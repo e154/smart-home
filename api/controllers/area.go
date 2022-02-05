@@ -37,6 +37,7 @@ func NewControllerArea(common *ControllerCommon) ControllerArea {
 	}
 }
 
+// AddArea ...
 func (c ControllerArea) AddArea(ctx context.Context, req *api.NewAreaRequest) (*api.Area, error) {
 
 	area := c.dto.Area.AddArea(req)
@@ -49,6 +50,7 @@ func (c ControllerArea) AddArea(ctx context.Context, req *api.NewAreaRequest) (*
 	return c.dto.Area.ToArea(area), nil
 }
 
+// UpdateArea ...
 func (c ControllerArea) UpdateArea(ctx context.Context, req *api.UpdateAreaRequest) (*api.Area, error) {
 
 	area := c.dto.Area.UpdateArea(req)
@@ -61,6 +63,7 @@ func (c ControllerArea) UpdateArea(ctx context.Context, req *api.UpdateAreaReque
 	return c.dto.Area.ToArea(area), nil
 }
 
+// GetAreaById ...
 func (c ControllerArea) GetAreaById(ctx context.Context, req *api.GetAreaRequest) (*api.Area, error) {
 
 	area, err := c.endpoint.Area.GetById(ctx, req.Id)
@@ -71,6 +74,7 @@ func (c ControllerArea) GetAreaById(ctx context.Context, req *api.GetAreaRequest
 	return c.dto.Area.ToArea(area), nil
 }
 
+// GetAreaList ...
 func (c ControllerArea) GetAreaList(ctx context.Context, req *api.PaginationRequest) (*api.GetAreaListResult, error) {
 
 	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
@@ -82,6 +86,7 @@ func (c ControllerArea) GetAreaList(ctx context.Context, req *api.PaginationRequ
 	return c.dto.Area.ToListResult(items, uint64(total), pagination), nil
 }
 
+// DeleteArea ...
 func (c ControllerArea) DeleteArea(ctx context.Context, req *api.DeleteAreaRequest) (*emptypb.Empty, error) {
 
 	if err := c.endpoint.Area.Delete(ctx, req.Id); err != nil {

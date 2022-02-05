@@ -32,7 +32,8 @@ import (
 // Logging ...
 type Logging struct {
 	logger     *zap.Logger
-	saver      ISaver
+	dbSaver    ISaver
+	wsSaver    ISaver
 	oldLogLock *sync.Mutex
 	oldLog     m.Log
 }
@@ -114,16 +115,27 @@ func (b *Logging) selfSaver(e zapcore.Entry) (err error) {
 
 	b.oldLog = record
 
-	if b.saver != nil {
-		b.saver.Save(record)
+	// db
+	if b.dbSaver != nil {
+		b.dbSaver.Save(record)
+	}
+
+	// ws
+	if b.wsSaver != nil {
+		b.wsSaver.Save(record)
 	}
 
 	return nil
 }
 
-// SetSaver ...
-func (b *Logging) SetSaver(saver ISaver) {
-	b.saver = saver
+// SetDbSaver ...
+func (b *Logging) SetDbSaver(saver ISaver) {
+	b.dbSaver = saver
+}
+
+// SetWsSaver ...
+func (b *Logging) SetWsSaver(saver ISaver) {
+	b.wsSaver = saver
 }
 
 // CustomLevelEncoder ...

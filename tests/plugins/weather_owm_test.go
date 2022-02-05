@@ -20,6 +20,7 @@ package plugins
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/system/event_bus/events"
 	"reflect"
 	"strings"
 	"testing"
@@ -103,13 +104,13 @@ func TestWeatherOwm(t *testing.T) {
 
 					// subscribe
 					// ------------------------------------------------
-					ch := make(chan event_bus.EventRequestState, 3)
+					ch := make(chan events.EventRequestState, 3)
 					fn := func(topic string, msg interface{}) {
 
 						switch v := msg.(type) {
-						case event_bus.EventRequestState:
+						case events.EventRequestState:
 							ch <- v
-						case event_bus.EventAddedActor:
+						case events.EventAddedActor:
 						default:
 							fmt.Printf("unknown type %s\n", reflect.TypeOf(v).String())
 
@@ -135,7 +136,7 @@ func TestWeatherOwm(t *testing.T) {
 					ticker := time.NewTimer(time.Second * 3)
 					defer ticker.Stop()
 
-					var msg event_bus.EventRequestState
+					var msg events.EventRequestState
 					var ok bool
 					select {
 					case msg = <-ch:
@@ -163,13 +164,13 @@ func TestWeatherOwm(t *testing.T) {
 
 					// subscribe
 					// ------------------------------------------------
-					ch := make(chan event_bus.EventRequestState, 3)
+					ch := make(chan events.EventRequestState, 3)
 					fn := func(topic string, msg interface{}) {
 
 						switch v := msg.(type) {
-						case event_bus.EventRequestState:
+						case events.EventRequestState:
 							ch <- v
-						case event_bus.EventAddedActor:
+						case events.EventAddedActor:
 
 						}
 					}
@@ -198,7 +199,7 @@ func TestWeatherOwm(t *testing.T) {
 					ticker := time.NewTimer(time.Second * 2)
 					defer ticker.Stop()
 
-					var msg event_bus.EventRequestState
+					var msg events.EventRequestState
 					var ok bool
 					select {
 					case msg = <-ch:
@@ -224,13 +225,13 @@ func TestWeatherOwm(t *testing.T) {
 
 					// subscribe
 					// ------------------------------------------------
-					ch := make(chan event_bus.EventRemoveActor)
+					ch := make(chan events.EventRemoveActor)
 					fn := func(topic string, msg interface{}) {
 
 						switch v := msg.(type) {
-						case event_bus.EventRequestState:
-						case event_bus.EventAddedActor:
-						case event_bus.EventRemoveActor:
+						case events.EventRequestState:
+						case events.EventAddedActor:
+						case events.EventRemoveActor:
 							if v.PluginName == "weather_owm" {
 								ch <- v
 							}
@@ -249,7 +250,7 @@ func TestWeatherOwm(t *testing.T) {
 					ticker := time.NewTimer(time.Second * 2)
 					defer ticker.Stop()
 
-					var msg event_bus.EventRemoveActor
+					var msg events.EventRemoveActor
 					var ok bool
 					select {
 					case msg = <-ch:

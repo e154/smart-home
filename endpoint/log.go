@@ -19,14 +19,13 @@
 package endpoint
 
 import (
-	"encoding/json"
-	"strings"
-	"time"
-
+	"context"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
+	"strings"
+	"time"
 )
 
 // LogEndpoint ...
@@ -73,31 +72,22 @@ func (l *LogEndpoint) GetById(id int64) (log *m.Log, err error) {
 }
 
 // GetList ...
-func (l *LogEndpoint) GetList(limit, offset int64, order, sortBy, query string) (list []*m.Log, total int64, err error) {
+func (l *LogEndpoint) GetList(ctx context.Context, pagination common.PageParams, query, startDate, endDate *string) (list []*m.Log, total int64, err error) {
 
-	var queryObj *m.LogQuery
-	if query != "" {
-		queryObj = &m.LogQuery{}
-		d := make(map[string]string, 0)
-		if err = json.Unmarshal([]byte(query), &d); err != nil {
-			err = errors.Wrap(common.ErrInternal, err.Error())
-			return
-		}
-
-		if startDate, ok := d["start_date"]; ok {
-			date, _ := time.Parse("2006-01-02", startDate)
-			queryObj.StartDate = &date
-		}
-		if endDate, ok := d["end_date"]; ok {
-			date, _ := time.Parse("2006-01-02", endDate)
-			queryObj.EndDate = &date
-		}
-		if levels, ok := d["levels"]; ok {
-			queryObj.Levels = strings.Split(strings.Replace(levels, "'", "", -1), ",")
-		}
+	var queryObj = &m.LogQuery{}
+	if startDate != nil {
+		date, _ := time.Parse("2006-01-02", *startDate)
+		queryObj.StartDate = &date
+	}
+	if endDate != nil {
+		date, _ := time.Parse("2006-01-02", *endDate)
+		queryObj.EndDate = &date
+	}
+	if query != nil {
+		queryObj.Levels = strings.Split(strings.Replace(*query, "'", "", -1), ",")
 	}
 
-	list, total, err = l.adaptors.Log.List(limit, offset, order, sortBy, queryObj)
+	list, total, err = l.adaptors.Log.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, queryObj)
 	if err != nil {
 		err = errors.Wrap(common.ErrInternal, err.Error())
 	}

@@ -16,11 +16,12 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package event_bus
+package events
 
 import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/event_bus"
 )
 
 // EventRequestState ...
@@ -32,11 +33,11 @@ type EventRequestState struct {
 
 // EventStateChanged ...
 type EventStateChanged struct {
-	StorageSave bool             `json:"storage_save"`
-	PluginName  string           `json:"plugin_name"`
-	EntityId    common.EntityId  `json:"entity_id"`
-	OldState    EventEntityState `json:"old_state"`
-	NewState    EventEntityState `json:"new_state"`
+	StorageSave bool                       `json:"storage_save"`
+	PluginName  string                     `json:"plugin_name"`
+	EntityId    common.EntityId            `json:"entity_id"`
+	OldState    event_bus.EventEntityState `json:"old_state"`
+	NewState    event_bus.EventEntityState `json:"new_state"`
 }
 
 // EventCallAction ...
@@ -68,16 +69,6 @@ type EventRemoveActor struct {
 	EntityId   common.EntityId `json:"entity_id"`
 }
 
-// EventLoadedPlugin ...
-type EventLoadedPlugin struct {
-	PluginName string `json:"plugin_name"`
-}
-
-// EventUnloadedPlugin ...
-type EventUnloadedPlugin struct {
-	PluginName string `json:"plugin_name"`
-}
-
 // EventCreatedEntity ...
 type EventCreatedEntity struct {
 	Id common.EntityId `json:"id"`
@@ -91,4 +82,13 @@ type EventUpdatedEntity struct {
 // EventDeletedEntity ...
 type EventDeletedEntity struct {
 	Id common.EntityId `json:"id"`
+}
+
+// EventEntitySetState ...
+type EventEntitySetState struct {
+	Id              common.EntityId  `json:"id"`
+	NewState        *string          `json:"new_state"`
+	AttributeValues m.AttributeValue `json:"attribute_values"`
+	SettingsValue   m.AttributeValue `json:"settings_value"`
+	StorageSave     bool             `json:"storage_save"`
 }

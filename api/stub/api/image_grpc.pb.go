@@ -31,6 +31,10 @@ type ImageServiceClient interface {
 	DeleteImageById(ctx context.Context, in *DeleteImageRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// upload image
 	UploadImage(ctx context.Context, in *UploadImageRequest, opts ...grpc.CallOption) (*Image, error)
+	// get image list by date
+	GetImageListByDate(ctx context.Context, in *GetImageListByDateRequest, opts ...grpc.CallOption) (*GetImageListByDateResult, error)
+	// get image filter list
+	GetImageFilterList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetImageFilterListResult, error)
 }
 
 type imageServiceClient struct {
@@ -95,6 +99,24 @@ func (c *imageServiceClient) UploadImage(ctx context.Context, in *UploadImageReq
 	return out, nil
 }
 
+func (c *imageServiceClient) GetImageListByDate(ctx context.Context, in *GetImageListByDateRequest, opts ...grpc.CallOption) (*GetImageListByDateResult, error) {
+	out := new(GetImageListByDateResult)
+	err := c.cc.Invoke(ctx, "/api.ImageService/GetImageListByDate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *imageServiceClient) GetImageFilterList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetImageFilterListResult, error) {
+	out := new(GetImageFilterListResult)
+	err := c.cc.Invoke(ctx, "/api.ImageService/GetImageFilterList", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ImageServiceServer is the server API for ImageService service.
 // All implementations should embed UnimplementedImageServiceServer
 // for forward compatibility
@@ -111,6 +133,10 @@ type ImageServiceServer interface {
 	DeleteImageById(context.Context, *DeleteImageRequest) (*emptypb.Empty, error)
 	// upload image
 	UploadImage(context.Context, *UploadImageRequest) (*Image, error)
+	// get image list by date
+	GetImageListByDate(context.Context, *GetImageListByDateRequest) (*GetImageListByDateResult, error)
+	// get image filter list
+	GetImageFilterList(context.Context, *emptypb.Empty) (*GetImageFilterListResult, error)
 }
 
 // UnimplementedImageServiceServer should be embedded to have forward compatible implementations.
@@ -134,6 +160,12 @@ func (UnimplementedImageServiceServer) DeleteImageById(context.Context, *DeleteI
 }
 func (UnimplementedImageServiceServer) UploadImage(context.Context, *UploadImageRequest) (*Image, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UploadImage not implemented")
+}
+func (UnimplementedImageServiceServer) GetImageListByDate(context.Context, *GetImageListByDateRequest) (*GetImageListByDateResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetImageListByDate not implemented")
+}
+func (UnimplementedImageServiceServer) GetImageFilterList(context.Context, *emptypb.Empty) (*GetImageFilterListResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetImageFilterList not implemented")
 }
 
 // UnsafeImageServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -255,6 +287,42 @@ func _ImageService_UploadImage_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ImageService_GetImageListByDate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetImageListByDateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ImageServiceServer).GetImageListByDate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.ImageService/GetImageListByDate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ImageServiceServer).GetImageListByDate(ctx, req.(*GetImageListByDateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ImageService_GetImageFilterList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ImageServiceServer).GetImageFilterList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.ImageService/GetImageFilterList",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ImageServiceServer).GetImageFilterList(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ImageService_ServiceDesc is the grpc.ServiceDesc for ImageService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -285,6 +353,14 @@ var ImageService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UploadImage",
 			Handler:    _ImageService_UploadImage_Handler,
+		},
+		{
+			MethodName: "GetImageListByDate",
+			Handler:    _ImageService_GetImageListByDate_Handler,
+		},
+		{
+			MethodName: "GetImageFilterList",
+			Handler:    _ImageService_GetImageFilterList_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

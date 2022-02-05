@@ -130,6 +130,24 @@ func (n Tasks) Delete(id int64) (err error) {
 	return
 }
 
+// Enable ...
+func (n Tasks) Enable(id int64) (err error) {
+	if err = n.Db.Model(&Task{Id: id}).Updates(map[string]interface{}{"enabled": true}).Error; err != nil {
+		err = errors.Wrap(err, "enable failed")
+		return
+	}
+	return
+}
+
+// Disable ...
+func (n Tasks) Disable(id int64) (err error) {
+	if err = n.Db.Model(&Task{Id: id}).Updates(map[string]interface{}{"enabled": false}).Error; err != nil {
+		err = errors.Wrap(err, "disable failed")
+		return
+	}
+	return
+}
+
 // List ...
 func (n *Tasks) List(limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*Task, total int64, err error) {
 

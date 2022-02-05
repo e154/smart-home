@@ -20,6 +20,7 @@ package zigbee2mqtt
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/system/event_bus/events"
 	"strings"
 	"sync"
 
@@ -195,7 +196,7 @@ func (p *plugin) getActorByZigbeeDeviceId(deviceId string) (actor *Actor, err er
 func (p *plugin) eventHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
-	case event_bus.EventCallAction:
+	case events.EventCallAction:
 		actor, ok := p.actors[v.EntityId.Name()]
 		if !ok {
 			return

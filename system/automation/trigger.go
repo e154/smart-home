@@ -34,6 +34,7 @@ type Trigger struct {
 	scriptService scripts.ScriptService
 	lastStatus    atomic.Bool
 	model         *m.Trigger
+	name          string
 	queue         chan interface{}
 	triggerPlugin triggers.ITrigger
 	isStarted     atomic.Bool
@@ -43,13 +44,14 @@ type Trigger struct {
 // NewTrigger ...
 func NewTrigger(scriptService scripts.ScriptService,
 	model *m.Trigger,
-	triggerPLugin triggers.ITrigger) (tr *Trigger, err error) {
+	triggerPlugin triggers.ITrigger) (tr *Trigger, err error) {
 
 	tr = &Trigger{
 		model:         model,
+		name:          model.Name,
 		queue:         make(chan interface{}, taskMsgBuffer),
 		scriptService: scriptService,
-		triggerPlugin: triggerPLugin,
+		triggerPlugin: triggerPlugin,
 	}
 
 	if tr.scriptEngine, err = scriptService.NewEngine(model.Script); err != nil {
@@ -93,12 +95,17 @@ func (tr *Trigger) EntityId() *common.EntityId {
 
 // Start ...
 func (tr *Trigger) Start() (err error) {
-
+	log.Infof("trigger '%s' started", tr.name)
 	return
 }
 
 // Stop ...
 func (tr *Trigger) Stop() (err error) {
-
+	log.Infof("stop trigger '%s'", tr.name)
 	return
+}
+
+// Call ...
+func (tr *Trigger) Call() {
+	tr.triggerPlugin.CallManual()
 }

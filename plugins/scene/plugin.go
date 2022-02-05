@@ -20,6 +20,7 @@ package scene
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/system/event_bus/events"
 	"sync"
 
 	"github.com/pkg/errors"
@@ -142,7 +143,7 @@ func (p *plugin) removeEntity(name string) (err error) {
 func (p *plugin) eventHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
-	case event_bus.EventCallScene:
+	case events.EventCallScene:
 		actor, ok := p.actors[v.EntityId.Name()]
 		if !ok {
 			return

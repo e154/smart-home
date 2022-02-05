@@ -313,6 +313,7 @@ func (j *Javascript) unsafeRun(program *goja.Program) (result string, err error)
 	wg.Wait()
 
 	if err != nil {
+		err = errors.Wrap(err, "unsafeRun")
 		return
 	}
 

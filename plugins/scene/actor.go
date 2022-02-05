@@ -20,12 +20,12 @@ package scene
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/system/event_bus/events"
 	"sync"
 
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/scripts"
 )
 
@@ -35,7 +35,7 @@ type Actor struct {
 	adaptors      *adaptors.Adaptors
 	scriptService scripts.ScriptService
 	scriptEngine  *scripts.Engine
-	eventPool     chan event_bus.EventCallScene
+	eventPool     chan events.EventCallScene
 	stateMu       *sync.Mutex
 }
 
@@ -50,7 +50,7 @@ func NewActor(entity *m.Entity,
 		BaseActor:     entity_manager.NewBaseActor(entity, scriptService, adaptors),
 		adaptors:      adaptors,
 		scriptService: scriptService,
-		eventPool:     make(chan event_bus.EventCallScene, 10),
+		eventPool:     make(chan events.EventCallScene, 10),
 		stateMu:       &sync.Mutex{},
 	}
 
@@ -82,11 +82,11 @@ func (e *Actor) Spawn() entity_manager.PluginActor {
 	return e
 }
 
-func (e *Actor) addEvent(event event_bus.EventCallScene) {
+func (e *Actor) addEvent(event events.EventCallScene) {
 	e.eventPool <- event
 }
 
-func (e *Actor) runEvent(msg event_bus.EventCallScene) {
+func (e *Actor) runEvent(msg events.EventCallScene) {
 
 	if _, err := e.scriptEngine.AssertFunction(FuncSceneEvent, msg.EntityId); err != nil {
 		log.Error(err.Error())

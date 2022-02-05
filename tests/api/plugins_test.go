@@ -66,8 +66,6 @@ func TestPlugins(t *testing.T) {
 			t.Run("list", func(t *testing.T) {
 				Convey("list", t, func(ctx C) {
 
-
-
 					request := &gw.PaginationRequest{
 						Limit: 100,
 						Page:  1,

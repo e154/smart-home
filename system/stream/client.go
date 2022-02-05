@@ -23,6 +23,7 @@ import (
 	"io"
 
 	"github.com/e154/smart-home/api/stub/api"
+	"github.com/e154/smart-home/common/uuid"
 )
 
 // Client ...
@@ -31,6 +32,7 @@ type Client struct {
 	server api.StreamService_SubscribeServer
 }
 
+// NewClient ...
 func NewClient(server api.StreamService_SubscribeServer) *Client {
 	return &Client{server: server}
 }
@@ -74,14 +76,7 @@ func (c *Client) Send(id, query string, body []byte) (err error) {
 
 // Broadcast ...
 func (c *Client) Broadcast(query string, body []byte) (err error) {
-	err = c.server.Send(&api.Response{
-		Id:    "",
-		Query: query,
-		Body:  body,
-	})
-	if err != nil {
-		c.closed = true
-	}
+	err = c.Send(uuid.NewV4().String(), query, body)
 	return
 }
 

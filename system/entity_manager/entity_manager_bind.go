@@ -23,15 +23,7 @@ import (
 	m "github.com/e154/smart-home/models"
 )
 
-// Javascript Binding
-//
-// entityManager
-//	.getEntity(id) -> EntityBind
-//  .setState(id, stateName)
-//  .setAttributes(id, attrs)
-//  .setMetric(id, name, value)
-//  .callAction(id, actionName)
-//
+// EntityManagerBind ...
 type EntityManagerBind struct {
 	manager EntityManager
 }
@@ -41,7 +33,7 @@ func NewEntityManagerBind(manager EntityManager) *EntityManagerBind {
 	return &EntityManagerBind{manager: manager}
 }
 
-// GetEntityById ...
+// GetEntity ...
 func (e *EntityManagerBind) GetEntity(id common.EntityId) *EntityBind {
 	return NewEntityBind(id, e.manager)
 }

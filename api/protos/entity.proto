@@ -158,10 +158,6 @@ message SearchEntityResult {
   repeated EntityShort items = 1;
 }
 
-message ReloadRequest {
-  string id = 1;
-}
-
 service EntityService {
 
   // add new entity
@@ -245,21 +241,6 @@ service EntityService {
   rpc SearchEntity (SearchRequest) returns (SearchEntityResult){
     option (google.api.http) = {
       get: "/v1/entity/search"
-    };
-    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
-      security: {
-        security_requirement: {
-          key: "ApiKeyAuth"
-          value: {}
-        }
-      }
-    };
-  }
-
-  // reload entity
-  rpc ReloadEntity (ReloadRequest) returns (google.protobuf.Empty){
-    option (google.api.http) = {
-      post: "/v1/entity/{id}/reload"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
       security: {

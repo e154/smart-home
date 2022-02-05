@@ -84,3 +84,8 @@ func (t *SystemTrigger) Unsubscribe(options Subscriber) error {
 	log.Infof("unsubscribe topic %s", TopicSystem)
 	return t.msgQueue.Unsubscribe(TopicSystem, options.Handler)
 }
+
+// CallManual ...
+func (t *SystemTrigger) CallManual() {
+	log.Warn("method not implemented")
+}

@@ -24,15 +24,6 @@ var (
 	log = common.MustGetLogger("js")
 )
 
-// Javascript Binding
-//
-// Log
-// 	 .info()
-// 	 .warn()
-// 	 .error()
-// 	 .debug()
-//
-
 // LogBind ...
 type LogBind struct{}
 

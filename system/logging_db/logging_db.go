@@ -16,16 +16,22 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package logging
+package logging_db
 
 import (
 	"context"
+	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/system/logging"
 	"time"
 
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"go.uber.org/atomic"
 	"go.uber.org/fx"
+)
+
+var (
+	log = common.MustGetLogger("logging_db")
 )
 
 // LogDbSaver ...
@@ -38,7 +44,7 @@ type LogDbSaver struct {
 
 // NewLogDbSaver ...
 func NewLogDbSaver(lc fx.Lifecycle,
-	adaptors *adaptors.Adaptors) ISaver {
+	adaptors *adaptors.Adaptors) logging.ISaver {
 	saver := &LogDbSaver{
 		adaptors:  adaptors,
 		pool:      make(chan m.Log),
@@ -62,6 +68,7 @@ func NewLogDbSaver(lc fx.Lifecycle,
 
 // Start ...
 func (l *LogDbSaver) Start() {
+	log.Info("start")
 
 	if l.isRunning.Load() {
 		return
@@ -102,6 +109,8 @@ func (l *LogDbSaver) Start() {
 
 // Shutdown ...
 func (l *LogDbSaver) Shutdown() {
+	log.Info("shutdown")
+
 	if !l.isRunning.Load() {
 		return
 	}

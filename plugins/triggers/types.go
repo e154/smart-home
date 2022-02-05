@@ -53,6 +53,7 @@ type ITrigger interface {
 	Subscribe(Subscriber) error
 	Unsubscribe(Subscriber) error
 	FunctionName() string
+	CallManual()
 }
 
 // Subscriber ...

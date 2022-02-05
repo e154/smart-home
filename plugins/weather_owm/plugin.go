@@ -19,6 +19,7 @@
 package weather_owm
 
 import (
+	"github.com/e154/smart-home/system/event_bus/events"
 	"time"
 
 	"github.com/e154/smart-home/common"
@@ -130,7 +131,7 @@ func (p plugin) Name() string {
 
 func (p *plugin) eventHandler(_ string, msg interface{}) {
 	switch v := msg.(type) {
-	case event_bus.EventAddedActor:
+	case events.EventAddedActor:
 		if v.PluginName != "weather" {
 			return
 		}
@@ -149,7 +150,7 @@ func (p *plugin) eventHandler(_ string, msg interface{}) {
 
 		p.weather.UpdateWeatherList(v.EntityId, v.Settings)
 
-	case event_bus.EventRemoveActor:
+	case events.EventRemoveActor:
 		if v.PluginName != "weather" {
 			return
 		}

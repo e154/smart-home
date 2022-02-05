@@ -91,6 +91,7 @@ func (r Area) ToArea(area *m.Area) (obj *api.Area) {
 	return
 }
 
+// ToArea ...
 func ToArea(area *m.Area) (obj *api.Area) {
 	if area == nil {
 		return

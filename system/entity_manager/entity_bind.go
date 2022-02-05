@@ -23,16 +23,6 @@ import (
 	m "github.com/e154/smart-home/models"
 )
 
-// Javascript Binding
-//
-// Entity
-//  .setState(stateName)
-//  .setAttributes(attrs)
-//  .getAttributes()
-//  .setMetric(name, value)
-//  .callAction(name, value)
-//
-
 // EntityBind ...
 type EntityBind struct {
 	m.EntityShort

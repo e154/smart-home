@@ -88,6 +88,14 @@ message DeleteTaskRequest {
   int64 id = 1;
 }
 
+message EnableTaskRequest {
+  int64 id = 1;
+}
+
+message DisableTaskRequest {
+  int64 id = 1;
+}
+
 service AutomationService {
 
   // add new task
@@ -166,4 +174,35 @@ service AutomationService {
       }
     };
   }
+
+  // enable task
+  rpc EnableTask (EnableTaskRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post: "/v1/task/{id}/enable"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // disable task
+  rpc DisableTask (DisableTaskRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post: "/v1/task/{id}/disable"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
 }

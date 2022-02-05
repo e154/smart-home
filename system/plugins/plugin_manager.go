@@ -21,6 +21,7 @@ package plugins
 import (
 	"context"
 	"fmt"
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -188,7 +189,7 @@ func (p *pluginManager) loadPlugin(name string) (err error) {
 
 	p.enabledPlugins[name] = true
 
-	p.eventBus.Publish(event_bus.TopicPlugins, event_bus.EventLoadedPlugin{
+	p.eventBus.Publish(event_bus.TopicPlugins, events.EventLoadedPlugin{
 		PluginName: string(name),
 	})
 
@@ -212,7 +213,7 @@ func (p *pluginManager) unloadPlugin(name string) (err error) {
 
 	p.enabledPlugins[name] = false
 
-	p.eventBus.Publish(event_bus.TopicPlugins, event_bus.EventUnloadedPlugin{
+	p.eventBus.Publish(event_bus.TopicPlugins, events.EventUnloadedPlugin{
 		PluginName: string(name),
 	})
 

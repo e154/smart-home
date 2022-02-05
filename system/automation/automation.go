@@ -22,10 +22,12 @@
 // │ TASK │  │ TASK │  │ TASK │
 // └──────┘  └──────┘  └──────┘   ...
 //
+
 package automation
 
 import (
 	"context"
+	"github.com/e154/smart-home/system/event_bus/events"
 	"sync"
 
 	"github.com/e154/smart-home/adaptors"
@@ -101,12 +103,14 @@ func NewAutomation(lc fx.Lifecycle,
 // Start ...
 func (a *automation) Start() (err error) {
 	a.load()
+	_ = a.eventBus.Subscribe(event_bus.TopicAutomation, a.eventHandler)
 	return
 }
 
 // Shutdown ...
 func (a *automation) Shutdown() (err error) {
 	a.unload()
+	_ = a.eventBus.Unsubscribe(event_bus.TopicAutomation, a.eventHandler)
 	return
 }
 
@@ -192,4 +196,73 @@ func (a *automation) RemoveTask(model *m.Task) {
 		delete(a.tasks, model.Id)
 		a.taskCount.Dec()
 	}
+}
+
+func (a *automation) eventHandler(_ string, msg interface{}) {
+
+	switch v := msg.(type) {
+	case events.EventCallTaskAction:
+		go a.eventCallAction(v.Id, v.Name)
+	case events.EventCallTaskTrigger:
+		go a.eventCallTrigger(v.Id, v.Name)
+
+	case events.EventEnableTask:
+		go a.updateTask(v.Id)
+	case events.EventUpdateTask:
+		go a.updateTask(v.Id)
+	case events.EventAddedTask:
+		go a.updateTask(v.Id)
+
+	case events.EventDisableTask:
+		go a.removeTask(v.Id)
+	case events.EventRemoveTask:
+		go a.removeTask(v.Id)
+	}
+
+	return
+}
+
+func (a *automation) eventCallTrigger(id int64, name string) {
+	a.taskLock.Lock()
+	defer a.taskLock.Unlock()
+
+	if task, ok := a.tasks[id]; ok {
+		task.CallTrigger(name)
+	}
+}
+
+func (a *automation) eventCallAction(id int64, name string) {
+	a.taskLock.Lock()
+	defer a.taskLock.Unlock()
+
+	if task, ok := a.tasks[id]; ok {
+		task.CallAction(name)
+	}
+}
+
+func (a *automation) removeTask(id int64) {
+	a.taskLock.Lock()
+	defer a.taskLock.Unlock()
+
+	if task, ok := a.tasks[id]; ok {
+		task.Stop()
+	}
+	delete(a.tasks, id)
+}
+
+func (a *automation) updateTask(id int64) {
+	a.taskLock.Lock()
+	defer a.taskLock.Unlock()
+
+	if task, ok := a.tasks[id]; ok {
+		task.Stop()
+	}
+	delete(a.tasks, id)
+
+	task, err := a.adaptors.Task.GetById(id)
+	if err != nil {
+		return
+	}
+
+	a.AddTask(task)
 }

@@ -56,6 +56,7 @@ type Endpoint struct {
 	PluginActor     *PluginActorEndpoint
 	Task            *TaskEndpoint
 	Area            *AreaEndpoint
+	Interact        *InteractEndpoint
 }
 
 // NewEndpoint ...
@@ -90,5 +91,6 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 		PluginActor:     NewPluginActorEndpoint(common),
 		Task:            NewTaskEndpoint(common),
 		Area:            NewAreaEndpoint(common),
+		Interact:        NewInteractEndpoint(common),
 	}
 }

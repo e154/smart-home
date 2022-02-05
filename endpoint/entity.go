@@ -20,6 +20,7 @@ package endpoint
 
 import (
 	"context"
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -62,7 +63,7 @@ func (n *EntityEndpoint) Add(ctx context.Context, entity *m.Entity) (result *m.E
 		return
 	}
 
-	n.eventBus.Publish(event_bus.TopicEntities, event_bus.EventCreatedEntity{
+	n.eventBus.Publish(event_bus.TopicEntities, events.EventCreatedEntity{
 		Id: result.Id,
 	})
 
@@ -119,7 +120,7 @@ func (n *EntityEndpoint) Update(ctx context.Context, params *m.Entity) (result *
 		return
 	}
 
-	n.eventBus.Publish(event_bus.TopicEntities, event_bus.EventUpdatedEntity{
+	n.eventBus.Publish(event_bus.TopicEntities, events.EventUpdatedEntity{
 		Id: result.Id,
 	})
 
@@ -158,7 +159,7 @@ func (n *EntityEndpoint) Delete(ctx context.Context, id common.EntityId) (err er
 		return
 	}
 
-	n.eventBus.Publish(event_bus.TopicEntities, event_bus.EventDeletedEntity{
+	n.eventBus.Publish(event_bus.TopicEntities, events.EventDeletedEntity{
 		Id: id,
 	})
 
@@ -172,24 +173,5 @@ func (n *EntityEndpoint) Search(ctx context.Context, query string, limit, offset
 	if err != nil {
 		err = errors.Wrap(common.ErrInternal, err.Error())
 	}
-	return
-}
-
-// Reload ...
-func (n *EntityEndpoint) Reload(ctx context.Context, id common.EntityId) (err error) {
-
-	_, err = n.adaptors.Entity.GetById(id)
-	if err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
-		return
-	}
-
-	n.eventBus.Publish(event_bus.TopicEntities, event_bus.EventUpdatedEntity{
-		Id: id,
-	})
-
 	return
 }

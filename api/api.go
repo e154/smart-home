@@ -21,10 +21,11 @@ package api
 import (
 	"context"
 	"embed"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net"
 	"net/http"
 	"strings"
+
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/e154/smart-home/api/controllers"
 	gw "github.com/e154/smart-home/api/stub/api"
@@ -105,6 +106,9 @@ func (a *Api) Start() error {
 	gw.RegisterEntityServiceServer(grpcServer, a.controllers.Entity)
 	gw.RegisterAutomationServiceServer(grpcServer, a.controllers.Automation)
 	gw.RegisterAreaServiceServer(grpcServer, a.controllers.Area)
+	gw.RegisterDeveloperToolsServiceServer(grpcServer, a.controllers.Dev)
+	gw.RegisterInteractServiceServer(grpcServer, a.controllers.Interact)
+	gw.RegisterLogServiceServer(grpcServer, a.controllers.Logs)
 	grpc_prometheus.Register(grpcServer)
 
 	var group errgroup.Group
@@ -151,6 +155,9 @@ func (a *Api) Start() error {
 		gw.RegisterEntityServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
 		gw.RegisterAutomationServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
 		gw.RegisterAreaServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		gw.RegisterDeveloperToolsServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		gw.RegisterInteractServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		gw.RegisterLogServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
 		return nil
 	})
 

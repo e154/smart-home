@@ -41,9 +41,12 @@ const (
 )
 
 var (
-	ErrPluginIsLoaded   = errors.New("plugin is loaded")
+	// ErrPluginIsLoaded ...
+	ErrPluginIsLoaded = errors.New("plugin is loaded")
+	// ErrPluginIsUnloaded ...
 	ErrPluginIsUnloaded = errors.New("plugin is unloaded")
-	ErrPluginNotLoaded  = errors.New("plugin not loaded")
+	// ErrPluginNotLoaded ...
+	ErrPluginNotLoaded = errors.New("plugin not loaded")
 )
 
 // Service ...

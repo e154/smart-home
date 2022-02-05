@@ -27,9 +27,12 @@ import (
 )
 
 var (
-	ErrInvalidAccessToken      = errors.New("invalid access token")
+	// ErrInvalidAccessToken ...
+	ErrInvalidAccessToken = errors.New("invalid access token")
+	// ErrUnexpectedSigningMethod ...
 	ErrUnexpectedSigningMethod = errors.New("unexpected signing method")
-	ErrInvalidTokenClaims      = errors.New("invalid token claims")
+	// ErrInvalidTokenClaims ...
+	ErrInvalidTokenClaims = errors.New("invalid token claims")
 )
 
 // JwtManager ...

@@ -20,6 +20,7 @@ package telegram
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/system/event_bus/events"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -45,7 +46,7 @@ type Actor struct {
 	bot         *tgbotapi.BotAPI
 	commandPool chan Command
 	msgPool     chan string
-	actionPool  chan event_bus.EventCallAction
+	actionPool  chan events.EventCallAction
 }
 
 // NewActor ...
@@ -61,7 +62,7 @@ func NewActor(entity *m.Entity,
 	actor := &Actor{
 		BaseActor:   entity_manager.NewBaseActor(entity, scriptService, adaptors),
 		eventBus:    eventBus,
-		actionPool:  make(chan event_bus.EventCallAction, 10),
+		actionPool:  make(chan events.EventCallAction, 10),
 		isStarted:   atomic.NewBool(false),
 		adaptors:    adaptors,
 		AccessToken: settings[AttrToken].String(),
@@ -260,7 +261,7 @@ func (p *Actor) UpdateStatus() (err error) {
 	}
 	p.AttrMu.Unlock()
 
-	p.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
+	p.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
 		StorageSave: true,
 		PluginName:  p.Id.PluginName(),
 		EntityId:    p.Id,
@@ -299,17 +300,17 @@ func (p *Actor) commandQuit(cmd Command) {
 
 //todo add command args
 func (p *Actor) commandAction(cmd Command) {
-	p.runAction(event_bus.EventCallAction{
+	p.runAction(events.EventCallAction{
 		ActionName: strings.Replace(cmd.Text, "/", "", 1),
 		EntityId:   p.Id,
 	})
 }
 
-func (p *Actor) addAction(event event_bus.EventCallAction) {
+func (p *Actor) addAction(event events.EventCallAction) {
 	p.actionPool <- event
 }
 
-func (p *Actor) runAction(msg event_bus.EventCallAction) {
+func (p *Actor) runAction(msg events.EventCallAction) {
 	action, ok := p.Actions[msg.ActionName]
 	if !ok {
 		log.Warnf("action %s not found", msg.ActionName)

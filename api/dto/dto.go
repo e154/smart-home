@@ -29,6 +29,7 @@ type Dto struct {
 	Zigbee2mqtt Zigbee2mqtt
 	Area        Area
 	Automation  Automation
+	Log         Log
 }
 
 // NewDto ...
@@ -43,5 +44,6 @@ func NewDto() Dto {
 		Zigbee2mqtt: NewZigbee2mqttDto(),
 		Area:        NewAreaDto(),
 		Automation:  NewAutomationDto(),
+		Log:         NewLogDto(),
 	}
 }

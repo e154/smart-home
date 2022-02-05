@@ -33,6 +33,7 @@ type Plugin struct {
 	Settings Attributes `json:"settings"`
 }
 
+// Plugins ...
 type Plugins []*Plugin
 
 // Len ...

@@ -19,11 +19,14 @@
 package automation
 
 import (
+	"fmt"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/triggers"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/pkg/errors"
 	"go.uber.org/atomic"
 )
 
@@ -36,12 +39,12 @@ type Task struct {
 	model          *m.Task
 	automation     *automation
 	conditionGroup *ConditionGroup
-	actions        []*Action
+	actions        map[string]*Action
 	script         *scripts.Engine
 	enabled        atomic.Bool
 	scriptService  scripts.ScriptService
 	entityManager  entity_manager.EntityManager
-	triggers       map[*Trigger]struct{}
+	triggers       map[string]*Trigger
 	rawPlugin      triggers.IGetTrigger
 }
 
@@ -57,7 +60,8 @@ func NewTask(automation *automation,
 		enabled:       atomic.Bool{},
 		scriptService: scriptService,
 		entityManager: entityManager,
-		triggers:      make(map[*Trigger]struct{}),
+		triggers:      make(map[string]*Trigger),
+		actions:       make(map[string]*Action),
 		rawPlugin:     rawPlugin,
 	}
 }
@@ -73,6 +77,11 @@ func (t *Task) Name() string {
 }
 
 func (t *Task) addTrigger(model *m.Trigger) (err error) {
+
+	if _, ok := t.triggers[model.Name]; ok {
+		err = errors.Wrap(common.ErrInternal, fmt.Sprintf("trigger %s exist", model.Name))
+		return
+	}
 
 	pluginName := model.PluginName
 	if pluginName == "" {
@@ -91,7 +100,9 @@ func (t *Task) addTrigger(model *m.Trigger) (err error) {
 		return
 	}
 
-	tr.Start()
+	t.triggers[model.Name] = tr
+
+	_ = tr.Start()
 
 	queue := make(chan interface{}, taskMsgBuffer)
 	var handler = func(_ string, msg interface{}) {
@@ -117,6 +128,7 @@ func (t *Task) addTrigger(model *m.Trigger) (err error) {
 		var err error
 
 		defer func() {
+			_ = tr.Stop()
 			triggerPLugin.Unsubscribe(triggers.Subscriber{
 				EntityId: entityId,
 				Handler:  handler,
@@ -162,7 +174,7 @@ func (t *Task) Start() {
 			log.Error(err.Error())
 			continue
 		}
-		t.actions = append(t.actions, action)
+		t.actions[model.Name] = action
 	}
 
 	// add condition group
@@ -193,10 +205,24 @@ func (t *Task) Stop() {
 	}
 	t.enabled.Store(false)
 	log.Infof("task %d stopped", t.Id())
-	for trigger := range t.triggers {
-		trigger.Stop()
-	}
-	t.triggers = make(map[*Trigger]struct{})
+	//for _, trigger := range t.triggers {
+	//	_ = trigger.Stop()
+	//}
+	//t.triggers = make(map[string]*Trigger)
 	t.conditionGroup = nil
-	t.actions = make([]*Action, 0)
+	//t.actions = make([]*Action, 0)
+}
+
+// CallTrigger ...
+func (t *Task) CallTrigger(name string) {
+	if tr, ok := t.triggers[name]; ok {
+		tr.Call()
+	}
+}
+
+// CallAction ...
+func (t *Task) CallAction(name string) {
+	if action, ok := t.actions[name]; ok {
+		action.Run(nil)
+	}
 }

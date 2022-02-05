@@ -19,6 +19,7 @@
 package plugins
 
 import (
+	"github.com/e154/smart-home/system/event_bus/events"
 	"testing"
 	"time"
 
@@ -58,8 +59,8 @@ func TestSun(t *testing.T) {
 			err = adaptors.Entity.Add(sunEnt)
 			ctx.So(err, ShouldBeNil)
 
-			ch := make(chan event_bus.EventStateChanged)
-			eventBus.Subscribe(event_bus.TopicEntities, func(topic string, msg event_bus.EventStateChanged) {
+			ch := make(chan events.EventStateChanged)
+			eventBus.Subscribe(event_bus.TopicEntities, func(topic string, msg events.EventStateChanged) {
 				ch <- msg
 			})
 
@@ -85,7 +86,7 @@ func TestSun(t *testing.T) {
 					ticker := time.NewTimer(time.Second * 2)
 					defer ticker.Stop()
 
-					var msg event_bus.EventStateChanged
+					var msg events.EventStateChanged
 					var ok bool
 					select {
 					case msg = <-ch:

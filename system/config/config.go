@@ -43,7 +43,6 @@ func ReadConfig(dir, fileName, pref string) (conf *models.AppConfig, err error) 
 	err = json.Unmarshal(file, conf)
 	if err != nil {
 		log.Fatal("Error: wrong format of config file")
-		return
 	}
 	checkEnv(pref, conf)
 

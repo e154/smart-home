@@ -21,6 +21,7 @@ package initial
 import (
 	_ "github.com/e154/smart-home/system/initial/environments/default"
 	_ "github.com/e154/smart-home/system/initial/environments/example1"
+	"github.com/e154/smart-home/system/logging_ws"
 	"github.com/e154/smart-home/system/validation"
 
 	_ "github.com/e154/smart-home/plugins"
@@ -84,7 +85,8 @@ func NewInitial(lc fx.Lifecycle,
 	api *api.Api,
 	metrics *metrics.MetricManager,
 	gateClient *gate_client.GateClient,
-	validation *validation.Validate) *Initial {
+	validation *validation.Validate,
+	_ *logging_ws.LoggingWs) *Initial {
 	initial := &Initial{
 		migrations:    migrations,
 		adaptors:      adaptors,

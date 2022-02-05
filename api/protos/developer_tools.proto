@@ -1,0 +1,89 @@
+syntax = "proto3";
+
+package api;
+option go_package = "/api";
+
+import "google/api/annotations.proto";
+import "protoc-gen-swagger/options/annotations.proto";
+import "google/protobuf/empty.proto";
+
+message EntityRequest {
+  string id = 1;
+  string name = 2;
+}
+
+message AutomationRequest {
+  int64 id = 1;
+  string name = 2;
+}
+
+message ReloadRequest {
+  string id = 1;
+}
+
+service DeveloperToolsService {
+
+  // entity set state
+  rpc EntitySetState (EntityRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post: "/v1/developer_tools/entity_set_state"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // reload entity
+  rpc ReloadEntity (ReloadRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post: "/v1/developer_tools/entity_reload"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // task call trigger
+  rpc TaskCallTrigger (AutomationRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post: "/v1/developer_tools/task_call_trigger"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // task call action
+  rpc TaskCallAction (AutomationRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post: "/v1/developer_tools/task_call_action"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+}

@@ -20,6 +20,7 @@ package script
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/system/event_bus/events"
 	"sync"
 
 	"github.com/e154/smart-home/adaptors"
@@ -42,7 +43,7 @@ type Actor struct {
 	scriptService scripts.ScriptService
 	system        entity_manager.EntityManager
 	stateMu       *sync.Mutex
-	actionPool    chan event_bus.EventCallAction
+	actionPool    chan events.EventCallAction
 }
 
 // NewActor ...
@@ -56,7 +57,7 @@ func NewActor(entity *m.Entity,
 		BaseActor:     entity_manager.NewBaseActor(entity, scriptService, adaptors),
 		adaptors:      adaptors,
 		scriptService: scriptService,
-		actionPool:    make(chan event_bus.EventCallAction, 10),
+		actionPool:    make(chan events.EventCallAction, 10),
 		stateMu:       &sync.Mutex{},
 		eventBus:      eventBus,
 	}
@@ -127,7 +128,7 @@ func (e *Actor) SetState(params entity_manager.EntityStateParams) (err error) {
 	}
 	e.AttrMu.Unlock()
 
-	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
+	e.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
 		PluginName: e.Id.PluginName(),
 		EntityId:   e.Id,
 		OldState:   oldState,
@@ -137,11 +138,11 @@ func (e *Actor) SetState(params entity_manager.EntityStateParams) (err error) {
 	return
 }
 
-func (e *Actor) addAction(event event_bus.EventCallAction) {
+func (e *Actor) addAction(event events.EventCallAction) {
 	e.actionPool <- event
 }
 
-func (e *Actor) runAction(msg event_bus.EventCallAction) {
+func (e *Actor) runAction(msg events.EventCallAction) {
 
 	action, ok := e.Actions[msg.ActionName]
 	if !ok {

@@ -29,13 +29,6 @@ type HttpResponse struct {
 	ErrorMessage string `json:"errorMessage"`
 }
 
-// Javascript Binding
-//
-// http
-// 	 .get(url)
-// 	 .post(url, body)
-//
-
 // HttpBind ...
 type HttpBind struct{}
 

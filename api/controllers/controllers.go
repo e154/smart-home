@@ -38,6 +38,9 @@ type Controllers struct {
 	Entity      ControllerEntity
 	Automation  ControllerAutomation
 	Area        ControllerArea
+	Dev         ControllerDeveloperTools
+	Interact    ControllerInteract
+	Logs        ControllerLogs
 }
 
 // NewControllers ...
@@ -58,5 +61,8 @@ func NewControllers(adaptors *adaptors.Adaptors,
 		Entity:      NewControllerEntity(common),
 		Automation:  NewControllerAutomation(common),
 		Area:        NewControllerArea(common),
+		Dev:         NewControllerDeveloperTools(common),
+		Interact:    NewControllerInteract(common),
+		Logs:        NewControllerLogs(common),
 	}
 }

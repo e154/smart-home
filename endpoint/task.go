@@ -20,12 +20,14 @@ package endpoint
 
 import (
 	"context"
+	"github.com/e154/smart-home/system/event_bus/events"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/go-playground/validator/v10"
+	"github.com/e154/smart-home/system/event_bus"
 )
 
 // TaskEndpoint ...
@@ -60,6 +62,10 @@ func (n *TaskEndpoint) Add(ctx context.Context, task *m.Task) (result *m.Task, e
 		return
 	}
 
+	n.eventBus.Publish(event_bus.TopicAutomation, events.EventAddedTask{
+		Id: task.Id,
+	})
+
 	return
 }
 
@@ -87,6 +93,10 @@ func (n *TaskEndpoint) Update(ctx context.Context, task *m.Task) (result *m.Task
 		return
 	}
 
+	n.eventBus.Publish(event_bus.TopicAutomation, events.EventUpdateTask{
+		Id: task.Id,
+	})
+
 	return
 }
 
@@ -112,6 +122,42 @@ func (n *TaskEndpoint) Delete(ctx context.Context, id int64) (err error) {
 			err = errors.Wrap(common.ErrInternal, err.Error())
 		}
 	}
+
+	n.eventBus.Publish(event_bus.TopicAutomation, events.EventRemoveTask{
+		Id: id,
+	})
+
+	return
+}
+
+// Enable ...
+func (n *TaskEndpoint) Enable(ctx context.Context, id int64) (err error) {
+
+	if err = n.adaptors.Task.Enable(id); err != nil {
+		if !errors.Is(err, common.ErrNotFound) {
+			err = errors.Wrap(common.ErrInternal, err.Error())
+		}
+	}
+
+	n.eventBus.Publish(event_bus.TopicAutomation, events.EventEnableTask{
+		Id: id,
+	})
+
+	return
+}
+
+// Disable ...
+func (n *TaskEndpoint) Disable(ctx context.Context, id int64) (err error) {
+
+	if err = n.adaptors.Task.Disable(id); err != nil {
+		if !errors.Is(err, common.ErrNotFound) {
+			err = errors.Wrap(common.ErrInternal, err.Error())
+		}
+	}
+
+	n.eventBus.Publish(event_bus.TopicAutomation, events.EventDisableTask{
+		Id: id,
+	})
 
 	return
 }

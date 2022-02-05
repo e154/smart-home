@@ -29,12 +29,18 @@ func (d DeviceType) String() string {
 }
 
 var (
-	ErrNoStatsInJsonResponse          = errors.New("no stats in JSON response")
-	ErrTooManyStatsInJsonResponse     = errors.New("too many stats in JSON response")
+	// ErrNoStatsInJsonResponse ...
+	ErrNoStatsInJsonResponse = errors.New("no stats in JSON response")
+	// ErrTooManyStatsInJsonResponse ...
+	ErrTooManyStatsInJsonResponse = errors.New("too many stats in JSON response")
+	// ErrReceivedMultipleSummaryObjects ...
 	ErrReceivedMultipleSummaryObjects = errors.New("received multiple Summary objects")
-	ErrNoSummaryInfoReceived          = errors.New("no summary info received")
-	ErrNoVersionInJsonResponse        = errors.New("no version in JSON response")
-	ErrTooManyVersionsInJsonResponse  = errors.New("too many versions in JSON response")
+	// ErrNoSummaryInfoReceived ...
+	ErrNoSummaryInfoReceived = errors.New("no summary info received")
+	// ErrNoVersionInJsonResponse ...
+	ErrNoVersionInJsonResponse = errors.New("no version in JSON response")
+	// ErrTooManyVersionsInJsonResponse ...
+	ErrTooManyVersionsInJsonResponse = errors.New("too many versions in JSON response")
 )
 
 const (

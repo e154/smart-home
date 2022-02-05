@@ -23,12 +23,6 @@ import (
 	m "github.com/e154/smart-home/models"
 )
 
-// Javascript Binding
-//
-// template
-//	 .render('name', {'key':'val'})
-//
-
 // TemplateBind ...
 type TemplateBind struct {
 	adaptor *adaptors.Adaptors
