@@ -185,7 +185,12 @@ func (a *Api) Start() error {
 	httpv1.HandleFunc("/v1/image/upload", a.controllers.Image.MuxUploadImage())
 
 	// uploaded and other static files
-	httpv1.Handle("/upload", http.FileServer(http.Dir(common.StoragePath())))
+	fileServer := http.FileServer(http.Dir("./data/file_storage"))
+	httpv1.HandleFunc("/upload/", func(w http.ResponseWriter, r *http.Request) {
+		r.RequestURI = strings.ReplaceAll(r.RequestURI, "/upload/", "/")
+		r.URL, _ = r.URL.Parse(r.RequestURI)
+		fileServer.ServeHTTP(w, r)
+	})
 	httpv1.Handle("/api_static", http.FileServer(http.Dir(common.StoragePath())))
 
 	// swagger

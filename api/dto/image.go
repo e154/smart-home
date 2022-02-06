@@ -43,6 +43,7 @@ func (i Image) ToImage(image *m.Image) (result *api.Image) {
 		Title:     image.Title,
 		Size:      image.Size,
 		Name:      image.Name,
+		Url:       image.Url,
 		CreatedAt: timestamppb.New(image.CreatedAt),
 	}
 	return
