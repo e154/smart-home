@@ -141,36 +141,36 @@ func (n *Task) Update(ver *m.Task) (err error) {
 	}
 
 	//conditions
+	conditionAction := GetConditionAdaptor(tx)
+	conditionAction.DeleteByTaskId(ver.Id)
 	if len(ver.Conditions) > 0 {
 		for i := range ver.Conditions {
 			ver.Conditions[i].TaskId = ver.Id
 		}
-		conditionAction := GetConditionAdaptor(tx)
-		conditionAction.DeleteByTaskId(ver.Id)
 		if err = conditionAction.AddMultiple(ver.Conditions); err != nil {
 			return
 		}
 	}
 
 	//triggers
+	triggerAction := GetTriggerAdaptor(tx)
+	triggerAction.DeleteByTaskId(ver.Id)
 	if len(ver.Triggers) > 0 {
 		for i := range ver.Triggers {
 			ver.Triggers[i].TaskId = ver.Id
 		}
-		triggerAction := GetTriggerAdaptor(tx)
-		triggerAction.DeleteByTaskId(ver.Id)
 		if err = triggerAction.AddMultiple(ver.Triggers); err != nil {
 			return
 		}
 	}
 
 	//actions
+	actionAction := GetActionAdaptor(tx)
+	actionAction.DeleteByTaskId(ver.Id)
 	if len(ver.Actions) > 0 {
 		for i := range ver.Actions {
 			ver.Actions[i].TaskId = ver.Id
 		}
-		actionAction := GetActionAdaptor(tx)
-		actionAction.DeleteByTaskId(ver.Id)
 		if err = actionAction.AddMultiple(ver.Actions); err != nil {
 			return
 		}

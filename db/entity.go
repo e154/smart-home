@@ -315,7 +315,7 @@ func (n Entities) ReplaceScript(id common.EntityId, script *Script) (err error) 
 func (n *Entities) preloadStorage(entity *Entity) (err error) {
 	err = n.Db.Model(&EntityStorage{}).
 		Where("entity_id = ?", entity.Id).
-		Order("id DESC").
+		Order("created_at DESC").
 		Limit(1).
 		Scan(&entity.Storage).
 		Error
