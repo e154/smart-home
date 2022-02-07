@@ -372,11 +372,16 @@ func (e *entityManager) eventStateChangedHandler(msg events.EventStateChanged) {
 		return
 	}
 
-	go e.adaptors.EntityStorage.Add(m.EntityStorage{
-		State:      state,
-		EntityId:   msg.EntityId,
-		Attributes: msg.NewState.Attributes.Serialize(),
-	})
+	go func() {
+		_, err := e.adaptors.EntityStorage.Add(m.EntityStorage{
+			State:      state,
+			EntityId:   msg.EntityId,
+			Attributes: msg.NewState.Attributes.Serialize(),
+		})
+		if err != nil {
+			log.Error(err.Error())
+		}
+	}()
 }
 
 func (e *entityManager) eventLoadedPlugin(msg events.EventLoadedPlugin) (err error) {
