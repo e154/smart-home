@@ -41,7 +41,7 @@ func AddPlugin(adaptors *adaptors.Adaptors, name string, opts ...m.Attributes) (
 }
 
 // AddArea ...
-func AddArea(adaptors *adaptors.Adaptors, name string, opts ...m.Attributes) (area *m.Area, err error) {
+func AddArea(adaptors *adaptors.Adaptors, name string, _ ...m.Attributes) (area *m.Area, err error) {
 	area = &m.Area{
 		Name:        name,
 		Description: "description " + name,

@@ -20,9 +20,10 @@ package messagebird
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/system/event_bus/events"
 	"sync"
 	"time"
+
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/pkg/errors"
 
@@ -87,7 +88,7 @@ func (p *Actor) Send(phone string, message m.Message) (err error) {
 	}
 
 	attr := NewMessageParams()
-	attr.Deserialize(message.Attributes)
+	_, _ = attr.Deserialize(message.Attributes)
 
 	var msg *sms.Message
 	if common.TestMode() {
@@ -113,7 +114,7 @@ func (p *Actor) Send(phone string, message m.Message) (err error) {
 	}
 
 	defer func() {
-		go p.UpdateBalance()
+		go func() { _, _ = p.UpdateBalance() }()
 	}()
 
 	log.Infof("SMS id(%s) successfully sent to phone '%s'", msg.ID, phone)

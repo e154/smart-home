@@ -82,7 +82,7 @@ func (c *Client) Broadcast(query string, body []byte) (err error) {
 
 // Notify ...
 func (c *Client) Notify(t, b string) {
-	msg := &map[string]string{
+	msg := map[string]string{
 		"title": t,
 		"body":  b,
 	}
@@ -95,5 +95,4 @@ func (c *Client) Notify(t, b string) {
 	if err != nil {
 		c.closed = true
 	}
-	return
 }

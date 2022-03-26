@@ -42,7 +42,7 @@ func (mi *MemoryItem) isExpire() bool {
 	if mi.lifespan == 0 {
 		return false
 	}
-	return time.Now().Sub(mi.createdTime) > mi.lifespan
+	return time.Since(mi.createdTime) > mi.lifespan
 }
 
 // MemoryCache is Memory cache adapter.
@@ -199,7 +199,7 @@ func (bc *MemoryCache) ClearAll() error {
 // StartAndGC start memory cache. it will check expiration in every clock time.
 func (bc *MemoryCache) StartAndGC(config string) error {
 	var cf map[string]int
-	json.Unmarshal([]byte(config), &cf)
+	_ = json.Unmarshal([]byte(config), &cf)
 	if _, ok := cf["interval"]; !ok {
 		cf = make(map[string]int)
 		cf["interval"] = DefaultEvery

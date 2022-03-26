@@ -324,7 +324,7 @@ entityAction = (entityId, actionName)->
 				Convey("stats", t, func(ctx C) {
 
 					ctx2, cancel := context2.WithCancel(context2.Background())
-					go MockTCPServer(ctx2, host, port, getFixture(L3PlusStatsJson))
+					go func() { _ = MockTCPServer(ctx2, host, port, getFixture(L3PlusStatsJson)) }()
 					time.Sleep(time.Millisecond * 500)
 					entityManager.CallAction(l3Ent.Id, "CHECK", nil)
 					time.Sleep(time.Second)
@@ -350,7 +350,7 @@ entityAction = (entityId, actionName)->
 				Convey("summary", t, func(ctx C) {
 
 					ctx2, cancel := context2.WithCancel(context2.Background())
-					go MockTCPServer(ctx2, host, port, getFixture(L3PlusSummaryJson))
+					go func() { _ = MockTCPServer(ctx2, host, port, getFixture(L3PlusSummaryJson)) }()
 					time.Sleep(time.Millisecond * 500)
 					entityManager.CallAction(l3Ent.Id, "SUM", nil)
 					time.Sleep(time.Second)
@@ -368,7 +368,7 @@ entityAction = (entityId, actionName)->
 				Convey("pools", t, func(ctx C) {
 
 					ctx2, cancel := context2.WithCancel(context2.Background())
-					go MockTCPServer(ctx2, host, port, getFixture(L3PlusPoolsJson))
+					go func() { _ = MockTCPServer(ctx2, host, port, getFixture(L3PlusPoolsJson)) }()
 					time.Sleep(time.Millisecond * 500)
 					entityManager.CallAction(l3Ent.Id, "POOLS", nil)
 					time.Sleep(time.Second)
@@ -380,7 +380,7 @@ entityAction = (entityId, actionName)->
 				Convey("version", t, func(ctx C) {
 
 					ctx2, cancel := context2.WithCancel(context2.Background())
-					go MockTCPServer(ctx2, host, port, getFixture(L3PlusVerJson))
+					go func() { _ = MockTCPServer(ctx2, host, port, getFixture(L3PlusVerJson)) }()
 					time.Sleep(time.Millisecond * 500)
 					entityManager.CallAction(l3Ent.Id, "VER", nil)
 					time.Sleep(time.Second)

@@ -36,7 +36,7 @@ type Variables struct {
 type Variable struct {
 	Name      string `gorm:"primary_key"`
 	Value     string
-	Autoload  bool
+	System    bool
 	EntityId  *common.EntityId
 	CreatedAt time.Time
 	UpdatedAt time.Time
@@ -80,13 +80,13 @@ func (n Variables) GetByName(name string) (variable Variable, err error) {
 	return
 }
 
-// GetAllEnabled ...
-func (n Variables) GetAllEnabled() (list []Variable, err error) {
+// GetAllSystem ...
+func (n Variables) GetAllSystem() (list []Variable, err error) {
 	list = make([]Variable, 0)
-	err = n.Db.Where("autoload = ?", true).
+	err = n.Db.Where("system = ?", true).
 		Find(&list).Error
 	if err != nil {
-		err = errors.Wrap(err, "getAllEnabled failed")
+		err = errors.Wrap(err, "getAllSystem failed")
 	}
 	return
 }
@@ -95,7 +95,7 @@ func (n Variables) GetAllEnabled() (list []Variable, err error) {
 func (n Variables) Update(m Variable) (err error) {
 	err = n.Db.Model(&Variable{Name: m.Name}).Updates(map[string]interface{}{
 		"value":     m.Value,
-		"autoload":  m.Autoload,
+		"system":    m.System,
 		"entity_id": m.EntityId,
 	}).Error
 	if err != nil {
@@ -113,7 +113,7 @@ func (n Variables) Delete(name string) (err error) {
 }
 
 // List ...
-func (n *Variables) List(limit, offset int64, orderBy, sort string) (list []Variable, total int64, err error) {
+func (n *Variables) List(limit, offset int64, orderBy, sort string, system bool) (list []Variable, total int64, err error) {
 
 	if err = n.Db.Model(Variable{}).Count(&total).Error; err != nil {
 		return
@@ -121,6 +121,8 @@ func (n *Variables) List(limit, offset int64, orderBy, sort string) (list []Vari
 
 	list = make([]Variable, 0)
 	err = n.Db.
+		Model(&Variable{}).
+		Where("system = false").
 		Limit(limit).
 		Offset(offset).
 		Order(fmt.Sprintf("%s %s", sort, orderBy)).

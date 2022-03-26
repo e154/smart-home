@@ -24,6 +24,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/e154/smart-home/common/logger"
+
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/adaptors"
@@ -34,7 +36,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("jwt")
+	log = logger.MustGetLogger("jwt")
 )
 
 type jwtManager struct {
@@ -138,8 +140,9 @@ func (j *jwtManager) getSecretKey() (hmacKey []byte, err error) {
 	var variable m.Variable
 	if variable, err = j.adaptors.Variable.GetByName("hmacKey"); err != nil {
 		variable = m.Variable{
-			Name:  "hmacKey",
-			Value: common.ComputeHmac256(),
+			System: true,
+			Name:   "hmacKey",
+			Value:  common.ComputeHmac256(),
 		}
 		if err = j.adaptors.Variable.Add(variable); err != nil {
 			log.Error(err.Error())

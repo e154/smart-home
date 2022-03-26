@@ -22,7 +22,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"runtime"
-	"strings"
 )
 
 // https://github.com/Unknwon/gcblog/blob/master/content/04-go-caller.md
@@ -32,23 +31,6 @@ func CallerName(skip int) (name, file string, line int, ok bool) {
 		return
 	}
 	name = runtime.FuncForPC(pc).Name()
-	return
-}
-
-// Trace ...
-func Trace() (trace string) {
-
-	i := 1 //0...
-	for skip := i; ; skip++ {
-		name, file, line, ok := CallerName(skip)
-		if !ok {
-			break
-		}
-		fn := strings.Title(strings.Split(name, ".")[1]) + "()"
-		trace += "\n"
-		trace += fmt.Sprintf("called: %s:%s line: %d", file, fn, line)
-	}
-
 	return
 }
 

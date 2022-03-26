@@ -21,10 +21,11 @@ package node
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/e154/smart-home/system/event_bus/events"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
@@ -82,7 +83,7 @@ func (e *Actor) destroy() {
 
 	e.mqttClient.Unsubscribe(e.mqttTopic("resp/+"))
 	e.mqttClient.Unsubscribe(e.mqttTopic("ping"))
-	e.eventBus.Unsubscribe(e.localTopic("req/+"), e.onMessage)
+	_ = e.eventBus.Unsubscribe(e.localTopic("req/+"), e.onMessage)
 
 	e.quit <- struct{}{}
 }
@@ -112,11 +113,11 @@ func (e *Actor) Spawn() entity_manager.PluginActor {
 	}()
 
 	// local sub
-	e.eventBus.Subscribe(e.localTopic("req/+"), e.onMessage)
+	_ = e.eventBus.Subscribe(e.localTopic("req/+"), e.onMessage)
 
 	// mqtt sub
-	e.mqttClient.Subscribe(e.mqttTopic("resp/+"), e.mqttOnMessage)
-	e.mqttClient.Subscribe(e.mqttTopic("ping"), e.ping)
+	_ = e.mqttClient.Subscribe(e.mqttTopic("resp/+"), e.mqttOnMessage)
+	_ = e.mqttClient.Subscribe(e.mqttTopic("ping"), e.ping)
 
 	return e
 }
@@ -127,7 +128,7 @@ func (e *Actor) onMessage(_ string, msg MessageRequest) {
 	if err != nil {
 		log.Error(err.Error())
 	}
-	e.mqttClient.Publish(e.mqttTopic(fmt.Sprintf("req/%s", msg.EntityId)), b)
+	_ = e.mqttClient.Publish(e.mqttTopic(fmt.Sprintf("req/%s", msg.EntityId)), b)
 }
 
 // event from home/node/nodeName/#
@@ -150,7 +151,7 @@ func (e *Actor) ping(_ mqtt.MqttCli, msg mqtt.Message) {
 
 	e.lastPing = time.Now()
 
-	json.Unmarshal(msg.Payload, &e.lastState)
+	_ = json.Unmarshal(msg.Payload, &e.lastState)
 }
 
 func (e *Actor) updateStatus() {
@@ -158,7 +159,7 @@ func (e *Actor) updateStatus() {
 	defer e.stateMu.Unlock()
 
 	var state = "wait"
-	if time.Now().Sub(e.lastPing).Seconds() < 2 {
+	if time.Since(e.lastPing).Seconds() < 2 {
 		state = "connected"
 	}
 

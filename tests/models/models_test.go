@@ -32,7 +32,7 @@ import (
 
 func init() {
 	apppath := filepath.Join(os.Getenv("PWD"), "../..")
-	os.Chdir(apppath)
+	_ = os.Chdir(apppath)
 }
 
 var (

@@ -21,6 +21,8 @@ package messagebird
 import (
 	"strings"
 
+	"github.com/e154/smart-home/common/logger"
+
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
@@ -30,7 +32,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("plugins.messagebird")
+	log = logger.MustGetLogger("plugins.messagebird")
 )
 
 var _ plugins.Plugable = (*plugin)(nil)
@@ -97,7 +99,7 @@ func (p *plugin) asyncLoad() (err error) {
 	// add actor
 	p.actor = NewActor(settings, p.EntityManager, p.EventBus, p.Adaptors)
 	p.EntityManager.Spawn(p.actor.Spawn)
-	go p.actor.UpdateBalance()
+	go func() { _, _ = p.actor.UpdateBalance() }()
 
 	// register messagebird provider
 	p.notify.AddProvider(Name, p)
@@ -159,7 +161,7 @@ func (p *plugin) Save(msg notify.Message) (addresses []string, message m.Message
 	}
 
 	attr := NewMessageParams()
-	attr.Deserialize(message.Attributes)
+	_, _ = attr.Deserialize(message.Attributes)
 
 	addresses = strings.Split(attr[AttrPhone].String(), ",")
 	return

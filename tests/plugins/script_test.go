@@ -19,7 +19,6 @@
 package plugins
 
 import (
-	"fmt"
 	"testing"
 	"time"
 
@@ -79,7 +78,7 @@ entityAction = (entityId, actionName)->
 
 			// add entity
 			// ------------------------------------------------
-			plugEnt := GetNewScript(fmt.Sprintf("script.1"), []*m.Script{})
+			plugEnt := GetNewScript("script.1", []*m.Script{})
 			plugEnt.PluginName = script.EntityScript
 			plugEnt.Actions = []*m.EntityAction{
 				{
@@ -111,10 +110,10 @@ entityAction = (entityId, actionName)->
 			go zigbee2mqtt.Start()
 
 			defer func() {
-				mqttServer.Shutdown()
+				_ = mqttServer.Shutdown()
 				zigbee2mqtt.Shutdown()
 				entityManager.Shutdown()
-				automation.Shutdown()
+				_ = automation.Shutdown()
 				pluginManager.Shutdown()
 			}()
 

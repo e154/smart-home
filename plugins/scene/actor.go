@@ -20,8 +20,9 @@ package scene
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/system/event_bus/events"
 	"sync"
+
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
@@ -55,16 +56,16 @@ func NewActor(entity *m.Entity,
 	}
 
 	actor.Manager = entityManager
-	actor.Attrs.Deserialize(params)
+	_, _ = actor.Attrs.Deserialize(params)
 
 	// todo move to baseActor
 	if len(entity.Scripts) != 0 {
 		if actor.scriptEngine, err = scriptService.NewEngine(entity.Scripts[0]); err != nil {
 			return
 		}
-		actor.scriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
+		_, _ = actor.scriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
 		actor.scriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
-		actor.scriptEngine.Do()
+		_, _ = actor.scriptEngine.Do()
 	}
 
 	// action worker

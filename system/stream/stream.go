@@ -22,30 +22,39 @@ import (
 	"context"
 	"sync"
 
+	"github.com/e154/smart-home/common/logger"
+	"github.com/e154/smart-home/system/event_bus"
+
 	"go.uber.org/fx"
 
 	"github.com/e154/smart-home/api/stub/api"
-	"github.com/e154/smart-home/common"
 )
 
 var (
-	log = common.MustGetLogger("stream")
+	log = logger.MustGetLogger("stream")
 )
 
 // Stream ...
 type Stream struct {
+	*eventHandler
 	subMx       sync.Mutex
 	subscribers map[string]func(client IStreamClient, id string, msg []byte)
-	sesMx       sync.Mutex
+	sesMx       sync.RWMutex
 	sessions    map[*Client]bool
+	eventBus    event_bus.EventBus
 }
 
 // NewStreamService ...
-func NewStreamService(lc fx.Lifecycle) *Stream {
-	s := &Stream{
+func NewStreamService(lc fx.Lifecycle,
+	eventBus event_bus.EventBus) (s *Stream) {
+	s = &Stream{
 		subscribers: make(map[string]func(client IStreamClient, id string, msg []byte)),
+		sesMx:       sync.RWMutex{},
 		sessions:    make(map[*Client]bool),
+		eventBus:    eventBus,
 	}
+
+	s.eventHandler = NewEventHandler(s.Broadcast)
 
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) (err error) {
@@ -56,18 +65,21 @@ func NewStreamService(lc fx.Lifecycle) *Stream {
 		},
 	})
 
-	return s
+	return
 }
 
 // Start ...
-func (s *Stream) Start(cts context.Context) error {
+func (s *Stream) Start(_ context.Context) error {
+	_ = s.eventBus.Subscribe(event_bus.TopicEntities, s.eventHandler.eventHandler)
 	return nil
 }
 
 // Shutdown ...
-func (s *Stream) Shutdown(cts context.Context) error {
+func (s *Stream) Shutdown(_ context.Context) error {
 	s.sesMx.Lock()
 	defer s.sesMx.Unlock()
+
+	_ = s.eventBus.Unsubscribe(event_bus.TopicEntities, s.eventHandler.eventHandler)
 
 	for client, ok := range s.sessions {
 		if !ok {
@@ -80,14 +92,14 @@ func (s *Stream) Shutdown(cts context.Context) error {
 
 // Broadcast ...
 func (s *Stream) Broadcast(query string, message []byte) {
-	s.sesMx.Lock()
-	defer s.sesMx.Unlock()
+	s.sesMx.RLock()
+	defer s.sesMx.RUnlock()
 
 	for client, ok := range s.sessions {
 		if !ok {
 			continue
 		}
-		client.Broadcast(query, message)
+		_ = client.Broadcast(query, message)
 	}
 }
 

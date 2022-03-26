@@ -121,7 +121,7 @@ func (n *Roles) List(limit, offset int64, orderBy, sort string) (list []*Role, t
 	}
 
 	for _, role := range list {
-		n.RelData(role)
+		_ = n.RelData(role)
 	}
 
 	return

@@ -19,10 +19,11 @@
 package plugins
 
 import (
-	"github.com/e154/smart-home/system/event_bus/events"
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -74,7 +75,7 @@ func TestZone(t *testing.T) {
 			wgAdd.Add(1)
 			wgUpdate := sync.WaitGroup{}
 			wgUpdate.Add(1)
-			eventBus.Subscribe(event_bus.TopicEntities, func(_ string, msg interface{}) {
+			_ = eventBus.Subscribe(event_bus.TopicEntities, func(_ string, msg interface{}) {
 
 				switch v := msg.(type) {
 				case events.EventStateChanged:
@@ -115,16 +116,16 @@ func TestZone(t *testing.T) {
 			go zigbee2mqtt.Start()
 
 			defer func() {
-				mqttServer.Shutdown()
+				_ = mqttServer.Shutdown()
 				zigbee2mqtt.Shutdown()
 				entityManager.Shutdown()
-				automation.Shutdown()
+				_ = automation.Shutdown()
 				pluginManager.Shutdown()
 			}()
 
 			//...
 			wgAdd.Wait()
-			entityManager.SetState(zoneEnt.Id, entity_manager.EntityStateParams{
+			_ = entityManager.SetState(zoneEnt.Id, entity_manager.EntityStateParams{
 				SettingsValue: m.AttributeValue{
 					"elevation": 10,
 					"lat":       10.881,

@@ -19,10 +19,11 @@
 package plugins
 
 import (
-	"github.com/e154/smart-home/system/event_bus/events"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -56,6 +57,7 @@ func TestWeatherMet(t *testing.T) {
 
 			// register plugins
 			err = AddPlugin(adaptors, "weather")
+			ctx.So(err, ShouldBeNil)
 			err = AddPlugin(adaptors, "weather_met")
 			ctx.So(err, ShouldBeNil)
 
@@ -69,8 +71,9 @@ func TestWeatherMet(t *testing.T) {
 			// ------------------------------------------------
 
 			err = adaptors.Variable.CreateOrUpdate(m.Variable{
-				Name:  "weather_met.home",
-				Value: strings.Replace(serverData, "LOADED_AT", time.Now().Format(time.RFC3339), -1),
+				System: true,
+				Name:   "weather_met.home",
+				Value:  strings.Replace(serverData, "LOADED_AT", time.Now().Format(time.RFC3339), -1),
 			})
 			ctx.So(err, ShouldBeNil)
 

@@ -91,7 +91,7 @@ func (n *EntityStorage) fromDb(dbVer db.EntityStorage) (ver m.EntityStorage) {
 	}
 
 	if len(dbVer.Attributes) > 0 {
-		json.Unmarshal(dbVer.Attributes, &ver.Attributes)
+		_ = json.Unmarshal(dbVer.Attributes, &ver.Attributes)
 	}
 
 	return
@@ -107,7 +107,7 @@ func (n *EntityStorage) toDb(ver m.EntityStorage) (dbVer db.EntityStorage) {
 
 	if ver.Attributes != nil {
 		b, _ := json.Marshal(ver.Attributes)
-		dbVer.Attributes.UnmarshalJSON(b)
+		_ = dbVer.Attributes.UnmarshalJSON(b)
 	}
 
 	return

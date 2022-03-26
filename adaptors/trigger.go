@@ -91,7 +91,7 @@ func (n *Trigger) fromDb(dbVer *db.Trigger) (ver *m.Trigger) {
 
 	// deserialize payload
 	payload := m.TriggerPayload{}
-	json.Unmarshal([]byte(dbVer.Payload), &payload)
+	_ = json.Unmarshal([]byte(dbVer.Payload), &payload)
 	ver.Payload = payload.Obj
 
 	return

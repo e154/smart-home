@@ -132,7 +132,7 @@ func (p *Plugin) fromDb(dbVer db.Plugin) (ver m.Plugin) {
 	// deserialize settings
 	b, _ := dbVer.Settings.MarshalJSON()
 	settings := m.EntitySettings{}
-	json.Unmarshal(b, &settings)
+	_ = json.Unmarshal(b, &settings)
 	ver.Settings = settings.Settings
 
 	return
@@ -151,7 +151,7 @@ func (p *Plugin) toDb(ver m.Plugin) (dbVer db.Plugin) {
 	b, _ := json.Marshal(m.EntitySettings{
 		Settings: ver.Settings,
 	})
-	dbVer.Settings.UnmarshalJSON(b)
+	_ = dbVer.Settings.UnmarshalJSON(b)
 
 	return
 }

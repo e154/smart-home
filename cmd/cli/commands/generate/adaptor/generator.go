@@ -24,13 +24,15 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/e154/smart-home/common/logger"
+
 	"github.com/e154/smart-home/cmd/cli/commands/generate"
 	"github.com/e154/smart-home/common"
 	"github.com/spf13/cobra"
 )
 
 var (
-	log = common.MustGetLogger("adaptor")
+	log = logger.MustGetLogger("adaptor")
 )
 
 var adaptorTpl = `//CODE GENERATED AUTOMATICALLY
@@ -157,8 +159,8 @@ var (
 		Short: "adaptor generator",
 		Long:  "$ cli g a [-m=ModelName] [adaptorName]",
 	}
-	modelName   string
-	adaptorName string
+	modelName string
+	//adaptorName string
 	packageName = "adaptors"
 )
 

@@ -218,12 +218,12 @@ func (j *Javascript) AssertFunction(f string, args ...interface{}) (result strin
 
 // PushStruct ...
 func (j *Javascript) PushStruct(name string, s interface{}) {
-	j.vm.Set(name, s)
+	_ = j.vm.Set(name, s)
 }
 
 // PushFunction ...
 func (j *Javascript) PushFunction(name string, s interface{}) {
-	j.vm.Set(name, s)
+	_ = j.vm.Set(name, s)
 }
 
 // EvalString ...
@@ -247,7 +247,7 @@ func (j *Javascript) bind() {
 	// hex2arr()
 	//
 
-	j.vm.Set("print", fmt.Println)
+	_ = j.vm.Set("print", log.Info)
 
 	_, _ = j.vm.RunString(`
 
@@ -264,14 +264,12 @@ func (j *Javascript) bind() {
 	`)
 
 	for name, structure := range j.engine.structures.heap {
-		j.vm.Set(name, structure)
+		_ = j.vm.Set(name, structure)
 	}
 
 	for name, structure := range j.engine.functions.heap {
-		j.vm.Set(name, structure)
+		_ = j.vm.Set(name, structure)
 	}
-
-	return
 }
 
 // CreateProgram ...

@@ -33,5 +33,5 @@ func (m MqttBind) Publish(topic string, payload []byte, qos uint8, retain bool) 
 	if m.mqtt == nil {
 		return
 	}
-	m.mqtt.Publish(topic, payload, qos, retain)
+	_ = m.mqtt.Publish(topic, payload, qos, retain)
 }

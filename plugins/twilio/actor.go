@@ -22,12 +22,13 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/e154/smart-home/system/event_bus/events"
 	"net/http"
 	"net/url"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/pkg/errors"
 
@@ -86,11 +87,11 @@ func (p *Actor) Spawn() entity_manager.PluginActor {
 func (e *Actor) Send(phone string, message m.Message) (err error) {
 
 	defer func() {
-		go e.UpdateBalance()
+		go func() { _ = e.UpdateBalance() }()
 	}()
 
 	attr := NewMessageParams()
-	attr.Deserialize(message.Attributes)
+	_, _ = attr.Deserialize(message.Attributes)
 
 	var resp *gotwilio.SmsResponse
 	var ex *gotwilio.Exception
@@ -184,7 +185,7 @@ func (e *Actor) Balance() (balance Balance, err error) {
 	if resp, err = client.Do(req); err != nil {
 		return
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	err = json.NewDecoder(resp.Body).Decode(&balance)
 

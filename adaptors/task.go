@@ -142,7 +142,7 @@ func (n *Task) Update(ver *m.Task) (err error) {
 
 	//conditions
 	conditionAction := GetConditionAdaptor(tx)
-	conditionAction.DeleteByTaskId(ver.Id)
+	_ = conditionAction.DeleteByTaskId(ver.Id)
 	if len(ver.Conditions) > 0 {
 		for i := range ver.Conditions {
 			ver.Conditions[i].TaskId = ver.Id
@@ -154,7 +154,7 @@ func (n *Task) Update(ver *m.Task) (err error) {
 
 	//triggers
 	triggerAction := GetTriggerAdaptor(tx)
-	triggerAction.DeleteByTaskId(ver.Id)
+	_ = triggerAction.DeleteByTaskId(ver.Id)
 	if len(ver.Triggers) > 0 {
 		for i := range ver.Triggers {
 			ver.Triggers[i].TaskId = ver.Id
@@ -166,7 +166,7 @@ func (n *Task) Update(ver *m.Task) (err error) {
 
 	//actions
 	actionAction := GetActionAdaptor(tx)
-	actionAction.DeleteByTaskId(ver.Id)
+	_ = actionAction.DeleteByTaskId(ver.Id)
 	if len(ver.Actions) > 0 {
 		for i := range ver.Actions {
 			ver.Actions[i].TaskId = ver.Id

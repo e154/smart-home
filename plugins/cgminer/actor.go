@@ -20,6 +20,7 @@ package cgminer
 
 import (
 	"fmt"
+
 	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/e154/smart-home/common"
@@ -144,13 +145,13 @@ func NewActor(entity *m.Entity,
 			// bind
 			a.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
 			a.ScriptEngine.PushFunction("Miner", actor.miner.Bind())
-			a.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
-			a.ScriptEngine.Do()
+			_, _ = a.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
+			_, _ = a.ScriptEngine.Do()
 		}
 	}
 
 	if actor.ScriptEngine != nil {
-		actor.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
+		_, _ = actor.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
 		actor.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
 	}
 
@@ -184,7 +185,7 @@ func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
 	}
 
 	e.AttrMu.Lock()
-	e.Attrs.Deserialize(params.AttributeValues)
+	_, _ = e.Attrs.Deserialize(params.AttributeValues)
 	e.AttrMu.Unlock()
 
 	e.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{

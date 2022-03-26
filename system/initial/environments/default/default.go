@@ -56,9 +56,9 @@ func (e Default) Upgrade(oldVersion int,
 	scriptService scripts.ScriptService,
 	validation *validation.Validate) {
 
-	NewImageManager(adaptors).Upgrade(oldVersion)
-	NewTemplateManager(adaptors).Upgrade(oldVersion)
-	NewRoleManager(adaptors, accessList, validation).Upgrade(oldVersion)
+	_ = NewImageManager(adaptors).Upgrade(oldVersion)
+	_ = NewTemplateManager(adaptors).Upgrade(oldVersion)
+	_ = NewRoleManager(adaptors, accessList, validation).Upgrade(oldVersion)
 }
 
 func init() {

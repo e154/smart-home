@@ -110,7 +110,9 @@ entityAction = (entityId, actionName)->
 
 			// register plugins
 			err = AddPlugin(adaptors, "node")
+			So(err, ShouldBeNil)
 			err = AddPlugin(adaptors, "triggers")
+			So(err, ShouldBeNil)
 			err = AddPlugin(adaptors, "modbus_tcp")
 			So(err, ShouldBeNil)
 
@@ -183,9 +185,9 @@ entityAction = (entityId, actionName)->
 			entityManager.LoadEntities()
 
 			defer func() {
-				mqttServer.Shutdown()
+				_ = mqttServer.Shutdown()
 				entityManager.Shutdown()
-				automation.Shutdown()
+				_ = automation.Shutdown()
 				pluginManager.Shutdown()
 			}()
 
@@ -193,7 +195,7 @@ entityAction = (entityId, actionName)->
 
 			ch := make(chan []byte)
 			mqttCli := mqttServer.NewClient("cli")
-			mqttCli.Subscribe("home/node/second/req/#", func(cli mqtt.MqttCli, message mqtt.Message) {
+			_ = mqttCli.Subscribe("home/node/second/req/#", func(cli mqtt.MqttCli, message mqtt.Message) {
 				ch <- message.Payload
 			})
 			defer mqttCli.UnsubscribeAll()
@@ -254,8 +256,8 @@ entityAction = (entityId, actionName)->
 					Status:     "",
 				}
 				b, _ = json.Marshal(resp)
-				mqttCli.Publish(fmt.Sprintf("home/node/second/resp/plugin.test"), b)
-				mqttCli.Publish(fmt.Sprintf("home/node/second/resp/%s", plugEnt.Id), b)
+				_ = mqttCli.Publish("home/node/second/resp/plugin.test", b)
+				_ = mqttCli.Publish(fmt.Sprintf("home/node/second/resp/%s", plugEnt.Id), b)
 
 				time.Sleep(time.Millisecond * 500)
 			})
@@ -315,8 +317,8 @@ entityAction = (entityId, actionName)->
 					Status:     "",
 				}
 				b, _ = json.Marshal(resp)
-				mqttCli.Publish(fmt.Sprintf("home/node/second/resp/plugin.test"), b)
-				mqttCli.Publish(fmt.Sprintf("home/node/second/resp/%s", plugEnt.Id), b)
+				_ = mqttCli.Publish("home/node/second/resp/plugin.test", b)
+				_ = mqttCli.Publish(fmt.Sprintf("home/node/second/resp/%s", plugEnt.Id), b)
 
 				time.Sleep(time.Millisecond * 500)
 			})
@@ -376,8 +378,8 @@ entityAction = (entityId, actionName)->
 					Status:     "",
 				}
 				b, _ = json.Marshal(resp)
-				mqttCli.Publish(fmt.Sprintf("home/node/second/resp/plugin.test"), b)
-				mqttCli.Publish(fmt.Sprintf("home/node/second/resp/%s", plugEnt.Id), b)
+				_ = mqttCli.Publish("home/node/second/resp/plugin.test", b)
+				_ = mqttCli.Publish(fmt.Sprintf("home/node/second/resp/%s", plugEnt.Id), b)
 
 				time.Sleep(time.Millisecond * 500)
 			})
@@ -429,8 +431,8 @@ entityAction = (entityId, actionName)->
 					Status:     "",
 				}
 				b, _ = json.Marshal(resp)
-				mqttCli.Publish(fmt.Sprintf("home/node/second/resp/plugin.test"), b)
-				mqttCli.Publish(fmt.Sprintf("home/node/second/resp/%s", plugEnt.Id), b)
+				_ = mqttCli.Publish("home/node/second/resp/plugin.test", b)
+				_ = mqttCli.Publish(fmt.Sprintf("home/node/second/resp/%s", plugEnt.Id), b)
 
 			})
 		})

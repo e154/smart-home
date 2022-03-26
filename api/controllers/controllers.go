@@ -27,20 +27,24 @@ import (
 
 // Controllers ...
 type Controllers struct {
-	Auth        ControllerAuth
-	Stream      ControllerStream
-	User        ControllerUser
-	Role        ControllerRole
-	Script      ControllerScript
-	Image       ControllerImage
-	Plugin      ControllerPlugin
-	Zigbee2mqtt ControllerZigbee2mqtt
-	Entity      ControllerEntity
-	Automation  ControllerAutomation
-	Area        ControllerArea
-	Dev         ControllerDeveloperTools
-	Interact    ControllerInteract
-	Logs        ControllerLogs
+	Auth          ControllerAuth
+	Stream        ControllerStream
+	User          ControllerUser
+	Role          ControllerRole
+	Script        ControllerScript
+	Image         ControllerImage
+	Plugin        ControllerPlugin
+	Zigbee2mqtt   ControllerZigbee2mqtt
+	Entity        ControllerEntity
+	Automation    ControllerAutomation
+	Area          ControllerArea
+	Dev           ControllerDeveloperTools
+	Interact      ControllerInteract
+	Logs          ControllerLogs
+	Dashboard     ControllerDashboard
+	DashboardCard ControllerDashboardCard
+	DashboardTab  ControllerDashboardTab
+	Variable      ControllerVariable
 }
 
 // NewControllers ...
@@ -50,19 +54,23 @@ func NewControllers(adaptors *adaptors.Adaptors,
 	stream *stream.Stream) *Controllers {
 	common := NewControllerCommon(adaptors, accessList, command, stream)
 	return &Controllers{
-		Auth:        NewControllerAuth(common),
-		Stream:      NewControllerStream(common),
-		User:        NewControllerUser(common),
-		Role:        NewControllerRole(common),
-		Script:      NewControllerScript(common),
-		Image:       NewControllerImage(common),
-		Plugin:      NewControllerPlugin(common),
-		Zigbee2mqtt: NewControllerZigbee2mqtt(common),
-		Entity:      NewControllerEntity(common),
-		Automation:  NewControllerAutomation(common),
-		Area:        NewControllerArea(common),
-		Dev:         NewControllerDeveloperTools(common),
-		Interact:    NewControllerInteract(common),
-		Logs:        NewControllerLogs(common),
+		Auth:          NewControllerAuth(common),
+		Stream:        NewControllerStream(common),
+		User:          NewControllerUser(common),
+		Role:          NewControllerRole(common),
+		Script:        NewControllerScript(common),
+		Image:         NewControllerImage(common),
+		Plugin:        NewControllerPlugin(common),
+		Zigbee2mqtt:   NewControllerZigbee2mqtt(common),
+		Entity:        NewControllerEntity(common),
+		Automation:    NewControllerAutomation(common),
+		Area:          NewControllerArea(common),
+		Dev:           NewControllerDeveloperTools(common),
+		Interact:      NewControllerInteract(common),
+		Logs:          NewControllerLogs(common),
+		Dashboard:     NewControllerDashboard(common),
+		DashboardCard: NewControllerDashboardCard(common),
+		DashboardTab:  NewControllerDashboardTab(common),
+		Variable:      NewControllerVariable(common),
 	}
 }

@@ -32,7 +32,7 @@ type Int64 struct {
 // NewInt64 ...
 func NewInt64(value interface{}) (i Int64) {
 	i = Int64{}
-	i.Scan(value)
+	_ = i.Scan(value)
 	return
 }
 

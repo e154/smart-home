@@ -49,7 +49,7 @@ func (tr Transport) RunCommand(command, argument string) (res []byte, err error)
 		return
 	}
 	defer conn.Close()
-	conn.SetDeadline(time.Now().Add(tr.timeout))
+	_ = conn.SetDeadline(time.Now().Add(tr.timeout))
 
 	request := &commandRequest{
 		Command:   command,

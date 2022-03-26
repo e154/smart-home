@@ -23,5 +23,5 @@ import (
 )
 
 func main() {
-	commands.Cli.Execute()
+	_ = commands.Cli.Execute()
 }

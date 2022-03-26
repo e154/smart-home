@@ -26,6 +26,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/e154/smart-home/common/logger"
+
 	"github.com/DrmagicE/gmqtt"
 	_ "github.com/DrmagicE/gmqtt/persistence"
 	"github.com/DrmagicE/gmqtt/pkg/codes"
@@ -44,7 +46,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("mqtt")
+	log = logger.MustGetLogger("mqtt")
 )
 
 // Mqtt ...
@@ -203,7 +205,7 @@ func (m *Mqtt) Publish(topic string, payload []byte, qos uint8, retain bool) (er
 	})
 
 	// send to local subscribers
-	m.onMsgArrived(nil, nil, &server.MsgArrivedRequest{
+	_ = m.onMsgArrived(context.TODO(), nil, &server.MsgArrivedRequest{
 		Message: &gmqtt.Message{
 			QoS:      qos,
 			Retained: retain,
@@ -239,7 +241,6 @@ func (m *Mqtt) RemoveClient(name string) {
 		return
 	}
 	delete(m.clients, name)
-	return
 }
 
 func (m *Mqtt) logging() *zap.Logger {

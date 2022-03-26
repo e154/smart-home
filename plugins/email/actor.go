@@ -20,8 +20,9 @@ package email
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/system/event_bus/events"
 	"sync"
+
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -82,11 +83,11 @@ func (e *Actor) Send(address string, message m.Message) error {
 	}
 
 	attr := NewMessageParams()
-	attr.Deserialize(message.Attributes)
+	_, _ = attr.Deserialize(message.Attributes)
 	subject := attr[AttrSubject].String()
 
 	defer func() {
-		go e.UpdateStatus()
+		go func() { _ = e.UpdateStatus() }()
 		log.Debugf("Sent email '%s' to: '%s'", subject, address)
 	}()
 

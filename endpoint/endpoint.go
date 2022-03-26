@@ -21,6 +21,7 @@ package endpoint
 import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/logger"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
@@ -32,7 +33,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("endpoint")
+	log = logger.MustGetLogger("endpoint")
 )
 
 // Endpoint ...
@@ -57,6 +58,10 @@ type Endpoint struct {
 	Task            *TaskEndpoint
 	Area            *AreaEndpoint
 	Interact        *InteractEndpoint
+	Dashboard       *DashboardEndpoint
+	DashboardTab    *DashboardTabEndpoint
+	DashboardCard   *DashboardCardEndpoint
+	Variable        *VariableEndpoint
 }
 
 // NewEndpoint ...
@@ -92,5 +97,9 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 		Task:            NewTaskEndpoint(common),
 		Area:            NewAreaEndpoint(common),
 		Interact:        NewInteractEndpoint(common),
+		Dashboard:       NewDashboardEndpoint(common),
+		DashboardTab:    NewDashboardTabEndpoint(common),
+		DashboardCard:   NewDashboardCardEndpoint(common),
+		Variable:        NewVariableEndpoint(common),
 	}
 }

@@ -19,9 +19,10 @@
 package plugins
 
 import (
-	"github.com/e154/smart-home/system/event_bus/events"
 	"testing"
 	"time"
+
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -53,6 +54,7 @@ func TestTwilio(t *testing.T) {
 
 			// register plugins
 			err = AddPlugin(adaptors, "notify")
+			ctx.So(err, ShouldBeNil)
 			settings := twilio.NewSettings()
 			settings[twilio.AttrAuthToken].Value = "XXXX"
 			settings[twilio.AttrSid].Value = "YYYY"
@@ -83,8 +85,8 @@ func TestTwilio(t *testing.T) {
 						}
 
 					}
-					eventBus.Subscribe(event_bus.TopicEntities, fn)
-					defer eventBus.Unsubscribe(event_bus.TopicEntities, fn)
+					_ = eventBus.Subscribe(event_bus.TopicEntities, fn)
+					defer func() { _ = eventBus.Unsubscribe(event_bus.TopicEntities, fn) }()
 
 					const (
 						phone = "+79990000001"
@@ -117,7 +119,7 @@ func TestTwilio(t *testing.T) {
 					ctx.So(del.Message.Type, ShouldEqual, twilio.Name)
 
 					attr := twilio.NewMessageParams()
-					attr.Deserialize(del.Message.Attributes)
+					_, _ = attr.Deserialize(del.Message.Attributes)
 					ctx.So(attr[twilio.AttrPhone].String(), ShouldEqual, phone)
 					ctx.So(attr[twilio.AttrBody].String(), ShouldEqual, body)
 

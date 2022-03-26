@@ -24,6 +24,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/e154/smart-home/common/logger"
+
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/adaptors"
@@ -32,7 +34,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("mqtt_authenticator")
+	log = logger.MustGetLogger("mqtt_authenticator")
 )
 
 // MqttAuthenticator ...
@@ -78,7 +80,7 @@ func (a *Authenticator) Authenticate(login string, pass interface{}) (err error)
 
 	defer func() {
 		if err == nil {
-			a.cache.Put(login, pass, 60*time.Second)
+			_ = a.cache.Put(login, pass, 60*time.Second)
 		}
 	}()
 

@@ -64,7 +64,7 @@ func (e *Provider) Save(msg notify.Message) (addresses []string, message m.Messa
 	}
 
 	attr := NewAttr()
-	attr.Deserialize(message.Attributes)
+	_, _ = attr.Deserialize(message.Attributes)
 
 	addresses = strings.Split(attr[AttrChannel].String(), ",")
 	return
@@ -78,7 +78,7 @@ func (e *Provider) Send(address string, message m.Message) (err error) {
 	}
 
 	attr := NewAttr()
-	attr.Deserialize(message.Attributes)
+	_, _ = attr.Deserialize(message.Attributes)
 
 	options := []slack.MsgOption{
 		slack.MsgOptionText(attr[AttrText].String(), false),

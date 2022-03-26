@@ -27,8 +27,10 @@ package automation
 
 import (
 	"context"
-	"github.com/e154/smart-home/system/event_bus/events"
 	"sync"
+
+	"github.com/e154/smart-home/common/logger"
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -43,7 +45,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("automation")
+	log = logger.MustGetLogger("automation")
 )
 
 const (
@@ -218,8 +220,6 @@ func (a *automation) eventHandler(_ string, msg interface{}) {
 	case events.EventRemoveTask:
 		go a.removeTask(v.Id)
 	}
-
-	return
 }
 
 func (a *automation) eventCallTrigger(id int64, name string) {

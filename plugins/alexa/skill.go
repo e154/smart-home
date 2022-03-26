@@ -58,7 +58,7 @@ func NewSkill(model *m.AlexaSkill,
 			log.Error(err.Error())
 		}
 		skill.engine.PushStruct("Alexa", skill.jsBind)
-		skill.engine.Do()
+		_, _ = skill.engine.Do()
 	}
 
 	return

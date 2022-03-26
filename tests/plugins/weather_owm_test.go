@@ -20,11 +20,12 @@ package plugins
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/system/event_bus/events"
 	"reflect"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -62,6 +63,7 @@ func TestWeatherOwm(t *testing.T) {
 			// register plugins
 			err = AddPlugin(adaptors, "weather")
 			ctx.So(err, ShouldBeNil)
+			ctx.So(err, ShouldBeNil)
 			settings := weather_owm.NewSettings()
 			settings[weather_owm.AttrAppid].Value = "qweqweqwe"
 			settings[weather_owm.AttrUnits].Value = "metric"
@@ -83,7 +85,8 @@ func TestWeatherOwm(t *testing.T) {
 			// ------------------------------------------------
 
 			err = adaptors.Variable.CreateOrUpdate(m.Variable{
-				Name: "weather_owm.home",
+				System: true,
+				Name:   "weather_owm.home",
 				//Value: serverData,
 				Value: strings.Replace(serverData, "LOADED_AT", time.Now().Format(time.RFC3339), -1),
 			})

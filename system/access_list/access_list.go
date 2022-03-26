@@ -21,14 +21,14 @@ package access_list
 import (
 	"encoding/json"
 
+	"github.com/e154/smart-home/common/logger"
+
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/debug"
 	m "github.com/e154/smart-home/models"
 )
 
 var (
-	log = common.MustGetLogger("access_list")
+	log = logger.MustGetLogger("access_list")
 )
 
 // AccessListService ...
@@ -50,7 +50,7 @@ func NewAccessListService(adaptors *adaptors.Adaptors) AccessListService {
 	accessList := &accessListService{
 		adaptors: adaptors,
 	}
-	accessList.ReadConfig()
+	_ = accessList.ReadConfig()
 	return accessList
 }
 
@@ -81,8 +81,6 @@ func (a *accessListService) GetFullAccessList(roleName string) (accessList Acces
 	if permissions, err = a.adaptors.Permission.GetAllPermissions(roleName); err != nil {
 		return
 	}
-
-	debug.Println(permissions)
 
 	accessList = make(AccessList)
 	var item AccessItem

@@ -25,8 +25,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/e154/smart-home/common/logger"
+
 	"github.com/Masterminds/semver"
-	"github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
 	"go.uber.org/fx"
@@ -43,7 +44,7 @@ type Orm struct {
 }
 
 var (
-	log = common.MustGetLogger("orm")
+	log = logger.MustGetLogger("orm")
 )
 
 const (

@@ -20,8 +20,9 @@ package cpuspeed
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/system/event_bus/events"
 	"sync"
+
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/entity_manager"

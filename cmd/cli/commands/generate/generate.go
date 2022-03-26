@@ -19,12 +19,7 @@
 package generate
 
 import (
-	"github.com/e154/smart-home/common"
 	"github.com/spf13/cobra"
-)
-
-var (
-	log = common.MustGetLogger("generate")
 )
 
 var (

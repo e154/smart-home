@@ -25,6 +25,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/e154/smart-home/common/logger"
+
 	"github.com/e154/smart-home/system/stream"
 	"github.com/iancoleman/strcase"
 
@@ -43,7 +45,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("controllers")
+	log = logger.MustGetLogger("controllers")
 )
 
 // ControllerCommon ...
@@ -122,10 +124,10 @@ func (c ControllerCommon) writeSuccess(w http.ResponseWriter) {
 
 func (c ControllerCommon) writeJson(w http.ResponseWriter, p interface{}) {
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(p)
+	_ = json.NewEncoder(w).Encode(p)
 }
 
-func (c ControllerCommon) error(ctx context.Context, errs validator.ValidationErrorsTranslations, err error) error {
+func (c ControllerCommon) error(_ context.Context, errs validator.ValidationErrorsTranslations, err error) error {
 	if len(errs) > 0 {
 		return c.prepareErrors(errs)
 	}

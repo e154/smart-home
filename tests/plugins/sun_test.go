@@ -19,9 +19,10 @@
 package plugins
 
 import (
-	"github.com/e154/smart-home/system/event_bus/events"
 	"testing"
 	"time"
+
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -60,7 +61,7 @@ func TestSun(t *testing.T) {
 			ctx.So(err, ShouldBeNil)
 
 			ch := make(chan events.EventStateChanged)
-			eventBus.Subscribe(event_bus.TopicEntities, func(topic string, msg events.EventStateChanged) {
+			_ = eventBus.Subscribe(event_bus.TopicEntities, func(topic string, msg events.EventStateChanged) {
 				ch <- msg
 			})
 

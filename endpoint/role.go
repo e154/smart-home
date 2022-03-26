@@ -208,7 +208,7 @@ func (n *RoleEndpoint) UpdateAccessList(ctx context.Context, roleName string, ac
 	tx := n.adaptors.Begin()
 	defer func() {
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 		}
 	}()
 
@@ -246,7 +246,7 @@ func (n *RoleEndpoint) UpdateAccessList(ctx context.Context, roleName string, ac
 
 	if len(addPerms) > 0 {
 		for _, perm := range addPerms {
-			tx.Permission.Add(perm)
+			_, _ = tx.Permission.Add(perm)
 		}
 	}
 

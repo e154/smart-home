@@ -20,8 +20,10 @@ package scene
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/system/event_bus/events"
 	"sync"
+
+	"github.com/e154/smart-home/common/logger"
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/pkg/errors"
 
@@ -33,7 +35,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("plugins.scene")
+	log = logger.MustGetLogger("plugins.scene")
 )
 
 var _ plugins.Plugable = (*plugin)(nil)
@@ -76,7 +78,7 @@ func (p *plugin) Unload() (err error) {
 		return
 	}
 
-	p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
 
 	return
 }
@@ -109,7 +111,7 @@ func (p *plugin) addOrUpdateEntity(entity *m.Entity,
 
 	if actor, ok := p.actors[name]; ok {
 		// update
-		actor.SetState(entity_manager.EntityStateParams{
+		_ = actor.SetState(entity_manager.EntityStateParams{
 			AttributeValues: attributes,
 		})
 		return

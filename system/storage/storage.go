@@ -23,14 +23,15 @@ import (
 	"sync"
 	"time"
 
+	"github.com/e154/smart-home/common/logger"
+
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"go.uber.org/atomic"
 )
 
 var (
-	log = common.MustGetLogger("storage")
+	log = logger.MustGetLogger("storage")
 )
 
 // Storage ...

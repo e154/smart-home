@@ -151,7 +151,7 @@ ORDER BY date`).Rows()
 
 	for rows.Next() {
 		item := &ImageFilterList{}
-		rows.Scan(&item.Date, &item.Count)
+		_ = rows.Scan(&item.Date, &item.Count)
 		images = append(images, item)
 	}
 

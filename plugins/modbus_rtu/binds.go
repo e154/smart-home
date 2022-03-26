@@ -77,7 +77,7 @@ func NewModbusRtu(eventBus event_bus.EventBus, actor *Actor) (modbus modbusRtu) 
 			return
 		}
 		defer func() {
-			eventBus.Unsubscribe(topic, fn)
+			_ = eventBus.Unsubscribe(topic, fn)
 		}()
 
 		var properties []byte

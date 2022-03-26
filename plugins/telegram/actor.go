@@ -20,8 +20,9 @@ package telegram
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/system/event_bus/events"
 	"strings"
+
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/pkg/errors"
 
@@ -57,7 +58,7 @@ func NewActor(entity *m.Entity,
 	adaptors *adaptors.Adaptors) (*Actor, error) {
 
 	settings := NewSettings()
-	settings.Deserialize(entity.Settings.Serialize())
+	_, _ = settings.Deserialize(entity.Settings.Serialize())
 
 	actor := &Actor{
 		BaseActor:   entity_manager.NewBaseActor(entity, scriptService, adaptors),
@@ -88,7 +89,7 @@ func NewActor(entity *m.Entity,
 	for _, a := range actor.Actions {
 		if a.ScriptEngine != nil {
 			// bind
-			a.ScriptEngine.Do()
+			_, _ = a.ScriptEngine.Do()
 		}
 	}
 
@@ -211,7 +212,7 @@ func (p *Actor) commandHandler(cmd Command) {
 func (p *Actor) sendMsg(body string, chatId int64) (messageID int, err error) {
 	defer func() {
 		if err == nil {
-			go p.UpdateStatus()
+			go func() { _ = p.UpdateStatus() }()
 			log.Debugf("Sent message '%s' to chatId '%d'", body, chatId)
 		}
 	}()
@@ -274,12 +275,12 @@ func (p *Actor) UpdateStatus() (err error) {
 
 func (p *Actor) commandStart(cmd Command) {
 	text := fmt.Sprintf(banner, version.GetHumanVersion(), cmd.Text)
-	p.adaptors.TelegramChat.Add(m.TelegramChat{
+	_ = p.adaptors.TelegramChat.Add(m.TelegramChat{
 		EntityId: p.Id,
 		ChatId:   cmd.ChatId,
 		Username: cmd.UserName,
 	})
-	p.sendMsg(text, cmd.ChatId)
+	_, _ = p.sendMsg(text, cmd.ChatId)
 }
 
 func (p *Actor) commandHelp(cmd Command) {
@@ -290,12 +291,12 @@ func (p *Actor) commandHelp(cmd Command) {
 		}
 	}
 	builder.WriteString(help)
-	p.sendMsg(builder.String(), cmd.ChatId)
+	_, _ = p.sendMsg(builder.String(), cmd.ChatId)
 }
 
 func (p *Actor) commandQuit(cmd Command) {
-	p.adaptors.TelegramChat.Delete(p.Id, cmd.ChatId)
-	p.sendMsg("/quit -unsubscribe from bot\n/start - subscriber again", cmd.ChatId)
+	_ = p.adaptors.TelegramChat.Delete(p.Id, cmd.ChatId)
+	_, _ = p.sendMsg("/quit -unsubscribe from bot\n/start - subscriber again", cmd.ChatId)
 }
 
 //todo add command args

@@ -20,11 +20,12 @@ package sun
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/system/event_bus/events"
 	"math"
 	"sort"
 	"sync"
 	"time"
+
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/astronomics/suncalc"

@@ -66,7 +66,7 @@ func Test4(t *testing.T) {
 			])`)
 			So(err, ShouldBeNil)
 
-			So(state, ShouldEqual, fmt.Sprintf("[42 84 21 63]"))
+			So(state, ShouldEqual, "[42 84 21 63]")
 		})
 	})
 }

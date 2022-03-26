@@ -36,7 +36,7 @@ func NewUserDto() User {
 // FromAddUser ...
 func (u User) FromAddUser(req *api.NewtUserRequest) (user *m.User) {
 	user = &m.User{}
-	common.Copy(&user, req, common.JsonEngine)
+	_ = common.Copy(&user, req, common.JsonEngine)
 	return
 }
 
@@ -180,6 +180,6 @@ func (u User) ToListResult(list []*m.User, total uint64, pagination common.PageP
 // FromUpdateUserRequest ...
 func (u User) FromUpdateUserRequest(req *api.UpdateUserRequest) (user *m.User) {
 	user = &m.User{}
-	common.Copy(&user, req, common.JsonEngine)
+	_ = common.Copy(&user, req, common.JsonEngine)
 	return
 }

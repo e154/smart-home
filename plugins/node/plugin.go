@@ -22,6 +22,8 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/e154/smart-home/common/logger"
+
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
@@ -32,7 +34,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("plugins.node")
+	log = logger.MustGetLogger("plugins.node")
 )
 
 var _ plugins.Plugable = (*plugin)(nil)
@@ -67,7 +69,7 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 	p.mqttServ = service.MqttServ()
 
 	p.mqttClient = p.mqttServ.NewClient("plugins.node")
-	p.mqttServ.Authenticator().Register(p.Authenticator)
+	_ = p.mqttServ.Authenticator().Register(p.Authenticator)
 
 	return nil
 }
@@ -79,7 +81,7 @@ func (p *plugin) Unload() (err error) {
 	}
 
 	p.mqttServ.RemoveClient("plugins.node")
-	p.mqttServ.Authenticator().Unregister(p.Authenticator)
+	_ = p.mqttServ.Authenticator().Unregister(p.Authenticator)
 
 	p.actorsLock.Lock()
 	defer p.actorsLock.Unlock()
@@ -107,8 +109,7 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 		return
 	}
 
-	var actor *Actor
-	actor = NewActor(entity, p.EntityManager, p.Adaptors, p.ScriptService, p.EventBus, p.mqttClient)
+	actor := NewActor(entity, p.EntityManager, p.Adaptors, p.ScriptService, p.EventBus, p.mqttClient)
 	p.actors[entity.Id] = actor
 	p.EntityManager.Spawn(actor.Spawn)
 

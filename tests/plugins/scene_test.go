@@ -19,7 +19,6 @@
 package plugins
 
 import (
-	"fmt"
 	"testing"
 	"time"
 
@@ -78,7 +77,7 @@ sceneEvent = (args)->
 
 			// add entity
 			// ------------------------------------------------
-			romanticEnt := GetNewScene(fmt.Sprintf("scene.romantic"), []*m.Script{sceneScript})
+			romanticEnt := GetNewScene("scene.romantic", []*m.Script{sceneScript})
 			err = adaptors.Entity.Add(romanticEnt)
 			So(err, ShouldBeNil)
 
@@ -97,10 +96,10 @@ sceneEvent = (args)->
 			go zigbee2mqtt.Start()
 
 			defer func() {
-				mqttServer.Shutdown()
+				_ = mqttServer.Shutdown()
 				zigbee2mqtt.Shutdown()
 				entityManager.Shutdown()
-				automation.Shutdown()
+				_ = automation.Shutdown()
 				pluginManager.Shutdown()
 			}()
 

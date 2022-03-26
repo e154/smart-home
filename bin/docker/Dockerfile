@@ -1,4 +1,4 @@
-FROM golang:1.17 as build
+FROM golang:1.18 as build
 RUN update-ca-certificates
 MAINTAINER Filippov Alex <support@e154.ru>
 

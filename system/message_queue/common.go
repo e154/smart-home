@@ -54,7 +54,6 @@ func TopicMatch(topic []byte, topicFilter []byte) bool {
 					if spos > 0 && topicFilter[spos-1] != '/' {
 						return false
 					}
-					spos++
 					return true
 				}
 			} else {
@@ -71,12 +70,10 @@ func TopicMatch(topic []byte, topicFilter []byte) bool {
 						return true
 					}
 				} else if topicFilter[spos] == '#' {
-					multilevelWildcard = true
 					return true
 				} else {
 					/* Check for e.g. foo/bar matching foo/+/# */
 					if spos > 0 && spos+2 == sublen && tpos == topiclen && topicFilter[spos-1] == '+' && topicFilter[spos] == '/' && topicFilter[spos+1] == '#' {
-						multilevelWildcard = true
 						return true
 					}
 					return false

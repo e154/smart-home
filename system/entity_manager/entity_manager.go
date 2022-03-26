@@ -22,10 +22,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/e154/smart-home/system/event_bus/events"
 	"sort"
 	"sync"
 	"time"
+
+	"github.com/e154/smart-home/common/logger"
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/pkg/errors"
 
@@ -38,7 +40,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("entity.manager")
+	log = logger.MustGetLogger("entity.manager")
 )
 
 type entityManager struct {
@@ -80,8 +82,8 @@ func (e *entityManager) SetPluginManager(pluginManager common.PluginManager) {
 	e.pluginManager = pluginManager
 
 	// event subscribe
-	e.eventBus.Subscribe(event_bus.TopicEntities, e.eventHandler)
-	e.eventBus.Subscribe(event_bus.TopicPlugins, e.eventHandler)
+	_ = e.eventBus.Subscribe(event_bus.TopicEntities, e.eventHandler)
+	_ = e.eventBus.Subscribe(event_bus.TopicPlugins, e.eventHandler)
 }
 
 // LoadEntities ...
@@ -110,15 +112,13 @@ LOOP:
 		page++
 		goto LOOP
 	}
-
-	return
 }
 
 // Shutdown ...
 func (e *entityManager) Shutdown() {
 
-	e.eventBus.Unsubscribe(event_bus.TopicEntities, e.eventHandler)
-	e.eventBus.Unsubscribe(event_bus.TopicPlugins, e.eventHandler)
+	_ = e.eventBus.Unsubscribe(event_bus.TopicEntities, e.eventHandler)
+	_ = e.eventBus.Unsubscribe(event_bus.TopicPlugins, e.eventHandler)
 
 	e.actors.Range(func(key, value interface{}) bool {
 		actor := value.(*actorInfo)
@@ -293,7 +293,7 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 			if plugin, err = e.getCrudActor(entityId); err != nil {
 				return
 			}
-			err = plugin.RemoveActor(entityId)
+			_ = plugin.RemoveActor(entityId)
 
 			//e.metric.Update(metrics.EntityDelete{Num: 1})
 		}()
@@ -311,7 +311,7 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 		Settings:   settings,
 	})
 
-	e.adaptors.Entity.Add(&m.Entity{
+	_ = e.adaptors.Entity.Add(&m.Entity{
 		Id:          entityId,
 		Description: info.Description,
 		PluginName:  info.PluginName,
@@ -334,7 +334,7 @@ func (e *entityManager) eventHandler(_ string, message interface{}) {
 	case events.EventStateChanged:
 		go e.eventStateChangedHandler(msg)
 	case events.EventLoadedPlugin:
-		go e.eventLoadedPlugin(msg)
+		go func() { _ = e.eventLoadedPlugin(msg) }()
 	case events.EventUnloadedPlugin:
 		go e.eventUnloadedPlugin(msg)
 	case events.EventCreatedEntity:
@@ -447,7 +447,7 @@ func (e *entityManager) eventDeletedEntity(msg events.EventDeletedEntity) {
 
 func (e *entityManager) eventEntitySetState(msg events.EventEntitySetState) {
 
-	e.SetState(msg.Id, EntityStateParams{
+	_ = e.SetState(msg.Id, EntityStateParams{
 		NewState:        msg.NewState,
 		AttributeValues: msg.AttributeValues,
 		SettingsValue:   msg.SettingsValue,
@@ -521,7 +521,7 @@ func (e *entityManager) Update(entity *m.Entity) (err error) {
 	//todo fix
 	time.Sleep(time.Millisecond * 1000)
 
-	e.Add(entity)
+	_ = e.Add(entity)
 
 	return
 }

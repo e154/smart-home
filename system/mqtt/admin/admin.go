@@ -21,16 +21,17 @@ package admin
 import (
 	"context"
 
+	"github.com/e154/smart-home/common/logger"
+
 	"github.com/DrmagicE/gmqtt"
 	"github.com/DrmagicE/gmqtt/pkg/packets"
 	"github.com/DrmagicE/gmqtt/server"
-	"github.com/e154/smart-home/common"
 )
 
 var _ server.Plugin = (*Admin)(nil)
 
 var (
-	log = common.MustGetLogger("mqtt.admin")
+	log = logger.MustGetLogger("mqtt.admin")
 )
 
 // Name ...
@@ -196,7 +197,7 @@ func (a *Admin) Unsubscribe(clientId, topic string) (err error) {
 		err = ErrInvalidClientID
 		return
 	}
-	a.subscriptionService.Unsubscribe(clientId, topic)
+	_ = a.subscriptionService.Unsubscribe(clientId, topic)
 	return
 }
 

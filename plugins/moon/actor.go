@@ -20,10 +20,11 @@ package moon
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/system/event_bus/events"
 	"math"
 	"sync"
 	"time"
+
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/astronomics/moonphase"

@@ -369,7 +369,7 @@ func (n *MapElement) fromDb(dbVer *db.MapElement) (ver *m.MapElement) {
 
 	// GraphSettings
 	graphSettings, _ := dbVer.GraphSettings.MarshalJSON()
-	json.Unmarshal(graphSettings, &ver.GraphSettings)
+	_ = json.Unmarshal(graphSettings, &ver.GraphSettings)
 
 	// MapElementPrototype
 	switch {
@@ -407,7 +407,7 @@ func (n *MapElement) toDb(ver *m.MapElement) (dbVer *db.MapElement) {
 	}
 
 	graphSettings, _ := json.Marshal(ver.GraphSettings)
-	dbVer.GraphSettings.UnmarshalJSON(graphSettings)
+	_ = dbVer.GraphSettings.UnmarshalJSON(graphSettings)
 
 	return
 }

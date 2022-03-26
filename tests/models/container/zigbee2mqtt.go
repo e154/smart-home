@@ -24,6 +24,6 @@ import (
 )
 
 // NewZigbee2mqttConfig ...
-func NewZigbee2mqttConfig(cfg *models.AppConfig) *zigbee2mqtt.Config {
+func NewZigbee2mqttConfig(_ *models.AppConfig) *zigbee2mqtt.Config {
 	return &zigbee2mqtt.Config{}
 }

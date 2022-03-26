@@ -62,7 +62,7 @@ func (n *Message) fromDb(dbVer db.Message) (ver m.Message) {
 	}
 
 	if len(dbVer.Payload) > 0 {
-		json.Unmarshal(dbVer.Payload, &ver.Attributes)
+		_ = json.Unmarshal(dbVer.Payload, &ver.Attributes)
 	}
 
 	return
@@ -78,7 +78,7 @@ func (n *Message) toDb(ver m.Message) (dbVer db.Message) {
 
 	if ver.Attributes != nil {
 		b, _ := json.Marshal(ver.Attributes)
-		dbVer.Payload.UnmarshalJSON(b)
+		_ = dbVer.Payload.UnmarshalJSON(b)
 	}
 
 	return

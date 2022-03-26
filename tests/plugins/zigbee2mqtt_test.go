@@ -153,6 +153,7 @@ automationAction = (entityId)->
 
 			err = AddPlugin(adaptors, "zigbee2mqtt")
 			ctx.So(err, ShouldBeNil)
+			ctx.So(err, ShouldBeNil)
 			go mqttServer.Start()
 
 			// add zigbee2mqtt
@@ -288,17 +289,17 @@ automationAction = (entityId)->
 			go zigbee2mqtt.Start()
 
 			defer func() {
-				mqttServer.Shutdown()
+				_ = mqttServer.Shutdown()
 				zigbee2mqtt.Shutdown()
 				entityManager.Shutdown()
-				automation.Shutdown()
+				_ = automation.Shutdown()
 				pluginManager.Shutdown()
 			}()
 
 			//
 			// ------------------------------------------------
 			mqttCli := mqttServer.NewClient("cli3")
-			mqttCli.Subscribe("zigbee2mqtt/"+zigbeePlugId+"/set", func(client mqtt.MqttCli, message mqtt.Message) {
+			_ = mqttCli.Subscribe("zigbee2mqtt/"+zigbeePlugId+"/set", func(client mqtt.MqttCli, message mqtt.Message) {
 				if string(message.Payload) == `{"state":"ON"}` {
 					err = mqttCli.Publish("zigbee2mqtt/"+zigbeePlugId, []byte(`{"consumption":2.87,"energy":2.87,"linkquality":147,"power":0,"state":"ON","temperature":41,"voltage":240.5}`))
 				} else {

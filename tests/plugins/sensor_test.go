@@ -145,7 +145,7 @@ entityAction = (entityId, actionName)->
 				Convey("stats", t, func(ctx C) {
 
 					ctx2, cancel := context2.WithCancel(context2.Background())
-					go MockHttpServer(ctx2, host, port, []byte(response1))
+					go func() { _ = MockHttpServer(ctx2, host, port, []byte(response1)) }()
 					time.Sleep(time.Millisecond * 500)
 					entityManager.CallAction(sensorEnt.Id, "CHECK", nil)
 					time.Sleep(time.Second)

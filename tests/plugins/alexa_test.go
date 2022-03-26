@@ -255,6 +255,7 @@ skillOnIntent = ->
 
 			// register plugins
 			err = AddPlugin(adaptors, "triggers")
+			So(err, ShouldBeNil)
 			err = AddPlugin(adaptors, "alexa")
 			ctx.So(err, ShouldBeNil)
 
@@ -299,7 +300,7 @@ skillOnIntent = ->
 
 			defer func() {
 				entityManager.Shutdown()
-				automation.Shutdown()
+				_ = automation.Shutdown()
 				pluginManager.Shutdown()
 			}()
 
@@ -328,7 +329,7 @@ skillOnIntent = ->
 			t.Run("on intent", func(t *testing.T) {
 
 				ch := make(chan alexa.EventAlexaAction)
-				eventBus.Subscribe(alexa.TopicPluginAlexa, func(_ string, msg alexa.EventAlexaAction) {
+				_ = eventBus.Subscribe(alexa.TopicPluginAlexa, func(_ string, msg alexa.EventAlexaAction) {
 					ch <- msg
 				})
 

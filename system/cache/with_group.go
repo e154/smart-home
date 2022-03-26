@@ -22,11 +22,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/logger"
 )
 
 var (
-	log = common.MustGetLogger("cache")
+	log = logger.MustGetLogger("cache")
 )
 
 // WithGroup ...
@@ -109,19 +109,18 @@ func (c *WithGroup) addToGroup(group, key string) (*WithGroup, error) {
 func (c *WithGroup) ClearGroup(group string) (*WithGroup, error) {
 	c.log("clear group %s", group)
 
-	g := []string{}
 	w := c.bm.Get(group)
 	if w == nil {
 		return c, nil
 	}
 
-	g = w.([]string)
+	g := w.([]string)
 	if len(g) == 0 {
 		return c, nil
 	}
 
 	for _, key := range g {
-		c.bm.Delete(key)
+		_ = c.bm.Delete(key)
 	}
 
 	_, err := c.Clear(group)
@@ -157,7 +156,7 @@ func (c *WithGroup) Get(key string) interface{} {
 func (c *WithGroup) Delete(key string) *WithGroup {
 	c.log("delete value by key %s", key)
 
-	c.bm.Delete(key)
+	_ = c.bm.Delete(key)
 
 	return c
 }

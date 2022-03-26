@@ -19,9 +19,10 @@
 package plugins
 
 import (
-	"github.com/e154/smart-home/system/event_bus/events"
 	"testing"
 	"time"
+
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -62,6 +63,7 @@ telegramAction = (entityId, actionName)->
 
 			// register plugins
 			err = AddPlugin(adaptors, "notify")
+			ctx.So(err, ShouldBeNil)
 			err = AddPlugin(adaptors, "telegram")
 			ctx.So(err, ShouldBeNil)
 
@@ -95,7 +97,7 @@ telegramAction = (entityId, actionName)->
 				ChatId:   123,
 				Username: "user",
 			}
-			adaptors.TelegramChat.Add(tgChan)
+			_ = adaptors.TelegramChat.Add(tgChan)
 
 			pluginManager.Start()
 			entityManager.SetPluginManager(pluginManager)
@@ -120,8 +122,8 @@ telegramAction = (entityId, actionName)->
 						}
 
 					}
-					eventBus.Subscribe(event_bus.TopicEntities, fn)
-					defer eventBus.Unsubscribe(event_bus.TopicEntities, fn)
+					_ = eventBus.Subscribe(event_bus.TopicEntities, fn)
+					defer func() { _ = eventBus.Unsubscribe(event_bus.TopicEntities, fn) }()
 
 					eventBus.Publish(notify.TopicNotify, notify.Message{
 						Type: telegram.Name,
@@ -148,7 +150,7 @@ telegramAction = (entityId, actionName)->
 					ctx.So(list[0].Message.Type, ShouldEqual, telegram.Name)
 
 					attr := telegram.NewMessageParams()
-					attr.Deserialize(list[0].Message.Attributes)
+					_, _ = attr.Deserialize(list[0].Message.Attributes)
 					ctx.So(attr[telegram.AttrBody].String(), ShouldEqual, "body")
 
 				})

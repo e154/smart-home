@@ -118,12 +118,12 @@ func (c ControllerImage) MuxUploadImage() func(w http.ResponseWriter, r *http.Re
 		var resultImages = make([]interface{}, 0)
 
 		for _, img := range images {
-			resultImages = append(resultImages, &map[string]int64{
+			resultImages = append(resultImages, map[string]int64{
 				"id": img.Id,
 			})
 		}
 
-		c.writeJson(w, &map[string]interface{}{
+		c.writeJson(w, map[string]interface{}{
 			"images": resultImages,
 			"errors": errs,
 		})

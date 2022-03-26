@@ -22,6 +22,8 @@ import (
 	"context"
 	"sync"
 
+	"github.com/e154/smart-home/common/logger"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -32,7 +34,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("zigbee2mqtt")
+	log = logger.MustGetLogger("zigbee2mqtt")
 )
 
 // zigbee2mqtt ...
@@ -121,7 +123,7 @@ func (z *zigbee2mqtt) Shutdown() {
 	for _, bridge := range z.bridges {
 		bridge.Stop(context.Background())
 	}
-	z.mqtt.Authenticator().Unregister(z.Authenticator)
+	_ = z.mqtt.Authenticator().Unregister(z.Authenticator)
 }
 
 // AddBridge ...

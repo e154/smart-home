@@ -24,14 +24,15 @@ import (
 	"net/http"
 	"net/http/pprof"
 
+	"github.com/e154/smart-home/common/logger"
+
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.uber.org/fx"
 )
 
 var (
-	log = common.MustGetLogger("metrics")
+	log = logger.MustGetLogger("metrics")
 )
 
 // MetricManager ...

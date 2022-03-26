@@ -186,7 +186,7 @@ func (n *Metric) fromDb(dbVer db.Metric) (ver m.Metric) {
 
 	// deserialize options
 	b, _ := dbVer.Options.MarshalJSON()
-	json.Unmarshal(b, &ver.Options)
+	_ = json.Unmarshal(b, &ver.Options)
 
 	if dbVer.Data != nil && len(dbVer.Data) > 0 {
 		metricBucketAdaptor := GetMetricBucketAdaptor(n.db, nil)
@@ -211,7 +211,7 @@ func (n *Metric) toDb(ver m.Metric) (dbVer db.Metric) {
 
 	// serialize options
 	b, _ := json.Marshal(ver.Options)
-	dbVer.Options.UnmarshalJSON(b)
+	_ = dbVer.Options.UnmarshalJSON(b)
 
 	return
 }

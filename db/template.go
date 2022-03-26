@@ -69,11 +69,11 @@ func (n Templates) UpdateOrCreate(tpl *Template) (err error) {
 }
 
 // Create ...
-func (n Templates) Create(tpl *Template) error {
-	if err := n.Db.Create(tpl).Error; err != nil {
+func (n Templates) Create(tpl *Template) (err error) {
+	if err = n.Db.Create(tpl).Error; err != nil {
 		err = errors.Wrap(err, "create failed")
 	}
-	return nil
+	return
 }
 
 // GetByName ...
@@ -244,8 +244,6 @@ func (n Templates) renderTreeRecursive(i []*Template, t *TemplateTree, c string)
 			n.renderTreeRecursive(i, tree, item.Name)
 		}
 	}
-
-	return
 }
 
 // UpdateItemsTree ...
@@ -273,19 +271,13 @@ func (n Templates) UpdateItemsTree(tree []*TemplateTree, parent string) error {
 	return nil
 }
 
-func (n Templates) emailItemParentUpdate(name, parent string) error {
+func (n Templates) emailItemParentUpdate(name, parent string) {
 
-	err := n.Db.Model(&Template{}).
+	_ = n.Db.Model(&Template{}).
 		Where("name = ?", name).
 		Updates(map[string]interface{}{
 			"parent": parent,
 		}).Error
-
-	if err != nil {
-		return errors.Wrap(err, "emailItemParentUpdate failed")
-	}
-
-	return nil
 }
 
 func (n Templates) updateTreeRecursive(t []*TemplateTree, parent string) {

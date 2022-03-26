@@ -41,7 +41,7 @@ func Start(app *fx.App) {
 
 // Work ...
 func Work() {
-	var gracefulStop = make(chan os.Signal)
+	var gracefulStop = make(chan os.Signal, 10)
 	signal.Notify(gracefulStop, syscall.SIGINT, syscall.SIGTERM)
 
 	<-gracefulStop

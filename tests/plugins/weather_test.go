@@ -59,7 +59,7 @@ func TestWeather(t *testing.T) {
 			ctx.So(err, ShouldBeNil)
 
 			ch := make(chan weatherPlugin.EventStateChanged)
-			eventBus.Subscribe(weatherPlugin.TopicPluginWeather, func(topic string, msg weatherPlugin.EventStateChanged) {
+			_ = eventBus.Subscribe(weatherPlugin.TopicPluginWeather, func(topic string, msg weatherPlugin.EventStateChanged) {
 				ch <- msg
 			})
 

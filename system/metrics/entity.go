@@ -89,22 +89,11 @@ func (d *EntityManager) updateOption(v EntitySetOption) (exist bool) {
 			exist = true
 			return
 		}
-
-		d.entities[key] = EntityState{
-			DeviceId:     v.DeviceId,
-			ElementName:  v.ElementName,
-			StateId:      v.StateId,
-			StateOptions: v.StateOptions,
-		}
+		d.entities[key] = (EntityState)(v)
 		return
 	}
 
-	d.entities[key] = EntityState{
-		DeviceId:     v.DeviceId,
-		ElementName:  v.ElementName,
-		StateId:      v.StateId,
-		StateOptions: v.StateOptions,
-	}
+	d.entities[key] = (EntityState)(v)
 
 	return
 }

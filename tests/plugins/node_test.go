@@ -21,9 +21,10 @@ package plugins
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/e154/smart-home/system/event_bus/events"
 	"testing"
 	"time"
+
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -77,10 +78,10 @@ func TestNode(t *testing.T) {
 			entityManager.LoadEntities()
 
 			defer func() {
-				mqttServer.Shutdown()
+				_ = mqttServer.Shutdown()
 				zigbee2mqtt.Shutdown()
 				entityManager.Shutdown()
-				automation.Shutdown()
+				_ = automation.Shutdown()
 				pluginManager.Shutdown()
 			}()
 
@@ -109,8 +110,8 @@ func TestNode(t *testing.T) {
 							ch <- struct{}{}
 						}
 					}
-					eventBus.Subscribe(event_bus.TopicEntities, fn)
-					defer eventBus.Unsubscribe(event_bus.TopicEntities, fn)
+					_ = eventBus.Subscribe(event_bus.TopicEntities, fn)
+					defer func() { _ = eventBus.Unsubscribe(event_bus.TopicEntities, fn) }()
 
 					b, err := json.Marshal(node.MessageStatus{
 						Status:    "enabled",
@@ -146,7 +147,7 @@ func TestNode(t *testing.T) {
 			t.Run("request", func(t *testing.T) {
 				Convey("case", t, func(ctx C) {
 					ch := make(chan struct{})
-					mqttCli.Subscribe("home/node/main/req/#", func(client mqtt.MqttCli, message mqtt.Message) {
+					_ = mqttCli.Subscribe("home/node/main/req/#", func(client mqtt.MqttCli, message mqtt.Message) {
 						req := node.MessageRequest{}
 						err = json.Unmarshal(message.Payload, &req)
 						ctx.So(err, ShouldBeNil)
@@ -193,8 +194,8 @@ func TestNode(t *testing.T) {
 						ctx.So(resp.Status, ShouldEqual, "success")
 						ch <- struct{}{}
 					}
-					eventBus.Subscribe(topic, fn)
-					defer eventBus.Unsubscribe(topic, fn)
+					_ = eventBus.Subscribe(topic, fn)
+					defer func() { _ = eventBus.Unsubscribe(topic, fn) }()
 					b, err := json.Marshal(node.MessageResponse{
 						EntityId:   "plugin.test",
 						DeviceType: "test",
@@ -204,7 +205,7 @@ func TestNode(t *testing.T) {
 					})
 					ctx.So(err, ShouldBeNil)
 
-					mqttCli.Publish(fmt.Sprintf("home/node/main/resp/%s", "plugin.test"), b)
+					_ = mqttCli.Publish(fmt.Sprintf("home/node/main/resp/%s", "plugin.test"), b)
 
 					ticker := time.NewTimer(time.Second * 1)
 					defer ticker.Stop()

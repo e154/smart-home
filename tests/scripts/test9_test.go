@@ -19,7 +19,6 @@
 package scripts
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/e154/smart-home/adaptors"
@@ -73,7 +72,7 @@ func Test9(t *testing.T) {
 				},
 				{
 					Name: "template2",
-					Content: fmt.Sprintf(`{
+					Content: `{
  "items": [
    "code"
  ],
@@ -84,7 +83,7 @@ func Test9(t *testing.T) {
      "value": "Activate code:"
    }
 ]
-}`),
+}`,
 					Status:     m.TemplateStatusActive,
 					Type:       m.TemplateTypeTemplate,
 					ParentName: nil,

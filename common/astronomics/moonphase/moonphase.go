@@ -146,15 +146,16 @@ func kepler(m float64, ecc float64) float64 {
 }
 
 func (m *Moon) phaseHunt() {
-	var sdate float64 = utcToJulian(m.timespace)
-	var adate float64 = sdate - 45
-	var ats float64 = m.timespace - 86400*45
+	var sdate = utcToJulian(m.timespace)
+	var adate = sdate - 45
+	var ats = m.timespace - 86400*45
 	t := time.Unix(int64(ats), 0)
-	var yy float64 = float64(t.Year())
-	var mm float64 = float64(t.Month())
+	var yy = float64(t.Year())
+	var mm = float64(t.Month())
 
-	var k1 float64 = math.Floor(float64(yy+((mm-1)*(1/12))-1900) * 12.3685)
-	var nt1 float64 = meanPhase(adate, k1)
+	//var k1 = math.Floor(float64(yy+((mm-1)*(1/12))-1900) * 12.3685)
+	var k1 = math.Floor(float64(yy+((mm-1)*(1.0/12.0))-1900) * 12.3685)
+	var nt1 = meanPhase(adate, k1)
 	adate = nt1
 	var nt2, k2 float64
 
@@ -192,9 +193,9 @@ func utcToJulian(t float64) float64 {
 	return t/86400 + 2440587.5
 }
 
-func julianToUtc(t float64) float64 {
-	return t*86400 + 2440587.5
-}
+//func julianToUtc(t float64) float64 {
+//	return t*86400 + 2440587.5
+//}
 
 /**
   Calculates time of the mean new Moon for a given
@@ -209,8 +210,7 @@ func meanPhase(sdate float64, k float64) float64 {
 	var t2 float64 = t * t
 	var t3 float64 = t2 * t
 
-	var nt float64
-	nt = 2415020.75933 + synmonth*k +
+	nt := 2415020.75933 + synmonth*k +
 		0.0001178*t2 -
 		0.000000155*t3 +
 		0.00033*sin(deg2rad(166.56+132.87*t-0.009173*t2))

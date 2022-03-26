@@ -17,11 +17,3 @@
 // <https://www.gnu.org/licenses/>.
 
 package db
-
-import (
-	"github.com/e154/smart-home/common"
-)
-
-var (
-	log = common.MustGetLogger("db")
-)

@@ -20,8 +20,10 @@ package cgminer
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/system/event_bus/events"
 	"sync"
+
+	"github.com/e154/smart-home/common/logger"
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/pkg/errors"
 
@@ -33,7 +35,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("plugins.cgminer")
+	log = logger.MustGetLogger("plugins.cgminer")
 )
 
 var _ plugins.Plugable = (*plugin)(nil)
@@ -63,7 +65,7 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 		return
 	}
 
-	p.EventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
 
 	return nil
 }
@@ -74,7 +76,7 @@ func (p *plugin) Unload() (err error) {
 		return
 	}
 
-	p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
 
 	return nil
 }
@@ -95,8 +97,6 @@ func (p *plugin) eventHandler(topic string, msg interface{}) {
 		}
 		actor.addAction(v)
 	}
-
-	return
 }
 
 // AddOrUpdateActor ...

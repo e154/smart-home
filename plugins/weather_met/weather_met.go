@@ -22,13 +22,14 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
-	"github.com/e154/smart-home/system/event_bus/events"
 	"math"
 	"net/url"
 	"sort"
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/pkg/errors"
 
@@ -84,7 +85,7 @@ func (p *WeatherMet) UpdateWeatherList(entityId common.EntityId, settings m.Attr
 	if !update {
 		return
 	}
-	p.UpdateForecastForAll()
+	_ = p.UpdateForecastForAll()
 }
 
 // RemoveWeather ...
@@ -129,7 +130,7 @@ func (p *WeatherMet) UpdateForecast(zone Zone) (err error) {
 	}
 
 	attr := weather.BaseForecast()
-	attr.Deserialize(forecast)
+	_, _ = attr.Deserialize(forecast)
 
 	p.eventBus.Publish(event_bus.TopicEntities, events.EventRequestState{
 		From:       common.EntityId(fmt.Sprintf("weather_met.%s", zone.Name)),
@@ -231,6 +232,7 @@ func (p *WeatherMet) saveToLocalStorage(zone Zone) (err error) {
 	}
 
 	err = p.adaptors.Variable.CreateOrUpdate(m.Variable{
+		System:   true,
 		Name:     fmt.Sprintf("weather_met.%s", zone.Name),
 		Value:    string(b),
 		EntityId: common.NewEntityId(fmt.Sprintf("weather.%s", zone.Name)),

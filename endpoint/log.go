@@ -20,12 +20,13 @@ package endpoint
 
 import (
 	"context"
+	"strings"
+	"time"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
-	"strings"
-	"time"
 )
 
 // LogEndpoint ...
@@ -41,7 +42,7 @@ func NewLogEndpoint(common *CommonEndpoint) *LogEndpoint {
 }
 
 // Add ...
-func (l *LogEndpoint) Add(log *m.Log) (result *m.Log, errs validator.ValidationErrorsTranslations, err error) {
+func (l *LogEndpoint) Add(ctx context.Context, log *m.Log) (result *m.Log, errs validator.ValidationErrorsTranslations, err error) {
 
 	var ok bool
 	if ok, errs = l.validation.Valid(log); !ok {
@@ -54,7 +55,7 @@ func (l *LogEndpoint) Add(log *m.Log) (result *m.Log, errs validator.ValidationE
 		return
 	}
 
-	if log, err = l.adaptors.Log.GetById(id); err != nil {
+	if result, err = l.adaptors.Log.GetById(id); err != nil {
 		err = errors.Wrap(common.ErrInternal, err.Error())
 	}
 
@@ -62,7 +63,7 @@ func (l *LogEndpoint) Add(log *m.Log) (result *m.Log, errs validator.ValidationE
 }
 
 // GetById ...
-func (l *LogEndpoint) GetById(id int64) (log *m.Log, err error) {
+func (l *LogEndpoint) GetById(ctx context.Context, id int64) (log *m.Log, err error) {
 
 	if log, err = l.adaptors.Log.GetById(id); err != nil {
 		err = errors.Wrap(common.ErrInternal, err.Error())
@@ -95,7 +96,7 @@ func (l *LogEndpoint) GetList(ctx context.Context, pagination common.PageParams,
 }
 
 // Search ...
-func (l *LogEndpoint) Search(query string, limit, offset int) (list []*m.Log, total int64, err error) {
+func (l *LogEndpoint) Search(ctx context.Context, query string, limit, offset int) (list []*m.Log, total int64, err error) {
 
 	list, total, err = l.adaptors.Log.Search(query, limit, offset)
 	if err != nil {
@@ -105,7 +106,7 @@ func (l *LogEndpoint) Search(query string, limit, offset int) (list []*m.Log, to
 }
 
 // Delete ...
-func (l *LogEndpoint) Delete(logId int64) (err error) {
+func (l *LogEndpoint) Delete(ctx context.Context, logId int64) (err error) {
 
 	_, err = l.adaptors.Log.GetById(logId)
 	if err != nil {

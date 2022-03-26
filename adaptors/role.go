@@ -187,7 +187,7 @@ func (n *Role) toDb(role *m.Role) (dbRole *db.Role) {
 	}
 
 	if role.Parent != nil {
-		dbRole.RoleName.Scan(role.Parent.Name)
+		_ = dbRole.RoleName.Scan(role.Parent.Name)
 	}
 	return
 }

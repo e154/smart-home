@@ -66,7 +66,7 @@ func (n AlexaIntents) GetByName(name string) (intent *AlexaIntent, err error) {
 
 // Update ...
 func (n AlexaIntents) Update(v *AlexaIntent) (err error) {
-	err = n.Db.Model(v).Where("name = ? and alexa_skill_id = ?", v.Name, v.AlexaSkillId).Updates(&map[string]interface{}{
+	err = n.Db.Model(v).Where("name = ? and alexa_skill_id = ?", v.Name, v.AlexaSkillId).Updates(map[string]interface{}{
 		"name":        v.Name,
 		"description": v.Description,
 		"script_id":   v.ScriptId,

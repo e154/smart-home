@@ -20,8 +20,10 @@ package weather
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/system/event_bus/events"
 	"sync"
+
+	"github.com/e154/smart-home/common/logger"
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/pkg/errors"
 
@@ -40,7 +42,7 @@ const (
 )
 
 var (
-	log = common.MustGetLogger("plugins.weather")
+	log = logger.MustGetLogger("plugins.weather")
 )
 
 var _ plugins.Plugable = (*plugin)(nil)
@@ -70,7 +72,7 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 		return
 	}
 
-	p.EventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
 
 	return nil
 }
@@ -81,7 +83,7 @@ func (p *plugin) Unload() (err error) {
 		return
 	}
 
-	p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
 
 	return nil
 }
@@ -99,10 +101,8 @@ func (p *plugin) eventHandler(_ string, msg interface{}) {
 			return
 		}
 
-		p.AddOrUpdateForecast(v.To.Name(), v.Attributes)
+		_ = p.AddOrUpdateForecast(v.To.Name(), v.Attributes)
 	}
-
-	return
 }
 
 // AddOrUpdateForecast ...
@@ -123,7 +123,7 @@ func (p *plugin) AddOrUpdateForecast(name string, attr m.Attributes) (err error)
 		stateName = a.String()
 	}
 
-	actor.SetState(entity_manager.EntityStateParams{
+	_ = actor.SetState(entity_manager.EntityStateParams{
 		NewState:        common.String(stateName),
 		AttributeValues: attr.Serialize(),
 	})

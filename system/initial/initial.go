@@ -19,6 +19,7 @@
 package initial
 
 import (
+	"github.com/e154/smart-home/common/logger"
 	_ "github.com/e154/smart-home/system/initial/environments/default"
 	_ "github.com/e154/smart-home/system/initial/environments/example1"
 	"github.com/e154/smart-home/system/logging_ws"
@@ -51,7 +52,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("initial")
+	log = logger.MustGetLogger("initial")
 )
 
 var (
@@ -118,7 +119,7 @@ func (n *Initial) Reset() {
 
 	log.Info("full reset")
 
-	n.migrations.Purge()
+	_ = n.migrations.Purge()
 
 	log.Info("complete")
 }
@@ -133,7 +134,7 @@ func (n *Initial) InstallDemoData() {
 	// install demo
 	environments.InstallDemoData(tx, n.accessList, n.scriptService)
 
-	tx.Commit()
+	_ = tx.Commit()
 
 	log.Info("complete")
 }
@@ -170,7 +171,7 @@ func (n *Initial) checkForUpgrade() {
 	environments.Upgrade(oldVersion, tx, n.accessList, n.scriptService, n.validation)
 
 	if oldVersion >= currentVersion {
-		tx.Commit()
+		_ = tx.Commit()
 		return
 	}
 
@@ -178,7 +179,7 @@ func (n *Initial) checkForUpgrade() {
 	err = tx.Variable.Update(v)
 	So(err, ShouldBeNil)
 
-	tx.Commit()
+	_ = tx.Commit()
 }
 
 // Start ...
@@ -188,8 +189,8 @@ func (n *Initial) Start() {
 	n.metrics.Start()
 	n.entityManager.SetPluginManager(n.pluginManager)
 	n.pluginManager.Start()
-	n.automation.Start()
-	go n.api.Start()
+	_ = n.automation.Start()
+	go func() { _ = n.api.Start() }()
 	n.gateClient.Start()
 }
 

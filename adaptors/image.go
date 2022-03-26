@@ -170,7 +170,7 @@ func (n *Image) UploadImage(reader *bufio.Reader, fileName string) (newFile *m.I
 
 	//create destination file making sure the path is writeable.
 	dir := common.GetFullPath(name)
-	os.MkdirAll(dir, os.ModePerm)
+	_ = os.MkdirAll(dir, os.ModePerm)
 	var dst *os.File
 	if dst, err = os.Create(filepath.Join(dir, newname)); err != nil {
 		return

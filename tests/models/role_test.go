@@ -32,12 +32,12 @@ import (
 func TestRole(t *testing.T) {
 
 	Convey("add role", t, func(ctx C) {
-		container.Invoke(func(adaptors *adaptors.Adaptors,
+		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			accessList access_list.AccessListService) {
 
 			// clear database
-			migrations.Purge()
+			_ = migrations.Purge()
 
 			demoRole := &m.Role{
 				Name: "demo",

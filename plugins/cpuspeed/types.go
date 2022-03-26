@@ -27,7 +27,7 @@ const (
 	// EntityCpuspeed ...
 	EntityCpuspeed = string("cpuspeed")
 
-	icon = "microchip"
+	//icon = "microchip"
 
 	// AttrCpuCores ...
 	AttrCpuCores = "cores"

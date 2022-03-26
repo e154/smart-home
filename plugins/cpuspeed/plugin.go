@@ -89,7 +89,7 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 			Type: common.MetricTypeLine,
 		}
 		if metric.Id, err = p.Adaptors.Metric.Add(metric); err == nil {
-			p.Adaptors.Entity.AppendMetric(p.actor.Id, metric)
+			_ = p.Adaptors.Entity.AppendMetric(p.actor.Id, metric)
 		}
 
 	} else {

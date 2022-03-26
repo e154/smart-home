@@ -36,7 +36,7 @@ func NewPluginManager(adaptors *adaptors.Adaptors) *PluginManager {
 }
 
 func (n PluginManager) addPlugin(name string, enabled, system, actor bool) (node *m.Plugin) {
-	n.adaptors.Plugin.CreateOrUpdate(m.Plugin{
+	_ = n.adaptors.Plugin.CreateOrUpdate(m.Plugin{
 		Name:    name,
 		Version: "0.0.1",
 		Enabled: enabled,

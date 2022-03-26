@@ -128,7 +128,7 @@ func (s *Server) Stop() {
 	//s.gate.SetAlexaApiEngine(nil)
 
 	if s.server != nil {
-		s.server.Close()
+		_ = s.server.Close()
 	}
 }
 
@@ -139,7 +139,7 @@ func (s *Server) handlerFunc(ctx *gin.Context) {
 	req := &Request{}
 	if err := ctx.ShouldBindJSON(req); err != nil {
 		log.Error(err.Error())
-		ctx.AbortWithError(400, err)
+		_ = ctx.AbortWithError(400, err)
 		return
 	}
 
@@ -161,7 +161,7 @@ func (s *Server) handlerFunc(ctx *gin.Context) {
 	ctx.Writer.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	b, _ := resp.String()
-	ctx.Writer.Write(b)
+	_, _ = ctx.Writer.Write(b)
 }
 
 // OnLaunchHandler ...
@@ -203,9 +203,10 @@ func (s *Server) OnAudioPlayerHandler(ctx *gin.Context, req *Request, resp *Resp
 		if skill.GetAppID() != req.Context.System.Application.ApplicationID {
 			continue
 		}
-		if skill.OnAudioPlayerState != nil {
-			skill.OnAudioPlayerState(ctx, req, resp)
-		}
+		//todo check
+		//if skill.OnAudioPlayerState != nil {
+		//	skill.OnAudioPlayerState(ctx, req, resp)
+		//}
 	}
 }
 
@@ -217,7 +218,7 @@ func (s Server) Auth(ctx *gin.Context) {
 	}
 
 	if !IsValidAlexaRequest(ctx.Writer, ctx.Request) {
-		ctx.AbortWithError(401, common.ErrBadRequestParams)
+		_ = ctx.AbortWithError(401, common.ErrBadRequestParams)
 		return
 	}
 }

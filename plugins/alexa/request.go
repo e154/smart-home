@@ -39,11 +39,7 @@ type Request struct {
 // format and is not too old. True will be returned if the timestamp is valid; false otherwise.
 func (r *Request) VerifyTimestamp() bool {
 	reqTimestamp, _ := time.Parse("2006-01-02T15:04:05Z", r.Request.Timestamp)
-	if time.Since(reqTimestamp) < time.Duration(150)*time.Second {
-		return true
-	}
-
-	return false
+	return time.Since(reqTimestamp) < time.Duration(150)*time.Second
 }
 
 // VerifyAppID check that the incoming application ID matches the application ID provided

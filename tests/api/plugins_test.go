@@ -59,7 +59,7 @@ func TestPlugins(t *testing.T) {
 			c := context.Background()
 			conn, err := grpc.DialContext(c, "", grpc.WithInsecure(), grpc.WithContextDialer(dialer.Call()))
 			ctx.So(err, ShouldBeNil)
-			defer conn.Close()
+			defer func() { _ = conn.Close() }()
 
 			client := gw.NewPluginServiceClient(conn)
 
@@ -84,19 +84,19 @@ func TestPlugins(t *testing.T) {
 
 			t.Run("enable", func(t *testing.T) {
 				Convey("", t, func(ctx C) {
-					ctx.Println("test not implemented")
+					_, _ = ctx.Println("test not implemented")
 				})
 			})
 
 			t.Run("disabled", func(t *testing.T) {
 				Convey("", t, func(ctx C) {
-					ctx.Println("test not implemented")
+					_, _ = ctx.Println("test not implemented")
 				})
 			})
 
 			t.Run("options", func(t *testing.T) {
 				Convey("", t, func(ctx C) {
-					ctx.Println("test not implemented")
+					_, _ = ctx.Println("test not implemented")
 				})
 			})
 

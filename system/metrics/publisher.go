@@ -61,9 +61,7 @@ func (p *Publisher) Subscribe(command string, f ISubscriber) {
 func (p *Publisher) UnSubscribe(command string) {
 	p.Lock()
 	defer p.Unlock()
-	if _, ok := p.subscribers[command]; ok {
-		delete(p.subscribers, command)
-	}
+	delete(p.subscribers, command)
 }
 
 // Broadcast ...

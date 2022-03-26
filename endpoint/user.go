@@ -54,11 +54,11 @@ func (n *UserEndpoint) Add(ctx context.Context, params *m.User,
 	}
 
 	if currentUser != nil {
-		user.UserId.Scan(currentUser.Id)
+		_ = user.UserId.Scan(currentUser.Id)
 	}
 
 	if params.Image != nil && params.Image.Id != 0 {
-		user.ImageId.Scan(params.Image.Id)
+		_ = user.ImageId.Scan(params.Image.Id)
 	}
 
 	if params.Role != nil {
@@ -167,10 +167,10 @@ func (n *UserEndpoint) Update(ctx context.Context, params *m.User) (result *m.Us
 		return
 	}
 
-	common.Copy(&user, &params, common.JsonEngine)
+	_ = common.Copy(&user, &params, common.JsonEngine)
 
 	if params.Image != nil && params.Image.Id != 0 {
-		user.ImageId.Scan(params.Image.Id)
+		_ = user.ImageId.Scan(params.Image.Id)
 	}
 
 	if params.Role != nil {

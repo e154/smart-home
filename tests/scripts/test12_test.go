@@ -72,7 +72,7 @@ func Test12(t *testing.T) {
 
 			// clear database
 			// ------------------------------------------------
-			migrations.Purge()
+			_ = migrations.Purge()
 
 			initCallback(ctx)
 

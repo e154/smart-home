@@ -19,8 +19,10 @@
 package weather_met
 
 import (
-	"github.com/e154/smart-home/system/event_bus/events"
 	"time"
+
+	"github.com/e154/smart-home/common/logger"
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/plugins/weather"
@@ -36,7 +38,7 @@ const (
 )
 
 var (
-	log = common.MustGetLogger("plugins.met")
+	log = logger.MustGetLogger("plugins.met")
 )
 
 var _ plugins.Plugable = (*plugin)(nil)
@@ -70,8 +72,8 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 
 	p.weather = NewWeatherMet(p.EventBus, p.Adaptors)
 
-	p.EventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
-	p.EventBus.Subscribe(weather.TopicPluginWeather, p.eventHandler)
+	_ = p.EventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Subscribe(weather.TopicPluginWeather, p.eventHandler)
 	p.quit = make(chan struct{})
 
 	go func() {
@@ -108,8 +110,8 @@ func (p *plugin) Unload() (err error) {
 	}
 
 	p.quit <- struct{}{}
-	p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
-	p.EventBus.Unsubscribe(weather.TopicPluginWeather, p.eventHandler)
+	_ = p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Unsubscribe(weather.TopicPluginWeather, p.eventHandler)
 	return nil
 }
 

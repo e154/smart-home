@@ -29,7 +29,7 @@ import (
 type Variable struct {
 	Name      string           `json:"name"`
 	Value     string           `json:"value"`
-	Autoload  bool             `json:"autoload"`
+	System    bool             `json:"system"`
 	EntityId  *common.EntityId `json:"entity_id"`
 	CreatedAt time.Time        `json:"created_at"`
 	UpdatedAt time.Time        `json:"updated_at"`

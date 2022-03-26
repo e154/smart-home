@@ -41,7 +41,7 @@ type IEntity interface {
 	Search(query string, limit, offset int64) (list []*m.Entity, total int64, err error)
 	AppendMetric(entityId common.EntityId, metric m.Metric) (err error)
 	DeleteMetric(entityId common.EntityId, metric m.Metric) (err error)
-	preloadMetric(ver *m.Entity) (err error)
+	preloadMetric(ver *m.Entity)
 	fromDb(dbVer *db.Entity) (ver *m.Entity)
 	toDb(ver *m.Entity) (dbVer *db.Entity)
 }
@@ -366,7 +366,9 @@ func (n *Entity) DeleteMetric(entityId common.EntityId, metric m.Metric) (err er
 	return
 }
 
-func (n *Entity) preloadMetric(ver *m.Entity) (err error) {
+func (n *Entity) preloadMetric(ver *m.Entity) {
+
+	var err error
 
 	// load preview metrics data
 	if ver.Metrics == nil || len(ver.Metrics) == 0 {
@@ -387,7 +389,6 @@ func (n *Entity) preloadMetric(ver *m.Entity) (err error) {
 
 		ver.Metrics[i].RangesByType()
 	}
-	return
 }
 
 func (n *Entity) fromDb(dbVer *db.Entity) (ver *m.Entity) {
@@ -453,20 +454,20 @@ func (n *Entity) fromDb(dbVer *db.Entity) (ver *m.Entity) {
 	// deserialize payload
 	b, _ := dbVer.Payload.MarshalJSON()
 	payload := m.EntityPayload{}
-	json.Unmarshal(b, &payload)
+	_ = json.Unmarshal(b, &payload)
 	ver.Attributes = payload.AttributeSignature
 
 	// deserialize settings
 	b, _ = dbVer.Settings.MarshalJSON()
 	settings := m.EntitySettings{}
-	json.Unmarshal(b, &settings)
+	_ = json.Unmarshal(b, &settings)
 	ver.Settings = settings.Settings
 
 	// storage
 	if len(dbVer.Storage) > 0 {
 		data := map[string]interface{}{}
-		json.Unmarshal(dbVer.Storage[0].Attributes, &data)
-		ver.Attributes.Deserialize(data)
+		_ = json.Unmarshal(dbVer.Storage[0].Attributes, &data)
+		_, _ = ver.Attributes.Deserialize(data)
 	}
 
 	return
@@ -498,13 +499,13 @@ func (n *Entity) toDb(ver *m.Entity) (dbVer *db.Entity) {
 	b, _ := json.Marshal(m.EntityPayload{
 		AttributeSignature: ver.Attributes.Signature(),
 	})
-	dbVer.Payload.UnmarshalJSON(b)
+	_ = dbVer.Payload.UnmarshalJSON(b)
 
 	// serialize settings
 	b, _ = json.Marshal(m.EntitySettings{
 		Settings: ver.Settings,
 	})
-	dbVer.Settings.UnmarshalJSON(b)
+	_ = dbVer.Settings.UnmarshalJSON(b)
 
 	// storage
 	// ...
