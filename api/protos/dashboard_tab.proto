@@ -1,0 +1,158 @@
+syntax = "proto3";
+
+package api;
+option go_package = "/api";
+
+import "google/api/annotations.proto";
+import "protoc-gen-swagger/options/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+import "dashboard_card.proto";
+import "pagination.proto";
+
+message DashboardTab {
+  int64 id = 1;
+  string name = 2;
+  int32 column_width = 3;
+  int32 gap = 4;
+  string background = 5;
+  string icon = 6;
+  bool enabled = 7;
+  int32 weight = 8;
+  int64 dashboard_id = 9;
+  repeated DashboardCard cards = 10;
+  google.protobuf.Timestamp created_at = 99;
+  google.protobuf.Timestamp  updated_at = 100;
+}
+
+message DashboardTabShort {
+  int64 id = 1;
+  string name = 2;
+  int32 column_width = 3;
+  int32 gap = 4;
+  string background = 5;
+  string icon = 6;
+  bool enabled = 7;
+  int32 weight = 8;
+  int64 dashboard_id = 9;
+  google.protobuf.Timestamp created_at = 99;
+  google.protobuf.Timestamp  updated_at = 100;
+}
+
+message NewDashboardTabRequest {
+  string name = 2;
+  int32 column_width = 3;
+  int32 gap = 4;
+  string background = 5;
+  string icon = 6;
+  bool enabled = 7;
+  int32 weight = 8;
+  int64 dashboard_id = 9;
+}
+
+message UpdateDashboardTabRequest {
+  int64 id = 1;
+  string name = 2;
+  int32 column_width = 3;
+  int32 gap = 4;
+  string background = 5;
+  string icon = 6;
+  bool enabled = 7;
+  int32 weight = 8;
+  int64 dashboard_id = 9;
+}
+
+message GetDashboardTabRequest {
+  int64 id = 1;
+}
+
+message GetDashboardTabListResult {
+  repeated DashboardTabShort items = 1;
+  Meta meta = 2;
+}
+
+message DeleteDashboardTabRequest {
+  int64 id = 1;
+}
+
+service DashboardTabService {
+
+  // add new dashboard_tab
+  rpc AddDashboardTab (NewDashboardTabRequest) returns (DashboardTab){
+    option (google.api.http) = {
+      post: "/v1/dashboard_tab"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // update dashboard
+  rpc UpdateDashboardTab (UpdateDashboardTabRequest) returns (DashboardTab){
+    option (google.api.http) = {
+      put: "/v1/dashboard_tab/{id}"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // get dashboard_tab by id
+  rpc GetDashboardTabById (GetDashboardTabRequest) returns (DashboardTab){
+    option (google.api.http) = {
+      get: "/v1/dashboard_tab/{id}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // get dashboard_tab list
+  rpc GetDashboardTabList (PaginationRequest) returns (GetDashboardTabListResult){
+    option (google.api.http) = {
+      get: "/v1/dashboard_tabs"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // delete dashboard_tab
+  rpc DeleteDashboardTab (DeleteDashboardTabRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      delete: "/v1/dashboard_tab/{id}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+}
