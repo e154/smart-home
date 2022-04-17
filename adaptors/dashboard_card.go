@@ -121,6 +121,13 @@ func (n *DashboardCard) fromDb(dbVer *db.DashboardCard) (ver *m.DashboardCard) {
 		UpdatedAt:      dbVer.UpdatedAt,
 	}
 
+	// items
+	itemAdaptor := GetDashboardCardItemAdaptor(n.db)
+	for _, dbAction := range dbVer.Items {
+		item := itemAdaptor.fromDb(dbAction)
+		ver.Items = append(ver.Items, item)
+	}
+
 	return
 }
 
@@ -128,13 +135,13 @@ func (n *DashboardCard) toDb(ver *m.DashboardCard) (dbVer *db.DashboardCard) {
 	dbVer = &db.DashboardCard{
 		Id:             ver.Id,
 		Title:          ver.Title,
-		Height:         ver.Height,
-		Width:          ver.Width,
-		Background:     ver.Background,
 		Weight:         ver.Weight,
+		Width:          ver.Width,
+		Height:         ver.Height,
+		Background:     ver.Background,
 		Enabled:        ver.Enabled,
 		DashboardTabId: ver.DashboardTabId,
-		Payload:        []byte("{}"), //todo
+		Payload:        ver.Payload, //todo
 	}
 
 	return

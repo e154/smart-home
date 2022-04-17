@@ -71,6 +71,7 @@ func (n DashboardTabs) GetById(id int64) (tab *DashboardTab, err error) {
 	err = n.Db.Model(tab).
 		Where("id = ?", id).
 		Preload("Cards").
+		Preload("Cards.Items").
 		First(&tab).Error
 
 	if err != nil {
@@ -122,6 +123,7 @@ func (n *DashboardTabs) List(limit, offset int64, orderBy, sort string) (list []
 	list = make([]*DashboardTab, 0)
 	q := n.Db.
 		Preload("Cards").
+		Preload("Cards.Items").
 		Limit(limit).
 		Offset(offset)
 

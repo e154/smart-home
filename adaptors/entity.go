@@ -33,6 +33,7 @@ import (
 type IEntity interface {
 	Add(ver *m.Entity) (err error)
 	GetById(id common.EntityId) (ver *m.Entity, err error)
+	GetByIds(ids []common.EntityId) (ver []*m.Entity, err error)
 	Delete(id common.EntityId) (err error)
 	List(limit, offset int64, orderBy, sort string, autoLoad bool) (list []*m.Entity, total int64, err error)
 	GetByType(t string, limit, offset int64) (list []*m.Entity, err error)
@@ -138,6 +139,21 @@ func (n *Entity) GetById(id common.EntityId) (ver *m.Entity, err error) {
 	ver = n.fromDb(dbVer)
 
 	n.preloadMetric(ver)
+
+	return
+}
+
+// GetByIds ...
+func (n *Entity) GetByIds(ids []common.EntityId) (list []*m.Entity, err error) {
+
+	var dbList []*db.Entity
+	if dbList, err = n.table.GetByIds(ids); err != nil {
+		return
+	}
+	list = make([]*m.Entity, len(dbList))
+	for i, dbVer := range dbList {
+		list[i] = n.fromDb(dbVer)
+	}
 
 	return
 }

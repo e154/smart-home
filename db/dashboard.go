@@ -69,6 +69,7 @@ func (n Dashboards) GetById(id int64) (board *Dashboard, err error) {
 		Preload("Area").
 		Preload("Tabs").
 		Preload("Tabs.Cards").
+		Preload("Tabs.Cards.Items").
 		First(&board).Error
 
 	if err != nil {
@@ -118,6 +119,7 @@ func (n *Dashboards) List(limit, offset int64, orderBy, sort string) (list []*Da
 		Preload("Area").
 		Preload("Tabs").
 		Preload("Tabs.Cards").
+		Preload("Tabs.Cards.Items").
 		Limit(limit).
 		Offset(offset)
 

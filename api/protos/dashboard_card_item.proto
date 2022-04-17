@@ -9,67 +9,60 @@ import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
 import "pagination.proto";
-import "dashboard_card_item.proto";
-import "entity.proto";
 
-message DashboardCard {
+message DashboardCardItem {
   int64 id = 1;
   string title = 2;
-  int32 height = 3;
-  int32 width = 4;
-  string background = 5;
-  int32 weight = 6;
-  bool enabled = 7;
-  int64 dashboard_tab_id = 8;
-  string payload = 9;
-  repeated DashboardCardItem items = 10;
-  map<string, Entity> entities = 11;
+  string type = 3;
+  int32 weight = 4;
+  bool enabled = 5;
+  int64 dashboard_card_id = 6;
+  string entity_id = 7;
+  string payload = 8;
   google.protobuf.Timestamp created_at = 99;
   google.protobuf.Timestamp  updated_at = 100;
 }
 
-message NewDashboardCardRequest {
+message NewDashboardCardItemRequest {
   string title = 2;
-  int32 height = 3;
-  int32 width = 4;
-  string background = 5;
-  int32 weight = 6;
-  bool enabled = 7;
-  int64 dashboard_tab_id = 8;
-  string payload = 9;
+  string type = 3;
+  int32 weight = 4;
+  bool enabled = 5;
+  int64 dashboard_card_id = 6;
+  string entity_id = 7;
+  string payload = 8;
 }
 
-message UpdateDashboardCardRequest {
+message UpdateDashboardCardItemRequest {
   int64 id = 1;
   string title = 2;
-  int32 height = 3;
-  int32 width = 4;
-  string background = 5;
-  int32 weight = 6;
-  bool enabled = 7;
-  int64 dashboard_tab_id = 8;
-  string payload = 9;
+  string type = 3;
+  int32 weight = 4;
+  bool enabled = 5;
+  int64 dashboard_card_id = 6;
+  string entity_id = 7;
+  string payload = 8;
 }
 
-message GetDashboardCardRequest {
+message GetDashboardCardItemRequest {
   int64 id = 1;
 }
 
-message GetDashboardCardListResult {
-  repeated DashboardCard items = 1;
+message GetDashboardCardItemListResult {
+  repeated DashboardCardItem items = 1;
   Meta meta = 2;
 }
 
-message DeleteDashboardCardRequest {
+message DeleteDashboardCardItemRequest {
   int64 id = 1;
 }
 
-service DashboardCardService {
+service DashboardCardItemService {
 
   // add new dashboard_card
-  rpc AddDashboardCard (NewDashboardCardRequest) returns (DashboardCard){
+  rpc AddDashboardCardItem (NewDashboardCardItemRequest) returns (DashboardCardItem){
     option (google.api.http) = {
-      post: "/v1/dashboard_card"
+      post: "/v1/dashboard_card_item"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
@@ -82,10 +75,10 @@ service DashboardCardService {
     };
   }
 
-  // update dashboard_card
-  rpc UpdateDashboardCard (UpdateDashboardCardRequest) returns (DashboardCard){
+  // update dashboard_card_item
+  rpc UpdateDashboardCardItem (UpdateDashboardCardItemRequest) returns (DashboardCardItem){
     option (google.api.http) = {
-      put: "/v1/dashboard_card/{id}"
+      put: "/v1/dashboard_card_item/{id}"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
@@ -98,10 +91,10 @@ service DashboardCardService {
     };
   }
 
-  // get dashboard_card by id
-  rpc GetDashboardCardById (GetDashboardCardRequest) returns (DashboardCard){
+  // get dashboard_card_item by id
+  rpc GetDashboardCardItemById (GetDashboardCardItemRequest) returns (DashboardCardItem){
     option (google.api.http) = {
-      get: "/v1/dashboard_card/{id}"
+      get: "/v1/dashboard_card_item/{id}"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
       security: {
@@ -113,8 +106,8 @@ service DashboardCardService {
     };
   }
 
-  // get dashboard_card list
-  rpc GetDashboardCardList (PaginationRequest) returns (GetDashboardCardListResult){
+  // get dashboard_card_item list
+  rpc GetDashboardCardItemList (PaginationRequest) returns (GetDashboardCardItemListResult){
     option (google.api.http) = {
       get: "/v1/dashboard_cards"
     };
@@ -128,10 +121,10 @@ service DashboardCardService {
     };
   }
 
-  // delete dashboard_card
-  rpc DeleteDashboardCard (DeleteDashboardCardRequest) returns (google.protobuf.Empty){
+  // delete dashboard_card_item
+  rpc DeleteDashboardCardItem (DeleteDashboardCardItemRequest) returns (google.protobuf.Empty){
     option (google.api.http) = {
-      delete: "/v1/dashboard_card/{id}"
+      delete: "/v1/dashboard_card_item/{id}"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
       security: {

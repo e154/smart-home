@@ -66,7 +66,10 @@ func (t *DashboardTabEndpoint) GetById(ctx context.Context, id int64) (tab *m.Da
 
 	if tab, err = t.adaptors.DashboardTab.GetById(id); err != nil {
 		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
 	}
+
+	err = t.preloadEntities(tab)
 
 	return
 }
@@ -108,7 +111,13 @@ func (t *DashboardTabEndpoint) GetList(ctx context.Context, pagination common.Pa
 	list, total, err = t.adaptors.DashboardTab.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
 	if err != nil {
 		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
 	}
+
+	for _, tab := range list {
+		err = t.preloadEntities(tab)
+	}
+
 	return
 }
 
@@ -128,5 +137,35 @@ func (t *DashboardTabEndpoint) Delete(ctx context.Context, id int64) (err error)
 	if err != nil {
 		err = errors.Wrap(common.ErrInternal, err.Error())
 	}
+	return
+}
+
+func (c *DashboardTabEndpoint) preloadEntities(tab *m.DashboardTab) (err error) {
+
+	// get child entities
+	entityMap := make(map[common.EntityId]*m.Entity)
+	for _, card := range tab.Cards {
+		for _, item := range card.Items {
+			entityMap[item.EntityId] = nil
+		}
+	}
+
+	entityIds := make([]common.EntityId, 0, len(entityMap))
+	for entityId, _ := range entityMap {
+		entityIds = append(entityIds, entityId)
+	}
+
+	var entites []*m.Entity
+	if entites, err = c.adaptors.Entity.GetByIds(entityIds); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
+	}
+
+	for _, entity := range entites {
+		entityMap[entity.Id] = entity
+	}
+
+	tab.Entities = entityMap
+
 	return
 }

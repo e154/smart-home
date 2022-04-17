@@ -20,7 +20,6 @@ package endpoint
 
 import (
 	"context"
-
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/go-playground/validator/v10"
@@ -66,7 +65,10 @@ func (c *DashboardCardEndpoint) GetById(ctx context.Context, id int64) (card *m.
 
 	if card, err = c.adaptors.DashboardCard.GetById(id); err != nil {
 		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
 	}
+
+	err = c.preloadEntities(card)
 
 	return
 }
@@ -108,7 +110,13 @@ func (c *DashboardCardEndpoint) GetList(ctx context.Context, pagination common.P
 	list, total, err = c.adaptors.DashboardCard.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
 	if err != nil {
 		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
 	}
+
+	for _, card := range list {
+		err = c.preloadEntities(card)
+	}
+
 	return
 }
 
@@ -128,5 +136,33 @@ func (c *DashboardCardEndpoint) Delete(ctx context.Context, id int64) (err error
 	if err != nil {
 		err = errors.Wrap(common.ErrInternal, err.Error())
 	}
+	return
+}
+
+func (c *DashboardCardEndpoint) preloadEntities(card *m.DashboardCard) (err error) {
+
+	// get child entities
+	entityMap := make(map[common.EntityId]*m.Entity)
+	for _, item := range card.Items {
+		entityMap[item.EntityId] = nil
+	}
+
+	entityIds := make([]common.EntityId, 0, len(entityMap))
+	for entityId, _ := range entityMap {
+		entityIds = append(entityIds, entityId)
+	}
+
+	var entites []*m.Entity
+	if entites, err = c.adaptors.Entity.GetByIds(entityIds); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
+	}
+
+	for _, entity := range entites {
+		entityMap[entity.Id] = entity
+	}
+
+	card.Entities = entityMap
+
 	return
 }

@@ -11,6 +11,7 @@ import "google/protobuf/timestamp.proto";
 import "area.proto";
 import "dashboard_tab.proto";
 import "pagination.proto";
+import "entity.proto";
 
 message Dashboard {
   int64 id = 1;
@@ -20,6 +21,7 @@ message Dashboard {
   optional int64 area_id = 5;
   optional Area area = 6;
   repeated DashboardTab tabs = 7;
+  map<string, Entity> entities = 11;
   google.protobuf.Timestamp created_at = 99;
   google.protobuf.Timestamp  updated_at = 100;
 }

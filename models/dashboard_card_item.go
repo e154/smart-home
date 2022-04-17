@@ -1,0 +1,23 @@
+package models
+
+import (
+	"encoding/json"
+	"github.com/e154/smart-home/common"
+	"time"
+)
+
+// DashboardCardItem ...
+type DashboardCardItem struct {
+	Id              int64           `json:"id"`
+	Title           string          `json:"title" validate:"required"`
+	Type            string          `json:"type" validate:"required"`
+	Weight          int             `json:"weight"`
+	Enabled         bool            `json:"enabled"`
+	DashboardCardId int64           `json:"dashboard_card_id" validate:"required"`
+	DashboardCard   *DashboardCard  `json:"dashboard_card"`
+	EntityId        common.EntityId `json:"entity_id" validate:"required"`
+	Entity          *Entity         `json:"entity"`
+	Payload         json.RawMessage `json:"payload"`
+	CreatedAt       time.Time       `json:"created_at"`
+	UpdatedAt       time.Time       `json:"updated_at"`
+}

@@ -93,6 +93,7 @@ func ToDashboard(ver *m.Dashboard) (obj *api.Dashboard) {
 		AreaId:      ver.AreaId,
 		Area:        ToArea(ver.Area),
 		Tabs:        make([]*api.DashboardTab, 0, len(ver.Tabs)),
+		Entities:    make(map[string]*api.Entity),
 		CreatedAt:   timestamppb.New(ver.CreatedAt),
 		UpdatedAt:   timestamppb.New(ver.UpdatedAt),
 	}
@@ -100,6 +101,11 @@ func ToDashboard(ver *m.Dashboard) (obj *api.Dashboard) {
 	// Tabs
 	for _, tab := range ver.Tabs {
 		obj.Tabs = append(obj.Tabs, ToDashboardTab(tab))
+	}
+
+	// Entities
+	for key, entity := range ver.Entities {
+		obj.Entities[key.String()] = ToEntity(entity)
 	}
 
 	return

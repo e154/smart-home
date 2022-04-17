@@ -10,6 +10,7 @@ import "google/protobuf/timestamp.proto";
 
 import "dashboard_card.proto";
 import "pagination.proto";
+import "entity.proto";
 
 message DashboardTab {
   int64 id = 1;
@@ -22,6 +23,7 @@ message DashboardTab {
   int32 weight = 8;
   int64 dashboard_id = 9;
   repeated DashboardCard cards = 10;
+  map<string, Entity> entities = 11;
   google.protobuf.Timestamp created_at = 99;
   google.protobuf.Timestamp  updated_at = 100;
 }

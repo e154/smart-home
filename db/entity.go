@@ -133,6 +133,31 @@ func (n Entities) GetById(id common.EntityId) (v *Entity, err error) {
 	return
 }
 
+// GetByIds ...
+func (n Entities) GetByIds(ids []common.EntityId) (list []*Entity, err error) {
+
+	list = make([]*Entity, 0)
+	err = n.Db.Model(Entity{}).
+		Where("id IN (?)", ids).
+		Preload("Image").
+		Preload("States").
+		Preload("States.Image").
+		Preload("Actions").
+		Preload("Actions.Image").
+		Preload("Actions.Script").
+		Preload("Area").
+		Preload("Metrics").
+		Preload("Scripts").
+		Find(&list).Error
+
+	if err != nil {
+		err = errors.Wrap(err, "GetByIds failed")
+		return
+	}
+
+	return
+}
+
 // Delete ...
 func (n Entities) Delete(id common.EntityId) (err error) {
 

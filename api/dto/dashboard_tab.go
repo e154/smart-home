@@ -104,6 +104,7 @@ func ToDashboardTab(ver *m.DashboardTab) (obj *api.DashboardTab) {
 		Weight:      int32(ver.Weight),
 		DashboardId: ver.DashboardId,
 		Cards:       make([]*api.DashboardCard, 0, len(ver.Cards)),
+		Entities:    make(map[string]*api.Entity),
 		CreatedAt:   timestamppb.New(ver.CreatedAt),
 		UpdatedAt:   timestamppb.New(ver.UpdatedAt),
 	}
@@ -111,6 +112,11 @@ func ToDashboardTab(ver *m.DashboardTab) (obj *api.DashboardTab) {
 	// Cards
 	for _, card := range ver.Cards {
 		obj.Cards = append(obj.Cards, ToDashboardCard(card))
+	}
+
+	// Entities
+	for key, entity := range ver.Entities {
+		obj.Entities[key.String()] = ToEntity(entity)
 	}
 
 	return

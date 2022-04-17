@@ -42,7 +42,7 @@ func (r DashboardCard) AddDashboardCard(obj *api.NewDashboardCardRequest) (ver *
 		Weight:         int(obj.Weight),
 		Enabled:        obj.Enabled,
 		DashboardTabId: obj.DashboardTabId,
-		//Payload:        obj.Payload, //todo
+		Payload:        nil, //todo
 	}
 	return
 }
@@ -57,7 +57,7 @@ func (r DashboardCard) UpdateDashboardCard(obj *api.UpdateDashboardCardRequest) 
 		Weight:         int(obj.Weight),
 		Enabled:        obj.Enabled,
 		DashboardTabId: obj.DashboardTabId,
-		//Payload:        nil, //todo
+		Payload:        nil, //todo
 	}
 	return
 }
@@ -102,9 +102,21 @@ func ToDashboardCard(ver *m.DashboardCard) (obj *api.DashboardCard) {
 		Weight:         int32(ver.Weight),
 		Enabled:        ver.Enabled,
 		DashboardTabId: ver.DashboardTabId,
-		//Payload:        ver.Payload, //todo
-		CreatedAt: timestamppb.New(ver.CreatedAt),
-		UpdatedAt: nil,
+		Payload:        "", //todo
+		Entities:       make(map[string]*api.Entity),
+		CreatedAt:      timestamppb.New(ver.CreatedAt),
+		UpdatedAt:      nil,
 	}
+
+	// Items
+	for _, item := range ver.Items {
+		obj.Items = append(obj.Items, ToDashboardCardItem(item))
+	}
+
+	// Entities
+	for key, entity := range ver.Entities {
+		obj.Entities[key.String()] = ToEntity(entity)
+	}
+
 	return
 }

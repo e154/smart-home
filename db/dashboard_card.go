@@ -43,6 +43,7 @@ type DashboardCard struct {
 	Enabled        bool
 	DashboardTabId int64
 	DashboardTab   *DashboardTab
+	Items          []*DashboardCardItem
 	Payload        json.RawMessage `gorm:"type:jsonb;not null"`
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
@@ -66,7 +67,12 @@ func (n DashboardCards) Add(card *DashboardCard) (id int64, err error) {
 // GetById ...
 func (n DashboardCards) GetById(id int64) (card *DashboardCard, err error) {
 	card = &DashboardCard{Id: id}
-	if err = n.Db.First(&card).Error; err != nil {
+	err = n.Db.Model(card).
+		Preload("Items").
+		First(&card).
+		Error
+
+	if err != nil {
 		err = errors.Wrap(err, "getById failed")
 	}
 	return
@@ -109,6 +115,7 @@ func (n *DashboardCards) List(limit, offset int64, orderBy, sort string) (list [
 
 	list = make([]*DashboardCard, 0)
 	q := n.Db.Model(&DashboardCard{}).
+		Preload("Items").
 		Limit(limit).
 		Offset(offset)
 
