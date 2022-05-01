@@ -17,10 +17,10 @@ message DashboardCardItem {
   int32 weight = 4;
   bool enabled = 5;
   int64 dashboard_card_id = 6;
-  string entity_id = 7;
-  string payload = 8;
+  optional string entity_id = 7;
+  bytes payload = 8;
   google.protobuf.Timestamp created_at = 99;
-  google.protobuf.Timestamp  updated_at = 100;
+  google.protobuf.Timestamp updated_at = 100;
 }
 
 message NewDashboardCardItemRequest {
@@ -29,8 +29,8 @@ message NewDashboardCardItemRequest {
   int32 weight = 4;
   bool enabled = 5;
   int64 dashboard_card_id = 6;
-  string entity_id = 7;
-  string payload = 8;
+  optional string entity_id = 7;
+  bytes payload = 8;
 }
 
 message UpdateDashboardCardItemRequest {
@@ -40,8 +40,8 @@ message UpdateDashboardCardItemRequest {
   int32 weight = 4;
   bool enabled = 5;
   int64 dashboard_card_id = 6;
-  string entity_id = 7;
-  string payload = 8;
+  optional string entity_id = 7;
+  bytes payload = 8;
 }
 
 message GetDashboardCardItemRequest {

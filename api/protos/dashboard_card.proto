@@ -21,7 +21,7 @@ message DashboardCard {
   int32 weight = 6;
   bool enabled = 7;
   int64 dashboard_tab_id = 8;
-  string payload = 9;
+  bytes payload = 9;
   repeated DashboardCardItem items = 10;
   map<string, Entity> entities = 11;
   google.protobuf.Timestamp created_at = 99;
@@ -36,7 +36,7 @@ message NewDashboardCardRequest {
   int32 weight = 6;
   bool enabled = 7;
   int64 dashboard_tab_id = 8;
-  string payload = 9;
+  bytes payload = 9;
 }
 
 message UpdateDashboardCardRequest {
@@ -48,7 +48,17 @@ message UpdateDashboardCardRequest {
   int32 weight = 6;
   bool enabled = 7;
   int64 dashboard_tab_id = 8;
-  string payload = 9;
+  bytes payload = 9;
+  message Item {
+    int64 id = 1;
+    string title = 2;
+    string type = 3;
+    int32 weight = 4;
+    bool enabled = 5;
+    optional string entity_id = 7;
+    bytes payload = 8;
+  }
+  repeated Item items = 10;
 }
 
 message GetDashboardCardRequest {

@@ -146,7 +146,9 @@ func (c *DashboardEndpoint) preloadEntities(board *m.Dashboard) (err error) {
 	for _, tab := range board.Tabs {
 		for _, card := range tab.Cards {
 			for _, item := range card.Items {
-				entityMap[item.EntityId] = nil
+				if item.EntityId != nil {
+					entityMap[*item.EntityId] = nil
+				}
 			}
 		}
 	}

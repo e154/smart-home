@@ -21,6 +21,7 @@ package db
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/e154/smart-home/common"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -73,6 +74,10 @@ func (n DashboardCards) GetById(id int64) (card *DashboardCard, err error) {
 		Error
 
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("id \"%s\"", id))
+			return
+		}
 		err = errors.Wrap(err, "getById failed")
 	}
 	return

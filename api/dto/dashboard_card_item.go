@@ -40,8 +40,11 @@ func (r DashboardCardItem) AddDashboardCardItem(obj *api.NewDashboardCardItemReq
 		Weight:          int(obj.Weight),
 		Enabled:         obj.Enabled,
 		DashboardCardId: obj.DashboardCardId,
-		EntityId:        common.EntityId(obj.EntityId),
-		Payload:         nil, //todo
+		Payload:         obj.Payload,
+	}
+
+	if obj.EntityId != nil && *obj.EntityId != "" {
+		ver.EntityId = common.NewEntityId(*obj.EntityId)
 	}
 	return
 }
@@ -54,8 +57,11 @@ func (r DashboardCardItem) UpdateDashboardCardItem(obj *api.UpdateDashboardCardI
 		Weight:          int(obj.Weight),
 		Enabled:         obj.Enabled,
 		DashboardCardId: obj.DashboardCardId,
-		EntityId:        common.EntityId(obj.EntityId),
-		Payload:         nil, //todo
+		Payload:         obj.Payload,
+	}
+
+	if obj.EntityId != nil && *obj.EntityId != "" {
+		ver.EntityId = common.NewEntityId(*obj.EntityId)
 	}
 	return
 }
@@ -98,10 +104,14 @@ func ToDashboardCardItem(ver *m.DashboardCardItem) (obj *api.DashboardCardItem) 
 		Weight:          int32(ver.Weight),
 		Enabled:         ver.Enabled,
 		DashboardCardId: ver.DashboardCardId,
-		EntityId:        ver.EntityId.String(),
-		Payload:         "", //todo
+		Payload:         ver.Payload,
 		CreatedAt:       timestamppb.New(ver.CreatedAt),
 		UpdatedAt:       timestamppb.New(ver.UpdatedAt),
 	}
+
+	if obj.EntityId != nil && *obj.EntityId != "" {
+		ver.EntityId = common.NewEntityId(*obj.EntityId)
+	}
+
 	return
 }

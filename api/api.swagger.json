@@ -704,7 +704,14 @@
                   "format": "int64"
                 },
                 "payload": {
-                  "type": "string"
+                  "type": "string",
+                  "format": "byte"
+                },
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/UpdateDashboardCardRequestItem"
+                  }
                 }
               }
             }
@@ -882,7 +889,8 @@
                   "type": "string"
                 },
                 "payload": {
-                  "type": "string"
+                  "type": "string",
+                  "format": "byte"
                 }
               }
             }
@@ -4509,6 +4517,35 @@
         }
       }
     },
+    "UpdateDashboardCardRequestItem": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "weight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "entityId": {
+          "type": "string"
+        },
+        "payload": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
     "UpdateRoleAccessListRequestAccessListDiff": {
       "type": "object",
       "properties": {
@@ -4801,7 +4838,8 @@
           "format": "int64"
         },
         "payload": {
-          "type": "string"
+          "type": "string",
+          "format": "byte"
         },
         "items": {
           "type": "array",
@@ -4853,7 +4891,8 @@
           "type": "string"
         },
         "payload": {
-          "type": "string"
+          "type": "string",
+          "format": "byte"
         },
         "createdAt": {
           "type": "string",
@@ -5696,7 +5735,8 @@
           "type": "string"
         },
         "payload": {
-          "type": "string"
+          "type": "string",
+          "format": "byte"
         }
       }
     },
@@ -5729,7 +5769,8 @@
           "format": "int64"
         },
         "payload": {
-          "type": "string"
+          "type": "string",
+          "format": "byte"
         }
       }
     },

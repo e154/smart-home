@@ -19,9 +19,11 @@
 package adaptors
 
 import (
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 )
 
 type IDashboardCard interface {
@@ -71,8 +73,39 @@ func (n *DashboardCard) GetById(mapId int64) (ver *m.DashboardCard, err error) {
 
 // Update ...
 func (n *DashboardCard) Update(ver *m.DashboardCard) (err error) {
+
+	transaction := true
+	tx := n.db.Begin()
+	if err = tx.Error; err != nil {
+		tx = n.db
+		transaction = false
+	}
+	defer func() {
+		if err != nil && transaction {
+			err = errors.Wrap(common.ErrTransactionError, err.Error())
+			tx.Rollback()
+			return
+		}
+		if transaction {
+			err = tx.Commit().Error
+		}
+	}()
+
+	table := db.DashboardCards{Db: tx}
+
 	dbVer := n.toDb(ver)
-	err = n.table.Update(dbVer)
+	if err = table.Update(dbVer); err != nil {
+		return
+	}
+
+	// items
+	itemAdaptor := GetDashboardCardItemAdaptor(tx)
+	for _, item := range ver.Items {
+		if err = itemAdaptor.Update(item); err != nil {
+			return
+		}
+	}
+
 	return
 }
 
@@ -116,7 +149,7 @@ func (n *DashboardCard) fromDb(dbVer *db.DashboardCard) (ver *m.DashboardCard) {
 		Weight:         dbVer.Weight,
 		Enabled:        dbVer.Enabled,
 		DashboardTabId: dbVer.DashboardTabId,
-		Payload:        dbVer.Payload, //todo
+		Payload:        dbVer.Payload,
 		CreatedAt:      dbVer.CreatedAt,
 		UpdatedAt:      dbVer.UpdatedAt,
 	}
@@ -141,7 +174,14 @@ func (n *DashboardCard) toDb(ver *m.DashboardCard) (dbVer *db.DashboardCard) {
 		Background:     ver.Background,
 		Enabled:        ver.Enabled,
 		DashboardTabId: ver.DashboardTabId,
-		Payload:        ver.Payload, //todo
+		Payload:        ver.Payload,
+		Items:          make([]*db.DashboardCardItem, 0, len(ver.Items)),
+	}
+
+	// items
+	itemAdaptor := GetDashboardCardItemAdaptor(n.db)
+	for _, item := range ver.Items {
+		dbVer.Items = append(dbVer.Items, itemAdaptor.toDb(item))
 	}
 
 	return

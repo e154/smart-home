@@ -70,7 +70,7 @@ create table dashboard_card_items
         constraint dashboard_card_item_2_dashboard_card_fk
             references dashboard_cards
             on update cascade on delete cascade,
-    entity_id         text                                   not null
+    entity_id         text
         constraint dashboard_card_item_2_entities_fk
             references entities (id)
             on update cascade on delete cascade,

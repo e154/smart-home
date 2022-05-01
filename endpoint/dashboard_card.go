@@ -144,7 +144,9 @@ func (c *DashboardCardEndpoint) preloadEntities(card *m.DashboardCard) (err erro
 	// get child entities
 	entityMap := make(map[common.EntityId]*m.Entity)
 	for _, item := range card.Items {
-		entityMap[item.EntityId] = nil
+		if item.EntityId != nil {
+			entityMap[*item.EntityId] = nil
+		}
 	}
 
 	entityIds := make([]common.EntityId, 0, len(entityMap))

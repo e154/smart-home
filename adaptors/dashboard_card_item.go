@@ -113,7 +113,7 @@ func (n *DashboardCardItem) fromDb(dbVer *db.DashboardCardItem) (ver *m.Dashboar
 		Type:            dbVer.Type,
 		Weight:          dbVer.Weight,
 		Enabled:         dbVer.Enabled,
-		Payload:         dbVer.Payload, //todo
+		Payload:         dbVer.Payload,
 		EntityId:        dbVer.EntityId,
 		DashboardCardId: dbVer.DashboardCardId,
 		CreatedAt:       dbVer.CreatedAt,
@@ -130,7 +130,7 @@ func (n *DashboardCardItem) toDb(ver *m.DashboardCardItem) (dbVer *db.DashboardC
 		Type:            ver.Type,
 		Weight:          ver.Weight,
 		Enabled:         ver.Enabled,
-		Payload:         ver.Payload, //todo
+		Payload:         ver.Payload,
 		EntityId:        ver.EntityId,
 		DashboardCardId: ver.DashboardCardId,
 	}

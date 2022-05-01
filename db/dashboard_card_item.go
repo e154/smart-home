@@ -42,8 +42,7 @@ type DashboardCardItem struct {
 	Enabled         bool
 	DashboardCardId int64
 	DashboardCard   *DashboardCard
-	EntityId        common.EntityId
-	Entity          *Entity
+	EntityId        *common.EntityId
 	Payload         json.RawMessage `gorm:"type:jsonb;not null"`
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
@@ -55,19 +54,19 @@ func (d *DashboardCardItem) TableName() string {
 }
 
 // Add ...
-func (n DashboardCardItems) Add(card *DashboardCardItem) (id int64, err error) {
-	if err = n.Db.Create(&card).Error; err != nil {
+func (n DashboardCardItems) Add(item *DashboardCardItem) (id int64, err error) {
+	if err = n.Db.Create(&item).Error; err != nil {
 		err = errors.Wrap(err, "add failed")
 		return
 	}
-	id = card.Id
+	id = item.Id
 	return
 }
 
 // GetById ...
-func (n DashboardCardItems) GetById(id int64) (card *DashboardCardItem, err error) {
-	card = &DashboardCardItem{Id: id}
-	if err = n.Db.First(&card).Error; err != nil {
+func (n DashboardCardItems) GetById(id int64) (item *DashboardCardItem, err error) {
+	item = &DashboardCardItem{Id: id}
+	if err = n.Db.First(&item).Error; err != nil {
 		err = errors.Wrap(err, "getById failed")
 	}
 	return
