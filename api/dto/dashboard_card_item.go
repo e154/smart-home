@@ -109,8 +109,8 @@ func ToDashboardCardItem(ver *m.DashboardCardItem) (obj *api.DashboardCardItem) 
 		UpdatedAt:       timestamppb.New(ver.UpdatedAt),
 	}
 
-	if obj.EntityId != nil && *obj.EntityId != "" {
-		ver.EntityId = common.NewEntityId(*obj.EntityId)
+	if ver.EntityId != nil && *ver.EntityId != "" {
+		obj.EntityId = common.String(string(*ver.EntityId))
 	}
 
 	return
