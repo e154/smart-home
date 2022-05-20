@@ -38,7 +38,7 @@ func Test1(t *testing.T) {
 
 	var script1 *m.Script
 	Convey("scripts run syn command", t, func(ctx C) {
-		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
+		err := container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService) {
 
@@ -61,5 +61,8 @@ func Test1(t *testing.T) {
 
 			So(state, ShouldEqual, "ok")
 		})
+		if err != nil {
+			fmt.Println(err.Error())
+		}
 	})
 }

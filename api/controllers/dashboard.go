@@ -21,8 +21,10 @@ package controllers
 import (
 	"context"
 
-	"github.com/e154/smart-home/api/stub/api"
 	"google.golang.org/protobuf/types/known/emptypb"
+
+	"github.com/e154/smart-home/api/dto"
+	"github.com/e154/smart-home/api/stub/api"
 )
 
 // ControllerDashboard ...
@@ -94,4 +96,15 @@ func (c ControllerDashboard) DeleteDashboard(ctx context.Context, req *api.Delet
 	}
 
 	return &emptypb.Empty{}, nil
+}
+
+// ImportDashboard ...
+func (c ControllerDashboard) ImportDashboard(ctx context.Context, req *api.Dashboard) (*api.Dashboard, error) {
+
+	board, err := c.endpoint.Dashboard.Import(ctx, dto.ImportDashboard(req))
+	if err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return c.dto.Dashboard.ToDashboard(board), nil
 }

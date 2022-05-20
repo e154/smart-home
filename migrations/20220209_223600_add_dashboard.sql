@@ -75,6 +75,8 @@ create table dashboard_card_items
             references entities (id)
             on update cascade on delete cascade,
     payload           jsonb                    default '{}'::jsonb,
+    hidden            bool                     default false not null,
+    frozen            bool                     default false not null,
     created_at        timestamp with time zone default CURRENT_TIMESTAMP,
     updated_at        timestamp with time zone default CURRENT_TIMESTAMP
 );

@@ -174,7 +174,8 @@ func (e *entityManager) SetState(id common.EntityId, params EntityStateParams) (
 	actor := item.(*actorInfo)
 
 	// store old state
-	actor.OldState = GetEventState(actor.Actor)
+	currentState := GetEventState(actor.Actor)
+	actor.CurrentState = &currentState
 
 	err = actor.Actor.SetState(params)
 
@@ -269,10 +270,11 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 		return
 	}
 
+	currentState := GetEventState(actor)
 	actorInfo := &actorInfo{
-		Actor:    actor,
-		quit:     make(chan struct{}),
-		OldState: GetEventState(actor),
+		Actor:        actor,
+		quit:         make(chan struct{}),
+		CurrentState: &currentState,
 	}
 	e.actors.Store(entityId, actorInfo)
 
@@ -345,6 +347,8 @@ func (e *entityManager) eventHandler(_ string, message interface{}) {
 		go e.eventDeletedEntity(msg)
 	case events.EventEntitySetState:
 		go e.eventEntitySetState(msg)
+	case events.EventGetLastState:
+		go e.eventLastState(msg)
 	}
 }
 
@@ -360,7 +364,13 @@ func (e *entityManager) eventStateChangedHandler(msg events.EventStateChanged) {
 		return
 	}
 
-	actor.OldState = msg.NewState
+	if actor.CurrentState != nil {
+		if actor.CurrentState.Compare(msg.NewState) {
+			return
+		}
+	}
+
+	actor.CurrentState = &msg.NewState
 
 	// store state to db
 	var state string
@@ -382,6 +392,30 @@ func (e *entityManager) eventStateChangedHandler(msg events.EventStateChanged) {
 			log.Error(err.Error())
 		}
 	}()
+}
+
+func (e *entityManager) eventLastState(msg events.EventGetLastState) {
+
+	item, ok := e.actors.Load(msg.EntityId)
+	if !ok {
+		return
+	}
+	actor := item.(*actorInfo)
+
+	if actor.CurrentState == nil {
+		currentState := GetEventState(actor.Actor)
+		actor.CurrentState = &currentState
+	}
+
+	info := actor.Actor.Info()
+
+	e.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
+		StorageSave: false,
+		PluginName:  info.PluginName,
+		EntityId:    info.Id,
+		OldState:    *actor.CurrentState,
+		NewState:    *actor.CurrentState,
+	})
 }
 
 func (e *entityManager) eventLoadedPlugin(msg events.EventLoadedPlugin) (err error) {

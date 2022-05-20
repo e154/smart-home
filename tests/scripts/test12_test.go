@@ -65,7 +65,7 @@ func Test12(t *testing.T) {
 	}
 
 	Convey("check db storage", t, func(ctx C) {
-		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
+		err := container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			storageService *storage.Storage,
 			scriptService scripts.ScriptService) {
@@ -112,5 +112,8 @@ func Test12(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(string(storage.Value), ShouldEqual, `{"foo": "bar"}`)
 		})
+		if err != nil {
+			fmt.Println(err.Error())
+		}
 	})
 }

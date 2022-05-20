@@ -575,6 +575,44 @@
         ]
       }
     },
+    "/v1/dashboard_card/import": {
+      "post": {
+        "summary": "import dashboard_card",
+        "operationId": "DashboardCardService_ImportDashboardCard",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiDashboardCard"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiDashboardCard"
+            }
+          }
+        ],
+        "tags": [
+          "DashboardCardService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
     "/v1/dashboard_card/{id}": {
       "get": {
         "summary": "get dashboard_card by id",
@@ -891,6 +929,12 @@
                 "payload": {
                   "type": "string",
                   "format": "byte"
+                },
+                "hidden": {
+                  "type": "boolean"
+                },
+                "frozen": {
+                  "type": "boolean"
                 }
               }
             }
@@ -1227,6 +1271,44 @@
             "in": "query",
             "required": false,
             "type": "string"
+          }
+        ],
+        "tags": [
+          "DashboardService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/dashboards/import": {
+      "post": {
+        "summary": "import dashboard",
+        "operationId": "DashboardService_ImportDashboard",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiDashboard"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiDashboard"
+            }
           }
         ],
         "tags": [
@@ -4543,6 +4625,24 @@
         "payload": {
           "type": "string",
           "format": "byte"
+        },
+        "hidden": {
+          "type": "boolean"
+        },
+        "frozen": {
+          "type": "boolean"
+        },
+        "showOn": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "hideOn": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -4893,6 +4993,12 @@
         "payload": {
           "type": "string",
           "format": "byte"
+        },
+        "hidden": {
+          "type": "boolean"
+        },
+        "frozen": {
+          "type": "boolean"
         },
         "createdAt": {
           "type": "string",
@@ -5737,6 +5843,12 @@
         "payload": {
           "type": "string",
           "format": "byte"
+        },
+        "hidden": {
+          "type": "boolean"
+        },
+        "frozen": {
+          "type": "boolean"
         }
       }
     },

@@ -127,3 +127,22 @@ func ToDashboardShort(ver *m.Dashboard) (obj *api.DashboardShort) {
 	}
 	return
 }
+
+// ImportDashboard ...
+func ImportDashboard(obj *api.Dashboard) (ver *m.Dashboard) {
+	ver = &m.Dashboard{
+		Id:          obj.Id,
+		Name:        obj.Name,
+		Description: obj.Description,
+		Enabled:     obj.Enabled,
+		AreaId:      obj.AreaId,
+		Tabs:        make([]*m.DashboardTab, 0, len(obj.Tabs)),
+	}
+
+	// tabs
+	for _, tabObj := range obj.Tabs {
+		ver.Tabs = append(ver.Tabs, ImportDashboardTab(tabObj))
+	}
+
+	return
+}

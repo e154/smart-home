@@ -71,6 +71,8 @@ func (r DashboardCard) UpdateDashboardCard(obj *api.UpdateDashboardCardRequest) 
 			Enabled:         item.Enabled,
 			DashboardCardId: obj.Id,
 			Payload:         item.Payload,
+			Hidden:          item.Hidden,
+			Frozen:          item.Frozen,
 		}
 		if item.EntityId != nil {
 			qwe.EntityId = common.NewEntityId(*item.EntityId)
@@ -135,6 +137,28 @@ func ToDashboardCard(ver *m.DashboardCard) (obj *api.DashboardCard) {
 	// Entities
 	for key, entity := range ver.Entities {
 		obj.Entities[key.String()] = ToEntity(entity)
+	}
+
+	return
+}
+
+func ImportDashboardCard(obj *api.DashboardCard) (ver *m.DashboardCard) {
+	ver = &m.DashboardCard{
+		Id:             obj.Id,
+		Title:          obj.Title,
+		Height:         int(obj.Height),
+		Width:          int(obj.Width),
+		Background:     obj.Background,
+		Weight:         int(obj.Weight),
+		Enabled:        obj.Enabled,
+		DashboardTabId: obj.DashboardTabId,
+		Payload:        obj.Payload,
+		Items:          make([]*m.DashboardCardItem, 0, len(obj.Items)),
+	}
+
+	// items
+	for _, itemObj := range obj.Items {
+		ver.Items = append(ver.Items, ImportDashboardCardItem(itemObj))
 	}
 
 	return

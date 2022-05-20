@@ -20,9 +20,10 @@ package controllers
 
 import (
 	"context"
+	"github.com/e154/smart-home/api/dto"
+	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/e154/smart-home/api/stub/api"
-	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 // ControllerDashboardCard ...
@@ -40,38 +41,38 @@ func NewControllerDashboardCard(common *ControllerCommon) ControllerDashboardCar
 // AddDashboardCard ...
 func (c ControllerDashboardCard) AddDashboardCard(ctx context.Context, req *api.NewDashboardCardRequest) (*api.DashboardCard, error) {
 
-	board := c.dto.DashboardCard.AddDashboardCard(req)
+	card := c.dto.DashboardCard.AddDashboardCard(req)
 
-	board, errs, err := c.endpoint.DashboardCard.Add(ctx, board)
+	card, errs, err := c.endpoint.DashboardCard.Add(ctx, card)
 	if len(errs) != 0 || err != nil {
 		return nil, c.error(ctx, errs, err)
 	}
 
-	return c.dto.DashboardCard.ToDashboardCard(board), nil
+	return c.dto.DashboardCard.ToDashboardCard(card), nil
 }
 
 // UpdateDashboardCard ...
 func (c ControllerDashboardCard) UpdateDashboardCard(ctx context.Context, req *api.UpdateDashboardCardRequest) (*api.DashboardCard, error) {
 
-	board := c.dto.DashboardCard.UpdateDashboardCard(req)
+	card := c.dto.DashboardCard.UpdateDashboardCard(req)
 
-	board, errs, err := c.endpoint.DashboardCard.Update(ctx, board)
+	card, errs, err := c.endpoint.DashboardCard.Update(ctx, card)
 	if len(errs) != 0 || err != nil {
 		return nil, c.error(ctx, errs, err)
 	}
 
-	return c.dto.DashboardCard.ToDashboardCard(board), nil
+	return c.dto.DashboardCard.ToDashboardCard(card), nil
 }
 
 // GetDashboardCardById ...
 func (c ControllerDashboardCard) GetDashboardCardById(ctx context.Context, req *api.GetDashboardCardRequest) (*api.DashboardCard, error) {
 
-	board, err := c.endpoint.DashboardCard.GetById(ctx, req.Id)
+	card, err := c.endpoint.DashboardCard.GetById(ctx, req.Id)
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
 
-	return c.dto.DashboardCard.ToDashboardCard(board), nil
+	return c.dto.DashboardCard.ToDashboardCard(card), nil
 }
 
 // GetDashboardCardList ...
@@ -94,4 +95,15 @@ func (c ControllerDashboardCard) DeleteDashboardCard(ctx context.Context, req *a
 	}
 
 	return &emptypb.Empty{}, nil
+}
+
+// ImportDashboardCard ...
+func (c ControllerDashboardCard) ImportDashboardCard(ctx context.Context, req *api.DashboardCard) (*api.DashboardCard, error) {
+
+	card, err := c.endpoint.DashboardCard.Import(ctx, dto.ImportDashboardCard(req))
+	if err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return dto.ToDashboardCard(card), nil
 }

@@ -57,6 +57,10 @@ message UpdateDashboardCardRequest {
     bool enabled = 5;
     optional string entity_id = 7;
     bytes payload = 8;
+    bool hidden = 9;
+    bool frozen = 10;
+    repeated string show_on = 11;
+    repeated string hide_on = 12;
   }
   repeated Item items = 10;
 }
@@ -142,6 +146,22 @@ service DashboardCardService {
   rpc DeleteDashboardCard (DeleteDashboardCardRequest) returns (google.protobuf.Empty){
     option (google.api.http) = {
       delete: "/v1/dashboard_card/{id}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // import dashboard_card
+  rpc ImportDashboardCard (DashboardCard) returns (DashboardCard){
+    option (google.api.http) = {
+      post: "/v1/dashboard_card/import"
+      body: "*"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
       security: {

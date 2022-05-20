@@ -19,6 +19,7 @@
 package plugins
 
 import (
+	"github.com/e154/smart-home/common/debug"
 	"testing"
 	"time"
 
@@ -98,6 +99,8 @@ func TestSun(t *testing.T) {
 					}
 
 					ctx.So(ok, ShouldBeTrue)
+
+					debug.Println(msg.NewState.Attributes)
 
 					ctx.So(msg.NewState.State, ShouldNotBeNil)
 					ctx.So(msg.NewState.State.Name, ShouldEqual, sunPlugin.AttrDusk)

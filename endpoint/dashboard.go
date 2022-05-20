@@ -20,11 +20,13 @@ package endpoint
 
 import (
 	"context"
-	"github.com/e154/smart-home/common"
-	m "github.com/e154/smart-home/models"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/jinzhu/copier"
 	"github.com/pkg/errors"
+
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 )
 
 // DashboardEndpoint ...
@@ -139,7 +141,7 @@ func (d *DashboardEndpoint) Delete(ctx context.Context, id int64) (err error) {
 	return
 }
 
-func (c *DashboardEndpoint) preloadEntities(board *m.Dashboard) (err error) {
+func (d *DashboardEndpoint) preloadEntities(board *m.Dashboard) (err error) {
 
 	// get child entities
 	entityMap := make(map[common.EntityId]*m.Entity)
@@ -154,21 +156,34 @@ func (c *DashboardEndpoint) preloadEntities(board *m.Dashboard) (err error) {
 	}
 
 	entityIds := make([]common.EntityId, 0, len(entityMap))
-	for entityId, _ := range entityMap {
+	for entityId := range entityMap {
 		entityIds = append(entityIds, entityId)
 	}
 
-	var entites []*m.Entity
-	if entites, err = c.adaptors.Entity.GetByIds(entityIds); err != nil {
+	var entities []*m.Entity
+	if entities, err = d.adaptors.Entity.GetByIds(entityIds); err != nil {
 		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
-	for _, entity := range entites {
+	for _, entity := range entities {
 		entityMap[entity.Id] = entity
 	}
 
 	board.Entities = entityMap
+
+	return
+}
+
+// Import ...
+func (d *DashboardEndpoint) Import(ctx context.Context, board *m.Dashboard) (result *m.Dashboard, err error) {
+
+	var id int64
+	if id, err = d.adaptors.Dashboard.Import(board); err != nil {
+		return
+	}
+
+	result, err = d.adaptors.Dashboard.GetById(id)
 
 	return
 }

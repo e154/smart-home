@@ -29,6 +29,8 @@ type DashboardServiceClient interface {
 	GetDashboardList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*GetDashboardListResult, error)
 	// delete dashboard
 	DeleteDashboard(ctx context.Context, in *DeleteDashboardRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// import dashboard
+	ImportDashboard(ctx context.Context, in *Dashboard, opts ...grpc.CallOption) (*Dashboard, error)
 }
 
 type dashboardServiceClient struct {
@@ -84,6 +86,15 @@ func (c *dashboardServiceClient) DeleteDashboard(ctx context.Context, in *Delete
 	return out, nil
 }
 
+func (c *dashboardServiceClient) ImportDashboard(ctx context.Context, in *Dashboard, opts ...grpc.CallOption) (*Dashboard, error) {
+	out := new(Dashboard)
+	err := c.cc.Invoke(ctx, "/api.DashboardService/ImportDashboard", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DashboardServiceServer is the server API for DashboardService service.
 // All implementations should embed UnimplementedDashboardServiceServer
 // for forward compatibility
@@ -98,6 +109,8 @@ type DashboardServiceServer interface {
 	GetDashboardList(context.Context, *PaginationRequest) (*GetDashboardListResult, error)
 	// delete dashboard
 	DeleteDashboard(context.Context, *DeleteDashboardRequest) (*emptypb.Empty, error)
+	// import dashboard
+	ImportDashboard(context.Context, *Dashboard) (*Dashboard, error)
 }
 
 // UnimplementedDashboardServiceServer should be embedded to have forward compatible implementations.
@@ -118,6 +131,9 @@ func (UnimplementedDashboardServiceServer) GetDashboardList(context.Context, *Pa
 }
 func (UnimplementedDashboardServiceServer) DeleteDashboard(context.Context, *DeleteDashboardRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteDashboard not implemented")
+}
+func (UnimplementedDashboardServiceServer) ImportDashboard(context.Context, *Dashboard) (*Dashboard, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ImportDashboard not implemented")
 }
 
 // UnsafeDashboardServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -221,6 +237,24 @@ func _DashboardService_DeleteDashboard_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DashboardService_ImportDashboard_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Dashboard)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DashboardServiceServer).ImportDashboard(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.DashboardService/ImportDashboard",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DashboardServiceServer).ImportDashboard(ctx, req.(*Dashboard))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DashboardService_ServiceDesc is the grpc.ServiceDesc for DashboardService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -247,6 +281,10 @@ var DashboardService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteDashboard",
 			Handler:    _DashboardService_DeleteDashboard_Handler,
+		},
+		{
+			MethodName: "ImportDashboard",
+			Handler:    _DashboardService_ImportDashboard_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

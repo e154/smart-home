@@ -376,6 +376,24 @@ func (a Attributes) Copy() (copy Attributes) {
 	return
 }
 
+// Compare ...
+func (a Attribute) Compare(b *Attribute) (ident bool) {
+
+	switch a.Type {
+	case common.AttributeString:
+	case common.AttributeInt:
+	case common.AttributeTime:
+	case common.AttributeBool:
+	case common.AttributeFloat:
+	case common.AttributeArray:
+		return
+	}
+
+	ident = fmt.Sprintf("%v", a.Value) == fmt.Sprintf("%v", b.Value)
+
+	return
+}
+
 func init() {
 	gob.Register(time.Time{})
 	gob.Register(Attributes{})

@@ -42,12 +42,6 @@ func TestModbusTcp(t *testing.T) {
 
 	const plugActionOnOffSourceScript = `
 
-getStatus =(status)->
-    if status == 1
-        return 'ON'
-    else
-        return 'OFF'
-
 writeRegisters =(d, c, r)->
     return ModbusTcp 'WriteMultipleRegisters', d, c, r
 

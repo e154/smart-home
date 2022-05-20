@@ -143,4 +143,20 @@ service DashboardService {
     };
   }
 
+  // import dashboard
+  rpc ImportDashboard (Dashboard) returns (Dashboard){
+    option (google.api.http) = {
+      post: "/v1/dashboards/import"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
 }

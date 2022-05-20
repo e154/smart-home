@@ -253,7 +253,9 @@ func (n *Entity) Update(ver *m.Entity) (err error) {
 	}()
 
 	table := db.Entities{Db: tx}
-	err = table.Update(n.toDb(ver))
+	if err = table.Update(n.toDb(ver)); err != nil {
+		return
+	}
 
 	entityActionAdaptor := GetEntityActionAdaptor(tx)
 	if err = entityActionAdaptor.DeleteByEntityId(ver.Id); err != nil {

@@ -100,6 +100,9 @@ func (n Dashboards) Update(m *Dashboard) (err error) {
 
 // Delete ...
 func (n Dashboards) Delete(id int64) (err error) {
+	if id == 0 {
+		return
+	}
 	if err = n.Db.Delete(&Dashboard{Id: id}).Error; err != nil {
 		err = errors.Wrap(err, "delete failed")
 	}

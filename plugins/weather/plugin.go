@@ -96,7 +96,7 @@ func (p plugin) Name() string {
 func (p *plugin) eventHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
-	case events.EventRequestState:
+	case events.EventPassAttributes:
 		if v.To.PluginName() != Name {
 			return
 		}

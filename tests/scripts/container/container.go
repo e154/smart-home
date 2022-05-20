@@ -44,6 +44,7 @@ import (
 	"github.com/e154/smart-home/system/stream"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	"go.uber.org/dig"
+	"go.uber.org/fx"
 )
 
 // BuildContainer ...
@@ -84,6 +85,10 @@ func BuildContainer() (container *dig.Container) {
 		conf.PgName = "smart_home_test"
 		conf.Logging = false
 		return
+	})
+
+	_ = container.Provide(func() (lc fx.Lifecycle) {
+		return &FxNull{}
 	})
 
 	return

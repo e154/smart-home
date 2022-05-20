@@ -19,6 +19,7 @@
 package scripts
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/e154/smart-home/adaptors"
@@ -39,17 +40,20 @@ func Test9(t *testing.T) {
 	const path = "conf/notify.json"
 
 	Convey("clear db", t, func(ctx C) {
-		_ = container.Invoke(func(migrations *migrations.Migrations) {
+		err := container.Invoke(func(migrations *migrations.Migrations) {
 
 			// clear database
 			// ------------------------------------------------
 			err := migrations.Purge()
 			So(err, ShouldBeNil)
 		})
+		if err != nil {
+			fmt.Println(err.Error())
+		}
 	})
 
 	Convey("send sms", t, func(ctx C) {
-		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
+		err := container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService) {
 
@@ -132,5 +136,8 @@ func Test9(t *testing.T) {
 			//
 			//time.Sleep(time.Second * 5)
 		})
+		if err != nil {
+			fmt.Println(err.Error())
+		}
 	})
 }

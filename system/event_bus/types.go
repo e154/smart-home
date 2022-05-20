@@ -19,8 +19,6 @@
 package event_bus
 
 import (
-	"bytes"
-	"encoding/json"
 	"time"
 
 	"github.com/e154/smart-home/common"
@@ -49,19 +47,19 @@ type EventEntityState struct {
 // Compare ...
 func (e1 EventEntityState) Compare(e2 EventEntityState) (ident bool) {
 
-	if e1.State != e2.State {
-		return
+	if e1.State != nil && e2.State != nil {
+		if e1.State.Name != e2.State.Name {
+			return
+		}
 	}
-	b1, _ := json.Marshal(e1.Attributes)
-	b2, _ := json.Marshal(e2.Attributes)
 
-	// Compare returns an integer comparing two byte slices lexicographically.
-	// The result will be 0 if a==b, -1 if a < b, and +1 if a > b.
-	// A nil argument is equivalent to an empty slice.
-	if bytes.Equal(b1, b2) {
-		ident = true
-		return
+	for k1, v1 := range e1.Attributes {
+		if !e2.Attributes[k1].Compare(v1) {
+			return false
+		}
 	}
+
+	ident = true
 
 	return
 }

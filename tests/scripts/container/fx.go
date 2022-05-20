@@ -16,48 +16,15 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package plugins
+package container
 
-import (
-	"fmt"
-	"os"
-	"path/filepath"
-	"runtime"
-	"testing"
-	"time"
+import "go.uber.org/fx"
 
-	"go.uber.org/dig"
-
-	"github.com/e154/smart-home/system/logging"
-	. "github.com/e154/smart-home/tests/plugins/container"
-)
-
-func init() {
-	apppath := filepath.Join(os.Getenv("PWD"), "../..")
-	_ = os.Chdir(apppath)
+// FxNull ...
+type FxNull struct {
 }
 
-var (
-	container *dig.Container
-)
+// Append ...
+func (FxNull) Append(hook fx.Hook) {
 
-func TestMain(m *testing.M) {
-
-	runtime.GOMAXPROCS(-1)
-
-	_ = os.Setenv("TEST_MODE", "true")
-
-	container = BuildContainer()
-	err := container.Invoke(func(
-		logging *logging.Logging,
-	) {
-
-		time.Sleep(time.Millisecond * 500)
-
-		os.Exit(m.Run())
-	})
-
-	if err != nil {
-		fmt.Println("error:", dig.RootCause(err))
-	}
 }

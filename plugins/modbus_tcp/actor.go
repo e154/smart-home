@@ -123,10 +123,11 @@ func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
 	e.AttrMu.Unlock()
 
 	e.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
-		PluginName: e.Id.PluginName(),
-		EntityId:   e.Id,
-		OldState:   oldState,
-		NewState:   e.GetEventState(e),
+		PluginName:  e.Id.PluginName(),
+		EntityId:    e.Id,
+		OldState:    oldState,
+		NewState:    e.GetEventState(e),
+		StorageSave: params.StorageSave,
 	})
 
 	return nil
@@ -140,6 +141,9 @@ func (e *Actor) runAction(msg events.EventCallAction) {
 	action, ok := e.Actions[msg.ActionName]
 	if !ok {
 		log.Warnf("action %s not found", msg.ActionName)
+		return
+	}
+	if action.ScriptEngine == nil {
 		return
 	}
 	if _, err := action.ScriptEngine.AssertFunction(FuncEntityAction, msg.EntityId, action.Name); err != nil {

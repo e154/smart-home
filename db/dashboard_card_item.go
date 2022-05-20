@@ -21,9 +21,9 @@ package db
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/e154/smart-home/common"
 	"time"
 
+	"github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 )
@@ -44,6 +44,8 @@ type DashboardCardItem struct {
 	DashboardCard   *DashboardCard
 	EntityId        *common.EntityId
 	Payload         json.RawMessage `gorm:"type:jsonb;not null"`
+	Hidden          bool
+	Frozen          bool
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
 }
@@ -82,6 +84,7 @@ func (n DashboardCardItems) Update(m *DashboardCardItem) (err error) {
 		"dashboard_card_id": m.DashboardCardId,
 		"entity_id":         m.EntityId,
 		"payload":           m.Payload,
+		"hidden":            m.Hidden,
 	}
 
 	if err = n.Db.Model(&DashboardCardItem{Id: m.Id}).Updates(q).Error; err != nil {

@@ -20,6 +20,7 @@ package endpoint
 
 import (
 	"context"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/go-playground/validator/v10"
@@ -76,12 +77,12 @@ func (c *DashboardCardEndpoint) GetById(ctx context.Context, id int64) (card *m.
 // Update ...
 func (i *DashboardCardEndpoint) Update(ctx context.Context, params *m.DashboardCard) (result *m.DashboardCard, errs validator.ValidationErrorsTranslations, err error) {
 
-	var board *m.DashboardCard
-	if board, err = i.adaptors.DashboardCard.GetById(params.Id); err != nil {
+	var card *m.DashboardCard
+	if card, err = i.adaptors.DashboardCard.GetById(params.Id); err != nil {
 		return
 	}
 
-	if err = copier.Copy(&board, &params); err != nil {
+	if err = copier.Copy(&card, &params); err != nil {
 		return
 	}
 
@@ -90,8 +91,7 @@ func (i *DashboardCardEndpoint) Update(ctx context.Context, params *m.DashboardC
 		return
 	}
 
-	if err = i.adaptors.DashboardCard.Update(board); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
+	if err = i.adaptors.DashboardCard.Update(card); err != nil {
 		return
 	}
 
@@ -139,6 +139,26 @@ func (c *DashboardCardEndpoint) Delete(ctx context.Context, id int64) (err error
 	return
 }
 
+// Import ...
+func (c *DashboardCardEndpoint) Import(ctx context.Context, card *m.DashboardCard) (result *m.DashboardCard, err error) {
+
+	var cardId int64
+	if cardId, err = c.adaptors.DashboardCard.Import(card); err != nil {
+		return
+	}
+
+	result, err = c.adaptors.DashboardCard.GetById(cardId)
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
+	}
+
+	return
+}
+
 func (c *DashboardCardEndpoint) preloadEntities(card *m.DashboardCard) (err error) {
 
 	// get child entities
@@ -150,7 +170,7 @@ func (c *DashboardCardEndpoint) preloadEntities(card *m.DashboardCard) (err erro
 	}
 
 	entityIds := make([]common.EntityId, 0, len(entityMap))
-	for entityId, _ := range entityMap {
+	for entityId := range entityMap {
 		entityIds = append(entityIds, entityId)
 	}
 

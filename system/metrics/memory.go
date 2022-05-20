@@ -18,101 +18,101 @@
 
 package metrics
 
-import (
-	"sync"
-	"time"
-
-	"github.com/shirou/gopsutil/mem"
-	"go.uber.org/atomic"
-)
-
-// Memory ...
-type Memory struct {
-	SwapTotal uint64 `json:"swap_total"`
-	SwapFree  uint64 `json:"swap_free"`
-	MemTotal  uint64 `json:"mem_total"`
-	MemFree   uint64 `json:"mem_free"`
-}
-
-// MemoryManager ...
-type MemoryManager struct {
-	publisher  IPublisher
-	updateLock sync.Mutex
-	swapTotal  uint64
-	swapFree   uint64
-	memTotal   uint64
-	memFree    uint64
-	isStarted  atomic.Bool
-	quit       chan struct{}
-}
-
-// NewMemoryManager ...
-func NewMemoryManager(publisher IPublisher) *MemoryManager {
-	return &MemoryManager{
-		quit:      make(chan struct{}),
-		publisher: publisher,
-	}
-}
-
-func (d *MemoryManager) start(pause int) {
-	if d.isStarted.Load() {
-		return
-	}
-	go func() {
-		ticker := time.NewTicker(time.Second * time.Duration(pause))
-		defer ticker.Stop()
-
-		d.isStarted.Store(true)
-		defer func() {
-			d.isStarted.Store(false)
-		}()
-
-		for {
-			select {
-			case <-d.quit:
-				return
-			case <-ticker.C:
-				d.selfUpdate()
-			}
-		}
-	}()
-}
-
-func (d *MemoryManager) stop() {
-	if !d.isStarted.Load() {
-		return
-	}
-	d.quit <- struct{}{}
-}
-
-// Snapshot ...
-func (d *MemoryManager) Snapshot() Memory {
-	d.updateLock.Lock()
-	defer d.updateLock.Unlock()
-
-	return Memory{
-		SwapTotal: d.swapTotal,
-		SwapFree:  d.swapFree,
-		MemTotal:  d.memTotal,
-		MemFree:   d.memFree,
-	}
-}
-
-func (d *MemoryManager) selfUpdate() {
-	d.updateLock.Lock()
-	defer d.updateLock.Unlock()
-
-	swap, _ := mem.SwapMemory()
-	d.swapFree = swap.Free / 1024
-	d.swapTotal = swap.Total / 1024
-
-	memory, _ := mem.VirtualMemory()
-	d.memFree = memory.Free / 1024
-	d.memTotal = memory.Total / 1024
-
-	d.broadcast()
-}
-
-func (d *MemoryManager) broadcast() {
-	go d.publisher.Broadcast("memory")
-}
+//import (
+//	"sync"
+//	"time"
+//
+//	"github.com/shirou/gopsutil/mem"
+//	"go.uber.org/atomic"
+//)
+//
+//// Memory ...
+//type Memory struct {
+//	SwapTotal uint64 `json:"swap_total"`
+//	SwapFree  uint64 `json:"swap_free"`
+//	MemTotal  uint64 `json:"mem_total"`
+//	MemFree   uint64 `json:"mem_free"`
+//}
+//
+//// MemoryManager ...
+//type MemoryManager struct {
+//	publisher  IPublisher
+//	updateLock sync.Mutex
+//	swapTotal  uint64
+//	swapFree   uint64
+//	memTotal   uint64
+//	memFree    uint64
+//	isStarted  atomic.Bool
+//	quit       chan struct{}
+//}
+//
+//// NewMemoryManager ...
+//func NewMemoryManager(publisher IPublisher) *MemoryManager {
+//	return &MemoryManager{
+//		quit:      make(chan struct{}),
+//		publisher: publisher,
+//	}
+//}
+//
+//func (d *MemoryManager) start(pause int) {
+//	if d.isStarted.Load() {
+//		return
+//	}
+//	go func() {
+//		ticker := time.NewTicker(time.Second * time.Duration(pause))
+//		defer ticker.Stop()
+//
+//		d.isStarted.Store(true)
+//		defer func() {
+//			d.isStarted.Store(false)
+//		}()
+//
+//		for {
+//			select {
+//			case <-d.quit:
+//				return
+//			case <-ticker.C:
+//				d.selfUpdate()
+//			}
+//		}
+//	}()
+//}
+//
+//func (d *MemoryManager) stop() {
+//	if !d.isStarted.Load() {
+//		return
+//	}
+//	d.quit <- struct{}{}
+//}
+//
+//// Snapshot ...
+//func (d *MemoryManager) Snapshot() Memory {
+//	d.updateLock.Lock()
+//	defer d.updateLock.Unlock()
+//
+//	return Memory{
+//		SwapTotal: d.swapTotal,
+//		SwapFree:  d.swapFree,
+//		MemTotal:  d.memTotal,
+//		MemFree:   d.memFree,
+//	}
+//}
+//
+//func (d *MemoryManager) selfUpdate() {
+//	d.updateLock.Lock()
+//	defer d.updateLock.Unlock()
+//
+//	swap, _ := mem.SwapMemory()
+//	d.swapFree = swap.Free / 1024
+//	d.swapTotal = swap.Total / 1024
+//
+//	memory, _ := mem.VirtualMemory()
+//	d.memFree = memory.Free / 1024
+//	d.memTotal = memory.Total / 1024
+//
+//	d.broadcast()
+//}
+//
+//func (d *MemoryManager) broadcast() {
+//	go d.publisher.Broadcast("memory")
+//}

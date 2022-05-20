@@ -31,6 +31,7 @@ type IDashboardCard interface {
 	GetById(mapId int64) (ver *m.DashboardCard, err error)
 	Update(ver *m.DashboardCard) (err error)
 	Delete(id int64) (err error)
+	Import(card *m.DashboardCard) (cardId int64, err error)
 	List(limit, offset int64, orderBy, sort string) (list []*m.DashboardCard, total int64, err error)
 	fromDb(dbVer *db.DashboardCard) (ver *m.DashboardCard)
 	toDb(ver *m.DashboardCard) (dbVer *db.DashboardCard)
@@ -115,6 +116,50 @@ func (n *DashboardCard) Delete(id int64) (err error) {
 	return
 }
 
+// Import ...
+func (n *DashboardCard) Import(card *m.DashboardCard) (cardId int64, err error) {
+
+	transaction := true
+	tx := n.db.Begin()
+	if err = tx.Error; err != nil {
+		tx = n.db
+		transaction = false
+	}
+	defer func() {
+		if err != nil && transaction {
+			err = errors.Wrap(common.ErrTransactionError, err.Error())
+			tx.Rollback()
+			return
+		}
+		if transaction {
+			err = tx.Commit().Error
+		}
+	}()
+
+	cardAdaptor := GetDashboardCardAdaptor(tx)
+	cardItemAdaptor := GetDashboardCardItemAdaptor(tx)
+
+	card.Id = 0
+	card.Title = card.Title + " [IMPORTED]"
+
+	if cardId, err = cardAdaptor.Add(card); err != nil {
+		return
+	}
+
+	// items
+	if len(card.Items) > 0 {
+		for _, item := range card.Items {
+			item.Id = 0
+			item.DashboardCardId = cardId
+			if _, err = cardItemAdaptor.Add(item); err != nil {
+				return
+			}
+		}
+	}
+
+	return
+}
+
 // List ...
 func (n *DashboardCard) List(limit, offset int64, orderBy, sort string) (list []*m.DashboardCard, total int64, err error) {
 
@@ -175,13 +220,6 @@ func (n *DashboardCard) toDb(ver *m.DashboardCard) (dbVer *db.DashboardCard) {
 		Enabled:        ver.Enabled,
 		DashboardTabId: ver.DashboardTabId,
 		Payload:        ver.Payload,
-		Items:          make([]*db.DashboardCardItem, 0, len(ver.Items)),
-	}
-
-	// items
-	itemAdaptor := GetDashboardCardItemAdaptor(n.db)
-	for _, item := range ver.Items {
-		dbVer.Items = append(dbVer.Items, itemAdaptor.toDb(item))
 	}
 
 	return

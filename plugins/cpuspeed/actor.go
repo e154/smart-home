@@ -22,13 +22,10 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/e154/smart-home/system/event_bus/events"
-
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/rcrowley/go-metrics"
-	"github.com/shirou/gopsutil/cpu"
 )
 
 // Actor ...
@@ -63,12 +60,13 @@ func NewActor(entityManager entity_manager.EntityManager,
 		updateLock: &sync.Mutex{},
 	}
 
-	cpuInfo, err := cpu.Info()
-	if err == nil {
-		actor.mhz = cpuInfo[0].Mhz
-		actor.cores = int64(cpuInfo[0].Cores)
-		actor.model = cpuInfo[0].Model
-	}
+	//todo uncomment
+	//cpuInfo, err := cpu.Info()
+	//if err == nil {
+	//	actor.mhz = cpuInfo[0].Mhz
+	//	actor.cores = int64(cpuInfo[0].Cores)
+	//	actor.model = cpuInfo[0].Model
+	//}
 
 	return actor
 }
@@ -80,38 +78,39 @@ func (e *Actor) Spawn() entity_manager.PluginActor {
 
 func (u *Actor) selfUpdate() {
 
-	u.updateLock.Lock()
-	defer u.updateLock.Unlock()
-
-	oldState := u.GetEventState(u)
-	u.Now(oldState)
-
-	timeStats, err := cpu.Times(false)
-	if err != nil || len(timeStats) == 0 {
-		return
-	}
-
-	total := timeStats[0].Total()
-	diffIdle := timeStats[0].Idle - u.allCpuPrevIdle
-	diffTotal := total - u.allCpuPrevTotal
-	u.all.Update(100 * (diffTotal - diffIdle) / diffTotal)
-	u.allCpuPrevTotal = total
-	u.allCpuPrevIdle = timeStats[0].Idle
-
-	u.AttrMu.Lock()
-	u.Attrs[AttrCpuCores].Value = u.cores
-	u.Attrs[AttrCpuMhz].Value = u.mhz
-	u.Attrs[AttrCpuAll].Value = u.all.Value()
-	u.AttrMu.Unlock()
-
-	u.SetMetric(u.Id, "cpuspeed", map[string]interface{}{
-		"all": common.Rounding(u.all.Value(), 2),
-	})
-
-	u.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
-		PluginName: u.Id.PluginName(),
-		EntityId:   u.Id,
-		OldState:   oldState,
-		NewState:   u.GetEventState(u),
-	})
+	//todo uncomment
+	//u.updateLock.Lock()
+	//defer u.updateLock.Unlock()
+	//
+	//oldState := u.GetEventState(u)
+	//u.Now(oldState)
+	//
+	//timeStats, err := cpu.Times(false)
+	//if err != nil || len(timeStats) == 0 {
+	//	return
+	//}
+	//
+	//total := timeStats[0].Total()
+	//diffIdle := timeStats[0].Idle - u.allCpuPrevIdle
+	//diffTotal := total - u.allCpuPrevTotal
+	//u.all.Update(100 * (diffTotal - diffIdle) / diffTotal)
+	//u.allCpuPrevTotal = total
+	//u.allCpuPrevIdle = timeStats[0].Idle
+	//
+	//u.AttrMu.Lock()
+	//u.Attrs[AttrCpuCores].Value = u.cores
+	//u.Attrs[AttrCpuMhz].Value = u.mhz
+	//u.Attrs[AttrCpuAll].Value = u.all.Value()
+	//u.AttrMu.Unlock()
+	//
+	//u.SetMetric(u.Id, "cpuspeed", map[string]interface{}{
+	//	"all": common.Rounding(u.all.Value(), 2),
+	//})
+	//
+	//u.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
+	//	PluginName: u.Id.PluginName(),
+	//	EntityId:   u.Id,
+	//	CurrentState:   oldState,
+	//	NewState:   u.GetEventState(u),
+	//})
 }

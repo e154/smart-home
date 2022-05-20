@@ -107,11 +107,11 @@ func TestWeatherOwm(t *testing.T) {
 
 					// subscribe
 					// ------------------------------------------------
-					ch := make(chan events.EventRequestState, 3)
+					ch := make(chan events.EventPassAttributes, 3)
 					fn := func(topic string, msg interface{}) {
 
 						switch v := msg.(type) {
-						case events.EventRequestState:
+						case events.EventPassAttributes:
 							ch <- v
 						case events.EventAddedActor:
 						default:
@@ -139,7 +139,7 @@ func TestWeatherOwm(t *testing.T) {
 					ticker := time.NewTimer(time.Second * 3)
 					defer ticker.Stop()
 
-					var msg events.EventRequestState
+					var msg events.EventPassAttributes
 					var ok bool
 					select {
 					case msg = <-ch:
@@ -167,11 +167,11 @@ func TestWeatherOwm(t *testing.T) {
 
 					// subscribe
 					// ------------------------------------------------
-					ch := make(chan events.EventRequestState, 3)
+					ch := make(chan events.EventPassAttributes, 3)
 					fn := func(topic string, msg interface{}) {
 
 						switch v := msg.(type) {
-						case events.EventRequestState:
+						case events.EventPassAttributes:
 							ch <- v
 						case events.EventAddedActor:
 
@@ -202,7 +202,7 @@ func TestWeatherOwm(t *testing.T) {
 					ticker := time.NewTimer(time.Second * 2)
 					defer ticker.Stop()
 
-					var msg events.EventRequestState
+					var msg events.EventPassAttributes
 					var ok bool
 					select {
 					case msg = <-ch:
@@ -232,7 +232,7 @@ func TestWeatherOwm(t *testing.T) {
 					fn := func(topic string, msg interface{}) {
 
 						switch v := msg.(type) {
-						case events.EventRequestState:
+						case events.EventPassAttributes:
 						case events.EventAddedActor:
 						case events.EventRemoveActor:
 							if v.PluginName == "weather_owm" {

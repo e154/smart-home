@@ -46,6 +46,7 @@ import (
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/storage"
 	"github.com/e154/smart-home/system/stream"
+	"github.com/e154/smart-home/system/stream/handlers"
 	"github.com/e154/smart-home/system/validation"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	"go.uber.org/fx"
@@ -89,6 +90,7 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 			api.NewApi,
 			controllers.NewControllers,
 			stream.NewStreamService,
+			handlers.NewEventHandler,
 			NewBackupConfig,
 			backup.NewBackup,
 			gate_client.NewGateClient,

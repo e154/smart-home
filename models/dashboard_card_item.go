@@ -2,8 +2,9 @@ package models
 
 import (
 	"encoding/json"
-	"github.com/e154/smart-home/common"
 	"time"
+
+	"github.com/e154/smart-home/common"
 )
 
 // DashboardCardItem ...
@@ -18,6 +19,8 @@ type DashboardCardItem struct {
 	EntityId        *common.EntityId `json:"entity_id"`
 	Entity          *Entity          `json:"entity"`
 	Payload         json.RawMessage  `json:"payload"`
+	Hidden          bool             `json:"hidden"`
+	Frozen          bool             `json:"frozen"`
 	CreatedAt       time.Time        `json:"created_at"`
 	UpdatedAt       time.Time        `json:"updated_at"`
 }

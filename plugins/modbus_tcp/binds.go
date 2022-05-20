@@ -40,7 +40,7 @@ func NewModbusTcp(eventBus event_bus.EventBus, actor *Actor) (modbus modbusTcp) 
 	var isStarted = atomic.NewBool(false)
 
 	return func(f string, address, count uint16, command []uint16) (result ModBusResponse) {
-		//fmt.Printf("send message^ func(%s), address(%d), count(%d), command(%b) \n", f, address, count, command)
+		//log.Debugf("send message func(%s), address(%d), count(%d), command(%b)", f, address, count, command)
 
 		var err error
 		defer func() {

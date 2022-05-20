@@ -38,7 +38,7 @@ func Test2(t *testing.T) {
 
 	var script1 *m.Script
 	Convey("require external library", t, func(ctx C) {
-		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
+		err := container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService) {
 
@@ -61,5 +61,8 @@ func Test2(t *testing.T) {
 
 			So(state, ShouldEqual, "123-bar-Jan")
 		})
+		if err != nil {
+			fmt.Println(err.Error())
+		}
 	})
 }

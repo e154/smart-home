@@ -117,6 +117,7 @@ func (r Entity) UpdateEntity(obj *api.UpdateEntityRequest) (entity *m.Entity) {
 		Icon:        obj.Icon,
 		Attributes:  AttributeFromApi(obj.Attributes),
 		Settings:    AttributeFromApi(obj.Settings),
+		ParentId:    nil,
 	}
 
 	// image
@@ -167,7 +168,7 @@ func (r Entity) UpdateEntity(obj *api.UpdateEntityRequest) (entity *m.Entity) {
 		entity.Scripts = append(entity.Scripts, script)
 	}
 	// parent
-	if obj.Parent != nil {
+	if obj.Parent != nil && obj.Parent.Id != "" {
 		parentId := common.EntityId(obj.Parent.Id)
 		entity.ParentId = &parentId
 	}

@@ -23,12 +23,14 @@ import (
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 )
 
 type IDashboard interface {
 	Add(ver *m.Dashboard) (id int64, err error)
 	GetById(mapId int64) (ver *m.Dashboard, err error)
 	Update(ver *m.Dashboard) (err error)
+	Import(*m.Dashboard) (int64, error)
 	Delete(id int64) (err error)
 	List(limit, offset int64, orderBy, sort string) (list []*m.Dashboard, total int64, err error)
 }
@@ -81,6 +83,76 @@ func (n *Dashboard) Delete(id int64) (err error) {
 	return
 }
 
+// Import ...
+func (n *Dashboard) Import(ver *m.Dashboard) (boardId int64, err error) {
+
+	transaction := true
+	tx := n.db.Begin()
+	if err = tx.Error; err != nil {
+		tx = n.db
+		transaction = false
+	}
+	defer func() {
+		if err != nil && transaction {
+			err = errors.Wrap(common.ErrTransactionError, err.Error())
+			tx.Rollback()
+			return
+		}
+		if transaction {
+			err = tx.Commit().Error
+		}
+	}()
+
+	boardAdaptor := GetDashboardAdaptor(tx)
+	tabAdaptor := GetDashboardTabAdaptor(tx)
+	cardAdaptor := GetDashboardCardAdaptor(tx)
+	cardItemAdaptor := GetDashboardCardItemAdaptor(tx)
+
+	// board
+	ver.Id = 0
+	ver.Name = ver.Name + " [IMPORTED]"
+	if boardId, err = boardAdaptor.Add(ver); err != nil {
+		return
+	}
+
+	// tabs
+	if len(ver.Tabs) > 0 {
+		for _, tab := range ver.Tabs {
+			tab.Id = 0
+			tab.DashboardId = boardId
+			var tabId int64
+			if tabId, err = tabAdaptor.Add(tab); err != nil {
+				return
+			}
+
+			// cards
+			if len(tab.Cards) > 0 {
+				for _, card := range tab.Cards {
+					card.Id = 0
+					card.DashboardTabId = tabId
+					var cardId int64
+					if cardId, err = cardAdaptor.Add(card); err != nil {
+						return
+					}
+
+					// items
+					if len(card.Items) > 0 {
+						for _, item := range card.Items {
+							item.Id = 0
+							item.DashboardCardId = cardId
+							if _, err = cardItemAdaptor.Add(item); err != nil {
+								return
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return
+}
+
 // List ...
 func (n *Dashboard) List(limit, offset int64, orderBy, sort string) (list []*m.Dashboard, total int64, err error) {
 
@@ -113,6 +185,7 @@ func (n *Dashboard) fromDb(dbVer *db.Dashboard) (ver *m.Dashboard) {
 		Enabled:     dbVer.Enabled,
 		CreatedAt:   dbVer.CreatedAt,
 		UpdatedAt:   dbVer.UpdatedAt,
+		AreaId:      dbVer.AreaId,
 	}
 
 	// Area
@@ -138,6 +211,7 @@ func (n *Dashboard) toDb(ver *m.Dashboard) (dbVer *db.Dashboard) {
 		Name:        ver.Name,
 		Description: ver.Description,
 		Enabled:     ver.Enabled,
+		AreaId:      ver.AreaId,
 	}
 
 	// area

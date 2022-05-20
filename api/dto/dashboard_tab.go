@@ -142,3 +142,25 @@ func ToDashboardTabShort(ver *m.DashboardTab) (obj *api.DashboardTabShort) {
 	}
 	return
 }
+
+func ImportDashboardTab(obj *api.DashboardTab) (ver *m.DashboardTab) {
+	ver = &m.DashboardTab{
+		Id:          obj.Id,
+		Name:        obj.Name,
+		ColumnWidth: int(obj.ColumnWidth),
+		Gap:         int(obj.Gap),
+		Background:  obj.Background,
+		Icon:        obj.Icon,
+		Enabled:     obj.Enabled,
+		Weight:      int(obj.Weight),
+		DashboardId: obj.DashboardId,
+		Cards:       make([]*m.DashboardCard, 0, len(obj.Cards)),
+	}
+
+	// cards
+	for _, cardObj := range obj.Cards {
+		ver.Cards = append(ver.Cards, ImportDashboardCard(cardObj))
+	}
+
+	return
+}

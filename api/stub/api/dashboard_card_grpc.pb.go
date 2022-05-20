@@ -29,6 +29,8 @@ type DashboardCardServiceClient interface {
 	GetDashboardCardList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*GetDashboardCardListResult, error)
 	// delete dashboard_card
 	DeleteDashboardCard(ctx context.Context, in *DeleteDashboardCardRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// import dashboard_card
+	ImportDashboardCard(ctx context.Context, in *DashboardCard, opts ...grpc.CallOption) (*DashboardCard, error)
 }
 
 type dashboardCardServiceClient struct {
@@ -84,6 +86,15 @@ func (c *dashboardCardServiceClient) DeleteDashboardCard(ctx context.Context, in
 	return out, nil
 }
 
+func (c *dashboardCardServiceClient) ImportDashboardCard(ctx context.Context, in *DashboardCard, opts ...grpc.CallOption) (*DashboardCard, error) {
+	out := new(DashboardCard)
+	err := c.cc.Invoke(ctx, "/api.DashboardCardService/ImportDashboardCard", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DashboardCardServiceServer is the server API for DashboardCardService service.
 // All implementations should embed UnimplementedDashboardCardServiceServer
 // for forward compatibility
@@ -98,6 +109,8 @@ type DashboardCardServiceServer interface {
 	GetDashboardCardList(context.Context, *PaginationRequest) (*GetDashboardCardListResult, error)
 	// delete dashboard_card
 	DeleteDashboardCard(context.Context, *DeleteDashboardCardRequest) (*emptypb.Empty, error)
+	// import dashboard_card
+	ImportDashboardCard(context.Context, *DashboardCard) (*DashboardCard, error)
 }
 
 // UnimplementedDashboardCardServiceServer should be embedded to have forward compatible implementations.
@@ -118,6 +131,9 @@ func (UnimplementedDashboardCardServiceServer) GetDashboardCardList(context.Cont
 }
 func (UnimplementedDashboardCardServiceServer) DeleteDashboardCard(context.Context, *DeleteDashboardCardRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteDashboardCard not implemented")
+}
+func (UnimplementedDashboardCardServiceServer) ImportDashboardCard(context.Context, *DashboardCard) (*DashboardCard, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ImportDashboardCard not implemented")
 }
 
 // UnsafeDashboardCardServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -221,6 +237,24 @@ func _DashboardCardService_DeleteDashboardCard_Handler(srv interface{}, ctx cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DashboardCardService_ImportDashboardCard_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DashboardCard)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DashboardCardServiceServer).ImportDashboardCard(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.DashboardCardService/ImportDashboardCard",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DashboardCardServiceServer).ImportDashboardCard(ctx, req.(*DashboardCard))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DashboardCardService_ServiceDesc is the grpc.ServiceDesc for DashboardCardService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -247,6 +281,10 @@ var DashboardCardService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteDashboardCard",
 			Handler:    _DashboardCardService_DeleteDashboardCard_Handler,
+		},
+		{
+			MethodName: "ImportDashboardCard",
+			Handler:    _DashboardCardService_ImportDashboardCard_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

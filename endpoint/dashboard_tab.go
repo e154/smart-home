@@ -153,7 +153,7 @@ func (c *DashboardTabEndpoint) preloadEntities(tab *m.DashboardTab) (err error) 
 	}
 
 	entityIds := make([]common.EntityId, 0, len(entityMap))
-	for entityId, _ := range entityMap {
+	for entityId := range entityMap {
 		entityIds = append(entityIds, entityId)
 	}
 

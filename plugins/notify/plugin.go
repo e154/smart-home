@@ -102,7 +102,9 @@ func (p *plugin) Version() string {
 
 // AddProvider ...
 func (p *plugin) AddProvider(name string, provider Provider) {
-	p.notify.AddProvider(name, provider)
+	if p.notify != nil {
+		p.notify.AddProvider(name, provider)
+	}
 }
 
 // RemoveProvider ...

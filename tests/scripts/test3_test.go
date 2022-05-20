@@ -38,7 +38,7 @@ func Test3(t *testing.T) {
 	}
 
 	Convey("eval script", t, func(ctx C) {
-		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
+		err := container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService) {
 
@@ -69,5 +69,8 @@ func Test3(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(state, ShouldEqual, "on_exit")
 		})
+		if err != nil {
+			fmt.Println(err.Error())
+		}
 	})
 }

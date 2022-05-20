@@ -182,9 +182,9 @@ const (
 )
 
 type actorInfo struct {
-	Actor    PluginActor
-	quit     chan struct{}
-	OldState event_bus.EventEntityState
+	Actor        PluginActor
+	quit         chan struct{}
+	CurrentState *event_bus.EventEntityState
 }
 
 // ActorInfo ...
