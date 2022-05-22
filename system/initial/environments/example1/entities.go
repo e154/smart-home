@@ -184,7 +184,7 @@ func (e *EntityManager) addL3(name, host string, script *m.Script, area *m.Area)
 	err := e.adaptors.Entity.Add(ent)
 	So(err, ShouldBeNil)
 
-	_, err = e.adaptors.EntityStorage.Add(m.EntityStorage{
+	_, err = e.adaptors.EntityStorage.Add(&m.EntityStorage{
 		EntityId:   ent.Id,
 		Attributes: ent.Attributes.Serialize(),
 	})
@@ -215,7 +215,7 @@ func (e *EntityManager) addTgBot(name, token string, script *m.Script, area *m.A
 	}
 	err := e.adaptors.Entity.Add(ent)
 	So(err, ShouldBeNil)
-	_, err = e.adaptors.EntityStorage.Add(m.EntityStorage{
+	_, err = e.adaptors.EntityStorage.Add(&m.EntityStorage{
 		EntityId:   ent.Id,
 		Attributes: ent.Attributes.Serialize(),
 	})
@@ -262,7 +262,7 @@ func (e *EntityManager) addSensor(name string, script *m.Script, area *m.Area) (
 	}
 	err := e.adaptors.Entity.Add(ent)
 	So(err, ShouldBeNil)
-	_, err = e.adaptors.EntityStorage.Add(m.EntityStorage{
+	_, err = e.adaptors.EntityStorage.Add(&m.EntityStorage{
 		EntityId:   ent.Id,
 		Attributes: ent.Attributes.Serialize(),
 	})

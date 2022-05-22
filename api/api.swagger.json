@@ -39,6 +39,9 @@
       "name": "EntityService"
     },
     {
+      "name": "EntityStorageService"
+    },
+    {
       "name": "ImageService"
     },
     {
@@ -1777,6 +1780,61 @@
         ],
         "tags": [
           "EntityService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/entity_storage/{entityId}": {
+      "get": {
+        "operationId": "EntityStorageService_GetEntityStorageList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiGetEntityStorageResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "entityId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "EntityStorageService"
         ],
         "security": [
           {
@@ -5380,6 +5438,32 @@
         }
       }
     },
+    "apiEntityStorage": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "entityId": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "attributes": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/apiAttribute"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "title": "map\u003cstring, google.protobuf.Any\u003e attributes = 4;"
+        }
+      }
+    },
     "apiExecScriptResult": {
       "type": "object",
       "properties": {
@@ -5496,6 +5580,20 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/apiEntity"
+          }
+        },
+        "meta": {
+          "$ref": "#/definitions/apiMeta"
+        }
+      }
+    },
+    "apiGetEntityStorageResult": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiEntityStorage"
           }
         },
         "meta": {

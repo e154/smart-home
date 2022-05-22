@@ -86,7 +86,7 @@ func (n ZoneManager) addZone(name, desc string) {
 	})
 	So(err, ShouldBeNil)
 
-	_, err = n.adaptors.EntityStorage.Add(m.EntityStorage{
+	_, err = n.adaptors.EntityStorage.Add(&m.EntityStorage{
 		EntityId:   common.EntityId("zone." + name),
 		Attributes: attributes.Serialize(),
 	})

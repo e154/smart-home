@@ -97,3 +97,33 @@ func (n *EntityStorages) List(limit, offset int64, orderBy, sort string) (list [
 	}
 	return
 }
+
+// ListByEntityId ...
+func (n *EntityStorages) ListByEntityId(limit, offset int64, orderBy, sort string, entityId common.EntityId) (list []EntityStorage, total int64, err error) {
+
+	q := n.Db.Model(&EntityStorage{}).Where("entity_id = ?", entityId)
+
+	if err = q.Count(&total).Error; err != nil {
+		err = errors.Wrap(err, "get count failed")
+		return
+	}
+
+	list = make([]EntityStorage, 0)
+	q = q.
+		Limit(limit).
+		Offset(offset)
+
+	if sort != "" && orderBy != "" {
+		q = q.
+			Order(fmt.Sprintf("%s %s", sort, orderBy))
+	}
+
+	err = q.
+		Find(&list).
+		Error
+	if err != nil {
+		err = errors.Wrap(err, "list failed")
+		return
+	}
+	return
+}

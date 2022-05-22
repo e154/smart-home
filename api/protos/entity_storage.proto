@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package api;
+option go_package = "/api";
+
+import "google/api/annotations.proto";
+import "protoc-gen-swagger/options/annotations.proto";
+import "google/protobuf/timestamp.proto";
+//import "google/protobuf/any.proto";
+
+import "pagination.proto";
+import "attributes.proto";
+
+message EntityStorage {
+  int64 id = 1;
+  string entity_id = 2;
+  string state = 3;
+  map<string, Attribute> attributes = 4;
+  //  map<string, google.protobuf.Any> attributes = 4;
+  google.protobuf.Timestamp created_at = 99;
+}
+
+message GetEntityStorageRequest {
+  uint64 page = 1;
+  uint64 limit = 2;
+  string sort = 3;
+  string entity_id = 4;
+}
+
+message GetEntityStorageResult {
+  repeated EntityStorage items = 1;
+  Meta meta = 2;
+}
+
+service EntityStorageService {
+
+  rpc GetEntityStorageList (GetEntityStorageRequest) returns (GetEntityStorageResult){
+    option (google.api.http) = {
+      get: "/v1/entity_storage/{entity_id}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+}

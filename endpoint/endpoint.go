@@ -63,6 +63,7 @@ type Endpoint struct {
 	DashboardCard     *DashboardCardEndpoint
 	DashboardCardItem *DashboardCardItemEndpoint
 	Variable          *VariableEndpoint
+	EntityStorage     *EntityStorageEndpoint
 }
 
 // NewEndpoint ...
@@ -103,5 +104,6 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 		DashboardCard:     NewDashboardCardEndpoint(common),
 		DashboardCardItem: NewDashboardCardItemEndpoint(common),
 		Variable:          NewVariableEndpoint(common),
+		EntityStorage:     NewEntityStorageEndpoint(common),
 	}
 }

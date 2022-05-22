@@ -35,6 +35,7 @@ type Dto struct {
 	DashboardCardItem DashboardCardItem
 	DashboardTab      DashboardTab
 	Variable          Variable
+	EntityStorage     EntityStorage
 }
 
 // NewDto ...
@@ -55,5 +56,6 @@ func NewDto() Dto {
 		DashboardCardItem: NewDashboardCardItemDto(),
 		DashboardTab:      NewDashboardTabDto(),
 		Variable:          NewVariableDto(),
+		EntityStorage:     NewEntityStorageDto(),
 	}
 }
