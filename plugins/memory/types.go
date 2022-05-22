@@ -16,16 +16,45 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package models
+package memory
 
 import (
-	"time"
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 )
 
-// MetricDataItem ...
-type MetricDataItem struct {
-	Value    map[string]float32 `json:"value"`
-	Metric   *Metric            `json:"metric"`
-	MetricId int64              `json:"metric_id"`
-	Time     time.Time          `json:"time"`
+const (
+	// EntityMemory ...
+	EntityMemory = string("memory")
+
+	// AttrTotal ...
+	AttrTotal = "total"
+	// AttrFree ...
+	AttrFree = "free"
+	// AttrUsedPercent ...
+	AttrUsedPercent = "used_percent"
+
+	// Name ...
+	Name = "memory"
+
+	// EntityType ...
+	EntityType = "memory"
+)
+
+// NewAttr ...
+func NewAttr() m.Attributes {
+	return m.Attributes{
+		AttrTotal: {
+			Name: AttrTotal,
+			Type: common.AttributeInt,
+		},
+		AttrFree: {
+			Name: AttrFree,
+			Type: common.AttributeInt,
+		},
+		AttrUsedPercent: {
+			Name: AttrUsedPercent,
+			Type: common.AttributeFloat,
+		},
+	}
 }

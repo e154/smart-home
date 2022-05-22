@@ -22,10 +22,13 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/rcrowley/go-metrics"
+	"github.com/shirou/gopsutil/v3/cpu"
+
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
-	"github.com/rcrowley/go-metrics"
+	"github.com/e154/smart-home/system/event_bus/events"
 )
 
 // Actor ...
@@ -35,6 +38,8 @@ type Actor struct {
 	model           string
 	mhz             float64
 	all             metrics.GaugeFloat64
+	loadMin         metrics.GaugeFloat64
+	loadMax         metrics.GaugeFloat64
 	allCpuPrevTotal float64
 	allCpuPrevIdle  float64
 	eventBus        event_bus.EventBus
@@ -57,16 +62,17 @@ func NewActor(entityManager entity_manager.EntityManager,
 		},
 		eventBus:   eventBus,
 		all:        metrics.NewGaugeFloat64(),
+		loadMin:    metrics.NewGaugeFloat64(),
+		loadMax:    metrics.NewGaugeFloat64(),
 		updateLock: &sync.Mutex{},
 	}
 
-	//todo uncomment
-	//cpuInfo, err := cpu.Info()
-	//if err == nil {
-	//	actor.mhz = cpuInfo[0].Mhz
-	//	actor.cores = int64(cpuInfo[0].Cores)
-	//	actor.model = cpuInfo[0].Model
-	//}
+	cpuInfo, err := cpu.Info()
+	if err == nil {
+		actor.mhz = cpuInfo[0].Mhz
+		actor.cores = int64(cpuInfo[0].Cores)
+		actor.model = cpuInfo[0].Model
+	}
 
 	return actor
 }
@@ -78,39 +84,53 @@ func (e *Actor) Spawn() entity_manager.PluginActor {
 
 func (u *Actor) selfUpdate() {
 
-	//todo uncomment
-	//u.updateLock.Lock()
-	//defer u.updateLock.Unlock()
-	//
-	//oldState := u.GetEventState(u)
-	//u.Now(oldState)
-	//
-	//timeStats, err := cpu.Times(false)
-	//if err != nil || len(timeStats) == 0 {
-	//	return
-	//}
-	//
-	//total := timeStats[0].Total()
-	//diffIdle := timeStats[0].Idle - u.allCpuPrevIdle
-	//diffTotal := total - u.allCpuPrevTotal
-	//u.all.Update(100 * (diffTotal - diffIdle) / diffTotal)
-	//u.allCpuPrevTotal = total
-	//u.allCpuPrevIdle = timeStats[0].Idle
-	//
-	//u.AttrMu.Lock()
-	//u.Attrs[AttrCpuCores].Value = u.cores
-	//u.Attrs[AttrCpuMhz].Value = u.mhz
-	//u.Attrs[AttrCpuAll].Value = u.all.Value()
-	//u.AttrMu.Unlock()
-	//
-	//u.SetMetric(u.Id, "cpuspeed", map[string]interface{}{
-	//	"all": common.Rounding(u.all.Value(), 2),
-	//})
-	//
-	//u.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
-	//	PluginName: u.Id.PluginName(),
-	//	EntityId:   u.Id,
-	//	CurrentState:   oldState,
-	//	NewState:   u.GetEventState(u),
-	//})
+	u.updateLock.Lock()
+	defer u.updateLock.Unlock()
+
+	oldState := u.GetEventState(u)
+	u.Now(oldState)
+
+	// export CGO_ENABLED=1
+	timeStats, err := cpu.Times(false)
+	if err != nil {
+		return
+	}
+	if len(timeStats) == 0 {
+		return
+	}
+
+	total := timeStats[0].Total()
+	diffIdle := timeStats[0].Idle - u.allCpuPrevIdle
+	diffTotal := total - u.allCpuPrevTotal
+	all := common.Rounding(100*(diffTotal-diffIdle)/diffTotal, 2)
+	if v := u.loadMin.Value(); v == 0 || all < v {
+		u.loadMin.Update(all)
+	}
+	if v := u.loadMax.Value(); v == 0 || all > v {
+		u.loadMax.Update(all)
+	}
+
+	u.all.Update(all)
+	u.allCpuPrevTotal = total
+	u.allCpuPrevIdle = timeStats[0].Idle
+
+	u.AttrMu.Lock()
+	u.Attrs[AttrCpuCores].Value = u.cores
+	u.Attrs[AttrCpuMhz].Value = u.mhz
+	u.Attrs[AttrCpuAll].Value = u.all.Value()
+	u.Attrs[AttrLoadMax].Value = u.loadMax.Value()
+	u.Attrs[AttrLoadMin].Value = u.loadMin.Value()
+	u.AttrMu.Unlock()
+
+	u.SetMetric(u.Id, "cpuspeed", map[string]float32{
+		"all": common.Rounding32(u.all.Value(), 2),
+	})
+
+	u.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
+		StorageSave: false,
+		PluginName:  u.Id.PluginName(),
+		EntityId:    u.Id,
+		OldState:    oldState,
+		NewState:    u.GetEventState(u),
+	})
 }

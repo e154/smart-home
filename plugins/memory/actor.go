@@ -16,15 +16,14 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package uptime
+package memory
 
 import (
 	"fmt"
 	"sync"
-	"time"
 
-	"github.com/shirou/gopsutil/v3/host"
-	"go.uber.org/atomic"
+	"github.com/rcrowley/go-metrics"
+	"github.com/shirou/gopsutil/v3/mem"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/entity_manager"
@@ -35,28 +34,39 @@ import (
 // Actor ...
 type Actor struct {
 	entity_manager.BaseActor
-	appStarted time.Time
-	total      *atomic.Uint64
-	eventBus   event_bus.EventBus
+	cores           int64
+	model           string
+	total           metrics.Gauge
+	free            metrics.Gauge
+	usedPercent     metrics.GaugeFloat64
+	allCpuPrevTotal float64
+	allCpuPrevIdle  float64
+	eventBus        event_bus.EventBus
+	updateLock      *sync.Mutex
 }
 
 // NewActor ...
 func NewActor(entityManager entity_manager.EntityManager,
 	eventBus event_bus.EventBus) *Actor {
-	return &Actor{
+
+	actor := &Actor{
 		BaseActor: entity_manager.BaseActor{
-			Id:                common.EntityId(fmt.Sprintf("%s.%s", EntitySensor, Name)),
+			Id:                common.EntityId(fmt.Sprintf("%s.%s", EntityMemory, Name)),
 			Name:              Name,
-			EntityType:        EntitySensor,
-			UnitOfMeasurement: "days",
+			EntityType:        EntityMemory,
+			UnitOfMeasurement: "GHz",
 			AttrMu:            &sync.RWMutex{},
 			Attrs:             NewAttr(),
 			Manager:           entityManager,
 		},
-		eventBus:   eventBus,
-		appStarted: time.Now(),
-		total:      atomic.NewUint64(0),
+		eventBus:    eventBus,
+		total:       metrics.NewGauge(),
+		free:        metrics.NewGauge(),
+		usedPercent: metrics.NewGaugeFloat64(),
+		updateLock:  &sync.Mutex{},
 	}
+
+	return actor
 }
 
 // Spawn ...
@@ -64,28 +74,36 @@ func (e *Actor) Spawn() entity_manager.PluginActor {
 	return e
 }
 
-func (e *Actor) update() {
+func (u *Actor) selfUpdate() {
 
-	oldState := e.GetEventState(e)
+	u.updateLock.Lock()
+	defer u.updateLock.Unlock()
 
-	e.Now(oldState)
+	oldState := u.GetEventState(u)
+	u.Now(oldState)
 
-	total, err := host.Uptime()
-	if err != nil {
-		return
-	}
+	v, _ := mem.VirtualMemory()
+	u.total.Update(int64(v.Total))
+	u.free.Update(int64(v.Free))
 
-	e.total.Store(total)
+	usedPercent := common.Rounding32(v.UsedPercent, 2)
+	u.usedPercent.Update(float64(usedPercent))
 
-	e.AttrMu.Lock()
-	e.Attrs[AttrUptimeTotal].Value = e.total.Load()
-	e.Attrs[AttrUptimeAppStarted].Value = e.appStarted
-	e.AttrMu.Unlock()
+	u.AttrMu.Lock()
+	u.Attrs[AttrTotal].Value = v.Total
+	u.Attrs[AttrFree].Value = v.Free
+	u.Attrs[AttrUsedPercent].Value = usedPercent
+	u.AttrMu.Unlock()
 
-	e.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
-		PluginName: e.Id.PluginName(),
-		EntityId:   e.Id,
-		OldState:   oldState,
-		NewState:   e.GetEventState(e),
+	u.SetMetric(u.Id, "memory", map[string]float32{
+		"used_percent": usedPercent,
+	})
+
+	u.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
+		StorageSave: false,
+		PluginName:  u.Id.PluginName(),
+		EntityId:    u.Id,
+		OldState:    oldState,
+		NewState:    u.GetEventState(u),
 	})
 }

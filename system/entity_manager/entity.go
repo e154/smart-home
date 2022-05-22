@@ -59,6 +59,15 @@ func NewEntity(a PluginActor) m.EntityShort {
 		}
 	}
 
+	settings := make(m.Attributes, len(a.Settings()))
+	for k, a := range a.Settings() {
+		settings[k] = &m.Attribute{
+			Name:  a.Name,
+			Type:  a.Type,
+			Value: a.Value,
+		}
+	}
+
 	entity := m.EntityShort{
 		Id:          info.Id,
 		Description: info.Description,
@@ -68,6 +77,7 @@ func NewEntity(a PluginActor) m.EntityShort {
 		Actions:     actions,
 		States:      states,
 		Attributes:  attributes,
+		Settings:    settings,
 		Area:        info.Area,
 		Metrics:     a.Metrics(),
 		Hidden:      info.Hidde,

@@ -20,7 +20,6 @@ package dto
 
 import (
 	"fmt"
-
 	"github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -46,6 +45,7 @@ func (r Entity) AddEntity(obj *api.NewEntityRequest) (entity *m.Entity) {
 		Icon:        obj.Icon,
 		Attributes:  AttributeFromApi(obj.Attributes),
 		Settings:    AttributeFromApi(obj.Settings),
+		Metrics:     AddMetric(obj.Metrics),
 	}
 
 	// image
@@ -118,6 +118,7 @@ func (r Entity) UpdateEntity(obj *api.UpdateEntityRequest) (entity *m.Entity) {
 		Attributes:  AttributeFromApi(obj.Attributes),
 		Settings:    AttributeFromApi(obj.Settings),
 		ParentId:    nil,
+		Metrics:     AddMetric(obj.Metrics),
 	}
 
 	// image
@@ -269,6 +270,7 @@ func ToEntity(entity *m.Entity) (obj *api.Entity) {
 		UpdatedAt:   timestamppb.New(entity.UpdatedAt),
 		Attributes:  AttributeToApi(entity.Attributes),
 		Settings:    AttributeToApi(entity.Settings),
+		Metrics:     Metrics(entity.Metrics),
 	}
 	// area
 	if entity.Area != nil {
@@ -325,6 +327,71 @@ func ToEntity(entity *m.Entity) (obj *api.Entity) {
 	for _, s := range entity.Scripts {
 		script := scriptDto.ToGScript(s)
 		obj.Scripts = append(obj.Scripts, script)
+	}
+	return
+}
+
+func Metrics(metrics []*m.Metric) (objects []*api.Metric) {
+	objects = make([]*api.Metric, 0, len(metrics))
+	for _, metric := range metrics {
+
+		var options = &api.MetricOption{}
+		for _, item := range metric.Options.Items {
+			options.Items = append(options.Items, &api.MetricOptionItem{
+				Name:        item.Name,
+				Description: item.Description,
+				Color:       item.Color,
+				Translate:   item.Translate,
+				Label:       item.Label,
+			})
+		}
+
+		var data = make([]*api.MetricOptionData, 0, len(metric.Data))
+		for _, item := range metric.Data {
+			data = append(data, &api.MetricOptionData{
+				Value:    item.Value,
+				MetricId: item.MetricId,
+				Time:     timestamppb.New(item.Time),
+			})
+		}
+
+		obj := &api.Metric{
+			Id:          metric.Id,
+			Name:        metric.Name,
+			Description: metric.Description,
+			Options:     options,
+			Data:        data,
+			Type:        string(metric.Type),
+			Ranges:      metric.Ranges,
+			CreatedAt:   timestamppb.New(metric.CreatedAt),
+			UpdatedAt:   timestamppb.New(metric.UpdatedAt),
+		}
+		objects = append(objects, obj)
+	}
+	return
+}
+
+func AddMetric(objects []*api.Metric) (metrics []*m.Metric) {
+	metrics = make([]*m.Metric, 0, len(objects))
+	for _, obj := range objects {
+		var options m.MetricOptions
+		for _, item := range obj.Options.Items {
+			options.Items = append(options.Items, m.MetricOptionsItem{
+				Name:        item.Name,
+				Description: item.Description,
+				Color:       item.Color,
+				Translate:   item.Translate,
+				Label:       item.Label,
+			})
+		}
+		metrics = append(metrics, &m.Metric{
+			Id:          obj.Id,
+			Name:        obj.Name,
+			Description: obj.Description,
+			Options:     options,
+			Type:        common.MetricType(obj.Type),
+			Ranges:      obj.Ranges,
+		})
 	}
 	return
 }

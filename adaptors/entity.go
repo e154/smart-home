@@ -40,8 +40,8 @@ type IEntity interface {
 	Update(ver *m.Entity) (err error)
 	UpdateSettings(entityId common.EntityId, settings m.Attributes) (err error)
 	Search(query string, limit, offset int64) (list []*m.Entity, total int64, err error)
-	AppendMetric(entityId common.EntityId, metric m.Metric) (err error)
-	DeleteMetric(entityId common.EntityId, metric m.Metric) (err error)
+	AppendMetric(entityId common.EntityId, metric *m.Metric) (err error)
+	DeleteMetric(entityId common.EntityId, metric *m.Metric) (err error)
 	preloadMetric(ver *m.Entity)
 	fromDb(dbVer *db.Entity) (ver *m.Entity)
 	toDb(ver *m.Entity) (dbVer *db.Entity)
@@ -372,14 +372,14 @@ func (n *Entity) Search(query string, limit, offset int64) (list []*m.Entity, to
 }
 
 // AppendMetric ...
-func (n *Entity) AppendMetric(entityId common.EntityId, metric m.Metric) (err error) {
+func (n *Entity) AppendMetric(entityId common.EntityId, metric *m.Metric) (err error) {
 	metricAdaptor := GetMetricAdaptor(n.db, nil)
 	err = n.table.AppendMetric(entityId, metricAdaptor.toDb(metric))
 	return
 }
 
 // DeleteMetric ...
-func (n *Entity) DeleteMetric(entityId common.EntityId, metric m.Metric) (err error) {
+func (n *Entity) DeleteMetric(entityId common.EntityId, metric *m.Metric) (err error) {
 	err = n.table.DeleteMetric(entityId, metric.Id)
 	return
 }

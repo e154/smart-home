@@ -13,6 +13,7 @@ import "image.proto";
 import "script.proto";
 import "attributes.proto";
 import "pagination.proto";
+import "metric.proto";
 
 message EntityAction {
   string name = 1;
@@ -49,7 +50,7 @@ message Entity {
   repeated Script scripts = 12;
   map<string, Attribute> attributes = 13;
   map<string, Attribute> settings = 14;
-  map<string, Attribute> metrics = 15;
+  repeated Metric metrics = 15;
   google.protobuf.Timestamp created_at = 99;
   google.protobuf.Timestamp updated_at = 100;
 }
@@ -101,8 +102,8 @@ message NewEntityRequest {
   repeated State states = 11;
   map<string, Attribute> attributes = 12;
   map<string, Attribute> settings = 13;
-  map<string, Attribute> metrics = 14;
-  repeated Script scripts = 15;
+  repeated Metric metrics = 15;
+  repeated Script scripts = 16;
 }
 
 message UpdateEntityRequest {
@@ -138,7 +139,7 @@ message UpdateEntityRequest {
   map<string, Attribute> attributes = 13;
   map<string, Attribute> settings = 14;
   repeated Script scripts = 15;
-  map<string, Attribute> metrics = 16;
+  repeated Metric metrics = 16;
 }
 
 message GetEntityRequest {

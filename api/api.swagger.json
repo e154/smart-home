@@ -1766,9 +1766,9 @@
                   }
                 },
                 "metrics": {
-                  "type": "object",
-                  "additionalProperties": {
-                    "$ref": "#/definitions/apiAttribute"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/apiMetric"
                   }
                 }
               }
@@ -5255,9 +5255,9 @@
           }
         },
         "metrics": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "#/definitions/apiAttribute"
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiMetric"
           }
         },
         "createdAt": {
@@ -5798,6 +5798,98 @@
         }
       }
     },
+    "apiMetric": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "options": {
+          "$ref": "#/definitions/apiMetricOption"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiMetricOptionData"
+          }
+        },
+        "type": {
+          "type": "string"
+        },
+        "ranges": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "apiMetricOption": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiMetricOptionItem"
+          }
+        }
+      }
+    },
+    "apiMetricOptionData": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number",
+            "format": "float"
+          }
+        },
+        "metricId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "time": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "apiMetricOptionItem": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "color": {
+          "type": "string"
+        },
+        "translate": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        }
+      }
+    },
     "apiNetworkmapResponse": {
       "type": "object",
       "properties": {
@@ -5989,9 +6081,9 @@
           }
         },
         "metrics": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "#/definitions/apiAttribute"
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiMetric"
           }
         },
         "scripts": {

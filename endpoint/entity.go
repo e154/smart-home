@@ -21,13 +21,13 @@ package endpoint
 import (
 	"context"
 
-	"github.com/e154/smart-home/system/event_bus/events"
+	"github.com/go-playground/validator/v10"
+	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/event_bus"
-	"github.com/go-playground/validator/v10"
-	"github.com/pkg/errors"
+	"github.com/e154/smart-home/system/event_bus/events"
 )
 
 // EntityEndpoint ...

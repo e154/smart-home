@@ -20,23 +20,21 @@ package entity_manager
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"sort"
 	"sync"
 	"time"
 
-	"github.com/e154/smart-home/common/logger"
-	"github.com/e154/smart-home/system/event_bus/events"
-
 	"github.com/pkg/errors"
+	"go.uber.org/fx"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/event_bus/events"
 	"github.com/e154/smart-home/system/scripts"
-	"go.uber.org/fx"
 )
 
 var (
@@ -131,7 +129,7 @@ func (e *entityManager) Shutdown() {
 }
 
 // SetMetric ...
-func (e *entityManager) SetMetric(id common.EntityId, name string, value map[string]interface{}) {
+func (e *entityManager) SetMetric(id common.EntityId, name string, value map[string]float32) {
 
 	item, ok := e.actors.Load(id)
 	if !ok {
@@ -145,14 +143,8 @@ func (e *entityManager) SetMetric(id common.EntityId, name string, value map[str
 			continue
 		}
 
-		var b []byte
-		if b, err = json.Marshal(value); err != nil {
-			log.Error(err.Error(), "value", value)
-			return
-		}
-
 		err = e.adaptors.MetricBucket.Add(m.MetricDataItem{
-			Value:    b,
+			Value:    value,
 			MetricId: metric.Id,
 			Time:     time.Now(),
 		})

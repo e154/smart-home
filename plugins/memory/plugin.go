@@ -16,7 +16,7 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package cpuspeed
+package memory
 
 import (
 	"time"
@@ -44,7 +44,7 @@ type plugin struct {
 func New() plugins.Plugable {
 	p := &plugin{
 		Plugin: plugins.NewPlugin(),
-		pause:  50,
+		pause:  10,
 	}
 	return p
 }
@@ -58,7 +58,7 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 	p.actor = NewActor(service.EntityManager(), service.EventBus())
 	p.EntityManager.Spawn(p.actor.Spawn)
 
-	list, _, err := p.Adaptors.Metric.Search("cpuspeed", 1, 0)
+	list, _, err := p.Adaptors.Metric.Search("memory", 1, 0)
 	if err != nil {
 		log.Error(err.Error())
 	}
@@ -66,16 +66,16 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 	var metric *m.Metric
 	if len(list) == 0 {
 		metric = &m.Metric{
-			Name:        "cpuspeed",
-			Description: "Cpu metric",
+			Name:        "memory",
+			Description: "RAM metric",
 			Options: m.MetricOptions{
 				Items: []m.MetricOptionsItem{
 					{
-						Name:        "all",
+						Name:        "used_percent",
 						Description: "",
-						Color:       "#00ff00",
-						Translate:   "all",
-						Label:       "GHz",
+						Color:       "#0000FF",
+						Translate:   "used_percent",
+						Label:       "%",
 					},
 				},
 			},

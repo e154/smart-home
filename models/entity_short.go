@@ -34,7 +34,8 @@ type EntityShort struct {
 	States      []EntityStateShort  `json:"states"`
 	State       *EntityStateShort   `json:"state"`
 	Attributes  Attributes          `json:"attributes"`
+	Settings    Attributes          `json:"settings"`
 	Area        *Area               `json:"area"`
-	Metrics     []Metric            `json:"metrics"`
+	Metrics     []*Metric           `json:"metrics"`
 	Hidden      bool                `json:"hidden"`
 }

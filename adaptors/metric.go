@@ -31,16 +31,16 @@ import (
 
 // IMetric ...
 type IMetric interface {
-	Add(ver m.Metric) (id int64, err error)
-	GetById(id int64) (metric m.Metric, err error)
-	GetByIdWithData(id int64, from, to *time.Time, metricRange *string) (metric m.Metric, err error)
-	Update(ver m.Metric) error
+	Add(ver *m.Metric) (id int64, err error)
+	GetById(id int64) (metric *m.Metric, err error)
+	GetByIdWithData(id int64, from, to *time.Time, metricRange *string) (metric *m.Metric, err error)
+	Update(ver *m.Metric) error
 	Delete(deviceId int64) (err error)
-	AddMultiple(items []m.Metric) (err error)
-	List(limit, offset int64, orderBy, sort string) (list []m.Metric, total int64, err error)
-	Search(query string, limit, offset int) (list []m.Metric, total int64, err error)
-	fromDb(dbVer db.Metric) (ver m.Metric)
-	toDb(ver m.Metric) (dbVer db.Metric)
+	AddMultiple(items []*m.Metric) (err error)
+	List(limit, offset int64, orderBy, sort string) (list []*m.Metric, total int64, err error)
+	Search(query string, limit, offset int) (list []*m.Metric, total int64, err error)
+	fromDb(dbVer db.Metric) (ver *m.Metric)
+	toDb(ver *m.Metric) (dbVer db.Metric)
 }
 
 // Metric ...
@@ -64,13 +64,13 @@ func GetMetricAdaptor(d *gorm.DB, orm *orm.Orm) IMetric {
 }
 
 // Add ...
-func (n *Metric) Add(ver m.Metric) (id int64, err error) {
+func (n *Metric) Add(ver *m.Metric) (id int64, err error) {
 	id, err = n.table.Add(n.toDb(ver))
 	return
 }
 
 // GetById ...
-func (n *Metric) GetById(id int64) (metric m.Metric, err error) {
+func (n *Metric) GetById(id int64) (metric *m.Metric, err error) {
 	var dbVer db.Metric
 	if dbVer, err = n.table.GetById(id); err != nil {
 		return
@@ -92,7 +92,7 @@ func (n *Metric) GetById(id int64) (metric m.Metric, err error) {
 }
 
 // GetByIdWithData ...
-func (n *Metric) GetByIdWithData(id int64, from, to *time.Time, metricRange *string) (metric m.Metric, err error) {
+func (n *Metric) GetByIdWithData(id int64, from, to *time.Time, metricRange *string) (metric *m.Metric, err error) {
 	var dbVer db.Metric
 	if dbVer, err = n.table.GetById(id); err != nil {
 		return
@@ -114,7 +114,7 @@ func (n *Metric) GetByIdWithData(id int64, from, to *time.Time, metricRange *str
 }
 
 // Update ...
-func (n *Metric) Update(ver m.Metric) error {
+func (n *Metric) Update(ver *m.Metric) error {
 	return n.table.Update(n.toDb(ver))
 }
 
@@ -125,7 +125,7 @@ func (n *Metric) Delete(deviceId int64) (err error) {
 }
 
 // AddMultiple ...
-func (n *Metric) AddMultiple(items []m.Metric) (err error) {
+func (n *Metric) AddMultiple(items []*m.Metric) (err error) {
 
 	//TODO not work
 	//insertRecords := make([]interface{}, 0, len(items))
@@ -145,13 +145,13 @@ func (n *Metric) AddMultiple(items []m.Metric) (err error) {
 }
 
 // List ...
-func (n *Metric) List(limit, offset int64, orderBy, sort string) (list []m.Metric, total int64, err error) {
+func (n *Metric) List(limit, offset int64, orderBy, sort string) (list []*m.Metric, total int64, err error) {
 	var dbList []db.Metric
 	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
 		return
 	}
 
-	list = make([]m.Metric, len(dbList))
+	list = make([]*m.Metric, len(dbList))
 	for i, dbVer := range dbList {
 		list[i] = n.fromDb(dbVer)
 	}
@@ -160,13 +160,13 @@ func (n *Metric) List(limit, offset int64, orderBy, sort string) (list []m.Metri
 }
 
 // Search ...
-func (n *Metric) Search(query string, limit, offset int) (list []m.Metric, total int64, err error) {
+func (n *Metric) Search(query string, limit, offset int) (list []*m.Metric, total int64, err error) {
 	var dbList []db.Metric
 	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
 		return
 	}
 
-	list = make([]m.Metric, len(dbList))
+	list = make([]*m.Metric, len(dbList))
 	for i, dbVer := range dbList {
 		list[i] = n.fromDb(dbVer)
 	}
@@ -174,8 +174,8 @@ func (n *Metric) Search(query string, limit, offset int) (list []m.Metric, total
 	return
 }
 
-func (n *Metric) fromDb(dbVer db.Metric) (ver m.Metric) {
-	ver = m.Metric{
+func (n *Metric) fromDb(dbVer db.Metric) (ver *m.Metric) {
+	ver = &m.Metric{
 		Id:          dbVer.Id,
 		Name:        dbVer.Name,
 		Description: dbVer.Description,
@@ -201,7 +201,7 @@ func (n *Metric) fromDb(dbVer db.Metric) (ver m.Metric) {
 	return
 }
 
-func (n *Metric) toDb(ver m.Metric) (dbVer db.Metric) {
+func (n *Metric) toDb(ver *m.Metric) (dbVer db.Metric) {
 	dbVer = db.Metric{
 		Id:          ver.Id,
 		Name:        ver.Name,
