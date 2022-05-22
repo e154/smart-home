@@ -46,7 +46,7 @@ func (c ControllerEntityStorage) GetEntityStorageList(ctx context.Context, req *
 	}
 
 	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
-	items, total, err := c.endpoint.EntityStorage.GetList(ctx, common.EntityId(req.EntityId), pagination)
+	items, total, err := c.endpoint.EntityStorage.GetList(ctx, common.EntityId(req.EntityId), pagination, req.StartDate, req.EndDate)
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
 	}

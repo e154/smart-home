@@ -20,6 +20,7 @@ package adaptors
 
 import (
 	"encoding/json"
+	"time"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
@@ -32,7 +33,7 @@ type IEntityStorage interface {
 	Add(ver *m.EntityStorage) (id int64, err error)
 	GetLastByEntityId(entityId common.EntityId) (ver *m.EntityStorage, err error)
 	List(limit, offset int64, orderBy, sort string) (list []*m.EntityStorage, total int64, err error)
-	ListByEntityId(limit, offset int64, orderBy, sort string, entityId common.EntityId) (list []*m.EntityStorage, total int64, err error)
+	ListByEntityId(limit, offset int64, orderBy, sort string, entityId common.EntityId, startDate, endDate *time.Time) (list []*m.EntityStorage, total int64, err error)
 	fromDb(dbVer db.EntityStorage) (ver *m.EntityStorage)
 	toDb(ver *m.EntityStorage) (dbVer db.EntityStorage)
 }
@@ -83,9 +84,9 @@ func (n *EntityStorage) List(limit, offset int64, orderBy, sort string) (list []
 }
 
 // ListByEntityId ...
-func (n *EntityStorage) ListByEntityId(limit, offset int64, orderBy, sort string, entityId common.EntityId) (list []*m.EntityStorage, total int64, err error) {
+func (n *EntityStorage) ListByEntityId(limit, offset int64, orderBy, sort string, entityId common.EntityId, startDate, endDate *time.Time) (list []*m.EntityStorage, total int64, err error) {
 	var dbList []db.EntityStorage
-	if dbList, total, err = n.table.ListByEntityId(limit, offset, orderBy, sort, entityId); err != nil {
+	if dbList, total, err = n.table.ListByEntityId(limit, offset, orderBy, sort, entityId, startDate, endDate); err != nil {
 		return
 	}
 

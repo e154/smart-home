@@ -1831,6 +1831,18 @@
             "in": "query",
             "required": false,
             "type": "string"
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "required": false,
+            "type": "string"
           }
         ],
         "tags": [
