@@ -45,6 +45,8 @@ const (
 	AttrMin = "min"
 	// AttrMax ...
 	AttrMax = "max"
+	// AttrLatency ...
+	AttrLatency = "latency"
 	// AttrStartedAt ...
 	AttrStartedAt = "started_at"
 	// AttrNodeLogin ...
@@ -70,6 +72,10 @@ func NewAttr() m.Attributes {
 		},
 		AttrMax: {
 			Name: AttrMax,
+			Type: common.AttributeInt,
+		},
+		AttrLatency: {
+			Name: AttrLatency,
 			Type: common.AttributeInt,
 		},
 		AttrStartedAt: {
@@ -151,5 +157,6 @@ type MessageStatus struct {
 	Rps       int64     `json:"rps"`
 	Min       int64     `json:"min"`
 	Max       int64     `json:"max"`
+	Laatency  int64     `json:"latency"`
 	StartedAt time.Time `json:"started_at"`
 }
