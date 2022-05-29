@@ -16,17 +16,57 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package logging
+package logs
 
 import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 )
 
-// ISaver ...
-type ISaver interface {
-	Save(log m.Log)
-}
+const (
+	// EntityLogs ...
+	EntityLogs = string("logs")
 
-//todo fix
-var LogsHook = func(level common.LogLevel) {}
+	AttrErrTotal      = "err_total"
+	AttrErrToday      = "err_today"
+	AttrErrYesterday  = "err_yesterday"
+	AttrWarnTotal     = "warn_total"
+	AttrWarnToday     = "warn_today"
+	AttrWarnYesterday = "warn_yesterday"
+
+	// Name ...
+	Name = "logs"
+
+	// EntityType ...
+	EntityType = "logs"
+)
+
+// NewAttr ...
+func NewAttr() m.Attributes {
+	return m.Attributes{
+		AttrErrTotal: {
+			Name: AttrErrTotal,
+			Type: common.AttributeInt,
+		},
+		AttrErrToday: {
+			Name: AttrErrToday,
+			Type: common.AttributeInt,
+		},
+		AttrErrYesterday: {
+			Name: AttrErrYesterday,
+			Type: common.AttributeInt,
+		},
+		AttrWarnTotal: {
+			Name: AttrWarnTotal,
+			Type: common.AttributeInt,
+		},
+		AttrWarnToday: {
+			Name: AttrWarnToday,
+			Type: common.AttributeInt,
+		},
+		AttrWarnYesterday: {
+			Name: AttrWarnYesterday,
+			Type: common.AttributeInt,
+		},
+	}
+}

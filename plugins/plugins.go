@@ -24,6 +24,7 @@ import (
 	_ "github.com/e154/smart-home/plugins/cpuspeed"
 	_ "github.com/e154/smart-home/plugins/email"
 	_ "github.com/e154/smart-home/plugins/hdd"
+	_ "github.com/e154/smart-home/plugins/logs"
 	_ "github.com/e154/smart-home/plugins/memory"
 	_ "github.com/e154/smart-home/plugins/memory_app"
 	_ "github.com/e154/smart-home/plugins/messagebird"
