@@ -16,25 +16,14 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package node
+package hdd
 
 import (
-	"fmt"
-	"sync"
-
-	"github.com/e154/smart-home/common/logger"
-
-	"github.com/pkg/errors"
-
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/plugins"
-)
-
-var (
-	log = logger.MustGetLogger("plugins.node")
+	"sync"
+	"time"
 )
 
 var _ plugins.Plugable = (*plugin)(nil)
@@ -45,19 +34,21 @@ func init() {
 
 type plugin struct {
 	*plugins.Plugin
+	quit       chan struct{}
+	pause      uint
 	actorsLock *sync.Mutex
 	actors     map[common.EntityId]*Actor
-	mqttServ   mqtt.MqttServ
-	mqttClient mqtt.MqttCli
 }
 
 // New ...
 func New() plugins.Plugable {
-	return &plugin{
+	p := &plugin{
 		Plugin:     plugins.NewPlugin(),
+		pause:      10,
 		actorsLock: &sync.Mutex{},
 		actors:     make(map[common.EntityId]*Actor),
 	}
+	return p
 }
 
 // Load ...
@@ -66,10 +57,25 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 		return
 	}
 
-	p.mqttServ = service.MqttServ()
+	go func() {
+		ticker := time.NewTicker(time.Second * time.Duration(p.pause))
+		p.quit = make(chan struct{})
+		defer func() {
+			ticker.Stop()
+			close(p.quit)
+		}()
 
-	p.mqttClient = p.mqttServ.NewClient("plugins.node")
-	_ = p.mqttServ.Authenticator().Register(p.Authenticator)
+		for {
+			select {
+			case <-p.quit:
+				return
+			case <-ticker.C:
+				for _, actor := range p.actors {
+					actor.selfUpdate()
+				}
+			}
+		}
+	}()
 
 	return nil
 }
@@ -79,25 +85,8 @@ func (p *plugin) Unload() (err error) {
 	if err = p.Plugin.Unload(); err != nil {
 		return
 	}
-
-	p.mqttServ.RemoveClient("plugins.node")
-	_ = p.mqttServ.Authenticator().Unregister(p.Authenticator)
-
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	// remove actors
-	for entityId, actor := range p.actors {
-		actor.destroy()
-		delete(p.actors, entityId)
-	}
-
+	p.quit <- struct{}{}
 	return nil
-}
-
-// Name ...
-func (p *plugin) Name() string {
-	return Name
 }
 
 // AddOrUpdateActor ...
@@ -109,7 +98,7 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 		return
 	}
 
-	actor := NewActor(entity, p.EntityManager, p.Adaptors, p.ScriptService, p.EventBus, p.mqttClient)
+	actor := NewActor(entity.Settings, p.EntityManager, p.EventBus)
 	p.actors[entity.Id] = actor
 	p.EntityManager.Spawn(actor.Spawn)
 
@@ -122,22 +111,19 @@ func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
 	p.actorsLock.Lock()
 	defer p.actorsLock.Unlock()
 
-	actor, ok := p.actors[entityId]
-	if !ok {
-		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("failed remove \"%s\"", entityId))
-		return
-	}
-
-	actor.destroy()
-
 	delete(p.actors, entityId)
 
 	return
 }
 
+// Name ...
+func (p plugin) Name() string {
+	return Name
+}
+
 // Type ...
 func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginBuiltIn
+	return plugins.PluginInstallable
 }
 
 // Depends ...
@@ -150,54 +136,10 @@ func (p *plugin) Version() string {
 	return "0.0.1"
 }
 
-func (p *plugin) pushToNode() {
-
-}
-
-// Authenticator ...
-func (p *plugin) Authenticator(login, password string) (err error) {
-
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	for _, actor := range p.actors {
-		attrs := actor.Settings()
-
-		if _login, ok := attrs[AttrNodeLogin]; !ok || _login.String() != login {
-			continue
-		}
-
-		if _password, ok := attrs[AttrNodePass]; !ok || _password.String() != password {
-			continue
-		}
-
-		err = nil
-		return
-
-		// todo add encripted password
-		//if ok := common.CheckPasswordHash(password, settings[AttrNodePass].String()); ok {
-		//	return
-		//}
-	}
-
-	err = common.ErrBadLoginOrPassword
-
-	return
-}
-
 // Options ...
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
-		Triggers:           false,
-		Actors:             true,
-		ActorCustomAttrs:   false,
-		ActorAttrs:         NewAttr(),
-		ActorCustomActions: false,
-		ActorActions:       nil,
-		ActorCustomStates:  false,
-		ActorStates:        entity_manager.ToEntityStateShort(NewStates()),
-		ActorCustomSetts:   false,
-		ActorSetts:         NewSettings(),
-		Setts:              nil,
+		ActorAttrs: NewAttr(),
+		ActorSetts: NewSettings(),
 	}
 }
