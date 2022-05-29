@@ -19,12 +19,10 @@
 package hdd
 
 import (
-	"fmt"
 	"github.com/e154/smart-home/system/event_bus/events"
 	"github.com/shirou/gopsutil/v3/disk"
 	"sync"
 
-	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
@@ -33,7 +31,7 @@ import (
 
 // Actor ...
 type Actor struct {
-	entity_manager.BaseActor
+	*entity_manager.BaseActor
 	cores           int64
 	model           string
 	total           metrics.Gauge
@@ -47,12 +45,12 @@ type Actor struct {
 }
 
 // NewActor ...
-func NewActor(settings m.Attributes,
+func NewActor(entity *m.Entity,
 	entityManager entity_manager.EntityManager,
 	eventBus event_bus.EventBus) *Actor {
 
 	var mountPoint string
-	if _mountPoint, ok := settings[AttrMountPoint]; ok {
+	if _mountPoint, ok := entity.Settings[AttrMountPoint]; ok {
 		mountPoint = _mountPoint.String()
 	}
 	if mountPoint == "" {
@@ -60,26 +58,23 @@ func NewActor(settings m.Attributes,
 	}
 
 	actor := &Actor{
-		BaseActor: entity_manager.BaseActor{
-			Id:                common.EntityId(fmt.Sprintf("%s.%s", EntityMemory, Name)),
-			Name:              Name,
-			EntityType:        EntityMemory,
-			UnitOfMeasurement: "GHz",
+		BaseActor: &entity_manager.BaseActor{
+			Id:                entity.Id,
+			Name:              entity.Id.Name(),
+			EntityType:        EntityHDD,
+			UnitOfMeasurement: "",
 			AttrMu:            &sync.RWMutex{},
 			Attrs:             NewAttr(),
 			Manager:           entityManager,
 		},
-		eventBus:    eventBus,
-		total:       metrics.NewGauge(),
-		free:        metrics.NewGauge(),
-		usedPercent: metrics.NewGaugeFloat64(),
-		updateLock:  &sync.Mutex{},
-		MountPoint:  mountPoint,
+		eventBus:   eventBus,
+		updateLock: &sync.Mutex{},
+		MountPoint: mountPoint,
 	}
 
 	actor.Manager = entityManager
 	actor.Attrs = NewAttr()
-	actor.Setts = settings
+	actor.Setts = entity.Settings
 
 	if actor.Setts == nil {
 		actor.Setts = NewSettings()

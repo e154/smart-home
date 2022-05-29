@@ -24,13 +24,13 @@ import (
 )
 
 const (
-	// EntityMemory ...
-	EntityMemory = string("hdd")
+	// EntityHDD ...
+	EntityHDD = string("hdd")
 
 	// AttrPath ...
 	AttrPath = "path"
 
-	// AttrFstype
+	// AttrFstype ...
 	AttrFstype = "fstype"
 
 	// AttrTotal ...

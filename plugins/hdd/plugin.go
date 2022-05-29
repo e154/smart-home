@@ -98,7 +98,7 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 		return
 	}
 
-	actor := NewActor(entity.Settings, p.EntityManager, p.EventBus)
+	actor := NewActor(entity, p.EntityManager, p.EventBus)
 	p.actors[entity.Id] = actor
 	p.EntityManager.Spawn(actor.Spawn)
 
