@@ -45,7 +45,6 @@ import (
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/gate_client"
 	. "github.com/e154/smart-home/system/initial/assertions"
-	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
 	"go.uber.org/fx"
@@ -69,7 +68,6 @@ type Initial struct {
 	pluginManager common.PluginManager
 	automation    automation.Automation
 	api           *api.Api
-	metrics       *metrics.MetricManager
 	gateClient    *gate_client.GateClient
 	validation    *validation.Validate
 }
@@ -84,7 +82,6 @@ func NewInitial(lc fx.Lifecycle,
 	pluginManager common.PluginManager,
 	automation automation.Automation,
 	api *api.Api,
-	metrics *metrics.MetricManager,
 	gateClient *gate_client.GateClient,
 	validation *validation.Validate,
 	_ *logging_ws.LoggingWs) *Initial {
@@ -97,7 +94,6 @@ func NewInitial(lc fx.Lifecycle,
 		pluginManager: pluginManager,
 		automation:    automation,
 		api:           api,
-		metrics:       metrics,
 		gateClient:    gateClient,
 		validation:    validation,
 	}
@@ -186,7 +182,6 @@ func (n *Initial) checkForUpgrade() {
 func (n *Initial) Start() {
 
 	n.checkForUpgrade()
-	n.metrics.Start()
 	n.entityManager.SetPluginManager(n.pluginManager)
 	n.pluginManager.Start()
 	_ = n.automation.Start()

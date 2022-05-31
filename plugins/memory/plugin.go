@@ -35,9 +35,9 @@ func init() {
 
 type plugin struct {
 	*plugins.Plugin
-	quit  chan struct{}
-	pause uint
-	actor *Actor
+	ticker *time.Ticker
+	pause  uint
+	actor  *Actor
 }
 
 // New ...
@@ -92,20 +92,10 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 	p.actor.Metric = []*m.Metric{metric}
 
 	go func() {
-		ticker := time.NewTicker(time.Second * time.Duration(p.pause))
-		p.quit = make(chan struct{})
-		defer func() {
-			ticker.Stop()
-			close(p.quit)
-		}()
+		p.ticker = time.NewTicker(time.Second * time.Duration(p.pause))
 
-		for {
-			select {
-			case <-p.quit:
-				return
-			case <-ticker.C:
-				p.actor.selfUpdate()
-			}
+		for range p.ticker.C {
+			p.actor.selfUpdate()
 		}
 	}()
 
@@ -117,7 +107,10 @@ func (p *plugin) Unload() (err error) {
 	if err = p.Plugin.Unload(); err != nil {
 		return
 	}
-	p.quit <- struct{}{}
+	if p.ticker != nil {
+		p.ticker.Stop()
+		p.ticker = nil
+	}
 	return nil
 }
 

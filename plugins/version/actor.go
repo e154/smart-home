@@ -16,53 +16,36 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package hdd
+package version
 
 import (
+	"fmt"
+	"runtime"
 	"sync"
 
-	"github.com/e154/smart-home/system/event_bus/events"
-	"github.com/shirou/gopsutil/v3/disk"
-
-	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
-	"github.com/rcrowley/go-metrics"
+	"github.com/e154/smart-home/system/event_bus/events"
+	"github.com/e154/smart-home/version"
 )
 
 // Actor ...
 type Actor struct {
-	*entity_manager.BaseActor
-	cores           int64
-	model           string
-	total           metrics.Gauge
-	free            metrics.Gauge
-	usedPercent     metrics.GaugeFloat64
-	allCpuPrevTotal float64
-	allCpuPrevIdle  float64
-	eventBus        event_bus.EventBus
-	updateLock      *sync.Mutex
-	MountPoint      string
+	entity_manager.BaseActor
+	eventBus   event_bus.EventBus
+	updateLock *sync.Mutex
 }
 
 // NewActor ...
-func NewActor(entity *m.Entity,
-	entityManager entity_manager.EntityManager,
+func NewActor(entityManager entity_manager.EntityManager,
 	eventBus event_bus.EventBus) *Actor {
 
-	var mountPoint string
-	if _mountPoint, ok := entity.Settings[AttrMountPoint]; ok {
-		mountPoint = _mountPoint.String()
-	}
-	if mountPoint == "" {
-		mountPoint = "/"
-	}
-
 	actor := &Actor{
-		BaseActor: &entity_manager.BaseActor{
-			Id:                entity.Id,
-			Name:              entity.Id.Name(),
-			EntityType:        EntityHDD,
+		BaseActor: entity_manager.BaseActor{
+			Id:                common.EntityId(fmt.Sprintf("%s.%s", EntityVersion, Name)),
+			Name:              Name,
+			EntityType:        EntityVersion,
 			UnitOfMeasurement: "",
 			AttrMu:            &sync.RWMutex{},
 			Attrs:             NewAttr(),
@@ -70,15 +53,6 @@ func NewActor(entity *m.Entity,
 		},
 		eventBus:   eventBus,
 		updateLock: &sync.Mutex{},
-		MountPoint: mountPoint,
-	}
-
-	actor.Manager = entityManager
-	actor.Attrs = NewAttr()
-	actor.Setts = entity.Settings
-
-	if actor.Setts == nil {
-		actor.Setts = NewSettings()
 	}
 
 	return actor
@@ -97,24 +71,19 @@ func (u *Actor) selfUpdate() {
 	oldState := u.GetEventState(u)
 	u.Now(oldState)
 
-	var mountPoint = "/"
-	if u.MountPoint != "" {
-		mountPoint = u.MountPoint
-	}
+	var s runtime.MemStats
+	runtime.ReadMemStats(&s)
 
-	if r, err := disk.Usage(mountPoint); err == nil {
-		u.AttrMu.Lock()
-		u.Attrs[AttrFstype].Value = r.Fstype
-		u.Attrs[AttrTotal].Value = r.Total
-		u.Attrs[AttrFree].Value = r.Free
-		u.Attrs[AttrUsed].Value = r.Used
-		u.Attrs[AttrUsedPercent].Value = r.UsedPercent
-		u.Attrs[AttrInodesTotal].Value = r.InodesTotal
-		u.Attrs[AttrInodesUsed].Value = r.InodesUsed
-		u.Attrs[AttrInodesFree].Value = r.InodesFree
-		u.Attrs[AttrInodesUsedPercent].Value = r.InodesUsedPercent
-		u.AttrMu.Unlock()
-	}
+	u.AttrMu.Lock()
+	u.Attrs[AttrVersion].Value = version.VersionString
+	u.Attrs[AttrRevision].Value = version.RevisionString
+	u.Attrs[AttrRevisionURL].Value = version.RevisionURLString
+	u.Attrs[AttrGenerated].Value = version.GeneratedString
+	u.Attrs[AttrDevelopers].Value = version.DevelopersString
+	u.Attrs[AttrBuildNum].Value = version.BuildNumString
+	u.Attrs[AttrDockerImage].Value = version.DockerImageString
+	u.Attrs[AttrGoVersion].Value = version.GoVersion
+	u.AttrMu.Unlock()
 
 	u.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
 		StorageSave: false,

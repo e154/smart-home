@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+
 	"go.uber.org/fx"
 
 	"github.com/e154/smart-home/common"

@@ -60,6 +60,7 @@ func (n PluginManager) Create() (home *m.Plugin) {
 	n.addPlugin("memory_app", true, false, true)
 	n.addPlugin("hdd", true, false, true)
 	n.addPlugin("logs", true, false, true)
+	n.addPlugin("version", true, false, true)
 	n.addPlugin("node", true, true, true)
 	n.addPlugin("notify", true, true, false)
 	n.addPlugin("scene", true, false, true)

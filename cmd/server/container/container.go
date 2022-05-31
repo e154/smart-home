@@ -36,7 +36,6 @@ import (
 	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/logging_db"
 	"github.com/e154/smart-home/system/logging_ws"
-	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/mqtt_authenticator"
@@ -76,8 +75,6 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 			mqtt.NewMqtt,
 			access_list.NewAccessListService,
 			rbac.NewAccessFilter,
-			NewMetricConfig,
-			metrics.NewMetricManager,
 			NewZigbee2mqttConfig,
 			zigbee2mqtt.NewZigbee2mqtt,
 			storage.NewStorage,

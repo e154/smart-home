@@ -20,10 +20,11 @@ package endpoint
 
 import (
 	"context"
+	"time"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/pkg/errors"
-	"time"
 )
 
 // EntityStorageEndpoint ...

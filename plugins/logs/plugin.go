@@ -33,7 +33,6 @@ func init() {
 
 type plugin struct {
 	*plugins.Plugin
-	quit  chan struct{}
 	pause uint
 	actor *Actor
 	cron  *cron.Cron
@@ -45,7 +44,7 @@ func New() plugins.Plugable {
 	p := &plugin{
 		Plugin: plugins.NewPlugin(),
 		pause:  10,
-		cron: cron.NewCron(),
+		cron:   cron.NewCron(),
 	}
 	return p
 }
@@ -81,7 +80,6 @@ func (p *plugin) Unload() (err error) {
 	}
 	p.cron.Stop()
 	p.task = nil
-	p.quit <- struct{}{}
 	return nil
 }
 

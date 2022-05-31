@@ -16,13 +16,11 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package hdd
+package version
 
 import (
-	"sync"
 	"time"
 
-	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/plugins"
 )
@@ -35,19 +33,16 @@ func init() {
 
 type plugin struct {
 	*plugins.Plugin
-	quit       chan struct{}
-	pause      uint
-	actorsLock *sync.Mutex
-	actors     map[common.EntityId]*Actor
+	pause  uint
+	actor  *Actor
+	ticker *time.Ticker
 }
 
 // New ...
 func New() plugins.Plugable {
 	p := &plugin{
-		Plugin:     plugins.NewPlugin(),
-		pause:      10,
-		actorsLock: &sync.Mutex{},
-		actors:     make(map[common.EntityId]*Actor),
+		Plugin: plugins.NewPlugin(),
+		pause:  10,
 	}
 	return p
 }
@@ -58,23 +53,14 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 		return
 	}
 
-	go func() {
-		ticker := time.NewTicker(time.Second * time.Duration(p.pause))
-		p.quit = make(chan struct{})
-		defer func() {
-			ticker.Stop()
-			close(p.quit)
-		}()
+	p.actor = NewActor(service.EntityManager(), service.EventBus())
+	p.EntityManager.Spawn(p.actor.Spawn)
 
-		for {
-			select {
-			case <-p.quit:
-				return
-			case <-ticker.C:
-				for _, actor := range p.actors {
-					actor.selfUpdate()
-				}
-			}
+	go func() {
+		p.ticker = time.NewTicker(time.Second * time.Duration(p.pause))
+
+		for range p.ticker.C {
+			p.actor.selfUpdate()
 		}
 	}()
 
@@ -83,38 +69,15 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 
 // Unload ...
 func (p *plugin) Unload() (err error) {
+
 	if err = p.Plugin.Unload(); err != nil {
 		return
 	}
-	p.quit <- struct{}{}
-	return nil
-}
-
-// AddOrUpdateActor ...
-func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	if _, ok := p.actors[entity.Id]; ok {
-		return
+	if p.ticker != nil {
+		p.ticker.Stop()
+		p.ticker = nil
 	}
-
-	actor := NewActor(entity, p.EntityManager, p.EventBus)
-	p.actors[entity.Id] = actor
-	p.EntityManager.Spawn(actor.Spawn)
-
-	return
-}
-
-// RemoveActor ...
-func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
-
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	delete(p.actors, entityId)
-
-	return
+	return nil
 }
 
 // Name ...
@@ -141,6 +104,5 @@ func (p *plugin) Version() string {
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
 		ActorAttrs: NewAttr(),
-		ActorSetts: NewSettings(),
 	}
 }

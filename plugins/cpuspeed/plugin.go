@@ -44,7 +44,7 @@ type plugin struct {
 func New() plugins.Plugable {
 	p := &plugin{
 		Plugin: plugins.NewPlugin(),
-		pause:  50,
+		pause:  10,
 	}
 	return p
 }

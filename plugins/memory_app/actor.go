@@ -20,12 +20,14 @@ package memory_app
 
 import (
 	"fmt"
+	"runtime"
+	"sync"
+	"time"
+
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/event_bus/events"
-	"runtime"
-	"sync"
 )
 
 // Actor ...
@@ -78,7 +80,7 @@ func (u *Actor) selfUpdate() {
 	u.Attrs[AttrTotalAlloc].Value = s.TotalAlloc
 	u.Attrs[AttrSys].Value = s.Sys
 	u.Attrs[AttrNumGC].Value = s.NumGC
-	u.Attrs[AttrLastGC].Value = s.LastGC
+	u.Attrs[AttrLastGC].Value = time.Unix(0, int64(s.LastGC))
 	u.AttrMu.Unlock()
 
 	u.SetMetric(u.Id, "memory_app", map[string]float32{
