@@ -41,7 +41,7 @@ type DashboardTab struct {
 	Enabled     bool
 	Weight      int
 	ColumnWidth int
-	Gap         int
+	Gap         bool
 	Background  string
 	DashboardId int64
 	Dashboard   *Dashboard

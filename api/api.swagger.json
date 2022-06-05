@@ -1152,8 +1152,7 @@
                   "format": "int32"
                 },
                 "gap": {
-                  "type": "integer",
-                  "format": "int32"
+                  "type": "boolean"
                 },
                 "background": {
                   "type": "string"
@@ -5125,8 +5124,7 @@
           "format": "int32"
         },
         "gap": {
-          "type": "integer",
-          "format": "int32"
+          "type": "boolean"
         },
         "background": {
           "type": "string"
@@ -5182,8 +5180,7 @@
           "format": "int32"
         },
         "gap": {
-          "type": "integer",
-          "format": "int32"
+          "type": "boolean"
         },
         "background": {
           "type": "string"
@@ -6117,8 +6114,7 @@
           "format": "int32"
         },
         "gap": {
-          "type": "integer",
-          "format": "int32"
+          "type": "boolean"
         },
         "background": {
           "type": "string"

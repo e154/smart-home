@@ -11,7 +11,7 @@ type DashboardTab struct {
 	Id          int64                       `json:"id"`
 	Name        string                      `json:"name" validate:"required"`
 	ColumnWidth int                         `json:"column_width"`
-	Gap         int                         `json:"gap"`
+	Gap         bool                        `json:"gap"`
 	Background  string                      `json:"background"`
 	Icon        string                      `json:"icon"`
 	Enabled     bool                        `json:"enabled"`
