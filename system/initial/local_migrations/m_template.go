@@ -1,24 +1,7 @@
-// This file is part of the Smart Home
-// Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
-//
-// This library is free software: you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 3 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Library General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library.  If not, see
-// <https://www.gnu.org/licenses/>.
-
-package _default
+package local_migrations
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -31,24 +14,25 @@ import (
 	. "github.com/e154/smart-home/system/initial/assertions"
 )
 
-// TemplateManager ...
-type TemplateManager struct {
+type MigrationTemplates struct {
 	adaptors *adaptors.Adaptors
 }
 
-// NewTemplateManager ...
-func NewTemplateManager(adaptors *adaptors.Adaptors) *TemplateManager {
-	return &TemplateManager{
+func NewMigrationTemplates(adaptors *adaptors.Adaptors) *MigrationTemplates {
+	return &MigrationTemplates{
 		adaptors: adaptors,
 	}
 }
 
-// Create ...
-func (t TemplateManager) Create() {
+func (t *MigrationTemplates) Up(ctx context.Context, adaptors *adaptors.Adaptors) (err error) {
 
+	if adaptors != nil {
+		t.adaptors = adaptors
+	}
 	dataDir := filepath.Join("data", "templates")
 
-	files, err := os.ReadDir(dataDir)
+	var files []os.DirEntry
+	files, err = os.ReadDir(dataDir)
 	So(err, ShouldBeNil)
 
 	for _, file := range files {
@@ -118,7 +102,8 @@ func (t TemplateManager) Create() {
 			continue
 		}
 
-		b, err := ioutil.ReadFile(filepath.Join(dataDir, fmt.Sprintf("%s.html", name)))
+		var b []byte
+		b, err = ioutil.ReadFile(filepath.Join(dataDir, fmt.Sprintf("%s.html", name)))
 		So(err, ShouldBeNil)
 
 		template := &m.Template{
@@ -131,15 +116,6 @@ func (t TemplateManager) Create() {
 
 		err = t.adaptors.Template.Create(template)
 		So(err, ShouldBeNil)
-	}
-}
-
-// Upgrade ...
-func (t TemplateManager) Upgrade(oldVersion int) (err error) {
-
-	switch oldVersion {
-	case 0:
-
 	}
 
 	return

@@ -131,7 +131,7 @@ func (m *Mqtt) Start() {
 	// Create a new server
 	m.server = server.New(options...)
 
-	log.Infof("Serving server at tcp://[::]:%d", m.cfg.Port)
+	log.Infof("Serving MQTT server at tcp://[::]:%d", m.cfg.Port)
 
 	go func() {
 		if err = m.server.Run(); err != nil {

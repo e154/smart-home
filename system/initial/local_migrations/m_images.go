@@ -1,24 +1,7 @@
-// This file is part of the Smart Home
-// Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
-//
-// This library is free software: you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 3 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Library General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library.  If not, see
-// <https://www.gnu.org/licenses/>.
-
-package _default
+package local_migrations
 
 import (
+	"context"
 	"os"
 	"path"
 	"strings"
@@ -29,22 +12,28 @@ import (
 	. "github.com/e154/smart-home/system/initial/assertions"
 )
 
-// ImageManager ...
-type ImageManager struct {
+type MigrationImages struct {
 	adaptors *adaptors.Adaptors
+	dir      string
 }
 
-// NewImageManager ...
-func NewImageManager(adaptors *adaptors.Adaptors) *ImageManager {
-	return &ImageManager{
+func NewMigrationImages(adaptors *adaptors.Adaptors, dir string) *MigrationImages {
+	if dir == "" {
+		dir = "data"
+	}
+	return &MigrationImages{
 		adaptors: adaptors,
+		dir:      dir,
 	}
 }
 
-// Create ...
-func (i ImageManager) Create() (imageList map[string]*m.Image) {
+func (i *MigrationImages) Up(ctx context.Context, adaptors *adaptors.Adaptors) (err error) {
 
-	imageList = map[string]*m.Image{
+	if adaptors != nil {
+		i.adaptors = adaptors
+	}
+
+	imageList := map[string]*m.Image{
 		"button_v1_off": {
 			Image:    "30d2f4116a09fd14b49c266985db8109.svg",
 			MimeType: "text/html; charset=utf-8",
@@ -305,13 +294,6 @@ func (i ImageManager) Create() (imageList map[string]*m.Image) {
 		},
 	}
 
-	_ = i.install(imageList)
-
-	return
-}
-
-func (i ImageManager) install(imageList map[string]*m.Image) (err error) {
-
 	var subDir string
 	for _, image := range imageList {
 		if _, err = i.adaptors.Image.GetByImageName(image.Image); err == nil {
@@ -322,7 +304,9 @@ func (i ImageManager) install(imageList map[string]*m.Image) (err error) {
 		So(err, ShouldBeNil)
 
 		fullPath := common.GetFullPath(image.Image)
-		to := path.Join(fullPath, image.Image)
+		to := path.Join(path.Join(i.dir, fullPath), image.Image)
+		_ = os.MkdirAll(to, os.ModePerm)
+
 		if exist := common.FileExist(to); !exist {
 
 			_ = os.MkdirAll(fullPath, os.ModePerm)
@@ -351,21 +335,5 @@ func (i ImageManager) install(imageList map[string]*m.Image) (err error) {
 		}
 	}
 
-	return
-}
-
-// Upgrade ...
-func (i ImageManager) Upgrade(oldVersion int) (err error) {
-
-	var imageList map[string]*m.Image
-	switch oldVersion {
-	case 0:
-
-	default:
-		return
-	}
-
-	err = i.install(imageList)
-
-	return
+	return nil
 }

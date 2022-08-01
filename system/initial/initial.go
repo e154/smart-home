@@ -19,57 +19,49 @@
 package initial
 
 import (
-	"github.com/e154/smart-home/common/logger"
-	_ "github.com/e154/smart-home/system/initial/environments/default"
-	_ "github.com/e154/smart-home/system/initial/environments/example1"
-	"github.com/e154/smart-home/system/logging_ws"
-	"github.com/e154/smart-home/system/validation"
-
-	_ "github.com/e154/smart-home/plugins"
-	_ "github.com/e154/smart-home/system/initial/environments"
-
 	"context"
 	"errors"
 	"fmt"
 
+	"github.com/e154/smart-home/system/initial/demo"
+	"go.uber.org/fx"
+
 	. "github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api"
-	"github.com/e154/smart-home/system/initial/environments"
-
-	"strconv"
-
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
+	_ "github.com/e154/smart-home/plugins"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/gate_client"
 	. "github.com/e154/smart-home/system/initial/assertions"
+	localMigrations "github.com/e154/smart-home/system/initial/local_migrations"
+	"github.com/e154/smart-home/system/logging_ws"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
-	"go.uber.org/fx"
+	"github.com/e154/smart-home/system/validation"
 )
 
 var (
 	log = logger.MustGetLogger("initial")
 )
 
-var (
-	currentVersion = 4
-)
-
 // Initial ...
 type Initial struct {
-	migrations    *migrations.Migrations
-	adaptors      *Adaptors
-	scriptService scripts.ScriptService
-	accessList    access_list.AccessListService
-	entityManager entity_manager.EntityManager
-	pluginManager common.PluginManager
-	automation    automation.Automation
-	api           *api.Api
-	gateClient    *gate_client.GateClient
-	validation    *validation.Validate
+	migrations      *migrations.Migrations
+	adaptors        *Adaptors
+	scriptService   scripts.ScriptService
+	accessList      access_list.AccessListService
+	entityManager   entity_manager.EntityManager
+	pluginManager   common.PluginManager
+	automation      automation.Automation
+	api             *api.Api
+	gateClient      *gate_client.GateClient
+	validation      *validation.Validate
+	localMigrations *localMigrations.Migrations
+	demo            *demo.Demos
 }
 
 // NewInitial ...
@@ -84,18 +76,22 @@ func NewInitial(lc fx.Lifecycle,
 	api *api.Api,
 	gateClient *gate_client.GateClient,
 	validation *validation.Validate,
-	_ *logging_ws.LoggingWs) *Initial {
+	_ *logging_ws.LoggingWs,
+	localMigrations *localMigrations.Migrations,
+	demo *demo.Demos) *Initial {
 	initial := &Initial{
-		migrations:    migrations,
-		adaptors:      adaptors,
-		scriptService: scriptService,
-		accessList:    accessList,
-		entityManager: entityManager,
-		pluginManager: pluginManager,
-		automation:    automation,
-		api:           api,
-		gateClient:    gateClient,
-		validation:    validation,
+		migrations:      migrations,
+		adaptors:        adaptors,
+		scriptService:   scriptService,
+		accessList:      accessList,
+		entityManager:   entityManager,
+		pluginManager:   pluginManager,
+		automation:      automation,
+		api:             api,
+		gateClient:      gateClient,
+		validation:      validation,
+		localMigrations: localMigrations,
+		demo:            demo,
 	}
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) (err error) {
@@ -128,7 +124,7 @@ func (n *Initial) InstallDemoData() {
 	tx := n.adaptors.Begin()
 
 	// install demo
-	environments.InstallDemoData(tx, n.accessList, n.scriptService)
+	_ = n.demo.InstallByName(context.TODO(), tx, "example1")
 
 	_ = tx.Commit()
 
@@ -155,23 +151,17 @@ func (n *Initial) checkForUpgrade() {
 			err = tx.Variable.Add(v)
 			So(err, ShouldBeNil)
 		}
-
-		// create
-		environments.Create(tx, n.accessList, n.scriptService, n.validation)
 	}
 
-	oldVersion, err := strconv.Atoi(v.Value)
+	oldVersion := v.Value
 	So(err, ShouldBeNil)
 
-	// upgrade
-	environments.Upgrade(oldVersion, tx, n.accessList, n.scriptService, n.validation)
-
-	if oldVersion >= currentVersion {
-		_ = tx.Commit()
+	var currentVersion string
+	if currentVersion, err = n.localMigrations.Up(context.TODO(), tx, oldVersion); err != nil {
 		return
 	}
 
-	v.Value = fmt.Sprintf("%d", currentVersion)
+	v.Value = currentVersion
 	err = tx.Variable.Update(v)
 	So(err, ShouldBeNil)
 

@@ -1,21 +1,3 @@
-// This file is part of the Smart Home
-// Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
-//
-// This library is free software: you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 3 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Library General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library.  If not, see
-// <https://www.gnu.org/licenses/>.
-
 package example1
 
 import (
@@ -29,13 +11,11 @@ import (
 	"github.com/e154/smart-home/system/scripts"
 )
 
-// ScriptManager ...
 type ScriptManager struct {
 	adaptors      *adaptors.Adaptors
 	scriptService scripts.ScriptService
 }
 
-// NewScriptManager ...
 func NewScriptManager(adaptors *adaptors.Adaptors,
 	scriptService scripts.ScriptService) *ScriptManager {
 	return &ScriptManager{
@@ -44,18 +24,27 @@ func NewScriptManager(adaptors *adaptors.Adaptors,
 	}
 }
 
-// Create ...
-func (s *ScriptManager) Create() []*m.Script {
-
+func (s *ScriptManager) addScripts() (scripts []*m.Script, err error) {
 	// L3+ script
-	script := s.add("l3+_script_v1", sourceScript1, "l3+ script v1")
+	var script1 *m.Script
+	if script1, err = s.addScript("l3+_script_v1", sourceScript1, "l3+ script v1"); err != nil {
+		return
+	}
 	// api monitor
-	script2 := s.add("sensor_script_v1", fmt.Sprintf(sourceScript2, os.Getenv("LC_ADDRESS")), "sensor script v1")
-
-	return []*m.Script{script, script2}
+	var script2 *m.Script
+	if script2, err = s.addScript("sensor_script_v1", fmt.Sprintf(sourceScript2, os.Getenv("LC_ADDRESS")), "sensor script v1"); err != nil {
+		return
+	}
+	scripts = []*m.Script{script1, script2}
+	return
 }
 
-func (s *ScriptManager) add(name, source, desc string) (script *m.Script) {
+func (s *ScriptManager) addScript(name, source, desc string) (script *m.Script, err error) {
+
+	if script, err = s.adaptors.Script.GetByName(name); err == nil {
+		return
+	}
+
 	script = &m.Script{
 		Lang:        common.ScriptLangCoffee,
 		Name:        name,
@@ -71,32 +60,6 @@ func (s *ScriptManager) add(name, source, desc string) (script *m.Script) {
 
 	script.Id, err = s.adaptors.Script.Add(script)
 	So(err, ShouldBeNil)
-
-	return
-}
-
-// Upgrade ...
-func (s *ScriptManager) Upgrade(oldVersion int) (scripts []*m.Script) {
-
-	switch oldVersion {
-	case 3:
-		script, err := s.adaptors.Script.GetByName("l3+_script_v1")
-		So(err, ShouldBeNil)
-		// update source
-		script.Source = sourceScript1
-		engineScript, err := s.scriptService.NewEngine(script)
-		So(err, ShouldBeNil)
-		err = engineScript.Compile()
-		So(err, ShouldBeNil)
-		err = s.adaptors.Script.Update(script)
-		So(err, ShouldBeNil)
-
-		// ...
-		scripts = append(scripts, script)
-	default:
-		return
-	}
-
 	return
 }
 

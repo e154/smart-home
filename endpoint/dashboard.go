@@ -66,6 +66,9 @@ func (d *DashboardEndpoint) Add(ctx context.Context, board *m.Dashboard) (result
 func (d *DashboardEndpoint) GetById(ctx context.Context, id int64) (board *m.Dashboard, err error) {
 
 	if board, err = d.adaptors.Dashboard.GetById(id); err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
 		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}

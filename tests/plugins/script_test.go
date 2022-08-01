@@ -19,8 +19,12 @@
 package plugins
 
 import (
+	"context"
 	"testing"
 	"time"
+
+	. "github.com/smartystreets/goconvey/convey"
+	"go.uber.org/atomic"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -29,13 +33,11 @@ import (
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
-	envDefault "github.com/e154/smart-home/system/initial/environments/default"
+	"github.com/e154/smart-home/system/initial/local_migrations"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
-	. "github.com/smartystreets/goconvey/convey"
-	"go.uber.org/atomic"
 )
 
 func TestScript(t *testing.T) {
@@ -66,7 +68,8 @@ entityAction = (entityId, actionName)->
 			So(err, ShouldBeNil)
 
 			// register plugins
-			envDefault.NewPluginManager(adaptors).Create()
+			err = local_migrations.NewMigrationPlugins(adaptors).Up(context.TODO(), nil)
+			So(err, ShouldBeNil)
 
 			go mqttServer.Start()
 

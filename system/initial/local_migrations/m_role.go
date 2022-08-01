@@ -1,24 +1,7 @@
-// This file is part of the Smart Home
-// Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
-//
-// This library is free software: you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 3 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Library General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library.  If not, see
-// <https://www.gnu.org/licenses/>.
-
-package _default
+package local_migrations
 
 import (
+	"context"
 	"strings"
 
 	"github.com/e154/smart-home/adaptors"
@@ -28,35 +11,48 @@ import (
 	"github.com/e154/smart-home/system/validation"
 )
 
-// RoleManager ...
-type RoleManager struct {
+type MigrationRoles struct {
 	adaptors   *adaptors.Adaptors
 	accessList access_list.AccessListService
 	validation *validation.Validate
 }
 
-// NewRoleManager ...
-func NewRoleManager(adaptors *adaptors.Adaptors,
+func NewMigrationRoles(adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
-	validation *validation.Validate) *RoleManager {
-	return &RoleManager{
+	validation *validation.Validate) *MigrationRoles {
+	return &MigrationRoles{
 		adaptors:   adaptors,
 		accessList: accessList,
 		validation: validation,
 	}
 }
 
-func (r RoleManager) addAdmin() (adminRole *m.Role) {
+func (r *MigrationRoles) Up(ctx context.Context, adaptors *adaptors.Adaptors) (err error) {
+	if adaptors != nil {
+		r.adaptors = adaptors
+	}
 
-	var err error
+	if _, err = r.addAdmin(); err != nil {
+		return
+	}
+	var demo *m.Role
+	if demo, err = r.addDemo(); err != nil {
+		return
+	}
+	_, err = r.addUser(demo)
+
+	return
+}
+
+func (r *MigrationRoles) addAdmin() (adminRole *m.Role, err error) {
+
 	if adminRole, err = r.adaptors.Role.GetByName("admin"); err != nil {
 		adminRole = &m.Role{
 			Name: "admin",
 		}
-		err := r.adaptors.Role.Add(adminRole)
+		err = r.adaptors.Role.Add(adminRole)
 		So(err, ShouldBeNil)
 	}
-
 	if _, err = r.adaptors.User.GetByNickname("admin"); err == nil {
 		return
 	}
@@ -94,9 +90,8 @@ func (r RoleManager) addAdmin() (adminRole *m.Role) {
 	return
 }
 
-func (r RoleManager) addUser(demoRole *m.Role) (userRole *m.Role) {
+func (r *MigrationRoles) addUser(demoRole *m.Role) (userRole *m.Role, err error) {
 
-	var err error
 	if userRole, err = r.adaptors.Role.GetByName("user"); err != nil {
 		userRole = &m.Role{
 			Name:   "user",
@@ -147,9 +142,8 @@ func (r RoleManager) addUser(demoRole *m.Role) (userRole *m.Role) {
 	return
 }
 
-func (r RoleManager) addDemo() (demoRole *m.Role) {
+func (r *MigrationRoles) addDemo() (demoRole *m.Role, err error) {
 
-	var err error
 	if demoRole, err = r.adaptors.Role.GetByName("demo"); err != nil {
 
 		demoRole = &m.Role{
@@ -196,25 +190,6 @@ func (r RoleManager) addDemo() (demoRole *m.Role) {
 
 	demoUser.Id, err = r.adaptors.User.Add(demoUser)
 	So(err, ShouldBeNil)
-
-	return
-}
-
-// Create ...
-func (r RoleManager) Create() {
-
-	r.addAdmin()
-	r.addUser(r.addDemo())
-
-}
-
-// Upgrade ...
-func (r RoleManager) Upgrade(oldVersion int) (err error) {
-
-	switch oldVersion {
-	case 0:
-
-	}
 
 	return
 }

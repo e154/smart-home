@@ -30,6 +30,7 @@ import (
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/initial"
+	localMigrations "github.com/e154/smart-home/system/initial/local_migrations"
 	"github.com/e154/smart-home/system/jwt_manager"
 	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/logging_db"
@@ -41,6 +42,7 @@ import (
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/storage"
 	"github.com/e154/smart-home/system/stream"
+	"github.com/e154/smart-home/system/validation"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	"go.uber.org/dig"
 	"go.uber.org/fx"
@@ -50,12 +52,15 @@ import (
 func BuildContainer() (container *dig.Container) {
 
 	container = dig.New()
+	_ = container.Provide(validation.NewValidate)
 	_ = container.Provide(NewOrmConfig)
 	_ = container.Provide(orm.NewOrm)
 	_ = container.Provide(NewMigrationsConfig)
 	_ = container.Provide(migrations.NewMigrations)
 	_ = container.Provide(adaptors.NewAdaptors)
 	_ = container.Provide(scripts.NewScriptService)
+	_ = container.Provide(MigrationList)
+	_ = container.Provide(localMigrations.NewMigrations)
 	_ = container.Provide(initial.NewInitial)
 	_ = container.Provide(NewBackupConfig)
 	_ = container.Provide(backup.NewBackup)

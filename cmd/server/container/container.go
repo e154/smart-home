@@ -32,6 +32,7 @@ import (
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/initial"
+	localMigrations "github.com/e154/smart-home/system/initial/local_migrations"
 	"github.com/e154/smart-home/system/jwt_manager"
 	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/logging_db"
@@ -69,6 +70,9 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 			logging_db.NewLogDbSaver,
 			logging_ws.NewLogWsSaver,
 			scripts.NewScriptService,
+			MigrationList,
+			localMigrations.NewMigrations,
+			NewDemo,
 			initial.NewInitial,
 			NewMqttConfig,
 			mqtt_authenticator.NewAuthenticator,
