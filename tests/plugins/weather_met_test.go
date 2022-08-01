@@ -167,7 +167,7 @@ func TestWeatherMet(t *testing.T) {
 						Settings:   settings,
 					})
 
-					ticker := time.NewTimer(time.Second * 2)
+					ticker := time.NewTimer(time.Second * 3)
 					defer ticker.Stop()
 
 					var msg events.EventPassAttributes
