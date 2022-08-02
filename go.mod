@@ -6,9 +6,9 @@ require (
 	github.com/DrmagicE/gmqtt v0.3.1
 	github.com/Masterminds/semver v1.5.0
 	github.com/Syfaro/telegram-bot-api v4.6.4+incompatible
-	github.com/dlclark/regexp2 v1.4.0 // indirect
-	github.com/dop251/goja v0.0.0-20210317175251-bb14c2267b76
-	github.com/dop251/goja_nodejs v0.0.0-20200128125109-2d688c7e0ac4
+	github.com/dlclark/regexp2 v1.7.0 // indirect
+	github.com/dop251/goja v0.0.0-20220801092856-7adb49968576
+	github.com/dop251/goja_nodejs v0.0.0-20220712185256-8cad205bf387
 	github.com/eclipse/paho.mqtt.golang v1.2.0
 	github.com/francoispqt/gojay v1.2.13
 	github.com/gammazero/deque v0.0.0-20200310222745-50fa758af896
