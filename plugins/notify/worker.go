@@ -53,7 +53,7 @@ func (n *Worker) send(msg m.MessageDelivery, provider Provider) {
 	} else {
 		msg.Status = m.MessageStatusSucceed
 	}
-	n.adaptor.MessageDelivery.SetStatus(msg)
+	_ = n.adaptor.MessageDelivery.SetStatus(msg)
 }
 
 // InWork ...

@@ -47,7 +47,7 @@ func TestMessageQueue(t *testing.T) {
 				arr = append(arr, args...)
 				wg.Done()
 			}
-			queue.Subscribe("a/b", fn)
+			_ = queue.Subscribe("a/b", fn)
 
 			queue.Publish("a", "msg1", "msg1")
 			queue.Publish("a/b", "msg2", "msg2")
@@ -56,7 +56,7 @@ func TestMessageQueue(t *testing.T) {
 
 			wg.Wait()
 
-			queue.Unsubscribe("a/b", fn)
+			_ = queue.Unsubscribe("a/b", fn)
 
 			ctx.So(fmt.Sprintf("%v", arr), ShouldEqual, "[msg2 msg2]")
 		})
@@ -74,7 +74,7 @@ func TestMessageQueue(t *testing.T) {
 				arr = append(arr, msg)
 				wg.Done()
 			}
-			queue.Subscribe("a/b/#", fn)
+			_ = queue.Subscribe("a/b/#", fn)
 
 			queue.Publish("a", "msg1")
 			queue.Publish("a/b", "msg2")
@@ -83,7 +83,7 @@ func TestMessageQueue(t *testing.T) {
 
 			wg.Wait()
 
-			queue.Unsubscribe("a/b/#", fn)
+			_ = queue.Unsubscribe("a/b/#", fn)
 
 			ctx.So(fmt.Sprintf("%v", arr), ShouldEqual, "[msg2 msg3 msg4]")
 		})
@@ -101,7 +101,7 @@ func TestMessageQueue(t *testing.T) {
 				arr = append(arr, msg)
 				wg.Done()
 			}
-			queue.Subscribe("a/b/+/d", fn)
+			_ = queue.Subscribe("a/b/+/d", fn)
 
 			queue.Publish("a", "msg1")
 			queue.Publish("a/b", "msg2")
@@ -112,7 +112,7 @@ func TestMessageQueue(t *testing.T) {
 
 			wg.Wait()
 
-			queue.Unsubscribe("a/b/+/d", fn)
+			_ = queue.Unsubscribe("a/b/+/d", fn)
 
 			ctx.So(fmt.Sprintf("%v", arr), ShouldEqual, "[msg4]")
 		})
@@ -127,14 +127,14 @@ func TestMessageQueue(t *testing.T) {
 			fn := func(topic string, msg ...string) {
 				arr = append(arr, msg...)
 			}
-			queue.Subscribe("a/#", fn)
+			_ = queue.Subscribe("a/#", fn)
 
 			queue.Publish("a", "msg1")
 			queue.Publish("a/b", "msg2")
 
 			time.Sleep(time.Millisecond * 500)
 
-			queue.Unsubscribe("a/#", fn)
+			_ = queue.Unsubscribe("a/#", fn)
 
 			queue.Publish("a", "msg3")
 			queue.Publish("a/b", "msg4")
@@ -154,7 +154,7 @@ func TestMessageQueue(t *testing.T) {
 			fn := func(topic string, msg ...string) {
 				count.Inc()
 			}
-			queue.Subscribe("a/#", fn)
+			_ = queue.Subscribe("a/#", fn)
 
 			for i := 0; i < 15; i++ {
 				queue.Publish("a/b", "msg")

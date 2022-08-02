@@ -21,7 +21,8 @@ package adaptors
 import (
 	"context"
 
-	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/logger"
+
 	"github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/orm"
@@ -30,7 +31,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("adaptors")
+	log = logger.MustGetLogger("adaptors")
 )
 
 // Adaptors ...
@@ -72,6 +73,10 @@ type Adaptors struct {
 	RunHistory        IRunHistory
 	Plugin            IPlugin
 	TelegramChat      ITelegramChat
+	Dashboard         IDashboard
+	DashboardTab      IDashboardTab
+	DashboardCard     IDashboardCard
+	DashboardCardItem IDashboardCardItem
 }
 
 // NewAdaptors ...
@@ -118,6 +123,10 @@ func NewAdaptors(lc fx.Lifecycle,
 		RunHistory:        GetRunHistoryAdaptor(db),
 		Plugin:            GetPluginAdaptor(db),
 		TelegramChat:      GetTelegramChannelAdaptor(db),
+		Dashboard:         GetDashboardAdaptor(db),
+		DashboardTab:      GetDashboardTabAdaptor(db),
+		DashboardCard:     GetDashboardCardAdaptor(db),
+		DashboardCardItem: GetDashboardCardItemAdaptor(db),
 	}
 
 	if lc != nil {

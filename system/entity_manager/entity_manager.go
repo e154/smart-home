@@ -20,25 +20,25 @@ package entity_manager
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"github.com/e154/smart-home/system/event_bus/events"
 	"sort"
 	"sync"
 	"time"
 
 	"github.com/pkg/errors"
+	"go.uber.org/fx"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/event_bus/events"
 	"github.com/e154/smart-home/system/scripts"
-	"go.uber.org/fx"
 )
 
 var (
-	log = common.MustGetLogger("entity.manager")
+	log = logger.MustGetLogger("entity.manager")
 )
 
 type entityManager struct {
@@ -80,8 +80,8 @@ func (e *entityManager) SetPluginManager(pluginManager common.PluginManager) {
 	e.pluginManager = pluginManager
 
 	// event subscribe
-	e.eventBus.Subscribe(event_bus.TopicEntities, e.eventHandler)
-	e.eventBus.Subscribe(event_bus.TopicPlugins, e.eventHandler)
+	_ = e.eventBus.Subscribe(event_bus.TopicEntities, e.eventHandler)
+	_ = e.eventBus.Subscribe(event_bus.TopicPlugins, e.eventHandler)
 }
 
 // LoadEntities ...
@@ -110,15 +110,13 @@ LOOP:
 		page++
 		goto LOOP
 	}
-
-	return
 }
 
 // Shutdown ...
 func (e *entityManager) Shutdown() {
 
-	e.eventBus.Unsubscribe(event_bus.TopicEntities, e.eventHandler)
-	e.eventBus.Unsubscribe(event_bus.TopicPlugins, e.eventHandler)
+	_ = e.eventBus.Unsubscribe(event_bus.TopicEntities, e.eventHandler)
+	_ = e.eventBus.Unsubscribe(event_bus.TopicPlugins, e.eventHandler)
 
 	e.actors.Range(func(key, value interface{}) bool {
 		actor := value.(*actorInfo)
@@ -131,7 +129,7 @@ func (e *entityManager) Shutdown() {
 }
 
 // SetMetric ...
-func (e *entityManager) SetMetric(id common.EntityId, name string, value map[string]interface{}) {
+func (e *entityManager) SetMetric(id common.EntityId, name string, value map[string]float32) {
 
 	item, ok := e.actors.Load(id)
 	if !ok {
@@ -145,14 +143,8 @@ func (e *entityManager) SetMetric(id common.EntityId, name string, value map[str
 			continue
 		}
 
-		var b []byte
-		if b, err = json.Marshal(value); err != nil {
-			log.Error(err.Error(), "value", value)
-			return
-		}
-
 		err = e.adaptors.MetricBucket.Add(m.MetricDataItem{
-			Value:    b,
+			Value:    value,
 			MetricId: metric.Id,
 			Time:     time.Now(),
 		})
@@ -174,7 +166,8 @@ func (e *entityManager) SetState(id common.EntityId, params EntityStateParams) (
 	actor := item.(*actorInfo)
 
 	// store old state
-	actor.OldState = GetEventState(actor.Actor)
+	currentState := GetEventState(actor.Actor)
+	actor.CurrentState = &currentState
 
 	err = actor.Actor.SetState(params)
 
@@ -269,10 +262,11 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 		return
 	}
 
+	currentState := GetEventState(actor)
 	actorInfo := &actorInfo{
-		Actor:    actor,
-		quit:     make(chan struct{}),
-		OldState: GetEventState(actor),
+		Actor:        actor,
+		quit:         make(chan struct{}),
+		CurrentState: &currentState,
 	}
 	e.actors.Store(entityId, actorInfo)
 
@@ -293,7 +287,7 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 			if plugin, err = e.getCrudActor(entityId); err != nil {
 				return
 			}
-			err = plugin.RemoveActor(entityId)
+			_ = plugin.RemoveActor(entityId)
 
 			//e.metric.Update(metrics.EntityDelete{Num: 1})
 		}()
@@ -311,7 +305,7 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 		Settings:   settings,
 	})
 
-	e.adaptors.Entity.Add(&m.Entity{
+	_ = e.adaptors.Entity.Add(&m.Entity{
 		Id:          entityId,
 		Description: info.Description,
 		PluginName:  info.PluginName,
@@ -334,7 +328,7 @@ func (e *entityManager) eventHandler(_ string, message interface{}) {
 	case events.EventStateChanged:
 		go e.eventStateChangedHandler(msg)
 	case events.EventLoadedPlugin:
-		go e.eventLoadedPlugin(msg)
+		go func() { _ = e.eventLoadedPlugin(msg) }()
 	case events.EventUnloadedPlugin:
 		go e.eventUnloadedPlugin(msg)
 	case events.EventCreatedEntity:
@@ -345,6 +339,8 @@ func (e *entityManager) eventHandler(_ string, message interface{}) {
 		go e.eventDeletedEntity(msg)
 	case events.EventEntitySetState:
 		go e.eventEntitySetState(msg)
+	case events.EventGetLastState:
+		go e.eventLastState(msg)
 	}
 }
 
@@ -360,7 +356,13 @@ func (e *entityManager) eventStateChangedHandler(msg events.EventStateChanged) {
 		return
 	}
 
-	actor.OldState = msg.NewState
+	if actor.CurrentState != nil {
+		if actor.CurrentState.Compare(msg.NewState) {
+			return
+		}
+	}
+
+	actor.CurrentState = &msg.NewState
 
 	// store state to db
 	var state string
@@ -373,7 +375,7 @@ func (e *entityManager) eventStateChangedHandler(msg events.EventStateChanged) {
 	}
 
 	go func() {
-		_, err := e.adaptors.EntityStorage.Add(m.EntityStorage{
+		_, err := e.adaptors.EntityStorage.Add(&m.EntityStorage{
 			State:      state,
 			EntityId:   msg.EntityId,
 			Attributes: msg.NewState.Attributes.Serialize(),
@@ -382,6 +384,30 @@ func (e *entityManager) eventStateChangedHandler(msg events.EventStateChanged) {
 			log.Error(err.Error())
 		}
 	}()
+}
+
+func (e *entityManager) eventLastState(msg events.EventGetLastState) {
+
+	item, ok := e.actors.Load(msg.EntityId)
+	if !ok {
+		return
+	}
+	actor := item.(*actorInfo)
+
+	if actor.CurrentState == nil {
+		currentState := GetEventState(actor.Actor)
+		actor.CurrentState = &currentState
+	}
+
+	info := actor.Actor.Info()
+
+	e.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
+		StorageSave: false,
+		PluginName:  info.PluginName,
+		EntityId:    info.Id,
+		OldState:    *actor.CurrentState,
+		NewState:    *actor.CurrentState,
+	})
 }
 
 func (e *entityManager) eventLoadedPlugin(msg events.EventLoadedPlugin) (err error) {
@@ -447,7 +473,7 @@ func (e *entityManager) eventDeletedEntity(msg events.EventDeletedEntity) {
 
 func (e *entityManager) eventEntitySetState(msg events.EventEntitySetState) {
 
-	e.SetState(msg.Id, EntityStateParams{
+	_ = e.SetState(msg.Id, EntityStateParams{
 		NewState:        msg.NewState,
 		AttributeValues: msg.AttributeValues,
 		SettingsValue:   msg.SettingsValue,
@@ -521,7 +547,7 @@ func (e *entityManager) Update(entity *m.Entity) (err error) {
 	//todo fix
 	time.Sleep(time.Millisecond * 1000)
 
-	e.Add(entity)
+	_ = e.Add(entity)
 
 	return
 }

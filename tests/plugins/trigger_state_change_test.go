@@ -92,8 +92,10 @@ automationTriggerStateChanged = (msg)->
 			So(err, ShouldBeNil)
 
 			// register plugins
-			AddPlugin(adaptors, "triggers")
-			AddPlugin(adaptors, "zigbee2mqtt")
+			err = AddPlugin(adaptors, "triggers")
+			ctx.So(err, ShouldBeNil)
+			err = AddPlugin(adaptors, "zigbee2mqtt")
+			ctx.So(err, ShouldBeNil)
 
 			go mqttServer.Start()
 
@@ -172,15 +174,16 @@ automationTriggerStateChanged = (msg)->
 			go zigbee2mqtt.Start()
 
 			defer func() {
-				mqttServer.Shutdown()
+				_ = mqttServer.Shutdown()
 				zigbee2mqtt.Shutdown()
 				entityManager.Shutdown()
-				automation.Shutdown()
+				_ = automation.Shutdown()
 				pluginManager.Shutdown()
 			}()
 
 			mqttCli := mqttServer.NewClient("cli2")
 			err = mqttCli.Publish("zigbee2mqtt/"+zigbeeButtonId, []byte(`{"battery":100,"action":"double","linkquality":134,"voltage":3042}`))
+			So(err, ShouldBeNil)
 			time.Sleep(time.Millisecond * 100)
 			err = mqttCli.Publish("zigbee2mqtt/"+zigbeeButtonId, []byte(`{"battery":100,"click":"double","linkquality":134,"voltage":3042}`))
 			So(err, ShouldBeNil)

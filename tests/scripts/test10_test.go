@@ -39,10 +39,9 @@ func Test10(t *testing.T) {
 
 	var script1 *m.Script
 	Convey("require external library", t, func(ctx C) {
-		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
+		err := container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService) {
-
 			scriptService.PushFunctions("So", func(actual interface{}, assert string, expected interface{}) {
 				//fmt.Printf("actual(%v), expected(%v)\n", actual, expected)
 				switch assert {
@@ -101,5 +100,8 @@ func Test10(t *testing.T) {
 
 			time.Sleep(time.Second * 2)
 		})
+		if err != nil {
+			fmt.Println(err.Error())
+		}
 	})
 }

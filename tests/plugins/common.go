@@ -39,7 +39,6 @@ import (
 	"github.com/e154/smart-home/plugins/sun"
 	"github.com/e154/smart-home/plugins/telegram"
 	"github.com/e154/smart-home/plugins/weather"
-	"github.com/e154/smart-home/plugins/weather_owm"
 	"github.com/e154/smart-home/plugins/zigbee2mqtt"
 	"github.com/e154/smart-home/plugins/zone"
 	"github.com/e154/smart-home/system/scripts"
@@ -284,19 +283,19 @@ func GetNewWeather(name string) *m.Entity {
 }
 
 // GetNewWeatherOwm ...
-func GetNewWeatherOwm(name string) *m.Entity {
-	settings := weather_owm.NewSettings()
-	settings[weather_owm.AttrAppid].Value = "**************"
-	settings[weather_owm.AttrUnits].Value = "metric"
-	settings[weather_owm.AttrLang].Value = "ru"
-	return &m.Entity{
-		Id:          common.EntityId(fmt.Sprintf("weather_owm.%s", name)),
-		Description: "weather owm",
-		PluginName:  weather_owm.EntityWeatherOwm,
-		AutoLoad:    true,
-		Settings:    settings,
-	}
-}
+//func GetNewWeatherOwm(name string) *m.Entity {
+//	settings := weather_owm.NewSettings()
+//	settings[weather_owm.AttrAppid].Value = "**************"
+//	settings[weather_owm.AttrUnits].Value = "metric"
+//	settings[weather_owm.AttrLang].Value = "ru"
+//	return &m.Entity{
+//		Id:          common.EntityId(fmt.Sprintf("weather_owm.%s", name)),
+//		Description: "weather owm",
+//		PluginName:  weather_owm.EntityWeatherOwm,
+//		AutoLoad:    true,
+//		Settings:    settings,
+//	}
+//}
 
 // GetNewSun ...
 func GetNewSun(name string) *m.Entity {
@@ -440,15 +439,15 @@ func MockHttpServer(ctx context.Context, ip string, port int64, payload []byte) 
 		return
 	}
 
-	http.Serve(listener, http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+	_ = http.Serve(listener, http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		rw.WriteHeader(200)
-		fmt.Fprintf(rw, string(payload))
+		_, _ = fmt.Fprintf(rw, string(payload))
 	}))
 	c := make(chan accepted, 1)
 	for {
 		select {
 		case <-ctx.Done():
-			listener.Close()
+			_ = listener.Close()
 			return
 		case a := <-c:
 			if a.err != nil {
@@ -456,14 +455,12 @@ func MockHttpServer(ctx context.Context, ip string, port int64, payload []byte) 
 				return
 			}
 			go func(conn net.Conn) {
-				conn.Write(payload)
-				conn.Close()
+				_, _ = conn.Write(payload)
+				_ = conn.Close()
 			}(a.conn)
 		default:
 		}
 	}
-
-	return
 }
 
 // MockTCPServer ...
@@ -483,7 +480,7 @@ func MockTCPServer(ctx context.Context, ip string, port int64, payloads ...[]byt
 	for {
 		select {
 		case <-ctx.Done():
-			listener.Close()
+			_ = listener.Close()
 			return
 		case a := <-c:
 			if a.err != nil {
@@ -492,18 +489,16 @@ func MockTCPServer(ctx context.Context, ip string, port int64, payloads ...[]byt
 			}
 			go func(conn net.Conn) {
 				if counter < len(payloads) {
-					conn.Write(payloads[counter])
+					_, _ = conn.Write(payloads[counter])
 				} else {
-					conn.Write(payloads[len(payloads)-1])
+					_, _ = conn.Write(payloads[len(payloads)-1])
 				}
-				conn.Close()
+				_ = conn.Close()
 				counter++
 			}(a.conn)
 		default:
 		}
 	}
-
-	return
 }
 
 // GetPort ...

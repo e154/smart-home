@@ -20,8 +20,10 @@ package telegram
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/system/event_bus/events"
 	"sync"
+
+	"github.com/e154/smart-home/common/logger"
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/pkg/errors"
 
@@ -33,7 +35,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("plugins.telegram")
+	log = logger.MustGetLogger("plugins.telegram")
 )
 
 var _ plugins.Plugable = (*plugin)(nil)
@@ -91,7 +93,7 @@ func (p *plugin) asyncLoad() (err error) {
 	// register telegram provider
 	p.notify.AddProvider(Name, p)
 
-	p.EventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
 
 	return
 }
@@ -102,7 +104,7 @@ func (p *plugin) Unload() (err error) {
 		return
 	}
 
-	p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
 
 	if p.notify == nil {
 		return
@@ -159,7 +161,7 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 	}
 	p.actors[entity.Id] = actor
 	p.EntityManager.Spawn(actor.Spawn)
-	actor.Start()
+	_ = actor.Start()
 	return
 }
 
@@ -190,7 +192,7 @@ func (p *plugin) Save(msg notify.Message) (addresses []string, message m.Message
 	}
 
 	attr := NewMessageParams()
-	attr.Deserialize(message.Attributes)
+	_, _ = attr.Deserialize(message.Attributes)
 
 	addresses = []string{attr[AttrName].String()}
 
@@ -200,7 +202,7 @@ func (p *plugin) Save(msg notify.Message) (addresses []string, message m.Message
 // Send ...
 func (p *plugin) Send(name string, message m.Message) (err error) {
 	params := NewMessageParams()
-	params.Deserialize(message.Attributes)
+	_, _ = params.Deserialize(message.Attributes)
 
 	body := params[AttrBody].String()
 
@@ -209,7 +211,7 @@ func (p *plugin) Send(name string, message m.Message) (err error) {
 
 	actor, ok := p.actors[common.EntityId(fmt.Sprintf("telegram.%s", name))]
 	if ok {
-		actor.Send(body)
+		_ = actor.Send(body)
 	} else {
 		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("bot \"%s\"", name))
 	}
@@ -233,6 +235,4 @@ func (p *plugin) eventHandler(topic string, msg interface{}) {
 		}
 		actor.addAction(v)
 	}
-
-	return
 }

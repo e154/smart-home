@@ -25,6 +25,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/e154/smart-home/system/validation"
+
 	"github.com/e154/smart-home/system/logging"
 	. "github.com/e154/smart-home/tests/system/container"
 	"go.uber.org/dig"
@@ -32,7 +34,7 @@ import (
 
 func init() {
 	apppath := filepath.Join(os.Getenv("PWD"), "../..")
-	os.Chdir(apppath)
+	_ = os.Chdir(apppath)
 }
 
 var (
@@ -42,10 +44,12 @@ var (
 func TestMain(m *testing.M) {
 
 	container = BuildContainer()
-	err := container.Invoke(func(logger *logging.Logging) {
+	err := container.Invoke(func(logger *logging.Logging,
+		validation *validation.Validate) {
 
 		time.Sleep(time.Millisecond * 500)
 
+		_ = validation.Start(nil)
 		os.Exit(m.Run())
 	})
 

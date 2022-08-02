@@ -40,7 +40,7 @@ type PluginActor interface {
 	Settings() m.Attributes
 
 	// Metrics ...
-	Metrics() []m.Metric
+	Metrics() []*m.Metric
 
 	// SetState ...
 	SetState(EntityStateParams) error
@@ -65,7 +65,7 @@ type EntityManager interface {
 	Shutdown()
 
 	// SetMetric ...
-	SetMetric(common.EntityId, string, map[string]interface{})
+	SetMetric(common.EntityId, string, map[string]float32)
 
 	// SetState ...
 	SetState(common.EntityId, EntityStateParams) error
@@ -182,9 +182,9 @@ const (
 )
 
 type actorInfo struct {
-	Actor    PluginActor
-	quit     chan struct{}
-	OldState event_bus.EventEntityState
+	Actor        PluginActor
+	quit         chan struct{}
+	CurrentState *event_bus.EventEntityState
 }
 
 // ActorInfo ...

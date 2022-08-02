@@ -48,31 +48,31 @@ func TestAutomation(t *testing.T) {
 
 			t.Run("create", func(t *testing.T) {
 				Convey("", t, func(ctx C) {
-					ctx.Println("test not implemented")
+					_, _ = ctx.Println("test not implemented")
 				})
 			})
 
 			t.Run("update", func(t *testing.T) {
 				Convey("", t, func(ctx C) {
-					ctx.Println("test not implemented")
+					_, _ = ctx.Println("test not implemented")
 				})
 			})
 
 			t.Run("get by id", func(t *testing.T) {
 				Convey("", t, func(ctx C) {
-					ctx.Println("test not implemented")
+					_, _ = ctx.Println("test not implemented")
 				})
 			})
 
 			t.Run("list", func(t *testing.T) {
 				Convey("", t, func(ctx C) {
-					ctx.Println("test not implemented")
+					_, _ = ctx.Println("test not implemented")
 				})
 			})
 
 			t.Run("remove", func(t *testing.T) {
 				Convey("", t, func(ctx C) {
-					ctx.Println("test not implemented")
+					_, _ = ctx.Println("test not implemented")
 				})
 			})
 		})

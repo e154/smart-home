@@ -1,0 +1,123 @@
+syntax = "proto3";
+
+package api;
+option go_package = "/api";
+
+import "google/api/annotations.proto";
+import "protoc-gen-swagger/options/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+import "pagination.proto";
+
+message Variable {
+  string name = 2;
+  string value = 3;
+  bool system = 4;
+  google.protobuf.Timestamp created_at = 99;
+  google.protobuf.Timestamp updated_at = 100;
+}
+
+message NewVariableRequest {
+  string name = 2;
+  string value = 3;
+}
+
+message UpdateVariableRequest {
+  string name = 2;
+  string value = 3;
+}
+
+message GetVariableRequest {
+  string name = 1;
+}
+
+message GetVariableListResult {
+  repeated Variable items = 1;
+  Meta meta = 2;
+}
+
+message DeleteVariableRequest {
+  string name = 1;
+}
+
+service VariableService {
+
+  // add new variable
+  rpc AddVariable (NewVariableRequest) returns (Variable){
+    option (google.api.http) = {
+      post: "/v1/variable"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // update variable
+  rpc UpdateVariable (UpdateVariableRequest) returns (Variable){
+    option (google.api.http) = {
+      put: "/v1/variable/{name}"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // get variable by name
+  rpc GetVariableByName (GetVariableRequest) returns (Variable){
+    option (google.api.http) = {
+      get: "/v1/variable/{name}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // get variable list
+  rpc GetVariableList (PaginationRequest) returns (GetVariableListResult){
+    option (google.api.http) = {
+      get: "/v1/variables"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // delete variable
+  rpc DeleteVariable (DeleteVariableRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      delete: "/v1/variable/{name}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+}

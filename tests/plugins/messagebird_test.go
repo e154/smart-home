@@ -19,9 +19,10 @@
 package plugins
 
 import (
-	"github.com/e154/smart-home/system/event_bus/events"
 	"testing"
 	"time"
+
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -53,6 +54,7 @@ func TestMessagebird(t *testing.T) {
 
 			// register plugins
 			err = AddPlugin(adaptors, "notify")
+			ctx.So(err, ShouldBeNil)
 			settings := messagebird.NewSettings()
 			settings[messagebird.AttrAccessKey].Value = "XXXX"
 			settings[messagebird.AttrName].Value = "YYYY"
@@ -82,8 +84,8 @@ func TestMessagebird(t *testing.T) {
 						}
 
 					}
-					eventBus.Subscribe(event_bus.TopicEntities, fn)
-					defer eventBus.Unsubscribe(event_bus.TopicEntities, fn)
+					_ = eventBus.Subscribe(event_bus.TopicEntities, fn)
+					defer func() { _ = eventBus.Unsubscribe(event_bus.TopicEntities, fn) }()
 
 					const (
 						phone = "+79990000001"
@@ -116,7 +118,7 @@ func TestMessagebird(t *testing.T) {
 					ctx.So(del.Message.Type, ShouldEqual, messagebird.Name)
 
 					attr := messagebird.NewMessageParams()
-					attr.Deserialize(del.Message.Attributes)
+					_, _ = attr.Deserialize(del.Message.Attributes)
 					ctx.So(attr[messagebird.AttrPhone].String(), ShouldEqual, phone)
 					ctx.So(attr[messagebird.AttrBody].String(), ShouldEqual, body)
 

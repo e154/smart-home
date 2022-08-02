@@ -26,6 +26,8 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/e154/smart-home/common/logger"
+
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
@@ -33,7 +35,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("backup")
+	log = logger.MustGetLogger("backup")
 )
 
 // Backup ...
@@ -82,7 +84,7 @@ func (b *Backup) New() (err error) {
 		return
 	}
 
-	os.Remove(tmpDir)
+	_ = os.Remove(tmpDir)
 
 	log.Info("complete")
 
@@ -92,7 +94,7 @@ func (b *Backup) New() (err error) {
 // List ...
 func (b *Backup) List() (list []string) {
 
-	filepath.Walk(b.cfg.Path, func(path string, info os.FileInfo, err error) error {
+	_ = filepath.Walk(b.cfg.Path, func(path string, info os.FileInfo, err error) error {
 		if info.Name() == ".gitignore" || info.Name() == b.cfg.Path || info.IsDir() {
 			return nil
 		}

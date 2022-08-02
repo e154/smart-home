@@ -30,5 +30,5 @@ func NewScriptBind(actor PluginActor) *ScriptBind {
 
 // SetState  ...
 func (s *ScriptBind) SetState(params EntityStateParams) {
-	s.actor.SetState(params)
+	_ = s.actor.SetState(params)
 }

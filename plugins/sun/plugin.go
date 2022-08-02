@@ -23,6 +23,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/e154/smart-home/common/logger"
+
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
@@ -32,7 +34,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("plugins.sun")
+	log = logger.MustGetLogger("plugins.sun")
 )
 
 var _ plugins.Plugable = (*plugin)(nil)

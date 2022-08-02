@@ -21,11 +21,12 @@ package updater
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/e154/smart-home/system/event_bus/events"
 	"io"
 	"net/http"
 	"sync"
 	"time"
+
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/Masterminds/semver"
 	"github.com/e154/smart-home/common"
@@ -124,7 +125,7 @@ func (e *Actor) check() {
 	if resp, err = http.Get(uri); err != nil {
 		return
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	var body []byte
 	if body, err = io.ReadAll(resp.Body); err != nil {

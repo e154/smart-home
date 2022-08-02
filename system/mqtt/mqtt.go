@@ -26,6 +26,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/e154/smart-home/common/logger"
+
 	"github.com/DrmagicE/gmqtt"
 	_ "github.com/DrmagicE/gmqtt/persistence"
 	"github.com/DrmagicE/gmqtt/pkg/codes"
@@ -34,7 +36,6 @@ import (
 	_ "github.com/DrmagicE/gmqtt/topicalias/fifo"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/logging"
-	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/mqtt/admin"
 	"github.com/e154/smart-home/system/mqtt_authenticator"
 	"github.com/e154/smart-home/system/scripts"
@@ -44,7 +45,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("mqtt")
+	log = logger.MustGetLogger("mqtt")
 )
 
 // Mqtt ...
@@ -52,7 +53,6 @@ type Mqtt struct {
 	cfg           *Config
 	server        GMqttServer
 	authenticator mqtt_authenticator.MqttAuthenticator
-	metric        *metrics.MetricManager
 	clientsLock   *sync.Mutex
 	clients       map[string]MqttCli
 	admin         *admin.Admin
@@ -131,7 +131,7 @@ func (m *Mqtt) Start() {
 	// Create a new server
 	m.server = server.New(options...)
 
-	log.Infof("Serving server at tcp://[::]:%d", m.cfg.Port)
+	log.Infof("Serving MQTT server at tcp://[::]:%d", m.cfg.Port)
 
 	go func() {
 		if err = m.server.Run(); err != nil {
@@ -203,7 +203,7 @@ func (m *Mqtt) Publish(topic string, payload []byte, qos uint8, retain bool) (er
 	})
 
 	// send to local subscribers
-	m.onMsgArrived(nil, nil, &server.MsgArrivedRequest{
+	_ = m.onMsgArrived(context.TODO(), nil, &server.MsgArrivedRequest{
 		Message: &gmqtt.Message{
 			QoS:      qos,
 			Retained: retain,
@@ -239,7 +239,6 @@ func (m *Mqtt) RemoveClient(name string) {
 		return
 	}
 	delete(m.clients, name)
-	return
 }
 
 func (m *Mqtt) logging() *zap.Logger {

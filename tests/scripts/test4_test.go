@@ -38,7 +38,7 @@ func Test4(t *testing.T) {
 	}
 
 	Convey("javascript PushStruct", t, func(ctx C) {
-		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
+		err := container.Invoke(func(adaptors *adaptors.Adaptors,
 			migratxions *migrations.Migrations,
 			scriptService scripts.ScriptService) {
 
@@ -66,7 +66,10 @@ func Test4(t *testing.T) {
 			])`)
 			So(err, ShouldBeNil)
 
-			So(state, ShouldEqual, fmt.Sprintf("[42 84 21 63]"))
+			So(state, ShouldEqual, "[42 84 21 63]")
 		})
+		if err != nil {
+			fmt.Println(err.Error())
+		}
 	})
 }

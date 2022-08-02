@@ -24,11 +24,11 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/logger"
 )
 
 var (
-	log = common.MustGetLogger("plugins.cgminer.bitmine")
+	log = logger.MustGetLogger("plugins.cgminer.bitmine")
 )
 
 // Bitmine ...

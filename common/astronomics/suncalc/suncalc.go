@@ -347,7 +347,7 @@ type MoonTimes struct {
 
 // calculations for moon rise/set times are based on http://www.stargazing.net/kepler/moonrise.html article
 func GetMoonTimes(date time.Time, lat float64, lng float64, inUTC bool) MoonTimes {
-	t := date
+	var t time.Time
 	if inUTC {
 		t = time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, time.UTC)
 	} else {

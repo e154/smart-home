@@ -32,11 +32,10 @@ import (
 type IVariable interface {
 	Add(ver m.Variable) (err error)
 	CreateOrUpdate(ver m.Variable) (err error)
-	GetAllEnabled() (list []m.Variable, err error)
 	GetByName(name string) (ver m.Variable, err error)
 	Update(variable m.Variable) (err error)
 	Delete(name string) (err error)
-	List(limit, offset int64, orderBy, sort string) (list []m.Variable, total int64, err error)
+	List(limit, offset int64, orderBy, sort string, system bool) (list []m.Variable, total int64, err error)
 	fromDb(dbVer db.Variable) (ver m.Variable)
 	toDb(ver m.Variable) (dbVer db.Variable)
 }
@@ -65,23 +64,6 @@ func (n *Variable) Add(ver m.Variable) (err error) {
 // CreateOrUpdate ...
 func (n *Variable) CreateOrUpdate(ver m.Variable) (err error) {
 	err = n.table.CreateOrUpdate(n.toDb(ver))
-	return
-}
-
-// GetAllEnabled ...
-func (n *Variable) GetAllEnabled() (list []m.Variable, err error) {
-
-	var dbList []db.Variable
-	if dbList, err = n.table.GetAllEnabled(); err != nil {
-		return
-	}
-
-	list = make([]m.Variable, 0)
-	for _, dbVer := range dbList {
-		ver := n.fromDb(dbVer)
-		list = append(list, ver)
-	}
-
 	return
 }
 
@@ -118,9 +100,9 @@ func (n *Variable) Delete(name string) (err error) {
 }
 
 // List ...
-func (n *Variable) List(limit, offset int64, orderBy, sort string) (list []m.Variable, total int64, err error) {
+func (n *Variable) List(limit, offset int64, orderBy, sort string, system bool) (list []m.Variable, total int64, err error) {
 	var dbList []db.Variable
-	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
+	if dbList, total, err = n.table.List(limit, offset, orderBy, sort, system); err != nil {
 		return
 	}
 
@@ -137,7 +119,7 @@ func (n *Variable) fromDb(dbVer db.Variable) (ver m.Variable) {
 	ver = m.Variable{
 		Name:      dbVer.Name,
 		Value:     dbVer.Value,
-		Autoload:  dbVer.Autoload,
+		System:    dbVer.System,
 		CreatedAt: dbVer.CreatedAt,
 		UpdatedAt: dbVer.UpdatedAt,
 		EntityId:  dbVer.EntityId,
@@ -150,7 +132,7 @@ func (n *Variable) toDb(ver m.Variable) (dbVer db.Variable) {
 	dbVer = db.Variable{
 		Name:     ver.Name,
 		Value:    ver.Value,
-		Autoload: ver.Autoload,
+		System:   ver.System,
 		EntityId: ver.EntityId,
 	}
 

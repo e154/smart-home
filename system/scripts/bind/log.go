@@ -18,10 +18,12 @@
 
 package bind
 
-import "github.com/e154/smart-home/common"
+import (
+	"github.com/e154/smart-home/common/logger"
+)
 
 var (
-	log = common.MustGetLogger("js")
+	log = logger.MustGetLogger("js")
 )
 
 // LogBind ...

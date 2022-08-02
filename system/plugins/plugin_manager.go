@@ -21,6 +21,8 @@ package plugins
 import (
 	"context"
 	"fmt"
+
+	"github.com/e154/smart-home/common/logger"
 	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/e154/smart-home/adaptors"
@@ -37,7 +39,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("plugins.manager")
+	log = logger.MustGetLogger("plugins.manager")
 )
 
 type pluginManager struct {
@@ -111,7 +113,7 @@ func (p *pluginManager) Shutdown() {
 		log.Infof("unload plugin '%s'", name)
 		if item, ok := pluginList.Load(name); ok {
 			plugin := item.(Plugable)
-			plugin.Unload()
+			_ = plugin.Unload()
 		}
 		p.enabledPlugins[name] = false
 	}
@@ -206,7 +208,7 @@ func (p *pluginManager) unloadPlugin(name string) (err error) {
 	if item, ok := pluginList.Load(name); ok {
 		plugin := item.(Plugable)
 		log.Infof("unload plugin %v", plugin.Name())
-		plugin.Unload()
+		_ = plugin.Unload()
 	} else {
 		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("name %s", name))
 	}
@@ -247,7 +249,7 @@ func (p *pluginManager) Install(t string) {
 		return
 	}
 
-	p.adaptors.Plugin.CreateOrUpdate(m.Plugin{
+	_ = p.adaptors.Plugin.CreateOrUpdate(m.Plugin{
 		Name:    plugin.Name(),
 		Version: plugin.Version(),
 		Enabled: true,

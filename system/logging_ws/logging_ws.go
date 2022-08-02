@@ -3,7 +3,8 @@ package logging_ws
 import (
 	"context"
 	"encoding/json"
-	"github.com/e154/smart-home/common"
+
+	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/stream"
@@ -11,7 +12,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("logging_ws")
+	log = logger.MustGetLogger("logging_ws")
 )
 
 type LoggingWs struct {

@@ -19,12 +19,12 @@
 package notify
 
 import (
-	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/logger"
 	"github.com/e154/smart-home/system/plugins"
 )
 
 var (
-	log = common.MustGetLogger("plugins.notify")
+	log = logger.MustGetLogger("plugins.notify")
 )
 
 var _ plugins.Plugable = (*plugin)(nil)
@@ -52,9 +52,9 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 	}
 
 	p.notify = NewNotify(p.Adaptors, p.ScriptService)
-	p.notify.Start()
+	_ = p.notify.Start()
 
-	p.EventBus.Subscribe(TopicNotify, p.eventHandler)
+	_ = p.EventBus.Subscribe(TopicNotify, p.eventHandler)
 
 	return nil
 }
@@ -65,9 +65,9 @@ func (p *plugin) Unload() (err error) {
 		return
 	}
 
-	p.EventBus.Unsubscribe(TopicNotify, p.eventHandler)
+	_ = p.EventBus.Unsubscribe(TopicNotify, p.eventHandler)
 
-	p.notify.Shutdown()
+	_ = p.notify.Shutdown()
 
 	return nil
 }
@@ -78,8 +78,6 @@ func (p *plugin) eventHandler(_ string, msg interface{}) {
 	case Message:
 		p.notify.Send(v)
 	}
-
-	return
 }
 
 // Name ...
@@ -104,7 +102,9 @@ func (p *plugin) Version() string {
 
 // AddProvider ...
 func (p *plugin) AddProvider(name string, provider Provider) {
-	p.notify.AddProvider(name, provider)
+	if p.notify != nil {
+		p.notify.AddProvider(name, provider)
+	}
 }
 
 // RemoveProvider ...

@@ -38,7 +38,7 @@ func TestUser(t *testing.T) {
 			accessList access_list.AccessListService) {
 
 			// clear database
-			migrations.Purge()
+			_ = migrations.Purge()
 
 			// add role
 			userRole := &m.Role{

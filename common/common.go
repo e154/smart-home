@@ -54,7 +54,7 @@ const (
 func RandStr(strSize int, dictionary string) string {
 
 	var bytes = make([]byte, strSize)
-	crypto_rand.Read(bytes)
+	_, _ = crypto_rand.Read(bytes)
 	for k, v := range bytes {
 		bytes[k] = dictionary[v%byte(len(dictionary))]
 	}

@@ -18,6 +18,9 @@
 // migrations/20211219_181232_update_entity.sql
 // migrations/20220114_222818_update_plugins.sql
 // migrations/20220201_003002_update_triggers.sql
+// migrations/20220209_223600_add_dashboard.sql
+// migrations/20220508_230436_update_entity.sql
+// migrations/20220605_184850_update_dashboard_tab.sql
 // DO NOT EDIT!
 
 package database
@@ -445,6 +448,66 @@ func migrations20220201_003002_update_triggersSql() (*asset, error) {
 	return a, nil
 }
 
+var _migrations20220209_223600_add_dashboardSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xb4\x98\xcf\x6e\xdb\x38\x10\xc6\xef\x7a\x8a\xb9\xd9\xc6\xc6\xc0\x22\x40\x2e\xc9\xee\x61\xb1\xcd\xa1\x40\x53\xb4\xf9\x73\x16\x28\x72\x6c\xb1\x96\x48\x85\x1c\xd5\x76\x8a\xbe\x7b\x41\xca\xb2\x24\xdb\x92\x19\xdb\xe1\x29\xa6\x86\x1f\x45\xce\xf7\x1b\x8a\x99\x4e\xe1\xaf\x5c\xce\x0d\x23\x84\x97\x22\x9a\x4e\xe1\xe9\xfb\x17\x90\x0a\x2c\x72\x92\x5a\xc1\xe8\xa5\x18\x81\xb4\x80\x2b\xe4\x25\xa1\x80\x65\x8a\x0a\x28\x95\x16\xaa\x71\x2e\x48\x5a\x60\x45\x91\x49\x14\x11\xcb\x08\x0d\x10\x4b\x32\x84\x9f\xcc\x48\xf7\x87\x8d\x00\x00\x0c\x2a\x96\x23\x70\x9d\x95\xb9\x02\x56\x92\xce\x34\x13\x40\x1a\xec\xda\x12\xe6\x77\x51\xc4\x0d\xba\x17\xa9\x46\x0b\x66\xd3\x44\x33\x23\x6c\x34\xf6\x02\x52\xc0\xb6\x25\x72\x6e\xd1\x48\x96\x41\x61\x64\xce\xcc\x1a\x16\xb8\xbe\xf2\x61\x7e\x96\x4d\x23\x5c\x11\xf0\x14\xf9\x02\xc6\x3c\x65\x26\xce\x50\xcd\x29\x1d\xbb\x98\x09\xfc\xf3\x2f\x5c\xdf\xdc\x4c\xea\x60\xa5\x09\x54\x99\x65\x95\x8c\x40\xcb\x8d\x2c\xfc\xfa\xfa\x64\x5a\x31\x8d\x5a\x23\x81\xca\x2d\xa4\x7a\xeb\x44\xeb\x0c\x99\x82\xbd\x26\x70\xc6\xca\x8c\x60\xc6\x32\x8b\xd5\x38\x66\x90\xc5\x9b\xd5\x26\x72\x2e\x15\xed\x0f\x3b\xd8\xdc\xd4\x51\xfd\x83\x6b\x65\xc9\x30\x37\x7a\xbb\x95\xf1\x75\xec\xc4\x6d\x3c\x5b\x44\xed\x81\x06\x67\x68\x50\x71\xb4\x7e\x72\xdb\x79\xa8\x15\x94\x85\x70\x89\xe1\xcc\x72\x26\xd0\xf5\x08\xcc\x90\x10\x2c\xb6\xf7\xac\xca\x9f\x88\x19\x01\x90\xcc\xd1\x12\xcb\x0b\x58\x4a\x4a\xfd\x4f\x78\xd3\x0a\xb7\x0b\xfe\xff\xe5\xf1\xf1\xfe\xeb\x73\xfc\xfc\xf9\xe1\xfe\xe9\xf9\xbf\x87\x6f\x95\x46\x35\xd5\xa9\x1a\xd1\xa4\xb1\x51\xa9\xe4\x6b\x89\x20\x95\xc0\x95\x77\x45\xcc\x28\x6e\x5c\x15\x97\xea\x35\xda\xac\xaf\xe9\x85\xca\x1b\xbd\x66\x8c\x89\x25\x87\x0c\x19\xea\xc8\x40\x4b\x76\xbd\x28\xb9\x56\xef\x14\xe8\x9a\x6b\x34\xda\x77\x64\xbf\x25\x0f\xb4\x03\x2e\x5d\xa2\x9c\xa7\xb5\x33\xc3\x3d\xda\x68\xfd\xbd\x31\x8d\x2f\x08\xf1\x52\x0a\x4a\xcf\xd1\x99\xb3\xa2\x79\x76\x86\x4e\xc2\xf8\x62\x6e\x74\xa9\xc4\xc0\x66\x37\x41\xcd\x96\xef\x6e\x76\xe3\x19\x29\x02\x39\xae\xd3\x7e\x0c\xe2\x96\x8b\xfb\x49\x6e\x15\xd0\x76\xc4\x10\xce\x9b\x9e\x7d\x9a\xfb\x51\x1c\xd8\xd0\x00\xc2\x2f\xa3\x1b\x4e\xbd\xc7\xf7\x20\xf9\xfe\x49\x45\xff\x55\x27\x75\x03\xb5\x80\xf7\x9c\x4e\xbe\x0d\x14\x04\x92\x94\x75\x56\xd8\x67\x33\x1f\xd8\x57\x15\x3a\x46\x1d\x52\x09\x31\x6b\x87\x66\x38\x8f\xa0\x0a\xe5\xcb\x68\xa5\x17\x7c\xaf\x4e\xf5\x83\xf3\x2b\x60\xc7\x3b\xe1\x90\x07\x52\xce\x77\x50\xf7\x93\x04\xd0\x5e\x9d\x50\xed\xa8\x60\xe2\x0b\xb6\xf6\xdf\x64\xdb\xf6\xc3\x6a\x95\x04\x6d\x4f\xeb\xac\xf9\xf5\x7b\x74\x7b\xeb\x47\x1e\xa8\x23\xf0\x81\xb5\xe4\x62\xda\xd1\x11\xe6\x63\x49\x98\xf7\x82\xff\x2e\xf2\x4f\x43\x9f\xd6\xc5\xce\x8a\x7a\x65\xd6\x45\xfb\xab\xa0\x2b\xb3\x07\x7d\x3f\x5d\xc7\x50\x7a\xd7\x07\xee\xee\x6e\x7e\x04\x39\x2e\x45\x1d\x7c\x7c\x6f\x08\x3f\xfc\xf4\x23\x13\x15\x49\x5a\xc7\x2d\x4b\xb8\xbc\x84\xbf\xad\x1f\x2f\x71\xe8\x54\xaf\x43\x60\x2c\xc5\xe4\x42\x98\xf7\x73\xde\x0b\x75\x2a\x85\xc0\x4e\xb6\x9d\x01\x0e\x26\xad\x63\x80\x1d\x07\xce\x8c\x7e\xbb\x80\xcc\x5e\x89\xb9\xc8\xf5\xe3\x54\x25\x5f\x3e\xda\x37\xeb\x4f\x7a\xa9\xea\xbb\xf5\xf6\x62\xed\x3a\x83\xae\xd6\x46\x67\x0e\x35\x77\x8a\x47\xc2\xe8\x62\x53\x92\xe4\x0c\x70\x25\x2d\xed\x5a\xb7\x2a\x4e\x75\xc6\xef\xda\x43\x76\x3c\x7e\x24\xc6\x7f\x10\x0d\x86\xb4\x1e\x07\x5f\xfc\xab\xcb\xbe\xbb\xf6\xd7\xff\x02\xb8\x8b\xfe\x04\x00\x00\xff\xff\x31\xf6\x1b\x22\x86\x10\x00\x00")
+
+func migrations20220209_223600_add_dashboardSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_migrations20220209_223600_add_dashboardSql,
+		"migrations/20220209_223600_add_dashboard.sql",
+	)
+}
+
+func migrations20220209_223600_add_dashboardSql() (*asset, error) {
+	bytes, err := migrations20220209_223600_add_dashboardSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "migrations/20220209_223600_add_dashboard.sql", size: 4230, mode: os.FileMode(420), modTime: time.Unix(1652459924, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _migrations20220508_230436_update_entitySql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x8c\xce\xbd\x6a\xc4\x30\x10\x04\xe0\x7e\x9f\x62\x3a\x17\x41\x4f\x90\x36\x65\x9a\x10\x5c\x07\x59\x1a\xe2\x25\xf2\x4a\x48\x6b\x9c\xc7\x3f\xcc\xfd\x70\xe5\x75\xc3\x30\x03\x5f\x08\x78\xdb\xf4\xb7\x47\x27\xe6\x26\x21\xe0\xfb\xeb\x13\x6a\x18\x4c\xae\xd5\x30\xcd\x6d\x82\x0e\xf0\x9f\x69\x77\x66\x1c\x2b\x0d\xbe\xea\xc0\xf5\x77\x8e\x74\x20\xb6\x56\x94\x59\x62\x71\x76\x78\x5c\x0a\x41\x73\x75\xe5\x10\x00\xe8\xb4\xb8\x11\xa9\x96\x7d\x33\xb4\xd8\x69\x0e\xaf\xb7\xf4\xa3\xf9\x5d\xe4\x59\xf3\x51\x0f\xbb\x7b\x1e\x98\xb3\x7c\x89\xd3\x6b\x29\xcc\x58\x62\xfa\x13\x91\x4b\x00\x00\x00\xff\xff\xb6\xf4\x9a\x5e\xe6\x00\x00\x00")
+
+func migrations20220508_230436_update_entitySqlBytes() ([]byte, error) {
+	return bindataRead(
+		_migrations20220508_230436_update_entitySql,
+		"migrations/20220508_230436_update_entity.sql",
+	)
+}
+
+func migrations20220508_230436_update_entitySql() (*asset, error) {
+	bytes, err := migrations20220508_230436_update_entitySqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "migrations/20220508_230436_update_entity.sql", size: 230, mode: os.FileMode(420), modTime: time.Unix(1652025905, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _migrations20220605_184850_update_dashboard_tabSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x8c\xcf\x31\x4e\x04\x31\x0c\x85\xe1\xde\xa7\x78\xdd\x16\x28\x27\xd8\x96\x92\x06\xa1\xad\x91\x13\x7b\x77\x22\x3c\x71\x94\x78\x34\x1c\x1f\x8d\x10\x68\x3a\x68\x9f\xde\x5f\x7c\x29\xe1\x69\xad\x8f\xc1\xa1\xb8\x75\x4a\x09\x6f\xaf\x2f\xa8\x0d\x53\x4b\x54\x6f\xb8\xdc\xfa\x05\x75\x42\x3f\xb5\x6c\xa1\x82\x7d\xd1\x86\x58\xea\xc4\x77\x77\x9c\xea\x04\xf7\x6e\x55\x85\xd8\x42\x07\x82\xb3\x29\x84\xe7\x92\x9d\x87\xbc\x07\xe7\x49\x00\x20\xc3\x3b\x8a\xdb\xb6\x36\x3c\xb8\x5f\xe9\xaf\x80\x45\x4e\x7f\x64\x77\x83\xe8\x9d\x37\x0b\xdc\xd9\xa6\x5e\x89\xce\x88\x67\xdf\xdb\x0f\xe3\xd7\x70\x8c\xff\x52\x0c\x37\x53\x41\xe6\xf2\x41\x44\x5f\x01\x00\x00\xff\xff\x7a\xdc\x33\x0f\x1d\x01\x00\x00")
+
+func migrations20220605_184850_update_dashboard_tabSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_migrations20220605_184850_update_dashboard_tabSql,
+		"migrations/20220605_184850_update_dashboard_tab.sql",
+	)
+}
+
+func migrations20220605_184850_update_dashboard_tabSql() (*asset, error) {
+	bytes, err := migrations20220605_184850_update_dashboard_tabSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "migrations/20220605_184850_update_dashboard_tab.sql", size: 285, mode: os.FileMode(420), modTime: time.Unix(1654429813, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -497,24 +560,27 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"migrations/20210314_133041_global_reset.sql": migrations20210314_133041_global_resetSql,
-	"migrations/20210401_225727_add_automation.sql": migrations20210401_225727_add_automationSql,
-	"migrations/20210415_172812_run_history.sql": migrations20210415_172812_run_historySql,
-	"migrations/20210422_161648_update_variables.sql": migrations20210422_161648_update_variablesSql,
-	"migrations/20210422_220814_update_entity.sql": migrations20210422_220814_update_entitySql,
-	"migrations/20210426_184659_add_plugins.sql": migrations20210426_184659_add_pluginsSql,
-	"migrations/20210505_161526_drop_nodes.sql": migrations20210505_161526_drop_nodesSql,
-	"migrations/20210514_161024_update_alexa.sql": migrations20210514_161024_update_alexaSql,
-	"migrations/20210519_173101_add_settings.sql": migrations20210519_173101_add_settingsSql,
-	"migrations/20210521_235148_remove_zone.sql": migrations20210521_235148_remove_zoneSql,
-	"migrations/20210603_153850_update_messages.sql": migrations20210603_153850_update_messagesSql,
-	"migrations/20210604_200254_update_plugin.sql": migrations20210604_200254_update_pluginSql,
-	"migrations/20210605_133028_update_message.sql": migrations20210605_133028_update_messageSql,
-	"migrations/20210609_161535_add_telegram.sql": migrations20210609_161535_add_telegramSql,
+	"migrations/20210314_133041_global_reset.sql":               migrations20210314_133041_global_resetSql,
+	"migrations/20210401_225727_add_automation.sql":             migrations20210401_225727_add_automationSql,
+	"migrations/20210415_172812_run_history.sql":                migrations20210415_172812_run_historySql,
+	"migrations/20210422_161648_update_variables.sql":           migrations20210422_161648_update_variablesSql,
+	"migrations/20210422_220814_update_entity.sql":              migrations20210422_220814_update_entitySql,
+	"migrations/20210426_184659_add_plugins.sql":                migrations20210426_184659_add_pluginsSql,
+	"migrations/20210505_161526_drop_nodes.sql":                 migrations20210505_161526_drop_nodesSql,
+	"migrations/20210514_161024_update_alexa.sql":               migrations20210514_161024_update_alexaSql,
+	"migrations/20210519_173101_add_settings.sql":               migrations20210519_173101_add_settingsSql,
+	"migrations/20210521_235148_remove_zone.sql":                migrations20210521_235148_remove_zoneSql,
+	"migrations/20210603_153850_update_messages.sql":            migrations20210603_153850_update_messagesSql,
+	"migrations/20210604_200254_update_plugin.sql":              migrations20210604_200254_update_pluginSql,
+	"migrations/20210605_133028_update_message.sql":             migrations20210605_133028_update_messageSql,
+	"migrations/20210609_161535_add_telegram.sql":               migrations20210609_161535_add_telegramSql,
 	"migrations/20211213_002431_update_zigbee2mqtt_devices.sql": migrations20211213_002431_update_zigbee2mqtt_devicesSql,
-	"migrations/20211219_181232_update_entity.sql": migrations20211219_181232_update_entitySql,
-	"migrations/20220114_222818_update_plugins.sql": migrations20220114_222818_update_pluginsSql,
-	"migrations/20220201_003002_update_triggers.sql": migrations20220201_003002_update_triggersSql,
+	"migrations/20211219_181232_update_entity.sql":              migrations20211219_181232_update_entitySql,
+	"migrations/20220114_222818_update_plugins.sql":             migrations20220114_222818_update_pluginsSql,
+	"migrations/20220201_003002_update_triggers.sql":            migrations20220201_003002_update_triggersSql,
+	"migrations/20220209_223600_add_dashboard.sql":              migrations20220209_223600_add_dashboardSql,
+	"migrations/20220508_230436_update_entity.sql":              migrations20220508_230436_update_entitySql,
+	"migrations/20220605_184850_update_dashboard_tab.sql":       migrations20220605_184850_update_dashboard_tabSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -556,26 +622,30 @@ type bintree struct {
 	Func     func() (*asset, error)
 	Children map[string]*bintree
 }
+
 var _bintree = &bintree{nil, map[string]*bintree{
-	"migrations": &bintree{nil, map[string]*bintree{
-		"20210314_133041_global_reset.sql": &bintree{migrations20210314_133041_global_resetSql, map[string]*bintree{}},
-		"20210401_225727_add_automation.sql": &bintree{migrations20210401_225727_add_automationSql, map[string]*bintree{}},
-		"20210415_172812_run_history.sql": &bintree{migrations20210415_172812_run_historySql, map[string]*bintree{}},
-		"20210422_161648_update_variables.sql": &bintree{migrations20210422_161648_update_variablesSql, map[string]*bintree{}},
-		"20210422_220814_update_entity.sql": &bintree{migrations20210422_220814_update_entitySql, map[string]*bintree{}},
-		"20210426_184659_add_plugins.sql": &bintree{migrations20210426_184659_add_pluginsSql, map[string]*bintree{}},
-		"20210505_161526_drop_nodes.sql": &bintree{migrations20210505_161526_drop_nodesSql, map[string]*bintree{}},
-		"20210514_161024_update_alexa.sql": &bintree{migrations20210514_161024_update_alexaSql, map[string]*bintree{}},
-		"20210519_173101_add_settings.sql": &bintree{migrations20210519_173101_add_settingsSql, map[string]*bintree{}},
-		"20210521_235148_remove_zone.sql": &bintree{migrations20210521_235148_remove_zoneSql, map[string]*bintree{}},
-		"20210603_153850_update_messages.sql": &bintree{migrations20210603_153850_update_messagesSql, map[string]*bintree{}},
-		"20210604_200254_update_plugin.sql": &bintree{migrations20210604_200254_update_pluginSql, map[string]*bintree{}},
-		"20210605_133028_update_message.sql": &bintree{migrations20210605_133028_update_messageSql, map[string]*bintree{}},
-		"20210609_161535_add_telegram.sql": &bintree{migrations20210609_161535_add_telegramSql, map[string]*bintree{}},
-		"20211213_002431_update_zigbee2mqtt_devices.sql": &bintree{migrations20211213_002431_update_zigbee2mqtt_devicesSql, map[string]*bintree{}},
-		"20211219_181232_update_entity.sql": &bintree{migrations20211219_181232_update_entitySql, map[string]*bintree{}},
-		"20220114_222818_update_plugins.sql": &bintree{migrations20220114_222818_update_pluginsSql, map[string]*bintree{}},
-		"20220201_003002_update_triggers.sql": &bintree{migrations20220201_003002_update_triggersSql, map[string]*bintree{}},
+	"migrations": {nil, map[string]*bintree{
+		"20210314_133041_global_reset.sql":               {migrations20210314_133041_global_resetSql, map[string]*bintree{}},
+		"20210401_225727_add_automation.sql":             {migrations20210401_225727_add_automationSql, map[string]*bintree{}},
+		"20210415_172812_run_history.sql":                {migrations20210415_172812_run_historySql, map[string]*bintree{}},
+		"20210422_161648_update_variables.sql":           {migrations20210422_161648_update_variablesSql, map[string]*bintree{}},
+		"20210422_220814_update_entity.sql":              {migrations20210422_220814_update_entitySql, map[string]*bintree{}},
+		"20210426_184659_add_plugins.sql":                {migrations20210426_184659_add_pluginsSql, map[string]*bintree{}},
+		"20210505_161526_drop_nodes.sql":                 {migrations20210505_161526_drop_nodesSql, map[string]*bintree{}},
+		"20210514_161024_update_alexa.sql":               {migrations20210514_161024_update_alexaSql, map[string]*bintree{}},
+		"20210519_173101_add_settings.sql":               {migrations20210519_173101_add_settingsSql, map[string]*bintree{}},
+		"20210521_235148_remove_zone.sql":                {migrations20210521_235148_remove_zoneSql, map[string]*bintree{}},
+		"20210603_153850_update_messages.sql":            {migrations20210603_153850_update_messagesSql, map[string]*bintree{}},
+		"20210604_200254_update_plugin.sql":              {migrations20210604_200254_update_pluginSql, map[string]*bintree{}},
+		"20210605_133028_update_message.sql":             {migrations20210605_133028_update_messageSql, map[string]*bintree{}},
+		"20210609_161535_add_telegram.sql":               {migrations20210609_161535_add_telegramSql, map[string]*bintree{}},
+		"20211213_002431_update_zigbee2mqtt_devices.sql": {migrations20211213_002431_update_zigbee2mqtt_devicesSql, map[string]*bintree{}},
+		"20211219_181232_update_entity.sql":              {migrations20211219_181232_update_entitySql, map[string]*bintree{}},
+		"20220114_222818_update_plugins.sql":             {migrations20220114_222818_update_pluginsSql, map[string]*bintree{}},
+		"20220201_003002_update_triggers.sql":            {migrations20220201_003002_update_triggersSql, map[string]*bintree{}},
+		"20220209_223600_add_dashboard.sql":              {migrations20220209_223600_add_dashboardSql, map[string]*bintree{}},
+		"20220508_230436_update_entity.sql":              {migrations20220508_230436_update_entitySql, map[string]*bintree{}},
+		"20220605_184850_update_dashboard_tab.sql":       {migrations20220605_184850_update_dashboard_tabSql, map[string]*bintree{}},
 	}},
 }}
 
@@ -625,4 +695,3 @@ func _filePath(dir, name string) string {
 	cannonicalName := strings.Replace(name, "\\", "/", -1)
 	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
-

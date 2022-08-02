@@ -19,9 +19,10 @@
 package plugins
 
 import (
-	"github.com/e154/smart-home/system/event_bus/events"
 	"testing"
 	"time"
+
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -53,6 +54,7 @@ func TestEmail(t *testing.T) {
 
 			// register plugins
 			err = AddPlugin(adaptors, "notify")
+			ctx.So(err, ShouldBeNil)
 			settings := email.NewSettings()
 			settings[email.AttrAuth].Value = "XXX"
 			settings[email.AttrPass].Value = "XXX"
@@ -85,8 +87,8 @@ func TestEmail(t *testing.T) {
 						}
 
 					}
-					eventBus.Subscribe(event_bus.TopicEntities, fn)
-					defer eventBus.Unsubscribe(event_bus.TopicEntities, fn)
+					_ = eventBus.Subscribe(event_bus.TopicEntities, fn)
+					defer func() { _ = eventBus.Unsubscribe(event_bus.TopicEntities, fn) }()
 
 					eventBus.Publish(notify.TopicNotify, notify.Message{
 						Type: email.Name,
@@ -115,7 +117,7 @@ func TestEmail(t *testing.T) {
 						ctx.So(del.Message.Type, ShouldEqual, email.Name)
 
 						attr := email.NewMessageParams()
-						attr.Deserialize(del.Message.Attributes)
+						_, _ = attr.Deserialize(del.Message.Attributes)
 						ctx.So(attr[email.AttrSubject].String(), ShouldEqual, "subject")
 						ctx.So(attr[email.AttrBody].String(), ShouldEqual, "body")
 					}

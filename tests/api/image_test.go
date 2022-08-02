@@ -63,37 +63,37 @@ func TestImage(t *testing.T) {
 
 			t.Run("add", func(t *testing.T) {
 				Convey("", t, func(ctx C) {
-					ctx.Println("test not implemented")
+					_, _ = ctx.Println("test not implemented")
 				})
 			})
 
 			t.Run("getById", func(t *testing.T) {
 				Convey("", t, func(ctx C) {
-					ctx.Println("test not implemented")
+					_, _ = ctx.Println("test not implemented")
 				})
 			})
 
 			t.Run("update", func(t *testing.T) {
 				Convey("", t, func(ctx C) {
-					ctx.Println("test not implemented")
+					_, _ = ctx.Println("test not implemented")
 				})
 			})
 
 			t.Run("list", func(t *testing.T) {
 				Convey("", t, func(ctx C) {
-					ctx.Println("test not implemented")
+					_, _ = ctx.Println("test not implemented")
 				})
 			})
 
 			t.Run("delete", func(t *testing.T) {
 				Convey("", t, func(ctx C) {
-					ctx.Println("test not implemented")
+					_, _ = ctx.Println("test not implemented")
 				})
 			})
 
 			t.Run("upload", func(t *testing.T) {
 				Convey("", t, func(ctx C) {
-					ctx.Println("test not implemented")
+					_, _ = ctx.Println("test not implemented")
 				})
 			})
 

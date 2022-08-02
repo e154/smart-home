@@ -22,6 +22,8 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/e154/smart-home/common/logger"
+
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
@@ -30,7 +32,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("plugins.triggers")
+	log = logger.MustGetLogger("plugins.triggers")
 )
 
 var _ plugins.Plugable = (*plugin)(nil)

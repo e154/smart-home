@@ -20,8 +20,9 @@ package script
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/system/event_bus/events"
 	"sync"
+
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
@@ -68,14 +69,14 @@ func NewActor(entity *m.Entity,
 	for _, a := range actor.Actions {
 		if a.ScriptEngine != nil {
 			a.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
-			a.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
-			a.ScriptEngine.Do()
+			_, _ = a.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
+			_, _ = a.ScriptEngine.Do()
 		}
 	}
 
 	// Script
 	if actor.ScriptEngine != nil {
-		actor.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
+		_, _ = actor.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
 		actor.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
 	}
 
@@ -129,10 +130,11 @@ func (e *Actor) SetState(params entity_manager.EntityStateParams) (err error) {
 	e.AttrMu.Unlock()
 
 	e.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
-		PluginName: e.Id.PluginName(),
-		EntityId:   e.Id,
-		OldState:   oldState,
-		NewState:   e.GetEventState(e),
+		PluginName:  e.Id.PluginName(),
+		EntityId:    e.Id,
+		OldState:    oldState,
+		NewState:    e.GetEventState(e),
+		StorageSave: params.StorageSave,
 	})
 
 	return
@@ -147,6 +149,9 @@ func (e *Actor) runAction(msg events.EventCallAction) {
 	action, ok := e.Actions[msg.ActionName]
 	if !ok {
 		log.Warnf("action %s not found", msg.ActionName)
+		return
+	}
+	if action.ScriptEngine == nil {
 		return
 	}
 	if _, err := action.ScriptEngine.AssertFunction(FuncEntityAction, msg.EntityId, action.Name); err != nil {

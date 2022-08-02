@@ -19,14 +19,14 @@
 package scripts
 
 import (
-	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/scripts/bind"
 	"github.com/e154/smart-home/system/storage"
 )
 
 var (
-	log = common.MustGetLogger("scripts")
+	log = logger.MustGetLogger("scripts")
 )
 
 // ScriptService ...

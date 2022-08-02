@@ -20,13 +20,14 @@ package endpoint
 
 import (
 	"context"
-	"github.com/e154/smart-home/system/event_bus/events"
+
+	"github.com/go-playground/validator/v10"
+	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/event_bus"
-	"github.com/go-playground/validator/v10"
-	"github.com/pkg/errors"
+	"github.com/e154/smart-home/system/event_bus/events"
 )
 
 // EntityEndpoint ...
@@ -93,7 +94,6 @@ func (n *EntityEndpoint) Update(ctx context.Context, params *m.Entity) (result *
 		if errors.Is(err, common.ErrNotFound) {
 			return
 		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -107,7 +107,6 @@ func (n *EntityEndpoint) Update(ctx context.Context, params *m.Entity) (result *
 	}
 
 	if err = n.adaptors.Entity.Update(entity); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -116,7 +115,6 @@ func (n *EntityEndpoint) Update(ctx context.Context, params *m.Entity) (result *
 		if errors.Is(err, common.ErrNotFound) {
 			return
 		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 

@@ -63,43 +63,43 @@ func TestRole(t *testing.T) {
 
 			t.Run("get accessList", func(t *testing.T) {
 				Convey("", t, func(ctx C) {
-					ctx.Println("test not implemented")
+					_, _ = ctx.Println("test not implemented")
 				})
 			})
 
 			t.Run("update accessList", func(t *testing.T) {
 				Convey("", t, func(ctx C) {
-					ctx.Println("test not implemented")
+					_, _ = ctx.Println("test not implemented")
 				})
 			})
 
 			t.Run("add", func(t *testing.T) {
 				Convey("", t, func(ctx C) {
-					ctx.Println("test not implemented")
+					_, _ = ctx.Println("test not implemented")
 				})
 			})
 
 			t.Run("get", func(t *testing.T) {
 				Convey("", t, func(ctx C) {
-					ctx.Println("test not implemented")
+					_, _ = ctx.Println("test not implemented")
 				})
 			})
 
 			t.Run("list", func(t *testing.T) {
 				Convey("", t, func(ctx C) {
-					ctx.Println("test not implemented")
+					_, _ = ctx.Println("test not implemented")
 				})
 			})
 
 			t.Run("delete", func(t *testing.T) {
 				Convey("", t, func(ctx C) {
-					ctx.Println("test not implemented")
+					_, _ = ctx.Println("test not implemented")
 				})
 			})
 
 			t.Run("search", func(t *testing.T) {
 				Convey("", t, func(ctx C) {
-					ctx.Println("test not implemented")
+					_, _ = ctx.Println("test not implemented")
 				})
 			})
 

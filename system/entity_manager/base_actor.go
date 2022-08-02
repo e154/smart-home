@@ -42,7 +42,7 @@ type BaseActor struct {
 	Manager           EntityManager
 	State             *ActorState
 	Area              *m.Area
-	Metric            []m.Metric
+	Metric            []*m.Metric
 	Hidden            bool
 	AttrMu            *sync.RWMutex
 	Attrs             m.Attributes
@@ -99,7 +99,7 @@ func NewBaseActor(entity *m.Entity,
 	}
 
 	// Metric
-	actor.Metric = make([]m.Metric, len(entity.Metrics))
+	actor.Metric = make([]*m.Metric, len(entity.Metrics))
 	copy(actor.Metric, entity.Metrics)
 
 	// States
@@ -142,7 +142,7 @@ func NewBaseActor(entity *m.Entity,
 			log.Error(err.Error())
 		}
 
-		actor.ScriptEngine.Do()
+		_, _ = actor.ScriptEngine.Do()
 
 	} else {
 		if actor.ScriptEngine, err = scriptService.NewEngine(nil); err != nil {
@@ -159,7 +159,7 @@ func (b *BaseActor) GetEventState(actor PluginActor) event_bus.EventEntityState 
 }
 
 // Metrics ...
-func (e *BaseActor) Metrics() []m.Metric {
+func (e *BaseActor) Metrics() []*m.Metric {
 	return e.Metric
 }
 
@@ -181,7 +181,7 @@ func (e *BaseActor) DeserializeAttr(data m.AttributeValue) {
 	e.attrLock()
 	e.AttrMu.Lock()
 	defer e.AttrMu.Unlock()
-	e.Attrs.Deserialize(data)
+	_, _ = e.Attrs.Deserialize(data)
 }
 
 // Info ...
@@ -223,7 +223,7 @@ func (e *BaseActor) Now(oldState event_bus.EventEntityState) time.Time {
 }
 
 // SetMetric ...
-func (e *BaseActor) SetMetric(id common.EntityId, name string, value map[string]interface{}) {
+func (e *BaseActor) SetMetric(id common.EntityId, name string, value map[string]float32) {
 	if e.Manager != nil {
 		e.Manager.SetMetric(id, name, value)
 	}
@@ -245,7 +245,7 @@ func (e *BaseActor) DeserializeSettings(settings m.AttributeValue) {
 	e.settingsLock()
 	e.SettingsMu.Lock()
 	defer e.SettingsMu.Unlock()
-	e.Setts.Deserialize(settings)
+	_, _ = e.Setts.Deserialize(settings)
 }
 
 func (e *BaseActor) attrLock() {

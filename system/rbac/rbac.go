@@ -23,8 +23,9 @@ import (
 	"fmt"
 	"regexp"
 
+	"github.com/e154/smart-home/common/logger"
+
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/jwt_manager"
@@ -35,7 +36,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("rbac")
+	log = logger.MustGetLogger("rbac")
 )
 
 // AccessFilter ...

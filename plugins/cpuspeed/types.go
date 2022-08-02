@@ -27,7 +27,7 @@ const (
 	// EntityCpuspeed ...
 	EntityCpuspeed = string("cpuspeed")
 
-	icon = "microchip"
+	//icon = "microchip"
 
 	// AttrCpuCores ...
 	AttrCpuCores = "cores"
@@ -35,6 +35,10 @@ const (
 	AttrCpuMhz = "mhz"
 	// AttrCpuAll ...
 	AttrCpuAll = "all"
+	// AttrLoadMin ...
+	AttrLoadMin = "load_min"
+	// AttrLoadMax ...
+	AttrLoadMax = "load_max"
 
 	// Name ...
 	Name = "cpuspeed"
@@ -56,6 +60,14 @@ func NewAttr() m.Attributes {
 		},
 		AttrCpuAll: {
 			Name: AttrCpuAll,
+			Type: common.AttributeFloat,
+		},
+		AttrLoadMin: {
+			Name: AttrLoadMin,
+			Type: common.AttributeFloat,
+		},
+		AttrLoadMax: {
+			Name: AttrLoadMax,
 			Type: common.AttributeFloat,
 		},
 	}

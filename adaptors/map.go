@@ -148,7 +148,7 @@ func (n *Map) fromDb(dbVer *db.Map) (ver *m.Map) {
 		UpdatedAt:   dbVer.UpdatedAt,
 	}
 	options, _ := dbVer.Options.MarshalJSON()
-	json.Unmarshal(options, &ver.Options)
+	_ = json.Unmarshal(options, &ver.Options)
 
 	// layers
 	layerAdaptor := GetMapLayerAdaptor(n.db)
@@ -167,6 +167,6 @@ func (n *Map) toDb(ver *m.Map) (dbVer *db.Map) {
 		Description: ver.Description,
 	}
 	options, _ := json.Marshal(ver.Options)
-	dbVer.Options.UnmarshalJSON(options)
+	_ = dbVer.Options.UnmarshalJSON(options)
 	return
 }

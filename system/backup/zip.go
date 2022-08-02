@@ -40,7 +40,7 @@ func unzip(archive, target string) error {
 	for _, file := range reader.File {
 		path := filepath.Join(target, file.Name)
 		if file.FileInfo().IsDir() {
-			os.MkdirAll(path, file.Mode())
+			_ = os.MkdirAll(path, file.Mode())
 			continue
 		}
 
@@ -85,7 +85,7 @@ func zipit(sources []string, target string) error {
 			baseDir = filepath.Base(source)
 		}
 
-		filepath.Walk(source, func(path string, info os.FileInfo, err error) error {
+		_ = filepath.Walk(source, func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
 			}

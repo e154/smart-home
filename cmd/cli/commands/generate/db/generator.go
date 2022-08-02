@@ -24,13 +24,15 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/e154/smart-home/common/logger"
+
 	"github.com/e154/smart-home/cmd/cli/commands/generate"
 	"github.com/e154/smart-home/common"
 	"github.com/spf13/cobra"
 )
 
 var (
-	log = common.MustGetLogger("db")
+	log = logger.MustGetLogger("db")
 )
 
 var dbModelTpl = `//CODE GENERATED AUTOMATICALLY

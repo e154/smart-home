@@ -22,22 +22,22 @@ import (
 	"context"
 	"sync"
 
+	"github.com/e154/smart-home/common/logger"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/mqtt"
 	"go.uber.org/atomic"
 	"go.uber.org/fx"
 )
 
 var (
-	log = common.MustGetLogger("zigbee2mqtt")
+	log = logger.MustGetLogger("zigbee2mqtt")
 )
 
 // zigbee2mqtt ...
 type zigbee2mqtt struct {
-	metric      *metrics.MetricManager
 	mqtt        mqtt.MqttServ
 	adaptors    *adaptors.Adaptors
 	isStarted   atomic.Bool
@@ -48,14 +48,12 @@ type zigbee2mqtt struct {
 // NewZigbee2mqtt ...
 func NewZigbee2mqtt(lc fx.Lifecycle,
 	mqtt mqtt.MqttServ,
-	adaptors *adaptors.Adaptors,
-	metric *metrics.MetricManager) Zigbee2mqtt {
+	adaptors *adaptors.Adaptors) Zigbee2mqtt {
 	zigbee2mqtt := &zigbee2mqtt{
 		mqtt:        mqtt,
 		adaptors:    adaptors,
 		bridgesLock: &sync.Mutex{},
 		bridges:     make(map[int64]*Bridge),
-		metric:      metric,
 	}
 
 	lc.Append(fx.Hook{
@@ -103,7 +101,7 @@ func (z *zigbee2mqtt) Start() {
 
 	//todo fix race condition
 	for _, model := range models {
-		bridge := NewBridge(z.mqtt, z.adaptors, model, z.metric)
+		bridge := NewBridge(z.mqtt, z.adaptors, model)
 		bridge.Start()
 
 		z.bridgesLock.Lock()
@@ -121,7 +119,7 @@ func (z *zigbee2mqtt) Shutdown() {
 	for _, bridge := range z.bridges {
 		bridge.Stop(context.Background())
 	}
-	z.mqtt.Authenticator().Unregister(z.Authenticator)
+	_ = z.mqtt.Authenticator().Unregister(z.Authenticator)
 }
 
 // AddBridge ...
@@ -140,7 +138,7 @@ func (z *zigbee2mqtt) AddBridge(model *m.Zigbee2mqtt) (err error) {
 	z.bridgesLock.Lock()
 	defer z.bridgesLock.Unlock()
 
-	bridge := NewBridge(z.mqtt, z.adaptors, model, z.metric)
+	bridge := NewBridge(z.mqtt, z.adaptors, model)
 	bridge.Start()
 	z.bridges[model.Id] = bridge
 	return

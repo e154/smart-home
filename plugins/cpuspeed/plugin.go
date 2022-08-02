@@ -44,7 +44,7 @@ type plugin struct {
 func New() plugins.Plugable {
 	p := &plugin{
 		Plugin: plugins.NewPlugin(),
-		pause:  50,
+		pause:  10,
 	}
 	return p
 }
@@ -63,20 +63,13 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 		log.Error(err.Error())
 	}
 
-	var metric m.Metric
+	var metric *m.Metric
 	if len(list) == 0 {
-		metric = m.Metric{
+		metric = &m.Metric{
 			Name:        "cpuspeed",
 			Description: "Cpu metric",
 			Options: m.MetricOptions{
 				Items: []m.MetricOptionsItem{
-					{
-						Name:        "mhz",
-						Description: "",
-						Color:       "#ff0000",
-						Translate:   "mhz",
-						Label:       "GHz",
-					},
 					{
 						Name:        "all",
 						Description: "",
@@ -89,14 +82,14 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 			Type: common.MetricTypeLine,
 		}
 		if metric.Id, err = p.Adaptors.Metric.Add(metric); err == nil {
-			p.Adaptors.Entity.AppendMetric(p.actor.Id, metric)
+			_ = p.Adaptors.Entity.AppendMetric(p.actor.Id, metric)
 		}
 
 	} else {
 		metric = list[0]
 	}
 
-	p.actor.Metric = []m.Metric{metric}
+	p.actor.Metric = []*m.Metric{metric}
 
 	go func() {
 		ticker := time.NewTicker(time.Second * time.Duration(p.pause))

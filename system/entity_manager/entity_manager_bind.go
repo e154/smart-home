@@ -40,20 +40,20 @@ func (e *EntityManagerBind) GetEntity(id common.EntityId) *EntityBind {
 
 // SetState ...
 func (e *EntityManagerBind) SetState(id common.EntityId, stateName string) {
-	e.manager.SetState(id, EntityStateParams{
+	_ = e.manager.SetState(id, EntityStateParams{
 		NewState: common.String(stateName),
 	})
 }
 
 // SetAttribute ...
 func (e *EntityManagerBind) SetAttribute(id common.EntityId, params m.AttributeValue) {
-	e.manager.SetState(id, EntityStateParams{
+	_ = e.manager.SetState(id, EntityStateParams{
 		AttributeValues: params,
 	})
 }
 
 // SetMetric ...
-func (e *EntityManagerBind) SetMetric(id common.EntityId, name string, value map[string]interface{}) {
+func (e *EntityManagerBind) SetMetric(id common.EntityId, name string, value map[string]float32) {
 	e.manager.SetMetric(id, name, value)
 }
 

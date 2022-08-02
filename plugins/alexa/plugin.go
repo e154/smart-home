@@ -21,6 +21,8 @@ package alexa
 import (
 	"sync"
 
+	"github.com/e154/smart-home/common/logger"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/triggers"
@@ -28,7 +30,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("plugins.server")
+	log = logger.MustGetLogger("plugins.server")
 )
 
 var _ plugins.Plugable = (*plugin)(nil)
@@ -77,7 +79,7 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 
 	p.server.Start()
 
-	p.EventBus.Subscribe(TopicPluginAlexa, p.eventHandler)
+	_ = p.EventBus.Subscribe(TopicPluginAlexa, p.eventHandler)
 
 	return nil
 }
@@ -88,7 +90,7 @@ func (p *plugin) Unload() (err error) {
 		return
 	}
 
-	p.EventBus.Unsubscribe(TopicPluginAlexa, p.eventHandler)
+	_ = p.EventBus.Unsubscribe(TopicPluginAlexa, p.eventHandler)
 
 	p.server.Stop()
 	p.server = nil

@@ -20,15 +20,16 @@ package weather
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/system/event_bus/events"
 	"sync"
 
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/event_bus/events"
 	"github.com/e154/smart-home/system/plugins"
 )
 
@@ -40,7 +41,7 @@ const (
 )
 
 var (
-	log = common.MustGetLogger("plugins.weather")
+	log = logger.MustGetLogger("plugins.weather")
 )
 
 var _ plugins.Plugable = (*plugin)(nil)
@@ -70,7 +71,7 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 		return
 	}
 
-	p.EventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
 
 	return nil
 }
@@ -81,7 +82,7 @@ func (p *plugin) Unload() (err error) {
 		return
 	}
 
-	p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
 
 	return nil
 }
@@ -94,15 +95,13 @@ func (p plugin) Name() string {
 func (p *plugin) eventHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
-	case events.EventRequestState:
+	case events.EventPassAttributes:
 		if v.To.PluginName() != Name {
 			return
 		}
 
-		p.AddOrUpdateForecast(v.To.Name(), v.Attributes)
+		_ = p.AddOrUpdateForecast(v.To.Name(), v.Attributes)
 	}
-
-	return
 }
 
 // AddOrUpdateForecast ...
@@ -123,7 +122,7 @@ func (p *plugin) AddOrUpdateForecast(name string, attr m.Attributes) (err error)
 		stateName = a.String()
 	}
 
-	actor.SetState(entity_manager.EntityStateParams{
+	_ = actor.SetState(entity_manager.EntityStateParams{
 		NewState:        common.String(stateName),
 		AttributeValues: attr.Serialize(),
 	})

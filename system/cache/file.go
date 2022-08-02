@@ -108,7 +108,7 @@ func (fc *FileCache) Init() {
 // get cached file name. it's md5 encoded.
 func (fc *FileCache) getCacheFileName(key string) string {
 	m := md5.New()
-	io.WriteString(m, key)
+	_, _ = io.WriteString(m, key)
 	keyMd5 := hex.EncodeToString(m.Sum(nil))
 	cachePath := fc.CachePath
 	switch fc.DirectoryLevel {
@@ -133,7 +133,7 @@ func (fc *FileCache) Get(key string) interface{} {
 		return ""
 	}
 	var to FileCacheItem
-	GobDecode(fileData, &to)
+	_ = GobDecode(fileData, &to)
 	if to.Expired.Before(time.Now()) {
 		return ""
 	}
@@ -189,7 +189,7 @@ func (fc *FileCache) Incr(key string) error {
 	} else {
 		incr = data.(int) + 1
 	}
-	fc.Put(key, incr, time.Duration(fc.EmbedExpiry))
+	_ = fc.Put(key, incr, time.Duration(fc.EmbedExpiry))
 	return nil
 }
 
@@ -202,7 +202,7 @@ func (fc *FileCache) Decr(key string) error {
 	} else {
 		decr = data.(int) - 1
 	}
-	fc.Put(key, decr, time.Duration(fc.EmbedExpiry))
+	_ = fc.Put(key, decr, time.Duration(fc.EmbedExpiry))
 	return nil
 }
 

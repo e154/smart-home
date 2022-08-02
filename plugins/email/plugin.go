@@ -21,6 +21,8 @@ package email
 import (
 	"strings"
 
+	"github.com/e154/smart-home/common/logger"
+
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
@@ -30,7 +32,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("plugins.email")
+	log = logger.MustGetLogger("plugins.email")
 )
 
 var _ plugins.Plugable = (*plugin)(nil)
@@ -157,7 +159,7 @@ func (p *plugin) Save(msg notify.Message) (addresses []string, message m.Message
 	}
 
 	attr := NewMessageParams()
-	attr.Deserialize(message.Attributes)
+	_, _ = attr.Deserialize(message.Attributes)
 
 	addresses = strings.Split(attr[AttrAddresses].String(), ",")
 	return

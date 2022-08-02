@@ -103,13 +103,13 @@ func (s *Engine) EvalString(str ...string) (result string, errs error) {
 	var err error
 	if len(str) == 0 {
 		if result, err = s.script.Do(); err != nil {
-			err = multierror.Append(err, errs)
+			errs = multierror.Append(err, errs)
 		}
 		return
 	}
 	for _, st := range str {
 		if result, err = s.script.EvalString(st); err != nil {
-			err = multierror.Append(err, errs)
+			errs = multierror.Append(err, errs)
 		}
 	}
 	return

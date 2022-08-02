@@ -47,9 +47,9 @@ func So(actual interface{}, assert assertion, expected ...interface{}) {
 	} else {
 		fmt.Println()
 		if adaptors != nil {
-			adaptors.Rollback()
+			_ = adaptors.Rollback()
 		}
-		panic(fmt.Sprintf("%v", reporting.NewFailureReport(result)))
+		panic(any(fmt.Sprintf("%v", reporting.NewFailureReport(result))))
 	}
 }
 

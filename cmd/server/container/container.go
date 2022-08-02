@@ -32,11 +32,11 @@ import (
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/initial"
+	localMigrations "github.com/e154/smart-home/system/initial/local_migrations"
 	"github.com/e154/smart-home/system/jwt_manager"
 	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/logging_db"
 	"github.com/e154/smart-home/system/logging_ws"
-	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/mqtt_authenticator"
@@ -46,6 +46,7 @@ import (
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/storage"
 	"github.com/e154/smart-home/system/stream"
+	"github.com/e154/smart-home/system/stream/handlers"
 	"github.com/e154/smart-home/system/validation"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	"go.uber.org/fx"
@@ -69,14 +70,15 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 			logging_db.NewLogDbSaver,
 			logging_ws.NewLogWsSaver,
 			scripts.NewScriptService,
+			MigrationList,
+			localMigrations.NewMigrations,
+			NewDemo,
 			initial.NewInitial,
 			NewMqttConfig,
 			mqtt_authenticator.NewAuthenticator,
 			mqtt.NewMqtt,
 			access_list.NewAccessListService,
 			rbac.NewAccessFilter,
-			NewMetricConfig,
-			metrics.NewMetricManager,
 			NewZigbee2mqttConfig,
 			zigbee2mqtt.NewZigbee2mqtt,
 			storage.NewStorage,
@@ -89,6 +91,7 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 			api.NewApi,
 			controllers.NewControllers,
 			stream.NewStreamService,
+			handlers.NewEventHandler,
 			NewBackupConfig,
 			backup.NewBackup,
 			gate_client.NewGateClient,

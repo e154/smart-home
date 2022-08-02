@@ -48,7 +48,7 @@ func (c ControllerUser) AddUser(ctx context.Context, req *api.NewtUserRequest) (
 	user := c.dto.User.FromAddUser(req)
 
 	if req.Password == req.PasswordRepeat {
-		user.SetPass(req.Password)
+		_ = user.SetPass(req.Password)
 	}
 
 	var currentUser *m.User
@@ -92,7 +92,7 @@ func (c ControllerUser) UpdateUserById(ctx context.Context, req *api.UpdateUserR
 	}
 
 	if req.Password != "" {
-		user.SetPass(req.Password)
+		_ = user.SetPass(req.Password)
 	}
 
 	user, errs, err := c.endpoint.User.Update(ctx, user)

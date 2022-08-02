@@ -20,6 +20,7 @@ package adaptors
 
 import (
 	"encoding/json"
+	"time"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
@@ -29,11 +30,12 @@ import (
 
 // IEntityStorage ...
 type IEntityStorage interface {
-	Add(ver m.EntityStorage) (id int64, err error)
-	GetLastByEntityId(entityId common.EntityId) (ver m.EntityStorage, err error)
-	List(limit, offset int64, orderBy, sort string) (list []m.EntityStorage, total int64, err error)
-	fromDb(dbVer db.EntityStorage) (ver m.EntityStorage)
-	toDb(ver m.EntityStorage) (dbVer db.EntityStorage)
+	Add(ver *m.EntityStorage) (id int64, err error)
+	GetLastByEntityId(entityId common.EntityId) (ver *m.EntityStorage, err error)
+	List(limit, offset int64, orderBy, sort string) (list []*m.EntityStorage, total int64, err error)
+	ListByEntityId(limit, offset int64, orderBy, sort string, entityId common.EntityId, startDate, endDate *time.Time) (list []*m.EntityStorage, total int64, err error)
+	fromDb(dbVer db.EntityStorage) (ver *m.EntityStorage)
+	toDb(ver *m.EntityStorage) (dbVer db.EntityStorage)
 }
 
 // EntityStorage ...
@@ -52,13 +54,13 @@ func GetEntityStorageAdaptor(d *gorm.DB) IEntityStorage {
 }
 
 // Add ...
-func (n *EntityStorage) Add(ver m.EntityStorage) (id int64, err error) {
+func (n *EntityStorage) Add(ver *m.EntityStorage) (id int64, err error) {
 	id, err = n.table.Add(n.toDb(ver))
 	return
 }
 
 // GetLastByEntityId ...
-func (n *EntityStorage) GetLastByEntityId(entityId common.EntityId) (ver m.EntityStorage, err error) {
+func (n *EntityStorage) GetLastByEntityId(entityId common.EntityId) (ver *m.EntityStorage, err error) {
 	var dbVer db.EntityStorage
 	if dbVer, err = n.table.GetLastByEntityId(entityId); err != nil {
 		return
@@ -68,21 +70,35 @@ func (n *EntityStorage) GetLastByEntityId(entityId common.EntityId) (ver m.Entit
 }
 
 // List ...
-func (n *EntityStorage) List(limit, offset int64, orderBy, sort string) (list []m.EntityStorage, total int64, err error) {
+func (n *EntityStorage) List(limit, offset int64, orderBy, sort string) (list []*m.EntityStorage, total int64, err error) {
 	var dbList []db.EntityStorage
 	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
 		return
 	}
 
-	list = make([]m.EntityStorage, len(dbList))
+	list = make([]*m.EntityStorage, len(dbList))
 	for i, dbVer := range dbList {
 		list[i] = n.fromDb(dbVer)
 	}
 	return
 }
 
-func (n *EntityStorage) fromDb(dbVer db.EntityStorage) (ver m.EntityStorage) {
-	ver = m.EntityStorage{
+// ListByEntityId ...
+func (n *EntityStorage) ListByEntityId(limit, offset int64, orderBy, sort string, entityId common.EntityId, startDate, endDate *time.Time) (list []*m.EntityStorage, total int64, err error) {
+	var dbList []db.EntityStorage
+	if dbList, total, err = n.table.ListByEntityId(limit, offset, orderBy, sort, entityId, startDate, endDate); err != nil {
+		return
+	}
+
+	list = make([]*m.EntityStorage, len(dbList))
+	for i, dbVer := range dbList {
+		list[i] = n.fromDb(dbVer)
+	}
+	return
+}
+
+func (n *EntityStorage) fromDb(dbVer db.EntityStorage) (ver *m.EntityStorage) {
+	ver = &m.EntityStorage{
 		Id:         dbVer.Id,
 		EntityId:   dbVer.EntityId,
 		State:      dbVer.State,
@@ -91,13 +107,13 @@ func (n *EntityStorage) fromDb(dbVer db.EntityStorage) (ver m.EntityStorage) {
 	}
 
 	if len(dbVer.Attributes) > 0 {
-		json.Unmarshal(dbVer.Attributes, &ver.Attributes)
+		_ = json.Unmarshal(dbVer.Attributes, &ver.Attributes)
 	}
 
 	return
 }
 
-func (n *EntityStorage) toDb(ver m.EntityStorage) (dbVer db.EntityStorage) {
+func (n *EntityStorage) toDb(ver *m.EntityStorage) (dbVer db.EntityStorage) {
 	dbVer = db.EntityStorage{
 		Id:        ver.Id,
 		EntityId:  ver.EntityId,
@@ -107,7 +123,7 @@ func (n *EntityStorage) toDb(ver m.EntityStorage) (dbVer db.EntityStorage) {
 
 	if ver.Attributes != nil {
 		b, _ := json.Marshal(ver.Attributes)
-		dbVer.Attributes.UnmarshalJSON(b)
+		_ = dbVer.Attributes.UnmarshalJSON(b)
 	}
 
 	return

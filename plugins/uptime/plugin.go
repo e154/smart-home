@@ -24,6 +24,8 @@ package uptime
 import (
 	"time"
 
+	"github.com/e154/smart-home/common/logger"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/plugins"
@@ -34,7 +36,7 @@ const (
 )
 
 var (
-	log = common.MustGetLogger("plugins.uptime")
+	log = logger.MustGetLogger("plugins.uptime")
 )
 
 var _ plugins.Plugable = (*plugin)(nil)

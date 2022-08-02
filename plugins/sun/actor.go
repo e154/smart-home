@@ -20,11 +20,12 @@ package sun
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/system/event_bus/events"
 	"math"
 	"sort"
 	"sync"
 	"time"
+
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/astronomics/suncalc"
@@ -112,7 +113,7 @@ func (e *Actor) UpdateSunPosition(now time.Time) {
 
 	times := suncalc.GetTimes(now, e.lat, e.lon)
 
-	log.Debugf("Sun pos azimuth(%f), elevation(%f)", e.solarAzimuth, e.solarElevation)
+	//log.Debugf("Sun pos azimuth(%f), elevation(%f)", e.solarAzimuth, e.solarElevation)
 
 	var attributeValues = make(m.AttributeValue)
 	attributeValues[AttrAzimuth] = e.solarAzimuth
@@ -157,7 +158,7 @@ func (e *Actor) UpdateSunPosition(now time.Time) {
 			}
 		}
 	}
-	log.Debugf("Sun phase %v", e.phase)
+	//log.Debugf("Sun phase %v", e.phase)
 
 	attributeValues[AttrPhase] = e.phase
 
@@ -169,7 +170,7 @@ func (e *Actor) UpdateSunPosition(now time.Time) {
 
 	attributeValues[AttrHorizonState] = e.horizonState
 
-	log.Debugf("Sun horizonState %v", e.horizonState)
+	//log.Debugf("Sun horizonState %v", e.horizonState)
 
 	e.DeserializeAttr(attributeValues)
 

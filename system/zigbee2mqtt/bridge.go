@@ -29,13 +29,11 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/mqtt"
 )
 
 // Bridge ...
 type Bridge struct {
-	metric         *metrics.MetricManager
 	adaptors       *adaptors.Adaptors
 	mqtt           mqtt.MqttServ
 	mqttClient     mqtt.MqttCli
@@ -56,13 +54,11 @@ type Bridge struct {
 // NewBridge ...
 func NewBridge(mqtt mqtt.MqttServ,
 	adaptors *adaptors.Adaptors,
-	model *m.Zigbee2mqtt,
-	metric *metrics.MetricManager) *Bridge {
+	model *m.Zigbee2mqtt) *Bridge {
 	return &Bridge{
 		adaptors: adaptors,
 		devices:  make(map[string]*Device),
 		model:    model,
-		metric:   metric,
 		mqtt:     mqtt,
 	}
 }
@@ -77,16 +73,14 @@ func (g *Bridge) Start() {
 
 	log.Infof("bridge id %v,  base topic: %v", g.model.Id, g.model.BaseTopic)
 
-	g.metric.Update(metrics.Zigbee2MqttAdd{
-		TotalNum: int64(len(g.model.Devices)),
-	})
+	//todo add metric ...
 
 	if g.mqttClient == nil {
 		g.mqttClient = g.mqtt.NewClient(fmt.Sprintf("bridge_%v", g.model.Name))
 	}
 
 	// /zigbee2mqtt/bridge/#
-	g.mqttClient.Subscribe(fmt.Sprintf("%s/bridge/#", g.model.BaseTopic), g.onBridgePublish)
+	_ = g.mqttClient.Subscribe(fmt.Sprintf("%s/bridge/#", g.model.BaseTopic), g.onBridgePublish)
 
 	if err := g.safeGetDeviceList(); err != nil {
 		log.Error(err.Error())
@@ -209,7 +203,7 @@ func (g *Bridge) safeUpdateDevice(device *Device) (err error) {
 		if err = g.adaptors.Zigbee2mqttDevice.Add(&model); err != nil {
 			return
 		}
-		g.metric.Update(metrics.Zigbee2MqttAdd{TotalNum: 1})
+		//todo add metric ...
 	}
 
 	g.devices[device.friendlyName] = device
@@ -224,7 +218,7 @@ func (g *Bridge) safeUpdateDevice(device *Device) (err error) {
 	}
 	g.modelLock.Unlock()
 
-	g.metric.Update(metrics.Zigbee2MqttUpdate{})
+	//todo add metric ...
 
 	return
 }
@@ -273,12 +267,12 @@ func (g *Bridge) getState() string {
 
 // get config
 func (g *Bridge) getConfig() {
-	g.mqttClient.Publish(g.topic("/bridge/config/get"), []byte{})
+	_ = g.mqttClient.Publish(g.topic("/bridge/config/get"), []byte{})
 }
 
 // get device list
 func (g *Bridge) getDevices() {
-	g.mqttClient.Publish(g.topic("/bridge/config/devices/get"), []byte{})
+	_ = g.mqttClient.Publish(g.topic("/bridge/config/devices/get"), []byte{})
 }
 
 func (g *Bridge) configPermitJoin(tr bool) {
@@ -286,7 +280,7 @@ func (g *Bridge) configPermitJoin(tr bool) {
 	if !tr {
 		permitJoin = "false"
 	}
-	g.mqttClient.Publish(g.topic("/bridge/config/permit_join"), []byte(permitJoin))
+	_ = g.mqttClient.Publish(g.topic("/bridge/config/permit_join"), []byte(permitJoin))
 }
 
 func (g *Bridge) configLastSeen() {}
@@ -294,7 +288,7 @@ func (g *Bridge) configElapsed()  {}
 
 // Resets the ZNP (CC2530/CC2531).
 func (g *Bridge) configReset() {
-	g.mqttClient.Publish(g.topic("/bridge/config/reset"), []byte{})
+	_ = g.mqttClient.Publish(g.topic("/bridge/config/reset"), []byte{})
 }
 
 // ConfigReset ...
@@ -310,17 +304,17 @@ func (g *Bridge) DeviceOptions() {}
 
 // Remove ...
 func (g *Bridge) Remove(friendlyName string) {
-	g.mqttClient.Publish(g.topic("/bridge/config/remove"), []byte(friendlyName))
+	_ = g.mqttClient.Publish(g.topic("/bridge/config/remove"), []byte(friendlyName))
 }
 
 // Ban ...
 func (g *Bridge) Ban(friendlyName string) {
-	g.mqttClient.Publish(g.topic("/bridge/config/force_remove"), []byte(friendlyName))
+	_ = g.mqttClient.Publish(g.topic("/bridge/config/force_remove"), []byte(friendlyName))
 }
 
 // Whitelist ...
 func (g *Bridge) Whitelist(friendlyName string) {
-	g.mqttClient.Publish(g.topic("/bridge/config/whitelist"), []byte(friendlyName))
+	_ = g.mqttClient.Publish(g.topic("/bridge/config/whitelist"), []byte(friendlyName))
 }
 
 // RenameDevice ...
@@ -357,7 +351,7 @@ func (g *Bridge) UpdateNetworkmap() {
 	}
 	g.scanInProcess = true
 
-	g.mqttClient.Publish(g.topic("/bridge/networkmap"), []byte("graphviz"))
+	_ = g.mqttClient.Publish(g.topic("/bridge/networkmap"), []byte("graphviz"))
 }
 
 // Networkmap ...
@@ -412,7 +406,7 @@ func (g *Bridge) deviceInterview(event Event) {
 func (g *Bridge) onDevices(client mqtt.MqttCli, message mqtt.Message) {
 
 	devices := make([]DeviceInfo, 0)
-	json.Unmarshal(message.Payload, &devices)
+	_ = json.Unmarshal(message.Payload, &devices)
 
 	for _, device := range devices {
 		if device.Type == Coordinator || !device.InterviewCompleted {

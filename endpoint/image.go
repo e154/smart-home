@@ -105,7 +105,7 @@ func (i *ImageEndpoint) Update(ctx context.Context, params *m.Image) (result *m.
 		return
 	}
 
-	if image, err = i.adaptors.Image.GetById(params.Id); err != nil {
+	if result, err = i.adaptors.Image.GetById(params.Id); err != nil {
 		if !errors.Is(err, common.ErrNotFound) {
 			err = errors.Wrap(common.ErrInternal, err.Error())
 		}

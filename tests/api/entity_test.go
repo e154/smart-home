@@ -220,7 +220,7 @@ func TestEntity(t *testing.T) {
 			c := context.Background()
 			conn, err := grpc.DialContext(c, "", grpc.WithInsecure(), grpc.WithContextDialer(dialer.Call()))
 			ctx.So(err, ShouldBeNil)
-			defer conn.Close()
+			defer func() { _ = conn.Close() }()
 
 			client := gw.NewEntityServiceClient(conn)
 
@@ -475,7 +475,7 @@ func TestEntity(t *testing.T) {
 					t.Run("get by id", func(t *testing.T) {
 						Convey("", t, func(ctx C) {
 
-							entity, err := client.GetEntity(c, &gw.GetEntityRequest{Id: "sensor.light234"})
+							entity, err = client.GetEntity(c, &gw.GetEntityRequest{Id: "sensor.light234"})
 							ctx.So(err, ShouldNotBeNil)
 
 							entity, err = client.GetEntity(c, &gw.GetEntityRequest{Id: "sensor.light2"})

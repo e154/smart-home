@@ -22,13 +22,14 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
-	"github.com/e154/smart-home/system/event_bus/events"
 	"math"
 	"net/url"
 	"sort"
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/pkg/errors"
 
@@ -75,16 +76,16 @@ func (p *WeatherMet) UpdateWeatherList(entityId common.EntityId, settings m.Attr
 		Lon:  settings[weather.AttrLon].Float64(),
 	}
 
-	var update bool
+	//var update bool
 	if _, ok := p.zones.Load(entityId); !ok {
-		update = true
+		//update = true
 	}
 	p.zones.Store(entityId, zone)
 
-	if !update {
-		return
-	}
-	p.UpdateForecastForAll()
+	//if !update {
+	//	return
+	//}
+	_ = p.UpdateForecastForAll()
 }
 
 // RemoveWeather ...
@@ -129,9 +130,9 @@ func (p *WeatherMet) UpdateForecast(zone Zone) (err error) {
 	}
 
 	attr := weather.BaseForecast()
-	attr.Deserialize(forecast)
+	_, _ = attr.Deserialize(forecast)
 
-	p.eventBus.Publish(event_bus.TopicEntities, events.EventRequestState{
+	p.eventBus.Publish(event_bus.TopicEntities, events.EventPassAttributes{
 		From:       common.EntityId(fmt.Sprintf("weather_met.%s", zone.Name)),
 		To:         common.EntityId(fmt.Sprintf("weather.%s", zone.Name)),
 		Attributes: attr,
@@ -231,6 +232,7 @@ func (p *WeatherMet) saveToLocalStorage(zone Zone) (err error) {
 	}
 
 	err = p.adaptors.Variable.CreateOrUpdate(m.Variable{
+		System:   true,
 		Name:     fmt.Sprintf("weather_met.%s", zone.Name),
 		Value:    string(b),
 		EntityId: common.NewEntityId(fmt.Sprintf("weather.%s", zone.Name)),

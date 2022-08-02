@@ -21,10 +21,25 @@
       "name": "AutomationService"
     },
     {
+      "name": "DashboardService"
+    },
+    {
+      "name": "DashboardCardService"
+    },
+    {
+      "name": "DashboardCardItemService"
+    },
+    {
+      "name": "DashboardTabService"
+    },
+    {
       "name": "DeveloperToolsService"
     },
     {
       "name": "EntityService"
+    },
+    {
+      "name": "EntityStorageService"
     },
     {
       "name": "ImageService"
@@ -49,6 +64,9 @@
     },
     {
       "name": "UserService"
+    },
+    {
+      "name": "VariableService"
     },
     {
       "name": "Zigbee2mqttService"
@@ -346,6 +364,957 @@
         ],
         "tags": [
           "AreaService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/dashboard": {
+      "post": {
+        "summary": "add new dashboard",
+        "operationId": "DashboardService_AddDashboard",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiDashboard"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiNewDashboardRequest"
+            }
+          }
+        ],
+        "tags": [
+          "DashboardService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/dashboard/{id}": {
+      "get": {
+        "summary": "get dashboard by id",
+        "operationId": "DashboardService_GetDashboardById",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiDashboard"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "DashboardService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "delete dashboard",
+        "operationId": "DashboardService_DeleteDashboard",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "DashboardService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "put": {
+        "summary": "update dashboard",
+        "operationId": "DashboardService_UpdateDashboard",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiDashboard"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "enabled": {
+                  "type": "boolean"
+                },
+                "areaId": {
+                  "type": "string",
+                  "format": "int64"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "DashboardService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/dashboard_card": {
+      "post": {
+        "summary": "add new dashboard_card",
+        "operationId": "DashboardCardService_AddDashboardCard",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiDashboardCard"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiNewDashboardCardRequest"
+            }
+          }
+        ],
+        "tags": [
+          "DashboardCardService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/dashboard_card/import": {
+      "post": {
+        "summary": "import dashboard_card",
+        "operationId": "DashboardCardService_ImportDashboardCard",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiDashboardCard"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiDashboardCard"
+            }
+          }
+        ],
+        "tags": [
+          "DashboardCardService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/dashboard_card/{id}": {
+      "get": {
+        "summary": "get dashboard_card by id",
+        "operationId": "DashboardCardService_GetDashboardCardById",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiDashboardCard"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "DashboardCardService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "delete dashboard_card",
+        "operationId": "DashboardCardService_DeleteDashboardCard",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "DashboardCardService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "put": {
+        "summary": "update dashboard_card",
+        "operationId": "DashboardCardService_UpdateDashboardCard",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiDashboardCard"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "height": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "width": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "background": {
+                  "type": "string"
+                },
+                "weight": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "enabled": {
+                  "type": "boolean"
+                },
+                "dashboardTabId": {
+                  "type": "string",
+                  "format": "int64"
+                },
+                "payload": {
+                  "type": "string",
+                  "format": "byte"
+                },
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/UpdateDashboardCardRequestItem"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "DashboardCardService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/dashboard_card_item": {
+      "post": {
+        "summary": "add new dashboard_card",
+        "operationId": "DashboardCardItemService_AddDashboardCardItem",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiDashboardCardItem"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiNewDashboardCardItemRequest"
+            }
+          }
+        ],
+        "tags": [
+          "DashboardCardItemService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/dashboard_card_item/{id}": {
+      "get": {
+        "summary": "get dashboard_card_item by id",
+        "operationId": "DashboardCardItemService_GetDashboardCardItemById",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiDashboardCardItem"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "DashboardCardItemService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "delete dashboard_card_item",
+        "operationId": "DashboardCardItemService_DeleteDashboardCardItem",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "DashboardCardItemService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "put": {
+        "summary": "update dashboard_card_item",
+        "operationId": "DashboardCardItemService_UpdateDashboardCardItem",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiDashboardCardItem"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                },
+                "weight": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "enabled": {
+                  "type": "boolean"
+                },
+                "dashboardCardId": {
+                  "type": "string",
+                  "format": "int64"
+                },
+                "entityId": {
+                  "type": "string"
+                },
+                "payload": {
+                  "type": "string",
+                  "format": "byte"
+                },
+                "hidden": {
+                  "type": "boolean"
+                },
+                "frozen": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "DashboardCardItemService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/dashboard_cards": {
+      "get": {
+        "summary": "get dashboard_card_item list",
+        "operationId": "DashboardCardItemService_GetDashboardCardItemList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiGetDashboardCardItemListResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "DashboardCardItemService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/dashboard_tab": {
+      "post": {
+        "summary": "add new dashboard_tab",
+        "operationId": "DashboardTabService_AddDashboardTab",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiDashboardTab"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiNewDashboardTabRequest"
+            }
+          }
+        ],
+        "tags": [
+          "DashboardTabService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/dashboard_tab/{id}": {
+      "get": {
+        "summary": "get dashboard_tab by id",
+        "operationId": "DashboardTabService_GetDashboardTabById",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiDashboardTab"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "DashboardTabService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "delete dashboard_tab",
+        "operationId": "DashboardTabService_DeleteDashboardTab",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "DashboardTabService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "put": {
+        "summary": "update dashboard",
+        "operationId": "DashboardTabService_UpdateDashboardTab",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiDashboardTab"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "columnWidth": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "gap": {
+                  "type": "boolean"
+                },
+                "background": {
+                  "type": "string"
+                },
+                "icon": {
+                  "type": "string"
+                },
+                "enabled": {
+                  "type": "boolean"
+                },
+                "weight": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "dashboardId": {
+                  "type": "string",
+                  "format": "int64"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "DashboardTabService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/dashboard_tabs": {
+      "get": {
+        "summary": "get dashboard_tab list",
+        "operationId": "DashboardTabService_GetDashboardTabList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiGetDashboardTabListResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "DashboardTabService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/dashboards": {
+      "get": {
+        "summary": "get dashboard list",
+        "operationId": "DashboardService_GetDashboardList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiGetDashboardListResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "DashboardService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/dashboards/import": {
+      "post": {
+        "summary": "import dashboard",
+        "operationId": "DashboardService_ImportDashboard",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiDashboard"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiDashboard"
+            }
+          }
+        ],
+        "tags": [
+          "DashboardService"
         ],
         "security": [
           {
@@ -799,9 +1768,9 @@
                   }
                 },
                 "metrics": {
-                  "type": "object",
-                  "additionalProperties": {
-                    "$ref": "#/definitions/apiAttribute"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/apiMetric"
                   }
                 }
               }
@@ -810,6 +1779,73 @@
         ],
         "tags": [
           "EntityService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/entity_storage/{entityId}": {
+      "get": {
+        "operationId": "EntityStorageService_GetEntityStorageList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiGetEntityStorageResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "entityId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "EntityStorageService"
         ],
         "security": [
           {
@@ -2791,6 +3827,211 @@
         ]
       }
     },
+    "/v1/variable": {
+      "post": {
+        "summary": "add new variable",
+        "operationId": "VariableService_AddVariable",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiVariable"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiNewVariableRequest"
+            }
+          }
+        ],
+        "tags": [
+          "VariableService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/variable/{name}": {
+      "get": {
+        "summary": "get variable by name",
+        "operationId": "VariableService_GetVariableByName",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiVariable"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "VariableService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "delete variable",
+        "operationId": "VariableService_DeleteVariable",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "VariableService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "put": {
+        "summary": "update variable",
+        "operationId": "VariableService_UpdateVariable",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiVariable"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "VariableService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/variables": {
+      "get": {
+        "summary": "get variable list",
+        "operationId": "VariableService_GetVariableList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiGetVariableListResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "VariableService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
     "/v1/zigbee2mqtt/bridge": {
       "get": {
         "summary": "get bridge list",
@@ -3427,6 +4668,53 @@
         }
       }
     },
+    "UpdateDashboardCardRequestItem": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "weight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "entityId": {
+          "type": "string"
+        },
+        "payload": {
+          "type": "string",
+          "format": "byte"
+        },
+        "hidden": {
+          "type": "boolean"
+        },
+        "frozen": {
+          "type": "boolean"
+        },
+        "showOn": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "hideOn": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "UpdateRoleAccessListRequestAccessListDiff": {
       "type": "object",
       "properties": {
@@ -3641,6 +4929,286 @@
         }
       }
     },
+    "apiDashboard": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "areaId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "area": {
+          "$ref": "#/definitions/apiArea"
+        },
+        "tabs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiDashboardTab"
+          }
+        },
+        "entities": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/apiEntity"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "apiDashboardCard": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "title": {
+          "type": "string"
+        },
+        "height": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "width": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "background": {
+          "type": "string"
+        },
+        "weight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "dashboardTabId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "payload": {
+          "type": "string",
+          "format": "byte"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiDashboardCardItem"
+          }
+        },
+        "entities": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/apiEntity"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "apiDashboardCardItem": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "weight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "dashboardCardId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "entityId": {
+          "type": "string"
+        },
+        "payload": {
+          "type": "string",
+          "format": "byte"
+        },
+        "hidden": {
+          "type": "boolean"
+        },
+        "frozen": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "apiDashboardShort": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "areaId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "apiDashboardTab": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "columnWidth": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "gap": {
+          "type": "boolean"
+        },
+        "background": {
+          "type": "string"
+        },
+        "icon": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "weight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "dashboardId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "cards": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiDashboardCard"
+          }
+        },
+        "entities": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/apiEntity"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "apiDashboardTabShort": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "columnWidth": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "gap": {
+          "type": "boolean"
+        },
+        "background": {
+          "type": "string"
+        },
+        "icon": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "weight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "dashboardId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "apiDeviceBanRequest": {
       "type": "object",
       "properties": {
@@ -3754,9 +5322,9 @@
           }
         },
         "metrics": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "#/definitions/apiAttribute"
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiMetric"
           }
         },
         "createdAt": {
@@ -3879,6 +5447,32 @@
         }
       }
     },
+    "apiEntityStorage": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "entityId": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "attributes": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/apiAttribute"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "title": "map\u003cstring, google.protobuf.Any\u003e attributes = 4;"
+        }
+      }
+    },
     "apiExecScriptResult": {
       "type": "object",
       "properties": {
@@ -3932,6 +5526,62 @@
         }
       }
     },
+    "apiGetDashboardCardItemListResult": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiDashboardCardItem"
+          }
+        },
+        "meta": {
+          "$ref": "#/definitions/apiMeta"
+        }
+      }
+    },
+    "apiGetDashboardCardListResult": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiDashboardCard"
+          }
+        },
+        "meta": {
+          "$ref": "#/definitions/apiMeta"
+        }
+      }
+    },
+    "apiGetDashboardListResult": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiDashboardShort"
+          }
+        },
+        "meta": {
+          "$ref": "#/definitions/apiMeta"
+        }
+      }
+    },
+    "apiGetDashboardTabListResult": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiDashboardTabShort"
+          }
+        },
+        "meta": {
+          "$ref": "#/definitions/apiMeta"
+        }
+      }
+    },
     "apiGetEntityListResult": {
       "type": "object",
       "properties": {
@@ -3939,6 +5589,20 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/apiEntity"
+          }
+        },
+        "meta": {
+          "$ref": "#/definitions/apiMeta"
+        }
+      }
+    },
+    "apiGetEntityStorageResult": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiEntityStorage"
           }
         },
         "meta": {
@@ -4153,6 +5817,20 @@
         }
       }
     },
+    "apiGetVariableListResult": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiVariable"
+          }
+        },
+        "meta": {
+          "$ref": "#/definitions/apiMeta"
+        }
+      }
+    },
     "apiImage": {
       "type": "object",
       "properties": {
@@ -4227,6 +5905,98 @@
         }
       }
     },
+    "apiMetric": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "options": {
+          "$ref": "#/definitions/apiMetricOption"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiMetricOptionData"
+          }
+        },
+        "type": {
+          "type": "string"
+        },
+        "ranges": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "apiMetricOption": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiMetricOptionItem"
+          }
+        }
+      }
+    },
+    "apiMetricOptionData": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number",
+            "format": "float"
+          }
+        },
+        "metricId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "time": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "apiMetricOptionItem": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "color": {
+          "type": "string"
+        },
+        "translate": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        }
+      }
+    },
     "apiNetworkmapResponse": {
       "type": "object",
       "properties": {
@@ -4243,6 +6013,125 @@
         },
         "description": {
           "type": "string"
+        }
+      }
+    },
+    "apiNewDashboardCardItemRequest": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "weight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "dashboardCardId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "entityId": {
+          "type": "string"
+        },
+        "payload": {
+          "type": "string",
+          "format": "byte"
+        },
+        "hidden": {
+          "type": "boolean"
+        },
+        "frozen": {
+          "type": "boolean"
+        }
+      }
+    },
+    "apiNewDashboardCardRequest": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "height": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "width": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "background": {
+          "type": "string"
+        },
+        "weight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "dashboardTabId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "payload": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "apiNewDashboardRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "areaId": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "apiNewDashboardTabRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "columnWidth": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "gap": {
+          "type": "boolean"
+        },
+        "background": {
+          "type": "string"
+        },
+        "icon": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "weight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "dashboardId": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -4298,9 +6187,9 @@
           }
         },
         "metrics": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "#/definitions/apiAttribute"
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiMetric"
           }
         },
         "scripts": {
@@ -4453,6 +6342,17 @@
         },
         "area": {
           "$ref": "#/definitions/apiArea"
+        }
+      }
+    },
+    "apiNewVariableRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
         }
       }
     },
@@ -5095,6 +6995,28 @@
         },
         "nickname": {
           "type": "string"
+        }
+      }
+    },
+    "apiVariable": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        },
+        "system": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },

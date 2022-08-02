@@ -240,11 +240,9 @@ func RenderTemplate(items []*Template, template *TemplateContent, params map[str
 
 	// заполнение формы
 	title := template.Title
-	if params != nil {
-		for k, v := range params {
-			buf = strings.Replace(buf, fmt.Sprintf("[%s]", k), fmt.Sprintf("%v", v), -1)
-			title = strings.Replace(title, fmt.Sprintf("[%s]", k), fmt.Sprintf("%v", v), -1)
-		}
+	for k, v := range params {
+		buf = strings.Replace(buf, fmt.Sprintf("[%s]", k), fmt.Sprintf("%v", v), -1)
+		title = strings.Replace(title, fmt.Sprintf("[%s]", k), fmt.Sprintf("%v", v), -1)
 	}
 
 	render = &TemplateRender{

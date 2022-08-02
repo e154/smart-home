@@ -129,7 +129,7 @@ func (t *Task) addTrigger(model *m.Trigger) (err error) {
 
 		defer func() {
 			_ = tr.Stop()
-			triggerPLugin.Unsubscribe(triggers.Subscriber{
+			_ = triggerPLugin.Unsubscribe(triggers.Subscriber{
 				EntityId: entityId,
 				Handler:  handler,
 				Payload:  tr.model.Payload,
@@ -223,6 +223,6 @@ func (t *Task) CallTrigger(name string) {
 // CallAction ...
 func (t *Task) CallAction(name string) {
 	if action, ok := t.actions[name]; ok {
-		action.Run(nil)
+		_, _ = action.Run(nil)
 	}
 }

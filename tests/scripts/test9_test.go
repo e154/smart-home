@@ -40,17 +40,20 @@ func Test9(t *testing.T) {
 	const path = "conf/notify.json"
 
 	Convey("clear db", t, func(ctx C) {
-		_ = container.Invoke(func(migrations *migrations.Migrations) {
+		err := container.Invoke(func(migrations *migrations.Migrations) {
 
 			// clear database
 			// ------------------------------------------------
 			err := migrations.Purge()
 			So(err, ShouldBeNil)
 		})
+		if err != nil {
+			fmt.Println(err.Error())
+		}
 	})
 
 	Convey("send sms", t, func(ctx C) {
-		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
+		err := container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService) {
 
@@ -73,7 +76,7 @@ func Test9(t *testing.T) {
 				},
 				{
 					Name: "template2",
-					Content: fmt.Sprintf(`{
+					Content: `{
  "items": [
    "code"
  ],
@@ -84,7 +87,7 @@ func Test9(t *testing.T) {
      "value": "Activate code:"
    }
 ]
-}`),
+}`,
 					Status:     m.TemplateStatusActive,
 					Type:       m.TemplateTypeTemplate,
 					ParentName: nil,
@@ -133,5 +136,8 @@ func Test9(t *testing.T) {
 			//
 			//time.Sleep(time.Second * 5)
 		})
+		if err != nil {
+			fmt.Println(err.Error())
+		}
 	})
 }

@@ -115,7 +115,7 @@ func TestTemplate(t *testing.T) {
 				},
 				{
 					Name: "template2",
-					Content: fmt.Sprintf(`{
+					Content: `{
  "items": [
    "code"
  ],
@@ -126,7 +126,7 @@ func TestTemplate(t *testing.T) {
      "value": "Activate code:"
    }
 ]
-}`),
+}`,
 					Status:     m.TemplateStatusActive,
 					Type:       m.TemplateTypeTemplate,
 					ParentName: nil,
@@ -140,13 +140,13 @@ func TestTemplate(t *testing.T) {
 				},
 				{
 					Name: "template3",
-					Content: fmt.Sprintf(`{
+					Content: `{
  "items": [
    "sms_warning"
  ],
  "title": "",
  "fields": []
-}`),
+}`,
 					Status:     m.TemplateStatusActive,
 					Type:       m.TemplateTypeTemplate,
 					ParentName: nil,

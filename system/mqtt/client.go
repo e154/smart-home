@@ -46,7 +46,7 @@ func NewClient(mqtt *Mqtt, name string) MqttCli {
 
 // Publish ...
 func (m *client) Publish(topic string, payload []byte) (err error) {
-	m.mqtt.Publish(topic, payload, 1, true)
+	_ = m.mqtt.Publish(topic, payload, 1, true)
 	return
 }
 

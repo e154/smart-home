@@ -20,9 +20,10 @@ package weather
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/system/event_bus/events"
 	"sync"
 	"time"
+
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/astronomics/suncalc"
@@ -95,7 +96,7 @@ func (e *Actor) UpdatePosition(settings m.Attributes) {
 		return
 	}
 
-	e.Setts.Deserialize(settings.Serialize())
+	_, _ = e.Setts.Deserialize(settings.Serialize())
 
 	e.positionLock.Lock()
 	defer e.positionLock.Unlock()
@@ -129,7 +130,7 @@ func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
 	}
 
 	e.AttrMu.Lock()
-	e.Attrs.Deserialize(params.AttributeValues)
+	_, _ = e.Attrs.Deserialize(params.AttributeValues)
 	e.AttrMu.Unlock()
 
 	e.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{

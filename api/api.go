@@ -25,6 +25,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/e154/smart-home/common/logger"
+
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/e154/smart-home/api/controllers"
@@ -46,7 +48,7 @@ import (
 var f embed.FS
 
 var (
-	log = common.MustGetLogger("api")
+	log = logger.MustGetLogger("api")
 )
 
 // Api ...
@@ -109,6 +111,12 @@ func (a *Api) Start() error {
 	gw.RegisterDeveloperToolsServiceServer(grpcServer, a.controllers.Dev)
 	gw.RegisterInteractServiceServer(grpcServer, a.controllers.Interact)
 	gw.RegisterLogServiceServer(grpcServer, a.controllers.Logs)
+	gw.RegisterDashboardServiceServer(grpcServer, a.controllers.Dashboard)
+	gw.RegisterDashboardTabServiceServer(grpcServer, a.controllers.DashboardTab)
+	gw.RegisterDashboardCardServiceServer(grpcServer, a.controllers.DashboardCard)
+	gw.RegisterDashboardCardItemServiceServer(grpcServer, a.controllers.DashboardCardItem)
+	gw.RegisterVariableServiceServer(grpcServer, a.controllers.Variable)
+	gw.RegisterEntityStorageServiceServer(grpcServer, a.controllers.EntityStorage)
 	grpc_prometheus.Register(grpcServer)
 
 	var group errgroup.Group
@@ -144,20 +152,25 @@ func (a *Api) Start() error {
 	}
 
 	group.Go(func() error {
-		gw.RegisterAuthServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		gw.RegisterStreamServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		gw.RegisterUserServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		gw.RegisterRoleServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		gw.RegisterScriptServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		gw.RegisterImageServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		gw.RegisterPluginServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		gw.RegisterZigbee2MqttServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		gw.RegisterEntityServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		gw.RegisterAutomationServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		gw.RegisterAreaServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		gw.RegisterDeveloperToolsServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		gw.RegisterInteractServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		gw.RegisterLogServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		_ = gw.RegisterAuthServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		_ = gw.RegisterStreamServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		_ = gw.RegisterUserServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		_ = gw.RegisterRoleServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		_ = gw.RegisterScriptServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		_ = gw.RegisterImageServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		_ = gw.RegisterPluginServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		_ = gw.RegisterZigbee2MqttServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		_ = gw.RegisterEntityServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		_ = gw.RegisterAutomationServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		_ = gw.RegisterAreaServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		_ = gw.RegisterDeveloperToolsServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		_ = gw.RegisterInteractServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		_ = gw.RegisterLogServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		_ = gw.RegisterDashboardServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		_ = gw.RegisterDashboardCardItemServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		_ = gw.RegisterDashboardCardServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		_ = gw.RegisterDashboardTabServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		_ = gw.RegisterEntityStorageServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
 		return nil
 	})
 

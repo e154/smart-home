@@ -20,9 +20,10 @@ package logging_db
 
 import (
 	"context"
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/logging"
 	"time"
+
+	"github.com/e154/smart-home/common/logger"
+	"github.com/e154/smart-home/system/logging"
 
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
@@ -31,7 +32,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("logging_db")
+	log = logger.MustGetLogger("logging_db")
 )
 
 // LogDbSaver ...

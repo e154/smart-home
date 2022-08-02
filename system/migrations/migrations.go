@@ -22,7 +22,8 @@ import (
 	"fmt"
 	"path"
 
-	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/logger"
+
 	. "github.com/e154/smart-home/system/migrations/assets"
 	"github.com/e154/smart-home/system/orm"
 	"github.com/jinzhu/gorm"
@@ -30,7 +31,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("migrations")
+	log = logger.MustGetLogger("migrations")
 )
 
 // Migrations ...

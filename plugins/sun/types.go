@@ -131,35 +131,35 @@ func NewAttr() m.Attributes {
 		},
 		AttrNauticalDawn: {
 			Name: AttrNauticalDawn,
-			Type: common.AttributeBool,
+			Type: common.AttributeTime,
 		},
 		AttrNauticalDusk: {
 			Name: AttrNauticalDusk,
-			Type: common.AttributeBool,
+			Type: common.AttributeTime,
 		},
 		AttrNightEnd: {
 			Name: AttrNightEnd,
-			Type: common.AttributeBool,
+			Type: common.AttributeTime,
 		},
 		AttrNight: {
 			Name: AttrNight,
-			Type: common.AttributeBool,
+			Type: common.AttributeTime,
 		},
 		AttrGoldenHourEnd: {
 			Name: AttrGoldenHourEnd,
-			Type: common.AttributeBool,
+			Type: common.AttributeTime,
 		},
 		AttrGoldenHour: {
 			Name: AttrGoldenHour,
-			Type: common.AttributeBool,
+			Type: common.AttributeTime,
 		},
 		AttrSolarNoon: {
 			Name: AttrSolarNoon,
-			Type: common.AttributeBool,
+			Type: common.AttributeTime,
 		},
 		AttrNadir: {
 			Name: AttrNadir,
-			Type: common.AttributeBool,
+			Type: common.AttributeTime,
 		},
 		AttrElevation: {
 			Name: AttrElevation,

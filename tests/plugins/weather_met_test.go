@@ -19,10 +19,11 @@
 package plugins
 
 import (
-	"github.com/e154/smart-home/system/event_bus/events"
 	"strings"
 	"testing"
 	"time"
+
+	. "github.com/smartystreets/goconvey/convey"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -31,9 +32,9 @@ import (
 	"github.com/e154/smart-home/plugins/weather_met"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/event_bus/events"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestWeatherMet(t *testing.T) {
@@ -56,6 +57,7 @@ func TestWeatherMet(t *testing.T) {
 
 			// register plugins
 			err = AddPlugin(adaptors, "weather")
+			ctx.So(err, ShouldBeNil)
 			err = AddPlugin(adaptors, "weather_met")
 			ctx.So(err, ShouldBeNil)
 
@@ -69,8 +71,9 @@ func TestWeatherMet(t *testing.T) {
 			// ------------------------------------------------
 
 			err = adaptors.Variable.CreateOrUpdate(m.Variable{
-				Name:  "weather_met.home",
-				Value: strings.Replace(serverData, "LOADED_AT", time.Now().Format(time.RFC3339), -1),
+				System: true,
+				Name:   "weather_met.home",
+				Value:  strings.Replace(serverData, "LOADED_AT", time.Now().Format(time.RFC3339), -1),
 			})
 			ctx.So(err, ShouldBeNil)
 
@@ -88,11 +91,11 @@ func TestWeatherMet(t *testing.T) {
 
 					// subscribe
 					// ------------------------------------------------
-					ch := make(chan events.EventRequestState)
+					ch := make(chan events.EventPassAttributes)
 					fn := func(topic string, msg interface{}) {
 
 						switch v := msg.(type) {
-						case events.EventRequestState:
+						case events.EventPassAttributes:
 							ch <- v
 						case events.EventAddedActor:
 
@@ -100,6 +103,10 @@ func TestWeatherMet(t *testing.T) {
 					}
 					err = eventBus.Subscribe(event_bus.TopicEntities, fn)
 					So(err, ShouldBeNil)
+
+					defer func() {
+						_ = eventBus.Unsubscribe(event_bus.TopicEntities, fn)
+					}()
 
 					settings := weatherPlugin.NewSettings()
 					settings[weatherPlugin.AttrLat].Value = 54.9022
@@ -114,7 +121,7 @@ func TestWeatherMet(t *testing.T) {
 					ticker := time.NewTimer(time.Second * 2)
 					defer ticker.Stop()
 
-					var msg events.EventRequestState
+					var msg events.EventPassAttributes
 					var ok bool
 					select {
 					case msg = <-ch:
@@ -130,8 +137,7 @@ func TestWeatherMet(t *testing.T) {
 					So(msg.To, ShouldEqual, "weather.home")
 					So(msg.Attributes[weatherPlugin.AttrWeatherAttribution].String(), ShouldEqual, "Weather forecast from met.no, delivered by the Norwegian Meteorological Institute.")
 
-					err = eventBus.Unsubscribe(event_bus.TopicEntities, fn)
-					So(err, ShouldBeNil)
+					time.Sleep(time.Millisecond * 500)
 				})
 			})
 
@@ -140,11 +146,10 @@ func TestWeatherMet(t *testing.T) {
 
 					// subscribe
 					// ------------------------------------------------
-					ch := make(chan events.EventRequestState, 3)
+					ch := make(chan events.EventPassAttributes, 3)
 					fn := func(topic string, msg interface{}) {
-
 						switch v := msg.(type) {
-						case events.EventRequestState:
+						case events.EventPassAttributes:
 							ch <- v
 						case events.EventAddedActor:
 
@@ -152,6 +157,11 @@ func TestWeatherMet(t *testing.T) {
 					}
 					err = eventBus.Subscribe(event_bus.TopicEntities, fn)
 					So(err, ShouldBeNil)
+
+					defer func() {
+						close(ch)
+						_ = eventBus.Unsubscribe(event_bus.TopicEntities, fn)
+					}()
 
 					settings := weatherPlugin.NewSettings()
 					settings[weatherPlugin.AttrLat].Value = 54.9022
@@ -164,10 +174,10 @@ func TestWeatherMet(t *testing.T) {
 						Settings:   settings,
 					})
 
-					ticker := time.NewTimer(time.Second * 2)
+					ticker := time.NewTimer(time.Second * 10)
 					defer ticker.Stop()
 
-					var msg events.EventRequestState
+					var msg events.EventPassAttributes
 					var ok bool
 					select {
 					case msg = <-ch:
@@ -183,8 +193,7 @@ func TestWeatherMet(t *testing.T) {
 					So(msg.To, ShouldEqual, "weather.home")
 					So(msg.Attributes[weatherPlugin.AttrWeatherAttribution].String(), ShouldEqual, "Weather forecast from met.no, delivered by the Norwegian Meteorological Institute.")
 
-					err = eventBus.Unsubscribe(event_bus.TopicEntities, fn)
-					So(err, ShouldBeNil)
+					time.Sleep(time.Millisecond * 500)
 				})
 			})
 
@@ -197,7 +206,7 @@ func TestWeatherMet(t *testing.T) {
 					fn := func(topic string, msg interface{}) {
 
 						switch v := msg.(type) {
-						case events.EventRequestState:
+						case events.EventPassAttributes:
 						case events.EventAddedActor:
 						case events.EventRemoveActor:
 							if v.PluginName == "weather_met" {
@@ -207,6 +216,10 @@ func TestWeatherMet(t *testing.T) {
 					}
 					err = eventBus.Subscribe(event_bus.TopicEntities, fn)
 					So(err, ShouldBeNil)
+
+					defer func() {
+						_ = eventBus.Unsubscribe(event_bus.TopicEntities, fn)
+					}()
 
 					eventBus.Publish(event_bus.TopicEntities, events.EventRemoveActor{
 						PluginName: weatherPlugin.EntityWeather,
@@ -230,8 +243,6 @@ func TestWeatherMet(t *testing.T) {
 
 					So(msg.EntityId, ShouldEqual, "weather_met.home")
 
-					err = eventBus.Unsubscribe(event_bus.TopicEntities, fn)
-					So(err, ShouldBeNil)
 				})
 			})
 

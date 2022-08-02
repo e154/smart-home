@@ -26,13 +26,15 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/e154/smart-home/tests/plugins/container"
 	"go.uber.org/dig"
+
+	"github.com/e154/smart-home/system/logging"
+	. "github.com/e154/smart-home/tests/plugins/container"
 )
 
 func init() {
 	apppath := filepath.Join(os.Getenv("PWD"), "../..")
-	os.Chdir(apppath)
+	_ = os.Chdir(apppath)
 }
 
 var (
@@ -43,11 +45,11 @@ func TestMain(m *testing.M) {
 
 	runtime.GOMAXPROCS(-1)
 
-	os.Setenv("TEST_MODE", "true")
+	_ = os.Setenv("TEST_MODE", "true")
 
 	container = BuildContainer()
 	err := container.Invoke(func(
-	//logging *logging.Logging,
+		logging *logging.Logging,
 	) {
 
 		time.Sleep(time.Millisecond * 500)

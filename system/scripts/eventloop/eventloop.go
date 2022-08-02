@@ -61,10 +61,10 @@ func NewEventLoop(vm *goja.Runtime) *EventLoop {
 
 	new(require.Registry).Enable(vm)
 	console.Enable(vm)
-	vm.Set("setTimeout", loop.setTimeout)
-	vm.Set("setInterval", loop.setInterval)
-	vm.Set("clearTimeout", loop.clearTimeout)
-	vm.Set("clearInterval", loop.clearInterval)
+	_ = vm.Set("setTimeout", loop.setTimeout)
+	_ = vm.Set("setInterval", loop.setInterval)
+	_ = vm.Set("clearTimeout", loop.clearTimeout)
+	_ = vm.Set("clearInterval", loop.clearInterval)
 
 	return loop
 }
@@ -182,7 +182,7 @@ func (loop *EventLoop) addInterval(f goja.Callable, timeout time.Duration, args 
 
 func (loop *EventLoop) doTimeout(t *timer) {
 	if !t.cancelled {
-		t.Callable(nil, t.args...)
+		_, _ = t.Callable(nil, t.args...)
 		t.cancelled = true
 		loop.jobCount--
 	}
@@ -190,7 +190,7 @@ func (loop *EventLoop) doTimeout(t *timer) {
 
 func (loop *EventLoop) doInterval(i *interval) {
 	if !i.cancelled {
-		i.Callable(nil, i.args...)
+		_, _ = i.Callable(nil, i.args...)
 	}
 }
 

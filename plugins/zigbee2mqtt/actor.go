@@ -20,8 +20,9 @@ package zigbee2mqtt
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/system/event_bus/events"
 	"sync"
+
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
@@ -72,14 +73,14 @@ func NewActor(entity *m.Entity,
 	}
 
 	actor.Manager = entityManager
-	actor.Attrs.Deserialize(params)
+	_, _ = actor.Attrs.Deserialize(params)
 
 	// Actions
 	for _, a := range actor.Actions {
 		if a.ScriptEngine != nil {
-			a.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
+			_, _ = a.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
 			a.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
-			a.ScriptEngine.Do()
+			_, _ = a.ScriptEngine.Do()
 		}
 	}
 
@@ -88,7 +89,7 @@ func NewActor(entity *m.Entity,
 		actor.ScriptEngine.PushStruct("message", actor.message)
 
 		// binds
-		actor.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
+		_, _ = actor.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
 		actor.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
 	}
 
@@ -202,6 +203,9 @@ func (e *Actor) runAction(msg events.EventCallAction) {
 	action, ok := e.Actions[msg.ActionName]
 	if !ok {
 		log.Warnf("action %s not found", msg.ActionName)
+		return
+	}
+	if action.ScriptEngine == nil {
 		return
 	}
 	if _, err := action.ScriptEngine.AssertFunction(FuncEntityAction, msg.EntityId, action.Name); err != nil {

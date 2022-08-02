@@ -20,9 +20,11 @@ package zigbee2mqtt
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/system/event_bus/events"
 	"strings"
 	"sync"
+
+	"github.com/e154/smart-home/common/logger"
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/pkg/errors"
 
@@ -35,7 +37,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("plugins.zigbee2mqtt")
+	log = logger.MustGetLogger("plugins.zigbee2mqtt")
 )
 
 var _ plugins.Plugable = (*plugin)(nil)
@@ -85,7 +87,7 @@ func (p plugin) Unload() (err error) {
 	}
 
 	p.mqttServ.RemoveClient("plugins.zigbee2mqtt")
-	p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
 	return
 }
 
@@ -115,7 +117,7 @@ func (p *plugin) addOrUpdateEntity(entity *m.Entity, attributes m.AttributeValue
 
 	if actor, ok := p.actors[name]; ok {
 		// update
-		actor.SetState(entity_manager.EntityStateParams{
+		_ = actor.SetState(entity_manager.EntityStateParams{
 			AttributeValues: attributes,
 		})
 		return
@@ -135,7 +137,7 @@ func (p *plugin) addOrUpdateEntity(entity *m.Entity, attributes m.AttributeValue
 	}
 
 	if _, ok := p.mqttSubs.Load(br.Id); !ok {
-		p.mqttClient.Subscribe(p.topic(br.BaseTopic), p.mqttOnPublish)
+		_ = p.mqttClient.Subscribe(p.topic(br.BaseTopic), p.mqttOnPublish)
 		p.mqttSubs.Store(br.Id, nil)
 	}
 

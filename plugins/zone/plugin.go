@@ -22,6 +22,8 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/e154/smart-home/common/logger"
+
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
@@ -31,7 +33,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("plugins.zone")
+	log = logger.MustGetLogger("plugins.zone")
 )
 
 var _ plugins.Plugable = (*plugin)(nil)
@@ -87,7 +89,7 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 	attributes := entity.Attributes.Serialize()
 	if actor, ok := p.actors[entity.Id.Name()]; ok {
 		// update
-		actor.SetState(entity_manager.EntityStateParams{
+		_ = actor.SetState(entity_manager.EntityStateParams{
 			AttributeValues: attributes,
 		})
 		return

@@ -23,46 +23,60 @@ import (
 	"github.com/e154/smart-home/endpoint"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/stream"
+	"github.com/e154/smart-home/system/stream/handlers"
 )
 
 // Controllers ...
 type Controllers struct {
-	Auth        ControllerAuth
-	Stream      ControllerStream
-	User        ControllerUser
-	Role        ControllerRole
-	Script      ControllerScript
-	Image       ControllerImage
-	Plugin      ControllerPlugin
-	Zigbee2mqtt ControllerZigbee2mqtt
-	Entity      ControllerEntity
-	Automation  ControllerAutomation
-	Area        ControllerArea
-	Dev         ControllerDeveloperTools
-	Interact    ControllerInteract
-	Logs        ControllerLogs
+	Auth              ControllerAuth
+	Stream            ControllerStream
+	User              ControllerUser
+	Role              ControllerRole
+	Script            ControllerScript
+	Image             ControllerImage
+	Plugin            ControllerPlugin
+	Zigbee2mqtt       ControllerZigbee2mqtt
+	Entity            ControllerEntity
+	Automation        ControllerAutomation
+	Area              ControllerArea
+	Dev               ControllerDeveloperTools
+	Interact          ControllerInteract
+	Logs              ControllerLogs
+	Dashboard         ControllerDashboard
+	DashboardCardItem ControllerDashboardCardItem
+	DashboardCard     ControllerDashboardCard
+	DashboardTab      ControllerDashboardTab
+	Variable          ControllerVariable
+	EntityStorage     ControllerEntityStorage
 }
 
 // NewControllers ...
 func NewControllers(adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
 	command *endpoint.Endpoint,
-	stream *stream.Stream) *Controllers {
+	stream *stream.Stream,
+	_ *handlers.EventHandler) *Controllers {
 	common := NewControllerCommon(adaptors, accessList, command, stream)
 	return &Controllers{
-		Auth:        NewControllerAuth(common),
-		Stream:      NewControllerStream(common),
-		User:        NewControllerUser(common),
-		Role:        NewControllerRole(common),
-		Script:      NewControllerScript(common),
-		Image:       NewControllerImage(common),
-		Plugin:      NewControllerPlugin(common),
-		Zigbee2mqtt: NewControllerZigbee2mqtt(common),
-		Entity:      NewControllerEntity(common),
-		Automation:  NewControllerAutomation(common),
-		Area:        NewControllerArea(common),
-		Dev:         NewControllerDeveloperTools(common),
-		Interact:    NewControllerInteract(common),
-		Logs:        NewControllerLogs(common),
+		Auth:              NewControllerAuth(common),
+		Stream:            NewControllerStream(common),
+		User:              NewControllerUser(common),
+		Role:              NewControllerRole(common),
+		Script:            NewControllerScript(common),
+		Image:             NewControllerImage(common),
+		Plugin:            NewControllerPlugin(common),
+		Zigbee2mqtt:       NewControllerZigbee2mqtt(common),
+		Entity:            NewControllerEntity(common),
+		Automation:        NewControllerAutomation(common),
+		Area:              NewControllerArea(common),
+		Dev:               NewControllerDeveloperTools(common),
+		Interact:          NewControllerInteract(common),
+		Logs:              NewControllerLogs(common),
+		Dashboard:         NewControllerDashboard(common),
+		DashboardCardItem: NewControllerDashboardCardItem(common),
+		DashboardCard:     NewControllerDashboardCard(common),
+		DashboardTab:      NewControllerDashboardTab(common),
+		Variable:          NewControllerVariable(common),
+		EntityStorage:     NewControllerEntityStorage(common),
 	}
 }

@@ -19,8 +19,10 @@
 package weather_owm
 
 import (
-	"github.com/e154/smart-home/system/event_bus/events"
 	"time"
+
+	"github.com/e154/smart-home/common/logger"
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -35,7 +37,7 @@ const (
 )
 
 var (
-	log = common.MustGetLogger("plugins.owm")
+	log = logger.MustGetLogger("plugins.owm")
 )
 
 var _ plugins.Plugable = (*plugin)(nil)
@@ -81,8 +83,8 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 
 	p.weather = NewWeatherOwm(p.EventBus, p.Adaptors, settings)
 
-	p.EventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
-	p.EventBus.Subscribe(weather.TopicPluginWeather, p.eventHandler)
+	_ = p.EventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Subscribe(weather.TopicPluginWeather, p.eventHandler)
 	p.quit = make(chan struct{})
 
 	go func() {
@@ -119,8 +121,8 @@ func (p *plugin) Unload() (err error) {
 	}
 
 	p.quit <- struct{}{}
-	p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
-	p.EventBus.Unsubscribe(weather.TopicPluginWeather, p.eventHandler)
+	_ = p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Unsubscribe(weather.TopicPluginWeather, p.eventHandler)
 	return nil
 }
 

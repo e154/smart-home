@@ -19,9 +19,12 @@
 package plugins
 
 import (
-	"fmt"
+	"context"
 	"testing"
 	"time"
+
+	. "github.com/smartystreets/goconvey/convey"
+	"go.uber.org/atomic"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -29,13 +32,11 @@ import (
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
-	envDefault "github.com/e154/smart-home/system/initial/environments/default"
+	"github.com/e154/smart-home/system/initial/local_migrations"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
-	. "github.com/smartystreets/goconvey/convey"
-	"go.uber.org/atomic"
 )
 
 func TestScene(t *testing.T) {
@@ -66,7 +67,8 @@ sceneEvent = (args)->
 			So(err, ShouldBeNil)
 
 			// register plugins
-			envDefault.NewPluginManager(adaptors).Create()
+			err = local_migrations.NewMigrationPlugins(adaptors).Up(context.TODO(), nil)
+			So(err, ShouldBeNil)
 
 			go mqttServer.Start()
 
@@ -78,7 +80,7 @@ sceneEvent = (args)->
 
 			// add entity
 			// ------------------------------------------------
-			romanticEnt := GetNewScene(fmt.Sprintf("scene.romantic"), []*m.Script{sceneScript})
+			romanticEnt := GetNewScene("scene.romantic", []*m.Script{sceneScript})
 			err = adaptors.Entity.Add(romanticEnt)
 			So(err, ShouldBeNil)
 
@@ -97,10 +99,10 @@ sceneEvent = (args)->
 			go zigbee2mqtt.Start()
 
 			defer func() {
-				mqttServer.Shutdown()
+				_ = mqttServer.Shutdown()
 				zigbee2mqtt.Shutdown()
 				entityManager.Shutdown()
-				automation.Shutdown()
+				_ = automation.Shutdown()
 				pluginManager.Shutdown()
 			}()
 

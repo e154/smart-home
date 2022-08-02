@@ -20,30 +20,42 @@ package dto
 
 // Dto ...
 type Dto struct {
-	Role        Role
-	User        User
-	Image       Image
-	Script      Script
-	Plugin      Plugin
-	Entity      Entity
-	Zigbee2mqtt Zigbee2mqtt
-	Area        Area
-	Automation  Automation
-	Log         Log
+	Role              Role
+	User              User
+	Image             Image
+	Script            Script
+	Plugin            Plugin
+	Entity            Entity
+	Zigbee2mqtt       Zigbee2mqtt
+	Area              Area
+	Automation        Automation
+	Log               Log
+	Dashboard         Dashboard
+	DashboardCard     DashboardCard
+	DashboardCardItem DashboardCardItem
+	DashboardTab      DashboardTab
+	Variable          Variable
+	EntityStorage     EntityStorage
 }
 
 // NewDto ...
 func NewDto() Dto {
 	return Dto{
-		Role:        NewRoleDto(),
-		User:        NewUserDto(),
-		Image:       NewImageDto(),
-		Script:      NewScriptDto(),
-		Plugin:      NewPluginDto(),
-		Entity:      NewEntityDto(),
-		Zigbee2mqtt: NewZigbee2mqttDto(),
-		Area:        NewAreaDto(),
-		Automation:  NewAutomationDto(),
-		Log:         NewLogDto(),
+		Role:              NewRoleDto(),
+		User:              NewUserDto(),
+		Image:             NewImageDto(),
+		Script:            NewScriptDto(),
+		Plugin:            NewPluginDto(),
+		Entity:            NewEntityDto(),
+		Zigbee2mqtt:       NewZigbee2mqttDto(),
+		Area:              NewAreaDto(),
+		Automation:        NewAutomationDto(),
+		Log:               NewLogDto(),
+		Dashboard:         NewDashboardDto(),
+		DashboardCard:     NewDashboardCardDto(),
+		DashboardCardItem: NewDashboardCardItemDto(),
+		DashboardTab:      NewDashboardTabDto(),
+		Variable:          NewVariableDto(),
+		EntityStorage:     NewEntityStorageDto(),
 	}
 }

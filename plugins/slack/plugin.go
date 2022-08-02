@@ -19,6 +19,7 @@
 package slack
 
 import (
+	"github.com/e154/smart-home/common/logger"
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
@@ -28,7 +29,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("plugins.slack")
+	log = logger.MustGetLogger("plugins.slack")
 )
 
 var _ plugins.Plugable = (*plugin)(nil)

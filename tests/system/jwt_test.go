@@ -39,7 +39,7 @@ func TestJwt(t *testing.T) {
 
 			err := container.Invoke(func(adaptors *adaptors.Adaptors,
 				jwtManager jwt_manager.JwtManager) {
-				jwtManager.Start()
+				_ = jwtManager.Start()
 				b, _ := hex.DecodeString(hmac)
 				jwtManager.SetHmacKey(b)
 

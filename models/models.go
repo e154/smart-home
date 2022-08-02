@@ -19,11 +19,11 @@
 package models
 
 import (
-	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/logger"
 )
 
 var (
-	log = common.MustGetLogger("models")
+	log = logger.MustGetLogger("models")
 )
 
 // Validity ...

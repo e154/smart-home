@@ -20,10 +20,11 @@ package moon
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/system/event_bus/events"
 	"math"
 	"sync"
 	"time"
+
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/astronomics/moonphase"
@@ -139,8 +140,8 @@ func (e *Actor) UpdateMoonPosition(now time.Time) {
 	e.moonAzimuth = moonPosition.Azimuth*180/math.Pi + 180
 	e.moonElevation = moonPosition.Altitude * 180 / math.Pi
 
-	log.Debugf("Moon pos azimuth(%f), elevation(%f)", e.moonAzimuth, e.moonElevation)
-	log.Debugf("Moon phase %v", e.phase)
+	//log.Debugf("Moon pos azimuth(%f), elevation(%f)", e.moonAzimuth, e.moonElevation)
+	//log.Debugf("Moon phase %v", e.phase)
 
 	attributeValues[AttrAzimuth] = e.moonAzimuth
 	attributeValues[AttrElevation] = e.moonElevation

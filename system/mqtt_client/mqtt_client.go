@@ -24,13 +24,15 @@ import (
 	"sync"
 	"time"
 
+	"github.com/e154/smart-home/common/logger"
+
 	"github.com/e154/smart-home/common"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/pkg/errors"
 )
 
 var (
-	log = common.MustGetLogger("mqtt_client")
+	log = logger.MustGetLogger("mqtt_client")
 )
 
 // Client ...

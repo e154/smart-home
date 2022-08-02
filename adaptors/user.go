@@ -68,7 +68,7 @@ func GetUserAdaptor(d *gorm.DB) IUser {
 func (n *User) Add(user *m.User) (id int64, err error) {
 
 	dbUser := n.toDb(user)
-	dbUser.History.UnmarshalJSON([]byte("[]"))
+	_ = dbUser.History.UnmarshalJSON([]byte("[]"))
 	if id, err = n.table.Add(dbUser); err != nil {
 		return
 	}
@@ -76,7 +76,7 @@ func (n *User) Add(user *m.User) (id int64, err error) {
 	metaAdaptor := GetUserMetaAdaptor(n.db)
 	for _, meta := range user.Meta {
 		meta.UserId = id
-		metaAdaptor.UpdateOrCreate(meta)
+		_, _ = metaAdaptor.UpdateOrCreate(meta)
 	}
 
 	return
@@ -166,7 +166,7 @@ func (n *User) GetByResetPassToken(token string) (user *m.User, err error) {
 		err = common.ErrTokenIsDeprecated
 	}
 
-	n.ClearResetPassToken(user)
+	_ = n.ClearResetPassToken(user)
 
 	return
 }
@@ -182,7 +182,7 @@ func (n *User) Update(user *m.User) (err error) {
 	metaAdaptor := GetUserMetaAdaptor(n.db)
 	for _, meta := range user.Meta {
 		meta.UserId = user.Id
-		metaAdaptor.UpdateOrCreate(meta)
+		_, _ = metaAdaptor.UpdateOrCreate(meta)
 	}
 
 	return
@@ -320,7 +320,7 @@ func (n *User) fromDb(dbUser *db.User) (user *m.User) {
 	// history
 	user.History = make([]*m.UserHistory, 0)
 	data, _ := dbUser.History.MarshalJSON()
-	json.Unmarshal(data, &user.History)
+	_ = json.Unmarshal(data, &user.History)
 
 	// role
 	if dbUser.Role != nil {
@@ -363,11 +363,11 @@ func (n *User) toDb(user *m.User) (dbUser *db.User) {
 	}
 
 	if user.ImageId.Valid {
-		dbUser.ImageId.Scan(user.ImageId.Int64)
+		_ = dbUser.ImageId.Scan(user.ImageId.Int64)
 	}
 
 	if user.UserId.Valid {
-		dbUser.UserId.Scan(user.UserId.Int64)
+		_ = dbUser.UserId.Scan(user.UserId.Int64)
 	}
 
 	return

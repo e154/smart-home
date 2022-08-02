@@ -19,10 +19,11 @@
 package updater
 
 import (
-	"github.com/e154/smart-home/system/event_bus/events"
 	"time"
 
-	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/logger"
+	"github.com/e154/smart-home/system/event_bus/events"
+
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
@@ -35,7 +36,7 @@ const (
 )
 
 var (
-	log = common.MustGetLogger("plugins.updater")
+	log = logger.MustGetLogger("plugins.updater")
 )
 
 var _ plugins.Plugable = (*plugin)(nil)
@@ -71,7 +72,7 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 	p.actor.check()
 	p.quit = make(chan struct{})
 
-	p.EventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
 
 	go func() {
 		ticker := time.NewTicker(time.Hour * p.pause)
@@ -101,7 +102,7 @@ func (p *plugin) Unload() (err error) {
 	}
 
 	p.quit <- struct{}{}
-	p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
 	return
 }
 
@@ -137,8 +138,6 @@ func (p *plugin) eventHandler(_ string, msg interface{}) {
 			p.actor.check()
 		}
 	}
-
-	return
 }
 
 // Options ...
