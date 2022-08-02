@@ -76,15 +76,15 @@ func (p *WeatherMet) UpdateWeatherList(entityId common.EntityId, settings m.Attr
 		Lon:  settings[weather.AttrLon].Float64(),
 	}
 
-	var update bool
+	//var update bool
 	if _, ok := p.zones.Load(entityId); !ok {
-		update = true
+		//update = true
 	}
 	p.zones.Store(entityId, zone)
 
-	if !update {
-		return
-	}
+	//if !update {
+	//	return
+	//}
 	_ = p.UpdateForecastForAll()
 }
 
