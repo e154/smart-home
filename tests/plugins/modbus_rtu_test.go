@@ -176,7 +176,7 @@ entityAction = (entityId, actionName)->
 			plugEnt.Settings[modbus_rtu.AttrParity].Value = "none"
 			err = adaptors.Entity.Add(plugEnt)
 			So(err, ShouldBeNil)
-			_, err = adaptors.EntityStorage.Add(m.EntityStorage{
+			_, err = adaptors.EntityStorage.Add(&m.EntityStorage{
 				EntityId:   plugEnt.Id,
 				Attributes: plugEnt.Attributes.Serialize(),
 			})

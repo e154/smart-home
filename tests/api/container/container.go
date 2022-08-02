@@ -34,7 +34,6 @@ import (
 	"github.com/e154/smart-home/system/jwt_manager"
 	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/logging_db"
-	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt_authenticator"
 	"github.com/e154/smart-home/system/orm"
@@ -42,6 +41,7 @@ import (
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/storage"
 	"github.com/e154/smart-home/system/stream"
+	"github.com/e154/smart-home/system/stream/handlers"
 	"github.com/e154/smart-home/system/validation"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	"go.uber.org/dig"
@@ -68,8 +68,6 @@ func BuildContainer() (container *dig.Container) {
 	_ = container.Provide(access_list.NewAccessListService)
 	_ = container.Provide(stream.NewStreamService)
 	_ = container.Provide(gate_client.NewGateClient)
-	_ = container.Provide(NewMetricConfig)
-	_ = container.Provide(metrics.NewMetricManager)
 	_ = container.Provide(NewZigbee2mqttConfig)
 	_ = container.Provide(zigbee2mqtt.NewZigbee2mqtt)
 	_ = container.Provide(logging.NewLogger)
@@ -80,6 +78,7 @@ func BuildContainer() (container *dig.Container) {
 	_ = container.Provide(automation.NewAutomation)
 	_ = container.Provide(event_bus.NewEventBus)
 	_ = container.Provide(endpoint.NewEndpoint)
+	_ = container.Provide(handlers.NewEventHandler)
 	_ = container.Provide(controllers.NewControllers)
 	_ = container.Provide(NewDialer)
 	_ = container.Provide(jwt_manager.NewJwtManager)

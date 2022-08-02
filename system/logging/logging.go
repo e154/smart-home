@@ -100,6 +100,10 @@ func (b *Logging) selfSaver(e zapcore.Entry) (err error) {
 		logLevel = "Warning"
 	}
 
+	if LogsHook != nil {
+		LogsHook(logLevel)
+	}
+
 	b.oldLogLock.Lock()
 	defer b.oldLogLock.Unlock()
 

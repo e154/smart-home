@@ -38,30 +38,32 @@ var (
 
 // Endpoint ...
 type Endpoint struct {
-	AlexaSkill      *AlexaSkillEndpoint
-	Auth            *AuthEndpoint
-	Image           *ImageEndpoint
-	Log             *LogEndpoint
-	Role            *RoleEndpoint
-	Script          *ScriptEndpoint
-	User            *UserEndpoint
-	Template        *TemplateEndpoint
-	Notify          *NotifyEndpoint
-	MessageDelivery *MessageDeliveryEndpoint
-	Version         *VersionEndpoint
-	Zigbee2mqtt     *Zigbee2mqttEndpoint
-	Entity          *EntityEndpoint
-	DeveloperTools  *DeveloperToolsEndpoint
-	Mqtt            *MqttEndpoint
-	Plugin          *PluginEndpoint
-	PluginActor     *PluginActorEndpoint
-	Task            *TaskEndpoint
-	Area            *AreaEndpoint
-	Interact        *InteractEndpoint
-	Dashboard       *DashboardEndpoint
-	DashboardTab    *DashboardTabEndpoint
-	DashboardCard   *DashboardCardEndpoint
-	Variable        *VariableEndpoint
+	AlexaSkill        *AlexaSkillEndpoint
+	Auth              *AuthEndpoint
+	Image             *ImageEndpoint
+	Log               *LogEndpoint
+	Role              *RoleEndpoint
+	Script            *ScriptEndpoint
+	User              *UserEndpoint
+	Template          *TemplateEndpoint
+	Notify            *NotifyEndpoint
+	MessageDelivery   *MessageDeliveryEndpoint
+	Version           *VersionEndpoint
+	Zigbee2mqtt       *Zigbee2mqttEndpoint
+	Entity            *EntityEndpoint
+	DeveloperTools    *DeveloperToolsEndpoint
+	Mqtt              *MqttEndpoint
+	Plugin            *PluginEndpoint
+	PluginActor       *PluginActorEndpoint
+	Task              *TaskEndpoint
+	Area              *AreaEndpoint
+	Interact          *InteractEndpoint
+	Dashboard         *DashboardEndpoint
+	DashboardTab      *DashboardTabEndpoint
+	DashboardCard     *DashboardCardEndpoint
+	DashboardCardItem *DashboardCardItemEndpoint
+	Variable          *VariableEndpoint
+	EntityStorage     *EntityStorageEndpoint
 }
 
 // NewEndpoint ...
@@ -77,29 +79,31 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 	validation *validation.Validate) *Endpoint {
 	common := NewCommonEndpoint(adaptors, accessList, scriptService, zigbee2mqtt, eventBus, pluginManager, entityManager, mqtt, jwtManager, validation)
 	return &Endpoint{
-		AlexaSkill:      NewAlexaSkillEndpoint(common),
-		Auth:            NewAuthEndpoint(common),
-		Image:           NewImageEndpoint(common),
-		Log:             NewLogEndpoint(common),
-		Role:            NewRoleEndpoint(common),
-		Script:          NewScriptEndpoint(common),
-		User:            NewUserEndpoint(common),
-		Template:        NewTemplateEndpoint(common),
-		Notify:          NewNotifyEndpoint(common),
-		MessageDelivery: NewMessageDeliveryEndpoint(common),
-		Version:         NewVersionEndpoint(common),
-		Zigbee2mqtt:     NewZigbee2mqttEndpoint(common),
-		Entity:          NewEntityEndpoint(common),
-		DeveloperTools:  NewDeveloperToolsEndpoint(common),
-		Mqtt:            NewMqttEndpoint(common),
-		Plugin:          NewPluginEndpoint(common),
-		PluginActor:     NewPluginActorEndpoint(common),
-		Task:            NewTaskEndpoint(common),
-		Area:            NewAreaEndpoint(common),
-		Interact:        NewInteractEndpoint(common),
-		Dashboard:       NewDashboardEndpoint(common),
-		DashboardTab:    NewDashboardTabEndpoint(common),
-		DashboardCard:   NewDashboardCardEndpoint(common),
-		Variable:        NewVariableEndpoint(common),
+		AlexaSkill:        NewAlexaSkillEndpoint(common),
+		Auth:              NewAuthEndpoint(common),
+		Image:             NewImageEndpoint(common),
+		Log:               NewLogEndpoint(common),
+		Role:              NewRoleEndpoint(common),
+		Script:            NewScriptEndpoint(common),
+		User:              NewUserEndpoint(common),
+		Template:          NewTemplateEndpoint(common),
+		Notify:            NewNotifyEndpoint(common),
+		MessageDelivery:   NewMessageDeliveryEndpoint(common),
+		Version:           NewVersionEndpoint(common),
+		Zigbee2mqtt:       NewZigbee2mqttEndpoint(common),
+		Entity:            NewEntityEndpoint(common),
+		DeveloperTools:    NewDeveloperToolsEndpoint(common),
+		Mqtt:              NewMqttEndpoint(common),
+		Plugin:            NewPluginEndpoint(common),
+		PluginActor:       NewPluginActorEndpoint(common),
+		Task:              NewTaskEndpoint(common),
+		Area:              NewAreaEndpoint(common),
+		Interact:          NewInteractEndpoint(common),
+		Dashboard:         NewDashboardEndpoint(common),
+		DashboardTab:      NewDashboardTabEndpoint(common),
+		DashboardCard:     NewDashboardCardEndpoint(common),
+		DashboardCardItem: NewDashboardCardItemEndpoint(common),
+		Variable:          NewVariableEndpoint(common),
+		EntityStorage:     NewEntityStorageEndpoint(common),
 	}
 }

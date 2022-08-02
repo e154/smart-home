@@ -1,0 +1,144 @@
+syntax = "proto3";
+
+package api;
+option go_package = "/api";
+
+import "google/api/annotations.proto";
+import "protoc-gen-swagger/options/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+import "pagination.proto";
+
+message DashboardCardItem {
+  int64 id = 1;
+  string title = 2;
+  string type = 3;
+  int32 weight = 4;
+  bool enabled = 5;
+  int64 dashboard_card_id = 6;
+  optional string entity_id = 7;
+  bytes payload = 8;
+  bool hidden = 9;
+  bool frozen = 10;
+  google.protobuf.Timestamp created_at = 99;
+  google.protobuf.Timestamp updated_at = 100;
+}
+
+message NewDashboardCardItemRequest {
+  string title = 2;
+  string type = 3;
+  int32 weight = 4;
+  bool enabled = 5;
+  int64 dashboard_card_id = 6;
+  optional string entity_id = 7;
+  bytes payload = 8;
+  bool hidden = 9;
+  bool frozen = 10;
+}
+
+message UpdateDashboardCardItemRequest {
+  int64 id = 1;
+  string title = 2;
+  string type = 3;
+  int32 weight = 4;
+  bool enabled = 5;
+  int64 dashboard_card_id = 6;
+  optional string entity_id = 7;
+  bytes payload = 8;
+  bool hidden = 9;
+  bool frozen = 10;
+}
+
+message GetDashboardCardItemRequest {
+  int64 id = 1;
+}
+
+message GetDashboardCardItemListResult {
+  repeated DashboardCardItem items = 1;
+  Meta meta = 2;
+}
+
+message DeleteDashboardCardItemRequest {
+  int64 id = 1;
+}
+
+service DashboardCardItemService {
+
+  // add new dashboard_card
+  rpc AddDashboardCardItem (NewDashboardCardItemRequest) returns (DashboardCardItem){
+    option (google.api.http) = {
+      post: "/v1/dashboard_card_item"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // update dashboard_card_item
+  rpc UpdateDashboardCardItem (UpdateDashboardCardItemRequest) returns (DashboardCardItem){
+    option (google.api.http) = {
+      put: "/v1/dashboard_card_item/{id}"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // get dashboard_card_item by id
+  rpc GetDashboardCardItemById (GetDashboardCardItemRequest) returns (DashboardCardItem){
+    option (google.api.http) = {
+      get: "/v1/dashboard_card_item/{id}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // get dashboard_card_item list
+  rpc GetDashboardCardItemList (PaginationRequest) returns (GetDashboardCardItemListResult){
+    option (google.api.http) = {
+      get: "/v1/dashboard_cards"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // delete dashboard_card_item
+  rpc DeleteDashboardCardItem (DeleteDashboardCardItemRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      delete: "/v1/dashboard_card_item/{id}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+}

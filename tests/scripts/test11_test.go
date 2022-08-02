@@ -72,7 +72,7 @@ func Test11(t *testing.T) {
 	}
 
 	Convey("require external library", t, func(ctx C) {
-		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
+		err := container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService) {
 
@@ -120,5 +120,8 @@ func Test11(t *testing.T) {
 
 			time.Sleep(time.Second * 2)
 		})
+		if err != nil {
+			fmt.Println(err.Error())
+		}
 	})
 }

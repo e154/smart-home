@@ -76,6 +76,7 @@ type Adaptors struct {
 	Dashboard         IDashboard
 	DashboardTab      IDashboardTab
 	DashboardCard     IDashboardCard
+	DashboardCardItem IDashboardCardItem
 }
 
 // NewAdaptors ...
@@ -125,6 +126,7 @@ func NewAdaptors(lc fx.Lifecycle,
 		Dashboard:         GetDashboardAdaptor(db),
 		DashboardTab:      GetDashboardTabAdaptor(db),
 		DashboardCard:     GetDashboardCardAdaptor(db),
+		DashboardCardItem: GetDashboardCardItemAdaptor(db),
 	}
 
 	if lc != nil {

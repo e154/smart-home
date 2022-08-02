@@ -76,15 +76,15 @@ func (p *WeatherMet) UpdateWeatherList(entityId common.EntityId, settings m.Attr
 		Lon:  settings[weather.AttrLon].Float64(),
 	}
 
-	var update bool
+	//var update bool
 	if _, ok := p.zones.Load(entityId); !ok {
-		update = true
+		//update = true
 	}
 	p.zones.Store(entityId, zone)
 
-	if !update {
-		return
-	}
+	//if !update {
+	//	return
+	//}
 	_ = p.UpdateForecastForAll()
 }
 
@@ -132,7 +132,7 @@ func (p *WeatherMet) UpdateForecast(zone Zone) (err error) {
 	attr := weather.BaseForecast()
 	_, _ = attr.Deserialize(forecast)
 
-	p.eventBus.Publish(event_bus.TopicEntities, events.EventRequestState{
+	p.eventBus.Publish(event_bus.TopicEntities, events.EventPassAttributes{
 		From:       common.EntityId(fmt.Sprintf("weather_met.%s", zone.Name)),
 		To:         common.EntityId(fmt.Sprintf("weather.%s", zone.Name)),
 		Attributes: attr,

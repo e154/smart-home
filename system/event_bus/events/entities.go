@@ -24,8 +24,8 @@ import (
 	"github.com/e154/smart-home/system/event_bus"
 )
 
-// EventRequestState ...
-type EventRequestState struct {
+// EventPassAttributes ...
+type EventPassAttributes struct {
 	From       common.EntityId `json:"from"`
 	To         common.EntityId `json:"to"`
 	Attributes m.Attributes    `json:"attributes"`
@@ -38,6 +38,11 @@ type EventStateChanged struct {
 	EntityId    common.EntityId            `json:"entity_id"`
 	OldState    event_bus.EventEntityState `json:"old_state"`
 	NewState    event_bus.EventEntityState `json:"new_state"`
+}
+
+// EventGetLastState ...
+type EventGetLastState struct {
+	EntityId common.EntityId `json:"entity_id"`
 }
 
 // EventCallAction ...

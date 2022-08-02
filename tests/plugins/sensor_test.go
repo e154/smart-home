@@ -123,7 +123,7 @@ entityAction = (entityId, actionName)->
 			}
 			err = adaptors.Entity.Add(sensorEnt)
 			ctx.So(err, ShouldBeNil)
-			_, err = adaptors.EntityStorage.Add(m.EntityStorage{
+			_, err = adaptors.EntityStorage.Add(&m.EntityStorage{
 				EntityId:   sensorEnt.Id,
 				Attributes: sensorEnt.Attributes.Serialize(),
 			})

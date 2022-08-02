@@ -33,7 +33,6 @@ import (
 	"github.com/e154/smart-home/system/jwt_manager"
 	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/logging_db"
-	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/mqtt_authenticator"
@@ -44,6 +43,7 @@ import (
 	"github.com/e154/smart-home/system/stream"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	"go.uber.org/dig"
+	"go.uber.org/fx"
 )
 
 // BuildContainer ...
@@ -65,8 +65,6 @@ func BuildContainer() (container *dig.Container) {
 	_ = container.Provide(access_list.NewAccessListService)
 	_ = container.Provide(stream.NewStreamService)
 	_ = container.Provide(gate_client.NewGateClient)
-	_ = container.Provide(NewMetricConfig)
-	_ = container.Provide(metrics.NewMetricManager)
 	_ = container.Provide(NewZigbee2mqttConfig)
 	_ = container.Provide(zigbee2mqtt.NewZigbee2mqtt)
 	_ = container.Provide(logging.NewLogger)
@@ -84,6 +82,10 @@ func BuildContainer() (container *dig.Container) {
 		conf.PgName = "smart_home_test"
 		conf.Logging = false
 		return
+	})
+
+	_ = container.Provide(func() (lc fx.Lifecycle) {
+		return &FxNull{}
 	})
 
 	return

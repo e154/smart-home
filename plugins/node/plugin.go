@@ -163,11 +163,11 @@ func (p *plugin) Authenticator(login, password string) (err error) {
 	for _, actor := range p.actors {
 		attrs := actor.Settings()
 
-		if attrs[AttrNodeLogin].String() != login {
+		if _login, ok := attrs[AttrNodeLogin]; !ok || _login.String() != login {
 			continue
 		}
 
-		if attrs[AttrNodePass].String() != password {
+		if _password, ok := attrs[AttrNodePass]; !ok || _password.String() != password {
 			continue
 		}
 

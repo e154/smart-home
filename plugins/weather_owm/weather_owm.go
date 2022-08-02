@@ -133,7 +133,7 @@ func (p *WeatherOwm) UpdateForecast(zone Zone) (err error) {
 	attr := weather.BaseForecast()
 	_, _ = attr.Deserialize(forecast)
 
-	p.eventBus.Publish(event_bus.TopicEntities, events.EventRequestState{
+	p.eventBus.Publish(event_bus.TopicEntities, events.EventPassAttributes{
 		From:       common.EntityId(fmt.Sprintf("weather_owm.%s", zone.Name)),
 		To:         common.EntityId(fmt.Sprintf("weather.%s", zone.Name)),
 		Attributes: attr,

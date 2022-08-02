@@ -23,6 +23,8 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/e154/smart-home/common/logger"
+
 	"github.com/go-playground/locales/en"
 	"github.com/go-playground/locales/es"
 	"github.com/go-playground/locales/ru"
@@ -32,6 +34,10 @@ import (
 	"go.uber.org/fx"
 
 	m "github.com/e154/smart-home/models"
+)
+
+var (
+	log = logger.MustGetLogger("validation")
 )
 
 // Validate ...
@@ -60,6 +66,8 @@ func NewValidate(lc fx.Lifecycle,
 
 // Start ...
 func (v *Validate) Start(_ context.Context) (err error) {
+
+	log.Info("start ...")
 
 	_en := en.New()
 	uni := ut.New(_en, _en, ru.New(), es.New())

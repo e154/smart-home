@@ -302,7 +302,7 @@ entityAction = (entityId, actionName)->
 			}
 			err = adaptors.Entity.Add(l3Ent)
 			ctx.So(err, ShouldBeNil)
-			_, err = adaptors.EntityStorage.Add(m.EntityStorage{
+			_, err = adaptors.EntityStorage.Add(&m.EntityStorage{
 				EntityId:   l3Ent.Id,
 				Attributes: l3Ent.Attributes.Serialize(),
 			})

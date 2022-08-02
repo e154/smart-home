@@ -85,7 +85,7 @@ func (n Templates) GetByName(name, itemType string) (*Template, error) {
 		First(&tpl).Error
 
 	if err != nil {
-		return nil, errors.Wrap(err, "getByName failed")
+		return nil, errors.Wrap(err, "getByName template failed")
 	}
 
 	return tpl, nil

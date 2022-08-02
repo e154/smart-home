@@ -22,15 +22,14 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/e154/smart-home/common/logger"
-	"github.com/e154/smart-home/system/event_bus/events"
-
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/event_bus/events"
 	"github.com/e154/smart-home/system/plugins"
 )
 
@@ -96,7 +95,7 @@ func (p plugin) Name() string {
 func (p *plugin) eventHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
-	case events.EventRequestState:
+	case events.EventPassAttributes:
 		if v.To.PluginName() != Name {
 			return
 		}

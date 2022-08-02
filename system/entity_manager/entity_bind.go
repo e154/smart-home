@@ -63,8 +63,19 @@ func (e *EntityBind) GetAttributes() m.AttributeValue {
 	return entity.Attributes.Serialize()
 }
 
+// GetSettings ...
+func (e *EntityBind) GetSettings() m.AttributeValue {
+
+	entity, err := e.manager.GetEntityById(e.Id)
+	if err != nil {
+		log.Error(err.Error())
+	}
+
+	return entity.Settings.Serialize()
+}
+
 // SetMetric ...
-func (e *EntityBind) SetMetric(name string, value map[string]interface{}) {
+func (e *EntityBind) SetMetric(name string, value map[string]float32) {
 	e.manager.SetMetric(e.Id, name, value)
 }
 

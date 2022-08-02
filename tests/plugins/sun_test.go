@@ -22,6 +22,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/e154/smart-home/common/debug"
+
 	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/e154/smart-home/adaptors"
@@ -98,6 +100,8 @@ func TestSun(t *testing.T) {
 					}
 
 					ctx.So(ok, ShouldBeTrue)
+
+					debug.Println(msg.NewState.Attributes)
 
 					ctx.So(msg.NewState.State, ShouldNotBeNil)
 					ctx.So(msg.NewState.State.Name, ShouldEqual, sunPlugin.AttrDusk)

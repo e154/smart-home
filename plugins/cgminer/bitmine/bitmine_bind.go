@@ -57,7 +57,7 @@ func (b *BitmineBind) Stats() (res Result) {
 	if err != nil {
 		res.Error = true
 		res.ErrMessage = err.Error()
-		log.Error(err.Error())
+		//log.Error(err.Error())
 		return
 	}
 	res.Result = string(data)

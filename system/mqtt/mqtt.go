@@ -36,7 +36,6 @@ import (
 	_ "github.com/DrmagicE/gmqtt/topicalias/fifo"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/logging"
-	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/mqtt/admin"
 	"github.com/e154/smart-home/system/mqtt_authenticator"
 	"github.com/e154/smart-home/system/scripts"
@@ -54,7 +53,6 @@ type Mqtt struct {
 	cfg           *Config
 	server        GMqttServer
 	authenticator mqtt_authenticator.MqttAuthenticator
-	metric        *metrics.MetricManager
 	clientsLock   *sync.Mutex
 	clients       map[string]MqttCli
 	admin         *admin.Admin
@@ -133,7 +131,7 @@ func (m *Mqtt) Start() {
 	// Create a new server
 	m.server = server.New(options...)
 
-	log.Infof("Serving server at tcp://[::]:%d", m.cfg.Port)
+	log.Infof("Serving MQTT server at tcp://[::]:%d", m.cfg.Port)
 
 	go func() {
 		if err = m.server.Run(); err != nil {

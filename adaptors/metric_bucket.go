@@ -19,6 +19,7 @@
 package adaptors
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/e154/smart-home/common"
@@ -43,7 +44,7 @@ type IMetricBucket interface {
 	toDb(ver m.MetricDataItem) (dbVer db.MetricBucket)
 }
 
-// MetricDataItem ...
+// MetricBucket ...
 type MetricBucket struct {
 	IMetricBucket
 	table *db.MetricBuckets
@@ -143,20 +144,28 @@ func (n *MetricBucket) CreateHypertable() (err error) {
 
 func (n *MetricBucket) fromDb(dbVer db.MetricBucket) (ver m.MetricDataItem) {
 	ver = m.MetricDataItem{
-		Value:    dbVer.Value,
 		MetricId: dbVer.MetricId,
 		Time:     dbVer.Time,
 	}
+
+	// deserialize value
+	b, _ := dbVer.Value.MarshalJSON()
+	value := make(map[string]float32)
+	_ = json.Unmarshal(b, &value)
+	ver.Value = value
 
 	return
 }
 
 func (n *MetricBucket) toDb(ver m.MetricDataItem) (dbVer db.MetricBucket) {
 	dbVer = db.MetricBucket{
-		Value:    ver.Value,
 		MetricId: ver.MetricId,
 		Time:     ver.Time,
 	}
+
+	// serialize value
+	b, _ := json.Marshal(ver.Value)
+	_ = dbVer.Value.UnmarshalJSON(b)
 
 	return
 }

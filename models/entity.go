@@ -45,7 +45,7 @@ type Entity struct {
 	States      []*EntityState   `json:"states"`
 	Area        *Area            `json:"area"`
 	AreaId      *int64           `json:"area_id"`
-	Metrics     []Metric         `json:"metrics"`
+	Metrics     []*Metric        `json:"metrics"`
 	Scripts     []*Script        `json:"scripts"`
 	Hidden      bool             `json:"hidden"`
 	Attributes  Attributes       `json:"attributes"`

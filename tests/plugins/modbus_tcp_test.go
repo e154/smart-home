@@ -42,12 +42,6 @@ func TestModbusTcp(t *testing.T) {
 
 	const plugActionOnOffSourceScript = `
 
-getStatus =(status)->
-    if status == 1
-        return 'ON'
-    else
-        return 'OFF'
-
 writeRegisters =(d, c, r)->
     return ModbusTcp 'WriteMultipleRegisters', d, c, r
 
@@ -172,7 +166,7 @@ entityAction = (entityId, actionName)->
 			plugEnt.Settings[modbus_tcp.AttrAddressPort].Value = "office:502"
 			err = adaptors.Entity.Add(plugEnt)
 			So(err, ShouldBeNil)
-			_, err = adaptors.EntityStorage.Add(m.EntityStorage{
+			_, err = adaptors.EntityStorage.Add(&m.EntityStorage{
 				EntityId:   plugEnt.Id,
 				Attributes: plugEnt.Attributes.Serialize(),
 			})

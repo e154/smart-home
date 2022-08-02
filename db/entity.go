@@ -51,7 +51,7 @@ type Entity struct {
 	Settings    json.RawMessage `gorm:"type:jsonb;not null"`
 	Storage     []*EntityStorage
 	AutoLoad    bool
-	ParentId    *common.EntityId `gorm:"column:parent"`
+	ParentId    *common.EntityId `gorm:"column:parent_id"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
@@ -74,6 +74,7 @@ func (n Entities) Update(v *Entity) (err error) {
 	q := map[string]interface{}{
 		"image_id":    v.ImageId,
 		"area_id":     v.AreaId,
+		"parent_id":   v.ParentId,
 		"description": v.Description,
 		"plugin_name": v.PluginName,
 		"icon":        v.Icon,
@@ -114,6 +115,9 @@ func (n Entities) GetById(id common.EntityId) (v *Entity, err error) {
 		Preload("Area").
 		Preload("Metrics").
 		Preload("Scripts").
+		Preload("Storage", func(db *gorm.DB) *gorm.DB {
+			return db.Limit(1).Order("created_at DESC")
+		}).
 		First(&v).Error
 
 	if err != nil {
@@ -125,8 +129,31 @@ func (n Entities) GetById(id common.EntityId) (v *Entity, err error) {
 		return
 	}
 
-	if err = n.preloadStorage(v); err != nil {
-		err = errors.Wrap(err, "preload failed")
+	return
+}
+
+// GetByIds ...
+func (n Entities) GetByIds(ids []common.EntityId) (list []*Entity, err error) {
+
+	list = make([]*Entity, 0)
+	err = n.Db.Model(Entity{}).
+		Where("id IN (?)", ids).
+		Preload("Image").
+		Preload("States").
+		Preload("States.Image").
+		Preload("Actions").
+		Preload("Actions.Image").
+		Preload("Actions.Script").
+		Preload("Area").
+		Preload("Metrics").
+		Preload("Scripts").
+		Preload("Storage", func(db *gorm.DB) *gorm.DB {
+			return db.Limit(1).Order("created_at DESC")
+		}).
+		Find(&list).Error
+
+	if err != nil {
+		err = errors.Wrap(err, "GetByIds failed")
 		return
 	}
 
@@ -175,6 +202,9 @@ func (n *Entities) List(limit, offset int64, orderBy, sort string, autoLoad bool
 		Preload("Area").
 		Preload("Metrics").
 		Preload("Scripts").
+		Preload("Storage", func(db *gorm.DB) *gorm.DB {
+			return db.Limit(1).Order("created_at DESC")
+		}).
 		Limit(limit).
 		Offset(offset)
 
@@ -189,13 +219,6 @@ func (n *Entities) List(limit, offset int64, orderBy, sort string, autoLoad bool
 	if err != nil {
 		err = errors.Wrap(err, "find failed")
 		return
-	}
-
-	for _, entity := range list {
-		if err = n.preloadStorage(entity); err != nil {
-			err = errors.Wrap(err, "preload failed")
-			return
-		}
 	}
 
 	return
@@ -216,6 +239,9 @@ func (n *Entities) GetByType(t string, limit, offset int64) (list []*Entity, err
 		Preload("Area").
 		Preload("Metrics").
 		Preload("Scripts").
+		Preload("Storage", func(db *gorm.DB) *gorm.DB {
+			return db.Limit(1).Order("created_at DESC")
+		}).
 		Limit(limit).
 		Offset(offset).
 		Find(&list).
@@ -228,13 +254,6 @@ func (n *Entities) GetByType(t string, limit, offset int64) (list []*Entity, err
 		}
 		err = errors.Wrap(err, "getByType failed")
 		return
-	}
-
-	for _, entity := range list {
-		if err = n.preloadStorage(entity); err != nil {
-			err = errors.Wrap(err, "preload failed")
-			return
-		}
 	}
 
 	return
@@ -309,15 +328,5 @@ func (n Entities) ReplaceScript(id common.EntityId, script *Script) (err error) 
 	if err = n.Db.Model(&Entity{Id: id}).Association("Scripts").Replace(script).Error; err != nil {
 		err = errors.Wrap(err, "replace metric failed")
 	}
-	return
-}
-
-func (n *Entities) preloadStorage(entity *Entity) (err error) {
-	err = n.Db.Model(&EntityStorage{}).
-		Where("entity_id = ?", entity.Id).
-		Order("created_at DESC").
-		Limit(1).
-		Scan(&entity.Storage).
-		Error
 	return
 }

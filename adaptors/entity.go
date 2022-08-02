@@ -33,14 +33,15 @@ import (
 type IEntity interface {
 	Add(ver *m.Entity) (err error)
 	GetById(id common.EntityId) (ver *m.Entity, err error)
+	GetByIds(ids []common.EntityId) (ver []*m.Entity, err error)
 	Delete(id common.EntityId) (err error)
 	List(limit, offset int64, orderBy, sort string, autoLoad bool) (list []*m.Entity, total int64, err error)
 	GetByType(t string, limit, offset int64) (list []*m.Entity, err error)
 	Update(ver *m.Entity) (err error)
 	UpdateSettings(entityId common.EntityId, settings m.Attributes) (err error)
 	Search(query string, limit, offset int64) (list []*m.Entity, total int64, err error)
-	AppendMetric(entityId common.EntityId, metric m.Metric) (err error)
-	DeleteMetric(entityId common.EntityId, metric m.Metric) (err error)
+	AppendMetric(entityId common.EntityId, metric *m.Metric) (err error)
+	DeleteMetric(entityId common.EntityId, metric *m.Metric) (err error)
 	preloadMetric(ver *m.Entity)
 	fromDb(dbVer *db.Entity) (ver *m.Entity)
 	toDb(ver *m.Entity) (dbVer *db.Entity)
@@ -142,6 +143,21 @@ func (n *Entity) GetById(id common.EntityId) (ver *m.Entity, err error) {
 	return
 }
 
+// GetByIds ...
+func (n *Entity) GetByIds(ids []common.EntityId) (list []*m.Entity, err error) {
+
+	var dbList []*db.Entity
+	if dbList, err = n.table.GetByIds(ids); err != nil {
+		return
+	}
+	list = make([]*m.Entity, len(dbList))
+	for i, dbVer := range dbList {
+		list[i] = n.fromDb(dbVer)
+	}
+
+	return
+}
+
 // Delete ...
 func (n *Entity) Delete(id common.EntityId) (err error) {
 
@@ -237,7 +253,9 @@ func (n *Entity) Update(ver *m.Entity) (err error) {
 	}()
 
 	table := db.Entities{Db: tx}
-	err = table.Update(n.toDb(ver))
+	if err = table.Update(n.toDb(ver)); err != nil {
+		return
+	}
 
 	entityActionAdaptor := GetEntityActionAdaptor(tx)
 	if err = entityActionAdaptor.DeleteByEntityId(ver.Id); err != nil {
@@ -354,14 +372,14 @@ func (n *Entity) Search(query string, limit, offset int64) (list []*m.Entity, to
 }
 
 // AppendMetric ...
-func (n *Entity) AppendMetric(entityId common.EntityId, metric m.Metric) (err error) {
+func (n *Entity) AppendMetric(entityId common.EntityId, metric *m.Metric) (err error) {
 	metricAdaptor := GetMetricAdaptor(n.db, nil)
 	err = n.table.AppendMetric(entityId, metricAdaptor.toDb(metric))
 	return
 }
 
 // DeleteMetric ...
-func (n *Entity) DeleteMetric(entityId common.EntityId, metric m.Metric) (err error) {
+func (n *Entity) DeleteMetric(entityId common.EntityId, metric *m.Metric) (err error) {
 	err = n.table.DeleteMetric(entityId, metric.Id)
 	return
 }

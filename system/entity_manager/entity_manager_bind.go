@@ -53,7 +53,7 @@ func (e *EntityManagerBind) SetAttribute(id common.EntityId, params m.AttributeV
 }
 
 // SetMetric ...
-func (e *EntityManagerBind) SetMetric(id common.EntityId, name string, value map[string]interface{}) {
+func (e *EntityManagerBind) SetMetric(id common.EntityId, name string, value map[string]float32) {
 	e.manager.SetMetric(id, name, value)
 }
 

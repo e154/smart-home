@@ -114,7 +114,9 @@ func (a *Api) Start() error {
 	gw.RegisterDashboardServiceServer(grpcServer, a.controllers.Dashboard)
 	gw.RegisterDashboardTabServiceServer(grpcServer, a.controllers.DashboardTab)
 	gw.RegisterDashboardCardServiceServer(grpcServer, a.controllers.DashboardCard)
+	gw.RegisterDashboardCardItemServiceServer(grpcServer, a.controllers.DashboardCardItem)
 	gw.RegisterVariableServiceServer(grpcServer, a.controllers.Variable)
+	gw.RegisterEntityStorageServiceServer(grpcServer, a.controllers.EntityStorage)
 	grpc_prometheus.Register(grpcServer)
 
 	var group errgroup.Group
@@ -165,9 +167,10 @@ func (a *Api) Start() error {
 		_ = gw.RegisterInteractServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
 		_ = gw.RegisterLogServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
 		_ = gw.RegisterDashboardServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		_ = gw.RegisterDashboardCardItemServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
 		_ = gw.RegisterDashboardCardServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
 		_ = gw.RegisterDashboardTabServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		_ = gw.RegisterDashboardTabServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		_ = gw.RegisterEntityStorageServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
 		return nil
 	})
 

@@ -19,6 +19,7 @@
 package logging
 
 import (
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 )
 
@@ -26,3 +27,6 @@ import (
 type ISaver interface {
 	Save(log m.Log)
 }
+
+//todo fix
+var LogsHook = func(level common.LogLevel) {}

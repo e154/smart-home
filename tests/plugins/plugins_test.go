@@ -26,8 +26,10 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/e154/smart-home/tests/plugins/container"
 	"go.uber.org/dig"
+
+	"github.com/e154/smart-home/system/logging"
+	. "github.com/e154/smart-home/tests/plugins/container"
 )
 
 func init() {
@@ -47,7 +49,7 @@ func TestMain(m *testing.M) {
 
 	container = BuildContainer()
 	err := container.Invoke(func(
-	//logging *logging.Logging,
+		logging *logging.Logging,
 	) {
 
 		time.Sleep(time.Millisecond * 500)

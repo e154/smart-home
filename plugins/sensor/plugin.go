@@ -160,11 +160,16 @@ func (p *plugin) Version() string {
 // Options ...
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
+		Triggers:           false,
 		Actors:             true,
 		ActorCustomAttrs:   true,
-		ActorCustomActions: true,
-		ActorCustomStates:  true,
 		ActorAttrs:         nil,
+		ActorCustomActions: true,
+		ActorActions:       nil,
+		ActorCustomStates:  true,
+		ActorStates:        nil,
+		ActorCustomSetts:   true,
 		ActorSetts:         nil,
+		Setts:              nil,
 	}
 }
