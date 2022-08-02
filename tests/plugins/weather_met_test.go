@@ -19,6 +19,8 @@
 package plugins
 
 import (
+	"fmt"
+	"github.com/e154/smart-home/common/debug"
 	"strings"
 	"testing"
 	"time"
@@ -148,6 +150,8 @@ func TestWeatherMet(t *testing.T) {
 
 						switch v := msg.(type) {
 						case events.EventPassAttributes:
+							fmt.Println("-----1")
+							debug.Println(v)
 							ch <- v
 						case events.EventAddedActor:
 
@@ -174,9 +178,11 @@ func TestWeatherMet(t *testing.T) {
 					var ok bool
 					select {
 					case msg = <-ch:
+						fmt.Println("-----2")
 						ok = true
 						break
 					case <-ticker.C:
+						fmt.Println("-----3")
 						break
 					}
 
