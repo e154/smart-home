@@ -19,13 +19,11 @@
 package plugins
 
 import (
-	"fmt"
-	"github.com/e154/smart-home/common/debug"
 	"strings"
 	"testing"
 	"time"
 
-	"github.com/e154/smart-home/system/event_bus/events"
+	. "github.com/smartystreets/goconvey/convey"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -34,9 +32,9 @@ import (
 	"github.com/e154/smart-home/plugins/weather_met"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/event_bus/events"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestWeatherMet(t *testing.T) {
@@ -150,8 +148,6 @@ func TestWeatherMet(t *testing.T) {
 
 						switch v := msg.(type) {
 						case events.EventPassAttributes:
-							fmt.Println("-----1")
-							debug.Println(v)
 							ch <- v
 						case events.EventAddedActor:
 
@@ -171,18 +167,16 @@ func TestWeatherMet(t *testing.T) {
 						Settings:   settings,
 					})
 
-					ticker := time.NewTimer(time.Second * 3)
+					ticker := time.NewTimer(time.Second * 10)
 					defer ticker.Stop()
 
 					var msg events.EventPassAttributes
 					var ok bool
 					select {
 					case msg = <-ch:
-						fmt.Println("-----2")
 						ok = true
 						break
 					case <-ticker.C:
-						fmt.Println("-----3")
 						break
 					}
 
