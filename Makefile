@@ -166,7 +166,7 @@ docs_dev:
 	cd ${ROOT}/doc
 	hugo server --buildDrafts --verbose --source="${ROOT}/doc" --config="${ROOT}/doc/config.toml" --port=1377 --disableFastRender
 
-doc_deploy:
+docs_deploy:
 	@echo MARK: deploy doc
 	cd ${ROOT}/doc && \
 	echo -e "node version.\n"  && \
