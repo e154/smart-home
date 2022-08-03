@@ -15,8 +15,9 @@
 
 |Branch      |Status   |
 |------------|---------|
-|master      | [![Build Status](https://travis-ci.com/e154/smart-home.svg?branch=master)](https://travis-ci.com/e154/smart-home?branch=master)   |
-|dev         | [![Build Status](https://travis-ci.com/e154/smart-home.svg?branch=develop)](https://travis-ci.com/e154/smart-home?branch=develop) |
+|master      | ![Build Status](https://github.com/e154/smart-home/actions/workflows/test.yml/badge.svg?branch=master)   |
+|dev         | ![Build Status](https://github.com/e154/smart-home/actions/workflows/test.yml/badge.svg?branch=develop)  |
+|docs        | ![Build Status](https://github.com/e154/smart-home/actions/workflows/test.yml/badge.svg?branch=docs)     |
 
 
 <img align="right" width="220" height="auto" src="doc/static/img/smarthome_logo.svg" alt="smart-home logo">

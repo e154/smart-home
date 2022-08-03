@@ -23,10 +23,6 @@ jobs:
           wget https://github.com/gohugoio/hugo/releases/download/v0.89.4/hugo_extended_0.89.4_Linux-64bit.deb
           sudo dpkg -i hugo*.deb
 
-      - name: Build docs
-        id: build-docs
-        run: make docs_build
-
       - name: Deploy docs
         id: docs-deploy
         run: make docs_deploy
