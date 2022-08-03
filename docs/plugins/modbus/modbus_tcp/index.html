@@ -37,7 +37,7 @@ WriteSingleRegister WriteMultipleRegisters
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://e154.github.io/smart-home/docs/plugins/modbus/modbus_tcp/"><meta property="article:section" content="docs">
 <meta property="article:published_time" content="2021-10-20T00:00:00+00:00">
-<meta property="article:modified_time" content="2022-08-03T15:44:58+07:00"><meta property="og:site_name" content="Умный дом">
+<meta property="article:modified_time" content="2022-08-03T17:19:18+07:00"><meta property="og:site_name" content="Умный дом">
 <meta itemprop=name content="Modbus tcp">
 <meta itemprop=description content="Modbus TCP — для передачи данных через TCP/IP-соединение.
 Для работы с modbus rtu устройством требуется настроенная нода  Настройка:  slave_id 1-32 address_port localhost:502  Команды:  произвольный набор  Атрибуты  произвольный набор  Статус  произвольный набор   Доступные функции 1 битные функции
@@ -47,7 +47,7 @@ WriteSingleCoil WriteMultipleCoils
 ReadInputRegisters ReadHoldingRegisters ReadWriteMultipleRegisters
 WriteSingleRegister WriteMultipleRegisters
  javascript свойства  ENTITY_ID ModbusRtu entityAction Action  # константа с уникальным id устройства const ENTITY_ID # выполнение команды(функции) на устройсте: result = ModbusTcp func, addr, count, command    значение описание     func функция для выполнения на устройстве   addr Адрес первого регистра (40108-40001 = 107 =6B hex)   count Количество требуемых регистров (чтение 3-х регистров с 40108 по 40110)   command Команда    # функция-обработчик события действий: entityAction = (entityId, actionName)->    значение описание     entityId уникальное id устройства   actionName системное наименование действия    Объект Action доступен в скриптах действий и скриптах закрепленных за устройством."><meta itemprop=datePublished content="2021-10-20T00:00:00+00:00">
-<meta itemprop=dateModified content="2022-08-03T15:44:58+07:00">
+<meta itemprop=dateModified content="2022-08-03T17:19:18+07:00">
 <meta itemprop=wordCount content="248">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Modbus tcp">
@@ -384,7 +384,7 @@ WriteMultipleRegisters</p>
 
 </code></pre></div>
 <div class="text-muted mt-5 pt-3 border-top">
-Изменено 03.08.2022: <a href=https://github.com/e154/smart-home/commit/ad3c6f1b9217a3f9927e25f37752014fb8336bac>Develop (#184) (ad3c6f1)</a>
+Изменено 03.08.2022: <a href=https://github.com/e154/smart-home/commit/a6291720a87199ca9d46a32fd24b5e4a0104e1ec>update deploy script (a629172)</a>
 </div>
 </div>
 </main>
