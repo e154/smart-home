@@ -17,7 +17,7 @@
 |------------|---------|
 |master      | ![Build Status](https://github.com/e154/smart-home/actions/workflows/test.yml/badge.svg?branch=master)   |
 |dev         | ![Build Status](https://github.com/e154/smart-home/actions/workflows/test.yml/badge.svg?branch=develop)  |
-|docs        | ![Build Status](https://github.com/e154/smart-home/actions/workflows/test.yml/badge.svg?branch=docs)     |
+|docs        | ![Build Status](https://github.com/e154/smart-home/actions/workflows/docs.yml/badge.svg?branch=docs)     |
 
 
 <img align="right" width="220" height="auto" src="doc/static/img/smarthome_logo.svg" alt="smart-home logo">
