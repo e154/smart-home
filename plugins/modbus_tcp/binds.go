@@ -24,9 +24,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/pkg/errors"
 
-	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/plugins/node"
 	"github.com/e154/smart-home/system/event_bus"
 	"go.uber.org/atomic"
@@ -111,7 +112,7 @@ func NewModbusTcp(eventBus event_bus.EventBus, actor *Actor) (modbus modbusTcp) 
 
 		select {
 		case <-ticker.C:
-			err = errors.Wrap(common.ErrTimeout, "wait timeout")
+			err = errors.Wrap(apperr.ErrTimeout, "wait timeout")
 		case resp := <-ch:
 			if err = json.Unmarshal(resp.Response, &result); err != nil {
 				log.Error(err.Error())

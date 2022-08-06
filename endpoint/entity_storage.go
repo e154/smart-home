@@ -24,7 +24,6 @@ import (
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/pkg/errors"
 )
 
 // EntityStorageEndpoint ...
@@ -53,8 +52,6 @@ func (i *EntityStorageEndpoint) GetList(ctx context.Context, entityId common.Ent
 	}
 
 	items, total, err = i.adaptors.EntityStorage.ListByEntityId(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, entityId, startDate, endDate)
-	if err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-	}
+
 	return
 }

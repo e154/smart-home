@@ -23,6 +23,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 )
@@ -52,7 +54,7 @@ func (s *Storages) CreateOrUpdate(v Storage) (err error) {
 			fmt.Sprintf("ON CONFLICT (name) DO UPDATE SET value = '%s', updated_at = '%s'", v.Value, time.Now().Format(time.RFC3339))).
 		Create(&v).Error
 	if err != nil {
-		err = errors.Wrap(err, "createOrUpdate failed")
+		err = errors.Wrap(apperr.ErrStorageAdd, err.Error())
 	}
 	return
 }
@@ -60,7 +62,11 @@ func (s *Storages) CreateOrUpdate(v Storage) (err error) {
 // GetByName ...
 func (s *Storages) GetByName(name string) (v Storage, err error) {
 	if err = s.Db.Model(&Storage{}).Where("name = ?", name).First(&v).Error; err != nil {
-		err = errors.Wrap(err, "getByName failed")
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = errors.Wrap(apperr.ErrStorageNotFound, fmt.Sprintf("name \"%s\"", name))
+			return
+		}
+		err = errors.Wrap(apperr.ErrStorageGet, err.Error())
 	}
 	return
 }
@@ -68,7 +74,7 @@ func (s *Storages) GetByName(name string) (v Storage, err error) {
 // Delete ...
 func (s *Storages) Delete(name string) (err error) {
 	if err = s.Db.Delete(&Storage{}, "name = ?", name).Error; err != nil {
-		err = errors.Wrap(err, "delete failed")
+		err = errors.Wrap(apperr.ErrStorageDelete, err.Error())
 	}
 	return
 }
@@ -80,7 +86,7 @@ func (s *Storages) Search(query string, limit, offset int) (list []Storage, tota
 		Where("name LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
-		err = errors.Wrap(err, "get count failed")
+		err = errors.Wrap(apperr.ErrStorageSearch, err.Error())
 		return
 	}
 
@@ -91,7 +97,7 @@ func (s *Storages) Search(query string, limit, offset int) (list []Storage, tota
 
 	list = make([]Storage, 0)
 	if err = q.Find(&list).Error; err != nil {
-		err = errors.Wrap(err, "search failed")
+		err = errors.Wrap(apperr.ErrStorageSearch, err.Error())
 	}
 	return
 }

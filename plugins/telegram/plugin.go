@@ -22,6 +22,8 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/e154/smart-home/common/logger"
 	"github.com/e154/smart-home/system/event_bus/events"
 
@@ -86,7 +88,7 @@ func (p *plugin) asyncLoad() (err error) {
 	var ok bool
 	p.notify, ok = pl.(notify.ProviderRegistrar)
 	if !ok {
-		err = errors.Wrap(common.ErrInternal, "can`t static cast to notify.ProviderRegistrar")
+		err = errors.Wrap(apperr.ErrInternal, "can`t static cast to notify.ProviderRegistrar")
 		return
 	}
 
@@ -171,7 +173,7 @@ func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
 	defer p.actorsLock.Unlock()
 
 	if _, ok := p.actors[entityId]; !ok {
-		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("entityId \"%s\"", entityId))
+		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("entityId \"%s\"", entityId))
 		return
 	}
 
@@ -213,7 +215,7 @@ func (p *plugin) Send(name string, message m.Message) (err error) {
 	if ok {
 		_ = actor.Send(body)
 	} else {
-		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("bot \"%s\"", name))
+		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("bot \"%s\"", name))
 	}
 
 	return

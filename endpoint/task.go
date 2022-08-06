@@ -23,12 +23,10 @@ import (
 
 	"github.com/e154/smart-home/system/event_bus/events"
 
-	"github.com/go-playground/validator/v10"
-	"github.com/pkg/errors"
-
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/event_bus"
+	"github.com/go-playground/validator/v10"
 )
 
 // TaskEndpoint ...
@@ -52,14 +50,10 @@ func (n *TaskEndpoint) Add(ctx context.Context, task *m.Task) (result *m.Task, e
 	}
 
 	if err = n.adaptors.Task.Add(task); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
 	}
 
 	if result, err = n.adaptors.Task.GetById(task.Id); err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -79,18 +73,10 @@ func (n *TaskEndpoint) Update(ctx context.Context, task *m.Task) (result *m.Task
 	}
 
 	if err = n.adaptors.Task.Update(task); err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	if result, err = n.adaptors.Task.GetById(task.Id); err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -104,13 +90,7 @@ func (n *TaskEndpoint) Update(ctx context.Context, task *m.Task) (result *m.Task
 // GetById ...
 func (n *TaskEndpoint) GetById(ctx context.Context, id int64) (task *m.Task, errs validator.ValidationErrorsTranslations, err error) {
 
-	if task, err = n.adaptors.Task.GetById(id); err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
-		return
-	}
+	task, err = n.adaptors.Task.GetById(id)
 
 	return
 }
@@ -119,9 +99,7 @@ func (n *TaskEndpoint) GetById(ctx context.Context, id int64) (task *m.Task, err
 func (n *TaskEndpoint) Delete(ctx context.Context, id int64) (err error) {
 
 	if err = n.adaptors.Task.Delete(id); err != nil {
-		if !errors.Is(err, common.ErrNotFound) {
-			err = errors.Wrap(common.ErrInternal, err.Error())
-		}
+		return
 	}
 
 	n.eventBus.Publish(event_bus.TopicAutomation, events.EventRemoveTask{
@@ -135,9 +113,7 @@ func (n *TaskEndpoint) Delete(ctx context.Context, id int64) (err error) {
 func (n *TaskEndpoint) Enable(ctx context.Context, id int64) (err error) {
 
 	if err = n.adaptors.Task.Enable(id); err != nil {
-		if !errors.Is(err, common.ErrNotFound) {
-			err = errors.Wrap(common.ErrInternal, err.Error())
-		}
+		return
 	}
 
 	n.eventBus.Publish(event_bus.TopicAutomation, events.EventEnableTask{
@@ -151,9 +127,7 @@ func (n *TaskEndpoint) Enable(ctx context.Context, id int64) (err error) {
 func (n *TaskEndpoint) Disable(ctx context.Context, id int64) (err error) {
 
 	if err = n.adaptors.Task.Disable(id); err != nil {
-		if !errors.Is(err, common.ErrNotFound) {
-			err = errors.Wrap(common.ErrInternal, err.Error())
-		}
+		return
 	}
 
 	n.eventBus.Publish(event_bus.TopicAutomation, events.EventDisableTask{
@@ -167,9 +141,6 @@ func (n *TaskEndpoint) Disable(ctx context.Context, id int64) (err error) {
 func (n *TaskEndpoint) List(ctx context.Context, pagination common.PageParams) (list []*m.Task, total int64, errs validator.ValidationErrorsTranslations, err error) {
 
 	list, total, err = n.adaptors.Task.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, false)
-	if err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-	}
 
 	return
 }

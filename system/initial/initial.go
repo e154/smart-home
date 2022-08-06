@@ -23,12 +23,12 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/e154/smart-home/system/initial/demo"
 	"go.uber.org/fx"
 
 	. "github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	_ "github.com/e154/smart-home/plugins"
@@ -37,6 +37,7 @@ import (
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/gate_client"
 	. "github.com/e154/smart-home/system/initial/assertions"
+	"github.com/e154/smart-home/system/initial/demo"
 	localMigrations "github.com/e154/smart-home/system/initial/local_migrations"
 	"github.com/e154/smart-home/system/logging_ws"
 	"github.com/e154/smart-home/system/migrations"
@@ -143,7 +144,7 @@ func (n *Initial) checkForUpgrade() {
 	v, err := tx.Variable.GetByName("initial_version")
 	if err != nil {
 
-		if errors.Is(err, common.ErrNotFound) {
+		if errors.Is(err, apperr.ErrNotFound) {
 			v = m.Variable{
 				Name:  "initial_version",
 				Value: fmt.Sprintf("%d", 1),

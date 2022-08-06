@@ -199,7 +199,7 @@ func (p *plugin) removeEntity(name string) (err error) {
 	defer p.actorsLock.Unlock()
 
 	if _, ok := p.actors[name]; !ok {
-		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("failed remove \"%s\"", name))
+		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("failed remove \"%s\"", name))
 		return
 	}
 

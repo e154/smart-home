@@ -24,9 +24,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/e154/smart-home/common/logger"
 
-	"github.com/e154/smart-home/common"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/pkg/errors"
 )
@@ -114,7 +115,7 @@ func (c *Client) Disconnect() {
 func (c *Client) Subscribe(topic string, qos byte, callback MQTT.MessageHandler) (err error) {
 
 	if topic == "" {
-		err = errors.Wrap(common.ErrInternal, "zero topic")
+		err = errors.Wrap(apperr.ErrInternal, "zero topic")
 		return
 	}
 
@@ -127,7 +128,7 @@ func (c *Client) Subscribe(topic string, qos byte, callback MQTT.MessageHandler)
 			Callback: callback,
 		}
 	} else {
-		err = errors.Wrap(common.ErrInternal, fmt.Sprintf("topic %s exist", topic))
+		err = errors.Wrap(apperr.ErrInternal, fmt.Sprintf("topic %s exist", topic))
 		return
 	}
 

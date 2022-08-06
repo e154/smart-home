@@ -22,6 +22,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/e154/smart-home/common/logger"
 	"github.com/e154/smart-home/system/event_bus/events"
 
@@ -136,7 +138,7 @@ func (p *pluginManager) getPlugin(name string) (plugin Plugable, err error) {
 		return
 	}
 
-	err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("name %s", name))
+	err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("name %s", name))
 
 	return
 }
@@ -186,7 +188,7 @@ func (p *pluginManager) loadPlugin(name string) (err error) {
 			return
 		}
 	} else {
-		err = common.ErrNotFound
+		err = apperr.ErrNotFound
 	}
 
 	p.enabledPlugins[name] = true
@@ -210,7 +212,7 @@ func (p *pluginManager) unloadPlugin(name string) (err error) {
 		log.Infof("unload plugin %v", plugin.Name())
 		_ = plugin.Unload()
 	} else {
-		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("name %s", name))
+		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("name %s", name))
 	}
 
 	p.enabledPlugins[name] = false
@@ -280,7 +282,7 @@ func (p *pluginManager) EnablePlugin(name string) (err error) {
 			System:  plugin.Type() == PluginBuiltIn,
 		})
 	} else {
-		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("name %s", name))
+		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("name %s", name))
 	}
 	return
 }
@@ -299,7 +301,7 @@ func (p *pluginManager) DisablePlugin(name string) (err error) {
 			System:  plugin.Type() == PluginBuiltIn,
 		})
 	} else {
-		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("name %s", name))
+		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("name %s", name))
 	}
 	return
 }

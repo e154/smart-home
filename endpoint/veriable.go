@@ -24,7 +24,6 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/go-playground/validator/v10"
-	"github.com/pkg/errors"
 )
 
 // VariableEndpoint ...
@@ -47,10 +46,7 @@ func (v *VariableEndpoint) Add(ctx context.Context, variable m.Variable) (errs v
 		return
 	}
 
-	if err = v.adaptors.Variable.CreateOrUpdate(variable); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-		return
-	}
+	err = v.adaptors.Variable.CreateOrUpdate(variable)
 
 	return
 }
@@ -58,9 +54,7 @@ func (v *VariableEndpoint) Add(ctx context.Context, variable m.Variable) (errs v
 // GetById ...
 func (v *VariableEndpoint) GetById(ctx context.Context, name string) (variable m.Variable, err error) {
 
-	if variable, err = v.adaptors.Variable.GetByName(name); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-	}
+	variable, err = v.adaptors.Variable.GetByName(name)
 
 	return
 }
@@ -73,10 +67,7 @@ func (v *VariableEndpoint) Update(ctx context.Context, variable m.Variable) (err
 		return
 	}
 
-	if err = v.adaptors.Variable.CreateOrUpdate(variable); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-		return
-	}
+	err = v.adaptors.Variable.CreateOrUpdate(variable)
 
 	return
 }
@@ -85,9 +76,6 @@ func (v *VariableEndpoint) Update(ctx context.Context, variable m.Variable) (err
 func (v *VariableEndpoint) GetList(ctx context.Context, pagination common.PageParams) (list []m.Variable, total int64, err error) {
 
 	list, total, err = v.adaptors.Variable.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, false)
-	if err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-	}
 	return
 }
 
@@ -95,8 +83,5 @@ func (v *VariableEndpoint) GetList(ctx context.Context, pagination common.PagePa
 func (v *VariableEndpoint) Delete(ctx context.Context, name string) (err error) {
 
 	err = v.adaptors.Variable.Delete(name)
-	if err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-	}
 	return
 }

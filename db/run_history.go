@@ -22,6 +22,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 )
@@ -31,7 +33,7 @@ type RunHistory struct {
 	Db *gorm.DB
 }
 
-// RunHistory ...
+// RunStory ...
 type RunStory struct {
 	Id    int64 `gorm:"primary_key"`
 	Start time.Time
@@ -46,7 +48,7 @@ func (d *RunStory) TableName() string {
 // Add ...
 func (n RunHistory) Add(story *RunStory) (id int64, err error) {
 	if err = n.Db.Create(&story).Error; err != nil {
-		err = errors.Wrap(err, "add failed")
+		err = errors.Wrap(apperr.ErrRunStoryAdd, err.Error())
 		return
 	}
 	id = story.Id
@@ -59,7 +61,7 @@ func (n RunHistory) Update(m *RunStory) (err error) {
 		"end": m.End,
 	}
 	if err = n.Db.Model(&RunStory{Id: m.Id}).Updates(q).Error; err != nil {
-		err = errors.Wrap(err, "update failed")
+		err = errors.Wrap(apperr.ErrRunStoryUpdate, err.Error())
 	}
 	return
 }
@@ -68,7 +70,7 @@ func (n RunHistory) Update(m *RunStory) (err error) {
 func (n *RunHistory) List(limit, offset int64, orderBy, sort string) (list []*RunStory, total int64, err error) {
 
 	if err = n.Db.Model(RunStory{}).Count(&total).Error; err != nil {
-		err = errors.Wrap(err, "get count failed")
+		err = errors.Wrap(apperr.ErrRunStoryList, err.Error())
 		return
 	}
 
@@ -83,7 +85,7 @@ func (n *RunHistory) List(limit, offset int64, orderBy, sort string) (list []*Ru
 	}
 
 	if err = q.Find(&list).Error; err != nil {
-		err = errors.Wrap(err, "list failed")
+		err = errors.Wrap(apperr.ErrRunStoryList, err.Error())
 	}
 
 	return

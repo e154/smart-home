@@ -26,6 +26,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -177,7 +179,7 @@ func (g *Bridge) safeGetDevice(friendlyName string) (device *Device, err error) 
 
 	var ok bool
 	if device, ok = g.devices[friendlyName]; !ok {
-		err = common.ErrNotFound
+		err = apperr.ErrNotFound
 		return
 	}
 

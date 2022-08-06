@@ -22,6 +22,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/pkg/errors"
@@ -125,7 +127,7 @@ func (p *Actor) Start() (err error) {
 	if !common.TestMode() {
 		p.bot, err = tgbotapi.NewBotAPI(p.AccessToken)
 		if err != nil {
-			err = errors.Wrap(common.ErrInternal, err.Error())
+			err = errors.Wrap(apperr.ErrInternal, err.Error())
 			return
 		}
 

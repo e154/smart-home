@@ -23,6 +23,8 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/pkg/errors"
 
 	"github.com/dop251/goja"
@@ -287,7 +289,7 @@ func (j *Javascript) RunProgram(name string) (result string, err error) {
 
 	program, ok := j.programs[name]
 	if !ok {
-		err = errors.Wrap(ErrNotFound, fmt.Sprintf("name \"%s\"", name))
+		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("name \"%s\"", name))
 		return
 	}
 

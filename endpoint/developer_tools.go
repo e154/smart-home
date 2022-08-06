@@ -27,7 +27,6 @@ import (
 	"github.com/e154/smart-home/system/event_bus/events"
 	"github.com/e154/smart-home/system/message_queue"
 	"github.com/go-playground/validator/v10"
-	"github.com/pkg/errors"
 )
 
 // DeveloperToolsEndpoint ...
@@ -46,7 +45,6 @@ func NewDeveloperToolsEndpoint(common *CommonEndpoint) *DeveloperToolsEndpoint {
 func (d DeveloperToolsEndpoint) StateList(ctx context.Context) (states []m.EntityShort, total int64, err error) {
 	states, err = d.entityManager.List()
 	if err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 	total = int64(len(states))
@@ -58,10 +56,6 @@ func (d DeveloperToolsEndpoint) SetEntityState(ctx context.Context, entityId str
 
 	_, err = d.adaptors.Entity.GetById(common.EntityId(entityId))
 	if err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -78,7 +72,6 @@ func (d DeveloperToolsEndpoint) SetEntityState(ctx context.Context, entityId str
 func (d DeveloperToolsEndpoint) EventList(ctx context.Context) (events []message_queue.Stat, total int64, err error) {
 	events, err = d.eventBus.Stat()
 	if err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 	total = int64(len(events))
@@ -89,10 +82,6 @@ func (d DeveloperToolsEndpoint) EventList(ctx context.Context) (events []message
 func (d *DeveloperToolsEndpoint) TaskCallTrigger(ctx context.Context, id int64, name string) (err error) {
 
 	if _, err = d.adaptors.Task.GetById(id); err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -108,10 +97,6 @@ func (d *DeveloperToolsEndpoint) TaskCallTrigger(ctx context.Context, id int64, 
 func (d *DeveloperToolsEndpoint) TaskCallAction(ctx context.Context, id int64, name string) (err error) {
 
 	if _, err = d.adaptors.Task.GetById(id); err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -128,10 +113,6 @@ func (d *DeveloperToolsEndpoint) ReloadEntity(ctx context.Context, id common.Ent
 
 	_, err = d.adaptors.Entity.GetById(id)
 	if err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -147,10 +128,6 @@ func (d *DeveloperToolsEndpoint) EntitySetState(ctx context.Context, id common.E
 
 	_, err = d.adaptors.Entity.GetById(id)
 	if err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 

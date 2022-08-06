@@ -26,6 +26,7 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
 	m "github.com/e154/smart-home/models"
 )
 
@@ -51,12 +52,10 @@ func (d *DashboardEndpoint) Add(ctx context.Context, board *m.Dashboard) (result
 
 	var id int64
 	if id, err = d.adaptors.Dashboard.Add(board); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	if result, err = d.adaptors.Dashboard.GetById(id); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
 	}
 
 	return
@@ -66,10 +65,9 @@ func (d *DashboardEndpoint) Add(ctx context.Context, board *m.Dashboard) (result
 func (d *DashboardEndpoint) GetById(ctx context.Context, id int64) (board *m.Dashboard, err error) {
 
 	if board, err = d.adaptors.Dashboard.GetById(id); err != nil {
-		if errors.Is(err, common.ErrNotFound) {
+		if errors.Is(err, apperr.ErrNotFound) {
 			return
 		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -96,13 +94,11 @@ func (i *DashboardEndpoint) Update(ctx context.Context, params *m.Dashboard) (re
 	}
 
 	if err = i.adaptors.Dashboard.Update(board); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	if result, err = i.adaptors.Dashboard.GetById(params.Id); err != nil {
-		if !errors.Is(err, common.ErrNotFound) {
-			err = errors.Wrap(common.ErrInternal, err.Error())
+		if !errors.Is(err, apperr.ErrNotFound) {
 		}
 	}
 
@@ -114,7 +110,6 @@ func (d *DashboardEndpoint) GetList(ctx context.Context, pagination common.PageP
 
 	list, total, err = d.adaptors.Dashboard.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
 	if err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -130,16 +125,14 @@ func (d *DashboardEndpoint) Delete(ctx context.Context, id int64) (err error) {
 
 	_, err = d.adaptors.Dashboard.GetById(id)
 	if err != nil {
-		if errors.Is(err, common.ErrNotFound) {
+		if errors.Is(err, apperr.ErrNotFound) {
 			return
 		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	err = d.adaptors.Dashboard.Delete(id)
 	if err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
 	}
 	return
 }
@@ -165,7 +158,6 @@ func (d *DashboardEndpoint) preloadEntities(board *m.Dashboard) (err error) {
 
 	var entities []*m.Entity
 	if entities, err = d.adaptors.Entity.GetByIds(entityIds); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -186,7 +178,14 @@ func (d *DashboardEndpoint) Import(ctx context.Context, board *m.Dashboard) (res
 		return
 	}
 
-	result, err = d.adaptors.Dashboard.GetById(id)
+	if result, err = d.adaptors.Dashboard.GetById(id); err != nil {
+		if errors.Is(err, apperr.ErrNotFound) {
+			return
+		}
+		return
+	}
+
+	err = d.preloadEntities(board)
 
 	return
 }
