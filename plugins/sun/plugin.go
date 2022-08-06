@@ -24,6 +24,7 @@ import (
 	"time"
 
 	"github.com/e154/smart-home/common/logger"
+	"github.com/e154/smart-home/tmp/apperr"
 
 	"github.com/pkg/errors"
 
@@ -132,7 +133,7 @@ func (p *plugin) removeEntity(name string) (err error) {
 	defer p.actorsLock.Unlock()
 
 	if _, ok := p.actors[name]; !ok {
-		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("failed remove \"%s\"", name))
+		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("failed remove \"%s\"", name))
 		return
 	}
 

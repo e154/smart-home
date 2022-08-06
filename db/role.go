@@ -23,7 +23,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 )
@@ -53,7 +54,7 @@ func (m *Role) TableName() string {
 // Add ...
 func (n Roles) Add(role *Role) (err error) {
 	if err = n.Db.Create(&role).Error; err != nil {
-		err = errors.Wrap(err, "add failed")
+		err = errors.Wrap(apperr.ErrRoleAdd, err.Error())
 		return
 	}
 	return
@@ -66,10 +67,10 @@ func (n Roles) GetByName(name string) (role *Role, err error) {
 	err = n.Db.First(&role).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("name \"%s\"", name))
+			err = errors.Wrap(apperr.ErrRoleNotFound, fmt.Sprintf("name \"%s\"", name))
 			return
 		}
-		err = errors.Wrap(err, "getByName failed")
+		err = errors.Wrap(apperr.ErrRoleGet, err.Error())
 		return
 	}
 
@@ -85,7 +86,7 @@ func (n Roles) Update(m *Role) (err error) {
 		"parent":      m.RoleName,
 	}).Error
 	if err != nil {
-		err = errors.Wrap(err, "update failed")
+		err = errors.Wrap(apperr.ErrRoleUpdate, err.Error())
 	}
 
 	return
@@ -94,7 +95,7 @@ func (n Roles) Update(m *Role) (err error) {
 // Delete ...
 func (n Roles) Delete(name string) (err error) {
 	if err = n.Db.Delete(&Role{Name: name}).Error; err != nil {
-		err = errors.Wrap(err, "delete failed")
+		err = errors.Wrap(apperr.ErrRoleDelete, err.Error())
 	}
 	return
 }
@@ -103,7 +104,7 @@ func (n Roles) Delete(name string) (err error) {
 func (n *Roles) List(limit, offset int64, orderBy, sort string) (list []*Role, total int64, err error) {
 
 	if err = n.Db.Model(Role{}).Count(&total).Error; err != nil {
-		err = errors.Wrap(err, "get count failed")
+		err = errors.Wrap(apperr.ErrRoleList, err.Error())
 		return
 	}
 
@@ -116,7 +117,7 @@ func (n *Roles) List(limit, offset int64, orderBy, sort string) (list []*Role, t
 		Error
 
 	if err != nil {
-		err = errors.Wrap(err, "list failed")
+		err = errors.Wrap(apperr.ErrRoleList, err.Error())
 		return
 	}
 
@@ -134,7 +135,7 @@ func (n *Roles) Search(query string, limit, offset int64) (list []*Role, total i
 		Where("name LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
-		err = errors.Wrap(err, "get count failed")
+		err = errors.Wrap(apperr.ErrRoleSearch, err.Error())
 		return
 	}
 
@@ -145,7 +146,7 @@ func (n *Roles) Search(query string, limit, offset int64) (list []*Role, total i
 
 	list = make([]*Role, 0)
 	if err = q.Find(&list).Error; err != nil {
-		err = errors.Wrap(err, "search failed")
+		err = errors.Wrap(apperr.ErrRoleSearch, err.Error())
 	}
 
 	return
@@ -162,7 +163,7 @@ func (n *Roles) RelData(role *Role) (err error) {
 			Find(&role.Role).
 			Error
 		if err != nil {
-			err = errors.Wrap(err, "get parent failed")
+			err = errors.Wrap(apperr.ErrRoleGet, err.Error())
 		}
 	}
 
@@ -173,7 +174,7 @@ func (n *Roles) RelData(role *Role) (err error) {
 		Find(&role.Children).
 		Error
 	if err != nil {
-		err = errors.Wrap(err, "get children failed")
+		err = errors.Wrap(apperr.ErrRoleGet, err.Error())
 	}
 
 	return

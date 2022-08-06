@@ -21,13 +21,13 @@ package endpoint
 import (
 	"context"
 
-	"github.com/go-playground/validator/v10"
-	"github.com/pkg/errors"
+	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/event_bus/events"
+	"github.com/go-playground/validator/v10"
 )
 
 // EntityEndpoint ...
@@ -51,16 +51,11 @@ func (n *EntityEndpoint) Add(ctx context.Context, entity *m.Entity) (result *m.E
 	}
 
 	if err = n.adaptors.Entity.Add(entity); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	result, err = n.adaptors.Entity.GetById(entity.Id)
 	if err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -75,13 +70,7 @@ func (n *EntityEndpoint) Add(ctx context.Context, entity *m.Entity) (result *m.E
 func (n *EntityEndpoint) GetById(ctx context.Context, id common.EntityId) (result *m.Entity, err error) {
 
 	result, err = n.adaptors.Entity.GetById(id)
-	if err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
-		return
-	}
+
 	return
 }
 
@@ -89,11 +78,7 @@ func (n *EntityEndpoint) GetById(ctx context.Context, id common.EntityId) (resul
 func (n *EntityEndpoint) Update(ctx context.Context, params *m.Entity) (result *m.Entity, errs validator.ValidationErrorsTranslations, err error) {
 
 	var entity *m.Entity
-	entity, err = n.adaptors.Entity.GetById(params.Id)
-	if err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
+	if entity, err = n.adaptors.Entity.GetById(params.Id); err != nil {
 		return
 	}
 
@@ -112,9 +97,6 @@ func (n *EntityEndpoint) Update(ctx context.Context, params *m.Entity) (result *
 
 	result, err = n.adaptors.Entity.GetById(entity.Id)
 	if err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
 		return
 	}
 
@@ -128,9 +110,7 @@ func (n *EntityEndpoint) Update(ctx context.Context, params *m.Entity) (result *
 // List ...
 func (n *EntityEndpoint) List(ctx context.Context, pagination common.PageParams) (result []*m.Entity, total int64, err error) {
 	result, total, err = n.adaptors.Entity.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, false)
-	if err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-	}
+
 	return
 }
 
@@ -138,22 +118,17 @@ func (n *EntityEndpoint) List(ctx context.Context, pagination common.PageParams)
 func (n *EntityEndpoint) Delete(ctx context.Context, id common.EntityId) (err error) {
 
 	if id == "" {
-		err = common.ErrBadRequestParams
+		err = apperr.ErrBadRequestParams
 		return
 	}
 
 	var entity *m.Entity
 	entity, err = n.adaptors.Entity.GetById(id)
 	if err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	if err = n.adaptors.Entity.Delete(entity.Id); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -168,8 +143,5 @@ func (n *EntityEndpoint) Delete(ctx context.Context, id common.EntityId) (err er
 func (n *EntityEndpoint) Search(ctx context.Context, query string, limit, offset int64) (result []*m.Entity, total int64, err error) {
 
 	result, total, err = n.adaptors.Entity.Search(query, limit, offset)
-	if err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-	}
 	return
 }

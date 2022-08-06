@@ -19,7 +19,10 @@
 package db
 
 import (
+	"fmt"
 	"time"
+
+	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
@@ -60,7 +63,7 @@ func (n Templates) UpdateOrCreate(tpl *Template) (err error) {
 
 	if err = n.Db.Create(tpl).Error; err != nil {
 		if err = n.Update(tpl); err != nil {
-			err = errors.Wrap(err, "updateOrCreate failed")
+			err = errors.Wrap(apperr.ErrTemplateUpdate, err.Error())
 			return
 		}
 	}
@@ -71,7 +74,7 @@ func (n Templates) UpdateOrCreate(tpl *Template) (err error) {
 // Create ...
 func (n Templates) Create(tpl *Template) (err error) {
 	if err = n.Db.Create(tpl).Error; err != nil {
-		err = errors.Wrap(err, "create failed")
+		err = errors.Wrap(apperr.ErrTemplateAdd, err.Error())
 	}
 	return
 }
@@ -85,7 +88,11 @@ func (n Templates) GetByName(name, itemType string) (*Template, error) {
 		First(&tpl).Error
 
 	if err != nil {
-		return nil, errors.Wrap(err, "getByName template failed")
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = errors.Wrap(apperr.ErrTemplateNotFound, fmt.Sprintf("name \"%s\"", name))
+			return nil, err
+		}
+		err = errors.Wrap(apperr.ErrTemplateGet, err.Error())
 	}
 
 	return tpl, nil
@@ -101,7 +108,7 @@ func (n Templates) GetItemsSortedList() (count int64, newItems []string, err err
 		Error
 
 	if err != nil {
-		err = errors.Wrap(err, "get items failed")
+		err = errors.Wrap(apperr.ErrTemplateList, err.Error())
 		return
 	}
 
@@ -140,7 +147,7 @@ func (n Templates) Update(m *Template) error {
 	}).Error
 
 	if err != nil {
-		return errors.Wrap(err, "update failed")
+		err = errors.Wrap(apperr.ErrTemplateUpdate, err.Error())
 	}
 	return nil
 }
@@ -152,7 +159,7 @@ func (n Templates) UpdateStatus(m *Template) error {
 	}).Error
 
 	if err != nil {
-		return errors.Wrap(err, "updateStatus failed")
+		err = errors.Wrap(apperr.ErrTemplateUpdate, err.Error())
 	}
 	return nil
 }
@@ -160,7 +167,7 @@ func (n Templates) UpdateStatus(m *Template) error {
 // Delete ...
 func (n Templates) Delete(name string) (err error) {
 	if err = n.Db.Delete(&Template{Name: name}).Error; err != nil {
-		err = errors.Wrap(err, "delete failed")
+		err = errors.Wrap(apperr.ErrTemplateDelete, err.Error())
 	}
 	return
 }
@@ -170,7 +177,7 @@ func (n Templates) GetItemsTree() (tree []*TemplateTree, err error) {
 
 	var items []*Template
 	if items, err = n.GetList("item"); err != nil {
-		err = errors.Wrap(err, "getItemsTree failed")
+		err = errors.Wrap(apperr.ErrTemplateGet, err.Error())
 		return
 	}
 
@@ -200,7 +207,7 @@ func (n Templates) GetList(templateType string) ([]*Template, error) {
 		Error
 
 	if err != nil {
-		return nil, errors.Wrap(err, "getList failed")
+		err = errors.Wrap(apperr.ErrTemplateGet, err.Error())
 	}
 
 	return items, nil
@@ -214,7 +221,7 @@ func (n *Templates) Search(query string, limit, offset int) (items []*Template, 
 		Where("type = 'template'")
 
 	if err = q.Count(&total).Error; err != nil {
-		err = errors.Wrap(err, "get template failed")
+		err = errors.Wrap(apperr.ErrTemplateSearch, err.Error())
 		return
 	}
 
@@ -225,7 +232,7 @@ func (n *Templates) Search(query string, limit, offset int) (items []*Template, 
 
 	items = make([]*Template, 0)
 	if err = q.Find(&items).Error; err != nil {
-		err = errors.Wrap(err, "search failed")
+		err = errors.Wrap(apperr.ErrTemplateSearch, err.Error())
 	}
 
 	return
@@ -258,7 +265,7 @@ func (n Templates) UpdateItemsTree(tree []*TemplateTree, parent string) error {
 			"parent": nil,
 		}).Error
 		if err != nil {
-			return errors.Wrap(err, "updateItemsTree failed")
+			err = errors.Wrap(apperr.ErrTemplateUpdate, err.Error())
 		}
 
 		if len(v.Nodes) == 0 {

@@ -20,6 +20,7 @@ package db
 
 import (
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 )
@@ -51,7 +52,7 @@ func (d *Trigger) TableName() string {
 // DeleteByTaskId ...
 func (n Triggers) DeleteByTaskId(id int64) (err error) {
 	if err = n.Db.Delete(&Trigger{}, "task_id = ?", id).Error; err != nil {
-		err = errors.Wrap(err, "deleteByTaskId failed")
+		err = errors.Wrap(apperr.ErrTriggerDelete, err.Error())
 	}
 	return
 }

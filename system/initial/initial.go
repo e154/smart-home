@@ -24,6 +24,7 @@ import (
 	"fmt"
 
 	"github.com/e154/smart-home/system/initial/demo"
+	"github.com/e154/smart-home/tmp/apperr"
 	"go.uber.org/fx"
 
 	. "github.com/e154/smart-home/adaptors"
@@ -143,7 +144,7 @@ func (n *Initial) checkForUpgrade() {
 	v, err := tx.Variable.GetByName("initial_version")
 	if err != nil {
 
-		if errors.Is(err, common.ErrNotFound) {
+		if errors.Is(err, apperr.ErrNotFound) {
 			v = m.Variable{
 				Name:  "initial_version",
 				Value: fmt.Sprintf("%d", 1),

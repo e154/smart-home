@@ -23,7 +23,6 @@ import (
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"github.com/jinzhu/gorm"
-	"github.com/pkg/errors"
 )
 
 // ITask ...
@@ -65,7 +64,6 @@ func (n *Task) Add(ver *m.Task) (err error) {
 	}
 	defer func() {
 		if err != nil && transaction {
-			err = errors.Wrap(common.ErrTransactionError, err.Error())
 			tx.Rollback()
 			return
 		}
@@ -126,7 +124,6 @@ func (n *Task) Update(ver *m.Task) (err error) {
 	}
 	defer func() {
 		if err != nil && transaction {
-			err = errors.Wrap(common.ErrTransactionError, err.Error())
 			tx.Rollback()
 			return
 		}
@@ -215,7 +212,6 @@ func (n *Task) Delete(id int64) (err error) {
 	}
 	defer func() {
 		if err != nil && transaction {
-			err = errors.Wrap(common.ErrTransactionError, err.Error())
 			tx.Rollback()
 			return
 		}

@@ -25,6 +25,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/pkg/errors"
 	"go.uber.org/fx"
 
@@ -160,7 +162,7 @@ func (e *entityManager) SetState(id common.EntityId, params EntityStateParams) (
 
 	item, ok := e.actors.Load(id)
 	if !ok {
-		err = common.ErrNotFound
+		err = apperr.ErrNotFound
 		return
 	}
 	actor := item.(*actorInfo)
@@ -179,7 +181,7 @@ func (e *entityManager) GetEntityById(id common.EntityId) (entity m.EntityShort,
 
 	item, ok := e.actors.Load(id)
 	if !ok {
-		err = common.ErrNotFound
+		err = apperr.ErrNotFound
 		return
 	}
 	actor := item.(*actorInfo)
@@ -192,7 +194,7 @@ func (e *entityManager) GetActorById(id common.EntityId) (actor PluginActor, err
 
 	item, ok := e.actors.Load(id)
 	if !ok {
-		err = common.ErrNotFound
+		err = apperr.ErrNotFound
 		return
 	}
 	actor = item.(*actorInfo).Actor
@@ -503,7 +505,7 @@ func (e *entityManager) CallScene(id common.EntityId, arg map[string]interface{}
 func (e *entityManager) getCrudActor(entityId common.EntityId) (result CrudActor, err error) {
 	var plugin interface{}
 	if plugin, err = e.pluginManager.GetPlugin(entityId.PluginName()); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
+		err = errors.Wrap(apperr.ErrInternal, err.Error())
 		return
 	}
 
@@ -512,7 +514,7 @@ func (e *entityManager) getCrudActor(entityId common.EntityId) (result CrudActor
 		return
 		//...
 	} else {
-		err = errors.Wrap(common.ErrInternal, fmt.Sprintf("can`t static cast '%s' to plugins.CrudActor", entityId.PluginName()))
+		err = errors.Wrap(apperr.ErrInternal, fmt.Sprintf("can`t static cast '%s' to plugins.CrudActor", entityId.PluginName()))
 	}
 	return
 }

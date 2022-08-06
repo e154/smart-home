@@ -22,6 +22,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 )
@@ -52,7 +54,7 @@ func (d *MessageDelivery) TableName() string {
 // Add ...
 func (n MessageDeliveries) Add(msg MessageDelivery) (id int64, err error) {
 	if err = n.Db.Create(&msg).Error; err != nil {
-		err = errors.Wrap(err, "add failed")
+		err = errors.Wrap(apperr.ErrMessageDeliveryAdd, err.Error())
 		return
 	}
 	id = msg.Id
@@ -63,7 +65,7 @@ func (n MessageDeliveries) Add(msg MessageDelivery) (id int64, err error) {
 func (n *MessageDeliveries) List(limit, offset int64, orderBy, sort string) (list []MessageDelivery, total int64, err error) {
 
 	if err = n.Db.Model(MessageDelivery{}).Count(&total).Error; err != nil {
-		err = errors.Wrap(err, "get count failed")
+		err = errors.Wrap(apperr.ErrMessageDeliveryList, err.Error())
 		return
 	}
 
@@ -79,7 +81,7 @@ func (n *MessageDeliveries) List(limit, offset int64, orderBy, sort string) (lis
 		Find(&list).
 		Error
 	if err != nil {
-		err = errors.Wrap(err, "list failed")
+		err = errors.Wrap(apperr.ErrMessageDeliveryList, err.Error())
 	}
 	return
 }
@@ -88,7 +90,7 @@ func (n *MessageDeliveries) List(limit, offset int64, orderBy, sort string) (lis
 func (n *MessageDeliveries) GetAllUncompleted(limit, offset int64) (list []MessageDelivery, total int64, err error) {
 
 	if err = n.Db.Model(MessageDelivery{}).Count(&total).Error; err != nil {
-		err = errors.Wrap(err, "get count failed")
+		err = errors.Wrap(apperr.ErrMessageDeliveryUpdate, err.Error())
 		return
 	}
 
@@ -101,7 +103,7 @@ func (n *MessageDeliveries) GetAllUncompleted(limit, offset int64) (list []Messa
 		Find(&list).
 		Error
 	if err != nil {
-		err = errors.Wrap(err, "getAllUncompleted failed")
+		err = errors.Wrap(apperr.ErrMessageDeliveryUpdate, err.Error())
 	}
 	return
 }
@@ -116,7 +118,7 @@ func (n MessageDeliveries) SetStatus(msg MessageDelivery) (err error) {
 			"error_system_message": msg.ErrorMessageBody,
 		}).Error
 	if err != nil {
-		err = errors.Wrap(err, "setStatus failed")
+		err = errors.Wrap(apperr.ErrMessageDeliveryUpdate, err.Error())
 	}
 	return
 }
@@ -124,7 +126,7 @@ func (n MessageDeliveries) SetStatus(msg MessageDelivery) (err error) {
 // Delete ...
 func (n MessageDeliveries) Delete(id int64) (err error) {
 	if err = n.Db.Delete(&MessageDelivery{Id: id}).Error; err != nil {
-		err = errors.Wrap(err, "delete failed")
+		err = errors.Wrap(apperr.ErrMessageDeliveryDelete, err.Error())
 	}
 	return
 }
@@ -139,7 +141,11 @@ func (n MessageDeliveries) GetById(id int64) (msg MessageDelivery, err error) {
 		First(&msg).
 		Error
 	if err != nil {
-		err = errors.Wrap(err, "getById failed")
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = errors.Wrap(apperr.ErrMessageDeliveryNotFound, fmt.Sprintf("id \"%d\"", id))
+			return
+		}
+		err = errors.Wrap(apperr.ErrMessageDeliveryGet, err.Error())
 	}
 	return
 }

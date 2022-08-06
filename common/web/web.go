@@ -25,7 +25,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
 )
 
 // Request ...
@@ -41,7 +41,7 @@ type Request struct {
 func Crawler(options Request) (body []byte, err error) {
 
 	if options.Url == "" {
-		err = common.ErrBadRequestParams
+		err = apperr.ErrBadRequestParams
 		return
 	}
 

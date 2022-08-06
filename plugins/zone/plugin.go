@@ -23,6 +23,7 @@ import (
 	"sync"
 
 	"github.com/e154/smart-home/common/logger"
+	"github.com/e154/smart-home/tmp/apperr"
 
 	"github.com/pkg/errors"
 
@@ -108,7 +109,7 @@ func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
 	defer p.actorsLock.Unlock()
 
 	if _, ok := p.actors[entityId.Name()]; !ok {
-		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("failed remove '%s", entityId))
+		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("failed remove '%s", entityId))
 		return
 	}
 

@@ -21,6 +21,8 @@ package endpoint
 import (
 	"context"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
@@ -49,18 +51,11 @@ func (n *RoleEndpoint) Add(ctx context.Context, params *m.Role) (result *m.Role,
 	}
 
 	if err = n.adaptors.Role.Add(params); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	result, err = n.adaptors.Role.GetByName(params.Name)
-	if err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
-		return
-	}
+
 	return
 }
 
@@ -68,13 +63,7 @@ func (n *RoleEndpoint) Add(ctx context.Context, params *m.Role) (result *m.Role,
 func (n *RoleEndpoint) GetByName(ctx context.Context, name string) (result *m.Role, err error) {
 
 	result, err = n.adaptors.Role.GetByName(name)
-	if err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
-		return
-	}
+
 	return
 }
 
@@ -84,10 +73,6 @@ func (n *RoleEndpoint) Update(ctx context.Context, params *m.Role) (result *m.Ro
 	var role *m.Role
 	role, err = n.adaptors.Role.GetByName(params.Name)
 	if err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -105,16 +90,14 @@ func (n *RoleEndpoint) Update(ctx context.Context, params *m.Role) (result *m.Ro
 	}
 
 	if err = n.adaptors.Role.Update(role); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	role, err = n.adaptors.Role.GetByName(params.Name)
 	if err != nil {
-		if errors.Is(err, common.ErrNotFound) {
+		if errors.Is(err, apperr.ErrNotFound) {
 			return
 		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 	return
@@ -124,9 +107,6 @@ func (n *RoleEndpoint) Update(ctx context.Context, params *m.Role) (result *m.Ro
 func (n *RoleEndpoint) GetList(ctx context.Context, pagination common.PageParams) (result []*m.Role, total int64, err error) {
 
 	result, total, err = n.adaptors.Role.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
-	if err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-	}
 	return
 }
 
@@ -134,23 +114,16 @@ func (n *RoleEndpoint) GetList(ctx context.Context, pagination common.PageParams
 func (n *RoleEndpoint) Delete(ctx context.Context, name string) (err error) {
 
 	if name == "admin" {
-		err = common.ErrBadRequestParams
+		err = apperr.ErrBadRequestParams
 		return
 	}
 
 	_, err = n.adaptors.Role.GetByName(name)
 	if err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	err = n.adaptors.Role.Delete(name)
-	if err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-	}
 
 	return
 }
@@ -163,9 +136,6 @@ func (n *RoleEndpoint) Search(ctx context.Context, query string, limit, offset i
 	}
 
 	result, total, err = n.adaptors.Role.Search(query, limit, offset)
-	if err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-	}
 
 	return
 }
@@ -177,17 +147,10 @@ func (n *RoleEndpoint) GetAccessList(ctx context.Context, roleName string,
 	var role *m.Role
 	role, err = n.adaptors.Role.GetByName(roleName)
 	if err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	accessList, err = accessListService.GetFullAccessList(role.Name)
-	if err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-	}
 
 	return
 }
@@ -198,10 +161,6 @@ func (n *RoleEndpoint) UpdateAccessList(ctx context.Context, roleName string, ac
 	var role *m.Role
 	role, err = n.adaptors.Role.GetByName(roleName)
 	if err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -251,7 +210,7 @@ func (n *RoleEndpoint) UpdateAccessList(ctx context.Context, roleName string, ac
 	}
 
 	if err = tx.Commit(); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
+		err = errors.Wrap(apperr.ErrInternal, err.Error())
 	}
 
 	return

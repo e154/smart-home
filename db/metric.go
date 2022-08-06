@@ -23,6 +23,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
@@ -53,7 +55,7 @@ func (Metric) TableName() string {
 // Add ...
 func (n Metrics) Add(metric Metric) (id int64, err error) {
 	if err = n.Db.Create(&metric).Error; err != nil {
-		err = errors.Wrap(err, "add failed")
+		err = errors.Wrap(apperr.ErrMetricAdd, err.Error())
 		return
 	}
 	id = metric.Id
@@ -64,7 +66,11 @@ func (n Metrics) Add(metric Metric) (id int64, err error) {
 func (n Metrics) GetById(id int64) (metric Metric, err error) {
 	metric = Metric{Id: id}
 	if err = n.Db.First(&metric).Error; err != nil {
-		err = errors.Wrap(err, "getById failed")
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = errors.Wrap(apperr.ErrMetricNotFound, fmt.Sprintf("id \"%d\"", id))
+			return
+		}
+		err = errors.Wrap(apperr.ErrMetricGet, err.Error())
 	}
 	return
 }
@@ -78,7 +84,7 @@ func (n Metrics) Update(m Metric) (err error) {
 		"type":        m.Type,
 	}
 	if err = n.Db.Model(&Metric{}).Where("id = ?", m.Id).Updates(q).Error; err != nil {
-		err = errors.Wrap(err, "update failed")
+		err = errors.Wrap(apperr.ErrMetricUpdate, err.Error())
 	}
 	return
 }
@@ -86,7 +92,7 @@ func (n Metrics) Update(m Metric) (err error) {
 // Delete ...
 func (n Metrics) Delete(id int64) (err error) {
 	if err = n.Db.Delete(&Metric{}, "id = ?", id).Error; err != nil {
-		err = errors.Wrap(err, "delete failed")
+		err = errors.Wrap(apperr.ErrMetricDelete, err.Error())
 	}
 	return
 }
@@ -95,7 +101,7 @@ func (n Metrics) Delete(id int64) (err error) {
 func (n *Metrics) List(limit, offset int64, orderBy, sort string) (list []Metric, total int64, err error) {
 
 	if err = n.Db.Model(Metric{}).Count(&total).Error; err != nil {
-		err = errors.Wrap(err, "get count failed")
+		err = errors.Wrap(apperr.ErrMetricList, err.Error())
 		return
 	}
 
@@ -110,7 +116,7 @@ func (n *Metrics) List(limit, offset int64, orderBy, sort string) (list []Metric
 	}
 
 	if err = q.Find(&list).Error; err != nil {
-		err = errors.Wrap(err, "list failed")
+		err = errors.Wrap(apperr.ErrMetricList, err.Error())
 	}
 	return
 }
@@ -122,7 +128,7 @@ func (n *Metrics) Search(query string, limit, offset int) (list []Metric, total 
 		Where("name LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
-		err = errors.Wrap(err, "get count failed")
+		err = errors.Wrap(apperr.ErrMetricSearch, err.Error())
 		return
 	}
 
@@ -134,7 +140,7 @@ func (n *Metrics) Search(query string, limit, offset int) (list []Metric, total 
 	list = make([]Metric, 0)
 	err = q.Find(&list).Error
 	if err != nil {
-		err = errors.Wrap(err, "search failed")
+		err = errors.Wrap(apperr.ErrMetricSearch, err.Error())
 	}
 	return
 }

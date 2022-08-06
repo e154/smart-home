@@ -23,6 +23,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
@@ -50,7 +52,7 @@ func (d *EntityStorage) TableName() string {
 // Add ...
 func (n *EntityStorages) Add(v EntityStorage) (id int64, err error) {
 	if err = n.Db.Create(&v).Error; err != nil {
-		err = errors.Wrap(err, "add failed")
+		err = errors.Wrap(apperr.ErrEntityStorageAdd, err.Error())
 		return
 	}
 	id = v.Id
@@ -60,11 +62,17 @@ func (n *EntityStorages) Add(v EntityStorage) (id int64, err error) {
 // GetLastByEntityId ...
 func (n *EntityStorages) GetLastByEntityId(entityId common.EntityId) (v EntityStorage, err error) {
 	v = EntityStorage{}
-	if err = n.Db.Model(&EntityStorage{}).
+	err = n.Db.Model(&EntityStorage{}).
 		Order("created_at desc").
 		First(&v, "entity_id = ?", entityId).
-		Error; err != nil {
-		err = errors.Wrap(err, "getLastByEntityId failed")
+		Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = errors.Wrap(apperr.ErrEntityNotFound, fmt.Sprintf("id \"%s\"", entityId))
+			return
+		}
+		err = errors.Wrap(apperr.ErrEntityStorageGet, err.Error())
 		return
 	}
 	return
@@ -74,7 +82,7 @@ func (n *EntityStorages) GetLastByEntityId(entityId common.EntityId) (v EntitySt
 func (n *EntityStorages) List(limit, offset int64, orderBy, sort string) (list []EntityStorage, total int64, err error) {
 
 	if err = n.Db.Model(EntityStorage{}).Count(&total).Error; err != nil {
-		err = errors.Wrap(err, "get count failed")
+		err = errors.Wrap(apperr.ErrEntityStorageList, err.Error())
 		return
 	}
 
@@ -92,7 +100,7 @@ func (n *EntityStorages) List(limit, offset int64, orderBy, sort string) (list [
 		Find(&list).
 		Error
 	if err != nil {
-		err = errors.Wrap(err, "list failed")
+		err = errors.Wrap(apperr.ErrEntityStorageList, err.Error())
 		return
 	}
 	return
@@ -111,7 +119,7 @@ func (n *EntityStorages) ListByEntityId(limit, offset int64, orderBy, sort strin
 	}
 
 	if err = q.Count(&total).Error; err != nil {
-		err = errors.Wrap(err, "get count failed")
+		err = errors.Wrap(apperr.ErrEntityStorageList, err.Error())
 		return
 	}
 
@@ -129,7 +137,7 @@ func (n *EntityStorages) ListByEntityId(limit, offset int64, orderBy, sort strin
 		Find(&list).
 		Error
 	if err != nil {
-		err = errors.Wrap(err, "list failed")
+		err = errors.Wrap(apperr.ErrEntityStorageList, err.Error())
 		return
 	}
 	return

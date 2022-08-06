@@ -19,9 +19,7 @@
 package endpoint
 
 import (
-	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/pkg/errors"
 )
 
 // MessageDeliveryEndpoint ...
@@ -39,16 +37,11 @@ func NewMessageDeliveryEndpoint(common *CommonEndpoint) *MessageDeliveryEndpoint
 // GetList ...
 func (n *MessageDeliveryEndpoint) GetList(limit, offset int64, order, sortBy string) (result []m.MessageDelivery, total int64, err error) {
 	result, total, err = n.adaptors.MessageDelivery.List(limit, offset, order, sortBy)
-	if err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-	}
 	return
 }
 
 // Delete ...
 func (n *MessageDeliveryEndpoint) Delete(id int64) (err error) {
-	if err = n.adaptors.MessageDelivery.Delete(id); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-	}
+	err = n.adaptors.MessageDelivery.Delete(id)
 	return
 }

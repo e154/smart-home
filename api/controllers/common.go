@@ -25,12 +25,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/e154/smart-home/common/logger"
-
-	"github.com/e154/smart-home/system/stream"
-	"github.com/iancoleman/strcase"
-
 	"github.com/go-playground/validator/v10"
+	"github.com/iancoleman/strcase"
 	"github.com/pkg/errors"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
@@ -39,9 +35,12 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api/dto"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/logger"
 	"github.com/e154/smart-home/endpoint"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
+	"github.com/e154/smart-home/system/stream"
 )
 
 var (
@@ -75,7 +74,7 @@ func (c ControllerCommon) currentUser(ctx context.Context) (*m.User, error) {
 
 	user, ok := ctx.Value("currentUser").(*m.User)
 	if !ok {
-		return nil, errors.Wrap(common.ErrBadRequestParams, "bad user object")
+		return nil, errors.Wrap(apperr.ErrBadRequestParams, "bad user object")
 	}
 
 	return user, nil
@@ -132,12 +131,28 @@ func (c ControllerCommon) error(_ context.Context, errs validator.ValidationErro
 		return c.prepareErrors(errs)
 	}
 
+	//defer func() {
+	//	fmt.Println("-------")
+	//	fmt.Println(errors.Cause(err).Error())
+	//	fmt.Println("-------")
+	//
+	//	for {
+	//		fmt.Println("--->", err.Error())
+	//		err = errors.Unwrap(err)
+	//		if err == nil {
+	//			return
+	//		}
+	//	}
+	//}()
+
 	switch {
-	case errors.Is(err, common.ErrNotFound):
+	case errors.Is(err, apperr.ErrNotFound):
 		return status.Error(codes.NotFound, err.Error())
-	case errors.Is(err, common.ErrNotAuthorized):
+	case errors.Is(err, apperr.ErrUnauthorized):
 		return status.Error(codes.Unauthenticated, err.Error())
-	case errors.Is(err, common.ErrUnimplemented):
+	case errors.Is(err, apperr.ErrNotFound):
+		return status.Error(codes.NotFound, err.Error())
+	case errors.Is(err, apperr.ErrUnimplemented):
 		return status.Error(codes.Unimplemented, err.Error())
 	default:
 		log.Errorf("%+v\n", err)

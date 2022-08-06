@@ -25,7 +25,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/pkg/errors"
 )
 
@@ -108,7 +109,7 @@ func (c *Cron) timeParser(t string) (result map[int][]int, err error) {
 	args := strings.Split(t, " ")
 
 	if len(args) != 6 {
-		err = errors.Wrap(common.ErrBadRequestParams, fmt.Sprintf("bad time string %s", t))
+		err = errors.Wrap(apperr.ErrBadRequestParams, fmt.Sprintf("bad time string %s", t))
 		return
 	}
 

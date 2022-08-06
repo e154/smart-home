@@ -22,6 +22,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
@@ -55,7 +57,7 @@ func (d *EntityState) TableName() string {
 // Add ...
 func (n EntityStates) Add(v *EntityState) (id int64, err error) {
 	if err = n.Db.Create(&v).Error; err != nil {
-		err = errors.Wrap(err, "add failed")
+		err = errors.Wrap(apperr.ErrEntityStateAdd, err.Error())
 		return
 	}
 	id = v.Id
@@ -63,11 +65,14 @@ func (n EntityStates) Add(v *EntityState) (id int64, err error) {
 }
 
 // GetById ...
-func (n EntityStates) GetById(mapId int64) (v *EntityState, err error) {
-	v = &EntityState{Id: mapId}
+func (n EntityStates) GetById(id int64) (v *EntityState, err error) {
+	v = &EntityState{Id: id}
 	if err = n.Db.First(&v).Error; err != nil {
-		err = errors.Wrap(err, "getById failed")
-		return
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = errors.Wrap(apperr.ErrEntityStateNotFound, fmt.Sprintf("id \"%d\"", id))
+			return
+		}
+		err = errors.Wrap(apperr.ErrEntityStateGet, err.Error())
 	}
 	return
 }
@@ -83,13 +88,16 @@ func (n EntityStates) Update(m *EntityState) (err error) {
 		"image_id":  m.ImageId,
 		"style":     m.Style,
 	}).Error
+	if err != nil {
+		err = errors.Wrap(apperr.ErrEntityStateUpdate, err.Error())
+	}
 	return
 }
 
 // DeleteByEntityId ...
 func (n EntityStates) DeleteByEntityId(entityId common.EntityId) (err error) {
 	if err = n.Db.Delete(&EntityState{}, "entity_id = ?", entityId).Error; err != nil {
-		err = errors.Wrap(err, "deleteByEntityId failed")
+		err = errors.Wrap(apperr.ErrEntityStateDelete, err.Error())
 		return
 	}
 	return
@@ -99,7 +107,7 @@ func (n EntityStates) DeleteByEntityId(entityId common.EntityId) (err error) {
 func (n *EntityStates) List(limit, offset int64, orderBy, sort string) (list []*EntityState, total int64, err error) {
 
 	if err = n.Db.Model(EntityState{}).Count(&total).Error; err != nil {
-		err = errors.Wrap(err, "get count failed")
+		err = errors.Wrap(apperr.ErrEntityStateList, err.Error())
 		return
 	}
 
@@ -111,7 +119,7 @@ func (n *EntityStates) List(limit, offset int64, orderBy, sort string) (list []*
 		Find(&list).
 		Error
 	if err != nil {
-		err = errors.Wrap(err, "list failed")
+		err = errors.Wrap(apperr.ErrEntityStateList, err.Error())
 		return
 	}
 	return

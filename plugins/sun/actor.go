@@ -93,8 +93,12 @@ func (e *Actor) setPosition(settings m.Attributes) {
 	e.positionLock.Lock()
 	defer e.positionLock.Unlock()
 
-	e.lat = settings[AttrLat].Float64()
-	e.lon = settings[AttrLon].Float64()
+	if settings[AttrLat] != nil {
+		e.lat = settings[AttrLat].Float64()
+	}
+	if settings[AttrLon] != nil {
+		e.lon = settings[AttrLon].Float64()
+	}
 }
 
 // UpdateSunPosition ...

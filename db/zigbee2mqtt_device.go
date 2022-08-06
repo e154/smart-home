@@ -20,7 +20,10 @@ package db
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
+
+	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/jinzhu/gorm"
 	"github.com/lib/pq"
@@ -57,8 +60,7 @@ func (m *Zigbee2mqttDevice) TableName() string {
 // Add ...
 func (z Zigbee2mqttDevices) Add(v *Zigbee2mqttDevice) (err error) {
 	if err = z.Db.Create(&v).Error; err != nil {
-		err = errors.Wrap(err, "add failed")
-		return
+		err = errors.Wrap(apperr.ErrZigbeeDeviceAdd, err.Error())
 	}
 	return
 }
@@ -67,7 +69,11 @@ func (z Zigbee2mqttDevices) Add(v *Zigbee2mqttDevice) (err error) {
 func (z Zigbee2mqttDevices) GetById(id string) (v *Zigbee2mqttDevice, err error) {
 	v = &Zigbee2mqttDevice{Id: id}
 	if err = z.Db.First(&v).Error; err != nil {
-		err = errors.Wrap(err, "getById failed")
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = errors.Wrap(apperr.ErrZigbeeDeviceNotFound, fmt.Sprintf("id \"%d\"", id))
+			return
+		}
+		err = errors.Wrap(apperr.ErrZigbeeDeviceGet, err.Error())
 	}
 	return
 }
@@ -85,7 +91,7 @@ func (z Zigbee2mqttDevices) Update(m *Zigbee2mqttDevice) (err error) {
 		"Payload":      m.Payload,
 	}).Error
 	if err != nil {
-		err = errors.Wrap(err, "update failed")
+		err = errors.Wrap(apperr.ErrZigbeeDeviceUpdate, err.Error())
 	}
 	return
 }
@@ -93,7 +99,7 @@ func (z Zigbee2mqttDevices) Update(m *Zigbee2mqttDevice) (err error) {
 // Delete ...
 func (z Zigbee2mqttDevices) Delete(id string) (err error) {
 	if err = z.Db.Delete(&Zigbee2mqttDevice{Id: id}).Error; err != nil {
-		err = errors.Wrap(err, "delete failed")
+		err = errors.Wrap(apperr.ErrZigbeeDeviceDelete, err.Error())
 	}
 	return
 }
@@ -102,6 +108,7 @@ func (z Zigbee2mqttDevices) Delete(id string) (err error) {
 func (z *Zigbee2mqttDevices) List(limit, offset int64) (list []*Zigbee2mqttDevice, total int64, err error) {
 
 	if err = z.Db.Model(Zigbee2mqttDevice{}).Count(&total).Error; err != nil {
+		err = errors.Wrap(apperr.ErrZigbeeDeviceList, err.Error())
 		return
 	}
 
@@ -112,7 +119,7 @@ func (z *Zigbee2mqttDevices) List(limit, offset int64) (list []*Zigbee2mqttDevic
 		Find(&list).
 		Error
 	if err != nil {
-		err = errors.Wrap(err, "list failed")
+		err = errors.Wrap(apperr.ErrZigbeeDeviceList, err.Error())
 	}
 	return
 }
@@ -121,6 +128,7 @@ func (z *Zigbee2mqttDevices) List(limit, offset int64) (list []*Zigbee2mqttDevic
 func (z *Zigbee2mqttDevices) ListByBridgeId(bridgeId, limit, offset int64) (list []*Zigbee2mqttDevice, total int64, err error) {
 
 	if err = z.Db.Model(Zigbee2mqttDevice{}).Where("zigbee2mqtt_id = ?", bridgeId).Count(&total).Error; err != nil {
+		err = errors.Wrap(apperr.ErrZigbeeDeviceList, err.Error())
 		return
 	}
 
@@ -132,7 +140,7 @@ func (z *Zigbee2mqttDevices) ListByBridgeId(bridgeId, limit, offset int64) (list
 		Find(&list).
 		Error
 	if err != nil {
-		err = errors.Wrap(err, "list failed")
+		err = errors.Wrap(apperr.ErrZigbeeDeviceList, err.Error())
 	}
 	return
 }
@@ -144,6 +152,7 @@ func (z *Zigbee2mqttDevices) Search(query string, limit, offset int64) (list []*
 		Where("name LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
+		err = errors.Wrap(apperr.ErrZigbeeDeviceSearch, err.Error())
 		return
 	}
 
@@ -154,7 +163,7 @@ func (z *Zigbee2mqttDevices) Search(query string, limit, offset int64) (list []*
 
 	list = make([]*Zigbee2mqttDevice, 0)
 	if err = q.Find(&list).Error; err != nil {
-		err = errors.Wrap(err, "search failed")
+		err = errors.Wrap(apperr.ErrZigbeeDeviceSearch, err.Error())
 	}
 
 	return

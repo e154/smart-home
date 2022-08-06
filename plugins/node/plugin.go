@@ -22,7 +22,10 @@ import (
 	"fmt"
 	"sync"
 
+	apperr2 "github.com/e154/smart-home/common/apperr"
+
 	"github.com/e154/smart-home/common/logger"
+	"github.com/e154/smart-home/tmp/apperr"
 
 	"github.com/pkg/errors"
 
@@ -124,7 +127,7 @@ func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
 
 	actor, ok := p.actors[entityId]
 	if !ok {
-		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("failed remove \"%s\"", entityId))
+		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("failed remove \"%s\"", entityId))
 		return
 	}
 
@@ -180,7 +183,7 @@ func (p *plugin) Authenticator(login, password string) (err error) {
 		//}
 	}
 
-	err = common.ErrBadLoginOrPassword
+	err = apperr2.ErrBadLoginOrPassword
 
 	return
 }

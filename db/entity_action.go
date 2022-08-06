@@ -22,6 +22,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
@@ -57,7 +59,7 @@ func (d *EntityAction) TableName() string {
 // Add ...
 func (n EntityActions) Add(v *EntityAction) (id int64, err error) {
 	if err = n.Db.Create(&v).Error; err != nil {
-		err = errors.Wrap(err, "add failed")
+		err = errors.Wrap(apperr.ErrEntityActionAdd, err.Error())
 		return
 	}
 	id = v.Id
@@ -65,10 +67,14 @@ func (n EntityActions) Add(v *EntityAction) (id int64, err error) {
 }
 
 // GetById ...
-func (n EntityActions) GetById(mapId int64) (v *EntityAction, err error) {
-	v = &EntityAction{Id: mapId}
+func (n EntityActions) GetById(id int64) (v *EntityAction, err error) {
+	v = &EntityAction{Id: id}
 	if err = n.Db.First(&v).Error; err != nil {
-		err = errors.Wrap(err, "getById failed")
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = errors.Wrap(apperr.ErrEntityActionNotFound, fmt.Sprintf("id \"%d\"", id))
+			return
+		}
+		err = errors.Wrap(apperr.ErrEntityActionGet, err.Error())
 	}
 	return
 }
@@ -86,7 +92,7 @@ func (n EntityActions) Update(m *EntityAction) (err error) {
 	}).Error
 
 	if err != nil {
-		err = errors.Wrap(err, "update failed")
+		err = errors.Wrap(apperr.ErrEntityActionUpdate, err.Error())
 	}
 	return
 }
@@ -94,7 +100,7 @@ func (n EntityActions) Update(m *EntityAction) (err error) {
 // DeleteByEntityId ...
 func (n EntityActions) DeleteByEntityId(deviceId common.EntityId) (err error) {
 	if err = n.Db.Delete(&EntityAction{}, "entity_id = ?", deviceId).Error; err != nil {
-		err = errors.Wrap(err, "delete failed")
+		err = errors.Wrap(apperr.ErrEntityActionDelete, err.Error())
 	}
 	return
 }
@@ -103,6 +109,7 @@ func (n EntityActions) DeleteByEntityId(deviceId common.EntityId) (err error) {
 func (n *EntityActions) List(limit, offset int64, orderBy, sort string) (list []*EntityAction, total int64, err error) {
 
 	if err = n.Db.Model(EntityAction{}).Count(&total).Error; err != nil {
+		err = errors.Wrap(apperr.ErrEntityActionList, err.Error())
 		return
 	}
 
@@ -115,7 +122,7 @@ func (n *EntityActions) List(limit, offset int64, orderBy, sort string) (list []
 		Error
 
 	if err != nil {
-		err = errors.Wrap(err, "list failed")
+		err = errors.Wrap(apperr.ErrEntityActionList, err.Error())
 	}
 	return
 }

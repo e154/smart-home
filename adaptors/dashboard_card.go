@@ -19,11 +19,9 @@
 package adaptors
 
 import (
-	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"github.com/jinzhu/gorm"
-	"github.com/pkg/errors"
 )
 
 type IDashboardCard interface {
@@ -83,7 +81,6 @@ func (n *DashboardCard) Update(ver *m.DashboardCard) (err error) {
 	}
 	defer func() {
 		if err != nil && transaction {
-			err = errors.Wrap(common.ErrTransactionError, err.Error())
 			tx.Rollback()
 			return
 		}
@@ -127,7 +124,6 @@ func (n *DashboardCard) Import(card *m.DashboardCard) (cardId int64, err error) 
 	}
 	defer func() {
 		if err != nil && transaction {
-			err = errors.Wrap(common.ErrTransactionError, err.Error())
 			tx.Rollback()
 			return
 		}

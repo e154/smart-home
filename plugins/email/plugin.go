@@ -21,11 +21,12 @@ package email
 import (
 	"strings"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/e154/smart-home/common/logger"
 
 	"github.com/pkg/errors"
 
-	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/notify"
 	"github.com/e154/smart-home/system/plugins"
@@ -92,7 +93,7 @@ func (p *plugin) asyncLoad() (err error) {
 	var ok bool
 	p.notify, ok = pl.(notify.ProviderRegistrar)
 	if !ok {
-		err = errors.Wrap(common.ErrInternal, "can`t static cast to  notify.ProviderRegistrar")
+		err = errors.Wrap(apperr.ErrInternal, "can`t static cast to  notify.ProviderRegistrar")
 		return
 	}
 

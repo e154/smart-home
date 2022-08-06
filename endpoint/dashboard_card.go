@@ -21,6 +21,8 @@ package endpoint
 import (
 	"context"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/go-playground/validator/v10"
@@ -50,13 +52,10 @@ func (c *DashboardCardEndpoint) Add(ctx context.Context, card *m.DashboardCard) 
 
 	var id int64
 	if id, err = c.adaptors.DashboardCard.Add(card); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
-	if result, err = c.adaptors.DashboardCard.GetById(id); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-	}
+	result, err = c.adaptors.DashboardCard.GetById(id)
 
 	return
 }
@@ -65,7 +64,6 @@ func (c *DashboardCardEndpoint) Add(ctx context.Context, card *m.DashboardCard) 
 func (c *DashboardCardEndpoint) GetById(ctx context.Context, id int64) (card *m.DashboardCard, err error) {
 
 	if card, err = c.adaptors.DashboardCard.GetById(id); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -83,6 +81,7 @@ func (i *DashboardCardEndpoint) Update(ctx context.Context, params *m.DashboardC
 	}
 
 	if err = copier.Copy(&card, &params); err != nil {
+		err = errors.Wrap(apperr.ErrInternal, err.Error())
 		return
 	}
 
@@ -95,11 +94,7 @@ func (i *DashboardCardEndpoint) Update(ctx context.Context, params *m.DashboardC
 		return
 	}
 
-	if result, err = i.adaptors.DashboardCard.GetById(params.Id); err != nil {
-		if !errors.Is(err, common.ErrNotFound) {
-			err = errors.Wrap(common.ErrInternal, err.Error())
-		}
-	}
+	result, err = i.adaptors.DashboardCard.GetById(params.Id)
 
 	return
 }
@@ -109,7 +104,6 @@ func (c *DashboardCardEndpoint) GetList(ctx context.Context, pagination common.P
 
 	list, total, err = c.adaptors.DashboardCard.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
 	if err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -125,17 +119,11 @@ func (c *DashboardCardEndpoint) Delete(ctx context.Context, id int64) (err error
 
 	_, err = c.adaptors.DashboardCard.GetById(id)
 	if err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	err = c.adaptors.DashboardCard.Delete(id)
-	if err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-	}
+
 	return
 }
 
@@ -148,13 +136,6 @@ func (c *DashboardCardEndpoint) Import(ctx context.Context, card *m.DashboardCar
 	}
 
 	result, err = c.adaptors.DashboardCard.GetById(cardId)
-	if err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
-		return
-	}
 
 	return
 }
@@ -176,7 +157,6 @@ func (c *DashboardCardEndpoint) preloadEntities(card *m.DashboardCard) (err erro
 
 	var entites []*m.Entity
 	if entites, err = c.adaptors.Entity.GetByIds(entityIds); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 

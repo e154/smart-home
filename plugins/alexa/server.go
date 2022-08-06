@@ -23,7 +23,8 @@ import (
 	"os"
 	"sync"
 
-	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/gin-gonic/gin"
 	"go.uber.org/atomic"
 
@@ -218,7 +219,7 @@ func (s Server) Auth(ctx *gin.Context) {
 	}
 
 	if !IsValidAlexaRequest(ctx.Writer, ctx.Request) {
-		_ = ctx.AbortWithError(401, common.ErrBadRequestParams)
+		_ = ctx.AbortWithError(401, apperr.ErrBadRequestParams)
 		return
 	}
 }

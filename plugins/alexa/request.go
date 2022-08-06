@@ -22,7 +22,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/tmp/apperr"
 	"github.com/pkg/errors"
 )
 
@@ -95,7 +95,7 @@ func (r *Request) GetSlot(slotName string) (Slot, error) {
 		return r.Request.Intent.Slots[slotName], nil
 	}
 
-	return Slot{}, errors.Wrap(common.ErrNotFound, fmt.Sprintf("name \"%s\"", slotName))
+	return Slot{}, errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("name \"%s\"", slotName))
 }
 
 // AllSlots will return a map of all the slots in the Request mapped by their name.

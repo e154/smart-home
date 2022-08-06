@@ -45,11 +45,6 @@ type Adaptors struct {
 	UserMeta          IUserMeta
 	Image             IImage
 	Variable          IVariable
-	Map               IMap
-	MapLayer          IMapLayer
-	MapText           IMapText
-	MapImage          IMapImage
-	MapElement        IMapElement
 	Entity            IEntity
 	EntityState       IEntityState
 	EntityAction      IEntityAction
@@ -95,15 +90,10 @@ func NewAdaptors(lc fx.Lifecycle,
 		UserMeta:          GetUserMetaAdaptor(db),
 		Image:             GetImageAdaptor(db),
 		Variable:          GetVariableAdaptor(db),
-		Map:               GetMapAdaptor(db),
-		MapLayer:          GetMapLayerAdaptor(db),
-		MapText:           GetMapTextAdaptor(db),
-		MapImage:          GetMapImageAdaptor(db),
 		Entity:            GetEntityAdaptor(db),
 		EntityState:       GetEntityStateAdaptor(db),
 		EntityAction:      GetEntityActionAdaptor(db),
 		EntityStorage:     GetEntityStorageAdaptor(db),
-		MapElement:        GetMapElementAdaptor(db),
 		Log:               GetLogAdaptor(db),
 		Template:          GetTemplateAdaptor(db),
 		Message:           GetMessageAdaptor(db),

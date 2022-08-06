@@ -20,12 +20,15 @@ package db
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
-	"github.com/e154/smart-home/common"
-
+	"github.com/jackc/pgerrcode"
 	"github.com/jinzhu/gorm"
+	"github.com/lib/pq"
 	"github.com/pkg/errors"
+
+	"github.com/e154/smart-home/common/apperr"
 )
 
 // Dashboards ...
@@ -54,7 +57,19 @@ func (d *Dashboard) TableName() string {
 // Add ...
 func (n Dashboards) Add(board *Dashboard) (id int64, err error) {
 	if err = n.Db.Create(&board).Error; err != nil {
-		err = errors.Wrap(err, "add failed")
+		var pgErr *pq.Error
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case pgerrcode.UniqueViolation:
+				if strings.Contains(pgErr.Message, "name_at_dashboards_unq") {
+					err = errors.Wrap(apperr.ErrDashboardAdd, fmt.Sprintf("dashboard name \"%s\" not unique", board.Name))
+					return
+				}
+			default:
+				fmt.Printf("unknown code \"%s\"\n", pgErr.Code)
+			}
+		}
+		err = errors.Wrap(apperr.ErrDashboardAdd, err.Error())
 		return
 	}
 	id = board.Id
@@ -74,10 +89,10 @@ func (n Dashboards) GetById(id int64) (board *Dashboard, err error) {
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("id \"%s\"", id))
+			err = errors.Wrap(apperr.ErrDashboardNotFound, fmt.Sprintf("id \"%s\"", id))
 			return
 		}
-		err = errors.Wrap(err, "getById failed")
+		err = errors.Wrap(apperr.ErrDashboardGet, err.Error())
 		return
 	}
 	return
@@ -93,7 +108,7 @@ func (n Dashboards) Update(m *Dashboard) (err error) {
 	}
 
 	if err = n.Db.Model(&Dashboard{Id: m.Id}).Updates(q).Error; err != nil {
-		err = errors.Wrap(err, "update failed")
+		err = errors.Wrap(apperr.ErrDashboardUpdate, err.Error())
 	}
 	return
 }
@@ -104,7 +119,7 @@ func (n Dashboards) Delete(id int64) (err error) {
 		return
 	}
 	if err = n.Db.Delete(&Dashboard{Id: id}).Error; err != nil {
-		err = errors.Wrap(err, "delete failed")
+		err = errors.Wrap(apperr.ErrDashboardDelete, err.Error())
 	}
 	return
 }
@@ -113,7 +128,7 @@ func (n Dashboards) Delete(id int64) (err error) {
 func (n *Dashboards) List(limit, offset int64, orderBy, sort string) (list []*Dashboard, total int64, err error) {
 
 	if err = n.Db.Model(Dashboard{}).Count(&total).Error; err != nil {
-		err = errors.Wrap(err, "get count failed")
+		err = errors.Wrap(apperr.ErrDashboardGet, err.Error())
 		return
 	}
 
@@ -135,7 +150,7 @@ func (n *Dashboards) List(limit, offset int64, orderBy, sort string) (list []*Da
 		Error
 
 	if err != nil {
-		err = errors.Wrap(err, "find failed")
+		err = errors.Wrap(apperr.ErrDashboardList, err.Error())
 	}
 
 	return

@@ -22,7 +22,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
+
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/pkg/errors"
@@ -49,23 +50,23 @@ func NewAuthEndpoint(common *CommonEndpoint) *AuthEndpoint {
 func (a *AuthEndpoint) SignIn(ctx context.Context, email, password string, ip string) (user *m.User, accessToken string, err error) {
 
 	if user, err = a.adaptors.User.GetByEmail(email); err != nil {
-		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("email %s", email))
+		err = errors.Wrap(apperr.ErrUnauthorized, fmt.Sprintf("email %s", email))
 		return
 	} else if !user.CheckPass(password) {
-		err = common.ErrPassNotValid
+		err = apperr.ErrPassNotValid
 		return
 	} else if user.Status == "blocked" && user.Id != AdminId {
-		err = common.ErrAccountIsBlocked
+		err = apperr.ErrAccountIsBlocked
 		return
 	}
 
 	if accessToken, err = a.jwtManager.Generate(user); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
+		err = errors.Wrap(apperr.ErrUnauthorized, err.Error())
 		return
 	}
 
 	if err = a.adaptors.User.SignIn(user, ip); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
+		err = errors.Wrap(apperr.ErrUnauthorized, err.Error())
 		return
 	}
 
@@ -78,7 +79,7 @@ func (a *AuthEndpoint) SignIn(ctx context.Context, email, password string, ip st
 func (a *AuthEndpoint) SignOut(ctx context.Context, user *m.User) (err error) {
 	err = a.adaptors.User.ClearToken(user)
 	if err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
+		err = errors.Wrap(apperr.ErrInternal, err.Error())
 		return
 	}
 	return

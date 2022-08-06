@@ -31,6 +31,7 @@ import (
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/event_bus/events"
 	"github.com/e154/smart-home/system/plugins"
+	"github.com/e154/smart-home/tmp/apperr"
 )
 
 const (
@@ -154,7 +155,7 @@ func (p *plugin) removeEntity(name string) (err error) {
 	defer p.actorsLock.Unlock()
 
 	if _, ok := p.actors[name]; !ok {
-		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("failed remove \"%s\"", name))
+		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("failed remove \"%s\"", name))
 		return
 	}
 
