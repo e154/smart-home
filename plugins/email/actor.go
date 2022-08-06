@@ -22,6 +22,8 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/e154/smart-home/adaptors"
@@ -79,7 +81,7 @@ func (p *Actor) Spawn() entity_manager.PluginActor {
 func (e *Actor) Send(address string, message m.Message) error {
 
 	if e.Auth == "" || e.Pass == "" || e.Smtp == "" || e.Port == 0 || e.Sender == "" {
-		return common.ErrBadActorSettingsParameters
+		return apperr.ErrBadActorSettingsParameters
 	}
 
 	attr := NewMessageParams()

@@ -19,7 +19,7 @@
 package adaptors
 
 import (
-	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"github.com/jinzhu/gorm"
@@ -88,7 +88,7 @@ func (n *AlexaSkill) Update(params *m.AlexaSkill) (err error) {
 	}
 	defer func() {
 		if err != nil && transaction {
-			err = errors.Wrap(common.ErrTransactionError, err.Error())
+			err = errors.Wrap(apperr.ErrInternal, err.Error())
 			tx.Rollback()
 			return
 		}

@@ -23,6 +23,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/pkg/errors"
@@ -224,7 +226,7 @@ func (p *Actor) UpdateBalance() (bal Balance, err error) {
 
 func (p *Actor) client() (client *messagebird.Client, err error) {
 	if p.AccessToken == "" {
-		err = common.ErrBadActorSettingsParameters
+		err = apperr.ErrBadActorSettingsParameters
 		return
 	}
 	client = messagebird.New(p.AccessToken)

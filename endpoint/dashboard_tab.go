@@ -25,7 +25,6 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/go-playground/validator/v10"
 	"github.com/jinzhu/copier"
-	"github.com/pkg/errors"
 )
 
 // DashboardTabEndpoint ...
@@ -50,13 +49,10 @@ func (t *DashboardTabEndpoint) Add(ctx context.Context, tab *m.DashboardTab) (re
 
 	var id int64
 	if id, err = t.adaptors.DashboardTab.Add(tab); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
-	if result, err = t.adaptors.DashboardTab.GetById(id); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-	}
+	result, err = t.adaptors.DashboardTab.GetById(id)
 
 	return
 }
@@ -65,7 +61,6 @@ func (t *DashboardTabEndpoint) Add(ctx context.Context, tab *m.DashboardTab) (re
 func (t *DashboardTabEndpoint) GetById(ctx context.Context, id int64) (tab *m.DashboardTab, err error) {
 
 	if tab, err = t.adaptors.DashboardTab.GetById(id); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -92,15 +87,10 @@ func (i *DashboardTabEndpoint) Update(ctx context.Context, params *m.DashboardTa
 	}
 
 	if err = i.adaptors.DashboardTab.Update(board); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
-	if result, err = i.adaptors.DashboardTab.GetById(params.Id); err != nil {
-		if !errors.Is(err, common.ErrNotFound) {
-			err = errors.Wrap(common.ErrInternal, err.Error())
-		}
-	}
+	result, err = i.adaptors.DashboardTab.GetById(params.Id)
 
 	return
 }
@@ -110,7 +100,6 @@ func (t *DashboardTabEndpoint) GetList(ctx context.Context, pagination common.Pa
 
 	list, total, err = t.adaptors.DashboardTab.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
 	if err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -126,17 +115,11 @@ func (t *DashboardTabEndpoint) Delete(ctx context.Context, id int64) (err error)
 
 	_, err = t.adaptors.DashboardTab.GetById(id)
 	if err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	err = t.adaptors.DashboardTab.Delete(id)
-	if err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-	}
+
 	return
 }
 
@@ -159,7 +142,6 @@ func (c *DashboardTabEndpoint) preloadEntities(tab *m.DashboardTab) (err error) 
 
 	var entites []*m.Entity
 	if entites, err = c.adaptors.Entity.GetByIds(entityIds); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 

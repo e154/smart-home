@@ -19,7 +19,10 @@
 package db
 
 import (
+	"fmt"
 	"time"
+
+	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
@@ -50,7 +53,7 @@ func (d *AlexaIntent) TableName() string {
 // Add ...
 func (n AlexaIntents) Add(v *AlexaIntent) (err error) {
 	if err = n.Db.Create(&v).Error; err != nil {
-		err = errors.Wrap(err, "add failed")
+		err = errors.Wrap(apperr.ErrAlexaIntentAdd, err.Error())
 	}
 	return
 }
@@ -59,7 +62,11 @@ func (n AlexaIntents) Add(v *AlexaIntent) (err error) {
 func (n AlexaIntents) GetByName(name string) (intent *AlexaIntent, err error) {
 	intent = &AlexaIntent{}
 	if err = n.Db.Model(intent).Where("name = ?", name).Error; err != nil {
-		err = errors.Wrap(err, "getById failed")
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = errors.Wrap(apperr.ErrAlexaIntentNotFound, fmt.Sprintf("name \"w%s\"", name))
+			return
+		}
+		err = errors.Wrap(apperr.ErrAlexaIntentGet, err.Error())
 	}
 	return
 }
@@ -72,7 +79,7 @@ func (n AlexaIntents) Update(v *AlexaIntent) (err error) {
 		"script_id":   v.ScriptId,
 	}).Error
 	if err != nil {
-		err = errors.Wrap(err, "Update failed")
+		err = errors.Wrap(apperr.ErrAlexaIntentUpdate, err.Error())
 	}
 	return
 }
@@ -80,7 +87,7 @@ func (n AlexaIntents) Update(v *AlexaIntent) (err error) {
 // Delete ...
 func (n AlexaIntents) Delete(v *AlexaIntent) (err error) {
 	if err = n.Db.Delete(&AlexaIntent{}, "name = ? and alexa_skill_id = ?", v.Name, v.AlexaSkillId).Error; err != nil {
-		err = errors.Wrap(err, "delete failed")
+		err = errors.Wrap(apperr.ErrAlexaIntentDelete, err.Error())
 	}
 	return
 }

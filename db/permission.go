@@ -19,6 +19,7 @@
 package db
 
 import (
+	"github.com/e154/smart-home/common/apperr"
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 )
@@ -45,7 +46,7 @@ func (m *Permission) TableName() string {
 // Add ...
 func (n Permissions) Add(permission *Permission) (id int64, err error) {
 	if err = n.Db.Create(&permission).Error; err != nil {
-		err = errors.Wrap(err, "add failed")
+		err = errors.Wrap(apperr.ErrPermissionAdd, err.Error())
 		return
 	}
 	id = permission.Id
@@ -59,7 +60,7 @@ func (n Permissions) Delete(roleName, packageName string, levelName []string) (e
 		Delete(&Permission{}, "role_name = ? and package_name = ? and level_name in (?)", roleName, packageName, levelName).
 		Error
 	if err != nil {
-		err = errors.Wrap(err, "delete failed")
+		err = errors.Wrap(apperr.ErrPermissionDelete, err.Error())
 	}
 
 	return
@@ -92,7 +93,7 @@ order by p.id;
 		Scan(&permissions).
 		Error
 	if err != nil {
-		err = errors.Wrap(err, "getAllPermissions failed")
+		err = errors.Wrap(apperr.ErrPermissionGet, err.Error())
 	}
 	return
 }

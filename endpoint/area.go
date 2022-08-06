@@ -21,10 +21,11 @@ package endpoint
 import (
 	"context"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/go-playground/validator/v10"
-	"github.com/pkg/errors"
 )
 
 // AreaEndpoint ...
@@ -44,22 +45,17 @@ func (n *AreaEndpoint) Add(ctx context.Context, params *m.Area) (result *m.Area,
 
 	var ok bool
 	if ok, errs = n.validation.Valid(params); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetContext(err, errs)
 		return
 	}
 
 	if _, err = n.adaptors.Area.Add(params); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	result, err = n.adaptors.Area.GetByName(params.Name)
-	if err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
-		return
-	}
+
 	return
 }
 
@@ -67,13 +63,7 @@ func (n *AreaEndpoint) Add(ctx context.Context, params *m.Area) (result *m.Area,
 func (n *AreaEndpoint) GetById(ctx context.Context, id int64) (result *m.Area, err error) {
 
 	result, err = n.adaptors.Area.GetById(id)
-	if err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
-		return
-	}
+
 	return
 }
 
@@ -81,13 +71,7 @@ func (n *AreaEndpoint) GetById(ctx context.Context, id int64) (result *m.Area, e
 func (n *AreaEndpoint) GetByName(ctx context.Context, name string) (result *m.Area, err error) {
 
 	result, err = n.adaptors.Area.GetByName(name)
-	if err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
-		return
-	}
+
 	return
 }
 
@@ -97,10 +81,6 @@ func (n *AreaEndpoint) Update(ctx context.Context, params *m.Area) (result *m.Ar
 	var area *m.Area
 	area, err = n.adaptors.Area.GetById(params.Id)
 	if err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -113,7 +93,6 @@ func (n *AreaEndpoint) Update(ctx context.Context, params *m.Area) (result *m.Ar
 	}
 
 	if err = n.adaptors.Area.Update(area); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -131,7 +110,6 @@ func (n *AreaEndpoint) GetList(ctx context.Context, pagination common.PageParams
 
 	result, total, err = n.adaptors.Area.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
 	if err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
 	}
 	return
 }
@@ -142,17 +120,10 @@ func (n *AreaEndpoint) Delete(ctx context.Context, id int64) (err error) {
 	var area *m.Area
 	area, err = n.adaptors.Area.GetById(id)
 	if err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	err = n.adaptors.Area.DeleteByName(area.Name)
-	if err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-	}
 
 	return
 }
@@ -165,9 +136,6 @@ func (n *AreaEndpoint) Search(ctx context.Context, query string, limit, offset i
 	}
 
 	result, total, err = n.adaptors.Area.Search(query, limit, offset)
-	if err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-	}
 
 	return
 }

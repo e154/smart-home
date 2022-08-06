@@ -24,6 +24,8 @@ import (
 	"time"
 	"unicode/utf8"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
@@ -163,7 +165,7 @@ func (n *User) GetByResetPassToken(token string) (user *m.User, err error) {
 	t := time.Now()
 	sub := t.Sub(user.ResetPasswordSentAt.Add(time.Hour * 24)).String()
 	if !strings.Contains(sub, "-") {
-		err = common.ErrTokenIsDeprecated
+		err = apperr.ErrTokenIsDeprecated
 	}
 
 	_ = n.ClearResetPassToken(user)

@@ -22,6 +22,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	. "github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
@@ -52,7 +54,7 @@ func (d *Script) TableName() string {
 // Add ...
 func (n Scripts) Add(script *Script) (id int64, err error) {
 	if err = n.Db.Create(&script).Error; err != nil {
-		err = errors.Wrap(err, "add failed")
+		err = errors.Wrap(apperr.ErrScriptAdd, err.Error())
 		return
 	}
 	id = script.Id
@@ -63,7 +65,11 @@ func (n Scripts) Add(script *Script) (id int64, err error) {
 func (n Scripts) GetById(scriptId int64) (script *Script, err error) {
 	script = &Script{Id: scriptId}
 	if err = n.Db.First(&script).Error; err != nil {
-		err = errors.Wrap(err, "getById failed")
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = errors.Wrap(apperr.ErrScriptNotFound, fmt.Sprintf("id \"%d\"", scriptId))
+			return
+		}
+		err = errors.Wrap(apperr.ErrScriptGet, err.Error())
 	}
 	return
 }
@@ -72,7 +78,11 @@ func (n Scripts) GetById(scriptId int64) (script *Script, err error) {
 func (n Scripts) GetByName(name string) (script *Script, err error) {
 	script = &Script{Name: name}
 	if err = n.Db.First(&script).Error; err != nil {
-		err = errors.Wrap(err, "getByName failed")
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = errors.Wrap(apperr.ErrScriptNotFound, fmt.Sprintf("name \"%d\"", name))
+			return
+		}
+		err = errors.Wrap(apperr.ErrScriptGet, err.Error())
 	}
 	return
 }
@@ -87,7 +97,7 @@ func (n Scripts) Update(m *Script) (err error) {
 		"compiled":    m.Compiled,
 	}).Error
 	if err != nil {
-		err = errors.Wrap(err, "update failed")
+		err = errors.Wrap(apperr.ErrScriptUpdate, err.Error())
 	}
 	return
 }
@@ -95,7 +105,7 @@ func (n Scripts) Update(m *Script) (err error) {
 // Delete ...
 func (n Scripts) Delete(scriptId int64) (err error) {
 	if err = n.Db.Delete(&Script{Id: scriptId}).Error; err != nil {
-		err = errors.Wrap(err, "delete failed")
+		err = errors.Wrap(apperr.ErrScriptDelete, err.Error())
 	}
 	return
 }
@@ -104,7 +114,7 @@ func (n Scripts) Delete(scriptId int64) (err error) {
 func (n *Scripts) List(limit, offset int64, orderBy, sort string) (list []*Script, total int64, err error) {
 
 	if err = n.Db.Model(Script{}).Count(&total).Error; err != nil {
-		err = errors.Wrap(err, "get count failed")
+		err = errors.Wrap(apperr.ErrScriptList, err.Error())
 		return
 	}
 
@@ -116,7 +126,7 @@ func (n *Scripts) List(limit, offset int64, orderBy, sort string) (list []*Scrip
 		Find(&list).
 		Error
 	if err != nil {
-		err = errors.Wrap(err, "list failed")
+		err = errors.Wrap(apperr.ErrScriptList, err.Error())
 	}
 	return
 }
@@ -128,7 +138,7 @@ func (n *Scripts) Search(query string, limit, offset int64) (list []*Script, tot
 		Where("name LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
-		err = errors.Wrap(err, "get count failed")
+		err = errors.Wrap(apperr.ErrScriptSearch, err.Error())
 		return
 	}
 
@@ -139,7 +149,7 @@ func (n *Scripts) Search(query string, limit, offset int64) (list []*Script, tot
 
 	list = make([]*Script, 0)
 	if err = q.Find(&list).Error; err != nil {
-		err = errors.Wrap(err, "search failed")
+		err = errors.Wrap(apperr.ErrScriptSearch, err.Error())
 	}
 	return
 }

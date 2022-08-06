@@ -27,7 +27,6 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/go-playground/validator/v10"
 	"github.com/jinzhu/copier"
-	"github.com/pkg/errors"
 )
 
 // ImageEndpoint ...
@@ -52,16 +51,10 @@ func (i *ImageEndpoint) Add(ctx context.Context, params *m.Image) (image *m.Imag
 
 	var id int64
 	if id, err = i.adaptors.Image.Add(params); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
-	if image, err = i.adaptors.Image.GetById(id); err != nil {
-		if !errors.Is(err, common.ErrNotFound) {
-			err = errors.Wrap(common.ErrInternal, err.Error())
-		}
-		return
-	}
+	image, err = i.adaptors.Image.GetById(id)
 
 	return
 }
@@ -74,11 +67,7 @@ func (i *ImageEndpoint) GetById(ctx context.Context, imageId int64) (image *m.Im
 		return
 	}
 
-	if image, err = i.adaptors.Image.GetById(imageId); err != nil {
-		if !errors.Is(err, common.ErrNotFound) {
-			err = errors.Wrap(common.ErrInternal, err.Error())
-		}
-	}
+	image, err = i.adaptors.Image.GetById(imageId)
 
 	return
 }
@@ -101,15 +90,10 @@ func (i *ImageEndpoint) Update(ctx context.Context, params *m.Image) (result *m.
 	}
 
 	if err = i.adaptors.Image.Update(image); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
-	if result, err = i.adaptors.Image.GetById(params.Id); err != nil {
-		if !errors.Is(err, common.ErrNotFound) {
-			err = errors.Wrap(common.ErrInternal, err.Error())
-		}
-	}
+	result, err = i.adaptors.Image.GetById(params.Id)
 
 	return
 }
@@ -124,15 +108,10 @@ func (i *ImageEndpoint) Delete(ctx context.Context, imageId int64) (errs validat
 
 	var image *m.Image
 	if image, err = i.adaptors.Image.GetById(imageId); err != nil {
-		if !errors.Is(err, common.ErrNotFound) {
-			err = errors.Wrap(common.ErrInternal, err.Error())
-		}
 		return
 	}
 
-	if err = i.adaptors.Image.Delete(image.Id); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-	}
+	err = i.adaptors.Image.Delete(image.Id)
 
 	return
 }
@@ -168,9 +147,7 @@ func (i *ImageEndpoint) Upload(ctx context.Context, files map[string][]*multipar
 // GetList ...
 func (i *ImageEndpoint) GetList(ctx context.Context, pagination common.PageParams) (items []*m.Image, total int64, err error) {
 
-	if items, total, err = i.adaptors.Image.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-	}
+	items, total, err = i.adaptors.Image.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
 
 	return
 }
@@ -178,9 +155,7 @@ func (i *ImageEndpoint) GetList(ctx context.Context, pagination common.PageParam
 // GetListByDate ...
 func (i *ImageEndpoint) GetListByDate(ctx context.Context, filter string) (images []*m.Image, err error) {
 
-	if images, err = i.adaptors.Image.GetAllByDate(filter); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-	}
+	images, err = i.adaptors.Image.GetAllByDate(filter)
 
 	return
 }
@@ -188,9 +163,7 @@ func (i *ImageEndpoint) GetListByDate(ctx context.Context, filter string) (image
 // GetFilterList ...
 func (i *ImageEndpoint) GetFilterList(ctx context.Context) (filterList []*m.ImageFilterList, err error) {
 
-	if filterList, err = i.adaptors.Image.GetFilterList(); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-	}
+	filterList, err = i.adaptors.Image.GetFilterList()
 
 	return
 }

@@ -21,11 +21,16 @@ package db
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
-	"github.com/e154/smart-home/common"
+	"github.com/jackc/pgerrcode"
 	"github.com/jinzhu/gorm"
+	"github.com/lib/pq"
 	"github.com/pkg/errors"
+
+	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
 )
 
 // DashboardCardItems ...
@@ -58,7 +63,22 @@ func (d *DashboardCardItem) TableName() string {
 // Add ...
 func (n DashboardCardItems) Add(item *DashboardCardItem) (id int64, err error) {
 	if err = n.Db.Create(&item).Error; err != nil {
-		err = errors.Wrap(err, "add failed")
+		var pgErr *pq.Error
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case pgerrcode.ForeignKeyViolation:
+				if strings.Contains(pgErr.Message, "dashboard_card_item_2_entities_fk") {
+					details := pgErr.Detail
+					details = strings.Split(details, `Key (entity_id)=(`)[1]
+					details = strings.Split(details, `) is not present in table "entities".`)[0]
+					err = errors.Wrap(apperr.ErrEntityGet, fmt.Sprintf("with name \"%s\"", details))
+					return
+				}
+			default:
+				fmt.Printf("unknown code \"%s\"\n", pgErr.Code)
+			}
+		}
+		err = errors.Wrap(apperr.ErrDashboardCardItemAdd, err.Error())
 		return
 	}
 	id = item.Id
@@ -69,7 +89,11 @@ func (n DashboardCardItems) Add(item *DashboardCardItem) (id int64, err error) {
 func (n DashboardCardItems) GetById(id int64) (item *DashboardCardItem, err error) {
 	item = &DashboardCardItem{Id: id}
 	if err = n.Db.First(&item).Error; err != nil {
-		err = errors.Wrap(err, "getById failed")
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = errors.Wrap(apperr.ErrDashboardCardItemNotFound, fmt.Sprintf("with id \"%d\"", id))
+			return
+		}
+		err = errors.Wrap(apperr.ErrDashboardCardItemGet, err.Error())
 	}
 	return
 }
@@ -88,7 +112,7 @@ func (n DashboardCardItems) Update(m *DashboardCardItem) (err error) {
 	}
 
 	if err = n.Db.Model(&DashboardCardItem{Id: m.Id}).Updates(q).Error; err != nil {
-		err = errors.Wrap(err, "update failed")
+		err = errors.Wrap(apperr.ErrDashboardCardItemUpdate, err.Error())
 	}
 	return
 }
@@ -96,7 +120,7 @@ func (n DashboardCardItems) Update(m *DashboardCardItem) (err error) {
 // Delete ...
 func (n DashboardCardItems) Delete(id int64) (err error) {
 	if err = n.Db.Delete(&DashboardCardItem{Id: id}).Error; err != nil {
-		err = errors.Wrap(err, "delete failed")
+		err = errors.Wrap(apperr.ErrDashboardCardItemDelete, err.Error())
 	}
 	return
 }
@@ -105,7 +129,7 @@ func (n DashboardCardItems) Delete(id int64) (err error) {
 func (n *DashboardCardItems) List(limit, offset int64, orderBy, sort string) (list []*DashboardCardItem, total int64, err error) {
 
 	if err = n.Db.Model(DashboardCardItem{}).Count(&total).Error; err != nil {
-		err = errors.Wrap(err, "get count failed")
+		err = errors.Wrap(apperr.ErrDashboardCardItemList, err.Error())
 		return
 	}
 
@@ -120,7 +144,7 @@ func (n *DashboardCardItems) List(limit, offset int64, orderBy, sort string) (li
 	}
 
 	if err = q.Find(&list).Error; err != nil {
-		err = errors.Wrap(err, "list failed")
+		err = errors.Wrap(apperr.ErrDashboardCardItemList, err.Error())
 	}
 
 	return

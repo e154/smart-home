@@ -19,6 +19,7 @@
 package db
 
 import (
+	"github.com/e154/smart-home/common/apperr"
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 )
@@ -46,7 +47,7 @@ func (d *Condition) TableName() string {
 // DeleteByTaskId ...
 func (n Conditions) DeleteByTaskId(id int64) (err error) {
 	if err = n.Db.Delete(&Condition{}, "task_id = ?", id).Error; err != nil {
-		err = errors.Wrap(err, "delete failed")
+		err = errors.Wrap(apperr.ErrConditionDelete, err.Error())
 	}
 	return
 }

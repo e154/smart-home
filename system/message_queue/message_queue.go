@@ -23,7 +23,8 @@ import (
 	"reflect"
 	"sort"
 
-	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/pkg/errors"
 )
 
@@ -31,7 +32,7 @@ import (
 // queueSize sets buffered channel length per subscriber
 func New(handlerQueueSize int) MessageQueue {
 	if handlerQueueSize == 0 {
-		panic("queueSize has to be greater then 0")
+		panic(any("queueSize has to be greater then 0"))
 	}
 
 	return &messageQueue{
@@ -61,7 +62,7 @@ func (b *messageQueue) Publish(topic string, args ...interface{}) {
 // Subscribe ...
 func (b *messageQueue) Subscribe(topic string, fn interface{}, options ...interface{}) error {
 	if reflect.TypeOf(fn).Kind() != reflect.Func {
-		return errors.Wrap(common.ErrInternal, fmt.Sprintf("%s is not a reflect.Func", reflect.TypeOf(fn)))
+		return errors.Wrap(apperr.ErrInternal, fmt.Sprintf("%s is not a reflect.Func", reflect.TypeOf(fn)))
 	}
 
 	h := &handler{
@@ -119,7 +120,7 @@ func (b *messageQueue) Unsubscribe(topic string, fn interface{}) error {
 		return nil
 	}
 
-	return errors.Wrap(common.ErrInternal, fmt.Sprintf("topic %s doesn't exist", topic))
+	return errors.Wrap(apperr.ErrInternal, fmt.Sprintf("topic %s doesn't exist", topic))
 }
 
 // Close ...

@@ -20,7 +20,8 @@ package endpoint
 
 import (
 	"context"
-	"fmt"
+
+	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -42,26 +43,19 @@ func NewPluginEndpoint(common *CommonEndpoint) *PluginEndpoint {
 
 // Enable ...
 func (p *PluginEndpoint) Enable(ctx context.Context, pluginName string) (err error) {
-	if err = p.pluginManager.EnablePlugin(pluginName); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-	}
+	err = p.pluginManager.EnablePlugin(pluginName)
 	return
 }
 
 // Disable ...
 func (p *PluginEndpoint) Disable(ctx context.Context, pluginName string) (err error) {
-	if err = p.pluginManager.DisablePlugin(pluginName); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-	}
+	err = p.pluginManager.DisablePlugin(pluginName)
 	return
 }
 
 // GetList ...
 func (p *PluginEndpoint) GetList(ctx context.Context, pagination common.PageParams) (list []m.Plugin, total int64, err error) {
 	list, total, err = p.adaptors.Plugin.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
-	if err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-	}
 	return
 }
 
@@ -70,13 +64,11 @@ func (p *PluginEndpoint) GetOptions(ctx context.Context, pluginName string) (opt
 
 	var pl interface{}
 	if pl, err = p.pluginManager.GetPlugin(pluginName); err != nil {
-		err = errors.Wrap(common.ErrInternal, fmt.Sprintf("name %s", pluginName))
 		return
 	}
 
 	plugin, ok := pl.(plugins.Plugable)
 	if !ok {
-		err = errors.Wrap(common.ErrInternal, fmt.Sprintf("name %s", pluginName))
 		return
 	}
 
@@ -90,7 +82,7 @@ func (n *PluginEndpoint) Search(ctx context.Context, query string, limit, offset
 
 	result, total, err = n.adaptors.Plugin.Search(query, limit, offset)
 	if err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
+		err = errors.Wrap(apperr.ErrInternal, err.Error())
 	}
 	return
 }

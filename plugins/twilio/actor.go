@@ -28,6 +28,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/pkg/errors"
@@ -122,7 +124,7 @@ func (e *Actor) Send(phone string, message m.Message) (err error) {
 	i := 0
 	for range ticker.C {
 		if i > 15 {
-			err = errors.Wrap(common.ErrTimeout, "wait ticker")
+			err = errors.Wrap(apperr.ErrTimeout, "wait ticker")
 			return
 		}
 		if status, err = e.GetStatus(resp.Sid); err != nil {
@@ -157,7 +159,7 @@ func (e *Actor) GetStatus(smsId string) (string, error) {
 	}
 
 	if ex != nil {
-		return "", errors.Wrap(common.ErrInternal, ex.Message)
+		return "", errors.Wrap(apperr.ErrInternal, ex.Message)
 	}
 
 	return resp.Status, nil
@@ -247,7 +249,7 @@ func (p *Actor) UpdateBalance() (err error) {
 
 func (e *Actor) client() (client *gotwilio.Twilio, err error) {
 	if e.authToken == "" || e.sid == "" {
-		err = common.ErrBadActorSettingsParameters
+		err = apperr.ErrBadActorSettingsParameters
 		return
 	}
 	client = gotwilio.NewTwilioClient(e.sid, e.authToken)

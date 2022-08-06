@@ -29,6 +29,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/pkg/errors"
@@ -171,7 +173,7 @@ func (p *WeatherMet) GetForecast(params Zone, now time.Time) (forecast m.Attribu
 func (p *WeatherMet) FetchData(name string, lat, lon float64, now time.Time) (zone Zone, err error) {
 
 	if lat == 0 || lon == 0 {
-		err = errors.Wrap(common.ErrBadRequestParams, "zero positions")
+		err = errors.Wrap(apperr.ErrBadRequestParams, "zero positions")
 		return
 	}
 

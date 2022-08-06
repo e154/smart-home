@@ -21,6 +21,8 @@ package automation
 import (
 	"fmt"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/triggers"
@@ -79,7 +81,7 @@ func (t *Task) Name() string {
 func (t *Task) addTrigger(model *m.Trigger) (err error) {
 
 	if _, ok := t.triggers[model.Name]; ok {
-		err = errors.Wrap(common.ErrInternal, fmt.Sprintf("trigger %s exist", model.Name))
+		err = errors.Wrap(apperr.ErrInternal, fmt.Sprintf("trigger %s exist", model.Name))
 		return
 	}
 

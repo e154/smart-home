@@ -21,8 +21,6 @@ package adaptors
 import (
 	"encoding/json"
 
-	"github.com/pkg/errors"
-
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
@@ -73,7 +71,6 @@ func (n *Entity) Add(ver *m.Entity) (err error) {
 	}
 	defer func() {
 		if err != nil && transaction {
-			err = errors.Wrap(common.ErrTransactionError, err.Error())
 			tx.Rollback()
 			return
 		}
@@ -169,7 +166,6 @@ func (n *Entity) Delete(id common.EntityId) (err error) {
 	}
 	defer func() {
 		if err != nil && transaction {
-			err = errors.Wrap(common.ErrTransactionError, err.Error())
 			tx.Rollback()
 			return
 		}
@@ -243,7 +239,6 @@ func (n *Entity) Update(ver *m.Entity) (err error) {
 	}
 	defer func() {
 		if err != nil && transaction {
-			err = errors.Wrap(common.ErrTransactionError, err.Error())
 			tx.Rollback()
 			return
 		}

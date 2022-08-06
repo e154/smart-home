@@ -22,6 +22,8 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 )
@@ -49,7 +51,7 @@ func (d *Message) TableName() string {
 // Add ...
 func (n Messages) Add(msg Message) (id int64, err error) {
 	if err = n.Db.Create(&msg).Error; err != nil {
-		err = errors.Wrap(err, "add failed")
+		err = errors.Wrap(apperr.ErrMessageAdd, err.Error())
 		return
 	}
 	id = msg.Id

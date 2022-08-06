@@ -19,6 +19,7 @@
 package db
 
 import (
+	"github.com/e154/smart-home/common/apperr"
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 )
@@ -51,7 +52,7 @@ func (m *UserMetas) UpdateOrCreate(meta *UserMeta) (id int64, err error) {
 
 	if err != nil {
 		if err = m.Db.Create(&meta).Error; err != nil {
-			err = errors.Wrap(err, "create failed")
+			err = errors.Wrap(apperr.ErrUserMetaAdd, err.Error())
 			return
 		}
 		id = meta.Id

@@ -22,6 +22,8 @@ import (
 	"context"
 	"sync"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/e154/smart-home/common/logger"
 
 	"github.com/e154/smart-home/adaptors"
@@ -153,7 +155,7 @@ func (z *zigbee2mqtt) GetBridgeById(id int64) (*m.Zigbee2mqtt, error) {
 		model := br.GetModel()
 		return &model, nil
 	}
-	return nil, common.ErrNotFound
+	return nil, apperr.ErrNotFound
 }
 
 // GetBridgeInfo ...
@@ -164,7 +166,7 @@ func (z *zigbee2mqtt) GetBridgeInfo(id int64) (*Zigbee2mqttBridge, error) {
 	if br, ok := z.bridges[id]; ok {
 		return br.Info(), nil
 	}
-	return nil, common.ErrNotFound
+	return nil, apperr.ErrNotFound
 }
 
 // ListBridges ...
@@ -284,7 +286,7 @@ func (z *zigbee2mqtt) BridgeUpdateNetworkmap(bridgeId int64) (err error) {
 func (z *zigbee2mqtt) unsafeGetBridge(bridgeId int64) (bridge *Bridge, err error) {
 	var ok bool
 	if bridge, ok = z.bridges[bridgeId]; !ok {
-		err = common.ErrNotFound
+		err = apperr.ErrNotFound
 	}
 	return
 }
@@ -297,7 +299,7 @@ func (z *zigbee2mqtt) GetTopicByDevice(model *m.Zigbee2mqttDevice) (topic string
 
 	br, ok := z.bridges[model.Zigbee2mqttId]
 	if !ok {
-		err = common.ErrNotFound
+		err = apperr.ErrNotFound
 		return
 	}
 
@@ -326,7 +328,7 @@ func (z *zigbee2mqtt) Authenticator(login, password string) (err error) {
 
 	for _, bridge := range z.bridges {
 		if bridge.model.Login != login {
-			err = common.ErrBadLoginOrPassword
+			err = apperr.ErrBadLoginOrPassword
 			return
 		}
 
@@ -336,7 +338,7 @@ func (z *zigbee2mqtt) Authenticator(login, password string) (err error) {
 		}
 	}
 
-	err = common.ErrBadLoginOrPassword
+	err = apperr.ErrBadLoginOrPassword
 
 	return
 }
