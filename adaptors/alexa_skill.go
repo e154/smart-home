@@ -19,9 +19,9 @@
 package adaptors
 
 import (
+	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/tmp/apperr"
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 )

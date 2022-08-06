@@ -22,8 +22,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/e154/smart-home/tmp/apperr"
 	"github.com/pkg/errors"
+
+	"github.com/e154/smart-home/common/apperr"
 )
 
 // Request represents all fields sent from the Server service to the skillserver.

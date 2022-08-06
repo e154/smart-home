@@ -22,9 +22,7 @@ import (
 	"sync"
 	"time"
 
-	apperr2 "github.com/e154/smart-home/common/apperr"
-
-	"github.com/e154/smart-home/tmp/apperr"
+	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
@@ -250,7 +248,7 @@ func (n *notify) RemoveProvider(name string) {
 // Provider ...
 func (n *notify) Provider(name string) (provider Provider, err error) {
 	if name == "" {
-		err = apperr2.ErrProviderIsEmpty
+		err = apperr.ErrProviderIsEmpty
 		return
 	}
 

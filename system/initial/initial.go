@@ -23,13 +23,12 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/e154/smart-home/system/initial/demo"
-	"github.com/e154/smart-home/tmp/apperr"
 	"go.uber.org/fx"
 
 	. "github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	_ "github.com/e154/smart-home/plugins"
@@ -38,6 +37,7 @@ import (
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/gate_client"
 	. "github.com/e154/smart-home/system/initial/assertions"
+	"github.com/e154/smart-home/system/initial/demo"
 	localMigrations "github.com/e154/smart-home/system/initial/local_migrations"
 	"github.com/e154/smart-home/system/logging_ws"
 	"github.com/e154/smart-home/system/migrations"

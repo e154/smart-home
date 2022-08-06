@@ -22,12 +22,11 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/e154/smart-home/common/logger"
-	"github.com/e154/smart-home/tmp/apperr"
-
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/plugins"

@@ -11,7 +11,6 @@ import (
 
 func TestError(t *testing.T) {
 
-
 	t.Run("error1", func(t *testing.T) {
 		Convey("", t, func(ctx C) {
 
