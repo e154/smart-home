@@ -55,8 +55,7 @@ func (d *DashboardEndpoint) Add(ctx context.Context, board *m.Dashboard) (result
 		return
 	}
 
-	if result, err = d.adaptors.Dashboard.GetById(id); err != nil {
-	}
+	result, err = d.adaptors.Dashboard.GetById(id)
 
 	return
 }
@@ -65,13 +64,23 @@ func (d *DashboardEndpoint) Add(ctx context.Context, board *m.Dashboard) (result
 func (d *DashboardEndpoint) GetById(ctx context.Context, id int64) (board *m.Dashboard, err error) {
 
 	if board, err = d.adaptors.Dashboard.GetById(id); err != nil {
-		if errors.Is(err, apperr.ErrNotFound) {
-			return
-		}
 		return
 	}
 
 	err = d.preloadEntities(board)
+
+	return
+}
+
+
+// Search ...
+func (d *DashboardEndpoint) Search(ctx context.Context, query string, limit, offset int64) (result []*m.Dashboard, total int64, err error) {
+
+	if limit == 0 {
+		limit = common.DefaultPageSize
+	}
+
+	result, total, err = d.adaptors.Dashboard.Search(query, limit, offset)
 
 	return
 }

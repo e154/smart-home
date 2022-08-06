@@ -64,6 +64,10 @@ message DeleteDashboardRequest {
   int64 id = 1;
 }
 
+message SearchDashboardResult {
+  repeated Dashboard items = 1;
+}
+
 service DashboardService {
 
   // add new dashboard
@@ -159,4 +163,18 @@ service DashboardService {
     };
   }
 
+  // search area
+  rpc SearchDashboard (SearchRequest) returns (SearchDashboardResult){
+    option (google.api.http) = {
+      get: "/v1/dashboards/search"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
 }

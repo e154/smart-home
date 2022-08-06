@@ -80,6 +80,20 @@ func (r Dashboard) ToDashboard(ver *m.Dashboard) (obj *api.Dashboard) {
 	return
 }
 
+// ToSearchResult ...
+func (r Dashboard) ToSearchResult(list []*m.Dashboard) *api.SearchDashboardResult {
+
+	items := make([]*api.Dashboard, 0, len(list))
+
+	for _, i := range list {
+		items = append(items, r.ToDashboard(i))
+	}
+
+	return &api.SearchDashboardResult{
+		Items: items,
+	}
+}
+
 // ToDashboard ...
 func ToDashboard(ver *m.Dashboard) (obj *api.Dashboard) {
 	if ver == nil {
