@@ -20,14 +20,16 @@ package migrations
 
 import (
 	"fmt"
+	"net/http"
 	"path"
 
-	"github.com/e154/smart-home/common/logger"
-
-	. "github.com/e154/smart-home/system/migrations/assets"
-	"github.com/e154/smart-home/system/orm"
 	"github.com/jinzhu/gorm"
 	migrate "github.com/rubenv/sql-migrate"
+
+	"github.com/e154/smart-home/common/logger"
+	"github.com/e154/smart-home/migrations"
+	. "github.com/e154/smart-home/system/migrations/assets"
+	"github.com/e154/smart-home/system/orm"
 )
 
 var (
@@ -51,6 +53,8 @@ func NewMigrations(cfg *orm.Config,
 	var source migrate.MigrationSource
 
 	switch mConf.Source {
+	case "embed":
+		source = &migrate.HttpFileSystemMigrationSource{FileSystem: http.FS(migrations.F)}
 	case "assets", "":
 		source = &migrate.AssetMigrationSource{
 			Asset:    Asset,

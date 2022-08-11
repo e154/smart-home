@@ -58,9 +58,9 @@ func NewActor(entity *m.Entity,
 		stateMu:       &sync.Mutex{},
 	}
 
-	if actor.ParentId == nil {
-		log.Warnf("entity %s, parent is nil", actor.Id)
-	}
+	//if actor.ParentId == nil {
+	//	log.Warnf("entity %s, parent is nil", actor.Id)
+	//}
 
 	actor.Manager = entityManager
 
