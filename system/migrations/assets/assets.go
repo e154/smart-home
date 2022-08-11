@@ -21,6 +21,7 @@
 // migrations/20220209_223600_add_dashboard.sql
 // migrations/20220508_230436_update_entity.sql
 // migrations/20220605_184850_update_dashboard_tab.sql
+// migrations/20220806_195936_update_area.sql
 // DO NOT EDIT!
 
 package database
@@ -443,7 +444,7 @@ func migrations20220201_003002_update_triggersSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/20220201_003002_update_triggers.sql", size: 396, mode: os.FileMode(420), modTime: time.Unix(1643650547, 0)}
+	info := bindataFileInfo{name: "migrations/20220201_003002_update_triggers.sql", size: 396, mode: os.FileMode(420), modTime: time.Unix(1659440855, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -463,7 +464,7 @@ func migrations20220209_223600_add_dashboardSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/20220209_223600_add_dashboard.sql", size: 4230, mode: os.FileMode(420), modTime: time.Unix(1652459924, 0)}
+	info := bindataFileInfo{name: "migrations/20220209_223600_add_dashboard.sql", size: 4230, mode: os.FileMode(420), modTime: time.Unix(1659440855, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -483,7 +484,7 @@ func migrations20220508_230436_update_entitySql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/20220508_230436_update_entity.sql", size: 230, mode: os.FileMode(420), modTime: time.Unix(1652025905, 0)}
+	info := bindataFileInfo{name: "migrations/20220508_230436_update_entity.sql", size: 230, mode: os.FileMode(420), modTime: time.Unix(1659440855, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -503,7 +504,27 @@ func migrations20220605_184850_update_dashboard_tabSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/20220605_184850_update_dashboard_tab.sql", size: 285, mode: os.FileMode(420), modTime: time.Unix(1654429813, 0)}
+	info := bindataFileInfo{name: "migrations/20220605_184850_update_dashboard_tab.sql", size: 285, mode: os.FileMode(420), modTime: time.Unix(1659440855, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _migrations20220806_195936_update_areaSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x8c\xce\x3b\x0e\xc2\x30\x0c\xc6\xf1\xdd\xa7\xf8\xb6\x82\x50\x4e\xc0\xca\xc8\x82\x50\xe7\x2a\x24\x16\xb5\x68\x9d\x34\x0f\xb5\xc7\x47\x01\x81\x18\x59\xff\x7e\xe8\x67\x0c\x0e\xb3\xdc\x93\x2d\x8c\x3e\x92\x31\xb8\x5e\xce\x10\x45\x66\x57\x24\x28\xba\x3e\x76\x90\x0c\xde\xd8\xd5\xc2\x1e\xeb\xc8\x8a\x32\x4a\xc6\xfb\xae\x2d\x49\x86\x8d\x71\x12\xf6\xe4\x12\xb7\x5f\x55\x65\xa9\x0c\x51\xcf\x1b\xd4\xce\x3c\xd8\x32\xd8\xc4\x36\x0f\x55\x17\x02\x80\xa0\x78\x05\xec\xda\x7c\x7f\x24\xfa\xc5\x9c\xc2\xaa\x1f\xce\xd7\xd2\xe2\x5f\x9a\x14\xa6\x89\x3d\x6e\xd6\x3d\x88\xe8\x19\x00\x00\xff\xff\x8f\xc0\xd2\xc6\xe5\x00\x00\x00")
+
+func migrations20220806_195936_update_areaSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_migrations20220806_195936_update_areaSql,
+		"migrations/20220806_195936_update_area.sql",
+	)
+}
+
+func migrations20220806_195936_update_areaSql() (*asset, error) {
+	bytes, err := migrations20220806_195936_update_areaSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "migrations/20220806_195936_update_area.sql", size: 229, mode: os.FileMode(420), modTime: time.Unix(1659790822, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -581,6 +602,7 @@ var _bindata = map[string]func() (*asset, error){
 	"migrations/20220209_223600_add_dashboard.sql":              migrations20220209_223600_add_dashboardSql,
 	"migrations/20220508_230436_update_entity.sql":              migrations20220508_230436_update_entitySql,
 	"migrations/20220605_184850_update_dashboard_tab.sql":       migrations20220605_184850_update_dashboard_tabSql,
+	"migrations/20220806_195936_update_area.sql":                migrations20220806_195936_update_areaSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -646,6 +668,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"20220209_223600_add_dashboard.sql":              {migrations20220209_223600_add_dashboardSql, map[string]*bintree{}},
 		"20220508_230436_update_entity.sql":              {migrations20220508_230436_update_entitySql, map[string]*bintree{}},
 		"20220605_184850_update_dashboard_tab.sql":       {migrations20220605_184850_update_dashboard_tabSql, map[string]*bintree{}},
+		"20220806_195936_update_area.sql":                {migrations20220806_195936_update_areaSql, map[string]*bintree{}},
 	}},
 }}
 

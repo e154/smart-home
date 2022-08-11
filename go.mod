@@ -11,7 +11,6 @@ require (
 	github.com/dop251/goja_nodejs v0.0.0-20220712185256-8cad205bf387
 	github.com/eclipse/paho.mqtt.golang v1.2.0
 	github.com/francoispqt/gojay v1.2.13
-	github.com/gammazero/deque v0.0.0-20200310222745-50fa758af896
 	github.com/gin-gonic/gin v1.7.4
 	github.com/go-playground/validator/v10 v10.9.0
 	github.com/go-sourcemap/sourcemap v2.1.3+incompatible // indirect
@@ -71,6 +70,7 @@ require (
 	github.com/go-playground/locales v0.14.0
 	github.com/go-playground/universal-translator v0.18.0
 	github.com/iancoleman/strcase v0.2.0
+	github.com/jackc/pgerrcode v0.0.0-20220416144525-469b46aa5efa
 	github.com/shirou/gopsutil/v3 v3.22.4
 )
 

@@ -26,7 +26,6 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/go-playground/validator/v10"
-	"github.com/pkg/errors"
 )
 
 // LogEndpoint ...
@@ -51,13 +50,10 @@ func (l *LogEndpoint) Add(ctx context.Context, log *m.Log) (result *m.Log, errs 
 
 	var id int64
 	if id, err = l.adaptors.Log.Add(log); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
-	if result, err = l.adaptors.Log.GetById(id); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-	}
+	result, err = l.adaptors.Log.GetById(id)
 
 	return
 }
@@ -65,9 +61,7 @@ func (l *LogEndpoint) Add(ctx context.Context, log *m.Log) (result *m.Log, errs 
 // GetById ...
 func (l *LogEndpoint) GetById(ctx context.Context, id int64) (log *m.Log, err error) {
 
-	if log, err = l.adaptors.Log.GetById(id); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-	}
+	log, err = l.adaptors.Log.GetById(id)
 
 	return
 }
@@ -89,9 +83,7 @@ func (l *LogEndpoint) GetList(ctx context.Context, pagination common.PageParams,
 	}
 
 	list, total, err = l.adaptors.Log.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, queryObj)
-	if err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-	}
+
 	return
 }
 
@@ -99,9 +91,7 @@ func (l *LogEndpoint) GetList(ctx context.Context, pagination common.PageParams,
 func (l *LogEndpoint) Search(ctx context.Context, query string, limit, offset int) (list []*m.Log, total int64, err error) {
 
 	list, total, err = l.adaptors.Log.Search(query, limit, offset)
-	if err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-	}
+
 	return
 }
 
@@ -110,16 +100,10 @@ func (l *LogEndpoint) Delete(ctx context.Context, logId int64) (err error) {
 
 	_, err = l.adaptors.Log.GetById(logId)
 	if err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	err = l.adaptors.Log.Delete(logId)
-	if err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-	}
+
 	return
 }

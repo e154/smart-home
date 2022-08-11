@@ -7,7 +7,6 @@ import (
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/event_bus/events"
 	"github.com/go-playground/validator/v10"
-	"github.com/pkg/errors"
 )
 
 // InteractEndpoint ...
@@ -28,10 +27,6 @@ func (d InteractEndpoint) EntityCallAction(ctx context.Context, entityId string,
 	id := common.EntityId(entityId)
 	_, err = d.adaptors.Entity.GetById(id)
 	if err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 

@@ -24,12 +24,13 @@ import (
 	"sync"
 	"time"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/e154/smart-home/common/logger"
 
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/cache"
 )
 
@@ -69,7 +70,7 @@ func (a *Authenticator) Authenticate(login string, pass interface{}) (err error)
 
 	password, ok := pass.(string)
 	if !ok || password == "" {
-		err = common.ErrBadLoginOrPassword
+		err = apperr.ErrBadLoginOrPassword
 	}
 
 	if a.cache.IsExist(login) {
@@ -103,7 +104,7 @@ func (a *Authenticator) Authenticate(login string, pass interface{}) (err error)
 // Register ...
 func (a *Authenticator) Register(fn func(login, password string) (err error)) (err error) {
 	if reflect.TypeOf(fn).Kind() != reflect.Func {
-		err = errors.Wrap(common.ErrInternal, fmt.Sprintf("%s is not a reflect.Func", reflect.TypeOf(fn)))
+		err = errors.Wrap(apperr.ErrInternal, fmt.Sprintf("%s is not a reflect.Func", reflect.TypeOf(fn)))
 	}
 
 	a.handlerMu.Lock()

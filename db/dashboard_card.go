@@ -23,10 +23,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/e154/smart-home/common"
-
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+
+	"github.com/e154/smart-home/common/apperr"
 )
 
 // DashboardCards ...
@@ -59,7 +59,7 @@ func (d *DashboardCard) TableName() string {
 // Add ...
 func (n DashboardCards) Add(card *DashboardCard) (id int64, err error) {
 	if err = n.Db.Create(&card).Error; err != nil {
-		err = errors.Wrap(err, "add failed")
+		err = errors.Wrap(apperr.ErrDashboardCardAdd, err.Error())
 		return
 	}
 	id = card.Id
@@ -76,10 +76,10 @@ func (n DashboardCards) GetById(id int64) (card *DashboardCard, err error) {
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("id \"%s\"", id))
+			err = errors.Wrap(apperr.ErrDashboardCardNotFound, err.Error())
 			return
 		}
-		err = errors.Wrap(err, "getById failed")
+		err = errors.Wrap(apperr.ErrDashboardCardGet, err.Error())
 	}
 	return
 }
@@ -98,7 +98,7 @@ func (n DashboardCards) Update(m *DashboardCard) (err error) {
 	}
 
 	if err = n.Db.Model(&DashboardCard{Id: m.Id}).Updates(q).Error; err != nil {
-		err = errors.Wrap(err, "update failed")
+		err = errors.Wrap(apperr.ErrDashboardCardUpdate, err.Error())
 	}
 	return
 }
@@ -106,7 +106,7 @@ func (n DashboardCards) Update(m *DashboardCard) (err error) {
 // Delete ...
 func (n DashboardCards) Delete(id int64) (err error) {
 	if err = n.Db.Delete(&DashboardCard{Id: id}).Error; err != nil {
-		err = errors.Wrap(err, "delete failed")
+		err = errors.Wrap(apperr.ErrDashboardCardDelete, err.Error())
 	}
 	return
 }
@@ -115,7 +115,7 @@ func (n DashboardCards) Delete(id int64) (err error) {
 func (n *DashboardCards) List(limit, offset int64, orderBy, sort string) (list []*DashboardCard, total int64, err error) {
 
 	if err = n.Db.Model(DashboardCard{}).Count(&total).Error; err != nil {
-		err = errors.Wrap(err, "get count failed")
+		err = errors.Wrap(apperr.ErrDashboardCardList, err.Error())
 		return
 	}
 
@@ -131,7 +131,7 @@ func (n *DashboardCards) List(limit, offset int64, orderBy, sort string) (list [
 	}
 
 	if err = q.Find(&list).Error; err != nil {
-		err = errors.Wrap(err, "list failed")
+		err = errors.Wrap(apperr.ErrDashboardCardList, err.Error())
 	}
 
 	return

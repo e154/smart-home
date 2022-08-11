@@ -28,7 +28,6 @@ import (
 	"github.com/e154/smart-home/plugins/notify"
 	"github.com/e154/smart-home/plugins/slack"
 	"github.com/e154/smart-home/plugins/telegram"
-	"github.com/pkg/errors"
 )
 
 // NotifyEndpoint ...
@@ -49,10 +48,6 @@ func (n *NotifyEndpoint) Repeat(id int64) (err error) {
 	var msg m.MessageDelivery
 	msg, err = n.adaptors.MessageDelivery.GetById(id)
 	if err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -70,7 +65,6 @@ func (n *NotifyEndpoint) Send(params *m.NewNotifrMessage) (err error) {
 	var render *m.TemplateRender
 	if params.BodyType == "template" && params.Template != nil && params.Params != nil {
 		if render, err = n.adaptors.Template.Render(common.StringValue(params.Template), params.Params); err != nil {
-			err = errors.Wrap(common.ErrInternal, err.Error())
 			return
 		}
 	}

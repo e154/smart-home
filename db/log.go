@@ -22,6 +22,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
@@ -55,7 +57,7 @@ func (m *Log) TableName() string {
 // Add ...
 func (n Logs) Add(v *Log) (id int64, err error) {
 	if err = n.Db.Create(&v).Error; err != nil {
-		err = errors.Wrap(err, "add failed")
+		err = errors.Wrap(apperr.ErrLogAdd, err.Error())
 		return
 	}
 	id = v.Id
@@ -63,10 +65,14 @@ func (n Logs) Add(v *Log) (id int64, err error) {
 }
 
 // GetById ...
-func (n Logs) GetById(mapId int64) (v *Log, err error) {
-	v = &Log{Id: mapId}
+func (n Logs) GetById(id int64) (v *Log, err error) {
+	v = &Log{Id: id}
 	if err = n.Db.First(&v).Error; err != nil {
-		err = errors.Wrap(err, "getById failed")
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = errors.Wrap(apperr.ErrLogNotFound, fmt.Sprintf("id \"%d\"", id))
+			return
+		}
+		err = errors.Wrap(apperr.ErrLogGet, err.Error())
 	}
 	return
 }
@@ -74,7 +80,7 @@ func (n Logs) GetById(mapId int64) (v *Log, err error) {
 // Delete ...
 func (n Logs) Delete(mapId int64) (err error) {
 	if err = n.Db.Delete(&Log{Id: mapId}).Error; err != nil {
-		err = errors.Wrap(err, "delete failed")
+		err = errors.Wrap(apperr.ErrLogDelete, err.Error())
 	}
 	return
 }
@@ -97,7 +103,7 @@ func (n *Logs) List(limit, offset int64, orderBy, sort string, queryObj *LogQuer
 	}
 
 	if err = q.Count(&total).Error; err != nil {
-		err = errors.Wrap(err, "get count failed")
+		err = errors.Wrap(apperr.ErrLogList, err.Error())
 		return
 	}
 
@@ -109,7 +115,7 @@ func (n *Logs) List(limit, offset int64, orderBy, sort string, queryObj *LogQuer
 		Find(&list).Error
 
 	if err != nil {
-		err = errors.Wrap(err, "list failed")
+		err = errors.Wrap(apperr.ErrLogList, err.Error())
 	}
 
 	return
@@ -122,7 +128,7 @@ func (n *Logs) Search(query string, limit, offset int) (list []*Log, total int64
 		Where("body LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
-		err = errors.Wrap(err, "get count failed")
+		err = errors.Wrap(apperr.ErrLogList, err.Error())
 		return
 	}
 
@@ -133,7 +139,7 @@ func (n *Logs) Search(query string, limit, offset int) (list []*Log, total int64
 
 	list = make([]*Log, 0)
 	if err = q.Find(&list).Error; err != nil {
-		err = errors.Wrap(err, "search failed")
+		err = errors.Wrap(apperr.ErrLogList, err.Error())
 	}
 
 	return

@@ -21,9 +21,10 @@ package cgminer
 import (
 	"fmt"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/e154/smart-home/system/event_bus/events"
 
-	"github.com/e154/smart-home/common"
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/adaptors"
@@ -76,7 +77,7 @@ func NewActor(entity *m.Entity,
 	actor.DeserializeAttr(entity.Attributes.Serialize())
 
 	if actor.Setts == nil || actor.Setts[SettingManufacturer] == nil {
-		err = errors.Wrap(common.ErrBadSettings, fmt.Sprintf("actor 'cgminer', current settings %+v", actor.Setts))
+		err = errors.Wrap(apperr.ErrBadSettings, fmt.Sprintf("actor 'cgminer', current settings %+v", actor.Setts))
 		return
 	}
 
@@ -97,37 +98,37 @@ func NewActor(entity *m.Entity,
 	}
 
 	if _, ok := actor.Setts[SettingHost]; !ok {
-		err = errors.Wrap(common.ErrBadSettings, fmt.Sprintf("actor 'cgminer', current settings %+v", actor.Setts))
+		err = errors.Wrap(apperr.ErrBadSettings, fmt.Sprintf("actor 'cgminer', current settings %+v", actor.Setts))
 		return
 	}
 
 	if _, ok := actor.Setts[SettingPort]; !ok {
-		err = errors.Wrap(common.ErrBadSettings, fmt.Sprintf("actor 'cgminer', current settings %+v", actor.Setts))
+		err = errors.Wrap(apperr.ErrBadSettings, fmt.Sprintf("actor 'cgminer', current settings %+v", actor.Setts))
 		return
 	}
 
 	if _, ok := actor.Setts[SettingTimeout]; !ok {
-		err = errors.Wrap(common.ErrBadSettings, fmt.Sprintf("actor 'cgminer', current settings %+v", actor.Setts))
+		err = errors.Wrap(apperr.ErrBadSettings, fmt.Sprintf("actor 'cgminer', current settings %+v", actor.Setts))
 		return
 	}
 
 	if _, ok := actor.Setts[SettingModel]; !ok {
-		err = errors.Wrap(common.ErrBadSettings, fmt.Sprintf("actor 'cgminer', current settings %+v", actor.Setts))
+		err = errors.Wrap(apperr.ErrBadSettings, fmt.Sprintf("actor 'cgminer', current settings %+v", actor.Setts))
 		return
 	}
 
 	if _, ok := actor.Setts[SettingHost]; !ok {
-		err = errors.Wrap(common.ErrBadSettings, fmt.Sprintf("actor 'cgminer', current settings %+v", actor.Setts))
+		err = errors.Wrap(apperr.ErrBadSettings, fmt.Sprintf("actor 'cgminer', current settings %+v", actor.Setts))
 		return
 	}
 
 	if _, ok := actor.Setts[SettingUser]; !ok {
-		err = errors.Wrap(common.ErrBadSettings, fmt.Sprintf("actor 'cgminer', current settings %+v", actor.Setts))
+		err = errors.Wrap(apperr.ErrBadSettings, fmt.Sprintf("actor 'cgminer', current settings %+v", actor.Setts))
 		return
 	}
 
 	if _, ok := actor.Setts[SettingPass]; !ok {
-		err = errors.Wrap(common.ErrBadSettings, fmt.Sprintf("actor 'cgminer', current settings %+v", actor.Setts))
+		err = errors.Wrap(apperr.ErrBadSettings, fmt.Sprintf("actor 'cgminer', current settings %+v", actor.Setts))
 		return
 	}
 

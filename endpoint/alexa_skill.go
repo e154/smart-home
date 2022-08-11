@@ -19,11 +19,10 @@
 package endpoint
 
 import (
-	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/alexa"
 	"github.com/go-playground/validator/v10"
-	"github.com/pkg/errors"
 )
 
 // AlexaSkillEndpoint ...
@@ -48,16 +47,11 @@ func (n *AlexaSkillEndpoint) Add(params *m.AlexaSkill) (result *m.AlexaSkill, er
 
 	var id int64
 	if id, err = n.adaptors.AlexaSkill.Add(params); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	result, err = n.adaptors.AlexaSkill.GetById(id)
 	if err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -72,13 +66,7 @@ func (n *AlexaSkillEndpoint) Add(params *m.AlexaSkill) (result *m.AlexaSkill, er
 func (n *AlexaSkillEndpoint) GetById(appId int64) (result *m.AlexaSkill, err error) {
 
 	result, err = n.adaptors.AlexaSkill.GetById(appId)
-	if err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
-		return
-	}
+
 	return
 }
 
@@ -91,16 +79,11 @@ func (n *AlexaSkillEndpoint) Update(params *m.AlexaSkill) (skill *m.AlexaSkill, 
 	}
 
 	if err = n.adaptors.AlexaSkill.Update(params); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	skill, err = n.adaptors.AlexaSkill.GetById(params.Id)
 	if err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -115,10 +98,7 @@ func (n *AlexaSkillEndpoint) Update(params *m.AlexaSkill) (skill *m.AlexaSkill, 
 func (n *AlexaSkillEndpoint) GetList(limit, offset int64, order, sortBy string) (result []*m.AlexaSkill, total int64, err error) {
 
 	result, total, err = n.adaptors.AlexaSkill.List(limit, offset, order, sortBy)
-	if err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-		return
-	}
+
 	return
 }
 
@@ -126,22 +106,17 @@ func (n *AlexaSkillEndpoint) GetList(limit, offset int64, order, sortBy string) 
 func (n *AlexaSkillEndpoint) Delete(skillId int64) (err error) {
 
 	if skillId == 0 {
-		err = common.ErrBadRequestParams
+		err = apperr.ErrInvalidRequest
 		return
 	}
 
 	var skill *m.AlexaSkill
 	skill, err = n.adaptors.AlexaSkill.GetById(skillId)
 	if err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	if err = n.adaptors.AlexaSkill.Delete(skill.Id); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 

@@ -22,7 +22,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
@@ -58,7 +58,7 @@ func (d *DashboardTab) TableName() string {
 // Add ...
 func (n DashboardTabs) Add(tab *DashboardTab) (id int64, err error) {
 	if err = n.Db.Create(&tab).Error; err != nil {
-		err = errors.Wrap(err, "add failed")
+		err = errors.Wrap(apperr.ErrDashboardTabAdd, err.Error())
 		return
 	}
 	id = tab.Id
@@ -76,10 +76,10 @@ func (n DashboardTabs) GetById(id int64) (tab *DashboardTab, err error) {
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("id \"%s\"", id))
+			err = errors.Wrap(apperr.ErrDashboardTabNotFound, fmt.Sprintf("id \"%d\"", id))
 			return
 		}
-		err = errors.Wrap(err, "getById failed")
+		err = errors.Wrap(apperr.ErrDashboardTabGet, err.Error())
 		return
 	}
 	return
@@ -99,7 +99,7 @@ func (n DashboardTabs) Update(m *DashboardTab) (err error) {
 	}
 
 	if err = n.Db.Model(&DashboardTab{Id: m.Id}).Updates(q).Error; err != nil {
-		err = errors.Wrap(err, "update failed")
+		err = errors.Wrap(apperr.ErrDashboardTabUpdate, err.Error())
 	}
 	return
 }
@@ -107,7 +107,7 @@ func (n DashboardTabs) Update(m *DashboardTab) (err error) {
 // Delete ...
 func (n DashboardTabs) Delete(id int64) (err error) {
 	if err = n.Db.Delete(&DashboardTab{Id: id}).Error; err != nil {
-		err = errors.Wrap(err, "delete failed")
+		err = errors.Wrap(apperr.ErrDashboardTabDelete, err.Error())
 	}
 	return
 }
@@ -116,7 +116,7 @@ func (n DashboardTabs) Delete(id int64) (err error) {
 func (n *DashboardTabs) List(limit, offset int64, orderBy, sort string) (list []*DashboardTab, total int64, err error) {
 
 	if err = n.Db.Model(DashboardTab{}).Count(&total).Error; err != nil {
-		err = errors.Wrap(err, "get count failed")
+		err = errors.Wrap(apperr.ErrDashboardTabList, err.Error())
 		return
 	}
 
@@ -136,7 +136,7 @@ func (n *DashboardTabs) List(limit, offset int64, orderBy, sort string) (list []
 		Error
 
 	if err != nil {
-		err = errors.Wrap(err, "find failed")
+		err = errors.Wrap(apperr.ErrDashboardTabList, err.Error())
 	}
 
 	return

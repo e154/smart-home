@@ -24,6 +24,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 )
@@ -73,7 +75,7 @@ func (u *User) TableName() string {
 func (u *Users) Add(user *User) (id int64, err error) {
 
 	if err = u.Db.Create(&user).Error; err != nil {
-		err = errors.Wrap(err, "add failed")
+		err = errors.Wrap(apperr.ErrUserAdd, err.Error())
 		return
 	}
 	id = user.Id
@@ -93,7 +95,11 @@ func (u *Users) GetById(userId int64) (user *User, err error) {
 		Find(&user).
 		Error
 	if err != nil {
-		err = errors.Wrap(err, "getById failed")
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = errors.Wrap(apperr.ErrUserNotFound, fmt.Sprintf("id \"%d\"", userId))
+			return
+		}
+		err = errors.Wrap(apperr.ErrUserGet, err.Error())
 	}
 	return
 }
@@ -111,7 +117,7 @@ func (u *Users) GetByEmail(email string) (user *User, err error) {
 		Find(&user).
 		Error
 	if err != nil {
-		err = errors.Wrap(err, "getByEmail failed")
+		err = errors.Wrap(apperr.ErrUserGet, err.Error())
 	}
 	return
 }
@@ -129,7 +135,7 @@ func (u *Users) GetByNickname(nickname string) (user *User, err error) {
 		Find(&user).
 		Error
 	if err != nil {
-		err = errors.Wrap(err, "getByNickname failed")
+		err = errors.Wrap(apperr.ErrUserGet, err.Error())
 	}
 	return
 }
@@ -147,7 +153,7 @@ func (u *Users) GetByAuthenticationToken(token string) (user *User, err error) {
 		Find(&user).
 		Error
 	if err != nil {
-		err = errors.Wrap(err, "getByAuthenticationToken failed")
+		err = errors.Wrap(apperr.ErrUserGet, err.Error())
 	}
 	return
 }
@@ -165,7 +171,7 @@ func (u *Users) GetByResetPassToken(token string) (user *User, err error) {
 		Find(&user).
 		Error
 	if err != nil {
-		err = errors.Wrap(err, "GetByResetPassToken failed")
+		err = errors.Wrap(apperr.ErrUserGet, err.Error())
 	}
 	return
 }
@@ -200,7 +206,7 @@ func (u *Users) Update(user *User) (err error) {
 		q["encrypted_password"] = user.EncryptedPassword
 	}
 	if err = u.Db.Model(&User{Id: user.Id}).Updates(q).Error; err != nil {
-		err = errors.Wrap(err, "update failed")
+		err = errors.Wrap(apperr.ErrUserUpdate, err.Error())
 	}
 	return
 }
@@ -212,7 +218,7 @@ func (u *Users) NewResetPassToken(userId int64, token string) (err error) {
 		"reset_password_sent_at": time.Now(),
 	}).Error
 	if err != nil {
-		err = errors.Wrap(err, "newResetPassToken failed")
+		err = errors.Wrap(apperr.ErrUserUpdate, err.Error())
 	}
 	return
 }
@@ -224,7 +230,7 @@ func (u *Users) ClearResetPassToken(userId int64) (err error) {
 		"reset_password_sent_at": nil,
 	}).Error
 	if err != nil {
-		err = errors.Wrap(err, "clearResetPassToken failed")
+		err = errors.Wrap(apperr.ErrUserUpdate, err.Error())
 	}
 	return
 }
@@ -235,7 +241,7 @@ func (u *Users) ClearToken(userId int64) (err error) {
 		"authentication_token": "",
 	}).Error
 	if err != nil {
-		err = errors.Wrap(err, "clearToken failed")
+		err = errors.Wrap(apperr.ErrUserUpdate, err.Error())
 	}
 	return
 }
@@ -246,7 +252,7 @@ func (u *Users) UpdateAuthenticationToken(userId int64, token string) (err error
 		"authentication_token": token,
 	}).Error
 	if err != nil {
-		err = errors.Wrap(err, "updateAuthenticationToken failed")
+		err = errors.Wrap(apperr.ErrUserUpdate, err.Error())
 	}
 	return
 }
@@ -257,7 +263,7 @@ func (u *Users) Delete(userId int64) (err error) {
 		"deleted_at": time.Now(),
 	}).Error
 	if err != nil {
-		err = errors.Wrap(err, "delete failed")
+		err = errors.Wrap(apperr.ErrUserDelete, err.Error())
 	}
 	return
 }
@@ -266,6 +272,7 @@ func (u *Users) Delete(userId int64) (err error) {
 func (n *Users) List(limit, offset int64, orderBy, sort string) (list []*User, total int64, err error) {
 
 	if err = n.Db.Model(User{}).Count(&total).Error; err != nil {
+		err = errors.Wrap(apperr.ErrUserList, err.Error())
 		return
 	}
 
@@ -282,7 +289,7 @@ func (n *Users) List(limit, offset int64, orderBy, sort string) (list []*User, t
 		Find(&list).
 		Error
 	if err != nil {
-		err = errors.Wrap(err, "list failed")
+		err = errors.Wrap(apperr.ErrUserList, err.Error())
 	}
 	return
 }

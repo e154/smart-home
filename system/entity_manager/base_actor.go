@@ -23,6 +23,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -165,7 +167,7 @@ func (e *BaseActor) Metrics() []*m.Metric {
 
 // SetState ...
 func (e *BaseActor) SetState(EntityStateParams) error {
-	return common.ErrUnimplemented
+	return apperr.ErrUnimplemented
 }
 
 // Attributes ...

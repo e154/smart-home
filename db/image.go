@@ -23,7 +23,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 )
@@ -53,7 +54,7 @@ func (m *Image) TableName() string {
 // Add ...
 func (n Images) Add(v *Image) (id int64, err error) {
 	if err = n.Db.Create(&v).Error; err != nil {
-		err = errors.Wrap(err, "add failed")
+		err = errors.Wrap(apperr.ErrImageAdd, err.Error())
 		return
 	}
 	id = v.Id
@@ -65,8 +66,10 @@ func (n Images) GetById(id int64) (v *Image, err error) {
 	v = &Image{Id: id}
 	if err = n.Db.First(&v).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("map with id \"%d\"", id))
+			err = errors.Wrap(apperr.ErrImageNotFound, fmt.Sprintf("id \"%d\"", id))
+			return
 		}
+		err = errors.Wrap(apperr.ErrImageGet, err.Error())
 	}
 	return
 }
@@ -75,7 +78,11 @@ func (n Images) GetById(id int64) (v *Image, err error) {
 func (n Images) GetByImageName(imageName string) (v *Image, err error) {
 	v = &Image{}
 	if err = n.Db.Model(v).Where("image = ?", imageName).First(&v).Error; err != nil {
-		err = errors.Wrap(err, "getByImageName failed")
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = errors.Wrap(apperr.ErrImageNotFound, fmt.Sprintf("name \"%s\"", imageName))
+			return
+		}
+		err = errors.Wrap(apperr.ErrImageGet, err.Error())
 		return
 	}
 	return
@@ -88,7 +95,7 @@ func (n Images) Update(m *Image) (err error) {
 		"Name":  m.Name,
 	}).Error
 	if err != nil {
-		err = errors.Wrap(err, "update failed")
+		err = errors.Wrap(apperr.ErrImageUpdate, err.Error())
 		return
 	}
 	return
@@ -97,7 +104,7 @@ func (n Images) Update(m *Image) (err error) {
 // Delete ...
 func (n Images) Delete(mapId int64) (err error) {
 	if err = n.Db.Delete(&Image{Id: mapId}).Error; err != nil {
-		err = errors.Wrap(err, "delete failed")
+		err = errors.Wrap(apperr.ErrImageDelete, err.Error())
 		return
 	}
 	return
@@ -107,7 +114,7 @@ func (n Images) Delete(mapId int64) (err error) {
 func (n *Images) List(limit, offset int64, orderBy, sort string) (list []*Image, total int64, err error) {
 
 	if err = n.Db.Model(Image{}).Count(&total).Error; err != nil {
-		err = errors.Wrap(err, "get count failed")
+		err = errors.Wrap(apperr.ErrImageList, err.Error())
 		return
 	}
 
@@ -120,7 +127,7 @@ func (n *Images) List(limit, offset int64, orderBy, sort string) (list []*Image,
 		Error
 
 	if err != nil {
-		err = errors.Wrap(err, "list failed")
+		err = errors.Wrap(apperr.ErrImageList, err.Error())
 		return
 	}
 	return
@@ -145,7 +152,7 @@ GROUP BY date
 ORDER BY date`).Rows()
 
 	if err != nil {
-		err = errors.Wrap(err, "getFilterList failed")
+		err = errors.Wrap(apperr.ErrImageList, err.Error())
 		return
 	}
 
@@ -174,7 +181,7 @@ ORDER BY created_at`, filter).
 		Error
 
 	if err != nil {
-		err = errors.Wrap(err, "getAllByDate failed")
+		err = errors.Wrap(apperr.ErrImageList, err.Error())
 	}
 	return
 }

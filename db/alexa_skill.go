@@ -22,6 +22,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
@@ -53,7 +55,7 @@ func (d *AlexaSkill) TableName() string {
 // Add ...
 func (n AlexaSkills) Add(v *AlexaSkill) (id int64, err error) {
 	if err = n.Db.Create(&v).Error; err != nil {
-		err = errors.Wrap(err, "add failed")
+		err = errors.Wrap(apperr.ErrAlexaSkillAdd, err.Error())
 		return
 	}
 	id = v.Id
@@ -70,10 +72,16 @@ func (n AlexaSkills) GetById(id int64) (v *AlexaSkill, err error) {
 		Find(v).
 		Error
 	if err != nil {
-		err = errors.Wrap(err, "getById failed")
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = errors.Wrap(apperr.ErrAlexaSkillNotFound, fmt.Sprintf("id \"%s\"", id))
+			return
+		}
+		err = errors.Wrap(apperr.ErrAlexaSkillGet, err.Error())
 		return
 	}
-	err = n.preload(v)
+	if err = n.preload(v); err != nil {
+		err = errors.Wrap(apperr.ErrAlexaSkillGet, err.Error())
+	}
 
 	return
 }
@@ -82,6 +90,7 @@ func (n AlexaSkills) GetById(id int64) (v *AlexaSkill, err error) {
 func (n *AlexaSkills) List(limit, offset int64, orderBy, sort string) (list []*AlexaSkill, total int64, err error) {
 
 	if err = n.Db.Model(AlexaSkill{}).Count(&total).Error; err != nil {
+		err = errors.Wrap(apperr.ErrAlexaSkillList, err.Error())
 		return
 	}
 
@@ -96,7 +105,7 @@ func (n *AlexaSkills) List(limit, offset int64, orderBy, sort string) (list []*A
 	}
 
 	if err = q.Find(&list).Error; err != nil {
-		err = errors.Wrap(err, "list failed")
+		err = errors.Wrap(apperr.ErrAlexaSkillList, err.Error())
 	}
 
 	return
@@ -116,7 +125,7 @@ func (n *AlexaSkills) ListEnabled(limit, offset int64) (list []*AlexaSkill, err 
 		Find(&list).Error
 
 	if err != nil {
-		err = errors.Wrap(err, "list enabled failed")
+		err = errors.Wrap(apperr.ErrAlexaSkillList, err.Error())
 		return
 	}
 
@@ -156,7 +165,7 @@ func (n AlexaSkills) Update(v *AlexaSkill) (err error) {
 		q["script_id"] = common.Int64Value(v.ScriptId)
 	}
 	if err = n.Db.Model(&AlexaSkill{}).Where("id = ?", v.Id).Updates(q).Error; err != nil {
-		err = errors.Wrap(err, "update failed")
+		err = errors.Wrap(apperr.ErrAlexaSkillUpdate, err.Error())
 	}
 	return
 }
@@ -164,7 +173,7 @@ func (n AlexaSkills) Update(v *AlexaSkill) (err error) {
 // Delete ...
 func (n AlexaSkills) Delete(id int64) (err error) {
 	if err = n.Db.Delete(&AlexaSkill{}, "id = ?", id).Error; err != nil {
-		err = errors.Wrap(err, "delete failed")
+		err = errors.Wrap(apperr.ErrAlexaSkillDelete, err.Error())
 	}
 	return
 }

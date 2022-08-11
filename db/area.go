@@ -20,12 +20,16 @@ package db
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
-	"github.com/e154/smart-home/common"
+	"github.com/jackc/pgerrcode"
+	"github.com/lib/pq"
 
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+
+	"github.com/e154/smart-home/common/apperr"
 )
 
 // Areas ...
@@ -50,7 +54,19 @@ func (d *Area) TableName() string {
 // Add ...
 func (n Areas) Add(area *Area) (id int64, err error) {
 	if err = n.Db.Create(&area).Error; err != nil {
-		err = errors.Wrap(err, "add failed")
+		var pgErr *pq.Error
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case pgerrcode.UniqueViolation:
+				if strings.Contains(pgErr.Message, "name_at_areas_unq") {
+					err = errors.Wrap(apperr.ErrAreaAdd, fmt.Sprintf("area name \"%s\" not unique", area.Name))
+					return
+				}
+			default:
+				fmt.Printf("unknown code \"%s\"\n", pgErr.Code)
+			}
+		}
+		err = errors.Wrap(apperr.ErrAreaAdd, err.Error())
 		return
 	}
 	id = area.Id
@@ -67,7 +83,7 @@ func (n Areas) GetByName(name string) (area *Area, err error) {
 		Error
 
 	if err != nil {
-		err = errors.Wrap(err, "getById failed")
+		err = errors.Wrap(apperr.ErrAreaGet, err.Error())
 	}
 	return
 }
@@ -79,6 +95,7 @@ func (n *Areas) Search(query string, limit, offset int64) (list []*Area, total i
 		Where("name LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
+		err = errors.Wrap(apperr.ErrAreaGet, err.Error())
 		return
 	}
 
@@ -89,7 +106,7 @@ func (n *Areas) Search(query string, limit, offset int64) (list []*Area, total i
 
 	list = make([]*Area, 0)
 	if err = q.Find(&list).Error; err != nil {
-		err = errors.Wrap(err, "search failed")
+		err = errors.Wrap(apperr.ErrAreaGet, err.Error())
 	}
 
 	return
@@ -98,12 +115,12 @@ func (n *Areas) Search(query string, limit, offset int64) (list []*Area, total i
 // DeleteByName ...
 func (n Areas) DeleteByName(name string) (err error) {
 	if name == "" {
-		err = errors.Wrap(common.ErrBadRequestParams, "zero name")
+		err = errors.Wrap(apperr.ErrAreaDelete, "zero name")
 		return
 	}
 
 	if err = n.Db.Delete(&Area{}, "name = ?", name).Error; err != nil {
-		err = errors.Wrap(err, "delete failed")
+		err = errors.Wrap(apperr.ErrAreaDelete, "zero name")
 	}
 	return
 }
@@ -121,7 +138,7 @@ where id not in (
 `).Error
 
 	if err != nil {
-		err = errors.Wrap(err, "clean failed")
+		err = errors.Wrap(apperr.ErrAreaClean, "zero name")
 	}
 
 	return
@@ -135,7 +152,7 @@ func (n Areas) Update(m *Area) (err error) {
 	}).Error
 
 	if err != nil {
-		err = errors.Wrap(err, "update failed")
+		err = errors.Wrap(apperr.ErrAreaUpdate, err.Error())
 	}
 	return
 }
@@ -144,7 +161,7 @@ func (n Areas) Update(m *Area) (err error) {
 func (n *Areas) List(limit, offset int64, orderBy, sort string) (list []*Area, total int64, err error) {
 
 	if err = n.Db.Model(Area{}).Count(&total).Error; err != nil {
-		err = errors.Wrap(err, "get count failed")
+		err = errors.Wrap(apperr.ErrAreaList, err.Error())
 		return
 	}
 
@@ -162,7 +179,7 @@ func (n *Areas) List(limit, offset int64, orderBy, sort string) (list []*Area, t
 		Find(&list).
 		Error
 	if err != nil {
-		err = errors.Wrap(err, "list failed")
+		err = errors.Wrap(apperr.ErrAreaList, err.Error())
 	}
 
 	return
@@ -172,7 +189,11 @@ func (n *Areas) List(limit, offset int64, orderBy, sort string) (list []*Area, t
 func (n Areas) GetById(areaId int64) (area *Area, err error) {
 	area = &Area{Id: areaId}
 	if err = n.Db.First(&area).Error; err != nil {
-		err = errors.Wrap(err, "getById failed")
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = errors.Wrap(apperr.ErrAreaNotFound, fmt.Sprintf("id \"%d\"", areaId))
+			return
+		}
+		err = errors.Wrap(apperr.ErrAreaGet, err.Error())
 	}
 	return
 }

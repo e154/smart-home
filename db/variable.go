@@ -22,6 +22,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
@@ -50,7 +52,7 @@ func (d *Variable) TableName() string {
 // Add ...
 func (n Variables) Add(variable Variable) (err error) {
 	if err = n.Db.Create(&variable).Error; err != nil {
-		err = errors.Wrap(err, "add failed")
+		err = errors.Wrap(apperr.ErrVariableAdd, err.Error())
 	}
 	return
 }
@@ -62,7 +64,7 @@ func (n *Variables) CreateOrUpdate(v Variable) (err error) {
 			fmt.Sprintf("ON CONFLICT (name) DO UPDATE SET value = '%s', entity_id = '%s', updated_at = '%s'", v.Value, v.EntityId, time.Now().Format(time.RFC3339))).
 		Create(&v).Error
 	if err != nil {
-		err = errors.Wrap(err, "createOrUpdate failed")
+		err = errors.Wrap(apperr.ErrVariableUpdate, err.Error())
 	}
 	return
 }
@@ -75,7 +77,11 @@ func (n Variables) GetByName(name string) (variable Variable, err error) {
 		First(&variable).
 		Error
 	if err != nil {
-		err = errors.Wrap(err, "getByName failed")
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = errors.Wrap(apperr.ErrVariableNotFound, fmt.Sprintf("name \"%s\"", name))
+			return
+		}
+		err = errors.Wrap(apperr.ErrVariableGet, err.Error())
 	}
 	return
 }
@@ -86,7 +92,7 @@ func (n Variables) GetAllSystem() (list []Variable, err error) {
 	err = n.Db.Where("system = ?", true).
 		Find(&list).Error
 	if err != nil {
-		err = errors.Wrap(err, "getAllSystem failed")
+		err = errors.Wrap(apperr.ErrVariableList, err.Error())
 	}
 	return
 }
@@ -99,7 +105,7 @@ func (n Variables) Update(m Variable) (err error) {
 		"entity_id": m.EntityId,
 	}).Error
 	if err != nil {
-		err = errors.Wrap(err, "update failed")
+		err = errors.Wrap(apperr.ErrVariableUpdate, err.Error())
 	}
 	return
 }
@@ -107,7 +113,7 @@ func (n Variables) Update(m Variable) (err error) {
 // Delete ...
 func (n Variables) Delete(name string) (err error) {
 	if err = n.Db.Delete(&Variable{Name: name}).Error; err != nil {
-		err = errors.Wrap(err, "delete failed")
+		err = errors.Wrap(apperr.ErrVariableDelete, err.Error())
 	}
 	return
 }
@@ -116,6 +122,7 @@ func (n Variables) Delete(name string) (err error) {
 func (n *Variables) List(limit, offset int64, orderBy, sort string, system bool) (list []Variable, total int64, err error) {
 
 	if err = n.Db.Model(Variable{}).Count(&total).Error; err != nil {
+		err = errors.Wrap(apperr.ErrVariableList, err.Error())
 		return
 	}
 
@@ -129,7 +136,7 @@ func (n *Variables) List(limit, offset int64, orderBy, sort string, system bool)
 		Find(&list).
 		Error
 	if err != nil {
-		err = errors.Wrap(err, "list failed")
+		err = errors.Wrap(apperr.ErrVariableList, err.Error())
 	}
 	return
 }
