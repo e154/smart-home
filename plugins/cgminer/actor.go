@@ -56,9 +56,9 @@ func NewActor(entity *m.Entity,
 		actionPool: make(chan events.EventCallAction, 10),
 	}
 
-	if actor.ParentId == nil {
-		log.Warnf("entity %s, parent is nil", actor.Id)
-	}
+	//if actor.ParentId == nil {
+	//	log.Warnf("entity %s, parent is nil", actor.Id)
+	//}
 
 	actor.Manager = entityManager
 

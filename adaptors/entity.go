@@ -149,7 +149,9 @@ func (n *Entity) GetByIds(ids []common.EntityId) (list []*m.Entity, err error) {
 	}
 	list = make([]*m.Entity, len(dbList))
 	for i, dbVer := range dbList {
-		list[i] = n.fromDb(dbVer)
+		ver := n.fromDb(dbVer)
+		n.preloadMetric(ver)
+		list[i] = ver
 	}
 
 	return

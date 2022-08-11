@@ -1323,6 +1323,56 @@
         ]
       }
     },
+    "/v1/dashboards/search": {
+      "get": {
+        "summary": "search area",
+        "operationId": "DashboardService_SearchDashboard",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiSearchDashboardResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "DashboardService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
     "/v1/developer_tools/entity_reload": {
       "post": {
         "summary": "reload entity",
@@ -6572,6 +6622,17 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/apiArea"
+          }
+        }
+      }
+    },
+    "apiSearchDashboardResult": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiDashboard"
           }
         }
       }

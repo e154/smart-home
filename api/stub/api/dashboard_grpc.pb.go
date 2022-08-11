@@ -4,7 +4,6 @@ package api
 
 import (
 	context "context"
-
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -32,6 +31,8 @@ type DashboardServiceClient interface {
 	DeleteDashboard(ctx context.Context, in *DeleteDashboardRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// import dashboard
 	ImportDashboard(ctx context.Context, in *Dashboard, opts ...grpc.CallOption) (*Dashboard, error)
+	// search area
+	SearchDashboard(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchDashboardResult, error)
 }
 
 type dashboardServiceClient struct {
@@ -96,6 +97,15 @@ func (c *dashboardServiceClient) ImportDashboard(ctx context.Context, in *Dashbo
 	return out, nil
 }
 
+func (c *dashboardServiceClient) SearchDashboard(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchDashboardResult, error) {
+	out := new(SearchDashboardResult)
+	err := c.cc.Invoke(ctx, "/api.DashboardService/SearchDashboard", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DashboardServiceServer is the server API for DashboardService service.
 // All implementations should embed UnimplementedDashboardServiceServer
 // for forward compatibility
@@ -112,6 +122,8 @@ type DashboardServiceServer interface {
 	DeleteDashboard(context.Context, *DeleteDashboardRequest) (*emptypb.Empty, error)
 	// import dashboard
 	ImportDashboard(context.Context, *Dashboard) (*Dashboard, error)
+	// search area
+	SearchDashboard(context.Context, *SearchRequest) (*SearchDashboardResult, error)
 }
 
 // UnimplementedDashboardServiceServer should be embedded to have forward compatible implementations.
@@ -135,6 +147,9 @@ func (UnimplementedDashboardServiceServer) DeleteDashboard(context.Context, *Del
 }
 func (UnimplementedDashboardServiceServer) ImportDashboard(context.Context, *Dashboard) (*Dashboard, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ImportDashboard not implemented")
+}
+func (UnimplementedDashboardServiceServer) SearchDashboard(context.Context, *SearchRequest) (*SearchDashboardResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchDashboard not implemented")
 }
 
 // UnsafeDashboardServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -256,6 +271,24 @@ func _DashboardService_ImportDashboard_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DashboardService_SearchDashboard_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DashboardServiceServer).SearchDashboard(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.DashboardService/SearchDashboard",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DashboardServiceServer).SearchDashboard(ctx, req.(*SearchRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DashboardService_ServiceDesc is the grpc.ServiceDesc for DashboardService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -286,6 +319,10 @@ var DashboardService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ImportDashboard",
 			Handler:    _DashboardService_ImportDashboard_Handler,
+		},
+		{
+			MethodName: "SearchDashboard",
+			Handler:    _DashboardService_SearchDashboard_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

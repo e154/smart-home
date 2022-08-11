@@ -54,6 +54,7 @@ var (
 	ErrDashboardNotFound = New("dashboard is not found", ErrNotFound)
 	ErrDashboardUpdate   = New("failed to update dashboard", ErrInternal)
 	ErrDashboardDelete   = New("failed to delete dashboard", ErrInternal)
+	ErrDashboardSearch   = New("failed to search dashboard", ErrInternal)
 
 	ErrDashboardCardAdd      = New("failed to add dashboard card", ErrInternal)
 	ErrDashboardCardGet      = New("failed to get dashboard card", ErrInternal)

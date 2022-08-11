@@ -155,3 +155,26 @@ func (n *Dashboards) List(limit, offset int64, orderBy, sort string) (list []*Da
 
 	return
 }
+
+// Search ...
+func (d *Dashboards) Search(query string, limit, offset int64) (list []*Dashboard, total int64, err error) {
+
+	q := d.Db.Model(&Dashboard{}).
+		Where("name LIKE ?", "%"+query+"%")
+
+	if err = q.Count(&total).Error; err != nil {
+		err = errors.Wrap(apperr.ErrDashboardSearch, err.Error())
+		return
+	}
+
+	q = q.
+		Limit(limit).
+		Offset(offset).
+		Order("name ASC")
+
+	list = make([]*Dashboard, 0)
+	if err = q.Find(&list).Error; err != nil {
+		err = errors.Wrap(apperr.ErrDashboardSearch, err.Error())
+	}
+	return
+}

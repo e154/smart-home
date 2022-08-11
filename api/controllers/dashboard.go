@@ -108,3 +108,15 @@ func (c ControllerDashboard) ImportDashboard(ctx context.Context, req *api.Dashb
 
 	return c.dto.Dashboard.ToDashboard(board), nil
 }
+
+// SearchDashboard ...
+func (c ControllerDashboard) SearchDashboard(ctx context.Context, req *api.SearchRequest) (*api.SearchDashboardResult, error) {
+
+	search := c.Search(req.Query, req.Limit, req.Offset)
+	items, _, err := c.endpoint.Dashboard.Search(ctx, search.Query, search.Limit, search.Offset)
+	if err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return c.dto.Dashboard.ToSearchResult(items), nil
+}
