@@ -310,7 +310,7 @@ func (n *Entity) Update(ver *m.Entity) (err error) {
 				return
 			}
 		} else {
-			if err = n.table.ReplaceMetric(ver.Id, metricAdaptor.toDb(metric)); err != nil {
+			if err = metricAdaptor.Update(metric); err != nil {
 				return
 			}
 		}
