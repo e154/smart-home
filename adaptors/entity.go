@@ -149,7 +149,9 @@ func (n *Entity) GetByIds(ids []common.EntityId) (list []*m.Entity, err error) {
 	}
 	list = make([]*m.Entity, len(dbList))
 	for i, dbVer := range dbList {
-		list[i] = n.fromDb(dbVer)
+		ver := n.fromDb(dbVer)
+		n.preloadMetric(ver)
+		list[i] = ver
 	}
 
 	return
@@ -308,7 +310,7 @@ func (n *Entity) Update(ver *m.Entity) (err error) {
 				return
 			}
 		} else {
-			if err = n.table.ReplaceMetric(ver.Id, metricAdaptor.toDb(metric)); err != nil {
+			if err = metricAdaptor.Update(metric); err != nil {
 				return
 			}
 		}
@@ -395,7 +397,7 @@ func (n *Entity) preloadMetric(ver *m.Entity) {
 			optionItems[i] = item.Name
 		}
 
-		if ver.Metrics[i].Data, err = bucketMetricBucketAdaptor.Simple24HPreview(metric.Id, optionItems); err != nil {
+		if ver.Metrics[i].Data, err = bucketMetricBucketAdaptor.SimpleListWithSoftRange(nil, nil, metric.Id, common.String(common.MetricRange24H.String()), optionItems); err != nil {
 			log.Error(err.Error())
 			return
 		}

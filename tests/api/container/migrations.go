@@ -23,7 +23,7 @@ import "github.com/e154/smart-home/system/migrations"
 // NewMigrationsConfig ...
 func NewMigrationsConfig() *migrations.Config {
 	return &migrations.Config{
-		Source: "assets",
+		Source: "embed",
 		Dir:    "migrations",
 	}
 }

@@ -59,9 +59,13 @@ func (n Variables) Add(variable Variable) (err error) {
 
 // CreateOrUpdate ...
 func (n *Variables) CreateOrUpdate(v Variable) (err error) {
+	var entityId = "null"
+	if v.EntityId != nil {
+		entityId = v.EntityId.String()
+	}
 	err = n.Db.Model(&Variable{}).
 		Set("gorm:insert_option",
-			fmt.Sprintf("ON CONFLICT (name) DO UPDATE SET value = '%s', entity_id = '%s', updated_at = '%s'", v.Value, v.EntityId, time.Now().Format(time.RFC3339))).
+			fmt.Sprintf("ON CONFLICT (name) DO UPDATE SET value = '%s', entity_id = %s, updated_at = '%s'", v.Value, entityId, time.Now().Format(time.RFC3339))).
 		Create(&v).Error
 	if err != nil {
 		err = errors.Wrap(apperr.ErrVariableUpdate, err.Error())
@@ -121,7 +125,7 @@ func (n Variables) Delete(name string) (err error) {
 // List ...
 func (n *Variables) List(limit, offset int64, orderBy, sort string, system bool) (list []Variable, total int64, err error) {
 
-	if err = n.Db.Model(Variable{}).Count(&total).Error; err != nil {
+	if err = n.Db.Model(Variable{}).Where("system = ?", system).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrVariableList, err.Error())
 		return
 	}
@@ -129,7 +133,7 @@ func (n *Variables) List(limit, offset int64, orderBy, sort string, system bool)
 	list = make([]Variable, 0)
 	err = n.Db.
 		Model(&Variable{}).
-		Where("system = false").
+		Where("system = ?", system).
 		Limit(limit).
 		Offset(offset).
 		Order(fmt.Sprintf("%s %s", sort, orderBy)).

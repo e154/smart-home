@@ -32,6 +32,7 @@ type IDashboard interface {
 	Import(*m.Dashboard) (int64, error)
 	Delete(id int64) (err error)
 	List(limit, offset int64, orderBy, sort string) (list []*m.Dashboard, total int64, err error)
+	Search(query string, limit, offset int64) (list []*m.Dashboard, total int64, err error)
 }
 
 // Dashboard ...
@@ -65,6 +66,21 @@ func (n *Dashboard) GetById(mapId int64) (ver *m.Dashboard, err error) {
 	}
 
 	ver = n.fromDb(dbVer)
+
+	return
+}
+
+// Search ...
+func (n *Dashboard) Search(query string, limit, offset int64) (list []*m.Dashboard, total int64, err error) {
+	var dbList []*db.Dashboard
+	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
+		return
+	}
+
+	list = make([]*m.Dashboard, 0)
+	for _, dbVer := range dbList {
+		list = append(list, n.fromDb(dbVer))
+	}
 
 	return
 }

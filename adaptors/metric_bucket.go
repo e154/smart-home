@@ -86,7 +86,7 @@ func (n *MetricBucket) SimpleListWithSoftRange(_from, _to *time.Time, metricId i
 	var dbList []db.MetricBucket
 
 	if _metricRange != nil {
-		if dbList, err = n.table.SimpleListByRangeType(metricId, common.StringValue(_metricRange), optionItems); err != nil {
+		if dbList, err = n.table.SimpleListByRangeType(metricId, common.MetricRange(common.StringValue(_metricRange)), optionItems); err != nil {
 			return
 		}
 	}

@@ -288,7 +288,6 @@ func (n Entities) AppendMetric(id common.EntityId, metric Metric) (err error) {
 // DeleteMetric ...
 func (n Entities) DeleteMetric(id common.EntityId, metricId int64) (err error) {
 	if err = n.Db.Model(&Entity{Id: id}).Association("Metrics").Delete(&Metric{Id: metricId}).Error; err != nil {
-		err = errors.Wrap(err, "delete metric failed")
 		err = errors.Wrap(apperr.ErrEntityDeleteMetric, err.Error())
 	}
 	return

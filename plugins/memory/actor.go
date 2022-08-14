@@ -95,9 +95,9 @@ func (u *Actor) selfUpdate() {
 	u.Attrs[AttrUsedPercent].Value = usedPercent
 	u.AttrMu.Unlock()
 
-	u.SetMetric(u.Id, "memory", map[string]float32{
-		"used_percent": usedPercent,
-	})
+	//u.SetMetric(u.Id, "memory", map[string]float32{
+	//	"used_percent": usedPercent,
+	//})
 
 	u.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
 		StorageSave: false,

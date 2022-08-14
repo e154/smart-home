@@ -25,22 +25,21 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/e154/smart-home/common/logger"
-
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-
-	"github.com/e154/smart-home/api/controllers"
-	gw "github.com/e154/smart-home/api/stub/api"
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/rbac"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/tmc/grpc-websocket-proxy/wsproxy"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/encoding/protojson"
+
+	"github.com/e154/smart-home/api/controllers"
+	gw "github.com/e154/smart-home/api/stub/api"
+	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/logger"
+	"github.com/e154/smart-home/system/rbac"
 )
 
 //go:embed swagger-ui/*
@@ -117,6 +116,7 @@ func (a *Api) Start() error {
 	gw.RegisterDashboardCardItemServiceServer(grpcServer, a.controllers.DashboardCardItem)
 	gw.RegisterVariableServiceServer(grpcServer, a.controllers.Variable)
 	gw.RegisterEntityStorageServiceServer(grpcServer, a.controllers.EntityStorage)
+	gw.RegisterMetricServiceServer(grpcServer, a.controllers.Metric)
 	grpc_prometheus.Register(grpcServer)
 
 	var group errgroup.Group
@@ -171,6 +171,8 @@ func (a *Api) Start() error {
 		_ = gw.RegisterDashboardCardServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
 		_ = gw.RegisterDashboardTabServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
 		_ = gw.RegisterEntityStorageServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		_ = gw.RegisterVariableServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		_ = gw.RegisterMetricServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
 		return nil
 	})
 

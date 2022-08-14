@@ -16,14 +16,30 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package container
+package endpoint
 
-import "github.com/e154/smart-home/system/migrations"
+import (
+	"context"
+	m "github.com/e154/smart-home/models"
+	"time"
+)
 
-// NewMigrationsConfig ...
-func NewMigrationsConfig() *migrations.Config {
-	return &migrations.Config{
-		Source: "embed",
-		Dir:    "migrations",
+// MetricEndpoint ...
+type MetricEndpoint struct {
+	*CommonEndpoint
+}
+
+// NewMetricEndpoint ...
+func NewMetricEndpoint(common *CommonEndpoint) *MetricEndpoint {
+	return &MetricEndpoint{
+		CommonEndpoint: common,
 	}
+}
+
+// GetByIdWithData ...
+func (l *MetricEndpoint) GetByIdWithData(ctx context.Context, from, to *time.Time, metricId int64, metricRange *string) (metric *m.Metric, err error) {
+
+	metric, err = l.adaptors.Metric.GetByIdWithData(metricId, from, to, metricRange)
+
+	return
 }

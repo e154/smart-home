@@ -19,6 +19,8 @@
 package logs
 
 import (
+	"fmt"
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/cron"
 	"github.com/e154/smart-home/system/logging"
@@ -54,8 +56,26 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 	if err = p.Plugin.Load(service); err != nil {
 		return
 	}
+	return p.load(service)
+}
 
-	p.actor = NewActor(p.EntityManager, p.EventBus)
+// Unload ...
+func (p *plugin) Unload() (err error) {
+	if err = p.Plugin.Unload(); err != nil {
+		return
+	}
+	return p.unload()
+}
+
+// Load ...
+func (p *plugin) load(service plugins.Service) (err error) {
+
+	var entity *m.Entity
+	if entity, err = p.Adaptors.Entity.GetById(common.EntityId(fmt.Sprintf("%s.%s", EntityLogs, Name))); err == nil {
+
+	}
+
+	p.actor = NewActor(p.EntityManager, p.EventBus, entity)
 	p.EntityManager.Spawn(p.actor.Spawn)
 
 	logging.LogsHook = p.actor.LogsHook
@@ -69,18 +89,23 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 	return nil
 }
 
-// Unload ...
-func (p *plugin) Unload() (err error) {
-	if err = p.Plugin.Unload(); err != nil {
-		return
-	}
-
+func (p *plugin) unload() (err error) {
 	if p.task != nil {
 		p.cron.RemoveTask(p.task)
 	}
 	p.cron.Stop()
 	p.task = nil
 	return nil
+}
+
+// AddOrUpdateActor ...
+func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
+	return p.load(nil)
+}
+
+// RemoveActor ...
+func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
+	return p.unload()
 }
 
 // Name ...

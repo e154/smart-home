@@ -130,6 +130,37 @@ func (e *entityManager) Shutdown() {
 	log.Info("Shutdown")
 }
 
+func (e *entityManager) updateMetric(actor *actorInfo, state event_bus.EventEntityState) {
+	metrics := actor.Actor.Metrics()
+	if metrics == nil {
+		return
+	}
+
+	var data = make(map[string]float32)
+	var name string
+
+	for _, metric := range metrics {
+		for _, prop := range metric.Options.Items {
+			if value, ok := state.Attributes[prop.Name]; ok {
+				name = metric.Name
+				switch value.Type {
+				case common.AttributeInt:
+					data[prop.Name] = float32(value.Int64())
+				case common.AttributeFloat:
+					data[prop.Name] = common.Rounding32(value.Float64(), 2)
+				}
+			}
+		}
+	}
+
+	if len(data) == 0 || name == "" {
+		return
+	}
+
+	e.SetMetric(state.EntityId, name, data)
+
+}
+
 // SetMetric ...
 func (e *entityManager) SetMetric(id common.EntityId, name string, value map[string]float32) {
 
@@ -354,6 +385,8 @@ func (e *entityManager) eventStateChangedHandler(msg events.EventStateChanged) {
 	}
 	actor := item.(*actorInfo)
 
+	go e.updateMetric(actor, msg.NewState)
+
 	if msg.NewState.Compare(msg.OldState) {
 		return
 	}
@@ -531,12 +564,12 @@ func (e *entityManager) Add(entity *m.Entity) (err error) {
 		return
 	}
 
-	var creudActor CrudActor
-	if creudActor, err = e.getCrudActor(entity.Id); err != nil {
+	var crudActor CrudActor
+	if crudActor, err = e.getCrudActor(entity.Id); err != nil {
 		return
 	}
 
-	err = creudActor.AddOrUpdateActor(entity)
+	err = crudActor.AddOrUpdateActor(entity)
 
 	return
 }
