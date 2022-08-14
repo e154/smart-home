@@ -57,6 +57,10 @@ func (a Attribute) Int64() int64 {
 	}
 	t := reflect.TypeOf(a.Value)
 	switch t.Kind() {
+	case reflect.Uint64:
+		return int64(a.Value.(uint64))
+	case reflect.Float32:
+		return int64(a.Value.(float32))
 	case reflect.Int:
 		return int64(a.Value.(int))
 	case reflect.Float64:

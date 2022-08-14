@@ -122,9 +122,9 @@ func (u *Actor) selfUpdate() {
 	u.Attrs[AttrLoadMin].Value = u.loadMin.Value()
 	u.AttrMu.Unlock()
 
-	u.SetMetric(u.Id, "cpuspeed", map[string]float32{
-		"all": common.Rounding32(u.all.Value(), 2),
-	})
+	//u.SetMetric(u.Id, "cpuspeed", map[string]float32{
+	//	"all": common.Rounding32(u.all.Value(), 2),
+	//})
 
 	u.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
 		StorageSave: false,

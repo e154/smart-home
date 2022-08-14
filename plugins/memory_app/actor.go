@@ -20,6 +20,7 @@ package memory_app
 
 import (
 	"fmt"
+	m "github.com/e154/smart-home/models"
 	"runtime"
 	"sync"
 	"time"
@@ -39,7 +40,8 @@ type Actor struct {
 
 // NewActor ...
 func NewActor(entityManager entity_manager.EntityManager,
-	eventBus event_bus.EventBus) *Actor {
+	eventBus event_bus.EventBus,
+	entity *m.Entity) *Actor {
 
 	actor := &Actor{
 		BaseActor: entity_manager.BaseActor{
@@ -53,6 +55,10 @@ func NewActor(entityManager entity_manager.EntityManager,
 		},
 		eventBus:   eventBus,
 		updateLock: &sync.Mutex{},
+	}
+
+	if entity != nil {
+		actor.Metric = entity.Metrics
 	}
 
 	return actor
@@ -83,9 +89,9 @@ func (u *Actor) selfUpdate() {
 	u.Attrs[AttrLastGC].Value = time.Unix(0, int64(s.LastGC))
 	u.AttrMu.Unlock()
 
-	u.SetMetric(u.Id, "memory_app", map[string]float32{
-		"total_alloc": float32(s.TotalAlloc),
-	})
+	//u.SetMetric(u.Id, "memory_app", map[string]float32{
+	//	"total_alloc": float32(s.TotalAlloc),
+	//})
 
 	u.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
 		StorageSave: false,

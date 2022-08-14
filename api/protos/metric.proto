@@ -4,6 +4,8 @@ package api;
 
 option go_package = "/api";
 
+import "google/api/annotations.proto";
+import "protoc-gen-swagger/options/annotations.proto";
 import "google/protobuf/timestamp.proto";
 
 message MetricOptionItem {
@@ -34,4 +36,29 @@ message Metric {
   repeated string ranges = 7;
   google.protobuf.Timestamp created_at = 99;
   google.protobuf.Timestamp updated_at = 100;
+}
+
+message GetMetricRequest {
+  int64 id = 1;
+  optional string range = 2;
+  optional google.protobuf.Timestamp from = 99;
+  optional google.protobuf.Timestamp to = 100;
+}
+
+service MetricService {
+
+  // get metric
+  rpc GetMetric (GetMetricRequest) returns (Metric){
+    option (google.api.http) = {
+      get: "/v1/metric"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
 }

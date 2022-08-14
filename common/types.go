@@ -120,6 +120,21 @@ const (
 	MetricTypeHorizontalBar = MetricType("horizontal bar")
 )
 
+type MetricRange string
+
+const (
+	MetricRange6H  = MetricRange("6h")
+	MetricRange12H = MetricRange("12h")
+	MetricRange24H = MetricRange("24h")
+	MetricRange7d  = MetricRange("7d")
+	MetricRange30d = MetricRange("30d")
+	MetricRange1m = MetricRange("1m")
+)
+
+func (m MetricRange) String() string {
+	return string(m)
+}
+
 // EntityId ...
 type EntityId string
 

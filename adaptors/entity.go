@@ -397,7 +397,7 @@ func (n *Entity) preloadMetric(ver *m.Entity) {
 			optionItems[i] = item.Name
 		}
 
-		if ver.Metrics[i].Data, err = bucketMetricBucketAdaptor.Simple24HPreview(metric.Id, optionItems); err != nil {
+		if ver.Metrics[i].Data, err = bucketMetricBucketAdaptor.SimpleListWithSoftRange(nil, nil, metric.Id, common.String(common.MetricRange24H.String()), optionItems); err != nil {
 			log.Error(err.Error())
 			return
 		}

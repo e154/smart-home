@@ -43,6 +43,7 @@ import (
 	"github.com/e154/smart-home/system/orm"
 	"github.com/e154/smart-home/system/plugins"
 	"github.com/e154/smart-home/system/rbac"
+	"github.com/e154/smart-home/system/scheduler"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/storage"
 	"github.com/e154/smart-home/system/stream"
@@ -66,6 +67,7 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 			NewMigrationsConfig,
 			migrations.NewMigrations,
 			adaptors.NewAdaptors,
+			scheduler.NewScheduler,
 			logging.NewLogger,
 			logging_db.NewLogDbSaver,
 			logging_ws.NewLogWsSaver,

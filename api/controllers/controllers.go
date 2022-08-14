@@ -48,6 +48,7 @@ type Controllers struct {
 	DashboardTab      ControllerDashboardTab
 	Variable          ControllerVariable
 	EntityStorage     ControllerEntityStorage
+	Metric            ControllerMetric
 }
 
 // NewControllers ...
@@ -78,5 +79,6 @@ func NewControllers(adaptors *adaptors.Adaptors,
 		DashboardTab:      NewControllerDashboardTab(common),
 		Variable:          NewControllerVariable(common),
 		EntityStorage:     NewControllerEntityStorage(common),
+		Metric:            NewControllerMetric(common),
 	}
 }

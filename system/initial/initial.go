@@ -22,7 +22,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-
+	"github.com/e154/smart-home/system/scheduler"
 	"go.uber.org/fx"
 
 	. "github.com/e154/smart-home/adaptors"
@@ -79,7 +79,8 @@ func NewInitial(lc fx.Lifecycle,
 	validation *validation.Validate,
 	_ *logging_ws.LoggingWs,
 	localMigrations *localMigrations.Migrations,
-	demo *demo.Demos) *Initial {
+	demo *demo.Demos,
+	_ *scheduler.Scheduler) *Initial {
 	initial := &Initial{
 		migrations:      migrations,
 		adaptors:        adaptors,

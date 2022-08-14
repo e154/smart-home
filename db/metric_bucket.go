@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/jinzhu/gorm"
@@ -89,7 +90,7 @@ LIMIT 3600`
 }
 
 // SimpleListByRangeType ...
-func (n *MetricBuckets) SimpleListByRangeType(metricId int64, metricRange string, optionItems []string) (list []MetricBucket, err error) {
+func (n *MetricBuckets) SimpleListByRangeType(metricId int64, metricRange common.MetricRange, optionItems []string) (list []MetricBucket, err error) {
 	var str string
 	for i, item := range optionItems {
 		str += fmt.Sprintf(" '%s', trunc(avg((value ->> '%[1]s')::numeric), 2)", item)
@@ -100,7 +101,7 @@ func (n *MetricBuckets) SimpleListByRangeType(metricId int64, metricRange string
 
 	var q string
 	switch metricRange {
-	case "6h":
+	case common.MetricRange6H:
 		q = `SELECT TIMESTAMP WITH TIME ZONE 'epoch' +
        INTERVAL '1 second' * round(extract('epoch' from time) / 6) * 6 as time,  json_build_object(
 ` + str + `
@@ -110,7 +111,7 @@ WHERE c.metric_id = ? and c.time > NOW() - interval '6 hour'
 GROUP BY round(extract('epoch' from c.time) / 6)
 order by time asc
 LIMIT 3600`
-	case "12h":
+	case common.MetricRange12H:
 		q = `SELECT TIMESTAMP WITH TIME ZONE 'epoch' +
        INTERVAL '1 second' * round(extract('epoch' from time) / 12) * 12 as time,  json_build_object(
 ` + str + `
@@ -120,7 +121,7 @@ WHERE c.metric_id = ? and c.time > NOW() - interval '12 hour'
 GROUP BY round(extract('epoch' from c.time) / 12)
 order by time asc
 LIMIT 3600`
-	case "24h":
+	case common.MetricRange24H:
 		q = `SELECT TIMESTAMP WITH TIME ZONE 'epoch' +
        INTERVAL '1 second' * round(extract('epoch' from time) / 24) * 24 as time,  json_build_object(
 ` + str + `
@@ -130,7 +131,7 @@ WHERE c.metric_id = ? and c.time > NOW() - interval '24 hour'
 GROUP BY round(extract('epoch' from c.time) / 24)
 order by time asc
 LIMIT 3600`
-	case "7d":
+	case common.MetricRange7d:
 		q = `SELECT TIMESTAMP WITH TIME ZONE 'epoch' +
        INTERVAL '1 second' * round(extract('epoch' from time) / 168) * 168 as time,  json_build_object(
 ` + str + `
@@ -140,7 +141,7 @@ WHERE c.metric_id = ? and c.time > NOW() - interval '7 days'
 GROUP BY round(extract('epoch' from c.time) / 168)
 order by time asc
 LIMIT 3600`
-	case "30d", "1m":
+	case common.MetricRange30d, common.MetricRange1m:
 		q = `SELECT TIMESTAMP WITH TIME ZONE 'epoch' +
        INTERVAL '1 second' * round(extract('epoch' from time) / 720) * 720 as time,  json_build_object(
 ` + str + `
