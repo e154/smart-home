@@ -42,7 +42,7 @@ var (
 			app := BuildContainer(fx.Invoke(func(
 				logger *logging.Logging,
 				dbSaver logging.ISaver,
-				initialService *initial.Initial,
+				_ *initial.Initial,
 			) {
 				logger.SetDbSaver(dbSaver)
 			}))
