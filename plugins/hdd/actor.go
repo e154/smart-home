@@ -67,6 +67,7 @@ func NewActor(entity *m.Entity,
 			AttrMu:            &sync.RWMutex{},
 			Attrs:             NewAttr(),
 			Manager:           entityManager,
+			Metric:            entity.Metrics,
 		},
 		eventBus:   eventBus,
 		updateLock: &sync.Mutex{},
@@ -115,7 +116,6 @@ func (u *Actor) selfUpdate() {
 		u.Attrs[AttrInodesUsedPercent].Value = r.InodesUsedPercent
 		u.AttrMu.Unlock()
 	}
-
 	u.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
 		StorageSave: false,
 		PluginName:  u.Id.PluginName(),

@@ -20,6 +20,7 @@ package logs
 
 import (
 	"fmt"
+	m "github.com/e154/smart-home/models"
 	"sync"
 
 	"github.com/rcrowley/go-metrics"
@@ -49,7 +50,7 @@ type Actor struct {
 
 // NewActor ...
 func NewActor(entityManager entity_manager.EntityManager,
-	eventBus event_bus.EventBus) *Actor {
+	eventBus event_bus.EventBus, entity *m.Entity) *Actor {
 
 	actor := &Actor{
 		BaseActor: entity_manager.BaseActor{
@@ -71,6 +72,16 @@ func NewActor(entityManager entity_manager.EntityManager,
 		updateLock:    &sync.Mutex{},
 	}
 
+	if entity != nil {
+		actor.Metric = entity.Metrics
+		attrs := entity.Attributes
+		actor.ErrTotal.Inc(attrs[AttrErrTotal].Int64())
+		actor.ErrToday.Inc(attrs[AttrErrToday].Int64())
+		actor.ErrYesterday.Inc(attrs[AttrErrYesterday].Int64())
+		actor.WarnTotal.Inc(attrs[AttrWarnTotal].Int64())
+		actor.WarnToday.Inc(attrs[AttrWarnToday].Int64())
+		actor.WarnYesterday.Inc(attrs[AttrWarnYesterday].Int64())
+	}
 	return actor
 }
 
