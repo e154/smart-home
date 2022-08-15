@@ -85,7 +85,7 @@ func (b *Backup) New() (err error) {
 		return
 	}
 
-	_ = os.Remove(tmpDir)
+	_ = os.RemoveAll(tmpDir)
 
 	log.Info("complete")
 
@@ -146,13 +146,13 @@ func (b *Backup) Restore(name string) (err error) {
 		return
 	}
 
-	os.Remove(path.Join("data", "file_storage"))
+	os.RemoveAll(path.Join("data", "file_storage"))
 
 	if err = Copy(path.Join(tmpDir, "file_storage"), path.Join("data", "file_storage")); err != nil {
 		return
 	}
 
-	os.Remove(tmpDir)
+	os.RemoveAll(tmpDir)
 
 	log.Info("complete")
 

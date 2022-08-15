@@ -117,6 +117,7 @@ func (a *Api) Start() error {
 	gw.RegisterVariableServiceServer(grpcServer, a.controllers.Variable)
 	gw.RegisterEntityStorageServiceServer(grpcServer, a.controllers.EntityStorage)
 	gw.RegisterMetricServiceServer(grpcServer, a.controllers.Metric)
+	gw.RegisterBackupServiceServer(grpcServer, a.controllers.Backup)
 	grpc_prometheus.Register(grpcServer)
 
 	var group errgroup.Group
@@ -173,6 +174,7 @@ func (a *Api) Start() error {
 		_ = gw.RegisterEntityStorageServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
 		_ = gw.RegisterVariableServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
 		_ = gw.RegisterMetricServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		_ = gw.RegisterBackupServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
 		return nil
 	})
 
