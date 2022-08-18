@@ -252,4 +252,20 @@ service EntityService {
       }
     };
   }
+
+  // import entity
+  rpc ImportEntity (Entity) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post: "/v1/entities/import"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
 }

@@ -145,3 +145,18 @@ func (i Image) ToFilterList(items []*m.ImageFilterList) (result *api.GetImageFil
 
 	return
 }
+
+func ImportImage(from *api.Image) (*int64, *m.Image) {
+	if from == nil {
+		return nil, nil
+	}
+	return common.Int64(from.Id), &m.Image{
+		Id:       from.Id,
+		Thumb:    from.Thumb,
+		Image:    from.Image,
+		MimeType: from.MimeType,
+		Title:    from.Title,
+		Name:     from.Name,
+		Size:     from.Size,
+	}
+}

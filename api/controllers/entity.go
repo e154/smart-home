@@ -51,6 +51,19 @@ func (c ControllerEntity) AddEntity(ctx context.Context, req *api.NewEntityReque
 	return c.dto.Entity.ToEntity(entity), nil
 }
 
+// ImportEntity ...
+func (c ControllerEntity) ImportEntity(ctx context.Context, req *api.Entity) (*emptypb.Empty, error) {
+
+	entity := c.dto.Entity.ImportEntity(req)
+
+	err := c.endpoint.Entity.Import(ctx, entity)
+	if err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return &emptypb.Empty{}, nil
+}
+
 // UpdateEntity ...
 func (c ControllerEntity) UpdateEntity(ctx context.Context, req *api.UpdateEntityRequest) (*api.Entity, error) {
 

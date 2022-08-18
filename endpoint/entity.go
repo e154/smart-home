@@ -67,11 +67,18 @@ func (n *EntityEndpoint) Add(ctx context.Context, entity *m.Entity) (result *m.E
 	return
 }
 
+// Import ...
+func (n *EntityEndpoint) Import(ctx context.Context, entity *m.Entity) (err error) {
+	// import scripts
+
+
+	err = n.adaptors.Entity.Import(entity)
+	return
+}
+
 // GetById ...
 func (n *EntityEndpoint) GetById(ctx context.Context, id common.EntityId) (result *m.Entity, err error) {
-
 	result, err = n.adaptors.Entity.GetById(id)
-
 	return
 }
 

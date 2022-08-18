@@ -20,7 +20,6 @@ package adaptors
 
 import (
 	"encoding/json"
-
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
@@ -40,6 +39,7 @@ type IEntity interface {
 	Search(query string, limit, offset int64) (list []*m.Entity, total int64, err error)
 	AppendMetric(entityId common.EntityId, metric *m.Metric) (err error)
 	DeleteMetric(entityId common.EntityId, metric *m.Metric) (err error)
+	Import(entity *m.Entity) (err error)
 	preloadMetric(ver *m.Entity)
 	fromDb(dbVer *db.Entity) (ver *m.Entity)
 	toDb(ver *m.Entity) (dbVer *db.Entity)
@@ -122,6 +122,98 @@ func (n *Entity) Add(ver *m.Entity) (err error) {
 		}
 	}
 
+	return
+}
+
+// Import ...
+func (n *Entity) Import(ver *m.Entity) (err error) {
+
+	transaction := true
+	tx := n.db.Begin()
+	if err = tx.Error; err != nil {
+		tx = n.db
+		transaction = false
+	}
+	defer func() {
+		if err != nil && transaction {
+			tx.Rollback()
+			return
+		}
+		if transaction {
+			err = tx.Commit().Error
+		}
+	}()
+
+	// area
+	if ver.Area != nil {
+		areaAdaptor := GetAreaAdaptor(tx)
+		var area *m.Area
+		if area, err = areaAdaptor.GetByName(ver.Area.Name); err != nil {
+			if ver.Area.Id, err = areaAdaptor.Add(ver.Area); err != nil {
+				return
+			}
+		} else {
+			ver.Area.Id = area.Id
+			ver.AreaId = common.Int64(area.Id)
+		}
+
+	}
+
+	// entity
+	table := db.Entities{Db: tx}
+	if err = table.Add(n.toDb(ver)); err != nil {
+		return
+	}
+
+	scriptAdaptor := GetScriptAdaptor(tx)
+
+	//actions
+	if len(ver.Actions) > 0 {
+		for i, action := range ver.Actions {
+			if action.Script != nil {
+				if action.Script.Id, err = scriptAdaptor.Add(action.Script); err != nil {
+					return
+				}
+			}
+			ver.Actions[i].EntityId = ver.Id
+		}
+		entityAction := GetEntityActionAdaptor(tx)
+		if err = entityAction.AddMultiple(ver.Actions); err != nil {
+			return
+		}
+	}
+
+	//states
+	if len(ver.States) > 0 {
+		for i := range ver.States {
+			ver.States[i].EntityId = ver.Id
+		}
+		stateAdaptor := GetEntityStateAdaptor(tx)
+		if err = stateAdaptor.AddMultiple(ver.States); err != nil {
+			return
+		}
+	}
+
+	//metrics
+	metricAdaptor := GetMetricAdaptor(tx, nil)
+	for _, metric := range ver.Metrics {
+		if metric.Id, err = metricAdaptor.Add(metric); err != nil {
+			return
+		}
+		if err = table.AppendMetric(ver.Id, metricAdaptor.toDb(metric)); err != nil {
+			return
+		}
+	}
+
+	// scripts
+	for _, script := range ver.Scripts {
+		if script.Id, err = scriptAdaptor.Add(script); err != nil {
+			return
+		}
+		if err = table.AppendScript(ver.Id, scriptAdaptor.toDb(script)); err != nil {
+			return
+		}
+	}
 	return
 }
 
