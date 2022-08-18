@@ -20,7 +20,6 @@ package dto
 
 import (
 	"fmt"
-
 	"github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -329,5 +328,70 @@ func ToEntity(entity *m.Entity) (obj *api.Entity) {
 		script := scriptDto.ToGScript(s)
 		obj.Scripts = append(obj.Scripts, script)
 	}
+	return
+}
+
+func (r Entity) ImportEntity(from *api.Entity) (to *m.Entity) {
+
+	areaId, area := ImportArea(from.Area)
+	var parentId *common.EntityId
+	if from.Parent != nil {
+		parentId = common.NewEntityId(from.Parent.Id)
+	}
+
+	_, image := ImportImage(from.Image)
+	to = &m.Entity{
+		Id:          common.EntityId(from.Id),
+		Description: from.Description,
+		PluginName:  from.PluginName,
+		Icon:        from.Icon,
+		Image:       image,
+		Actions:     make([]*m.EntityAction, 0, len(from.Actions)),
+		States:      make([]*m.EntityState, 0, len(from.States)),
+		Area:        area,
+		AreaId:      areaId,
+		Metrics:     AddMetric(from.Metrics),
+		Scripts:     make([]*m.Script, 0, len(from.Scripts)),
+		Attributes:  AttributeFromApi(from.Attributes),
+		Settings:    AttributeFromApi(from.Settings),
+		AutoLoad:    from.AutoLoad,
+		ParentId:    parentId,
+	}
+
+	// ACTIONS
+	for _, action := range from.Actions {
+		imageId, image := ImportImage(action.Image)
+		scriptId, script := ImportScript(action.Script)
+		to.Actions = append(to.Actions, &m.EntityAction{
+			Name:        action.Name,
+			Description: action.Description,
+			Icon:        action.Icon,
+			Image:       image,
+			ImageId:     imageId,
+			Script:      script,
+			ScriptId:    scriptId,
+			Type:        action.Type,
+		})
+	}
+
+	// STATES
+	for _, state := range from.States {
+		imageId, image := ImportImage(state.Image)
+		to.States = append(to.States, &m.EntityState{
+			Name:        state.Name,
+			Description: state.Description,
+			Icon:        state.Icon,
+			Image:       image,
+			ImageId:     imageId,
+			Style:       state.Style,
+		})
+	}
+
+	// SCRIPTS
+	for _, script := range from.Scripts {
+		_, _script := ImportScript(script)
+		to.Scripts = append(to.Scripts, _script)
+	}
+
 	return
 }
