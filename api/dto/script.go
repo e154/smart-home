@@ -123,3 +123,16 @@ func ToGScript(script *m.Script) (result *api.Script) {
 	}
 	return
 }
+
+func ImportScript(from *api.Script) (*int64, *m.Script) {
+	if from == nil {
+		return nil, nil
+	}
+	return common.Int64(from.Id), &m.Script{
+		Id:          from.Id,
+		Lang:        common.ScriptLang(from.Lang),
+		Name:        from.Name,
+		Source:      from.Source,
+		Description: from.Description,
+	}
+}

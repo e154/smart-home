@@ -103,3 +103,14 @@ func ToArea(area *m.Area) (obj *api.Area) {
 	}
 	return
 }
+
+func ImportArea(from *api.Area) (*int64, *m.Area) {
+	if from == nil {
+		return nil, nil
+	}
+	return common.Int64(from.Id), &m.Area{
+		Id:          from.Id,
+		Name:        from.Name,
+		Description: from.Description,
+	}
+}

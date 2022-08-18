@@ -4,7 +4,6 @@ package api
 
 import (
 	context "context"
-
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -32,6 +31,8 @@ type EntityServiceClient interface {
 	DeleteEntity(ctx context.Context, in *DeleteEntityRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// search entity
 	SearchEntity(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchEntityResult, error)
+	// import entity
+	ImportEntity(ctx context.Context, in *Entity, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type entityServiceClient struct {
@@ -96,6 +97,15 @@ func (c *entityServiceClient) SearchEntity(ctx context.Context, in *SearchReques
 	return out, nil
 }
 
+func (c *entityServiceClient) ImportEntity(ctx context.Context, in *Entity, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/api.EntityService/ImportEntity", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // EntityServiceServer is the server API for EntityService service.
 // All implementations should embed UnimplementedEntityServiceServer
 // for forward compatibility
@@ -112,6 +122,8 @@ type EntityServiceServer interface {
 	DeleteEntity(context.Context, *DeleteEntityRequest) (*emptypb.Empty, error)
 	// search entity
 	SearchEntity(context.Context, *SearchRequest) (*SearchEntityResult, error)
+	// import entity
+	ImportEntity(context.Context, *Entity) (*emptypb.Empty, error)
 }
 
 // UnimplementedEntityServiceServer should be embedded to have forward compatible implementations.
@@ -135,6 +147,9 @@ func (UnimplementedEntityServiceServer) DeleteEntity(context.Context, *DeleteEnt
 }
 func (UnimplementedEntityServiceServer) SearchEntity(context.Context, *SearchRequest) (*SearchEntityResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchEntity not implemented")
+}
+func (UnimplementedEntityServiceServer) ImportEntity(context.Context, *Entity) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ImportEntity not implemented")
 }
 
 // UnsafeEntityServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -256,6 +271,24 @@ func _EntityService_SearchEntity_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _EntityService_ImportEntity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Entity)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EntityServiceServer).ImportEntity(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.EntityService/ImportEntity",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EntityServiceServer).ImportEntity(ctx, req.(*Entity))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // EntityService_ServiceDesc is the grpc.ServiceDesc for EntityService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -286,6 +319,10 @@ var EntityService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SearchEntity",
 			Handler:    _EntityService_SearchEntity_Handler,
+		},
+		{
+			MethodName: "ImportEntity",
+			Handler:    _EntityService_ImportEntity_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

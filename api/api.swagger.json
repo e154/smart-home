@@ -1685,6 +1685,44 @@
         ]
       }
     },
+    "/v1/entities/import": {
+      "post": {
+        "summary": "import entity",
+        "operationId": "EntityService_ImportEntity",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiEntity"
+            }
+          }
+        ],
+        "tags": [
+          "EntityService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
     "/v1/entity": {
       "post": {
         "summary": "add new entity",
