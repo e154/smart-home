@@ -33,11 +33,15 @@ func (n *MigrationAreas) Up(ctx context.Context, adaptors *adaptors.Adaptors) (e
 	return
 }
 
-func (n *MigrationAreas) addArea(name, desc string) (node *m.Area, err error) {
-	_, err = n.adaptors.Area.Add(&m.Area{
+func (n *MigrationAreas) addArea(name, desc string) (area *m.Area, err error) {
+	if area, err = n.adaptors.Area.GetByName(name); err == nil {
+		return
+	}
+	area = &m.Area{
 		Name:        name,
 		Description: desc,
-	})
+	}
+	area.Id, err = n.adaptors.Area.Add(area)
 	So(err, ShouldBeNil)
 	return
 }

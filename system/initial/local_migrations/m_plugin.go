@@ -23,7 +23,7 @@ func (n *MigrationPlugins) Up(ctx context.Context, adaptors *adaptors.Adaptors) 
 	}
 	n.addPlugin("alexa", false, false, false)
 	n.addPlugin("cgminer", true, false, true)
-	n.addPlugin("cpuspeed", false, false, false)
+	n.addPlugin("cpuspeed", true, false, false)
 	n.addPlugin("email", true, false, false)
 	n.addPlugin("messagebird", false, false, false)
 	n.addPlugin("modbus_rtu", false, false, true)
@@ -45,12 +45,12 @@ func (n *MigrationPlugins) Up(ctx context.Context, adaptors *adaptors.Adaptors) 
 	n.addPlugin("triggers", true, true, false)
 	n.addPlugin("twilio", false, false, false)
 	n.addPlugin("updater", false, false, false)
-	n.addPlugin("uptime", false, false, false)
+	n.addPlugin("uptime", true, false, false)
 	n.addPlugin("weather", false, false, false)
 	n.addPlugin("weather_met", false, false, true)
 	n.addPlugin("weather_owm", false, false, true)
 	n.addPlugin("zigbee2mqtt", false, false, true)
-	n.addPlugin("zone", false, false, true)
+	n.addPlugin("zone", true, false, true)
 	return nil
 }
 

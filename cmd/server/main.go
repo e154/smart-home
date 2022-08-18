@@ -20,12 +20,14 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/e154/smart-home/cmd/server/commands"
 )
 
 func main() {
 	if err := commands.Server.Execute(); err != nil {
-		fmt.Println(err.Error())
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
 }

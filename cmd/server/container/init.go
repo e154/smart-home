@@ -11,11 +11,12 @@ func MigrationList(adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
 	validation *validation.Validate) []local_migrations.Migration {
 	return []local_migrations.Migration{
-		local_migrations.NewMigrationImages(adaptors, "data"),
+		local_migrations.NewMigrationImages(adaptors, "./"),
 		local_migrations.NewMigrationRoles(adaptors, accessList, validation),
 		local_migrations.NewMigrationTemplates(adaptors),
 		local_migrations.NewMigrationAreas(adaptors),
 		local_migrations.NewMigrationPlugins(adaptors),
 		local_migrations.NewMigrationZones(adaptors),
+		//local_migrations.NewMigrationDashboard(adaptors),
 	}
 }
