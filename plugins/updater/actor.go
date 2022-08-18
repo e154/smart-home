@@ -26,12 +26,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/e154/smart-home/system/event_bus/events"
+	"github.com/e154/smart-home/common/events"
 
 	"github.com/Masterminds/semver"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/version"
 	"go.uber.org/atomic"
 )
@@ -39,7 +39,7 @@ import (
 // Actor ...
 type Actor struct {
 	entity_manager.BaseActor
-	eventBus          event_bus.EventBus
+	eventBus          bus.Bus
 	checkLock         *sync.Mutex
 	latestVersion     string
 	latestDownloadUrl string
@@ -50,7 +50,7 @@ type Actor struct {
 
 // NewActor ...
 func NewActor(entityManager entity_manager.EntityManager,
-	eventBus event_bus.EventBus) *Actor {
+	eventBus bus.Bus) *Actor {
 
 	var v = "v0.0.1"
 	if version.VersionString != "?" {
@@ -163,7 +163,7 @@ func (e *Actor) check() {
 	e.Attrs[AttrUpdaterLatestCheck].Value = e.lastCheck
 	e.AttrMu.Unlock()
 
-	e.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
+	e.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
 		PluginName: e.Id.PluginName(),
 		EntityId:   e.Id,
 		OldState:   oldState,

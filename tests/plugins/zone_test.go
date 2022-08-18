@@ -23,14 +23,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/e154/smart-home/system/event_bus/events"
+	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/automation"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
@@ -48,7 +48,7 @@ func TestZone(t *testing.T) {
 			zigbee2mqtt zigbee2mqtt.Zigbee2mqtt,
 			mqttServer mqtt.MqttServ,
 			automation automation.Automation,
-			eventBus event_bus.EventBus,
+			eventBus bus.Bus,
 			pluginManager common.PluginManager) {
 
 			eventBus.Purge()
@@ -75,7 +75,7 @@ func TestZone(t *testing.T) {
 			wgAdd.Add(1)
 			wgUpdate := sync.WaitGroup{}
 			wgUpdate.Add(1)
-			_ = eventBus.Subscribe(event_bus.TopicEntities, func(_ string, msg interface{}) {
+			_ = eventBus.Subscribe(bus.TopicEntities, func(_ string, msg interface{}) {
 
 				switch v := msg.(type) {
 				case events.EventStateChanged:

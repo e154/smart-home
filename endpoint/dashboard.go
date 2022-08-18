@@ -20,7 +20,6 @@ package endpoint
 
 import (
 	"context"
-
 	"github.com/go-playground/validator/v10"
 	"github.com/jinzhu/copier"
 	"github.com/pkg/errors"
@@ -71,7 +70,6 @@ func (d *DashboardEndpoint) GetById(ctx context.Context, id int64) (board *m.Das
 
 	return
 }
-
 
 // Search ...
 func (d *DashboardEndpoint) Search(ctx context.Context, query string, limit, offset int64) (result []*m.Dashboard, total int64, err error) {
@@ -181,6 +179,9 @@ func (d *DashboardEndpoint) preloadEntities(board *m.Dashboard) (err error) {
 
 // Import ...
 func (d *DashboardEndpoint) Import(ctx context.Context, board *m.Dashboard) (result *m.Dashboard, err error) {
+
+	//b, _ := json.Marshal(board)
+	//fmt.Println(string(b))
 
 	var id int64
 	if id, err = d.adaptors.Dashboard.Import(board); err != nil {

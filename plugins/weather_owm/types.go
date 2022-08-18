@@ -296,10 +296,10 @@ func NewSettings() map[string]*m.Attribute {
 	}
 }
 
-//  "id": 500,
-//  "main": "Rain",
-//  "description": "небольшой дождь",
-//  "icon": "10d"
+// "id": 500,
+// "main": "Rain",
+// "description": "небольшой дождь",
+// "icon": "10d"
 func WeatherCondition(w ProductWeather) (state entity_manager.ActorState) {
 
 	//fmt.Println("------")

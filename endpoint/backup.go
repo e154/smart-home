@@ -16,42 +16,42 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package common
+package endpoint
 
 import (
 	"context"
-	"fmt"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
 
-	"go.uber.org/fx"
+	"github.com/e154/smart-home/system/backup"
 )
 
-// Start ...
-func Start(app *fx.App) {
-	startCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-	defer cancel()
-	if err := app.Start(startCtx); err != nil {
-		fmt.Println("fx error:", err.Error())
-		return
+// BackupEndpoint ...
+type BackupEndpoint struct {
+	*CommonEndpoint
+	backup *backup.Backup
+}
+
+// NewBackupEndpoint ...
+func NewBackupEndpoint(common *CommonEndpoint, backup *backup.Backup) *BackupEndpoint {
+	return &BackupEndpoint{
+		CommonEndpoint: common,
+		backup:         backup,
 	}
 }
 
-// Work ...
-func Work() {
-	var gracefulStop = make(chan os.Signal, 10)
-	signal.Notify(gracefulStop, syscall.SIGINT, syscall.SIGTERM)
-
-	<-gracefulStop
+// New ...
+func (b *BackupEndpoint) New(ctx context.Context) (err error) {
+	err = b.backup.New()
+	return
 }
 
-// Stop ...
-func Stop(app *fx.App) {
-	stopCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-	defer cancel()
-	if err := app.Stop(stopCtx); err != nil {
-		fmt.Println("fx error:", err.Error())
-	}
+// Restore ...
+func (b *BackupEndpoint) Restore(ctx context.Context, name string) (err error) {
+	err = b.backup.Restore(name)
+	return
+}
+
+// GetList ...
+func (b *BackupEndpoint) GetList(ctx context.Context) (list []string) {
+	list = b.backup.List()
+	return
 }

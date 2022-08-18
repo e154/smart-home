@@ -23,23 +23,24 @@ import (
 	"runtime"
 	"sync"
 
+	"github.com/e154/smart-home/common/events"
+
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/event_bus/events"
 	"github.com/e154/smart-home/version"
 )
 
 // Actor ...
 type Actor struct {
 	entity_manager.BaseActor
-	eventBus   event_bus.EventBus
+	eventBus   bus.Bus
 	updateLock *sync.Mutex
 }
 
 // NewActor ...
 func NewActor(entityManager entity_manager.EntityManager,
-	eventBus event_bus.EventBus) *Actor {
+	eventBus bus.Bus) *Actor {
 
 	actor := &Actor{
 		BaseActor: entity_manager.BaseActor{
@@ -85,7 +86,7 @@ func (u *Actor) selfUpdate() {
 	u.Attrs[AttrGoVersion].Value = version.GoVersion
 	u.AttrMu.Unlock()
 
-	u.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
+	u.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
 		StorageSave: false,
 		PluginName:  u.Id.PluginName(),
 		EntityId:    u.Id,

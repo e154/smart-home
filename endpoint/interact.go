@@ -3,9 +3,10 @@ package endpoint
 import (
 	"context"
 
+	"github.com/e154/smart-home/common/events"
+
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/event_bus/events"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -30,7 +31,7 @@ func (d InteractEndpoint) EntityCallAction(ctx context.Context, entityId string,
 		return
 	}
 
-	d.eventBus.Publish(event_bus.TopicEntities, events.EventCallAction{
+	d.eventBus.Publish(bus.TopicEntities, events.EventCallAction{
 		PluginName: id.PluginName(),
 		EntityId:   id,
 		ActionName: action,

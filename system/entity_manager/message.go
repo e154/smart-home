@@ -20,14 +20,14 @@ package entity_manager
 
 import (
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/bus"
 )
 
 // MessageStateChanged -> entityManager
 type MessageStateChanged struct {
 	StorageSave bool
-	OldState    event_bus.EventEntityState
-	NewState    event_bus.EventEntityState
+	OldState    bus.EventEntityState
+	NewState    bus.EventEntityState
 }
 
 // EntityStateParams -> entityManager

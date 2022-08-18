@@ -22,22 +22,22 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/events"
 
-	"github.com/e154/smart-home/system/event_bus/events"
+	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 	"gopkg.in/gomail.v2"
 )
 
 // Actor ...
 type Actor struct {
 	entity_manager.BaseActor
-	eventBus event_bus.EventBus
+	eventBus bus.Bus
 	adaptors *adaptors.Adaptors
 	Auth     string
 	Pass     string
@@ -49,7 +49,7 @@ type Actor struct {
 // NewActor ...
 func NewActor(settings m.Attributes,
 	entityManager entity_manager.EntityManager,
-	eventBus event_bus.EventBus,
+	eventBus bus.Bus,
 	adaptors *adaptors.Adaptors) *Actor {
 
 	actor := &Actor{
@@ -142,7 +142,7 @@ func (p *Actor) UpdateStatus() (err error) {
 	}
 	p.AttrMu.Unlock()
 
-	p.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
+	p.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
 		StorageSave: true,
 		PluginName:  p.Id.PluginName(),
 		EntityId:    p.Id,

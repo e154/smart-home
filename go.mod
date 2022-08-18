@@ -67,8 +67,10 @@ require (
 )
 
 require (
+	github.com/go-co-op/gocron v1.16.2
 	github.com/go-playground/locales v0.14.0
 	github.com/go-playground/universal-translator v0.18.0
+	github.com/google/uuid v1.3.0
 	github.com/iancoleman/strcase v0.2.0
 	github.com/jackc/pgerrcode v0.0.0-20220416144525-469b46aa5efa
 	github.com/shirou/gopsutil/v3 v3.22.4
@@ -81,7 +83,6 @@ require (
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
-	github.com/go-co-op/gocron v1.16.2 // indirect
 	github.com/go-gorp/gorp/v3 v3.0.2 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/golang/glog v0.0.0-20210429001901-424d2337a529 // indirect

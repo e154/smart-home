@@ -25,6 +25,8 @@ import (
 	"sync"
 	"time"
 
+	events2 "github.com/e154/smart-home/common/events"
+
 	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/pkg/errors"
@@ -34,8 +36,7 @@ import (
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/event_bus/events"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/scripts"
 )
 
@@ -44,7 +45,7 @@ var (
 )
 
 type entityManager struct {
-	eventBus      event_bus.EventBus
+	eventBus      bus.Bus
 	adaptors      *adaptors.Adaptors
 	scripts       scripts.ScriptService
 	pluginManager common.PluginManager
@@ -54,7 +55,7 @@ type entityManager struct {
 
 // NewEntityManager ...
 func NewEntityManager(lc fx.Lifecycle,
-	eventBus event_bus.EventBus,
+	eventBus bus.Bus,
 	adaptors *adaptors.Adaptors,
 	scripts scripts.ScriptService) EntityManager {
 	manager := &entityManager{
@@ -82,8 +83,8 @@ func (e *entityManager) SetPluginManager(pluginManager common.PluginManager) {
 	e.pluginManager = pluginManager
 
 	// event subscribe
-	_ = e.eventBus.Subscribe(event_bus.TopicEntities, e.eventHandler)
-	_ = e.eventBus.Subscribe(event_bus.TopicPlugins, e.eventHandler)
+	_ = e.eventBus.Subscribe(bus.TopicEntities, e.eventHandler)
+	_ = e.eventBus.Subscribe(bus.TopicPlugins, e.eventHandler)
 }
 
 // LoadEntities ...
@@ -117,8 +118,8 @@ LOOP:
 // Shutdown ...
 func (e *entityManager) Shutdown() {
 
-	_ = e.eventBus.Unsubscribe(event_bus.TopicEntities, e.eventHandler)
-	_ = e.eventBus.Unsubscribe(event_bus.TopicPlugins, e.eventHandler)
+	_ = e.eventBus.Unsubscribe(bus.TopicEntities, e.eventHandler)
+	_ = e.eventBus.Unsubscribe(bus.TopicPlugins, e.eventHandler)
 
 	e.actors.Range(func(key, value interface{}) bool {
 		actor := value.(*actorInfo)
@@ -130,7 +131,7 @@ func (e *entityManager) Shutdown() {
 	log.Info("Shutdown")
 }
 
-func (e *entityManager) updateMetric(actor *actorInfo, state event_bus.EventEntityState) {
+func (e *entityManager) updateMetric(actor *actorInfo, state bus.EventEntityState) {
 	metrics := actor.Actor.Metrics()
 	if metrics == nil {
 		return
@@ -310,7 +311,7 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 
 			log.Infof("unload %v", entityId)
 
-			e.eventBus.Publish(event_bus.TopicEntities, events.EventRemoveActor{
+			e.eventBus.Publish(bus.TopicEntities, events2.EventRemoveActor{
 				PluginName: info.PluginName,
 				EntityId:   entityId,
 			})
@@ -331,7 +332,7 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 	attr := actor.Attributes()
 	settings := actor.Settings()
 
-	e.eventBus.Publish(event_bus.TopicEntities, events.EventAddedActor{
+	e.eventBus.Publish(bus.TopicEntities, events2.EventAddedActor{
 		PluginName: info.PluginName,
 		EntityId:   entityId,
 		Attributes: attr,
@@ -358,26 +359,26 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 func (e *entityManager) eventHandler(_ string, message interface{}) {
 
 	switch msg := message.(type) {
-	case events.EventStateChanged:
+	case events2.EventStateChanged:
 		go e.eventStateChangedHandler(msg)
-	case events.EventLoadedPlugin:
+	case events2.EventLoadedPlugin:
 		go func() { _ = e.eventLoadedPlugin(msg) }()
-	case events.EventUnloadedPlugin:
+	case events2.EventUnloadedPlugin:
 		go e.eventUnloadedPlugin(msg)
-	case events.EventCreatedEntity:
+	case events2.EventCreatedEntity:
 		go e.eventCreatedEntity(msg)
-	case events.EventUpdatedEntity:
+	case events2.EventUpdatedEntity:
 		go e.eventUpdatedEntity(msg)
-	case events.EventDeletedEntity:
+	case events2.EventDeletedEntity:
 		go e.eventDeletedEntity(msg)
-	case events.EventEntitySetState:
+	case events2.EventEntitySetState:
 		go e.eventEntitySetState(msg)
-	case events.EventGetLastState:
+	case events2.EventGetLastState:
 		go e.eventLastState(msg)
 	}
 }
 
-func (e *entityManager) eventStateChangedHandler(msg events.EventStateChanged) {
+func (e *entityManager) eventStateChangedHandler(msg events2.EventStateChanged) {
 
 	item, ok := e.actors.Load(msg.EntityId)
 	if !ok {
@@ -421,7 +422,7 @@ func (e *entityManager) eventStateChangedHandler(msg events.EventStateChanged) {
 	}()
 }
 
-func (e *entityManager) eventLastState(msg events.EventGetLastState) {
+func (e *entityManager) eventLastState(msg events2.EventGetLastState) {
 
 	item, ok := e.actors.Load(msg.EntityId)
 	if !ok {
@@ -436,7 +437,7 @@ func (e *entityManager) eventLastState(msg events.EventGetLastState) {
 
 	info := actor.Actor.Info()
 
-	e.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
+	e.eventBus.Publish(bus.TopicEntities, events2.EventStateChanged{
 		StorageSave: false,
 		PluginName:  info.PluginName,
 		EntityId:    info.Id,
@@ -445,7 +446,7 @@ func (e *entityManager) eventLastState(msg events.EventGetLastState) {
 	})
 }
 
-func (e *entityManager) eventLoadedPlugin(msg events.EventLoadedPlugin) (err error) {
+func (e *entityManager) eventLoadedPlugin(msg events2.EventLoadedPlugin) (err error) {
 
 	log.Infof("Load plugin '%s' entities", msg.PluginName)
 
@@ -463,7 +464,7 @@ func (e *entityManager) eventLoadedPlugin(msg events.EventLoadedPlugin) (err err
 	return
 }
 
-func (e *entityManager) eventUnloadedPlugin(msg events.EventUnloadedPlugin) {
+func (e *entityManager) eventUnloadedPlugin(msg events2.EventUnloadedPlugin) {
 
 	log.Infof("Unload plugin '%s' entities", msg.PluginName)
 
@@ -477,7 +478,7 @@ func (e *entityManager) eventUnloadedPlugin(msg events.EventUnloadedPlugin) {
 	})
 }
 
-func (e *entityManager) eventCreatedEntity(msg events.EventCreatedEntity) {
+func (e *entityManager) eventCreatedEntity(msg events2.EventCreatedEntity) {
 
 	entity, err := e.adaptors.Entity.GetById(msg.Id)
 	if err != nil {
@@ -489,7 +490,7 @@ func (e *entityManager) eventCreatedEntity(msg events.EventCreatedEntity) {
 	}
 }
 
-func (e *entityManager) eventUpdatedEntity(msg events.EventUpdatedEntity) {
+func (e *entityManager) eventUpdatedEntity(msg events2.EventUpdatedEntity) {
 
 	entity, err := e.adaptors.Entity.GetById(msg.Id)
 	if err != nil {
@@ -501,12 +502,12 @@ func (e *entityManager) eventUpdatedEntity(msg events.EventUpdatedEntity) {
 	}
 }
 
-func (e *entityManager) eventDeletedEntity(msg events.EventDeletedEntity) {
+func (e *entityManager) eventDeletedEntity(msg events2.EventDeletedEntity) {
 
 	e.Remove(msg.Id)
 }
 
-func (e *entityManager) eventEntitySetState(msg events.EventEntitySetState) {
+func (e *entityManager) eventEntitySetState(msg events2.EventEntitySetState) {
 
 	_ = e.SetState(msg.Id, EntityStateParams{
 		NewState:        msg.NewState,
@@ -518,7 +519,7 @@ func (e *entityManager) eventEntitySetState(msg events.EventEntitySetState) {
 
 // CallAction ...
 func (e *entityManager) CallAction(id common.EntityId, action string, arg map[string]interface{}) {
-	e.eventBus.Publish(event_bus.TopicEntities, events.EventCallAction{
+	e.eventBus.Publish(bus.TopicEntities, events2.EventCallAction{
 		PluginName: id.PluginName(),
 		EntityId:   id,
 		ActionName: action,
@@ -528,7 +529,7 @@ func (e *entityManager) CallAction(id common.EntityId, action string, arg map[st
 
 // CallScene ...
 func (e *entityManager) CallScene(id common.EntityId, arg map[string]interface{}) {
-	e.eventBus.Publish(event_bus.TopicEntities, events.EventCallScene{
+	e.eventBus.Publish(bus.TopicEntities, events2.EventCallScene{
 		PluginName: id.PluginName(),
 		EntityId:   id,
 		Args:       arg,
@@ -605,16 +606,16 @@ func (e *entityManager) unsafeRemove(id common.EntityId) {
 }
 
 // GetEventState ...
-func GetEventState(actor PluginActor) (eventState event_bus.EventEntityState) {
+func GetEventState(actor PluginActor) (eventState bus.EventEntityState) {
 
 	attrs := actor.Attributes()
 	setts := actor.Settings()
 
-	var state *event_bus.EntityState
+	var state *bus.EntityState
 
 	info := actor.Info()
 	if info.State != nil {
-		state = &event_bus.EntityState{
+		state = &bus.EntityState{
 			Name:        info.State.Name,
 			Description: info.State.Description,
 			ImageUrl:    info.State.ImageUrl,
@@ -622,7 +623,7 @@ func GetEventState(actor PluginActor) (eventState event_bus.EventEntityState) {
 		}
 	}
 
-	eventState = event_bus.EventEntityState{
+	eventState = bus.EventEntityState{
 		EntityId:   info.Id,
 		Value:      info.Value,
 		State:      state,

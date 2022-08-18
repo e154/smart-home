@@ -21,12 +21,13 @@ package hdd
 import (
 	"sync"
 
-	"github.com/e154/smart-home/system/event_bus/events"
+	"github.com/e154/smart-home/common/events"
+
 	"github.com/shirou/gopsutil/v3/disk"
 
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 	"github.com/rcrowley/go-metrics"
 )
 
@@ -40,7 +41,7 @@ type Actor struct {
 	usedPercent     metrics.GaugeFloat64
 	allCpuPrevTotal float64
 	allCpuPrevIdle  float64
-	eventBus        event_bus.EventBus
+	eventBus        bus.Bus
 	updateLock      *sync.Mutex
 	MountPoint      string
 }
@@ -48,7 +49,7 @@ type Actor struct {
 // NewActor ...
 func NewActor(entity *m.Entity,
 	entityManager entity_manager.EntityManager,
-	eventBus event_bus.EventBus) *Actor {
+	eventBus bus.Bus) *Actor {
 
 	var mountPoint string
 	if _mountPoint, ok := entity.Settings[AttrMountPoint]; ok {
@@ -116,7 +117,7 @@ func (u *Actor) selfUpdate() {
 		u.Attrs[AttrInodesUsedPercent].Value = r.InodesUsedPercent
 		u.AttrMu.Unlock()
 	}
-	u.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
+	u.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
 		StorageSave: false,
 		PluginName:  u.Id.PluginName(),
 		EntityId:    u.Id,

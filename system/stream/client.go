@@ -22,8 +22,9 @@ import (
 	"encoding/json"
 	"io"
 
+	"github.com/google/uuid"
+
 	"github.com/e154/smart-home/api/stub/api"
-	"github.com/e154/smart-home/common/uuid"
 )
 
 // Client ...
@@ -76,7 +77,7 @@ func (c *Client) Send(id, query string, body []byte) (err error) {
 
 // Broadcast ...
 func (c *Client) Broadcast(query string, body []byte) (err error) {
-	err = c.Send(uuid.NewV4().String(), query, body)
+	err = c.Send(uuid.NewString(), query, body)
 	return
 }
 

@@ -22,7 +22,7 @@ import (
 	"fmt"
 
 	. "github.com/e154/smart-home/cmd/server/container"
-	. "github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/app"
 	"github.com/e154/smart-home/system/initial"
 	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/version"
@@ -39,7 +39,7 @@ var (
 
 			fmt.Printf(version.ShortVersionBanner, "")
 
-			app := BuildContainer(fx.Invoke(func(
+			app.Do(BuildContainer, fx.Invoke(func(
 				logger *logging.Logging,
 				dbSaver logging.ISaver,
 				_ *initial.Initial,
@@ -47,11 +47,6 @@ var (
 				logger.SetDbSaver(dbSaver)
 			}))
 
-			Start(app)
-
-			Work()
-
-			Stop(app)
 		},
 	}
 )

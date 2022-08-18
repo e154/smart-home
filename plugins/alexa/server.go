@@ -30,7 +30,7 @@ import (
 
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/scripts"
 )
@@ -47,7 +47,7 @@ type Server struct {
 	config        Config
 	scriptService scripts.ScriptService
 	gate          *gate_client.GateClient
-	eventBus      event_bus.EventBus
+	eventBus      bus.Bus
 }
 
 // NewServer ...
@@ -55,7 +55,7 @@ func NewServer(adaptors *adaptors.Adaptors,
 	config Config,
 	scriptService scripts.ScriptService,
 	gateClient *gate_client.GateClient,
-	eventBus event_bus.EventBus) *Server {
+	eventBus bus.Bus) *Server {
 	return &Server{
 		isStarted:     atomic.NewBool(false),
 		adaptors:      adaptors,

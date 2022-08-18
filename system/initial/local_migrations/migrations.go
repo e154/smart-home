@@ -71,11 +71,13 @@ func (t *Migrations) Up(ctx context.Context, tx *adaptors.Adaptors, ver string) 
 
 		for _, migration := range t.list[position:len(t.list)] {
 			if err = ctx.Err(); err != nil {
+				log.Error(err.Error())
 				return
 			}
 			newVersion = reflect.TypeOf(migration).String()
 			if err = migration.Up(ctx, tx); err != nil {
 				fmt.Printf("migration '%s' ... error\n", newVersion)
+				log.Error(err.Error())
 				return
 			}
 			ok = append(ok, newVersion)

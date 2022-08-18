@@ -24,7 +24,6 @@ const TriggerFunc = "automationTrigger"
 // Javascript Binding
 //
 // Trigger
-//
 type TriggerBind struct {
 	tr *Trigger
 }

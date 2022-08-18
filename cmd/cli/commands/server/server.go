@@ -21,9 +21,8 @@
 // topics every 30 seconds. `sudo` is needed because we are using RAW sockets and
 // that requires root privilege.
 //
-//   $ go build
-//   $ sudo ./pingmq server -p 8.8.8.0/28 -i 30
-//
+//	$ go build
+//	$ sudo ./pingmq server -p 8.8.8.0/28 -i 30
 package server
 
 import (

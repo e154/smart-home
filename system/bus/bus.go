@@ -16,33 +16,33 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package message_queue
+package bus
 
 import (
 	"fmt"
 	"reflect"
 	"sort"
-
-	"github.com/e154/smart-home/common/apperr"
+	"sync"
 
 	"github.com/pkg/errors"
+
+	"github.com/e154/smart-home/common/apperr"
 )
 
-// New creates new MessageQueue
-// queueSize sets buffered channel length per subscriber
-func New(handlerQueueSize int) MessageQueue {
-	if handlerQueueSize == 0 {
-		panic(any("queueSize has to be greater then 0"))
-	}
+type bus struct {
+	sync.RWMutex
+	sub map[string]*subscribers
+}
 
-	return &messageQueue{
-		queueSize: handlerQueueSize,
-		sub:       make(map[string]*subscribers),
+// NewBus ...
+func NewBus() Bus {
+	return &bus{
+		sub: make(map[string]*subscribers),
 	}
 }
 
 // Publish ...
-func (b *messageQueue) Publish(topic string, args ...interface{}) {
+func (b *bus) Publish(topic string, args ...interface{}) {
 	rArgs := buildHandlerArgs(append([]interface{}{topic}, args...))
 
 	b.RLock()
@@ -60,14 +60,16 @@ func (b *messageQueue) Publish(topic string, args ...interface{}) {
 }
 
 // Subscribe ...
-func (b *messageQueue) Subscribe(topic string, fn interface{}, options ...interface{}) error {
+func (b *bus) Subscribe(topic string, fn interface{}, options ...interface{}) error {
 	if reflect.TypeOf(fn).Kind() != reflect.Func {
 		return errors.Wrap(apperr.ErrInternal, fmt.Sprintf("%s is not a reflect.Func", reflect.TypeOf(fn)))
 	}
 
+	const queueSize = 1024
+
 	h := &handler{
 		callback: reflect.ValueOf(fn),
-		queue:    make(chan []reflect.Value, b.queueSize),
+		queue:    make(chan []reflect.Value, queueSize),
 	}
 
 	b.Lock()
@@ -78,6 +80,7 @@ func (b *messageQueue) Subscribe(topic string, fn interface{}, options ...interf
 			h.callback.Call(args)
 		}
 	}()
+
 
 	if _, ok := b.sub[topic]; ok {
 		b.sub[topic].handlers = append(b.sub[topic].handlers, h)
@@ -102,7 +105,7 @@ func (b *messageQueue) Subscribe(topic string, fn interface{}, options ...interf
 }
 
 // Unsubscribe ...
-func (b *messageQueue) Unsubscribe(topic string, fn interface{}) error {
+func (b *bus) Unsubscribe(topic string, fn interface{}) error {
 	b.Lock()
 	defer b.Unlock()
 
@@ -112,7 +115,6 @@ func (b *messageQueue) Unsubscribe(topic string, fn interface{}) error {
 		for i, h := range b.sub[topic].handlers {
 			if h.callback == rv {
 				close(h.queue)
-
 				b.sub[topic].handlers = append(b.sub[topic].handlers[:i], b.sub[topic].handlers[i+1:]...)
 			}
 		}
@@ -124,7 +126,7 @@ func (b *messageQueue) Unsubscribe(topic string, fn interface{}) error {
 }
 
 // Close ...
-func (b *messageQueue) Close(topic string) {
+func (b *bus) Close(topic string) {
 	b.Lock()
 	defer b.Unlock()
 
@@ -132,15 +134,13 @@ func (b *messageQueue) Close(topic string) {
 		for _, h := range b.sub[topic].handlers {
 			close(h.queue)
 		}
-
 		delete(b.sub, topic)
-
 		return
 	}
 }
 
 // Purge ...
-func (b *messageQueue) Purge() {
+func (b *bus) Purge() {
 	b.Lock()
 	defer b.Unlock()
 
@@ -150,13 +150,12 @@ func (b *messageQueue) Purge() {
 		for _, h := range s.handlers {
 			close(h.queue)
 		}
-
 		delete(b.sub, topic)
 	}
 }
 
-// todo fix
-func (b *messageQueue) Stat() (stats Stats, err error) {
+// todo: fix ...
+func (b *bus) Stat() (stats Stats, err error) {
 	b.RLock()
 
 	for topic, subs := range b.sub {

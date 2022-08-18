@@ -24,14 +24,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/e154/smart-home/system/event_bus/events"
+	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/plugins/node"
 	"github.com/e154/smart-home/system/automation"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
@@ -49,7 +49,7 @@ func TestNode(t *testing.T) {
 			zigbee2mqtt zigbee2mqtt.Zigbee2mqtt,
 			mqttServer mqtt.MqttServ,
 			automation automation.Automation,
-			eventBus event_bus.EventBus,
+			eventBus bus.Bus,
 			pluginManager common.PluginManager) {
 
 			eventBus.Purge()
@@ -110,8 +110,8 @@ func TestNode(t *testing.T) {
 							ch <- struct{}{}
 						}
 					}
-					_ = eventBus.Subscribe(event_bus.TopicEntities, fn)
-					defer func() { _ = eventBus.Unsubscribe(event_bus.TopicEntities, fn) }()
+					_ = eventBus.Subscribe(bus.TopicEntities, fn)
+					defer func() { _ = eventBus.Unsubscribe(bus.TopicEntities, fn) }()
 
 					b, err := json.Marshal(node.MessageStatus{
 						Status:    "enabled",

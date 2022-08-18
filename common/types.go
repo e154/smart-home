@@ -128,7 +128,7 @@ const (
 	MetricRange24H = MetricRange("24h")
 	MetricRange7d  = MetricRange("7d")
 	MetricRange30d = MetricRange("30d")
-	MetricRange1m = MetricRange("1m")
+	MetricRange1m  = MetricRange("1m")
 )
 
 func (m MetricRange) String() string {

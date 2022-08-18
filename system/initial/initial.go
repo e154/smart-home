@@ -22,6 +22,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"github.com/e154/smart-home/system/scheduler"
 	"go.uber.org/fx"
 
@@ -97,12 +98,10 @@ func NewInitial(lc fx.Lifecycle,
 	}
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) (err error) {
-			initial.Start()
-			return nil
+			return initial.Start(ctx)
 		},
 		OnStop: func(ctx context.Context) (err error) {
-			initial.Shutdown()
-			return nil
+			return initial.Shutdown(ctx)
 		},
 	})
 	return initial
@@ -171,17 +170,20 @@ func (n *Initial) checkForUpgrade() {
 }
 
 // Start ...
-func (n *Initial) Start() {
-
+func (n *Initial) Start(ctx context.Context) (err error) {
 	n.checkForUpgrade()
 	n.entityManager.SetPluginManager(n.pluginManager)
 	n.pluginManager.Start()
 	_ = n.automation.Start()
-	go func() { _ = n.api.Start() }()
+	go func() {
+		_ = n.api.Start()
+	}()
 	n.gateClient.Start()
+	return
 }
 
 // Shutdown ...
-func (n *Initial) Shutdown() {
-
+func (n *Initial) Shutdown(ctx context.Context) (err error) {
+	_ = n.api.Shutdown(ctx)
+	return
 }

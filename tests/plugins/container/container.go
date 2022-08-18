@@ -25,9 +25,9 @@ import (
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/backup"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/initial"
 	"github.com/e154/smart-home/system/jwt_manager"
@@ -73,7 +73,7 @@ func BuildContainer() (container *dig.Container) {
 	_ = container.Provide(plugins2.NewPluginManager)
 	_ = container.Provide(entity_manager.NewEntityManager)
 	_ = container.Provide(automation.NewAutomation)
-	_ = container.Provide(event_bus.NewEventBus)
+	_ = container.Provide(bus.NewBus)
 	_ = container.Provide(endpoint.NewEndpoint)
 	_ = container.Provide(jwt_manager.NewJwtManager)
 

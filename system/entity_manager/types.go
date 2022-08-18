@@ -23,7 +23,7 @@ import (
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/scripts"
 )
 
@@ -184,7 +184,7 @@ const (
 type actorInfo struct {
 	Actor        PluginActor
 	quit         chan struct{}
-	CurrentState *event_bus.EventEntityState
+	CurrentState *bus.EventEntityState
 }
 
 // ActorInfo ...

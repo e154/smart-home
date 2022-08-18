@@ -46,7 +46,7 @@ type IRegistrar interface {
 	TriggerList() []string
 }
 
-//todo deAttach
+// todo deAttach
 type ITrigger interface {
 	Name() string
 	AsyncAttach(wg *sync.WaitGroup)

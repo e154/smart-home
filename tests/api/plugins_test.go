@@ -32,8 +32,8 @@ import (
 	"github.com/e154/smart-home/api/controllers"
 	gw "github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
 )
@@ -45,7 +45,7 @@ func TestPlugins(t *testing.T) {
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService,
 			entityManager entity_manager.EntityManager,
-			eventBus event_bus.EventBus,
+			eventBus bus.Bus,
 			pluginManager common.PluginManager,
 			controllers *controllers.Controllers,
 			dialer *container2.Dialer) {

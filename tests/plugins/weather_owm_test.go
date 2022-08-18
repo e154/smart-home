@@ -25,15 +25,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/e154/smart-home/system/event_bus/events"
+	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	weatherPlugin "github.com/e154/smart-home/plugins/weather"
 	"github.com/e154/smart-home/plugins/weather_owm"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
 	. "github.com/smartystreets/goconvey/convey"
@@ -51,7 +51,7 @@ func TestWeatherOwm(t *testing.T) {
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService,
 			entityManager entity_manager.EntityManager,
-			eventBus event_bus.EventBus,
+			eventBus bus.Bus,
 			pluginManager common.PluginManager) {
 
 			eventBus.Purge()
@@ -107,9 +107,9 @@ func TestWeatherOwm(t *testing.T) {
 
 					// subscribe
 					// ------------------------------------------------
-					ch := make(chan events.EventPassAttributes, 3)
+					ch := make(chan events.EventPassAttributes, 123)
 					fn := func(topic string, msg interface{}) {
-
+fmt.Println("topic", topic)
 						switch v := msg.(type) {
 						case events.EventPassAttributes:
 							ch <- v
@@ -119,7 +119,7 @@ func TestWeatherOwm(t *testing.T) {
 
 						}
 					}
-					err = eventBus.Subscribe(event_bus.TopicEntities, fn)
+					err = eventBus.Subscribe(bus.TopicEntities, fn)
 					So(err, ShouldBeNil)
 
 					//settings := weatherPlugin.NewSettings()
@@ -155,7 +155,7 @@ func TestWeatherOwm(t *testing.T) {
 					So(msg.To, ShouldEqual, "weather.home")
 					So(msg.Attributes[weatherPlugin.AttrWeatherAttribution].String(), ShouldEqual, "Weather forecast from openweathermap api")
 
-					err = eventBus.Unsubscribe(event_bus.TopicEntities, fn)
+					err = eventBus.Unsubscribe(bus.TopicEntities, fn)
 					So(err, ShouldBeNil)
 
 					time.Sleep(time.Second * 1)
@@ -177,7 +177,7 @@ func TestWeatherOwm(t *testing.T) {
 
 						}
 					}
-					err = eventBus.Subscribe(event_bus.TopicEntities, fn)
+					err = eventBus.Subscribe(bus.TopicEntities, fn)
 					So(err, ShouldBeNil)
 
 					//settings := weatherPlugin.NewSettings()
@@ -218,7 +218,7 @@ func TestWeatherOwm(t *testing.T) {
 					So(msg.To, ShouldEqual, "weather.home")
 					So(msg.Attributes[weatherPlugin.AttrWeatherAttribution].String(), ShouldEqual, "Weather forecast from openweathermap api")
 
-					err = eventBus.Unsubscribe(event_bus.TopicEntities, fn)
+					err = eventBus.Unsubscribe(bus.TopicEntities, fn)
 					So(err, ShouldBeNil)
 				})
 			})
@@ -228,7 +228,7 @@ func TestWeatherOwm(t *testing.T) {
 
 					// subscribe
 					// ------------------------------------------------
-					ch := make(chan events.EventRemoveActor)
+					ch := make(chan events.EventRemoveActor, 3)
 					fn := func(topic string, msg interface{}) {
 
 						switch v := msg.(type) {
@@ -240,7 +240,7 @@ func TestWeatherOwm(t *testing.T) {
 							}
 						}
 					}
-					err = eventBus.Subscribe(event_bus.TopicEntities, fn)
+					err = eventBus.Subscribe(bus.TopicEntities, fn)
 					So(err, ShouldBeNil)
 
 					//eventBus.Publish(event_bus.TopicEntities, event_bus.EventRemoveActor{
@@ -267,7 +267,7 @@ func TestWeatherOwm(t *testing.T) {
 
 					So(msg.EntityId, ShouldEqual, "weather_owm.home")
 
-					err = eventBus.Unsubscribe(event_bus.TopicEntities, fn)
+					err = eventBus.Unsubscribe(bus.TopicEntities, fn)
 					So(err, ShouldBeNil)
 				})
 			})

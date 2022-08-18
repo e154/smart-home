@@ -21,6 +21,9 @@
       "name": "AutomationService"
     },
     {
+      "name": "BackupService"
+    },
+    {
       "name": "DashboardService"
     },
     {
@@ -367,6 +370,110 @@
         ],
         "tags": [
           "AreaService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/backup": {
+      "post": {
+        "summary": "new backup",
+        "operationId": "BackupService_NewBackup",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "properties": {}
+            }
+          }
+        ],
+        "tags": [
+          "BackupService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/backup/restore": {
+      "put": {
+        "summary": "restore backup",
+        "operationId": "BackupService_RestoreBackup",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiRestoreBackupRequest"
+            }
+          }
+        ],
+        "tags": [
+          "BackupService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/backups": {
+      "get": {
+        "summary": "get backup list",
+        "operationId": "BackupService_GetBackupList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiGetBackupListResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "BackupService"
         ],
         "security": [
           {
@@ -5622,6 +5729,17 @@
         }
       }
     },
+    "apiGetBackupListResult": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "apiGetBridgeListResult": {
       "type": "object",
       "properties": {
@@ -6590,6 +6708,14 @@
         "body": {
           "type": "string",
           "format": "byte"
+        }
+      }
+    },
+    "apiRestoreBackupRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
         }
       }
     },

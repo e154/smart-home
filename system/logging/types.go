@@ -28,5 +28,5 @@ type ISaver interface {
 	Save(log m.Log)
 }
 
-//todo fix
+// todo fix
 var LogsHook = func(level common.LogLevel) {}
