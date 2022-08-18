@@ -20,8 +20,8 @@ package controllers
 
 import (
 	"context"
-	"github.com/e154/smart-home/api/stub/api"
 
+	"github.com/e154/smart-home/api/stub/api"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -47,7 +47,6 @@ func (c ControllerBackup) NewBackup(ctx context.Context, _ *emptypb.Empty) (*emp
 
 	return &emptypb.Empty{}, nil
 }
-
 
 // RestoreBackup ...
 func (c ControllerBackup) RestoreBackup(ctx context.Context, req *api.RestoreBackupRequest) (*emptypb.Empty, error) {

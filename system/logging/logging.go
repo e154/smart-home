@@ -151,7 +151,7 @@ func CustomLevelEncoder(l zapcore.Level, enc zapcore.PrimitiveArrayEncoder) {
 	enc.AppendString(s)
 }
 
-//TODO fix
+// TODO fix
 func CustomNameEncoder(v string, enc zapcore.PrimitiveArrayEncoder) {
 	var builder strings.Builder
 	builder.WriteString(White.Add(v))

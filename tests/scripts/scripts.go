@@ -319,10 +319,10 @@ main =->
 
 `
 
-//bar
-//&{foo <nil>}
-//foo
-//<nil>
+// bar
+// &{foo <nil>}
+// foo
+// <nil>
 const coffeeScript25 = `
 "use strict";
 

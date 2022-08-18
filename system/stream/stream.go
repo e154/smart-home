@@ -23,7 +23,7 @@ import (
 	"sync"
 
 	"github.com/e154/smart-home/common/logger"
-	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/bus"
 
 	"go.uber.org/fx"
 
@@ -41,12 +41,12 @@ type Stream struct {
 	subscribers map[string]func(client IStreamClient, id string, msg []byte)
 	sesMx       sync.RWMutex
 	sessions    map[*Client]bool
-	eventBus    event_bus.EventBus
+	eventBus    bus.Bus
 }
 
 // NewStreamService ...
 func NewStreamService(lc fx.Lifecycle,
-	eventBus event_bus.EventBus) (s *Stream) {
+	eventBus bus.Bus) (s *Stream) {
 	s = &Stream{
 		subscribers: make(map[string]func(client IStreamClient, id string, msg []byte)),
 		sesMx:       sync.RWMutex{},
@@ -70,7 +70,7 @@ func NewStreamService(lc fx.Lifecycle,
 
 // Start ...
 func (s *Stream) Start(_ context.Context) error {
-	_ = s.eventBus.Subscribe(event_bus.TopicEntities, s.eventHandler.eventHandler)
+	_ = s.eventBus.Subscribe(bus.TopicEntities, s.eventHandler.eventHandler)
 	return nil
 }
 
@@ -79,7 +79,7 @@ func (s *Stream) Shutdown(_ context.Context) error {
 	s.sesMx.Lock()
 	defer s.sesMx.Unlock()
 
-	_ = s.eventBus.Unsubscribe(event_bus.TopicEntities, s.eventHandler.eventHandler)
+	_ = s.eventBus.Unsubscribe(bus.TopicEntities, s.eventHandler.eventHandler)
 
 	for client, ok := range s.sessions {
 		if !ok {

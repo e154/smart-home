@@ -21,18 +21,18 @@ package bitmine
 // Javascript Binding
 //
 // Miner
-//	.stats() result
-//  .devs() result
-//  .summary() result
-//  .pools() result
-//  .addPool(url string) result
-//  .version() result
-//  .enable(poolId int64) result
-//  .disable(poolId int64) result
-//  .delete(poolId int64) result
-//  .switchPool(poolId int64) result
-//  .restart() result
 //
+//		.stats() result
+//	 .devs() result
+//	 .summary() result
+//	 .pools() result
+//	 .addPool(url string) result
+//	 .version() result
+//	 .enable(poolId int64) result
+//	 .disable(poolId int64) result
+//	 .delete(poolId int64) result
+//	 .switchPool(poolId int64) result
+//	 .restart() result
 type BitmineBind struct {
 	bitmine *Bitmine
 }

@@ -22,13 +22,14 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/e154/smart-home/common/events"
+
 	"github.com/rcrowley/go-metrics"
 	"github.com/shirou/gopsutil/v3/cpu"
 
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/event_bus/events"
 )
 
 // Actor ...
@@ -42,13 +43,13 @@ type Actor struct {
 	loadMax         metrics.GaugeFloat64
 	allCpuPrevTotal float64
 	allCpuPrevIdle  float64
-	eventBus        event_bus.EventBus
+	eventBus        bus.Bus
 	updateLock      *sync.Mutex
 }
 
 // NewActor ...
 func NewActor(entityManager entity_manager.EntityManager,
-	eventBus event_bus.EventBus) *Actor {
+	eventBus bus.Bus) *Actor {
 
 	actor := &Actor{
 		BaseActor: entity_manager.BaseActor{
@@ -126,7 +127,7 @@ func (u *Actor) selfUpdate() {
 	//	"all": common.Rounding32(u.all.Value(), 2),
 	//})
 
-	u.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
+	u.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
 		StorageSave: false,
 		PluginName:  u.Id.PluginName(),
 		EntityId:    u.Id,

@@ -22,8 +22,8 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
@@ -53,7 +53,7 @@ var (
 type Service interface {
 	Plugins() map[string]Plugable
 	PluginManager() common.PluginManager
-	EventBus() event_bus.EventBus
+	EventBus() bus.Bus
 	Adaptors() *adaptors.Adaptors
 	EntityManager() entity_manager.EntityManager
 	ScriptService() scripts.ScriptService

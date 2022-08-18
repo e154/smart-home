@@ -21,11 +21,11 @@ package endpoint
 import (
 	"context"
 
+	events2 "github.com/e154/smart-home/common/events"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/event_bus/events"
-	"github.com/e154/smart-home/system/message_queue"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -59,7 +59,7 @@ func (d DeveloperToolsEndpoint) SetEntityState(ctx context.Context, entityId str
 		return
 	}
 
-	d.eventBus.Publish(event_bus.TopicEntities, events.EventEntitySetState{
+	d.eventBus.Publish(bus.TopicEntities, events2.EventEntitySetState{
 		Id:              common.EntityId(entityId),
 		NewState:        newState,
 		AttributeValues: attrs,
@@ -69,7 +69,7 @@ func (d DeveloperToolsEndpoint) SetEntityState(ctx context.Context, entityId str
 }
 
 // EventList ...
-func (d DeveloperToolsEndpoint) EventList(ctx context.Context) (events []message_queue.Stat, total int64, err error) {
+func (d DeveloperToolsEndpoint) EventList(ctx context.Context) (events []bus.Stat, total int64, err error) {
 	events, err = d.eventBus.Stat()
 	if err != nil {
 		return
@@ -85,7 +85,7 @@ func (d *DeveloperToolsEndpoint) TaskCallTrigger(ctx context.Context, id int64, 
 		return
 	}
 
-	d.eventBus.Publish(event_bus.TopicAutomation, events.EventCallTaskTrigger{
+	d.eventBus.Publish(bus.TopicAutomation, events2.EventCallTaskTrigger{
 		Id:   id,
 		Name: name,
 	})
@@ -100,7 +100,7 @@ func (d *DeveloperToolsEndpoint) TaskCallAction(ctx context.Context, id int64, n
 		return
 	}
 
-	d.eventBus.Publish(event_bus.TopicAutomation, events.EventCallTaskAction{
+	d.eventBus.Publish(bus.TopicAutomation, events2.EventCallTaskAction{
 		Id:   id,
 		Name: name,
 	})
@@ -116,7 +116,7 @@ func (d *DeveloperToolsEndpoint) ReloadEntity(ctx context.Context, id common.Ent
 		return
 	}
 
-	d.eventBus.Publish(event_bus.TopicEntities, events.EventUpdatedEntity{
+	d.eventBus.Publish(bus.TopicEntities, events2.EventUpdatedEntity{
 		Id: id,
 	})
 
@@ -131,7 +131,7 @@ func (d *DeveloperToolsEndpoint) EntitySetState(ctx context.Context, id common.E
 		return
 	}
 
-	d.eventBus.Publish(event_bus.TopicEntities, events.EventEntitySetState{
+	d.eventBus.Publish(bus.TopicEntities, events2.EventEntitySetState{
 		Id:       id,
 		NewState: common.String(name),
 	})

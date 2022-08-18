@@ -28,7 +28,7 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/scripts"
 	"go.uber.org/atomic"
 )
@@ -156,7 +156,7 @@ func NewBaseActor(entity *m.Entity,
 }
 
 // GetEventState ...
-func (b *BaseActor) GetEventState(actor PluginActor) event_bus.EventEntityState {
+func (b *BaseActor) GetEventState(actor PluginActor) bus.EventEntityState {
 	return GetEventState(actor)
 }
 
@@ -212,7 +212,7 @@ func (e *BaseActor) Info() (info ActorInfo) {
 }
 
 // Now ...
-func (e *BaseActor) Now(oldState event_bus.EventEntityState) time.Time {
+func (e *BaseActor) Now(oldState bus.EventEntityState) time.Time {
 	now := time.Now()
 	e.LastUpdated = common.Time(now)
 

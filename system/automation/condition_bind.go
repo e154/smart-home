@@ -29,7 +29,6 @@ type ConditionBind struct {
 // Javascript Binding
 //
 // Condition
-//
 func NewConditionBind(condition *Condition) *ConditionBind {
 	return &ConditionBind{condition: condition}
 }

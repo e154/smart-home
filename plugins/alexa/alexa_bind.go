@@ -19,7 +19,7 @@
 package alexa
 
 import (
-	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/bus"
 )
 
 // AlexaBind ...
@@ -27,13 +27,13 @@ type AlexaBind struct {
 	Slots      map[string]string `json:"slots"`
 	req        *Request
 	resp       *Response
-	eventBus   event_bus.EventBus
+	eventBus   bus.Bus
 	skillId    int64
 	intentName string
 }
 
 // NewAlexaBind ...
-func NewAlexaBind(eventBus event_bus.EventBus, skillId int64) (alex *AlexaBind) {
+func NewAlexaBind(eventBus bus.Bus, skillId int64) (alex *AlexaBind) {
 	alex = &AlexaBind{
 		Slots:    make(map[string]string),
 		eventBus: eventBus,

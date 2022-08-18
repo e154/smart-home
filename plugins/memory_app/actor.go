@@ -20,27 +20,28 @@ package memory_app
 
 import (
 	"fmt"
-	m "github.com/e154/smart-home/models"
 	"runtime"
 	"sync"
 	"time"
 
+	"github.com/e154/smart-home/common/events"
+	m "github.com/e154/smart-home/models"
+
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/event_bus/events"
 )
 
 // Actor ...
 type Actor struct {
 	entity_manager.BaseActor
-	eventBus   event_bus.EventBus
+	eventBus   bus.Bus
 	updateLock *sync.Mutex
 }
 
 // NewActor ...
 func NewActor(entityManager entity_manager.EntityManager,
-	eventBus event_bus.EventBus,
+	eventBus bus.Bus,
 	entity *m.Entity) *Actor {
 
 	actor := &Actor{
@@ -93,7 +94,7 @@ func (u *Actor) selfUpdate() {
 	//	"total_alloc": float32(s.TotalAlloc),
 	//})
 
-	u.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
+	u.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
 		StorageSave: false,
 		PluginName:  u.Id.PluginName(),
 		EntityId:    u.Id,

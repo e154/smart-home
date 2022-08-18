@@ -20,9 +20,10 @@ package controllers
 
 import (
 	"context"
+	"time"
+
 	"github.com/e154/smart-home/api/dto"
 	"github.com/e154/smart-home/common"
-	"time"
 
 	"github.com/e154/smart-home/api/stub/api"
 )

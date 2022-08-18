@@ -88,7 +88,7 @@ type GenericResponse struct {
 	Status []Status `json:"STATUS"`
 }
 
-//TODO remove in go2
+// TODO remove in go2
 type StatsResponse struct {
 	GenericResponse
 	Stats []StatsL3 `json:"STATS"`

@@ -19,7 +19,7 @@
 package access_list
 
 // DATA ...
-//todo fix
+// todo fix
 const DATA = `
 {
   "node": {

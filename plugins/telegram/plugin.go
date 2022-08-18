@@ -22,17 +22,17 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/e154/smart-home/common/events"
+
 	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/e154/smart-home/common/logger"
-	"github.com/e154/smart-home/system/event_bus/events"
-
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/notify"
-	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/plugins"
 )
 
@@ -95,7 +95,7 @@ func (p *plugin) asyncLoad() (err error) {
 	// register telegram provider
 	p.notify.AddProvider(Name, p)
 
-	_ = p.EventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Subscribe(bus.TopicEntities, p.eventHandler)
 
 	return
 }
@@ -106,7 +106,7 @@ func (p *plugin) Unload() (err error) {
 		return
 	}
 
-	_ = p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Unsubscribe(bus.TopicEntities, p.eventHandler)
 
 	if p.notify == nil {
 		return

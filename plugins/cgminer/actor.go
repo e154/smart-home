@@ -21,24 +21,24 @@ package cgminer
 import (
 	"fmt"
 
-	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/events"
 
-	"github.com/e154/smart-home/system/event_bus/events"
+	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/cgminer/bitmine"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/scripts"
 )
 
 // Actor ...
 type Actor struct {
 	entity_manager.BaseActor
-	eventBus   event_bus.EventBus
+	eventBus   bus.Bus
 	miner      IMiner
 	actionPool chan events.EventCallAction
 }
@@ -48,7 +48,7 @@ func NewActor(entity *m.Entity,
 	entityManager entity_manager.EntityManager,
 	adaptors *adaptors.Adaptors,
 	scriptService scripts.ScriptService,
-	eventBus event_bus.EventBus) (actor *Actor, err error) {
+	eventBus bus.Bus) (actor *Actor, err error) {
 
 	actor = &Actor{
 		BaseActor:  entity_manager.NewBaseActor(entity, scriptService, adaptors),
@@ -189,7 +189,7 @@ func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
 	_, _ = e.Attrs.Deserialize(params.AttributeValues)
 	e.AttrMu.Unlock()
 
-	e.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
+	e.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
 		StorageSave: params.StorageSave,
 		PluginName:  e.Id.PluginName(),
 		EntityId:    e.Id,

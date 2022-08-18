@@ -26,8 +26,8 @@ const ActionFunc = "automationAction"
 // Javascript Binding
 //
 // Action
-//	.callAction(entityId, action, args)
 //
+//	.callAction(entityId, action, args)
 type ActionBind struct {
 	action *Action
 }

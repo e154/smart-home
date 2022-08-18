@@ -28,8 +28,8 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/alexa"
 	"github.com/e154/smart-home/system/automation"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
 	. "github.com/smartystreets/goconvey/convey"
@@ -247,7 +247,7 @@ skillOnIntent = ->
 			scriptService scripts.ScriptService,
 			entityManager entity_manager.EntityManager,
 			automation automation.Automation,
-			eventBus event_bus.EventBus,
+			eventBus bus.Bus,
 			pluginManager common.PluginManager) {
 
 			err := migrations.Purge()
@@ -328,7 +328,7 @@ skillOnIntent = ->
 
 			t.Run("on intent", func(t *testing.T) {
 
-				ch := make(chan alexa.EventAlexaAction)
+				ch := make(chan alexa.EventAlexaAction, 2)
 				_ = eventBus.Subscribe(alexa.TopicPluginAlexa, func(_ string, msg alexa.EventAlexaAction) {
 					ch <- msg
 				})

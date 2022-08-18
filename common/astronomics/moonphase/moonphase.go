@@ -197,12 +197,14 @@ func utcToJulian(t float64) float64 {
 //	return t*86400 + 2440587.5
 //}
 
-/**
-  Calculates time of the mean new Moon for a given
-  base date. This argument K to this function is the
-  precomputed synodic month index, given by:
-      K = (year - 1900) * 12.3685
-  where year is expressed as a year aand fractional year
+/*
+*
+
+	Calculates time of the mean new Moon for a given
+	base date. This argument K to this function is the
+	precomputed synodic month index, given by:
+	    K = (year - 1900) * 12.3685
+	where year is expressed as a year aand fractional year
 */
 func meanPhase(sdate float64, k float64) float64 {
 	// Time in Julian centuries from 1900 January 0.5

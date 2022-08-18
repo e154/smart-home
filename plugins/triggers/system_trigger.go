@@ -21,8 +21,7 @@ package triggers
 import (
 	"sync"
 
-	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/message_queue"
+	"github.com/e154/smart-home/system/bus"
 )
 
 const (
@@ -48,11 +47,11 @@ type SystemTrigger struct {
 }
 
 // NewSystemTrigger ...
-func NewSystemTrigger(eventBus event_bus.EventBus) ITrigger {
+func NewSystemTrigger(eventBus bus.Bus) ITrigger {
 	return &SystemTrigger{
 		baseTrigger{
 			eventBus:     eventBus,
-			msgQueue:     message_queue.New(SystemQueueSize),
+			msgQueue:     bus.NewBus(),
 			functionName: SystemFunctionName,
 			name:         SystemName,
 		},

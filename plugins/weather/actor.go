@@ -23,28 +23,28 @@ import (
 	"sync"
 	"time"
 
-	"github.com/e154/smart-home/system/event_bus/events"
+	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/astronomics/suncalc"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/zone"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 )
 
 // Actor ...
 type Actor struct {
 	entity_manager.BaseActor
 	updateLock   *sync.Mutex
-	eventBus     event_bus.EventBus
+	eventBus     bus.Bus
 	positionLock *sync.Mutex
 }
 
 // NewActor ...
 func NewActor(entity *m.Entity,
 	entityManager entity_manager.EntityManager,
-	eventBus event_bus.EventBus) *Actor {
+	eventBus bus.Bus) *Actor {
 
 	name := entity.Id.Name()
 
@@ -133,7 +133,7 @@ func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
 	_, _ = e.Attrs.Deserialize(params.AttributeValues)
 	e.AttrMu.Unlock()
 
-	e.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
+	e.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
 		PluginName:  e.Id.PluginName(),
 		EntityId:    e.Id,
 		OldState:    oldState,

@@ -23,7 +23,7 @@ import (
 
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/gin-gonic/gin"
 )
@@ -33,7 +33,7 @@ type Skill struct {
 	adaptors      *adaptors.Adaptors
 	model         *m.AlexaSkill
 	scriptService scripts.ScriptService
-	eventBus      event_bus.EventBus
+	eventBus      bus.Bus
 	engine        *scripts.Engine
 	jsBind        *AlexaBind
 }
@@ -42,7 +42,7 @@ type Skill struct {
 func NewSkill(model *m.AlexaSkill,
 	adaptors *adaptors.Adaptors,
 	scriptService scripts.ScriptService,
-	eventBus event_bus.EventBus) (skill *Skill) {
+	eventBus bus.Bus) (skill *Skill) {
 
 	skill = &Skill{
 		model:         model,

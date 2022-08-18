@@ -23,13 +23,14 @@ import (
 	"sync"
 	"time"
 
+	"github.com/e154/smart-home/common/events"
+
 	"github.com/shirou/gopsutil/v3/host"
 	"go.uber.org/atomic"
 
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/event_bus/events"
 )
 
 // Actor ...
@@ -37,12 +38,12 @@ type Actor struct {
 	entity_manager.BaseActor
 	appStarted time.Time
 	total      *atomic.Uint64
-	eventBus   event_bus.EventBus
+	eventBus   bus.Bus
 }
 
 // NewActor ...
 func NewActor(entityManager entity_manager.EntityManager,
-	eventBus event_bus.EventBus) *Actor {
+	eventBus bus.Bus) *Actor {
 	return &Actor{
 		BaseActor: entity_manager.BaseActor{
 			Id:                common.EntityId(fmt.Sprintf("%s.%s", EntitySensor, Name)),
@@ -82,7 +83,7 @@ func (e *Actor) update() {
 	e.Attrs[AttrUptimeAppStarted].Value = e.appStarted
 	e.AttrMu.Unlock()
 
-	e.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
+	e.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
 		PluginName: e.Id.PluginName(),
 		EntityId:   e.Id,
 		OldState:   oldState,

@@ -21,7 +21,6 @@ package backup
 import (
 	"context"
 	"fmt"
-	"go.uber.org/fx"
 	"os"
 	"os/exec"
 	"path"
@@ -30,6 +29,7 @@ import (
 
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"go.uber.org/fx"
 
 	app "github.com/e154/smart-home/common/app"
 	"github.com/e154/smart-home/common/apperr"
