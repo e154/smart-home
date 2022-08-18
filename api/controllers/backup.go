@@ -22,7 +22,6 @@ import (
 	"context"
 
 	"github.com/e154/smart-home/api/stub/api"
-
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 

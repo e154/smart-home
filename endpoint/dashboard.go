@@ -20,7 +20,6 @@ package endpoint
 
 import (
 	"context"
-
 	"github.com/go-playground/validator/v10"
 	"github.com/jinzhu/copier"
 	"github.com/pkg/errors"
