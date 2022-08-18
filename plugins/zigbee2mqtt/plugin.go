@@ -23,15 +23,16 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/e154/smart-home/common/events"
+
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/event_bus/events"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/plugins"
 )
@@ -74,7 +75,7 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 	p.mqttServ = service.MqttServ()
 
 	p.mqttClient = p.mqttServ.NewClient("plugins.zigbee2mqtt")
-	if err := p.EventBus.Subscribe(event_bus.TopicEntities, p.eventHandler); err != nil {
+	if err := p.EventBus.Subscribe(bus.TopicEntities, p.eventHandler); err != nil {
 		log.Error(err.Error())
 	}
 	return nil
@@ -87,7 +88,7 @@ func (p plugin) Unload() (err error) {
 	}
 
 	p.mqttServ.RemoveClient("plugins.zigbee2mqtt")
-	_ = p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Unsubscribe(bus.TopicEntities, p.eventHandler)
 	return
 }
 

@@ -22,15 +22,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/e154/smart-home/system/event_bus/events"
+	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/email"
 	"github.com/e154/smart-home/plugins/notify"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
 	. "github.com/smartystreets/goconvey/convey"
@@ -43,7 +43,7 @@ func TestEmail(t *testing.T) {
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService,
 			entityManager entity_manager.EntityManager,
-			eventBus event_bus.EventBus,
+			eventBus bus.Bus,
 			pluginManager common.PluginManager) {
 
 			eventBus.Purge()
@@ -87,8 +87,8 @@ func TestEmail(t *testing.T) {
 						}
 
 					}
-					_ = eventBus.Subscribe(event_bus.TopicEntities, fn)
-					defer func() { _ = eventBus.Unsubscribe(event_bus.TopicEntities, fn) }()
+					_ = eventBus.Subscribe(bus.TopicEntities, fn)
+					defer func() { _ = eventBus.Unsubscribe(bus.TopicEntities, fn) }()
 
 					eventBus.Publish(notify.TopicNotify, notify.Message{
 						Type: email.Name,

@@ -16,52 +16,37 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package event_bus
+package bus
 
 import (
-	"time"
-
-	"github.com/e154/smart-home/common"
-	m "github.com/e154/smart-home/models"
+	"reflect"
 )
 
-// EntityState ...
-type EntityState struct {
-	Name        string  `json:"name"`
-	Description string  `json:"description"`
-	ImageUrl    *string `json:"image_url"`
-	Icon        *string `json:"icon"`
+// Bus implements publish/subscribe messaging paradigm
+type Bus interface {
+	// Publish publishes arguments to the given topic subscribers
+	// Publish block only when the buffer of one of the subscribers is full.
+	Publish(topic string, args ...interface{})
+	// Close unsubscribe all subscribers from given topic
+	Close(topic string)
+	// Subscribe subscribes to the given topic
+	Subscribe(topic string, fn interface{}, options ...interface{}) error
+	// Unsubscribe unsubscribe handler from the given topic
+	Unsubscribe(topic string, fn interface{}) error
+	// Stat ...
+	Stat() (stats Stats, err error)
+	// Purge ...
+	Purge()
 }
 
-// EventEntityState ...
-type EventEntityState struct {
-	EntityId    common.EntityId `json:"entity_id"`
-	Value       interface{}     `json:"value"`
-	State       *EntityState    `json:"state"`
-	Attributes  m.Attributes    `json:"attributes"`
-	Settings    m.Attributes    `json:"settings"`
-	LastChanged *time.Time      `json:"last_changed"`
-	LastUpdated *time.Time      `json:"last_updated"`
+type handler struct {
+	callback reflect.Value
+	queue    chan []reflect.Value
 }
 
-// Compare ...
-func (e1 EventEntityState) Compare(e2 EventEntityState) (ident bool) {
-
-	if e1.State != nil && e2.State != nil {
-		if e1.State.Name != e2.State.Name {
-			return
-		}
-	}
-
-	for k1, v1 := range e1.Attributes {
-		if !e2.Attributes[k1].Compare(v1) {
-			return false
-		}
-	}
-
-	ident = true
-
-	return
+type subscribers struct {
+	handlers []*handler
+	lastMsg  []reflect.Value
 }
 
 // EventType ...

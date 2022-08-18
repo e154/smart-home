@@ -30,8 +30,8 @@ import (
 	"github.com/e154/smart-home/plugins/modbus_rtu"
 	"github.com/e154/smart-home/plugins/node"
 	"github.com/e154/smart-home/system/automation"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
@@ -96,7 +96,7 @@ entityAction = (entityId, actionName)->
 			entityManager entity_manager.EntityManager,
 			mqttServer mqtt.MqttServ,
 			automation automation.Automation,
-			eventBus event_bus.EventBus,
+			eventBus bus.Bus,
 			pluginManager common.PluginManager) {
 
 			eventBus.Purge()

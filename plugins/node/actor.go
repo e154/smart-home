@@ -25,12 +25,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/e154/smart-home/system/event_bus/events"
+	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
 )
@@ -40,7 +40,7 @@ type Actor struct {
 	entity_manager.BaseActor
 	adaptors      *adaptors.Adaptors
 	scriptService scripts.ScriptService
-	eventBus      event_bus.EventBus
+	eventBus      bus.Bus
 	mqttClient    mqtt.MqttCli
 	stateMu       *sync.Mutex
 	quit          chan struct{}
@@ -53,7 +53,7 @@ func NewActor(entity *m.Entity,
 	entityManager entity_manager.EntityManager,
 	adaptors *adaptors.Adaptors,
 	scriptService scripts.ScriptService,
-	eventBus event_bus.EventBus,
+	eventBus bus.Bus,
 	mqttClient mqtt.MqttCli) (actor *Actor) {
 
 	actor = &Actor{
@@ -178,7 +178,7 @@ func (e *Actor) updateStatus() {
 		e.State = &state
 	}
 
-	e.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
+	e.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
 		PluginName: e.Id.PluginName(),
 		EntityId:   e.Id,
 		OldState:   oldState,

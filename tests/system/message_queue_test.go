@@ -24,7 +24,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/e154/smart-home/system/message_queue"
+	"github.com/e154/smart-home/system/bus"
 	. "github.com/smartystreets/goconvey/convey"
 	"go.uber.org/atomic"
 )
@@ -38,7 +38,7 @@ func TestMessageQueue(t *testing.T) {
 	t.Run("base topic", func(t *testing.T) {
 		Convey("case", t, func(ctx C) {
 
-			queue := message_queue.New(queueSize)
+			queue := bus.NewBus()
 
 			wg := &sync.WaitGroup{}
 			wg.Add(1)
@@ -65,7 +65,7 @@ func TestMessageQueue(t *testing.T) {
 	t.Run("multi level", func(t *testing.T) {
 		Convey("case", t, func(ctx C) {
 
-			queue := message_queue.New(queueSize)
+			queue := bus.NewBus()
 
 			wg := &sync.WaitGroup{}
 			wg.Add(3)
@@ -92,7 +92,7 @@ func TestMessageQueue(t *testing.T) {
 	t.Run("single level", func(t *testing.T) {
 		Convey("case", t, func(ctx C) {
 
-			queue := message_queue.New(queueSize)
+			queue := bus.NewBus()
 
 			wg := &sync.WaitGroup{}
 			wg.Add(1)
@@ -121,7 +121,7 @@ func TestMessageQueue(t *testing.T) {
 	t.Run("subscribing", func(t *testing.T) {
 		Convey("case", t, func(ctx C) {
 
-			queue := message_queue.New(queueSize)
+			queue := bus.NewBus()
 
 			arr := make([]string, 0)
 			fn := func(topic string, msg ...string) {
@@ -148,7 +148,7 @@ func TestMessageQueue(t *testing.T) {
 	t.Run("full channel", func(t *testing.T) {
 		Convey("case", t, func(ctx C) {
 
-			queue := message_queue.New(queueSize)
+			queue := bus.NewBus()
 
 			var count atomic.Uint32
 			fn := func(topic string, msg ...string) {

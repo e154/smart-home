@@ -23,8 +23,7 @@ import (
 	"sync"
 
 	"github.com/e154/smart-home/plugins/triggers"
-	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/message_queue"
+	"github.com/e154/smart-home/system/bus"
 )
 
 var _ triggers.ITrigger = (*Trigger)(nil)
@@ -39,17 +38,17 @@ const (
 
 // Trigger ...
 type Trigger struct {
-	eventBus     event_bus.EventBus
-	msgQueue     message_queue.MessageQueue
+	eventBus     bus.Bus
+	msgQueue     bus.Bus
 	functionName string
 	name         string
 }
 
 // NewTrigger ...
-func NewTrigger(eventBus event_bus.EventBus) (tr triggers.ITrigger) {
+func NewTrigger(eventBus bus.Bus) (tr triggers.ITrigger) {
 	return &Trigger{
 		eventBus:     eventBus,
-		msgQueue:     message_queue.New(queueSize),
+		msgQueue:     bus.NewBus(),
 		functionName: TriggerFunctionName,
 		name:         TriggerName,
 	}

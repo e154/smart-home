@@ -21,19 +21,19 @@ package zone
 import (
 	"sync"
 
-	"github.com/e154/smart-home/system/event_bus/events"
+	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/scripts"
 )
 
 // Actor ...
 type Actor struct {
 	entity_manager.BaseActor
-	eventBus event_bus.EventBus
+	eventBus bus.Bus
 	entities []entity_manager.PluginActor
 	stateMu  *sync.Mutex
 }
@@ -42,7 +42,7 @@ type Actor struct {
 func NewActor(entity *m.Entity,
 	scriptService scripts.ScriptService,
 	adaptors *adaptors.Adaptors,
-	eventBus event_bus.EventBus) *Actor {
+	eventBus bus.Bus) *Actor {
 
 	actor := &Actor{
 		BaseActor: entity_manager.NewBaseActor(entity, scriptService, adaptors),
@@ -88,7 +88,7 @@ func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
 	}
 	e.SettingsMu.Unlock()
 
-	e.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
+	e.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
 		PluginName: e.Id.PluginName(),
 		EntityId:   e.Id,
 		OldState:   oldState,

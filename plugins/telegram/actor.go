@@ -22,9 +22,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/events"
 
-	"github.com/e154/smart-home/system/event_bus/events"
+	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/pkg/errors"
 
@@ -32,8 +32,8 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/version"
 	"go.uber.org/atomic"
@@ -43,7 +43,7 @@ import (
 type Actor struct {
 	entity_manager.BaseActor
 	isStarted   *atomic.Bool
-	eventBus    event_bus.EventBus
+	eventBus    bus.Bus
 	adaptors    *adaptors.Adaptors
 	AccessToken string
 	bot         *tgbotapi.BotAPI
@@ -56,7 +56,7 @@ type Actor struct {
 func NewActor(entity *m.Entity,
 	entityManager entity_manager.EntityManager,
 	scriptService scripts.ScriptService,
-	eventBus event_bus.EventBus,
+	eventBus bus.Bus,
 	adaptors *adaptors.Adaptors) (*Actor, error) {
 
 	settings := NewSettings()
@@ -264,7 +264,7 @@ func (p *Actor) UpdateStatus() (err error) {
 	}
 	p.AttrMu.Unlock()
 
-	p.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
+	p.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
 		StorageSave: true,
 		PluginName:  p.Id.PluginName(),
 		EntityId:    p.Id,
@@ -301,7 +301,7 @@ func (p *Actor) commandQuit(cmd Command) {
 	_, _ = p.sendMsg("/quit -unsubscribe from bot\n/start - subscriber again", cmd.ChatId)
 }
 
-//todo add command args
+// todo add command args
 func (p *Actor) commandAction(cmd Command) {
 	p.runAction(events.EventCallAction{
 		ActionName: strings.Replace(cmd.Text, "/", "", 1),

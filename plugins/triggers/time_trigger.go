@@ -24,9 +24,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/cron"
-	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/message_queue"
 )
 
 const (
@@ -54,7 +53,7 @@ type TimeTrigger struct {
 }
 
 // NewTimeTrigger ...
-func NewTimeTrigger(eventBus event_bus.EventBus) ITrigger {
+func NewTimeTrigger(eventBus bus.Bus) ITrigger {
 	c := cron.NewCron()
 	go c.Run()
 	return &TimeTrigger{
@@ -62,7 +61,7 @@ func NewTimeTrigger(eventBus event_bus.EventBus) ITrigger {
 		subscribers: make(map[string][]*subscribe),
 		baseTrigger: baseTrigger{
 			eventBus:     eventBus,
-			msgQueue:     message_queue.New(TimeQueueSize),
+			msgQueue:     bus.NewBus(),
 			functionName: TimeFunctionName,
 			name:         TimeName,
 		},

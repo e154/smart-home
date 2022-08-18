@@ -21,11 +21,11 @@ package endpoint
 import (
 	"context"
 
-	"github.com/e154/smart-home/system/event_bus/events"
+	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -57,7 +57,7 @@ func (n *TaskEndpoint) Add(ctx context.Context, task *m.Task) (result *m.Task, e
 		return
 	}
 
-	n.eventBus.Publish(event_bus.TopicAutomation, events.EventAddedTask{
+	n.eventBus.Publish(bus.TopicAutomation, events.EventAddedTask{
 		Id: task.Id,
 	})
 
@@ -80,7 +80,7 @@ func (n *TaskEndpoint) Update(ctx context.Context, task *m.Task) (result *m.Task
 		return
 	}
 
-	n.eventBus.Publish(event_bus.TopicAutomation, events.EventUpdateTask{
+	n.eventBus.Publish(bus.TopicAutomation, events.EventUpdateTask{
 		Id: task.Id,
 	})
 
@@ -102,7 +102,7 @@ func (n *TaskEndpoint) Delete(ctx context.Context, id int64) (err error) {
 		return
 	}
 
-	n.eventBus.Publish(event_bus.TopicAutomation, events.EventRemoveTask{
+	n.eventBus.Publish(bus.TopicAutomation, events.EventRemoveTask{
 		Id: id,
 	})
 
@@ -116,7 +116,7 @@ func (n *TaskEndpoint) Enable(ctx context.Context, id int64) (err error) {
 		return
 	}
 
-	n.eventBus.Publish(event_bus.TopicAutomation, events.EventEnableTask{
+	n.eventBus.Publish(bus.TopicAutomation, events.EventEnableTask{
 		Id: id,
 	})
 
@@ -130,7 +130,7 @@ func (n *TaskEndpoint) Disable(ctx context.Context, id int64) (err error) {
 		return
 	}
 
-	n.eventBus.Publish(event_bus.TopicAutomation, events.EventDisableTask{
+	n.eventBus.Publish(bus.TopicAutomation, events.EventDisableTask{
 		Id: id,
 	})
 

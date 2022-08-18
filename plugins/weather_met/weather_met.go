@@ -29,9 +29,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/events"
 
-	"github.com/e154/smart-home/system/event_bus/events"
+	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/pkg/errors"
 
@@ -40,19 +40,19 @@ import (
 	"github.com/e154/smart-home/common/web"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/weather"
-	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/bus"
 )
 
 // WeatherMet ...
 type WeatherMet struct {
 	adaptors *adaptors.Adaptors
-	eventBus event_bus.EventBus
+	eventBus bus.Bus
 	lock     *sync.Mutex
 	zones    *sync.Map
 }
 
 // NewWeatherMet ...
-func NewWeatherMet(eventBus event_bus.EventBus,
+func NewWeatherMet(eventBus bus.Bus,
 	adaptors *adaptors.Adaptors) (weather *WeatherMet) {
 	weather = &WeatherMet{
 		eventBus: eventBus,
@@ -95,7 +95,7 @@ func (p *WeatherMet) RemoveWeather(entityId common.EntityId) {
 	p.zones.Delete(entityId.Name())
 	log.Infof("unload weather_met.%s", entityId.Name())
 
-	p.eventBus.Publish(event_bus.TopicEntities, events.EventRemoveActor{
+	p.eventBus.Publish(bus.TopicEntities, events.EventRemoveActor{
 		PluginName: "weather_met",
 		EntityId:   common.EntityId(fmt.Sprintf("weather_met.%s", entityId.Name())),
 	})
@@ -134,7 +134,7 @@ func (p *WeatherMet) UpdateForecast(zone Zone) (err error) {
 	attr := weather.BaseForecast()
 	_, _ = attr.Deserialize(forecast)
 
-	p.eventBus.Publish(event_bus.TopicEntities, events.EventPassAttributes{
+	p.eventBus.Publish(bus.TopicEntities, events.EventPassAttributes{
 		From:       common.EntityId(fmt.Sprintf("weather_met.%s", zone.Name)),
 		To:         common.EntityId(fmt.Sprintf("weather.%s", zone.Name)),
 		Attributes: attr,

@@ -22,8 +22,8 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
@@ -31,7 +31,7 @@ import (
 
 type service struct {
 	pluginManager common.PluginManager
-	bus           event_bus.EventBus
+	bus           bus.Bus
 	adaptors      *adaptors.Adaptors
 	entityManager entity_manager.EntityManager
 	scriptService scripts.ScriptService
@@ -57,7 +57,7 @@ func (s service) PluginManager() common.PluginManager {
 }
 
 // EventBus ...
-func (s service) EventBus() event_bus.EventBus {
+func (s service) EventBus() bus.Bus {
 	return s.bus
 }
 

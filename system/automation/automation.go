@@ -29,16 +29,15 @@ import (
 	"context"
 	"sync"
 
-	"github.com/e154/smart-home/common/logger"
-	"github.com/e154/smart-home/system/event_bus/events"
+	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/triggers"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/message_queue"
 	"github.com/e154/smart-home/system/scripts"
 	"go.uber.org/atomic"
 	"go.uber.org/fx"
@@ -62,12 +61,12 @@ type Automation interface {
 }
 
 type automation struct {
-	eventBus      event_bus.EventBus
+	eventBus      bus.Bus
 	taskLock      *sync.Mutex
 	scriptService scripts.ScriptService
 	tasks         map[int64]*Task
 	taskCount     atomic.Uint64
-	msgQueue      message_queue.MessageQueue
+	msgQueue      bus.Bus
 	entityManager entity_manager.EntityManager
 	adaptors      *adaptors.Adaptors
 	isStarted     *atomic.Bool
@@ -77,7 +76,7 @@ type automation struct {
 
 // NewAutomation ...
 func NewAutomation(lc fx.Lifecycle,
-	eventBus event_bus.EventBus,
+	eventBus bus.Bus,
 	scriptService scripts.ScriptService,
 	entityManager entity_manager.EntityManager,
 	adaptors *adaptors.Adaptors,
@@ -88,7 +87,7 @@ func NewAutomation(lc fx.Lifecycle,
 		taskLock:      &sync.Mutex{},
 		scriptService: scriptService,
 		tasks:         make(map[int64]*Task),
-		msgQueue:      message_queue.New(queueSize),
+		msgQueue:      bus.NewBus(),
 		entityManager: entityManager,
 		adaptors:      adaptors,
 		isStarted:     atomic.NewBool(false),
@@ -105,14 +104,14 @@ func NewAutomation(lc fx.Lifecycle,
 // Start ...
 func (a *automation) Start() (err error) {
 	a.load()
-	_ = a.eventBus.Subscribe(event_bus.TopicAutomation, a.eventHandler)
+	_ = a.eventBus.Subscribe(bus.TopicAutomation, a.eventHandler)
 	return
 }
 
 // Shutdown ...
 func (a *automation) Shutdown() (err error) {
 	a.unload()
-	_ = a.eventBus.Unsubscribe(event_bus.TopicAutomation, a.eventHandler)
+	_ = a.eventBus.Unsubscribe(bus.TopicAutomation, a.eventHandler)
 	return
 }
 

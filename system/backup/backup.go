@@ -21,12 +21,13 @@ package backup
 import (
 	"context"
 	"fmt"
-	"go.uber.org/fx"
 	"os"
 	"os/exec"
 	"path"
 	"path/filepath"
 	"time"
+
+	"go.uber.org/fx"
 
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"

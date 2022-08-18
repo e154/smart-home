@@ -29,14 +29,14 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/plugins/node"
-	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/bus"
 	"go.uber.org/atomic"
 )
 
 type modbusTcp func(f string, address, count uint16, command []uint16) (result ModBusResponse)
 
 // NewModbusTcp ...
-func NewModbusTcp(eventBus event_bus.EventBus, actor *Actor) (modbus modbusTcp) {
+func NewModbusTcp(eventBus bus.Bus, actor *Actor) (modbus modbusTcp) {
 
 	var isStarted = atomic.NewBool(false)
 

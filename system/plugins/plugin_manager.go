@@ -22,16 +22,16 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/events"
 
-	"github.com/e154/smart-home/common/logger"
-	"github.com/e154/smart-home/system/event_bus/events"
+	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
@@ -48,20 +48,20 @@ type pluginManager struct {
 	adaptors       *adaptors.Adaptors
 	isStarted      *atomic.Bool
 	service        *service
-	eventBus       event_bus.EventBus
+	eventBus       bus.Bus
 	enabledPlugins map[string]bool
 }
 
 // NewPluginManager ...
 func NewPluginManager(lc fx.Lifecycle,
 	adaptors *adaptors.Adaptors,
-	bus event_bus.EventBus,
+	bus bus.Bus,
 	entityManager entity_manager.EntityManager,
 	mqttServ mqtt.MqttServ,
 	scriptService scripts.ScriptService,
 	appConfig *m.AppConfig,
 	gateClient *gate_client.GateClient,
-	eventBus event_bus.EventBus) common.PluginManager {
+	eventBus bus.Bus) common.PluginManager {
 	pluginManager := &pluginManager{
 		adaptors:       adaptors,
 		isStarted:      atomic.NewBool(false),
@@ -193,7 +193,7 @@ func (p *pluginManager) loadPlugin(name string) (err error) {
 
 	p.enabledPlugins[name] = true
 
-	p.eventBus.Publish(event_bus.TopicPlugins, events.EventLoadedPlugin{
+	p.eventBus.Publish(bus.TopicPlugins, events.EventLoadedPlugin{
 		PluginName: string(name),
 	})
 
@@ -217,7 +217,7 @@ func (p *pluginManager) unloadPlugin(name string) (err error) {
 
 	p.enabledPlugins[name] = false
 
-	p.eventBus.Publish(event_bus.TopicPlugins, events.EventUnloadedPlugin{
+	p.eventBus.Publish(bus.TopicPlugins, events.EventUnloadedPlugin{
 		PluginName: string(name),
 	})
 

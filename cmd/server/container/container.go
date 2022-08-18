@@ -27,9 +27,9 @@ import (
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/backup"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/initial"
 	localMigrations "github.com/e154/smart-home/system/initial/local_migrations"
@@ -88,7 +88,7 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 			plugins.NewPluginManager,
 			entity_manager.NewEntityManager,
 			automation.NewAutomation,
-			event_bus.NewEventBus,
+			bus.NewBus,
 			endpoint.NewEndpoint,
 			NewApiConfig,
 			api.NewApi,

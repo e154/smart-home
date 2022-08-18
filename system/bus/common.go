@@ -16,7 +16,7 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package message_queue
+package bus
 
 // TopicMatch 返回topic和topic filter是否
 //

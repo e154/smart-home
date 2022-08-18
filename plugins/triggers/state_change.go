@@ -23,10 +23,9 @@ package triggers
 import (
 	"sync"
 
-	"github.com/e154/smart-home/system/event_bus/events"
+	"github.com/e154/smart-home/common/events"
 
-	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/message_queue"
+	"github.com/e154/smart-home/system/bus"
 )
 
 const (
@@ -46,11 +45,11 @@ type StateChangeTrigger struct {
 }
 
 // NewStateChangedTrigger ...
-func NewStateChangedTrigger(eventBus event_bus.EventBus) ITrigger {
+func NewStateChangedTrigger(eventBus bus.Bus) ITrigger {
 	return &StateChangeTrigger{
 		baseTrigger{
 			eventBus:     eventBus,
-			msgQueue:     message_queue.New(StateChangeQueueSize),
+			msgQueue:     bus.NewBus(),
 			functionName: StateChangeFunctionName,
 			name:         StateChangeName,
 		},
@@ -60,7 +59,7 @@ func NewStateChangedTrigger(eventBus event_bus.EventBus) ITrigger {
 // AsyncAttach ...
 func (t *StateChangeTrigger) AsyncAttach(wg *sync.WaitGroup) {
 
-	if err := t.eventBus.Subscribe(event_bus.TopicEntities, t.eventHandler); err != nil {
+	if err := t.eventBus.Subscribe(bus.TopicEntities, t.eventHandler); err != nil {
 		log.Error(err.Error())
 	}
 

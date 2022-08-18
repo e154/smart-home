@@ -20,8 +20,9 @@ package endpoint
 
 import (
 	"context"
-	m "github.com/e154/smart-home/models"
 	"time"
+
+	m "github.com/e154/smart-home/models"
 )
 
 // MetricEndpoint ...

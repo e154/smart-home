@@ -24,8 +24,8 @@ import (
 	"github.com/e154/smart-home/common/logger"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/backup"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/jwt_manager"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
@@ -75,7 +75,7 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
 	zigbee2mqtt zigbee2mqtt.Zigbee2mqtt,
 	entityManager entity_manager.EntityManager,
-	eventBus event_bus.EventBus,
+	eventBus bus.Bus,
 	pluginManager common.PluginManager,
 	mqtt mqtt.MqttServ,
 	jwtManager jwt_manager.JwtManager,

@@ -21,7 +21,7 @@ package events
 import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/bus"
 )
 
 // EventPassAttributes ...
@@ -33,11 +33,11 @@ type EventPassAttributes struct {
 
 // EventStateChanged ...
 type EventStateChanged struct {
-	StorageSave bool                       `json:"storage_save"`
-	PluginName  string                     `json:"plugin_name"`
-	EntityId    common.EntityId            `json:"entity_id"`
-	OldState    event_bus.EventEntityState `json:"old_state"`
-	NewState    event_bus.EventEntityState `json:"new_state"`
+	StorageSave bool                 `json:"storage_save"`
+	PluginName  string               `json:"plugin_name"`
+	EntityId    common.EntityId      `json:"entity_id"`
+	OldState    bus.EventEntityState `json:"old_state"`
+	NewState    bus.EventEntityState `json:"new_state"`
 }
 
 // EventGetLastState ...

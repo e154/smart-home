@@ -28,24 +28,24 @@ import (
 	"sync"
 	"time"
 
-	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/events"
 
-	"github.com/e154/smart-home/system/event_bus/events"
+	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 	"github.com/sfreiberg/gotwilio"
 )
 
 // Actor ...
 type Actor struct {
 	entity_manager.BaseActor
-	eventBus  event_bus.EventBus
+	eventBus  bus.Bus
 	adaptors  *adaptors.Adaptors
 	from      string
 	sid       string
@@ -55,7 +55,7 @@ type Actor struct {
 // NewActor ...
 func NewActor(settings m.Attributes,
 	entityManager entity_manager.EntityManager,
-	eventBus event_bus.EventBus,
+	eventBus bus.Bus,
 	adaptors *adaptors.Adaptors) *Actor {
 
 	sid := settings[AttrSid].String()
@@ -236,7 +236,7 @@ func (p *Actor) UpdateBalance() (err error) {
 	}
 	p.AttrMu.Unlock()
 
-	p.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
+	p.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
 		StorageSave: true,
 		PluginName:  p.Id.PluginName(),
 		EntityId:    p.Id,

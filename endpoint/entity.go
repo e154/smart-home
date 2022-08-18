@@ -21,12 +21,13 @@ package endpoint
 import (
 	"context"
 
+	"github.com/e154/smart-home/common/events"
+
 	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/event_bus/events"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -59,7 +60,7 @@ func (n *EntityEndpoint) Add(ctx context.Context, entity *m.Entity) (result *m.E
 		return
 	}
 
-	n.eventBus.Publish(event_bus.TopicEntities, events.EventCreatedEntity{
+	n.eventBus.Publish(bus.TopicEntities, events.EventCreatedEntity{
 		Id: result.Id,
 	})
 
@@ -100,7 +101,7 @@ func (n *EntityEndpoint) Update(ctx context.Context, params *m.Entity) (result *
 		return
 	}
 
-	n.eventBus.Publish(event_bus.TopicEntities, events.EventUpdatedEntity{
+	n.eventBus.Publish(bus.TopicEntities, events.EventUpdatedEntity{
 		Id: result.Id,
 	})
 
@@ -132,7 +133,7 @@ func (n *EntityEndpoint) Delete(ctx context.Context, id common.EntityId) (err er
 		return
 	}
 
-	n.eventBus.Publish(event_bus.TopicEntities, events.EventDeletedEntity{
+	n.eventBus.Publish(bus.TopicEntities, events.EventDeletedEntity{
 		Id: id,
 	})
 

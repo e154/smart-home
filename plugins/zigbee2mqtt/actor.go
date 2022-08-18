@@ -22,12 +22,12 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/e154/smart-home/system/event_bus/events"
+	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
 )
@@ -35,7 +35,7 @@ import (
 // Actor ...
 type Actor struct {
 	entity_manager.BaseActor
-	eventBus          event_bus.EventBus
+	eventBus          bus.Bus
 	adaptors          *adaptors.Adaptors
 	scriptService     scripts.ScriptService
 	zigbee2mqttDevice *m.Zigbee2mqttDevice
@@ -52,7 +52,7 @@ func NewActor(entity *m.Entity,
 	adaptors *adaptors.Adaptors,
 	scriptService scripts.ScriptService,
 	entityManager entity_manager.EntityManager,
-	eventBus event_bus.EventBus) (actor *Actor, err error) {
+	eventBus bus.Bus) (actor *Actor, err error) {
 
 	var zigbee2mqttDevice *m.Zigbee2mqttDevice
 	if zigbee2mqttDevice, err = adaptors.Zigbee2mqttDevice.GetById(entity.Id.Name()); err != nil {
@@ -160,7 +160,7 @@ func (e *Actor) setState(params entity_manager.EntityStateParams) (changed bool)
 	}
 	e.AttrMu.Unlock()
 
-	e.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
+	e.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
 		PluginName:  e.Id.PluginName(),
 		EntityId:    e.Id,
 		OldState:    oldState,

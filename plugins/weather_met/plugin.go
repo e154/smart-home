@@ -21,12 +21,12 @@ package weather_met
 import (
 	"time"
 
-	"github.com/e154/smart-home/common/logger"
-	"github.com/e154/smart-home/system/event_bus/events"
+	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/logger"
 	"github.com/e154/smart-home/plugins/weather"
-	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/plugins"
 )
 
@@ -72,7 +72,7 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 
 	p.weather = NewWeatherMet(p.EventBus, p.Adaptors)
 
-	_ = p.EventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Subscribe(bus.TopicEntities, p.eventHandler)
 	_ = p.EventBus.Subscribe(weather.TopicPluginWeather, p.eventHandler)
 	p.quit = make(chan struct{})
 
@@ -110,7 +110,7 @@ func (p *plugin) Unload() (err error) {
 	}
 
 	p.quit <- struct{}{}
-	_ = p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Unsubscribe(bus.TopicEntities, p.eventHandler)
 	_ = p.EventBus.Unsubscribe(weather.TopicPluginWeather, p.eventHandler)
 	return nil
 }
