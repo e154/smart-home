@@ -18,7 +18,7 @@
 
 package stream
 
-import "github.com/e154/smart-home/common/uuid"
+import "github.com/google/uuid"
 
 // BroadcastClient ...
 type BroadcastClient interface {

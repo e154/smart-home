@@ -19,7 +19,7 @@ type MigrationImages struct {
 
 func NewMigrationImages(adaptors *adaptors.Adaptors, dir string) *MigrationImages {
 	if dir == "" {
-		dir = "data"
+		dir = "./"
 	}
 	return &MigrationImages{
 		adaptors: adaptors,
@@ -305,11 +305,11 @@ func (i *MigrationImages) Up(ctx context.Context, adaptors *adaptors.Adaptors) (
 
 		fullPath := common.GetFullPath(image.Image)
 		to := path.Join(path.Join(i.dir, fullPath), image.Image)
-		_ = os.MkdirAll(to, os.ModePerm)
+
+		//log.Infof("create dir %s", path.Join(i.dir, fullPath))
+		_ = os.MkdirAll(path.Join(i.dir, fullPath), os.ModePerm)
 
 		if exist := common.FileExist(to); !exist {
-
-			_ = os.MkdirAll(fullPath, os.ModePerm)
 
 			switch {
 			case strings.Contains(image.Name, "button"):
@@ -331,6 +331,7 @@ func (i *MigrationImages) Up(ctx context.Context, adaptors *adaptors.Adaptors) (
 			}
 
 			from := path.Join("data", "icons", subDir, image.Name)
+			//log.Infof("copy %s --> %s", from, to)
 			common.CopyFile(from, to)
 		}
 	}

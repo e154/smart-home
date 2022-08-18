@@ -16,7 +16,7 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package common
+package app
 
 import (
 	"context"
@@ -29,12 +29,15 @@ import (
 	"go.uber.org/fx"
 )
 
+var IsRestart bool
+
 // Start ...
 func Start(app *fx.App) {
 	startCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 	if err := app.Start(startCtx); err != nil {
-		fmt.Println("fx error:", err.Error())
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 		return
 	}
 }
@@ -52,6 +55,27 @@ func Stop(app *fx.App) {
 	stopCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 	if err := app.Stop(stopCtx); err != nil {
-		fmt.Println("fx error:", err.Error())
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+}
+
+func Kill() error {
+	return syscall.Kill(syscall.Getpid(), syscall.SIGINT)
+}
+
+func Do(builder func(opt fx.Option) (app *fx.App), options fx.Option) {
+LOOP:
+	app := builder(options)
+
+	Start(app)
+
+	Work()
+
+	Stop(app)
+
+	if IsRestart {
+		IsRestart = false
+		goto LOOP
 	}
 }

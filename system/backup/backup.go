@@ -19,20 +19,21 @@
 package backup
 
 import (
+	"context"
 	"fmt"
+	"go.uber.org/fx"
 	"os"
 	"os/exec"
 	"path"
 	"path/filepath"
 	"time"
 
-	"github.com/e154/smart-home/common/apperr"
-
-	"github.com/e154/smart-home/common/logger"
-
+	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 
-	"github.com/jinzhu/gorm"
+	app "github.com/e154/smart-home/common/app"
+	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/logger"
 )
 
 var (
@@ -41,23 +42,47 @@ var (
 
 // Backup ...
 type Backup struct {
-	cfg     *BackupConfig
-	Options []string
-	db      *gorm.DB
+	cfg          *BackupConfig
+	Options      []string
+	db           *gorm.DB
+	restoreImage string
 }
 
 // NewBackup ...
-func NewBackup(cfg *BackupConfig,
+func NewBackup(lc fx.Lifecycle,
+	cfg *BackupConfig,
 	db *gorm.DB) *Backup {
-	return &Backup{
+
+	backup := &Backup{
 		cfg: cfg,
 		db:  db,
 	}
+
+	lc.Append(fx.Hook{
+		OnStop: func(ctx context.Context) error {
+			return backup.Shutdown(ctx)
+		},
+	})
+
+	return backup
+}
+
+// Shutdown ...
+func (b *Backup) Shutdown(ctx context.Context) (err error) {
+
+	if b.restoreImage != "" {
+		if err = b.restore(b.restoreImage); err != nil {
+			log.Errorf("%+v", err)
+			return
+		}
+		app.IsRestart = true
+	}
+	return
 }
 
 // New ...
 func (b *Backup) New() (err error) {
-	log.Info("backup")
+	log.Info("create new backup")
 
 	options := b.dumpOptions()
 
@@ -67,13 +92,13 @@ func (b *Backup) New() (err error) {
 	}
 
 	// filename
-	filename := path.Join(tmpDir, "database.tar")
+	filename := path.Join(tmpDir, "database.sql")
 	options = append(options, "-f", filename)
-
-	//log.Info()("options", options)
 
 	cmd := exec.Command("pg_dump", options...)
 	cmd.Env = append(os.Environ(), fmt.Sprintf("PGPASSWORD=%s", b.cfg.PgPass))
+
+	log.Infof("run command %s", cmd.String())
 
 	_, err = cmd.CombinedOutput()
 	if err != nil {
@@ -99,6 +124,9 @@ func (b *Backup) List() (list []string) {
 		if info.Name() == ".gitignore" || info.Name() == b.cfg.Path || info.IsDir() {
 			return nil
 		}
+		if info.Name()[0:1] == "." {
+			return nil
+		}
 		list = append(list, info.Name())
 		return nil
 	})
@@ -107,7 +135,21 @@ func (b *Backup) List() (list []string) {
 
 // Restore ...
 func (b *Backup) Restore(name string) (err error) {
-	log.Infof("restore: %s", name)
+	if name == "" {
+		return
+	}
+
+	b.restoreImage = name
+
+	log.Info("try to shutdown")
+	err = app.Kill()
+
+	return
+}
+
+// restore ...
+func (b *Backup) restore(name string) (err error) {
+	log.Infof("restore backup file %s", name)
 
 	file := path.Join(b.cfg.Path, name)
 
@@ -119,40 +161,48 @@ func (b *Backup) Restore(name string) (err error) {
 
 	tmpDir := path.Join(os.TempDir(), "smart_home")
 	if err = unzip(file, tmpDir); err != nil {
+		err = errors.Wrap(fmt.Errorf("failed unzip file %s", file), err.Error())
 		return
 	}
-
-	//log.Info()("tmpDir", tmpDir)
 
 	log.Info("Purge database")
 
 	if err = b.db.Exec(`DROP SCHEMA IF EXISTS "public" CASCADE;`).Error; err != nil {
+		err = errors.Wrap(fmt.Errorf("failed exec sql command"), err.Error())
 		return
 	}
 	if err = b.db.Exec(`CREATE SCHEMA "public";`).Error; err != nil {
+		err = errors.Wrap(fmt.Errorf("failed exec sql command"), err.Error())
 		return
 	}
 
 	options := b.restoreOptions()
 
-	options = append(options, "-f", path.Join(tmpDir, "database.tar"))
-
-	//log.Info()("options", options)
+	options = append(options, "-f", path.Join(tmpDir, "database.sql"))
 
 	cmd := exec.Command("psql", options...)
 	cmd.Env = append(os.Environ(), fmt.Sprintf("PGPASSWORD=%s", b.cfg.PgPass))
 
+	log.Infof("command: %s", cmd.String())
+
 	if _, err = cmd.CombinedOutput(); err != nil {
+		err = errors.Wrap(fmt.Errorf("failed combine command"), err.Error())
 		return
 	}
 
-	os.RemoveAll(path.Join("data", "file_storage"))
+	d := path.Join("data", "file_storage")
+	log.Infof("remove data dir")
+	_ = os.RemoveAll(d)
 
-	if err = Copy(path.Join(tmpDir, "file_storage"), path.Join("data", "file_storage")); err != nil {
+	from := path.Join(tmpDir, "file_storage")
+	to := path.Join("data", "file_storage")
+	log.Infof("copy file_storage %s --> %s", from, to)
+	if err = Copy(from, to); err != nil {
 		return
 	}
 
-	os.RemoveAll(tmpDir)
+	log.Infof("remove tmp dir %s", tmpDir)
+	_ = os.RemoveAll(tmpDir)
 
 	log.Info("complete")
 
@@ -190,7 +240,7 @@ func (b Backup) dumpOptions() []string {
 	//options = append(options, "-Z", "9")
 
 	// formats
-	options = append(options, "-F", "t")
+	options = append(options, "-F", "p")
 
 	return options
 }

@@ -20,9 +20,11 @@ package adaptors
 
 import (
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 	gormbulk "github.com/t-tiger/gorm-bulk-insert"
 )
 
@@ -79,7 +81,10 @@ func (n *EntityAction) AddMultiple(items []*m.EntityAction) (err error) {
 		insertRecords = append(insertRecords, n.toDb(ver))
 	}
 
-	err = gormbulk.BulkInsert(n.db, insertRecords, len(insertRecords))
+	if err = gormbulk.BulkInsert(n.db, insertRecords, len(insertRecords)); err != nil {
+		err = errors.Wrap(apperr.ErrEntityActionAdd, err.Error())
+	}
+
 	return
 }
 

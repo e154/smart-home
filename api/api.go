@@ -55,6 +55,10 @@ type Api struct {
 	controllers *controllers.Controllers
 	filter      *rbac.AccessFilter
 	cfg         Config
+	lis         net.Listener
+	httpServer  *http.Server
+	promServer  *http.Server
+	grpcServer  *grpc.Server
 }
 
 // NewApi ...
@@ -80,52 +84,52 @@ func grpcHandlerFunc(grpcServer *grpc.Server, otherHandler http.Handler) http.Ha
 }
 
 // Start ...
-func (a *Api) Start() error {
+func (a *Api) Start() (err error) {
 
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	lis, err := net.Listen("tcp", a.cfg.GrpcHostPort)
+	a.lis, err = net.Listen("tcp", a.cfg.GrpcHostPort)
 	if err != nil {
 		log.Error(err.Error())
 		return err
 	}
 
-	grpcServer := grpc.NewServer(
+	a.grpcServer = grpc.NewServer(
 		grpc.UnaryInterceptor(a.filter.AuthInterceptor),
 		grpc.StreamInterceptor(grpc_prometheus.StreamServerInterceptor),
 	)
-	gw.RegisterAuthServiceServer(grpcServer, a.controllers.Auth)
-	gw.RegisterStreamServiceServer(grpcServer, a.controllers.Stream)
-	gw.RegisterUserServiceServer(grpcServer, a.controllers.User)
-	gw.RegisterRoleServiceServer(grpcServer, a.controllers.Role)
-	gw.RegisterScriptServiceServer(grpcServer, a.controllers.Script)
-	gw.RegisterImageServiceServer(grpcServer, a.controllers.Image)
-	gw.RegisterPluginServiceServer(grpcServer, a.controllers.Plugin)
-	gw.RegisterZigbee2MqttServiceServer(grpcServer, a.controllers.Zigbee2mqtt)
-	gw.RegisterEntityServiceServer(grpcServer, a.controllers.Entity)
-	gw.RegisterAutomationServiceServer(grpcServer, a.controllers.Automation)
-	gw.RegisterAreaServiceServer(grpcServer, a.controllers.Area)
-	gw.RegisterDeveloperToolsServiceServer(grpcServer, a.controllers.Dev)
-	gw.RegisterInteractServiceServer(grpcServer, a.controllers.Interact)
-	gw.RegisterLogServiceServer(grpcServer, a.controllers.Logs)
-	gw.RegisterDashboardServiceServer(grpcServer, a.controllers.Dashboard)
-	gw.RegisterDashboardTabServiceServer(grpcServer, a.controllers.DashboardTab)
-	gw.RegisterDashboardCardServiceServer(grpcServer, a.controllers.DashboardCard)
-	gw.RegisterDashboardCardItemServiceServer(grpcServer, a.controllers.DashboardCardItem)
-	gw.RegisterVariableServiceServer(grpcServer, a.controllers.Variable)
-	gw.RegisterEntityStorageServiceServer(grpcServer, a.controllers.EntityStorage)
-	gw.RegisterMetricServiceServer(grpcServer, a.controllers.Metric)
-	gw.RegisterBackupServiceServer(grpcServer, a.controllers.Backup)
-	grpc_prometheus.Register(grpcServer)
+	gw.RegisterAuthServiceServer(a.grpcServer, a.controllers.Auth)
+	gw.RegisterStreamServiceServer(a.grpcServer, a.controllers.Stream)
+	gw.RegisterUserServiceServer(a.grpcServer, a.controllers.User)
+	gw.RegisterRoleServiceServer(a.grpcServer, a.controllers.Role)
+	gw.RegisterScriptServiceServer(a.grpcServer, a.controllers.Script)
+	gw.RegisterImageServiceServer(a.grpcServer, a.controllers.Image)
+	gw.RegisterPluginServiceServer(a.grpcServer, a.controllers.Plugin)
+	gw.RegisterZigbee2MqttServiceServer(a.grpcServer, a.controllers.Zigbee2mqtt)
+	gw.RegisterEntityServiceServer(a.grpcServer, a.controllers.Entity)
+	gw.RegisterAutomationServiceServer(a.grpcServer, a.controllers.Automation)
+	gw.RegisterAreaServiceServer(a.grpcServer, a.controllers.Area)
+	gw.RegisterDeveloperToolsServiceServer(a.grpcServer, a.controllers.Dev)
+	gw.RegisterInteractServiceServer(a.grpcServer, a.controllers.Interact)
+	gw.RegisterLogServiceServer(a.grpcServer, a.controllers.Logs)
+	gw.RegisterDashboardServiceServer(a.grpcServer, a.controllers.Dashboard)
+	gw.RegisterDashboardTabServiceServer(a.grpcServer, a.controllers.DashboardTab)
+	gw.RegisterDashboardCardServiceServer(a.grpcServer, a.controllers.DashboardCard)
+	gw.RegisterDashboardCardItemServiceServer(a.grpcServer, a.controllers.DashboardCardItem)
+	gw.RegisterVariableServiceServer(a.grpcServer, a.controllers.Variable)
+	gw.RegisterEntityStorageServiceServer(a.grpcServer, a.controllers.EntityStorage)
+	gw.RegisterMetricServiceServer(a.grpcServer, a.controllers.Metric)
+	gw.RegisterBackupServiceServer(a.grpcServer, a.controllers.Backup)
+	grpc_prometheus.Register(a.grpcServer)
 
 	var group errgroup.Group
 
 	// GRPC
 	if a.cfg.GrpcHostPort != "" {
 		group.Go(func() (err error) {
-			if err = grpcServer.Serve(lis); err != nil {
+			if err = a.grpcServer.Serve(a.lis); err != nil {
 				log.Error(err.Error())
 			}
 			return
@@ -188,15 +192,16 @@ func (a *Api) Start() error {
 
 	// PROMETHEUS
 	if a.cfg.PromHostPort != "" {
+		a.promServer = &http.Server{Addr: a.cfg.PromHostPort, Handler: promhttp.Handler()}
 		group.Go(func() error {
-			return http.ListenAndServe(a.cfg.PromHostPort, promhttp.Handler())
+			return a.promServer.ListenAndServe()
 		})
 		log.Infof("Serving PROMETHEUS server at %s", a.cfg.PromHostPort)
 	}
 
 	// HTTP
 	httpv1 := http.NewServeMux()
-	httpv1.Handle("/", grpcHandlerFunc(grpcServer, mux))
+	httpv1.Handle("/", grpcHandlerFunc(a.grpcServer, mux))
 
 	// upload handler
 	httpv1.HandleFunc("/v1/image/upload", a.controllers.Image.MuxUploadImage())
@@ -216,12 +221,30 @@ func (a *Api) Start() error {
 		httpv1.Handle("/api.swagger.json", http.StripPrefix("/", http.FileServer(http.FS(f))))
 	}
 
+	a.httpServer = &http.Server{Addr: a.cfg.HttpHostPort, Handler: httpv1}
 	group.Go(func() error {
-		return http.ListenAndServe(a.cfg.HttpHostPort, httpv1)
+		return a.httpServer.ListenAndServe()
 	})
 	log.Infof("Serving HTTP server at %s", a.cfg.HttpHostPort)
 
 	return group.Wait()
+}
+
+// Shutdown ...
+func (a *Api) Shutdown(ctx context.Context) (err error) {
+	if a.httpServer != nil {
+		err = a.httpServer.Shutdown(ctx)
+	}
+	if a.promServer != nil {
+		err = a.promServer.Shutdown(ctx)
+	}
+	if a.grpcServer != nil {
+		a.grpcServer.Stop()
+	}
+	if a.lis != nil {
+		err = a.lis.Close()
+	}
+	return
 }
 
 // CustomMatcher ...
