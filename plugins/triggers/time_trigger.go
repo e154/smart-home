@@ -25,7 +25,7 @@ import (
 	"time"
 
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/cron"
+	"github.com/e154/smart-home/system/scheduler"
 )
 
 const (
@@ -41,23 +41,23 @@ var _ ITrigger = (*TimeTrigger)(nil)
 
 type subscribe struct {
 	callback reflect.Value
-	task     *cron.Task
+	entryID  scheduler.EntryID
 }
 
 // TimeTrigger ...
 type TimeTrigger struct {
 	baseTrigger
-	cron *cron.Cron
+	scheduler *scheduler.Scheduler
 	sync.Mutex
 	subscribers map[string][]*subscribe
 }
 
 // NewTimeTrigger ...
-func NewTimeTrigger(eventBus bus.Bus) ITrigger {
-	c := cron.NewCron()
-	go c.Run()
+func NewTimeTrigger(eventBus bus.Bus,
+	scheduler *scheduler.Scheduler) ITrigger {
+
 	return &TimeTrigger{
-		cron:        c,
+		scheduler:   scheduler,
 		subscribers: make(map[string][]*subscribe),
 		baseTrigger: baseTrigger{
 			eventBus:     eventBus,
@@ -81,7 +81,7 @@ func (t *TimeTrigger) Subscribe(options Subscriber) error {
 		return fmt.Errorf("error static cast to string %v", options.Payload)
 	}
 	callback := reflect.ValueOf(options.Handler)
-	task, err := t.cron.NewTask(schedule, func() {
+	entryID, err := t.scheduler.AddFunc(schedule, func() {
 		callback.Call([]reflect.Value{reflect.ValueOf(""), reflect.ValueOf(time.Now())})
 	})
 
@@ -91,7 +91,7 @@ func (t *TimeTrigger) Subscribe(options Subscriber) error {
 
 	sub := &subscribe{
 		callback: callback,
-		task:     task,
+		entryID:  entryID,
 	}
 	t.Lock()
 	t.subscribers[schedule] = append(t.subscribers[schedule], sub)
@@ -118,7 +118,7 @@ func (t *TimeTrigger) Unsubscribe(options Subscriber) error {
 
 	for i, sub := range t.subscribers[schedule] {
 		if sub.callback == callback {
-			t.cron.RemoveTask(sub.task)
+			t.scheduler.Remove(sub.entryID)
 			t.subscribers[schedule] = append(t.subscribers[schedule][:i], t.subscribers[schedule][i+1:]...)
 		}
 	}

@@ -26,6 +26,7 @@ import (
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/mqtt"
+	"github.com/e154/smart-home/system/scheduler"
 	"github.com/e154/smart-home/system/scripts"
 )
 
@@ -38,6 +39,7 @@ type service struct {
 	mqttServ      mqtt.MqttServ
 	appConfig     *models.AppConfig
 	gateClient    *gate_client.GateClient
+	scheduler     *scheduler.Scheduler
 }
 
 // Plugins ...
@@ -89,4 +91,9 @@ func (s service) AppConfig() *models.AppConfig {
 // GateClient ...
 func (s service) GateClient() *gate_client.GateClient {
 	return s.gateClient
+}
+
+// Scheduler ...
+func (s service) Scheduler() *scheduler.Scheduler {
+	return s.scheduler
 }

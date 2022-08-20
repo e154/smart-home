@@ -23,7 +23,6 @@ import (
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/cron"
 	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/plugins"
 )
@@ -38,8 +37,6 @@ type plugin struct {
 	*plugins.Plugin
 	pause uint
 	actor *Actor
-	cron  *cron.Cron
-	task  *cron.Task
 }
 
 // New ...
@@ -47,7 +44,6 @@ func New() plugins.Plugable {
 	p := &plugin{
 		Plugin: plugins.NewPlugin(),
 		pause:  10,
-		cron:   cron.NewCron(),
 	}
 	return p
 }
@@ -65,6 +61,10 @@ func (p *plugin) Unload() (err error) {
 	if err = p.Plugin.Unload(); err != nil {
 		return
 	}
+	// every day at 00:00 am
+	p.Scheduler.AddFunc("0 0 * * *", func() {
+		p.actor.UpdateDay()
+	})
 	return p.unload()
 }
 
@@ -81,22 +81,11 @@ func (p *plugin) load(service plugins.Service) (err error) {
 
 	logging.LogsHook = p.actor.LogsHook
 
-	// Spawn ...
-	p.task, _ = p.cron.NewTask("0 0 0 * * *", func() {
-		p.actor.UpdateDay()
-	})
-	p.cron.Run()
-
-	return nil
+	return
 }
 
 func (p *plugin) unload() (err error) {
-	if p.task != nil {
-		p.cron.RemoveTask(p.task)
-	}
-	p.cron.Stop()
-	p.task = nil
-	return nil
+	return
 }
 
 // AddOrUpdateActor ...

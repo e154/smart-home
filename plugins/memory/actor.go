@@ -22,6 +22,8 @@ import (
 	"fmt"
 	"sync"
 
+	m "github.com/e154/smart-home/models"
+
 	"github.com/e154/smart-home/common/events"
 
 	"github.com/rcrowley/go-metrics"
@@ -48,7 +50,8 @@ type Actor struct {
 
 // NewActor ...
 func NewActor(entityManager entity_manager.EntityManager,
-	eventBus bus.Bus) *Actor {
+	eventBus bus.Bus,
+	entity *m.Entity) *Actor {
 
 	actor := &Actor{
 		BaseActor: entity_manager.BaseActor{
@@ -65,6 +68,10 @@ func NewActor(entityManager entity_manager.EntityManager,
 		free:        metrics.NewGauge(),
 		usedPercent: metrics.NewGaugeFloat64(),
 		updateLock:  &sync.Mutex{},
+	}
+
+	if entity != nil {
+		actor.Metric = entity.Metrics
 	}
 
 	return actor

@@ -109,7 +109,7 @@ func TestWeatherOwm(t *testing.T) {
 					// ------------------------------------------------
 					ch := make(chan events.EventPassAttributes, 123)
 					fn := func(topic string, msg interface{}) {
-fmt.Println("topic", topic)
+						fmt.Println("topic", topic)
 						switch v := msg.(type) {
 						case events.EventPassAttributes:
 							ch <- v
