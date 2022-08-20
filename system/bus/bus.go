@@ -81,7 +81,6 @@ func (b *bus) Subscribe(topic string, fn interface{}, options ...interface{}) er
 		}
 	}()
 
-
 	if _, ok := b.sub[topic]; ok {
 		b.sub[topic].handlers = append(b.sub[topic].handlers, h)
 	} else {

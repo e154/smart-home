@@ -69,6 +69,10 @@ func (p *plugin) Unload() (err error) {
 // load ...
 func (p *plugin) load() (err error) {
 
+	if p.actor != nil {
+		return
+	}
+
 	var entity *m.Entity
 	if entity, err = p.Adaptors.Entity.GetById(common.EntityId(fmt.Sprintf("%s.%s", EntityMemory, Name))); err == nil {
 

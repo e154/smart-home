@@ -49,7 +49,7 @@ func TestMain(m *testing.M) {
 
 	container = BuildContainer()
 	err := container.Invoke(func(
-		logging *logging.Logging,
+		_ *logging.Logging,
 	) {
 
 		time.Sleep(time.Millisecond * 500)

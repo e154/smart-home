@@ -22,22 +22,22 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/e154/smart-home/common/events"
-
-	"github.com/e154/smart-home/common/apperr"
+	"github.com/pkg/errors"
+	"go.uber.org/atomic"
+	"go.uber.org/fx"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/mqtt"
+	"github.com/e154/smart-home/system/scheduler"
 	"github.com/e154/smart-home/system/scripts"
-	"github.com/pkg/errors"
-	"go.uber.org/atomic"
-	"go.uber.org/fx"
 )
 
 var (
@@ -61,7 +61,8 @@ func NewPluginManager(lc fx.Lifecycle,
 	scriptService scripts.ScriptService,
 	appConfig *m.AppConfig,
 	gateClient *gate_client.GateClient,
-	eventBus bus.Bus) common.PluginManager {
+	eventBus bus.Bus,
+	scheduler *scheduler.Scheduler) common.PluginManager {
 	pluginManager := &pluginManager{
 		adaptors:       adaptors,
 		isStarted:      atomic.NewBool(false),
@@ -77,6 +78,7 @@ func NewPluginManager(lc fx.Lifecycle,
 		scriptService: scriptService,
 		appConfig:     appConfig,
 		gateClient:    gateClient,
+		scheduler:     scheduler,
 	}
 
 	lc.Append(fx.Hook{

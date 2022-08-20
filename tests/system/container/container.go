@@ -39,6 +39,7 @@ import (
 	"github.com/e154/smart-home/system/mqtt_authenticator"
 	"github.com/e154/smart-home/system/orm"
 	plugins2 "github.com/e154/smart-home/system/plugins"
+	"github.com/e154/smart-home/system/scheduler"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/storage"
 	"github.com/e154/smart-home/system/stream"
@@ -58,6 +59,7 @@ func BuildContainer() (container *dig.Container) {
 	_ = container.Provide(NewMigrationsConfig)
 	_ = container.Provide(migrations.NewMigrations)
 	_ = container.Provide(adaptors.NewAdaptors)
+	_ = container.Provide(scheduler.NewScheduler)
 	_ = container.Provide(scripts.NewScriptService)
 	_ = container.Provide(MigrationList)
 	_ = container.Provide(localMigrations.NewMigrations)

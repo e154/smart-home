@@ -19,8 +19,12 @@
 package plugins
 
 import (
+	"context"
 	"testing"
 	"time"
+
+	. "github.com/smartystreets/goconvey/convey"
+	"go.uber.org/atomic"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -31,10 +35,9 @@ import (
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
+	"github.com/e154/smart-home/system/scheduler"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
-	. "github.com/smartystreets/goconvey/convey"
-	"go.uber.org/atomic"
 )
 
 func TestTriggerTime(t *testing.T) {
@@ -57,7 +60,9 @@ automationTriggerTime = (msg)->
 			mqttServer mqtt.MqttServ,
 			automation automation.Automation,
 			eventBus bus.Bus,
-			pluginManager common.PluginManager) {
+			pluginManager common.PluginManager,
+			scheduler *scheduler.Scheduler,
+		) {
 
 			eventBus.Purge()
 			scriptService.Purge()
@@ -70,6 +75,7 @@ automationTriggerTime = (msg)->
 			ctx.So(err, ShouldBeNil)
 
 			go mqttServer.Start()
+			scheduler.Start(context.TODO())
 
 			// add scripts
 			// ------------------------------------------------

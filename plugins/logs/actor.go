@@ -29,7 +29,6 @@ import (
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/cron"
 	"github.com/e154/smart-home/system/entity_manager"
 )
 
@@ -46,7 +45,6 @@ type Actor struct {
 	WarnYesterday metrics.Counter
 	eventBus      bus.Bus
 	updateLock    *sync.Mutex
-	cron          *cron.Cron
 }
 
 // NewActor ...
