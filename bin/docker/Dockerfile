@@ -2,7 +2,7 @@ FROM golang:1.18 as build
 RUN update-ca-certificates
 MAINTAINER Filippov Alex <support@e154.ru>
 
-FROM postgres
+FROM postgres:11
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=build /etc/passwd /etc/passwd
 ENTRYPOINT ["/server"]
