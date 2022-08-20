@@ -19,12 +19,12 @@
 package memory
 
 import (
+	"fmt"
+	"github.com/e154/smart-home/common"
 	"time"
 
-	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/plugins"
-	"github.com/prometheus/common/log"
 )
 
 var _ plugins.Plugable = (*plugin)(nil)
@@ -54,42 +54,31 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 	if err = p.Plugin.Load(service); err != nil {
 		return
 	}
+	return p.load()
+}
 
-	p.actor = NewActor(service.EntityManager(), service.EventBus())
+// Unload ...
+func (p *plugin) Unload() (err error) {
+	if err = p.Plugin.Unload(); err != nil {
+		return
+	}
+	return p.unload()
+}
+
+// load ...
+func (p *plugin) load() (err error) {
+
+	if p.actor != nil {
+		return
+	}
+
+	var entity *m.Entity
+	if entity, err = p.Adaptors.Entity.GetById(common.EntityId(fmt.Sprintf("%s.%s", EntityMemory, Name))); err == nil {
+
+	}
+
+	p.actor = NewActor(p.EntityManager, p.EventBus, entity)
 	p.EntityManager.Spawn(p.actor.Spawn)
-
-	list, _, err := p.Adaptors.Metric.Search("memory", 1, 0)
-	if err != nil {
-		log.Error(err.Error())
-	}
-
-	var metric *m.Metric
-	if len(list) == 0 {
-		metric = &m.Metric{
-			Name:        "memory",
-			Description: "RAM metric",
-			Options: m.MetricOptions{
-				Items: []m.MetricOptionsItem{
-					{
-						Name:        "used_percent",
-						Description: "",
-						Color:       "#0000FF",
-						Translate:   "used_percent",
-						Label:       "%",
-					},
-				},
-			},
-			Type: common.MetricTypeLine,
-		}
-		if metric.Id, err = p.Adaptors.Metric.Add(metric); err == nil {
-			_ = p.Adaptors.Entity.AppendMetric(p.actor.Id, metric)
-		}
-
-	} else {
-		metric = list[0]
-	}
-
-	p.actor.Metric = []*m.Metric{metric}
 
 	go func() {
 		p.ticker = time.NewTicker(time.Second * time.Duration(p.pause))
@@ -102,16 +91,25 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 	return nil
 }
 
-// Unload ...
-func (p *plugin) Unload() (err error) {
-	if err = p.Plugin.Unload(); err != nil {
-		return
-	}
+// unload ...
+func (p *plugin) unload() (err error) {
+
 	if p.ticker != nil {
 		p.ticker.Stop()
 		p.ticker = nil
 	}
+	p.actor = nil
 	return nil
+}
+
+// AddOrUpdateActor ...
+func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
+	return p.load()
+}
+
+// RemoveActor ...
+func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
+	return p.unload()
 }
 
 // Name ...

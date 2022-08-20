@@ -290,7 +290,7 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 	var entityId = info.Id
 
 	item, ok := e.actors.Load(entityId)
-	if ok {
+	if ok && item != nil {
 		log.Warnf("entityId %v exist", entityId)
 		actor = item.(PluginActor)
 		return
