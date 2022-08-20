@@ -20,8 +20,9 @@ package memory
 
 import (
 	"fmt"
-	m "github.com/e154/smart-home/models"
 	"sync"
+
+	m "github.com/e154/smart-home/models"
 
 	"github.com/e154/smart-home/common/events"
 

@@ -71,7 +71,6 @@ func (n *EntityEndpoint) Add(ctx context.Context, entity *m.Entity) (result *m.E
 func (n *EntityEndpoint) Import(ctx context.Context, entity *m.Entity) (err error) {
 	// import scripts
 
-
 	err = n.adaptors.Entity.Import(entity)
 	return
 }

@@ -2,22 +2,23 @@ package scheduler
 
 import (
 	"context"
-	"time"
 
-	"github.com/go-co-op/gocron"
+	"github.com/robfig/cron/v3"
 	"go.uber.org/fx"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common/logger"
 )
 
+type EntryID int
+
 var (
 	log = logger.MustGetLogger("scheduler")
 )
 
 type Scheduler struct {
-	adaptors  *adaptors.Adaptors
-	scheduler *gocron.Scheduler
+	adaptors *adaptors.Adaptors
+	cron     *cron.Cron
 }
 
 func NewScheduler(lc fx.Lifecycle,
@@ -37,23 +38,43 @@ func NewScheduler(lc fx.Lifecycle,
 }
 
 func (c *Scheduler) Start(_ context.Context) error {
-	c.scheduler = gocron.NewScheduler(time.UTC)
+
+	c.cron = cron.New(
+		cron.WithSeconds(),
+		cron.WithParser(cron.NewParser(
+			cron.SecondOptional|cron.Minute|cron.Hour|cron.Dom|cron.Month|cron.Dow|cron.Descriptor,
+		)))
 
 	// every day at 00:00 am
-	_, _ = c.scheduler.Cron("0 0 * * *").Do(func() {
+	c.cron.AddFunc("0 0 * * *", func() {
 		if err := c.adaptors.MetricBucket.DeleteOldest(60); err != nil {
 			log.Error(err.Error())
 		}
 	})
 
-	c.scheduler.StartAsync()
+	c.cron.Start()
+	c.cron.Run()
+
 	log.Info("started ...")
 
 	return nil
 }
 
 func (c *Scheduler) Shutdown(_ context.Context) error {
-	c.scheduler.Stop()
+	c.cron.Stop()
 	log.Info("shutdown ...")
 	return nil
+}
+
+func (c *Scheduler) AddFunc(spec string, cmd func()) (id EntryID, err error) {
+	var entryId cron.EntryID
+	if entryId, err = c.cron.AddFunc(spec, cmd); err != nil {
+		return
+	}
+	id = EntryID(entryId)
+	return
+}
+
+func (c *Scheduler) Remove(id EntryID) {
+	c.cron.Remove(cron.EntryID(id))
 }

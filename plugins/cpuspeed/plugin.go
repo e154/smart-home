@@ -20,8 +20,9 @@ package cpuspeed
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/common"
 	"time"
+
+	"github.com/e154/smart-home/common"
 
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/plugins"
@@ -36,8 +37,8 @@ func init() {
 type plugin struct {
 	*plugins.Plugin
 	ticker *time.Ticker
-	pause uint
-	actor *Actor
+	pause  uint
+	actor  *Actor
 }
 
 // New ...

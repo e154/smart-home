@@ -24,6 +24,7 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/scheduler"
 	"github.com/e154/smart-home/system/scripts"
 	"go.uber.org/atomic"
 )
@@ -36,6 +37,7 @@ type Plugin struct {
 	PluginManager common.PluginManager
 	EventBus      bus.Bus
 	IsStarted     *atomic.Bool
+	Scheduler     *scheduler.Scheduler
 }
 
 // NewPlugin ...
@@ -52,6 +54,7 @@ func (p *Plugin) Load(service Service) error {
 	p.EntityManager = service.EntityManager()
 	p.ScriptService = service.ScriptService()
 	p.PluginManager = service.PluginManager()
+	p.Scheduler = service.Scheduler()
 
 	if p.IsStarted.Load() {
 		return ErrPluginIsLoaded

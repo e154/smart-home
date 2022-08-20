@@ -89,7 +89,7 @@ func (p *plugin) attachTrigger() {
 	// init triggers ...
 	p.triggers[StateChangeName] = NewStateChangedTrigger(p.EventBus)
 	p.triggers[SystemName] = NewSystemTrigger(p.EventBus)
-	p.triggers[TimeName] = NewTimeTrigger(p.EventBus)
+	p.triggers[TimeName] = NewTimeTrigger(p.EventBus, p.Scheduler)
 
 	wg := &sync.WaitGroup{}
 
