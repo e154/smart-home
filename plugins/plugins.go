@@ -31,6 +31,7 @@ import (
 	_ "github.com/e154/smart-home/plugins/modbus_rtu"
 	_ "github.com/e154/smart-home/plugins/modbus_tcp"
 	_ "github.com/e154/smart-home/plugins/moon"
+	_ "github.com/e154/smart-home/plugins/mqtt"
 	_ "github.com/e154/smart-home/plugins/node"
 	_ "github.com/e154/smart-home/plugins/notify"
 	_ "github.com/e154/smart-home/plugins/scene"
