@@ -29,10 +29,12 @@ type EventEntityState struct {
 // Compare ...
 func (e1 EventEntityState) Compare(e2 EventEntityState) (ident bool) {
 
-	if e1.State != nil && e2.State != nil {
-		if e1.State.Name != e2.State.Name {
-			return
-		}
+	if e1.State == nil || e2.State == nil {
+		return
+	}
+
+	if e1.State.Name != e2.State.Name {
+		return
 	}
 
 	for k1, v1 := range e1.Attributes {
