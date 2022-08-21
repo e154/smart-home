@@ -70,7 +70,7 @@ func (z Zigbee2mqttDevices) GetById(id string) (v *Zigbee2mqttDevice, err error)
 	v = &Zigbee2mqttDevice{Id: id}
 	if err = z.Db.First(&v).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			err = errors.Wrap(apperr.ErrZigbeeDeviceNotFound, fmt.Sprintf("id \"%d\"", id))
+			err = errors.Wrap(apperr.ErrZigbeeDeviceNotFound, fmt.Sprintf("id \"%s\"", id))
 			return
 		}
 		err = errors.Wrap(apperr.ErrZigbeeDeviceGet, err.Error())
