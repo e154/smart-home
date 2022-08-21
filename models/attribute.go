@@ -278,9 +278,7 @@ func (a Attributes) Deserialize(data AttributeValue) (changed bool, err error) {
 					Value: vFrom,
 				}
 
-				if fmt.Sprintf("%v", vFrom) != fmt.Sprintf("%v", v.Value) {
-					changed = true
-				}
+				changed = fmt.Sprintf("%v", vFrom) != fmt.Sprintf("%v", v.Value)
 			}
 		}
 	}
