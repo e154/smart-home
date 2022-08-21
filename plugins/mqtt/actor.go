@@ -112,19 +112,6 @@ func (e *Actor) Spawn() entity_manager.PluginActor {
 
 // SetState ...
 func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
-	if !e.setState(params) {
-		return nil
-	}
-
-	message := NewMessage()
-	message.NewState = params
-
-	e.mqttMessageQueue <- message
-
-	return nil
-}
-
-func (e *Actor) setState(params entity_manager.EntityStateParams) (changed bool) {
 	e.stateMu.Lock()
 	defer e.stateMu.Unlock()
 
@@ -138,8 +125,8 @@ func (e *Actor) setState(params entity_manager.EntityStateParams) (changed bool)
 	}
 
 	e.AttrMu.Lock()
-	var err error
-	if changed, err = e.Attrs.Deserialize(params.AttributeValues); !changed {
+	changed, err := e.Attrs.Deserialize(params.AttributeValues)
+	if !changed {
 		if err != nil {
 			log.Warn(err.Error())
 		}
@@ -149,7 +136,7 @@ func (e *Actor) setState(params entity_manager.EntityStateParams) (changed bool)
 			//fmt.Println("delta", delta)
 			if delta < 200 {
 				e.AttrMu.Unlock()
-				return
+				return nil
 			}
 		}
 	}
@@ -163,7 +150,7 @@ func (e *Actor) setState(params entity_manager.EntityStateParams) (changed bool)
 		StorageSave: params.StorageSave,
 	})
 
-	return
+	return nil
 }
 
 func (e *Actor) mqttOnPublish(client mqtt.MqttCli, msg mqtt.Message) {

@@ -25,15 +25,13 @@ import (
 	"sync"
 	"time"
 
-	events2 "github.com/e154/smart-home/common/events"
-
-	"github.com/e154/smart-home/common/apperr"
-
 	"github.com/pkg/errors"
 	"go.uber.org/fx"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
@@ -311,7 +309,7 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 
 			log.Infof("unload %v", entityId)
 
-			e.eventBus.Publish(bus.TopicEntities, events2.EventRemoveActor{
+			e.eventBus.Publish(bus.TopicEntities, events.EventRemoveActor{
 				PluginName: info.PluginName,
 				EntityId:   entityId,
 			})
@@ -332,7 +330,7 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 	attr := actor.Attributes()
 	settings := actor.Settings()
 
-	e.eventBus.Publish(bus.TopicEntities, events2.EventAddedActor{
+	e.eventBus.Publish(bus.TopicEntities, events.EventAddedActor{
 		PluginName: info.PluginName,
 		EntityId:   entityId,
 		Attributes: attr,
@@ -359,26 +357,26 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 func (e *entityManager) eventHandler(_ string, message interface{}) {
 
 	switch msg := message.(type) {
-	case events2.EventStateChanged:
+	case events.EventStateChanged:
 		go e.eventStateChangedHandler(msg)
-	case events2.EventLoadedPlugin:
+	case events.EventLoadedPlugin:
 		go func() { _ = e.eventLoadedPlugin(msg) }()
-	case events2.EventUnloadedPlugin:
+	case events.EventUnloadedPlugin:
 		go e.eventUnloadedPlugin(msg)
-	case events2.EventCreatedEntity:
+	case events.EventCreatedEntity:
 		go e.eventCreatedEntity(msg)
-	case events2.EventUpdatedEntity:
+	case events.EventUpdatedEntity:
 		go e.eventUpdatedEntity(msg)
-	case events2.EventDeletedEntity:
+	case events.EventDeletedEntity:
 		go e.eventDeletedEntity(msg)
-	case events2.EventEntitySetState:
+	case events.EventEntitySetState:
 		go e.eventEntitySetState(msg)
-	case events2.EventGetLastState:
+	case events.EventGetLastState:
 		go e.eventLastState(msg)
 	}
 }
 
-func (e *entityManager) eventStateChangedHandler(msg events2.EventStateChanged) {
+func (e *entityManager) eventStateChangedHandler(msg events.EventStateChanged) {
 
 	item, ok := e.actors.Load(msg.EntityId)
 	if !ok {
@@ -422,7 +420,7 @@ func (e *entityManager) eventStateChangedHandler(msg events2.EventStateChanged) 
 	}()
 }
 
-func (e *entityManager) eventLastState(msg events2.EventGetLastState) {
+func (e *entityManager) eventLastState(msg events.EventGetLastState) {
 
 	item, ok := e.actors.Load(msg.EntityId)
 	if !ok {
@@ -437,7 +435,7 @@ func (e *entityManager) eventLastState(msg events2.EventGetLastState) {
 
 	info := actor.Actor.Info()
 
-	e.eventBus.Publish(bus.TopicEntities, events2.EventStateChanged{
+	e.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
 		StorageSave: false,
 		PluginName:  info.PluginName,
 		EntityId:    info.Id,
@@ -446,7 +444,7 @@ func (e *entityManager) eventLastState(msg events2.EventGetLastState) {
 	})
 }
 
-func (e *entityManager) eventLoadedPlugin(msg events2.EventLoadedPlugin) (err error) {
+func (e *entityManager) eventLoadedPlugin(msg events.EventLoadedPlugin) (err error) {
 
 	log.Infof("Load plugin '%s' entities", msg.PluginName)
 
@@ -464,7 +462,7 @@ func (e *entityManager) eventLoadedPlugin(msg events2.EventLoadedPlugin) (err er
 	return
 }
 
-func (e *entityManager) eventUnloadedPlugin(msg events2.EventUnloadedPlugin) {
+func (e *entityManager) eventUnloadedPlugin(msg events.EventUnloadedPlugin) {
 
 	log.Infof("Unload plugin '%s' entities", msg.PluginName)
 
@@ -478,7 +476,7 @@ func (e *entityManager) eventUnloadedPlugin(msg events2.EventUnloadedPlugin) {
 	})
 }
 
-func (e *entityManager) eventCreatedEntity(msg events2.EventCreatedEntity) {
+func (e *entityManager) eventCreatedEntity(msg events.EventCreatedEntity) {
 
 	entity, err := e.adaptors.Entity.GetById(msg.Id)
 	if err != nil {
@@ -490,7 +488,7 @@ func (e *entityManager) eventCreatedEntity(msg events2.EventCreatedEntity) {
 	}
 }
 
-func (e *entityManager) eventUpdatedEntity(msg events2.EventUpdatedEntity) {
+func (e *entityManager) eventUpdatedEntity(msg events.EventUpdatedEntity) {
 
 	entity, err := e.adaptors.Entity.GetById(msg.Id)
 	if err != nil {
@@ -502,12 +500,12 @@ func (e *entityManager) eventUpdatedEntity(msg events2.EventUpdatedEntity) {
 	}
 }
 
-func (e *entityManager) eventDeletedEntity(msg events2.EventDeletedEntity) {
+func (e *entityManager) eventDeletedEntity(msg events.EventDeletedEntity) {
 
 	e.Remove(msg.Id)
 }
 
-func (e *entityManager) eventEntitySetState(msg events2.EventEntitySetState) {
+func (e *entityManager) eventEntitySetState(msg events.EventEntitySetState) {
 
 	_ = e.SetState(msg.Id, EntityStateParams{
 		NewState:        msg.NewState,
@@ -519,7 +517,7 @@ func (e *entityManager) eventEntitySetState(msg events2.EventEntitySetState) {
 
 // CallAction ...
 func (e *entityManager) CallAction(id common.EntityId, action string, arg map[string]interface{}) {
-	e.eventBus.Publish(bus.TopicEntities, events2.EventCallAction{
+	e.eventBus.Publish(bus.TopicEntities, events.EventCallAction{
 		PluginName: id.PluginName(),
 		EntityId:   id,
 		ActionName: action,
@@ -529,7 +527,7 @@ func (e *entityManager) CallAction(id common.EntityId, action string, arg map[st
 
 // CallScene ...
 func (e *entityManager) CallScene(id common.EntityId, arg map[string]interface{}) {
-	e.eventBus.Publish(bus.TopicEntities, events2.EventCallScene{
+	e.eventBus.Publish(bus.TopicEntities, events.EventCallScene{
 		PluginName: id.PluginName(),
 		EntityId:   id,
 		Args:       arg,
