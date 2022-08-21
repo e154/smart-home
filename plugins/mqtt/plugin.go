@@ -56,6 +56,9 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 	if err := p.EventBus.Subscribe(bus.TopicEntities, p.eventHandler); err != nil {
 		log.Error(err.Error())
 	}
+
+	_ = p.mqttServ.Authenticator().Register(p.Authenticator)
+
 	return nil
 }
 
@@ -76,6 +79,8 @@ func (p plugin) Unload() (err error) {
 		actor.destroy()
 		delete(p.actors, entityId)
 	}
+
+	_ = p.mqttServ.Authenticator().Unregister(p.Authenticator)
 
 	return
 }
@@ -176,16 +181,44 @@ func (p *plugin) Version() string {
 // Options ...
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
-		Triggers:         false,
-		Actors:           true,
-		ActorCustomAttrs: true,
-		//ActorAttrs:         NewAttr(),
+		Triggers:           false,
+		Actors:             true,
+		ActorCustomAttrs:   true,
 		ActorCustomActions: true,
-		//ActorActions:       entity_manager.ToEntityActionShort(NewActions()),
-		ActorCustomStates: true,
-		//ActorStates:        entity_manager.ToEntityStateShort(NewStates()),
-		ActorCustomSetts: true,
-		ActorSetts:       NewSettings(),
-		Setts:            nil,
+		ActorCustomStates:  true,
+		ActorCustomSetts:   true,
+		ActorSetts:         NewSettings(),
+		Setts:              nil,
 	}
+}
+
+// Authenticator ...
+func (p *plugin) Authenticator(login, password string) (err error) {
+
+	p.actorsLock.Lock()
+	defer p.actorsLock.Unlock()
+
+	for _, actor := range p.actors {
+		attrs := actor.Settings()
+
+		if _login, ok := attrs[AttrMqttLogin]; !ok || _login.String() != login {
+			continue
+		}
+
+		if _password, ok := attrs[AttrMqttPass]; !ok || _password.String() != password {
+			continue
+		}
+
+		err = nil
+		return
+
+		// todo add encripted password
+		//if ok := common.CheckPasswordHash(password, settings[AttrNodePass].String()); ok {
+		//	return
+		//}
+	}
+
+	err = apperr.ErrBadLoginOrPassword
+
+	return
 }
