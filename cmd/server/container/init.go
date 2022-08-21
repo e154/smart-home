@@ -17,6 +17,7 @@ func MigrationList(adaptors *adaptors.Adaptors,
 		local_migrations.NewMigrationAreas(adaptors),
 		local_migrations.NewMigrationPlugins(adaptors),
 		local_migrations.NewMigrationZones(adaptors),
+		local_migrations.NewMigrationMqtt(adaptors),
 		//local_migrations.NewMigrationDashboard(adaptors),
 	}
 }
