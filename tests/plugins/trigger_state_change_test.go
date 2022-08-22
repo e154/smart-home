@@ -68,9 +68,10 @@ zigbee2mqttEvent = ->
 
 		task1SourceScript = `
 automationTriggerStateChanged = (msg)->
-    #print '---trigger---'
-    Done msg.payload.new_state.state.name
-    return false
+  print '---trigger---'
+  print msg.payload 
+  Done msg.payload.new_state.state.name
+  return false
 `
 	)
 

@@ -21,19 +21,16 @@ package automation
 import (
 	"fmt"
 
+	"github.com/e154/smart-home/common"
+
 	"github.com/e154/smart-home/common/apperr"
 
-	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/triggers"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/pkg/errors"
 	"go.uber.org/atomic"
-)
-
-const (
-	taskMsgBuffer = 50
 )
 
 // Task ...
@@ -85,19 +82,8 @@ func (t *Task) addTrigger(model *m.Trigger) (err error) {
 		return
 	}
 
-	pluginName := model.PluginName
-	if pluginName == "" {
-		pluginName = triggers.StateChangeName
-	}
-
-	var triggerPLugin triggers.ITrigger
-	if triggerPLugin, err = t.rawPlugin.GetTrigger(pluginName); err != nil {
-		log.Error(err.Error())
-		return
-	}
-
 	var tr *Trigger
-	if tr, err = NewTrigger(t.scriptService, model, triggerPLugin); err != nil {
+	if tr, err = NewTrigger(t.scriptService, t.model.Name, model, t.rawPlugin, t.triggerHandler); err != nil {
 		log.Error(err.Error())
 		return
 	}
@@ -106,60 +92,20 @@ func (t *Task) addTrigger(model *m.Trigger) (err error) {
 
 	_ = tr.Start()
 
-	queue := make(chan interface{}, taskMsgBuffer)
-	var handler = func(_ string, msg interface{}) {
-		queue <- map[string]interface{}{
-			"payload":      msg,
-			"trigger_name": model.Name,
-			"task_name":    t.model.Name,
-			"entity_id":    model.EntityId.String(),
-		}
-	}
+	return
+}
 
-	if err = triggerPLugin.Subscribe(triggers.Subscriber{
-		EntityId: tr.EntityId(),
-		Handler:  handler,
-		Payload:  tr.model.Payload,
-	}); err != nil {
-		log.Error(err.Error())
+func (t *Task) triggerHandler(entityId *common.EntityId) {
+	result, err := t.conditionGroup.Check(entityId)
+	if err != nil || !result {
 		return
 	}
 
-	go func(entityId *common.EntityId) {
-		var result bool
-		var err error
-
-		defer func() {
-			_ = tr.Stop()
-			_ = triggerPLugin.Unsubscribe(triggers.Subscriber{
-				EntityId: entityId,
-				Handler:  handler,
-				Payload:  tr.model.Payload,
-			})
-			close(queue)
-		}()
-
-		for msg := range queue {
-
-			result, err = tr.Check(msg)
-			if err != nil || !result {
-				continue
-			}
-
-			result, err = t.conditionGroup.Check(entityId)
-			if err != nil || !result {
-				continue
-			}
-
-			for _, acion := range t.actions {
-				if _, err = acion.Run(entityId); err != nil {
-					log.Error(err.Error())
-				}
-			}
+	for _, acion := range t.actions {
+		if _, err = acion.Run(entityId); err != nil {
+			log.Error(err.Error())
 		}
-	}(tr.EntityId())
-
-	return
+	}
 }
 
 // Start ...
@@ -209,12 +155,12 @@ func (t *Task) Stop() {
 	}
 	t.enabled.Store(false)
 	log.Infof("task %d stopped", t.Id())
-	//for _, trigger := range t.triggers {
-	//	_ = trigger.Stop()
-	//}
-	//t.triggers = make(map[string]*Trigger)
+	for _, trigger := range t.triggers {
+		_ = trigger.Stop()
+	}
+	t.triggers = make(map[string]*Trigger)
+	t.actions = make(map[string]*Action)
 	t.conditionGroup = nil
-	//t.actions = make([]*Action, 0)
 }
 
 // CallTrigger ...

@@ -21,11 +21,12 @@ package automation
 import (
 	"sync"
 
+	"go.uber.org/atomic"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/triggers"
 	"github.com/e154/smart-home/system/scripts"
-	"go.uber.org/atomic"
 )
 
 // Trigger ...
@@ -35,23 +36,58 @@ type Trigger struct {
 	lastStatus    atomic.Bool
 	model         *m.Trigger
 	name          string
-	queue         chan interface{}
 	triggerPlugin triggers.ITrigger
 	isStarted     atomic.Bool
+	cb            func(entityId *common.EntityId)
+	taskName      string
+	subscriber    triggers.Subscriber
 	sync.Mutex
 }
 
 // NewTrigger ...
 func NewTrigger(scriptService scripts.ScriptService,
+	taskName string,
 	model *m.Trigger,
-	triggerPlugin triggers.ITrigger) (tr *Trigger, err error) {
+	rawPlugin triggers.IGetTrigger,
+	cb func(entityId *common.EntityId)) (tr *Trigger, err error) {
+
+	pluginName := model.PluginName
+	if pluginName == "" {
+		pluginName = triggers.StateChangeName
+	}
+
+	var triggerPlugin triggers.ITrigger
+	if triggerPlugin, err = rawPlugin.GetTrigger(pluginName); err != nil {
+		log.Error(err.Error())
+		return
+	}
 
 	tr = &Trigger{
 		model:         model,
 		name:          model.Name,
-		queue:         make(chan interface{}, taskMsgBuffer),
 		scriptService: scriptService,
 		triggerPlugin: triggerPlugin,
+		cb:            cb,
+		taskName:      taskName,
+	}
+
+	tr.subscriber = triggers.Subscriber{
+		EntityId: model.EntityId,
+		Handler: func(_ string, msg interface{}) {
+			obj := map[string]interface{}{
+				"payload":      msg,
+				"trigger_name": tr.model.Name,
+				"task_name":    tr.taskName,
+				"entity_id":    tr.model.EntityId.String(),
+			}
+			result, err := tr.Check(obj)
+			if err != nil || !result {
+				return
+			}
+			tr.cb(tr.EntityId())
+			return
+		},
+		Payload: model.Payload,
 	}
 
 	if tr.scriptEngine, err = scriptService.NewEngine(model.Script); err != nil {
@@ -95,13 +131,15 @@ func (tr *Trigger) EntityId() *common.EntityId {
 
 // Start ...
 func (tr *Trigger) Start() (err error) {
-	log.Infof("trigger '%s' started", tr.name)
+	log.Infof("start trigger '%s'", tr.name)
+	err = tr.triggerPlugin.Subscribe(tr.subscriber)
 	return
 }
 
 // Stop ...
 func (tr *Trigger) Stop() (err error) {
 	log.Infof("stop trigger '%s'", tr.name)
+	err = tr.triggerPlugin.Unsubscribe(tr.subscriber)
 	return
 }
 

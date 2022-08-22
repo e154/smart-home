@@ -31,7 +31,7 @@ type Bus interface {
 	Close(topic string)
 	// Subscribe subscribes to the given topic
 	Subscribe(topic string, fn interface{}, options ...interface{}) error
-	// Unsubscribe unsubscribe handler from the given topic
+	// Unsubscribe handler from the given topic
 	Unsubscribe(topic string, fn interface{}) error
 	// Stat ...
 	Stat() (stats Stats, err error)

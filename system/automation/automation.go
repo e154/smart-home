@@ -141,8 +141,8 @@ LOOP:
 		log.Error(err.Error())
 		return
 	}
-	for _, model := range tasks {
-		a.AddTask(model)
+	for _, task := range tasks {
+		a.AddTask(task)
 	}
 	if len(tasks) != 0 {
 		page++
@@ -159,11 +159,9 @@ func (a *automation) unload() {
 		return
 	}
 
-	for id, task := range a.tasks {
-		task.Stop()
-		delete(a.tasks, id)
+	for id := range a.tasks {
+		a.removeTask(id)
 	}
-	a.taskCount.Store(0)
 	a.isStarted.Store(false)
 
 	log.Info("Unloaded ...")
@@ -189,14 +187,7 @@ func (a *automation) AddTask(model *m.Task) {
 
 // RemoveTask ...
 func (a *automation) RemoveTask(model *m.Task) {
-	a.taskLock.Lock()
-	defer a.taskLock.Unlock()
-
-	if task, ok := a.tasks[model.Id]; ok {
-		task.Stop()
-		delete(a.tasks, model.Id)
-		a.taskCount.Dec()
-	}
+	a.removeTask(model.Id)
 }
 
 func (a *automation) eventHandler(_ string, msg interface{}) {
@@ -243,14 +234,19 @@ func (a *automation) removeTask(id int64) {
 	a.taskLock.Lock()
 	defer a.taskLock.Unlock()
 
-	if task, ok := a.tasks[id]; ok {
-		task.Stop()
+	log.Infof("remove task %d", id)
+
+	task, ok := a.tasks[id]
+	if !ok {
+		return
 	}
+	task.Stop()
 	delete(a.tasks, id)
+	a.taskCount.Dec()
 }
 
 func (a *automation) updateTask(id int64) {
-
+	log.Infof("reload task %d", id)
 	a.removeTask(id)
 
 	task, err := a.adaptors.Task.GetById(id)
