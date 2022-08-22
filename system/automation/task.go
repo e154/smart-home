@@ -169,6 +169,8 @@ func (t *Task) Start() {
 	}
 	t.enabled.Store(true)
 
+	log.Infof("task %d start", t.Id())
+
 	// add actions
 	for _, model := range t.model.Actions {
 		action, err := NewAction(t.scriptService, t.entityManager, model)

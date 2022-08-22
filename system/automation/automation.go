@@ -177,13 +177,13 @@ func (a *automation) Reload() {
 
 // AddTask ...
 func (a *automation) AddTask(model *m.Task) {
-	a.taskLock.Lock()
-	defer a.taskLock.Unlock()
 
 	task := NewTask(a, a.scriptService, model, a.entityManager, a.rawPlugin)
 	a.taskCount.Inc()
 	log.Infof("add task name(%s) id(%d)", task.Name(), task.Id())
+	a.taskLock.Lock()
 	a.tasks[model.Id] = task
+	a.taskLock.Unlock()
 	task.Start()
 }
 
@@ -250,13 +250,8 @@ func (a *automation) removeTask(id int64) {
 }
 
 func (a *automation) updateTask(id int64) {
-	a.taskLock.Lock()
-	defer a.taskLock.Unlock()
 
-	if task, ok := a.tasks[id]; ok {
-		task.Stop()
-	}
-	delete(a.tasks, id)
+	a.removeTask(id)
 
 	task, err := a.adaptors.Task.GetById(id)
 	if err != nil {

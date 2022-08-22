@@ -61,3 +61,8 @@ func (e *EntityManagerBind) SetMetric(id common.EntityId, name string, value map
 func (e *EntityManagerBind) CallAction(id common.EntityId, action string, arg map[string]interface{}) {
 	e.manager.CallAction(id, action, arg)
 }
+
+// CallScene ...
+func (e *EntityManagerBind) CallScene(id common.EntityId, arg map[string]interface{}) {
+	e.manager.CallScene(id, arg)
+}
