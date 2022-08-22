@@ -10,12 +10,5 @@ import (
 func MigrationList(adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
 	validation *validation.Validate) []local_migrations.Migration {
-	return []local_migrations.Migration{
-		local_migrations.NewMigrationImages(adaptors, "data_tmp"),
-		local_migrations.NewMigrationRoles(adaptors, accessList, validation),
-		local_migrations.NewMigrationTemplates(adaptors),
-		local_migrations.NewMigrationAreas(adaptors),
-		local_migrations.NewMigrationPlugins(adaptors),
-		local_migrations.NewMigrationZones(adaptors),
-	}
+	return []local_migrations.Migration{}
 }
