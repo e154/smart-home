@@ -19,6 +19,7 @@
 package automation
 
 import (
+	"encoding/json"
 	"sync"
 
 	"go.uber.org/atomic"
@@ -73,12 +74,14 @@ func NewTrigger(scriptService scripts.ScriptService,
 
 	tr.subscriber = triggers.Subscriber{
 		EntityId: model.EntityId,
+		Payload:  model.Payload,
 		Handler: func(_ string, msg interface{}) {
-			obj := map[string]interface{}{
-				"payload":      msg,
-				"trigger_name": tr.model.Name,
-				"task_name":    tr.taskName,
-				"entity_id":    tr.model.EntityId.String(),
+			b, _ := json.Marshal(msg)
+			obj := &Obj{
+				Payload:     string(b),
+				TriggerName: tr.model.Name,
+				TaskName:    tr.taskName,
+				EntityId:    tr.model.EntityId.String(),
 			}
 			result, err := tr.Check(obj)
 			if err != nil || !result {
@@ -87,18 +90,17 @@ func NewTrigger(scriptService scripts.ScriptService,
 			tr.cb(tr.EntityId())
 			return
 		},
-		Payload: model.Payload,
 	}
 
 	if tr.scriptEngine, err = scriptService.NewEngine(model.Script); err != nil {
 		return
 	}
 
+	tr.scriptEngine.PushStruct("Trigger", NewTriggerBind(tr))
+
 	if _, err = tr.scriptEngine.Do(); err != nil {
 		return
 	}
-
-	tr.scriptEngine.PushStruct("Trigger", NewTriggerBind(tr))
 
 	return
 }
@@ -146,4 +148,11 @@ func (tr *Trigger) Stop() (err error) {
 // Call ...
 func (tr *Trigger) Call() {
 	tr.triggerPlugin.CallManual()
+}
+
+type Obj struct {
+	Payload     string `json:"payload"`
+	TriggerName string `json:"trigger_name"`
+	TaskName    string `json:"task_name"`
+	EntityId    string `json:"entity_id"`
 }

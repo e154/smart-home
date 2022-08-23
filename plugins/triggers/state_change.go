@@ -70,7 +70,7 @@ func (t *StateChangeTrigger) eventHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
 	case events.EventStateChanged:
-		t.msgQueue.Publish(string(v.EntityId), v)
+		t.msgQueue.Publish(string(v.EntityId), msg)
 	}
 }
 
