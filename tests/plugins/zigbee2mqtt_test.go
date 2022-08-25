@@ -47,7 +47,7 @@ zigbee2mqttEvent = ->
   #print '---mqtt new event from button---'
   if !message
     return
-  payload = JSON.parse(message.payload)
+  payload = unmarshal message.payload
   attrs =
     'battery': payload.battery
     'linkquality': payload.linkquality
@@ -70,7 +70,7 @@ zigbee2mqttEvent = ->
   #print '---mqtt new event from plug---'
   if !message || message.topic.includes('/set')
     return
-  payload = JSON.parse(message.payload)
+  payload = unmarshal message.payload
   attrs =
     'consumption': payload.consumption
     'linkquality': payload.linkquality
@@ -87,14 +87,14 @@ zigbee2mqttEvent = ->
 entityAction = (entityId, actionName)->
     #print '---action on/off--'
     topic = entityId.replace(".", "/")+'/set'
-    payload = JSON.stringify({"state": actionName})
+    payload = marshal {"state": actionName}
     Mqtt.publish(topic, payload, 0, false)
 `
 
 		task1SourceScript = `
 automationTriggerStateChanged = (msg)->
     #print '---trigger---'
-    p = JSON.parse msg.payload
+    p = unmarshal msg.payload
     if !p.new_state || !p.new_state.state
         return false
     return msg.new_state.state.name == 'DOUBLE_CLICK'
@@ -116,7 +116,7 @@ automationAction = (entityId)->
 		task2SourceScript = `
 automationTriggerStateChanged = (msg)->
     #print '---trigger---'
-    p = JSON.parse msg.payload
+    p = unmarshal msg.payload
     if !p.new_state || !p.new_state.state
         return false
     return msg.new_state.state.name == 'DOUBLE_CLICK'

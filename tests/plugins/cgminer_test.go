@@ -47,7 +47,7 @@ checkStatus =->
         Actor.setState
             'new_state': 'ERROR'
         return
-    p = JSON.parse(stats.result)
+    p = unmarshal stats.result
     attrs = {
         heat: false
         chain1_temp_chip: p.temp2_1
@@ -73,7 +73,7 @@ checkSum =->
         Actor.setState
             'new_state': 'ERROR'
         return
-    p = JSON.parse(summary.result)
+    p = unmarshal summary.result
     attrs = {}
     attrs["ghs_av"] = p["GHS av"] 
     attrs["hardware_errors"] = p["Hardware Errors"] 
@@ -88,7 +88,7 @@ checkDevs =->
         Actor.setState
             'new_state': 'ERROR'
         return
-    p = JSON.parse(devs.result)
+    p = unmarshal devs.result
     attrs = {}
     attrs["ghs_av"] = p["GHS av"] 
     attrs["hardware_errors"] = p["Hardware Errors"] 
@@ -103,7 +103,7 @@ checkPools =->
         Actor.setState
             'new_state': 'ERROR'
         return
-    p = JSON.parse(pools.result)
+    p = unmarshal pools.result
     So(p.length, 'ShouldEqual', '4')
 
     So(p[0].POOL, 'ShouldEqual', '0')
@@ -136,7 +136,7 @@ checkVer =(entityId)->
         Actor.setState
             'new_state': 'ERROR'
         return
-    p = JSON.parse(ver.result)
+    p = unmarshal ver.result
     So(p.API, 'ShouldEqual', '3.1')
     So(p.Miner, 'ShouldEqual', '1.0.1.3')
     So(p.CompileTime, 'ShouldEqual', 'Fri 11 Jun 15:32:42 MSK 2021')

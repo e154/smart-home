@@ -48,7 +48,7 @@ zigbee2mqttEvent = ->
   #print '---mqtt new event from button---'
   if !message
     return
-  payload = JSON.parse(message.payload)
+  payload = unmarshal message.payload
   attrs =
     'battery': payload.battery
     'linkquality': payload.linkquality
@@ -69,7 +69,7 @@ zigbee2mqttEvent = ->
 		task1SourceScript = `
 automationTriggerStateChanged = (msg)->
   print '---trigger---'
-  p = JSON.parse msg.payload
+  p = unmarshal msg.payload
   Done p.new_state.state.name
   return false
 `

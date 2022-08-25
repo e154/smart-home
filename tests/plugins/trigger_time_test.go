@@ -46,7 +46,7 @@ func TestTriggerTime(t *testing.T) {
 		task3SourceScript = `
 automationTriggerTime = (msg)->
     #print '---trigger---'
-    p = JSON.parse msg.payload
+    p = unmarshal msg.payload
     Done p
     return false
 `

@@ -42,7 +42,7 @@ func TestTriggerAlexa(t *testing.T) {
 		task3SourceScript = `
 automationTriggerAlexa = (msg)->
     #print '---trigger---'
-    p = JSON.parse msg.payload
+    p = unmarshal msg.payload
     Done p
     #msg.trigger_name
     #msg.task_name

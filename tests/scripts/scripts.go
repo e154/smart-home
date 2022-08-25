@@ -367,7 +367,7 @@ store value
 foo = 
 	'bar': 'bar'
 
-value = JSON.stringify foo
+value = marshal foo
 
 # save var
 Storage.push 'foo', value
@@ -375,17 +375,17 @@ Storage.push 'foo', value
 # get exist var
 value = Storage.getByName 'foo'
 store value
-foo = JSON.parse(value)
+foo = unmarshal value
 store foo.bar
 
 # update var and save
 foo.bar = 'foo'
-value = JSON.stringify foo
+value = marshal foo
 Storage.push 'foo', value
 
 value = Storage.getByName 'foo'
 store value
-foo = JSON.parse(value)
+foo = unmarshal value
 store foo.bar
 
 list = Storage.search 'bar'
