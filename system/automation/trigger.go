@@ -77,11 +77,11 @@ func NewTrigger(scriptService scripts.ScriptService,
 		Payload:  model.Payload,
 		Handler: func(_ string, msg interface{}) {
 			b, _ := json.Marshal(msg)
-			obj := &Obj{
-				Payload:     string(b),
-				TriggerName: tr.model.Name,
-				TaskName:    tr.taskName,
-				EntityId:    tr.model.EntityId.String(),
+			obj := map[string]interface{}{
+				"payload":      string(b),
+				"trigger_name": tr.model.Name,
+				"task_name":    tr.taskName,
+				"entity_id":    tr.model.EntityId.String(),
 			}
 			result, err := tr.Check(obj)
 			if err != nil || !result {
@@ -148,11 +148,4 @@ func (tr *Trigger) Stop() (err error) {
 // Call ...
 func (tr *Trigger) Call() {
 	tr.triggerPlugin.CallManual()
-}
-
-type Obj struct {
-	Payload     string `json:"payload"`
-	TriggerName string `json:"trigger_name"`
-	TaskName    string `json:"task_name"`
-	EntityId    string `json:"entity_id"`
 }

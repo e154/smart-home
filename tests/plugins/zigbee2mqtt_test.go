@@ -94,7 +94,8 @@ entityAction = (entityId, actionName)->
 		task1SourceScript = `
 automationTriggerStateChanged = (msg)->
     #print '---trigger---'
-    if !msg.payload.new_state || !msg.payload.new_state.state
+    p = JSON.parse msg.payload
+    if !p.new_state || !p.new_state.state
         return false
     return msg.new_state.state.name == 'DOUBLE_CLICK'
 
@@ -115,7 +116,8 @@ automationAction = (entityId)->
 		task2SourceScript = `
 automationTriggerStateChanged = (msg)->
     #print '---trigger---'
-    if !msg.payload.new_state || !msg.payload.new_state.state
+    p = JSON.parse msg.payload
+    if !p.new_state || !p.new_state.state
         return false
     return msg.new_state.state.name == 'DOUBLE_CLICK'
 

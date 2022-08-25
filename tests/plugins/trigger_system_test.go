@@ -43,7 +43,8 @@ func TestTriggerSystem(t *testing.T) {
 		task3SourceScript = `
 automationTriggerSystem = (msg)->
     #print '---trigger---'
-    Done msg.payload.event
+    p = JSON.parse msg.payload
+    Done p.event
     return false
 `
 	)
