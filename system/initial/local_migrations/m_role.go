@@ -104,6 +104,9 @@ func (r *MigrationRoles) addUser(demoRole *m.Role) (userRole *m.Role, err error)
 			for right := range item {
 				if strings.Contains(right, "create") ||
 					strings.Contains(right, "update") ||
+					strings.Contains(right, "search") ||
+					strings.Contains(right, "signout") ||
+					strings.Contains(right, "read_access_list") ||
 					strings.Contains(right, "delete") {
 					permission := &m.Permission{
 						RoleName:    userRole.Name,
@@ -155,8 +158,9 @@ func (r *MigrationRoles) addDemo() (demoRole *m.Role, err error) {
 		for pack, item := range *r.accessList.List() {
 			for right := range item {
 				if strings.Contains(right, "read") ||
-					strings.Contains(right, "view") ||
-					strings.Contains(right, "preview") {
+					strings.Contains(right, "signout") ||
+					strings.Contains(right, "read_access_list") ||
+					strings.Contains(right, "search") {
 					permission := &m.Permission{
 						RoleName:    demoRole.Name,
 						PackageName: pack,

@@ -62,15 +62,11 @@ func NewAccessFilter(adaptors *adaptors.Adaptors,
 	}
 }
 
-func (f *AccessFilter) accessDecision(params, method string, accessList access_list.AccessList) bool {
+func (f *AccessFilter) accessDecision(params string, accessList access_list.AccessList) bool {
 
 	for _, levels := range accessList {
 		for _, item := range levels {
 			for _, action := range item.Actions {
-				if item.Method != method {
-					continue
-				}
-
 				if ok, _ := regexp.MatchString(action, params); ok {
 					return true
 				}
@@ -98,12 +94,12 @@ func (f *AccessFilter) AuthInterceptor(ctx context.Context, req interface{}, inf
 	if !ok {
 		return nil, f.internalServerError
 	}
-	if len(meta["x-api-key"]) != 1 {
+	if len(meta["authorization"]) != 1 {
 		return nil, f.internalServerError
 	}
 
 	// get access token from meta
-	var accessToken = meta["x-api-key"][0]
+	var accessToken = meta["authorization"][0]
 
 	claims, err := f.jwtManager.Verify(accessToken)
 	if err != nil {
@@ -122,14 +118,11 @@ func (f *AccessFilter) AuthInterceptor(ctx context.Context, req interface{}, inf
 		return nil, f.internalServerError
 	}
 
-	const method = "post"
-	var requestURI = info.FullMethod
-
-	if ret := f.accessDecision(requestURI, method, accessList); ret {
+	if ret := f.accessDecision(info.FullMethod, accessList); ret {
 		return f.getUser(claims.UserId, handler, ctx, req)
 	}
 
-	log.Warnf(fmt.Sprintf("access denied: role(%s) [%s] url(%s)", claims.RoleName, method, requestURI))
+	log.Warnf(fmt.Sprintf("access denied: role(%s) url(%s)", claims.RoleName, info.FullMethod))
 
 	return nil, f.internalServerError
 }

@@ -149,8 +149,10 @@ func (e *Actor) check() {
 	var releaseVersion *semver.Version
 	if releaseVersion, err = semver.NewVersion(e.latestVersion); err == nil {
 		// found update
-		if compare := e.currentVersion.Compare(releaseVersion); compare < 0 {
-			e.setState("exist_update")
+		if e.currentVersion != nil {
+			if compare := e.currentVersion.Compare(releaseVersion); compare < 0 {
+				e.setState("exist_update")
+			}
 		}
 	}
 

@@ -247,6 +247,8 @@ func (j *Javascript) bind() {
 	// print()
 	// console()
 	// hex2arr()
+	// marshal(obj)
+	// unmarshal(json)
 	//
 
 	_ = j.vm.Set("print", log.Info)
@@ -262,7 +264,8 @@ func (j *Javascript) bind() {
 	   }
 	   return result;
 	};
-
+	unmarshal = function(j) { return JSON.parse(j); }
+	marshal = function(obj) { return JSON.stringify(obj); }
 	`)
 
 	for name, structure := range j.engine.structures.heap {

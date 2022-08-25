@@ -217,9 +217,9 @@ type Context struct {
 
 // EventAlexaAction ...
 type EventAlexaAction struct {
-	SkillId    int64
-	IntentName string
-	Payload    interface{}
+	SkillId    int64       `json:"skill_id"`
+	IntentName string      `json:"intent_name"`
+	Payload    interface{} `json:"payload"`
 }
 
 // EventAlexaAddSkill ...

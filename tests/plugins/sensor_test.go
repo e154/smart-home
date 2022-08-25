@@ -43,7 +43,7 @@ checkStatus =->
         Actor.setState
             'new_state': 'ERROR'
         return
-    p = JSON.parse(res.body)
+    p = unmarshal res.body
     attrs =
         paid_rewards: p.user.paid_rewards
 
