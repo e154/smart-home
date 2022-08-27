@@ -4,11 +4,10 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/e154/smart-home/common/events"
-
 	"go.uber.org/fx"
 
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/stream"
 )

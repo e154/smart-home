@@ -40,6 +40,15 @@ type EventStateChanged struct {
 	NewState    bus.EventEntityState `json:"new_state"`
 }
 
+// EventLastStateChanged ...
+type EventLastStateChanged struct {
+	StorageSave bool                 `json:"storage_save"`
+	PluginName  string               `json:"plugin_name"`
+	EntityId    common.EntityId      `json:"entity_id"`
+	OldState    bus.EventEntityState `json:"old_state"`
+	NewState    bus.EventEntityState `json:"new_state"`
+}
+
 // EventGetLastState ...
 type EventGetLastState struct {
 	EntityId common.EntityId `json:"entity_id"`
