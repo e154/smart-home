@@ -121,10 +121,11 @@ automationTriggerTime = (msg)->
 
 automationTriggerStateChanged = (msg)->
     #print '---trigger---'
-    if !msg.payload.old_state.state || !msg.payload.old_state.state.name
+    p = unmarshal msg.payload
+    if !p.old_state.state || !p.old_state.state.name
         return
-    newState = msg.payload.new_state.state.name
-    oldState = msg.payload.old_state.state.name
+    newState = p.new_state.state.name
+    oldState = p.old_state.state.name
     if newState == oldState
         return false
     return newState == 'WARNING' || newState == 'ERROR'
