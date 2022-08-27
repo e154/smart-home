@@ -3,7 +3,7 @@ package stream
 import (
 	"encoding/json"
 
-	events2 "github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/common/events"
 )
 
 type eventHandler struct {
@@ -16,19 +16,21 @@ func NewEventHandler(broadcast func(query string, message []byte)) *eventHandler
 
 func (e *eventHandler) eventHandler(_ string, message interface{}) {
 
-	switch msg := message.(type) {
-	case events2.EventStateChanged:
-		go e.eventStateChangedHandler(msg)
-	case events2.EventLoadedPlugin:
-	case events2.EventUnloadedPlugin:
-	case events2.EventCreatedEntity:
-	case events2.EventUpdatedEntity:
-	case events2.EventDeletedEntity:
-	case events2.EventEntitySetState:
+	switch message.(type) {
+	case events.EventStateChanged:
+		go e.eventStateChangedHandler(message)
+	case events.EventLastStateChanged:
+		go e.eventStateChangedHandler(message)
+	case events.EventLoadedPlugin:
+	case events.EventUnloadedPlugin:
+	case events.EventCreatedEntity:
+	case events.EventUpdatedEntity:
+	case events.EventDeletedEntity:
+	case events.EventEntitySetState:
 	}
 }
 
-func (e *eventHandler) eventStateChangedHandler(msg events2.EventStateChanged) {
+func (e *eventHandler) eventStateChangedHandler(msg interface{}) {
 	//todo optimize
 	b, _ := json.Marshal(msg)
 	e.broadcast("state_changed", b)
