@@ -21,6 +21,7 @@ package plugins
 import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/web"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
@@ -38,6 +39,7 @@ type Plugin struct {
 	EventBus      bus.Bus
 	IsStarted     *atomic.Bool
 	Scheduler     *scheduler.Scheduler
+	Crawler       web.Crawler
 }
 
 // NewPlugin ...
@@ -55,6 +57,7 @@ func (p *Plugin) Load(service Service) error {
 	p.ScriptService = service.ScriptService()
 	p.PluginManager = service.PluginManager()
 	p.Scheduler = service.Scheduler()
+	p.Crawler = service.Crawler()
 
 	if p.IsStarted.Load() {
 		return ErrPluginIsLoaded

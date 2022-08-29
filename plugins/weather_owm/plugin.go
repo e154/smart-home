@@ -168,7 +168,7 @@ func (p *plugin) Type() plugins.PluginType {
 
 // Depends ...
 func (p *plugin) Depends() []string {
-	return []string{weather.Name}
+	return []string{}
 }
 
 // Version ...

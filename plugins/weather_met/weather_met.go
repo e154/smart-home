@@ -22,6 +22,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"github.com/e154/smart-home/common/debug"
 	"math"
 	"net/url"
 	"sort"
@@ -29,118 +30,37 @@ import (
 	"sync"
 	"time"
 
-	"github.com/e154/smart-home/common/events"
-
-	"github.com/e154/smart-home/common/apperr"
-
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/web"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/weather"
-	"github.com/e154/smart-home/system/bus"
 )
 
 // WeatherMet ...
 type WeatherMet struct {
 	adaptors *adaptors.Adaptors
-	eventBus bus.Bus
+	crawler  web.Crawler
 	lock     *sync.Mutex
-	zones    *sync.Map
 }
 
 // NewWeatherMet ...
-func NewWeatherMet(eventBus bus.Bus,
-	adaptors *adaptors.Adaptors) (weather *WeatherMet) {
+func NewWeatherMet(adaptors *adaptors.Adaptors, crawler web.Crawler) (weather *WeatherMet) {
 	weather = &WeatherMet{
-		eventBus: eventBus,
 		adaptors: adaptors,
-		lock:     &sync.Mutex{},
-		zones:    &sync.Map{},
+		crawler:  crawler,
 	}
 
 	return
 }
 
-// AddWeather ...
-func (p *WeatherMet) AddWeather(entityId common.EntityId, settings m.Attributes) {
-	p.UpdateWeatherList(entityId, settings)
-}
-
-// UpdateWeatherList ...
-func (p *WeatherMet) UpdateWeatherList(entityId common.EntityId, settings m.Attributes) {
-
-	zone := Zone{
-		Name: entityId.Name(),
-		Lat:  settings[weather.AttrLat].Float64(),
-		Lon:  settings[weather.AttrLon].Float64(),
-	}
-
-	//var update bool
-	if _, ok := p.zones.Load(entityId); !ok {
-		//update = true
-	}
-	p.zones.Store(entityId, zone)
-
-	//if !update {
-	//	return
-	//}
-	_ = p.UpdateForecastForAll()
-}
-
-// RemoveWeather ...
-func (p *WeatherMet) RemoveWeather(entityId common.EntityId) {
-	p.zones.Delete(entityId.Name())
-	log.Infof("unload weather_met.%s", entityId.Name())
-
-	p.eventBus.Publish(bus.TopicEntities, events.EventRemoveActor{
-		PluginName: "weather_met",
-		EntityId:   common.EntityId(fmt.Sprintf("weather_met.%s", entityId.Name())),
-	})
-}
-
-// UpdateForecastForAll ...
-func (p *WeatherMet) UpdateForecastForAll() (err error) {
-
-	p.lock.Lock()
-	defer p.lock.Unlock()
-
-	p.zones.Range(func(key, value interface{}) bool {
-		zone, ok := value.(Zone)
-		if !ok {
-			return true
-		}
-
-		if err = p.UpdateForecast(zone); err != nil {
-			log.Error(err.Error())
-		}
-
-		return true
-	})
-
-	return nil
-}
-
 // UpdateForecast ...
-func (p *WeatherMet) UpdateForecast(zone Zone) (err error) {
-
-	var forecast m.AttributeValue
-	if forecast, err = p.GetForecast(zone, time.Now()); err != nil {
-		return
-	}
-
-	attr := weather.BaseForecast()
-	_, _ = attr.Deserialize(forecast)
-
-	p.eventBus.Publish(bus.TopicEntities, events.EventPassAttributes{
-		From:       common.EntityId(fmt.Sprintf("weather_met.%s", zone.Name)),
-		To:         common.EntityId(fmt.Sprintf("weather.%s", zone.Name)),
-		Attributes: attr,
-	})
-
-	return nil
+func (p *WeatherMet) UpdateForecast(zone Zone) (forecast m.AttributeValue, err error) {
+	forecast, err = p.GetForecast(zone, time.Now())
+	return
 }
 
 // GetForecast ...
@@ -183,7 +103,7 @@ func (p *WeatherMet) FetchData(name string, lat, lon float64, now time.Time) (zo
 			return
 		}
 	} else {
-		log.Error(err.Error())
+		log.Info(err.Error())
 	}
 
 	// fetch from server
@@ -233,12 +153,17 @@ func (p *WeatherMet) saveToLocalStorage(zone Zone) (err error) {
 		return
 	}
 
-	err = p.adaptors.Variable.CreateOrUpdate(m.Variable{
+	model := m.Variable{
 		System:   true,
 		Name:     fmt.Sprintf("weather_met.%s", zone.Name),
 		Value:    string(b),
-		EntityId: common.NewEntityId(fmt.Sprintf("weather.%s", zone.Name)),
-	})
+		EntityId: common.NewEntityId(fmt.Sprintf("weather_met.%s", zone.Name)),
+	}
+	fmt.Println("----")
+	debug.Println(model)
+	fmt.Println("----")
+
+	err = p.adaptors.Variable.CreateOrUpdate(model)
 
 	return
 }
@@ -254,7 +179,7 @@ func (p *WeatherMet) fetchFromServer(lat, lon float64) (body []byte, err error) 
 
 	log.Debugf("fetch from server %s", uri.String())
 
-	body, err = web.Crawler(web.Request{Method: "GET", Url: uri.String()})
+	_, body, err = p.crawler.Probe(web.Request{Method: "GET", Url: uri.String()})
 
 	return
 }

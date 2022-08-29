@@ -30,12 +30,18 @@ type HttpResponse struct {
 }
 
 // HttpBind ...
-type HttpBind struct{}
+type HttpBind struct {
+	crawler web.Crawler
+}
+
+func NewHttpBind(crawler web.Crawler) *HttpBind {
+	return &HttpBind{crawler: crawler}
+}
 
 // Get ...
 func (h *HttpBind) Get(url string) (response HttpResponse) {
 	//log.Infof("call [GET ] request %s", url)
-	body, err := web.Crawler(web.Request{Method: "GET", Url: url})
+	_, body, err := h.crawler.Probe(web.Request{Method: "GET", Url: url})
 	if err != nil {
 		response.Error = true
 		response.ErrorMessage = err.Error()
@@ -48,7 +54,7 @@ func (h *HttpBind) Get(url string) (response HttpResponse) {
 // Post ...
 func (h *HttpBind) Post(url, data string) (response HttpResponse) {
 	//log.Infof("call [POST] request %s", url)
-	body, err := web.Crawler(web.Request{Method: "POST", Url: url, Body: []byte(data)})
+	_, body, err := h.crawler.Probe(web.Request{Method: "POST", Url: url, Body: []byte(data)})
 	if err != nil {
 		response.Error = true
 		response.ErrorMessage = err.Error()

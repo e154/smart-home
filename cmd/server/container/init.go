@@ -18,6 +18,7 @@ func MigrationList(adaptors *adaptors.Adaptors,
 		local_migrations.NewMigrationZones(adaptors),
 		local_migrations.NewMigrationMqtt(adaptors),
 		local_migrations.NewMigrationRoles(adaptors, accessList, validation),
+		local_migrations.NewMigrationWeatherMet(adaptors),
 		//local_migrations.NewMigrationDashboard(adaptors),
 	}
 }

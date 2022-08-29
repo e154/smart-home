@@ -21,6 +21,7 @@ package plugins
 import (
 	"context"
 	"fmt"
+	"github.com/e154/smart-home/common/web"
 
 	"github.com/pkg/errors"
 	"go.uber.org/atomic"
@@ -62,7 +63,8 @@ func NewPluginManager(lc fx.Lifecycle,
 	appConfig *m.AppConfig,
 	gateClient *gate_client.GateClient,
 	eventBus bus.Bus,
-	scheduler *scheduler.Scheduler) common.PluginManager {
+	scheduler *scheduler.Scheduler,
+	crawler web.Crawler) common.PluginManager {
 	pluginManager := &pluginManager{
 		adaptors:       adaptors,
 		isStarted:      atomic.NewBool(false),
@@ -79,6 +81,7 @@ func NewPluginManager(lc fx.Lifecycle,
 		appConfig:     appConfig,
 		gateClient:    gateClient,
 		scheduler:     scheduler,
+		crawler:       crawler,
 	}
 
 	lc.Append(fx.Hook{

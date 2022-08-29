@@ -20,6 +20,7 @@ package scripts
 
 import (
 	"github.com/e154/smart-home/common/logger"
+	"github.com/e154/smart-home/common/web"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/scripts/bind"
 	"github.com/e154/smart-home/system/storage"
@@ -43,23 +44,27 @@ type scriptService struct {
 	functions  *Pull
 	structures *Pull
 	storage    *storage.Storage
+	crawler    web.Crawler
 }
 
 // NewScriptService ...
-func NewScriptService(cfg *m.AppConfig, storage *storage.Storage) (service ScriptService) {
+func NewScriptService(cfg *m.AppConfig,
+	storage *storage.Storage,
+	crawler web.Crawler) (service ScriptService) {
 
 	service = &scriptService{
 		cfg:        cfg,
 		functions:  NewPull(),
 		structures: NewPull(),
 		storage:    storage,
+		crawler:    crawler,
 	}
 
 	service.PushStruct("Log", &bind.LogBind{})
 	service.PushFunctions("ExecuteSync", bind.ExecuteSync)
 	service.PushFunctions("ExecuteAsync", bind.ExecuteAsync)
 	service.PushStruct("Storage", bind.NewStorageBind(storage))
-	service.PushStruct("http", &bind.HttpBind{})
+	service.PushStruct("http", bind.NewHttpBind(crawler))
 	return service
 }
 

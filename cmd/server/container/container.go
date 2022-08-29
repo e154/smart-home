@@ -22,6 +22,7 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api"
 	"github.com/e154/smart-home/api/controllers"
+	"github.com/e154/smart-home/common/web"
 	"github.com/e154/smart-home/endpoint"
 	"github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
@@ -67,6 +68,7 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 			backup.NewBackup,
 			NewMigrationsConfig,
 			migrations.NewMigrations,
+			web.New,
 			adaptors.NewAdaptors,
 			scheduler.NewScheduler,
 			logging.NewLogger,

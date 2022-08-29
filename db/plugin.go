@@ -61,7 +61,7 @@ func (n Plugins) Add(plugin Plugin) (err error) {
 func (n Plugins) CreateOrUpdate(v Plugin) (err error) {
 	err = n.Db.Model(&Plugin{}).
 		Set("gorm:insert_option",
-			fmt.Sprintf("ON CONFLICT (name) DO UPDATE SET version = '%s', enabled = '%t', system = '%t', settings = '%s'", v.Version, v.Enabled, v.System, v.Settings)).
+			fmt.Sprintf("ON CONFLICT (name) DO UPDATE SET version = '%s', enabled = '%t', system = '%t', settings = '%s', actor = '%t'", v.Version, v.Enabled, v.System, v.Settings, v.Actor)).
 		Create(&v).Error
 	if err != nil {
 		err = errors.Wrap(apperr.ErrPluginUpdate, err.Error())

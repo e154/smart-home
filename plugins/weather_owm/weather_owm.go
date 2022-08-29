@@ -34,7 +34,6 @@ import (
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/web"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/weather"
 	"github.com/e154/smart-home/system/bus"
@@ -292,7 +291,7 @@ func (p *WeatherOwm) fetchFromServer(lat, lon float64) (body []byte, err error) 
 
 	log.Debugf("fetch from server %s\n", uri.String())
 
-	body, err = web.Crawler(web.Request{Method: "GET", Url: uri.String()})
+	//body, err = web.Crawler(web.Request{Method: "GET", Url: uri.String()})
 
 	return
 }

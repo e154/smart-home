@@ -21,24 +21,27 @@ package web
 import (
 	"bytes"
 	"io"
-	"io/ioutil"
+	"net"
 	"net/http"
 	"time"
 
 	"github.com/e154/smart-home/common/apperr"
 )
 
-// Request ...
-type Request struct {
-	Method  string
-	Url     string
-	Body    []byte
-	headers []map[string]string
-	Timeout time.Duration
+type crawler struct {
 }
 
-// Crawler ...
-func Crawler(options Request) (body []byte, err error) {
+func New() Crawler {
+	return &crawler{}
+}
+
+// Probe ...
+func (crawler) Probe(options Request) (status int, body []byte, err error) {
+	return Probe(options)
+}
+
+// Probe ...
+func Probe(options Request) (status int, body []byte, err error) {
 
 	if options.Url == "" {
 		err = apperr.ErrBadRequestParams
@@ -58,12 +61,13 @@ func Crawler(options Request) (body []byte, err error) {
 		return
 	}
 
-	if len(options.headers) > 0 {
-		for k, v := range options.headers[0] {
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Safari/605.1.15")
+
+	// set headers
+	for _, values := range options.Headers {
+		for k, v := range values {
 			req.Header.Set(k, v)
 		}
-	} else {
-		req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Safari/605.1.15")
 	}
 
 	var timeout = time.Second * 2
@@ -71,8 +75,16 @@ func Crawler(options Request) (body []byte, err error) {
 		timeout = options.Timeout
 	}
 
+	netTransport := &http.Transport{
+		DialContext: (&net.Dialer{
+			Timeout: timeout,
+		}).DialContext,
+		TLSHandshakeTimeout: timeout,
+	}
+
 	client := &http.Client{
-		Timeout: timeout,
+		Timeout:   timeout,
+		Transport: netTransport,
 	}
 
 	var resp *http.Response
@@ -80,8 +92,10 @@ func Crawler(options Request) (body []byte, err error) {
 		return
 	}
 
+	status = resp.StatusCode
+
 	defer resp.Body.Close()
-	body, err = ioutil.ReadAll(resp.Body)
+	body, err = io.ReadAll(resp.Body)
 
 	return
 }

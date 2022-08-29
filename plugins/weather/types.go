@@ -28,16 +28,6 @@ import (
 )
 
 const (
-	// StatePositionUpdate ...
-	StatePositionUpdate = "positionUpdate"
-)
-
-const (
-	// TopicPluginWeather ...
-	TopicPluginWeather = string("plugin.weather")
-)
-
-const (
 	// AttrForecast ...
 	AttrForecast = "forecast"
 	// AttrForecastDay1 ...
@@ -182,10 +172,6 @@ func NewSettings() m.Attributes {
 		AttrLon: {
 			Name: AttrLon,
 			Type: common.AttributeFloat,
-		},
-		AttrPlugin: {
-			Name: AttrPlugin,
-			Type: common.AttributeString,
 		},
 	}
 }
