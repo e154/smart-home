@@ -22,7 +22,6 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
-	"github.com/e154/smart-home/common/debug"
 	"math"
 	"net/url"
 	"sort"
@@ -159,9 +158,6 @@ func (p *WeatherMet) saveToLocalStorage(zone Zone) (err error) {
 		Value:    string(b),
 		EntityId: common.NewEntityId(fmt.Sprintf("weather_met.%s", zone.Name)),
 	}
-	fmt.Println("----")
-	debug.Println(model)
-	fmt.Println("----")
 
 	err = p.adaptors.Variable.CreateOrUpdate(model)
 

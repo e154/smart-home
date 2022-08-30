@@ -21,7 +21,7 @@ package weather_met
 import (
 	"fmt"
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common/debug"
+	"github.com/e154/smart-home/common/astronomics/suncalc"
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/web"
 	m "github.com/e154/smart-home/models"
@@ -29,6 +29,7 @@ import (
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/scripts"
+	"time"
 )
 
 // Actor ...
@@ -137,8 +138,6 @@ func (e *Actor) runAction(msg events.EventCallAction) {
 }
 
 func (e *Actor) update() {
-	fmt.Println("update forecast")
-	debug.Println(e.Zone)
 
 	oldState := e.GetEventState(e)
 
@@ -167,18 +166,22 @@ func (e *Actor) updateForecast() (changed bool) {
 
 	log.Infof("update forecast for '%s'", e.Id)
 
-	fmt.Println("-----1")
-	//debug.Println(forecast)
-	fmt.Println("-----2")
-
 	e.AttrMu.Lock()
 	defer e.AttrMu.Unlock()
 	if changed, err = e.Attrs.Deserialize(forecast); err != nil {
-		log.Error(err.Error())
 		return
 	}
-	fmt.Println("-----3")
-	fmt.Println(changed)
-	//debug.Println(e.Attrs)
+
+	// update sun position
+	sunrisePos := suncalc.GetSunPosition(time.Now(), e.Setts[weather.AttrLat].Float64(), e.Setts[weather.AttrLon].Float64())
+	var night = suncalc.IsNight(sunrisePos)
+	var winter bool //todo fix
+
+	if val, ok := e.Attrs[weather.AttrWeatherMain]; ok {
+		state := e.States[val.String()]
+		e.State = &state
+		e.State.ImageUrl = weather.GetImagePath(state.Name, night, winter)
+	}
+
 	return
 }
