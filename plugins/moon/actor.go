@@ -158,7 +158,7 @@ func (e *Actor) UpdateMoonPosition(now time.Time) {
 		e.State = &state
 	}
 
-	log.Debugf("Moon horizonState %v", e.horizonState)
+	//log.Debugf("Moon horizonState %v", e.horizonState)
 
 	e.DeserializeAttr(attributeValues)
 
