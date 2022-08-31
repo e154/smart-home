@@ -47,6 +47,7 @@ func AttributeFromApi(apiAttr map[string]*api.Attribute) (attributes m.Attribute
 		case api.Types_ARRAY:
 			//	attr.Value = v.GetArray()
 			attr.Type = common.AttributeArray
+		case api.Types_MAP:
 		}
 		attributes[k] = attr
 	}
@@ -75,6 +76,8 @@ func AttributeToApi(attributes m.Attributes) (apiAttr map[string]*api.Attribute)
 			apiAttr[k].Float = common.Float32(float32(v.Float64()))
 		case "array":
 			apiAttr[k].Type = api.Types_ARRAY
+		case "map":
+			apiAttr[k].Type = api.Types_MAP
 		}
 	}
 	return

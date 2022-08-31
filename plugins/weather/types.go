@@ -28,48 +28,69 @@ import (
 )
 
 const (
-	// AttrForecast ...
-	AttrForecast = "forecast"
-	// AttrForecastDay1 ...
+	AttrForecast     = "forecast"
 	AttrForecastDay1 = "forecast_day1"
-	// AttrForecastDay2 ...
 	AttrForecastDay2 = "forecast_day2"
-	// AttrForecastDay3 ...
 	AttrForecastDay3 = "forecast_day3"
-	// AttrForecastDay4 ...
 	AttrForecastDay4 = "forecast_day4"
-	// AttrForecastDay5 ...
 	AttrForecastDay5 = "forecast_day5"
-	// AttrWeatherCondition ...
-	AttrWeatherCondition = "condition"
-	// AttrWeatherDatetime ...
-	AttrWeatherDatetime = "datetime"
-	// AttrWeatherAttribution ...
+
+	AttrWeatherCondition   = "condition"
+	AttrWeatherOzone       = "ozone"
 	AttrWeatherAttribution = "attribution"
-	// AttrWeatherHumidity ...
-	AttrWeatherHumidity = "humidity"
-	// AttrWeatherOzone ...
-	AttrWeatherOzone = "ozone"
-	// AttrWeatherPressure ...
-	AttrWeatherPressure = "pressure"
-	// AttrWeatherTemperature ...
 	AttrWeatherTemperature = "temperature"
-	// AttrWeatherMinTemperature ...
-	AttrWeatherMinTemperature = "min_temperature"
-	// AttrWeatherMaxTemperature ...
-	AttrWeatherMaxTemperature = "max_temperature"
-	// AttrWeatherVisibility ...
-	AttrWeatherVisibility = "visibility"
-	// AttrWeatherWindBearing ...
-	AttrWeatherWindBearing = "wind_bearing"
-	// AttrWeatherWindSpeed ...
-	AttrWeatherWindSpeed = "wind_speed"
-	// AttrWeatherMain ...
-	AttrWeatherMain = "main"
-	// AttrWeatherDescription ...
+	AttrWeatherVisibility  = "visibility"
 	AttrWeatherDescription = "description"
-	// AttrWeatherIcon ...
-	AttrWeatherIcon = "icon"
+	AttrWeatherIcon        = "icon"
+
+	AttrWeatherMain               = "main"
+	AttrWeatherDatetime           = "datetime"
+	AttrWeatherHumidity           = "humidity"
+	AttrWeatherMaxTemperature     = "max_temperature"
+	AttrWeatherMinTemperature     = "min_temperature"
+	AttrWeatherPressure           = "pressure"
+	AttrWeatherWindBearing        = "wind_bearing"
+	AttrWeatherWindSpeed          = "wind_speed"
+	Day1AttrWeatherMain           = "day1_main"
+	Day1AttrWeatherDatetime       = "day1_datetime"
+	Day1AttrWeatherHumidity       = "day1_humidity"
+	Day1AttrWeatherMaxTemperature = "day1_max_temperature"
+	Day1AttrWeatherMinTemperature = "day1_min_temperature"
+	Day1AttrWeatherPressure       = "day1_pressure"
+	Day1AttrWeatherWindBearing    = "day1_wind_bearing"
+	Day1AttrWeatherWindSpeed      = "day1_wind_speed"
+	Day2AttrWeatherMain           = "day2_main"
+	Day2AttrWeatherDatetime       = "day2_datetime"
+	Day2AttrWeatherHumidity       = "day2_humidity"
+	Day2AttrWeatherMaxTemperature = "day2_max_temperature"
+	Day2AttrWeatherMinTemperature = "day2_min_temperature"
+	Day2AttrWeatherPressure       = "day2_pressure"
+	Day2AttrWeatherWindBearing    = "day2_wind_bearing"
+	Day2AttrWeatherWindSpeed      = "day2_wind_speed"
+	Day3AttrWeatherMain           = "day3_main"
+	Day3AttrWeatherDatetime       = "day3_datetime"
+	Day3AttrWeatherHumidity       = "day3_humidity"
+	Day3AttrWeatherMaxTemperature = "day3_max_temperature"
+	Day3AttrWeatherMinTemperature = "day3_min_temperature"
+	Day3AttrWeatherPressure       = "day3_pressure"
+	Day3AttrWeatherWindBearing    = "day3_wind_bearing"
+	Day3AttrWeatherWindSpeed      = "day3_wind_speed"
+	Day4AttrWeatherMain           = "day4_main"
+	Day4AttrWeatherDatetime       = "day4_datetime"
+	Day4AttrWeatherHumidity       = "day4_humidity"
+	Day4AttrWeatherMaxTemperature = "day4_max_temperature"
+	Day4AttrWeatherMinTemperature = "day4_min_temperature"
+	Day4AttrWeatherPressure       = "day4_pressure"
+	Day4AttrWeatherWindBearing    = "day4_wind_bearing"
+	Day4AttrWeatherWindSpeed      = "day4_wind_speed"
+	Day5AttrWeatherMain           = "day5_main"
+	Day5AttrWeatherDatetime       = "day5_datetime"
+	Day5AttrWeatherHumidity       = "day5_humidity"
+	Day5AttrWeatherMaxTemperature = "day5_max_temperature"
+	Day5AttrWeatherMinTemperature = "day5_min_temperature"
+	Day5AttrWeatherPressure       = "day5_pressure"
+	Day5AttrWeatherWindBearing    = "day5_wind_bearing"
+	Day5AttrWeatherWindSpeed      = "day5_wind_speed"
 
 	// Attribution ...
 	Attribution = ""
@@ -98,10 +119,11 @@ func NewForecast(days int) m.Attributes {
 	}
 
 	for i := 1; i < days; i++ {
-		attributes[fmt.Sprintf("forecast_day%d", i)] = &m.Attribute{
-			Name:  fmt.Sprintf("forecast_day%d", i),
-			Type:  common.AttributeMap,
-			Value: NewAttr(),
+		attrs := NewAttr()
+		for name, attr := range attrs {
+			newName := fmt.Sprintf("day%d_%s", i, name)
+			attr.Name = newName
+			attributes[newName] = attr
 		}
 	}
 

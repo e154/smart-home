@@ -5089,6 +5089,12 @@
           "items": {
             "$ref": "#/definitions/apiAttribute"
           }
+        },
+        "map": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/apiAttribute"
+          }
         }
       }
     },
@@ -7019,7 +7025,8 @@
         "STRING",
         "FLOAT",
         "BOOL",
-        "ARRAY"
+        "ARRAY",
+        "MAP"
       ],
       "default": "INT"
     },

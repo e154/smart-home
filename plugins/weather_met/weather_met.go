@@ -82,7 +82,9 @@ func (p *WeatherMet) GetForecast(params Zone, now time.Time) (forecast m.Attribu
 		if err != nil {
 			log.Error(err.Error())
 		}
-		forecast[fmt.Sprintf("forecast_day%d", i)] = weather
+		for name, attr := range weather {
+			forecast[fmt.Sprintf("day%d_%s", i, name)] = attr
+		}
 	}
 
 	return
