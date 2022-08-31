@@ -38,7 +38,7 @@ func TestSensor(t *testing.T) {
 
 	const sensorSourceScript = `
 checkStatus =->
-    res = http.get("http://%s:%d/?t=12345678")
+    res = HTTP.get("http://%s:%d/?t=12345678")
     if res.error 
         Actor.setState
             'new_state': 'ERROR'
