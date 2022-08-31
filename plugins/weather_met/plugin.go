@@ -161,16 +161,9 @@ func (p *plugin) Version() string {
 // Options ...
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
-		Triggers:           false,
-		Actors:             true,
-		ActorCustomAttrs:   true,
-		ActorAttrs:         weather.BaseForecast(),
-		ActorCustomActions: true,
-		ActorActions:       nil,
-		ActorCustomStates:  true,
-		ActorStates:        entity_manager.ToEntityStateShort(weather.NewActorStates(false, false)),
-		ActorCustomSetts:   true,
-		ActorSetts:         weather.NewSettings(),
-		Setts:              nil,
+		Actors:      true,
+		ActorAttrs:  weather.BaseForecast(),
+		ActorStates: entity_manager.ToEntityStateShort(weather.NewActorStates(false, false)),
+		ActorSetts:  weather.NewSettings(),
 	}
 }
