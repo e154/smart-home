@@ -86,11 +86,11 @@ func NewActor(entity *m.Entity,
 	}
 
 	// zone
-	if _, ok := actor.Setts[weather.AttrLon]; ok {
-		actor.Zone.Lon = actor.Setts[weather.AttrLon].Float64()
+	if lon, ok := actor.Setts[weather.AttrLon]; ok {
+		actor.Zone.Lon = lon.Float64()
 	}
-	if _, ok := actor.Setts[weather.AttrLat]; ok {
-		actor.Zone.Lat = actor.Setts[weather.AttrLat].Float64()
+	if lat, ok := actor.Setts[weather.AttrLat]; ok {
+		actor.Zone.Lat = lat.Float64()
 	}
 	actor.Zone.Name = actor.Id.Name()
 

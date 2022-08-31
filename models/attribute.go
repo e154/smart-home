@@ -23,6 +23,7 @@ import (
 	"encoding/gob"
 	"fmt"
 	"reflect"
+	"strconv"
 	"time"
 
 	"github.com/e154/smart-home/common"
@@ -65,6 +66,9 @@ func (a Attribute) Int64() int64 {
 		return int64(a.Value.(int))
 	case reflect.Float64:
 		return int64(a.Float64())
+	case reflect.String:
+		i, _ := strconv.Atoi(a.Value.(string))
+		return int64(i)
 	default:
 		log.Warnf("unknown type %s", t.String())
 	}

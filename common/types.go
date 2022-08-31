@@ -187,7 +187,7 @@ const (
 	AttributeFloat = AttributeType("float")
 	//DEPRECATED
 	AttributeArray = AttributeType("array")
-	// AttributeMap ...
+	//DEPRECATED
 	AttributeMap = AttributeType("map")
 )
 

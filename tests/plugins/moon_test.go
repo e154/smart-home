@@ -65,7 +65,7 @@ func TestMoon(t *testing.T) {
 				ch <- msg
 			})
 
-			moon := moonPlugin.NewActor(moonEnt, entityManager, eventBus)
+			moon := moonPlugin.NewActor(moonEnt, entityManager, adaptors, scriptService, eventBus)
 
 			t.Run("entity", func(t *testing.T) {
 				Convey("position", t, func(ctx C) {

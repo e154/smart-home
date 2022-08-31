@@ -24,8 +24,6 @@ import (
 
 	"github.com/e154/smart-home/common/events"
 
-	"github.com/e154/smart-home/common/debug"
-
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	sunPlugin "github.com/e154/smart-home/plugins/sun"
@@ -67,7 +65,7 @@ func TestSun(t *testing.T) {
 				ch <- msg
 			})
 
-			sun := sunPlugin.NewActor(sunEnt, entityManager, eventBus)
+			sun := sunPlugin.NewActor(sunEnt, entityManager, adaptors, scriptService, eventBus)
 
 			t.Run("entity", func(t *testing.T) {
 				Convey("phase", t, func(ctx C) {
@@ -101,7 +99,7 @@ func TestSun(t *testing.T) {
 
 					ctx.So(ok, ShouldBeTrue)
 
-					debug.Println(msg.NewState.Attributes)
+					//debug.Println(msg.NewState.Attributes)
 
 					ctx.So(msg.NewState.State, ShouldNotBeNil)
 					ctx.So(msg.NewState.State.Name, ShouldEqual, sunPlugin.AttrDusk)
