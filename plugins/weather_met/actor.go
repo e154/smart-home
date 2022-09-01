@@ -41,6 +41,8 @@ type Actor struct {
 	eventBus      bus.Bus
 	actionPool    chan events.EventCallAction
 	weather       *WeatherMet
+	winter        bool
+	theme         string
 }
 
 // NewActor ...
@@ -89,10 +91,18 @@ func NewActor(entity *m.Entity,
 	if lon, ok := actor.Setts[weather.AttrLon]; ok {
 		actor.Zone.Lon = lon.Float64()
 	}
+	actor.Zone.Name = actor.Id.Name()
 	if lat, ok := actor.Setts[weather.AttrLat]; ok {
 		actor.Zone.Lat = lat.Float64()
 	}
-	actor.Zone.Name = actor.Id.Name()
+
+	// etc
+	if theme, ok := actor.Setts[weather.AttrTheme]; ok {
+		actor.theme = theme.String()
+	}
+	if winter, ok := actor.Setts[weather.AttrWinter]; ok {
+		actor.winter = winter.Bool()
+	}
 
 	// action worker
 	go func() {
@@ -175,12 +185,17 @@ func (e *Actor) updateForecast() (changed bool) {
 	// update sun position
 	sunrisePos := suncalc.GetSunPosition(time.Now(), e.Setts[weather.AttrLat].Float64(), e.Setts[weather.AttrLon].Float64())
 	var night = suncalc.IsNight(sunrisePos)
-	var winter bool //todo fix
 
 	if val, ok := e.Attrs[weather.AttrWeatherMain]; ok {
 		state := e.States[val.String()]
 		e.State = &state
-		e.State.ImageUrl = weather.GetImagePath(state.Name, night, winter)
+		e.State.ImageUrl = weather.GetImagePath(state.Name, e.theme, night, e.winter)
+	}
+
+	for i := 1; i < 6; i++ {
+		if main, ok := e.Attrs[fmt.Sprintf("day%d_main", i)]; ok {
+			e.Attrs[fmt.Sprintf("day%d_icon", i)].Value = weather.GetImagePath(main.String(), e.theme, night, e.winter)
+		}
 	}
 
 	return

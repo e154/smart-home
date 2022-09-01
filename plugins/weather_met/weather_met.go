@@ -252,6 +252,12 @@ func (p *WeatherMet) getTemperature(orderedEntries []Product) (value float64) {
 
 func (p *WeatherMet) getMinTemperature(orderedEntries []Product) (value float64) {
 
+	defer func() {
+		if value != 0 {
+			value = math.Round(value*100) / 100
+		}
+	}()
+
 	value = 99
 	for _, entry := range orderedEntries {
 		if entry.Location.MinTemperature != nil {
@@ -259,7 +265,6 @@ func (p *WeatherMet) getMinTemperature(orderedEntries []Product) (value float64)
 			if value == 99 {
 				value = _value
 			}
-			_value = math.Round(_value*100) / 100
 			if _value < value {
 				value = _value
 			}
@@ -275,10 +280,15 @@ func (p *WeatherMet) getMinTemperature(orderedEntries []Product) (value float64)
 
 func (p *WeatherMet) getMaxTemperature(orderedEntries []Product) (value float64) {
 
+	defer func() {
+		if value != 0 {
+			value = math.Round(value*100) / 100
+		}
+	}()
+
 	for _, entry := range orderedEntries {
 		if entry.Location.MaxTemperature != nil {
 			_value, _ := strconv.ParseFloat(entry.Location.MaxTemperature.Value, 32)
-			_value = math.Round(_value*100) / 100
 			if _value > value {
 				value = _value
 			}

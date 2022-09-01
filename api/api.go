@@ -37,7 +37,6 @@ import (
 
 	"github.com/e154/smart-home/api/controllers"
 	gw "github.com/e154/smart-home/api/stub/api"
-	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/logger"
 	"github.com/e154/smart-home/system/rbac"
 )
@@ -213,7 +212,13 @@ func (a *Api) Start() (err error) {
 		r.URL, _ = r.URL.Parse(r.RequestURI)
 		fileServer.ServeHTTP(w, r)
 	})
-	httpv1.Handle("/api_static", http.FileServer(http.Dir(common.StoragePath())))
+	//httpv1.Handle("/api_static", http.FileServer(http.Dir(common.StoragePath())))
+	fileServer2 := http.FileServer(http.Dir("./data/static"))
+	httpv1.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
+		r.RequestURI = strings.ReplaceAll(r.RequestURI, "/static/", "/")
+		r.URL, _ = r.URL.Parse(r.RequestURI)
+		fileServer2.ServeHTTP(w, r)
+	})
 
 	// swagger
 	if a.cfg.Swagger {
