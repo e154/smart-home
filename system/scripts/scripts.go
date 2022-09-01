@@ -20,6 +20,7 @@ package scripts
 
 import (
 	"github.com/e154/smart-home/common/logger"
+	"github.com/e154/smart-home/common/web"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/scripts/bind"
 	"github.com/e154/smart-home/system/storage"
@@ -43,50 +44,56 @@ type scriptService struct {
 	functions  *Pull
 	structures *Pull
 	storage    *storage.Storage
+	crawler    web.Crawler
 }
 
 // NewScriptService ...
-func NewScriptService(cfg *m.AppConfig, storage *storage.Storage) (service ScriptService) {
+func NewScriptService(cfg *m.AppConfig,
+	storage *storage.Storage,
+	crawler web.Crawler) ScriptService {
 
-	service = &scriptService{
+	s := &scriptService{
 		cfg:        cfg,
 		functions:  NewPull(),
 		structures: NewPull(),
 		storage:    storage,
+		crawler:    crawler,
 	}
 
-	service.PushStruct("Log", &bind.LogBind{})
-	service.PushFunctions("ExecuteSync", bind.ExecuteSync)
-	service.PushFunctions("ExecuteAsync", bind.ExecuteAsync)
-	service.PushStruct("Storage", bind.NewStorageBind(storage))
-	service.PushStruct("http", &bind.HttpBind{})
-	return service
+	s.bind()
+
+	return s
 }
 
 // NewEngine ...
-func (service *scriptService) NewEngine(s *m.Script) (*Engine, error) {
-	return NewEngine(s, service.structures, service.functions)
+func (s *scriptService) NewEngine(scr *m.Script) (*Engine, error) {
+	return NewEngine(scr, s.structures, s.functions)
 }
 
 // PushStruct ...
-func (service *scriptService) PushStruct(name string, s interface{}) {
+func (s *scriptService) PushStruct(name string, str interface{}) {
 	log.Infof("register structure: '%s'", name)
-	service.structures.Add(name, s)
+	s.structures.Add(name, str)
 }
 
 // PushFunctions ...
-func (service *scriptService) PushFunctions(name string, s interface{}) {
+func (s *scriptService) PushFunctions(name string, f interface{}) {
 	log.Infof("register function: '%s'", name)
-	service.functions.Add(name, s)
+	s.functions.Add(name, f)
 }
 
 // Purge ...
-func (service *scriptService) Purge() {
-	service.functions.Purge()
-	service.structures.Purge()
-	service.PushStruct("Log", &bind.LogBind{})
-	service.PushFunctions("ExecuteSync", bind.ExecuteSync)
-	service.PushFunctions("ExecuteAsync", bind.ExecuteAsync)
-	service.PushStruct("Storage", bind.NewStorageBind(service.storage))
-	service.PushStruct("http", &bind.HttpBind{})
+func (s *scriptService) Purge() {
+	s.functions.Purge()
+	s.structures.Purge()
+	s.bind()
+}
+
+func (s *scriptService) bind() {
+	s.PushStruct("Log", &bind.LogBind{})
+	s.PushFunctions("ExecuteSync", bind.ExecuteSync)
+	s.PushFunctions("ExecuteAsync", bind.ExecuteAsync)
+	s.PushStruct("Storage", bind.NewStorageBind(s.storage))
+	s.PushStruct("http", bind.NewHttpBind(s.crawler))
+	s.PushStruct("HTTP", bind.NewHttpBind(s.crawler))
 }

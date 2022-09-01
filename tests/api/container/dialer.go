@@ -56,6 +56,7 @@ func (d *Dialer) Call() func(context.Context, string) (net.Conn, error) {
 	gw.RegisterAreaServiceServer(grpcServer, d.controllers.Area)
 	gw.RegisterEntityServiceServer(grpcServer, d.controllers.Entity)
 	gw.RegisterAutomationServiceServer(grpcServer, d.controllers.Automation)
+	gw.RegisterVariableServiceServer(grpcServer, d.controllers.Variable)
 
 	listener := bufconn.Listen(1024 * 1024)
 

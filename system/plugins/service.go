@@ -21,6 +21,7 @@ package plugins
 import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/web"
 	"github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
@@ -40,6 +41,7 @@ type service struct {
 	appConfig     *models.AppConfig
 	gateClient    *gate_client.GateClient
 	scheduler     *scheduler.Scheduler
+	crawler       web.Crawler
 }
 
 // Plugins ...
@@ -96,4 +98,9 @@ func (s service) GateClient() *gate_client.GateClient {
 // Scheduler ...
 func (s service) Scheduler() *scheduler.Scheduler {
 	return s.scheduler
+}
+
+// Crawler ...
+func (s service) Crawler() web.Crawler {
+	return s.crawler
 }

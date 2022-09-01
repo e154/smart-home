@@ -22,10 +22,15 @@ import (
 	"github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // AttributeFromApi ...
 func AttributeFromApi(apiAttr map[string]*api.Attribute) (attributes m.Attributes) {
+	return attributeFromApi(apiAttr)
+}
+
+func attributeFromApi(apiAttr map[string]*api.Attribute) (attributes m.Attributes) {
 	attributes = make(m.Attributes)
 	for k, v := range apiAttr {
 		attr := &m.Attribute{
@@ -47,6 +52,12 @@ func AttributeFromApi(apiAttr map[string]*api.Attribute) (attributes m.Attribute
 		case api.Types_ARRAY:
 			//	attr.Value = v.GetArray()
 			attr.Type = common.AttributeArray
+		case api.Types_MAP:
+			attr.Type = common.AttributeMap
+			attr.Value = AttributeFromApi(v.GetMap())
+		case api.Types_TIME:
+			attr.Value = v.GetTime().AsTime()
+			attr.Type = common.AttributeTime
 		}
 		attributes[k] = attr
 	}
@@ -75,6 +86,11 @@ func AttributeToApi(attributes m.Attributes) (apiAttr map[string]*api.Attribute)
 			apiAttr[k].Float = common.Float32(float32(v.Float64()))
 		case "array":
 			apiAttr[k].Type = api.Types_ARRAY
+		case "map":
+			apiAttr[k].Type = api.Types_MAP
+		case "time":
+			apiAttr[k].Type = api.Types_TIME
+			apiAttr[k].Time = timestamppb.New(v.Time())
 		}
 	}
 	return

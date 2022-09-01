@@ -4,12 +4,16 @@ package api;
 
 option go_package = "/api";
 
+import "google/protobuf/timestamp.proto";
+
 enum Types {
   INT = 0;
   STRING = 1;
   FLOAT = 2;
   BOOL = 3;
   ARRAY = 4;
+  MAP = 5;
+  TIME = 6;
 }
 
 message Attribute {
@@ -20,4 +24,6 @@ message Attribute {
   optional bool bool = 5;
   optional float float = 6;
   repeated Attribute array = 7;
+  map<string, Attribute> map = 8;
+  optional google.protobuf.Timestamp time = 9;
 }

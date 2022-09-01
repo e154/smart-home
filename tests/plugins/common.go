@@ -264,18 +264,28 @@ func GetNewMoon(name string) *m.Entity {
 		AutoLoad:    true,
 		Attributes:  moon.NewAttr(),
 		Settings:    settings,
+		States: []*m.EntityState{
+			{
+				Name: moon.StateAboveHorizon,
+				Description: "above horizon",
+			},
+			{
+				Name: moon.StateBelowHorizon,
+				Description: "below horizon",
+			},
+		},
 	}
 }
 
-// GetNewWeather ...
-func GetNewWeather(name string) *m.Entity {
+// GetNewWeatherMet ...
+func GetNewWeatherMet(name string) *m.Entity {
 	settings := weather.NewSettings()
 	settings[weather.AttrLat].Value = 54.9022
 	settings[weather.AttrLon].Value = 83.0335
 	return &m.Entity{
-		Id:          common.EntityId(fmt.Sprintf("weather.%s", name)),
-		Description: "home",
-		PluginName:  "weather",
+		Id:          common.EntityId(fmt.Sprintf("weather_met.%s", name)),
+		Description: name,
+		PluginName:  "weather_met",
 		AutoLoad:    true,
 		Attributes:  weather.BaseForecast(),
 		Settings:    settings,
@@ -309,6 +319,12 @@ func GetNewSun(name string) *m.Entity {
 		AutoLoad:    true,
 		Attributes:  sun.NewAttr(),
 		Settings:    settings,
+		States: []*m.EntityState{
+			{
+				Name: sun.AttrDusk,
+				Description: "dusk (evening nautical twilight starts)",
+			},
+		},
 	}
 }
 

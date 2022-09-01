@@ -20,12 +20,11 @@ package db
 
 import (
 	"fmt"
+	"github.com/jinzhu/gorm"
 	"time"
 
-	"github.com/e154/smart-home/common/apperr"
-
 	"github.com/e154/smart-home/common"
-	"github.com/jinzhu/gorm"
+	"github.com/e154/smart-home/common/apperr"
 	"github.com/pkg/errors"
 )
 
@@ -59,16 +58,8 @@ func (n Variables) Add(variable Variable) (err error) {
 
 // CreateOrUpdate ...
 func (n *Variables) CreateOrUpdate(v Variable) (err error) {
-	var entityId = "null"
-	if v.EntityId != nil {
-		entityId = v.EntityId.String()
-	}
-	err = n.Db.Model(&Variable{}).
-		Set("gorm:insert_option",
-			fmt.Sprintf("ON CONFLICT (name) DO UPDATE SET value = '%s', entity_id = %s, updated_at = '%s'", v.Value, entityId, time.Now().Format(time.RFC3339))).
-		Create(&v).Error
-	if err != nil {
-		err = errors.Wrap(apperr.ErrVariableUpdate, err.Error())
+	if n.Db.Model(&v).Where("name = ?", v.Name).Updates(&v).RowsAffected == 0 {
+		err = n.Db.Create(&v).Error
 	}
 	return
 }

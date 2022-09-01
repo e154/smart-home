@@ -5089,6 +5089,16 @@
           "items": {
             "$ref": "#/definitions/apiAttribute"
           }
+        },
+        "map": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/apiAttribute"
+          }
+        },
+        "time": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
@@ -7019,7 +7029,9 @@
         "STRING",
         "FLOAT",
         "BOOL",
-        "ARRAY"
+        "ARRAY",
+        "MAP",
+        "TIME"
       ],
       "default": "INT"
     },

@@ -19,22 +19,24 @@
 package plugins
 
 import (
+	"context"
 	"strings"
 	"testing"
 	"time"
-
-	"github.com/e154/smart-home/common/events"
 
 	. "github.com/smartystreets/goconvey/convey"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/debug"
+	"github.com/e154/smart-home/common/web"
 	m "github.com/e154/smart-home/models"
 	weatherPlugin "github.com/e154/smart-home/plugins/weather"
 	"github.com/e154/smart-home/plugins/weather_met"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/migrations"
+	"github.com/e154/smart-home/system/scheduler"
 	"github.com/e154/smart-home/system/scripts"
 )
 
@@ -48,7 +50,9 @@ func TestWeatherMet(t *testing.T) {
 			scriptService scripts.ScriptService,
 			entityManager entity_manager.EntityManager,
 			eventBus bus.Bus,
-			pluginManager common.PluginManager) {
+			pluginManager common.PluginManager,
+			scheduler *scheduler.Scheduler,
+			crawler web.Crawler) {
 
 			eventBus.Purge()
 			scriptService.Purge()
@@ -57,20 +61,17 @@ func TestWeatherMet(t *testing.T) {
 			ctx.So(err, ShouldBeNil)
 
 			// register plugins
-			err = AddPlugin(adaptors, "weather")
-			ctx.So(err, ShouldBeNil)
 			err = AddPlugin(adaptors, "weather_met")
 			ctx.So(err, ShouldBeNil)
 
 			// add entity
 			// ------------------------------------------------
-			weatherEnt := GetNewWeather("home")
+			weatherEnt := GetNewWeatherMet("home")
 			err = adaptors.Entity.Add(weatherEnt)
 			ctx.So(err, ShouldBeNil)
 
 			// add weather vars
 			// ------------------------------------------------
-
 			err = adaptors.Variable.CreateOrUpdate(m.Variable{
 				System: true,
 				Name:   "weather_met.home",
@@ -79,179 +80,36 @@ func TestWeatherMet(t *testing.T) {
 			ctx.So(err, ShouldBeNil)
 
 			// ------------------------------------------------
+			_ = scheduler.Start(context.TODO())
 			pluginManager.Start()
+			entityManager.SetPluginManager(pluginManager)
 
 			defer func() {
 				pluginManager.Shutdown()
 			}()
 
-			time.Sleep(time.Millisecond * 500)
+			time.Sleep(time.Second * 1)
 
 			t.Run("add weather", func(t *testing.T) {
 				Convey("weather_met", t, func(ctx C) {
 
-					// subscribe
-					// ------------------------------------------------
-					ch := make(chan events.EventPassAttributes, 2)
-					fn := func(topic string, msg interface{}) {
-
-						switch v := msg.(type) {
-						case events.EventPassAttributes:
-							ch <- v
-						case events.EventAddedActor:
-
-						}
-					}
-					err = eventBus.Subscribe(bus.TopicEntities, fn)
-					So(err, ShouldBeNil)
-
-					defer func() {
-						_ = eventBus.Unsubscribe(bus.TopicEntities, fn)
-					}()
-
-					settings := weatherPlugin.NewSettings()
-					settings[weatherPlugin.AttrLat].Value = 54.9022
-					settings[weatherPlugin.AttrLon].Value = 83.0335
-					eventBus.Publish(bus.TopicEntities, events.EventAddedActor{
-						PluginName: weatherPlugin.EntityWeather,
-						EntityId:   "weather.home",
-						Attributes: weatherPlugin.BaseForecast(),
-						Settings:   settings,
-					})
-
-					ticker := time.NewTimer(time.Second * 2)
-					defer ticker.Stop()
-
-					var msg events.EventPassAttributes
-					var ok bool
-					select {
-					case msg = <-ch:
-						ok = true
-						break
-					case <-ticker.C:
-						break
-					}
-
-					ctx.So(ok, ShouldBeTrue)
-
-					So(msg.From, ShouldEqual, "weather_met.home")
-					So(msg.To, ShouldEqual, "weather.home")
-					So(msg.Attributes[weatherPlugin.AttrWeatherAttribution].String(), ShouldEqual, "Weather forecast from met.no, delivered by the Norwegian Meteorological Institute.")
+					err = entityManager.Add(weatherEnt)
+					ctx.So(err, ShouldBeNil)
 
 					time.Sleep(time.Millisecond * 500)
-				})
-			})
 
-			t.Run("update weather", func(t *testing.T) {
-				Convey("weather_met", t, func(ctx C) {
+					actor, err := entityManager.GetActorById(weatherEnt.Id)
+					ctx.So(err, ShouldBeNil)
 
-					// subscribe
-					// ------------------------------------------------
-					ch := make(chan events.EventPassAttributes, 3)
-					fn := func(topic string, msg interface{}) {
-						switch v := msg.(type) {
-						case events.EventPassAttributes:
-							ch <- v
-						case events.EventAddedActor:
-
-						}
-					}
-					err = eventBus.Subscribe(bus.TopicEntities, fn)
-					So(err, ShouldBeNil)
-
-					defer func() {
-						close(ch)
-						_ = eventBus.Unsubscribe(bus.TopicEntities, fn)
-					}()
-
-					settings := weatherPlugin.NewSettings()
-					settings[weatherPlugin.AttrLat].Value = 54.9022
-					settings[weatherPlugin.AttrLon].Value = 83.0335
-					eventBus.Publish(weatherPlugin.TopicPluginWeather, weatherPlugin.EventStateChanged{
-						Type:       weatherPlugin.EntityWeather,
-						EntityId:   "weather.home",
-						State:      weatherPlugin.StatePositionUpdate,
-						Attributes: weatherPlugin.BaseForecast(),
-						Settings:   settings,
-					})
-
-					ticker := time.NewTimer(time.Second * 10)
-					defer ticker.Stop()
-
-					var msg events.EventPassAttributes
-					var ok bool
-					select {
-					case msg = <-ch:
-						ok = true
-						break
-					case <-ticker.C:
-						break
-					}
-
-					ctx.So(ok, ShouldBeTrue)
-
-					So(msg.From, ShouldEqual, "weather_met.home")
-					So(msg.To, ShouldEqual, "weather.home")
-					So(msg.Attributes[weatherPlugin.AttrWeatherAttribution].String(), ShouldEqual, "Weather forecast from met.no, delivered by the Norwegian Meteorological Institute.")
-
-					time.Sleep(time.Millisecond * 500)
-				})
-			})
-
-			t.Run("remove weather", func(t *testing.T) {
-				Convey("weather_met", t, func(ctx C) {
-
-					// subscribe
-					// ------------------------------------------------
-					ch := make(chan events.EventRemoveActor, 3)
-					fn := func(topic string, msg interface{}) {
-
-						switch v := msg.(type) {
-						case events.EventPassAttributes:
-						case events.EventAddedActor:
-						case events.EventRemoveActor:
-							if v.PluginName == "weather_met" {
-								ch <- v
-							}
-						}
-					}
-					err = eventBus.Subscribe(bus.TopicEntities, fn)
-					So(err, ShouldBeNil)
-
-					defer func() {
-						_ = eventBus.Unsubscribe(bus.TopicEntities, fn)
-					}()
-
-					eventBus.Publish(bus.TopicEntities, events.EventRemoveActor{
-						PluginName: weatherPlugin.EntityWeather,
-						EntityId:   "weather.home",
-					})
-
-					ticker := time.NewTimer(time.Second * 2)
-					defer ticker.Stop()
-
-					var msg events.EventRemoveActor
-					var ok bool
-					select {
-					case msg = <-ch:
-						ok = true
-						break
-					case <-ticker.C:
-						break
-					}
-
-					ctx.So(ok, ShouldBeTrue)
-
-					So(msg.EntityId, ShouldEqual, "weather_met.home")
-
+					attrs := actor.Attributes()
+					debug.Println(attrs)
 				})
 			})
 
 			t.Run("weather_met", func(t *testing.T) {
 				Convey("weather_met", t, func(ctx C) {
 
-					w := weather_met.NewWeatherMet(eventBus, adaptors)
-					w.AddWeather("weather.home", weatherEnt.Settings)
+					w := weather_met.NewWeatherMet(adaptors, crawler)
 
 					loc, _ := time.LoadLocation("Asia/Novosibirsk")
 					now := time.Date(2021, 5, 29, 0, 0, 0, 0, loc)
@@ -277,59 +135,54 @@ func TestWeatherMet(t *testing.T) {
 					So(attr[weatherPlugin.AttrWeatherWindSpeed].Float64(), ShouldEqual, 6.84)
 
 					// day1
-					day1 := attr[weatherPlugin.AttrForecastDay1].Map()
-					So(day1[weatherPlugin.AttrWeatherMain].String(), ShouldEqual, "fair")
-					So(day1[weatherPlugin.AttrWeatherDatetime].Time().String(), ShouldEqual, "2021-05-30 00:00:00 +0700 +07")
-					So(day1[weatherPlugin.AttrWeatherHumidity].Float64(), ShouldEqual, 65.6)
-					So(day1[weatherPlugin.AttrWeatherMaxTemperature].Float64(), ShouldEqual, 20.8)
-					So(day1[weatherPlugin.AttrWeatherMinTemperature].Float64(), ShouldEqual, 9.8)
-					So(day1[weatherPlugin.AttrWeatherPressure].Float64(), ShouldEqual, 1021.8)
-					So(day1[weatherPlugin.AttrWeatherWindBearing].Float64(), ShouldEqual, 97.4)
-					So(day1[weatherPlugin.AttrWeatherWindSpeed].Float64(), ShouldEqual, 9.36)
+					So(attr[weatherPlugin.Day1AttrWeatherMain].String(), ShouldEqual, "fair")
+					So(attr[weatherPlugin.Day1AttrWeatherDatetime].Time().String(), ShouldEqual, "2021-05-30 00:00:00 +0700 +07")
+					So(attr[weatherPlugin.Day1AttrWeatherHumidity].Float64(), ShouldEqual, 65.6)
+					So(attr[weatherPlugin.Day1AttrWeatherMaxTemperature].Float64(), ShouldEqual, 20.8)
+					So(attr[weatherPlugin.Day1AttrWeatherMinTemperature].Float64(), ShouldEqual, 9.8)
+					So(attr[weatherPlugin.Day1AttrWeatherPressure].Float64(), ShouldEqual, 1021.8)
+					So(attr[weatherPlugin.Day1AttrWeatherWindBearing].Float64(), ShouldEqual, 97.4)
+					So(attr[weatherPlugin.Day1AttrWeatherWindSpeed].Float64(), ShouldEqual, 9.36)
 
 					// day2
-					day2 := attr[weatherPlugin.AttrForecastDay2].Map()
-					So(day2[weatherPlugin.AttrWeatherMain].String(), ShouldEqual, "partlyCloudy")
-					So(day2[weatherPlugin.AttrWeatherDatetime].Time().String(), ShouldEqual, "2021-05-31 00:00:00 +0700 +07")
-					So(day2[weatherPlugin.AttrWeatherHumidity].Float64(), ShouldEqual, 82.3)
-					So(day2[weatherPlugin.AttrWeatherMaxTemperature].Float64(), ShouldEqual, 24.6)
-					So(day2[weatherPlugin.AttrWeatherMinTemperature].Float64(), ShouldEqual, 10.9)
-					So(day2[weatherPlugin.AttrWeatherPressure].Float64(), ShouldEqual, 1016.5)
-					So(day2[weatherPlugin.AttrWeatherWindBearing].Float64(), ShouldEqual, 138.8)
-					So(day2[weatherPlugin.AttrWeatherWindSpeed].Float64(), ShouldEqual, 9.72)
+					So(attr[weatherPlugin.Day2AttrWeatherMain].String(), ShouldEqual, "partlyCloudy")
+					So(attr[weatherPlugin.Day2AttrWeatherDatetime].Time().String(), ShouldEqual, "2021-05-31 00:00:00 +0700 +07")
+					So(attr[weatherPlugin.Day2AttrWeatherHumidity].Float64(), ShouldEqual, 82.3)
+					So(attr[weatherPlugin.Day2AttrWeatherMaxTemperature].Float64(), ShouldEqual, 24.6)
+					So(attr[weatherPlugin.Day2AttrWeatherMinTemperature].Float64(), ShouldEqual, 10.9)
+					So(attr[weatherPlugin.Day2AttrWeatherPressure].Float64(), ShouldEqual, 1016.5)
+					So(attr[weatherPlugin.Day2AttrWeatherWindBearing].Float64(), ShouldEqual, 138.8)
+					So(attr[weatherPlugin.Day2AttrWeatherWindSpeed].Float64(), ShouldEqual, 9.72)
 
 					// day3
-					day3 := attr[weatherPlugin.AttrForecastDay3].Map()
-					So(day3[weatherPlugin.AttrWeatherMain].String(), ShouldEqual, "partlyCloudy")
-					So(day3[weatherPlugin.AttrWeatherDatetime].Time().String(), ShouldEqual, "2021-06-01 00:00:00 +0700 +07")
-					So(day3[weatherPlugin.AttrWeatherHumidity].Float64(), ShouldEqual, 65.6)
-					So(day3[weatherPlugin.AttrWeatherMaxTemperature].Float64(), ShouldEqual, 25.5)
-					So(day3[weatherPlugin.AttrWeatherMinTemperature].Float64(), ShouldEqual, 14.4)
-					So(day3[weatherPlugin.AttrWeatherPressure].Float64(), ShouldEqual, 1009.4)
-					So(day3[weatherPlugin.AttrWeatherWindBearing].Float64(), ShouldEqual, 134.9)
-					So(day3[weatherPlugin.AttrWeatherWindSpeed].Float64(), ShouldEqual, 13.32)
+					So(attr[weatherPlugin.Day3AttrWeatherMain].String(), ShouldEqual, "partlyCloudy")
+					So(attr[weatherPlugin.Day3AttrWeatherDatetime].Time().String(), ShouldEqual, "2021-06-01 00:00:00 +0700 +07")
+					So(attr[weatherPlugin.Day3AttrWeatherHumidity].Float64(), ShouldEqual, 65.6)
+					So(attr[weatherPlugin.Day3AttrWeatherMaxTemperature].Float64(), ShouldEqual, 25.5)
+					So(attr[weatherPlugin.Day3AttrWeatherMinTemperature].Float64(), ShouldEqual, 14.4)
+					So(attr[weatherPlugin.Day3AttrWeatherPressure].Float64(), ShouldEqual, 1009.4)
+					So(attr[weatherPlugin.Day3AttrWeatherWindBearing].Float64(), ShouldEqual, 134.9)
+					So(attr[weatherPlugin.Day3AttrWeatherWindSpeed].Float64(), ShouldEqual, 13.32)
 
 					// day4
-					day4 := attr[weatherPlugin.AttrForecastDay4].Map()
-					So(day4[weatherPlugin.AttrWeatherMain].String(), ShouldEqual, "partlyCloudy")
-					So(day4[weatherPlugin.AttrWeatherDatetime].Time().String(), ShouldEqual, "2021-06-02 00:00:00 +0700 +07")
-					So(day4[weatherPlugin.AttrWeatherHumidity].Float64(), ShouldEqual, 78.3)
-					So(day4[weatherPlugin.AttrWeatherMaxTemperature].Float64(), ShouldEqual, 27.5)
-					So(day4[weatherPlugin.AttrWeatherMinTemperature].Float64(), ShouldEqual, 9.5)
-					So(day4[weatherPlugin.AttrWeatherPressure].Float64(), ShouldEqual, 1009.2)
-					So(day4[weatherPlugin.AttrWeatherWindBearing].Float64(), ShouldEqual, 342.2)
-					So(day4[weatherPlugin.AttrWeatherWindSpeed].Float64(), ShouldEqual, 23.76)
+					So(attr[weatherPlugin.Day4AttrWeatherMain].String(), ShouldEqual, "partlyCloudy")
+					So(attr[weatherPlugin.Day4AttrWeatherDatetime].Time().String(), ShouldEqual, "2021-06-02 00:00:00 +0700 +07")
+					So(attr[weatherPlugin.Day4AttrWeatherHumidity].Float64(), ShouldEqual, 78.3)
+					So(attr[weatherPlugin.Day4AttrWeatherMaxTemperature].Float64(), ShouldEqual, 27.5)
+					So(attr[weatherPlugin.Day4AttrWeatherMinTemperature].Float64(), ShouldEqual, 9.5)
+					So(attr[weatherPlugin.Day4AttrWeatherPressure].Float64(), ShouldEqual, 1009.2)
+					So(attr[weatherPlugin.Day4AttrWeatherWindBearing].Float64(), ShouldEqual, 342.2)
+					So(attr[weatherPlugin.Day4AttrWeatherWindSpeed].Float64(), ShouldEqual, 23.76)
 
 					// day5
-					day5 := attr[weatherPlugin.AttrForecastDay5].Map()
-					So(day5[weatherPlugin.AttrWeatherMain].String(), ShouldEqual, "partlyCloudy")
-					So(day5[weatherPlugin.AttrWeatherDatetime].Time().String(), ShouldEqual, "2021-06-03 00:00:00 +0700 +07")
-					So(day5[weatherPlugin.AttrWeatherHumidity].Float64(), ShouldEqual, 67.1)
-					So(day5[weatherPlugin.AttrWeatherMaxTemperature].Float64(), ShouldEqual, 18.3)
-					So(day5[weatherPlugin.AttrWeatherMinTemperature].Float64(), ShouldEqual, 7.2)
-					So(day5[weatherPlugin.AttrWeatherPressure].Float64(), ShouldEqual, 1008.8)
-					So(day5[weatherPlugin.AttrWeatherWindBearing].Float64(), ShouldEqual, 334.8)
-					So(day5[weatherPlugin.AttrWeatherWindSpeed].Float64(), ShouldEqual, 12.6)
+					So(attr[weatherPlugin.Day5AttrWeatherMain].String(), ShouldEqual, "partlyCloudy")
+					So(attr[weatherPlugin.Day5AttrWeatherDatetime].Time().String(), ShouldEqual, "2021-06-03 00:00:00 +0700 +07")
+					So(attr[weatherPlugin.Day5AttrWeatherHumidity].Float64(), ShouldEqual, 67.1)
+					So(attr[weatherPlugin.Day5AttrWeatherMaxTemperature].Float64(), ShouldEqual, 18.3)
+					So(attr[weatherPlugin.Day5AttrWeatherMinTemperature].Float64(), ShouldEqual, 7.2)
+					So(attr[weatherPlugin.Day5AttrWeatherPressure].Float64(), ShouldEqual, 1008.8)
+					So(attr[weatherPlugin.Day5AttrWeatherWindBearing].Float64(), ShouldEqual, 334.8)
+					So(attr[weatherPlugin.Day5AttrWeatherWindSpeed].Float64(), ShouldEqual, 12.6)
 				})
 			})
 

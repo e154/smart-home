@@ -20,6 +20,7 @@ package container
 
 import (
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common/web"
 	"github.com/e154/smart-home/endpoint"
 	"github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
@@ -54,6 +55,7 @@ func BuildContainer() (container *dig.Container) {
 
 	container = dig.New()
 	_ = container.Provide(validation.NewValidate)
+	_ = container.Provide(web.New)
 	_ = container.Provide(NewOrmConfig)
 	_ = container.Provide(orm.NewOrm)
 	_ = container.Provide(NewMigrationsConfig)

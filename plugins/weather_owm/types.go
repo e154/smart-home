@@ -34,6 +34,8 @@ const (
 	DefaultApiUrl = "https://api.openweathermap.org/data/2.5/onecall"
 	// Attribution ...
 	Attribution = "Weather forecast from openweathermap api"
+	// FuncEntityAction ...
+	FuncEntityAction = "entityAction"
 )
 
 // GeoPos ...
@@ -281,6 +283,22 @@ const (
 // NewSettings ...
 func NewSettings() map[string]*m.Attribute {
 	return map[string]*m.Attribute{
+		weather.AttrLat: {
+			Name: weather.AttrLat,
+			Type: common.AttributeFloat,
+		},
+		weather.AttrLon: {
+			Name: weather.AttrLon,
+			Type: common.AttributeFloat,
+		},
+		weather.AttrTheme: {
+			Name: weather.AttrTheme,
+			Type: common.AttributeString,
+		},
+		weather.AttrWinter: {
+			Name: weather.AttrWinter,
+			Type: common.AttributeBool,
+		},
 		AttrAppid: {
 			Name: AttrAppid,
 			Type: common.AttributeString,
@@ -312,193 +330,193 @@ func WeatherCondition(w ProductWeather) (state entity_manager.ActorState) {
 
 	// Thunderstorm
 
-	//thunderstorm with light rain
+	//thunderstorm with  light rain
 	case 200:
-		state = weather.GetActorState(weather.StateLightRainAndThunder, n, winter)
+		state = weather.GetActorState(weather.StateLightRainAndThunder, "", n, winter)
 	//thunderstorm with rain
 	case 201:
-		state = weather.GetActorState(weather.StateRainAndThunder, n, winter)
+		state = weather.GetActorState(weather.StateRainAndThunder, "", n, winter)
 	//thunderstorm with heavy rain
 	case 202:
-		state = weather.GetActorState(weather.StateHeavyRainAndThunder, n, winter)
+		state = weather.GetActorState(weather.StateHeavyRainAndThunder, "", n, winter)
 	//light thunderstorm
 	case 210:
-		state = weather.GetActorState(weather.StateHeavyRainShowersAndThunder, n, winter)
+		state = weather.GetActorState(weather.StateHeavyRainShowersAndThunder, "", n, winter)
 	//thunderstorm
 	case 211:
-		state = weather.GetActorState(weather.StateHeavyRainShowersAndThunder, n, winter)
+		state = weather.GetActorState(weather.StateHeavyRainShowersAndThunder, "", n, winter)
 	//heavy thunderstorm
 	case 212:
-		state = weather.GetActorState(weather.StateHeavyRainShowersAndThunder, n, winter)
+		state = weather.GetActorState(weather.StateHeavyRainShowersAndThunder, "", n, winter)
 	//ragged thunderstorm
 	case 221:
-		state = weather.GetActorState(weather.StateHeavyRainShowersAndThunder, n, winter)
+		state = weather.GetActorState(weather.StateHeavyRainShowersAndThunder, "", n, winter)
 	//thunderstorm with light drizzle
 	case 230:
-		state = weather.GetActorState(weather.StateHeavyRainShowersAndThunder, n, winter)
+		state = weather.GetActorState(weather.StateHeavyRainShowersAndThunder, "", n, winter)
 	//thunderstorm with drizzle
 	case 231:
-		state = weather.GetActorState(weather.StateHeavyRainShowersAndThunder, n, winter)
+		state = weather.GetActorState(weather.StateHeavyRainShowersAndThunder, "", n, winter)
 	//thunderstorm with heavy drizzle
 	case 232:
-		state = weather.GetActorState(weather.StateHeavyRainShowersAndThunder, n, winter)
+		state = weather.GetActorState(weather.StateHeavyRainShowersAndThunder, "", n, winter)
 
 	// Drizzle
 
 	//light intensity drizzle
 	case 300:
-		state = weather.GetActorState(weather.StateLightRainShowers, n, winter)
+		state = weather.GetActorState(weather.StateLightRainShowers, "", n, winter)
 	//drizzle
 	case 301:
-		state = weather.GetActorState(weather.StateLightRainShowers, n, winter)
+		state = weather.GetActorState(weather.StateLightRainShowers, "", n, winter)
 	//heavy intensity drizzle
 	case 302:
-		state = weather.GetActorState(weather.StateLightRainShowers, n, winter)
+		state = weather.GetActorState(weather.StateLightRainShowers, "", n, winter)
 	//light intensity drizzle rain
 	case 310:
-		state = weather.GetActorState(weather.StateLightRainShowers, n, winter)
+		state = weather.GetActorState(weather.StateLightRainShowers, "", n, winter)
 	//drizzle rain
 	case 311:
-		state = weather.GetActorState(weather.StateLightRainShowers, n, winter)
+		state = weather.GetActorState(weather.StateLightRainShowers, "", n, winter)
 	//heavy intensity drizzle rain
 	case 312:
-		state = weather.GetActorState(weather.StateLightRainShowers, n, winter)
+		state = weather.GetActorState(weather.StateLightRainShowers, "", n, winter)
 	//shower rain and drizzle
 	case 313:
-		state = weather.GetActorState(weather.StateLightRainShowers, n, winter)
+		state = weather.GetActorState(weather.StateLightRainShowers, "", n, winter)
 	//heavy shower rain and drizzle
 	case 314:
-		state = weather.GetActorState(weather.StateLightRainShowers, n, winter)
+		state = weather.GetActorState(weather.StateLightRainShowers, "", n, winter)
 	//shower drizzle
 	case 321:
-		state = weather.GetActorState(weather.StateLightRainShowers, n, winter)
+		state = weather.GetActorState(weather.StateLightRainShowers, "", n, winter)
 
 	// Rain
 
 	//light rain
 	case 500:
-		state = weather.GetActorState(weather.StateLightRain, n, winter)
+		state = weather.GetActorState(weather.StateLightRain, "", n, winter)
 	//moderate rain
 	case 501:
-		state = weather.GetActorState(weather.StateRain, n, winter)
+		state = weather.GetActorState(weather.StateRain, "", n, winter)
 	//heavy intensity rain
 	case 502:
-		state = weather.GetActorState(weather.StateHeavyRain, n, winter)
+		state = weather.GetActorState(weather.StateHeavyRain, "", n, winter)
 	//very heavy rain
 	case 503:
-		state = weather.GetActorState(weather.StateHeavySnowShowers, n, winter)
+		state = weather.GetActorState(weather.StateHeavySnowShowers, "", n, winter)
 	//extreme rain
 	case 504:
-		state = weather.GetActorState(weather.StateHeavySnowShowers, n, winter)
+		state = weather.GetActorState(weather.StateHeavySnowShowers, "", n, winter)
 	//freezing rain
 	case 511:
-		state = weather.GetActorState(weather.StateHeavySleetShowers, n, winter)
+		state = weather.GetActorState(weather.StateHeavySleetShowers, "", n, winter)
 	//light intensity shower rain
 	case 520:
 		// todo fix
-		state = weather.GetActorState(weather.StateHeavySnowShowers, n, winter)
+		state = weather.GetActorState(weather.StateHeavySnowShowers, "", n, winter)
 	//shower rain
 	case 521:
 		// todo fix
-		state = weather.GetActorState(weather.StateHeavySnowShowers, n, winter)
+		state = weather.GetActorState(weather.StateHeavySnowShowers, "", n, winter)
 	//heavy intensity shower rain
 	case 522:
 		// todo fix
-		state = weather.GetActorState(weather.StateHeavySnowShowers, n, winter)
+		state = weather.GetActorState(weather.StateHeavySnowShowers, "", n, winter)
 	//ragged shower rain
 	case 531:
 		// todo fix
-		state = weather.GetActorState(weather.StateHeavySnowShowers, n, winter)
+		state = weather.GetActorState(weather.StateHeavySnowShowers, "", n, winter)
 
 	// Snow
 
 	//light snow
 	case 600:
-		state = weather.GetActorState(weather.StateLightSnow, n, winter)
+		state = weather.GetActorState(weather.StateLightSnow, "", n, winter)
 	//Snow
 	case 601:
-		state = weather.GetActorState(weather.StateSnow, n, winter)
+		state = weather.GetActorState(weather.StateSnow, "", n, winter)
 	//Heavy snow
 	case 602:
-		state = weather.GetActorState(weather.StateHeavySnow, n, winter)
+		state = weather.GetActorState(weather.StateHeavySnow, "", n, winter)
 	//Sleet
 	case 611:
-		state = weather.GetActorState(weather.StateLightSleetShowers, n, winter)
+		state = weather.GetActorState(weather.StateLightSleetShowers, "", n, winter)
 	//Light shower sleet
 	case 612:
-		state = weather.GetActorState(weather.StateSleetShowers, n, winter)
+		state = weather.GetActorState(weather.StateSleetShowers, "", n, winter)
 	//Shower sleet
 	case 613:
-		state = weather.GetActorState(weather.StateHeavySleetShowers, n, winter)
+		state = weather.GetActorState(weather.StateHeavySleetShowers, "", n, winter)
 	//Light rain and snow
 	case 615:
-		state = weather.GetActorState(weather.StateLightSleetShowers, n, winter)
+		state = weather.GetActorState(weather.StateLightSleetShowers, "", n, winter)
 	//Rain and snow
 	case 616:
-		state = weather.GetActorState(weather.StateLightSleetShowers, n, winter)
+		state = weather.GetActorState(weather.StateLightSleetShowers, "", n, winter)
 	//Light shower snow
 	case 620:
-		state = weather.GetActorState(weather.StateLightSnowShowers, n, winter)
+		state = weather.GetActorState(weather.StateLightSnowShowers, "", n, winter)
 	//Shower snow
 	case 621:
-		state = weather.GetActorState(weather.StateSnowShowers, n, winter)
+		state = weather.GetActorState(weather.StateSnowShowers, "", n, winter)
 	//Heavy shower snow
 	case 622:
-		state = weather.GetActorState(weather.StateHeavySnowShowers, n, winter)
+		state = weather.GetActorState(weather.StateHeavySnowShowers, "", n, winter)
 
 	// Atmosphere
 
 	//Mist
 	case 701:
-		state = weather.GetActorState(weather.StateFog, n, winter)
+		state = weather.GetActorState(weather.StateFog, "", n, winter)
 	//Smoke
 	case 711:
-		state = weather.GetActorState(weather.StateFog, n, winter)
+		state = weather.GetActorState(weather.StateFog, "", n, winter)
 	//Haze
 	case 721:
-		state = weather.GetActorState(weather.StateFog, n, winter)
+		state = weather.GetActorState(weather.StateFog, "", n, winter)
 	//Dust	sand/dust whirls
 	case 731:
-		state = weather.GetActorState(weather.StateFog, n, winter)
+		state = weather.GetActorState(weather.StateFog, "", n, winter)
 	//Fog
 	case 741:
-		state = weather.GetActorState(weather.StateFog, n, winter)
+		state = weather.GetActorState(weather.StateFog, "", n, winter)
 	//Sand
 	case 751:
-		state = weather.GetActorState(weather.StateFog, n, winter)
+		state = weather.GetActorState(weather.StateFog, "", n, winter)
 	//Dust
 	case 761:
-		state = weather.GetActorState(weather.StateFog, n, winter)
+		state = weather.GetActorState(weather.StateFog, "", n, winter)
 	//Ash volcanic ash
 	case 762:
-		state = weather.GetActorState(weather.StateFog, n, winter)
+		state = weather.GetActorState(weather.StateFog, "", n, winter)
 	//Squall
 	case 771:
-		state = weather.GetActorState(weather.StateFog, n, winter)
+		state = weather.GetActorState(weather.StateFog, "", n, winter)
 	//Tornado
 	case 781:
-		state = weather.GetActorState(weather.StateFog, n, winter)
+		state = weather.GetActorState(weather.StateFog, "", n, winter)
 
 	// Clear
 
 	//clear sky
 	case 800:
-		state = weather.GetActorState(weather.StateClearSky, n, winter)
+		state = weather.GetActorState(weather.StateClearSky, "", n, winter)
 
 	// Clouds
 
 	// few clouds: 11-25%
 	case 801:
-		state = weather.GetActorState(weather.StateFair, n, winter)
+		state = weather.GetActorState(weather.StateFair, "", n, winter)
 	// scattered clouds: 25-50%
 	case 802:
-		state = weather.GetActorState(weather.StateFair, n, winter)
+		state = weather.GetActorState(weather.StateFair, "", n, winter)
 	// broken clouds: 51-84%
 	case 803:
-		state = weather.GetActorState(weather.StatePartlyCloudy, n, winter)
+		state = weather.GetActorState(weather.StatePartlyCloudy, "", n, winter)
 	// overcast clouds: 85-100%
 	case 804:
-		state = weather.GetActorState(weather.StateCloudy, n, winter)
+		state = weather.GetActorState(weather.StateCloudy, "", n, winter)
 
 	default:
 		log.Errorf("unknown weather id %d", w.Id)

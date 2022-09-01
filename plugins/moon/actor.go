@@ -19,14 +19,14 @@
 package moon
 
 import (
-	"fmt"
+	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/system/scripts"
 	"math"
 	"sync"
 	"time"
 
 	"github.com/e154/smart-home/common/events"
 
-	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/astronomics/moonphase"
 	"github.com/e154/smart-home/common/astronomics/suncalc"
 	m "github.com/e154/smart-home/models"
@@ -49,24 +49,20 @@ type Actor struct {
 // NewActor ...
 func NewActor(entity *m.Entity,
 	entityManager entity_manager.EntityManager,
+	adaptors *adaptors.Adaptors,
+	scriptService scripts.ScriptService,
 	eventBus bus.Bus) *Actor {
 
-	name := entity.Id.Name()
-
 	actor := &Actor{
-		BaseActor: entity_manager.BaseActor{
-			Id:          common.EntityId(fmt.Sprintf("%s.%s", EntityMoon, name)),
-			Name:        name,
-			Description: "moon plugin",
-			EntityType:  EntityMoon,
-			AttrMu:      &sync.RWMutex{},
-			Attrs:       entity.Attributes,
-			Setts:       entity.Settings,
-			Manager:     entityManager,
-			States:      NewStates(),
-		},
+		BaseActor:    entity_manager.NewBaseActor(entity, scriptService, adaptors),
 		eventBus:     eventBus,
 		positionLock: &sync.Mutex{},
+	}
+
+	actor.Manager = entityManager
+
+	if actor.Attrs == nil {
+		actor.Attrs = NewAttr()
 	}
 
 	if actor.Setts == nil {
@@ -92,8 +88,12 @@ func (e *Actor) setPosition(settings m.Attributes) {
 	e.positionLock.Lock()
 	defer e.positionLock.Unlock()
 
-	e.lat = settings[AttrLat].Float64()
-	e.lon = settings[AttrLon].Float64()
+	if lat, ok := settings[AttrLat]; ok {
+		e.lat = lat.Float64()
+	}
+	if lon, ok := settings[AttrLon]; ok {
+		e.lon = lon.Float64()
+	}
 }
 
 // UpdateMoonPosition ...
@@ -158,7 +158,7 @@ func (e *Actor) UpdateMoonPosition(now time.Time) {
 		e.State = &state
 	}
 
-	log.Debugf("Moon horizonState %v", e.horizonState)
+	//log.Debugf("Moon horizonState %v", e.horizonState)
 
 	e.DeserializeAttr(attributeValues)
 

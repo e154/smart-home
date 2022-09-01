@@ -24,8 +24,11 @@ import (
 )
 
 const (
+	EntityWeather = "weather_met"
 	// Attribution ...
 	Attribution = "Weather forecast from met.no, delivered by the Norwegian Meteorological Institute."
+	// FuncEntityAction ...
+	FuncEntityAction = "entityAction"
 )
 
 // MaxTemperature ...

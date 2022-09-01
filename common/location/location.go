@@ -37,7 +37,7 @@ const (
 func GeoLocationFromIP(ip string) (location m.GeoLocation, err error) {
 
 	var body []byte
-	if body, err = web.Crawler(web.Request{Method: "GET", Url: fmt.Sprintf("%s/%s", IpApi, ip)}); err != nil {
+	if _, body, err = web.Probe(web.Request{Method: "GET", Url: fmt.Sprintf("%s/%s", IpApi, ip)}); err != nil {
 		return
 	}
 	location = m.GeoLocation{}
@@ -50,7 +50,7 @@ func GeoLocationFromIP(ip string) (location m.GeoLocation, err error) {
 func GetRegionInfo() (info m.RegionInfo, err error) {
 
 	var body []byte
-	if body, err = web.Crawler(web.Request{Method: "GET", Url: IPAPI}); err != nil {
+	if _, body, err = web.Probe(web.Request{Method: "GET", Url: IPAPI}); err != nil {
 		return
 	}
 	info = m.RegionInfo{}

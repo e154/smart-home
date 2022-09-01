@@ -20,9 +20,8 @@ package scene
 
 import (
 	"fmt"
-	"sync"
-
 	"github.com/e154/smart-home/common/events"
+	"sync"
 
 	"github.com/pkg/errors"
 
@@ -99,15 +98,24 @@ func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
 	return p.removeEntity(entityId.Name())
 }
 
-func (p *plugin) addOrUpdateEntity(entity *m.Entity,
-	attributes m.AttributeValue,
-) (err error) {
+func (p *plugin) addOrUpdateEntity(entity *m.Entity, attributes m.AttributeValue) (err error) {
 	p.actorsLock.Lock()
 	defer p.actorsLock.Unlock()
 
 	name := entity.Id.Name()
 	if _, ok := p.actors[name]; ok {
 		return
+	}
+
+	if len(entity.Actions) == 0 {
+		var action = &m.EntityAction{
+			Name:        "apply",
+			Description: "apply scene",
+			EntityId:    entity.Id,
+		}
+		if action.Id, err = p.Adaptors.EntityAction.Add(action); err != nil {
+			return
+		}
 	}
 
 	if actor, ok := p.actors[name]; ok {
@@ -146,6 +154,16 @@ func (p *plugin) removeEntity(name string) (err error) {
 func (p *plugin) eventHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
+	case events.EventCallAction:
+		actor, ok := p.actors[v.EntityId.Name()]
+		if !ok {
+			return
+		}
+		actor.addEvent(events.EventCallScene{
+			PluginName: v.PluginName,
+			EntityId:   v.EntityId,
+			Args:       v.Args,
+		})
 	case events.EventCallScene:
 		actor, ok := p.actors[v.EntityId.Name()]
 		if !ok {

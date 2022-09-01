@@ -21,6 +21,7 @@ package plugins
 import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/web"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
@@ -62,6 +63,7 @@ type Service interface {
 	AppConfig() *m.AppConfig
 	GateClient() *gate_client.GateClient
 	Scheduler() *scheduler.Scheduler
+	Crawler() web.Crawler
 }
 
 // Plugable ...
