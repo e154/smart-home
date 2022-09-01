@@ -26,7 +26,6 @@ import (
 	"net/url"
 	"sort"
 	"strconv"
-	"sync"
 	"time"
 
 	"github.com/pkg/errors"
@@ -43,7 +42,6 @@ import (
 type WeatherMet struct {
 	adaptors *adaptors.Adaptors
 	crawler  web.Crawler
-	lock     *sync.Mutex
 }
 
 // NewWeatherMet ...

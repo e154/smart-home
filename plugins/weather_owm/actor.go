@@ -16,7 +16,7 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package weather_met
+package weather_owm
 
 import (
 	"fmt"
@@ -40,7 +40,7 @@ type Actor struct {
 	scriptService scripts.ScriptService
 	eventBus      bus.Bus
 	actionPool    chan events.EventCallAction
-	weather       *WeatherMet
+	weather       *WeatherOwm
 	winter        bool
 	theme         string
 }
@@ -59,7 +59,7 @@ func NewActor(entity *m.Entity,
 		scriptService: scriptService,
 		eventBus:      eventBus,
 		actionPool:    make(chan events.EventCallAction, 10),
-		weather:       NewWeatherMet(adaptors, crawler),
+		weather:       NewWeatherOwm(adaptors, crawler),
 	}
 
 	actor.Manager = entityManager
@@ -69,7 +69,7 @@ func NewActor(entity *m.Entity,
 	}
 
 	if actor.Setts == nil {
-		actor.Setts = weather.NewSettings()
+		actor.Setts = NewSettings()
 	}
 
 	// Actions
@@ -169,7 +169,7 @@ func (e *Actor) update() {
 }
 
 func (e *Actor) updateForecast() (changed bool) {
-	forecast, err := e.weather.UpdateForecast(e.Zone)
+	forecast, err := e.weather.UpdateForecast(e.Zone, e.Setts)
 	if err != nil {
 		log.Error(err.Error())
 		return

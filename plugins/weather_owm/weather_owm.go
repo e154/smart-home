@@ -20,13 +20,10 @@ package weather_owm
 
 import (
 	"encoding/json"
-	"encoding/xml"
 	"fmt"
+	"github.com/e154/smart-home/common/web"
 	"net/url"
-	"sync"
 	"time"
-
-	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/common/apperr"
 
@@ -36,118 +33,41 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/weather"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
+)
+
+const (
+	timeout = time.Second * 5
 )
 
 // WeatherOwm ...
 type WeatherOwm struct {
 	adaptors *adaptors.Adaptors
-	eventBus bus.Bus
-	settings map[string]*m.Attribute
-	lock     *sync.Mutex
-	zones    *sync.Map
+	crawler  web.Crawler
 }
 
 // NewWeatherOwm ...
-func NewWeatherOwm(eventBus bus.Bus,
-	adaptors *adaptors.Adaptors,
-	settings map[string]*m.Attribute) (weather *WeatherOwm) {
+func NewWeatherOwm(adaptors *adaptors.Adaptors, crawler web.Crawler) (weather *WeatherOwm) {
 	weather = &WeatherOwm{
-		eventBus: eventBus,
 		adaptors: adaptors,
-		settings: settings,
-		lock:     &sync.Mutex{},
-		zones:    &sync.Map{},
+		crawler:  crawler,
 	}
 
 	return
 }
 
-// AddWeather ...
-func (p *WeatherOwm) AddWeather(entityId common.EntityId, settings m.Attributes) {
-	p.UpdateWeatherList(entityId, settings)
-}
-
-// UpdateWeatherList ...
-func (p *WeatherOwm) UpdateWeatherList(entityId common.EntityId, settings m.Attributes) {
-
-	zone := Zone{
-		Name: entityId.Name(),
-		Lat:  settings[weather.AttrLat].Float64(),
-		Lon:  settings[weather.AttrLon].Float64(),
-	}
-
-	var update bool
-	if _, ok := p.zones.Load(entityId.Name()); !ok {
-		update = true
-	}
-	p.zones.Store(entityId, zone)
-
-	if !update {
-		return
-	}
-	_ = p.UpdateForecastForAll()
-}
-
-// RemoveWeather ...
-func (p *WeatherOwm) RemoveWeather(entityId common.EntityId) {
-	p.zones.Delete(entityId.Name())
-	log.Infof("unload weather_owm.%s", entityId.Name())
-
-	p.eventBus.Publish(bus.TopicEntities, events.EventRemoveActor{
-		PluginName: "weather_owm",
-		EntityId:   common.EntityId(fmt.Sprintf("weather_owm.%s", entityId.Name())),
-	})
-}
-
-// UpdateForecastForAll ...
-func (p *WeatherOwm) UpdateForecastForAll() (err error) {
-
-	p.lock.Lock()
-	defer p.lock.Unlock()
-
-	p.zones.Range(func(key, value interface{}) bool {
-		zone, ok := value.(Zone)
-		if !ok {
-			return true
-		}
-
-		if err = p.UpdateForecast(zone); err != nil {
-			log.Error(err.Error())
-		}
-
-		return true
-	})
-
-	return nil
-}
-
 // UpdateForecast ...
-func (p *WeatherOwm) UpdateForecast(zone Zone) (err error) {
-
-	var forecast m.AttributeValue
-	if forecast, err = p.GetForecast(zone, time.Now()); err != nil {
-		return
-	}
-
-	attr := weather.BaseForecast()
-	_, _ = attr.Deserialize(forecast)
-
-	p.eventBus.Publish(bus.TopicEntities, events.EventPassAttributes{
-		From:       common.EntityId(fmt.Sprintf("weather_owm.%s", zone.Name)),
-		To:         common.EntityId(fmt.Sprintf("weather.%s", zone.Name)),
-		Attributes: attr,
-	})
-
-	return nil
+func (p *WeatherOwm) UpdateForecast(zone Zone, settings map[string]*m.Attribute) (forecast m.AttributeValue, err error) {
+	forecast, err = p.GetForecast(zone, time.Now(), settings)
+	return
 }
 
 // GetForecast ...
-func (p *WeatherOwm) GetForecast(params Zone, now time.Time) (forecast m.AttributeValue, err error) {
+func (p *WeatherOwm) GetForecast(params Zone, now time.Time, settings map[string]*m.Attribute) (forecast m.AttributeValue, err error) {
 
 	var zone Zone
-	if zone, err = p.FetchData(params.Name, params.Lat, params.Lon, now); err != nil {
+	if zone, err = p.FetchData(params.Name, params.Lat, params.Lon, now, settings); err != nil {
+		log.Errorf("%+v", err)
 		return
 	}
 
@@ -183,7 +103,8 @@ func (p *WeatherOwm) GetForecast(params Zone, now time.Time) (forecast m.Attribu
 		if len(zone.Weatherdata.Daily[i].Weather) > 0 {
 			state = WeatherCondition(zone.Weatherdata.Daily[i].Weather[0])
 		}
-		forecast[fmt.Sprintf("forecast_day%d", i)] = m.AttributeValue{
+
+		attrs := m.AttributeValue{
 			weather.AttrWeatherDatetime:       time.Unix(zone.Weatherdata.Daily[i].Dt, 0),
 			weather.AttrWeatherMinTemperature: zone.Weatherdata.Daily[i].Temp.Min,
 			weather.AttrWeatherMaxTemperature: zone.Weatherdata.Daily[i].Temp.Max,
@@ -195,6 +116,10 @@ func (p *WeatherOwm) GetForecast(params Zone, now time.Time) (forecast m.Attribu
 			weather.AttrWeatherDescription:    state.Description,
 			weather.AttrWeatherIcon:           common.StringValue(state.ImageUrl),
 		}
+		for name, attr := range attrs {
+			forecast[fmt.Sprintf("day%d_%s", i, name)] = attr
+		}
+
 	}
 
 	forecast[weather.AttrWeatherAttribution] = Attribution
@@ -203,7 +128,7 @@ func (p *WeatherOwm) GetForecast(params Zone, now time.Time) (forecast m.Attribu
 }
 
 // FetchData ...
-func (p *WeatherOwm) FetchData(name string, lat, lon float64, now time.Time) (zone Zone, err error) {
+func (p *WeatherOwm) FetchData(name string, lat, lon float64, now time.Time, settings map[string]*m.Attribute) (zone Zone, err error) {
 
 	if lat == 0 || lon == 0 {
 		err = errors.Wrap(apperr.ErrBadRequestParams, "zero positions")
@@ -221,7 +146,8 @@ func (p *WeatherOwm) FetchData(name string, lat, lon float64, now time.Time) (zo
 
 	// fetch from server
 	var body []byte
-	if body, err = p.fetchFromServer(lat, lon); err != nil {
+	if body, err = p.fetchFromServer(lat, lon, settings); err != nil {
+		err = errors.Wrap(errors.New("fetch from server failed"), err.Error())
 		return
 	}
 
@@ -232,12 +158,15 @@ func (p *WeatherOwm) FetchData(name string, lat, lon float64, now time.Time) (zo
 	}
 	zone.Weatherdata = &WeatherFor8Days{}
 	zone.LoadedAt = common.Time(time.Now())
-	if err = xml.Unmarshal(body, zone.Weatherdata); err != nil {
+	if err = json.Unmarshal(body, zone.Weatherdata); err != nil {
+		err = errors.Wrap(errors.New("failed unmarshal response body"), err.Error())
 		return
 	}
 
 	// save to storage
-	err = p.saveToLocalStorage(zone)
+	if err = p.saveToLocalStorage(zone); err != nil {
+		err = errors.Wrap(errors.New("save to local storage failed"), err.Error())
+	}
 
 	return
 }
@@ -270,28 +199,37 @@ func (p *WeatherOwm) saveToLocalStorage(zone Zone) (err error) {
 		System:   true,
 		Name:     fmt.Sprintf("weather_owm.%s", zone.Name),
 		Value:    string(b),
-		EntityId: common.NewEntityId(fmt.Sprintf("weather.%s", zone.Name)),
+		EntityId: common.NewEntityId(fmt.Sprintf("weather_owm.%s", zone.Name)),
 	})
 
 	return
 }
 
-func (p *WeatherOwm) fetchFromServer(lat, lon float64) (body []byte, err error) {
+func (p *WeatherOwm) fetchFromServer(lat, lon float64, settings map[string]*m.Attribute) (body []byte, err error) {
 
 	uri, _ := url.Parse(DefaultApiUrl)
 	params := url.Values{}
 	params.Add("lat", fmt.Sprintf("%f", lat))
 	params.Add("lon", fmt.Sprintf("%f", lon))
-	params.Add("appid", p.settings[AttrAppid].String())
-	params.Add("units", p.settings[AttrUnits].String())
-	params.Add("lang", p.settings[AttrLang].String())
 	params.Add("cnt", "48")
+
+	if appid, ok := settings[AttrAppid]; ok {
+		params.Add("appid", appid.String())
+	}
+
+	if units, ok := settings[AttrUnits]; ok {
+		params.Add("units", units.String())
+	}
+
+	if lang, ok := settings[AttrLang]; ok {
+		params.Add("lang", lang.String())
+	}
 
 	uri.RawQuery = params.Encode()
 
 	log.Debugf("fetch from server %s\n", uri.String())
 
-	//body, err = web.Crawler(web.Request{Method: "GET", Url: uri.String()})
+	_, body, err = p.crawler.Probe(web.Request{Method: "GET", Url: uri.String(), Timeout: timeout})
 
 	return
 }
