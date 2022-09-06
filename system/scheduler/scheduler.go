@@ -46,7 +46,7 @@ func (c *Scheduler) Start(_ context.Context) error {
 		)))
 
 	// every day at 00:00 am
-	c.cron.AddFunc("0 0 * * *", func() {
+	c.cron.AddFunc("0 0 0 * * *", func() {
 		if err := c.adaptors.MetricBucket.DeleteOldest(60); err != nil {
 			log.Error(err.Error())
 		}

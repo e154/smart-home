@@ -266,11 +266,11 @@ func GetNewMoon(name string) *m.Entity {
 		Settings:    settings,
 		States: []*m.EntityState{
 			{
-				Name: moon.StateAboveHorizon,
+				Name:        moon.StateAboveHorizon,
 				Description: "above horizon",
 			},
 			{
-				Name: moon.StateBelowHorizon,
+				Name:        moon.StateBelowHorizon,
 				Description: "below horizon",
 			},
 		},
@@ -321,7 +321,7 @@ func GetNewSun(name string) *m.Entity {
 		Settings:    settings,
 		States: []*m.EntityState{
 			{
-				Name: sun.AttrDusk,
+				Name:        sun.AttrDusk,
 				Description: "dusk (evening nautical twilight starts)",
 			},
 		},

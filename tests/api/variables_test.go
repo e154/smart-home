@@ -21,11 +21,12 @@ package api
 import (
 	"context"
 	"fmt"
+	"testing"
+
 	gw "github.com/e154/smart-home/api/stub/api"
 	m "github.com/e154/smart-home/models"
 	container2 "github.com/e154/smart-home/tests/api/container"
 	"google.golang.org/grpc"
-	"testing"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/system/migrations"

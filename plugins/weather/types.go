@@ -160,7 +160,7 @@ func NewAttr() m.Attributes {
 		},
 		AttrWeatherIcon: {
 			Name: AttrWeatherIcon,
-			Type: common.AttributeString,
+			Type: common.AttributeImage,
 		},
 		AttrWeatherMinTemperature: {
 			Name: AttrWeatherMinTemperature,
@@ -544,6 +544,7 @@ LOOP:
 			goto LOOP
 		}
 	}
+	p = path.Join("/", p)
 	imagePath = common.String(p)
 	return
 }

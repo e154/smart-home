@@ -21,6 +21,8 @@ package logs
 import (
 	"fmt"
 
+	"github.com/e154/smart-home/system/scheduler"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/logging"
@@ -35,8 +37,9 @@ func init() {
 
 type plugin struct {
 	*plugins.Plugin
-	pause uint
-	actor *Actor
+	pause   uint
+	actor   *Actor
+	entryId scheduler.EntryID
 }
 
 // New ...
@@ -53,6 +56,10 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 	if err = p.Plugin.Load(service); err != nil {
 		return
 	}
+	// every day at 00:00 am
+	p.entryId, err = p.Scheduler.AddFunc("0 0 0 * * *", func() {
+		p.actor.UpdateDay()
+	})
 	return p.load(service)
 }
 
@@ -61,10 +68,7 @@ func (p *plugin) Unload() (err error) {
 	if err = p.Plugin.Unload(); err != nil {
 		return
 	}
-	// every day at 00:00 am
-	p.Scheduler.AddFunc("0 0 * * *", func() {
-		p.actor.UpdateDay()
-	})
+	p.Scheduler.Remove(p.entryId)
 	return p.unload()
 }
 

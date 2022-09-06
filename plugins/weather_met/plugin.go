@@ -20,9 +20,10 @@ package weather_met
 
 import (
 	"fmt"
+	"sync"
+
 	"github.com/e154/smart-home/plugins/weather"
 	"github.com/e154/smart-home/system/entity_manager"
-	"sync"
 
 	"github.com/pkg/errors"
 

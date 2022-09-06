@@ -2,6 +2,7 @@ package local_migrations
 
 import (
 	"context"
+
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 )
