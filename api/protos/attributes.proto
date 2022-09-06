@@ -14,6 +14,7 @@ enum Types {
   ARRAY = 4;
   MAP = 5;
   TIME = 6;
+  IMAGE = 7;
 }
 
 message Attribute {
@@ -26,4 +27,5 @@ message Attribute {
   repeated Attribute array = 7;
   map<string, Attribute> map = 8;
   optional google.protobuf.Timestamp time = 9;
+  optional string image_url = 10;
 }

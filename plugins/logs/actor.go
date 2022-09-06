@@ -22,6 +22,8 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/prometheus/common/log"
+
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 
@@ -85,6 +87,7 @@ func NewActor(entityManager entity_manager.EntityManager,
 }
 
 func (e *Actor) Spawn() entity_manager.PluginActor {
+	go e.selfUpdate()
 	return e
 }
 
@@ -123,15 +126,16 @@ func (u *Actor) LogsHook(level common.LogLevel) {
 	case common.LogLevelWarning:
 		u.WarnTotal.Inc(1)
 		u.WarnToday.Inc(1)
-	case common.LogLevelInfo:
-	case common.LogLevelDebug:
-
+	//case common.LogLevelInfo:
+	//case common.LogLevelDebug:
+	default:
+		return
 	}
 	u.selfUpdate()
 }
 
 func (u *Actor) UpdateDay() {
-	fmt.Println("update day")
+	log.Info("reset counters")
 	u.ErrYesterday.Clear()
 	u.ErrYesterday.Inc(u.ErrToday.Count())
 	u.WarnYesterday.Clear()

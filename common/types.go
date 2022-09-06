@@ -48,23 +48,6 @@ const (
 	Frozen = StatusType("frozen")
 )
 
-// MapElementPrototypeId ...
-type MapElementPrototypeId interface{}
-
-// MapElementPrototypeType ...
-type MapElementPrototypeType string
-
-const (
-	// MapElementPrototypeText ...
-	MapElementPrototypeText = MapElementPrototypeType("text")
-	// MapElementPrototypeImage ...
-	MapElementPrototypeImage = MapElementPrototypeType("image")
-	// MapElementPrototypeEntity ...
-	MapElementPrototypeEntity = MapElementPrototypeType("entity")
-	// MapElementPrototypeEmpty ...
-	MapElementPrototypeEmpty = MapElementPrototypeType("")
-)
-
 // LogLevel ...
 type LogLevel string
 
@@ -185,6 +168,8 @@ const (
 	AttributeBool = AttributeType("bool")
 	// AttributeFloat ...
 	AttributeFloat = AttributeType("float")
+	// AttributeImage ...
+	AttributeImage = AttributeType("image")
 	//DEPRECATED
 	AttributeArray = AttributeType("array")
 	//DEPRECATED

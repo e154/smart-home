@@ -35,6 +35,7 @@ import (
 	"github.com/e154/smart-home/system/initial/local_migrations"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
+	"github.com/e154/smart-home/system/scheduler"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 )
@@ -58,7 +59,8 @@ sceneEvent = (args)->
 			mqttServer mqtt.MqttServ,
 			automation automation.Automation,
 			eventBus bus.Bus,
-			pluginManager common.PluginManager) {
+			pluginManager common.PluginManager,
+			scheduler *scheduler.Scheduler) {
 
 			eventBus.Purge()
 			scriptService.Purge()
@@ -92,6 +94,7 @@ sceneEvent = (args)->
 				counter.Inc()
 			})
 
+			scheduler.Start(context.TODO())
 			pluginManager.Start()
 			automation.Reload()
 			entityManager.SetPluginManager(pluginManager)

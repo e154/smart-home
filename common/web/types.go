@@ -13,7 +13,6 @@ type Request struct {
 	Timeout time.Duration
 }
 
-
 type Crawler interface {
 	Probe(Request) (int, []byte, error)
 }

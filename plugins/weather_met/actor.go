@@ -20,6 +20,8 @@ package weather_met
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common/astronomics/suncalc"
 	"github.com/e154/smart-home/common/events"
@@ -29,7 +31,6 @@ import (
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/scripts"
-	"time"
 )
 
 // Actor ...

@@ -5099,6 +5099,9 @@
         "time": {
           "type": "string",
           "format": "date-time"
+        },
+        "imageUrl": {
+          "type": "string"
         }
       }
     },
@@ -7031,7 +7034,8 @@
         "BOOL",
         "ARRAY",
         "MAP",
-        "TIME"
+        "TIME",
+        "IMAGE"
       ],
       "default": "INT"
     },

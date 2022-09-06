@@ -19,12 +19,13 @@
 package sun
 
 import (
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/system/scripts"
 	"math"
 	"sort"
 	"sync"
 	"time"
+
+	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/system/scripts"
 
 	"github.com/e154/smart-home/common/events"
 

@@ -137,6 +137,7 @@ func (a Attributes) Serialize() (to AttributeValue) {
 			case common.AttributeTime:
 			case common.AttributeBool:
 			case common.AttributeFloat:
+			case common.AttributeImage:
 			case common.AttributeArray:
 
 				arr := make([]interface{}, 0)
@@ -307,6 +308,7 @@ func (a Attributes) Signature() (signature Attributes) {
 			case common.AttributeTime:
 			case common.AttributeBool:
 			case common.AttributeFloat:
+			case common.AttributeImage:
 			case common.AttributeArray:
 
 				if attrs, ok := vFrom.Value.([]interface{}); ok {
@@ -393,6 +395,7 @@ func (a Attribute) Compare(b *Attribute) (ident bool) {
 	case common.AttributeTime:
 	case common.AttributeBool:
 	case common.AttributeFloat:
+	case common.AttributeImage:
 	case common.AttributeArray:
 		return
 	}

@@ -19,11 +19,12 @@
 package moon
 
 import (
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/system/scripts"
 	"math"
 	"sync"
 	"time"
+
+	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/system/scripts"
 
 	"github.com/e154/smart-home/common/events"
 

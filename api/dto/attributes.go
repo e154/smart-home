@@ -49,6 +49,9 @@ func attributeFromApi(apiAttr map[string]*api.Attribute) (attributes m.Attribute
 		case api.Types_FLOAT:
 			attr.Value = v.GetFloat()
 			attr.Type = common.AttributeFloat
+		case api.Types_IMAGE:
+			attr.Value = v.GetImageUrl()
+			attr.Type = common.AttributeImage
 		case api.Types_ARRAY:
 			//	attr.Value = v.GetArray()
 			attr.Type = common.AttributeArray
@@ -91,6 +94,9 @@ func AttributeToApi(attributes m.Attributes) (apiAttr map[string]*api.Attribute)
 		case "time":
 			apiAttr[k].Type = api.Types_TIME
 			apiAttr[k].Time = timestamppb.New(v.Time())
+		case "image":
+			apiAttr[k].Type = api.Types_IMAGE
+			apiAttr[k].ImageUrl = common.String(v.String())
 		}
 	}
 	return

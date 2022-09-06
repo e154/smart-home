@@ -20,8 +20,9 @@ package scene
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/common/events"
 	"sync"
+
+	"github.com/e154/smart-home/common/events"
 
 	"github.com/pkg/errors"
 

@@ -21,9 +21,10 @@ package weather_owm
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/e154/smart-home/common/web"
 	"net/url"
 	"time"
+
+	"github.com/e154/smart-home/common/web"
 
 	"github.com/e154/smart-home/common/apperr"
 
