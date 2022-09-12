@@ -97,7 +97,7 @@ func (r *MigrationRoles) addUser(demoRole *m.Role) (userRole *m.Role, err error)
 			Name:   "user",
 			Parent: demoRole,
 		}
-		err := r.adaptors.Role.Add(userRole)
+		err = r.adaptors.Role.Add(userRole)
 		So(err, ShouldBeNil)
 
 		for pack, item := range *r.accessList.List() {
