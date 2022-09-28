@@ -38,7 +38,7 @@ import (
 )
 
 const (
-	timeout = time.Second * 5
+	timeout = time.Second * 10
 )
 
 // WeatherOwm ...

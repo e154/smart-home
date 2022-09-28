@@ -22,12 +22,12 @@ import (
 	"context"
 	"sync"
 
-	"github.com/e154/smart-home/common/logger"
-	"github.com/e154/smart-home/system/bus"
-
+	"github.com/google/uuid"
 	"go.uber.org/fx"
 
 	"github.com/e154/smart-home/api/stub/api"
+	"github.com/e154/smart-home/common/logger"
+	"github.com/e154/smart-home/system/bus"
 )
 
 var (
@@ -39,8 +39,7 @@ type Stream struct {
 	*eventHandler
 	subMx       sync.Mutex
 	subscribers map[string]func(client IStreamClient, id string, msg []byte)
-	sesMx       sync.RWMutex
-	sessions    map[*Client]bool
+	sessions    sync.Map
 	eventBus    bus.Bus
 }
 
@@ -49,8 +48,7 @@ func NewStreamService(lc fx.Lifecycle,
 	eventBus bus.Bus) (s *Stream) {
 	s = &Stream{
 		subscribers: make(map[string]func(client IStreamClient, id string, msg []byte)),
-		sesMx:       sync.RWMutex{},
-		sessions:    make(map[*Client]bool),
+		sessions:    sync.Map{},
 		eventBus:    eventBus,
 	}
 
@@ -76,31 +74,25 @@ func (s *Stream) Start(_ context.Context) error {
 
 // Shutdown ...
 func (s *Stream) Shutdown(_ context.Context) error {
-	s.sesMx.Lock()
-	defer s.sesMx.Unlock()
 
 	_ = s.eventBus.Unsubscribe(bus.TopicEntities, s.eventHandler.eventHandler)
 
-	for client, ok := range s.sessions {
-		if !ok {
-			continue
-		}
-		client.Close()
-	}
+	s.sessions.Range(func(key, value interface{}) bool {
+		cli := value.(*Client)
+		cli.Close()
+		return true
+	})
 	return nil
 }
 
 // Broadcast ...
 func (s *Stream) Broadcast(query string, message []byte) {
-	s.sesMx.RLock()
-	defer s.sesMx.RUnlock()
 
-	for client, ok := range s.sessions {
-		if !ok {
-			continue
-		}
-		_ = client.Broadcast(query, message)
-	}
+	s.sessions.Range(func(key, value interface{}) bool {
+		cli := value.(*Client)
+		cli.Broadcast(query, message)
+		return true
+	})
 }
 
 // Subscribe ...
@@ -128,19 +120,16 @@ func (s *Stream) UnSubscribe(command string) {
 // NewConnection ...
 func (s *Stream) NewConnection(server api.StreamService_SubscribeServer) error {
 
+	id := uuid.NewString()
 	client := NewClient(server)
 	defer func() {
-		log.Infof("websocket session closed")
-		s.sesMx.Lock()
-		delete(s.sessions, client)
-		s.sesMx.Unlock()
+		log.Info("websocket session closed")
+		s.sessions.Delete(id)
 	}()
 
-	s.sesMx.Lock()
-	s.sessions[client] = true
-	s.sesMx.Unlock()
+	s.sessions.Store(id, client)
 
-	log.Infof("new websocket session established")
+	log.Info("new websocket session established")
 
 	err := client.WritePump(s.Recv)
 	return err

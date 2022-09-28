@@ -20,5 +20,6 @@ func MigrationList(adaptors *adaptors.Adaptors,
 		local_migrations.NewMigrationRoles(adaptors, accessList, validation),
 		local_migrations.NewMigrationWeatherMet(adaptors),
 		//local_migrations.NewMigrationDashboard(adaptors),
+		local_migrations.NewMigrationRoleNobody(adaptors),
 	}
 }
