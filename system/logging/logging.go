@@ -114,6 +114,7 @@ func (b *Logging) selfSaver(e zapcore.Entry) (err error) {
 	record := m.Log{
 		Level:     logLevel,
 		Body:      e.Message,
+		Owner:     e.LoggerName,
 		CreatedAt: e.Time,
 	}
 

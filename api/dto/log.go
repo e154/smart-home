@@ -68,6 +68,7 @@ func ToLog(log *m.Log) (obj *api.Log) {
 		Id:        log.Id,
 		Body:      log.Body,
 		Level:     string(log.Level),
+		Owner:     log.Owner,
 		CreatedAt: timestamppb.New(log.CreatedAt),
 	}
 	return

@@ -144,6 +144,7 @@ func (n *Log) fromDb(dbVer *db.Log) (ver *m.Log) {
 		Id:        dbVer.Id,
 		Body:      dbVer.Body,
 		Level:     dbVer.Level,
+		Owner:     dbVer.Owner,
 		CreatedAt: dbVer.CreatedAt,
 	}
 
@@ -154,6 +155,7 @@ func (n *Log) toDb(ver *m.Log) (dbVer *db.Log) {
 	dbVer = &db.Log{
 		Body:  ver.Body,
 		Level: ver.Level,
+		Owner: ver.Owner,
 	}
 	return
 }

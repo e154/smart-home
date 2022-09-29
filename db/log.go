@@ -39,6 +39,7 @@ type Log struct {
 	Id        int64 `gorm:"primary_key"`
 	Body      string
 	Level     common.LogLevel
+	Owner     string
 	CreatedAt time.Time
 }
 
