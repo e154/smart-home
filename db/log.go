@@ -145,3 +145,14 @@ func (n *Logs) Search(query string, limit, offset int) (list []*Log, total int64
 
 	return
 }
+
+// DeleteOldest ...
+func (n *Logs) DeleteOldest(days int) (err error) {
+	err = n.Db.Raw(`delete
+    from logs
+    where created_at < now() - interval '? days'`, days).Error
+	if err != nil {
+		err = errors.Wrap(apperr.ErrLogDelete, err.Error())
+	}
+	return
+}
