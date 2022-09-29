@@ -6158,6 +6158,9 @@
         "body": {
           "type": "string"
         },
+        "owner": {
+          "type": "string"
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time"

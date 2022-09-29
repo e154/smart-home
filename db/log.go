@@ -39,6 +39,7 @@ type Log struct {
 	Id        int64 `gorm:"primary_key"`
 	Body      string
 	Level     common.LogLevel
+	Owner     string
 	CreatedAt time.Time
 }
 
@@ -142,5 +143,16 @@ func (n *Logs) Search(query string, limit, offset int) (list []*Log, total int64
 		err = errors.Wrap(apperr.ErrLogList, err.Error())
 	}
 
+	return
+}
+
+// DeleteOldest ...
+func (n *Logs) DeleteOldest(days int) (err error) {
+	err = n.Db.Raw(`delete
+    from logs
+    where created_at < now() - interval '? days'`, days).Error
+	if err != nil {
+		err = errors.Wrap(apperr.ErrLogDelete, err.Error())
+	}
 	return
 }

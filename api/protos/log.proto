@@ -13,6 +13,7 @@ message Log {
   int64 id = 1;
   string level = 2;
   string body = 3;
+  string owner = 4;
   google.protobuf.Timestamp created_at = 99;
 }
 

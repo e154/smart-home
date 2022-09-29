@@ -36,5 +36,6 @@ type Log struct {
 	Id        int64           `json:"id"`
 	Body      string          `json:"body" validate:"required"`
 	Level     common.LogLevel `json:"level" validate:"required"`
+	Owner     string          `json:"owner"`
 	CreatedAt time.Time       `json:"created_at"`
 }

@@ -33,6 +33,7 @@ type ILog interface {
 	Delete(verId int64) (err error)
 	List(limit, offset int64, orderBy, sort string, queryObj *m.LogQuery) (list []*m.Log, total int64, err error)
 	Search(query string, limit, offset int) (list []*m.Log, total int64, err error)
+	DeleteOldest(days int) (err error)
 	fromDb(dbVer *db.Log) (ver *m.Log)
 	toDb(ver *m.Log) (dbVer *db.Log)
 }
@@ -139,11 +140,18 @@ func (n *Log) Search(query string, limit, offset int) (list []*m.Log, total int6
 	return
 }
 
+// DeleteOldest ...
+func (n *Log) DeleteOldest(days int) (err error) {
+	err = n.table.DeleteOldest(days)
+	return
+}
+
 func (n *Log) fromDb(dbVer *db.Log) (ver *m.Log) {
 	ver = &m.Log{
 		Id:        dbVer.Id,
 		Body:      dbVer.Body,
 		Level:     dbVer.Level,
+		Owner:     dbVer.Owner,
 		CreatedAt: dbVer.CreatedAt,
 	}
 
@@ -154,6 +162,7 @@ func (n *Log) toDb(ver *m.Log) (dbVer *db.Log) {
 	dbVer = &db.Log{
 		Body:  ver.Body,
 		Level: ver.Level,
+		Owner: ver.Owner,
 	}
 	return
 }
