@@ -18,6 +18,8 @@
 
 package entity_manager
 
+import m "github.com/e154/smart-home/models"
+
 // ScriptBind ...
 type ScriptBind struct {
 	actor PluginActor
@@ -31,4 +33,14 @@ func NewScriptBind(actor PluginActor) *ScriptBind {
 // SetState  ...
 func (s *ScriptBind) SetState(params EntityStateParams) {
 	_ = s.actor.SetState(params)
+}
+
+// GetSettings  ...
+func (s *ScriptBind) GetSettings() map[string]interface{} {
+	return s.actor.Settings().Serialize()
+}
+
+// SetAttribute  ...
+func (s *ScriptBind) SetAttribute(params m.AttributeValue) {
+
 }

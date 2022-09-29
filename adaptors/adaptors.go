@@ -57,7 +57,6 @@ type Adaptors struct {
 	Zigbee2mqttDevice IZigbee2mqttDevice
 	AlexaSkill        IAlexaSkill
 	AlexaIntent       IAlexaIntent
-	Storage           IStorage
 	Metric            IMetric
 	MetricBucket      IMetricBucket
 	Area              IArea
@@ -102,7 +101,6 @@ func NewAdaptors(lc fx.Lifecycle,
 		Zigbee2mqttDevice: GetZigbee2mqttDeviceAdaptor(db),
 		AlexaSkill:        GetAlexaSkillAdaptor(db),
 		AlexaIntent:       GetAlexaIntentAdaptor(db),
-		Storage:           GetStorageAdaptor(db),
 		Metric:            GetMetricAdaptor(db, orm),
 		MetricBucket:      GetMetricBucketAdaptor(db, orm),
 		Area:              GetAreaAdaptor(db),

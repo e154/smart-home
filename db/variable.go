@@ -136,3 +136,26 @@ func (n *Variables) List(limit, offset int64, orderBy, sort string, system bool)
 	}
 	return
 }
+
+// Search ...
+func (s *Variables) Search(query string, limit, offset int) (list []Variable, total int64, err error) {
+
+	q := s.Db.Model(&Variable{}).
+		Where("name LIKE ?", "%"+query+"%")
+
+	if err = q.Count(&total).Error; err != nil {
+		err = errors.Wrap(apperr.ErrVariableGet, err.Error())
+		return
+	}
+
+	q = q.
+		Limit(limit).
+		Offset(offset).
+		Order("name ASC")
+
+	list = make([]Variable, 0)
+	if err = q.Find(&list).Error; err != nil {
+		err = errors.Wrap(apperr.ErrVariableGet, err.Error())
+	}
+	return
+}
