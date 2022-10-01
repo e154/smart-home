@@ -23,11 +23,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/e154/smart-home/common/logger"
+	"go.uber.org/atomic"
 
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
-	"go.uber.org/atomic"
 )
 
 var (
@@ -87,7 +87,7 @@ func (s *Storage) Shutdown() {
 }
 
 // Search ...
-func (s *Storage) Search(name string) (result map[string][]byte) {
+func (s *Storage) Search(name string) (result map[string]string) {
 	return s.search(name)
 }
 
@@ -98,32 +98,32 @@ func (s *Storage) Push(name string, v string) (err error) {
 }
 
 // GetByName ...
-func (s *Storage) GetByName(name string) (val []byte, err error) {
+func (s *Storage) GetByName(name string) (val string, err error) {
 	return s.getByName(name)
 }
 
 // Pop ...
-func (s *Storage) Pop(name string) (val []byte, err error) {
+func (s *Storage) Pop(name string) (val string, err error) {
 	return s.pop(name)
 }
 
 func (s *Storage) push(name string, v string) (err error) {
-	s.pool.Store(name, m.Storage{
+	s.pool.Store(name, m.Variable{
 		Name:    name,
 		Changed: true,
-		Value:   []byte(v),
+		Value:   v,
 	})
 	return
 }
 
-func (s *Storage) getByName(name string) (val []byte, err error) {
+func (s *Storage) getByName(name string) (val string, err error) {
 
 	if v, ok := s.pool.Load(name); ok {
-		val = v.(m.Storage).Value
+		val = v.(m.Variable).Value
 		return
 	}
-	var storage m.Storage
-	if storage, err = s.adaptors.Storage.GetByName(name); err != nil {
+	var storage m.Variable
+	if storage, err = s.adaptors.Variable.GetByName(name); err != nil {
 		return
 	}
 	val = storage.Value
@@ -131,12 +131,12 @@ func (s *Storage) getByName(name string) (val []byte, err error) {
 	return
 }
 
-func (s *Storage) pop(name string) (val []byte, err error) {
+func (s *Storage) pop(name string) (val string, err error) {
 	val, err = s.getByName(name)
 	if err != nil {
 		return
 	}
-	if err = s.adaptors.Storage.Delete(name); err != nil {
+	if err = s.adaptors.Variable.Delete(name); err != nil {
 		return
 	}
 	s.pool.Delete(name)
@@ -155,11 +155,11 @@ func (s *Storage) serialize() {
 	}
 	s.inProcess.Store(true)
 
-	var data m.Storage
+	var data m.Variable
 	var ok bool
 
 	s.pool.Range(func(key, val interface{}) bool {
-		data, ok = val.(m.Storage)
+		data, ok = val.(m.Variable)
 		if !ok {
 			return true
 		}
@@ -170,7 +170,7 @@ func (s *Storage) serialize() {
 
 		s.pool.Store(key, data)
 
-		if err := s.adaptors.Storage.CreateOrUpdate(data); err != nil {
+		if err := s.adaptors.Variable.CreateOrUpdate(data); err != nil {
 			log.Error(err.Error())
 			return true
 		}
@@ -180,11 +180,11 @@ func (s *Storage) serialize() {
 
 }
 
-func (s *Storage) search(sub string) (result map[string][]byte) {
-	result = make(map[string][]byte)
+func (s *Storage) search(sub string) (result map[string]string) {
+	result = make(map[string]string)
 	s.pool.Range(func(key, val interface{}) bool {
 		if strings.Contains(key.(string), sub) {
-			if data, ok := val.(m.Storage); ok {
+			if data, ok := val.(m.Variable); ok {
 				result[data.Name] = data.Value
 			}
 		}
@@ -192,7 +192,7 @@ func (s *Storage) search(sub string) (result map[string][]byte) {
 		return true
 	})
 
-	list, _, err := s.adaptors.Storage.Search(sub, 99, 0)
+	list, _, err := s.adaptors.Variable.Search(sub, 99, 0)
 	if err != nil {
 		return
 	}

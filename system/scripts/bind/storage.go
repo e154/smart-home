@@ -40,7 +40,7 @@ func (s *StorageBind) Search(name string) (result map[string]string) {
 	result = make(map[string]string)
 	storRes := s.storage.Search(name)
 	for k, v := range storRes {
-		result[k] = string(v)
+		result[k] = v
 	}
 	return
 }
@@ -53,11 +53,11 @@ func (s *StorageBind) Push(name string, val string) (err error) {
 // GetByName ...
 func (s *StorageBind) GetByName(name string) string {
 	b, _ := s.storage.GetByName(name)
-	return string(b)
+	return b
 }
 
 // Pop ...
 func (s *StorageBind) Pop(name string) string {
 	b, _ := s.storage.Pop(name)
-	return string(b)
+	return b
 }

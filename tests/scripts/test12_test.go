@@ -94,23 +94,23 @@ func Test12(t *testing.T) {
 			_, err = engine.Do()
 			So(err, ShouldBeNil)
 
-			_, err = adaptors.Storage.GetByName("foo")
+			_, err = adaptors.Variable.GetByName("foo")
 			So(err, ShouldNotBeNil)
 
 			storageService.Serialize()
-			storage, err := adaptors.Storage.GetByName("foo")
+			storage, err := adaptors.Variable.GetByName("foo")
 			So(err, ShouldBeNil)
-			So(string(storage.Value), ShouldEqual, `{"bar": "foo"}`)
+			So(storage.Value, ShouldEqual, `{"bar":"foo"}`)
 
-			err = adaptors.Storage.CreateOrUpdate(m.Storage{
+			err = adaptors.Variable.CreateOrUpdate(m.Variable{
 				Name:  "foo2",
-				Value: []byte(`{"foo":"bar"}`),
+				Value: `{"foo":"bar"}`,
 			})
 			So(err, ShouldBeNil)
 
-			storage, err = adaptors.Storage.GetByName("foo2")
+			storage, err = adaptors.Variable.GetByName("foo2")
 			So(err, ShouldBeNil)
-			So(string(storage.Value), ShouldEqual, `{"foo": "bar"}`)
+			So(storage.Value, ShouldEqual, `{"foo":"bar"}`)
 		})
 		if err != nil {
 			fmt.Println(err.Error())

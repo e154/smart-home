@@ -130,9 +130,10 @@ var (
 	ErrEntityStateNotFound = New("state is not found", ErrNotFound)
 	ErrEntityStateDelete   = New("failed to delete state", ErrInternal)
 
-	ErrEntityStorageAdd  = New("failed to add storage", ErrInternal)
-	ErrEntityStorageGet  = New("failed to get storage", ErrAreaNotFound)
-	ErrEntityStorageList = New("failed to list storage", ErrInternal)
+	ErrEntityStorageAdd    = New("failed to add storage", ErrInternal)
+	ErrEntityStorageGet    = New("failed to get storage", ErrAreaNotFound)
+	ErrEntityStorageList   = New("failed to list storage", ErrInternal)
+	ErrEntityStorageDelete = New("failed to delete storage", ErrInternal)
 
 	ErrImageAdd      = New("failed to add image", ErrInternal)
 	ErrImageGet      = New("failed to get image", ErrAreaNotFound)

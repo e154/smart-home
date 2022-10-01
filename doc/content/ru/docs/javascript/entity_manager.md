@@ -23,6 +23,7 @@ entityManager
   .setAttributes(id, attrs)
   .setMetric(id, name, value)
   .callAction(id, actionName, args)
+  .callScene(id, args)
 ```
 
 |  значение  | описание  |
@@ -33,6 +34,7 @@ entityManager
 | setAttributes | изменить свойство текущего состояния, **attr** - map параметрый {key:val} |
 | setMetric | обновить метрики устройства, **name** - наименование метрики, **attr** - map параметрый {key:val}|
 | callAction | иcполнение команды на устройстве, **actionName** - наименование команды, **args** - map параметрый {key:val}|
+| callScene | выполнить сцену с **id** |
 
 ### методы объекта Entity
 
@@ -43,6 +45,7 @@ Entity
   .getAttributes() -> attrs
   .setMetric(name, value)
   .callAction(name, value)
+  .getSettings() -> map[string]any
 ```
 
 |  значение  | описание  |
@@ -127,5 +130,10 @@ entityManager.setMetric('telegram.clavicus', 'cpu', {'all': 55})
 # иcполнение команды на устройстве
 entityManager.callAction('floor.light', 'ON', {'power': 30})
 
+# получение настроек
+settings = device.getSettings()
+headers = [{'apikey':settings['apikey']}]
+url = 'https://webhook.site/2692a589-a5bc-4156-af7d-75875578798f'
+res = http.headers(headers).get(url)
 
 ```

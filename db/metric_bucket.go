@@ -193,9 +193,7 @@ LIMIT 345`
 
 // DeleteOldest ...
 func (n *MetricBuckets) DeleteOldest(days int) (err error) {
-	err = n.Db.Raw(`delete
-    from metric_bucket
-    where time < now() - interval '? days'`, days).Error
+	err = n.Db.Delete(&MetricBucket{}, fmt.Sprintf(`time < now() - interval '%d days'`, days)).Error
 	if err != nil {
 		err = errors.Wrap(apperr.ErrMetricBucketDelete, err.Error())
 	}

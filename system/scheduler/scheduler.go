@@ -48,12 +48,20 @@ func (c *Scheduler) Start(_ context.Context) error {
 	// every day at 00:00 am
 	c.cron.AddFunc("0 0 0 * * *", func() {
 		go func() {
+			log.Info("deleting obsolete metric entries ...")
 			if err := c.adaptors.MetricBucket.DeleteOldest(60); err != nil {
 				log.Error(err.Error())
 			}
 		}()
 		go func() {
+			log.Info("deleting obsolete log entries ...")
 			if err := c.adaptors.Log.DeleteOldest(60); err != nil {
+				log.Error(err.Error())
+			}
+		}()
+		go func() {
+			log.Info("deleting obsolete entity storage entries ...")
+			if err := c.adaptors.EntityStorage.DeleteOldest(60); err != nil {
 				log.Error(err.Error())
 			}
 		}()

@@ -31,8 +31,9 @@ type Variable struct {
 	Value     string           `json:"value"`
 	System    bool             `json:"system"`
 	EntityId  *common.EntityId `json:"entity_id"`
-	CreatedAt time.Time        `json:"created_at"`
-	UpdatedAt time.Time        `json:"updated_at"`
+	Changed   bool
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 // NewVariable ...

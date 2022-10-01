@@ -34,6 +34,7 @@ type IEntityStorage interface {
 	GetLastByEntityId(entityId common.EntityId) (ver *m.EntityStorage, err error)
 	List(limit, offset int64, orderBy, sort string) (list []*m.EntityStorage, total int64, err error)
 	ListByEntityId(limit, offset int64, orderBy, sort string, entityId common.EntityId, startDate, endDate *time.Time) (list []*m.EntityStorage, total int64, err error)
+	DeleteOldest(days int) (err error)
 	fromDb(dbVer db.EntityStorage) (ver *m.EntityStorage)
 	toDb(ver *m.EntityStorage) (dbVer db.EntityStorage)
 }
@@ -94,6 +95,12 @@ func (n *EntityStorage) ListByEntityId(limit, offset int64, orderBy, sort string
 	for i, dbVer := range dbList {
 		list[i] = n.fromDb(dbVer)
 	}
+	return
+}
+
+// DeleteOldest ...
+func (n *EntityStorage) DeleteOldest(days int) (err error) {
+	err = n.table.DeleteOldest(days)
 	return
 }
 

@@ -13,9 +13,11 @@ description: >
 
 ----------------
 
-### Логирование
+### Вызов команды
 ```coffeescript
-ExecuteSync file, args
+ExecuteSync(file, args)
+
+ExecuteAsync(file, args)
 ```
 
 |  значение  | описание  |

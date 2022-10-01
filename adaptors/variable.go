@@ -32,6 +32,7 @@ type IVariable interface {
 	Update(variable m.Variable) (err error)
 	Delete(name string) (err error)
 	List(limit, offset int64, orderBy, sort string, system bool) (list []m.Variable, total int64, err error)
+	Search(query string, limit, offset int) (list []m.Variable, total int64, err error)
 	fromDb(dbVer db.Variable) (ver m.Variable)
 	toDb(ver m.Variable) (dbVer db.Variable)
 }
@@ -104,6 +105,22 @@ func (n *Variable) List(limit, offset int64, orderBy, sort string, system bool) 
 	for _, dbVer := range dbList {
 		ver := n.fromDb(dbVer)
 		list = append(list, ver)
+	}
+
+	return
+}
+
+
+// Search ...
+func (s *Variable) Search(query string, limit, offset int) (list []m.Variable, total int64, err error) {
+	var dbList []db.Variable
+	if dbList, total, err = s.table.Search(query, limit, offset); err != nil {
+		return
+	}
+
+	list = make([]m.Variable, 0)
+	for _, dbVer := range dbList {
+		list = append(list, s.fromDb(dbVer))
 	}
 
 	return

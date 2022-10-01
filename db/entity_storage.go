@@ -142,3 +142,12 @@ func (n *EntityStorages) ListByEntityId(limit, offset int64, orderBy, sort strin
 	}
 	return
 }
+
+// DeleteOldest ...
+func (n *EntityStorages) DeleteOldest(days int) (err error) {
+	err = n.Db.Delete(&EntityStorage{}, fmt.Sprintf(`created_at < now() - interval '%d days'`, days)).Error
+	if err != nil {
+		err = errors.Wrap(apperr.ErrEntityStorageDelete, err.Error())
+	}
+	return
+}

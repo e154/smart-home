@@ -8,5 +8,7 @@ menu:
     weight: 20
 ---
 
+{{< figure src="/smart-home/layer-scheme.png" >}}
+
 Документация включает в себя следующие разделы:
 
