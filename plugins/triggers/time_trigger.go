@@ -111,11 +111,6 @@ func (t *TimeTrigger) Unsubscribe(options Subscriber) error {
 	t.Lock()
 	defer t.Unlock()
 
-	if len(t.subscribers[schedule]) == 1 {
-		t.subscribers[schedule] = []*subscribe{}
-		return nil
-	}
-
 	for i, sub := range t.subscribers[schedule] {
 		if sub.callback == callback {
 			t.scheduler.Remove(sub.entryID)

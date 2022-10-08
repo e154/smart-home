@@ -112,5 +112,4 @@ require (
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gorm.io/gorm v1.23.8 // indirect
 )
