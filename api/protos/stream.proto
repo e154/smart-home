@@ -9,6 +9,7 @@ message Request {
   string id = 1;
   string query = 2;
   bytes body = 3;
+  string access_token = 4;
 }
 
 message Response {

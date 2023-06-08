@@ -86,6 +86,8 @@ func (f *AccessFilter) AuthInterceptor(ctx context.Context, req interface{}, inf
 
 	meta, ok := metadata.FromIncomingContext(ctx)
 
+	//log.Debugf("method: %s", info.FullMethod)
+
 	switch info.FullMethod {
 	case "/api.AuthService/Signin":
 		return handler(ctx, req)
@@ -107,7 +109,7 @@ func (f *AccessFilter) AuthInterceptor(ctx context.Context, req interface{}, inf
 		return nil, f.internalServerError
 	}
 
-	// если id == 1 is admin
+	// if id == 1 is admin
 	if claims.UserId == 1 || claims.RoleName == "admin" {
 		return f.getUser(claims.UserId, handler, ctx, req)
 	}

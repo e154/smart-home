@@ -99,20 +99,3 @@ func (p *plugin) Depends() []string {
 func (p *plugin) Version() string {
 	return "0.0.1"
 }
-
-// AddProvider ...
-func (p *plugin) AddProvider(name string, provider Provider) {
-	if p.notify != nil {
-		p.notify.AddProvider(name, provider)
-	}
-}
-
-// RemoveProvider ...
-func (p *plugin) RemoveProvider(name string) {
-	p.notify.RemoveProvider(name)
-}
-
-// Provider ...
-func (p *plugin) Provider(name string) (provider Provider, err error) {
-	panic("implement me")
-}

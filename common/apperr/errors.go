@@ -257,4 +257,8 @@ var (
 	ErrZigbeeDeviceNotFound = New("device is not found", ErrNotFound)
 	ErrZigbeeDeviceDelete   = New("failed to delete device", ErrInternal)
 	ErrZigbeeDeviceSearch   = New("failed to search device", ErrInternal)
+
+	ErrUserDeviceGet    = New("failed to get device list", ErrInternal)
+	ErrUserDeviceDelete = New("failed to delete user device", ErrInternal)
+	ErrUserDeviceAdd    = New("failed to add user device", ErrInternal)
 )

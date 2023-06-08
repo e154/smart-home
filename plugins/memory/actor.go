@@ -37,13 +37,9 @@ import (
 // Actor ...
 type Actor struct {
 	entity_manager.BaseActor
-	cores           int64
-	model           string
 	total           metrics.Gauge
 	free            metrics.Gauge
 	usedPercent     metrics.GaugeFloat64
-	allCpuPrevTotal float64
-	allCpuPrevIdle  float64
 	eventBus        bus.Bus
 	updateLock      *sync.Mutex
 }

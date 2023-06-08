@@ -36,5 +36,5 @@ func NewControllerStream(common *ControllerCommon) ControllerStream {
 
 // Subscribe ...
 func (a ControllerStream) Subscribe(server api.StreamService_SubscribeServer) error {
-	return a.stream.NewConnection(server)
+	return a.endpoint.Stream.Subscribe(server)
 }

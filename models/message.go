@@ -48,6 +48,7 @@ type NewNotifrMessage struct {
 	SmsText      *string                `json:"sms_text"`
 	SlackText    *string                `json:"slack_text"`
 	TelegramText *string                `json:"telegram_text"`
+	Webpush      *string                `json:"webpush"`
 	Params       map[string]interface{} `json:"params"`
 	Address      string                 `json:"address"`
 }
