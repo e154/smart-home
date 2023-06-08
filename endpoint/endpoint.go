@@ -29,6 +29,7 @@ import (
 	"github.com/e154/smart-home/system/jwt_manager"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/stream"
 	"github.com/e154/smart-home/system/validation"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 )
@@ -67,6 +68,7 @@ type Endpoint struct {
 	EntityStorage     *EntityStorageEndpoint
 	Metric            *MetricEndpoint
 	Backup            *BackupEndpoint
+	Stream            *StreamEndpoint
 }
 
 // NewEndpoint ...
@@ -80,7 +82,8 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 	mqtt mqtt.MqttServ,
 	jwtManager jwt_manager.JwtManager,
 	validation *validation.Validate,
-	backup *backup.Backup) *Endpoint {
+	backup *backup.Backup,
+	stream *stream.Stream) *Endpoint {
 	common := NewCommonEndpoint(adaptors, accessList, scriptService, zigbee2mqtt, eventBus, pluginManager, entityManager, mqtt, jwtManager, validation)
 	return &Endpoint{
 		AlexaSkill:        NewAlexaSkillEndpoint(common),
@@ -111,5 +114,6 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 		EntityStorage:     NewEntityStorageEndpoint(common),
 		Metric:            NewMetricEndpoint(common),
 		Backup:            NewBackupEndpoint(common, backup),
+		Stream:            NewStreamEndpoint(common, stream),
 	}
 }

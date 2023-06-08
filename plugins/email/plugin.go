@@ -21,11 +21,7 @@ package email
 import (
 	"strings"
 
-	"github.com/e154/smart-home/common/apperr"
-
 	"github.com/e154/smart-home/common/logger"
-
-	"github.com/pkg/errors"
 
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/notify"
@@ -44,8 +40,7 @@ func init() {
 
 type plugin struct {
 	*plugins.Plugin
-	notify notify.ProviderRegistrar
-	actor  *Actor
+	actor *Actor
 }
 
 // New ...
@@ -84,25 +79,12 @@ func (p *plugin) asyncLoad() (err error) {
 		settings = NewSettings()
 	}
 
-	// get provider registrar
-	var pl interface{}
-	if pl, err = p.GetPlugin(notify.Name); err != nil {
-		return
-	}
-
-	var ok bool
-	p.notify, ok = pl.(notify.ProviderRegistrar)
-	if !ok {
-		err = errors.Wrap(apperr.ErrInternal, "can`t static cast to  notify.ProviderRegistrar")
-		return
-	}
-
 	// add actor
 	p.actor = NewActor(settings, p.EntityManager, p.EventBus, p.Adaptors)
 	p.EntityManager.Spawn(p.actor.Spawn)
 
 	// register email provider
-	p.notify.AddProvider(Name, p)
+	notify.ProviderManager.AddProvider(Name, p)
 
 	return
 }
@@ -113,10 +95,7 @@ func (p *plugin) Unload() (err error) {
 		return
 	}
 
-	if p.notify == nil {
-		return
-	}
-	p.notify.RemoveProvider(Name)
+	notify.ProviderManager.RemoveProvider(Name)
 
 	return nil
 }

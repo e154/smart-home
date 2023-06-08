@@ -22,10 +22,10 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/e154/smart-home/common/apperr"
-
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+
+	"github.com/e154/smart-home/common/apperr"
 )
 
 // Plugins ...
@@ -71,15 +71,7 @@ func (n Plugins) CreateOrUpdate(v Plugin) (err error) {
 
 // Update ...
 func (n Plugins) Update(m Plugin) (err error) {
-	q := map[string]interface{}{
-		"version":   m.Version,
-		"installed": m.Enabled,
-		"system":    m.System,
-		"enabled":   m.Enabled,
-		"settings":  m.Settings,
-		"actor":     m.Actor,
-	}
-	if err = n.Db.Model(&Plugin{Name: m.Name}).Updates(q).Error; err != nil {
+	if err = n.Db.Model(&Plugin{Name: m.Name}).Updates(m).Error; err != nil {
 		err = errors.Wrap(apperr.ErrPluginUpdate, err.Error())
 	}
 	return

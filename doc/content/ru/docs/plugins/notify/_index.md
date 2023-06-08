@@ -7,7 +7,7 @@ description: >
 
 ---
 
-Базовое расширение для обеспечения уведомлений, таких как _sms_, _push_, _email_, _telegram_, etc.
+Базовое расширение для обеспечения уведомлений, таких как _sms_, _push_, _email_, _telegram_, _html5 notify_, etc.
 
 
 

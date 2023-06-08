@@ -48,7 +48,6 @@ func init() {
 
 type plugin struct {
 	*plugins.Plugin
-	notify     notify.ProviderRegistrar
 	actorsLock *sync.RWMutex
 	actors     map[common.EntityId]*Actor
 }
@@ -79,21 +78,8 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 
 func (p *plugin) asyncLoad() (err error) {
 
-	// get provider registrar
-	var pl interface{}
-	if pl, err = p.GetPlugin(notify.Name); err != nil {
-		return
-	}
-
-	var ok bool
-	p.notify, ok = pl.(notify.ProviderRegistrar)
-	if !ok {
-		err = errors.Wrap(apperr.ErrInternal, "can`t static cast to notify.ProviderRegistrar")
-		return
-	}
-
 	// register telegram provider
-	p.notify.AddProvider(Name, p)
+	notify.ProviderManager.AddProvider(Name, p)
 
 	_ = p.EventBus.Subscribe(bus.TopicEntities, p.eventHandler)
 
@@ -108,10 +94,7 @@ func (p *plugin) Unload() (err error) {
 
 	_ = p.EventBus.Unsubscribe(bus.TopicEntities, p.eventHandler)
 
-	if p.notify == nil {
-		return
-	}
-	p.notify.RemoveProvider(Name)
+	notify.ProviderManager.RemoveProvider(Name)
 
 	return nil
 }

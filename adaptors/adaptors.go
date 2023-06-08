@@ -21,13 +21,13 @@ package adaptors
 import (
 	"context"
 
-	"github.com/e154/smart-home/common/logger"
+	"github.com/jinzhu/gorm"
+	"go.uber.org/fx"
 
+	"github.com/e154/smart-home/common/logger"
 	"github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/orm"
-	"github.com/jinzhu/gorm"
-	"go.uber.org/fx"
 )
 
 var (
@@ -43,6 +43,7 @@ type Adaptors struct {
 	Permission        IPermission
 	User              IUser
 	UserMeta          IUserMeta
+	UserDevice        IUserDevice
 	Image             IImage
 	Variable          IVariable
 	Entity            IEntity
@@ -87,6 +88,7 @@ func NewAdaptors(lc fx.Lifecycle,
 		Permission:        GetPermissionAdaptor(db),
 		User:              GetUserAdaptor(db),
 		UserMeta:          GetUserMetaAdaptor(db),
+		UserDevice:        GetUserDeviceAdaptor(db),
 		Image:             GetImageAdaptor(db),
 		Variable:          GetVariableAdaptor(db),
 		Entity:            GetEntityAdaptor(db),

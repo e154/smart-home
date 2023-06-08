@@ -19,23 +19,22 @@
 package stream
 
 import (
-	"encoding/json"
 	"io"
 
-	"github.com/google/uuid"
-
 	"github.com/e154/smart-home/api/stub/api"
+	m "github.com/e154/smart-home/models"
 )
 
 // Client ...
 type Client struct {
 	closed bool
 	server api.StreamService_SubscribeServer
+	user   *m.User
 }
 
 // NewClient ...
-func NewClient(server api.StreamService_SubscribeServer) *Client {
-	return &Client{server: server}
+func NewClient(server api.StreamService_SubscribeServer, user *m.User) *Client {
+	return &Client{server: server, user: user}
 }
 
 // WritePump ...
@@ -75,25 +74,6 @@ func (c *Client) Send(id, query string, body []byte) (err error) {
 	return
 }
 
-// Broadcast ...
-func (c *Client) Broadcast(query string, body []byte) (err error) {
-	err = c.Send(uuid.NewString(), query, body)
-	return
-}
-
-// Notify ...
-func (c *Client) Notify(t, b string) {
-	msg := map[string]string{
-		"title": t,
-		"body":  b,
-	}
-	body, _ := json.Marshal(msg)
-	err := c.server.Send(&api.Response{
-		Id:    "",
-		Query: "notify",
-		Body:  body,
-	})
-	if err != nil {
-		c.closed = true
-	}
+func (c *Client) GetUser() *m.User {
+	return c.user
 }

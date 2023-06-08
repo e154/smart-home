@@ -19,10 +19,7 @@
 package notify
 
 import (
-	"sync"
 	"time"
-
-	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
@@ -41,9 +38,6 @@ type Notify interface {
 	Stat() *Stat
 	Repeat(msg m.MessageDelivery)
 	Send(msg Message)
-	AddProvider(name string, provider Provider)
-	RemoveProvider(name string)
-	Provider(name string) (provider Provider, err error)
 }
 
 // notify ...
@@ -54,8 +48,7 @@ type notify struct {
 	scriptService scripts.ScriptService
 	workers       []*Worker
 	queue         chan m.MessageDelivery
-	providerMu    *sync.RWMutex
-	providerList  map[string]Provider
+	*manager
 }
 
 // NewNotify ...
@@ -64,11 +57,10 @@ func NewNotify(
 	scriptService scripts.ScriptService) Notify {
 
 	n := &notify{
-		adaptor:      adaptor,
-		isStarted:    atomic.NewBool(false),
-		queue:        make(chan m.MessageDelivery, queueSize),
-		providerMu:   &sync.RWMutex{},
-		providerList: make(map[string]Provider),
+		adaptor:   adaptor,
+		isStarted: atomic.NewBool(false),
+		queue:     make(chan m.MessageDelivery, queueSize),
+		manager:   ProviderManager,
 	}
 
 	// workers
@@ -217,49 +209,4 @@ func (n *notify) Repeat(msg m.MessageDelivery) {
 	_ = n.adaptor.MessageDelivery.SetStatus(msg)
 
 	n.queue <- msg
-}
-
-// AddProvider ...
-func (n *notify) AddProvider(name string, provider Provider) {
-	n.providerMu.Lock()
-	defer n.providerMu.Unlock()
-
-	if _, ok := n.providerList[name]; ok {
-		return
-	}
-
-	log.Infof("add new notify provider '%s'", name)
-	n.providerList[name] = provider
-}
-
-// RemoveProvider ...
-func (n *notify) RemoveProvider(name string) {
-	n.providerMu.Lock()
-	defer n.providerMu.Unlock()
-
-	if _, ok := n.providerList[name]; !ok {
-		return
-	}
-
-	log.Infof("remove notify provider '%s'", name)
-	delete(n.providerList, name)
-}
-
-// Provider ...
-func (n *notify) Provider(name string) (provider Provider, err error) {
-	if name == "" {
-		err = apperr.ErrProviderIsEmpty
-		return
-	}
-
-	n.providerMu.RLock()
-	defer n.providerMu.RUnlock()
-
-	var ok bool
-	if provider, ok = n.providerList[name]; !ok {
-		log.Warnf("provider '%s' not found", name)
-		err = apperr.ErrNotFound
-		return
-	}
-	return
 }

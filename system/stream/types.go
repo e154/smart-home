@@ -18,25 +18,20 @@
 
 package stream
 
-import "github.com/google/uuid"
+import m "github.com/e154/smart-home/models"
 
 // BroadcastClient ...
 type BroadcastClient interface {
 	Broadcast(query string, message []byte)
 }
 
-// IStreamClient ...
-type IStreamClient interface {
-	Send(id string, query string, body []byte) error
-	Notify(t, b string)
+// IDirectMessage ...
+type IDirectMessage interface {
+	DirectMessage(userId int64, query string, message []byte)
 }
 
-// Message ...
-type Message struct {
-	Id      uuid.UUID              `json:"id"`
-	Command string                 `json:"command"`
-	Payload map[string]interface{} `json:"payload"`
-	Forward string                 `json:"forward"`
-	Status  string                 `json:"status"`
-	Type    string                 `json:"type"`
+// IStreamClient ...
+type IStreamClient interface {
+	GetUser() *m.User
+	Send(id string, query string, body []byte) error
 }

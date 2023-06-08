@@ -24,6 +24,7 @@ import (
 	_ "github.com/e154/smart-home/plugins/cpuspeed"
 	_ "github.com/e154/smart-home/plugins/email"
 	_ "github.com/e154/smart-home/plugins/hdd"
+	_ "github.com/e154/smart-home/plugins/html5_notify"
 	_ "github.com/e154/smart-home/plugins/logs"
 	_ "github.com/e154/smart-home/plugins/memory"
 	_ "github.com/e154/smart-home/plugins/memory_app"
@@ -47,6 +48,7 @@ import (
 	_ "github.com/e154/smart-home/plugins/version"
 	_ "github.com/e154/smart-home/plugins/weather_met"
 	_ "github.com/e154/smart-home/plugins/weather_owm"
+	_ "github.com/e154/smart-home/plugins/webpush"
 	_ "github.com/e154/smart-home/plugins/zigbee2mqtt"
 	_ "github.com/e154/smart-home/plugins/zone"
 )

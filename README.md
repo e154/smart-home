@@ -19,7 +19,6 @@
 |dev         | ![Build Status](https://github.com/e154/smart-home/actions/workflows/test.yml/badge.svg?branch=develop)  |
 |docs        | ![Build Status](https://github.com/e154/smart-home/actions/workflows/docs.yml/badge.svg?branch=docs)     |
 
-
 <img align="right" width="220" height="auto" src="doc/static/img/smarthome_logo.svg" alt="smart-home logo">
 
 Attention! The project is under active development.
@@ -27,16 +26,17 @@ Attention! The project is under active development.
 
 ### Overview
 
-With the help of the software package **Smart Home** you can control many devices.
-Distributed network of devices based on software package **Smart Home** has no geographical boundaries and allows
-manage devices anywhere in the Internet through a system of nodes - microservices.
-You will be able to interact with these devices as if they were on your local network.
-Create scripts and reactions to events in the web interface of the configurator through a flexible scripting system.
+With the help of the software package **Smart Home** you can control many devices. Distributed network of devices based
+on software package **Smart Home** has no geographical boundaries and allows manage devices anywhere in the Internet
+through a system of nodes - microservices. You will be able to interact with these devices as if they were on your local
+network. Create scripts and reactions to events in the web interface of the configurator through a flexible scripting
+system.
 
-The system does not require a permanent connection to the Internet, it is completely autonomous and has no dependencies on external
-services.
+The system does not require a permanent connection to the Internet, it is completely autonomous and has no dependencies
+on external services.
 
-The basic principles underlying the system being developed are ease of setup, low cost of content and accessibility of the component base.
+The basic principles underlying the system being developed are ease of setup, low cost of content and accessibility of
+the component base.
 
 - [Features](#features)
 - [Demo access](#demo-access)
@@ -88,19 +88,19 @@ user: user@e154.ru <br />
 pass: user
 
 ### Supported system
-    
-*   macOS 386 10.6
-*   macOS amd64 10.6
-*   linux 386
-*   linux amd64
-*   linux arm-5
-*   linux arm-6
-*   linux arm-7
-*   linux arm-64
-*   linux mips64
-*   linux mips64le
-*   windows 386
-*   windows amd64
+
+* macOS 386 10.6
+* macOS amd64 10.6
+* linux 386
+* linux amd64
+* linux arm-5
+* linux arm-6
+* linux arm-7
+* linux arm-64
+* linux mips64
+* linux mips64le
+* windows 386
+* windows amd64
 
 Schematic smart home map
 
@@ -110,9 +110,9 @@ Schematic smart home map
 
 #### Database postgresql
 
-System **Smart Home** works with **Postgresql database**. Create a database and database user with full rights to this database.
-Connection parameters to the database must be specified in the configuration file. Updating the server version may require updating the database.
-, migrations will start automatically, manual intervention is not required.
+System **Smart Home** works with **Postgresql database**. Create a database and database user with full rights to this
+database. Connection parameters to the database must be specified in the configuration file. Updating the server version
+may require updating the database. , migrations will start automatically, manual intervention is not required.
 
 ```bash
 sudo -u postgres psql
@@ -123,12 +123,35 @@ postgres=# grant all privileges on database mydb to myuser;
 
 ### Installation for development
 
+install brew
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+Run these two commands in your terminal to add Homebrew to your PATH:
+
+```bash
+(echo; echo 'eval "$(/opt/homebrew/bin/brew shellenv)"') >> /Users/delta54/.zprofile
+eval "$(/opt/homebrew/bin/brew shellenv)"
+```
+
+install protobuf v3
+```bash
+brew update && brew install protobuf
+```
+
 ```bash
 go install \
     github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway \
     github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2 \
     google.golang.org/protobuf/cmd/protoc-gen-go \
     google.golang.org/grpc/cmd/protoc-gen-go-grpc
+```
+
+generate api stub
+```bash
+make server
 ```
 
 #### main server install
@@ -169,7 +192,6 @@ docker-compose up
 
 connect to the database, create two smart-home databases, smart-home-gate
 
-
 It's all
 
 ### Testing
@@ -180,16 +202,17 @@ The system supports self-testing of internal components, and is started by the c
 go test -v ./tests/...
 ```
 
-### Support 
+### Support
 
 Smart home Wiki: [e154.github.io/smart-home](https://e154.github.io/smart-home/)
-Bugs and feature requests: GitHub issues 
+Bugs and feature requests: GitHub issues
 
 ### Contributors
 
 - [Alex Filippov](https://github.com/e154)
 
 All the contributors are welcome. If you would like to be the contributor please accept some rules.
+
 - The pull requests will be accepted only in "develop" branch
 - All modifications or additions should be tested
 

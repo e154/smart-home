@@ -19,10 +19,7 @@
 package slack
 
 import (
-	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/logger"
-	"github.com/pkg/errors"
-
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/notify"
 	"github.com/e154/smart-home/system/plugins"
@@ -40,7 +37,6 @@ func init() {
 
 type plugin struct {
 	*plugins.Plugin
-	notify notify.ProviderRegistrar
 }
 
 // New ...
@@ -79,23 +75,10 @@ func (p *plugin) asyncLoad() (err error) {
 		settings = NewSettings()
 	}
 
-	// get provider registrar
-	var pl interface{}
-	if pl, err = p.GetPlugin(notify.Name); err != nil {
-		return
-	}
-
-	var ok bool
-	p.notify, ok = pl.(notify.ProviderRegistrar)
-	if !ok {
-		err = errors.Wrap(apperr.ErrInternal, "can`t static cast to notify.ProviderRegistrar")
-		return
-	}
-
 	// register slack provider
 	var provider *Provider
 	provider, err = NewProvider(settings, p.Adaptors)
-	p.notify.AddProvider(Name, provider)
+	notify.ProviderManager.AddProvider(Name, provider)
 
 	return
 }
@@ -106,10 +89,7 @@ func (p *plugin) Unload() (err error) {
 		return
 	}
 
-	if p.notify == nil {
-		return
-	}
-	p.notify.RemoveProvider(Name)
+	notify.ProviderManager.RemoveProvider(Name)
 
 	return nil
 }
