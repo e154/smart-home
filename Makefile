@@ -89,6 +89,7 @@ build_cli:
 	@echo MARK: build cli
 	cd ${ROOT}/cmd/cli && ${GO_BUILD_ENV} GOOS=linux GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${CLI}-linux-amd64
 	cd ${ROOT}/cmd/cli && ${GO_BUILD_ENV} GOOS=darwin GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${CLI}-darwin-10.6-amd64
+	cd ${ROOT}/cmd/cli && ${GO_BUILD_ENV} GOOS=darwin GOARCH=arm64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${CLI}-darwin-10.6-arm64
 
 server:
 	@echo "Building http server"
@@ -151,6 +152,7 @@ build_structure:
 	cp ${ROOT}/${EXEC}-darwin-10.6-amd64 ${TMP_DIR}
 	cp ${ROOT}/${CLI}-darwin-10.6-amd64 ${TMP_DIR}
 	cp ${ROOT}/${CLI}-linux-amd64 ${TMP_DIR}
+	cp ${ROOT}/${CLI}-linux-arm64 ${TMP_DIR}
 	cp ${ROOT}/bin/server ${TMP_DIR}
 
 build_archive:
@@ -212,6 +214,8 @@ clean:
 	rm -f ${ROOT}/${EXEC}-linux-arm-6
 	rm -f ${ROOT}/${EXEC}-linux-arm-5
 	rm -f ${ROOT}/${EXEC}-darwin-10.6-amd64
+	rm -f ${ROOT}/${EXEC}-darwin-10.6-arm64
 	rm -f ${ROOT}/${CLI}-linux-amd64
 	rm -f ${ROOT}/${CLI}-darwin-10.6-amd64
+	rm -f ${ROOT}/${CLI}-darwin-10.6-arm64
 	rm -f ${HOME}/${ARCHIVE}
