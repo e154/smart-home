@@ -48,7 +48,7 @@ func (m MessageDelivery) ToMessageDelivery(message *m.MessageDelivery) (obj *api
 }
 
 func ToMessage(message *m.Message) (obj *api.Message) {
-	var attributes map[string]string
+	var attributes = make(map[string]string)
 	for k, v := range message.Attributes {
 		attributes[k] = fmt.Sprintf("%v", v)
 	}
