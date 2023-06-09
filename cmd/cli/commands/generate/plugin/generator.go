@@ -41,21 +41,22 @@ package {{.Package}}
 
 import (
 	"fmt"
+	"sync"
+
 	"{{.Dir}}/common"
 	m "{{.Dir}}/models"
+	"{{.Dir}}/system/bus"
 	"{{.Dir}}/system/entity_manager"
-	"{{.Dir}}/system/event_bus"
-	"sync"
 )
 
 type Actor struct {
 	entity_manager.BaseActor
-	eventBus event_bus.EventBus
+	eventBus bus.Bus
 }
 
 func NewActor(entity *m.Entity,
 	entityManager entity_manager.EntityManager,
-	eventBus event_bus.EventBus) *Actor {
+	eventBus bus.Bus) *Actor {
 
 	name := entity.Id.Name()
 
@@ -99,16 +100,21 @@ package {{.Package}}
 
 import (
 	"fmt"
+	"sync"
+	"time"
+
+	"github.com/pkg/errors"
+
 	"{{.Dir}}/common"
+	"{{.Dir}}/common/apperr"
+	"{{.Dir}}/common/logger"
 	m "{{.Dir}}/models"
 	"{{.Dir}}/system/entity_manager"
 	"{{.Dir}}/system/plugins"
-	"sync"
-	"time"
 )
 
 var (
-	log = common.MustGetLogger("plugins.{{.Package}}")
+	log = logger.MustGetLogger("plugins.{{.Package}}")
 )
 
 var _ plugins.Plugable = (*plugin)(nil)
@@ -120,7 +126,7 @@ func init() {
 type plugin struct {
 	*plugins.Plugin
 	actorsLock *sync.Mutex
-	actors     map[string]*Actor
+	actors     map[common.EntityId]*Actor
 	quit       chan struct{}
 	pause      time.Duration
 }
@@ -129,7 +135,7 @@ func New() plugins.Plugable {
 	return &plugin{
 		Plugin:     plugins.NewPlugin(),
 		actorsLock: &sync.Mutex{},
-		actors:     make(map[string]*Actor),
+		actors:     make(map[common.EntityId]*Actor),
 		pause:      240,
 	}
 }
@@ -179,31 +185,31 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 	p.actorsLock.Lock()
 	defer p.actorsLock.Unlock()
 
-	if _, ok := p.actors[entity.Id.Name()]; ok {
-		p.actors[entity.Id.Name()].Update()
+	if _, ok := p.actors[entity.Id]; ok {
+		p.actors[entity.Id].Update()
 		return
 	}
 
-	p.actors[entity.Id.Name()] = NewActor(entity, p.EntityManager, p.EventBus)
-	p.EntityManager.Spawn(p.actors[entity.Id.Name()].Spawn)
+	p.actors[entity.Id] = NewActor(entity, p.EntityManager, p.EventBus)
+	p.EntityManager.Spawn(p.actors[entity.Id].Spawn)
 
 	return
 }
 
 func (p *plugin) RemoveActor(entityId common.EntityId) error {
-	return p.removeEntity(entityId.Name())
+	return p.removeEntity(entityId)
 }
 
-func (p *plugin) removeEntity(name string) (err error) {
+func (p *plugin) removeEntity(entityId common.EntityId) (err error) {
 	p.actorsLock.Lock()
 	defer p.actorsLock.Unlock()
 
-	if _, ok := p.actors[name]; !ok {
-		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("failed remove \"%s\"", name))
+	if _, ok := p.actors[entityId]; !ok {
+		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("failed remove \"%s\"", entityId.Name()))
 		return
 	}
 
-	delete(p.actors, name)
+	delete(p.actors, entityId)
 
 	return
 }
