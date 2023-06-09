@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package api;
+option go_package = "/api";
+
+import "google/api/annotations.proto";
+import "protoc-gen-swagger/options/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+import "pagination.proto";
+
+message Message {
+  int64 id = 1;
+  string type = 2;
+  map<string, string> attributes = 3;
+  google.protobuf.Timestamp created_at = 99;
+  google.protobuf.Timestamp updated_at = 100;
+}
+
+message MessageDelivery {
+  int64 id = 1;
+  Message message = 2;
+  string address = 3;
+  string status = 4;
+  optional string error_message_status = 5;
+  optional string error_message_body = 6;
+  google.protobuf.Timestamp created_at = 99;
+  google.protobuf.Timestamp updated_at = 100;
+}
+
+message GetMessageDeliveryListResult {
+  repeated MessageDelivery items = 1;
+  Meta meta = 2;
+}
+
+service MessageDeliveryService {
+
+  // get list
+  rpc GetMessageDeliveryList (PaginationRequest) returns (GetMessageDeliveryListResult){
+    option (google.api.http) = {
+      get: "/v1/message_delivery"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+}

@@ -41,11 +41,13 @@ package {{.Package}}
 
 import (
 	"context"
-	"{{.Dir}}/api/stub/api"
+	"net/http"
+
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"net/http"
+
+	"{{.Dir}}/api/stub/api"	
 )
 
 // {{.Name}} ...
@@ -107,14 +109,15 @@ func (c Controller{{.Name}}) Update{{.Name}}ById(_ context.Context, req *api.Upd
 }
 
 // Get{{.Name}}List ...
-func (c Controller{{.Name}}) Get{{.Name}}List(_ context.Context, req *api.Get{{.Name}}ListRequest) (*api.Get{{.Name}}ListResult, error) {
+func (c Controller{{.Name}}) Get{{.Name}}List(_ context.Context, req *api.PaginationRequest) (*api.Get{{.Name}}ListResult, error) {
 
-	items, total, err := c.endpoint.{{.EndpointName}}.GetList(int64(req.Limit), int64(req.Offset), req.Order, req.SortBy)
+	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
+	items, total, err := c.endpoint.{{.EndpointName}}.List(ctx, pagination)
 	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
+		return nil, c.error(ctx, nil, err)
 	}
 
-	return c.dto.{{.Name}}.To{{.Name}}ListResult(items, uint32(total), req.Limit, req.Offset), nil
+	return c.dto.{{.EndpointName}}.ToListResult(items, uint64(total), pagination), nil
 }
 
 // Delete{{.Name}}ById ...

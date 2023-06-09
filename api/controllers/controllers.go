@@ -49,6 +49,7 @@ type Controllers struct {
 	EntityStorage     ControllerEntityStorage
 	Metric            ControllerMetric
 	Backup            ControllerBackup
+	MessageDelivery   ControllerMessageDelivery
 }
 
 // NewControllers ...
@@ -80,5 +81,6 @@ func NewControllers(adaptors *adaptors.Adaptors,
 		EntityStorage:     NewControllerEntityStorage(common),
 		Metric:            NewControllerMetric(common),
 		Backup:            NewControllerBackup(common),
+		MessageDelivery:   NewControllerMessageDelivery(common),
 	}
 }

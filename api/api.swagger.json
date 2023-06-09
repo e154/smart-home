@@ -54,6 +54,9 @@
       "name": "LogService"
     },
     {
+      "name": "MessageDeliveryService"
+    },
+    {
       "name": "MetricService"
     },
     {
@@ -2475,6 +2478,56 @@
         ],
         "tags": [
           "LogService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/message_delivery": {
+      "get": {
+        "summary": "get list",
+        "operationId": "MessageDeliveryService_GetMessageDeliveryList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiGetMessageDeliveryListResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "MessageDeliveryService"
         ],
         "security": [
           {
@@ -5945,6 +5998,20 @@
         }
       }
     },
+    "apiGetMessageDeliveryListResult": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiMessageDelivery"
+          }
+        },
+        "meta": {
+          "$ref": "#/definitions/apiMeta"
+        }
+      }
+    },
     "apiGetPluginListResult": {
       "type": "object",
       "properties": {
@@ -6168,6 +6235,64 @@
           "type": "string"
         },
         "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "apiMessage": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "type": {
+          "type": "string"
+        },
+        "attributes": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "apiMessageDelivery": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "message": {
+          "$ref": "#/definitions/apiMessage"
+        },
+        "address": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "errorMessageStatus": {
+          "type": "string"
+        },
+        "errorMessageBody": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
           "type": "string",
           "format": "date-time"
         }

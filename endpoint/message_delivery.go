@@ -19,6 +19,8 @@
 package endpoint
 
 import (
+	"context"
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 )
 
@@ -34,14 +36,14 @@ func NewMessageDeliveryEndpoint(common *CommonEndpoint) *MessageDeliveryEndpoint
 	}
 }
 
-// GetList ...
-func (n *MessageDeliveryEndpoint) GetList(limit, offset int64, order, sortBy string) (result []m.MessageDelivery, total int64, err error) {
-	result, total, err = n.adaptors.MessageDelivery.List(limit, offset, order, sortBy)
+// List ...
+func (n *MessageDeliveryEndpoint) List(ctx context.Context, pagination common.PageParams) (result []*m.MessageDelivery, total int64, err error) {
+	result, total, err = n.adaptors.MessageDelivery.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
 	return
 }
 
 // Delete ...
-func (n *MessageDeliveryEndpoint) Delete(id int64) (err error) {
-	err = n.adaptors.MessageDelivery.Delete(id)
+func (n *MessageDeliveryEndpoint) Delete(ctx context.Context, id int64) (err error) {
+	err = n.adaptors.MessageDelivery.Delete(ctx, id)
 	return
 }

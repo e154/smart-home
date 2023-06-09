@@ -19,6 +19,7 @@
 package adaptors
 
 import (
+	"context"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"github.com/jinzhu/gorm"
@@ -26,14 +27,14 @@ import (
 
 // IMessageDelivery ...
 type IMessageDelivery interface {
-	Add(msg m.MessageDelivery) (id int64, err error)
-	SetStatus(msg m.MessageDelivery) (err error)
-	List(limit, offset int64, orderBy, sort string) (list []m.MessageDelivery, total int64, err error)
-	GetAllUncompleted(limit, offset int64) (list []m.MessageDelivery, total int64, err error)
-	Delete(id int64) (err error)
-	GetById(id int64) (ver m.MessageDelivery, err error)
-	fromDb(dbVer db.MessageDelivery) (ver m.MessageDelivery)
-	toDb(ver m.MessageDelivery) (dbVer db.MessageDelivery)
+	Add(ctx context.Context, msg *m.MessageDelivery) (id int64, err error)
+	SetStatus(ctx context.Context, msg *m.MessageDelivery) (err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.MessageDelivery, total int64, err error)
+	GetAllUncompleted(ctx context.Context, limit, offset int64) (list []*m.MessageDelivery, total int64, err error)
+	Delete(ctx context.Context, id int64) (err error)
+	GetById(ctx context.Context, id int64) (ver *m.MessageDelivery, err error)
+	fromDb(dbVer *db.MessageDelivery) (ver *m.MessageDelivery)
+	toDb(ver *m.MessageDelivery) (dbVer *db.MessageDelivery)
 }
 
 // MessageDelivery ...
@@ -51,25 +52,25 @@ func GetMessageDeliveryAdaptor(d *gorm.DB) IMessageDelivery {
 }
 
 // Add ...
-func (n *MessageDelivery) Add(msg m.MessageDelivery) (id int64, err error) {
+func (n *MessageDelivery) Add(ctx context.Context, msg *m.MessageDelivery) (id int64, err error) {
 	id, err = n.table.Add(n.toDb(msg))
 	return
 }
 
 // SetStatus ...
-func (n *MessageDelivery) SetStatus(msg m.MessageDelivery) (err error) {
+func (n *MessageDelivery) SetStatus(ctx context.Context, msg *m.MessageDelivery) (err error) {
 	err = n.table.SetStatus(n.toDb(msg))
 	return
 }
 
 // List ...
-func (n *MessageDelivery) List(limit, offset int64, orderBy, sort string) (list []m.MessageDelivery, total int64, err error) {
-	var dbList []db.MessageDelivery
+func (n *MessageDelivery) List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.MessageDelivery, total int64, err error) {
+	var dbList []*db.MessageDelivery
 	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
 		return
 	}
 
-	list = make([]m.MessageDelivery, 0)
+	list = make([]*m.MessageDelivery, 0)
 	for _, dbVer := range dbList {
 		list = append(list, n.fromDb(dbVer))
 	}
@@ -78,13 +79,13 @@ func (n *MessageDelivery) List(limit, offset int64, orderBy, sort string) (list 
 }
 
 // GetAllUncompleted ...
-func (n *MessageDelivery) GetAllUncompleted(limit, offset int64) (list []m.MessageDelivery, total int64, err error) {
-	var dbList []db.MessageDelivery
+func (n *MessageDelivery) GetAllUncompleted(ctx context.Context, limit, offset int64) (list []*m.MessageDelivery, total int64, err error) {
+	var dbList []*db.MessageDelivery
 	if dbList, total, err = n.table.GetAllUncompleted(limit, offset); err != nil {
 		return
 	}
 
-	list = make([]m.MessageDelivery, 0)
+	list = make([]*m.MessageDelivery, 0)
 	for _, dbVer := range dbList {
 		list = append(list, n.fromDb(dbVer))
 	}
@@ -93,15 +94,15 @@ func (n *MessageDelivery) GetAllUncompleted(limit, offset int64) (list []m.Messa
 }
 
 // Delete ...
-func (n *MessageDelivery) Delete(id int64) (err error) {
+func (n *MessageDelivery) Delete(ctx context.Context, id int64) (err error) {
 	err = n.table.Delete(id)
 	return
 }
 
 // GetById ...
-func (n *MessageDelivery) GetById(id int64) (ver m.MessageDelivery, err error) {
+func (n *MessageDelivery) GetById(ctx context.Context, id int64) (ver *m.MessageDelivery, err error) {
 
-	var dbVer db.MessageDelivery
+	var dbVer *db.MessageDelivery
 	if dbVer, err = n.table.GetById(id); err != nil {
 		return
 	}
@@ -111,9 +112,9 @@ func (n *MessageDelivery) GetById(id int64) (ver m.MessageDelivery, err error) {
 	return
 }
 
-func (n *MessageDelivery) fromDb(dbVer db.MessageDelivery) (ver m.MessageDelivery) {
+func (n *MessageDelivery) fromDb(dbVer *db.MessageDelivery) (ver *m.MessageDelivery) {
 
-	ver = m.MessageDelivery{
+	ver = &m.MessageDelivery{
 		Id:                 dbVer.Id,
 		MessageId:          dbVer.MessageId,
 		Address:            dbVer.Address,
@@ -132,9 +133,9 @@ func (n *MessageDelivery) fromDb(dbVer db.MessageDelivery) (ver m.MessageDeliver
 	return
 }
 
-func (n *MessageDelivery) toDb(ver m.MessageDelivery) (dbVer db.MessageDelivery) {
+func (n *MessageDelivery) toDb(ver *m.MessageDelivery) (dbVer *db.MessageDelivery) {
 
-	dbVer = db.MessageDelivery{
+	dbVer = &db.MessageDelivery{
 		Id:                 ver.Id,
 		MessageId:          ver.MessageId,
 		Address:            ver.Address,
