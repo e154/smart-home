@@ -63,16 +63,10 @@ func (n *MessageDeliveries) Add(msg *MessageDelivery) (id int64, err error) {
 
 func (n *MessageDeliveries) List(limit, offset int64, orderBy, sort string, queryObj *MessageDeliveryQuery) (list []*MessageDelivery, total int64, err error) {
 
-	if err = n.Db.Model(&MessageDelivery{}).Count(&total).Error; err != nil {
-		err = errors.Wrap(apperr.ErrMessageDeliveryList, err.Error())
-		return
-	}
-
 	list = make([]*MessageDelivery, 0)
-	q := n.Db.
-		Joins(`left join messages on messages.id = message_deliveries.message_id`).
-		Limit(limit).
-		Offset(offset)
+	q := n.Db.Model(&MessageDelivery{}).
+		Joins(`left join messages on messages.id = message_deliveries.message_id`)
+
 	if sort != "" && orderBy != "" {
 		q = q.Order(fmt.Sprintf("%s %s", sort, orderBy))
 	}
@@ -90,7 +84,14 @@ func (n *MessageDeliveries) List(limit, offset int64, orderBy, sort string, quer
 		}
 	}
 
+	if err = q.Count(&total).Error; err != nil {
+		err = errors.Wrap(apperr.ErrMessageDeliveryList, err.Error())
+		return
+	}
+
 	err = q.
+		Limit(limit).
+		Offset(offset).
 		Find(&list).
 		Error
 
