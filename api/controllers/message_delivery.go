@@ -19,7 +19,7 @@ func NewControllerMessageDelivery(common *ControllerCommon) ControllerMessageDel
 // GetMessageDeliveryList ...
 func (c ControllerMessageDelivery) GetMessageDeliveryList(ctx context.Context, req *api.MessageDeliveryPaginationRequest) (*api.GetMessageDeliveryListResult, error) {
 	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
-	items, total, err := c.endpoint.MessageDelivery.List(ctx, pagination, req.MessageType)
+	items, total, err := c.endpoint.MessageDelivery.List(ctx, pagination, req.MessageType, req.StartDate, req.EndDate)
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
 	}

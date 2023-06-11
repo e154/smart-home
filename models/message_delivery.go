@@ -34,6 +34,13 @@ const (
 	MessageStatusError = MessageStatus("error")
 )
 
+// MessageDeliveryQuery ...
+type MessageDeliveryQuery struct {
+	StartDate *time.Time `json:"start_date"`
+	EndDate   *time.Time `json:"end_date"`
+	Types     []string   `json:"types"`
+}
+
 // MessageDelivery ...
 type MessageDelivery struct {
 	Id                 int64         `json:"id"`

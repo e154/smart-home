@@ -33,6 +33,8 @@ message MessageDeliveryPaginationRequest {
   uint64 limit = 2;
   string sort = 3;
   optional string message_type = 4;
+  optional string start_date = 5;
+  optional string end_date = 6;
 }
 
 message GetMessageDeliveryListResult {

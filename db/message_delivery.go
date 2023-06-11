@@ -61,7 +61,7 @@ func (n *MessageDeliveries) Add(msg *MessageDelivery) (id int64, err error) {
 	return
 }
 
-func (n *MessageDeliveries) List(limit, offset int64, orderBy, sort string, messageType []string) (list []*MessageDelivery, total int64, err error) {
+func (n *MessageDeliveries) List(limit, offset int64, orderBy, sort string, queryObj *MessageDeliveryQuery) (list []*MessageDelivery, total int64, err error) {
 
 	if err = n.Db.Model(&MessageDelivery{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMessageDeliveryList, err.Error())
@@ -76,17 +76,23 @@ func (n *MessageDeliveries) List(limit, offset int64, orderBy, sort string, mess
 	if sort != "" && orderBy != "" {
 		q = q.Order(fmt.Sprintf("%s %s", sort, orderBy))
 	}
-	if messageType != nil && len(messageType) > 0{
-		err = q.
-			Preload("Message").
-			Find(&list, "messages.type in (?)", messageType).
-			Error
-	} else {
-		err = q.
-			Preload("Message").
-			Find(&list).
-			Error
+
+	q = q.Preload("Message")
+	if queryObj != nil {
+		if queryObj.StartDate != nil {
+			q = q.Where("created_at >= ?", &queryObj.StartDate)
+		}
+		if queryObj.EndDate != nil {
+			q = q.Where("created_at <= ?", &queryObj.EndDate)
+		}
+		if len(queryObj.Types) > 0 {
+			q = q.Where("messages.type in (?)", queryObj.Types)
+		}
 	}
+
+	err = q.
+		Find(&list).
+		Error
 
 	if err != nil {
 		err = errors.Wrap(apperr.ErrMessageDeliveryList, err.Error())
@@ -156,4 +162,11 @@ func (n MessageDeliveries) GetById(id int64) (msg *MessageDelivery, err error) {
 		err = errors.Wrap(apperr.ErrMessageDeliveryGet, err.Error())
 	}
 	return
+}
+
+// MessageDeliveryQuery ...
+type MessageDeliveryQuery struct {
+	StartDate *time.Time `json:"start_date"`
+	EndDate   *time.Time `json:"end_date"`
+	Types     []string   `json:"types"`
 }
