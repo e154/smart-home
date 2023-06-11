@@ -107,7 +107,7 @@ func TestMessagebird(t *testing.T) {
 
 					time.Sleep(time.Second * 2)
 
-					list, total, err := adaptors.MessageDelivery.List(context.Background(), 10, 0, "", "")
+					list, total, err := adaptors.MessageDelivery.List(context.Background(), 10, 0, "", "", nil)
 					ctx.So(err, ShouldBeNil)
 					ctx.So(total, ShouldEqual, 1)
 

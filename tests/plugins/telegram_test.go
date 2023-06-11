@@ -140,7 +140,7 @@ telegramAction = (entityId, actionName)->
 
 					time.Sleep(time.Millisecond * 500)
 
-					list, total, err := adaptors.MessageDelivery.List(context.Background(), 10, 0, "", "")
+					list, total, err := adaptors.MessageDelivery.List(context.Background(), 10, 0, "", "", nil)
 					ctx.So(err, ShouldBeNil)
 					ctx.So(total, ShouldEqual, 1)
 
