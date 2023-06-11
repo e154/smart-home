@@ -29,7 +29,7 @@ import (
 type IMessageDelivery interface {
 	Add(ctx context.Context, msg *m.MessageDelivery) (id int64, err error)
 	SetStatus(ctx context.Context, msg *m.MessageDelivery) (err error)
-	List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.MessageDelivery, total int64, err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string, messageType []string) (list []*m.MessageDelivery, total int64, err error)
 	GetAllUncompleted(ctx context.Context, limit, offset int64) (list []*m.MessageDelivery, total int64, err error)
 	Delete(ctx context.Context, id int64) (err error)
 	GetById(ctx context.Context, id int64) (ver *m.MessageDelivery, err error)
@@ -64,9 +64,9 @@ func (n *MessageDelivery) SetStatus(ctx context.Context, msg *m.MessageDelivery)
 }
 
 // List ...
-func (n *MessageDelivery) List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.MessageDelivery, total int64, err error) {
+func (n *MessageDelivery) List(ctx context.Context, limit, offset int64, orderBy, sort string, messageType []string) (list []*m.MessageDelivery, total int64, err error) {
 	var dbList []*db.MessageDelivery
-	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
+	if dbList, total, err = n.table.List(limit, offset, orderBy, sort, messageType); err != nil {
 		return
 	}
 

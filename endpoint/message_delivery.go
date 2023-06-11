@@ -22,6 +22,7 @@ import (
 	"context"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"strings"
 )
 
 // MessageDeliveryEndpoint ...
@@ -37,8 +38,12 @@ func NewMessageDeliveryEndpoint(common *CommonEndpoint) *MessageDeliveryEndpoint
 }
 
 // List ...
-func (n *MessageDeliveryEndpoint) List(ctx context.Context, pagination common.PageParams) (result []*m.MessageDelivery, total int64, err error) {
-	result, total, err = n.adaptors.MessageDelivery.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
+func (n *MessageDeliveryEndpoint) List(ctx context.Context, pagination common.PageParams, query *string) (result []*m.MessageDelivery, total int64, err error) {
+	var messageType []string
+	if query != nil {
+		messageType = strings.Split(*query, ",")
+	}
+	result, total, err = n.adaptors.MessageDelivery.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, messageType)
 	return
 }
 

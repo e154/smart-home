@@ -2524,6 +2524,12 @@
             "in": "query",
             "required": false,
             "type": "string"
+          },
+          {
+            "name": "messageType",
+            "in": "query",
+            "required": false,
+            "type": "string"
           }
         ],
         "tags": [

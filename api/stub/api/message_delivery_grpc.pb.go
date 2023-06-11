@@ -23,7 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MessageDeliveryServiceClient interface {
 	// get list
-	GetMessageDeliveryList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*GetMessageDeliveryListResult, error)
+	GetMessageDeliveryList(ctx context.Context, in *MessageDeliveryPaginationRequest, opts ...grpc.CallOption) (*GetMessageDeliveryListResult, error)
 }
 
 type messageDeliveryServiceClient struct {
@@ -34,7 +34,7 @@ func NewMessageDeliveryServiceClient(cc grpc.ClientConnInterface) MessageDeliver
 	return &messageDeliveryServiceClient{cc}
 }
 
-func (c *messageDeliveryServiceClient) GetMessageDeliveryList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*GetMessageDeliveryListResult, error) {
+func (c *messageDeliveryServiceClient) GetMessageDeliveryList(ctx context.Context, in *MessageDeliveryPaginationRequest, opts ...grpc.CallOption) (*GetMessageDeliveryListResult, error) {
 	out := new(GetMessageDeliveryListResult)
 	err := c.cc.Invoke(ctx, "/api.MessageDeliveryService/GetMessageDeliveryList", in, out, opts...)
 	if err != nil {
@@ -48,14 +48,14 @@ func (c *messageDeliveryServiceClient) GetMessageDeliveryList(ctx context.Contex
 // for forward compatibility
 type MessageDeliveryServiceServer interface {
 	// get list
-	GetMessageDeliveryList(context.Context, *PaginationRequest) (*GetMessageDeliveryListResult, error)
+	GetMessageDeliveryList(context.Context, *MessageDeliveryPaginationRequest) (*GetMessageDeliveryListResult, error)
 }
 
 // UnimplementedMessageDeliveryServiceServer should be embedded to have forward compatible implementations.
 type UnimplementedMessageDeliveryServiceServer struct {
 }
 
-func (UnimplementedMessageDeliveryServiceServer) GetMessageDeliveryList(context.Context, *PaginationRequest) (*GetMessageDeliveryListResult, error) {
+func (UnimplementedMessageDeliveryServiceServer) GetMessageDeliveryList(context.Context, *MessageDeliveryPaginationRequest) (*GetMessageDeliveryListResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMessageDeliveryList not implemented")
 }
 
@@ -71,7 +71,7 @@ func RegisterMessageDeliveryServiceServer(s grpc.ServiceRegistrar, srv MessageDe
 }
 
 func _MessageDeliveryService_GetMessageDeliveryList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PaginationRequest)
+	in := new(MessageDeliveryPaginationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -83,7 +83,7 @@ func _MessageDeliveryService_GetMessageDeliveryList_Handler(srv interface{}, ctx
 		FullMethod: "/api.MessageDeliveryService/GetMessageDeliveryList",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MessageDeliveryServiceServer).GetMessageDeliveryList(ctx, req.(*PaginationRequest))
+		return srv.(MessageDeliveryServiceServer).GetMessageDeliveryList(ctx, req.(*MessageDeliveryPaginationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

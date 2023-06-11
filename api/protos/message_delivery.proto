@@ -28,6 +28,13 @@ message MessageDelivery {
   google.protobuf.Timestamp updated_at = 100;
 }
 
+message MessageDeliveryPaginationRequest {
+  uint64 page = 1;
+  uint64 limit = 2;
+  string sort = 3;
+  optional string message_type = 4;
+}
+
 message GetMessageDeliveryListResult {
   repeated MessageDelivery items = 1;
   Meta meta = 2;
@@ -36,7 +43,7 @@ message GetMessageDeliveryListResult {
 service MessageDeliveryService {
 
   // get list
-  rpc GetMessageDeliveryList (PaginationRequest) returns (GetMessageDeliveryListResult){
+  rpc GetMessageDeliveryList (MessageDeliveryPaginationRequest) returns (GetMessageDeliveryListResult){
     option (google.api.http) = {
       get: "/v1/message_delivery"
     };

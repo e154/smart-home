@@ -36,7 +36,7 @@ var (
 )
 
 func request_MessageDeliveryService_GetMessageDeliveryList_0(ctx context.Context, marshaler runtime.Marshaler, client MessageDeliveryServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq PaginationRequest
+	var protoReq MessageDeliveryPaginationRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
@@ -52,7 +52,7 @@ func request_MessageDeliveryService_GetMessageDeliveryList_0(ctx context.Context
 }
 
 func local_request_MessageDeliveryService_GetMessageDeliveryList_0(ctx context.Context, marshaler runtime.Marshaler, server MessageDeliveryServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq PaginationRequest
+	var protoReq MessageDeliveryPaginationRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
