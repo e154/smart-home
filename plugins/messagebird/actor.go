@@ -82,7 +82,7 @@ func (p *Actor) Spawn() entity_manager.PluginActor {
 }
 
 // Send ...
-func (p *Actor) Send(phone string, message m.Message) (err error) {
+func (p *Actor) Send(phone string, message *m.Message) (err error) {
 
 	params := &sms.Params{
 		Type:       "sms",

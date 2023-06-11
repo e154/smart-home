@@ -19,6 +19,9 @@
 package endpoint
 
 import (
+	"context"
+	"github.com/e154/smart-home/plugins/html5_notify"
+	"github.com/e154/smart-home/plugins/webpush"
 	"strings"
 
 	"github.com/e154/smart-home/common"
@@ -43,10 +46,10 @@ func NewNotifyEndpoint(common *CommonEndpoint) *NotifyEndpoint {
 }
 
 // Repeat ...
-func (n *NotifyEndpoint) Repeat(id int64) (err error) {
+func (n *NotifyEndpoint) Repeat(ctx context.Context ,id int64) (err error) {
 
-	var msg m.MessageDelivery
-	msg, err = n.adaptors.MessageDelivery.GetById(id)
+	var msg *m.MessageDelivery
+	msg, err = n.adaptors.MessageDelivery.GetById(ctx, id)
 	if err != nil {
 		return
 	}
@@ -60,7 +63,7 @@ func (n *NotifyEndpoint) Repeat(id int64) (err error) {
 }
 
 // Send ...
-func (n *NotifyEndpoint) Send(params *m.NewNotifrMessage) (err error) {
+func (n *NotifyEndpoint) Send(ctx context.Context, params *m.NewNotifrMessage) (err error) {
 
 	var render *m.TemplateRender
 	if params.BodyType == "template" && params.Template != nil && params.Params != nil {
@@ -78,9 +81,9 @@ func (n *NotifyEndpoint) Send(params *m.NewNotifrMessage) (err error) {
 		n.eventBus.Publish(notify.TopicNotify, notify.Message{
 			Type: email.Name,
 			Attributes: map[string]interface{}{
-				"addresses": params.Address,
-				"subject":   common.StringValue(params.EmailSubject),
-				"body":      body,
+				email.AttrAddresses: params.Address,
+				email.AttrSubject:   common.StringValue(params.EmailSubject),
+				email.AttrBody:      body,
 			},
 		})
 	case "sms":
@@ -126,6 +129,25 @@ func (n *NotifyEndpoint) Send(params *m.NewNotifrMessage) (err error) {
 				telegram.AttrBody: body,
 			},
 		})
+	case "html5_notify":
+		n.eventBus.Publish(notify.TopicNotify, notify.Message{
+			Type: html5_notify.Name,
+			Attributes: map[string]interface{}{
+				html5_notify.AttrUserIDS: "14",
+				html5_notify.AttrTitle:   "neural network",
+				html5_notify.AttrBody:    "all completed",
+			},
+		})
+	case "webpush":
+		n.eventBus.Publish(notify.TopicNotify, notify.Message{
+			Type: webpush.Name,
+			Attributes: map[string]interface{}{
+				webpush.AttrUserIDS: "14",
+				webpush.AttrTitle:   "neural network",
+				webpush.AttrBody:    "all completed",
+			},
+		})
+
 	}
 
 	return

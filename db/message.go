@@ -49,8 +49,8 @@ func (d *Message) TableName() string {
 }
 
 // Add ...
-func (n Messages) Add(msg Message) (id int64, err error) {
-	if err = n.Db.Create(&msg).Error; err != nil {
+func (n Messages) Add(msg *Message) (id int64, err error) {
+	if err = n.Db.Create(msg).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMessageAdd, err.Error())
 		return
 	}

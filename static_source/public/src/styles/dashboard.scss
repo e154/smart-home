@@ -1,0 +1,135 @@
+// map device radial menu
+//
+.device-menu {
+  position: relative;
+  transition: all .7s ease-in-out;
+
+  a {
+  width: 40px;
+  height: 40px;
+   cursor: pointer;
+   img {
+    width: 100%;
+    height: 100%;
+   }
+  }
+
+  .device-menu-circle {
+    //display: none;
+    opacity: 0;
+    width: inherit !important;
+    height: inherit !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -10;
+
+    a {
+      position: absolute;
+      display: inherit;
+      width: inherit !important;
+      height: inherit !important;
+      -webkit-transition: all 0.1s ease-in;
+      -moz-transition: all 0.1s ease-in;
+      transition: all 0.1s ease-in;
+
+      &:nth-of-type(1) {
+        bottom: 0;
+      }
+      &:nth-of-type(2) {
+        top: 0;
+        right: 0;
+      }
+      &:nth-of-type(3) {
+        right: 0;
+      }
+      &:nth-of-type(4) {
+        right: 0;
+        bottom: 0;
+      }
+      &:nth-of-type(5) {
+        bottom: 0;
+      }
+      &:nth-of-type(6) {
+        bottom: 0;
+        left: 0;
+      }
+      &:nth-of-type(7) {
+        left: 0;
+      }
+      &:nth-of-type(8) {
+        top: 0;
+        left: 0;
+      }
+    }
+
+    &.show {
+      //display: inherit;
+      opacity: 1;
+        a {
+          &:nth-child(+n+8) {
+            display: none;
+          }
+          &:nth-of-type(1) {
+            bottom: 180%;
+          }
+          &:nth-of-type(2) {
+            top: -130%;
+            right: -130%;
+          }
+          &:nth-of-type(3) {
+            right: -180%;
+          }
+          &:nth-of-type(4) {
+            right: -130%;
+            bottom: -130%;
+          }
+          &:nth-of-type(5) {
+            bottom: -180%;
+          }
+          &:nth-of-type(6) {
+            bottom: -130%;
+            left: -130%;
+          }
+          &:nth-of-type(7) {
+            left: -180%;
+          }
+          &:nth-of-type(8) {
+            top: -130%;
+            left: -130%;
+          }
+          &:hover {
+            img {
+              transform:scale(1.1);
+            }
+          }//hover
+        }
+    }
+  }//device-menu-circle
+
+  a.device-menu-button {
+    &:hover {
+      img {
+        transform:scale(1.1);
+      }
+    }//hover
+  }
+  &.as-button {
+    img.device {
+      cursor: pointer;
+      &:hover {
+        transform:scale(1.1);
+      }
+    }
+  }
+}
+
+.unselectable {
+  user-drag: none;
+  -webkit-user-select: none; /* Safari, Chrome */
+  -khtml-user-select: none; /* Konqueror */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE */
+  user-select: none; /* CSS3 */
+  -webkit-user-drag: none;
+}

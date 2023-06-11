@@ -19,6 +19,7 @@
 package notify
 
 import (
+	"context"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -42,7 +43,7 @@ func NewWorker(adaptor *adaptors.Adaptors) *Worker {
 	return worker
 }
 
-func (n *Worker) send(msg m.MessageDelivery, provider Provider) {
+func (n *Worker) send(msg *m.MessageDelivery, provider Provider) {
 
 	n.inProcess.Store(true)
 	defer n.inProcess.Store(false)
@@ -53,7 +54,7 @@ func (n *Worker) send(msg m.MessageDelivery, provider Provider) {
 	} else {
 		msg.Status = m.MessageStatusSucceed
 	}
-	_ = n.adaptor.MessageDelivery.SetStatus(msg)
+	_ = n.adaptor.MessageDelivery.SetStatus(context.Background(), msg)
 }
 
 // InWork ...

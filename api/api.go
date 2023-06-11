@@ -28,6 +28,7 @@ import (
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/rs/cors"
 	"github.com/tmc/grpc-websocket-proxy/wsproxy"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
@@ -37,13 +38,27 @@ import (
 
 	"github.com/e154/smart-home/api/controllers"
 	gw "github.com/e154/smart-home/api/stub/api"
+	publicAssets "github.com/e154/smart-home/build"
 	"github.com/e154/smart-home/common/logger"
 	"github.com/e154/smart-home/system/rbac"
 )
 
 //go:embed swagger-ui/*
 //go:embed api.swagger.json
-var f embed.FS
+var assets embed.FS
+
+////go:embed build/public/*
+////go:embed build/public/css/*
+////go:embed build/public/js/*
+////go:embed build/public/fonts/*
+////go:embed build/public/tinymce/*
+////go:embed build/public/tinymce/langs/*
+////go:embed build/public/tinymce/skins/*
+////go:embed build/public/tinymce/skins/fonts/*
+////go:embed build/public/img/*
+////go:embed build/public/img/icons/*
+////go:embed build/public/img/icons/*
+//var publicAssets embed.FS
 
 var (
 	log = logger.MustGetLogger("api")
@@ -121,6 +136,7 @@ func (a *Api) Start() (err error) {
 	gw.RegisterEntityStorageServiceServer(a.grpcServer, a.controllers.EntityStorage)
 	gw.RegisterMetricServiceServer(a.grpcServer, a.controllers.Metric)
 	gw.RegisterBackupServiceServer(a.grpcServer, a.controllers.Backup)
+	gw.RegisterMessageDeliveryServiceServer(a.grpcServer, a.controllers.MessageDelivery)
 	grpc_prometheus.Register(a.grpcServer)
 
 	var group errgroup.Group
@@ -178,16 +194,9 @@ func (a *Api) Start() (err error) {
 		_ = gw.RegisterVariableServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
 		_ = gw.RegisterMetricServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
 		_ = gw.RegisterBackupServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		_ = gw.RegisterMessageDeliveryServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
 		return nil
 	})
-
-	// WS
-	if a.cfg.WsHostPort != "" {
-		group.Go(func() error {
-			return http.ListenAndServe(a.cfg.WsHostPort, wsproxy.WebsocketProxy(mux))
-		})
-		log.Infof("Serving WS server at %s", a.cfg.WsHostPort)
-	}
 
 	// PROMETHEUS
 	if a.cfg.PromHostPort != "" {
@@ -200,9 +209,9 @@ func (a *Api) Start() (err error) {
 
 	// HTTP
 	httpv1 := http.NewServeMux()
-	httpv1.Handle("/", grpcHandlerFunc(a.grpcServer, mux))
-
-	// upload handler
+	httpv1.HandleFunc("/", a.controllers.Index.Index(publicAssets.F))
+	httpv1.Handle("/v1/", grpcHandlerFunc(a.grpcServer, mux))
+	httpv1.Handle("/ws", wsproxy.WebsocketProxy(mux))
 	httpv1.HandleFunc("/v1/image/upload", a.controllers.Image.MuxUploadImage())
 
 	// uploaded and other static files
@@ -213,20 +222,31 @@ func (a *Api) Start() (err error) {
 		fileServer.ServeHTTP(w, r)
 	})
 	//httpv1.Handle("/api_static", http.FileServer(http.Dir(common.StoragePath())))
-	fileServer2 := http.FileServer(http.Dir("./data/static"))
+	staticServer := http.FileServer(http.Dir("./data/static"))
 	httpv1.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
 		r.RequestURI = strings.ReplaceAll(r.RequestURI, "/static/", "/")
 		r.URL, _ = r.URL.Parse(r.RequestURI)
-		fileServer2.ServeHTTP(w, r)
+		staticServer.ServeHTTP(w, r)
 	})
+
+	// public
+	httpv1.Handle("/public/", http.StripPrefix("/", http.FileServer(http.FS(publicAssets.F))))
 
 	// swagger
 	if a.cfg.Swagger {
-		httpv1.Handle("/swagger-ui/", http.StripPrefix("/", http.FileServer(http.FS(f))))
-		httpv1.Handle("/api.swagger.json", http.StripPrefix("/", http.FileServer(http.FS(f))))
+		httpv1.Handle("/swagger-ui/", http.StripPrefix("/", http.FileServer(http.FS(assets))))
+		httpv1.Handle("/api.swagger.json", http.StripPrefix("/", http.FileServer(http.FS(assets))))
 	}
 
-	a.httpServer = &http.Server{Addr: a.cfg.HttpHostPort, Handler: httpv1}
+	cors := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"HEAD", "GET", "POST", "PUT"},
+		AllowedHeaders:   []string{"*"},
+		AllowCredentials: false,
+		Debug:            a.cfg.Debug,
+	})
+
+	a.httpServer = &http.Server{Addr: a.cfg.HttpHostPort, Handler: cors.Handler(httpv1)}
 	group.Go(func() error {
 		return a.httpServer.ListenAndServe()
 	})

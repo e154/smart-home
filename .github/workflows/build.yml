@@ -30,6 +30,11 @@ jobs:
         with:
           go-version: 1.19
 
+      - name: Set up Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
       - name: Prepary deps
         run: |
           echo -e "machine github.com\n  login ${{ secrets.GITHUBTOKEN }}" > ~/.netrc

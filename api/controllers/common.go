@@ -52,17 +52,20 @@ type ControllerCommon struct {
 	accessList access_list.AccessListService
 	endpoint   *endpoint.Endpoint
 	dto        dto.Dto
+	appConfig  *m.AppConfig
 }
 
 // NewControllerCommon ...
 func NewControllerCommon(adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
-	endpoint *endpoint.Endpoint) *ControllerCommon {
+	endpoint *endpoint.Endpoint,
+	appConfig *m.AppConfig) *ControllerCommon {
 	return &ControllerCommon{
 		dto:        dto.NewDto(),
 		adaptors:   adaptors,
 		accessList: accessList,
 		endpoint:   endpoint,
+		appConfig:  appConfig,
 	}
 }
 

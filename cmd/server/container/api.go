@@ -20,6 +20,7 @@ package container
 
 import (
 	"github.com/e154/smart-home/api"
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/models"
 )
 
@@ -32,7 +33,7 @@ func NewApiConfig(cfg *models.AppConfig) api.Config {
 		GrpcHostPort: cfg.ApiGrpcHostPort,
 		HttpHostPort: cfg.ApiHttpHostPort,
 		PromHostPort: cfg.ApiPromHostPort,
-		WsHostPort:   cfg.ApiWsHostPort,
 		Swagger:      cfg.ApiSwagger,
+		Debug:        cfg.Mode == common.DebugMode,
 	}
 }
