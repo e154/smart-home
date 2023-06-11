@@ -7628,7 +7628,7 @@
   "securityDefinitions": {
     "ApiKeyAuth": {
       "type": "apiKey",
-      "name": "x-api-key",
+      "name": "Authorization",
       "in": "header",
       "x-api-key": "jwt"
     },

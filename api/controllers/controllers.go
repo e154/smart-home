@@ -21,6 +21,7 @@ package controllers
 import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/endpoint"
+	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/stream/handlers"
 )
@@ -50,14 +51,16 @@ type Controllers struct {
 	Metric            ControllerMetric
 	Backup            ControllerBackup
 	MessageDelivery   ControllerMessageDelivery
+	Index             ControllerIndex
 }
 
 // NewControllers ...
 func NewControllers(adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
 	command *endpoint.Endpoint,
-	_ *handlers.EventHandler) *Controllers {
-	common := NewControllerCommon(adaptors, accessList, command)
+	_ *handlers.EventHandler,
+	appConfig  *m.AppConfig) *Controllers {
+	common := NewControllerCommon(adaptors, accessList, command, appConfig)
 	return &Controllers{
 		Auth:              NewControllerAuth(common),
 		Stream:            NewControllerStream(common),
@@ -82,5 +85,6 @@ func NewControllers(adaptors *adaptors.Adaptors,
 		Metric:            NewControllerMetric(common),
 		Backup:            NewControllerBackup(common),
 		MessageDelivery:   NewControllerMessageDelivery(common),
+		Index:             NewControllerIndex(common),
 	}
 }

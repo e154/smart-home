@@ -43,7 +43,11 @@
             plugins: [
                 SwaggerUIBundle.plugins.DownloadUrl
             ],
-            layout: "StandaloneLayout"
+            layout: "StandaloneLayout",
+            requestInterceptor: function(req) {
+                req.headers.Authorization = localStorage.getItem('token')
+                return req
+            }
         });
         // End Swagger UI call region
 
