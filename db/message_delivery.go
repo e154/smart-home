@@ -80,10 +80,10 @@ func (n *MessageDeliveries) List(limit, offset int64, orderBy, sort string, quer
 	q = q.Preload("Message")
 	if queryObj != nil {
 		if queryObj.StartDate != nil {
-			q = q.Where("created_at >= ?", &queryObj.StartDate)
+			q = q.Where("message_deliveries.created_at >= ?", &queryObj.StartDate)
 		}
 		if queryObj.EndDate != nil {
-			q = q.Where("created_at <= ?", &queryObj.EndDate)
+			q = q.Where("message_deliveries.created_at <= ?", &queryObj.EndDate)
 		}
 		if len(queryObj.Types) > 0 {
 			q = q.Where("messages.type in (?)", queryObj.Types)
