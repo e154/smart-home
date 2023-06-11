@@ -78,7 +78,7 @@ func (p *Actor) Spawn() entity_manager.PluginActor {
 }
 
 // Send ...
-func (e *Actor) Send(address string, message m.Message) error {
+func (e *Actor) Send(address string, message *m.Message) error {
 
 	if e.Auth == "" || e.Pass == "" || e.Smtp == "" || e.Port == 0 || e.Sender == "" {
 		return apperr.ErrBadActorSettingsParameters

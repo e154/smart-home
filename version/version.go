@@ -56,7 +56,7 @@ const ShortVersionBanner = `
 func GetHumanVersion() string {
 	version := ""
 
-	if DevelopersString != "" {
+	if GeneratedString != "" {
 		version = fmt.Sprintf("Generated: %s\n", GeneratedString)
 	}
 

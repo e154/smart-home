@@ -19,7 +19,11 @@
 package endpoint
 
 import (
+	"context"
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"strings"
+	"time"
 )
 
 // MessageDeliveryEndpoint ...
@@ -34,14 +38,28 @@ func NewMessageDeliveryEndpoint(common *CommonEndpoint) *MessageDeliveryEndpoint
 	}
 }
 
-// GetList ...
-func (n *MessageDeliveryEndpoint) GetList(limit, offset int64, order, sortBy string) (result []m.MessageDelivery, total int64, err error) {
-	result, total, err = n.adaptors.MessageDelivery.List(limit, offset, order, sortBy)
+// List ...
+func (n *MessageDeliveryEndpoint) List(ctx context.Context, pagination common.PageParams, query *string, startDate, endDate *string) (result []*m.MessageDelivery, total int64, err error) {
+
+
+	queryObj := &m.MessageDeliveryQuery{}
+	if startDate != nil {
+		date, _ := time.Parse("2006-01-02", *startDate)
+		queryObj.StartDate = &date
+	}
+	if endDate != nil {
+		date, _ := time.Parse("2006-01-02", *endDate)
+		queryObj.EndDate = &date
+	}
+	if query != nil {
+		queryObj.Types = strings.Split(*query, ",")
+	}
+	result, total, err = n.adaptors.MessageDelivery.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, queryObj)
 	return
 }
 
 // Delete ...
-func (n *MessageDeliveryEndpoint) Delete(id int64) (err error) {
-	err = n.adaptors.MessageDelivery.Delete(id)
+func (n *MessageDeliveryEndpoint) Delete(ctx context.Context, id int64) (err error) {
+	err = n.adaptors.MessageDelivery.Delete(ctx, id)
 	return
 }

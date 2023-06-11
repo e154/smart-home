@@ -60,7 +60,6 @@ type AppConfig struct {
 	ApiGrpcHostPort                string         `json:"api_grpc_host_port" env:"API_GRPC_HOST_PORT"`
 	ApiHttpHostPort                string         `json:"api_http_host_port" env:"API_HTTP_HOST_PORT"`
 	ApiPromHostPort                string         `json:"api_prom_host_port" env:"API_PROM_HOST_PORT"`
-	ApiWsHostPort                  string         `json:"api_ws_host_port" env:"API_WS_HOST_PORT"`
 	ApiSwagger                     bool           `json:"api_swagger" env:"API_SWAGGER"`
 	Lang                           string         `json:"lang" env:"LANG"`
 	GodMode                        bool           `json:"god_mode" env:"GOD_MODE"`

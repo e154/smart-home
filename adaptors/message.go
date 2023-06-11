@@ -28,9 +28,9 @@ import (
 
 // IMessage ...
 type IMessage interface {
-	Add(msg m.Message) (id int64, err error)
-	fromDb(dbVer db.Message) (ver m.Message)
-	toDb(ver m.Message) (dbVer db.Message)
+	Add(msg *m.Message) (id int64, err error)
+	fromDb(dbVer *db.Message) (ver *m.Message)
+	toDb(ver *m.Message) (dbVer *db.Message)
 }
 
 // Message ...
@@ -47,13 +47,13 @@ func GetMessageAdaptor(d *gorm.DB) IMessage {
 }
 
 // Add ...
-func (n *Message) Add(msg m.Message) (id int64, err error) {
+func (n *Message) Add(msg *m.Message) (id int64, err error) {
 	id, err = n.table.Add(n.toDb(msg))
 	return
 }
 
-func (n *Message) fromDb(dbVer db.Message) (ver m.Message) {
-	ver = m.Message{
+func (n *Message) fromDb(dbVer *db.Message) (ver *m.Message) {
+	ver = &m.Message{
 		Id:         dbVer.Id,
 		Type:       dbVer.Type,
 		CreatedAt:  dbVer.CreatedAt,
@@ -68,8 +68,8 @@ func (n *Message) fromDb(dbVer db.Message) (ver m.Message) {
 	return
 }
 
-func (n *Message) toDb(ver m.Message) (dbVer db.Message) {
-	dbVer = db.Message{
+func (n *Message) toDb(ver *m.Message) (dbVer *db.Message) {
+	dbVer = &db.Message{
 		Id:        ver.Id,
 		Type:      ver.Type,
 		CreatedAt: ver.CreatedAt,

@@ -1,6 +1,6 @@
 .PHONY: get_deps fmt
 .DEFAULT_GOAL := build
-build: get_deps build_server build_cli
+build: get_deps build_public build_server build_cli
 tests: lint test
 all: build build_structure build_archive docker_image
 deploy: docker_image_upload
@@ -89,6 +89,20 @@ build_cli:
 	@echo MARK: build cli
 	cd ${ROOT}/cmd/cli && ${GO_BUILD_ENV} GOOS=linux GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${CLI}-linux-amd64
 	cd ${ROOT}/cmd/cli && ${GO_BUILD_ENV} GOOS=darwin GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${CLI}-darwin-10.6-amd64
+	cd ${ROOT}/cmd/cli && ${GO_BUILD_ENV} GOOS=darwin GOARCH=arm64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${CLI}-darwin-10.6-arm64
+
+build_public:
+	@echo MARK: build public
+	echo -e "node version.\n"  && \
+	node -v  && \
+	echo -e "npm version.\n"  && \
+	npm -v  && \
+	cd ${ROOT}/static_source/public && \
+	npm i && \
+	npm run build:prod && \
+	rm -rf ${ROOT}/build/public && \
+	mkdir -p ${ROOT}/build && \
+	mv ${ROOT}/static_source/public/dist ${ROOT}/build/public
 
 server:
 	@echo "Building http server"
@@ -150,6 +164,7 @@ build_structure:
 	cp ${ROOT}/${EXEC}-linux-arm-5 ${TMP_DIR}
 	cp ${ROOT}/${EXEC}-darwin-10.6-amd64 ${TMP_DIR}
 	cp ${ROOT}/${CLI}-darwin-10.6-amd64 ${TMP_DIR}
+	cp ${ROOT}/${CLI}-darwin-10.6-arm64 ${TMP_DIR}
 	cp ${ROOT}/${CLI}-linux-amd64 ${TMP_DIR}
 	cp ${ROOT}/bin/server ${TMP_DIR}
 
@@ -212,6 +227,12 @@ clean:
 	rm -f ${ROOT}/${EXEC}-linux-arm-6
 	rm -f ${ROOT}/${EXEC}-linux-arm-5
 	rm -f ${ROOT}/${EXEC}-darwin-10.6-amd64
+	rm -f ${ROOT}/${EXEC}-darwin-10.6-arm64
 	rm -f ${ROOT}/${CLI}-linux-amd64
 	rm -f ${ROOT}/${CLI}-darwin-10.6-amd64
+	rm -f ${ROOT}/${CLI}-darwin-10.6-arm64
 	rm -f ${HOME}/${ARCHIVE}
+
+front_client:
+	@echo MARK: generate front client lib
+	npx swagger-typescript-api@12.0.4 --axios -p ./api/api.swagger.yml -o ./static_source/public/src/api -n stub_new.ts

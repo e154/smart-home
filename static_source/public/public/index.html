@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+  <title><%= htmlWebpackPlugin.options.title %></title>
+<!--  <script>-->
+<!--    window.__VUE_DEVTOOLS_HOST__ = 'localhost' // default: localhost-->
+<!--    window.__VUE_DEVTOOLS_PORT__ = '8098' // default: 8098-->
+<!--  </script>-->
+<!--  <script src="http://localhost:8098"></script>-->
+
+  <script type="text/javascript">
+    const app_settings = Object.create(Object.prototype, {
+      server_url: {
+        get: function(){
+          return {{index . "server_url"}};
+        }
+      },
+      run_mode: {
+        get: function(){
+          return {{index . "run_mode"}};
+        }
+      },
+      server_version: {
+        get: function () {
+          return {{index . "server_version"}};
+        }
+      }
+    });
+  </script>
+
+</head>
+
+<body>
+  <noscript>
+    <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled.
+      Please enable it to continue.</strong>
+  </noscript>
+  <div id="app"></div>
+  <!-- built files will be auto injected -->
+</body>
+
+</html>
