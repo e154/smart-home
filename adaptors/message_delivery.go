@@ -66,11 +66,15 @@ func (n *MessageDelivery) SetStatus(ctx context.Context, msg *m.MessageDelivery)
 // List ...
 func (n *MessageDelivery) List(ctx context.Context, limit, offset int64, orderBy, sort string, query *m.MessageDeliveryQuery) (list []*m.MessageDelivery, total int64, err error) {
 	var dbList []*db.MessageDelivery
-	if dbList, total, err = n.table.List(limit, offset, orderBy, sort, &db.MessageDeliveryQuery{
-		StartDate: query.StartDate,
-		EndDate:   query.EndDate,
-		Types:     query.Types,
-	}); err != nil {
+	var queryObj *db.MessageDeliveryQuery
+	if query != nil {
+		queryObj = &db.MessageDeliveryQuery{
+			StartDate: query.StartDate,
+			EndDate:   query.EndDate,
+			Types:     query.Types,
+		}
+	}
+	if dbList, total, err = n.table.List(limit, offset, orderBy, sort, queryObj); err != nil {
 		return
 	}
 
