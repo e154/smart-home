@@ -67,8 +67,8 @@ jobs:
           echo -e "machine github.com\n  login ${{ secrets.GITHUBTOKEN }}" > ~/.netrc
           make get_deps
 
-      - name: Unit test code
-        id: test-code
+      - name: Build public
+        id: build-public
         run: make build_public
 
       - name: Unit test code
