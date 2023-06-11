@@ -86,7 +86,7 @@ func (p *Actor) Spawn() entity_manager.PluginActor {
 }
 
 // Send ...
-func (e *Actor) Send(phone string, message m.Message) (err error) {
+func (e *Actor) Send(phone string, message *m.Message) (err error) {
 
 	defer func() {
 		go func() { _ = e.UpdateBalance() }()

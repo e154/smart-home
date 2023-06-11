@@ -53,8 +53,8 @@ func NewProvider(attrs m.Attributes,
 }
 
 // Save ...
-func (e *Provider) Save(msg notify.Message) (addresses []string, message m.Message) {
-	message = m.Message{
+func (e *Provider) Save(msg notify.Message) (addresses []string, message *m.Message) {
+	message = &m.Message{
 		Type:       Name,
 		Attributes: msg.Attributes,
 	}
@@ -71,7 +71,7 @@ func (e *Provider) Save(msg notify.Message) (addresses []string, message m.Messa
 }
 
 // Send ...
-func (e *Provider) Send(address string, message m.Message) (err error) {
+func (e *Provider) Send(address string, message *m.Message) (err error) {
 
 	if e.Token == "" || e.UserName == "" {
 		return apperr.ErrBadActorSettingsParameters

@@ -34,10 +34,17 @@ const (
 	MessageStatusError = MessageStatus("error")
 )
 
+// MessageDeliveryQuery ...
+type MessageDeliveryQuery struct {
+	StartDate *time.Time `json:"start_date"`
+	EndDate   *time.Time `json:"end_date"`
+	Types     []string   `json:"types"`
+}
+
 // MessageDelivery ...
 type MessageDelivery struct {
 	Id                 int64         `json:"id"`
-	Message            Message       `json:"message"`
+	Message            *Message      `json:"message"`
 	MessageId          int64         `json:"message_id"`
 	Address            string        `json:"address"`
 	Status             MessageStatus `json:"status"`

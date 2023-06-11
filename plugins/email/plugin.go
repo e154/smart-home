@@ -128,8 +128,8 @@ func (p *plugin) Options() m.PluginOptions {
 }
 
 // Save ...
-func (p *plugin) Save(msg notify.Message) (addresses []string, message m.Message) {
-	message = m.Message{
+func (p *plugin) Save(msg notify.Message) (addresses []string, message *m.Message) {
+	message = &m.Message{
 		Type:       Name,
 		Attributes: msg.Attributes,
 	}
@@ -146,7 +146,7 @@ func (p *plugin) Save(msg notify.Message) (addresses []string, message m.Message
 }
 
 // Send ...
-func (p *plugin) Send(address string, message m.Message) (err error) {
+func (p *plugin) Send(address string, message *m.Message) (err error) {
 	err = p.actor.Send(address, message)
 	return
 }
