@@ -85,7 +85,7 @@
             :label="$t('message.table.type')"
             prop="type"
             align="left"
-            width="100px"
+            width="140px"
             :class-name="getSortClass('type')"
           >
             <template slot-scope="{row}">
@@ -97,10 +97,23 @@
             :label="$t('message_delivery.table.attributes')"
             prop="body"
             align="left"
-            width="auto"
+            width="100px"
           >
             <template slot-scope="{row}">
               <span>{{ Object.keys(row.message.attributes).length || $t('message_delivery.table.nothing') }}</span>
+            </template>
+          </el-table-column>
+
+          <el-table-column
+            :label="$t('message_delivery.table.address')"
+            prop="address"
+            sortable="custom"
+            align="left"
+            width="auto"
+            :class-name="getSortClass('address')"
+          >
+            <template slot-scope="{row}">
+              <span>{{ row.address }}</span>
             </template>
           </el-table-column>
 
@@ -109,7 +122,7 @@
             prop="status"
             sortable="custom"
             align="left"
-            width="150px"
+            width="100px"
             :class-name="getSortClass('status')"
           >
             <template slot-scope="{row}">
