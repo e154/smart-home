@@ -78,6 +78,7 @@ var (
 	ErrDashboardTabDelete   = New("failed to delete dashboard tab", ErrInternal)
 
 	ErrActionDelete = New("failed to delete action", ErrInternal)
+	ErrActionCreate = New("failed to create action", ErrInternal)
 
 	ErrEntityAdd           = New("failed to add entity", ErrInternal)
 	ErrEntityGet           = New("failed to get entity", ErrInternal)
@@ -115,6 +116,7 @@ var (
 	ErrAreaClean    = New("failed to clean area", ErrInternal)
 
 	ErrConditionDelete = New("condition delete", ErrInternal)
+	ErrConditionCreate = New("failed to create", ErrInternal)
 
 	ErrEntityActionAdd      = New("failed to add action", ErrInternal)
 	ErrEntityActionGet      = New("failed to get action", ErrAreaNotFound)
@@ -200,12 +202,6 @@ var (
 	ErrScriptDelete   = New("failed to delete script", ErrInternal)
 	ErrScriptSearch   = New("failed to search script", ErrInternal)
 
-	ErrStorageAdd      = New("failed to add storage", ErrInternal)
-	ErrStorageGet      = New("failed to get storage", ErrAreaNotFound)
-	ErrStorageNotFound = New("storage is not found", ErrNotFound)
-	ErrStorageDelete   = New("failed to delete storage", ErrInternal)
-	ErrStorageSearch   = New("failed to search storage", ErrInternal)
-
 	ErrTaskAdd      = New("failed to add Task", ErrInternal)
 	ErrTaskGet      = New("failed to get Task", ErrAreaNotFound)
 	ErrTaskUpdate   = New("failed to update Task", ErrInternal)
@@ -227,6 +223,7 @@ var (
 	ErrTemplateSearch   = New("failed to search template", ErrInternal)
 
 	ErrTriggerDelete = New("failed to delete trigger", ErrInternal)
+	ErrTriggerAdd    = New("failed to add trigger", ErrInternal)
 
 	ErrUserAdd      = New("failed to add user", ErrInternal)
 	ErrUserMetaAdd  = New("failed to add user meta", ErrInternal)

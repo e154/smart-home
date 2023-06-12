@@ -22,7 +22,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
@@ -115,7 +115,7 @@ func (n Variables) Delete(name string) (err error) {
 }
 
 // List ...
-func (n *Variables) List(limit, offset int64, orderBy, sort string, system bool) (list []Variable, total int64, err error) {
+func (n *Variables) List(limit, offset int, orderBy, sort string, system bool) (list []Variable, total int64, err error) {
 
 	if err = n.Db.Model(Variable{}).Where("system = ?", system).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrVariableList, err.Error())

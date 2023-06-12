@@ -22,7 +22,7 @@ import (
 	"context"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // IMessageDelivery ...
@@ -74,7 +74,7 @@ func (n *MessageDelivery) List(ctx context.Context, limit, offset int64, orderBy
 			Types:     query.Types,
 		}
 	}
-	if dbList, total, err = n.table.List(limit, offset, orderBy, sort, queryObj); err != nil {
+	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort, queryObj); err != nil {
 		return
 	}
 
@@ -89,7 +89,7 @@ func (n *MessageDelivery) List(ctx context.Context, limit, offset int64, orderBy
 // GetAllUncompleted ...
 func (n *MessageDelivery) GetAllUncompleted(ctx context.Context, limit, offset int64) (list []*m.MessageDelivery, total int64, err error) {
 	var dbList []*db.MessageDelivery
-	if dbList, total, err = n.table.GetAllUncompleted(limit, offset); err != nil {
+	if dbList, total, err = n.table.GetAllUncompleted(int(limit), int(offset)); err != nil {
 		return
 	}
 

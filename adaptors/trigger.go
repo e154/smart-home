@@ -23,8 +23,7 @@ import (
 
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/gorm"
-	gormbulk "github.com/t-tiger/gorm-bulk-insert"
+	"gorm.io/gorm"
 )
 
 // ITrigger ...
@@ -59,13 +58,13 @@ func (n *Trigger) DeleteByTaskId(id int64) (err error) {
 // AddMultiple ...
 func (n *Trigger) AddMultiple(items []*m.Trigger) (err error) {
 
-	insertRecords := make([]interface{}, 0, len(items))
+	insertRecords := make([]*db.Trigger, 0, len(items))
 
 	for _, ver := range items {
 		insertRecords = append(insertRecords, n.toDb(ver))
 	}
 
-	err = gormbulk.BulkInsert(n.db, insertRecords, len(insertRecords))
+	err = n.table.AddMultiple(insertRecords)
 	return
 }
 

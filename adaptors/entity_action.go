@@ -23,9 +23,8 @@ import (
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
-	gormbulk "github.com/t-tiger/gorm-bulk-insert"
+	"gorm.io/gorm"
 )
 
 // IEntityAction ...
@@ -72,7 +71,7 @@ func (n *EntityAction) DeleteByEntityId(id common.EntityId) (err error) {
 // AddMultiple ...
 func (n *EntityAction) AddMultiple(items []*m.EntityAction) (err error) {
 
-	insertRecords := make([]interface{}, 0, len(items))
+	insertRecords := make([]*db.EntityAction, 0, len(items))
 
 	for _, ver := range items {
 		//if ver.ImageId == 0 {
@@ -81,7 +80,7 @@ func (n *EntityAction) AddMultiple(items []*m.EntityAction) (err error) {
 		insertRecords = append(insertRecords, n.toDb(ver))
 	}
 
-	if err = gormbulk.BulkInsert(n.db, insertRecords, len(insertRecords)); err != nil {
+	if err = n.table.AddMultiple(insertRecords); err != nil {
 		err = errors.Wrap(apperr.ErrEntityActionAdd, err.Error())
 	}
 

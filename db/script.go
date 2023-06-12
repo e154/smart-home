@@ -25,8 +25,8 @@ import (
 	"github.com/e154/smart-home/common/apperr"
 
 	. "github.com/e154/smart-home/common"
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // Scripts ...
@@ -111,7 +111,7 @@ func (n Scripts) Delete(scriptId int64) (err error) {
 }
 
 // List ...
-func (n *Scripts) List(limit, offset int64, orderBy, sort string) (list []*Script, total int64, err error) {
+func (n *Scripts) List(limit, offset int, orderBy, sort string) (list []*Script, total int64, err error) {
 
 	if err = n.Db.Model(Script{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrScriptList, err.Error())
@@ -132,7 +132,7 @@ func (n *Scripts) List(limit, offset int64, orderBy, sort string) (list []*Scrip
 }
 
 // Search ...
-func (n *Scripts) Search(query string, limit, offset int64) (list []*Script, total int64, err error) {
+func (n *Scripts) Search(query string, limit, offset int) (list []*Script, total int64, err error) {
 
 	q := n.Db.Model(&Script{}).
 		Where("name LIKE ?", "%"+query+"%")

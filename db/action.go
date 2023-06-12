@@ -20,8 +20,8 @@ package db
 
 import (
 	"github.com/e154/smart-home/common/apperr"
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // Actions ...
@@ -48,6 +48,14 @@ func (d *Action) TableName() string {
 func (n Actions) DeleteByTaskId(id int64) (err error) {
 	if err = n.Db.Delete(&Action{}, "task_id = ?", id).Error; err != nil {
 		err = errors.Wrap(apperr.ErrActionDelete, err.Error())
+	}
+	return
+}
+
+// AddMultiple ...
+func (n *Actions) AddMultiple(actions []*Action) (err error) {
+	if err = n.Db.Create(&actions).Error; err != nil {
+		err = errors.Wrap(apperr.ErrActionCreate, err.Error())
 	}
 	return
 }

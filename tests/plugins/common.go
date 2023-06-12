@@ -399,7 +399,7 @@ func GetNewTelegram(name string) *m.Entity {
 
 // AddPlugin ...
 func AddPlugin(adaptors *adaptors.Adaptors, name string, opts ...m.Attributes) (err error) {
-	plugin := m.Plugin{
+	plugin := &m.Plugin{
 		Name:    name,
 		Version: "0.0.1",
 		Enabled: true,

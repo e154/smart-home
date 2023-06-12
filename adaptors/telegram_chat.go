@@ -22,7 +22,7 @@ import (
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // ITelegramChat ...
@@ -64,7 +64,7 @@ func (p *TelegramChat) Delete(entityId common.EntityId, channelId int64) (err er
 // List ...
 func (p *TelegramChat) List(limit, offset int64, orderBy, sort string, entityId common.EntityId) (list []m.TelegramChat, total int64, err error) {
 	var dbList []db.TelegramChat
-	if dbList, total, err = p.table.List(limit, offset, orderBy, sort, entityId); err != nil {
+	if dbList, total, err = p.table.List(int(limit), int(offset), orderBy, sort, entityId); err != nil {
 		return
 	}
 

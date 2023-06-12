@@ -20,8 +20,8 @@ package db
 
 import (
 	"github.com/e154/smart-home/common/apperr"
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // Permissions ...

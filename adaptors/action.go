@@ -21,8 +21,7 @@ package adaptors
 import (
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/gorm"
-	gormbulk "github.com/t-tiger/gorm-bulk-insert"
+	"gorm.io/gorm"
 )
 
 // IAction ...
@@ -57,13 +56,13 @@ func (n *Action) DeleteByTaskId(id int64) (err error) {
 // AddMultiple ...
 func (n *Action) AddMultiple(items []*m.Action) (err error) {
 
-	insertRecords := make([]interface{}, 0, len(items))
+	insertRecords := make([]*db.Action, 0, len(items))
 
 	for _, ver := range items {
 		insertRecords = append(insertRecords, n.toDb(ver))
 	}
 
-	err = gormbulk.BulkInsert(n.db, insertRecords, len(insertRecords))
+	err = n.table.AddMultiple(insertRecords)
 	return
 }
 

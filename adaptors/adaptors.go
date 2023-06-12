@@ -21,7 +21,7 @@ package adaptors
 import (
 	"context"
 
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 	"go.uber.org/fx"
 
 	"github.com/e154/smart-home/common/logger"

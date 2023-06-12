@@ -24,8 +24,8 @@ import (
 
 	"github.com/e154/smart-home/common/apperr"
 
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // MessageDeliveries ...
@@ -61,7 +61,7 @@ func (n *MessageDeliveries) Add(msg *MessageDelivery) (id int64, err error) {
 	return
 }
 
-func (n *MessageDeliveries) List(limit, offset int64, orderBy, sort string, queryObj *MessageDeliveryQuery) (list []*MessageDelivery, total int64, err error) {
+func (n *MessageDeliveries) List(limit, offset int, orderBy, sort string, queryObj *MessageDeliveryQuery) (list []*MessageDelivery, total int64, err error) {
 
 	list = make([]*MessageDelivery, 0)
 	q := n.Db.Model(&MessageDelivery{}).
@@ -102,7 +102,7 @@ func (n *MessageDeliveries) List(limit, offset int64, orderBy, sort string, quer
 }
 
 // GetAllUncompleted ...
-func (n *MessageDeliveries) GetAllUncompleted(limit, offset int64) (list []*MessageDelivery, total int64, err error) {
+func (n *MessageDeliveries) GetAllUncompleted(limit, offset int) (list []*MessageDelivery, total int64, err error) {
 
 	if err = n.Db.Model(&MessageDelivery{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMessageDeliveryUpdate, err.Error())

@@ -26,8 +26,8 @@ import (
 	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/e154/smart-home/common"
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // EntityStorages ...
@@ -79,7 +79,7 @@ func (n *EntityStorages) GetLastByEntityId(entityId common.EntityId) (v EntitySt
 }
 
 // List ...
-func (n *EntityStorages) List(limit, offset int64, orderBy, sort string) (list []EntityStorage, total int64, err error) {
+func (n *EntityStorages) List(limit, offset int, orderBy, sort string) (list []EntityStorage, total int64, err error) {
 
 	if err = n.Db.Model(EntityStorage{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrEntityStorageList, err.Error())
@@ -107,7 +107,7 @@ func (n *EntityStorages) List(limit, offset int64, orderBy, sort string) (list [
 }
 
 // ListByEntityId ...
-func (n *EntityStorages) ListByEntityId(limit, offset int64, orderBy, sort string, entityId common.EntityId, startDate, endDate *time.Time) (list []EntityStorage, total int64, err error) {
+func (n *EntityStorages) ListByEntityId(limit, offset int, orderBy, sort string, entityId common.EntityId, startDate, endDate *time.Time) (list []EntityStorage, total int64, err error) {
 
 	q := n.Db.Model(&EntityStorage{}).Where("entity_id = ?", entityId)
 

@@ -25,8 +25,8 @@ import (
 	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/e154/smart-home/common"
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // TelegramChats ...
@@ -68,7 +68,7 @@ func (n TelegramChats) Delete(entityId common.EntityId, chatId int64) (err error
 }
 
 // List ...
-func (n *TelegramChats) List(limit, offset int64, orderBy, sort string, entityId common.EntityId) (list []TelegramChat, total int64, err error) {
+func (n *TelegramChats) List(limit, offset int, orderBy, sort string, entityId common.EntityId) (list []TelegramChat, total int64, err error) {
 
 	if err = n.Db.Model(TelegramChat{EntityId: entityId}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrChatList, err.Error())

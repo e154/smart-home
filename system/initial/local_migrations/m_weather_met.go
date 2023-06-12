@@ -22,7 +22,7 @@ func (n *MigrationWeatherMet) Up(ctx context.Context, adaptors *adaptors.Adaptor
 		n.adaptors = adaptors
 	}
 
-	_ = n.adaptors.Plugin.CreateOrUpdate(m.Plugin{
+	_ = n.adaptors.Plugin.CreateOrUpdate(&m.Plugin{
 		Name:    "weather_met",
 		Version: "0.0.1",
 		Enabled: true,

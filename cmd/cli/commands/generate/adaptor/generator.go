@@ -43,7 +43,7 @@ import (
 	"{{.Dir}}/common"
 	"{{.Dir}}/db"
 	m "{{.Dir}}/models"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type I{{.Name}} interface {

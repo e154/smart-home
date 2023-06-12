@@ -22,8 +22,8 @@ import (
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // IAlexaSkill ...
@@ -149,7 +149,7 @@ func (n *AlexaSkill) Delete(appId int64) (err error) {
 // List ...
 func (n *AlexaSkill) List(limit, offset int64, orderBy, sort string) (list []*m.AlexaSkill, total int64, err error) {
 	var dbList []*db.AlexaSkill
-	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
+	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort); err != nil {
 		return
 	}
 
@@ -164,7 +164,7 @@ func (n *AlexaSkill) List(limit, offset int64, orderBy, sort string) (list []*m.
 // ListEnabled ...
 func (n *AlexaSkill) ListEnabled(limit, offset int64) (list []*m.AlexaSkill, err error) {
 	var dbList []*db.AlexaSkill
-	if dbList, err = n.table.ListEnabled(limit, offset); err != nil {
+	if dbList, err = n.table.ListEnabled(int(limit), int(offset)); err != nil {
 		return
 	}
 

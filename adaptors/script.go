@@ -22,7 +22,7 @@ import (
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"github.com/jinzhu/copier"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // IScript ...
@@ -110,7 +110,7 @@ func (n *Script) List(limit, offset int64, orderBy, sort string) (list []*m.Scri
 	}
 
 	var dbList []*db.Script
-	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
+	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort); err != nil {
 		return
 	}
 
@@ -126,7 +126,7 @@ func (n *Script) List(limit, offset int64, orderBy, sort string) (list []*m.Scri
 // Search ...
 func (n *Script) Search(query string, limit, offset int64) (list []*m.Script, total int64, err error) {
 	var dbList []*db.Script
-	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
+	if dbList, total, err = n.table.Search(query, int(limit), int(offset)); err != nil {
 		return
 	}
 

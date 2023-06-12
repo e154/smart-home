@@ -20,8 +20,8 @@ package db
 
 import (
 	"github.com/e154/smart-home/common/apperr"
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // Conditions ...
@@ -48,6 +48,14 @@ func (d *Condition) TableName() string {
 func (n Conditions) DeleteByTaskId(id int64) (err error) {
 	if err = n.Db.Delete(&Condition{}, "task_id = ?", id).Error; err != nil {
 		err = errors.Wrap(apperr.ErrConditionDelete, err.Error())
+	}
+	return
+}
+
+// AddMultiple ...
+func (n *Conditions) AddMultiple(conditions []*Condition) (err error) {
+	if err = n.Db.Create(&conditions).Error; err != nil {
+		err = errors.Wrap(apperr.ErrConditionCreate, err.Error())
 	}
 	return
 }

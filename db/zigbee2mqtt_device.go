@@ -25,9 +25,9 @@ import (
 
 	"github.com/e154/smart-home/common/apperr"
 
-	"github.com/jinzhu/gorm"
 	"github.com/lib/pq"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // Zigbee2mqttDevices ...
@@ -105,7 +105,7 @@ func (z Zigbee2mqttDevices) Delete(id string) (err error) {
 }
 
 // List ...
-func (z *Zigbee2mqttDevices) List(limit, offset int64) (list []*Zigbee2mqttDevice, total int64, err error) {
+func (z *Zigbee2mqttDevices) List(limit, offset int) (list []*Zigbee2mqttDevice, total int64, err error) {
 
 	if err = z.Db.Model(Zigbee2mqttDevice{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrZigbeeDeviceList, err.Error())
@@ -125,7 +125,7 @@ func (z *Zigbee2mqttDevices) List(limit, offset int64) (list []*Zigbee2mqttDevic
 }
 
 // ListByBridgeId ...
-func (z *Zigbee2mqttDevices) ListByBridgeId(bridgeId, limit, offset int64) (list []*Zigbee2mqttDevice, total int64, err error) {
+func (z *Zigbee2mqttDevices) ListByBridgeId(bridgeId int64, limit, offset int) (list []*Zigbee2mqttDevice, total int64, err error) {
 
 	if err = z.Db.Model(Zigbee2mqttDevice{}).Where("zigbee2mqtt_id = ?", bridgeId).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrZigbeeDeviceList, err.Error())
@@ -146,7 +146,7 @@ func (z *Zigbee2mqttDevices) ListByBridgeId(bridgeId, limit, offset int64) (list
 }
 
 // Search ...
-func (z *Zigbee2mqttDevices) Search(query string, limit, offset int64) (list []*Zigbee2mqttDevice, total int64, err error) {
+func (z *Zigbee2mqttDevices) Search(query string, limit, offset int) (list []*Zigbee2mqttDevice, total int64, err error) {
 
 	q := z.Db.Model(&Zigbee2mqttDevice{}).
 		Where("name LIKE ?", "%"+query+"%")

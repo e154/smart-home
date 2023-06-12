@@ -21,8 +21,8 @@ package db
 import (
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // Triggers ...
@@ -53,6 +53,14 @@ func (d *Trigger) TableName() string {
 func (n Triggers) DeleteByTaskId(id int64) (err error) {
 	if err = n.Db.Delete(&Trigger{}, "task_id = ?", id).Error; err != nil {
 		err = errors.Wrap(apperr.ErrTriggerDelete, err.Error())
+	}
+	return
+}
+
+// AddMultiple ...
+func (n *Triggers) AddMultiple(triggers []*Trigger) (err error) {
+	if err = n.Db.Create(&triggers).Error; err != nil {
+		err = errors.Wrap(apperr.ErrTriggerAdd, err.Error())
 	}
 	return
 }

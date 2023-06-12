@@ -24,7 +24,7 @@ import (
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // IEntity ...
@@ -281,7 +281,7 @@ func (n *Entity) Delete(id common.EntityId) (err error) {
 func (n *Entity) List(limit, offset int64, orderBy, sort string, autoLoad bool) (list []*m.Entity, total int64, err error) {
 
 	var dbList []*db.Entity
-	if dbList, total, err = n.table.List(limit, offset, orderBy, sort, autoLoad); err != nil {
+	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort, autoLoad); err != nil {
 		return
 	}
 
@@ -297,7 +297,7 @@ func (n *Entity) List(limit, offset int64, orderBy, sort string, autoLoad bool) 
 func (n *Entity) GetByType(t string, limit, offset int64) (list []*m.Entity, err error) {
 
 	var dbList []*db.Entity
-	if dbList, err = n.table.GetByType(t, limit, offset); err != nil {
+	if dbList, err = n.table.GetByType(t, int(limit), int(offset)); err != nil {
 		return
 	}
 
@@ -449,7 +449,7 @@ func (n *Entity) Update(ver *m.Entity) (err error) {
 // Search ...
 func (n *Entity) Search(query string, limit, offset int64) (list []*m.Entity, total int64, err error) {
 	var dbList []*db.Entity
-	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
+	if dbList, total, err = n.table.Search(query, int(limit), int(offset)); err != nil {
 		return
 	}
 
@@ -552,7 +552,7 @@ func (n *Entity) fromDb(dbVer *db.Entity) (ver *m.Entity) {
 	if dbVer.Scripts != nil && len(dbVer.Scripts) > 0 {
 		scriptAdaptor := GetScriptAdaptor(n.db)
 		for _, script := range dbVer.Scripts {
-			s, _ := scriptAdaptor.fromDb(&script)
+			s, _ := scriptAdaptor.fromDb(script)
 			ver.Scripts = append(ver.Scripts, s)
 		}
 	} else {

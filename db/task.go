@@ -25,8 +25,8 @@ import (
 	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/e154/smart-home/common"
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // Tasks ...
@@ -155,7 +155,7 @@ func (n Tasks) Disable(id int64) (err error) {
 }
 
 // List ...
-func (n *Tasks) List(limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*Task, total int64, err error) {
+func (n *Tasks) List(limit, offset int, orderBy, sort string, onlyEnabled bool) (list []*Task, total int64, err error) {
 
 	if err = n.Db.Model(Task{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrTaskList, err.Error())

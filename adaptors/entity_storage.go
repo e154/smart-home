@@ -25,7 +25,7 @@ import (
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // IEntityStorage ...
@@ -73,7 +73,7 @@ func (n *EntityStorage) GetLastByEntityId(entityId common.EntityId) (ver *m.Enti
 // List ...
 func (n *EntityStorage) List(limit, offset int64, orderBy, sort string) (list []*m.EntityStorage, total int64, err error) {
 	var dbList []db.EntityStorage
-	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
+	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort); err != nil {
 		return
 	}
 
@@ -87,7 +87,7 @@ func (n *EntityStorage) List(limit, offset int64, orderBy, sort string) (list []
 // ListByEntityId ...
 func (n *EntityStorage) ListByEntityId(limit, offset int64, orderBy, sort string, entityId common.EntityId, startDate, endDate *time.Time) (list []*m.EntityStorage, total int64, err error) {
 	var dbList []db.EntityStorage
-	if dbList, total, err = n.table.ListByEntityId(limit, offset, orderBy, sort, entityId, startDate, endDate); err != nil {
+	if dbList, total, err = n.table.ListByEntityId(int(limit), int(offset), orderBy, sort, entityId, startDate, endDate); err != nil {
 		return
 	}
 

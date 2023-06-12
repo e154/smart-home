@@ -26,7 +26,7 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/cache"
 	"github.com/e154/smart-home/system/orm"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // IMetric ...
@@ -39,8 +39,8 @@ type IMetric interface {
 	AddMultiple(items []*m.Metric) (err error)
 	List(limit, offset int64, orderBy, sort string) (list []*m.Metric, total int64, err error)
 	Search(query string, limit, offset int) (list []*m.Metric, total int64, err error)
-	fromDb(dbVer db.Metric) (ver *m.Metric)
-	toDb(ver *m.Metric) (dbVer db.Metric)
+	fromDb(dbVer *db.Metric) (ver *m.Metric)
+	toDb(ver *m.Metric) (dbVer *db.Metric)
 }
 
 // Metric ...
@@ -71,7 +71,7 @@ func (n *Metric) Add(ver *m.Metric) (id int64, err error) {
 
 // GetById ...
 func (n *Metric) GetById(id int64) (metric *m.Metric, err error) {
-	var dbVer db.Metric
+	var dbVer *db.Metric
 	if dbVer, err = n.table.GetById(id); err != nil {
 		return
 	}
@@ -93,7 +93,7 @@ func (n *Metric) GetById(id int64) (metric *m.Metric, err error) {
 
 // GetByIdWithData ...
 func (n *Metric) GetByIdWithData(id int64, from, to *time.Time, metricRange *string) (metric *m.Metric, err error) {
-	var dbVer db.Metric
+	var dbVer *db.Metric
 	if dbVer, err = n.table.GetById(id); err != nil {
 		return
 	}
@@ -127,27 +127,19 @@ func (n *Metric) Delete(deviceId int64) (err error) {
 // AddMultiple ...
 func (n *Metric) AddMultiple(items []*m.Metric) (err error) {
 
-	//TODO not work
-	//insertRecords := make([]interface{}, 0, len(items))
-	//for _, ver := range items {
-	//	insertRecords = append(insertRecords, n.toDb(ver))
-	//}
-	//
-	//err = gormbulk.BulkInsert(n.db, insertRecords, len(insertRecords))
-
+	insertRecords := make([]*db.Metric, 0, len(items))
 	for _, ver := range items {
-		if _, err = n.table.Add(n.toDb(ver)); err != nil {
-			return
-		}
+		insertRecords = append(insertRecords, n.toDb(ver))
 	}
 
+	err = n.table.AddMultiple(insertRecords)
 	return
 }
 
 // List ...
 func (n *Metric) List(limit, offset int64, orderBy, sort string) (list []*m.Metric, total int64, err error) {
-	var dbList []db.Metric
-	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
+	var dbList []*db.Metric
+	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort); err != nil {
 		return
 	}
 
@@ -161,7 +153,7 @@ func (n *Metric) List(limit, offset int64, orderBy, sort string) (list []*m.Metr
 
 // Search ...
 func (n *Metric) Search(query string, limit, offset int) (list []*m.Metric, total int64, err error) {
-	var dbList []db.Metric
+	var dbList []*db.Metric
 	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
 		return
 	}
@@ -174,7 +166,7 @@ func (n *Metric) Search(query string, limit, offset int) (list []*m.Metric, tota
 	return
 }
 
-func (n *Metric) fromDb(dbVer db.Metric) (ver *m.Metric) {
+func (n *Metric) fromDb(dbVer *db.Metric) (ver *m.Metric) {
 	ver = &m.Metric{
 		Id:          dbVer.Id,
 		Name:        dbVer.Name,
@@ -190,7 +182,7 @@ func (n *Metric) fromDb(dbVer db.Metric) (ver *m.Metric) {
 
 	if dbVer.Data != nil && len(dbVer.Data) > 0 {
 		metricBucketAdaptor := GetMetricBucketAdaptor(n.db, nil)
-		ver.Data = make([]m.MetricDataItem, len(dbVer.Data))
+		ver.Data = make([]*m.MetricDataItem, len(dbVer.Data))
 		for i, dbVer := range dbVer.Data {
 			ver.Data[i] = metricBucketAdaptor.fromDb(dbVer)
 		}
@@ -201,8 +193,8 @@ func (n *Metric) fromDb(dbVer db.Metric) (ver *m.Metric) {
 	return
 }
 
-func (n *Metric) toDb(ver *m.Metric) (dbVer db.Metric) {
-	dbVer = db.Metric{
+func (n *Metric) toDb(ver *m.Metric) (dbVer *db.Metric) {
+	dbVer = &db.Metric{
 		Id:          ver.Id,
 		Name:        ver.Name,
 		Type:        ver.Type,

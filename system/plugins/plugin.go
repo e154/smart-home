@@ -109,7 +109,7 @@ func (p *Plugin) Options() m.PluginOptions {
 
 // LoadSettings ...
 func (p *Plugin) LoadSettings(pl Plugable) (settings m.Attributes, err error) {
-	var plugin m.Plugin
+	var plugin *m.Plugin
 	if plugin, err = p.Adaptors.Plugin.GetByName(pl.Name()); err != nil {
 		return
 	}

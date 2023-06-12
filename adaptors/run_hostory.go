@@ -21,7 +21,7 @@ package adaptors
 import (
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // IRunHistory ...
@@ -72,7 +72,7 @@ func (n *RunHistory) Update(story *m.RunStory) (err error) {
 // List ...
 func (n *RunHistory) List(limit, offset int64, orderBy, sort string) (list []*m.RunStory, total int64, err error) {
 	var dbList []*db.RunStory
-	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
+	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort); err != nil {
 		return
 	}
 

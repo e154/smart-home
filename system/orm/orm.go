@@ -25,12 +25,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/e154/smart-home/common/logger"
-
 	"github.com/Masterminds/semver"
-	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
 	"go.uber.org/fx"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	dbLogger "gorm.io/gorm/logger"
+
+	"github.com/e154/smart-home/common/logger"
 )
 
 // Orm ...
@@ -80,21 +82,33 @@ func NewOrm(lc fx.Lifecycle,
 func (o *Orm) Start() (err error) {
 
 	log.Infof("database connect %s", o.cfg.String())
-	o.db, err = gorm.Open("postgres", o.cfg.String())
+	o.db, err = gorm.Open(postgres.Open(o.cfg.String()), &gorm.Config{
+		SkipDefaultTransaction: true,
+		PrepareStmt:            true,
+	})
 	if err != nil {
+		// it for DI
+		err = nil
 		return
 	}
 
-	o.db.LogMode(o.cfg.Logger)
+	if o.cfg.Debug {
+		o.db.Logger.LogMode(dbLogger.Info)
+	}
+
+	var db *sql.DB
+	if db, err = o.db.DB(); err != nil {
+		return
+	}
 
 	// SetMaxIdleConns sets the maximum number of connections in the idle connection pool
-	o.db.DB().SetMaxIdleConns(o.cfg.MaxIdleConns)
+	db.SetMaxIdleConns(o.cfg.MaxIdleConns)
 
 	// SetMaxOpenConns sets the maximum number of open connections to the database.
-	o.db.DB().SetMaxOpenConns(o.cfg.MaxOpenConns)
+	db.SetMaxOpenConns(o.cfg.MaxOpenConns)
 
 	// SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
-	o.db.DB().SetConnMaxLifetime(time.Duration(o.cfg.ConnMaxLifeTime) * time.Minute)
+	db.SetConnMaxLifetime(time.Duration(o.cfg.ConnMaxLifeTime) * time.Minute)
 
 	err = o.check()
 
@@ -103,14 +117,19 @@ func (o *Orm) Start() (err error) {
 
 // DB ...
 func (o *Orm) DB() *sql.DB {
-	return o.db.DB()
+	db, _ := o.db.DB()
+	return db
 }
 
 // Shutdown ...
 func (o *Orm) Shutdown() (err error) {
 	if o.db != nil {
-		log.Debug("database shutdown")
-		err = o.db.Close()
+		log.Info("database shutdown")
+		var db *sql.DB
+		if db, err = o.db.DB(); err != nil {
+			return
+		}
+		err = db.Close()
 	}
 	return
 }
@@ -216,4 +235,18 @@ func (o *Orm) checkExtensions() (err error) {
 // ExtTimescaledbEnabled ...
 func (o Orm) ExtTimescaledbEnabled() bool {
 	return o.extTimescaledb
+}
+
+func (o *Orm) Ping() (latency float64, err error) {
+
+	start := time.Now()
+
+	if err = o.DB().Ping(); err != nil {
+		return
+	}
+
+	diff := time.Since(start).Microseconds()
+	latency = float64(diff) / 1000000.0
+
+	return
 }

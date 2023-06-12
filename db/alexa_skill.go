@@ -25,8 +25,8 @@ import (
 	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/e154/smart-home/common"
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // AlexaSkills ...
@@ -87,7 +87,7 @@ func (n AlexaSkills) GetById(id int64) (v *AlexaSkill, err error) {
 }
 
 // List ...
-func (n *AlexaSkills) List(limit, offset int64, orderBy, sort string) (list []*AlexaSkill, total int64, err error) {
+func (n *AlexaSkills) List(limit, offset int, orderBy, sort string) (list []*AlexaSkill, total int64, err error) {
 
 	if err = n.Db.Model(AlexaSkill{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrAlexaSkillList, err.Error())
@@ -112,7 +112,7 @@ func (n *AlexaSkills) List(limit, offset int64, orderBy, sort string) (list []*A
 }
 
 // ListEnabled ...
-func (n *AlexaSkills) ListEnabled(limit, offset int64) (list []*AlexaSkill, err error) {
+func (n *AlexaSkills) ListEnabled(limit, offset int) (list []*AlexaSkill, err error) {
 
 	list = make([]*AlexaSkill, 0)
 	err = n.Db.Model(&AlexaSkill{}).
@@ -138,19 +138,20 @@ func (n *AlexaSkills) ListEnabled(limit, offset int64) (list []*AlexaSkill, err 
 }
 
 func (n AlexaSkills) preload(v *AlexaSkill) (err error) {
-	err = n.Db.Model(v).
-		Related(&v.Intents).Error
-
-	if err != nil {
-		err = errors.Wrap(err, "get related intents failed")
-		return
-	}
-
-	for _, intent := range v.Intents {
-		intent.Script = &Script{Id: intent.ScriptId}
-		err = n.Db.Model(intent).
-			Related(intent.Script).Error
-	}
+	//todo fix
+	//err = n.Db.Model(v).
+	//	Related(&v.Intents).Error
+	//
+	//if err != nil {
+	//	err = errors.Wrap(err, "get related intents failed")
+	//	return
+	//}
+	//
+	//for _, intent := range v.Intents {
+	//	intent.Script = &Script{Id: intent.ScriptId}
+	//	err = n.Db.Model(intent).
+	//		Related(intent.Script).Error
+	//}
 	return
 }
 

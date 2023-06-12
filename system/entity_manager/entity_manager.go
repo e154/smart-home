@@ -175,7 +175,7 @@ func (e *entityManager) SetMetric(id common.EntityId, name string, value map[str
 			continue
 		}
 
-		err = e.adaptors.MetricBucket.Add(m.MetricDataItem{
+		err = e.adaptors.MetricBucket.Add(&m.MetricDataItem{
 			Value:    value,
 			MetricId: metric.Id,
 			Time:     time.Now(),
@@ -554,7 +554,7 @@ func (e *entityManager) getCrudActor(entityId common.EntityId) (result CrudActor
 // Add ...
 func (e *entityManager) Add(entity *m.Entity) (err error) {
 
-	var plugin m.Plugin
+	var plugin *m.Plugin
 	if plugin, err = e.adaptors.Plugin.GetByName(entity.PluginName); err != nil {
 		return
 	}

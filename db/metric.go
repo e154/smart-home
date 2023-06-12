@@ -26,8 +26,8 @@ import (
 	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/e154/smart-home/common"
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // Metrics ...
@@ -38,7 +38,7 @@ type Metrics struct {
 // Metric ...
 type Metric struct {
 	Id          int64 `gorm:"primary_key"`
-	Data        []MetricBucket
+	Data        []*MetricBucket
 	Name        string
 	Description string
 	Options     json.RawMessage `gorm:"type:jsonb;not null"`
@@ -53,7 +53,7 @@ func (Metric) TableName() string {
 }
 
 // Add ...
-func (n Metrics) Add(metric Metric) (id int64, err error) {
+func (n Metrics) Add(metric *Metric) (id int64, err error) {
 	if err = n.Db.Create(&metric).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMetricAdd, err.Error())
 		return
@@ -63,8 +63,8 @@ func (n Metrics) Add(metric Metric) (id int64, err error) {
 }
 
 // GetById ...
-func (n Metrics) GetById(id int64) (metric Metric, err error) {
-	metric = Metric{Id: id}
+func (n Metrics) GetById(id int64) (metric *Metric, err error) {
+	metric = &Metric{Id: id}
 	if err = n.Db.First(&metric).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			err = errors.Wrap(apperr.ErrMetricNotFound, fmt.Sprintf("id \"%d\"", id))
@@ -76,7 +76,7 @@ func (n Metrics) GetById(id int64) (metric Metric, err error) {
 }
 
 // Update ...
-func (n Metrics) Update(m Metric) (err error) {
+func (n Metrics) Update(m *Metric) (err error) {
 	q := map[string]interface{}{
 		"name":        m.Name,
 		"description": m.Description,
@@ -98,14 +98,14 @@ func (n Metrics) Delete(id int64) (err error) {
 }
 
 // List ...
-func (n *Metrics) List(limit, offset int64, orderBy, sort string) (list []Metric, total int64, err error) {
+func (n *Metrics) List(limit, offset int, orderBy, sort string) (list []*Metric, total int64, err error) {
 
 	if err = n.Db.Model(Metric{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMetricList, err.Error())
 		return
 	}
 
-	list = make([]Metric, 0)
+	list = make([]*Metric, 0)
 	q := n.Db.Model(&Metric{}).
 		Limit(limit).
 		Offset(offset)
@@ -122,7 +122,7 @@ func (n *Metrics) List(limit, offset int64, orderBy, sort string) (list []Metric
 }
 
 // Search ...q
-func (n *Metrics) Search(query string, limit, offset int) (list []Metric, total int64, err error) {
+func (n *Metrics) Search(query string, limit, offset int) (list []*Metric, total int64, err error) {
 
 	q := n.Db.Model(&Metric{}).
 		Where("name LIKE ?", "%"+query+"%")
@@ -137,10 +137,18 @@ func (n *Metrics) Search(query string, limit, offset int) (list []Metric, total 
 		Offset(offset).
 		Order("name ASC")
 
-	list = make([]Metric, 0)
+	list = make([]*Metric, 0)
 	err = q.Find(&list).Error
 	if err != nil {
 		err = errors.Wrap(apperr.ErrMetricSearch, err.Error())
+	}
+	return
+}
+
+// AddMultiple ...
+func (n *Metrics) AddMultiple(metrics []*Metric) (err error) {
+	if err = n.Db.Create(&metrics).Error; err != nil {
+		err = errors.Wrap(apperr.ErrMetricAdd, err.Error())
 	}
 	return
 }

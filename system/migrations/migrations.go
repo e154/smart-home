@@ -23,7 +23,7 @@ import (
 	"net/http"
 	"path"
 
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 	migrate "github.com/rubenv/sql-migrate"
 
 	"github.com/e154/smart-home/common/logger"

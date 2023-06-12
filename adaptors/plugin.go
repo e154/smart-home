@@ -23,20 +23,20 @@ import (
 
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // IPlugin ...
 type IPlugin interface {
-	Add(plugin m.Plugin) error
-	CreateOrUpdate(ver m.Plugin) error
-	Update(plugin m.Plugin) error
+	Add(plugin *m.Plugin) error
+	CreateOrUpdate(ver *m.Plugin) error
+	Update(plugin *m.Plugin) error
 	Delete(pluginId string) error
-	List(limit, offset int64, orderBy, sort string) (list []m.Plugin, total int64, err error)
-	Search(query string, limit, offset int64) (list []m.Plugin, total int64, err error)
-	GetByName(name string) (ver m.Plugin, err error)
-	fromDb(dbVer db.Plugin) (plugin m.Plugin)
-	toDb(plugin m.Plugin) (dbVer db.Plugin)
+	List(limit, offset int64, orderBy, sort string) (list []*m.Plugin, total int64, err error)
+	Search(query string, limit, offset int64) (list []*m.Plugin, total int64, err error)
+	GetByName(name string) (ver *m.Plugin, err error)
+	fromDb(dbVer *db.Plugin) (plugin *m.Plugin)
+	toDb(plugin *m.Plugin) (dbVer *db.Plugin)
 }
 
 // Plugin ...
@@ -55,19 +55,19 @@ func GetPluginAdaptor(d *gorm.DB) IPlugin {
 }
 
 // Add ...
-func (p *Plugin) Add(plugin m.Plugin) (err error) {
+func (p *Plugin) Add(plugin *m.Plugin) (err error) {
 	err = p.table.Add(p.toDb(plugin))
 	return
 }
 
 // CreateOrUpdate ...
-func (p *Plugin) CreateOrUpdate(plugin m.Plugin) (err error) {
+func (p *Plugin) CreateOrUpdate(plugin *m.Plugin) (err error) {
 	err = p.table.CreateOrUpdate(p.toDb(plugin))
 	return
 }
 
 // Update ...
-func (p *Plugin) Update(plugin m.Plugin) (err error) {
+func (p *Plugin) Update(plugin *m.Plugin) (err error) {
 	err = p.table.Update(p.toDb(plugin))
 	return
 }
@@ -79,13 +79,13 @@ func (p *Plugin) Delete(name string) (err error) {
 }
 
 // List ...
-func (p *Plugin) List(limit, offset int64, orderBy, sort string) (list []m.Plugin, total int64, err error) {
-	var dbList []db.Plugin
-	if dbList, total, err = p.table.List(limit, offset, orderBy, sort); err != nil {
+func (p *Plugin) List(limit, offset int64, orderBy, sort string) (list []*m.Plugin, total int64, err error) {
+	var dbList []*db.Plugin
+	if dbList, total, err = p.table.List(int(limit), int(offset), orderBy, sort); err != nil {
 		return
 	}
 
-	list = make([]m.Plugin, len(dbList))
+	list = make([]*m.Plugin, len(dbList))
 	for i, dbVer := range dbList {
 		list[i] = p.fromDb(dbVer)
 	}
@@ -93,13 +93,13 @@ func (p *Plugin) List(limit, offset int64, orderBy, sort string) (list []m.Plugi
 }
 
 // Search ...
-func (p *Plugin) Search(query string, limit, offset int64) (list []m.Plugin, total int64, err error) {
-	var dbList []db.Plugin
-	if dbList, total, err = p.table.Search(query, limit, offset); err != nil {
+func (p *Plugin) Search(query string, limit, offset int64) (list []*m.Plugin, total int64, err error) {
+	var dbList []*db.Plugin
+	if dbList, total, err = p.table.Search(query, int(limit), int(offset)); err != nil {
 		return
 	}
 
-	list = make([]m.Plugin, len(dbList))
+	list = make([]*m.Plugin, len(dbList))
 	for i, dbVer := range dbList {
 		list[i] = p.fromDb(dbVer)
 	}
@@ -108,9 +108,9 @@ func (p *Plugin) Search(query string, limit, offset int64) (list []m.Plugin, tot
 }
 
 // GetByName ...
-func (p *Plugin) GetByName(name string) (ver m.Plugin, err error) {
+func (p *Plugin) GetByName(name string) (ver *m.Plugin, err error) {
 
-	var dbVer db.Plugin
+	var dbVer *db.Plugin
 	if dbVer, err = p.table.GetByName(name); err != nil {
 		return
 	}
@@ -120,8 +120,8 @@ func (p *Plugin) GetByName(name string) (ver m.Plugin, err error) {
 	return
 }
 
-func (p *Plugin) fromDb(dbVer db.Plugin) (ver m.Plugin) {
-	ver = m.Plugin{
+func (p *Plugin) fromDb(dbVer *db.Plugin) (ver *m.Plugin) {
+	ver = &m.Plugin{
 		Name:    dbVer.Name,
 		Version: dbVer.Version,
 		Enabled: dbVer.Enabled,
@@ -138,8 +138,8 @@ func (p *Plugin) fromDb(dbVer db.Plugin) (ver m.Plugin) {
 	return
 }
 
-func (p *Plugin) toDb(ver m.Plugin) (dbVer db.Plugin) {
-	dbVer = db.Plugin{
+func (p *Plugin) toDb(ver *m.Plugin) (dbVer *db.Plugin) {
+	dbVer = &db.Plugin{
 		Name:    ver.Name,
 		Version: ver.Version,
 		Enabled: ver.Enabled,

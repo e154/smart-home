@@ -26,7 +26,7 @@ func (n *MigrationMqtt) Up(ctx context.Context, adaptors *adaptors.Adaptors) err
 }
 
 func (n *MigrationMqtt) addPlugin(name string, enabled, system, actor bool) (node *m.Plugin) {
-	_ = n.adaptors.Plugin.CreateOrUpdate(m.Plugin{
+	_ = n.adaptors.Plugin.CreateOrUpdate(&m.Plugin{
 		Name:    name,
 		Version: "0.0.1",
 		Enabled: enabled,

@@ -26,8 +26,8 @@ import (
 	"github.com/jackc/pgerrcode"
 	"github.com/lib/pq"
 
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 
 	"github.com/e154/smart-home/common/apperr"
 )
@@ -89,7 +89,7 @@ func (n Areas) GetByName(name string) (area *Area, err error) {
 }
 
 // Search ...
-func (n *Areas) Search(query string, limit, offset int64) (list []*Area, total int64, err error) {
+func (n *Areas) Search(query string, limit, offset int) (list []*Area, total int64, err error) {
 
 	q := n.Db.Model(&Area{}).
 		Where("name LIKE ?", "%"+query+"%")
@@ -158,7 +158,7 @@ func (n Areas) Update(m *Area) (err error) {
 }
 
 // List ...
-func (n *Areas) List(limit, offset int64, orderBy, sort string) (list []*Area, total int64, err error) {
+func (n *Areas) List(limit, offset int, orderBy, sort string) (list []*Area, total int64, err error) {
 
 	if err = n.Db.Model(Area{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrAreaList, err.Error())

@@ -25,8 +25,8 @@ import (
 	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/e154/smart-home/common"
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // EntityStates ...
@@ -104,7 +104,7 @@ func (n EntityStates) DeleteByEntityId(entityId common.EntityId) (err error) {
 }
 
 // List ...
-func (n *EntityStates) List(limit, offset int64, orderBy, sort string) (list []*EntityState, total int64, err error) {
+func (n *EntityStates) List(limit, offset int, orderBy, sort string) (list []*EntityState, total int64, err error) {
 
 	if err = n.Db.Model(EntityState{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrEntityStateList, err.Error())
@@ -121,6 +121,14 @@ func (n *EntityStates) List(limit, offset int64, orderBy, sort string) (list []*
 	if err != nil {
 		err = errors.Wrap(apperr.ErrEntityStateList, err.Error())
 		return
+	}
+	return
+}
+
+// AddMultiple ...
+func (n *EntityStates) AddMultiple(states []*EntityState) (err error) {
+	if err = n.Db.Create(&states).Error; err != nil {
+		err = errors.Wrap(apperr.ErrEntityStateAdd, err.Error())
 	}
 	return
 }

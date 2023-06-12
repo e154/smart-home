@@ -41,7 +41,7 @@ package {{.Package}}
 
 import (
 	"fmt"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 	"time"
 )
 
