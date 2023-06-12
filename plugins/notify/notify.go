@@ -19,6 +19,7 @@
 package notify
 
 import (
+	"context"
 	"time"
 
 	"github.com/e154/smart-home/adaptors"
@@ -36,7 +37,7 @@ type Notify interface {
 	Shutdown() error
 	Start() (err error)
 	Stat() *Stat
-	Repeat(msg m.MessageDelivery)
+	Repeat(msg *m.MessageDelivery)
 	Send(msg Message)
 }
 
@@ -47,7 +48,7 @@ type notify struct {
 	isStarted     *atomic.Bool
 	scriptService scripts.ScriptService
 	workers       []*Worker
-	queue         chan m.MessageDelivery
+	queue         chan *m.MessageDelivery
 	*manager
 }
 
@@ -59,7 +60,7 @@ func NewNotify(
 	n := &notify{
 		adaptor:   adaptor,
 		isStarted: atomic.NewBool(false),
-		queue:     make(chan m.MessageDelivery, queueSize),
+		queue:     make(chan *m.MessageDelivery, queueSize),
 		manager:   ProviderManager,
 	}
 
@@ -155,13 +156,13 @@ func (n *notify) save(event Message) {
 	addresses, message := provider.Save(event)
 
 	for _, address := range addresses {
-		messageDelivery := m.MessageDelivery{
+		messageDelivery := &m.MessageDelivery{
 			Message:   message,
 			MessageId: message.Id,
 			Status:    m.MessageStatusInProgress,
 			Address:   address,
 		}
-		if messageDelivery.Id, err = n.adaptor.MessageDelivery.Add(messageDelivery); err != nil {
+		if messageDelivery.Id, err = n.adaptor.MessageDelivery.Add(context.Background(), messageDelivery); err != nil {
 			log.Error(err.Error())
 		}
 
@@ -171,7 +172,7 @@ func (n *notify) save(event Message) {
 
 func (n *notify) read() {
 
-	messageDeliveries, _, err := n.adaptor.MessageDelivery.GetAllUncompleted(99, 0)
+	messageDeliveries, _, err := n.adaptor.MessageDelivery.GetAllUncompleted(context.Background(), 99, 0)
 	if err != nil {
 		log.Error(err.Error())
 	}
@@ -200,13 +201,13 @@ func (n *notify) updateStat() {
 }
 
 // Repeat ...
-func (n *notify) Repeat(msg m.MessageDelivery) {
+func (n *notify) Repeat(msg *m.MessageDelivery) {
 	if !n.isStarted.Load() {
 		return
 	}
 
 	msg.Status = m.MessageStatusInProgress
-	_ = n.adaptor.MessageDelivery.SetStatus(msg)
+	_ = n.adaptor.MessageDelivery.SetStatus(context.Background(), msg)
 
 	n.queue <- msg
 }

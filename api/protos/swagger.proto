@@ -25,7 +25,7 @@ option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
       value: {
         type: TYPE_API_KEY;
         in: IN_HEADER;
-        name: "x-api-key";
+        name: "Authorization";
         extensions: {
           key: "x-api-key";
           value {

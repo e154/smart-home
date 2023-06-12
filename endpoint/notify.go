@@ -19,6 +19,7 @@
 package endpoint
 
 import (
+	"context"
 	"github.com/e154/smart-home/plugins/html5_notify"
 	"github.com/e154/smart-home/plugins/webpush"
 	"strings"
@@ -45,10 +46,10 @@ func NewNotifyEndpoint(common *CommonEndpoint) *NotifyEndpoint {
 }
 
 // Repeat ...
-func (n *NotifyEndpoint) Repeat(id int64) (err error) {
+func (n *NotifyEndpoint) Repeat(ctx context.Context ,id int64) (err error) {
 
-	var msg m.MessageDelivery
-	msg, err = n.adaptors.MessageDelivery.GetById(id)
+	var msg *m.MessageDelivery
+	msg, err = n.adaptors.MessageDelivery.GetById(ctx, id)
 	if err != nil {
 		return
 	}
@@ -62,7 +63,7 @@ func (n *NotifyEndpoint) Repeat(id int64) (err error) {
 }
 
 // Send ...
-func (n *NotifyEndpoint) Send(params *m.NewNotifrMessage) (err error) {
+func (n *NotifyEndpoint) Send(ctx context.Context, params *m.NewNotifrMessage) (err error) {
 
 	var render *m.TemplateRender
 	if params.BodyType == "template" && params.Template != nil && params.Params != nil {
