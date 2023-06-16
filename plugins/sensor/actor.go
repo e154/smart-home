@@ -21,9 +21,8 @@ package sensor
 import (
 	"fmt"
 
-	"github.com/e154/smart-home/common/events"
-
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"

@@ -217,6 +217,7 @@
             </el-tab-pane>
             <el-tab-pane :label="$t('dashboard.editor.cardList')" key="2">
               <el-row :gutter="20" v-if="board.activeTab && board.tabs[board.activeTab]">
+                <!-- card details -->
                 <el-col :span="12" :xs="12">
                   <el-card>
                     <div slot="header" class="clearfix">
@@ -326,6 +327,9 @@
 
                   </el-card>
                 </el-col>
+                <!-- card details -->
+
+                <!-- card list -->
                 <el-col :span="8" :xs="12">
 
                   <el-card>
@@ -357,11 +361,15 @@
 
                   </el-card>
                 </el-col>
+                <!-- /card list -->
+
               </el-row>
             </el-tab-pane>
             <el-tab-pane :label="$t('dashboard.editor.cardItems')" key="3">
               <el-row :gutter="20"
                       v-if="board.activeTab && board.tabs[board.activeTab] && board.tabs[board.activeTab].cards[board.activeCard] && board.tabs[board.activeTab].cards[board.activeCard].id">
+
+                <!-- item detail -->
                 <el-col :span="15" :xs="15">
 
                   <el-card>
@@ -468,7 +476,9 @@
 
                   </el-card>
                 </el-col>
+                <!-- /item detail -->
 
+                <!-- item list -->
                 <el-col :span="8" :xs="12">
                   <el-card>
                     <div slot="header" class="clearfix">
@@ -497,6 +507,10 @@
                       <el-tag v-if="item.frozen" size="mini" type="info" effect="plain">
                         {{ $t('dashboard.editor.frozen') }}
                       </el-tag>
+                      <el-button style="float: right" size="mini" @click.prevent.stop="sortItemUp(item, index)"><i
+                        class="el-icon-upload2"/></el-button>
+                          <el-button style="float: right" size="mini" @click.prevent.stop="sortItemDown(item, index)"><i
+                            class="el-icon-download"/></el-button>
                     </span>
                       </el-menu-item>
                     </el-menu>
@@ -521,6 +535,7 @@
                   </table>
 
                 </el-col>
+                <!-- /item list -->
               </el-row>
             </el-tab-pane>
           </el-tabs>
@@ -540,7 +555,7 @@ import {UUID} from 'uuid-generator-ts';
 import Editor from '@/views/automation/new.vue';
 import api from '@/api/api';
 import {Form} from 'element-ui';
-import {Card, Core, Tab} from '@/views/dashboard/core';
+import {Card, CardItem, Core, Tab} from '@/views/dashboard/core';
 import ImagePreview from '@/views/images/preview.vue';
 import CardWrapper from '@/components/card-wrapper/index.vue';
 import EntitySearch from '@/views/entities/components/entity_search.vue';
@@ -874,6 +889,52 @@ export default class extends Vue {
     }
   }
 
+  private sortItemUp(item: CardItem, index: number) {
+    // console.log('up', item, index)
+
+    if (!this.board.tabs || !this.board.activeTab) {
+      return;
+    }
+
+    if (!this.board.tabs[this.board.activeTab].cards[this.board.activeCard].items[index - 1]) {
+      return;
+    }
+
+    let rows = [this.board.tabs[this.board.activeTab].cards[this.board.activeCard].items[index - 1], this.board.tabs[this.board.activeTab].cards[this.board.activeCard].items[index]];
+    this.board.tabs[this.board.activeTab].cards[this.board.activeCard].items.splice(index - 1, 2, rows[1], rows[0]);
+
+    let counter = 0
+    for (const index in this.board.tabs[this.board.activeTab].cards[this.board.activeCard].items) {
+      this.board.tabs[this.board.activeTab].cards[this.board.activeCard].items[index].weight = counter;
+      counter++;
+    }
+
+    this.board.updateCard();
+  }
+
+  private sortItemDown(item: CardItem, index: number) {
+    // console.log('down', item, index)
+
+    if (!this.board.tabs || !this.board.activeTab) {
+      return;
+    }
+
+    if (!this.board.tabs[this.board.activeTab].cards[this.board.activeCard].items[index + 1]) {
+      return;
+    }
+
+    let rows = [this.board.tabs[this.board.activeTab].cards[this.board.activeCard].items[index], this.board.tabs[this.board.activeTab].cards[this.board.activeCard].items[index + 1]];
+    this.board.tabs[this.board.activeTab].cards[this.board.activeCard].items.splice(index, 2, rows[1], rows[0]);
+
+    let counter = 0
+    for (const index in this.board.tabs[this.board.activeTab].cards[this.board.activeCard].items) {
+      this.board.tabs[this.board.activeTab].cards[this.board.activeCard].items[index].weight = counter;
+      counter++;
+    }
+
+    this.board.updateCard();
+  }
+
   private sortCardUp(card: Card, index: number) {
     if (!this.board.tabs || !this.board.activeTab) {
       return;
@@ -883,17 +944,16 @@ export default class extends Vue {
       return;
     }
 
-    let weight1 = this.board.tabs[this.board.activeTab].cards[index - 1].weight;
-    const weight2 = card.weight;
-    if (weight1 === weight2) {
-      weight1 += 1;
-    }
-    this.board.tabs[this.board.activeTab].cards[index - 1].weight = weight2;
-    this.board.tabs[this.board.activeTab].cards[index].weight = weight1;
-    this.board.tabs[this.board.activeTab].cards[index].update();
-    this.board.tabs[this.board.activeTab].cards[index - 1].update();
+    let rows = [this.board.tabs[this.board.activeTab].cards[index - 1], this.board.tabs[this.board.activeTab].cards[index]];
+    this.board.tabs[this.board.activeTab].cards.splice(index - 1, 2, rows[1], rows[0]);
 
-    this.board.tabs[this.board.activeTab].sortCards();
+    let counter = 0
+    for (const index in this.board.tabs[this.board.activeTab].cards) {
+      this.board.tabs[this.board.activeTab].cards[index].weight = counter;
+      this.board.tabs[this.board.activeTab].cards[index].update();
+      counter++;
+    }
+
     this.board.updateCurrentTab();
   }
 
@@ -906,13 +966,16 @@ export default class extends Vue {
       return;
     }
 
-    const wd = this.board.tabs[this.board.activeTab].cards[index + 1].weight;
-    this.board.tabs[this.board.activeTab].cards[index + 1].weight = card.weight;
-    this.board.tabs[this.board.activeTab].cards[index].weight = wd;
-    this.board.tabs[this.board.activeTab].cards[index].update();
-    this.board.tabs[this.board.activeTab].cards[index + 1].update();
+    let rows = [this.board.tabs[this.board.activeTab].cards[index], this.board.tabs[this.board.activeTab].cards[index + 1]];
+    this.board.tabs[this.board.activeTab].cards.splice(index, 2, rows[1], rows[0]);
 
-    this.board.tabs[this.board.activeTab].sortCards();
+    let counter = 0
+    for (const index in this.board.tabs[this.board.activeTab].cards) {
+      this.board.tabs[this.board.activeTab].cards[index].weight = counter;
+      this.board.tabs[this.board.activeTab].cards[index].update();
+      counter++;
+    }
+
     this.board.updateCurrentTab();
   }
 
