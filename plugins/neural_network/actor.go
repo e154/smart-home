@@ -1,26 +1,7 @@
-// This file is part of the Smart Home
-// Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
-//
-// This library is free software: you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 3 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Library General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library.  If not, see
-// <https://www.gnu.org/licenses/>.
-
-package sensor
+package neural_network
 
 import (
 	"fmt"
-
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
@@ -29,28 +10,30 @@ import (
 	"github.com/e154/smart-home/system/scripts"
 )
 
-// Actor ...
 type Actor struct {
 	entity_manager.BaseActor
+	eventBus      bus.Bus
 	adaptors      *adaptors.Adaptors
 	scriptService scripts.ScriptService
-	eventBus      bus.Bus
 	actionPool    chan events.EventCallAction
+	network1      *Network1
+	network2      *Network2
 }
 
-// NewActor ...
 func NewActor(entity *m.Entity,
 	entityManager entity_manager.EntityManager,
 	adaptors *adaptors.Adaptors,
 	scriptService scripts.ScriptService,
-	eventBus bus.Bus) (actor *Actor) {
+	eventBus bus.Bus) *Actor {
 
-	actor = &Actor{
+	actor := &Actor{
 		BaseActor:     entity_manager.NewBaseActor(entity, scriptService, adaptors),
 		adaptors:      adaptors,
 		scriptService: scriptService,
 		eventBus:      eventBus,
 		actionPool:    make(chan events.EventCallAction, 10),
+		network1:      NewNetwork1(eventBus),
+		network2:      NewNetwork2(eventBus, entityManager),
 	}
 
 	actor.Manager = entityManager
@@ -81,41 +64,18 @@ func NewActor(entity *m.Entity,
 }
 
 func (e *Actor) destroy() {
-
+	if e.network2 != nil {
+		e.network2.Stop()
+	}
 }
 
-// Spawn ...
 func (e *Actor) Spawn() entity_manager.PluginActor {
-
+	e.Update()
 	return e
 }
 
-// SetState ...
-func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
+func (e *Actor) Update() {
 
-	oldState := e.GetEventState(e)
-
-	e.Now(oldState)
-
-	if params.NewState != nil {
-		state := e.States[*params.NewState]
-		e.State = &state
-		e.State.ImageUrl = state.ImageUrl
-	}
-
-	e.AttrMu.Lock()
-	_, _ = e.Attrs.Deserialize(params.AttributeValues)
-	e.AttrMu.Unlock()
-
-	e.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
-		StorageSave: params.StorageSave,
-		PluginName:  e.Id.PluginName(),
-		EntityId:    e.Id,
-		OldState:    oldState,
-		NewState:    e.GetEventState(e),
-	})
-
-	return nil
 }
 
 func (e *Actor) addAction(event events.EventCallAction) {
@@ -128,10 +88,24 @@ func (e *Actor) runAction(msg events.EventCallAction) {
 		log.Warnf("action %s not found", msg.ActionName)
 		return
 	}
-	if action.ScriptEngine == nil {
-		return
+	switch action.Name {
+	case "TRAIN1":
+		e.network2.Train1()
+	case "TRAIN2":
+		e.network2.Train2()
+	case "TRAIN3":
+	case "TRAIN4":
+	case "CHECK2":
+	case "ENABLE":
+	case "DISABLE":
+
+	default:
+		fmt.Sprintf("unknown comand: %s", action.Name)
 	}
-	if _, err := action.ScriptEngine.AssertFunction(FuncEntityAction, msg.EntityId, action.Name); err != nil {
-		log.Error(err.Error())
-	}
+}
+
+func (e *Actor) Start() {
+}
+
+func (e *Actor) Stop() {
 }

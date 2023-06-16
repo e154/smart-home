@@ -200,12 +200,13 @@ export default {
   message: {
     attributes: 'Attributes',
     table: {
-      type: 'Message type',
+      type: 'Message type'
     }
   },
   message_delivery: {
     table: {
       id: 'Id',
+      address: 'Address',
       attributes: 'Attributes',
       status: 'Status',
       createdAt: 'Created at',

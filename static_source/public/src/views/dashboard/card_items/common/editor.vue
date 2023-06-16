@@ -281,8 +281,8 @@
     <!-- /hide on-->
 
     <!-- button options -->
-    <el-divider content-position="left">{{ $t('dashboard.editor.buttonOptions') }}</el-divider>
-    <el-row :gutter="20">
+    <el-divider v-if="item.type !== 'button'" content-position="left">{{ $t('dashboard.editor.buttonOptions') }}</el-divider>
+    <el-row :gutter="20" v-if="item.type !== 'button'">
       <el-col
         :span="8"
         :xs="8"
@@ -294,7 +294,7 @@
       </el-col>
     </el-row>
 
-    <el-row>
+    <el-row v-if="item.type !== 'button'">
       <el-col>
         <div style="padding-bottom: 20px">
           <el-button type="default" @click.prevent.stop="addAction()"><i

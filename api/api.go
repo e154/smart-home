@@ -47,19 +47,6 @@ import (
 //go:embed api.swagger.json
 var assets embed.FS
 
-////go:embed build/public/*
-////go:embed build/public/css/*
-////go:embed build/public/js/*
-////go:embed build/public/fonts/*
-////go:embed build/public/tinymce/*
-////go:embed build/public/tinymce/langs/*
-////go:embed build/public/tinymce/skins/*
-////go:embed build/public/tinymce/skins/fonts/*
-////go:embed build/public/img/*
-////go:embed build/public/img/icons/*
-////go:embed build/public/img/icons/*
-//var publicAssets embed.FS
-
 var (
 	log = logger.MustGetLogger("api")
 )
@@ -221,7 +208,7 @@ func (a *Api) Start() (err error) {
 		r.URL, _ = r.URL.Parse(r.RequestURI)
 		fileServer.ServeHTTP(w, r)
 	})
-	//httpv1.Handle("/api_static", http.FileServer(http.Dir(common.StoragePath())))
+
 	staticServer := http.FileServer(http.Dir("./data/static"))
 	httpv1.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
 		r.RequestURI = strings.ReplaceAll(r.RequestURI, "/static/", "/")

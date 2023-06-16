@@ -32,6 +32,5 @@
   "api_grpc_host_port": ":3000",
   "api_http_host_port": ":3001",
   "api_prom_host_port": ":3002",
-  "api_ws_host_port": ":3003",
   "api_swagger": true
 }
