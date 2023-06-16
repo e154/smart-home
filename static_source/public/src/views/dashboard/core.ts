@@ -109,6 +109,7 @@ export class CardItem {
   title: string;
   enabled: boolean;
   width = 0;
+  weight = 0;
   height = 0;
   hidden = false;
   frozen = false;
@@ -138,6 +139,7 @@ export class CardItem {
     this.dashboardCardId = item.dashboardCardId;
     this._entityId = item.entityId;
     this.hidden = item.hidden;
+    this.weight = item.weight;
     this.frozen = item.frozen;
     if (this._entityId) {
       this._entity = {id: this._entityId} as ApiEntity;
@@ -250,7 +252,7 @@ export class CardItem {
       id: this.id,
       title: this.title,
       type: this._type,
-      weight: -1,
+      weight: this.weight,
       enabled: this.enabled,
       entityId: this._entityId || null,
       payload: payload,
@@ -532,6 +534,8 @@ export class Card {
     for (const index in card.items) {
       this.items.push(new CardItem(card.items[index]));
     }
+
+    this.sortItems();
   }
 
   addItem(item: CardItem) {
@@ -663,6 +667,10 @@ export class Card {
     const item = await this.items[index].copy();
     this.items.push(item);
     this.selectedItem = this.items.length;
+  }
+
+  sortItems() {
+    this.items.sort(sortCardItems);
   }
 
   // ---------------------------------
@@ -1065,6 +1073,18 @@ export class Core {
 }
 
 function sortCards(n1: Card, n2: Card) {
+  if (n1.weight > n2.weight) {
+    return 1;
+  }
+
+  if (n1.weight < n2.weight) {
+    return -1;
+  }
+
+  return 0;
+}
+
+function sortCardItems(n1: CardItem, n2: CardItem) {
   if (n1.weight > n2.weight) {
     return 1;
   }

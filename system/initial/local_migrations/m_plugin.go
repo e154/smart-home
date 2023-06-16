@@ -50,6 +50,8 @@ func (n *MigrationPlugins) Up(ctx context.Context, adaptors *adaptors.Adaptors) 
 	n.addPlugin("weather_owm", false, false, true)
 	n.addPlugin("zigbee2mqtt", false, false, true)
 	n.addPlugin("zone", true, false, true)
+	n.addPlugin("html5_notify", true, false, false)
+	n.addPlugin("webpush", true, false, false)
 	return nil
 }
 
