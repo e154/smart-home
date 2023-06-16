@@ -59,6 +59,10 @@ api.instance.interceptors.response.use(
     }
   },
   (error) => {
+    if (!error.response) {
+      return
+    }
+
     const res = error.response.data;
 
     for (const i in res.details) {
