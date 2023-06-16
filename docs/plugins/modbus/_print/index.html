@@ -25,8 +25,8 @@
 <meta itemprop=description content="Програмный комплекс"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Modbus">
 <meta name=twitter:description content="Програмный комплекс">
-<link rel=preload href=/smart-home/scss/main.min.644ec6c591a2b6177d8c3c17d276a18c0f0182737d8c6ba83dfa6715ec5e8432.css as=style>
-<link href=/smart-home/scss/main.min.644ec6c591a2b6177d8c3c17d276a18c0f0182737d8c6ba83dfa6715ec5e8432.css rel=stylesheet integrity>
+<link rel=preload href=/smart-home/scss/main.min.8ebd0f8570c5c2da16785e52cb8f20394c6d706e75009a748bfe4c38f7ae92c1.css as=style>
+<link href=/smart-home/scss/main.min.8ebd0f8570c5c2da16785e52cb8f20394c6d706e75009a748bfe4c38f7ae92c1.css rel=stylesheet integrity>
 <script src=https://code.jquery.com/jquery-3.5.1.min.js integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin=anonymous></script>
 </head>
 <body class=td-section>
@@ -85,10 +85,27 @@ RS-422, RS-232, а также Ethernet сети TCP/IP (протокол Modbus 
 </div>
 <div class=td-content>
 <h1 id=pg-83ccc62bb21aa1015dc85c4aa89b620d>1 - Modbus rtu</h1>
-<p>Modbus RTU — компактный двоичный вариант. Сообщения разделяются по паузе в линии. Сообщение должно начинаться и
-заканчиваться интервалом тишины, длительностью не менее 3,5 символов при данной скорости передачи. Во время передачи
-сообщения не должно быть пауз длительностью более 1,5 символов. Для скоростей более 19200 бод допускается использовать
-интервалы 1,75 и 0,75 мс, соответственно. Проверка целостности осуществляется с помощью CRC.</p>
+<p>В системе <strong>Smart Home</strong> реализован плагин Modbus RTU, который обеспечивает взаимодействие с устройствами по протоколу
+Modbus RTU. Плагин предоставляет метод <code>ModbusRtu(FUNC, ADDRESS, COUNT, COMMAND)</code>, позволяющий отправлять команды и
+получать данные по указанному протоколу.</p>
+<p>Аргументы метода <code>ModbusRtu</code>:</p>
+<ul>
+<li><code>FUNC</code>: Код функции Modbus, указывающий тип операции, которую следует выполнить с устройством.</li>
+<li><code>ADDRESS</code>: Адрес устройства Modbus, к которому отправляется команда.</li>
+<li><code>COUNT</code>: Количество регистров или битов, которые следует прочитать или записать.</li>
+<li><code>COMMAND</code>: Команда, которую необходимо выполнить, указывающая дополнительные параметры и настройки.</li>
+</ul>
+<p>Пример использования:</p>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>COMMAND</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000;font-weight:700>[]</span>
+<span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>FUNC</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#4e9a06>&#39;ReadHoldingRegisters&#39;</span>
+<span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>ADDRESS</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>0</span>
+<span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>COUNT</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>16</span>
+
+<span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>response</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>ModbusRtu</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>FUNC</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>ADDRESS</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>COUNT</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>COMMAND</span><span style=color:#000;font-weight:700>);</span>
+<span style=color:#000>console</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>log</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>response</span><span style=color:#000;font-weight:700>);</span>
+</code></pre></div><p>Метод <code>ModbusRtu</code> позволяет отправлять команды Modbus RTU, выполнять чтение или запись регистров и получать данные от
+устройств. Вы можете использовать этот метод в вашем проекте <strong>Smart Home</strong> для взаимодействия с устройствами, поддерживающими
+протокол Modbus RTU.</p>
 <div class="alert alert-warning" role=alert>
 Для работы с modbus rtu устройством требуется настроенная <strong>нода</strong>
 </div>
@@ -254,7 +271,25 @@ WriteMultipleRegisters</p>
 </div>
 <div class=td-content style=page-break-before:always>
 <h1 id=pg-2ab89625f67635397c493f87afe8c5f2>2 - Modbus tcp</h1>
-<p>Modbus TCP — для передачи данных через TCP/IP-соединение.</p>
+<p>В системе <strong>Smart Home</strong> реализован плагин Modbus TCP, который обеспечивает взаимодействие с устройствами по протоколу Modbus TCP.
+Плагин предоставляет метод <code>ModbusTcp(func, addr, count, command)</code>, позволяющий отправлять команды и получать данные по указанному протоколу.</p>
+<p>Аргументы метода <code>ModbusTcp</code>:</p>
+<ul>
+<li><code>func</code>: Код функции Modbus, указывающий тип операции, которую следует выполнить с устройством.</li>
+<li><code>addr</code>: Адрес устройства Modbus, к которому отправляется команда.</li>
+<li><code>count</code>: Количество регистров или битов, которые следует прочитать или записать.</li>
+<li><code>command</code>: Команда, которую необходимо выполнить, указывающая дополнительные параметры и настройки.</li>
+</ul>
+<p>Пример использования:</p>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>COMMAND</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000;font-weight:700>[]</span>
+<span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>FUNC</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#4e9a06>&#39;ReadHoldingRegisters&#39;</span>
+<span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>ADDRESS</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>0</span>
+<span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>COUNT</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>16</span>
+
+<span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>response</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>ModbusTcp</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>FUNC</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>ADDRESS</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>COUNT</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>COMMAND</span><span style=color:#000;font-weight:700>);</span>
+<span style=color:#000>console</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>log</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>response</span><span style=color:#000;font-weight:700>);</span>
+</code></pre></div><p>Метод <code>ModbusTcp</code> позволяет отправлять команды Modbus TCP, выполнять чтение или запись регистров и получать данные от устройств.
+Вы можете использовать этот метод в вашем проекте <strong>Smart Home</strong> для взаимодействия с устройствами, поддерживающими протокол Modbus TCP.</p>
 <div class="alert alert-warning" role=alert>
 Для работы с modbus rtu устройством требуется настроенная <strong>нода</strong>
 </div>
@@ -431,7 +466,7 @@ WriteMultipleRegisters</p>
 </ul>
 </div>
 <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-<small class=text-white>&copy; 2022 Разработано при поддержке <a href=http://e154.ru>e154.ru</a></small>
+<small class=text-white>&copy; 2023 Разработано при поддержке <a href=http://e154.ru>e154.ru</a></small>
 <div><small class="ml-1 text-white">Код лицензии <a href=https://github.com/e154/smart-home/blob/master/LICENSE>MIT</a> документы <a href=http://creativecommons.org/licenses/by/3.0/>CC BY 3.0</a></small></div>
 </div>
 </div>

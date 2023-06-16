@@ -14,32 +14,29 @@
 <link rel=icon type=image/png href=/smart-home/favicons/android-144x144.png sizes=144x144>
 <link rel=icon type=image/png href=/smart-home/favicons/android-192x192.png sizes=192x192>
 <title>Менеджер устройств | Умный дом</title>
-<meta name=description content="Предостовляет возможность работать напрямую с устройствами. Получение/изменение настроек, получение/изменение текущего
-состояния.
-
-
-
-
-
-    Функция …">
+<meta name=description content="В проекте Smart Home имеется менеджер устройств &ldquo;Entity Manager&rdquo;, который обеспечивает удобный доступ к устройствам,
+их настройкам и …">
 <meta property="og:title" content="Менеджер устройств">
-<meta property="og:description" content="Предостовляет возможность работать напрямую с устройствами. Получение/изменение настроек, получение/изменение текущего состояния.
-Функция доступна в любом скрипте системы.   объект entityManager # доступные метода entityManager .getEntity(id) -> Entity .setState(id, stateName) .setAttributes(id, attrs) .setMetric(id, name, value) .callAction(id, actionName, args)    значение описание     id уникальному id устройства   getEntity поиск устройства, возвращает Entity   setState изменить текущее состояние, stateName - наименования будущего состояния   setAttributes изменить свойство текущего состояния, attr - map параметрый {key:val}   setMetric обновить метрики устройства, name - наименование метрики, attr - map параметрый {key:val}   callAction иcполнение команды на устройстве, actionName - наименование команды, args - map параметрый {key:val}    методы объекта Entity Entity .">
+<meta property="og:description" content="В проекте Smart Home имеется менеджер устройств &ldquo;Entity Manager&rdquo;, который обеспечивает удобный доступ к устройствам, их настройкам и текущему состоянию.
+Функция доступна в любом скрипте системы.  Менеджер устройств &ldquo;Entity Manager&rdquo; предоставляет набор методов и функций для управления устройствами и получения информации о них. Некоторые основные возможности &ldquo;Entity Manager&rdquo; включают:
+ getEntity(id) -> Entity: Этот метод позволяет получить объект &ldquo;Entity&rdquo; по его идентификатору. Вы передаете идентификатор устройства в качестве аргумента id, и метод возвращает соответствующий объект &ldquo;Entity&rdquo;.">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://e154.github.io/smart-home/docs/javascript/entity_manager/"><meta property="article:section" content="docs">
 <meta property="article:published_time" content="2021-11-20T00:00:00+00:00">
-<meta property="article:modified_time" content="2022-08-03T17:35:42+07:00"><meta property="og:site_name" content="Умный дом">
+<meta property="article:modified_time" content="2023-06-16T22:47:48+06:00"><meta property="og:site_name" content="Умный дом">
 <meta itemprop=name content="Менеджер устройств">
-<meta itemprop=description content="Предостовляет возможность работать напрямую с устройствами. Получение/изменение настроек, получение/изменение текущего состояния.
-Функция доступна в любом скрипте системы.   объект entityManager # доступные метода entityManager .getEntity(id) -> Entity .setState(id, stateName) .setAttributes(id, attrs) .setMetric(id, name, value) .callAction(id, actionName, args)    значение описание     id уникальному id устройства   getEntity поиск устройства, возвращает Entity   setState изменить текущее состояние, stateName - наименования будущего состояния   setAttributes изменить свойство текущего состояния, attr - map параметрый {key:val}   setMetric обновить метрики устройства, name - наименование метрики, attr - map параметрый {key:val}   callAction иcполнение команды на устройстве, actionName - наименование команды, args - map параметрый {key:val}    методы объекта Entity Entity ."><meta itemprop=datePublished content="2021-11-20T00:00:00+00:00">
-<meta itemprop=dateModified content="2022-08-03T17:35:42+07:00">
-<meta itemprop=wordCount content="310">
+<meta itemprop=description content="В проекте Smart Home имеется менеджер устройств &ldquo;Entity Manager&rdquo;, который обеспечивает удобный доступ к устройствам, их настройкам и текущему состоянию.
+Функция доступна в любом скрипте системы.  Менеджер устройств &ldquo;Entity Manager&rdquo; предоставляет набор методов и функций для управления устройствами и получения информации о них. Некоторые основные возможности &ldquo;Entity Manager&rdquo; включают:
+ getEntity(id) -> Entity: Этот метод позволяет получить объект &ldquo;Entity&rdquo; по его идентификатору. Вы передаете идентификатор устройства в качестве аргумента id, и метод возвращает соответствующий объект &ldquo;Entity&rdquo;."><meta itemprop=datePublished content="2021-11-20T00:00:00+00:00">
+<meta itemprop=dateModified content="2023-06-16T22:47:48+06:00">
+<meta itemprop=wordCount content="437">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Менеджер устройств">
-<meta name=twitter:description content="Предостовляет возможность работать напрямую с устройствами. Получение/изменение настроек, получение/изменение текущего состояния.
-Функция доступна в любом скрипте системы.   объект entityManager # доступные метода entityManager .getEntity(id) -> Entity .setState(id, stateName) .setAttributes(id, attrs) .setMetric(id, name, value) .callAction(id, actionName, args)    значение описание     id уникальному id устройства   getEntity поиск устройства, возвращает Entity   setState изменить текущее состояние, stateName - наименования будущего состояния   setAttributes изменить свойство текущего состояния, attr - map параметрый {key:val}   setMetric обновить метрики устройства, name - наименование метрики, attr - map параметрый {key:val}   callAction иcполнение команды на устройстве, actionName - наименование команды, args - map параметрый {key:val}    методы объекта Entity Entity .">
-<link rel=preload href=/smart-home/scss/main.min.644ec6c591a2b6177d8c3c17d276a18c0f0182737d8c6ba83dfa6715ec5e8432.css as=style>
-<link href=/smart-home/scss/main.min.644ec6c591a2b6177d8c3c17d276a18c0f0182737d8c6ba83dfa6715ec5e8432.css rel=stylesheet integrity>
+<meta name=twitter:description content="В проекте Smart Home имеется менеджер устройств &ldquo;Entity Manager&rdquo;, который обеспечивает удобный доступ к устройствам, их настройкам и текущему состоянию.
+Функция доступна в любом скрипте системы.  Менеджер устройств &ldquo;Entity Manager&rdquo; предоставляет набор методов и функций для управления устройствами и получения информации о них. Некоторые основные возможности &ldquo;Entity Manager&rdquo; включают:
+ getEntity(id) -> Entity: Этот метод позволяет получить объект &ldquo;Entity&rdquo; по его идентификатору. Вы передаете идентификатор устройства в качестве аргумента id, и метод возвращает соответствующий объект &ldquo;Entity&rdquo;.">
+<link rel=preload href=/smart-home/scss/main.min.8ebd0f8570c5c2da16785e52cb8f20394c6d706e75009a748bfe4c38f7ae92c1.css as=style>
+<link href=/smart-home/scss/main.min.8ebd0f8570c5c2da16785e52cb8f20394c6d706e75009a748bfe4c38f7ae92c1.css rel=stylesheet integrity>
 <script src=https://code.jquery.com/jquery-3.5.1.min.js integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin=anonymous></script>
 </head>
 <body class=td-page>
@@ -92,7 +89,11 @@
 <li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id=m-smart-homedocsjavascript-li>
 <a href=/smart-home/docs/javascript/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocsjavascript><span>Javascript</span></a>
 <ul class="ul-2 foldable">
-<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child active-path" id=m-smart-homedocsjavascriptentity_manager-li>
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascriptactor-li>
+<a href=/smart-home/docs/javascript/actor/ title=Actor class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascriptactor><span>actor</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascriptentity-li>
+<a href=/smart-home/docs/javascript/entity/ title=Устройство class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascriptentity><span>entity</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child active-path" id=m-smart-homedocsjavascriptentity_manager-li>
 <a href=/smart-home/docs/javascript/entity_manager/ title="Менеджер устройств" class="align-left pl-0 active td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascriptentity_manager><span class=td-sidebar-nav-active-item>entity manager</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascriptmqtt-li>
 <a href=/smart-home/docs/javascript/mqtt/ title=Mqtt class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascriptmqtt><span>mqtt</span></a>
@@ -107,7 +108,7 @@
 </li>
 </ul>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homedocsplugins-li>
-<a href=/smart-home/docs/plugins/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocsplugins><span>Расширения</span></a>
+<a href=/smart-home/docs/plugins/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocsplugins><span>Plugins</span></a>
 <ul class="ul-2 foldable">
 <li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homedocspluginsmodbus-li>
 <a href=/smart-home/docs/plugins/modbus/ title=Modbus class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocspluginsmodbus><span>modbus</span></a>
@@ -132,7 +133,11 @@
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homedocspluginsnotify-li>
 <a href=/smart-home/docs/plugins/notify/ title="Отправка сообщений" class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocspluginsnotify><span>notify</span></a>
 <ul class="ul-3 foldable">
-<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsnotifymessagebird-li>
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsnotifywebpush-li>
+<a href=/smart-home/docs/plugins/notify/webpush/ title="Push уведомления" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsnotifywebpush><span>webpush</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsnotifyhtml5_notify-li>
+<a href=/smart-home/docs/plugins/notify/html5_notify/ title="HTML5 Уведомления" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsnotifyhtml5_notify><span>html5_notify</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsnotifymessagebird-li>
 <a href=/smart-home/docs/plugins/notify/messagebird/ title=Messagebird class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsnotifymessagebird><span>messagebird</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsnotifyslack-li>
 <a href=/smart-home/docs/plugins/notify/slack/ title=Slack class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsnotifyslack><span>slack</span></a>
@@ -152,6 +157,10 @@
 <a href=/smart-home/docs/plugins/sensor/ title=Sensor class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocspluginssensor><span>sensor</span></a>
 </li>
 </ul>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsdashboard-li>
+<a href=/smart-home/docs/dashboard/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocsdashboard><span>Dashboard</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsmqtt-li>
+<a href=/smart-home/docs/mqtt/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocsmqtt><span>MQTT</span></a>
 </li>
 </ul>
 </li>
@@ -172,8 +181,6 @@
 <li>
 <ul>
 <li><a href=#объект-entitymanager>объект entityManager</a></li>
-<li><a href=#методы-объекта-entity>методы объекта Entity</a></li>
-<li><a href=#свойства-объекта-entity>свойства объекта Entity</a></li>
 <li><a href=#пример-кода>пример кода</a></li>
 </ul>
 </li>
@@ -198,11 +205,52 @@
 <h1>Менеджер устройств</h1>
 <header class=article-meta>
 </header>
-<p>Предостовляет возможность работать напрямую с устройствами. Получение/изменение настроек, получение/изменение текущего
-состояния.</p>
+<p>В проекте <strong>Smart Home</strong> имеется менеджер устройств &ldquo;Entity Manager&rdquo;, который обеспечивает удобный доступ к устройствам,
+их настройкам и текущему состоянию.</p>
 <div class="alert alert-success" role=alert>
 Функция доступна в любом скрипте системы.
 </div>
+<p>Менеджер устройств &ldquo;Entity Manager&rdquo; предоставляет набор методов и функций для управления устройствами и получения
+информации о них. Некоторые основные возможности &ldquo;Entity Manager&rdquo; включают:</p>
+<ol>
+<li><code>getEntity(id) -> Entity</code>: Этот метод позволяет получить объект &ldquo;Entity&rdquo; по его идентификатору.</li>
+<li>Вы передаете идентификатор устройства в качестве аргумента <code>id</code>, и метод возвращает соответствующий объект &ldquo;Entity&rdquo;.</li>
+</ol>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>entity</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>entityManager</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>getEntity</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>id</span><span style=color:#000;font-weight:700>);</span>
+</code></pre></div><ol start=2>
+<li><code>setState(id, stateName)</code>: Данный метод используется для установки состояния устройства с заданным идентификатором.</li>
+<li>Вы передаете идентификатор устройства в аргументе <code>id</code> и имя состояния в аргументе <code>stateName</code>. Например:</li>
+</ol>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#000>entityManager</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>setState</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>id</span><span style=color:#000;font-weight:700>,</span> <span style=color:#4e9a06>&#39;on&#39;</span><span style=color:#000;font-weight:700>);</span>
+</code></pre></div><ol start=3>
+<li><code>setAttributes(id, attrs)</code>: Этот метод позволяет установить атрибуты устройства с заданным идентификатором.</li>
+<li>Вы передаете идентификатор устройства в аргументе <code>id</code> и объект с новыми атрибутами в аргументе <code>attrs</code>.</li>
+</ol>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>newAttributes</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000;font-weight:700>{</span>
+  <span style=color:#000>brightness</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#0000cf;font-weight:700>80</span><span style=color:#000;font-weight:700>,</span>
+  <span style=color:#000>color</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;red&#39;</span><span style=color:#000;font-weight:700>,</span>
+<span style=color:#000;font-weight:700>};</span>
+
+<span style=color:#000>entityManager</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>setAttributes</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>id</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>newAttributes</span><span style=color:#000;font-weight:700>);</span>
+</code></pre></div><ol start=4>
+<li><code>setMetric(id, name, value)</code>: Этот метод используется для установки метрики устройства с заданным идентификатором.</li>
+<li>Вы передаете идентификатор устройства в аргументе <code>id</code>, имя метрики в аргументе <code>name</code> и значение метрики в аргументе <code>value</code>.</li>
+</ol>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#000>entityManager</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>setMetric</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>id</span><span style=color:#000;font-weight:700>,</span> <span style=color:#4e9a06>&#39;temperature&#39;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#0000cf;font-weight:700>25</span><span style=color:#000;font-weight:700>);</span>
+</code></pre></div><ol start=5>
+<li><code>callAction(id, actionName, args)</code>: Данный метод позволяет вызвать определенное действие на устройстве с заданным</li>
+<li>идентификатором. Вы передаете идентификатор устройства в аргументе <code>id</code>, имя действия в аргументе <code>actionName</code> и</li>
+<li>аргументы, связанные с действием, в аргументе <code>args</code>.</li>
+</ol>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#000>entityManager</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>callAction</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>id</span><span style=color:#000;font-weight:700>,</span> <span style=color:#4e9a06>&#39;turnOn&#39;</span><span style=color:#000;font-weight:700>);</span>
+</code></pre></div><ol start=6>
+<li><code>callScene(id, args)</code>: Этот метод используется для вызова сцены с заданным идентификатором. Вы передаете идентификатор</li>
+<li>сцены в аргументе <code>id</code> и аргументы, связанные со сценой, в аргументе <code>args</code>.</li>
+</ol>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#000>entityManager</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>callScene</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>id</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>args</span><span style=color:#000;font-weight:700>);</span>
+</code></pre></div><p>Менеджер устройств &ldquo;Entity Manager&rdquo; упрощает управление устройствами, настройками и состоянием в проекте <strong>Smart Home</strong>.
+Он предоставляет удобный интерфейс для получения информации о устройствах, управления ими и обработки связанных с ними
+событий. Это позволяет вам создавать более гибкие и функциональные приложения для вашего умного дома.</p>
 <hr>
 <h3 id=объект-entitymanager>объект entityManager</h3>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#8f5902;font-style:italic># доступные метода
@@ -212,6 +260,7 @@
   <span style=color:#000;font-weight:700>.</span><span style=color:#000>setAttributes</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>id</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>attrs</span><span style=color:#000;font-weight:700>)</span>
   <span style=color:#000;font-weight:700>.</span><span style=color:#000>setMetric</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>id</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>name</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>value</span><span style=color:#000;font-weight:700>)</span>
   <span style=color:#000;font-weight:700>.</span><span style=color:#000>callAction</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>id</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>actionName</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>args</span><span style=color:#000;font-weight:700>)</span>
+  <span style=color:#000;font-weight:700>.</span><span style=color:#000>callScene</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>id</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>args</span><span style=color:#000;font-weight:700>)</span>
 </code></pre></div><table>
 <thead>
 <tr>
@@ -244,97 +293,13 @@
 <td>callAction</td>
 <td>иcполнение команды на устройстве, <strong>actionName</strong> - наименование команды, <strong>args</strong> - map параметрый {key:val}</td>
 </tr>
-</tbody>
-</table>
-<h3 id=методы-объекта-entity>методы объекта Entity</h3>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>Entity</span>
-  <span style=color:#000;font-weight:700>.</span><span style=color:#000>setState</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>stateName</span><span style=color:#000;font-weight:700>)</span>
-  <span style=color:#000;font-weight:700>.</span><span style=color:#000>setAttributes</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>key</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>attrs</span><span style=color:#000;font-weight:700>)</span>
-  <span style=color:#000;font-weight:700>.</span><span style=color:#000>getAttributes</span><span style=color:#000>() -&gt;</span> <span style=color:#000>attrs</span>
-  <span style=color:#000;font-weight:700>.</span><span style=color:#000>setMetric</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>name</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>value</span><span style=color:#000;font-weight:700>)</span>
-  <span style=color:#000;font-weight:700>.</span><span style=color:#000>callAction</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>name</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>value</span><span style=color:#000;font-weight:700>)</span>
-</code></pre></div><table>
-<thead>
 <tr>
-<th>значение</th>
-<th>описание</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>setState</td>
-<td>изменить текущее состояние, <strong>stateName</strong> - наименования будущего состояния</td>
-</tr>
-<tr>
-<td>setAttributes</td>
-<td>изменить свойство текущего состояния, <strong>attr</strong> - map параметрый {key:val}</td>
-</tr>
-<tr>
-<td>getAttributes</td>
-<td>текущее состояние устройства, <strong>attrs</strong> - map параметрый {key:val}</td>
-</tr>
-<tr>
-<td>setMetric</td>
-<td>обновить метрики устройства, <strong>name</strong> - наименование метрики, <strong>attr</strong> - map параметрый {key:val}</td>
-</tr>
-<tr>
-<td>callAction</td>
-<td>иcполнение команды на устройстве, <strong>actionName</strong> - наименование команды, <strong>args</strong> - map параметрый {key:val}</td>
-</tr>
-<tr>
-<td>short</td>
-<td>срез свойств состояния и настроек устройства</td>
+<td>callScene</td>
+<td>выполнить сцену с <strong>id</strong></td>
 </tr>
 </tbody>
 </table>
-<h3 id=свойства-объекта-entity>свойства объекта Entity</h3>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000;font-weight:700>{</span>
-  <span style=color:#4e9a06>&#34;id&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#34;sensor.device1&#34;</span><span style=color:#000;font-weight:700>,</span>
-  <span style=color:#4e9a06>&#34;type&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#34;sensor&#34;</span><span style=color:#000;font-weight:700>,</span>
-  <span style=color:#4e9a06>&#34;name&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#34;&#34;</span><span style=color:#000;font-weight:700>,</span>
-  <span style=color:#4e9a06>&#34;description&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#34;device description&#34;</span><span style=color:#000;font-weight:700>,</span>
-  <span style=color:#4e9a06>&#34;icon&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>null</span><span style=color:#000;font-weight:700>,</span>
-  <span style=color:#4e9a06>&#34;image_url&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>null</span><span style=color:#000;font-weight:700>,</span>
-  <span style=color:#4e9a06>&#34;actions&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000;font-weight:700>[</span>
-    <span style=color:#000;font-weight:700>{</span>
-      <span style=color:#4e9a06>&#34;name&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#34;ENABLE&#34;</span><span style=color:#000;font-weight:700>,</span>
-      <span style=color:#4e9a06>&#34;description&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#34;включить&#34;</span><span style=color:#000;font-weight:700>,</span>
-      <span style=color:#4e9a06>&#34;image_url&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>null</span><span style=color:#000;font-weight:700>,</span>
-      <span style=color:#4e9a06>&#34;icon&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>null</span>
-    <span style=color:#000;font-weight:700>},</span>
-    <span style=color:#000;font-weight:700>{</span>
-      <span style=color:#4e9a06>&#34;name&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#34;DISABLE&#34;</span><span style=color:#000;font-weight:700>,</span>
-      <span style=color:#4e9a06>&#34;description&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#34;выключить&#34;</span><span style=color:#000;font-weight:700>,</span>
-      <span style=color:#4e9a06>&#34;image_url&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>null</span><span style=color:#000;font-weight:700>,</span>
-      <span style=color:#4e9a06>&#34;icon&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>null</span>
-    <span style=color:#000;font-weight:700>}</span>
-  <span style=color:#000;font-weight:700>],</span>
-  <span style=color:#4e9a06>&#34;states&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000;font-weight:700>[</span>
-    <span style=color:#000;font-weight:700>{</span>
-      <span style=color:#4e9a06>&#34;name&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#34;ENABLED&#34;</span><span style=color:#000;font-weight:700>,</span>
-      <span style=color:#4e9a06>&#34;description&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#34;enabled state&#34;</span><span style=color:#000;font-weight:700>,</span>
-      <span style=color:#4e9a06>&#34;image_url&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>null</span><span style=color:#000;font-weight:700>,</span>
-      <span style=color:#4e9a06>&#34;icon&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>null</span>
-    <span style=color:#000;font-weight:700>},</span>
-    <span style=color:#000;font-weight:700>{</span>
-      <span style=color:#4e9a06>&#34;name&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#34;DISABLED&#34;</span><span style=color:#000;font-weight:700>,</span>
-      <span style=color:#4e9a06>&#34;description&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#34;disabled state&#34;</span><span style=color:#000;font-weight:700>,</span>
-      <span style=color:#4e9a06>&#34;image_url&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>null</span><span style=color:#000;font-weight:700>,</span>
-      <span style=color:#4e9a06>&#34;icon&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>null</span>
-    <span style=color:#000;font-weight:700>}</span>
-  <span style=color:#000;font-weight:700>],</span>
-  <span style=color:#4e9a06>&#34;state&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000;font-weight:700>{</span>
-    <span style=color:#4e9a06>&#34;name&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#34;ENABLED&#34;</span><span style=color:#000;font-weight:700>,</span>
-    <span style=color:#4e9a06>&#34;description&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#34;enabled state&#34;</span><span style=color:#000;font-weight:700>,</span>
-    <span style=color:#4e9a06>&#34;image_url&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>null</span><span style=color:#000;font-weight:700>,</span>
-    <span style=color:#4e9a06>&#34;icon&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>null</span>
-  <span style=color:#000;font-weight:700>},</span>
-  <span style=color:#4e9a06>&#34;attributes&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000;font-weight:700>{},</span>
-  <span style=color:#4e9a06>&#34;area&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>null</span><span style=color:#000;font-weight:700>,</span>
-  <span style=color:#4e9a06>&#34;metrics&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000;font-weight:700>[],</span>
-  <span style=color:#4e9a06>&#34;hidden&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>false</span>
-<span style=color:#000;font-weight:700>}</span>
-</code></pre></div><hr>
+<hr>
 <h3 id=пример-кода>пример кода</h3>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#8f5902;font-style:italic># entity manager
 </span><span style=color:#8f5902;font-style:italic># ##################################
@@ -354,10 +319,15 @@
 <span style=color:#8f5902;font-style:italic># иcполнение команды на устройстве
 </span><span style=color:#8f5902;font-style:italic></span><span style=color:#000>entityManager</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>callAction</span><span style=color:#000;font-weight:700>(</span><span style=color:#4e9a06>&#39;floor.light&#39;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#4e9a06>&#39;ON&#39;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000;font-weight:700>{</span><span style=color:#4e9a06>&#39;power&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#0000cf;font-weight:700>30</span><span style=color:#000;font-weight:700>})</span>
 
+<span style=color:#8f5902;font-style:italic># получение настроек
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000>settings = </span><span style=color:#000>device</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>getSettings</span><span style=color:#000;font-weight:700>()</span>
+<span style=color:#000>headers = </span><span style=color:#000;font-weight:700>[{</span><span style=color:#4e9a06>&#39;apikey&#39;</span><span style=color:#ce5c00;font-weight:700>:</span><span style=color:#000>settings</span><span style=color:#000;font-weight:700>[</span><span style=color:#4e9a06>&#39;apikey&#39;</span><span style=color:#000;font-weight:700>]}]</span>
+<span style=color:#000>url = </span><span style=color:#4e9a06>&#39;https://webhook.site/2692a589-a5bc-4156-af7d-75875578798f&#39;</span>
+<span style=color:#000>res = </span><span style=color:#000>http</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>headers</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>headers</span><span style=color:#000;font-weight:700>).</span><span style=color:#000>get</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>url</span><span style=color:#000;font-weight:700>)</span>
 
 </code></pre></div>
 <div class="text-muted mt-5 pt-3 border-top">
-Изменено 03.08.2022: <a href=https://github.com/e154/smart-home/commit/84130958c2486c0e0752e40f17f0f3237982e37b>update deploy script (8413095)</a>
+Изменено 16.06.2023: <a href=https://github.com/e154/smart-home/commit/1fa33e01857b95fdbcfe4dd2d491e1958b23211a>Merge pull request #221 from e154/develop (1fa33e0)</a>
 </div>
 </div>
 </main>
@@ -378,7 +348,7 @@
 </ul>
 </div>
 <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-<small class=text-white>&copy; 2022 Разработано при поддержке <a href=http://e154.ru>e154.ru</a></small>
+<small class=text-white>&copy; 2023 Разработано при поддержке <a href=http://e154.ru>e154.ru</a></small>
 <div><small class="ml-1 text-white">Код лицензии <a href=https://github.com/e154/smart-home/blob/master/LICENSE>MIT</a> документы <a href=http://creativecommons.org/licenses/by/3.0/>CC BY 3.0</a></small></div>
 </div>
 </div>

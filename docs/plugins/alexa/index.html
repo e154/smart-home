@@ -15,21 +15,16 @@
 <link rel=icon type=image/png href=/smart-home/favicons/android-144x144.png sizes=144x144>
 <link rel=icon type=image/png href=/smart-home/favicons/android-192x192.png sizes=192x192>
 <title>Alexa | Умный дом</title>
-<meta name=description content="Не законченная статья
-Настройка:
-Команды:
+<meta name=description content="
 
-произвольный набор
 
-Атрибуты
 
-произвольный набор
 
-Статус
+    Не законченная статья
 
-произвольный набор
 
-">
+
+В системе Smart Home реализован плагин Amazon Alexa, который обеспечивает интеграцию с голосовым помощником Amazon …">
 <meta property="og:title" content="Alexa">
 <meta property="og:description" content="Програмный комплекс">
 <meta property="og:type" content="website">
@@ -38,8 +33,8 @@
 <meta itemprop=description content="Програмный комплекс"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Alexa">
 <meta name=twitter:description content="Програмный комплекс">
-<link rel=preload href=/smart-home/scss/main.min.644ec6c591a2b6177d8c3c17d276a18c0f0182737d8c6ba83dfa6715ec5e8432.css as=style>
-<link href=/smart-home/scss/main.min.644ec6c591a2b6177d8c3c17d276a18c0f0182737d8c6ba83dfa6715ec5e8432.css rel=stylesheet integrity>
+<link rel=preload href=/smart-home/scss/main.min.8ebd0f8570c5c2da16785e52cb8f20394c6d706e75009a748bfe4c38f7ae92c1.css as=style>
+<link href=/smart-home/scss/main.min.8ebd0f8570c5c2da16785e52cb8f20394c6d706e75009a748bfe4c38f7ae92c1.css rel=stylesheet integrity>
 <script src=https://code.jquery.com/jquery-3.5.1.min.js integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin=anonymous></script>
 </head>
 <body class=td-section>
@@ -92,7 +87,11 @@
 <li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homedocsjavascript-li>
 <a href=/smart-home/docs/javascript/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocsjavascript><span>Javascript</span></a>
 <ul class="ul-2 foldable">
-<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascriptentity_manager-li>
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascriptactor-li>
+<a href=/smart-home/docs/javascript/actor/ title=Actor class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascriptactor><span>actor</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascriptentity-li>
+<a href=/smart-home/docs/javascript/entity/ title=Устройство class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascriptentity><span>entity</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascriptentity_manager-li>
 <a href=/smart-home/docs/javascript/entity_manager/ title="Менеджер устройств" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascriptentity_manager><span>entity manager</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascriptmqtt-li>
 <a href=/smart-home/docs/javascript/mqtt/ title=Mqtt class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascriptmqtt><span>mqtt</span></a>
@@ -107,7 +106,7 @@
 </li>
 </ul>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id=m-smart-homedocsplugins-li>
-<a href=/smart-home/docs/plugins/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocsplugins><span>Расширения</span></a>
+<a href=/smart-home/docs/plugins/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocsplugins><span>Plugins</span></a>
 <ul class="ul-2 foldable">
 <li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homedocspluginsmodbus-li>
 <a href=/smart-home/docs/plugins/modbus/ title=Modbus class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocspluginsmodbus><span>modbus</span></a>
@@ -132,7 +131,11 @@
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homedocspluginsnotify-li>
 <a href=/smart-home/docs/plugins/notify/ title="Отправка сообщений" class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocspluginsnotify><span>notify</span></a>
 <ul class="ul-3 foldable">
-<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsnotifymessagebird-li>
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsnotifywebpush-li>
+<a href=/smart-home/docs/plugins/notify/webpush/ title="Push уведомления" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsnotifywebpush><span>webpush</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsnotifyhtml5_notify-li>
+<a href=/smart-home/docs/plugins/notify/html5_notify/ title="HTML5 Уведомления" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsnotifyhtml5_notify><span>html5_notify</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsnotifymessagebird-li>
 <a href=/smart-home/docs/plugins/notify/messagebird/ title=Messagebird class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsnotifymessagebird><span>messagebird</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsnotifyslack-li>
 <a href=/smart-home/docs/plugins/notify/slack/ title=Slack class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsnotifyslack><span>slack</span></a>
@@ -152,6 +155,10 @@
 <a href=/smart-home/docs/plugins/sensor/ title=Sensor class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocspluginssensor><span>sensor</span></a>
 </li>
 </ul>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsdashboard-li>
+<a href=/smart-home/docs/dashboard/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocsdashboard><span>Dashboard</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsmqtt-li>
+<a href=/smart-home/docs/mqtt/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocsmqtt><span>MQTT</span></a>
 </li>
 </ul>
 </li>
@@ -167,18 +174,6 @@
 <a href=https://github.com/e154/smart-home/issues/new target=_blank><i class="fas fa-tasks fa-fw"></i> Предложить доработки по проекту</a>
 <a id=print href=https://e154.github.io/smart-home/docs/plugins/alexa/_print/><i class="fa fa-print fa-fw"></i> Print entire section</a>
 </div>
-<div class=td-toc><nav id=TableOfContents>
-<ul>
-<li>
-<ul>
-<li><a href=#настройка>Настройка:</a></li>
-<li><a href=#команды>Команды:</a></li>
-<li><a href=#атрибуты>Атрибуты</a></li>
-<li><a href=#статус>Статус</a></li>
-</ul>
-</li>
-</ul>
-</nav></div>
 </aside>
 <main class="col-12 col-md-9 col-xl-8 pl-md-5" role=main>
 <nav aria-label=breadcrumb class="d-none d-md-block d-print-none">
@@ -187,7 +182,7 @@
 <a href=https://e154.github.io/smart-home/docs/>Документация</a>
 </li>
 <li class=breadcrumb-item>
-<a href=https://e154.github.io/smart-home/docs/plugins/>Расширения</a>
+<a href=https://e154.github.io/smart-home/docs/plugins/>Plugins</a>
 </li>
 <li class="breadcrumb-item active" aria-current=page>
 <a href=https://e154.github.io/smart-home/docs/plugins/alexa/>alexa</a>
@@ -198,24 +193,92 @@
 <h1>Alexa</h1>
 <header class=article-meta>
 </header>
-<p>Не законченная статья</p>
-<h3 id=настройка>Настройка:</h3>
-<h3 id=команды>Команды:</h3>
-<ul>
-<li>произвольный набор</li>
-</ul>
-<h3 id=атрибуты>Атрибуты</h3>
-<ul>
-<li>произвольный набор</li>
-</ul>
-<h3 id=статус>Статус</h3>
-<ul>
-<li>произвольный набор</li>
-</ul>
+<div class="alert alert-warning" role=alert>
+Не законченная статья
+</div>
+<p>В системе <strong>Smart Home</strong> реализован плагин Amazon Alexa, который обеспечивает интеграцию с голосовым помощником Amazon
+Alexa. Этот плагин позволяет управлять устройствами и выполнить различные операции в вашем умном доме с помощью
+голосовых команд.</p>
+<p>Плагин Amazon Alexa обеспечивает следующий функционал:</p>
+<ol>
+<li>
+<p>Распознавание и обработка голосовых команд: Плагин позволяет принимать голосовые команды от пользователя,
+отправленные</p>
+</li>
+<li>
+<p>через голосового помощника Amazon Alexa. Он распознает команды, анализирует их и выполняет соответствующие действия в
+вашем умном доме.</p>
+</li>
+<li>
+<p>Управление устройствами: Плагин позволяет управлять устройствами в вашем умном доме с помощью голосовых команд.</p>
+</li>
+<li>
+<p>Например, вы можете сказать &ldquo;Alexa, включи свет в гостиной&rdquo; или &ldquo;Alexa, установи температуру на 25 градусов&rdquo;.</p>
+</li>
+<li>
+<p>Интеграция с другими функциями системы: Плагин Amazon Alexa интегрируется с другими функциями системы <strong>Smart Home</strong>.</p>
+</li>
+<li>
+<p>Например, вы можете использовать голосовые команды для запуска сценариев, управления автоматическими задачами или</p>
+</li>
+<li>
+<p>получения информации о состоянии устройств.</p>
+</li>
+</ol>
+<p>Для использования плагина Amazon Alexa в вашем проекте <strong>Smart Home</strong> требуется настройка и подключение к вашему аккаунту
+Amazon Alexa. После этого вы можете настроить голосовые команды и действия для управления вашим умным домом через
+голосового помощника Amazon Alexa.</p>
+<p>В плагине Amazon Alexa для системы <strong>Smart Home</strong> реализованы следующие хэндлеры на языке JavaScript:</p>
+<ol>
+<li><code>skillOnLaunch</code>: Этот хэндлер вызывается при запуске навыка (skill) на устройстве Amazon Alexa. Он предназначен для</li>
+<li>обработки начального события запуска навыка. Вы можете определить здесь логику или выполнить необходимые действия при</li>
+<li>запуске навыка. Пример использования:</li>
+</ol>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#000>skillOnLaunch</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000;font-weight:700>()</span> <span style=color:#000;font-weight:700>=&gt;</span> <span style=color:#000;font-weight:700>{</span>
+    <span style=color:#8f5902;font-style:italic>// Логика обработки события запуска навыка
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000;font-weight:700>};</span>
+</code></pre></div><ol start=2>
+<li><code>skillOnSessionEnd</code>: Этот хэндлер вызывается при завершении сессии с навыком. Он позволяет выполнить определенные</li>
+<li>действия при окончании сеанса с пользователем. Например, вы можете сохранить состояние или выполнить завершающие
+операции. Пример использования:</li>
+</ol>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#000>skillOnSessionEnd</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000;font-weight:700>()</span> <span style=color:#000;font-weight:700>=&gt;</span> <span style=color:#000;font-weight:700>{</span>
+    <span style=color:#8f5902;font-style:italic>// Логика завершения сессии
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000;font-weight:700>};</span>
+</code></pre></div><ol start=3>
+<li><code>skillOnIntent</code>: Этот хэндлер вызывается при получении навыком интентов (намерений) от пользователя. Он предназначен</li>
+<li>для обработки различных интентов и выполнения соответствующих действий. Вы можете определить здесь логику обработки</li>
+<li>интентов и взаимодействия с вашим умным домом. Пример использования:</li>
+</ol>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#000>skillOnIntent</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000;font-weight:700>()</span> <span style=color:#000;font-weight:700>=&gt;</span> <span style=color:#000;font-weight:700>{</span>
+    <span style=color:#8f5902;font-style:italic>// Логика обработки интентов
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000;font-weight:700>};</span>
+</code></pre></div><p>Эти хэндлеры предоставляют возможность обрабатывать события запуска навыка, завершения сессии и получения интентов от
+пользователя в контексте плагина Amazon Alexa. Вы можете определить свою логику и выполнить необходимые действия в
+каждом из этих хэндлеров в соответствии с требованиями вашего проекта.</p>
+<h3 id=пример-кода>пример кода</h3>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>skillOnLaunch = </span><span style=color:#000>-&gt;</span>
+<span style=color:#8f5902;font-style:italic>#print &#39;---action onLaunch---&#39;
+</span><span style=color:#8f5902;font-style:italic></span>  <span style=color:#000>Done</span><span style=color:#000;font-weight:700>(</span><span style=color:#4e9a06>&#39;skillOnLaunch&#39;</span><span style=color:#000;font-weight:700>)</span>
+<span style=color:#000>skillOnSessionEnd = </span><span style=color:#000>-&gt;</span>
+<span style=color:#8f5902;font-style:italic>#print &#39;---action onSessionEnd---&#39;
+</span><span style=color:#8f5902;font-style:italic></span>  <span style=color:#000>Done</span><span style=color:#000;font-weight:700>(</span><span style=color:#4e9a06>&#39;skillOnSessionEnd&#39;</span><span style=color:#000;font-weight:700>)</span>
+<span style=color:#000>skillOnIntent = </span><span style=color:#000>-&gt;</span>
+<span style=color:#8f5902;font-style:italic>#print &#39;---action onIntent---&#39;
+</span><span style=color:#8f5902;font-style:italic></span>  <span style=color:#000>state = </span><span style=color:#4e9a06>&#39;on&#39;</span>
+  <span style=color:#204a87;font-weight:700>if</span> <span style=color:#000>Alexa</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>slots</span><span style=color:#000;font-weight:700>[</span><span style=color:#4e9a06>&#39;state&#39;</span><span style=color:#000;font-weight:700>]</span> <span style=color:#ce5c00;font-weight:700>==</span> <span style=color:#4e9a06>&#39;off&#39;</span>
+    <span style=color:#000>state = </span><span style=color:#4e9a06>&#39;off&#39;</span>
+
+  <span style=color:#000>place = </span><span style=color:#000>Alexa</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>slots</span><span style=color:#000;font-weight:700>[</span><span style=color:#4e9a06>&#39;place&#39;</span><span style=color:#000;font-weight:700>]</span>
+
+  <span style=color:#000>Done</span><span style=color:#000;font-weight:700>(</span><span style=color:#4e9a06>&#34;</span><span style=color:#4e9a06>#{</span><span style=color:#000>place</span><span style=color:#4e9a06>}</span><span style=color:#4e9a06>_</span><span style=color:#4e9a06>#{</span><span style=color:#000>state</span><span style=color:#4e9a06>}</span><span style=color:#4e9a06>&#34;</span><span style=color:#000;font-weight:700>)</span>
+
+  <span style=color:#000>Alexa</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>sendMessage</span><span style=color:#000;font-weight:700>(</span><span style=color:#4e9a06>&#34;</span><span style=color:#4e9a06>#{</span><span style=color:#000>place</span><span style=color:#4e9a06>}</span><span style=color:#4e9a06>_</span><span style=color:#4e9a06>#{</span><span style=color:#000>state</span><span style=color:#4e9a06>}</span><span style=color:#4e9a06>&#34;</span><span style=color:#000;font-weight:700>)</span>
+</code></pre></div>
 <div class=section-index>
 </div>
 <div class="text-muted mt-5 pt-3 border-top">
-Изменено 03.08.2022: <a href=https://github.com/e154/smart-home/commit/84130958c2486c0e0752e40f17f0f3237982e37b>update deploy script (8413095)</a>
+Изменено 16.06.2023: <a href=https://github.com/e154/smart-home/commit/1fa33e01857b95fdbcfe4dd2d491e1958b23211a>Merge pull request #221 from e154/develop (1fa33e0)</a>
 </div>
 </div>
 </main>
@@ -236,7 +299,7 @@
 </ul>
 </div>
 <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-<small class=text-white>&copy; 2022 Разработано при поддержке <a href=http://e154.ru>e154.ru</a></small>
+<small class=text-white>&copy; 2023 Разработано при поддержке <a href=http://e154.ru>e154.ru</a></small>
 <div><small class="ml-1 text-white">Код лицензии <a href=https://github.com/e154/smart-home/blob/master/LICENSE>MIT</a> документы <a href=http://creativecommons.org/licenses/by/3.0/>CC BY 3.0</a></small></div>
 </div>
 </div>

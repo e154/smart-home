@@ -2,7 +2,7 @@
 <head>
 <meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
-<meta name=generator content="Hugo 0.89.4"><link rel=canonical type=text/html href=https://e154.github.io/smart-home/docs/plugins/scene/>
+<meta name=generator content="Hugo 0.89.4"><link rel=canonical type=text/html href=https://e154.github.io/smart-home/docs/mqtt/>
 <meta name=ROBOTS content="NOINDEX, NOFOLLOW">
 <link rel="shortcut icon" href=/smart-home/favicons/favicon.ico>
 <link rel=apple-touch-icon href=/smart-home/favicons/apple-touch-icon-180x180.png sizes=180x180>
@@ -14,29 +14,16 @@
 <link rel=icon type=image/png href=/smart-home/favicons/android-96x96.png sizes=96x96>
 <link rel=icon type=image/png href=/smart-home/favicons/android-144x144.png sizes=144x144>
 <link rel=icon type=image/png href=/smart-home/favicons/android-192x192.png sizes=192x192>
-<title>Scene | Умный дом</title>
-<meta name=description content="Не законченная статья
-Настройка:
-Команды:
-
-произвольный набор
-
-Атрибуты
-
-произвольный набор
-
-Статус
-
-произвольный набор
-
-">
-<meta property="og:title" content="Scene">
+<title>MQTT | Умный дом</title>
+<meta name=description content="Система проекта Smart Home включает встроенный MQTT брокер, что позволяет обмениваться сообщениями и управлять
+устройствами в умном доме с помощью …">
+<meta property="og:title" content="MQTT">
 <meta property="og:description" content="Програмный комплекс">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://e154.github.io/smart-home/docs/plugins/scene/"><meta property="og:site_name" content="Умный дом">
-<meta itemprop=name content="Scene">
+<meta property="og:url" content="https://e154.github.io/smart-home/docs/mqtt/"><meta property="og:site_name" content="Умный дом">
+<meta itemprop=name content="MQTT">
 <meta itemprop=description content="Програмный комплекс"><meta name=twitter:card content="summary">
-<meta name=twitter:title content="Scene">
+<meta name=twitter:title content="MQTT">
 <meta name=twitter:description content="Програмный комплекс">
 <link rel=preload href=/smart-home/scss/main.min.8ebd0f8570c5c2da16785e52cb8f20394c6d706e75009a748bfe4c38f7ae92c1.css as=style>
 <link href=/smart-home/scss/main.min.8ebd0f8570c5c2da16785e52cb8f20394c6d706e75009a748bfe4c38f7ae92c1.css rel=stylesheet integrity>
@@ -81,27 +68,52 @@
 This the multi-page printable view of this section.
 <a href=# onclick="return print(),!1">Click here to print</a>.
 </p><p>
-<a href=/smart-home/docs/plugins/scene/>Return to the regular view of this page</a>.
+<a href=/smart-home/docs/mqtt/>Return to the regular view of this page</a>.
 </p>
 </div>
-<h1 class=title>Scene</h1>
+<h1 class=title>MQTT</h1>
 <ul>
 </ul>
 <div class=content>
-<p>Не законченная статья</p>
-<h3 id=настройка>Настройка:</h3>
-<h3 id=команды>Команды:</h3>
-<ul>
-<li>произвольный набор</li>
-</ul>
-<h3 id=атрибуты>Атрибуты</h3>
-<ul>
-<li>произвольный набор</li>
-</ul>
-<h3 id=статус>Статус</h3>
-<ul>
-<li>произвольный набор</li>
-</ul>
+<p>Система проекта <strong>Smart Home</strong> включает встроенный MQTT брокер, что позволяет обмениваться сообщениями и управлять
+устройствами в умном доме с помощью протокола MQTT (Message Queuing Telemetry Transport).</p>
+<p>MQTT - это легковесный протокол обмена сообщениями, разработанный для обмена данными между устройствами в сетях с
+ограниченной пропускной способностью или низкой надежностью соединения. Он основан на модели издатель-подписчик
+(publisher-subscriber) и обеспечивает надежную доставку сообщений между устройствами.</p>
+<p>Встроенный MQTT брокер в проекте <strong>Smart Home</strong> предоставляет серверную часть для обработки MQTT сообщений.
+Он выполняет следующие функции:</p>
+<ol>
+<li>
+<p>Поддержка издателей и подписчиков: MQTT брокер принимает сообщения от издателей (publishers) и перенаправляет их</p>
+</li>
+<li>
+<p>подписчикам (subscribers). Это позволяет устройствам в умном доме обмениваться данными и управляться друг другом.</p>
+</li>
+<li>
+<p>Топики и фильтрация: MQTT брокер использует понятие &ldquo;топика&rdquo; (topic) для классификации сообщений. Подписчики могут</p>
+</li>
+<li>
+<p>подписываться на определенные топики, чтобы получать только интересующие их данные. Брокер выполняет фильтрацию</p>
+</li>
+<li>
+<p>сообщений и пересылает их только тем подписчикам, которые подписаны на соответствующие топики.</p>
+</li>
+<li>
+<p>Гарантированная доставка сообщений: MQTT брокер обеспечивает надежную доставку сообщений, гарантируя, что сообщения</p>
+</li>
+<li>
+<p>будут доставлены подписчикам даже при временных проблемах с соединением или недоступности устройств.</p>
+</li>
+<li>
+<p>Управление доступом: MQTT брокер предоставляет возможности для аутентификации и авторизации, что позволяет контролировать</p>
+</li>
+<li>
+<p>доступ к различным топикам и ограничивать доступ к устройствам и данным в умном доме.</p>
+</li>
+</ol>
+<p>Встроенный MQTT брокер в проекте <strong>Smart Home</strong> упрощает взаимодействие и интеграцию устройств в умном доме. Он предоставляет
+стабильную и эффективную среду для обмена данными и управления устройствами с использованием протокола MQTT. Это позволяет
+создавать сложные сценарии автоматизации, контролировать состояние устройств и обмениваться данными между различ</p>
 </div>
 </div>
 </main>
