@@ -1,6 +1,6 @@
 ---
-title: "Менеджер устройств"
-linkTitle: "entity manager"
+title: "entityManager"
+linkTitle: "entityManager"
 date: 2021-11-20 
 description: >
 
