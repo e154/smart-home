@@ -6,9 +6,18 @@ option go_package = "/api";
 
 import "google/api/annotations.proto";
 import "protoc-gen-swagger/options/annotations.proto";
+import "google/protobuf/empty.proto";
 
 import "attributes.proto";
 import "pagination.proto";
+
+message PluginShort {
+  string name = 1;
+  string version = 2;
+  bool enabled = 3;
+  bool system = 4;
+  bool actor = 5;
+}
 
 message Plugin {
   string name = 1;
@@ -17,16 +26,18 @@ message Plugin {
   bool system = 4;
   bool actor = 5;
   map<string, Attribute> settings = 6;
+  PluginOptionsResult options = 7;
 }
 
 message GetPluginListResult {
-  repeated Plugin items = 1;
+  repeated PluginShort items = 1;
   Meta meta = 2;
 }
 
 message EnablePluginRequest {
   string name = 1;
 }
+
 message EnablePluginResult {
 
 }
@@ -42,7 +53,7 @@ message GetPluginOptionsRequest {
   string name = 1;
 }
 
-message GetPluginOptionsResult {
+message PluginOptionsResult {
   bool triggers = 1;
   bool actors = 2;
   bool actor_custom_attrs = 3;
@@ -69,7 +80,16 @@ message GetPluginOptionsResult {
 }
 
 message SearchPluginResult {
-  repeated Plugin items = 1;
+  repeated PluginShort items = 1;
+}
+
+message UpdatePluginSettingsRequest {
+  string name = 1;
+  map<string, Attribute> settings = 2;
+}
+
+message GetPluginRequest {
+  string name = 1;
 }
 
 service PluginService {
@@ -78,6 +98,22 @@ service PluginService {
   rpc GetPluginList(PaginationRequest) returns (GetPluginListResult) {
     option (google.api.http) = {
       get: "/v1/plugins"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // update plugin settings
+  rpc UpdatePluginSettings(UpdatePluginSettingsRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/v1/plugin/{name}/settings"
+      body: "*"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
       security: {
@@ -119,10 +155,10 @@ service PluginService {
     };
   }
 
-  // get plugin options
-  rpc GetPluginOptions(GetPluginOptionsRequest) returns (GetPluginOptionsResult) {
+  // search plugin
+  rpc SearchPlugin (SearchRequest) returns (SearchPluginResult){
     option (google.api.http) = {
-      get: "/v1/plugin/{name}/options"
+      get: "/v1/plugins/search"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
       security: {
@@ -134,10 +170,10 @@ service PluginService {
     };
   }
 
-  // search plugin
-  rpc SearchPlugin (SearchRequest) returns (SearchPluginResult){
+  // get plugin
+  rpc GetPlugin (GetPluginRequest) returns (Plugin){
     option (google.api.http) = {
-      get: "/v1/plugins/search"
+      get: "/v1/plugin/{name}"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
       security: {

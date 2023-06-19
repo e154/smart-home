@@ -1,10 +1,10 @@
 <template>
-  <div v-if="item.entity">
+  <div v-if="item.entity" style="height: 100%">
     <div v-if="item.payload.chart.type === 'bar'">
       <BarChart :chart-data="chartData"
                 :chart-options="chartOptions"
-                :width="600"
-                :height="400"
+                :width="item.payload.chart.width"
+                :height="item.payload.chart.height"
                 :bus="bus"
                 ref="bar"
       />
@@ -12,8 +12,8 @@
     <div v-if="item.payload.chart.type === 'line'">
       <LineChart :chart-data="chartData"
                  :chart-options="chartOptions"
-                 :width="600"
-                 :height="400"
+                 :width="item.width"
+                 :height="item.height"
                  :plugins="plugins"
                  :bus="bus"
                  ref="line"
@@ -22,8 +22,8 @@
     <div v-if="item.payload.chart.type === 'doughnut'">
       <DoughnutChart :chart-data="chartData"
                      :chart-options="chartOptions"
-                     :width="600"
-                     :height="400"
+                     :width="item.payload.chart.width"
+                     :height="item.payload.chart.height"
                      :plugins="plugins"
                      :bus="bus"
                      ref="doughnut"
@@ -32,8 +32,8 @@
     <div v-if="item.payload.chart.type === 'radar'">
       <RadarChart :chart-data="chartData"
                   :chart-options="chartOptions"
-                  :width="600"
-                  :height="400"
+                  :width="item.payload.chart.width"
+                  :height="item.payload.chart.height"
                   :plugins="plugins"
                   :bus="bus"
                   ref="radar"
@@ -188,8 +188,8 @@ export default class extends Vue {
           interaction: {
             intersect: false
           },
-          responsive: true,
-          maintainAspectRatio: true,
+          responsive: false,
+          maintainAspectRatio: false,
           plugins: {
             legend: this.item.payload.chart?.legend || false
           },

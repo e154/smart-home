@@ -367,7 +367,7 @@ export interface ApiGetMessageDeliveryListResult {
 }
 
 export interface ApiGetPluginListResult {
-  items: ApiPlugin[];
+  items: ApiPluginShort[];
   meta: ApiMeta;
 }
 
@@ -672,6 +672,16 @@ export interface ApiPlugin {
   system: boolean;
   actor: boolean;
   settings: Record<string, ApiAttribute>;
+  options?: ApiGetPluginOptionsResult;
+}
+
+export interface ApiPluginShort {
+  name: string;
+  version: string;
+  enabled: boolean;
+  system?: boolean;
+  actor?: boolean;
+  settings?: Record<string, ApiAttribute>;
 }
 
 export interface ApiReloadRequest {
@@ -743,7 +753,7 @@ export interface ApiSearchEntityResult {
 }
 
 export interface ApiSearchPluginResult {
-  items: ApiPlugin[];
+  items?: ApiPluginShort[];
 }
 
 export interface ApiSearchRoleListResult {
@@ -2425,6 +2435,24 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags PluginService
+     * @name PluginServiceGetPlugin
+     * @summary get plugin
+     * @request GET:/v1/plugin/{name}
+     * @secure
+     */
+    pluginServiceGetPlugin: (name: string, params: RequestParams = {}) =>
+      this.request<ApiPlugin, RpcStatus>({
+        path: `/v1/plugin/${name}`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags PluginService
      * @name PluginServiceDisablePlugin
      * @summary disable plugin
      * @request POST:/v1/plugin/{name}/disable
@@ -2461,17 +2489,25 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags PluginService
-     * @name PluginServiceGetPluginOptions
-     * @summary get plugin options
-     * @request GET:/v1/plugin/{name}/options
+     * @name PluginServiceUpdatePluginSettings
+     * @summary update plugin settings
+     * @request PUT:/v1/plugin/{name}/settings
      * @secure
      */
-    pluginServiceGetPluginOptions: (name: string, params: RequestParams = {}) =>
-      this.request<ApiGetPluginOptionsResult, RpcStatus>({
-        path: `/v1/plugin/${name}/options`,
-        method: 'GET',
+    pluginServiceUpdatePluginSettings: (
+      name: string,
+      body: {
+        settings?: Record<string, ApiAttribute>;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<any, RpcStatus>({
+        path: `/v1/plugin/${name}/settings`,
+        method: "PUT",
+        body: body,
         secure: true,
-        format: 'json',
+        type: ContentType.Json,
+        format: "json",
         ...params,
       }),
 

@@ -16,9 +16,9 @@
           width="auto"
           :class-name="getSortClass('name')"
         >
-          <template slot-scope="{row}"
-                    @click="goto(row)">
-            <span class="cursor-pointer">{{ row.name }}</span>
+          <template slot-scope="{row}">
+            <span class="cursor-pointer"
+                  @click="goto(row)">{{ row.name }}</span>
           </template>
         </el-table-column>
 
@@ -41,8 +41,7 @@
 
             <el-switch
               v-model="row.enabled"
-              :disabled="row.system"
-            v-on:change="updateItem(row)">
+              disabled>
             </el-switch>
           </template>
         </el-table-column>
@@ -76,7 +75,7 @@
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator'
 import api from '@/api/api'
-import { ApiPlugin } from '@/api/stub'
+import {ApiArea, ApiPlugin, ApiPluginShort} from '@/api/stub'
 import Pagination from '@/components/Pagination/index.vue'
 import router from '@/router'
 
@@ -88,7 +87,7 @@ import router from '@/router'
 })
 export default class extends Vue {
   private tableKey = 0;
-  private list: ApiPlugin[] = [];
+  private list: ApiPluginShort[] = [];
   private total = 0;
   private listLoading = true;
   private listQuery = {
@@ -140,26 +139,8 @@ export default class extends Vue {
     return sort === `+${key}` ? 'ascending' : 'descending'
   }
 
-  private goto(plugin: ApiPlugin) {
-    router.push({ path: `/plugins/edit/${plugin.name}` })
-  }
-
-  private updateItem(plugin: ApiPlugin) {
-    if (plugin.enabled) {
-      this.enable(plugin)
-    } else {
-      this.disable(plugin)
-    }
-  }
-
-  private async enable(plugin: ApiPlugin) {
-    const { data } = await api.v1.pluginServiceEnablePlugin(plugin.name)
-    this.getList()
-  }
-
-  private async disable(plugin: ApiPlugin) {
-    const { data } = await api.v1.pluginServiceDisablePlugin(plugin.name)
-    this.getList()
+  private goto(plugin: ApiPluginShort) {
+    router.push({ path: `/etc/plugins/edit/${plugin.name}` })
   }
 }
 </script>
