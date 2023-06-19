@@ -26,7 +26,7 @@ import (
 )
 
 // AddPlugin ...
-func AddPlugin(adaptors *adaptors.Adaptors, name string, opts ...m.Attributes) (err error) {
+func AddPlugin(adaptors *adaptors.Adaptors, name string, opts ...m.AttributeValue) (err error) {
 	plugin := m.Plugin{
 		Name:    name,
 		Version: "0.0.1",

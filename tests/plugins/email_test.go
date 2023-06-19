@@ -62,7 +62,7 @@ func TestEmail(t *testing.T) {
 			settings[email.AttrSmtp].Value = "XXX"
 			settings[email.AttrPort].Value = 123
 			settings[email.AttrSender].Value = "XXX"
-			err = AddPlugin(adaptors, "email", settings)
+			err = AddPlugin(adaptors, "email", settings.Serialize())
 			ctx.So(err, ShouldBeNil)
 
 			pluginManager.Start()
