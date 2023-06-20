@@ -59,7 +59,7 @@ func TestMessagebird(t *testing.T) {
 			settings := messagebird.NewSettings()
 			settings[messagebird.AttrAccessKey].Value = "XXXX"
 			settings[messagebird.AttrName].Value = "YYYY"
-			err = AddPlugin(adaptors, "messagebird", settings)
+			err = AddPlugin(adaptors, "messagebird", settings.Serialize())
 			ctx.So(err, ShouldBeNil)
 
 			pluginManager.Start()

@@ -77,6 +77,12 @@ func (p *PluginEndpoint) GetOptions(ctx context.Context, pluginName string) (opt
 	return
 }
 
+// GetByName ...
+func (p *PluginEndpoint) GetByName(ctx context.Context, pluginName string) (plugin m.Plugin, err error) {
+	plugin, err = p.adaptors.Plugin.GetByName(pluginName)
+	return
+}
+
 // Search ...
 func (n *PluginEndpoint) Search(ctx context.Context, query string, limit, offset int64) (result []m.Plugin, total int64, err error) {
 
@@ -84,5 +90,28 @@ func (n *PluginEndpoint) Search(ctx context.Context, query string, limit, offset
 	if err != nil {
 		err = errors.Wrap(apperr.ErrInternal, err.Error())
 	}
+	return
+}
+
+// UpdateSettings ...
+func (n *PluginEndpoint) UpdateSettings(ctx context.Context, name string, settings m.Attributes) (err error) {
+
+	var plugin m.Plugin
+	if plugin, err = n.adaptors.Plugin.GetByName(name); err != nil {
+		return
+	}
+
+	plugin.Settings = settings.Serialize()
+
+	if err = n.adaptors.Plugin.Update(plugin); err != nil {
+		return
+	}
+
+	if err = n.pluginManager.DisablePlugin(name); err != nil {
+		return
+	}
+
+	err = n.pluginManager.EnablePlugin(name)
+
 	return
 }

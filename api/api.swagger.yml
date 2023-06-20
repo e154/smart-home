@@ -1,0 +1,5047 @@
+swagger: '2.0'
+info:
+  title: Smart home api
+  description: This documentation describes APIs found under https://github.com/e154/smart-home
+  version: '1.0'
+  contact:
+    name: Alex Filippov
+    url: https://e154.github.io/smart-home/
+    email: support@e154.ru
+tags:
+  - name: AreaService
+  - name: AuthService
+  - name: AutomationService
+  - name: BackupService
+  - name: DashboardService
+  - name: DashboardCardService
+  - name: DashboardCardItemService
+  - name: DashboardTabService
+  - name: DeveloperToolsService
+  - name: EntityService
+  - name: EntityStorageService
+  - name: ImageService
+  - name: InteractService
+  - name: LogService
+  - name: MessageDeliveryService
+  - name: MetricService
+  - name: PluginService
+  - name: RoleService
+  - name: ScriptService
+  - name: StreamService
+  - name: UserService
+  - name: VariableService
+  - name: Zigbee2mqttService
+schemes:
+  - http
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /v1/access_list:
+    get:
+      summary: get user access list object
+      operationId: AuthService_AccessList
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiAccessListResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      tags:
+        - AuthService
+      security:
+        - ApiKeyAuth: []
+  /v1/area:
+    post:
+      summary: add new area
+      operationId: AreaService_AddArea
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiArea'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/apiNewAreaRequest'
+      tags:
+        - AreaService
+      security:
+        - ApiKeyAuth: []
+  /v1/area/{id}:
+    get:
+      summary: get area by id
+      operationId: AreaService_GetAreaById
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiArea'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+      tags:
+        - AreaService
+      security:
+        - ApiKeyAuth: []
+    delete:
+      summary: delete area
+      operationId: AreaService_DeleteArea
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+      tags:
+        - AreaService
+      security:
+        - ApiKeyAuth: []
+    put:
+      summary: update area
+      operationId: AreaService_UpdateArea
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiArea'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              description:
+                type: string
+      tags:
+        - AreaService
+      security:
+        - ApiKeyAuth: []
+  /v1/areas:
+    get:
+      summary: get area list
+      operationId: AreaService_GetAreaList
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiGetAreaListResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: page
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: limit
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: sort
+          in: query
+          required: false
+          type: string
+      tags:
+        - AreaService
+      security:
+        - ApiKeyAuth: []
+  /v1/areas/search:
+    get:
+      summary: search area
+      operationId: AreaService_SearchArea
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiSearchAreaResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: query
+          in: query
+          required: false
+          type: string
+        - name: limit
+          in: query
+          required: false
+          type: string
+          format: int64
+        - name: offset
+          in: query
+          required: false
+          type: string
+          format: int64
+      tags:
+        - AreaService
+      security:
+        - ApiKeyAuth: []
+  /v1/backup:
+    post:
+      summary: new backup
+      operationId: BackupService_NewBackup
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            properties: {}
+      tags:
+        - BackupService
+      security:
+        - ApiKeyAuth: []
+  /v1/backup/restore:
+    put:
+      summary: restore backup
+      operationId: BackupService_RestoreBackup
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/apiRestoreBackupRequest'
+      tags:
+        - BackupService
+      security:
+        - ApiKeyAuth: []
+  /v1/backups:
+    get:
+      summary: get backup list
+      operationId: BackupService_GetBackupList
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiGetBackupListResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      tags:
+        - BackupService
+      security:
+        - ApiKeyAuth: []
+  /v1/dashboard:
+    post:
+      summary: add new dashboard
+      operationId: DashboardService_AddDashboard
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiDashboard'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/apiNewDashboardRequest'
+      tags:
+        - DashboardService
+      security:
+        - ApiKeyAuth: []
+  /v1/dashboard/{id}:
+    get:
+      summary: get dashboard by id
+      operationId: DashboardService_GetDashboardById
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiDashboard'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+      tags:
+        - DashboardService
+      security:
+        - ApiKeyAuth: []
+    delete:
+      summary: delete dashboard
+      operationId: DashboardService_DeleteDashboard
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+      tags:
+        - DashboardService
+      security:
+        - ApiKeyAuth: []
+    put:
+      summary: update dashboard
+      operationId: DashboardService_UpdateDashboard
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiDashboard'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              description:
+                type: string
+              enabled:
+                type: boolean
+              areaId:
+                type: string
+                format: int64
+      tags:
+        - DashboardService
+      security:
+        - ApiKeyAuth: []
+  /v1/dashboard_card:
+    post:
+      summary: add new dashboard_card
+      operationId: DashboardCardService_AddDashboardCard
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiDashboardCard'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/apiNewDashboardCardRequest'
+      tags:
+        - DashboardCardService
+      security:
+        - ApiKeyAuth: []
+  /v1/dashboard_card/import:
+    post:
+      summary: import dashboard_card
+      operationId: DashboardCardService_ImportDashboardCard
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiDashboardCard'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/apiDashboardCard'
+      tags:
+        - DashboardCardService
+      security:
+        - ApiKeyAuth: []
+  /v1/dashboard_card/{id}:
+    get:
+      summary: get dashboard_card by id
+      operationId: DashboardCardService_GetDashboardCardById
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiDashboardCard'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+      tags:
+        - DashboardCardService
+      security:
+        - ApiKeyAuth: []
+    delete:
+      summary: delete dashboard_card
+      operationId: DashboardCardService_DeleteDashboardCard
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+      tags:
+        - DashboardCardService
+      security:
+        - ApiKeyAuth: []
+    put:
+      summary: update dashboard_card
+      operationId: DashboardCardService_UpdateDashboardCard
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiDashboardCard'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+              height:
+                type: integer
+                format: int32
+              width:
+                type: integer
+                format: int32
+              background:
+                type: string
+              weight:
+                type: integer
+                format: int32
+              enabled:
+                type: boolean
+              dashboardTabId:
+                type: string
+                format: int64
+              payload:
+                type: string
+                format: byte
+              items:
+                type: array
+                items:
+                  $ref: '#/definitions/UpdateDashboardCardRequestItem'
+      tags:
+        - DashboardCardService
+      security:
+        - ApiKeyAuth: []
+  /v1/dashboard_card_item:
+    post:
+      summary: add new dashboard_card
+      operationId: DashboardCardItemService_AddDashboardCardItem
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiDashboardCardItem'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/apiNewDashboardCardItemRequest'
+      tags:
+        - DashboardCardItemService
+      security:
+        - ApiKeyAuth: []
+  /v1/dashboard_card_item/{id}:
+    get:
+      summary: get dashboard_card_item by id
+      operationId: DashboardCardItemService_GetDashboardCardItemById
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiDashboardCardItem'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+      tags:
+        - DashboardCardItemService
+      security:
+        - ApiKeyAuth: []
+    delete:
+      summary: delete dashboard_card_item
+      operationId: DashboardCardItemService_DeleteDashboardCardItem
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+      tags:
+        - DashboardCardItemService
+      security:
+        - ApiKeyAuth: []
+    put:
+      summary: update dashboard_card_item
+      operationId: DashboardCardItemService_UpdateDashboardCardItem
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiDashboardCardItem'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+              type:
+                type: string
+              weight:
+                type: integer
+                format: int32
+              enabled:
+                type: boolean
+              dashboardCardId:
+                type: string
+                format: int64
+              entityId:
+                type: string
+              payload:
+                type: string
+                format: byte
+              hidden:
+                type: boolean
+              frozen:
+                type: boolean
+      tags:
+        - DashboardCardItemService
+      security:
+        - ApiKeyAuth: []
+  /v1/dashboard_cards:
+    get:
+      summary: get dashboard_card_item list
+      operationId: DashboardCardItemService_GetDashboardCardItemList
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiGetDashboardCardItemListResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: page
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: limit
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: sort
+          in: query
+          required: false
+          type: string
+      tags:
+        - DashboardCardItemService
+      security:
+        - ApiKeyAuth: []
+  /v1/dashboard_tab:
+    post:
+      summary: add new dashboard_tab
+      operationId: DashboardTabService_AddDashboardTab
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiDashboardTab'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/apiNewDashboardTabRequest'
+      tags:
+        - DashboardTabService
+      security:
+        - ApiKeyAuth: []
+  /v1/dashboard_tab/{id}:
+    get:
+      summary: get dashboard_tab by id
+      operationId: DashboardTabService_GetDashboardTabById
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiDashboardTab'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+      tags:
+        - DashboardTabService
+      security:
+        - ApiKeyAuth: []
+    delete:
+      summary: delete dashboard_tab
+      operationId: DashboardTabService_DeleteDashboardTab
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+      tags:
+        - DashboardTabService
+      security:
+        - ApiKeyAuth: []
+    put:
+      summary: update dashboard
+      operationId: DashboardTabService_UpdateDashboardTab
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiDashboardTab'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              columnWidth:
+                type: integer
+                format: int32
+              gap:
+                type: boolean
+              background:
+                type: string
+              icon:
+                type: string
+              enabled:
+                type: boolean
+              weight:
+                type: integer
+                format: int32
+              dashboardId:
+                type: string
+                format: int64
+      tags:
+        - DashboardTabService
+      security:
+        - ApiKeyAuth: []
+  /v1/dashboard_tabs:
+    get:
+      summary: get dashboard_tab list
+      operationId: DashboardTabService_GetDashboardTabList
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiGetDashboardTabListResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: page
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: limit
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: sort
+          in: query
+          required: false
+          type: string
+      tags:
+        - DashboardTabService
+      security:
+        - ApiKeyAuth: []
+  /v1/dashboards:
+    get:
+      summary: get dashboard list
+      operationId: DashboardService_GetDashboardList
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiGetDashboardListResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: page
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: limit
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: sort
+          in: query
+          required: false
+          type: string
+      tags:
+        - DashboardService
+      security:
+        - ApiKeyAuth: []
+  /v1/dashboards/import:
+    post:
+      summary: import dashboard
+      operationId: DashboardService_ImportDashboard
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiDashboard'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/apiDashboard'
+      tags:
+        - DashboardService
+      security:
+        - ApiKeyAuth: []
+  /v1/dashboards/search:
+    get:
+      summary: search area
+      operationId: DashboardService_SearchDashboard
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiSearchDashboardResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: query
+          in: query
+          required: false
+          type: string
+        - name: limit
+          in: query
+          required: false
+          type: string
+          format: int64
+        - name: offset
+          in: query
+          required: false
+          type: string
+          format: int64
+      tags:
+        - DashboardService
+      security:
+        - ApiKeyAuth: []
+  /v1/developer_tools/entity_reload:
+    post:
+      summary: reload entity
+      operationId: DeveloperToolsService_ReloadEntity
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/apiReloadRequest'
+      tags:
+        - DeveloperToolsService
+      security:
+        - ApiKeyAuth: []
+  /v1/developer_tools/entity_set_state:
+    post:
+      summary: entity set state
+      operationId: DeveloperToolsService_EntitySetState
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/apiEntityRequest'
+      tags:
+        - DeveloperToolsService
+      security:
+        - ApiKeyAuth: []
+  /v1/developer_tools/task_call_action:
+    post:
+      summary: task call action
+      operationId: DeveloperToolsService_TaskCallAction
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/apiAutomationRequest'
+      tags:
+        - DeveloperToolsService
+      security:
+        - ApiKeyAuth: []
+  /v1/developer_tools/task_call_trigger:
+    post:
+      summary: task call trigger
+      operationId: DeveloperToolsService_TaskCallTrigger
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/apiAutomationRequest'
+      tags:
+        - DeveloperToolsService
+      security:
+        - ApiKeyAuth: []
+  /v1/entities:
+    get:
+      summary: get entity list
+      operationId: EntityService_GetEntityList
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiGetEntityListResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: page
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: limit
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: sort
+          in: query
+          required: false
+          type: string
+      tags:
+        - EntityService
+      security:
+        - ApiKeyAuth: []
+  /v1/entities/import:
+    post:
+      summary: import entity
+      operationId: EntityService_ImportEntity
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/apiEntity'
+      tags:
+        - EntityService
+      security:
+        - ApiKeyAuth: []
+  /v1/entity:
+    post:
+      summary: add new entity
+      operationId: EntityService_AddEntity
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiEntity'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/apiNewEntityRequest'
+      tags:
+        - EntityService
+      security:
+        - ApiKeyAuth: []
+  /v1/entity/search:
+    get:
+      summary: search entity
+      operationId: EntityService_SearchEntity
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiSearchEntityResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: query
+          in: query
+          required: false
+          type: string
+        - name: limit
+          in: query
+          required: false
+          type: string
+          format: int64
+        - name: offset
+          in: query
+          required: false
+          type: string
+          format: int64
+      tags:
+        - EntityService
+      security:
+        - ApiKeyAuth: []
+  /v1/entity/{id}:
+    get:
+      summary: get entity
+      operationId: EntityService_GetEntity
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiEntity'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+      tags:
+        - EntityService
+      security:
+        - ApiKeyAuth: []
+    delete:
+      summary: delete entity
+      operationId: EntityService_DeleteEntity
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+      tags:
+        - EntityService
+      security:
+        - ApiKeyAuth: []
+    put:
+      summary: update entity
+      operationId: EntityService_UpdateEntity
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiEntity'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              pluginName:
+                type: string
+              description:
+                type: string
+              area:
+                $ref: '#/definitions/apiArea'
+              icon:
+                type: string
+              image:
+                $ref: '#/definitions/apiUpdateEntityRequestImage'
+              autoLoad:
+                type: boolean
+              parent:
+                $ref: '#/definitions/apiEntityParent'
+              actions:
+                type: array
+                items:
+                  $ref: '#/definitions/apiUpdateEntityRequestAction'
+              states:
+                type: array
+                items:
+                  $ref: '#/definitions/apiUpdateEntityRequestState'
+              attributes:
+                type: object
+                additionalProperties:
+                  $ref: '#/definitions/apiAttribute'
+              settings:
+                type: object
+                additionalProperties:
+                  $ref: '#/definitions/apiAttribute'
+              scripts:
+                type: array
+                items:
+                  $ref: '#/definitions/apiScript'
+              metrics:
+                type: array
+                items:
+                  $ref: '#/definitions/apiMetric'
+      tags:
+        - EntityService
+      security:
+        - ApiKeyAuth: []
+  /v1/entity_storage/{entityId}:
+    get:
+      operationId: EntityStorageService_GetEntityStorageList
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiGetEntityStorageResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: entityId
+          in: path
+          required: true
+          type: string
+        - name: page
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: limit
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: sort
+          in: query
+          required: false
+          type: string
+        - name: startDate
+          in: query
+          required: false
+          type: string
+        - name: endDate
+          in: query
+          required: false
+          type: string
+      tags:
+        - EntityStorageService
+      security:
+        - ApiKeyAuth: []
+  /v1/image:
+    post:
+      summary: add new image
+      operationId: ImageService_AddImage
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiImage'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/apiNewImageRequest'
+      tags:
+        - ImageService
+      security:
+        - ApiKeyAuth: []
+  /v1/image/upload:
+    post:
+      summary: upload image
+      operationId: ImageService_UploadImage
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiImage'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/apiUploadImageRequest'
+      tags:
+        - ImageService
+      security:
+        - ApiKeyAuth: []
+  /v1/image/{id}:
+    get:
+      summary: get image by id
+      operationId: ImageService_GetImageById
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiImage'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+      tags:
+        - ImageService
+      security:
+        - ApiKeyAuth: []
+    delete:
+      summary: delete image by id
+      operationId: ImageService_DeleteImageById
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+      tags:
+        - ImageService
+      security:
+        - ApiKeyAuth: []
+    put:
+      summary: update image
+      operationId: ImageService_UpdateImageById
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiImage'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              thumb:
+                type: string
+              image:
+                type: string
+              mimeType:
+                type: string
+              title:
+                type: string
+              size:
+                type: string
+                format: int64
+              name:
+                type: string
+      tags:
+        - ImageService
+      security:
+        - ApiKeyAuth: []
+  /v1/images:
+    get:
+      summary: get image list
+      operationId: ImageService_GetImageList
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiGetImageListResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: page
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: limit
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: sort
+          in: query
+          required: false
+          type: string
+      tags:
+        - ImageService
+      security:
+        - ApiKeyAuth: []
+  /v1/images/filter_list:
+    get:
+      summary: get image filter list
+      operationId: ImageService_GetImageFilterList
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiGetImageFilterListResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      tags:
+        - ImageService
+      security:
+        - ApiKeyAuth: []
+  /v1/images/filtered:
+    get:
+      summary: get image list by date
+      operationId: ImageService_GetImageListByDate
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiGetImageListByDateResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: filter
+          in: query
+          required: false
+          type: string
+      tags:
+        - ImageService
+      security:
+        - ApiKeyAuth: []
+  /v1/interact/entity_call_action:
+    post:
+      summary: entity call action
+      operationId: InteractService_EntityCallAction
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/apiEntityCallActionRequest'
+      tags:
+        - InteractService
+      security:
+        - ApiKeyAuth: []
+  /v1/logs:
+    get:
+      operationId: LogService_GetLogList
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiGetLogListResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: page
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: limit
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: sort
+          in: query
+          required: false
+          type: string
+        - name: query
+          in: query
+          required: false
+          type: string
+        - name: startDate
+          in: query
+          required: false
+          type: string
+        - name: endDate
+          in: query
+          required: false
+          type: string
+      tags:
+        - LogService
+      security:
+        - ApiKeyAuth: []
+  /v1/message_delivery:
+    get:
+      summary: get list
+      operationId: MessageDeliveryService_GetMessageDeliveryList
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiGetMessageDeliveryListResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: page
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: limit
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: sort
+          in: query
+          required: false
+          type: string
+        - name: messageType
+          in: query
+          required: false
+          type: string
+        - name: startDate
+          in: query
+          required: false
+          type: string
+        - name: endDate
+          in: query
+          required: false
+          type: string
+      tags:
+        - MessageDeliveryService
+      security:
+        - ApiKeyAuth: []
+  /v1/metric:
+    get:
+      summary: get metric
+      operationId: MetricService_GetMetric
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiMetric'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: query
+          required: false
+          type: string
+          format: int64
+        - name: range
+          in: query
+          required: false
+          type: string
+        - name: from
+          in: query
+          required: false
+          type: string
+          format: date-time
+        - name: to
+          in: query
+          required: false
+          type: string
+          format: date-time
+      tags:
+        - MetricService
+      security:
+        - ApiKeyAuth: []
+  /v1/plugin/{name}:
+    get:
+      summary: get plugin
+      operationId: PluginService_GetPlugin
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiPlugin'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: name
+          in: path
+          required: true
+          type: string
+      tags:
+        - PluginService
+      security:
+        - ApiKeyAuth: []
+  /v1/plugin/{name}/disable:
+    post:
+      summary: disable plugin
+      operationId: PluginService_DisablePlugin
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiDisablePluginResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: name
+          in: path
+          required: true
+          type: string
+      tags:
+        - PluginService
+      security:
+        - ApiKeyAuth: []
+  /v1/plugin/{name}/enable:
+    post:
+      summary: enable plugin
+      operationId: PluginService_EnablePlugin
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiEnablePluginResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: name
+          in: path
+          required: true
+          type: string
+      tags:
+        - PluginService
+      security:
+        - ApiKeyAuth: []
+  /v1/plugin/{name}/settings:
+    put:
+      summary: update plugin settings
+      operationId: PluginService_UpdatePluginSettings
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: name
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              settings:
+                type: object
+                additionalProperties:
+                  $ref: '#/definitions/apiAttribute'
+      tags:
+        - PluginService
+      security:
+        - ApiKeyAuth: []
+  /v1/plugins:
+    get:
+      summary: get plugin list
+      operationId: PluginService_GetPluginList
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiGetPluginListResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: page
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: limit
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: sort
+          in: query
+          required: false
+          type: string
+      tags:
+        - PluginService
+      security:
+        - ApiKeyAuth: []
+  /v1/plugins/search:
+    get:
+      summary: search plugin
+      operationId: PluginService_SearchPlugin
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiSearchPluginResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: query
+          in: query
+          required: false
+          type: string
+        - name: limit
+          in: query
+          required: false
+          type: string
+          format: int64
+        - name: offset
+          in: query
+          required: false
+          type: string
+          format: int64
+      tags:
+        - PluginService
+      security:
+        - ApiKeyAuth: []
+  /v1/role:
+    post:
+      summary: add new role
+      operationId: RoleService_AddRole
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiRole'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/apiNewRoleRequest'
+      tags:
+        - RoleService
+      security:
+        - ApiKeyAuth: []
+  /v1/role/{name}:
+    get:
+      summary: get role by name
+      operationId: RoleService_GetRoleByName
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiRole'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: name
+          in: path
+          required: true
+          type: string
+      tags:
+        - RoleService
+      security:
+        - ApiKeyAuth: []
+    delete:
+      summary: delete role by name
+      operationId: RoleService_DeleteRoleByName
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: name
+          in: path
+          required: true
+          type: string
+      tags:
+        - RoleService
+      security:
+        - ApiKeyAuth: []
+    put:
+      summary: update role
+      operationId: RoleService_UpdateRoleByName
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiRole'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: name
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              description:
+                type: string
+              parent:
+                type: string
+      tags:
+        - RoleService
+      security:
+        - ApiKeyAuth: []
+  /v1/role/{name}/access_list:
+    get:
+      summary: get role access list
+      operationId: RoleService_GetRoleAccessList
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiRoleAccessListResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: name
+          in: path
+          required: true
+          type: string
+      tags:
+        - RoleService
+      security:
+        - ApiKeyAuth: []
+    put:
+      summary: update role access list
+      operationId: RoleService_UpdateRoleAccessList
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiRoleAccessListResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: name
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              accessListDiff:
+                type: object
+                additionalProperties:
+                  $ref: '#/definitions/UpdateRoleAccessListRequestAccessListDiff'
+      tags:
+        - RoleService
+      security:
+        - ApiKeyAuth: []
+  /v1/roles:
+    get:
+      summary: get role list
+      operationId: RoleService_GetRoleList
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiGetRoleListResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: page
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: limit
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: sort
+          in: query
+          required: false
+          type: string
+      tags:
+        - RoleService
+      security:
+        - ApiKeyAuth: []
+  /v1/roles/search:
+    get:
+      summary: delete role by name
+      operationId: RoleService_SearchRoleByName
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiSearchRoleListResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: query
+          in: query
+          required: false
+          type: string
+        - name: limit
+          in: query
+          required: false
+          type: string
+          format: int64
+        - name: offset
+          in: query
+          required: false
+          type: string
+          format: int64
+      tags:
+        - RoleService
+      security:
+        - ApiKeyAuth: []
+  /v1/script:
+    post:
+      summary: add new script
+      operationId: ScriptService_AddScript
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiScript'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/apiNewScriptRequest'
+      tags:
+        - ScriptService
+      security:
+        - ApiKeyAuth: []
+  /v1/script/exec_src:
+    post:
+      summary: exec src script by id
+      operationId: ScriptService_ExecSrcScriptById
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiExecScriptResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/apiExecSrcScriptRequest'
+      tags:
+        - ScriptService
+      security:
+        - ApiKeyAuth: []
+  /v1/script/{id}:
+    get:
+      summary: get script by id
+      operationId: ScriptService_GetScriptById
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiScript'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+      tags:
+        - ScriptService
+      security:
+        - ApiKeyAuth: []
+    delete:
+      summary: delete script by id
+      operationId: ScriptService_DeleteScriptById
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+      tags:
+        - ScriptService
+      security:
+        - ApiKeyAuth: []
+    put:
+      summary: update script
+      operationId: ScriptService_UpdateScriptById
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiScript'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              lang:
+                type: string
+              name:
+                type: string
+              source:
+                type: string
+              description:
+                type: string
+      tags:
+        - ScriptService
+      security:
+        - ApiKeyAuth: []
+  /v1/script/{id}/copy:
+    post:
+      summary: copy script by id
+      operationId: ScriptService_CopyScriptById
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiScript'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+      tags:
+        - ScriptService
+      security:
+        - ApiKeyAuth: []
+  /v1/script/{id}/exec:
+    post:
+      summary: exec script by id
+      operationId: ScriptService_ExecScriptById
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiExecScriptResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+      tags:
+        - ScriptService
+      security:
+        - ApiKeyAuth: []
+  /v1/scripts:
+    get:
+      summary: get script list
+      operationId: ScriptService_GetScriptList
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiGetScriptListResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: page
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: limit
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: sort
+          in: query
+          required: false
+          type: string
+      tags:
+        - ScriptService
+      security:
+        - ApiKeyAuth: []
+  /v1/scripts/search:
+    get:
+      summary: delete script by id
+      operationId: ScriptService_SearchScript
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiSearchScriptListResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: query
+          in: query
+          required: false
+          type: string
+        - name: limit
+          in: query
+          required: false
+          type: string
+          format: int64
+        - name: offset
+          in: query
+          required: false
+          type: string
+          format: int64
+      tags:
+        - ScriptService
+      security:
+        - ApiKeyAuth: []
+  /v1/signin:
+    post:
+      summary: sign in user
+      operationId: AuthService_Signin
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiSigninResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      tags:
+        - AuthService
+      security:
+        - BasicAuth: []
+  /v1/signout:
+    post:
+      summary: sign out user
+      operationId: AuthService_Signout
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      tags:
+        - AuthService
+      security:
+        - ApiKeyAuth: []
+  /v1/task:
+    post:
+      summary: add new task
+      operationId: AutomationService_AddTask
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiTask'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/apiNewTaskRequest'
+      tags:
+        - AutomationService
+      security:
+        - ApiKeyAuth: []
+  /v1/task/{id}:
+    get:
+      summary: get task
+      operationId: AutomationService_GetTask
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiTask'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+      tags:
+        - AutomationService
+      security:
+        - ApiKeyAuth: []
+    delete:
+      summary: delete task
+      operationId: AutomationService_DeleteTask
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+      tags:
+        - AutomationService
+      security:
+        - ApiKeyAuth: []
+    put:
+      summary: update task
+      operationId: AutomationService_UpdateTask
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiTask'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              description:
+                type: string
+              enabled:
+                type: boolean
+              condition:
+                type: string
+              triggers:
+                type: array
+                items:
+                  $ref: '#/definitions/apiTrigger'
+              conditions:
+                type: array
+                items:
+                  $ref: '#/definitions/apiCondition'
+              actions:
+                type: array
+                items:
+                  $ref: '#/definitions/apiAction'
+              area:
+                $ref: '#/definitions/apiArea'
+      tags:
+        - AutomationService
+      security:
+        - ApiKeyAuth: []
+  /v1/task/{id}/disable:
+    post:
+      summary: disable task
+      operationId: AutomationService_DisableTask
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+      tags:
+        - AutomationService
+      security:
+        - ApiKeyAuth: []
+  /v1/task/{id}/enable:
+    post:
+      summary: enable task
+      operationId: AutomationService_EnableTask
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+      tags:
+        - AutomationService
+      security:
+        - ApiKeyAuth: []
+  /v1/tasks:
+    get:
+      summary: get task list
+      operationId: AutomationService_GetTaskList
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiGetTaskListResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: page
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: limit
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: sort
+          in: query
+          required: false
+          type: string
+      tags:
+        - AutomationService
+      security:
+        - ApiKeyAuth: []
+  /v1/user:
+    post:
+      summary: add new user
+      operationId: UserService_AddUser
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiUserFull'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/apiNewtUserRequest'
+      tags:
+        - UserService
+      security:
+        - ApiKeyAuth: []
+  /v1/user/{id}:
+    get:
+      summary: get user by id
+      operationId: UserService_GetUserById
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiUserFull'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          description: user id
+          in: path
+          required: true
+          type: string
+          format: int64
+      tags:
+        - UserService
+      security:
+        - ApiKeyAuth: []
+    delete:
+      summary: delete user by id
+      operationId: UserService_DeleteUserById
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          description: user id
+          in: path
+          required: true
+          type: string
+          format: int64
+      tags:
+        - UserService
+      security:
+        - ApiKeyAuth: []
+    put:
+      summary: update user by id
+      operationId: UserService_UpdateUserById
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiUserFull'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              nickname:
+                type: string
+              firstName:
+                type: string
+              lastName:
+                type: string
+              password:
+                type: string
+              passwordRepeat:
+                type: string
+              email:
+                type: string
+              status:
+                type: string
+              lang:
+                type: string
+              image:
+                $ref: '#/definitions/apiUpdateUserRequestImage'
+              role:
+                $ref: '#/definitions/apiUpdateUserRequestRole'
+              meta:
+                type: array
+                items:
+                  $ref: '#/definitions/apiUserMeta'
+      tags:
+        - UserService
+      security:
+        - ApiKeyAuth: []
+  /v1/users:
+    get:
+      summary: get user list
+      operationId: UserService_GetUserList
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiGetUserListResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: page
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: limit
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: sort
+          in: query
+          required: false
+          type: string
+      tags:
+        - UserService
+      security:
+        - ApiKeyAuth: []
+  /v1/variable:
+    post:
+      summary: add new variable
+      operationId: VariableService_AddVariable
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiVariable'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/apiNewVariableRequest'
+      tags:
+        - VariableService
+      security:
+        - ApiKeyAuth: []
+  /v1/variable/{name}:
+    get:
+      summary: get variable by name
+      operationId: VariableService_GetVariableByName
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiVariable'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: name
+          in: path
+          required: true
+          type: string
+      tags:
+        - VariableService
+      security:
+        - ApiKeyAuth: []
+    delete:
+      summary: delete variable
+      operationId: VariableService_DeleteVariable
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: name
+          in: path
+          required: true
+          type: string
+      tags:
+        - VariableService
+      security:
+        - ApiKeyAuth: []
+    put:
+      summary: update variable
+      operationId: VariableService_UpdateVariable
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiVariable'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: name
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              value:
+                type: string
+      tags:
+        - VariableService
+      security:
+        - ApiKeyAuth: []
+  /v1/variables:
+    get:
+      summary: get variable list
+      operationId: VariableService_GetVariableList
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiGetVariableListResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: page
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: limit
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: sort
+          in: query
+          required: false
+          type: string
+      tags:
+        - VariableService
+      security:
+        - ApiKeyAuth: []
+  /v1/zigbee2mqtt/bridge:
+    get:
+      summary: get bridge list
+      operationId: Zigbee2mqttService_GetBridgeList
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiGetBridgeListResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: page
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: limit
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: sort
+          in: query
+          required: false
+          type: string
+      tags:
+        - Zigbee2mqttService
+      security:
+        - ApiKeyAuth: []
+    post:
+      summary: add new bridge
+      operationId: Zigbee2mqttService_AddZigbee2mqttBridge
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiZigbee2mqtt'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/apiNewZigbee2mqttRequest'
+      tags:
+        - Zigbee2mqttService
+      security:
+        - ApiKeyAuth: []
+  /v1/zigbee2mqtt/bridge/{id}:
+    get:
+      summary: get bridge
+      operationId: Zigbee2mqttService_GetZigbee2mqttBridge
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiZigbee2mqtt'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+      tags:
+        - Zigbee2mqttService
+      security:
+        - ApiKeyAuth: []
+    delete:
+      summary: delete bridge by id
+      operationId: Zigbee2mqttService_DeleteBridgeById
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+      tags:
+        - Zigbee2mqttService
+      security:
+        - ApiKeyAuth: []
+  /v1/zigbee2mqtt/bridge/{id}/bridge:
+    put:
+      summary: update bridge by id
+      operationId: Zigbee2mqttService_UpdateBridgeById
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiZigbee2mqtt'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              login:
+                type: string
+              password:
+                type: string
+              permitJoin:
+                type: boolean
+              baseTopic:
+                type: string
+      tags:
+        - Zigbee2mqttService
+      security:
+        - ApiKeyAuth: []
+  /v1/zigbee2mqtt/bridge/{id}/devices:
+    get:
+      summary: list device
+      operationId: Zigbee2mqttService_DeviceList
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiDeviceListResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+        - name: page
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: limit
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: sort
+          in: query
+          required: false
+          type: string
+      tags:
+        - Zigbee2mqttService
+      security:
+        - ApiKeyAuth: []
+  /v1/zigbee2mqtt/bridge/{id}/networkmap:
+    get:
+      summary: networkmap
+      operationId: Zigbee2mqttService_Networkmap
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiNetworkmapResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+      tags:
+        - Zigbee2mqttService
+      security:
+        - ApiKeyAuth: []
+    post:
+      summary: update networkmap
+      operationId: Zigbee2mqttService_UpdateNetworkmap
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+      tags:
+        - Zigbee2mqttService
+      security:
+        - ApiKeyAuth: []
+  /v1/zigbee2mqtt/bridge/{id}/reset:
+    post:
+      summary: reset bridge by id
+      operationId: Zigbee2mqttService_ResetBridgeById
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: int64
+      tags:
+        - Zigbee2mqttService
+      security:
+        - ApiKeyAuth: []
+  /v1/zigbee2mqtt/device_ban:
+    post:
+      summary: device ban
+      operationId: Zigbee2mqttService_DeviceBan
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/apiDeviceBanRequest'
+      tags:
+        - Zigbee2mqttService
+      security:
+        - ApiKeyAuth: []
+  /v1/zigbee2mqtt/device_rename:
+    post:
+      summary: device rename
+      operationId: Zigbee2mqttService_DeviceRename
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/apiDeviceRenameRequest'
+      tags:
+        - Zigbee2mqttService
+      security:
+        - ApiKeyAuth: []
+  /v1/zigbee2mqtt/device_whitelist:
+    post:
+      summary: device whitelist
+      operationId: Zigbee2mqttService_DeviceWhitelist
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/apiDeviceWhitelistRequest'
+      tags:
+        - Zigbee2mqttService
+      security:
+        - ApiKeyAuth: []
+  /v1/zigbee2mqtt/search_device:
+    get:
+      summary: search device
+      operationId: Zigbee2mqttService_SearchDevice
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiSearchDeviceResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: query
+          in: query
+          required: false
+          type: string
+        - name: limit
+          in: query
+          required: false
+          type: string
+          format: int64
+        - name: offset
+          in: query
+          required: false
+          type: string
+          format: int64
+      tags:
+        - Zigbee2mqttService
+      security:
+        - ApiKeyAuth: []
+  /ws:
+    get:
+      operationId: StreamService_Subscribe
+      responses:
+        '200':
+          description: A successful response.(streaming responses)
+          schema:
+            type: object
+            properties:
+              result:
+                $ref: '#/definitions/apiResponse'
+              error:
+                $ref: '#/definitions/rpcStatus'
+            title: Stream result of apiResponse
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          in: query
+          required: false
+          type: string
+        - name: query
+          in: query
+          required: false
+          type: string
+        - name: body
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: accessToken
+          in: query
+          required: false
+          type: string
+      tags:
+        - StreamService
+definitions:
+  AccessListListOfString:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          type: string
+  GetImageFilterListResultfilter:
+    type: object
+    properties:
+      date:
+        type: string
+      count:
+        type: integer
+        format: int32
+  NewEntityRequestActionScript:
+    type: object
+    properties:
+      id:
+        type: string
+        format: int64
+  UpdateDashboardCardRequestItem:
+    type: object
+    properties:
+      id:
+        type: string
+        format: int64
+      title:
+        type: string
+      type:
+        type: string
+      weight:
+        type: integer
+        format: int32
+      enabled:
+        type: boolean
+      entityId:
+        type: string
+      payload:
+        type: string
+        format: byte
+      hidden:
+        type: boolean
+      frozen:
+        type: boolean
+      showOn:
+        type: array
+        items:
+          type: string
+      hideOn:
+        type: array
+        items:
+          type: string
+  UpdateRoleAccessListRequestAccessListDiff:
+    type: object
+    properties:
+      items:
+        type: object
+        additionalProperties:
+          type: boolean
+  apiAccessItem:
+    type: object
+    properties:
+      actions:
+        type: array
+        items:
+          type: string
+      method:
+        type: string
+      description:
+        type: string
+      roleName:
+        type: string
+  apiAccessLevels:
+    type: object
+    properties:
+      items:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/apiAccessItem'
+  apiAccessList:
+    type: object
+    properties:
+      levels:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/apiAccessLevels'
+  apiAccessListResponse:
+    type: object
+    properties:
+      accessList:
+        $ref: '#/definitions/apiAccessList'
+  apiAction:
+    type: object
+    properties:
+      id:
+        type: string
+        format: int64
+      name:
+        type: string
+      script:
+        $ref: '#/definitions/apiScript'
+  apiArea:
+    type: object
+    properties:
+      id:
+        type: string
+        format: int64
+      name:
+        type: string
+      description:
+        type: string
+  apiAttribute:
+    type: object
+    properties:
+      name:
+        type: string
+      type:
+        $ref: '#/definitions/apiTypes'
+      int:
+        type: string
+        format: int64
+      string:
+        type: string
+      bool:
+        type: boolean
+      float:
+        type: number
+        format: float
+      array:
+        type: array
+        items:
+          $ref: '#/definitions/apiAttribute'
+      map:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/apiAttribute'
+      time:
+        type: string
+        format: date-time
+      imageUrl:
+        type: string
+  apiAutomationRequest:
+    type: object
+    properties:
+      id:
+        type: string
+        format: int64
+      name:
+        type: string
+  apiCondition:
+    type: object
+    properties:
+      id:
+        type: string
+        format: int64
+      name:
+        type: string
+      script:
+        $ref: '#/definitions/apiScript'
+  apiCurrentUser:
+    type: object
+    properties:
+      id:
+        type: string
+        format: int64
+      nickname:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      email:
+        type: string
+      status:
+        type: string
+      history:
+        type: array
+        items:
+          $ref: '#/definitions/apiUserHistory'
+      image:
+        $ref: '#/definitions/apiImage'
+      signInCount:
+        type: string
+        format: int64
+      meta:
+        type: array
+        items:
+          $ref: '#/definitions/apiUserMeta'
+      role:
+        $ref: '#/definitions/apiRole'
+      lang:
+        type: string
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+      currentSignInAt:
+        type: string
+        format: date-time
+      lastSignInAt:
+        type: string
+        format: date-time
+  apiDashboard:
+    type: object
+    properties:
+      id:
+        type: string
+        format: int64
+      name:
+        type: string
+      description:
+        type: string
+      enabled:
+        type: boolean
+      areaId:
+        type: string
+        format: int64
+      area:
+        $ref: '#/definitions/apiArea'
+      tabs:
+        type: array
+        items:
+          $ref: '#/definitions/apiDashboardTab'
+      entities:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/apiEntity'
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+  apiDashboardCard:
+    type: object
+    properties:
+      id:
+        type: string
+        format: int64
+      title:
+        type: string
+      height:
+        type: integer
+        format: int32
+      width:
+        type: integer
+        format: int32
+      background:
+        type: string
+      weight:
+        type: integer
+        format: int32
+      enabled:
+        type: boolean
+      dashboardTabId:
+        type: string
+        format: int64
+      payload:
+        type: string
+        format: byte
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/apiDashboardCardItem'
+      entities:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/apiEntity'
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+  apiDashboardCardItem:
+    type: object
+    properties:
+      id:
+        type: string
+        format: int64
+      title:
+        type: string
+      type:
+        type: string
+      weight:
+        type: integer
+        format: int32
+      enabled:
+        type: boolean
+      dashboardCardId:
+        type: string
+        format: int64
+      entityId:
+        type: string
+      payload:
+        type: string
+        format: byte
+      hidden:
+        type: boolean
+      frozen:
+        type: boolean
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+  apiDashboardShort:
+    type: object
+    properties:
+      id:
+        type: string
+        format: int64
+      name:
+        type: string
+      description:
+        type: string
+      enabled:
+        type: boolean
+      areaId:
+        type: string
+        format: int64
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+  apiDashboardTab:
+    type: object
+    properties:
+      id:
+        type: string
+        format: int64
+      name:
+        type: string
+      columnWidth:
+        type: integer
+        format: int32
+      gap:
+        type: boolean
+      background:
+        type: string
+      icon:
+        type: string
+      enabled:
+        type: boolean
+      weight:
+        type: integer
+        format: int32
+      dashboardId:
+        type: string
+        format: int64
+      cards:
+        type: array
+        items:
+          $ref: '#/definitions/apiDashboardCard'
+      entities:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/apiEntity'
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+  apiDashboardTabShort:
+    type: object
+    properties:
+      id:
+        type: string
+        format: int64
+      name:
+        type: string
+      columnWidth:
+        type: integer
+        format: int32
+      gap:
+        type: boolean
+      background:
+        type: string
+      icon:
+        type: string
+      enabled:
+        type: boolean
+      weight:
+        type: integer
+        format: int32
+      dashboardId:
+        type: string
+        format: int64
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+  apiDeviceBanRequest:
+    type: object
+    properties:
+      id:
+        type: string
+        format: int64
+      friendlyName:
+        type: string
+  apiDeviceListResult:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/apiZigbee2mqttDevice'
+      meta:
+        $ref: '#/definitions/apiMeta'
+  apiDeviceRenameRequest:
+    type: object
+    properties:
+      friendlyName:
+        type: string
+      newName:
+        type: string
+  apiDeviceWhitelistRequest:
+    type: object
+    properties:
+      id:
+        type: string
+        format: int64
+      friendlyName:
+        type: string
+  apiDisablePluginResult:
+    type: object
+  apiEnablePluginResult:
+    type: object
+  apiEntity:
+    type: object
+    properties:
+      id:
+        type: string
+      pluginName:
+        type: string
+      description:
+        type: string
+      area:
+        $ref: '#/definitions/apiArea'
+      image:
+        $ref: '#/definitions/apiImage'
+      icon:
+        type: string
+      autoLoad:
+        type: boolean
+      parent:
+        $ref: '#/definitions/apiEntityParent'
+      actions:
+        type: array
+        items:
+          $ref: '#/definitions/apiEntityAction'
+      states:
+        type: array
+        items:
+          $ref: '#/definitions/apiEntityState'
+      scripts:
+        type: array
+        items:
+          $ref: '#/definitions/apiScript'
+      attributes:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/apiAttribute'
+      settings:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/apiAttribute'
+      metrics:
+        type: array
+        items:
+          $ref: '#/definitions/apiMetric'
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+  apiEntityAction:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      icon:
+        type: string
+      image:
+        $ref: '#/definitions/apiImage'
+      script:
+        $ref: '#/definitions/apiScript'
+      type:
+        type: string
+  apiEntityCallActionRequest:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+  apiEntityParent:
+    type: object
+    properties:
+      id:
+        type: string
+  apiEntityRequest:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+  apiEntityShort:
+    type: object
+    properties:
+      id:
+        type: string
+      pluginName:
+        type: string
+      description:
+        type: string
+      area:
+        $ref: '#/definitions/apiArea'
+      image:
+        $ref: '#/definitions/apiImage'
+      icon:
+        type: string
+      autoLoad:
+        type: boolean
+      parent:
+        $ref: '#/definitions/apiEntityParent'
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+  apiEntityState:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      icon:
+        type: string
+      image:
+        $ref: '#/definitions/apiImage'
+      style:
+        type: string
+  apiEntityStorage:
+    type: object
+    properties:
+      id:
+        type: string
+        format: int64
+      entityId:
+        type: string
+      state:
+        type: string
+      attributes:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/apiAttribute'
+      createdAt:
+        type: string
+        format: date-time
+        title: map<string, google.protobuf.Any> attributes = 4;
+  apiExecScriptResult:
+    type: object
+    properties:
+      result:
+        type: string
+  apiExecSrcScriptRequest:
+    type: object
+    properties:
+      lang:
+        type: string
+      name:
+        type: string
+      source:
+        type: string
+      description:
+        type: string
+  apiGetAreaListResult:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/apiArea'
+      meta:
+        $ref: '#/definitions/apiMeta'
+  apiGetBackupListResult:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          type: string
+  apiGetBridgeListResult:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/apiZigbee2mqttShort'
+      meta:
+        $ref: '#/definitions/apiMeta'
+  apiGetDashboardCardItemListResult:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/apiDashboardCardItem'
+      meta:
+        $ref: '#/definitions/apiMeta'
+  apiGetDashboardCardListResult:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/apiDashboardCard'
+      meta:
+        $ref: '#/definitions/apiMeta'
+  apiGetDashboardListResult:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/apiDashboardShort'
+      meta:
+        $ref: '#/definitions/apiMeta'
+  apiGetDashboardTabListResult:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/apiDashboardTabShort'
+      meta:
+        $ref: '#/definitions/apiMeta'
+  apiGetEntityListResult:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/apiEntity'
+      meta:
+        $ref: '#/definitions/apiMeta'
+  apiGetEntityStorageResult:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/apiEntityStorage'
+      meta:
+        $ref: '#/definitions/apiMeta'
+  apiGetImageFilterListResult:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/GetImageFilterListResultfilter'
+  apiGetImageListByDateResult:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/apiImage'
+  apiGetImageListResult:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/apiImage'
+      meta:
+        $ref: '#/definitions/apiMeta'
+  apiGetLogListResult:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/apiLog'
+      meta:
+        $ref: '#/definitions/apiMeta'
+  apiGetMessageDeliveryListResult:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/apiMessageDelivery'
+      meta:
+        $ref: '#/definitions/apiMeta'
+  apiGetPluginListResult:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/apiPluginShort'
+      meta:
+        $ref: '#/definitions/apiMeta'
+  apiGetPluginOptionsResult:
+    type: object
+    properties:
+      triggers:
+        type: boolean
+      actors:
+        type: boolean
+      actorCustomAttrs:
+        type: boolean
+      actorAttrs:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/apiAttribute'
+      actorCustomActions:
+        type: boolean
+      actorActions:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/apiGetPluginOptionsResultEntityAction'
+      actorCustomStates:
+        type: boolean
+      actorStates:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/apiGetPluginOptionsResultEntityState'
+      actorCustomSetts:
+        type: boolean
+      actorSetts:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/apiAttribute'
+      setts:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/apiAttribute'
+  apiGetPluginOptionsResultEntityAction:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      imageUrl:
+        type: string
+      icon:
+        type: string
+  apiGetPluginOptionsResultEntityState:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      imageUrl:
+        type: string
+      icon:
+        type: string
+  apiGetRoleListResult:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/apiRole'
+      meta:
+        $ref: '#/definitions/apiMeta'
+  apiGetScriptListResult:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/apiScript'
+      meta:
+        $ref: '#/definitions/apiMeta'
+  apiGetTaskListResult:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/apiTask'
+      meta:
+        $ref: '#/definitions/apiMeta'
+  apiGetUserListResult:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/apiUserShot'
+      meta:
+        $ref: '#/definitions/apiMeta'
+  apiGetVariableListResult:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/apiVariable'
+      meta:
+        $ref: '#/definitions/apiMeta'
+  apiImage:
+    type: object
+    properties:
+      id:
+        type: string
+        format: int64
+      thumb:
+        type: string
+      url:
+        type: string
+      image:
+        type: string
+      mimeType:
+        type: string
+      title:
+        type: string
+      size:
+        type: string
+        format: int64
+      name:
+        type: string
+      createdAt:
+        type: string
+        format: date-time
+  apiLog:
+    type: object
+    properties:
+      id:
+        type: string
+        format: int64
+      level:
+        type: string
+      body:
+        type: string
+      owner:
+        type: string
+      createdAt:
+        type: string
+        format: date-time
+  apiMessage:
+    type: object
+    properties:
+      id:
+        type: string
+        format: int64
+      type:
+        type: string
+      attributes:
+        type: object
+        additionalProperties:
+          type: string
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+  apiMessageDelivery:
+    type: object
+    properties:
+      id:
+        type: string
+        format: int64
+      message:
+        $ref: '#/definitions/apiMessage'
+      address:
+        type: string
+      status:
+        type: string
+      errorMessageStatus:
+        type: string
+      errorMessageBody:
+        type: string
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+  apiMeta:
+    type: object
+    properties:
+      limit:
+        type: string
+        format: uint64
+      page:
+        type: string
+        format: uint64
+      total:
+        type: string
+        format: uint64
+      sort:
+        type: string
+  apiMetric:
+    type: object
+    properties:
+      id:
+        type: string
+        format: int64
+      name:
+        type: string
+      description:
+        type: string
+      options:
+        $ref: '#/definitions/apiMetricOption'
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/apiMetricOptionData'
+      type:
+        type: string
+      ranges:
+        type: array
+        items:
+          type: string
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+  apiMetricOption:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/apiMetricOptionItem'
+  apiMetricOptionData:
+    type: object
+    properties:
+      value:
+        type: object
+        additionalProperties:
+          type: number
+          format: float
+      metricId:
+        type: string
+        format: int64
+      time:
+        type: string
+        format: date-time
+  apiMetricOptionItem:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      color:
+        type: string
+      translate:
+        type: string
+      label:
+        type: string
+  apiNetworkmapResponse:
+    type: object
+    properties:
+      networkmap:
+        type: string
+  apiNewAreaRequest:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+  apiNewDashboardCardItemRequest:
+    type: object
+    properties:
+      title:
+        type: string
+      type:
+        type: string
+      weight:
+        type: integer
+        format: int32
+      enabled:
+        type: boolean
+      dashboardCardId:
+        type: string
+        format: int64
+      entityId:
+        type: string
+      payload:
+        type: string
+        format: byte
+      hidden:
+        type: boolean
+      frozen:
+        type: boolean
+  apiNewDashboardCardRequest:
+    type: object
+    properties:
+      title:
+        type: string
+      height:
+        type: integer
+        format: int32
+      width:
+        type: integer
+        format: int32
+      background:
+        type: string
+      weight:
+        type: integer
+        format: int32
+      enabled:
+        type: boolean
+      dashboardTabId:
+        type: string
+        format: int64
+      payload:
+        type: string
+        format: byte
+  apiNewDashboardRequest:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      enabled:
+        type: boolean
+      areaId:
+        type: string
+        format: int64
+  apiNewDashboardTabRequest:
+    type: object
+    properties:
+      name:
+        type: string
+      columnWidth:
+        type: integer
+        format: int32
+      gap:
+        type: boolean
+      background:
+        type: string
+      icon:
+        type: string
+      enabled:
+        type: boolean
+      weight:
+        type: integer
+        format: int32
+      dashboardId:
+        type: string
+        format: int64
+  apiNewEntityRequest:
+    type: object
+    properties:
+      name:
+        type: string
+      pluginName:
+        type: string
+      description:
+        type: string
+      area:
+        $ref: '#/definitions/apiArea'
+      icon:
+        type: string
+      image:
+        $ref: '#/definitions/apiNewEntityRequestImage'
+      autoLoad:
+        type: boolean
+      parent:
+        $ref: '#/definitions/apiEntityParent'
+      actions:
+        type: array
+        items:
+          $ref: '#/definitions/apiNewEntityRequestAction'
+      states:
+        type: array
+        items:
+          $ref: '#/definitions/apiNewEntityRequestState'
+      attributes:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/apiAttribute'
+      settings:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/apiAttribute'
+      metrics:
+        type: array
+        items:
+          $ref: '#/definitions/apiMetric'
+      scripts:
+        type: array
+        items:
+          $ref: '#/definitions/apiScript'
+  apiNewEntityRequestAction:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      icon:
+        type: string
+      image:
+        $ref: '#/definitions/apiNewEntityRequestImage'
+      script:
+        $ref: '#/definitions/NewEntityRequestActionScript'
+      type:
+        type: string
+  apiNewEntityRequestImage:
+    type: object
+    properties:
+      id:
+        type: string
+        format: int64
+  apiNewEntityRequestState:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      icon:
+        type: string
+      image:
+        $ref: '#/definitions/apiNewEntityRequestImage'
+      style:
+        type: string
+  apiNewImageRequest:
+    type: object
+    properties:
+      thumb:
+        type: string
+      image:
+        type: string
+      mimeType:
+        type: string
+      title:
+        type: string
+      size:
+        type: string
+        format: int64
+      name:
+        type: string
+  apiNewRoleRequest:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      parent:
+        type: string
+  apiNewScriptRequest:
+    type: object
+    properties:
+      lang:
+        type: string
+      name:
+        type: string
+      source:
+        type: string
+      description:
+        type: string
+  apiNewTaskRequest:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      enabled:
+        type: boolean
+      condition:
+        type: string
+      triggers:
+        type: array
+        items:
+          $ref: '#/definitions/apiTrigger'
+      conditions:
+        type: array
+        items:
+          $ref: '#/definitions/apiCondition'
+      actions:
+        type: array
+        items:
+          $ref: '#/definitions/apiAction'
+      area:
+        $ref: '#/definitions/apiArea'
+  apiNewVariableRequest:
+    type: object
+    properties:
+      name:
+        type: string
+      value:
+        type: string
+  apiNewZigbee2mqttRequest:
+    type: object
+    properties:
+      name:
+        type: string
+      login:
+        type: string
+      password:
+        type: string
+      permitJoin:
+        type: boolean
+      baseTopic:
+        type: string
+  apiNewtUserRequest:
+    type: object
+    properties:
+      nickname:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      password:
+        type: string
+      passwordRepeat:
+        type: string
+      email:
+        type: string
+      status:
+        type: string
+      lang:
+        type: string
+      image:
+        $ref: '#/definitions/apiNewtUserRequestImage'
+      role:
+        $ref: '#/definitions/apiNewtUserRequestRole'
+      meta:
+        type: array
+        items:
+          $ref: '#/definitions/apiUserMeta'
+  apiNewtUserRequestImage:
+    type: object
+    properties:
+      id:
+        type: string
+        format: int64
+  apiNewtUserRequestRole:
+    type: object
+    properties:
+      name:
+        type: string
+  apiPlugin:
+    type: object
+    properties:
+      name:
+        type: string
+      version:
+        type: string
+      enabled:
+        type: boolean
+      system:
+        type: boolean
+      actor:
+        type: boolean
+      settings:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/apiAttribute'
+      options:
+        $ref: '#/definitions/apiGetPluginOptionsResult'
+  apiPluginShort:
+    type: object
+    properties:
+      name:
+        type: string
+      version:
+        type: string
+      enabled:
+        type: boolean
+      system:
+        type: boolean
+      actor:
+        type: boolean
+      settings:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/apiAttribute'
+  apiReloadRequest:
+    type: object
+    properties:
+      id:
+        type: string
+  apiResponse:
+    type: object
+    properties:
+      id:
+        type: string
+      query:
+        type: string
+      body:
+        type: string
+        format: byte
+  apiRestoreBackupRequest:
+    type: object
+    properties:
+      name:
+        type: string
+  apiRole:
+    type: object
+    properties:
+      parent:
+        $ref: '#/definitions/apiRole'
+      name:
+        type: string
+      description:
+        type: string
+      children:
+        type: array
+        items:
+          $ref: '#/definitions/apiRole'
+      accessList:
+        $ref: '#/definitions/apiRoleAccessList'
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+  apiRoleAccessList:
+    type: object
+    properties:
+      levels:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/AccessListListOfString'
+  apiRoleAccessListResult:
+    type: object
+    properties:
+      levels:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/apiAccessLevels'
+  apiScript:
+    type: object
+    properties:
+      id:
+        type: string
+        format: int64
+      lang:
+        type: string
+      name:
+        type: string
+      source:
+        type: string
+      description:
+        type: string
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+  apiSearchAreaResult:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/apiArea'
+  apiSearchDashboardResult:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/apiDashboard'
+  apiSearchDeviceResult:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/apiZigbee2mqttDevice'
+  apiSearchEntityResult:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/apiEntityShort'
+  apiSearchPluginResult:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/apiPluginShort'
+  apiSearchRoleListResult:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/apiRole'
+  apiSearchScriptListResult:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/apiScript'
+  apiSigninResponse:
+    type: object
+    properties:
+      currentUser:
+        $ref: '#/definitions/apiCurrentUser'
+      accessToken:
+        type: string
+  apiTask:
+    type: object
+    properties:
+      id:
+        type: string
+        format: int64
+      name:
+        type: string
+      description:
+        type: string
+      enabled:
+        type: boolean
+      condition:
+        type: string
+      triggers:
+        type: array
+        items:
+          $ref: '#/definitions/apiTrigger'
+      conditions:
+        type: array
+        items:
+          $ref: '#/definitions/apiCondition'
+      actions:
+        type: array
+        items:
+          $ref: '#/definitions/apiAction'
+      area:
+        $ref: '#/definitions/apiArea'
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+  apiTrigger:
+    type: object
+    properties:
+      id:
+        type: string
+        format: int64
+      name:
+        type: string
+      entity:
+        $ref: '#/definitions/apiTriggerEntity'
+      script:
+        $ref: '#/definitions/apiScript'
+      pluginName:
+        type: string
+      attributes:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/apiAttribute'
+  apiTriggerEntity:
+    type: object
+    properties:
+      id:
+        type: string
+  apiTypes:
+    type: string
+    enum:
+      - INT
+      - STRING
+      - FLOAT
+      - BOOL
+      - ARRAY
+      - MAP
+      - TIME
+      - IMAGE
+    default: INT
+  apiUpdateEntityRequestAction:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      icon:
+        type: string
+      image:
+        $ref: '#/definitions/apiUpdateEntityRequestImage'
+      script:
+        $ref: '#/definitions/apiScript'
+      type:
+        type: string
+  apiUpdateEntityRequestImage:
+    type: object
+    properties:
+      id:
+        type: string
+        format: int64
+  apiUpdateEntityRequestState:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      icon:
+        type: string
+      image:
+        $ref: '#/definitions/apiUpdateEntityRequestImage'
+      style:
+        type: string
+  apiUpdateUserRequestImage:
+    type: object
+    properties:
+      id:
+        type: string
+        format: int64
+  apiUpdateUserRequestRole:
+    type: object
+    properties:
+      name:
+        type: string
+  apiUploadImageRequest:
+    type: object
+    properties:
+      body:
+        type: string
+        format: byte
+  apiUserFull:
+    type: object
+    properties:
+      id:
+        type: string
+        format: int64
+      nickname:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      email:
+        type: string
+      status:
+        type: string
+      history:
+        type: array
+        items:
+          $ref: '#/definitions/apiUserHistory'
+      image:
+        $ref: '#/definitions/apiImage'
+      signInCount:
+        type: string
+        format: int64
+      meta:
+        type: array
+        items:
+          $ref: '#/definitions/apiUserMeta'
+      role:
+        $ref: '#/definitions/apiRole'
+      roleName:
+        type: string
+      lang:
+        type: string
+      authenticationToken:
+        type: string
+      currentSignInIp:
+        type: string
+      lastSignInIp:
+        type: string
+      user:
+        $ref: '#/definitions/apiUserFullParent'
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+      currentSignInAt:
+        type: string
+        format: date-time
+      lastSignInAt:
+        type: string
+        format: date-time
+      resetPasswordSentAt:
+        type: string
+        format: date-time
+      deletedAt:
+        type: string
+        format: date-time
+  apiUserFullParent:
+    type: object
+    properties:
+      id:
+        type: string
+        format: int64
+      nickname:
+        type: string
+  apiUserHistory:
+    type: object
+    properties:
+      ip:
+        type: string
+      time:
+        type: string
+        format: date-time
+  apiUserMeta:
+    type: object
+    properties:
+      key:
+        type: string
+      value:
+        type: string
+  apiUserShot:
+    type: object
+    properties:
+      id:
+        type: string
+        format: int64
+      nickname:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      email:
+        type: string
+      status:
+        type: string
+      image:
+        $ref: '#/definitions/apiImage'
+      lang:
+        type: string
+      role:
+        $ref: '#/definitions/apiRole'
+      roleName:
+        type: string
+      user:
+        $ref: '#/definitions/apiUserShotParent'
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+  apiUserShotParent:
+    type: object
+    properties:
+      id:
+        type: string
+        format: int64
+      nickname:
+        type: string
+  apiVariable:
+    type: object
+    properties:
+      name:
+        type: string
+      value:
+        type: string
+      system:
+        type: boolean
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+  apiZigbee2mqtt:
+    type: object
+    properties:
+      scanInProcess:
+        type: boolean
+      lastScan:
+        type: string
+        format: date-time
+      networkmap:
+        type: string
+      status:
+        type: string
+      id:
+        type: string
+        format: int64
+      name:
+        type: string
+      login:
+        type: string
+      permitJoin:
+        type: boolean
+      baseTopic:
+        type: string
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+  apiZigbee2mqttDevice:
+    type: object
+    properties:
+      id:
+        type: string
+      zigbee2mqttId:
+        type: string
+        format: int64
+      name:
+        type: string
+      type:
+        type: string
+      model:
+        type: string
+      description:
+        type: string
+      manufacturer:
+        type: string
+      functions:
+        type: array
+        items:
+          type: string
+      imageUrl:
+        type: string
+      status:
+        type: string
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+  apiZigbee2mqttShort:
+    type: object
+    properties:
+      id:
+        type: string
+        format: int64
+      name:
+        type: string
+      login:
+        type: string
+      permitJoin:
+        type: boolean
+      baseTopic:
+        type: string
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+  protobufAny:
+    type: object
+    properties:
+      typeUrl:
+        type: string
+        description: |-
+          A URL/resource name that uniquely identifies the type of the serialized
+          protocol buffer message. This string must contain at least
+          one "/" character. The last segment of the URL's path must represent
+          the fully qualified name of the type (as in
+          `path/google.protobuf.Duration`). The name should be in a canonical form
+          (e.g., leading "." is not accepted).
+
+          In practice, teams usually precompile into the binary all types that they
+          expect it to use in the context of Any. However, for URLs which use the
+          scheme `http`, `https`, or no scheme, one can optionally set up a type
+          server that maps type URLs to message definitions as follows:
+
+          * If no scheme is provided, `https` is assumed.
+          * An HTTP GET on the URL must yield a [google.protobuf.Type][]
+            value in binary format, or produce an error.
+          * Applications are allowed to cache lookup results based on the
+            URL, or have them precompiled into a binary to avoid any
+            lookup. Therefore, binary compatibility needs to be preserved
+            on changes to types. (Use versioned type names to manage
+            breaking changes.)
+
+          Note: this functionality is not currently available in the official
+          protobuf release, and it is not used for type URLs beginning with
+          type.googleapis.com.
+
+          Schemes other than `http`, `https` (or the empty scheme) might be
+          used with implementation specific semantics.
+      value:
+        type: string
+        format: byte
+        description: Must be a valid serialized protocol buffer of the above specified type.
+    description: |-
+      `Any` contains an arbitrary serialized protocol buffer message along with a
+      URL that describes the type of the serialized message.
+
+      Protobuf library provides support to pack/unpack Any values in the form
+      of utility functions or additional generated methods of the Any type.
+
+      Example 1: Pack and unpack a message in C++.
+
+          Foo foo = ...;
+          Any any;
+          any.PackFrom(foo);
+          ...
+          if (any.UnpackTo(&foo)) {
+            ...
+          }
+
+      Example 2: Pack and unpack a message in Java.
+
+          Foo foo = ...;
+          Any any = Any.pack(foo);
+          ...
+          if (any.is(Foo.class)) {
+            foo = any.unpack(Foo.class);
+          }
+
+      Example 3: Pack and unpack a message in Python.
+
+          foo = Foo(...)
+          any = Any()
+          any.Pack(foo)
+          ...
+          if any.Is(Foo.DESCRIPTOR):
+            any.Unpack(foo)
+            ...
+
+      Example 4: Pack and unpack a message in Go
+
+           foo := &pb.Foo{...}
+           any, err := anypb.New(foo)
+           if err != nil {
+             ...
+           }
+           ...
+           foo := &pb.Foo{}
+           if err := any.UnmarshalTo(foo); err != nil {
+             ...
+           }
+
+      The pack methods provided by protobuf library will by default use
+      'type.googleapis.com/full.type.name' as the type URL and the unpack
+      methods only use the fully qualified type name after the last '/'
+      in the type URL, for example "foo.bar.com/x/y.z" will yield type
+      name "y.z".
+
+
+      JSON
+
+      The JSON representation of an `Any` value uses the regular
+      representation of the deserialized, embedded message, with an
+      additional field `@type` which contains the type URL. Example:
+
+          package google.profile;
+          message Person {
+            string first_name = 1;
+            string last_name = 2;
+          }
+
+          {
+            "@type": "type.googleapis.com/google.profile.Person",
+            "firstName": <string>,
+            "lastName": <string>
+          }
+
+      If the embedded message type is well-known and has a custom JSON
+      representation, that representation will be embedded adding a field
+      `value` which holds the custom JSON in addition to the `@type`
+      field. Example (for message [google.protobuf.Duration][]):
+
+          {
+            "@type": "type.googleapis.com/google.protobuf.Duration",
+            "value": "1.212s"
+          }
+  rpcStatus:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      details:
+        type: array
+        items:
+          $ref: '#/definitions/protobufAny'
+securityDefinitions:
+  ApiKeyAuth:
+    type: apiKey
+    name: Authorization
+    in: header
+    x-api-key: jwt
+  BasicAuth:
+    type: basic
+security:
+  - ApiKeyAuth: []
+    BasicAuth: []

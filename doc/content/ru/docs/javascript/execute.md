@@ -13,25 +13,23 @@ description: >
 
 Для этого доступны следующие методы:
 
-1. `ExecuteSync(file, args)`: Этот метод позволяет запускать файлы и скрипты синхронно. Вы передаете имя файла или путь 
-2. к скрипту в аргументе `file`, а также необходимые аргументы в виде объекта `args`. Пример использования:
+1. `ExecuteSync(file, args)`: Этот метод позволяет запускать файлы и скрипты синхронно. Вы передаете имя файла или путь к скрипту в аргументе `file`, а также необходимые аргументы в виде объекта `args`. Пример использования:
 
-```javascript
-const file = 'script.js';
-const args = { param1: 'value1', param2: 'value2' };
+    ```javascript
+    const file = 'script.js';
+    const args = { param1: 'value1', param2: 'value2' };
+    
+    ExecuteSync(file, args);
+    ```
 
-ExecuteSync(file, args);
-```
+2. `ExecuteAsync(file, args)`: Данный метод позволяет запускать файлы и скрипты асинхронно. Аргументы `file` и `args`имеют такую же структуру, как и в методе `ExecuteSync`. Пример использования:
 
-2. `ExecuteAsync(file, args)`: Данный метод позволяет запускать файлы и скрипты асинхронно. Аргументы `file` и `args` 
-3. имеют такую же структуру, как и в методе `ExecuteSync`. Пример использования:
-
-```javascript
-const file = 'script.js';
-const args = { param1: 'value1', param2: 'value2' };
-
-ExecuteAsync(file, args);
-```
+    ```javascript
+    const file = 'script.js';
+    const args = { param1: 'value1', param2: 'value2' };
+    
+    ExecuteAsync(file, args);
+    ```
 
 Оба метода `ExecuteSync` и `ExecuteAsync` предоставляют возможность запуска произвольных файлов и скриптов в вашем проекте 
 **Smart Home**. Синхронный режим означает, что выполнение кода будет блокировать последующие операции до завершения скрипта,

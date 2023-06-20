@@ -209,7 +209,7 @@ export default class extends Vue {
   };
 
   private pageSizes = [50, 100, 150, 250];
-  private messageTypes: string[] = ['webpush', 'html5_notify', 'email', 'sms', 'telegram'];
+  private messageTypes: string[] = ['webpush', 'html5_notify', 'email', 'sms', 'telegram', 'slack'];
   private typeFilter: string[] = [];
   private dateFilter: Date[] = [];
   private pickerOptions: Object = {

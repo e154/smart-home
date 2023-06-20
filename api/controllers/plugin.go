@@ -21,6 +21,9 @@ package controllers
 import (
 	"context"
 
+	"google.golang.org/protobuf/types/known/emptypb"
+
+	"github.com/e154/smart-home/api/dto"
 	"github.com/e154/smart-home/api/stub/api"
 )
 
@@ -68,17 +71,6 @@ func (c ControllerPlugin) DisablePlugin(ctx context.Context, req *api.DisablePlu
 	return &api.DisablePluginResult{}, nil
 }
 
-// GetPluginOptions ...
-func (c ControllerPlugin) GetPluginOptions(ctx context.Context, req *api.GetPluginOptionsRequest) (*api.GetPluginOptionsResult, error) {
-
-	options, err := c.endpoint.Plugin.GetOptions(ctx, req.Name)
-	if err != nil {
-		return nil, c.error(ctx, nil, err)
-	}
-
-	return c.dto.Plugin.Options(options), nil
-}
-
 // SearchPlugin ...
 func (c ControllerPlugin) SearchPlugin(ctx context.Context, req *api.SearchRequest) (*api.SearchPluginResult, error) {
 
@@ -89,4 +81,30 @@ func (c ControllerPlugin) SearchPlugin(ctx context.Context, req *api.SearchReque
 	}
 
 	return c.dto.Plugin.ToSearchResult(items), nil
+}
+
+// GetPlugin ...
+func (c ControllerPlugin) GetPlugin(ctx context.Context, req *api.GetPluginRequest) (*api.Plugin, error) {
+
+	plugin, err := c.endpoint.Plugin.GetByName(ctx, req.Name)
+	if err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	options, err := c.endpoint.Plugin.GetOptions(ctx, req.Name)
+	if err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return c.dto.Plugin.ToGetPlugin(plugin, options), nil
+}
+
+// UpdatePluginSettings ...
+func (c ControllerPlugin) UpdatePluginSettings(ctx context.Context, req *api.UpdatePluginSettingsRequest) (*emptypb.Empty, error) {
+
+	if err := c.endpoint.Plugin.UpdateSettings(ctx, req.Name, dto.AttributeFromApi(req.Settings)); err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return &emptypb.Empty{}, nil
 }

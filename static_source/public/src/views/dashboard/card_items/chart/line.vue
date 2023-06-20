@@ -8,6 +8,7 @@
     :css-classes="cssClasses"
     :styles="styles"
     :width="width"
+    :height="height"
     ref="line"
   />
 </template>
