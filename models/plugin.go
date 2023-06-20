@@ -25,12 +25,12 @@ type PluginSettings struct {
 
 // Plugin ...
 type Plugin struct {
-	Name     string     `json:"name"`
-	Version  string     `json:"version"`
-	Enabled  bool       `json:"enabled"`
-	System   bool       `json:"system"`
-	Actor    bool       `json:"actor"`
-	Settings Attributes `json:"settings"`
+	Name     string         `json:"name"`
+	Version  string         `json:"version"`
+	Enabled  bool           `json:"enabled"`
+	System   bool           `json:"system"`
+	Actor    bool           `json:"actor"`
+	Settings AttributeValue `json:"settings"`
 }
 
 // Plugins ...

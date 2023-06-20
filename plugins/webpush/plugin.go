@@ -87,7 +87,7 @@ func (p *plugin) asyncLoad() (err error) {
 		}
 		var model m.Plugin
 		model, _ = p.Adaptors.Plugin.GetByName(Name)
-		model.Settings = settings
+		model.Settings = settings.Serialize()
 		_ = p.Adaptors.Plugin.Update(model)
 	}
 

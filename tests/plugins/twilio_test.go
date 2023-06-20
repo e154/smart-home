@@ -60,7 +60,7 @@ func TestTwilio(t *testing.T) {
 			settings[twilio.AttrAuthToken].Value = "XXXX"
 			settings[twilio.AttrSid].Value = "YYYY"
 			settings[twilio.AttrFrom].Value = "YYYY"
-			err = AddPlugin(adaptors, "twilio", settings)
+			err = AddPlugin(adaptors, "twilio", settings.Serialize())
 			ctx.So(err, ShouldBeNil)
 
 			pluginManager.Start()

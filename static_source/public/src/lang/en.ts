@@ -19,6 +19,7 @@ export default {
     scriptEdit: 'Edit script',
     plugins: 'Plugins',
     pluginList: 'Plugins',
+    pluginEdit: 'Edit plugins',
     areas: 'Areas',
     areaList: 'Areas',
     areaNew: 'New Area',
@@ -115,10 +116,25 @@ export default {
   plugins: {
     table: {
       name: 'Name',
+      type: 'Type',
+      value: 'Value',
       version: 'Version',
       enabled: 'Enabled',
       system: 'System'
-    }
+    },
+    options: {
+      triggers: 'Triggers',
+      actors: 'Actors',
+      actorCustomAttrs: 'Actor custom attributes',
+      actorCustomActions: 'Actor custom actions',
+      actorCustomStates: 'Actor custom states',
+      actorCustomSetts: 'Actor custom settings'
+    },
+    actorAttrs: "Actor attributes",
+    actorStates: "Actor states",
+    actor: "Actor",
+    settings: "Settings",
+    actorActions: "Actor actions"
   },
   variables: {
     addNew: 'Add variable',

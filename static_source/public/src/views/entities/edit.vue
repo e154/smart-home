@@ -407,8 +407,8 @@ export default class extends Vue {
 
   private async fetchPlugin() {
     this.listLoading = true;
-    const {data} = await api.v1.pluginServiceGetPluginOptions(this.currentEntity.pluginName);
-    this.$set(this.internal, 'pluginOptions', data);
+    const {data} = await api.v1.pluginServiceGetPlugin(this.currentEntity.pluginName);
+    this.$set(this.internal, 'pluginOptions', data.options);
     this.listLoading = false;
   }
 
