@@ -54,7 +54,7 @@ func NewMessageParams() m.Attributes {
 }
 
 // NewSettings ...
-func NewSettings() map[string]*m.Attribute {
+func NewSettings() m.Attributes {
 	return map[string]*m.Attribute{
 		AttrPublicKey: {
 			Name: AttrPublicKey,

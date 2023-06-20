@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -24,14 +25,16 @@ const _ = grpc.SupportPackageIsVersion7
 type PluginServiceClient interface {
 	// get plugin list
 	GetPluginList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*GetPluginListResult, error)
+	// update plugin settings
+	UpdatePluginSettings(ctx context.Context, in *UpdatePluginSettingsRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// enable plugin
 	EnablePlugin(ctx context.Context, in *EnablePluginRequest, opts ...grpc.CallOption) (*EnablePluginResult, error)
 	// disable plugin
 	DisablePlugin(ctx context.Context, in *DisablePluginRequest, opts ...grpc.CallOption) (*DisablePluginResult, error)
-	// get plugin options
-	GetPluginOptions(ctx context.Context, in *GetPluginOptionsRequest, opts ...grpc.CallOption) (*GetPluginOptionsResult, error)
 	// search plugin
 	SearchPlugin(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchPluginResult, error)
+	// get plugin
+	GetPlugin(ctx context.Context, in *GetPluginRequest, opts ...grpc.CallOption) (*Plugin, error)
 }
 
 type pluginServiceClient struct {
@@ -45,6 +48,15 @@ func NewPluginServiceClient(cc grpc.ClientConnInterface) PluginServiceClient {
 func (c *pluginServiceClient) GetPluginList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*GetPluginListResult, error) {
 	out := new(GetPluginListResult)
 	err := c.cc.Invoke(ctx, "/api.PluginService/GetPluginList", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *pluginServiceClient) UpdatePluginSettings(ctx context.Context, in *UpdatePluginSettingsRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/api.PluginService/UpdatePluginSettings", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -69,18 +81,18 @@ func (c *pluginServiceClient) DisablePlugin(ctx context.Context, in *DisablePlug
 	return out, nil
 }
 
-func (c *pluginServiceClient) GetPluginOptions(ctx context.Context, in *GetPluginOptionsRequest, opts ...grpc.CallOption) (*GetPluginOptionsResult, error) {
-	out := new(GetPluginOptionsResult)
-	err := c.cc.Invoke(ctx, "/api.PluginService/GetPluginOptions", in, out, opts...)
+func (c *pluginServiceClient) SearchPlugin(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchPluginResult, error) {
+	out := new(SearchPluginResult)
+	err := c.cc.Invoke(ctx, "/api.PluginService/SearchPlugin", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *pluginServiceClient) SearchPlugin(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchPluginResult, error) {
-	out := new(SearchPluginResult)
-	err := c.cc.Invoke(ctx, "/api.PluginService/SearchPlugin", in, out, opts...)
+func (c *pluginServiceClient) GetPlugin(ctx context.Context, in *GetPluginRequest, opts ...grpc.CallOption) (*Plugin, error) {
+	out := new(Plugin)
+	err := c.cc.Invoke(ctx, "/api.PluginService/GetPlugin", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -93,14 +105,16 @@ func (c *pluginServiceClient) SearchPlugin(ctx context.Context, in *SearchReques
 type PluginServiceServer interface {
 	// get plugin list
 	GetPluginList(context.Context, *PaginationRequest) (*GetPluginListResult, error)
+	// update plugin settings
+	UpdatePluginSettings(context.Context, *UpdatePluginSettingsRequest) (*emptypb.Empty, error)
 	// enable plugin
 	EnablePlugin(context.Context, *EnablePluginRequest) (*EnablePluginResult, error)
 	// disable plugin
 	DisablePlugin(context.Context, *DisablePluginRequest) (*DisablePluginResult, error)
-	// get plugin options
-	GetPluginOptions(context.Context, *GetPluginOptionsRequest) (*GetPluginOptionsResult, error)
 	// search plugin
 	SearchPlugin(context.Context, *SearchRequest) (*SearchPluginResult, error)
+	// get plugin
+	GetPlugin(context.Context, *GetPluginRequest) (*Plugin, error)
 }
 
 // UnimplementedPluginServiceServer should be embedded to have forward compatible implementations.
@@ -110,17 +124,20 @@ type UnimplementedPluginServiceServer struct {
 func (UnimplementedPluginServiceServer) GetPluginList(context.Context, *PaginationRequest) (*GetPluginListResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPluginList not implemented")
 }
+func (UnimplementedPluginServiceServer) UpdatePluginSettings(context.Context, *UpdatePluginSettingsRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdatePluginSettings not implemented")
+}
 func (UnimplementedPluginServiceServer) EnablePlugin(context.Context, *EnablePluginRequest) (*EnablePluginResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EnablePlugin not implemented")
 }
 func (UnimplementedPluginServiceServer) DisablePlugin(context.Context, *DisablePluginRequest) (*DisablePluginResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DisablePlugin not implemented")
 }
-func (UnimplementedPluginServiceServer) GetPluginOptions(context.Context, *GetPluginOptionsRequest) (*GetPluginOptionsResult, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetPluginOptions not implemented")
-}
 func (UnimplementedPluginServiceServer) SearchPlugin(context.Context, *SearchRequest) (*SearchPluginResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchPlugin not implemented")
+}
+func (UnimplementedPluginServiceServer) GetPlugin(context.Context, *GetPluginRequest) (*Plugin, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPlugin not implemented")
 }
 
 // UnsafePluginServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -148,6 +165,24 @@ func _PluginService_GetPluginList_Handler(srv interface{}, ctx context.Context, 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PluginServiceServer).GetPluginList(ctx, req.(*PaginationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PluginService_UpdatePluginSettings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdatePluginSettingsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PluginServiceServer).UpdatePluginSettings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.PluginService/UpdatePluginSettings",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PluginServiceServer).UpdatePluginSettings(ctx, req.(*UpdatePluginSettingsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -188,24 +223,6 @@ func _PluginService_DisablePlugin_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _PluginService_GetPluginOptions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetPluginOptionsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PluginServiceServer).GetPluginOptions(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.PluginService/GetPluginOptions",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PluginServiceServer).GetPluginOptions(ctx, req.(*GetPluginOptionsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _PluginService_SearchPlugin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SearchRequest)
 	if err := dec(in); err != nil {
@@ -224,6 +241,24 @@ func _PluginService_SearchPlugin_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PluginService_GetPlugin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPluginRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PluginServiceServer).GetPlugin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.PluginService/GetPlugin",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PluginServiceServer).GetPlugin(ctx, req.(*GetPluginRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PluginService_ServiceDesc is the grpc.ServiceDesc for PluginService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -236,6 +271,10 @@ var PluginService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _PluginService_GetPluginList_Handler,
 		},
 		{
+			MethodName: "UpdatePluginSettings",
+			Handler:    _PluginService_UpdatePluginSettings_Handler,
+		},
+		{
 			MethodName: "EnablePlugin",
 			Handler:    _PluginService_EnablePlugin_Handler,
 		},
@@ -244,12 +283,12 @@ var PluginService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _PluginService_DisablePlugin_Handler,
 		},
 		{
-			MethodName: "GetPluginOptions",
-			Handler:    _PluginService_GetPluginOptions_Handler,
-		},
-		{
 			MethodName: "SearchPlugin",
 			Handler:    _PluginService_SearchPlugin_Handler,
+		},
+		{
+			MethodName: "GetPlugin",
+			Handler:    _PluginService_GetPlugin_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

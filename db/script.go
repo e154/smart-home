@@ -76,8 +76,8 @@ func (n Scripts) GetById(scriptId int64) (script *Script, err error) {
 
 // GetByName ...
 func (n Scripts) GetByName(name string) (script *Script, err error) {
-	script = &Script{Name: name}
-	if err = n.Db.First(&script).Error; err != nil {
+	script = &Script{}
+	if err = n.Db.Model(script).Where("name = ?", name).First(script).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			err = errors.Wrap(apperr.ErrScriptNotFound, fmt.Sprintf("name \"%d\"", name))
 			return

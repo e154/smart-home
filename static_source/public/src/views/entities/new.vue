@@ -168,8 +168,8 @@ export default class extends Vue {
     if (!this.currentEntity || !this.currentEntity.pluginName) {
       return;
     }
-    const {data} = await api.v1.pluginServiceGetPluginOptions(this.currentEntity.pluginName);
-    this.$set(this.internal, 'pluginOptions', data);
+    const {data} = await api.v1.pluginServiceGetPlugin(this.currentEntity.pluginName);
+    this.$set(this.internal, 'pluginOptions', data.options);
   }
 
   private async create() {
