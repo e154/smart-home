@@ -131,11 +131,11 @@ export default class extends Vue {
   }
 
   private goto(variable: ApiVariable) {
-    router.push({ path: `/variables/edit/${variable.name}` })
+    router.push({ path: `/etc/variables/edit/${variable.name}` })
   }
 
   private add() {
-    router.push({ path: '/variables/new' })
+    router.push({ path: '/etc/variables/new' })
   }
 }
 </script>
