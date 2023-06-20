@@ -22,7 +22,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"runtime"
 	"testing"
 	"time"
 
@@ -42,8 +41,6 @@ var (
 )
 
 func TestMain(m *testing.M) {
-
-	runtime.GOMAXPROCS(-1)
 
 	_ = os.Setenv("TEST_MODE", "true")
 

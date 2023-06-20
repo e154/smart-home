@@ -78,7 +78,7 @@ func (p *PluginEndpoint) GetOptions(ctx context.Context, pluginName string) (opt
 }
 
 // GetByName ...
-func (p *PluginEndpoint) GetByName(ctx context.Context, pluginName string) (plugin m.Plugin, err error) {
+func (p *PluginEndpoint) GetByName(ctx context.Context, pluginName string) (plugin *m.Plugin, err error) {
 	plugin, err = p.adaptors.Plugin.GetByName(pluginName)
 	return
 }
@@ -96,7 +96,7 @@ func (n *PluginEndpoint) Search(ctx context.Context, query string, limit, offset
 // UpdateSettings ...
 func (n *PluginEndpoint) UpdateSettings(ctx context.Context, name string, settings m.Attributes) (err error) {
 
-	var plugin m.Plugin
+	var plugin *m.Plugin
 	if plugin, err = n.adaptors.Plugin.GetByName(name); err != nil {
 		return
 	}
