@@ -45,7 +45,7 @@
 Русский
 </a>
 <div class=dropdown-menu aria-labelledby=navbarDropdownMenuLink>
-<a class=dropdown-item href=/smart-home/en/>English</a>
+<a class=dropdown-item href=/smart-home/en/docs/plugins/modbus/>English</a>
 </div>
 </li>
 </ul>
@@ -89,12 +89,12 @@ RS-422, RS-232, а также Ethernet сети TCP/IP (протокол Modbus 
 Modbus RTU. Плагин предоставляет метод <code>ModbusRtu(FUNC, ADDRESS, COUNT, COMMAND)</code>, позволяющий отправлять команды и
 получать данные по указанному протоколу.</p>
 <p>Аргументы метода <code>ModbusRtu</code>:</p>
-<ul>
+<ol>
 <li><code>FUNC</code>: Код функции Modbus, указывающий тип операции, которую следует выполнить с устройством.</li>
 <li><code>ADDRESS</code>: Адрес устройства Modbus, к которому отправляется команда.</li>
 <li><code>COUNT</code>: Количество регистров или битов, которые следует прочитать или записать.</li>
 <li><code>COMMAND</code>: Команда, которую необходимо выполнить, указывающая дополнительные параметры и настройки.</li>
-</ul>
+</ol>
 <p>Пример использования:</p>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>COMMAND</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000;font-weight:700>[]</span>
 <span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>FUNC</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#4e9a06>&#39;ReadHoldingRegisters&#39;</span>
@@ -274,12 +274,12 @@ WriteMultipleRegisters</p>
 <p>В системе <strong>Smart Home</strong> реализован плагин Modbus TCP, который обеспечивает взаимодействие с устройствами по протоколу Modbus TCP.
 Плагин предоставляет метод <code>ModbusTcp(func, addr, count, command)</code>, позволяющий отправлять команды и получать данные по указанному протоколу.</p>
 <p>Аргументы метода <code>ModbusTcp</code>:</p>
-<ul>
+<ol>
 <li><code>func</code>: Код функции Modbus, указывающий тип операции, которую следует выполнить с устройством.</li>
 <li><code>addr</code>: Адрес устройства Modbus, к которому отправляется команда.</li>
 <li><code>count</code>: Количество регистров или битов, которые следует прочитать или записать.</li>
 <li><code>command</code>: Команда, которую необходимо выполнить, указывающая дополнительные параметры и настройки.</li>
-</ul>
+</ol>
 <p>Пример использования:</p>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>COMMAND</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000;font-weight:700>[]</span>
 <span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>FUNC</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#4e9a06>&#39;ReadHoldingRegisters&#39;</span>

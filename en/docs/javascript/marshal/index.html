@@ -1,0 +1,301 @@
+<!doctype html><html lang=en class=no-js>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<meta name=generator content="Hugo 0.89.4"><meta name=ROBOTS content="INDEX, FOLLOW">
+<link rel="shortcut icon" href=/smart-home/favicons/favicon.ico>
+<link rel=apple-touch-icon href=/smart-home/favicons/apple-touch-icon-180x180.png sizes=180x180>
+<link rel=icon type=image/png href=/smart-home/favicons/favicon-16x16.png sizes=16x16>
+<link rel=icon type=image/png href=/smart-home/favicons/favicon-32x32.png sizes=32x32>
+<link rel=icon type=image/png href=/smart-home/favicons/android-36x36.png sizes=36x36>
+<link rel=icon type=image/png href=/smart-home/favicons/android-48x48.png sizes=48x48>
+<link rel=icon type=image/png href=/smart-home/favicons/android-72x72.png sizes=72x72>
+<link rel=icon type=image/png href=/smart-home/favicons/android-96x96.png sizes=96x96>
+<link rel=icon type=image/png href=/smart-home/favicons/android-144x144.png sizes=144x144>
+<link rel=icon type=image/png href=/smart-home/favicons/android-192x192.png sizes=192x192>
+<title>marshal | Smart home</title>
+<meta name=description content="In the JavaScript environment, there is a function called marshal that converts an object into its JSON representation using the JSON.stringify …">
+<meta property="og:title" content="marshal">
+<meta property="og:description" content="In the JavaScript environment, there is a function called marshal that converts an object into its JSON representation using the JSON.stringify function.
+Here&rsquo;s an implementation example of the marshal function:
+function marshal(obj) { return JSON.stringify(obj); } Here&rsquo;s an example of using the marshal function:
+var obj = { name: &#34;John&#34;, age: 30, city: &#34;New York&#34; }; var jsonStr = marshal(obj); console.log(jsonStr); // {&#34;name&#34;:&#34;John&#34;,&#34;age&#34;:30,&#34;city&#34;:&#34;New York&#34;} In this example, the marshal function takes an object obj and uses the JSON.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://e154.github.io/smart-home/en/docs/javascript/marshal/"><meta property="article:section" content="docs">
+<meta property="article:published_time" content="2021-11-20T00:00:00+00:00">
+<meta property="article:modified_time" content="2023-06-20T11:59:09+06:00"><meta property="og:site_name" content="Smart home">
+<meta itemprop=name content="marshal">
+<meta itemprop=description content="In the JavaScript environment, there is a function called marshal that converts an object into its JSON representation using the JSON.stringify function.
+Here&rsquo;s an implementation example of the marshal function:
+function marshal(obj) { return JSON.stringify(obj); } Here&rsquo;s an example of using the marshal function:
+var obj = { name: &#34;John&#34;, age: 30, city: &#34;New York&#34; }; var jsonStr = marshal(obj); console.log(jsonStr); // {&#34;name&#34;:&#34;John&#34;,&#34;age&#34;:30,&#34;city&#34;:&#34;New York&#34;} In this example, the marshal function takes an object obj and uses the JSON."><meta itemprop=datePublished content="2021-11-20T00:00:00+00:00">
+<meta itemprop=dateModified content="2023-06-20T11:59:09+06:00">
+<meta itemprop=wordCount content="104">
+<meta itemprop=keywords content><meta name=twitter:card content="summary">
+<meta name=twitter:title content="marshal">
+<meta name=twitter:description content="In the JavaScript environment, there is a function called marshal that converts an object into its JSON representation using the JSON.stringify function.
+Here&rsquo;s an implementation example of the marshal function:
+function marshal(obj) { return JSON.stringify(obj); } Here&rsquo;s an example of using the marshal function:
+var obj = { name: &#34;John&#34;, age: 30, city: &#34;New York&#34; }; var jsonStr = marshal(obj); console.log(jsonStr); // {&#34;name&#34;:&#34;John&#34;,&#34;age&#34;:30,&#34;city&#34;:&#34;New York&#34;} In this example, the marshal function takes an object obj and uses the JSON.">
+<link rel=preload href=/smart-home/scss/main.min.8ebd0f8570c5c2da16785e52cb8f20394c6d706e75009a748bfe4c38f7ae92c1.css as=style>
+<link href=/smart-home/scss/main.min.8ebd0f8570c5c2da16785e52cb8f20394c6d706e75009a748bfe4c38f7ae92c1.css rel=stylesheet integrity>
+<script src=https://code.jquery.com/jquery-3.5.1.min.js integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin=anonymous></script>
+</head>
+<body class=td-page>
+<header>
+<nav class="js-navbar-scroll navbar navbar-expand navbar-dark flex-column flex-md-row td-navbar">
+<a class=navbar-brand href=/smart-home/en/>
+<span class=navbar-logo></span><span class="text-uppercase font-weight-bold">Smart home</span>
+</a>
+<div class="td-navbar-nav-scroll ml-md-auto" id=main_navbar>
+<ul class="navbar-nav mt-2 mt-lg-0">
+<li class="nav-item mr-4 mb-2 mb-lg-0">
+<a class="nav-link active" href=/smart-home/en/docs/><span class=active>Documentation</span></a>
+</li>
+<li class="nav-item dropdown mr-4 d-none d-lg-block">
+<a class="nav-link dropdown-toggle" href=# id=navbarDropdown role=button data-toggle=dropdown aria-haspopup=true aria-expanded=false>
+English
+</a>
+<div class=dropdown-menu aria-labelledby=navbarDropdownMenuLink>
+<a class=dropdown-item href=/smart-home/docs/javascript/marshal/>Русский</a>
+</div>
+</li>
+</ul>
+</div>
+<div class="navbar-nav d-none d-lg-block">
+</div>
+</nav>
+</header>
+<div class="container-fluid td-outer">
+<div class=td-main>
+<div class="row flex-xl-nowrap">
+<aside class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none">
+<div id=td-sidebar-menu class=td-sidebar__inner>
+<form class="td-sidebar__search d-flex align-items-center">
+<button class="btn btn-link td-sidebar__toggle d-md-none p-0 ml-3 fas fa-bars" type=button data-toggle=collapse data-target=#td-section-nav aria-controls=td-docs-nav aria-expanded=false aria-label="Toggle section navigation">
+</button>
+</form>
+<nav class="collapse td-sidebar-nav" id=td-section-nav>
+<div class="nav-item dropdown d-block d-lg-none">
+<a class="nav-link dropdown-toggle" href=# id=navbarDropdown role=button data-toggle=dropdown aria-haspopup=true aria-expanded=false>
+English
+</a>
+<div class=dropdown-menu aria-labelledby=navbarDropdownMenuLink>
+<a class=dropdown-item href=/smart-home/docs/javascript/marshal/>Русский</a>
+</div>
+</div>
+<ul class="td-sidebar-nav__section pr-md-3 ul-0">
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id=m-smart-homeendocs-li>
+<a href=/smart-home/en/docs/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section tree-root" id=m-smart-homeendocs><span>Documentation</span></a>
+<ul class=ul-1>
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homeendocsdashboard-li>
+<a href=/smart-home/en/docs/dashboard/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homeendocsdashboard><span>Dashboard</span></a>
+<ul class="ul-2 foldable">
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocsdashboardentity-li>
+<a href=/smart-home/en/docs/dashboard/entity/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocsdashboardentity><span>Entity</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homeendocsdashboardautomation-li>
+<a href=/smart-home/en/docs/dashboard/automation/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homeendocsdashboardautomation><span>Automation</span></a>
+<ul class="ul-3 foldable">
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocsdashboardautomationactions-li>
+<a href=/smart-home/en/docs/dashboard/automation/actions/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocsdashboardautomationactions><span>Actions</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocsdashboardautomationconditions-li>
+<a href=/smart-home/en/docs/dashboard/automation/conditions/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocsdashboardautomationconditions><span>Conditions</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocsdashboardautomationtriggers-li>
+<a href=/smart-home/en/docs/dashboard/automation/triggers/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocsdashboardautomationtriggers><span>Triggers</span></a>
+</li>
+</ul>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocsdashboardmqtt-li>
+<a href=/smart-home/en/docs/dashboard/mqtt/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homeendocsdashboardmqtt><span>MQTT</span></a>
+</li>
+</ul>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id=m-smart-homeendocsjavascript-li>
+<a href=/smart-home/en/docs/javascript/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homeendocsjavascript><span>Javascript</span></a>
+<ul class="ul-2 foldable">
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocsjavascriptactor-li>
+<a href=/smart-home/en/docs/javascript/actor/ title=Actor class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocsjavascriptactor><span>actor</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocsjavascriptentity-li>
+<a href=/smart-home/en/docs/javascript/entity/ title=Entity class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocsjavascriptentity><span>entity</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocsjavascriptentity_manager-li>
+<a href=/smart-home/en/docs/javascript/entity_manager/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocsjavascriptentity_manager><span>entityManager</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocsjavascripthex2arr-li>
+<a href=/smart-home/en/docs/javascript/hex2arr/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocsjavascripthex2arr><span>hex2arr</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child active-path" id=m-smart-homeendocsjavascriptmarshal-li>
+<a href=/smart-home/en/docs/javascript/marshal/ class="align-left pl-0 active td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocsjavascriptmarshal><span class=td-sidebar-nav-active-item>marshal</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocsjavascriptmqtt-li>
+<a href=/smart-home/en/docs/javascript/mqtt/ title=Mqtt class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocsjavascriptmqtt><span>mqtt</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocsjavascriptprint-li>
+<a href=/smart-home/en/docs/javascript/print/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocsjavascriptprint><span>print</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocsjavascriptunmarshal-li>
+<a href=/smart-home/en/docs/javascript/unmarshal/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocsjavascriptunmarshal><span>unmarshal</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocsjavascriptexecute-li>
+<a href=/smart-home/en/docs/javascript/execute/ title=Execute class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocsjavascriptexecute><span>execute</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocsjavascriptlog-li>
+<a href=/smart-home/en/docs/javascript/log/ title=Log class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocsjavascriptlog><span>log</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocsjavascriptstorage-li>
+<a href=/smart-home/en/docs/javascript/storage/ title=Storage class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocsjavascriptstorage><span>storage</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocsjavascripthttp-li>
+<a href=/smart-home/en/docs/javascript/http/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocsjavascripthttp><span>http</span></a>
+</li>
+</ul>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homeendocsplugins-li>
+<a href=/smart-home/en/docs/plugins/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homeendocsplugins><span>Plugins</span></a>
+<ul class="ul-2 foldable">
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homeendocspluginsmodbus-li>
+<a href=/smart-home/en/docs/plugins/modbus/ title=Modbus class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homeendocspluginsmodbus><span>modbus</span></a>
+<ul class="ul-3 foldable">
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocspluginsmodbusmodbus_rtu-li>
+<a href=/smart-home/en/docs/plugins/modbus/modbus_rtu/ title="Modbus rtu" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocspluginsmodbusmodbus_rtu><span>modbus rtu</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocspluginsmodbusmodbus_tcp-li>
+<a href=/smart-home/en/docs/plugins/modbus/modbus_tcp/ title="Modbus tcp" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocspluginsmodbusmodbus_tcp><span>modbus tcp</span></a>
+</li>
+</ul>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocspluginsalexa-li>
+<a href=/smart-home/en/docs/plugins/alexa/ title=Alexa class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocspluginsalexa><span>alexa</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homeendocspluginscgminer-li>
+<a href=/smart-home/en/docs/plugins/cgminer/ title=Cgminer class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homeendocspluginscgminer><span>cgminer</span></a>
+<ul class="ul-3 foldable">
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocspluginscgminerbitmine-li>
+<a href=/smart-home/en/docs/plugins/cgminer/bitmine/ title=Bitmine class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocspluginscgminerbitmine><span>bitmine</span></a>
+</li>
+</ul>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocspluginscpuspeed-li>
+<a href=/smart-home/en/docs/plugins/cpuspeed/ title=CPU class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocspluginscpuspeed><span>cpu</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocspluginshdd-li>
+<a href=/smart-home/en/docs/plugins/hdd/ title=HDD class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocspluginshdd><span>hdd</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocspluginsmemory-li>
+<a href=/smart-home/en/docs/plugins/memory/ title=Memory class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocspluginsmemory><span>memory</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocspluginsmemory_app-li>
+<a href=/smart-home/en/docs/plugins/memory_app/ title="Memory app" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocspluginsmemory_app><span>memory app</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocspluginsmoon-li>
+<a href=/smart-home/en/docs/plugins/moon/ title=Moon class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocspluginsmoon><span>moon</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocspluginsmqtt-li>
+<a href=/smart-home/en/docs/plugins/mqtt/ title=MQTT class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocspluginsmqtt><span>mqtt</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocspluginsnode-li>
+<a href=/smart-home/en/docs/plugins/node/ title=Node class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocspluginsnode><span>node</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homeendocspluginsnotify-li>
+<a href=/smart-home/en/docs/plugins/notify/ title="Отправка сообщений" class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homeendocspluginsnotify><span>notify</span></a>
+<ul class="ul-3 foldable">
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocspluginsnotifywebpush-li>
+<a href=/smart-home/en/docs/plugins/notify/webpush/ title="Push уведомления" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocspluginsnotifywebpush><span>webpush</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocspluginsnotifyhtml5_notify-li>
+<a href=/smart-home/en/docs/plugins/notify/html5_notify/ title="HTML5 Уведомления" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocspluginsnotifyhtml5_notify><span>html5_notify</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocspluginsnotifymessagebird-li>
+<a href=/smart-home/en/docs/plugins/notify/messagebird/ title=Messagebird class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocspluginsnotifymessagebird><span>messagebird</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocspluginsnotifyslack-li>
+<a href=/smart-home/en/docs/plugins/notify/slack/ title=Slack class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocspluginsnotifyslack><span>slack</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocspluginsnotifytelegram-li>
+<a href=/smart-home/en/docs/plugins/notify/telegram/ title=Telegram class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocspluginsnotifytelegram><span>telegram</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocspluginsnotifytwilio-li>
+<a href=/smart-home/en/docs/plugins/notify/twilio/ title=Twilio class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocspluginsnotifytwilio><span>twilio</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocspluginsnotifytemplate-li>
+<a href=/smart-home/en/docs/plugins/notify/template/ title="Шаблон сообщения" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocspluginsnotifytemplate><span>шаблоны</span></a>
+</li>
+</ul>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocspluginsscene-li>
+<a href=/smart-home/en/docs/plugins/scene/ title=Scene class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocspluginsscene><span>scene</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocspluginssensor-li>
+<a href=/smart-home/en/docs/plugins/sensor/ title=Sensor class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocspluginssensor><span>sensor</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocspluginssun-li>
+<a href=/smart-home/en/docs/plugins/sun/ title=Sun class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocspluginssun><span>sun</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocspluginstriggers-li>
+<a href=/smart-home/en/docs/plugins/triggers/ title=Triggers class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocspluginstriggers><span>triggers</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocspluginsupdater-li>
+<a href=/smart-home/en/docs/plugins/updater/ title=Updater class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocspluginsupdater><span>updater</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocspluginsuptime-li>
+<a href=/smart-home/en/docs/plugins/uptime/ title=Uptime class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocspluginsuptime><span>uptime</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocspluginsversion-li>
+<a href=/smart-home/en/docs/plugins/version/ title=Version class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocspluginsversion><span>version</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homeendocspluginsweather-li>
+<a href=/smart-home/en/docs/plugins/weather/ title=Weather class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homeendocspluginsweather><span>weather</span></a>
+<ul class="ul-3 foldable">
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocspluginsweathermet-li>
+<a href=/smart-home/en/docs/plugins/weather/met/ title=Met class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocspluginsweathermet><span>met</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocspluginsweatherowm-li>
+<a href=/smart-home/en/docs/plugins/weather/owm/ title=Met class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocspluginsweatherowm><span>met</span></a>
+</li>
+</ul>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocspluginszibee2mqtt-li>
+<a href=/smart-home/en/docs/plugins/zibee2mqtt/ title=Zigbee2mqtt class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocspluginszibee2mqtt><span>zigbee2mqtt</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homeendocspluginszone-li>
+<a href=/smart-home/en/docs/plugins/zone/ title=Zone class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homeendocspluginszone><span>zone</span></a>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</div>
+</aside>
+<aside class="d-none d-xl-block col-xl-2 td-sidebar-toc d-print-none">
+<div class="td-page-meta ml-2 pb-1 pt-2 mb-0">
+<a href=https://github.com/e154/smart-home/edit/master/content/en/docs/javascript/marshal.md target=_blank><i class="fa fa-edit fa-fw"></i> Edit this page</a>
+<a href="https://github.com/e154/smart-home/new/master/content/en/docs/javascript/marshal.md?filename=change-me.md&value=---%0Atitle%3A+%22Long+Page+Title%22%0AlinkTitle%3A+%22Short+Nav+Title%22%0Aweight%3A+100%0Adescription%3A+%3E-%0A+++++Page+description+for+heading+and+indexes.%0A---%0A%0A%23%23+Heading%0A%0AEdit+this+template+to+create+your+new+page.%0A%0A%2A+Give+it+a+good+name%2C+ending+in+%60.md%60+-+e.g.+%60getting-started.md%60%0A%2A+Edit+the+%22front+matter%22+section+at+the+top+of+the+page+%28weight+controls+how+its+ordered+amongst+other+pages+in+the+same+directory%3B+lowest+number+first%29.%0A%2A+Add+a+good+commit+message+at+the+bottom+of+the+page+%28%3C80+characters%3B+use+the+extended+description+field+for+more+detail%29.%0A%2A+Create+a+new+branch+so+you+can+preview+your+new+file+and+request+a+review+via+Pull+Request.%0A" target=_blank><i class="fa fa-edit fa-fw"></i> Create child page</a>
+<a href="https://github.com/e154/smart-home/issues/new?title=marshal" target=_blank><i class="fab fa-github fa-fw"></i> Create documentation issue</a>
+<a href=https://github.com/e154/smart-home/issues/new target=_blank><i class="fas fa-tasks fa-fw"></i> Create project issue</a>
+<a id=print href=https://e154.github.io/smart-home/en/docs/javascript/_print/><i class="fa fa-print fa-fw"></i> Print entire section</a>
+</div>
+</aside>
+<main class="col-12 col-md-9 col-xl-8 pl-md-5" role=main>
+<nav aria-label=breadcrumb class="d-none d-md-block d-print-none">
+<ol class="breadcrumb spb-1">
+<li class=breadcrumb-item>
+<a href=https://e154.github.io/smart-home/en/docs/>Documentation</a>
+</li>
+<li class=breadcrumb-item>
+<a href=https://e154.github.io/smart-home/en/docs/javascript/>Javascript</a>
+</li>
+<li class="breadcrumb-item active" aria-current=page>
+<a href=https://e154.github.io/smart-home/en/docs/javascript/marshal/>marshal</a>
+</li>
+</ol>
+</nav>
+<div class=td-content>
+<h1>marshal</h1>
+<header class=article-meta>
+</header>
+<p>In the JavaScript environment, there is a function called <code>marshal</code> that converts an object into its JSON representation using the <code>JSON.stringify</code> function.</p>
+<p>Here&rsquo;s an implementation example of the <code>marshal</code> function:</p>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#204a87;font-weight:700>function</span> <span style=color:#000>marshal</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>obj</span><span style=color:#000;font-weight:700>)</span> <span style=color:#000;font-weight:700>{</span>
+  <span style=color:#204a87;font-weight:700>return</span> <span style=color:#000>JSON</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>stringify</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>obj</span><span style=color:#000;font-weight:700>);</span>
+<span style=color:#000;font-weight:700>}</span>
+</code></pre></div><p>Here&rsquo;s an example of using the <code>marshal</code> function:</p>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#204a87;font-weight:700>var</span> <span style=color:#000>obj</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000;font-weight:700>{</span> <span style=color:#000>name</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#34;John&#34;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>age</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#0000cf;font-weight:700>30</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>city</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#34;New York&#34;</span> <span style=color:#000;font-weight:700>};</span>
+<span style=color:#204a87;font-weight:700>var</span> <span style=color:#000>jsonStr</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>marshal</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>obj</span><span style=color:#000;font-weight:700>);</span>
+<span style=color:#000>console</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>log</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>jsonStr</span><span style=color:#000;font-weight:700>);</span> <span style=color:#8f5902;font-style:italic>// {&#34;name&#34;:&#34;John&#34;,&#34;age&#34;:30,&#34;city&#34;:&#34;New York&#34;}
+</span></code></pre></div><p>In this example, the <code>marshal</code> function takes an object <code>obj</code> and uses the <code>JSON.stringify</code> function to convert the object into its JSON representation. The result of the function will be a JSON string containing the serialized data of the object.</p>
+<div class="text-muted mt-5 pt-3 border-top">
+Last modified June 20, 2023: <a href=https://github.com/e154/smart-home/commit/4f7f3b2f4f7e2529b1f5457029f2ed16264ead36>Merge pull request #225 from e154/develop (4f7f3b2)</a>
+</div>
+</div>
+</main>
+</div>
+</div>
+<footer class="bg-dark py-5 row d-print-none">
+<div class="container-fluid mx-sm-5">
+<div class=row>
+<div class="col-6 col-sm-4 text-xs-center order-sm-2">
+</div>
+<div class="col-6 col-sm-4 text-right text-xs-center order-sm-3">
+<ul class="list-inline mb-0">
+<li class="list-inline-item mx-2 h3" data-toggle=tooltip data-placement=top title=GitHub aria-label=GitHub>
+<a class=text-white target=_blank rel=noopener href=https://github.com/e154/smart-home aria-label=GitHub>
+<i class="fab fa-github"></i>
+</a>
+</li>
+</ul>
+</div>
+<div class="col-12 col-sm-4 text-center py-2 order-sm-2">
+<small class=text-white>&copy; 2023 Powered by <a href=http://e154.ru>e154.ru</a></small>
+<div><small class="ml-1 text-white"><a href=https://github.com/e154/smart-home/blob/master/LICENSE>MIT</a> License Code Documents <a href=http://creativecommons.org/licenses/by/3.0/>CC BY 3.0</a></small></div>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js integrity=sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js integrity=sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF crossorigin=anonymous></script>
+<script src=/smart-home/js/tabpane-persist.js></script>
+<script src=/smart-home/js/main.min.307d9740a83ff885dafd50af6ce4f79e2146b78e74ee078b11b627d0d02146a9.js integrity="sha256-MH2XQKg/+IXa/VCvbOT3niFGt4507geLEbYn0NAhRqk=" crossorigin=anonymous></script>
+</body>
+</html>

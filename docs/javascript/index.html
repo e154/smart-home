@@ -15,8 +15,8 @@
 <link rel=icon type=image/png href=/smart-home/favicons/android-144x144.png sizes=144x144>
 <link rel=icon type=image/png href=/smart-home/favicons/android-192x192.png sizes=192x192>
 <title>Javascript | Умный дом</title>
-<meta name=description content="Программная логика и приложения в проекте Smart Home разрабатываются с использованием языка JavaScript.
-JavaScript - это широко используемый язык …">
+<meta name=description content="Программная логика и приложения в проекте Smart Home разрабатываются с использованием языка JavaScript, CoffeeScript и TypeScript.
+JavaScript - это …">
 <meta property="og:title" content="Javascript">
 <meta property="og:description" content="Програмный комплекс">
 <meta property="og:type" content="website">
@@ -45,7 +45,7 @@ JavaScript - это широко используемый язык …">
 Русский
 </a>
 <div class=dropdown-menu aria-labelledby=navbarDropdownMenuLink>
-<a class=dropdown-item href=/smart-home/en/>English</a>
+<a class=dropdown-item href=/smart-home/en/docs/javascript/>English</a>
 </div>
 </li>
 </ul>
@@ -69,14 +69,34 @@ JavaScript - это широко используемый язык …">
 Русский
 </a>
 <div class=dropdown-menu aria-labelledby=navbarDropdownMenuLink>
-<a class=dropdown-item href=/smart-home/en/>English</a>
+<a class=dropdown-item href=/smart-home/en/docs/javascript/>English</a>
 </div>
 </div>
 <ul class="td-sidebar-nav__section pr-md-3 ul-0">
 <li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id=m-smart-homedocs-li>
 <a href=/smart-home/docs/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section tree-root" id=m-smart-homedocs><span>Документация</span></a>
 <ul class=ul-1>
-<li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id=m-smart-homedocsjavascript-li>
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homedocsdashboard-li>
+<a href=/smart-home/docs/dashboard/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocsdashboard><span>Dashboard</span></a>
+<ul class="ul-2 foldable">
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsdashboardentity-li>
+<a href=/smart-home/docs/dashboard/entity/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsdashboardentity><span>Entity</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homedocsdashboardautomation-li>
+<a href=/smart-home/docs/dashboard/automation/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocsdashboardautomation><span>Automation</span></a>
+<ul class="ul-3 foldable">
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsdashboardautomationactions-li>
+<a href=/smart-home/docs/dashboard/automation/actions/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsdashboardautomationactions><span>Actions</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsdashboardautomationconditions-li>
+<a href=/smart-home/docs/dashboard/automation/conditions/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsdashboardautomationconditions><span>Conditions</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsdashboardautomationtriggers-li>
+<a href=/smart-home/docs/dashboard/automation/triggers/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsdashboardautomationtriggers><span>Triggers</span></a>
+</li>
+</ul>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsdashboardmqtt-li>
+<a href=/smart-home/docs/dashboard/mqtt/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocsdashboardmqtt><span>MQTT</span></a>
+</li>
+</ul>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id=m-smart-homedocsjavascript-li>
 <a href=/smart-home/docs/javascript/ class="align-left pl-0 active td-sidebar-link td-sidebar-link__section" id=m-smart-homedocsjavascript><span class=td-sidebar-nav-active-item>Javascript</span></a>
 <ul class="ul-2 foldable">
 <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascriptactor-li>
@@ -84,9 +104,17 @@ JavaScript - это широко используемый язык …">
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascriptentity-li>
 <a href=/smart-home/docs/javascript/entity/ title=Устройство class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascriptentity><span>entity</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascriptentity_manager-li>
-<a href=/smart-home/docs/javascript/entity_manager/ title="Менеджер устройств" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascriptentity_manager><span>entity manager</span></a>
+<a href=/smart-home/docs/javascript/entity_manager/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascriptentity_manager><span>entityManager</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascripthex2arr-li>
+<a href=/smart-home/docs/javascript/hex2arr/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascripthex2arr><span>hex2arr</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascriptmarshal-li>
+<a href=/smart-home/docs/javascript/marshal/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascriptmarshal><span>marshal</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascriptmqtt-li>
 <a href=/smart-home/docs/javascript/mqtt/ title=Mqtt class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascriptmqtt><span>mqtt</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascriptprint-li>
+<a href=/smart-home/docs/javascript/print/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascriptprint><span>print</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascriptunmarshal-li>
+<a href=/smart-home/docs/javascript/unmarshal/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascriptunmarshal><span>unmarshal</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascriptexecute-li>
 <a href=/smart-home/docs/javascript/execute/ title="Выполнение системных команд" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascriptexecute><span>execute</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascriptlog-li>
@@ -110,7 +138,7 @@ JavaScript - это широко используемый язык …">
 </li>
 </ul>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsalexa-li>
-<a href=/smart-home/docs/plugins/alexa/ title=Alexa class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocspluginsalexa><span>alexa</span></a>
+<a href=/smart-home/docs/plugins/alexa/ title=Alexa class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsalexa><span>alexa</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homedocspluginscgminer-li>
 <a href=/smart-home/docs/plugins/cgminer/ title=Cgminer class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocspluginscgminer><span>cgminer</span></a>
 <ul class="ul-3 foldable">
@@ -118,8 +146,20 @@ JavaScript - это широко используемый язык …">
 <a href=/smart-home/docs/plugins/cgminer/bitmine/ title=Bitmine class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginscgminerbitmine><span>bitmine</span></a>
 </li>
 </ul>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginscpuspeed-li>
+<a href=/smart-home/docs/plugins/cpuspeed/ title=CPU class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginscpuspeed><span>cpu</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginshdd-li>
+<a href=/smart-home/docs/plugins/hdd/ title=HDD class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginshdd><span>hdd</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsmemory-li>
+<a href=/smart-home/docs/plugins/memory/ title=Memory class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsmemory><span>memory</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsmemory_app-li>
+<a href=/smart-home/docs/plugins/memory_app/ title="Memory app" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsmemory_app><span>memory app</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsmoon-li>
+<a href=/smart-home/docs/plugins/moon/ title=Moon class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsmoon><span>moon</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsmqtt-li>
+<a href=/smart-home/docs/plugins/mqtt/ title=MQTT class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsmqtt><span>mqtt</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsnode-li>
-<a href=/smart-home/docs/plugins/node/ title=Node class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocspluginsnode><span>node</span></a>
+<a href=/smart-home/docs/plugins/node/ title=Node class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsnode><span>node</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homedocspluginsnotify-li>
 <a href=/smart-home/docs/plugins/notify/ title="Отправка сообщений" class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocspluginsnotify><span>notify</span></a>
 <ul class="ul-3 foldable">
@@ -140,17 +180,34 @@ JavaScript - это широко используемый язык …">
 </li>
 </ul>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsscene-li>
-<a href=/smart-home/docs/plugins/scene/ title=Scene class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocspluginsscene><span>scene</span></a>
-</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsscript-li>
-<a href=/smart-home/docs/plugins/script/ title=Script class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocspluginsscript><span>script</span></a>
+<a href=/smart-home/docs/plugins/scene/ title=Scene class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsscene><span>scene</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginssensor-li>
-<a href=/smart-home/docs/plugins/sensor/ title=Sensor class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocspluginssensor><span>sensor</span></a>
+<a href=/smart-home/docs/plugins/sensor/ title=Sensor class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginssensor><span>sensor</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginssun-li>
+<a href=/smart-home/docs/plugins/sun/ title=Sun class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginssun><span>sun</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginstriggers-li>
+<a href=/smart-home/docs/plugins/triggers/ title=Triggers class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginstriggers><span>triggers</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsupdater-li>
+<a href=/smart-home/docs/plugins/updater/ title=Updater class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsupdater><span>updater</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsuptime-li>
+<a href=/smart-home/docs/plugins/uptime/ title=Uptime class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsuptime><span>uptime</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsversion-li>
+<a href=/smart-home/docs/plugins/version/ title=Version class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsversion><span>version</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homedocspluginsweather-li>
+<a href=/smart-home/docs/plugins/weather/ title=Weather class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocspluginsweather><span>weather</span></a>
+<ul class="ul-3 foldable">
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsweathermet-li>
+<a href=/smart-home/docs/plugins/weather/met/ title=Met class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsweathermet><span>met</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsweatherowm-li>
+<a href=/smart-home/docs/plugins/weather/owm/ title=Met class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsweatherowm><span>met</span></a>
 </li>
 </ul>
-</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsdashboard-li>
-<a href=/smart-home/docs/dashboard/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocsdashboard><span>Dashboard</span></a>
-</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsmqtt-li>
-<a href=/smart-home/docs/mqtt/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocsmqtt><span>MQTT</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginszibee2mqtt-li>
+<a href=/smart-home/docs/plugins/zibee2mqtt/ title=Zigbee2mqtt class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginszibee2mqtt><span>zigbee2mqtt</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginszone-li>
+<a href=/smart-home/docs/plugins/zone/ title=Zone class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginszone><span>zone</span></a>
+</li>
+</ul>
 </li>
 </ul>
 </li>
@@ -182,7 +239,7 @@ JavaScript - это широко используемый язык …">
 <h1>Javascript</h1>
 <header class=article-meta>
 </header>
-<p>Программная логика и приложения в проекте <strong>Smart Home</strong> разрабатываются с использованием языка JavaScript.
+<p>Программная логика и приложения в проекте <strong>Smart Home</strong> разрабатываются с использованием языка JavaScript, CoffeeScript и TypeScript.
 JavaScript - это широко используемый язык программирования, который обеспечивает гибкость и мощность в создании
 интерактивных компонентоа.</p>
 <p>Проект <strong>Smart Home</strong> использует JavaScript для написания всех основных компонентов, которые управляют умным домом.
@@ -213,13 +270,37 @@ JavaScript - это широко используемый язык програ�
 </div>
 <div class=entry>
 <h5>
-<a href=/smart-home/docs/javascript/entity_manager/>Менеджер устройств</a>
+<a href=/smart-home/docs/javascript/entity_manager/>entityManager</a>
+</h5>
+<p></p>
+</div>
+<div class=entry>
+<h5>
+<a href=/smart-home/docs/javascript/hex2arr/>hex2arr</a>
+</h5>
+<p></p>
+</div>
+<div class=entry>
+<h5>
+<a href=/smart-home/docs/javascript/marshal/>marshal</a>
 </h5>
 <p></p>
 </div>
 <div class=entry>
 <h5>
 <a href=/smart-home/docs/javascript/mqtt/>Mqtt</a>
+</h5>
+<p></p>
+</div>
+<div class=entry>
+<h5>
+<a href=/smart-home/docs/javascript/print/>print</a>
+</h5>
+<p></p>
+</div>
+<div class=entry>
+<h5>
+<a href=/smart-home/docs/javascript/unmarshal/>unmarshal</a>
 </h5>
 <p></p>
 </div>
@@ -249,7 +330,7 @@ JavaScript - это широко используемый язык програ�
 </div>
 </div>
 <div class="text-muted mt-5 pt-3 border-top">
-Изменено 16.06.2023: <a href=https://github.com/e154/smart-home/commit/1fa33e01857b95fdbcfe4dd2d491e1958b23211a>Merge pull request #221 from e154/develop (1fa33e0)</a>
+Изменено 20.06.2023: <a href=https://github.com/e154/smart-home/commit/4f7f3b2f4f7e2529b1f5457029f2ed16264ead36>Merge pull request #225 from e154/develop (4f7f3b2)</a>
 </div>
 </div>
 </main>
