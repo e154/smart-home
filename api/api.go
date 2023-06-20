@@ -227,7 +227,7 @@ func (a *Api) Start() (err error) {
 
 	cors := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
-		AllowedMethods:   []string{"HEAD", "GET", "POST", "PUT"},
+		AllowedMethods:   []string{"HEAD", "GET", "POST", "PUT", "DELETE"},
 		AllowedHeaders:   []string{"*"},
 		AllowCredentials: false,
 		Debug:            a.cfg.Debug,
