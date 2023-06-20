@@ -21,8 +21,11 @@ package controllers
 import (
 	"embed"
 	"fmt"
+
 	"html/template"
 	"net/http"
+
+	"github.com/e154/smart-home/version"
 )
 
 // ControllerIndex ...
@@ -43,7 +46,7 @@ func (c ControllerIndex) Index(publicAssets embed.FS) func(w http.ResponseWriter
 		b := map[string]interface{}{
 			"server_url":     c.ControllerCommon.appConfig.ApiHttpHostPort,
 			"run_mode":       c.ControllerCommon.appConfig.Mode,
-			"server_version": "",
+			"server_version": version.VersionString,
 		}
 		templates := template.Must(template.New("index").ParseFS(publicAssets, "public/index.html"))
 
