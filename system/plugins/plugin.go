@@ -113,7 +113,12 @@ func (p *Plugin) LoadSettings(pl Plugable) (settings m.Attributes, err error) {
 	if plugin, err = p.Adaptors.Plugin.GetByName(pl.Name()); err != nil {
 		return
 	}
-	settings = plugin.Settings
+	settings = pl.Options().Setts
+	if settings == nil {
+		settings = make(m.Attributes)
+		return
+	}
+	_, err = settings.Deserialize(plugin.Settings)
 	return
 }
 

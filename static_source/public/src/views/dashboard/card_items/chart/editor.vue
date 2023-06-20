@@ -68,6 +68,11 @@
                        v-model="item.payload.chart.borderWidth"></el-input-number>
     </el-form-item>
 
+    <el-form-item :label="$t('dashboard.editor.chart.height')" prop="height">
+      <el-input-number size="small"
+                       v-model="item.payload.chart.height"></el-input-number>
+    </el-form-item>
+
     <el-form-item :label="$t('dashboard.editor.chart.legend')" prop="legend">
       <el-switch
         v-model="item.payload.chart.legend"></el-switch>
@@ -97,7 +102,7 @@ import {Component, Prop, Vue} from 'vue-property-decorator';
 import {CardItem, Core} from '@/views/dashboard/core';
 import CommonEditor from '@/views/dashboard/card_items/common/editor.vue';
 import EventViewer from '@/views/dashboard/card_items/common/event_viewer.vue';
-import {RangeList, FilterList} from '@/views/dashboard/card_items/chart/types';
+import {FilterList, RangeList} from '@/views/dashboard/card_items/chart/types';
 
 @Component({
   name: 'IChartEditor',

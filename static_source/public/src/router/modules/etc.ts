@@ -29,6 +29,16 @@ const etcRouter: RouteConfig = {
       }
     },
     {
+      path: 'plugins/edit/:name',
+      component: () => import('@/views/plugins/edit.vue'),
+      props: true,
+      name: 'plugin edit',
+      meta: {
+        title: 'pluginEdit',
+        hidden: true
+      }
+    },
+    {
       path: 'swagger',
       component: () => import('@/views/swagger/index.vue'),
       name: 'swagger',

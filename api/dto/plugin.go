@@ -36,7 +36,7 @@ func NewPluginDto() Plugin {
 func (p Plugin) ToPluginListResult(items []*m.Plugin, total uint64, pagination common.PageParams) (result *api.GetPluginListResult) {
 
 	result = &api.GetPluginListResult{
-		Items: make([]*api.Plugin, 0, len(items)),
+		Items: make([]*api.PluginShort, 0, len(items)),
 		Meta: &api.Meta{
 			Limit: uint64(pagination.Limit),
 			Page:  pagination.PageReq,
@@ -46,12 +46,11 @@ func (p Plugin) ToPluginListResult(items []*m.Plugin, total uint64, pagination c
 	}
 
 	for _, item := range items {
-		result.Items = append(result.Items, &api.Plugin{
-			Name:     item.Name,
-			Version:  item.Version,
-			Enabled:  item.Enabled,
-			System:   item.System,
-			Settings: AttributeToApi(item.Settings),
+		result.Items = append(result.Items, &api.PluginShort{
+			Name:    item.Name,
+			Version: item.Version,
+			Enabled: item.Enabled,
+			System:  item.System,
 		})
 	}
 
@@ -59,11 +58,11 @@ func (p Plugin) ToPluginListResult(items []*m.Plugin, total uint64, pagination c
 }
 
 // Options ...
-func (p Plugin) Options(options m.PluginOptions) (result *api.GetPluginOptionsResult) {
+func (p Plugin) Options(options m.PluginOptions) (result *api.PluginOptionsResult) {
 
-	var actions = make(map[string]*api.GetPluginOptionsResult_EntityAction)
+	var actions = make(map[string]*api.PluginOptionsResult_EntityAction)
 	for k, v := range options.ActorActions {
-		actions[k] = &api.GetPluginOptionsResult_EntityAction{
+		actions[k] = &api.PluginOptionsResult_EntityAction{
 			Name:        v.Name,
 			Description: v.Description,
 			ImageUrl:    common.StringValue(v.ImageUrl),
@@ -71,9 +70,9 @@ func (p Plugin) Options(options m.PluginOptions) (result *api.GetPluginOptionsRe
 		}
 	}
 
-	var states = make(map[string]*api.GetPluginOptionsResult_EntityState)
+	var states = make(map[string]*api.PluginOptionsResult_EntityState)
 	for k, v := range options.ActorStates {
-		states[k] = &api.GetPluginOptionsResult_EntityState{
+		states[k] = &api.PluginOptionsResult_EntityState{
 			Name:        v.Name,
 			Description: v.Description,
 			ImageUrl:    common.StringValue(v.ImageUrl),
@@ -81,7 +80,7 @@ func (p Plugin) Options(options m.PluginOptions) (result *api.GetPluginOptionsRe
 		}
 	}
 
-	result = &api.GetPluginOptionsResult{
+	result = &api.PluginOptionsResult{
 		Triggers:           options.Triggers,
 		Actors:             options.Actors,
 		ActorCustomAttrs:   options.ActorCustomAttrs,
@@ -100,19 +99,38 @@ func (p Plugin) Options(options m.PluginOptions) (result *api.GetPluginOptionsRe
 // ToSearchResult ...
 func (p Plugin) ToSearchResult(list []*m.Plugin) *api.SearchPluginResult {
 
-	items := make([]*api.Plugin, 0, len(list))
+	items := make([]*api.PluginShort, 0, len(list))
 
 	for _, i := range list {
-		items = append(items, &api.Plugin{
-			Name:     i.Name,
-			Version:  i.Version,
-			Enabled:  i.Enabled,
-			System:   i.System,
-			Settings: AttributeToApi(i.Settings),
+		items = append(items, &api.PluginShort{
+			Name:    i.Name,
+			Version: i.Version,
+			Enabled: i.Enabled,
+			System:  i.System,
 		})
 	}
 
 	return &api.SearchPluginResult{
 		Items: items,
 	}
+}
+
+func (p Plugin) ToGetPlugin(plugin m.Plugin, options m.PluginOptions) (result *api.Plugin) {
+
+	var settings = make(map[string]*api.Attribute)
+	if options.Setts != nil && plugin.Settings != nil {
+		setts := options.Setts.Copy()
+		setts.Deserialize(plugin.Settings)
+		settings = AttributeToApi(setts)
+	}
+	result = &api.Plugin{
+		Name:     plugin.Name,
+		Version:  plugin.Version,
+		Enabled:  plugin.Enabled,
+		System:   plugin.System,
+		Actor:    plugin.Actor,
+		Settings: settings,
+		Options:  p.Options(options),
+	}
+	return
 }

@@ -1,18 +1,46 @@
 <template>
   <transition name="fade">
-    <div
-      :style="item.style"
-      v-show="!item.hidden"
-      v-html="value"
-      :key="reloadKey"></div>
+    <div v-if="item.asButton"
+         v-show="!item.hidden"
+         @mouseover="mouseOver"
+         @mouseleave="mouseLive()"
+         class="device-menu"
+         :class="[{'as-button': item.asButton && item.buttonActions.length > 0}]"
+    >
+
+      <div
+        class="cursor-pointer"
+        :style="item.style"
+        v-html="value"
+        :key="reloadKey"
+        @click.prevent.stop="callAction(item.buttonActions[0])"></div>
+
+      <div
+        :class="[{'show': showMenu}]"
+        class="device-menu-circle"
+        v-if="item.asButton && item.buttonActions.length > 1"
+      >
+        <a href="#"
+           v-for="action in item.buttonActions"
+           @click.prevent.stop="callAction(action)">
+          <img :src="item.getUrl(action.image)"/>
+        </a>
+      </div>
+    </div>
+    <div v-else
+         :style="item.style"
+         v-show="!item.hidden"
+         v-html="value"
+         :key="reloadKey"></div>
   </transition>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
-import {CardItem, requestCurrentState} from '@/views/dashboard/core';
-import { Cache, Compare, GetTokens, RenderText, Resolve } from '@/views/dashboard/render'
-import { Attribute, GetAttrValue } from '@/api/stream_types'
+import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
+import {ButtonAction, CardItem, requestCurrentState} from '@/views/dashboard/core';
+import {Cache, Compare, GetTokens, RenderText, Resolve} from '@/views/dashboard/render'
+import {Attribute, GetAttrValue} from '@/api/stream_types'
+import api from "@/api/api";
 
 @Component({
   name: 'IText',
@@ -23,6 +51,7 @@ export default class extends Vue {
   private value = '';
   private _cache!: Cache;
   private reloadKey = 0;
+  private showMenu = false;
 
   reload() {
     this.reloadKey += 1
@@ -98,7 +127,7 @@ export default class extends Vue {
     this.value = value
   }
 
-  @Watch('item', { deep: true })
+  @Watch('item', {deep: true})
   private onUpdateItem(item: CardItem) {
     this.update()
   }
@@ -107,11 +136,50 @@ export default class extends Vue {
   resetCache() {
     this._cache.clear()
   }
+
+  private timer: any;
+
+  private mouseLive() {
+    if (!this.showMenu) {
+      return;
+    }
+    this.timer = setTimeout(() => {
+      this.showMenu = false;
+      this.timer = null;
+    }, 2000);
+  }
+
+  private mouseOver() {
+    this.showMenu = true;
+    if (!this.timer) {
+      return;
+    }
+    clearTimeout(this.timer);
+  }
+
+  private async callAction(action: ButtonAction) {
+    if (!action) {
+      return;
+    }
+    await api.v1.interactServiceEntityCallAction({
+      id: action.entityId,
+      name: action.action || ''
+    });
+    this.$notify({
+      title: 'Success',
+      message: 'Call Successfully',
+      type: 'success',
+      duration: 2000
+    });
+  }
 }
 </script>
 
 <style>
 .ql-align-center {
   text-align: center;
+}
+.cursor-pointer {
+  cursor: pointer;
 }
 </style>

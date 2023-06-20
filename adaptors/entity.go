@@ -172,8 +172,14 @@ func (n *Entity) Import(ver *m.Entity) (err error) {
 	if len(ver.Actions) > 0 {
 		for i, action := range ver.Actions {
 			if action.Script != nil {
-				if action.Script.Id, err = scriptAdaptor.Add(action.Script); err != nil {
-					return
+				var foundedScript *m.Script
+				if foundedScript, err = GetScriptAdaptor(n.db).GetByName(action.Script.Name); err == nil {
+					action.Script = foundedScript
+				} else {
+					action.Script.Id = 0
+					if action.Script.Id, err = scriptAdaptor.Add(action.Script); err != nil {
+						return
+					}
 				}
 			}
 			ver.Actions[i].EntityId = ver.Id
@@ -208,8 +214,14 @@ func (n *Entity) Import(ver *m.Entity) (err error) {
 
 	// scripts
 	for _, script := range ver.Scripts {
-		if script.Id, err = scriptAdaptor.Add(script); err != nil {
-			return
+		var foundedScript *m.Script
+		if foundedScript, err = GetScriptAdaptor(n.db).GetByName(script.Name); err == nil {
+			script = foundedScript
+		} else {
+			script.Id = 0
+			if script.Id, err = scriptAdaptor.Add(script); err != nil {
+				return
+			}
 		}
 		if err = table.AppendScript(ver.Id, scriptAdaptor.toDb(script)); err != nil {
 			return

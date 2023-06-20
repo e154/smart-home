@@ -131,9 +131,9 @@ func (p *Plugin) fromDb(dbVer *db.Plugin) (ver *m.Plugin) {
 
 	// deserialize settings
 	b, _ := dbVer.Settings.MarshalJSON()
-	settings := m.EntitySettings{}
+	settings := make(m.AttributeValue, 0)
 	_ = json.Unmarshal(b, &settings)
-	ver.Settings = settings.Settings
+	ver.Settings = settings
 
 	return
 }
@@ -148,9 +148,7 @@ func (p *Plugin) toDb(ver *m.Plugin) (dbVer *db.Plugin) {
 	}
 
 	// serialize settings
-	b, _ := json.Marshal(m.EntitySettings{
-		Settings: ver.Settings,
-	})
+	b, _ := json.Marshal(ver.Settings)
 	_ = dbVer.Settings.UnmarshalJSON(b)
 
 	return
