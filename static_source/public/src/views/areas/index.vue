@@ -12,6 +12,7 @@
       <el-col>
         <el-table
           :key="tableKey"
+          :default-sort="defaultSort"
           v-loading="listLoading"
           :data="list"
           style="width: 100%;"
@@ -55,7 +56,7 @@
           :total="total"
           :page.sync="listQuery.page"
           :limit.sync="listQuery.limit"
-          @pagination="getList"
+          @pagination="updatePagination"
         />
       </el-col>
     </el-row>
@@ -64,10 +65,10 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import {Component, Vue} from 'vue-property-decorator'
 import Pagination from '@/components/Pagination/index.vue'
 import api from '@/api/api'
-import { ApiArea } from '@/api/stub'
+import {ApiArea} from '@/api/stub'
 import router from '@/router'
 
 @Component({
@@ -86,14 +87,16 @@ export default class extends Vue {
     limit: 20,
     sort: '-name'
   };
+  private defaultSort: Object = {prop: "name", order: "ascending"};
+  private itemName = 'AreasTableSort'
 
   created() {
-    this.getList()
+    this.restoreSort(); // Восстановление состояния сортировки при загрузке компонента
   }
 
   private async getList() {
     this.listLoading = true
-    const { data } = await api.v1.areaServiceGetAreaList({
+    const {data} = await api.v1.areaServiceGetAreaList({
       limit: this.listQuery.limit,
       page: this.listQuery.page,
       sort: this.listQuery.sort
@@ -109,18 +112,57 @@ export default class extends Vue {
     this.getList()
   }
 
-  private sortChange(data: any) {
-    const { prop, order } = data
-    if (prop === 'name') {
-      this.sortByName(order)
+  private updatePagination() {
+    const sortData = localStorage.getItem(this.itemName);
+    if (sortData) {
+      const {column} = JSON.parse(sortData);
+      localStorage.setItem(this.itemName, JSON.stringify({
+        column: column,
+        page: this.listQuery.page,
+        limit: this.listQuery.limit
+      }));
+    }
+    this.getList()
+  }
+
+  private restoreSort() {
+    // Восстановление состояния сортировки при загрузке компонента
+    const sortData = localStorage.getItem(this.itemName);
+    if (sortData) {
+      const {column, page, limit} = JSON.parse(sortData);
+      this.defaultSort = {prop: column.property, order: column.order};
+      this.listQuery.page = page
+      this.listQuery.limit = limit
+      if (column.property === 'name') {
+        this.sort(column.property, column.order)
+      }
+    } else {
+      this.getList()
     }
   }
 
-  private sortByName(order: string) {
+  private sortChange(data: any) {
+    // Обработчик изменения состояния сортировки
+    const {column, prop, order} = data;
+    this.defaultSort = {prop, order};
+    // Сохраняем состояние сортировки в localStorage
+    localStorage.setItem(this.itemName, JSON.stringify({
+      column: column,
+      page: this.listQuery.page,
+      limit: this.listQuery.limit
+    }));
+    this.sort(prop, column.order)
+  }
+
+  private sort(column: string, order: string) {
+    let pref: string = '-'
     if (order === 'ascending') {
-      this.listQuery.sort = '+name'
-    } else {
-      this.listQuery.sort = '-name'
+      pref = '+'
+    }
+    switch (column) {
+      case 'name':
+        this.listQuery.sort = pref + 'name'
+        break
     }
     this.handleFilter()
   }
@@ -131,11 +173,11 @@ export default class extends Vue {
   }
 
   private goto(area: ApiArea) {
-    router.push({ path: `areas/edit/${area.id}` })
+    router.push({path: `areas/edit/${area.id}`})
   }
 
   private add() {
-    router.push({ path: 'areas/new' })
+    router.push({path: 'areas/new'})
   }
 }
 </script>

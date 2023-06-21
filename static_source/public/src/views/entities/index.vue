@@ -21,6 +21,7 @@
       <el-col>
         <el-table
           :key="tableKey"
+          :default-sort="defaultSort"
           v-loading="listLoading"
           :data="list"
           style="width: 100%;"
@@ -47,9 +48,13 @@
             class-name="status-col"
             align="left"
             width="150px"
+            prop="pluginName"
+            sortable="custom"
           >
             <template slot-scope="{row}">
-              <el-tag type="info">
+              <el-tag type="info"
+                      class="cursor-pointer"
+                      @click="gotoPlugin(row.pluginName)">
                 {{ row.pluginName }}
               </el-tag>
             </template>
@@ -59,6 +64,8 @@
             :label="$t('entities.table.area')"
             class-name="status-col"
             width="150px"
+            prop="areaId"
+            sortable="custom"
           >
             <template slot-scope="{row}" v-if="row.area">
               <el-tag type="info"
@@ -73,6 +80,8 @@
             :label="$t('entities.table.description')"
             width="auto"
             align="left"
+            prop="description"
+            sortable="custom"
           >
             <template slot-scope="{row}">
           <span class="cursor-pointer">
@@ -133,7 +142,7 @@
           :total="total"
           :page.sync="listQuery.page"
           :limit.sync="listQuery.limit"
-          @pagination="getList"
+          @pagination="updatePagination"
         />
       </el-col>
     </el-row>
@@ -143,11 +152,11 @@
 <script lang="ts">
 import api from '@/api/api'
 import router from '@/router'
-import { Component, Vue } from 'vue-property-decorator'
+import {Component, Vue} from 'vue-property-decorator'
 import Pagination from '@/components/Pagination/index.vue'
-import { ApiArea, ApiEntity } from '@/api/stub'
+import {ApiArea, ApiEntity} from '@/api/stub'
 import ExportTool from '@/components/export-tool/index.vue'
-import {createCard, importEntity} from '@/views/entities/common';
+import {importEntity} from '@/views/entities/common';
 
 @Component({
   name: 'EntitiesList',
@@ -166,18 +175,20 @@ export default class extends Vue {
     limit: 20,
     sort: '-createdAt'
   };
+  private defaultSort: Object = {prop: "createdAt", order: "ascending"};
+  private itemName = 'EntityTableSort'
 
   private internal = {
     importValue: ''
   };
 
   created() {
-    this.getList()
+    this.restoreSort(); // Восстановление состояния сортировки при загрузке компонента
   }
 
   private async getList() {
     this.listLoading = true
-    const { data } = await api.v1.entityServiceGetEntityList({
+    const {data} = await api.v1.entityServiceGetEntityList({
       limit: this.listQuery.limit,
       page: this.listQuery.page,
       sort: this.listQuery.sort
@@ -189,45 +200,55 @@ export default class extends Vue {
   }
 
   private handleFilter() {
-    this.listQuery.page = 1
     this.getList()
   }
 
+  private updatePagination() {
+    const sortData = localStorage.getItem(this.itemName);
+    if (sortData) {
+      const {column} = JSON.parse(sortData);
+      localStorage.setItem(this.itemName, JSON.stringify({
+        column: column,
+        page: this.listQuery.page,
+        limit: this.listQuery.limit
+      }));
+    }
+    this.getList()
+  }
+
+  private restoreSort() {
+    // Восстановление состояния сортировки при загрузке компонента
+    const sortData = localStorage.getItem(this.itemName);
+    if (sortData) {
+      const {column, page, limit} = JSON.parse(sortData);
+      this.defaultSort = {prop: column.property, order: column.order};
+      this.listQuery.page = page
+      this.listQuery.limit = limit
+      this.sort(column.property, column.order)
+    } else {
+      this.getList()
+    }
+  }
+
   private sortChange(data: any) {
-    const { prop, order } = data
-    if (prop === 'id') {
-      this.sortByID(order)
-    } else if (prop === 'createdAt') {
-      this.sortByCreatedAt(order)
-    } else if (prop === 'updatedAt') {
-      this.sortByUpdatedAt(order)
-    }
+    // Обработчик изменения состояния сортировки
+    const {column, prop, order} = data;
+    this.defaultSort = {prop, order};
+    // Сохраняем состояние сортировки в localStorage
+    localStorage.setItem(this.itemName, JSON.stringify({
+      column: column,
+      page: this.listQuery.page,
+      limit: this.listQuery.limit
+    }));
+    this.sort(prop, order)
   }
 
-  private sortByCreatedAt(order: string) {
+  private sort(column: string, order: string) {
+    let pref: string = '-'
     if (order === 'ascending') {
-      this.listQuery.sort = '+createdAt'
-    } else {
-      this.listQuery.sort = '-createdAt'
+      pref = '+'
     }
-    this.handleFilter()
-  }
-
-  private sortByUpdatedAt(order: string) {
-    if (order === 'ascending') {
-      this.listQuery.sort = '+updatedAt'
-    } else {
-      this.listQuery.sort = '-updatedAt'
-    }
-    this.handleFilter()
-  }
-
-  private sortByID(order: string) {
-    if (order === 'ascending') {
-      this.listQuery.sort = '+id'
-    } else {
-      this.listQuery.sort = '-id'
-    }
+    this.listQuery.sort = pref + column
     this.handleFilter()
   }
 
@@ -237,20 +258,24 @@ export default class extends Vue {
   }
 
   private goto(entity: ApiEntity) {
-    router.push({ path: `/entities/edit/${entity.id}` })
+    router.push({path: `/entities/edit/${entity.id}`})
   }
 
   private add() {
-    router.push({ path: '/entities/new' })
+    router.push({path: '/entities/new'})
   }
 
   private gotoArea(area: ApiArea) {
-    router.push({ path: `/areas/edit/${area.id}` })
+    router.push({path: `/etc/areas/edit/${area.id}`})
+  }
+
+  private gotoPlugin(name: string) {
+    router.push({path: `/etc/plugins/edit/${name}`})
   }
 
   private async reloadEntity(entity: ApiEntity, index: number) {
     if (entity) {
-      await api.v1.developerToolsServiceReloadEntity({ id: entity.id })
+      await api.v1.developerToolsServiceReloadEntity({id: entity.id})
       this.$notify({
         title: 'Success',
         message: 'entity reloaded successfully',
@@ -264,7 +289,7 @@ export default class extends Vue {
 
   private async onImport(value: string, event?: any) {
     const json = JSON.parse(value)
-    const { data } = await importEntity(json)
+    const {data} = await importEntity(json)
     if (data) {
       this.getList()
       this.$notify({
