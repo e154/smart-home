@@ -19,6 +19,18 @@
 
     <el-row>
       <el-col>
+        <pagination
+          v-show="total>listQuery.limit"
+          :total="total"
+          :page.sync="listQuery.page"
+          :limit.sync="listQuery.limit"
+          @pagination="updatePagination"
+        />
+      </el-col>
+    </el-row>
+
+    <el-row>
+      <el-col>
         <el-table
           :key="tableKey"
           :default-sort="defaultSort"
