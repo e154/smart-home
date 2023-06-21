@@ -111,7 +111,14 @@ export default {
       description: 'Description',
       createdAt: 'Created at',
       updatedAt: 'Updated at'
-    }
+    },
+    scriptInfo: 'Info',
+    alexaIntents: 'Alexa Intents',
+    entityActions: 'Entity Actions',
+    entityScripts: 'Entity Scripts',
+    automationTriggers: 'Automation Triggers',
+    automationConditions: 'Automation Conditions',
+    automationActions: 'Automation Actions'
   },
   plugins: {
     table: {

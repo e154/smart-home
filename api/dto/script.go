@@ -118,8 +118,16 @@ func ToGScript(script *m.Script) (result *api.Script) {
 		Name:        script.Name,
 		Source:      script.Source,
 		Description: script.Description,
-		CreatedAt:   timestamppb.New(script.CreatedAt),
-		UpdatedAt:   timestamppb.New(script.UpdatedAt),
+		ScriptInfo: &api.ScriptInfo{
+			AlexaIntents:         int32(script.Info.AlexaIntents),
+			EntityActions:        int32(script.Info.EntityActions),
+			EntityScripts:        int32(script.Info.EntityScripts),
+			AutomationTriggers:   int32(script.Info.AutomationTriggers),
+			AutomationConditions: int32(script.Info.AutomationConditions),
+			AutomationActions:    int32(script.Info.AutomationActions),
+		},
+		CreatedAt: timestamppb.New(script.CreatedAt),
+		UpdatedAt: timestamppb.New(script.UpdatedAt),
 	}
 	return
 }

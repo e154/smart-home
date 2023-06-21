@@ -7069,6 +7069,9 @@
         "description": {
           "type": "string"
         },
+        "scriptInfo": {
+          "$ref": "#/definitions/apiScriptInfo"
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time"
@@ -7076,6 +7079,35 @@
         "updatedAt": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "apiScriptInfo": {
+      "type": "object",
+      "properties": {
+        "alexaIntents": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "entityActions": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "entityScripts": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "automationTriggers": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "automationConditions": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "automationActions": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
