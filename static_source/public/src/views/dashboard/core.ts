@@ -560,16 +560,31 @@ export class Card {
       scalable: false,
       throttleScale: 0.01,
 
-      rotatable: selected,
-      throttleRotate: 1,
+      rotatable: true,
+      throttleRotate: 10,
       pinchable: selected,
 
       origin: false,
 
+      originDraggable: true,
+      groupable: true,
+
       snappable: true,
+      snapCenter: true,
+      snapHorizontal: true,
+      snapVertical: true,
+      snapElement: true,
+      snapGap: true,
+      snapDirections: {"top": true, "left": true, "bottom": true, "right": true},
       snapThreshold: 5,
-      horizontalGuidlines: [0],
-      verticalGuidlines: [0]
+      isDisplaySnapDigit: true,
+      snapDigit: 5,
+      snapGridWidth: 5,
+      snapGridHeight: 5,
+
+      verticalGuidelines: [0, 150, 300],
+      horizontalGuidelines: [0, 150, 300],
+      // useAccuratePosition: false,
       // elementGuidelines: Array.apply(
       //   null,
       //   document.querySelectorAll('.item-element')
