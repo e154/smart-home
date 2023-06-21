@@ -45,11 +45,10 @@
     <el-row>
       <el-col>
         <pagination
-          v-show="total>listQuery.limit"
           :total="total"
           :page.sync="listQuery.page"
           :limit.sync="listQuery.limit"
-          @pagination="getList"
+          @pagination="updatePagination"
         />
       </el-col>
     </el-row>
@@ -57,6 +56,7 @@
       <el-col>
         <el-table
           :key="tableKey"
+          :default-sort="defaultSort"
           v-loading="listLoading"
           :data="list"
           style="width: 100%;"
@@ -79,6 +79,8 @@
             :label="$t('dashboard.table.name')"
             width="140px"
             align="left"
+            prop="name"
+            sortable="custom"
           >
             <template slot-scope="{row}">
           <span class="cursor-pointer"
@@ -92,27 +94,13 @@
             :label="$t('dashboard.table.description')"
             width="auto"
             align="left"
+            prop="description"
+            sortable="custom"
           >
             <template slot-scope="{row}">
               <span>{{ row.description }}</span>
             </template>
           </el-table-column>
-
-          <!--          <el-table-column
-                      :label="$t('dashboard.table.enabled')"
-                      class-name="status-col"
-                      width="150px"
-                    >
-                      <template slot-scope="{row}">
-
-                        <el-switch
-                          v-model="row.enabled"
-                          :disabled="row.system"
-                          v-on:change="activate(row)">
-                        </el-switch>
-                      </template>
-
-                    </el-table-column>-->
 
           <el-table-column
             :label="$t('dashboard.table.operations')"
@@ -165,7 +153,7 @@
           :total="total"
           :page.sync="listQuery.page"
           :limit.sync="listQuery.limit"
-          @pagination="getList"
+          @pagination="updatePagination"
         />
       </el-col>
     </el-row>
@@ -211,9 +199,11 @@ export default class extends Vue {
     devDashboard?: ApiDashboard
     devVar?: ApiVariable,
   } = {};
+  private defaultSort: Object = {prop: "createdAt", order: "ascending"};
+  private itemName = 'DashboardTableSort'
 
   created() {
-    this.getList();
+    this.restoreSort(); // Восстановление состояния сортировки при загрузке компонента
     this.getSettings();
   }
 
@@ -260,46 +250,56 @@ export default class extends Vue {
   }
 
   private handleFilter() {
-    this.listQuery.page = 1;
     this.getList();
   }
 
+  private updatePagination() {
+    const sortData = localStorage.getItem(this.itemName);
+    if (sortData) {
+      const {column} = JSON.parse(sortData);
+      localStorage.setItem(this.itemName, JSON.stringify({
+        column: column,
+        page: this.listQuery.page,
+        limit: this.listQuery.limit
+      }));
+    }
+    this.getList()
+  }
+
+  private restoreSort() {
+    // Восстановление состояния сортировки при загрузке компонента
+    const sortData = localStorage.getItem(this.itemName);
+    if (sortData) {
+      const {column, page, limit} = JSON.parse(sortData);
+      this.defaultSort = {prop: column.property, order: column.order};
+      this.listQuery.page = page
+      this.listQuery.limit = limit
+      this.sort(column.property, column.order)
+    } else {
+      this.getList()
+    }
+  }
+
   private sortChange(data: any) {
-    const {prop, order} = data;
-    if (prop === 'id') {
-      this.sortByID(order);
-    } else if (prop === 'createdAt') {
-      this.sortByCreatedAt(order);
-    } else if (prop === 'updatedAt') {
-      this.sortByUpdatedAt(order);
-    }
+    // Обработчик изменения состояния сортировки
+    const {column, prop, order} = data;
+    this.defaultSort = {prop, order};
+    // Сохраняем состояние сортировки в localStorage
+    localStorage.setItem(this.itemName, JSON.stringify({
+      column: column,
+      page: this.listQuery.page,
+      limit: this.listQuery.limit
+    }));
+    this.sort(prop, order)
   }
 
-  private sortByCreatedAt(order: string) {
+  private sort(column: string, order: string) {
+    let pref: string = '-'
     if (order === 'ascending') {
-      this.listQuery.sort = '+createdAt';
-    } else {
-      this.listQuery.sort = '-createdAt';
+      pref = '+'
     }
-    this.handleFilter();
-  }
-
-  private sortByUpdatedAt(order: string) {
-    if (order === 'ascending') {
-      this.listQuery.sort = '+updatedAt';
-    } else {
-      this.listQuery.sort = '-updatedAt';
-    }
-    this.handleFilter();
-  }
-
-  private sortByID(order: string) {
-    if (order === 'ascending') {
-      this.listQuery.sort = '+id';
-    } else {
-      this.listQuery.sort = '-id';
-    }
-    this.handleFilter();
+    this.listQuery.sort = pref + column
+    this.handleFilter()
   }
 
   private getSortClass(key: string) {
