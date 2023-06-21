@@ -5,6 +5,7 @@
       <el-col>
         <el-table
           :key="tableKey"
+          :default-sort="defaultSort"
           v-loading="listLoading"
           :data="list"
           style="width: 100%;"
@@ -29,6 +30,8 @@
             align="left"
             header-align="left"
             width="100px"
+            prop="model"
+            sortable="custom"
           >
             <template slot-scope="{row}">
 
@@ -41,6 +44,8 @@
             width="70px"
             align="left"
             header-align="left"
+            prop="status"
+            sortable="custom"
           >
             <template slot-scope="{row}">
               {{ row.status }}
@@ -53,6 +58,8 @@
             width="auto"
             align="left"
             header-align="left"
+            prop="description"
+            sortable="custom"
           >
             <template slot-scope="{row}">
               {{row.description}}
@@ -70,7 +77,7 @@
           :total="total"
           :page.sync="listQuery.page"
           :limit.sync="listQuery.limit"
-          @pagination="getList"
+          @pagination="updatePagination"
         />
       </el-col>
     </el-row>
@@ -102,9 +109,11 @@ export default class extends Vue {
     limit: 20,
     sort: '-createdAt'
   };
+  private defaultSort: Object = {prop: "createdAt", order: "ascending"};
+  private itemName = 'Zigbee2mqttDevicesrdTableSort'
 
   created() {
-    this.getList()
+    this.restoreSort(); // Восстановление состояния сортировки при загрузке компонента
   }
 
   private async getList() {
@@ -121,45 +130,55 @@ export default class extends Vue {
   }
 
   private handleFilter() {
-    this.listQuery.page = 1
     this.getList()
   }
 
+  private updatePagination() {
+    const sortData = localStorage.getItem(this.itemName);
+    if (sortData) {
+      const {column} = JSON.parse(sortData);
+      localStorage.setItem(this.itemName, JSON.stringify({
+        column: column,
+        page: this.listQuery.page,
+        limit: this.listQuery.limit
+      }));
+    }
+    this.getList()
+  }
+
+  private restoreSort() {
+    // Восстановление состояния сортировки при загрузке компонента
+    const sortData = localStorage.getItem(this.itemName);
+    if (sortData) {
+      const {column, page, limit} = JSON.parse(sortData);
+      this.defaultSort = {prop: column.property, order: column.order};
+      this.listQuery.page = page
+      this.listQuery.limit = limit
+      this.sort(column.property, column.order)
+    } else {
+      this.getList()
+    }
+  }
+
   private sortChange(data: any) {
-    const { prop, order } = data
-    if (prop === 'id') {
-      this.sortByID(order)
-    } else if (prop === 'createdAt') {
-      this.sortByCreatedAt(order)
-    } else if (prop === 'updatedAt') {
-      this.sortByUpdatedAt(order)
-    }
+    // Обработчик изменения состояния сортировки
+    const {column, prop, order} = data;
+    this.defaultSort = {prop, order};
+    // Сохраняем состояние сортировки в localStorage
+    localStorage.setItem(this.itemName, JSON.stringify({
+      column: column,
+      page: this.listQuery.page,
+      limit: this.listQuery.limit
+    }));
+    this.sort(prop, order)
   }
 
-  private sortByCreatedAt(order: string) {
+  private sort(column: string, order: string) {
+    let pref: string = '-'
     if (order === 'ascending') {
-      this.listQuery.sort = '+createdAt'
-    } else {
-      this.listQuery.sort = '-createdAt'
+      pref = '+'
     }
-    this.handleFilter()
-  }
-
-  private sortByUpdatedAt(order: string) {
-    if (order === 'ascending') {
-      this.listQuery.sort = '+updatedAt'
-    } else {
-      this.listQuery.sort = '-updatedAt'
-    }
-    this.handleFilter()
-  }
-
-  private sortByID(order: string) {
-    if (order === 'ascending') {
-      this.listQuery.sort = '+id'
-    } else {
-      this.listQuery.sort = '-id'
-    }
+    this.listQuery.sort = pref + column
     this.handleFilter()
   }
 
