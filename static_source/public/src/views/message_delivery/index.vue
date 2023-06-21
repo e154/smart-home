@@ -84,6 +84,7 @@
           <el-table-column
             :label="$t('message.table.type')"
             prop="type"
+            sortable="custom"
             align="left"
             width="140px"
             :class-name="getSortClass('type')"
@@ -307,39 +308,12 @@ export default class extends Vue {
 
   private sortChange(data: any) {
     const {prop, order} = data;
-    switch (prop) {
-      case 'id':
-        if (order === 'ascending') {
-          this.listQuery.sort = '+id';
-        } else {
-          this.listQuery.sort = '-id';
-        }
-        break;
-      case 'createdAt':
-        if (order === 'ascending') {
-          this.listQuery.sort = '+createdAt';
-        } else {
-          this.listQuery.sort = '-createdAt';
-        }
-        break;
-      case 'updatedAt':
-        if (order === 'ascending') {
-          this.listQuery.sort = '+updatedAt';
-        } else {
-          this.listQuery.sort = '-updatedAt';
-        }
-        break;
-      case 'status':
-        if (order === 'ascending') {
-          this.listQuery.sort = '+status';
-        } else {
-          this.listQuery.sort = '-status';
-        }
-        break;
-      default:
-        console.warn(`unknown field ${prop}`);
+    let pref: string = '-'
+    if (order === 'ascending') {
+      pref = '+'
     }
-    this.handleFilter();
+    this.listQuery.sort = pref + prop
+    this.handleFilter()
   }
 
   private getSortClass(key: string) {
