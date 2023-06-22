@@ -50,7 +50,11 @@ export interface ApiAccessListResponse {
 export interface ApiAction {
   id?: number;
   name?: string;
+  scriptId?: number;
   script?: ApiScript;
+  entityId?: string;
+  entity?: ApiEntity;
+  entityActionName?: string;
 }
 
 export interface ApiArea {
@@ -791,7 +795,7 @@ export interface ApiTask {
 export interface ApiTrigger {
   id?: number;
   name?: string;
-  entity?: ApiTriggerEntity;
+  entityId?: string;
   script?: ApiScript;
   pluginName?: string;
   attributes?: Record<string, ApiAttribute>;

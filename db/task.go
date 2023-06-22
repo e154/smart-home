@@ -71,11 +71,12 @@ func (n Tasks) GetAllEnabled() (list []*Task, err error) {
 	err = n.Db.Where("enabled = ?", true).
 		Preload("Triggers").
 		Preload("Triggers.Script").
+		Preload("Triggers.Entity").
 		Preload("Conditions").
 		Preload("Conditions.Script").
 		Preload("Actions").
 		Preload("Actions.Script").
-		Preload("Actions.EntityAction").
+		Preload("Actions.Entity").
 		Preload("Area").
 		Find(&list).Error
 	if err != nil {
@@ -93,11 +94,12 @@ func (n Tasks) GetById(taskId int64) (task *Task, err error) {
 		Where("id = ?", taskId).
 		Preload("Triggers").
 		Preload("Triggers.Script").
+		Preload("Triggers.Entity").
 		Preload("Conditions").
 		Preload("Conditions.Script").
 		Preload("Actions").
 		Preload("Actions.Script").
-		Preload("Actions.EntityAction").
+		Preload("Actions.Entity").
 		Preload("Area").
 		First(task).Error
 	if err != nil {
@@ -173,11 +175,12 @@ func (n *Tasks) List(limit, offset int64, orderBy, sort string, onlyEnabled bool
 
 	q = q.Preload("Triggers").
 		Preload("Triggers.Script").
+		Preload("Triggers.Entity").
 		Preload("Conditions").
 		Preload("Conditions.Script").
 		Preload("Actions").
 		Preload("Actions.Script").
-		Preload("Actions.EntityAction").
+		Preload("Actions.Entity").
 		Preload("Area").
 		Limit(limit).
 		Offset(offset)

@@ -117,7 +117,7 @@ func (c Controller{{.Name}}) Get{{.Name}}List(_ context.Context, req *api.Pagina
 		return nil, c.error(ctx, nil, err)
 	}
 
-	return c.dto.{{.EndpointName}}.ToListResult(items, uint64(total), pagination), nil
+	return c.dto.{{.EndpointName}}.GetTaskList(items, uint64(total), pagination), nil
 }
 
 // Delete{{.Name}}ById ...

@@ -21,7 +21,6 @@ package adaptors
 import (
 	"encoding/json"
 	"github.com/e154/smart-home/common"
-
 	"github.com/jinzhu/gorm"
 
 	"github.com/e154/smart-home/db"
@@ -87,8 +86,8 @@ func (n *Trigger) fromDb(dbVer *db.Trigger) (ver *m.Trigger) {
 	}
 	// entity
 	if dbVer.Entity != nil {
-		scriptAdaptor := GetEntityAdaptor(n.db)
-		ver.Entity = scriptAdaptor.fromDb(dbVer.Entity)
+		entityAdaptor := GetEntityAdaptor(n.db)
+		ver.Entity = entityAdaptor.fromDb(dbVer.Entity)
 	}
 
 	// deserialize payload

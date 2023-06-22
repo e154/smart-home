@@ -256,6 +256,9 @@ func (r Entity) ToEntityShort(entity *m.Entity) (obj *api.EntityShort) {
 
 // ToEntity ...
 func ToEntity(entity *m.Entity) (obj *api.Entity) {
+	if entity == nil {
+		return
+	}
 	imageDto := NewImageDto()
 	scriptDto := NewScriptDto()
 	obj = &api.Entity{

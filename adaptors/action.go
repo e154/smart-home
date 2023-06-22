@@ -70,40 +70,38 @@ func (n *Action) AddMultiple(items []*m.Action) (err error) {
 
 func (n *Action) fromDb(dbVer *db.Action) (ver *m.Action) {
 	ver = &m.Action{
-		Id:             dbVer.Id,
-		Name:           dbVer.Name,
-		TaskId:         dbVer.TaskId,
-		ScriptId:       dbVer.ScriptId,
-		EntityActionId: dbVer.EntityActionId,
+		Id:               dbVer.Id,
+		Name:             dbVer.Name,
+		TaskId:           dbVer.TaskId,
+		ScriptId:         dbVer.ScriptId,
+		EntityId:         dbVer.EntityId,
+		EntityActionName: dbVer.EntityActionName,
 	}
 	// script
 	if dbVer.Script != nil {
 		scriptAdaptor := GetScriptAdaptor(n.db)
 		ver.Script, _ = scriptAdaptor.fromDb(dbVer.Script)
 	}
-	// EntityAction
-	if dbVer.EntityAction != nil {
-		entityActionAdaptor := GetEntityActionAdaptor(n.db)
-		ver.EntityAction = entityActionAdaptor.fromDb(dbVer.EntityAction)
+	// entity
+	if dbVer.Entity != nil {
+		entityAdaptor := GetEntityAdaptor(n.db)
+		ver.Entity = entityAdaptor.fromDb(dbVer.Entity)
 	}
 	return
 }
 
 func (n *Action) toDb(ver *m.Action) (dbVer *db.Action) {
 	dbVer = &db.Action{
-		Id:             ver.Id,
-		Name:           ver.Name,
-		TaskId:         ver.TaskId,
-		ScriptId:       ver.ScriptId,
-		EntityActionId: ver.EntityActionId,
+		Id:               ver.Id,
+		Name:             ver.Name,
+		TaskId:           ver.TaskId,
+		ScriptId:         ver.ScriptId,
+		EntityId:         ver.EntityId,
+		EntityActionName: ver.EntityActionName,
 	}
 
 	if ver.Script != nil {
 		dbVer.ScriptId = common.Int64(ver.Script.Id)
-	}
-
-	if ver.EntityAction != nil {
-		dbVer.EntityActionId = common.Int64(ver.EntityAction.Id)
 	}
 
 	return

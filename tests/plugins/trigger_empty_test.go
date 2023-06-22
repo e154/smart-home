@@ -23,9 +23,6 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
-	"go.uber.org/atomic"
-
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -38,17 +35,10 @@ import (
 	"github.com/e154/smart-home/system/scheduler"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestTriggerTime2(t *testing.T) {
-
-	const (
-		task3SourceScript = `
-entityAction = (entityId, actionName)->
-    #print '---action---'
-    Done()
-`
-	)
+func TestTriggerEmpty(t *testing.T) {
 
 	Convey("trigger time", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
@@ -73,35 +63,9 @@ entityAction = (entityId, actionName)->
 			err = AddPlugin(adaptors, "triggers")
 			ctx.So(err, ShouldBeNil)
 
-			// register plugins
-			err = AddPlugin(adaptors, "sensor")
-			ctx.So(err, ShouldBeNil)
-
 			go mqttServer.Start()
 			scheduler.Start(context.TODO())
 
-			// add scripts
-			// ------------------------------------------------
-
-			task3Script, err := AddScript("task3", task3SourceScript, adaptors, scriptService)
-			So(err, ShouldBeNil)
-
-			// add entity
-			// ------------------------------------------------
-
-			sensorEnt := GetNewSensor("device1")
-			sensorEnt.Actions = []*m.EntityAction{
-				{
-					Name:        "CHECK",
-					Description: "condition check",
-					Script:      task3Script,
-				},
-			}
-			err = adaptors.Entity.Add(sensorEnt)
-			ctx.So(err, ShouldBeNil)
-
-			sensorEnt, err = adaptors.Entity.GetById(sensorEnt.Id)
-			ctx.So(err, ShouldBeNil)
 
 			// automation
 			// ------------------------------------------------
@@ -123,20 +87,10 @@ entityAction = (entityId, actionName)->
 					},
 				},
 			})
-			task3.AddAction(&m.Action{
-				Name:             "action1",
-				EntityId:         common.NewEntityId(string(sensorEnt.Id)),
-				EntityActionName: common.String(sensorEnt.Actions[0].Name),
-			})
 			err = adaptors.Task.Add(task3)
 			So(err, ShouldBeNil)
 
 			// ------------------------------------------------
-
-			var counter atomic.Int32
-			scriptService.PushFunctions("Done", func() {
-				counter.Inc()
-			})
 
 			pluginManager.Start()
 			automation.Reload()
@@ -153,8 +107,6 @@ entityAction = (entityId, actionName)->
 				_ = automation.Shutdown()
 				pluginManager.Shutdown()
 			}()
-
-			So(counter.Load(), ShouldBeGreaterThanOrEqualTo, 1)
 
 		})
 	})

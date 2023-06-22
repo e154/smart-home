@@ -75,8 +75,8 @@ func (a *Action) Run(entityId *common.EntityId) (result string, err error) {
 		}
 	}
 
-	if a.model.EntityAction != nil {
-		a.entityManager.CallAction(a.model.EntityAction.EntityId, a.model.EntityAction.Name, nil)
+	if a.model.EntityId != nil && a.model.EntityActionName != nil {
+		a.entityManager.CallAction(*a.model.EntityId, *a.model.EntityActionName, nil)
 	}
 
 	return

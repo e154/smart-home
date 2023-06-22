@@ -18,13 +18,16 @@
 
 package models
 
+import "github.com/e154/smart-home/common"
+
 // Action ...
 type Action struct {
-	Id             int64         `json:"id"`
-	Name           string        `json:"name" validate:"required,lte=255"`
-	TaskId         int64         `json:"task_id"`
-	Script         *Script       `json:"script"`
-	ScriptId       *int64        `json:"script_id"`
-	EntityAction   *EntityAction `json:"entity_action"`
-	EntityActionId *int64        `json:"entity_action_id"`
+	Id               int64            `json:"id"`
+	Name             string           `json:"name" validate:"required,lte=255"`
+	TaskId           int64            `json:"task_id"`
+	Script           *Script          `json:"script"`
+	ScriptId         *int64           `json:"script_id"`
+	Entity           *Entity          `json:"entity"`
+	EntityId         *common.EntityId `json:"entity_id"`
+	EntityActionName *string          `json:"entity_action_name"`
 }

@@ -60,14 +60,9 @@ func (r Automation) AddTask(obj *api.NewTaskRequest) (task *m.Task) {
 		trigger := &m.Trigger{
 			Name:       t.Name,
 			PluginName: t.PluginName,
+			ScriptId:   t.ScriptId,
+			EntityId:   common.NewEntityIdFromPtr(t.EntityId),
 			Payload:    AttributeFromApi(t.Attributes),
-		}
-		if t.Script != nil {
-			trigger.ScriptId = common.Int64(t.Script.Id)
-		}
-		if t.Entity != nil {
-			entityId := common.EntityId(t.Entity.Id)
-			trigger.EntityId = &entityId
 		}
 		task.Triggers = append(task.Triggers, trigger)
 	}
@@ -84,11 +79,10 @@ func (r Automation) AddTask(obj *api.NewTaskRequest) (task *m.Task) {
 	// actions
 	for _, a := range obj.Actions {
 		action := &m.Action{
-			Name:           a.Name,
-			EntityActionId: a.EntityActionId,
-		}
-		if a.Script != nil {
-			action.ScriptId = common.Int64(a.Script.Id)
+			Name:             a.Name,
+			EntityId:         common.NewEntityIdFromPtr(a.EntityId),
+			EntityActionName: a.EntityActionName,
+			ScriptId:         a.ScriptId,
 		}
 		task.Actions = append(task.Actions, action)
 	}
@@ -125,14 +119,9 @@ func (r Automation) ImportTask(obj *api.NewTaskRequest) (task *m.Task) {
 			Name:       t.Name,
 			Script:     script,
 			PluginName: t.PluginName,
+			ScriptId:   t.ScriptId,
+			EntityId:   common.NewEntityIdFromPtr(t.EntityId),
 			Payload:    AttributeFromApi(t.Attributes),
-		}
-		if t.Script != nil {
-			trigger.ScriptId = common.Int64(t.Script.Id)
-		}
-		if t.Entity != nil {
-			entityId := common.EntityId(t.Entity.Id)
-			trigger.EntityId = &entityId
 		}
 		task.Triggers = append(task.Triggers, trigger)
 	}
@@ -151,13 +140,10 @@ func (r Automation) ImportTask(obj *api.NewTaskRequest) (task *m.Task) {
 	// actions
 	for _, a := range obj.Actions {
 		action := &m.Action{
-			Name:           a.Name,
-			EntityActionId: a.EntityActionId,
-		}
-		if a.Script != nil {
-			_, script := ImportScript(a.Script)
-			action.ScriptId = common.Int64(a.Script.Id)
-			action.Script = script
+			Name:             a.Name,
+			EntityId:         common.NewEntityIdFromPtr(a.EntityId),
+			EntityActionName: a.EntityActionName,
+			ScriptId:         a.ScriptId,
 		}
 		task.Actions = append(task.Actions, action)
 	}
@@ -189,11 +175,9 @@ func (r Automation) UpdateTask(obj *api.UpdateTaskRequest) (task *m.Task) {
 		trigger := &m.Trigger{
 			Name:       t.Name,
 			PluginName: t.PluginName,
+			EntityId:   common.NewEntityIdFromPtr(t.EntityId),
 			Payload:    AttributeFromApi(t.Attributes),
-		}
-		if t.Entity != nil {
-			entityId := common.EntityId(t.Entity.Id)
-			trigger.EntityId = &entityId
+			ScriptId:   t.ScriptId,
 		}
 		if t.Script != nil {
 			trigger.ScriptId = common.Int64(t.Script.Id)
@@ -213,24 +197,23 @@ func (r Automation) UpdateTask(obj *api.UpdateTaskRequest) (task *m.Task) {
 	// actions
 	for _, a := range obj.Actions {
 		action := &m.Action{
-			Name:           a.Name,
-			EntityActionId: a.EntityActionId,
-		}
-		if a.Script != nil {
-			action.ScriptId = common.Int64(a.Script.Id)
+			Name:             a.Name,
+			EntityId:         common.NewEntityIdFromPtr(a.EntityId),
+			EntityActionName: a.EntityActionName,
+			ScriptId:         a.ScriptId,
 		}
 		task.Actions = append(task.Actions, action)
 	}
 	return
 }
 
-// ToListResult ...
-func (r Automation) ToListResult(list []*m.Task, total uint64, pagination common.PageParams) *api.GetTaskListResult {
+// GetTaskList ...
+func (r Automation) GetTaskList(list []*m.Task, total uint64, pagination common.PageParams) *api.GetTaskListResult {
 
 	items := make([]*api.Task, 0, len(list))
 
 	for _, i := range list {
-		items = append(items, r.ToTask(i))
+		items = append(items, r.GetTask(i))
 	}
 
 	return &api.GetTaskListResult{
@@ -244,8 +227,8 @@ func (r Automation) ToListResult(list []*m.Task, total uint64, pagination common
 	}
 }
 
-// ToTask ...
-func (r Automation) ToTask(task *m.Task) (obj *api.Task) {
+// GetTask ...
+func (r Automation) GetTask(task *m.Task) (obj *api.Task) {
 
 	obj = &api.Task{
 		Id:          task.Id,
@@ -263,10 +246,10 @@ func (r Automation) ToTask(task *m.Task) (obj *api.Task) {
 		obj.Triggers = append(obj.Triggers, &api.Trigger{
 			Name:       tr.Name,
 			Script:     ToGScript(tr.Script),
+			ScriptId:   tr.ScriptId,
 			PluginName: tr.PluginName,
-			Entity: &api.Trigger_Entity{
-				Id: tr.EntityId.String(),
-			},
+			Entity:     ToEntity(tr.Entity),
+			EntityId:   tr.EntityId.StringPtr(),
 			Attributes: AttributeToApi(tr.Payload),
 		})
 	}
@@ -282,8 +265,13 @@ func (r Automation) ToTask(task *m.Task) (obj *api.Task) {
 	// actions
 	for _, con := range task.Actions {
 		obj.Actions = append(obj.Actions, &api.Action{
-			Name:   con.Name,
-			Script: ToGScript(con.Script),
+			Id:               nil,
+			Name:             con.Name,
+			Script:           ToGScript(con.Script),
+			ScriptId:         con.ScriptId,
+			EntityId:         con.EntityId.StringPtr(),
+			Entity:           ToEntity(con.Entity),
+			EntityActionName: con.EntityActionName,
 		})
 	}
 

@@ -209,6 +209,7 @@ export default {
     table: {
       id: 'Id',
       name: 'Name',
+      action: 'Action',
       description: 'Description',
       enabled: 'Enabled',
       condition: 'Condition',

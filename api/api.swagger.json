@@ -5170,12 +5170,21 @@
         "name": {
           "type": "string"
         },
+        "scriptId": {
+          "type": "string",
+          "format": "int64"
+        },
         "script": {
           "$ref": "#/definitions/apiScript"
         },
-        "entityActionId": {
-          "type": "string",
-          "format": "int64"
+        "entity": {
+          "$ref": "#/definitions/apiEntity"
+        },
+        "entityId": {
+          "type": "string"
+        },
+        "entityActionName": {
+          "type": "string"
         }
       }
     },
@@ -7264,10 +7273,17 @@
           "type": "string"
         },
         "entity": {
-          "$ref": "#/definitions/apiTriggerEntity"
+          "$ref": "#/definitions/apiEntity"
+        },
+        "entityId": {
+          "type": "string"
         },
         "script": {
           "$ref": "#/definitions/apiScript"
+        },
+        "scriptId": {
+          "type": "string",
+          "format": "int64"
         },
         "pluginName": {
           "type": "string"
@@ -7277,14 +7293,6 @@
           "additionalProperties": {
             "$ref": "#/definitions/apiAttribute"
           }
-        }
-      }
-    },
-    "apiTriggerEntity": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
         }
       }
     },

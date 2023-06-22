@@ -23,7 +23,7 @@
                   <el-input v-model.trim="currentTask.name"/>
                 </el-form-item>
                 <el-form-item :label="$t('automation.table.description')" prop="description">
-                  <el-input v-model.trim="currentTask.description"/>
+                  <el-input v-model="currentTask.description"/>
                 </el-form-item>
                 <el-form-item :label="$t('automation.table.enabled')" prop="autoLoad">
                   <el-switch v-model="currentTask.enabled"></el-switch>
@@ -159,7 +159,8 @@ export default class extends Vue {
   private currentTask: ApiTask = {
     name: '',
     enabled: true,
-    condition: 'and'
+    condition: 'and',
+    description: undefined
   };
 
   private rules = {
@@ -277,7 +278,15 @@ export default class extends Vue {
   private showExport = false;
   private async _export() {
     let task: any
-    task = this.currentTask
+    task = Object.assign({}, this.currentTask)
+    for (const i in task.actions) {
+      task.actions[i].entity = null
+      task.actions[i].script = null
+    }
+    for (const i in task.triggers) {
+      task.triggers[i].entity = null
+      task.triggers[i].script = null
+    }
     this.internal.exportValue = task
     this.showExport = true
   }

@@ -127,6 +127,15 @@ func NewEntityId(s string) *EntityId {
 	return &e
 }
 
+// NewEntityIdFromPtr ...
+func NewEntityIdFromPtr(s *string) *EntityId {
+	if s == nil {
+		return nil
+	}
+	e := EntityId(*s)
+	return &e
+}
+
 // Name ...
 func (e EntityId) Name() string {
 	arr := strings.Split(string(e), ".")
@@ -152,6 +161,15 @@ func (e *EntityId) String() string {
 	} else {
 		return string(*e)
 	}
+}
+
+// StringPtr ...
+func (e *EntityId) StringPtr() *string {
+	if e == nil {
+		return nil
+	}
+	r := e.String()
+	return &r
 }
 
 // AttributeType ...
