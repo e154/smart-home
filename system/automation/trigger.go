@@ -92,14 +92,17 @@ func NewTrigger(scriptService scripts.ScriptService,
 		},
 	}
 
-	if tr.scriptEngine, err = scriptService.NewEngine(model.Script); err != nil {
-		return
-	}
+	if model.Script != nil {
 
-	tr.scriptEngine.PushStruct("Trigger", NewTriggerBind(tr))
+		if tr.scriptEngine, err = scriptService.NewEngine(model.Script); err != nil {
+			return
+		}
 
-	if _, err = tr.scriptEngine.Do(); err != nil {
-		return
+		tr.scriptEngine.PushStruct("Trigger", NewTriggerBind(tr))
+
+		if _, err = tr.scriptEngine.Do(); err != nil {
+			return
+		}
 	}
 
 	return
@@ -110,12 +113,19 @@ func (tr *Trigger) Check(msg interface{}) (state bool, err error) {
 	tr.Lock()
 	defer tr.Unlock()
 
-	var result string
-	if result, err = tr.scriptEngine.AssertFunction(tr.triggerPlugin.FunctionName(), msg); err != nil {
-		log.Error(err.Error())
+	if tr.scriptEngine != nil {
+		var result string
+		if result, err = tr.scriptEngine.AssertFunction(tr.triggerPlugin.FunctionName(), msg); err != nil {
+			log.Error(err.Error())
+		}
+
+		state = result == "true"
+		tr.lastStatus.Store(state)
+		return
 	}
 
-	state = result == "true"
+	state = true
+
 	tr.lastStatus.Store(state)
 
 	return
@@ -128,6 +138,9 @@ func (tr *Trigger) Id() int64 {
 
 // EntityId ...
 func (tr *Trigger) EntityId() *common.EntityId {
+	if tr.model == nil {
+		return nil
+	}
 	return tr.model.EntityId
 }
 

@@ -5172,6 +5172,10 @@
         },
         "script": {
           "$ref": "#/definitions/apiScript"
+        },
+        "entityActionId": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },

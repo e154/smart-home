@@ -49,15 +49,17 @@ func NewAction(scriptService scripts.ScriptService,
 		model:         model,
 	}
 
-	if action.scriptEngine, err = scriptService.NewEngine(model.Script); err != nil {
-		return
-	}
+	if model.Script != nil {
+		if action.scriptEngine, err = scriptService.NewEngine(model.Script); err != nil {
+			return
+		}
 
-	if _, err = action.scriptEngine.Do(); err != nil {
-		return
-	}
+		if _, err = action.scriptEngine.Do(); err != nil {
+			return
+		}
 
-	action.scriptEngine.PushStruct("Action", NewActionBind(action))
+		action.scriptEngine.PushStruct("Action", NewActionBind(action))
+	}
 
 	return
 }
@@ -67,8 +69,14 @@ func (a *Action) Run(entityId *common.EntityId) (result string, err error) {
 	a.Lock()
 	defer a.Unlock()
 
-	if result, err = a.scriptEngine.AssertFunction(ActionFunc, entityId); err != nil {
-		log.Error(err.Error())
+	if a.scriptEngine != nil {
+		if result, err = a.scriptEngine.AssertFunction(ActionFunc, entityId); err != nil {
+			log.Error(err.Error())
+		}
+	}
+
+	if a.model.EntityAction != nil {
+		a.entityManager.CallAction(a.model.EntityAction.EntityId, a.model.EntityAction.Name, nil)
 	}
 
 	return

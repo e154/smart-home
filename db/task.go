@@ -75,6 +75,7 @@ func (n Tasks) GetAllEnabled() (list []*Task, err error) {
 		Preload("Conditions.Script").
 		Preload("Actions").
 		Preload("Actions.Script").
+		Preload("Actions.EntityAction").
 		Preload("Area").
 		Find(&list).Error
 	if err != nil {
@@ -96,6 +97,7 @@ func (n Tasks) GetById(taskId int64) (task *Task, err error) {
 		Preload("Conditions.Script").
 		Preload("Actions").
 		Preload("Actions.Script").
+		Preload("Actions.EntityAction").
 		Preload("Area").
 		First(task).Error
 	if err != nil {
@@ -175,6 +177,7 @@ func (n *Tasks) List(limit, offset int64, orderBy, sort string, onlyEnabled bool
 		Preload("Conditions.Script").
 		Preload("Actions").
 		Preload("Actions.Script").
+		Preload("Actions.EntityAction").
 		Preload("Area").
 		Limit(limit).
 		Offset(offset)

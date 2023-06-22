@@ -33,7 +33,7 @@ type Trigger struct {
 	Entity     *Entity          `json:"entity"`
 	EntityId   *common.EntityId `json:"entity_id"`
 	Script     *Script          `json:"script"`
-	ScriptId   int64            `json:"script_id" validate:"required"`
+	ScriptId   *int64           `json:"script_id"`
 	PluginName string           `json:"plugin_name" validate:"required,lte=255"`
 	Payload    Attributes       `json:"payload"`
 }

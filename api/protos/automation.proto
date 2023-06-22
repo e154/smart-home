@@ -19,8 +19,8 @@ message Trigger {
   message Entity {
     string id = 1;
   }
-  Entity entity = 4;
-  Script script = 5;
+  optional Entity entity = 4;
+  optional Script script = 5;
   string plugin_name = 6;
   map<string, Attribute> attributes = 7;
 }
@@ -34,7 +34,8 @@ message Condition {
 message Action {
   optional int64 id = 1;
   string name = 2;
-  Script script = 4;
+  optional Script script = 4;
+  optional int64 entity_action_id = 5;
 }
 
 message Task {

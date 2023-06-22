@@ -20,6 +20,7 @@ package adaptors
 
 import (
 	"encoding/json"
+	"github.com/e154/smart-home/common"
 
 	"github.com/jinzhu/gorm"
 
@@ -109,7 +110,7 @@ func (n *Trigger) toDb(ver *m.Trigger) (dbVer *db.Trigger) {
 	}
 
 	if ver.Script != nil {
-		dbVer.ScriptId = ver.Script.Id
+		dbVer.ScriptId = common.Int64(ver.Script.Id)
 	}
 
 	// serialize payload

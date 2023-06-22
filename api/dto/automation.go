@@ -59,9 +59,11 @@ func (r Automation) AddTask(obj *api.NewTaskRequest) (task *m.Task) {
 	for _, t := range obj.Triggers {
 		trigger := &m.Trigger{
 			Name:       t.Name,
-			ScriptId:   t.Script.Id,
 			PluginName: t.PluginName,
 			Payload:    AttributeFromApi(t.Attributes),
+		}
+		if t.Script != nil {
+			trigger.ScriptId = common.Int64(t.Script.Id)
 		}
 		if t.Entity != nil {
 			entityId := common.EntityId(t.Entity.Id)
@@ -82,10 +84,11 @@ func (r Automation) AddTask(obj *api.NewTaskRequest) (task *m.Task) {
 	// actions
 	for _, a := range obj.Actions {
 		action := &m.Action{
-			Name: a.Name,
+			Name:           a.Name,
+			EntityActionId: a.EntityActionId,
 		}
 		if a.Script != nil {
-			action.ScriptId = a.Script.Id
+			action.ScriptId = common.Int64(a.Script.Id)
 		}
 		task.Actions = append(task.Actions, action)
 	}
@@ -120,10 +123,12 @@ func (r Automation) ImportTask(obj *api.NewTaskRequest) (task *m.Task) {
 		_, script := ImportScript(t.Script)
 		trigger := &m.Trigger{
 			Name:       t.Name,
-			ScriptId:   t.Script.Id,
 			Script:     script,
 			PluginName: t.PluginName,
 			Payload:    AttributeFromApi(t.Attributes),
+		}
+		if t.Script != nil {
+			trigger.ScriptId = common.Int64(t.Script.Id)
 		}
 		if t.Entity != nil {
 			entityId := common.EntityId(t.Entity.Id)
@@ -146,11 +151,12 @@ func (r Automation) ImportTask(obj *api.NewTaskRequest) (task *m.Task) {
 	// actions
 	for _, a := range obj.Actions {
 		action := &m.Action{
-			Name: a.Name,
+			Name:           a.Name,
+			EntityActionId: a.EntityActionId,
 		}
 		if a.Script != nil {
 			_, script := ImportScript(a.Script)
-			action.ScriptId = a.Script.Id
+			action.ScriptId = common.Int64(a.Script.Id)
 			action.Script = script
 		}
 		task.Actions = append(task.Actions, action)
@@ -190,7 +196,7 @@ func (r Automation) UpdateTask(obj *api.UpdateTaskRequest) (task *m.Task) {
 			trigger.EntityId = &entityId
 		}
 		if t.Script != nil {
-			trigger.ScriptId = t.Script.Id
+			trigger.ScriptId = common.Int64(t.Script.Id)
 		}
 		task.Triggers = append(task.Triggers, trigger)
 	}
@@ -207,10 +213,11 @@ func (r Automation) UpdateTask(obj *api.UpdateTaskRequest) (task *m.Task) {
 	// actions
 	for _, a := range obj.Actions {
 		action := &m.Action{
-			Name: a.Name,
+			Name:           a.Name,
+			EntityActionId: a.EntityActionId,
 		}
 		if a.Script != nil {
-			action.ScriptId = a.Script.Id
+			action.ScriptId = common.Int64(a.Script.Id)
 		}
 		task.Actions = append(task.Actions, action)
 	}

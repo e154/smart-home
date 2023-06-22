@@ -31,12 +31,14 @@ type Actions struct {
 
 // Action ...
 type Action struct {
-	Id       int64 `gorm:"primary_key"`
-	Name     string
-	Task     *Task
-	TaskId   int64
-	Script   *Script
-	ScriptId int64
+	Id             int64 `gorm:"primary_key"`
+	Name           string
+	Task           *Task
+	TaskId         int64
+	Script         *Script
+	ScriptId       *int64
+	EntityAction   *EntityAction
+	EntityActionId *int64
 }
 
 // TableName ...

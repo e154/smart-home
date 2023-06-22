@@ -39,7 +39,7 @@ type Trigger struct {
 	Entity     *Entity
 	EntityId   *common.EntityId
 	Script     *Script
-	ScriptId   int64
+	ScriptId   *int64
 	PluginName string
 	Payload    string
 }
