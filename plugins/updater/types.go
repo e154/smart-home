@@ -52,6 +52,8 @@ const (
 	Name = "updater"
 	// EntityUpdater ...
 	EntityUpdater = string(Name)
+
+	Version = "0.0.1"
 )
 
 // NewAttr ...

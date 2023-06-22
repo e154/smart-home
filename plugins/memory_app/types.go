@@ -50,6 +50,8 @@ const (
 
 	// EntityType ...
 	EntityType = "memory_app"
+
+	Version = "0.0.1"
 )
 
 // NewAttr ...

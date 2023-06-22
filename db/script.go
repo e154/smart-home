@@ -20,6 +20,9 @@ package db
 
 import (
 	"fmt"
+	"github.com/jackc/pgerrcode"
+	"github.com/lib/pq"
+	"strings"
 	"time"
 
 	"github.com/e154/smart-home/common/apperr"
@@ -60,6 +63,18 @@ func (d *Script) TableName() string {
 // Add ...
 func (n Scripts) Add(script *Script) (id int64, err error) {
 	if err = n.Db.Create(&script).Error; err != nil {
+		var pgErr *pq.Error
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case pgerrcode.UniqueViolation:
+				if strings.Contains(pgErr.Message, "name_at_scripts_unq") {
+					err = errors.Wrap(apperr.ErrScriptAdd, fmt.Sprintf("script name \"%s\" not unique", script.Name))
+					return
+				}
+			default:
+				fmt.Printf("unknown code \"%s\"\n", pgErr.Code)
+			}
+		}
 		err = errors.Wrap(apperr.ErrScriptAdd, err.Error())
 		return
 	}

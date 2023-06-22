@@ -33,6 +33,8 @@ const (
 	AttrPublicKey      = "public_key"
 	AttrPrivateKey     = "private_key"
 	TopicPluginWebpush = "plugin.webpush"
+
+	Version = "0.0.1"
 )
 
 // NewMessageParams ...

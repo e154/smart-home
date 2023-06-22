@@ -130,6 +130,8 @@ export default class extends Vue {
         {text: 'ExecuteAsync(file, args)', displayText: 'ExecuteAsync'},
         {text: 'for v, i in items', displayText: 'for'},
         {text: 'parseFloat', displayText: 'parseFloat'},
+        {text: 'indexOf', displayText: 'indexOf'},
+        {text: 'substring', displayText: 'substring'},
 
         // notifr
         {text: 'notifr.newMessage()', displayText: 'notifr.newMessage'},

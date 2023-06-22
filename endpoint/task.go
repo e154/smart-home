@@ -21,11 +21,14 @@ package endpoint
 import (
 	"context"
 
-	"github.com/e154/smart-home/common/events"
+	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
+	"github.com/e154/smart-home/system/scripts"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -50,6 +53,72 @@ func (n *TaskEndpoint) Add(ctx context.Context, task *m.Task) (result *m.Task, e
 	}
 
 	if err = n.adaptors.Task.Add(task); err != nil {
+		return
+	}
+
+	if result, err = n.adaptors.Task.GetById(task.Id); err != nil {
+		return
+	}
+
+	n.eventBus.Publish(bus.TopicAutomation, events.EventAddedTask{
+		Id: task.Id,
+	})
+
+	return
+}
+
+// Import ...
+func (n *TaskEndpoint) Import(ctx context.Context, task *m.Task) (result *m.Task, errs validator.ValidationErrorsTranslations, err error) {
+
+	var ok bool
+	if ok, errs = n.validation.Valid(task); !ok {
+		return
+	}
+
+	for _, condition := range task.Conditions {
+		if condition.Script != nil {
+			var engine *scripts.Engine
+			if engine, err = n.scriptService.NewEngine(condition.Script); err != nil {
+				err = errors.Wrap(apperr.ErrInternal, err.Error())
+				return
+			}
+
+			if err = engine.Compile(); err != nil {
+				err = errors.Wrap(apperr.ErrInternal, err.Error())
+				return
+			}
+		}
+	}
+	for _, trigger := range task.Triggers {
+		if trigger.Script != nil {
+			var engine *scripts.Engine
+			if engine, err = n.scriptService.NewEngine(trigger.Script); err != nil {
+				err = errors.Wrap(apperr.ErrInternal, err.Error())
+				return
+			}
+
+			if err = engine.Compile(); err != nil {
+				err = errors.Wrap(apperr.ErrInternal, err.Error())
+				return
+			}
+		}
+	}
+	for _, action := range task.Actions {
+		if action.Script != nil {
+			var engine *scripts.Engine
+			if engine, err = n.scriptService.NewEngine(action.Script); err != nil {
+				err = errors.Wrap(apperr.ErrInternal, err.Error())
+				return
+			}
+
+			if err = engine.Compile(); err != nil {
+				err = errors.Wrap(apperr.ErrInternal, err.Error())
+				return
+			}
+		}
+	}
+
+	if err = n.adaptors.Task.Import(task); err != nil {
 		return
 	}
 

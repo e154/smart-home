@@ -19,12 +19,13 @@
 package hdd
 
 import (
-	"sync"
-	"time"
-
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/bus"
+	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/plugins"
+	"sync"
 )
 
 var _ plugins.Plugable = (*plugin)(nil)
@@ -35,8 +36,6 @@ func init() {
 
 type plugin struct {
 	*plugins.Plugin
-	quit       chan struct{}
-	pause      uint
 	actorsLock *sync.Mutex
 	actors     map[common.EntityId]*Actor
 }
@@ -45,7 +44,6 @@ type plugin struct {
 func New() plugins.Plugable {
 	p := &plugin{
 		Plugin:     plugins.NewPlugin(),
-		pause:      10,
 		actorsLock: &sync.Mutex{},
 		actors:     make(map[common.EntityId]*Actor),
 	}
@@ -57,27 +55,7 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 	if err = p.Plugin.Load(service); err != nil {
 		return
 	}
-
-	go func() {
-		ticker := time.NewTicker(time.Second * time.Duration(p.pause))
-		p.quit = make(chan struct{})
-		defer func() {
-			ticker.Stop()
-			close(p.quit)
-		}()
-
-		for {
-			select {
-			case <-p.quit:
-				return
-			case <-ticker.C:
-				for _, actor := range p.actors {
-					actor.selfUpdate()
-				}
-			}
-		}
-	}()
-
+	_ = p.EventBus.Subscribe(bus.TopicEntities, p.eventHandler)
 	return nil
 }
 
@@ -86,7 +64,7 @@ func (p *plugin) Unload() (err error) {
 	if err = p.Plugin.Unload(); err != nil {
 		return
 	}
-	p.quit <- struct{}{}
+	_ = p.EventBus.Unsubscribe(bus.TopicEntities, p.eventHandler)
 	return nil
 }
 
@@ -122,6 +100,19 @@ func (p plugin) Name() string {
 	return Name
 }
 
+func (p *plugin) eventHandler(topic string, msg interface{}) {
+
+	switch v := msg.(type) {
+	case events.EventStateChanged:
+	case events.EventCallAction:
+		actor, ok := p.actors[v.EntityId]
+		if !ok {
+			return
+		}
+		actor.runAction(v)
+	}
+}
+
 // Type ...
 func (p *plugin) Type() plugins.PluginType {
 	return plugins.PluginInstallable
@@ -140,7 +131,8 @@ func (p *plugin) Version() string {
 // Options ...
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
-		ActorAttrs: NewAttr(),
-		ActorSetts: NewSettings(),
+		ActorAttrs:   NewAttr(),
+		ActorSetts:   NewSettings(),
+		ActorActions: entity_manager.ToEntityActionShort(NewActions()),
 	}
 }

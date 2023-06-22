@@ -23,4 +23,6 @@ const (
 	Name = "script"
 	// EntityScript ...
 	EntityScript = string("script")
+
+	Version = "0.0.1"
 )

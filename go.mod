@@ -69,6 +69,7 @@ require (
 require (
 	github.com/go-playground/locales v0.14.1
 	github.com/go-playground/universal-translator v0.18.1
+	github.com/golang/protobuf v1.5.3
 	github.com/google/uuid v1.3.0
 	github.com/iancoleman/strcase v0.2.0
 	github.com/jackc/pgerrcode v0.0.0-20220416144525-469b46aa5efa
@@ -91,7 +92,6 @@ require (
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/golang/glog v0.0.0-20210429001901-424d2337a529 // indirect
-	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/gomodule/redigo v1.8.2 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.0.1-0.20190118093823-f849b5445de4 // indirect

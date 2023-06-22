@@ -92,6 +92,72 @@ func (r Automation) AddTask(obj *api.NewTaskRequest) (task *m.Task) {
 	return
 }
 
+// ImportTask ...
+func (r Automation) ImportTask(obj *api.NewTaskRequest) (task *m.Task) {
+	if obj == nil {
+		return
+	}
+	task = &m.Task{
+		Name:        obj.Name,
+		Description: obj.Description,
+		Enabled:     obj.Enabled,
+		Condition:   common.ConditionType(obj.Condition),
+		Triggers:    make([]*m.Trigger, 0, len(obj.Triggers)),
+		Conditions:  make([]*m.Condition, 0, len(obj.Conditions)),
+		Actions:     make([]*m.Action, 0, len(obj.Actions)),
+	}
+	// area
+	if obj.Area != nil {
+		task.Area = &m.Area{
+			Id:          obj.Area.Id,
+			Name:        obj.Area.Name,
+			Description: obj.Area.Description,
+		}
+	}
+	// triggers
+
+	for _, t := range obj.Triggers {
+		_, script := ImportScript(t.Script)
+		trigger := &m.Trigger{
+			Name:       t.Name,
+			ScriptId:   t.Script.Id,
+			Script:     script,
+			PluginName: t.PluginName,
+			Payload:    AttributeFromApi(t.Attributes),
+		}
+		if t.Entity != nil {
+			entityId := common.EntityId(t.Entity.Id)
+			trigger.EntityId = &entityId
+		}
+		task.Triggers = append(task.Triggers, trigger)
+	}
+	// conditions
+	for _, c := range obj.Conditions {
+		condition := &m.Condition{
+			Name: c.Name,
+		}
+		if c.Script != nil {
+			_, script := ImportScript(c.Script)
+			condition.ScriptId = c.Script.Id
+			condition.Script = script
+		}
+		task.Conditions = append(task.Conditions, condition)
+	}
+	// actions
+	for _, a := range obj.Actions {
+		action := &m.Action{
+			Name: a.Name,
+		}
+		if a.Script != nil {
+			_, script := ImportScript(a.Script)
+			action.ScriptId = a.Script.Id
+			action.Script = script
+		}
+		task.Actions = append(task.Actions, action)
+	}
+	return
+}
+
 // UpdateTask ...
 func (r Automation) UpdateTask(obj *api.UpdateTaskRequest) (task *m.Task) {
 	task = &m.Task{

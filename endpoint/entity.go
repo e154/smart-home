@@ -21,13 +21,14 @@ package endpoint
 import (
 	"context"
 
-	"github.com/e154/smart-home/common/events"
-
-	"github.com/e154/smart-home/common/apperr"
+	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
+	"github.com/e154/smart-home/system/scripts"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -69,7 +70,35 @@ func (n *EntityEndpoint) Add(ctx context.Context, entity *m.Entity) (result *m.E
 
 // Import ...
 func (n *EntityEndpoint) Import(ctx context.Context, entity *m.Entity) (err error) {
-	// import scripts
+
+	for _, action := range entity.Actions {
+		if action.Script != nil {
+			var engine *scripts.Engine
+			if engine, err = n.scriptService.NewEngine(action.Script); err != nil {
+				err = errors.Wrap(apperr.ErrInternal, err.Error())
+				return
+			}
+
+			if err = engine.Compile(); err != nil {
+				err = errors.Wrap(apperr.ErrInternal, err.Error())
+				return
+			}
+		}
+	}
+	for _, script := range entity.Scripts {
+		if script != nil {
+			var engine *scripts.Engine
+			if engine, err = n.scriptService.NewEngine(script); err != nil {
+				err = errors.Wrap(apperr.ErrInternal, err.Error())
+				return
+			}
+
+			if err = engine.Compile(); err != nil {
+				err = errors.Wrap(apperr.ErrInternal, err.Error())
+				return
+			}
+		}
+	}
 
 	err = n.adaptors.Entity.Import(entity)
 	return

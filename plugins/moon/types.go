@@ -29,6 +29,8 @@ const (
 	Name = "moon"
 	// EntityMoon ...
 	EntityMoon = string("moon")
+
+	Version = "0.0.1"
 )
 
 const (

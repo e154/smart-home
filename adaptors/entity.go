@@ -174,7 +174,7 @@ func (n *Entity) Import(ver *m.Entity) (err error) {
 		for i, action := range ver.Actions {
 			if action.Script != nil {
 				var foundedScript *m.Script
-				if foundedScript, err = GetScriptAdaptor(n.db).GetByName(action.Script.Name); err == nil {
+				if foundedScript, err = scriptAdaptor.GetByName(action.Script.Name); err == nil {
 					action.Script = foundedScript
 				} else {
 					action.Script.Id = 0
@@ -216,7 +216,7 @@ func (n *Entity) Import(ver *m.Entity) (err error) {
 	// scripts
 	for _, script := range ver.Scripts {
 		var foundedScript *m.Script
-		if foundedScript, err = GetScriptAdaptor(n.db).GetByName(script.Name); err == nil {
+		if foundedScript, err = scriptAdaptor.GetByName(script.Name); err == nil {
 			script = foundedScript
 		} else {
 			script.Id = 0

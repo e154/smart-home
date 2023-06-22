@@ -23,4 +23,6 @@ const (
 	Name = "sensor"
 	// FuncEntityAction ...
 	FuncEntityAction = "entityAction"
+
+	Version = "0.0.1"
 )

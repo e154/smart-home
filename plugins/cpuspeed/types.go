@@ -45,6 +45,8 @@ const (
 
 	// EntityType ...
 	EntityType = "cpuspeed"
+
+	Version = "0.0.1"
 )
 
 // NewAttr ...

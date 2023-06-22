@@ -54,6 +54,9 @@ func Metrics(metrics []*m.Metric) (objects []*api.Metric) {
 func AddMetric(objects []*api.Metric) (metrics []*m.Metric) {
 	metrics = make([]*m.Metric, 0, len(objects))
 	for _, obj := range objects {
+		if obj.Options == nil {
+			continue
+		}
 		var options m.MetricOptions
 		for _, item := range obj.Options.Items {
 			options.Items = append(options.Items, m.MetricOptionsItem{
