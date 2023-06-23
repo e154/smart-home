@@ -68,6 +68,30 @@
           </el-table-column>
 
           <el-table-column
+            :label="$t('automation.table.actions')"
+            class-name="status-col"
+            align="left"
+            width="100px"
+          >
+            <template slot-scope="{row}">
+              <span v-if="row.actions && row.actions.length">{{ row.actions.length }}</span>
+              <span v-else>-</span>
+            </template>
+          </el-table-column>
+
+          <el-table-column
+            :label="$t('automation.table.triggers')"
+            class-name="status-col"
+            align="left"
+            width="100px"
+          >
+            <template slot-scope="{row}">
+              <span v-if="row.triggers && row.triggers.length">{{ row.triggers.length }}</span>
+              <span v-else>-</span>
+            </template>
+          </el-table-column>
+
+          <el-table-column
             :label="$t('automation.table.description')"
             width="auto"
             align="left"

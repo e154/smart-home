@@ -210,6 +210,8 @@ export default {
       id: 'Id',
       name: 'Name',
       action: 'Action',
+      actions: 'Actions',
+      triggers: 'Triggers',
       description: 'Description',
       enabled: 'Enabled',
       condition: 'Condition',
