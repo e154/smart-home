@@ -83,12 +83,20 @@ func NewActor(entity *m.Entity,
 		actor.Setts = NewSettings()
 	}
 
+	if actor.Actions == nil {
+		actor.Actions = NewActions()
+	}
+
 	return actor
 }
 
 // Spawn ...
 func (e *Actor) Spawn() entity_manager.PluginActor {
 	return e
+}
+
+func (e *Actor) runAction(msg events.EventCallAction) {
+	go e.selfUpdate()
 }
 
 func (u *Actor) selfUpdate() {

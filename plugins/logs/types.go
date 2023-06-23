@@ -39,6 +39,8 @@ const (
 
 	// EntityType ...
 	EntityType = "logs"
+
+	Version = "0.0.1"
 )
 
 // NewAttr ...

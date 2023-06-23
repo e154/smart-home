@@ -20,6 +20,9 @@ package db
 
 import (
 	"fmt"
+	"github.com/jackc/pgerrcode"
+	"github.com/lib/pq"
+	"strings"
 	"time"
 
 	"github.com/e154/smart-home/common/apperr"
@@ -36,14 +39,20 @@ type Scripts struct {
 
 // Script ...
 type Script struct {
-	Id          int64 `gorm:"primary_key"`
-	Lang        ScriptLang
-	Name        string
-	Source      string
-	Description string
-	Compiled    string
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	Id                   int64 `gorm:"primary_key"`
+	Lang                 ScriptLang
+	Name                 string
+	Source               string
+	Description          string
+	Compiled             string
+	AlexaIntents         int `gorm:"-"`
+	EntityActions        int `gorm:"-"`
+	EntityScripts        int `gorm:"-"`
+	AutomationTriggers   int `gorm:"-"`
+	AutomationConditions int `gorm:"-"`
+	AutomationActions    int `gorm:"-"`
+	CreatedAt            time.Time
+	UpdatedAt            time.Time
 }
 
 // TableName ...
@@ -54,6 +63,18 @@ func (d *Script) TableName() string {
 // Add ...
 func (n Scripts) Add(script *Script) (id int64, err error) {
 	if err = n.Db.Create(&script).Error; err != nil {
+		var pgErr *pq.Error
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case pgerrcode.UniqueViolation:
+				if strings.Contains(pgErr.Message, "name_at_scripts_unq") {
+					err = errors.Wrap(apperr.ErrScriptAdd, fmt.Sprintf("script name \"%s\" not unique", script.Name))
+					return
+				}
+			default:
+				fmt.Printf("unknown code \"%s\"\n", pgErr.Code)
+			}
+		}
 		err = errors.Wrap(apperr.ErrScriptAdd, err.Error())
 		return
 	}
@@ -63,8 +84,20 @@ func (n Scripts) Add(script *Script) (id int64, err error) {
 
 // GetById ...
 func (n Scripts) GetById(scriptId int64) (script *Script, err error) {
-	script = &Script{Id: scriptId}
-	if err = n.Db.First(&script).Error; err != nil {
+	script = &Script{}
+	err = n.Db.Raw(`
+select scripts.*,
+       (select count(*) from alexa_intents where script_id = scripts.id)  as alexa_intents,
+       (select count(*) from entity_actions where script_id = scripts.id) as entity_actions,
+       (select count(*) from entity_scripts where script_id = scripts.id) as entity_scripts,
+       (select count(*) from triggers where script_id = scripts.id)       as automation_triggers,
+       (select count(*) from conditions where script_id = scripts.id)     as automation_conditions,
+       (select count(*) from actions where script_id = scripts.id)        as automation_actions
+from scripts where id = ?`, scriptId).
+		First(script).
+		Error
+
+	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			err = errors.Wrap(apperr.ErrScriptNotFound, fmt.Sprintf("id \"%d\"", scriptId))
 			return
@@ -77,7 +110,19 @@ func (n Scripts) GetById(scriptId int64) (script *Script, err error) {
 // GetByName ...
 func (n Scripts) GetByName(name string) (script *Script, err error) {
 	script = &Script{}
-	if err = n.Db.Model(script).Where("name = ?", name).First(script).Error; err != nil {
+	err = n.Db.Raw(`
+select scripts.*,
+       (select count(*) from alexa_intents where script_id = scripts.id)  as alexa_intents,
+       (select count(*) from entity_actions where script_id = scripts.id) as entity_actions,
+       (select count(*) from entity_scripts where script_id = scripts.id) as entity_scripts,
+       (select count(*) from triggers where script_id = scripts.id)       as automation_triggers,
+       (select count(*) from conditions where script_id = scripts.id)     as automation_conditions,
+       (select count(*) from actions where script_id = scripts.id)        as automation_actions
+from scripts where name = ?`, name).
+		First(script).
+		Error
+
+	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			err = errors.Wrap(apperr.ErrScriptNotFound, fmt.Sprintf("name \"%d\"", name))
 			return

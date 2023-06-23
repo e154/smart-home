@@ -26,12 +26,22 @@ import (
 
 // Script ...
 type Script struct {
-	Id          int64      `json:"id"`
-	Lang        ScriptLang `json:"lang" validate:"required"`
-	Name        string     `json:"name" validate:"max=254,required"`
-	Source      string     `json:"source"`
-	Description string     `json:"description"`
-	Compiled    string     `json:"-"`
-	CreatedAt   time.Time  `json:"created_at"`
-	UpdatedAt   time.Time  `json:"updated_at"`
+	Id          int64       `json:"id"`
+	Lang        ScriptLang  `json:"lang" validate:"required"`
+	Name        string      `json:"name" validate:"max=254,required"`
+	Source      string      `json:"source"`
+	Description string      `json:"description"`
+	Compiled    string      `json:"-"`
+	CreatedAt   time.Time   `json:"created_at"`
+	UpdatedAt   time.Time   `json:"updated_at"`
+	Info        *ScriptInfo `json:"info"`
+}
+
+type ScriptInfo struct {
+	AlexaIntents         int `json:"alexa_intents"`
+	EntityActions        int `json:"entity_actions"`
+	EntityScripts        int `json:"entity_scripts"`
+	AutomationTriggers   int `json:"automation_triggers"`
+	AutomationConditions int `json:"automation_conditions"`
+	AutomationActions    int `json:"automation_actions"`
 }

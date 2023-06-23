@@ -435,6 +435,11 @@ func (e *entityManager) eventLastState(msg events.EventGetLastState) {
 
 	info := actor.Actor.Info()
 
+	if actor.CurrentState.LastChanged == nil && actor.CurrentState.LastUpdated == nil {
+		entity, _ := e.adaptors.Entity.GetById(msg.EntityId)
+		actor.CurrentState.Attributes = entity.Attributes
+	}
+
 	e.eventBus.Publish(bus.TopicEntities, events.EventLastStateChanged{
 		StorageSave: false,
 		PluginName:  info.PluginName,

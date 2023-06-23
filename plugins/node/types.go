@@ -34,6 +34,8 @@ const (
 	EntityNode = string("node")
 	// TopicPluginNode ...
 	TopicPluginNode = "plugin.node"
+
+	Version = "0.0.1"
 )
 
 const (

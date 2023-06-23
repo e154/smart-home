@@ -36,6 +36,8 @@ const (
 	Attribution = "Weather forecast from openweathermap api"
 	// FuncEntityAction ...
 	FuncEntityAction = "entityAction"
+
+	Version = "0.0.1"
 )
 
 // GeoPos ...

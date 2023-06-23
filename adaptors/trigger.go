@@ -20,10 +20,11 @@ package adaptors
 
 import (
 	"encoding/json"
+	"github.com/e154/smart-home/common"
+	"github.com/jinzhu/gorm"
 
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/gorm"
 	gormbulk "github.com/t-tiger/gorm-bulk-insert"
 )
 
@@ -85,8 +86,8 @@ func (n *Trigger) fromDb(dbVer *db.Trigger) (ver *m.Trigger) {
 	}
 	// entity
 	if dbVer.Entity != nil {
-		scriptAdaptor := GetEntityAdaptor(n.db)
-		ver.Entity = scriptAdaptor.fromDb(dbVer.Entity)
+		entityAdaptor := GetEntityAdaptor(n.db)
+		ver.Entity = entityAdaptor.fromDb(dbVer.Entity)
 	}
 
 	// deserialize payload
@@ -108,7 +109,7 @@ func (n *Trigger) toDb(ver *m.Trigger) (dbVer *db.Trigger) {
 	}
 
 	if ver.Script != nil {
-		dbVer.ScriptId = ver.Script.Id
+		dbVer.ScriptId = common.Int64(ver.Script.Id)
 	}
 
 	// serialize payload

@@ -9,8 +9,7 @@
  * ---------------------------------------------------------------
  */
 
-import HeadersDefaults from "axios"
-import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse, ResponseType} from 'axios';
+import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse, ResponseType} from "axios"
 
 export interface AccessListListOfString {
   items: string[];
@@ -51,7 +50,11 @@ export interface ApiAccessListResponse {
 export interface ApiAction {
   id?: number;
   name?: string;
+  scriptId?: number;
   script?: ApiScript;
+  entityId?: string;
+  entity?: ApiEntity;
+  entityActionName?: string;
 }
 
 export interface ApiArea {
@@ -722,17 +725,23 @@ export interface ApiRoleAccessListResult {
   levels?: Record<string, ApiAccessLevels>;
 }
 
+export interface ApiScriptInfo {
+  alexaIntents: number;
+  entityActions: number;
+  entityScripts: number;
+  automationTriggers: number;
+  automationConditions: number;
+  automationActions: number;
+}
+
 export interface ApiScript {
   id?: number;
   lang: string;
   name: string;
   source: string;
   description: string;
-
-  /** @format date-time */
+  scriptInfo?: ApiScriptInfo;
   createdAt?: string;
-
-  /** @format date-time */
   updatedAt?: string;
 }
 
@@ -786,7 +795,7 @@ export interface ApiTask {
 export interface ApiTrigger {
   id?: number;
   name?: string;
-  entity?: ApiTriggerEntity;
+  entityId?: string;
   script?: ApiScript;
   pluginName?: string;
   attributes?: Record<string, ApiAttribute>;

@@ -28,6 +28,8 @@ const (
 	Name = "notify"
 	// TopicNotify ...
 	TopicNotify = "notify"
+
+	Version = "0.0.1"
 )
 
 // Stat ...

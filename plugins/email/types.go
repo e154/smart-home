@@ -43,6 +43,8 @@ const (
 	AttrSubject = "subject"
 	// AttrBody ...
 	AttrBody = "body"
+
+	Version = "0.0.1"
 )
 
 // NewMessageParams ...

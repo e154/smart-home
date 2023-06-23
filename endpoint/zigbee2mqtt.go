@@ -238,7 +238,7 @@ func (n *Zigbee2mqttEndpoint) SearchDevice(ctx context.Context, search common.Se
 // DeviceList ...
 func (n *Zigbee2mqttEndpoint) DeviceList(ctx context.Context, bridgeId int64, pagination common.PageParams) (result []*m.Zigbee2mqttDevice, total int64, err error) {
 
-	result, total, err = n.adaptors.Zigbee2mqttDevice.ListByBridgeId(bridgeId, pagination.Limit, pagination.Offset)
+	result, total, err = n.adaptors.Zigbee2mqttDevice.ListByBridgeId(bridgeId, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
 
 	return
 }

@@ -38,6 +38,8 @@ const (
 	StateAboveHorizon = "aboveHorizon"
 	// StateBelowHorizon ...
 	StateBelowHorizon = "belowHorizon"
+
+	Version = "0.0.1"
 )
 
 const (

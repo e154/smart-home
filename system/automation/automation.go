@@ -175,7 +175,6 @@ func (a *automation) Reload() {
 
 // AddTask ...
 func (a *automation) AddTask(model *m.Task) {
-
 	task := NewTask(a, a.scriptService, model, a.entityManager, a.rawPlugin)
 	a.taskCount.Inc()
 	log.Infof("add task name(%s) id(%d)", task.Name(), task.Id())

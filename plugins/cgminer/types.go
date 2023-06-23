@@ -60,6 +60,8 @@ const (
 	ActionDisable = "DISABLE"
 	// ActionCheck ...
 	ActionCheck = "CHECK"
+
+	Version = "0.0.1"
 )
 
 // store entity status in this struct

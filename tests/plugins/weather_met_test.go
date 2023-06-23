@@ -28,7 +28,6 @@ import (
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/debug"
 	"github.com/e154/smart-home/common/web"
 	m "github.com/e154/smart-home/models"
 	weatherPlugin "github.com/e154/smart-home/plugins/weather"
@@ -101,8 +100,8 @@ func TestWeatherMet(t *testing.T) {
 					actor, err := entityManager.GetActorById(weatherEnt.Id)
 					ctx.So(err, ShouldBeNil)
 
-					attrs := actor.Attributes()
-					debug.Println(attrs)
+					_ = actor.Attributes()
+					//debug.Println(attrs)
 				})
 			})
 

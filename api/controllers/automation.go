@@ -47,7 +47,7 @@ func (c ControllerAutomation) AddTask(ctx context.Context, req *api.NewTaskReque
 		return nil, c.error(ctx, errs, err)
 	}
 
-	return c.dto.Automation.ToTask(task), nil
+	return c.dto.Automation.GetTask(task), nil
 }
 
 // UpdateTask ...
@@ -60,7 +60,7 @@ func (c ControllerAutomation) UpdateTask(ctx context.Context, req *api.UpdateTas
 		return nil, c.error(ctx, errs, err)
 	}
 
-	return c.dto.Automation.ToTask(task), nil
+	return c.dto.Automation.GetTask(task), nil
 }
 
 // GetTask ...
@@ -71,7 +71,7 @@ func (c ControllerAutomation) GetTask(ctx context.Context, req *api.GetTaskReque
 		return nil, c.error(ctx, errs, err)
 	}
 
-	return c.dto.Automation.ToTask(task), nil
+	return c.dto.Automation.GetTask(task), nil
 }
 
 // GetTaskList ...
@@ -83,7 +83,7 @@ func (c ControllerAutomation) GetTaskList(ctx context.Context, req *api.Paginati
 		return nil, c.error(ctx, errs, err)
 	}
 
-	return c.dto.Automation.ToListResult(items, uint64(total), pagination), nil
+	return c.dto.Automation.GetTaskList(items, uint64(total), pagination), nil
 }
 
 // DeleteTask ...

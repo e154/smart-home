@@ -36,6 +36,8 @@ const (
 
 	// Name ...
 	Name = "uptime"
+
+	Version = "0.0.1"
 )
 
 // NewAttr ...

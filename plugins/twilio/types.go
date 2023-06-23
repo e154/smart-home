@@ -40,6 +40,8 @@ const (
 	AttrAmount = "amount"
 	// AttrCurrency ...
 	AttrCurrency = "currency"
+
+	Version = "0.0.1"
 )
 
 // NewAttr ...

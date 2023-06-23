@@ -11,44 +11,67 @@
               label="Main"
               name="main"
             >
-              <el-form label-position="top"
-                       ref="currentScript"
-                       :model="currentScript"
-                       :rules="rules"
-                       style="width: 100%">
-                <el-form-item :label="$t('scripts.table.name')" prop="name">
-                  <el-input
-                    size="medium"
-                    placeholder="Name"
-                    label="Name"
-                    v-model="currentScript.name">
-                  </el-input>
-                </el-form-item>
 
-                <el-form-item :label="$t('scripts.table.lang')" prop="lang">
-                  <el-select v-model="currentScript.lang"
-                             placeholder="Language"
-                             label="Language"
-                             style="width: 100%"
-                  >
-                    <el-option
-                      v-for="item in options"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value">
-                    </el-option>
-                  </el-select>
-                </el-form-item>
-                <el-form-item :label="$t('scripts.table.description')" prop="description">
-                  <el-input
-                    type="textarea"
-                    size="medium"
-                    placeholder="Description"
-                    label="Description"
-                    v-model="currentScript.description">
-                  </el-input>
-                </el-form-item>
-              </el-form>
+              <el-row>
+                <el-col>
+                  <el-form label-position="top"
+                           ref="currentScript"
+                           :model="currentScript"
+                           :rules="rules"
+                           style="width: 100%">
+                    <el-form-item :label="$t('scripts.table.name')" prop="name">
+                      <el-input
+                        size="medium"
+                        placeholder="Name"
+                        label="Name"
+                        v-model="currentScript.name">
+                      </el-input>
+                    </el-form-item>
+
+                    <el-form-item :label="$t('scripts.table.lang')" prop="lang">
+                      <el-select v-model="currentScript.lang"
+                                 placeholder="Language"
+                                 label="Language"
+                                 style="width: 100%"
+                      >
+                        <el-option
+                          v-for="item in options"
+                          :key="item.value"
+                          :label="item.label"
+                          :value="item.value">
+                        </el-option>
+                      </el-select>
+                    </el-form-item>
+                    <el-form-item :label="$t('scripts.table.description')" prop="description">
+                      <el-input
+                        type="textarea"
+                        size="medium"
+                        placeholder="Description"
+                        label="Description"
+                        v-model="currentScript.description">
+                      </el-input>
+                    </el-form-item>
+                  </el-form>
+
+                </el-col>
+              </el-row>
+
+              <el-row v-if="currentScript.scriptInfo">
+                <el-col>
+                  <h3>{{ $t('scripts.scriptInfo') }}</h3>
+                </el-col>
+              </el-row>
+
+              <el-row v-if="currentScript.scriptInfo">
+                <el-col>
+                  <p>{{ $t('scripts.alexaIntents') }}: {{ currentScript.scriptInfo.alexaIntents }}</p>
+                  <p>{{ $t('scripts.entityActions') }}: {{ currentScript.scriptInfo.entityActions }}</p>
+                  <p>{{ $t('scripts.entityScripts') }}: {{ currentScript.scriptInfo.entityScripts }}</p>
+                  <p>{{ $t('scripts.automationTriggers') }}: {{ currentScript.scriptInfo.automationTriggers }}</p>
+                  <p>{{ $t('scripts.automationConditions') }}: {{ currentScript.scriptInfo.automationConditions }}</p>
+                  <p>{{ $t('scripts.automationActions') }}: {{ currentScript.scriptInfo.automationActions }}</p>
+                </el-col>
+              </el-row>
             </el-tab-pane>
             <el-tab-pane
               label="Source"
@@ -94,11 +117,11 @@ import 'codemirror/theme/mdn-like.css'
 import 'codemirror/mode/coffeescript/coffeescript'
 import 'codemirror/addon/lint/lint'
 import 'codemirror/addon/lint/json-lint'
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
+import {Component, Prop, Vue} from 'vue-property-decorator'
 import api from '@/api/api'
-import { ApiScript } from '@/api/stub'
+import {ApiScript} from '@/api/stub'
 import router from '@/router'
-import { Form } from 'element-ui'
+import {Form} from 'element-ui'
 import CardWrapper from '@/components/card-wrapper/index.vue'
 import ScriptEditor from '@/components/script_editor/index.vue'
 
@@ -113,16 +136,16 @@ class elementOption {
 
 @Component({
   name: 'ScriptEdit',
-  components: { ScriptEditor, CardWrapper }
+  components: {ScriptEditor, CardWrapper}
 })
 export default class extends Vue {
-  @Prop({ required: true }) private id!: number;
+  @Prop({required: true}) private id!: number;
 
   private listLoading = true;
   private options: elementOption[] = [
-    { value: 'coffeescript', label: 'coffeescript' },
-    { value: 'javascript', label: 'javascript' },
-    { value: 'typescript', label: 'typescript' }
+    {value: 'coffeescript', label: 'coffeescript'},
+    {value: 'javascript', label: 'javascript'},
+    {value: 'typescript', label: 'typescript'}
   ];
 
   private internal = {
@@ -138,22 +161,22 @@ export default class extends Vue {
 
   private rules = {
     name: [
-      { required: true, trigger: 'blur' },
-      { min: 4, max: 255, trigger: 'blur' }
+      {required: true, trigger: 'blur'},
+      {min: 4, max: 255, trigger: 'blur'}
     ],
     description: [
-      { required: false, trigger: 'blur' },
-      { max: 255, trigger: 'blur' }
+      {required: false, trigger: 'blur'},
+      {max: 255, trigger: 'blur'}
     ],
     lang: [
-      { required: true, trigger: 'blur' },
-      { max: 255, trigger: 'blur' }
+      {required: true, trigger: 'blur'},
+      {max: 255, trigger: 'blur'}
     ]
   };
 
   private async fetch() {
     this.listLoading = true
-    const { data } = await api.v1.scriptServiceGetScriptById(this.id)
+    const {data} = await api.v1.scriptServiceGetScriptById(this.id)
     this.currentScript = data
     this.listLoading = false
   }
@@ -174,7 +197,7 @@ export default class extends Vue {
         source: this.currentScript.source,
         description: this.currentScript.description
       }
-      const { data } = await api.v1.scriptServiceUpdateScriptById(this.id, script)
+      const {data} = await api.v1.scriptServiceUpdateScriptById(this.id, script)
       if (data) {
         this.$notify({
           title: 'Success',
@@ -187,8 +210,8 @@ export default class extends Vue {
   }
 
   private async copy() {
-    const { data } = await api.v1.scriptServiceCopyScriptById(this.id)
-    router.push({ path: `/scripts/edit/${data.id}` })
+    const {data} = await api.v1.scriptServiceCopyScriptById(this.id)
+    router.push({path: `/scripts/edit/${data.id}`})
   }
 
   private async remove() {
@@ -199,7 +222,7 @@ export default class extends Vue {
       type: 'success',
       duration: 2000
     })
-    router.push({ path: '/scripts' })
+    router.push({path: '/scripts'})
   }
 
   private changed(value: string, event?: any) {

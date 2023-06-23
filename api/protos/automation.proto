@@ -10,19 +10,19 @@ import "google/protobuf/empty.proto";
 
 import "area.proto";
 import "script.proto";
+import "entity.proto";
 import "attributes.proto";
 import "pagination.proto";
 
 message Trigger {
   optional int64 id = 1;
   string name = 2;
-  message Entity {
-    string id = 1;
-  }
-  Entity entity = 4;
-  Script script = 5;
-  string plugin_name = 6;
-  map<string, Attribute> attributes = 7;
+  optional Entity entity = 3;
+  optional string entity_id = 4;
+  optional Script script = 5;
+  optional int64 script_id = 6;
+  string plugin_name = 7;
+  map<string, Attribute> attributes = 8;
 }
 
 message Condition {
@@ -34,7 +34,11 @@ message Condition {
 message Action {
   optional int64 id = 1;
   string name = 2;
-  Script script = 4;
+  optional int64 script_id = 3;
+  optional Script script = 4;
+  optional Entity entity = 5;
+  optional string entity_id = 6;
+  optional string entity_action_name = 7;
 }
 
 message Task {

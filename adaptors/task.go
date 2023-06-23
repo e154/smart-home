@@ -19,15 +19,19 @@
 package adaptors
 
 import (
+	"fmt"
+
+	"github.com/jinzhu/gorm"
+
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/gorm"
 )
 
 // ITask ...
 type ITask interface {
 	Add(ver *m.Task) (err error)
+	Import(ver *m.Task) (err error)
 	Update(ver *m.Task) (err error)
 	Delete(id int64) (err error)
 	GetById(id int64) (task *m.Task, err error)
@@ -51,6 +55,105 @@ func GetTaskAdaptor(d *gorm.DB) ITask {
 		table: &db.Tasks{Db: d},
 		db:    d,
 	}
+}
+
+// Import ...
+func (n *Task) Import(ver *m.Task) (err error) {
+
+	transaction := true
+	tx := n.db.Begin()
+	if err = tx.Error; err != nil {
+		tx = n.db
+		transaction = false
+	}
+	defer func() {
+		if err != nil && transaction {
+			fmt.Println(err.Error())
+			tx.Rollback()
+			return
+		}
+		if transaction {
+			err = tx.Commit().Error
+		}
+	}()
+
+	table := db.Tasks{Db: tx}
+	if ver.Id, err = table.Add(n.toDb(ver)); err != nil {
+		return
+	}
+
+	scriptAdaptor := GetScriptAdaptor(tx)
+
+	//conditions
+	if len(ver.Conditions) > 0 {
+		for _, condition := range ver.Conditions {
+			condition.TaskId = ver.Id
+			if condition.Script != nil {
+				var foundedScript *m.Script
+				if foundedScript, err = scriptAdaptor.GetByName(condition.Script.Name); err == nil {
+					condition.Script = foundedScript
+					condition.Script.Id = foundedScript.Id
+				} else {
+					condition.Script.Id = 0
+					if condition.Script.Id, err = scriptAdaptor.Add(condition.Script); err != nil {
+						return
+					}
+				}
+			}
+		}
+		conditionAdaptor := GetConditionAdaptor(tx)
+		if err = conditionAdaptor.AddMultiple(ver.Conditions); err != nil {
+			return
+		}
+	}
+
+	//triggers
+	if len(ver.Triggers) > 0 {
+		for _, trigger := range ver.Triggers {
+			trigger.TaskId = ver.Id
+			if trigger.Script != nil {
+				var foundedScript *m.Script
+				if foundedScript, err = scriptAdaptor.GetByName(trigger.Script.Name); err == nil {
+					trigger.Script = foundedScript
+					trigger.Script.Id = foundedScript.Id
+				} else {
+					trigger.Script.Id = 0
+					if trigger.Script.Id, err = scriptAdaptor.Add(trigger.Script); err != nil {
+						return
+					}
+				}
+			}
+		}
+		triggerAdaptor := GetTriggerAdaptor(tx)
+		if err = triggerAdaptor.AddMultiple(ver.Triggers); err != nil {
+			return
+		}
+	}
+
+	//actions
+	if len(ver.Actions) > 0 {
+		for _, action := range ver.Actions {
+			action.TaskId = ver.Id
+			if action.Script != nil {
+				var foundedScript *m.Script
+				if foundedScript, err = scriptAdaptor.GetByName(action.Script.Name); err == nil {
+					action.Script = foundedScript
+					action.Script.Id = foundedScript.Id
+				} else {
+					action.Script.Id = 0
+					if action.Script.Id, err = scriptAdaptor.Add(action.Script); err != nil {
+						return
+					}
+				}
+			}
+		}
+		actionAdaptor := GetActionAdaptor(tx)
+		if err = actionAdaptor.AddMultiple(ver.Actions); err != nil {
+			return
+		}
+	}
+
+	return
 }
 
 // Add ...

@@ -19,9 +19,11 @@
 package db
 
 import (
-	"github.com/e154/smart-home/common/apperr"
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+
+	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
 )
 
 // Actions ...
@@ -31,12 +33,15 @@ type Actions struct {
 
 // Action ...
 type Action struct {
-	Id       int64 `gorm:"primary_key"`
-	Name     string
-	Task     *Task
-	TaskId   int64
-	Script   *Script
-	ScriptId int64
+	Id               int64 `gorm:"primary_key"`
+	Name             string
+	Task             *Task
+	TaskId           int64
+	Script           *Script
+	ScriptId         *int64
+	Entity           *Entity
+	EntityId         *common.EntityId
+	EntityActionName *string
 }
 
 // TableName ...

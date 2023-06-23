@@ -22,8 +22,6 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/prometheus/common/log"
-
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 
@@ -135,7 +133,6 @@ func (u *Actor) LogsHook(level common.LogLevel) {
 }
 
 func (u *Actor) UpdateDay() {
-	log.Info("reset counters")
 	u.ErrYesterday.Clear()
 	u.ErrYesterday.Inc(u.ErrToday.Count())
 	u.WarnYesterday.Clear()
