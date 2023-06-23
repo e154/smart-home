@@ -31,6 +31,8 @@ const (
 	FuncEntityAction = "entityAction"
 	// DeviceTypeModbusTcp ...
 	DeviceTypeModbusTcp = node.DeviceType("modbus_tcp")
+
+	Version = "0.0.1"
 )
 
 const (

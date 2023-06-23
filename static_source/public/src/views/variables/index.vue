@@ -8,10 +8,24 @@
         </el-button>
       </el-col>
     </el-row>
+
+    <el-row>
+      <el-col>
+        <pagination
+          v-show="total>listQuery.limit"
+          :total="total"
+          :page.sync="listQuery.page"
+          :limit.sync="listQuery.limit"
+          @pagination="updatePagination"
+        />
+      </el-col>
+    </el-row>
+
     <el-row>
       <el-col>
         <el-table
           :key="tableKey"
+          :default-sort="defaultSort"
           v-loading="listLoading"
           :data="list"
           style="width: 100%;"
@@ -55,7 +69,7 @@
           :total="total"
           :page.sync="listQuery.page"
           :limit.sync="listQuery.limit"
-          @pagination="getList"
+          @pagination="updatePagination"
         />
       </el-col>
     </el-row>
@@ -86,9 +100,11 @@ export default class extends Vue {
     limit: 20,
     sort: '-name'
   };
+  private defaultSort: Object = {prop: "name", order: "ascending"};
+  private itemName = 'VariablesTableSort'
 
   created() {
-    this.getList()
+    this.restoreSort(); // Восстановление состояния сортировки при загрузке компонента
   }
 
   private async getList() {
@@ -105,23 +121,55 @@ export default class extends Vue {
   }
 
   private handleFilter() {
-    this.listQuery.page = 1
     this.getList()
   }
 
-  private sortChange(data: any) {
-    const { prop, order } = data
-    if (prop === 'name') {
-      this.sortByName(order)
+  private updatePagination() {
+    const sortData = localStorage.getItem(this.itemName);
+    if (sortData) {
+      const {column} = JSON.parse(sortData);
+      localStorage.setItem(this.itemName, JSON.stringify({
+        column: column,
+        page: this.listQuery.page,
+        limit: this.listQuery.limit
+      }));
+    }
+    this.getList()
+  }
+
+  private restoreSort() {
+    // Восстановление состояния сортировки при загрузке компонента
+    const sortData = localStorage.getItem(this.itemName);
+    if (sortData) {
+      const {column, page, limit} = JSON.parse(sortData);
+      this.defaultSort = {prop: column.property, order: column.order};
+      this.listQuery.page = page
+      this.listQuery.limit = limit
+      this.sort(column.property, column.order)
+    } else {
+      this.getList()
     }
   }
 
-  private sortByName(order: string) {
+  private sortChange(data: any) {
+    // Обработчик изменения состояния сортировки
+    const {column, prop, order} = data;
+    this.defaultSort = {prop, order};
+    // Сохраняем состояние сортировки в localStorage
+    localStorage.setItem(this.itemName, JSON.stringify({
+      column: column,
+      page: this.listQuery.page,
+      limit: this.listQuery.limit
+    }));
+    this.sort(prop, order)
+  }
+
+  private sort(column: string, order: string) {
+    let pref: string = '-'
     if (order === 'ascending') {
-      this.listQuery.sort = '+name'
-    } else {
-      this.listQuery.sort = '-name'
+      pref = '+'
     }
+    this.listQuery.sort = pref + column
     this.handleFilter()
   }
 
@@ -131,11 +179,11 @@ export default class extends Vue {
   }
 
   private goto(variable: ApiVariable) {
-    router.push({ path: `/variables/edit/${variable.name}` })
+    router.push({ path: `/etc/variables/edit/${variable.name}` })
   }
 
   private add() {
-    router.push({ path: '/variables/new' })
+    router.push({ path: '/etc/variables/new' })
   }
 }
 </script>

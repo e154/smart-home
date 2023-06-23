@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	ctxTimeout = 5
+	ctxTimeout = 30 * time.Second
 )
 
 var (
@@ -28,9 +28,9 @@ func NewMigrations(list []Migration) *Migrations {
 	}
 }
 
-func (t *Migrations) Up(ctx context.Context, tx *adaptors.Adaptors, ver string) (newVersion string, err error) {
+func (t *Migrations) Up(ctx context.Context, adaptors *adaptors.Adaptors, ver string) (newVersion string, err error) {
 
-	ctx, ctxCancel := context.WithTimeout(ctx, time.Second*ctxTimeout)
+	ctx, ctxCancel := context.WithTimeout(ctx, ctxTimeout)
 	defer ctxCancel()
 
 	ch := make(chan error, 1)
@@ -74,12 +74,16 @@ func (t *Migrations) Up(ctx context.Context, tx *adaptors.Adaptors, ver string) 
 				log.Error(err.Error())
 				return
 			}
+
 			newVersion = reflect.TypeOf(migration).String()
+			tx := adaptors.Begin()
 			if err = migration.Up(ctx, tx); err != nil {
-				fmt.Printf("migration '%s' ... error\n", newVersion)
+				fmt.Printf("\n\nmigration '%s' ... error\n", newVersion)
 				log.Error(err.Error())
+				_ = tx.Rollback()
 				return
 			}
+			_ = tx.Commit()
 			ok = append(ok, newVersion)
 		}
 	}()

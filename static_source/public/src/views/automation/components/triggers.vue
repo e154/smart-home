@@ -126,6 +126,7 @@
             >
               <template slot-scope="{row}">
                 <span v-if="row.script && row.script.name">{{ row.script.name }}</span>
+                <span v-else>-</span>
               </template>
             </el-table-column>
 
@@ -136,7 +137,8 @@
               width="120px"
             >
               <template slot-scope="{row}">
-                {{ row.entity.id }}
+                <span v-if="row.entity">{{ row.entity.id }}</span>
+                <span v-else>-</span>
               </template>
             </el-table-column>
 
@@ -226,10 +228,10 @@ export default class extends Vue {
       {min: 4, max: 255, trigger: 'blur'}
     ],
     script: [
-      {required: true, trigger: 'blur'}
+      {required: false, trigger: 'blur'}
     ],
     entity: [
-      {required: true, trigger: 'blur'}
+      {required: false, trigger: 'blur'}
     ],
     pluginName: [
       {required: true, trigger: 'blur'}
@@ -273,16 +275,20 @@ export default class extends Vue {
   private changedScript(value: ApiScript, event?: any) {
     if (value) {
       this.$set(this.currentItem, 'script', {id: value.id, name: value.name});
+      this.$set(this.currentItem, 'scriptId', value.id);
     } else {
       this.$set(this.currentItem, 'script', undefined);
+      this.$set(this.currentItem, 'scriptId', undefined);
     }
   }
 
   private changedEntity(value: ApiEntity, event?: any) {
     if (value) {
-      this.$set(this.currentItem, 'entity', {id: value.id});
+      this.$set(this.currentItem, 'entity', value);
+      this.$set(this.currentItem, 'entityId', value.id);
     } else {
       this.$set(this.currentItem, 'entity', undefined);
+      this.$set(this.currentItem, 'entityId', undefined);
     }
   }
 

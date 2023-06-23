@@ -21,6 +21,7 @@ package hdd
 import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/entity_manager"
 )
 
 const (
@@ -65,6 +66,10 @@ const (
 
 	// EntityType ...
 	EntityType = "hdd"
+
+	ActionCheck = "CHECK"
+
+	Version = "0.0.1"
 )
 
 // NewAttr ...
@@ -119,6 +124,16 @@ func NewSettings() map[string]*m.Attribute {
 		AttrMountPoint: {
 			Name: AttrMountPoint,
 			Type: common.AttributeString,
+		},
+	}
+}
+
+// entity action list
+func NewActions() map[string]entity_manager.ActorAction {
+	return map[string]entity_manager.ActorAction{
+		ActionCheck: {
+			Name:        ActionCheck,
+			Description: "check disk",
 		},
 	}
 }

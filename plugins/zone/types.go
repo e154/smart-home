@@ -39,6 +39,8 @@ const (
 	AttrElevation = "elevation"
 	// AttrTimezone ...
 	AttrTimezone = "timezone"
+
+	Version = "0.0.1"
 )
 
 // NewAttr ...

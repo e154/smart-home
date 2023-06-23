@@ -17,6 +17,8 @@ const (
 	FuncMqttEvent = "mqttEvent"
 	// FuncEntityAction ...
 	FuncEntityAction = "entityAction"
+
+	Version = "0.0.1"
 )
 
 const (

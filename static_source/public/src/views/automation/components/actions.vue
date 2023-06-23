@@ -13,7 +13,7 @@
 
         <el-form-item :label="$t('automation.table.script')" prop="script">
 
-          <span slot="label"  v-if="currentItem.script && currentItem.script.id">
+          <span slot="label" v-if="currentItem.script && currentItem.script.id">
             {{ $t('entities.table.script') }}
             <script-dialog
               :visible.sync="dialogScriptVisible"
@@ -23,7 +23,7 @@
             <el-button
               type="text"
               @click="dialogScriptVisible=true">
-             {{ $t('scripts.view') }}   <svg-icon name="link" />
+             {{ $t('scripts.view') }}   <svg-icon name="link"/>
             </el-button>
           </span>
 
@@ -34,8 +34,34 @@
           />
         </el-form-item>
 
-        <el-form-item>
-          <el-button v-if="mode == 'NEW'" type="primary" @click="submitForm()">{{$t('entities.addAction') }}</el-button>
+        <el-form-item :label="$t('dashboard.editor.entity')" prop="entity">
+          <entity-search
+            v-model="currentItem.entity"
+            @update-value="changedEntity"
+          />
+        </el-form-item>
+
+        <el-select
+          v-if="currentItem.entity"
+          v-model="currentItem.entityActionName"
+          clearable
+          :placeholder="$t('dashboard.editor.selectAction')"
+          style="width: 100%"
+        >
+          <el-option
+            v-for="item in buffer.entityActions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+
+
+        <el-form-item style="margin-top: 20px">
+          <el-button v-if="mode == 'NEW'" type="primary" @click="submitForm()">{{
+              $t('entities.addAction')
+            }}
+          </el-button>
           <el-button v-if="mode == 'EDIT'" type="primary" @click="submitForm()">{{ $t('main.update') }}</el-button>
           <el-button @click="resetForm()">{{ $t('main.cancel') }}</el-button>
           <el-button v-if="mode == 'EDIT'" type="danger" @click="removeItem()">{{ $t('main.remove') }}</el-button>
@@ -79,6 +105,31 @@
             >
               <template slot-scope="{row}">
                 <span v-if="row.script && row.script.name">{{ row.script.name }}</span>
+                <span v-else>-</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column
+              :label="$t('automation.table.entity')"
+              prop="entity"
+              align="left"
+              width="auto"
+            >
+              <template slot-scope="{row}">
+                <span v-if="row.entityId">{{ row.entityId }}</span>
+                <span v-else>-</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column
+              :label="$t('automation.table.action')"
+              prop="action"
+              align="left"
+              width="auto"
+            >
+              <template slot-scope="{row}">
+                <span v-if="row.entityActionName">{{ row.entityActionName }}</span>
+                <span v-else>-</span>
               </template>
             </el-table-column>
 
@@ -103,12 +154,19 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
-import { ApiAction, ApiScript } from '@/api/stub'
-import { Form } from 'element-ui'
+import {Component, Prop, Vue} from 'vue-property-decorator'
+import {ApiAction, ApiEntity, ApiEntityAction, ApiScript} from '@/api/stub'
+import {Form} from 'element-ui'
 import ScriptSearch from '@/views/scripts/components/script_search.vue'
 import ScriptEditModal from '@/views/scripts/edit-modal.vue'
 import ScriptDialog from '@/views/scripts/dialog.vue'
+import EntitySearch from "@/views/entities/components/entity_search.vue";
+import api from "@/api/api";
+
+export interface Action {
+  value: string;
+  label: string;
+}
 
 export enum Mode {
   VIEW = 'VIEW',
@@ -119,26 +177,39 @@ export enum Mode {
 @Component({
   name: 'Actions',
   components: {
+    EntitySearch,
     ScriptSearch,
     ScriptEditModal,
     ScriptDialog
   }
 })
 export default class extends Vue {
-  @Prop({ required: false, default: () => [] }) private value?: ApiAction[];
+  @Prop({required: false, default: () => []}) private value?: ApiAction[];
 
   private mode: Mode = Mode.VIEW;
-  private currentItem: ApiAction = {};
+  private currentItem: ApiAction = {
+    entityActionName: undefined
+  };
   private currentItemIndex?: number;
   private dialogScriptVisible = false;
+  private buffer: {
+    entity?: ApiEntity
+    entityActions: Action[];
+  } = {
+    entity: undefined,
+    entityActions: []
+  }
 
   private rules = {
     name: [
-      { required: true, trigger: 'blur' },
-      { min: 4, max: 255, trigger: 'blur' }
+      {required: true, trigger: 'blur'},
+      {min: 4, max: 255, trigger: 'blur'}
     ],
     script: [
-      { required: true, trigger: 'blur' }
+      {required: false, trigger: 'blur'}
+    ],
+    entity: [
+      {required: false, trigger: 'blur'}
     ]
   };
 
@@ -146,6 +217,9 @@ export default class extends Vue {
     this.currentItem = Object.assign({}, action)
     this.currentItemIndex = index
     this.mode = Mode.EDIT
+    if (this.currentItem.entityId) {
+      this.fetchEntity(this.currentItem.entityId)
+    }
   }
 
   private callAction(action: ApiAction, index: number) {
@@ -178,9 +252,23 @@ export default class extends Vue {
   private changedScript(value: ApiScript, event?: any) {
     if (value) {
       this.$set(this.currentItem, 'script', value)
+      this.$set(this.currentItem, 'scriptId', value.id)
     } else {
       this.$set(this.currentItem, 'script', undefined)
+      this.$set(this.currentItem, 'scriptId', undefined)
     }
+  }
+
+  private changedEntity(value: ApiEntity, event?: any) {
+    if (value && value.id) {
+      this.$set(this.currentItem, 'entity', value)
+      this.$set(this.currentItem, 'entityId', value.id)
+      this.fetchEntity(value.id)
+    } else {
+      this.$set(this.currentItem, 'entity', undefined)
+      this.$set(this.currentItem, 'entityId', undefined)
+      this.$set(this.currentItem, 'entityActionName', undefined)
+    };
   }
 
   private submitForm() {
@@ -203,6 +291,21 @@ export default class extends Vue {
       this.resetForm()
     })
   }
+
+  private async fetchEntity(id: string) {
+    const {data} = await api.v1.entityServiceGetEntity(id);
+    this.currentItem.entity = data;
+    this.currentItem.entityId = data.id;
+
+    this.buffer.entityActions = [];
+    if (data.actions) {
+      for (const item of data.actions) {
+        this.buffer.entityActions.push({label: item.description || item.name, value: item.name || 'no name'});
+      }
+    }
+
+  }
+
 }
 </script>
 

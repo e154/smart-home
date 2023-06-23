@@ -42,6 +42,8 @@ const (
 
 	// ConfNone means there has been not acceptance or denial of the intent or slot.
 	ConfNone ConfirmationStatus = "NONE"
+
+	Version = "0.0.1"
 )
 
 // Type will indicate type of dialog interaction to be sent to the user.

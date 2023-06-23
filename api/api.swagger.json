@@ -5170,8 +5170,21 @@
         "name": {
           "type": "string"
         },
+        "scriptId": {
+          "type": "string",
+          "format": "int64"
+        },
         "script": {
           "$ref": "#/definitions/apiScript"
+        },
+        "entity": {
+          "$ref": "#/definitions/apiEntity"
+        },
+        "entityId": {
+          "type": "string"
+        },
+        "entityActionName": {
+          "type": "string"
         }
       }
     },
@@ -7069,6 +7082,9 @@
         "description": {
           "type": "string"
         },
+        "scriptInfo": {
+          "$ref": "#/definitions/apiScriptInfo"
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time"
@@ -7076,6 +7092,35 @@
         "updatedAt": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "apiScriptInfo": {
+      "type": "object",
+      "properties": {
+        "alexaIntents": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "entityActions": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "entityScripts": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "automationTriggers": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "automationConditions": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "automationActions": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -7228,10 +7273,17 @@
           "type": "string"
         },
         "entity": {
-          "$ref": "#/definitions/apiTriggerEntity"
+          "$ref": "#/definitions/apiEntity"
+        },
+        "entityId": {
+          "type": "string"
         },
         "script": {
           "$ref": "#/definitions/apiScript"
+        },
+        "scriptId": {
+          "type": "string",
+          "format": "int64"
         },
         "pluginName": {
           "type": "string"
@@ -7241,14 +7293,6 @@
           "additionalProperties": {
             "$ref": "#/definitions/apiAttribute"
           }
-        }
-      }
-    },
-    "apiTriggerEntity": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
         }
       }
     },

@@ -36,6 +36,8 @@ const (
 	AttrChannel = "channel"
 	// AttrText ...
 	AttrText = "text"
+
+	Version = "0.0.1"
 )
 
 // NewAttr ...
