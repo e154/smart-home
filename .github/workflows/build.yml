@@ -11,6 +11,7 @@ env:
   TRAVIS_BUILD_NUMBER: ${{ github.run_number }}
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+  GITHUB_TOKEN: ${{ github.token }}
 
 jobs:
   build:
@@ -48,7 +49,79 @@ jobs:
         id: deploy-docker
         run: make deploy
 
-      - uses: actions/upload-artifact@v3
+      - name: upload server linux amd64 artifact
+        uses: softprops/action-gh-release@v1
         with:
-          name: server
-          path: /home/runner/smart-home-server.tar.gz
+          files: /home/runner/work/smart-home/smart-home/server-linux-amd64
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: upload server linux arm 7 artifact
+        uses: softprops/action-gh-release@v1
+        with:
+          files: /home/runner/work/smart-home/smart-home/server-linux-arm-7
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: upload server linux arm 6 artifact
+        uses: softprops/action-gh-release@v1
+        with:
+          files: /home/runner/work/smart-home/smart-home/server-linux-arm-6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: upload server linux arm 5 artifact
+        uses: softprops/action-gh-release@v1
+        with:
+          files: /home/runner/work/smart-home/smart-home/server-linux-arm-5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: upload server darwin amd64 artifact
+        uses: softprops/action-gh-release@v1
+        with:
+          files: /home/runner/work/smart-home/smart-home/server-darwin-10.6-amd64
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: upload server darwin arm64 artifact
+        uses: softprops/action-gh-release@v1
+        with:
+          files: /home/runner/work/smart-home/smart-home/server-darwin-10.6-arm64
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: upload cli darwin arm64 artifact
+        uses: softprops/action-gh-release@v1
+        with:
+          files: /home/runner/work/smart-home/smart-home/cli-darwin-10.6-arm64
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: upload cli darwin amd64 artifact
+        uses: softprops/action-gh-release@v1
+        with:
+          files: /home/runner/work/smart-home/smart-home/cli-darwin-10.6-amd64
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: upload cli linux amd64 artifact
+        uses: softprops/action-gh-release@v1
+        with:
+          files: /home/runner/work/smart-home/smart-home/cli-linux-amd64
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: upload cli linux amd64 artifact
+        uses: softprops/action-gh-release@v1
+        with:
+          files: /home/runner/work/smart-home/smart-home/cli-linux-amd64
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: upload common artifact
+        uses: softprops/action-gh-release@v1
+        with:
+          files: /home/runner/work/smart-home/smart-home/smart-home-common.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

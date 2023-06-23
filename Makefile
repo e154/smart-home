@@ -2,14 +2,15 @@
 .DEFAULT_GOAL := build
 build: get_deps build_public build_server build_cli
 tests: lint test
-all: build build_structure build_archive docker_image
+all: build build_structure build_common_structure build_archive docker_image
 deploy: docker_image_upload
 
 EXEC=server
 CLI=cli
 ROOT := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
-TMP_DIR = ${ROOT}/tmp/${EXEC}
-ARCHIVE=smart-home-${EXEC}.tar.gz
+SERVER_DIR = ${ROOT}/tmp/${EXEC}
+COMMON_DIR = ${ROOT}/tmp/common
+ARCHIVE=smart-home-common.tar.gz
 
 PROJECT ?=github.com/e154/smart-home
 TRAVIS_BUILD_NUMBER ?= local
@@ -147,31 +148,46 @@ server:
 
 build_structure:
 	@echo MARK: create app structure
-	mkdir -p ${TMP_DIR}
-	cd ${TMP_DIR}
-	cp -r ${ROOT}/conf ${TMP_DIR}
-	cp -r ${ROOT}/data ${TMP_DIR}
-	cp -r ${ROOT}/snapshots ${TMP_DIR}
-	cp ${ROOT}/LICENSE ${TMP_DIR}
-	cp ${ROOT}/README* ${TMP_DIR}
-	cp ${ROOT}/contributors.txt ${TMP_DIR}
-	cp ${ROOT}/bin/docker/Dockerfile ${TMP_DIR}
-	cp ${ROOT}/bin/server-installer.sh ${TMP_DIR}
-	chmod +x ${TMP_DIR}/data/scripts/ping.sh
-	cp ${ROOT}/${EXEC}-linux-amd64 ${TMP_DIR}
-	cp ${ROOT}/${EXEC}-linux-arm-7 ${TMP_DIR}
-	cp ${ROOT}/${EXEC}-linux-arm-6 ${TMP_DIR}
-	cp ${ROOT}/${EXEC}-linux-arm-5 ${TMP_DIR}
-	cp ${ROOT}/${EXEC}-darwin-10.6-amd64 ${TMP_DIR}
-	cp ${ROOT}/${EXEC}-darwin-10.6-arm64 ${TMP_DIR}
-	cp ${ROOT}/${CLI}-darwin-10.6-amd64 ${TMP_DIR}
-	cp ${ROOT}/${CLI}-darwin-10.6-arm64 ${TMP_DIR}
-	cp ${ROOT}/${CLI}-linux-amd64 ${TMP_DIR}
-	cp ${ROOT}/bin/server ${TMP_DIR}
+	mkdir -p ${SERVER_DIR}
+	cd ${SERVER_DIR}
+	cp -r ${ROOT}/conf ${SERVER_DIR}
+	cp -r ${ROOT}/data ${SERVER_DIR}
+	cp -r ${ROOT}/snapshots ${SERVER_DIR}
+	cp ${ROOT}/LICENSE ${SERVER_DIR}
+	cp ${ROOT}/README* ${SERVER_DIR}
+	cp ${ROOT}/contributors.txt ${SERVER_DIR}
+	cp ${ROOT}/bin/docker/Dockerfile ${SERVER_DIR}
+	cp ${ROOT}/bin/server-installer.sh ${SERVER_DIR}
+	chmod +x ${SERVER_DIR}/data/scripts/ping.sh
+	cp ${ROOT}/${EXEC}-linux-amd64 ${SERVER_DIR}
+	cp ${ROOT}/${EXEC}-linux-arm-7 ${SERVER_DIR}
+	cp ${ROOT}/${EXEC}-linux-arm-6 ${SERVER_DIR}
+	cp ${ROOT}/${EXEC}-linux-arm-5 ${SERVER_DIR}
+	cp ${ROOT}/${EXEC}-darwin-10.6-amd64 ${SERVER_DIR}
+	cp ${ROOT}/${EXEC}-darwin-10.6-arm64 ${SERVER_DIR}
+	cp ${ROOT}/${CLI}-darwin-10.6-amd64 ${SERVER_DIR}
+	cp ${ROOT}/${CLI}-darwin-10.6-arm64 ${SERVER_DIR}
+	cp ${ROOT}/${CLI}-linux-amd64 ${SERVER_DIR}
+	cp ${ROOT}/bin/server ${SERVER_DIR}
+
+build_common_structure:
+	@echo MARK: create common structure
+	mkdir -p ${COMMON_DIR}
+	cd ${COMMON_DIR}
+	cp -r ${ROOT}/conf ${COMMON_DIR}
+	cp -r ${ROOT}/data ${COMMON_DIR}
+	cp -r ${ROOT}/snapshots ${COMMON_DIR}
+	cp ${ROOT}/LICENSE ${COMMON_DIR}
+	cp ${ROOT}/README* ${COMMON_DIR}
+	cp ${ROOT}/contributors.txt ${COMMON_DIR}
+	cp ${ROOT}/bin/docker/Dockerfile ${COMMON_DIR}
+	cp ${ROOT}/bin/server-installer.sh ${COMMON_DIR}
+	chmod +x ${COMMON_DIR}/data/scripts/ping.sh
+	cp ${ROOT}/bin/server ${COMMON_DIR}
 
 build_archive:
 	@echo MARK: build app archive
-	cd ${TMP_DIR} && ls -l && tar -zcf ${HOME}/${ARCHIVE} .
+	cd ${COMMON_DIR} && ls -l && tar -zcf ${HOME}/${ARCHIVE} .
 
 build_docs:
 	@echo MARK: build doc
@@ -210,7 +226,7 @@ docs_deploy:
 	echo -e "Done documentation deploy.\n"
 
 docker_image:
-	cd ${TMP_DIR} && ls -ll && docker build -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
+	cd ${SERVER_DIR} && ls -ll && docker build -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
 
 docker_image_upload:
 	echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
@@ -222,7 +238,7 @@ docker_image_upload:
 
 clean:
 	@echo MARK: clean
-	rm -rf ${TMP_DIR}
+	rm -rf ${SERVER_DIR}
 	rm -f ${ROOT}/${EXEC}-linux-amd64
 	rm -f ${ROOT}/${EXEC}-linux-arm-7
 	rm -f ${ROOT}/${EXEC}-linux-arm-6
