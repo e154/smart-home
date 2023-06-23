@@ -114,10 +114,8 @@ func (r Automation) ImportTask(obj *api.NewTaskRequest) (task *m.Task) {
 	// triggers
 
 	for _, t := range obj.Triggers {
-		_, script := ImportScript(t.Script)
 		trigger := &m.Trigger{
 			Name:       t.Name,
-			Script:     script,
 			PluginName: t.PluginName,
 			ScriptId:   t.ScriptId,
 			EntityId:   common.NewEntityIdFromPtr(t.EntityId),
