@@ -41,6 +41,8 @@ const (
 
 	// EntityType ...
 	EntityType = "version"
+
+	Version = "0.0.1"
 )
 
 // NewAttr ...

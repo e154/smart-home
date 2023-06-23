@@ -22,6 +22,8 @@ const (
 
 	ActionEnabled = "enable"
 	ActionDisable = "disable"
+
+	Version = "0.0.1"
 )
 
 // store entity status in this struct

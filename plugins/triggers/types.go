@@ -32,6 +32,8 @@ const (
 	TopicSystemStart = "system_start"
 	// TopicSystemStop ...
 	TopicSystemStop = "system_stop"
+
+	Version = "0.0.1"
 )
 
 // IGetTrigger ...

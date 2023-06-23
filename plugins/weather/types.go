@@ -28,6 +28,8 @@ import (
 )
 
 const (
+	Version = "0.0.1"
+
 	AttrForecast     = "forecast"
 	AttrForecastDay1 = "forecast_day1"
 	AttrForecastDay2 = "forecast_day2"

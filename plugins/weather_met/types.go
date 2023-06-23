@@ -29,6 +29,8 @@ const (
 	Attribution = "Weather forecast from met.no, delivered by the Norwegian Meteorological Institute."
 	// FuncEntityAction ...
 	FuncEntityAction = "entityAction"
+
+	Version = "0.0.1"
 )
 
 // MaxTemperature ...

@@ -40,6 +40,8 @@ const (
 	AttrType = "Type"
 	// AttrAmount ...
 	AttrAmount = "Amount"
+
+	Version = "0.0.1"
 )
 
 const (

@@ -111,7 +111,14 @@ export default {
       description: 'Description',
       createdAt: 'Created at',
       updatedAt: 'Updated at'
-    }
+    },
+    scriptInfo: 'Info',
+    alexaIntents: 'Alexa Intents',
+    entityActions: 'Entity Actions',
+    entityScripts: 'Entity Scripts',
+    automationTriggers: 'Automation Triggers',
+    automationConditions: 'Automation Conditions',
+    automationActions: 'Automation Actions'
   },
   plugins: {
     table: {
@@ -202,6 +209,9 @@ export default {
     table: {
       id: 'Id',
       name: 'Name',
+      action: 'Action',
+      actions: 'Actions',
+      triggers: 'Triggers',
       description: 'Description',
       enabled: 'Enabled',
       condition: 'Condition',

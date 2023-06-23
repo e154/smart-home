@@ -19,6 +19,7 @@
 package adaptors
 
 import (
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"github.com/jinzhu/gorm"
@@ -69,29 +70,38 @@ func (n *Action) AddMultiple(items []*m.Action) (err error) {
 
 func (n *Action) fromDb(dbVer *db.Action) (ver *m.Action) {
 	ver = &m.Action{
-		Id:       dbVer.Id,
-		Name:     dbVer.Name,
-		TaskId:   dbVer.TaskId,
-		ScriptId: dbVer.ScriptId,
+		Id:               dbVer.Id,
+		Name:             dbVer.Name,
+		TaskId:           dbVer.TaskId,
+		ScriptId:         dbVer.ScriptId,
+		EntityId:         dbVer.EntityId,
+		EntityActionName: dbVer.EntityActionName,
 	}
 	// script
 	if dbVer.Script != nil {
 		scriptAdaptor := GetScriptAdaptor(n.db)
 		ver.Script, _ = scriptAdaptor.fromDb(dbVer.Script)
 	}
+	// entity
+	if dbVer.Entity != nil {
+		entityAdaptor := GetEntityAdaptor(n.db)
+		ver.Entity = entityAdaptor.fromDb(dbVer.Entity)
+	}
 	return
 }
 
 func (n *Action) toDb(ver *m.Action) (dbVer *db.Action) {
 	dbVer = &db.Action{
-		Id:       ver.Id,
-		Name:     ver.Name,
-		TaskId:   ver.TaskId,
-		ScriptId: ver.ScriptId,
+		Id:               ver.Id,
+		Name:             ver.Name,
+		TaskId:           ver.TaskId,
+		ScriptId:         ver.ScriptId,
+		EntityId:         ver.EntityId,
+		EntityActionName: ver.EntityActionName,
 	}
 
 	if ver.Script != nil {
-		dbVer.ScriptId = ver.Script.Id
+		dbVer.ScriptId = common.Int64(ver.Script.Id)
 	}
 
 	return

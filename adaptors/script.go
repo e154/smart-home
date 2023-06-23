@@ -21,7 +21,6 @@ package adaptors
 import (
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/copier"
 	"github.com/jinzhu/gorm"
 )
 
@@ -139,14 +138,30 @@ func (n *Script) Search(query string, limit, offset int64) (list []*m.Script, to
 	return
 }
 
-func (n *Script) fromDb(dbScript *db.Script) (script *m.Script, err error) {
-	script = &m.Script{}
-	err = copier.Copy(&script, &dbScript)
+func (n *Script) fromDb(dbVer *db.Script) (ver *m.Script, err error) {
+	ver = &m.Script{
+		Id:          dbVer.Id,
+		Lang:        dbVer.Lang,
+		Name:        dbVer.Name,
+		Source:      dbVer.Source,
+		Description: dbVer.Description,
+		Compiled:    dbVer.Compiled,
+		CreatedAt:   dbVer.CreatedAt,
+		UpdatedAt:   dbVer.UpdatedAt,
+		Info: &m.ScriptInfo{
+			AlexaIntents:         dbVer.AlexaIntents,
+			EntityActions:        dbVer.EntityActions,
+			EntityScripts:        dbVer.EntityScripts,
+			AutomationTriggers:   dbVer.AutomationTriggers,
+			AutomationConditions: dbVer.AutomationConditions,
+			AutomationActions:    dbVer.AutomationActions,
+		},
+	}
 	return
 }
 
-func (n *Script) toDb(script *m.Script) (dbScript *db.Script) {
-	dbScript = &db.Script{
+func (n *Script) toDb(script *m.Script) (dbVer *db.Script) {
+	dbVer = &db.Script{
 		Id:          script.Id,
 		Lang:        script.Lang,
 		Name:        script.Name,

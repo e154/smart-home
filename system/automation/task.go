@@ -20,7 +20,6 @@ package automation
 
 import (
 	"fmt"
-
 	"github.com/e154/smart-home/common"
 
 	"github.com/e154/smart-home/common/apperr"

@@ -31,8 +31,8 @@ import (
 // IEntity ...
 type IEntity interface {
 	Add(ver *m.Entity) (err error)
-	GetById(id common.EntityId) (ver *m.Entity, err error)
-	GetByIds(ids []common.EntityId) (ver []*m.Entity, err error)
+	GetById(id common.EntityId, preloadMetric ...bool) (ver *m.Entity, err error)
+	GetByIds(ids []common.EntityId, preloadMetric ...bool) (ver []*m.Entity, err error)
 	Delete(id common.EntityId) (err error)
 	List(limit, offset int64, orderBy, sort string, autoLoad bool) (list []*m.Entity, total int64, err error)
 	GetByType(t string, limit, offset int64) (list []*m.Entity, err error)
@@ -174,7 +174,7 @@ func (n *Entity) Import(ver *m.Entity) (err error) {
 		for i, action := range ver.Actions {
 			if action.Script != nil {
 				var foundedScript *m.Script
-				if foundedScript, err = GetScriptAdaptor(n.db).GetByName(action.Script.Name); err == nil {
+				if foundedScript, err = scriptAdaptor.GetByName(action.Script.Name); err == nil {
 					action.Script = foundedScript
 				} else {
 					action.Script.Id = 0
@@ -216,7 +216,7 @@ func (n *Entity) Import(ver *m.Entity) (err error) {
 	// scripts
 	for _, script := range ver.Scripts {
 		var foundedScript *m.Script
-		if foundedScript, err = GetScriptAdaptor(n.db).GetByName(script.Name); err == nil {
+		if foundedScript, err = scriptAdaptor.GetByName(script.Name); err == nil {
 			script = foundedScript
 		} else {
 			script.Id = 0
@@ -232,7 +232,7 @@ func (n *Entity) Import(ver *m.Entity) (err error) {
 }
 
 // GetById ...
-func (n *Entity) GetById(id common.EntityId) (ver *m.Entity, err error) {
+func (n *Entity) GetById(id common.EntityId, preloadMetric ...bool) (ver *m.Entity, err error) {
 
 	var dbVer *db.Entity
 	if dbVer, err = n.table.GetById(id); err != nil {
@@ -241,13 +241,15 @@ func (n *Entity) GetById(id common.EntityId) (ver *m.Entity, err error) {
 
 	ver = n.fromDb(dbVer)
 
-	n.preloadMetric(ver)
+	if len(preloadMetric) > 0 && preloadMetric[0] {
+		n.preloadMetric(ver)
+	}
 
 	return
 }
 
 // GetByIds ...
-func (n *Entity) GetByIds(ids []common.EntityId) (list []*m.Entity, err error) {
+func (n *Entity) GetByIds(ids []common.EntityId, preloadMetric ...bool) (list []*m.Entity, err error) {
 
 	var dbList []*db.Entity
 	if dbList, err = n.table.GetByIds(ids); err != nil {
@@ -256,7 +258,9 @@ func (n *Entity) GetByIds(ids []common.EntityId) (list []*m.Entity, err error) {
 	list = make([]*m.Entity, len(dbList))
 	for i, dbVer := range dbList {
 		ver := n.fromDb(dbVer)
-		n.preloadMetric(ver)
+		if len(preloadMetric) > 0 && preloadMetric[0] {
+			n.preloadMetric(ver)
+		}
 		list[i] = ver
 	}
 

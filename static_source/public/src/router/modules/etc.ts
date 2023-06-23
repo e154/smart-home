@@ -21,6 +21,26 @@ const etcRouter: RouteConfig = {
       }
     },
     {
+      path: 'variables/edit/:name',
+      component: () => import('@/views/variables/edit.vue'),
+      props: true,
+      name: 'variable edit',
+      meta: {
+        title: 'variableEdit',
+        hidden: true
+      }
+    },
+    {
+      path: 'variables/new',
+      component: () => import('@/views/variables/new.vue'),
+      props: true,
+      name: 'variable new',
+      meta: {
+        title: 'variableNew',
+        hidden: true
+      }
+    },
+    {
       path: 'plugins',
       component: () => import('@/views/plugins/index.vue'),
       name: 'plugins',
