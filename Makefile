@@ -187,7 +187,7 @@ build_common_structure:
 
 build_archive:
 	@echo MARK: build app archive
-	cd ${COMMON_DIR} && ls -l && tar -zcf ${HOME}/${ARCHIVE} .
+	cd ${COMMON_DIR} && ls -l && tar -zcf ${ROOT}/${ARCHIVE} .
 
 build_docs:
 	@echo MARK: build doc
