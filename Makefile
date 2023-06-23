@@ -163,6 +163,7 @@ build_structure:
 	cp ${ROOT}/${EXEC}-linux-arm-6 ${TMP_DIR}
 	cp ${ROOT}/${EXEC}-linux-arm-5 ${TMP_DIR}
 	cp ${ROOT}/${EXEC}-darwin-10.6-amd64 ${TMP_DIR}
+	cp ${ROOT}/${EXEC}-darwin-10.6-arm64 ${TMP_DIR}
 	cp ${ROOT}/${CLI}-darwin-10.6-amd64 ${TMP_DIR}
 	cp ${ROOT}/${CLI}-darwin-10.6-arm64 ${TMP_DIR}
 	cp ${ROOT}/${CLI}-linux-amd64 ${TMP_DIR}
