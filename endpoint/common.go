@@ -21,6 +21,7 @@ package endpoint
 import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
@@ -43,6 +44,7 @@ type CommonEndpoint struct {
 	mqtt          mqtt.MqttServ
 	jwtManager    jwt_manager.JwtManager
 	validation    *validation.Validate
+	appConfig     *m.AppConfig
 }
 
 // NewCommonEndpoint ...
@@ -56,6 +58,7 @@ func NewCommonEndpoint(adaptors *adaptors.Adaptors,
 	mqtt mqtt.MqttServ,
 	jwtManager jwt_manager.JwtManager,
 	validation *validation.Validate,
+	appConfig *m.AppConfig,
 ) *CommonEndpoint {
 	return &CommonEndpoint{
 		adaptors:      adaptors,
@@ -68,5 +71,6 @@ func NewCommonEndpoint(adaptors *adaptors.Adaptors,
 		mqtt:          mqtt,
 		jwtManager:    jwtManager,
 		validation:    validation,
+		appConfig:     appConfig,
 	}
 }

@@ -20,9 +20,8 @@ package api
 
 // Config ...
 type Config struct {
-	GrpcHostPort string
-	HttpHostPort string
-	PromHostPort string
-	Swagger      bool
-	Debug        bool
+	GrpcPort int
+	HttpPort int
+	Swagger  bool
+	Debug    bool
 }

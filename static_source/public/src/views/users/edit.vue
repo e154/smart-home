@@ -48,7 +48,7 @@
               />
             </el-form-item>
 
-            <el-form-item :label="$t('user.table.status')" prop="status">
+            <el-form-item :label="$t('users.table.status')" prop="role">
               <el-select
                 v-model="currentUser.status"
                 placeholder="please select status"

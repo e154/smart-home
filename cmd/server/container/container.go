@@ -91,6 +91,7 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 			entity_manager.NewEntityManager,
 			automation.NewAutomation,
 			bus.NewBus,
+			endpoint.NewCommonEndpoint,
 			endpoint.NewEndpoint,
 			NewApiConfig,
 			api.NewApi,

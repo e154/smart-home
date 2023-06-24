@@ -20,17 +20,17 @@ package endpoint
 
 import (
 	"context"
-	"github.com/e154/smart-home/plugins/html5_notify"
-	"github.com/e154/smart-home/plugins/webpush"
 	"strings"
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/email"
+	"github.com/e154/smart-home/plugins/html5_notify"
 	"github.com/e154/smart-home/plugins/messagebird"
 	"github.com/e154/smart-home/plugins/notify"
 	"github.com/e154/smart-home/plugins/slack"
 	"github.com/e154/smart-home/plugins/telegram"
+	"github.com/e154/smart-home/plugins/webpush"
 )
 
 // NotifyEndpoint ...
@@ -46,7 +46,7 @@ func NewNotifyEndpoint(common *CommonEndpoint) *NotifyEndpoint {
 }
 
 // Repeat ...
-func (n *NotifyEndpoint) Repeat(ctx context.Context ,id int64) (err error) {
+func (n *NotifyEndpoint) Repeat(ctx context.Context, id int64) (err error) {
 
 	var msg *m.MessageDelivery
 	msg, err = n.adaptors.MessageDelivery.GetById(ctx, id)

@@ -20,9 +20,9 @@ package controllers
 
 import (
 	"context"
-
 	"github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/location"
 	m "github.com/e154/smart-home/models"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -45,7 +45,7 @@ func NewControllerAuth(common *ControllerCommon) ControllerAuth {
 // Signin ...
 func (a ControllerAuth) Signin(ctx context.Context, _ *emptypb.Empty) (resp *api.SigninResponse, err error) {
 
-	var internalServerError = status.Error(codes.Unauthenticated, "INTERNAL_SERVER_ERROR")
+	var internalServerError = status.Error(codes.Unauthenticated, "user is not found")
 	meta, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, internalServerError
@@ -58,7 +58,10 @@ func (a ControllerAuth) Signin(ctx context.Context, _ *emptypb.Empty) (resp *api
 
 	var user *m.User
 	var accessToken string
-	if user, accessToken, err = a.endpoint.Auth.SignIn(ctx, username, pass, ""); err != nil {
+
+	info, _ := location.GetRegionInfo()
+
+	if user, accessToken, err = a.endpoint.Auth.SignIn(ctx, username, pass, info.Ip); err != nil {
 		return nil, internalServerError
 	}
 
@@ -76,7 +79,7 @@ func (a ControllerAuth) Signin(ctx context.Context, _ *emptypb.Empty) (resp *api
 // Signout ...
 func (a ControllerAuth) Signout(ctx context.Context, _ *emptypb.Empty) (*emptypb.Empty, error) {
 
-	var internalServerError = status.Error(codes.Unauthenticated, "INTERNAL_SERVER_ERROR")
+	var internalServerError = status.Error(codes.PermissionDenied, "Permission Denied")
 	currentUser, err := a.currentUser(ctx)
 	if err != nil {
 		return nil, internalServerError
@@ -92,7 +95,7 @@ func (a ControllerAuth) Signout(ctx context.Context, _ *emptypb.Empty) (*emptypb
 // AccessList ...
 func (a ControllerAuth) AccessList(ctx context.Context, _ *emptypb.Empty) (*api.AccessListResponse, error) {
 
-	var internalServerError = status.Error(codes.Unauthenticated, "INTERNAL_SERVER_ERROR")
+	var internalServerError = status.Error(codes.PermissionDenied, "Permission Denied")
 	currentUser, err := a.currentUser(ctx)
 	if err != nil {
 		return nil, internalServerError
@@ -108,4 +111,12 @@ func (a ControllerAuth) AccessList(ctx context.Context, _ *emptypb.Empty) (*api.
 	}
 
 	return result, nil
+}
+
+// PasswordReset ...
+func (a ControllerAuth) PasswordReset(ctx context.Context, req *api.PasswordResetRequest) (*emptypb.Empty, error) {
+	if err := a.endpoint.Auth.PasswordReset(ctx, req.Email, req.Token, req.NewPassword); err != nil {
+		return nil, status.Error(codes.Unauthenticated, "user is not found")
+	}
+	return &emptypb.Empty{}, nil
 }

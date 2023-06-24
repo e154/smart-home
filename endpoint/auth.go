@@ -21,10 +21,10 @@ package endpoint
 import (
 	"context"
 	"fmt"
-
 	"github.com/e154/smart-home/common/apperr"
-
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/plugins/email"
+	"github.com/e154/smart-home/plugins/notify"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/pkg/errors"
 )
@@ -79,17 +79,78 @@ func (a *AuthEndpoint) SignIn(ctx context.Context, email, password string, ip st
 func (a *AuthEndpoint) SignOut(ctx context.Context, user *m.User) (err error) {
 	err = a.adaptors.User.ClearToken(user)
 	if err != nil {
-		err = errors.Wrap(apperr.ErrInternal, err.Error())
+		err = errors.Wrap(apperr.ErrNotAllowed, err.Error())
 		return
 	}
 	return
 }
 
-// Recovery ...
-func (a *AuthEndpoint) Recovery(ctx context.Context) {}
+// PasswordReset ...
+func (a *AuthEndpoint) PasswordReset(ctx context.Context, userEmail string, token, newPassword *string) (err error) {
 
-// Reset ...
-func (a *AuthEndpoint) Reset(ctx context.Context) {}
+	if token != nil {
+
+		if newPassword == nil {
+			err = errors.New("password is required")
+			return
+		}
+
+		var user *m.User
+		if user, err = a.adaptors.User.GetByResetPassToken(*token); err != nil {
+			return
+		}
+
+		if err = user.SetPass(*newPassword); err != nil {
+			return
+		}
+
+		user.ResetPasswordToken = ""
+		user.ResetPasswordSentAt = nil
+		err = a.adaptors.User.Update(user)
+
+		return
+	}
+
+	var user *m.User
+	if user, err = a.adaptors.User.GetByEmail(userEmail); err != nil {
+		err = errors.Wrap(apperr.ErrNotAllowed, err.Error())
+		return
+	}
+
+	if user.ResetPasswordSentAt != nil {
+		err = errors.Wrap(apperr.ErrNotAllowed, err.Error())
+		return
+	}
+
+	var resetToken string
+	if resetToken, err = a.adaptors.User.GenResetPassToken(user); err != nil {
+		err = errors.Wrap(apperr.ErrNotAllowed, err.Error())
+		return
+	}
+
+	renderParams := map[string]interface{}{
+		"site:name":               "Smart home",
+		"user:name:first":         user.FirstName,
+		"user:name:last":          user.LastName,
+		"user:one-time-login-url": fmt.Sprintf("%s/#/password_reset?t=%s", a.appConfig.ApiFullAddress(), resetToken),
+	}
+
+	var render *m.TemplateRender
+	if render, err = a.adaptors.Template.Render("password_reset", renderParams); err != nil {
+		return
+	}
+
+	a.eventBus.Publish(notify.TopicNotify, notify.Message{
+		Type: email.Name,
+		Attributes: map[string]interface{}{
+			email.AttrAddresses: user.Email,
+			email.AttrSubject:   "Reset your Smart home password",
+			email.AttrBody:      render.Body,
+		},
+	})
+
+	return
+}
 
 // AccessList ...
 func (a *AuthEndpoint) AccessList(ctx context.Context, user *m.User, accessListService access_list.AccessListService) (accessList *access_list.AccessList, err error) {

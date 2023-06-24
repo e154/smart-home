@@ -136,6 +136,7 @@ export default class extends Vue {
         // notifr
         {text: 'notifr.newMessage()', displayText: 'notifr.newMessage'},
         {text: 'notifr.send(msg)', displayText: 'notifr.send'},
+        {text: 'template.render(name, params)', displayText: 'template.render'},
 
         // logging
         {text: 'print', displayText: 'print'},

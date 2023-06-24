@@ -29,6 +29,8 @@ type AuthServiceClient interface {
 	Signout(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// get user access list object
 	AccessList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*AccessListResponse, error)
+	// sign out user
+	PasswordReset(ctx context.Context, in *PasswordResetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type authServiceClient struct {
@@ -66,6 +68,15 @@ func (c *authServiceClient) AccessList(ctx context.Context, in *emptypb.Empty, o
 	return out, nil
 }
 
+func (c *authServiceClient) PasswordReset(ctx context.Context, in *PasswordResetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/api.AuthService/PasswordReset", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations should embed UnimplementedAuthServiceServer
 // for forward compatibility
@@ -76,6 +87,8 @@ type AuthServiceServer interface {
 	Signout(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
 	// get user access list object
 	AccessList(context.Context, *emptypb.Empty) (*AccessListResponse, error)
+	// sign out user
+	PasswordReset(context.Context, *PasswordResetRequest) (*emptypb.Empty, error)
 }
 
 // UnimplementedAuthServiceServer should be embedded to have forward compatible implementations.
@@ -90,6 +103,9 @@ func (UnimplementedAuthServiceServer) Signout(context.Context, *emptypb.Empty) (
 }
 func (UnimplementedAuthServiceServer) AccessList(context.Context, *emptypb.Empty) (*AccessListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AccessList not implemented")
+}
+func (UnimplementedAuthServiceServer) PasswordReset(context.Context, *PasswordResetRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PasswordReset not implemented")
 }
 
 // UnsafeAuthServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -157,6 +173,24 @@ func _AuthService_AccessList_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_PasswordReset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PasswordResetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).PasswordReset(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.AuthService/PasswordReset",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).PasswordReset(ctx, req.(*PasswordResetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -175,6 +209,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AccessList",
 			Handler:    _AuthService_AccessList_Handler,
+		},
+		{
+			MethodName: "PasswordReset",
+			Handler:    _AuthService_PasswordReset_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
