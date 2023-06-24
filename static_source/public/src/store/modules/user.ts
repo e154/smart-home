@@ -106,6 +106,16 @@ class User extends VuexModule implements IUserState {
   }
 
   @Action
+  public async PasswordReset(userInfo: { email?: string, token?: string, new_password?: string }) {
+    let {email, token, new_password} = userInfo;
+    return api.v1.authServicePasswordReset({
+      'email': email,
+      'token': token,
+      'new_password': new_password
+    });
+  }
+
+  @Action
   public ResetToken() {
     removeToken();
     this.SET_TOKEN('');

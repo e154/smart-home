@@ -51,7 +51,9 @@ export default {
     etc: 'etc',
     variables: 'Variables',
     backupList: 'Backups',
-    messageDelivery: 'Message Delivery'
+    messageDelivery: 'Message Delivery',
+    UserEdit: "Edit user",
+    UserNew: "New user"
   },
   navbar: {
     logOut: 'Log Out',
@@ -62,13 +64,20 @@ export default {
     profile: 'Profile'
   },
   login: {
+    email: 'Email',
     title: 'Login Form',
+    restore_title: 'Reset your password',
+    enter_new_password: 'Enter new password',
     logIn: 'Login',
+    restore: 'Restore',
+    returnToSignIn: 'Return to sign in',
     username: 'Username',
     password: 'Password',
     any: 'any',
     thirdparty: 'Or connect with',
-    thirdpartyTips: 'Can not be simulated on local, so please combine you own business simulation! ! !'
+    thirdpartyTips: 'Can not be simulated on local, so please combine you own business simulation! ! !',
+    'forgot-password': 'Forgot your password?',
+    backLink: 'Back to login form'
   },
   table: {
     dynamicTips1: 'Fixed header, sorted by header order',

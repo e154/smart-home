@@ -89,7 +89,7 @@ func (f *AccessFilter) AuthInterceptor(ctx context.Context, req interface{}, inf
 	//log.Debugf("method: %s", info.FullMethod)
 
 	switch info.FullMethod {
-	case "/api.AuthService/Signin":
+	case "/api.AuthService/Signin", "/api.AuthService/PasswordReset":
 		return handler(ctx, req)
 	}
 

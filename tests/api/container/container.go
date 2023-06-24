@@ -81,6 +81,7 @@ func BuildContainer() (container *dig.Container) {
 	_ = container.Provide(entity_manager.NewEntityManager)
 	_ = container.Provide(automation.NewAutomation)
 	_ = container.Provide(bus.NewBus)
+	_ = container.Provide(endpoint.NewCommonEndpoint)
 	_ = container.Provide(endpoint.NewEndpoint)
 	_ = container.Provide(handlers.NewEventHandler)
 	_ = container.Provide(controllers.NewControllers)

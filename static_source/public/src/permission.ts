@@ -1,19 +1,19 @@
 import router from './router'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
-import { Message } from 'element-ui'
-import { Route } from 'vue-router'
-import { UserModule } from '@/store/modules/user'
-import { PermissionModule } from '@/store/modules/permission'
+import {Message} from 'element-ui'
+import {Route} from 'vue-router'
+import {UserModule} from '@/store/modules/user'
+import {PermissionModule} from '@/store/modules/permission'
 import i18n from '@/lang' // Internationalization
 import settings from './settings'
 import stream from '@/api/stream'
 import customNavigator from '@/navigator';
 import registerServiceWorker from '@/pwa/register-service-worker';
 
-NProgress.configure({ showSpinner: false })
+NProgress.configure({showSpinner: false})
 
-const whiteList = ['/login', '/auth-redirect']
+const whiteList = ['/login', '/password_reset', '/auth-redirect']
 
 const getPageTitle = (key: string) => {
   const hasKey = i18n.te(`route.${key}`)
@@ -24,13 +24,13 @@ const getPageTitle = (key: string) => {
   return `${settings.title}`
 }
 
-router.beforeEach(async(to: Route, _: Route, next: any) => {
+router.beforeEach(async (to: Route, _: Route, next: any) => {
   // Start progress bar
   NProgress.start()
 
   // Determine whether the user has logged in
   if (UserModule.token) {
-    if (to.path === '/login') {
+    if (to.path === '/login' || to.path === '/password_reset') {
       // If is logged in, redirect to the home page
       next({ path: '/' })
       NProgress.done()
@@ -55,7 +55,7 @@ router.beforeEach(async(to: Route, _: Route, next: any) => {
           })
           // Hack: ensure addRoutes is complete
           // Set the replace: true, so the navigation will not leave a history record
-          next({ ...to, replace: true })
+          next({...to, replace: true})
         } catch (err) {
           // Remove token and redirect to login page
           UserModule.ResetToken()
