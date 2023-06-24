@@ -62,10 +62,19 @@
         </el-form-item>
       </el-tooltip>
 
+      <el-row>
+        <el-col>
+          <span class="cursor-pointer"
+                @click="gotoRestorePage()">
+              {{ $t('login.forgot-password') }}
+            </span>
+        </el-col>
+      </el-row>
+
       <el-button
         :loading="loading"
         type="primary"
-        style="width:100%; margin-bottom:30px;"
+        style="width:100%; margin:20px 0 30px 0;"
         @click.native.prevent="handleLogin"
       >
         {{ $t('login.logIn') }}
@@ -73,16 +82,6 @@
 
     </el-form>
 
-    <el-dialog
-      :title="$t('login.thirdparty')"
-      :visible.sync="showDialog"
-    >
-      {{ $t('login.thirdpartyTips') }}
-      <br>
-      <br>
-      <br>
-      <social-sign />
-    </el-dialog>
   </div>
 </template>
 
@@ -94,31 +93,15 @@ import { Form as ElForm, Input } from 'element-ui'
 import { UserModule } from '@/store/modules/user'
 import { isValidUsername } from '@/utils/validate'
 import LangSelect from '@/components/LangSelect/index.vue'
-import SocialSign from './components/SocialSignin.vue'
+import router from "@/router";
 
 @Component({
   name: 'Login',
   components: {
     LangSelect,
-    SocialSign
   }
 })
 export default class extends Vue {
-  private validateUsername = (rule: any, value: string, callback: Function) => {
-    // if (!isValidUsername(value)) {
-    //   callback(new Error('Please enter the correct user name'))
-    // } else {
-    callback()
-    // }
-  }
-
-  private validatePassword = (rule: any, value: string, callback: Function) => {
-    if (value.length < 4) {
-      callback(new Error('The password can not be less than 6 digits'))
-    } else {
-      callback()
-    }
-  }
 
   private loginForm = {
     username: 'admin@e154.ru',
@@ -126,8 +109,12 @@ export default class extends Vue {
   }
 
   private loginRules = {
-    username: [{ validator: this.validateUsername, trigger: 'blur' }],
-    password: [{ validator: this.validatePassword, trigger: 'blur' }]
+    username: [
+      { required: true, trigger: 'blur' },
+    ],
+    password: [
+      { required: true, trigger: 'blur' },
+    ]
   }
 
   private passwordType = 'password'
@@ -176,17 +163,18 @@ export default class extends Vue {
     (this.$refs.loginForm as ElForm).validate(async(valid: boolean) => {
       if (valid) {
         this.loading = true
-        await UserModule.Signin(this.loginForm)
-        this.$router.push({
-          path: this.redirect || '/',
-          query: this.otherQuery
-        }).catch(err => {
-          console.warn(err)
-        })
-        // Just to simulate the time of the request
-        setTimeout(() => {
+        UserModule.Signin(this.loginForm).then(()=>{
           this.loading = false
-        }, 0.5 * 1000)
+          this.$router.push({
+            path: this.redirect || '/',
+            query: this.otherQuery
+          }).catch(err => {
+            console.warn(err)
+          })
+
+        }).catch((e: any)=>{
+          this.loading = false
+        })
       } else {
         return false
       }
@@ -200,6 +188,10 @@ export default class extends Vue {
       }
       return acc
     }, {} as Dictionary<string>)
+  }
+
+  private gotoRestorePage() {
+    router.push({path: `/password_reset`})
   }
 }
 </script>
@@ -322,6 +314,11 @@ export default class extends Vue {
     .thirdparty-button {
       display: none;
     }
+  }
+
+  .cursor-pointer {
+    cursor: pointer;
+    color: $lightGray;
   }
 }
 </style>

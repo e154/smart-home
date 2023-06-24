@@ -1,6 +1,6 @@
 import {Api} from '@/api/stub';
 import {UserModule} from '@/store/modules/user';
-import {Message, MessageBox, Notification} from 'element-ui';
+import {Message, Notification} from 'element-ui';
 
 const api = new Api({
   baseURL: process.env.VUE_APP_BASE_API || '/', // url = base url + request url
@@ -24,64 +24,50 @@ api.instance.interceptors.request.use(
 // Response interceptors
 api.instance.interceptors.response.use(
   (response) => {
-    // Some example codes here:
-    // code == 200: success
-    // You can change this part for your own usage.
     const res = response.data;
-    if (response.status !== 200) {
-      Message({
-        message: res.message || 'Error',
-        type: 'error',
-        duration: 5 * 1000
-      });
-      if (response.status === 401 || response.status === 400) {
-        MessageBox.confirm(
-          '你已被登出，可以取消继续留在该页面，或者重新登录',
-          '确定登出',
-          {
-            confirmButtonText: '重新登录',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }
-        ).then(() => {
-          UserModule.ResetToken();
-          location.reload(); // To prevent bugs from vue-router
-        });
-      }
-      return Promise.reject(new Error(res.message || 'Error'));
-    } else {
-      if (response.data && response.data.meta) {
-        response.data.meta.limit = +response.data.meta.limit;
-        response.data.meta.page = +response.data.meta.page;
-        response.data.meta.total = +response.data.meta.total;
-      }
-      return response;
+    if (res && res.meta) {
+      res.meta.limit = +res.meta.limit;
+      res.meta.page = +res.meta.page;
+      res.meta.total = +res.meta.total;
     }
+    return response;
   },
   (error) => {
     if (!error.response) {
       return
     }
+    const response = error.response
+    const res = response.data;
 
-    const res = error.response.data;
+    Message({
+      message: res.message || 'Error',
+      type: 'error',
+      duration: 5 * 1000
+    });
 
-    for (const i in res.details) {
-      Notification({
-        message: res.details[i].description || 'unknown error',
-        title: 'Warning',
-        type: 'warning',
-        showClose: true,
-      });
+    if (response.status === 401 || response.status === 400) {
+
+      if (location.toString().includes('/login') || location.toString().includes('/password_reset')) {
+        return
+      }
+
+      UserModule.ResetToken();
+      location.reload() // To prevent bugs from vue-router
+      return
     }
-    setTimeout(() => {
-      Notification({
-        message: res.message || 'Error',
-        title: 'Error',
-        type: 'error',
-        duration: 5 * 1000,
-        showClose: true,
-      });
-    }, 100)
+
+    if (res.details) {
+      for (const i in res.details) {
+        Notification({
+          message: res.details[i].description || 'unknown error',
+          title: 'Warning',
+          type: 'warning',
+          showClose: true,
+          duration: 5 * 1000,
+        });
+      }
+    }
+
     return Promise.reject(error);
   }
 );

@@ -19,6 +19,12 @@ message AccessListResponse {
   AccessList access_list = 1;
 }
 
+message PasswordResetRequest {
+  string email = 1;
+  optional string token = 2;
+  optional string new_password = 3;
+}
+
 service AuthService {
 
   // sign in user
@@ -64,6 +70,15 @@ service AuthService {
         }
       }
     };
+  }
+
+  // sign out user
+  rpc PasswordReset (PasswordResetRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post: "/v1/password_reset"
+      body: "*"
+    };
+
   }
 }
 

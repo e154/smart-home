@@ -19,19 +19,9 @@
 package endpoint
 
 import (
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/logger"
-	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/backup"
-	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/jwt_manager"
-	"github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/stream"
-	"github.com/e154/smart-home/system/validation"
-	"github.com/e154/smart-home/system/zigbee2mqtt"
 )
 
 var (
@@ -72,19 +62,7 @@ type Endpoint struct {
 }
 
 // NewEndpoint ...
-func NewEndpoint(adaptors *adaptors.Adaptors,
-	scriptService scripts.ScriptService,
-	accessList access_list.AccessListService,
-	zigbee2mqtt zigbee2mqtt.Zigbee2mqtt,
-	entityManager entity_manager.EntityManager,
-	eventBus bus.Bus,
-	pluginManager common.PluginManager,
-	mqtt mqtt.MqttServ,
-	jwtManager jwt_manager.JwtManager,
-	validation *validation.Validate,
-	backup *backup.Backup,
-	stream *stream.Stream) *Endpoint {
-	common := NewCommonEndpoint(adaptors, accessList, scriptService, zigbee2mqtt, eventBus, pluginManager, entityManager, mqtt, jwtManager, validation)
+func NewEndpoint(backup *backup.Backup, stream *stream.Stream, common *CommonEndpoint) *Endpoint {
 	return &Endpoint{
 		AlexaSkill:        NewAlexaSkillEndpoint(common),
 		Auth:              NewAuthEndpoint(common),

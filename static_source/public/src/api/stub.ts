@@ -2925,6 +2925,29 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         ...params,
       }),
 
+
+    /**
+     * No description
+     *
+     * @tags AuthService
+     * @name AuthServicePasswordReset
+     * @summary sign in user
+     * @request POST:/v1/password_reset
+     * @secure
+     */
+    authServicePasswordReset: (
+      body: { email?: string; token?: string; new_password?: string },
+                                params: RequestParams = {}) =>
+      this.request<any, RpcStatus>({
+        path: `/v1/password_reset`,
+        method: 'POST',
+        body: body,
+        secure: false,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
     /**
      * No description
      *
