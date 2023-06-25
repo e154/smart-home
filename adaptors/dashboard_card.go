@@ -191,6 +191,8 @@ func (n *DashboardCard) fromDb(dbVer *db.DashboardCard) (ver *m.DashboardCard) {
 		Enabled:        dbVer.Enabled,
 		DashboardTabId: dbVer.DashboardTabId,
 		Payload:        dbVer.Payload,
+		EntityId:       dbVer.EntityId,
+		Hidden:         dbVer.Hidden,
 		CreatedAt:      dbVer.CreatedAt,
 		UpdatedAt:      dbVer.UpdatedAt,
 	}
@@ -216,6 +218,8 @@ func (n *DashboardCard) toDb(ver *m.DashboardCard) (dbVer *db.DashboardCard) {
 		Enabled:        ver.Enabled,
 		DashboardTabId: ver.DashboardTabId,
 		Payload:        ver.Payload,
+		Hidden:         ver.Hidden,
+		EntityId:       ver.EntityId,
 	}
 
 	return
