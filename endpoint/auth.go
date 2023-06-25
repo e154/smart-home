@@ -27,6 +27,7 @@ import (
 	"github.com/e154/smart-home/plugins/notify"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/pkg/errors"
+	"time"
 )
 
 const (
@@ -106,7 +107,9 @@ func (a *AuthEndpoint) PasswordReset(ctx context.Context, userEmail string, toke
 
 		user.ResetPasswordToken = ""
 		user.ResetPasswordSentAt = nil
-		err = a.adaptors.User.Update(user)
+		if err = a.adaptors.User.Update(user); err == nil {
+			log.Warnf("The password for the %s user has just been updated", user.Email)
+		}
 
 		return
 	}
@@ -117,8 +120,8 @@ func (a *AuthEndpoint) PasswordReset(ctx context.Context, userEmail string, toke
 		return
 	}
 
-	if user.ResetPasswordSentAt != nil {
-		err = errors.Wrap(apperr.ErrNotAllowed, err.Error())
+	if user.ResetPasswordSentAt != nil && time.Now().Before(*user.ResetPasswordSentAt){
+		err = errors.Wrap(apperr.ErrNotAllowed, "reset request already exists")
 		return
 	}
 

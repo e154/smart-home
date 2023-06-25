@@ -705,7 +705,7 @@ export interface ApiRestoreBackupRequest {
 
 export interface ApiRole {
   parent?: ApiRole;
-  name?: string;
+  name: string;
   description?: string;
   children?: ApiRole[];
   accessList?: ApiRoleAccessList;

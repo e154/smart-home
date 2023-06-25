@@ -90,7 +90,7 @@ func (e *Actor) Send(address string, message *m.Message) error {
 
 	defer func() {
 		go func() { _ = e.UpdateStatus() }()
-		log.Debugf("Sent email '%s' to: '%s'", subject, address)
+		log.Infof("Sent email '%s' to: '%s'", subject, address)
 	}()
 
 	if common.TestMode() {
