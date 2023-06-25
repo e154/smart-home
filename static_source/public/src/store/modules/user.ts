@@ -136,16 +136,20 @@ class User extends VuexModule implements IUserState {
     if (!data) {
       throw Error('Verification failed, please Login again.');
     }
-    // const { roles, name, avatar, introduction, email } = user
+    const { role, nickname, image, email } = data
     // roles must be a non-empty array
-    // if (!roles || roles.length <= 0) {
-    //   throw Error('GetUserInfo: roles must be a non-null array!')
-    // }
-    this.SET_ROLES(['admin']);
-    this.SET_NAME(data.nickname);
-    this.SET_AVATAR('https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif');
-    this.SET_INTRODUCTION('I am a super administrator');
-    this.SET_EMAIL(data.email);
+    if (!role) {
+      throw Error('GetUserInfo: roles must be a non-null array!')
+    }
+    this.SET_ROLES([role.name]);
+    this.SET_NAME(nickname);
+    this.SET_INTRODUCTION('');
+    this.SET_EMAIL(email);
+    if (image) {
+      this.SET_AVATAR((process.env.VUE_APP_BASE_API || window.location.origin) + image.url);
+    } else {
+      this.SET_AVATAR('https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif');
+    }
   }
 
   @Action
@@ -179,6 +183,11 @@ class User extends VuexModule implements IUserState {
     TagsViewModule.delAllViews();
     this.SET_TOKEN('');
     this.SET_ROLES([]);
+  }
+
+  @Action
+  public gotoProfile() {
+    router.push({ path: `/etc/users/edit/${this.id}` })
   }
 }
 

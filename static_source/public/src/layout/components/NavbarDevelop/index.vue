@@ -46,11 +46,10 @@
           <i class="el-icon-caret-bottom"/>
         </div>
         <el-dropdown-menu slot="dropdown">
-          <router-link to="/profile/">
-            <el-dropdown-item>
-              {{ $t('navbar.profile') }}
-            </el-dropdown-item>
-          </router-link>
+          <el-dropdown-item
+            @click.native="gotoProfile">
+            {{ $t('navbar.profile') }}
+          </el-dropdown-item>
           <router-link to="/">
             <el-dropdown-item>
               {{ $t('navbar.dashboard') }}
@@ -113,6 +112,10 @@ export default class extends Vue {
 
   private toggleSideBar() {
     AppModule.ToggleSideBar(false)
+  }
+
+  private async gotoProfile() {
+    UserModule.gotoProfile()
   }
 
   private async logout() {

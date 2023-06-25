@@ -215,7 +215,7 @@ func (p *Actor) sendMsg(body string, chatId int64) (messageID int, err error) {
 	defer func() {
 		if err == nil {
 			go func() { _ = p.UpdateStatus() }()
-			log.Debugf("Sent message '%s' to chatId '%d'", body, chatId)
+			log.Infof("Sent message '%s' to chatId '%d'", body, chatId)
 		}
 	}()
 	if common.TestMode() {

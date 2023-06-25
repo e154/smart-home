@@ -132,24 +132,6 @@ export const dashboardRoutes: RouteConfig[] = [
       }
     ]
   },
-  {
-    path: '/profile',
-    component: Dashboard,
-    redirect: '/profile/index',
-    meta: {hidden: true},
-    children: [
-      {
-        path: 'index',
-        component: () => import(/* webpackChunkName: "profile" */ '@/views/profile/index.vue'),
-        name: 'Profile',
-        meta: {
-          title: 'profile',
-          icon: 'user',
-          noCache: true
-        }
-      }
-    ]
-  },
   // {
   //   path: '*',
   //   redirect: '/404',
@@ -187,24 +169,6 @@ export const developRoutes: RouteConfig[] = [
   dashboardsRouter,
   logsRouter,
   etcRouter,
-  {
-    path: '/profile',
-    component: Dashboard,
-    redirect: '/profile/index',
-    meta: {hidden: true},
-    children: [
-      {
-        path: 'index',
-        component: () => import(/* webpackChunkName: "profile" */ '@/views/profile/index.vue'),
-        name: 'Profile',
-        meta: {
-          title: 'profile',
-          icon: 'user',
-          noCache: true
-        }
-      }
-    ]
-  },
   {
     path: '*',
     redirect: '/404',

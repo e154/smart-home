@@ -1,6 +1,6 @@
 <template>
   <div>
-    <common-editor :item="item" :board="board"></common-editor>
+    <common-editor :item="item" :core="core"></common-editor>
 
     <el-divider content-position="left">Chart options</el-divider>
 
@@ -113,7 +113,7 @@ import {FilterList, RangeList} from '@/views/dashboard/card_items/chart/types';
 })
 export default class extends Vue {
   @Prop() private item!: CardItem;
-  @Prop() private board!: Core;
+  @Prop() private core!: Core;
 
   private rangeList = RangeList;
   private filterList = FilterList;

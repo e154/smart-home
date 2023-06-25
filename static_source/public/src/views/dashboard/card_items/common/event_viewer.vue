@@ -15,24 +15,23 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
-import { CardItem, Core, requestCurrentState } from '@/views/dashboard/core'
+import {Component, Prop, Vue} from 'vue-property-decorator'
+import {requestCurrentState} from '@/views/dashboard/core'
 import CommonEditor from '@/views/dashboard/card_items/common/editor.vue'
 import JsonEditor from '@/components/JsonEditor/index.vue'
+import {EventStateChange} from "@/api/stream_types";
+
+export interface Item {
+  entityId: string;
+  lastEvent: EventStateChange;
+}
 
 @Component({
   name: 'EventViewer',
-  components: { JsonEditor, CommonEditor }
+  components: {JsonEditor, CommonEditor}
 })
 export default class extends Vue {
-  @Prop() private item!: CardItem;
-  @Prop() private board!: Core;
-
-  private created() {
-  }
-
-  private mounted() {
-  }
+  @Prop() private item!: Item;
 
   get lastEvent() {
     return this.item.lastEvent || {}

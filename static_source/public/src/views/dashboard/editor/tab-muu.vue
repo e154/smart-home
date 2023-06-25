@@ -1,6 +1,6 @@
 <template>
   <vuuri
-    v-model="tab.cards"
+    v-model="tab.cards2"
     item-key="id"
     :get-item-width="getItemWidth"
     :get-item-height="getItemHeight"
@@ -62,7 +62,7 @@ export default class extends Vue {
     // todo
     // TypeError: Cannot read properties of undefined (reading 'update')
     // this.$refs.grid.update();
-    this.reload()
+    // this.reload()
   }
 
   onUpdated() {

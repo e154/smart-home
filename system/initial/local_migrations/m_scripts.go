@@ -11,14 +11,14 @@ import (
 )
 
 type MigrationScripts struct {
-	adaptors *adaptors.Adaptors
+	adaptors      *adaptors.Adaptors
 	scriptService scripts.ScriptService
 }
 
 func NewMigrationScripts(adaptors *adaptors.Adaptors,
 	scriptService scripts.ScriptService) *MigrationScripts {
 	return &MigrationScripts{
-		adaptors: adaptors,
+		adaptors:      adaptors,
 		scriptService: scriptService,
 	}
 }
@@ -59,4 +59,3 @@ func (n *MigrationScripts) Up(ctx context.Context, adaptors *adaptors.Adaptors) 
 	_, err := n.addScripts()
 	return err
 }
-
