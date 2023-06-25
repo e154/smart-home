@@ -62,7 +62,7 @@ export default class extends Vue {
     // todo
     // TypeError: Cannot read properties of undefined (reading 'update')
     // this.$refs.grid.update();
-    this.reload()
+    // this.reload()
   }
 
   onUpdated() {

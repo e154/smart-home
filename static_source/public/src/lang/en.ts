@@ -4,6 +4,7 @@ export default {
     dashboards: 'Dashboards',
     dashboardEdit: 'Edit',
     dashboardList: 'Dashboards',
+    dashboardView: "View",
     development: 'Development',
     documentation: 'Documentation',
     errorPages: 'Error Pages',
