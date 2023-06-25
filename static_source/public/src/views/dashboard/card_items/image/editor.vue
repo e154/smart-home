@@ -1,6 +1,6 @@
 <template>
   <div>
-    <common-editor :item="item" :board="board"></common-editor>
+    <common-editor :item="item" :core="core"></common-editor>
 
     <el-divider content-position="left">{{ $t('dashboard.editor.imageOptions') }}</el-divider>
 
@@ -43,7 +43,7 @@ import EventViewer from '@/views/dashboard/card_items/common/event_viewer.vue';
 })
 export default class extends Vue {
   @Prop() private item!: CardItem;
-  @Prop() private board!: Core;
+  @Prop() private core!: Core;
   @Prop() private index!: number;
 
   private created() {

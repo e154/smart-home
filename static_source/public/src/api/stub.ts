@@ -123,9 +123,13 @@ export interface ApiDashboardCard {
   weight: number;
   enabled: boolean;
   dashboardTabId: number;
-  payload: {};
+  payload: string;
   items: ApiDashboardCardItem[];
   entities: Map<string, ApiEntity>;
+  hidden: boolean;
+  showOn: string[];
+  hideOn: string[];
+  entityId: string;
   createdAt?: string;
   updatedAt?: string;
 }

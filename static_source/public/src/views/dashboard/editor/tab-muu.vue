@@ -1,6 +1,6 @@
 <template>
   <vuuri
-    v-model="tab.cards"
+    v-model="tab.cards2"
     item-key="id"
     :get-item-width="getItemWidth"
     :get-item-height="getItemHeight"
