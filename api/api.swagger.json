@@ -866,6 +866,12 @@
                   "items": {
                     "$ref": "#/definitions/UpdateDashboardCardRequestItem"
                   }
+                },
+                "hidden": {
+                  "type": "boolean"
+                },
+                "entityId": {
+                  "type": "string"
                 }
               }
             }
@@ -5465,6 +5471,12 @@
             "$ref": "#/definitions/apiEntity"
           }
         },
+        "hidden": {
+          "type": "boolean"
+        },
+        "entityId": {
+          "type": "string"
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time"
@@ -6524,6 +6536,12 @@
         "payload": {
           "type": "string",
           "format": "byte"
+        },
+        "hidden": {
+          "type": "boolean"
+        },
+        "entityId": {
+          "type": "string"
         }
       }
     },

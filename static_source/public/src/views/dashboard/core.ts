@@ -45,7 +45,7 @@ export interface PositionInfo {
   height: string;
 }
 
-// eq: равно равно равно
+// eq: равно
 // lt: меньше чем
 // le: меньше или равно
 // ne: не равно
@@ -158,9 +158,6 @@ export class CardItem {
       this.styleString = JSON.stringify(payload.style || {}, null, 2);
       if (payload.showOn) {
         this.showOn = payload.showOn;
-      }
-      if (payload.hideOn) {
-        this.hideOn = payload.hideOn;
       }
       if (payload.hideOn) {
         this.hideOn = payload.hideOn;
@@ -441,7 +438,7 @@ export class CardItem {
   // ---------------------------------
   // events
   // ---------------------------------
-  onStateChanged(event: EventStateChange) {
+  async onStateChanged(event: EventStateChange) {
     if (!this.entityId || event.entity_id != this.entityId) {
       return;
     }
@@ -510,13 +507,20 @@ export class Card {
   weight: number;
   enabled: boolean;
   dashboardTabId: number;
-  payload: {};
+  payload: ItemPayload = {} as ItemPayload;
   entities: Map<string, ApiEntity>;
   active = false;
+  hidden: boolean
+  showOn: CompareProp[] = [];
+  hideOn: CompareProp[] = [];
 
   selectedItem = -1;
 
   items: CardItem[] = [];
+
+  private _entityId: string;
+  private _entity?: ApiEntity = {} as ApiEntity;
+  private _lastEvent?: EventStateChange = {} as EventStateChange;
 
   constructor(card: ApiDashboardCard) {
     this.id = card.id;
@@ -527,9 +531,23 @@ export class Card {
     this.weight = card.weight;
     this.enabled = card.enabled;
     this.dashboardTabId = card.dashboardTabId;
-    this.payload = card.payload;
     this.entities = card.entities;
     this.items = [];
+    this._entityId = card.entityId;
+    this.hidden = card.hidden;
+    if (this._entityId) {
+      this._entity = {id: this._entityId} as ApiEntity;
+    }
+    if (card.payload) {
+      const result: any = JSON.parse(decodeURIComponent(escape(atob(card.payload))));
+      const payload = result as ItemParams;
+      if (payload.showOn) {
+        this.showOn = payload.showOn;
+      }
+      if (payload.hideOn) {
+        this.hideOn = payload.hideOn;
+      }
+    }
 
     for (const index in card.items) {
       this.items.push(new CardItem(card.items[index]));
@@ -616,6 +634,10 @@ export class Card {
       items.push(this.items[index].serialize());
     }
 
+    const payload = btoa(unescape(encodeURIComponent(JSON.stringify({
+      showOn: this.showOn,
+      hideOn: this.hideOn,
+    }))));
     const card = {
       id: this.id,
       background: this.background,
@@ -623,10 +645,12 @@ export class Card {
       enabled: this.enabled,
       height: this.height,
       weight: this.weight,
-      payload: this.payload,
+      payload: payload,
       title: this.title,
       width: this.width,
-      items: items
+      items: items,
+      entityId: this._entityId || null,
+      hidden: this.hidden,
     } as ApiDashboardCard;
     return card;
   }
@@ -641,6 +665,31 @@ export class Card {
 
   static async import(card: ApiDashboardCard) {
     // todo ...
+  }
+
+  // entity
+  get entity(): ApiEntity | undefined {
+    return this._entity;
+  }
+
+  set entity(entity: ApiEntity | undefined) {
+    this._entityId = entity?.id || '';
+    if (entity?.id) {
+      this._entity = entity;
+    } else {
+      this._entity = undefined;
+      return;
+    }
+  }
+
+  // entityId
+  get entityId(): string {
+    return this._entityId;
+  }
+
+  // lastEvent
+  get lastEvent(): EventStateChange | undefined {
+    return this._lastEvent;
   }
 
   // ---------------------------------
@@ -695,8 +744,66 @@ export class Card {
     for (const index in this.items) {
       this.items[index].onStateChanged(event);
     }
+
+    if (!this.entityId || event.entity_id != this.entityId) {
+      return;
+    }
+
+    // console.log(event);
+
+    this._lastEvent = event;
+    // this.update();
+
+    // hide
+    for (const prop of this.hideOn) {
+      let val = Resolve(prop.key, event);
+      if (!val) {
+        continue;
+      }
+      if (typeof val === 'object') {
+        if (val && val.hasOwnProperty('type') && val.hasOwnProperty('name')) {
+          val = GetAttrValue(val as Attribute);
+        }
+      }
+
+      if (val == undefined) {
+        val = '[NO VALUE]';
+      }
+
+      const tr = Compare(val, prop.value, prop.comparison);
+      if (tr) {
+        this.hidden = true;
+        // this.update();
+        return;
+      }
+    }
+
+    // show
+    for (const prop of this.showOn) {
+      let val = Resolve(prop.key, event);
+      if (!val) {
+        continue;
+      }
+      if (typeof val === 'object') {
+        if (val && val.hasOwnProperty('type') && val.hasOwnProperty('name')) {
+          val = GetAttrValue(val as Attribute);
+        }
+      }
+
+      if (val == undefined) {
+        val = '[NO VALUE]';
+      }
+
+      const tr = Compare(val, prop.value, prop.comparison);
+      if (tr) {
+        this.hidden = false;
+        this.update();
+        return;
+      }
+    }
+
   }
-}
+} // /Card
 
 export class Tab {
   background: string;
@@ -792,6 +899,18 @@ export class Tab {
 
   sortCards() {
     this.cards.sort(sortCards);
+  }
+
+  get cards2(): Card[] {
+    //todo fix items sort
+    let cards: Card[] = [];
+    for (let card of this.cards) {
+      if (card.hidden) {
+        continue
+      }
+      cards.push(card)
+    }
+    return cards
   }
 
   // ---------------------------------

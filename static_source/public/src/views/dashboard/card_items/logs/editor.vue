@@ -1,6 +1,6 @@
 <template>
   <div>
-    <common-editor :item="item" :board="board"></common-editor>
+    <common-editor :item="item" :core="core"></common-editor>
 
     <el-divider content-position="left">Logs options</el-divider>
 
@@ -31,7 +31,7 @@ import CommonEditor from '@/views/dashboard/card_items/common/editor.vue'
 })
 export default class extends Vue {
   @Prop() private item!: CardItem;
-  @Prop() private board!: Core;
+  @Prop() private core!: Core;
 
   private logsRules = {
     limit: [

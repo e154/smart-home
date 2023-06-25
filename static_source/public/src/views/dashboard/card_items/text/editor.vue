@@ -1,6 +1,6 @@
 <template>
   <div>
-    <common-editor :item="item" :board="board"></common-editor>
+    <common-editor :item="item" :core="core"></common-editor>
 
     <el-divider content-position="left">{{ $t('dashboard.editor.textOptions') }}</el-divider>
 
@@ -215,7 +215,7 @@ import {TextProp} from '@/views/dashboard/card_items/text/types';
 })
 export default class extends Vue {
   @Prop() private item!: CardItem;
-  @Prop() private board!: Core;
+  @Prop() private core!: Core;
 
   private _cache!: Cache;
   private tokens: string[] = [];

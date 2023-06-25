@@ -195,8 +195,8 @@ export default class extends Vue {
     return sort === `+${key}` ? 'ascending' : 'descending'
   }
 
-  private goto(area: ApiUserShot) {
-    router.push({ path: `/etc/users/edit/${area.id}` })
+  private goto(user: ApiUserShot) {
+    router.push({ path: `/etc/users/edit/${user.id}` })
   }
 
   private add() {

@@ -21,8 +21,6 @@ package controllers
 import (
 	"embed"
 	"fmt"
-	"net/url"
-
 	"html/template"
 	"net/http"
 
@@ -43,14 +41,9 @@ func NewControllerIndex(common *ControllerCommon) ControllerIndex {
 
 // Index ...
 func (c ControllerIndex) Index(publicAssets embed.FS) func(w http.ResponseWriter, r *http.Request) {
-	uri, _ := url.Parse(fmt.Sprintf("%s:%d", c.ControllerCommon.appConfig.Domain, c.ControllerCommon.appConfig.ApiHttpPort))
-	uri.Scheme = "http"
-	if c.ControllerCommon.appConfig.Https {
-		uri.Scheme = "https"
-	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		b := map[string]interface{}{
-			"server_url":     uri.String(),
+			"server_url":     c.ControllerCommon.appConfig.ApiFullAddress(),
 			"run_mode":       c.ControllerCommon.appConfig.Mode,
 			"server_version": version.VersionString,
 		}

@@ -201,6 +201,7 @@ export default class extends Vue {
   } = {};
   private defaultSort: Object = {prop: "createdAt", order: "ascending"};
   private itemName = 'DashboardTableSort'
+  private counter: number = 0;
 
   created() {
     this.restoreSort(); // Восстановление состояния сортировки при загрузке компонента
@@ -247,6 +248,7 @@ export default class extends Vue {
     this.list = data.items;
     this.total = data.meta.total;
     this.listLoading = false;
+    this.counter = this.list.length + 1
   }
 
   private handleFilter() {
@@ -311,10 +313,9 @@ export default class extends Vue {
     router.push({path: `/dashboards/view/${board.id}`});
   }
 
-  private async add() {
-    const counter: number = this.list.length;
-    const dashboard = await Core.createNew('new' + counter);
-    if (dashboard) {
+  private async add() {;
+    Core.createNew('new' + this.counter)
+    .then((dashboard: ApiDashboard)=>{
       this.$notify({
         title: 'Success',
         message: 'dashboard added successfully',
@@ -322,7 +323,11 @@ export default class extends Vue {
         duration: 2000
       });
       router.push({path: `/dashboards/edit/${dashboard.id}`});
-    }
+    })
+    .catch((e)=>{
+      this.counter++
+    })
+
   }
 
   private showImport = false;

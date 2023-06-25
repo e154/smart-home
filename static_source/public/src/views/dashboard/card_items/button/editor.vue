@@ -1,6 +1,6 @@
 <template>
   <div>
-    <common-editor :item="item" :board="board"></common-editor>
+    <common-editor :item="item" :core="core"></common-editor>
 
     <el-divider content-position="left">{{$t('dashboard.editor.buttonOptions')}}</el-divider>
 
@@ -100,7 +100,7 @@ import { EventStateChange } from '@/api/stream_types'
 })
 export default class extends Vue {
   @Prop() private item!: CardItem;
-  @Prop() private board!: Core;
+  @Prop() private core!: Core;
 
   private currentID = '';
 
@@ -108,14 +108,14 @@ export default class extends Vue {
     const uuid = new UUID()
     this.currentID = uuid.getDashFreeUUID()
 
-    this.board.bus.$on('state_changed', this.onStateChanged)
+    this.core.bus.$on('state_changed', this.onStateChanged)
   }
 
   private mounted() {
   }
 
   private destroyed() {
-    this.board.bus.$off('state_changed', this.onStateChanged)
+    this.core.bus.$off('state_changed', this.onStateChanged)
   }
 
   private onStateChanged(m: EventStateChange) {
