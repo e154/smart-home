@@ -9,7 +9,7 @@
       </el-col>
     </el-row>
 
-    <el-row>
+    <el-row style="margin-top: 20px">
       <el-col>
         <pagination
           v-show="total>listQuery.limit"
