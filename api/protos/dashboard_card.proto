@@ -17,7 +17,7 @@ message DashboardCard {
   string title = 2;
   int32 height = 3;
   int32 width = 4;
-  string background = 5;
+  optional string background = 5;
   int32 weight = 6;
   bool enabled = 7;
   int64 dashboard_tab_id = 8;
@@ -34,7 +34,7 @@ message NewDashboardCardRequest {
   string title = 2;
   int32 height = 3;
   int32 width = 4;
-  string background = 5;
+  optional string background = 5;
   int32 weight = 6;
   bool enabled = 7;
   int64 dashboard_tab_id = 8;
@@ -48,7 +48,7 @@ message UpdateDashboardCardRequest {
   string title = 2;
   int32 height = 3;
   int32 width = 4;
-  string background = 5;
+  optional string background = 5;
   int32 weight = 6;
   bool enabled = 7;
   int64 dashboard_tab_id = 8;

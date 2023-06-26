@@ -176,6 +176,17 @@ export default class extends Vue {
 
 <style lang="scss">
 
+.splitter-pane-resizer.horizontal[data-v-212fa2a4] {
+  border-top: 5px solid hsl(0deg 0% 100%);
+  border-bottom: 5px solid hsl(0deg 0% 100%);
+}
+
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
 .dashboard-container {
   padding-top: 20px;
   position: relative;
@@ -196,14 +207,14 @@ export default class extends Vue {
   width: 100%;
   height: 100%;
   padding: 0 20px;
-  overflow: scroll;
+  overflow-y: scroll;
 }
 
 .bottom-container {
   width: 100%;
   height: 100%;
   padding: 0 20px;
-  overflow: scroll;
+  overflow-y: scroll;
 }
 
 .filter-list {

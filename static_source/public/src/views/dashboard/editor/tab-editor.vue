@@ -33,7 +33,7 @@
               <el-switch v-model="tab.gap"></el-switch>
             </el-form-item>
             <el-form-item :label="$t('dashboard.editor.background')" prop="background">
-              <el-color-picker v-model="tab.background"></el-color-picker>
+              <el-color-picker show-alpha v-model="tab.background"></el-color-picker>
             </el-form-item>
             <el-form-item :label="$t('dashboard.editor.enabled')" prop="enabled">
               <el-switch v-model="tab.enabled"></el-switch>
@@ -64,7 +64,7 @@
               :title="$t('main.are_you_sure_to_do_want_this?')"
               v-on:confirm="removeTab"
             >
-              <el-button type="danger" icon="el-icon-delete" slot="reference">{{
+              <el-button type="danger" plain icon="el-icon-delete" slot="reference">{{
                   $t('main.remove')
                 }}
               </el-button>
