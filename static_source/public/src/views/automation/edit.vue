@@ -109,7 +109,7 @@
             :title="$t('main.are_you_sure_to_do_want_this?')"
             v-on:confirm="remove"
           >
-            <el-button type="danger" icon="el-icon-delete" slot="reference">{{ $t('main.remove') }}</el-button>
+            <el-button type="danger" plain icon="el-icon-delete" slot="reference">{{ $t('main.remove') }}</el-button>
           </el-popconfirm>
         </el-col>
       </el-row>
