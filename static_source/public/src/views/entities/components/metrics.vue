@@ -83,7 +83,7 @@
                   </el-form-item>
 
                   <el-form-item :label="$t('entities.metric.color')" prop="background">
-                    <el-color-picker v-model="prop.color"></el-color-picker>
+                    <el-color-picker show-alpha v-model="prop.color"></el-color-picker>
                   </el-form-item>
 
                   <el-form-item :label="$t('entities.metric.translate')" prop="translate">
@@ -110,7 +110,7 @@
                         :title="$t('main.are_you_sure_to_do_want_this?')"
                         v-on:confirm="removeProp(index)"
                       >
-                        <el-button type="danger" icon="el-icon-delete" slot="reference">{{
+                        <el-button type="danger" plain icon="el-icon-delete" slot="reference">{{
                             $t('main.remove')
                           }}
                         </el-button>
@@ -138,7 +138,7 @@
           :title="$t('main.are_you_sure_to_do_want_this?')"
           v-on:confirm="remove(index)"
         >
-          <el-button type="danger" icon="el-icon-delete" slot="reference">{{
+          <el-button type="danger" plain icon="el-icon-delete" slot="reference">{{
               $t('main.remove')
             }}
           </el-button>
