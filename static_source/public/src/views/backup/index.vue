@@ -8,7 +8,7 @@
         </el-button>
       </el-col>
     </el-row>
-    <el-row>
+    <el-row style="margin-top: 20px">
       <el-col>
         <el-table
           :key="tableKey"
@@ -41,7 +41,7 @@
                 v-on:confirm="restoreImage(row, $index)"
               >
 
-                <el-button type="danger" slot="reference">{{ $t('backup.table.restore') }}</el-button>
+                <el-button type="danger" plain slot="reference">{{ $t('backup.table.restore') }}</el-button>
 
               </el-popconfirm>
 

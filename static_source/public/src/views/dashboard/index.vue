@@ -1,6 +1,31 @@
 <template>
   <div class="app-container">
-    <el-row>
+
+        <el-form label-position="top"
+                 ref="currentEntity"
+                 :model="settings"
+                 style="width: 100%">
+          <el-row>
+            <el-col :span="12" :xs="24" :lg="12" style="padding: 0 6px 0 6px">
+          <el-form-item :label="$t('dashboard.mainDashboard')" prop="scripts">
+            <dashboard_search
+              v-model="settings.mainDashboard"
+              @update-value="changedMainDashboard"
+            />
+          </el-form-item>
+            </el-col>
+            <el-col :span="12" :xs="24" :lg="12" style="padding: 0 6px 0 6px">
+          <el-form-item :label="$t('dashboard.devDashboard')" prop="scripts">
+            <dashboard_search
+              v-model="settings.devDashboard"
+              @update-value="changedDevDashboard"
+            />
+          </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+
+    <el-row style="margin-top: 20px">
       <el-col>
         <el-button type="primary" @click.prevent.stop="add">
           <i class="el-icon-plus"/> {{ $t('dashboard.addNew') }}
@@ -16,30 +41,6 @@
           @on-import="onImport"
           :import-dialog="true"/>
 
-      </el-col>
-    </el-row>
-    <el-row>
-      <el-col :span="6" :xs="24" :lg="12">
-        <el-form label-position="top"
-                 ref="currentEntity"
-                 :model="settings"
-                 style="width: 100%">
-
-          <el-form-item :label="$t('dashboard.mainDashboard')" prop="scripts">
-            <dashboard_search
-              v-model="settings.mainDashboard"
-              @update-value="changedMainDashboard"
-            />
-          </el-form-item>
-
-          <el-form-item :label="$t('dashboard.devDashboard')" prop="scripts">
-            <dashboard_search
-              v-model="settings.devDashboard"
-              @update-value="changedDevDashboard"
-            />
-          </el-form-item>
-
-        </el-form>
       </el-col>
     </el-row>
     <el-row>

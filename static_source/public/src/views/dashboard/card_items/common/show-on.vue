@@ -93,7 +93,7 @@
                         :title="$t('main.are_you_sure_to_do_want_this?')"
                         v-on:confirm="removeShowOnProp(index)"
                       >
-                        <el-button type="danger" icon="el-icon-delete" slot="reference">{{
+                        <el-button type="danger" plain icon="el-icon-delete" slot="reference">{{
                             $t('main.remove')
                           }}
                         </el-button>

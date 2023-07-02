@@ -8,7 +8,7 @@
         </el-button>
       </el-col>
     </el-row>
-    <el-row>
+    <el-row style="margin-top: 20px">
       <el-col>
         <el-table
           :key="tableKey"

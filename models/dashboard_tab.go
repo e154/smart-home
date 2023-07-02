@@ -12,7 +12,7 @@ type DashboardTab struct {
 	Name        string                      `json:"name" validate:"required"`
 	ColumnWidth int                         `json:"column_width"`
 	Gap         bool                        `json:"gap"`
-	Background  string                      `json:"background"`
+	Background  *string                     `json:"background"`
 	Icon        string                      `json:"icon"`
 	Enabled     bool                        `json:"enabled"`
 	Weight      int                         `json:"weight"`

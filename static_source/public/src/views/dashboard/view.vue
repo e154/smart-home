@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container dashboard-container" v-if="!loading" :style="{backgroundColor: board.tabs[0].background}">
+  <div class="app-container dashboard-container" v-if="!loading">
 
     <el-tabs type="card" v-model="board.activeTab" v-if="board.tabs.length > 1">
       <el-tab-pane

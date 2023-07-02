@@ -115,7 +115,7 @@ service DashboardCardItemService {
   // get dashboard_card_item list
   rpc GetDashboardCardItemList (PaginationRequest) returns (GetDashboardCardItemListResult){
     option (google.api.http) = {
-      get: "/v1/dashboard_cards"
+      get: "/v1/dashboard_card_items"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
       security: {

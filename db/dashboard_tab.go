@@ -42,7 +42,7 @@ type DashboardTab struct {
 	Weight      int
 	ColumnWidth int
 	Gap         bool
-	Background  string
+	Background  *string
 	DashboardId int64
 	Dashboard   *Dashboard
 	Cards       []*DashboardCard
