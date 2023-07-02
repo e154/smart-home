@@ -109,7 +109,7 @@ server:
 	@echo "Building http server"
 	cd ${ROOT}/api/protos/ && \
 	mkdir -p ${ROOT}/api/stub && \
-	protoc -I/usr/local/include -I. \
+	protoc -I. \
       -I${GOPATH}/src \
       -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0/third_party/googleapis \
       -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0 \
@@ -119,7 +119,7 @@ server:
 	@echo "Building grpc server"
 	cd ${ROOT}/api/protos/ && \
 	mkdir -p ${ROOT}/api/stub && \
-	protoc -I/usr/local/include -I. \
+	protoc -I. \
       -I${GOPATH}/src \
       -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0/third_party/googleapis \
       -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0 \
@@ -129,7 +129,7 @@ server:
 	@echo "Building protobuf files"
 	cd ${ROOT}/api/protos/ && \
 	mkdir -p ${ROOT}/api/stub && \
-	protoc -I/usr/local/include -I. \
+	protoc -I. \
       -I${GOPATH}/src \
       -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0/third_party/googleapis \
       -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0 \
@@ -138,7 +138,7 @@ server:
 
 	@echo "Building swagger.json"
 	cd ${ROOT}/api/protos/ && \
-	protoc -I/usr/local/include -I. \
+	protoc -I. \
 	  -I${GOPATH}/src \
 	  -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0/third_party/googleapis \
 	  -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway/v2@v2.5.0/protoc-gen-openapiv2 \
@@ -252,4 +252,4 @@ clean:
 
 front_client:
 	@echo MARK: generate front client lib
-	npx swagger-typescript-api@12.0.4 --axios -p ./api/api.swagger.yml -o ./static_source/public/src/api -n stub_new.ts
+	npx swagger-typescript-api@12.0.4 --axios -p ./api/api.swagger.json -o ./static_source/public/src/api -n stub_new.ts

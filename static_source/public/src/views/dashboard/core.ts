@@ -846,7 +846,7 @@ export class Tab {
       icon: '',
       columnWidth: columnWidth,
       gap: false,
-      background: 'white',
+      background: 'inherit',
       enabled: true,
       weight: weight,
       dashboardId: boardId

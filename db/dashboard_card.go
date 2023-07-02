@@ -42,7 +42,7 @@ type DashboardCard struct {
 	Weight         int
 	Width          int
 	Height         int
-	Background     string
+	Background     *string
 	Enabled        bool
 	DashboardTabId int64
 	DashboardTab   *DashboardTab

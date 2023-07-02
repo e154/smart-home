@@ -138,7 +138,7 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 
 install protobuf v3
 ```bash
-brew update && brew install protobuf
+brew update && brew install protobuf@3
 ```
 
 ```bash
@@ -148,6 +148,8 @@ go install \
     google.golang.org/protobuf/cmd/protoc-gen-go \
     google.golang.org/grpc/cmd/protoc-gen-go-grpc
 ```
+
+download from https://github.com/grpc-ecosystem/grpc-gateway/releases/tag/v2.14.0
 
 generate api stub
 ```bash

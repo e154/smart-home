@@ -13,7 +13,7 @@ type DashboardCard struct {
 	Title          string                      `json:"title" validate:"required"`
 	Height         int                         `json:"height" validate:"required"`
 	Width          int                         `json:"width" validate:"required"`
-	Background     string                      `json:"background" validate:"required"`
+	Background     *string                     `json:"background"`
 	Weight         int                         `json:"weight"`
 	Enabled        bool                        `json:"enabled"`
 	DashboardTabId int64                       `json:"dashboard_tab_id" validate:"required"`
