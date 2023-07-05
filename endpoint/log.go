@@ -71,11 +71,11 @@ func (l *LogEndpoint) GetList(ctx context.Context, pagination common.PageParams,
 
 	var queryObj = &m.LogQuery{}
 	if startDate != nil {
-		date, _ := time.Parse("2006-01-02", *startDate)
+		date, _ := time.Parse("2006-01-02T15:04:05.999Z07", *startDate)
 		queryObj.StartDate = &date
 	}
 	if endDate != nil {
-		date, _ := time.Parse("2006-01-02", *endDate)
+		date, _ := time.Parse("2006-01-02T15:04:05.999Z07", *endDate)
 		queryObj.EndDate = &date
 	}
 	if query != nil {
