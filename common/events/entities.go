@@ -77,30 +77,40 @@ type EventAddedActor struct {
 	Settings   m.Attributes    `json:"settings"` //???
 }
 
-// EventRemoveActor ...
-type EventRemoveActor struct {
-	PluginName string          `json:"plugin_name"`
-	EntityId   common.EntityId `json:"entity_id"`
-}
-
 // EventCreatedEntity ...
 type EventCreatedEntity struct {
-	Id common.EntityId `json:"id"`
+	EntityId common.EntityId `json:"entity_id"`
 }
 
 // EventUpdatedEntity ...
 type EventUpdatedEntity struct {
-	Id common.EntityId `json:"id"`
+	EntityId common.EntityId `json:"entity_id"`
 }
 
-// EventDeletedEntity ...
-type EventDeletedEntity struct {
-	Id common.EntityId `json:"id"`
+// CommandUnloadEntity ...
+type CommandUnloadEntity struct {
+	EntityId common.EntityId `json:"entity_id"`
+}
+
+// EventEntityUnloaded ...
+type EventEntityUnloaded struct {
+	EntityId   common.EntityId `json:"entity_id"`
+	PluginName string          `json:"plugin_name"`
+}
+
+// CommandLoadEntity ...
+type CommandLoadEntity struct {
+	EntityId common.EntityId `json:"entity_id"`
+}
+
+// EventEntityLoaded ...
+type EventEntityLoaded struct {
+	EntityId common.EntityId `json:"entity_id"`
 }
 
 // EventEntitySetState ...
 type EventEntitySetState struct {
-	Id              common.EntityId  `json:"id"`
+	EntityId        common.EntityId  `json:"entity_id"`
 	NewState        *string          `json:"new_state"`
 	AttributeValues m.AttributeValue `json:"attribute_values"`
 	SettingsValue   m.AttributeValue `json:"settings_value"`

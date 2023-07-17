@@ -1993,20 +1993,22 @@
                 "description": {
                   "type": "string"
                 },
-                "area": {
-                  "$ref": "#/definitions/apiArea"
+                "areaId": {
+                  "type": "string",
+                  "format": "int64"
                 },
                 "icon": {
                   "type": "string"
                 },
-                "image": {
-                  "$ref": "#/definitions/apiUpdateEntityRequestImage"
+                "imageId": {
+                  "type": "string",
+                  "format": "int64"
                 },
                 "autoLoad": {
                   "type": "boolean"
                 },
-                "parent": {
-                  "$ref": "#/definitions/apiEntityParent"
+                "parentId": {
+                  "type": "string"
                 },
                 "actions": {
                   "type": "array",
@@ -2032,10 +2034,11 @@
                     "$ref": "#/definitions/apiAttribute"
                   }
                 },
-                "scripts": {
+                "scriptIds": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/definitions/apiScript"
+                    "type": "string",
+                    "format": "int64"
                   }
                 },
                 "metrics": {
@@ -2046,6 +2049,80 @@
                 }
               }
             }
+          }
+        ],
+        "tags": [
+          "EntityService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/entity/{id}/disable": {
+      "post": {
+        "summary": "disable entity",
+        "operationId": "EntityService_DisabledEntity",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "EntityService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/entity/{id}/enable": {
+      "post": {
+        "summary": "enabled entity",
+        "operationId": "EntityService_EnabledEntity",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
           }
         ],
         "tags": [
@@ -3703,6 +3780,34 @@
         ]
       }
     },
+    "/v1/scripts/statistic": {
+      "get": {
+        "summary": "get statistic",
+        "operationId": "ScriptService_GetStatistic",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiStatistics"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "ScriptService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
     "/v1/signin": {
       "post": {
         "summary": "sign in user",
@@ -3932,8 +4037,9 @@
                     "$ref": "#/definitions/apiAction"
                   }
                 },
-                "area": {
-                  "$ref": "#/definitions/apiArea"
+                "areaId": {
+                  "type": "string",
+                  "format": "int64"
                 }
               }
             }
@@ -4243,11 +4349,12 @@
                 "lang": {
                   "type": "string"
                 },
-                "image": {
-                  "$ref": "#/definitions/apiUpdateUserRequestImage"
+                "imageId": {
+                  "type": "string",
+                  "format": "int64"
                 },
-                "role": {
-                  "$ref": "#/definitions/apiUpdateUserRequestRole"
+                "roleName": {
+                  "type": "string"
                 },
                 "meta": {
                   "type": "array",
@@ -5164,15 +5271,6 @@
         }
       }
     },
-    "NewEntityRequestActionScript": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
     "UpdateDashboardCardRequestItem": {
       "type": "object",
       "properties": {
@@ -5389,6 +5487,10 @@
         },
         "name": {
           "type": "string"
+        },
+        "scriptId": {
+          "type": "string",
+          "format": "int64"
         },
         "script": {
           "$ref": "#/definitions/apiScript"
@@ -5846,6 +5948,13 @@
             "$ref": "#/definitions/apiScript"
           }
         },
+        "scriptIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
         "attributes": {
           "type": "object",
           "additionalProperties": {
@@ -5863,6 +5972,9 @@
           "items": {
             "$ref": "#/definitions/apiMetric"
           }
+        },
+        "isLoaded": {
+          "type": "boolean"
         },
         "createdAt": {
           "type": "string",
@@ -5951,8 +6063,8 @@
         "autoLoad": {
           "type": "boolean"
         },
-        "parent": {
-          "$ref": "#/definitions/apiEntityParent"
+        "parentId": {
+          "type": "string"
         },
         "createdAt": {
           "type": "string",
@@ -6688,20 +6800,22 @@
         "description": {
           "type": "string"
         },
-        "area": {
-          "$ref": "#/definitions/apiArea"
+        "areaId": {
+          "type": "string",
+          "format": "int64"
         },
         "icon": {
           "type": "string"
         },
-        "image": {
-          "$ref": "#/definitions/apiNewEntityRequestImage"
+        "imageId": {
+          "type": "string",
+          "format": "int64"
         },
         "autoLoad": {
           "type": "boolean"
         },
-        "parent": {
-          "$ref": "#/definitions/apiEntityParent"
+        "parentId": {
+          "type": "string"
         },
         "actions": {
           "type": "array",
@@ -6733,10 +6847,11 @@
             "$ref": "#/definitions/apiMetric"
           }
         },
-        "scripts": {
+        "scriptIds": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/apiScript"
+            "type": "string",
+            "format": "int64"
           }
         }
       }
@@ -6753,23 +6868,16 @@
         "icon": {
           "type": "string"
         },
-        "image": {
-          "$ref": "#/definitions/apiNewEntityRequestImage"
+        "imageId": {
+          "type": "string",
+          "format": "int64"
         },
-        "script": {
-          "$ref": "#/definitions/NewEntityRequestActionScript"
+        "scriptId": {
+          "type": "string",
+          "format": "int64"
         },
         "type": {
           "type": "string"
-        }
-      }
-    },
-    "apiNewEntityRequestImage": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
         }
       }
     },
@@ -6785,8 +6893,9 @@
         "icon": {
           "type": "string"
         },
-        "image": {
-          "$ref": "#/definitions/apiNewEntityRequestImage"
+        "imageId": {
+          "type": "string",
+          "format": "int64"
         },
         "style": {
           "type": "string"
@@ -6881,8 +6990,9 @@
             "$ref": "#/definitions/apiAction"
           }
         },
-        "area": {
-          "$ref": "#/definitions/apiArea"
+        "areaId": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -6944,34 +7054,18 @@
         "lang": {
           "type": "string"
         },
-        "image": {
-          "$ref": "#/definitions/apiNewtUserRequestImage"
+        "imageId": {
+          "type": "string",
+          "format": "int64"
         },
-        "role": {
-          "$ref": "#/definitions/apiNewtUserRequestRole"
+        "roleName": {
+          "type": "string"
         },
         "meta": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/apiUserMeta"
           }
-        }
-      }
-    },
-    "apiNewtUserRequestImage": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "apiNewtUserRequestRole": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
         }
       }
     },
@@ -7015,6 +7109,9 @@
         },
         "options": {
           "$ref": "#/definitions/apiPluginOptionsResult"
+        },
+        "isLoaded": {
+          "type": "boolean"
         }
       }
     },
@@ -7121,6 +7218,9 @@
           "type": "boolean"
         },
         "actor": {
+          "type": "boolean"
+        },
+        "isLoaded": {
           "type": "boolean"
         }
       }
@@ -7358,6 +7458,36 @@
         }
       }
     },
+    "apiStatistic": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "value": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "diff": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "apiStatistics": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiStatistic"
+          }
+        }
+      }
+    },
     "apiTask": {
       "type": "object",
       "properties": {
@@ -7397,6 +7527,13 @@
         },
         "area": {
           "$ref": "#/definitions/apiArea"
+        },
+        "areaId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "isLoaded": {
+          "type": "boolean"
         },
         "createdAt": {
           "type": "string",
@@ -7468,23 +7605,16 @@
         "icon": {
           "type": "string"
         },
-        "image": {
-          "$ref": "#/definitions/apiUpdateEntityRequestImage"
+        "imageId": {
+          "type": "string",
+          "format": "int64"
         },
-        "script": {
-          "$ref": "#/definitions/apiScript"
+        "scriptId": {
+          "type": "string",
+          "format": "int64"
         },
         "type": {
           "type": "string"
-        }
-      }
-    },
-    "apiUpdateEntityRequestImage": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
         }
       }
     },
@@ -7500,27 +7630,11 @@
         "icon": {
           "type": "string"
         },
-        "image": {
-          "$ref": "#/definitions/apiUpdateEntityRequestImage"
-        },
-        "style": {
-          "type": "string"
-        }
-      }
-    },
-    "apiUpdateUserRequestImage": {
-      "type": "object",
-      "properties": {
-        "id": {
+        "imageId": {
           "type": "string",
           "format": "int64"
-        }
-      }
-    },
-    "apiUpdateUserRequestRole": {
-      "type": "object",
-      "properties": {
-        "name": {
+        },
+        "style": {
           "type": "string"
         }
       }

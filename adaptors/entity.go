@@ -41,6 +41,7 @@ type IEntity interface {
 	Search(query string, limit, offset int64) (list []*m.Entity, total int64, err error)
 	AppendMetric(entityId common.EntityId, metric *m.Metric) (err error)
 	DeleteMetric(entityId common.EntityId, metric *m.Metric) (err error)
+	UpdateAutoload(entityId common.EntityId, autoLoad bool) (err error)
 	Import(entity *m.Entity) (err error)
 	preloadMetric(ver *m.Entity)
 	fromDb(dbVer *db.Entity) (ver *m.Entity)
@@ -435,7 +436,7 @@ func (n *Entity) Update(ver *m.Entity) (err error) {
 			}
 		}
 		if !exist {
-			if err = n.table.DeleteMetric(oldVer.Id, oldScript.Id); err != nil {
+			if err = n.table.DeleteScript(oldVer.Id, oldScript.Id); err != nil {
 				return
 			}
 		}
@@ -451,10 +452,6 @@ func (n *Entity) Update(ver *m.Entity) (err error) {
 		}
 		if !exist {
 			if err = n.table.AppendScript(ver.Id, scriptAdaptor.toDb(script)); err != nil {
-				return
-			}
-		} else {
-			if err = n.table.ReplaceScript(ver.Id, scriptAdaptor.toDb(script)); err != nil {
 				return
 			}
 		}
@@ -488,6 +485,12 @@ func (n *Entity) AppendMetric(entityId common.EntityId, metric *m.Metric) (err e
 // DeleteMetric ...
 func (n *Entity) DeleteMetric(entityId common.EntityId, metric *m.Metric) (err error) {
 	err = n.table.DeleteMetric(entityId, metric.Id)
+	return
+}
+
+// UpdateAutoload ...
+func (n *Entity) UpdateAutoload(entityId common.EntityId, autoLoad bool) (err error) {
+	err = n.table.UpdateAutoload(entityId, autoLoad)
 	return
 }
 
@@ -608,16 +611,7 @@ func (n *Entity) toDb(ver *m.Entity) (dbVer *db.Entity) {
 		AutoLoad:    ver.AutoLoad,
 		ParentId:    ver.ParentId,
 		AreaId:      ver.AreaId,
-	}
-
-	// image
-	if ver.Image != nil && ver.Image.Id != 0 {
-		dbVer.ImageId = common.Int64(ver.Image.Id)
-	}
-
-	// area
-	if ver.Area != nil && ver.Area.Id != 0 {
-		dbVer.AreaId = &ver.Area.Id
+		ImageId:     ver.ImageId,
 	}
 
 	// serialize payload

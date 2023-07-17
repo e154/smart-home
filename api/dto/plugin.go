@@ -47,10 +47,11 @@ func (p Plugin) ToPluginListResult(items []m.Plugin, total uint64, pagination co
 
 	for _, item := range items {
 		result.Items = append(result.Items, &api.PluginShort{
-			Name:    item.Name,
-			Version: item.Version,
-			Enabled: item.Enabled,
-			System:  item.System,
+			Name:     item.Name,
+			Version:  item.Version,
+			Enabled:  item.Enabled,
+			System:   item.System,
+			IsLoaded: common.Bool(item.IsLoaded),
 		})
 	}
 
@@ -131,6 +132,7 @@ func (p Plugin) ToGetPlugin(plugin m.Plugin, options m.PluginOptions) (result *a
 		Actor:    plugin.Actor,
 		Settings: settings,
 		Options:  p.Options(options),
+		IsLoaded: common.Bool(plugin.IsLoaded),
 	}
 	return
 }

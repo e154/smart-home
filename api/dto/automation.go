@@ -46,15 +46,9 @@ func (r Automation) AddTask(obj *api.NewTaskRequest) (task *m.Task) {
 		Triggers:    make([]*m.Trigger, 0, len(obj.Triggers)),
 		Conditions:  make([]*m.Condition, 0, len(obj.Conditions)),
 		Actions:     make([]*m.Action, 0, len(obj.Actions)),
+		AreaId:      obj.AreaId,
 	}
-	// area
-	if obj.Area != nil {
-		task.Area = &m.Area{
-			Id:          obj.Area.Id,
-			Name:        obj.Area.Name,
-			Description: obj.Area.Description,
-		}
-	}
+
 	// triggers
 	for _, t := range obj.Triggers {
 		trigger := &m.Trigger{
@@ -69,10 +63,8 @@ func (r Automation) AddTask(obj *api.NewTaskRequest) (task *m.Task) {
 	// conditions
 	for _, c := range obj.Conditions {
 		condition := &m.Condition{
-			Name: c.Name,
-		}
-		if c.Script != nil {
-			condition.ScriptId = c.Script.Id
+			Name:     c.Name,
+			ScriptId: c.ScriptId,
 		}
 		task.Conditions = append(task.Conditions, condition)
 	}
@@ -102,17 +94,10 @@ func (r Automation) ImportTask(obj *api.NewTaskRequest) (task *m.Task) {
 		Triggers:    make([]*m.Trigger, 0, len(obj.Triggers)),
 		Conditions:  make([]*m.Condition, 0, len(obj.Conditions)),
 		Actions:     make([]*m.Action, 0, len(obj.Actions)),
+		AreaId:      obj.AreaId,
 	}
-	// area
-	if obj.Area != nil {
-		task.Area = &m.Area{
-			Id:          obj.Area.Id,
-			Name:        obj.Area.Name,
-			Description: obj.Area.Description,
-		}
-	}
-	// triggers
 
+	// triggers
 	for _, t := range obj.Triggers {
 		trigger := &m.Trigger{
 			Name:       t.Name,
@@ -159,15 +144,9 @@ func (r Automation) UpdateTask(obj *api.UpdateTaskRequest) (task *m.Task) {
 		Triggers:    make([]*m.Trigger, 0, len(obj.Triggers)),
 		Conditions:  make([]*m.Condition, 0, len(obj.Conditions)),
 		Actions:     make([]*m.Action, 0, len(obj.Actions)),
+		AreaId:      obj.AreaId,
 	}
-	// area
-	if obj.Area != nil {
-		task.Area = &m.Area{
-			Id:          obj.Area.Id,
-			Name:        obj.Area.Name,
-			Description: obj.Area.Description,
-		}
-	}
+
 	// triggers
 	for _, t := range obj.Triggers {
 		trigger := &m.Trigger{
@@ -177,18 +156,13 @@ func (r Automation) UpdateTask(obj *api.UpdateTaskRequest) (task *m.Task) {
 			Payload:    AttributeFromApi(t.Attributes),
 			ScriptId:   t.ScriptId,
 		}
-		if t.Script != nil {
-			trigger.ScriptId = common.Int64(t.Script.Id)
-		}
 		task.Triggers = append(task.Triggers, trigger)
 	}
 	// conditions
 	for _, c := range obj.Conditions {
 		condition := &m.Condition{
-			Name: c.Name,
-		}
-		if c.Script != nil {
-			condition.ScriptId = c.Script.Id
+			Name:     c.Name,
+			ScriptId: c.ScriptId,
 		}
 		task.Conditions = append(task.Conditions, condition)
 	}
@@ -233,7 +207,9 @@ func (r Automation) GetTask(task *m.Task) (obj *api.Task) {
 		Name:        task.Name,
 		Description: task.Description,
 		Enabled:     task.Enabled,
+		IsLoaded:    common.Bool(task.IsLoaded),
 		Area:        ToArea(task.Area),
+		AreaId:      task.AreaId,
 		Condition:   string(task.Condition),
 		CreatedAt:   timestamppb.New(task.CreatedAt),
 		UpdatedAt:   timestamppb.New(task.UpdatedAt),
@@ -255,8 +231,9 @@ func (r Automation) GetTask(task *m.Task) (obj *api.Task) {
 	// conditions
 	for _, con := range task.Conditions {
 		obj.Conditions = append(obj.Conditions, &api.Condition{
-			Name:   con.Name,
-			Script: ToGScript(con.Script),
+			Name:     con.Name,
+			ScriptId: con.ScriptId,
+			Script:   ToGScript(con.Script),
 		})
 	}
 

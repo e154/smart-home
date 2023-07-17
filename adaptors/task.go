@@ -23,7 +23,6 @@ import (
 
 	"github.com/jinzhu/gorm"
 
-	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 )
@@ -353,6 +352,7 @@ func (n *Task) fromDb(dbVer *db.Task) (ver *m.Task) {
 		Name:        dbVer.Name,
 		Description: dbVer.Description,
 		Enabled:     dbVer.Enabled,
+		AreaId:      dbVer.AreaId,
 		Condition:   dbVer.Condition,
 		CreatedAt:   dbVer.CreatedAt,
 		UpdatedAt:   dbVer.UpdatedAt,
@@ -397,11 +397,7 @@ func (n *Task) toDb(ver *m.Task) (dbVer *db.Task) {
 		Condition:   ver.Condition,
 		CreatedAt:   ver.CreatedAt,
 		UpdatedAt:   ver.UpdatedAt,
-	}
-
-	// area
-	if ver.Area != nil {
-		dbVer.AreaId = common.Int64(ver.Area.Id)
+		AreaId:      ver.AreaId,
 	}
 
 	return

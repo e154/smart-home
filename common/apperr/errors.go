@@ -199,6 +199,7 @@ var (
 	ErrScriptNotFound = New("script is not found", ErrNotFound)
 	ErrScriptDelete   = New("failed to delete script", ErrInternal)
 	ErrScriptSearch   = New("failed to search script", ErrInternal)
+	ErrScriptStat     = New("failed to get script statistic", ErrInternal)
 
 	ErrStorageAdd      = New("failed to add storage", ErrInternal)
 	ErrStorageGet      = New("failed to get storage", ErrAreaNotFound)

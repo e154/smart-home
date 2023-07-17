@@ -36,3 +36,13 @@ type EventRemoveTask struct {
 type EventUpdateTask struct {
 	Id int64 `json:"id"`
 }
+
+// EventTaskLoaded ...
+type EventTaskLoaded struct {
+	Id int64 `json:"id"`
+}
+
+// EventTaskUnloaded ...
+type EventTaskUnloaded struct {
+	Id int64 `json:"id"`
+}

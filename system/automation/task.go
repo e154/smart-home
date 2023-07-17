@@ -143,6 +143,7 @@ func (t *Task) Start() {
 	for _, model := range t.model.Triggers {
 		if err := t.addTrigger(model); err != nil {
 			log.Error(err.Error())
+			return
 		}
 	}
 }

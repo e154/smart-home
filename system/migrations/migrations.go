@@ -28,7 +28,6 @@ import (
 
 	"github.com/e154/smart-home/common/logger"
 	"github.com/e154/smart-home/migrations"
-	. "github.com/e154/smart-home/system/migrations/assets"
 	"github.com/e154/smart-home/system/orm"
 )
 
@@ -55,12 +54,6 @@ func NewMigrations(cfg *orm.Config,
 	switch mConf.Source {
 	case "embed":
 		source = &migrate.HttpFileSystemMigrationSource{FileSystem: http.FS(migrations.F)}
-	case "assets", "":
-		source = &migrate.AssetMigrationSource{
-			Asset:    Asset,
-			AssetDir: AssetDir,
-			Dir:      mConf.Dir,
-		}
 	case "dir":
 		source = &migrate.FileMigrationSource{
 			Dir: path.Join(mConf.Dir),

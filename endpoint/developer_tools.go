@@ -60,7 +60,7 @@ func (d DeveloperToolsEndpoint) SetEntityState(ctx context.Context, entityId str
 	}
 
 	d.eventBus.Publish(bus.TopicEntities, events2.EventEntitySetState{
-		Id:              common.EntityId(entityId),
+		EntityId:        common.EntityId(entityId),
 		NewState:        newState,
 		AttributeValues: attrs,
 	})
@@ -117,7 +117,7 @@ func (d *DeveloperToolsEndpoint) ReloadEntity(ctx context.Context, id common.Ent
 	}
 
 	d.eventBus.Publish(bus.TopicEntities, events2.EventUpdatedEntity{
-		Id: id,
+		EntityId: id,
 	})
 
 	return
@@ -132,7 +132,7 @@ func (d *DeveloperToolsEndpoint) EntitySetState(ctx context.Context, id common.E
 	}
 
 	d.eventBus.Publish(bus.TopicEntities, events2.EventEntitySetState{
-		Id:       id,
+		EntityId: id,
 		NewState: common.String(name),
 	})
 

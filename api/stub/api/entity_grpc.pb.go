@@ -33,6 +33,10 @@ type EntityServiceClient interface {
 	SearchEntity(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchEntityResult, error)
 	// import entity
 	ImportEntity(ctx context.Context, in *Entity, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// enabled entity
+	EnabledEntity(ctx context.Context, in *EnableEntityRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// disable entity
+	DisabledEntity(ctx context.Context, in *DisableEntityRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type entityServiceClient struct {
@@ -106,6 +110,24 @@ func (c *entityServiceClient) ImportEntity(ctx context.Context, in *Entity, opts
 	return out, nil
 }
 
+func (c *entityServiceClient) EnabledEntity(ctx context.Context, in *EnableEntityRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/api.EntityService/EnabledEntity", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *entityServiceClient) DisabledEntity(ctx context.Context, in *DisableEntityRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/api.EntityService/DisabledEntity", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // EntityServiceServer is the server API for EntityService service.
 // All implementations should embed UnimplementedEntityServiceServer
 // for forward compatibility
@@ -124,6 +146,10 @@ type EntityServiceServer interface {
 	SearchEntity(context.Context, *SearchRequest) (*SearchEntityResult, error)
 	// import entity
 	ImportEntity(context.Context, *Entity) (*emptypb.Empty, error)
+	// enabled entity
+	EnabledEntity(context.Context, *EnableEntityRequest) (*emptypb.Empty, error)
+	// disable entity
+	DisabledEntity(context.Context, *DisableEntityRequest) (*emptypb.Empty, error)
 }
 
 // UnimplementedEntityServiceServer should be embedded to have forward compatible implementations.
@@ -150,6 +176,12 @@ func (UnimplementedEntityServiceServer) SearchEntity(context.Context, *SearchReq
 }
 func (UnimplementedEntityServiceServer) ImportEntity(context.Context, *Entity) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ImportEntity not implemented")
+}
+func (UnimplementedEntityServiceServer) EnabledEntity(context.Context, *EnableEntityRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EnabledEntity not implemented")
+}
+func (UnimplementedEntityServiceServer) DisabledEntity(context.Context, *DisableEntityRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DisabledEntity not implemented")
 }
 
 // UnsafeEntityServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -289,6 +321,42 @@ func _EntityService_ImportEntity_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _EntityService_EnabledEntity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EnableEntityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EntityServiceServer).EnabledEntity(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.EntityService/EnabledEntity",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EntityServiceServer).EnabledEntity(ctx, req.(*EnableEntityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _EntityService_DisabledEntity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DisableEntityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EntityServiceServer).DisabledEntity(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.EntityService/DisabledEntity",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EntityServiceServer).DisabledEntity(ctx, req.(*DisableEntityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // EntityService_ServiceDesc is the grpc.ServiceDesc for EntityService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -323,6 +391,14 @@ var EntityService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ImportEntity",
 			Handler:    _EntityService_ImportEntity_Handler,
+		},
+		{
+			MethodName: "EnabledEntity",
+			Handler:    _EntityService_EnabledEntity_Handler,
+		},
+		{
+			MethodName: "DisabledEntity",
+			Handler:    _EntityService_DisabledEntity_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

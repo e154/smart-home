@@ -293,6 +293,18 @@ func (n Entities) DeleteMetric(id common.EntityId, metricId int64) (err error) {
 	return
 }
 
+// UpdateAutoload ...
+func (n Entities) UpdateAutoload(entityId common.EntityId, autoLoad bool) (err error) {
+	q := map[string]interface{}{
+		"auto_load": autoLoad,
+	}
+
+	if err = n.Db.Model(&Entity{Id: entityId}).Updates(q).Error; err != nil {
+		err = errors.Wrap(apperr.ErrEntityUpdate, err.Error())
+	}
+	return
+}
+
 // ReplaceMetric ...
 func (n Entities) ReplaceMetric(id common.EntityId, metric Metric) (err error) {
 	if err = n.Db.Model(&Entity{Id: id}).Association("Metrics").Replace(&metric).Error; err != nil {

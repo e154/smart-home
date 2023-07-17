@@ -58,6 +58,7 @@ type Automation interface {
 	Reload()
 	AddTask(model *m.Task)
 	RemoveTask(model *m.Task)
+	IsLoaded(id int64) (loaded bool)
 }
 
 type automation struct {
@@ -182,6 +183,10 @@ func (a *automation) AddTask(model *m.Task) {
 	a.tasks[model.Id] = task
 	a.taskLock.Unlock()
 	task.Start()
+
+	a.eventBus.Publish(bus.TopicEntities, events.EventTaskLoaded{
+		Id: model.Id,
+	})
 }
 
 // RemoveTask ...
@@ -242,6 +247,10 @@ func (a *automation) removeTask(id int64) {
 	task.Stop()
 	delete(a.tasks, id)
 	a.taskCount.Dec()
+
+	a.eventBus.Publish(bus.TopicEntities, events.EventTaskUnloaded{
+		Id: id,
+	})
 }
 
 func (a *automation) updateTask(id int64) {
@@ -255,3 +264,11 @@ func (a *automation) updateTask(id int64) {
 
 	a.AddTask(task)
 }
+
+func (a *automation) IsLoaded(id int64) (loaded bool) {
+	a.taskLock.Lock()
+	_, loaded = a.tasks[id]
+	a.taskLock.Unlock()
+	return
+}
+

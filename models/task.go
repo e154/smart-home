@@ -30,11 +30,13 @@ type Task struct {
 	Name        string               `json:"name" validate:"required,lte=255"`
 	Description string               `json:"description" validate:"lte=255"`
 	Enabled     bool                 `json:"enabled"`
+	IsLoaded    bool                 `json:"is_loaded"`
 	Condition   common.ConditionType `json:"condition" validate:"required,oneof=or and"`
 	Triggers    []*Trigger           `json:"triggers" validate:"dive"`
 	Conditions  []*Condition         `json:"conditions" validate:"dive"`
 	Actions     []*Action            `json:"actions" validate:"dive"`
 	Area        *Area                `json:"area"`
+	AreaId      *int64               `json:"area_id"`
 	CreatedAt   time.Time            `json:"created_at"`
 	UpdatedAt   time.Time            `json:"updated_at"`
 }

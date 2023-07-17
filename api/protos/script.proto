@@ -9,6 +9,7 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 
 import "pagination.proto";
+import "statistic.proto";
 
 message ScriptInfo {
   int32 alexa_intents = 1;
@@ -210,6 +211,21 @@ service ScriptService {
   rpc CopyScriptById (CopyScriptRequest) returns (Script){
     option (google.api.http) = {
       post: "/v1/script/{id}/copy"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // get statistic
+  rpc GetStatistic (google.protobuf.Empty) returns (Statistics){
+    option (google.api.http) = {
+      get: "/v1/scripts/statistic"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
       security: {

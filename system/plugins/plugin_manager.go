@@ -332,3 +332,8 @@ func (p *pluginManager) PluginList() (list []common.PluginInfo, total int64, err
 	})
 	return
 }
+
+func (p *pluginManager) IsLoaded(name string) (loaded bool) {
+	_, loaded = p.enabledPlugins[name]
+	return
+}

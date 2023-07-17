@@ -28,7 +28,8 @@ message Trigger {
 message Condition {
   optional int64 id = 1;
   string name = 2;
-  Script script = 4;
+  int64 script_id = 3;
+  optional Script script = 4;
 }
 
 message Action {
@@ -51,6 +52,8 @@ message Task {
   repeated Condition conditions = 7;
   repeated Action actions = 8;
   optional Area area = 9;
+  optional int64 area_id = 10;
+  optional bool isLoaded = 11;
 
   google.protobuf.Timestamp created_at = 99;
   google.protobuf.Timestamp updated_at = 100;
@@ -64,7 +67,7 @@ message NewTaskRequest {
   repeated Trigger triggers = 6;
   repeated Condition conditions = 7;
   repeated Action actions = 8;
-  optional Area area = 9;
+  optional int64 area_id = 9;
 }
 
 message UpdateTaskRequest {
@@ -76,7 +79,7 @@ message UpdateTaskRequest {
   repeated Trigger triggers = 6;
   repeated Condition conditions = 7;
   repeated Action actions = 8;
-  optional Area area = 9;
+  optional int64 area_id = 9;
 }
 
 message GetTaskRequest {

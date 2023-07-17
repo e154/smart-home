@@ -62,7 +62,7 @@ func (n *EntityEndpoint) Add(ctx context.Context, entity *m.Entity) (result *m.E
 	}
 
 	n.eventBus.Publish(bus.TopicEntities, events.EventCreatedEntity{
-		Id: result.Id,
+		EntityId: result.Id,
 	})
 
 	return
@@ -106,7 +106,10 @@ func (n *EntityEndpoint) Import(ctx context.Context, entity *m.Entity) (err erro
 
 // GetById ...
 func (n *EntityEndpoint) GetById(ctx context.Context, id common.EntityId) (result *m.Entity, err error) {
-	result, err = n.adaptors.Entity.GetById(id)
+	if result, err = n.adaptors.Entity.GetById(id); err != nil {
+		return
+	}
+	result.IsLoaded = n.entityManager.IsLoaded(id)
 	return
 }
 
@@ -137,16 +140,21 @@ func (n *EntityEndpoint) Update(ctx context.Context, params *m.Entity) (result *
 	}
 
 	n.eventBus.Publish(bus.TopicEntities, events.EventUpdatedEntity{
-		Id: result.Id,
+		EntityId: result.Id,
 	})
 
 	return
 }
 
 // List ...
-func (n *EntityEndpoint) List(ctx context.Context, pagination common.PageParams) (result []*m.Entity, total int64, err error) {
-	result, total, err = n.adaptors.Entity.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, false)
-
+func (n *EntityEndpoint) List(ctx context.Context, pagination common.PageParams) (entities []*m.Entity, total int64, err error) {
+	entities, total, err = n.adaptors.Entity.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, false)
+	if err != nil {
+		return
+	}
+	for _, entity := range entities {
+		entity.IsLoaded = n.entityManager.IsLoaded(entity.Id)
+	}
 	return
 }
 
@@ -168,8 +176,8 @@ func (n *EntityEndpoint) Delete(ctx context.Context, id common.EntityId) (err er
 		return
 	}
 
-	n.eventBus.Publish(bus.TopicEntities, events.EventDeletedEntity{
-		Id: id,
+	n.eventBus.Publish(bus.TopicEntities, events.CommandUnloadEntity{
+		EntityId: id,
 	})
 
 	return
@@ -179,5 +187,55 @@ func (n *EntityEndpoint) Delete(ctx context.Context, id common.EntityId) (err er
 func (n *EntityEndpoint) Search(ctx context.Context, query string, limit, offset int64) (result []*m.Entity, total int64, err error) {
 
 	result, total, err = n.adaptors.Entity.Search(query, limit, offset)
+	return
+}
+
+// Enable ...
+func (n *EntityEndpoint) Enable(ctx context.Context, id common.EntityId) (err error) {
+
+	if id == "" {
+		err = apperr.ErrBadRequestParams
+		return
+	}
+
+	var entity *m.Entity
+	entity, err = n.adaptors.Entity.GetById(id)
+	if err != nil {
+		return
+	}
+
+	if err = n.adaptors.Entity.UpdateAutoload(entity.Id, true); err != nil {
+		return
+	}
+
+	n.eventBus.Publish(bus.TopicEntities, events.CommandLoadEntity{
+		EntityId: id,
+	})
+
+	return
+}
+
+// Disable ...
+func (n *EntityEndpoint) Disable(ctx context.Context, id common.EntityId) (err error) {
+
+	if id == "" {
+		err = apperr.ErrBadRequestParams
+		return
+	}
+
+	var entity *m.Entity
+	entity, err = n.adaptors.Entity.GetById(id)
+	if err != nil {
+		return
+	}
+
+	if err = n.adaptors.Entity.UpdateAutoload(entity.Id, false); err != nil {
+		return
+	}
+
+	n.eventBus.Publish(bus.TopicEntities, events.CommandUnloadEntity{
+		EntityId: id,
+	})
+
 	return
 }

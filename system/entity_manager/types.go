@@ -96,6 +96,9 @@ type EntityManager interface {
 
 	// Update ...
 	Update(*m.Entity) error
+
+	// IsLoaded ...
+	IsLoaded(id common.EntityId) (loaded bool)
 }
 
 // ActorAction ...

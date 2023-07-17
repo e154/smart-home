@@ -54,8 +54,13 @@ func (p *PluginEndpoint) Disable(ctx context.Context, pluginName string) (err er
 }
 
 // GetList ...
-func (p *PluginEndpoint) GetList(ctx context.Context, pagination common.PageParams) (list []m.Plugin, total int64, err error) {
-	list, total, err = p.adaptors.Plugin.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
+func (p *PluginEndpoint) GetList(ctx context.Context, pagination common.PageParams) (plugins []m.Plugin, total int64, err error) {
+	if plugins, total, err = p.adaptors.Plugin.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy); err != nil {
+		return
+	}
+	for _, plugin := range plugins {
+		plugin.IsLoaded = p.pluginManager.IsLoaded(plugin.Name)
+	}
 	return
 }
 
@@ -79,7 +84,10 @@ func (p *PluginEndpoint) GetOptions(ctx context.Context, pluginName string) (opt
 
 // GetByName ...
 func (p *PluginEndpoint) GetByName(ctx context.Context, pluginName string) (plugin m.Plugin, err error) {
-	plugin, err = p.adaptors.Plugin.GetByName(pluginName)
+	if plugin, err = p.adaptors.Plugin.GetByName(pluginName); err != nil {
+		return
+	}
+	plugin.IsLoaded = p.pluginManager.IsLoaded(plugin.Name)
 	return
 }
 

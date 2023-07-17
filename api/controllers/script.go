@@ -20,6 +20,7 @@ package controllers
 
 import (
 	"context"
+	"github.com/e154/smart-home/api/dto"
 
 	"github.com/e154/smart-home/api/stub/api"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -135,4 +136,15 @@ func (c ControllerScript) CopyScriptById(ctx context.Context, req *api.CopyScrip
 	}
 
 	return c.dto.Script.ToGScript(script), nil
+}
+
+// GetStatistic ...
+func (c ControllerScript) GetStatistic(ctx context.Context, _ *emptypb.Empty) (*api.Statistics, error) {
+
+	statistic, err := c.endpoint.Script.Statistic(ctx)
+	if err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return dto.GetStatistic(statistic), nil
 }

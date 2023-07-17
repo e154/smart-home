@@ -55,6 +55,15 @@ type Script struct {
 	UpdatedAt            time.Time
 }
 
+type ScriptsStatistic struct {
+	Total        int32
+	Used         int32
+	Unused       int32
+	CoffeeScript int32
+	TypeScript   int32
+	JavaScript   int32
+}
+
 // TableName ...
 func (d *Script) TableName() string {
 	return "scripts"
@@ -196,5 +205,71 @@ func (n *Scripts) Search(query string, limit, offset int64) (list []*Script, tot
 	if err = q.Find(&list).Error; err != nil {
 		err = errors.Wrap(apperr.ErrScriptSearch, err.Error())
 	}
+	return
+}
+
+// Statistic ...
+func (n *Scripts) Statistic() (statistic *ScriptsStatistic, err error) {
+
+	statistic = &ScriptsStatistic{}
+
+	var usedList []struct {
+		Count int32
+		Used  bool
+	}
+	err = n.Db.Raw(`
+select count(scripts.id),
+       (exists(select * from alexa_intents where script_id = scripts.id) or exists(select * from entity_actions where script_id = scripts.id) or
+        exists(select * from entity_scripts where script_id = scripts.id) or
+        exists(select * from triggers where script_id = scripts.id)       or
+        exists(select * from conditions where script_id = scripts.id)     or
+        exists(select * from actions where script_id = scripts.id)    ) as used
+from scripts
+group by used`).
+		Scan(&usedList).
+		Error
+
+	if err != nil {
+		err = errors.Wrap(apperr.ErrScriptStat, err.Error())
+		return
+	}
+
+	for _, item := range usedList {
+		statistic.Total += item.Count
+		if item.Used {
+			statistic.Used = item.Count
+
+			continue
+		}
+		statistic.Unused = item.Count
+	}
+
+	var langList []struct {
+		Lang  string
+		Count int32
+	}
+	err = n.Db.Raw(`
+select scripts.lang, count(scripts.*)
+		from scripts
+		group by lang`).
+		Scan(&langList).
+		Error
+
+	if err != nil {
+		err = errors.Wrap(apperr.ErrScriptStat, err.Error())
+		return
+	}
+
+	for _, item := range langList {
+		switch item.Lang {
+		case "coffeescript":
+			statistic.CoffeeScript = item.Count
+		case "ts":
+			statistic.TypeScript = item.Count
+		case "javascript":
+			statistic.JavaScript = item.Count
+		}
+	}
+
 	return
 }

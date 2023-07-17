@@ -17,6 +17,7 @@ message PluginShort {
   bool enabled = 3;
   bool system = 4;
   bool actor = 5;
+  optional bool isLoaded = 6;
 }
 
 message Plugin {
@@ -27,6 +28,7 @@ message Plugin {
   bool actor = 5;
   map<string, Attribute> settings = 6;
   PluginOptionsResult options = 7;
+  optional bool isLoaded = 8;
 }
 
 message GetPluginListResult {

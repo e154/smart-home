@@ -34,4 +34,5 @@ type PluginManager interface {
 	EnablePlugin(string) error
 	DisablePlugin(string) error
 	PluginList() (list []PluginInfo, total int64, err error)
+	IsLoaded(name string) (loaded bool)
 }

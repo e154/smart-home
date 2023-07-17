@@ -102,7 +102,7 @@ LOOP:
 
 	// add entities from database
 	for _, entity := range entities {
-		if err := e.Add(entity); err != nil {
+		if err = e.Add(entity); err != nil {
 			log.Warnf("%s, %s", entity.Id, err.Error())
 		}
 	}
@@ -203,6 +203,12 @@ func (e *entityManager) SetState(id common.EntityId, params EntityStateParams) (
 
 	err = actor.Actor.SetState(params)
 
+	return
+}
+
+// IsLoaded ...
+func (e *entityManager) IsLoaded(id common.EntityId) (loaded bool) {
+	_, loaded = e.actors.Load(id)
 	return
 }
 
@@ -309,11 +315,6 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 
 			log.Infof("unload %v", entityId)
 
-			e.eventBus.Publish(bus.TopicEntities, events.EventRemoveActor{
-				PluginName: info.PluginName,
-				EntityId:   entityId,
-			})
-
 			var err error
 			var plugin CrudActor
 			if plugin, err = e.getCrudActor(entityId); err != nil {
@@ -322,6 +323,11 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 			_ = plugin.RemoveActor(entityId)
 
 			//e.metric.Update(metrics.EntityDelete{Num: 1})
+
+			e.eventBus.Publish(bus.TopicEntities, events.EventEntityUnloaded{
+				PluginName: info.PluginName,
+				EntityId:   entityId,
+			})
 		}()
 
 		<-actorInfo.quit
@@ -367,8 +373,10 @@ func (e *entityManager) eventHandler(_ string, message interface{}) {
 		go e.eventCreatedEntity(msg)
 	case events.EventUpdatedEntity:
 		go e.eventUpdatedEntity(msg)
-	case events.EventDeletedEntity:
-		go e.eventDeletedEntity(msg)
+	case events.CommandUnloadEntity:
+		go e.eventUnloadEntity(msg)
+	case events.CommandLoadEntity:
+		go e.eventLoadEntity(msg)
 	case events.EventEntitySetState:
 		go e.eventEntitySetState(msg)
 	case events.EventGetLastState:
@@ -483,7 +491,7 @@ func (e *entityManager) eventUnloadedPlugin(msg events.EventUnloadedPlugin) {
 
 func (e *entityManager) eventCreatedEntity(msg events.EventCreatedEntity) {
 
-	entity, err := e.adaptors.Entity.GetById(msg.Id)
+	entity, err := e.adaptors.Entity.GetById(msg.EntityId)
 	if err != nil {
 		return
 	}
@@ -495,7 +503,7 @@ func (e *entityManager) eventCreatedEntity(msg events.EventCreatedEntity) {
 
 func (e *entityManager) eventUpdatedEntity(msg events.EventUpdatedEntity) {
 
-	entity, err := e.adaptors.Entity.GetById(msg.Id)
+	entity, err := e.adaptors.Entity.GetById(msg.EntityId)
 	if err != nil {
 		return
 	}
@@ -505,14 +513,21 @@ func (e *entityManager) eventUpdatedEntity(msg events.EventUpdatedEntity) {
 	}
 }
 
-func (e *entityManager) eventDeletedEntity(msg events.EventDeletedEntity) {
+func (e *entityManager) eventUnloadEntity(msg events.CommandUnloadEntity) {
 
-	e.Remove(msg.Id)
+	e.Remove(msg.EntityId)
+}
+
+func (e *entityManager) eventLoadEntity(msg events.CommandLoadEntity) {
+	entity, _ := e.adaptors.Entity.GetById(msg.EntityId)
+	if err := e.Add(entity); err != nil {
+		log.Warnf("%s, %s", entity.Id, err.Error())
+	}
 }
 
 func (e *entityManager) eventEntitySetState(msg events.EventEntitySetState) {
 
-	_ = e.SetState(msg.Id, EntityStateParams{
+	_ = e.SetState(msg.EntityId, EntityStateParams{
 		NewState:        msg.NewState,
 		AttributeValues: msg.AttributeValues,
 		SettingsValue:   msg.SettingsValue,
@@ -573,7 +588,13 @@ func (e *entityManager) Add(entity *m.Entity) (err error) {
 		return
 	}
 
-	err = crudActor.AddOrUpdateActor(entity)
+	if err = crudActor.AddOrUpdateActor(entity); err != nil {
+		return
+	}
+
+	e.eventBus.Publish(bus.TopicEntities, events.EventEntityLoaded{
+		EntityId: entity.Id,
+	})
 
 	return
 }

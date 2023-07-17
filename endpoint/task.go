@@ -158,8 +158,10 @@ func (n *TaskEndpoint) Update(ctx context.Context, task *m.Task) (result *m.Task
 // GetById ...
 func (n *TaskEndpoint) GetById(ctx context.Context, id int64) (task *m.Task, errs validator.ValidationErrorsTranslations, err error) {
 
-	task, err = n.adaptors.Task.GetById(id)
-
+	if task, err = n.adaptors.Task.GetById(id); err != nil {
+		return
+	}
+	task.IsLoaded = n.automation.IsLoaded(id)
 	return
 }
 
@@ -206,9 +208,13 @@ func (n *TaskEndpoint) Disable(ctx context.Context, id int64) (err error) {
 }
 
 // List ...
-func (n *TaskEndpoint) List(ctx context.Context, pagination common.PageParams) (list []*m.Task, total int64, errs validator.ValidationErrorsTranslations, err error) {
+func (n *TaskEndpoint) List(ctx context.Context, pagination common.PageParams) (tasks []*m.Task, total int64, errs validator.ValidationErrorsTranslations, err error) {
 
-	list, total, err = n.adaptors.Task.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, false)
-
+	if tasks, total, err = n.adaptors.Task.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, false); err != nil {
+		return
+	}
+	for _, task := range tasks {
+		task.IsLoaded = n.automation.IsLoaded(task.Id)
+	}
 	return
 }

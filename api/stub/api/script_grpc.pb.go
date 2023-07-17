@@ -37,6 +37,8 @@ type ScriptServiceClient interface {
 	ExecSrcScriptById(ctx context.Context, in *ExecSrcScriptRequest, opts ...grpc.CallOption) (*ExecScriptResult, error)
 	// copy script by id
 	CopyScriptById(ctx context.Context, in *CopyScriptRequest, opts ...grpc.CallOption) (*Script, error)
+	// get statistic
+	GetStatistic(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Statistics, error)
 }
 
 type scriptServiceClient struct {
@@ -128,6 +130,15 @@ func (c *scriptServiceClient) CopyScriptById(ctx context.Context, in *CopyScript
 	return out, nil
 }
 
+func (c *scriptServiceClient) GetStatistic(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Statistics, error) {
+	out := new(Statistics)
+	err := c.cc.Invoke(ctx, "/api.ScriptService/GetStatistic", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ScriptServiceServer is the server API for ScriptService service.
 // All implementations should embed UnimplementedScriptServiceServer
 // for forward compatibility
@@ -150,6 +161,8 @@ type ScriptServiceServer interface {
 	ExecSrcScriptById(context.Context, *ExecSrcScriptRequest) (*ExecScriptResult, error)
 	// copy script by id
 	CopyScriptById(context.Context, *CopyScriptRequest) (*Script, error)
+	// get statistic
+	GetStatistic(context.Context, *emptypb.Empty) (*Statistics, error)
 }
 
 // UnimplementedScriptServiceServer should be embedded to have forward compatible implementations.
@@ -182,6 +195,9 @@ func (UnimplementedScriptServiceServer) ExecSrcScriptById(context.Context, *Exec
 }
 func (UnimplementedScriptServiceServer) CopyScriptById(context.Context, *CopyScriptRequest) (*Script, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CopyScriptById not implemented")
+}
+func (UnimplementedScriptServiceServer) GetStatistic(context.Context, *emptypb.Empty) (*Statistics, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetStatistic not implemented")
 }
 
 // UnsafeScriptServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -357,6 +373,24 @@ func _ScriptService_CopyScriptById_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ScriptService_GetStatistic_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ScriptServiceServer).GetStatistic(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.ScriptService/GetStatistic",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ScriptServiceServer).GetStatistic(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ScriptService_ServiceDesc is the grpc.ServiceDesc for ScriptService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -399,6 +433,10 @@ var ScriptService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CopyScriptById",
 			Handler:    _ScriptService_CopyScriptById_Handler,
+		},
+		{
+			MethodName: "GetStatistic",
+			Handler:    _ScriptService_GetStatistic_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

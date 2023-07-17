@@ -3,8 +3,8 @@ package stream
 import (
 	"encoding/json"
 
-	"github.com/e154/smart-home/plugins/webpush"
 	"github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/plugins/webpush"
 )
 
 type eventHandler struct {
@@ -31,7 +31,15 @@ func (e *eventHandler) eventHandler(_ string, message interface{}) {
 	case events.EventUnloadedPlugin:
 	case events.EventCreatedEntity:
 	case events.EventUpdatedEntity:
-	case events.EventDeletedEntity:
+	case events.CommandUnloadEntity:
+	case events.EventTaskLoaded:
+		go e.event(message)
+	case events.EventTaskUnloaded:
+		go e.event(message)
+	case events.EventEntityLoaded:
+		go e.event(message)
+	case events.EventEntityUnloaded:
+		go e.event(message)
 	case events.EventEntitySetState:
 	case webpush.EventNewWebPushPublicKey:
 		go e.eventNewWebPushPublicKey(v)
@@ -56,6 +64,11 @@ func (e *eventHandler) eventStateChangedHandler(msg interface{}) {
 }
 
 func (e *eventHandler) eventDirectMessage(userID int64, query string, msg interface{}) {
-	body, _ := json.Marshal(msg)
-	e.directMessage(userID, query, body)
+	b, _ := json.Marshal(msg)
+	e.directMessage(userID, query, b)
+}
+
+func (e *eventHandler) event(msg interface{}) {
+	b, _ := json.Marshal(msg)
+	e.broadcast(events.EventName(msg), b)
 }

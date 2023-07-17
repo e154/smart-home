@@ -33,6 +33,7 @@ type IScript interface {
 	Delete(scriptId int64) (err error)
 	List(limit, offset int64, orderBy, sort string) (list []*m.Script, total int64, err error)
 	Search(query string, limit, offset int64) (list []*m.Script, total int64, err error)
+	Statistic() (statistic *m.ScriptsStatistic, err error)
 	fromDb(dbScript *db.Script) (script *m.Script, err error)
 	toDb(script *m.Script) (dbScript *db.Script)
 }
@@ -135,6 +136,22 @@ func (n *Script) Search(query string, limit, offset int64) (list []*m.Script, to
 		list = append(list, dev)
 	}
 
+	return
+}
+
+func (n *Script) Statistic() (statistic *m.ScriptsStatistic, err error) {
+	var dbVer *db.ScriptsStatistic
+	if dbVer, err = n.table.Statistic(); err != nil {
+		return
+	}
+	statistic = &m.ScriptsStatistic{
+		Total:        dbVer.Total,
+		Used:         dbVer.Used,
+		Unused:       dbVer.Unused,
+		CoffeeScript: dbVer.CoffeeScript,
+		TypeScript:   dbVer.TypeScript,
+		JavaScript:   dbVer.JavaScript,
+	}
 	return
 }
 

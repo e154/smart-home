@@ -121,3 +121,19 @@ func (c ControllerEntity) SearchEntity(ctx context.Context, req *api.SearchReque
 
 	return c.dto.Entity.ToSearchResult(items), nil
 }
+
+func (c ControllerEntity) EnabledEntity(ctx context.Context, req *api.EnableEntityRequest) (*emptypb.Empty, error) {
+	if err := c.endpoint.Entity.Enable(ctx, common.EntityId(req.Id)); err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return &emptypb.Empty{}, nil
+}
+
+func (c ControllerEntity) DisabledEntity(ctx context.Context, req *api.DisableEntityRequest) (*emptypb.Empty, error) {
+	if err := c.endpoint.Entity.Disable(ctx, common.EntityId(req.Id)); err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return &emptypb.Empty{}, nil
+}
