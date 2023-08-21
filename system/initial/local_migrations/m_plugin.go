@@ -89,7 +89,7 @@ func (n *MigrationPlugins) Up(ctx context.Context, adaptors *adaptors.Adaptors) 
 }
 
 func (n *MigrationPlugins) addPlugin(name string, enabled, system, actor bool, version string) (node *m.Plugin) {
-	_ = n.adaptors.Plugin.CreateOrUpdate(m.Plugin{
+	_ = n.adaptors.Plugin.CreateOrUpdate(&m.Plugin{
 		Name:    name,
 		Version: version,
 		Enabled: enabled,

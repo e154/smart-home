@@ -16,17 +16,18 @@ func NewEntityStorageDto() EntityStorage {
 	return EntityStorage{}
 }
 
-func (_ EntityStorage) List(list []*m.EntityStorage, total uint64, pagination common.PageParams, entity *m.Entity) (result *api.GetEntityStorageResult) {
+func (_ EntityStorage) List(list *m.EntityStorageList, total uint64, pagination common.PageParams) (result *api.GetEntityStorageResult) {
 
-	var items = make([]*api.EntityStorage, 0, len(list))
+	var items = make([]*api.EntityStorage, 0, len(list.Attributes))
 
-	for _, item := range list {
-		entity.Attributes.Deserialize(item.Attributes)
+	for _, item := range list.Items {
+		attributes := list.Attributes[item.EntityId].Copy()
+		attributes.Deserialize(item.Attributes)
 		items = append(items, &api.EntityStorage{
 			Id:         item.Id,
 			EntityId:   string(item.EntityId),
 			State:      item.State,
-			Attributes: AttributeToApi(entity.Attributes),
+			Attributes: AttributeToApi(attributes),
 			CreatedAt:  timestamppb.New(item.CreatedAt),
 		})
 	}

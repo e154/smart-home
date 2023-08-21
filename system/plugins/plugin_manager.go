@@ -151,7 +151,7 @@ func (p *pluginManager) getPlugin(name string) (plugin Plugable, err error) {
 func (p *pluginManager) loadPlugins() {
 
 	var page int64
-	var loadList []m.Plugin
+	var loadList []*m.Plugin
 	const perPage = 100
 	var err error
 
@@ -256,7 +256,7 @@ func (p *pluginManager) Install(t string) {
 		return
 	}
 
-	_ = p.adaptors.Plugin.CreateOrUpdate(m.Plugin{
+	_ = p.adaptors.Plugin.CreateOrUpdate(&m.Plugin{
 		Name:    plugin.Name(),
 		Version: plugin.Version(),
 		Enabled: true,
@@ -282,7 +282,7 @@ func (p *pluginManager) EnablePlugin(name string) (err error) {
 		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("name %s", name))
 		return
 	}
-	var plugin m.Plugin
+	var plugin *m.Plugin
 	if plugin, err = p.adaptors.Plugin.GetByName(name); err != nil {
 		err = errors.Wrap(apperr.ErrPluginGet, fmt.Sprintf("name %s", name))
 		return
@@ -303,7 +303,7 @@ func (p *pluginManager) DisablePlugin(name string) (err error) {
 		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("name %s", name))
 		return
 	}
-	var plugin m.Plugin
+	var plugin *m.Plugin
 	if plugin, err = p.adaptors.Plugin.GetByName(name); err != nil {
 		err = errors.Wrap(apperr.ErrPluginGet, fmt.Sprintf("name %s", name))
 		return
@@ -333,7 +333,6 @@ func (p *pluginManager) PluginList() (list []common.PluginInfo, total int64, err
 	return
 }
 
-func (p *pluginManager) IsLoaded(name string) (loaded bool) {
-	_, loaded = p.enabledPlugins[name]
-	return
+func (p *pluginManager) IsLoaded(name string) bool {
+	return p.enabledPlugins[name]
 }

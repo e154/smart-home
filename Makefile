@@ -34,7 +34,7 @@ GENERATED_VAR=${PROJECT}/version.GeneratedString
 DEVELOPERS_VAR=${PROJECT}/version.DevelopersString
 BUILD_NUMBER_VAR=${PROJECT}/version.BuildNumString
 DOCKER_IMAGE_VAR=${PROJECT}/version.DockerImageString
-GO_BUILD_LDFLAGS= -X ${VERSION_VAR}=${RELEASE_VERSION} -X ${REV_VAR}=${REV_VALUE} -X ${REV_URL_VAR}=${REV_URL_VALUE} -X ${GENERATED_VAR}=${GENERATED_VALUE} -X ${DEVELOPERS_VAR}=${DEVELOPERS_VALUE} -X ${BUILD_NUMBER_VAR}=${BUILD_NUMBER_VALUE} -X ${DOCKER_IMAGE_VAR}=${DOCKER_IMAGE_VER}
+GO_BUILD_LDFLAGS= -s -w -X ${VERSION_VAR}=${RELEASE_VERSION} -X ${REV_VAR}=${REV_VALUE} -X ${REV_URL_VAR}=${REV_URL_VALUE} -X ${GENERATED_VAR}=${GENERATED_VALUE} -X ${DEVELOPERS_VAR}=${DEVELOPERS_VALUE} -X ${BUILD_NUMBER_VAR}=${BUILD_NUMBER_VALUE} -X ${DOCKER_IMAGE_VAR}=${DOCKER_IMAGE_VER}
 GO_BUILD_FLAGS= -a -installsuffix cgo -v --ldflags '${GO_BUILD_LDFLAGS}'
 GO_BUILD_ENV= CGO_ENABLED=0
 GO_BUILD_TAGS= -tags 'production'
@@ -98,12 +98,15 @@ build_public:
 	node -v  && \
 	echo -e "npm version.\n"  && \
 	npm -v  && \
-	cd ${ROOT}/static_source/public && \
-	npm i && \
-	npm run build:prod && \
-	rm -rf ${ROOT}/build/public && \
+	npm i -g pnpm  && \
+	echo -e "pnpm version.\n"  && \
+	pnpm -v && \
+	cd ${ROOT}/static_source/admin && \
+	pnpm i && \
+	pnpm run build:pro && \
+	rm -rf ${ROOT}/build/admin && \
 	mkdir -p ${ROOT}/build && \
-	mv ${ROOT}/static_source/public/dist ${ROOT}/build/public
+	mv ${ROOT}/static_source/admin/dist-pro ${ROOT}/build/admin
 
 server:
 	@echo "Building http server"

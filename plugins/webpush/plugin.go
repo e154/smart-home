@@ -85,7 +85,7 @@ func (p *plugin) asyncLoad() (err error) {
 		if settings[AttrPrivateKey].Value, settings[AttrPublicKey].Value, err = GenerateVAPIDKeys(); err != nil {
 			return
 		}
-		var model m.Plugin
+		var model *m.Plugin
 		model, _ = p.Adaptors.Plugin.GetByName(Name)
 		model.Settings = settings.Serialize()
 		_ = p.Adaptors.Plugin.Update(model)

@@ -22,7 +22,7 @@ message GetEntityStorageRequest {
   uint64 page = 1;
   uint64 limit = 2;
   string sort = 3;
-  string entity_id = 4;
+  optional string entity_id = 4;
   optional string start_date = 5;
   optional string end_date = 6;
 }
@@ -36,7 +36,7 @@ service EntityStorageService {
 
   rpc GetEntityStorageList (GetEntityStorageRequest) returns (GetEntityStorageResult){
     option (google.api.http) = {
-      get: "/v1/entity_storage/{entity_id}"
+      get: "/v1/entity_storage"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
       security: {

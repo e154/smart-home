@@ -162,6 +162,22 @@ func (n Entities) GetByIds(ids []common.EntityId) (list []*Entity, err error) {
 	return
 }
 
+// GetByIdsSimple ...
+func (n Entities) GetByIdsSimple(ids []common.EntityId) (list []*Entity, err error) {
+
+	list = make([]*Entity, 0)
+	err = n.Db.Model(Entity{}).
+		Where("id IN (?)", ids).
+		Find(&list).Error
+
+	if err != nil {
+		err = errors.Wrap(apperr.ErrEntityGet, err.Error())
+		return
+	}
+
+	return
+}
+
 // Delete ...
 func (n Entities) Delete(id common.EntityId) (err error) {
 

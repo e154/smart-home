@@ -33,7 +33,7 @@ func NewPluginDto() Plugin {
 }
 
 // ToPluginListResult ...
-func (p Plugin) ToPluginListResult(items []m.Plugin, total uint64, pagination common.PageParams) (result *api.GetPluginListResult) {
+func (p Plugin) ToPluginListResult(items []*m.Plugin, total uint64, pagination common.PageParams) (result *api.GetPluginListResult) {
 
 	result = &api.GetPluginListResult{
 		Items: make([]*api.PluginShort, 0, len(items)),
@@ -98,7 +98,7 @@ func (p Plugin) Options(options m.PluginOptions) (result *api.PluginOptionsResul
 }
 
 // ToSearchResult ...
-func (p Plugin) ToSearchResult(list []m.Plugin) *api.SearchPluginResult {
+func (p Plugin) ToSearchResult(list []*m.Plugin) *api.SearchPluginResult {
 
 	items := make([]*api.PluginShort, 0, len(list))
 
@@ -116,7 +116,7 @@ func (p Plugin) ToSearchResult(list []m.Plugin) *api.SearchPluginResult {
 	}
 }
 
-func (p Plugin) ToGetPlugin(plugin m.Plugin, options m.PluginOptions) (result *api.Plugin) {
+func (p Plugin) ToGetPlugin(plugin *m.Plugin, options m.PluginOptions) (result *api.Plugin) {
 
 	var settings = make(map[string]*api.Attribute)
 	if options.Setts != nil && plugin.Settings != nil {

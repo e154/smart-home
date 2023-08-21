@@ -2135,7 +2135,7 @@
         ]
       }
     },
-    "/v1/entity_storage/{entityId}": {
+    "/v1/entity_storage": {
       "get": {
         "operationId": "EntityStorageService_GetEntityStorageList",
         "responses": {
@@ -2154,12 +2154,6 @@
         },
         "parameters": [
           {
-            "name": "entityId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
             "name": "page",
             "in": "query",
             "required": false,
@@ -2175,6 +2169,12 @@
           },
           {
             "name": "sort",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "entityId",
             "in": "query",
             "required": false,
             "type": "string"

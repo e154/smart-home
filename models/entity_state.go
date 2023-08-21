@@ -53,3 +53,8 @@ func (m *EntityState) Short() (short EntityStateShort) {
 
 	return
 }
+
+type EntityStorageList struct {
+	Items      []*EntityStorage
+	Attributes map[common.EntityId]Attributes
+}

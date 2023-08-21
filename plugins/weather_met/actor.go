@@ -122,7 +122,7 @@ func (e *Actor) destroy() {
 
 // Spawn ...
 func (e *Actor) Spawn() entity_manager.PluginActor {
-	_ = e.updateForecast()
+	go e.updateForecast()
 	return e
 }
 

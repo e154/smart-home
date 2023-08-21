@@ -66,7 +66,7 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 		return
 	}
 
-	p.actor = NewActor(p.EntityManager, p.EventBus)
+	p.actor = NewActor(p.EntityManager, p.EventBus, p.Crawler)
 
 	p.EntityManager.Spawn(p.actor.Spawn)
 	p.actor.check()

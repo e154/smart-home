@@ -21,19 +21,18 @@ package updater
 import (
 	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
 	"sync"
 	"time"
 
-	"github.com/e154/smart-home/common/events"
-
 	"github.com/Masterminds/semver"
+	"go.uber.org/atomic"
+
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/common/web"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/version"
-	"go.uber.org/atomic"
 )
 
 // Actor ...
@@ -46,11 +45,12 @@ type Actor struct {
 	latestVersionTime time.Time
 	lastCheck         time.Time
 	currentVersion    *semver.Version
+	crawler           web.Crawler
 }
 
 // NewActor ...
 func NewActor(entityManager entity_manager.EntityManager,
-	eventBus bus.Bus) *Actor {
+	eventBus bus.Bus, crawler web.Crawler) *Actor {
 
 	var v = "v0.0.1"
 	if version.VersionString != "?" {
@@ -77,6 +77,7 @@ func NewActor(entityManager entity_manager.EntityManager,
 		eventBus:       eventBus,
 		checkLock:      &sync.Mutex{},
 		currentVersion: currentVersion,
+		crawler:        crawler,
 	}
 }
 
@@ -121,14 +122,8 @@ func (e *Actor) check() {
 
 	e.setState(entity_manager.StateInProcess)
 
-	var resp *http.Response
-	if resp, err = http.Get(uri); err != nil {
-		return
-	}
-	defer func() { _ = resp.Body.Close() }()
-
 	var body []byte
-	if body, err = io.ReadAll(resp.Body); err != nil {
+	if _, body, err = e.crawler.Probe(web.Request{Method: "GET", Url: uri, Timeout: 5 * time.Second}); err != nil {
 		return
 	}
 

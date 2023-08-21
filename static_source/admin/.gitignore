@@ -1,0 +1,9 @@
+node_modules
+.DS_Store
+dist
+dist-ssr
+*.local
+/dist*
+*-lock.*
+pnpm-debug
+src/api/stub_new.ts

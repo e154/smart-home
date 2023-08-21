@@ -54,7 +54,7 @@ func (p *PluginEndpoint) Disable(ctx context.Context, pluginName string) (err er
 }
 
 // GetList ...
-func (p *PluginEndpoint) GetList(ctx context.Context, pagination common.PageParams) (plugins []m.Plugin, total int64, err error) {
+func (p *PluginEndpoint) GetList(ctx context.Context, pagination common.PageParams) (plugins []*m.Plugin, total int64, err error) {
 	if plugins, total, err = p.adaptors.Plugin.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy); err != nil {
 		return
 	}
@@ -83,7 +83,7 @@ func (p *PluginEndpoint) GetOptions(ctx context.Context, pluginName string) (opt
 }
 
 // GetByName ...
-func (p *PluginEndpoint) GetByName(ctx context.Context, pluginName string) (plugin m.Plugin, err error) {
+func (p *PluginEndpoint) GetByName(ctx context.Context, pluginName string) (plugin *m.Plugin, err error) {
 	if plugin, err = p.adaptors.Plugin.GetByName(pluginName); err != nil {
 		return
 	}
@@ -92,7 +92,7 @@ func (p *PluginEndpoint) GetByName(ctx context.Context, pluginName string) (plug
 }
 
 // Search ...
-func (n *PluginEndpoint) Search(ctx context.Context, query string, limit, offset int64) (result []m.Plugin, total int64, err error) {
+func (n *PluginEndpoint) Search(ctx context.Context, query string, limit, offset int64) (result []*m.Plugin, total int64, err error) {
 
 	result, total, err = n.adaptors.Plugin.Search(query, limit, offset)
 	if err != nil {
@@ -104,7 +104,7 @@ func (n *PluginEndpoint) Search(ctx context.Context, query string, limit, offset
 // UpdateSettings ...
 func (n *PluginEndpoint) UpdateSettings(ctx context.Context, name string, settings m.Attributes) (err error) {
 
-	var plugin m.Plugin
+	var plugin *m.Plugin
 	if plugin, err = n.adaptors.Plugin.GetByName(name); err != nil {
 		return
 	}
