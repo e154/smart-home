@@ -17,6 +17,7 @@ bee.json
 /conf/notify.json
 /cmd/pingmq/pingmq
 ._*
-cli*
+cli-*
 server-*
 build/public/*
+build/admin/*

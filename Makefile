@@ -104,9 +104,9 @@ build_public:
 	cd ${ROOT}/static_source/admin && \
 	pnpm i && \
 	pnpm run build:pro && \
-	rm -rf ${ROOT}/build/admin && \
+	rm -rf ${ROOT}/build/public && \
 	mkdir -p ${ROOT}/build && \
-	mv ${ROOT}/static_source/admin/dist-pro ${ROOT}/build/admin
+	mv ${ROOT}/static_source/admin/dist-pro ${ROOT}/build/public
 
 server:
 	@echo "Building http server"

@@ -2,10 +2,10 @@
 NODE_ENV=production
 
 # 接口前缀
-VITE_API_BASEPATH=pro
+VITE_API_BASEPATH=
 
 # 打包路径
-VITE_BASE_PATH=/
+VITE_BASE_PATH=/public
 
 # 是否删除debugger
 VITE_DROP_DEBUGGER=true
