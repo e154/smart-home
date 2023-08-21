@@ -45,23 +45,19 @@ func TestEntity(t *testing.T) {
 		Name:        "light",
 		PluginName:  "sensor",
 		Description: "light toggle",
-		Area:        &gw.Area{},
 		AutoLoad:    true,
 		Actions: []*gw.NewEntityRequest_Action{
 			{
 				Name:        "ON",
 				Description: "toggle on",
-				Script:      &gw.NewEntityRequest_Action_Script{},
 			},
 			{
 				Name:        "OFF",
 				Description: "toggle off",
-				Script:      &gw.NewEntityRequest_Action_Script{},
 			},
 			{
 				Name:        "CHECK",
 				Description: "check status",
-				Script:      &gw.NewEntityRequest_Action_Script{},
 			},
 		},
 		States: []*gw.NewEntityRequest_State{
@@ -125,28 +121,23 @@ func TestEntity(t *testing.T) {
 		Name:        "light",
 		PluginName:  "sensor",
 		Description: "light toggle FX",
-		Area:        &gw.Area{},
 		AutoLoad:    false,
 		Actions: []*gw.UpdateEntityRequest_Action{
 			{
 				Name:        "ON FX",
 				Description: "toggle on FX",
-				Script:      &gw.Script{},
 			},
 			{
 				Name:        "OFF FX",
 				Description: "toggle off FX",
-				Script:      &gw.Script{},
 			},
 			{
 				Name:        "CHECK FX",
 				Description: "check status FX",
-				Script:      &gw.Script{},
 			},
 			{
 				Name:        "FX",
 				Description: "status FX",
-				Script:      &gw.Script{},
 			},
 		},
 		States: []*gw.UpdateEntityRequest_State{
@@ -243,13 +234,13 @@ func TestEntity(t *testing.T) {
 			script2, err := AddScript("script2", sourceScript, adaptors, scriptService)
 			ctx.So(err, ShouldBeNil)
 
-			createRequest.Area.Id = area.Id
+			createRequest.AreaId = common.Int64(area.Id)
 			for i := range createRequest.Actions {
-				createRequest.Actions[i].Script.Id = script.Id
+				createRequest.Actions[i].ScriptId = common.Int64(script.Id)
 			}
-			updateRequest.Area.Id = area2.Id
+			updateRequest.AreaId = common.Int64(area2.Id)
 			for i := range updateRequest.Actions {
-				updateRequest.Actions[i].Script.Id = script2.Id
+				updateRequest.Actions[i].ScriptId = common.Int64(script2.Id)
 			}
 
 			t.Run("create", func(t *testing.T) {
