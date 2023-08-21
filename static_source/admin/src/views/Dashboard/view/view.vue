@@ -79,23 +79,26 @@ const activeTabIdx = computed({
   }
 })
 
+const getBackgroundColor = () => {
+  return {backgroundColor: core.tabs[core.activeTab]?.background}
+}
+
 fetchDashboard()
 
 </script>
 
 <template>
-  <ElTabs v-model="activeTabIdx"  v-if="core.tabs.length > 1 && !loading" >
+  <ElTabs v-model="activeTabIdx"  v-if="core.tabs.length > 1 && !loading" :style="getBackgroundColor()" class="pl-20px pt-20px !min-h-[calc(100%-var(--top-tool-height))]">
     <ElTabPane
         v-for="(tab, index) in core.tabs"
         :label="tab.name"
         :key="index"
-        :style="{backgroundColor: tab.background}"
         :class="[{'gap': tab.gap}]">
       <ViewTab :tab="tab" :key="index" :core="core"/>
     </ElTabPane>
   </ElTabs>
 
-  <div v-if="core.tabs.length && core.tabs.length === 1 && !loading" :class="[{'gap': core.tabs[0].gap}]">
+  <div v-if="core.tabs.length && core.tabs.length === 1 && !loading" :class="[{'gap': core.tabs[0].gap}]" :style="getBackgroundColor()" class="pl-20px pt-20px !min-h-[calc(100%-var(--top-tool-height))] ">
     <ViewTab :tab="core.tabs[0]" :core="core"/>
   </div>
 </template>

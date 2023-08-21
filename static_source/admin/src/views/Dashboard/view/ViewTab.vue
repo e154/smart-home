@@ -58,8 +58,7 @@ const cards = computed<Card[]>(() => props.tab?.cards2)
     padding: 5px;
 
     .muuri-item-content {
-      /*border: 1px #e9e9e9 solid;*/
-      border: 1px solid #e9edf3;
+      //border: 1px solid #e9edf3;
     }
   }
 }

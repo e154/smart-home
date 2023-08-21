@@ -120,10 +120,14 @@ const activeTabIdx = computed({
 const activeTab = computed<Tab>(() => core.tabs[core.activeTab] as Tab)
 const activeCard = computed<Card>(() => core.tabs[core.activeTab].cards[core.activeCard] as Card)
 
+const getBackgroundColor = () => {
+  return {backgroundColor: core.tabs[core.activeTab]?.background}
+}
+
 </script>
 
 <template>
-  <div class="components-container dashboard-container" style="margin: 0" v-if="!loading">
+  <div class="components-container dashboard-container" style="margin: 0" v-if="!loading" :style="getBackgroundColor()">
 
   <splitpanes class="default-theme" horizontal>
     <pane min-size="10" max-size="90" :size="50">
@@ -137,7 +141,6 @@ const activeCard = computed<Card>(() => core.tabs[core.activeTab].cards[core.act
               v-for="(tab, index) in core.tabs"
               :label="tab.name"
               :key="index"
-              :style="{backgroundColor: tab.background}"
               :class="[{'gap': tab.gap}]">
             <ViewTab :tab="tab" :key="index" :core="core"/>
           </ElTabPane>

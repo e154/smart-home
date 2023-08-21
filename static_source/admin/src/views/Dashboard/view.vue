@@ -9,9 +9,7 @@ const dashboardId = computed(() => parseInt(route.params.id as string));
 </script>
 
 <template>
-  <div class="ml-20px mt-20px">
-    <View v-if="dashboardId" :id="dashboardId" />
-  </div>
+  <View v-if="dashboardId" :id="dashboardId" class="ml-20px mt-20px"/>
 </template>
 
 <style lang="less" scoped>

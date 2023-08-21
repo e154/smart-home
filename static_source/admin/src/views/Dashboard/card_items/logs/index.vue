@@ -313,7 +313,6 @@ getList()
         v-model:currentPage="paginationObj.currentPage"
         :columns="columns"
         :data="tableObject.tableList"
-        :loading="tableObject.loading"
         :pagination="paginationObj"
         @sort-change="sortChange"
         :row-class-name="tableRowClassName"

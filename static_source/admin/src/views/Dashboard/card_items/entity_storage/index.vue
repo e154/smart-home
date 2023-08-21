@@ -232,6 +232,7 @@ const onFormChange = async () => {
 }
 
 const selectRow = (row: ApiEntityStorage) => {
+  if (!row) return;
   dialogSource.value = row?.attributes
   dialogVisible.value = true
 }
@@ -267,7 +268,6 @@ getList()
         v-model:currentPage="paginationObj.currentPage"
         :columns="columns"
         :data="tableObject.tableList"
-        :loading="tableObject.loading"
         :pagination="paginationObj"
         @sort-change="sortChange"
         style="width: 100%"

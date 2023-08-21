@@ -38,9 +38,7 @@ fetchDashboard()
 </script>
 
 <template>
-  <div class="ml-20px mt-20px">
-    <View v-if="!loading && id" :id="id" />
-  </div>
+  <View v-if="!loading && id" :id="id"/>
 </template>
 
 <style lang="less" scoped>
