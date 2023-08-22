@@ -518,7 +518,9 @@ export default {
   },
   settings: {
     dashboardOptions: 'Настройки панели',
-    mainDashboard: 'Main Dashboard',
-    devDashboard: 'Dev Dashboard'
+    mainDarkDashboard: 'Main Dark Dashboard',
+    mainLightDashboard: 'Main Light Dashboard',
+    devDarkDashboard: 'Dev Dark Dashboard',
+    devLightDashboard: 'Dev Light Dashboard'
   }
 }

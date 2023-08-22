@@ -519,7 +519,9 @@ export default {
     },
     settings: {
         dashboardOptions: 'Dashboard Options',
-        mainDashboard: 'Main Dashboard',
-        devDashboard: 'Dev Dashboard'
+        mainDarkDashboard: 'Main Dark Dashboard',
+        mainLightDashboard: 'Main Light Dashboard',
+        devDarkDashboard: 'Dev Dark Dashboard',
+        devLightDashboard: 'Dev Light Dashboard'
     }
 }
