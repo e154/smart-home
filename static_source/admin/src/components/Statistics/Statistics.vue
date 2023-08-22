@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import {useI18n} from '@/hooks/web/useI18n'
 import {PropType, ref, unref, watch} from 'vue'
-import {ElCol, ElIcon, ElRow, ElStatistic, ElTag, ElTooltip} from 'element-plus'
-import {ApiStatistics, ApiStatistic} from "@/api/stub";
+import {ElCol, ElRow, ElStatistic} from 'element-plus'
+import {ApiStatistic, ApiStatistics} from "@/api/stub";
 import {propTypes} from "@/utils/propTypes";
 
 const statistic = ref<Statistic>({items: []})
@@ -15,6 +15,15 @@ const {t} = useI18n()
 interface Statistic {
   items: ApiStatistic[][];
 }
+
+const colorList = [
+    'linear-gradient(rgb(61, 73, 46) 0%, rgb(38, 56, 39) 100%)',
+    'linear-gradient(rgb(40, 73, 145) 0%, rgb(18, 43, 98) 100%)',
+    'linear-gradient(rgb(49, 37, 101) 0%, rgb(32, 25, 54) 100%)',
+    'linear-gradient(#457b9d 0%, #30556d 100%)',
+    'linear-gradient(#dda15e 0%, #78562f 100%)',
+    'linear-gradient(#40916c 0%, #255640 100%)'
+]
 
 const props = defineProps({
   modelValue: {
@@ -47,10 +56,11 @@ watch(
         statistic.value.items[row].push(items[index])
       }
     },
-    {
-      immediate: true
-    }
 )
+
+const getStyle = (index, index2) => {
+  return {'background': colorList[index2]}
+}
 
 </script>
 
@@ -58,7 +68,7 @@ watch(
   <div class="ml-20px mr-20px" v-if="statistic">
     <ElRow :gutter="rowGutter" v-for="(cols, $index) in statistic.items" :key="$index" >
       <ElCol :span="colSpan" v-for="(col, $index2) in cols" :key="$index2" class="mt-20px">
-        <div class="statistic-card">
+        <div class="statistic-card" :style="getStyle($index, $index2)">
           <ElStatistic :value="col.value">
             <template #title>
               <div style="display: inline-flex; align-items: center">
@@ -73,14 +83,6 @@ watch(
 </template>
 
 <style lang="less">
-
-.el-table__row {
-  cursor: pointer;
-}
-
-:global(h2#card-usage ~ .example .example-showcase) {
-  background-color: var(--el-fill-color) !important;
-}
 
 .el-statistic {
   --el-statistic-content-font-size: 28px;
@@ -121,5 +123,12 @@ watch(
 
 .red {
   color: var(--el-color-error);
+}
+
+.el-statistic__head {
+  color: #bbb;
+}
+.el-statistic__content {
+  color: #fff;
 }
 </style>

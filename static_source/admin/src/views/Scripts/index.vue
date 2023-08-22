@@ -178,7 +178,7 @@ const selectRow = (row) => {
 
 <template>
 
-  <Statistics v-model="statistic" :cols="6" :key="1"/>
+  <Statistics v-model="statistic" :cols="6" />
 
   <ContentWrap>
     <ElButton class="flex mb-20px items-left" type="primary" @click="addNew()" plain>
