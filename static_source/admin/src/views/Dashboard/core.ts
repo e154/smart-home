@@ -732,6 +732,8 @@ export class Card {
 
     console.log('card item created, id:', item.id);
 
+    this.updateItemList()
+
     return item;
   }
 

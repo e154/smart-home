@@ -162,16 +162,16 @@ build_structure:
 	cp ${ROOT}/bin/docker/Dockerfile ${SERVER_DIR}
 	cp ${ROOT}/bin/server-installer.sh ${SERVER_DIR}
 	chmod +x ${SERVER_DIR}/data/scripts/ping.sh
-#	cp ${ROOT}/${EXEC}-linux-amd64 ${SERVER_DIR}
-#	cp ${ROOT}/${EXEC}-linux-arm-7 ${SERVER_DIR}
-#	cp ${ROOT}/${EXEC}-linux-arm-6 ${SERVER_DIR}
-#	cp ${ROOT}/${EXEC}-linux-arm-5 ${SERVER_DIR}
-#	cp ${ROOT}/${EXEC}-darwin-10.6-amd64 ${SERVER_DIR}
-#	cp ${ROOT}/${EXEC}-darwin-10.6-arm64 ${SERVER_DIR}
-#	cp ${ROOT}/${CLI}-darwin-10.6-amd64 ${SERVER_DIR}
-#	cp ${ROOT}/${CLI}-darwin-10.6-arm64 ${SERVER_DIR}
-#	cp ${ROOT}/${CLI}-linux-amd64 ${SERVER_DIR}
-#	cp ${ROOT}/bin/server ${SERVER_DIR}
+	cp ${ROOT}/${EXEC}-linux-amd64 ${SERVER_DIR}
+	cp ${ROOT}/${EXEC}-linux-arm-7 ${SERVER_DIR}
+	cp ${ROOT}/${EXEC}-linux-arm-6 ${SERVER_DIR}
+	cp ${ROOT}/${EXEC}-linux-arm-5 ${SERVER_DIR}
+	cp ${ROOT}/${EXEC}-darwin-10.6-amd64 ${SERVER_DIR}
+	cp ${ROOT}/${EXEC}-darwin-10.6-arm64 ${SERVER_DIR}
+	cp ${ROOT}/${CLI}-darwin-10.6-amd64 ${SERVER_DIR}
+	cp ${ROOT}/${CLI}-darwin-10.6-arm64 ${SERVER_DIR}
+	cp ${ROOT}/${CLI}-linux-amd64 ${SERVER_DIR}
+	cp ${ROOT}/bin/server ${SERVER_DIR}
 
 build_common_structure:
 	@echo MARK: create common structure
@@ -182,7 +182,7 @@ build_common_structure:
 	cp -r ${ROOT}/snapshots ${COMMON_DIR}
 	cp ${ROOT}/LICENSE ${COMMON_DIR}
 	cp ${ROOT}/README* ${COMMON_DIR}
-	cp ${ROOT}/contributors.txt ${COMMON_DIR}
+	cp ${ROOT}/CONTRIBUTING.md ${COMMON_DIR}
 	cp ${ROOT}/bin/docker/Dockerfile ${COMMON_DIR}
 	cp ${ROOT}/bin/server-installer.sh ${COMMON_DIR}
 	chmod +x ${COMMON_DIR}/data/scripts/ping.sh

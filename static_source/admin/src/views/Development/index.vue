@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import {computed, onMounted, PropType, ref, unref, watch} from "vue";
+import {nextTick, ref, watch} from "vue";
 import {ApiVariable} from "@/api/stub";
 import View from "@/views/Dashboard/view/view.vue";
 import api from "@/api/api";
+import {useAppStore} from "@/store/modules/app";
 
 const loading = ref(true)
 const id = ref<Nullable<number>>(null)
@@ -11,10 +12,17 @@ const id = ref<Nullable<number>>(null)
 // common
 // ---------------------------------
 
-const fetchDashboard =  async () => {
+const reloadKey = ref(0);
+const reload = () => {
+  reloadKey.value += 1
+}
+
+const appStore = useAppStore()
+
+const fetchDashboard = async () => {
   loading.value = true;
 
-  const res = await api.v1.variableServiceGetVariableByName('devDashboard')
+  const res = await api.v1.variableServiceGetVariableByName('devDashboard' + (appStore.isDark ? 'Dark' : 'Light'))
       .catch(() => {
       })
       .finally(() => {
@@ -22,23 +30,36 @@ const fetchDashboard =  async () => {
       })
 
   if (!res) {
-    loading.value = false;
     return;
   }
 
   const variable = res.data as ApiVariable
 
-  id.value = parseInt(variable.value);
+  nextTick(() => {
+    id.value = parseInt(variable.value);
+    reload()
+  })
 
   loading.value = false;
 }
+
+
+watch(
+    () => appStore.isDark,
+    (val: boolean) => {
+      fetchDashboard()
+    },
+    {
+      immediate: false
+    }
+)
 
 fetchDashboard()
 
 </script>
 
 <template>
-  <View v-if="!loading && id" :id="id"/>
+  <View v-if="!loading && id" :id="id" :key="reloadKey"/>
 </template>
 
 <style lang="less" scoped>

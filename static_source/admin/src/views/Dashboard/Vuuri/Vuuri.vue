@@ -1,11 +1,14 @@
-<script setup lang="ts">2
-import {computed, nextTick, onMounted, onUnmounted, PropType, ref, watch} from "vue";
+<script setup lang="ts">
+import {useBus} from "@/views/Dashboard/bus";
+import {computed, nextTick, onMounted, onUnmounted, PropType, ref} from "vue";
 import {Card} from "@/views/Dashboard/core";
 import GridStore from './GridStore';
 import Muuri from "muuri";
 import {UUID} from "uuid-generator-ts";
 import {ItemDragHandle, ItemKey, ItemSize} from './constants';
 import debounce from 'lodash.debounce'
+
+2
 
 const uuid = new UUID()
 const muuri = ref<Muuri>({} as Muuri)
@@ -105,13 +108,15 @@ const genKey = () => {
 }
 const gridKey = genKey()
 
+const emit = defineEmits(['updated'])
+
 const update = () => {
   console.log('update vuury')
   nextTick(() => {
     muuri.value
         .refreshItems()
-        .layout(true, () => {});
-    // .layout(true, () => this.$emit('updated')*/);
+        .layout(true, () => {})
+        .layout(true, () => emit('updated'));
   });
 }
 
@@ -160,6 +165,13 @@ const _resizeOnLoad = debounce(() => {
     update();
   });
 }, 100)
+
+useBus({
+  name: 'updateVuuri',
+  callback: () => {
+    update();
+  }
+})
 
 </script>
 

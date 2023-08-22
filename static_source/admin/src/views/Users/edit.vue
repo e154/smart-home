@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {computed, defineEmits, ref, unref} from 'vue'
 import {useI18n} from '@/hooks/web/useI18n'
-import {ElButton, ElPopconfirm} from 'element-plus'
+import {ElButton, ElMessage, ElPopconfirm} from 'element-plus'
 import {useForm} from '@/hooks/web/useForm'
 import {useCache} from '@/hooks/web/useCache'
 import {useAppStore} from '@/store/modules/app'
@@ -90,6 +90,12 @@ const save = async () => {
         })
     if (res) {
       fetch()
+      ElMessage({
+        title: t('Success'),
+        message: t('message.updatedSuccessfully'),
+        type: 'success',
+        duration: 2000
+      })
     }
   }
 }
