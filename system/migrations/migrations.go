@@ -99,7 +99,7 @@ func (m Migrations) Down() (err error) {
 // Purge ...
 func (m Migrations) Purge() (err error) {
 
-	fmt.Printf("Purge database: %s\n", m.cfg.Name)
+	fmt.Printf("Restart database: %s\n", m.cfg.Name)
 
 	if err = m.db.Exec(`DROP SCHEMA IF EXISTS "public" CASCADE;`).Error; err != nil {
 		log.Error(err.Error())

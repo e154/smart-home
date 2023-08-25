@@ -64,7 +64,7 @@ func (i *EntityStorageEndpoint) GetList(ctx context.Context, entityId *common.En
 
 	var ids []common.EntityId
 	ids = make([]common.EntityId, 0, len(idsMap))
-	for id, _ := range idsMap {
+	for id := range idsMap {
 		ids = append(ids, id)
 	}
 

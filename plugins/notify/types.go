@@ -27,7 +27,7 @@ const (
 	// Name ...
 	Name = "notify"
 	// TopicNotify ...
-	TopicNotify = "notify"
+	TopicNotify = "system/plugins/notify"
 
 	Version = "0.0.1"
 )

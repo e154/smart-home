@@ -43,7 +43,7 @@ func NewDeveloperToolsEndpoint(common *CommonEndpoint) *DeveloperToolsEndpoint {
 
 // StateList ...
 func (d DeveloperToolsEndpoint) StateList(ctx context.Context) (states []m.EntityShort, total int64, err error) {
-	states, err = d.entityManager.List()
+	states, err = d.supervisor.List()
 	if err != nil {
 		return
 	}
@@ -70,11 +70,7 @@ func (d DeveloperToolsEndpoint) SetEntityState(ctx context.Context, entityId str
 
 // EventList ...
 func (d DeveloperToolsEndpoint) EventList(ctx context.Context) (events []bus.Stat, total int64, err error) {
-	events, err = d.eventBus.Stat()
-	if err != nil {
-		return
-	}
-	total = int64(len(events))
+	events, total, err = d.eventBus.Stat()
 	return
 }
 

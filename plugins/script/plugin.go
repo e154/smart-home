@@ -31,37 +31,36 @@ import (
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/plugins"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 var (
 	log = logger.MustGetLogger("plugins.script")
 )
 
-var _ plugins.Plugable = (*plugin)(nil)
+var _ supervisor.Pluggable = (*plugin)(nil)
 
 func init() {
-	plugins.RegisterPlugin(Name, New)
+	supervisor.RegisterPlugin(Name, New)
 }
 
 type plugin struct {
-	*plugins.Plugin
+	*supervisor.Plugin
 	actorsLock *sync.Mutex
 	actors     map[string]*Actor
 }
 
 // New ...
-func New() plugins.Plugable {
+func New() supervisor.Pluggable {
 	return &plugin{
-		Plugin:     plugins.NewPlugin(),
+		Plugin:     supervisor.NewPlugin(),
 		actorsLock: &sync.Mutex{},
 		actors:     make(map[string]*Actor),
 	}
 }
 
 // Load ...
-func (p *plugin) Load(service plugins.Service) (err error) {
+func (p *plugin) Load(service supervisor.Service) (err error) {
 	if err = p.Plugin.Load(service); err != nil {
 		return
 	}
@@ -116,7 +115,7 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 
 	if actor, ok := p.actors[name]; ok {
 		// update
-		_ = actor.SetState(entity_manager.EntityStateParams{
+		_ = actor.SetState(supervisor.EntityStateParams{
 			AttributeValues: entity.Attributes.Serialize(),
 			SettingsValue:   entity.Settings.Serialize(),
 		})
@@ -124,11 +123,11 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 	}
 
 	var actor *Actor
-	if actor, err = NewActor(entity, p.Adaptors, p.ScriptService, p.EntityManager, p.EventBus); err != nil {
+	if actor, err = NewActor(entity, p.Adaptors, p.ScriptService, p.Supervisor, p.EventBus); err != nil {
 		return
 	}
 	p.actors[name] = actor
-	p.EntityManager.Spawn(p.actors[name].Spawn)
+	p.Supervisor.Spawn(p.actors[name].Spawn)
 
 	return
 }
@@ -149,8 +148,8 @@ func (p *plugin) eventHandler(_ string, msg interface{}) {
 }
 
 // Type ...
-func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginInstallable
+func (p *plugin) Type() supervisor.PluginType {
+	return supervisor.PluginInstallable
 }
 
 // Depends ...

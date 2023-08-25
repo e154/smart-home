@@ -26,9 +26,7 @@ import (
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api/controllers"
-	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
 	. "github.com/smartystreets/goconvey/convey"
@@ -40,16 +38,14 @@ func TestAuth(t *testing.T) {
 		err := container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService,
-			entityManager entity_manager.EntityManager,
 			eventBus bus.Bus,
-			pluginManager common.PluginManager,
 			controllers *controllers.Controllers,
 			dialer *container2.Dialer) {
 
-			//eventBus.Purge()
-			//scriptService.Purge()
+			//eventBus.Restart()
+			//scriptService.Restart()
 			//
-			//err := migrations.Purge()
+			//err := migrations.Restart()
 			//ctx.So(err, ShouldBeNil)
 			//
 			//c := context.Background()

@@ -19,22 +19,21 @@
 package plugins
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"testing"
 	"time"
 
-	"github.com/e154/smart-home/common/events"
-
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/plugins/node"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -45,15 +44,11 @@ func TestNode(t *testing.T) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService,
-			entityManager entity_manager.EntityManager,
+			supervisor supervisor.Supervisor,
 			zigbee2mqtt zigbee2mqtt.Zigbee2mqtt,
 			mqttServer mqtt.MqttServ,
 			automation automation.Automation,
-			eventBus bus.Bus,
-			pluginManager common.PluginManager) {
-
-			eventBus.Purge()
-			scriptService.Purge()
+			eventBus bus.Bus) {
 
 			err := migrations.Purge()
 			ctx.So(err, ShouldBeNil)
@@ -62,6 +57,10 @@ func TestNode(t *testing.T) {
 			err = AddPlugin(adaptors, "node")
 			ctx.So(err, ShouldBeNil)
 
+			eventBus.Purge()
+			scriptService.Restart()
+			supervisor.Restart(context.Background())
+			automation.Restart()
 			go mqttServer.Start()
 
 			// add entity
@@ -71,21 +70,13 @@ func TestNode(t *testing.T) {
 			err = adaptors.Entity.Add(nodeEnt)
 			ctx.So(err, ShouldBeNil)
 
+			eventBus.Publish(bus.TopicEntities, events.EventCreatedEntity{
+				EntityId: nodeEnt.Id,
+			})
+
+			time.Sleep(time.Second)
+
 			// ------------------------------------------------
-			pluginManager.Start()
-			automation.Reload()
-			entityManager.SetPluginManager(pluginManager)
-			entityManager.LoadEntities()
-
-			defer func() {
-				_ = mqttServer.Shutdown()
-				zigbee2mqtt.Shutdown()
-				entityManager.Shutdown()
-				_ = automation.Shutdown()
-				pluginManager.Shutdown()
-			}()
-
-			time.Sleep(time.Millisecond * 500)
 
 			now := time.Now()
 
@@ -122,7 +113,7 @@ func TestNode(t *testing.T) {
 						StartedAt: now,
 					})
 					ctx.So(err, ShouldBeNil)
-					err = mqttServer.Publish("home/node/main/ping", b, 0, false)
+					err = mqttServer.Publish("system/plugins/node/main/ping", b, 0, false)
 					ctx.So(err, ShouldBeNil)
 
 					ticker := time.NewTimer(time.Second * 2)
@@ -147,7 +138,7 @@ func TestNode(t *testing.T) {
 			t.Run("request", func(t *testing.T) {
 				Convey("case", t, func(ctx C) {
 					ch := make(chan struct{})
-					_ = mqttCli.Subscribe("home/node/main/req/#", func(client mqtt.MqttCli, message mqtt.Message) {
+					_ = mqttCli.Subscribe("system/plugins/node/main/req/#", func(client mqtt.MqttCli, message mqtt.Message) {
 						req := node.MessageRequest{}
 						err = json.Unmarshal(message.Payload, &req)
 						ctx.So(err, ShouldBeNil)
@@ -163,7 +154,7 @@ func TestNode(t *testing.T) {
 						Properties: nil,
 						Command:    nil,
 					}
-					eventBus.Publish(fmt.Sprintf("plugin.node/main/req/%s", nodeEnt.Id), req)
+					eventBus.Publish(fmt.Sprintf("system/plugins/node/main/req/%s", nodeEnt.Id), req)
 
 					ticker := time.NewTimer(time.Second * 1)
 					defer ticker.Stop()
@@ -186,9 +177,9 @@ func TestNode(t *testing.T) {
 				Convey("case", t, func(ctx C) {
 
 					ch := make(chan struct{})
-					topic := fmt.Sprintf("plugin.node/main/resp/%s", "plugin.test")
+					topic := fmt.Sprintf("system/plugins/node/main/resp/%s", "plugin.test")
 					fn := func(topic string, resp node.MessageResponse) {
-						ctx.So(topic, ShouldEqual, "plugin.node/main/resp/plugin.test")
+						ctx.So(topic, ShouldEqual, "system/plugins/node/main/resp/plugin.test")
 						ctx.So(resp.EntityId, ShouldEqual, "plugin.test")
 						ctx.So(resp.DeviceType, ShouldEqual, "test")
 						ctx.So(resp.Status, ShouldEqual, "success")
@@ -205,7 +196,7 @@ func TestNode(t *testing.T) {
 					})
 					ctx.So(err, ShouldBeNil)
 
-					_ = mqttCli.Publish(fmt.Sprintf("home/node/main/resp/%s", "plugin.test"), b)
+					_ = mqttCli.Publish(fmt.Sprintf("system/plugins/node/main/resp/%s", "plugin.test"), b)
 
 					ticker := time.NewTimer(time.Second * 1)
 					defer ticker.Stop()

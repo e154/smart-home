@@ -16,33 +16,18 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package plugins
+package supervisor
 
 import (
-	"context"
 	"fmt"
 
-	"github.com/pkg/errors"
-	"go.uber.org/atomic"
-	"go.uber.org/fx"
-
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/events"
-	"github.com/e154/smart-home/common/logger"
-	"github.com/e154/smart-home/common/web"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/gate_client"
-	"github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/scheduler"
-	"github.com/e154/smart-home/system/scripts"
-)
-
-var (
-	log = logger.MustGetLogger("plugins.manager")
+	"github.com/pkg/errors"
+	"go.uber.org/atomic"
 )
 
 type pluginManager struct {
@@ -51,46 +36,6 @@ type pluginManager struct {
 	service        *service
 	eventBus       bus.Bus
 	enabledPlugins map[string]bool
-}
-
-// NewPluginManager ...
-func NewPluginManager(lc fx.Lifecycle,
-	adaptors *adaptors.Adaptors,
-	bus bus.Bus,
-	entityManager entity_manager.EntityManager,
-	mqttServ mqtt.MqttServ,
-	scriptService scripts.ScriptService,
-	appConfig *m.AppConfig,
-	gateClient *gate_client.GateClient,
-	eventBus bus.Bus,
-	scheduler *scheduler.Scheduler,
-	crawler web.Crawler) common.PluginManager {
-	pluginManager := &pluginManager{
-		adaptors:       adaptors,
-		isStarted:      atomic.NewBool(false),
-		eventBus:       eventBus,
-		enabledPlugins: make(map[string]bool),
-	}
-	pluginManager.service = &service{
-		pluginManager: pluginManager,
-		bus:           bus,
-		entityManager: entityManager,
-		mqttServ:      mqttServ,
-		adaptors:      adaptors,
-		scriptService: scriptService,
-		appConfig:     appConfig,
-		gateClient:    gateClient,
-		scheduler:     scheduler,
-		crawler:       crawler,
-	}
-
-	lc.Append(fx.Hook{
-		OnStop: func(ctx context.Context) (err error) {
-			pluginManager.Shutdown()
-			return nil
-		},
-	})
-	return pluginManager
 }
 
 // Start ...
@@ -119,7 +64,7 @@ func (p *pluginManager) Shutdown() {
 		}
 		log.Infof("unload plugin '%s'", name)
 		if item, ok := pluginList.Load(name); ok {
-			plugin := item.(Plugable)
+			plugin := item.(Pluggable)
 			_ = plugin.Unload()
 		}
 		p.enabledPlugins[name] = false
@@ -136,10 +81,10 @@ func (p *pluginManager) GetPlugin(t string) (plugin interface{}, err error) {
 	return
 }
 
-func (p *pluginManager) getPlugin(name string) (plugin Plugable, err error) {
+func (p *pluginManager) getPlugin(name string) (plugin Pluggable, err error) {
 
 	if item, ok := pluginList.Load(name); ok {
-		plugin = item.(Plugable)
+		plugin = item.(Pluggable)
 		return
 	}
 
@@ -152,20 +97,17 @@ func (p *pluginManager) loadPlugins() {
 
 	var page int64
 	var loadList []*m.Plugin
-	const perPage = 100
+	const perPage = 500
 	var err error
 
 LOOP:
-	loadList, _, err = p.adaptors.Plugin.List(perPage, perPage*page, "", "")
+	loadList, _, err = p.adaptors.Plugin.List(perPage, perPage*page, "", "", true)
 	if err != nil {
 		log.Error(err.Error())
 		return
 	}
 
 	for _, pl := range loadList {
-		if !pl.Enabled {
-			continue
-		}
 		if err = p.loadPlugin(pl.Name); err != nil {
 			log.Errorf("plugin name '%s', %s", pl.Name, err.Error())
 		}
@@ -186,8 +128,8 @@ func (p *pluginManager) loadPlugin(name string) (err error) {
 		return
 	}
 	if item, ok := pluginList.Load(name); ok {
-		plugin := item.(Plugable)
-		log.Infof("load plugin %v", plugin.Name())
+		plugin := item.(Pluggable)
+		log.Infof("load plugin '%v'", plugin.Name())
 		if err = plugin.Load(p.service); err != nil {
 			err = errors.Wrap(err, "load plugin")
 			return
@@ -213,7 +155,7 @@ func (p *pluginManager) unloadPlugin(name string) (err error) {
 	}
 
 	if item, ok := pluginList.Load(name); ok {
-		plugin := item.(Plugable)
+		plugin := item.(Pluggable)
 		log.Infof("unload plugin %v", plugin.Name())
 		_ = plugin.Unload()
 	} else {
@@ -316,13 +258,13 @@ func (p *pluginManager) DisablePlugin(name string) (err error) {
 }
 
 // PluginList ...
-func (p *pluginManager) PluginList() (list []common.PluginInfo, total int64, err error) {
+func (p *pluginManager) PluginList() (list []PluginInfo, total int64, err error) {
 
-	list = make([]common.PluginInfo, 0)
+	list = make([]PluginInfo, 0)
 	pluginList.Range(func(key, value interface{}) bool {
 		total++
-		plugin := value.(Plugable)
-		list = append(list, common.PluginInfo{
+		plugin := value.(Pluggable)
+		list = append(list, PluginInfo{
 			Name:    plugin.Name(),
 			Version: plugin.Version(),
 			Enabled: p.enabledPlugins[plugin.Name()],
@@ -333,6 +275,6 @@ func (p *pluginManager) PluginList() (list []common.PluginInfo, total int64, err
 	return
 }
 
-func (p *pluginManager) IsLoaded(name string) bool {
+func (p *pluginManager) PluginIsLoaded(name string) bool {
 	return p.enabledPlugins[name]
 }

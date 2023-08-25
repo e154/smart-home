@@ -16,24 +16,31 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package entity_manager
+package supervisor
 
-import (
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
-)
+import m "github.com/e154/smart-home/models"
 
-// MessageStateChanged -> entityManager
-type MessageStateChanged struct {
-	StorageSave bool
-	OldState    bus.EventEntityState
-	NewState    bus.EventEntityState
+// ScriptBind ...
+type ScriptBind struct {
+	actor PluginActor
 }
 
-// EntityStateParams -> entityManager
-type EntityStateParams struct {
-	NewState        *string          `json:"new_state"`
-	AttributeValues m.AttributeValue `json:"attribute_values"`
-	SettingsValue   m.AttributeValue `json:"settings_value"`
-	StorageSave     bool             `json:"storage_save"`
+// NewScriptBind  ...
+func NewScriptBind(actor PluginActor) *ScriptBind {
+	return &ScriptBind{actor: actor}
+}
+
+// SetState  ...
+func (s *ScriptBind) SetState(params EntityStateParams) {
+	_ = s.actor.SetState(params)
+}
+
+// GetSettings  ...
+func (s *ScriptBind) GetSettings() map[string]interface{} {
+	return s.actor.Settings().Serialize()
+}
+
+// SetAttribute  ...
+func (s *ScriptBind) SetAttribute(params m.AttributeValue) {
+
 }

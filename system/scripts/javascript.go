@@ -268,13 +268,16 @@ func (j *Javascript) bind() {
 	marshal = function(obj) { return JSON.stringify(obj); }
 	`)
 
-	for name, structure := range j.engine.structures.heap {
-		_ = j.vm.Set(name, structure)
-	}
 
-	for name, structure := range j.engine.functions.heap {
-		_ = j.vm.Set(name, structure)
-	}
+	j.engine.functions.Range(func(key, value interface{}) bool {
+		_ = j.vm.Set(key.(string), value)
+		return true
+	})
+
+	j.engine.structures.Range(func(key, value interface{}) bool {
+		_ = j.vm.Set(key.(string), value)
+		return true
+	})
 }
 
 // CreateProgram ...

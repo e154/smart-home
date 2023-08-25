@@ -16,15 +16,13 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package plugins
+package supervisor
 
 import (
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/web"
 	"github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scheduler"
@@ -32,10 +30,9 @@ import (
 )
 
 type service struct {
-	pluginManager common.PluginManager
 	bus           bus.Bus
 	adaptors      *adaptors.Adaptors
-	entityManager entity_manager.EntityManager
+	supervisor    Supervisor
 	scriptService scripts.ScriptService
 	mqttServ      mqtt.MqttServ
 	appConfig     *models.AppConfig
@@ -45,19 +42,14 @@ type service struct {
 }
 
 // Plugins ...
-func (s service) Plugins() map[string]Plugable {
-	list := make(map[string]Plugable)
+func (s service) Plugins() map[string]Pluggable {
+	list := make(map[string]Pluggable)
 	pluginList.Range(func(key, value interface{}) bool {
 		name := key.(string)
-		list[name] = value.(Plugable)
+		list[name] = value.(Pluggable)
 		return true
 	})
 	return list
-}
-
-// PluginManager ...
-func (s service) PluginManager() common.PluginManager {
-	return s.pluginManager
 }
 
 // EventBus ...
@@ -65,9 +57,9 @@ func (s service) EventBus() bus.Bus {
 	return s.bus
 }
 
-// EntityManager ...
-func (s service) EntityManager() entity_manager.EntityManager {
-	return s.entityManager
+// Supervisor ...
+func (s service) Supervisor() Supervisor {
+	return s.supervisor
 }
 
 // Adaptors ...

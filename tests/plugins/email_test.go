@@ -26,14 +26,13 @@ import (
 	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/email"
 	"github.com/e154/smart-home/plugins/notify"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -43,12 +42,8 @@ func TestEmail(t *testing.T) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService,
-			entityManager entity_manager.EntityManager,
-			eventBus bus.Bus,
-			pluginManager common.PluginManager) {
-
-			eventBus.Purge()
-			scriptService.Purge()
+			supervisor supervisor.Supervisor,
+			eventBus bus.Bus) {
 
 			err := migrations.Purge()
 			ctx.So(err, ShouldBeNil)
@@ -65,16 +60,11 @@ func TestEmail(t *testing.T) {
 			err = AddPlugin(adaptors, "email", settings.Serialize())
 			ctx.So(err, ShouldBeNil)
 
-			pluginManager.Start()
-			entityManager.SetPluginManager(pluginManager)
-			entityManager.LoadEntities()
+			eventBus.Purge()
+			scriptService.Restart()
+			supervisor.Restart(context.Background())
 
-			defer func() {
-				entityManager.Shutdown()
-				pluginManager.Shutdown()
-			}()
-
-			time.Sleep(time.Millisecond * 500)
+			time.Sleep(time.Second)
 
 			t.Run("succeed", func(t *testing.T) {
 				Convey("", t, func(ctx C) {

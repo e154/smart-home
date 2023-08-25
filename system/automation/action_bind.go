@@ -39,5 +39,5 @@ func NewActionBind(action *Action) *ActionBind {
 
 // CallAction ...
 func (e *ActionBind) CallAction(id common.EntityId, action string, arg map[string]interface{}) {
-	e.action.entityManager.CallAction(id, action, arg)
+	e.action.supervisor.CallAction(id, action, arg)
 }

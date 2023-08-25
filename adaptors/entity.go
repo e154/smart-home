@@ -269,7 +269,6 @@ func (n *Entity) GetByIds(ids []common.EntityId, preloadMetric ...bool) (list []
 	return
 }
 
-
 // GetByIdsSimple ...
 func (n *Entity) GetByIdsSimple(ids []common.EntityId) (list []*m.Entity, err error) {
 

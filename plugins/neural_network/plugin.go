@@ -13,38 +13,37 @@ import (
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/plugins"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 var (
 	log = logger.MustGetLogger("plugins.neural_network")
 )
 
-var _ plugins.Plugable = (*plugin)(nil)
+var _ supervisor.Pluggable = (*plugin)(nil)
 
 func init() {
-	plugins.RegisterPlugin(Name, New)
+	supervisor.RegisterPlugin(Name, New)
 }
 
 type plugin struct {
-	*plugins.Plugin
+	*supervisor.Plugin
 	actorsLock *sync.Mutex
 	actors     map[common.EntityId]*Actor
 	quit       chan struct{}
 	pause      time.Duration
 }
 
-func New() plugins.Plugable {
+func New() supervisor.Pluggable {
 	return &plugin{
-		Plugin:     plugins.NewPlugin(),
+		Plugin:     supervisor.NewPlugin(),
 		actorsLock: &sync.Mutex{},
 		actors:     make(map[common.EntityId]*Actor),
 		pause:      240,
 	}
 }
 
-func (p *plugin) Load(service plugins.Service) (err error) {
+func (p *plugin) Load(service supervisor.Service) (err error) {
 	if err = p.Plugin.Load(service); err != nil {
 		return
 	}
@@ -98,8 +97,8 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 		return
 	}
 
-	p.actors[entity.Id] = NewActor(entity, p.EntityManager, p.Adaptors, p.ScriptService, p.EventBus)
-	p.EntityManager.Spawn(p.actors[entity.Id].Spawn)
+	p.actors[entity.Id] = NewActor(entity, p.Supervisor, p.Adaptors, p.ScriptService, p.EventBus)
+	p.Supervisor.Spawn(p.actors[entity.Id].Spawn)
 
 	return
 }
@@ -131,8 +130,8 @@ func (p *plugin) updateForAll() {
 	}
 }
 
-func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginBuiltIn
+func (p *plugin) Type() supervisor.PluginType {
+	return supervisor.PluginBuiltIn
 }
 
 func (p *plugin) Depends() []string {
@@ -148,7 +147,7 @@ func (p *plugin) Options() m.PluginOptions {
 		Actors:       true,
 		ActorAttrs:   NewAttr(),
 		ActorSetts:   NewSettings(),
-		ActorActions: entity_manager.ToEntityActionShort(NewActions()),
-		ActorStates:  entity_manager.ToEntityStateShort(NewStates()),
+		ActorActions: supervisor.ToEntityActionShort(NewActions()),
+		ActorStates:  supervisor.ToEntityStateShort(NewStates()),
 	}
 }

@@ -34,7 +34,7 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/weather"
-	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 const (
@@ -74,7 +74,7 @@ func (p *WeatherOwm) GetForecast(params Zone, now time.Time, settings map[string
 
 	// current weather
 	if len(zone.Weatherdata.Daily) > 0 {
-		var state entity_manager.ActorState
+		var state supervisor.ActorState
 		if len(zone.Weatherdata.Current.Weather) > 0 {
 			state = WeatherCondition(zone.Weatherdata.Current.Weather[0])
 		}
@@ -100,7 +100,7 @@ func (p *WeatherOwm) GetForecast(params Zone, now time.Time, settings map[string
 		if len(zone.Weatherdata.Daily) < i {
 			return
 		}
-		var state entity_manager.ActorState
+		var state supervisor.ActorState
 		if len(zone.Weatherdata.Daily[i].Weather) > 0 {
 			state = WeatherCondition(zone.Weatherdata.Daily[i].Weather[0])
 		}

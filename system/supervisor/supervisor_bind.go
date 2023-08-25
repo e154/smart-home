@@ -16,53 +16,53 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package entity_manager
+package supervisor
 
 import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 )
 
-// EntityManagerBind ...
-type EntityManagerBind struct {
-	manager EntityManager
+// SupervisorBind ...
+type SupervisorBind struct {
+	manager Supervisor
 }
 
-// NewEntityManagerBind ...
-func NewEntityManagerBind(manager EntityManager) *EntityManagerBind {
-	return &EntityManagerBind{manager: manager}
+// NewSupervisorBind ...
+func NewSupervisorBind(manager Supervisor) *SupervisorBind {
+	return &SupervisorBind{manager: manager}
 }
 
 // GetEntity ...
-func (e *EntityManagerBind) GetEntity(id common.EntityId) *EntityBind {
+func (e *SupervisorBind) GetEntity(id common.EntityId) *EntityBind {
 	return NewEntityBind(id, e.manager)
 }
 
 // SetState ...
-func (e *EntityManagerBind) SetState(id common.EntityId, stateName string) {
+func (e *SupervisorBind) SetState(id common.EntityId, stateName string) {
 	_ = e.manager.SetState(id, EntityStateParams{
 		NewState: common.String(stateName),
 	})
 }
 
 // SetAttribute ...
-func (e *EntityManagerBind) SetAttribute(id common.EntityId, params m.AttributeValue) {
+func (e *SupervisorBind) SetAttribute(id common.EntityId, params m.AttributeValue) {
 	_ = e.manager.SetState(id, EntityStateParams{
 		AttributeValues: params,
 	})
 }
 
 // SetMetric ...
-func (e *EntityManagerBind) SetMetric(id common.EntityId, name string, value map[string]float32) {
+func (e *SupervisorBind) SetMetric(id common.EntityId, name string, value map[string]float32) {
 	e.manager.SetMetric(id, name, value)
 }
 
 // CallAction ...
-func (e *EntityManagerBind) CallAction(id common.EntityId, action string, arg map[string]interface{}) {
+func (e *SupervisorBind) CallAction(id common.EntityId, action string, arg map[string]interface{}) {
 	e.manager.CallAction(id, action, arg)
 }
 
 // CallScene ...
-func (e *EntityManagerBind) CallScene(id common.EntityId, arg map[string]interface{}) {
+func (e *SupervisorBind) CallScene(id common.EntityId, arg map[string]interface{}) {
 	e.manager.CallScene(id, arg)
 }

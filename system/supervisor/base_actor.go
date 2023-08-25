@@ -16,7 +16,7 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package entity_manager
+package supervisor
 
 import (
 	"fmt"
@@ -41,7 +41,7 @@ type BaseActor struct {
 	Name              string
 	Description       string
 	EntityType        string
-	Manager           EntityManager
+	Supervisor        Supervisor
 	State             *ActorState
 	Area              *m.Area
 	Metric            []*m.Metric
@@ -75,7 +75,7 @@ func NewBaseActor(entity *m.Entity,
 		Description:       entity.Description,
 		EntityType:        entity.PluginName,
 		ParentId:          entity.ParentId,
-		Manager:           nil,
+		Supervisor:        nil,
 		State:             nil,
 		Area:              entity.Area,
 		Hidden:            entity.Hidden,
@@ -226,8 +226,8 @@ func (e *BaseActor) Now(oldState bus.EventEntityState) time.Time {
 
 // SetMetric ...
 func (e *BaseActor) SetMetric(id common.EntityId, name string, value map[string]float32) {
-	if e.Manager != nil {
-		e.Manager.SetMetric(id, name, value)
+	if e.Supervisor != nil {
+		e.Supervisor.SetMetric(id, name, value)
 	}
 }
 
@@ -257,7 +257,7 @@ func (e *BaseActor) attrLock() {
 }
 
 func (e *BaseActor) settingsLock() {
-	if e.SettingsMu == nil {
+	if e.SettingsMu == nil  {//todo: check race condition
 		e.SettingsMu = &sync.RWMutex{}
 	}
 }

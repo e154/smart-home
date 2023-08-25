@@ -5,7 +5,7 @@ import (
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/supervisor"
 	"github.com/julioguillermo/staticneurogenetic"
 	"math"
 	"math/rand"
@@ -15,25 +15,25 @@ import (
 const fileName = "oxo.bin"
 
 type Network2 struct {
-	train2        bool
-	entityManager entity_manager.EntityManager
-	eventBus      bus.Bus
-	game          *Game
-	actor         entity_manager.PluginActor
-	entityId      common.EntityId
-	agents        *staticneurogenetic.SNG
-	moves         int
-	individual    int
+	train2     bool
+	supervisor supervisor.Supervisor
+	eventBus   bus.Bus
+	game       *Game
+	actor      supervisor.PluginActor
+	entityId   common.EntityId
+	agents     *staticneurogenetic.SNG
+	moves      int
+	individual int
 }
 
 func NewNetwork2(eventBus bus.Bus,
-	entityManager entity_manager.EntityManager) (net *Network2) {
+	supervisor supervisor.Supervisor) (net *Network2) {
 	net = &Network2{
-		eventBus:      eventBus,
-		train2:        true,
-		game:          NewGame(),
-		entityManager: entityManager,
-		entityId:      "sensor.ticTacToe",
+		eventBus:   eventBus,
+		train2:     true,
+		game:       NewGame(),
+		supervisor: supervisor,
+		entityId:   "sensor.ticTacToe",
 	}
 	net.Start()
 	return net
@@ -45,7 +45,7 @@ const (
 )
 
 func (e *Network2) Start() {
-	e.actor, _ = e.entityManager.GetActorById(e.entityId)
+	e.actor, _ = e.supervisor.GetActorById(e.entityId)
 	_ = e.eventBus.Subscribe(bus.TopicEntities, e.eventHandler)
 
 	rand.Seed(int64(time.Now().Nanosecond()))
@@ -138,7 +138,7 @@ func (e *Network2) eventHandler(_ string, msg interface{}) {
 }
 
 func (e *Network2) sendMoveCommand(row, col int) {
-	e.entityManager.CallAction(e.entityId, fmt.Sprintf("B_R%dC%d", row, col), nil)
+	e.supervisor.CallAction(e.entityId, fmt.Sprintf("B_R%dC%d", row, col), nil)
 }
 
 func (e *Network2) MakeMove() {
@@ -175,9 +175,7 @@ func (e *Network2) Train2() {
 
 	e.agents.ResetFitness()
 
-
 	for k := 0; k < 50; k++ {
-
 
 		generation := e.agents.GetGeneration()
 		fmt.Println("generation:", generation)

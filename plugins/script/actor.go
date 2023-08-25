@@ -27,8 +27,8 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 const (
@@ -38,11 +38,11 @@ const (
 
 // Actor ...
 type Actor struct {
-	entity_manager.BaseActor
+	supervisor.BaseActor
 	eventBus      bus.Bus
 	adaptors      *adaptors.Adaptors
 	scriptService scripts.ScriptService
-	system        entity_manager.EntityManager
+	system        supervisor.Supervisor
 	stateMu       *sync.Mutex
 	actionPool    chan events.EventCallAction
 }
@@ -51,11 +51,11 @@ type Actor struct {
 func NewActor(entity *m.Entity,
 	adaptors *adaptors.Adaptors,
 	scriptService scripts.ScriptService,
-	entityManager entity_manager.EntityManager,
+	visor supervisor.Supervisor,
 	eventBus bus.Bus) (actor *Actor, err error) {
 
 	actor = &Actor{
-		BaseActor:     entity_manager.NewBaseActor(entity, scriptService, adaptors),
+		BaseActor:     supervisor.NewBaseActor(entity, scriptService, adaptors),
 		adaptors:      adaptors,
 		scriptService: scriptService,
 		actionPool:    make(chan events.EventCallAction, 10),
@@ -63,12 +63,12 @@ func NewActor(entity *m.Entity,
 		eventBus:      eventBus,
 	}
 
-	actor.Manager = entityManager
+	actor.Supervisor = visor
 
 	// Actions
 	for _, a := range actor.Actions {
 		if a.ScriptEngine != nil {
-			a.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
+			a.ScriptEngine.PushStruct("Actor", supervisor.NewScriptBind(actor))
 			_, _ = a.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
 			_, _ = a.ScriptEngine.Do()
 		}
@@ -77,7 +77,7 @@ func NewActor(entity *m.Entity,
 	// Script
 	if actor.ScriptEngine != nil {
 		_, _ = actor.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
-		actor.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
+		actor.ScriptEngine.PushStruct("Actor", supervisor.NewScriptBind(actor))
 	}
 
 	// action worker
@@ -91,12 +91,12 @@ func NewActor(entity *m.Entity,
 }
 
 // Spawn ...
-func (e *Actor) Spawn() entity_manager.PluginActor {
+func (e *Actor) Spawn() supervisor.PluginActor {
 	return e
 }
 
 // SetState ...
-func (e *Actor) SetState(params entity_manager.EntityStateParams) (err error) {
+func (e *Actor) SetState(params supervisor.EntityStateParams) (err error) {
 
 	e.stateMu.Lock()
 	defer e.stateMu.Unlock()

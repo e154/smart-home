@@ -31,13 +31,13 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/cgminer/bitmine"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 // Actor ...
 type Actor struct {
-	entity_manager.BaseActor
+	supervisor.BaseActor
 	eventBus   bus.Bus
 	miner      IMiner
 	actionPool chan events.EventCallAction
@@ -45,13 +45,13 @@ type Actor struct {
 
 // NewActor ...
 func NewActor(entity *m.Entity,
-	entityManager entity_manager.EntityManager,
+	visor supervisor.Supervisor,
 	adaptors *adaptors.Adaptors,
 	scriptService scripts.ScriptService,
 	eventBus bus.Bus) (actor *Actor, err error) {
 
 	actor = &Actor{
-		BaseActor:  entity_manager.NewBaseActor(entity, scriptService, adaptors),
+		BaseActor:  supervisor.NewBaseActor(entity, scriptService, adaptors),
 		eventBus:   eventBus,
 		actionPool: make(chan events.EventCallAction, 10),
 	}
@@ -60,7 +60,7 @@ func NewActor(entity *m.Entity,
 	//	log.Warnf("entity %s, parent is nil", actor.Id)
 	//}
 
-	actor.Manager = entityManager
+	actor.Supervisor = visor
 
 	if actor.Attrs == nil {
 		actor.Attrs = NewAttr()
@@ -144,7 +144,7 @@ func NewActor(entity *m.Entity,
 	for _, a := range actor.Actions {
 		if a.ScriptEngine != nil {
 			// bind
-			a.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
+			a.ScriptEngine.PushStruct("Actor", supervisor.NewScriptBind(actor))
 			a.ScriptEngine.PushFunction("Miner", actor.miner.Bind())
 			_, _ = a.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
 			_, _ = a.ScriptEngine.Do()
@@ -153,7 +153,7 @@ func NewActor(entity *m.Entity,
 
 	if actor.ScriptEngine != nil {
 		_, _ = actor.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
-		actor.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
+		actor.ScriptEngine.PushStruct("Actor", supervisor.NewScriptBind(actor))
 	}
 
 	// action worker
@@ -167,13 +167,13 @@ func NewActor(entity *m.Entity,
 }
 
 // Spawn ...
-func (e *Actor) Spawn() entity_manager.PluginActor {
+func (e *Actor) Spawn() supervisor.PluginActor {
 	e.Update()
 	return e
 }
 
 // SetState ...
-func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
+func (e *Actor) SetState(params supervisor.EntityStateParams) error {
 
 	oldState := e.GetEventState(e)
 

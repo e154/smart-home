@@ -19,42 +19,42 @@
 package version
 
 import (
+	"github.com/e154/smart-home/system/supervisor"
 	"time"
 
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/plugins"
 )
 
-var _ plugins.Plugable = (*plugin)(nil)
+var _ supervisor.Pluggable = (*plugin)(nil)
 
 func init() {
-	plugins.RegisterPlugin(Name, New)
+	supervisor.RegisterPlugin(Name, New)
 }
 
 type plugin struct {
-	*plugins.Plugin
+	*supervisor.Plugin
 	pause  uint
 	actor  *Actor
 	ticker *time.Ticker
 }
 
 // New ...
-func New() plugins.Plugable {
+func New() supervisor.Pluggable {
 	p := &plugin{
-		Plugin: plugins.NewPlugin(),
+		Plugin: supervisor.NewPlugin(),
 		pause:  10,
 	}
 	return p
 }
 
 // Load ...
-func (p *plugin) Load(service plugins.Service) (err error) {
+func (p *plugin) Load(service supervisor.Service) (err error) {
 	if err = p.Plugin.Load(service); err != nil {
 		return
 	}
 
-	p.actor = NewActor(service.EntityManager(), service.EventBus())
-	p.EntityManager.Spawn(p.actor.Spawn)
+	p.actor = NewActor(service.Supervisor(), service.EventBus())
+	p.Supervisor.Spawn(p.actor.Spawn)
 
 	go func() {
 		p.ticker = time.NewTicker(time.Second * time.Duration(p.pause))
@@ -86,8 +86,8 @@ func (p plugin) Name() string {
 }
 
 // Type ...
-func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginInstallable
+func (p *plugin) Type() supervisor.PluginType {
+	return supervisor.PluginInstallable
 }
 
 // Depends ...

@@ -27,7 +27,7 @@ const (
 	// Name ...
 	Name = "alexa"
 	// TopicPluginAlexa ...
-	TopicPluginAlexa = "plugin.alexa"
+	TopicPluginAlexa = "system/plugins/alexa"
 )
 
 // ConfirmationStatus represents the status of either a dialog or slot confirmation.

@@ -30,14 +30,14 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 // Actor ...
 type Actor struct {
-	entity_manager.BaseActor
+	supervisor.BaseActor
 	adaptors      *adaptors.Adaptors
 	scriptService scripts.ScriptService
 	eventBus      bus.Bus
@@ -50,14 +50,14 @@ type Actor struct {
 
 // NewActor ...
 func NewActor(entity *m.Entity,
-	entityManager entity_manager.EntityManager,
+	visor supervisor.Supervisor,
 	adaptors *adaptors.Adaptors,
 	scriptService scripts.ScriptService,
 	eventBus bus.Bus,
 	mqttClient mqtt.MqttCli) (actor *Actor) {
 
 	actor = &Actor{
-		BaseActor:     entity_manager.NewBaseActor(entity, scriptService, adaptors),
+		BaseActor:     supervisor.NewBaseActor(entity, scriptService, adaptors),
 		adaptors:      adaptors,
 		scriptService: scriptService,
 		eventBus:      eventBus,
@@ -67,7 +67,7 @@ func NewActor(entity *m.Entity,
 		lastState:     m.AttributeValue{},
 	}
 
-	actor.Manager = entityManager
+	actor.Supervisor = visor
 	actor.Attrs = NewAttr()
 	actor.States = NewStates()
 	actor.Setts = entity.Settings
@@ -89,7 +89,7 @@ func (e *Actor) destroy() {
 }
 
 // Spawn ...
-func (e *Actor) Spawn() entity_manager.PluginActor {
+func (e *Actor) Spawn() supervisor.PluginActor {
 
 	e.quit = make(chan struct{})
 
@@ -191,5 +191,5 @@ func (e *Actor) localTopic(r string) string {
 }
 
 func (e *Actor) mqttTopic(r string) string {
-	return fmt.Sprintf("home/node/%s/%s", e.Name, r)
+	return fmt.Sprintf("system/plugins/node/%s/%s", e.Name, r)
 }

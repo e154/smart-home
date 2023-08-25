@@ -20,39 +20,39 @@ package logs
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/system/supervisor"
 
 	"github.com/e154/smart-home/system/scheduler"
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/logging"
-	"github.com/e154/smart-home/system/plugins"
 )
 
-var _ plugins.Plugable = (*plugin)(nil)
+var _ supervisor.Pluggable = (*plugin)(nil)
 
 func init() {
-	plugins.RegisterPlugin(Name, New)
+	supervisor.RegisterPlugin(Name, New)
 }
 
 type plugin struct {
-	*plugins.Plugin
+	*supervisor.Plugin
 	pause   uint
 	actor   *Actor
 	entryId scheduler.EntryID
 }
 
 // New ...
-func New() plugins.Plugable {
+func New() supervisor.Pluggable {
 	p := &plugin{
-		Plugin: plugins.NewPlugin(),
+		Plugin: supervisor.NewPlugin(),
 		pause:  10,
 	}
 	return p
 }
 
 // Load ...
-func (p *plugin) Load(service plugins.Service) (err error) {
+func (p *plugin) Load(service supervisor.Service) (err error) {
 	if err = p.Plugin.Load(service); err != nil {
 		return
 	}
@@ -73,15 +73,15 @@ func (p *plugin) Unload() (err error) {
 }
 
 // Load ...
-func (p *plugin) load(service plugins.Service) (err error) {
+func (p *plugin) load(service supervisor.Service) (err error) {
 
 	var entity *m.Entity
 	if entity, err = p.Adaptors.Entity.GetById(common.EntityId(fmt.Sprintf("%s.%s", EntityLogs, Name))); err == nil {
 
 	}
 
-	p.actor = NewActor(p.EntityManager, p.EventBus, entity)
-	p.EntityManager.Spawn(p.actor.Spawn)
+	p.actor = NewActor(p.Supervisor, p.EventBus, entity)
+	p.Supervisor.Spawn(p.actor.Spawn)
 
 	logging.LogsHook = p.actor.LogsHook
 
@@ -108,8 +108,8 @@ func (p plugin) Name() string {
 }
 
 // Type ...
-func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginInstallable
+func (p *plugin) Type() supervisor.PluginType {
+	return supervisor.PluginInstallable
 }
 
 // Depends ...

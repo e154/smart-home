@@ -120,7 +120,7 @@ func (a *AuthEndpoint) PasswordReset(ctx context.Context, userEmail string, toke
 		return
 	}
 
-	if user.ResetPasswordSentAt != nil && time.Now().Before(*user.ResetPasswordSentAt){
+	if user.ResetPasswordSentAt != nil && time.Now().Before(*user.ResetPasswordSentAt) {
 		err = errors.Wrap(apperr.ErrNotAllowed, "reset request already exists")
 		return
 	}

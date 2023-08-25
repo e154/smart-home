@@ -22,6 +22,8 @@ import (
 	"context"
 	"embed"
 	"fmt"
+	"github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/system/bus"
 	"net"
 	"net/http"
 	"strings"
@@ -58,16 +60,19 @@ type Api struct {
 	lis         net.Listener
 	httpServer  *http.Server
 	grpcServer  *grpc.Server
+	eventBus    bus.Bus
 }
 
 // NewApi ...
 func NewApi(controllers *controllers.Controllers,
 	filter *rbac.AccessFilter,
-	cfg Config) (api *Api) {
+	cfg Config,
+	eventBus bus.Bus) (api *Api) {
 	api = &Api{
 		controllers: controllers,
 		filter:      filter,
 		cfg:         cfg,
+		eventBus:    eventBus,
 	}
 	return
 }
@@ -227,6 +232,8 @@ func (a *Api) Start() (err error) {
 	})
 	log.Infof("Serving HTTP server at %d", a.cfg.HttpPort)
 
+	a.eventBus.Publish("system/services/api", events.EventServiceStarted{})
+
 	return group.Wait()
 }
 
@@ -241,6 +248,9 @@ func (a *Api) Shutdown(ctx context.Context) (err error) {
 	if a.lis != nil {
 		err = a.lis.Close()
 	}
+
+	a.eventBus.Publish("system/services/api", events.EventServiceStopped{})
+
 	return
 }
 

@@ -28,7 +28,6 @@ import (
 	"github.com/e154/smart-home/system/backup"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/config"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/initial"
 	localMigrations "github.com/e154/smart-home/system/initial/local_migrations"
@@ -39,11 +38,11 @@ import (
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/mqtt_authenticator"
 	"github.com/e154/smart-home/system/orm"
-	plugins2 "github.com/e154/smart-home/system/plugins"
 	"github.com/e154/smart-home/system/scheduler"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/storage"
 	"github.com/e154/smart-home/system/stream"
+	"github.com/e154/smart-home/system/supervisor"
 	"github.com/e154/smart-home/system/validation"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	"go.uber.org/dig"
@@ -79,8 +78,7 @@ func BuildContainer() (container *dig.Container) {
 	_ = container.Provide(logging.NewLogger)
 	_ = container.Provide(logging_db.NewLogDbSaver)
 	_ = container.Provide(storage.NewStorage)
-	_ = container.Provide(plugins2.NewPluginManager)
-	_ = container.Provide(entity_manager.NewEntityManager)
+	_ = container.Provide(supervisor.NewSupervisor)
 	_ = container.Provide(automation.NewAutomation)
 	_ = container.Provide(bus.NewBus)
 	_ = container.Provide(endpoint.NewCommonEndpoint)

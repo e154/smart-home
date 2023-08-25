@@ -26,15 +26,15 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 // Actor ...
 type Actor struct {
-	entity_manager.BaseActor
+	supervisor.BaseActor
 	eventBus bus.Bus
-	entities []entity_manager.PluginActor
+	entities []supervisor.PluginActor
 	stateMu  *sync.Mutex
 }
 
@@ -45,7 +45,7 @@ func NewActor(entity *m.Entity,
 	eventBus bus.Bus) *Actor {
 
 	actor := &Actor{
-		BaseActor: entity_manager.NewBaseActor(entity, scriptService, adaptors),
+		BaseActor: supervisor.NewBaseActor(entity, scriptService, adaptors),
 		eventBus:  eventBus,
 		stateMu:   &sync.Mutex{},
 	}
@@ -57,12 +57,12 @@ func NewActor(entity *m.Entity,
 }
 
 // Spawn ...
-func (e *Actor) Spawn() entity_manager.PluginActor {
+func (e *Actor) Spawn() supervisor.PluginActor {
 	return e
 }
 
 // SetState ...
-func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
+func (e *Actor) SetState(params supervisor.EntityStateParams) error {
 	e.stateMu.Lock()
 	defer e.stateMu.Unlock()
 

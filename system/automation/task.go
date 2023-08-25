@@ -26,8 +26,8 @@ import (
 
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/triggers"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 	"github.com/pkg/errors"
 	"go.uber.org/atomic"
 )
@@ -41,7 +41,7 @@ type Task struct {
 	script         *scripts.Engine
 	enabled        atomic.Bool
 	scriptService  scripts.ScriptService
-	entityManager  entity_manager.EntityManager
+	supervisor     supervisor.Supervisor
 	triggers       map[string]*Trigger
 	rawPlugin      triggers.IGetTrigger
 }
@@ -50,14 +50,14 @@ type Task struct {
 func NewTask(automation *automation,
 	scriptService scripts.ScriptService,
 	model *m.Task,
-	entityManager entity_manager.EntityManager,
+	supervisor supervisor.Supervisor,
 	rawPlugin triggers.IGetTrigger) *Task {
 	return &Task{
 		model:         model,
 		automation:    automation,
 		enabled:       atomic.Bool{},
 		scriptService: scriptService,
-		entityManager: entityManager,
+		supervisor:    supervisor,
 		triggers:      make(map[string]*Trigger),
 		actions:       make(map[string]*Action),
 		rawPlugin:     rawPlugin,
@@ -118,7 +118,7 @@ func (t *Task) Start() {
 
 	// add actions
 	for _, model := range t.model.Actions {
-		action, err := NewAction(t.scriptService, t.entityManager, model)
+		action, err := NewAction(t.scriptService, t.supervisor, model)
 		if err != nil {
 			log.Error(err.Error())
 			continue
@@ -131,7 +131,7 @@ func (t *Task) Start() {
 
 	// add conditions
 	for _, model := range t.model.Conditions {
-		condition, err := NewCondition(t.scriptService, model, t.entityManager)
+		condition, err := NewCondition(t.scriptService, model, t.supervisor)
 		if err != nil {
 			log.Error(err.Error())
 			continue

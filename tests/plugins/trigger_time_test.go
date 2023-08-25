@@ -32,12 +32,10 @@ import (
 	"github.com/e154/smart-home/plugins/triggers"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/migrations"
-	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scheduler"
 	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/zigbee2mqtt"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 func TestTriggerTime(t *testing.T) {
@@ -56,17 +54,11 @@ automationTriggerTime = (msg)->
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService,
-			entityManager entity_manager.EntityManager,
-			zigbee2mqtt zigbee2mqtt.Zigbee2mqtt,
-			mqttServer mqtt.MqttServ,
+			supervisor supervisor.Supervisor,
 			automation automation.Automation,
 			eventBus bus.Bus,
-			pluginManager common.PluginManager,
 			scheduler *scheduler.Scheduler,
 		) {
-
-			eventBus.Purge()
-			scriptService.Purge()
 
 			err := migrations.Purge()
 			So(err, ShouldBeNil)
@@ -75,8 +67,12 @@ automationTriggerTime = (msg)->
 			err = AddPlugin(adaptors, "triggers")
 			ctx.So(err, ShouldBeNil)
 
-			go mqttServer.Start()
+			eventBus.Purge()
+			scriptService.Restart()
 			scheduler.Start(context.TODO())
+			defer func() {
+				scheduler.Shutdown(context.Background())
+			}()
 
 			// add scripts
 			// ------------------------------------------------
@@ -115,24 +111,12 @@ automationTriggerTime = (msg)->
 				counter.Inc()
 			})
 
-			pluginManager.Start()
-			automation.Reload()
-			entityManager.SetPluginManager(pluginManager)
-			entityManager.LoadEntities()
-			go zigbee2mqtt.Start()
+			supervisor.Restart(context.Background())
+			automation.Restart()
 
 			time.Sleep(time.Second)
 
-			defer func() {
-				_ = mqttServer.Shutdown()
-				zigbee2mqtt.Shutdown()
-				entityManager.Shutdown()
-				_ = automation.Shutdown()
-				pluginManager.Shutdown()
-			}()
-
 			So(counter.Load(), ShouldBeGreaterThanOrEqualTo, 1)
-
 		})
 	})
 }

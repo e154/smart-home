@@ -59,7 +59,7 @@ func NewControllers(adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
 	command *endpoint.Endpoint,
 	_ *handlers.EventHandler,
-	appConfig  *m.AppConfig) *Controllers {
+	appConfig *m.AppConfig) *Controllers {
 	common := NewControllerCommon(adaptors, accessList, command, appConfig)
 	return &Controllers{
 		Auth:              NewControllerAuth(common),

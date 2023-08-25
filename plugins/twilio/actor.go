@@ -38,13 +38,13 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/supervisor"
 	"github.com/sfreiberg/gotwilio"
 )
 
 // Actor ...
 type Actor struct {
-	entity_manager.BaseActor
+	supervisor.BaseActor
 	eventBus  bus.Bus
 	adaptors  *adaptors.Adaptors
 	from      string
@@ -54,7 +54,7 @@ type Actor struct {
 
 // NewActor ...
 func NewActor(settings m.Attributes,
-	entityManager entity_manager.EntityManager,
+	visor supervisor.Supervisor,
 	eventBus bus.Bus,
 	adaptors *adaptors.Adaptors) *Actor {
 
@@ -62,13 +62,13 @@ func NewActor(settings m.Attributes,
 	authToken := settings[AttrAuthToken].String()
 
 	actor := &Actor{
-		BaseActor: entity_manager.BaseActor{
+		BaseActor: supervisor.BaseActor{
 			Id:         common.EntityId(fmt.Sprintf("%s.%s", Name, Name)),
 			Name:       Name,
 			EntityType: Name,
 			AttrMu:     &sync.RWMutex{},
 			Attrs:      NewAttr(),
-			Manager:    entityManager,
+			Supervisor: visor,
 		},
 		eventBus:  eventBus,
 		adaptors:  adaptors,
@@ -81,7 +81,7 @@ func NewActor(settings m.Attributes,
 }
 
 // Spawn ...
-func (p *Actor) Spawn() entity_manager.PluginActor {
+func (p *Actor) Spawn() supervisor.PluginActor {
 	return p
 }
 

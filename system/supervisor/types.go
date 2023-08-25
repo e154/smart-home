@@ -16,9 +16,16 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package entity_manager
+package supervisor
 
 import (
+	"context"
+	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common/web"
+	"github.com/e154/smart-home/system/gate_client"
+	"github.com/e154/smart-home/system/mqtt"
+	"github.com/e154/smart-home/system/scheduler"
+	"github.com/pkg/errors"
 	"time"
 
 	"github.com/e154/smart-home/common"
@@ -26,6 +33,39 @@ import (
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/scripts"
 )
+
+// PluginInfo ...
+type PluginInfo struct {
+	Name    string `json:"name"`
+	Version string `json:"version"`
+	Enabled bool   `json:"enabled"`
+	System  bool   `json:"system"`
+}
+
+// Supervisor ...
+type Supervisor interface {
+	Start(context.Context) error
+	Shutdown(context.Context) error
+	Restart(context.Context) error
+	GetPlugin(name string) (plugin interface{}, err error)
+	EnablePlugin(string) error
+	DisablePlugin(string) error
+	PluginList() (list []PluginInfo, total int64, err error)
+	LoadEntities()
+	SetMetric(common.EntityId, string, map[string]float32)
+	SetState(common.EntityId, EntityStateParams) error
+	GetEntityById(common.EntityId) (m.EntityShort, error)
+	GetActorById(common.EntityId) (PluginActor, error)
+	List() ([]m.EntityShort, error)
+	Spawn(ActorConstructor) PluginActor
+	Remove(common.EntityId)
+	CallAction(common.EntityId, string, map[string]interface{})
+	CallScene(common.EntityId, map[string]interface{})
+	AddEntity(*m.Entity) error
+	UpdateEntity(*m.Entity) error
+	EntityIsLoaded(id common.EntityId) (loaded bool)
+	PluginIsLoaded(name string) (loaded bool)
+}
 
 // PluginActor ...
 type PluginActor interface {
@@ -51,55 +91,6 @@ type PluginActor interface {
 
 // ActorConstructor ...
 type ActorConstructor func() PluginActor
-
-// EntityManager ...
-type EntityManager interface {
-
-	// SetPluginManager ...
-	SetPluginManager(pluginManager common.PluginManager)
-
-	// LoadEntities ...
-	LoadEntities()
-
-	// Shutdown ...
-	Shutdown()
-
-	// SetMetric ...
-	SetMetric(common.EntityId, string, map[string]float32)
-
-	// SetState ...
-	SetState(common.EntityId, EntityStateParams) error
-
-	// GetEntityById ...
-	GetEntityById(common.EntityId) (m.EntityShort, error)
-
-	// GetActorById ...
-	GetActorById(common.EntityId) (PluginActor, error)
-
-	// List ...
-	List() ([]m.EntityShort, error)
-
-	// Spawn ...
-	Spawn(ActorConstructor) PluginActor
-
-	// Remove ...
-	Remove(common.EntityId)
-
-	// CallAction ...
-	CallAction(common.EntityId, string, map[string]interface{})
-
-	// CallScene ...
-	CallScene(common.EntityId, map[string]interface{})
-
-	// Add ...
-	Add(*m.Entity) error
-
-	// Update ...
-	Update(*m.Entity) error
-
-	// IsLoaded ...
-	IsLoaded(id common.EntityId) (loaded bool)
-}
 
 // ActorAction ...
 type ActorAction struct {
@@ -187,7 +178,7 @@ const (
 type actorInfo struct {
 	Actor        PluginActor
 	quit         chan struct{}
-	CurrentState *bus.EventEntityState
+	CurrentState *bus.EventEntityState //todo: check race condition
 }
 
 // ActorInfo ...
@@ -210,4 +201,60 @@ type ActorInfo struct {
 	Value             interface{}            `json:"value"`
 	States            map[string]ActorState  `json:"states"`
 	Actions           map[string]ActorAction `json:"actions"`
+}
+
+// PluginType ...
+type PluginType string
+
+const (
+	// PluginBuiltIn ...
+	PluginBuiltIn = PluginType("System")
+	// PluginInstallable ...
+	PluginInstallable = PluginType("Installable")
+)
+
+var (
+	// ErrPluginIsLoaded ...
+	ErrPluginIsLoaded = errors.New("plugin is loaded")
+	// ErrPluginIsUnloaded ...
+	ErrPluginIsUnloaded = errors.New("plugin is unloaded")
+	// ErrPluginNotLoaded ...
+	ErrPluginNotLoaded = errors.New("plugin not loaded")
+)
+
+// Service ...
+type Service interface {
+	Plugins() map[string]Pluggable
+	EventBus() bus.Bus
+	Adaptors() *adaptors.Adaptors
+	Supervisor() Supervisor
+	ScriptService() scripts.ScriptService
+	MqttServ() mqtt.MqttServ
+	AppConfig() *m.AppConfig
+	GateClient() *gate_client.GateClient
+	Scheduler() *scheduler.Scheduler
+	Crawler() web.Crawler
+}
+
+// Pluggable ...
+type Pluggable interface {
+	Load(Service) error
+	Unload() error
+	Name() string
+	Type() PluginType
+	Depends() []string
+	Version() string
+	Options() m.PluginOptions
+}
+
+// Installable ...
+type Installable interface {
+	Install() error
+	Uninstall() error
+}
+
+// CrudActor ...
+type CrudActor interface {
+	AddOrUpdateActor(*m.Entity) error
+	RemoveActor(common.EntityId) error
 }

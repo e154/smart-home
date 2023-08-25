@@ -33,15 +33,15 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 	"github.com/e154/smart-home/version"
 	"go.uber.org/atomic"
 )
 
 // Actor ...
 type Actor struct {
-	entity_manager.BaseActor
+	supervisor.BaseActor
 	isStarted   *atomic.Bool
 	eventBus    bus.Bus
 	adaptors    *adaptors.Adaptors
@@ -54,7 +54,7 @@ type Actor struct {
 
 // NewActor ...
 func NewActor(entity *m.Entity,
-	entityManager entity_manager.EntityManager,
+	visor supervisor.Supervisor,
 	scriptService scripts.ScriptService,
 	eventBus bus.Bus,
 	adaptors *adaptors.Adaptors) (*Actor, error) {
@@ -63,7 +63,7 @@ func NewActor(entity *m.Entity,
 	_, _ = settings.Deserialize(entity.Settings.Serialize())
 
 	actor := &Actor{
-		BaseActor:   entity_manager.NewBaseActor(entity, scriptService, adaptors),
+		BaseActor:   supervisor.NewBaseActor(entity, scriptService, adaptors),
 		eventBus:    eventBus,
 		actionPool:  make(chan events.EventCallAction, 10),
 		isStarted:   atomic.NewBool(false),
@@ -73,7 +73,7 @@ func NewActor(entity *m.Entity,
 		msgPool:     make(chan string, 99),
 	}
 
-	actor.Manager = entityManager
+	actor.Supervisor = visor
 
 	if actor.Attrs == nil {
 		actor.Attrs = NewAttr()
@@ -108,7 +108,7 @@ func NewActor(entity *m.Entity,
 }
 
 // Spawn ...
-func (p *Actor) Spawn() entity_manager.PluginActor {
+func (p *Actor) Spawn() supervisor.PluginActor {
 	return p
 }
 

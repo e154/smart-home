@@ -20,22 +20,20 @@ package plugins
 
 import (
 	"context"
-	"testing"
-	"time"
-
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/triggers"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/migrations"
-	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scheduler"
 	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/zigbee2mqtt"
+	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/smartystreets/goconvey/convey"
+	"testing"
+	"time"
 )
 
 func TestTriggerEmpty(t *testing.T) {
@@ -44,17 +42,11 @@ func TestTriggerEmpty(t *testing.T) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService,
-			entityManager entity_manager.EntityManager,
-			zigbee2mqtt zigbee2mqtt.Zigbee2mqtt,
-			mqttServer mqtt.MqttServ,
+			supervisor supervisor.Supervisor,
 			automation automation.Automation,
 			eventBus bus.Bus,
-			pluginManager common.PluginManager,
 			scheduler *scheduler.Scheduler,
 		) {
-
-			eventBus.Purge()
-			scriptService.Purge()
 
 			err := migrations.Purge()
 			So(err, ShouldBeNil)
@@ -63,9 +55,16 @@ func TestTriggerEmpty(t *testing.T) {
 			err = AddPlugin(adaptors, "triggers")
 			ctx.So(err, ShouldBeNil)
 
-			go mqttServer.Start()
-			scheduler.Start(context.TODO())
+			eventBus.Purge()
+			scriptService.Restart()
+			scheduler.Start(context.Background())
+			automation.Restart()
+			supervisor.Restart(context.Background())
+			defer func() {
+				scheduler.Shutdown(context.Background())
+			}()
 
+			time.Sleep(time.Millisecond * 500)
 
 			// automation
 			// ------------------------------------------------
@@ -90,23 +89,11 @@ func TestTriggerEmpty(t *testing.T) {
 			err = adaptors.Task.Add(task3)
 			So(err, ShouldBeNil)
 
-			// ------------------------------------------------
+			eventBus.Publish(bus.TopicAutomation, events.EventAddedTask{
+				Id: task3.Id,
+			})
 
-			pluginManager.Start()
-			automation.Reload()
-			entityManager.SetPluginManager(pluginManager)
-			entityManager.LoadEntities()
-			go zigbee2mqtt.Start()
-
-			time.Sleep(time.Second)
-
-			defer func() {
-				_ = mqttServer.Shutdown()
-				zigbee2mqtt.Shutdown()
-				entityManager.Shutdown()
-				_ = automation.Shutdown()
-				pluginManager.Shutdown()
-			}()
+			time.Sleep(time.Millisecond * 500)
 
 		})
 	})

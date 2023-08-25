@@ -32,13 +32,12 @@ import (
 	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/triggers"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 	"go.uber.org/atomic"
 	"go.uber.org/fx"
 )
@@ -55,7 +54,7 @@ const (
 type Automation interface {
 	Start() (err error)
 	Shutdown() (err error)
-	Reload()
+	Restart()
 	AddTask(model *m.Task)
 	RemoveTask(model *m.Task)
 	IsLoaded(id int64) (loaded bool)
@@ -68,20 +67,18 @@ type automation struct {
 	tasks         map[int64]*Task
 	taskCount     atomic.Uint64
 	msgQueue      bus.Bus
-	entityManager entity_manager.EntityManager
+	supervisor    supervisor.Supervisor
 	adaptors      *adaptors.Adaptors
 	isStarted     *atomic.Bool
 	rawPlugin     triggers.IGetTrigger
-	pluginManager common.PluginManager
 }
 
 // NewAutomation ...
 func NewAutomation(lc fx.Lifecycle,
 	eventBus bus.Bus,
 	scriptService scripts.ScriptService,
-	entityManager entity_manager.EntityManager,
-	adaptors *adaptors.Adaptors,
-	pluginManager common.PluginManager) (auto Automation) {
+	sup supervisor.Supervisor,
+	adaptors *adaptors.Adaptors) (auto Automation) {
 
 	auto = &automation{
 		eventBus:      eventBus,
@@ -89,10 +86,9 @@ func NewAutomation(lc fx.Lifecycle,
 		scriptService: scriptService,
 		tasks:         make(map[int64]*Task),
 		msgQueue:      bus.NewBus(),
-		entityManager: entityManager,
+		supervisor:    sup,
 		adaptors:      adaptors,
 		isStarted:     atomic.NewBool(false),
-		pluginManager: pluginManager,
 	}
 	lc.Append(fx.Hook{
 		OnStop: func(ctx context.Context) error {
@@ -106,6 +102,7 @@ func NewAutomation(lc fx.Lifecycle,
 func (a *automation) Start() (err error) {
 	a.load()
 	_ = a.eventBus.Subscribe(bus.TopicAutomation, a.eventHandler)
+	a.eventBus.Publish("system/services/automation", events.EventServiceStarted{})
 	return
 }
 
@@ -113,6 +110,7 @@ func (a *automation) Start() (err error) {
 func (a *automation) Shutdown() (err error) {
 	a.unload()
 	_ = a.eventBus.Unsubscribe(bus.TopicAutomation, a.eventHandler)
+	a.eventBus.Publish("system/services/automation", events.EventServiceStopped{})
 	return
 }
 
@@ -122,7 +120,7 @@ func (a *automation) load() {
 	}
 
 	// load triggers plugin
-	plugin, err := a.pluginManager.GetPlugin(triggers.Name)
+	plugin, err := a.supervisor.GetPlugin(triggers.Name)
 	if err != nil {
 		log.Error(err.Error())
 		return
@@ -168,15 +166,15 @@ func (a *automation) unload() {
 	log.Info("Unloaded ...")
 }
 
-// Reload ...
-func (a *automation) Reload() {
-	a.unload()
-	a.load()
+// Restart ...
+func (a *automation) Restart() {
+	_ = a.Shutdown()
+	_ = a.Start()
 }
 
 // AddTask ...
 func (a *automation) AddTask(model *m.Task) {
-	task := NewTask(a, a.scriptService, model, a.entityManager, a.rawPlugin)
+	task := NewTask(a, a.scriptService, model, a.supervisor, a.rawPlugin)
 	a.taskCount.Inc()
 	log.Infof("add task name(%s) id(%d)", task.Name(), task.Id())
 	a.taskLock.Lock()
@@ -271,4 +269,3 @@ func (a *automation) IsLoaded(id int64) (loaded bool) {
 	a.taskLock.Unlock()
 	return
 }
-

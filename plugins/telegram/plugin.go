@@ -20,6 +20,7 @@ package telegram
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/system/supervisor"
 	"sync"
 
 	"github.com/e154/smart-home/common/events"
@@ -33,36 +34,35 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/notify"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/plugins"
 )
 
 var (
 	log = logger.MustGetLogger("plugins.telegram")
 )
 
-var _ plugins.Plugable = (*plugin)(nil)
+var _ supervisor.Pluggable = (*plugin)(nil)
 
 func init() {
-	plugins.RegisterPlugin(Name, New)
+	supervisor.RegisterPlugin(Name, New)
 }
 
 type plugin struct {
-	*plugins.Plugin
+	*supervisor.Plugin
 	actorsLock *sync.RWMutex
 	actors     map[common.EntityId]*Actor
 }
 
 // New ...
-func New() plugins.Plugable {
+func New() supervisor.Pluggable {
 	return &plugin{
-		Plugin:     plugins.NewPlugin(),
+		Plugin:     supervisor.NewPlugin(),
 		actorsLock: &sync.RWMutex{},
 		actors:     make(map[common.EntityId]*Actor),
 	}
 }
 
 // Load ...
-func (p *plugin) Load(service plugins.Service) (err error) {
+func (p *plugin) Load(service supervisor.Service) (err error) {
 	if err = p.Plugin.Load(service); err != nil {
 		return
 	}
@@ -105,8 +105,8 @@ func (p *plugin) Name() string {
 }
 
 // Type ...
-func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginInstallable
+func (p *plugin) Type() supervisor.PluginType {
+	return supervisor.PluginInstallable
 }
 
 // Depends ...
@@ -141,11 +141,11 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 	}
 
 	var actor *Actor
-	if actor, err = NewActor(entity, p.EntityManager, p.ScriptService, p.EventBus, p.Adaptors); err != nil {
+	if actor, err = NewActor(entity, p.Supervisor, p.ScriptService, p.EventBus, p.Adaptors); err != nil {
 		return
 	}
 	p.actors[entity.Id] = actor
-	p.EntityManager.Spawn(actor.Spawn)
+	p.Supervisor.Spawn(actor.Spawn)
 	_ = actor.Start()
 	return
 }

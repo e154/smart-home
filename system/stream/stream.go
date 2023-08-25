@@ -20,6 +20,7 @@ package stream
 
 import (
 	"context"
+	"github.com/e154/smart-home/common/events"
 	"sync"
 
 	"github.com/google/uuid"
@@ -72,6 +73,7 @@ func NewStreamService(lc fx.Lifecycle,
 func (s *Stream) Start(_ context.Context) error {
 	_ = s.eventBus.Subscribe(bus.TopicEntities, s.eventHandler.eventHandler)
 	_ = s.eventBus.Subscribe(webpush.TopicPluginWebpush, s.eventHandler.eventHandler)
+	s.eventBus.Publish("system/services/stream", events.EventServiceStarted{})
 	return nil
 }
 
@@ -84,6 +86,7 @@ func (s *Stream) Shutdown(_ context.Context) error {
 		cli.Close()
 		return true
 	})
+	s.eventBus.Publish("system/services/stream", events.EventServiceStopped{})
 	return nil
 }
 

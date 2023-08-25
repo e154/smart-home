@@ -19,22 +19,23 @@
 package plugins
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"testing"
 	"time"
 
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/modbus_rtu"
 	"github.com/e154/smart-home/plugins/node"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -93,20 +94,13 @@ entityAction = (entityId, actionName)->
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService,
-			entityManager entity_manager.EntityManager,
+			supervisor supervisor.Supervisor,
 			mqttServer mqtt.MqttServ,
 			automation automation.Automation,
-			eventBus bus.Bus,
-			pluginManager common.PluginManager) {
-
-			eventBus.Purge()
-			scriptService.Purge()
+			eventBus bus.Bus) {
 
 			err := migrations.Purge()
 			So(err, ShouldBeNil)
-
-			// bind convey
-			RegisterConvey(scriptService, ctx)
 
 			// register plugins
 			err = AddPlugin(adaptors, "node")
@@ -116,7 +110,14 @@ entityAction = (entityId, actionName)->
 			err = AddPlugin(adaptors, "modbus_rtu")
 			So(err, ShouldBeNil)
 
+			eventBus.Purge()
+			automation.Restart()
+			scriptService.Restart()
+			supervisor.Restart(context.Background())
 			go mqttServer.Start()
+
+			RegisterConvey(scriptService, ctx)
+
 
 			// add scripts
 			// ------------------------------------------------
@@ -182,31 +183,27 @@ entityAction = (entityId, actionName)->
 			})
 			So(err, ShouldBeNil)
 
+			eventBus.Publish(bus.TopicEntities, events.EventCreatedEntity{
+				EntityId: nodeEnt.Id,
+			})
+			eventBus.Publish(bus.TopicEntities, events.EventCreatedEntity{
+				EntityId: plugEnt.Id,
+			})
+
+			time.Sleep(time.Second)
+
 			// ------------------------------------------------
-			pluginManager.Start()
-			automation.Reload()
-			entityManager.SetPluginManager(pluginManager)
-			entityManager.LoadEntities()
-
-			defer func() {
-				_ = mqttServer.Shutdown()
-				entityManager.Shutdown()
-				_ = automation.Shutdown()
-				pluginManager.Shutdown()
-			}()
-
-			time.Sleep(time.Millisecond * 500)
 
 			ch := make(chan []byte)
 			mqttCli := mqttServer.NewClient("cli")
-			_ = mqttCli.Subscribe("home/node/main/req/#", func(cli mqtt.MqttCli, message mqtt.Message) {
+			_ = mqttCli.Subscribe("system/plugins/node/main/req/#", func(cli mqtt.MqttCli, message mqtt.Message) {
 				ch <- message.Payload
 			})
 			defer mqttCli.UnsubscribeAll()
 
 			// commands
 			t.Run("on command", func(t *testing.T) {
-				entityManager.CallAction(plugEnt.Id, "ON", nil)
+				supervisor.CallAction(plugEnt.Id, "ON", nil)
 
 				ticker := time.NewTimer(time.Second * 2)
 				defer ticker.Stop()
@@ -265,14 +262,14 @@ entityAction = (entityId, actionName)->
 					Status:     "",
 				}
 				b, _ = json.Marshal(resp)
-				_ = mqttCli.Publish("home/node/main/resp/plugin.test", b)
-				_ = mqttCli.Publish(fmt.Sprintf("home/node/main/resp/%s", plugEnt.Id), b)
+				_ = mqttCli.Publish("system/plugins/node/main/resp/plugin.test", b)
+				_ = mqttCli.Publish(fmt.Sprintf("system/plugins/node/main/resp/%s", plugEnt.Id), b)
 
 				time.Sleep(time.Millisecond * 500)
 			})
 
 			t.Run("off command", func(t *testing.T) {
-				entityManager.CallAction(plugEnt.Id, "OFF", nil)
+				supervisor.CallAction(plugEnt.Id, "OFF", nil)
 
 				ticker := time.NewTimer(time.Second * 2)
 				defer ticker.Stop()
@@ -331,14 +328,14 @@ entityAction = (entityId, actionName)->
 					Status:     "",
 				}
 				b, _ = json.Marshal(resp)
-				_ = mqttCli.Publish("home/node/main/resp/plugin.test", b)
-				_ = mqttCli.Publish(fmt.Sprintf("home/node/main/resp/%s", plugEnt.Id), b)
+				_ = mqttCli.Publish("system/plugins/node/main/resp/plugin.test", b)
+				_ = mqttCli.Publish(fmt.Sprintf("system/plugins/node/main/resp/%s", plugEnt.Id), b)
 
 				time.Sleep(time.Millisecond * 500)
 			})
 
 			t.Run("check command", func(t *testing.T) {
-				entityManager.CallAction(plugEnt.Id, "CHECK", nil)
+				supervisor.CallAction(plugEnt.Id, "CHECK", nil)
 
 				ticker := time.NewTimer(time.Second * 2)
 				defer ticker.Stop()
@@ -397,14 +394,14 @@ entityAction = (entityId, actionName)->
 					Status:     "",
 				}
 				b, _ = json.Marshal(resp)
-				_ = mqttCli.Publish("home/node/main/resp/plugin.test", b)
-				_ = mqttCli.Publish(fmt.Sprintf("home/node/main/resp/%s", plugEnt.Id), b)
+				_ = mqttCli.Publish("system/plugins/node/main/resp/plugin.test", b)
+				_ = mqttCli.Publish(fmt.Sprintf("system/plugins/node/main/resp/%s", plugEnt.Id), b)
 
 				time.Sleep(time.Millisecond * 500)
 			})
 
 			t.Run("bad command", func(t *testing.T) {
-				entityManager.CallAction(plugEnt.Id, "NULL", nil)
+				supervisor.CallAction(plugEnt.Id, "NULL", nil)
 
 				ticker := time.NewTimer(time.Second * 1)
 				defer ticker.Stop()
@@ -422,7 +419,7 @@ entityAction = (entityId, actionName)->
 			})
 
 			t.Run("response with error", func(t *testing.T) {
-				entityManager.CallAction(plugEnt.Id, "ON_WITH_ERR", nil)
+				supervisor.CallAction(plugEnt.Id, "ON_WITH_ERR", nil)
 
 				ticker := time.NewTimer(time.Second * 2)
 				defer ticker.Stop()
@@ -450,8 +447,8 @@ entityAction = (entityId, actionName)->
 					Status:     "",
 				}
 				b, _ = json.Marshal(resp)
-				_ = mqttCli.Publish("home/node/main/resp/plugin.test", b)
-				_ = mqttCli.Publish(fmt.Sprintf("home/node/main/resp/%s", plugEnt.Id), b)
+				_ = mqttCli.Publish("system/plugins/node/main/resp/plugin.test", b)
+				_ = mqttCli.Publish(fmt.Sprintf("system/plugins/node/main/resp/%s", plugEnt.Id), b)
 
 				time.Sleep(time.Millisecond * 500)
 			})

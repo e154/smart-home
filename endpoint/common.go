@@ -20,15 +20,14 @@ package endpoint
 
 import (
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/jwt_manager"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 	"github.com/e154/smart-home/system/validation"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 )
@@ -40,8 +39,7 @@ type CommonEndpoint struct {
 	scriptService scripts.ScriptService
 	zigbee2mqtt   zigbee2mqtt.Zigbee2mqtt
 	eventBus      bus.Bus
-	pluginManager common.PluginManager
-	entityManager entity_manager.EntityManager
+	supervisor    supervisor.Supervisor
 	mqtt          mqtt.MqttServ
 	jwtManager    jwt_manager.JwtManager
 	validation    *validation.Validate
@@ -55,8 +53,7 @@ func NewCommonEndpoint(adaptors *adaptors.Adaptors,
 	scriptService scripts.ScriptService,
 	zigbee2mqtt zigbee2mqtt.Zigbee2mqtt,
 	eventBus bus.Bus,
-	pluginManager common.PluginManager,
-	entityManager entity_manager.EntityManager,
+	supervisor supervisor.Supervisor,
 	mqtt mqtt.MqttServ,
 	jwtManager jwt_manager.JwtManager,
 	validation *validation.Validate,
@@ -69,8 +66,7 @@ func NewCommonEndpoint(adaptors *adaptors.Adaptors,
 		scriptService: scriptService,
 		zigbee2mqtt:   zigbee2mqtt,
 		eventBus:      eventBus,
-		pluginManager: pluginManager,
-		entityManager: entityManager,
+		supervisor:    supervisor,
 		mqtt:          mqtt,
 		jwtManager:    jwtManager,
 		validation:    validation,

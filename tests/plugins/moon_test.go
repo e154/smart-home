@@ -25,12 +25,11 @@ import (
 	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
 	moonPlugin "github.com/e154/smart-home/plugins/moon"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -40,12 +39,8 @@ func TestMoon(t *testing.T) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService,
-			entityManager entity_manager.EntityManager,
-			eventBus bus.Bus,
-			pluginManager common.PluginManager) {
-
-			eventBus.Purge()
-			scriptService.Purge()
+			supervisor supervisor.Supervisor,
+			eventBus bus.Bus) {
 
 			err := migrations.Purge()
 			ctx.So(err, ShouldBeNil)
@@ -54,18 +49,27 @@ func TestMoon(t *testing.T) {
 			err = AddPlugin(adaptors, "moon")
 			ctx.So(err, ShouldBeNil)
 
+			eventBus.Purge()
+			scriptService.Restart()
+
 			// add entity
 			// ------------------------------------------------
 			moonEnt := GetNewMoon("main")
 			err = adaptors.Entity.Add(moonEnt)
 			ctx.So(err, ShouldBeNil)
 
+			eventBus.Publish(bus.TopicEntities, events.EventCreatedEntity{
+				EntityId: moonEnt.Id,
+			})
+
+			time.Sleep(time.Second)
+
 			ch := make(chan events.EventStateChanged, 2)
 			_ = eventBus.Subscribe(bus.TopicEntities, func(topic string, msg events.EventStateChanged) {
 				ch <- msg
 			})
 
-			moon := moonPlugin.NewActor(moonEnt, entityManager, adaptors, scriptService, eventBus)
+			moon := moonPlugin.NewActor(moonEnt, supervisor, adaptors, scriptService, eventBus)
 
 			t.Run("entity", func(t *testing.T) {
 				Convey("position", t, func(ctx C) {

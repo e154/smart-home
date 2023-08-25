@@ -23,7 +23,7 @@ import (
 	"sync"
 
 	"github.com/e154/smart-home/plugins/weather"
-	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/supervisor"
 
 	"github.com/pkg/errors"
 
@@ -32,7 +32,6 @@ import (
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/plugins"
 	"github.com/e154/smart-home/system/scheduler"
 )
 
@@ -47,32 +46,31 @@ var (
 	log = logger.MustGetLogger("plugins.met")
 )
 
-var _ plugins.Plugable = (*plugin)(nil)
+var _ supervisor.Pluggable = (*plugin)(nil)
 
 func init() {
-	plugins.RegisterPlugin(Name, New)
+	supervisor.RegisterPlugin(Name, New)
 }
 
 type plugin struct {
-	*plugins.Plugin
+	*supervisor.Plugin
 	actorsLock *sync.Mutex
 	actors     map[common.EntityId]*Actor
-	service    common.PluginManager
 	weather    *WeatherMet
 	task       scheduler.EntryID
 }
 
 // New ...
-func New() plugins.Plugable {
+func New() supervisor.Pluggable {
 	return &plugin{
-		Plugin:     plugins.NewPlugin(),
+		Plugin:     supervisor.NewPlugin(),
 		actorsLock: &sync.Mutex{},
 		actors:     make(map[common.EntityId]*Actor),
 	}
 }
 
 // Load ...
-func (p *plugin) Load(service plugins.Service) (err error) {
+func (p *plugin) Load(service supervisor.Service) (err error) {
 	if err = p.Plugin.Load(service); err != nil {
 		return
 	}
@@ -118,9 +116,9 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 		return
 	}
 
-	actor := NewActor(entity, p.EntityManager, p.Adaptors, p.ScriptService, p.EventBus, p.Crawler)
+	actor := NewActor(entity, p.Supervisor, p.Adaptors, p.ScriptService, p.EventBus, p.Crawler)
 	p.actors[entity.Id] = actor
-	p.EntityManager.Spawn(actor.Spawn)
+	p.Supervisor.Spawn(actor.Spawn)
 
 	return
 }
@@ -145,8 +143,8 @@ func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
 }
 
 // Type ...
-func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginInstallable
+func (p *plugin) Type() supervisor.PluginType {
+	return supervisor.PluginInstallable
 }
 
 // Depends ...
@@ -164,7 +162,7 @@ func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
 		Actors:      true,
 		ActorAttrs:  weather.BaseForecast(),
-		ActorStates: entity_manager.ToEntityStateShort(weather.NewActorStates(false, false)),
+		ActorStates: supervisor.ToEntityStateShort(weather.NewActorStates(false, false)),
 		ActorSetts:  weather.NewSettings(),
 	}
 }

@@ -23,8 +23,8 @@ import (
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 	"go.uber.org/atomic"
 )
 
@@ -32,7 +32,7 @@ import (
 type Action struct {
 	model         *m.Action
 	scriptService scripts.ScriptService
-	entityManager entity_manager.EntityManager
+	supervisor    supervisor.Supervisor
 	scriptEngine  *scripts.Engine
 	inProcess     atomic.Bool
 	sync.Mutex
@@ -40,12 +40,12 @@ type Action struct {
 
 // NewAction ...
 func NewAction(scriptService scripts.ScriptService,
-	entityManager entity_manager.EntityManager,
+	supervisor supervisor.Supervisor,
 	model *m.Action) (action *Action, err error) {
 
 	action = &Action{
 		scriptService: scriptService,
-		entityManager: entityManager,
+		supervisor:    supervisor,
 		model:         model,
 	}
 
@@ -76,7 +76,7 @@ func (a *Action) Run(entityId *common.EntityId) (result string, err error) {
 	}
 
 	if a.model.EntityId != nil && a.model.EntityActionName != nil {
-		a.entityManager.CallAction(*a.model.EntityId, *a.model.EntityActionName, nil)
+		a.supervisor.CallAction(*a.model.EntityId, *a.model.EntityActionName, nil)
 	}
 
 	return

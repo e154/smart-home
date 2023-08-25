@@ -31,13 +31,13 @@ import (
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/web"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/supervisor"
 	"github.com/e154/smart-home/version"
 )
 
 // Actor ...
 type Actor struct {
-	entity_manager.BaseActor
+	supervisor.BaseActor
 	eventBus          bus.Bus
 	checkLock         *sync.Mutex
 	latestVersion     string
@@ -49,7 +49,7 @@ type Actor struct {
 }
 
 // NewActor ...
-func NewActor(entityManager entity_manager.EntityManager,
+func NewActor(visor supervisor.Supervisor,
 	eventBus bus.Bus, crawler web.Crawler) *Actor {
 
 	var v = "v0.0.1"
@@ -62,15 +62,15 @@ func NewActor(entityManager entity_manager.EntityManager,
 	}
 
 	return &Actor{
-		BaseActor: entity_manager.BaseActor{
+		BaseActor: supervisor.BaseActor{
 			Id:          common.EntityId(fmt.Sprintf("%s.%s", EntityUpdater, Name)),
 			Name:        Name,
 			Description: "sun plugin",
 			EntityType:  EntityUpdater,
-			Value:       atomic.NewString(entity_manager.StateAwait),
+			Value:       atomic.NewString(supervisor.StateAwait),
 			AttrMu:      &sync.RWMutex{},
 			Attrs:       NewAttr(),
-			Manager:     entityManager,
+			Supervisor:  visor,
 			States:      NewStates(),
 			Actions:     NewActions(),
 		},
@@ -82,7 +82,7 @@ func NewActor(entityManager entity_manager.EntityManager,
 }
 
 // Spawn ...
-func (e *Actor) Spawn() entity_manager.PluginActor {
+func (e *Actor) Spawn() supervisor.PluginActor {
 	return e
 }
 
@@ -92,12 +92,12 @@ func (e *Actor) setState(v string) {
 	case "exist_update":
 		state := e.States["exist_update"]
 		e.State = &state
-		e.Value.Store(entity_manager.StateOk)
+		e.Value.Store(supervisor.StateOk)
 		return
-	case entity_manager.StateAwait, entity_manager.StateOk, entity_manager.StateInProcess:
+	case supervisor.StateAwait, supervisor.StateOk, supervisor.StateInProcess:
 		state := e.States["enabled"]
 		e.State = &state
-	case entity_manager.StateError:
+	case supervisor.StateError:
 		state := e.States["error"]
 		e.State = &state
 	default:
@@ -114,13 +114,13 @@ func (e *Actor) check() {
 	var err error
 	defer func() {
 		if err != nil {
-			e.setState(entity_manager.StateError)
+			e.setState(supervisor.StateError)
 			return
 		}
 		e.checkLock.Unlock()
 	}()
 
-	e.setState(entity_manager.StateInProcess)
+	e.setState(supervisor.StateInProcess)
 
 	var body []byte
 	if _, body, err = e.crawler.Probe(web.Request{Method: "GET", Url: uri, Timeout: 5 * time.Second}); err != nil {
@@ -132,7 +132,7 @@ func (e *Actor) check() {
 		return
 	}
 
-	e.setState(entity_manager.StateOk)
+	e.setState(supervisor.StateOk)
 
 	e.lastCheck = time.Now()
 	e.latestVersion = data.TagName

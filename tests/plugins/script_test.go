@@ -20,6 +20,7 @@ package plugins
 
 import (
 	"context"
+	"github.com/e154/smart-home/common/events"
 	"testing"
 	"time"
 
@@ -27,17 +28,12 @@ import (
 	"go.uber.org/atomic"
 
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/script"
-	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/initial/local_migrations"
 	"github.com/e154/smart-home/system/migrations"
-	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/zigbee2mqtt"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 func TestScript(t *testing.T) {
@@ -54,30 +50,33 @@ entityAction = (entityId, actionName)->
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService,
-			entityManager entity_manager.EntityManager,
-			zigbee2mqtt zigbee2mqtt.Zigbee2mqtt,
-			mqttServer mqtt.MqttServ,
-			automation automation.Automation,
-			eventBus bus.Bus,
-			pluginManager common.PluginManager) {
-
-			eventBus.Purge()
-			scriptService.Purge()
+			supervisor supervisor.Supervisor,
+			eventBus bus.Bus) {
 
 			err := migrations.Purge()
 			So(err, ShouldBeNil)
 
 			// register plugins
-			err = local_migrations.NewMigrationPlugins(adaptors).Up(context.TODO(), nil)
+			err = AddPlugin(adaptors, "script")
 			So(err, ShouldBeNil)
 
-			go mqttServer.Start()
+			eventBus.Purge()
+			scriptService.Restart()
+			supervisor.Restart(context.Background())
 
 			// add scripts
 			// ------------------------------------------------
 
 			plugActionOnOffScript, err := AddScript("plug script", plugActionOnOffSourceScript, adaptors, scriptService)
 			So(err, ShouldBeNil)
+
+
+			var counter atomic.Int32
+			scriptService.PushFunctions("Done", func(entityId, action string) {
+				counter.Inc()
+			})
+
+			time.Sleep(time.Second)
 
 			// add entity
 			// ------------------------------------------------
@@ -98,31 +97,19 @@ entityAction = (entityId, actionName)->
 			err = adaptors.Entity.Add(plugEnt)
 			So(err, ShouldBeNil)
 
+			eventBus.Publish(bus.TopicEntities, events.EventCreatedEntity{
+				EntityId: plugEnt.Id,
+			})
+
+			time.Sleep(time.Second)
+
 			// automation
 			// ------------------------------------------------
 
-			var counter atomic.Int32
-			scriptService.PushFunctions("Done", func(entityId, action string) {
-				counter.Inc()
-			})
 
-			pluginManager.Start()
-			automation.Reload()
-			entityManager.SetPluginManager(pluginManager)
-			entityManager.LoadEntities()
-			go zigbee2mqtt.Start()
-
-			defer func() {
-				_ = mqttServer.Shutdown()
-				zigbee2mqtt.Shutdown()
-				entityManager.Shutdown()
-				_ = automation.Shutdown()
-				pluginManager.Shutdown()
-			}()
-
-			entityManager.CallAction(plugEnt.Id, "ON", nil)
-			entityManager.CallAction(plugEnt.Id, "OFF", nil)
-			entityManager.CallAction(plugEnt.Id, "NULL", nil)
+			supervisor.CallAction(plugEnt.Id, "ON", nil)
+			supervisor.CallAction(plugEnt.Id, "OFF", nil)
+			supervisor.CallAction(plugEnt.Id, "NULL", nil)
 			time.Sleep(time.Millisecond * 500)
 
 			So(counter.Load(), ShouldBeGreaterThanOrEqualTo, 2)

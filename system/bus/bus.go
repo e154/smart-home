@@ -115,6 +115,10 @@ func (b *bus) Unsubscribe(topic string, fn interface{}) error {
 			if h.callback == rv {
 				close(h.queue)
 				b.sub[topic].handlers = append(b.sub[topic].handlers[:i], b.sub[topic].handlers[i+1:]...)
+				if len(b.sub[topic].handlers) == 0 {
+					delete(b.sub, topic)
+				}
+				return nil
 			}
 		}
 
@@ -124,8 +128,8 @@ func (b *bus) Unsubscribe(topic string, fn interface{}) error {
 	return errors.Wrap(apperr.ErrInternal, fmt.Sprintf("topic %s doesn't exist", topic))
 }
 
-// Close ...
-func (b *bus) Close(topic string) {
+// CloseTopic ...
+func (b *bus) CloseTopic(topic string) {
 	b.Lock()
 	defer b.Unlock()
 
@@ -143,7 +147,7 @@ func (b *bus) Purge() {
 	b.Lock()
 	defer b.Unlock()
 
-	fmt.Println("purge")
+	fmt.Println("purge bus")
 
 	for topic, s := range b.sub {
 		for _, h := range s.handlers {
@@ -154,7 +158,7 @@ func (b *bus) Purge() {
 }
 
 // todo: fix ...
-func (b *bus) Stat() (stats Stats, err error) {
+func (b *bus) Stat() (stats Stats, total int64, err error) {
 	b.RLock()
 
 	for topic, subs := range b.sub {
@@ -166,6 +170,8 @@ func (b *bus) Stat() (stats Stats, err error) {
 	b.RUnlock()
 
 	sort.Sort(stats)
+
+	total = int64(len(stats))
 
 	return
 }

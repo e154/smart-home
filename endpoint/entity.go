@@ -109,7 +109,7 @@ func (n *EntityEndpoint) GetById(ctx context.Context, id common.EntityId) (resul
 	if result, err = n.adaptors.Entity.GetById(id); err != nil {
 		return
 	}
-	result.IsLoaded = n.entityManager.IsLoaded(id)
+	result.IsLoaded = n.supervisor.EntityIsLoaded(id)
 	return
 }
 
@@ -153,7 +153,7 @@ func (n *EntityEndpoint) List(ctx context.Context, pagination common.PageParams)
 		return
 	}
 	for _, entity := range entities {
-		entity.IsLoaded = n.entityManager.IsLoaded(entity.Id)
+		entity.IsLoaded = n.supervisor.EntityIsLoaded(entity.Id)
 	}
 	return
 }

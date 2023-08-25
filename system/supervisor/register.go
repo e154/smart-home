@@ -16,31 +16,18 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package entity_manager
+package supervisor
 
-import m "github.com/e154/smart-home/models"
+import "sync"
 
-// ScriptBind ...
-type ScriptBind struct {
-	actor PluginActor
-}
+var (
+	pluginList = sync.Map{}
+)
 
-// NewScriptBind  ...
-func NewScriptBind(actor PluginActor) *ScriptBind {
-	return &ScriptBind{actor: actor}
-}
-
-// SetState  ...
-func (s *ScriptBind) SetState(params EntityStateParams) {
-	_ = s.actor.SetState(params)
-}
-
-// GetSettings  ...
-func (s *ScriptBind) GetSettings() map[string]interface{} {
-	return s.actor.Settings().Serialize()
-}
-
-// SetAttribute  ...
-func (s *ScriptBind) SetAttribute(params m.AttributeValue) {
-
+// RegisterPlugin ...
+func RegisterPlugin(name string, new func() Pluggable) {
+	if _, ok := pluginList.Load(name); ok {
+		panic("duplicated plugin: " + name)
+	}
+	pluginList.Store(name, new())
 }

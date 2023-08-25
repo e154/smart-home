@@ -16,7 +16,7 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package entity_manager
+package supervisor
 
 import (
 	"github.com/e154/smart-home/common"
@@ -26,11 +26,11 @@ import (
 // EntityBind ...
 type EntityBind struct {
 	m.EntityShort
-	manager EntityManager
+	manager Supervisor
 }
 
 // NewEntityBind ...
-func NewEntityBind(id common.EntityId, manager EntityManager) *EntityBind {
+func NewEntityBind(id common.EntityId, manager Supervisor) *EntityBind {
 	entity, _ := manager.GetEntityById(id)
 	return &EntityBind{
 		EntityShort: entity,

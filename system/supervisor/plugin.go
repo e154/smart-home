@@ -16,15 +16,13 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package plugins
+package supervisor
 
 import (
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/web"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/scheduler"
 	"github.com/e154/smart-home/system/scripts"
 	"go.uber.org/atomic"
@@ -32,10 +30,9 @@ import (
 
 // Plugin ...
 type Plugin struct {
-	EntityManager entity_manager.EntityManager
+	Supervisor    Supervisor
 	Adaptors      *adaptors.Adaptors
 	ScriptService scripts.ScriptService
-	PluginManager common.PluginManager
 	EventBus      bus.Bus
 	IsStarted     *atomic.Bool
 	Scheduler     *scheduler.Scheduler
@@ -53,9 +50,8 @@ func NewPlugin() *Plugin {
 func (p *Plugin) Load(service Service) error {
 	p.Adaptors = service.Adaptors()
 	p.EventBus = service.EventBus()
-	p.EntityManager = service.EntityManager()
+	p.Supervisor = service.Supervisor()
 	p.ScriptService = service.ScriptService()
-	p.PluginManager = service.PluginManager()
 	p.Scheduler = service.Scheduler()
 	p.Crawler = service.Crawler()
 
@@ -108,7 +104,7 @@ func (p *Plugin) Options() m.PluginOptions {
 }
 
 // LoadSettings ...
-func (p *Plugin) LoadSettings(pl Plugable) (settings m.Attributes, err error) {
+func (p *Plugin) LoadSettings(pl Pluggable) (settings m.Attributes, err error) {
 	var plugin *m.Plugin
 	if plugin, err = p.Adaptors.Plugin.GetByName(pl.Name()); err != nil {
 		return
@@ -124,5 +120,5 @@ func (p *Plugin) LoadSettings(pl Plugable) (settings m.Attributes, err error) {
 
 // GetPlugin ...
 func (p *Plugin) GetPlugin(name string) (interface{}, error) {
-	return p.PluginManager.GetPlugin(name)
+	return p.Supervisor.GetPlugin(name)
 }
