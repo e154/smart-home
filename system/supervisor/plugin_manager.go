@@ -45,9 +45,9 @@ func (p *pluginManager) Start() {
 	}
 	p.isStarted.Store(true)
 
-	log.Info("Start")
-
 	p.loadPlugins()
+
+	log.Info("Started")
 }
 
 // Shutdown ...

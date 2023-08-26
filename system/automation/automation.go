@@ -103,6 +103,8 @@ func (a *automation) Start() (err error) {
 	a.load()
 	_ = a.eventBus.Subscribe(bus.TopicAutomation, a.eventHandler)
 	a.eventBus.Publish("system/services/automation", events.EventServiceStarted{})
+
+	log.Info("Started")
 	return
 }
 
@@ -111,6 +113,8 @@ func (a *automation) Shutdown() (err error) {
 	a.unload()
 	_ = a.eventBus.Unsubscribe(bus.TopicAutomation, a.eventHandler)
 	a.eventBus.Publish("system/services/automation", events.EventServiceStopped{})
+
+	log.Info("Shutdown")
 	return
 }
 
@@ -132,7 +136,7 @@ func (a *automation) load() {
 		log.Fatal("bad static cast triggers.IGetTrigger")
 	}
 
-	const perPage int64 = 100
+	const perPage int64 = 500
 	var page int64 = 0
 LOOP:
 	tasks, _, err := a.adaptors.Task.List(perPage, page*perPage, "", "", true)

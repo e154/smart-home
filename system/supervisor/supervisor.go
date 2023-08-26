@@ -112,7 +112,7 @@ func (e *supervisor) Start(ctx context.Context) (err error) {
 	_ = e.eventBus.Subscribe("system/services/scripts", e.handlerSystemScripts)
 	e.eventBus.Publish("system/services/supervisor", events.EventServiceStarted{})
 
-	log.Info("Start")
+	log.Info("Started")
 
 	return
 }
