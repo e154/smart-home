@@ -23,9 +23,6 @@ watch(
       if (val === unref(value)) return
       value.value = val || [] ;
     },
-    {
-      immediate: true
-    }
 )
 
 // 监听

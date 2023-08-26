@@ -23,9 +23,6 @@ watch(
       areaName.value = val?.name || null;
       currentArea.value = val || null;
     },
-    {
-      immediate: true
-    }
 )
 
 // 监听

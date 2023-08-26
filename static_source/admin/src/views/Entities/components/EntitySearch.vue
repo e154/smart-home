@@ -23,9 +23,6 @@ watch(
       entityId.value = val?.id || null;
       currentEntity.value = val || null;
     },
-    {
-      immediate: true
-    }
 )
 
 // 监听

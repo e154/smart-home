@@ -3,11 +3,11 @@ import {useI18n} from '@/hooks/web/useI18n'
 import {Table} from '@/components/Table'
 import {PropType, reactive, ref, unref, watch} from 'vue'
 import {TableColumn} from '@/types/table'
-import {ElButton, ElTag, ElPopconfirm} from 'element-plus'
+import {ElButton, ElPopconfirm} from 'element-plus'
 import {useEmitt} from "@/hooks/web/useEmitt";
 import {useRouter} from "vue-router";
 import ActionForm from "@/views/Entities/components/ActionForm.vue";
-import {Attribute, EntityAction} from "@/views/Entities/components/types";
+import {EntityAction} from "@/views/Entities/components/types";
 import {propTypes} from "@/utils/propTypes";
 
 const {currentRoute, addRoute, push} = useRouter()
@@ -99,11 +99,6 @@ const call = (action: EntityAction) => {
   emitter.emit('callAction', action.name)
 }
 
-const updateTriggers = () => {
-  const actions = unref(tableObject.tableList)
-  emitter.emit('updateActions', actions)
-}
-
 const edit = (actions: EntityAction, $index) => {
   currentActionIndex.value = $index
   currentAction = unref(actions)
@@ -131,7 +126,7 @@ const save = async () => {
       tableObject.tableList[currentActionIndex.value] = action
     }
     mode.value = Mode.VIEW
-    updateTriggers()
+    emitter.emit('updateActions', unref(tableObject.tableList))
   }
 }
 
@@ -159,12 +154,13 @@ const loadFromPlugin = async () => {
 </script>
 
 <template>
-  <ElButton class="flex mb-20px items-left"  @click="addNew()" plain v-if="mode ==='VIEW' && customActions">
+  <ElButton class="flex mb-20px items-left" @click="addNew()" plain v-if="mode ==='VIEW' && customActions">
     <Icon icon="ep:plus" class="mr-5px"/>
     {{ t('entities.addNewAction') }}
   </ElButton>
 
-  <ElButton class="flex mb-20px items-left"  @click="loadFromPlugin()" plain v-if="mode ==='VIEW' && pluginActions.length">
+  <ElButton class="flex mb-20px items-left" @click="loadFromPlugin()" plain
+            v-if="mode ==='VIEW' && pluginActions.length">
     {{ t('entities.loadFromPlugin') }}
   </ElButton>
 

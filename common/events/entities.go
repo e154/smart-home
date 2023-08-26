@@ -24,13 +24,6 @@ import (
 	"github.com/e154/smart-home/system/bus"
 )
 
-// EventPassAttributes ...
-type EventPassAttributes struct {
-	From       common.EntityId `json:"from"`
-	To         common.EntityId `json:"to"`
-	Attributes m.Attributes    `json:"attributes"`
-}
-
 // EventStateChanged ...
 type EventStateChanged struct {
 	StorageSave bool                 `json:"storage_save"`

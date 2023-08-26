@@ -157,13 +157,6 @@ func (a *ActorState) Copy() (state *ActorState) {
 	return
 }
 
-// Message ...
-type Message struct {
-	From    common.EntityId
-	To      common.EntityId
-	Payload interface{}
-}
-
 const (
 	// StateAwait ...
 	StateAwait = "await"

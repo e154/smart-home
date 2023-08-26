@@ -19,14 +19,10 @@ const props = defineProps({
 watch(
     () => props.modelValue,
     (val?: ApiScript) => {
-      if (props.modelValue == unref(val)) return;
       if (val === unref(currentScript)) return
       scriptName.value = val?.name || null;
       currentScript.value = val || null;
     },
-    {
-      immediate: true
-    }
 )
 
 // 监听

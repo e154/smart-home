@@ -5,7 +5,7 @@ import {h, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
 import {useAppStore} from "@/store/modules/app";
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
-import {ElButton, ElMessage, ElText} from 'element-plus'
+import {ElButton, ElMessage, ElTag} from 'element-plus'
 import {ApiEntity, ApiTask} from "@/api/stub";
 import {useForm} from "@/hooks/web/useForm";
 import {useRouter} from "vue-router";
@@ -303,12 +303,16 @@ const importEntity = async () => {
     >
 
       <template #status="{ row }">
-
         <div class="w-[100%] text-center">
           <Icon icon="noto:green-circle" class="mr-5px" v-if="row?.isLoaded"/>
           <Icon icon="noto:red-circle" class="mr-5px" v-if="!row?.isLoaded"/>
         </div>
+      </template>
 
+      <template #pluginName="{row}">
+        <ElTag>
+          {{ row.pluginName }}
+        </ElTag>
       </template>
 
       <template #operations="{ row }">

@@ -24,12 +24,12 @@ const {t} = useI18n()
 
 const writeRef = ref<ComponentRef<typeof Form>>()
 const loading = ref(false)
-const areaId = computed(() => route.params.id);
+const areaId = computed(() => route.params.id as number);
 const currentRow = ref<Nullable<ApiArea>>(null)
 
 const fetch = async () => {
   loading.value = true
-  const res = await api.v1.areaServiceGetAreaById(areaId.value as string)
+  const res = await api.v1.areaServiceGetAreaById(areaId.value)
       .catch(() => {
       })
       .finally(() => {
@@ -49,7 +49,7 @@ const save = async () => {
   if (validate) {
     loading.value = true
     const data = (await write?.getFormData()) as ApiArea
-    const res = await api.v1.areaServiceUpdateArea(areaId.value as string, data)
+    const res = await api.v1.areaServiceUpdateArea(areaId.value, data)
         .catch(() => {
         })
         .finally(() => {
@@ -67,7 +67,7 @@ const cancel = () => {
 
 const remove = async () => {
   loading.value = true
-  const res = await api.v1.areaServiceDeleteArea(areaId.value as string)
+  const res = await api.v1.areaServiceDeleteArea(areaId.value)
       .catch(() => {
       })
       .finally(() => {

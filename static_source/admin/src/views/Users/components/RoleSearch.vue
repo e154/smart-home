@@ -23,9 +23,6 @@ watch(
       roleName.value = val?.name || null;
       currentRole.value = val || null;
     },
-    {
-      immediate: true
-    }
 )
 
 // 监听
