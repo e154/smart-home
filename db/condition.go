@@ -19,9 +19,11 @@
 package db
 
 import (
+	"fmt"
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"time"
 )
 
 // Conditions ...
@@ -31,12 +33,12 @@ type Conditions struct {
 
 // Condition ...
 type Condition struct {
-	Id       int64 `gorm:"primary_key"`
-	Name     string
-	Task     *Task
-	TaskId   int64
-	Script   *Script
-	ScriptId int64
+	Id        int64 `gorm:"primary_key"`
+	Name      string
+	Script    *Script
+	ScriptId  int64
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 // TableName ...
@@ -44,10 +46,93 @@ func (d *Condition) TableName() string {
 	return "conditions"
 }
 
-// DeleteByTaskId ...
-func (n Conditions) DeleteByTaskId(id int64) (err error) {
-	if err = n.Db.Delete(&Condition{}, "task_id = ?", id).Error; err != nil {
+// Add ...
+func (t Conditions) Add(condition *Condition) (id int64, err error) {
+	if err = t.Db.Create(&condition).Error; err != nil {
+		err = errors.Wrap(apperr.ErrConditionAdd, err.Error())
+		return
+	}
+	id = condition.Id
+	return
+}
+
+// GetById ...
+func (t Conditions) GetById(id int64) (condition *Condition, err error) {
+	condition = &Condition{Id: id}
+	err = t.Db.
+		Model(condition).
+		Preload("Script").
+		First(&condition).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = errors.Wrap(apperr.ErrConditionNotFound, fmt.Sprintf("id \"%d\"", id))
+			return
+		}
+		err = errors.Wrap(apperr.ErrConditionGet, err.Error())
+	}
+	return
+}
+
+// Update ...
+func (t Conditions) Update(m *Condition) (err error) {
+	if err = t.Db.Model(&Condition{}).Where("id = ?", m.Id).Updates(m).Error; err != nil {
+		err = errors.Wrap(apperr.ErrConditionUpdate, err.Error())
+	}
+	return
+}
+
+// Delete ...
+func (t Conditions) Delete(id int64) (err error) {
+	if err = t.Db.Delete(&Condition{}, "id = ?", id).Error; err != nil {
 		err = errors.Wrap(apperr.ErrConditionDelete, err.Error())
+	}
+	return
+}
+
+// List ...
+func (t *Conditions) List(limit, offset int64, orderBy, sort string) (list []*Condition, total int64, err error) {
+
+	if err = t.Db.Model(Condition{}).Count(&total).Error; err != nil {
+		err = errors.Wrap(apperr.ErrConditionList, err.Error())
+		return
+	}
+
+	list = make([]*Condition, 0)
+	q := t.Db.Model(&Condition{}).
+		Limit(limit).
+		Offset(offset)
+
+	if sort != "" && orderBy != "" {
+		q = q.
+			Order(fmt.Sprintf("%s %s", sort, orderBy))
+	}
+
+	if err = q.Find(&list).Error; err != nil {
+		err = errors.Wrap(apperr.ErrConditionList, err.Error())
+	}
+	return
+}
+
+// Search ...q
+func (t *Conditions) Search(query string, limit, offset int) (list []*Condition, total int64, err error) {
+
+	q := t.Db.Model(&Condition{}).
+		Where("name LIKE ?", "%"+query+"%")
+
+	if err = q.Count(&total).Error; err != nil {
+		err = errors.Wrap(apperr.ErrConditionSearch, err.Error())
+		return
+	}
+
+	q = q.
+		Limit(limit).
+		Offset(offset).
+		Order("name ASC")
+
+	list = make([]*Condition, 0)
+	err = q.Find(&list).Error
+	if err != nil {
+		err = errors.Wrap(apperr.ErrConditionSearch, err.Error())
 	}
 	return
 }

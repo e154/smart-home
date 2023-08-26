@@ -47,6 +47,9 @@ type Endpoint struct {
 	Mqtt              *MqttEndpoint
 	Plugin            *PluginEndpoint
 	PluginActor       *PluginActorEndpoint
+	Action            *ActionEndpoint
+	Condition         *ConditionEndpoint
+	Trigger           *TriggerEndpoint
 	Task              *TaskEndpoint
 	Area              *AreaEndpoint
 	Interact          *InteractEndpoint
@@ -81,6 +84,9 @@ func NewEndpoint(backup *backup.Backup, stream *stream.Stream, common *CommonEnd
 		Mqtt:              NewMqttEndpoint(common),
 		Plugin:            NewPluginEndpoint(common),
 		PluginActor:       NewPluginActorEndpoint(common),
+		Action:            NewActionEndpoint(common),
+		Condition:         NewConditionEndpoint(common),
+		Trigger:           NewTriggerEndpoint(common),
 		Task:              NewTaskEndpoint(common),
 		Area:              NewAreaEndpoint(common),
 		Interact:          NewInteractEndpoint(common),

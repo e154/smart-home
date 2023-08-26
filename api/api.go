@@ -126,6 +126,9 @@ func (a *Api) Start() (err error) {
 	gw.RegisterMetricServiceServer(a.grpcServer, a.controllers.Metric)
 	gw.RegisterBackupServiceServer(a.grpcServer, a.controllers.Backup)
 	gw.RegisterMessageDeliveryServiceServer(a.grpcServer, a.controllers.MessageDelivery)
+	gw.RegisterActionServiceServer(a.grpcServer, a.controllers.Action)
+	gw.RegisterConditionServiceServer(a.grpcServer, a.controllers.Condition)
+	gw.RegisterTriggerServiceServer(a.grpcServer, a.controllers.Trigger)
 
 	var group errgroup.Group
 
@@ -184,6 +187,9 @@ func (a *Api) Start() (err error) {
 		_ = gw.RegisterMetricServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
 		_ = gw.RegisterBackupServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
 		_ = gw.RegisterMessageDeliveryServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterActionServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterConditionServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterTriggerServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
 		return nil
 	})
 

@@ -34,55 +34,25 @@ func NewAutomationDto() Automation {
 }
 
 // AddTask ...
-func (r Automation) AddTask(obj *api.NewTaskRequest) (task *m.Task) {
+func (r Automation) AddTask(obj *api.NewTaskRequest) (task *m.NewTask) {
 	if obj == nil {
 		return
 	}
-	task = &m.Task{
+	task = &m.NewTask{
 		Name:        obj.Name,
 		Description: obj.Description,
 		Enabled:     obj.Enabled,
 		Condition:   common.ConditionType(obj.Condition),
-		Triggers:    make([]*m.Trigger, 0, len(obj.Triggers)),
-		Conditions:  make([]*m.Condition, 0, len(obj.Conditions)),
-		Actions:     make([]*m.Action, 0, len(obj.Actions)),
+		Triggers:    obj.Triggers,
+		Conditions:  obj.Conditions,
+		Actions:     obj.Actions,
 		AreaId:      obj.AreaId,
-	}
-
-	// triggers
-	for _, t := range obj.Triggers {
-		trigger := &m.Trigger{
-			Name:       t.Name,
-			PluginName: t.PluginName,
-			ScriptId:   t.ScriptId,
-			EntityId:   common.NewEntityIdFromPtr(t.EntityId),
-			Payload:    AttributeFromApi(t.Attributes),
-		}
-		task.Triggers = append(task.Triggers, trigger)
-	}
-	// conditions
-	for _, c := range obj.Conditions {
-		condition := &m.Condition{
-			Name:     c.Name,
-			ScriptId: c.ScriptId,
-		}
-		task.Conditions = append(task.Conditions, condition)
-	}
-	// actions
-	for _, a := range obj.Actions {
-		action := &m.Action{
-			Name:             a.Name,
-			EntityId:         common.NewEntityIdFromPtr(a.EntityId),
-			EntityActionName: a.EntityActionName,
-			ScriptId:         a.ScriptId,
-		}
-		task.Actions = append(task.Actions, action)
 	}
 	return
 }
 
 // ImportTask ...
-func (r Automation) ImportTask(obj *api.NewTaskRequest) (task *m.Task) {
+func (r Automation) ImportTask(obj *api.Task) (task *m.Task) {
 	if obj == nil {
 		return
 	}
@@ -134,48 +104,19 @@ func (r Automation) ImportTask(obj *api.NewTaskRequest) (task *m.Task) {
 }
 
 // UpdateTask ...
-func (r Automation) UpdateTask(obj *api.UpdateTaskRequest) (task *m.Task) {
-	task = &m.Task{
+func (r Automation) UpdateTask(obj *api.UpdateTaskRequest) (task *m.UpdateTask) {
+	task = &m.UpdateTask{
 		Id:          obj.Id,
 		Name:        obj.Name,
 		Description: obj.Description,
 		Enabled:     obj.Enabled,
 		Condition:   common.ConditionType(obj.Condition),
-		Triggers:    make([]*m.Trigger, 0, len(obj.Triggers)),
-		Conditions:  make([]*m.Condition, 0, len(obj.Conditions)),
-		Actions:     make([]*m.Action, 0, len(obj.Actions)),
+		Triggers:    obj.Triggers,
+		Conditions:  obj.Conditions,
+		Actions:     obj.Actions,
 		AreaId:      obj.AreaId,
 	}
 
-	// triggers
-	for _, t := range obj.Triggers {
-		trigger := &m.Trigger{
-			Name:       t.Name,
-			PluginName: t.PluginName,
-			EntityId:   common.NewEntityIdFromPtr(t.EntityId),
-			Payload:    AttributeFromApi(t.Attributes),
-			ScriptId:   t.ScriptId,
-		}
-		task.Triggers = append(task.Triggers, trigger)
-	}
-	// conditions
-	for _, c := range obj.Conditions {
-		condition := &m.Condition{
-			Name:     c.Name,
-			ScriptId: c.ScriptId,
-		}
-		task.Conditions = append(task.Conditions, condition)
-	}
-	// actions
-	for _, a := range obj.Actions {
-		action := &m.Action{
-			Name:             a.Name,
-			EntityId:         common.NewEntityIdFromPtr(a.EntityId),
-			EntityActionName: a.EntityActionName,
-			ScriptId:         a.ScriptId,
-		}
-		task.Actions = append(task.Actions, action)
-	}
 	return
 }
 
@@ -218,35 +159,24 @@ func (r Automation) GetTask(task *m.Task) (obj *api.Task) {
 	// triggers
 	for _, tr := range task.Triggers {
 		obj.Triggers = append(obj.Triggers, &api.Trigger{
-			Name:       tr.Name,
-			Script:     ToGScript(tr.Script),
-			ScriptId:   tr.ScriptId,
-			PluginName: tr.PluginName,
-			Entity:     ToEntity(tr.Entity),
-			EntityId:   tr.EntityId.StringPtr(),
-			Attributes: AttributeToApi(tr.Payload),
+			Id:   tr.Id,
+			Name: tr.Name,
 		})
 	}
 
 	// conditions
 	for _, con := range task.Conditions {
 		obj.Conditions = append(obj.Conditions, &api.Condition{
-			Name:     con.Name,
-			ScriptId: con.ScriptId,
-			Script:   ToGScript(con.Script),
+			Id:   con.Id,
+			Name: con.Name,
 		})
 	}
 
 	// actions
 	for _, con := range task.Actions {
 		obj.Actions = append(obj.Actions, &api.Action{
-			Id:               nil,
-			Name:             con.Name,
-			Script:           ToGScript(con.Script),
-			ScriptId:         con.ScriptId,
-			EntityId:         con.EntityId.StringPtr(),
-			Entity:           ToEntity(con.Entity),
-			EntityActionName: con.EntityActionName,
+			Id:   con.Id,
+			Name: con.Name,
 		})
 	}
 

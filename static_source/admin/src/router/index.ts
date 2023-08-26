@@ -212,45 +212,153 @@ export const developRouterMap: AppRouteRecordRaw[] = [
     },
     children: [
       {
-        path: 'index',
-        name: 'Automation',
+        path: 'tasks',
+        name: 'Tasks',
         component: () => import('@/views/Automation/index.vue'),
         meta: {
-          title: t('router.List'),
-          noTagsView: true,
-          noCache: true,
-          hidden: true,
-          canTo: true,
-          activeMenu: '/automation'
-        }
+          title: t('router.Tasks'),
+        },
+        children: [
+          {
+            path: 'new',
+            name: 'newTask',
+            component: () => import('@/views/Automation/new.vue'),
+            meta: {
+              title: t('router.New'),
+              noTagsView: true,
+              noCache: true,
+              hidden: true,
+              canTo: true,
+              activeMenu: '/automation/tasks'
+            }
+          },
+          {
+            path: 'edit/:id',
+            name: 'editTask',
+            component: () => import('@/views/Automation/edit.vue'),
+            props: true,
+            meta: {
+              title: t('router.Edit'),
+              noTagsView: true,
+              noCache: true,
+              hidden: true,
+              canTo: true,
+              activeMenu: '/automation/tasks'
+            }
+          }
+        ]
       },
       {
-        path: 'new',
-        name: 'newAutomation',
-        component: () => import('@/views/Automation/new.vue'),
+        path: 'triggers',
+        name: 'Triggers',
+        component: () => import('@/views/Automation/Triggers/index.vue'),
         meta: {
-          title: t('router.New'),
-          noTagsView: true,
-          noCache: true,
-          hidden: true,
-          canTo: true,
-          activeMenu: '/automation'
-        }
+          title: t('router.Triggers'),
+        },
+        children: [
+          {
+            path: 'new',
+            name: 'newTrigger',
+            component: () => import('@/views/Automation/Triggers/new.vue'),
+            meta: {
+              title: t('router.New'),
+              noTagsView: true,
+              noCache: true,
+              hidden: true,
+              canTo: true,
+              activeMenu: '/automation/triggers'
+            }
+          },
+          {
+            path: 'edit/:id',
+            name: 'editTrigger',
+            component: () => import('@/views/Automation/Triggers/edit.vue'),
+            props: true,
+            meta: {
+              title: t('router.Edit'),
+              noTagsView: true,
+              noCache: true,
+              hidden: true,
+              canTo: true,
+              activeMenu: '/automation/triggers'
+            }
+          }
+        ]
       },
       {
-        path: 'edit/:id',
-        name: 'editAutomation',
-        component: () => import('@/views/Automation/edit.vue'),
-        props: true,
+        path: 'conditions',
+        name: 'Conditions',
+        component: () => import('@/views/Automation/Conditions/index.vue'),
         meta: {
-          title: t('router.Edit'),
-          noTagsView: true,
-          noCache: true,
-          hidden: true,
-          canTo: true,
-          activeMenu: '/automation'
-        }
-      }
+          title: t('router.Conditions'),
+        },
+        children: [
+          {
+            path: 'new',
+            name: 'newCondition',
+            component: () => import('@/views/Automation/Conditions/new.vue'),
+            meta: {
+              title: t('router.New'),
+              noTagsView: true,
+              noCache: true,
+              hidden: true,
+              canTo: true,
+              activeMenu: '/automation/conditions'
+            }
+          },
+          {
+            path: 'edit/:id',
+            name: 'editCondition',
+            component: () => import('@/views/Automation/Conditions/edit.vue'),
+            props: true,
+            meta: {
+              title: t('router.Edit'),
+              noTagsView: true,
+              noCache: true,
+              hidden: true,
+              canTo: true,
+              activeMenu: '/automation/conditions'
+            }
+          }
+        ]
+      },
+      {
+        path: 'actions',
+        name: 'Actions',
+        component: () => import('@/views/Automation/Actions/index.vue'),
+        meta: {
+          title: t('router.Actions'),
+        },
+        children: [
+          {
+            path: 'new',
+            name: 'newAction',
+            component: () => import('@/views/Automation/Actions/new.vue'),
+            meta: {
+              title: t('router.New'),
+              noTagsView: true,
+              noCache: true,
+              hidden: true,
+              canTo: true,
+              activeMenu: '/automation/actions'
+            }
+          },
+          {
+            path: 'edit/:id',
+            name: 'editAction',
+            component: () => import('@/views/Automation/Actions/edit.vue'),
+            props: true,
+            meta: {
+              title: t('router.Edit'),
+              noTagsView: true,
+              noCache: true,
+              hidden: true,
+              canTo: true,
+              activeMenu: '/automation/actions'
+            }
+          }
+        ]
+      },
     ]
   },
   {

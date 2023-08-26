@@ -37,6 +37,9 @@ type Controllers struct {
 	Plugin            ControllerPlugin
 	Zigbee2mqtt       ControllerZigbee2mqtt
 	Entity            ControllerEntity
+	Action            ControllerAction
+	Condition         ControllerCondition
+	Trigger           ControllerTrigger
 	Automation        ControllerAutomation
 	Area              ControllerArea
 	Dev               ControllerDeveloperTools
@@ -71,6 +74,9 @@ func NewControllers(adaptors *adaptors.Adaptors,
 		Plugin:            NewControllerPlugin(common),
 		Zigbee2mqtt:       NewControllerZigbee2mqtt(common),
 		Entity:            NewControllerEntity(common),
+		Action:            NewControllerAction(common),
+		Condition:         NewControllerCondition(common),
+		Trigger:           NewControllerTrigger(common),
 		Automation:        NewControllerAutomation(common),
 		Area:              NewControllerArea(common),
 		Dev:               NewControllerDeveloperTools(common),

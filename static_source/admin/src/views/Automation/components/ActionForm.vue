@@ -67,37 +67,37 @@ updateEntityActions(props.action?.entity)
 const schema = reactive<FormSchema[]>([
   {
     field: 'name',
-    label: t('actions.name'),
+    label: t('automation.actions.name'),
     component: 'Input',
     colProps: {
       span: 24
     },
     componentProps: {
-      placeholder: t('actions.name')
+      placeholder: t('automation.actions.name')
     }
   },
   {
     field: 'script',
-    label: t('actions.script'),
+    label: t('automation.actions.script'),
     component: 'Script',
     colProps: {
       span: 24
     },
     value: null,
     componentProps: {
-      placeholder: t('actions.script')
+      placeholder: t('automation.actions.script')
     }
   },
   {
     field: 'entity',
-    label: t('actions.entity'),
+    label: t('automation.actions.entity'),
     component: 'Entity',
     colProps: {
       span: 24
     },
     hidden: false,
     componentProps: {
-      placeholder: t('actions.entity'),
+      placeholder: t('automation.actions.entity'),
       onChange: (entity?: ApiEntityShort) => {
         updateEntityActions(entity)
       }
@@ -105,7 +105,7 @@ const schema = reactive<FormSchema[]>([
   },
   {
     field: 'entityActionName',
-    label: t('actions.entityActionName'),
+    label: t('automation.actions.entityActionName'),
     component: 'Select',
     colProps: {
       span: 24,

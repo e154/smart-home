@@ -26,25 +26,25 @@ const rules = {
 const schema = reactive<FormSchema[]>([
   {
     field: 'name',
-    label: t('conditions.name'),
+    label: t('automation.conditions.name'),
     component: 'Input',
     colProps: {
       span: 24
     },
     componentProps: {
-      placeholder: t('conditions.name')
+      placeholder: t('automation.conditions.name')
     }
   },
   {
     field: 'script',
-    label: t('conditions.script'),
+    label: t('automation.conditions.script'),
     component: 'Script',
     colProps: {
       span: 24
     },
     value: null,
     componentProps: {
-      placeholder: t('conditions.script')
+      placeholder: t('automation.conditions.script')
     }
   },
 ])

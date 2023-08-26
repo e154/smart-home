@@ -12,6 +12,9 @@
   },
   "tags": [
     {
+      "name": "ActionService"
+    },
+    {
       "name": "AreaService"
     },
     {
@@ -22,6 +25,9 @@
     },
     {
       "name": "BackupService"
+    },
+    {
+      "name": "ConditionService"
     },
     {
       "name": "DashboardService"
@@ -72,6 +78,9 @@
       "name": "StreamService"
     },
     {
+      "name": "TriggerService"
+    },
+    {
       "name": "UserService"
     },
     {
@@ -112,6 +121,281 @@
         },
         "tags": [
           "AuthService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/action": {
+      "post": {
+        "summary": "add new action",
+        "operationId": "ActionService_AddAction",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiAction"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiNewActionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ActionService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/action/{id}": {
+      "get": {
+        "summary": "get action by id",
+        "operationId": "ActionService_GetActionById",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiAction"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "ActionService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "delete action",
+        "operationId": "ActionService_DeleteAction",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "ActionService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "put": {
+        "summary": "update action",
+        "operationId": "ActionService_UpdateAction",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiAction"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "scriptId": {
+                  "type": "string",
+                  "format": "int64"
+                },
+                "script": {
+                  "$ref": "#/definitions/apiScript"
+                },
+                "entity": {
+                  "$ref": "#/definitions/apiEntity"
+                },
+                "entityId": {
+                  "type": "string"
+                },
+                "entityActionName": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "ActionService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/actions": {
+      "get": {
+        "summary": "get action list",
+        "operationId": "ActionService_GetActionList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiGetActionListResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ActionService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/actions/search": {
+      "get": {
+        "summary": "search action",
+        "operationId": "ActionService_SearchAction",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiSearchActionResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "ActionService"
         ],
         "security": [
           {
@@ -481,6 +765,272 @@
         },
         "tags": [
           "BackupService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/condition": {
+      "post": {
+        "summary": "add new condition",
+        "operationId": "ConditionService_AddCondition",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiCondition"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiNewConditionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ConditionService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/condition/{id}": {
+      "get": {
+        "summary": "get condition by id",
+        "operationId": "ConditionService_GetConditionById",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiCondition"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "ConditionService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "delete condition",
+        "operationId": "ConditionService_DeleteCondition",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "ConditionService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "put": {
+        "summary": "update condition",
+        "operationId": "ConditionService_UpdateCondition",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiCondition"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "scriptId": {
+                  "type": "string",
+                  "format": "int64"
+                },
+                "script": {
+                  "$ref": "#/definitions/apiScript"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "ConditionService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/conditions": {
+      "get": {
+        "summary": "get condition list",
+        "operationId": "ConditionService_GetConditionList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiGetConditionListResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ConditionService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/conditions/search": {
+      "get": {
+        "summary": "search condition",
+        "operationId": "ConditionService_SearchCondition",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiSearchConditionResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "ConditionService"
         ],
         "security": [
           {
@@ -4022,19 +4572,22 @@
                 "triggers": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/definitions/apiTrigger"
+                    "type": "string",
+                    "format": "int64"
                   }
                 },
                 "conditions": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/definitions/apiCondition"
+                    "type": "string",
+                    "format": "int64"
                   }
                 },
                 "actions": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/definitions/apiAction"
+                    "type": "string",
+                    "format": "int64"
                   }
                 },
                 "areaId": {
@@ -4173,6 +4726,326 @@
         ],
         "tags": [
           "AutomationService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/tasks/import": {
+      "post": {
+        "summary": "import task",
+        "operationId": "AutomationService_ImportTask",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiTask"
+            }
+          }
+        ],
+        "tags": [
+          "AutomationService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/trigger": {
+      "post": {
+        "summary": "add new trigger",
+        "operationId": "TriggerService_AddTrigger",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiTrigger"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiNewTriggerRequest"
+            }
+          }
+        ],
+        "tags": [
+          "TriggerService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/trigger/{id}": {
+      "get": {
+        "summary": "get trigger by id",
+        "operationId": "TriggerService_GetTriggerById",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiTrigger"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "TriggerService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "delete trigger",
+        "operationId": "TriggerService_DeleteTrigger",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "TriggerService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "put": {
+        "summary": "update trigger",
+        "operationId": "TriggerService_UpdateTrigger",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiTrigger"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "entity": {
+                  "$ref": "#/definitions/apiEntity"
+                },
+                "entityId": {
+                  "type": "string"
+                },
+                "script": {
+                  "$ref": "#/definitions/apiScript"
+                },
+                "scriptId": {
+                  "type": "string",
+                  "format": "int64"
+                },
+                "pluginName": {
+                  "type": "string"
+                },
+                "attributes": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/definitions/apiAttribute"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "TriggerService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/triggers": {
+      "get": {
+        "summary": "get trigger list",
+        "operationId": "TriggerService_GetTriggerList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiGetTriggerListResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "TriggerService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/triggers/search": {
+      "get": {
+        "summary": "search trigger",
+        "operationId": "TriggerService_SearchTrigger",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiSearchTriggerResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "TriggerService"
         ],
         "security": [
           {
@@ -5404,6 +6277,14 @@
         },
         "entityActionName": {
           "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
@@ -5494,6 +6375,14 @@
         },
         "script": {
           "$ref": "#/definitions/apiScript"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
@@ -6146,6 +7035,20 @@
         }
       }
     },
+    "apiGetActionListResult": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiAction"
+          }
+        },
+        "meta": {
+          "$ref": "#/definitions/apiMeta"
+        }
+      }
+    },
     "apiGetAreaListResult": {
       "type": "object",
       "properties": {
@@ -6178,6 +7081,20 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/apiZigbee2mqttShort"
+          }
+        },
+        "meta": {
+          "$ref": "#/definitions/apiMeta"
+        }
+      }
+    },
+    "apiGetConditionListResult": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiCondition"
           }
         },
         "meta": {
@@ -6382,6 +7299,20 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/apiTask"
+          }
+        },
+        "meta": {
+          "$ref": "#/definitions/apiMeta"
+        }
+      }
+    },
+    "apiGetTriggerListResult": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiTrigger"
           }
         },
         "meta": {
@@ -6652,6 +7583,30 @@
         }
       }
     },
+    "apiNewActionRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "scriptId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "script": {
+          "$ref": "#/definitions/apiScript"
+        },
+        "entity": {
+          "$ref": "#/definitions/apiEntity"
+        },
+        "entityId": {
+          "type": "string"
+        },
+        "entityActionName": {
+          "type": "string"
+        }
+      }
+    },
     "apiNewAreaRequest": {
       "type": "object",
       "properties": {
@@ -6660,6 +7615,21 @@
         },
         "description": {
           "type": "string"
+        }
+      }
+    },
+    "apiNewConditionRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "scriptId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "script": {
+          "$ref": "#/definitions/apiScript"
         }
       }
     },
@@ -6975,24 +7945,57 @@
         "triggers": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/apiTrigger"
+            "type": "string",
+            "format": "int64"
           }
         },
         "conditions": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/apiCondition"
+            "type": "string",
+            "format": "int64"
           }
         },
         "actions": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/apiAction"
+            "type": "string",
+            "format": "int64"
           }
         },
         "areaId": {
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "apiNewTriggerRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "entity": {
+          "$ref": "#/definitions/apiEntity"
+        },
+        "entityId": {
+          "type": "string"
+        },
+        "script": {
+          "$ref": "#/definitions/apiScript"
+        },
+        "scriptId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "pluginName": {
+          "type": "string"
+        },
+        "attributes": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/apiAttribute"
+          }
         }
       }
     },
@@ -7370,6 +8373,17 @@
         }
       }
     },
+    "apiSearchActionResult": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiAction"
+          }
+        }
+      }
+    },
     "apiSearchAreaResult": {
       "type": "object",
       "properties": {
@@ -7377,6 +8391,17 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/apiArea"
+          }
+        }
+      }
+    },
+    "apiSearchConditionResult": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiCondition"
           }
         }
       }
@@ -7443,6 +8468,17 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/apiScript"
+          }
+        }
+      }
+    },
+    "apiSearchTriggerResult": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiTrigger"
           }
         }
       }
@@ -7576,6 +8612,14 @@
           "additionalProperties": {
             "$ref": "#/definitions/apiAttribute"
           }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },

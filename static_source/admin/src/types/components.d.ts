@@ -29,6 +29,12 @@ export type ComponentName =
   | 'Entity'
   | 'Plugin'
   | 'Scripts'
+  | 'Trigger'
+  | 'Action'
+  | 'Condition'
+  | 'Triggers'
+  | 'Actions'
+  | 'Conditions'
 
 export type ColProps = {
   span?: number

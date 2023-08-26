@@ -69,6 +69,10 @@ export interface ApiAction {
   entity?: ApiEntity;
   entityId?: string;
   entityActionName?: string;
+  /** @format date-time */
+  createdAt?: string;
+  /** @format date-time */
+  updatedAt?: string;
 }
 
 export interface ApiArea {
@@ -107,6 +111,10 @@ export interface ApiCondition {
   /** @format int64 */
   scriptId?: number;
   script?: ApiScript;
+  /** @format date-time */
+  createdAt?: string;
+  /** @format date-time */
+  updatedAt?: string;
 }
 
 export interface ApiCurrentUser {
@@ -370,6 +378,11 @@ export interface ApiExecSrcScriptRequest {
   description?: string;
 }
 
+export interface ApiGetActionListResult {
+  items?: ApiAction[];
+  meta?: ApiMeta;
+}
+
 export interface ApiGetAreaListResult {
   items?: ApiArea[];
   meta?: ApiMeta;
@@ -381,6 +394,11 @@ export interface ApiGetBackupListResult {
 
 export interface ApiGetBridgeListResult {
   items?: ApiZigbee2MqttShort[];
+  meta?: ApiMeta;
+}
+
+export interface ApiGetConditionListResult {
+  items?: ApiCondition[];
   meta?: ApiMeta;
 }
 
@@ -454,6 +472,11 @@ export interface ApiGetScriptListResult {
 
 export interface ApiGetTaskListResult {
   items?: ApiTask[];
+  meta?: ApiMeta;
+}
+
+export interface ApiGetTriggerListResult {
+  items?: ApiTrigger[];
   meta?: ApiMeta;
 }
 
@@ -566,9 +589,26 @@ export interface ApiNetworkmapResponse {
   networkmap?: string;
 }
 
+export interface ApiNewActionRequest {
+  name?: string;
+  /** @format int64 */
+  scriptId?: number;
+  script?: ApiScript;
+  entity?: ApiEntity;
+  entityId?: string;
+  entityActionName?: string;
+}
+
 export interface ApiNewAreaRequest {
   name?: string;
   description?: string;
+}
+
+export interface ApiNewConditionRequest {
+  name?: string;
+  /** @format int64 */
+  scriptId?: string;
+  script?: ApiScript;
 }
 
 export interface ApiNewDashboardCardItemRequest {
@@ -693,11 +733,22 @@ export interface ApiNewTaskRequest {
   description?: string;
   enabled?: boolean;
   condition?: string;
-  triggers?: ApiTrigger[];
-  conditions?: ApiCondition[];
-  actions?: ApiAction[];
+  triggers?: number[];
+  conditions?: number[];
+  actions?: number[];
   /** @format int64 */
-  areaId?: number;
+  areaId?: string;
+}
+
+export interface ApiNewTriggerRequest {
+  name?: string;
+  entity?: ApiEntity;
+  entityId?: string;
+  script?: ApiScript;
+  /** @format int64 */
+  scriptId?: number;
+  pluginName?: string;
+  attributes?: Record<string, ApiAttribute>;
 }
 
 export interface ApiNewVariableRequest {
@@ -846,8 +897,16 @@ export interface ApiScriptInfo {
   automationActions?: number;
 }
 
+export interface ApiSearchActionResult {
+  items?: ApiAction[];
+}
+
 export interface ApiSearchAreaResult {
   items?: ApiArea[];
+}
+
+export interface ApiSearchConditionResult {
+  items?: ApiCondition[];
 }
 
 export interface ApiSearchDashboardResult {
@@ -872,6 +931,10 @@ export interface ApiSearchRoleListResult {
 
 export interface ApiSearchScriptListResult {
   items?: ApiScript[];
+}
+
+export interface ApiSearchTriggerResult {
+  items?: ApiTrigger[];
 }
 
 export interface ApiSigninResponse {
@@ -923,6 +986,10 @@ export interface ApiTrigger {
   scriptId?: number;
   pluginName?: string;
   attributes?: Record<string, ApiAttribute>;
+  /** @format date-time */
+  createdAt?: string;
+  /** @format date-time */
+  updatedAt?: string;
 }
 
 /** @default "INT" */
@@ -1382,6 +1449,150 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
     /**
      * No description
      *
+     * @tags ActionService
+     * @name ActionServiceAddAction
+     * @summary add new action
+     * @request POST:/v1/action
+     * @secure
+     */
+    actionServiceAddAction: (body: ApiNewActionRequest, params: RequestParams = {}) =>
+      this.request<ApiAction, RpcStatus>({
+        path: `/v1/action`,
+        method: "POST",
+        body: body,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags ActionService
+     * @name ActionServiceGetActionById
+     * @summary get action by id
+     * @request GET:/v1/action/{id}
+     * @secure
+     */
+    actionServiceGetActionById: (id: number, params: RequestParams = {}) =>
+      this.request<ApiAction, RpcStatus>({
+        path: `/v1/action/${id}`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags ActionService
+     * @name ActionServiceDeleteAction
+     * @summary delete action
+     * @request DELETE:/v1/action/{id}
+     * @secure
+     */
+    actionServiceDeleteAction: (id: number, params: RequestParams = {}) =>
+      this.request<ApiDisablePluginResult, RpcStatus>({
+        path: `/v1/action/${id}`,
+        method: "DELETE",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags ActionService
+     * @name ActionServiceUpdateAction
+     * @summary update action
+     * @request PUT:/v1/action/{id}
+     * @secure
+     */
+    actionServiceUpdateAction: (
+      id: number,
+      body: {
+        name?: string;
+        /** @format int64 */
+        scriptId?: number;
+        script?: ApiScript;
+        entity?: ApiEntity;
+        entityId?: string;
+        entityActionName?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<ApiAction, RpcStatus>({
+        path: `/v1/action/${id}`,
+        method: "PUT",
+        body: body,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags ActionService
+     * @name ActionServiceGetActionList
+     * @summary get action list
+     * @request GET:/v1/actions
+     * @secure
+     */
+    actionServiceGetActionList: (
+      query?: {
+        /** @format uint64 */
+        page?: number;
+        /** @format uint64 */
+        limit?: number;
+        sort?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<ApiGetActionListResult, RpcStatus>({
+        path: `/v1/actions`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags ActionService
+     * @name ActionServiceSearchAction
+     * @summary search action
+     * @request GET:/v1/actions/search
+     * @secure
+     */
+    actionServiceSearchAction: (
+      query?: {
+        query?: string;
+        /** @format int64 */
+        limit?: number;
+        /** @format int64 */
+        offset?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<ApiSearchActionResult, RpcStatus>({
+        path: `/v1/actions/search`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
      * @tags AreaService
      * @name AreaServiceAddArea
      * @summary add new area
@@ -1571,6 +1782,147 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
       this.request<ApiGetBackupListResult, RpcStatus>({
         path: `/v1/backups`,
         method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags ConditionService
+     * @name ConditionServiceAddCondition
+     * @summary add new condition
+     * @request POST:/v1/condition
+     * @secure
+     */
+    conditionServiceAddCondition: (body: ApiNewConditionRequest, params: RequestParams = {}) =>
+      this.request<ApiCondition, RpcStatus>({
+        path: `/v1/condition`,
+        method: "POST",
+        body: body,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags ConditionService
+     * @name ConditionServiceGetConditionById
+     * @summary get condition by id
+     * @request GET:/v1/condition/{id}
+     * @secure
+     */
+    conditionServiceGetConditionById: (id: number, params: RequestParams = {}) =>
+      this.request<ApiCondition, RpcStatus>({
+        path: `/v1/condition/${id}`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags ConditionService
+     * @name ConditionServiceDeleteCondition
+     * @summary delete condition
+     * @request DELETE:/v1/condition/{id}
+     * @secure
+     */
+    conditionServiceDeleteCondition: (id: number, params: RequestParams = {}) =>
+      this.request<ApiDisablePluginResult, RpcStatus>({
+        path: `/v1/condition/${id}`,
+        method: "DELETE",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags ConditionService
+     * @name ConditionServiceUpdateCondition
+     * @summary update condition
+     * @request PUT:/v1/condition/{id}
+     * @secure
+     */
+    conditionServiceUpdateCondition: (
+      id: number,
+      body: {
+        name?: string;
+        /** @format int64 */
+        scriptId?: number;
+        script?: ApiScript;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<ApiCondition, RpcStatus>({
+        path: `/v1/condition/${id}`,
+        method: "PUT",
+        body: body,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags ConditionService
+     * @name ConditionServiceGetConditionList
+     * @summary get condition list
+     * @request GET:/v1/conditions
+     * @secure
+     */
+    conditionServiceGetConditionList: (
+      query?: {
+        /** @format uint64 */
+        page?: number;
+        /** @format uint64 */
+        limit?: number;
+        sort?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<ApiGetConditionListResult, RpcStatus>({
+        path: `/v1/conditions`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags ConditionService
+     * @name ConditionServiceSearchCondition
+     * @summary search condition
+     * @request GET:/v1/conditions/search
+     * @secure
+     */
+    conditionServiceSearchCondition: (
+      query?: {
+        query?: string;
+        /** @format int64 */
+        limit?: number;
+        /** @format int64 */
+        offset?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<ApiSearchConditionResult, RpcStatus>({
+        path: `/v1/conditions/search`,
+        method: "GET",
+        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -3392,9 +3744,9 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
         description?: string;
         enabled?: boolean;
         condition?: string;
-        triggers?: ApiTrigger[];
-        conditions?: ApiCondition[];
-        actions?: ApiAction[];
+        triggers?: number[];
+        conditions?: number[];
+        actions?: number[];
         /** @format int64 */
         areaId?: number;
       },
@@ -3467,6 +3819,171 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
     ) =>
       this.request<ApiGetTaskListResult, RpcStatus>({
         path: `/v1/tasks`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags AutomationService
+     * @name AutomationServiceImportTask
+     * @summary import task
+     * @request POST:/v1/tasks/import
+     * @secure
+     */
+    automationServiceImportTask: (body: ApiTask, params: RequestParams = {}) =>
+      this.request<ApiDisablePluginResult, RpcStatus>({
+        path: `/v1/tasks/import`,
+        method: "POST",
+        body: body,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags TriggerService
+     * @name TriggerServiceAddTrigger
+     * @summary add new trigger
+     * @request POST:/v1/trigger
+     * @secure
+     */
+    triggerServiceAddTrigger: (body: ApiNewTriggerRequest, params: RequestParams = {}) =>
+      this.request<ApiTrigger, RpcStatus>({
+        path: `/v1/trigger`,
+        method: "POST",
+        body: body,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags TriggerService
+     * @name TriggerServiceGetTriggerById
+     * @summary get trigger by id
+     * @request GET:/v1/trigger/{id}
+     * @secure
+     */
+    triggerServiceGetTriggerById: (id: number, params: RequestParams = {}) =>
+      this.request<ApiTrigger, RpcStatus>({
+        path: `/v1/trigger/${id}`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags TriggerService
+     * @name TriggerServiceDeleteTrigger
+     * @summary delete trigger
+     * @request DELETE:/v1/trigger/{id}
+     * @secure
+     */
+    triggerServiceDeleteTrigger: (id: number, params: RequestParams = {}) =>
+      this.request<ApiDisablePluginResult, RpcStatus>({
+        path: `/v1/trigger/${id}`,
+        method: "DELETE",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags TriggerService
+     * @name TriggerServiceUpdateTrigger
+     * @summary update trigger
+     * @request PUT:/v1/trigger/{id}
+     * @secure
+     */
+    triggerServiceUpdateTrigger: (
+      id: number,
+      body: {
+        name?: string;
+        entity?: ApiEntity;
+        entityId?: string;
+        script?: ApiScript;
+        /** @format int64 */
+        scriptId?: number;
+        pluginName?: string;
+        attributes?: Record<string, ApiAttribute>;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<ApiTrigger, RpcStatus>({
+        path: `/v1/trigger/${id}`,
+        method: "PUT",
+        body: body,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags TriggerService
+     * @name TriggerServiceGetTriggerList
+     * @summary get trigger list
+     * @request GET:/v1/triggers
+     * @secure
+     */
+    triggerServiceGetTriggerList: (
+      query?: {
+        /** @format uint64 */
+        page?: number;
+        /** @format uint64 */
+        limit?: number;
+        sort?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<ApiGetTriggerListResult, RpcStatus>({
+        path: `/v1/triggers`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags TriggerService
+     * @name TriggerServiceSearchTrigger
+     * @summary search trigger
+     * @request GET:/v1/triggers/search
+     * @secure
+     */
+    triggerServiceSearchTrigger: (
+      query?: {
+        query?: string;
+        /** @format int64 */
+        limit?: number;
+        /** @format int64 */
+        offset?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<ApiSearchTriggerResult, RpcStatus>({
+        path: `/v1/triggers/search`,
         method: "GET",
         query: query,
         secure: true,

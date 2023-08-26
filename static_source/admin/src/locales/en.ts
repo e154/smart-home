@@ -159,6 +159,10 @@ export default {
         Entities: 'Entities',
         Scripts: 'Scripts',
         Automation: 'Automation',
+        Tasks: 'Tasks',
+        Triggers: 'Triggers',
+        Conditions: 'Conditions',
+        Actions: 'Actions',
         Zigbee2mqtt: 'Zigbee2mqtt',
         Dashboard: 'Dashboard',
         Dashboards: 'Dashboards',
@@ -263,15 +267,12 @@ export default {
     automation: {
         id: 'ID',
         name: 'Name',
-        actions: 'Actions',
-        triggers: 'Triggers',
         description: 'Description',
         enabled: 'Enabled',
         nothing: '-',
         addNew: 'Add new task',
         import: 'Import task',
         condition: 'Condition',
-        conditions: 'Conditions',
         area: 'Area',
         task: 'Task',
         pipeline: 'Pipeline',
@@ -279,8 +280,40 @@ export default {
         eventStart: 'Event Start',
         eventEnd: 'Event End',
         dialogTitle: 'Import task',
-        operations: 'Actions'
-
+        operations: 'Actions',
+        triggers: {
+            id: 'ID',
+            name: 'Name',
+            script: 'Script',
+            entity: 'Entity',
+            plugin: 'Plugin',
+            operations: 'Operations',
+            addNew: 'Add new trigger',
+            pluginName: 'Plugin name',
+            addTrigger: 'Add Trigger',
+            pluginOptions: 'Plugin Options',
+            timePluginOptions: 'Time Expression',
+            alexaSkillId: 'Alexa Skill ID'
+        },
+        conditions: {
+            id: 'ID',
+            name: 'Name',
+            script: 'Script',
+            operations: 'Operations',
+            addNew: 'Add new condition',
+            addCondition: 'Add Condition'
+        },
+        actions: {
+            id: 'ID',
+            name: 'Name',
+            script: 'Script',
+            entity: 'Entity',
+            action: 'Action',
+            operations: 'Operations',
+            addNew: 'Add new action',
+            addAction: 'Add Action',
+            entityActionName: 'Entity Action'
+        },
     },
     scripts: {
         id: 'ID',
@@ -310,36 +343,6 @@ export default {
         stat_cs_descr: '',
         stat_ts_name: 'Total typescript scripts',
         stat_ts_descr: ''
-    },
-    triggers: {
-        name: 'Name',
-        script: 'Script',
-        entity: 'Entity',
-        plugin: 'Plugin',
-        operations: 'Operations',
-        addNew: 'Add new trigger',
-        pluginName: 'Plugin name',
-        addTrigger: 'Add Trigger',
-        pluginOptions: 'Plugin Options',
-        timePluginOptions: 'Time Expression',
-        alexaSkillId: 'Alexa Skill ID'
-    },
-    actions: {
-        name: 'Name',
-        script: 'Script',
-        entity: 'Entity',
-        action: 'Action',
-        operations: 'Operations',
-        addNew: 'Add new action',
-        addAction: 'Add Action',
-        entityActionName: 'Entity Action'
-    },
-    conditions: {
-        name: 'Name',
-        script: 'Script',
-        operations: 'Operations',
-        addNew: 'Add new condition',
-        addCondition: 'Add Condition'
     },
     zigbee2mqtt: {
         id: 'ID',

@@ -41,9 +41,9 @@ type Task struct {
 	Description string
 	Enabled     bool
 	Condition   common.ConditionType
-	Conditions  []*Condition
-	Triggers    []*Trigger
-	Actions     []*Action
+	Conditions  []*Condition `gorm:"many2many:task_conditions;"`
+	Actions     []*Action    `gorm:"many2many:task_actions;"`
+	Triggers    []*Trigger   `gorm:"many2many:task_triggers;"`
 	AreaId      *int64
 	Area        *Area
 	CreatedAt   time.Time
@@ -72,11 +72,11 @@ func (n Tasks) GetAllEnabled() (list []*Task, err error) {
 		Preload("Triggers").
 		Preload("Triggers.Script").
 		Preload("Triggers.Entity").
-		Preload("Conditions").
-		Preload("Conditions.Script").
-		Preload("Actions").
-		Preload("Actions.Script").
-		Preload("Actions.Entity").
+		//Preload("Conditions").
+		//Preload("Conditions.Script").
+		//Preload("Actions").
+		//Preload("Actions.Script").
+		//Preload("Actions.Entity").
 		Preload("Area").
 		Find(&list).Error
 	if err != nil {
@@ -215,6 +215,54 @@ func (n *Tasks) Search(query string, limit, offset int) (list []*Task, total int
 	list = make([]*Task, 0)
 	if err = q.Find(&list).Error; err != nil {
 		err = errors.Wrap(apperr.ErrTaskSearch, err.Error())
+	}
+	return
+}
+
+// AppendTrigger ...
+func (n *Tasks) AppendTrigger(id int64, trigger *Trigger) (err error) {
+	if err = n.Db.Model(&Task{Id: id}).Association("Triggers").Append(trigger).Error; err != nil {
+		err = errors.Wrap(apperr.ErrTaskAppendTrigger, err.Error())
+	}
+	return
+}
+
+// DeleteTrigger ...
+func (n *Tasks) DeleteTrigger(id, triggerId int64) (err error) {
+	if err = n.Db.Model(&Task{Id: id}).Association("Triggers").Delete(&Trigger{Id: triggerId}).Error; err != nil {
+		err = errors.Wrap(apperr.ErrTaskDeleteTrigger, err.Error())
+	}
+	return
+}
+
+// AppendCondition ...
+func (n *Tasks) AppendCondition(id int64, condition *Condition) (err error) {
+	if err = n.Db.Model(&Task{Id: id}).Association("Conditions").Append(condition).Error; err != nil {
+		err = errors.Wrap(apperr.ErrTaskAppendCondition, err.Error())
+	}
+	return
+}
+
+// DeleteCondition ...
+func (n *Tasks) DeleteCondition(id, conditionId int64) (err error) {
+	if err = n.Db.Model(&Task{Id: id}).Association("Conditions").Delete(&Condition{Id: conditionId}).Error; err != nil {
+		err = errors.Wrap(apperr.ErrTaskDeleteCondition, err.Error())
+	}
+	return
+}
+
+// AppendAction ...
+func (n *Tasks) AppendAction(id int64, action *Action) (err error) {
+	if err = n.Db.Model(&Task{Id: id}).Association("Actions").Append(action).Error; err != nil {
+		err = errors.Wrap(apperr.ErrTaskAppendAction, err.Error())
+	}
+	return
+}
+
+// DeleteAction ...
+func (n *Tasks) DeleteAction(id, actionId int64) (err error) {
+	if err = n.Db.Model(&Task{Id: id}).Association("Actions").Delete(&Action{Id: actionId}).Error; err != nil {
+		err = errors.Wrap(apperr.ErrTaskDeleteAction, err.Error())
 	}
 	return
 }

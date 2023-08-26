@@ -44,23 +44,24 @@ func NewTaskEndpoint(common *CommonEndpoint) *TaskEndpoint {
 }
 
 // Add ...
-func (n *TaskEndpoint) Add(ctx context.Context, task *m.Task) (result *m.Task, errs validator.ValidationErrorsTranslations, err error) {
+func (n *TaskEndpoint) Add(ctx context.Context, task *m.NewTask) (result *m.Task, errs validator.ValidationErrorsTranslations, err error) {
 
 	var ok bool
 	if ok, errs = n.validation.Valid(task); !ok {
 		return
 	}
 
-	if err = n.adaptors.Task.Add(task); err != nil {
+	var id int64
+	if id, err = n.adaptors.Task.Add(task); err != nil {
 		return
 	}
 
-	if result, err = n.adaptors.Task.GetById(task.Id); err != nil {
+	if result, err = n.adaptors.Task.GetById(id); err != nil {
 		return
 	}
 
 	n.eventBus.Publish(bus.TopicAutomation, events.EventAddedTask{
-		Id: task.Id,
+		Id: id,
 	})
 
 	return
@@ -133,7 +134,7 @@ func (n *TaskEndpoint) Import(ctx context.Context, task *m.Task) (result *m.Task
 }
 
 // Update ...
-func (n *TaskEndpoint) Update(ctx context.Context, task *m.Task) (result *m.Task, errs validator.ValidationErrorsTranslations, err error) {
+func (n *TaskEndpoint) Update(ctx context.Context, task *m.UpdateTask) (result *m.Task, errs validator.ValidationErrorsTranslations, err error) {
 
 	var ok bool
 	if ok, errs = n.validation.Valid(task); !ok {

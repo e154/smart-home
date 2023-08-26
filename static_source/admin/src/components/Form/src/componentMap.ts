@@ -28,6 +28,12 @@ import ScriptSearch from '@/views/Scripts/components/ScriptSearch.vue'
 import ScriptsSearch from '@/views/Scripts/components/ScriptsSearch.vue'
 import EntitySearch from '@/views/Entities/components/EntitySearch.vue'
 import PluginSearch from '@/views/Plugins/components/PluginSearch.vue'
+import TriggerSearch from '@/views/Automation/components/TriggerSearch.vue'
+import TriggersSearch from '@/views/Automation/components/TriggersSearch.vue'
+import ConditionSearch from '@/views/Automation/components/ConditionSearch.vue'
+import ConditionsSearch from '@/views/Automation/components/ConditionsSearch.vue'
+import ActionSearch from '@/views/Automation/components/ActionSearch.vue'
+import ActionsSearch from '@/views/Automation/components/ActionsSearch.vue'
 
 const componentMap: Recordable<Component, ComponentName> = {
   Radio: ElRadioGroup,
@@ -57,7 +63,13 @@ const componentMap: Recordable<Component, ComponentName> = {
   Script: ScriptSearch,
   Scripts: ScriptsSearch,
   Entity: EntitySearch,
-  Plugin: PluginSearch
+  Plugin: PluginSearch,
+  Trigger: TriggerSearch,
+  Triggers: TriggersSearch,
+  Condition: ConditionSearch,
+  Conditions: ConditionsSearch,
+  Action: ActionSearch,
+  Actions: ActionsSearch,
 }
 
 export { componentMap }

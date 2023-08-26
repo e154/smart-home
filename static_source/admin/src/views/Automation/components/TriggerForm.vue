@@ -41,30 +41,30 @@ const pluginChanged = async (value?: string) => {
 const schema = reactive<FormSchema[]>([
   {
     field: 'name',
-    label: t('triggers.name'),
+    label: t('automation.triggers.name'),
     component: 'Input',
     colProps: {
       span: 24
     },
     componentProps: {
-      placeholder: t('triggers.name')
+      placeholder: t('automation.triggers.name')
     }
   },
   {
     field: 'script',
-    label: t('triggers.script'),
+    label: t('automation.triggers.script'),
     component: 'Script',
     colProps: {
       span: 24
     },
     value: null,
     componentProps: {
-      placeholder: t('triggers.script')
+      placeholder: t('automation.triggers.script')
     }
   },
   {
     field: 'pluginName',
-    label: t('triggers.pluginName'),
+    label: t('automation.triggers.pluginName'),
     component: 'Select',
     colProps: {
       span: 24,
@@ -95,52 +95,51 @@ const schema = reactive<FormSchema[]>([
   },
   {
     field: 'entity',
-    label: t('triggers.entity'),
+    label: t('automation.triggers.entity'),
     component: 'Entity',
     colProps: {
       span: 24
     },
     hidden: false,
     componentProps: {
-      placeholder: t('triggers.entity')
+      placeholder: t('automation.triggers.entity')
     }
   },
   {
     hidden: false,
     field: 'timePluginOptions',
-    label: t('triggers.timePluginOptions'),
+    label: t('automation.triggers.timePluginOptions'),
     component: 'Input',
     colProps: {
       span: 24
     }, componentProps: {
-      placeholder: t('triggers.timePluginOptions')
+      placeholder: t('automation.triggers.timePluginOptions')
     }
   },
   {
     hidden: false,
     field: 'systemPluginOptions',
-    label: t('triggers.pluginOptions'),
+    label: t('automation.triggers.pluginOptions'),
     component: 'Input',
     colProps: {
       span: 24
     }, componentProps: {
-      placeholder: t('triggers.pluginOptions')
+      placeholder: t('automation.triggers.pluginOptions')
     }
   },
   {
     hidden: false,
     field: 'alexaPluginOptions',
-    label: t('triggers.alexaSkillId'),
+    label: t('automation.triggers.alexaSkillId'),
     component: 'InputNumber',
     colProps: {
       span: 24
     },
     componentProps: {
-      placeholder: t('triggers.alexaSkillId')
+      placeholder: t('automation.triggers.alexaSkillId')
     }
   },
 ])
-
 
 const prepareAttrs = (attrs?: Record<string, ApiAttribute>) => {
   if (!attrs) {

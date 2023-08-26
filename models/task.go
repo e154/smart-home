@@ -55,3 +55,32 @@ func (t *Task) AddCondition(c *Condition) {
 func (t *Task) AddAction(a *Action) {
 	t.Actions = append(t.Actions, a)
 }
+
+// NewTask ...
+type NewTask struct {
+	Name        string               `json:"name" validate:"required,lte=255"`
+	Description string               `json:"description" validate:"lte=255"`
+	Enabled     bool                 `json:"enabled"`
+	IsLoaded    bool                 `json:"is_loaded"`
+	Condition   common.ConditionType `json:"condition" validate:"required,oneof=or and"`
+	Triggers    []int64              `json:"triggers" validate:"dive"`
+	Conditions  []int64              `json:"conditions" validate:"dive"`
+	Actions     []int64              `json:"actions" validate:"dive"`
+	Area        *Area                `json:"area"`
+	AreaId      *int64               `json:"area_id"`
+}
+
+// UpdateTask ...
+type UpdateTask struct {
+	Id          int64                `json:"id"`
+	Name        string               `json:"name" validate:"required,lte=255"`
+	Description string               `json:"description" validate:"lte=255"`
+	Enabled     bool                 `json:"enabled"`
+	IsLoaded    bool                 `json:"is_loaded"`
+	Condition   common.ConditionType `json:"condition" validate:"required,oneof=or and"`
+	Triggers    []int64              `json:"triggers" validate:"dive"`
+	Conditions  []int64              `json:"conditions" validate:"dive"`
+	Actions     []int64              `json:"actions" validate:"dive"`
+	Area        *Area                `json:"area"`
+	AreaId      *int64               `json:"area_id"`
+}
