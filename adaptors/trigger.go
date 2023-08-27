@@ -20,6 +20,7 @@ package adaptors
 
 import (
 	"encoding/json"
+	"github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"
 	"time"
 
@@ -180,6 +181,14 @@ func (n *Trigger) toDb(ver *m.Trigger) (dbVer *db.Trigger) {
 		PluginName: ver.PluginName,
 		CreatedAt:  ver.CreatedAt,
 		UpdatedAt:  ver.UpdatedAt,
+	}
+
+	if ver.Script != nil {
+		dbVer.ScriptId = common.Int64(ver.Script.Id)
+	}
+
+	if ver.Entity != nil {
+		dbVer.EntityId = common.NewEntityId(ver.Entity.Id.String())
 	}
 
 	// serialize payload

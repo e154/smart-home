@@ -101,7 +101,7 @@ automationTriggerTime = (msg)->
 					},
 				},
 			})
-			err = adaptors.Task.Add(task3)
+			err = adaptors.Task.Import(task3)
 			So(err, ShouldBeNil)
 
 			// ------------------------------------------------

@@ -258,7 +258,7 @@ automationAction = (entityId)->
 				Name:   "action on Plug",
 				Script: task1Script,
 			})
-			err = adaptors.Task.Add(task1)
+			err = adaptors.Task.Import(task1)
 			So(err, ShouldBeNil)
 
 			//TASK2
@@ -281,7 +281,7 @@ automationAction = (entityId)->
 				Name:   "action on Plug",
 				Script: task2Script,
 			})
-			err = adaptors.Task.Add(task2)
+			err = adaptors.Task.Import(task2)
 			So(err, ShouldBeNil)
 
 			// ------------------------------------------------

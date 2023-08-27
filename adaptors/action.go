@@ -175,6 +175,10 @@ func (n *Action) toDb(ver *m.Action) (dbVer *db.Action) {
 		UpdatedAt:        ver.UpdatedAt,
 	}
 
+	if ver.Entity != nil {
+		dbVer.EntityId = common.NewEntityId(ver.Entity.Id.String())
+	}
+
 	if ver.Script != nil {
 		dbVer.ScriptId = common.Int64(ver.Script.Id)
 	}

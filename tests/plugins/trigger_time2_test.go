@@ -124,7 +124,7 @@ entityAction = (entityId, actionName)->
 				EntityId:         common.NewEntityId(string(sensorEnt.Id)),
 				EntityActionName: common.String(sensorEnt.Actions[0].Name),
 			})
-			err = adaptors.Task.Add(task3)
+			err = adaptors.Task.Import(task3)
 			So(err, ShouldBeNil)
 
 			// ------------------------------------------------

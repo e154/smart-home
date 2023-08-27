@@ -180,7 +180,7 @@ automationTriggerStateChanged = (msg)->
 				Script:     task1Script,
 				PluginName: "state_change",
 			})
-			err = adaptors.Task.Add(task1)
+			err = adaptors.Task.Import(task1)
 			So(err, ShouldBeNil)
 
 			eventBus.Publish(bus.TopicAutomation, events.EventAddedTask{
