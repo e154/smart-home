@@ -86,7 +86,7 @@ func (u *Actor) selfUpdate() {
 	u.Attrs[AttrGoVersion].Value = version.GoVersion
 	u.AttrMu.Unlock()
 
-	u.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
+	u.eventBus.Publish("system/entities/"+u.Id.String(), events.EventStateChanged{
 		StorageSave: false,
 		PluginName:  u.Id.PluginName(),
 		EntityId:    u.Id,

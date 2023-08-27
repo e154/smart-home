@@ -90,13 +90,11 @@ automationTriggerStateChanged = (msg)->
 			err := migrations.Purge()
 			So(err, ShouldBeNil)
 
-
 			// register plugins
 			err = AddPlugin(adaptors, "triggers")
 			ctx.So(err, ShouldBeNil)
 			err = AddPlugin(adaptors, "zigbee2mqtt")
 			ctx.So(err, ShouldBeNil)
-
 
 			// add zigbee2mqtt
 			zigbeeServer := &m.Zigbee2mqtt{
@@ -142,7 +140,6 @@ automationTriggerStateChanged = (msg)->
 				wg.Done()
 			})
 
-
 			time.Sleep(time.Second)
 
 			// add scripts
@@ -160,7 +157,7 @@ automationTriggerStateChanged = (msg)->
 			err = adaptors.Entity.Add(buttonEnt)
 			So(err, ShouldBeNil)
 
-			eventBus.Publish(bus.TopicEntities, events.EventCreatedEntity{
+			eventBus.Publish("system/entities/"+buttonEnt.Id.String(), events.EventCreatedEntity{
 				EntityId: buttonEnt.Id,
 			})
 
@@ -183,15 +180,13 @@ automationTriggerStateChanged = (msg)->
 			err = adaptors.Task.Import(task1)
 			So(err, ShouldBeNil)
 
-			eventBus.Publish(bus.TopicAutomation, events.EventAddedTask{
+			eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", task1.Id), events.EventAddedTask{
 				Id: task1.Id,
 			})
 
 			time.Sleep(time.Millisecond * 500)
 
 			// ------------------------------------------------
-
-
 
 			mqttCli := mqttServer.NewClient("cli2")
 			err = mqttCli.Publish("zigbee2mqtt/"+zigbeeButtonId, []byte(`{"battery":100,"action":"double","linkquality":134,"voltage":3042}`))

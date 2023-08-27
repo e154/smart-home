@@ -103,7 +103,7 @@ func (u *Actor) selfUpdate() {
 	//	"used_percent": usedPercent,
 	//})
 
-	u.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
+	u.eventBus.Publish("system/entities/"+u.Id.String(), events.EventStateChanged{
 		StorageSave: false,
 		PluginName:  u.Id.PluginName(),
 		EntityId:    u.Id,

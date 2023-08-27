@@ -70,7 +70,7 @@ func TestNode(t *testing.T) {
 			err = adaptors.Entity.Add(nodeEnt)
 			ctx.So(err, ShouldBeNil)
 
-			eventBus.Publish(bus.TopicEntities, events.EventCreatedEntity{
+			eventBus.Publish("system/entities/"+nodeEnt.Id.String(), events.EventCreatedEntity{
 				EntityId: nodeEnt.Id,
 			})
 
@@ -101,8 +101,8 @@ func TestNode(t *testing.T) {
 							ch <- struct{}{}
 						}
 					}
-					_ = eventBus.Subscribe(bus.TopicEntities, fn)
-					defer func() { _ = eventBus.Unsubscribe(bus.TopicEntities, fn) }()
+					_ = eventBus.Subscribe("system/entities/+", fn)
+					defer func() { _ = eventBus.Unsubscribe("system/entities/+", fn) }()
 
 					b, err := json.Marshal(node.MessageStatus{
 						Status:    "enabled",

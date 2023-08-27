@@ -20,8 +20,9 @@ package endpoint
 
 import (
 	"context"
-
+	"fmt"
 	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -54,38 +55,50 @@ func (n *TriggerEndpoint) Add(ctx context.Context, trigger *m.Trigger) (result *
 		return
 	}
 
-	result, err = n.adaptors.Trigger.GetById(trigger.Id)
+	if result, err = n.adaptors.Trigger.GetById(trigger.Id); err != nil {
+		return
+	}
+
+	n.eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", trigger.Id), events.EventAddedTrigger{
+		Id: trigger.Id,
+	})
 
 	return
 }
 
 // GetById ...
-func (n *TriggerEndpoint) GetById(ctx context.Context, id int64) (result *m.Trigger, err error) {
+func (n *TriggerEndpoint) GetById(ctx context.Context, id int64) (trigger *m.Trigger, err error) {
 
-	result, err = n.adaptors.Trigger.GetById(id)
-
+	trigger, err = n.adaptors.Trigger.GetById(id)
+	trigger.IsLoaded = n.automation.TriggerIsLoaded(id)
 	return
 }
 
 // Update ...
-func (n *TriggerEndpoint) Update(ctx context.Context, params *m.Trigger) (result *m.Trigger, errs validator.ValidationErrorsTranslations, err error) {
+func (n *TriggerEndpoint) Update(ctx context.Context, trigger *m.Trigger) (result *m.Trigger, errs validator.ValidationErrorsTranslations, err error) {
 
-	_, err = n.adaptors.Trigger.GetById(params.Id)
+	_, err = n.adaptors.Trigger.GetById(trigger.Id)
 	if err != nil {
 		return
 	}
 
 
 	var ok bool
-	if ok, errs = n.validation.Valid(params); !ok {
+	if ok, errs = n.validation.Valid(trigger); !ok {
 		return
 	}
 
-	if err = n.adaptors.Trigger.Update(params); err != nil {
+	if err = n.adaptors.Trigger.Update(trigger); err != nil {
 		return
 	}
 
-	result, err = n.adaptors.Trigger.GetById(params.Id)
+	if result, err = n.adaptors.Trigger.GetById(trigger.Id); err != nil {
+		return
+	}
+
+	n.eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", trigger.Id), events.EventUpdatedTrigger{
+		Id: trigger.Id,
+	})
 
 	return
 }
@@ -93,9 +106,14 @@ func (n *TriggerEndpoint) Update(ctx context.Context, params *m.Trigger) (result
 // GetList ...
 func (n *TriggerEndpoint) GetList(ctx context.Context, pagination common.PageParams) (result []*m.Trigger, total int64, err error) {
 
-	result, total, err = n.adaptors.Trigger.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
-	if err != nil {
+	if result, total, err = n.adaptors.Trigger.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, false); err != nil {
+		return
 	}
+
+	for _, trigger := range result {
+		trigger.IsLoaded = n.automation.TriggerIsLoaded(trigger.Id)
+	}
+
 	return
 }
 
@@ -108,7 +126,13 @@ func (n *TriggerEndpoint) Delete(ctx context.Context, id int64) (err error) {
 		return
 	}
 
-	err = n.adaptors.Trigger.Delete(trigger.Id)
+	if err = n.adaptors.Trigger.Delete(trigger.Id); err != nil {
+		return
+	}
+
+	n.eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", trigger.Id), events.EventRemovedTrigger{
+		Id: trigger.Id,
+	})
 
 	return
 }
@@ -121,6 +145,35 @@ func (n *TriggerEndpoint) Search(ctx context.Context, query string, limit, offse
 	}
 
 	result, total, err = n.adaptors.Trigger.Search(query, int(limit), int(offset))
+
+	return
+}
+
+
+// Enable ...
+func (n *TriggerEndpoint) Enable(ctx context.Context, id int64) (err error) {
+
+	if err = n.adaptors.Trigger.Enable(id); err != nil {
+		return
+	}
+
+	n.eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", id), events.EventEnableTrigger{
+		Id: id,
+	})
+
+	return
+}
+
+// Disable ...
+func (n *TriggerEndpoint) Disable(ctx context.Context, id int64) (err error) {
+
+	if err = n.adaptors.Trigger.Disable(id); err != nil {
+		return
+	}
+
+	n.eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", id), events.EventDisableTrigger{
+		Id: id,
+	})
 
 	return
 }

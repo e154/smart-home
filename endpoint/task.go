@@ -20,13 +20,13 @@ package endpoint
 
 import (
 	"context"
+	"fmt"
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/go-playground/validator/v10"
 )
@@ -60,7 +60,7 @@ func (n *TaskEndpoint) Add(ctx context.Context, task *m.NewTask) (result *m.Task
 		return
 	}
 
-	n.eventBus.Publish(bus.TopicAutomation, events.EventAddedTask{
+	n.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", result.Id), events.EventAddedTask{
 		Id: id,
 	})
 
@@ -126,7 +126,7 @@ func (n *TaskEndpoint) Import(ctx context.Context, task *m.Task) (result *m.Task
 		return
 	}
 
-	n.eventBus.Publish(bus.TopicAutomation, events.EventAddedTask{
+	n.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", result.Id), events.EventAddedTask{
 		Id: task.Id,
 	})
 
@@ -149,7 +149,7 @@ func (n *TaskEndpoint) Update(ctx context.Context, task *m.UpdateTask) (result *
 		return
 	}
 
-	n.eventBus.Publish(bus.TopicAutomation, events.EventUpdateTask{
+	n.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", result.Id), events.EventUpdateTask{
 		Id: task.Id,
 	})
 
@@ -162,7 +162,7 @@ func (n *TaskEndpoint) GetById(ctx context.Context, id int64) (task *m.Task, err
 	if task, err = n.adaptors.Task.GetById(id); err != nil {
 		return
 	}
-	task.IsLoaded = n.automation.IsLoaded(id)
+	task.IsLoaded = n.automation.TaskIsLoaded(id)
 	return
 }
 
@@ -173,7 +173,7 @@ func (n *TaskEndpoint) Delete(ctx context.Context, id int64) (err error) {
 		return
 	}
 
-	n.eventBus.Publish(bus.TopicAutomation, events.EventRemoveTask{
+	n.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", id), events.EventRemoveTask{
 		Id: id,
 	})
 
@@ -187,7 +187,7 @@ func (n *TaskEndpoint) Enable(ctx context.Context, id int64) (err error) {
 		return
 	}
 
-	n.eventBus.Publish(bus.TopicAutomation, events.EventEnableTask{
+	n.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", id), events.EventEnableTask{
 		Id: id,
 	})
 
@@ -201,7 +201,7 @@ func (n *TaskEndpoint) Disable(ctx context.Context, id int64) (err error) {
 		return
 	}
 
-	n.eventBus.Publish(bus.TopicAutomation, events.EventDisableTask{
+	n.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", id), events.EventDisableTask{
 		Id: id,
 	})
 
@@ -215,7 +215,7 @@ func (n *TaskEndpoint) List(ctx context.Context, pagination common.PageParams) (
 		return
 	}
 	for _, task := range tasks {
-		task.IsLoaded = n.automation.IsLoaded(task.Id)
+		task.IsLoaded = n.automation.TaskIsLoaded(task.Id)
 	}
 	return
 }

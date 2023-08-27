@@ -42,6 +42,7 @@ type Trigger struct {
 	ScriptId   *int64
 	PluginName string
 	Payload    string
+	Enabled    bool
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
 }
@@ -98,7 +99,7 @@ func (t Triggers) Delete(id int64) (err error) {
 }
 
 // List ...
-func (t *Triggers) List(limit, offset int64, orderBy, sort string) (list []*Trigger, total int64, err error) {
+func (t *Triggers) List(limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*Trigger, total int64, err error) {
 
 	if err = t.Db.Model(Trigger{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrTriggerList, err.Error())
@@ -106,7 +107,14 @@ func (t *Triggers) List(limit, offset int64, orderBy, sort string) (list []*Trig
 	}
 
 	list = make([]*Trigger, 0)
-	q := t.Db.Model(&Trigger{}).
+	q := t.Db.Model(&Trigger{})
+
+	if onlyEnabled {
+		q = q.Where("enabled = ?", true)
+	}
+
+	q = q.Preload("Entity").
+		Preload("Script").
 		Limit(limit).
 		Offset(offset)
 
@@ -141,6 +149,24 @@ func (t *Triggers) Search(query string, limit, offset int) (list []*Trigger, tot
 	err = q.Find(&list).Error
 	if err != nil {
 		err = errors.Wrap(apperr.ErrTriggerSearch, err.Error())
+	}
+	return
+}
+
+// Enable ...
+func (t Triggers) Enable(id int64) (err error) {
+	if err = t.Db.Model(&Trigger{Id: id}).Updates(map[string]interface{}{"enabled": true}).Error; err != nil {
+		err = errors.Wrap(apperr.ErrTriggerUpdate, err.Error())
+		return
+	}
+	return
+}
+
+// Disable ...
+func (t Triggers) Disable(id int64) (err error) {
+	if err = t.Db.Model(&Trigger{Id: id}).Updates(map[string]interface{}{"enabled": false}).Error; err != nil {
+		err = errors.Wrap(apperr.ErrTriggerUpdate, err.Error())
+		return
 	}
 	return
 }

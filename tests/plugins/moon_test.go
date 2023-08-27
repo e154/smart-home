@@ -58,14 +58,14 @@ func TestMoon(t *testing.T) {
 			err = adaptors.Entity.Add(moonEnt)
 			ctx.So(err, ShouldBeNil)
 
-			eventBus.Publish(bus.TopicEntities, events.EventCreatedEntity{
+			eventBus.Publish("system/entities/"+moonEnt.Id.String(), events.EventCreatedEntity{
 				EntityId: moonEnt.Id,
 			})
 
 			time.Sleep(time.Second)
 
 			ch := make(chan events.EventStateChanged, 2)
-			_ = eventBus.Subscribe(bus.TopicEntities, func(topic string, msg events.EventStateChanged) {
+			_ = eventBus.Subscribe("system/entities/"+moonEnt.Id.String(), func(topic string, msg events.EventStateChanged) {
 				ch <- msg
 			})
 

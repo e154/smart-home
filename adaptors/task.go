@@ -20,8 +20,6 @@ package adaptors
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/common/debug"
-
 	"github.com/jinzhu/gorm"
 
 	"github.com/e154/smart-home/db"
@@ -59,8 +57,6 @@ func GetTaskAdaptor(d *gorm.DB) ITask {
 
 // Import ...
 func (n *Task) Import(ver *m.Task) (err error) {
-
-	debug.Println(ver)
 
 	transaction := true
 	tx := n.db.Begin()

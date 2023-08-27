@@ -21,7 +21,7 @@ type Actor struct {
 	scriptService    scripts.ScriptService
 	message          *Message
 	mqttMessageQueue chan *Message
-	actionPool       chan events.EventCallAction
+	actionPool       chan events.EventCallEntityAction
 	mqttClient       mqtt.MqttCli
 	newMsgMu         *sync.Mutex
 	stateMu          *sync.Mutex
@@ -43,7 +43,7 @@ func NewActor(entity *m.Entity,
 		scriptService:    scriptService,
 		message:          NewMessage(),
 		mqttMessageQueue: make(chan *Message, 10),
-		actionPool:       make(chan events.EventCallAction, 10),
+		actionPool:       make(chan events.EventCallEntityAction, 10),
 		mqttClient:       mqttClient,
 		newMsgMu:         &sync.Mutex{},
 		stateMu:          &sync.Mutex{},
@@ -142,7 +142,7 @@ func (e *Actor) SetState(params supervisor.EntityStateParams) error {
 	}
 	e.AttrMu.Unlock()
 
-	e.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
+	e.eventBus.Publish("system/entities/"+e.Id.String(), events.EventStateChanged{
 		PluginName:  e.Id.PluginName(),
 		EntityId:    e.Id,
 		OldState:    oldState,
@@ -178,11 +178,11 @@ func (e *Actor) mqttNewMessage(message *Message) {
 	}
 }
 
-func (e *Actor) addAction(event events.EventCallAction) {
+func (e *Actor) addAction(event events.EventCallEntityAction) {
 	e.actionPool <- event
 }
 
-func (e *Actor) runAction(msg events.EventCallAction) {
+func (e *Actor) runAction(msg events.EventCallEntityAction) {
 	action, ok := e.Actions[msg.ActionName]
 	if !ok {
 		log.Warnf("action %s not found", msg.ActionName)

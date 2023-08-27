@@ -31,7 +31,6 @@ import (
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
 )
 
 var (
@@ -65,7 +64,7 @@ func (p *plugin) Load(service supervisor.Service) (err error) {
 		return
 	}
 
-	_ = p.EventBus.Subscribe(bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Subscribe("system/entities/+", p.eventHandler)
 
 	return nil
 }
@@ -76,7 +75,7 @@ func (p *plugin) Unload() (err error) {
 		return
 	}
 
-	_ = p.EventBus.Unsubscribe(bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Unsubscribe("system/entities/+", p.eventHandler)
 	return nil
 }
 
@@ -89,7 +88,7 @@ func (p *plugin) eventHandler(topic string, msg interface{}) {
 
 	switch v := msg.(type) {
 	case events.EventStateChanged:
-	case events.EventCallAction:
+	case events.EventCallEntityAction:
 		actor, ok := p.actors[v.EntityId]
 		if !ok {
 			return

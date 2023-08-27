@@ -140,7 +140,7 @@ func (p *pluginManager) loadPlugin(name string) (err error) {
 
 	p.enabledPlugins[name] = true
 
-	p.eventBus.Publish(bus.TopicPlugins, events.EventLoadedPlugin{
+	p.eventBus.Publish("system/plugins/"+name, events.EventLoadedPlugin{
 		PluginName: string(name),
 	})
 
@@ -164,7 +164,7 @@ func (p *pluginManager) unloadPlugin(name string) (err error) {
 
 	p.enabledPlugins[name] = false
 
-	p.eventBus.Publish(bus.TopicPlugins, events.EventUnloadedPlugin{
+	p.eventBus.Publish("system/plugins/+", events.EventUnloadedPlugin{
 		PluginName: string(name),
 	})
 

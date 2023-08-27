@@ -100,8 +100,8 @@ func NewSupervisor(lc fx.Lifecycle,
 func (e *supervisor) Start(ctx context.Context) (err error) {
 
 	// event subscribe
-	_ = e.eventBus.Subscribe(bus.TopicEntities, e.eventHandler)
-	_ = e.eventBus.Subscribe(bus.TopicPlugins, e.eventHandler)
+	_ = e.eventBus.Subscribe("system/entities/+", e.eventHandler)
+	_ = e.eventBus.Subscribe("system/plugins/+", e.eventHandler)
 
 	e.scriptService.PushStruct("supervisor", NewSupervisorBind(e))
 	//DEPRECATED
@@ -110,7 +110,7 @@ func (e *supervisor) Start(ctx context.Context) (err error) {
 	e.pluginManager.Start()
 
 	_ = e.eventBus.Subscribe("system/services/scripts", e.handlerSystemScripts)
-	e.eventBus.Publish("system/services/supervisor", events.EventServiceStarted{})
+	e.eventBus.Publish("system/services/supervisor", events.EventServiceStarted{Service: "Supervisor"})
 
 	log.Info("Started")
 
@@ -127,8 +127,8 @@ func (e *supervisor) Shutdown(ctx context.Context) (err error) {
 
 	e.pluginManager.Shutdown()
 
-	_ = e.eventBus.Unsubscribe(bus.TopicEntities, e.eventHandler)
-	_ = e.eventBus.Unsubscribe(bus.TopicPlugins, e.eventHandler)
+	_ = e.eventBus.Unsubscribe("system/entities/+", e.eventHandler)
+	_ = e.eventBus.Unsubscribe("system/plugins/+", e.eventHandler)
 
 	e.actors.Range(func(key, value interface{}) bool {
 		actor := value.(*actorInfo)
@@ -137,7 +137,7 @@ func (e *supervisor) Shutdown(ctx context.Context) (err error) {
 		return true
 	})
 
-	e.eventBus.Publish("system/services/supervisor", events.EventServiceStopped{})
+	e.eventBus.Publish("system/services/supervisor", events.EventServiceStopped{Service: "Supervisor"})
 
 	log.Info("Shutdown")
 
@@ -267,7 +267,7 @@ func (e *supervisor) SetState(id common.EntityId, params EntityStateParams) (err
 	return
 }
 
-// IsLoaded ...
+// TaskIsLoaded ...
 func (e *supervisor) EntityIsLoaded(id common.EntityId) (loaded bool) {
 	_, loaded = e.actors.Load(id)
 	return
@@ -349,14 +349,14 @@ func (e *supervisor) Spawn(constructor ActorConstructor) (actor PluginActor) {
 	info := actor.Info()
 
 	defer func(entityId common.EntityId) {
-		log.Infof("loaded entity %v", entityId)
+		log.Infof("loaded entity '%v'", entityId)
 	}(info.Id)
 
 	var entityId = info.Id
 
 	item, ok := e.actors.Load(entityId)
 	if ok && item != nil {
-		log.Warnf("entityId %v exist", entityId)
+		log.Warnf("entityId '%v' exist", entityId)
 		actor = item.(PluginActor)
 		return
 	}
@@ -385,7 +385,7 @@ func (e *supervisor) Spawn(constructor ActorConstructor) (actor PluginActor) {
 
 			//e.metric.UpdateEntity(metrics.EntityDelete{Num: 1})
 
-			e.eventBus.Publish(bus.TopicEntities, events.EventEntityUnloaded{
+			e.eventBus.Publish("system/entities/"+entityId.String(), events.EventEntityUnloaded{
 				PluginName: info.PluginName,
 				EntityId:   entityId,
 			})
@@ -397,7 +397,7 @@ func (e *supervisor) Spawn(constructor ActorConstructor) (actor PluginActor) {
 	attr := actor.Attributes()
 	settings := actor.Settings()
 
-	e.eventBus.Publish(bus.TopicEntities, events.EventAddedActor{
+	e.eventBus.Publish("system/entities/"+entityId.String(), events.EventAddedActor{
 		PluginName: info.PluginName,
 		EntityId:   entityId,
 		Attributes: attr,
@@ -509,7 +509,7 @@ func (e *supervisor) eventLastState(msg events.EventGetLastState) {
 		actor.CurrentState.Attributes = entity.Attributes
 	}
 
-	e.eventBus.Publish(bus.TopicEntities, events.EventLastStateChanged{
+	e.eventBus.Publish("system/entities/"+msg.EntityId.String(), events.EventLastStateChanged{
 		StorageSave: false,
 		PluginName:  info.PluginName,
 		EntityId:    info.Id,
@@ -609,7 +609,7 @@ func (e *supervisor) eventEntitySetState(msg events.EventEntitySetState) {
 
 // CallAction ...
 func (e *supervisor) CallAction(id common.EntityId, action string, arg map[string]interface{}) {
-	e.eventBus.Publish(bus.TopicEntities, events.EventCallAction{
+	e.eventBus.Publish("system/entities/"+id.String(), events.EventCallEntityAction{
 		PluginName: id.PluginName(),
 		EntityId:   id,
 		ActionName: action,
@@ -619,7 +619,7 @@ func (e *supervisor) CallAction(id common.EntityId, action string, arg map[strin
 
 // CallScene ...
 func (e *supervisor) CallScene(id common.EntityId, arg map[string]interface{}) {
-	e.eventBus.Publish(bus.TopicEntities, events.EventCallScene{
+	e.eventBus.Publish("system/entities/"+id.String(), events.EventCallScene{
 		PluginName: id.PluginName(),
 		EntityId:   id,
 		Args:       arg,
@@ -659,7 +659,7 @@ func (e *supervisor) AddEntity(entity *m.Entity) (err error) {
 		return
 	}
 
-	e.eventBus.Publish(bus.TopicEntities, events.EventEntityLoaded{
+	e.eventBus.Publish("system/entities/"+entity.Id.String(), events.EventEntityLoaded{
 		EntityId: entity.Id,
 	})
 

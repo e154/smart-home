@@ -49,7 +49,7 @@ type Actor struct {
 	bot         *tgbotapi.BotAPI
 	commandPool chan Command
 	msgPool     chan string
-	actionPool  chan events.EventCallAction
+	actionPool  chan events.EventCallEntityAction
 }
 
 // NewActor ...
@@ -65,7 +65,7 @@ func NewActor(entity *m.Entity,
 	actor := &Actor{
 		BaseActor:   supervisor.NewBaseActor(entity, scriptService, adaptors),
 		eventBus:    eventBus,
-		actionPool:  make(chan events.EventCallAction, 10),
+		actionPool:  make(chan events.EventCallEntityAction, 10),
 		isStarted:   atomic.NewBool(false),
 		adaptors:    adaptors,
 		AccessToken: settings[AttrToken].String(),
@@ -264,7 +264,7 @@ func (p *Actor) UpdateStatus() (err error) {
 	}
 	p.AttrMu.Unlock()
 
-	p.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
+	p.eventBus.Publish("system/entities/"+p.Id.String(), events.EventStateChanged{
 		StorageSave: true,
 		PluginName:  p.Id.PluginName(),
 		EntityId:    p.Id,
@@ -303,17 +303,17 @@ func (p *Actor) commandQuit(cmd Command) {
 
 // todo add command args
 func (p *Actor) commandAction(cmd Command) {
-	p.runAction(events.EventCallAction{
+	p.runAction(events.EventCallEntityAction{
 		ActionName: strings.Replace(cmd.Text, "/", "", 1),
 		EntityId:   p.Id,
 	})
 }
 
-func (p *Actor) addAction(event events.EventCallAction) {
+func (p *Actor) addAction(event events.EventCallEntityAction) {
 	p.actionPool <- event
 }
 
-func (p *Actor) runAction(msg events.EventCallAction) {
+func (p *Actor) runAction(msg events.EventCallEntityAction) {
 	action, ok := p.Actions[msg.ActionName]
 	if !ok {
 		log.Warnf("action %s not found", msg.ActionName)

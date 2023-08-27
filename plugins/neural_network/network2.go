@@ -46,7 +46,7 @@ const (
 
 func (e *Network2) Start() {
 	e.actor, _ = e.supervisor.GetActorById(e.entityId)
-	_ = e.eventBus.Subscribe(bus.TopicEntities, e.eventHandler)
+	_ = e.eventBus.Subscribe("system/entities/"+e.entityId.Name(), e.eventHandler)
 
 	rand.Seed(int64(time.Now().Nanosecond()))
 	var err error
@@ -71,7 +71,7 @@ func (e *Network2) Start() {
 }
 
 func (e *Network2) Stop() {
-	_ = e.eventBus.Unsubscribe(bus.TopicEntities, e.eventHandler)
+	_ = e.eventBus.Unsubscribe("system/entities/"+e.entityId.String(), e.eventHandler)
 	if err := e.agents.SaveAsBin(fileName); err != nil {
 		log.Error(err.Error())
 	}
@@ -81,7 +81,7 @@ func (e *Network2) Stop() {
 func (e *Network2) eventHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
-	case events.EventCallAction:
+	case events.EventCallEntityAction:
 	case events.EventStateChanged:
 		if v.EntityId != e.entityId {
 			return

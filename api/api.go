@@ -238,7 +238,7 @@ func (a *Api) Start() (err error) {
 	})
 	log.Infof("Serving HTTP server at %d", a.cfg.HttpPort)
 
-	a.eventBus.Publish("system/services/api", events.EventServiceStarted{})
+	a.eventBus.Publish("system/services/api", events.EventServiceStarted{Service: "Api"})
 
 	return group.Wait()
 }

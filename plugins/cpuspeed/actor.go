@@ -134,7 +134,7 @@ func (u *Actor) selfUpdate() {
 	//	"all": common.Rounding32(u.all.Value(), 2),
 	//})
 
-	u.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
+	u.eventBus.Publish("system/entities/"+u.Id.String(), events.EventStateChanged{
 		StorageSave: false,
 		PluginName:  u.Id.PluginName(),
 		EntityId:    u.Id,

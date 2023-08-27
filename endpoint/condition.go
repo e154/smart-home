@@ -20,6 +20,8 @@ package endpoint
 
 import (
 	"context"
+	"fmt"
+	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/common/apperr"
 
@@ -54,7 +56,13 @@ func (n *ConditionEndpoint) Add(ctx context.Context, condition *m.Condition) (re
 		return
 	}
 
-	result, err = n.adaptors.Condition.GetById(condition.Id)
+	if result, err = n.adaptors.Condition.GetById(condition.Id); err != nil {
+		return
+	}
+
+	n.eventBus.Publish(fmt.Sprintf("system/automation/conditions/%d", result.Id), events.EventAddedCondition{
+		Id: result.Id,
+	})
 
 	return
 }
@@ -84,7 +92,13 @@ func (n *ConditionEndpoint) Update(ctx context.Context, params *m.Condition) (re
 		return
 	}
 
-	result, err = n.adaptors.Condition.GetById(params.Id)
+	if result, err = n.adaptors.Condition.GetById(params.Id); err != nil {
+		return
+	}
+
+	n.eventBus.Publish(fmt.Sprintf("system/automation/conditions/%d", result.Id), events.EventUpdatedCondition{
+		Id: result.Id,
+	})
 
 	return
 }
@@ -93,8 +107,7 @@ func (n *ConditionEndpoint) Update(ctx context.Context, params *m.Condition) (re
 func (n *ConditionEndpoint) GetList(ctx context.Context, pagination common.PageParams) (result []*m.Condition, total int64, err error) {
 
 	result, total, err = n.adaptors.Condition.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
-	if err != nil {
-	}
+
 	return
 }
 
@@ -107,7 +120,13 @@ func (n *ConditionEndpoint) Delete(ctx context.Context, id int64) (err error) {
 		return
 	}
 
-	err = n.adaptors.Condition.Delete(area.Id)
+	if err = n.adaptors.Condition.Delete(area.Id); err != nil {
+		return
+	}
+
+	n.eventBus.Publish(fmt.Sprintf("system/automation/conditions/%d", id), events.EventRemovedCondition{
+		Id: id,
+	})
 
 	return
 }

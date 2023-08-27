@@ -163,7 +163,7 @@ func (m *Mqtt) Start() {
 		}
 	}()
 
-	m.eventBus.Publish("system/services/mqtt", events.EventServiceStarted{})
+	m.eventBus.Publish("system/services/mqtt", events.EventServiceStarted{Service: "Mqtt"})
 }
 
 // OnMsgArrived ...

@@ -20,8 +20,9 @@ package endpoint
 
 import (
 	"context"
+	"fmt"
 
-	events2 "github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -59,7 +60,7 @@ func (d DeveloperToolsEndpoint) SetEntityState(ctx context.Context, entityId str
 		return
 	}
 
-	d.eventBus.Publish(bus.TopicEntities, events2.EventEntitySetState{
+	d.eventBus.Publish("system/entities/"+entityId, events.EventEntitySetState{
 		EntityId:        common.EntityId(entityId),
 		NewState:        newState,
 		AttributeValues: attrs,
@@ -77,13 +78,12 @@ func (d DeveloperToolsEndpoint) EventList(ctx context.Context) (events []bus.Sta
 // TaskCallTrigger ...
 func (d *DeveloperToolsEndpoint) TaskCallTrigger(ctx context.Context, id int64, name string) (err error) {
 
-	if _, err = d.adaptors.Task.GetById(id); err != nil {
+	if _, err = d.adaptors.Trigger.GetById(id); err != nil {
 		return
 	}
 
-	d.eventBus.Publish(bus.TopicAutomation, events2.EventCallTaskTrigger{
+	d.eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", id), events.EventCallTrigger{
 		Id:   id,
-		Name: name,
 	})
 
 	return
@@ -92,13 +92,12 @@ func (d *DeveloperToolsEndpoint) TaskCallTrigger(ctx context.Context, id int64, 
 // TaskCallAction ...
 func (d *DeveloperToolsEndpoint) TaskCallAction(ctx context.Context, id int64, name string) (err error) {
 
-	if _, err = d.adaptors.Task.GetById(id); err != nil {
+	if _, err = d.adaptors.Action.GetById(id); err != nil {
 		return
 	}
 
-	d.eventBus.Publish(bus.TopicAutomation, events2.EventCallTaskAction{
+	d.eventBus.Publish(fmt.Sprintf("system/automation/actions/%d", id), events.EventCallAction{
 		Id:   id,
-		Name: name,
 	})
 
 	return
@@ -112,7 +111,7 @@ func (d *DeveloperToolsEndpoint) ReloadEntity(ctx context.Context, id common.Ent
 		return
 	}
 
-	d.eventBus.Publish(bus.TopicEntities, events2.EventUpdatedEntity{
+	d.eventBus.Publish("system/entities/"+id.String(), events.EventUpdatedEntity{
 		EntityId: id,
 	})
 
@@ -127,7 +126,7 @@ func (d *DeveloperToolsEndpoint) EntitySetState(ctx context.Context, id common.E
 		return
 	}
 
-	d.eventBus.Publish(bus.TopicEntities, events2.EventEntitySetState{
+	d.eventBus.Publish("system/entities/"+id.String(), events.EventEntitySetState{
 		EntityId: id,
 		NewState: common.String(name),
 	})

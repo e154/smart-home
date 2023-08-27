@@ -15,7 +15,7 @@ type Actor struct {
 	eventBus      bus.Bus
 	adaptors      *adaptors.Adaptors
 	scriptService scripts.ScriptService
-	actionPool    chan events.EventCallAction
+	actionPool    chan events.EventCallEntityAction
 	network1      *Network1
 	network2      *Network2
 }
@@ -31,7 +31,7 @@ func NewActor(entity *m.Entity,
 		adaptors:      adaptors,
 		scriptService: scriptService,
 		eventBus:      eventBus,
-		actionPool:    make(chan events.EventCallAction, 10),
+		actionPool:    make(chan events.EventCallEntityAction, 10),
 		network1:      NewNetwork1(eventBus),
 		network2:      NewNetwork2(eventBus, visor),
 	}
@@ -78,11 +78,11 @@ func (e *Actor) Update() {
 
 }
 
-func (e *Actor) addAction(event events.EventCallAction) {
+func (e *Actor) addAction(event events.EventCallEntityAction) {
 	e.actionPool <- event
 }
 
-func (e *Actor) runAction(msg events.EventCallAction) {
+func (e *Actor) runAction(msg events.EventCallEntityAction) {
 	action, ok := e.Actions[msg.ActionName]
 	if !ok {
 		log.Warnf("action %s not found", msg.ActionName)

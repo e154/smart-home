@@ -20,6 +20,8 @@ package endpoint
 
 import (
 	"context"
+	"fmt"
+	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/common/apperr"
 
@@ -54,7 +56,13 @@ func (n *ActionEndpoint) Add(ctx context.Context, action *m.Action) (result *m.A
 		return
 	}
 
-	result, err = n.adaptors.Action.GetById(action.Id)
+	if result, err = n.adaptors.Action.GetById(action.Id); err != nil {
+		return
+	}
+
+	n.eventBus.Publish(fmt.Sprintf("system/automation/actions/%d", result.Id), events.EventAddedAction{
+		Id: action.Id,
+	})
 
 	return
 }
@@ -84,7 +92,13 @@ func (n *ActionEndpoint) Update(ctx context.Context, params *m.Action) (result *
 		return
 	}
 
-	result, err = n.adaptors.Action.GetById(params.Id)
+	if result, err = n.adaptors.Action.GetById(params.Id); err != nil {
+		return
+	}
+
+	n.eventBus.Publish(fmt.Sprintf("system/automation/actions/%d", result.Id), events.EventUpdatedAction{
+		Id: result.Id,
+	})
 
 	return
 }
@@ -93,8 +107,7 @@ func (n *ActionEndpoint) Update(ctx context.Context, params *m.Action) (result *
 func (n *ActionEndpoint) GetList(ctx context.Context, pagination common.PageParams) (result []*m.Action, total int64, err error) {
 
 	result, total, err = n.adaptors.Action.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
-	if err != nil {
-	}
+
 	return
 }
 
@@ -106,7 +119,13 @@ func (n *ActionEndpoint) Delete(ctx context.Context, id int64) (err error) {
 		return
 	}
 
-	err = n.adaptors.Action.Delete(id)
+	if err = n.adaptors.Action.Delete(id); err != nil {
+		return
+	}
+
+	n.eventBus.Publish(fmt.Sprintf("system/automation/actions/%d", id), events.EventRemovedAction{
+		Id: id,
+	})
 
 	return
 }

@@ -133,7 +133,7 @@ entityAction = (entityId, actionName)->
 			})
 			So(err, ShouldBeNil)
 
-			eventBus.Publish(bus.TopicEntities, events.EventCreatedEntity{
+			eventBus.Publish("system/entities/"+sensorEnt.Id.String(), events.EventCreatedEntity{
 				EntityId: sensorEnt.Id,
 			})
 

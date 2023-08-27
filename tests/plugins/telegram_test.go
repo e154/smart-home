@@ -93,7 +93,7 @@ telegramAction = (entityId, actionName)->
 			})
 			So(err, ShouldBeNil)
 
-			eventBus.Publish(bus.TopicEntities, events.EventCreatedEntity{
+			eventBus.Publish("system/entities/"+tgEnt.Id.String(), events.EventCreatedEntity{
 				EntityId: tgEnt.Id,
 			})
 
@@ -120,8 +120,8 @@ telegramAction = (entityId, actionName)->
 						}
 
 					}
-					_ = eventBus.Subscribe(bus.TopicEntities, fn)
-					defer func() { _ = eventBus.Unsubscribe(bus.TopicEntities, fn) }()
+					_ = eventBus.Subscribe("system/entities/+", fn)
+					defer func() { _ = eventBus.Unsubscribe("system/entities/+", fn) }()
 
 					eventBus.Publish(notify.TopicNotify, notify.Message{
 						Type: telegram.Name,

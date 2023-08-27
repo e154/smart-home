@@ -94,7 +94,7 @@ func (u *Actor) selfUpdate() {
 	//	"total_alloc": float32(s.TotalAlloc),
 	//})
 
-	u.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
+	u.eventBus.Publish("system/entities/"+u.Id.String(), events.EventStateChanged{
 		StorageSave: false,
 		PluginName:  u.Id.PluginName(),
 		EntityId:    u.Id,

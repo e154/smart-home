@@ -59,16 +59,20 @@ func TestSun(t *testing.T) {
 			err = adaptors.Entity.Add(sunEnt)
 			ctx.So(err, ShouldBeNil)
 
-			eventBus.Publish(bus.TopicEntities, events.EventCreatedEntity{
+			eventBus.Publish("system/entities/"+sunEnt.Id.String(), events.EventCreatedEntity{
 				EntityId: sunEnt.Id,
 			})
 
 			time.Sleep(time.Second)
 
 			ch := make(chan events.EventStateChanged, 2)
-			_ = eventBus.Subscribe(bus.TopicEntities, func(topic string, msg events.EventStateChanged) {
+			fn := func(topic string, msg events.EventStateChanged) {
 				ch <- msg
-			})
+			}
+			_ = eventBus.Subscribe("system/entities/+", fn)
+			defer func() {
+				_ = eventBus.Unsubscribe("system/entities/+", fn)
+			}()
 
 			sun := sunPlugin.NewActor(sunEnt, supervisor, adaptors, scriptService, eventBus)
 

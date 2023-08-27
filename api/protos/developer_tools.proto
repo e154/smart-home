@@ -26,7 +26,7 @@ service DeveloperToolsService {
   // entity set state
   rpc EntitySetState (EntityRequest) returns (google.protobuf.Empty){
     option (google.api.http) = {
-      post: "/v1/developer_tools/entity_set_state"
+      post: "/v1/developer_tools/entity/set_state"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
@@ -42,7 +42,7 @@ service DeveloperToolsService {
   // reload entity
   rpc ReloadEntity (ReloadRequest) returns (google.protobuf.Empty){
     option (google.api.http) = {
-      post: "/v1/developer_tools/entity_reload"
+      post: "/v1/developer_tools/entity/reload"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
@@ -55,10 +55,10 @@ service DeveloperToolsService {
     };
   }
 
-  // task call trigger
-  rpc TaskCallTrigger (AutomationRequest) returns (google.protobuf.Empty){
+  // call trigger
+  rpc CallTrigger (AutomationRequest) returns (google.protobuf.Empty){
     option (google.api.http) = {
-      post: "/v1/developer_tools/task_call_trigger"
+      post: "/v1/developer_tools/automation/call_trigger"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
@@ -71,10 +71,10 @@ service DeveloperToolsService {
     };
   }
 
-  // task call action
-  rpc TaskCallAction (AutomationRequest) returns (google.protobuf.Empty){
+  // call action
+  rpc CallAction (AutomationRequest) returns (google.protobuf.Empty){
     option (google.api.http) = {
-      post: "/v1/developer_tools/task_call_action"
+      post: "/v1/developer_tools/automation/call_action"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {

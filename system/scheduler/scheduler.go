@@ -76,7 +76,7 @@ func (c *Scheduler) Start(_ context.Context) error {
 
 	c.cron.Start()
 	c.cron.Run()
-	c.eventBus.Publish("system/services/scheduler", events.EventServiceStarted{})
+	c.eventBus.Publish("system/services/scheduler", events.EventServiceStarted{Service: "Scheduler"})
 	log.Info("started ...")
 
 	return nil
@@ -84,7 +84,7 @@ func (c *Scheduler) Start(_ context.Context) error {
 
 func (c *Scheduler) Shutdown(_ context.Context) error {
 	c.cron.Stop()
-	c.eventBus.Publish("system/services/scheduler", events.EventServiceStopped{})
+	c.eventBus.Publish("system/services/scheduler", events.EventServiceStopped{Service: "Scheduler"})
 	log.Info("shutdown ...")
 	return nil
 }

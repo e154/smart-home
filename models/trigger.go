@@ -38,6 +38,8 @@ type Trigger struct {
 	ScriptId   *int64           `json:"script_id"`
 	PluginName string           `json:"plugin_name" validate:"required,lte=255"`
 	Payload    Attributes       `json:"payload"`
+	Enabled    bool             `json:"enabled"`
+	IsLoaded   bool             `json:"is_loaded"`
 	CreatedAt  time.Time        `json:"created_at"`
 	UpdatedAt  time.Time        `json:"updated_at"`
 }

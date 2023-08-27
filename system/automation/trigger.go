@@ -20,13 +20,17 @@ package automation
 
 import (
 	"encoding/json"
+	"fmt"
 	"sync"
+	"time"
 
 	"go.uber.org/atomic"
 
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/triggers"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/scripts"
 )
 
@@ -39,18 +43,18 @@ type Trigger struct {
 	name          string
 	triggerPlugin triggers.ITrigger
 	isStarted     atomic.Bool
-	cb            func(entityId *common.EntityId)
 	taskName      string
 	subscriber    triggers.Subscriber
+	eventBus      bus.Bus
 	sync.Mutex
 }
 
 // NewTrigger ...
-func NewTrigger(scriptService scripts.ScriptService,
-	taskName string,
+func NewTrigger(
+	eventBus bus.Bus,
+	scriptService scripts.ScriptService,
 	model *m.Trigger,
-	rawPlugin triggers.IGetTrigger,
-	cb func(entityId *common.EntityId)) (tr *Trigger, err error) {
+	rawPlugin triggers.IGetTrigger) (tr *Trigger, err error) {
 
 	pluginName := model.PluginName
 	if pluginName == "" {
@@ -68,8 +72,7 @@ func NewTrigger(scriptService scripts.ScriptService,
 		name:          model.Name,
 		scriptService: scriptService,
 		triggerPlugin: triggerPlugin,
-		cb:            cb,
-		taskName:      taskName,
+		eventBus:      eventBus,
 	}
 
 	tr.subscriber = triggers.Subscriber{
@@ -77,17 +80,23 @@ func NewTrigger(scriptService scripts.ScriptService,
 		Payload:  model.Payload,
 		Handler: func(_ string, msg interface{}) {
 			b, _ := json.Marshal(msg)
-			obj := map[string]interface{}{
+			args := map[string]interface{}{
 				"payload":      string(b),
 				"trigger_name": tr.model.Name,
-				"task_name":    tr.taskName,
-				"entity_id":    tr.model.EntityId.String(),
+				//"task_name":    tr.taskName,
+				"entity_id": tr.EntityId(),
 			}
-			result, err := tr.Check(obj)
+			result, err := tr.Check(args)
 			if err != nil || !result {
 				return
 			}
-			tr.cb(tr.EntityId())
+			//fmt.Println("call trigger", tr.model.Name, tr.triggerPlugin.Name())
+			eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), events.EventTriggerActivated{
+				Id:       model.Id,
+				Args:     args,
+				LastTime: time.Now(),
+				EntityId: tr.EntityId(),
+			})
 			return
 		},
 	}
@@ -145,20 +154,35 @@ func (tr *Trigger) EntityId() *common.EntityId {
 }
 
 // Start ...
-func (tr *Trigger) Start() (err error) {
+func (tr *Trigger) Start() {
 	log.Infof("start trigger '%s'", tr.name)
-	err = tr.triggerPlugin.Subscribe(tr.subscriber)
+	tr.triggerPlugin.Subscribe(tr.subscriber)
+	tr.eventBus.Subscribe(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), tr.eventHandler)
+	tr.eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), events.EventTriggerLoaded{
+		Id: tr.model.Id,
+	})
 	return
 }
 
 // Stop ...
-func (tr *Trigger) Stop() (err error) {
+func (tr *Trigger) Stop() {
 	log.Infof("stop trigger '%s'", tr.name)
-	err = tr.triggerPlugin.Unsubscribe(tr.subscriber)
-	return
+	tr.eventBus.Unsubscribe(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), tr.eventHandler)
+	tr.triggerPlugin.Unsubscribe(tr.subscriber)
+	tr.eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), events.EventTriggerUnloaded{
+		Id: tr.model.Id,
+	})
 }
 
-// Call ...
-func (tr *Trigger) Call() {
-	tr.triggerPlugin.CallManual()
+func (tr *Trigger) eventHandler(_ string, msg interface{}) {
+
+	switch msg.(type) {
+	case events.EventCallTrigger:
+		tr.eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), events.EventTriggerActivated{
+			Id:       tr.model.Id,
+			Args:     nil,
+			LastTime: time.Now(),
+			EntityId: tr.EntityId(),
+		})
+	}
 }

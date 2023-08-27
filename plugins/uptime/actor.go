@@ -83,7 +83,7 @@ func (e *Actor) update() {
 	e.Attrs[AttrUptimeAppStarted].Value = e.appStarted
 	e.AttrMu.Unlock()
 
-	e.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
+	e.eventBus.Publish("system/entities/"+e.Id.String(), events.EventStateChanged{
 		PluginName: e.Id.PluginName(),
 		EntityId:   e.Id,
 		OldState:   oldState,

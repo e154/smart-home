@@ -2100,7 +2100,85 @@
         ]
       }
     },
-    "/v1/developer_tools/entity_reload": {
+    "/v1/developer_tools/automation/call_action": {
+      "post": {
+        "summary": "call action",
+        "operationId": "DeveloperToolsService_CallAction",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiAutomationRequest"
+            }
+          }
+        ],
+        "tags": [
+          "DeveloperToolsService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/developer_tools/automation/call_trigger": {
+      "post": {
+        "summary": "call trigger",
+        "operationId": "DeveloperToolsService_CallTrigger",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiAutomationRequest"
+            }
+          }
+        ],
+        "tags": [
+          "DeveloperToolsService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/developer_tools/entity/reload": {
       "post": {
         "summary": "reload entity",
         "operationId": "DeveloperToolsService_ReloadEntity",
@@ -2139,7 +2217,7 @@
         ]
       }
     },
-    "/v1/developer_tools/entity_set_state": {
+    "/v1/developer_tools/entity/set_state": {
       "post": {
         "summary": "entity set state",
         "operationId": "DeveloperToolsService_EntitySetState",
@@ -2165,84 +2243,6 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/apiEntityRequest"
-            }
-          }
-        ],
-        "tags": [
-          "DeveloperToolsService"
-        ],
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ]
-      }
-    },
-    "/v1/developer_tools/task_call_action": {
-      "post": {
-        "summary": "task call action",
-        "operationId": "DeveloperToolsService_TaskCallAction",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "type": "object",
-              "properties": {}
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/apiAutomationRequest"
-            }
-          }
-        ],
-        "tags": [
-          "DeveloperToolsService"
-        ],
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ]
-      }
-    },
-    "/v1/developer_tools/task_call_trigger": {
-      "post": {
-        "summary": "task call trigger",
-        "operationId": "DeveloperToolsService_TaskCallTrigger",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "type": "object",
-              "properties": {}
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/apiAutomationRequest"
             }
           }
         ],
@@ -3079,7 +3079,7 @@
         ]
       }
     },
-    "/v1/interact/entity_call_action": {
+    "/v1/interact/entity/call_action": {
       "post": {
         "summary": "entity call action",
         "operationId": "InteractService_EntityCallAction",
@@ -4939,6 +4939,9 @@
                   "additionalProperties": {
                     "$ref": "#/definitions/apiAttribute"
                   }
+                },
+                "enabled": {
+                  "type": "boolean"
                 }
               }
             }
@@ -5040,6 +5043,82 @@
             "name": "offset",
             "in": "query",
             "required": false,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "TriggerService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/triggers/{id}/disable": {
+      "post": {
+        "summary": "disable triggers",
+        "operationId": "TriggerService_DisableTrigger",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "TriggerService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/triggers/{id}/enable": {
+      "post": {
+        "summary": "enable triggers",
+        "operationId": "TriggerService_EnableTrigger",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
             "type": "string",
             "format": "int64"
           }
@@ -7996,6 +8075,9 @@
           "additionalProperties": {
             "$ref": "#/definitions/apiAttribute"
           }
+        },
+        "enabled": {
+          "type": "boolean"
         }
       }
     },
@@ -8612,6 +8694,12 @@
           "additionalProperties": {
             "$ref": "#/definitions/apiAttribute"
           }
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "isLoaded": {
+          "type": "boolean"
         },
         "createdAt": {
           "type": "string",

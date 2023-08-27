@@ -183,10 +183,10 @@ entityAction = (entityId, actionName)->
 			})
 			So(err, ShouldBeNil)
 
-			eventBus.Publish(bus.TopicEntities, events.EventCreatedEntity{
+			eventBus.Publish("system/entities/"+nodeEnt.Id.String(), events.EventCreatedEntity{
 				EntityId: nodeEnt.Id,
 			})
-			eventBus.Publish(bus.TopicEntities, events.EventCreatedEntity{
+			eventBus.Publish("system/entities/"+nodeEnt.Id.String(), events.EventCreatedEntity{
 				EntityId: plugEnt.Id,
 			})
 

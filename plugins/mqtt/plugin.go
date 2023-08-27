@@ -11,7 +11,6 @@ import (
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/supervisor"
 )
@@ -52,7 +51,7 @@ func (p *plugin) Load(service supervisor.Service) (err error) {
 	p.mqttServ = service.MqttServ()
 
 	p.mqttClient = p.mqttServ.NewClient("plugins.mqtt")
-	if err := p.EventBus.Subscribe(bus.TopicEntities, p.eventHandler); err != nil {
+	if err := p.EventBus.Subscribe("system/entities/+", p.eventHandler); err != nil {
 		log.Error(err.Error())
 	}
 
@@ -68,7 +67,7 @@ func (p plugin) Unload() (err error) {
 	}
 
 	p.mqttServ.RemoveClient("plugins.mqtt")
-	_ = p.EventBus.Unsubscribe(bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Unsubscribe("system/entities/+", p.eventHandler)
 
 	p.actorsLock.Lock()
 	defer p.actorsLock.Unlock()
@@ -150,7 +149,7 @@ func (p *plugin) topic(bridgeId string) string {
 func (p *plugin) eventHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
-	case events.EventCallAction:
+	case events.EventCallEntityAction:
 		actor, ok := p.actors[v.EntityId.Name()]
 		if !ok {
 			return

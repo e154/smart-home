@@ -65,28 +65,6 @@ func (n Tasks) Add(task *Task) (id int64, err error) {
 	return
 }
 
-// GetAllEnabled ...
-func (n Tasks) GetAllEnabled() (list []*Task, err error) {
-	list = make([]*Task, 0)
-	err = n.Db.Where("enabled = ?", true).
-		Preload("Triggers").
-		Preload("Triggers.Script").
-		Preload("Triggers.Entity").
-		//Preload("Conditions").
-		//Preload("Conditions.Script").
-		//Preload("Actions").
-		//Preload("Actions.Script").
-		//Preload("Actions.Entity").
-		Preload("Area").
-		Find(&list).Error
-	if err != nil {
-		err = errors.Wrap(apperr.ErrTaskUpdate, err.Error())
-		return
-	}
-
-	return
-}
-
 // GetById ...
 func (n Tasks) GetById(taskId int64) (task *Task, err error) {
 	task = &Task{}

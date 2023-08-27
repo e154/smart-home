@@ -34,9 +34,11 @@ type ITrigger interface {
 	GetById(id int64) (metric *m.Trigger, err error)
 	Update(ver *m.Trigger) error
 	Delete(deviceId int64) (err error)
-	List(limit, offset int64, orderBy, sort string) (list []*m.Trigger, total int64, err error)
+	List(limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Trigger, total int64, err error)
 	Search(query string, limit, offset int) (list []*m.Trigger, total int64, err error)
 	AddMultiple(items []*m.Trigger) (err error)
+	Enable(id int64) (err error)
+	Disable(id int64) (err error)
 	fromDb(dbVer *db.Trigger) (ver *m.Trigger)
 	toDb(ver *m.Trigger) (dbVer *db.Trigger)
 }
@@ -114,9 +116,9 @@ func (n *Trigger) AddMultiple(items []*m.Trigger) (err error) {
 }
 
 // List ...
-func (n *Trigger) List(limit, offset int64, orderBy, sort string) (list []*m.Trigger, total int64, err error) {
+func (n *Trigger) List(limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Trigger, total int64, err error) {
 	var dbList []*db.Trigger
-	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
+	if dbList, total, err = n.table.List(limit, offset, orderBy, sort, onlyEnabled); err != nil {
 		return
 	}
 
@@ -143,6 +145,18 @@ func (n *Trigger) Search(query string, limit, offset int) (list []*m.Trigger, to
 	return
 }
 
+// Enable ...
+func (n *Trigger) Enable(id int64) (err error) {
+	err = n.table.Enable(id)
+	return
+}
+
+// Disable ...
+func (n *Trigger) Disable(id int64) (err error) {
+	err = n.table.Disable(id)
+	return
+}
+
 func (n *Trigger) fromDb(dbVer *db.Trigger) (ver *m.Trigger) {
 	ver = &m.Trigger{
 		Id:         dbVer.Id,
@@ -150,6 +164,7 @@ func (n *Trigger) fromDb(dbVer *db.Trigger) (ver *m.Trigger) {
 		EntityId:   dbVer.EntityId,
 		ScriptId:   dbVer.ScriptId,
 		PluginName: dbVer.PluginName,
+		Enabled:    dbVer.Enabled,
 		CreatedAt:  dbVer.CreatedAt,
 		UpdatedAt:  dbVer.UpdatedAt,
 	}
@@ -179,6 +194,7 @@ func (n *Trigger) toDb(ver *m.Trigger) (dbVer *db.Trigger) {
 		EntityId:   ver.EntityId,
 		ScriptId:   ver.ScriptId,
 		PluginName: ver.PluginName,
+		Enabled:    ver.Enabled,
 		CreatedAt:  ver.CreatedAt,
 		UpdatedAt:  ver.UpdatedAt,
 	}

@@ -107,3 +107,23 @@ func (c ControllerTrigger) SearchTrigger(ctx context.Context, req *api.SearchReq
 
 	return c.dto.Trigger.ToSearchResult(items), nil
 }
+
+// EnableTrigger ...
+func (c ControllerTrigger) EnableTrigger(ctx context.Context, req *api.EnableTriggerRequest) (*emptypb.Empty, error) {
+
+	if err := c.endpoint.Trigger.Enable(ctx, req.Id); err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return &emptypb.Empty{}, nil
+}
+
+// DisableTrigger ...
+func (c ControllerTrigger) DisableTrigger(ctx context.Context, req *api.DisableTriggerRequest) (*emptypb.Empty, error) {
+
+	if err := c.endpoint.Trigger.Disable(ctx, req.Id); err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return &emptypb.Empty{}, nil
+}

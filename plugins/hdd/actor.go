@@ -95,7 +95,7 @@ func (e *Actor) Spawn() supervisor.PluginActor {
 	return e
 }
 
-func (e *Actor) runAction(msg events.EventCallAction) {
+func (e *Actor) runAction(msg events.EventCallEntityAction) {
 	go e.selfUpdate()
 }
 
@@ -125,7 +125,7 @@ func (u *Actor) selfUpdate() {
 		u.Attrs[AttrInodesUsedPercent].Value = r.InodesUsedPercent
 		u.AttrMu.Unlock()
 	}
-	u.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
+	u.eventBus.Publish("system/entities/"+u.Id.String(), events.EventStateChanged{
 		StorageSave: false,
 		PluginName:  u.Id.PluginName(),
 		EntityId:    u.Id,

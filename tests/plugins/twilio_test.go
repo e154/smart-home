@@ -76,8 +76,8 @@ func TestTwilio(t *testing.T) {
 						}
 
 					}
-					_ = eventBus.Subscribe(bus.TopicEntities, fn)
-					defer func() { _ = eventBus.Unsubscribe(bus.TopicEntities, fn) }()
+					_ = eventBus.Subscribe("system/entities/+", fn)
+					defer func() { _ = eventBus.Unsubscribe("system/entities/+", fn) }()
 
 					const (
 						phone = "+79990000001"

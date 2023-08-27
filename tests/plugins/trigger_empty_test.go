@@ -20,6 +20,7 @@ package plugins
 
 import (
 	"context"
+	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/events"
@@ -89,7 +90,7 @@ func TestTriggerEmpty(t *testing.T) {
 			err = adaptors.Task.Import(task3)
 			So(err, ShouldBeNil)
 
-			eventBus.Publish(bus.TopicAutomation, events.EventAddedTask{
+			eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", task3.Id), events.EventAddedTask{
 				Id: task3.Id,
 			})
 

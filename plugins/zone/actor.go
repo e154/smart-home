@@ -88,7 +88,7 @@ func (e *Actor) SetState(params supervisor.EntityStateParams) error {
 	}
 	e.SettingsMu.Unlock()
 
-	e.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
+	e.eventBus.Publish("system/entities/"+e.Id.String(), events.EventStateChanged{
 		PluginName: e.Id.PluginName(),
 		EntityId:   e.Id,
 		OldState:   oldState,

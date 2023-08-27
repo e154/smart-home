@@ -14,5 +14,5 @@ func TestEventName(t *testing.T) {
 
 	require.Equal(t, EventName(event1), "event_state_changed")
 	require.Equal(t, EventName(event2), "event_state_changed")
-	require.Equal(t, EventName(event3), "event_entity_deleted")
+	require.Equal(t, EventName(event3), "event_entity_unloaded")
 }

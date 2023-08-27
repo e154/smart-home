@@ -120,8 +120,3 @@ func (t *TimeTrigger) Unsubscribe(options Subscriber) error {
 
 	return nil
 }
-
-// CallManual ...
-func (t *TimeTrigger) CallManual() {
-	log.Warn("method not implemented")
-}

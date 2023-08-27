@@ -41,6 +41,7 @@ func (r Trigger) AddTrigger(from *api.NewTriggerRequest) (action *m.Trigger) {
 		ScriptId:   from.ScriptId,
 		PluginName: from.PluginName,
 		Payload:    AttributeFromApi(from.Attributes),
+		Enabled:    from.Enabled,
 	}
 	return
 }
@@ -54,6 +55,7 @@ func (r Trigger) UpdateTrigger(from *api.UpdateTriggerRequest) (action *m.Trigge
 		ScriptId:   from.ScriptId,
 		PluginName: from.PluginName,
 		Payload:    AttributeFromApi(from.Attributes),
+		Enabled:    from.Enabled,
 	}
 	return
 }
@@ -111,6 +113,8 @@ func ToTrigger(trigger *m.Trigger) (obj *api.Trigger) {
 		Script:     ToScript(trigger.Script),
 		ScriptId:   trigger.ScriptId,
 		PluginName: trigger.PluginName,
+		Enabled:    trigger.Enabled,
+		IsLoaded:   common.Bool(trigger.IsLoaded),
 		Attributes: AttributeToApi(trigger.Payload),
 		CreatedAt:  timestamppb.New(trigger.CreatedAt),
 		UpdatedAt:  timestamppb.New(trigger.UpdatedAt),

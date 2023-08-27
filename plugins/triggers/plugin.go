@@ -127,7 +127,7 @@ func (p *plugin) GetTrigger(name string) (trigger ITrigger, err error) {
 
 	var ok bool
 	if trigger, ok = p.triggers[name]; !ok {
-		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("trigger name \"%s\"", name))
+		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("trigger name '%s'", name))
 	}
 	return
 }
@@ -139,7 +139,7 @@ func (p *plugin) RegisterTrigger(tr ITrigger) (err error) {
 	defer p.mu.Unlock()
 
 	if _, ok := p.triggers[tr.Name()]; ok {
-		err = errors.Wrap(apperr.ErrInternal, fmt.Sprintf("trigger \"%s\" is registerred", tr.Name()))
+		err = errors.Wrap(apperr.ErrInternal, fmt.Sprintf("trigger '%s' is registerred", tr.Name()))
 		return
 	}
 

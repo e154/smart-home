@@ -54,12 +54,12 @@ func NewGateClient(lc fx.Lifecycle,
 
 // Start ...
 func (g *GateClient) Start() (err error) {
-	g.eventBus.Publish("system/services/gate_client", events.EventServiceStarted{})
+	g.eventBus.Publish("system/services/gate_client", events.EventServiceStarted{Service: "GateClient"})
 	return
 }
 
 // Shutdown ...
 func (g *GateClient) Shutdown() (err error) {
-	g.eventBus.Publish("system/services/gate_client", events.EventServiceStopped{})
+	g.eventBus.Publish("system/services/gate_client", events.EventServiceStopped{Service: "GateClient"})
 	return
 }

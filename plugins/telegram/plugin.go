@@ -33,7 +33,6 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/notify"
-	"github.com/e154/smart-home/system/bus"
 )
 
 var (
@@ -81,7 +80,7 @@ func (p *plugin) asyncLoad() (err error) {
 	// register telegram provider
 	notify.ProviderManager.AddProvider(Name, p)
 
-	_ = p.EventBus.Subscribe(bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Subscribe("system/entities/+", p.eventHandler)
 
 	return
 }
@@ -92,7 +91,7 @@ func (p *plugin) Unload() (err error) {
 		return
 	}
 
-	_ = p.EventBus.Unsubscribe(bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Unsubscribe("system/entities/+", p.eventHandler)
 
 	notify.ProviderManager.RemoveProvider(Name)
 
@@ -213,7 +212,7 @@ func (p *plugin) eventHandler(topic string, msg interface{}) {
 
 	switch v := msg.(type) {
 	case events.EventStateChanged:
-	case events.EventCallAction:
+	case events.EventCallEntityAction:
 		actor, ok := p.actors[v.EntityId]
 		if !ok {
 			return

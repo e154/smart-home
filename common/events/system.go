@@ -1,7 +1,13 @@
 package events
 
-type EventServiceStarted struct{}
+type EventServiceStarted struct {
+	Service string `json:"service"`
+}
 
-type EventServiceStopped struct{}
+type EventServiceStopped struct {
+	Service string `json:"service"`
+}
 
-type EventServiceRestarted struct{}
+type EventServiceRestarted struct {
+	Service string `json:"service"`
+}

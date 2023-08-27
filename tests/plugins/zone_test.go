@@ -94,7 +94,10 @@ func TestZone(t *testing.T) {
 					//fmt.Printf("new event: %v\n", reflect.TypeOf(v).String())
 				}
 			}
-			_ = eventBus.Subscribe(bus.TopicEntities, fn)
+			_ = eventBus.Subscribe("system/entities/+", fn)
+			defer func() {
+				_ = eventBus.Unsubscribe("system/entities/+", fn)
+			}()
 
 			// ------------------------------------------------
 

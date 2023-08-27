@@ -142,7 +142,7 @@ func (p *Actor) UpdateStatus() (err error) {
 	}
 	p.AttrMu.Unlock()
 
-	p.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
+	p.eventBus.Publish("system/entities/"+p.Id.String(), events.EventStateChanged{
 		StorageSave: true,
 		PluginName:  p.Id.PluginName(),
 		EntityId:    p.Id,

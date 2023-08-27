@@ -97,7 +97,7 @@ entityAction = (entityId, actionName)->
 			err = adaptors.Entity.Add(plugEnt)
 			So(err, ShouldBeNil)
 
-			eventBus.Publish(bus.TopicEntities, events.EventCreatedEntity{
+			eventBus.Publish("system/entities/"+plugEnt.Id.String(), events.EventCreatedEntity{
 				EntityId: plugEnt.Id,
 			})
 

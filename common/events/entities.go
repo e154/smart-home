@@ -47,8 +47,8 @@ type EventGetLastState struct {
 	EntityId common.EntityId `json:"entity_id"`
 }
 
-// EventCallAction ...
-type EventCallAction struct {
+// EventCallEntityAction ...
+type EventCallEntityAction struct {
 	PluginName string                 `json:"plugin_name"`
 	EntityId   common.EntityId        `json:"entity_id"`
 	ActionName string                 `json:"action_name"`

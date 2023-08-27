@@ -48,15 +48,3 @@ type subscribers struct {
 	handlers []*handler
 	lastMsg  []reflect.Value
 }
-
-// EventType ...
-type EventType string
-
-const (
-	// TopicEntities ...
-	TopicEntities = "system/entities"
-	// TopicPlugins ...
-	TopicPlugins = "system/plugins"
-	// TopicAutomation ...
-	TopicAutomation = "system/automation"
-)

@@ -44,7 +44,7 @@ type Actor struct {
 	scriptService scripts.ScriptService
 	system        supervisor.Supervisor
 	stateMu       *sync.Mutex
-	actionPool    chan events.EventCallAction
+	actionPool    chan events.EventCallEntityAction
 }
 
 // NewActor ...
@@ -58,7 +58,7 @@ func NewActor(entity *m.Entity,
 		BaseActor:     supervisor.NewBaseActor(entity, scriptService, adaptors),
 		adaptors:      adaptors,
 		scriptService: scriptService,
-		actionPool:    make(chan events.EventCallAction, 10),
+		actionPool:    make(chan events.EventCallEntityAction, 10),
 		stateMu:       &sync.Mutex{},
 		eventBus:      eventBus,
 	}
@@ -129,7 +129,7 @@ func (e *Actor) SetState(params supervisor.EntityStateParams) (err error) {
 	}
 	e.AttrMu.Unlock()
 
-	e.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
+	e.eventBus.Publish("system/entities/"+e.Id.String(), events.EventStateChanged{
 		PluginName:  e.Id.PluginName(),
 		EntityId:    e.Id,
 		OldState:    oldState,
@@ -140,11 +140,11 @@ func (e *Actor) SetState(params supervisor.EntityStateParams) (err error) {
 	return
 }
 
-func (e *Actor) addAction(event events.EventCallAction) {
+func (e *Actor) addAction(event events.EventCallEntityAction) {
 	e.actionPool <- event
 }
 
-func (e *Actor) runAction(msg events.EventCallAction) {
+func (e *Actor) runAction(msg events.EventCallEntityAction) {
 
 	action, ok := e.Actions[msg.ActionName]
 	if !ok {

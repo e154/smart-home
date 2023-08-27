@@ -31,7 +31,6 @@ import (
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/scheduler"
 )
 
@@ -75,7 +74,7 @@ func (p *plugin) Load(service supervisor.Service) (err error) {
 		return
 	}
 
-	_ = p.EventBus.Subscribe(bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Subscribe("system/entities/+", p.eventHandler)
 
 	p.actorsLock.Lock()
 	defer p.actorsLock.Unlock()
@@ -94,7 +93,7 @@ func (p *plugin) Unload() (err error) {
 		return
 	}
 	p.Scheduler.Remove(p.task)
-	_ = p.EventBus.Unsubscribe(bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Unsubscribe("system/entities/+", p.eventHandler)
 	return nil
 }
 

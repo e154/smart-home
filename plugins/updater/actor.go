@@ -160,7 +160,7 @@ func (e *Actor) check() {
 	e.Attrs[AttrUpdaterLatestCheck].Value = e.lastCheck
 	e.AttrMu.Unlock()
 
-	e.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
+	e.eventBus.Publish("system/entities/"+e.Id.String(), events.EventStateChanged{
 		PluginName: e.Id.PluginName(),
 		EntityId:   e.Id,
 		OldState:   oldState,

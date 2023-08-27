@@ -25,7 +25,6 @@ import (
 
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
@@ -71,7 +70,7 @@ func (p *plugin) Load(service supervisor.Service) (err error) {
 	p.actor.check()
 	p.quit = make(chan struct{})
 
-	_ = p.EventBus.Subscribe(bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Subscribe("system/entities/+", p.eventHandler)
 
 	go func() {
 		ticker := time.NewTicker(time.Hour * p.pause)
@@ -101,7 +100,7 @@ func (p *plugin) Unload() (err error) {
 	}
 
 	p.quit <- struct{}{}
-	_ = p.EventBus.Unsubscribe(bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Unsubscribe("system/entities/+", p.eventHandler)
 	return
 }
 
@@ -128,7 +127,7 @@ func (p *plugin) Version() string {
 func (p *plugin) eventHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
-	case events.EventCallAction:
+	case events.EventCallEntityAction:
 		if v.EntityId != p.actor.Id {
 			return
 		}

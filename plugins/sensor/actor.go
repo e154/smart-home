@@ -35,7 +35,7 @@ type Actor struct {
 	adaptors      *adaptors.Adaptors
 	scriptService scripts.ScriptService
 	eventBus      bus.Bus
-	actionPool    chan events.EventCallAction
+	actionPool    chan events.EventCallEntityAction
 }
 
 // NewActor ...
@@ -50,7 +50,7 @@ func NewActor(entity *m.Entity,
 		adaptors:      adaptors,
 		scriptService: scriptService,
 		eventBus:      eventBus,
-		actionPool:    make(chan events.EventCallAction, 10),
+		actionPool:    make(chan events.EventCallEntityAction, 10),
 	}
 
 	actor.Supervisor = visor
@@ -107,7 +107,7 @@ func (e *Actor) SetState(params supervisor.EntityStateParams) error {
 	_, _ = e.Attrs.Deserialize(params.AttributeValues)
 	e.AttrMu.Unlock()
 
-	e.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
+	e.eventBus.Publish("system/entities/"+e.Id.String(), events.EventStateChanged{
 		StorageSave: params.StorageSave,
 		PluginName:  e.Id.PluginName(),
 		EntityId:    e.Id,
@@ -118,11 +118,11 @@ func (e *Actor) SetState(params supervisor.EntityStateParams) error {
 	return nil
 }
 
-func (e *Actor) addAction(event events.EventCallAction) {
+func (e *Actor) addAction(event events.EventCallEntityAction) {
 	e.actionPool <- event
 }
 
-func (e *Actor) runAction(msg events.EventCallAction) {
+func (e *Actor) runAction(msg events.EventCallEntityAction) {
 	action, ok := e.Actions[msg.ActionName]
 	if !ok {
 		log.Warnf("action %s not found", msg.ActionName)

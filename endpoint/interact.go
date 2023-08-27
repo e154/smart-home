@@ -6,7 +6,6 @@ import (
 	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -31,7 +30,7 @@ func (d InteractEndpoint) EntityCallAction(ctx context.Context, entityId string,
 		return
 	}
 
-	d.eventBus.Publish(bus.TopicEntities, events.EventCallAction{
+	d.eventBus.Publish("system/entities/"+id.String(), events.EventCallEntityAction{
 		PluginName: id.PluginName(),
 		EntityId:   id,
 		ActionName: action,

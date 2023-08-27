@@ -163,7 +163,7 @@ func (e *Actor) UpdateMoonPosition(now time.Time) {
 
 	e.DeserializeAttr(attributeValues)
 
-	e.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
+	e.eventBus.Publish("system/entities/"+e.Id.String(), events.EventStateChanged{
 		StorageSave: true,
 		PluginName:  e.Id.PluginName(),
 		EntityId:    e.Id,

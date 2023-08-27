@@ -74,11 +74,11 @@ func NewScriptService(lc fx.Lifecycle,
 
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) (err error) {
-			eventBus.Publish("system/services/scripts", events.EventServiceStarted{})
+			eventBus.Publish("system/services/scripts", events.EventServiceStarted{Service: "Scripts"})
 			return
 		},
 		OnStop: func(ctx context.Context) (err error) {
-			eventBus.Publish("system/services/scripts", events.EventServiceStopped{})
+			eventBus.Publish("system/services/scripts", events.EventServiceStopped{Service: "Scripts"})
 			return
 		},
 	})

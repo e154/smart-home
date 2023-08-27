@@ -116,7 +116,7 @@ func (z *zigbee2mqtt) Start() {
 		z.bridgesLock.Unlock()
 	}
 
-	z.eventBus.Publish("system/services/zigbee2mqtt", events.EventServiceStarted{})
+	z.eventBus.Publish("system/services/zigbee2mqtt", events.EventServiceStarted{Service: "Zigbee2mqtt"})
 }
 
 // Shutdown ...
@@ -130,7 +130,7 @@ func (z *zigbee2mqtt) Shutdown() {
 	}
 	_ = z.mqtt.Authenticator().Unregister(z.Authenticator)
 
-	z.eventBus.Publish("system/services/zigbee2mqtt", events.EventServiceStopped{})
+	z.eventBus.Publish("system/services/zigbee2mqtt", events.EventServiceStopped{Service: "Zigbee2mqtt"})
 }
 
 // AddBridge ...

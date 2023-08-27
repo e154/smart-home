@@ -27,7 +27,6 @@ import (
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/go-playground/validator/v10"
 )
@@ -61,7 +60,7 @@ func (n *EntityEndpoint) Add(ctx context.Context, entity *m.Entity) (result *m.E
 		return
 	}
 
-	n.eventBus.Publish(bus.TopicEntities, events.EventCreatedEntity{
+	n.eventBus.Publish("system/entities/"+entity.Id.String(), events.EventCreatedEntity{
 		EntityId: result.Id,
 	})
 
@@ -139,7 +138,7 @@ func (n *EntityEndpoint) Update(ctx context.Context, params *m.Entity) (result *
 		return
 	}
 
-	n.eventBus.Publish(bus.TopicEntities, events.EventUpdatedEntity{
+	n.eventBus.Publish("system/entities/"+entity.Id.String(), events.EventUpdatedEntity{
 		EntityId: result.Id,
 	})
 
@@ -176,7 +175,7 @@ func (n *EntityEndpoint) Delete(ctx context.Context, id common.EntityId) (err er
 		return
 	}
 
-	n.eventBus.Publish(bus.TopicEntities, events.CommandUnloadEntity{
+	n.eventBus.Publish("system/entities/"+id.String(), events.CommandUnloadEntity{
 		EntityId: id,
 	})
 
@@ -208,7 +207,7 @@ func (n *EntityEndpoint) Enable(ctx context.Context, id common.EntityId) (err er
 		return
 	}
 
-	n.eventBus.Publish(bus.TopicEntities, events.CommandLoadEntity{
+	n.eventBus.Publish("system/entities/"+id.String(), events.CommandLoadEntity{
 		EntityId: id,
 	})
 
@@ -233,7 +232,7 @@ func (n *EntityEndpoint) Disable(ctx context.Context, id common.EntityId) (err e
 		return
 	}
 
-	n.eventBus.Publish(bus.TopicEntities, events.CommandUnloadEntity{
+	n.eventBus.Publish("system/entities/"+id.String(), events.CommandUnloadEntity{
 		EntityId: id,
 	})
 

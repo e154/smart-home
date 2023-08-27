@@ -31,6 +31,10 @@ type TriggerServiceClient interface {
 	DeleteTrigger(ctx context.Context, in *DeleteTriggerRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// search trigger
 	SearchTrigger(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchTriggerResult, error)
+	// enable triggers
+	EnableTrigger(ctx context.Context, in *EnableTriggerRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// disable triggers
+	DisableTrigger(ctx context.Context, in *DisableTriggerRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type triggerServiceClient struct {
@@ -95,6 +99,24 @@ func (c *triggerServiceClient) SearchTrigger(ctx context.Context, in *SearchRequ
 	return out, nil
 }
 
+func (c *triggerServiceClient) EnableTrigger(ctx context.Context, in *EnableTriggerRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/api.TriggerService/EnableTrigger", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *triggerServiceClient) DisableTrigger(ctx context.Context, in *DisableTriggerRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/api.TriggerService/DisableTrigger", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TriggerServiceServer is the server API for TriggerService service.
 // All implementations should embed UnimplementedTriggerServiceServer
 // for forward compatibility
@@ -111,6 +133,10 @@ type TriggerServiceServer interface {
 	DeleteTrigger(context.Context, *DeleteTriggerRequest) (*emptypb.Empty, error)
 	// search trigger
 	SearchTrigger(context.Context, *SearchRequest) (*SearchTriggerResult, error)
+	// enable triggers
+	EnableTrigger(context.Context, *EnableTriggerRequest) (*emptypb.Empty, error)
+	// disable triggers
+	DisableTrigger(context.Context, *DisableTriggerRequest) (*emptypb.Empty, error)
 }
 
 // UnimplementedTriggerServiceServer should be embedded to have forward compatible implementations.
@@ -134,6 +160,12 @@ func (UnimplementedTriggerServiceServer) DeleteTrigger(context.Context, *DeleteT
 }
 func (UnimplementedTriggerServiceServer) SearchTrigger(context.Context, *SearchRequest) (*SearchTriggerResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchTrigger not implemented")
+}
+func (UnimplementedTriggerServiceServer) EnableTrigger(context.Context, *EnableTriggerRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EnableTrigger not implemented")
+}
+func (UnimplementedTriggerServiceServer) DisableTrigger(context.Context, *DisableTriggerRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DisableTrigger not implemented")
 }
 
 // UnsafeTriggerServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -255,6 +287,42 @@ func _TriggerService_SearchTrigger_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TriggerService_EnableTrigger_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EnableTriggerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TriggerServiceServer).EnableTrigger(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.TriggerService/EnableTrigger",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TriggerServiceServer).EnableTrigger(ctx, req.(*EnableTriggerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TriggerService_DisableTrigger_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DisableTriggerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TriggerServiceServer).DisableTrigger(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.TriggerService/DisableTrigger",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TriggerServiceServer).DisableTrigger(ctx, req.(*DisableTriggerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // TriggerService_ServiceDesc is the grpc.ServiceDesc for TriggerService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -285,6 +353,14 @@ var TriggerService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SearchTrigger",
 			Handler:    _TriggerService_SearchTrigger_Handler,
+		},
+		{
+			MethodName: "EnableTrigger",
+			Handler:    _TriggerService_EnableTrigger_Handler,
+		},
+		{
+			MethodName: "DisableTrigger",
+			Handler:    _TriggerService_DisableTrigger_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
