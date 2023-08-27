@@ -9,9 +9,10 @@ import {usePermissionStore} from '@/store/modules/permission'
 import {useRoute, useRouter} from 'vue-router'
 import {useValidator} from '@/hooks/web/useValidator'
 import api from "@/api/api";
-import Form from './components/Form.vue'
 import {ApiNewTaskRequest, ApiTask} from "@/api/stub";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import TaskForm from "@/views/Automation/components/TaskForm.vue";
+import {Form} from "@/components/Form";
 
 const {register, elFormRef, methods} = useForm()
 const {required} = useValidator()
@@ -66,7 +67,7 @@ const cancel = () => {
 
 <template>
   <ContentWrap>
-    <Form ref="writeRef" :current-row="currentRow"/>
+    <TaskForm ref="writeRef" :current-row="currentRow"/>
 
     <div style="text-align: right">
 

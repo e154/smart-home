@@ -962,9 +962,9 @@ export interface ApiTask {
   description?: string;
   enabled?: boolean;
   condition?: string;
-  triggers?: ApiTrigger[];
-  conditions?: ApiCondition[];
-  actions?: ApiAction[];
+  triggers?: number[];
+  conditions?: number[];
+  actions?: number[];
   area?: ApiArea;
   /** @format int64 */
   areaId?: number;

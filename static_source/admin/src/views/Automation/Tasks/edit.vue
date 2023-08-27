@@ -10,14 +10,14 @@ import {useValidator} from '@/hooks/web/useValidator'
 import api from "@/api/api";
 import {ApiAction, ApiCondition, ApiTask, ApiTrigger} from "@/api/stub";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
-import Form from "@/views/Automation/components/Form.vue";
-import Triggers from "@/views/Automation/components/Triggers.vue";
-import Conditions from "@/views/Automation/components/Conditions.vue";
-import Actions from "@/views/Automation/components/Actions.vue";
 import {useEmitt} from "@/hooks/web/useEmitt";
-import { Dialog } from '@/components/Dialog'
 import Viewer from "@/components/JsonViewer/JsonViewer.vue";
 import {copyToClipboard} from "@/utils/clipboard";
+import {Form} from "@/components/Form";
+import TaskForm from "@/views/Automation/components/TaskForm.vue";
+import TriggersSearch from "@/views/Automation/components/TriggersSearch.vue";
+import ConditionsSearch from "@/views/Automation/components/ConditionsSearch.vue";
+import ActionsSearch from "@/views/Automation/components/ActionsSearch.vue";
 
 const {register, elFormRef, methods} = useForm()
 const {required} = useValidator()
@@ -44,7 +44,19 @@ const fetch = async () => {
         loading.value = false
       })
   if (res) {
-    currentTask.value = res.data
+    let task = res.data
+    // if (!task.triggers) {
+    //   task.triggers = []
+    // }
+    // if (!task.conditions) {
+    //   task.conditions = []
+    // }
+    // if (!task.actiona) {
+    //   task.actiona = []
+    // }
+    currentTask.value = task
+    console.log(task)
+
   } else {
     currentTask.value = null
   }
@@ -135,7 +147,7 @@ const remove = async () => {
 }
 
 const cancel = () => {
-  push('/automation')
+  push('/automation/tasks')
 }
 
 const copy = async () => {
@@ -215,7 +227,7 @@ fetch()
     <el-tabs class="demo-tabs" v-model="activeTab">
       <!-- main -->
       <el-tab-pane :label="$t('automation.main')" name="main">
-        <Form ref="writeRef" :current-task="currentTask"/>
+        <TaskForm ref="writeRef" :current-task="currentTask"/>
       </el-tab-pane>
       <!-- /main -->
 
@@ -226,17 +238,20 @@ fetch()
 
           <el-timeline-item :timestamp="$t('automation.triggers')" placement="top" type="primary" center>
             <el-card>
-              <Triggers :triggers="currentTask?.triggers"/>
+              triggers
+              <TriggersSearch v-model="currentTask.triggers"/>
             </el-card>
           </el-timeline-item>
           <el-timeline-item :timestamp="$t('automation.conditions')" placement="top" type="primary" center>
             <el-card>
-              <Conditions :conditions="currentTask?.conditions"/>
+              conditions
+<!--              <ConditionsSearch v-model="currentTask.conditions"/>-->
             </el-card>
           </el-timeline-item>
           <el-timeline-item :timestamp="$t('automation.actions')" placement="top" type="primary" center>
             <el-card>
-              <Actions :actions="currentTask?.actions"/>
+              actions
+<!--              <ActionsSearch v-model="currentTask.actions"/>-->
             </el-card>
           </el-timeline-item>
           <el-timeline-item :timestamp="$t('automation.eventEnd')" placement="top" type="success"/>

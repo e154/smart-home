@@ -214,7 +214,7 @@ export const developRouterMap: AppRouteRecordRaw[] = [
       {
         path: 'tasks',
         name: 'Tasks',
-        component: () => import('@/views/Automation/index.vue'),
+        component: () => import('@/views/Automation/Tasks/index.vue'),
         meta: {
           title: t('router.Tasks'),
         },
@@ -222,7 +222,7 @@ export const developRouterMap: AppRouteRecordRaw[] = [
           {
             path: 'new',
             name: 'newTask',
-            component: () => import('@/views/Automation/new.vue'),
+            component: () => import('@/views/Automation/Tasks/new.vue'),
             meta: {
               title: t('router.New'),
               noTagsView: true,
@@ -235,7 +235,7 @@ export const developRouterMap: AppRouteRecordRaw[] = [
           {
             path: 'edit/:id',
             name: 'editTask',
-            component: () => import('@/views/Automation/edit.vue'),
+            component: () => import('@/views/Automation/Tasks/edit.vue'),
             props: true,
             meta: {
               title: t('router.Edit'),

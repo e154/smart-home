@@ -210,7 +210,7 @@ const sortChange = (data) => {
 getList()
 
 const addNew = () => {
-  push('/automation/new')
+  push('/automation/tasks/new')
 }
 
 
@@ -219,7 +219,7 @@ const selectRow = (row) => {
     return
   }
   const {id} = row
-  push(`/automation/edit/${id}`)
+  push(`/automation/tasks/edit/${id}`)
 }
 
 const enable = async (task: ApiTask) => {
