@@ -532,5 +532,11 @@ export default {
     mainLightDashboard: 'Main Light Dashboard',
     devDarkDashboard: 'Dev Dark Dashboard',
     devLightDashboard: 'Dev Light Dashboard'
+  },
+  development: {
+    eventBus: {
+      topic: 'Канал',
+      subscribers: 'Подписчики'
+    }
   }
 }
