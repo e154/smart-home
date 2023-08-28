@@ -8,6 +8,10 @@ import (
 // Tasks
 // ------------------------------------------------
 
+type EventTaskCompleted struct {
+	Id int64 `json:"id"`
+}
+
 // EventEnableTask ...
 type EventEnableTask struct {
 	Id int64 `json:"id"`
@@ -46,7 +50,7 @@ type EventTaskUnloaded struct {
 // Triggers
 // ------------------------------------------------
 
-type EventTriggerActivated struct {
+type EventTriggerCompleted struct {
 	Id       int64                  `json:"id"`
 	Args     map[string]interface{} `json:"args"`
 	EntityId *common.EntityId       `json:"entity_id,omitempty"`
@@ -95,6 +99,10 @@ type EventTriggerUnloaded struct {
 
 // Actions
 // ------------------------------------------------
+
+type EventActionCompleted struct {
+	Id int64 `json:"id"`
+}
 
 // EventCallTaskAction ...
 type EventCallTaskAction struct {

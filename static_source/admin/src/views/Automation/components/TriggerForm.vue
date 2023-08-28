@@ -51,6 +51,15 @@ const schema = reactive<FormSchema[]>([
     }
   },
   {
+    field: 'enabled',
+    label: t('automation.enabled'),
+    component: 'Switch',
+    value: false,
+    colProps: {
+      span: 24
+    },
+  },
+  {
     field: 'script',
     label: t('automation.triggers.script'),
     component: 'Script',

@@ -104,6 +104,12 @@ export interface ApiAutomationRequest {
   name?: string;
 }
 
+export interface ApiBusStateItem {
+  topic?: string;
+  /** @format int32 */
+  subscribers?: number;
+}
+
 export interface ApiCondition {
   /** @format int64 */
   id?: number;
@@ -365,6 +371,11 @@ export interface ApiEntityStorage {
   attributes?: Record<string, ApiAttribute>;
   /** @format date-time */
   createdAt?: string;
+}
+
+export interface ApiEventBusStateListResult {
+  items?: ApiBusStateItem[];
+  meta?: ApiMeta;
 }
 
 export interface ApiExecScriptResult {
@@ -733,9 +744,9 @@ export interface ApiNewTaskRequest {
   description?: string;
   enabled?: boolean;
   condition?: string;
-  triggers?: number[];
-  conditions?: number[];
-  actions?: number[];
+  triggerIds?: number[];
+  conditionIds?: number[];
+  actionIds?: number[];
   /** @format int64 */
   areaId?: string;
 }
@@ -749,6 +760,7 @@ export interface ApiNewTriggerRequest {
   scriptId?: number;
   pluginName?: string;
   attributes?: Record<string, ApiAttribute>;
+  enabled?: boolean;
 }
 
 export interface ApiNewVariableRequest {
@@ -962,13 +974,17 @@ export interface ApiTask {
   description?: string;
   enabled?: boolean;
   condition?: string;
-  triggers?: number[];
-  conditions?: number[];
-  actions?: number[];
+  triggers?: ApiTrigger[];
+  conditions?: ApiCondition[];
+  actions?: ApiAction[];
   area?: ApiArea;
   /** @format int64 */
   areaId?: number;
   isLoaded?: boolean;
+  triggerIds?: number[];
+  conditionIds?: number[];
+  actionIds?: number[];
+  completed?: boolean;
   /** @format date-time */
   createdAt?: string;
   /** @format date-time */
@@ -986,6 +1002,9 @@ export interface ApiTrigger {
   scriptId?: number;
   pluginName?: string;
   attributes?: Record<string, ApiAttribute>;
+  enabled?: boolean;
+  isLoaded?: boolean;
+  completed?: boolean;
   /** @format date-time */
   createdAt?: string;
   /** @format date-time */
@@ -2480,14 +2499,80 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * No description
      *
      * @tags DeveloperToolsService
+     * @name DeveloperToolsServiceTaskCallAction
+     * @summary task call action
+     * @request POST:/v1/developer_tools/automation/call_action
+     * @secure
+     */
+    developerToolsServiceTaskCallAction: (body: ApiAutomationRequest, params: RequestParams = {}) =>
+      this.request<ApiDisablePluginResult, RpcStatus>({
+        path: `/v1/developer_tools/automation/call_action`,
+        method: "POST",
+        body: body,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags DeveloperToolsService
+     * @name DeveloperToolsServiceCallTrigger
+     * @summary call trigger
+     * @request POST:/v1/developer_tools/automation/call_trigger
+     * @secure
+     */
+    developerToolsServiceCallTrigger: (body: ApiAutomationRequest, params: RequestParams = {}) =>
+      this.request<ApiDisablePluginResult, RpcStatus>({
+        path: `/v1/developer_tools/automation/call_trigger`,
+        method: "POST",
+        body: body,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags DeveloperToolsService
+     * @name DeveloperToolsServiceGetEventBusStateList
+     * @summary bas state
+     * @request GET:/v1/developer_tools/bus/state
+     * @secure
+     */
+    developerToolsServiceGetEventBusStateList: (
+      query?: {
+        /** @format uint64 */
+        page?: number;
+        /** @format uint64 */
+        limit?: number;
+        sort?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<ApiEventBusStateListResult, RpcStatus>({
+        path: `/v1/developer_tools/bus/state`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags DeveloperToolsService
      * @name DeveloperToolsServiceReloadEntity
      * @summary reload entity
-     * @request POST:/v1/developer_tools/entity_reload
+     * @request POST:/v1/developer_tools/entity/reload
      * @secure
      */
     developerToolsServiceReloadEntity: (body: ApiReloadRequest, params: RequestParams = {}) =>
       this.request<ApiDisablePluginResult, RpcStatus>({
-        path: `/v1/developer_tools/entity_reload`,
+        path: `/v1/developer_tools/entity/reload`,
         method: "POST",
         body: body,
         secure: true,
@@ -2502,54 +2587,16 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @tags DeveloperToolsService
      * @name DeveloperToolsServiceEntitySetState
      * @summary entity set state
-     * @request POST:/v1/developer_tools/entity_set_state
+     * @request POST:/v1/developer_tools/entity/set_state
      * @secure
      */
     developerToolsServiceEntitySetState: (body: ApiEntityRequest, params: RequestParams = {}) =>
       this.request<ApiDisablePluginResult, RpcStatus>({
-        path: `/v1/developer_tools/entity_set_state`,
+        path: `/v1/developer_tools/entity/set_state`,
         method: "POST",
         body: body,
         secure: true,
         type: ContentType.Json,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags DeveloperToolsService
-     * @name DeveloperToolsServiceTaskCallAction
-     * @summary task call action
-     * @request POST:/v1/developer_tools/task_call_action
-     * @secure
-     */
-    developerToolsServiceTaskCallAction: (body: ApiAutomationRequest, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
-        path: `/v1/developer_tools/task_call_action`,
-        method: "POST",
-        body: body,
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags DeveloperToolsService
-     * @name DeveloperToolsServiceTaskCallTrigger
-     * @summary task call trigger
-     * @request POST:/v1/developer_tools/task_call_trigger
-     * @secure
-     */
-    developerToolsServiceTaskCallTrigger: (body: ApiAutomationRequest, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
-        path: `/v1/developer_tools/task_call_trigger`,
-        method: "POST",
-        body: body,
-        secure: true,
         format: "json",
         ...params,
       }),
@@ -2977,12 +3024,12 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @tags InteractService
      * @name InteractServiceEntityCallAction
      * @summary entity call action
-     * @request POST:/v1/interact/entity_call_action
+     * @request POST:/v1/interact/entity/call_action
      * @secure
      */
     interactServiceEntityCallAction: (body: ApiEntityCallActionRequest, params: RequestParams = {}) =>
       this.request<ApiDisablePluginResult, RpcStatus>({
-        path: `/v1/interact/entity_call_action`,
+        path: `/v1/interact/entity/call_action`,
         method: "POST",
         body: body,
         secure: true,
@@ -3744,9 +3791,9 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
         description?: string;
         enabled?: boolean;
         condition?: string;
-        triggers?: number[];
-        conditions?: number[];
-        actions?: number[];
+        triggerIds?: number[];
+        conditionIds?: number[];
+        actionIds?: number[];
         /** @format int64 */
         areaId?: number;
       },
@@ -3922,6 +3969,7 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
         scriptId?: number;
         pluginName?: string;
         attributes?: Record<string, ApiAttribute>;
+        enabled?: boolean;
       },
       params: RequestParams = {},
     ) =>
@@ -3986,6 +4034,42 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
         path: `/v1/triggers/search`,
         method: "GET",
         query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags TriggerService
+     * @name TriggerServiceDisableTrigger
+     * @summary disable triggers
+     * @request POST:/v1/triggers/{id}/disable
+     * @secure
+     */
+    triggerServiceDisableTrigger: (id: number, params: RequestParams = {}) =>
+      this.request<ApiDisablePluginResult, RpcStatus>({
+        path: `/v1/triggers/${id}/disable`,
+        method: "POST",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags TriggerService
+     * @name TriggerServiceEnableTrigger
+     * @summary enable triggers
+     * @request POST:/v1/triggers/{id}/enable
+     * @secure
+     */
+    triggerServiceEnableTrigger: (id: number, params: RequestParams = {}) =>
+      this.request<ApiDisablePluginResult, RpcStatus>({
+        path: `/v1/triggers/${id}/enable`,
+        method: "POST",
         secure: true,
         format: "json",
         ...params,

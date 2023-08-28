@@ -76,6 +76,12 @@ func (t *TimeTrigger) AsyncAttach(wg *sync.WaitGroup) {
 
 // Subscribe ...
 func (t *TimeTrigger) Subscribe(options Subscriber) error {
+	if options.Payload == nil {
+		return fmt.Errorf("payload is nil")
+	}
+	if _, ok := options.Payload[CronOptionTrigger]; !ok {
+		return fmt.Errorf("cron attribute is nil")
+	}
 	schedule := options.Payload[CronOptionTrigger].String()
 	if schedule == "" {
 		return fmt.Errorf("error static cast to string %v", options.Payload)
@@ -102,6 +108,9 @@ func (t *TimeTrigger) Subscribe(options Subscriber) error {
 
 // Unsubscribe ...
 func (t *TimeTrigger) Unsubscribe(options Subscriber) error {
+	if options.Payload == nil {
+		return fmt.Errorf("payload is nil")
+	}
 	schedule := options.Payload[CronOptionTrigger].String()
 	if schedule == "" {
 		return fmt.Errorf("error static cast to string %v", options.Payload)

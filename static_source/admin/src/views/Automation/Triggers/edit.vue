@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, defineEmits, ref, unref} from 'vue'
+import {computed, ref, unref} from 'vue'
 import {useI18n} from '@/hooks/web/useI18n'
 import {ElButton, ElMessage, ElPopconfirm} from 'element-plus'
 import {useForm} from '@/hooks/web/useForm'
@@ -7,7 +7,7 @@ import {useRoute, useRouter} from 'vue-router'
 import {useValidator} from '@/hooks/web/useValidator'
 import api from "@/api/api";
 import Form from './components/Form.vue'
-import {ApiAttribute, ApiEntity, ApiScript, ApiTrigger} from "@/api/stub";
+import {ApiTrigger} from "@/api/stub";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
 import TriggerForm from "@/views/Automation/components/TriggerForm.vue";
 
@@ -44,12 +44,25 @@ const save = async () => {
   if (validate) {
     loading.value = true
     const tr = (await write?.getFormData()) as ApiTrigger;
-    const data = {
+    let data = {
       name: tr.name,
       entityId: tr.entity?.id || null,
       scriptId: tr.script?.id || null,
       pluginName: tr.pluginName,
-      attributes: tr.attributes,
+      attributes: {},
+      enabled: tr.enabled,
+    }
+    if (tr.pluginName === 'time') {
+      data.attributes['cron'] = {
+        string: tr?.timePluginOptions || '',
+        type: "STRING",
+      }
+    }
+    if (tr.pluginName === 'system') {
+      data.attributes['system'] = {
+        string: tr?.systemPluginOptions || '',
+        type: "STRING",
+      }
     }
     const res = await api.v1.triggerServiceUpdateTrigger(triggerId.value, data)
         .catch(() => {
@@ -84,6 +97,21 @@ const remove = async () => {
     cancel()
   }
 }
+
+const callTrigger = async () => {
+  await api.v1.developerToolsServiceCallTrigger({id: triggerId.value})
+      .catch(() => {
+      })
+      .finally(() => {
+        ElMessage({
+          title: t('Success'),
+          message: t('message.callSuccessful'),
+          type: 'success',
+          duration: 2000
+        })
+      })
+}
+
 fetch()
 
 </script>
@@ -94,6 +122,10 @@ fetch()
     <TriggerForm ref="writeRef" :trigger="currentRow"/>
 
     <div style="text-align: right">
+
+      <ElButton type="success" @click="callTrigger()">
+        {{ t('main.call') }}
+      </ElButton>
 
       <ElButton type="primary" @click="save()">
         {{ t('main.save') }}

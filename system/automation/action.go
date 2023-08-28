@@ -77,7 +77,7 @@ func (a *Action) Run(entityId *common.EntityId) (result string, err error) {
 	a.Lock()
 	defer a.Unlock()
 
-	log.Infof("run action")
+	//log.Infof("run action")
 
 	if a.scriptEngine != nil {
 		if result, err = a.scriptEngine.AssertFunction(ActionFunc, entityId); err != nil {
@@ -94,6 +94,10 @@ func (a *Action) Run(entityId *common.EntityId) (result string, err error) {
 			ActionName: action,
 		})
 	}
+
+	a.eventBus.Publish(fmt.Sprintf("system/automation/actions/%d", a.model.Id), events.EventActionCompleted{
+		Id: a.model.Id,
+	})
 
 	return
 }

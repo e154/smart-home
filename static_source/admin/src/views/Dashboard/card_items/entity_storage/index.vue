@@ -17,6 +17,7 @@ import { Dialog } from '@/components/Dialog'
 import {EventStateChange} from "@/api/stream_types";
 import AttributesViewer from "@/views/Entities/components/AttributesViewer.vue";
 import {CardItem} from "@/views/Dashboard/core";
+import {debounce} from "lodash-es";
 
 const remember = ref(false)
 const {register, elFormRef, methods} = useForm()
@@ -172,7 +173,7 @@ onUnmounted(() => {
   stream.unsubscribe('state_changed', currentID.value)
 })
 
-const getList = async () => {
+const getList = debounce( async () => {
 
   tableObject.loading = true
 
@@ -199,7 +200,7 @@ const getList = async () => {
   } else {
     tableObject.tableList = [];
   }
-}
+}, 100)
 
 const onStateChanged = (event: EventStateChange) => {
   getList()

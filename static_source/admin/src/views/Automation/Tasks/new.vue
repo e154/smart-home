@@ -54,13 +54,13 @@ const save = async () => {
         })
     if (res) {
       const {id} = res.data
-      push(`/automation/edit/${id}`)
+      push(`/automation/tasks/edit/${id}`)
     }
   }
 }
 
 const cancel = () => {
-  push('/automation')
+  push('/automation/tasks')
 }
 
 </script>

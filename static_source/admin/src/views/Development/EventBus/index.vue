@@ -5,16 +5,15 @@ import {computed, h, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
 import {useAppStore} from "@/store/modules/app";
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
-import {ElButton, ElTag} from 'element-plus'
-import {ApiAction} from "@/api/stub";
+import {ElButton, ElMessage, ElTag} from 'element-plus'
+import {ApiBusStateItem} from "@/api/stub";
 import {useForm} from "@/hooks/web/useForm";
 import {useRouter} from "vue-router";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
 import {parseTime} from "@/utils";
 import { Dialog } from '@/components/Dialog'
-import Viewer from "@/components/JsonViewer/JsonViewer.vue";
 import {useEmitt} from "@/hooks/web/useEmitt";
-import {EventActionCompleted, EventStateChange, EventTriggerActivated} from "@/api/stream_types";
+import {EventStateChange, EventTriggerCompleted} from "@/api/stream_types";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 
@@ -30,7 +29,7 @@ const dialogVisible = ref(false)
 const importedTask = ref("")
 
 interface TableObject {
-  tableList: ApiAction[]
+  tableList: ApiBusStateItem[]
   params?: any
   loading: boolean
   sort?: string
@@ -51,72 +50,36 @@ const tableObject = reactive<TableObject>(
 
 const currentID = ref('')
 
-const onStateChanged = (event: EventStateChange) => {
-  getList()
-}
+const onEventTriggerActivated = (event: EventTriggerCompleted) => {
 
-const onEventActionActivated = (event: EventActionCompleted) => {
-  for (const i in tableObject.tableList) {
-    if (tableObject.tableList[i].id == event.id) {
-      tableObject.tableList[i].completed = true;
-      setTimeout(() => {
-        tableObject.tableList[i].completed = false
-      }, 500)
-      return
-    }
-  }
 }
 
 onMounted(() => {
   const uuid = new UUID()
   currentID.value = uuid.getDashFreeUUID()
 
-  setTimeout(() => {
-    stream.subscribe('event_action_completed', currentID.value, onEventActionActivated);
-  }, 1000)
+  // setTimeout(() => {
+  //   stream.subscribe('event_trigger_loaded', currentID.value, onStateChanged);
+  //   stream.subscribe('event_trigger_unloaded', currentID.value, onStateChanged);
+  //   stream.subscribe('event_trigger_completed', currentID.value, onEventTriggerActivated);
+  // }, 1000)
 })
 
 onUnmounted(() => {
-  stream.unsubscribe('event_action_completed', currentID.value);
+  // stream.unsubscribe('event_trigger_loaded', currentID.value);
+  // stream.unsubscribe('event_trigger_unloaded', currentID.value);
+  // stream.unsubscribe('event_trigger_completed', currentID.value);
 })
 
 const columns: TableColumn[] = [
   {
-    field: 'id',
-    label: t('automation.actions.id'),
-    sortable: true,
-    width: "60px"
+    field: 'topic',
+    label: t('development.eventBus.topic'),
   },
   {
-    field: 'name',
-    label: t('automation.actions.name'),
-    sortable: true,
-  },
-  {
-    field: 'createdAt',
-    label: t('main.createdAt'),
-    type: 'time',
-    sortable: true,
-    width: "150px",
-    formatter: (row: ApiAction) => {
-      return h(
-          'span',
-          parseTime(row.createdAt)
-      )
-    }
-  },
-  {
-    field: 'updatedAt',
-    label: t('main.updatedAt'),
-    type: 'time',
-    sortable: true,
-    width: "150px",
-    formatter: (row: ApiAction) => {
-      return h(
-          'span',
-          parseTime(row.updatedAt)
-      )
-    }
+    field: 'subscribers',
+    label: t('development.eventBus.subscribers'),
+    width: "100px"
   },
 ]
 const paginationObj = ref<Pagination>({
@@ -135,7 +98,7 @@ const getList = async () => {
     sort: tableObject.sort,
   }
 
-  const res = await api.v1.actionServiceGetActionList(params)
+  const res = await api.v1.developerToolsServiceGetEventBusStateList(params)
       .catch(() => {
       })
       .finally(() => {
@@ -174,32 +137,6 @@ const sortChange = (data) => {
 
 getList()
 
-const addNew = () => {
-  push('/automation/actions/new')
-}
-
-
-const selectRow = (row) => {
-  if (!row) {
-    return
-  }
-  const {id} = row
-  push(`/automation/actions/edit/${id}`)
-}
-
-const showImportDialog = () => {
-  dialogVisible.value = true
-}
-
-useEmitt({
-  name: 'updateSource',
-  callback: (val: string) => {
-    if (importedTask.value == val) {
-      return
-    }
-    importedTask.value = val
-  }
-})
 
 const tableRowClassName = (data) => {
   const { row, rowIndex } = data
@@ -214,10 +151,6 @@ const tableRowClassName = (data) => {
 
 <template>
   <ContentWrap>
-    <ElButton class="flex mb-20px items-left" type="primary" @click="addNew()" plain>
-      <Icon icon="ep:plus" class="mr-5px"/>
-      {{ t('automation.actions.addNew') }}
-    </ElButton>
 
     <Table
         :selection="false"
@@ -231,14 +164,8 @@ const tableRowClassName = (data) => {
         :row-class-name="tableRowClassName"
         style="width: 100%"
         :showUpPagination="20"
-    >
-      <template #name="{ row }">
-        <span @click.prevent.stop="selectRow(row)" style="cursor: pointer">
-          {{ row.name }}
-        </span>
-      </template>
+    />
 
-    </Table>
 
   </ContentWrap>
 
@@ -253,7 +180,6 @@ const tableRowClassName = (data) => {
       -webkit-transition: background-color 200ms linear;
       -ms-transition: background-color 200ms linear;
       transition: background-color 200ms linear;
-
     }
   }
 }

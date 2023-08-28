@@ -10,6 +10,7 @@ import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 import {useI18n} from "@/hooks/web/useI18n";
 import api from "@/api/api";
+import {debounce} from "lodash-es";
 
 const {t} = useI18n()
 
@@ -214,7 +215,7 @@ const tableObject = reactive<TableObject>(
     }
 );
 
-const getList = async () => {
+const getList = debounce( async () => {
   tableObject.loading = true
 
   let params: Params = {
@@ -241,7 +242,7 @@ const getList = async () => {
   } else {
     tableObject.tableList = [];
   }
-}
+}, 100)
 
 
 const onLogs = (log: ApiLog) => {

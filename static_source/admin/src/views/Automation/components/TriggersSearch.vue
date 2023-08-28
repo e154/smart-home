@@ -21,8 +21,7 @@ watch(
     () => props.modelValue,
     (val?: number[]) => {
       if (val === unref(value)) return
-      console.log('---1',val)
-      // value.value = val || [] ;
+      value.value = val || [] ;
     },
 )
 
@@ -30,12 +29,11 @@ watch(
 watch(
     () => value.value,
     (val?: number[]) => {
-      if (unref(props.modelValue) == val) return;
-      console.log('---2',val)
-      // emit('update:modelValue', val)
-      // if (!val) {
-      //   emit('change', val)
-      // }
+      if (props.modelValue == unref(val)) return;
+      emit('update:modelValue', val)
+      if (!val) {
+        emit('change', val)
+      }
     },
     {
       immediate: true
@@ -43,7 +41,6 @@ watch(
 )
 
 const remoteMethod = async (query: string) => {
-  console.log('---3',query)
   loading.value = true
   const params = {query: query, limit: 25, offset: 0}
   const {data} = await api.v1.triggerServiceSearchTrigger(params)

@@ -94,6 +94,14 @@ const save = async () => {
         .finally(() => {
           loading.value = false
         })
+    if (res) {
+      ElMessage({
+        title: t('Success'),
+        message: t('message.updatedSuccessfully'),
+        type: 'success',
+        duration: 2000
+      })
+    }
   }
 }
 

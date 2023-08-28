@@ -20,7 +20,6 @@ package automation
 
 import (
 	"fmt"
-
 	"go.uber.org/atomic"
 
 	"github.com/e154/smart-home/common/events"
@@ -65,8 +64,12 @@ func (t *Task) Name() string {
 
 func (t *Task) triggerHandler(_ string, msg interface{}) {
 
+	if t == nil || !t.enabled.Load() {
+		return
+	}
+
 	switch v := msg.(type) {
-	case events.EventTriggerActivated:
+	case events.EventTriggerCompleted:
 		result, err := t.conditionGroup.Check(v.EntityId)
 		if err != nil || !result {
 			return
@@ -77,6 +80,9 @@ func (t *Task) triggerHandler(_ string, msg interface{}) {
 				log.Error(err.Error())
 			}
 		}
+		t.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", t.model.Id), events.EventTaskCompleted{
+			Id: t.model.Id,
+		})
 	}
 }
 
@@ -129,15 +135,14 @@ func (t *Task) Stop() {
 	}
 	t.enabled.Store(false)
 	//log.Infof("task %d stopped", t.Id())
-	for model := range t.model.Triggers {
-		t.eventBus.Unsubscribe(fmt.Sprintf("system/automation/triggers/%d", model), t.triggerHandler)
+	for _, model := range t.model.Triggers {
+		t.eventBus.Unsubscribe(fmt.Sprintf("system/automation/triggers/%d", model.Id), t.triggerHandler)
 	}
 	for _, action := range t.actions {
 		action.Remove()
 	}
 	t.actions = make(map[int64]*Action)
 	t.conditionGroup = nil
-
 
 	t.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", t.model.Id), events.EventTaskUnloaded{
 		Id: t.model.Id,

@@ -91,7 +91,7 @@ func NewTrigger(
 				return
 			}
 			//fmt.Println("call trigger", tr.model.Name, tr.triggerPlugin.Name())
-			eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), events.EventTriggerActivated{
+			eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), events.EventTriggerCompleted{
 				Id:       model.Id,
 				Args:     args,
 				LastTime: time.Now(),
@@ -178,7 +178,7 @@ func (tr *Trigger) eventHandler(_ string, msg interface{}) {
 
 	switch msg.(type) {
 	case events.EventCallTrigger:
-		tr.eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), events.EventTriggerActivated{
+		tr.eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), events.EventTriggerCompleted{
 			Id:       tr.model.Id,
 			Args:     nil,
 			LastTime: time.Now(),

@@ -20,7 +20,6 @@ package controllers
 
 import (
 	"context"
-
 	"github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/common"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -78,4 +77,15 @@ func (c ControllerDeveloperTools) CallAction(ctx context.Context, req *api.Autom
 	}
 
 	return &emptypb.Empty{}, nil
+}
+
+// GetEventBusStateList ...
+func (c ControllerDeveloperTools) GetEventBusStateList(ctx context.Context, _ *api.PaginationRequest) (*api.EventBusStateListResult, error) {
+
+	state, total, err := c.endpoint.DeveloperTools.GetEventBusState()
+	if err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return c.dto.DeveloperTools.GetEventBusState(state, total), nil
 }

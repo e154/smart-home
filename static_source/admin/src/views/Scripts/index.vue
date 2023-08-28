@@ -199,7 +199,7 @@ const selectRow = (row) => {
         @current-change="selectRow"
     >
       <template #lang="{row}">
-        <ElTag type="info">
+        <ElTag>
           {{ row.lang }}
         </ElTag>
       </template>

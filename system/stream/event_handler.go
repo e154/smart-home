@@ -52,11 +52,19 @@ func (e *eventHandler) eventHandler(_ string, message interface{}) {
 		go e.event(message)
 	case events.EventTaskUnloaded:
 		go e.event(message)
+	case events.EventTaskCompleted:
+		go e.event(message)
 
 	// triggers
 	case events.EventTriggerLoaded:
 		go e.event(message)
 	case events.EventTriggerUnloaded:
+		go e.event(message)
+	case events.EventTriggerCompleted:
+		go e.event(message)
+
+	// actions
+	case events.EventActionCompleted:
 		go e.event(message)
 	}
 }

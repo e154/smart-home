@@ -18,6 +18,7 @@ import TaskForm from "@/views/Automation/components/TaskForm.vue";
 import TriggersSearch from "@/views/Automation/components/TriggersSearch.vue";
 import ConditionsSearch from "@/views/Automation/components/ConditionsSearch.vue";
 import ActionsSearch from "@/views/Automation/components/ActionsSearch.vue";
+import { Dialog } from '@/components/Dialog'
 
 const {register, elFormRef, methods} = useForm()
 const {required} = useValidator()
@@ -34,6 +35,9 @@ const currentTask = ref<Nullable<ApiTask>>(null)
 const activeTab = ref('pipeline')
 const dialogSource = ref({})
 const dialogVisible = ref(false)
+const triggerIds = ref([])
+const conditionIds = ref([])
+const actionIds = ref([])
 
 const fetch = async () => {
   loading.value = true
@@ -44,19 +48,11 @@ const fetch = async () => {
         loading.value = false
       })
   if (res) {
-    let task = res.data
-    // if (!task.triggers) {
-    //   task.triggers = []
-    // }
-    // if (!task.conditions) {
-    //   task.conditions = []
-    // }
-    // if (!task.actiona) {
-    //   task.actiona = []
-    // }
+    let task = res.data as ApiTask
+    triggerIds.value = Object.assign([], task.triggerIds);
+    conditionIds.value = Object.assign([], task.conditionIds);
+    actionIds.value = Object.assign([], task.actionIds);
     currentTask.value = task
-    console.log(task)
-
   } else {
     currentTask.value = null
   }
@@ -64,58 +60,24 @@ const fetch = async () => {
 
 const prepareForSave = async () => {
   const write = unref(writeRef)
-  const validate = await write?.elFormRef?.validate()?.catch((err) => {
+  const validate = await write?.elFormRef?.validate()?.catch(() => {
   })
+  const con = (await write?.getFormData()) as ApiTask;
   if (validate) {
-    const data = (await write?.getFormData()) as ApiTask
-    let triggers: ApiTrigger[] = []
-    let conditions: ApiCondition[] = []
-    let actions: ApiAction[] = []
-    for (const tr of data.triggers) {
-      triggers.push({
-        id: tr.id,
-        name: tr.name,
-        entityId: tr.entityId,
-        scriptId: tr.scriptId,
-        pluginName: tr.pluginName,
-        attributes: tr.attributes,
-      })
-    }
-    for (const cond of data.conditions) {
-      conditions.push({
-        id: cond.id,
-        name: cond.name,
-        scriptId: cond.scriptId,
-      })
-    }
-    for (const action of data.actions) {
-      actions.push({
-        id: action.id,
-        name: action.name,
-        entityId: action.entityId,
-        scriptId: action.scriptId,
-        entityActionName: action.entityActionName,
-      })
-    }
     return {
-      name: data.name,
-      description: data.description,
-      enabled: data.enabled,
-      condition: data.condition,
-      triggers: triggers,
-      conditions: conditions,
-      actions: actions,
-      areaId: data.area?.id || null,
+      name: con.name,
+      description: con.description,
+      enabled: con.enabled,
+      condition: con.condition,
+      triggerIds: triggerIds.value ,
+      conditionIds: conditionIds.value,
+      actionIds: actionIds.value,
     }
   }
-  return null
 }
 
 const save = async () => {
   const body = await prepareForSave()
-  if (!body) {
-    return
-  }
   const res = await api.v1.automationServiceUpdateTask(taskId.value, body)
       .catch(() => {
       })
@@ -151,17 +113,18 @@ const cancel = () => {
 }
 
 const copy = async () => {
-  const body = await prepareForSave()
+  const body = prepareForSave()
   copyToClipboard(JSON.stringify(body, null, 2))
 }
 
 const exportTask = async () => {
-  const body = await prepareForSave()
+  const body = prepareForSave()
   dialogSource.value = body
   dialogVisible.value = true
 }
 
 const callAction = async (name: string) => {
+  // todo: fix
   await api.v1.developerToolsServiceTaskCallAction({ id: taskId.value || 0, name: name })
       .catch(() => {
       })
@@ -195,7 +158,8 @@ useEmitt({
 })
 
 const callTrigger = async (name: string) => {
-  await api.v1.developerToolsServiceTaskCallTrigger({ id: taskId.value || 0, name: name })
+  //todo: fix
+  await api.v1.developerToolsServiceCallTrigger({ id: taskId.value || 0, name: name })
       .catch(() => {
       })
       .finally(() => {
@@ -232,29 +196,26 @@ fetch()
       <!-- /main -->
 
       <!-- pipeline -->
-      <el-tab-pane :label="$t('automation.pipeline')" name="pipeline" class="mt-20px">
+      <el-tab-pane :label="$t('automation.tasks.pipeline')" name="pipeline" class="mt-20px">
         <el-timeline>
-          <el-timeline-item :timestamp="$t('automation.eventStart')" placement="top" type="primary"/>
+          <el-timeline-item :timestamp="$t('automation.tasks.eventStart')" placement="top" type="primary"/>
 
-          <el-timeline-item :timestamp="$t('automation.triggers')" placement="top" type="primary" center>
+          <el-timeline-item :timestamp="$t('automation.tasks.triggers')" placement="top" type="primary" center>
             <el-card>
-              triggers
-              <TriggersSearch v-model="currentTask.triggers"/>
+              <TriggersSearch v-model="triggerIds"/>
             </el-card>
           </el-timeline-item>
-          <el-timeline-item :timestamp="$t('automation.conditions')" placement="top" type="primary" center>
+          <el-timeline-item :timestamp="$t('automation.tasks.conditions')" placement="top" type="primary" center>
             <el-card>
-              conditions
-<!--              <ConditionsSearch v-model="currentTask.conditions"/>-->
+              <ConditionsSearch v-model="conditionIds"/>
             </el-card>
           </el-timeline-item>
-          <el-timeline-item :timestamp="$t('automation.actions')" placement="top" type="primary" center>
+          <el-timeline-item :timestamp="$t('automation.tasks.actions')" placement="top" type="primary" center>
             <el-card>
-              actions
-<!--              <ActionsSearch v-model="currentTask.actions"/>-->
+              <ActionsSearch v-model="actionIds"/>
             </el-card>
           </el-timeline-item>
-          <el-timeline-item :timestamp="$t('automation.eventEnd')" placement="top" type="success"/>
+          <el-timeline-item :timestamp="$t('automation.tasks.eventEnd')" placement="top" type="success"/>
         </el-timeline>
       </el-tab-pane>
       <!-- /pipeline -->
@@ -299,7 +260,7 @@ fetch()
   </ContentWrap>
 
   <!-- export dialog -->
-  <Dialog v-model="dialogVisible" :title="t('automation.dialogTitle')" :maxHeight="400">
+  <Dialog v-model="dialogVisible" :title="t('automation.tasks.exportDialogTitle')" :maxHeight="400">
     <Viewer v-model="dialogSource"/>
     <template #footer>
       <ElButton @click="copy()">{{ t('setting.copy') }}</ElButton>

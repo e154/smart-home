@@ -20,6 +20,8 @@ message Action {
   optional Entity entity = 5;
   optional string entity_id = 6;
   optional string entity_action_name = 7;
+  optional bool completed = 8;
+
   google.protobuf.Timestamp created_at = 99;
   google.protobuf.Timestamp updated_at = 100;
 }

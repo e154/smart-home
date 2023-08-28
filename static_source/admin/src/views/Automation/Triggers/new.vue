@@ -4,13 +4,11 @@ import {useI18n} from '@/hooks/web/useI18n'
 import {ElButton, ElMessage} from 'element-plus'
 import {useForm} from '@/hooks/web/useForm'
 import {useCache} from '@/hooks/web/useCache'
-import {useAppStore} from '@/store/modules/app'
-import {usePermissionStore} from '@/store/modules/permission'
 import {useRoute, useRouter} from 'vue-router'
 import {useValidator} from '@/hooks/web/useValidator'
 import api from "@/api/api";
 import Form from './components/Form.vue'
-import {ApiAttribute, ApiEntity, ApiNewTriggerRequest, ApiScript, ApiTrigger} from "@/api/stub";
+import {ApiNewTriggerRequest, ApiTrigger} from "@/api/stub";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
 import TriggerForm from "@/views/Automation/components/TriggerForm.vue";
 
@@ -32,13 +30,26 @@ const save = async () => {
   if (validate) {
     loading.value = true
     const tr = (await write?.getFormData()) as ApiTrigger;
-    const data = {
+    let data = {
       name: tr.name,
-      entityId: tr.entity?.id,
-      scriptId: tr.script?.id,
+      entityId: tr.entity?.id || null,
+      scriptId: tr.script?.id || null,
       pluginName: tr.pluginName,
-      attributes: tr.attributes,
+      attributes: {},
+      enabled: tr.enabled,
     } as ApiNewTriggerRequest
+    if (tr.pluginName === 'time') {
+      data.attributes['cron'] = {
+        string: tr?.timePluginOptions || '',
+        type: "STRING",
+      }
+    }
+    if (tr.pluginName === 'system') {
+      data.attributes['system'] = {
+        string: tr?.systemPluginOptions || '',
+        type: "STRING",
+      }
+    }
     const res = await api.v1.triggerServiceAddTrigger(data)
         .catch(() => {
         })

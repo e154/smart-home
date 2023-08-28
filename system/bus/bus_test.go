@@ -230,6 +230,136 @@ func TestBus2(t *testing.T) {
 	require.Equal(t, int32(3), counter)
 }
 
+func TestBus3(t *testing.T) {
+
+	bus := NewBus()
+
+	var counter int32
+	var wg = sync.WaitGroup{}
+
+	const n = 10000
+
+	wg.Add(n)
+	fn := func(_ string, msg interface{}) {
+		//fmt.Println("msg", msg)
+		atomic.AddInt32(&counter, 1)
+		wg.Done()
+	}
+
+	for i := 0; i < n; i++ {
+		bus.Subscribe(fmt.Sprintf("foo/bar/%d",i), fn)
+	}
+
+	time.Sleep(time.Second)
+
+	stat, total, err := bus.Stat()
+	require.NoError(t, err)
+	require.Equal(t, len(stat), n)
+	require.Equal(t, total, int64(n))
+	require.Equal(t, counter, int32(0))
+
+	for i := 0; i < n; i++ {
+		bus.Publish(fmt.Sprintf("foo/bar/%d",i), i)
+	}
+
+	time.Sleep(time.Second)
+
+	for i := 0; i < n; i++ {
+		bus.Unsubscribe(fmt.Sprintf("foo/bar/%d",i), fn)
+	}
+	time.Sleep(time.Second)
+
+	stat, total, err = bus.Stat()
+	require.NoError(t, err)
+	require.Equal(t, len(stat), 0)
+	require.Equal(t, total, int64(0))
+	require.Equal(t, counter, int32(n))
+
+	for i := 0; i < n; i++ {
+		bus.Publish(fmt.Sprintf("foo/bar/%d",i), i)
+	}
+
+	wg.Wait()
+
+	require.Equal(t, counter, int32(n))
+}
+
+
+func TestBus4(t *testing.T) {
+
+	bus := NewBus()
+
+	var counter1 int32
+	var counter2 int32
+	var wg1 = sync.WaitGroup{}
+	var wg2 = sync.WaitGroup{}
+
+	const n = 1
+
+	wg1.Add(n)
+	fn1 := func(_ string, msg interface{}) {
+		//fmt.Println("msg", msg)
+		atomic.AddInt32(&counter1, 1)
+		wg1.Done()
+	}
+	wg2.Add(n)
+	fn2 := func(_ string, msg interface{}) {
+		//fmt.Println("msg", msg)
+		atomic.AddInt32(&counter2, 1)
+		wg2.Done()
+	}
+
+	for i := 0; i < n; i++ {
+		bus.Subscribe(fmt.Sprintf("foo/bar/%d",i), fn1)
+		bus.Subscribe(fmt.Sprintf("foo/bar/%d",i), fn2)
+	}
+
+	time.Sleep(time.Second)
+
+	stat, total, err := bus.Stat()
+	require.NoError(t, err)
+	require.Equal(t, len(stat), n)
+	require.Equal(t, total, int64(n))
+	require.Equal(t, counter1, int32(0))
+	require.Equal(t, counter2, int32(0))
+
+
+	for i := 0; i < n; i++ {
+		bus.Publish(fmt.Sprintf("foo/bar/%d",i), i)
+	}
+
+	wg1.Wait()
+	wg2.Wait()
+
+	require.Equal(t, counter1, int32(n))
+	require.Equal(t, counter2, int32(n))
+
+	for i := 0; i < n; i++ {
+		bus.Unsubscribe(fmt.Sprintf("foo/bar/%d",i), fn1)
+	}
+	time.Sleep(time.Second)
+
+	stat, total, err = bus.Stat()
+	require.NoError(t, err)
+	require.Equal(t, len(stat), n)
+	require.Equal(t, total, int64(n))
+
+	wg2.Add(n)
+	for i := 0; i < n; i++ {
+		bus.Publish(fmt.Sprintf("foo/bar/%d",i), i)
+	}
+
+	wg2.Wait()
+
+	require.Equal(t, counter1, int32(n))
+	require.Equal(t, counter2, int32(n*2))
+
+	stat, total, err = bus.Stat()
+	require.NoError(t, err)
+	require.Equal(t, len(stat), n)
+	require.Equal(t, total, int64(n))
+}
+
 func BenchmarkBus(b *testing.B) {
 
 	const topic = "test/topic"

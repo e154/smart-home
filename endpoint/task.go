@@ -168,7 +168,6 @@ func (n *TaskEndpoint) GetById(ctx context.Context, id int64) (task *m.Task, err
 
 // Delete ...
 func (n *TaskEndpoint) Delete(ctx context.Context, id int64) (err error) {
-
 	if err = n.adaptors.Task.Delete(id); err != nil {
 		return
 	}
@@ -176,7 +175,6 @@ func (n *TaskEndpoint) Delete(ctx context.Context, id int64) (err error) {
 	n.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", id), events.EventRemoveTask{
 		Id: id,
 	})
-
 	return
 }
 
@@ -190,7 +188,6 @@ func (n *TaskEndpoint) Enable(ctx context.Context, id int64) (err error) {
 	n.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", id), events.EventEnableTask{
 		Id: id,
 	})
-
 	return
 }
 
@@ -204,7 +201,6 @@ func (n *TaskEndpoint) Disable(ctx context.Context, id int64) (err error) {
 	n.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", id), events.EventDisableTask{
 		Id: id,
 	})
-
 	return
 }
 

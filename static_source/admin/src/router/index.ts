@@ -566,6 +566,16 @@ export const developRouterMap: AppRouteRecordRaw[] = [
         ]
       },
       {
+        path: 'development',
+        name: 'Development',
+        component: () => import('@/views/Development/EventBus/index.vue'),
+        meta: {
+          title: t('router.Development'),
+        },
+        children: [
+        ]
+      },
+      {
         path: 'swagger',
         name: 'Swagger',
         component: () => import('@/views/Swagger/index.vue'),

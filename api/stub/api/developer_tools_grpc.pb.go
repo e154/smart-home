@@ -27,6 +27,8 @@ type DeveloperToolsServiceClient interface {
 	CallTrigger(ctx context.Context, in *AutomationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// call action
 	CallAction(ctx context.Context, in *AutomationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// bas state
+	GetEventBusStateList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*EventBusStateListResult, error)
 }
 
 type developerToolsServiceClient struct {
@@ -73,6 +75,15 @@ func (c *developerToolsServiceClient) CallAction(ctx context.Context, in *Automa
 	return out, nil
 }
 
+func (c *developerToolsServiceClient) GetEventBusStateList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*EventBusStateListResult, error) {
+	out := new(EventBusStateListResult)
+	err := c.cc.Invoke(ctx, "/api.DeveloperToolsService/GetEventBusStateList", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DeveloperToolsServiceServer is the server API for DeveloperToolsService service.
 // All implementations should embed UnimplementedDeveloperToolsServiceServer
 // for forward compatibility
@@ -85,6 +96,8 @@ type DeveloperToolsServiceServer interface {
 	CallTrigger(context.Context, *AutomationRequest) (*emptypb.Empty, error)
 	// call action
 	CallAction(context.Context, *AutomationRequest) (*emptypb.Empty, error)
+	// bas state
+	GetEventBusStateList(context.Context, *PaginationRequest) (*EventBusStateListResult, error)
 }
 
 // UnimplementedDeveloperToolsServiceServer should be embedded to have forward compatible implementations.
@@ -102,6 +115,9 @@ func (UnimplementedDeveloperToolsServiceServer) CallTrigger(context.Context, *Au
 }
 func (UnimplementedDeveloperToolsServiceServer) CallAction(context.Context, *AutomationRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CallAction not implemented")
+}
+func (UnimplementedDeveloperToolsServiceServer) GetEventBusStateList(context.Context, *PaginationRequest) (*EventBusStateListResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetEventBusStateList not implemented")
 }
 
 // UnsafeDeveloperToolsServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -187,6 +203,24 @@ func _DeveloperToolsService_CallAction_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DeveloperToolsService_GetEventBusStateList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PaginationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DeveloperToolsServiceServer).GetEventBusStateList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.DeveloperToolsService/GetEventBusStateList",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DeveloperToolsServiceServer).GetEventBusStateList(ctx, req.(*PaginationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DeveloperToolsService_ServiceDesc is the grpc.ServiceDesc for DeveloperToolsService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -209,6 +243,10 @@ var DeveloperToolsService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CallAction",
 			Handler:    _DeveloperToolsService_CallAction_Handler,
+		},
+		{
+			MethodName: "GetEventBusStateList",
+			Handler:    _DeveloperToolsService_GetEventBusStateList_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

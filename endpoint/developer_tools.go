@@ -133,3 +133,8 @@ func (d *DeveloperToolsEndpoint) EntitySetState(ctx context.Context, id common.E
 
 	return
 }
+
+// GetEventBusState ...
+func (d *DeveloperToolsEndpoint) GetEventBusState() (bus.Stats, int64, error)  {
+	return d.eventBus.Stat()
+}

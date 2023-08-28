@@ -149,7 +149,7 @@ func (n *Task) Add(ver *m.NewTask) (taskId int64, err error) {
 
 	//conditions
 	conditionAdaptor := GetConditionAdaptor(tx)
-	for _, id := range ver.Conditions {
+	for _, id := range ver.ConditionIds {
 		if err = table.AppendCondition(taskId, conditionAdaptor.toDb(&m.Condition{Id: id})); err != nil {
 			return
 		}
@@ -157,7 +157,7 @@ func (n *Task) Add(ver *m.NewTask) (taskId int64, err error) {
 
 	//triggers
 	triggerAdaptor := GetTriggerAdaptor(tx)
-	for _, id := range ver.Triggers {
+	for _, id := range ver.TriggerIds {
 		if err = table.AppendTrigger(taskId, triggerAdaptor.toDb(&m.Trigger{Id: id})); err != nil {
 			return
 		}
@@ -165,7 +165,7 @@ func (n *Task) Add(ver *m.NewTask) (taskId int64, err error) {
 
 	//actions
 	actionAdaptor := GetActionAdaptor(tx)
-	for _, id := range ver.Actions {
+	for _, id := range ver.ActionIds {
 		if err = table.AppendAction(taskId, actionAdaptor.toDb(&m.Action{Id: id})); err != nil {
 			return
 		}
@@ -213,7 +213,7 @@ func (n *Task) Update(ver *m.UpdateTask) (err error) {
 	//conditions
 	for _, oldCondition := range oldVer.Conditions {
 		var exist bool
-		for _, id := range ver.Conditions {
+		for _, id := range ver.ConditionIds {
 			if id == oldCondition.Id {
 				exist = true
 			}
@@ -226,7 +226,7 @@ func (n *Task) Update(ver *m.UpdateTask) (err error) {
 	}
 
 	conditionAdaptor := GetConditionAdaptor(tx)
-	for _, id := range ver.Conditions {
+	for _, id := range ver.ConditionIds {
 		var exist bool
 		for _, oldCondition := range oldVer.Conditions {
 			if id == oldCondition.Id {
@@ -243,7 +243,7 @@ func (n *Task) Update(ver *m.UpdateTask) (err error) {
 	//triggers
 	for _, oldTrigger := range oldVer.Triggers {
 		var exist bool
-		for _, id := range ver.Triggers {
+		for _, id := range ver.TriggerIds {
 			if id == oldTrigger.Id {
 				exist = true
 			}
@@ -256,7 +256,7 @@ func (n *Task) Update(ver *m.UpdateTask) (err error) {
 	}
 
 	triggerAdaptor := GetTriggerAdaptor(tx)
-	for _, id := range ver.Triggers {
+	for _, id := range ver.TriggerIds {
 		var exist bool
 		for _, oldTrigger := range oldVer.Triggers {
 			if id == oldTrigger.Id {
@@ -273,7 +273,7 @@ func (n *Task) Update(ver *m.UpdateTask) (err error) {
 	//actions
 	for _, oldAction := range oldVer.Actions {
 		var exist bool
-		for _, id := range ver.Actions {
+		for _, id := range ver.ActionIds {
 			if id == oldAction.Id {
 				exist = true
 			}
@@ -286,7 +286,7 @@ func (n *Task) Update(ver *m.UpdateTask) (err error) {
 	}
 
 	actionAdaptor := GetActionAdaptor(tx)
-	for _, id := range ver.Actions {
+	for _, id := range ver.ActionIds {
 		var exist bool
 		for _, oldAction := range oldVer.Actions {
 			if id == oldAction.Id {

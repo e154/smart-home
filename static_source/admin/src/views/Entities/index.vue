@@ -81,11 +81,6 @@ const columns: TableColumn[] = [
     width: "70px",
   },
   {
-    field: 'operations',
-    label: t('entities.operations'),
-    width: "200px",
-  },
-  {
     field: 'createdAt',
     label: t('main.createdAt'),
     type: 'time',
@@ -304,8 +299,12 @@ const importEntity = async () => {
 
       <template #status="{ row }">
         <div class="w-[100%] text-center">
-          <Icon icon="noto:green-circle" class="mr-5px" v-if="row?.isLoaded"/>
-          <Icon icon="noto:red-circle" class="mr-5px" v-if="!row?.isLoaded"/>
+          <ElButton :link="true" @click.prevent.stop="enable(row)" v-if="!row?.isLoaded">
+            <Icon icon="noto:red-circle" class="mr-5px"/>
+          </ElButton>
+          <ElButton :link="true" @click.prevent.stop="disable(row)" v-if="row?.isLoaded">
+            <Icon icon="noto:green-circle" class="mr-5px"/>
+          </ElButton>
         </div>
       </template>
 
@@ -315,19 +314,6 @@ const importEntity = async () => {
         </ElTag>
       </template>
 
-      <template #operations="{ row }">
-
-        <ElButton :link="true" @click.prevent.stop="restart(row)">
-          {{ $t('main.restart') }}
-        </ElButton>
-        <ElButton :link="true" @click.prevent.stop="enable(row)" v-if="!row?.isLoaded">
-          {{ $t('main.enable') }}
-        </ElButton>
-        <ElButton :link="true" @click.prevent.stop="disable(row)" v-if="row?.isLoaded">
-          {{ $t('main.disable') }}
-        </ElButton>
-
-      </template>
     </Table>
   </ContentWrap>
 

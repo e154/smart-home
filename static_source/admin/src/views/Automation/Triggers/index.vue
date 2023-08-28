@@ -5,16 +5,15 @@ import {computed, h, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
 import {useAppStore} from "@/store/modules/app";
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
-import {ElButton, ElTag} from 'element-plus'
+import {ElButton, ElMessage, ElTag} from 'element-plus'
 import {ApiTrigger} from "@/api/stub";
 import {useForm} from "@/hooks/web/useForm";
 import {useRouter} from "vue-router";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
 import {parseTime} from "@/utils";
 import { Dialog } from '@/components/Dialog'
-import Viewer from "@/components/JsonViewer/JsonViewer.vue";
 import {useEmitt} from "@/hooks/web/useEmitt";
-import {EventStateChange} from "@/api/stream_types";
+import {EventStateChange, EventTriggerCompleted} from "@/api/stream_types";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 
@@ -55,14 +54,33 @@ const onStateChanged = (event: EventStateChange) => {
   getList()
 }
 
+const onEventTriggerActivated = (event: EventTriggerCompleted) => {
+  for (const i in tableObject.tableList) {
+    if (tableObject.tableList[i].id == event.id) {
+      tableObject.tableList[i].completed = true;
+      setTimeout(() => {
+        tableObject.tableList[i].completed = false
+      }, 500)
+      return
+    }
+  }
+}
+
 onMounted(() => {
   const uuid = new UUID()
   currentID.value = uuid.getDashFreeUUID()
 
+  setTimeout(() => {
+    stream.subscribe('event_trigger_loaded', currentID.value, onStateChanged);
+    stream.subscribe('event_trigger_unloaded', currentID.value, onStateChanged);
+    stream.subscribe('event_trigger_completed', currentID.value, onEventTriggerActivated);
+  }, 1000)
 })
 
 onUnmounted(() => {
-
+  stream.unsubscribe('event_trigger_loaded', currentID.value);
+  stream.unsubscribe('event_trigger_unloaded', currentID.value);
+  stream.unsubscribe('event_trigger_completed', currentID.value);
 })
 
 const columns: TableColumn[] = [
@@ -82,6 +100,11 @@ const columns: TableColumn[] = [
     field: 'pluginName',
     label: t('automation.triggers.pluginName'),
     sortable: true,
+  },
+  {
+    field: 'status',
+    label: t('entities.status'),
+    width: "70px",
   },
   {
     field: 'createdAt',
@@ -192,6 +215,37 @@ useEmitt({
   }
 })
 
+const enable = async (trigger: ApiTrigger) => {
+  if (!trigger?.id) return;
+  await api.v1.triggerServiceEnableTrigger(trigger.id);
+  ElMessage({
+    title: t('Success'),
+    message: t('message.requestSentSuccessfully'),
+    type: 'success',
+    duration: 2000
+  });
+}
+
+const disable = async (trigger: ApiTrigger) => {
+  if (!trigger?.id) return;
+  await api.v1.triggerServiceDisableTrigger(trigger.id);
+  ElMessage({
+    title: t('Success'),
+    message: t('message.requestSentSuccessfully'),
+    type: 'success',
+    duration: 2000
+  });
+}
+
+const tableRowClassName = (data) => {
+  const { row, rowIndex } = data
+  let style = ''
+  if (row.completed) {
+    style = 'completed'
+  }
+  return style
+}
+
 </script>
 
 <template>
@@ -210,6 +264,7 @@ useEmitt({
         :loading="tableObject.loading"
         :pagination="paginationObj"
         @sort-change="sortChange"
+        :row-class-name="tableRowClassName"
         style="width: 100%"
         :showUpPagination="20"
     >
@@ -224,6 +279,18 @@ useEmitt({
           {{ row.pluginName }}
         </ElTag>
       </template>
+
+      <template #status="{ row }">
+        <div class="w-[100%] text-center">
+          <ElButton :link="true" @click.prevent.stop="enable(row)" v-if="!row?.isLoaded">
+            <Icon icon="noto:red-circle" class="mr-5px"/>
+          </ElButton>
+          <ElButton :link="true" @click.prevent.stop="disable(row)" v-if="row?.isLoaded">
+            <Icon icon="noto:green-circle" class="mr-5px"/>
+          </ElButton>
+        </div>
+      </template>
+
     </Table>
 
   </ContentWrap>
@@ -231,5 +298,27 @@ useEmitt({
 </template>
 
 <style lang="less">
+
+.light {
+  .el-table__row {
+    &.completed {
+      --el-table-tr-bg-color: var(--el-color-primary-light-7);
+      -webkit-transition: background-color 200ms linear;
+      -ms-transition: background-color 200ms linear;
+      transition: background-color 200ms linear;
+    }
+  }
+}
+
+.dark {
+  .el-table__row {
+    &.completed {
+      --el-table-tr-bg-color: var(--el-color-primary-dark-2);
+      -webkit-transition: background-color 200ms linear;
+      -ms-transition: background-color 200ms linear;
+      transition: background-color 200ms linear;
+    }
+  }
+}
 
 </style>

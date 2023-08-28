@@ -43,6 +43,11 @@ func NewBus() Bus {
 
 // Publish ...
 func (b *bus) Publish(topic string, args ...interface{}) {
+	go b.publish(topic, args...)
+}
+
+// publish ...
+func (b *bus) publish(topic string, args ...interface{}) {
 	rArgs := buildHandlerArgs(append([]interface{}{topic}, args...))
 
 	b.RLock()
@@ -61,6 +66,12 @@ func (b *bus) Publish(topic string, args ...interface{}) {
 
 // Subscribe ...
 func (b *bus) Subscribe(topic string, fn interface{}, options ...interface{}) error {
+	go b.subscribe(topic, fn, options...)
+	return nil
+}
+
+// subscribe ...
+func (b *bus) subscribe(topic string, fn interface{}, options ...interface{}) error {
 	if reflect.TypeOf(fn).Kind() != reflect.Func {
 		return errors.Wrap(apperr.ErrInternal, fmt.Sprintf("%s is not a reflect.Func", reflect.TypeOf(fn)))
 	}
@@ -105,6 +116,12 @@ func (b *bus) Subscribe(topic string, fn interface{}, options ...interface{}) er
 
 // Unsubscribe ...
 func (b *bus) Unsubscribe(topic string, fn interface{}) error {
+	go b.unsubscribe(topic, fn)
+	return nil
+}
+
+// unsubscribe ...
+func (b *bus) unsubscribe(topic string, fn interface{}) error {
 	b.Lock()
 	defer b.Unlock()
 
@@ -112,7 +129,7 @@ func (b *bus) Unsubscribe(topic string, fn interface{}) error {
 
 	if _, ok := b.sub[topic]; ok {
 		for i, h := range b.sub[topic].handlers {
-			if h.callback == rv {
+			if h.callback == rv || h.callback.Pointer() == rv.Pointer() {
 				close(h.queue)
 				b.sub[topic].handlers = append(b.sub[topic].handlers[:i], b.sub[topic].handlers[i+1:]...)
 				if len(b.sub[topic].handlers) == 0 {
@@ -147,8 +164,6 @@ func (b *bus) Purge() {
 	b.Lock()
 	defer b.Unlock()
 
-	fmt.Println("purge bus")
-
 	for topic, s := range b.sub {
 		for _, h := range s.handlers {
 			close(h.queue)
@@ -160,6 +175,7 @@ func (b *bus) Purge() {
 // todo: fix ...
 func (b *bus) Stat() (stats Stats, total int64, err error) {
 	b.RLock()
+	defer b.RUnlock()
 
 	for topic, subs := range b.sub {
 		stats = append(stats, Stat{
@@ -167,7 +183,6 @@ func (b *bus) Stat() (stats Stats, total int64, err error) {
 			Subscribers: len(subs.handlers),
 		})
 	}
-	b.RUnlock()
 
 	sort.Sort(stats)
 

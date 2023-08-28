@@ -2178,6 +2178,56 @@
         ]
       }
     },
+    "/v1/developer_tools/bus/state": {
+      "get": {
+        "summary": "bas state",
+        "operationId": "DeveloperToolsService_GetEventBusStateList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiEventBusStateListResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "DeveloperToolsService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
     "/v1/developer_tools/entity/reload": {
       "post": {
         "summary": "reload entity",
@@ -4569,21 +4619,21 @@
                 "condition": {
                   "type": "string"
                 },
-                "triggers": {
+                "triggerIds": {
                   "type": "array",
                   "items": {
                     "type": "string",
                     "format": "int64"
                   }
                 },
-                "conditions": {
+                "conditionIds": {
                   "type": "array",
                   "items": {
                     "type": "string",
                     "format": "int64"
                   }
                 },
-                "actions": {
+                "actionIds": {
                   "type": "array",
                   "items": {
                     "type": "string",
@@ -6357,6 +6407,9 @@
         "entityActionName": {
           "type": "string"
         },
+        "completed": {
+          "type": "boolean"
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time"
@@ -6435,6 +6488,18 @@
         },
         "name": {
           "type": "string"
+        }
+      }
+    },
+    "apiBusStateItem": {
+      "type": "object",
+      "properties": {
+        "topic": {
+          "type": "string"
+        },
+        "subscribers": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -7086,6 +7151,20 @@
         "createdAt": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "apiEventBusStateListResult": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiBusStateItem"
+          }
+        },
+        "meta": {
+          "$ref": "#/definitions/apiMeta"
         }
       }
     },
@@ -8021,21 +8100,21 @@
         "condition": {
           "type": "string"
         },
-        "triggers": {
+        "triggerIds": {
           "type": "array",
           "items": {
             "type": "string",
             "format": "int64"
           }
         },
-        "conditions": {
+        "conditionIds": {
           "type": "array",
           "items": {
             "type": "string",
             "format": "int64"
           }
         },
-        "actions": {
+        "actionIds": {
           "type": "array",
           "items": {
             "type": "string",
@@ -8653,6 +8732,30 @@
         "isLoaded": {
           "type": "boolean"
         },
+        "triggerIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "conditionIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "actionIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "completed": {
+          "type": "boolean"
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time"
@@ -8699,6 +8802,9 @@
           "type": "boolean"
         },
         "isLoaded": {
+          "type": "boolean"
+        },
+        "completed": {
           "type": "boolean"
         },
         "createdAt": {

@@ -275,12 +275,19 @@ export default {
         condition: 'Condition',
         area: 'Area',
         task: 'Task',
-        pipeline: 'Pipeline',
         main: 'Main',
-        eventStart: 'Event Start',
-        eventEnd: 'Event End',
         dialogTitle: 'Import task',
         operations: 'Actions',
+        tasks: {
+            triggers: 'Triggers',
+            conditions: 'Conditions',
+            actions: 'Actions',
+            eventStart: 'Event Start',
+            eventEnd: 'Event End',
+            pipeline: 'Pipeline',
+            exportDialogTitle: 'Export Task'
+
+        },
         triggers: {
             id: 'ID',
             name: 'Name',
@@ -526,5 +533,11 @@ export default {
         mainLightDashboard: 'Main Light Dashboard',
         devDarkDashboard: 'Dev Dark Dashboard',
         devLightDashboard: 'Dev Light Dashboard'
+    },
+    development: {
+        eventBus: {
+            topic: 'Topic',
+            subscribers: 'Subscribers'
+        }
     }
 }

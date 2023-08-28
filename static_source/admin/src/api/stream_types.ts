@@ -42,6 +42,21 @@ export interface EventStateChange {
   new_state: EventState
 }
 
+export interface EventTriggerCompleted {
+  id: number
+  args: Map<string, Attribute>
+  entity_id: string
+  last_time: string
+}
+
+export interface EventTaskCompleted {
+  id: number
+}
+
+export interface EventActionCompleted {
+  id: number
+}
+
 export interface EventHTML5Notify {
   title: string
   options?: NotificationOptions

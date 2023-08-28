@@ -24,6 +24,8 @@ message Trigger {
   map<string, Attribute> attributes = 8;
   bool enabled = 9;
   optional bool isLoaded = 10;
+  optional bool completed = 11;
+
   google.protobuf.Timestamp created_at = 99;
   google.protobuf.Timestamp updated_at = 100;
 }

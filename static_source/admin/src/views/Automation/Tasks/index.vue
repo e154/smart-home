@@ -6,7 +6,7 @@ import {useAppStore} from "@/store/modules/app";
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
 import {ElButton, ElMessage, ElSwitch} from 'element-plus'
-import {ApiEntity, ApiTask} from "@/api/stub";
+import {ApiTask} from "@/api/stub";
 import {useForm} from "@/hooks/web/useForm";
 import {useRouter} from "vue-router";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
@@ -14,7 +14,7 @@ import {parseTime} from "@/utils";
 import { Dialog } from '@/components/Dialog'
 import Viewer from "@/components/JsonViewer/JsonViewer.vue";
 import {useEmitt} from "@/hooks/web/useEmitt";
-import {EventStateChange} from "@/api/stream_types";
+import {EventStateChange, EventTriggerCompleted} from "@/api/stream_types";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 
@@ -55,6 +55,18 @@ const onStateChanged = (event: EventStateChange) => {
   getList()
 }
 
+const onEventTaskActivated = (event: EventTriggerCompleted) => {
+  for (const i in tableObject.tableList) {
+    if (tableObject.tableList[i].id == event.id) {
+      tableObject.tableList[i].completed = true;
+      setTimeout(() => {
+        tableObject.tableList[i].completed = false
+      }, 500)
+      return
+    }
+  }
+}
+
 onMounted(() => {
   const uuid = new UUID()
   currentID.value = uuid.getDashFreeUUID()
@@ -62,12 +74,14 @@ onMounted(() => {
   setTimeout(() => {
     stream.subscribe('event_task_loaded', currentID.value, onStateChanged);
     stream.subscribe('event_task_unloaded', currentID.value, onStateChanged);
+    stream.subscribe('event_task_completed', currentID.value, onEventTaskActivated);
   }, 1000)
 })
 
 onUnmounted(() => {
   stream.unsubscribe('event_task_loaded', currentID.value);
   stream.unsubscribe('event_task_unloaded', currentID.value);
+  stream.unsubscribe('event_task_completed', currentID.value);
 })
 
 const columns: TableColumn[] = [
@@ -85,23 +99,23 @@ const columns: TableColumn[] = [
   },
   {
     field: 'actions',
-    label: t('automation.actions'),
+    label: t('automation.tasks.actions'),
     width: "100px",
     formatter: (row: ApiTask) => {
       return h(
           'span',
-          row?.actions.length || t('automation.nothing')
+          row?.actions?.length || t('automation.nothing')
       )
     }
   },
   {
     field: 'triggers',
-    label: t('automation.triggers'),
+    label: t('automation.tasks.triggers'),
     width: "100px",
     formatter: (row: ApiTask) => {
       return h(
           'span',
-          row?.triggers.length || t('automation.nothing')
+          row?.triggers?.length || t('automation.nothing')
       )
     }
   },
@@ -120,12 +134,6 @@ const columns: TableColumn[] = [
     field: 'status',
     label: t('entities.status'),
     width: "70px",
-  },
-  {
-    field: 'operations',
-    label: t('automation.operations'),
-    sortable: true,
-    width: "120px"
   },
   {
     field: 'createdAt',
@@ -284,6 +292,15 @@ useEmitt({
   }
 })
 
+const tableRowClassName = (data) => {
+  const { row, rowIndex } = data
+  let style = ''
+  if (row.completed) {
+    style = 'completed'
+  }
+  return style
+}
+
 </script>
 
 <template>
@@ -306,6 +323,7 @@ useEmitt({
         :loading="tableObject.loading"
         :pagination="paginationObj"
         @sort-change="sortChange"
+        :row-class-name="tableRowClassName"
         style="width: 100%"
         :showUpPagination="20"
     >
@@ -316,21 +334,14 @@ useEmitt({
       </template>
 
       <template #status="{ row }">
-
         <div class="w-[100%] text-center">
-          <Icon icon="noto:green-circle" class="mr-5px" v-if="row?.isLoaded"/>
-          <Icon icon="noto:red-circle" class="mr-5px" v-if="!row?.isLoaded"/>
-        </div>
-
-      </template>
-
-      <template #operations="{ row }">
         <ElButton :link="true" @click.prevent.stop="enable(row)" v-if="!row?.isLoaded">
-          {{ $t('main.enable') }}
+          <Icon icon="noto:red-circle" class="mr-5px"/>
         </ElButton>
         <ElButton :link="true" @click.prevent.stop="disable(row)" v-if="row?.isLoaded">
-          {{ $t('main.disable') }}
+          <Icon icon="noto:green-circle" class="mr-5px"/>
         </ElButton>
+        </div>
       </template>
     </Table>
 
@@ -349,5 +360,27 @@ useEmitt({
 </template>
 
 <style lang="less">
+
+.light {
+  .el-table__row {
+    &.completed {
+      --el-table-tr-bg-color: var(--el-color-primary-light-7);
+      -webkit-transition: background-color 200ms linear;
+      -ms-transition: background-color 200ms linear;
+      transition: background-color 200ms linear;
+    }
+  }
+}
+
+.dark {
+  .el-table__row {
+    &.completed {
+      --el-table-tr-bg-color: var(--el-color-primary-dark-2);
+      -webkit-transition: background-color 200ms linear;
+      -ms-transition: background-color 200ms linear;
+      transition: background-color 200ms linear;
+    }
+  }
+}
 
 </style>

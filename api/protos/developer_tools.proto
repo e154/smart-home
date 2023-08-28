@@ -6,6 +6,7 @@ option go_package = "/api";
 import "google/api/annotations.proto";
 import "protoc-gen-swagger/options/annotations.proto";
 import "google/protobuf/empty.proto";
+import "pagination.proto";
 
 message EntityRequest {
   string id = 1;
@@ -19,6 +20,16 @@ message AutomationRequest {
 
 message ReloadRequest {
   string id = 1;
+}
+
+message BusStateItem {
+  string topic = 1;
+  int32 subscribers = 2;
+}
+
+message EventBusStateListResult {
+  repeated BusStateItem items = 1;
+  Meta meta = 2;
 }
 
 service DeveloperToolsService {
@@ -76,6 +87,21 @@ service DeveloperToolsService {
     option (google.api.http) = {
       post: "/v1/developer_tools/automation/call_action"
       body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // bas state
+  rpc GetEventBusStateList (PaginationRequest) returns (EventBusStateListResult){
+    option (google.api.http) = {
+      get: "/v1/developer_tools/bus/state"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
       security: {

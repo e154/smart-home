@@ -19,9 +19,8 @@
 package automation
 
 import (
-	"sync"
-
 	"github.com/e154/smart-home/common/events"
+	"sync"
 
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
@@ -128,28 +127,12 @@ LOOP:
 		return
 	}
 	for _, task := range tasks {
-		a.AddTask(task)
+		a.addTask(task)
 	}
 	if len(tasks) != 0 {
 		page++
 		goto LOOP
 	}
-}
-
-// AddTask ...
-func (a *taskManager) AddTask(model *m.Task) {
-	task := NewTask(a.eventBus, a.scriptService, model)
-	a.taskCount.Inc()
-	log.Infof("add task name(%s) id(%d)", task.Name(), task.Id())
-	a.Lock()
-	a.tasks[model.Id] = task
-	a.Unlock()
-	task.Start()
-}
-
-// RemoveTask ...
-func (a *taskManager) RemoveTask(model *m.Task) {
-	a.removeTask(model.Id)
 }
 
 func (a *taskManager) eventHandler(_ string, msg interface{}) {
@@ -167,6 +150,17 @@ func (a *taskManager) eventHandler(_ string, msg interface{}) {
 	case events.EventRemoveTask:
 		go a.removeTask(v.Id)
 	}
+}
+
+// addTask ...
+func (a *taskManager) addTask(model *m.Task) {
+	task := NewTask(a.eventBus, a.scriptService, model)
+	a.taskCount.Inc()
+	log.Infof("add task name(%s) id(%d)", task.Name(), task.Id())
+	a.Lock()
+	a.tasks[model.Id] = task
+	a.Unlock()
+	task.Start()
 }
 
 func (a *taskManager) removeTask(id int64) {
@@ -194,7 +188,7 @@ func (a *taskManager) updateTask(id int64) {
 	}
 	log.Infof("reload task %d", id)
 
-	a.AddTask(task)
+	a.addTask(task)
 }
 
 func (a *taskManager) IsLoaded(id int64) (loaded bool) {

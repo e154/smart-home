@@ -39,14 +39,14 @@ func (r Automation) AddTask(obj *api.NewTaskRequest) (task *m.NewTask) {
 		return
 	}
 	task = &m.NewTask{
-		Name:        obj.Name,
-		Description: obj.Description,
-		Enabled:     obj.Enabled,
-		Condition:   common.ConditionType(obj.Condition),
-		Triggers:    obj.Triggers,
-		Conditions:  obj.Conditions,
-		Actions:     obj.Actions,
-		AreaId:      obj.AreaId,
+		Name:         obj.Name,
+		Description:  obj.Description,
+		Enabled:      obj.Enabled,
+		Condition:    common.ConditionType(obj.Condition),
+		TriggerIds:   obj.TriggerIds,
+		ConditionIds: obj.ConditionIds,
+		ActionIds:    obj.ActionIds,
+		AreaId:       obj.AreaId,
 	}
 	return
 }
@@ -106,15 +106,15 @@ func (r Automation) ImportTask(obj *api.Task) (task *m.Task) {
 // UpdateTask ...
 func (r Automation) UpdateTask(obj *api.UpdateTaskRequest) (task *m.UpdateTask) {
 	task = &m.UpdateTask{
-		Id:          obj.Id,
-		Name:        obj.Name,
-		Description: obj.Description,
-		Enabled:     obj.Enabled,
-		Condition:   common.ConditionType(obj.Condition),
-		Triggers:    obj.Triggers,
-		Conditions:  obj.Conditions,
-		Actions:     obj.Actions,
-		AreaId:      obj.AreaId,
+		Id:           obj.Id,
+		Name:         obj.Name,
+		Description:  obj.Description,
+		Enabled:      obj.Enabled,
+		Condition:    common.ConditionType(obj.Condition),
+		TriggerIds:   obj.TriggerIds,
+		ConditionIds: obj.ConditionIds,
+		ActionIds:    obj.ActionIds,
+		AreaId:       obj.AreaId,
 	}
 
 	return
@@ -162,6 +162,7 @@ func (r Automation) GetTask(task *m.Task) (obj *api.Task) {
 			Id:   tr.Id,
 			Name: tr.Name,
 		})
+		obj.TriggerIds = append(obj.TriggerIds, tr.Id)
 	}
 
 	// conditions
@@ -170,14 +171,16 @@ func (r Automation) GetTask(task *m.Task) (obj *api.Task) {
 			Id:   con.Id,
 			Name: con.Name,
 		})
+		obj.ConditionIds = append(obj.ConditionIds, con.Id)
 	}
 
 	// actions
-	for _, con := range task.Actions {
+	for _, action := range task.Actions {
 		obj.Actions = append(obj.Actions, &api.Action{
-			Id:   con.Id,
-			Name: con.Name,
+			Id:   action.Id,
+			Name: action.Name,
 		})
+		obj.ActionIds = append(obj.ActionIds, action.Id)
 	}
 
 	return

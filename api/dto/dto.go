@@ -40,6 +40,7 @@ type Dto struct {
 	Variable          Variable
 	EntityStorage     EntityStorage
 	MessageDelivery   MessageDelivery
+	DeveloperTools    DeveloperTools
 }
 
 // NewDto ...
@@ -65,5 +66,6 @@ func NewDto() Dto {
 		Variable:          NewVariableDto(),
 		EntityStorage:     NewEntityStorageDto(),
 		MessageDelivery:   NewMessageDeliveryDto(),
+		DeveloperTools:    NewDeveloperToolsDto(),
 	}
 }

@@ -324,8 +324,11 @@ skillOnIntent = ->
 			t.Run("on intent", func(t *testing.T) {
 
 				ch := make(chan alexa.EventAlexaAction, 2)
-				_ = eventBus.Subscribe(alexa.TopicPluginAlexa, func(_ string, msg alexa.EventAlexaAction) {
-					ch <- msg
+				_ = eventBus.Subscribe(alexa.TopicPluginAlexa, func(_ string, m interface{} ) {
+					switch v := m.(type) {
+					case alexa.EventAlexaAction:
+						ch <- v
+					}
 				})
 
 				req := &alexa.Request{}
