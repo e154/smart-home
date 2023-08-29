@@ -177,7 +177,8 @@ export default {
         Users: 'Users',
         Backups: 'Backups',
         MessageDelivery: 'Message Delivery',
-        Settings: 'Settings'
+        Settings: 'Settings',
+        Tools: 'Tools'
     },
     permission: {
         hasPermission: 'Please set the operation permission value'
@@ -534,7 +535,7 @@ export default {
         devDarkDashboard: 'Dev Dark Dashboard',
         devLightDashboard: 'Dev Light Dashboard'
     },
-    development: {
+    tools: {
         eventBus: {
             topic: 'Topic',
             subscribers: 'Subscribers'

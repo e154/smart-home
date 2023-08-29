@@ -566,11 +566,11 @@ export const developRouterMap: AppRouteRecordRaw[] = [
         ]
       },
       {
-        path: 'development',
-        name: 'Development',
-        component: () => import('@/views/Development/EventBus/index.vue'),
+        path: 'tools',
+        name: 'Tools',
+        component: () => import('@/views/Tools/EventBus/index.vue'),
         meta: {
-          title: t('router.Development'),
+          title: t('router.Tools'),
         },
         children: [
         ]

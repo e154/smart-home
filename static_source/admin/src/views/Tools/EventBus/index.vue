@@ -74,11 +74,11 @@ onUnmounted(() => {
 const columns: TableColumn[] = [
   {
     field: 'topic',
-    label: t('development.eventBus.topic'),
+    label: t('tools.eventBus.topic'),
   },
   {
     field: 'subscribers',
-    label: t('development.eventBus.subscribers'),
+    label: t('tools.eventBus.subscribers'),
     width: "100px"
   },
 ]

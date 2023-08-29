@@ -177,7 +177,8 @@ export default {
     Users: "Пользователи",
     Backups: "Резервные копии",
     MessageDelivery: "Сообщения",
-    Settings: 'Настройки'
+    Settings: 'Настройки',
+    Tools: 'Tools'
   },
   permission: {
     hasPermission: "Пожалуйста, установите значение разрешения на операцию"
@@ -533,7 +534,7 @@ export default {
     devDarkDashboard: 'Dev Dark Dashboard',
     devLightDashboard: 'Dev Light Dashboard'
   },
-  development: {
+  tools: {
     eventBus: {
       topic: 'Канал',
       subscribers: 'Подписчики'
