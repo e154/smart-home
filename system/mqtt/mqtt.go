@@ -141,8 +141,9 @@ func (m *Mqtt) Start() {
 		server.WithTCPListener(ln),
 		server.WithPlugin(m.admin),
 		server.WithHook(server.Hooks{
-			OnBasicAuth:  m.onBasicAuth,
-			OnMsgArrived: m.onMsgArrived,
+			OnConnected: func(ctx context.Context, client server.Client) {
+				m.eventBus.Publish("system/services/mqtt", events.EventMqttNewClient{})
+			},
 		}),
 	}
 

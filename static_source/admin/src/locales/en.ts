@@ -180,7 +180,7 @@ export default {
         MessageDelivery: 'Message Delivery',
         Settings: 'Settings',
         Tools: 'Tools',
-        Mqtt: 'Mqtt'
+        Mqtt: 'Mqtt Server'
     },
     permission: {
         hasPermission: 'Please set the operation permission value'
@@ -545,7 +545,7 @@ export default {
     },
     mqtt: {
         client: {
-            client: 'Client',
+            client: 'MQTT Client',
             clientId: 'Client Id',
             username: 'User Name',
             keepAlive: 'Keep Alive',
@@ -567,6 +567,16 @@ export default {
             queueLen: 'Queue Len',
             connectedAt: 'Connected At',
             disconnectedAt: 'Disconnected At',
+            subscriptions: 'Subscriptions',
+        },
+        subscription: {
+            id: 'ID',
+            topicName: 'Topic Name',
+            name: 'Name',
+            qos: 'QOS',
+            noLocal: 'No Local',
+            retainAsPublished: 'Retain As Published',
+            retainHandling: 'Retain Handling',
         }
     }
 }

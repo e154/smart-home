@@ -18,10 +18,12 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MqttServiceClient interface {
-	// get mqtt by id
+	// get client by id
 	GetClientById(ctx context.Context, in *GetClientRequest, opts ...grpc.CallOption) (*Client, error)
-	// get mqtt list
+	// get client list
 	GetClientList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*GetClientListResult, error)
+	// get subscription list
+	GetSubscriptionList(ctx context.Context, in *SubscriptionPaginationRequest, opts ...grpc.CallOption) (*GetSubscriptionListResult, error)
 }
 
 type mqttServiceClient struct {
@@ -50,14 +52,25 @@ func (c *mqttServiceClient) GetClientList(ctx context.Context, in *PaginationReq
 	return out, nil
 }
 
+func (c *mqttServiceClient) GetSubscriptionList(ctx context.Context, in *SubscriptionPaginationRequest, opts ...grpc.CallOption) (*GetSubscriptionListResult, error) {
+	out := new(GetSubscriptionListResult)
+	err := c.cc.Invoke(ctx, "/api.MqttService/GetSubscriptionList", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MqttServiceServer is the server API for MqttService service.
 // All implementations should embed UnimplementedMqttServiceServer
 // for forward compatibility
 type MqttServiceServer interface {
-	// get mqtt by id
+	// get client by id
 	GetClientById(context.Context, *GetClientRequest) (*Client, error)
-	// get mqtt list
+	// get client list
 	GetClientList(context.Context, *PaginationRequest) (*GetClientListResult, error)
+	// get subscription list
+	GetSubscriptionList(context.Context, *SubscriptionPaginationRequest) (*GetSubscriptionListResult, error)
 }
 
 // UnimplementedMqttServiceServer should be embedded to have forward compatible implementations.
@@ -69,6 +82,9 @@ func (UnimplementedMqttServiceServer) GetClientById(context.Context, *GetClientR
 }
 func (UnimplementedMqttServiceServer) GetClientList(context.Context, *PaginationRequest) (*GetClientListResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetClientList not implemented")
+}
+func (UnimplementedMqttServiceServer) GetSubscriptionList(context.Context, *SubscriptionPaginationRequest) (*GetSubscriptionListResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSubscriptionList not implemented")
 }
 
 // UnsafeMqttServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -118,6 +134,24 @@ func _MqttService_GetClientList_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MqttService_GetSubscriptionList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SubscriptionPaginationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MqttServiceServer).GetSubscriptionList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.MqttService/GetSubscriptionList",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MqttServiceServer).GetSubscriptionList(ctx, req.(*SubscriptionPaginationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // MqttService_ServiceDesc is the grpc.ServiceDesc for MqttService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -132,6 +166,10 @@ var MqttService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetClientList",
 			Handler:    _MqttService_GetClientList_Handler,
+		},
+		{
+			MethodName: "GetSubscriptionList",
+			Handler:    _MqttService_GetSubscriptionList_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -58,3 +58,15 @@ func (c ControllerMqtt) GetClientList(ctx context.Context, req *api.PaginationRe
 
 	return c.dto.Mqtt.ToListResult(items, uint64(total), pagination), nil
 }
+
+// GetSubscriptionList ...
+func (c ControllerMqtt) GetSubscriptionList(ctx context.Context, req *api.SubscriptionPaginationRequest) (*api.GetSubscriptionListResult, error) {
+
+	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
+	items, total, err := c.endpoint.Mqtt.GetSubscriptionList(ctx, req.ClientId, pagination)
+	if err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return c.dto.Mqtt.GetSubscriptionList(items, uint64(total), pagination), nil
+}

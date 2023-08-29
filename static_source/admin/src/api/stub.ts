@@ -524,6 +524,11 @@ export interface ApiGetScriptListResult {
   meta?: ApiMeta;
 }
 
+export interface ApiGetSubscriptionListResult {
+  items?: ApiSubscription[];
+  meta?: ApiMeta;
+}
+
 export interface ApiGetTaskListResult {
   items?: ApiTask[];
   meta?: ApiMeta;
@@ -1008,6 +1013,20 @@ export interface ApiStatistic {
 
 export interface ApiStatistics {
   items?: ApiStatistic[];
+}
+
+export interface ApiSubscription {
+  /** @format int64 */
+  id?: number;
+  clientId?: string;
+  topicName?: string;
+  name?: string;
+  /** @format int64 */
+  qos?: number;
+  noLocal?: boolean;
+  retainAsPublished?: boolean;
+  /** @format int64 */
+  retainHandling?: number;
 }
 
 export interface ApiTask {
@@ -3211,6 +3230,35 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
     ) =>
       this.request<ApiGetClientListResult, RpcStatus>({
         path: `/v1/mqtt/clients`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags MqttService
+     * @name MqttServiceGetSubscriptionList
+     * @summary get subscription list
+     * @request GET:/v1/mqtt/subscriptions
+     * @secure
+     */
+    mqttServiceGetSubscriptionList: (
+      query?: {
+        /** @format uint64 */
+        page?: number;
+        /** @format uint64 */
+        limit?: number;
+        sort?: string;
+        clientId?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<ApiGetSubscriptionListResult, RpcStatus>({
+        path: `/v1/mqtt/subscriptions`,
         method: "GET",
         query: query,
         secure: true,

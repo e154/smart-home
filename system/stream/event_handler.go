@@ -66,6 +66,10 @@ func (e *eventHandler) eventHandler(_ string, message interface{}) {
 	// actions
 	case events.EventActionCompleted:
 		go e.event(message)
+
+	// mqtt
+	case events.EventMqttNewClient:
+		go e.event(message)
 	}
 }
 

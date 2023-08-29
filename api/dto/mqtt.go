@@ -67,3 +67,41 @@ func (r Mqtt) ToListResult(list []*admin.ClientInfo, total uint64, pagination co
 		},
 	}
 }
+
+// GetSubscriptiontById ...
+func (r Mqtt) GetSubscriptiontById(from *admin.SubscriptionInfo) (client *api.Subscription) {
+	if from == nil {
+		return
+	}
+	client = &api.Subscription{
+		Id:                from.Id,
+		ClientId:          from.ClientID,
+		TopicName:         from.TopicName,
+		Name:              from.Name,
+		Qos:               from.Qos,
+		NoLocal:           from.NoLocal,
+		RetainAsPublished: from.RetainAsPublished,
+		RetainHandling:    from.RetainHandling,
+	}
+	return
+}
+
+// GetSubscriptionList ...
+func (r Mqtt) GetSubscriptionList(list []*admin.SubscriptionInfo, total uint64, pagination common.PageParams) *api.GetSubscriptionListResult {
+
+	items := make([]*api.Subscription, 0, len(list))
+
+	for _, i := range list {
+		items = append(items, r.GetSubscriptiontById(i))
+	}
+
+	return &api.GetSubscriptionListResult{
+		Items: items,
+		Meta: &api.Meta{
+			Limit: uint64(pagination.Limit),
+			Page:  pagination.PageReq,
+			Total: total,
+			Sort:  pagination.SortReq,
+		},
+	}
+}

@@ -179,8 +179,8 @@ export default {
     Backups: "Резервные копии",
     MessageDelivery: "Сообщения",
     Settings: 'Настройки',
-    Tools: 'Tools',
-    Mqtt: 'Mqtt'
+    Tools: 'Инструменты',
+    Mqtt: 'Mqtt Сервер'
   },
   permission: {
     hasPermission: "Пожалуйста, установите значение разрешения на операцию"
@@ -565,7 +565,17 @@ export default {
       inflightLen: "Длина очереди in-flight",
       queueLen: "Длина очереди",
       connectedAt: "Подключено с",
-      disconnectedAt: "Отключено с"
+      disconnectedAt: "Отключено с",
+      subscriptions: 'Подписки'
+    },
+    subscription: {
+      id: "ID",
+      topicName: "Имя темы",
+      name: "Название",
+      qos: "Уровень качества сервиса (QoS)",
+      noLocal: "Без локальных сообщений",
+      retainAsPublished: "Сохранять как опубликованное",
+      retainHandling: "Обработка сохранения"
     }
   }
 }

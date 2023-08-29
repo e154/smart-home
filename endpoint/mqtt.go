@@ -77,13 +77,17 @@ func (m *MqttEndpoint) GetSession(clientId string) (session *admin.SessionInfo, 
 	return
 }
 
-// GetSubscriptions ...
-func (m *MqttEndpoint) GetSubscriptions(clientId string, limit, offset uint) (list []*admin.SubscriptionInfo, total int, err error) {
+// GetSubscriptionList ...
+func (m *MqttEndpoint) GetSubscriptionList(ctx context.Context, clientId *string, pagination common.PageParams) (list []*admin.SubscriptionInfo, total int, err error) {
 	if m.mqtt.Admin() == nil {
 		err = apperr.ErrMqttServerNoWorked
 		return
 	}
-	list, total, err = m.mqtt.Admin().GetSubscriptions(clientId, limit, offset)
+	if clientId == nil {
+		err = apperr.ErrBadRequestParams
+		return
+	}
+	list, total, err = m.mqtt.Admin().GetSubscriptions(*clientId, uint(pagination.Limit), uint(pagination.Limit))
 	return
 }
 

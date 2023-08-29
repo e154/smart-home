@@ -34,7 +34,16 @@ message Client {
   google.protobuf.Timestamp disconnected_at = 100;
 }
 
-
+message Subscription {
+  uint32 id = 1;
+  string client_id = 2;
+  string topic_name = 3;
+  string name = 4;
+  uint32 qos = 5;
+  bool no_local = 6;
+  bool retain_as_published = 7;
+  uint32 retain_handling = 8;
+}
 
 message GetClientRequest {
   string id = 1;
@@ -45,9 +54,21 @@ message GetClientListResult {
   Meta meta = 2;
 }
 
+message SubscriptionPaginationRequest {
+  uint64 page = 1;
+  uint64 limit = 2;
+  string sort = 3;
+  optional string client_id = 4;
+}
+
+message GetSubscriptionListResult {
+  repeated Subscription items = 1;
+  Meta meta = 2;
+}
+
 service MqttService {
 
-  // get mqtt by id
+  // get client by id
   rpc GetClientById (GetClientRequest) returns (Client){
     option (google.api.http) = {
       get: "/v1/mqtt/client/{id}"
@@ -62,10 +83,25 @@ service MqttService {
     };
   }
 
-  // get mqtt list
+  // get client list
   rpc GetClientList (PaginationRequest) returns (GetClientListResult){
     option (google.api.http) = {
       get: "/v1/mqtt/clients"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // get subscription list
+  rpc GetSubscriptionList (SubscriptionPaginationRequest) returns (GetSubscriptionListResult){
+    option (google.api.http) = {
+      get: "/v1/mqtt/subscriptions"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
       security: {

@@ -50,25 +50,21 @@ const tableObject = reactive<TableObject>(
 
 const currentID = ref('')
 
-const onEventTriggerActivated = (event: EventTriggerCompleted) => {
-
+const onEventMqttNewClient = () => {
+  getList()
 }
 
 onMounted(() => {
   const uuid = new UUID()
   currentID.value = uuid.getDashFreeUUID()
 
-  // setTimeout(() => {
-  //   stream.subscribe('event_trigger_loaded', currentID.value, onStateChanged);
-  //   stream.subscribe('event_trigger_unloaded', currentID.value, onStateChanged);
-  //   stream.subscribe('event_trigger_completed', currentID.value, onEventTriggerActivated);
-  // }, 1000)
+  setTimeout(() => {
+    stream.subscribe('event_mqtt_new_client', currentID.value, onEventMqttNewClient);
+  }, 1000)
 })
 
 onUnmounted(() => {
-  // stream.unsubscribe('event_trigger_loaded', currentID.value);
-  // stream.unsubscribe('event_trigger_unloaded', currentID.value);
-  // stream.unsubscribe('event_trigger_completed', currentID.value);
+  stream.unsubscribe('event_mqtt_new_client', currentID.value);
 })
 
 const columns: TableColumn[] = [
@@ -94,19 +90,6 @@ const columns: TableColumn[] = [
       )
     }
   },
-  // {
-  //   field: 'disconnectedAt',
-  //   label: t('mqtt.client.disconnectedAt'),
-  //   type: 'time',
-  //   sortable: true,
-  //   width: "150px",
-  //   formatter: (row: ApiClient) => {
-  //     return h(
-  //         'span',
-  //         parseTime(row?.disconnectedAt)
-  //     )
-  //   }
-  // },
 ]
 const paginationObj = ref<Pagination>({
   currentPage: 1,
