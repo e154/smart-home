@@ -121,7 +121,6 @@ telegramAction = (entityId, actionName)->
 
 					}
 					_ = eventBus.Subscribe("system/entities/+", fn)
-					defer func() { _ = eventBus.Unsubscribe("system/entities/+", fn) }()
 
 					eventBus.Publish(notify.TopicNotify, notify.Message{
 						Type: telegram.Name,

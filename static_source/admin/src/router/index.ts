@@ -639,7 +639,7 @@ export const developRouterMap: AppRouteRecordRaw[] = [
           {
             path: 'dummy',
             name: 'dummyMqtt',
-            component: () => import('@/views/Mqtts/edit.vue'),
+            component: () => import('@/views/Mqtts/index.vue'),
             meta: {
               title: t('router.View'),
               noTagsView: true,
