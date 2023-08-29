@@ -155,6 +155,7 @@ export default {
         New: 'New',
         Edit: 'Edit',
         List: 'List',
+        View: 'View',
         Development: 'Development',
         Entities: 'Entities',
         Scripts: 'Scripts',
@@ -178,7 +179,8 @@ export default {
         Backups: 'Backups',
         MessageDelivery: 'Message Delivery',
         Settings: 'Settings',
-        Tools: 'Tools'
+        Tools: 'Tools',
+        Mqtt: 'Mqtt'
     },
     permission: {
         hasPermission: 'Please set the operation permission value'
@@ -539,6 +541,32 @@ export default {
         eventBus: {
             topic: 'Topic',
             subscribers: 'Subscribers'
+        }
+    },
+    mqtt: {
+        client: {
+            client: 'Client',
+            clientId: 'Client Id',
+            username: 'User Name',
+            keepAlive: 'Keep Alive',
+            version: 'Version',
+            willRetain: 'Will Retain',
+            willQos: 'Will Qos',
+            willTopic: 'Will Topic',
+            willPayload: 'Will Payload',
+            remoteAddr: 'Remote Addr',
+            localAddr: 'Local Addr',
+            subscriptionsCurrent: 'Subscriptions Current',
+            subscriptionsTotal: 'Subscriptions Total',
+            packetsReceivedBytes: 'Packets Received Bytes',
+            packetsReceivedNums: 'Packets Received Nums',
+            packetsSendBytes: 'Packets Send Bytes',
+            packetsSendNums: 'Packets Send Nums',
+            messageDropped: 'Message Dropped',
+            inflightLen: 'Inflight Len',
+            queueLen: 'Queue Len',
+            connectedAt: 'Connected At',
+            disconnectedAt: 'Disconnected At',
         }
     }
 }

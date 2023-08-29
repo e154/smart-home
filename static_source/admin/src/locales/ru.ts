@@ -155,6 +155,7 @@ export default {
     New: 'Создание',
     Edit: 'Редактирование',
     List: 'Список',
+    View: 'Просмотр',
     Development: "Разработка",
     Entities: "Сущности",
     Scripts: "Скрипты",
@@ -178,7 +179,8 @@ export default {
     Backups: "Резервные копии",
     MessageDelivery: "Сообщения",
     Settings: 'Настройки',
-    Tools: 'Tools'
+    Tools: 'Tools',
+    Mqtt: 'Mqtt'
   },
   permission: {
     hasPermission: "Пожалуйста, установите значение разрешения на операцию"
@@ -538,6 +540,32 @@ export default {
     eventBus: {
       topic: 'Канал',
       subscribers: 'Подписчики'
+    }
+  },
+  mqtt: {
+    client: {
+      client: 'MQTT Клиент',
+      clientId: "ID клиента",
+      username: "Имя пользователя",
+      keepAlive: "Сохранять подключение",
+      version: "Версия",
+      willRetain: "Запомнить в случае отключения",
+      willQos: "Уровень качества сервиса для сообщения по умолчанию",
+      willTopic: "Тема сообщения по умолчанию",
+      willPayload: "Содержание сообщения по умолчанию",
+      remoteAddr: "Удаленный адрес",
+      localAddr: "Локальный адрес",
+      subscriptionsCurrent: "Текущие подписки",
+      subscriptionsTotal: "Всего подписок",
+      packetsReceivedBytes: "Байт получено",
+      packetsReceivedNums: "Количество пакетов получено",
+      packetsSendBytes: "Байт отправлено",
+      packetsSendNums: "Количество пакетов отправлено",
+      messageDropped: "Сообщения отброшено",
+      inflightLen: "Длина очереди in-flight",
+      queueLen: "Длина очереди",
+      connectedAt: "Подключено с",
+      disconnectedAt: "Отключено с"
     }
   }
 }

@@ -66,6 +66,9 @@
       "name": "MetricService"
     },
     {
+      "name": "MqttService"
+    },
+    {
       "name": "PluginService"
     },
     {
@@ -3360,6 +3363,92 @@
         ]
       }
     },
+    "/v1/mqtt/client/{id}": {
+      "get": {
+        "summary": "get mqtt by id",
+        "operationId": "MqttService_GetClientById",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiClient"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "MqttService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/mqtt/clients": {
+      "get": {
+        "summary": "get mqtt list",
+        "operationId": "MqttService_GetClientList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiGetClientListResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "MqttService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
     "/v1/password_reset": {
       "post": {
         "summary": "sign out user",
@@ -6503,6 +6592,88 @@
         }
       }
     },
+    "apiClient": {
+      "type": "object",
+      "properties": {
+        "clientId": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "keepAlive": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "version": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "willRetain": {
+          "type": "boolean"
+        },
+        "willQos": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "willTopic": {
+          "type": "string"
+        },
+        "willPayload": {
+          "type": "string"
+        },
+        "remoteAddr": {
+          "type": "string"
+        },
+        "localAddr": {
+          "type": "string"
+        },
+        "subscriptionsCurrent": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "subscriptionsTotal": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "packetsReceivedBytes": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "packetsReceivedNums": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "packetsSendBytes": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "packetsSendNums": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "messageDropped": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "inflightLen": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "queueLen": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "connectedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "disconnectedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "apiCondition": {
       "type": "object",
       "properties": {
@@ -7239,6 +7410,20 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/apiZigbee2mqttShort"
+          }
+        },
+        "meta": {
+          "$ref": "#/definitions/apiMeta"
+        }
+      }
+    },
+    "apiGetClientListResult": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiClient"
           }
         },
         "meta": {

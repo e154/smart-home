@@ -55,6 +55,7 @@ type Controllers struct {
 	Backup            ControllerBackup
 	MessageDelivery   ControllerMessageDelivery
 	Index             ControllerIndex
+	Mqtt              ControllerMqtt
 }
 
 // NewControllers ...
@@ -92,5 +93,6 @@ func NewControllers(adaptors *adaptors.Adaptors,
 		Backup:            NewControllerBackup(common),
 		MessageDelivery:   NewControllerMessageDelivery(common),
 		Index:             NewControllerIndex(common),
+		Mqtt:              NewControllerMqtt(common),
 	}
 }

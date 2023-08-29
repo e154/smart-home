@@ -19,6 +19,8 @@
 package endpoint
 
 import (
+	"context"
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/system/mqtt/admin"
 )
@@ -35,18 +37,18 @@ func NewMqttEndpoint(common *CommonEndpoint) *MqttEndpoint {
 	}
 }
 
-// GetClients ...
-func (m *MqttEndpoint) GetClients(limit, offset uint) (list []*admin.ClientInfo, total uint32, err error) {
+// GetClientList ...
+func (m *MqttEndpoint) GetClientList(ctx context.Context, pagination common.PageParams) (list []*admin.ClientInfo, total uint32, err error) {
 	if m.mqtt.Admin() == nil {
 		err = apperr.ErrMqttServerNoWorked
 		return
 	}
-	list, total, err = m.mqtt.Admin().GetClients(limit, offset)
+	list, total, err = m.mqtt.Admin().GetClients(uint(pagination.Limit), uint(pagination.Offset))
 	return
 }
 
-// GetClient ...
-func (m *MqttEndpoint) GetClient(clientId string) (client *admin.ClientInfo, err error) {
+// GetClientById ...
+func (m *MqttEndpoint) GetClientById(ctx context.Context, clientId string) (client *admin.ClientInfo, err error) {
 	if m.mqtt.Admin() == nil {
 		err = apperr.ErrMqttServerNoWorked
 		return

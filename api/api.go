@@ -129,6 +129,7 @@ func (a *Api) Start() (err error) {
 	gw.RegisterActionServiceServer(a.grpcServer, a.controllers.Action)
 	gw.RegisterConditionServiceServer(a.grpcServer, a.controllers.Condition)
 	gw.RegisterTriggerServiceServer(a.grpcServer, a.controllers.Trigger)
+	gw.RegisterMqttServiceServer(a.grpcServer, a.controllers.Mqtt)
 
 	var group errgroup.Group
 
@@ -190,6 +191,7 @@ func (a *Api) Start() (err error) {
 		_ = gw.RegisterActionServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
 		_ = gw.RegisterConditionServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
 		_ = gw.RegisterTriggerServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterMqttServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
 		return nil
 	})
 

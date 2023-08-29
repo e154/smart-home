@@ -41,6 +41,7 @@ type Dto struct {
 	EntityStorage     EntityStorage
 	MessageDelivery   MessageDelivery
 	DeveloperTools    DeveloperTools
+	Mqtt              Mqtt
 }
 
 // NewDto ...
@@ -67,5 +68,6 @@ func NewDto() Dto {
 		EntityStorage:     NewEntityStorageDto(),
 		MessageDelivery:   NewMessageDeliveryDto(),
 		DeveloperTools:    NewDeveloperToolsDto(),
+		Mqtt:              NewMqttDto(),
 	}
 }

@@ -110,6 +110,44 @@ export interface ApiBusStateItem {
   subscribers?: number;
 }
 
+export interface ApiClient {
+  clientId?: string;
+  username?: string;
+  /** @format int64 */
+  keepAlive?: number;
+  /** @format int32 */
+  version?: number;
+  willRetain?: boolean;
+  /** @format int64 */
+  willQos?: number;
+  willTopic?: string;
+  willPayload?: string;
+  remoteAddr?: string;
+  localAddr?: string;
+  /** @format int64 */
+  subscriptionsCurrent?: number;
+  /** @format int64 */
+  subscriptionsTotal?: number;
+  /** @format uint64 */
+  packetsReceivedBytes?: number;
+  /** @format uint64 */
+  packetsReceivedNums?: number;
+  /** @format uint64 */
+  packetsSendBytes?: number;
+  /** @format uint64 */
+  packetsSendNums?: number;
+  /** @format uint64 */
+  messageDropped?: number;
+  /** @format int64 */
+  inflightLen?: number;
+  /** @format int64 */
+  queueLen?: number;
+  /** @format date-time */
+  connectedAt?: string;
+  /** @format date-time */
+  disconnectedAt?: string;
+}
+
 export interface ApiCondition {
   /** @format int64 */
   id?: number;
@@ -405,6 +443,11 @@ export interface ApiGetBackupListResult {
 
 export interface ApiGetBridgeListResult {
   items?: ApiZigbee2MqttShort[];
+  meta?: ApiMeta;
+}
+
+export interface ApiGetClientListResult {
+  items?: ApiClient[];
   meta?: ApiMeta;
 }
 
@@ -3122,6 +3165,52 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
     ) =>
       this.request<ApiMetric, RpcStatus>({
         path: `/v1/metric`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags MqttService
+     * @name MqttServiceGetClientById
+     * @summary get mqtt by id
+     * @request GET:/v1/mqtt/client/{id}
+     * @secure
+     */
+    mqttServiceGetClientById: (id: string, params: RequestParams = {}) =>
+      this.request<ApiClient, RpcStatus>({
+        path: `/v1/mqtt/client/${id}`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags MqttService
+     * @name MqttServiceGetClientList
+     * @summary get mqtt list
+     * @request GET:/v1/mqtt/clients
+     * @secure
+     */
+    mqttServiceGetClientList: (
+      query?: {
+        /** @format uint64 */
+        page?: number;
+        /** @format uint64 */
+        limit?: number;
+        sort?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<ApiGetClientListResult, RpcStatus>({
+        path: `/v1/mqtt/clients`,
         method: "GET",
         query: query,
         secure: true,

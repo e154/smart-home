@@ -537,8 +537,8 @@ export const developRouterMap: AppRouteRecordRaw[] = [
         },
         children: [
           {
-            path: 'new',
-            name: 'newPlugin',
+            path: 'dummy',
+            name: 'dummyPlugin',
             component: () => import('@/views/Plugins/edit.vue'),
             meta: {
               title: t('router.New'),
@@ -551,11 +551,11 @@ export const developRouterMap: AppRouteRecordRaw[] = [
           },
           {
             path: 'edit/:name',
-            name: 'editPlugin',
+            name: 'viewPlugin',
             component: () => import('@/views/Plugins/edit.vue'),
             props: true,
             meta: {
-              title: t('router.Edit'),
+              title: t('router.View'),
               noTagsView: true,
               noCache: true,
               hidden: true,
@@ -624,6 +624,43 @@ export const developRouterMap: AppRouteRecordRaw[] = [
               hidden: true,
               canTo: true,
               activeMenu: '/etc/areas'
+            }
+          }
+        ]
+      },
+      {
+        path: 'mqtt',
+        name: 'Mqtt',
+        component: () => import('@/views/Mqtt/index.vue'),
+        meta: {
+          title: t('router.Mqtt'),
+        },
+        children: [
+          {
+            path: 'dummy',
+            name: 'dummyMqtt',
+            component: () => import('@/views/Mqtts/edit.vue'),
+            meta: {
+              title: t('router.View'),
+              noTagsView: true,
+              noCache: true,
+              hidden: true,
+              canTo: true,
+              activeMenu: '/etc/plugins'
+            }
+          },
+          {
+            path: 'client/:id',
+            name: 'viewMqttClient',
+            component: () => import('@/views/Mqtt/client.vue'),
+            props: true,
+            meta: {
+              title: t('router.View'),
+              noTagsView: true,
+              noCache: true,
+              hidden: true,
+              canTo: true,
+              activeMenu: '/etc/mqtt'
             }
           }
         ]

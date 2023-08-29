@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+package api;
+option go_package = "/api";
+
+import "google/api/annotations.proto";
+import "protoc-gen-swagger/options/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+import "pagination.proto";
+
+message Client {
+  string client_id = 1;
+  string username = 2;
+  uint32 keep_alive = 3;
+  int32 version = 4;
+  bool will_retain = 5;
+  uint32 will_qos = 6;
+  string will_topic = 7;
+  string will_payload = 8;
+  string remote_addr = 9;
+  string local_addr = 10;
+  uint32 subscriptions_current = 11;
+  uint32 subscriptions_total = 12;
+  uint64 packets_received_bytes = 13;
+  uint64 packets_received_nums = 14;
+  uint64 packets_send_bytes = 15;
+  uint64 packets_send_nums = 16;
+  uint64 message_dropped = 17;
+  uint32 inflight_len = 18;
+  uint32 queue_len = 19;
+
+  google.protobuf.Timestamp connected_at = 99;
+  google.protobuf.Timestamp disconnected_at = 100;
+}
+
+
+
+message GetClientRequest {
+  string id = 1;
+}
+
+message GetClientListResult {
+  repeated Client items = 1;
+  Meta meta = 2;
+}
+
+service MqttService {
+
+  // get mqtt by id
+  rpc GetClientById (GetClientRequest) returns (Client){
+    option (google.api.http) = {
+      get: "/v1/mqtt/client/{id}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // get mqtt list
+  rpc GetClientList (PaginationRequest) returns (GetClientListResult){
+    option (google.api.http) = {
+      get: "/v1/mqtt/clients"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+}
