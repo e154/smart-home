@@ -70,9 +70,18 @@ automationTriggerTime = (msg)->
 			eventBus.Purge()
 			scriptService.Restart()
 			scheduler.Start(context.TODO())
+			supervisor.Restart(context.Background())
+			automation.Restart()
 			defer func() {
 				scheduler.Shutdown(context.Background())
 			}()
+
+			var counter atomic.Int32
+			scriptService.PushFunctions("Done", func(t time.Time) {
+				counter.Inc()
+			})
+
+			time.Sleep(time.Second)
 
 			// add scripts
 			// ------------------------------------------------
@@ -82,14 +91,7 @@ automationTriggerTime = (msg)->
 
 			// automation
 			// ------------------------------------------------
-
-			//TASK3
-			task3 := &m.Task{
-				Name:      "Toggle plug OFF",
-				Enabled:   true,
-				Condition: common.ConditionAnd,
-			}
-			task3.AddTrigger(&m.Trigger{
+			trigger := &m.Trigger{
 				Name:       "trigger1",
 				Script:     task3Script,
 				PluginName: "time",
@@ -100,21 +102,21 @@ automationTriggerTime = (msg)->
 						Value: "* * * * * *", //every seconds
 					},
 				},
-			})
-			err = adaptors.Task.Import(task3)
+			}
+			err = AddTrigger(trigger, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
-			// ------------------------------------------------
+			//TASK3
+			newTask := &m.NewTask{
+				Name:       "Toggle plug OFF",
+				Enabled:    true,
+				Condition:  common.ConditionAnd,
+				TriggerIds: []int64{trigger.Id},
+			}
+			err = AddTask(newTask, adaptors, eventBus)
+			So(err, ShouldBeNil)
 
-			var counter atomic.Int32
-			scriptService.PushFunctions("Done", func(t time.Time) {
-				counter.Inc()
-			})
-
-			supervisor.Restart(context.Background())
-			automation.Restart()
-
-			time.Sleep(time.Second)
+			time.Sleep(time.Second * 2)
 
 			So(counter.Load(), ShouldBeGreaterThanOrEqualTo, 1)
 		})

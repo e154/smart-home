@@ -125,10 +125,8 @@ automationTriggerStateChanged = (msg)->
 			scriptService.Restart()
 			supervisor.Restart(context.Background())
 			mqttServer.Start()
-			go zigbee2mqtt.Start()
-			defer func() {
-				zigbee2mqtt.Shutdown()
-			}()
+			zigbee2mqtt.Start()
+			defer zigbee2mqtt.Shutdown()
 
 			var counter atomic.Int32
 			var lastStat atomic.String
@@ -165,24 +163,24 @@ automationTriggerStateChanged = (msg)->
 
 			// automation
 			// ------------------------------------------------
-			//TASK1
-			task1 := &m.Task{
-				Name:      "Toggle plug ON",
-				Enabled:   true,
-				Condition: common.ConditionAnd,
-			}
-			task1.AddTrigger(&m.Trigger{
+			trigger := &m.Trigger{
 				Name:       "state_change",
 				EntityId:   &buttonEnt.Id,
 				Script:     task1Script,
 				PluginName: "state_change",
-			})
-			err = adaptors.Task.Import(task1)
+			}
+			err = AddTrigger(trigger, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
-			eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", task1.Id), events.EventAddedTask{
-				Id: task1.Id,
-			})
+			//TASK1
+			newTask := &m.NewTask{
+				Name:      "Toggle plug ON",
+				Enabled:   true,
+				TriggerIds: []int64{trigger.Id},
+				Condition: common.ConditionAnd,
+			}
+			err = AddTask(newTask, adaptors, eventBus)
+			So(err, ShouldBeNil)
 
 			time.Sleep(time.Millisecond * 500)
 

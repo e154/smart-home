@@ -21,6 +21,8 @@ package plugins
 import (
 	"context"
 	"fmt"
+	"github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/system/bus"
 	"net"
 	"net/http"
 	"time"
@@ -544,5 +546,26 @@ func AddScript(name, src string, adaptors *adaptors.Adaptors, scriptService scri
 
 	script.Id, err = adaptors.Script.Add(script)
 
+	return
+}
+
+func AddTrigger(trigger *m.Trigger, adaptors *adaptors.Adaptors, eventBus bus.Bus) (err error) {
+	if trigger.Id, err = adaptors.Trigger.Add(trigger); err != nil {
+		return
+	}
+	eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", trigger.Id), events.EventAddedTrigger{
+		Id: trigger.Id,
+	})
+	return
+}
+
+func AddTask(newTask *m.NewTask, adaptors *adaptors.Adaptors, eventBus bus.Bus) (err error) {
+	var task1Id int64
+	if task1Id, err = adaptors.Task.Add(newTask); err != nil {
+		return
+	}
+	eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", task1Id), events.EventAddedTask{
+		Id: task1Id,
+	})
 	return
 }

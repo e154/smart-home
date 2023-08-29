@@ -20,8 +20,6 @@ package plugins
 
 import (
 	"context"
-	"fmt"
-	"github.com/e154/smart-home/common/events"
 	"testing"
 	"time"
 
@@ -89,14 +87,7 @@ automationTriggerAlexa = (msg)->
 
 			// automation
 			// ------------------------------------------------
-
-			//TASK3
-			task3 := &m.Task{
-				Name:      "Toggle plug ON",
-				Enabled:   true,
-				Condition: common.ConditionAnd,
-			}
-			task3.AddTrigger(&m.Trigger{
+			trigger := &m.Trigger{
 				Name:       "alexa",
 				Script:     task3Script,
 				PluginName: "alexa",
@@ -107,13 +98,19 @@ automationTriggerAlexa = (msg)->
 						Value: 1,
 					},
 				},
-			})
-			err = adaptors.Task.Import(task3)
+			}
+			err = AddTrigger(trigger, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
-			eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", task3.Id), events.EventAddedTask{
-				Id: task3.Id,
-			})
+			//TASK3
+			newTask := &m.NewTask{
+				Name:      "Toggle plug ON",
+				Enabled:   true,
+				TriggerIds: []int64{trigger.Id},
+				Condition: common.ConditionAnd,
+			}
+			err = AddTask(newTask, adaptors, eventBus)
+			So(err, ShouldBeNil)
 
 			time.Sleep(time.Millisecond * 500)
 

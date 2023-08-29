@@ -23,6 +23,7 @@ import (
 	"github.com/e154/smart-home/common/events"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
@@ -50,6 +51,9 @@ func TestZone(t *testing.T) {
 			ctx.So(err, ShouldBeNil)
 
 			eventBus.Purge()
+			automation.Restart()
+
+			time.Sleep(time.Second)
 
 			// add entity
 			// ------------------------------------------------
@@ -57,6 +61,12 @@ func TestZone(t *testing.T) {
 			zoneEnt := GetNewZone()
 			err = adaptors.Entity.Add(zoneEnt)
 			So(err, ShouldBeNil)
+
+			eventBus.Publish("system/entities/"+zoneEnt.Id.String(), events.EventCreatedEntity{
+				EntityId: zoneEnt.Id,
+			})
+
+			time.Sleep(time.Second)
 
 			// ------------------------------------------------
 			wgAdd := sync.WaitGroup{}

@@ -20,6 +20,7 @@ package plugins
 
 import (
 	"context"
+	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/system/initial/local_migrations"
 	"testing"
 	"time"
@@ -67,12 +68,20 @@ sceneEvent = (args)->
 			eventBus.Purge()
 			scriptService.Restart()
 
+			scheduler.Start(context.TODO())
+			supervisor.Restart(context.Background())
+			automation.Restart()
+			defer func() {
+				_ = scheduler.Shutdown(context.TODO())
+			}()
+
+			time.Sleep(time.Millisecond * 500)
+
 			var counter atomic.Int32
 			scriptService.PushFunctions("Done", func(args string) {
 				counter.Inc()
 			})
 
-			time.Sleep(time.Millisecond * 500)
 			// add scripts
 			// ------------------------------------------------
 
@@ -85,21 +94,15 @@ sceneEvent = (args)->
 			err = adaptors.Entity.Add(romanticEnt)
 			So(err, ShouldBeNil)
 
-			// automation
-			// ------------------------------------------------
+			eventBus.Publish("system/entities/"+romanticEnt.Id.String(), events.EventCreatedEntity{
+				EntityId: romanticEnt.Id,
+			})
 
-			scheduler.Start(context.TODO())
-			supervisor.Restart(context.Background())
-			automation.Restart()
-			defer func() {
-				_ = scheduler.Shutdown(context.TODO())
-			}()
-
+			time.Sleep(time.Millisecond * 500)
 
 			t.Run("call scene", func(t *testing.T) {
 				Convey("case", t, func(ctx C) {
 
-					time.Sleep(time.Millisecond * 500)
 					supervisor.CallScene(romanticEnt.Id, nil)
 					time.Sleep(time.Millisecond * 500)
 

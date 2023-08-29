@@ -87,7 +87,7 @@ func (m *MqttEndpoint) GetSubscriptionList(ctx context.Context, clientId *string
 		err = apperr.ErrBadRequestParams
 		return
 	}
-	list, total, err = m.mqtt.Admin().GetSubscriptions(*clientId, uint(pagination.Limit), uint(pagination.Limit))
+	list, total, err = m.mqtt.Admin().GetSubscriptions(*clientId, uint(pagination.Limit), uint(pagination.Offset))
 	return
 }
 

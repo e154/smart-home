@@ -72,6 +72,21 @@ automationTriggerSystem = (msg)->
 			scriptService.Restart()
 
 			go mqttServer.Start()
+			supervisor.Restart(context.Background())
+			automation.Restart()
+			go zigbee2mqtt.Start()
+			defer func() {
+				zigbee2mqtt.Shutdown()
+			}()
+
+			time.Sleep(time.Second)
+
+			var counter atomic.Int32
+			var lastEvent atomic.String
+			scriptService.PushFunctions("Done", func(systemEvent string) {
+				lastEvent.Store(systemEvent)
+				counter.Inc()
+			})
 
 			// add scripts
 			// ------------------------------------------------
@@ -81,36 +96,25 @@ automationTriggerSystem = (msg)->
 
 			// automation
 			// ------------------------------------------------
-
-			//TASK3
-			task3 := &m.Task{
-				Name:      "Toggle plug OFF",
-				Enabled:   true,
-				Condition: common.ConditionAnd,
-			}
-			task3.AddTrigger(&m.Trigger{
+			trigger := &m.Trigger{
 				Name:       "tr1",
 				Script:     task3Script,
 				PluginName: "system",
-			})
-			err = adaptors.Task.Import(task3)
+			}
+			err = AddTrigger(trigger, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
-			// ------------------------------------------------
+			//TASK3
+			newTask := &m.NewTask{
+				Name:      "Toggle plug OFF",
+				Enabled:   true,
+				Condition: common.ConditionAnd,
+				TriggerIds: []int64{trigger.Id},
+			}
+			err = AddTask(newTask, adaptors, eventBus)
+			So(err, ShouldBeNil)
 
-			var counter atomic.Int32
-			var lastEvent atomic.String
-			scriptService.PushFunctions("Done", func(systemEvent string) {
-				lastEvent.Store(systemEvent)
-				counter.Inc()
-			})
 
-			supervisor.Restart(context.Background())
-			automation.Restart()
-			go zigbee2mqtt.Start()
-			defer func() {
-				zigbee2mqtt.Shutdown()
-			}()
 
 			// ------------------------------------------------
 

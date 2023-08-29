@@ -238,50 +238,81 @@ automationAction = (entityId)->
 
 			// automation
 			// ------------------------------------------------
-			//TASK1
-			task1 := &m.Task{
-				Name:      "Toggle plug ON",
-				Enabled:   true,
-				Condition: common.ConditionAnd,
-			}
-			task1.AddTrigger(&m.Trigger{
+			trigger1 := &m.Trigger{
 				Name:       "state_change",
 				EntityId:   &buttonEnt.Id,
 				Script:     task1Script,
 				PluginName: "state_change",
-			})
-			task1.AddCondition(&m.Condition{
-				Name:   "check plug state",
-				Script: task1Script,
-			})
-			task1.AddAction(&m.Action{
-				Name:   "action on Plug",
-				Script: task1Script,
-			})
-			err = adaptors.Task.Import(task1)
+			}
+			err = AddTrigger(trigger1, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
-			//TASK2
-			task2 := &m.Task{
-				Name:      "Toggle plug OFF",
-				Enabled:   true,
-				Condition: common.ConditionAnd,
-			}
-			task2.AddTrigger(&m.Trigger{
+			trigger2 := &m.Trigger{
 				Name:       "",
 				EntityId:   &buttonEnt.Id,
 				Script:     task2Script,
 				PluginName: "state_change",
-			})
-			task2.AddCondition(&m.Condition{
+			}
+			err = AddTrigger(trigger2, adaptors, eventBus)
+			So(err, ShouldBeNil)
+
+
+			// conditions
+			// -----------------------
+			condition1 := &m.Condition{
+				Name:   "check plug state",
+				Script: task1Script,
+			}
+			condition1.Id, err = adaptors.Condition.Add(condition1)
+			So(err, ShouldBeNil)
+
+			condition2 := &m.Condition{
 				Name:   "check plug state",
 				Script: task2Script,
-			})
-			task2.AddAction(&m.Action{
+			}
+			condition2.Id, err = adaptors.Condition.Add(condition2)
+			So(err, ShouldBeNil)
+
+			// actions
+			// -----------------------
+			action1 := &m.Action{
+				Name:   "action on Plug",
+				Script: task1Script,
+			}
+			action1.Id, err = adaptors.Action.Add(action1)
+			So(err, ShouldBeNil)
+
+			action2 := &m.Action{
 				Name:   "action on Plug",
 				Script: task2Script,
-			})
-			err = adaptors.Task.Import(task2)
+			}
+			action2.Id, err = adaptors.Action.Add(action2)
+			So(err, ShouldBeNil)
+
+			// tasks
+			// -----------------------
+			newTask1 := &m.NewTask{
+				Name:      "Toggle plug ON",
+				Enabled:   true,
+				Condition: common.ConditionAnd,
+				TriggerIds: []int64{trigger1.Id},
+				ConditionIds: []int64{condition1.Id},
+				ActionIds: []int64{action1.Id},
+			}
+
+			err = AddTask(newTask1, adaptors, eventBus)
+			So(err, ShouldBeNil)
+
+			//TASK2
+			newTask2 := &m.NewTask{
+				Name:      "Toggle plug OFF",
+				Enabled:   true,
+				Condition: common.ConditionAnd,
+				TriggerIds: []int64{trigger2.Id},
+				ConditionIds: []int64{condition2.Id},
+				ActionIds: []int64{action2.Id},
+			}
+			err = AddTask(newTask2, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
 			// ------------------------------------------------

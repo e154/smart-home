@@ -20,6 +20,7 @@ package plugins
 
 import (
 	"context"
+	"github.com/e154/smart-home/common/events"
 	"testing"
 	"time"
 
@@ -72,10 +73,18 @@ entityAction = (entityId, actionName)->
 			eventBus.Purge()
 			scriptService.Restart()
 			scheduler.Start(context.TODO())
+			supervisor.Restart(context.Background())
+			automation.Restart()
 			defer func() {
 				scheduler.Shutdown(context.Background())
 			}()
 
+			var counter atomic.Int32
+			scriptService.PushFunctions("Done", func() {
+				counter.Inc()
+			})
+
+			time.Sleep(time.Second)
 			// add scripts
 			// ------------------------------------------------
 
@@ -99,16 +108,14 @@ entityAction = (entityId, actionName)->
 			sensorEnt, err = adaptors.Entity.GetById(sensorEnt.Id)
 			ctx.So(err, ShouldBeNil)
 
+			eventBus.Publish("system/entities/"+sensorEnt.Id.String(), events.EventCreatedEntity{
+				EntityId: sensorEnt.Id,
+			})
+
+
 			// automation
 			// ------------------------------------------------
-
-			//TASK3
-			task3 := &m.Task{
-				Name:      "Toggle plug OFF",
-				Enabled:   true,
-				Condition: common.ConditionAnd,
-			}
-			task3.AddTrigger(&m.Trigger{
+			trigger := &m.Trigger{
 				Name:       "trigger1",
 				PluginName: "time",
 				Payload: m.Attributes{
@@ -118,26 +125,30 @@ entityAction = (entityId, actionName)->
 						Value: "* * * * * *", //every seconds
 					},
 				},
-			})
-			task3.AddAction(&m.Action{
+			}
+			err = AddTrigger(trigger, adaptors, eventBus)
+			So(err, ShouldBeNil)
+
+			action := &m.Action{
 				Name:             "action1",
 				EntityId:         common.NewEntityId(string(sensorEnt.Id)),
 				EntityActionName: common.String(sensorEnt.Actions[0].Name),
-			})
-			err = adaptors.Task.Import(task3)
+			}
+			action.Id, err = adaptors.Action.Add(action)
 			So(err, ShouldBeNil)
 
-			// ------------------------------------------------
+			//TASK3
+			newTask := &m.NewTask{
+				Name:      "Toggle plug OFF",
+				Enabled:   true,
+				Condition: common.ConditionAnd,
+				TriggerIds: []int64{trigger.Id},
+				ActionIds: []int64{action.Id},
+			}
+			err = AddTask(newTask, adaptors, eventBus)
+			So(err, ShouldBeNil)
 
-			var counter atomic.Int32
-			scriptService.PushFunctions("Done", func() {
-				counter.Inc()
-			})
-
-			supervisor.Restart(context.Background())
-			automation.Restart()
-
-			time.Sleep(time.Second)
+			time.Sleep(time.Second * 2)
 
 			So(counter.Load(), ShouldBeGreaterThanOrEqualTo, 1)
 

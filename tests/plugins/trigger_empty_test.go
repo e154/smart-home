@@ -20,10 +20,8 @@ package plugins
 
 import (
 	"context"
-	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/triggers"
 	"github.com/e154/smart-home/system/automation"
@@ -69,14 +67,7 @@ func TestTriggerEmpty(t *testing.T) {
 
 			// automation
 			// ------------------------------------------------
-
-			//TASK3
-			task3 := &m.Task{
-				Name:      "Toggle plug OFF",
-				Enabled:   true,
-				Condition: common.ConditionAnd,
-			}
-			task3.AddTrigger(&m.Trigger{
+			trigger := &m.Trigger{
 				Name:       "trigger1",
 				PluginName: "time",
 				Payload: m.Attributes{
@@ -86,13 +77,19 @@ func TestTriggerEmpty(t *testing.T) {
 						Value: "* * * * * *", //every seconds
 					},
 				},
-			})
-			err = adaptors.Task.Import(task3)
+			}
+			err = AddTrigger(trigger, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
-			eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", task3.Id), events.EventAddedTask{
-				Id: task3.Id,
-			})
+			//TASK3
+			newTask := &m.NewTask{
+				Name:      "Toggle plug OFF",
+				Enabled:   true,
+				Condition: common.ConditionAnd,
+				TriggerIds: []int64{trigger.Id},
+			}
+			err = AddTask(newTask, adaptors, eventBus)
+			So(err, ShouldBeNil)
 
 			time.Sleep(time.Millisecond * 500)
 
