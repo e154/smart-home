@@ -72,6 +72,17 @@ const schema = reactive<FormSchema[]>([
     }
   },
   {
+    field: 'script',
+    component: 'ScriptV',
+    colProps: {
+      span: 24
+    },
+    value: null,
+    componentProps: {
+      placeholder: t('automation.triggers.script'),
+    }
+  },
+  {
     field: 'pluginName',
     label: t('automation.triggers.pluginName'),
     component: 'Select',

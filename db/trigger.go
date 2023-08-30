@@ -84,7 +84,15 @@ func (t Triggers) GetById(id int64) (trigger *Trigger, err error) {
 
 // Update ...
 func (t Triggers) Update(m *Trigger) (err error) {
-	if err = t.Db.Model(&Trigger{}).Where("id = ?", m.Id).Updates(m).Error; err != nil {
+	q := map[string]interface{}{
+		"name":        m.Name,
+		"plugin_name": m.PluginName,
+		"payload":     m.Payload,
+		"enabled":     m.Enabled,
+		"script_id":   m.ScriptId,
+		"entity_id":   m.EntityId,
+	}
+	if err = t.Db.Model(&Trigger{}).Where("id = ?", m.Id).Updates(q).Error; err != nil {
 		err = errors.Wrap(apperr.ErrTriggerUpdate, err.Error())
 	}
 	return

@@ -351,7 +351,9 @@ export default {
     stat_cs_name: "Всего скриптов на CoffeeScript",
     stat_cs_descr: "",
     stat_ts_name: "Всего скриптов на TypeScript",
-    stat_ts_descr: ""
+    stat_ts_descr: "",
+    showModalDialog: 'Редактировать выбранный скрипт',
+    modalWindow: 'Выбранный скрипт'
   },
   zigbee2mqtt: {
     id: "ID",

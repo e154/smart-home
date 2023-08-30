@@ -352,7 +352,9 @@ export default {
         stat_cs_name: 'Total coffeescript scripts',
         stat_cs_descr: '',
         stat_ts_name: 'Total typescript scripts',
-        stat_ts_descr: ''
+        stat_ts_descr: '',
+        showModalDialog: 'Edit current script',
+        modalWindow: 'Current script'
     },
     zigbee2mqtt: {
         id: 'ID',

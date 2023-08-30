@@ -25,6 +25,7 @@ import ImageSearch from '@/views/Images/components/ImageSearch.vue'
 import AreaSearch from '@/views/Areas/components/AreaSearch.vue'
 import RoleSearch from '@/views/Users/components/RoleSearch.vue'
 import ScriptSearch from '@/views/Scripts/components/ScriptSearch.vue'
+import ScriptViewer from '@/views/Scripts/components/ScriptViewer.vue'
 import ScriptsSearch from '@/views/Scripts/components/ScriptsSearch.vue'
 import EntitySearch from '@/views/Entities/components/EntitySearch.vue'
 import PluginSearch from '@/views/Plugins/components/PluginSearch.vue'
@@ -62,6 +63,7 @@ const componentMap: Recordable<Component, ComponentName> = {
   Role: RoleSearch,
   Script: ScriptSearch,
   Scripts: ScriptsSearch,
+  ScriptV: ScriptViewer,
   Entity: EntitySearch,
   Plugin: PluginSearch,
   Trigger: TriggerSearch,

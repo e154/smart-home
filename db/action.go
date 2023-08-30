@@ -82,7 +82,13 @@ func (t Actions) GetById(id int64) (action *Action, err error) {
 
 // Update ...
 func (t Actions) Update(m *Action) (err error) {
-	if err = t.Db.Model(&Action{}).Where("id = ?", m.Id).Updates(m).Error; err != nil {
+	q := map[string]interface{}{
+		"name":               m.Name,
+		"script_id":          m.ScriptId,
+		"entity_id":          m.EntityId,
+		"entity_action_name": m.EntityActionName,
+	}
+	if err = t.Db.Model(&Action{}).Where("id = ?", m.Id).Updates(q).Error; err != nil {
 		err = errors.Wrap(apperr.ErrActionUpdate, err.Error())
 	}
 	return

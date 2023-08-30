@@ -82,7 +82,17 @@ const schema = reactive<FormSchema[]>([
       placeholder: t('entities.script')
     }
   },
-
+  {
+    field: 'script',
+    component: 'ScriptV',
+    colProps: {
+      span: 24
+    },
+    value: null,
+    componentProps: {
+      placeholder: t('automation.triggers.script'),
+    }
+  },
 ])
 
 watch(

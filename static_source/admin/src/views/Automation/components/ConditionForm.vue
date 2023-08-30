@@ -47,6 +47,17 @@ const schema = reactive<FormSchema[]>([
       placeholder: t('automation.conditions.script')
     }
   },
+  {
+    field: 'script',
+    component: 'ScriptV',
+    colProps: {
+      span: 24
+    },
+    value: null,
+    componentProps: {
+      placeholder: t('automation.triggers.script'),
+    }
+  },
 ])
 
 const {setValues} = methods

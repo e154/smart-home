@@ -29,6 +29,7 @@ export type ComponentName =
   | 'Entity'
   | 'Plugin'
   | 'Scripts'
+  | 'ScriptV'
   | 'Trigger'
   | 'Action'
   | 'Condition'
