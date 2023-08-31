@@ -84,7 +84,7 @@ const schema = reactive<FormSchema[]>([
   },
   {
     field: 'script',
-    component: 'ScriptV',
+    component: 'ScriptHelper',
     colProps: {
       span: 24
     },

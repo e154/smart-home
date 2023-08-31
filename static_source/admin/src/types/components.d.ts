@@ -29,7 +29,7 @@ export type ComponentName =
   | 'Entity'
   | 'Plugin'
   | 'Scripts'
-  | 'ScriptV'
+  | 'ScriptHelper'
   | 'Trigger'
   | 'Action'
   | 'Condition'
