@@ -23,7 +23,6 @@ watch(
       pluginName.value = val?.name || null;
       currentPlugin.value = val || null;
     },
-
 )
 
 // 监听
@@ -36,9 +35,6 @@ watch(
         emit('change', val)
       }
     },
-    {
-      immediate: true
-    }
 )
 
 const querySearchAsync = async (queryString: string, cb: Fn) => {

@@ -505,6 +505,7 @@ export default {
       size: "Размер",
       stateOptions: "Параметры состояния",
       defaultImage: "Изображение по умолчанию",
+      selectAction: 'Выберите действие',
       chart: {
         type: "Тип",
         metric_index: "Индекс метрики",

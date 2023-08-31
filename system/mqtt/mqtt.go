@@ -126,7 +126,7 @@ func (m *Mqtt) Start() {
 		return
 	}
 
-	ln, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%d", m.cfg.Port))
+	ln, err := net.Listen("tcp", fmt.Sprintf(":%d", m.cfg.Port))
 	if err != nil {
 		log.Error(err.Error())
 	}
@@ -141,6 +141,8 @@ func (m *Mqtt) Start() {
 		server.WithTCPListener(ln),
 		server.WithPlugin(m.admin),
 		server.WithHook(server.Hooks{
+			OnBasicAuth:  m.onBasicAuth,
+			OnMsgArrived: m.onMsgArrived,
 			OnConnected: func(ctx context.Context, client server.Client) {
 				m.eventBus.Publish("system/services/mqtt", events.EventMqttNewClient{})
 			},

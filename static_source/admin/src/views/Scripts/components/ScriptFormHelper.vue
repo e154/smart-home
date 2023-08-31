@@ -84,6 +84,21 @@ useEmitt({
   }
 })
 
+const exec = async () => {
+  await api.v1.scriptServiceExecSrcScriptById({
+    name: currentScript.value?.name,
+    source: sourceScript.value,
+    lang: currentScript.value?.lang
+  })
+  ElMessage({
+    title: t('Success'),
+    message: t('message.callSuccessful'),
+    type: 'success',
+    duration: 2000
+  })
+}
+
+
 </script>
 
 <template>
@@ -98,7 +113,9 @@ useEmitt({
   <Dialog v-model="dialogVisible" :title="t('scripts.modalWindow')" :maxHeight="400" width="80%">
     <ScriptEditor v-if="!loading" v-model="currentScript"/>
     <template #footer>
+      <ElButton type="success" @click="exec()">{{ t('main.exec') }}</ElButton>
       <ElButton @click="save()">{{ t('main.update') }}</ElButton>
+      <ElButton type="default" @click="fetch()">{{ t('main.loadFromServer') }}</ElButton>
       <ElButton @click="dialogVisible = false">{{ t('main.closeDialog') }}</ElButton>
     </template>
   </Dialog>

@@ -6,6 +6,8 @@ import {ElButton, ElCol, ElDialog, ElImage, ElRow} from 'element-plus'
 import Browser from "@/views/Images/components/Browser.vue";
 import {useEmitt} from "@/hooks/web/useEmitt";
 import {useI18n} from "@/hooks/web/useI18n";
+import {UUID} from "uuid-generator-ts";
+import stream from "@/api/stream";
 
 const emit = defineEmits(['change', 'update:modelValue'])
 const {t} = useI18n()
@@ -19,6 +21,12 @@ const props = defineProps({
 
 const dialogVisible = ref(false)
 const currentImage = ref<Nullable<ApiImage>>(null)
+
+const currentID = ref('')
+onMounted(() => {
+  const uuid = new UUID()
+  currentID.value = uuid.getDashFreeUUID()
+})
 
 watch(
     () => props.modelValue,
@@ -49,7 +57,9 @@ const getUrl = (image?: ApiImage): string => {
 
 useEmitt({
   name: 'imageSelected',
-  callback: (image?: ApiImage) => {
+  callback: (val) => {
+    const {id, image} = val;
+    if (id && id != currentID.value) return;
     currentImage.value = image || null
   }
 })
@@ -74,7 +84,7 @@ const showBrowser = () => {
       </div>
 
       <ElDialog v-model="dialogVisible" append-to-body :title="$t('images.imageBrowser')" :maxHeight="400" width="80%">
-        <Browser/>
+        <Browser :id="currentID"/>
       </ElDialog>
     </ElCol>
   </ElRow>

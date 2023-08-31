@@ -29,14 +29,12 @@ watch(
 watch(
     () => currentScript.value,
     (val?: ApiScript) => {
+      if (props.modelValue == unref(val)) return;
       emit('update:modelValue', val)
       if (!val) {
         emit('change', val)
       }
     },
-    {
-      immediate: true
-    }
 )
 
 const querySearchAsync = async (queryString: string, cb: Fn) => {

@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import {ElButton, ElRow, ElCol, ElBadge, ElImage, ElUpload, UploadProps, ElDialog, ElMessage} from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
-import {reactive, ref, unref} from "vue";
-import {ApiImage, GetImageFilterListResultfilter} from "@/api/stub";
+import {PropType, reactive, ref, unref} from "vue";
+import {ApiCondition, ApiImage, GetImageFilterListResultfilter} from "@/api/stub";
 import api from "@/api/api";
 import {useEmitt} from "@/hooks/web/useEmitt";
 import {createImageViewer} from "@/components/ImageViewer";
+import {propTypes} from "@/utils/propTypes";
 
 const { t } = useI18n()
 
@@ -16,6 +17,10 @@ interface ViewerObject {
   imageList?: ApiImage[]
   selected?: ApiImage
 }
+
+const props = defineProps({
+  id: propTypes.string.def(''),
+})
 
 const viewerObject = reactive<ViewerObject>(
     {
@@ -88,7 +93,7 @@ const select = (image: ApiImage) => {
   }
   const output = Object.assign({}, unref(viewerObject)?.selected) as ApiImage
   output.url = output.url.replace(import.meta.env.VITE_API_BASEPATH,'');
-  emitter.emit('imageSelected', output)
+  emitter.emit('imageSelected', {id: props.id, image: output})
   //todo: fix
   ElMessage({
     message: t('message.selectedImage') + ` ${output.id}`,

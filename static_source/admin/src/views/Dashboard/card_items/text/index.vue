@@ -167,50 +167,184 @@ update()
 </script>
 
 <template>
-  <div
-      v-if="item.asButton"
-      ref="el"
-      v-show="!item.hidden"
-      @mouseover="mouseOver"
-      @mouseleave="mouseLive()"
-      class="device-menu"
-      :class="[{'as-button': item.asButton && item.buttonActions.length > 0}]"
-  >
-
+  <div ref="el" :class="[{'hidden': item.hidden}]">
     <div
-        class="cursor-pointer"
-        :style="item.style"
-        v-html="currentValue"
-        :key="reloadKey"
-        @click.prevent.stop="callAction(item.buttonActions[0])"></div>
-
-    <div
-        :class="[{'show': showMenu}]"
-        class="device-menu-circle"
-        v-if="item.asButton && item.buttonActions.length > 1"
+        v-if="item.asButton"
+        v-show="!item.hidden"
+        @mouseover="mouseOver"
+        @mouseleave="mouseLive()"
+        class="device-menu"
+        :class="[{'as-button': item.asButton && item.buttonActions.length > 0}]"
     >
-      <a
-          href="#"
-          v-for="(action, index) in item.buttonActions"
-          :key="index"
-          @click.prevent.stop="callAction(action)">
-        <img :src="item.getUrl(action.image)"/>
-      </a>
+
+      <div
+          class="cursor-pointer"
+          :style="item.style"
+          v-html="currentValue"
+          :key="reloadKey"
+          @click.prevent.stop="callAction(item.buttonActions[0])"></div>
+
+      <div
+          :class="[{'show': showMenu}]"
+          class="device-menu-circle"
+          v-if="item.asButton && item.buttonActions.length > 1"
+      >
+        <a
+            href="#"
+            v-for="(action, index) in item.buttonActions"
+            @click.prevent.stop="callAction(action)"
+            :key="index">
+          <img :src="item.getUrl(action.image)"/>
+        </a>
+      </div>
+    </div>
+    <div v-else v-show="!item.hidden">
+      <div
+          :style="getStyle()"
+          v-show="!item.hidden"
+          v-html="currentValue"
+          :key="reloadKey">
+
+      </div>
     </div>
   </div>
-  <div v-else
-       ref="el"
-       :style="getStyle()"
-       v-show="!item.hidden"
-       v-html="currentValue"
-       :key="reloadKey"></div>
+
 </template>
 
-<style lang="less" >
+<style lang="less" scoped>
+.hidden {
+  z-index: -99999;
+}
 .ql-align-center {
   text-align: center;
 }
 .cursor-pointer {
   cursor: pointer;
+}
+
+
+.device-menu {
+  position: relative;
+  transition: all 0.7s ease-in-out;
+  a {
+    cursor: pointer;
+    height: 40px;
+    width: 40px;
+    img {
+      height: 100%;
+      width: 100%;
+    }
+  }
+  .device-menu-circle {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    z-index: -10;
+    a {
+      -moz-transition: all 0.1s ease-in;
+      -webkit-transition: all 0.1s ease-in;
+      display: inherit;
+      height: inherit !important;
+      position: absolute;
+      transition: all 0.1s ease-in;
+      width: inherit !important;
+      &:nth-of-type(1) {
+        bottom: 0;
+      }
+      &:nth-of-type(2) {
+        right: 0;
+        top: 0;
+      }
+      &:nth-of-type(3) {
+        right: 0;
+      }
+      &:nth-of-type(4) {
+        bottom: 0;
+        right: 0;
+      }
+      &:nth-of-type(5) {
+        bottom: 0;
+      }
+      &:nth-of-type(6) {
+        bottom: 0;
+        left: 0;
+      }
+      &:nth-of-type(7) {
+        left: 0;
+      }
+      &:nth-of-type(8) {
+        left: 0;
+        top: 0;
+      }
+    }
+  }
+  .device-menu-circle.show {
+    opacity: 1;
+    a {
+      &:nth-child(+n+8) {
+        display: none;
+      }
+      &:nth-of-type(1) {
+        bottom: 180%;
+      }
+      &:nth-of-type(2) {
+        right: -130%;
+        top: -130%;
+      }
+      &:nth-of-type(3) {
+        right: -180%;
+      }
+      &:nth-of-type(4) {
+        bottom: -130%;
+        right: -130%;
+      }
+      &:nth-of-type(5) {
+        bottom: -180%;
+      }
+      &:nth-of-type(6) {
+        bottom: -130%;
+        left: -130%;
+      }
+      &:nth-of-type(7) {
+        left: -180%;
+      }
+      &:nth-of-type(8) {
+        left: -130%;
+        top: -130%;
+      }
+      &:hover {
+        img {
+          transform: scale(1.1);
+        }
+      }
+    }
+  }
+  a.device-menu-button {
+    &:hover {
+      img {
+        transform: scale(1.1);
+      }
+    }
+  }
+}
+.device-menu.as-button {
+  img.device {
+    cursor: pointer;
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+}
+.unselectable {
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  user-drag: none;
+  user-select: none;
 }
 </style>

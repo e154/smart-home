@@ -35,9 +35,6 @@ watch(
         emit('change', val)
       }
     },
-    {
-      immediate: true
-    }
 )
 
 const querySearchAsync = async (queryString: string, cb: Fn) => {

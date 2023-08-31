@@ -289,7 +289,6 @@ export default {
             eventEnd: 'Event End',
             pipeline: 'Pipeline',
             exportDialogTitle: 'Export Task'
-
         },
         triggers: {
             id: 'ID',
@@ -506,6 +505,7 @@ export default {
             size: 'Size',
             stateOptions: 'State Options',
             defaultImage: 'Default Image',
+            selectAction: 'Select Action',
             chart: {
                 type: 'Type',
                 metric_index: 'Metric Index',

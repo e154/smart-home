@@ -48,14 +48,14 @@ const currentItem = computed({
 
 onMounted(() => {
   setTimeout(() => {
-    if (props.item.entityId) {
+    if (props.item?.entityId) {
       fetchEntity(props.item.entityId);
     }
   }, 1000);
 })
 
 const fetchEntity = async (id: string) => {
-  // const entity = await props.core.fetchEntity(id);
+0  // const entity = await props.core.fetchEntity(id);
   // currentItem.value.entity = entity;
 }
 
@@ -78,7 +78,15 @@ const changedForActionButton = async (entity: ApiEntity, index: number) => {
   }
 }
 
-const getButtonAction = (entity?: ApiEntity) => {
+const updateButtonActions = () => {
+  for (const index in currentItem.value.buttonActions) {
+    changedForActionButton(currentItem.value.buttonActions[index].entity, index)
+  }
+}
+
+updateButtonActions()
+
+const getActionList = (entity?: ApiEntity) => {
   if (!entity) {
     return [];
   }
@@ -151,9 +159,7 @@ const removeAction = (index: number) => {
 
   <!-- button options -->
   <div v-if="item.type !== 'button' && item.type !== 'chart'">
-    <ElDivider content-position="left">
-      {{$t('dashboard.editor.buttonOptions') }}
-    </ElDivider>
+    <ElDivider content-position="left">{{$t('dashboard.editor.buttonOptions') }}</ElDivider>
     <ElRow :gutter="24">
       <ElCol :span="12" :xs="12">
         <ElFormItem :label="$t('dashboard.editor.asButton')" prop="enabled">
@@ -198,7 +204,7 @@ const removeAction = (index: number) => {
                   </ElCol>
 
                   <ElCol :span="12" :xs="12">
-                    <ElFormItem :label="$t('dashboard.editor.action')" prop="action" :aria-disabled="!item.entity">
+                    <ElFormItem :label="$t('dashboard.editor.action')"  prop="action" :aria-disabled="!item.entity">
                       <ElSelect
                           v-model="prop.action"
                           clearable
@@ -206,7 +212,7 @@ const removeAction = (index: number) => {
                           style="width: 100%"
                       >
                         <ElOption
-                            v-for="item in getButtonAction(prop.entity)"
+                            v-for="item in getActionList(prop.entity)"
                             :key="item.name"
                             :label="item.name"
                             :value="item.name"/>
@@ -216,7 +222,7 @@ const removeAction = (index: number) => {
                 </ElRow>
 
                 <ElFormItem :label="$t('dashboard.editor.image')" prop="image">
-                  <ImageSearch v-model="prop.image" @change="onSelectImageForAction(index, ...arguments)"/>
+                    <ImageSearch v-model="prop.image" @change="onSelectImageForAction(index, ...arguments)"/>
                 </ElFormItem>
 
                 <ElRow>

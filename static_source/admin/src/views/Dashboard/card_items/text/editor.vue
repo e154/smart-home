@@ -275,7 +275,7 @@ const updateCurrentState = () => {
   <ElRow>
     <ElCol>
       <ElFormItem :label="$t('dashboard.editor.html')" prop="enabled">
-        <el-switch v-model="defaultTextHtml"/>
+        <ElSwitch v-model="defaultTextHtml"/>
       </ElFormItem>
 
       <ElFormItem :label="$t('dashboard.editor.textBody')" prop="text">

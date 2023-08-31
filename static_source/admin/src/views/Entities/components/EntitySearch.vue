@@ -23,6 +23,9 @@ watch(
       entityId.value = val?.id || null;
       currentEntity.value = val || null;
     },
+    {
+      immediate: true
+    }
 )
 
 // 监听
@@ -35,9 +38,7 @@ watch(
         emit('change', val)
       }
     },
-    {
-      immediate: true
-    }
+
 )
 
 const querySearchAsync = async (queryString: string, cb: Fn) => {

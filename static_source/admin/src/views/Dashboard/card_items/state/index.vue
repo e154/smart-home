@@ -134,7 +134,7 @@ requestCurrentState(props.item?.entityId);
 </script>
 
 <template>
-  <div ref="el">
+  <div ref="el" :class="[{'hidden': item.hidden}]">
     <div
         v-if="item.asButton"
          v-show="!item.hidden"
@@ -176,6 +176,9 @@ requestCurrentState(props.item?.entityId);
 </template>
 
 <style lang="less" scoped>
+.hidden {
+  z-index: -99999;
+}
 
 .device-menu {
   position: relative;

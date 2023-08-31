@@ -29,14 +29,12 @@ watch(
 watch(
     () => currentCondition.value,
     (val?: ApiCondition) => {
+      if (props.modelValue == unref(val)) return;
       emit('update:modelValue', val)
       if (!val) {
         emit('change', val)
       }
     },
-    {
-      immediate: true
-    }
 )
 
 const querySearchAsync = async (queryString: string, cb: Fn) => {
