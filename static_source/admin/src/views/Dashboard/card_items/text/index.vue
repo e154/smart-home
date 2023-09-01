@@ -167,18 +167,18 @@ update()
 </script>
 
 <template>
-  <div ref="el" :class="[{'hidden': item.hidden}]">
+  <div ref="el" :class="[{'hidden': item.hidden}]" class="w-[100%] h-[100%]">
     <div
         v-if="item.asButton"
         v-show="!item.hidden"
         @mouseover="mouseOver"
         @mouseleave="mouseLive()"
-        class="device-menu"
+        class="device-menu w-[100%] h-[100%]"
         :class="[{'as-button': item.asButton && item.buttonActions.length > 0}]"
     >
 
       <div
-          class="cursor-pointer"
+          class="cursor-pointer w-[100%] h-[100%]"
           :style="item.style"
           v-html="currentValue"
           :key="reloadKey"
@@ -198,8 +198,9 @@ update()
         </a>
       </div>
     </div>
-    <div v-else v-show="!item.hidden">
+    <div v-else v-show="!item.hidden" class="w-[100%] h-[100%]">
       <div
+          class="w-[100%] h-[100%]"
           :style="getStyle()"
           v-show="!item.hidden"
           v-html="currentValue"
