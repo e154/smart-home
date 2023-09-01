@@ -28,19 +28,9 @@ const props = defineProps({
   },
 })
 
-const currentCore = computed({
-  get(): Core {
-    return props.core as Core
-  },
-  set(val: Core) {}
-})
+const currentCore = computed(() => props.core as Core)
 
-const currentItem = computed({
-  get(): CardItem {
-    return props.item as CardItem
-  },
-  set(val: CardItem) {}
-})
+const currentItem = computed(() => props.item as CardItem)
 
 // ---------------------------------
 // component methods
