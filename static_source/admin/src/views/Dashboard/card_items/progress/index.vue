@@ -8,7 +8,7 @@ import {ElProgress} from "element-plus";
 // ---------------------------------
 // common
 // ---------------------------------
-const item = ref<CardItem>({} as CardItem)
+
 const value = ref(0)
 
 const props = defineProps({
@@ -42,7 +42,6 @@ watch(
     () => props.item,
     (val?: CardItem) => {
       if (!val) return;
-      item.value = val;
       update()
     },
     {
@@ -50,7 +49,6 @@ watch(
       immediate: true
     }
 )
-
 
 requestCurrentState(props.item?.entityId);
 

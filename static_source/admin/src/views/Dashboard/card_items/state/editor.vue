@@ -41,12 +41,7 @@ watch(
     }
 )
 
-const currentItem = computed({
-  get(): CardItem {
-    return props.item as CardItem
-  },
-  set(val: CardItem) {}
-})
+const currentItem = computed(() => props.item as CardItem)
 
 const addProp = () => {
   // console.log('add prop');

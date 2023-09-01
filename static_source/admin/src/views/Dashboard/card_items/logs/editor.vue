@@ -13,7 +13,6 @@ const {t} = useI18n()
 // ---------------------------------
 // common
 // ---------------------------------
-const item = ref<CardItem>({} as CardItem)
 
 const props = defineProps({
   core: {
@@ -26,17 +25,6 @@ const props = defineProps({
   },
 })
 
-watch(
-    () => props.item,
-    (val?: CardItem) => {
-      if (!val) return;
-      item.value = val;
-    },
-    {
-      deep: true,
-      immediate: true
-    }
-)
 
 // ---------------------------------
 // component methods
