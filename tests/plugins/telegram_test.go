@@ -122,6 +122,8 @@ telegramAction = (entityId, actionName)->
 					}
 					_ = eventBus.Subscribe("system/entities/+", fn)
 
+					time.Sleep(time.Millisecond * 500)
+
 					eventBus.Publish(notify.TopicNotify, notify.Message{
 						Type: telegram.Name,
 						Attributes: map[string]interface{}{
@@ -131,10 +133,7 @@ telegramAction = (entityId, actionName)->
 					})
 
 					ok := Wait(2, ch)
-
 					ctx.So(ok, ShouldBeTrue)
-
-					time.Sleep(time.Millisecond * 500)
 
 					list, total, err := adaptors.MessageDelivery.List(context.Background(), 10, 0, "", "", nil)
 					ctx.So(err, ShouldBeNil)
