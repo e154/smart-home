@@ -14,7 +14,6 @@ const {t} = useI18n()
 // ---------------------------------
 // common
 // ---------------------------------
-const item = ref<CardItem>({} as CardItem)
 
 const props = defineProps({
   core: {
@@ -27,17 +26,7 @@ const props = defineProps({
   },
 })
 
-watch(
-    () => props.item,
-    (val?: CardItem) => {
-      if (!val) return;
-      item.value = val;
-    },
-    {
-      deep: true,
-      immediate: true
-    }
-)
+const currentItem = computed(() => props.item as CardItem)
 
 // ---------------------------------
 // component methods
@@ -49,30 +38,30 @@ watch(
 <template>
   <div>
 
-    <CommonEditor :item="item" :core="core"/>
+    <CommonEditor :item="currentItem" :core="core"/>
 
     <ElDivider content-position="left">{{$t('dashboard.editor.buttonOptions')}}</ElDivider>
 
     <ElRow :gutter="24">
       <ElCol :span="8" :xs="8">
 <!--        <ElFormItem :label="$t('dashboard.editor.icon')" prop="icon">-->
-<!--          <ElInput size="small" v-model="item.payload.button.icon"/>-->
+<!--          <ElInput size="small" v-model="currentItem.payload.button.icon"/>-->
 <!--        </ElFormItem>-->
 
         <ElFormItem :label="$t('dashboard.editor.text')" prop="text">
-          <ElInput size="small" v-model="item.payload.button.text"/>
+          <ElInput size="small" v-model="currentItem.payload.button.text"/>
         </ElFormItem>
 
-        <ElFormItem :label="$t('dashboard.editor.action')" prop="action" :aria-disabled="!item.entity">
+        <ElFormItem :label="$t('dashboard.editor.action')" prop="action" :aria-disabled="!currentItem.entity">
 
           <ElSelect
-              v-model="item.payload.button.action"
+              v-model="currentItem.payload.button.action"
               clearable
               :placeholder="$t('dashboard.editor.selectAction')"
               style="width: 100%"
           >
             <ElOption
-                v-for="p in item.entityActions"
+                v-for="p in currentItem.entityActions"
                 :key="p.value"
                 :label="p.label"
                 :value="p.value"/>
@@ -85,7 +74,7 @@ watch(
 
         <ElFormItem :label="$t('dashboard.editor.type')" prop="type">
           <ElSelect
-              v-model="item.payload.button.type"
+              v-model="currentItem.payload.button.type"
               placeholder="please select type"
               style="width: 100%"
           >
@@ -101,7 +90,7 @@ watch(
 
         <ElFormItem :label="$t('dashboard.editor.size')" prop="size">
           <ElSelect
-              v-model="item.payload.button.size"
+              v-model="currentItem.payload.button.size"
               placeholder="please select type"
               style="width: 100%"
           >
@@ -115,7 +104,7 @@ watch(
       <ElCol :span="8" :xs="8">
 
         <ElFormItem :label="$t('dashboard.editor.round')" prop="round">
-          <ElSwitch v-model="item.payload.button.round"/>
+          <ElSwitch v-model="currentItem.payload.button.round"/>
         </ElFormItem>
       </ElCol>
     </ElRow>
