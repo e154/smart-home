@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {nextTick, PropType, reactive, ref, unref, watch} from 'vue'
+import {computed, nextTick, PropType, reactive, ref, unref, watch} from 'vue'
 import {Form} from '@/components/Form'
 import {ElButton, ElCard, ElCol, ElMessage, ElPopconfirm, ElRow} from 'element-plus'
 import {useI18n} from '@/hooks/web/useI18n'
@@ -31,13 +31,14 @@ interface DashboardForm {
   areaId?: number;
 }
 
-const core = ref<Core>(new Core())
 const props = defineProps({
   core: {
     type: Object as PropType<Nullable<Core>>,
     default: () => null
   },
 })
+
+const currentCore = computed(() => props.core as Core)
 
 const rules = {
   name: [required()],
@@ -107,18 +108,6 @@ watch(
     }
 )
 
-watch(
-    () => props.core,
-    (val?: Core) => {
-      if (!val) return
-      core.value = val
-    },
-    {
-      deep: false,
-      immediate: true
-    }
-)
-
 const prepareForExport = async () => {
   return ""
 }
@@ -130,7 +119,7 @@ const copy = async () => {
 
 
 const exportDashbord = () => {
-  dialogSource.value = core.value.serialize()
+  dialogSource.value = currentCore.value.serialize()
   dialogVisible.value = true
 }
 
@@ -140,14 +129,14 @@ const updateBoard = async () => {
     if (isValid) {
       const {getFormData} = methods
       const formData = await getFormData<DashboardForm>()
-      const board = core.value.current;
+      const board = currentCore.value.current;
       board.areaId = formData.area?.id
       board.area = formData.area
       board.name = formData.name
       board.description = formData.description
       board.enabled = formData.enabled
       nextTick()
-      const res = await core.value?.update()
+      const res = await currentCore.value?.update()
           .catch(() => {
           })
           .finally(() => {
@@ -173,8 +162,8 @@ const cancel = () => {
 }
 
 const removeBoard = async () => {
-  if (!core.value) return;
-  await core.value.removeBoard()
+  if (!currentCore.value) return;
+  await currentCore.value.removeBoard()
       .catch(() => {
       })
       .finally(() => {

@@ -141,32 +141,8 @@ const schema = reactive<FormSchema[]>([
   },
 ])
 
-// const currentCore = ref<Core>(new Core())
-// watch(
-//     () => props.core,
-//     (val?: Core) => {
-//       if (!val) return
-//       currentCore.value = val
-//     },
-//     {
-//       deep: true,
-//       immediate: true
-//     }
-// )
-
-const currentCore = computed({
-  get(): Core {
-    return props.core as Core
-  },
-  set(val: Core) {}
-})
-
-const activeCard = computed({
-  get(): Card {
-    return props.core?.tabs[props.core?.activeTab]?.cards[props.core?.activeCard] as Card
-  },
-  set(val: Card) {}
-})
+const currentCore = computed(() => props.core as Core)
+const activeCard = computed(() => props.core?.tabs[props.core?.activeTab]?.cards[props.core?.activeCard] as Card)
 
 //todo: optimize
 watch(
