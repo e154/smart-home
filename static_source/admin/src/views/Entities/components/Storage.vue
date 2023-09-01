@@ -247,6 +247,7 @@ const onFormChange = async () => {
 }
 
 const selectRow = (row: ApiEntityStorage) => {
+  if (!row) return;
   dialogSource.value = row?.attributes
   dialogVisible.value = true
 }
