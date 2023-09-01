@@ -34,6 +34,9 @@ watch(
       if (val === unref(currentImage)) return
       currentImage.value = val || null
     },
+    {
+      immediate: true
+    }
 )
 
 // 监听

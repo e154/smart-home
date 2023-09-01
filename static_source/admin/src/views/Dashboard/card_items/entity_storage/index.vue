@@ -255,15 +255,6 @@ getList()
       </template>
     </Dialog>
 
-<!--    <Form-->
-<!--        :schema="schema"-->
-<!--        label-position="top"-->
-<!--        label-width="auto"-->
-<!--        hide-required-asterisk-->
-<!--        @change="onFormChange"-->
-<!--        @register="register"-->
-<!--    />-->
-
     <Table
         v-model:pageSize="paginationObj.pageSize"
         v-model:currentPage="paginationObj.currentPage"
