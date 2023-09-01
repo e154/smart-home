@@ -187,6 +187,9 @@ func TestNode(t *testing.T) {
 					}
 					_ = eventBus.Subscribe(topic, fn)
 					defer func() { _ = eventBus.Unsubscribe(topic, fn) }()
+
+					time.Sleep(time.Millisecond * 500)
+
 					b, err := json.Marshal(node.MessageResponse{
 						EntityId:   "plugin.test",
 						DeviceType: "test",
