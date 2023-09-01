@@ -207,10 +207,10 @@ entityAction = (entityId, actionName)->
 				Convey("", t, func(ctx C) {
 					supervisor.CallAction(plugEnt.Id, "ON", nil)
 
+					var req []byte
 					ticker := time.NewTimer(time.Second * 2)
 					defer ticker.Stop()
 
-					var req []byte
 					var ok bool
 					select {
 					case req = <-ch:

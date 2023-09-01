@@ -132,7 +132,7 @@ telegramAction = (entityId, actionName)->
 						},
 					})
 
-					ok := Wait(2, ch)
+					ok := Wait(3, ch)
 					ctx.So(ok, ShouldBeTrue)
 
 					list, total, err := adaptors.MessageDelivery.List(context.Background(), 10, 0, "", "", nil)

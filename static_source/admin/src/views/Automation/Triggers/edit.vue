@@ -123,7 +123,7 @@ fetch()
 
     <div style="text-align: right">
 
-      <ElButton type="success" @click="callTrigger()">
+      <ElButton type="success" @click="callTrigger()" :disabled="!row?.isLoaded">
         {{ t('main.call') }}
       </ElButton>
 

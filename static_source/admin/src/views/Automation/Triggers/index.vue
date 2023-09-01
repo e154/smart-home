@@ -102,6 +102,11 @@ const columns: TableColumn[] = [
     sortable: true,
   },
   {
+    field: 'operations',
+    label: t('automation.triggers.operations'),
+    width: "100px",
+  },
+  {
     field: 'status',
     label: t('entities.status'),
     width: "70px",
@@ -246,6 +251,21 @@ const tableRowClassName = (data) => {
   return style
 }
 
+const callTrigger = async (trigger: ApiTrigger) => {
+  if (!trigger?.id) return;
+  await api.v1.developerToolsServiceCallTrigger({id: trigger.id})
+      .catch(() => {
+      })
+      .finally(() => {
+        ElMessage({
+          title: t('Success'),
+          message: t('message.callSuccessful'),
+          type: 'success',
+          duration: 2000
+        })
+      })
+}
+
 </script>
 
 <template>
@@ -278,6 +298,14 @@ const tableRowClassName = (data) => {
         <ElTag>
           {{ row.pluginName }}
         </ElTag>
+      </template>
+
+      <template #operations="{ row, $index }">
+
+        <ElButton :link="true" @click.prevent.stop="callTrigger(row, $index)" :disabled="!row?.isLoaded">
+          {{ $t('main.call') }}
+        </ElButton>
+
       </template>
 
       <template #status="{ row }">
