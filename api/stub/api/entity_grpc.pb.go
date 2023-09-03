@@ -26,7 +26,7 @@ type EntityServiceClient interface {
 	// get entity
 	GetEntity(ctx context.Context, in *GetEntityRequest, opts ...grpc.CallOption) (*Entity, error)
 	// get entity list
-	GetEntityList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*GetEntityListResult, error)
+	GetEntityList(ctx context.Context, in *EntityPaginationRequest, opts ...grpc.CallOption) (*GetEntityListResult, error)
 	// delete entity
 	DeleteEntity(ctx context.Context, in *DeleteEntityRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// search entity
@@ -74,7 +74,7 @@ func (c *entityServiceClient) GetEntity(ctx context.Context, in *GetEntityReques
 	return out, nil
 }
 
-func (c *entityServiceClient) GetEntityList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*GetEntityListResult, error) {
+func (c *entityServiceClient) GetEntityList(ctx context.Context, in *EntityPaginationRequest, opts ...grpc.CallOption) (*GetEntityListResult, error) {
 	out := new(GetEntityListResult)
 	err := c.cc.Invoke(ctx, "/api.EntityService/GetEntityList", in, out, opts...)
 	if err != nil {
@@ -139,7 +139,7 @@ type EntityServiceServer interface {
 	// get entity
 	GetEntity(context.Context, *GetEntityRequest) (*Entity, error)
 	// get entity list
-	GetEntityList(context.Context, *PaginationRequest) (*GetEntityListResult, error)
+	GetEntityList(context.Context, *EntityPaginationRequest) (*GetEntityListResult, error)
 	// delete entity
 	DeleteEntity(context.Context, *DeleteEntityRequest) (*emptypb.Empty, error)
 	// search entity
@@ -165,7 +165,7 @@ func (UnimplementedEntityServiceServer) UpdateEntity(context.Context, *UpdateEnt
 func (UnimplementedEntityServiceServer) GetEntity(context.Context, *GetEntityRequest) (*Entity, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetEntity not implemented")
 }
-func (UnimplementedEntityServiceServer) GetEntityList(context.Context, *PaginationRequest) (*GetEntityListResult, error) {
+func (UnimplementedEntityServiceServer) GetEntityList(context.Context, *EntityPaginationRequest) (*GetEntityListResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetEntityList not implemented")
 }
 func (UnimplementedEntityServiceServer) DeleteEntity(context.Context, *DeleteEntityRequest) (*emptypb.Empty, error) {
@@ -250,7 +250,7 @@ func _EntityService_GetEntity_Handler(srv interface{}, ctx context.Context, dec 
 }
 
 func _EntityService_GetEntityList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PaginationRequest)
+	in := new(EntityPaginationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -262,7 +262,7 @@ func _EntityService_GetEntityList_Handler(srv interface{}, ctx context.Context, 
 		FullMethod: "/api.EntityService/GetEntityList",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EntityServiceServer).GetEntityList(ctx, req.(*PaginationRequest))
+		return srv.(EntityServiceServer).GetEntityList(ctx, req.(*EntityPaginationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

@@ -30,7 +30,8 @@ export default {
         BLOCKED: 'Blocked',
         Success: 'Success',
         Warning: 'Warning',
-        Error: 'Error'
+        Error: 'Error',
+        filter: 'Filter'
     },
     message: {
         unknownError: 'unknown error',

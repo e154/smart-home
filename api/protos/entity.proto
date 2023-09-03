@@ -139,6 +139,15 @@ message GetEntityRequest {
   string id = 1;
 }
 
+message EntityPaginationRequest {
+  uint64 page = 1;
+  uint64 limit = 2;
+  string sort = 3;
+  optional string query = 4;
+  optional string plugin = 5;
+  optional int64 area = 6;
+}
+
 message GetEntityListResult {
   repeated Entity items = 1;
   Meta meta = 2;
@@ -210,7 +219,7 @@ service EntityService {
   }
 
   // get entity list
-  rpc GetEntityList (PaginationRequest) returns (GetEntityListResult){
+  rpc GetEntityList (EntityPaginationRequest) returns (GetEntityListResult){
     option (google.api.http) = {
       get: "/v1/entities"
     };

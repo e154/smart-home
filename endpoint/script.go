@@ -150,9 +150,9 @@ func (n *ScriptEndpoint) Update(ctx context.Context, params *m.Script) (result *
 }
 
 // GetList ...
-func (n *ScriptEndpoint) GetList(ctx context.Context, pagination common.PageParams) (result []*m.Script, total int64, err error) {
+func (n *ScriptEndpoint) GetList(ctx context.Context, pagination common.PageParams, query *string) (result []*m.Script, total int64, err error) {
 
-	result, total, err = n.adaptors.Script.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
+	result, total, err = n.adaptors.Script.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, query)
 
 	return
 }

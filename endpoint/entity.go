@@ -146,8 +146,9 @@ func (n *EntityEndpoint) Update(ctx context.Context, params *m.Entity) (result *
 }
 
 // List ...
-func (n *EntityEndpoint) List(ctx context.Context, pagination common.PageParams) (entities []*m.Entity, total int64, err error) {
-	entities, total, err = n.adaptors.Entity.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, false)
+func (n *EntityEndpoint) List(ctx context.Context, pagination common.PageParams, query, plugin *string, areaId *int64) (entities []*m.Entity, total int64, err error) {
+	entities, total, err = n.adaptors.Entity.List(pagination.Limit, pagination.Offset, pagination.Order,
+		pagination.SortBy, false, query, plugin, areaId)
 	if err != nil {
 		return
 	}

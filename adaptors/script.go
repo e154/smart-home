@@ -31,7 +31,7 @@ type IScript interface {
 	GetByName(name string) (script *m.Script, err error)
 	Update(script *m.Script) (err error)
 	Delete(scriptId int64) (err error)
-	List(limit, offset int64, orderBy, sort string) (list []*m.Script, total int64, err error)
+	List(limit, offset int64, orderBy, sort string, query *string) (list []*m.Script, total int64, err error)
 	Search(query string, limit, offset int64) (list []*m.Script, total int64, err error)
 	Statistic() (statistic *m.ScriptsStatistic, err error)
 	fromDb(dbScript *db.Script) (script *m.Script, err error)
@@ -100,7 +100,7 @@ func (n *Script) Delete(scriptId int64) (err error) {
 }
 
 // List ...
-func (n *Script) List(limit, offset int64, orderBy, sort string) (list []*m.Script, total int64, err error) {
+func (n *Script) List(limit, offset int64, orderBy, sort string, query *string) (list []*m.Script, total int64, err error) {
 
 	if sort == "" {
 		sort = "id"
@@ -110,7 +110,7 @@ func (n *Script) List(limit, offset int64, orderBy, sort string) (list []*m.Scri
 	}
 
 	var dbList []*db.Script
-	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
+	if dbList, total, err = n.table.List(limit, offset, orderBy, sort, query); err != nil {
 		return
 	}
 

@@ -165,7 +165,7 @@ func (n Scripts) Delete(scriptId int64) (err error) {
 }
 
 // List ...
-func (n *Scripts) List(limit, offset int64, orderBy, sort string) (list []*Script, total int64, err error) {
+func (n *Scripts) List(limit, offset int64, orderBy, sort string, query *string) (list []*Script, total int64, err error) {
 
 	if err = n.Db.Model(Script{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrScriptList, err.Error())
@@ -173,7 +173,12 @@ func (n *Scripts) List(limit, offset int64, orderBy, sort string) (list []*Scrip
 	}
 
 	list = make([]*Script, 0)
-	err = n.Db.
+	q := n.Db
+	if query != nil {
+		q = q.Where("name LIKE ?",  "%"+*query+"%")
+	}
+
+	err = q.
 		Limit(limit).
 		Offset(offset).
 		Order(fmt.Sprintf("%s %s", sort, orderBy)).

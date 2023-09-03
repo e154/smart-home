@@ -2347,6 +2347,25 @@
             "in": "query",
             "required": false,
             "type": "string"
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "plugin",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "area",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
           }
         ],
         "tags": [
@@ -4460,6 +4479,12 @@
           },
           {
             "name": "sort",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "query",
             "in": "query",
             "required": false,
             "type": "string"

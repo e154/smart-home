@@ -30,7 +30,8 @@ export default {
     BLOCKED: 'Заблокирован',
     Success: 'Успешно',
     Warning: 'Внимание',
-    Error: 'Ошибка'
+    Error: 'Ошибка',
+    filter: 'Фильтр'
   },
   message: {
     unknownError: "Неизвестная ошибка",

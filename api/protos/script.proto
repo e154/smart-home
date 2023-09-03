@@ -69,6 +69,13 @@ message ExecScriptResult {
   string result = 1;
 }
 
+message ScriptPaginationRequest {
+  uint64 page = 1;
+  uint64 limit = 2;
+  string sort = 3;
+  optional string query = 4;
+}
+
 message GetScriptListResult {
   repeated Script items = 1;
   Meta meta = 2;
@@ -132,7 +139,7 @@ service ScriptService {
   }
 
   // get script list
-  rpc GetScriptList (PaginationRequest) returns (GetScriptListResult){
+  rpc GetScriptList (ScriptPaginationRequest) returns (GetScriptListResult){
     option (google.api.http) = {
       get: "/v1/scripts"
     };

@@ -5,8 +5,8 @@ import {h, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
 import {useAppStore} from "@/store/modules/app";
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
-import {ElButton, ElMessage, ElTag} from 'element-plus'
-import {ApiEntity, ApiTask} from "@/api/stub";
+import {ElButton, ElMessage, ElTag, ElCollapse, ElCollapseItem} from 'element-plus'
+import {ApiArea, ApiEntity, ApiPlugin, ApiTask} from "@/api/stub";
 import {useForm} from "@/hooks/web/useForm";
 import {useRouter} from "vue-router";
 import {parseTime} from "@/utils";
@@ -17,6 +17,8 @@ import {useEmitt} from "@/hooks/web/useEmitt";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 import {EventStateChange} from "@/api/stream_types";
+import {FormSchema} from "@/types/form";
+import {Form} from '@/components/Form'
 
 const {push, currentRoute} = useRouter()
 const remember = ref(false)
@@ -29,6 +31,9 @@ interface TableObject {
   params?: any
   loading: boolean
   sort?: string
+  query?: string
+  plugin?: string
+  area?: ApiArea
 }
 
 interface Params {
@@ -120,6 +125,9 @@ const getList = async () => {
     page: paginationObj.value.currentPage,
     limit: paginationObj.value.pageSize,
     sort: tableObject.sort,
+    query: tableObject.query || undefined,
+    plugin: tableObject.plugin || undefined,
+    area: tableObject?.area?.id || undefined,
   }
 
   const res = await api.v1.entityServiceGetEntityList(params)
@@ -272,6 +280,75 @@ const importEntity = async () => {
   }
 }
 
+// search form
+const schema = reactive<FormSchema[]>([
+  {
+    field: 'name',
+    label: t('entities.name'),
+    component: 'Input',
+    colProps: {
+      span: 24
+    },
+    componentProps: {
+      placeholder: t('entities.name'),
+      onChange: (val: string) => {
+        tableObject.query = val || undefined
+        getList()
+      }
+    }
+  },
+  {
+    field: 'plugin',
+    label: t('entities.pluginName'),
+    component: 'Plugin',
+    value: null,
+    colProps: {
+      span: 24
+    },
+    hidden: false,
+    componentProps: {
+      placeholder: t('entities.pluginName'),
+      onChange: (val: ApiPlugin) => {
+        tableObject.plugin = val?.name || undefined
+        getList()
+      }
+    },
+  },
+  {
+    field: 'area',
+    label: t('entities.area'),
+    value: null,
+    component: 'Area',
+    colProps: {
+      span: 24
+    },
+    componentProps: {
+      placeholder: t('entities.area'),
+      onChange: (val: ApiArea) => {
+        tableObject.area = val || undefined
+        getList()
+      }
+    },
+  },
+])
+
+const filterList = () => {
+  let list = ''
+  if (tableObject?.query) {
+    list += 'name(' + tableObject.query + ') '
+  }
+  if (tableObject?.plugin) {
+    list += 'plugin(' + tableObject.plugin + ') '
+  }
+  if (tableObject?.area) {
+    list += 'area(' + tableObject.area.name + ') '
+  }
+  if (list != '') {
+    list = ': ' + list
+  }
+  return list
+}
+
 </script>
 
 <template>
@@ -283,6 +360,17 @@ const importEntity = async () => {
     <ElButton class="flex mb-20px items-left" type="primary" @click="showImportDialog()" plain>
       {{ t('entities.import') }}
     </ElButton>
+    <ElCollapse class="mb-20px">
+      <ElCollapseItem :title="$t('main.filter') + filterList()">
+        <Form
+            :schema="schema"
+            label-position="top"
+            label-width="auto"
+            hide-required-asterisk
+            @register="register"
+        />
+      </ElCollapseItem>
+    </ElCollapse>
     <Table
         :selection="false"
         v-model:pageSize="paginationObj.pageSize"

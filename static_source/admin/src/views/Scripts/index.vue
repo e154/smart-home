@@ -6,12 +6,14 @@ import {useAppStore} from "@/store/modules/app";
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
 import {ElButton, ElCol, ElIcon, ElRow, ElStatistic, ElTag, ElTooltip} from 'element-plus'
-import {ApiScript, ApiStatistics} from "@/api/stub";
+import {ApiArea, ApiPlugin, ApiScript, ApiStatistics} from "@/api/stub";
 import {useForm} from "@/hooks/web/useForm";
 import {useRouter} from "vue-router";
 import {parseTime} from "@/utils";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
 import Statistics from "@/components/Statistics/Statistics.vue";
+import {FormSchema} from "@/types/form";
+import {Form} from '@/components/Form'
 
 const {push, currentRoute} = useRouter()
 const remember = ref(false)
@@ -25,6 +27,7 @@ interface TableObject {
   params?: any
   loading: boolean
   sort?: string
+  query?: string
 }
 
 interface Params {
@@ -121,6 +124,7 @@ const getList = async () => {
     page: paginationObj.value.currentPage,
     limit: paginationObj.value.pageSize,
     sort: tableObject.sort,
+    query: tableObject.query || undefined,
   }
 
   const res = await api.v1.scriptServiceGetScriptList(params)
@@ -174,6 +178,25 @@ const selectRow = (row) => {
   push(`/scripts/edit/${id}`)
 }
 
+// search form
+const schema = reactive<FormSchema[]>([
+  {
+    field: 'name',
+    label: t('entities.name'),
+    component: 'Input',
+    colProps: {
+      span: 24
+    },
+    componentProps: {
+      placeholder: t('entities.name'),
+      onChange: (val: string) => {
+        tableObject.query = val || undefined
+        getList()
+      }
+    }
+  },
+])
+
 </script>
 
 <template>
@@ -185,6 +208,13 @@ const selectRow = (row) => {
       <Icon icon="ep:plus" class="mr-5px"/>
       {{ t('scripts.addNew') }}
     </ElButton>
+    <Form
+        :schema="schema"
+        label-position="top"
+        label-width="auto"
+        hide-required-asterisk
+        @register="register"
+    />
     <Table
         :selection="false"
         v-model:pageSize="paginationObj.pageSize"

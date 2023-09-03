@@ -69,6 +69,7 @@ export interface ApiAction {
   entity?: ApiEntity;
   entityId?: string;
   entityActionName?: string;
+  completed?: boolean;
   /** @format date-time */
   createdAt?: string;
   /** @format date-time */
@@ -2679,6 +2680,10 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
         /** @format uint64 */
         limit?: number;
         sort?: string;
+        query?: string;
+        plugin?: string;
+        /** @format int64 */
+        area?: number;
       },
       params: RequestParams = {},
     ) =>
@@ -2887,9 +2892,9 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
         /** @format uint64 */
         limit?: number;
         sort?: string;
+        entityId?: string;
         startDate?: string;
         endDate?: string;
-        entityId?: string,
       },
       params: RequestParams = {},
     ) =>
@@ -3762,6 +3767,7 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
         /** @format uint64 */
         limit?: number;
         sort?: string;
+        query?: string;
       },
       params: RequestParams = {},
     ) =>

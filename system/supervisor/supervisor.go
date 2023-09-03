@@ -171,7 +171,7 @@ func (e *supervisor) LoadEntities() {
 	var err error
 
 LOOP:
-	entities, _, err = e.adaptors.Entity.List(perPage, perPage*page, "", "", true)
+	entities, _, err = e.adaptors.Entity.List(perPage, perPage*page, "", "", true, nil, nil, nil)
 	if err != nil {
 		log.Error(err.Error())
 		return
@@ -565,6 +565,10 @@ func (e *supervisor) eventCreatedEntity(msg events.EventCreatedEntity) {
 
 	entity, err := e.adaptors.Entity.GetById(msg.EntityId)
 	if err != nil {
+		return
+	}
+
+	if !entity.AutoLoad {
 		return
 	}
 

@@ -35,7 +35,7 @@ type IEntity interface {
 	GetByIds(ids []common.EntityId, preloadMetric ...bool) (ver []*m.Entity, err error)
 	GetByIdsSimple(ids []common.EntityId) (list []*m.Entity, err error)
 	Delete(id common.EntityId) (err error)
-	List(limit, offset int64, orderBy, sort string, autoLoad bool) (list []*m.Entity, total int64, err error)
+	List(limit, offset int64, orderBy, sort string, autoLoad bool, query, plugin *string, areaId *int64) (list []*m.Entity, total int64, err error)
 	GetByType(t string, limit, offset int64) (list []*m.Entity, err error)
 	Update(ver *m.Entity) (err error)
 	UpdateSettings(entityId common.EntityId, settings m.Attributes) (err error)
@@ -312,10 +312,10 @@ func (n *Entity) Delete(id common.EntityId) (err error) {
 }
 
 // List ...
-func (n *Entity) List(limit, offset int64, orderBy, sort string, autoLoad bool) (list []*m.Entity, total int64, err error) {
+func (n *Entity) List(limit, offset int64, orderBy, sort string, autoLoad bool, query, plugin *string, areaId *int64) (list []*m.Entity, total int64, err error) {
 
 	var dbList []*db.Entity
-	if dbList, total, err = n.table.List(limit, offset, orderBy, sort, autoLoad); err != nil {
+	if dbList, total, err = n.table.List(limit, offset, orderBy, sort, autoLoad, query, plugin, areaId); err != nil {
 		return
 	}
 

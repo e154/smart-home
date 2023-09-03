@@ -190,7 +190,8 @@ func (n Entities) Delete(id common.EntityId) (err error) {
 }
 
 // List ...
-func (n *Entities) List(limit, offset int64, orderBy, sort string, autoLoad bool) (list []*Entity, total int64, err error) {
+func (n *Entities) List(limit, offset int64, orderBy, sort string, autoLoad bool,
+	query, plugin *string, areaId *int64) (list []*Entity, total int64, err error) {
 
 	if err = n.Db.Model(Entity{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrEntityList, err.Error())
@@ -201,6 +202,15 @@ func (n *Entities) List(limit, offset int64, orderBy, sort string, autoLoad bool
 	q := n.Db
 	if autoLoad {
 		q = q.Where("auto_load = ?", true)
+	}
+	if query != nil {
+		q = q.Where("id LIKE ?",  "%"+*query+"%")
+	}
+	if plugin != nil {
+		q = q.Where("plugin_name = ?", *plugin)
+	}
+	if areaId != nil {
+		q = q.Where("area_id = ?", *areaId)
 	}
 	q = q.
 		Preload("Image").

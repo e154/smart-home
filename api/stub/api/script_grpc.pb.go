@@ -26,7 +26,7 @@ type ScriptServiceClient interface {
 	// update script
 	UpdateScriptById(ctx context.Context, in *UpdateScriptRequest, opts ...grpc.CallOption) (*Script, error)
 	// get script list
-	GetScriptList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*GetScriptListResult, error)
+	GetScriptList(ctx context.Context, in *ScriptPaginationRequest, opts ...grpc.CallOption) (*GetScriptListResult, error)
 	// delete script by id
 	SearchScript(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchScriptListResult, error)
 	// delete script by id
@@ -76,7 +76,7 @@ func (c *scriptServiceClient) UpdateScriptById(ctx context.Context, in *UpdateSc
 	return out, nil
 }
 
-func (c *scriptServiceClient) GetScriptList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*GetScriptListResult, error) {
+func (c *scriptServiceClient) GetScriptList(ctx context.Context, in *ScriptPaginationRequest, opts ...grpc.CallOption) (*GetScriptListResult, error) {
 	out := new(GetScriptListResult)
 	err := c.cc.Invoke(ctx, "/api.ScriptService/GetScriptList", in, out, opts...)
 	if err != nil {
@@ -150,7 +150,7 @@ type ScriptServiceServer interface {
 	// update script
 	UpdateScriptById(context.Context, *UpdateScriptRequest) (*Script, error)
 	// get script list
-	GetScriptList(context.Context, *PaginationRequest) (*GetScriptListResult, error)
+	GetScriptList(context.Context, *ScriptPaginationRequest) (*GetScriptListResult, error)
 	// delete script by id
 	SearchScript(context.Context, *SearchRequest) (*SearchScriptListResult, error)
 	// delete script by id
@@ -178,7 +178,7 @@ func (UnimplementedScriptServiceServer) GetScriptById(context.Context, *GetScrip
 func (UnimplementedScriptServiceServer) UpdateScriptById(context.Context, *UpdateScriptRequest) (*Script, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateScriptById not implemented")
 }
-func (UnimplementedScriptServiceServer) GetScriptList(context.Context, *PaginationRequest) (*GetScriptListResult, error) {
+func (UnimplementedScriptServiceServer) GetScriptList(context.Context, *ScriptPaginationRequest) (*GetScriptListResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetScriptList not implemented")
 }
 func (UnimplementedScriptServiceServer) SearchScript(context.Context, *SearchRequest) (*SearchScriptListResult, error) {
@@ -266,7 +266,7 @@ func _ScriptService_UpdateScriptById_Handler(srv interface{}, ctx context.Contex
 }
 
 func _ScriptService_GetScriptList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PaginationRequest)
+	in := new(ScriptPaginationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -278,7 +278,7 @@ func _ScriptService_GetScriptList_Handler(srv interface{}, ctx context.Context, 
 		FullMethod: "/api.ScriptService/GetScriptList",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ScriptServiceServer).GetScriptList(ctx, req.(*PaginationRequest))
+		return srv.(ScriptServiceServer).GetScriptList(ctx, req.(*ScriptPaginationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
