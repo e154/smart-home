@@ -5,7 +5,6 @@ go 1.18
 require (
 	github.com/DrmagicE/gmqtt v0.5.0
 	github.com/Masterminds/semver v1.5.0
-	github.com/Syfaro/telegram-bot-api v4.6.4+incompatible
 	github.com/dlclark/regexp2 v1.7.0 // indirect
 	github.com/dop251/goja v0.0.0-20220801092856-7adb49968576
 	github.com/dop251/goja_nodejs v0.0.0-20220712185256-8cad205bf387
@@ -14,7 +13,6 @@ require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-playground/validator/v10 v10.14.1
 	github.com/go-sourcemap/sourcemap v2.1.3+incompatible // indirect
-	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang-jwt/jwt/v4 v4.1.0
 	github.com/golang/mock v1.6.0 // indirect
@@ -46,7 +44,6 @@ require (
 	github.com/spf13/cobra v1.2.1
 	github.com/surge/glog v0.0.0-20141108051140-2578deb2b95c // indirect
 	github.com/t-tiger/gorm-bulk-insert v1.3.0
-	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5
 	go.uber.org/atomic v1.7.0
 	go.uber.org/dig v1.10.0
@@ -80,6 +77,7 @@ require (
 	github.com/stretchr/testify v1.8.4
 	google.golang.org/genproto/googleapis/api v0.0.0-20230530153820-e85fd2cbaebc
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230530153820-e85fd2cbaebc
+	gopkg.in/telebot.v3 v3.1.3
 )
 
 require (

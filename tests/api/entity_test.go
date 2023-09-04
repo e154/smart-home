@@ -447,7 +447,7 @@ func TestEntity(t *testing.T) {
 							ctx.So(entity.Id, ShouldEqual, "sensor.light2")
 
 							// list
-							listRequest := &gw.PaginationRequest{}
+							listRequest := &gw.EntityPaginationRequest{}
 							result, err := client.GetEntityList(c, listRequest)
 							ctx.So(err, ShouldBeNil)
 
@@ -586,7 +586,7 @@ func TestEntity(t *testing.T) {
 							ctx.So(err, ShouldBeNil)
 
 							// list
-							listRequest := &gw.PaginationRequest{}
+							listRequest := &gw.EntityPaginationRequest{}
 							result, err := client.GetEntityList(c, listRequest)
 							ctx.So(err, ShouldBeNil)
 							ctx.So(len(result.Items), ShouldEqual, 1)

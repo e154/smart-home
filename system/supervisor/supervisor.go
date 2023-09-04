@@ -369,8 +369,6 @@ func (e *supervisor) Spawn(constructor ActorConstructor) (actor PluginActor) {
 	}
 	e.actors.Store(entityId, actorInfo)
 
-	//e.metric.UpdateEntity(metrics.EntityAdd{Num: 1})
-
 	go func() {
 		defer func() {
 
@@ -382,8 +380,6 @@ func (e *supervisor) Spawn(constructor ActorConstructor) (actor PluginActor) {
 				return
 			}
 			_ = plugin.RemoveActor(entityId)
-
-			//e.metric.UpdateEntity(metrics.EntityDelete{Num: 1})
 
 			e.eventBus.Publish("system/entities/"+entityId.String(), events.EventEntityUnloaded{
 				PluginName: info.PluginName,
