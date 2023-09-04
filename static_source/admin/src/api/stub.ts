@@ -1048,10 +1048,27 @@ export interface ApiTask {
   conditionIds?: number[];
   actionIds?: number[];
   completed?: boolean;
+  telemetry?: ApiTelemetryItem[];
   /** @format date-time */
   createdAt?: string;
   /** @format date-time */
   updatedAt?: string;
+}
+
+export interface ApiTelemetryItem {
+  name?: string;
+  /** @format int32 */
+  num?: number;
+  /** @format int64 */
+  start?: number;
+  /** @format int64 */
+  end?: number;
+  /** @format int64 */
+  timeEstimate?: number;
+  attributes?: Record<string, string>;
+  status?: string;
+  /** @format int32 */
+  level?: number;
 }
 
 export interface ApiTrigger {

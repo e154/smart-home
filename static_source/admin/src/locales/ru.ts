@@ -282,6 +282,7 @@ export default {
     main: 'Базыовые',
     dialogTitle: 'Импортировать задачу',
     operations: "Операции",
+    telemetry: 'Телеметрия',
     tasks: {
       triggers: "Триггеры",
       conditions: "Условия",

@@ -282,6 +282,7 @@ export default {
         main: 'Main',
         dialogTitle: 'Import task',
         operations: 'Actions',
+        telemetry: 'Telemetry',
         tasks: {
             triggers: 'Triggers',
             conditions: 'Conditions',

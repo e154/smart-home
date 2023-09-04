@@ -22,21 +22,19 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/e154/smart-home/common/events"
-
-	"github.com/e154/smart-home/common/apperr"
-
-	"github.com/pkg/errors"
-
 	tgbotapi "github.com/Syfaro/telegram-bot-api"
+	"github.com/pkg/errors"
+	"go.uber.org/atomic"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/supervisor"
 	"github.com/e154/smart-home/version"
-	"go.uber.org/atomic"
 )
 
 // Actor ...

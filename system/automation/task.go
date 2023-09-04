@@ -19,10 +19,14 @@
 package automation
 
 import (
+	"context"
 	"fmt"
+	"sync"
+
 	"go.uber.org/atomic"
 
 	"github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/common/telemetry"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/scripts"
@@ -37,6 +41,8 @@ type Task struct {
 	script         *scripts.Engine
 	enabled        atomic.Bool
 	scriptService  scripts.ScriptService
+	sync.Mutex
+	telemetry telemetry.Telemetry
 }
 
 // NewTask ...
@@ -70,18 +76,46 @@ func (t *Task) triggerHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
 	case events.EventTriggerCompleted:
+		taskCtx, taskSpan := telemetry.Start(v.Ctx, "task")
+		taskSpan.SetAttributes("id", t.model.Id)
+
+		var actionCtx context.Context
+		defer func() {
+			taskSpan.End()
+
+			t.Lock()
+			t.telemetry = telemetry.Unpack(actionCtx)
+			t.Unlock()
+		}()
+
+		conditionsCtx, span := telemetry.Start(taskCtx, "conditions")
 		result, err := t.conditionGroup.Check(v.EntityId)
 		if err != nil || !result {
+			if err != nil {
+				span.SetStatus(telemetry.Error, err.Error())
+			}
+			span.End()
 			return
 		}
+		span.End()
 
 		for _, action := range t.actions {
+			if actionCtx != nil {
+				conditionsCtx = actionCtx
+			}
+			actionCtx, span = telemetry.Start(conditionsCtx, "actions")
+			span.SetAttributes("id", action.model.Id)
 			if _, err = action.Run(v.EntityId); err != nil {
 				log.Error(err.Error())
+				span.SetStatus(telemetry.Error, err.Error())
 			}
+			span.End()
 		}
+
+		//fmt.Println("time spent", timeSpent.Microseconds())
 		t.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", t.model.Id), events.EventTaskCompleted{
-			Id: t.model.Id,
+			Id:  t.model.Id,
+			Ctx: actionCtx,
 		})
 	}
 }
@@ -147,4 +181,10 @@ func (t *Task) Stop() {
 	t.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", t.model.Id), events.EventTaskUnloaded{
 		Id: t.model.Id,
 	})
+}
+
+func (t *Task) Telemetry() telemetry.Telemetry {
+	t.Lock()
+	defer t.Unlock()
+	return t.telemetry
 }

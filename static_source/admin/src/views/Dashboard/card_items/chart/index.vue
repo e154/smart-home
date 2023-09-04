@@ -166,7 +166,7 @@ const getLineOptions = () => {
     series.push(row)
   }
 
-  chartOptions.value = {
+  let options: EChartsOption = {
     xAxis: {
       show: props.item.payload.chart?.xAxis,
       data: chartData.value.labels,
@@ -203,16 +203,30 @@ const getLineOptions = () => {
   } as EChartsOption
 
   if (color.length) {
-    chartOptions.value.color = color
+    options.color = color
+  }
+
+  if (props.item.payload.chart?.dataZoom) {
+    options.grid.bottom = 40;
+    options.dataZoom = [
+      {
+        type: 'inside',
+      },
+      {
+        start: 0,
+        end: 10
+      }
+    ]
   }
 
   if (props.item.payload.chart?.legend) {
-    chartOptions.value.legend = {
+    options.legend = {
       data: legendData,
       top: 10
     }
   }
 
+  chartOptions.value = options as EChartsOption
 }
 
 const _cache = new Cache()
@@ -477,7 +491,7 @@ const prepareData = debounce( async ()  => {
   // console.log(lineOptions.value)
   // console.log(chartData.value)
   // console.log(metric)
-}, 200)
+}, 500)
 
 const reloadKey = ref(0)
 const reload = debounce(() => {

@@ -183,5 +183,27 @@ func (r Automation) GetTask(task *m.Task) (obj *api.Task) {
 		obj.ActionIds = append(obj.ActionIds, action.Id)
 	}
 
+	// telemetry
+	if task.Telemetry != nil {
+		obj.Telemetry = make([]*api.TelemetryItem, 0)
+	}
+
+	for _, item := range task.Telemetry {
+		stateItem := &api.TelemetryItem{
+			Name:         item.Name,
+			Num:          int32(item.Num),
+			Start:        item.Start.UnixNano(),
+			End:          nil,
+			TimeEstimate: int64(item.TimeEstimate),
+			Attributes:   item.Attributes,
+			Status:       string(item.Status),
+			Level:        int32(item.Level),
+		}
+		if item.End != nil {
+			stateItem.End = common.Int64(item.End.UnixNano())
+		}
+		obj.Telemetry = append(obj.Telemetry, stateItem)
+	}
+
 	return
 }

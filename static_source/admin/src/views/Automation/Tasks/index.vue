@@ -14,7 +14,7 @@ import {parseTime} from "@/utils";
 import { Dialog } from '@/components/Dialog'
 import Viewer from "@/components/JsonViewer/JsonViewer.vue";
 import {useEmitt} from "@/hooks/web/useEmitt";
-import {EventStateChange, EventTriggerCompleted} from "@/api/stream_types";
+import {EventStateChange, EventTaskCompleted, EventTriggerCompleted} from "@/api/stream_types";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 
@@ -55,7 +55,7 @@ const onStateChanged = (event: EventStateChange) => {
   getList()
 }
 
-const onEventTaskActivated = (event: EventTriggerCompleted) => {
+const onEventTaskActivated = (event: EventTaskCompleted) => {
   for (const i in tableObject.tableList) {
     if (tableObject.tableList[i].id == event.id) {
       tableObject.tableList[i].completed = true;

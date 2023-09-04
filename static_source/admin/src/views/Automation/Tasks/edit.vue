@@ -19,6 +19,7 @@ import TriggersSearch from "@/views/Automation/components/TriggersSearch.vue";
 import ConditionsSearch from "@/views/Automation/components/ConditionsSearch.vue";
 import ActionsSearch from "@/views/Automation/components/ActionsSearch.vue";
 import { Dialog } from '@/components/Dialog'
+import TaskTelemetry from "@/views/Automation/components/TaskTelemetry.vue";
 
 const {register, elFormRef, methods} = useForm()
 const {required} = useValidator()
@@ -191,9 +192,15 @@ fetch()
     <el-tabs class="demo-tabs" v-model="activeTab">
       <!-- main -->
       <el-tab-pane :label="$t('automation.main')" name="main">
-        <TaskForm ref="writeRef" :current-task="currentTask"/>
+        <TaskForm ref="writeRef" :task="currentTask"/>
       </el-tab-pane>
       <!-- /main -->
+
+      <!-- telemetry -->
+      <el-tab-pane :label="$t('automation.telemetry')" name="telemetry" :lazy="true">
+        <TaskTelemetry ref="writeRef" :task="currentTask"/>
+      </el-tab-pane>
+      <!-- /telemetry -->
 
       <!-- pipeline -->
       <el-tab-pane :label="$t('automation.tasks.pipeline')" name="pipeline" class="mt-20px">

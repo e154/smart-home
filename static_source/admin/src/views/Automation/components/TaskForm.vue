@@ -23,7 +23,7 @@ const {wsCache} = useCache()
 const {t} = useI18n()
 
 const props = defineProps({
-  currentTask: {
+  task: {
     type: Object as PropType<Nullable<ApiTask>>,
     default: () => null
   }
@@ -102,11 +102,11 @@ const schema = reactive<FormSchema[]>([
 ])
 
 watch(
-    () => props.currentTask,
-    (currentTask) => {
-      if (!currentTask) return
+    () => props.task,
+    (task) => {
+      if (!task) return
       const { setValues, setSchema } = methods
-      setValues(currentTask)
+      setValues(task)
     },
     {
       deep: true,

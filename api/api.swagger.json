@@ -9068,6 +9068,12 @@
         "completed": {
           "type": "boolean"
         },
+        "telemetry": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiTelemetryItem"
+          }
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time"
@@ -9075,6 +9081,43 @@
         "updatedAt": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "apiTelemetryItem": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "num": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "start": {
+          "type": "string",
+          "format": "int64"
+        },
+        "end": {
+          "type": "string",
+          "format": "int64"
+        },
+        "timeEstimate": {
+          "type": "string",
+          "format": "int64"
+        },
+        "attributes": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "status": {
+          "type": "string"
+        },
+        "level": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

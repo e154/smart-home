@@ -104,7 +104,7 @@ func NewBaseActor(entity *m.Entity,
 	actor.Metric = make([]*m.Metric, len(entity.Metrics))
 	copy(actor.Metric, entity.Metrics)
 
-	// States
+	// Items
 	for _, s := range entity.States {
 		state := ActorState{
 			Name:        s.Name,

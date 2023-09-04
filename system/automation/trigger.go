@@ -19,12 +19,12 @@
 package automation
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
-	"sync"
-	"time"
-
+	"github.com/e154/smart-home/common/telemetry"
 	"go.uber.org/atomic"
+	"sync"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/events"
@@ -79,23 +79,26 @@ func NewTrigger(
 		EntityId: model.EntityId,
 		Payload:  model.Payload,
 		Handler: func(_ string, msg interface{}) {
+			triggerCtx, span := telemetry.Start(context.Background(), "trigger")
+			span.SetAttributes("id", tr.model.Id)
 			b, _ := json.Marshal(msg)
 			args := map[string]interface{}{
 				"payload":      string(b),
 				"trigger_name": tr.model.Name,
-				//"task_name":    tr.taskName,
-				"entity_id": tr.EntityId(),
+				"entity_id":    tr.EntityId(),
 			}
 			result, err := tr.Check(args)
 			if err != nil || !result {
+				span.End()
 				return
 			}
+			span.End()
 			//fmt.Println("call trigger", tr.model.Name, tr.triggerPlugin.Name())
 			eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), events.EventTriggerCompleted{
 				Id:       model.Id,
 				Args:     args,
-				LastTime: time.Now(),
 				EntityId: tr.EntityId(),
+				Ctx:      triggerCtx,
 			})
 			return
 		},
@@ -176,13 +179,16 @@ func (tr *Trigger) Stop() {
 
 func (tr *Trigger) eventHandler(_ string, msg interface{}) {
 
-	switch msg.(type) {
+	switch v := msg.(type) {
 	case events.EventCallTrigger:
+		triggerCtx, span := telemetry.Start(v.Ctx, "trigger")
+		span.SetAttributes("id", tr.model.Id)
+		span.End()
 		tr.eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), events.EventTriggerCompleted{
 			Id:       tr.model.Id,
 			Args:     nil,
-			LastTime: time.Now(),
 			EntityId: tr.EntityId(),
+			Ctx:      triggerCtx,
 		})
 	}
 }

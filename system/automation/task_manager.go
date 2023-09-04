@@ -19,10 +19,11 @@
 package automation
 
 import (
-	"github.com/e154/smart-home/common/events"
 	"sync"
 
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/common/telemetry"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/triggers"
 	"github.com/e154/smart-home/system/bus"
@@ -196,4 +197,13 @@ func (a *taskManager) IsLoaded(id int64) (loaded bool) {
 	_, loaded = a.tasks[id]
 	a.Unlock()
 	return
+}
+
+func (a *taskManager) TaskTelemetry(id int64) telemetry.Telemetry {
+	a.Lock()
+	defer a.Unlock()
+	if task, ok := a.tasks[id]; ok {
+		return task.Telemetry()
+	}
+	return nil
 }

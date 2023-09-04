@@ -22,6 +22,7 @@ import (
 	"time"
 
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/telemetry"
 )
 
 // Task ...
@@ -37,6 +38,7 @@ type Task struct {
 	Actions     []*Action            `json:"actions" validate:"dive"`
 	Area        *Area                `json:"area"`
 	AreaId      *int64               `json:"area_id"`
+	Telemetry   telemetry.Telemetry  `json:"telemetry"`
 	CreatedAt   time.Time            `json:"created_at"`
 	UpdatedAt   time.Time            `json:"updated_at"`
 }

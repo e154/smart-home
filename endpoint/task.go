@@ -163,6 +163,7 @@ func (n *TaskEndpoint) GetById(ctx context.Context, id int64) (task *m.Task, err
 		return
 	}
 	task.IsLoaded = n.automation.TaskIsLoaded(id)
+	task.Telemetry = n.automation.TaskTelemetry(id)
 	return
 }
 

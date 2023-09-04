@@ -1,15 +1,16 @@
 package events
 
 import (
+	"context"
 	"github.com/e154/smart-home/common"
-	"time"
 )
 
 // Tasks
 // ------------------------------------------------
 
 type EventTaskCompleted struct {
-	Id int64 `json:"id"`
+	Id  int64           `json:"id"`
+	Ctx context.Context `json:"ctx"`
 }
 
 // EventEnableTask ...
@@ -54,7 +55,7 @@ type EventTriggerCompleted struct {
 	Id       int64                  `json:"id"`
 	Args     map[string]interface{} `json:"args"`
 	EntityId *common.EntityId       `json:"entity_id,omitempty"`
-	LastTime time.Time              `json:"last_time"`
+	Ctx      context.Context        `json:"ctx"`
 }
 
 // EventEnableTrigger ...
@@ -69,7 +70,8 @@ type EventDisableTrigger struct {
 
 // EventCallTrigger ...
 type EventCallTrigger struct {
-	Id int64 `json:"id"`
+	Id  int64           `json:"id"`
+	Ctx context.Context `json:"ctx"`
 }
 
 // EventAddedTrigger ...
@@ -101,7 +103,8 @@ type EventTriggerUnloaded struct {
 // ------------------------------------------------
 
 type EventActionCompleted struct {
-	Id int64 `json:"id"`
+	Id  int64           `json:"id"`
+	Ctx context.Context `json:"ctx"`
 }
 
 // EventCallTaskAction ...
@@ -112,7 +115,8 @@ type EventCallTaskAction struct {
 
 // EventCallAction ...
 type EventCallAction struct {
-	Id int64 `json:"id"`
+	Id  int64           `json:"id"`
+	Ctx context.Context `json:"ctx"`
 }
 
 // EventAddedAction ...

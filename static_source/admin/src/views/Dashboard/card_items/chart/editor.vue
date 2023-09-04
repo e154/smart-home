@@ -111,6 +111,10 @@ const removeChartItem = (index: number) => {
       <ElFormItem :label="$t('dashboard.editor.chart.scale')" prop="scale">
         <ElSwitch v-model="currentItem.payload.chart.scale"/>
       </ElFormItem>
+
+      <ElFormItem :label="$t('dashboard.editor.chart.dataZoom')" prop="scale">
+        <ElSwitch v-model="currentItem.payload.chart.dataZoom"/>
+      </ElFormItem>
     </ElCol>
   </ElRow>
 

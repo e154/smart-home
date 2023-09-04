@@ -27,14 +27,16 @@ package automation
 
 import (
 	"context"
-	"github.com/e154/smart-home/common/events"
+
+	"go.uber.org/fx"
 
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
+	"github.com/e154/smart-home/common/telemetry"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/supervisor"
-	"go.uber.org/fx"
 )
 
 var (
@@ -52,6 +54,7 @@ type Automation interface {
 	Restart()
 	TaskIsLoaded(id int64) bool
 	TriggerIsLoaded(id int64) bool
+	TaskTelemetry(id int64) telemetry.Telemetry
 }
 
 type automation struct {
@@ -109,4 +112,8 @@ func (a *automation) TaskIsLoaded(id int64) bool {
 
 func (a *automation) TriggerIsLoaded(id int64) bool {
 	return a.triggerManager.IsLoaded(id)
+}
+
+func (a *automation) TaskTelemetry(id int64) telemetry.Telemetry {
+	return a.taskManager.TaskTelemetry(id)
 }

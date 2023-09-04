@@ -22,9 +22,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/e154/smart-home/common/events"
-
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/go-playground/validator/v10"
@@ -83,7 +82,8 @@ func (d *DeveloperToolsEndpoint) TaskCallTrigger(ctx context.Context, id int64, 
 	}
 
 	d.eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", id), events.EventCallTrigger{
-		Id:   id,
+		Id:  id,
+		Ctx: context.Background(),
 	})
 
 	return
@@ -97,7 +97,8 @@ func (d *DeveloperToolsEndpoint) TaskCallAction(ctx context.Context, id int64, n
 	}
 
 	d.eventBus.Publish(fmt.Sprintf("system/automation/actions/%d", id), events.EventCallAction{
-		Id:   id,
+		Id:  id,
+		Ctx: context.Background(),
 	})
 
 	return
@@ -135,6 +136,6 @@ func (d *DeveloperToolsEndpoint) EntitySetState(ctx context.Context, id common.E
 }
 
 // GetEventBusState ...
-func (d *DeveloperToolsEndpoint) GetEventBusState() (bus.Stats, int64, error)  {
+func (d *DeveloperToolsEndpoint) GetEventBusState() (bus.Stats, int64, error) {
 	return d.eventBus.Stat()
 }

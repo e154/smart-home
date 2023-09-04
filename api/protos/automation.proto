@@ -13,6 +13,7 @@ import "pagination.proto";
 import "trigger.proto";
 import "condition.proto";
 import "action.proto";
+import "telemetry.proto";
 
 message Task {
   int64 id = 1;
@@ -30,6 +31,7 @@ message Task {
   repeated int64 conditionIds = 13;
   repeated int64 actionIds = 14;
   optional bool completed = 15;
+  repeated TelemetryItem telemetry = 16;
 
   google.protobuf.Timestamp created_at = 99;
   google.protobuf.Timestamp updated_at = 100;

@@ -22,9 +22,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/e154/smart-home/system/supervisor"
 
-	"github.com/e154/smart-home/system/scheduler"
 	"go.uber.org/fx"
 
 	. "github.com/e154/smart-home/adaptors"
@@ -41,7 +39,9 @@ import (
 	localMigrations "github.com/e154/smart-home/system/initial/local_migrations"
 	"github.com/e154/smart-home/system/logging_ws"
 	"github.com/e154/smart-home/system/migrations"
+	"github.com/e154/smart-home/system/scheduler"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 	"github.com/e154/smart-home/system/validation"
 )
 

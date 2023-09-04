@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package api;
+option go_package = "/api";
+
+message TelemetryItem {
+  string name = 1;
+  int32 num = 2;
+  int64 start = 3;
+  optional int64 end = 4;
+  int64 time_estimate = 5;
+  map<string, string> attributes = 6;
+  string status = 7;
+  int32 level = 8;
+}
+
+message Telemetry {
+  repeated TelemetryItem items = 1;
+}

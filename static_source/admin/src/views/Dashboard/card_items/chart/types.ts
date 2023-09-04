@@ -20,6 +20,7 @@ export interface ItemPayloadChart {
   backgroundColor: string,
   scale: boolean,
   automatic: boolean,
+  dataZoom: boolean,
   items: Array<ItemPayloadChartItem>,
 }
 
