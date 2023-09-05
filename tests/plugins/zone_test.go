@@ -53,7 +53,7 @@ func TestZone(t *testing.T) {
 			eventBus.Purge()
 			automation.Restart()
 
-			time.Sleep(time.Second)
+			time.Sleep(time.Millisecond * 500)
 
 			// add entity
 			// ------------------------------------------------
@@ -66,7 +66,7 @@ func TestZone(t *testing.T) {
 				EntityId: zoneEnt.Id,
 			})
 
-			time.Sleep(time.Second)
+			time.Sleep(time.Millisecond * 500)
 
 			// ------------------------------------------------
 			wgAdd := sync.WaitGroup{}

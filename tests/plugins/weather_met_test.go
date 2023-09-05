@@ -61,6 +61,8 @@ func TestWeatherMet(t *testing.T) {
 			eventBus.Purge()
 			scriptService.Restart()
 
+			time.Sleep(time.Millisecond * 500)
+
 			// add entity
 			// ------------------------------------------------
 			weatherEnt := GetNewWeatherMet("home")

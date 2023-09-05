@@ -156,6 +156,7 @@ automationAction = (entityId)->
 
 			go mqttServer.Start()
 
+			time.Sleep(time.Millisecond * 500)
 
 			// add zigbee2mqtt
 			zigbeeServer := &m.Zigbee2mqtt{

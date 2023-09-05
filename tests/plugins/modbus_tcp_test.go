@@ -110,6 +110,8 @@ entityAction = (entityId, actionName)->
 			supervisor.Restart(context.Background())
 			go mqttServer.Start()
 
+			time.Sleep(time.Millisecond * 500)
+
 			// bind convey
 			RegisterConvey(scriptService, ctx)
 
