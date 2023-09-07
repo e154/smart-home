@@ -48,6 +48,9 @@
     "moveable": "^0.51.1",
     "muuri": "^0.9.5",
     "nprogress": "^0.2.0",
+    "ol": "^8.0.0",
+    "ol-contextmenu": "^5.2.1",
+    "ol-ext": "^4.0.11",
     "pinia": "^2.0.34",
     "qrcode": "^1.5.1",
     "qs": "^6.11.1",
@@ -61,6 +64,7 @@
     "vue-router": "^4.1.6",
     "vue-types": "^5.0.2",
     "vue3-moveable": "^0.26.1",
+    "vue3-openlayers": "2.0.0-0",
     "vue3-selecto": "^1.12.0",
     "web-storage-cache": "^1.1.1",
     "websocket-ts": "^1.1.1"

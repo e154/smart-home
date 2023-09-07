@@ -16,6 +16,8 @@ import chart from './chart/index.vue';
 import chartEditor from './chart/editor.vue';
 import entityStorage from './entity_storage/index.vue';
 import entityStorageEditor from './entity_storage/editor.vue';
+import map from './map/index.vue';
+import mapEditor from './map/editor.vue';
 
 export const CardItemName = (name: string): any => {
   switch (name) {
@@ -35,6 +37,8 @@ export const CardItemName = (name: string): any => {
       return chart;
     case 'entityStorage':
       return entityStorage;
+    case 'map':
+      return map;
     default:
       // console.error(`unknown card name "${name}"`);
       return dummy;
@@ -59,6 +63,8 @@ export const CardEditorName = (name: string): any => {
       return chartEditor;
     case 'entityStorage':
       return entityStorageEditor;
+    case 'map':
+      return mapEditor;
     default:
       // console.error(`unknown card name "${name}"`);
       return dummyEditor;
@@ -78,5 +84,6 @@ export const CardItemList: ItemsType[] = [
   {label: 'LOGS', value: 'logs'},
   {label: 'PROGRESS', value: 'progress'},
   {label: 'CHART', value: 'chart'},
-  {label: 'ENTITY_STORAGE', value: 'entityStorage'}
+  {label: 'ENTITY_STORAGE', value: 'entityStorage'},
+  {label: 'MAP', value: 'map'}
 ];

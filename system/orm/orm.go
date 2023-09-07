@@ -182,13 +182,15 @@ func (o *Orm) checkExtensions() (err error) {
 	}
 
 	var extCrypto bool
+	var extPostgis bool
 	for _, ext := range o.availableExtensions {
-
 		switch ext.Name {
 		case "pgcrypto":
 			extCrypto = true
 		case "timescaledb":
 			o.extTimescaledb = true
+		case "postgis":
+			extPostgis = true
 		default:
 
 		}
@@ -197,16 +199,27 @@ func (o *Orm) checkExtensions() (err error) {
 	if !extCrypto {
 		log.Warn("please install pgcrypto extension for postgresql database (maybe need install postgresql-contrib)\r")
 	} else {
+		o.db.Exec(`CREATE EXTENSION IF NOT EXISTS pgcrypto CASCADE;`)
 		if o.checkAvailableExtensions(o.availableExtensions, "pgcrypto") {
-			log.Warn("extension 'pgcrypto' installed but not enabled, enable it \nCREATE EXTENSION IF NOT EXISTS pgcrypto CASCADE;\n\r")
+			log.Warn("extension 'pgcrypto' installed but not enabled, enable it: CREATE EXTENSION IF NOT EXISTS pgcrypto CASCADE;\n\r")
 		}
 	}
 
 	if !o.extTimescaledb {
 		log.Warn("please install timescaledb extension, website: https://docs.timescale.com/v1.1/getting-started/installation)\r")
 	} else {
+		o.db.Exec(`CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;`)
 		if o.checkAvailableExtensions(o.availableExtensions, "timescaledb") {
-			log.Warn("extension 'timescaledb' installed but not enabled, enable it \nCREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;\n\r")
+			log.Warn("extension 'timescaledb' installed but not enabled, enable it: CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;\n\r")
+		}
+	}
+
+	if !extPostgis {
+		log.Warn("please install Postgis extension\r")
+	} else {
+		o.db.Exec(`CREATE EXTENSION IF NOT EXISTS Postgis CASCADE;`)
+		if o.checkAvailableExtensions(o.availableExtensions, "postgis") {
+			log.Warn("extension 'Postgis' installed but not enabled, enable it: CREATE EXTENSION IF NOT EXISTS Postgis CASCADE;\n\r")
 		}
 	}
 

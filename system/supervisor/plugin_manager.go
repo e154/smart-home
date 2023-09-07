@@ -136,6 +136,7 @@ func (p *pluginManager) loadPlugin(name string) (err error) {
 		}
 	} else {
 		err = apperr.ErrNotFound
+		return
 	}
 
 	p.enabledPlugins[name] = true

@@ -53,9 +53,9 @@ func GetAreaAdaptor(d *gorm.DB) IArea {
 }
 
 // Add ...
-func (n *Area) Add(ver *m.Area) (id int64, err error) {
+func (a *Area) Add(ver *m.Area) (id int64, err error) {
 
-	if id, err = n.table.Add(n.toDb(ver)); err != nil {
+	if id, err = a.table.Add(a.toDb(ver)); err != nil {
 		return
 	}
 
@@ -63,54 +63,54 @@ func (n *Area) Add(ver *m.Area) (id int64, err error) {
 }
 
 // GetById ...
-func (n *Area) GetById(verId int64) (ver *m.Area, err error) {
+func (a *Area) GetById(verId int64) (ver *m.Area, err error) {
 
 	var dbVer *db.Area
-	if dbVer, err = n.table.GetById(verId); err != nil {
+	if dbVer, err = a.table.GetById(verId); err != nil {
 		return
 	}
 
-	ver = n.fromDb(dbVer)
+	ver = a.fromDb(dbVer)
 
 	return
 }
 
 // Update ...
-func (n *Area) Update(ver *m.Area) (err error) {
-	err = n.table.Update(n.toDb(ver))
+func (a *Area) Update(ver *m.Area) (err error) {
+	err = a.table.Update(a.toDb(ver))
 	return
 }
 
 // DeleteByName ...
-func (n *Area) DeleteByName(name string) (err error) {
-	err = n.table.DeleteByName(name)
+func (a *Area) DeleteByName(name string) (err error) {
+	err = a.table.DeleteByName(name)
 	return
 }
 
 // List ...
-func (n *Area) List(limit, offset int64, orderBy, sort string) (list []*m.Area, total int64, err error) {
+func (a *Area) List(limit, offset int64, orderBy, sort string) (list []*m.Area, total int64, err error) {
 	var dbList []*db.Area
-	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
+	if dbList, total, err = a.table.List(limit, offset, orderBy, sort); err != nil {
 		return
 	}
 
 	list = make([]*m.Area, len(dbList))
 	for i, dbVer := range dbList {
-		list[i] = n.fromDb(dbVer)
+		list[i] = a.fromDb(dbVer)
 	}
 	return
 }
 
 // Search ...
-func (n *Area) Search(query string, limit, offset int64) (list []*m.Area, total int64, err error) {
+func (a *Area) Search(query string, limit, offset int64) (list []*m.Area, total int64, err error) {
 	var dbList []*db.Area
-	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
+	if dbList, total, err = a.table.Search(query, limit, offset); err != nil {
 		return
 	}
 
 	list = make([]*m.Area, len(dbList))
 	for i, dbVer := range dbList {
-		list[i] = n.fromDb(dbVer)
+		list[i] = a.fromDb(dbVer)
 	}
 
 	return
@@ -129,22 +129,39 @@ func (a *Area) GetByName(name string) (ver *m.Area, err error) {
 	return
 }
 
-func (n *Area) fromDb(dbVer *db.Area) (ver *m.Area) {
+func (a *Area) fromDb(dbVer *db.Area) (ver *m.Area) {
 	ver = &m.Area{
 		Id:          dbVer.Id,
 		Name:        dbVer.Name,
 		Description: dbVer.Description,
+		CreatedAt:   dbVer.CreatedAt,
+		UpdatedAt:   dbVer.UpdatedAt,
 	}
-
+	for _, point := range dbVer.Polygon.Points {
+		ver.Polygon = append(ver.Polygon, m.Point{
+			Lon: point.Lon,
+			Lat: point.Lat,
+		})
+	}
 	return
 }
 
-func (n *Area) toDb(ver *m.Area) (dbVer *db.Area) {
+func (a *Area) toDb(ver *m.Area) (dbVer *db.Area) {
 	dbVer = &db.Area{
 		Id:          ver.Id,
 		Name:        ver.Name,
 		Description: ver.Description,
+		CreatedAt:   ver.CreatedAt,
+		UpdatedAt:   ver.UpdatedAt,
 	}
-
+	if ver.Polygon != nil {
+		dbVer.Polygon = &db.Polygon{}
+		for _, point := range ver.Polygon {
+			dbVer.Polygon.Points = append(dbVer.Polygon.Points, db.Point{
+				Lon: point.Lon,
+				Lat: point.Lat,
+			})
+		}
+	}
 	return
 }

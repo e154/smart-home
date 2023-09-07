@@ -24,9 +24,8 @@ import (
 	"time"
 
 	"github.com/jackc/pgerrcode"
-	"github.com/lib/pq"
-
 	"github.com/jinzhu/gorm"
+	"github.com/lib/pq"
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common/apperr"
@@ -42,6 +41,7 @@ type Area struct {
 	Id          int64 `gorm:"primary_key"`
 	Name        string
 	Description string
+	Polygon     *Polygon
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }

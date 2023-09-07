@@ -6602,6 +6602,33 @@
         },
         "description": {
           "type": "string"
+        },
+        "polygon": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiAreaLocation"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "apiAreaLocation": {
+      "type": "object",
+      "properties": {
+        "lat": {
+          "type": "number",
+          "format": "float"
+        },
+        "lon": {
+          "type": "number",
+          "format": "float"
         }
       }
     },

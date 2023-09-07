@@ -81,6 +81,18 @@ export interface ApiArea {
   id?: number;
   name?: string;
   description?: string;
+  polygon?: ApiAreaLocation[];
+  /** @format date-time */
+  createdAt?: string;
+  /** @format date-time */
+  updatedAt?: string;
+}
+
+export interface ApiAreaLocation {
+  /** @format float */
+  lat?: number;
+  /** @format float */
+  lon?: number;
 }
 
 export interface ApiAttribute {

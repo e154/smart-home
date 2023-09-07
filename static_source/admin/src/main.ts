@@ -36,6 +36,8 @@ import App from './App.vue'
 
 import './permission'
 
+import OpenLayersMap from "vue3-openlayers";
+
 // 创建实例
 const setupAll = async () => {
   const app = createApp(App)
@@ -53,6 +55,8 @@ const setupAll = async () => {
   setupPermission(app)
 
   app.use(InstallCodemirro);
+
+  app.use(OpenLayersMap);
 
   app.mount('#app')
 }

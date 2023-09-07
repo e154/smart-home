@@ -12,6 +12,7 @@ import api from "@/api/api";
 import Form from './components/Form.vue'
 import {ApiArea} from "@/api/stub";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import MapEditor from "@/views/Areas/components/MapEditor.vue";
 
 const {register, elFormRef, methods} = useForm()
 const {required} = useValidator()
@@ -85,7 +86,9 @@ fetch()
   <ContentWrap>
     <Form ref="writeRef" :current-row="currentRow"/>
 
-    <div style="text-align: right">
+    <MapEditor/>
+
+    <div style="text-align: right" class="mt-20px">
 
       <ElButton type="primary" @click="save()">
         {{ t('main.save') }}
