@@ -38,16 +38,30 @@ func (r Area) AddArea(from *api.NewAreaRequest) (area *m.Area) {
 	area = &m.Area{
 		Name:        from.Name,
 		Description: from.Description,
+		Polygon:     make([]m.Point, 0),
+	}
+	for _, point := range from.Polygon {
+		area.Polygon = append(area.Polygon, m.Point{
+			Lon: float64(point.Lon),
+			Lat: float64(point.Lat),
+		})
 	}
 	return
 }
 
 // UpdateArea ...
-func (r Area) UpdateArea(obj *api.UpdateAreaRequest) (area *m.Area) {
+func (r Area) UpdateArea(from *api.UpdateAreaRequest) (area *m.Area) {
 	area = &m.Area{
-		Id:          obj.Id,
-		Name:        obj.Name,
-		Description: obj.Description,
+		Id:          from.Id,
+		Name:        from.Name,
+		Description: from.Description,
+		Polygon:     make([]m.Point, 0),
+	}
+	for _, point := range from.Polygon {
+		area.Polygon = append(area.Polygon, m.Point{
+			Lon: float64(point.Lon),
+			Lat: float64(point.Lat),
+		})
 	}
 	return
 }
@@ -101,12 +115,12 @@ func ToArea(area *m.Area) (obj *api.Area) {
 		Id:          area.Id,
 		Name:        area.Name,
 		Description: area.Description,
-		Polygon:     make([]*api.Area_Location, 0, len(area.Polygon)),
+		Polygon:     make([]*api.AreaLocation, 0, len(area.Polygon)),
 		CreatedAt:   timestamppb.New(area.CreatedAt),
 		UpdatedAt:   timestamppb.New(area.UpdatedAt),
 	}
 	for _, location := range area.Polygon {
-		obj.Polygon = append(obj.Polygon, &api.Area_Location{
+		obj.Polygon = append(obj.Polygon, &api.AreaLocation{
 			Lat: float32(location.Lat),
 			Lon: float32(location.Lon),
 		})
