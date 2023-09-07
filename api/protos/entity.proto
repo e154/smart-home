@@ -48,9 +48,11 @@ message Entity {
   repeated EntityAction actions = 10;
   repeated EntityState states = 11;
   repeated Script scripts = 12;
-  map<string, Attribute> attributes = 13;
-  map<string, Attribute> settings = 14;
-  repeated Metric metrics = 15;
+  repeated int64 scriptIds = 13;
+  map<string, Attribute> attributes = 14;
+  map<string, Attribute> settings = 15;
+  repeated Metric metrics = 16;
+  optional bool isLoaded = 17;
   google.protobuf.Timestamp created_at = 99;
   google.protobuf.Timestamp updated_at = 100;
 }
@@ -63,7 +65,7 @@ message EntityShort {
   optional Image image = 6;
   optional string icon = 5;
   bool auto_load = 8;
-  optional EntityParent parent = 9;
+  optional string parentId = 9;
   google.protobuf.Timestamp created_at = 99;
   google.protobuf.Timestamp updated_at = 100;
 }
@@ -72,23 +74,17 @@ message NewEntityRequest {
   string name = 1;
   string plugin_name = 2;
   string description = 3;
-  optional Area area = 4;
+  optional int64 areaId = 4;
   optional string icon = 5;
-  message Image {
-    int64 id = 1;
-  }
-  optional Image image = 6;
+  optional int64 imageId = 6;
   bool auto_load = 8;
-  optional EntityParent parent = 9;
+  optional string parentId = 9;
   message Action {
     string name = 1;
     string description = 2;
     optional string icon = 3;
-    optional Image image = 4;
-    message Script {
-      int64 id = 1;
-    }
-    optional Script script = 5;
+    optional int64 imageId = 4;
+    optional int64 scriptId = 5;
     string type = 6;
   }
   repeated Action actions = 10;
@@ -96,14 +92,14 @@ message NewEntityRequest {
     string name = 1;
     string description = 2;
     optional string icon = 3;
-    optional Image image = 4;
+    optional int64 imageId = 4;
     string style = 5;
   }
   repeated State states = 11;
   map<string, Attribute> attributes = 12;
   map<string, Attribute> settings = 13;
   repeated Metric metrics = 15;
-  repeated Script scripts = 16;
+  repeated int64 scriptIds = 16;
 }
 
 message UpdateEntityRequest {
@@ -111,20 +107,17 @@ message UpdateEntityRequest {
   string name = 2;
   string plugin_name = 3;
   string description = 4;
-  optional Area area = 5;
+  optional int64 areaId = 5;
   optional string icon = 6;
-  message Image {
-    int64 id = 1;
-  }
-  optional Image image = 7;
+  optional int64 imageId = 7;
   bool auto_load = 9;
-  optional EntityParent parent = 10;
+  optional string parentId = 10;
   message Action {
     string name = 1;
     string description = 2;
     optional string icon = 3;
-    optional Image image = 4;
-    optional Script script = 5;
+    optional int64 imageId = 4;
+    optional int64 scriptId = 5;
     string type = 6;
   }
   repeated Action actions = 11;
@@ -132,18 +125,27 @@ message UpdateEntityRequest {
     string name = 1;
     string description = 2;
     optional string icon = 3;
-    optional Image image = 4;
+    optional int64 imageId = 4;
     string style = 5;
   }
   repeated State states = 12;
   map<string, Attribute> attributes = 13;
   map<string, Attribute> settings = 14;
-  repeated Script scripts = 15;
+  repeated int64 scriptIds = 15;
   repeated Metric metrics = 16;
 }
 
 message GetEntityRequest {
   string id = 1;
+}
+
+message EntityPaginationRequest {
+  uint64 page = 1;
+  uint64 limit = 2;
+  string sort = 3;
+  optional string query = 4;
+  optional string plugin = 5;
+  optional int64 area = 6;
 }
 
 message GetEntityListResult {
@@ -157,6 +159,14 @@ message DeleteEntityRequest {
 
 message SearchEntityResult {
   repeated EntityShort items = 1;
+}
+
+message EnableEntityRequest {
+  string id = 1;
+}
+
+message DisableEntityRequest {
+  string id = 1;
 }
 
 service EntityService {
@@ -209,7 +219,7 @@ service EntityService {
   }
 
   // get entity list
-  rpc GetEntityList (PaginationRequest) returns (GetEntityListResult){
+  rpc GetEntityList (EntityPaginationRequest) returns (GetEntityListResult){
     option (google.api.http) = {
       get: "/v1/entities"
     };
@@ -258,6 +268,36 @@ service EntityService {
     option (google.api.http) = {
       post: "/v1/entities/import"
       body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // enabled entity
+  rpc EnabledEntity (EnableEntityRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post: "/v1/entity/{id}/enable"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // disable entity
+  rpc DisabledEntity (DisableEntityRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post: "/v1/entity/{id}/disable"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
       security: {

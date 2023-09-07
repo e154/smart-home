@@ -2,14 +2,15 @@
 .DEFAULT_GOAL := build
 build: get_deps build_public build_server build_cli
 tests: lint test
-all: build build_structure build_archive docker_image
+all: build build_structure build_common_structure build_archive docker_image
 deploy: docker_image_upload
 
 EXEC=server
 CLI=cli
 ROOT := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
-TMP_DIR = ${ROOT}/tmp/${EXEC}
-ARCHIVE=smart-home-${EXEC}.tar.gz
+SERVER_DIR = ${ROOT}/tmp/${EXEC}
+COMMON_DIR = ${ROOT}/tmp/common
+ARCHIVE=smart-home-common.tar.gz
 
 PROJECT ?=github.com/e154/smart-home
 TRAVIS_BUILD_NUMBER ?= local
@@ -33,7 +34,7 @@ GENERATED_VAR=${PROJECT}/version.GeneratedString
 DEVELOPERS_VAR=${PROJECT}/version.DevelopersString
 BUILD_NUMBER_VAR=${PROJECT}/version.BuildNumString
 DOCKER_IMAGE_VAR=${PROJECT}/version.DockerImageString
-GO_BUILD_LDFLAGS= -X ${VERSION_VAR}=${RELEASE_VERSION} -X ${REV_VAR}=${REV_VALUE} -X ${REV_URL_VAR}=${REV_URL_VALUE} -X ${GENERATED_VAR}=${GENERATED_VALUE} -X ${DEVELOPERS_VAR}=${DEVELOPERS_VALUE} -X ${BUILD_NUMBER_VAR}=${BUILD_NUMBER_VALUE} -X ${DOCKER_IMAGE_VAR}=${DOCKER_IMAGE_VER}
+GO_BUILD_LDFLAGS= -s -w -X ${VERSION_VAR}=${RELEASE_VERSION} -X ${REV_VAR}=${REV_VALUE} -X ${REV_URL_VAR}=${REV_URL_VALUE} -X ${GENERATED_VAR}=${GENERATED_VALUE} -X ${DEVELOPERS_VAR}=${DEVELOPERS_VALUE} -X ${BUILD_NUMBER_VAR}=${BUILD_NUMBER_VALUE} -X ${DOCKER_IMAGE_VAR}=${DOCKER_IMAGE_VER}
 GO_BUILD_FLAGS= -a -installsuffix cgo -v --ldflags '${GO_BUILD_LDFLAGS}'
 GO_BUILD_ENV= CGO_ENABLED=0
 GO_BUILD_TAGS= -tags 'production'
@@ -97,18 +98,21 @@ build_public:
 	node -v  && \
 	echo -e "npm version.\n"  && \
 	npm -v  && \
-	cd ${ROOT}/static_source/public && \
-	npm i && \
-	npm run build:prod && \
+	npm i -g pnpm  && \
+	echo -e "pnpm version.\n"  && \
+	pnpm -v && \
+	cd ${ROOT}/static_source/admin && \
+	pnpm i && \
+	pnpm run build:pro && \
 	rm -rf ${ROOT}/build/public && \
 	mkdir -p ${ROOT}/build && \
-	mv ${ROOT}/static_source/public/dist ${ROOT}/build/public
+	mv ${ROOT}/static_source/admin/dist-pro ${ROOT}/build/public
 
 server:
 	@echo "Building http server"
 	cd ${ROOT}/api/protos/ && \
 	mkdir -p ${ROOT}/api/stub && \
-	protoc -I/usr/local/include -I. \
+	protoc -I. \
       -I${GOPATH}/src \
       -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0/third_party/googleapis \
       -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0 \
@@ -118,7 +122,7 @@ server:
 	@echo "Building grpc server"
 	cd ${ROOT}/api/protos/ && \
 	mkdir -p ${ROOT}/api/stub && \
-	protoc -I/usr/local/include -I. \
+	protoc -I. \
       -I${GOPATH}/src \
       -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0/third_party/googleapis \
       -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0 \
@@ -128,7 +132,7 @@ server:
 	@echo "Building protobuf files"
 	cd ${ROOT}/api/protos/ && \
 	mkdir -p ${ROOT}/api/stub && \
-	protoc -I/usr/local/include -I. \
+	protoc -I. \
       -I${GOPATH}/src \
       -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0/third_party/googleapis \
       -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0 \
@@ -137,7 +141,7 @@ server:
 
 	@echo "Building swagger.json"
 	cd ${ROOT}/api/protos/ && \
-	protoc -I/usr/local/include -I. \
+	protoc -I. \
 	  -I${GOPATH}/src \
 	  -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0/third_party/googleapis \
 	  -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway/v2@v2.5.0/protoc-gen-openapiv2 \
@@ -147,30 +151,46 @@ server:
 
 build_structure:
 	@echo MARK: create app structure
-	mkdir -p ${TMP_DIR}
-	cd ${TMP_DIR}
-	cp -r ${ROOT}/conf ${TMP_DIR}
-	cp -r ${ROOT}/data ${TMP_DIR}
-	cp -r ${ROOT}/snapshots ${TMP_DIR}
-	cp ${ROOT}/LICENSE ${TMP_DIR}
-	cp ${ROOT}/README* ${TMP_DIR}
-	cp ${ROOT}/contributors.txt ${TMP_DIR}
-	cp ${ROOT}/bin/docker/Dockerfile ${TMP_DIR}
-	cp ${ROOT}/bin/server-installer.sh ${TMP_DIR}
-	chmod +x ${TMP_DIR}/data/scripts/ping.sh
-	cp ${ROOT}/${EXEC}-linux-amd64 ${TMP_DIR}
-	cp ${ROOT}/${EXEC}-linux-arm-7 ${TMP_DIR}
-	cp ${ROOT}/${EXEC}-linux-arm-6 ${TMP_DIR}
-	cp ${ROOT}/${EXEC}-linux-arm-5 ${TMP_DIR}
-	cp ${ROOT}/${EXEC}-darwin-10.6-amd64 ${TMP_DIR}
-	cp ${ROOT}/${CLI}-darwin-10.6-amd64 ${TMP_DIR}
-	cp ${ROOT}/${CLI}-darwin-10.6-arm64 ${TMP_DIR}
-	cp ${ROOT}/${CLI}-linux-amd64 ${TMP_DIR}
-	cp ${ROOT}/bin/server ${TMP_DIR}
+	mkdir -p ${SERVER_DIR}
+	cd ${SERVER_DIR}
+	cp -r ${ROOT}/conf ${SERVER_DIR}
+	cp -r ${ROOT}/data ${SERVER_DIR}
+	cp -r ${ROOT}/snapshots ${SERVER_DIR}
+	cp ${ROOT}/LICENSE ${SERVER_DIR}
+	cp ${ROOT}/README* ${SERVER_DIR}
+	cp ${ROOT}/CONTRIBUTING.md ${SERVER_DIR}
+	cp ${ROOT}/bin/docker/Dockerfile ${SERVER_DIR}
+	cp ${ROOT}/bin/server-installer.sh ${SERVER_DIR}
+	chmod +x ${SERVER_DIR}/data/scripts/ping.sh
+	cp ${ROOT}/${EXEC}-linux-amd64 ${SERVER_DIR}
+	cp ${ROOT}/${EXEC}-linux-arm-7 ${SERVER_DIR}
+	cp ${ROOT}/${EXEC}-linux-arm-6 ${SERVER_DIR}
+	cp ${ROOT}/${EXEC}-linux-arm-5 ${SERVER_DIR}
+	cp ${ROOT}/${EXEC}-darwin-10.6-amd64 ${SERVER_DIR}
+	cp ${ROOT}/${EXEC}-darwin-10.6-arm64 ${SERVER_DIR}
+	cp ${ROOT}/${CLI}-darwin-10.6-amd64 ${SERVER_DIR}
+	cp ${ROOT}/${CLI}-darwin-10.6-arm64 ${SERVER_DIR}
+	cp ${ROOT}/${CLI}-linux-amd64 ${SERVER_DIR}
+	cp ${ROOT}/bin/server ${SERVER_DIR}
+
+build_common_structure:
+	@echo MARK: create common structure
+	mkdir -p ${COMMON_DIR}
+	cd ${COMMON_DIR}
+	cp -r ${ROOT}/conf ${COMMON_DIR}
+	cp -r ${ROOT}/data ${COMMON_DIR}
+	cp -r ${ROOT}/snapshots ${COMMON_DIR}
+	cp ${ROOT}/LICENSE ${COMMON_DIR}
+	cp ${ROOT}/README* ${COMMON_DIR}
+	cp ${ROOT}/CONTRIBUTING.md ${COMMON_DIR}
+	cp ${ROOT}/bin/docker/Dockerfile ${COMMON_DIR}
+	cp ${ROOT}/bin/server-installer.sh ${COMMON_DIR}
+	chmod +x ${COMMON_DIR}/data/scripts/ping.sh
+	cp ${ROOT}/bin/server ${COMMON_DIR}
 
 build_archive:
 	@echo MARK: build app archive
-	cd ${TMP_DIR} && ls -l && tar -zcf ${HOME}/${ARCHIVE} .
+	cd ${COMMON_DIR} && ls -l && tar -zcf ${ROOT}/${ARCHIVE} .
 
 build_docs:
 	@echo MARK: build doc
@@ -209,7 +229,7 @@ docs_deploy:
 	echo -e "Done documentation deploy.\n"
 
 docker_image:
-	cd ${TMP_DIR} && ls -ll && docker build -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
+	cd ${SERVER_DIR} && ls -ll && docker build -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
 
 docker_image_upload:
 	echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
@@ -221,7 +241,7 @@ docker_image_upload:
 
 clean:
 	@echo MARK: clean
-	rm -rf ${TMP_DIR}
+	rm -rf ${SERVER_DIR}
 	rm -f ${ROOT}/${EXEC}-linux-amd64
 	rm -f ${ROOT}/${EXEC}-linux-arm-7
 	rm -f ${ROOT}/${EXEC}-linux-arm-6
@@ -235,4 +255,4 @@ clean:
 
 front_client:
 	@echo MARK: generate front client lib
-	npx swagger-typescript-api@12.0.4 --axios -p ./api/api.swagger.yml -o ./static_source/public/src/api -n stub_new.ts
+	npx swagger-typescript-api@12.0.4 --axios -p ./api/api.swagger.json -o ./static_source/admin/src/api -n stub_new.ts

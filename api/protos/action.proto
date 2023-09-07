@@ -1,0 +1,158 @@
+syntax = "proto3";
+
+package api;
+option go_package = "/api";
+
+import "google/api/annotations.proto";
+import "protoc-gen-swagger/options/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+import "script.proto";
+import "entity.proto";
+import "pagination.proto";
+
+message Action {
+  int64 id = 1;
+  string name = 2;
+  optional int64 script_id = 3;
+  optional Script script = 4;
+  optional Entity entity = 5;
+  optional string entity_id = 6;
+  optional string entity_action_name = 7;
+  optional bool completed = 8;
+
+  google.protobuf.Timestamp created_at = 99;
+  google.protobuf.Timestamp updated_at = 100;
+}
+
+message NewActionRequest {
+  string name = 2;
+  optional int64 script_id = 3;
+  optional Script script = 4;
+  optional Entity entity = 5;
+  optional string entity_id = 6;
+  optional string entity_action_name = 7;
+}
+
+message UpdateActionRequest {
+  int64 id = 1;
+  string name = 2;
+  optional int64 script_id = 3;
+  optional Script script = 4;
+  optional Entity entity = 5;
+  optional string entity_id = 6;
+  optional string entity_action_name = 7;
+}
+
+message GetActionRequest {
+  int64 id = 1;
+}
+
+message GetActionListResult {
+  repeated Action items = 1;
+  Meta meta = 2;
+}
+
+message DeleteActionRequest {
+  int64 id = 1;
+}
+
+message SearchActionResult {
+  repeated Action items = 1;
+}
+
+service ActionService {
+
+  // add new action
+  rpc AddAction (NewActionRequest) returns (Action){
+    option (google.api.http) = {
+      post: "/v1/action"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // update action
+  rpc UpdateAction (UpdateActionRequest) returns (Action){
+    option (google.api.http) = {
+      put: "/v1/action/{id}"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // get action by id
+  rpc GetActionById (GetActionRequest) returns (Action){
+    option (google.api.http) = {
+      get: "/v1/action/{id}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // get action list
+  rpc GetActionList (PaginationRequest) returns (GetActionListResult){
+    option (google.api.http) = {
+      get: "/v1/actions"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // delete action
+  rpc DeleteAction (DeleteActionRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      delete: "/v1/action/{id}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // search action
+  rpc SearchAction (SearchRequest) returns (SearchActionResult){
+    option (google.api.http) = {
+      get: "/v1/actions/search"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+}

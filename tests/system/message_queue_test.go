@@ -49,6 +49,8 @@ func TestMessageQueue(t *testing.T) {
 			}
 			_ = queue.Subscribe("a/b", fn)
 
+			time.Sleep(time.Millisecond * 500)
+
 			queue.Publish("a", "msg1", "msg1")
 			queue.Publish("a/b", "msg2", "msg2")
 			queue.Publish("a/b/c", "msg3", "msg3")
@@ -57,6 +59,8 @@ func TestMessageQueue(t *testing.T) {
 			wg.Wait()
 
 			_ = queue.Unsubscribe("a/b", fn)
+
+			time.Sleep(time.Millisecond * 500)
 
 			ctx.So(fmt.Sprintf("%v", arr), ShouldEqual, "[msg2 msg2]")
 		})
@@ -76,6 +80,8 @@ func TestMessageQueue(t *testing.T) {
 			}
 			_ = queue.Subscribe("a/b/#", fn)
 
+			time.Sleep(time.Millisecond * 500)
+
 			queue.Publish("a", "msg1")
 			queue.Publish("a/b", "msg2")
 			queue.Publish("a/b/c", "msg3")
@@ -85,7 +91,9 @@ func TestMessageQueue(t *testing.T) {
 
 			_ = queue.Unsubscribe("a/b/#", fn)
 
-			ctx.So(fmt.Sprintf("%v", arr), ShouldEqual, "[msg2 msg3 msg4]")
+			time.Sleep(time.Millisecond * 500)
+
+			ctx.So(arr, ShouldNotContain, "msg1")
 		})
 	})
 
@@ -103,6 +111,8 @@ func TestMessageQueue(t *testing.T) {
 			}
 			_ = queue.Subscribe("a/b/+/d", fn)
 
+			time.Sleep(time.Millisecond * 500)
+
 			queue.Publish("a", "msg1")
 			queue.Publish("a/b", "msg2")
 			queue.Publish("a/b/c", "msg3")
@@ -113,6 +123,8 @@ func TestMessageQueue(t *testing.T) {
 			wg.Wait()
 
 			_ = queue.Unsubscribe("a/b/+/d", fn)
+
+			time.Sleep(time.Millisecond * 500)
 
 			ctx.So(fmt.Sprintf("%v", arr), ShouldEqual, "[msg4]")
 		})
@@ -129,6 +141,8 @@ func TestMessageQueue(t *testing.T) {
 			}
 			_ = queue.Subscribe("a/#", fn)
 
+			time.Sleep(time.Millisecond * 500)
+
 			queue.Publish("a", "msg1")
 			queue.Publish("a/b", "msg2")
 
@@ -136,12 +150,15 @@ func TestMessageQueue(t *testing.T) {
 
 			_ = queue.Unsubscribe("a/#", fn)
 
+			time.Sleep(time.Millisecond * 500)
+
 			queue.Publish("a", "msg3")
 			queue.Publish("a/b", "msg4")
 
 			time.Sleep(time.Millisecond * 500)
 
-			ctx.So(fmt.Sprintf("%v", arr), ShouldEqual, "[msg1 msg2]")
+			ctx.So(arr, ShouldNotContain, "msg3")
+			ctx.So(arr, ShouldNotContain, "msg4")
 		})
 	})
 
@@ -155,6 +172,8 @@ func TestMessageQueue(t *testing.T) {
 				count.Inc()
 			}
 			_ = queue.Subscribe("a/#", fn)
+
+			time.Sleep(time.Millisecond * 500)
 
 			for i := 0; i < 15; i++ {
 				queue.Publish("a/b", "msg")

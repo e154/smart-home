@@ -26,14 +26,13 @@ import (
 	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/notify"
 	"github.com/e154/smart-home/plugins/telegram"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -52,12 +51,8 @@ telegramAction = (entityId, actionName)->
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService,
-			entityManager entity_manager.EntityManager,
-			eventBus bus.Bus,
-			pluginManager common.PluginManager) {
-
-			eventBus.Purge()
-			scriptService.Purge()
+			supervisor supervisor.Supervisor,
+			eventBus bus.Bus) {
 
 			err := migrations.Purge()
 			ctx.So(err, ShouldBeNil)
@@ -67,6 +62,12 @@ telegramAction = (entityId, actionName)->
 			ctx.So(err, ShouldBeNil)
 			err = AddPlugin(adaptors, "telegram")
 			ctx.So(err, ShouldBeNil)
+
+			eventBus.Purge()
+			scriptService.Restart()
+			supervisor.Restart(context.Background())
+
+			time.Sleep(time.Millisecond * 500)
 
 			// add scripts
 			// ------------------------------------------------
@@ -92,6 +93,13 @@ telegramAction = (entityId, actionName)->
 			})
 			So(err, ShouldBeNil)
 
+			eventBus.Publish("system/entities/"+tgEnt.Id.String(), events.EventCreatedEntity{
+				EntityId: tgEnt.Id,
+			})
+
+			time.Sleep(time.Second)
+
+
 			// add chat
 			tgChan := m.TelegramChat{
 				EntityId: tgEnt.Id,
@@ -99,17 +107,6 @@ telegramAction = (entityId, actionName)->
 				Username: "user",
 			}
 			_ = adaptors.TelegramChat.Add(tgChan)
-
-			pluginManager.Start()
-			entityManager.SetPluginManager(pluginManager)
-			entityManager.LoadEntities()
-
-			defer func() {
-				entityManager.Shutdown()
-				pluginManager.Shutdown()
-			}()
-
-			time.Sleep(time.Millisecond * 500)
 
 			t.Run("succeed", func(t *testing.T) {
 				Convey("", t, func(ctx C) {
@@ -123,8 +120,9 @@ telegramAction = (entityId, actionName)->
 						}
 
 					}
-					_ = eventBus.Subscribe(bus.TopicEntities, fn)
-					defer func() { _ = eventBus.Unsubscribe(bus.TopicEntities, fn) }()
+					_ = eventBus.Subscribe("system/entities/+", fn)
+
+					time.Sleep(time.Millisecond * 500)
 
 					eventBus.Publish(notify.TopicNotify, notify.Message{
 						Type: telegram.Name,
@@ -134,11 +132,8 @@ telegramAction = (entityId, actionName)->
 						},
 					})
 
-					ok := Wait(2, ch)
-
+					ok := Wait(3, ch)
 					ctx.So(ok, ShouldBeTrue)
-
-					time.Sleep(time.Millisecond * 500)
 
 					list, total, err := adaptors.MessageDelivery.List(context.Background(), 10, 0, "", "", nil)
 					ctx.So(err, ShouldBeNil)
@@ -159,7 +154,7 @@ telegramAction = (entityId, actionName)->
 
 			t.Run("call actions", func(t *testing.T) {
 				Convey("call actions", t, func(ctx C) {
-					entityManager.CallAction(tgEnt.Id, "CHECK", nil)
+					supervisor.CallAction(tgEnt.Id, "CHECK", nil)
 					time.Sleep(time.Second)
 				})
 			})

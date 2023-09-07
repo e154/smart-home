@@ -23,7 +23,7 @@ import (
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 const (
@@ -38,6 +38,8 @@ const (
 	StateAboveHorizon = "aboveHorizon"
 	// StateBelowHorizon ...
 	StateBelowHorizon = "belowHorizon"
+
+	Version = "0.0.1"
 )
 
 const (
@@ -232,9 +234,9 @@ const (
 )
 
 // NewStates ...
-func NewStates() (states map[string]entity_manager.ActorState) {
+func NewStates() (states map[string]supervisor.ActorState) {
 
-	states = map[string]entity_manager.ActorState{
+	states = map[string]supervisor.ActorState{
 		Sunrise: {
 			Name:        Sunrise,
 			Description: "sunrise (top edge of the sun appears on the horizon)",

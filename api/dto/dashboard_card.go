@@ -43,6 +43,10 @@ func (r DashboardCard) AddDashboardCard(obj *api.NewDashboardCardRequest) (ver *
 		Enabled:        obj.Enabled,
 		DashboardTabId: obj.DashboardTabId,
 		Payload:        obj.Payload,
+		Hidden:         obj.Hidden,
+	}
+	if obj.EntityId != nil && *obj.EntityId != "" {
+		ver.EntityId = common.NewEntityId(*obj.EntityId)
 	}
 	return
 }
@@ -56,11 +60,14 @@ func (r DashboardCard) UpdateDashboardCard(obj *api.UpdateDashboardCardRequest) 
 		Background:     obj.Background,
 		Weight:         int(obj.Weight),
 		Enabled:        obj.Enabled,
+		Hidden:         obj.Hidden,
 		DashboardTabId: obj.DashboardTabId,
 		Payload:        obj.Payload,
 		Items:          make([]*m.DashboardCardItem, 0, len(obj.Items)),
 	}
-
+	if obj.EntityId != nil && *obj.EntityId != "" {
+		ver.EntityId = common.NewEntityId(*obj.EntityId)
+	}
 	// items
 	for _, item := range obj.Items {
 		qwe := &m.DashboardCardItem{
@@ -124,9 +131,14 @@ func ToDashboardCard(ver *m.DashboardCard) (obj *api.DashboardCard) {
 		Enabled:        ver.Enabled,
 		DashboardTabId: ver.DashboardTabId,
 		Payload:        ver.Payload,
+		Hidden:         ver.Hidden,
 		Entities:       make(map[string]*api.Entity),
 		CreatedAt:      timestamppb.New(ver.CreatedAt),
 		UpdatedAt:      nil,
+	}
+
+	if ver.EntityId != nil && *ver.EntityId != "" {
+		obj.EntityId = common.String(string(*ver.EntityId))
 	}
 
 	// Items
@@ -153,7 +165,12 @@ func ImportDashboardCard(obj *api.DashboardCard) (ver *m.DashboardCard) {
 		Enabled:        obj.Enabled,
 		DashboardTabId: obj.DashboardTabId,
 		Payload:        obj.Payload,
+		Hidden:         obj.Hidden,
 		Items:          make([]*m.DashboardCardItem, 0, len(obj.Items)),
+	}
+
+	if obj.EntityId != nil && *obj.EntityId != "" {
+		ver.EntityId = common.NewEntityId(*obj.EntityId)
 	}
 
 	// items

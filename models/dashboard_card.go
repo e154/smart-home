@@ -13,7 +13,7 @@ type DashboardCard struct {
 	Title          string                      `json:"title" validate:"required"`
 	Height         int                         `json:"height" validate:"required"`
 	Width          int                         `json:"width" validate:"required"`
-	Background     string                      `json:"background" validate:"required"`
+	Background     *string                     `json:"background"`
 	Weight         int                         `json:"weight"`
 	Enabled        bool                        `json:"enabled"`
 	DashboardTabId int64                       `json:"dashboard_tab_id" validate:"required"`
@@ -21,6 +21,9 @@ type DashboardCard struct {
 	Payload        json.RawMessage             `json:"payload"`
 	Items          []*DashboardCardItem        `json:"items"`
 	Entities       map[common.EntityId]*Entity `json:"entities"`
+	Hidden         bool                        `json:"hidden"`
+	EntityId       *common.EntityId            `json:"entity_id"`
+	Entity         *Entity                     `json:"entity"`
 	CreatedAt      time.Time                   `json:"created_at"`
 	UpdatedAt      time.Time                   `json:"updated_at"`
 }

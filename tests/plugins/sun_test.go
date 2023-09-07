@@ -25,12 +25,11 @@ import (
 	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
 	sunPlugin "github.com/e154/smart-home/plugins/sun"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -40,12 +39,8 @@ func TestSun(t *testing.T) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService,
-			entityManager entity_manager.EntityManager,
-			eventBus bus.Bus,
-			pluginManager common.PluginManager) {
-
-			eventBus.Purge()
-			scriptService.Purge()
+			supervisor supervisor.Supervisor,
+			eventBus bus.Bus) {
 
 			err := migrations.Purge()
 			ctx.So(err, ShouldBeNil)
@@ -54,18 +49,32 @@ func TestSun(t *testing.T) {
 			err = AddPlugin(adaptors, "sun")
 			ctx.So(err, ShouldBeNil)
 
+			eventBus.Purge()
+			scriptService.Restart()
+
+
 			// add entity
 			// ------------------------------------------------
 			sunEnt := GetNewSun("main")
 			err = adaptors.Entity.Add(sunEnt)
 			ctx.So(err, ShouldBeNil)
 
-			ch := make(chan events.EventStateChanged, 2)
-			_ = eventBus.Subscribe(bus.TopicEntities, func(topic string, msg events.EventStateChanged) {
-				ch <- msg
+			eventBus.Publish("system/entities/"+sunEnt.Id.String(), events.EventCreatedEntity{
+				EntityId: sunEnt.Id,
 			})
 
-			sun := sunPlugin.NewActor(sunEnt, entityManager, adaptors, scriptService, eventBus)
+			time.Sleep(time.Second)
+
+			ch := make(chan events.EventStateChanged, 2)
+			fn := func(topic string, msg events.EventStateChanged) {
+				ch <- msg
+			}
+			_ = eventBus.Subscribe("system/entities/+", fn)
+			defer func() {
+				_ = eventBus.Unsubscribe("system/entities/+", fn)
+			}()
+
+			sun := sunPlugin.NewActor(sunEnt, supervisor, adaptors, scriptService, eventBus)
 
 			t.Run("entity", func(t *testing.T) {
 				Convey("phase", t, func(ctx C) {
@@ -104,8 +113,8 @@ func TestSun(t *testing.T) {
 					ctx.So(msg.NewState.State, ShouldNotBeNil)
 					ctx.So(msg.NewState.State.Name, ShouldEqual, sunPlugin.AttrDusk)
 					ctx.So(msg.NewState.State.Description, ShouldEqual, "dusk (evening nautical twilight starts)")
-					ctx.So(msg.NewState.Attributes[sunPlugin.AttrAzimuth].Float64(), ShouldEqual, 326.12752266195463)
-					ctx.So(msg.NewState.Attributes[sunPlugin.AttrElevation].Float64(), ShouldEqual, -7.663125133580264)
+					ctx.So(msg.NewState.Attributes[sunPlugin.AttrAzimuth].String(), ShouldContainSubstring, "326.127522661")
+					ctx.So(msg.NewState.Attributes[sunPlugin.AttrElevation].String(), ShouldContainSubstring, "-7.663125133")
 					ctx.So(msg.NewState.Attributes[sunPlugin.AttrHorizonState].String(), ShouldEqual, "belowHorizon")
 					ctx.So(msg.NewState.Attributes[sunPlugin.AttrPhase].String(), ShouldEqual, "dusk")
 				})

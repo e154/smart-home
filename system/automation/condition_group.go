@@ -23,17 +23,17 @@ import (
 	"sync"
 	"time"
 
-	"github.com/e154/smart-home/common"
 	"go.uber.org/atomic"
+
+	"github.com/e154/smart-home/common"
 )
 
 // NewConditionGroup ...
-func NewConditionGroup(automation *automation,
-	t common.ConditionType) *ConditionGroup {
+func NewConditionGroup(t common.ConditionType) *ConditionGroup {
 	return &ConditionGroup{
-		automation: automation,
 		t:          t,
 		lastStatus: atomic.Bool{},
+		Mutex:      sync.Mutex{},
 	}
 }
 
@@ -41,7 +41,6 @@ func NewConditionGroup(automation *automation,
 type ConditionGroup struct {
 	rules      []*Condition
 	t          common.ConditionType
-	automation *automation
 	lastStatus atomic.Bool
 	sync.Mutex
 }

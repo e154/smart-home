@@ -19,7 +19,8 @@
 package plugins
 
 import (
-	context2 "context"
+	"context"
+	"github.com/e154/smart-home/common/events"
 	"testing"
 	"time"
 
@@ -28,9 +29,9 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/cgminer"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -164,22 +165,22 @@ entityAction = (entityId, actionName)->
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService,
-			entityManager entity_manager.EntityManager,
-			eventBus bus.Bus,
-			pluginManager common.PluginManager) {
-
-			eventBus.Purge()
-			scriptService.Purge()
+			supervisor supervisor.Supervisor,
+			eventBus bus.Bus) {
 
 			err := migrations.Purge()
 			ctx.So(err, ShouldBeNil)
 
-			// bind convey
-			RegisterConvey(scriptService, ctx)
-
 			// register plugins
 			err = AddPlugin(adaptors, "cgminer")
 			ctx.So(err, ShouldBeNil)
+
+			eventBus.Purge()
+			scriptService.Restart()
+			supervisor.Restart(context.Background())
+
+			// bind convey
+			RegisterConvey(scriptService, ctx)
 
 			// add scripts
 			// ------------------------------------------------
@@ -308,25 +309,21 @@ entityAction = (entityId, actionName)->
 			})
 			So(err, ShouldBeNil)
 
+			eventBus.Publish("system/entities/"+l3Ent.Id.String(), events.EventCreatedEntity{
+				EntityId: l3Ent.Id,
+			})
+
+			time.Sleep(time.Second)
+
 			// ------------------------------------------------
-			pluginManager.Start()
-			entityManager.SetPluginManager(pluginManager)
-			entityManager.LoadEntities()
-
-			defer func() {
-				entityManager.Shutdown()
-				pluginManager.Shutdown()
-			}()
-
-			time.Sleep(time.Millisecond * 500)
 
 			t.Run("antminer L3+ stats", func(t *testing.T) {
 				Convey("stats", t, func(ctx C) {
 
-					ctx2, cancel := context2.WithCancel(context2.Background())
+					ctx2, cancel := context.WithCancel(context.Background())
 					go func() { _ = MockTCPServer(ctx2, host, port, getFixture(L3PlusStatsJson)) }()
 					time.Sleep(time.Millisecond * 500)
-					entityManager.CallAction(l3Ent.Id, "CHECK", nil)
+					supervisor.CallAction(l3Ent.Id, "CHECK", nil)
 					time.Sleep(time.Second)
 					cancel()
 
@@ -349,10 +346,10 @@ entityAction = (entityId, actionName)->
 			t.Run("antminer L3+ summary", func(t *testing.T) {
 				Convey("summary", t, func(ctx C) {
 
-					ctx2, cancel := context2.WithCancel(context2.Background())
+					ctx2, cancel := context.WithCancel(context.Background())
 					go func() { _ = MockTCPServer(ctx2, host, port, getFixture(L3PlusSummaryJson)) }()
 					time.Sleep(time.Millisecond * 500)
-					entityManager.CallAction(l3Ent.Id, "SUM", nil)
+					supervisor.CallAction(l3Ent.Id, "SUM", nil)
 					time.Sleep(time.Second)
 					cancel()
 
@@ -367,10 +364,10 @@ entityAction = (entityId, actionName)->
 			t.Run("antminer L3+ pools", func(t *testing.T) {
 				Convey("pools", t, func(ctx C) {
 
-					ctx2, cancel := context2.WithCancel(context2.Background())
+					ctx2, cancel := context.WithCancel(context.Background())
 					go func() { _ = MockTCPServer(ctx2, host, port, getFixture(L3PlusPoolsJson)) }()
 					time.Sleep(time.Millisecond * 500)
-					entityManager.CallAction(l3Ent.Id, "POOLS", nil)
+					supervisor.CallAction(l3Ent.Id, "POOLS", nil)
 					time.Sleep(time.Second)
 					cancel()
 				})
@@ -379,10 +376,10 @@ entityAction = (entityId, actionName)->
 			t.Run("antminer L3+ version", func(t *testing.T) {
 				Convey("version", t, func(ctx C) {
 
-					ctx2, cancel := context2.WithCancel(context2.Background())
+					ctx2, cancel := context.WithCancel(context.Background())
 					go func() { _ = MockTCPServer(ctx2, host, port, getFixture(L3PlusVerJson)) }()
 					time.Sleep(time.Millisecond * 500)
-					entityManager.CallAction(l3Ent.Id, "VER", nil)
+					supervisor.CallAction(l3Ent.Id, "VER", nil)
 					time.Sleep(time.Second)
 					cancel()
 				})

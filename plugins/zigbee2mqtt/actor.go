@@ -27,21 +27,21 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 // Actor ...
 type Actor struct {
-	entity_manager.BaseActor
+	supervisor.BaseActor
 	eventBus          bus.Bus
 	adaptors          *adaptors.Adaptors
 	scriptService     scripts.ScriptService
 	zigbee2mqttDevice *m.Zigbee2mqttDevice
 	message           *Message
 	mqttMessageQueue  chan *Message
-	actionPool        chan events.EventCallAction
+	actionPool        chan events.EventCallEntityAction
 	newMsgMu          *sync.Mutex
 	stateMu           *sync.Mutex
 }
@@ -51,7 +51,7 @@ func NewActor(entity *m.Entity,
 	params map[string]interface{},
 	adaptors *adaptors.Adaptors,
 	scriptService scripts.ScriptService,
-	entityManager entity_manager.EntityManager,
+	visor supervisor.Supervisor,
 	eventBus bus.Bus) (actor *Actor, err error) {
 
 	var zigbee2mqttDevice *m.Zigbee2mqttDevice
@@ -60,26 +60,26 @@ func NewActor(entity *m.Entity,
 	}
 
 	actor = &Actor{
-		BaseActor:         entity_manager.NewBaseActor(entity, scriptService, adaptors),
+		BaseActor:         supervisor.NewBaseActor(entity, scriptService, adaptors),
 		eventBus:          eventBus,
 		adaptors:          adaptors,
 		scriptService:     scriptService,
 		zigbee2mqttDevice: zigbee2mqttDevice,
 		message:           NewMessage(),
 		mqttMessageQueue:  make(chan *Message, 10),
-		actionPool:        make(chan events.EventCallAction, 10),
+		actionPool:        make(chan events.EventCallEntityAction, 10),
 		newMsgMu:          &sync.Mutex{},
 		stateMu:           &sync.Mutex{},
 	}
 
-	actor.Manager = entityManager
+	actor.Supervisor = visor
 	_, _ = actor.Attrs.Deserialize(params)
 
 	// Actions
 	for _, a := range actor.Actions {
 		if a.ScriptEngine != nil {
 			_, _ = a.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
-			a.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
+			a.ScriptEngine.PushStruct("Actor", supervisor.NewScriptBind(actor))
 			_, _ = a.ScriptEngine.Do()
 		}
 	}
@@ -90,7 +90,7 @@ func NewActor(entity *m.Entity,
 
 		// binds
 		_, _ = actor.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
-		actor.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
+		actor.ScriptEngine.PushStruct("Actor", supervisor.NewScriptBind(actor))
 	}
 
 	// mqtt worker
@@ -111,25 +111,25 @@ func NewActor(entity *m.Entity,
 }
 
 // Spawn ...
-func (e *Actor) Spawn() entity_manager.PluginActor {
+func (e *Actor) Spawn() supervisor.PluginActor {
 	return e
 }
 
 // SetState ...
-func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
+func (e *Actor) SetState(params supervisor.EntityStateParams) error {
 	if !e.setState(params) {
 		return nil
 	}
 
-	message := NewMessage()
-	message.NewState = params
-
-	e.mqttMessageQueue <- message
+	//message := NewMessage()
+	//message.NewState = params
+	//
+	//e.mqttMessageQueue <- message
 
 	return nil
 }
 
-func (e *Actor) setState(params entity_manager.EntityStateParams) (changed bool) {
+func (e *Actor) setState(params supervisor.EntityStateParams) (changed bool) {
 	e.stateMu.Lock()
 	defer e.stateMu.Unlock()
 
@@ -160,7 +160,7 @@ func (e *Actor) setState(params entity_manager.EntityStateParams) (changed bool)
 	}
 	e.AttrMu.Unlock()
 
-	e.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
+	e.eventBus.Publish("system/entities/"+e.Id.String(), events.EventStateChanged{
 		PluginName:  e.Id.PluginName(),
 		EntityId:    e.Id,
 		OldState:    oldState,
@@ -195,11 +195,11 @@ func (e *Actor) mqttNewMessage(message *Message) {
 	}
 }
 
-func (e *Actor) addAction(event events.EventCallAction) {
+func (e *Actor) addAction(event events.EventCallEntityAction) {
 	e.actionPool <- event
 }
 
-func (e *Actor) runAction(msg events.EventCallAction) {
+func (e *Actor) runAction(msg events.EventCallEntityAction) {
 	action, ok := e.Actions[msg.ActionName]
 	if !ok {
 		log.Warnf("action %s not found", msg.ActionName)

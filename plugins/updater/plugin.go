@@ -25,9 +25,7 @@ import (
 
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/plugins"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 const (
@@ -39,40 +37,40 @@ var (
 	log = logger.MustGetLogger("plugins.updater")
 )
 
-var _ plugins.Plugable = (*plugin)(nil)
+var _ supervisor.Pluggable = (*plugin)(nil)
 
 func init() {
-	plugins.RegisterPlugin(Name, New)
+	supervisor.RegisterPlugin(Name, New)
 }
 
 type plugin struct {
-	*plugins.Plugin
+	*supervisor.Plugin
 	pause time.Duration
 	actor *Actor
 	quit  chan struct{}
 }
 
 // New ...
-func New() plugins.Plugable {
+func New() supervisor.Pluggable {
 	return &plugin{
-		Plugin: plugins.NewPlugin(),
+		Plugin: supervisor.NewPlugin(),
 		pause:  24,
 	}
 }
 
 // Load ...
-func (p *plugin) Load(service plugins.Service) (err error) {
+func (p *plugin) Load(service supervisor.Service) (err error) {
 	if err = p.Plugin.Load(service); err != nil {
 		return
 	}
 
-	p.actor = NewActor(p.EntityManager, p.EventBus)
+	p.actor = NewActor(p.Supervisor, p.EventBus, p.Crawler)
 
-	p.EntityManager.Spawn(p.actor.Spawn)
+	p.Supervisor.Spawn(p.actor.Spawn)
 	p.actor.check()
 	p.quit = make(chan struct{})
 
-	_ = p.EventBus.Subscribe(bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Subscribe("system/entities/+", p.eventHandler)
 
 	go func() {
 		ticker := time.NewTicker(time.Hour * p.pause)
@@ -102,7 +100,7 @@ func (p *plugin) Unload() (err error) {
 	}
 
 	p.quit <- struct{}{}
-	_ = p.EventBus.Unsubscribe(bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Unsubscribe("system/entities/+", p.eventHandler)
 	return
 }
 
@@ -112,8 +110,8 @@ func (p *plugin) Name() string {
 }
 
 // Type ...
-func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginBuiltIn
+func (p *plugin) Type() supervisor.PluginType {
+	return supervisor.PluginBuiltIn
 }
 
 // Depends ...
@@ -129,7 +127,7 @@ func (p *plugin) Version() string {
 func (p *plugin) eventHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
-	case events.EventCallAction:
+	case events.EventCallEntityAction:
 		if v.EntityId != p.actor.Id {
 			return
 		}
@@ -144,7 +142,7 @@ func (p *plugin) eventHandler(_ string, msg interface{}) {
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
 		ActorAttrs:   NewAttr(),
-		ActorActions: entity_manager.ToEntityActionShort(NewActions()),
-		ActorStates:  entity_manager.ToEntityStateShort(NewStates()),
+		ActorActions: supervisor.ToEntityActionShort(NewActions()),
+		ActorStates:  supervisor.ToEntityStateShort(NewStates()),
 	}
 }

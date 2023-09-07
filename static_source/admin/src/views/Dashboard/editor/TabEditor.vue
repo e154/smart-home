@@ -1,0 +1,338 @@
+<script setup lang="ts">
+import {computed, nextTick, PropType, reactive, ref, unref, watch} from 'vue'
+import {Form} from '@/components/Form'
+import {ElButton, ElCard, ElCol, ElMessage, ElPopconfirm, ElRow,
+  ElSkeleton, ElMenu, ElMenuItem, ElButtonGroup} from 'element-plus'
+import {useI18n} from '@/hooks/web/useI18n'
+import {useForm} from '@/hooks/web/useForm'
+import {useValidator} from '@/hooks/web/useValidator'
+import {FormSchema} from '@/types/form'
+import {ApiArea, ApiDashboard, ApiDashboardCard, ApiEntity} from "@/api/stub";
+import {copyToClipboard} from "@/utils/clipboard";
+import Viewer from "@/components/JsonViewer/JsonViewer.vue";
+import {Core, Tab} from "@/views/Dashboard/core";
+import {useRouter} from "vue-router";
+import {useBus} from "@/views/Dashboard/bus";
+import { Dialog } from '@/components/Dialog'
+
+const {register, elFormRef, methods} = useForm()
+const {required} = useValidator()
+const {t} = useI18n()
+const dialogSource = ref({})
+const dialogVisible = ref(false)
+const {setValues, setSchema} = methods
+const {currentRoute, addRoute, push} = useRouter()
+const {bus} = useBus()
+
+interface DashboardTab {
+  id: number;
+  name: string;
+  columnWidth: number;
+  gap: boolean;
+  background: string;
+  icon: string;
+  enabled: boolean;
+  weight: number;
+  dashboardId: number;
+  cards: ApiDashboardCard[];
+  entities: Map<string, ApiEntity>;
+  dragEnabled: boolean;
+}
+
+const currentCore = ref<Core>(new Core())
+const props = defineProps({
+  core: {
+    type: Object as PropType<Nullable<Core>>,
+    default: () => null
+  },
+  tab: {
+    type: Object as PropType<Nullable<DashboardTab>>,
+    default: () => null
+  },
+})
+
+const rules = {
+  name: [required()],
+}
+
+const schema = reactive<FormSchema[]>([
+  {
+    field: 'name',
+    label: t('dashboard.name'),
+    component: 'Input',
+    colProps: {
+      span: 24
+    },
+    componentProps: {
+      placeholder: t('dashboard.name')
+    }
+  },
+  {
+    field: 'icon',
+    label: t('dashboard.icon'),
+    component: 'Input',
+    colProps: {
+      span: 24
+    },
+    componentProps: {
+      placeholder: t('dashboard.icon')
+    }
+  },
+  {
+    field: 'gap',
+    label: t('dashboard.gap'),
+    component: 'Switch',
+    value: false,
+    colProps: {
+      span: 24
+    },
+  },
+  {
+    field: 'enabled',
+    label: t('dashboard.enabled'),
+    component: 'Switch',
+    value: false,
+    colProps: {
+      span: 24
+    },
+  },
+  {
+    field: 'dragEnabled',
+    label: t('dashboard.dragEnabled'),
+    component: 'Switch',
+    value: false,
+    colProps: {
+      span: 24
+    },
+  },
+  {
+    field: 'columnWidth',
+    label: t('dashboard.columnWidth'),
+    component: 'InputNumber',
+    value: 300,
+    colProps: {
+      span: 24
+    },
+  },
+  {
+    field: 'background',
+    label: t('dashboard.background'),
+    component: 'ColorPicker',
+    colProps: {
+      span: 24
+    },
+    componentProps: {
+      placeholder: t('dashboard.background'),
+    }
+  },
+])
+
+watch(
+    () => props.tab,
+    (val?: DashboardTab) => {
+      if (!val) return
+      setValues({
+        name: val.name,
+        columnWidth: val.columnWidth,
+        gap: val.gap,
+        background: val.background,
+        icon: val.icon,
+        enabled: val.enabled,
+        weight: val.weight,
+        dragEnabled: val.dragEnabled,
+      })
+    },
+    {
+      deep: false,
+      immediate: true
+    }
+)
+
+watch(
+    () => props.core,
+    (val?: Core) => {
+      if (!val) return
+      currentCore.value = val
+    },
+    {
+      deep: false,
+      immediate: true
+    }
+)
+
+
+const activeTab = computed({
+  get(): Tab {
+    return currentCore.value.tabs[currentCore.value.activeTab] as Tab
+  },
+  set(val: Tab) {}
+})
+
+// ---------------------------------
+// common
+// ---------------------------------
+const updateTab = async () => {
+  const formRef = unref(elFormRef)
+  await formRef?.validate(async (isValid) => {
+    if (isValid) {
+      const {getFormData} = methods
+      const formData = await getFormData<DashboardTab>()
+
+      activeTab.value.background = formData.background;
+      activeTab.value.columnWidth = formData.columnWidth;
+      activeTab.value.dragEnabled = formData.dragEnabled;
+      activeTab.value.enabled = formData.enabled;
+      activeTab.value.gap = formData.gap;
+      activeTab.value.icon = formData.icon;
+      activeTab.value.name = formData.name;
+      activeTab.value.weight = formData.weight;
+
+      const res = await currentCore.value?.updateTab();
+      if (res) {
+        ElMessage({
+          title: t('Success'),
+          message: t('message.updatedSuccessfully'),
+          type: 'success',
+          duration: 2000
+        });
+      }
+    }
+  })
+
+}
+
+const removeTab = async () => {
+  if (!activeTab.value) return;
+  await currentCore.value.removeTab();
+
+  currentCore.value.tabs.splice(currentCore.value.activeTab, 1);
+  currentCore.value.activeTab = currentCore.value.tabs.length - 1;
+  currentCore.value.updateCurrentTab();
+}
+
+const menuTabClick = (index: number, tab: Tab) => {
+  if (currentCore.value.activeTab === index) return;
+  currentCore.value.activeTab = index;
+  currentCore.value.updateCurrentTab();
+}
+
+const createTab = async () => {
+  await currentCore.value.createTab();
+
+  ElMessage({
+    title: t('Success'),
+    message: t('message.createdSuccessfully'),
+    type: 'success',
+    duration: 2000
+  });
+}
+
+const cancel = () => {
+  if (!activeTab.value) return;
+  setValues({
+    name: activeTab.value.name,
+    columnWidth: activeTab.value.columnWidth,
+    gap: activeTab.value.gap,
+    background: activeTab.value.background,
+    icon: activeTab.value.icon,
+    enabled: activeTab.value.enabled,
+    weight: activeTab.value.weight,
+    dragEnabled: activeTab.value.dragEnabled,
+  })
+}
+
+const sortCardUp = (tab: Tab, index: number) => {}
+const sortCardDown = (tab: Tab, index: number) => {}
+
+</script>
+
+<template>
+
+  <ElRow :gutter="20">
+    <ElCol :span="15" :xs="15">
+      <ElCard class="box-card">
+        <template #header>
+          <div class="card-header">
+            <span>{{ $t('dashboard.mainSettings') }}</span>
+          </div>
+        </template>
+
+        <Form v-if="currentCore.tabs.length"
+            :schema="schema"
+            :rules="rules"
+            label-position="top"
+            @register="register"
+        />
+
+        <ElSkeleton v-if="!currentCore.tabs.length" :rows="5" />
+
+        <div class="text-right" v-if="currentCore.tabs.length">
+          <ElButton type="primary" @click.prevent.stop="updateTab">{{ $t('main.update') }}</ElButton>
+          <ElButton type="default" @click.prevent.stop="cancel" plain>{{ t('main.cancel') }}</ElButton>
+          <ElPopconfirm
+              :confirm-button-text="$t('main.ok')"
+              :cancel-button-text="$t('main.no')"
+              width="250"
+              style="margin-left: 10px;"
+              :title="$t('main.are_you_sure_to_do_want_this?')"
+              @confirm="removeTab"
+          >
+            <template #reference>
+              <ElButton class="mr-10px" type="danger" plain>
+                <Icon icon="ep:delete" class="mr-5px"/>
+                {{ t('main.remove') }}
+              </ElButton>
+            </template>
+          </ElPopconfirm>
+        </div>
+
+      </ElCard>
+    </ElCol>
+    <ElCol :span="8" :xs="12">
+      <ElCard class="box-card">
+        <template #header>
+          <div class="card-header">
+            <span>{{ $t('dashboard.tabList') }}</span>
+            <ElButton @click="createTab()" text>
+              {{ t('dashboard.addNewTab') }}
+            </ElButton>
+          </div>
+        </template>
+        <ElMenu v-if="currentCore.tabs.length" :default-active="currentCore.activeTab + ''" v-model="currentCore.activeTab" class="el-menu-vertical-demo">
+          <ElMenuItem :index="index + ''" :key="tab" v-for="(tab, index) in currentCore.tabs" @click="menuTabClick(index, tab)">
+           <div class="w-[100%] card-header">
+             <span>{{ tab.name }}</span>
+<!--             <ElButtonGroup class="hide ">-->
+<!--               <ElButton type="default" @click.prevent.stop="sortCardUp(card, index)">-->
+<!--                 <Icon icon="teenyicons:up-solid" />-->
+<!--               </ElButton>-->
+<!--               <ElButton type="default" @click.prevent.stop="sortCardDown(card, index)">-->
+<!--                 <Icon icon="teenyicons:down-solid" />-->
+<!--               </ElButton>-->
+<!--             </ElButtonGroup>-->
+           </div>
+          </ElMenuItem>
+        </ElMenu>
+
+      </ElCard>
+    </ElCol>
+  </ElRow>
+
+</template>
+
+<style lang="less" scoped>
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hide {
+  display: none;
+}
+
+.el-menu-item:hover .hide {
+  display: block;
+  color: red;
+}
+</style>

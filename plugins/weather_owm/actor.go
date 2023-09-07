@@ -29,18 +29,18 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/weather"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 // Actor ...
 type Actor struct {
-	entity_manager.BaseActor
+	supervisor.BaseActor
 	Zone
 	adaptors      *adaptors.Adaptors
 	scriptService scripts.ScriptService
 	eventBus      bus.Bus
-	actionPool    chan events.EventCallAction
+	actionPool    chan events.EventCallEntityAction
 	weather       *WeatherOwm
 	winter        bool
 	theme         string
@@ -48,22 +48,22 @@ type Actor struct {
 
 // NewActor ...
 func NewActor(entity *m.Entity,
-	entityManager entity_manager.EntityManager,
+	visor supervisor.Supervisor,
 	adaptors *adaptors.Adaptors,
 	scriptService scripts.ScriptService,
 	eventBus bus.Bus,
 	crawler web.Crawler) *Actor {
 
 	actor := &Actor{
-		BaseActor:     entity_manager.NewBaseActor(entity, scriptService, adaptors),
+		BaseActor:     supervisor.NewBaseActor(entity, scriptService, adaptors),
 		adaptors:      adaptors,
 		scriptService: scriptService,
 		eventBus:      eventBus,
-		actionPool:    make(chan events.EventCallAction, 10),
+		actionPool:    make(chan events.EventCallEntityAction, 10),
 		weather:       NewWeatherOwm(adaptors, crawler),
 	}
 
-	actor.Manager = entityManager
+	actor.Supervisor = visor
 
 	if actor.Attrs == nil {
 		actor.Attrs = weather.BaseForecast()
@@ -77,7 +77,7 @@ func NewActor(entity *m.Entity,
 	for _, a := range actor.Actions {
 		if a.ScriptEngine != nil {
 			// bind
-			a.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
+			a.ScriptEngine.PushStruct("Actor", supervisor.NewScriptBind(actor))
 			_, _ = a.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
 			_, _ = a.ScriptEngine.Do()
 		}
@@ -85,7 +85,7 @@ func NewActor(entity *m.Entity,
 
 	if actor.ScriptEngine != nil {
 		_, _ = actor.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
-		actor.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
+		actor.ScriptEngine.PushStruct("Actor", supervisor.NewScriptBind(actor))
 	}
 
 	// zone
@@ -121,21 +121,21 @@ func (e *Actor) destroy() {
 }
 
 // Spawn ...
-func (e *Actor) Spawn() entity_manager.PluginActor {
-	_ = e.updateForecast()
+func (e *Actor) Spawn() supervisor.PluginActor {
+	go e.updateForecast()
 	return e
 }
 
 // SetState ...
-func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
+func (e *Actor) SetState(params supervisor.EntityStateParams) error {
 	return nil
 }
 
-func (e *Actor) addAction(event events.EventCallAction) {
+func (e *Actor) addAction(event events.EventCallEntityAction) {
 	e.actionPool <- event
 }
 
-func (e *Actor) runAction(msg events.EventCallAction) {
+func (e *Actor) runAction(msg events.EventCallEntityAction) {
 	action, ok := e.Actions[msg.ActionName]
 	if !ok {
 		log.Warnf("action %s not found", msg.ActionName)
@@ -159,7 +159,7 @@ func (e *Actor) update() {
 		return
 	}
 
-	e.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
+	e.eventBus.Publish("system/entities/"+e.Id.String(), events.EventStateChanged{
 		PluginName:  e.Id.PluginName(),
 		EntityId:    e.Id,
 		OldState:    oldState,

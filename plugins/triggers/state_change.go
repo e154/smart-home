@@ -21,9 +21,8 @@
 package triggers
 
 import (
-	"sync"
-
 	"github.com/e154/smart-home/common/events"
+	"sync"
 
 	"github.com/e154/smart-home/system/bus"
 )
@@ -33,8 +32,6 @@ const (
 	StateChangeName = "state_change"
 	// StateChangeFunctionName ...
 	StateChangeFunctionName = "automationTriggerStateChanged"
-	// StateChangeQueueSize ...
-	StateChangeQueueSize = 10
 )
 
 var _ ITrigger = (*StateChangeTrigger)(nil)
@@ -59,7 +56,7 @@ func NewStateChangedTrigger(eventBus bus.Bus) ITrigger {
 // AsyncAttach ...
 func (t *StateChangeTrigger) AsyncAttach(wg *sync.WaitGroup) {
 
-	if err := t.eventBus.Subscribe(bus.TopicEntities, t.eventHandler); err != nil {
+	if err := t.eventBus.Subscribe("system/entities/+", t.eventHandler); err != nil {
 		log.Error(err.Error())
 	}
 
@@ -76,17 +73,12 @@ func (t *StateChangeTrigger) eventHandler(_ string, msg interface{}) {
 
 // Subscribe ...
 func (t *StateChangeTrigger) Subscribe(options Subscriber) error {
-	log.Infof("subscribe topic %s", options.EntityId)
+	//log.Infof("subscribe topic %s", options.EntityId)
 	return t.msgQueue.Subscribe(options.EntityId.String(), options.Handler)
 }
 
 // Unsubscribe ...
 func (t *StateChangeTrigger) Unsubscribe(options Subscriber) error {
-	log.Infof("unsubscribe topic %s", options.EntityId)
+	//log.Infof("unsubscribe topic %s", options.EntityId)
 	return t.msgQueue.Unsubscribe(options.EntityId.String(), options.Handler)
-}
-
-// CallManual ...
-func (t *StateChangeTrigger) CallManual() {
-	log.Warn("method not implemented")
 }

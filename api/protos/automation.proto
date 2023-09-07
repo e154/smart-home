@@ -9,33 +9,11 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 
 import "area.proto";
-import "script.proto";
-import "attributes.proto";
 import "pagination.proto";
-
-message Trigger {
-  optional int64 id = 1;
-  string name = 2;
-  message Entity {
-    string id = 1;
-  }
-  Entity entity = 4;
-  Script script = 5;
-  string plugin_name = 6;
-  map<string, Attribute> attributes = 7;
-}
-
-message Condition {
-  optional int64 id = 1;
-  string name = 2;
-  Script script = 4;
-}
-
-message Action {
-  optional int64 id = 1;
-  string name = 2;
-  Script script = 4;
-}
+import "trigger.proto";
+import "condition.proto";
+import "action.proto";
+import "telemetry.proto";
 
 message Task {
   int64 id = 1;
@@ -47,6 +25,13 @@ message Task {
   repeated Condition conditions = 7;
   repeated Action actions = 8;
   optional Area area = 9;
+  optional int64 area_id = 10;
+  optional bool isLoaded = 11;
+  repeated int64 triggerIds = 12;
+  repeated int64 conditionIds = 13;
+  repeated int64 actionIds = 14;
+  optional bool completed = 15;
+  repeated TelemetryItem telemetry = 16;
 
   google.protobuf.Timestamp created_at = 99;
   google.protobuf.Timestamp updated_at = 100;
@@ -57,10 +42,10 @@ message NewTaskRequest {
   string description = 3;
   bool enabled = 4;
   string condition = 5;
-  repeated Trigger triggers = 6;
-  repeated Condition conditions = 7;
-  repeated Action actions = 8;
-  optional Area area = 9;
+  repeated int64 triggerIds = 6;
+  repeated int64 conditionIds = 7;
+  repeated int64 actionIds = 8;
+  optional int64 area_id = 9;
 }
 
 message UpdateTaskRequest {
@@ -69,10 +54,10 @@ message UpdateTaskRequest {
   string description = 3;
   bool enabled = 4;
   string condition = 5;
-  repeated Trigger triggers = 6;
-  repeated Condition conditions = 7;
-  repeated Action actions = 8;
-  optional Area area = 9;
+  repeated int64 triggerIds = 6;
+  repeated int64 conditionIds = 7;
+  repeated int64 actionIds = 8;
+  optional int64 area_id = 9;
 }
 
 message GetTaskRequest {
@@ -194,6 +179,22 @@ service AutomationService {
   rpc DisableTask (DisableTaskRequest) returns (google.protobuf.Empty){
     option (google.api.http) = {
       post: "/v1/task/{id}/disable"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // import task
+  rpc ImportTask (Task) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post: "/v1/tasks/import"
+      body: "*"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
       security: {

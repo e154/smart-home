@@ -125,7 +125,7 @@ func (z *Zigbee2mqttDevices) List(limit, offset int) (list []*Zigbee2mqttDevice,
 }
 
 // ListByBridgeId ...
-func (z *Zigbee2mqttDevices) ListByBridgeId(bridgeId int64, limit, offset int) (list []*Zigbee2mqttDevice, total int64, err error) {
+func (z *Zigbee2mqttDevices) ListByBridgeId(bridgeId int64, limit, offset int, orderBy, sort string) (list []*Zigbee2mqttDevice, total int64, err error) {
 
 	if err = z.Db.Model(Zigbee2mqttDevice{}).Where("zigbee2mqtt_id = ?", bridgeId).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrZigbeeDeviceList, err.Error())
@@ -133,12 +133,17 @@ func (z *Zigbee2mqttDevices) ListByBridgeId(bridgeId int64, limit, offset int) (
 	}
 
 	list = make([]*Zigbee2mqttDevice, 0)
-	err = z.Db.
+	q := z.Db.
 		Where("zigbee2mqtt_id = ?", bridgeId).
 		Limit(limit).
-		Offset(offset).
-		Find(&list).
-		Error
+		Offset(offset)
+
+	if sort != "" && orderBy != "" {
+		q = q.Order(fmt.Sprintf("%s %s", sort, orderBy))
+	}
+
+	err = q.Find(&list).Error
+
 	if err != nil {
 		err = errors.Wrap(apperr.ErrZigbeeDeviceList, err.Error())
 	}

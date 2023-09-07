@@ -30,4 +30,6 @@ const (
 	FuncZigbee2mqttEvent = "zigbee2mqttEvent"
 	// FuncEntityAction ...
 	FuncEntityAction = "entityAction"
+
+	Version = "0.0.1"
 )

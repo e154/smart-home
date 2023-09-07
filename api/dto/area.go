@@ -22,6 +22,7 @@ import (
 	"github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Area ...
@@ -100,6 +101,15 @@ func ToArea(area *m.Area) (obj *api.Area) {
 		Id:          area.Id,
 		Name:        area.Name,
 		Description: area.Description,
+		Polygon:     make([]*api.Area_Location, 0, len(area.Polygon)),
+		CreatedAt:   timestamppb.New(area.CreatedAt),
+		UpdatedAt:   timestamppb.New(area.UpdatedAt),
+	}
+	for _, location := range area.Polygon {
+		obj.Polygon = append(obj.Polygon, &api.Area_Location{
+			Lat: float32(location.Lat),
+			Lon: float32(location.Lon),
+		})
 	}
 	return
 }

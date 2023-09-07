@@ -23,7 +23,7 @@ import (
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 // GithubRelease ...
@@ -52,6 +52,8 @@ const (
 	Name = "updater"
 	// EntityUpdater ...
 	EntityUpdater = string(Name)
+
+	Version = "0.0.1"
 )
 
 // NewAttr ...
@@ -77,8 +79,8 @@ func NewAttr() m.Attributes {
 }
 
 // NewStates ...
-func NewStates() map[string]entity_manager.ActorState {
-	return map[string]entity_manager.ActorState{
+func NewStates() map[string]supervisor.ActorState {
+	return map[string]supervisor.ActorState{
 		"enabled": {
 			Name:        "enabled",
 			Description: "Enabled",
@@ -99,8 +101,8 @@ func NewStates() map[string]entity_manager.ActorState {
 }
 
 // NewActions ...
-func NewActions() map[string]entity_manager.ActorAction {
-	return map[string]entity_manager.ActorAction{
+func NewActions() map[string]supervisor.ActorAction {
+	return map[string]supervisor.ActorAction{
 		"check": {
 			Name:        "check",
 			Description: "Check version",

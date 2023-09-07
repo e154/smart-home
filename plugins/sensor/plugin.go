@@ -20,6 +20,7 @@ package sensor
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/system/supervisor"
 	"sync"
 
 	"github.com/e154/smart-home/common/events"
@@ -31,23 +32,21 @@ import (
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/plugins"
 )
 
 var (
 	log = logger.MustGetLogger("plugins.sensor")
 )
 
-var _ plugins.Plugable = (*plugin)(nil)
+var _ supervisor.Pluggable = (*plugin)(nil)
 
 func init() {
-	plugins.RegisterPlugin(Name, New)
+	supervisor.RegisterPlugin(Name, New)
 }
 
 type plugin struct {
-	*plugins.Plugin
+	*supervisor.Plugin
 	actorsLock *sync.Mutex
 	actors     map[common.EntityId]*Actor
 	mqttServ   mqtt.MqttServ
@@ -55,21 +54,21 @@ type plugin struct {
 }
 
 // New ...
-func New() plugins.Plugable {
+func New() supervisor.Pluggable {
 	return &plugin{
-		Plugin:     plugins.NewPlugin(),
+		Plugin:     supervisor.NewPlugin(),
 		actorsLock: &sync.Mutex{},
 		actors:     make(map[common.EntityId]*Actor),
 	}
 }
 
 // Load ...
-func (p *plugin) Load(service plugins.Service) (err error) {
+func (p *plugin) Load(service supervisor.Service) (err error) {
 	if err = p.Plugin.Load(service); err != nil {
 		return
 	}
 
-	_ = p.EventBus.Subscribe(bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Subscribe("system/entities/+", p.eventHandler)
 
 	return nil
 }
@@ -80,7 +79,7 @@ func (p *plugin) Unload() (err error) {
 		return
 	}
 
-	_ = p.EventBus.Unsubscribe(bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Unsubscribe("system/entities/+", p.eventHandler)
 
 	// remove actors
 	for entityId, actor := range p.actors {
@@ -100,7 +99,7 @@ func (p *plugin) eventHandler(topic string, msg interface{}) {
 
 	switch v := msg.(type) {
 	case events.EventStateChanged:
-	case events.EventCallAction:
+	case events.EventCallEntityAction:
 		actor, ok := p.actors[v.EntityId]
 		if !ok {
 			return
@@ -118,9 +117,9 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 		return
 	}
 
-	actor := NewActor(entity, p.EntityManager, p.Adaptors, p.ScriptService, p.EventBus)
+	actor := NewActor(entity, p.Supervisor, p.Adaptors, p.ScriptService, p.EventBus)
 	p.actors[entity.Id] = actor
-	p.EntityManager.Spawn(actor.Spawn)
+	p.Supervisor.Spawn(actor.Spawn)
 
 	return
 }
@@ -145,8 +144,8 @@ func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
 }
 
 // Type ...
-func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginInstallable
+func (p *plugin) Type() supervisor.PluginType {
+	return supervisor.PluginInstallable
 }
 
 // Depends ...

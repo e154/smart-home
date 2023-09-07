@@ -466,7 +466,7 @@ const DATA = `
   "user": {
     "create": {
       "actions": [
-        "/api.UserService/AddUser"
+        "/api.UserService/AddUserRequest"
       ],
       "description": ""
     },

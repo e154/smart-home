@@ -31,6 +31,7 @@ type Plugin struct {
 	System   bool           `json:"system"`
 	Actor    bool           `json:"actor"`
 	Settings AttributeValue `json:"settings"`
+	IsLoaded bool           `json:"is_loaded"`
 }
 
 // Plugins ...

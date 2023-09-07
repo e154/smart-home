@@ -20,6 +20,9 @@ package db
 
 import (
 	"fmt"
+	"github.com/jackc/pgerrcode"
+	"github.com/lib/pq"
+	"strings"
 	"time"
 
 	"github.com/e154/smart-home/common/apperr"
@@ -36,14 +39,29 @@ type Scripts struct {
 
 // Script ...
 type Script struct {
-	Id          int64 `gorm:"primary_key"`
-	Lang        ScriptLang
-	Name        string
-	Source      string
-	Description string
-	Compiled    string
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	Id                   int64 `gorm:"primary_key"`
+	Lang                 ScriptLang
+	Name                 string
+	Source               string
+	Description          string
+	Compiled             string
+	AlexaIntents         int `gorm:"-"`
+	EntityActions        int `gorm:"-"`
+	EntityScripts        int `gorm:"-"`
+	AutomationTriggers   int `gorm:"-"`
+	AutomationConditions int `gorm:"-"`
+	AutomationActions    int `gorm:"-"`
+	CreatedAt            time.Time
+	UpdatedAt            time.Time
+}
+
+type ScriptsStatistic struct {
+	Total        int32
+	Used         int32
+	Unused       int32
+	CoffeeScript int32
+	TypeScript   int32
+	JavaScript   int32
 }
 
 // TableName ...
@@ -54,6 +72,18 @@ func (d *Script) TableName() string {
 // Add ...
 func (n Scripts) Add(script *Script) (id int64, err error) {
 	if err = n.Db.Create(&script).Error; err != nil {
+		var pgErr *pq.Error
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case pgerrcode.UniqueViolation:
+				if strings.Contains(pgErr.Message, "name_at_scripts_unq") {
+					err = errors.Wrap(apperr.ErrScriptAdd, fmt.Sprintf("script name \"%s\" not unique", script.Name))
+					return
+				}
+			default:
+				fmt.Printf("unknown code \"%s\"\n", pgErr.Code)
+			}
+		}
 		err = errors.Wrap(apperr.ErrScriptAdd, err.Error())
 		return
 	}
@@ -63,8 +93,20 @@ func (n Scripts) Add(script *Script) (id int64, err error) {
 
 // GetById ...
 func (n Scripts) GetById(scriptId int64) (script *Script, err error) {
-	script = &Script{Id: scriptId}
-	if err = n.Db.First(&script).Error; err != nil {
+	script = &Script{}
+	err = n.Db.Raw(`
+select scripts.*,
+       (select count(*) from alexa_intents where script_id = scripts.id)  as alexa_intents,
+       (select count(*) from entity_actions where script_id = scripts.id) as entity_actions,
+       (select count(*) from entity_scripts where script_id = scripts.id) as entity_scripts,
+       (select count(*) from triggers where script_id = scripts.id)       as automation_triggers,
+       (select count(*) from conditions where script_id = scripts.id)     as automation_conditions,
+       (select count(*) from actions where script_id = scripts.id)        as automation_actions
+from scripts where id = ?`, scriptId).
+		First(script).
+		Error
+
+	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			err = errors.Wrap(apperr.ErrScriptNotFound, fmt.Sprintf("id \"%d\"", scriptId))
 			return
@@ -77,7 +119,19 @@ func (n Scripts) GetById(scriptId int64) (script *Script, err error) {
 // GetByName ...
 func (n Scripts) GetByName(name string) (script *Script, err error) {
 	script = &Script{}
-	if err = n.Db.Model(script).Where("name = ?", name).First(script).Error; err != nil {
+	err = n.Db.Raw(`
+select scripts.*,
+       (select count(*) from alexa_intents where script_id = scripts.id)  as alexa_intents,
+       (select count(*) from entity_actions where script_id = scripts.id) as entity_actions,
+       (select count(*) from entity_scripts where script_id = scripts.id) as entity_scripts,
+       (select count(*) from triggers where script_id = scripts.id)       as automation_triggers,
+       (select count(*) from conditions where script_id = scripts.id)     as automation_conditions,
+       (select count(*) from actions where script_id = scripts.id)        as automation_actions
+from scripts where name = ?`, name).
+		First(script).
+		Error
+
+	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			err = errors.Wrap(apperr.ErrScriptNotFound, fmt.Sprintf("name \"%d\"", name))
 			return
@@ -111,7 +165,7 @@ func (n Scripts) Delete(scriptId int64) (err error) {
 }
 
 // List ...
-func (n *Scripts) List(limit, offset int, orderBy, sort string) (list []*Script, total int64, err error) {
+func (n *Scripts) List(limit, offset int, orderBy, sort string, query *string) (list []*Script, total int64, err error) {
 
 	if err = n.Db.Model(Script{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrScriptList, err.Error())
@@ -119,7 +173,12 @@ func (n *Scripts) List(limit, offset int, orderBy, sort string) (list []*Script,
 	}
 
 	list = make([]*Script, 0)
-	err = n.Db.
+	q := n.Db
+	if query != nil {
+		q = q.Where("name LIKE ?",  "%"+*query+"%")
+	}
+
+	err = q.
 		Limit(limit).
 		Offset(offset).
 		Order(fmt.Sprintf("%s %s", sort, orderBy)).
@@ -151,5 +210,71 @@ func (n *Scripts) Search(query string, limit, offset int) (list []*Script, total
 	if err = q.Find(&list).Error; err != nil {
 		err = errors.Wrap(apperr.ErrScriptSearch, err.Error())
 	}
+	return
+}
+
+// Statistic ...
+func (n *Scripts) Statistic() (statistic *ScriptsStatistic, err error) {
+
+	statistic = &ScriptsStatistic{}
+
+	var usedList []struct {
+		Count int32
+		Used  bool
+	}
+	err = n.Db.Raw(`
+select count(scripts.id),
+       (exists(select * from alexa_intents where script_id = scripts.id) or exists(select * from entity_actions where script_id = scripts.id) or
+        exists(select * from entity_scripts where script_id = scripts.id) or
+        exists(select * from triggers where script_id = scripts.id)       or
+        exists(select * from conditions where script_id = scripts.id)     or
+        exists(select * from actions where script_id = scripts.id)    ) as used
+from scripts
+group by used`).
+		Scan(&usedList).
+		Error
+
+	if err != nil {
+		err = errors.Wrap(apperr.ErrScriptStat, err.Error())
+		return
+	}
+
+	for _, item := range usedList {
+		statistic.Total += item.Count
+		if item.Used {
+			statistic.Used = item.Count
+
+			continue
+		}
+		statistic.Unused = item.Count
+	}
+
+	var langList []struct {
+		Lang  string
+		Count int32
+	}
+	err = n.Db.Raw(`
+select scripts.lang, count(scripts.*)
+		from scripts
+		group by lang`).
+		Scan(&langList).
+		Error
+
+	if err != nil {
+		err = errors.Wrap(apperr.ErrScriptStat, err.Error())
+		return
+	}
+
+	for _, item := range langList {
+		switch item.Lang {
+		case "coffeescript":
+			statistic.CoffeeScript = item.Count
+		case "ts":
+			statistic.TypeScript = item.Count
+		case "javascript":
+			statistic.JavaScript = item.Count
+		}
+	}
+
 	return
 }

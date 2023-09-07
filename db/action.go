@@ -19,9 +19,14 @@
 package db
 
 import (
-	"github.com/e154/smart-home/common/apperr"
-	"github.com/pkg/errors"
+	"fmt"
+	"time"
+
 	"gorm.io/gorm"
+	"github.com/pkg/errors"
+
+	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
 )
 
 // Actions ...
@@ -31,31 +36,117 @@ type Actions struct {
 
 // Action ...
 type Action struct {
-	Id       int64 `gorm:"primary_key"`
-	Name     string
-	Task     *Task
-	TaskId   int64
-	Script   *Script
-	ScriptId int64
+	Id               int64 `gorm:"primary_key"`
+	Name             string
+	Script           *Script
+	ScriptId         *int64
+	Entity           *Entity
+	EntityId         *common.EntityId
+	EntityActionName *string
+	CreatedAt        time.Time
+	UpdatedAt        time.Time
 }
 
 // TableName ...
-func (d *Action) TableName() string {
+func (*Action) TableName() string {
 	return "actions"
 }
 
-// DeleteByTaskId ...
-func (n Actions) DeleteByTaskId(id int64) (err error) {
-	if err = n.Db.Delete(&Action{}, "task_id = ?", id).Error; err != nil {
+// Add ...
+func (t Actions) Add(action *Action) (id int64, err error) {
+	if err = t.Db.Create(&action).Error; err != nil {
+		err = errors.Wrap(apperr.ErrActionAdd, err.Error())
+		return
+	}
+	id = action.Id
+	return
+}
+
+// GetById ...
+func (t Actions) GetById(id int64) (action *Action, err error) {
+	action = &Action{}
+	err = t.Db.Model(action).
+		Where("id = ?", id).
+		Preload("Entity").
+		Preload("Script").
+		First(&action).
+		Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = errors.Wrap(apperr.ErrActionNotFound, fmt.Sprintf("id \"%d\"", id))
+			return
+		}
+		err = errors.Wrap(apperr.ErrActionGet, err.Error())
+	}
+	return
+}
+
+// Update ...
+func (t Actions) Update(m *Action) (err error) {
+	q := map[string]interface{}{
+		"name":               m.Name,
+		"script_id":          m.ScriptId,
+		"entity_id":          m.EntityId,
+		"entity_action_name": m.EntityActionName,
+	}
+	if err = t.Db.Model(&Action{}).Where("id = ?", m.Id).Updates(q).Error; err != nil {
+		err = errors.Wrap(apperr.ErrActionUpdate, err.Error())
+	}
+	return
+}
+
+// Delete ...
+func (t Actions) Delete(id int64) (err error) {
+	if err = t.Db.Delete(&Action{}, "id = ?", id).Error; err != nil {
 		err = errors.Wrap(apperr.ErrActionDelete, err.Error())
 	}
 	return
 }
 
-// AddMultiple ...
-func (n *Actions) AddMultiple(actions []*Action) (err error) {
-	if err = n.Db.Create(&actions).Error; err != nil {
-		err = errors.Wrap(apperr.ErrActionCreate, err.Error())
+// List ...
+func (t *Actions) List(limit, offset int64, orderBy, sort string) (list []*Action, total int64, err error) {
+
+	if err = t.Db.Model(Action{}).Count(&total).Error; err != nil {
+		err = errors.Wrap(apperr.ErrActionList, err.Error())
+		return
+	}
+
+	list = make([]*Action, 0)
+	q := t.Db.Model(&Action{}).
+		Limit(limit).
+		Offset(offset)
+
+	if sort != "" && orderBy != "" {
+		q = q.
+			Order(fmt.Sprintf("%s %s", sort, orderBy))
+	}
+
+	if err = q.Find(&list).Error; err != nil {
+		err = errors.Wrap(apperr.ErrActionList, err.Error())
+	}
+	return
+}
+
+// Search ...q
+func (t *Actions) Search(query string, limit, offset int) (list []*Action, total int64, err error) {
+
+	q := t.Db.Model(&Action{}).
+		Where("name LIKE ?", "%"+query+"%")
+
+	if err = q.Count(&total).Error; err != nil {
+		err = errors.Wrap(apperr.ErrActionSearch, err.Error())
+		return
+	}
+
+	q = q.
+		Limit(limit).
+		Offset(offset).
+		Order("name ASC")
+
+	list = make([]*Action, 0)
+	err = q.Find(&list).Error
+	if err != nil {
+		err = errors.Wrap(apperr.ErrActionSearch, err.Error())
 	}
 	return
 }

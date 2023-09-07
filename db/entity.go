@@ -162,6 +162,22 @@ func (n Entities) GetByIds(ids []common.EntityId) (list []*Entity, err error) {
 	return
 }
 
+// GetByIdsSimple ...
+func (n Entities) GetByIdsSimple(ids []common.EntityId) (list []*Entity, err error) {
+
+	list = make([]*Entity, 0)
+	err = n.Db.Model(Entity{}).
+		Where("id IN (?)", ids).
+		Find(&list).Error
+
+	if err != nil {
+		err = errors.Wrap(apperr.ErrEntityGet, err.Error())
+		return
+	}
+
+	return
+}
+
 // Delete ...
 func (n Entities) Delete(id common.EntityId) (err error) {
 
@@ -174,7 +190,8 @@ func (n Entities) Delete(id common.EntityId) (err error) {
 }
 
 // List ...
-func (n *Entities) List(limit, offset int, orderBy, sort string, autoLoad bool) (list []*Entity, total int64, err error) {
+func (n *Entities) List(limit, offset int, orderBy, sort string, autoLoad bool,
+	query, plugin *string, areaId *int64) (list []*Entity, total int64, err error) {
 
 	if err = n.Db.Model(Entity{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrEntityList, err.Error())
@@ -185,6 +202,15 @@ func (n *Entities) List(limit, offset int, orderBy, sort string, autoLoad bool) 
 	q := n.Db
 	if autoLoad {
 		q = q.Where("auto_load = ?", true)
+	}
+	if query != nil {
+		q = q.Where("id LIKE ?",  "%"+*query+"%")
+	}
+	if plugin != nil {
+		q = q.Where("plugin_name = ?", *plugin)
+	}
+	if areaId != nil {
+		q = q.Where("area_id = ?", *areaId)
 	}
 	q = q.
 		Preload("Image").
@@ -289,6 +315,18 @@ func (n Entities) AppendMetric(id common.EntityId, metric *Metric) (err error) {
 func (n Entities) DeleteMetric(id common.EntityId, metricId int64) (err error) {
 	if err = n.Db.Model(&Entity{Id: id}).Association("Metrics").Delete(&Metric{Id: metricId}); err != nil {
 		err = errors.Wrap(apperr.ErrEntityDeleteMetric, err.Error())
+	}
+	return
+}
+
+// UpdateAutoload ...
+func (n Entities) UpdateAutoload(entityId common.EntityId, autoLoad bool) (err error) {
+	q := map[string]interface{}{
+		"auto_load": autoLoad,
+	}
+
+	if err = n.Db.Model(&Entity{Id: entityId}).Updates(q).Error; err != nil {
+		err = errors.Wrap(apperr.ErrEntityUpdate, err.Error())
 	}
 	return
 }

@@ -19,33 +19,29 @@
 package hdd
 
 import (
-	"sync"
-	"time"
-
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/plugins"
+	"github.com/e154/smart-home/system/supervisor"
+	"sync"
 )
 
-var _ plugins.Plugable = (*plugin)(nil)
+var _ supervisor.Pluggable = (*plugin)(nil)
 
 func init() {
-	plugins.RegisterPlugin(Name, New)
+	supervisor.RegisterPlugin(Name, New)
 }
 
 type plugin struct {
-	*plugins.Plugin
-	quit       chan struct{}
-	pause      uint
+	*supervisor.Plugin
 	actorsLock *sync.Mutex
 	actors     map[common.EntityId]*Actor
 }
 
 // New ...
-func New() plugins.Plugable {
+func New() supervisor.Pluggable {
 	p := &plugin{
-		Plugin:     plugins.NewPlugin(),
-		pause:      10,
+		Plugin:     supervisor.NewPlugin(),
 		actorsLock: &sync.Mutex{},
 		actors:     make(map[common.EntityId]*Actor),
 	}
@@ -53,31 +49,11 @@ func New() plugins.Plugable {
 }
 
 // Load ...
-func (p *plugin) Load(service plugins.Service) (err error) {
+func (p *plugin) Load(service supervisor.Service) (err error) {
 	if err = p.Plugin.Load(service); err != nil {
 		return
 	}
-
-	go func() {
-		ticker := time.NewTicker(time.Second * time.Duration(p.pause))
-		p.quit = make(chan struct{})
-		defer func() {
-			ticker.Stop()
-			close(p.quit)
-		}()
-
-		for {
-			select {
-			case <-p.quit:
-				return
-			case <-ticker.C:
-				for _, actor := range p.actors {
-					actor.selfUpdate()
-				}
-			}
-		}
-	}()
-
+	_ = p.EventBus.Subscribe("system/entities/+", p.eventHandler)
 	return nil
 }
 
@@ -86,7 +62,7 @@ func (p *plugin) Unload() (err error) {
 	if err = p.Plugin.Unload(); err != nil {
 		return
 	}
-	p.quit <- struct{}{}
+	_ = p.EventBus.Unsubscribe("system/entities/+", p.eventHandler)
 	return nil
 }
 
@@ -99,9 +75,9 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 		return
 	}
 
-	actor := NewActor(entity, p.EntityManager, p.EventBus)
+	actor := NewActor(entity, p.Supervisor, p.EventBus)
 	p.actors[entity.Id] = actor
-	p.EntityManager.Spawn(actor.Spawn)
+	p.Supervisor.Spawn(actor.Spawn)
 
 	return
 }
@@ -122,9 +98,22 @@ func (p plugin) Name() string {
 	return Name
 }
 
+func (p *plugin) eventHandler(topic string, msg interface{}) {
+
+	switch v := msg.(type) {
+	case events.EventStateChanged:
+	case events.EventCallEntityAction:
+		actor, ok := p.actors[v.EntityId]
+		if !ok {
+			return
+		}
+		actor.runAction(v)
+	}
+}
+
 // Type ...
-func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginInstallable
+func (p *plugin) Type() supervisor.PluginType {
+	return supervisor.PluginInstallable
 }
 
 // Depends ...
@@ -140,7 +129,10 @@ func (p *plugin) Version() string {
 // Options ...
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
-		ActorAttrs: NewAttr(),
-		ActorSetts: NewSettings(),
+		ActorAttrs:         NewAttr(),
+		ActorSetts:         NewSettings(),
+		ActorActions:       supervisor.ToEntityActionShort(NewActions()),
+		ActorCustomActions: false,
+		ActorCustomSetts:   false,
 	}
 }

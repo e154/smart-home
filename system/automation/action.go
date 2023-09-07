@@ -19,11 +19,13 @@
 package automation
 
 import (
+	"fmt"
+	"github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/system/bus"
 	"sync"
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/scripts"
 	"go.uber.org/atomic"
 )
@@ -32,7 +34,7 @@ import (
 type Action struct {
 	model         *m.Action
 	scriptService scripts.ScriptService
-	entityManager entity_manager.EntityManager
+	eventBus      bus.Bus
 	scriptEngine  *scripts.Engine
 	inProcess     atomic.Bool
 	sync.Mutex
@@ -40,26 +42,34 @@ type Action struct {
 
 // NewAction ...
 func NewAction(scriptService scripts.ScriptService,
-	entityManager entity_manager.EntityManager,
+	eventBus bus.Bus,
 	model *m.Action) (action *Action, err error) {
 
 	action = &Action{
 		scriptService: scriptService,
-		entityManager: entityManager,
+		eventBus:      eventBus,
 		model:         model,
 	}
 
-	if action.scriptEngine, err = scriptService.NewEngine(model.Script); err != nil {
-		return
+	if model.Script != nil {
+		if action.scriptEngine, err = scriptService.NewEngine(model.Script); err != nil {
+			return
+		}
+
+		if _, err = action.scriptEngine.Do(); err != nil {
+			return
+		}
+
+		action.scriptEngine.PushStruct("Action", NewActionBind(action))
 	}
 
-	if _, err = action.scriptEngine.Do(); err != nil {
-		return
-	}
-
-	action.scriptEngine.PushStruct("Action", NewActionBind(action))
+	eventBus.Subscribe(fmt.Sprintf("system/automation/actions/%d", model.Id), action.actionHandler)
 
 	return
+}
+
+func (a *Action) Remove() {
+	a.eventBus.Unsubscribe(fmt.Sprintf("system/automation/actions/%d", a.model.Id), a.actionHandler)
 }
 
 // Run ...
@@ -67,9 +77,34 @@ func (a *Action) Run(entityId *common.EntityId) (result string, err error) {
 	a.Lock()
 	defer a.Unlock()
 
-	if result, err = a.scriptEngine.AssertFunction(ActionFunc, entityId); err != nil {
-		log.Error(err.Error())
+	//log.Infof("run action")
+
+	if a.scriptEngine != nil {
+		if result, err = a.scriptEngine.AssertFunction(ActionFunc, entityId); err != nil {
+			log.Error(err.Error())
+		}
 	}
 
+	if a.model.EntityId != nil && a.model.EntityActionName != nil {
+		id := *a.model.EntityId
+		action := *a.model.EntityActionName
+		a.eventBus.Publish("system/entities/"+id.String(), events.EventCallEntityAction{
+			PluginName: id.PluginName(),
+			EntityId:   id,
+			ActionName: action,
+		})
+	}
+
+	a.eventBus.Publish(fmt.Sprintf("system/automation/actions/%d", a.model.Id), events.EventActionCompleted{
+		Id: a.model.Id,
+	})
+
 	return
+}
+
+func (a *Action) actionHandler(_ string, msg interface{}) {
+	switch msg.(type) {
+	case events.EventCallAction:
+		a.Run(nil)
+	}
 }

@@ -18,6 +18,8 @@
 
 package uptime
 
+import "github.com/e154/smart-home/system/supervisor"
+
 const (
 	name = "uptime"
 )
@@ -27,8 +29,8 @@ type plugin struct {
 }
 
 // RegisterUptime ...
-func RegisterUptime(manager *plugin_manager.PluginManager,
-	entityManager entity_manager.IEntityManager, pause uint) {
+func RegisterUptime(manager supervisor.Supervisor,
+	visor entity_manager.IEntityManager, pause uint) {
 	manager.Register(&plugin{})
 
 	return

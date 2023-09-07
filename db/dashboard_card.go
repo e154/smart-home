@@ -21,6 +21,7 @@ package db
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/e154/smart-home/common"
 	"time"
 
 	"github.com/pkg/errors"
@@ -41,12 +42,14 @@ type DashboardCard struct {
 	Weight         int
 	Width          int
 	Height         int
-	Background     string
+	Background     *string
 	Enabled        bool
 	DashboardTabId int64
 	DashboardTab   *DashboardTab
 	Items          []*DashboardCardItem
 	Payload        json.RawMessage `gorm:"type:jsonb;not null"`
+	EntityId       *common.EntityId
+	Hidden         bool
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
 }
@@ -95,6 +98,8 @@ func (n DashboardCards) Update(m *DashboardCard) (err error) {
 		"enabled":          m.Enabled,
 		"dashboard_tab_id": m.DashboardTabId,
 		"payload":          m.Payload,
+		"hidden":           m.Hidden,
+		"entity_id":        m.EntityId,
 	}
 
 	if err = n.Db.Model(&DashboardCard{Id: m.Id}).Updates(q).Error; err != nil {

@@ -61,10 +61,10 @@ func NewController{{.Name}}(common *ControllerCommon) Controller{{.Name}} {
 	}
 }
 
-// Add{{.Name}} ...
-func (c Controller{{.Name}}) Add{{.Name}}(_ context.Context, req *api.New{{.Name}}Request) (*api.{{.Name}}, error) {
+// AddEntity{{.Name}} ...
+func (c Controller{{.Name}}) AddEntity{{.Name}}(_ context.Context, req *api.New{{.Name}}Request) (*api.{{.Name}}, error) {
 
-	image, errs, err := c.endpoint.{{.EndpointName}}.Add(c.dto.{{.Name}}.FromNew{{.Name}}Request(req))
+	image, errs, err := c.endpoint.{{.EndpointName}}.AddEntity(c.dto.{{.Name}}.FromNew{{.Name}}Request(req))
 	if len(errs) > 0 {
 		return nil, c.prepareErrors(errs)
 	}
@@ -90,10 +90,10 @@ func (c Controller{{.Name}}) Get{{.Name}}ById(_ context.Context, req *api.Get{{.
 	return c.dto.{{.Name}}.To{{.Name}}(image), nil
 }
 
-// Update{{.Name}}ById ...
-func (c Controller{{.Name}}) Update{{.Name}}ById(_ context.Context, req *api.Update{{.Name}}Request) (*api.{{.Name}}, error) {
+// UpdateEntity{{.Name}}ById ...
+func (c Controller{{.Name}}) UpdateEntity{{.Name}}ById(_ context.Context, req *api.UpdateEntity{{.Name}}Request) (*api.{{.Name}}, error) {
 
-	image, errs, err := c.endpoint.{{.EndpointName}}.Update(c.dto.{{.Name}}.FromUpdate{{.Name}}Request(req))
+	image, errs, err := c.endpoint.{{.EndpointName}}.UpdateEntity(c.dto.{{.Name}}.FromUpdate{{.Name}}Request(req))
 	if len(errs) > 0 {
 		return nil, c.prepareErrors(errs)
 	}
@@ -117,7 +117,7 @@ func (c Controller{{.Name}}) Get{{.Name}}List(_ context.Context, req *api.Pagina
 		return nil, c.error(ctx, nil, err)
 	}
 
-	return c.dto.{{.EndpointName}}.ToListResult(items, uint64(total), pagination), nil
+	return c.dto.{{.EndpointName}}.GetTaskList(items, uint64(total), pagination), nil
 }
 
 // Delete{{.Name}}ById ...

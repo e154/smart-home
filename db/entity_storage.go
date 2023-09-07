@@ -107,9 +107,13 @@ func (n *EntityStorages) List(limit, offset int, orderBy, sort string) (list []E
 }
 
 // ListByEntityId ...
-func (n *EntityStorages) ListByEntityId(limit, offset int, orderBy, sort string, entityId common.EntityId, startDate, endDate *time.Time) (list []EntityStorage, total int64, err error) {
+func (n *EntityStorages) ListByEntityId(limit, offset int, orderBy, sort string, entityId *common.EntityId, startDate, endDate *time.Time) (list []EntityStorage, total int64, err error) {
 
-	q := n.Db.Model(&EntityStorage{}).Where("entity_id = ?", entityId)
+	q := n.Db.Model(&EntityStorage{})
+
+	if entityId != nil {
+		q = q.Where("entity_id = ?", entityId)
+	}
 
 	if startDate != nil {
 		q = q.Where("created_at >= ?", &startDate)

@@ -28,37 +28,36 @@ import (
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/plugins"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 var (
 	log = logger.MustGetLogger("plugins.zone")
 )
 
-var _ plugins.Plugable = (*plugin)(nil)
+var _ supervisor.Pluggable = (*plugin)(nil)
 
 func init() {
-	plugins.RegisterPlugin(Name, New)
+	supervisor.RegisterPlugin(Name, New)
 }
 
 type plugin struct {
-	*plugins.Plugin
+	*supervisor.Plugin
 	actorsLock *sync.Mutex
-	actors     map[string]entity_manager.PluginActor
+	actors     map[string]supervisor.PluginActor
 }
 
 // New ...
-func New() plugins.Plugable {
+func New() supervisor.Pluggable {
 	return &plugin{
-		Plugin:     plugins.NewPlugin(),
+		Plugin:     supervisor.NewPlugin(),
 		actorsLock: &sync.Mutex{},
-		actors:     make(map[string]entity_manager.PluginActor),
+		actors:     make(map[string]supervisor.PluginActor),
 	}
 }
 
 // Load ...
-func (p *plugin) Load(service plugins.Service) (err error) {
+func (p *plugin) Load(service supervisor.Service) (err error) {
 	if err = p.Plugin.Load(service); err != nil {
 		return
 	}
@@ -89,7 +88,7 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 	attributes := entity.Attributes.Serialize()
 	if actor, ok := p.actors[entity.Id.Name()]; ok {
 		// update
-		_ = actor.SetState(entity_manager.EntityStateParams{
+		_ = actor.SetState(supervisor.EntityStateParams{
 			AttributeValues: attributes,
 		})
 		return
@@ -97,7 +96,7 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 
 	actor := NewActor(entity, p.ScriptService, p.Adaptors, p.EventBus)
 	p.actors[entity.Id.Name()] = actor
-	p.EntityManager.Spawn(actor.Spawn)
+	p.Supervisor.Spawn(actor.Spawn)
 
 	return
 }
@@ -118,8 +117,8 @@ func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
 }
 
 // Type ...
-func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginBuiltIn
+func (p *plugin) Type() supervisor.PluginType {
+	return supervisor.PluginBuiltIn
 }
 
 // Depends ...

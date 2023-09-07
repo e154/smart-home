@@ -21,13 +21,14 @@ package api
 import (
 	"context"
 	"embed"
+	"fmt"
+	"github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/system/bus"
 	"net"
 	"net/http"
 	"strings"
 
-	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rs/cors"
 	"github.com/tmc/grpc-websocket-proxy/wsproxy"
 	"golang.org/x/net/http2"
@@ -58,18 +59,20 @@ type Api struct {
 	cfg         Config
 	lis         net.Listener
 	httpServer  *http.Server
-	promServer  *http.Server
 	grpcServer  *grpc.Server
+	eventBus    bus.Bus
 }
 
 // NewApi ...
 func NewApi(controllers *controllers.Controllers,
 	filter *rbac.AccessFilter,
-	cfg Config) (api *Api) {
+	cfg Config,
+	eventBus bus.Bus) (api *Api) {
 	api = &Api{
 		controllers: controllers,
 		filter:      filter,
 		cfg:         cfg,
+		eventBus:    eventBus,
 	}
 	return
 }
@@ -91,7 +94,7 @@ func (a *Api) Start() (err error) {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	a.lis, err = net.Listen("tcp", a.cfg.GrpcHostPort)
+	a.lis, err = net.Listen("tcp", fmt.Sprintf(":%d", a.cfg.GrpcPort))
 	if err != nil {
 		log.Error(err.Error())
 		return err
@@ -99,7 +102,6 @@ func (a *Api) Start() (err error) {
 
 	a.grpcServer = grpc.NewServer(
 		grpc.UnaryInterceptor(a.filter.AuthInterceptor),
-		grpc.StreamInterceptor(grpc_prometheus.StreamServerInterceptor),
 	)
 	gw.RegisterAuthServiceServer(a.grpcServer, a.controllers.Auth)
 	gw.RegisterStreamServiceServer(a.grpcServer, a.controllers.Stream)
@@ -124,19 +126,22 @@ func (a *Api) Start() (err error) {
 	gw.RegisterMetricServiceServer(a.grpcServer, a.controllers.Metric)
 	gw.RegisterBackupServiceServer(a.grpcServer, a.controllers.Backup)
 	gw.RegisterMessageDeliveryServiceServer(a.grpcServer, a.controllers.MessageDelivery)
-	grpc_prometheus.Register(a.grpcServer)
+	gw.RegisterActionServiceServer(a.grpcServer, a.controllers.Action)
+	gw.RegisterConditionServiceServer(a.grpcServer, a.controllers.Condition)
+	gw.RegisterTriggerServiceServer(a.grpcServer, a.controllers.Trigger)
+	gw.RegisterMqttServiceServer(a.grpcServer, a.controllers.Mqtt)
 
 	var group errgroup.Group
 
 	// GRPC
-	if a.cfg.GrpcHostPort != "" {
+	if a.cfg.GrpcPort != 0 {
 		group.Go(func() (err error) {
 			if err = a.grpcServer.Serve(a.lis); err != nil {
 				log.Error(err.Error())
 			}
 			return
 		})
-		log.Infof("Serving GRPC server at %s", a.cfg.GrpcHostPort)
+		log.Infof("Serving GRPC server at %d", a.cfg.GrpcPort)
 	}
 
 	//todo check ...
@@ -158,41 +163,37 @@ func (a *Api) Start() (err error) {
 		grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(50000000)),
 	}
 
+	grpcEndpoint := fmt.Sprintf(":%d", a.cfg.GrpcPort)
 	group.Go(func() error {
-		_ = gw.RegisterAuthServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		_ = gw.RegisterStreamServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		_ = gw.RegisterUserServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		_ = gw.RegisterRoleServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		_ = gw.RegisterScriptServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		_ = gw.RegisterImageServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		_ = gw.RegisterPluginServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		_ = gw.RegisterZigbee2MqttServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		_ = gw.RegisterEntityServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		_ = gw.RegisterAutomationServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		_ = gw.RegisterAreaServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		_ = gw.RegisterDeveloperToolsServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		_ = gw.RegisterInteractServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		_ = gw.RegisterLogServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		_ = gw.RegisterDashboardServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		_ = gw.RegisterDashboardCardItemServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		_ = gw.RegisterDashboardCardServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		_ = gw.RegisterDashboardTabServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		_ = gw.RegisterEntityStorageServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		_ = gw.RegisterVariableServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		_ = gw.RegisterMetricServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		_ = gw.RegisterBackupServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
-		_ = gw.RegisterMessageDeliveryServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		_ = gw.RegisterAuthServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterStreamServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterUserServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterRoleServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterScriptServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterImageServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterPluginServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterZigbee2MqttServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterEntityServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterAutomationServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterAreaServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterDeveloperToolsServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterInteractServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterLogServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterDashboardServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterDashboardCardItemServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterDashboardCardServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterDashboardTabServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterEntityStorageServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterVariableServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterMetricServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterBackupServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterMessageDeliveryServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterActionServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterConditionServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterTriggerServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterMqttServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
 		return nil
 	})
-
-	// PROMETHEUS
-	if a.cfg.PromHostPort != "" {
-		a.promServer = &http.Server{Addr: a.cfg.PromHostPort, Handler: promhttp.Handler()}
-		group.Go(func() error {
-			return a.promServer.ListenAndServe()
-		})
-		log.Infof("Serving PROMETHEUS server at %s", a.cfg.PromHostPort)
-	}
 
 	// HTTP
 	httpv1 := http.NewServeMux()
@@ -227,17 +228,19 @@ func (a *Api) Start() (err error) {
 
 	cors := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
-		AllowedMethods:   []string{"HEAD", "GET", "POST", "PUT"},
+		AllowedMethods:   []string{"HEAD", "GET", "POST", "PUT", "DELETE"},
 		AllowedHeaders:   []string{"*"},
 		AllowCredentials: false,
 		Debug:            a.cfg.Debug,
 	})
 
-	a.httpServer = &http.Server{Addr: a.cfg.HttpHostPort, Handler: cors.Handler(httpv1)}
+	a.httpServer = &http.Server{Addr: fmt.Sprintf(":%d", a.cfg.HttpPort), Handler: cors.Handler(httpv1)}
 	group.Go(func() error {
 		return a.httpServer.ListenAndServe()
 	})
-	log.Infof("Serving HTTP server at %s", a.cfg.HttpHostPort)
+	log.Infof("Serving HTTP server at %d", a.cfg.HttpPort)
+
+	a.eventBus.Publish("system/services/api", events.EventServiceStarted{Service: "Api"})
 
 	return group.Wait()
 }
@@ -247,15 +250,15 @@ func (a *Api) Shutdown(ctx context.Context) (err error) {
 	if a.httpServer != nil {
 		err = a.httpServer.Shutdown(ctx)
 	}
-	if a.promServer != nil {
-		err = a.promServer.Shutdown(ctx)
-	}
 	if a.grpcServer != nil {
 		a.grpcServer.Stop()
 	}
 	if a.lis != nil {
 		err = a.lis.Close()
 	}
+
+	a.eventBus.Publish("system/services/api", events.EventServiceStopped{})
+
 	return
 }
 

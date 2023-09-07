@@ -19,6 +19,7 @@
 package plugins
 
 import (
+	"context"
 	"encoding/json"
 	"testing"
 	"time"
@@ -29,9 +30,9 @@ import (
 	"github.com/e154/smart-home/plugins/alexa"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -245,10 +246,9 @@ skillOnIntent = ->
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService,
-			entityManager entity_manager.EntityManager,
+			supervisor supervisor.Supervisor,
 			automation automation.Automation,
-			eventBus bus.Bus,
-			pluginManager common.PluginManager) {
+			eventBus bus.Bus) {
 
 			err := migrations.Purge()
 			So(err, ShouldBeNil)
@@ -258,6 +258,15 @@ skillOnIntent = ->
 			So(err, ShouldBeNil)
 			err = AddPlugin(adaptors, "alexa")
 			ctx.So(err, ShouldBeNil)
+
+			eventBus.Purge()
+			automation.Restart()
+			scriptService.Restart()
+
+			var lastVal string
+			scriptService.PushFunctions("Done", func(args string) {
+				lastVal = args
+			})
 
 			// add scripts
 			// ------------------------------------------------
@@ -285,29 +294,15 @@ skillOnIntent = ->
 			err = adaptors.AlexaIntent.Add(intent)
 			So(err, ShouldBeNil)
 
-			var lastVal string
-			scriptService.PushFunctions("Done", func(args string) {
-				lastVal = args
-			})
-
-			// start system
 			// ------------------------------------------------
 
-			pluginManager.Start()
-			automation.Reload()
-			entityManager.SetPluginManager(pluginManager)
-			entityManager.LoadEntities()
-
-			defer func() {
-				entityManager.Shutdown()
-				_ = automation.Shutdown()
-				pluginManager.Shutdown()
-			}()
+			supervisor.Restart(context.Background())
 
 			time.Sleep(time.Millisecond * 500)
 
-			// ...
-			plugin, err := pluginManager.GetPlugin("alexa")
+
+			// ------------------------------------------------
+			plugin, err := supervisor.GetPlugin("alexa")
 			So(err, ShouldBeNil)
 
 			alexaPlugin, ok := plugin.(alexa.AlexaPlugin)
@@ -329,8 +324,11 @@ skillOnIntent = ->
 			t.Run("on intent", func(t *testing.T) {
 
 				ch := make(chan alexa.EventAlexaAction, 2)
-				_ = eventBus.Subscribe(alexa.TopicPluginAlexa, func(_ string, msg alexa.EventAlexaAction) {
-					ch <- msg
+				_ = eventBus.Subscribe(alexa.TopicPluginAlexa, func(_ string, m interface{} ) {
+					switch v := m.(type) {
+					case alexa.EventAlexaAction:
+						ch <- v
+					}
 				})
 
 				req := &alexa.Request{}

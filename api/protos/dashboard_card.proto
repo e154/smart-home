@@ -17,13 +17,15 @@ message DashboardCard {
   string title = 2;
   int32 height = 3;
   int32 width = 4;
-  string background = 5;
+  optional string background = 5;
   int32 weight = 6;
   bool enabled = 7;
   int64 dashboard_tab_id = 8;
   bytes payload = 9;
   repeated DashboardCardItem items = 10;
   map<string, Entity> entities = 11;
+  bool hidden = 12;
+  optional string entity_id = 13;
   google.protobuf.Timestamp created_at = 99;
   google.protobuf.Timestamp  updated_at = 100;
 }
@@ -32,11 +34,13 @@ message NewDashboardCardRequest {
   string title = 2;
   int32 height = 3;
   int32 width = 4;
-  string background = 5;
+  optional string background = 5;
   int32 weight = 6;
   bool enabled = 7;
   int64 dashboard_tab_id = 8;
   bytes payload = 9;
+  bool hidden = 10;
+  optional string entity_id = 11;
 }
 
 message UpdateDashboardCardRequest {
@@ -44,7 +48,7 @@ message UpdateDashboardCardRequest {
   string title = 2;
   int32 height = 3;
   int32 width = 4;
-  string background = 5;
+  optional string background = 5;
   int32 weight = 6;
   bool enabled = 7;
   int64 dashboard_tab_id = 8;
@@ -63,6 +67,8 @@ message UpdateDashboardCardRequest {
     repeated string hide_on = 12;
   }
   repeated Item items = 10;
+  bool hidden = 11;
+  optional string entity_id = 12;
 }
 
 message GetDashboardCardRequest {

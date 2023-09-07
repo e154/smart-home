@@ -86,7 +86,7 @@ func (n Plugins) Delete(name string) (err error) {
 }
 
 // List ...
-func (n Plugins) List(limit, offset int, orderBy, sort string) (list []*Plugin, total int64, err error) {
+func (n Plugins) List(limit, offset int, orderBy, sort string, onlyEnabled bool) (list []Plugin, total int64, err error) {
 
 	if err = n.Db.Model(&Plugin{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrPluginList, err.Error())
@@ -97,6 +97,11 @@ func (n Plugins) List(limit, offset int, orderBy, sort string) (list []*Plugin, 
 	q := n.Db.Model(&Plugin{}).
 		Limit(limit).
 		Offset(offset)
+
+	if onlyEnabled {
+		q = q.
+			Where("enabled is true")
+	}
 
 	if sort != "" && orderBy != "" {
 		q = q.

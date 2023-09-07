@@ -31,7 +31,7 @@ type IZigbee2mqttDevice interface {
 	Update(ver *m.Zigbee2mqttDevice) (err error)
 	Delete(id string) (err error)
 	List(limit, offset int64) (list []*m.Zigbee2mqttDevice, total int64, err error)
-	ListByBridgeId(bridgeId, limit, offset int64) (list []*m.Zigbee2mqttDevice, total int64, err error)
+	ListByBridgeId(bridgeId, limit, offset int64, orderBy, sort string) (list []*m.Zigbee2mqttDevice, total int64, err error)
 	Search(query string, limit, offset int64) (list []*m.Zigbee2mqttDevice, total int64, err error)
 	fromDb(dbVer *db.Zigbee2mqttDevice) (ver *m.Zigbee2mqttDevice)
 	toDb(ver *m.Zigbee2mqttDevice) (dbVer *db.Zigbee2mqttDevice)
@@ -103,9 +103,9 @@ func (n *Zigbee2mqttDevice) List(limit, offset int64) (list []*m.Zigbee2mqttDevi
 }
 
 // ListByBridgeId ...
-func (n *Zigbee2mqttDevice) ListByBridgeId(bridgeId, limit, offset int64) (list []*m.Zigbee2mqttDevice, total int64, err error) {
+func (n *Zigbee2mqttDevice) ListByBridgeId(bridgeId, limit, offset int64, orderBy, sort string) (list []*m.Zigbee2mqttDevice, total int64, err error) {
 	var dbList []*db.Zigbee2mqttDevice
-	if dbList, total, err = n.table.ListByBridgeId(bridgeId, int(limit), int(offset)); err != nil {
+	if dbList, total, err = n.table.ListByBridgeId(bridgeId, int(limit), int(offset), orderBy, sort); err != nil {
 		return
 	}
 

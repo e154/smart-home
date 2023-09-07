@@ -31,33 +31,33 @@ import (
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 // Actor ...
 type Actor struct {
-	entity_manager.BaseActor
-	total           metrics.Gauge
-	free            metrics.Gauge
-	usedPercent     metrics.GaugeFloat64
-	eventBus        bus.Bus
-	updateLock      *sync.Mutex
+	supervisor.BaseActor
+	total       metrics.Gauge
+	free        metrics.Gauge
+	usedPercent metrics.GaugeFloat64
+	eventBus    bus.Bus
+	updateLock  *sync.Mutex
 }
 
 // NewActor ...
-func NewActor(entityManager entity_manager.EntityManager,
+func NewActor(visor supervisor.Supervisor,
 	eventBus bus.Bus,
 	entity *m.Entity) *Actor {
 
 	actor := &Actor{
-		BaseActor: entity_manager.BaseActor{
+		BaseActor: supervisor.BaseActor{
 			Id:                common.EntityId(fmt.Sprintf("%s.%s", EntityMemory, Name)),
 			Name:              Name,
 			EntityType:        EntityMemory,
 			UnitOfMeasurement: "GHz",
 			AttrMu:            &sync.RWMutex{},
 			Attrs:             NewAttr(),
-			Manager:           entityManager,
+			Supervisor:        visor,
 		},
 		eventBus:    eventBus,
 		total:       metrics.NewGauge(),
@@ -74,7 +74,7 @@ func NewActor(entityManager entity_manager.EntityManager,
 }
 
 // Spawn ...
-func (e *Actor) Spawn() entity_manager.PluginActor {
+func (e *Actor) Spawn() supervisor.PluginActor {
 	return e
 }
 
@@ -103,7 +103,7 @@ func (u *Actor) selfUpdate() {
 	//	"used_percent": usedPercent,
 	//})
 
-	u.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
+	u.eventBus.Publish("system/entities/"+u.Id.String(), events.EventStateChanged{
 		StorageSave: false,
 		PluginName:  u.Id.PluginName(),
 		EntityId:    u.Id,

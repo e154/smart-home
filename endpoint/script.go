@@ -150,9 +150,9 @@ func (n *ScriptEndpoint) Update(ctx context.Context, params *m.Script) (result *
 }
 
 // GetList ...
-func (n *ScriptEndpoint) GetList(ctx context.Context, pagination common.PageParams) (result []*m.Script, total int64, err error) {
+func (n *ScriptEndpoint) GetList(ctx context.Context, pagination common.PageParams, query *string) (result []*m.Script, total int64, err error) {
 
-	result, total, err = n.adaptors.Script.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
+	result, total, err = n.adaptors.Script.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, query)
 
 	return
 }
@@ -226,5 +226,52 @@ func (n *ScriptEndpoint) Search(ctx context.Context, query string, limit, offset
 
 	devices, total, err = n.adaptors.Script.Search(query, limit, offset)
 
+	return
+}
+
+// Statistic ...
+func (n *ScriptEndpoint) Statistic(ctx context.Context) (statistic []*m.Statistic, err error) {
+	var stat *m.ScriptsStatistic
+	if stat, err = n.adaptors.Script.Statistic(); err != nil {
+		return
+	}
+	statistic = []*m.Statistic{
+		{
+			Name:        "scripts.stat_total_name",
+			Description: "scripts.stat_total_descr",
+			Value:       stat.Total,
+			Diff:        0,
+		},
+		{
+			Name:        "scripts.stat_used_name",
+			Description: "scripts.stat_used_descr",
+			Value:       stat.Used,
+			Diff:        0,
+		},
+		{
+			Name:        "scripts.stat_unused_name",
+			Description: "scripts.stat_unused_descr",
+			Value:       stat.Unused,
+			Diff:        0,
+		},
+		{
+			Name:        "scripts.stat_js_name",
+			Description: "scripts.stat_js_descr",
+			Value:       stat.JavaScript,
+			Diff:        0,
+		},
+		{
+			Name:        "scripts.stat_cs_name",
+			Description: "scripts.stat_cs_descr",
+			Value:       stat.CoffeeScript,
+			Diff:        0,
+		},
+		{
+			Name:        "scripts.stat_ts_name",
+			Description: "scripts.stat_ts_descr",
+			Value:       stat.TypeScript,
+			Diff:        0,
+		},
+	}
 	return
 }

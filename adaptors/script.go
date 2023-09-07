@@ -32,8 +32,9 @@ type IScript interface {
 	GetByName(name string) (script *m.Script, err error)
 	Update(script *m.Script) (err error)
 	Delete(scriptId int64) (err error)
-	List(limit, offset int64, orderBy, sort string) (list []*m.Script, total int64, err error)
+	List(limit, offset int64, orderBy, sort string, query *string) (list []*m.Script, total int64, err error)
 	Search(query string, limit, offset int64) (list []*m.Script, total int64, err error)
+	Statistic() (statistic *m.ScriptsStatistic, err error)
 	fromDb(dbScript *db.Script) (script *m.Script, err error)
 	toDb(script *m.Script) (dbScript *db.Script)
 }
@@ -100,7 +101,7 @@ func (n *Script) Delete(scriptId int64) (err error) {
 }
 
 // List ...
-func (n *Script) List(limit, offset int64, orderBy, sort string) (list []*m.Script, total int64, err error) {
+func (n *Script) List(limit, offset int64, orderBy, sort string, query *string) (list []*m.Script, total int64, err error) {
 
 	if sort == "" {
 		sort = "id"
@@ -110,7 +111,7 @@ func (n *Script) List(limit, offset int64, orderBy, sort string) (list []*m.Scri
 	}
 
 	var dbList []*db.Script
-	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort); err != nil {
+	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort, query); err != nil {
 		return
 	}
 
@@ -139,14 +140,46 @@ func (n *Script) Search(query string, limit, offset int64) (list []*m.Script, to
 	return
 }
 
-func (n *Script) fromDb(dbScript *db.Script) (script *m.Script, err error) {
-	script = &m.Script{}
-	err = copier.Copy(&script, &dbScript)
+func (n *Script) Statistic() (statistic *m.ScriptsStatistic, err error) {
+	var dbVer *db.ScriptsStatistic
+	if dbVer, err = n.table.Statistic(); err != nil {
+		return
+	}
+	statistic = &m.ScriptsStatistic{
+		Total:        dbVer.Total,
+		Used:         dbVer.Used,
+		Unused:       dbVer.Unused,
+		CoffeeScript: dbVer.CoffeeScript,
+		TypeScript:   dbVer.TypeScript,
+		JavaScript:   dbVer.JavaScript,
+	}
 	return
 }
 
-func (n *Script) toDb(script *m.Script) (dbScript *db.Script) {
-	dbScript = &db.Script{
+func (n *Script) fromDb(dbVer *db.Script) (ver *m.Script, err error) {
+	ver = &m.Script{
+		Id:          dbVer.Id,
+		Lang:        dbVer.Lang,
+		Name:        dbVer.Name,
+		Source:      dbVer.Source,
+		Description: dbVer.Description,
+		Compiled:    dbVer.Compiled,
+		CreatedAt:   dbVer.CreatedAt,
+		UpdatedAt:   dbVer.UpdatedAt,
+		Info: &m.ScriptInfo{
+			AlexaIntents:         dbVer.AlexaIntents,
+			EntityActions:        dbVer.EntityActions,
+			EntityScripts:        dbVer.EntityScripts,
+			AutomationTriggers:   dbVer.AutomationTriggers,
+			AutomationConditions: dbVer.AutomationConditions,
+			AutomationActions:    dbVer.AutomationActions,
+		},
+	}
+	return
+}
+
+func (n *Script) toDb(script *m.Script) (dbVer *db.Script) {
+	dbVer = &db.Script{
 		Id:          script.Id,
 		Lang:        script.Lang,
 		Name:        script.Name,

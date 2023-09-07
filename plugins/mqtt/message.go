@@ -18,7 +18,7 @@
 
 package mqtt
 
-import "github.com/e154/smart-home/system/entity_manager"
+import "github.com/e154/smart-home/system/supervisor"
 
 // NewMessage ...
 func NewMessage() (m *Message) {
@@ -30,14 +30,14 @@ func NewMessage() (m *Message) {
 
 // Message ...
 type Message struct {
-	Payload   string                           `json:"payload"`
-	Topic     string                           `json:"topic"`
-	Qos       uint8                            `json:"qos"`
-	Duplicate bool                             `json:"duplicate"`
-	storage   Storage                          `json:"storage"`
-	Error     string                           `json:"error"`
-	Success   bool                             `json:"success"`
-	NewState  entity_manager.EntityStateParams `json:"new_state"`
+	Payload   string                       `json:"payload"`
+	Topic     string                       `json:"topic"`
+	Qos       uint8                        `json:"qos"`
+	Duplicate bool                         `json:"duplicate"`
+	storage   Storage                      `json:"storage"`
+	Error     string                       `json:"error"`
+	Success   bool                         `json:"success"`
+	NewState  supervisor.EntityStateParams `json:"new_state"`
 }
 
 func (m *Message) clearError() {

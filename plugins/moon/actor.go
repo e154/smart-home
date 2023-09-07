@@ -32,12 +32,12 @@ import (
 	"github.com/e154/smart-home/common/astronomics/suncalc"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 // Actor ...
 type Actor struct {
-	entity_manager.BaseActor
+	supervisor.BaseActor
 	eventBus      bus.Bus
 	positionLock  *sync.Mutex
 	lat, lon      float64
@@ -49,18 +49,18 @@ type Actor struct {
 
 // NewActor ...
 func NewActor(entity *m.Entity,
-	entityManager entity_manager.EntityManager,
+	visor supervisor.Supervisor,
 	adaptors *adaptors.Adaptors,
 	scriptService scripts.ScriptService,
 	eventBus bus.Bus) *Actor {
 
 	actor := &Actor{
-		BaseActor:    entity_manager.NewBaseActor(entity, scriptService, adaptors),
+		BaseActor:    supervisor.NewBaseActor(entity, scriptService, adaptors),
 		eventBus:     eventBus,
 		positionLock: &sync.Mutex{},
 	}
 
-	actor.Manager = entityManager
+	actor.Supervisor = visor
 
 	if actor.Attrs == nil {
 		actor.Attrs = NewAttr()
@@ -76,7 +76,7 @@ func NewActor(entity *m.Entity,
 }
 
 // Spawn ...
-func (e *Actor) Spawn() entity_manager.PluginActor {
+func (e *Actor) Spawn() supervisor.PluginActor {
 	e.UpdateMoonPosition(time.Now())
 	return e
 }
@@ -163,7 +163,7 @@ func (e *Actor) UpdateMoonPosition(now time.Time) {
 
 	e.DeserializeAttr(attributeValues)
 
-	e.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
+	e.eventBus.Publish("system/entities/"+e.Id.String(), events.EventStateChanged{
 		StorageSave: true,
 		PluginName:  e.Id.PluginName(),
 		EntityId:    e.Id,

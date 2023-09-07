@@ -41,7 +41,6 @@ func NewMessageDeliveryEndpoint(common *CommonEndpoint) *MessageDeliveryEndpoint
 // List ...
 func (n *MessageDeliveryEndpoint) List(ctx context.Context, pagination common.PageParams, query *string, startDate, endDate *string) (result []*m.MessageDelivery, total int64, err error) {
 
-
 	queryObj := &m.MessageDeliveryQuery{}
 	if startDate != nil {
 		date, _ := time.Parse("2006-01-02", *startDate)

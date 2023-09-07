@@ -21,25 +21,28 @@ package adaptors
 import (
 	"encoding/json"
 
+	"gorm.io/gorm"
+
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"gorm.io/gorm"
 )
 
 // IEntity ...
 type IEntity interface {
 	Add(ver *m.Entity) (err error)
-	GetById(id common.EntityId) (ver *m.Entity, err error)
-	GetByIds(ids []common.EntityId) (ver []*m.Entity, err error)
+	GetById(id common.EntityId, preloadMetric ...bool) (ver *m.Entity, err error)
+	GetByIds(ids []common.EntityId, preloadMetric ...bool) (ver []*m.Entity, err error)
+	GetByIdsSimple(ids []common.EntityId) (list []*m.Entity, err error)
 	Delete(id common.EntityId) (err error)
-	List(limit, offset int64, orderBy, sort string, autoLoad bool) (list []*m.Entity, total int64, err error)
+	List(limit, offset int64, orderBy, sort string, autoLoad bool, query, plugin *string, areaId *int64) (list []*m.Entity, total int64, err error)
 	GetByType(t string, limit, offset int64) (list []*m.Entity, err error)
 	Update(ver *m.Entity) (err error)
 	UpdateSettings(entityId common.EntityId, settings m.Attributes) (err error)
 	Search(query string, limit, offset int64) (list []*m.Entity, total int64, err error)
 	AppendMetric(entityId common.EntityId, metric *m.Metric) (err error)
 	DeleteMetric(entityId common.EntityId, metric *m.Metric) (err error)
+	UpdateAutoload(entityId common.EntityId, autoLoad bool) (err error)
 	Import(entity *m.Entity) (err error)
 	preloadMetric(ver *m.Entity)
 	fromDb(dbVer *db.Entity) (ver *m.Entity)
@@ -173,7 +176,7 @@ func (n *Entity) Import(ver *m.Entity) (err error) {
 		for i, action := range ver.Actions {
 			if action.Script != nil {
 				var foundedScript *m.Script
-				if foundedScript, err = GetScriptAdaptor(n.db).GetByName(action.Script.Name); err == nil {
+				if foundedScript, err = scriptAdaptor.GetByName(action.Script.Name); err == nil {
 					action.Script = foundedScript
 				} else {
 					action.Script.Id = 0
@@ -215,7 +218,7 @@ func (n *Entity) Import(ver *m.Entity) (err error) {
 	// scripts
 	for _, script := range ver.Scripts {
 		var foundedScript *m.Script
-		if foundedScript, err = GetScriptAdaptor(n.db).GetByName(script.Name); err == nil {
+		if foundedScript, err = scriptAdaptor.GetByName(script.Name); err == nil {
 			script = foundedScript
 		} else {
 			script.Id = 0
@@ -231,7 +234,7 @@ func (n *Entity) Import(ver *m.Entity) (err error) {
 }
 
 // GetById ...
-func (n *Entity) GetById(id common.EntityId) (ver *m.Entity, err error) {
+func (n *Entity) GetById(id common.EntityId, preloadMetric ...bool) (ver *m.Entity, err error) {
 
 	var dbVer *db.Entity
 	if dbVer, err = n.table.GetById(id); err != nil {
@@ -240,13 +243,15 @@ func (n *Entity) GetById(id common.EntityId) (ver *m.Entity, err error) {
 
 	ver = n.fromDb(dbVer)
 
-	n.preloadMetric(ver)
+	if len(preloadMetric) > 0 && preloadMetric[0] {
+		n.preloadMetric(ver)
+	}
 
 	return
 }
 
 // GetByIds ...
-func (n *Entity) GetByIds(ids []common.EntityId) (list []*m.Entity, err error) {
+func (n *Entity) GetByIds(ids []common.EntityId, preloadMetric ...bool) (list []*m.Entity, err error) {
 
 	var dbList []*db.Entity
 	if dbList, err = n.table.GetByIds(ids); err != nil {
@@ -255,8 +260,25 @@ func (n *Entity) GetByIds(ids []common.EntityId) (list []*m.Entity, err error) {
 	list = make([]*m.Entity, len(dbList))
 	for i, dbVer := range dbList {
 		ver := n.fromDb(dbVer)
-		n.preloadMetric(ver)
+		if len(preloadMetric) > 0 && preloadMetric[0] {
+			n.preloadMetric(ver)
+		}
 		list[i] = ver
+	}
+
+	return
+}
+
+// GetByIdsSimple ...
+func (n *Entity) GetByIdsSimple(ids []common.EntityId) (list []*m.Entity, err error) {
+
+	var dbList []*db.Entity
+	if dbList, err = n.table.GetByIdsSimple(ids); err != nil {
+		return
+	}
+	list = make([]*m.Entity, len(dbList))
+	for i, dbVer := range dbList {
+		list[i] = n.fromDb(dbVer)
 	}
 
 	return
@@ -290,10 +312,10 @@ func (n *Entity) Delete(id common.EntityId) (err error) {
 }
 
 // List ...
-func (n *Entity) List(limit, offset int64, orderBy, sort string, autoLoad bool) (list []*m.Entity, total int64, err error) {
+func (n *Entity) List(limit, offset int64, orderBy, sort string, autoLoad bool, query, plugin *string, areaId *int64) (list []*m.Entity, total int64, err error) {
 
 	var dbList []*db.Entity
-	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort, autoLoad); err != nil {
+	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort, autoLoad, query, plugin, areaId); err != nil {
 		return
 	}
 
@@ -430,7 +452,7 @@ func (n *Entity) Update(ver *m.Entity) (err error) {
 			}
 		}
 		if !exist {
-			if err = n.table.DeleteMetric(oldVer.Id, oldScript.Id); err != nil {
+			if err = n.table.DeleteScript(oldVer.Id, oldScript.Id); err != nil {
 				return
 			}
 		}
@@ -446,10 +468,6 @@ func (n *Entity) Update(ver *m.Entity) (err error) {
 		}
 		if !exist {
 			if err = n.table.AppendScript(ver.Id, scriptAdaptor.toDb(script)); err != nil {
-				return
-			}
-		} else {
-			if err = n.table.ReplaceScript(ver.Id, scriptAdaptor.toDb(script)); err != nil {
 				return
 			}
 		}
@@ -483,6 +501,12 @@ func (n *Entity) AppendMetric(entityId common.EntityId, metric *m.Metric) (err e
 // DeleteMetric ...
 func (n *Entity) DeleteMetric(entityId common.EntityId, metric *m.Metric) (err error) {
 	err = n.table.DeleteMetric(entityId, metric.Id)
+	return
+}
+
+// UpdateAutoload ...
+func (n *Entity) UpdateAutoload(entityId common.EntityId, autoLoad bool) (err error) {
+	err = n.table.UpdateAutoload(entityId, autoLoad)
 	return
 }
 
@@ -564,7 +588,7 @@ func (n *Entity) fromDb(dbVer *db.Entity) (ver *m.Entity) {
 	if dbVer.Scripts != nil && len(dbVer.Scripts) > 0 {
 		scriptAdaptor := GetScriptAdaptor(n.db)
 		for _, script := range dbVer.Scripts {
-			s, _ := scriptAdaptor.fromDb(script)
+			s, _ := scriptAdaptor.fromDb(&script)
 			ver.Scripts = append(ver.Scripts, s)
 		}
 	} else {
@@ -603,16 +627,7 @@ func (n *Entity) toDb(ver *m.Entity) (dbVer *db.Entity) {
 		AutoLoad:    ver.AutoLoad,
 		ParentId:    ver.ParentId,
 		AreaId:      ver.AreaId,
-	}
-
-	// image
-	if ver.Image != nil && ver.Image.Id != 0 {
-		dbVer.ImageId = common.Int64(ver.Image.Id)
-	}
-
-	// area
-	if ver.Area != nil && ver.Area.Id != 0 {
-		dbVer.AreaId = &ver.Area.Id
+		ImageId:     ver.ImageId,
 	}
 
 	// serialize payload

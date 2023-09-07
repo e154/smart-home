@@ -42,6 +42,8 @@ const (
 	AttrSilent             = "silent"
 	AttrTag                = "tag"
 	AttrTimestamp          = "timestamp"
+
+	Version = "0.0.1"
 )
 
 // NewMessageParams ...

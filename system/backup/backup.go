@@ -165,7 +165,7 @@ func (b *Backup) restore(name string) (err error) {
 		return
 	}
 
-	log.Info("Purge database")
+	log.Info("Restart database")
 
 	if err = b.db.Exec(`DROP SCHEMA IF EXISTS "public" CASCADE;`).Error; err != nil {
 		err = errors.Wrap(fmt.Errorf("failed exec sql command"), err.Error())

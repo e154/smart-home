@@ -30,7 +30,6 @@ import (
 	gw "github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
 	container2 "github.com/e154/smart-home/tests/api/container"
@@ -45,23 +44,19 @@ func TestEntity(t *testing.T) {
 		Name:        "light",
 		PluginName:  "sensor",
 		Description: "light toggle",
-		Area:        &gw.Area{},
 		AutoLoad:    true,
 		Actions: []*gw.NewEntityRequest_Action{
 			{
 				Name:        "ON",
 				Description: "toggle on",
-				Script:      &gw.NewEntityRequest_Action_Script{},
 			},
 			{
 				Name:        "OFF",
 				Description: "toggle off",
-				Script:      &gw.NewEntityRequest_Action_Script{},
 			},
 			{
 				Name:        "CHECK",
 				Description: "check status",
-				Script:      &gw.NewEntityRequest_Action_Script{},
 			},
 		},
 		States: []*gw.NewEntityRequest_State{
@@ -125,28 +120,23 @@ func TestEntity(t *testing.T) {
 		Name:        "light",
 		PluginName:  "sensor",
 		Description: "light toggle FX",
-		Area:        &gw.Area{},
 		AutoLoad:    false,
 		Actions: []*gw.UpdateEntityRequest_Action{
 			{
 				Name:        "ON FX",
 				Description: "toggle on FX",
-				Script:      &gw.Script{},
 			},
 			{
 				Name:        "OFF FX",
 				Description: "toggle off FX",
-				Script:      &gw.Script{},
 			},
 			{
 				Name:        "CHECK FX",
 				Description: "check status FX",
-				Script:      &gw.Script{},
 			},
 			{
 				Name:        "FX",
 				Description: "status FX",
-				Script:      &gw.Script{},
 			},
 		},
 		States: []*gw.UpdateEntityRequest_State{
@@ -205,14 +195,12 @@ func TestEntity(t *testing.T) {
 		err := container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService,
-			entityManager entity_manager.EntityManager,
 			eventBus bus.Bus,
-			pluginManager common.PluginManager,
 			controllers *controllers.Controllers,
 			dialer *container2.Dialer) {
 
 			eventBus.Purge()
-			scriptService.Purge()
+			scriptService.Restart()
 
 			err := migrations.Purge()
 			ctx.So(err, ShouldBeNil)
@@ -243,13 +231,13 @@ func TestEntity(t *testing.T) {
 			script2, err := AddScript("script2", sourceScript, adaptors, scriptService)
 			ctx.So(err, ShouldBeNil)
 
-			createRequest.Area.Id = area.Id
+			createRequest.AreaId = common.Int64(area.Id)
 			for i := range createRequest.Actions {
-				createRequest.Actions[i].Script.Id = script.Id
+				createRequest.Actions[i].ScriptId = common.Int64(script.Id)
 			}
-			updateRequest.Area.Id = area2.Id
+			updateRequest.AreaId = common.Int64(area2.Id)
 			for i := range updateRequest.Actions {
-				updateRequest.Actions[i].Script.Id = script2.Id
+				updateRequest.Actions[i].ScriptId = common.Int64(script2.Id)
 			}
 
 			t.Run("create", func(t *testing.T) {
@@ -459,7 +447,7 @@ func TestEntity(t *testing.T) {
 							ctx.So(entity.Id, ShouldEqual, "sensor.light2")
 
 							// list
-							listRequest := &gw.PaginationRequest{}
+							listRequest := &gw.EntityPaginationRequest{}
 							result, err := client.GetEntityList(c, listRequest)
 							ctx.So(err, ShouldBeNil)
 
@@ -598,7 +586,7 @@ func TestEntity(t *testing.T) {
 							ctx.So(err, ShouldBeNil)
 
 							// list
-							listRequest := &gw.PaginationRequest{}
+							listRequest := &gw.EntityPaginationRequest{}
 							result, err := client.GetEntityList(c, listRequest)
 							ctx.So(err, ShouldBeNil)
 							ctx.So(len(result.Items), ShouldEqual, 1)

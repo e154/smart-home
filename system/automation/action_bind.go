@@ -18,7 +18,10 @@
 
 package automation
 
-import "github.com/e154/smart-home/common"
+import (
+	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/events"
+)
 
 // ActionFunc ...
 const ActionFunc = "automationAction"
@@ -39,5 +42,10 @@ func NewActionBind(action *Action) *ActionBind {
 
 // CallAction ...
 func (e *ActionBind) CallAction(id common.EntityId, action string, arg map[string]interface{}) {
-	e.action.entityManager.CallAction(id, action, arg)
+	e.action.eventBus.Publish("system/entities/"+id.String(), events.EventCallEntityAction{
+		PluginName: id.PluginName(),
+		EntityId:   id,
+		ActionName: action,
+		Args:       arg,
+	})
 }

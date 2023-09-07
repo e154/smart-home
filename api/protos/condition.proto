@@ -1,0 +1,146 @@
+syntax = "proto3";
+
+package api;
+option go_package = "/api";
+
+import "google/api/annotations.proto";
+import "protoc-gen-swagger/options/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+import "script.proto";
+import "pagination.proto";
+
+message Condition {
+  int64 id = 1;
+  string name = 2;
+  int64 script_id = 3;
+  optional Script script = 4;
+  google.protobuf.Timestamp created_at = 99;
+  google.protobuf.Timestamp updated_at = 100;
+}
+
+message NewConditionRequest {
+  string name = 2;
+  int64 script_id = 3;
+  optional Script script = 4;
+}
+
+message UpdateConditionRequest {
+  int64 id = 1;
+  string name = 2;
+  int64 script_id = 3;
+  optional Script script = 4;
+}
+
+message GetConditionRequest {
+  int64 id = 1;
+}
+
+message GetConditionListResult {
+  repeated Condition items = 1;
+  Meta meta = 2;
+}
+
+message DeleteConditionRequest {
+  int64 id = 1;
+}
+
+message SearchConditionResult {
+  repeated Condition items = 1;
+}
+
+service ConditionService {
+
+  // add new condition
+  rpc AddCondition (NewConditionRequest) returns (Condition){
+    option (google.api.http) = {
+      post: "/v1/condition"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // update condition
+  rpc UpdateCondition (UpdateConditionRequest) returns (Condition){
+    option (google.api.http) = {
+      put: "/v1/condition/{id}"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // get condition by id
+  rpc GetConditionById (GetConditionRequest) returns (Condition){
+    option (google.api.http) = {
+      get: "/v1/condition/{id}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // get condition list
+  rpc GetConditionList (PaginationRequest) returns (GetConditionListResult){
+    option (google.api.http) = {
+      get: "/v1/conditions"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // delete condition
+  rpc DeleteCondition (DeleteConditionRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      delete: "/v1/condition/{id}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // search condition
+  rpc SearchCondition (SearchRequest) returns (SearchConditionResult){
+    option (google.api.http) = {
+      get: "/v1/conditions/search"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+}

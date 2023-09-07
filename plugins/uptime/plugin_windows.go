@@ -18,24 +18,28 @@
 
 package uptime
 
+import (
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/supervisor"
+	"time"
+)
+
 const (
 	name = "uptime"
 )
 
 // plugin ...
 type plugin struct {
-}
-
-// RegisterUptime ...
-func RegisterUptime(manager *plugin_manager.PluginManager,
-	entityManager entity_manager.IEntityManager, pause uint) {
-	manager.Register(&plugin{})
-
-	return
+	*supervisor.Plugin
+	entity     *Actor
+	ticker     *time.Ticker
+	pause      time.Duration
+	storyModel *m.RunStory
+	quit       chan struct{}
 }
 
 // Load ...
-func (u *plugin) Load(service plugin_manager.IServer) (err error) {
+func (p *plugin) Load(service supervisor.Service) (err error) {
 
 	return
 }
@@ -52,6 +56,16 @@ func (u plugin) Name() string {
 }
 
 // Type ...
-func (p *plugin) Type() plugin_manager.PlugableType {
-	return plugin_manager.PlugableBuiltIn
+func (p *plugin) Type() supervisor.PluginType {
+	return supervisor.PluginBuiltIn
+}
+
+// Depends ...
+func (p *plugin) Depends() []string {
+	return nil
+}
+
+// Version ...
+func (p *plugin) Version() string {
+	return "0.0.1"
 }

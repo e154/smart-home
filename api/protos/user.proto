@@ -50,14 +50,8 @@ message NewtUserRequest {
   string email = 6;
   string status = 7;
   string lang = 8;
-  message Image {
-    int64 id = 1;
-  }
-  Image image = 9;
-  message Role {
-    string name = 1;
-  }
-  Role role = 10;
+  optional int64 image_id = 9;
+  string role_name = 10;
   repeated UserMeta meta = 11;
 }
 
@@ -71,14 +65,8 @@ message UpdateUserRequest {
   string email = 7;
   string status = 8;
   string lang = 9;
-  message Image {
-    int64 id = 1;
-  }
-  Image image = 10;
-  message Role {
-    string name = 1;
-  }
-  Role role = 11;
+  optional int64 image_id = 10;
+  string role_name = 11;
   repeated UserMeta meta = 12;
 }
 

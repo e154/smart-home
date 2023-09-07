@@ -33,14 +33,14 @@ func TestWeatherOwm(t *testing.T) {
 	//	_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 	//		migrations *migrations.Migrations,
 	//		scriptService scripts.ScriptService,
-	//		entityManager entity_manager.EntityManager,
+	//		supervisor entity_manager.Supervisor,
 	//		eventBus bus.Bus,
 	//		pluginManager common.PluginManager) {
 	//
-	//		eventBus.Purge()
-	//		scriptService.Purge()
+	//		eventBus.Restart()
+	//		scriptService.Restart()
 	//
-	//		err := migrations.Purge()
+	//		err := migrations.Restart()
 	//		ctx.So(err, ShouldBeNil)
 	//
 	//		// register plugins
@@ -58,7 +58,7 @@ func TestWeatherOwm(t *testing.T) {
 	//		// ------------------------------------------------
 	//		weatherEnt := GetNewWeather("home")
 	//		weatherEnt.Settings[weatherPlugin.AttrPlugin].Value = "weather_owm"
-	//		err = adaptors.Entity.Add(weatherEnt)
+	//		err = adaptors.Entity.AddEntity(weatherEnt)
 	//		ctx.So(err, ShouldBeNil)
 	//
 	//		weatherEnt, err = adaptors.Entity.GetById(weatherEnt.Id)
@@ -77,7 +77,7 @@ func TestWeatherOwm(t *testing.T) {
 	//
 	//		// ------------------------------------------------
 	//		pluginManager.Start()
-	//		entityManager.SetPluginManager(pluginManager)
+	//		supervisor.SetPluginManager(pluginManager)
 	//
 	//		defer func() {
 	//			pluginManager.Shutdown()
@@ -116,7 +116,7 @@ func TestWeatherOwm(t *testing.T) {
 	//				//	Settings:   settings,
 	//				//})
 	//
-	//				err = entityManager.Add(weatherEnt)
+	//				err = supervisor.AddEntity(weatherEnt)
 	//				So(err, ShouldBeNil)
 	//
 	//				ticker := time.NewTimer(time.Second * 3)
@@ -176,10 +176,10 @@ func TestWeatherOwm(t *testing.T) {
 	//				//})
 	//
 	//				weatherEnt.Settings[weatherPlugin.AttrLat].Value = 54.9033
-	//				err = adaptors.Entity.Update(weatherEnt)
+	//				err = adaptors.Entity.UpdateEntity(weatherEnt)
 	//				ctx.So(err, ShouldBeNil)
 	//
-	//				err = entityManager.Update(weatherEnt)
+	//				err = supervisor.UpdateEntity(weatherEnt)
 	//				So(err, ShouldBeNil)
 	//
 	//				ticker := time.NewTimer(time.Second * 2)
@@ -231,7 +231,7 @@ func TestWeatherOwm(t *testing.T) {
 	//				//	EntityId: "weather.home",
 	//				//})
 	//
-	//				entityManager.Remove(weatherEnt.Id)
+	//				supervisor.Remove(weatherEnt.Id)
 	//
 	//				ticker := time.NewTimer(time.Second * 2)
 	//				defer ticker.Stop()

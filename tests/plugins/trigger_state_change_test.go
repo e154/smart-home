@@ -19,7 +19,9 @@
 package plugins
 
 import (
+	"context"
 	"fmt"
+	"github.com/e154/smart-home/common/events"
 	"sync"
 	"testing"
 	"time"
@@ -29,10 +31,10 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	. "github.com/smartystreets/goconvey/convey"
 	"go.uber.org/atomic"
@@ -68,7 +70,7 @@ zigbee2mqttEvent = ->
 
 		task1SourceScript = `
 automationTriggerStateChanged = (msg)->
-  print '---trigger---'
+  #print '---trigger---'
   p = unmarshal msg.payload
   Done p.new_state.state.name
   return false
@@ -79,15 +81,11 @@ automationTriggerStateChanged = (msg)->
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService,
-			entityManager entity_manager.EntityManager,
+			supervisor supervisor.Supervisor,
 			zigbee2mqtt zigbee2mqtt.Zigbee2mqtt,
 			mqttServer mqtt.MqttServ,
 			automation automation.Automation,
-			eventBus bus.Bus,
-			pluginManager common.PluginManager) {
-
-			eventBus.Purge()
-			scriptService.Purge()
+			eventBus bus.Bus) {
 
 			err := migrations.Purge()
 			So(err, ShouldBeNil)
@@ -97,8 +95,6 @@ automationTriggerStateChanged = (msg)->
 			ctx.So(err, ShouldBeNil)
 			err = AddPlugin(adaptors, "zigbee2mqtt")
 			ctx.So(err, ShouldBeNil)
-
-			go mqttServer.Start()
 
 			// add zigbee2mqtt
 			zigbeeServer := &m.Zigbee2mqtt{
@@ -124,6 +120,26 @@ automationTriggerStateChanged = (msg)->
 			err = adaptors.Zigbee2mqttDevice.Add(butonDevice)
 			So(err, ShouldBeNil)
 
+			eventBus.Purge()
+			automation.Restart()
+			scriptService.Restart()
+			supervisor.Restart(context.Background())
+			mqttServer.Start()
+			zigbee2mqtt.Start()
+			defer zigbee2mqtt.Shutdown()
+
+			var counter atomic.Int32
+			var lastStat atomic.String
+			var wg sync.WaitGroup
+			wg.Add(2)
+			scriptService.PushFunctions("Done", func(state string) {
+				lastStat.Store(state)
+				counter.Inc()
+				wg.Done()
+			})
+
+			time.Sleep(time.Second)
+
 			// add scripts
 			// ------------------------------------------------
 
@@ -139,48 +155,36 @@ automationTriggerStateChanged = (msg)->
 			err = adaptors.Entity.Add(buttonEnt)
 			So(err, ShouldBeNil)
 
+			eventBus.Publish("system/entities/"+buttonEnt.Id.String(), events.EventCreatedEntity{
+				EntityId: buttonEnt.Id,
+			})
+
+			time.Sleep(time.Second)
+
 			// automation
 			// ------------------------------------------------
-			//TASK1
-			task1 := &m.Task{
-				Name:      "Toggle plug ON",
-				Enabled:   true,
-				Condition: common.ConditionAnd,
-			}
-			task1.AddTrigger(&m.Trigger{
-				Name:       "",
+			trigger := &m.Trigger{
+				Name:       "state_change",
 				EntityId:   &buttonEnt.Id,
 				Script:     task1Script,
 				PluginName: "state_change",
-			})
-			err = adaptors.Task.Add(task1)
+			}
+			err = AddTrigger(trigger, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
+			//TASK1
+			newTask := &m.NewTask{
+				Name:      "Toggle plug ON",
+				Enabled:   true,
+				TriggerIds: []int64{trigger.Id},
+				Condition: common.ConditionAnd,
+			}
+			err = AddTask(newTask, adaptors, eventBus)
+			So(err, ShouldBeNil)
+
+			time.Sleep(time.Millisecond * 500)
+
 			// ------------------------------------------------
-
-			var counter atomic.Int32
-			var lastStat atomic.String
-			var wg sync.WaitGroup
-			wg.Add(2)
-			scriptService.PushFunctions("Done", func(state string) {
-				lastStat.Store(state)
-				counter.Inc()
-				wg.Done()
-			})
-
-			pluginManager.Start()
-			automation.Reload()
-			entityManager.SetPluginManager(pluginManager)
-			entityManager.LoadEntities()
-			go zigbee2mqtt.Start()
-
-			defer func() {
-				_ = mqttServer.Shutdown()
-				zigbee2mqtt.Shutdown()
-				entityManager.Shutdown()
-				_ = automation.Shutdown()
-				pluginManager.Shutdown()
-			}()
 
 			mqttCli := mqttServer.NewClient("cli2")
 			err = mqttCli.Publish("zigbee2mqtt/"+zigbeeButtonId, []byte(`{"battery":100,"action":"double","linkquality":134,"voltage":3042}`))
@@ -189,7 +193,11 @@ automationTriggerStateChanged = (msg)->
 			err = mqttCli.Publish("zigbee2mqtt/"+zigbeeButtonId, []byte(`{"battery":100,"click":"double","linkquality":134,"voltage":3042}`))
 			So(err, ShouldBeNil)
 
+			time.Sleep(time.Second)
+
 			wg.Wait()
+
+			time.Sleep(time.Second)
 
 			So(counter.Load(), ShouldBeGreaterThanOrEqualTo, 1)
 			So(lastStat.Load(), ShouldEqual, "DOUBLE_CLICK")

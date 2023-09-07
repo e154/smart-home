@@ -32,6 +32,8 @@ const (
 	AttrName = "name"
 	// AttrBody ...
 	AttrBody = "body"
+
+	Version = "0.0.1"
 )
 
 const (

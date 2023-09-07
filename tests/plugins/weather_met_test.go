@@ -27,17 +27,15 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/debug"
 	"github.com/e154/smart-home/common/web"
 	m "github.com/e154/smart-home/models"
 	weatherPlugin "github.com/e154/smart-home/plugins/weather"
 	"github.com/e154/smart-home/plugins/weather_met"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scheduler"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 func TestWeatherMet(t *testing.T) {
@@ -48,14 +46,10 @@ func TestWeatherMet(t *testing.T) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService,
-			entityManager entity_manager.EntityManager,
+			supervisor supervisor.Supervisor,
 			eventBus bus.Bus,
-			pluginManager common.PluginManager,
 			scheduler *scheduler.Scheduler,
 			crawler web.Crawler) {
-
-			eventBus.Purge()
-			scriptService.Purge()
 
 			err := migrations.Purge()
 			ctx.So(err, ShouldBeNil)
@@ -63,6 +57,11 @@ func TestWeatherMet(t *testing.T) {
 			// register plugins
 			err = AddPlugin(adaptors, "weather_met")
 			ctx.So(err, ShouldBeNil)
+
+			eventBus.Purge()
+			scriptService.Restart()
+
+			time.Sleep(time.Millisecond * 500)
 
 			// add entity
 			// ------------------------------------------------
@@ -81,11 +80,10 @@ func TestWeatherMet(t *testing.T) {
 
 			// ------------------------------------------------
 			_ = scheduler.Start(context.TODO())
-			pluginManager.Start()
-			entityManager.SetPluginManager(pluginManager)
+			supervisor.Restart(context.Background())
 
 			defer func() {
-				pluginManager.Shutdown()
+				_ = scheduler.Shutdown(context.TODO())
 			}()
 
 			time.Sleep(time.Second * 1)
@@ -93,16 +91,16 @@ func TestWeatherMet(t *testing.T) {
 			t.Run("add weather", func(t *testing.T) {
 				Convey("weather_met", t, func(ctx C) {
 
-					err = entityManager.Add(weatherEnt)
+					err = supervisor.AddEntity(weatherEnt)
 					ctx.So(err, ShouldBeNil)
 
 					time.Sleep(time.Millisecond * 500)
 
-					actor, err := entityManager.GetActorById(weatherEnt.Id)
+					actor, err := supervisor.GetActorById(weatherEnt.Id)
 					ctx.So(err, ShouldBeNil)
 
-					attrs := actor.Attributes()
-					debug.Println(attrs)
+					_ = actor.Attributes()
+					//debug.Println(attrs)
 				})
 			})
 

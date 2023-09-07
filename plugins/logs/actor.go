@@ -22,8 +22,6 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/prometheus/common/log"
-
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 
@@ -31,12 +29,12 @@ import (
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 // Actor ...
 type Actor struct {
-	entity_manager.BaseActor
+	supervisor.BaseActor
 	cores         int64
 	model         string
 	ErrTotal      metrics.Counter
@@ -50,18 +48,18 @@ type Actor struct {
 }
 
 // NewActor ...
-func NewActor(entityManager entity_manager.EntityManager,
+func NewActor(visor supervisor.Supervisor,
 	eventBus bus.Bus, entity *m.Entity) *Actor {
 
 	actor := &Actor{
-		BaseActor: entity_manager.BaseActor{
+		BaseActor: supervisor.BaseActor{
 			Id:                common.EntityId(fmt.Sprintf("%s.%s", EntityLogs, Name)),
 			Name:              Name,
 			EntityType:        EntityLogs,
 			UnitOfMeasurement: "",
 			AttrMu:            &sync.RWMutex{},
 			Attrs:             NewAttr(),
-			Manager:           entityManager,
+			Supervisor:        visor,
 		},
 		eventBus:      eventBus,
 		ErrTotal:      metrics.NewCounter(),
@@ -86,7 +84,7 @@ func NewActor(entityManager entity_manager.EntityManager,
 	return actor
 }
 
-func (e *Actor) Spawn() entity_manager.PluginActor {
+func (e *Actor) Spawn() supervisor.PluginActor {
 	go e.selfUpdate()
 	return e
 }
@@ -108,7 +106,7 @@ func (u *Actor) selfUpdate() {
 	u.Attrs[AttrWarnYesterday].Value = u.WarnYesterday.Count()
 	u.AttrMu.Unlock()
 
-	u.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
+	u.eventBus.Publish("system/entities/"+u.Id.String(), events.EventStateChanged{
 		StorageSave: true,
 		PluginName:  u.Id.PluginName(),
 		EntityId:    u.Id,
@@ -135,7 +133,6 @@ func (u *Actor) LogsHook(level common.LogLevel) {
 }
 
 func (u *Actor) UpdateDay() {
-	log.Info("reset counters")
 	u.ErrYesterday.Clear()
 	u.ErrYesterday.Inc(u.ErrToday.Count())
 	u.WarnYesterday.Clear()

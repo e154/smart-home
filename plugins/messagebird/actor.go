@@ -33,7 +33,7 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/supervisor"
 	messagebird "github.com/messagebird/go-rest-api"
 	"github.com/messagebird/go-rest-api/balance"
 	"github.com/messagebird/go-rest-api/sms"
@@ -41,7 +41,7 @@ import (
 
 // Actor ...
 type Actor struct {
-	entity_manager.BaseActor
+	supervisor.BaseActor
 	eventBus    bus.Bus
 	adaptors    *adaptors.Adaptors
 	AccessToken string
@@ -51,20 +51,20 @@ type Actor struct {
 
 // NewActor ...
 func NewActor(settings m.Attributes,
-	entityManager entity_manager.EntityManager,
+	visor supervisor.Supervisor,
 	eventBus bus.Bus,
 	adaptors *adaptors.Adaptors) *Actor {
 
 	accessToken := settings[AttrAccessKey].String()
 
 	actor := &Actor{
-		BaseActor: entity_manager.BaseActor{
+		BaseActor: supervisor.BaseActor{
 			Id:         common.EntityId(fmt.Sprintf("%s.%s", Name, Name)),
 			Name:       Name,
 			EntityType: Name,
 			AttrMu:     &sync.RWMutex{},
 			Attrs:      NewAttr(),
-			Manager:    entityManager,
+			Supervisor: visor,
 		},
 		eventBus:    eventBus,
 		adaptors:    adaptors,
@@ -77,7 +77,7 @@ func NewActor(settings m.Attributes,
 }
 
 // Spawn ...
-func (p *Actor) Spawn() entity_manager.PluginActor {
+func (p *Actor) Spawn() supervisor.PluginActor {
 	return p
 }
 
@@ -213,7 +213,7 @@ func (p *Actor) UpdateBalance() (bal Balance, err error) {
 	}
 	p.AttrMu.Unlock()
 
-	p.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
+	p.eventBus.Publish("system/entities/"+p.Id.String(), events.EventStateChanged{
 		StorageSave: true,
 		PluginName:  p.Id.PluginName(),
 		EntityId:    p.Id,

@@ -1,0 +1,204 @@
+syntax = "proto3";
+
+package api;
+option go_package = "/api";
+
+import "google/api/annotations.proto";
+import "protoc-gen-swagger/options/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+import "script.proto";
+import "entity.proto";
+import "attributes.proto";
+import "pagination.proto";
+
+message Trigger {
+  int64 id = 1;
+  string name = 2;
+  optional Entity entity = 3;
+  optional string entity_id = 4;
+  optional Script script = 5;
+  optional int64 script_id = 6;
+  string plugin_name = 7;
+  map<string, Attribute> attributes = 8;
+  bool enabled = 9;
+  optional bool isLoaded = 10;
+  optional bool completed = 11;
+
+  google.protobuf.Timestamp created_at = 99;
+  google.protobuf.Timestamp updated_at = 100;
+}
+
+message NewTriggerRequest {
+  string name = 2;
+  optional Entity entity = 3;
+  optional string entity_id = 4;
+  optional Script script = 5;
+  optional int64 script_id = 6;
+  string plugin_name = 7;
+  map<string, Attribute> attributes = 8;
+  bool enabled = 9;
+}
+
+message UpdateTriggerRequest {
+  int64 id = 1;
+  string name = 2;
+  optional Entity entity = 3;
+  optional string entity_id = 4;
+  optional Script script = 5;
+  optional int64 script_id = 6;
+  string plugin_name = 7;
+  map<string, Attribute> attributes = 8;
+  bool enabled = 9;
+}
+
+message GetTriggerRequest {
+  int64 id = 1;
+}
+
+message GetTriggerListResult {
+  repeated Trigger items = 1;
+  Meta meta = 2;
+}
+
+message DeleteTriggerRequest {
+  int64 id = 1;
+}
+
+message SearchTriggerResult {
+  repeated Trigger items = 1;
+}
+
+message EnableTriggerRequest {
+  int64 id = 1;
+}
+
+message DisableTriggerRequest {
+  int64 id = 1;
+}
+
+service TriggerService {
+
+  // add new trigger
+  rpc AddTrigger (NewTriggerRequest) returns (Trigger){
+    option (google.api.http) = {
+      post: "/v1/trigger"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // update trigger
+  rpc UpdateTrigger (UpdateTriggerRequest) returns (Trigger){
+    option (google.api.http) = {
+      put: "/v1/trigger/{id}"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // get trigger by id
+  rpc GetTriggerById (GetTriggerRequest) returns (Trigger){
+    option (google.api.http) = {
+      get: "/v1/trigger/{id}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // get trigger list
+  rpc GetTriggerList (PaginationRequest) returns (GetTriggerListResult){
+    option (google.api.http) = {
+      get: "/v1/triggers"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // delete trigger
+  rpc DeleteTrigger (DeleteTriggerRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      delete: "/v1/trigger/{id}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // search trigger
+  rpc SearchTrigger (SearchRequest) returns (SearchTriggerResult){
+    option (google.api.http) = {
+      get: "/v1/triggers/search"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // enable triggers
+  rpc EnableTrigger (EnableTriggerRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post: "/v1/triggers/{id}/enable"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // disable triggers
+  rpc DisableTrigger (DisableTriggerRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post: "/v1/triggers/{id}/disable"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+}

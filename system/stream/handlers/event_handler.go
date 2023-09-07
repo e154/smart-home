@@ -92,7 +92,8 @@ func (s *EventHandler) EventAddWebPushSubscription(client stream.IStreamClient, 
 func (s *EventHandler) EventGetLastState(client stream.IStreamClient, query string, body []byte) {
 	req := map[string]common.EntityId{}
 	_ = json.Unmarshal(body, &req)
-	s.eventBus.Publish(bus.TopicEntities, events.EventGetLastState{
-		EntityId: req["entity_id"],
+	id := req["entity_id"]
+	s.eventBus.Publish("system/entities/"+id.String(), events.EventGetLastState{
+		EntityId: id,
 	})
 }

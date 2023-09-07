@@ -19,6 +19,7 @@
 package plugins
 
 import (
+	"context"
 	"fmt"
 	"testing"
 	"time"
@@ -28,10 +29,10 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -95,13 +96,11 @@ entityAction = (entityId, actionName)->
 automationTriggerStateChanged = (msg)->
     #print '---trigger---'
     p = unmarshal msg.payload
-    if !p.new_state || !p.new_state.state
-        return false
-    return msg.new_state.state.name == 'DOUBLE_CLICK'
+    return p.new_state.state.name == 'DOUBLE_CLICK'
 
 automationCondition = (entityId)->
     #print '---condition---'
-    entity = Condition.getEntityById('zigbee2mqtt.` + zigbeePlugId + `')
+    entity = supervisor.getEntity('zigbee2mqtt.` + zigbeePlugId + `')
     if !entity
         return false
     if !entity.state || entity.state.name == 'OFF'
@@ -113,17 +112,15 @@ automationAction = (entityId)->
     Action.callAction('zigbee2mqtt.` + zigbeePlugId + `', 'ON', {})
 `
 
-		task2SourceScript = `
+task2SourceScript = `
 automationTriggerStateChanged = (msg)->
-    #print '---trigger---'
+    #print '---trigger---2'
     p = unmarshal msg.payload
-    if !p.new_state || !p.new_state.state
-        return false
-    return msg.new_state.state.name == 'DOUBLE_CLICK'
+    return p.new_state.state.name == 'DOUBLE_CLICK'
 
-automationCondition = (entityId)->
-    #print '---condition---'
-    entity = Condition.getEntityById('zigbee2mqtt.` + zigbeePlugId + `')
+automationentityManager = (entityId)->
+    print '---condition---'
+    entity = Condition.getEntity('zigbee2mqtt.` + zigbeePlugId + `')
     if !entity || !entity.state 
         return false
     if entity.state.name == 'ON'
@@ -140,23 +137,26 @@ automationAction = (entityId)->
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService,
-			entityManager entity_manager.EntityManager,
+			supervisor supervisor.Supervisor,
 			zigbee2mqtt zigbee2mqtt.Zigbee2mqtt,
 			mqttServer mqtt.MqttServ,
 			automation automation.Automation,
-			eventBus bus.Bus,
-			pluginManager common.PluginManager) {
-
-			eventBus.Purge()
-			scriptService.Purge()
+			eventBus bus.Bus) {
 
 			err := migrations.Purge()
 			So(err, ShouldBeNil)
 
 			err = AddPlugin(adaptors, "zigbee2mqtt")
 			ctx.So(err, ShouldBeNil)
+			err = AddPlugin(adaptors, "triggers")
 			ctx.So(err, ShouldBeNil)
+
+			eventBus.Purge()
+			scriptService.Restart()
+
 			go mqttServer.Start()
+
+			time.Sleep(time.Millisecond * 500)
 
 			// add zigbee2mqtt
 			zigbeeServer := &m.Zigbee2mqtt{
@@ -235,68 +235,99 @@ automationAction = (entityId)->
 			err = adaptors.Entity.Add(plugEnt)
 			So(err, ShouldBeNil)
 
+			time.Sleep(time.Second)
+
 			// automation
 			// ------------------------------------------------
-			//TASK1
-			task1 := &m.Task{
-				Name:      "Toggle plug ON",
-				Enabled:   true,
-				Condition: common.ConditionAnd,
-			}
-			task1.AddTrigger(&m.Trigger{
-				Name:       "",
+			trigger1 := &m.Trigger{
+				Name:       "state_change",
 				EntityId:   &buttonEnt.Id,
 				Script:     task1Script,
 				PluginName: "state_change",
-			})
-			task1.AddCondition(&m.Condition{
-				Name:   "check plug state",
-				Script: task1Script,
-			})
-			task1.AddAction(&m.Action{
-				Name:   "action on Plug",
-				Script: task1Script,
-			})
-			err = adaptors.Task.Add(task1)
+			}
+			err = AddTrigger(trigger1, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
-			//TASK2
-			task2 := &m.Task{
-				Name:      "Toggle plug OFF",
-				Enabled:   true,
-				Condition: common.ConditionAnd,
-			}
-			task2.AddTrigger(&m.Trigger{
+			trigger2 := &m.Trigger{
 				Name:       "",
 				EntityId:   &buttonEnt.Id,
 				Script:     task2Script,
 				PluginName: "state_change",
-			})
-			task2.AddCondition(&m.Condition{
+			}
+			err = AddTrigger(trigger2, adaptors, eventBus)
+			So(err, ShouldBeNil)
+
+
+			// conditions
+			// -----------------------
+			condition1 := &m.Condition{
+				Name:   "check plug state",
+				Script: task1Script,
+			}
+			condition1.Id, err = adaptors.Condition.Add(condition1)
+			So(err, ShouldBeNil)
+
+			condition2 := &m.Condition{
 				Name:   "check plug state",
 				Script: task2Script,
-			})
-			task2.AddAction(&m.Action{
+			}
+			condition2.Id, err = adaptors.Condition.Add(condition2)
+			So(err, ShouldBeNil)
+
+			// actions
+			// -----------------------
+			action1 := &m.Action{
+				Name:   "action on Plug",
+				Script: task1Script,
+			}
+			action1.Id, err = adaptors.Action.Add(action1)
+			So(err, ShouldBeNil)
+
+			action2 := &m.Action{
 				Name:   "action on Plug",
 				Script: task2Script,
-			})
-			err = adaptors.Task.Add(task2)
+			}
+			action2.Id, err = adaptors.Action.Add(action2)
+			So(err, ShouldBeNil)
+
+			// tasks
+			// -----------------------
+			newTask1 := &m.NewTask{
+				Name:      "Toggle plug ON",
+				Enabled:   true,
+				Condition: common.ConditionAnd,
+				TriggerIds: []int64{trigger1.Id},
+				ConditionIds: []int64{condition1.Id},
+				ActionIds: []int64{action1.Id},
+			}
+
+			err = AddTask(newTask1, adaptors, eventBus)
+			So(err, ShouldBeNil)
+
+			//TASK2
+			newTask2 := &m.NewTask{
+				Name:      "Toggle plug OFF",
+				Enabled:   true,
+				Condition: common.ConditionAnd,
+				TriggerIds: []int64{trigger2.Id},
+				ConditionIds: []int64{condition2.Id},
+				ActionIds: []int64{action2.Id},
+			}
+			err = AddTask(newTask2, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
 			// ------------------------------------------------
-			pluginManager.Start()
-			automation.Reload()
-			entityManager.SetPluginManager(pluginManager)
-			entityManager.LoadEntities()
+			err = supervisor.Restart(context.Background())
+			So(err, ShouldBeNil)
+
+			automation.Restart()
 			go zigbee2mqtt.Start()
 
 			defer func() {
-				_ = mqttServer.Shutdown()
 				zigbee2mqtt.Shutdown()
-				entityManager.Shutdown()
-				_ = automation.Shutdown()
-				pluginManager.Shutdown()
 			}()
+
+			time.Sleep(time.Second)
 
 			//
 			// ------------------------------------------------
@@ -308,6 +339,8 @@ automationAction = (entityId)->
 					err = mqttCli.Publish("zigbee2mqtt/"+zigbeePlugId, []byte(`{"consumption":2.87,"energy":2.87,"linkquality":147,"power":0,"state":"OFF","temperature":41,"voltage":240.5}`))
 				}
 			})
+
+			time.Sleep(time.Second)
 
 			err = mqttCli.Publish("zigbee2mqtt/"+zigbeeButtonId, []byte(`{"battery":100,"action":"single","linkquality":131,"voltage":3042}`))
 			err = mqttCli.Publish("zigbee2mqtt/"+zigbeeButtonId, []byte(`{"battery":100,"click":"single","linkquality":131,"voltage":3042}`))

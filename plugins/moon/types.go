@@ -21,7 +21,7 @@ package moon
 import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 const (
@@ -29,6 +29,8 @@ const (
 	Name = "moon"
 	// EntityMoon ...
 	EntityMoon = string("moon")
+
+	Version = "0.0.1"
 )
 
 const (
@@ -110,9 +112,9 @@ func NewSettings() m.Attributes {
 }
 
 // NewStates ...
-func NewStates() (states map[string]entity_manager.ActorState) {
+func NewStates() (states map[string]supervisor.ActorState) {
 
-	states = map[string]entity_manager.ActorState{
+	states = map[string]supervisor.ActorState{
 		StateAboveHorizon: {
 			Name:        StateAboveHorizon,
 			Description: "above horizon",

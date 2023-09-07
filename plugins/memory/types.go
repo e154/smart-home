@@ -39,6 +39,8 @@ const (
 
 	// EntityType ...
 	EntityType = "memory"
+
+	Version = "0.0.1"
 )
 
 // NewAttr ...

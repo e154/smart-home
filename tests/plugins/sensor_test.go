@@ -19,8 +19,10 @@
 package plugins
 
 import (
+	"context"
 	context2 "context"
 	"fmt"
+	"github.com/e154/smart-home/common/events"
 	"testing"
 	"time"
 
@@ -28,9 +30,9 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -63,22 +65,24 @@ entityAction = (entityId, actionName)->
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService,
-			entityManager entity_manager.EntityManager,
-			eventBus bus.Bus,
-			pluginManager common.PluginManager) {
-
-			eventBus.Purge()
-			scriptService.Purge()
+			supervisor supervisor.Supervisor,
+			eventBus bus.Bus) {
 
 			err := migrations.Purge()
 			ctx.So(err, ShouldBeNil)
 
-			// bind convey
-			RegisterConvey(scriptService, ctx)
-
 			// register plugins
 			err = AddPlugin(adaptors, "sensor")
 			ctx.So(err, ShouldBeNil)
+
+			eventBus.Purge()
+			scriptService.Restart()
+			supervisor.Restart(context.Background())
+
+			time.Sleep(time.Millisecond * 500)
+
+			// bind convey
+			RegisterConvey(scriptService, ctx)
 
 			// test server
 			var port = GetPort()
@@ -129,17 +133,13 @@ entityAction = (entityId, actionName)->
 			})
 			So(err, ShouldBeNil)
 
+			eventBus.Publish("system/entities/"+sensorEnt.Id.String(), events.EventCreatedEntity{
+				EntityId: sensorEnt.Id,
+			})
+
+			time.Sleep(time.Second)
+
 			// ------------------------------------------------
-			pluginManager.Start()
-			entityManager.SetPluginManager(pluginManager)
-			entityManager.LoadEntities()
-
-			defer func() {
-				entityManager.Shutdown()
-				pluginManager.Shutdown()
-			}()
-
-			time.Sleep(time.Millisecond * 500)
 
 			t.Run("sensor stats", func(t *testing.T) {
 				Convey("stats", t, func(ctx C) {
@@ -147,7 +147,7 @@ entityAction = (entityId, actionName)->
 					ctx2, cancel := context2.WithCancel(context2.Background())
 					go func() { _ = MockHttpServer(ctx2, host, port, []byte(response1)) }()
 					time.Sleep(time.Millisecond * 500)
-					entityManager.CallAction(sensorEnt.Id, "CHECK", nil)
+					supervisor.CallAction(sensorEnt.Id, "CHECK", nil)
 					time.Sleep(time.Second)
 					cancel()
 

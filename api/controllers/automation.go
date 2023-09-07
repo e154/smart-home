@@ -40,27 +40,27 @@ func NewControllerAutomation(common *ControllerCommon) ControllerAutomation {
 // AddTask ...
 func (c ControllerAutomation) AddTask(ctx context.Context, req *api.NewTaskRequest) (*api.Task, error) {
 
-	task := c.dto.Automation.AddTask(req)
+	newTask := c.dto.Automation.AddTask(req)
 
-	task, errs, err := c.endpoint.Task.Add(ctx, task)
+	task, errs, err := c.endpoint.Task.Add(ctx, newTask)
 	if len(errs) != 0 || err != nil {
 		return nil, c.error(ctx, errs, err)
 	}
 
-	return c.dto.Automation.ToTask(task), nil
+	return c.dto.Automation.GetTask(task), nil
 }
 
 // UpdateTask ...
 func (c ControllerAutomation) UpdateTask(ctx context.Context, req *api.UpdateTaskRequest) (*api.Task, error) {
 
-	task := c.dto.Automation.UpdateTask(req)
+	updateTask := c.dto.Automation.UpdateTask(req)
 
-	task, errs, err := c.endpoint.Task.Update(ctx, task)
+	task, errs, err := c.endpoint.Task.Update(ctx, updateTask)
 	if len(errs) != 0 || err != nil {
 		return nil, c.error(ctx, errs, err)
 	}
 
-	return c.dto.Automation.ToTask(task), nil
+	return c.dto.Automation.GetTask(task), nil
 }
 
 // GetTask ...
@@ -71,7 +71,7 @@ func (c ControllerAutomation) GetTask(ctx context.Context, req *api.GetTaskReque
 		return nil, c.error(ctx, errs, err)
 	}
 
-	return c.dto.Automation.ToTask(task), nil
+	return c.dto.Automation.GetTask(task), nil
 }
 
 // GetTaskList ...
@@ -83,7 +83,7 @@ func (c ControllerAutomation) GetTaskList(ctx context.Context, req *api.Paginati
 		return nil, c.error(ctx, errs, err)
 	}
 
-	return c.dto.Automation.ToListResult(items, uint64(total), pagination), nil
+	return c.dto.Automation.GetTaskList(items, uint64(total), pagination), nil
 }
 
 // DeleteTask ...
@@ -112,6 +112,16 @@ func (c ControllerAutomation) DisableTask(ctx context.Context, req *api.DisableT
 	if err := c.endpoint.Task.Disable(ctx, req.Id); err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
+
+	return &emptypb.Empty{}, nil
+}
+
+// ImportTask ...
+func (c ControllerAutomation) ImportTask(ctx context.Context, req *api.Task) (*emptypb.Empty, error) {
+
+	//if err := c.endpoint.Task.Disable(ctx, req.Id); err != nil {
+	//	return nil, c.error(ctx, nil, err)
+	//}
 
 	return &emptypb.Empty{}, nil
 }

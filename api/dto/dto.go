@@ -28,6 +28,9 @@ type Dto struct {
 	Entity            Entity
 	Zigbee2mqtt       Zigbee2mqtt
 	Area              Area
+	Action            Action
+	Condition         Condition
+	Trigger           Trigger
 	Automation        Automation
 	Log               Log
 	Dashboard         Dashboard
@@ -37,6 +40,8 @@ type Dto struct {
 	Variable          Variable
 	EntityStorage     EntityStorage
 	MessageDelivery   MessageDelivery
+	DeveloperTools    DeveloperTools
+	Mqtt              Mqtt
 }
 
 // NewDto ...
@@ -50,6 +55,9 @@ func NewDto() Dto {
 		Entity:            NewEntityDto(),
 		Zigbee2mqtt:       NewZigbee2mqttDto(),
 		Area:              NewAreaDto(),
+		Action:            NewActionDto(),
+		Condition:         NewConditionDto(),
+		Trigger:           NewTriggerDto(),
 		Automation:        NewAutomationDto(),
 		Log:               NewLogDto(),
 		Dashboard:         NewDashboardDto(),
@@ -59,5 +67,7 @@ func NewDto() Dto {
 		Variable:          NewVariableDto(),
 		EntityStorage:     NewEntityStorageDto(),
 		MessageDelivery:   NewMessageDeliveryDto(),
+		DeveloperTools:    NewDeveloperToolsDto(),
+		Mqtt:              NewMqttDto(),
 	}
 }

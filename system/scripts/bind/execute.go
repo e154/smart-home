@@ -20,7 +20,6 @@ package bind
 
 import (
 	"bytes"
-	"fmt"
 	"os/exec"
 	"strings"
 )
@@ -35,8 +34,6 @@ type Response struct {
 func ExecuteSync(name string, arg ...string) (r *Response) {
 
 	r = &Response{}
-
-	log.Infof("Execute [SYNC] command: %s %s", name, strings.Trim(fmt.Sprint(arg), "[]"))
 
 	// https://golang.org/pkg/os/exec/#example_Cmd_Start
 	cmd := exec.Command(name, arg...)
@@ -63,8 +60,6 @@ func ExecuteSync(name string, arg ...string) (r *Response) {
 func ExecuteAsync(name string, arg ...string) (r *Response) {
 
 	r = &Response{}
-
-	log.Infof("Execute [ASYNC] command: %s %s", name, strings.Trim(fmt.Sprint(arg), "[]"))
 
 	go func() {
 		b, err := exec.Command(name, arg...).Output()

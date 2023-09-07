@@ -19,6 +19,7 @@
 package plugins
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -28,11 +29,9 @@ import (
 	"github.com/e154/smart-home/plugins/alexa"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/migrations"
-	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/zigbee2mqtt"
+	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -55,15 +54,9 @@ automationTriggerAlexa = (msg)->
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService,
-			entityManager entity_manager.EntityManager,
-			zigbee2mqtt zigbee2mqtt.Zigbee2mqtt,
-			mqttServer mqtt.MqttServ,
+			supervisor supervisor.Supervisor,
 			automation automation.Automation,
-			eventBus bus.Bus,
-			pluginManager common.PluginManager) {
-
-			eventBus.Purge()
-			scriptService.Purge()
+			eventBus bus.Bus) {
 
 			err := migrations.Purge()
 			So(err, ShouldBeNil)
@@ -74,7 +67,17 @@ automationTriggerAlexa = (msg)->
 			err = AddPlugin(adaptors, "alexa")
 			ctx.So(err, ShouldBeNil)
 
-			go mqttServer.Start()
+			eventBus.Purge()
+			automation.Restart()
+			scriptService.Restart()
+			supervisor.Restart(context.Background())
+
+			var ch = make(chan alexa.EventAlexaAction)
+			scriptService.PushFunctions("Done", func(msg alexa.EventAlexaAction) {
+				ch <- msg
+			})
+
+			time.Sleep(time.Millisecond * 500)
 
 			// add scripts
 			// ------------------------------------------------
@@ -84,14 +87,7 @@ automationTriggerAlexa = (msg)->
 
 			// automation
 			// ------------------------------------------------
-
-			//TASK3
-			task3 := &m.Task{
-				Name:      "Toggle plug ON",
-				Enabled:   true,
-				Condition: common.ConditionAnd,
-			}
-			task3.AddTrigger(&m.Trigger{
+			trigger := &m.Trigger{
 				Name:       "alexa",
 				Script:     task3Script,
 				PluginName: "alexa",
@@ -102,36 +98,31 @@ automationTriggerAlexa = (msg)->
 						Value: 1,
 					},
 				},
-			})
-			err = adaptors.Task.Add(task3)
+			}
+			err = AddTrigger(trigger, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
+			//TASK3
+			newTask := &m.NewTask{
+				Name:      "Toggle plug ON",
+				Enabled:   true,
+				TriggerIds: []int64{trigger.Id},
+				Condition: common.ConditionAnd,
+			}
+			err = AddTask(newTask, adaptors, eventBus)
+			So(err, ShouldBeNil)
+
+			time.Sleep(time.Millisecond * 500)
+
 			// ------------------------------------------------
-
-			var ch = make(chan alexa.EventAlexaAction)
-			scriptService.PushFunctions("Done", func(msg alexa.EventAlexaAction) {
-				ch <- msg
-			})
-
-			pluginManager.Start()
-			automation.Reload()
-			entityManager.SetPluginManager(pluginManager)
-			entityManager.LoadEntities()
-			go zigbee2mqtt.Start()
-
-			defer func() {
-				_ = mqttServer.Shutdown()
-				zigbee2mqtt.Shutdown()
-				entityManager.Shutdown()
-				_ = automation.Shutdown()
-				pluginManager.Shutdown()
-			}()
 
 			eventBus.Publish(alexa.TopicPluginAlexa, alexa.EventAlexaAction{
 				SkillId:    1,
 				IntentName: "FlatLights",
 				Payload:    "kitchen_on",
 			})
+
+			time.Sleep(time.Millisecond * 500)
 
 			ticker := time.NewTimer(time.Second * 2)
 			defer ticker.Stop()
@@ -145,9 +136,12 @@ automationTriggerAlexa = (msg)->
 				break
 			}
 
+			time.Sleep(time.Second)
 			ctx.So(msg.Payload, ShouldEqual, "kitchen_on")
 			ctx.So(msg.SkillId, ShouldEqual, 1)
 			ctx.So(msg.IntentName, ShouldEqual, "FlatLights")
+
+			time.Sleep(time.Second)
 
 		})
 	})

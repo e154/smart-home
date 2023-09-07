@@ -6,6 +6,7 @@ option go_package = "/api";
 import "google/api/annotations.proto";
 import "protoc-gen-swagger/options/annotations.proto";
 import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
 
 import "pagination.proto";
 
@@ -13,6 +14,13 @@ message Area {
   int64 id = 1;
   string name = 2;
   string description = 3;
+  message Location {
+    float lat = 1;
+    float lon = 2;
+  }
+  repeated Location polygon = 4;
+  google.protobuf.Timestamp created_at = 99;
+  google.protobuf.Timestamp updated_at = 100;
 }
 
 message NewAreaRequest {

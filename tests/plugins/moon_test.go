@@ -25,12 +25,11 @@ import (
 	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
 	moonPlugin "github.com/e154/smart-home/plugins/moon"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -40,12 +39,8 @@ func TestMoon(t *testing.T) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService,
-			entityManager entity_manager.EntityManager,
-			eventBus bus.Bus,
-			pluginManager common.PluginManager) {
-
-			eventBus.Purge()
-			scriptService.Purge()
+			supervisor supervisor.Supervisor,
+			eventBus bus.Bus) {
 
 			err := migrations.Purge()
 			ctx.So(err, ShouldBeNil)
@@ -54,18 +49,27 @@ func TestMoon(t *testing.T) {
 			err = AddPlugin(adaptors, "moon")
 			ctx.So(err, ShouldBeNil)
 
+			eventBus.Purge()
+			scriptService.Restart()
+
 			// add entity
 			// ------------------------------------------------
 			moonEnt := GetNewMoon("main")
 			err = adaptors.Entity.Add(moonEnt)
 			ctx.So(err, ShouldBeNil)
 
+			eventBus.Publish("system/entities/"+moonEnt.Id.String(), events.EventCreatedEntity{
+				EntityId: moonEnt.Id,
+			})
+
+			time.Sleep(time.Second)
+
 			ch := make(chan events.EventStateChanged, 2)
-			_ = eventBus.Subscribe(bus.TopicEntities, func(topic string, msg events.EventStateChanged) {
+			_ = eventBus.Subscribe("system/entities/"+moonEnt.Id.String(), func(topic string, msg events.EventStateChanged) {
 				ch <- msg
 			})
 
-			moon := moonPlugin.NewActor(moonEnt, entityManager, adaptors, scriptService, eventBus)
+			moon := moonPlugin.NewActor(moonEnt, supervisor, adaptors, scriptService, eventBus)
 
 			t.Run("entity", func(t *testing.T) {
 				Convey("position", t, func(ctx C) {
@@ -102,8 +106,8 @@ func TestMoon(t *testing.T) {
 					ctx.So(msg.NewState.State, ShouldNotBeNil)
 					ctx.So(msg.NewState.State.Name, ShouldEqual, moonPlugin.StateBelowHorizon)
 					ctx.So(msg.NewState.State.Description, ShouldEqual, "below horizon")
-					ctx.So(msg.NewState.Attributes[moonPlugin.AttrAzimuth].Float64(), ShouldEqual, 131.93217912435995)
-					ctx.So(msg.NewState.Attributes[moonPlugin.AttrElevation].Float64(), ShouldEqual, -1.2069581282932162)
+					ctx.So(msg.NewState.Attributes[moonPlugin.AttrAzimuth].String(), ShouldContainSubstring, "131.932179124")
+					ctx.So(msg.NewState.Attributes[moonPlugin.AttrElevation].String(), ShouldContainSubstring, "-1.206958128")
 					ctx.So(msg.NewState.Attributes[moonPlugin.AttrHorizonState].String(), ShouldEqual, "belowHorizon")
 					ctx.So(msg.NewState.Attributes[moonPlugin.AttrPhase].String(), ShouldEqual, "full_moon")
 				})

@@ -19,6 +19,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/e154/smart-home/common"
@@ -50,17 +51,28 @@ type AppConfig struct {
 	MqttMaxMsgQueue                int            `json:"mqtt_max_msg_queue" env:"MQTT_MAX_MSG_QUEUE"`
 	MqttDeliverMode                int            `json:"mqtt_deliver_mode" env:"MQTT_DELIVER_MODE"`
 	Logging                        bool           `json:"logging" env:"LOGGING"`
-	Metric                         bool           `json:"metric" env:"METRIC"`
-	MetricPort                     int            `json:"metric_port" env:"METRIC_PORT"`
-	ColoredLogging                 bool           `json:"colored_logging" env:"API_GRPC_HOST_PORT"`
+	ColoredLogging                 bool           `json:"colored_logging" env:"COLORED_LOGGING"`
 	AlexaHost                      string         `json:"alexa_host" env:"ALEXA_HOST"`
 	AlexaPort                      int            `json:"alexa_port" env:"ALEXA_PORT"`
 	MobileHost                     string         `json:"mobile_host" env:"MOBILE_HOST"`
 	MobilePort                     int            `json:"mobile_port" env:"MOBILE_PORT"`
-	ApiGrpcHostPort                string         `json:"api_grpc_host_port" env:"API_GRPC_HOST_PORT"`
-	ApiHttpHostPort                string         `json:"api_http_host_port" env:"API_HTTP_HOST_PORT"`
-	ApiPromHostPort                string         `json:"api_prom_host_port" env:"API_PROM_HOST_PORT"`
+	ApiGrpcPort                    int            `json:"api_grpc_port" env:"API_GRPC_PORT"`
+	ApiHttpPort                    int            `json:"api_http_port" env:"API_HTTP_PORT"`
 	ApiSwagger                     bool           `json:"api_swagger" env:"API_SWAGGER"`
 	Lang                           string         `json:"lang" env:"LANG"`
 	GodMode                        bool           `json:"god_mode" env:"GOD_MODE"`
+	Domain                         string         `json:"domain" env:"DOMAIN"`
+	Https                          bool           `json:"https" env:"HTTPS"`
+}
+
+func (c *AppConfig) ApiScheme() (scheme string) {
+	scheme = "http"
+	if c.Https {
+		scheme = "https"
+	}
+	return
+}
+
+func (c *AppConfig) ApiFullAddress() (scheme string) {
+	return fmt.Sprintf("%s://%s:%d", c.ApiScheme(), c.Domain, c.ApiHttpPort)
 }

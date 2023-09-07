@@ -17,7 +17,7 @@ message DashboardTab {
   string name = 2;
   int32 column_width = 3;
   bool gap = 4;
-  string background = 5;
+  optional string background = 5;
   string icon = 6;
   bool enabled = 7;
   int32 weight = 8;
@@ -33,7 +33,7 @@ message DashboardTabShort {
   string name = 2;
   int32 column_width = 3;
   bool gap = 4;
-  string background = 5;
+  optional string background = 5;
   string icon = 6;
   bool enabled = 7;
   int32 weight = 8;
@@ -46,7 +46,7 @@ message NewDashboardTabRequest {
   string name = 2;
   int32 column_width = 3;
   bool gap = 4;
-  string background = 5;
+  optional string background = 5;
   string icon = 6;
   bool enabled = 7;
   int32 weight = 8;
@@ -58,7 +58,7 @@ message UpdateDashboardTabRequest {
   string name = 2;
   int32 column_width = 3;
   bool gap = 4;
-  string background = 5;
+  optional string background = 5;
   string icon = 6;
   bool enabled = 7;
   int32 weight = 8;

@@ -26,14 +26,13 @@ import (
 	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/notify"
 	"github.com/e154/smart-home/plugins/twilio"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -43,12 +42,8 @@ func TestTwilio(t *testing.T) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService,
-			entityManager entity_manager.EntityManager,
-			eventBus bus.Bus,
-			pluginManager common.PluginManager) {
-
-			eventBus.Purge()
-			scriptService.Purge()
+			supervisor supervisor.Supervisor,
+			eventBus bus.Bus) {
 
 			err := migrations.Purge()
 			ctx.So(err, ShouldBeNil)
@@ -63,14 +58,9 @@ func TestTwilio(t *testing.T) {
 			err = AddPlugin(adaptors, "twilio", settings.Serialize())
 			ctx.So(err, ShouldBeNil)
 
-			pluginManager.Start()
-			entityManager.SetPluginManager(pluginManager)
-			entityManager.LoadEntities()
-
-			defer func() {
-				entityManager.Shutdown()
-				pluginManager.Shutdown()
-			}()
+			eventBus.Purge()
+			scriptService.Restart()
+			supervisor.Restart(context.Background())
 
 			time.Sleep(time.Millisecond * 500)
 
@@ -86,8 +76,8 @@ func TestTwilio(t *testing.T) {
 						}
 
 					}
-					_ = eventBus.Subscribe(bus.TopicEntities, fn)
-					defer func() { _ = eventBus.Unsubscribe(bus.TopicEntities, fn) }()
+					_ = eventBus.Subscribe("system/entities/+", fn)
+					defer func() { _ = eventBus.Unsubscribe("system/entities/+", fn) }()
 
 					const (
 						phone = "+79990000001"

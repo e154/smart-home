@@ -24,16 +24,16 @@ import (
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 const (
 	// Name ...
 	Name = "node"
-	// EntityNode ...
-	EntityNode = string("node")
 	// TopicPluginNode ...
-	TopicPluginNode = "plugin.node"
+	TopicPluginNode = "system/plugins/node"
+
+	Version = "0.0.1"
 )
 
 const (
@@ -100,9 +100,9 @@ func NewSettings() m.Attributes {
 }
 
 // NewStates ...
-func NewStates() (states map[string]entity_manager.ActorState) {
+func NewStates() (states map[string]supervisor.ActorState) {
 
-	states = map[string]entity_manager.ActorState{
+	states = map[string]supervisor.ActorState{
 		"wait": {
 			Name:        "wait",
 			Description: "Wait",

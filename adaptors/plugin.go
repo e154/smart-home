@@ -32,7 +32,7 @@ type IPlugin interface {
 	CreateOrUpdate(ver *m.Plugin) error
 	Update(plugin *m.Plugin) error
 	Delete(pluginId string) error
-	List(limit, offset int64, orderBy, sort string) (list []*m.Plugin, total int64, err error)
+	List(limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Plugin, total int64, err error)
 	Search(query string, limit, offset int64) (list []*m.Plugin, total int64, err error)
 	GetByName(name string) (ver *m.Plugin, err error)
 	fromDb(dbVer *db.Plugin) (plugin *m.Plugin)
@@ -79,9 +79,9 @@ func (p *Plugin) Delete(name string) (err error) {
 }
 
 // List ...
-func (p *Plugin) List(limit, offset int64, orderBy, sort string) (list []*m.Plugin, total int64, err error) {
+func (p *Plugin) List(limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Plugin, total int64, err error) {
 	var dbList []*db.Plugin
-	if dbList, total, err = p.table.List(int(limit), int(offset), orderBy, sort); err != nil {
+	if dbList, total, err = p.table.List(int(limit), int(offset), orderBy, sort, onlyEnabled); err != nil {
 		return
 	}
 

@@ -27,13 +27,13 @@ import (
 
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/supervisor"
 	"github.com/rcrowley/go-metrics"
 )
 
 // Actor ...
 type Actor struct {
-	*entity_manager.BaseActor
+	*supervisor.BaseActor
 	cores           int64
 	model           string
 	total           metrics.Gauge
@@ -48,7 +48,7 @@ type Actor struct {
 
 // NewActor ...
 func NewActor(entity *m.Entity,
-	entityManager entity_manager.EntityManager,
+	visor supervisor.Supervisor,
 	eventBus bus.Bus) *Actor {
 
 	var mountPoint string
@@ -60,14 +60,14 @@ func NewActor(entity *m.Entity,
 	}
 
 	actor := &Actor{
-		BaseActor: &entity_manager.BaseActor{
+		BaseActor: &supervisor.BaseActor{
 			Id:                entity.Id,
 			Name:              entity.Id.Name(),
 			EntityType:        EntityHDD,
 			UnitOfMeasurement: "",
 			AttrMu:            &sync.RWMutex{},
 			Attrs:             NewAttr(),
-			Manager:           entityManager,
+			Supervisor:        visor,
 			Metric:            entity.Metrics,
 		},
 		eventBus:   eventBus,
@@ -75,7 +75,7 @@ func NewActor(entity *m.Entity,
 		MountPoint: mountPoint,
 	}
 
-	actor.Manager = entityManager
+	actor.Supervisor = visor
 	actor.Attrs = NewAttr()
 	actor.Setts = entity.Settings
 
@@ -83,12 +83,20 @@ func NewActor(entity *m.Entity,
 		actor.Setts = NewSettings()
 	}
 
+	if actor.Actions == nil {
+		actor.Actions = NewActions()
+	}
+
 	return actor
 }
 
 // Spawn ...
-func (e *Actor) Spawn() entity_manager.PluginActor {
+func (e *Actor) Spawn() supervisor.PluginActor {
 	return e
+}
+
+func (e *Actor) runAction(msg events.EventCallEntityAction) {
+	go e.selfUpdate()
 }
 
 func (u *Actor) selfUpdate() {
@@ -117,7 +125,7 @@ func (u *Actor) selfUpdate() {
 		u.Attrs[AttrInodesUsedPercent].Value = r.InodesUsedPercent
 		u.AttrMu.Unlock()
 	}
-	u.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
+	u.eventBus.Publish("system/entities/"+u.Id.String(), events.EventStateChanged{
 		StorageSave: false,
 		PluginName:  u.Id.PluginName(),
 		EntityId:    u.Id,

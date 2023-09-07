@@ -19,42 +19,40 @@
 package html5_notify
 
 import (
+	"github.com/e154/smart-home/system/supervisor"
 	"strconv"
 	"strings"
 
 	"github.com/e154/smart-home/common/events"
-	"github.com/e154/smart-home/system/bus"
-
 	"github.com/e154/smart-home/common/logger"
 
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/notify"
-	"github.com/e154/smart-home/system/plugins"
 )
 
 var (
 	log = logger.MustGetLogger("plugins.html5_notify")
 )
 
-var _ plugins.Plugable = (*plugin)(nil)
+var _ supervisor.Pluggable = (*plugin)(nil)
 
 func init() {
-	plugins.RegisterPlugin(Name, New)
+	supervisor.RegisterPlugin(Name, New)
 }
 
 type plugin struct {
-	*plugins.Plugin
+	*supervisor.Plugin
 }
 
 // New ...
-func New() plugins.Plugable {
+func New() supervisor.Pluggable {
 	return &plugin{
-		Plugin: plugins.NewPlugin(),
+		Plugin: supervisor.NewPlugin(),
 	}
 }
 
 // Load ...
-func (p *plugin) Load(service plugins.Service) (err error) {
+func (p *plugin) Load(service supervisor.Service) (err error) {
 	if err = p.Plugin.Load(service); err != nil {
 		return
 	}
@@ -93,8 +91,8 @@ func (p *plugin) Name() string {
 }
 
 // Type ...
-func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginInstallable
+func (p *plugin) Type() supervisor.PluginType {
+	return supervisor.PluginInstallable
 }
 
 // Depends ...
@@ -140,7 +138,7 @@ func (p *plugin) Send(address string, message *m.Message) (err error) {
 	attr := NewMessageParams()
 	_, _ = attr.Deserialize(message.Attributes)
 
-	p.EventBus.Publish(bus.TopicEntities, events.EventDirectMessage{
+	p.EventBus.Publish("system/plugins/html5_notify", events.EventDirectMessage{
 		UserID: userID,
 		Query:  "html5_notify",
 		Message: Notification{
