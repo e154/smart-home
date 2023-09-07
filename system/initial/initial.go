@@ -163,7 +163,7 @@ func (n *Initial) checkForUpgrade() {
 
 // Start ...
 func (n *Initial) Start(ctx context.Context) (err error) {
-	n.checkForUpgrade()
+	//n.checkForUpgrade()
 	_ = n.supervisor.Start(ctx)
 	_ = n.automation.Start()
 	go func() {

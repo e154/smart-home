@@ -42,7 +42,6 @@ require (
 	github.com/smartystreets/goconvey v1.6.4
 	github.com/spf13/cobra v1.2.1
 	github.com/surge/glog v0.0.0-20141108051140-2578deb2b95c // indirect
-	github.com/t-tiger/gorm-bulk-insert v1.3.0
 	github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5
 	go.uber.org/atomic v1.7.0
 	go.uber.org/dig v1.10.0
@@ -60,7 +59,7 @@ require (
 	google.golang.org/protobuf v1.31.0
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/gomail.v2 v2.0.0-20150902115704-41f357289737
-	gorm.io/gorm v1.25.1
+	gorm.io/gorm v1.25.4
 )
 
 require (

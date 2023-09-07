@@ -33,7 +33,6 @@ type ICondition interface {
 	Delete(deviceId int64) (err error)
 	List(limit, offset int64, orderBy, sort string) (list []*m.Condition, total int64, err error)
 	Search(query string, limit, offset int) (list []*m.Condition, total int64, err error)
-	AddMultiple(items []*m.Condition) (err error)
 	fromDb(dbVer *db.Condition) (ver *m.Condition)
 	toDb(ver *m.Condition) (dbVer *db.Condition)
 }
@@ -90,30 +89,10 @@ func (n *Condition) Delete(deviceId int64) (err error) {
 	return
 }
 
-// AddMultiple ...
-func (n *Condition) AddMultiple(items []*m.Condition) (err error) {
-
-	//TODO not work
-	//insertRecords := make([]interface{}, 0, len(items))
-	//for _, ver := range items {
-	//	insertRecords = append(insertRecords, n.toDb(ver))
-	//}
-	//
-	//err = gormbulk.BulkInsert(n.db, insertRecords, len(insertRecords))
-
-	for _, ver := range items {
-		if _, err = n.table.Add(n.toDb(ver)); err != nil {
-			return
-		}
-	}
-
-	return
-}
-
 // List ...
 func (n *Condition) List(limit, offset int64, orderBy, sort string) (list []*m.Condition, total int64, err error) {
 	var dbList []*db.Condition
-	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
+	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort); err != nil {
 		return
 	}
 

@@ -22,8 +22,8 @@ import (
 	"fmt"
 	"time"
 
-	"gorm.io/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
@@ -104,7 +104,7 @@ func (t Actions) Delete(id int64) (err error) {
 }
 
 // List ...
-func (t *Actions) List(limit, offset int64, orderBy, sort string) (list []*Action, total int64, err error) {
+func (t *Actions) List(limit, offset int, orderBy, sort string) (list []*Action, total int64, err error) {
 
 	if err = t.Db.Model(Action{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrActionList, err.Error())

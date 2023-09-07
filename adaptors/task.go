@@ -20,7 +20,6 @@ package adaptors
 
 import (
 	"fmt"
-	"github.com/jinzhu/gorm"
 
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"

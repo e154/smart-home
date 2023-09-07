@@ -1,30 +1,28 @@
 package db
 
 import (
-	"bytes"
-	"database/sql/driver"
+	"context"
 	"fmt"
 	"github.com/pkg/errors"
 	"github.com/twpayne/go-geom"
 	"github.com/twpayne/go-geom/encoding/ewkbhex"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type Polygon struct {
 	Points []Point
 }
 
-func (p Polygon) Value() (driver.Value, error) {
-	points, err := formatPoints(p.Points)
-	if err != nil {
-		return nil, fmt.Errorf("failed to format point for query: %v", err)
+func (p Polygon) GormValue(ctx context.Context, db *gorm.DB) clause.Expr {
+	points, _ := formatPoints(p.Points)
+	return clause.Expr{
+		SQL:  "ST_Polygon(?::geometry, 4326)",
+		Vars: []interface{}{fmt.Sprintf("LINESTRING(%s)", points)},
 	}
-	buf := new(bytes.Buffer)
-	fmt.Fprintf(buf, "ST_Polygon('LINESTRING(%s)'::geometry, 4326)", points)
-	fmt.Println(buf.String())
-	return buf.String(), nil
 }
 
-func (p *Polygon) Scan(src interface{}) (err error) {
+func (p *Polygon) Scan(src any) (err error) {
 	var geometry geom.T
 	if geometry, err = ewkbhex.Decode(src.(string)); err != nil {
 		return errors.Wrap(errors.New("decode value"), err.Error())
@@ -34,7 +32,17 @@ func (p *Polygon) Scan(src interface{}) (err error) {
 		return errors.New("geometry is not a point")
 	}
 	fmt.Println(polygon.Coords())
+	for _, point := range polygon.Coords()[0] {
+		p.Points = append(p.Points, Point{
+			Lon: point.X(),
+			Lat: point.Y(),
+		})
+	}
 	return nil
+}
+
+func (Polygon) GormDataType() string {
+	return "geometry"
 }
 
 func formatPoints(polygonPoints []Point) (string, error) {

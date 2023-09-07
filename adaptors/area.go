@@ -137,11 +137,13 @@ func (a *Area) fromDb(dbVer *db.Area) (ver *m.Area) {
 		CreatedAt:   dbVer.CreatedAt,
 		UpdatedAt:   dbVer.UpdatedAt,
 	}
-	for _, point := range dbVer.Polygon.Points {
-		ver.Polygon = append(ver.Polygon, m.Point{
-			Lon: point.Lon,
-			Lat: point.Lat,
-		})
+	if dbVer.Polygon != nil {
+		for _, point := range dbVer.Polygon.Points {
+			ver.Polygon = append(ver.Polygon, m.Point{
+				Lon: point.Lon,
+				Lat: point.Lat,
+			})
+		}
 	}
 	return
 }

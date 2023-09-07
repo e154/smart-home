@@ -26,13 +26,11 @@ import (
 	"time"
 
 	"github.com/Masterminds/semver"
+	"github.com/e154/smart-home/common/logger"
 	_ "github.com/lib/pq"
 	"go.uber.org/fx"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	dbLogger "gorm.io/gorm/logger"
-
-	"github.com/e154/smart-home/common/logger"
 )
 
 // Orm ...
@@ -92,9 +90,9 @@ func (o *Orm) Start() (err error) {
 		return
 	}
 
-	if o.cfg.Debug {
-		o.db.Logger.LogMode(dbLogger.Info)
-	}
+	//if o.cfg.Debug {
+	//	o.db.Logger.LogMode(dbLogger.Info)
+	//}
 
 	var db *sql.DB
 	if db, err = o.db.DB(); err != nil {
@@ -110,7 +108,7 @@ func (o *Orm) Start() (err error) {
 	// SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
 	db.SetConnMaxLifetime(time.Duration(o.cfg.ConnMaxLifeTime) * time.Minute)
 
-	err = o.check()
+	err = o.Check()
 
 	return
 }
@@ -134,7 +132,7 @@ func (o *Orm) Shutdown() (err error) {
 	return
 }
 
-func (o *Orm) check() (err error) {
+func (o *Orm) Check() (err error) {
 
 	if err = o.checkServerVersion(); err != nil {
 		return

@@ -90,7 +90,7 @@ func (t Conditions) Delete(id int64) (err error) {
 }
 
 // List ...
-func (t *Conditions) List(limit, offset int64, orderBy, sort string) (list []*Condition, total int64, err error) {
+func (t *Conditions) List(limit, offset int, orderBy, sort string) (list []*Condition, total int64, err error) {
 
 	if err = t.Db.Model(Condition{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrConditionList, err.Error())

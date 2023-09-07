@@ -199,7 +199,7 @@ func (n *Tasks) Search(query string, limit, offset int) (list []*Task, total int
 
 // AppendTrigger ...
 func (n *Tasks) AppendTrigger(id int64, trigger *Trigger) (err error) {
-	if err = n.Db.Model(&Task{Id: id}).Association("Triggers").Append(trigger).Error; err != nil {
+	if err = n.Db.Model(&Task{Id: id}).Association("Triggers").Append(trigger); err != nil {
 		err = errors.Wrap(apperr.ErrTaskAppendTrigger, err.Error())
 	}
 	return
@@ -207,7 +207,7 @@ func (n *Tasks) AppendTrigger(id int64, trigger *Trigger) (err error) {
 
 // DeleteTrigger ...
 func (n *Tasks) DeleteTrigger(id, triggerId int64) (err error) {
-	if err = n.Db.Model(&Task{Id: id}).Association("Triggers").Delete(&Trigger{Id: triggerId}).Error; err != nil {
+	if err = n.Db.Model(&Task{Id: id}).Association("Triggers").Delete(&Trigger{Id: triggerId}); err != nil {
 		err = errors.Wrap(apperr.ErrTaskDeleteTrigger, err.Error())
 	}
 	return
@@ -215,7 +215,7 @@ func (n *Tasks) DeleteTrigger(id, triggerId int64) (err error) {
 
 // AppendCondition ...
 func (n *Tasks) AppendCondition(id int64, condition *Condition) (err error) {
-	if err = n.Db.Model(&Task{Id: id}).Association("Conditions").Append(condition).Error; err != nil {
+	if err = n.Db.Model(&Task{Id: id}).Association("Conditions").Append(condition); err != nil {
 		err = errors.Wrap(apperr.ErrTaskAppendCondition, err.Error())
 	}
 	return
@@ -223,7 +223,7 @@ func (n *Tasks) AppendCondition(id int64, condition *Condition) (err error) {
 
 // DeleteCondition ...
 func (n *Tasks) DeleteCondition(id, conditionId int64) (err error) {
-	if err = n.Db.Model(&Task{Id: id}).Association("Conditions").Delete(&Condition{Id: conditionId}).Error; err != nil {
+	if err = n.Db.Model(&Task{Id: id}).Association("Conditions").Delete(&Condition{Id: conditionId}); err != nil {
 		err = errors.Wrap(apperr.ErrTaskDeleteCondition, err.Error())
 	}
 	return
@@ -231,7 +231,7 @@ func (n *Tasks) DeleteCondition(id, conditionId int64) (err error) {
 
 // AppendAction ...
 func (n *Tasks) AppendAction(id int64, action *Action) (err error) {
-	if err = n.Db.Model(&Task{Id: id}).Association("Actions").Append(action).Error; err != nil {
+	if err = n.Db.Model(&Task{Id: id}).Association("Actions").Append(action); err != nil {
 		err = errors.Wrap(apperr.ErrTaskAppendAction, err.Error())
 	}
 	return
@@ -239,7 +239,7 @@ func (n *Tasks) AppendAction(id int64, action *Action) (err error) {
 
 // DeleteAction ...
 func (n *Tasks) DeleteAction(id, actionId int64) (err error) {
-	if err = n.Db.Model(&Task{Id: id}).Association("Actions").Delete(&Action{Id: actionId}).Error; err != nil {
+	if err = n.Db.Model(&Task{Id: id}).Association("Actions").Delete(&Action{Id: actionId}); err != nil {
 		err = errors.Wrap(apperr.ErrTaskDeleteAction, err.Error())
 	}
 	return

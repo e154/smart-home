@@ -107,7 +107,7 @@ func (t Triggers) Delete(id int64) (err error) {
 }
 
 // List ...
-func (t *Triggers) List(limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*Trigger, total int64, err error) {
+func (t *Triggers) List(limit, offset int, orderBy, sort string, onlyEnabled bool) (list []*Trigger, total int64, err error) {
 
 	if err = t.Db.Model(Trigger{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrTriggerList, err.Error())

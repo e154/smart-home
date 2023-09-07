@@ -588,7 +588,7 @@ func (n *Entity) fromDb(dbVer *db.Entity) (ver *m.Entity) {
 	if dbVer.Scripts != nil && len(dbVer.Scripts) > 0 {
 		scriptAdaptor := GetScriptAdaptor(n.db)
 		for _, script := range dbVer.Scripts {
-			s, _ := scriptAdaptor.fromDb(&script)
+			s, _ := scriptAdaptor.fromDb(script)
 			ver.Scripts = append(ver.Scripts, s)
 		}
 	} else {

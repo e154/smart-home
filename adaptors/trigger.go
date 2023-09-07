@@ -36,7 +36,6 @@ type ITrigger interface {
 	Delete(deviceId int64) (err error)
 	List(limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Trigger, total int64, err error)
 	Search(query string, limit, offset int) (list []*m.Trigger, total int64, err error)
-	AddMultiple(items []*m.Trigger) (err error)
 	Enable(id int64) (err error)
 	Disable(id int64) (err error)
 	fromDb(dbVer *db.Trigger) (ver *m.Trigger)
@@ -95,30 +94,10 @@ func (n *Trigger) Delete(deviceId int64) (err error) {
 	return
 }
 
-// AddMultiple ...
-func (n *Trigger) AddMultiple(items []*m.Trigger) (err error) {
-
-	//TODO not work
-	//insertRecords := make([]interface{}, 0, len(items))
-	//for _, ver := range items {
-	//	insertRecords = append(insertRecords, n.toDb(ver))
-	//}
-	//
-	//err = gormbulk.BulkInsert(n.db, insertRecords, len(insertRecords))
-
-	for _, ver := range items {
-		if _, err = n.table.Add(n.toDb(ver)); err != nil {
-			return
-		}
-	}
-
-	return
-}
-
 // List ...
 func (n *Trigger) List(limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Trigger, total int64, err error) {
 	var dbList []*db.Trigger
-	if dbList, total, err = n.table.List(limit, offset, orderBy, sort, onlyEnabled); err != nil {
+	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort, onlyEnabled); err != nil {
 		return
 	}
 

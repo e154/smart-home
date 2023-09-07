@@ -34,7 +34,6 @@ type IAction interface {
 	Delete(deviceId int64) (err error)
 	List(limit, offset int64, orderBy, sort string) (list []*m.Action, total int64, err error)
 	Search(query string, limit, offset int) (list []*m.Action, total int64, err error)
-	AddMultiple(items []*m.Action) (err error)
 	fromDb(dbVer *db.Action) (ver *m.Action)
 	toDb(ver *m.Action) (dbVer *db.Action)
 }
@@ -91,23 +90,10 @@ func (n *Action) Delete(deviceId int64) (err error) {
 	return
 }
 
-// AddMultiple ...
-func (n *Action) AddMultiple(items []*m.Action) (err error) {
-
-	insertRecords := make([]*db.Action, 0, len(items))
-
-	for _, ver := range items {
-		insertRecords = append(insertRecords, n.toDb(ver))
-	}
-
-	err = n.table.AddMultiple(insertRecords)
-	return
-}
-
 // List ...
 func (n *Action) List(limit, offset int64, orderBy, sort string) (list []*m.Action, total int64, err error) {
 	var dbList []*db.Action
-	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
+	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort); err != nil {
 		return
 	}
 
