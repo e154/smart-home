@@ -44,9 +44,32 @@ test_system:
 	cp ${ROOT}/conf/config.dev.json ${ROOT}/conf/config.json
 	go test -v ./tests/api
 	go test -v ./tests/models
-	go test -v ./tests/plugins
 	go test -v ./tests/scripts
 	go test -v ./tests/system
+	go test -v ./tests/plugins/alexa
+	go test -v ./tests/plugins/area
+	go test -v ./tests/plugins/cgminer
+	go test -v ./tests/plugins/email
+	go test -v ./tests/plugins/messagebird
+	go test -v ./tests/plugins/modbus_rtu
+	go test -v ./tests/plugins/modbus_tcp
+	go test -v ./tests/plugins/moon
+	go test -v ./tests/plugins/node
+	go test -v ./tests/plugins/scene
+	go test -v ./tests/plugins/script
+	go test -v ./tests/plugins/sensor
+	go test -v ./tests/plugins/sun
+	go test -v ./tests/plugins/telegram
+	go test -v ./tests/plugins/trigger_alexa
+	go test -v ./tests/plugins/trigger_empty
+	go test -v ./tests/plugins/trigger_state
+	go test -v ./tests/plugins/trigger_system
+	go test -v ./tests/plugins/trigger_time
+	go test -v ./tests/plugins/twilio
+	go test -v ./tests/plugins/weather_met
+	go test -v ./tests/plugins/weather_owm
+	go test -v ./tests/plugins/zigbee2mqtt
+	go test -v ./tests/plugins/zone
 
 test:
 	@echo MARK: unit tests

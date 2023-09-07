@@ -31,7 +31,6 @@ func (p *Polygon) Scan(src any) (err error) {
 	if !ok {
 		return errors.New("geometry is not a point")
 	}
-	fmt.Println(polygon.Coords())
 	for _, point := range polygon.Coords()[0] {
 		p.Points = append(p.Points, Point{
 			Lon: point.X(),

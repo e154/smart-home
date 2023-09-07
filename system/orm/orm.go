@@ -22,6 +22,8 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	goLog "log"
+	"os"
 	"strings"
 	"time"
 
@@ -31,6 +33,7 @@ import (
 	"go.uber.org/fx"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	gormLogger "gorm.io/gorm/logger"
 )
 
 // Orm ...
@@ -80,9 +83,22 @@ func NewOrm(lc fx.Lifecycle,
 func (o *Orm) Start() (err error) {
 
 	log.Infof("database connect %s", o.cfg.String())
+
+	newLogger := gormLogger.New(
+		goLog.New(os.Stdout, "\r\n", goLog.LstdFlags), // io writer
+		gormLogger.Config{
+			SlowThreshold:             time.Second,       // Slow SQL threshold
+			LogLevel:                  gormLogger.Silent, // Log level
+			IgnoreRecordNotFoundError: true,              // Ignore ErrRecordNotFound error for logger
+			ParameterizedQueries:      true,              // Don't include params in the SQL log
+			Colorful:                  false,             // Disable color
+		},
+	)
+
 	o.db, err = gorm.Open(postgres.Open(o.cfg.String()), &gorm.Config{
 		SkipDefaultTransaction: true,
 		PrepareStmt:            true,
+		Logger:                 newLogger,
 	})
 	if err != nil {
 		// it for DI
