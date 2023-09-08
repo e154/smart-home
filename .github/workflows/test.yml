@@ -72,11 +72,11 @@ jobs:
         id: build-public
         run: make build_public
 
-      - name: Unit test code
+      - name: Unit tests
         id: test-code
         run: make test
 
-      - name: System test code
+      - name: System tests
         id: system-code
         run: make test_system
 
