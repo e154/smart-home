@@ -21,6 +21,7 @@ package endpoint
 import (
 	"context"
 	"fmt"
+
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/events"
 
@@ -81,7 +82,6 @@ func (n *TriggerEndpoint) Update(ctx context.Context, trigger *m.Trigger) (resul
 	if err != nil {
 		return
 	}
-
 
 	var ok bool
 	if ok, errs = n.validation.Valid(trigger); !ok {
@@ -148,7 +148,6 @@ func (n *TriggerEndpoint) Search(ctx context.Context, query string, limit, offse
 
 	return
 }
-
 
 // Enable ...
 func (n *TriggerEndpoint) Enable(ctx context.Context, id int64) (err error) {

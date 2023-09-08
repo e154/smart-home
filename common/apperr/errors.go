@@ -281,7 +281,7 @@ var (
 	ErrUserDeviceDelete = New("failed to delete user device", ErrInternal)
 	ErrUserDeviceAdd    = New("failed to add user device", ErrInternal)
 
-	ErrPolygonAdd      = New("failed to add polygon", ErrInternal)
-	ErrPolygonGet      = New("failed to get polygon", ErrInternal)
-	ErrPolygonUpdate   = New("failed to update polygon", ErrInternal)
+	ErrPolygonAdd    = New("failed to add polygon", ErrInternal)
+	ErrPolygonGet    = New("failed to get polygon", ErrInternal)
+	ErrPolygonUpdate = New("failed to update polygon", ErrInternal)
 )

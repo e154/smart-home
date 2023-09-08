@@ -171,8 +171,7 @@ entityAction = (entityId, actionName)->
 			AddPlugin(adaptors, "cgminer")
 
 			supervisor.Start(context.Background())
-
-			time.Sleep(time.Second)
+			WaitSupervisor(eventBus)
 
 			// bind convey
 			RegisterConvey(scriptService, ctx)

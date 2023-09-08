@@ -204,7 +204,7 @@ func (n *Entities) List(limit, offset int, orderBy, sort string, autoLoad bool,
 		q = q.Where("auto_load = ?", true)
 	}
 	if query != nil {
-		q = q.Where("id LIKE ?",  "%"+*query+"%")
+		q = q.Where("id LIKE ?", "%"+*query+"%")
 	}
 	if plugin != nil {
 		q = q.Where("plugin_name = ?", *plugin)

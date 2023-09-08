@@ -2,12 +2,13 @@ package bus
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/require"
 	"reflect"
 	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestBus(t *testing.T) {
@@ -114,7 +115,6 @@ func TestBus(t *testing.T) {
 	}
 
 	// ------------------------------------------------------------
-
 
 	wg.Add(1)
 	err = b.Subscribe(topic, fn)
@@ -247,7 +247,7 @@ func TestBus3(t *testing.T) {
 	}
 
 	for i := 0; i < n; i++ {
-		bus.Subscribe(fmt.Sprintf("foo/bar/%d",i), fn)
+		bus.Subscribe(fmt.Sprintf("foo/bar/%d", i), fn)
 	}
 
 	time.Sleep(time.Second)
@@ -259,13 +259,13 @@ func TestBus3(t *testing.T) {
 	require.Equal(t, counter, int32(0))
 
 	for i := 0; i < n; i++ {
-		bus.Publish(fmt.Sprintf("foo/bar/%d",i), i)
+		bus.Publish(fmt.Sprintf("foo/bar/%d", i), i)
 	}
 
 	time.Sleep(time.Second)
 
 	for i := 0; i < n; i++ {
-		bus.Unsubscribe(fmt.Sprintf("foo/bar/%d",i), fn)
+		bus.Unsubscribe(fmt.Sprintf("foo/bar/%d", i), fn)
 	}
 	time.Sleep(time.Second)
 
@@ -276,14 +276,13 @@ func TestBus3(t *testing.T) {
 	require.Equal(t, counter, int32(n))
 
 	for i := 0; i < n; i++ {
-		bus.Publish(fmt.Sprintf("foo/bar/%d",i), i)
+		bus.Publish(fmt.Sprintf("foo/bar/%d", i), i)
 	}
 
 	wg.Wait()
 
 	require.Equal(t, counter, int32(n))
 }
-
 
 func TestBus4(t *testing.T) {
 
@@ -310,8 +309,8 @@ func TestBus4(t *testing.T) {
 	}
 
 	for i := 0; i < n; i++ {
-		bus.Subscribe(fmt.Sprintf("foo/bar/%d",i), fn1)
-		bus.Subscribe(fmt.Sprintf("foo/bar/%d",i), fn2)
+		bus.Subscribe(fmt.Sprintf("foo/bar/%d", i), fn1)
+		bus.Subscribe(fmt.Sprintf("foo/bar/%d", i), fn2)
 	}
 
 	time.Sleep(time.Second)
@@ -323,9 +322,8 @@ func TestBus4(t *testing.T) {
 	require.Equal(t, counter1, int32(0))
 	require.Equal(t, counter2, int32(0))
 
-
 	for i := 0; i < n; i++ {
-		bus.Publish(fmt.Sprintf("foo/bar/%d",i), i)
+		bus.Publish(fmt.Sprintf("foo/bar/%d", i), i)
 	}
 
 	wg1.Wait()
@@ -335,7 +333,7 @@ func TestBus4(t *testing.T) {
 	require.Equal(t, counter2, int32(n))
 
 	for i := 0; i < n; i++ {
-		bus.Unsubscribe(fmt.Sprintf("foo/bar/%d",i), fn1)
+		bus.Unsubscribe(fmt.Sprintf("foo/bar/%d", i), fn1)
 	}
 	time.Sleep(time.Second)
 
@@ -346,7 +344,7 @@ func TestBus4(t *testing.T) {
 
 	wg2.Add(n)
 	for i := 0; i < n; i++ {
-		bus.Publish(fmt.Sprintf("foo/bar/%d",i), i)
+		bus.Publish(fmt.Sprintf("foo/bar/%d", i), i)
 	}
 
 	wg2.Wait()

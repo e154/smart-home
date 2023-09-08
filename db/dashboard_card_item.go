@@ -25,9 +25,9 @@ import (
 	"time"
 
 	"github.com/jackc/pgerrcode"
-	"gorm.io/gorm"
 	"github.com/lib/pq"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"

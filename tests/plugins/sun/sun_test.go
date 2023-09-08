@@ -19,9 +19,9 @@
 package sun
 
 import (
+	"context"
 	"testing"
 	"time"
-	"context"
 
 	"github.com/e154/smart-home/common/events"
 
@@ -45,8 +45,7 @@ func TestSun(t *testing.T) {
 			AddPlugin(adaptors, "sun")
 
 			supervisor.Start(context.Background())
-
-			time.Sleep(time.Millisecond * 500)
+			WaitSupervisor(eventBus)
 
 			// add entity
 			// ------------------------------------------------

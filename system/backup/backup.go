@@ -27,9 +27,9 @@ import (
 	"path/filepath"
 	"time"
 
-	"gorm.io/gorm"
 	"github.com/pkg/errors"
 	"go.uber.org/fx"
+	"gorm.io/gorm"
 
 	app "github.com/e154/smart-home/common/app"
 	"github.com/e154/smart-home/common/apperr"

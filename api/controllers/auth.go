@@ -20,6 +20,7 @@ package controllers
 
 import (
 	"context"
+
 	"github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/location"

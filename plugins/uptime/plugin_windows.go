@@ -19,9 +19,10 @@
 package uptime
 
 import (
+	"time"
+
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/supervisor"
-	"time"
 )
 
 const (

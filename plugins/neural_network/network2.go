@@ -2,14 +2,15 @@ package neural_network
 
 import (
 	"fmt"
+	"math"
+	"math/rand"
+	"time"
+
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/supervisor"
 	"github.com/julioguillermo/staticneurogenetic"
-	"math"
-	"math/rand"
-	"time"
 )
 
 const fileName = "oxo.bin"

@@ -2,12 +2,13 @@ package neural_network
 
 import (
 	"fmt"
+	"math"
+
 	"github.com/e154/smart-home/plugins/notify"
 	"github.com/e154/smart-home/plugins/webpush"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/patrikeh/go-deep"
 	"github.com/patrikeh/go-deep/training"
-	"math"
 )
 
 type Network1 struct {

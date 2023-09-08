@@ -22,11 +22,12 @@ import (
 	"context"
 	"embed"
 	"fmt"
-	"github.com/e154/smart-home/common/events"
-	"github.com/e154/smart-home/system/bus"
 	"net"
 	"net/http"
 	"strings"
+
+	"github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/system/bus"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/rs/cors"

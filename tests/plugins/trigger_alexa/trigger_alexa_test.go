@@ -63,13 +63,12 @@ automationTriggerAlexa = (msg)->
 
 			automation.Start()
 			supervisor.Start(context.Background())
+			WaitSupervisor(eventBus)
 
 			var ch = make(chan alexa.EventAlexaAction)
 			scriptService.PushFunctions("Done", func(msg alexa.EventAlexaAction) {
 				ch <- msg
 			})
-
-			time.Sleep(time.Millisecond * 500)
 
 			// add scripts
 			// ------------------------------------------------
@@ -96,10 +95,10 @@ automationTriggerAlexa = (msg)->
 
 			//TASK3
 			newTask := &m.NewTask{
-				Name:      "Toggle plug ON",
-				Enabled:   true,
+				Name:       "Toggle plug ON",
+				Enabled:    true,
 				TriggerIds: []int64{trigger.Id},
-				Condition: common.ConditionAnd,
+				Condition:  common.ConditionAnd,
 			}
 			err = AddTask(newTask, adaptors, eventBus)
 			So(err, ShouldBeNil)

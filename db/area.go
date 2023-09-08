@@ -203,7 +203,7 @@ func (n *Areas) GetById(areaId int64) (area *Area, err error) {
 	return
 }
 
-func (p *Areas) ListByPoint(ctx context.Context, point Point, limit, offset int) (list []*Area, err error) {
+func (a *Areas) ListByPoint(ctx context.Context, point Point, limit, offset int) (list []*Area, err error) {
 
 	// https://postgis.net/docs/ST_Point.html
 	// geometry ST_Point(float x, float y);
@@ -221,9 +221,26 @@ WHERE ST_Contains(a.polygon::geometry,
 	list = make([]*Area, 0)
 	q := fmt.Sprintf(query, point.Lon, point.Lat)
 
-	err = p.Db.WithContext(ctx).Raw(q).
+	err = a.Db.WithContext(ctx).Raw(q).
 		Limit(limit).
 		Offset(offset).Scan(&list).Error
+	if err != nil {
+		err = errors.Wrap(apperr.ErrAreaList, err.Error())
+		return
+	}
+
+	return
+}
+
+func (a *Areas) GetDistance(ctx context.Context, point Point, areaId int64) (distance float64, err error) {
+
+	const query = `
+select st_distance(
+   ST_Transform(ST_GeomFromText('POINT (%f %f)', 4326)::geometry, 4326),
+   ST_Transform((select polygon from areas where id = %d)::geometry, 4326)
+)`
+	q := fmt.Sprintf(query, point.Lat, point.Lon, areaId)
+	err = a.Db.WithContext(ctx).Raw(q).Scan(&distance).Error
 	if err != nil {
 		err = errors.Wrap(apperr.ErrAreaList, err.Error())
 		return

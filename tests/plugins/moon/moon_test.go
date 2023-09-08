@@ -46,8 +46,7 @@ func TestMoon(t *testing.T) {
 			AddPlugin(adaptors, "moon")
 
 			supervisor.Start(context.Background())
-
-			time.Sleep(time.Millisecond * 500)
+			WaitSupervisor(eventBus)
 
 			// add entity
 			// ------------------------------------------------

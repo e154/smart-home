@@ -268,7 +268,6 @@ func (j *Javascript) bind() {
 	marshal = function(obj) { return JSON.stringify(obj); }
 	`)
 
-
 	j.engine.functions.Range(func(key, value interface{}) bool {
 		_ = j.vm.Set(key.(string), value)
 		return true

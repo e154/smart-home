@@ -19,12 +19,13 @@
 package trigger_state
 
 import (
-	"context"
 	"fmt"
-	"github.com/e154/smart-home/common/events"
 	"sync"
 	"testing"
 	"time"
+	"context"
+
+	"github.com/e154/smart-home/common/events"
 
 	"go.uber.org/atomic"
 
@@ -117,9 +118,10 @@ automationTriggerStateChanged = (msg)->
 			So(err, ShouldBeNil)
 
 			automation.Start()
-			supervisor.Start(context.Background())
 			mqttServer.Start()
 			zigbee2mqtt.Start()
+			supervisor.Start(context.Background())
+			WaitSupervisor(eventBus)
 
 			var counter atomic.Int32
 			var lastStat atomic.String

@@ -54,8 +54,7 @@ func TestMessagebird(t *testing.T) {
 			AddPlugin(adaptors, "messagebird", settings.Serialize())
 
 			supervisor.Start(context.Background())
-
-			time.Sleep(time.Millisecond * 500)
+			WaitSupervisor(eventBus)
 
 			t.Run("succeed", func(t *testing.T) {
 				Convey("", t, func(ctx C) {

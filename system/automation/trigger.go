@@ -22,9 +22,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"sync"
+
 	"github.com/e154/smart-home/common/telemetry"
 	"go.uber.org/atomic"
-	"sync"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/events"

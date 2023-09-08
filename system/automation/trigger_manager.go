@@ -2,6 +2,8 @@ package automation
 
 import (
 	"fmt"
+	"sync"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/events"
@@ -12,7 +14,6 @@ import (
 	"github.com/e154/smart-home/system/supervisor"
 	"github.com/pkg/errors"
 	"go.uber.org/atomic"
-	"sync"
 )
 
 type triggerManager struct {

@@ -57,7 +57,7 @@ func TestDebounce(t *testing.T) {
 	}
 
 	fmt.Println("counter1", c1)
-	fmt.Println("counter2", c2					)
+	fmt.Println("counter2", c2)
 }
 
 func TestDebounceConcurrentAdd(t *testing.T) {
@@ -153,7 +153,6 @@ func ExampleNew() {
 	fmt.Println("Counter is", c)
 	// Output: Counter is 3
 }
-
 
 func ExampleNew2() {
 	var counter1 uint64

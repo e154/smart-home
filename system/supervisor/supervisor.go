@@ -267,7 +267,7 @@ func (e *supervisor) SetState(id common.EntityId, params EntityStateParams) (err
 	return
 }
 
-// TaskIsLoaded ...
+// EntityIsLoaded ...
 func (e *supervisor) EntityIsLoaded(id common.EntityId) (loaded bool) {
 	_, loaded = e.actors.Load(id)
 	return

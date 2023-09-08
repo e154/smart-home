@@ -20,13 +20,14 @@ package supervisor
 
 import (
 	"context"
+	"time"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common/web"
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scheduler"
 	"github.com/pkg/errors"
-	"time"
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"

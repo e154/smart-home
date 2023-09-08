@@ -19,11 +19,12 @@
 package hdd
 
 import (
+	"sync"
+
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/supervisor"
-	"sync"
 )
 
 var _ supervisor.Pluggable = (*plugin)(nil)

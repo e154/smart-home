@@ -21,12 +21,13 @@ package mqtt
 import (
 	"context"
 	"fmt"
-	"github.com/e154/smart-home/common/events"
-	"github.com/e154/smart-home/system/bus"
 	"net"
 	"os"
 	"sync"
 	"time"
+
+	"github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/system/bus"
 
 	"github.com/e154/smart-home/common/logger"
 

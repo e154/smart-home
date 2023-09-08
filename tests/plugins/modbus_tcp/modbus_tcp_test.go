@@ -22,9 +22,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/e154/smart-home/common/events"
 	"testing"
 	"time"
+
+	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
@@ -100,10 +101,9 @@ entityAction = (entityId, actionName)->
 			AddPlugin(adaptors, "modbus_tcp")
 
 			automation.Start()
-			supervisor.Start(context.Background())
 			go mqttServer.Start()
-
-			time.Sleep(time.Millisecond * 500)
+			supervisor.Start(context.Background())
+			WaitSupervisor(eventBus)
 
 			// bind convey
 			RegisterConvey(scriptService, ctx)

@@ -58,8 +58,7 @@ telegramAction = (entityId, actionName)->
 			AddPlugin(adaptors, "telegram")
 
 			supervisor.Start(context.Background())
-
-			time.Sleep(time.Millisecond * 500)
+			WaitSupervisor(eventBus)
 
 			// add scripts
 			// ------------------------------------------------
@@ -90,7 +89,6 @@ telegramAction = (entityId, actionName)->
 			})
 
 			time.Sleep(time.Second)
-
 
 			// add chat
 			tgChan := m.TelegramChat{

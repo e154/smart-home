@@ -20,10 +20,11 @@ package db
 
 import (
 	"fmt"
-	"github.com/jackc/pgerrcode"
-	"github.com/lib/pq"
 	"strings"
 	"time"
+
+	"github.com/jackc/pgerrcode"
+	"github.com/lib/pq"
 
 	"github.com/e154/smart-home/common/apperr"
 
@@ -175,7 +176,7 @@ func (n *Scripts) List(limit, offset int, orderBy, sort string, query *string) (
 	list = make([]*Script, 0)
 	q := n.Db
 	if query != nil {
-		q = q.Where("name LIKE ?",  "%"+*query+"%")
+		q = q.Where("name LIKE ?", "%"+*query+"%")
 	}
 
 	err = q.

@@ -21,8 +21,9 @@
 package triggers
 
 import (
-	"github.com/e154/smart-home/common/events"
 	"sync"
+
+	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/system/bus"
 )

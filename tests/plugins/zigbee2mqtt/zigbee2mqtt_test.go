@@ -112,7 +112,7 @@ automationAction = (entityId)->
     Action.callAction('zigbee2mqtt.` + zigbeePlugId + `', 'ON', {})
 `
 
-task2SourceScript = `
+		task2SourceScript = `
 automationTriggerStateChanged = (msg)->
     #print '---trigger---2'
     p = unmarshal msg.payload
@@ -249,7 +249,6 @@ automationAction = (entityId)->
 			err = AddTrigger(trigger2, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
-
 			// conditions
 			// -----------------------
 			condition1 := &m.Condition{
@@ -285,12 +284,12 @@ automationAction = (entityId)->
 			// tasks
 			// -----------------------
 			newTask1 := &m.NewTask{
-				Name:      "Toggle plug ON",
-				Enabled:   true,
-				Condition: common.ConditionAnd,
-				TriggerIds: []int64{trigger1.Id},
+				Name:         "Toggle plug ON",
+				Enabled:      true,
+				Condition:    common.ConditionAnd,
+				TriggerIds:   []int64{trigger1.Id},
 				ConditionIds: []int64{condition1.Id},
-				ActionIds: []int64{action1.Id},
+				ActionIds:    []int64{action1.Id},
 			}
 
 			err = AddTask(newTask1, adaptors, eventBus)
@@ -298,24 +297,23 @@ automationAction = (entityId)->
 
 			//TASK2
 			newTask2 := &m.NewTask{
-				Name:      "Toggle plug OFF",
-				Enabled:   true,
-				Condition: common.ConditionAnd,
-				TriggerIds: []int64{trigger2.Id},
+				Name:         "Toggle plug OFF",
+				Enabled:      true,
+				Condition:    common.ConditionAnd,
+				TriggerIds:   []int64{trigger2.Id},
 				ConditionIds: []int64{condition2.Id},
-				ActionIds: []int64{action2.Id},
+				ActionIds:    []int64{action2.Id},
 			}
 			err = AddTask(newTask2, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
 			// ------------------------------------------------
-			err = supervisor.Start(context.Background())
-			So(err, ShouldBeNil)
 
 			automation.Start()
 			go zigbee2mqtt.Start()
 
-			time.Sleep(time.Second)
+			supervisor.Start(context.Background())
+			WaitSupervisor(eventBus)
 
 			//
 			// ------------------------------------------------

@@ -257,7 +257,7 @@ func (e *BaseActor) attrLock() {
 }
 
 func (e *BaseActor) settingsLock() {
-	if e.SettingsMu == nil  {//todo: check race condition
+	if e.SettingsMu == nil { //todo: check race condition
 		e.SettingsMu = &sync.RWMutex{}
 	}
 }

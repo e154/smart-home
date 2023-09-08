@@ -20,10 +20,11 @@ package scene
 
 import (
 	"context"
-	"github.com/e154/smart-home/common/events"
-	"github.com/e154/smart-home/system/initial/local_migrations"
 	"testing"
 	"time"
+
+	"github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/system/initial/local_migrations"
 
 	. "github.com/smartystreets/goconvey/convey"
 	"go.uber.org/atomic"
@@ -61,10 +62,9 @@ sceneEvent = (args)->
 			So(err, ShouldBeNil)
 
 			scheduler.Start(context.TODO())
-			supervisor.Start(context.Background())
 			automation.Start()
-
-			time.Sleep(time.Millisecond * 500)
+			supervisor.Start(context.Background())
+			WaitSupervisor(eventBus)
 
 			var counter atomic.Int32
 			scriptService.PushFunctions("Done", func(args string) {

@@ -19,8 +19,9 @@
 package alexa
 
 import (
-	"github.com/e154/smart-home/system/supervisor"
 	"sync"
+
+	"github.com/e154/smart-home/system/supervisor"
 
 	"github.com/e154/smart-home/common/logger"
 

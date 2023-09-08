@@ -21,8 +21,9 @@ package db
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/e154/smart-home/common"
 	"time"
+
+	"github.com/e154/smart-home/common"
 
 	"github.com/pkg/errors"
 	"gorm.io/gorm"

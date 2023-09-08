@@ -3,6 +3,7 @@ package local_migrations
 import (
 	"context"
 	"encoding/json"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api/dto"
 	"github.com/e154/smart-home/api/stub/api"

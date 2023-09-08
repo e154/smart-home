@@ -21,12 +21,14 @@ package trigger_time
 import (
 	"context"
 	"fmt"
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/bus"
 	"os"
 	"path/filepath"
 	"testing"
 	"time"
+
+	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/system/scripts"
 
 	"go.uber.org/dig"
 
@@ -61,6 +63,7 @@ func TestMain(m *testing.M) {
 		supervisor supervisor.Supervisor,
 		automation automation.Automation,
 		scheduler *scheduler.Scheduler,
+		eventBus bus.Bus,
 	) {
 
 		migrations.Purge()
@@ -73,10 +76,9 @@ func TestMain(m *testing.M) {
 
 		scriptService.Restart()
 		scheduler.Start(context.TODO())
-		supervisor.Start(context.Background())
 		automation.Start()
-
-		time.Sleep(time.Millisecond * 500)
+		supervisor.Start(context.Background())
+		WaitSupervisor(eventBus)
 
 		os.Exit(m.Run())
 	})

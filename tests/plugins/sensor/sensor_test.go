@@ -21,9 +21,10 @@ package sensor
 import (
 	"context"
 	"fmt"
-	"github.com/e154/smart-home/common/events"
 	"testing"
 	"time"
+
+	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -70,8 +71,7 @@ entityAction = (entityId, actionName)->
 			AddPlugin(adaptors, "sensor")
 
 			supervisor.Start(context.Background())
-
-			time.Sleep(time.Millisecond * 500)
+			WaitSupervisor(eventBus)
 
 			// bind convey
 			RegisterConvey(scriptService, ctx)

@@ -20,10 +20,11 @@ package db
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/common/apperr"
-	"gorm.io/gorm"
-	"github.com/pkg/errors"
 	"time"
+
+	"github.com/e154/smart-home/common/apperr"
+	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // Conditions ...

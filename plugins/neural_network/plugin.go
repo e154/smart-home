@@ -2,9 +2,10 @@ package neural_network
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/common/events"
 	"sync"
 	"time"
+
+	"github.com/e154/smart-home/common/events"
 
 	"github.com/pkg/errors"
 

@@ -106,12 +106,11 @@ entityAction = (entityId, actionName)->
 			AddPlugin(adaptors, "modbus_rtu")
 
 			automation.Start()
-			supervisor.Start(context.Background())
 			go mqttServer.Start()
+			supervisor.Start(context.Background())
+			WaitSupervisor(eventBus)
 
 			RegisterConvey(scriptService, ctx)
-
-			time.Sleep(time.Millisecond * 500)
 
 			// add scripts
 			// ------------------------------------------------

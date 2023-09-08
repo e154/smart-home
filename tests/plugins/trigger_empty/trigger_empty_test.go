@@ -20,6 +20,9 @@ package trigger_empty
 
 import (
 	"context"
+	"testing"
+	"time"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -31,8 +34,6 @@ import (
 	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/e154/smart-home/tests/plugins"
 	. "github.com/smartystreets/goconvey/convey"
-	"testing"
-	"time"
 )
 
 func TestTriggerEmpty(t *testing.T) {
@@ -52,8 +53,7 @@ func TestTriggerEmpty(t *testing.T) {
 			scheduler.Start(context.Background())
 			automation.Start()
 			supervisor.Start(context.Background())
-
-			time.Sleep(time.Millisecond * 500)
+			WaitSupervisor(eventBus)
 
 			// automation
 			// ------------------------------------------------
@@ -73,9 +73,9 @@ func TestTriggerEmpty(t *testing.T) {
 
 			//TASK3
 			newTask := &m.NewTask{
-				Name:      "Toggle plug OFF",
-				Enabled:   true,
-				Condition: common.ConditionAnd,
+				Name:       "Toggle plug OFF",
+				Enabled:    true,
+				Condition:  common.ConditionAnd,
 				TriggerIds: []int64{trigger.Id},
 			}
 			err = AddTask(newTask, adaptors, eventBus)

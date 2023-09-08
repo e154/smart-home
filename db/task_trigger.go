@@ -20,8 +20,8 @@ package db
 
 // TaskTrigger ...
 type TaskTrigger struct {
-	Task   *Task
-	TaskId string `gorm:"primary_key;auto_increment:false"`
+	Task      *Task
+	TaskId    string `gorm:"primary_key;auto_increment:false"`
 	Trigger   *Trigger
 	TriggerId int64 `gorm:"primary_key;auto_increment:false"`
 }

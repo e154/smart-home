@@ -19,8 +19,9 @@
 package twilio
 
 import (
-	"github.com/e154/smart-home/system/supervisor"
 	"strings"
+
+	"github.com/e154/smart-home/system/supervisor"
 
 	"github.com/e154/smart-home/common/logger"
 

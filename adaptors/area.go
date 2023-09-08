@@ -21,6 +21,7 @@ package adaptors
 import (
 	"context"
 	"encoding/json"
+
 	"gorm.io/gorm"
 
 	"github.com/e154/smart-home/db"
@@ -35,8 +36,9 @@ type IArea interface {
 	Update(ver *m.Area) (err error)
 	DeleteByName(name string) (err error)
 	List(limit, offset int64, orderBy, sort string) (list []*m.Area, total int64, err error)
-	ListByPoint(ctx context.Context, point m.Point, limit, offset int) (list []*m.Area, err error)
+	ListByPoint(ctx context.Context, point m.Point, limit, offset int64) (list []*m.Area, err error)
 	Search(query string, limit, offset int64) (list []*m.Area, total int64, err error)
+	GetDistance(ctx context.Context, point m.Point, areaId int64) (distance float64, err error)
 	fromDb(dbVer *db.Area) (ver *m.Area)
 	toDb(ver *m.Area) (dbVer *db.Area)
 }
@@ -106,7 +108,7 @@ func (a *Area) List(limit, offset int64, orderBy, sort string) (list []*m.Area, 
 }
 
 // ListByPoint ...
-func (a *Area) ListByPoint(ctx context.Context, point m.Point, limit, offset int) (list []*m.Area, err error) {
+func (a *Area) ListByPoint(ctx context.Context, point m.Point, limit, offset int64) (list []*m.Area, err error) {
 
 	var dbList []*db.Area
 	if dbList, err = a.table.ListByPoint(ctx, db.Point{Lon: float64(point.Lon), Lat: float64(point.Lat)}, int(limit), int(offset)); err != nil {
@@ -145,6 +147,12 @@ func (a *Area) GetByName(name string) (ver *m.Area, err error) {
 
 	ver = a.fromDb(dbVer)
 
+	return
+}
+
+// GetDistance ...
+func (a *Area) GetDistance(ctx context.Context, point m.Point, areaId int64) (distance float64, err error) {
+	distance, err = a.table.GetDistance(ctx, db.Point{Lon: float64(point.Lon), Lat: float64(point.Lat)}, areaId)
 	return
 }
 

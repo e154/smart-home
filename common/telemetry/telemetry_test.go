@@ -2,15 +2,15 @@ package telemetry
 
 import (
 	"context"
-	"github.com/e154/smart-home/common/debug"
 	"testing"
 	"time"
+
+	"github.com/e154/smart-home/common/debug"
 )
 
 func TestTelemetry(t *testing.T) {
 
 	ctx := context.Background()
-
 
 	triggerCtx, triggerSpan := Start(ctx, "trigger")
 	triggerSpan.SetAttributes("trigger.id", 1)

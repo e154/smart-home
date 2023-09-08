@@ -285,9 +285,8 @@ skillOnIntent = ->
 
 			// ------------------------------------------------
 
-			supervisor.Restart(context.Background())
-
-			time.Sleep(time.Millisecond * 500)
+			supervisor.Start(context.Background())
+			WaitSupervisor(eventBus)
 
 			// ------------------------------------------------
 			plugin, err := supervisor.GetPlugin("alexa")

@@ -2,6 +2,7 @@ package local_migrations
 
 import (
 	"context"
+
 	"github.com/e154/smart-home/plugins/alexa"
 	"github.com/e154/smart-home/plugins/cgminer"
 	"github.com/e154/smart-home/plugins/cpuspeed"

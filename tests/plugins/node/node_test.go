@@ -49,16 +49,14 @@ func TestNode(t *testing.T) {
 			automation automation.Automation,
 			eventBus bus.Bus) {
 
-
 			// register plugins
 			err := AddPlugin(adaptors, "node")
 			ctx.So(err, ShouldBeNil)
 
-			supervisor.Start(context.Background())
-			automation.Start()
 			go mqttServer.Start()
-
-			time.Sleep(time.Millisecond * 500)
+			automation.Start()
+			supervisor.Start(context.Background())
+			WaitSupervisor(eventBus)
 
 			// add entity
 			// ------------------------------------------------

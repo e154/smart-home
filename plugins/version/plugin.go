@@ -19,8 +19,9 @@
 package version
 
 import (
-	"github.com/e154/smart-home/system/supervisor"
 	"time"
+
+	"github.com/e154/smart-home/system/supervisor"
 
 	m "github.com/e154/smart-home/models"
 )

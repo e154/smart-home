@@ -61,16 +61,14 @@ automationTriggerSystem = (msg)->
 			automation automation.Automation,
 			eventBus bus.Bus) {
 
-
 			// register plugins
 			AddPlugin(adaptors, "triggers")
 
 			go mqttServer.Start()
-			supervisor.Start(context.Background())
 			automation.Start()
 			go zigbee2mqtt.Start()
-
-			time.Sleep(time.Millisecond * 500)
+			supervisor.Start(context.Background())
+			WaitSupervisor(eventBus)
 
 			var counter atomic.Int32
 			var lastEvent atomic.String

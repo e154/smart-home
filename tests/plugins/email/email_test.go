@@ -20,6 +20,9 @@ package email
 
 import (
 	"context"
+	"testing"
+	"time"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
@@ -30,8 +33,6 @@ import (
 	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/e154/smart-home/tests/plugins"
 	. "github.com/smartystreets/goconvey/convey"
-	"testing"
-	"time"
 )
 
 func TestEmail(t *testing.T) {
@@ -53,8 +54,7 @@ func TestEmail(t *testing.T) {
 			AddPlugin(adaptors, "email", settings.Serialize())
 
 			supervisor.Start(context.Background())
-
-			time.Sleep(time.Millisecond * 500)
+			WaitSupervisor(eventBus)
 
 			t.Run("succeed", func(t *testing.T) {
 				Convey("", t, func(ctx C) {

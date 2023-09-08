@@ -20,10 +20,11 @@ package zone
 
 import (
 	"context"
-	"github.com/e154/smart-home/common/events"
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"

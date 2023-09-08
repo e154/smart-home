@@ -19,9 +19,10 @@
 package html5_notify
 
 import (
-	"github.com/e154/smart-home/system/supervisor"
 	"strconv"
 	"strings"
+
+	"github.com/e154/smart-home/system/supervisor"
 
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"

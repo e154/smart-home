@@ -19,9 +19,10 @@
 package trigger_time
 
 import (
-	"github.com/e154/smart-home/common/events"
 	"testing"
 	"time"
+
+	"github.com/e154/smart-home/common/events"
 
 	. "github.com/smartystreets/goconvey/convey"
 	"go.uber.org/atomic"
@@ -92,7 +93,6 @@ entityAction = (entityId, actionName)->
 				EntityId: sensorEnt.Id,
 			})
 
-
 			// automation
 			// ------------------------------------------------
 			trigger := &m.Trigger{
@@ -119,11 +119,11 @@ entityAction = (entityId, actionName)->
 
 			//TASK3
 			newTask := &m.NewTask{
-				Name:      "Toggle plug OFF",
-				Enabled:   true,
-				Condition: common.ConditionAnd,
+				Name:       "Toggle plug OFF",
+				Enabled:    true,
+				Condition:  common.ConditionAnd,
 				TriggerIds: []int64{trigger.Id},
-				ActionIds: []int64{action.Id},
+				ActionIds:  []int64{action.Id},
 			}
 			err = AddTask(newTask, adaptors, eventBus)
 			So(err, ShouldBeNil)

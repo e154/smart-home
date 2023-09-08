@@ -134,4 +134,3 @@ func (n *EntityActions) AddMultiple(actions []*EntityAction) (err error) {
 	}
 	return
 }
-

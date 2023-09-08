@@ -20,8 +20,9 @@ package cpuspeed
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/system/supervisor"
 	"time"
+
+	"github.com/e154/smart-home/system/supervisor"
 
 	"github.com/e154/smart-home/common"
 

@@ -21,11 +21,13 @@ package plugins
 import (
 	"context"
 	"fmt"
-	"github.com/e154/smart-home/common/events"
-	"github.com/e154/smart-home/system/bus"
 	"net"
 	"net/http"
+	"sync"
 	"time"
+
+	"github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/system/bus"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -568,4 +570,22 @@ func AddTask(newTask *m.NewTask, adaptors *adaptors.Adaptors, eventBus bus.Bus) 
 		Id: task1Id,
 	})
 	return
+}
+
+func WaitSupervisor(eventBus bus.Bus) {
+
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+	fn := func(_ string, msg interface{}) {
+		switch msg.(type) {
+		case events.EventServiceStarted:
+			wg.Done()
+		}
+	}
+	eventBus.Subscribe("system/services/supervisor", fn)
+	defer eventBus.Unsubscribe("system/services/supervisor", fn)
+
+	wg.Wait()
+
+	time.Sleep(time.Millisecond * 500)
 }

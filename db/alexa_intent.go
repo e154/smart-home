@@ -24,8 +24,8 @@ import (
 
 	"github.com/e154/smart-home/common/apperr"
 
-	"gorm.io/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // AlexaIntents ...

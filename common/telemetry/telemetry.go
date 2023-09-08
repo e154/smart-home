@@ -3,9 +3,10 @@ package telemetry
 import (
 	"context"
 	"fmt"
-	"github.com/e154/smart-home/common"
 	"sort"
 	"time"
+
+	"github.com/e154/smart-home/common"
 )
 
 type StatusCode string

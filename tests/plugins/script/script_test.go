@@ -20,9 +20,10 @@ package script
 
 import (
 	"context"
-	"github.com/e154/smart-home/common/events"
 	"testing"
 	"time"
+
+	"github.com/e154/smart-home/common/events"
 
 	. "github.com/smartystreets/goconvey/convey"
 	"go.uber.org/atomic"
@@ -57,13 +58,13 @@ entityAction = (entityId, actionName)->
 			So(err, ShouldBeNil)
 
 			supervisor.Start(context.Background())
+			WaitSupervisor(eventBus)
 
 			// add scripts
 			// ------------------------------------------------
 
 			plugActionOnOffScript, err := AddScript("plug script", plugActionOnOffSourceScript, adaptors, scriptService)
 			So(err, ShouldBeNil)
-
 
 			var counter atomic.Int32
 			scriptService.PushFunctions("Done", func(entityId, action string) {
@@ -99,7 +100,6 @@ entityAction = (entityId, actionName)->
 
 			// automation
 			// ------------------------------------------------
-
 
 			supervisor.CallAction(plugEnt.Id, "ON", nil)
 			supervisor.CallAction(plugEnt.Id, "OFF", nil)
