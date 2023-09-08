@@ -586,3 +586,23 @@ func WaitSupervisor(eventBus bus.Bus) {
 
 	time.Sleep(time.Millisecond * 500)
 }
+
+
+func WaitStateChanged(eventBus bus.Bus) (ok bool) {
+
+	ch := make(chan interface{})
+	defer close(ch)
+	fn := func(_ string, msg interface{}) {
+		switch msg.(type) {
+		case events.EventStateChanged:
+			ch <- struct{}{}
+		}
+	}
+	eventBus.Subscribe("system/entities/+", fn)
+	defer eventBus.Unsubscribe("system/entities/+", fn)
+
+	ok = Wait(1, ch)
+
+	time.Sleep(time.Millisecond * 500)
+	return
+}

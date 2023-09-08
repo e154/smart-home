@@ -92,9 +92,7 @@ func TestMoon(t *testing.T) {
 					select {
 					case msg = <-ch:
 						ok = true
-						break
 					case <-ticker.C:
-						break
 					}
 
 					ctx.So(ok, ShouldBeTrue)

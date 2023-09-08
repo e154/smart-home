@@ -118,9 +118,7 @@ func TestNode(t *testing.T) {
 					select {
 					case <-ch:
 						ok = true
-						break
 					case <-ticker.C:
-						break
 					}
 
 					ctx.So(ok, ShouldBeTrue)
@@ -158,9 +156,7 @@ func TestNode(t *testing.T) {
 					select {
 					case <-ch:
 						ok = true
-						break
 					case <-ticker.C:
-						break
 					}
 
 					ctx.So(ok, ShouldBeTrue)
@@ -203,9 +199,7 @@ func TestNode(t *testing.T) {
 					select {
 					case <-ch:
 						ok = true
-						break
 					case <-ticker.C:
-						break
 					}
 
 					ctx.So(ok, ShouldBeTrue)

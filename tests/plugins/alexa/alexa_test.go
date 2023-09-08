@@ -336,9 +336,7 @@ skillOnIntent = ->
 				select {
 				case v := <-ch:
 					msg = v
-					break
 				case <-ticker.C:
-					break
 				}
 
 				ctx.So(msg.Payload, ShouldEqual, "kitchen_on")

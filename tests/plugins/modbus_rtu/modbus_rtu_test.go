@@ -207,9 +207,7 @@ entityAction = (entityId, actionName)->
 					select {
 					case req = <-ch:
 						ok = true
-						break
 					case <-ticker.C:
-						break
 					}
 
 					ctx.So(ok, ShouldBeTrue)
@@ -276,9 +274,7 @@ entityAction = (entityId, actionName)->
 					select {
 					case req = <-ch:
 						ok = true
-						break
 					case <-ticker.C:
-						break
 					}
 
 					ctx.So(ok, ShouldBeTrue)
@@ -344,9 +340,7 @@ entityAction = (entityId, actionName)->
 					select {
 					case req = <-ch:
 						ok = true
-						break
 					case <-ticker.C:
-						break
 					}
 
 					ctx.So(ok, ShouldBeTrue)
@@ -411,9 +405,7 @@ entityAction = (entityId, actionName)->
 					select {
 					case <-ch:
 						ok = true
-						break
 					case <-ticker.C:
-						break
 					}
 
 					ctx.So(ok, ShouldBeFalse)
@@ -431,9 +423,7 @@ entityAction = (entityId, actionName)->
 					select {
 					case <-ch:
 						ok = true
-						break
 					case <-ticker.C:
-						break
 					}
 
 					ctx.So(ok, ShouldBeTrue)

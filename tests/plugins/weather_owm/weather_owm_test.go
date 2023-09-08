@@ -127,9 +127,7 @@ func TestWeatherOwm(t *testing.T) {
 	//				select {
 	//				case msg = <-ch:
 	//					ok = true
-	//					break
 	//				case <-ticker.C:
-	//					break
 	//				}
 	//
 	//				ctx.So(ok, ShouldBeTrue)
@@ -190,9 +188,7 @@ func TestWeatherOwm(t *testing.T) {
 	//				select {
 	//				case msg = <-ch:
 	//					ok = true
-	//					break
 	//				case <-ticker.C:
-	//					break
 	//				}
 	//
 	//				ctx.So(ok, ShouldBeTrue)
@@ -241,9 +237,7 @@ func TestWeatherOwm(t *testing.T) {
 	//				select {
 	//				case msg = <-ch:
 	//					ok = true
-	//					break
 	//				case <-ticker.C:
-	//					break
 	//				}
 	//
 	//				ctx.So(ok, ShouldBeTrue)

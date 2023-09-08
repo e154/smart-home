@@ -122,9 +122,7 @@ automationTriggerAlexa = (msg)->
 			select {
 			case v := <-ch:
 				msg = v
-				break
 			case <-ticker.C:
-				break
 			}
 
 			time.Sleep(time.Second)

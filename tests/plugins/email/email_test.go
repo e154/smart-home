@@ -20,11 +20,7 @@ package email
 
 import (
 	"context"
-	"testing"
-	"time"
-
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/email"
 	"github.com/e154/smart-home/plugins/notify"
@@ -33,6 +29,7 @@ import (
 	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/e154/smart-home/tests/plugins"
 	. "github.com/smartystreets/goconvey/convey"
+	"testing"
 )
 
 func TestEmail(t *testing.T) {
@@ -59,18 +56,6 @@ func TestEmail(t *testing.T) {
 			t.Run("succeed", func(t *testing.T) {
 				Convey("", t, func(ctx C) {
 
-					ch := make(chan interface{}, 2)
-					fn := func(topic string, message interface{}) {
-						switch v := message.(type) {
-						case events.EventStateChanged:
-							ch <- v
-						default:
-						}
-
-					}
-					eventBus.Subscribe("system/entities/+", fn)
-					defer eventBus.Unsubscribe("system/entities/+", fn)
-
 					eventBus.Publish(notify.TopicNotify, notify.Message{
 						Type: email.Name,
 						Attributes: map[string]interface{}{
@@ -80,11 +65,8 @@ func TestEmail(t *testing.T) {
 						},
 					})
 
-					ok := Wait(5, ch)
-
+					ok := WaitStateChanged(eventBus)
 					ctx.So(ok, ShouldBeTrue)
-
-					time.Sleep(time.Second * 2)
 
 					list, total, err := adaptors.MessageDelivery.List(context.Background(), 10, 0, "", "", nil)
 					ctx.So(err, ShouldBeNil)
