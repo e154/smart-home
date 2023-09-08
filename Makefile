@@ -1,6 +1,6 @@
 .PHONY: get_deps fmt
 .DEFAULT_GOAL := build
-build: get_deps build_public build_server build_cli
+build: build_public build_server build_cli
 tests: lint test
 all: build build_structure build_common_structure build_archive docker_image
 deploy: docker_image_upload
