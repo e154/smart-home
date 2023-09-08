@@ -23,7 +23,6 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-	"sync"
 	"time"
 
 	"github.com/e154/smart-home/common/events"
@@ -439,9 +438,7 @@ func Wait(t time.Duration, ch chan interface{}) (ok bool) {
 	select {
 	case <-ch:
 		ok = true
-		break
 	case <-ticker.C:
-		break
 	}
 	return
 }
@@ -574,18 +571,18 @@ func AddTask(newTask *m.NewTask, adaptors *adaptors.Adaptors, eventBus bus.Bus) 
 
 func WaitSupervisor(eventBus bus.Bus) {
 
-	wg := sync.WaitGroup{}
-	wg.Add(1)
+	ch := make(chan interface{})
+	defer close(ch)
 	fn := func(_ string, msg interface{}) {
 		switch msg.(type) {
 		case events.EventServiceStarted:
-			wg.Done()
+			ch <- struct{}{}
 		}
 	}
 	eventBus.Subscribe("system/services/supervisor", fn)
 	defer eventBus.Unsubscribe("system/services/supervisor", fn)
 
-	wg.Wait()
+	Wait(1, ch)
 
 	time.Sleep(time.Millisecond * 500)
 }
