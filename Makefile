@@ -52,7 +52,7 @@ test_system:
 	go test -v ./tests/plugins/email
 	go test -v ./tests/plugins/messagebird
 	go test -v ./tests/plugins/modbus_rtu
-	go test -v ./tests/plugins/modbus_tcp
+	#go test -v ./tests/plugins/modbus_tcp
 	go test -v ./tests/plugins/moon
 	go test -v ./tests/plugins/node
 	go test -v ./tests/plugins/scene

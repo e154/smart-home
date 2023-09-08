@@ -370,57 +370,57 @@ entityAction = (entityId, actionName)->
 				})
 			})
 
-			//t.Run("bad command", func(t *testing.T) {
-			//	Convey("stats", t, func(ctx C) {
-			//		supervisor.CallAction(plugEnt.Id, "NULL", nil)
-			//
-			//		ticker := time.NewTimer(time.Second * 1)
-			//		defer ticker.Stop()
-			//
-			//		var ok bool
-			//		select {
-			//		case <-ch:
-			//			ok = true
-			//		case <-ticker.C:
-			//		}
-			//
-			//		ctx.So(ok, ShouldBeFalse)
-			//	})
-			//})
-			//
-			//t.Run("response with error", func(t *testing.T) {
-			//	Convey("stats", t, func(ctx C) {
-			//		supervisor.CallAction(plugEnt.Id, "ON_WITH_ERR", nil)
-			//
-			//		ticker := time.NewTimer(time.Second * 2)
-			//		defer ticker.Stop()
-			//
-			//		var ok bool
-			//		select {
-			//		case <-ch:
-			//			ok = true
-			//		case <-ticker.C:
-			//		}
-			//
-			//		ctx.So(ok, ShouldBeTrue)
-			//
-			//		r := modbus_tcp.ModBusResponse{
-			//			Error: "some error",
-			//		}
-			//		b, _ := json.Marshal(r)
-			//		resp := node.MessageResponse{
-			//			EntityId:   plugEnt.Id,
-			//			DeviceType: modbus_tcp.DeviceTypeModbusTcp,
-			//			Properties: nil,
-			//			Response:   b,
-			//			Status:     "",
-			//		}
-			//		b, _ = json.Marshal(resp)
-			//		_ = mqttCli.Publish("system/plugins/node/second/resp/plugin.test", b)
-			//		_ = mqttCli.Publish(fmt.Sprintf("system/plugins/node/second/resp/%s", plugEnt.Id), b)
-			//
-			//	})
-			//})
+			t.Run("bad command", func(t *testing.T) {
+				Convey("stats", t, func(ctx C) {
+					supervisor.CallAction(plugEnt.Id, "NULL", nil)
+
+					ticker := time.NewTimer(time.Second * 1)
+					defer ticker.Stop()
+
+					var ok bool
+					select {
+					case <-ch:
+						ok = true
+					case <-ticker.C:
+					}
+
+					ctx.So(ok, ShouldBeFalse)
+				})
+			})
+
+			t.Run("response with error", func(t *testing.T) {
+				Convey("stats", t, func(ctx C) {
+					supervisor.CallAction(plugEnt.Id, "ON_WITH_ERR", nil)
+
+					ticker := time.NewTimer(time.Second * 2)
+					defer ticker.Stop()
+
+					var ok bool
+					select {
+					case <-ch:
+						ok = true
+					case <-ticker.C:
+					}
+
+					ctx.So(ok, ShouldBeTrue)
+
+					r := modbus_tcp.ModBusResponse{
+						Error: "some error",
+					}
+					b, _ := json.Marshal(r)
+					resp := node.MessageResponse{
+						EntityId:   plugEnt.Id,
+						DeviceType: modbus_tcp.DeviceTypeModbusTcp,
+						Properties: nil,
+						Response:   b,
+						Status:     "",
+					}
+					b, _ = json.Marshal(resp)
+					_ = mqttCli.Publish("system/plugins/node/second/resp/plugin.test", b)
+					_ = mqttCli.Publish(fmt.Sprintf("system/plugins/node/second/resp/%s", plugEnt.Id), b)
+
+				})
+			})
 		})
 	})
 }
