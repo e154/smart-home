@@ -45,7 +45,7 @@ func NewControllerUser(common *ControllerCommon) ControllerUser {
 // AddUser ...
 func (c ControllerUser) AddUser(ctx context.Context, req *api.NewtUserRequest) (userFull *api.UserFull, err error) {
 
-	user := c.dto.User.FromAddUser(req)
+	user := c.dto.User.AddUserRequest(req)
 
 	if req.Password == req.PasswordRepeat {
 		_ = user.SetPass(req.Password)
@@ -80,7 +80,7 @@ func (c ControllerUser) GetUserById(ctx context.Context, req *api.GetUserByIdReq
 // UpdateUserById ...
 func (c ControllerUser) UpdateUserById(ctx context.Context, req *api.UpdateUserRequest) (*api.UserFull, error) {
 
-	user := c.dto.User.FromUpdateUserRequest(req)
+	user := c.dto.User.UpdateUserByIdRequest(req)
 
 	if req.Password != req.PasswordRepeat {
 		st := status.New(codes.InvalidArgument, "One or more fields are invalid")

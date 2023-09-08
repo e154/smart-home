@@ -22,15 +22,18 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	goLog "log"
+	"os"
 	"strings"
 	"time"
 
-	"github.com/e154/smart-home/common/logger"
-
 	"github.com/Masterminds/semver"
-	"github.com/jinzhu/gorm"
+	"github.com/e154/smart-home/common/logger"
 	_ "github.com/lib/pq"
 	"go.uber.org/fx"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	gormLogger "gorm.io/gorm/logger"
 )
 
 // Orm ...
@@ -80,42 +83,72 @@ func NewOrm(lc fx.Lifecycle,
 func (o *Orm) Start() (err error) {
 
 	log.Infof("database connect %s", o.cfg.String())
-	o.db, err = gorm.Open("postgres", o.cfg.String())
+
+	newLogger := gormLogger.New(
+		goLog.New(os.Stdout, "\r\n", goLog.LstdFlags), // io writer
+		gormLogger.Config{
+			SlowThreshold:             time.Second,       // Slow SQL threshold
+			LogLevel:                  gormLogger.Silent, // Log level
+			IgnoreRecordNotFoundError: true,              // Ignore ErrRecordNotFound error for logger
+			ParameterizedQueries:      true,              // Don't include params in the SQL log
+			Colorful:                  false,             // Disable color
+		},
+	)
+
+	o.db, err = gorm.Open(postgres.Open(o.cfg.String()), &gorm.Config{
+		SkipDefaultTransaction: true,
+		PrepareStmt:            true,
+		Logger:                 newLogger,
+	})
 	if err != nil {
+		// it for DI
+		err = nil
 		return
 	}
 
-	o.db.LogMode(o.cfg.Logger)
+	//if o.cfg.Debug {
+	//	o.db.Logger.LogMode(dbLogger.Info)
+	//}
+
+	var db *sql.DB
+	if db, err = o.db.DB(); err != nil {
+		return
+	}
 
 	// SetMaxIdleConns sets the maximum number of connections in the idle connection pool
-	o.db.DB().SetMaxIdleConns(o.cfg.MaxIdleConns)
+	db.SetMaxIdleConns(o.cfg.MaxIdleConns)
 
 	// SetMaxOpenConns sets the maximum number of open connections to the database.
-	o.db.DB().SetMaxOpenConns(o.cfg.MaxOpenConns)
+	db.SetMaxOpenConns(o.cfg.MaxOpenConns)
 
 	// SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
-	o.db.DB().SetConnMaxLifetime(time.Duration(o.cfg.ConnMaxLifeTime) * time.Minute)
+	db.SetConnMaxLifetime(time.Duration(o.cfg.ConnMaxLifeTime) * time.Minute)
 
-	err = o.check()
+	err = o.Check()
 
 	return
 }
 
 // DB ...
 func (o *Orm) DB() *sql.DB {
-	return o.db.DB()
+	db, _ := o.db.DB()
+	return db
 }
 
 // Shutdown ...
 func (o *Orm) Shutdown() (err error) {
 	if o.db != nil {
-		log.Debug("database shutdown")
-		err = o.db.Close()
+		log.Info("database shutdown")
+		var db *sql.DB
+		if db, err = o.db.DB(); err != nil {
+			return
+		}
+		err = db.Close()
 	}
 	return
 }
 
-func (o *Orm) check() (err error) {
+func (o *Orm) Check() (err error) {
 
 	if err = o.checkServerVersion(); err != nil {
 		return
@@ -182,13 +215,15 @@ func (o *Orm) checkExtensions() (err error) {
 	}
 
 	var extCrypto bool
+	var extPostgis bool
 	for _, ext := range o.availableExtensions {
-
 		switch ext.Name {
 		case "pgcrypto":
 			extCrypto = true
 		case "timescaledb":
 			o.extTimescaledb = true
+		case "postgis":
+			extPostgis = true
 		default:
 
 		}
@@ -197,16 +232,27 @@ func (o *Orm) checkExtensions() (err error) {
 	if !extCrypto {
 		log.Warn("please install pgcrypto extension for postgresql database (maybe need install postgresql-contrib)\r")
 	} else {
+		o.db.Exec(`CREATE EXTENSION IF NOT EXISTS pgcrypto CASCADE;`)
 		if o.checkAvailableExtensions(o.availableExtensions, "pgcrypto") {
-			log.Warn("extension 'pgcrypto' installed but not enabled, enable it \nCREATE EXTENSION IF NOT EXISTS pgcrypto CASCADE;\n\r")
+			log.Warn("extension 'pgcrypto' installed but not enabled, enable it: CREATE EXTENSION IF NOT EXISTS pgcrypto CASCADE;\n\r")
 		}
 	}
 
 	if !o.extTimescaledb {
 		log.Warn("please install timescaledb extension, website: https://docs.timescale.com/v1.1/getting-started/installation)\r")
 	} else {
+		o.db.Exec(`CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;`)
 		if o.checkAvailableExtensions(o.availableExtensions, "timescaledb") {
-			log.Warn("extension 'timescaledb' installed but not enabled, enable it \nCREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;\n\r")
+			log.Warn("extension 'timescaledb' installed but not enabled, enable it: CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;\n\r")
+		}
+	}
+
+	if !extPostgis {
+		log.Warn("please install Postgis extension\r")
+	} else {
+		o.db.Exec(`CREATE EXTENSION IF NOT EXISTS Postgis CASCADE;`)
+		if o.checkAvailableExtensions(o.availableExtensions, "postgis") {
+			log.Warn("extension 'Postgis' installed but not enabled, enable it: CREATE EXTENSION IF NOT EXISTS Postgis CASCADE;\n\r")
 		}
 	}
 
@@ -216,4 +262,18 @@ func (o *Orm) checkExtensions() (err error) {
 // ExtTimescaledbEnabled ...
 func (o Orm) ExtTimescaledbEnabled() bool {
 	return o.extTimescaledb
+}
+
+func (o *Orm) Ping() (latency float64, err error) {
+
+	start := time.Now()
+
+	if err = o.DB().Ping(); err != nil {
+		return
+	}
+
+	diff := time.Since(start).Microseconds()
+	latency = float64(diff) / 1000000.0
+
+	return
 }

@@ -21,7 +21,7 @@ package hdd
 import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 const (
@@ -129,8 +129,8 @@ func NewSettings() map[string]*m.Attribute {
 }
 
 // entity action list
-func NewActions() map[string]entity_manager.ActorAction {
-	return map[string]entity_manager.ActorAction{
+func NewActions() map[string]supervisor.ActorAction {
+	return map[string]supervisor.ActorAction{
 		ActionCheck: {
 			Name:        ActionCheck,
 			Description: "check disk",

@@ -30,7 +30,7 @@ func TestLocalMigration(t *testing.T) {
 	//			localMigrations *localMigrations.Migrations,
 	//			migrations *migrations.Migrations) {
 	//
-	//			err := migrations.Purge()
+	//			err := migrations.Restart()
 	//			ctx.So(err, ShouldBeNil)
 	//
 	//			oldVersion := ""

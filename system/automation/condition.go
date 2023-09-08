@@ -22,15 +22,13 @@ import (
 	"context"
 
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/scripts"
 	"go.uber.org/atomic"
 )
 
 // NewCondition ...
 func NewCondition(scriptService scripts.ScriptService,
-	model *m.Condition,
-	entityManager entity_manager.EntityManager) (condition *Condition, err error) {
+	model *m.Condition) (condition *Condition, err error) {
 
 	var scriptEngine *scripts.Engine
 	if scriptEngine, err = scriptService.NewEngine(model.Script); err != nil {
@@ -42,11 +40,10 @@ func NewCondition(scriptService scripts.ScriptService,
 	}
 
 	condition = &Condition{
-		model:         model,
-		inProcess:     atomic.Bool{},
-		lastStatus:    atomic.Bool{},
-		scriptEngine:  scriptEngine,
-		entityManager: entityManager,
+		model:        model,
+		inProcess:    atomic.Bool{},
+		lastStatus:   atomic.Bool{},
+		scriptEngine: scriptEngine,
 	}
 
 	scriptEngine.PushStruct("Condition", NewConditionBind(condition))
@@ -56,11 +53,10 @@ func NewCondition(scriptService scripts.ScriptService,
 
 // Condition ...
 type Condition struct {
-	model         *m.Condition
-	inProcess     atomic.Bool
-	lastStatus    atomic.Bool
-	scriptEngine  *scripts.Engine
-	entityManager entity_manager.EntityManager
+	model        *m.Condition
+	inProcess    atomic.Bool
+	lastStatus   atomic.Bool
+	scriptEngine *scripts.Engine
 }
 
 // Check ...

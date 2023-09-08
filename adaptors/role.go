@@ -21,7 +21,7 @@ package adaptors
 import (
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // IRole ...
@@ -100,7 +100,7 @@ func (n *Role) List(limit, offset int64, orderBy, sort string) (list []*m.Role, 
 	}
 
 	var dbList []*db.Role
-	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
+	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort); err != nil {
 		return
 	}
 
@@ -116,7 +116,7 @@ func (n *Role) List(limit, offset int64, orderBy, sort string) (list []*m.Role, 
 // Search ...
 func (n *Role) Search(query string, limit, offset int64) (list []*m.Role, total int64, err error) {
 	var dbList []*db.Role
-	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
+	if dbList, total, err = n.table.Search(query, int(limit), int(offset)); err != nil {
 		return
 	}
 

@@ -3,6 +3,9 @@ package scheduler
 import (
 	"context"
 
+	"github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/system/bus"
+
 	"github.com/robfig/cron/v3"
 	"go.uber.org/fx"
 
@@ -19,11 +22,16 @@ var (
 type Scheduler struct {
 	adaptors *adaptors.Adaptors
 	cron     *cron.Cron
+	eventBus bus.Bus
 }
 
 func NewScheduler(lc fx.Lifecycle,
-	adaptors *adaptors.Adaptors) (scheduler *Scheduler, err error) {
-	scheduler = &Scheduler{adaptors: adaptors}
+	adaptors *adaptors.Adaptors,
+	eventBus bus.Bus) (scheduler *Scheduler, err error) {
+	scheduler = &Scheduler{
+		adaptors: adaptors,
+		eventBus: eventBus,
+	}
 
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
@@ -69,7 +77,7 @@ func (c *Scheduler) Start(_ context.Context) error {
 
 	c.cron.Start()
 	c.cron.Run()
-
+	c.eventBus.Publish("system/services/scheduler", events.EventServiceStarted{Service: "Scheduler"})
 	log.Info("started ...")
 
 	return nil
@@ -77,6 +85,7 @@ func (c *Scheduler) Start(_ context.Context) error {
 
 func (c *Scheduler) Shutdown(_ context.Context) error {
 	c.cron.Stop()
+	c.eventBus.Publish("system/services/scheduler", events.EventServiceStopped{Service: "Scheduler"})
 	log.Info("shutdown ...")
 	return nil
 }

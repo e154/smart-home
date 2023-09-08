@@ -26,13 +26,13 @@ import (
 
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 // Actor ...
 type Actor struct {
-	entity_manager.BaseActor
+	supervisor.BaseActor
 	adaptors      *adaptors.Adaptors
 	scriptService scripts.ScriptService
 	scriptEngine  *scripts.Engine
@@ -45,17 +45,17 @@ func NewActor(entity *m.Entity,
 	params map[string]interface{},
 	adaptors *adaptors.Adaptors,
 	scriptService scripts.ScriptService,
-	entityManager entity_manager.EntityManager) (actor *Actor, err error) {
+	visor supervisor.Supervisor) (actor *Actor, err error) {
 
 	actor = &Actor{
-		BaseActor:     entity_manager.NewBaseActor(entity, scriptService, adaptors),
+		BaseActor:     supervisor.NewBaseActor(entity, scriptService, adaptors),
 		adaptors:      adaptors,
 		scriptService: scriptService,
 		eventPool:     make(chan events.EventCallScene, 10),
 		stateMu:       &sync.Mutex{},
 	}
 
-	actor.Manager = entityManager
+	actor.Supervisor = visor
 	_, _ = actor.Attrs.Deserialize(params)
 
 	// todo move to baseActor
@@ -64,7 +64,7 @@ func NewActor(entity *m.Entity,
 			return
 		}
 		_, _ = actor.scriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
-		actor.scriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
+		actor.scriptEngine.PushStruct("Actor", supervisor.NewScriptBind(actor))
 		_, _ = actor.scriptEngine.Do()
 	}
 
@@ -79,7 +79,7 @@ func NewActor(entity *m.Entity,
 }
 
 // Spawn ...
-func (e *Actor) Spawn() entity_manager.PluginActor {
+func (e *Actor) Spawn() supervisor.PluginActor {
 	return e
 }
 

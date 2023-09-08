@@ -23,36 +23,37 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/e154/smart-home/system/supervisor"
+
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/notify"
-	"github.com/e154/smart-home/system/plugins"
 )
 
 var (
 	log = logger.MustGetLogger("plugins.webpush")
 )
 
-var _ plugins.Plugable = (*plugin)(nil)
+var _ supervisor.Pluggable = (*plugin)(nil)
 
 func init() {
-	plugins.RegisterPlugin(Name, New)
+	supervisor.RegisterPlugin(Name, New)
 }
 
 type plugin struct {
-	*plugins.Plugin
+	*supervisor.Plugin
 	VAPIDPublicKey, VAPIDPrivateKey string
 }
 
 // New ...
-func New() plugins.Plugable {
+func New() supervisor.Pluggable {
 	return &plugin{
-		Plugin: plugins.NewPlugin(),
+		Plugin: supervisor.NewPlugin(),
 	}
 }
 
 // Load ...
-func (p *plugin) Load(service plugins.Service) (err error) {
+func (p *plugin) Load(service supervisor.Service) (err error) {
 	if err = p.Plugin.Load(service); err != nil {
 		return
 	}
@@ -85,7 +86,7 @@ func (p *plugin) asyncLoad() (err error) {
 		if settings[AttrPrivateKey].Value, settings[AttrPublicKey].Value, err = GenerateVAPIDKeys(); err != nil {
 			return
 		}
-		var model m.Plugin
+		var model *m.Plugin
 		model, _ = p.Adaptors.Plugin.GetByName(Name)
 		model.Settings = settings.Serialize()
 		_ = p.Adaptors.Plugin.Update(model)
@@ -123,8 +124,8 @@ func (p *plugin) Name() string {
 }
 
 // Type ...
-func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginInstallable
+func (p *plugin) Type() supervisor.PluginType {
+	return supervisor.PluginInstallable
 }
 
 // Depends ...

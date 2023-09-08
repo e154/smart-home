@@ -1,0 +1,144 @@
+// This file is part of the Smart Home
+// Program complex distribution https://github.com/e154/smart-home
+// Copyright (C) 2016-2021, Filippov Alex
+//
+// This library is free software: you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Library General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.  If not, see
+// <https://www.gnu.org/licenses/>.
+
+package endpoint
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/e154/smart-home/common/events"
+
+	"github.com/e154/smart-home/common/apperr"
+
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
+	"github.com/go-playground/validator/v10"
+)
+
+// ActionEndpoint ...
+type ActionEndpoint struct {
+	*CommonEndpoint
+}
+
+// NewActionEndpoint ...
+func NewActionEndpoint(common *CommonEndpoint) *ActionEndpoint {
+	return &ActionEndpoint{
+		CommonEndpoint: common,
+	}
+}
+
+// Add ...
+func (n *ActionEndpoint) Add(ctx context.Context, action *m.Action) (result *m.Action, errs validator.ValidationErrorsTranslations, err error) {
+
+	var ok bool
+	if ok, errs = n.validation.Valid(action); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetContext(err, errs)
+		return
+	}
+
+	if action.Id, err = n.adaptors.Action.Add(action); err != nil {
+		return
+	}
+
+	if result, err = n.adaptors.Action.GetById(action.Id); err != nil {
+		return
+	}
+
+	n.eventBus.Publish(fmt.Sprintf("system/automation/actions/%d", result.Id), events.EventAddedAction{
+		Id: action.Id,
+	})
+
+	return
+}
+
+// GetById ...
+func (n *ActionEndpoint) GetById(ctx context.Context, id int64) (result *m.Action, err error) {
+
+	result, err = n.adaptors.Action.GetById(id)
+
+	return
+}
+
+// Update ...
+func (n *ActionEndpoint) Update(ctx context.Context, params *m.Action) (result *m.Action, errs validator.ValidationErrorsTranslations, err error) {
+
+	_, err = n.adaptors.Action.GetById(params.Id)
+	if err != nil {
+		return
+	}
+
+	var ok bool
+	if ok, errs = n.validation.Valid(params); !ok {
+		return
+	}
+
+	if err = n.adaptors.Action.Update(params); err != nil {
+		return
+	}
+
+	if result, err = n.adaptors.Action.GetById(params.Id); err != nil {
+		return
+	}
+
+	n.eventBus.Publish(fmt.Sprintf("system/automation/actions/%d", result.Id), events.EventUpdatedAction{
+		Id: result.Id,
+	})
+
+	return
+}
+
+// GetList ...
+func (n *ActionEndpoint) GetList(ctx context.Context, pagination common.PageParams) (result []*m.Action, total int64, err error) {
+
+	result, total, err = n.adaptors.Action.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
+
+	return
+}
+
+// Delete ...
+func (n *ActionEndpoint) Delete(ctx context.Context, id int64) (err error) {
+
+	_, err = n.adaptors.Action.GetById(id)
+	if err != nil {
+		return
+	}
+
+	if err = n.adaptors.Action.Delete(id); err != nil {
+		return
+	}
+
+	n.eventBus.Publish(fmt.Sprintf("system/automation/actions/%d", id), events.EventRemovedAction{
+		Id: id,
+	})
+
+	return
+}
+
+// Search ...
+func (n *ActionEndpoint) Search(ctx context.Context, query string, limit, offset int64) (result []*m.Action, total int64, err error) {
+
+	if limit == 0 {
+		limit = common.DefaultPageSize
+	}
+
+	result, total, err = n.adaptors.Action.Search(query, int(limit), int(offset))
+
+	return
+}

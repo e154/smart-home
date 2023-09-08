@@ -39,7 +39,7 @@ func NewEntityStorageEndpoint(common *CommonEndpoint) *EntityStorageEndpoint {
 }
 
 // GetList ...
-func (i *EntityStorageEndpoint) GetList(ctx context.Context, entityId common.EntityId, pagination common.PageParams, _startDate, _endDate *string) (items []*m.EntityStorage, total int64, err error) {
+func (i *EntityStorageEndpoint) GetList(ctx context.Context, entityId *common.EntityId, pagination common.PageParams, _startDate, _endDate *string) (result *m.EntityStorageList, total int64, err error) {
 
 	var startDate, endDate *time.Time
 	if _startDate != nil {
@@ -51,7 +51,38 @@ func (i *EntityStorageEndpoint) GetList(ctx context.Context, entityId common.Ent
 		endDate = &date
 	}
 
-	items, total, err = i.adaptors.EntityStorage.ListByEntityId(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, entityId, startDate, endDate)
+	var items []*m.EntityStorage
+	if items, total, err = i.adaptors.EntityStorage.ListByEntityId(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, entityId, startDate, endDate); err != nil {
+		return
+	}
+
+	var idsMap = map[common.EntityId]struct{}{}
+
+	for j := range items {
+		idsMap[items[j].EntityId] = struct{}{}
+	}
+
+	var ids []common.EntityId
+	ids = make([]common.EntityId, 0, len(idsMap))
+	for id := range idsMap {
+		ids = append(ids, id)
+	}
+
+	var entities []*m.Entity
+	if entities, err = i.adaptors.Entity.GetByIdsSimple(ids); err != nil {
+		return
+	}
+
+	attributes := make(map[common.EntityId]m.Attributes)
+
+	for _, entity := range entities {
+		attributes[entity.Id] = entity.Attributes
+	}
+
+	result = &m.EntityStorageList{
+		Items:      items,
+		Attributes: attributes,
+	}
 
 	return
 }

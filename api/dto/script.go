@@ -47,7 +47,7 @@ func (s Script) FromNewScriptRequest(req *api.NewScriptRequest) (script *m.Scrip
 // FromUpdateScriptRequest ...
 func (s Script) FromUpdateScriptRequest(req *api.UpdateScriptRequest) (script *m.Script) {
 	script = &m.Script{
-		Id:          int64(req.Id),
+		Id:          req.Id,
 		Lang:        common.ScriptLang(req.Lang),
 		Name:        req.Name,
 		Source:      req.Source,
@@ -67,9 +67,9 @@ func (s Script) FromExecSrcScriptRequest(req *api.ExecSrcScriptRequest) (script 
 	return
 }
 
-// ToGScript ...
+// ToScript ...
 func (s Script) ToGScript(script *m.Script) (result *api.Script) {
-	result = ToGScript(script)
+	result = ToScript(script)
 	return
 }
 
@@ -107,8 +107,8 @@ func (s Script) ToListResult(list []*m.Script, total uint64, pagination common.P
 	}
 }
 
-// ToGScript ...
-func ToGScript(script *m.Script) (result *api.Script) {
+// ToScript ...
+func ToScript(script *m.Script) (result *api.Script) {
 	if script == nil {
 		return
 	}

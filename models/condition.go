@@ -18,11 +18,14 @@
 
 package models
 
+import "time"
+
 // Condition ...
 type Condition struct {
-	Id       int64   `json:"id"`
-	Name     string  `json:"name" validate:"required,lte=255"`
-	TaskId   int64   `json:"task_id"`
-	Script   *Script `json:"script"`
-	ScriptId int64   `json:"script_id" validate:"required"`
+	Id        int64     `json:"id"`
+	Name      string    `json:"name" validate:"required,lte=255"`
+	Script    *Script   `json:"script"`
+	ScriptId  int64     `json:"script_id" validate:"required"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }

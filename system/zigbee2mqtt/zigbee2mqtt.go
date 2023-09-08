@@ -22,6 +22,9 @@ import (
 	"context"
 	"sync"
 
+	"github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/system/bus"
+
 	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/e154/smart-home/common/logger"
@@ -45,17 +48,20 @@ type zigbee2mqtt struct {
 	isStarted   atomic.Bool
 	bridgesLock *sync.Mutex
 	bridges     map[int64]*Bridge
+	eventBus    bus.Bus
 }
 
 // NewZigbee2mqtt ...
 func NewZigbee2mqtt(lc fx.Lifecycle,
 	mqtt mqtt.MqttServ,
-	adaptors *adaptors.Adaptors) Zigbee2mqtt {
+	adaptors *adaptors.Adaptors,
+	eventBus bus.Bus) Zigbee2mqtt {
 	zigbee2mqtt := &zigbee2mqtt{
 		mqtt:        mqtt,
 		adaptors:    adaptors,
 		bridgesLock: &sync.Mutex{},
 		bridges:     make(map[int64]*Bridge),
+		eventBus:    eventBus,
 	}
 
 	lc.Append(fx.Hook{
@@ -110,6 +116,8 @@ func (z *zigbee2mqtt) Start() {
 		z.bridges[model.Id] = bridge
 		z.bridgesLock.Unlock()
 	}
+
+	z.eventBus.Publish("system/services/zigbee2mqtt", events.EventServiceStarted{Service: "Zigbee2mqtt"})
 }
 
 // Shutdown ...
@@ -122,6 +130,8 @@ func (z *zigbee2mqtt) Shutdown() {
 		bridge.Stop(context.Background())
 	}
 	_ = z.mqtt.Authenticator().Unregister(z.Authenticator)
+
+	z.eventBus.Publish("system/services/zigbee2mqtt", events.EventServiceStopped{Service: "Zigbee2mqtt"})
 }
 
 // AddBridge ...

@@ -24,8 +24,8 @@ import (
 
 	"github.com/e154/smart-home/common/apperr"
 
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // DashboardTabs ...
@@ -113,7 +113,7 @@ func (n DashboardTabs) Delete(id int64) (err error) {
 }
 
 // List ...
-func (n *DashboardTabs) List(limit, offset int64, orderBy, sort string) (list []*DashboardTab, total int64, err error) {
+func (n *DashboardTabs) List(limit, offset int, orderBy, sort string) (list []*DashboardTab, total int64, err error) {
 
 	if err = n.Db.Model(DashboardTab{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrDashboardTabList, err.Error())

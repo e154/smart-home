@@ -18,6 +18,11 @@
 
 package models
 
+type Point struct {
+	Lon float32 `json:"lon"`
+	Lat float32 `json:"lat"`
+}
+
 // "status": "success",
 // "country": "Russia",
 // "countryCode": "RU",

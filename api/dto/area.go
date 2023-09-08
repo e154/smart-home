@@ -22,6 +22,7 @@ import (
 	"github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Area ...
@@ -37,16 +38,47 @@ func (r Area) AddArea(from *api.NewAreaRequest) (area *m.Area) {
 	area = &m.Area{
 		Name:        from.Name,
 		Description: from.Description,
+		Polygon:     make([]m.Point, 0),
+		Zoom:        from.Zoom,
+
+		Resolution: from.Resolution,
+	}
+	if from.Center != nil {
+		area.Center = m.Point{
+			Lon: from.Center.Lon,
+			Lat: from.Center.Lat,
+		}
+	}
+	for _, point := range from.Polygon {
+		area.Polygon = append(area.Polygon, m.Point{
+			Lon: point.Lon,
+			Lat: point.Lat,
+		})
 	}
 	return
 }
 
 // UpdateArea ...
-func (r Area) UpdateArea(obj *api.UpdateAreaRequest) (area *m.Area) {
+func (r Area) UpdateArea(from *api.UpdateAreaRequest) (area *m.Area) {
 	area = &m.Area{
-		Id:          obj.Id,
-		Name:        obj.Name,
-		Description: obj.Description,
+		Id:          from.Id,
+		Name:        from.Name,
+		Description: from.Description,
+		Polygon:     make([]m.Point, 0),
+		Zoom:        from.Zoom,
+		Resolution:  from.Resolution,
+	}
+	if from.Center != nil {
+		area.Center = m.Point{
+			Lon: from.Center.Lon,
+			Lat: from.Center.Lat,
+		}
+	}
+	for _, point := range from.Polygon {
+		area.Polygon = append(area.Polygon, m.Point{
+			Lon: point.Lon,
+			Lat: point.Lat,
+		})
 	}
 	return
 }
@@ -100,6 +132,21 @@ func ToArea(area *m.Area) (obj *api.Area) {
 		Id:          area.Id,
 		Name:        area.Name,
 		Description: area.Description,
+		Polygon:     make([]*api.AreaLocation, 0, len(area.Polygon)),
+		Center: &api.AreaLocation{
+			Lat: area.Center.Lat,
+			Lon: area.Center.Lon,
+		},
+		Zoom:       area.Zoom,
+		Resolution: area.Resolution,
+		CreatedAt:  timestamppb.New(area.CreatedAt),
+		UpdatedAt:  timestamppb.New(area.UpdatedAt),
+	}
+	for _, location := range area.Polygon {
+		obj.Polygon = append(obj.Polygon, &api.AreaLocation{
+			Lat: float32(location.Lat),
+			Lon: float32(location.Lon),
+		})
 	}
 	return
 }

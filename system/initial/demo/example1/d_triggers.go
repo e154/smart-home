@@ -66,7 +66,7 @@ func (t *TriggerManager) addTimerTask(name string,
 			},
 		},
 	})
-	err := t.adaptors.Task.Add(task)
+	err := t.adaptors.Task.Import(task)
 	So(err, ShouldBeNil)
 
 	return
@@ -94,7 +94,7 @@ func (t *TriggerManager) addTimerTask2(name string,
 			},
 		},
 	})
-	err := t.adaptors.Task.Add(task)
+	err := t.adaptors.Task.Import(task)
 	So(err, ShouldBeNil)
 
 	return
@@ -123,7 +123,7 @@ func (t *TriggerManager) addCheckTask(name string,
 		Name:   fmt.Sprintf("action_%s", name),
 		Script: script,
 	})
-	err := t.adaptors.Task.Add(task)
+	err := t.adaptors.Task.Import(task)
 	So(err, ShouldBeNil)
 
 	return

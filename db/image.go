@@ -25,8 +25,8 @@ import (
 
 	"github.com/e154/smart-home/common/apperr"
 
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // Images ...
@@ -111,7 +111,7 @@ func (n Images) Delete(mapId int64) (err error) {
 }
 
 // List ...
-func (n *Images) List(limit, offset int64, orderBy, sort string) (list []*Image, total int64, err error) {
+func (n *Images) List(limit, offset int, orderBy, sort string) (list []*Image, total int64, err error) {
 
 	if err = n.Db.Model(Image{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrImageList, err.Error())
@@ -182,6 +182,14 @@ ORDER BY created_at`, filter).
 
 	if err != nil {
 		err = errors.Wrap(apperr.ErrImageList, err.Error())
+	}
+	return
+}
+
+// AddMultiple ...
+func (n *Images) AddMultiple(images []*Image) (err error) {
+	if err = n.Db.Create(&images).Error; err != nil {
+		err = errors.Wrap(apperr.ErrImageAdd, err.Error())
 	}
 	return
 }

@@ -21,6 +21,8 @@ package controllers
 import (
 	"context"
 
+	"github.com/e154/smart-home/api/dto"
+
 	"github.com/e154/smart-home/api/stub/api"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
@@ -71,10 +73,10 @@ func (c ControllerScript) UpdateScriptById(ctx context.Context, req *api.UpdateS
 }
 
 // GetScriptList ...
-func (c ControllerScript) GetScriptList(ctx context.Context, req *api.PaginationRequest) (*api.GetScriptListResult, error) {
+func (c ControllerScript) GetScriptList(ctx context.Context, req *api.ScriptPaginationRequest) (*api.GetScriptListResult, error) {
 
 	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
-	items, total, err := c.endpoint.Script.GetList(ctx, pagination)
+	items, total, err := c.endpoint.Script.GetList(ctx, pagination, req.Query)
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
@@ -135,4 +137,15 @@ func (c ControllerScript) CopyScriptById(ctx context.Context, req *api.CopyScrip
 	}
 
 	return c.dto.Script.ToGScript(script), nil
+}
+
+// GetStatistic ...
+func (c ControllerScript) GetStatistic(ctx context.Context, _ *emptypb.Empty) (*api.Statistics, error) {
+
+	statistic, err := c.endpoint.Script.Statistic(ctx)
+	if err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return dto.GetStatistic(statistic), nil
 }

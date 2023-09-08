@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+
 	"github.com/e154/smart-home/api/dto"
 	"github.com/e154/smart-home/api/stub/api"
 

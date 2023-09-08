@@ -41,6 +41,7 @@ type Entity struct {
 	PluginName  string           `json:"plugin_name" validate:"required"`
 	Icon        *string          `json:"icon"`
 	Image       *Image           `json:"image"`
+	ImageId     *int64           `json:"image_id"`
 	Actions     []*EntityAction  `json:"actions"`
 	States      []*EntityState   `json:"states"`
 	Area        *Area            `json:"area"`
@@ -51,6 +52,7 @@ type Entity struct {
 	Attributes  Attributes       `json:"attributes"`
 	Settings    Attributes       `json:"settings"`
 	AutoLoad    bool             `json:"auto_load"`
+	IsLoaded    bool             `json:"is_loaded"`
 	ParentId    *common.EntityId `json:"parent_id"`
 	CreatedAt   time.Time        `json:"created_at"`
 	UpdatedAt   time.Time        `json:"updated_at"`

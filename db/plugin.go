@@ -22,8 +22,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 
 	"github.com/e154/smart-home/common/apperr"
 )
@@ -49,7 +49,7 @@ func (d Plugin) TableName() string {
 }
 
 // Add ...
-func (n Plugins) Add(plugin Plugin) (err error) {
+func (n Plugins) Add(plugin *Plugin) (err error) {
 	if err = n.Db.Create(&plugin).Error; err != nil {
 		err = errors.Wrap(apperr.ErrPluginAdd, err.Error())
 		return
@@ -58,7 +58,7 @@ func (n Plugins) Add(plugin Plugin) (err error) {
 }
 
 // CreateOrUpdate ...
-func (n Plugins) CreateOrUpdate(v Plugin) (err error) {
+func (n Plugins) CreateOrUpdate(v *Plugin) (err error) {
 	err = n.Db.Model(&Plugin{}).
 		Set("gorm:insert_option",
 			fmt.Sprintf("ON CONFLICT (name) DO UPDATE SET version = '%s', enabled = '%t', system = '%t', settings = '%s', actor = '%t'", v.Version, v.Enabled, v.System, v.Settings, v.Actor)).
@@ -70,7 +70,7 @@ func (n Plugins) CreateOrUpdate(v Plugin) (err error) {
 }
 
 // Update ...
-func (n Plugins) Update(m Plugin) (err error) {
+func (n Plugins) Update(m *Plugin) (err error) {
 	if err = n.Db.Model(&Plugin{Name: m.Name}).Updates(m).Error; err != nil {
 		err = errors.Wrap(apperr.ErrPluginUpdate, err.Error())
 	}
@@ -86,17 +86,22 @@ func (n Plugins) Delete(name string) (err error) {
 }
 
 // List ...
-func (n Plugins) List(limit, offset int64, orderBy, sort string) (list []Plugin, total int64, err error) {
+func (n Plugins) List(limit, offset int, orderBy, sort string, onlyEnabled bool) (list []*Plugin, total int64, err error) {
 
-	if err = n.Db.Model(Plugin{}).Count(&total).Error; err != nil {
+	if err = n.Db.Model(&Plugin{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrPluginList, err.Error())
 		return
 	}
 
-	list = make([]Plugin, 0)
+	list = make([]*Plugin, 0)
 	q := n.Db.Model(&Plugin{}).
 		Limit(limit).
 		Offset(offset)
+
+	if onlyEnabled {
+		q = q.
+			Where("enabled is true")
+	}
 
 	if sort != "" && orderBy != "" {
 		q = q.
@@ -111,7 +116,7 @@ func (n Plugins) List(limit, offset int64, orderBy, sort string) (list []Plugin,
 }
 
 // Search ...
-func (n Plugins) Search(query string, limit, offset int64) (list []Plugin, total int64, err error) {
+func (n Plugins) Search(query string, limit, offset int) (list []*Plugin, total int64, err error) {
 
 	q := n.Db.Model(&Plugin{}).
 		Where("name LIKE ? and actor=true and enabled=true", "%"+query+"%")
@@ -126,7 +131,7 @@ func (n Plugins) Search(query string, limit, offset int64) (list []Plugin, total
 		Offset(offset).
 		Order("name ASC")
 
-	list = make([]Plugin, 0)
+	list = make([]*Plugin, 0)
 	if err = q.Find(&list).Error; err != nil {
 		err = errors.Wrap(apperr.ErrPluginSearch, err.Error())
 	}
@@ -135,9 +140,9 @@ func (n Plugins) Search(query string, limit, offset int64) (list []Plugin, total
 }
 
 // GetByName ...
-func (n Plugins) GetByName(name string) (plugin Plugin, err error) {
+func (n Plugins) GetByName(name string) (plugin *Plugin, err error) {
 
-	plugin = Plugin{}
+	plugin = &Plugin{}
 	err = n.Db.Model(plugin).
 		Where("name = ?", name).
 		First(&plugin).

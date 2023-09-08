@@ -21,11 +21,12 @@ package endpoint
 import (
 	"context"
 
+	"github.com/e154/smart-home/system/supervisor"
+
 	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/plugins"
 	"github.com/pkg/errors"
 )
 
@@ -43,19 +44,24 @@ func NewPluginEndpoint(common *CommonEndpoint) *PluginEndpoint {
 
 // Enable ...
 func (p *PluginEndpoint) Enable(ctx context.Context, pluginName string) (err error) {
-	err = p.pluginManager.EnablePlugin(pluginName)
+	err = p.supervisor.EnablePlugin(pluginName)
 	return
 }
 
 // Disable ...
 func (p *PluginEndpoint) Disable(ctx context.Context, pluginName string) (err error) {
-	err = p.pluginManager.DisablePlugin(pluginName)
+	err = p.supervisor.DisablePlugin(pluginName)
 	return
 }
 
 // GetList ...
-func (p *PluginEndpoint) GetList(ctx context.Context, pagination common.PageParams) (list []m.Plugin, total int64, err error) {
-	list, total, err = p.adaptors.Plugin.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
+func (p *PluginEndpoint) GetList(ctx context.Context, pagination common.PageParams) (plugins []*m.Plugin, total int64, err error) {
+	if plugins, total, err = p.adaptors.Plugin.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, false); err != nil {
+		return
+	}
+	for _, plugin := range plugins {
+		plugin.IsLoaded = p.supervisor.PluginIsLoaded(plugin.Name)
+	}
 	return
 }
 
@@ -63,11 +69,11 @@ func (p *PluginEndpoint) GetList(ctx context.Context, pagination common.PagePara
 func (p *PluginEndpoint) GetOptions(ctx context.Context, pluginName string) (options m.PluginOptions, err error) {
 
 	var pl interface{}
-	if pl, err = p.pluginManager.GetPlugin(pluginName); err != nil {
+	if pl, err = p.supervisor.GetPlugin(pluginName); err != nil {
 		return
 	}
 
-	plugin, ok := pl.(plugins.Plugable)
+	plugin, ok := pl.(supervisor.Pluggable)
 	if !ok {
 		return
 	}
@@ -78,13 +84,16 @@ func (p *PluginEndpoint) GetOptions(ctx context.Context, pluginName string) (opt
 }
 
 // GetByName ...
-func (p *PluginEndpoint) GetByName(ctx context.Context, pluginName string) (plugin m.Plugin, err error) {
-	plugin, err = p.adaptors.Plugin.GetByName(pluginName)
+func (p *PluginEndpoint) GetByName(ctx context.Context, pluginName string) (plugin *m.Plugin, err error) {
+	if plugin, err = p.adaptors.Plugin.GetByName(pluginName); err != nil {
+		return
+	}
+	plugin.IsLoaded = p.supervisor.PluginIsLoaded(plugin.Name)
 	return
 }
 
 // Search ...
-func (n *PluginEndpoint) Search(ctx context.Context, query string, limit, offset int64) (result []m.Plugin, total int64, err error) {
+func (n *PluginEndpoint) Search(ctx context.Context, query string, limit, offset int64) (result []*m.Plugin, total int64, err error) {
 
 	result, total, err = n.adaptors.Plugin.Search(query, limit, offset)
 	if err != nil {
@@ -96,7 +105,7 @@ func (n *PluginEndpoint) Search(ctx context.Context, query string, limit, offset
 // UpdateSettings ...
 func (n *PluginEndpoint) UpdateSettings(ctx context.Context, name string, settings m.Attributes) (err error) {
 
-	var plugin m.Plugin
+	var plugin *m.Plugin
 	if plugin, err = n.adaptors.Plugin.GetByName(name); err != nil {
 		return
 	}
@@ -107,11 +116,11 @@ func (n *PluginEndpoint) UpdateSettings(ctx context.Context, name string, settin
 		return
 	}
 
-	if err = n.pluginManager.DisablePlugin(name); err != nil {
+	if err = n.supervisor.DisablePlugin(name); err != nil {
 		return
 	}
 
-	err = n.pluginManager.EnablePlugin(name)
+	err = n.supervisor.EnablePlugin(name)
 
 	return
 }

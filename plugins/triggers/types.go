@@ -29,9 +29,9 @@ const (
 	// Name ...
 	Name = "triggers"
 	// TopicSystemStart ...
-	TopicSystemStart = "system_start"
+	TopicSystemStart = "system/event/start" //todo move
 	// TopicSystemStop ...
-	TopicSystemStop = "system_stop"
+	TopicSystemStop = "system/event/stop" //todo move
 
 	Version = "0.0.1"
 )
@@ -55,7 +55,6 @@ type ITrigger interface {
 	Subscribe(Subscriber) error
 	Unsubscribe(Subscriber) error
 	FunctionName() string
-	CallManual()
 }
 
 // Subscriber ...

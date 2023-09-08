@@ -14,17 +14,17 @@ import (
 	. "github.com/e154/smart-home/system/initial/assertions"
 )
 
-type EntityManager struct {
+type Supervisor struct {
 	adaptors *adaptors.Adaptors
 }
 
-func NewEntityManager(adaptors *adaptors.Adaptors) *EntityManager {
-	return &EntityManager{
+func NewSupervisor(adaptors *adaptors.Adaptors) *Supervisor {
+	return &Supervisor{
 		adaptors: adaptors,
 	}
 }
 
-func (e *EntityManager) addEntities(scripts []*m.Script, area *m.Area) (entities []*m.Entity, err error) {
+func (e *Supervisor) addEntities(scripts []*m.Script, area *m.Area) (entities []*m.Entity, err error) {
 
 	var script *m.Script
 	if len(scripts) > 0 {
@@ -45,7 +45,7 @@ func (e *EntityManager) addEntities(scripts []*m.Script, area *m.Area) (entities
 	return
 }
 
-func (e *EntityManager) addL3(name, host string, script *m.Script, area *m.Area) (ent *m.Entity) {
+func (e *Supervisor) addL3(name, host string, script *m.Script, area *m.Area) (ent *m.Entity) {
 
 	id := common.EntityId(fmt.Sprintf("cgminer.%s", name))
 
@@ -179,7 +179,7 @@ func (e *EntityManager) addL3(name, host string, script *m.Script, area *m.Area)
 	return
 }
 
-func (e *EntityManager) addTgBot(name, token string, script *m.Script, area *m.Area) (ent *m.Entity) {
+func (e *Supervisor) addTgBot(name, token string, script *m.Script, area *m.Area) (ent *m.Entity) {
 
 	id := common.EntityId(fmt.Sprintf("%s.%s", telegram.Name, name))
 
@@ -217,7 +217,7 @@ func (e *EntityManager) addTgBot(name, token string, script *m.Script, area *m.A
 	return
 }
 
-func (e *EntityManager) addSensor(name string, script *m.Script, area *m.Area) (ent *m.Entity) {
+func (e *Supervisor) addSensor(name string, script *m.Script, area *m.Area) (ent *m.Entity) {
 
 	id := common.EntityId(fmt.Sprintf("cgminer.%s", name))
 

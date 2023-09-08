@@ -24,7 +24,7 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/weather"
-	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 const (
@@ -320,7 +320,7 @@ func NewSettings() map[string]*m.Attribute {
 // "main": "Rain",
 // "description": "небольшой дождь",
 // "icon": "10d"
-func WeatherCondition(w ProductWeather) (state entity_manager.ActorState) {
+func WeatherCondition(w ProductWeather) (state supervisor.ActorState) {
 
 	//fmt.Println("------")
 	//debug.Println(w)

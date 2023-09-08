@@ -4,6 +4,7 @@ package api
 
 import (
 	context "context"
+
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -26,7 +27,7 @@ type ScriptServiceClient interface {
 	// update script
 	UpdateScriptById(ctx context.Context, in *UpdateScriptRequest, opts ...grpc.CallOption) (*Script, error)
 	// get script list
-	GetScriptList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*GetScriptListResult, error)
+	GetScriptList(ctx context.Context, in *ScriptPaginationRequest, opts ...grpc.CallOption) (*GetScriptListResult, error)
 	// delete script by id
 	SearchScript(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchScriptListResult, error)
 	// delete script by id
@@ -37,6 +38,8 @@ type ScriptServiceClient interface {
 	ExecSrcScriptById(ctx context.Context, in *ExecSrcScriptRequest, opts ...grpc.CallOption) (*ExecScriptResult, error)
 	// copy script by id
 	CopyScriptById(ctx context.Context, in *CopyScriptRequest, opts ...grpc.CallOption) (*Script, error)
+	// get statistic
+	GetStatistic(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Statistics, error)
 }
 
 type scriptServiceClient struct {
@@ -74,7 +77,7 @@ func (c *scriptServiceClient) UpdateScriptById(ctx context.Context, in *UpdateSc
 	return out, nil
 }
 
-func (c *scriptServiceClient) GetScriptList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*GetScriptListResult, error) {
+func (c *scriptServiceClient) GetScriptList(ctx context.Context, in *ScriptPaginationRequest, opts ...grpc.CallOption) (*GetScriptListResult, error) {
 	out := new(GetScriptListResult)
 	err := c.cc.Invoke(ctx, "/api.ScriptService/GetScriptList", in, out, opts...)
 	if err != nil {
@@ -128,6 +131,15 @@ func (c *scriptServiceClient) CopyScriptById(ctx context.Context, in *CopyScript
 	return out, nil
 }
 
+func (c *scriptServiceClient) GetStatistic(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Statistics, error) {
+	out := new(Statistics)
+	err := c.cc.Invoke(ctx, "/api.ScriptService/GetStatistic", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ScriptServiceServer is the server API for ScriptService service.
 // All implementations should embed UnimplementedScriptServiceServer
 // for forward compatibility
@@ -139,7 +151,7 @@ type ScriptServiceServer interface {
 	// update script
 	UpdateScriptById(context.Context, *UpdateScriptRequest) (*Script, error)
 	// get script list
-	GetScriptList(context.Context, *PaginationRequest) (*GetScriptListResult, error)
+	GetScriptList(context.Context, *ScriptPaginationRequest) (*GetScriptListResult, error)
 	// delete script by id
 	SearchScript(context.Context, *SearchRequest) (*SearchScriptListResult, error)
 	// delete script by id
@@ -150,6 +162,8 @@ type ScriptServiceServer interface {
 	ExecSrcScriptById(context.Context, *ExecSrcScriptRequest) (*ExecScriptResult, error)
 	// copy script by id
 	CopyScriptById(context.Context, *CopyScriptRequest) (*Script, error)
+	// get statistic
+	GetStatistic(context.Context, *emptypb.Empty) (*Statistics, error)
 }
 
 // UnimplementedScriptServiceServer should be embedded to have forward compatible implementations.
@@ -165,7 +179,7 @@ func (UnimplementedScriptServiceServer) GetScriptById(context.Context, *GetScrip
 func (UnimplementedScriptServiceServer) UpdateScriptById(context.Context, *UpdateScriptRequest) (*Script, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateScriptById not implemented")
 }
-func (UnimplementedScriptServiceServer) GetScriptList(context.Context, *PaginationRequest) (*GetScriptListResult, error) {
+func (UnimplementedScriptServiceServer) GetScriptList(context.Context, *ScriptPaginationRequest) (*GetScriptListResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetScriptList not implemented")
 }
 func (UnimplementedScriptServiceServer) SearchScript(context.Context, *SearchRequest) (*SearchScriptListResult, error) {
@@ -182,6 +196,9 @@ func (UnimplementedScriptServiceServer) ExecSrcScriptById(context.Context, *Exec
 }
 func (UnimplementedScriptServiceServer) CopyScriptById(context.Context, *CopyScriptRequest) (*Script, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CopyScriptById not implemented")
+}
+func (UnimplementedScriptServiceServer) GetStatistic(context.Context, *emptypb.Empty) (*Statistics, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetStatistic not implemented")
 }
 
 // UnsafeScriptServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -250,7 +267,7 @@ func _ScriptService_UpdateScriptById_Handler(srv interface{}, ctx context.Contex
 }
 
 func _ScriptService_GetScriptList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PaginationRequest)
+	in := new(ScriptPaginationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -262,7 +279,7 @@ func _ScriptService_GetScriptList_Handler(srv interface{}, ctx context.Context, 
 		FullMethod: "/api.ScriptService/GetScriptList",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ScriptServiceServer).GetScriptList(ctx, req.(*PaginationRequest))
+		return srv.(ScriptServiceServer).GetScriptList(ctx, req.(*ScriptPaginationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -357,6 +374,24 @@ func _ScriptService_CopyScriptById_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ScriptService_GetStatistic_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ScriptServiceServer).GetStatistic(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.ScriptService/GetStatistic",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ScriptServiceServer).GetStatistic(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ScriptService_ServiceDesc is the grpc.ServiceDesc for ScriptService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -399,6 +434,10 @@ var ScriptService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CopyScriptById",
 			Handler:    _ScriptService_CopyScriptById_Handler,
+		},
+		{
+			MethodName: "GetStatistic",
+			Handler:    _ScriptService_GetStatistic_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

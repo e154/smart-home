@@ -44,7 +44,7 @@ type Metric struct {
 	Name        string            `json:"name" validate:"max=254;required"`
 	Description string            `json:"description" validate:"max=254"`
 	Options     MetricOptions     `json:"options"`
-	Data        []MetricDataItem  `json:"data"`
+	Data        []*MetricDataItem `json:"data"`
 	Type        common.MetricType `json:"type" validate:"required"`
 	Ranges      []string          `json:"ranges"`
 	UpdatedAt   time.Time         `json:"updated_at"`

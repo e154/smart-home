@@ -32,7 +32,7 @@ const (
 	AttrBody           = "body"
 	AttrPublicKey      = "public_key"
 	AttrPrivateKey     = "private_key"
-	TopicPluginWebpush = "plugin.webpush"
+	TopicPluginWebpush = "system/plugins/webpush"
 
 	Version = "0.0.1"
 )

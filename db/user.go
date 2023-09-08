@@ -26,8 +26,8 @@ import (
 
 	"github.com/e154/smart-home/common/apperr"
 
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // Users ...
@@ -56,7 +56,7 @@ type User struct {
 	UserId              sql.NullInt64
 	Role                *Role
 	RoleName            string
-	Meta                []*UserMeta
+	Meta                []*UserMeta `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE;"`
 	ResetPasswordSentAt *time.Time
 	CurrentSignInAt     *time.Time
 	LastSignInAt        *time.Time
@@ -86,13 +86,13 @@ func (u *Users) Add(user *User) (id int64, err error) {
 func (u *Users) GetById(userId int64) (user *User, err error) {
 
 	user = &User{}
-	err = u.Db.Model(&User{}).
+	err = u.Db.Model(user).
 		Where("id = ? and deleted_at isnull", userId).
 		Preload("Image").
 		Preload("Meta").
 		Preload("Role").
 		Preload("User").
-		Find(&user).
+		Find(user).
 		Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -108,13 +108,13 @@ func (u *Users) GetById(userId int64) (user *User, err error) {
 func (u *Users) GetByEmail(email string) (user *User, err error) {
 
 	user = &User{}
-	err = u.Db.Model(&User{}).
+	err = u.Db.Model(user).
 		Where("email = ?", email).
 		Preload("Image").
 		Preload("Meta").
 		Preload("Role").
 		Preload("User").
-		Find(&user).
+		Find(user).
 		Error
 	if err != nil {
 		err = errors.Wrap(apperr.ErrUserGet, err.Error())
@@ -126,13 +126,13 @@ func (u *Users) GetByEmail(email string) (user *User, err error) {
 func (u *Users) GetByNickname(nickname string) (user *User, err error) {
 
 	user = &User{}
-	err = u.Db.Model(&User{}).
+	err = u.Db.Model(user).
 		Where("nickname = ?", nickname).
 		Preload("Image").
 		Preload("Meta").
 		Preload("Role").
 		Preload("User").
-		Find(&user).
+		Find(user).
 		Error
 	if err != nil {
 		err = errors.Wrap(apperr.ErrUserGet, err.Error())
@@ -144,13 +144,13 @@ func (u *Users) GetByNickname(nickname string) (user *User, err error) {
 func (u *Users) GetByAuthenticationToken(token string) (user *User, err error) {
 
 	user = &User{}
-	err = u.Db.Model(&User{}).
+	err = u.Db.Model(user).
 		Where("authentication_token = ?", token).
 		Preload("Image").
 		Preload("Meta").
 		Preload("Role").
 		Preload("User").
-		Find(&user).
+		Find(user).
 		Error
 	if err != nil {
 		err = errors.Wrap(apperr.ErrUserGet, err.Error())
@@ -162,13 +162,13 @@ func (u *Users) GetByAuthenticationToken(token string) (user *User, err error) {
 func (u *Users) GetByResetPassToken(token string) (user *User, err error) {
 
 	user = &User{}
-	err = u.Db.Model(&User{}).
+	err = u.Db.Model(user).
 		Where("reset_password_token = ?", token).
 		Preload("Image").
 		Preload("Meta").
 		Preload("Role").
 		Preload("User").
-		Find(&user).
+		Find(user).
 		Error
 	if err != nil {
 		err = errors.Wrap(apperr.ErrUserGet, err.Error())
@@ -180,21 +180,21 @@ func (u *Users) GetByResetPassToken(token string) (user *User, err error) {
 func (u *Users) Update(user *User) (err error) {
 
 	q := map[string]interface{}{
-		"nickname":               user.Nickname,
-		"first_name":             user.FirstName,
-		"last_name":              user.LastName,
-		"email":                  user.Email,
-		"status":                 user.Status,
-		"reset_password_token":   user.ResetPasswordToken,
-		"authentication_token":   user.AuthenticationToken,
-		"image_id":               user.ImageId,
-		"sign_in_count":          user.SignInCount,
-		"current_sign_in_ip":     user.CurrentSignInIp,
-		"last_sign_in_ip":        user.LastSignInIp,
-		"lang":                   user.Lang,
-		"user_id":                user.UserId,
-		"role_name":              user.RoleName,
-		"meta":                   user.Meta,
+		"nickname":             user.Nickname,
+		"first_name":           user.FirstName,
+		"last_name":            user.LastName,
+		"email":                user.Email,
+		"status":               user.Status,
+		"reset_password_token": user.ResetPasswordToken,
+		"authentication_token": user.AuthenticationToken,
+		"image_id":             user.ImageId,
+		"sign_in_count":        user.SignInCount,
+		"current_sign_in_ip":   user.CurrentSignInIp,
+		"last_sign_in_ip":      user.LastSignInIp,
+		"lang":                 user.Lang,
+		"user_id":              user.UserId,
+		"role_name":            user.RoleName,
+		//"meta":                   user.Meta, //todo fix
 		"reset_password_sent_at": user.ResetPasswordSentAt,
 		"current_sign_in_at":     user.CurrentSignInAt,
 		"last_sign_in_at":        user.LastSignInAt,
@@ -269,7 +269,7 @@ func (u *Users) Delete(userId int64) (err error) {
 }
 
 // List ...
-func (n *Users) List(limit, offset int64, orderBy, sort string) (list []*User, total int64, err error) {
+func (n *Users) List(limit, offset int, orderBy, sort string) (list []*User, total int64, err error) {
 
 	if err = n.Db.Model(User{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrUserList, err.Error())

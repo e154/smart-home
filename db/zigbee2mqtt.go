@@ -24,8 +24,8 @@ import (
 
 	"github.com/e154/smart-home/common/apperr"
 
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // Zigbee2mqtts ...
@@ -101,7 +101,7 @@ func (z Zigbee2mqtts) Delete(id int64) (err error) {
 }
 
 // List ...
-func (z *Zigbee2mqtts) List(limit, offset int64) (list []*Zigbee2mqtt, total int64, err error) {
+func (z *Zigbee2mqtts) List(limit, offset int) (list []*Zigbee2mqtt, total int64, err error) {
 
 	if err = z.Db.Model(Zigbee2mqtt{}).Count(&total).Error; err != nil {
 		return

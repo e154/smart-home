@@ -25,8 +25,8 @@ import (
 	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/e154/smart-home/common"
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // Logs ...
@@ -87,7 +87,7 @@ func (n Logs) Delete(mapId int64) (err error) {
 }
 
 // List ...
-func (n *Logs) List(limit, offset int64, orderBy, sort string, queryObj *LogQuery) (list []*Log, total int64, err error) {
+func (n *Logs) List(limit, offset int, orderBy, sort string, queryObj *LogQuery) (list []*Log, total int64, err error) {
 
 	q := n.Db.Model(Log{})
 
@@ -151,6 +151,14 @@ func (n *Logs) DeleteOldest(days int) (err error) {
 	err = n.Db.Delete(&Log{}, fmt.Sprintf(`created_at < now() - interval '%d days'`, days)).Error
 	if err != nil {
 		err = errors.Wrap(apperr.ErrLogDelete, err.Error())
+	}
+	return
+}
+
+// AddMultiple ...
+func (n *Logs) AddMultiple(logs []*Log) (err error) {
+	if err = n.Db.Create(&logs).Error; err != nil {
+		err = errors.Wrap(apperr.ErrLogAdd, err.Error())
 	}
 	return
 }

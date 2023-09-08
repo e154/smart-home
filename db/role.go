@@ -25,8 +25,8 @@ import (
 
 	"github.com/e154/smart-home/common/apperr"
 
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // Roles ...
@@ -101,7 +101,7 @@ func (n Roles) Delete(name string) (err error) {
 }
 
 // List ...
-func (n *Roles) List(limit, offset int64, orderBy, sort string) (list []*Role, total int64, err error) {
+func (n *Roles) List(limit, offset int, orderBy, sort string) (list []*Role, total int64, err error) {
 
 	if err = n.Db.Model(Role{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrRoleList, err.Error())
@@ -129,7 +129,7 @@ func (n *Roles) List(limit, offset int64, orderBy, sort string) (list []*Role, t
 }
 
 // Search ...
-func (n *Roles) Search(query string, limit, offset int64) (list []*Role, total int64, err error) {
+func (n *Roles) Search(query string, limit, offset int) (list []*Role, total int64, err error) {
 
 	q := n.Db.Model(&Role{}).
 		Where("name LIKE ?", "%"+query+"%")

@@ -21,37 +21,38 @@ package messagebird
 import (
 	"strings"
 
+	"github.com/e154/smart-home/system/supervisor"
+
 	"github.com/e154/smart-home/common/logger"
 
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/notify"
-	"github.com/e154/smart-home/system/plugins"
 )
 
 var (
 	log = logger.MustGetLogger("plugins.messagebird")
 )
 
-var _ plugins.Plugable = (*plugin)(nil)
+var _ supervisor.Pluggable = (*plugin)(nil)
 
 func init() {
-	plugins.RegisterPlugin(Name, New)
+	supervisor.RegisterPlugin(Name, New)
 }
 
 type plugin struct {
-	*plugins.Plugin
+	*supervisor.Plugin
 	actor *Actor
 }
 
 // New ...
-func New() plugins.Plugable {
+func New() supervisor.Pluggable {
 	return &plugin{
-		Plugin: plugins.NewPlugin(),
+		Plugin: supervisor.NewPlugin(),
 	}
 }
 
 // Load ...
-func (p *plugin) Load(service plugins.Service) (err error) {
+func (p *plugin) Load(service supervisor.Service) (err error) {
 	if err = p.Plugin.Load(service); err != nil {
 		return
 	}
@@ -80,8 +81,8 @@ func (p *plugin) asyncLoad() (err error) {
 	}
 
 	// add actor
-	p.actor = NewActor(settings, p.EntityManager, p.EventBus, p.Adaptors)
-	p.EntityManager.Spawn(p.actor.Spawn)
+	p.actor = NewActor(settings, p.Supervisor, p.EventBus, p.Adaptors)
+	p.Supervisor.Spawn(p.actor.Spawn)
 	go func() { _, _ = p.actor.UpdateBalance() }()
 
 	// register messagebird provider
@@ -107,8 +108,8 @@ func (p *plugin) Name() string {
 }
 
 // Type ...
-func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginInstallable
+func (p *plugin) Type() supervisor.PluginType {
+	return supervisor.PluginInstallable
 }
 
 // Depends ...

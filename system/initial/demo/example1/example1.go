@@ -13,7 +13,7 @@ type Example1 struct {
 	scriptService  scripts.ScriptService
 	areaManager    *AreaManager
 	scriptManager  *ScriptManager
-	entityManager  *EntityManager
+	supervisor     *Supervisor
 	triggerManager *TriggerManager
 }
 
@@ -24,7 +24,7 @@ func NewExample1(adaptors *adaptors.Adaptors,
 		scriptService:  scriptService,
 		areaManager:    NewAreaManager(adaptors),
 		scriptManager:  NewScriptManager(adaptors, scriptService),
-		entityManager:  NewEntityManager(adaptors),
+		supervisor:     NewSupervisor(adaptors),
 		triggerManager: NewTriggerManager(adaptors),
 	}
 }
@@ -34,7 +34,7 @@ func (e *Example1) Install(_ context.Context, adaptors *adaptors.Adaptors) (err 
 		e.adaptors = adaptors
 		e.areaManager = NewAreaManager(adaptors)
 		e.scriptManager = NewScriptManager(adaptors, e.scriptService)
-		e.entityManager = NewEntityManager(adaptors)
+		e.supervisor = NewSupervisor(adaptors)
 		e.triggerManager = NewTriggerManager(adaptors)
 	}
 
@@ -48,7 +48,7 @@ func (e *Example1) Install(_ context.Context, adaptors *adaptors.Adaptors) (err 
 	}
 
 	var entities []*m.Entity
-	if entities, err = e.entityManager.addEntities(scripts, area); err != nil {
+	if entities, err = e.supervisor.addEntities(scripts, area); err != nil {
 		return
 	}
 

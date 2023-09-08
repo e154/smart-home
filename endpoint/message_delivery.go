@@ -20,10 +20,11 @@ package endpoint
 
 import (
 	"context"
-	"github.com/e154/smart-home/common"
-	m "github.com/e154/smart-home/models"
 	"strings"
 	"time"
+
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 )
 
 // MessageDeliveryEndpoint ...
@@ -40,7 +41,6 @@ func NewMessageDeliveryEndpoint(common *CommonEndpoint) *MessageDeliveryEndpoint
 
 // List ...
 func (n *MessageDeliveryEndpoint) List(ctx context.Context, pagination common.PageParams, query *string, startDate, endDate *string) (result []*m.MessageDelivery, total int64, err error) {
-
 
 	queryObj := &m.MessageDeliveryQuery{}
 	if startDate != nil {

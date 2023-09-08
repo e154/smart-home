@@ -24,8 +24,8 @@ import (
 
 	"github.com/e154/smart-home/common/apperr"
 
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // RunHistory ...
@@ -67,7 +67,7 @@ func (n RunHistory) Update(m *RunStory) (err error) {
 }
 
 // List ...
-func (n *RunHistory) List(limit, offset int64, orderBy, sort string) (list []*RunStory, total int64, err error) {
+func (n *RunHistory) List(limit, offset int, orderBy, sort string) (list []*RunStory, total int64, err error) {
 
 	if err = n.Db.Model(RunStory{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrRunStoryList, err.Error())

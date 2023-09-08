@@ -47,14 +47,10 @@ func (r Entity) AddEntity(obj *api.NewEntityRequest) (entity *m.Entity) {
 		Attributes:  AttributeFromApi(obj.Attributes),
 		Settings:    AttributeFromApi(obj.Settings),
 		Metrics:     AddMetric(obj.Metrics),
+		ImageId:     obj.ImageId,
+		AreaId:      obj.AreaId,
 	}
 
-	// image
-	if obj.Image != nil && obj.Image.Id != 0 {
-		entity.Image = &m.Image{
-			Id: obj.Image.Id,
-		}
-	}
 	// actions
 	for _, a := range obj.Actions {
 		action := &m.EntityAction{
@@ -62,13 +58,10 @@ func (r Entity) AddEntity(obj *api.NewEntityRequest) (entity *m.Entity) {
 			Description: a.Description,
 			Icon:        a.Icon,
 			Type:        a.Type,
+			ImageId:     a.ImageId,
+			ScriptId:    a.ScriptId,
 		}
-		if a.Image != nil {
-			action.ImageId = common.Int64(a.Image.Id)
-		}
-		if a.Script != nil {
-			action.ScriptId = common.Int64(a.Script.Id)
-		}
+
 		entity.Actions = append(entity.Actions, action)
 	}
 	// states
@@ -78,27 +71,22 @@ func (r Entity) AddEntity(obj *api.NewEntityRequest) (entity *m.Entity) {
 			Description: s.Description,
 			Icon:        s.Icon,
 			Style:       s.Style,
-		}
-		if s.Image != nil {
-			state.ImageId = common.Int64(s.Image.Id)
+			ImageId:     s.ImageId,
 		}
 
 		entity.States = append(entity.States, state)
 	}
-	// area
-	if obj.Area != nil && obj.Area.Id != 0 {
-		entity.AreaId = &obj.Area.Id
-	}
+
 	// scripts
-	for _, s := range obj.Scripts {
+	for _, id := range obj.ScriptIds {
 		script := &m.Script{
-			Id: s.Id,
+			Id: id,
 		}
 		entity.Scripts = append(entity.Scripts, script)
 	}
 	// parent
-	if obj.Parent != nil {
-		parentId := common.EntityId(obj.Parent.Id)
+	if obj.ParentId != nil {
+		parentId := common.EntityId(*obj.ParentId)
 		entity.ParentId = &parentId
 	}
 
@@ -120,14 +108,10 @@ func (r Entity) UpdateEntity(obj *api.UpdateEntityRequest) (entity *m.Entity) {
 		Settings:    AttributeFromApi(obj.Settings),
 		ParentId:    nil,
 		Metrics:     AddMetric(obj.Metrics),
+		ImageId:     obj.ImageId,
+		AreaId:      obj.AreaId,
 	}
 
-	// image
-	if obj.Image != nil && obj.Image.Id != 0 {
-		entity.Image = &m.Image{
-			Id: obj.Image.Id,
-		}
-	}
 	// actions
 	for _, a := range obj.Actions {
 		action := &m.EntityAction{
@@ -135,13 +119,10 @@ func (r Entity) UpdateEntity(obj *api.UpdateEntityRequest) (entity *m.Entity) {
 			Description: a.Description,
 			Icon:        a.Icon,
 			Type:        a.Type,
+			ImageId:     a.ImageId,
+			ScriptId:    a.ScriptId,
 		}
-		if a.Image != nil {
-			action.ImageId = common.Int64(a.Image.Id)
-		}
-		if a.Script != nil {
-			action.ScriptId = common.Int64(a.Script.Id)
-		}
+
 		entity.Actions = append(entity.Actions, action)
 	}
 	// states
@@ -151,27 +132,22 @@ func (r Entity) UpdateEntity(obj *api.UpdateEntityRequest) (entity *m.Entity) {
 			Description: s.Description,
 			Icon:        s.Icon,
 			Style:       s.Style,
-		}
-		if s.Image != nil {
-			state.ImageId = common.Int64(s.Image.Id)
+			ImageId:     s.ImageId,
 		}
 
 		entity.States = append(entity.States, state)
 	}
-	// area
-	if obj.Area != nil && obj.Area.Id != 0 {
-		entity.AreaId = &obj.Area.Id
-	}
+
 	// scripts
-	for _, s := range obj.Scripts {
+	for _, id := range obj.ScriptIds {
 		script := &m.Script{
-			Id: s.Id,
+			Id: id,
 		}
 		entity.Scripts = append(entity.Scripts, script)
 	}
 	// parent
-	if obj.Parent != nil && obj.Parent.Id != "" {
-		parentId := common.EntityId(obj.Parent.Id)
+	if obj.ParentId != nil {
+		parentId := common.EntityId(*obj.ParentId)
 		entity.ParentId = &parentId
 	}
 	return
@@ -231,6 +207,7 @@ func (r Entity) ToEntityShort(entity *m.Entity) (obj *api.EntityShort) {
 		AutoLoad:    entity.AutoLoad,
 		CreatedAt:   timestamppb.New(entity.CreatedAt),
 		UpdatedAt:   timestamppb.New(entity.UpdatedAt),
+		ParentId:    entity.ParentId.StringPtr(),
 	}
 	// area
 	if entity.Area != nil {
@@ -243,12 +220,6 @@ func (r Entity) ToEntityShort(entity *m.Entity) (obj *api.EntityShort) {
 	// image
 	if entity.Image != nil {
 		obj.Image = imageDto.ToImage(entity.Image)
-	}
-	// parent
-	if entity.ParentId != nil {
-		obj.Parent = &api.EntityParent{
-			Id: entity.ParentId.String(),
-		}
 	}
 
 	return
@@ -267,6 +238,7 @@ func ToEntity(entity *m.Entity) (obj *api.Entity) {
 		Description: entity.Description,
 		Icon:        entity.Icon,
 		AutoLoad:    entity.AutoLoad,
+		IsLoaded:    common.Bool(entity.IsLoaded),
 		Actions:     make([]*api.EntityAction, 0, len(entity.Actions)),
 		States:      make([]*api.EntityState, 0, len(entity.States)),
 		Scripts:     make([]*api.Script, 0, len(entity.Scripts)),
@@ -331,6 +303,7 @@ func ToEntity(entity *m.Entity) (obj *api.Entity) {
 	for _, s := range entity.Scripts {
 		script := scriptDto.ToGScript(s)
 		obj.Scripts = append(obj.Scripts, script)
+		obj.ScriptIds = append(obj.ScriptIds, s.Id)
 	}
 	return
 }

@@ -22,6 +22,8 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/e154/smart-home/system/supervisor"
+
 	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/e154/smart-home/common/logger"
@@ -29,36 +31,35 @@ import (
 	"github.com/pkg/errors"
 
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/plugins"
 )
 
 var (
 	log = logger.MustGetLogger("plugins.triggers")
 )
 
-var _ plugins.Plugable = (*plugin)(nil)
+var _ supervisor.Pluggable = (*plugin)(nil)
 
 func init() {
-	plugins.RegisterPlugin(Name, New)
+	supervisor.RegisterPlugin(Name, New)
 }
 
 type plugin struct {
-	*plugins.Plugin
+	*supervisor.Plugin
 	mu       *sync.Mutex
 	triggers map[string]ITrigger
 }
 
 // New ...
-func New() plugins.Plugable {
+func New() supervisor.Pluggable {
 	return &plugin{
-		Plugin:   plugins.NewPlugin(),
+		Plugin:   supervisor.NewPlugin(),
 		mu:       &sync.Mutex{},
 		triggers: make(map[string]ITrigger),
 	}
 }
 
 // Load ...
-func (p *plugin) Load(service plugins.Service) (err error) {
+func (p *plugin) Load(service supervisor.Service) (err error) {
 	if err = p.Plugin.Load(service); err != nil {
 		return
 	}
@@ -105,8 +106,8 @@ func (p *plugin) attachTrigger() {
 }
 
 // Type ...
-func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginBuiltIn
+func (p *plugin) Type() supervisor.PluginType {
+	return supervisor.PluginBuiltIn
 }
 
 // Depends ...
@@ -127,7 +128,7 @@ func (p *plugin) GetTrigger(name string) (trigger ITrigger, err error) {
 
 	var ok bool
 	if trigger, ok = p.triggers[name]; !ok {
-		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("trigger name \"%s\"", name))
+		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("trigger name '%s'", name))
 	}
 	return
 }
@@ -139,7 +140,7 @@ func (p *plugin) RegisterTrigger(tr ITrigger) (err error) {
 	defer p.mu.Unlock()
 
 	if _, ok := p.triggers[tr.Name()]; ok {
-		err = errors.Wrap(apperr.ErrInternal, fmt.Sprintf("trigger \"%s\" is registerred", tr.Name()))
+		err = errors.Wrap(apperr.ErrInternal, fmt.Sprintf("trigger '%s' is registerred", tr.Name()))
 		return
 	}
 

@@ -21,8 +21,7 @@ package adaptors
 import (
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/gorm"
-	gormbulk "github.com/t-tiger/gorm-bulk-insert"
+	"gorm.io/gorm"
 )
 
 // ILog ...
@@ -67,13 +66,13 @@ func (n *Log) Add(ver *m.Log) (id int64, err error) {
 // AddMultiple ...
 func (n *Log) AddMultiple(items []*m.Log) (err error) {
 
-	insertRecords := make([]interface{}, 0, len(items))
+	insertRecords := make([]*db.Log, 0, len(items))
 	for _, ver := range items {
 		dbVer := n.toDb(ver)
-		insertRecords = append(insertRecords, *dbVer)
+		insertRecords = append(insertRecords, dbVer)
 	}
 
-	err = gormbulk.BulkInsert(n.db, insertRecords, len(insertRecords))
+	err = n.table.AddMultiple(insertRecords)
 
 	return
 }
@@ -111,7 +110,7 @@ func (n *Log) List(limit, offset int64, orderBy, sort string, queryObj *m.LogQue
 		}
 	}
 
-	if dbList, total, err = n.table.List(limit, offset, orderBy, sort, dbQueryObj); err != nil {
+	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort, dbQueryObj); err != nil {
 		return
 	}
 

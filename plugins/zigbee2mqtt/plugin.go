@@ -31,24 +31,22 @@ import (
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/plugins"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 var (
 	log = logger.MustGetLogger("plugins.zigbee2mqtt")
 )
 
-var _ plugins.Plugable = (*plugin)(nil)
+var _ supervisor.Pluggable = (*plugin)(nil)
 
 func init() {
-	plugins.RegisterPlugin(Name, New)
+	supervisor.RegisterPlugin(Name, New)
 }
 
 type plugin struct {
-	*plugins.Plugin
+	*supervisor.Plugin
 	actorsLock *sync.Mutex
 	actors     map[string]*Actor
 	mqttServ   mqtt.MqttServ
@@ -57,9 +55,9 @@ type plugin struct {
 }
 
 // New ...
-func New() plugins.Plugable {
+func New() supervisor.Pluggable {
 	return &plugin{
-		Plugin:     plugins.NewPlugin(),
+		Plugin:     supervisor.NewPlugin(),
 		actorsLock: &sync.Mutex{},
 		actors:     make(map[string]*Actor),
 		mqttSubs:   sync.Map{},
@@ -67,7 +65,7 @@ func New() plugins.Plugable {
 }
 
 // Load ...
-func (p *plugin) Load(service plugins.Service) (err error) {
+func (p *plugin) Load(service supervisor.Service) (err error) {
 	if err = p.Plugin.Load(service); err != nil {
 		return
 	}
@@ -75,7 +73,7 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 	p.mqttServ = service.MqttServ()
 
 	p.mqttClient = p.mqttServ.NewClient("plugins.zigbee2mqtt")
-	if err := p.EventBus.Subscribe(bus.TopicEntities, p.eventHandler); err != nil {
+	if err := p.EventBus.Subscribe("system/entities/+", p.eventHandler); err != nil {
 		log.Error(err.Error())
 	}
 	return nil
@@ -88,7 +86,7 @@ func (p plugin) Unload() (err error) {
 	}
 
 	p.mqttServ.RemoveClient("plugins.zigbee2mqtt")
-	_ = p.EventBus.Unsubscribe(bus.TopicEntities, p.eventHandler)
+	_ = p.EventBus.Unsubscribe("system/entities/+", p.eventHandler)
 	return
 }
 
@@ -118,19 +116,18 @@ func (p *plugin) addOrUpdateEntity(entity *m.Entity, attributes m.AttributeValue
 
 	if actor, ok := p.actors[name]; ok {
 		// update
-		_ = actor.SetState(entity_manager.EntityStateParams{
+		_ = actor.SetState(supervisor.EntityStateParams{
 			AttributeValues: attributes,
 		})
 		return
 	}
 
 	var actor *Actor
-	if actor, err = NewActor(entity, attributes,
-		p.Adaptors, p.ScriptService, p.EntityManager, p.EventBus); err != nil {
+	if actor, err = NewActor(entity, attributes, p.Adaptors, p.ScriptService, p.Supervisor, p.EventBus); err != nil {
 		return
 	}
 	p.actors[name] = actor
-	p.EntityManager.Spawn(p.actors[name].Spawn)
+	p.Supervisor.Spawn(p.actors[name].Spawn)
 
 	var br *m.Zigbee2mqtt
 	if br, err = p.Adaptors.Zigbee2mqtt.GetById(actor.zigbee2mqttDevice.Zigbee2mqttId); err != nil {
@@ -199,7 +196,7 @@ func (p *plugin) getActorByZigbeeDeviceId(deviceId string) (actor *Actor, err er
 func (p *plugin) eventHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
-	case events.EventCallAction:
+	case events.EventCallEntityAction:
 		actor, ok := p.actors[v.EntityId.Name()]
 		if !ok {
 			return
@@ -212,8 +209,8 @@ func (p *plugin) eventHandler(_ string, msg interface{}) {
 }
 
 // Type ...
-func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginInstallable
+func (p *plugin) Type() supervisor.PluginType {
+	return supervisor.PluginInstallable
 }
 
 // Depends ...

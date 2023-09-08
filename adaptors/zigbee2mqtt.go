@@ -22,7 +22,7 @@ import (
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // IZigbee2mqtt ...
@@ -88,7 +88,7 @@ func (n *Zigbee2mqtt) Delete(id int64) (err error) {
 // List ...
 func (n *Zigbee2mqtt) List(limit, offset int64) (list []*m.Zigbee2mqtt, total int64, err error) {
 	var dbList []*db.Zigbee2mqtt
-	if dbList, total, err = n.table.List(limit, offset); err != nil {
+	if dbList, total, err = n.table.List(int(limit), int(offset)); err != nil {
 		return
 	}
 

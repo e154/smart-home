@@ -25,6 +25,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/system/bus"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -399,7 +402,7 @@ func GetNewTelegram(name string) *m.Entity {
 
 // AddPlugin ...
 func AddPlugin(adaptors *adaptors.Adaptors, name string, opts ...m.AttributeValue) (err error) {
-	plugin := m.Plugin{
+	plugin := &m.Plugin{
 		Name:    name,
 		Version: "0.0.1",
 		Enabled: true,
@@ -435,9 +438,7 @@ func Wait(t time.Duration, ch chan interface{}) (ok bool) {
 	select {
 	case <-ch:
 		ok = true
-		break
 	case <-ticker.C:
-		break
 	}
 	return
 }
@@ -544,5 +545,64 @@ func AddScript(name, src string, adaptors *adaptors.Adaptors, scriptService scri
 
 	script.Id, err = adaptors.Script.Add(script)
 
+	return
+}
+
+func AddTrigger(trigger *m.Trigger, adaptors *adaptors.Adaptors, eventBus bus.Bus) (err error) {
+	if trigger.Id, err = adaptors.Trigger.Add(trigger); err != nil {
+		return
+	}
+	eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", trigger.Id), events.EventAddedTrigger{
+		Id: trigger.Id,
+	})
+	return
+}
+
+func AddTask(newTask *m.NewTask, adaptors *adaptors.Adaptors, eventBus bus.Bus) (err error) {
+	var task1Id int64
+	if task1Id, err = adaptors.Task.Add(newTask); err != nil {
+		return
+	}
+	eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", task1Id), events.EventAddedTask{
+		Id: task1Id,
+	})
+	return
+}
+
+func WaitSupervisor(eventBus bus.Bus) {
+
+	ch := make(chan interface{})
+	defer close(ch)
+	fn := func(_ string, msg interface{}) {
+		switch msg.(type) {
+		case events.EventServiceStarted:
+			ch <- struct{}{}
+		}
+	}
+	eventBus.Subscribe("system/services/supervisor", fn)
+	defer eventBus.Unsubscribe("system/services/supervisor", fn)
+
+	Wait(1, ch)
+
+	time.Sleep(time.Millisecond * 500)
+}
+
+
+func WaitStateChanged(eventBus bus.Bus) (ok bool) {
+
+	ch := make(chan interface{})
+	defer close(ch)
+	fn := func(_ string, msg interface{}) {
+		switch msg.(type) {
+		case events.EventStateChanged:
+			ch <- struct{}{}
+		}
+	}
+	eventBus.Subscribe("system/entities/+", fn)
+	defer eventBus.Unsubscribe("system/entities/+", fn)
+
+	ok = Wait(1, ch)
+
+	time.Sleep(time.Millisecond * 500)
 	return
 }

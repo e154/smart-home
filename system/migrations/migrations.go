@@ -23,12 +23,11 @@ import (
 	"net/http"
 	"path"
 
-	"github.com/jinzhu/gorm"
 	migrate "github.com/rubenv/sql-migrate"
+	"gorm.io/gorm"
 
 	"github.com/e154/smart-home/common/logger"
 	"github.com/e154/smart-home/migrations"
-	. "github.com/e154/smart-home/system/migrations/assets"
 	"github.com/e154/smart-home/system/orm"
 )
 
@@ -55,12 +54,6 @@ func NewMigrations(cfg *orm.Config,
 	switch mConf.Source {
 	case "embed":
 		source = &migrate.HttpFileSystemMigrationSource{FileSystem: http.FS(migrations.F)}
-	case "assets", "":
-		source = &migrate.AssetMigrationSource{
-			Asset:    Asset,
-			AssetDir: AssetDir,
-			Dir:      mConf.Dir,
-		}
 	case "dir":
 		source = &migrate.FileMigrationSource{
 			Dir: path.Join(mConf.Dir),
@@ -98,7 +91,7 @@ func (m Migrations) Down() (err error) {
 		log.Error(err.Error())
 	}
 
-	fmt.Printf("Applied %d migrations!\n", n)
+	fmt.Printf("Down %d migrations!\n", n)
 
 	return
 }
@@ -106,7 +99,7 @@ func (m Migrations) Down() (err error) {
 // Purge ...
 func (m Migrations) Purge() (err error) {
 
-	fmt.Printf("Purge database: %s\n", m.cfg.Name)
+	fmt.Printf("Drop database: %s\n", m.cfg.Name)
 
 	if err = m.db.Exec(`DROP SCHEMA IF EXISTS "public" CASCADE;`).Error; err != nil {
 		log.Error(err.Error())
@@ -116,6 +109,8 @@ func (m Migrations) Purge() (err error) {
 		log.Error(err.Error())
 		return
 	}
+
+	m.orm.Check()
 
 	err = m.Up()
 

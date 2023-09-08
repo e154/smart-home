@@ -30,29 +30,29 @@ import (
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 // Actor ...
 type Actor struct {
-	entity_manager.BaseActor
+	supervisor.BaseActor
 	appStarted time.Time
 	total      *atomic.Uint64
 	eventBus   bus.Bus
 }
 
 // NewActor ...
-func NewActor(entityManager entity_manager.EntityManager,
+func NewActor(visor supervisor.Supervisor,
 	eventBus bus.Bus) *Actor {
 	return &Actor{
-		BaseActor: entity_manager.BaseActor{
+		BaseActor: supervisor.BaseActor{
 			Id:                common.EntityId(fmt.Sprintf("%s.%s", EntitySensor, Name)),
 			Name:              Name,
 			EntityType:        EntitySensor,
 			UnitOfMeasurement: "days",
 			AttrMu:            &sync.RWMutex{},
 			Attrs:             NewAttr(),
-			Manager:           entityManager,
+			Supervisor:        visor,
 		},
 		eventBus:   eventBus,
 		appStarted: time.Now(),
@@ -61,7 +61,7 @@ func NewActor(entityManager entity_manager.EntityManager,
 }
 
 // Spawn ...
-func (e *Actor) Spawn() entity_manager.PluginActor {
+func (e *Actor) Spawn() supervisor.PluginActor {
 	return e
 }
 
@@ -83,7 +83,7 @@ func (e *Actor) update() {
 	e.Attrs[AttrUptimeAppStarted].Value = e.appStarted
 	e.AttrMu.Unlock()
 
-	e.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
+	e.eventBus.Publish("system/entities/"+e.Id.String(), events.EventStateChanged{
 		PluginName: e.Id.PluginName(),
 		EntityId:   e.Id,
 		OldState:   oldState,

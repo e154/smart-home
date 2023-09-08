@@ -26,8 +26,8 @@ import (
 	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/e154/smart-home/common"
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // Entities ...
@@ -46,8 +46,8 @@ type Entity struct {
 	Actions     []*EntityAction
 	AreaId      *int64
 	Area        *Area
-	Metrics     []Metric `gorm:"many2many:entity_metrics;"`
-	Scripts     []Script `gorm:"many2many:entity_scripts;"`
+	Metrics     []*Metric `gorm:"many2many:entity_metrics;"`
+	Scripts     []*Script `gorm:"many2many:entity_scripts;"`
 	Icon        *string
 	Payload     json.RawMessage `gorm:"type:jsonb;not null"`
 	Settings    json.RawMessage `gorm:"type:jsonb;not null"`
@@ -162,6 +162,22 @@ func (n Entities) GetByIds(ids []common.EntityId) (list []*Entity, err error) {
 	return
 }
 
+// GetByIdsSimple ...
+func (n Entities) GetByIdsSimple(ids []common.EntityId) (list []*Entity, err error) {
+
+	list = make([]*Entity, 0)
+	err = n.Db.Model(Entity{}).
+		Where("id IN (?)", ids).
+		Find(&list).Error
+
+	if err != nil {
+		err = errors.Wrap(apperr.ErrEntityGet, err.Error())
+		return
+	}
+
+	return
+}
+
 // Delete ...
 func (n Entities) Delete(id common.EntityId) (err error) {
 
@@ -174,7 +190,8 @@ func (n Entities) Delete(id common.EntityId) (err error) {
 }
 
 // List ...
-func (n *Entities) List(limit, offset int64, orderBy, sort string, autoLoad bool) (list []*Entity, total int64, err error) {
+func (n *Entities) List(limit, offset int, orderBy, sort string, autoLoad bool,
+	query, plugin *string, areaId *int64) (list []*Entity, total int64, err error) {
 
 	if err = n.Db.Model(Entity{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrEntityList, err.Error())
@@ -185,6 +202,15 @@ func (n *Entities) List(limit, offset int64, orderBy, sort string, autoLoad bool
 	q := n.Db
 	if autoLoad {
 		q = q.Where("auto_load = ?", true)
+	}
+	if query != nil {
+		q = q.Where("id LIKE ?", "%"+*query+"%")
+	}
+	if plugin != nil {
+		q = q.Where("plugin_name = ?", *plugin)
+	}
+	if areaId != nil {
+		q = q.Where("area_id = ?", *areaId)
 	}
 	q = q.
 		Preload("Image").
@@ -219,7 +245,7 @@ func (n *Entities) List(limit, offset int64, orderBy, sort string, autoLoad bool
 }
 
 // GetByType ...
-func (n *Entities) GetByType(t string, limit, offset int64) (list []*Entity, err error) {
+func (n *Entities) GetByType(t string, limit, offset int) (list []*Entity, err error) {
 
 	list = make([]*Entity, 0)
 	err = n.Db.Model(&Entity{}).
@@ -254,7 +280,7 @@ func (n *Entities) GetByType(t string, limit, offset int64) (list []*Entity, err
 }
 
 // Search ...
-func (n *Entities) Search(query string, limit, offset int64) (list []*Entity, total int64, err error) {
+func (n *Entities) Search(query string, limit, offset int) (list []*Entity, total int64, err error) {
 
 	q := n.Db.Model(&Entity{}).
 		Where("id LIKE ?", "%"+query+"%")
@@ -278,8 +304,8 @@ func (n *Entities) Search(query string, limit, offset int64) (list []*Entity, to
 }
 
 // AppendMetric ...
-func (n Entities) AppendMetric(id common.EntityId, metric Metric) (err error) {
-	if err = n.Db.Model(&Entity{Id: id}).Association("Metrics").Append(&metric).Error; err != nil {
+func (n Entities) AppendMetric(id common.EntityId, metric *Metric) (err error) {
+	if err = n.Db.Model(&Entity{Id: id}).Association("Metrics").Append(&metric); err != nil {
 		err = errors.Wrap(apperr.ErrEntityAppendMetric, err.Error())
 	}
 	return
@@ -287,15 +313,27 @@ func (n Entities) AppendMetric(id common.EntityId, metric Metric) (err error) {
 
 // DeleteMetric ...
 func (n Entities) DeleteMetric(id common.EntityId, metricId int64) (err error) {
-	if err = n.Db.Model(&Entity{Id: id}).Association("Metrics").Delete(&Metric{Id: metricId}).Error; err != nil {
+	if err = n.Db.Model(&Entity{Id: id}).Association("Metrics").Delete(&Metric{Id: metricId}); err != nil {
 		err = errors.Wrap(apperr.ErrEntityDeleteMetric, err.Error())
+	}
+	return
+}
+
+// UpdateAutoload ...
+func (n Entities) UpdateAutoload(entityId common.EntityId, autoLoad bool) (err error) {
+	q := map[string]interface{}{
+		"auto_load": autoLoad,
+	}
+
+	if err = n.Db.Model(&Entity{Id: entityId}).Updates(q).Error; err != nil {
+		err = errors.Wrap(apperr.ErrEntityUpdate, err.Error())
 	}
 	return
 }
 
 // ReplaceMetric ...
 func (n Entities) ReplaceMetric(id common.EntityId, metric Metric) (err error) {
-	if err = n.Db.Model(&Entity{Id: id}).Association("Metrics").Replace(&metric).Error; err != nil {
+	if err = n.Db.Model(&Entity{Id: id}).Association("Metrics").Replace(&metric); err != nil {
 		err = errors.Wrap(apperr.ErrEntityReplaceMetric, err.Error())
 	}
 	return
@@ -303,7 +341,7 @@ func (n Entities) ReplaceMetric(id common.EntityId, metric Metric) (err error) {
 
 // AppendScript ...
 func (n Entities) AppendScript(id common.EntityId, script *Script) (err error) {
-	if err = n.Db.Model(&Entity{Id: id}).Association("Scripts").Append(script).Error; err != nil {
+	if err = n.Db.Model(&Entity{Id: id}).Association("Scripts").Append(script); err != nil {
 		err = errors.Wrap(apperr.ErrEntityAppendScript, err.Error())
 	}
 	return
@@ -311,7 +349,7 @@ func (n Entities) AppendScript(id common.EntityId, script *Script) (err error) {
 
 // DeleteScript ...
 func (n Entities) DeleteScript(id common.EntityId, scriptId int64) (err error) {
-	if err = n.Db.Model(&Entity{Id: id}).Association("Scripts").Delete(&Script{Id: scriptId}).Error; err != nil {
+	if err = n.Db.Model(&Entity{Id: id}).Association("Scripts").Delete(&Script{Id: scriptId}); err != nil {
 		err = errors.Wrap(apperr.ErrEntityDeleteScript, err.Error())
 	}
 	return
@@ -319,7 +357,7 @@ func (n Entities) DeleteScript(id common.EntityId, scriptId int64) (err error) {
 
 // ReplaceScript ...
 func (n Entities) ReplaceScript(id common.EntityId, script *Script) (err error) {
-	if err = n.Db.Model(&Entity{Id: id}).Association("Scripts").Replace(script).Error; err != nil {
+	if err = n.Db.Model(&Entity{Id: id}).Association("Scripts").Replace(script); err != nil {
 		err = errors.Wrap(apperr.ErrEntityReplaceScript, err.Error())
 	}
 	return

@@ -24,9 +24,9 @@ import (
 	"time"
 
 	"github.com/jackc/pgerrcode"
-	"github.com/jinzhu/gorm"
 	"github.com/lib/pq"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 
 	"github.com/e154/smart-home/common/apperr"
 )
@@ -125,7 +125,7 @@ func (n Dashboards) Delete(id int64) (err error) {
 }
 
 // List ...
-func (n *Dashboards) List(limit, offset int64, orderBy, sort string) (list []*Dashboard, total int64, err error) {
+func (n *Dashboards) List(limit, offset int, orderBy, sort string) (list []*Dashboard, total int64, err error) {
 
 	if err = n.Db.Model(Dashboard{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrDashboardGet, err.Error())
@@ -157,7 +157,7 @@ func (n *Dashboards) List(limit, offset int64, orderBy, sort string) (list []*Da
 }
 
 // Search ...
-func (d *Dashboards) Search(query string, limit, offset int64) (list []*Dashboard, total int64, err error) {
+func (d *Dashboards) Search(query string, limit, offset int) (list []*Dashboard, total int64, err error) {
 
 	q := d.Db.Model(&Dashboard{}).
 		Where("name LIKE ?", "%"+query+"%")

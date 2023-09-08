@@ -21,7 +21,7 @@ package adaptors
 import (
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // IScript ...
@@ -31,8 +31,9 @@ type IScript interface {
 	GetByName(name string) (script *m.Script, err error)
 	Update(script *m.Script) (err error)
 	Delete(scriptId int64) (err error)
-	List(limit, offset int64, orderBy, sort string) (list []*m.Script, total int64, err error)
+	List(limit, offset int64, orderBy, sort string, query *string) (list []*m.Script, total int64, err error)
 	Search(query string, limit, offset int64) (list []*m.Script, total int64, err error)
+	Statistic() (statistic *m.ScriptsStatistic, err error)
 	fromDb(dbScript *db.Script) (script *m.Script, err error)
 	toDb(script *m.Script) (dbScript *db.Script)
 }
@@ -99,7 +100,7 @@ func (n *Script) Delete(scriptId int64) (err error) {
 }
 
 // List ...
-func (n *Script) List(limit, offset int64, orderBy, sort string) (list []*m.Script, total int64, err error) {
+func (n *Script) List(limit, offset int64, orderBy, sort string, query *string) (list []*m.Script, total int64, err error) {
 
 	if sort == "" {
 		sort = "id"
@@ -109,7 +110,7 @@ func (n *Script) List(limit, offset int64, orderBy, sort string) (list []*m.Scri
 	}
 
 	var dbList []*db.Script
-	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
+	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort, query); err != nil {
 		return
 	}
 
@@ -125,7 +126,7 @@ func (n *Script) List(limit, offset int64, orderBy, sort string) (list []*m.Scri
 // Search ...
 func (n *Script) Search(query string, limit, offset int64) (list []*m.Script, total int64, err error) {
 	var dbList []*db.Script
-	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
+	if dbList, total, err = n.table.Search(query, int(limit), int(offset)); err != nil {
 		return
 	}
 
@@ -135,6 +136,22 @@ func (n *Script) Search(query string, limit, offset int64) (list []*m.Script, to
 		list = append(list, dev)
 	}
 
+	return
+}
+
+func (n *Script) Statistic() (statistic *m.ScriptsStatistic, err error) {
+	var dbVer *db.ScriptsStatistic
+	if dbVer, err = n.table.Statistic(); err != nil {
+		return
+	}
+	statistic = &m.ScriptsStatistic{
+		Total:        dbVer.Total,
+		Used:         dbVer.Used,
+		Unused:       dbVer.Unused,
+		CoffeeScript: dbVer.CoffeeScript,
+		TypeScript:   dbVer.TypeScript,
+		JavaScript:   dbVer.JavaScript,
+	}
 	return
 }
 

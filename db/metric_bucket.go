@@ -26,8 +26,8 @@ import (
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
 
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // MetricBuckets ...
@@ -49,7 +49,7 @@ func (d *MetricBucket) TableName() string {
 }
 
 // Add ...
-func (n MetricBuckets) Add(metric MetricBucket) (err error) {
+func (n MetricBuckets) Add(metric *MetricBucket) (err error) {
 	if err = n.Db.Create(&metric).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMetricBucketAdd, err.Error())
 	}
@@ -57,14 +57,14 @@ func (n MetricBuckets) Add(metric MetricBucket) (err error) {
 }
 
 // SimpleListWithSoftRange ...
-func (n *MetricBuckets) SimpleListWithSoftRange(from, to time.Time, metricId int64, optionItems []string) (list []MetricBucket, err error) {
+func (n *MetricBuckets) SimpleListWithSoftRange(from, to time.Time, metricId int64, optionItems []string) (list []*MetricBucket, err error) {
 	var num int64 = 1
 	t := from.Sub(to).Seconds()
 	if t > 3600 {
 		num = int64(t / 3600)
 	}
 
-	list = make([]MetricBucket, 0)
+	list = make([]*MetricBucket, 0)
 	var str string
 	for i, item := range optionItems {
 		str += fmt.Sprintf(" '%s', trunc(avg((value ->> '%[1]s')::numeric), 2)", item)
@@ -90,7 +90,7 @@ LIMIT 3600`
 }
 
 // SimpleListByRangeType ...
-func (n *MetricBuckets) SimpleListByRangeType(metricId int64, metricRange common.MetricRange, optionItems []string) (list []MetricBucket, err error) {
+func (n *MetricBuckets) SimpleListByRangeType(metricId int64, metricRange common.MetricRange, optionItems []string) (list []*MetricBucket, err error) {
 	var str string
 	for i, item := range optionItems {
 		str += fmt.Sprintf(" '%s', trunc(avg((value ->> '%[1]s')::numeric), 2)", item)
@@ -157,7 +157,7 @@ from metric_bucket b
 where b.metric_id = ? and b.time > NOW() - interval '1 hour'
 limit 3600`
 	}
-	list = make([]MetricBucket, 0)
+	list = make([]*MetricBucket, 0)
 	if err = n.Db.Raw(q, metricId).Scan(&list).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMetricBucketGet, err.Error())
 	}
@@ -166,8 +166,8 @@ limit 3600`
 }
 
 // Simple24HPreview ...
-func (n *MetricBuckets) Simple24HPreview(metricId int64, optionItems []string) (list []MetricBucket, err error) {
-	list = make([]MetricBucket, 0)
+func (n *MetricBuckets) Simple24HPreview(metricId int64, optionItems []string) (list []*MetricBucket, err error) {
+	list = make([]*MetricBucket, 0)
 	var str string
 	for i, item := range optionItems {
 		str += fmt.Sprintf(" '%s', trunc(avg((value ->> '%[1]s')::numeric), 2)", item)
@@ -219,6 +219,14 @@ func (n MetricBuckets) DeleteById(id int64) (err error) {
 // CreateHypertable ...
 func (n MetricBuckets) CreateHypertable() (err error) {
 	if err = n.Db.Raw(`SELECT create_hypertable('metric_bucket', 'time', migrate_data=>'TRUE')`).Error; err != nil {
+		err = errors.Wrap(apperr.ErrMetricBucketAdd, err.Error())
+	}
+	return
+}
+
+// AddMultiple ...
+func (n *MetricBuckets) AddMultiple(buckets []*MetricBucket) (err error) {
+	if err = n.Db.Create(&buckets).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMetricBucketAdd, err.Error())
 	}
 	return

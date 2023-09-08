@@ -19,17 +19,22 @@
 package adaptors
 
 import (
+	"time"
+
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/gorm"
-	gormbulk "github.com/t-tiger/gorm-bulk-insert"
+	"gorm.io/gorm"
 )
 
 // IAction ...
 type IAction interface {
-	DeleteByTaskId(id int64) (err error)
-	AddMultiple(items []*m.Action) (err error)
+	Add(ver *m.Action) (id int64, err error)
+	GetById(id int64) (metric *m.Action, err error)
+	Update(ver *m.Action) error
+	Delete(deviceId int64) (err error)
+	List(limit, offset int64, orderBy, sort string) (list []*m.Action, total int64, err error)
+	Search(query string, limit, offset int) (list []*m.Action, total int64, err error)
 	fromDb(dbVer *db.Action) (ver *m.Action)
 	toDb(ver *m.Action) (dbVer *db.Action)
 }
@@ -49,22 +54,70 @@ func GetActionAdaptor(d *gorm.DB) IAction {
 	}
 }
 
-// DeleteByTaskId ...
-func (n *Action) DeleteByTaskId(id int64) (err error) {
-	err = n.table.DeleteByTaskId(id)
+// Add ...
+func (n *Action) Add(ver *m.Action) (id int64, err error) {
+	id, err = n.table.Add(n.toDb(ver))
 	return
 }
 
-// AddMultiple ...
-func (n *Action) AddMultiple(items []*m.Action) (err error) {
+// GetById ...
+func (n *Action) GetById(id int64) (metric *m.Action, err error) {
+	var dbVer *db.Action
+	if dbVer, err = n.table.GetById(id); err != nil {
+		return
+	}
+	metric = n.fromDb(dbVer)
+	return
+}
 
-	insertRecords := make([]interface{}, 0, len(items))
+// GetByIdWithData ...
+func (n *Action) GetByIdWithData(id int64, from, to *time.Time, metricRange *string) (metric *m.Action, err error) {
+	var dbVer *db.Action
+	if dbVer, err = n.table.GetById(id); err != nil {
+		return
+	}
+	metric = n.fromDb(dbVer)
+	return
+}
 
-	for _, ver := range items {
-		insertRecords = append(insertRecords, n.toDb(ver))
+// Update ...
+func (n *Action) Update(ver *m.Action) error {
+	return n.table.Update(n.toDb(ver))
+}
+
+// Delete ...
+func (n *Action) Delete(deviceId int64) (err error) {
+	err = n.table.Delete(deviceId)
+	return
+}
+
+// List ...
+func (n *Action) List(limit, offset int64, orderBy, sort string) (list []*m.Action, total int64, err error) {
+	var dbList []*db.Action
+	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort); err != nil {
+		return
 	}
 
-	err = gormbulk.BulkInsert(n.db, insertRecords, len(insertRecords))
+	list = make([]*m.Action, len(dbList))
+	for i, dbVer := range dbList {
+		list[i] = n.fromDb(dbVer)
+	}
+
+	return
+}
+
+// Search ...
+func (n *Action) Search(query string, limit, offset int) (list []*m.Action, total int64, err error) {
+	var dbList []*db.Action
+	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
+		return
+	}
+
+	list = make([]*m.Action, len(dbList))
+	for i, dbVer := range dbList {
+		list[i] = n.fromDb(dbVer)
+	}
+
 	return
 }
 
@@ -72,10 +125,11 @@ func (n *Action) fromDb(dbVer *db.Action) (ver *m.Action) {
 	ver = &m.Action{
 		Id:               dbVer.Id,
 		Name:             dbVer.Name,
-		TaskId:           dbVer.TaskId,
 		ScriptId:         dbVer.ScriptId,
 		EntityId:         dbVer.EntityId,
 		EntityActionName: dbVer.EntityActionName,
+		CreatedAt:        dbVer.CreatedAt,
+		UpdatedAt:        dbVer.UpdatedAt,
 	}
 	// script
 	if dbVer.Script != nil {
@@ -94,10 +148,15 @@ func (n *Action) toDb(ver *m.Action) (dbVer *db.Action) {
 	dbVer = &db.Action{
 		Id:               ver.Id,
 		Name:             ver.Name,
-		TaskId:           ver.TaskId,
 		ScriptId:         ver.ScriptId,
 		EntityId:         ver.EntityId,
 		EntityActionName: ver.EntityActionName,
+		CreatedAt:        ver.CreatedAt,
+		UpdatedAt:        ver.UpdatedAt,
+	}
+
+	if ver.Entity != nil {
+		dbVer.EntityId = common.NewEntityId(ver.Entity.Id.String())
 	}
 
 	if ver.Script != nil {

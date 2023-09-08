@@ -21,8 +21,8 @@ package adaptors
 import (
 	"context"
 
-	"github.com/jinzhu/gorm"
 	"go.uber.org/fx"
+	"gorm.io/gorm"
 
 	"github.com/e154/smart-home/common/logger"
 	"github.com/e154/smart-home/models"
@@ -136,24 +136,30 @@ func NewAdaptors(lc fx.Lifecycle,
 
 // Begin ...
 func (a Adaptors) Begin() (adaptors *Adaptors) {
-	adaptors = NewAdaptors(nil, a.db.Begin(), nil, nil, nil)
-	adaptors.isTx = true
+	//adaptors = NewAdaptors(nil, a.db.Begin(), nil, nil, nil)
+	//adaptors.isTx = true
+	adaptors = &a
+	adaptors.db.Begin()
 	return
 }
 
 // Commit ...
 func (a *Adaptors) Commit() error {
-	if !a.isTx {
-		return nil
-	}
-	a.isTx = false
-	return a.db.Commit().Error
+	//if !a.isTx {
+	//	return nil
+	//}
+	//a.isTx = false
+	//return a.db.Commit().Error
+	a.db.Commit()
+	return nil
 }
 
 // Rollback ...
 func (a *Adaptors) Rollback() error {
-	if !a.isTx {
-		return nil
-	}
-	return a.db.Rollback().Error
+	//if !a.isTx {
+	//	return nil
+	//}
+	//return a.db.Rollback().Error
+	a.db.Rollback()
+	return nil
 }

@@ -3,8 +3,8 @@ package stream
 import (
 	"encoding/json"
 
-	"github.com/e154/smart-home/plugins/webpush"
 	"github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/plugins/webpush"
 )
 
 type eventHandler struct {
@@ -23,20 +23,54 @@ func NewEventHandler(broadcast func(query string, message []byte),
 func (e *eventHandler) eventHandler(_ string, message interface{}) {
 
 	switch v := message.(type) {
+
+	// entities
 	case events.EventStateChanged:
 		go e.eventStateChangedHandler(message)
 	case events.EventLastStateChanged:
 		go e.eventStateChangedHandler(message)
-	case events.EventLoadedPlugin:
-	case events.EventUnloadedPlugin:
 	case events.EventCreatedEntity:
 	case events.EventUpdatedEntity:
-	case events.EventDeletedEntity:
+	case events.CommandUnloadEntity:
+	case events.EventEntityLoaded:
+		go e.event(message)
+	case events.EventEntityUnloaded:
+		go e.event(message)
 	case events.EventEntitySetState:
+
+	// notifications
 	case webpush.EventNewWebPushPublicKey:
 		go e.eventNewWebPushPublicKey(v)
 	case events.EventDirectMessage:
 		go e.eventDirectMessage(v.UserID, v.Query, v.Message)
+
+	// plugins
+	case events.EventLoadedPlugin:
+	case events.EventUnloadedPlugin:
+
+	// tasks
+	case events.EventTaskLoaded:
+		go e.event(message)
+	case events.EventTaskUnloaded:
+		go e.event(message)
+	case events.EventTaskCompleted:
+		go e.event(message)
+
+	// triggers
+	case events.EventTriggerLoaded:
+		go e.event(message)
+	case events.EventTriggerUnloaded:
+		go e.event(message)
+	case events.EventTriggerCompleted:
+		go e.event(message)
+
+	// actions
+	case events.EventActionCompleted:
+		go e.event(message)
+
+	// mqtt
+	case events.EventMqttNewClient:
+		go e.event(message)
 	}
 }
 
@@ -56,6 +90,11 @@ func (e *eventHandler) eventStateChangedHandler(msg interface{}) {
 }
 
 func (e *eventHandler) eventDirectMessage(userID int64, query string, msg interface{}) {
-	body, _ := json.Marshal(msg)
-	e.directMessage(userID, query, body)
+	b, _ := json.Marshal(msg)
+	e.directMessage(userID, query, b)
+}
+
+func (e *eventHandler) event(msg interface{}) {
+	b, _ := json.Marshal(msg)
+	e.broadcast(events.EventName(msg), b)
 }

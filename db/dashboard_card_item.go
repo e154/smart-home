@@ -25,9 +25,9 @@ import (
 	"time"
 
 	"github.com/jackc/pgerrcode"
-	"github.com/jinzhu/gorm"
 	"github.com/lib/pq"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
@@ -126,7 +126,7 @@ func (n DashboardCardItems) Delete(id int64) (err error) {
 }
 
 // List ...
-func (n *DashboardCardItems) List(limit, offset int64, orderBy, sort string) (list []*DashboardCardItem, total int64, err error) {
+func (n *DashboardCardItems) List(limit, offset int, orderBy, sort string) (list []*DashboardCardItem, total int64, err error) {
 
 	if err = n.Db.Model(DashboardCardItem{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrDashboardCardItemList, err.Error())

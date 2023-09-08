@@ -21,7 +21,7 @@ package adaptors
 import (
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type IDashboardCardItem interface {
@@ -93,7 +93,7 @@ func (n *DashboardCardItem) List(limit, offset int64, orderBy, sort string) (lis
 	}
 
 	var dbList []*db.DashboardCardItem
-	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
+	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort); err != nil {
 		return
 	}
 

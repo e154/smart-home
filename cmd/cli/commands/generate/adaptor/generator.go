@@ -43,14 +43,14 @@ import (
 	"{{.Dir}}/common"
 	"{{.Dir}}/db"
 	m "{{.Dir}}/models"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type I{{.Name}} interface {
-	Add(ver *m.{{.ModelName}}) (id int64, err error)
+	AddEntity(ver *m.{{.ModelName}}) (id int64, err error)
 	GetBy{{.Name}}Name(imageName string) (ver *m.{{.ModelName}}, err error)
 	GetById(mapId int64) (ver *m.{{.ModelName}}, err error)
-	Update(ver *m.{{.ModelName}}) (err error)
+	UpdateEntity(ver *m.{{.ModelName}}) (err error)
 	Delete(mapId int64) (err error)
 	List(limit, offset int64, orderBy, sort string) (list []*m.{{.ModelName}}, total int64, err error)
 	fromDb(*db.{{.ModelName}}) *m.{{.ModelName}}
@@ -72,11 +72,11 @@ func Get{{.Name}}Adaptor(d *gorm.DB) I{{.Name}} {
 	}
 }
 
-// Add ...
-func (n *{{.Name}}) Add(ver *m.{{.ModelName}}) (id int64, err error) {
+// AddEntity ...
+func (n *{{.Name}}) AddEntity(ver *m.{{.ModelName}}) (id int64, err error) {
 
 	dbVer := n.toDb(ver)
-	if id, err = n.table.Add(dbVer); err != nil {
+	if id, err = n.table.AddEntity(dbVer); err != nil {
 		return
 	}
 
@@ -96,10 +96,10 @@ func (n *{{.Name}}) GetById(mapId int64) (ver *m.{{.ModelName}}, err error) {
 	return
 }
 
-// Update ...
-func (n *{{.Name}}) Update(ver *m.{{.ModelName}}) (err error) {
+// UpdateEntity ...
+func (n *{{.Name}}) UpdateEntity(ver *m.{{.ModelName}}) (err error) {
 	dbVer := n.toDb(ver)
-	err = n.table.Update(dbVer)
+	err = n.table.UpdateEntity(dbVer)
 	return
 }
 

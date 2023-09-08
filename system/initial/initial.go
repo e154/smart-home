@@ -23,26 +23,25 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/e154/smart-home/system/scheduler"
 	"go.uber.org/fx"
 
 	. "github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api"
-	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	_ "github.com/e154/smart-home/plugins"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/automation"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/gate_client"
 	. "github.com/e154/smart-home/system/initial/assertions"
 	"github.com/e154/smart-home/system/initial/demo"
 	localMigrations "github.com/e154/smart-home/system/initial/local_migrations"
 	"github.com/e154/smart-home/system/logging_ws"
 	"github.com/e154/smart-home/system/migrations"
+	"github.com/e154/smart-home/system/scheduler"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 	"github.com/e154/smart-home/system/validation"
 )
 
@@ -56,8 +55,7 @@ type Initial struct {
 	adaptors        *Adaptors
 	scriptService   scripts.ScriptService
 	accessList      access_list.AccessListService
-	entityManager   entity_manager.EntityManager
-	pluginManager   common.PluginManager
+	supervisor      supervisor.Supervisor
 	automation      automation.Automation
 	api             *api.Api
 	gateClient      *gate_client.GateClient
@@ -72,8 +70,7 @@ func NewInitial(lc fx.Lifecycle,
 	adaptors *Adaptors,
 	scriptService scripts.ScriptService,
 	accessList access_list.AccessListService,
-	entityManager entity_manager.EntityManager,
-	pluginManager common.PluginManager,
+	supervisor supervisor.Supervisor,
 	automation automation.Automation,
 	api *api.Api,
 	gateClient *gate_client.GateClient,
@@ -87,8 +84,7 @@ func NewInitial(lc fx.Lifecycle,
 		adaptors:        adaptors,
 		scriptService:   scriptService,
 		accessList:      accessList,
-		entityManager:   entityManager,
-		pluginManager:   pluginManager,
+		supervisor:      supervisor,
 		automation:      automation,
 		api:             api,
 		gateClient:      gateClient,
@@ -139,7 +135,6 @@ func (n *Initial) checkForUpgrade() {
 		fmt.Println("")
 	}()
 
-
 	v, err := n.adaptors.Variable.GetByName("initial_version")
 	if err != nil {
 
@@ -168,9 +163,8 @@ func (n *Initial) checkForUpgrade() {
 
 // Start ...
 func (n *Initial) Start(ctx context.Context) (err error) {
-	n.checkForUpgrade()
-	n.entityManager.SetPluginManager(n.pluginManager)
-	n.pluginManager.Start()
+	//n.checkForUpgrade()
+	_ = n.supervisor.Start(ctx)
 	_ = n.automation.Start()
 	go func() {
 		_ = n.api.Start()

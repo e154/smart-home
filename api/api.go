@@ -26,6 +26,9 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/system/bus"
+
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/rs/cors"
 	"github.com/tmc/grpc-websocket-proxy/wsproxy"
@@ -58,16 +61,19 @@ type Api struct {
 	lis         net.Listener
 	httpServer  *http.Server
 	grpcServer  *grpc.Server
+	eventBus    bus.Bus
 }
 
 // NewApi ...
 func NewApi(controllers *controllers.Controllers,
 	filter *rbac.AccessFilter,
-	cfg Config) (api *Api) {
+	cfg Config,
+	eventBus bus.Bus) (api *Api) {
 	api = &Api{
 		controllers: controllers,
 		filter:      filter,
 		cfg:         cfg,
+		eventBus:    eventBus,
 	}
 	return
 }
@@ -121,6 +127,10 @@ func (a *Api) Start() (err error) {
 	gw.RegisterMetricServiceServer(a.grpcServer, a.controllers.Metric)
 	gw.RegisterBackupServiceServer(a.grpcServer, a.controllers.Backup)
 	gw.RegisterMessageDeliveryServiceServer(a.grpcServer, a.controllers.MessageDelivery)
+	gw.RegisterActionServiceServer(a.grpcServer, a.controllers.Action)
+	gw.RegisterConditionServiceServer(a.grpcServer, a.controllers.Condition)
+	gw.RegisterTriggerServiceServer(a.grpcServer, a.controllers.Trigger)
+	gw.RegisterMqttServiceServer(a.grpcServer, a.controllers.Mqtt)
 
 	var group errgroup.Group
 
@@ -179,6 +189,10 @@ func (a *Api) Start() (err error) {
 		_ = gw.RegisterMetricServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
 		_ = gw.RegisterBackupServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
 		_ = gw.RegisterMessageDeliveryServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterActionServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterConditionServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterTriggerServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+		_ = gw.RegisterMqttServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
 		return nil
 	})
 
@@ -227,6 +241,8 @@ func (a *Api) Start() (err error) {
 	})
 	log.Infof("Serving HTTP server at %d", a.cfg.HttpPort)
 
+	a.eventBus.Publish("system/services/api", events.EventServiceStarted{Service: "Api"})
+
 	return group.Wait()
 }
 
@@ -241,6 +257,9 @@ func (a *Api) Shutdown(ctx context.Context) (err error) {
 	if a.lis != nil {
 		err = a.lis.Close()
 	}
+
+	a.eventBus.Publish("system/services/api", events.EventServiceStopped{})
+
 	return
 }
 

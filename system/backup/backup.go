@@ -27,9 +27,9 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 	"go.uber.org/fx"
+	"gorm.io/gorm"
 
 	app "github.com/e154/smart-home/common/app"
 	"github.com/e154/smart-home/common/apperr"
@@ -165,7 +165,7 @@ func (b *Backup) restore(name string) (err error) {
 		return
 	}
 
-	log.Info("Purge database")
+	log.Info("Restart database")
 
 	if err = b.db.Exec(`DROP SCHEMA IF EXISTS "public" CASCADE;`).Error; err != nil {
 		err = errors.Wrap(fmt.Errorf("failed exec sql command"), err.Error())

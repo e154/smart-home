@@ -32,8 +32,7 @@ import (
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/gorm"
-	gormbulk "github.com/t-tiger/gorm-bulk-insert"
+	"gorm.io/gorm"
 )
 
 // IImage ...
@@ -128,7 +127,7 @@ func (n *Image) List(limit, offset int64, orderBy, sort string) (list []*m.Image
 	}
 
 	var dbList []*db.Image
-	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
+	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort); err != nil {
 		return
 	}
 
@@ -199,13 +198,13 @@ func (n *Image) UploadImage(reader *bufio.Reader, fileName string) (newFile *m.I
 // AddMultiple ...
 func (n *Image) AddMultiple(items []*m.Image) (err error) {
 
-	insertRecords := make([]interface{}, 0)
+	insertRecords := make([]*db.Image, 0)
 	for _, ver := range items {
 		dbVer := n.toDb(ver)
 		insertRecords = append(insertRecords, dbVer)
 	}
 
-	err = gormbulk.BulkInsert(n.db, insertRecords, 3000)
+	err = n.table.AddMultiple(insertRecords)
 
 	return
 }

@@ -27,30 +27,30 @@ import (
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/supervisor"
 	"github.com/e154/smart-home/version"
 )
 
 // Actor ...
 type Actor struct {
-	entity_manager.BaseActor
+	supervisor.BaseActor
 	eventBus   bus.Bus
 	updateLock *sync.Mutex
 }
 
 // NewActor ...
-func NewActor(entityManager entity_manager.EntityManager,
+func NewActor(visor supervisor.Supervisor,
 	eventBus bus.Bus) *Actor {
 
 	actor := &Actor{
-		BaseActor: entity_manager.BaseActor{
+		BaseActor: supervisor.BaseActor{
 			Id:                common.EntityId(fmt.Sprintf("%s.%s", EntityVersion, Name)),
 			Name:              Name,
 			EntityType:        EntityVersion,
 			UnitOfMeasurement: "",
 			AttrMu:            &sync.RWMutex{},
 			Attrs:             NewAttr(),
-			Manager:           entityManager,
+			Supervisor:        visor,
 		},
 		eventBus:   eventBus,
 		updateLock: &sync.Mutex{},
@@ -60,7 +60,7 @@ func NewActor(entityManager entity_manager.EntityManager,
 }
 
 // Spawn ...
-func (e *Actor) Spawn() entity_manager.PluginActor {
+func (e *Actor) Spawn() supervisor.PluginActor {
 	return e
 }
 
@@ -86,7 +86,7 @@ func (u *Actor) selfUpdate() {
 	u.Attrs[AttrGoVersion].Value = version.GoVersion
 	u.AttrMu.Unlock()
 
-	u.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
+	u.eventBus.Publish("system/entities/"+u.Id.String(), events.EventStateChanged{
 		StorageSave: false,
 		PluginName:  u.Id.PluginName(),
 		EntityId:    u.Id,

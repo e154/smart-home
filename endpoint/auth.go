@@ -21,13 +21,14 @@ package endpoint
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/e154/smart-home/common/apperr"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/email"
 	"github.com/e154/smart-home/plugins/notify"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/pkg/errors"
-	"time"
 )
 
 const (
@@ -120,7 +121,7 @@ func (a *AuthEndpoint) PasswordReset(ctx context.Context, userEmail string, toke
 		return
 	}
 
-	if user.ResetPasswordSentAt != nil && time.Now().Before(*user.ResetPasswordSentAt){
+	if user.ResetPasswordSentAt != nil && time.Now().Before(*user.ResetPasswordSentAt) {
 		err = errors.Wrap(apperr.ErrNotAllowed, "reset request already exists")
 		return
 	}

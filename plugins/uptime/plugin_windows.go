@@ -19,9 +19,10 @@
 package uptime
 
 import (
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/plugins"
 	"time"
+
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 const (
@@ -30,7 +31,7 @@ const (
 
 // plugin ...
 type plugin struct {
-	*plugins.Plugin
+	*supervisor.Plugin
 	entity     *Actor
 	ticker     *time.Ticker
 	pause      time.Duration
@@ -39,7 +40,7 @@ type plugin struct {
 }
 
 // Load ...
-func (p *plugin) Load(service plugins.Service) (err error) {
+func (p *plugin) Load(service supervisor.Service) (err error) {
 
 	return
 }
@@ -56,8 +57,8 @@ func (u plugin) Name() string {
 }
 
 // Type ...
-func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginBuiltIn
+func (p *plugin) Type() supervisor.PluginType {
+	return supervisor.PluginBuiltIn
 }
 
 // Depends ...

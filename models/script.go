@@ -45,3 +45,12 @@ type ScriptInfo struct {
 	AutomationConditions int `json:"automation_conditions"`
 	AutomationActions    int `json:"automation_actions"`
 }
+
+type ScriptsStatistic struct {
+	Total        int32
+	Used         int32
+	Unused       int32
+	CoffeeScript int32
+	TypeScript   int32
+	JavaScript   int32
+}

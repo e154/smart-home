@@ -27,7 +27,6 @@ import (
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/go-playground/validator/v10"
 )
@@ -61,8 +60,8 @@ func (n *EntityEndpoint) Add(ctx context.Context, entity *m.Entity) (result *m.E
 		return
 	}
 
-	n.eventBus.Publish(bus.TopicEntities, events.EventCreatedEntity{
-		Id: result.Id,
+	n.eventBus.Publish("system/entities/"+entity.Id.String(), events.EventCreatedEntity{
+		EntityId: result.Id,
 	})
 
 	return
@@ -106,7 +105,10 @@ func (n *EntityEndpoint) Import(ctx context.Context, entity *m.Entity) (err erro
 
 // GetById ...
 func (n *EntityEndpoint) GetById(ctx context.Context, id common.EntityId) (result *m.Entity, err error) {
-	result, err = n.adaptors.Entity.GetById(id)
+	if result, err = n.adaptors.Entity.GetById(id); err != nil {
+		return
+	}
+	result.IsLoaded = n.supervisor.EntityIsLoaded(id)
 	return
 }
 
@@ -136,17 +138,23 @@ func (n *EntityEndpoint) Update(ctx context.Context, params *m.Entity) (result *
 		return
 	}
 
-	n.eventBus.Publish(bus.TopicEntities, events.EventUpdatedEntity{
-		Id: result.Id,
+	n.eventBus.Publish("system/entities/"+entity.Id.String(), events.EventUpdatedEntity{
+		EntityId: result.Id,
 	})
 
 	return
 }
 
 // List ...
-func (n *EntityEndpoint) List(ctx context.Context, pagination common.PageParams) (result []*m.Entity, total int64, err error) {
-	result, total, err = n.adaptors.Entity.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, false)
-
+func (n *EntityEndpoint) List(ctx context.Context, pagination common.PageParams, query, plugin *string, areaId *int64) (entities []*m.Entity, total int64, err error) {
+	entities, total, err = n.adaptors.Entity.List(pagination.Limit, pagination.Offset, pagination.Order,
+		pagination.SortBy, false, query, plugin, areaId)
+	if err != nil {
+		return
+	}
+	for _, entity := range entities {
+		entity.IsLoaded = n.supervisor.EntityIsLoaded(entity.Id)
+	}
 	return
 }
 
@@ -168,8 +176,8 @@ func (n *EntityEndpoint) Delete(ctx context.Context, id common.EntityId) (err er
 		return
 	}
 
-	n.eventBus.Publish(bus.TopicEntities, events.EventDeletedEntity{
-		Id: id,
+	n.eventBus.Publish("system/entities/"+id.String(), events.CommandUnloadEntity{
+		EntityId: id,
 	})
 
 	return
@@ -179,5 +187,55 @@ func (n *EntityEndpoint) Delete(ctx context.Context, id common.EntityId) (err er
 func (n *EntityEndpoint) Search(ctx context.Context, query string, limit, offset int64) (result []*m.Entity, total int64, err error) {
 
 	result, total, err = n.adaptors.Entity.Search(query, limit, offset)
+	return
+}
+
+// Enable ...
+func (n *EntityEndpoint) Enable(ctx context.Context, id common.EntityId) (err error) {
+
+	if id == "" {
+		err = apperr.ErrBadRequestParams
+		return
+	}
+
+	var entity *m.Entity
+	entity, err = n.adaptors.Entity.GetById(id)
+	if err != nil {
+		return
+	}
+
+	if err = n.adaptors.Entity.UpdateAutoload(entity.Id, true); err != nil {
+		return
+	}
+
+	n.eventBus.Publish("system/entities/"+id.String(), events.CommandLoadEntity{
+		EntityId: id,
+	})
+
+	return
+}
+
+// Disable ...
+func (n *EntityEndpoint) Disable(ctx context.Context, id common.EntityId) (err error) {
+
+	if id == "" {
+		err = apperr.ErrBadRequestParams
+		return
+	}
+
+	var entity *m.Entity
+	entity, err = n.adaptors.Entity.GetById(id)
+	if err != nil {
+		return
+	}
+
+	if err = n.adaptors.Entity.UpdateAutoload(entity.Id, false); err != nil {
+		return
+	}
+
+	n.eventBus.Publish("system/entities/"+id.String(), events.CommandUnloadEntity{
+		EntityId: id,
+	})
+
 	return
 }

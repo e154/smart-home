@@ -2,6 +2,7 @@ package local_migrations
 
 import (
 	"context"
+
 	"github.com/e154/smart-home/plugins/alexa"
 	"github.com/e154/smart-home/plugins/cgminer"
 	"github.com/e154/smart-home/plugins/cpuspeed"
@@ -89,7 +90,7 @@ func (n *MigrationPlugins) Up(ctx context.Context, adaptors *adaptors.Adaptors) 
 }
 
 func (n *MigrationPlugins) addPlugin(name string, enabled, system, actor bool, version string) (node *m.Plugin) {
-	_ = n.adaptors.Plugin.CreateOrUpdate(m.Plugin{
+	_ = n.adaptors.Plugin.CreateOrUpdate(&m.Plugin{
 		Name:    name,
 		Version: version,
 		Enabled: enabled,

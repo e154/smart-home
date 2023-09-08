@@ -4,6 +4,7 @@ package api
 
 import (
 	context "context"
+
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -23,10 +24,12 @@ type DeveloperToolsServiceClient interface {
 	EntitySetState(ctx context.Context, in *EntityRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// reload entity
 	ReloadEntity(ctx context.Context, in *ReloadRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// task call trigger
-	TaskCallTrigger(ctx context.Context, in *AutomationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// task call action
-	TaskCallAction(ctx context.Context, in *AutomationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// call trigger
+	CallTrigger(ctx context.Context, in *AutomationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// call action
+	CallAction(ctx context.Context, in *AutomationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// bas state
+	GetEventBusStateList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*EventBusStateListResult, error)
 }
 
 type developerToolsServiceClient struct {
@@ -55,18 +58,27 @@ func (c *developerToolsServiceClient) ReloadEntity(ctx context.Context, in *Relo
 	return out, nil
 }
 
-func (c *developerToolsServiceClient) TaskCallTrigger(ctx context.Context, in *AutomationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *developerToolsServiceClient) CallTrigger(ctx context.Context, in *AutomationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, "/api.DeveloperToolsService/TaskCallTrigger", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.DeveloperToolsService/CallTrigger", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *developerToolsServiceClient) TaskCallAction(ctx context.Context, in *AutomationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *developerToolsServiceClient) CallAction(ctx context.Context, in *AutomationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, "/api.DeveloperToolsService/TaskCallAction", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.DeveloperToolsService/CallAction", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *developerToolsServiceClient) GetEventBusStateList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*EventBusStateListResult, error) {
+	out := new(EventBusStateListResult)
+	err := c.cc.Invoke(ctx, "/api.DeveloperToolsService/GetEventBusStateList", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -81,10 +93,12 @@ type DeveloperToolsServiceServer interface {
 	EntitySetState(context.Context, *EntityRequest) (*emptypb.Empty, error)
 	// reload entity
 	ReloadEntity(context.Context, *ReloadRequest) (*emptypb.Empty, error)
-	// task call trigger
-	TaskCallTrigger(context.Context, *AutomationRequest) (*emptypb.Empty, error)
-	// task call action
-	TaskCallAction(context.Context, *AutomationRequest) (*emptypb.Empty, error)
+	// call trigger
+	CallTrigger(context.Context, *AutomationRequest) (*emptypb.Empty, error)
+	// call action
+	CallAction(context.Context, *AutomationRequest) (*emptypb.Empty, error)
+	// bas state
+	GetEventBusStateList(context.Context, *PaginationRequest) (*EventBusStateListResult, error)
 }
 
 // UnimplementedDeveloperToolsServiceServer should be embedded to have forward compatible implementations.
@@ -97,11 +111,14 @@ func (UnimplementedDeveloperToolsServiceServer) EntitySetState(context.Context, 
 func (UnimplementedDeveloperToolsServiceServer) ReloadEntity(context.Context, *ReloadRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReloadEntity not implemented")
 }
-func (UnimplementedDeveloperToolsServiceServer) TaskCallTrigger(context.Context, *AutomationRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method TaskCallTrigger not implemented")
+func (UnimplementedDeveloperToolsServiceServer) CallTrigger(context.Context, *AutomationRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CallTrigger not implemented")
 }
-func (UnimplementedDeveloperToolsServiceServer) TaskCallAction(context.Context, *AutomationRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method TaskCallAction not implemented")
+func (UnimplementedDeveloperToolsServiceServer) CallAction(context.Context, *AutomationRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CallAction not implemented")
+}
+func (UnimplementedDeveloperToolsServiceServer) GetEventBusStateList(context.Context, *PaginationRequest) (*EventBusStateListResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetEventBusStateList not implemented")
 }
 
 // UnsafeDeveloperToolsServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -151,38 +168,56 @@ func _DeveloperToolsService_ReloadEntity_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DeveloperToolsService_TaskCallTrigger_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DeveloperToolsService_CallTrigger_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AutomationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DeveloperToolsServiceServer).TaskCallTrigger(ctx, in)
+		return srv.(DeveloperToolsServiceServer).CallTrigger(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.DeveloperToolsService/TaskCallTrigger",
+		FullMethod: "/api.DeveloperToolsService/CallTrigger",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DeveloperToolsServiceServer).TaskCallTrigger(ctx, req.(*AutomationRequest))
+		return srv.(DeveloperToolsServiceServer).CallTrigger(ctx, req.(*AutomationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DeveloperToolsService_TaskCallAction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DeveloperToolsService_CallAction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AutomationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DeveloperToolsServiceServer).TaskCallAction(ctx, in)
+		return srv.(DeveloperToolsServiceServer).CallAction(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.DeveloperToolsService/TaskCallAction",
+		FullMethod: "/api.DeveloperToolsService/CallAction",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DeveloperToolsServiceServer).TaskCallAction(ctx, req.(*AutomationRequest))
+		return srv.(DeveloperToolsServiceServer).CallAction(ctx, req.(*AutomationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DeveloperToolsService_GetEventBusStateList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PaginationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DeveloperToolsServiceServer).GetEventBusStateList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.DeveloperToolsService/GetEventBusStateList",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DeveloperToolsServiceServer).GetEventBusStateList(ctx, req.(*PaginationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -203,12 +238,16 @@ var DeveloperToolsService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _DeveloperToolsService_ReloadEntity_Handler,
 		},
 		{
-			MethodName: "TaskCallTrigger",
-			Handler:    _DeveloperToolsService_TaskCallTrigger_Handler,
+			MethodName: "CallTrigger",
+			Handler:    _DeveloperToolsService_CallTrigger_Handler,
 		},
 		{
-			MethodName: "TaskCallAction",
-			Handler:    _DeveloperToolsService_TaskCallAction_Handler,
+			MethodName: "CallAction",
+			Handler:    _DeveloperToolsService_CallAction_Handler,
+		},
+		{
+			MethodName: "GetEventBusStateList",
+			Handler:    _DeveloperToolsService_GetEventBusStateList_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

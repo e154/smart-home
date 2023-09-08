@@ -4,6 +4,7 @@ package api
 
 import (
 	context "context"
+
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -26,13 +27,17 @@ type EntityServiceClient interface {
 	// get entity
 	GetEntity(ctx context.Context, in *GetEntityRequest, opts ...grpc.CallOption) (*Entity, error)
 	// get entity list
-	GetEntityList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*GetEntityListResult, error)
+	GetEntityList(ctx context.Context, in *EntityPaginationRequest, opts ...grpc.CallOption) (*GetEntityListResult, error)
 	// delete entity
 	DeleteEntity(ctx context.Context, in *DeleteEntityRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// search entity
 	SearchEntity(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchEntityResult, error)
 	// import entity
 	ImportEntity(ctx context.Context, in *Entity, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// enabled entity
+	EnabledEntity(ctx context.Context, in *EnableEntityRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// disable entity
+	DisabledEntity(ctx context.Context, in *DisableEntityRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type entityServiceClient struct {
@@ -70,7 +75,7 @@ func (c *entityServiceClient) GetEntity(ctx context.Context, in *GetEntityReques
 	return out, nil
 }
 
-func (c *entityServiceClient) GetEntityList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*GetEntityListResult, error) {
+func (c *entityServiceClient) GetEntityList(ctx context.Context, in *EntityPaginationRequest, opts ...grpc.CallOption) (*GetEntityListResult, error) {
 	out := new(GetEntityListResult)
 	err := c.cc.Invoke(ctx, "/api.EntityService/GetEntityList", in, out, opts...)
 	if err != nil {
@@ -106,6 +111,24 @@ func (c *entityServiceClient) ImportEntity(ctx context.Context, in *Entity, opts
 	return out, nil
 }
 
+func (c *entityServiceClient) EnabledEntity(ctx context.Context, in *EnableEntityRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/api.EntityService/EnabledEntity", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *entityServiceClient) DisabledEntity(ctx context.Context, in *DisableEntityRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/api.EntityService/DisabledEntity", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // EntityServiceServer is the server API for EntityService service.
 // All implementations should embed UnimplementedEntityServiceServer
 // for forward compatibility
@@ -117,13 +140,17 @@ type EntityServiceServer interface {
 	// get entity
 	GetEntity(context.Context, *GetEntityRequest) (*Entity, error)
 	// get entity list
-	GetEntityList(context.Context, *PaginationRequest) (*GetEntityListResult, error)
+	GetEntityList(context.Context, *EntityPaginationRequest) (*GetEntityListResult, error)
 	// delete entity
 	DeleteEntity(context.Context, *DeleteEntityRequest) (*emptypb.Empty, error)
 	// search entity
 	SearchEntity(context.Context, *SearchRequest) (*SearchEntityResult, error)
 	// import entity
 	ImportEntity(context.Context, *Entity) (*emptypb.Empty, error)
+	// enabled entity
+	EnabledEntity(context.Context, *EnableEntityRequest) (*emptypb.Empty, error)
+	// disable entity
+	DisabledEntity(context.Context, *DisableEntityRequest) (*emptypb.Empty, error)
 }
 
 // UnimplementedEntityServiceServer should be embedded to have forward compatible implementations.
@@ -139,7 +166,7 @@ func (UnimplementedEntityServiceServer) UpdateEntity(context.Context, *UpdateEnt
 func (UnimplementedEntityServiceServer) GetEntity(context.Context, *GetEntityRequest) (*Entity, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetEntity not implemented")
 }
-func (UnimplementedEntityServiceServer) GetEntityList(context.Context, *PaginationRequest) (*GetEntityListResult, error) {
+func (UnimplementedEntityServiceServer) GetEntityList(context.Context, *EntityPaginationRequest) (*GetEntityListResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetEntityList not implemented")
 }
 func (UnimplementedEntityServiceServer) DeleteEntity(context.Context, *DeleteEntityRequest) (*emptypb.Empty, error) {
@@ -150,6 +177,12 @@ func (UnimplementedEntityServiceServer) SearchEntity(context.Context, *SearchReq
 }
 func (UnimplementedEntityServiceServer) ImportEntity(context.Context, *Entity) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ImportEntity not implemented")
+}
+func (UnimplementedEntityServiceServer) EnabledEntity(context.Context, *EnableEntityRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EnabledEntity not implemented")
+}
+func (UnimplementedEntityServiceServer) DisabledEntity(context.Context, *DisableEntityRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DisabledEntity not implemented")
 }
 
 // UnsafeEntityServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -218,7 +251,7 @@ func _EntityService_GetEntity_Handler(srv interface{}, ctx context.Context, dec 
 }
 
 func _EntityService_GetEntityList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PaginationRequest)
+	in := new(EntityPaginationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -230,7 +263,7 @@ func _EntityService_GetEntityList_Handler(srv interface{}, ctx context.Context, 
 		FullMethod: "/api.EntityService/GetEntityList",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EntityServiceServer).GetEntityList(ctx, req.(*PaginationRequest))
+		return srv.(EntityServiceServer).GetEntityList(ctx, req.(*EntityPaginationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -289,6 +322,42 @@ func _EntityService_ImportEntity_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _EntityService_EnabledEntity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EnableEntityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EntityServiceServer).EnabledEntity(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.EntityService/EnabledEntity",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EntityServiceServer).EnabledEntity(ctx, req.(*EnableEntityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _EntityService_DisabledEntity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DisableEntityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EntityServiceServer).DisabledEntity(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.EntityService/DisabledEntity",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EntityServiceServer).DisabledEntity(ctx, req.(*DisableEntityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // EntityService_ServiceDesc is the grpc.ServiceDesc for EntityService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -323,6 +392,14 @@ var EntityService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ImportEntity",
 			Handler:    _EntityService_ImportEntity_Handler,
+		},
+		{
+			MethodName: "EnabledEntity",
+			Handler:    _EntityService_EnabledEntity_Handler,
+		},
+		{
+			MethodName: "DisabledEntity",
+			Handler:    _EntityService_DisabledEntity_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

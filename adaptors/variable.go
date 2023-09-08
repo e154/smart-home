@@ -21,7 +21,7 @@ package adaptors
 import (
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // IVariable ...
@@ -97,7 +97,7 @@ func (n *Variable) Delete(name string) (err error) {
 // List ...
 func (n *Variable) List(limit, offset int64, orderBy, sort string, system bool) (list []m.Variable, total int64, err error) {
 	var dbList []db.Variable
-	if dbList, total, err = n.table.List(limit, offset, orderBy, sort, system); err != nil {
+	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort, system); err != nil {
 		return
 	}
 

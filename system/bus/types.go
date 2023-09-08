@@ -27,14 +27,14 @@ type Bus interface {
 	// Publish publishes arguments to the given topic subscribers
 	// Publish block only when the buffer of one of the subscribers is full.
 	Publish(topic string, args ...interface{})
-	// Close unsubscribe all subscribers from given topic
-	Close(topic string)
+	// CloseTopic unsubscribe all subscribers from given topic
+	CloseTopic(topic string)
 	// Subscribe subscribes to the given topic
 	Subscribe(topic string, fn interface{}, options ...interface{}) error
 	// Unsubscribe handler from the given topic
 	Unsubscribe(topic string, fn interface{}) error
 	// Stat ...
-	Stat() (stats Stats, err error)
+	Stat() (stats Stats, total int64, err error)
 	// Purge ...
 	Purge()
 }
@@ -48,15 +48,3 @@ type subscribers struct {
 	handlers []*handler
 	lastMsg  []reflect.Value
 }
-
-// EventType ...
-type EventType string
-
-const (
-	// TopicEntities ...
-	TopicEntities = "entities"
-	// TopicPlugins ...
-	TopicPlugins = "plugins"
-	// TopicAutomation ...
-	TopicAutomation = "automation"
-)

@@ -30,7 +30,6 @@ import (
 	"github.com/e154/smart-home/system/backup"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/config"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/initial"
 	localMigrations "github.com/e154/smart-home/system/initial/local_migrations"
@@ -42,13 +41,13 @@ import (
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/mqtt_authenticator"
 	"github.com/e154/smart-home/system/orm"
-	"github.com/e154/smart-home/system/plugins"
 	"github.com/e154/smart-home/system/rbac"
 	"github.com/e154/smart-home/system/scheduler"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/storage"
 	"github.com/e154/smart-home/system/stream"
 	"github.com/e154/smart-home/system/stream/handlers"
+	"github.com/e154/smart-home/system/supervisor"
 	"github.com/e154/smart-home/system/validation"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	"go.uber.org/fx"
@@ -64,6 +63,7 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 			},
 			validation.NewValidate,
 			NewOrmConfig,
+			bus.NewBus,
 			orm.NewOrm,
 			backup.NewBackup,
 			NewMigrationsConfig,
@@ -87,10 +87,8 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 			NewZigbee2mqttConfig,
 			zigbee2mqtt.NewZigbee2mqtt,
 			storage.NewStorage,
-			plugins.NewPluginManager,
-			entity_manager.NewEntityManager,
+			supervisor.NewSupervisor,
 			automation.NewAutomation,
-			bus.NewBus,
 			endpoint.NewCommonEndpoint,
 			endpoint.NewEndpoint,
 			NewApiConfig,

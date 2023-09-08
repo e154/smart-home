@@ -28,33 +28,33 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/node"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 // Actor ...
 type Actor struct {
-	entity_manager.BaseActor
+	supervisor.BaseActor
 	adaptors      *adaptors.Adaptors
 	scriptService scripts.ScriptService
 	eventBus      bus.Bus
-	actionPool    chan events.EventCallAction
+	actionPool    chan events.EventCallEntityAction
 	stateMu       *sync.Mutex
 }
 
 // NewActor ...
 func NewActor(entity *m.Entity,
-	entityManager entity_manager.EntityManager,
+	visor supervisor.Supervisor,
 	adaptors *adaptors.Adaptors,
 	scriptService scripts.ScriptService,
 	eventBus bus.Bus) (actor *Actor) {
 
 	actor = &Actor{
-		BaseActor:     entity_manager.NewBaseActor(entity, scriptService, adaptors),
+		BaseActor:     supervisor.NewBaseActor(entity, scriptService, adaptors),
 		adaptors:      adaptors,
 		scriptService: scriptService,
 		eventBus:      eventBus,
-		actionPool:    make(chan events.EventCallAction, 10),
+		actionPool:    make(chan events.EventCallEntityAction, 10),
 		stateMu:       &sync.Mutex{},
 	}
 
@@ -62,7 +62,7 @@ func NewActor(entity *m.Entity,
 	//	log.Warnf("entity %s, parent is nil", actor.Id)
 	//}
 
-	actor.Manager = entityManager
+	actor.Supervisor = visor
 
 	if actor.Attrs == nil {
 		actor.Attrs = NewAttr()
@@ -78,7 +78,7 @@ func NewActor(entity *m.Entity,
 	for _, a := range actor.Actions {
 		if a.ScriptEngine != nil {
 			// bind
-			a.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
+			a.ScriptEngine.PushStruct("Actor", supervisor.NewScriptBind(actor))
 			_, _ = a.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
 			a.ScriptEngine.PushFunction("ModbusTcp", NewModbusTcp(eventBus, actor))
 			_, _ = a.ScriptEngine.Do()
@@ -86,7 +86,7 @@ func NewActor(entity *m.Entity,
 	}
 
 	if actor.ScriptEngine != nil {
-		actor.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
+		actor.ScriptEngine.PushStruct("Actor", supervisor.NewScriptBind(actor))
 		_, _ = actor.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
 	}
 
@@ -101,12 +101,12 @@ func NewActor(entity *m.Entity,
 }
 
 // Spawn ...
-func (e *Actor) Spawn() entity_manager.PluginActor {
+func (e *Actor) Spawn() supervisor.PluginActor {
 	return e
 }
 
 // SetState ...
-func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
+func (e *Actor) SetState(params supervisor.EntityStateParams) error {
 
 	oldState := e.GetEventState(e)
 
@@ -122,7 +122,7 @@ func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
 	_, _ = e.Attrs.Deserialize(params.AttributeValues)
 	e.AttrMu.Unlock()
 
-	e.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
+	e.eventBus.Publish("system/entities/"+e.Id.String(), events.EventStateChanged{
 		PluginName:  e.Id.PluginName(),
 		EntityId:    e.Id,
 		OldState:    oldState,
@@ -133,11 +133,11 @@ func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
 	return nil
 }
 
-func (e *Actor) addAction(event events.EventCallAction) {
+func (e *Actor) addAction(event events.EventCallEntityAction) {
 	e.actionPool <- event
 }
 
-func (e *Actor) runAction(msg events.EventCallAction) {
+func (e *Actor) runAction(msg events.EventCallEntityAction) {
 	action, ok := e.Actions[msg.ActionName]
 	if !ok {
 		log.Warnf("action %s not found", msg.ActionName)
