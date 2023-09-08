@@ -19,11 +19,11 @@
 package area
 
 import (
-	"testing"
-
+	"context"
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	. "github.com/smartystreets/goconvey/convey"
+	"testing"
 )
 
 func TestArea(t *testing.T) {
@@ -32,6 +32,7 @@ func TestArea(t *testing.T) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors) {
 
 			area := &m.Area{
+				Id:          0,
 				Name:        "zone 51",
 				Description: "zone 51",
 				Polygon: []m.Point{
@@ -40,6 +41,12 @@ func TestArea(t *testing.T) {
 					{77.3, 29.4},
 					{75.4, 29.5},
 				},
+				Zoom:       6,
+				Center:     m.Point{
+					Lon: 76,
+					Lat: 30,
+				},
+				Resolution: 0,
 			}
 
 			var err error
@@ -59,6 +66,26 @@ func TestArea(t *testing.T) {
 			So(area.Polygon[2].Lon, ShouldEqual, 77.3)
 			So(area.Polygon[3].Lat, ShouldEqual, 29.5)
 			So(area.Polygon[3].Lon, ShouldEqual, 75.4)
+			So(area.Zoom, ShouldEqual, 6)
+			So(area.Center.Lon, ShouldEqual, 76)
+			So(area.Center.Lat, ShouldEqual, 30)
+
+			areas, err := adaptors.Area.ListByPoint(context.Background(), m.Point{
+				Lon: 76,
+				Lat: 29.4,
+			}, 10, 0)
+			So(err, ShouldBeNil)
+			So(areas, ShouldNotBeNil)
+			So(len(areas), ShouldEqual, 1)
+			So(areas[0].Id, ShouldEqual, area.Id)
+
+
+			areas, err = adaptors.Area.ListByPoint(context.Background(), m.Point{
+				Lon: 1,
+				Lat: 1,
+			}, 10, 0)
+			So(err, ShouldBeNil)
+			So(len(areas), ShouldEqual, 0)
 		})
 	})
 }
