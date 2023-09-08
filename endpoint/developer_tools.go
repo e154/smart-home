@@ -92,7 +92,7 @@ func (d *DeveloperToolsEndpoint) TaskCallTrigger(ctx context.Context, id int64, 
 // TaskCallAction ...
 func (d *DeveloperToolsEndpoint) TaskCallAction(ctx context.Context, id int64, name string) (err error) {
 
-	if _, err = d.adaptors.Action.GetById(id); err != nil {
+	if _, err = d.adaptors.Action.GetById(ctx, id); err != nil {
 		return
 	}
 

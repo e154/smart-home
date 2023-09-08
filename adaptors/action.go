@@ -19,6 +19,7 @@
 package adaptors
 
 import (
+	"context"
 	"time"
 
 	"github.com/e154/smart-home/common"
@@ -29,12 +30,12 @@ import (
 
 // IAction ...
 type IAction interface {
-	Add(ver *m.Action) (id int64, err error)
-	GetById(id int64) (metric *m.Action, err error)
-	Update(ver *m.Action) error
-	Delete(deviceId int64) (err error)
-	List(limit, offset int64, orderBy, sort string) (list []*m.Action, total int64, err error)
-	Search(query string, limit, offset int) (list []*m.Action, total int64, err error)
+	Add(ctx context.Context, ver *m.Action) (id int64, err error)
+	GetById(ctx context.Context,id int64) (metric *m.Action, err error)
+	Update(ctx context.Context,ver *m.Action) error
+	Delete(ctx context.Context,deviceId int64) (err error)
+	List(ctx context.Context,limit, offset int64, orderBy, sort string) (list []*m.Action, total int64, err error)
+	Search(ctx context.Context,query string, limit, offset int) (list []*m.Action, total int64, err error)
 	fromDb(dbVer *db.Action) (ver *m.Action)
 	toDb(ver *m.Action) (dbVer *db.Action)
 }
@@ -55,15 +56,15 @@ func GetActionAdaptor(d *gorm.DB) IAction {
 }
 
 // Add ...
-func (n *Action) Add(ver *m.Action) (id int64, err error) {
-	id, err = n.table.Add(n.toDb(ver))
+func (n *Action) Add(ctx context.Context, ver *m.Action) (id int64, err error) {
+	id, err = n.table.Add(ctx, n.toDb(ver))
 	return
 }
 
 // GetById ...
-func (n *Action) GetById(id int64) (metric *m.Action, err error) {
+func (n *Action) GetById(ctx context.Context, id int64) (metric *m.Action, err error) {
 	var dbVer *db.Action
-	if dbVer, err = n.table.GetById(id); err != nil {
+	if dbVer, err = n.table.GetById(ctx, id); err != nil {
 		return
 	}
 	metric = n.fromDb(dbVer)
@@ -71,9 +72,9 @@ func (n *Action) GetById(id int64) (metric *m.Action, err error) {
 }
 
 // GetByIdWithData ...
-func (n *Action) GetByIdWithData(id int64, from, to *time.Time, metricRange *string) (metric *m.Action, err error) {
+func (n *Action) GetByIdWithData(ctx context.Context, id int64, from, to *time.Time, metricRange *string) (metric *m.Action, err error) {
 	var dbVer *db.Action
-	if dbVer, err = n.table.GetById(id); err != nil {
+	if dbVer, err = n.table.GetById(ctx, id); err != nil {
 		return
 	}
 	metric = n.fromDb(dbVer)
@@ -81,20 +82,20 @@ func (n *Action) GetByIdWithData(id int64, from, to *time.Time, metricRange *str
 }
 
 // Update ...
-func (n *Action) Update(ver *m.Action) error {
-	return n.table.Update(n.toDb(ver))
+func (n *Action) Update(ctx context.Context, ver *m.Action) error {
+	return n.table.Update(ctx, n.toDb(ver))
 }
 
 // Delete ...
-func (n *Action) Delete(deviceId int64) (err error) {
-	err = n.table.Delete(deviceId)
+func (n *Action) Delete(ctx context.Context, deviceId int64) (err error) {
+	err = n.table.Delete(ctx, deviceId)
 	return
 }
 
 // List ...
-func (n *Action) List(limit, offset int64, orderBy, sort string) (list []*m.Action, total int64, err error) {
+func (n *Action) List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.Action, total int64, err error) {
 	var dbList []*db.Action
-	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort); err != nil {
+	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort); err != nil {
 		return
 	}
 
@@ -107,9 +108,9 @@ func (n *Action) List(limit, offset int64, orderBy, sort string) (list []*m.Acti
 }
 
 // Search ...
-func (n *Action) Search(query string, limit, offset int) (list []*m.Action, total int64, err error) {
+func (n *Action) Search(ctx context.Context, query string, limit, offset int) (list []*m.Action, total int64, err error) {
 	var dbList []*db.Action
-	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
+	if dbList, total, err = n.table.Search(ctx, query, limit, offset); err != nil {
 		return
 	}
 

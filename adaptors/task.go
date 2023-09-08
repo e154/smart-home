@@ -19,6 +19,7 @@
 package adaptors
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/e154/smart-home/db"
@@ -105,7 +106,7 @@ func (n *Task) Import(ver *m.Task) (err error) {
 	//actions
 	actionAdaptor := GetActionAdaptor(tx)
 	for _, action := range ver.Actions {
-		if action.Id, err = actionAdaptor.Add(action); err != nil {
+		if action.Id, err = actionAdaptor.Add(context.Background(), action); err != nil {
 			return
 		}
 		if err = table.AppendAction(ver.Id, actionAdaptor.toDb(action)); err != nil {

@@ -53,11 +53,11 @@ func (n *ActionEndpoint) Add(ctx context.Context, action *m.Action) (result *m.A
 		return
 	}
 
-	if action.Id, err = n.adaptors.Action.Add(action); err != nil {
+	if action.Id, err = n.adaptors.Action.Add(ctx, action); err != nil {
 		return
 	}
 
-	if result, err = n.adaptors.Action.GetById(action.Id); err != nil {
+	if result, err = n.adaptors.Action.GetById(ctx, action.Id); err != nil {
 		return
 	}
 
@@ -71,7 +71,7 @@ func (n *ActionEndpoint) Add(ctx context.Context, action *m.Action) (result *m.A
 // GetById ...
 func (n *ActionEndpoint) GetById(ctx context.Context, id int64) (result *m.Action, err error) {
 
-	result, err = n.adaptors.Action.GetById(id)
+	result, err = n.adaptors.Action.GetById(ctx, id)
 
 	return
 }
@@ -79,7 +79,7 @@ func (n *ActionEndpoint) GetById(ctx context.Context, id int64) (result *m.Actio
 // Update ...
 func (n *ActionEndpoint) Update(ctx context.Context, params *m.Action) (result *m.Action, errs validator.ValidationErrorsTranslations, err error) {
 
-	_, err = n.adaptors.Action.GetById(params.Id)
+	_, err = n.adaptors.Action.GetById(ctx, params.Id)
 	if err != nil {
 		return
 	}
@@ -89,11 +89,11 @@ func (n *ActionEndpoint) Update(ctx context.Context, params *m.Action) (result *
 		return
 	}
 
-	if err = n.adaptors.Action.Update(params); err != nil {
+	if err = n.adaptors.Action.Update(ctx, params); err != nil {
 		return
 	}
 
-	if result, err = n.adaptors.Action.GetById(params.Id); err != nil {
+	if result, err = n.adaptors.Action.GetById(ctx, params.Id); err != nil {
 		return
 	}
 
@@ -107,7 +107,7 @@ func (n *ActionEndpoint) Update(ctx context.Context, params *m.Action) (result *
 // GetList ...
 func (n *ActionEndpoint) GetList(ctx context.Context, pagination common.PageParams) (result []*m.Action, total int64, err error) {
 
-	result, total, err = n.adaptors.Action.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
+	result, total, err = n.adaptors.Action.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
 
 	return
 }
@@ -115,12 +115,12 @@ func (n *ActionEndpoint) GetList(ctx context.Context, pagination common.PagePara
 // Delete ...
 func (n *ActionEndpoint) Delete(ctx context.Context, id int64) (err error) {
 
-	_, err = n.adaptors.Action.GetById(id)
+	_, err = n.adaptors.Action.GetById(ctx, id)
 	if err != nil {
 		return
 	}
 
-	if err = n.adaptors.Action.Delete(id); err != nil {
+	if err = n.adaptors.Action.Delete(ctx, id); err != nil {
 		return
 	}
 
@@ -138,7 +138,7 @@ func (n *ActionEndpoint) Search(ctx context.Context, query string, limit, offset
 		limit = common.DefaultPageSize
 	}
 
-	result, total, err = n.adaptors.Action.Search(query, int(limit), int(offset))
+	result, total, err = n.adaptors.Action.Search(ctx, query, int(limit), int(offset))
 
 	return
 }

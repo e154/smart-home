@@ -271,14 +271,14 @@ automationAction = (entityId)->
 				Name:   "action on Plug",
 				Script: task1Script,
 			}
-			action1.Id, err = adaptors.Action.Add(action1)
+			action1.Id, err = adaptors.Action.Add(context.Background(), action1)
 			So(err, ShouldBeNil)
 
 			action2 := &m.Action{
 				Name:   "action on Plug",
 				Script: task2Script,
 			}
-			action2.Id, err = adaptors.Action.Add(action2)
+			action2.Id, err = adaptors.Action.Add(context.Background(), action2)
 			So(err, ShouldBeNil)
 
 			// tasks
