@@ -18,7 +18,9 @@
 
 package models
 
-import "time"
+import (
+	"time"
+)
 
 // Area ...
 type Area struct {
@@ -26,6 +28,15 @@ type Area struct {
 	Name        string    `json:"name" validate:"required"`
 	Description string    `json:"description"`
 	Polygon     []Point   `json:"polygon"`
+	Zoom        float32   `json:"zoom"`
+	Center      Point     `json:"center"`
+	Resolution  float32   `json:"resolution"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
+}
+
+type AreaPayload struct {
+	Zoom       float32 `json:"zoom"`
+	Center     Point   `json:"center"`
+	Resolution float32 `json:"resolution"`
 }

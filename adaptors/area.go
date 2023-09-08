@@ -19,9 +19,11 @@
 package adaptors
 
 import (
+	"encoding/json"
+	"gorm.io/gorm"
+
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"gorm.io/gorm"
 )
 
 // IArea ...
@@ -140,11 +142,19 @@ func (a *Area) fromDb(dbVer *db.Area) (ver *m.Area) {
 	if dbVer.Polygon != nil {
 		for _, point := range dbVer.Polygon.Points {
 			ver.Polygon = append(ver.Polygon, m.Point{
-				Lon: point.Lon,
-				Lat: point.Lat,
+				Lon: float32(point.Lon),
+				Lat: float32(point.Lat),
 			})
 		}
 	}
+	if len(dbVer.Payload) > 0 {
+		payload := &m.AreaPayload{}
+		_ = json.Unmarshal(dbVer.Payload, payload)
+		ver.Zoom = payload.Zoom
+		ver.Center = payload.Center
+		ver.Resolution = payload.Resolution
+	}
+
 	return
 }
 
@@ -156,14 +166,20 @@ func (a *Area) toDb(ver *m.Area) (dbVer *db.Area) {
 		CreatedAt:   ver.CreatedAt,
 		UpdatedAt:   ver.UpdatedAt,
 	}
-	if ver.Polygon != nil {
+	if ver.Polygon != nil && len(ver.Polygon) > 2 {
 		dbVer.Polygon = &db.Polygon{}
 		for _, point := range ver.Polygon {
 			dbVer.Polygon.Points = append(dbVer.Polygon.Points, db.Point{
-				Lon: point.Lon,
-				Lat: point.Lat,
+				Lon: float64(point.Lon),
+				Lat: float64(point.Lat),
 			})
 		}
 	}
+	b, _ := json.Marshal(m.AreaPayload{
+		Zoom:       ver.Zoom,
+		Center:     ver.Center,
+		Resolution: ver.Resolution,
+	})
+	_ = dbVer.Payload.UnmarshalJSON(b)
 	return
 }

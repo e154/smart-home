@@ -82,6 +82,11 @@ export interface ApiArea {
   name?: string;
   description?: string;
   polygon?: ApiAreaLocation[];
+  center?: ApiAreaLocation;
+  /** @format float */
+  zoom?: number;
+  /** @format float */
+  resolution?: number;
   /** @format date-time */
   createdAt?: string;
   /** @format date-time */
@@ -90,9 +95,9 @@ export interface ApiArea {
 
 export interface ApiAreaLocation {
   /** @format float */
-  lat?: number;
+  lat: number;
   /** @format float */
-  lon?: number;
+  lon: number;
 }
 
 export interface ApiAttribute {
@@ -674,6 +679,12 @@ export interface ApiNewActionRequest {
 export interface ApiNewAreaRequest {
   name?: string;
   description?: string;
+  polygon?: ApiAreaLocation[];
+  center?: ApiAreaLocation;
+  /** @format float */
+  zoom?: number;
+  /** @format float */
+  resolution?: number;
 }
 
 export interface ApiNewConditionRequest {
@@ -1771,6 +1782,12 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
       body: {
         name?: string;
         description?: string;
+        polygon?: ApiAreaLocation[];
+        center?: ApiAreaLocation;
+        /** @format float */
+        zoom?: number;
+        /** @format float */
+        resolution?: number;
       },
       params: RequestParams = {},
     ) =>

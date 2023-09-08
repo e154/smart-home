@@ -19,6 +19,7 @@
 package db
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -42,6 +43,7 @@ type Area struct {
 	Name        string
 	Description string
 	Polygon     *Polygon
+	Payload     json.RawMessage `gorm:"type:jsonb;not null"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
@@ -149,6 +151,8 @@ func (n Areas) Update(m *Area) (err error) {
 	err = n.Db.Model(&Area{Id: m.Id}).Updates(map[string]interface{}{
 		"name":        m.Name,
 		"description": m.Description,
+		"payload":     m.Payload,
+		"polygon":     m.Polygon,
 	}).Error
 
 	if err != nil {

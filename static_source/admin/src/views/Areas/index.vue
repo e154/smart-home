@@ -6,7 +6,7 @@ import {useAppStore} from "@/store/modules/app";
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
 import {ElButton} from 'element-plus'
-import {ApiArea, ApiLog} from "@/api/stub";
+import {ApiArea, ApiLog, ApiTask} from "@/api/stub";
 import {useForm} from "@/hooks/web/useForm";
 import {useRouter} from "vue-router";
 import {parseTime} from "@/utils";
@@ -55,6 +55,32 @@ const columns: TableColumn[] = [
   {
     field: 'description',
     label: t('areas.description')
+  },
+  {
+    field: 'createdAt',
+    label: t('main.createdAt'),
+    type: 'time',
+    sortable: true,
+    width: "150px",
+    formatter: (row: ApiTask) => {
+      return h(
+          'span',
+          parseTime(row.createdAt)
+      )
+    }
+  },
+  {
+    field: 'updatedAt',
+    label: t('main.updatedAt'),
+    type: 'time',
+    sortable: true,
+    width: "150px",
+    formatter: (row: ApiTask) => {
+      return h(
+          'span',
+          parseTime(row.updatedAt)
+      )
+    }
   },
 ]
 const paginationObj = ref<Pagination>({

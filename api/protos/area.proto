@@ -20,6 +20,9 @@ message Area {
   string name = 2;
   string description = 3;
   repeated AreaLocation polygon = 4;
+  AreaLocation center = 5;
+  float zoom = 6;
+  float resolution = 7;
   google.protobuf.Timestamp created_at = 99;
   google.protobuf.Timestamp updated_at = 100;
 }
@@ -28,6 +31,9 @@ message NewAreaRequest {
   string name = 2;
   string description = 3;
   repeated AreaLocation polygon = 4;
+  AreaLocation center = 5;
+  float zoom = 6;
+  float resolution = 7;
 }
 
 message UpdateAreaRequest {
@@ -35,6 +41,9 @@ message UpdateAreaRequest {
   string name = 2;
   string description = 3;
   repeated AreaLocation polygon = 4;
+  AreaLocation center = 5;
+  float zoom = 6;
+  float resolution = 7;
 }
 
 message GetAreaRequest {

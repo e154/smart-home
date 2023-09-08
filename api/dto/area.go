@@ -39,11 +39,20 @@ func (r Area) AddArea(from *api.NewAreaRequest) (area *m.Area) {
 		Name:        from.Name,
 		Description: from.Description,
 		Polygon:     make([]m.Point, 0),
+		Zoom:        from.Zoom,
+
+		Resolution: from.Resolution,
+	}
+	if from.Center != nil {
+		area.Center = m.Point{
+			Lon: from.Center.Lon,
+			Lat: from.Center.Lat,
+		}
 	}
 	for _, point := range from.Polygon {
 		area.Polygon = append(area.Polygon, m.Point{
-			Lon: float64(point.Lon),
-			Lat: float64(point.Lat),
+			Lon: point.Lon,
+			Lat: point.Lat,
 		})
 	}
 	return
@@ -56,11 +65,19 @@ func (r Area) UpdateArea(from *api.UpdateAreaRequest) (area *m.Area) {
 		Name:        from.Name,
 		Description: from.Description,
 		Polygon:     make([]m.Point, 0),
+		Zoom:        from.Zoom,
+		Resolution:  from.Resolution,
+	}
+	if from.Center != nil {
+		area.Center = m.Point{
+			Lon: from.Center.Lon,
+			Lat: from.Center.Lat,
+		}
 	}
 	for _, point := range from.Polygon {
 		area.Polygon = append(area.Polygon, m.Point{
-			Lon: float64(point.Lon),
-			Lat: float64(point.Lat),
+			Lon: point.Lon,
+			Lat: point.Lat,
 		})
 	}
 	return
@@ -116,8 +133,14 @@ func ToArea(area *m.Area) (obj *api.Area) {
 		Name:        area.Name,
 		Description: area.Description,
 		Polygon:     make([]*api.AreaLocation, 0, len(area.Polygon)),
-		CreatedAt:   timestamppb.New(area.CreatedAt),
-		UpdatedAt:   timestamppb.New(area.UpdatedAt),
+		Center: &api.AreaLocation{
+			Lat: area.Center.Lat,
+			Lon: area.Center.Lon,
+		},
+		Zoom:       area.Zoom,
+		Resolution: area.Resolution,
+		CreatedAt:  timestamppb.New(area.CreatedAt),
+		UpdatedAt:  timestamppb.New(area.UpdatedAt),
 	}
 	for _, location := range area.Polygon {
 		obj.Polygon = append(obj.Polygon, &api.AreaLocation{

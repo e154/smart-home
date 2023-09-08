@@ -1,17 +1,19 @@
 <script setup lang="ts">
-import {inject, PropType, reactive, ref} from "vue";
-import {CardItem} from "@/views/Dashboard/core";
+import {inject, PropType, reactive, ref, watch} from "vue";
 import {GeoJSON} from "ol/format"
 import {Collection} from "ol";
 import {Fill, Stroke, Style} from "ol/style";
+import {ApiArea} from "@/api/stub";
+import type { ObjectEvent } from "ol/Object";
+import hereIcon from "@/assets/imgs/marker.png";
 
 // ---------------------------------
 // common
 // ---------------------------------
 
 const props = defineProps({
-  item: {
-    type: Object as PropType<Nullable<CardItem>>,
+  area: {
+    type: Object as PropType<Nullable<ApiArea>>,
     default: () => null
   },
 })
@@ -23,58 +25,81 @@ const zoom = ref(5);
 const rotation = ref(0);
 const modifyEnabled = ref(false);
 const drawEnabled = ref(false);
-const drawType = ref("Polygon");
+
+watch(
+    () => props.area,
+    (val?: ApiArea) => {
+      console.log(val)
+      if (!val) {
+        drawEnabled.value = true;
+        return
+      }
+      if (val.center) {
+        center.value = [val.center.lon, val.center.lat]
+      }
+      if (val.zoom) {
+        zoom.value = val.zoom
+      }
+      if (val.resolution) {
+        currentView.Resolution = val.resolution
+      }
+      let coordinates = [[]]
+      for (const point of val.polygon) {
+        coordinates[0].push([point.lon, point.lat])
+      }
+
+      modifyEnabled.value = val.polygon?.length > 0
+      drawEnabled.value = !val.polygon || val.polygon?.length == 0
+
+      const geojsonObject = {
+        type: "FeatureCollection",
+        crs: {
+          type: "name",
+          properties: {
+            name: "EPSG:4326",
+          },
+        },
+        features: [{
+          "type": "Feature",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": coordinates
+          },
+          "properties": null
+        }],
+      };
+      zones.value = new GeoJSON().readFeatures(geojsonObject);
+    },
+)
 
 // ---------------------------------
 // save/restore
 // ---------------------------------
 
-const fetch = async () => {
-  const geojsonObject = {
-    type: "FeatureCollection",
-    crs: {
-      type: "name",
-      properties: {
-        name: "EPSG:4326",
-      },
-    },
-    features: [{
-      "type": "Feature",
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [[[-120.57356426341968, 47.62779988411872], [-121.36271234087499, 39.45346738917534], [-113.04222608634038, 39.5500809855296], [-113.06586558332069, 47.624922032312426], [-120.57356426341968, 47.62779988411872]]]
-      },
-      "properties": null
-    }, {
-      "type": "Feature",
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [[[-107.95171736268756, 47.22469507039383], [-108.17433975598897, 39.07996333688665], [-99.42423133894287, 39.3753542687187], [-99.42423133894287, 47.45368984983775], [-107.95171736268756, 47.22469507039383]]]
-      },
-      "properties": null
-    }, {
-      "type": "Feature",
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [[[-94.44143649718288, 47.70241847023914], [-94.44143649718288, 39.89254535047895], [-83.96030021864914, 40.65085930143821], [-83.96030021864914, 48.77647387651785], [-94.44143649718288, 47.70241847023914]]]
-      },
-      "properties": null
-    }, {"type": "Feature", "geometry": {"type": "GeometryCollection", "geometries": []}, "properties": null}],
-  };
-  zones.value = new GeoJSON().readFeatures(geojsonObject);
-}
-
-const save = async () => {
+const save = () => {
   const parser = new GeoJSON();
   const colls = parser.writeFeaturesObject(zones.value, {featureProjection: 'EPSG:4326'});
-  const {features}  = colls
-  // console.log(JSON.stringify(features))
+  const {features} = colls
+  let polygon = []
+  for (const feature of features) {
+    polygon = []
+    for (const point of feature.geometry.coordinates[0]) {
+      polygon.push({
+        lon: point[0],
+        lat: point[1],
+      })
+    }
+  }
+  return {
+    polygon: polygon,
+    zoom: currentView.Zoom,
+    center: {
+      lon: currentView.Center[0],
+      lat: currentView.Center[1],
+    },
+    resolution: currentView.Resolution,
+  }
 }
-
-const deletePolygon = () => {
-  selectedFeatures.value
-}
-
 
 const Clear = () => {
 
@@ -89,8 +114,7 @@ const zones = ref([]);
 const selectedFeatures = ref(new Collection());
 
 const drawstart = (event) => {
-  // console.log(event);
-  // modifyEnabled.value = false;
+
 };
 
 const drawend = (event) => {
@@ -99,8 +123,6 @@ const drawend = (event) => {
 
   modifyEnabled.value = true;
   drawEnabled.value = false;
-
-  save()
 };
 
 function vectorStyle() {
@@ -125,7 +147,6 @@ function featureSelected(event) {
     modifyEnabled.value = true;
   }
   selectedFeatures.value = event.target.getFeatures();
-  console.log(selectedFeatures.value)
 }
 
 // ---------------------------------
@@ -146,27 +167,35 @@ const currentView = reactive<View>({
   Rotation: rotation.value,
 })
 
-function zoomChanged(z) {currentView.Zoom = z}
-function resolutionChanged(r) {currentView.Resolution = r}
-function centerChanged(c) {currentView.Center = c}
-function rotationChanged(r) {currentView.Rotation = r}
+function zoomChanged(z) {
+  currentView.Zoom = z
+}
 
-// ---------------------------------
-// etc
-// ---------------------------------
-fetch()
+function resolutionChanged(r) {
+  currentView.Resolution = r
+}
 
+function centerChanged(c) {
+  currentView.Center = c
+}
+
+function rotationChanged(r) {
+  currentView.Rotation = r
+}
+
+const position = ref([]);
+const geoLocChange = (event: ObjectEvent) => {
+  // console.log("AAAAA", event);
+  position.value = event.target.getPosition();
+  currentView.Center = event.target?.getPosition()
+};
+
+defineExpose({
+  save,
+})
 </script>
 
 <template>
-  <input type="checkbox" id="checkbox" v-model="drawEnabled" />
-  <label for="checkbox">Draw Enable</label>
-
-  <select id="type" v-model="drawType">
-    <option value="Polygon">Polygon</option>
-    <option value="Circle">Circle</option>
-  </select>
-
   <ol-map
       ref="map"
       :load-tiles-while-animating="true"
@@ -186,7 +215,7 @@ fetch()
     />
 
     <ol-tile-layer>
-      <ol-source-osm />
+      <ol-source-osm/>
     </ol-tile-layer>
 
     <ol-vector-layer :styles="vectorStyle">
@@ -199,11 +228,11 @@ fetch()
         <ol-interaction-draw
             v-if="drawEnabled"
             :stopClick="true"
-            :type="drawType"
+            type="Polygon"
             @drawstart="drawstart"
             @drawend="drawend"
         />
-        <ol-interaction-snap v-if="modifyEnabled || drawEnabled" />
+        <ol-interaction-snap v-if="modifyEnabled || drawEnabled"/>
       </ol-source-vector>
     </ol-vector-layer>
     <ol-interaction-select
@@ -216,14 +245,29 @@ fetch()
         <ol-style-fill :color="`rgba(255, 0, 0, 0.4)`"/>
       </ol-style>
     </ol-interaction-select>
+
+    <ol-geolocation :projection="projection" @change:position="geoLocChange">
+      <template>
+        <ol-vector-layer :zIndex="2">
+          <ol-source-vector>
+            <ol-feature ref="positionFeature">
+              <ol-geom-point :coordinates="position"/>
+              <ol-style>
+                <ol-style-icon :src="hereIcon" :scale="0.02"/>
+              </ol-style>
+            </ol-feature>
+          </ol-source-vector>
+        </ol-vector-layer>
+      </template>
+    </ol-geolocation>
   </ol-map>
 
-  <div>
-    center : {{ currentView.Center }} zoom : {{ currentView.Zoom }} resolution :
-    {{ currentView.Resolution }} rotation : {{ currentView.Rotation }}
-  </div>
+<!--  <div>-->
+<!--    center : {{ currentView.Center }} zoom : {{ currentView.Zoom }} resolution :-->
+<!--    {{ currentView.Resolution }} rotation : {{ currentView.Rotation }}-->
+<!--  </div>-->
 </template>
 
-<style lang="less" >
+<style lang="less">
 
 </style>

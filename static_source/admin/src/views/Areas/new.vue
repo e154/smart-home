@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import {ref, unref} from 'vue'
+import {onMounted, ref, unref} from 'vue'
 import {useI18n} from '@/hooks/web/useI18n'
-import {ElButton} from 'element-plus'
+import {ElButton, ElCol, ElRow} from 'element-plus'
 import {useForm} from '@/hooks/web/useForm'
 import {useCache} from '@/hooks/web/useCache'
 import {useAppStore} from '@/store/modules/app'
@@ -12,6 +12,7 @@ import api from "@/api/api";
 import Form from './components/Form.vue'
 import {ApiArea} from "@/api/stub";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import MapEditor from "@/views/Areas/components/MapEditor.vue";
 
 const {register, elFormRef, methods} = useForm()
 const {required} = useValidator()
@@ -26,14 +27,36 @@ const writeRef = ref<ComponentRef<typeof Form>>()
 const loading = ref(false)
 const currentRow = ref<Nullable<ApiArea>>(null)
 
+onMounted(() => {
+  currentRow.value = {
+    name: '',
+    description: '',
+    polygon: [],
+    center: {lat: 0, lon: 0},
+    zoom: 0,
+    resolution: 0,
+  }
+})
+
+const child = ref(null)
 const save = async () => {
+  const {polygon, zoom, center, resolution} = child.value.save()
+
   const write = unref(writeRef)
   const validate = await write?.elFormRef?.validate()?.catch(() => {
   })
   if (validate) {
     loading.value = true
     const data = (await write?.getFormData()) as ApiArea
-    const res = await api.v1.areaServiceAddArea(data)
+    const body = {
+      name: data.name,
+      description: data.description,
+      polygon: polygon,
+      center: center,
+      zoom: zoom,
+      resolution: resolution,
+    }
+    const res = await api.v1.areaServiceAddArea(body)
         .catch(() => {
         })
         .finally(() => {
@@ -55,7 +78,9 @@ const cancel = () => {
   <ContentWrap>
     <Form ref="writeRef" :current-row="currentRow"/>
 
-    <div style="text-align: right">
+    <MapEditor ref="child" :area="currentRow"/>
+
+    <div style="text-align: right" class="mt-20px">
 
       <ElButton type="primary" @click="save()">
         {{ t('main.save') }}

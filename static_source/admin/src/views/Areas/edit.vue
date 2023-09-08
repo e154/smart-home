@@ -43,22 +43,30 @@ const fetch = async () => {
   }
 }
 
+const child = ref(null)
 const save = async () => {
+  const {polygon, zoom, center, resolution} = child.value.save()
+
   const write = unref(writeRef)
   const validate = await write?.elFormRef?.validate()?.catch(() => {
   })
   if (validate) {
     loading.value = true
     const data = (await write?.getFormData()) as ApiArea
-    const res = await api.v1.areaServiceUpdateArea(areaId.value, data)
+    const body = {
+      name: data.name,
+      description: data.description,
+      polygon: polygon,
+      center: center,
+      zoom: zoom,
+      resolution: resolution,
+    }
+    const res = await api.v1.areaServiceUpdateArea(areaId.value, body)
         .catch(() => {
         })
         .finally(() => {
           loading.value = false
         })
-    if (res) {
-      cancel()
-    }
   }
 }
 
@@ -86,7 +94,7 @@ fetch()
   <ContentWrap>
     <Form ref="writeRef" :current-row="currentRow"/>
 
-    <MapEditor/>
+    <MapEditor ref="child" :area="currentRow"/>
 
     <div style="text-align: right" class="mt-20px">
 

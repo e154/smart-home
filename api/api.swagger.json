@@ -560,6 +560,17 @@
                   "items": {
                     "$ref": "#/definitions/apiAreaLocation"
                   }
+                },
+                "center": {
+                  "$ref": "#/definitions/apiAreaLocation"
+                },
+                "zoom": {
+                  "type": "number",
+                  "format": "float"
+                },
+                "resolution": {
+                  "type": "number",
+                  "format": "float"
                 }
               }
             }
@@ -6615,6 +6626,17 @@
             "$ref": "#/definitions/apiAreaLocation"
           }
         },
+        "center": {
+          "$ref": "#/definitions/apiAreaLocation"
+        },
+        "zoom": {
+          "type": "number",
+          "format": "float"
+        },
+        "resolution": {
+          "type": "number",
+          "format": "float"
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time"
@@ -8092,6 +8114,17 @@
           "items": {
             "$ref": "#/definitions/apiAreaLocation"
           }
+        },
+        "center": {
+          "$ref": "#/definitions/apiAreaLocation"
+        },
+        "zoom": {
+          "type": "number",
+          "format": "float"
+        },
+        "resolution": {
+          "type": "number",
+          "format": "float"
         }
       }
     },
