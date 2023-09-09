@@ -57,7 +57,7 @@ func (c *Scheduler) Start(ctx context.Context) error {
 	c.cron.AddFunc("0 0 0 * * *", func() {
 		go func() {
 			log.Info("deleting obsolete metric entries ...")
-			if err := c.adaptors.MetricBucket.DeleteOldest(60); err != nil {
+			if err := c.adaptors.MetricBucket.DeleteOldest(ctx, 60); err != nil {
 				log.Error(err.Error())
 			}
 		}()

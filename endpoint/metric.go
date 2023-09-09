@@ -40,7 +40,7 @@ func NewMetricEndpoint(common *CommonEndpoint) *MetricEndpoint {
 // GetByIdWithData ...
 func (l *MetricEndpoint) GetByIdWithData(ctx context.Context, from, to *time.Time, metricId int64, metricRange *string) (metric *m.Metric, err error) {
 
-	metric, err = l.adaptors.Metric.GetByIdWithData(metricId, from, to, metricRange)
+	metric, err = l.adaptors.Metric.GetByIdWithData(ctx, metricId, from, to, metricRange)
 
 	return
 }

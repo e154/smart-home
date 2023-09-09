@@ -236,7 +236,7 @@ func (e *supervisor) SetMetric(id common.EntityId, name string, value map[string
 			continue
 		}
 
-		err = e.adaptors.MetricBucket.Add(&m.MetricDataItem{
+		err = e.adaptors.MetricBucket.Add(context.Background(), &m.MetricDataItem{
 			Value:    value,
 			MetricId: metric.Id,
 			Time:     time.Now(),
@@ -331,7 +331,7 @@ func (e *supervisor) List() (entities []m.EntityShort, err error) {
 					optionItems[i] = item.Name
 				}
 
-				if entities[i].Metrics[j].Data, err = e.adaptors.MetricBucket.Simple24HPreview(metric.Id, optionItems); err != nil {
+				if entities[i].Metrics[j].Data, err = e.adaptors.MetricBucket.Simple24HPreview(context.Background(), metric.Id, optionItems); err != nil {
 					log.Error(err.Error())
 					return
 				}

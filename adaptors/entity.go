@@ -208,7 +208,7 @@ func (n *Entity) Import(ctx context.Context, ver *m.Entity) (err error) {
 	//metrics
 	metricAdaptor := GetMetricAdaptor(tx, nil)
 	for _, metric := range ver.Metrics {
-		if metric.Id, err = metricAdaptor.Add(metric); err != nil {
+		if metric.Id, err = metricAdaptor.Add(ctx, metric); err != nil {
 			return
 		}
 		if err = table.AppendMetric(ctx, ver.Id, metricAdaptor.toDb(metric)); err != nil {
@@ -438,7 +438,7 @@ func (n *Entity) Update(ctx context.Context, ver *m.Entity) (err error) {
 				return
 			}
 		} else {
-			if err = metricAdaptor.Update(metric); err != nil {
+			if err = metricAdaptor.Update(ctx, metric); err != nil {
 				return
 			}
 		}
@@ -527,7 +527,7 @@ func (n *Entity) preloadMetric(ctx context.Context, ver *m.Entity) {
 			optionItems[i] = item.Name
 		}
 
-		if ver.Metrics[i].Data, err = bucketMetricBucketAdaptor.SimpleListWithSoftRange(nil, nil, metric.Id, common.String(common.MetricRange24H.String()), optionItems); err != nil {
+		if ver.Metrics[i].Data, err = bucketMetricBucketAdaptor.SimpleListWithSoftRange(ctx, nil, nil, metric.Id, common.String(common.MetricRange24H.String()), optionItems); err != nil {
 			log.Error(err.Error())
 			return
 		}
