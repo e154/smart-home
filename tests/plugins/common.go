@@ -587,7 +587,6 @@ func WaitSupervisor(eventBus bus.Bus) {
 	time.Sleep(time.Millisecond * 500)
 }
 
-
 func WaitStateChanged(eventBus bus.Bus) (ok bool) {
 
 	ch := make(chan interface{})

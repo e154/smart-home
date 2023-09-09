@@ -20,6 +20,7 @@ package endpoint
 
 import (
 	"context"
+
 	"github.com/e154/smart-home/common/apperr"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/alexa"
@@ -64,7 +65,7 @@ func (n *AlexaSkillEndpoint) Add(ctx context.Context, params *m.AlexaSkill) (res
 }
 
 // GetById ...
-func (n *AlexaSkillEndpoint) GetById(ctx context.Context,appId int64) (result *m.AlexaSkill, err error) {
+func (n *AlexaSkillEndpoint) GetById(ctx context.Context, appId int64) (result *m.AlexaSkill, err error) {
 
 	result, err = n.adaptors.AlexaSkill.GetById(ctx, appId)
 
@@ -72,7 +73,7 @@ func (n *AlexaSkillEndpoint) GetById(ctx context.Context,appId int64) (result *m
 }
 
 // Update ...
-func (n *AlexaSkillEndpoint) Update(ctx context.Context,params *m.AlexaSkill) (skill *m.AlexaSkill, errs validator.ValidationErrorsTranslations, err error) {
+func (n *AlexaSkillEndpoint) Update(ctx context.Context, params *m.AlexaSkill) (skill *m.AlexaSkill, errs validator.ValidationErrorsTranslations, err error) {
 
 	var ok bool
 	if ok, errs = n.validation.Valid(params); !ok {
@@ -96,7 +97,7 @@ func (n *AlexaSkillEndpoint) Update(ctx context.Context,params *m.AlexaSkill) (s
 }
 
 // GetList ...
-func (n *AlexaSkillEndpoint) GetList(ctx context.Context,limit, offset int64, order, sortBy string) (result []*m.AlexaSkill, total int64, err error) {
+func (n *AlexaSkillEndpoint) GetList(ctx context.Context, limit, offset int64, order, sortBy string) (result []*m.AlexaSkill, total int64, err error) {
 
 	result, total, err = n.adaptors.AlexaSkill.List(ctx, limit, offset, order, sortBy)
 
@@ -104,7 +105,7 @@ func (n *AlexaSkillEndpoint) GetList(ctx context.Context,limit, offset int64, or
 }
 
 // Delete ...
-func (n *AlexaSkillEndpoint) Delete(ctx context.Context,skillId int64) (err error) {
+func (n *AlexaSkillEndpoint) Delete(ctx context.Context, skillId int64) (err error) {
 
 	if skillId == 0 {
 		err = apperr.ErrInvalidRequest

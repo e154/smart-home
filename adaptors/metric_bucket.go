@@ -138,7 +138,7 @@ func (n *MetricBucket) DeleteByMetricId(ctx context.Context, metricId int64) (er
 
 // CreateHypertable ...
 func (n *MetricBucket) CreateHypertable(ctx context.Context) (err error) {
-	err = n.table.CreateHypertable(ctx, )
+	err = n.table.CreateHypertable(ctx)
 	return
 }
 

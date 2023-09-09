@@ -19,6 +19,7 @@
 package controllers
 
 import (
+	"context"
 	"github.com/e154/smart-home/api/stub/api"
 )
 
@@ -36,5 +37,5 @@ func NewControllerStream(common *ControllerCommon) ControllerStream {
 
 // Subscribe ...
 func (a ControllerStream) Subscribe(server api.StreamService_SubscribeServer) error {
-	return a.endpoint.Stream.Subscribe(server)
+	return a.endpoint.Stream.Subscribe(context.Background(), server)
 }

@@ -168,7 +168,7 @@ func (e *Supervisor) addL3(ctx context.Context, name, host string, script *m.Scr
 		},
 	}
 
-	err = e.adaptors.Entity.Add(ctx,ent)
+	err = e.adaptors.Entity.Add(ctx, ent)
 	So(err, ShouldBeNil)
 
 	_, err = e.adaptors.EntityStorage.Add(ctx, &m.EntityStorage{

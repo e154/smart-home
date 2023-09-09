@@ -20,6 +20,8 @@ package email
 
 import (
 	"context"
+	"testing"
+
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/email"
@@ -29,7 +31,6 @@ import (
 	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/e154/smart-home/tests/plugins"
 	. "github.com/smartystreets/goconvey/convey"
-	"testing"
 )
 
 func TestEmail(t *testing.T) {

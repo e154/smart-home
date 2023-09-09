@@ -19,6 +19,7 @@
 package models
 
 import (
+	"context"
 	"strings"
 	"testing"
 
@@ -42,21 +43,21 @@ func TestRole(t *testing.T) {
 			demoRole := &m.Role{
 				Name: "demo",
 			}
-			err := adaptors.Role.Add(demoRole)
+			err := adaptors.Role.Add(context.Background(), demoRole)
 			So(err, ShouldBeNil)
 
 			userRole := &m.Role{
 				Name:   "user",
 				Parent: demoRole,
 			}
-			err = adaptors.Role.Add(userRole)
+			err = adaptors.Role.Add(context.Background(), userRole)
 			So(err, ShouldBeNil)
 
 			//debug.Println(accessList.List)
 			//fmt.Println("----")
 
 			var counter int
-			for pack, item := range *accessList.List() {
+			for pack, item := range *accessList.List(context.Background()) {
 				for right := range item {
 					if strings.Contains(right, "read") ||
 						strings.Contains(right, "view") {
@@ -67,13 +68,13 @@ func TestRole(t *testing.T) {
 						}
 
 						counter++
-						_, err = adaptors.Permission.Add(permission)
+						_, err = adaptors.Permission.Add(context.Background(), permission)
 						So(err, ShouldBeNil)
 					}
 				}
 			}
 
-			for pack, item := range *accessList.List() {
+			for pack, item := range *accessList.List(context.Background()) {
 				for right := range item {
 					if !strings.Contains(right, "read") &&
 						!strings.Contains(right, "view") {
@@ -84,7 +85,7 @@ func TestRole(t *testing.T) {
 						}
 
 						counter++
-						_, err = adaptors.Permission.Add(permission)
+						_, err = adaptors.Permission.Add(context.Background(), permission)
 						So(err, ShouldBeNil)
 					}
 				}
@@ -94,11 +95,11 @@ func TestRole(t *testing.T) {
 				Name:   "admin",
 				Parent: userRole,
 			}
-			err = adaptors.Role.Add(adminRole)
+			err = adaptors.Role.Add(context.Background(), adminRole)
 			So(err, ShouldBeNil)
 
 			// user
-			userRole, err = adaptors.Role.GetByName("user")
+			userRole, err = adaptors.Role.GetByName(context.Background(), "user")
 			So(err, ShouldBeNil)
 			So(userRole.Name, ShouldEqual, "user")
 			So(userRole.Parent, ShouldNotBeNil)
@@ -107,7 +108,7 @@ func TestRole(t *testing.T) {
 			So(userRole.Children[0].Name, ShouldEqual, "admin")
 
 			// demo
-			demoRole, err = adaptors.Role.GetByName("demo")
+			demoRole, err = adaptors.Role.GetByName(context.Background(), "demo")
 			So(err, ShouldBeNil)
 			So(demoRole.Parent, ShouldBeNil)
 			So(demoRole.Name, ShouldEqual, "demo")
@@ -115,27 +116,27 @@ func TestRole(t *testing.T) {
 			So(demoRole.Children[0].Name, ShouldEqual, "user")
 
 			// admin
-			adminRole, err = adaptors.Role.GetByName("admin")
+			adminRole, err = adaptors.Role.GetByName(context.Background(), "admin")
 			So(err, ShouldBeNil)
 			So(adminRole.Parent, ShouldNotBeNil)
 			So(adminRole.Parent.Name, ShouldEqual, "user")
 			So(adminRole.Name, ShouldEqual, "admin")
 			So(len(adminRole.Children), ShouldBeZeroValue)
 
-			permissions, err := adaptors.Permission.GetAllPermissions("user")
+			permissions, err := adaptors.Permission.GetAllPermissions(context.Background(), "user")
 			So(err, ShouldBeNil)
 
 			So(len(permissions), ShouldEqual, counter)
 
-			err = adaptors.Role.Delete("demo")
+			err = adaptors.Role.Delete(context.Background(), "demo")
 			So(err, ShouldNotBeNil)
-			err = adaptors.Role.Delete("user")
+			err = adaptors.Role.Delete(context.Background(), "user")
 			So(err, ShouldNotBeNil)
-			err = adaptors.Role.Delete("admin")
+			err = adaptors.Role.Delete(context.Background(), "admin")
 			So(err, ShouldBeNil)
-			err = adaptors.Role.Delete("user")
+			err = adaptors.Role.Delete(context.Background(), "user")
 			So(err, ShouldBeNil)
-			err = adaptors.Role.Delete("demo")
+			err = adaptors.Role.Delete(context.Background(), "demo")
 			So(err, ShouldBeNil)
 		})
 	})

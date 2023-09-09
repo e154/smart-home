@@ -19,6 +19,7 @@
 package access_list
 
 import (
+	"context"
 	"encoding/json"
 
 	"github.com/e154/smart-home/common/logger"
@@ -33,10 +34,10 @@ var (
 
 // AccessListService ...
 type AccessListService interface {
-	ReadConfig() (err error)
-	GetFullAccessList(roleName string) (accessList AccessList, err error)
-	GetShotAccessList(role *m.Role) (err error)
-	List() *AccessList
+	ReadConfig(ctx context.Context) (err error)
+	GetFullAccessList(ctx context.Context, roleName string) (accessList AccessList, err error)
+	GetShotAccessList(ctx context.Context, role *m.Role) (err error)
+	List(ctx context.Context) *AccessList
 }
 
 // accessListService ...
@@ -50,12 +51,12 @@ func NewAccessListService(adaptors *adaptors.Adaptors) AccessListService {
 	accessList := &accessListService{
 		adaptors: adaptors,
 	}
-	_ = accessList.ReadConfig()
+	_ = accessList.ReadConfig(context.Background())
 	return accessList
 }
 
 // ReadConfig ...
-func (a *accessListService) ReadConfig() (err error) {
+func (a *accessListService) ReadConfig(ctx context.Context) (err error) {
 
 	//var file []byte
 	//file, err = ioutil.ReadFile(path)
@@ -75,10 +76,10 @@ func (a *accessListService) ReadConfig() (err error) {
 }
 
 // GetFullAccessList ...
-func (a *accessListService) GetFullAccessList(roleName string) (accessList AccessList, err error) {
+func (a *accessListService) GetFullAccessList(ctx context.Context, roleName string) (accessList AccessList, err error) {
 
 	var permissions []*m.Permission
-	if permissions, err = a.adaptors.Permission.GetAllPermissions(roleName); err != nil {
+	if permissions, err = a.adaptors.Permission.GetAllPermissions(ctx, roleName); err != nil {
 		return
 	}
 
@@ -109,13 +110,13 @@ func (a *accessListService) GetFullAccessList(roleName string) (accessList Acces
 }
 
 // GetShotAccessList ...
-func (a *accessListService) GetShotAccessList(role *m.Role) (err error) {
+func (a *accessListService) GetShotAccessList(ctx context.Context, role *m.Role) (err error) {
 
-	err = a.adaptors.Role.GetAccessList(role)
+	err = a.adaptors.Role.GetAccessList(ctx, role)
 	return
 }
 
 // List ...
-func (a *accessListService) List() *AccessList {
+func (a *accessListService) List(ctx context.Context) *AccessList {
 	return a.list
 }

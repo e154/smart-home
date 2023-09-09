@@ -21,11 +21,12 @@ package trigger_time
 import (
 	"context"
 	"fmt"
-	"github.com/e154/smart-home/system/bus"
 	"os"
 	"path/filepath"
 	"testing"
 	"time"
+
+	"github.com/e154/smart-home/system/bus"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/system/scripts"

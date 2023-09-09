@@ -129,7 +129,7 @@ func (n *Areas) DeleteByName(ctx context.Context, name string) (err error) {
 }
 
 // Clean ...
-func (n *Areas) Clean(ctx context.Context, ) (err error) {
+func (n *Areas) Clean(ctx context.Context) (err error) {
 
 	err = n.Db.WithContext(ctx).Exec(`delete 
 from areas

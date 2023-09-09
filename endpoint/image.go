@@ -163,7 +163,7 @@ func (i *ImageEndpoint) GetListByDate(ctx context.Context, filter string) (image
 // GetFilterList ...
 func (i *ImageEndpoint) GetFilterList(ctx context.Context) (filterList []*m.ImageFilterList, err error) {
 
-	filterList, err = i.adaptors.Image.GetFilterList(ctx, )
+	filterList, err = i.adaptors.Image.GetFilterList(ctx)
 
 	return
 }

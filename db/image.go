@@ -141,7 +141,7 @@ type ImageFilterList struct {
 }
 
 // GetFilterList ...
-func (n *Images) GetFilterList(ctx context.Context, ) (images []*ImageFilterList, err error) {
+func (n *Images) GetFilterList(ctx context.Context) (images []*ImageFilterList, err error) {
 
 	image := &Image{}
 	var rows *sql.Rows

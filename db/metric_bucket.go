@@ -218,7 +218,7 @@ func (n MetricBuckets) DeleteById(ctx context.Context, id int64) (err error) {
 }
 
 // CreateHypertable ...
-func (n MetricBuckets) CreateHypertable(ctx context.Context, ) (err error) {
+func (n MetricBuckets) CreateHypertable(ctx context.Context) (err error) {
 	if err = n.Db.WithContext(ctx).Raw(`SELECT create_hypertable('metric_bucket', 'time', migrate_data=>'TRUE')`).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMetricBucketAdd, err.Error())
 	}

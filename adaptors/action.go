@@ -31,11 +31,11 @@ import (
 // IAction ...
 type IAction interface {
 	Add(ctx context.Context, ver *m.Action) (id int64, err error)
-	GetById(ctx context.Context,id int64) (metric *m.Action, err error)
-	Update(ctx context.Context,ver *m.Action) error
-	Delete(ctx context.Context,deviceId int64) (err error)
-	List(ctx context.Context,limit, offset int64, orderBy, sort string) (list []*m.Action, total int64, err error)
-	Search(ctx context.Context,query string, limit, offset int) (list []*m.Action, total int64, err error)
+	GetById(ctx context.Context, id int64) (metric *m.Action, err error)
+	Update(ctx context.Context, ver *m.Action) error
+	Delete(ctx context.Context, deviceId int64) (err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.Action, total int64, err error)
+	Search(ctx context.Context, query string, limit, offset int) (list []*m.Action, total int64, err error)
 	fromDb(dbVer *db.Action) (ver *m.Action)
 	toDb(ver *m.Action) (dbVer *db.Action)
 }

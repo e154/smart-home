@@ -47,7 +47,7 @@ type IImage interface {
 	UploadImage(ctx context.Context, reader *bufio.Reader, fileName string) (file *m.Image, err error)
 	AddMultiple(ctx context.Context, items []*m.Image) (err error)
 	GetAllByDate(ctx context.Context, filter string) (images []*m.Image, err error)
-	GetFilterList(ctx context.Context, ) (filterList []*m.ImageFilterList, err error)
+	GetFilterList(ctx context.Context) (filterList []*m.ImageFilterList, err error)
 	fromDb(dbImage *db.Image) (image *m.Image)
 	toDb(image *m.Image) (dbImage *db.Image)
 }
@@ -226,7 +226,7 @@ func (n *Image) GetAllByDate(ctx context.Context, filter string) (images []*m.Im
 }
 
 // GetFilterList ...
-func (n *Image) GetFilterList(ctx context.Context, ) (filterList []*m.ImageFilterList, err error) {
+func (n *Image) GetFilterList(ctx context.Context) (filterList []*m.ImageFilterList, err error) {
 
 	var dblist []*db.ImageFilterList
 	if dblist, err = n.table.GetFilterList(ctx); err != nil {

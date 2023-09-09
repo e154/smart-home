@@ -19,6 +19,7 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -72,9 +73,9 @@ func (u *User) TableName() string {
 }
 
 // Add ...
-func (u *Users) Add(user *User) (id int64, err error) {
+func (u *Users) Add(ctx context.Context, user *User) (id int64, err error) {
 
-	if err = u.Db.Create(&user).Error; err != nil {
+	if err = u.Db.WithContext(ctx).Create(&user).Error; err != nil {
 		err = errors.Wrap(apperr.ErrUserAdd, err.Error())
 		return
 	}
@@ -83,10 +84,10 @@ func (u *Users) Add(user *User) (id int64, err error) {
 }
 
 // GetById ...
-func (u *Users) GetById(userId int64) (user *User, err error) {
+func (u *Users) GetById(ctx context.Context, userId int64) (user *User, err error) {
 
 	user = &User{}
-	err = u.Db.Model(user).
+	err = u.Db.WithContext(ctx).Model(user).
 		Where("id = ? and deleted_at isnull", userId).
 		Preload("Image").
 		Preload("Meta").
@@ -105,10 +106,10 @@ func (u *Users) GetById(userId int64) (user *User, err error) {
 }
 
 // GetByEmail ...
-func (u *Users) GetByEmail(email string) (user *User, err error) {
+func (u *Users) GetByEmail(ctx context.Context, email string) (user *User, err error) {
 
 	user = &User{}
-	err = u.Db.Model(user).
+	err = u.Db.WithContext(ctx).Model(user).
 		Where("email = ?", email).
 		Preload("Image").
 		Preload("Meta").
@@ -123,10 +124,10 @@ func (u *Users) GetByEmail(email string) (user *User, err error) {
 }
 
 // GetByNickname ...
-func (u *Users) GetByNickname(nickname string) (user *User, err error) {
+func (u *Users) GetByNickname(ctx context.Context, nickname string) (user *User, err error) {
 
 	user = &User{}
-	err = u.Db.Model(user).
+	err = u.Db.WithContext(ctx).Model(user).
 		Where("nickname = ?", nickname).
 		Preload("Image").
 		Preload("Meta").
@@ -141,10 +142,10 @@ func (u *Users) GetByNickname(nickname string) (user *User, err error) {
 }
 
 // GetByAuthenticationToken ...
-func (u *Users) GetByAuthenticationToken(token string) (user *User, err error) {
+func (u *Users) GetByAuthenticationToken(ctx context.Context, token string) (user *User, err error) {
 
 	user = &User{}
-	err = u.Db.Model(user).
+	err = u.Db.WithContext(ctx).Model(user).
 		Where("authentication_token = ?", token).
 		Preload("Image").
 		Preload("Meta").
@@ -159,10 +160,10 @@ func (u *Users) GetByAuthenticationToken(token string) (user *User, err error) {
 }
 
 // GetByResetPassToken ...
-func (u *Users) GetByResetPassToken(token string) (user *User, err error) {
+func (u *Users) GetByResetPassToken(ctx context.Context, token string) (user *User, err error) {
 
 	user = &User{}
-	err = u.Db.Model(user).
+	err = u.Db.WithContext(ctx).Model(user).
 		Where("reset_password_token = ?", token).
 		Preload("Image").
 		Preload("Meta").
@@ -177,7 +178,7 @@ func (u *Users) GetByResetPassToken(token string) (user *User, err error) {
 }
 
 // Update ...
-func (u *Users) Update(user *User) (err error) {
+func (u *Users) Update(ctx context.Context, user *User) (err error) {
 
 	q := map[string]interface{}{
 		"nickname":             user.Nickname,
@@ -205,15 +206,15 @@ func (u *Users) Update(user *User) (err error) {
 	if user.EncryptedPassword != "" {
 		q["encrypted_password"] = user.EncryptedPassword
 	}
-	if err = u.Db.Model(&User{Id: user.Id}).Updates(q).Error; err != nil {
+	if err = u.Db.WithContext(ctx).Model(&User{Id: user.Id}).Updates(q).Error; err != nil {
 		err = errors.Wrap(apperr.ErrUserUpdate, err.Error())
 	}
 	return
 }
 
 // NewResetPassToken ...
-func (u *Users) NewResetPassToken(userId int64, token string) (err error) {
-	err = u.Db.Model(&User{Id: userId}).Updates(map[string]interface{}{
+func (u *Users) NewResetPassToken(ctx context.Context, userId int64, token string) (err error) {
+	err = u.Db.WithContext(ctx).Model(&User{Id: userId}).Updates(map[string]interface{}{
 		"reset_password_token":   token,
 		"reset_password_sent_at": time.Now(),
 	}).Error
@@ -224,8 +225,8 @@ func (u *Users) NewResetPassToken(userId int64, token string) (err error) {
 }
 
 // ClearResetPassToken ...
-func (u *Users) ClearResetPassToken(userId int64) (err error) {
-	err = u.Db.Model(&User{Id: userId}).Updates(map[string]interface{}{
+func (u *Users) ClearResetPassToken(ctx context.Context, userId int64) (err error) {
+	err = u.Db.WithContext(ctx).Model(&User{Id: userId}).Updates(map[string]interface{}{
 		"reset_password_token":   "",
 		"reset_password_sent_at": nil,
 	}).Error
@@ -236,8 +237,8 @@ func (u *Users) ClearResetPassToken(userId int64) (err error) {
 }
 
 // ClearToken ...
-func (u *Users) ClearToken(userId int64) (err error) {
-	err = u.Db.Model(&User{Id: userId}).Updates(map[string]interface{}{
+func (u *Users) ClearToken(ctx context.Context, userId int64) (err error) {
+	err = u.Db.WithContext(ctx).Model(&User{Id: userId}).Updates(map[string]interface{}{
 		"authentication_token": "",
 	}).Error
 	if err != nil {
@@ -247,8 +248,8 @@ func (u *Users) ClearToken(userId int64) (err error) {
 }
 
 // UpdateAuthenticationToken ...
-func (u *Users) UpdateAuthenticationToken(userId int64, token string) (err error) {
-	err = u.Db.Model(&User{Id: userId}).Updates(map[string]interface{}{
+func (u *Users) UpdateAuthenticationToken(ctx context.Context, userId int64, token string) (err error) {
+	err = u.Db.WithContext(ctx).Model(&User{Id: userId}).Updates(map[string]interface{}{
 		"authentication_token": token,
 	}).Error
 	if err != nil {
@@ -258,8 +259,8 @@ func (u *Users) UpdateAuthenticationToken(userId int64, token string) (err error
 }
 
 // Delete ...
-func (u *Users) Delete(userId int64) (err error) {
-	err = u.Db.Model(&User{Id: userId}).Updates(map[string]interface{}{
+func (u *Users) Delete(ctx context.Context, userId int64) (err error) {
+	err = u.Db.WithContext(ctx).Model(&User{Id: userId}).Updates(map[string]interface{}{
 		"deleted_at": time.Now(),
 	}).Error
 	if err != nil {
@@ -269,15 +270,15 @@ func (u *Users) Delete(userId int64) (err error) {
 }
 
 // List ...
-func (n *Users) List(limit, offset int, orderBy, sort string) (list []*User, total int64, err error) {
+func (n *Users) List(ctx context.Context, limit, offset int, orderBy, sort string) (list []*User, total int64, err error) {
 
-	if err = n.Db.Model(User{}).Count(&total).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(User{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrUserList, err.Error())
 		return
 	}
 
 	list = make([]*User, 0)
-	err = n.Db.
+	err = n.Db.WithContext(ctx).
 		Limit(limit).
 		Offset(offset).
 		Order(fmt.Sprintf("%s %s", sort, orderBy)).
