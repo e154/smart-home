@@ -25,7 +25,7 @@ func NewInteractEndpoint(common *CommonEndpoint) *InteractEndpoint {
 func (d InteractEndpoint) EntityCallAction(ctx context.Context, entityId string, action string, args map[string]interface{}) (errs validator.ValidationErrorsTranslations, err error) {
 
 	id := common.EntityId(entityId)
-	_, err = d.adaptors.Entity.GetById(id)
+	_, err = d.adaptors.Entity.GetById(ctx, id)
 	if err != nil {
 		return
 	}

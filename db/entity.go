@@ -19,6 +19,7 @@
 package db
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -64,15 +65,15 @@ func (d *Entity) TableName() string {
 }
 
 // Add ...
-func (n Entities) Add(v *Entity) (err error) {
-	if err = n.Db.Create(&v).Error; err != nil {
+func (n Entities) Add(ctx context.Context, v *Entity) (err error) {
+	if err = n.Db.WithContext(ctx).Create(&v).Error; err != nil {
 		err = errors.Wrap(apperr.ErrEntityAdd, err.Error())
 	}
 	return
 }
 
 // Update ...
-func (n Entities) Update(v *Entity) (err error) {
+func (n Entities) Update(ctx context.Context, v *Entity) (err error) {
 	q := map[string]interface{}{
 		"image_id":    v.ImageId,
 		"area_id":     v.AreaId,
@@ -85,28 +86,28 @@ func (n Entities) Update(v *Entity) (err error) {
 		"auto_load":   v.AutoLoad,
 	}
 
-	if err = n.Db.Model(&Entity{Id: v.Id}).Updates(q).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(&Entity{Id: v.Id}).Updates(q).Error; err != nil {
 		err = errors.Wrap(apperr.ErrEntityUpdate, err.Error())
 	}
 	return
 }
 
 // UpdateSettings ...
-func (n Entities) UpdateSettings(entityId common.EntityId, settings []byte) (err error) {
+func (n Entities) UpdateSettings(ctx context.Context, entityId common.EntityId, settings []byte) (err error) {
 	q := map[string]interface{}{
 		"settings": settings,
 	}
 
-	if err = n.Db.Model(&Entity{Id: entityId}).Updates(q).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(&Entity{Id: entityId}).Updates(q).Error; err != nil {
 		err = errors.Wrap(apperr.ErrEntityUpdate, err.Error())
 	}
 	return
 }
 
 // GetById ...
-func (n Entities) GetById(id common.EntityId) (v *Entity, err error) {
+func (n Entities) GetById(ctx context.Context, id common.EntityId) (v *Entity, err error) {
 	v = &Entity{}
-	err = n.Db.Model(v).
+	err = n.Db.WithContext(ctx).Model(v).
 		Where("id = ?", id).
 		Preload("Image").
 		Preload("States").
@@ -135,10 +136,10 @@ func (n Entities) GetById(id common.EntityId) (v *Entity, err error) {
 }
 
 // GetByIds ...
-func (n Entities) GetByIds(ids []common.EntityId) (list []*Entity, err error) {
+func (n Entities) GetByIds(ctx context.Context, ids []common.EntityId) (list []*Entity, err error) {
 
 	list = make([]*Entity, 0)
-	err = n.Db.Model(Entity{}).
+	err = n.Db.WithContext(ctx).Model(Entity{}).
 		Where("id IN (?)", ids).
 		Preload("Image").
 		Preload("States").
@@ -163,10 +164,10 @@ func (n Entities) GetByIds(ids []common.EntityId) (list []*Entity, err error) {
 }
 
 // GetByIdsSimple ...
-func (n Entities) GetByIdsSimple(ids []common.EntityId) (list []*Entity, err error) {
+func (n Entities) GetByIdsSimple(ctx context.Context, ids []common.EntityId) (list []*Entity, err error) {
 
 	list = make([]*Entity, 0)
-	err = n.Db.Model(Entity{}).
+	err = n.Db.WithContext(ctx).Model(Entity{}).
 		Where("id IN (?)", ids).
 		Find(&list).Error
 
@@ -179,9 +180,9 @@ func (n Entities) GetByIdsSimple(ids []common.EntityId) (list []*Entity, err err
 }
 
 // Delete ...
-func (n Entities) Delete(id common.EntityId) (err error) {
+func (n Entities) Delete(ctx context.Context, id common.EntityId) (err error) {
 
-	if err = n.Db.Delete(&Entity{Id: id}).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Delete(&Entity{Id: id}).Error; err != nil {
 		err = errors.Wrap(apperr.ErrEntityDelete, err.Error())
 		return
 	}
@@ -190,10 +191,10 @@ func (n Entities) Delete(id common.EntityId) (err error) {
 }
 
 // List ...
-func (n *Entities) List(limit, offset int, orderBy, sort string, autoLoad bool,
+func (n *Entities) List(ctx context.Context, limit, offset int, orderBy, sort string, autoLoad bool,
 	query, plugin *string, areaId *int64) (list []*Entity, total int64, err error) {
 
-	if err = n.Db.Model(Entity{}).Count(&total).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(Entity{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrEntityList, err.Error())
 		return
 	}
@@ -233,6 +234,7 @@ func (n *Entities) List(limit, offset int, orderBy, sort string, autoLoad bool,
 	}
 
 	err = q.
+		WithContext(ctx).
 		Find(&list).
 		Error
 
@@ -245,10 +247,11 @@ func (n *Entities) List(limit, offset int, orderBy, sort string, autoLoad bool,
 }
 
 // GetByType ...
-func (n *Entities) GetByType(t string, limit, offset int) (list []*Entity, err error) {
+func (n *Entities) GetByType(ctx context.Context, t string, limit, offset int) (list []*Entity, err error) {
 
 	list = make([]*Entity, 0)
-	err = n.Db.Model(&Entity{}).
+	err = n.Db.WithContext(ctx).
+		Model(&Entity{}).
 		Where("plugin_name = ? and auto_load = true", t).
 		Preload("Image").
 		Preload("States").
@@ -280,9 +283,9 @@ func (n *Entities) GetByType(t string, limit, offset int) (list []*Entity, err e
 }
 
 // Search ...
-func (n *Entities) Search(query string, limit, offset int) (list []*Entity, total int64, err error) {
+func (n *Entities) Search(ctx context.Context, query string, limit, offset int) (list []*Entity, total int64, err error) {
 
-	q := n.Db.Model(&Entity{}).
+	q := n.Db.WithContext(ctx).Model(&Entity{}).
 		Where("id LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
@@ -304,60 +307,60 @@ func (n *Entities) Search(query string, limit, offset int) (list []*Entity, tota
 }
 
 // AppendMetric ...
-func (n Entities) AppendMetric(id common.EntityId, metric *Metric) (err error) {
-	if err = n.Db.Model(&Entity{Id: id}).Association("Metrics").Append(&metric); err != nil {
+func (n Entities) AppendMetric(ctx context.Context, id common.EntityId, metric *Metric) (err error) {
+	if err = n.Db.WithContext(ctx).Model(&Entity{Id: id}).Association("Metrics").Append(&metric); err != nil {
 		err = errors.Wrap(apperr.ErrEntityAppendMetric, err.Error())
 	}
 	return
 }
 
 // DeleteMetric ...
-func (n Entities) DeleteMetric(id common.EntityId, metricId int64) (err error) {
-	if err = n.Db.Model(&Entity{Id: id}).Association("Metrics").Delete(&Metric{Id: metricId}); err != nil {
+func (n Entities) DeleteMetric(ctx context.Context, id common.EntityId, metricId int64) (err error) {
+	if err = n.Db.WithContext(ctx).Model(&Entity{Id: id}).Association("Metrics").Delete(&Metric{Id: metricId}); err != nil {
 		err = errors.Wrap(apperr.ErrEntityDeleteMetric, err.Error())
 	}
 	return
 }
 
 // UpdateAutoload ...
-func (n Entities) UpdateAutoload(entityId common.EntityId, autoLoad bool) (err error) {
+func (n Entities) UpdateAutoload(ctx context.Context, entityId common.EntityId, autoLoad bool) (err error) {
 	q := map[string]interface{}{
 		"auto_load": autoLoad,
 	}
 
-	if err = n.Db.Model(&Entity{Id: entityId}).Updates(q).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(&Entity{Id: entityId}).Updates(q).Error; err != nil {
 		err = errors.Wrap(apperr.ErrEntityUpdate, err.Error())
 	}
 	return
 }
 
 // ReplaceMetric ...
-func (n Entities) ReplaceMetric(id common.EntityId, metric Metric) (err error) {
-	if err = n.Db.Model(&Entity{Id: id}).Association("Metrics").Replace(&metric); err != nil {
+func (n Entities) ReplaceMetric(ctx context.Context, id common.EntityId, metric Metric) (err error) {
+	if err = n.Db.WithContext(ctx).Model(&Entity{Id: id}).Association("Metrics").Replace(&metric); err != nil {
 		err = errors.Wrap(apperr.ErrEntityReplaceMetric, err.Error())
 	}
 	return
 }
 
 // AppendScript ...
-func (n Entities) AppendScript(id common.EntityId, script *Script) (err error) {
-	if err = n.Db.Model(&Entity{Id: id}).Association("Scripts").Append(script); err != nil {
+func (n Entities) AppendScript(ctx context.Context, id common.EntityId, script *Script) (err error) {
+	if err = n.Db.WithContext(ctx).Model(&Entity{Id: id}).Association("Scripts").Append(script); err != nil {
 		err = errors.Wrap(apperr.ErrEntityAppendScript, err.Error())
 	}
 	return
 }
 
 // DeleteScript ...
-func (n Entities) DeleteScript(id common.EntityId, scriptId int64) (err error) {
-	if err = n.Db.Model(&Entity{Id: id}).Association("Scripts").Delete(&Script{Id: scriptId}); err != nil {
+func (n Entities) DeleteScript(ctx context.Context, id common.EntityId, scriptId int64) (err error) {
+	if err = n.Db.WithContext(ctx).Model(&Entity{Id: id}).Association("Scripts").Delete(&Script{Id: scriptId}); err != nil {
 		err = errors.Wrap(apperr.ErrEntityDeleteScript, err.Error())
 	}
 	return
 }
 
 // ReplaceScript ...
-func (n Entities) ReplaceScript(id common.EntityId, script *Script) (err error) {
-	if err = n.Db.Model(&Entity{Id: id}).Association("Scripts").Replace(script); err != nil {
+func (n Entities) ReplaceScript(ctx context.Context, id common.EntityId, script *Script) (err error) {
+	if err = n.Db.WithContext(ctx).Model(&Entity{Id: id}).Association("Scripts").Replace(script); err != nil {
 		err = errors.Wrap(apperr.ErrEntityReplaceScript, err.Error())
 	}
 	return

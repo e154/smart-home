@@ -89,7 +89,7 @@ entityAction = (entityId, actionName)->
 					Script:      plugActionOnOffScript,
 				},
 			}
-			err = adaptors.Entity.Add(plugEnt)
+			err = adaptors.Entity.Add(context.Background(), plugEnt)
 			So(err, ShouldBeNil)
 
 			eventBus.Publish("system/entities/"+plugEnt.Id.String(), events.EventCreatedEntity{

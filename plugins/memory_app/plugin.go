@@ -19,6 +19,7 @@
 package memory_app
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -75,7 +76,7 @@ func (p *plugin) load() (err error) {
 	}
 
 	var entity *m.Entity
-	if entity, err = p.Adaptors.Entity.GetById(common.EntityId(fmt.Sprintf("%s.%s", EntityMemory, Name))); err == nil {
+	if entity, err = p.Adaptors.Entity.GetById(context.Background(), common.EntityId(fmt.Sprintf("%s.%s", EntityMemory, Name))); err == nil {
 
 	}
 

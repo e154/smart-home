@@ -19,6 +19,7 @@
 package api
 
 import (
+	"context"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -47,7 +48,7 @@ func AddArea(adaptors *adaptors.Adaptors, name string, _ ...m.Attributes) (area 
 		Description: "description " + name,
 	}
 
-	area.Id, err = adaptors.Area.Add(area)
+	area.Id, err = adaptors.Area.Add(context.Background(), area)
 	return
 }
 

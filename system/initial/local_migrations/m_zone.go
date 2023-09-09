@@ -33,7 +33,7 @@ func (n *MigrationZones) Up(_ context.Context, adaptors *adaptors.Adaptors) (err
 func (n *MigrationZones) addZone(name, desc string) (err error) {
 
 	id := common.EntityId("zone." + name)
-	if _, err = n.adaptors.Entity.GetById(id); err == nil {
+	if _, err = n.adaptors.Entity.GetById(context.Background(), id); err == nil {
 		return
 	}
 
@@ -73,7 +73,7 @@ func (n *MigrationZones) addZone(name, desc string) (err error) {
 		},
 	}
 
-	err = n.adaptors.Entity.Add(&m.Entity{
+	err = n.adaptors.Entity.Add(context.Background(), &m.Entity{
 		Id:          id,
 		Description: desc,
 		PluginName:  "zone",

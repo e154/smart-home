@@ -67,7 +67,7 @@ func (c *DashboardCardEndpoint) GetById(ctx context.Context, id int64) (card *m.
 		return
 	}
 
-	err = c.preloadEntities(card)
+	err = c.preloadEntities(ctx, card)
 
 	return
 }
@@ -108,7 +108,7 @@ func (c *DashboardCardEndpoint) GetList(ctx context.Context, pagination common.P
 	}
 
 	for _, card := range list {
-		err = c.preloadEntities(card)
+		err = c.preloadEntities(ctx, card)
 	}
 
 	return
@@ -140,7 +140,7 @@ func (c *DashboardCardEndpoint) Import(ctx context.Context, card *m.DashboardCar
 	return
 }
 
-func (c *DashboardCardEndpoint) preloadEntities(card *m.DashboardCard) (err error) {
+func (c *DashboardCardEndpoint) preloadEntities(ctx context.Context, card *m.DashboardCard) (err error) {
 
 	// get child entities
 	entityMap := make(map[common.EntityId]*m.Entity)
@@ -156,7 +156,7 @@ func (c *DashboardCardEndpoint) preloadEntities(card *m.DashboardCard) (err erro
 	}
 
 	var entites []*m.Entity
-	if entites, err = c.adaptors.Entity.GetByIds(entityIds); err != nil {
+	if entites, err = c.adaptors.Entity.GetByIds(ctx, entityIds); err != nil {
 		return
 	}
 

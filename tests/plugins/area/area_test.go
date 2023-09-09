@@ -52,10 +52,10 @@ func TestArea(t *testing.T) {
 			}
 
 			var err error
-			area.Id, err = adaptors.Area.Add(area)
+			area.Id, err = adaptors.Area.Add(context.Background(), area)
 			So(err, ShouldBeNil)
 
-			area, err = adaptors.Area.GetById(area.Id)
+			area, err = adaptors.Area.GetById(context.Background(), area.Id)
 			So(err, ShouldBeNil)
 
 			So(area.Name, ShouldEqual, "zone 51")
@@ -106,7 +106,7 @@ func TestArea(t *testing.T) {
 				},
 				Resolution: 0,
 			}
-			area2.Id, err = adaptors.Area.Add(area2)
+			area2.Id, err = adaptors.Area.Add(context.Background(), area2)
 			So(err, ShouldBeNil)
 
 			distance, err := adaptors.Area.GetDistance(context.Background(), m.Point{Lon: 74.57289978531306, Lat: 42.86754085166162}, area2.Id)

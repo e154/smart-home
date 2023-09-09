@@ -55,7 +55,7 @@ func TestWeatherMet(t *testing.T) {
 			// add entity
 			// ------------------------------------------------
 			weatherEnt := GetNewWeatherMet("home")
-			err := adaptors.Entity.Add(weatherEnt)
+			err := adaptors.Entity.Add(context.Background(), weatherEnt)
 			ctx.So(err, ShouldBeNil)
 
 			// add weather vars

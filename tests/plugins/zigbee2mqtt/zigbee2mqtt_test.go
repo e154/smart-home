@@ -208,7 +208,7 @@ automationAction = (entityId)->
 			// add entity
 			// ------------------------------------------------
 			buttonEnt := GetNewButton(fmt.Sprintf("zigbee2mqtt.%s", zigbeeButtonId), []*m.Script{buttonScript})
-			err = adaptors.Entity.Add(buttonEnt)
+			err = adaptors.Entity.Add(context.Background(), buttonEnt)
 			So(err, ShouldBeNil)
 
 			plugEnt := GetNewPlug(fmt.Sprintf("zigbee2mqtt.%s", zigbeePlugId), []*m.Script{plugScript})
@@ -224,7 +224,7 @@ automationAction = (entityId)->
 					Script:      plugActionOnOffScript,
 				},
 			}
-			err = adaptors.Entity.Add(plugEnt)
+			err = adaptors.Entity.Add(context.Background(), plugEnt)
 			So(err, ShouldBeNil)
 
 			time.Sleep(time.Second)

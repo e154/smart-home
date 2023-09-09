@@ -19,11 +19,11 @@
 package trigger_state
 
 import (
+	"context"
 	"fmt"
 	"sync"
 	"testing"
 	"time"
-	"context"
 
 	"github.com/e154/smart-home/common/events"
 
@@ -147,7 +147,7 @@ automationTriggerStateChanged = (msg)->
 			// add entity
 			// ------------------------------------------------
 			buttonEnt := GetNewButton(fmt.Sprintf("zigbee2mqtt.%s", zigbeeButtonId), []*m.Script{buttonScript})
-			err = adaptors.Entity.Add(buttonEnt)
+			err = adaptors.Entity.Add(context.Background(), buttonEnt)
 			So(err, ShouldBeNil)
 
 			eventBus.Publish("system/entities/"+buttonEnt.Id.String(), events.EventCreatedEntity{

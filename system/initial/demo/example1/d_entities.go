@@ -1,6 +1,7 @@
 package example1
 
 import (
+	"context"
 	"fmt"
 	"os"
 
@@ -50,7 +51,7 @@ func (e *Supervisor) addL3(name, host string, script *m.Script, area *m.Area) (e
 	id := common.EntityId(fmt.Sprintf("cgminer.%s", name))
 
 	var err error
-	if ent, err = e.adaptors.Entity.GetById(id); err == nil {
+	if ent, err = e.adaptors.Entity.GetById(context.Background(), id); err == nil {
 		return
 	}
 
@@ -167,7 +168,7 @@ func (e *Supervisor) addL3(name, host string, script *m.Script, area *m.Area) (e
 		},
 	}
 
-	err = e.adaptors.Entity.Add(ent)
+	err = e.adaptors.Entity.Add(context.Background(),ent)
 	So(err, ShouldBeNil)
 
 	_, err = e.adaptors.EntityStorage.Add(&m.EntityStorage{
@@ -184,7 +185,7 @@ func (e *Supervisor) addTgBot(name, token string, script *m.Script, area *m.Area
 	id := common.EntityId(fmt.Sprintf("%s.%s", telegram.Name, name))
 
 	var err error
-	if ent, err = e.adaptors.Entity.GetById(id); err == nil {
+	if ent, err = e.adaptors.Entity.GetById(context.Background(), id); err == nil {
 		return
 	}
 
@@ -206,7 +207,7 @@ func (e *Supervisor) addTgBot(name, token string, script *m.Script, area *m.Area
 		},
 		Area: area,
 	}
-	err = e.adaptors.Entity.Add(ent)
+	err = e.adaptors.Entity.Add(context.Background(), ent)
 	So(err, ShouldBeNil)
 	_, err = e.adaptors.EntityStorage.Add(&m.EntityStorage{
 		EntityId:   ent.Id,
@@ -222,7 +223,7 @@ func (e *Supervisor) addSensor(name string, script *m.Script, area *m.Area) (ent
 	id := common.EntityId(fmt.Sprintf("cgminer.%s", name))
 
 	var err error
-	if ent, err = e.adaptors.Entity.GetById(id); err == nil {
+	if ent, err = e.adaptors.Entity.GetById(context.Background(), id); err == nil {
 		return
 	}
 
@@ -260,7 +261,7 @@ func (e *Supervisor) addSensor(name string, script *m.Script, area *m.Area) (ent
 		},
 		Area: area,
 	}
-	err = e.adaptors.Entity.Add(ent)
+	err = e.adaptors.Entity.Add(context.Background(), ent)
 	So(err, ShouldBeNil)
 	_, err = e.adaptors.EntityStorage.Add(&m.EntityStorage{
 		EntityId:   ent.Id,

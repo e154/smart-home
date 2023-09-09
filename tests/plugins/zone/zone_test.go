@@ -49,7 +49,7 @@ func TestZone(t *testing.T) {
 			// add entity
 			// ------------------------------------------------
 			zoneEnt := GetNewZone()
-			err := adaptors.Entity.Add(zoneEnt)
+			err := adaptors.Entity.Add(context.Background(), zoneEnt)
 			So(err, ShouldBeNil)
 
 			eventBus.Publish("system/entities/"+zoneEnt.Id.String(), events.EventCreatedEntity{

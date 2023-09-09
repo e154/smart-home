@@ -76,7 +76,7 @@ telegramAction = (entityId, actionName)->
 					Script:      plugScript,
 				},
 			}
-			err = adaptors.Entity.Add(tgEnt)
+			err = adaptors.Entity.Add(context.Background(), tgEnt)
 			ctx.So(err, ShouldBeNil)
 			_, err = adaptors.EntityStorage.Add(&m.EntityStorage{
 				EntityId:   tgEnt.Id,

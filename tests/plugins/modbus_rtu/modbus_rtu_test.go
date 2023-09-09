@@ -121,7 +121,7 @@ entityAction = (entityId, actionName)->
 			// add entity
 			// ------------------------------------------------
 			nodeEnt := GetNewNode("main")
-			err = adaptors.Entity.Add(nodeEnt)
+			err = adaptors.Entity.Add(context.Background(), nodeEnt)
 			So(err, ShouldBeNil)
 
 			plugEnt := GetNewModbusRtu("plug")
@@ -168,7 +168,7 @@ entityAction = (entityId, actionName)->
 			plugEnt.Settings[modbus_rtu.AttrTimeout].Value = 100
 			plugEnt.Settings[modbus_rtu.AttrDataBits].Value = 8
 			plugEnt.Settings[modbus_rtu.AttrParity].Value = "none"
-			err = adaptors.Entity.Add(plugEnt)
+			err = adaptors.Entity.Add(context.Background(), plugEnt)
 			So(err, ShouldBeNil)
 			_, err = adaptors.EntityStorage.Add(&m.EntityStorage{
 				EntityId:   plugEnt.Id,

@@ -19,6 +19,7 @@
 package logs
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/e154/smart-home/system/supervisor"
@@ -77,7 +78,7 @@ func (p *plugin) Unload() (err error) {
 func (p *plugin) load(service supervisor.Service) (err error) {
 
 	var entity *m.Entity
-	if entity, err = p.Adaptors.Entity.GetById(common.EntityId(fmt.Sprintf("%s.%s", EntityLogs, Name))); err == nil {
+	if entity, err = p.Adaptors.Entity.GetById(context.Background(), common.EntityId(fmt.Sprintf("%s.%s", EntityLogs, Name))); err == nil {
 
 	}
 

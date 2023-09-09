@@ -295,7 +295,7 @@ entityAction = (entityId, actionName)->
 					Type: common.AttributeInt,
 				},
 			}
-			err = adaptors.Entity.Add(l3Ent)
+			err = adaptors.Entity.Add(context.Background(), l3Ent)
 			ctx.So(err, ShouldBeNil)
 			_, err = adaptors.EntityStorage.Add(&m.EntityStorage{
 				EntityId:   l3Ent.Id,

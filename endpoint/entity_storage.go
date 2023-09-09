@@ -69,7 +69,7 @@ func (i *EntityStorageEndpoint) GetList(ctx context.Context, entityId *common.En
 	}
 
 	var entities []*m.Entity
-	if entities, err = i.adaptors.Entity.GetByIdsSimple(ids); err != nil {
+	if entities, err = i.adaptors.Entity.GetByIdsSimple(ctx, ids); err != nil {
 		return
 	}
 

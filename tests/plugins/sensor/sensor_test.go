@@ -117,7 +117,7 @@ entityAction = (entityId, actionName)->
 					Type: common.AttributeFloat,
 				},
 			}
-			err = adaptors.Entity.Add(sensorEnt)
+			err = adaptors.Entity.Add(context.Background(), sensorEnt)
 			ctx.So(err, ShouldBeNil)
 			_, err = adaptors.EntityStorage.Add(&m.EntityStorage{
 				EntityId:   sensorEnt.Id,
