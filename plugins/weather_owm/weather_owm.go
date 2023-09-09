@@ -19,6 +19,7 @@
 package weather_owm
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/url"
@@ -177,7 +178,7 @@ func (p *WeatherOwm) fetchFromLocalStorage(name string) (zone Zone, err error) {
 	log.Debugf("fetch from local storage")
 
 	var variable m.Variable
-	if variable, err = p.adaptors.Variable.GetByName(fmt.Sprintf("weather_owm.%s", name)); err != nil {
+	if variable, err = p.adaptors.Variable.GetByName(context.Background(), fmt.Sprintf("weather_owm.%s", name)); err != nil {
 		return
 	}
 
@@ -196,7 +197,7 @@ func (p *WeatherOwm) saveToLocalStorage(zone Zone) (err error) {
 		return
 	}
 
-	err = p.adaptors.Variable.CreateOrUpdate(m.Variable{
+	err = p.adaptors.Variable.CreateOrUpdate(context.Background(), m.Variable{
 		System:   true,
 		Name:     fmt.Sprintf("weather_owm.%s", zone.Name),
 		Value:    string(b),

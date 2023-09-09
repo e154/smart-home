@@ -79,7 +79,7 @@ func (n *User) Add(ctx context.Context, user *m.User) (id int64, err error) {
 	metaAdaptor := GetUserMetaAdaptor(n.db)
 	for _, meta := range user.Meta {
 		meta.UserId = id
-		_, _ = metaAdaptor.UpdateOrCreate(meta)
+		_, _ = metaAdaptor.UpdateOrCreate(ctx, meta)
 	}
 
 	return
@@ -185,7 +185,7 @@ func (n *User) Update(ctx context.Context, user *m.User) (err error) {
 	metaAdaptor := GetUserMetaAdaptor(n.db)
 	for _, meta := range user.Meta {
 		meta.UserId = user.Id
-		_, _ = metaAdaptor.UpdateOrCreate(meta)
+		_, _ = metaAdaptor.UpdateOrCreate(ctx, meta)
 	}
 
 	return

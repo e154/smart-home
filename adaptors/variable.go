@@ -19,6 +19,7 @@
 package adaptors
 
 import (
+	"context"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"gorm.io/gorm"
@@ -26,13 +27,13 @@ import (
 
 // IVariable ...
 type IVariable interface {
-	Add(ver m.Variable) (err error)
-	CreateOrUpdate(ver m.Variable) (err error)
-	GetByName(name string) (ver m.Variable, err error)
-	Update(variable m.Variable) (err error)
-	Delete(name string) (err error)
-	List(limit, offset int64, orderBy, sort string, system bool) (list []m.Variable, total int64, err error)
-	Search(query string, limit, offset int) (list []m.Variable, total int64, err error)
+	Add(ctx context.Context, ver m.Variable) (err error)
+	CreateOrUpdate(ctx context.Context, ver m.Variable) (err error)
+	GetByName(ctx context.Context, name string) (ver m.Variable, err error)
+	Update(ctx context.Context, variable m.Variable) (err error)
+	Delete(ctx context.Context, name string) (err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string, system bool) (list []m.Variable, total int64, err error)
+	Search(ctx context.Context, query string, limit, offset int) (list []m.Variable, total int64, err error)
 	fromDb(dbVer db.Variable) (ver m.Variable)
 	toDb(ver m.Variable) (dbVer db.Variable)
 }
@@ -53,22 +54,22 @@ func GetVariableAdaptor(d *gorm.DB) IVariable {
 }
 
 // Add ...
-func (n *Variable) Add(ver m.Variable) (err error) {
-	err = n.table.Add(n.toDb(ver))
+func (n *Variable) Add(ctx context.Context, ver m.Variable) (err error) {
+	err = n.table.Add(ctx, n.toDb(ver))
 	return
 }
 
 // CreateOrUpdate ...
-func (n *Variable) CreateOrUpdate(ver m.Variable) (err error) {
-	err = n.table.CreateOrUpdate(n.toDb(ver))
+func (n *Variable) CreateOrUpdate(ctx context.Context, ver m.Variable) (err error) {
+	err = n.table.CreateOrUpdate(ctx, n.toDb(ver))
 	return
 }
 
 // GetByName ...
-func (n *Variable) GetByName(name string) (ver m.Variable, err error) {
+func (n *Variable) GetByName(ctx context.Context, name string) (ver m.Variable, err error) {
 
 	var dbVer db.Variable
-	if dbVer, err = n.table.GetByName(name); err != nil {
+	if dbVer, err = n.table.GetByName(ctx, name); err != nil {
 
 		return
 	}
@@ -79,25 +80,25 @@ func (n *Variable) GetByName(name string) (ver m.Variable, err error) {
 }
 
 // Update ...
-func (n *Variable) Update(variable m.Variable) (err error) {
-	if _, err = n.table.GetByName(variable.Name); err != nil {
-		err = n.Add(variable)
+func (n *Variable) Update(ctx context.Context, variable m.Variable) (err error) {
+	if _, err = n.table.GetByName(ctx, variable.Name); err != nil {
+		err = n.Add(ctx, variable)
 		return
 	}
-	err = n.table.Update(n.toDb(variable))
+	err = n.table.Update(ctx, n.toDb(variable))
 	return
 }
 
 // Delete ...
-func (n *Variable) Delete(name string) (err error) {
-	err = n.table.Delete(name)
+func (n *Variable) Delete(ctx context.Context, name string) (err error) {
+	err = n.table.Delete(ctx, name)
 	return
 }
 
 // List ...
-func (n *Variable) List(limit, offset int64, orderBy, sort string, system bool) (list []m.Variable, total int64, err error) {
+func (n *Variable) List(ctx context.Context, limit, offset int64, orderBy, sort string, system bool) (list []m.Variable, total int64, err error) {
 	var dbList []db.Variable
-	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort, system); err != nil {
+	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort, system); err != nil {
 		return
 	}
 
@@ -111,9 +112,9 @@ func (n *Variable) List(limit, offset int64, orderBy, sort string, system bool) 
 }
 
 // Search ...
-func (s *Variable) Search(query string, limit, offset int) (list []m.Variable, total int64, err error) {
+func (s *Variable) Search(ctx context.Context, query string, limit, offset int) (list []m.Variable, total int64, err error) {
 	var dbList []db.Variable
-	if dbList, total, err = s.table.Search(query, limit, offset); err != nil {
+	if dbList, total, err = s.table.Search(ctx, query, limit, offset); err != nil {
 		return
 	}
 

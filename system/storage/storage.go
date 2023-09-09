@@ -19,6 +19,7 @@
 package storage
 
 import (
+	"context"
 	"strings"
 	"sync"
 	"time"
@@ -123,7 +124,7 @@ func (s *Storage) getByName(name string) (val string, err error) {
 		return
 	}
 	var storage m.Variable
-	if storage, err = s.adaptors.Variable.GetByName(name); err != nil {
+	if storage, err = s.adaptors.Variable.GetByName(context.Background(), name); err != nil {
 		return
 	}
 	val = storage.Value
@@ -136,7 +137,7 @@ func (s *Storage) pop(name string) (val string, err error) {
 	if err != nil {
 		return
 	}
-	if err = s.adaptors.Variable.Delete(name); err != nil {
+	if err = s.adaptors.Variable.Delete(context.Background(), name); err != nil {
 		return
 	}
 	s.pool.Delete(name)
@@ -170,7 +171,7 @@ func (s *Storage) serialize() {
 
 		s.pool.Store(key, data)
 
-		if err := s.adaptors.Variable.CreateOrUpdate(data); err != nil {
+		if err := s.adaptors.Variable.CreateOrUpdate(context.Background(), data); err != nil {
 			log.Error(err.Error())
 			return true
 		}
@@ -192,7 +193,7 @@ func (s *Storage) search(sub string) (result map[string]string) {
 		return true
 	})
 
-	list, _, err := s.adaptors.Variable.Search(sub, 99, 0)
+	list, _, err := s.adaptors.Variable.Search(context.Background(), sub, 99, 0)
 	if err != nil {
 		return
 	}

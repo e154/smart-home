@@ -60,7 +60,7 @@ func TestWeatherMet(t *testing.T) {
 
 			// add weather vars
 			// ------------------------------------------------
-			err = adaptors.Variable.CreateOrUpdate(m.Variable{
+			err = adaptors.Variable.CreateOrUpdate(context.Background(), m.Variable{
 				System: true,
 				Name:   "weather_met.home",
 				Value:  strings.Replace(serverData, "LOADED_AT", time.Now().Format(time.RFC3339), -1),

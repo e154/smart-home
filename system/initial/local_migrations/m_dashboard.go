@@ -35,7 +35,7 @@ func (n *MigrationDashboard) addDashboard(ctx context.Context, name, src string)
 		return err
 	}
 
-	err = n.adaptors.Variable.CreateOrUpdate(m.Variable{
+	err = n.adaptors.Variable.CreateOrUpdate(ctx, m.Variable{
 		Name:   name,
 		Value:  fmt.Sprintf("%d", board.Id),
 		System: true,

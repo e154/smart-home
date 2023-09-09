@@ -19,6 +19,7 @@
 package db
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -50,25 +51,25 @@ func (d *Variable) TableName() string {
 }
 
 // Add ...
-func (n Variables) Add(variable Variable) (err error) {
-	if err = n.Db.Create(&variable).Error; err != nil {
+func (n Variables) Add(ctx context.Context, variable Variable) (err error) {
+	if err = n.Db.WithContext(ctx).Create(&variable).Error; err != nil {
 		err = errors.Wrap(apperr.ErrVariableAdd, err.Error())
 	}
 	return
 }
 
 // CreateOrUpdate ...
-func (n *Variables) CreateOrUpdate(v Variable) (err error) {
-	if n.Db.Model(&v).Where("name = ?", v.Name).Updates(&v).RowsAffected == 0 {
-		err = n.Db.Create(&v).Error
+func (n *Variables) CreateOrUpdate(ctx context.Context, v Variable) (err error) {
+	if n.Db.WithContext(ctx).Model(&v).Where("name = ?", v.Name).Updates(&v).RowsAffected == 0 {
+		err = n.Db.WithContext(ctx).Create(&v).Error
 	}
 	return
 }
 
 // GetByName ...
-func (n Variables) GetByName(name string) (variable Variable, err error) {
+func (n Variables) GetByName(ctx context.Context, name string) (variable Variable, err error) {
 	variable = Variable{}
-	err = n.Db.Model(&Variable{}).
+	err = n.Db.WithContext(ctx).Model(&Variable{}).
 		Where("name = ?", name).
 		First(&variable).
 		Error
@@ -83,9 +84,9 @@ func (n Variables) GetByName(name string) (variable Variable, err error) {
 }
 
 // GetAllSystem ...
-func (n Variables) GetAllSystem() (list []Variable, err error) {
+func (n Variables) GetAllSystem(ctx context.Context) (list []Variable, err error) {
 	list = make([]Variable, 0)
-	err = n.Db.Where("system = ?", true).
+	err = n.Db.WithContext(ctx).Where("system = ?", true).
 		Find(&list).Error
 	if err != nil {
 		err = errors.Wrap(apperr.ErrVariableList, err.Error())
@@ -94,8 +95,8 @@ func (n Variables) GetAllSystem() (list []Variable, err error) {
 }
 
 // Update ...
-func (n Variables) Update(m Variable) (err error) {
-	err = n.Db.Model(&Variable{Name: m.Name}).Updates(map[string]interface{}{
+func (n Variables) Update(ctx context.Context, m Variable) (err error) {
+	err = n.Db.WithContext(ctx).Model(&Variable{Name: m.Name}).Updates(map[string]interface{}{
 		"value":     m.Value,
 		"system":    m.System,
 		"entity_id": m.EntityId,
@@ -107,23 +108,23 @@ func (n Variables) Update(m Variable) (err error) {
 }
 
 // Delete ...
-func (n Variables) Delete(name string) (err error) {
-	if err = n.Db.Delete(&Variable{Name: name}).Error; err != nil {
+func (n Variables) Delete(ctx context.Context, name string) (err error) {
+	if err = n.Db.WithContext(ctx).Delete(&Variable{Name: name}).Error; err != nil {
 		err = errors.Wrap(apperr.ErrVariableDelete, err.Error())
 	}
 	return
 }
 
 // List ...
-func (n *Variables) List(limit, offset int, orderBy, sort string, system bool) (list []Variable, total int64, err error) {
+func (n *Variables) List(ctx context.Context, limit, offset int, orderBy, sort string, system bool) (list []Variable, total int64, err error) {
 
-	if err = n.Db.Model(Variable{}).Where("system = ?", system).Count(&total).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(Variable{}).Where("system = ?", system).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrVariableList, err.Error())
 		return
 	}
 
 	list = make([]Variable, 0)
-	err = n.Db.
+	err = n.Db.WithContext(ctx).
 		Model(&Variable{}).
 		Where("system = ?", system).
 		Limit(limit).
@@ -138,9 +139,9 @@ func (n *Variables) List(limit, offset int, orderBy, sort string, system bool) (
 }
 
 // Search ...
-func (s *Variables) Search(query string, limit, offset int) (list []Variable, total int64, err error) {
+func (s *Variables) Search(ctx context.Context, query string, limit, offset int) (list []Variable, total int64, err error) {
 
-	q := s.Db.Model(&Variable{}).
+	q := s.Db.WithContext(ctx).Model(&Variable{}).
 		Where("name LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {

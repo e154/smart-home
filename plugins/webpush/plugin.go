@@ -176,7 +176,7 @@ func (p *plugin) Send(address string, message *m.Message) (err error) {
 
 	userId, _ := strconv.ParseInt(address, 0, 64)
 	var userDevices []*m.UserDevice
-	if userDevices, err = p.Adaptors.UserDevice.GetByUserId(userId); err != nil {
+	if userDevices, err = p.Adaptors.UserDevice.GetByUserId(context.Background(), userId); err != nil {
 		return
 	}
 
@@ -220,7 +220,7 @@ func (p *plugin) sendPush(userDevice *m.UserDevice, msgTitle, msgBody string) (e
 	if statusCode != 201 {
 		log.Warn(string(responseBody))
 		go func() {
-			_ = p.Adaptors.UserDevice.Delete(userDevice.Id)
+			_ = p.Adaptors.UserDevice.Delete(context.Background(), userDevice.Id)
 			log.Infof("remove user device %d", userDevice.Id)
 		}()
 		return
@@ -250,7 +250,7 @@ func (p *plugin) sendPublicKey(event EventGetWebPushPublicKey) {
 
 func (p *plugin) updateSubscribe(event EventAddWebPushSubscription) {
 
-	if _, err := p.Adaptors.UserDevice.Add(&m.UserDevice{
+	if _, err := p.Adaptors.UserDevice.Add(context.Background(), &m.UserDevice{
 		UserId:       event.UserID,
 		Subscription: event.Subscription,
 	}); err != nil {
