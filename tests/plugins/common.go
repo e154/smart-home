@@ -543,7 +543,7 @@ func AddScript(name, src string, adaptors *adaptors.Adaptors, scriptService scri
 		return
 	}
 
-	script.Id, err = adaptors.Script.Add(script)
+	script.Id, err = adaptors.Script.Add(context.Background(), script)
 
 	return
 }
