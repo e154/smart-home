@@ -62,6 +62,7 @@ export interface Attribute {
     map?: Record<string, Attribute>;
     time?: string;
     imageUrl?: string;
+    point?: string;
 }
 
 export interface Entity {

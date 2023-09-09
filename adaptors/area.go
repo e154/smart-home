@@ -111,7 +111,7 @@ func (a *Area) List(ctx context.Context, limit, offset int64, orderBy, sort stri
 func (a *Area) ListByPoint(ctx context.Context, point m.Point, limit, offset int64) (list []*m.Area, err error) {
 
 	var dbList []*db.Area
-	if dbList, err = a.table.ListByPoint(ctx, db.Point{Lon: float64(point.Lon), Lat: float64(point.Lat)}, int(limit), int(offset)); err != nil {
+	if dbList, err = a.table.ListByPoint(ctx, db.Point{Lon: point.Lon, Lat: point.Lat}, int(limit), int(offset)); err != nil {
 		return
 	}
 
@@ -152,7 +152,7 @@ func (a *Area) GetByName(ctx context.Context, name string) (ver *m.Area, err err
 
 // GetDistance ...
 func (a *Area) GetDistance(ctx context.Context, point m.Point, areaId int64) (distance float64, err error) {
-	distance, err = a.table.GetDistance(ctx, db.Point{Lon: float64(point.Lon), Lat: float64(point.Lat)}, areaId)
+	distance, err = a.table.GetDistance(ctx, db.Point{Lon: point.Lon, Lat: point.Lat}, areaId)
 	return
 }
 
@@ -167,8 +167,8 @@ func (a *Area) fromDb(dbVer *db.Area) (ver *m.Area) {
 	if dbVer.Polygon != nil {
 		for _, point := range dbVer.Polygon.Points {
 			ver.Polygon = append(ver.Polygon, m.Point{
-				Lon: float32(point.Lon),
-				Lat: float32(point.Lat),
+				Lon: point.Lon,
+				Lat: point.Lat,
 			})
 		}
 	}

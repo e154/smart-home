@@ -91,6 +91,7 @@ const loadFromPlugin = async () => {
         <ElOption label="Time" value="TIME"/>
         <ElOption label="Map" value="MAP"/>
         <ElOption label="Image" value="IMAGE"/>
+        <ElOption label="Point" value="POINT"/>
       </ElSelect>
     </template>
 
@@ -109,6 +110,9 @@ const loadFromPlugin = async () => {
       </div>
       <div v-if="row.type === 'ARRAY'">
         <ElInput type="string" v-model="row.array"/>
+      </div>
+      <div v-if="row.type === 'POINT'">
+        <ElInput type="string" v-model="row.point"/>
       </div>
       <ElSelect
           v-model="row.bool"
