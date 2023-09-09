@@ -95,7 +95,7 @@ func (n *Entity) Add(ctx context.Context, ver *m.Entity) (err error) {
 			ver.Actions[i].EntityId = ver.Id
 		}
 		entityAction := GetEntityActionAdaptor(tx)
-		if err = entityAction.AddMultiple(ver.Actions); err != nil {
+		if err = entityAction.AddMultiple(ctx, ver.Actions); err != nil {
 			return
 		}
 	}
@@ -106,7 +106,7 @@ func (n *Entity) Add(ctx context.Context, ver *m.Entity) (err error) {
 			ver.States[i].EntityId = ver.Id
 		}
 		stateAdaptor := GetEntityStateAdaptor(tx)
-		if err = stateAdaptor.AddMultiple(ver.States); err != nil {
+		if err = stateAdaptor.AddMultiple(ctx, ver.States); err != nil {
 			return
 		}
 	}
@@ -189,7 +189,7 @@ func (n *Entity) Import(ctx context.Context, ver *m.Entity) (err error) {
 			ver.Actions[i].EntityId = ver.Id
 		}
 		entityAction := GetEntityActionAdaptor(tx)
-		if err = entityAction.AddMultiple(ver.Actions); err != nil {
+		if err = entityAction.AddMultiple(ctx, ver.Actions); err != nil {
 			return
 		}
 	}
@@ -200,7 +200,7 @@ func (n *Entity) Import(ctx context.Context, ver *m.Entity) (err error) {
 			ver.States[i].EntityId = ver.Id
 		}
 		stateAdaptor := GetEntityStateAdaptor(tx)
-		if err = stateAdaptor.AddMultiple(ver.States); err != nil {
+		if err = stateAdaptor.AddMultiple(ctx, ver.States); err != nil {
 			return
 		}
 	}
@@ -383,12 +383,12 @@ func (n *Entity) Update(ctx context.Context, ver *m.Entity) (err error) {
 	}
 
 	entityActionAdaptor := GetEntityActionAdaptor(tx)
-	if err = entityActionAdaptor.DeleteByEntityId(ver.Id); err != nil {
+	if err = entityActionAdaptor.DeleteByEntityId(ctx, ver.Id); err != nil {
 		return
 	}
 
 	entityStateAdaptor := GetEntityStateAdaptor(tx)
-	if err = entityStateAdaptor.DeleteByEntityId(ver.Id); err != nil {
+	if err = entityStateAdaptor.DeleteByEntityId(ctx, ver.Id); err != nil {
 		return
 	}
 
@@ -396,7 +396,7 @@ func (n *Entity) Update(ctx context.Context, ver *m.Entity) (err error) {
 	for _, action := range ver.Actions {
 		action.EntityId = ver.Id
 	}
-	if err = entityActionAdaptor.AddMultiple(ver.Actions); err != nil {
+	if err = entityActionAdaptor.AddMultiple(ctx, ver.Actions); err != nil {
 		log.Error(err.Error())
 		return
 	}
@@ -405,7 +405,7 @@ func (n *Entity) Update(ctx context.Context, ver *m.Entity) (err error) {
 	for _, state := range ver.States {
 		state.EntityId = ver.Id
 	}
-	if err = entityStateAdaptor.AddMultiple(ver.States); err != nil {
+	if err = entityStateAdaptor.AddMultiple(ctx, ver.States); err != nil {
 		log.Errorf(err.Error())
 		return
 	}

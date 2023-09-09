@@ -474,7 +474,7 @@ func (e *supervisor) eventStateChangedHandler(msg events.EventStateChanged) {
 	}
 
 	go func() {
-		_, err := e.adaptors.EntityStorage.Add(&m.EntityStorage{
+		_, err := e.adaptors.EntityStorage.Add(context.Background(), &m.EntityStorage{
 			State:      state,
 			EntityId:   msg.EntityId,
 			Attributes: msg.NewState.Attributes.Serialize(),

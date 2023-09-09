@@ -52,7 +52,7 @@ func (i *EntityStorageEndpoint) GetList(ctx context.Context, entityId *common.En
 	}
 
 	var items []*m.EntityStorage
-	if items, total, err = i.adaptors.EntityStorage.ListByEntityId(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, entityId, startDate, endDate); err != nil {
+	if items, total, err = i.adaptors.EntityStorage.ListByEntityId(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, entityId, startDate, endDate); err != nil {
 		return
 	}
 

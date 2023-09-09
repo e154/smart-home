@@ -17,7 +17,7 @@ func NewAreaManager(adaptors *adaptors.Adaptors) *AreaManager {
 	}
 }
 
-func (n *AreaManager) addArea(name, desc string) (area *m.Area, err error) {
+func (n *AreaManager) addArea(ctx context.Context, name, desc string) (area *m.Area, err error) {
 	if area, err = n.adaptors.Area.GetByName(context.Background(), name); err == nil {
 		return
 	}
@@ -26,7 +26,7 @@ func (n *AreaManager) addArea(name, desc string) (area *m.Area, err error) {
 		Description: desc,
 	}
 
-	area.Id, err = n.adaptors.Area.Add(context.Background(), area)
+	area.Id, err = n.adaptors.Area.Add(ctx, area)
 	So(err, ShouldBeNil)
 	return
 }

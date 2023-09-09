@@ -119,7 +119,7 @@ entityAction = (entityId, actionName)->
 			}
 			err = adaptors.Entity.Add(context.Background(), sensorEnt)
 			ctx.So(err, ShouldBeNil)
-			_, err = adaptors.EntityStorage.Add(&m.EntityStorage{
+			_, err = adaptors.EntityStorage.Add(context.Background(), &m.EntityStorage{
 				EntityId:   sensorEnt.Id,
 				Attributes: sensorEnt.Attributes.Serialize(),
 			})
@@ -143,7 +143,7 @@ entityAction = (entityId, actionName)->
 					time.Sleep(time.Second)
 					cancel()
 
-					lastState, err := adaptors.EntityStorage.GetLastByEntityId(sensorEnt.Id)
+					lastState, err := adaptors.EntityStorage.GetLastByEntityId(context.Background(), sensorEnt.Id)
 					ctx.So(err, ShouldBeNil)
 
 					ctx.So(lastState.Attributes["paid_rewards"], ShouldEqual, 9.08)

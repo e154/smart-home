@@ -297,7 +297,7 @@ entityAction = (entityId, actionName)->
 			}
 			err = adaptors.Entity.Add(context.Background(), l3Ent)
 			ctx.So(err, ShouldBeNil)
-			_, err = adaptors.EntityStorage.Add(&m.EntityStorage{
+			_, err = adaptors.EntityStorage.Add(context.Background(), &m.EntityStorage{
 				EntityId:   l3Ent.Id,
 				Attributes: l3Ent.Attributes.Serialize(),
 			})
@@ -321,7 +321,7 @@ entityAction = (entityId, actionName)->
 					time.Sleep(time.Second)
 					cancel()
 
-					lastState, err := adaptors.EntityStorage.GetLastByEntityId(l3Ent.Id)
+					lastState, err := adaptors.EntityStorage.GetLastByEntityId(context.Background(), l3Ent.Id)
 					ctx.So(err, ShouldBeNil)
 
 					ctx.So(lastState.Attributes["chain1_temp_chip"], ShouldEqual, 0)
@@ -347,7 +347,7 @@ entityAction = (entityId, actionName)->
 					time.Sleep(time.Second)
 					cancel()
 
-					lastState, err := adaptors.EntityStorage.GetLastByEntityId(l3Ent.Id)
+					lastState, err := adaptors.EntityStorage.GetLastByEntityId(context.Background(), l3Ent.Id)
 					ctx.So(err, ShouldBeNil)
 
 					ctx.So(lastState.Attributes["ghs_av"], ShouldEqual, 411.85)

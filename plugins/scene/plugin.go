@@ -19,6 +19,7 @@
 package scene
 
 import (
+	"context"
 	"fmt"
 	"sync"
 
@@ -112,7 +113,7 @@ func (p *plugin) addOrUpdateEntity(entity *m.Entity, attributes m.AttributeValue
 			Description: "apply scene",
 			EntityId:    entity.Id,
 		}
-		if action.Id, err = p.Adaptors.EntityAction.Add(action); err != nil {
+		if action.Id, err = p.Adaptors.EntityAction.Add(context.Background(), action); err != nil {
 			return
 		}
 	}

@@ -22,15 +22,15 @@ func NewMigrationZones(adaptors *adaptors.Adaptors) *MigrationZones {
 	}
 }
 
-func (n *MigrationZones) Up(_ context.Context, adaptors *adaptors.Adaptors) (err error) {
+func (n *MigrationZones) Up(ctx context.Context, adaptors *adaptors.Adaptors) (err error) {
 	if adaptors != nil {
 		n.adaptors = adaptors
 	}
-	err = n.addZone("home", "base geo position")
+	err = n.addZone(ctx, "home", "base geo position")
 	return
 }
 
-func (n *MigrationZones) addZone(name, desc string) (err error) {
+func (n *MigrationZones) addZone(ctx context.Context, name, desc string) (err error) {
 
 	id := common.EntityId("zone." + name)
 	if _, err = n.adaptors.Entity.GetById(context.Background(), id); err == nil {
@@ -82,7 +82,7 @@ func (n *MigrationZones) addZone(name, desc string) (err error) {
 	})
 	So(err, ShouldBeNil)
 
-	_, err = n.adaptors.EntityStorage.Add(&m.EntityStorage{
+	_, err = n.adaptors.EntityStorage.Add(ctx, &m.EntityStorage{
 		EntityId:   common.EntityId("zone." + name),
 		Attributes: attributes.Serialize(),
 	})

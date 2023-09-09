@@ -29,7 +29,7 @@ func NewExample1(adaptors *adaptors.Adaptors,
 	}
 }
 
-func (e *Example1) Install(_ context.Context, adaptors *adaptors.Adaptors) (err error) {
+func (e *Example1) Install(ctx context.Context, adaptors *adaptors.Adaptors) (err error) {
 	if adaptors != nil {
 		e.adaptors = adaptors
 		e.areaManager = NewAreaManager(adaptors)
@@ -39,16 +39,16 @@ func (e *Example1) Install(_ context.Context, adaptors *adaptors.Adaptors) (err 
 	}
 
 	var area *m.Area
-	if area, err = e.areaManager.addArea("zone51", "demo"); err != nil {
+	if area, err = e.areaManager.addArea(ctx, "zone51", "demo"); err != nil {
 		return
 	}
 	var scripts []*m.Script
-	if scripts, err = e.scriptManager.addScripts(); err != nil {
+	if scripts, err = e.scriptManager.addScripts(ctx); err != nil {
 		return
 	}
 
 	var entities []*m.Entity
-	if entities, err = e.supervisor.addEntities(scripts, area); err != nil {
+	if entities, err = e.supervisor.addEntities(ctx, scripts, area); err != nil {
 		return
 	}
 

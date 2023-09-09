@@ -78,7 +78,7 @@ telegramAction = (entityId, actionName)->
 			}
 			err = adaptors.Entity.Add(context.Background(), tgEnt)
 			ctx.So(err, ShouldBeNil)
-			_, err = adaptors.EntityStorage.Add(&m.EntityStorage{
+			_, err = adaptors.EntityStorage.Add(context.Background(), &m.EntityStorage{
 				EntityId:   tgEnt.Id,
 				Attributes: tgEnt.Attributes.Serialize(),
 			})
