@@ -140,7 +140,7 @@ func (a *AuthEndpoint) PasswordReset(ctx context.Context, userEmail string, toke
 	}
 
 	var render *m.TemplateRender
-	if render, err = a.adaptors.Template.Render("password_reset", renderParams); err != nil {
+	if render, err = a.adaptors.Template.Render(ctx, "password_reset", renderParams); err != nil {
 		return
 	}
 

@@ -19,6 +19,7 @@
 package telegram
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"time"
@@ -203,7 +204,7 @@ func (p *Actor) sendMsg(body string, chatId int64) (messageID int, err error) {
 }
 
 func (p *Actor) getChatList() (list []m.TelegramChat, err error) {
-	list, _, err = p.adaptors.TelegramChat.List(999, 0, "", "", p.Id)
+	list, _, err = p.adaptors.TelegramChat.List(context.Background(), 999, 0, "", "", p.Id)
 	return
 }
 
@@ -254,7 +255,7 @@ func (p *Actor) commandStart(c tele.Context) (err error) {
 	)
 
 	text = fmt.Sprintf(banner, version.GetHumanVersion(), text)
-	_ = p.adaptors.TelegramChat.Add(m.TelegramChat{
+	_ = p.adaptors.TelegramChat.Add(context.Background(), m.TelegramChat{
 		EntityId: p.Id,
 		ChatId:   chat.ID,
 		Username: user.Username,
@@ -282,7 +283,7 @@ func (p *Actor) commandQuit(c tele.Context) (err error) {
 		chat = c.Chat()
 	)
 
-	_ = p.adaptors.TelegramChat.Delete(p.Id, chat.ID)
+	_ = p.adaptors.TelegramChat.Delete(context.Background(), p.Id, chat.ID)
 	err = c.Send("/quit -unsubscribe from bot\n/start - subscriber again")
 	return
 }

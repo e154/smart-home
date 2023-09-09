@@ -19,6 +19,7 @@
 package db
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -48,16 +49,16 @@ func (d *TelegramChat) TableName() string {
 }
 
 // Add ...
-func (n TelegramChats) Add(ch TelegramChat) (err error) {
-	if err = n.Db.Create(&ch).Error; err != nil {
+func (n TelegramChats) Add(ctx context.Context, ch TelegramChat) (err error) {
+	if err = n.Db.WithContext(ctx).Create(&ch).Error; err != nil {
 		err = errors.Wrap(apperr.ErrChatAdd, err.Error())
 	}
 	return
 }
 
 // Delete ...
-func (n TelegramChats) Delete(entityId common.EntityId, chatId int64) (err error) {
-	err = n.Db.Delete(&TelegramChat{
+func (n TelegramChats) Delete(ctx context.Context, entityId common.EntityId, chatId int64) (err error) {
+	err = n.Db.WithContext(ctx).Delete(&TelegramChat{
 		EntityId: entityId,
 		ChatId:   chatId,
 	}).Error
@@ -68,15 +69,15 @@ func (n TelegramChats) Delete(entityId common.EntityId, chatId int64) (err error
 }
 
 // List ...
-func (n *TelegramChats) List(limit, offset int, orderBy, sort string, entityId common.EntityId) (list []TelegramChat, total int64, err error) {
+func (n *TelegramChats) List(ctx context.Context, limit, offset int, orderBy, sort string, entityId common.EntityId) (list []TelegramChat, total int64, err error) {
 
-	if err = n.Db.Model(TelegramChat{EntityId: entityId}).Count(&total).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(TelegramChat{EntityId: entityId}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrChatList, err.Error())
 		return
 	}
 
 	list = make([]TelegramChat, 0)
-	q := n.Db.Model(&TelegramChat{EntityId: entityId})
+	q := n.Db.WithContext(ctx).Model(&TelegramChat{EntityId: entityId})
 
 	q = q.
 		Limit(limit).

@@ -19,6 +19,7 @@
 package adaptors
 
 import (
+	"context"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
@@ -27,9 +28,9 @@ import (
 
 // ITelegramChat ...
 type ITelegramChat interface {
-	Add(plugin m.TelegramChat) (err error)
-	Delete(entityId common.EntityId, channelId int64) (err error)
-	List(limit, offset int64, orderBy, sort string, entityId common.EntityId) (list []m.TelegramChat, total int64, err error)
+	Add(ctx context.Context, plugin m.TelegramChat) (err error)
+	Delete(ctx context.Context, entityId common.EntityId, channelId int64) (err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string, entityId common.EntityId) (list []m.TelegramChat, total int64, err error)
 	fromDb(dbVer db.TelegramChat) (ver m.TelegramChat)
 	toDb(ver m.TelegramChat) (dbVer db.TelegramChat)
 }
@@ -50,21 +51,21 @@ func GetTelegramChannelAdaptor(d *gorm.DB) ITelegramChat {
 }
 
 // Add ...
-func (p *TelegramChat) Add(plugin m.TelegramChat) (err error) {
-	err = p.table.Add(p.toDb(plugin))
+func (p *TelegramChat) Add(ctx context.Context, plugin m.TelegramChat) (err error) {
+	err = p.table.Add(ctx, p.toDb(plugin))
 	return
 }
 
 // Delete ...
-func (p *TelegramChat) Delete(entityId common.EntityId, channelId int64) (err error) {
-	err = p.table.Delete(entityId, channelId)
+func (p *TelegramChat) Delete(ctx context.Context, entityId common.EntityId, channelId int64) (err error) {
+	err = p.table.Delete(ctx, entityId, channelId)
 	return
 }
 
 // List ...
-func (p *TelegramChat) List(limit, offset int64, orderBy, sort string, entityId common.EntityId) (list []m.TelegramChat, total int64, err error) {
+func (p *TelegramChat) List(ctx context.Context, limit, offset int64, orderBy, sort string, entityId common.EntityId) (list []m.TelegramChat, total int64, err error) {
 	var dbList []db.TelegramChat
-	if dbList, total, err = p.table.List(int(limit), int(offset), orderBy, sort, entityId); err != nil {
+	if dbList, total, err = p.table.List(ctx, int(limit), int(offset), orderBy, sort, entityId); err != nil {
 		return
 	}
 
