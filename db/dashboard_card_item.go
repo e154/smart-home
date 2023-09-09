@@ -19,6 +19,7 @@
 package db
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -61,8 +62,8 @@ func (d *DashboardCardItem) TableName() string {
 }
 
 // Add ...
-func (n DashboardCardItems) Add(item *DashboardCardItem) (id int64, err error) {
-	if err = n.Db.Create(&item).Error; err != nil {
+func (n DashboardCardItems) Add(ctx context.Context, item *DashboardCardItem) (id int64, err error) {
+	if err = n.Db.WithContext(ctx).Create(&item).Error; err != nil {
 		var pgErr *pq.Error
 		if errors.As(err, &pgErr) {
 			switch pgErr.Code {
@@ -86,9 +87,9 @@ func (n DashboardCardItems) Add(item *DashboardCardItem) (id int64, err error) {
 }
 
 // GetById ...
-func (n DashboardCardItems) GetById(id int64) (item *DashboardCardItem, err error) {
+func (n DashboardCardItems) GetById(ctx context.Context, id int64) (item *DashboardCardItem, err error) {
 	item = &DashboardCardItem{Id: id}
-	if err = n.Db.First(&item).Error; err != nil {
+	if err = n.Db.WithContext(ctx).First(&item).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			err = errors.Wrap(apperr.ErrDashboardCardItemNotFound, fmt.Sprintf("with id \"%d\"", id))
 			return
@@ -99,7 +100,7 @@ func (n DashboardCardItems) GetById(id int64) (item *DashboardCardItem, err erro
 }
 
 // Update ...
-func (n DashboardCardItems) Update(m *DashboardCardItem) (err error) {
+func (n DashboardCardItems) Update(ctx context.Context, m *DashboardCardItem) (err error) {
 	q := map[string]interface{}{
 		"title":             m.Title,
 		"type":              m.Type,
@@ -111,30 +112,30 @@ func (n DashboardCardItems) Update(m *DashboardCardItem) (err error) {
 		"hidden":            m.Hidden,
 	}
 
-	if err = n.Db.Model(&DashboardCardItem{Id: m.Id}).Updates(q).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(&DashboardCardItem{Id: m.Id}).Updates(q).Error; err != nil {
 		err = errors.Wrap(apperr.ErrDashboardCardItemUpdate, err.Error())
 	}
 	return
 }
 
 // Delete ...
-func (n DashboardCardItems) Delete(id int64) (err error) {
-	if err = n.Db.Delete(&DashboardCardItem{Id: id}).Error; err != nil {
+func (n DashboardCardItems) Delete(ctx context.Context, id int64) (err error) {
+	if err = n.Db.WithContext(ctx).Delete(&DashboardCardItem{Id: id}).Error; err != nil {
 		err = errors.Wrap(apperr.ErrDashboardCardItemDelete, err.Error())
 	}
 	return
 }
 
 // List ...
-func (n *DashboardCardItems) List(limit, offset int, orderBy, sort string) (list []*DashboardCardItem, total int64, err error) {
+func (n *DashboardCardItems) List(ctx context.Context, limit, offset int, orderBy, sort string) (list []*DashboardCardItem, total int64, err error) {
 
-	if err = n.Db.Model(DashboardCardItem{}).Count(&total).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(DashboardCardItem{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrDashboardCardItemList, err.Error())
 		return
 	}
 
 	list = make([]*DashboardCardItem, 0)
-	q := n.Db.Model(&DashboardCardItem{}).
+	q := n.Db.WithContext(ctx).Model(&DashboardCardItem{}).
 		Limit(limit).
 		Offset(offset)
 

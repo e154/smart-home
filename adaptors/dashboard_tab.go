@@ -19,17 +19,18 @@
 package adaptors
 
 import (
+	"context"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"gorm.io/gorm"
 )
 
 type IDashboardTab interface {
-	Add(ver *m.DashboardTab) (id int64, err error)
-	GetById(mapId int64) (ver *m.DashboardTab, err error)
-	Update(ver *m.DashboardTab) (err error)
-	Delete(id int64) (err error)
-	List(limit, offset int64, orderBy, sort string) (list []*m.DashboardTab, total int64, err error)
+	Add(ctx context.Context, ver *m.DashboardTab) (id int64, err error)
+	GetById(ctx context.Context, mapId int64) (ver *m.DashboardTab, err error)
+	Update(ctx context.Context, ver *m.DashboardTab) (err error)
+	Delete(ctx context.Context, id int64) (err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.DashboardTab, total int64, err error)
 	fromDb(dbVer *db.DashboardTab) (ver *m.DashboardTab)
 	toDb(ver *m.DashboardTab) (dbVer *db.DashboardTab)
 }
@@ -50,17 +51,17 @@ func GetDashboardTabAdaptor(d *gorm.DB) IDashboardTab {
 }
 
 // Add ...
-func (n *DashboardTab) Add(ver *m.DashboardTab) (id int64, err error) {
+func (n *DashboardTab) Add(ctx context.Context, ver *m.DashboardTab) (id int64, err error) {
 	dbVer := n.toDb(ver)
-	id, err = n.table.Add(dbVer)
+	id, err = n.table.Add(ctx, dbVer)
 	return
 }
 
 // GetById ...
-func (n *DashboardTab) GetById(mapId int64) (ver *m.DashboardTab, err error) {
+func (n *DashboardTab) GetById(ctx context.Context, mapId int64) (ver *m.DashboardTab, err error) {
 
 	var dbVer *db.DashboardTab
-	if dbVer, err = n.table.GetById(mapId); err != nil {
+	if dbVer, err = n.table.GetById(ctx, mapId); err != nil {
 		return
 	}
 
@@ -70,20 +71,20 @@ func (n *DashboardTab) GetById(mapId int64) (ver *m.DashboardTab, err error) {
 }
 
 // Update ...
-func (n *DashboardTab) Update(ver *m.DashboardTab) (err error) {
+func (n *DashboardTab) Update(ctx context.Context, ver *m.DashboardTab) (err error) {
 	dbVer := n.toDb(ver)
-	err = n.table.Update(dbVer)
+	err = n.table.Update(ctx, dbVer)
 	return
 }
 
 // Delete ...
-func (n *DashboardTab) Delete(id int64) (err error) {
-	err = n.table.Delete(id)
+func (n *DashboardTab) Delete(ctx context.Context, id int64) (err error) {
+	err = n.table.Delete(ctx, id)
 	return
 }
 
 // List ...
-func (n *DashboardTab) List(limit, offset int64, orderBy, sort string) (list []*m.DashboardTab, total int64, err error) {
+func (n *DashboardTab) List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.DashboardTab, total int64, err error) {
 
 	if sort == "" {
 		sort = "name"
@@ -93,7 +94,7 @@ func (n *DashboardTab) List(limit, offset int64, orderBy, sort string) (list []*
 	}
 
 	var dbList []*db.DashboardTab
-	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort); err != nil {
+	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort); err != nil {
 		return
 	}
 

@@ -19,6 +19,7 @@
 package db
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"time"
@@ -55,8 +56,8 @@ func (d *Dashboard) TableName() string {
 }
 
 // Add ...
-func (n Dashboards) Add(board *Dashboard) (id int64, err error) {
-	if err = n.Db.Create(&board).Error; err != nil {
+func (n Dashboards) Add(ctx context.Context, board *Dashboard) (id int64, err error) {
+	if err = n.Db.WithContext(ctx).Create(&board).Error; err != nil {
 		var pgErr *pq.Error
 		if errors.As(err, &pgErr) {
 			switch pgErr.Code {
@@ -77,9 +78,9 @@ func (n Dashboards) Add(board *Dashboard) (id int64, err error) {
 }
 
 // GetById ...
-func (n Dashboards) GetById(id int64) (board *Dashboard, err error) {
+func (n Dashboards) GetById(ctx context.Context, id int64) (board *Dashboard, err error) {
 	board = &Dashboard{}
-	err = n.Db.Model(board).
+	err = n.Db.WithContext(ctx).Model(board).
 		Where("id = ?", id).
 		Preload("Area").
 		Preload("Tabs").
@@ -99,7 +100,7 @@ func (n Dashboards) GetById(id int64) (board *Dashboard, err error) {
 }
 
 // Update ...
-func (n Dashboards) Update(m *Dashboard) (err error) {
+func (n Dashboards) Update(ctx context.Context, m *Dashboard) (err error) {
 	q := map[string]interface{}{
 		"name":        m.Name,
 		"description": m.Description,
@@ -107,33 +108,33 @@ func (n Dashboards) Update(m *Dashboard) (err error) {
 		"area_id":     m.AreaId,
 	}
 
-	if err = n.Db.Model(&Dashboard{Id: m.Id}).Updates(q).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(&Dashboard{Id: m.Id}).Updates(q).Error; err != nil {
 		err = errors.Wrap(apperr.ErrDashboardUpdate, err.Error())
 	}
 	return
 }
 
 // Delete ...
-func (n Dashboards) Delete(id int64) (err error) {
+func (n Dashboards) Delete(ctx context.Context, id int64) (err error) {
 	if id == 0 {
 		return
 	}
-	if err = n.Db.Delete(&Dashboard{Id: id}).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Delete(&Dashboard{Id: id}).Error; err != nil {
 		err = errors.Wrap(apperr.ErrDashboardDelete, err.Error())
 	}
 	return
 }
 
 // List ...
-func (n *Dashboards) List(limit, offset int, orderBy, sort string) (list []*Dashboard, total int64, err error) {
+func (n *Dashboards) List(ctx context.Context, limit, offset int, orderBy, sort string) (list []*Dashboard, total int64, err error) {
 
-	if err = n.Db.Model(Dashboard{}).Count(&total).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(Dashboard{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrDashboardGet, err.Error())
 		return
 	}
 
 	list = make([]*Dashboard, 0)
-	q := n.Db.
+	q := n.Db.WithContext(ctx).
 		Preload("Area").
 		Preload("Tabs").
 		Preload("Tabs.Cards").
@@ -157,7 +158,7 @@ func (n *Dashboards) List(limit, offset int, orderBy, sort string) (list []*Dash
 }
 
 // Search ...
-func (d *Dashboards) Search(query string, limit, offset int) (list []*Dashboard, total int64, err error) {
+func (d *Dashboards) Search(ctx context.Context, query string, limit, offset int) (list []*Dashboard, total int64, err error) {
 
 	q := d.Db.Model(&Dashboard{}).
 		Where("name LIKE ?", "%"+query+"%")

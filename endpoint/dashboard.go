@@ -51,11 +51,11 @@ func (d *DashboardEndpoint) Add(ctx context.Context, board *m.Dashboard) (result
 	}
 
 	var id int64
-	if id, err = d.adaptors.Dashboard.Add(board); err != nil {
+	if id, err = d.adaptors.Dashboard.Add(ctx, board); err != nil {
 		return
 	}
 
-	result, err = d.adaptors.Dashboard.GetById(id)
+	result, err = d.adaptors.Dashboard.GetById(ctx, id)
 
 	return
 }
@@ -63,7 +63,7 @@ func (d *DashboardEndpoint) Add(ctx context.Context, board *m.Dashboard) (result
 // GetById ...
 func (d *DashboardEndpoint) GetById(ctx context.Context, id int64) (board *m.Dashboard, err error) {
 
-	if board, err = d.adaptors.Dashboard.GetById(id); err != nil {
+	if board, err = d.adaptors.Dashboard.GetById(ctx, id); err != nil {
 		return
 	}
 
@@ -79,7 +79,7 @@ func (d *DashboardEndpoint) Search(ctx context.Context, query string, limit, off
 		limit = common.DefaultPageSize
 	}
 
-	result, total, err = d.adaptors.Dashboard.Search(query, limit, offset)
+	result, total, err = d.adaptors.Dashboard.Search(ctx, query, limit, offset)
 
 	return
 }
@@ -88,7 +88,7 @@ func (d *DashboardEndpoint) Search(ctx context.Context, query string, limit, off
 func (i *DashboardEndpoint) Update(ctx context.Context, params *m.Dashboard) (result *m.Dashboard, errs validator.ValidationErrorsTranslations, err error) {
 
 	var board *m.Dashboard
-	if board, err = i.adaptors.Dashboard.GetById(params.Id); err != nil {
+	if board, err = i.adaptors.Dashboard.GetById(ctx, params.Id); err != nil {
 		return
 	}
 
@@ -101,11 +101,11 @@ func (i *DashboardEndpoint) Update(ctx context.Context, params *m.Dashboard) (re
 		return
 	}
 
-	if err = i.adaptors.Dashboard.Update(board); err != nil {
+	if err = i.adaptors.Dashboard.Update(ctx, board); err != nil {
 		return
 	}
 
-	if result, err = i.adaptors.Dashboard.GetById(params.Id); err != nil {
+	if result, err = i.adaptors.Dashboard.GetById(ctx, params.Id); err != nil {
 		if !errors.Is(err, apperr.ErrNotFound) {
 		}
 	}
@@ -116,7 +116,7 @@ func (i *DashboardEndpoint) Update(ctx context.Context, params *m.Dashboard) (re
 // GetList ...
 func (d *DashboardEndpoint) GetList(ctx context.Context, pagination common.PageParams) (list []*m.Dashboard, total int64, err error) {
 
-	list, total, err = d.adaptors.Dashboard.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
+	list, total, err = d.adaptors.Dashboard.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
 	if err != nil {
 		return
 	}
@@ -131,7 +131,7 @@ func (d *DashboardEndpoint) GetList(ctx context.Context, pagination common.PageP
 // Delete ...
 func (d *DashboardEndpoint) Delete(ctx context.Context, id int64) (err error) {
 
-	_, err = d.adaptors.Dashboard.GetById(id)
+	_, err = d.adaptors.Dashboard.GetById(ctx, id)
 	if err != nil {
 		if errors.Is(err, apperr.ErrNotFound) {
 			return
@@ -139,7 +139,7 @@ func (d *DashboardEndpoint) Delete(ctx context.Context, id int64) (err error) {
 		return
 	}
 
-	err = d.adaptors.Dashboard.Delete(id)
+	err = d.adaptors.Dashboard.Delete(ctx, id)
 	if err != nil {
 	}
 	return
@@ -188,11 +188,11 @@ func (d *DashboardEndpoint) Import(ctx context.Context, board *m.Dashboard) (res
 	//fmt.Println(string(b))
 
 	var id int64
-	if id, err = d.adaptors.Dashboard.Import(board); err != nil {
+	if id, err = d.adaptors.Dashboard.Import(ctx, board); err != nil {
 		return
 	}
 
-	if result, err = d.adaptors.Dashboard.GetById(id); err != nil {
+	if result, err = d.adaptors.Dashboard.GetById(ctx, id); err != nil {
 		if errors.Is(err, apperr.ErrNotFound) {
 			return
 		}

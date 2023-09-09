@@ -19,17 +19,18 @@
 package adaptors
 
 import (
+	"context"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"gorm.io/gorm"
 )
 
 type IDashboardCardItem interface {
-	Add(ver *m.DashboardCardItem) (id int64, err error)
-	GetById(mapId int64) (ver *m.DashboardCardItem, err error)
-	Update(ver *m.DashboardCardItem) (err error)
-	Delete(id int64) (err error)
-	List(limit, offset int64, orderBy, sort string) (list []*m.DashboardCardItem, total int64, err error)
+	Add(ctx context.Context, ver *m.DashboardCardItem) (id int64, err error)
+	GetById(ctx context.Context, mapId int64) (ver *m.DashboardCardItem, err error)
+	Update(ctx context.Context, ver *m.DashboardCardItem) (err error)
+	Delete(ctx context.Context, id int64) (err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.DashboardCardItem, total int64, err error)
 	fromDb(dbVer *db.DashboardCardItem) (ver *m.DashboardCardItem)
 	toDb(ver *m.DashboardCardItem) (dbVer *db.DashboardCardItem)
 }
@@ -50,17 +51,17 @@ func GetDashboardCardItemAdaptor(d *gorm.DB) IDashboardCardItem {
 }
 
 // Add ...
-func (n *DashboardCardItem) Add(ver *m.DashboardCardItem) (id int64, err error) {
+func (n *DashboardCardItem) Add(ctx context.Context, ver *m.DashboardCardItem) (id int64, err error) {
 	dbVer := n.toDb(ver)
-	id, err = n.table.Add(dbVer)
+	id, err = n.table.Add(ctx, dbVer)
 	return
 }
 
 // GetById ...
-func (n *DashboardCardItem) GetById(mapId int64) (ver *m.DashboardCardItem, err error) {
+func (n *DashboardCardItem) GetById(ctx context.Context, mapId int64) (ver *m.DashboardCardItem, err error) {
 
 	var dbVer *db.DashboardCardItem
-	if dbVer, err = n.table.GetById(mapId); err != nil {
+	if dbVer, err = n.table.GetById(ctx, mapId); err != nil {
 		return
 	}
 
@@ -70,20 +71,20 @@ func (n *DashboardCardItem) GetById(mapId int64) (ver *m.DashboardCardItem, err 
 }
 
 // Update ...
-func (n *DashboardCardItem) Update(ver *m.DashboardCardItem) (err error) {
+func (n *DashboardCardItem) Update(ctx context.Context, ver *m.DashboardCardItem) (err error) {
 	dbVer := n.toDb(ver)
-	err = n.table.Update(dbVer)
+	err = n.table.Update(ctx, dbVer)
 	return
 }
 
 // Delete ...
-func (n *DashboardCardItem) Delete(id int64) (err error) {
-	err = n.table.Delete(id)
+func (n *DashboardCardItem) Delete(ctx context.Context, id int64) (err error) {
+	err = n.table.Delete(ctx, id)
 	return
 }
 
 // List ...
-func (n *DashboardCardItem) List(limit, offset int64, orderBy, sort string) (list []*m.DashboardCardItem, total int64, err error) {
+func (n *DashboardCardItem) List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.DashboardCardItem, total int64, err error) {
 
 	if sort == "" {
 		sort = "name"
@@ -93,7 +94,7 @@ func (n *DashboardCardItem) List(limit, offset int64, orderBy, sort string) (lis
 	}
 
 	var dbList []*db.DashboardCardItem
-	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort); err != nil {
+	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort); err != nil {
 		return
 	}
 

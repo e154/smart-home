@@ -31,7 +31,7 @@ func (n *MigrationDashboard) addDashboard(ctx context.Context, name, src string)
 	board := dto.ImportDashboard(req)
 
 	var err error
-	if board.Id, err = n.adaptors.Dashboard.Import(board); err != nil {
+	if board.Id, err = n.adaptors.Dashboard.Import(ctx, board); err != nil {
 		return err
 	}
 
