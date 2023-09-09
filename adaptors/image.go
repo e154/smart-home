@@ -21,6 +21,7 @@ package adaptors
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -37,16 +38,16 @@ import (
 
 // IImage ...
 type IImage interface {
-	Add(ver *m.Image) (id int64, err error)
-	GetByImageName(imageName string) (ver *m.Image, err error)
-	GetById(mapId int64) (ver *m.Image, err error)
-	Update(ver *m.Image) (err error)
-	Delete(mapId int64) (err error)
-	List(limit, offset int64, orderBy, sort string) (list []*m.Image, total int64, err error)
-	UploadImage(reader *bufio.Reader, fileName string) (file *m.Image, err error)
-	AddMultiple(items []*m.Image) (err error)
-	GetAllByDate(filter string) (images []*m.Image, err error)
-	GetFilterList() (filterList []*m.ImageFilterList, err error)
+	Add(ctx context.Context, ver *m.Image) (id int64, err error)
+	GetByImageName(ctx context.Context, imageName string) (ver *m.Image, err error)
+	GetById(ctx context.Context, mapId int64) (ver *m.Image, err error)
+	Update(ctx context.Context, ver *m.Image) (err error)
+	Delete(ctx context.Context, mapId int64) (err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.Image, total int64, err error)
+	UploadImage(ctx context.Context, reader *bufio.Reader, fileName string) (file *m.Image, err error)
+	AddMultiple(ctx context.Context, items []*m.Image) (err error)
+	GetAllByDate(ctx context.Context, filter string) (images []*m.Image, err error)
+	GetFilterList(ctx context.Context, ) (filterList []*m.ImageFilterList, err error)
 	fromDb(dbImage *db.Image) (image *m.Image)
 	toDb(image *m.Image) (dbImage *db.Image)
 }
@@ -67,10 +68,10 @@ func GetImageAdaptor(d *gorm.DB) IImage {
 }
 
 // Add ...
-func (n *Image) Add(ver *m.Image) (id int64, err error) {
+func (n *Image) Add(ctx context.Context, ver *m.Image) (id int64, err error) {
 
 	dbVer := n.toDb(ver)
-	if id, err = n.table.Add(dbVer); err != nil {
+	if id, err = n.table.Add(ctx, dbVer); err != nil {
 		return
 	}
 
@@ -78,10 +79,10 @@ func (n *Image) Add(ver *m.Image) (id int64, err error) {
 }
 
 // GetByImageName ...
-func (n *Image) GetByImageName(imageName string) (ver *m.Image, err error) {
+func (n *Image) GetByImageName(ctx context.Context, imageName string) (ver *m.Image, err error) {
 
 	var dbVer *db.Image
-	if dbVer, err = n.table.GetByImageName(imageName); err != nil {
+	if dbVer, err = n.table.GetByImageName(ctx, imageName); err != nil {
 		return
 	}
 
@@ -91,10 +92,10 @@ func (n *Image) GetByImageName(imageName string) (ver *m.Image, err error) {
 }
 
 // GetById ...
-func (n *Image) GetById(mapId int64) (ver *m.Image, err error) {
+func (n *Image) GetById(ctx context.Context, mapId int64) (ver *m.Image, err error) {
 
 	var dbVer *db.Image
-	if dbVer, err = n.table.GetById(mapId); err != nil {
+	if dbVer, err = n.table.GetById(ctx, mapId); err != nil {
 		return
 	}
 
@@ -104,20 +105,20 @@ func (n *Image) GetById(mapId int64) (ver *m.Image, err error) {
 }
 
 // Update ...
-func (n *Image) Update(ver *m.Image) (err error) {
+func (n *Image) Update(ctx context.Context, ver *m.Image) (err error) {
 	dbVer := n.toDb(ver)
-	err = n.table.Update(dbVer)
+	err = n.table.Update(ctx, dbVer)
 	return
 }
 
 // Delete ...
-func (n *Image) Delete(mapId int64) (err error) {
-	err = n.table.Delete(mapId)
+func (n *Image) Delete(ctx context.Context, mapId int64) (err error) {
+	err = n.table.Delete(ctx, mapId)
 	return
 }
 
 // List ...
-func (n *Image) List(limit, offset int64, orderBy, sort string) (list []*m.Image, total int64, err error) {
+func (n *Image) List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.Image, total int64, err error) {
 
 	if sort == "" {
 		sort = "id"
@@ -127,7 +128,7 @@ func (n *Image) List(limit, offset int64, orderBy, sort string) (list []*m.Image
 	}
 
 	var dbList []*db.Image
-	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort); err != nil {
+	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort); err != nil {
 		return
 	}
 
@@ -141,7 +142,7 @@ func (n *Image) List(limit, offset int64, orderBy, sort string) (list []*m.Image
 }
 
 // UploadImage ...
-func (n *Image) UploadImage(reader *bufio.Reader, fileName string) (newFile *m.Image, err error) {
+func (n *Image) UploadImage(ctx context.Context, reader *bufio.Reader, fileName string) (newFile *m.Image, err error) {
 
 	buffer := bytes.NewBuffer(make([]byte, 0))
 	part := make([]byte, 128)
@@ -190,13 +191,13 @@ func (n *Image) UploadImage(reader *bufio.Reader, fileName string) (newFile *m.I
 		Name:     fileName,
 	}
 
-	newFile.Id, err = n.Add(newFile)
+	newFile.Id, err = n.Add(ctx, newFile)
 
 	return
 }
 
 // AddMultiple ...
-func (n *Image) AddMultiple(items []*m.Image) (err error) {
+func (n *Image) AddMultiple(ctx context.Context, items []*m.Image) (err error) {
 
 	insertRecords := make([]*db.Image, 0)
 	for _, ver := range items {
@@ -204,16 +205,16 @@ func (n *Image) AddMultiple(items []*m.Image) (err error) {
 		insertRecords = append(insertRecords, dbVer)
 	}
 
-	err = n.table.AddMultiple(insertRecords)
+	err = n.table.AddMultiple(ctx, insertRecords)
 
 	return
 }
 
 // GetAllByDate ...
-func (n *Image) GetAllByDate(filter string) (images []*m.Image, err error) {
+func (n *Image) GetAllByDate(ctx context.Context, filter string) (images []*m.Image, err error) {
 
 	var dblist []*db.Image
-	if dblist, err = n.table.GetAllByDate(filter); err != nil {
+	if dblist, err = n.table.GetAllByDate(ctx, filter); err != nil {
 		return
 	}
 	for _, dbVer := range dblist {
@@ -225,10 +226,10 @@ func (n *Image) GetAllByDate(filter string) (images []*m.Image, err error) {
 }
 
 // GetFilterList ...
-func (n *Image) GetFilterList() (filterList []*m.ImageFilterList, err error) {
+func (n *Image) GetFilterList(ctx context.Context, ) (filterList []*m.ImageFilterList, err error) {
 
 	var dblist []*db.ImageFilterList
-	if dblist, err = n.table.GetFilterList(); err != nil {
+	if dblist, err = n.table.GetFilterList(ctx); err != nil {
 		return
 	}
 	for _, dbVer := range dblist {

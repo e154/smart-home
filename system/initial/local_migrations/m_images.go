@@ -296,11 +296,11 @@ func (i *MigrationImages) Up(ctx context.Context, adaptors *adaptors.Adaptors) (
 
 	var subDir string
 	for _, image := range imageList {
-		if _, err = i.adaptors.Image.GetByImageName(image.Image); err == nil {
+		if _, err = i.adaptors.Image.GetByImageName(ctx, image.Image); err == nil {
 			continue
 		}
 
-		image.Id, err = i.adaptors.Image.Add(image)
+		image.Id, err = i.adaptors.Image.Add(ctx, image)
 		So(err, ShouldBeNil)
 
 		fullPath := common.GetFullPath(image.Image)
