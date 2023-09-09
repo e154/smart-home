@@ -1,6 +1,7 @@
 package example1
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/e154/smart-home/adaptors"
@@ -66,7 +67,7 @@ func (t *TriggerManager) addTimerTask(name string,
 			},
 		},
 	})
-	err := t.adaptors.Task.Import(task)
+	err := t.adaptors.Task.Import(context.Background(), task)
 	So(err, ShouldBeNil)
 
 	return
@@ -94,7 +95,7 @@ func (t *TriggerManager) addTimerTask2(name string,
 			},
 		},
 	})
-	err := t.adaptors.Task.Import(task)
+	err := t.adaptors.Task.Import(context.Background(), task)
 	So(err, ShouldBeNil)
 
 	return
@@ -123,7 +124,7 @@ func (t *TriggerManager) addCheckTask(name string,
 		Name:   fmt.Sprintf("action_%s", name),
 		Script: script,
 	})
-	err := t.adaptors.Task.Import(task)
+	err := t.adaptors.Task.Import(context.Background(), task)
 	So(err, ShouldBeNil)
 
 	return

@@ -52,11 +52,11 @@ func (n *TriggerEndpoint) Add(ctx context.Context, trigger *m.Trigger) (result *
 		return
 	}
 
-	if trigger.Id, err = n.adaptors.Trigger.Add(trigger); err != nil {
+	if trigger.Id, err = n.adaptors.Trigger.Add(ctx, trigger); err != nil {
 		return
 	}
 
-	if result, err = n.adaptors.Trigger.GetById(trigger.Id); err != nil {
+	if result, err = n.adaptors.Trigger.GetById(ctx, trigger.Id); err != nil {
 		return
 	}
 
@@ -70,7 +70,7 @@ func (n *TriggerEndpoint) Add(ctx context.Context, trigger *m.Trigger) (result *
 // GetById ...
 func (n *TriggerEndpoint) GetById(ctx context.Context, id int64) (trigger *m.Trigger, err error) {
 
-	trigger, err = n.adaptors.Trigger.GetById(id)
+	trigger, err = n.adaptors.Trigger.GetById(ctx, id)
 	trigger.IsLoaded = n.automation.TriggerIsLoaded(id)
 	return
 }
@@ -78,7 +78,7 @@ func (n *TriggerEndpoint) GetById(ctx context.Context, id int64) (trigger *m.Tri
 // Update ...
 func (n *TriggerEndpoint) Update(ctx context.Context, trigger *m.Trigger) (result *m.Trigger, errs validator.ValidationErrorsTranslations, err error) {
 
-	_, err = n.adaptors.Trigger.GetById(trigger.Id)
+	_, err = n.adaptors.Trigger.GetById(ctx, trigger.Id)
 	if err != nil {
 		return
 	}
@@ -88,11 +88,11 @@ func (n *TriggerEndpoint) Update(ctx context.Context, trigger *m.Trigger) (resul
 		return
 	}
 
-	if err = n.adaptors.Trigger.Update(trigger); err != nil {
+	if err = n.adaptors.Trigger.Update(ctx, trigger); err != nil {
 		return
 	}
 
-	if result, err = n.adaptors.Trigger.GetById(trigger.Id); err != nil {
+	if result, err = n.adaptors.Trigger.GetById(ctx, trigger.Id); err != nil {
 		return
 	}
 
@@ -106,7 +106,7 @@ func (n *TriggerEndpoint) Update(ctx context.Context, trigger *m.Trigger) (resul
 // GetList ...
 func (n *TriggerEndpoint) GetList(ctx context.Context, pagination common.PageParams) (result []*m.Trigger, total int64, err error) {
 
-	if result, total, err = n.adaptors.Trigger.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, false); err != nil {
+	if result, total, err = n.adaptors.Trigger.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, false); err != nil {
 		return
 	}
 
@@ -121,12 +121,12 @@ func (n *TriggerEndpoint) GetList(ctx context.Context, pagination common.PagePar
 func (n *TriggerEndpoint) Delete(ctx context.Context, id int64) (err error) {
 
 	var trigger *m.Trigger
-	trigger, err = n.adaptors.Trigger.GetById(id)
+	trigger, err = n.adaptors.Trigger.GetById(ctx, id)
 	if err != nil {
 		return
 	}
 
-	if err = n.adaptors.Trigger.Delete(trigger.Id); err != nil {
+	if err = n.adaptors.Trigger.Delete(ctx, trigger.Id); err != nil {
 		return
 	}
 
@@ -144,7 +144,7 @@ func (n *TriggerEndpoint) Search(ctx context.Context, query string, limit, offse
 		limit = common.DefaultPageSize
 	}
 
-	result, total, err = n.adaptors.Trigger.Search(query, int(limit), int(offset))
+	result, total, err = n.adaptors.Trigger.Search(ctx, query, int(limit), int(offset))
 
 	return
 }
@@ -152,7 +152,7 @@ func (n *TriggerEndpoint) Search(ctx context.Context, query string, limit, offse
 // Enable ...
 func (n *TriggerEndpoint) Enable(ctx context.Context, id int64) (err error) {
 
-	if err = n.adaptors.Trigger.Enable(id); err != nil {
+	if err = n.adaptors.Trigger.Enable(ctx, id); err != nil {
 		return
 	}
 
@@ -166,7 +166,7 @@ func (n *TriggerEndpoint) Enable(ctx context.Context, id int64) (err error) {
 // Disable ...
 func (n *TriggerEndpoint) Disable(ctx context.Context, id int64) (err error) {
 
-	if err = n.adaptors.Trigger.Disable(id); err != nil {
+	if err = n.adaptors.Trigger.Disable(ctx, id); err != nil {
 		return
 	}
 

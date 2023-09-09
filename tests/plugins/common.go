@@ -549,7 +549,7 @@ func AddScript(name, src string, adaptors *adaptors.Adaptors, scriptService scri
 }
 
 func AddTrigger(trigger *m.Trigger, adaptors *adaptors.Adaptors, eventBus bus.Bus) (err error) {
-	if trigger.Id, err = adaptors.Trigger.Add(trigger); err != nil {
+	if trigger.Id, err = adaptors.Trigger.Add(context.Background(), trigger); err != nil {
 		return
 	}
 	eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", trigger.Id), events.EventAddedTrigger{
@@ -560,7 +560,7 @@ func AddTrigger(trigger *m.Trigger, adaptors *adaptors.Adaptors, eventBus bus.Bu
 
 func AddTask(newTask *m.NewTask, adaptors *adaptors.Adaptors, eventBus bus.Bus) (err error) {
 	var task1Id int64
-	if task1Id, err = adaptors.Task.Add(newTask); err != nil {
+	if task1Id, err = adaptors.Task.Add(context.Background(), newTask); err != nil {
 		return
 	}
 	eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", task1Id), events.EventAddedTask{

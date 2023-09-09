@@ -19,6 +19,7 @@
 package adaptors
 
 import (
+	"context"
 	"encoding/json"
 	"time"
 
@@ -31,14 +32,14 @@ import (
 
 // ITrigger ...
 type ITrigger interface {
-	Add(ver *m.Trigger) (id int64, err error)
-	GetById(id int64) (metric *m.Trigger, err error)
-	Update(ver *m.Trigger) error
-	Delete(deviceId int64) (err error)
-	List(limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Trigger, total int64, err error)
-	Search(query string, limit, offset int) (list []*m.Trigger, total int64, err error)
-	Enable(id int64) (err error)
-	Disable(id int64) (err error)
+	Add(ctx context.Context, ver *m.Trigger) (id int64, err error)
+	GetById(ctx context.Context, id int64) (metric *m.Trigger, err error)
+	Update(ctx context.Context, ver *m.Trigger) error
+	Delete(ctx context.Context, deviceId int64) (err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Trigger, total int64, err error)
+	Search(ctx context.Context, query string, limit, offset int) (list []*m.Trigger, total int64, err error)
+	Enable(ctx context.Context, id int64) (err error)
+	Disable(ctx context.Context, id int64) (err error)
 	fromDb(dbVer *db.Trigger) (ver *m.Trigger)
 	toDb(ver *m.Trigger) (dbVer *db.Trigger)
 }
@@ -59,15 +60,15 @@ func GetTriggerAdaptor(d *gorm.DB) ITrigger {
 }
 
 // Add ...
-func (n *Trigger) Add(ver *m.Trigger) (id int64, err error) {
-	id, err = n.table.Add(n.toDb(ver))
+func (n *Trigger) Add(ctx context.Context, ver *m.Trigger) (id int64, err error) {
+	id, err = n.table.Add(ctx, n.toDb(ver))
 	return
 }
 
 // GetById ...
-func (n *Trigger) GetById(id int64) (metric *m.Trigger, err error) {
+func (n *Trigger) GetById(ctx context.Context, id int64) (metric *m.Trigger, err error) {
 	var dbVer *db.Trigger
-	if dbVer, err = n.table.GetById(id); err != nil {
+	if dbVer, err = n.table.GetById(ctx, id); err != nil {
 		return
 	}
 	metric = n.fromDb(dbVer)
@@ -75,9 +76,9 @@ func (n *Trigger) GetById(id int64) (metric *m.Trigger, err error) {
 }
 
 // GetByIdWithData ...
-func (n *Trigger) GetByIdWithData(id int64, from, to *time.Time, metricRange *string) (metric *m.Trigger, err error) {
+func (n *Trigger) GetByIdWithData(ctx context.Context, id int64, from, to *time.Time, metricRange *string) (metric *m.Trigger, err error) {
 	var dbVer *db.Trigger
-	if dbVer, err = n.table.GetById(id); err != nil {
+	if dbVer, err = n.table.GetById(ctx, id); err != nil {
 		return
 	}
 	metric = n.fromDb(dbVer)
@@ -85,20 +86,20 @@ func (n *Trigger) GetByIdWithData(id int64, from, to *time.Time, metricRange *st
 }
 
 // Update ...
-func (n *Trigger) Update(ver *m.Trigger) error {
-	return n.table.Update(n.toDb(ver))
+func (n *Trigger) Update(ctx context.Context, ver *m.Trigger) error {
+	return n.table.Update(ctx, n.toDb(ver))
 }
 
 // Delete ...
-func (n *Trigger) Delete(deviceId int64) (err error) {
-	err = n.table.Delete(deviceId)
+func (n *Trigger) Delete(ctx context.Context, deviceId int64) (err error) {
+	err = n.table.Delete(ctx, deviceId)
 	return
 }
 
 // List ...
-func (n *Trigger) List(limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Trigger, total int64, err error) {
+func (n *Trigger) List(ctx context.Context, limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Trigger, total int64, err error) {
 	var dbList []*db.Trigger
-	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort, onlyEnabled); err != nil {
+	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort, onlyEnabled); err != nil {
 		return
 	}
 
@@ -111,9 +112,9 @@ func (n *Trigger) List(limit, offset int64, orderBy, sort string, onlyEnabled bo
 }
 
 // Search ...
-func (n *Trigger) Search(query string, limit, offset int) (list []*m.Trigger, total int64, err error) {
+func (n *Trigger) Search(ctx context.Context, query string, limit, offset int) (list []*m.Trigger, total int64, err error) {
 	var dbList []*db.Trigger
-	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
+	if dbList, total, err = n.table.Search(ctx, query, limit, offset); err != nil {
 		return
 	}
 
@@ -126,14 +127,14 @@ func (n *Trigger) Search(query string, limit, offset int) (list []*m.Trigger, to
 }
 
 // Enable ...
-func (n *Trigger) Enable(id int64) (err error) {
-	err = n.table.Enable(id)
+func (n *Trigger) Enable(ctx context.Context, id int64) (err error) {
+	err = n.table.Enable(ctx, id)
 	return
 }
 
 // Disable ...
-func (n *Trigger) Disable(id int64) (err error) {
-	err = n.table.Disable(id)
+func (n *Trigger) Disable(ctx context.Context, id int64) (err error) {
+	err = n.table.Disable(ctx, id)
 	return
 }
 

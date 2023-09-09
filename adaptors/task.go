@@ -29,14 +29,14 @@ import (
 
 // ITask ...
 type ITask interface {
-	Add(ver *m.NewTask) (id int64, err error)
-	Import(ver *m.Task) (err error)
-	Update(ver *m.UpdateTask) (err error)
-	Delete(id int64) (err error)
-	GetById(id int64) (task *m.Task, err error)
-	List(limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Task, total int64, err error)
-	Enable(id int64) (err error)
-	Disable(id int64) (err error)
+	Add(ctx context.Context, ver *m.NewTask) (id int64, err error)
+	Import(ctx context.Context, ver *m.Task) (err error)
+	Update(ctx context.Context, ver *m.UpdateTask) (err error)
+	Delete(ctx context.Context, id int64) (err error)
+	GetById(ctx context.Context, id int64) (task *m.Task, err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Task, total int64, err error)
+	Enable(ctx context.Context, id int64) (err error)
+	Disable(ctx context.Context, id int64) (err error)
 	fromDb(dbVer *db.Task) (ver *m.Task)
 	toDb(ver *m.Task) (dbVer *db.Task)
 }
@@ -57,7 +57,7 @@ func GetTaskAdaptor(d *gorm.DB) ITask {
 }
 
 // Import ...
-func (n *Task) Import(ver *m.Task) (err error) {
+func (n *Task) Import(ctx context.Context, ver *m.Task) (err error) {
 
 	transaction := true
 	tx := n.db.Begin()
@@ -77,17 +77,17 @@ func (n *Task) Import(ver *m.Task) (err error) {
 	}()
 
 	table := db.Tasks{Db: tx}
-	if ver.Id, err = table.Add(n.toDb(ver)); err != nil {
+	if ver.Id, err = table.Add(ctx, n.toDb(ver)); err != nil {
 		return
 	}
 
 	//conditions
 	conditionAdaptor := GetConditionAdaptor(tx)
 	for _, condition := range ver.Conditions {
-		if condition.Id, err = conditionAdaptor.Add(condition); err != nil {
+		if condition.Id, err = conditionAdaptor.Add(ctx, condition); err != nil {
 			return
 		}
-		if err = table.AppendCondition(ver.Id, conditionAdaptor.toDb(condition)); err != nil {
+		if err = table.AppendCondition(ctx, ver.Id, conditionAdaptor.toDb(condition)); err != nil {
 			return
 		}
 	}
@@ -95,10 +95,10 @@ func (n *Task) Import(ver *m.Task) (err error) {
 	//triggers
 	triggerAdaptor := GetTriggerAdaptor(tx)
 	for _, trigger := range ver.Triggers {
-		if trigger.Id, err = triggerAdaptor.Add(trigger); err != nil {
+		if trigger.Id, err = triggerAdaptor.Add(ctx, trigger); err != nil {
 			return
 		}
-		if err = table.AppendTrigger(ver.Id, triggerAdaptor.toDb(trigger)); err != nil {
+		if err = table.AppendTrigger(ctx, ver.Id, triggerAdaptor.toDb(trigger)); err != nil {
 			return
 		}
 	}
@@ -109,7 +109,7 @@ func (n *Task) Import(ver *m.Task) (err error) {
 		if action.Id, err = actionAdaptor.Add(context.Background(), action); err != nil {
 			return
 		}
-		if err = table.AppendAction(ver.Id, actionAdaptor.toDb(action)); err != nil {
+		if err = table.AppendAction(ctx, ver.Id, actionAdaptor.toDb(action)); err != nil {
 			return
 		}
 	}
@@ -118,7 +118,7 @@ func (n *Task) Import(ver *m.Task) (err error) {
 }
 
 // Add ...
-func (n *Task) Add(ver *m.NewTask) (taskId int64, err error) {
+func (n *Task) Add(ctx context.Context, ver *m.NewTask) (taskId int64, err error) {
 
 	transaction := true
 	tx := n.db.Begin()
@@ -137,7 +137,7 @@ func (n *Task) Add(ver *m.NewTask) (taskId int64, err error) {
 	}()
 
 	table := db.Tasks{Db: tx}
-	taskId, err = table.Add(&db.Task{
+	taskId, err = table.Add(ctx, &db.Task{
 		Name:        ver.Name,
 		Description: ver.Description,
 		Enabled:     ver.Enabled,
@@ -151,7 +151,7 @@ func (n *Task) Add(ver *m.NewTask) (taskId int64, err error) {
 	//conditions
 	conditionAdaptor := GetConditionAdaptor(tx)
 	for _, id := range ver.ConditionIds {
-		if err = table.AppendCondition(taskId, conditionAdaptor.toDb(&m.Condition{Id: id})); err != nil {
+		if err = table.AppendCondition(ctx, taskId, conditionAdaptor.toDb(&m.Condition{Id: id})); err != nil {
 			return
 		}
 	}
@@ -159,7 +159,7 @@ func (n *Task) Add(ver *m.NewTask) (taskId int64, err error) {
 	//triggers
 	triggerAdaptor := GetTriggerAdaptor(tx)
 	for _, id := range ver.TriggerIds {
-		if err = table.AppendTrigger(taskId, triggerAdaptor.toDb(&m.Trigger{Id: id})); err != nil {
+		if err = table.AppendTrigger(ctx, taskId, triggerAdaptor.toDb(&m.Trigger{Id: id})); err != nil {
 			return
 		}
 	}
@@ -167,7 +167,7 @@ func (n *Task) Add(ver *m.NewTask) (taskId int64, err error) {
 	//actions
 	actionAdaptor := GetActionAdaptor(tx)
 	for _, id := range ver.ActionIds {
-		if err = table.AppendAction(taskId, actionAdaptor.toDb(&m.Action{Id: id})); err != nil {
+		if err = table.AppendAction(ctx, taskId, actionAdaptor.toDb(&m.Action{Id: id})); err != nil {
 			return
 		}
 	}
@@ -176,10 +176,10 @@ func (n *Task) Add(ver *m.NewTask) (taskId int64, err error) {
 }
 
 // Update ...
-func (n *Task) Update(ver *m.UpdateTask) (err error) {
+func (n *Task) Update(ctx context.Context, ver *m.UpdateTask) (err error) {
 
 	var oldVer *m.Task
-	if oldVer, err = n.GetById(ver.Id); err != nil {
+	if oldVer, err = n.GetById(ctx, ver.Id); err != nil {
 		return
 	}
 
@@ -200,7 +200,7 @@ func (n *Task) Update(ver *m.UpdateTask) (err error) {
 	}()
 
 	table := db.Tasks{Db: tx}
-	if err = table.Update(&db.Task{
+	if err = table.Update(ctx, &db.Task{
 		Id:          ver.Id,
 		Name:        ver.Name,
 		Description: ver.Description,
@@ -220,7 +220,7 @@ func (n *Task) Update(ver *m.UpdateTask) (err error) {
 			}
 		}
 		if !exist {
-			if err = n.table.DeleteCondition(oldVer.Id, oldCondition.Id); err != nil {
+			if err = n.table.DeleteCondition(ctx, oldVer.Id, oldCondition.Id); err != nil {
 				return
 			}
 		}
@@ -235,7 +235,7 @@ func (n *Task) Update(ver *m.UpdateTask) (err error) {
 			}
 		}
 		if !exist {
-			if err = n.table.AppendCondition(ver.Id, conditionAdaptor.toDb(&m.Condition{Id: id})); err != nil {
+			if err = n.table.AppendCondition(ctx, ver.Id, conditionAdaptor.toDb(&m.Condition{Id: id})); err != nil {
 				return
 			}
 		}
@@ -250,7 +250,7 @@ func (n *Task) Update(ver *m.UpdateTask) (err error) {
 			}
 		}
 		if !exist {
-			if err = n.table.DeleteTrigger(oldVer.Id, oldTrigger.Id); err != nil {
+			if err = n.table.DeleteTrigger(ctx, oldVer.Id, oldTrigger.Id); err != nil {
 				return
 			}
 		}
@@ -265,7 +265,7 @@ func (n *Task) Update(ver *m.UpdateTask) (err error) {
 			}
 		}
 		if !exist {
-			if err = n.table.AppendTrigger(ver.Id, triggerAdaptor.toDb(&m.Trigger{Id: id})); err != nil {
+			if err = n.table.AppendTrigger(ctx, ver.Id, triggerAdaptor.toDb(&m.Trigger{Id: id})); err != nil {
 				return
 			}
 		}
@@ -280,7 +280,7 @@ func (n *Task) Update(ver *m.UpdateTask) (err error) {
 			}
 		}
 		if !exist {
-			if err = n.table.DeleteAction(oldVer.Id, oldAction.Id); err != nil {
+			if err = n.table.DeleteAction(ctx, oldVer.Id, oldAction.Id); err != nil {
 				return
 			}
 		}
@@ -295,7 +295,7 @@ func (n *Task) Update(ver *m.UpdateTask) (err error) {
 			}
 		}
 		if !exist {
-			if err = n.table.AppendAction(ver.Id, actionAdaptor.toDb(&m.Action{Id: id})); err != nil {
+			if err = n.table.AppendAction(ctx, ver.Id, actionAdaptor.toDb(&m.Action{Id: id})); err != nil {
 				return
 			}
 		}
@@ -305,22 +305,22 @@ func (n *Task) Update(ver *m.UpdateTask) (err error) {
 }
 
 // Enable ...
-func (n *Task) Enable(id int64) (err error) {
-	err = n.table.Enable(id)
+func (n *Task) Enable(ctx context.Context, id int64) (err error) {
+	err = n.table.Enable(ctx, id)
 	return
 }
 
 // Disable ...
-func (n *Task) Disable(id int64) (err error) {
-	err = n.table.Disable(id)
+func (n *Task) Disable(ctx context.Context, id int64) (err error) {
+	err = n.table.Disable(ctx, id)
 	return
 }
 
 // GetById ...
-func (n *Task) GetById(id int64) (task *m.Task, err error) {
+func (n *Task) GetById(ctx context.Context, id int64) (task *m.Task, err error) {
 
 	var dbVer *db.Task
-	if dbVer, err = n.table.GetById(id); err != nil {
+	if dbVer, err = n.table.GetById(ctx, id); err != nil {
 		return
 	}
 
@@ -330,7 +330,7 @@ func (n *Task) GetById(id int64) (task *m.Task, err error) {
 }
 
 // Delete ...
-func (n *Task) Delete(id int64) (err error) {
+func (n *Task) Delete(ctx context.Context, id int64) (err error) {
 
 	transaction := true
 	tx := n.db.Begin()
@@ -349,7 +349,7 @@ func (n *Task) Delete(id int64) (err error) {
 	}()
 
 	table := &db.Tasks{Db: tx}
-	if err = table.Delete(id); err != nil {
+	if err = table.Delete(ctx, id); err != nil {
 		return
 	}
 
@@ -357,10 +357,10 @@ func (n *Task) Delete(id int64) (err error) {
 }
 
 // List ...
-func (n *Task) List(limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Task, total int64, err error) {
+func (n *Task) List(ctx context.Context, limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Task, total int64, err error) {
 
 	var dbList []*db.Task
-	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort, onlyEnabled); err != nil {
+	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort, onlyEnabled); err != nil {
 		return
 	}
 

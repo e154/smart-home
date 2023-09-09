@@ -19,6 +19,7 @@
 package db
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -54,8 +55,8 @@ func (*Trigger) TableName() string {
 }
 
 // Add ...
-func (t Triggers) Add(trigger *Trigger) (id int64, err error) {
-	if err = t.Db.Create(&trigger).Error; err != nil {
+func (t Triggers) Add(ctx context.Context, trigger *Trigger) (id int64, err error) {
+	if err = t.Db.WithContext(ctx).Create(&trigger).Error; err != nil {
 		err = errors.Wrap(apperr.ErrTriggerAdd, err.Error())
 		return
 	}
@@ -64,9 +65,9 @@ func (t Triggers) Add(trigger *Trigger) (id int64, err error) {
 }
 
 // GetById ...
-func (t Triggers) GetById(id int64) (trigger *Trigger, err error) {
+func (t Triggers) GetById(ctx context.Context, id int64) (trigger *Trigger, err error) {
 	trigger = &Trigger{}
-	err = t.Db.Model(trigger).
+	err = t.Db.WithContext(ctx).Model(trigger).
 		Where("id = ?", id).
 		Preload("Entity").
 		Preload("Script").
@@ -84,7 +85,7 @@ func (t Triggers) GetById(id int64) (trigger *Trigger, err error) {
 }
 
 // Update ...
-func (t Triggers) Update(m *Trigger) (err error) {
+func (t Triggers) Update(ctx context.Context, m *Trigger) (err error) {
 	q := map[string]interface{}{
 		"name":        m.Name,
 		"plugin_name": m.PluginName,
@@ -93,30 +94,30 @@ func (t Triggers) Update(m *Trigger) (err error) {
 		"script_id":   m.ScriptId,
 		"entity_id":   m.EntityId,
 	}
-	if err = t.Db.Model(&Trigger{}).Where("id = ?", m.Id).Updates(q).Error; err != nil {
+	if err = t.Db.WithContext(ctx).Model(&Trigger{}).Where("id = ?", m.Id).Updates(q).Error; err != nil {
 		err = errors.Wrap(apperr.ErrTriggerUpdate, err.Error())
 	}
 	return
 }
 
 // Delete ...
-func (t Triggers) Delete(id int64) (err error) {
-	if err = t.Db.Delete(&Trigger{}, "id = ?", id).Error; err != nil {
+func (t Triggers) Delete(ctx context.Context, id int64) (err error) {
+	if err = t.Db.WithContext(ctx).Delete(&Trigger{}, "id = ?", id).Error; err != nil {
 		err = errors.Wrap(apperr.ErrTriggerDelete, err.Error())
 	}
 	return
 }
 
 // List ...
-func (t *Triggers) List(limit, offset int, orderBy, sort string, onlyEnabled bool) (list []*Trigger, total int64, err error) {
+func (t Triggers) List(ctx context.Context, limit, offset int, orderBy, sort string, onlyEnabled bool) (list []*Trigger, total int64, err error) {
 
-	if err = t.Db.Model(Trigger{}).Count(&total).Error; err != nil {
+	if err = t.Db.WithContext(ctx).Model(Trigger{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrTriggerList, err.Error())
 		return
 	}
 
 	list = make([]*Trigger, 0)
-	q := t.Db.Model(&Trigger{})
+	q := t.Db.WithContext(ctx).Model(&Trigger{})
 
 	if onlyEnabled {
 		q = q.Where("enabled = ?", true)
@@ -139,9 +140,9 @@ func (t *Triggers) List(limit, offset int, orderBy, sort string, onlyEnabled boo
 }
 
 // Search ...q
-func (t *Triggers) Search(query string, limit, offset int) (list []*Trigger, total int64, err error) {
+func (t Triggers) Search(ctx context.Context, query string, limit, offset int) (list []*Trigger, total int64, err error) {
 
-	q := t.Db.Model(&Trigger{}).
+	q := t.Db.WithContext(ctx).Model(&Trigger{}).
 		Where("name LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
@@ -163,7 +164,7 @@ func (t *Triggers) Search(query string, limit, offset int) (list []*Trigger, tot
 }
 
 // Enable ...
-func (t Triggers) Enable(id int64) (err error) {
+func (t Triggers) Enable(ctx context.Context, id int64) (err error) {
 	if err = t.Db.Model(&Trigger{Id: id}).Updates(map[string]interface{}{"enabled": true}).Error; err != nil {
 		err = errors.Wrap(apperr.ErrTriggerUpdate, err.Error())
 		return
@@ -172,7 +173,7 @@ func (t Triggers) Enable(id int64) (err error) {
 }
 
 // Disable ...
-func (t Triggers) Disable(id int64) (err error) {
+func (t Triggers) Disable(ctx context.Context, id int64) (err error) {
 	if err = t.Db.Model(&Trigger{Id: id}).Updates(map[string]interface{}{"enabled": false}).Error; err != nil {
 		err = errors.Wrap(apperr.ErrTriggerUpdate, err.Error())
 		return

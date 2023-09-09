@@ -19,6 +19,7 @@
 package automation
 
 import (
+	"context"
 	"sync"
 
 	"github.com/e154/smart-home/adaptors"
@@ -122,7 +123,7 @@ func (a *taskManager) AddTasks() {
 	const perPage int64 = 500
 	var page int64 = 0
 LOOP:
-	tasks, _, err := a.adaptors.Task.List(perPage, page*perPage, "", "", true)
+	tasks, _, err := a.adaptors.Task.List(context.Background(), perPage, page*perPage, "", "", true)
 	if err != nil {
 		log.Error(err.Error())
 		return
@@ -183,7 +184,7 @@ func (a *taskManager) removeTask(id int64) {
 func (a *taskManager) updateTask(id int64) {
 	a.removeTask(id)
 
-	task, err := a.adaptors.Task.GetById(id)
+	task, err := a.adaptors.Task.GetById(context.Background(), id)
 	if err != nil {
 		return
 	}

@@ -53,11 +53,11 @@ func (n *TaskEndpoint) Add(ctx context.Context, task *m.NewTask) (result *m.Task
 	}
 
 	var id int64
-	if id, err = n.adaptors.Task.Add(task); err != nil {
+	if id, err = n.adaptors.Task.Add(ctx, task); err != nil {
 		return
 	}
 
-	if result, err = n.adaptors.Task.GetById(id); err != nil {
+	if result, err = n.adaptors.Task.GetById(ctx, id); err != nil {
 		return
 	}
 
@@ -119,11 +119,11 @@ func (n *TaskEndpoint) Import(ctx context.Context, task *m.Task) (result *m.Task
 		}
 	}
 
-	if err = n.adaptors.Task.Import(task); err != nil {
+	if err = n.adaptors.Task.Import(ctx, task); err != nil {
 		return
 	}
 
-	if result, err = n.adaptors.Task.GetById(task.Id); err != nil {
+	if result, err = n.adaptors.Task.GetById(ctx, task.Id); err != nil {
 		return
 	}
 
@@ -142,11 +142,11 @@ func (n *TaskEndpoint) Update(ctx context.Context, task *m.UpdateTask) (result *
 		return
 	}
 
-	if err = n.adaptors.Task.Update(task); err != nil {
+	if err = n.adaptors.Task.Update(ctx, task); err != nil {
 		return
 	}
 
-	if result, err = n.adaptors.Task.GetById(task.Id); err != nil {
+	if result, err = n.adaptors.Task.GetById(ctx, task.Id); err != nil {
 		return
 	}
 
@@ -160,7 +160,7 @@ func (n *TaskEndpoint) Update(ctx context.Context, task *m.UpdateTask) (result *
 // GetById ...
 func (n *TaskEndpoint) GetById(ctx context.Context, id int64) (task *m.Task, errs validator.ValidationErrorsTranslations, err error) {
 
-	if task, err = n.adaptors.Task.GetById(id); err != nil {
+	if task, err = n.adaptors.Task.GetById(ctx, id); err != nil {
 		return
 	}
 	task.IsLoaded = n.automation.TaskIsLoaded(id)
@@ -170,7 +170,7 @@ func (n *TaskEndpoint) GetById(ctx context.Context, id int64) (task *m.Task, err
 
 // Delete ...
 func (n *TaskEndpoint) Delete(ctx context.Context, id int64) (err error) {
-	if err = n.adaptors.Task.Delete(id); err != nil {
+	if err = n.adaptors.Task.Delete(ctx, id); err != nil {
 		return
 	}
 
@@ -183,7 +183,7 @@ func (n *TaskEndpoint) Delete(ctx context.Context, id int64) (err error) {
 // Enable ...
 func (n *TaskEndpoint) Enable(ctx context.Context, id int64) (err error) {
 
-	if err = n.adaptors.Task.Enable(id); err != nil {
+	if err = n.adaptors.Task.Enable(ctx, id); err != nil {
 		return
 	}
 
@@ -196,7 +196,7 @@ func (n *TaskEndpoint) Enable(ctx context.Context, id int64) (err error) {
 // Disable ...
 func (n *TaskEndpoint) Disable(ctx context.Context, id int64) (err error) {
 
-	if err = n.adaptors.Task.Disable(id); err != nil {
+	if err = n.adaptors.Task.Disable(ctx, id); err != nil {
 		return
 	}
 
@@ -209,7 +209,7 @@ func (n *TaskEndpoint) Disable(ctx context.Context, id int64) (err error) {
 // List ...
 func (n *TaskEndpoint) List(ctx context.Context, pagination common.PageParams) (tasks []*m.Task, total int64, errs validator.ValidationErrorsTranslations, err error) {
 
-	if tasks, total, err = n.adaptors.Task.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, false); err != nil {
+	if tasks, total, err = n.adaptors.Task.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, false); err != nil {
 		return
 	}
 	for _, task := range tasks {

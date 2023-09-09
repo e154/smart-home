@@ -255,14 +255,14 @@ automationAction = (entityId)->
 				Name:   "check plug state",
 				Script: task1Script,
 			}
-			condition1.Id, err = adaptors.Condition.Add(condition1)
+			condition1.Id, err = adaptors.Condition.Add(context.Background(), condition1)
 			So(err, ShouldBeNil)
 
 			condition2 := &m.Condition{
 				Name:   "check plug state",
 				Script: task2Script,
 			}
-			condition2.Id, err = adaptors.Condition.Add(condition2)
+			condition2.Id, err = adaptors.Condition.Add(context.Background(), condition2)
 			So(err, ShouldBeNil)
 
 			// actions
