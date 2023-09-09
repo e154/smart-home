@@ -49,8 +49,8 @@ type Supervisor interface {
 	Shutdown(context.Context) error
 	Restart(context.Context) error
 	GetPlugin(name string) (plugin interface{}, err error)
-	EnablePlugin(string) error
-	DisablePlugin(string) error
+	EnablePlugin(context.Context, string) error
+	DisablePlugin(context.Context, string) error
 	PluginList() (list []PluginInfo, total int64, err error)
 	LoadEntities()
 	SetMetric(common.EntityId, string, map[string]float32)
@@ -232,8 +232,8 @@ type Service interface {
 
 // Pluggable ...
 type Pluggable interface {
-	Load(Service) error
-	Unload() error
+	Load(context.Context, Service) error
+	Unload(context.Context) error
 	Name() string
 	Type() PluginType
 	Depends() []string

@@ -107,7 +107,7 @@ func (e *supervisor) Start(ctx context.Context) (err error) {
 	//DEPRECATED
 	e.scriptService.PushStruct("entityManager", NewSupervisorBind(e))
 
-	e.pluginManager.Start()
+	e.pluginManager.Start(ctx)
 
 	_ = e.eventBus.Subscribe("system/services/scripts", e.handlerSystemScripts)
 	e.eventBus.Publish("system/services/supervisor", events.EventServiceStarted{Service: "Supervisor"})
@@ -125,7 +125,7 @@ func (e *supervisor) Shutdown(ctx context.Context) (err error) {
 	e.scriptService.PopStruct("supervisor")
 	e.scriptService.PopStruct("entityManager")
 
-	e.pluginManager.Shutdown()
+	e.pluginManager.Shutdown(ctx)
 
 	_ = e.eventBus.Unsubscribe("system/entities/+", e.eventHandler)
 	_ = e.eventBus.Unsubscribe("system/plugins/+", e.eventHandler)

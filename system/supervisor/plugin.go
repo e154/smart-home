@@ -48,7 +48,7 @@ func NewPlugin() *Plugin {
 }
 
 // Load ...
-func (p *Plugin) Load(service Service) error {
+func (p *Plugin) Load(ctx context.Context, service Service) error {
 	p.Adaptors = service.Adaptors()
 	p.EventBus = service.EventBus()
 	p.Supervisor = service.Supervisor()
@@ -65,7 +65,7 @@ func (p *Plugin) Load(service Service) error {
 }
 
 // Unload ...
-func (p *Plugin) Unload() error {
+func (p *Plugin) Unload(ctx context.Context) error {
 
 	if !p.IsStarted.Load() {
 		return ErrPluginIsUnloaded

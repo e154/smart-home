@@ -44,13 +44,13 @@ func NewPluginEndpoint(common *CommonEndpoint) *PluginEndpoint {
 
 // Enable ...
 func (p *PluginEndpoint) Enable(ctx context.Context, pluginName string) (err error) {
-	err = p.supervisor.EnablePlugin(pluginName)
+	err = p.supervisor.EnablePlugin(ctx, pluginName)
 	return
 }
 
 // Disable ...
 func (p *PluginEndpoint) Disable(ctx context.Context, pluginName string) (err error) {
-	err = p.supervisor.DisablePlugin(pluginName)
+	err = p.supervisor.DisablePlugin(ctx, pluginName)
 	return
 }
 
@@ -116,11 +116,11 @@ func (n *PluginEndpoint) UpdateSettings(ctx context.Context, name string, settin
 		return
 	}
 
-	if err = n.supervisor.DisablePlugin(name); err != nil {
+	if err = n.supervisor.DisablePlugin(ctx, name); err != nil {
 		return
 	}
 
-	err = n.supervisor.EnablePlugin(name)
+	err = n.supervisor.EnablePlugin(ctx, name)
 
 	return
 }
