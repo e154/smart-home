@@ -19,6 +19,7 @@
 package messagebird
 
 import (
+	"context"
 	"strings"
 
 	"github.com/e154/smart-home/system/supervisor"
@@ -137,7 +138,7 @@ func (p *plugin) Save(msg notify.Message) (addresses []string, message *m.Messag
 		Attributes: msg.Attributes,
 	}
 	var err error
-	if message.Id, err = p.Adaptors.Message.Add(message); err != nil {
+	if message.Id, err = p.Adaptors.Message.Add(context.Background(), message); err != nil {
 		log.Error(err.Error())
 	}
 

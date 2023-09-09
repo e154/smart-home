@@ -19,6 +19,7 @@
 package slack
 
 import (
+	"context"
 	"strings"
 
 	"github.com/e154/smart-home/common/apperr"
@@ -59,7 +60,7 @@ func (e *Provider) Save(msg notify.Message) (addresses []string, message *m.Mess
 		Attributes: msg.Attributes,
 	}
 	var err error
-	if message.Id, err = e.adaptors.Message.Add(message); err != nil {
+	if message.Id, err = e.adaptors.Message.Add(context.Background(), message); err != nil {
 		log.Error(err.Error())
 	}
 

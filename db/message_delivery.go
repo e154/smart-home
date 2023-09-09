@@ -19,6 +19,7 @@
 package db
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -52,8 +53,8 @@ func (d *MessageDelivery) TableName() string {
 }
 
 // Add ...
-func (n *MessageDeliveries) Add(msg *MessageDelivery) (id int64, err error) {
-	if err = n.Db.Create(&msg).Error; err != nil {
+func (n *MessageDeliveries) Add(ctx context.Context, msg *MessageDelivery) (id int64, err error) {
+	if err = n.Db.WithContext(ctx).Create(&msg).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMessageDeliveryAdd, err.Error())
 		return
 	}
@@ -61,10 +62,10 @@ func (n *MessageDeliveries) Add(msg *MessageDelivery) (id int64, err error) {
 	return
 }
 
-func (n *MessageDeliveries) List(limit, offset int, orderBy, sort string, queryObj *MessageDeliveryQuery) (list []*MessageDelivery, total int64, err error) {
+func (n *MessageDeliveries) List(ctx context.Context, limit, offset int, orderBy, sort string, queryObj *MessageDeliveryQuery) (list []*MessageDelivery, total int64, err error) {
 
 	list = make([]*MessageDelivery, 0)
-	q := n.Db.Model(&MessageDelivery{}).
+	q := n.Db.WithContext(ctx).Model(&MessageDelivery{}).
 		Joins(`left join messages on messages.id = message_deliveries.message_id`)
 
 	if sort != "" && orderBy != "" {
@@ -102,15 +103,15 @@ func (n *MessageDeliveries) List(limit, offset int, orderBy, sort string, queryO
 }
 
 // GetAllUncompleted ...
-func (n *MessageDeliveries) GetAllUncompleted(limit, offset int) (list []*MessageDelivery, total int64, err error) {
+func (n *MessageDeliveries) GetAllUncompleted(ctx context.Context, limit, offset int) (list []*MessageDelivery, total int64, err error) {
 
-	if err = n.Db.Model(&MessageDelivery{}).Count(&total).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(&MessageDelivery{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMessageDeliveryUpdate, err.Error())
 		return
 	}
 
 	list = make([]*MessageDelivery, 0)
-	err = n.Db.
+	err = n.Db.WithContext(ctx).
 		Where("status in ('in_progress', 'new')").
 		Limit(limit).
 		Offset(offset).
@@ -124,9 +125,9 @@ func (n *MessageDeliveries) GetAllUncompleted(limit, offset int) (list []*Messag
 }
 
 // SetStatus ...
-func (n MessageDeliveries) SetStatus(msg *MessageDelivery) (err error) {
+func (n *MessageDeliveries) SetStatus(ctx context.Context, msg *MessageDelivery) (err error) {
 
-	err = n.Db.Model(&MessageDelivery{Id: msg.Id}).
+	err = n.Db.WithContext(ctx).Model(&MessageDelivery{Id: msg.Id}).
 		Updates(map[string]interface{}{
 			"status":               msg.Status,
 			"error_system_code":    msg.ErrorMessageStatus,
@@ -139,18 +140,18 @@ func (n MessageDeliveries) SetStatus(msg *MessageDelivery) (err error) {
 }
 
 // Delete ...
-func (n MessageDeliveries) Delete(id int64) (err error) {
-	if err = n.Db.Delete(&MessageDelivery{Id: id}).Error; err != nil {
+func (n *MessageDeliveries) Delete(ctx context.Context, id int64) (err error) {
+	if err = n.Db.WithContext(ctx).Delete(&MessageDelivery{Id: id}).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMessageDeliveryDelete, err.Error())
 	}
 	return
 }
 
 // GetById ...
-func (n MessageDeliveries) GetById(id int64) (msg *MessageDelivery, err error) {
+func (n *MessageDeliveries) GetById(ctx context.Context, id int64) (msg *MessageDelivery, err error) {
 
 	msg = &MessageDelivery{}
-	err = n.Db.Model(msg).
+	err = n.Db.WithContext(ctx).Model(msg).
 		Where("id = ?", id).
 		Preload("Message").
 		First(&msg).
