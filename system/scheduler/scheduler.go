@@ -63,7 +63,7 @@ func (c *Scheduler) Start(ctx context.Context) error {
 		}()
 		go func() {
 			log.Info("deleting obsolete log entries ...")
-			if err := c.adaptors.Log.DeleteOldest(60); err != nil {
+			if err := c.adaptors.Log.DeleteOldest(ctx, 60); err != nil {
 				log.Error(err.Error())
 			}
 		}()

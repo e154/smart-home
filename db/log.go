@@ -19,6 +19,7 @@
 package db
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -56,8 +57,8 @@ func (m *Log) TableName() string {
 }
 
 // Add ...
-func (n Logs) Add(v *Log) (id int64, err error) {
-	if err = n.Db.Create(&v).Error; err != nil {
+func (n Logs) Add(ctx context.Context, v *Log) (id int64, err error) {
+	if err = n.Db.WithContext(ctx).Create(&v).Error; err != nil {
 		err = errors.Wrap(apperr.ErrLogAdd, err.Error())
 		return
 	}
@@ -66,9 +67,9 @@ func (n Logs) Add(v *Log) (id int64, err error) {
 }
 
 // GetById ...
-func (n Logs) GetById(id int64) (v *Log, err error) {
+func (n Logs) GetById(ctx context.Context, id int64) (v *Log, err error) {
 	v = &Log{Id: id}
-	if err = n.Db.First(&v).Error; err != nil {
+	if err = n.Db.WithContext(ctx).First(&v).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			err = errors.Wrap(apperr.ErrLogNotFound, fmt.Sprintf("id \"%d\"", id))
 			return
@@ -79,17 +80,17 @@ func (n Logs) GetById(id int64) (v *Log, err error) {
 }
 
 // Delete ...
-func (n Logs) Delete(mapId int64) (err error) {
-	if err = n.Db.Delete(&Log{Id: mapId}).Error; err != nil {
+func (n Logs) Delete(ctx context.Context, mapId int64) (err error) {
+	if err = n.Db.WithContext(ctx).Delete(&Log{Id: mapId}).Error; err != nil {
 		err = errors.Wrap(apperr.ErrLogDelete, err.Error())
 	}
 	return
 }
 
 // List ...
-func (n *Logs) List(limit, offset int, orderBy, sort string, queryObj *LogQuery) (list []*Log, total int64, err error) {
+func (n *Logs) List(ctx context.Context, limit, offset int, orderBy, sort string, queryObj *LogQuery) (list []*Log, total int64, err error) {
 
-	q := n.Db.Model(Log{})
+	q := n.Db.WithContext(ctx).Model(Log{})
 
 	if queryObj != nil {
 		if queryObj.StartDate != nil {
@@ -123,9 +124,9 @@ func (n *Logs) List(limit, offset int, orderBy, sort string, queryObj *LogQuery)
 }
 
 // Search ...
-func (n *Logs) Search(query string, limit, offset int) (list []*Log, total int64, err error) {
+func (n *Logs) Search(ctx context.Context, query string, limit, offset int) (list []*Log, total int64, err error) {
 
-	q := n.Db.Model(&Log{}).
+	q := n.Db.WithContext(ctx).Model(&Log{}).
 		Where("body LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
@@ -147,8 +148,8 @@ func (n *Logs) Search(query string, limit, offset int) (list []*Log, total int64
 }
 
 // DeleteOldest ...
-func (n *Logs) DeleteOldest(days int) (err error) {
-	err = n.Db.Delete(&Log{}, fmt.Sprintf(`created_at < now() - interval '%d days'`, days)).Error
+func (n *Logs) DeleteOldest(ctx context.Context, days int) (err error) {
+	err = n.Db.WithContext(ctx).Delete(&Log{}, fmt.Sprintf(`created_at < now() - interval '%d days'`, days)).Error
 	if err != nil {
 		err = errors.Wrap(apperr.ErrLogDelete, err.Error())
 	}
@@ -156,8 +157,8 @@ func (n *Logs) DeleteOldest(days int) (err error) {
 }
 
 // AddMultiple ...
-func (n *Logs) AddMultiple(logs []*Log) (err error) {
-	if err = n.Db.Create(&logs).Error; err != nil {
+func (n *Logs) AddMultiple(ctx context.Context, logs []*Log) (err error) {
+	if err = n.Db.WithContext(ctx).Create(&logs).Error; err != nil {
 		err = errors.Wrap(apperr.ErrLogAdd, err.Error())
 	}
 	return
