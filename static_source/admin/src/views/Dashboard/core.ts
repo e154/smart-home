@@ -22,6 +22,7 @@ import {ItemPayloadState} from '@/views/Dashboard/card_items/state/types';
 import {ItemPayloadLogs} from '@/views/Dashboard/card_items/logs/types';
 import {ItemPayloadProgress} from '@/views/Dashboard/card_items/progress/types';
 import {ItemPayloadChart} from '@/views/Dashboard/card_items/chart/types';
+import {ItemPayloadMap} from '@/views/Dashboard/card_items/map/types';
 import {useBus} from "@/views/Dashboard/bus";
 import {countBy, debounce} from "lodash-es";
 import {ref} from "vue";
@@ -82,6 +83,7 @@ export interface ItemPayload {
   logs?: ItemPayloadLogs;
   progress?: ItemPayloadProgress;
   chart?: ItemPayloadChart;
+  map?: ItemPayloadMap;
 }
 
 export interface ItemParams {
@@ -223,6 +225,11 @@ export class CardItem {
           legend: false,
           range: '24h'
         } as ItemPayloadChart;
+      }
+      if (!this.payload.map) {
+        this.payload.map = {
+         markers: []
+        } as ItemPayloadMap;
       }
     }
   }

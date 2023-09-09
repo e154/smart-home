@@ -1,10 +1,15 @@
 <script setup lang="ts">
 import {computed, onMounted, PropType, ref, unref, watch, inject} from "vue";
-import {Card, CardItem, Core, Tab} from "@/views/Dashboard/core";
+import {Card, CardItem, Core, requestCurrentState, Tab} from "@/views/Dashboard/core";
+import {ElImage, ElIcon} from "element-plus";
 import { GeoJSON } from "ol/format"
 import { Fill, Stroke, Style } from "ol/style"
 import type { ObjectEvent } from "ol/Object";
 import type { View } from "ol";
+import {Cache, GetTokens, RenderText} from "@/views/Dashboard/render";
+import {debounce} from "lodash-es";
+import markerIcon from "@/assets/imgs/marker.png";
+import {ApiImage} from "@/api/stub";
 
 // ---------------------------------
 // common
@@ -42,7 +47,7 @@ const getRandomInRange = (from, to, fixed) => {
 const view = ref<View>();
 const position = ref([]);
 const geoLocChange = (event: ObjectEvent) => {
-  console.log("AAAAA", event);
+  // console.log("AAAAA", event);
   position.value = event.target.getPosition();
   view.value?.setCenter(event.target?.getPosition());
 };
@@ -51,52 +56,46 @@ const overviewmapcontrol = ref(true);
 const fullscreencontrol = ref(true);
 const mousepositioncontrol = ref(true);
 const attributioncontrol = ref(true);
+const vectorsource = ref(null);
 
 // ---------------------------------
 // component methods
 // ---------------------------------
 
-const vectors = ref(null);
-const drawedMarker = ref()
-const drawType = ref("Point")
-
-const drawstart = (event) => {
-  vectors.value.source.removeFeature(drawedMarker.value);
-  drawedMarker.value = event.feature;
-  console.log(vectors.value.source)
-}
-
-// ---------------------------------
-// component methods
-// ---------------------------------
-
-const contextMenuItems = ref([]);
-const markers = ref(null);
 const Feature = inject("ol-feature");
 const Geom = inject("ol-geom");
 
-contextMenuItems.value = [
-  {
-    text: "Center map here",
-    classname: "some-style-class", // add some CSS rules
-    callback: (val) => {
-      view.value.setCenter(val.coordinate);
-    }, // `center` is your callback function
-  },
-  {
-    text: "Add a Marker",
-    classname: "some-style-class", // you can add this icon with a CSS class
-    // instead of `icon` property (see next line)
-    icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Map_marker.svg/1334px-Map_marker.svg.png", // this can be relative or absolute
-    callback: (val) => {
-      const feature = new Feature({
-        geometry: new Geom.Point(val.coordinate),
-      });
-      markers.value.source.addFeature(feature);
-    },
-  },
-  "-", // this is a separator
-];
+// ---------------------------------
+// markers methods
+// ---------------------------------
+
+const _cache = new Cache()
+const update = () => {
+  for (let index in props.item?.payload.map?.markers) {
+    let v: string = props.item?.payload.map?.markers[index].attribute || ''
+    const tokens = GetTokens(props.item?.payload.map?.markers[index].attribute, _cache)
+    if (tokens.length) {
+      v = RenderText(tokens, v, props.item?.lastEvent)
+    }
+    console.log(v)
+  }
+}
+
+
+onMounted(() => {
+  setTimeout(() => {
+    for (let index in props.item?.payload.map?.markers) {
+      requestCurrentState(props.item?.payload.map?.markers[index].entityId);
+    }
+  }, 1000);
+})
+
+const getUrl = (image?: ApiImage): string | undefined => {
+  return import.meta.env.VITE_API_BASEPATH as string + image?.url || undefined;
+}
+
+update()
+
 
 </script>
 
@@ -121,70 +120,32 @@ contextMenuItems.value = [
       <ol-mouseposition-control v-if="mousepositioncontrol"/>
       <ol-attribution-control v-if="attributioncontrol" />
 
-<!--      <ol-overviewmap-control v-if="overviewmapcontrol">-->
-<!--        <ol-tile-layer>-->
-<!--          <ol-source-osm />-->
-<!--        </ol-tile-layer>-->
-<!--      </ol-overviewmap-control>-->
-
-        <ol-tile-layer>
-          <ol-source-osm />
-        </ol-tile-layer>
+      <ol-tile-layer>
+        <ol-source-osm />
+      </ol-tile-layer>
 
 
-<!--      <ol-tile-layer ref="jawgLayer" title="JAWG">-->
-<!--        <ol-source-xyz-->
-<!--            crossOrigin="anonymous"-->
-<!--            url="https://c.tile.jawg.io/jawg-dark/{z}/{x}/{y}.png?access-token=87PWIbRaZAGNmYDjlYsLkeTVJpQeCfl2Y61mcHopxXqSdxXExoTLEv7dwqBwSWuJ"-->
-<!--        />-->
-<!--      </ol-tile-layer>-->
+      <ol-vector-layer
+          :updateWhileAnimating="true"
+          :updateWhileInteracting="true"
+      >
+        <ol-source-vector ref="vectorsource">
+          <ol-animation-fade :duration="4000">
+<!--            <ol-feature v-for="index in 20" :key="index">-->
+            <ol-feature v-for="(marker, index) in props.item?.payload.map?.markers" :key="index">
+              <ol-geom-point
+                  :coordinates="[
+                getRandomInRange(24, 45, 3),
+                getRandomInRange(35, 41, 3),
+              ]"
+              />
 
-<!--      <ol-vector-layer>-->
-<!--        <ol-source-cluster :distance="40">-->
-<!--          <ol-source-vector>-->
-<!--            <ol-feature v-for="index in 300" :key="index">-->
-<!--              <ol-geom-point-->
-<!--                  :coordinates="[-->
-<!--                getRandomInRange(24, 45, 3),-->
-<!--                getRandomInRange(35, 41, 3),-->
-<!--              ]"-->
-<!--              />-->
-<!--            </ol-feature>-->
-<!--          </ol-source-vector>-->
-<!--        </ol-source-cluster>-->
-
-<!--        <ol-style :overrideStyleFunction="overrideStyleFunction">-->
-<!--          <ol-style-stroke color="red" :width="2"/>-->
-<!--          <ol-style-fill color="rgba(255,255,255,0.1)"/>-->
-
-<!--          <ol-style-circle :radius="10">-->
-<!--            <ol-style-fill color="#3399CC"/>-->
-<!--            <ol-style-stroke color="#fff" :width="1"/>-->
-<!--          </ol-style-circle>-->
-<!--          <ol-style-text>-->
-<!--            <ol-style-fill color="#fff"/>-->
-<!--          </ol-style-text>-->
-<!--        </ol-style>-->
-<!--      </ol-vector-layer>-->
-
-
-      <ol-context-menu-control :items="contextMenuItems" />
-
-      <ol-vector-layer>
-        <ol-source-vector ref="vectors">
-          <ol-interaction-draw @drawstart="drawstart" :type="drawType"/>
+              <ol-style>
+                <ol-style-icon :src="getUrl(marker.image) || markerIcon" :opacity="marker?.opacity || 0.9" :scale="marker?.scale || 0.08" />
+              </ol-style>
+            </ol-feature>
+          </ol-animation-fade>
         </ol-source-vector>
-
-        <ol-style>
-          <ol-style-icon src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Map_marker.svg/1334px-Map_marker.svg.png" :scale="0.02"/>
-        </ol-style>
-      </ol-vector-layer>
-
-      <ol-vector-layer>
-        <ol-source-vector ref="markers"/>
-        <ol-style>
-          <ol-style-icon src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Map_marker.svg/1334px-Map_marker.svg.png" :scale="0.02"/>
-        </ol-style>
       </ol-vector-layer>
 
       <ol-geolocation :projection="projection" @change:position="geoLocChange">
@@ -194,7 +155,7 @@ contextMenuItems.value = [
               <ol-feature ref="positionFeature">
                 <ol-geom-point :coordinates="position"/>
                 <ol-style>
-                  <ol-style-icon src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Map_marker.svg/1334px-Map_marker.svg.png" :scale="0.02"/>
+                  <ol-style-icon :src="markerIcon" :scale="0.02"/>
                 </ol-style>
               </ol-feature>
             </ol-source-vector>
