@@ -57,9 +57,6 @@ const changedForActionButton = async (entity: ApiEntity, index: number) => {
   } else {
     currentItem.value.payload.map.markers[index].entity = undefined;
     currentItem.value.payload.map.markers[index].entityId = '';
-    currentItem.value.payload.map.markers[index].attribute = '';
-    currentItem.value.payload.map.markers[index].opacity = 0.9;
-    currentItem.value.payload.map.markers[index].scale = 0.5;
   }
 }
 
@@ -70,7 +67,9 @@ const addMarker = () => {
   currentItem.value.payload.map.markers.push({
     image: null,
     entityId: null,
-    attribute: null,
+    attribute: '',
+    opacity: 0.9,
+    scale: 0.5,
   });
 }
 
@@ -137,23 +136,23 @@ const removeMarker = (index: number) => {
                   </ElCol>
                 </ElRow>
 
-                <ElFormItem :label="$t('dashboard.editor.image')" prop="image">
-                  <ImageSearch v-model="prop.image" @change="onSelectImageForAction(index, ...arguments)"/>
-                </ElFormItem>
-
                 <ElRow :gutter="24">
                   <ElCol :span="12" :xs="12">
                     <ElFormItem :label="$t('dashboard.editor.opacity')" prop="entity">
-                      <ElInputNumber v-model="prop.opacity" :show-tooltip="false" min="0" max="1" step="0.01"/>
+                      <ElInputNumber v-model="prop.opacity" :show-tooltip="false" min="0" max="1" step="0.01" style="width: 100%"/>
                     </ElFormItem>
                   </ElCol>
 
                   <ElCol :span="12" :xs="12">
                     <ElFormItem :label="$t('dashboard.editor.scale')" prop="value">
-                      <ElInputNumber v-model="prop.scale" :show-tooltip="false" min="0" max="1" step="0.01"/>
+                      <ElInputNumber v-model="prop.scale" :show-tooltip="false" min="0" max="1" step="0.01" style="width: 100%"/>
                     </ElFormItem>
                   </ElCol>
                 </ElRow>
+
+                <ElFormItem :label="$t('dashboard.editor.image')" prop="image">
+                  <ImageSearch v-model="prop.image" @change="onSelectImageForAction(index, ...arguments)"/>
+                </ElFormItem>
 
                 <ElRow>
                   <ElCol>

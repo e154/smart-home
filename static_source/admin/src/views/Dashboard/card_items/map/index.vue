@@ -117,7 +117,6 @@ update()
       />
 
       <ol-fullscreen-control v-if="fullscreencontrol" />
-      <ol-mouseposition-control v-if="mousepositioncontrol"/>
       <ol-attribution-control v-if="attributioncontrol" />
 
       <ol-tile-layer>
@@ -131,7 +130,6 @@ update()
       >
         <ol-source-vector ref="vectorsource">
           <ol-animation-fade :duration="4000">
-<!--            <ol-feature v-for="index in 20" :key="index">-->
             <ol-feature v-for="(marker, index) in props.item?.payload.map?.markers" :key="index">
               <ol-geom-point
                   :coordinates="[
