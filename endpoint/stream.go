@@ -2,6 +2,7 @@ package endpoint
 
 import (
 	"context"
+
 	"github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/common/apperr"
 	m "github.com/e154/smart-home/models"

@@ -20,6 +20,7 @@ package endpoint
 
 import (
 	"context"
+
 	m "github.com/e154/smart-home/models"
 	"github.com/go-playground/validator/v10"
 )
@@ -81,14 +82,14 @@ func (t *TemplateEndpoint) GetItemByName(ctx context.Context, name string) (resu
 }
 
 // GetItemsSortedList ...
-func (t *TemplateEndpoint) GetItemsSortedList(ctx context.Context, ) (count int64, items []string, err error) {
-	count, items, err = t.adaptors.Template.GetItemsSortedList(ctx, )
+func (t *TemplateEndpoint) GetItemsSortedList(ctx context.Context) (count int64, items []string, err error) {
+	count, items, err = t.adaptors.Template.GetItemsSortedList(ctx)
 
 	return
 }
 
 // GetList ...
-func (t *TemplateEndpoint) GetList(ctx context.Context, ) (count int64, templates []*m.Template, err error) {
+func (t *TemplateEndpoint) GetList(ctx context.Context) (count int64, templates []*m.Template, err error) {
 	templates, err = t.adaptors.Template.GetList(ctx, m.TemplateTypeTemplate)
 
 	return
@@ -101,8 +102,8 @@ func (t *TemplateEndpoint) Delete(ctx context.Context, name string) (err error) 
 }
 
 // GetItemsTree ...
-func (t *TemplateEndpoint) GetItemsTree(ctx context.Context, ) (tree []*m.TemplateTree, err error) {
-	tree, err = t.adaptors.Template.GetItemsTree(ctx, )
+func (t *TemplateEndpoint) GetItemsTree(ctx context.Context) (tree []*m.TemplateTree, err error) {
+	tree, err = t.adaptors.Template.GetItemsTree(ctx)
 	return
 }
 

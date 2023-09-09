@@ -20,6 +20,7 @@ package adaptors
 
 import (
 	"context"
+
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
@@ -35,9 +36,9 @@ type ITemplate interface {
 	GetList(ctx context.Context, templateType m.TemplateType) (items []*m.Template, err error)
 	GetByName(ctx context.Context, name string) (ver *m.Template, err error)
 	GetItemByName(ctx context.Context, name string) (ver *m.Template, err error)
-	GetItemsSortedList(ctx context.Context, ) (count int64, items []string, err error)
+	GetItemsSortedList(ctx context.Context) (count int64, items []string, err error)
 	Delete(ctx context.Context, name string) (err error)
-	GetItemsTree(ctx context.Context, ) (tree []*m.TemplateTree, err error)
+	GetItemsTree(ctx context.Context) (tree []*m.TemplateTree, err error)
 	UpdateItemsTree(ctx context.Context, tree []*m.TemplateTree) (err error)
 	Search(ctx context.Context, query string, limit, offset int) (list []*m.Template, total int64, err error)
 	GetMarkers(ctx context.Context, template *m.Template) (err error)
@@ -135,8 +136,8 @@ func (n *Template) GetItemByName(ctx context.Context, name string) (ver *m.Templ
 }
 
 // GetItemsSortedList ...
-func (n *Template) GetItemsSortedList(ctx context.Context, ) (count int64, items []string, err error) {
-	count, items, err = n.table.GetItemsSortedList(ctx, )
+func (n *Template) GetItemsSortedList(ctx context.Context) (count int64, items []string, err error) {
+	count, items, err = n.table.GetItemsSortedList(ctx)
 	return
 }
 
@@ -147,10 +148,10 @@ func (n *Template) Delete(ctx context.Context, name string) (err error) {
 }
 
 // GetItemsTree ...
-func (n *Template) GetItemsTree(ctx context.Context, ) (tree []*m.TemplateTree, err error) {
+func (n *Template) GetItemsTree(ctx context.Context) (tree []*m.TemplateTree, err error) {
 
 	var dbTree []*db.TemplateTree
-	if dbTree, err = n.table.GetItemsTree(ctx, ); err != nil {
+	if dbTree, err = n.table.GetItemsTree(ctx); err != nil {
 		return
 	}
 

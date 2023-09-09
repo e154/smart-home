@@ -20,6 +20,7 @@ package adaptors
 
 import (
 	"context"
+
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"gorm.io/gorm"
