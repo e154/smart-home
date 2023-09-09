@@ -157,7 +157,7 @@ automationAction = (entityId)->
 				BaseTopic:  "zigbee2mqtt",
 			}
 			var err error
-			zigbeeServer.Id, err = adaptors.Zigbee2mqtt.Add(zigbeeServer)
+			zigbeeServer.Id, err = adaptors.Zigbee2mqtt.Add(context.Background(), zigbeeServer)
 			So(err, ShouldBeNil)
 
 			// add zigbee2mqtt_device
@@ -171,7 +171,7 @@ automationAction = (entityId)->
 				Status:        "active",
 				Payload:       []byte("{}"),
 			}
-			err = adaptors.Zigbee2mqttDevice.Add(butonDevice)
+			err = adaptors.Zigbee2mqttDevice.Add(context.Background(), butonDevice)
 			So(err, ShouldBeNil)
 
 			plugDevice := &m.Zigbee2mqttDevice{
@@ -184,7 +184,7 @@ automationAction = (entityId)->
 				Status:        "active",
 				Payload:       []byte("{}"),
 			}
-			err = adaptors.Zigbee2mqttDevice.Add(plugDevice)
+			err = adaptors.Zigbee2mqttDevice.Add(context.Background(), plugDevice)
 			So(err, ShouldBeNil)
 
 			// add scripts
@@ -310,7 +310,7 @@ automationAction = (entityId)->
 			// ------------------------------------------------
 
 			automation.Start()
-			go zigbee2mqtt.Start()
+			go zigbee2mqtt.Start(context.Background())
 
 			supervisor.Start(context.Background())
 			WaitSupervisor(eventBus)

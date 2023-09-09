@@ -65,26 +65,20 @@ func NewZigbee2mqtt(lc fx.Lifecycle,
 	}
 
 	lc.Append(fx.Hook{
-		OnStart: func(ctx context.Context) error {
-			zigbee2mqtt.Start()
-			return nil
-		},
-		OnStop: func(ctx context.Context) error {
-			zigbee2mqtt.Shutdown()
-			return nil
-		},
+		OnStart: zigbee2mqtt.Start,
+		OnStop: zigbee2mqtt.Shutdown,
 	})
 	return zigbee2mqtt
 }
 
 // Start ...
-func (z *zigbee2mqtt) Start() {
+func (z *zigbee2mqtt) Start(ctx context.Context) (err error) {
 	if z.isStarted.Load() {
 		return
 	}
 	z.isStarted.Store(true)
 
-	models, _, err := z.adaptors.Zigbee2mqtt.List(99, 0)
+	models, _, err := z.adaptors.Zigbee2mqtt.List(ctx, 99, 0)
 	if err != nil {
 		log.Error(err.Error())
 	}
@@ -95,7 +89,7 @@ func (z *zigbee2mqtt) Start() {
 			BaseTopic:  "zigbee2mqtt",
 			PermitJoin: true,
 		}
-		model.Id, err = z.adaptors.Zigbee2mqtt.Add(model)
+		model.Id, err = z.adaptors.Zigbee2mqtt.Add(ctx, model)
 		if err != nil {
 			log.Error(err.Error())
 			return
@@ -118,10 +112,12 @@ func (z *zigbee2mqtt) Start() {
 	}
 
 	z.eventBus.Publish("system/services/zigbee2mqtt", events.EventServiceStarted{Service: "Zigbee2mqtt"})
+
+	return
 }
 
 // Shutdown ...
-func (z *zigbee2mqtt) Shutdown() {
+func (z *zigbee2mqtt) Shutdown(ctx context.Context) (err error) {
 	if !z.isStarted.Load() {
 		return
 	}
@@ -132,18 +128,20 @@ func (z *zigbee2mqtt) Shutdown() {
 	_ = z.mqtt.Authenticator().Unregister(z.Authenticator)
 
 	z.eventBus.Publish("system/services/zigbee2mqtt", events.EventServiceStopped{Service: "Zigbee2mqtt"})
+
+	return
 }
 
 // AddBridge ...
 func (z *zigbee2mqtt) AddBridge(model *m.Zigbee2mqtt) (err error) {
 
-	model.Id, err = z.adaptors.Zigbee2mqtt.Add(model)
+	model.Id, err = z.adaptors.Zigbee2mqtt.Add(context.Background(), model)
 	if err != nil {
 		log.Error(err.Error())
 		return
 	}
 
-	if model, err = z.adaptors.Zigbee2mqtt.GetById(model.Id); err != nil {
+	if model, err = z.adaptors.Zigbee2mqtt.GetById(context.Background(), model.Id); err != nil {
 		return
 	}
 
@@ -205,11 +203,11 @@ func (z *zigbee2mqtt) UpdateBridge(model *m.Zigbee2mqtt) (result *m.Zigbee2mqtt,
 		return
 	}
 
-	if err = z.adaptors.Zigbee2mqtt.Update(model); err != nil {
+	if err = z.adaptors.Zigbee2mqtt.Update(context.Background(), model); err != nil {
 		return
 	}
 
-	result, err = z.adaptors.Zigbee2mqtt.GetById(model.Id)
+	result, err = z.adaptors.Zigbee2mqtt.GetById(context.Background(), model.Id)
 	bridge.UpdateModel(result)
 
 	return
@@ -228,7 +226,7 @@ func (z *zigbee2mqtt) DeleteBridge(bridgeId int64) (err error) {
 		return
 	}
 
-	err = z.adaptors.Zigbee2mqtt.Delete(bridgeId)
+	err = z.adaptors.Zigbee2mqtt.Delete(context.Background(), bridgeId)
 
 	return
 }

@@ -192,9 +192,9 @@ func (g *Bridge) safeUpdateDevice(device *Device) (err error) {
 
 	model := device.GetModel()
 
-	if _, err = g.adaptors.Zigbee2mqttDevice.GetById(device.friendlyName); err == nil {
+	if _, err = g.adaptors.Zigbee2mqttDevice.GetById(context.Background(), device.friendlyName); err == nil {
 		log.Infof("update device %v ...", model.Id)
-		if err = g.adaptors.Zigbee2mqttDevice.Update(&model); err != nil {
+		if err = g.adaptors.Zigbee2mqttDevice.Update(context.Background(), &model); err != nil {
 			log.Error(err.Error())
 			return
 		}
@@ -202,7 +202,7 @@ func (g *Bridge) safeUpdateDevice(device *Device) (err error) {
 
 	} else {
 		log.Infof("add device %v ...", model.Id)
-		if err = g.adaptors.Zigbee2mqttDevice.Add(&model); err != nil {
+		if err = g.adaptors.Zigbee2mqttDevice.Add(context.Background(), &model); err != nil {
 			return
 		}
 		//todo add metric ...
@@ -459,7 +459,7 @@ func (g *Bridge) PermitJoin(permitJoin bool) {
 	defer g.modelLock.Unlock()
 
 	g.model.PermitJoin = permitJoin
-	if err := g.adaptors.Zigbee2mqtt.Update(g.model); err != nil {
+	if err := g.adaptors.Zigbee2mqtt.Update(context.Background(), g.model); err != nil {
 		return
 	}
 	g.configPermitJoin(g.model.PermitJoin)

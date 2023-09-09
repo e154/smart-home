@@ -19,6 +19,7 @@
 package adaptors
 
 import (
+	"context"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
@@ -27,12 +28,12 @@ import (
 
 // IZigbee2mqtt ...
 type IZigbee2mqtt interface {
-	Add(ver *m.Zigbee2mqtt) (id int64, err error)
-	GetById(id int64) (ver *m.Zigbee2mqtt, err error)
-	Update(ver *m.Zigbee2mqtt) (err error)
-	Delete(id int64) (err error)
-	List(limit, offset int64) (list []*m.Zigbee2mqtt, total int64, err error)
-	GetByLogin(login string) (ver *m.Zigbee2mqtt, err error)
+	Add(ctx context.Context, ver *m.Zigbee2mqtt) (id int64, err error)
+	GetById(ctx context.Context, id int64) (ver *m.Zigbee2mqtt, err error)
+	Update(ctx context.Context, ver *m.Zigbee2mqtt) (err error)
+	Delete(ctx context.Context, id int64) (err error)
+	List(ctx context.Context, limit, offset int64) (list []*m.Zigbee2mqtt, total int64, err error)
+	GetByLogin(ctx context.Context, login string) (ver *m.Zigbee2mqtt, err error)
 	fromDb(dbVer *db.Zigbee2mqtt) (ver *m.Zigbee2mqtt)
 	toDb(ver *m.Zigbee2mqtt) (dbVer *db.Zigbee2mqtt)
 }
@@ -53,18 +54,18 @@ func GetZigbee2mqttAdaptor(d *gorm.DB) IZigbee2mqtt {
 }
 
 // Add ...
-func (n *Zigbee2mqtt) Add(ver *m.Zigbee2mqtt) (id int64, err error) {
+func (n *Zigbee2mqtt) Add(ctx context.Context, ver *m.Zigbee2mqtt) (id int64, err error) {
 
-	id, err = n.table.Add(n.toDb(ver))
+	id, err = n.table.Add(ctx, n.toDb(ver))
 
 	return
 }
 
 // GetById ...
-func (n *Zigbee2mqtt) GetById(id int64) (ver *m.Zigbee2mqtt, err error) {
+func (n *Zigbee2mqtt) GetById(ctx context.Context, id int64) (ver *m.Zigbee2mqtt, err error) {
 
 	var dbVer *db.Zigbee2mqtt
-	if dbVer, err = n.table.GetById(id); err != nil {
+	if dbVer, err = n.table.GetById(ctx, id); err != nil {
 		return
 	}
 
@@ -74,21 +75,21 @@ func (n *Zigbee2mqtt) GetById(id int64) (ver *m.Zigbee2mqtt, err error) {
 }
 
 // Update ...
-func (n *Zigbee2mqtt) Update(ver *m.Zigbee2mqtt) (err error) {
-	err = n.table.Update(n.toDb(ver))
+func (n *Zigbee2mqtt) Update(ctx context.Context, ver *m.Zigbee2mqtt) (err error) {
+	err = n.table.Update(ctx, n.toDb(ver))
 	return
 }
 
 // Delete ...
-func (n *Zigbee2mqtt) Delete(id int64) (err error) {
-	err = n.table.Delete(id)
+func (n *Zigbee2mqtt) Delete(ctx context.Context, id int64) (err error) {
+	err = n.table.Delete(ctx, id)
 	return
 }
 
 // List ...
-func (n *Zigbee2mqtt) List(limit, offset int64) (list []*m.Zigbee2mqtt, total int64, err error) {
+func (n *Zigbee2mqtt) List(ctx context.Context, limit, offset int64) (list []*m.Zigbee2mqtt, total int64, err error) {
 	var dbList []*db.Zigbee2mqtt
-	if dbList, total, err = n.table.List(int(limit), int(offset)); err != nil {
+	if dbList, total, err = n.table.List(ctx, int(limit), int(offset)); err != nil {
 		return
 	}
 
@@ -102,10 +103,10 @@ func (n *Zigbee2mqtt) List(limit, offset int64) (list []*m.Zigbee2mqtt, total in
 }
 
 // GetByLogin ...
-func (a *Zigbee2mqtt) GetByLogin(login string) (ver *m.Zigbee2mqtt, err error) {
+func (a *Zigbee2mqtt) GetByLogin(ctx context.Context, login string) (ver *m.Zigbee2mqtt, err error) {
 
 	var dbVer *db.Zigbee2mqtt
-	if dbVer, err = a.table.GetByLogin(login); err != nil {
+	if dbVer, err = a.table.GetByLogin(ctx, login); err != nil {
 		return
 	}
 

@@ -19,6 +19,7 @@
 package zigbee2mqtt
 
 import (
+	"context"
 	"time"
 
 	m "github.com/e154/smart-home/models"
@@ -26,8 +27,8 @@ import (
 
 // Zigbee2mqtt ...
 type Zigbee2mqtt interface {
-	Start()
-	Shutdown()
+	Start(ctx context.Context) error
+	Shutdown(ctx context.Context) error
 	AddBridge(model *m.Zigbee2mqtt) (err error)
 	GetBridgeById(id int64) (*m.Zigbee2mqtt, error)
 	GetBridgeInfo(id int64) (*Zigbee2mqttBridge, error)

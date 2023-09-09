@@ -131,7 +131,7 @@ func (p *plugin) addOrUpdateEntity(entity *m.Entity, attributes m.AttributeValue
 	p.Supervisor.Spawn(p.actors[name].Spawn)
 
 	var br *m.Zigbee2mqtt
-	if br, err = p.Adaptors.Zigbee2mqtt.GetById(actor.zigbee2mqttDevice.Zigbee2mqttId); err != nil {
+	if br, err = p.Adaptors.Zigbee2mqtt.GetById(context.Background(), actor.zigbee2mqttDevice.Zigbee2mqttId); err != nil {
 		return
 	}
 
