@@ -19,6 +19,7 @@
 package adaptors
 
 import (
+	"context"
 	"encoding/json"
 
 	"github.com/e154/smart-home/db"
@@ -28,13 +29,13 @@ import (
 
 // IPlugin ...
 type IPlugin interface {
-	Add(plugin *m.Plugin) error
-	CreateOrUpdate(ver *m.Plugin) error
-	Update(plugin *m.Plugin) error
-	Delete(pluginId string) error
-	List(limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Plugin, total int64, err error)
-	Search(query string, limit, offset int64) (list []*m.Plugin, total int64, err error)
-	GetByName(name string) (ver *m.Plugin, err error)
+	Add(ctx context.Context, plugin *m.Plugin) error
+	CreateOrUpdate(ctx context.Context, ver *m.Plugin) error
+	Update(ctx context.Context, plugin *m.Plugin) error
+	Delete(ctx context.Context, pluginId string) error
+	List(ctx context.Context, limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Plugin, total int64, err error)
+	Search(ctx context.Context, query string, limit, offset int64) (list []*m.Plugin, total int64, err error)
+	GetByName(ctx context.Context, name string) (ver *m.Plugin, err error)
 	fromDb(dbVer *db.Plugin) (plugin *m.Plugin)
 	toDb(plugin *m.Plugin) (dbVer *db.Plugin)
 }
@@ -55,33 +56,33 @@ func GetPluginAdaptor(d *gorm.DB) IPlugin {
 }
 
 // Add ...
-func (p *Plugin) Add(plugin *m.Plugin) (err error) {
-	err = p.table.Add(p.toDb(plugin))
+func (p *Plugin) Add(ctx context.Context, plugin *m.Plugin) (err error) {
+	err = p.table.Add(ctx, p.toDb(plugin))
 	return
 }
 
 // CreateOrUpdate ...
-func (p *Plugin) CreateOrUpdate(plugin *m.Plugin) (err error) {
-	err = p.table.CreateOrUpdate(p.toDb(plugin))
+func (p *Plugin) CreateOrUpdate(ctx context.Context, plugin *m.Plugin) (err error) {
+	err = p.table.CreateOrUpdate(ctx, p.toDb(plugin))
 	return
 }
 
 // Update ...
-func (p *Plugin) Update(plugin *m.Plugin) (err error) {
-	err = p.table.Update(p.toDb(plugin))
+func (p *Plugin) Update(ctx context.Context, plugin *m.Plugin) (err error) {
+	err = p.table.Update(ctx, p.toDb(plugin))
 	return
 }
 
 // Delete ...
-func (p *Plugin) Delete(name string) (err error) {
-	err = p.table.Delete(name)
+func (p *Plugin) Delete(ctx context.Context, name string) (err error) {
+	err = p.table.Delete(ctx, name)
 	return
 }
 
 // List ...
-func (p *Plugin) List(limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Plugin, total int64, err error) {
+func (p *Plugin) List(ctx context.Context, limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Plugin, total int64, err error) {
 	var dbList []*db.Plugin
-	if dbList, total, err = p.table.List(int(limit), int(offset), orderBy, sort, onlyEnabled); err != nil {
+	if dbList, total, err = p.table.List(ctx, int(limit), int(offset), orderBy, sort, onlyEnabled); err != nil {
 		return
 	}
 
@@ -93,9 +94,9 @@ func (p *Plugin) List(limit, offset int64, orderBy, sort string, onlyEnabled boo
 }
 
 // Search ...
-func (p *Plugin) Search(query string, limit, offset int64) (list []*m.Plugin, total int64, err error) {
+func (p *Plugin) Search(ctx context.Context, query string, limit, offset int64) (list []*m.Plugin, total int64, err error) {
 	var dbList []*db.Plugin
-	if dbList, total, err = p.table.Search(query, int(limit), int(offset)); err != nil {
+	if dbList, total, err = p.table.Search(ctx, query, int(limit), int(offset)); err != nil {
 		return
 	}
 
@@ -108,10 +109,10 @@ func (p *Plugin) Search(query string, limit, offset int64) (list []*m.Plugin, to
 }
 
 // GetByName ...
-func (p *Plugin) GetByName(name string) (ver *m.Plugin, err error) {
+func (p *Plugin) GetByName(ctx context.Context, name string) (ver *m.Plugin, err error) {
 
 	var dbVer *db.Plugin
-	if dbVer, err = p.table.GetByName(name); err != nil {
+	if dbVer, err = p.table.GetByName(ctx, name); err != nil {
 		return
 	}
 

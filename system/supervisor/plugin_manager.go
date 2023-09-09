@@ -19,6 +19,7 @@
 package supervisor
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/e154/smart-home/adaptors"
@@ -101,7 +102,7 @@ func (p *pluginManager) loadPlugins() {
 	var err error
 
 LOOP:
-	loadList, _, err = p.adaptors.Plugin.List(perPage, perPage*page, "", "", true)
+	loadList, _, err = p.adaptors.Plugin.List(context.Background(), perPage, perPage*page, "", "", true)
 	if err != nil {
 		log.Error(err.Error())
 		return
@@ -175,7 +176,7 @@ func (p *pluginManager) unloadPlugin(name string) (err error) {
 // Install ...
 func (p *pluginManager) Install(t string) {
 
-	pl, _ := p.adaptors.Plugin.GetByName(t)
+	pl, _ := p.adaptors.Plugin.GetByName(context.Background(), t)
 	if pl.Enabled {
 		return
 	}
@@ -199,7 +200,7 @@ func (p *pluginManager) Install(t string) {
 		return
 	}
 
-	_ = p.adaptors.Plugin.CreateOrUpdate(&m.Plugin{
+	_ = p.adaptors.Plugin.CreateOrUpdate(context.Background(), &m.Plugin{
 		Name:    plugin.Name(),
 		Version: plugin.Version(),
 		Enabled: true,
@@ -226,12 +227,12 @@ func (p *pluginManager) EnablePlugin(name string) (err error) {
 		return
 	}
 	var plugin *m.Plugin
-	if plugin, err = p.adaptors.Plugin.GetByName(name); err != nil {
+	if plugin, err = p.adaptors.Plugin.GetByName(context.Background(), name); err != nil {
 		err = errors.Wrap(apperr.ErrPluginGet, fmt.Sprintf("name %s", name))
 		return
 	}
 	plugin.Enabled = true
-	if err = p.adaptors.Plugin.CreateOrUpdate(plugin); err != nil {
+	if err = p.adaptors.Plugin.CreateOrUpdate(context.Background(), plugin); err != nil {
 		err = errors.Wrap(apperr.ErrPluginUpdate, fmt.Sprintf("name %s", name))
 	}
 	return
@@ -247,12 +248,12 @@ func (p *pluginManager) DisablePlugin(name string) (err error) {
 		return
 	}
 	var plugin *m.Plugin
-	if plugin, err = p.adaptors.Plugin.GetByName(name); err != nil {
+	if plugin, err = p.adaptors.Plugin.GetByName(context.Background(), name); err != nil {
 		err = errors.Wrap(apperr.ErrPluginGet, fmt.Sprintf("name %s", name))
 		return
 	}
 	plugin.Enabled = false
-	if err = p.adaptors.Plugin.CreateOrUpdate(plugin); err != nil {
+	if err = p.adaptors.Plugin.CreateOrUpdate(context.Background(), plugin); err != nil {
 		err = errors.Wrap(apperr.ErrPluginUpdate, fmt.Sprintf("name %s", name))
 	}
 	return

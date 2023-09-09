@@ -56,7 +56,7 @@ func (p *PluginEndpoint) Disable(ctx context.Context, pluginName string) (err er
 
 // GetList ...
 func (p *PluginEndpoint) GetList(ctx context.Context, pagination common.PageParams) (plugins []*m.Plugin, total int64, err error) {
-	if plugins, total, err = p.adaptors.Plugin.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, false); err != nil {
+	if plugins, total, err = p.adaptors.Plugin.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, false); err != nil {
 		return
 	}
 	for _, plugin := range plugins {
@@ -85,7 +85,7 @@ func (p *PluginEndpoint) GetOptions(ctx context.Context, pluginName string) (opt
 
 // GetByName ...
 func (p *PluginEndpoint) GetByName(ctx context.Context, pluginName string) (plugin *m.Plugin, err error) {
-	if plugin, err = p.adaptors.Plugin.GetByName(pluginName); err != nil {
+	if plugin, err = p.adaptors.Plugin.GetByName(ctx, pluginName); err != nil {
 		return
 	}
 	plugin.IsLoaded = p.supervisor.PluginIsLoaded(plugin.Name)
@@ -95,7 +95,7 @@ func (p *PluginEndpoint) GetByName(ctx context.Context, pluginName string) (plug
 // Search ...
 func (n *PluginEndpoint) Search(ctx context.Context, query string, limit, offset int64) (result []*m.Plugin, total int64, err error) {
 
-	result, total, err = n.adaptors.Plugin.Search(query, limit, offset)
+	result, total, err = n.adaptors.Plugin.Search(ctx, query, limit, offset)
 	if err != nil {
 		err = errors.Wrap(apperr.ErrInternal, err.Error())
 	}
@@ -106,13 +106,13 @@ func (n *PluginEndpoint) Search(ctx context.Context, query string, limit, offset
 func (n *PluginEndpoint) UpdateSettings(ctx context.Context, name string, settings m.Attributes) (err error) {
 
 	var plugin *m.Plugin
-	if plugin, err = n.adaptors.Plugin.GetByName(name); err != nil {
+	if plugin, err = n.adaptors.Plugin.GetByName(ctx, name); err != nil {
 		return
 	}
 
 	plugin.Settings = settings.Serialize()
 
-	if err = n.adaptors.Plugin.Update(plugin); err != nil {
+	if err = n.adaptors.Plugin.Update(ctx, plugin); err != nil {
 		return
 	}
 

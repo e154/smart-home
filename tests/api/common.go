@@ -38,7 +38,7 @@ func AddPlugin(adaptors *adaptors.Adaptors, name string, opts ...m.AttributeValu
 	if len(opts) > 0 {
 		plugin.Settings = opts[0]
 	}
-	err = adaptors.Plugin.CreateOrUpdate(plugin)
+	err = adaptors.Plugin.CreateOrUpdate(context.Background(), plugin)
 	return
 }
 

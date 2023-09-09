@@ -19,6 +19,7 @@
 package supervisor
 
 import (
+	"context"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common/web"
 	m "github.com/e154/smart-home/models"
@@ -106,7 +107,7 @@ func (p *Plugin) Options() m.PluginOptions {
 // LoadSettings ...
 func (p *Plugin) LoadSettings(pl Pluggable) (settings m.Attributes, err error) {
 	var plugin *m.Plugin
-	if plugin, err = p.Adaptors.Plugin.GetByName(pl.Name()); err != nil {
+	if plugin, err = p.Adaptors.Plugin.GetByName(context.Background(), pl.Name()); err != nil {
 		return
 	}
 	settings = pl.Options().Setts

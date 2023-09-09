@@ -88,9 +88,9 @@ func (p *plugin) asyncLoad() (err error) {
 			return
 		}
 		var model *m.Plugin
-		model, _ = p.Adaptors.Plugin.GetByName(Name)
+		model, _ = p.Adaptors.Plugin.GetByName(context.Background(), Name)
 		model.Settings = settings.Serialize()
-		_ = p.Adaptors.Plugin.Update(model)
+		_ = p.Adaptors.Plugin.Update(context.Background(), model)
 	}
 
 	p.VAPIDPrivateKey = settings[AttrPrivateKey].String()
