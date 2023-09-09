@@ -29,9 +29,9 @@ func (s *MigrationScripts) addScripts() (scripts []*m.Script, err error) {
 	return
 }
 
-func (s *MigrationScripts) addScript(name, source, desc string) (script *m.Script, err error) {
+func (s *MigrationScripts) addScript(ctx context.Context, name, source, desc string) (script *m.Script, err error) {
 
-	if script, err = s.adaptors.Script.GetByName(name); err == nil {
+	if script, err = s.adaptors.Script.GetByName(ctx, name); err == nil {
 		return
 	}
 
@@ -47,7 +47,7 @@ func (s *MigrationScripts) addScript(name, source, desc string) (script *m.Scrip
 	err = engineScript.Compile()
 	So(err, ShouldBeNil)
 
-	script.Id, err = s.adaptors.Script.Add(script)
+	script.Id, err = s.adaptors.Script.Add(ctx, script)
 	So(err, ShouldBeNil)
 	return
 }

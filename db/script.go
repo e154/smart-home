@@ -19,6 +19,7 @@
 package db
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"time"
@@ -71,8 +72,8 @@ func (d *Script) TableName() string {
 }
 
 // Add ...
-func (n Scripts) Add(script *Script) (id int64, err error) {
-	if err = n.Db.Create(&script).Error; err != nil {
+func (n Scripts) Add(ctx context.Context, script *Script) (id int64, err error) {
+	if err = n.Db.WithContext(ctx).Create(&script).Error; err != nil {
 		var pgErr *pq.Error
 		if errors.As(err, &pgErr) {
 			switch pgErr.Code {
@@ -93,9 +94,9 @@ func (n Scripts) Add(script *Script) (id int64, err error) {
 }
 
 // GetById ...
-func (n Scripts) GetById(scriptId int64) (script *Script, err error) {
+func (n Scripts) GetById(ctx context.Context, scriptId int64) (script *Script, err error) {
 	script = &Script{}
-	err = n.Db.Raw(`
+	err = n.Db.WithContext(ctx).Raw(`
 select scripts.*,
        (select count(*) from alexa_intents where script_id = scripts.id)  as alexa_intents,
        (select count(*) from entity_actions where script_id = scripts.id) as entity_actions,
@@ -118,9 +119,9 @@ from scripts where id = ?`, scriptId).
 }
 
 // GetByName ...
-func (n Scripts) GetByName(name string) (script *Script, err error) {
+func (n Scripts) GetByName(ctx context.Context, name string) (script *Script, err error) {
 	script = &Script{}
-	err = n.Db.Raw(`
+	err = n.Db.WithContext(ctx).Raw(`
 select scripts.*,
        (select count(*) from alexa_intents where script_id = scripts.id)  as alexa_intents,
        (select count(*) from entity_actions where script_id = scripts.id) as entity_actions,
@@ -143,8 +144,8 @@ from scripts where name = ?`, name).
 }
 
 // Update ...
-func (n Scripts) Update(m *Script) (err error) {
-	err = n.Db.Model(&Script{Id: m.Id}).Updates(map[string]interface{}{
+func (n Scripts) Update(ctx context.Context, m *Script) (err error) {
+	err = n.Db.WithContext(ctx).Model(&Script{Id: m.Id}).Updates(map[string]interface{}{
 		"name":        m.Name,
 		"description": m.Description,
 		"lang":        m.Lang,
@@ -158,17 +159,17 @@ func (n Scripts) Update(m *Script) (err error) {
 }
 
 // Delete ...
-func (n Scripts) Delete(scriptId int64) (err error) {
-	if err = n.Db.Delete(&Script{Id: scriptId}).Error; err != nil {
+func (n Scripts) Delete(ctx context.Context, scriptId int64) (err error) {
+	if err = n.Db.WithContext(ctx).Delete(&Script{Id: scriptId}).Error; err != nil {
 		err = errors.Wrap(apperr.ErrScriptDelete, err.Error())
 	}
 	return
 }
 
 // List ...
-func (n *Scripts) List(limit, offset int, orderBy, sort string, query *string) (list []*Script, total int64, err error) {
+func (n *Scripts) List(ctx context.Context, limit, offset int, orderBy, sort string, query *string) (list []*Script, total int64, err error) {
 
-	if err = n.Db.Model(Script{}).Count(&total).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(Script{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrScriptList, err.Error())
 		return
 	}
@@ -192,9 +193,9 @@ func (n *Scripts) List(limit, offset int, orderBy, sort string, query *string) (
 }
 
 // Search ...
-func (n *Scripts) Search(query string, limit, offset int) (list []*Script, total int64, err error) {
+func (n *Scripts) Search(ctx context.Context, query string, limit, offset int) (list []*Script, total int64, err error) {
 
-	q := n.Db.Model(&Script{}).
+	q := n.Db.WithContext(ctx).Model(&Script{}).
 		Where("name LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
@@ -215,7 +216,7 @@ func (n *Scripts) Search(query string, limit, offset int) (list []*Script, total
 }
 
 // Statistic ...
-func (n *Scripts) Statistic() (statistic *ScriptsStatistic, err error) {
+func (n *Scripts) Statistic(ctx context.Context) (statistic *ScriptsStatistic, err error) {
 
 	statistic = &ScriptsStatistic{}
 
@@ -223,7 +224,7 @@ func (n *Scripts) Statistic() (statistic *ScriptsStatistic, err error) {
 		Count int32
 		Used  bool
 	}
-	err = n.Db.Raw(`
+	err = n.Db.WithContext(ctx).Raw(`
 select count(scripts.id),
        (exists(select * from alexa_intents where script_id = scripts.id) or exists(select * from entity_actions where script_id = scripts.id) or
         exists(select * from entity_scripts where script_id = scripts.id) or
@@ -254,7 +255,7 @@ group by used`).
 		Lang  string
 		Count int32
 	}
-	err = n.Db.Raw(`
+	err = n.Db.WithContext(ctx).Raw(`
 select scripts.lang, count(scripts.*)
 		from scripts
 		group by lang`).

@@ -42,7 +42,7 @@ func (s *ScriptManager) addScripts(ctx context.Context) (scripts []*m.Script, er
 
 func (s *ScriptManager) addScript(ctx context.Context, name, source, desc string) (script *m.Script, err error) {
 
-	if script, err = s.adaptors.Script.GetByName(name); err == nil {
+	if script, err = s.adaptors.Script.GetByName(ctx, name); err == nil {
 		return
 	}
 
@@ -59,7 +59,7 @@ func (s *ScriptManager) addScript(ctx context.Context, name, source, desc string
 	err = engineScript.Compile()
 	So(err, ShouldBeNil)
 
-	script.Id, err = s.adaptors.Script.Add(script)
+	script.Id, err = s.adaptors.Script.Add(ctx, script)
 	So(err, ShouldBeNil)
 	return
 }

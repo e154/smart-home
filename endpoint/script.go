@@ -65,11 +65,11 @@ func (n *ScriptEndpoint) Add(ctx context.Context, params *m.Script) (result *m.S
 	}
 
 	var id int64
-	if id, err = n.adaptors.Script.Add(params); err != nil {
+	if id, err = n.adaptors.Script.Add(ctx, params); err != nil {
 		return
 	}
 
-	result, err = n.adaptors.Script.GetById(id)
+	result, err = n.adaptors.Script.GetById(ctx, id)
 
 	return
 }
@@ -77,7 +77,7 @@ func (n *ScriptEndpoint) Add(ctx context.Context, params *m.Script) (result *m.S
 // GetById ...
 func (n *ScriptEndpoint) GetById(ctx context.Context, scriptId int64) (result *m.Script, err error) {
 
-	result, err = n.adaptors.Script.GetById(scriptId)
+	result, err = n.adaptors.Script.GetById(ctx, scriptId)
 
 	return
 }
@@ -85,7 +85,7 @@ func (n *ScriptEndpoint) GetById(ctx context.Context, scriptId int64) (result *m
 // Copy ...
 func (n *ScriptEndpoint) Copy(ctx context.Context, scriptId int64) (script *m.Script, err error) {
 
-	script, err = n.adaptors.Script.GetById(scriptId)
+	script, err = n.adaptors.Script.GetById(ctx, scriptId)
 	if err != nil {
 		return
 	}
@@ -101,11 +101,11 @@ func (n *ScriptEndpoint) Copy(ctx context.Context, scriptId int64) (script *m.Sc
 	}
 
 	var id int64
-	if id, err = n.adaptors.Script.Add(script); err != nil {
+	if id, err = n.adaptors.Script.Add(ctx, script); err != nil {
 		return
 	}
 
-	script, err = n.adaptors.Script.GetById(id)
+	script, err = n.adaptors.Script.GetById(ctx, id)
 
 	return
 }
@@ -114,7 +114,7 @@ func (n *ScriptEndpoint) Copy(ctx context.Context, scriptId int64) (script *m.Sc
 func (n *ScriptEndpoint) Update(ctx context.Context, params *m.Script) (result *m.Script, errs validator.ValidationErrorsTranslations, err error) {
 
 	var script *m.Script
-	script, err = n.adaptors.Script.GetById(params.Id)
+	script, err = n.adaptors.Script.GetById(ctx, params.Id)
 	if err != nil {
 		return
 	}
@@ -140,11 +140,11 @@ func (n *ScriptEndpoint) Update(ctx context.Context, params *m.Script) (result *
 		return
 	}
 
-	if err = n.adaptors.Script.Update(script); err != nil {
+	if err = n.adaptors.Script.Update(ctx, script); err != nil {
 		return
 	}
 
-	result, err = n.adaptors.Script.GetById(script.Id)
+	result, err = n.adaptors.Script.GetById(ctx, script.Id)
 
 	return
 }
@@ -152,7 +152,7 @@ func (n *ScriptEndpoint) Update(ctx context.Context, params *m.Script) (result *
 // GetList ...
 func (n *ScriptEndpoint) GetList(ctx context.Context, pagination common.PageParams, query *string) (result []*m.Script, total int64, err error) {
 
-	result, total, err = n.adaptors.Script.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, query)
+	result, total, err = n.adaptors.Script.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, query)
 
 	return
 }
@@ -166,12 +166,12 @@ func (n *ScriptEndpoint) DeleteScriptById(ctx context.Context, scriptId int64) (
 	}
 
 	var script *m.Script
-	script, err = n.adaptors.Script.GetById(scriptId)
+	script, err = n.adaptors.Script.GetById(ctx, scriptId)
 	if err != nil {
 		return
 	}
 
-	err = n.adaptors.Script.Delete(script.Id)
+	err = n.adaptors.Script.Delete(ctx, script.Id)
 
 	return
 }
@@ -180,7 +180,7 @@ func (n *ScriptEndpoint) DeleteScriptById(ctx context.Context, scriptId int64) (
 func (n *ScriptEndpoint) Execute(ctx context.Context, scriptId int64) (result string, err error) {
 
 	var script *m.Script
-	script, err = n.adaptors.Script.GetById(scriptId)
+	script, err = n.adaptors.Script.GetById(ctx, scriptId)
 	if err != nil {
 		return
 	}
@@ -224,7 +224,7 @@ func (n *ScriptEndpoint) ExecuteSource(ctx context.Context, script *m.Script) (r
 // Search ...
 func (n *ScriptEndpoint) Search(ctx context.Context, query string, limit, offset int64) (devices []*m.Script, total int64, err error) {
 
-	devices, total, err = n.adaptors.Script.Search(query, limit, offset)
+	devices, total, err = n.adaptors.Script.Search(ctx, query, limit, offset)
 
 	return
 }
@@ -232,7 +232,7 @@ func (n *ScriptEndpoint) Search(ctx context.Context, query string, limit, offset
 // Statistic ...
 func (n *ScriptEndpoint) Statistic(ctx context.Context) (statistic []*m.Statistic, err error) {
 	var stat *m.ScriptsStatistic
-	if stat, err = n.adaptors.Script.Statistic(); err != nil {
+	if stat, err = n.adaptors.Script.Statistic(ctx); err != nil {
 		return
 	}
 	statistic = []*m.Statistic{
