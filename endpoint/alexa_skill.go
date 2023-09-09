@@ -19,6 +19,7 @@
 package endpoint
 
 import (
+	"context"
 	"github.com/e154/smart-home/common/apperr"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/alexa"
@@ -38,7 +39,7 @@ func NewAlexaSkillEndpoint(common *CommonEndpoint) *AlexaSkillEndpoint {
 }
 
 // Add ...
-func (n *AlexaSkillEndpoint) Add(params *m.AlexaSkill) (result *m.AlexaSkill, errs validator.ValidationErrorsTranslations, err error) {
+func (n *AlexaSkillEndpoint) Add(ctx context.Context, params *m.AlexaSkill) (result *m.AlexaSkill, errs validator.ValidationErrorsTranslations, err error) {
 
 	var ok bool
 	if ok, errs = n.validation.Valid(params); !ok {
@@ -46,11 +47,11 @@ func (n *AlexaSkillEndpoint) Add(params *m.AlexaSkill) (result *m.AlexaSkill, er
 	}
 
 	var id int64
-	if id, err = n.adaptors.AlexaSkill.Add(params); err != nil {
+	if id, err = n.adaptors.AlexaSkill.Add(ctx, params); err != nil {
 		return
 	}
 
-	result, err = n.adaptors.AlexaSkill.GetById(id)
+	result, err = n.adaptors.AlexaSkill.GetById(ctx, id)
 	if err != nil {
 		return
 	}
@@ -63,26 +64,26 @@ func (n *AlexaSkillEndpoint) Add(params *m.AlexaSkill) (result *m.AlexaSkill, er
 }
 
 // GetById ...
-func (n *AlexaSkillEndpoint) GetById(appId int64) (result *m.AlexaSkill, err error) {
+func (n *AlexaSkillEndpoint) GetById(ctx context.Context,appId int64) (result *m.AlexaSkill, err error) {
 
-	result, err = n.adaptors.AlexaSkill.GetById(appId)
+	result, err = n.adaptors.AlexaSkill.GetById(ctx, appId)
 
 	return
 }
 
 // Update ...
-func (n *AlexaSkillEndpoint) Update(params *m.AlexaSkill) (skill *m.AlexaSkill, errs validator.ValidationErrorsTranslations, err error) {
+func (n *AlexaSkillEndpoint) Update(ctx context.Context,params *m.AlexaSkill) (skill *m.AlexaSkill, errs validator.ValidationErrorsTranslations, err error) {
 
 	var ok bool
 	if ok, errs = n.validation.Valid(params); !ok {
 		return
 	}
 
-	if err = n.adaptors.AlexaSkill.Update(params); err != nil {
+	if err = n.adaptors.AlexaSkill.Update(ctx, params); err != nil {
 		return
 	}
 
-	skill, err = n.adaptors.AlexaSkill.GetById(params.Id)
+	skill, err = n.adaptors.AlexaSkill.GetById(ctx, params.Id)
 	if err != nil {
 		return
 	}
@@ -95,15 +96,15 @@ func (n *AlexaSkillEndpoint) Update(params *m.AlexaSkill) (skill *m.AlexaSkill, 
 }
 
 // GetList ...
-func (n *AlexaSkillEndpoint) GetList(limit, offset int64, order, sortBy string) (result []*m.AlexaSkill, total int64, err error) {
+func (n *AlexaSkillEndpoint) GetList(ctx context.Context,limit, offset int64, order, sortBy string) (result []*m.AlexaSkill, total int64, err error) {
 
-	result, total, err = n.adaptors.AlexaSkill.List(limit, offset, order, sortBy)
+	result, total, err = n.adaptors.AlexaSkill.List(ctx, limit, offset, order, sortBy)
 
 	return
 }
 
 // Delete ...
-func (n *AlexaSkillEndpoint) Delete(skillId int64) (err error) {
+func (n *AlexaSkillEndpoint) Delete(ctx context.Context,skillId int64) (err error) {
 
 	if skillId == 0 {
 		err = apperr.ErrInvalidRequest
@@ -111,12 +112,12 @@ func (n *AlexaSkillEndpoint) Delete(skillId int64) (err error) {
 	}
 
 	var skill *m.AlexaSkill
-	skill, err = n.adaptors.AlexaSkill.GetById(skillId)
+	skill, err = n.adaptors.AlexaSkill.GetById(ctx, skillId)
 	if err != nil {
 		return
 	}
 
-	if err = n.adaptors.AlexaSkill.Delete(skill.Id); err != nil {
+	if err = n.adaptors.AlexaSkill.Delete(ctx, skill.Id); err != nil {
 		return
 	}
 

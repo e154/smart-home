@@ -19,6 +19,7 @@
 package adaptors
 
 import (
+	"context"
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
@@ -28,12 +29,12 @@ import (
 
 // IAlexaSkill ...
 type IAlexaSkill interface {
-	Add(app *m.AlexaSkill) (id int64, err error)
-	GetById(appId int64) (app *m.AlexaSkill, err error)
-	Update(params *m.AlexaSkill) (err error)
-	Delete(appId int64) (err error)
-	List(limit, offset int64, orderBy, sort string) (list []*m.AlexaSkill, total int64, err error)
-	ListEnabled(limit, offset int64) (list []*m.AlexaSkill, err error)
+	Add(ctx context.Context, app *m.AlexaSkill) (id int64, err error)
+	GetById(ctx context.Context, appId int64) (app *m.AlexaSkill, err error)
+	Update(ctx context.Context, params *m.AlexaSkill) (err error)
+	Delete(ctx context.Context, appId int64) (err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.AlexaSkill, total int64, err error)
+	ListEnabled(ctx context.Context, limit, offset int64) (list []*m.AlexaSkill, err error)
 	fromDb(dbVer *db.AlexaSkill) (app *m.AlexaSkill)
 	toDb(ver *m.AlexaSkill) (dbVer *db.AlexaSkill)
 }
@@ -54,16 +55,16 @@ func GetAlexaSkillAdaptor(d *gorm.DB) IAlexaSkill {
 }
 
 // Add ...
-func (n *AlexaSkill) Add(app *m.AlexaSkill) (id int64, err error) {
-	id, err = n.table.Add(n.toDb(app))
+func (n *AlexaSkill) Add(ctx context.Context, app *m.AlexaSkill) (id int64, err error) {
+	id, err = n.table.Add(ctx, n.toDb(app))
 	return
 }
 
 // GetById ...
-func (n *AlexaSkill) GetById(appId int64) (app *m.AlexaSkill, err error) {
+func (n *AlexaSkill) GetById(ctx context.Context, appId int64) (app *m.AlexaSkill, err error) {
 
 	var dbVer *db.AlexaSkill
-	if dbVer, err = n.table.GetById(appId); err != nil {
+	if dbVer, err = n.table.GetById(ctx, appId); err != nil {
 		return
 	}
 
@@ -73,10 +74,10 @@ func (n *AlexaSkill) GetById(appId int64) (app *m.AlexaSkill, err error) {
 }
 
 // Update ...
-func (n *AlexaSkill) Update(params *m.AlexaSkill) (err error) {
+func (n *AlexaSkill) Update(ctx context.Context, params *m.AlexaSkill) (err error) {
 
 	var app *db.AlexaSkill
-	if app, err = n.table.GetById(params.Id); err != nil {
+	if app, err = n.table.GetById(ctx, params.Id); err != nil {
 		return
 	}
 
@@ -109,11 +110,11 @@ func (n *AlexaSkill) Update(params *m.AlexaSkill) (err error) {
 			}
 		}
 		if !exist {
-			if err = intentAdaptor.Delete(intentAdaptor.fromDb(intent)); err != nil {
+			if err = intentAdaptor.Delete(ctx, intentAdaptor.fromDb(intent)); err != nil {
 				return
 			}
 		} else {
-			if err = intentAdaptor.Update(intentAdaptor.fromDb(intent)); err != nil {
+			if err = intentAdaptor.Update(ctx, intentAdaptor.fromDb(intent)); err != nil {
 				return
 			}
 		}
@@ -128,28 +129,28 @@ func (n *AlexaSkill) Update(params *m.AlexaSkill) (err error) {
 			}
 		}
 		if !exist {
-			if err = intentAdaptor.Add(parIntent); err != nil {
+			if err = intentAdaptor.Add(ctx, parIntent); err != nil {
 				return
 			}
 		}
 	}
 
 	table := &db.AlexaSkills{Db: tx}
-	err = table.Update(n.toDb(params))
+	err = table.Update(ctx, n.toDb(params))
 
 	return
 }
 
 // Delete ...
-func (n *AlexaSkill) Delete(appId int64) (err error) {
-	err = n.table.Delete(appId)
+func (n *AlexaSkill) Delete(ctx context.Context, appId int64) (err error) {
+	err = n.table.Delete(ctx, appId)
 	return
 }
 
 // List ...
-func (n *AlexaSkill) List(limit, offset int64, orderBy, sort string) (list []*m.AlexaSkill, total int64, err error) {
+func (n *AlexaSkill) List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.AlexaSkill, total int64, err error) {
 	var dbList []*db.AlexaSkill
-	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort); err != nil {
+	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort); err != nil {
 		return
 	}
 
@@ -162,9 +163,9 @@ func (n *AlexaSkill) List(limit, offset int64, orderBy, sort string) (list []*m.
 }
 
 // ListEnabled ...
-func (n *AlexaSkill) ListEnabled(limit, offset int64) (list []*m.AlexaSkill, err error) {
+func (n *AlexaSkill) ListEnabled(ctx context.Context, limit, offset int64) (list []*m.AlexaSkill, err error) {
 	var dbList []*db.AlexaSkill
-	if dbList, err = n.table.ListEnabled(int(limit), int(offset)); err != nil {
+	if dbList, err = n.table.ListEnabled(ctx, int(limit), int(offset)); err != nil {
 		return
 	}
 
