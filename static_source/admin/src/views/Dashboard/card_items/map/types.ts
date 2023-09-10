@@ -17,8 +17,16 @@ export interface Marker {
   attribute?: string
   opacity?: number
   scale?: number
+  value?: number[]
 }
 
 export interface ItemPayloadMap {
+  projection: string
+  zoom: number
+  rotation: number
+  resolution: number
+  center: number[]
+  staticCenter: boolean
+  indexMarkerCenter?: number
   markers: Marker[]
 }

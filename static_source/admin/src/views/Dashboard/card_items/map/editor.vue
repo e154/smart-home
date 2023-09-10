@@ -1,11 +1,8 @@
 <script setup lang="ts">
 import {computed, PropType, ref, unref, watch} from "vue";
 import {Card, CardItem, Core, Tab} from "@/views/Dashboard/core";
-import {ElDivider, ElOption, ElCollapse, ElFormItem, ElInputNumber, ElCol, ElRow, ElButton, ElInput,
-  ElPopconfirm, ElForm, ElCard, ElCollapseItem} from 'element-plus'
-import {Vuuri} from "@/views/Dashboard/Vuuri"
-import {useBus} from "@/views/Dashboard/bus";
-import ViewCard from "@/views/Dashboard/editor/ViewCard.vue";
+import {ElDivider, ElSwitch, ElCollapse, ElFormItem, ElInputNumber, ElCol, ElRow, ElButton, ElInput,
+  ElPopconfirm, ElForm, ElCard, ElCollapseItem, ElTag} from 'element-plus'
 import {ApiEntity, ApiImage} from "@/api/stub";
 import CommonEditor from "@/views/Dashboard/card_items/common/editor.vue";
 import EntitySearch from "@/views/Entities/components/EntitySearch.vue";
@@ -70,7 +67,9 @@ const addMarker = () => {
     attribute: '',
     opacity: 0.9,
     scale: 0.5,
+    value: [0,0],
   });
+  currentItem.value.update()
 }
 
 const removeMarker = (index: number) => {
@@ -79,6 +78,11 @@ const removeMarker = (index: number) => {
   }
 
   currentItem.value.payload.map.markers.splice(index, 1);
+  currentItem.value.update()
+}
+
+const updateCenter = (index: number) => {
+  currentItem.value.payload.map.indexMarkerCenter = index
 }
 
 </script>
@@ -88,7 +92,11 @@ const removeMarker = (index: number) => {
 
     <CommonEditor :item="item" :core="core"/>
 
-<!--    <ElDivider content-position="left">Map options</ElDivider>-->
+    <ElDivider content-position="left">{{$t('dashboard.editor.mapOptions')}}</ElDivider>
+
+    <ElFormItem :label="$t('dashboard.editor.staticPosition')" prop="round">
+      <ElSwitch v-model="currentItem.payload.map.staticCenter"/>
+    </ElFormItem>
 
     <!-- marker options -->
     <ElDivider content-position="left">{{$t('dashboard.editor.markers') }}</ElDivider>
@@ -111,7 +119,10 @@ const removeMarker = (index: number) => {
           >
 
             <template #title>
-              {{ prop.entityId }} - {{ prop.attribute }}
+              {{ prop.entityId }} - {{ prop.attribute }}&nbsp;&nbsp;
+              <ElTag v-if="item.payload.map.indexMarkerCenter === index">
+                {{ $t('dashboard.editor.tracked') }}
+              </ElTag>
             </template>
 
             <ElCard shadow="never" class="item-card-editor">
@@ -139,13 +150,13 @@ const removeMarker = (index: number) => {
                 <ElRow :gutter="24">
                   <ElCol :span="12" :xs="12">
                     <ElFormItem :label="$t('dashboard.editor.opacity')" prop="entity">
-                      <ElInputNumber v-model="prop.opacity" :show-tooltip="false" min="0" max="1" step="0.01" style="width: 100%"/>
+                      <ElInputNumber v-model="prop.opacity" :show-tooltip="false" :min="0" :max="1" :step="0.01" style="width: 100%"/>
                     </ElFormItem>
                   </ElCol>
 
                   <ElCol :span="12" :xs="12">
                     <ElFormItem :label="$t('dashboard.editor.scale')" prop="value">
-                      <ElInputNumber v-model="prop.scale" :show-tooltip="false" min="0" max="1" step="0.01" style="width: 100%"/>
+                      <ElInputNumber v-model="prop.scale" :show-tooltip="false" :min="0" :max="1" :step="0.01" style="width: 100%"/>
                     </ElFormItem>
                   </ElCol>
                 </ElRow>
@@ -158,6 +169,13 @@ const removeMarker = (index: number) => {
                   <ElCol>
                     <div style="padding-bottom: 20px">
                       <div style="text-align: right;">
+                        <ElButton
+                            class="mr-10px" plain
+                            @click="updateCenter(index)"
+                            :disabled="currentItem.payload.map.indexMarkerCenter === index"
+                        >
+                          {{$t('dashboard.editor.followTheMarker')}}
+                        </ElButton>
                         <ElPopconfirm
                             :confirm-button-text="$t('main.ok')"
                             :cancel-button-text="$t('main.no')"
