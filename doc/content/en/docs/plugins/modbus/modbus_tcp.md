@@ -97,13 +97,14 @@ result = ModbusTcp(func, addr, count, command)
 
 ```coffeescript
 # Event handler function for actions:
-entityAction = (entityId, actionName)->
+entityAction = (entityId, actionName, args)->
 ```
 
 |  Value   | Description |
 |-------------|---------|
 | entityId | Unique ID of the device |
 | actionName | System name of the action |
+| args | Type: map[string]any |
 
 {{< alert color="warning" >}}The **Action** object is available in action scripts and scripts attached to the device.{{< /alert >}}
 ```coffeescript
@@ -146,7 +147,7 @@ checkStatus = ->
   print res.result
   print res.time
 
-entityAction = (entityId, actionName)->
+entityAction = (entityId, actionName, args)->
   switch actionName
     when 'ON' then doOnAction()
     when 'OFF' then doOffAction()
