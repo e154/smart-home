@@ -20,6 +20,8 @@ import map from './map/index.vue';
 import mapEditor from './map/editor.vue';
 import slider from './slider/index.vue';
 import sliderEditor from './slider/editor.vue';
+import colorPicker from './color_picker/index.vue';
+import colorPickerEditor from './color_picker/editor.vue';
 
 export const CardItemName = (name: string): any => {
   switch (name) {
@@ -43,6 +45,8 @@ export const CardItemName = (name: string): any => {
       return map;
     case 'slider':
       return slider;
+    case 'colorPicker':
+      return colorPicker;
     default:
       // console.error(`unknown card name "${name}"`);
       return dummy;
@@ -71,6 +75,8 @@ export const CardEditorName = (name: string): any => {
       return mapEditor;
     case 'slider':
       return sliderEditor;
+    case 'colorPicker':
+      return colorPickerEditor;
     default:
       // console.error(`unknown card name "${name}"`);
       return dummyEditor;
@@ -92,5 +98,6 @@ export const CardItemList: ItemsType[] = [
   {label: 'CHART', value: 'chart'},
   {label: 'ENTITY_STORAGE', value: 'entityStorage'},
   {label: 'MAP', value: 'map'},
-  {label: 'SLIDER', value: 'slider'}
+  {label: 'SLIDER', value: 'slider'},
+  {label: 'COLOR_PICKER', value: 'colorPicker'}
 ];

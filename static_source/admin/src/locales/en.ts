@@ -526,6 +526,7 @@ export default {
             ENTITY_STORAGE: 'Entity Storage Table',
             MAP: 'Map',
             SLIDER: 'Slider',
+            COLOR_PICKER: 'Color Picker',
             slider: {
                 options: 'Slider Options',
                 color: 'Color',

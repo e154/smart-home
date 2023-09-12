@@ -526,6 +526,7 @@ export default {
       ENTITY_STORAGE: 'Entity история состояний',
       MAP: 'Карта',
       SLIDER: 'Ползунок',
+      COLOR_PICKER: 'Цветовая паллитра',
       chart: {
         type: "Тип",
         metric_index: "Индекс метрики",

@@ -28,6 +28,7 @@ import {debounce} from "lodash-es";
 import {ref} from "vue";
 import {bool} from "vue-types";
 import {ItemPayloadSlider} from "@/views/Dashboard/card_items/slider/types";
+import {ItemPayloadColorPicker} from "@/views/Dashboard/card_items/color_picker/types";
 
 const {bus} = useBus()
 
@@ -88,6 +89,7 @@ export interface ItemPayload {
   chart?: ItemPayloadChart;
   map?: ItemPayloadMap;
   slider?: ItemPayloadSlider;
+  colorPicker?: ItemPayloadColorPicker;
 }
 
 export interface ItemParams {
@@ -249,6 +251,10 @@ export class CardItem {
       if (!this.payload.slider) {
         this.payload.slider = {
         } as ItemPayloadSlider;
+      }
+      if (!this.payload.colorPicker) {
+        this.payload.colorPicker = {
+        } as ItemPayloadColorPicker;
       }
     }
   }

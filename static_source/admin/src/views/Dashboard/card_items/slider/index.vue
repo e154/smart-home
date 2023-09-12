@@ -127,7 +127,6 @@ requestCurrentState(props.item?.entityId);
 <template>
   <div ref="el" class="h-[100%] w-[100%]">
     <slider
-        ref="el"
         v-model="value"
         width="100%"
         :color="color"
