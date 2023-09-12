@@ -43,7 +43,6 @@ import (
 	"github.com/e154/smart-home/plugins/telegram"
 	"github.com/e154/smart-home/plugins/weather"
 	"github.com/e154/smart-home/plugins/zigbee2mqtt"
-	"github.com/e154/smart-home/plugins/zone"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/phayes/freeport"
 	"github.com/smartystreets/goconvey/convey"
@@ -221,22 +220,6 @@ func GetNewScene(id string, scripts []*m.Script) *m.Entity {
 		PluginName:  scene.EntityScene,
 		Scripts:     scripts,
 		AutoLoad:    true,
-	}
-}
-
-// GetNewZone ...
-func GetNewZone() *m.Entity {
-	setings := zone.NewSettings()
-	setings[zone.AttrLat].Value = 54.9022
-	setings[zone.AttrLon].Value = 83.0335
-	setings[zone.AttrElevation].Value = 150
-	setings[zone.AttrTimezone].Value = 7
-	return &m.Entity{
-		Id:          "zone.home",
-		Description: "main geo zone",
-		PluginName:  "zone",
-		AutoLoad:    true,
-		Settings:    setings,
 	}
 }
 
