@@ -19,12 +19,14 @@ import stream from "@/api/stream";
 import {EventStateChange} from "@/api/stream_types";
 import {FormSchema} from "@/types/form";
 import {Form} from '@/components/Form'
+import {useCache} from "@/hooks/web/useCache";
 
 const {push, currentRoute} = useRouter()
 const remember = ref(false)
 const {register, elFormRef, methods} = useForm()
 const appStore = useAppStore()
 const {t} = useI18n()
+const { wsCache } = useCache()
 
 interface TableObject {
   tableList: ApiEntity[]
@@ -42,11 +44,15 @@ interface Params {
   sort?: string;
 }
 
+const cachePref = 'entities'
 const tableObject = reactive<TableObject>(
     {
       tableList: [],
       loading: false,
-      sort: '-createdAt'
+      sort: wsCache.get(cachePref+'Sort') || '-createdAt',
+      query: wsCache.get(cachePref+'Query'),
+      plugin: wsCache.get(cachePref+'Plugin')?.name,
+      area: wsCache.get(cachePref+'Area')
     },
 );
 
@@ -113,13 +119,18 @@ const columns: TableColumn[] = [
   }
 ]
 const paginationObj = ref<Pagination>({
-  currentPage: 1,
-  pageSize: 50,
+  currentPage: wsCache.get(cachePref+'CurrentPage') || 1,
+  pageSize: wsCache.get(cachePref+'PageSize') || 50,
   total: 0,
 })
 
 const getList = async () => {
   tableObject.loading = true
+
+  wsCache.set(cachePref+'CurrentPage', paginationObj.value.currentPage)
+  wsCache.set(cachePref+'PageSize', paginationObj.value.pageSize)
+  wsCache.set(cachePref+'Sort', tableObject.sort)
+  wsCache.set(cachePref+'Query', tableObject.query)
 
   let params: Params = {
     page: paginationObj.value.currentPage,
@@ -310,6 +321,7 @@ const schema = reactive<FormSchema[]>([
       placeholder: t('entities.pluginName'),
       onChange: (val: ApiPlugin) => {
         tableObject.plugin = val?.name || undefined
+        wsCache.set(cachePref+'Plugin', val)
         getList()
       }
     },
@@ -325,6 +337,7 @@ const schema = reactive<FormSchema[]>([
     componentProps: {
       placeholder: t('entities.area'),
       onChange: (val: ApiArea) => {
+        wsCache.set(cachePref+'Area', val)
         tableObject.area = val || undefined
         getList()
       }
@@ -347,6 +360,23 @@ const filterList = () => {
     list = ': ' + list
   }
   return list
+}
+
+const {setValues, setSchema} = methods
+if (wsCache.get(cachePref+'Query')) {
+  setValues({
+    name: wsCache.get(cachePref+'Query')
+  })
+}
+if (wsCache.get(cachePref+'Plugin')) {
+  setValues({
+    plugin: wsCache.get(cachePref+'Plugin')
+  })
+}
+if (wsCache.get(cachePref+'Area')) {
+  setValues({
+    area: wsCache.get(cachePref+'Area')
+  })
 }
 
 </script>

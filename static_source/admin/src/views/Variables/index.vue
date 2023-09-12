@@ -10,6 +10,7 @@ import {ApiVariable} from "@/api/stub";
 import {useForm} from "@/hooks/web/useForm";
 import {useRouter} from "vue-router";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {useCache} from "@/hooks/web/useCache";
 
 const {push, currentRoute} = useRouter()
 const remember = ref(false)
@@ -17,6 +18,7 @@ const {register, elFormRef, methods} = useForm()
 const appStore = useAppStore()
 const {t} = useI18n()
 const isMobile = computed(() => appStore.getMobile)
+const { wsCache } = useCache()
 
 interface TableObject {
   tableList: ApiVariable[]
@@ -31,10 +33,12 @@ interface Params {
   sort?: string;
 }
 
+const cachePref = 'variables'
 const tableObject = reactive<TableObject>(
     {
       tableList: [],
       loading: false,
+      sort: wsCache.get(cachePref+'Sort') || '-createdAt'
     }
 );
 
@@ -51,8 +55,8 @@ const columns: TableColumn[] = [
   },
 ]
 const paginationObj = ref<Pagination>({
-  currentPage: 1,
-  pageSize: 50,
+  currentPage: wsCache.get(cachePref+'CurrentPage') || 1,
+  pageSize: wsCache.get(cachePref+'PageSize') || 50,
   total: 0,
   pageSizes: [50, 100, 150, 250],
 })
@@ -60,6 +64,10 @@ const currentID = ref('')
 
 const getList = async () => {
   tableObject.loading = true
+
+  wsCache.set(cachePref+'CurrentPage', paginationObj.value.currentPage)
+  wsCache.set(cachePref+'PageSize', paginationObj.value.pageSize)
+  wsCache.set(cachePref+'Sort', tableObject.sort)
 
   let params: Params = {
     page: paginationObj.value.currentPage,
