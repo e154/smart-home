@@ -19,6 +19,7 @@
 package scripts
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -95,12 +96,12 @@ func Test9(t *testing.T) {
 			}
 
 			for _, template := range templates {
-				err := adaptors.Template.UpdateOrCreate(template)
+				err := adaptors.Template.UpdateOrCreate(context.Background(), template)
 				So(err, ShouldBeNil)
 			}
 
 			// ------------------------------------------------
-			render, err := adaptors.Template.Render("template2", map[string]interface{}{
+			render, err := adaptors.Template.Render(context.Background(), "template2", map[string]interface{}{
 				"code": 12345,
 			})
 			So(err, ShouldBeNil)

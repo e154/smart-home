@@ -1,6 +1,7 @@
 package automation
 
 import (
+	"context"
 	"fmt"
 	"sync"
 
@@ -100,7 +101,7 @@ func (a *triggerManager) load() {
 	const perPage int64 = 500
 	var page int64 = 0
 LOOP:
-	triggers, _, err := a.adaptors.Trigger.List(perPage, page*perPage, "", "", true)
+	triggers, _, err := a.adaptors.Trigger.List(context.Background(), perPage, page*perPage, "", "", true)
 	if err != nil {
 		log.Error(err.Error())
 		return
@@ -182,7 +183,7 @@ func (a *triggerManager) updateTrigger(id int64) {
 	//log.Infof("reload trigger id:%d", id)
 	a.removeTrigger(id)
 
-	task, err := a.adaptors.Trigger.GetById(id)
+	task, err := a.adaptors.Trigger.GetById(context.Background(), id)
 	if err != nil {
 		return
 	}

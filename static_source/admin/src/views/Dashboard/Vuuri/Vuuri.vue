@@ -111,7 +111,7 @@ const gridKey = genKey()
 const emit = defineEmits(['updated'])
 
 const update = () => {
-  console.log('update vuury')
+  // console.log('update vuury')
   nextTick(() => {
     muuri.value
         .refreshItems()

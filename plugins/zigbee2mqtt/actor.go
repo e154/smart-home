@@ -19,6 +19,7 @@
 package zigbee2mqtt
 
 import (
+	"context"
 	"fmt"
 	"sync"
 
@@ -55,7 +56,7 @@ func NewActor(entity *m.Entity,
 	eventBus bus.Bus) (actor *Actor, err error) {
 
 	var zigbee2mqttDevice *m.Zigbee2mqttDevice
-	if zigbee2mqttDevice, err = adaptors.Zigbee2mqttDevice.GetById(entity.Id.Name()); err != nil {
+	if zigbee2mqttDevice, err = adaptors.Zigbee2mqttDevice.GetById(context.Background(), entity.Id.Name()); err != nil {
 		return nil, err
 	}
 
@@ -208,7 +209,7 @@ func (e *Actor) runAction(msg events.EventCallEntityAction) {
 	if action.ScriptEngine == nil {
 		return
 	}
-	if _, err := action.ScriptEngine.AssertFunction(FuncEntityAction, msg.EntityId, action.Name); err != nil {
+	if _, err := action.ScriptEngine.AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
 		log.Error(err.Error())
 	}
 }

@@ -117,7 +117,7 @@ entityAction = (entityId, actionName)->
 			// add entity
 			// ------------------------------------------------
 			nodeEnt := GetNewNode("second")
-			err = adaptors.Entity.Add(nodeEnt)
+			err = adaptors.Entity.Add(context.Background(), nodeEnt)
 			So(err, ShouldBeNil)
 
 			plugEnt := GetNewModbusTcp("plug")
@@ -160,9 +160,9 @@ entityAction = (entityId, actionName)->
 			}
 			plugEnt.Settings[modbus_tcp.AttrSlaveId].Value = 1
 			plugEnt.Settings[modbus_tcp.AttrAddressPort].Value = "office:502"
-			err = adaptors.Entity.Add(plugEnt)
+			err = adaptors.Entity.Add(context.Background(), plugEnt)
 			So(err, ShouldBeNil)
-			_, err = adaptors.EntityStorage.Add(&m.EntityStorage{
+			_, err = adaptors.EntityStorage.Add(context.Background(), &m.EntityStorage{
 				EntityId:   plugEnt.Id,
 				Attributes: plugEnt.Attributes.Serialize(),
 			})

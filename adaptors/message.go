@@ -19,6 +19,7 @@
 package adaptors
 
 import (
+	"context"
 	"encoding/json"
 
 	"github.com/e154/smart-home/db"
@@ -28,7 +29,7 @@ import (
 
 // IMessage ...
 type IMessage interface {
-	Add(msg *m.Message) (id int64, err error)
+	Add(ctx context.Context, msg *m.Message) (id int64, err error)
 	fromDb(dbVer *db.Message) (ver *m.Message)
 	toDb(ver *m.Message) (dbVer *db.Message)
 }
@@ -47,8 +48,8 @@ func GetMessageAdaptor(d *gorm.DB) IMessage {
 }
 
 // Add ...
-func (n *Message) Add(msg *m.Message) (id int64, err error) {
-	id, err = n.table.Add(n.toDb(msg))
+func (n *Message) Add(ctx context.Context, msg *m.Message) (id int64, err error) {
+	id, err = n.table.Add(ctx, n.toDb(msg))
 	return
 }
 

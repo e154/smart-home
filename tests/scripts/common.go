@@ -19,6 +19,7 @@
 package scripts
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/e154/smart-home/adaptors"
@@ -83,9 +84,9 @@ func GetScripts(ctx C, scriptService scripts.ScriptService, adaptors *adaptors.A
 		ctx.So(err, ShouldBeNil)
 		err = engine.Compile()
 		ctx.So(err, ShouldBeNil)
-		scriptId, err := adaptors.Script.Add(script)
+		scriptId, err := adaptors.Script.Add(context.Background(), script)
 		ctx.So(err, ShouldBeNil)
-		script, err = adaptors.Script.GetById(scriptId)
+		script, err = adaptors.Script.GetById(context.Background(), scriptId)
 		ctx.So(err, ShouldBeNil)
 		scripts[fmt.Sprintf("script%d", arg)] = script
 	}

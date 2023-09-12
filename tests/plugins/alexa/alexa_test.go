@@ -272,7 +272,7 @@ skillOnIntent = ->
 				Status:      "enabled",
 				ScriptId:    common.Int64(alexaSkillScript.Id),
 			}
-			skill.Id, err = adaptors.AlexaSkill.Add(skill)
+			skill.Id, err = adaptors.AlexaSkill.Add(context.Background(), skill)
 			So(err, ShouldBeNil)
 
 			intent := &m.AlexaIntent{
@@ -280,7 +280,7 @@ skillOnIntent = ->
 				AlexaSkillId: skill.Id,
 				ScriptId:     alexaSkillScript.Id,
 			}
-			err = adaptors.AlexaIntent.Add(intent)
+			err = adaptors.AlexaIntent.Add(context.Background(), intent)
 			So(err, ShouldBeNil)
 
 			// ------------------------------------------------

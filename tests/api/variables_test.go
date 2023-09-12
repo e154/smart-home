@@ -47,7 +47,7 @@ func TestVariables(t *testing.T) {
 				Name:  "v1",
 				Value: "v1",
 			}
-			err = adaptors.Variable.Add(v1)
+			err = adaptors.Variable.Add(context.Background(), v1)
 			ctx.So(err, ShouldBeNil)
 
 			c := context.Background()

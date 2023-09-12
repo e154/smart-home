@@ -30,14 +30,14 @@ import (
 
 // IArea ...
 type IArea interface {
-	Add(ver *m.Area) (id int64, err error)
-	GetById(verId int64) (ver *m.Area, err error)
-	GetByName(name string) (ver *m.Area, err error)
-	Update(ver *m.Area) (err error)
-	DeleteByName(name string) (err error)
-	List(limit, offset int64, orderBy, sort string) (list []*m.Area, total int64, err error)
+	Add(ctx context.Context, ver *m.Area) (id int64, err error)
+	GetById(ctx context.Context, verId int64) (ver *m.Area, err error)
+	GetByName(ctx context.Context, name string) (ver *m.Area, err error)
+	Update(ctx context.Context, ver *m.Area) (err error)
+	DeleteByName(ctx context.Context, name string) (err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.Area, total int64, err error)
 	ListByPoint(ctx context.Context, point m.Point, limit, offset int64) (list []*m.Area, err error)
-	Search(query string, limit, offset int64) (list []*m.Area, total int64, err error)
+	Search(ctx context.Context, query string, limit, offset int64) (list []*m.Area, total int64, err error)
 	GetDistance(ctx context.Context, point m.Point, areaId int64) (distance float64, err error)
 	fromDb(dbVer *db.Area) (ver *m.Area)
 	toDb(ver *m.Area) (dbVer *db.Area)
@@ -59,9 +59,9 @@ func GetAreaAdaptor(d *gorm.DB) IArea {
 }
 
 // Add ...
-func (a *Area) Add(ver *m.Area) (id int64, err error) {
+func (a *Area) Add(ctx context.Context, ver *m.Area) (id int64, err error) {
 
-	if id, err = a.table.Add(a.toDb(ver)); err != nil {
+	if id, err = a.table.Add(ctx, a.toDb(ver)); err != nil {
 		return
 	}
 
@@ -69,10 +69,10 @@ func (a *Area) Add(ver *m.Area) (id int64, err error) {
 }
 
 // GetById ...
-func (a *Area) GetById(verId int64) (ver *m.Area, err error) {
+func (a *Area) GetById(ctx context.Context, verId int64) (ver *m.Area, err error) {
 
 	var dbVer *db.Area
-	if dbVer, err = a.table.GetById(verId); err != nil {
+	if dbVer, err = a.table.GetById(ctx, verId); err != nil {
 		return
 	}
 
@@ -82,21 +82,21 @@ func (a *Area) GetById(verId int64) (ver *m.Area, err error) {
 }
 
 // Update ...
-func (a *Area) Update(ver *m.Area) (err error) {
-	err = a.table.Update(a.toDb(ver))
+func (a *Area) Update(ctx context.Context, ver *m.Area) (err error) {
+	err = a.table.Update(ctx, a.toDb(ver))
 	return
 }
 
 // DeleteByName ...
-func (a *Area) DeleteByName(name string) (err error) {
-	err = a.table.DeleteByName(name)
+func (a *Area) DeleteByName(ctx context.Context, name string) (err error) {
+	err = a.table.DeleteByName(ctx, name)
 	return
 }
 
 // List ...
-func (a *Area) List(limit, offset int64, orderBy, sort string) (list []*m.Area, total int64, err error) {
+func (a *Area) List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.Area, total int64, err error) {
 	var dbList []*db.Area
-	if dbList, total, err = a.table.List(int(limit), int(offset), orderBy, sort); err != nil {
+	if dbList, total, err = a.table.List(ctx, int(limit), int(offset), orderBy, sort); err != nil {
 		return
 	}
 
@@ -111,7 +111,7 @@ func (a *Area) List(limit, offset int64, orderBy, sort string) (list []*m.Area, 
 func (a *Area) ListByPoint(ctx context.Context, point m.Point, limit, offset int64) (list []*m.Area, err error) {
 
 	var dbList []*db.Area
-	if dbList, err = a.table.ListByPoint(ctx, db.Point{Lon: float64(point.Lon), Lat: float64(point.Lat)}, int(limit), int(offset)); err != nil {
+	if dbList, err = a.table.ListByPoint(ctx, db.Point{Lon: point.Lon, Lat: point.Lat}, int(limit), int(offset)); err != nil {
 		return
 	}
 
@@ -123,9 +123,9 @@ func (a *Area) ListByPoint(ctx context.Context, point m.Point, limit, offset int
 }
 
 // Search ...
-func (a *Area) Search(query string, limit, offset int64) (list []*m.Area, total int64, err error) {
+func (a *Area) Search(ctx context.Context, query string, limit, offset int64) (list []*m.Area, total int64, err error) {
 	var dbList []*db.Area
-	if dbList, total, err = a.table.Search(query, int(limit), int(offset)); err != nil {
+	if dbList, total, err = a.table.Search(ctx, query, int(limit), int(offset)); err != nil {
 		return
 	}
 
@@ -138,10 +138,10 @@ func (a *Area) Search(query string, limit, offset int64) (list []*m.Area, total 
 }
 
 // GetByName ...
-func (a *Area) GetByName(name string) (ver *m.Area, err error) {
+func (a *Area) GetByName(ctx context.Context, name string) (ver *m.Area, err error) {
 
 	var dbVer *db.Area
-	if dbVer, err = a.table.GetByName(name); err != nil {
+	if dbVer, err = a.table.GetByName(ctx, name); err != nil {
 		return
 	}
 
@@ -152,7 +152,7 @@ func (a *Area) GetByName(name string) (ver *m.Area, err error) {
 
 // GetDistance ...
 func (a *Area) GetDistance(ctx context.Context, point m.Point, areaId int64) (distance float64, err error) {
-	distance, err = a.table.GetDistance(ctx, db.Point{Lon: float64(point.Lon), Lat: float64(point.Lat)}, areaId)
+	distance, err = a.table.GetDistance(ctx, db.Point{Lon: point.Lon, Lat: point.Lat}, areaId)
 	return
 }
 
@@ -167,8 +167,8 @@ func (a *Area) fromDb(dbVer *db.Area) (ver *m.Area) {
 	if dbVer.Polygon != nil {
 		for _, point := range dbVer.Polygon.Points {
 			ver.Polygon = append(ver.Polygon, m.Point{
-				Lon: float32(point.Lon),
-				Lat: float32(point.Lat),
+				Lon: point.Lon,
+				Lat: point.Lat,
 			})
 		}
 	}

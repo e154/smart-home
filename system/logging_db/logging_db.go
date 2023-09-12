@@ -84,7 +84,7 @@ func (l *LogDbSaver) Start() {
 		}()
 
 		update := func() {
-			_ = l.adaptors.Log.AddMultiple(logList)
+			_ = l.adaptors.Log.AddMultiple(context.Background(), logList)
 			logList = make([]*m.Log, 0, 50)
 		}
 

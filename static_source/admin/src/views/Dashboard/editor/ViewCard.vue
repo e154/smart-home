@@ -237,6 +237,7 @@ const onSnap = e => {
         :is="getCardItemName(item)"
         :item="item"
         :core="core"
+        :editor="true"
         @mousedown.capture="selectCardItem(index)"
     />
 

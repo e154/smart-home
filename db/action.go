@@ -19,6 +19,7 @@
 package db
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -53,8 +54,8 @@ func (*Action) TableName() string {
 }
 
 // Add ...
-func (t Actions) Add(action *Action) (id int64, err error) {
-	if err = t.Db.Create(&action).Error; err != nil {
+func (t Actions) Add(ctx context.Context, action *Action) (id int64, err error) {
+	if err = t.Db.WithContext(ctx).Create(&action).Error; err != nil {
 		err = errors.Wrap(apperr.ErrActionAdd, err.Error())
 		return
 	}
@@ -63,9 +64,9 @@ func (t Actions) Add(action *Action) (id int64, err error) {
 }
 
 // GetById ...
-func (t Actions) GetById(id int64) (action *Action, err error) {
+func (t Actions) GetById(ctx context.Context, id int64) (action *Action, err error) {
 	action = &Action{}
-	err = t.Db.Model(action).
+	err = t.Db.WithContext(ctx).Model(action).
 		Where("id = ?", id).
 		Preload("Entity").
 		Preload("Script").
@@ -82,37 +83,37 @@ func (t Actions) GetById(id int64) (action *Action, err error) {
 }
 
 // Update ...
-func (t Actions) Update(m *Action) (err error) {
+func (t Actions) Update(ctx context.Context, m *Action) (err error) {
 	q := map[string]interface{}{
 		"name":               m.Name,
 		"script_id":          m.ScriptId,
 		"entity_id":          m.EntityId,
 		"entity_action_name": m.EntityActionName,
 	}
-	if err = t.Db.Model(&Action{}).Where("id = ?", m.Id).Updates(q).Error; err != nil {
+	if err = t.Db.WithContext(ctx).Model(&Action{}).Where("id = ?", m.Id).Updates(q).Error; err != nil {
 		err = errors.Wrap(apperr.ErrActionUpdate, err.Error())
 	}
 	return
 }
 
 // Delete ...
-func (t Actions) Delete(id int64) (err error) {
-	if err = t.Db.Delete(&Action{}, "id = ?", id).Error; err != nil {
+func (t Actions) Delete(ctx context.Context, id int64) (err error) {
+	if err = t.Db.WithContext(ctx).Delete(&Action{}, "id = ?", id).Error; err != nil {
 		err = errors.Wrap(apperr.ErrActionDelete, err.Error())
 	}
 	return
 }
 
 // List ...
-func (t *Actions) List(limit, offset int, orderBy, sort string) (list []*Action, total int64, err error) {
+func (t *Actions) List(ctx context.Context, limit, offset int, orderBy, sort string) (list []*Action, total int64, err error) {
 
-	if err = t.Db.Model(Action{}).Count(&total).Error; err != nil {
+	if err = t.Db.WithContext(ctx).Model(Action{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrActionList, err.Error())
 		return
 	}
 
 	list = make([]*Action, 0)
-	q := t.Db.Model(&Action{}).
+	q := t.Db.WithContext(ctx).Model(&Action{}).
 		Limit(limit).
 		Offset(offset)
 
@@ -128,9 +129,9 @@ func (t *Actions) List(limit, offset int, orderBy, sort string) (list []*Action,
 }
 
 // Search ...q
-func (t *Actions) Search(query string, limit, offset int) (list []*Action, total int64, err error) {
+func (t *Actions) Search(ctx context.Context, query string, limit, offset int) (list []*Action, total int64, err error) {
 
-	q := t.Db.Model(&Action{}).
+	q := t.Db.WithContext(ctx).Model(&Action{}).
 		Where("name LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {

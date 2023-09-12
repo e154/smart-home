@@ -22,6 +22,7 @@
 package uptime
 
 import (
+	"context"
 	"time"
 
 	"github.com/e154/smart-home/system/supervisor"
@@ -64,8 +65,8 @@ func New() supervisor.Pluggable {
 }
 
 // Load ...
-func (p *plugin) Load(service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(service); err != nil {
+func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
+	if err = p.Plugin.Load(ctx, service); err != nil {
 		return
 	}
 
@@ -76,7 +77,7 @@ func (p *plugin) Load(service supervisor.Service) (err error) {
 		Start: time.Now(),
 	}
 
-	p.storyModel.Id, err = p.Adaptors.RunHistory.Add(p.storyModel)
+	p.storyModel.Id, err = p.Adaptors.RunHistory.Add(context.Background(), p.storyModel)
 
 	if err != nil {
 		log.Error(err.Error())
@@ -107,14 +108,14 @@ func (p *plugin) Load(service supervisor.Service) (err error) {
 }
 
 // Unload ...
-func (p *plugin) Unload() (err error) {
-	if err = p.Plugin.Unload(); err != nil {
+func (p *plugin) Unload(ctx context.Context) (err error) {
+	if err = p.Plugin.Unload(ctx); err != nil {
 		return
 	}
 
 	p.quit <- struct{}{}
 	p.storyModel.End = common.Time(time.Now())
-	if err = p.Adaptors.RunHistory.Update(p.storyModel); err != nil {
+	if err = p.Adaptors.RunHistory.Update(context.Background(), p.storyModel); err != nil {
 		log.Error(err.Error())
 	}
 	return

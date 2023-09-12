@@ -131,7 +131,6 @@ const getBackgroundColor = () => {
 
   <splitpanes class="default-theme" horizontal>
     <pane min-size="10" max-size="90" :size="50">
-      <div class="top-container">
         <ElTabs
             v-model="activeTabIdx"
             @edit="handleTabsEdit"
@@ -145,7 +144,6 @@ const getBackgroundColor = () => {
             <ViewTab :tab="tab" :key="index" :core="core"/>
           </ElTabPane>
         </ElTabs>
-      </div>
     </pane>
     <pane>
       <div class="bottom-container">

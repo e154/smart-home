@@ -83,13 +83,14 @@ const result = {
 ### entityAction Function
 
 ```javascript
-entityAction = (entityId, actionName) => {
+entityAction = (entityId, actionName, args) => {
 }
 ```
 | Property  | Description  |
 |-------------|---------|
 | entityId |    Type: string, ID of the entity sending the message   |
 | actionName |   Type: string, name of the action, in uppercase without the '/' symbol  |
+| args | Type: map[string]any |
 
 ----------------
 
@@ -133,7 +134,7 @@ const entityStateParams = {
 ifError =(res)->
   return !res || res.error || res.Error
 
-checkStatus =->
+checkStatus =(args)->
   stats = Miner.stats()
   if ifError(stats)
     Actor.setState
@@ -142,7 +143,7 @@ checkStatus =->
   p = JSON.parse(stats.result)
   print p
 
-checkSum =->
+checkSum =(args)->
   summary = Miner.summary()
   if ifError(summary)
     Actor.setState
@@ -151,8 +152,8 @@ checkSum =->
   p = JSON.parse(summary.result)
   print p
 
-entityAction = (entityId, actionName)->
+entityAction = (entityId, actionName, args)->
   switch actionName
-    when 'CHECK' then checkStatus()
-    when 'SUM' then checkSum()
+    when 'CHECK' then checkStatus(args)
+    when 'SUM' then checkSum(args)
 ```

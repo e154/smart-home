@@ -80,7 +80,7 @@ sceneEvent = (args)->
 			// add entity
 			// ------------------------------------------------
 			romanticEnt := GetNewScene("scene.romantic", []*m.Script{sceneScript})
-			err = adaptors.Entity.Add(romanticEnt)
+			err = adaptors.Entity.Add(context.Background(), romanticEnt)
 			So(err, ShouldBeNil)
 
 			eventBus.Publish("system/entities/"+romanticEnt.Id.String(), events.EventCreatedEntity{

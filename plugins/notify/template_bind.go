@@ -19,6 +19,8 @@
 package notify
 
 import (
+	"context"
+
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 )
@@ -37,7 +39,7 @@ func NewTemplateBind(adaptor *adaptors.Adaptors) *TemplateBind {
 
 // Render ...
 func (t *TemplateBind) Render(templateName string, params map[string]interface{}) *m.TemplateRender {
-	render, err := t.adaptor.Template.Render(templateName, params)
+	render, err := t.adaptor.Template.Render(context.Background(), templateName, params)
 	if err != nil {
 		return nil
 	}

@@ -19,6 +19,7 @@
 package logs
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/e154/smart-home/system/supervisor"
@@ -53,8 +54,8 @@ func New() supervisor.Pluggable {
 }
 
 // Load ...
-func (p *plugin) Load(service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(service); err != nil {
+func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
+	if err = p.Plugin.Load(ctx, service); err != nil {
 		return
 	}
 	// every day at 00:00 am
@@ -65,8 +66,8 @@ func (p *plugin) Load(service supervisor.Service) (err error) {
 }
 
 // Unload ...
-func (p *plugin) Unload() (err error) {
-	if err = p.Plugin.Unload(); err != nil {
+func (p *plugin) Unload(ctx context.Context) (err error) {
+	if err = p.Plugin.Unload(ctx); err != nil {
 		return
 	}
 	p.Scheduler.Remove(p.entryId)
@@ -77,7 +78,7 @@ func (p *plugin) Unload() (err error) {
 func (p *plugin) load(service supervisor.Service) (err error) {
 
 	var entity *m.Entity
-	if entity, err = p.Adaptors.Entity.GetById(common.EntityId(fmt.Sprintf("%s.%s", EntityLogs, Name))); err == nil {
+	if entity, err = p.Adaptors.Entity.GetById(context.Background(), common.EntityId(fmt.Sprintf("%s.%s", EntityLogs, Name))); err == nil {
 
 	}
 

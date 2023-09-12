@@ -45,8 +45,8 @@ onMounted(() => {
 })
 
 const fetchEntity = async (id: string) => {
-0  // const entity = await props.core.fetchEntity(id);
-  // currentItem.value.entity = entity;
+  const entity = await currentCore.value.fetchEntity(id);
+  currentItem.value.entity = entity;
 }
 
 const changedEntity = (entity: ApiEntity, event?: any) => {
@@ -148,7 +148,7 @@ const removeAction = (index: number) => {
   <!-- /hide on-->
 
   <!-- button options -->
-  <div v-if="item.type !== 'button' && item.type !== 'chart'">
+  <div v-if="!['button', 'chart', 'map', 'slider'].includes(item.type)">
     <ElDivider content-position="left">{{$t('dashboard.editor.buttonOptions') }}</ElDivider>
     <ElRow :gutter="24">
       <ElCol :span="12" :xs="12">

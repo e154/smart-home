@@ -51,7 +51,7 @@ func TestMoon(t *testing.T) {
 			// add entity
 			// ------------------------------------------------
 			moonEnt := GetNewMoon("main")
-			err := adaptors.Entity.Add(moonEnt)
+			err := adaptors.Entity.Add(context.Background(), moonEnt)
 			ctx.So(err, ShouldBeNil)
 
 			eventBus.Publish("system/entities/"+moonEnt.Id.String(), events.EventCreatedEntity{
@@ -69,7 +69,7 @@ func TestMoon(t *testing.T) {
 
 			t.Run("entity", func(t *testing.T) {
 				Convey("position", t, func(ctx C) {
-					moonEnt, err = adaptors.Entity.GetById(moonEnt.Id)
+					moonEnt, err = adaptors.Entity.GetById(context.Background(), moonEnt.Id)
 					ctx.So(err, ShouldBeNil)
 
 					ctx.So(moonEnt.Settings[moonPlugin.AttrLat].Float64(), ShouldEqual, 54.9022)

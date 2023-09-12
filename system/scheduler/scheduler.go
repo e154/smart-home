@@ -45,7 +45,7 @@ func NewScheduler(lc fx.Lifecycle,
 	return
 }
 
-func (c *Scheduler) Start(_ context.Context) error {
+func (c *Scheduler) Start(ctx context.Context) error {
 
 	c.cron = cron.New(
 		cron.WithSeconds(),
@@ -57,19 +57,19 @@ func (c *Scheduler) Start(_ context.Context) error {
 	c.cron.AddFunc("0 0 0 * * *", func() {
 		go func() {
 			log.Info("deleting obsolete metric entries ...")
-			if err := c.adaptors.MetricBucket.DeleteOldest(60); err != nil {
+			if err := c.adaptors.MetricBucket.DeleteOldest(ctx, 60); err != nil {
 				log.Error(err.Error())
 			}
 		}()
 		go func() {
 			log.Info("deleting obsolete log entries ...")
-			if err := c.adaptors.Log.DeleteOldest(60); err != nil {
+			if err := c.adaptors.Log.DeleteOldest(ctx, 60); err != nil {
 				log.Error(err.Error())
 			}
 		}()
 		go func() {
 			log.Info("deleting obsolete entity storage entries ...")
-			if err := c.adaptors.EntityStorage.DeleteOldest(60); err != nil {
+			if err := c.adaptors.EntityStorage.DeleteOldest(ctx, 60); err != nil {
 				log.Error(err.Error())
 			}
 		}()

@@ -22,9 +22,13 @@ import {ItemPayloadState} from '@/views/Dashboard/card_items/state/types';
 import {ItemPayloadLogs} from '@/views/Dashboard/card_items/logs/types';
 import {ItemPayloadProgress} from '@/views/Dashboard/card_items/progress/types';
 import {ItemPayloadChart} from '@/views/Dashboard/card_items/chart/types';
+import {ItemPayloadMap, Marker} from '@/views/Dashboard/card_items/map/types';
 import {useBus} from "@/views/Dashboard/bus";
-import {countBy, debounce} from "lodash-es";
+import {debounce} from "lodash-es";
 import {ref} from "vue";
+import {bool} from "vue-types";
+import {ItemPayloadSlider} from "@/views/Dashboard/card_items/slider/types";
+import {ItemPayloadColorPicker} from "@/views/Dashboard/card_items/color_picker/types";
 
 const {bus} = useBus()
 
@@ -74,6 +78,7 @@ export interface ItemPayloadImage {
   image?: ApiImage;
 }
 
+//todo: shouldn't be here, so will be optimize!!!
 export interface ItemPayload {
   text?: ItemPayloadText;
   image?: ItemPayloadImage;
@@ -82,6 +87,9 @@ export interface ItemPayload {
   logs?: ItemPayloadLogs;
   progress?: ItemPayloadProgress;
   chart?: ItemPayloadChart;
+  map?: ItemPayloadMap;
+  slider?: ItemPayloadSlider;
+  colorPicker?: ItemPayloadColorPicker;
 }
 
 export interface ItemParams {
@@ -133,7 +141,7 @@ export class CardItem {
   private _type: string;
   private _entityActions: Action[] = [];
   private _entityStates: State[] = [];
-  private _lastEvent?: EventStateChange = {} as EventStateChange;
+  private _lastEvents?: Map<string, EventStateChange> = {} as Map<string, EventStateChange> ;
 
   constructor(item: ApiDashboardCardItem) {
     this.id = item.id;
@@ -223,6 +231,30 @@ export class CardItem {
           legend: false,
           range: '24h'
         } as ItemPayloadChart;
+      }
+      if (!this.payload?.map) {
+        this.payload.map = {
+         markers: []
+        } as ItemPayloadMap;
+      } else {
+        if (!this.payload.map?.markers) {
+          this.payload.map.markers = [] as Marker[];
+        }
+        for (const index in this.payload.map?.markers) {
+          const entityId = this.payload.map.markers[index].entityId;
+          if (entityId) {
+            this._lastEvents[entityId] = {} as EventStateChange;
+          }
+          requestCurrentState(entityId)
+        }
+      }
+      if (!this.payload.slider) {
+        this.payload.slider = {
+        } as ItemPayloadSlider;
+      }
+      if (!this.payload.colorPicker) {
+        this.payload.colorPicker = {
+        } as ItemPayloadColorPicker;
       }
     }
   }
@@ -445,11 +477,6 @@ export class CardItem {
     };
   }
 
-  // lastEvent
-  get lastEvent(): EventStateChange | undefined {
-    return this._lastEvent;
-  }
-
   update() {
     // console.log('update item', this.title)
     this.uuid = new UUID();
@@ -459,13 +486,25 @@ export class CardItem {
   // events
   // ---------------------------------
   async onStateChanged(event: EventStateChange) {
+    let updated: bool = false;
+
+    // for common items
+    if (this._lastEvents && this._lastEvents[event.entity_id]) {
+      this._lastEvents[event.entity_id] = event;
+      updated = true
+    }
+
+    // for base entity
     if (!this.entityId || event.entity_id != this.entityId) {
+      if (updated) {
+        this.update();
+      }
       return;
     }
 
     // console.log(event);
 
-    this._lastEvent = event;
+    this._lastEvents[this.entityId] = event;
     this.update();
 
     // hide
@@ -516,7 +555,17 @@ export class CardItem {
       }
     }
   }
-}
+
+  // lastEvent
+  get lastEvent(): EventStateChange | undefined {
+    return this._lastEvents[this.entityId];
+  }
+
+  // lastEvents
+  lastEvents(entityId: string): EventStateChange | undefined {
+    return this._lastEvents[entityId];
+  }
+} // \CardItem
 
 export class Card {
   id: number;
@@ -849,7 +898,7 @@ export class Card {
     }
 
   }
-} // /Card
+} // \Card
 
 export class Tab {
   background: string;
@@ -967,7 +1016,7 @@ export class Tab {
       this.cards[index].onStateChanged(event);
     }
   }
-}
+} // \Tab
 
 export class Core {
   current: ApiDashboard = {} as ApiDashboard;
@@ -1254,7 +1303,7 @@ export class Core {
 
     // bus.emit('update_tab', this.currentTabId);
   }
-}
+} // \Core
 
 function sortCards(n1: Card, n2: Card) {
   if (n1.weight > n2.weight) {

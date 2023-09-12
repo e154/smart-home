@@ -19,6 +19,8 @@
 package adaptors
 
 import (
+	"context"
+
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"gorm.io/gorm"
@@ -26,10 +28,10 @@ import (
 
 // IAlexaIntent ...
 type IAlexaIntent interface {
-	Add(ver *m.AlexaIntent) (err error)
-	GetByName(name string) (ver *m.AlexaIntent, err error)
-	Update(ver *m.AlexaIntent) (err error)
-	Delete(ver *m.AlexaIntent) (err error)
+	Add(ctx context.Context, ver *m.AlexaIntent) (err error)
+	GetByName(ctx context.Context, name string) (ver *m.AlexaIntent, err error)
+	Update(ctx context.Context, ver *m.AlexaIntent) (err error)
+	Delete(ctx context.Context, ver *m.AlexaIntent) (err error)
 	fromDb(dbVer *db.AlexaIntent) (ver *m.AlexaIntent)
 	toDb(ver *m.AlexaIntent) (dbVer *db.AlexaIntent)
 }
@@ -50,15 +52,15 @@ func GetAlexaIntentAdaptor(d *gorm.DB) IAlexaIntent {
 }
 
 // Add ...
-func (n *AlexaIntent) Add(ver *m.AlexaIntent) error {
-	return n.table.Add(n.toDb(ver))
+func (n *AlexaIntent) Add(ctx context.Context, ver *m.AlexaIntent) error {
+	return n.table.Add(ctx, n.toDb(ver))
 }
 
 // GetByName ...
-func (n *AlexaIntent) GetByName(name string) (ver *m.AlexaIntent, err error) {
+func (n *AlexaIntent) GetByName(ctx context.Context, name string) (ver *m.AlexaIntent, err error) {
 
 	var dbVer *db.AlexaIntent
-	if dbVer, err = n.table.GetByName(name); err != nil {
+	if dbVer, err = n.table.GetByName(ctx, name); err != nil {
 		return
 	}
 
@@ -68,14 +70,14 @@ func (n *AlexaIntent) GetByName(name string) (ver *m.AlexaIntent, err error) {
 }
 
 // Update ...
-func (n *AlexaIntent) Update(ver *m.AlexaIntent) (err error) {
-	err = n.table.Update(n.toDb(ver))
+func (n *AlexaIntent) Update(ctx context.Context, ver *m.AlexaIntent) (err error) {
+	err = n.table.Update(ctx, n.toDb(ver))
 	return
 }
 
 // Delete ...
-func (n *AlexaIntent) Delete(ver *m.AlexaIntent) (err error) {
-	err = n.table.Delete(n.toDb(ver))
+func (n *AlexaIntent) Delete(ctx context.Context, ver *m.AlexaIntent) (err error) {
+	err = n.table.Delete(ctx, n.toDb(ver))
 	return
 }
 

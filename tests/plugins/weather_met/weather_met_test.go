@@ -55,12 +55,12 @@ func TestWeatherMet(t *testing.T) {
 			// add entity
 			// ------------------------------------------------
 			weatherEnt := GetNewWeatherMet("home")
-			err := adaptors.Entity.Add(weatherEnt)
+			err := adaptors.Entity.Add(context.Background(), weatherEnt)
 			ctx.So(err, ShouldBeNil)
 
 			// add weather vars
 			// ------------------------------------------------
-			err = adaptors.Variable.CreateOrUpdate(m.Variable{
+			err = adaptors.Variable.CreateOrUpdate(context.Background(), m.Variable{
 				System: true,
 				Name:   "weather_met.home",
 				Value:  strings.Replace(serverData, "LOADED_AT", time.Now().Format(time.RFC3339), -1),

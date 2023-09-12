@@ -19,6 +19,8 @@
 package adaptors
 
 import (
+	"context"
+
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
@@ -26,13 +28,13 @@ import (
 )
 
 type IDashboard interface {
-	Add(ver *m.Dashboard) (id int64, err error)
-	GetById(mapId int64) (ver *m.Dashboard, err error)
-	Update(ver *m.Dashboard) (err error)
-	Import(*m.Dashboard) (int64, error)
-	Delete(id int64) (err error)
-	List(limit, offset int64, orderBy, sort string) (list []*m.Dashboard, total int64, err error)
-	Search(query string, limit, offset int64) (list []*m.Dashboard, total int64, err error)
+	Add(ctx context.Context, ver *m.Dashboard) (id int64, err error)
+	GetById(ctx context.Context, mapId int64) (ver *m.Dashboard, err error)
+	Update(ctx context.Context, ver *m.Dashboard) (err error)
+	Import(ctx context.Context, dashboard *m.Dashboard) (int64, error)
+	Delete(ctx context.Context, id int64) (err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.Dashboard, total int64, err error)
+	Search(ctx context.Context, query string, limit, offset int64) (list []*m.Dashboard, total int64, err error)
 }
 
 // Dashboard ...
@@ -51,17 +53,17 @@ func GetDashboardAdaptor(d *gorm.DB) IDashboard {
 }
 
 // Add ...
-func (n *Dashboard) Add(ver *m.Dashboard) (id int64, err error) {
+func (n *Dashboard) Add(ctx context.Context, ver *m.Dashboard) (id int64, err error) {
 	dbVer := n.toDb(ver)
-	id, err = n.table.Add(dbVer)
+	id, err = n.table.Add(ctx, dbVer)
 	return
 }
 
 // GetById ...
-func (n *Dashboard) GetById(mapId int64) (ver *m.Dashboard, err error) {
+func (n *Dashboard) GetById(ctx context.Context, mapId int64) (ver *m.Dashboard, err error) {
 
 	var dbVer *db.Dashboard
-	if dbVer, err = n.table.GetById(mapId); err != nil {
+	if dbVer, err = n.table.GetById(ctx, mapId); err != nil {
 		return
 	}
 
@@ -71,9 +73,9 @@ func (n *Dashboard) GetById(mapId int64) (ver *m.Dashboard, err error) {
 }
 
 // Search ...
-func (n *Dashboard) Search(query string, limit, offset int64) (list []*m.Dashboard, total int64, err error) {
+func (n *Dashboard) Search(ctx context.Context, query string, limit, offset int64) (list []*m.Dashboard, total int64, err error) {
 	var dbList []*db.Dashboard
-	if dbList, total, err = n.table.Search(query, int(limit), int(offset)); err != nil {
+	if dbList, total, err = n.table.Search(ctx, query, int(limit), int(offset)); err != nil {
 		return
 	}
 
@@ -86,20 +88,20 @@ func (n *Dashboard) Search(query string, limit, offset int64) (list []*m.Dashboa
 }
 
 // Update ...
-func (n *Dashboard) Update(ver *m.Dashboard) (err error) {
+func (n *Dashboard) Update(ctx context.Context, ver *m.Dashboard) (err error) {
 	dbVer := n.toDb(ver)
-	err = n.table.Update(dbVer)
+	err = n.table.Update(ctx, dbVer)
 	return
 }
 
 // Delete ...
-func (n *Dashboard) Delete(id int64) (err error) {
-	err = n.table.Delete(id)
+func (n *Dashboard) Delete(ctx context.Context, id int64) (err error) {
+	err = n.table.Delete(ctx, id)
 	return
 }
 
 // Import ...
-func (n *Dashboard) Import(ver *m.Dashboard) (boardId int64, err error) {
+func (n *Dashboard) Import(ctx context.Context, ver *m.Dashboard) (boardId int64, err error) {
 
 	transaction := true
 	tx := n.db.Begin()
@@ -125,7 +127,7 @@ func (n *Dashboard) Import(ver *m.Dashboard) (boardId int64, err error) {
 	// board
 	ver.Id = 0
 	ver.Name = ver.Name + " [IMPORTED]"
-	if boardId, err = boardAdaptor.Add(ver); err != nil {
+	if boardId, err = boardAdaptor.Add(ctx, ver); err != nil {
 		return
 	}
 
@@ -135,7 +137,7 @@ func (n *Dashboard) Import(ver *m.Dashboard) (boardId int64, err error) {
 			tab.Id = 0
 			tab.DashboardId = boardId
 			var tabId int64
-			if tabId, err = tabAdaptor.Add(tab); err != nil {
+			if tabId, err = tabAdaptor.Add(ctx, tab); err != nil {
 				return
 			}
 
@@ -145,7 +147,7 @@ func (n *Dashboard) Import(ver *m.Dashboard) (boardId int64, err error) {
 					card.Id = 0
 					card.DashboardTabId = tabId
 					var cardId int64
-					if cardId, err = cardAdaptor.Add(card); err != nil {
+					if cardId, err = cardAdaptor.Add(ctx, card); err != nil {
 						return
 					}
 
@@ -154,7 +156,7 @@ func (n *Dashboard) Import(ver *m.Dashboard) (boardId int64, err error) {
 						for _, item := range card.Items {
 							item.Id = 0
 							item.DashboardCardId = cardId
-							if _, err = cardItemAdaptor.Add(item); err != nil {
+							if _, err = cardItemAdaptor.Add(ctx, item); err != nil {
 								return
 							}
 						}
@@ -168,7 +170,7 @@ func (n *Dashboard) Import(ver *m.Dashboard) (boardId int64, err error) {
 }
 
 // List ...
-func (n *Dashboard) List(limit, offset int64, orderBy, sort string) (list []*m.Dashboard, total int64, err error) {
+func (n *Dashboard) List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.Dashboard, total int64, err error) {
 
 	if sort == "" {
 		sort = "name"
@@ -178,7 +180,7 @@ func (n *Dashboard) List(limit, offset int64, orderBy, sort string) (list []*m.D
 	}
 
 	var dbList []*db.Dashboard
-	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort); err != nil {
+	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort); err != nil {
 		return
 	}
 

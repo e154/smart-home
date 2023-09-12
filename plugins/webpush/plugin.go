@@ -19,6 +19,7 @@
 package webpush
 
 import (
+	"context"
 	"encoding/json"
 	"strconv"
 	"strings"
@@ -53,8 +54,8 @@ func New() supervisor.Pluggable {
 }
 
 // Load ...
-func (p *plugin) Load(service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(service); err != nil {
+func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
+	if err = p.Plugin.Load(ctx, service); err != nil {
 		return
 	}
 
@@ -87,9 +88,9 @@ func (p *plugin) asyncLoad() (err error) {
 			return
 		}
 		var model *m.Plugin
-		model, _ = p.Adaptors.Plugin.GetByName(Name)
+		model, _ = p.Adaptors.Plugin.GetByName(context.Background(), Name)
 		model.Settings = settings.Serialize()
-		_ = p.Adaptors.Plugin.Update(model)
+		_ = p.Adaptors.Plugin.Update(context.Background(), model)
 	}
 
 	p.VAPIDPrivateKey = settings[AttrPrivateKey].String()
@@ -106,8 +107,8 @@ func (p *plugin) asyncLoad() (err error) {
 }
 
 // Unload ...
-func (p *plugin) Unload() (err error) {
-	if err = p.Plugin.Unload(); err != nil {
+func (p *plugin) Unload(ctx context.Context) (err error) {
+	if err = p.Plugin.Unload(ctx); err != nil {
 		return
 	}
 
@@ -152,7 +153,7 @@ func (p *plugin) Save(msg notify.Message) (addresses []string, message *m.Messag
 		Attributes: msg.Attributes,
 	}
 	var err error
-	if message.Id, err = p.Adaptors.Message.Add(message); err != nil {
+	if message.Id, err = p.Adaptors.Message.Add(context.Background(), message); err != nil {
 		log.Error(err.Error())
 	}
 
@@ -175,7 +176,7 @@ func (p *plugin) Send(address string, message *m.Message) (err error) {
 
 	userId, _ := strconv.ParseInt(address, 0, 64)
 	var userDevices []*m.UserDevice
-	if userDevices, err = p.Adaptors.UserDevice.GetByUserId(userId); err != nil {
+	if userDevices, err = p.Adaptors.UserDevice.GetByUserId(context.Background(), userId); err != nil {
 		return
 	}
 
@@ -219,7 +220,7 @@ func (p *plugin) sendPush(userDevice *m.UserDevice, msgTitle, msgBody string) (e
 	if statusCode != 201 {
 		log.Warn(string(responseBody))
 		go func() {
-			_ = p.Adaptors.UserDevice.Delete(userDevice.Id)
+			_ = p.Adaptors.UserDevice.Delete(context.Background(), userDevice.Id)
 			log.Infof("remove user device %d", userDevice.Id)
 		}()
 		return
@@ -249,7 +250,7 @@ func (p *plugin) sendPublicKey(event EventGetWebPushPublicKey) {
 
 func (p *plugin) updateSubscribe(event EventAddWebPushSubscription) {
 
-	if _, err := p.Adaptors.UserDevice.Add(&m.UserDevice{
+	if _, err := p.Adaptors.UserDevice.Add(context.Background(), &m.UserDevice{
 		UserId:       event.UserID,
 		Subscription: event.Subscription,
 	}); err != nil {

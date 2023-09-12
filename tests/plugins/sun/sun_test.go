@@ -50,7 +50,7 @@ func TestSun(t *testing.T) {
 			// add entity
 			// ------------------------------------------------
 			sunEnt := GetNewSun("main")
-			err := adaptors.Entity.Add(sunEnt)
+			err := adaptors.Entity.Add(context.Background(), sunEnt)
 			ctx.So(err, ShouldBeNil)
 
 			eventBus.Publish("system/entities/"+sunEnt.Id.String(), events.EventCreatedEntity{
@@ -75,7 +75,7 @@ func TestSun(t *testing.T) {
 
 			t.Run("entity", func(t *testing.T) {
 				Convey("phase", t, func(ctx C) {
-					sunEnt, err = adaptors.Entity.GetById(sunEnt.Id)
+					sunEnt, err = adaptors.Entity.GetById(context.Background(), sunEnt.Id)
 					ctx.So(err, ShouldBeNil)
 
 					ctx.So(sunEnt.Settings[sunPlugin.AttrLat].Float64(), ShouldEqual, 54.9022)

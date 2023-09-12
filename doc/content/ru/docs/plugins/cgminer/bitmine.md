@@ -84,12 +84,13 @@ result = Miner
 ### функция entityAction
 
 ```coffeescript
-entityAction = (entityId, actionName)->
+entityAction = (entityId, actionName, args)->
 ```
 | значение   | описание               |
 |-------------|-------------------|
 | entityId    | type: string, id сущности отправляющего сообщение |
 | actionName  | type: string, название действия, без символа '/' в верхнем регистре |
+| args | Type: map[string]any |
 
 ----------------
 
@@ -151,7 +152,7 @@ checkSum =->
   p = JSON.parse(summary.result)
   print p
 
-entityAction = (entityId, actionName)->
+entityAction = (entityId, actionName, args)->
   switch actionName
     when 'CHECK' then checkStatus()
     when 'SUM' then checkSum()

@@ -19,6 +19,7 @@
 package adaptors
 
 import (
+	"context"
 	"time"
 
 	"github.com/e154/smart-home/db"
@@ -28,12 +29,12 @@ import (
 
 // ICondition ...
 type ICondition interface {
-	Add(ver *m.Condition) (id int64, err error)
-	GetById(id int64) (metric *m.Condition, err error)
-	Update(ver *m.Condition) error
-	Delete(deviceId int64) (err error)
-	List(limit, offset int64, orderBy, sort string) (list []*m.Condition, total int64, err error)
-	Search(query string, limit, offset int) (list []*m.Condition, total int64, err error)
+	Add(ctx context.Context, ver *m.Condition) (id int64, err error)
+	GetById(ctx context.Context, id int64) (metric *m.Condition, err error)
+	Update(ctx context.Context, ver *m.Condition) error
+	Delete(ctx context.Context, deviceId int64) (err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.Condition, total int64, err error)
+	Search(ctx context.Context, query string, limit, offset int) (list []*m.Condition, total int64, err error)
 	fromDb(dbVer *db.Condition) (ver *m.Condition)
 	toDb(ver *m.Condition) (dbVer *db.Condition)
 }
@@ -54,15 +55,15 @@ func GetConditionAdaptor(d *gorm.DB) ICondition {
 }
 
 // Add ...
-func (n *Condition) Add(ver *m.Condition) (id int64, err error) {
-	id, err = n.table.Add(n.toDb(ver))
+func (n *Condition) Add(ctx context.Context, ver *m.Condition) (id int64, err error) {
+	id, err = n.table.Add(ctx, n.toDb(ver))
 	return
 }
 
 // GetById ...
-func (n *Condition) GetById(id int64) (metric *m.Condition, err error) {
+func (n *Condition) GetById(ctx context.Context, id int64) (metric *m.Condition, err error) {
 	var dbVer *db.Condition
-	if dbVer, err = n.table.GetById(id); err != nil {
+	if dbVer, err = n.table.GetById(ctx, id); err != nil {
 		return
 	}
 	metric = n.fromDb(dbVer)
@@ -70,9 +71,9 @@ func (n *Condition) GetById(id int64) (metric *m.Condition, err error) {
 }
 
 // GetByIdWithData ...
-func (n *Condition) GetByIdWithData(id int64, from, to *time.Time, metricRange *string) (metric *m.Condition, err error) {
+func (n *Condition) GetByIdWithData(ctx context.Context, id int64, from, to *time.Time, metricRange *string) (metric *m.Condition, err error) {
 	var dbVer *db.Condition
-	if dbVer, err = n.table.GetById(id); err != nil {
+	if dbVer, err = n.table.GetById(ctx, id); err != nil {
 		return
 	}
 	metric = n.fromDb(dbVer)
@@ -80,20 +81,20 @@ func (n *Condition) GetByIdWithData(id int64, from, to *time.Time, metricRange *
 }
 
 // Update ...
-func (n *Condition) Update(ver *m.Condition) error {
-	return n.table.Update(n.toDb(ver))
+func (n *Condition) Update(ctx context.Context, ver *m.Condition) error {
+	return n.table.Update(ctx, n.toDb(ver))
 }
 
 // Delete ...
-func (n *Condition) Delete(deviceId int64) (err error) {
-	err = n.table.Delete(deviceId)
+func (n *Condition) Delete(ctx context.Context, deviceId int64) (err error) {
+	err = n.table.Delete(ctx, deviceId)
 	return
 }
 
 // List ...
-func (n *Condition) List(limit, offset int64, orderBy, sort string) (list []*m.Condition, total int64, err error) {
+func (n *Condition) List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.Condition, total int64, err error) {
 	var dbList []*db.Condition
-	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort); err != nil {
+	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort); err != nil {
 		return
 	}
 
@@ -106,9 +107,9 @@ func (n *Condition) List(limit, offset int64, orderBy, sort string) (list []*m.C
 }
 
 // Search ...
-func (n *Condition) Search(query string, limit, offset int) (list []*m.Condition, total int64, err error) {
+func (n *Condition) Search(ctx context.Context, query string, limit, offset int) (list []*m.Condition, total int64, err error) {
 	var dbList []*db.Condition
-	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
+	if dbList, total, err = n.table.Search(ctx, query, limit, offset); err != nil {
 		return
 	}
 

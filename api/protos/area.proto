@@ -11,8 +11,8 @@ import "google/protobuf/timestamp.proto";
 import "pagination.proto";
 
 message AreaLocation {
-  float lat = 1;
-  float lon = 2;
+  double lat = 1;
+  double lon = 2;
 }
 
 message Area {

@@ -138,13 +138,13 @@ func (j *jwtManager) getSecretKey() (hmacKey []byte, err error) {
 	}
 
 	var variable m.Variable
-	if variable, err = j.adaptors.Variable.GetByName("hmacKey"); err != nil {
+	if variable, err = j.adaptors.Variable.GetByName(context.Background(), "hmacKey"); err != nil {
 		variable = m.Variable{
 			System: true,
 			Name:   "hmacKey",
 			Value:  common.ComputeHmac256(),
 		}
-		if err = j.adaptors.Variable.Add(variable); err != nil {
+		if err = j.adaptors.Variable.Add(context.Background(), variable); err != nil {
 			log.Error(err.Error())
 		}
 	}

@@ -19,6 +19,8 @@
 package adaptors
 
 import (
+	"context"
+
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"gorm.io/gorm"
@@ -26,9 +28,9 @@ import (
 
 // IPermission ...
 type IPermission interface {
-	Add(permission *m.Permission) (id int64, err error)
-	Delete(roleName, packageName string, levelName []string) (err error)
-	GetAllPermissions(roleName string) (permissions []*m.Permission, err error)
+	Add(ctx context.Context, permission *m.Permission) (id int64, err error)
+	Delete(ctx context.Context, roleName, packageName string, levelName []string) (err error)
+	GetAllPermissions(ctx context.Context, roleName string) (permissions []*m.Permission, err error)
 	fromDb(dbPermission *db.Permission) (permission *m.Permission)
 	toDb(permission *m.Permission) (dbPermission *db.Permission)
 }
@@ -49,10 +51,10 @@ func GetPermissionAdaptor(d *gorm.DB) IPermission {
 }
 
 // Add ...
-func (n *Permission) Add(permission *m.Permission) (id int64, err error) {
+func (n *Permission) Add(ctx context.Context, permission *m.Permission) (id int64, err error) {
 
 	dbPermission := n.toDb(permission)
-	if id, err = n.table.Add(dbPermission); err != nil {
+	if id, err = n.table.Add(ctx, dbPermission); err != nil {
 		return
 	}
 
@@ -60,18 +62,18 @@ func (n *Permission) Add(permission *m.Permission) (id int64, err error) {
 }
 
 // Delete ...
-func (n *Permission) Delete(roleName, packageName string, levelName []string) (err error) {
+func (n *Permission) Delete(ctx context.Context, roleName, packageName string, levelName []string) (err error) {
 
-	err = n.table.Delete(roleName, packageName, levelName)
+	err = n.table.Delete(ctx, roleName, packageName, levelName)
 
 	return
 }
 
 // GetAllPermissions ...
-func (n *Permission) GetAllPermissions(roleName string) (permissions []*m.Permission, err error) {
+func (n *Permission) GetAllPermissions(ctx context.Context, roleName string) (permissions []*m.Permission, err error) {
 
 	var dbPermissions []*db.Permission
-	if dbPermissions, err = n.table.GetAllPermissions(roleName); err != nil {
+	if dbPermissions, err = n.table.GetAllPermissions(ctx, roleName); err != nil {
 		return
 	}
 

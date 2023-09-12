@@ -19,6 +19,8 @@
 package adaptors
 
 import (
+	"context"
+
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"gorm.io/gorm"
@@ -26,13 +28,13 @@ import (
 
 // IRole ...
 type IRole interface {
-	Add(role *m.Role) (err error)
-	GetByName(name string) (role *m.Role, err error)
-	Update(role *m.Role) (err error)
-	Delete(name string) (err error)
-	List(limit, offset int64, orderBy, sort string) (list []*m.Role, total int64, err error)
-	Search(query string, limit, offset int64) (list []*m.Role, total int64, err error)
-	GetAccessList(role *m.Role) (err error)
+	Add(ctx context.Context, role *m.Role) (err error)
+	GetByName(ctx context.Context, name string) (role *m.Role, err error)
+	Update(ctx context.Context, role *m.Role) (err error)
+	Delete(ctx context.Context, name string) (err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.Role, total int64, err error)
+	Search(ctx context.Context, query string, limit, offset int64) (list []*m.Role, total int64, err error)
+	GetAccessList(ctx context.Context, role *m.Role) (err error)
 	fromDb(dbRole *db.Role) (role *m.Role)
 	toDb(role *m.Role) (dbRole *db.Role)
 }
@@ -53,44 +55,44 @@ func GetRoleAdaptor(d *gorm.DB) IRole {
 }
 
 // Add ...
-func (n *Role) Add(role *m.Role) (err error) {
+func (n *Role) Add(ctx context.Context, role *m.Role) (err error) {
 
 	dbRole := n.toDb(role)
-	err = n.table.Add(dbRole)
+	err = n.table.Add(ctx, dbRole)
 
 	return
 }
 
 // GetByName ...
-func (n *Role) GetByName(name string) (role *m.Role, err error) {
+func (n *Role) GetByName(ctx context.Context, name string) (role *m.Role, err error) {
 
 	var dbRole *db.Role
-	if dbRole, err = n.table.GetByName(name); err != nil {
+	if dbRole, err = n.table.GetByName(ctx, name); err != nil {
 		return
 	}
 
 	role = n.fromDb(dbRole)
 
-	err = n.GetAccessList(role)
+	err = n.GetAccessList(ctx, role)
 
 	return
 }
 
 // Update ...
-func (n *Role) Update(role *m.Role) (err error) {
+func (n *Role) Update(ctx context.Context, role *m.Role) (err error) {
 	dbRole := n.toDb(role)
-	err = n.table.Update(dbRole)
+	err = n.table.Update(ctx, dbRole)
 	return
 }
 
 // Delete ...
-func (n *Role) Delete(name string) (err error) {
-	err = n.table.Delete(name)
+func (n *Role) Delete(ctx context.Context, name string) (err error) {
+	err = n.table.Delete(ctx, name)
 	return
 }
 
 // List ...
-func (n *Role) List(limit, offset int64, orderBy, sort string) (list []*m.Role, total int64, err error) {
+func (n *Role) List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.Role, total int64, err error) {
 
 	if sort == "" {
 		sort = "name"
@@ -100,7 +102,7 @@ func (n *Role) List(limit, offset int64, orderBy, sort string) (list []*m.Role, 
 	}
 
 	var dbList []*db.Role
-	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort); err != nil {
+	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort); err != nil {
 		return
 	}
 
@@ -114,9 +116,9 @@ func (n *Role) List(limit, offset int64, orderBy, sort string) (list []*m.Role, 
 }
 
 // Search ...
-func (n *Role) Search(query string, limit, offset int64) (list []*m.Role, total int64, err error) {
+func (n *Role) Search(ctx context.Context, query string, limit, offset int64) (list []*m.Role, total int64, err error) {
 	var dbList []*db.Role
-	if dbList, total, err = n.table.Search(query, int(limit), int(offset)); err != nil {
+	if dbList, total, err = n.table.Search(ctx, query, int(limit), int(offset)); err != nil {
 		return
 	}
 
@@ -130,12 +132,12 @@ func (n *Role) Search(query string, limit, offset int64) (list []*m.Role, total 
 }
 
 // GetAccessList ...
-func (n *Role) GetAccessList(role *m.Role) (err error) {
+func (n *Role) GetAccessList(ctx context.Context, role *m.Role) (err error) {
 
 	role.AccessList = make(map[string][]string)
 	permissionAdaptor := GetPermissionAdaptor(n.db)
 	var permissions []*m.Permission
-	if permissions, err = permissionAdaptor.GetAllPermissions(role.Name); err != nil {
+	if permissions, err = permissionAdaptor.GetAllPermissions(ctx, role.Name); err != nil {
 		return
 	}
 

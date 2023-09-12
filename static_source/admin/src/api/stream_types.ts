@@ -9,6 +9,7 @@ export enum Types {
   TIME = 'time',
   MAP = 'map',
   IMAGE = 'image',
+  POINT = 'point',
 }
 
 export interface Attribute {
@@ -96,6 +97,9 @@ export function GetAttrValue(attr: Attribute): string {
       val = parseTime(attr.value) as string
       break
     case Types.MAP:
+      val = attr.value
+      break
+    case Types.POINT:
       val = attr.value
       break
     default:

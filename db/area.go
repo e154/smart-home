@@ -55,8 +55,8 @@ func (d *Area) TableName() string {
 }
 
 // Add ...
-func (n *Areas) Add(area *Area) (id int64, err error) {
-	if err = n.Db.Create(&area).Error; err != nil {
+func (n *Areas) Add(ctx context.Context, area *Area) (id int64, err error) {
+	if err = n.Db.WithContext(ctx).Create(&area).Error; err != nil {
 		var pgErr *pq.Error
 		if errors.As(err, &pgErr) {
 			switch pgErr.Code {
@@ -77,10 +77,10 @@ func (n *Areas) Add(area *Area) (id int64, err error) {
 }
 
 // GetByName ...
-func (n *Areas) GetByName(name string) (area *Area, err error) {
+func (n *Areas) GetByName(ctx context.Context, name string) (area *Area, err error) {
 
 	area = &Area{}
-	err = n.Db.Model(area).
+	err = n.Db.WithContext(ctx).Model(area).
 		Where("name = ?", name).
 		First(&area).
 		Error
@@ -92,9 +92,9 @@ func (n *Areas) GetByName(name string) (area *Area, err error) {
 }
 
 // Search ...
-func (n *Areas) Search(query string, limit, offset int) (list []*Area, total int64, err error) {
+func (n *Areas) Search(ctx context.Context, query string, limit, offset int) (list []*Area, total int64, err error) {
 
-	q := n.Db.Model(&Area{}).
+	q := n.Db.WithContext(ctx).Model(&Area{}).
 		Where("name LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
@@ -116,22 +116,22 @@ func (n *Areas) Search(query string, limit, offset int) (list []*Area, total int
 }
 
 // DeleteByName ...
-func (n *Areas) DeleteByName(name string) (err error) {
+func (n *Areas) DeleteByName(ctx context.Context, name string) (err error) {
 	if name == "" {
 		err = errors.Wrap(apperr.ErrAreaDelete, "zero name")
 		return
 	}
 
-	if err = n.Db.Delete(&Area{}, "name = ?", name).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Delete(&Area{}, "name = ?", name).Error; err != nil {
 		err = errors.Wrap(apperr.ErrAreaDelete, "zero name")
 	}
 	return
 }
 
 // Clean ...
-func (n *Areas) Clean() (err error) {
+func (n *Areas) Clean(ctx context.Context) (err error) {
 
-	err = n.Db.Exec(`delete 
+	err = n.Db.WithContext(ctx).Exec(`delete 
 from areas
 where id not in (
     select DISTINCT me.area_id
@@ -148,8 +148,8 @@ where id not in (
 }
 
 // Update ...
-func (n *Areas) Update(m *Area) (err error) {
-	err = n.Db.Model(&Area{Id: m.Id}).Updates(map[string]interface{}{
+func (n *Areas) Update(ctx context.Context, m *Area) (err error) {
+	err = n.Db.WithContext(ctx).Model(&Area{Id: m.Id}).Updates(map[string]interface{}{
 		"name":        m.Name,
 		"description": m.Description,
 		"payload":     m.Payload,
@@ -163,15 +163,15 @@ func (n *Areas) Update(m *Area) (err error) {
 }
 
 // List ...
-func (n *Areas) List(limit, offset int, orderBy, sort string) (list []*Area, total int64, err error) {
+func (n *Areas) List(ctx context.Context, limit, offset int, orderBy, sort string) (list []*Area, total int64, err error) {
 
-	if err = n.Db.Model(Area{}).Count(&total).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(Area{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrAreaList, err.Error())
 		return
 	}
 
 	list = make([]*Area, 0)
-	q := n.Db.Model(&Area{}).
+	q := n.Db.WithContext(ctx).Model(&Area{}).
 		Limit(limit).
 		Offset(offset)
 
@@ -191,9 +191,9 @@ func (n *Areas) List(limit, offset int, orderBy, sort string) (list []*Area, tot
 }
 
 // GetById ...
-func (n *Areas) GetById(areaId int64) (area *Area, err error) {
+func (n *Areas) GetById(ctx context.Context, areaId int64) (area *Area, err error) {
 	area = &Area{Id: areaId}
-	if err = n.Db.First(&area).Error; err != nil {
+	if err = n.Db.WithContext(ctx).First(&area).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			err = errors.Wrap(apperr.ErrAreaNotFound, fmt.Sprintf("id \"%d\"", areaId))
 			return

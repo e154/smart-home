@@ -85,6 +85,8 @@ const getValue = (attr: Attribute): any => {
   switch (attr.type) {
     case 'STRING':
       return attr.string;
+    case 'POINT':
+      return attr.point;
     case 'INT':
       return attr.int;
     case 'FLOAT':

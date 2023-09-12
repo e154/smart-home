@@ -19,6 +19,7 @@
 package zigbee2mqtt
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"sync"
@@ -65,8 +66,8 @@ func New() supervisor.Pluggable {
 }
 
 // Load ...
-func (p *plugin) Load(service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(service); err != nil {
+func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
+	if err = p.Plugin.Load(ctx, service); err != nil {
 		return
 	}
 
@@ -80,8 +81,8 @@ func (p *plugin) Load(service supervisor.Service) (err error) {
 }
 
 // Unload ...
-func (p plugin) Unload() (err error) {
-	if err = p.Plugin.Unload(); err != nil {
+func (p plugin) Unload(ctx context.Context) (err error) {
+	if err = p.Plugin.Unload(ctx); err != nil {
 		return
 	}
 
@@ -130,7 +131,7 @@ func (p *plugin) addOrUpdateEntity(entity *m.Entity, attributes m.AttributeValue
 	p.Supervisor.Spawn(p.actors[name].Spawn)
 
 	var br *m.Zigbee2mqtt
-	if br, err = p.Adaptors.Zigbee2mqtt.GetById(actor.zigbee2mqttDevice.Zigbee2mqttId); err != nil {
+	if br, err = p.Adaptors.Zigbee2mqtt.GetById(context.Background(), actor.zigbee2mqttDevice.Zigbee2mqttId); err != nil {
 		return
 	}
 

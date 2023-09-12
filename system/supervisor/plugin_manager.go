@@ -19,6 +19,7 @@
 package supervisor
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/e154/smart-home/adaptors"
@@ -39,19 +40,19 @@ type pluginManager struct {
 }
 
 // Start ...
-func (p *pluginManager) Start() {
+func (p *pluginManager) Start(ctx context.Context) {
 	if p.isStarted.Load() {
 		return
 	}
 	p.isStarted.Store(true)
 
-	p.loadPlugins()
+	p.loadPlugins(ctx)
 
 	log.Info("Started")
 }
 
 // Shutdown ...
-func (p *pluginManager) Shutdown() {
+func (p *pluginManager) Shutdown(ctx context.Context) {
 
 	if !p.isStarted.Load() {
 		return
@@ -65,7 +66,7 @@ func (p *pluginManager) Shutdown() {
 		log.Infof("unload plugin '%s'", name)
 		if item, ok := pluginList.Load(name); ok {
 			plugin := item.(Pluggable)
-			_ = plugin.Unload()
+			_ = plugin.Unload(ctx)
 		}
 		p.enabledPlugins[name] = false
 	}
@@ -93,7 +94,7 @@ func (p *pluginManager) getPlugin(name string) (plugin Pluggable, err error) {
 	return
 }
 
-func (p *pluginManager) loadPlugins() {
+func (p *pluginManager) loadPlugins(ctx context.Context) {
 
 	var page int64
 	var loadList []*m.Plugin
@@ -101,14 +102,14 @@ func (p *pluginManager) loadPlugins() {
 	var err error
 
 LOOP:
-	loadList, _, err = p.adaptors.Plugin.List(perPage, perPage*page, "", "", true)
+	loadList, _, err = p.adaptors.Plugin.List(context.Background(), perPage, perPage*page, "", "", true)
 	if err != nil {
 		log.Error(err.Error())
 		return
 	}
 
 	for _, pl := range loadList {
-		if err = p.loadPlugin(pl.Name); err != nil {
+		if err = p.loadPlugin(ctx, pl.Name); err != nil {
 			log.Errorf("plugin name '%s', %s", pl.Name, err.Error())
 		}
 	}
@@ -121,7 +122,7 @@ LOOP:
 	log.Info("all plugins loaded ...")
 }
 
-func (p *pluginManager) loadPlugin(name string) (err error) {
+func (p *pluginManager) loadPlugin(ctx context.Context, name string) (err error) {
 
 	if p.enabledPlugins[name] {
 		err = errors.Wrap(ErrPluginIsLoaded, name)
@@ -130,7 +131,7 @@ func (p *pluginManager) loadPlugin(name string) (err error) {
 	if item, ok := pluginList.Load(name); ok {
 		plugin := item.(Pluggable)
 		log.Infof("load plugin '%v'", plugin.Name())
-		if err = plugin.Load(p.service); err != nil {
+		if err = plugin.Load(ctx, p.service); err != nil {
 			err = errors.Wrap(err, "load plugin")
 			return
 		}
@@ -148,7 +149,7 @@ func (p *pluginManager) loadPlugin(name string) (err error) {
 	return
 }
 
-func (p *pluginManager) unloadPlugin(name string) (err error) {
+func (p *pluginManager) unloadPlugin(ctx context.Context, name string) (err error) {
 
 	if !p.enabledPlugins[name] {
 		err = errors.Wrap(ErrPluginNotLoaded, name)
@@ -158,7 +159,7 @@ func (p *pluginManager) unloadPlugin(name string) (err error) {
 	if item, ok := pluginList.Load(name); ok {
 		plugin := item.(Pluggable)
 		log.Infof("unload plugin %v", plugin.Name())
-		_ = plugin.Unload()
+		_ = plugin.Unload(ctx)
 	} else {
 		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("name %s", name))
 	}
@@ -173,9 +174,9 @@ func (p *pluginManager) unloadPlugin(name string) (err error) {
 }
 
 // Install ...
-func (p *pluginManager) Install(t string) {
+func (p *pluginManager) Install(ctx context.Context, t string) {
 
-	pl, _ := p.adaptors.Plugin.GetByName(t)
+	pl, _ := p.adaptors.Plugin.GetByName(context.Background(), t)
 	if pl.Enabled {
 		return
 	}
@@ -199,14 +200,14 @@ func (p *pluginManager) Install(t string) {
 		return
 	}
 
-	_ = p.adaptors.Plugin.CreateOrUpdate(&m.Plugin{
+	_ = p.adaptors.Plugin.CreateOrUpdate(context.Background(), &m.Plugin{
 		Name:    plugin.Name(),
 		Version: plugin.Version(),
 		Enabled: true,
 		System:  plugin.Type() == PluginBuiltIn,
 	})
 
-	if err = p.loadPlugin(plugin.Name()); err != nil {
+	if err = p.loadPlugin(ctx, plugin.Name()); err != nil {
 		log.Error(err.Error())
 	}
 }
@@ -217,8 +218,8 @@ func (p *pluginManager) Uninstall(name string) {
 }
 
 // EnablePlugin ...
-func (p *pluginManager) EnablePlugin(name string) (err error) {
-	if err = p.loadPlugin(name); err != nil {
+func (p *pluginManager) EnablePlugin(ctx context.Context, name string) (err error) {
+	if err = p.loadPlugin(ctx, name); err != nil {
 		return
 	}
 	if _, ok := pluginList.Load(name); !ok {
@@ -226,20 +227,20 @@ func (p *pluginManager) EnablePlugin(name string) (err error) {
 		return
 	}
 	var plugin *m.Plugin
-	if plugin, err = p.adaptors.Plugin.GetByName(name); err != nil {
+	if plugin, err = p.adaptors.Plugin.GetByName(context.Background(), name); err != nil {
 		err = errors.Wrap(apperr.ErrPluginGet, fmt.Sprintf("name %s", name))
 		return
 	}
 	plugin.Enabled = true
-	if err = p.adaptors.Plugin.CreateOrUpdate(plugin); err != nil {
+	if err = p.adaptors.Plugin.CreateOrUpdate(context.Background(), plugin); err != nil {
 		err = errors.Wrap(apperr.ErrPluginUpdate, fmt.Sprintf("name %s", name))
 	}
 	return
 }
 
 // DisablePlugin ...
-func (p *pluginManager) DisablePlugin(name string) (err error) {
-	if err = p.unloadPlugin(name); err != nil {
+func (p *pluginManager) DisablePlugin(ctx context.Context, name string) (err error) {
+	if err = p.unloadPlugin(ctx, name); err != nil {
 		return
 	}
 	if _, ok := pluginList.Load(name); !ok {
@@ -247,12 +248,12 @@ func (p *pluginManager) DisablePlugin(name string) (err error) {
 		return
 	}
 	var plugin *m.Plugin
-	if plugin, err = p.adaptors.Plugin.GetByName(name); err != nil {
+	if plugin, err = p.adaptors.Plugin.GetByName(context.Background(), name); err != nil {
 		err = errors.Wrap(apperr.ErrPluginGet, fmt.Sprintf("name %s", name))
 		return
 	}
 	plugin.Enabled = false
-	if err = p.adaptors.Plugin.CreateOrUpdate(plugin); err != nil {
+	if err = p.adaptors.Plugin.CreateOrUpdate(context.Background(), plugin); err != nil {
 		err = errors.Wrap(apperr.ErrPluginUpdate, fmt.Sprintf("name %s", name))
 	}
 	return

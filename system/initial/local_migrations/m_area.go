@@ -34,14 +34,14 @@ func (n *MigrationAreas) Up(ctx context.Context, adaptors *adaptors.Adaptors) (e
 }
 
 func (n *MigrationAreas) addArea(name, desc string) (area *m.Area, err error) {
-	if area, err = n.adaptors.Area.GetByName(name); err == nil {
+	if area, err = n.adaptors.Area.GetByName(context.Background(), name); err == nil {
 		return
 	}
 	area = &m.Area{
 		Name:        name,
 		Description: desc,
 	}
-	area.Id, err = n.adaptors.Area.Add(area)
+	area.Id, err = n.adaptors.Area.Add(context.Background(), area)
 	So(err, ShouldBeNil)
 	return
 }

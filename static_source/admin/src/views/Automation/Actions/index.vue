@@ -17,12 +17,14 @@ import {useEmitt} from "@/hooks/web/useEmitt";
 import {EventActionCompleted, EventStateChange, EventTriggerActivated} from "@/api/stream_types";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
+import {useCache} from "@/hooks/web/useCache";
 
 const {push, currentRoute} = useRouter()
 const remember = ref(false)
 const {register, elFormRef, methods} = useForm()
 const appStore = useAppStore()
 const {t} = useI18n()
+const { wsCache } = useCache()
 const isMobile = computed(() => appStore.getMobile)
 
 const dialogSource = ref("")
@@ -42,10 +44,12 @@ interface Params {
   sort?: string;
 }
 
+const cachePref = 'actions'
 const tableObject = reactive<TableObject>(
     {
       tableList: [],
       loading: false,
+      sort: wsCache.get(cachePref+'Sort') || '-createdAt'
     }
 );
 
@@ -120,14 +124,18 @@ const columns: TableColumn[] = [
   },
 ]
 const paginationObj = ref<Pagination>({
-  currentPage: 1,
-  pageSize: 50,
+  currentPage: wsCache.get(cachePref+'CurrentPage') || 1,
+  pageSize: wsCache.get(cachePref+'PageSize') || 50,
   total: 0,
   pageSizes: [50, 100, 150, 250],
 })
 
 const getList = async () => {
   tableObject.loading = true
+
+  wsCache.set(cachePref+'CurrentPage', paginationObj.value.currentPage)
+  wsCache.set(cachePref+'PageSize', paginationObj.value.pageSize)
+  wsCache.set(cachePref+'Sort', tableObject.sort)
 
   let params: Params = {
     page: paginationObj.value.currentPage,

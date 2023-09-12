@@ -19,6 +19,7 @@
 package adaptors
 
 import (
+	"context"
 	"encoding/json"
 
 	"gorm.io/gorm"
@@ -30,21 +31,21 @@ import (
 
 // IEntity ...
 type IEntity interface {
-	Add(ver *m.Entity) (err error)
-	GetById(id common.EntityId, preloadMetric ...bool) (ver *m.Entity, err error)
-	GetByIds(ids []common.EntityId, preloadMetric ...bool) (ver []*m.Entity, err error)
-	GetByIdsSimple(ids []common.EntityId) (list []*m.Entity, err error)
-	Delete(id common.EntityId) (err error)
-	List(limit, offset int64, orderBy, sort string, autoLoad bool, query, plugin *string, areaId *int64) (list []*m.Entity, total int64, err error)
-	GetByType(t string, limit, offset int64) (list []*m.Entity, err error)
-	Update(ver *m.Entity) (err error)
-	UpdateSettings(entityId common.EntityId, settings m.Attributes) (err error)
-	Search(query string, limit, offset int64) (list []*m.Entity, total int64, err error)
-	AppendMetric(entityId common.EntityId, metric *m.Metric) (err error)
-	DeleteMetric(entityId common.EntityId, metric *m.Metric) (err error)
-	UpdateAutoload(entityId common.EntityId, autoLoad bool) (err error)
-	Import(entity *m.Entity) (err error)
-	preloadMetric(ver *m.Entity)
+	Add(ctx context.Context, ver *m.Entity) (err error)
+	GetById(ctx context.Context, id common.EntityId, preloadMetric ...bool) (ver *m.Entity, err error)
+	GetByIds(ctx context.Context, ids []common.EntityId, preloadMetric ...bool) (ver []*m.Entity, err error)
+	GetByIdsSimple(ctx context.Context, ids []common.EntityId) (list []*m.Entity, err error)
+	Delete(ctx context.Context, id common.EntityId) (err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string, autoLoad bool, query, plugin *string, areaId *int64) (list []*m.Entity, total int64, err error)
+	GetByType(ctx context.Context, t string, limit, offset int64) (list []*m.Entity, err error)
+	Update(ctx context.Context, ver *m.Entity) (err error)
+	UpdateSettings(ctx context.Context, entityId common.EntityId, settings m.Attributes) (err error)
+	Search(ctx context.Context, query string, limit, offset int64) (list []*m.Entity, total int64, err error)
+	AppendMetric(ctx context.Context, entityId common.EntityId, metric *m.Metric) (err error)
+	DeleteMetric(ctx context.Context, entityId common.EntityId, metric *m.Metric) (err error)
+	UpdateAutoload(ctx context.Context, entityId common.EntityId, autoLoad bool) (err error)
+	Import(ctx context.Context, entity *m.Entity) (err error)
+	preloadMetric(ctx context.Context, ver *m.Entity)
 	fromDb(dbVer *db.Entity) (ver *m.Entity)
 	toDb(ver *m.Entity) (dbVer *db.Entity)
 }
@@ -65,7 +66,7 @@ func GetEntityAdaptor(d *gorm.DB) IEntity {
 }
 
 // Add ...
-func (n *Entity) Add(ver *m.Entity) (err error) {
+func (n *Entity) Add(ctx context.Context, ver *m.Entity) (err error) {
 
 	transaction := true
 	tx := n.db.Begin()
@@ -84,7 +85,7 @@ func (n *Entity) Add(ver *m.Entity) (err error) {
 	}()
 
 	table := db.Entities{Db: tx}
-	if err = table.Add(n.toDb(ver)); err != nil {
+	if err = table.Add(ctx, n.toDb(ver)); err != nil {
 		return
 	}
 
@@ -94,7 +95,7 @@ func (n *Entity) Add(ver *m.Entity) (err error) {
 			ver.Actions[i].EntityId = ver.Id
 		}
 		entityAction := GetEntityActionAdaptor(tx)
-		if err = entityAction.AddMultiple(ver.Actions); err != nil {
+		if err = entityAction.AddMultiple(ctx, ver.Actions); err != nil {
 			return
 		}
 	}
@@ -105,7 +106,7 @@ func (n *Entity) Add(ver *m.Entity) (err error) {
 			ver.States[i].EntityId = ver.Id
 		}
 		stateAdaptor := GetEntityStateAdaptor(tx)
-		if err = stateAdaptor.AddMultiple(ver.States); err != nil {
+		if err = stateAdaptor.AddMultiple(ctx, ver.States); err != nil {
 			return
 		}
 	}
@@ -113,7 +114,7 @@ func (n *Entity) Add(ver *m.Entity) (err error) {
 	//metrics
 	metricAdaptor := GetMetricAdaptor(tx, nil)
 	for _, metric := range ver.Metrics {
-		if err = table.AppendMetric(ver.Id, metricAdaptor.toDb(metric)); err != nil {
+		if err = table.AppendMetric(ctx, ver.Id, metricAdaptor.toDb(metric)); err != nil {
 			return
 		}
 	}
@@ -121,7 +122,7 @@ func (n *Entity) Add(ver *m.Entity) (err error) {
 	//scripts
 	scriptAdaptor := GetScriptAdaptor(tx)
 	for _, script := range ver.Scripts {
-		if err = table.AppendScript(ver.Id, scriptAdaptor.toDb(script)); err != nil {
+		if err = table.AppendScript(ctx, ver.Id, scriptAdaptor.toDb(script)); err != nil {
 			return
 		}
 	}
@@ -130,7 +131,7 @@ func (n *Entity) Add(ver *m.Entity) (err error) {
 }
 
 // Import ...
-func (n *Entity) Import(ver *m.Entity) (err error) {
+func (n *Entity) Import(ctx context.Context, ver *m.Entity) (err error) {
 
 	transaction := true
 	tx := n.db.Begin()
@@ -152,8 +153,8 @@ func (n *Entity) Import(ver *m.Entity) (err error) {
 	if ver.Area != nil {
 		areaAdaptor := GetAreaAdaptor(tx)
 		var area *m.Area
-		if area, err = areaAdaptor.GetByName(ver.Area.Name); err != nil {
-			if ver.Area.Id, err = areaAdaptor.Add(ver.Area); err != nil {
+		if area, err = areaAdaptor.GetByName(ctx, ver.Area.Name); err != nil {
+			if ver.Area.Id, err = areaAdaptor.Add(ctx, ver.Area); err != nil {
 				return
 			}
 		} else {
@@ -165,7 +166,7 @@ func (n *Entity) Import(ver *m.Entity) (err error) {
 
 	// entity
 	table := db.Entities{Db: tx}
-	if err = table.Add(n.toDb(ver)); err != nil {
+	if err = table.Add(ctx, n.toDb(ver)); err != nil {
 		return
 	}
 
@@ -176,11 +177,11 @@ func (n *Entity) Import(ver *m.Entity) (err error) {
 		for i, action := range ver.Actions {
 			if action.Script != nil {
 				var foundedScript *m.Script
-				if foundedScript, err = scriptAdaptor.GetByName(action.Script.Name); err == nil {
+				if foundedScript, err = scriptAdaptor.GetByName(ctx, action.Script.Name); err == nil {
 					action.Script = foundedScript
 				} else {
 					action.Script.Id = 0
-					if action.Script.Id, err = scriptAdaptor.Add(action.Script); err != nil {
+					if action.Script.Id, err = scriptAdaptor.Add(ctx, action.Script); err != nil {
 						return
 					}
 				}
@@ -188,7 +189,7 @@ func (n *Entity) Import(ver *m.Entity) (err error) {
 			ver.Actions[i].EntityId = ver.Id
 		}
 		entityAction := GetEntityActionAdaptor(tx)
-		if err = entityAction.AddMultiple(ver.Actions); err != nil {
+		if err = entityAction.AddMultiple(ctx, ver.Actions); err != nil {
 			return
 		}
 	}
@@ -199,7 +200,7 @@ func (n *Entity) Import(ver *m.Entity) (err error) {
 			ver.States[i].EntityId = ver.Id
 		}
 		stateAdaptor := GetEntityStateAdaptor(tx)
-		if err = stateAdaptor.AddMultiple(ver.States); err != nil {
+		if err = stateAdaptor.AddMultiple(ctx, ver.States); err != nil {
 			return
 		}
 	}
@@ -207,10 +208,10 @@ func (n *Entity) Import(ver *m.Entity) (err error) {
 	//metrics
 	metricAdaptor := GetMetricAdaptor(tx, nil)
 	for _, metric := range ver.Metrics {
-		if metric.Id, err = metricAdaptor.Add(metric); err != nil {
+		if metric.Id, err = metricAdaptor.Add(ctx, metric); err != nil {
 			return
 		}
-		if err = table.AppendMetric(ver.Id, metricAdaptor.toDb(metric)); err != nil {
+		if err = table.AppendMetric(ctx, ver.Id, metricAdaptor.toDb(metric)); err != nil {
 			return
 		}
 	}
@@ -218,15 +219,15 @@ func (n *Entity) Import(ver *m.Entity) (err error) {
 	// scripts
 	for _, script := range ver.Scripts {
 		var foundedScript *m.Script
-		if foundedScript, err = scriptAdaptor.GetByName(script.Name); err == nil {
+		if foundedScript, err = scriptAdaptor.GetByName(ctx, script.Name); err == nil {
 			script = foundedScript
 		} else {
 			script.Id = 0
-			if script.Id, err = scriptAdaptor.Add(script); err != nil {
+			if script.Id, err = scriptAdaptor.Add(ctx, script); err != nil {
 				return
 			}
 		}
-		if err = table.AppendScript(ver.Id, scriptAdaptor.toDb(script)); err != nil {
+		if err = table.AppendScript(ctx, ver.Id, scriptAdaptor.toDb(script)); err != nil {
 			return
 		}
 	}
@@ -234,34 +235,34 @@ func (n *Entity) Import(ver *m.Entity) (err error) {
 }
 
 // GetById ...
-func (n *Entity) GetById(id common.EntityId, preloadMetric ...bool) (ver *m.Entity, err error) {
+func (n *Entity) GetById(ctx context.Context, id common.EntityId, preloadMetric ...bool) (ver *m.Entity, err error) {
 
 	var dbVer *db.Entity
-	if dbVer, err = n.table.GetById(id); err != nil {
+	if dbVer, err = n.table.GetById(ctx, id); err != nil {
 		return
 	}
 
 	ver = n.fromDb(dbVer)
 
 	if len(preloadMetric) > 0 && preloadMetric[0] {
-		n.preloadMetric(ver)
+		n.preloadMetric(ctx, ver)
 	}
 
 	return
 }
 
 // GetByIds ...
-func (n *Entity) GetByIds(ids []common.EntityId, preloadMetric ...bool) (list []*m.Entity, err error) {
+func (n *Entity) GetByIds(ctx context.Context, ids []common.EntityId, preloadMetric ...bool) (list []*m.Entity, err error) {
 
 	var dbList []*db.Entity
-	if dbList, err = n.table.GetByIds(ids); err != nil {
+	if dbList, err = n.table.GetByIds(ctx, ids); err != nil {
 		return
 	}
 	list = make([]*m.Entity, len(dbList))
 	for i, dbVer := range dbList {
 		ver := n.fromDb(dbVer)
 		if len(preloadMetric) > 0 && preloadMetric[0] {
-			n.preloadMetric(ver)
+			n.preloadMetric(ctx, ver)
 		}
 		list[i] = ver
 	}
@@ -270,10 +271,10 @@ func (n *Entity) GetByIds(ids []common.EntityId, preloadMetric ...bool) (list []
 }
 
 // GetByIdsSimple ...
-func (n *Entity) GetByIdsSimple(ids []common.EntityId) (list []*m.Entity, err error) {
+func (n *Entity) GetByIdsSimple(ctx context.Context, ids []common.EntityId) (list []*m.Entity, err error) {
 
 	var dbList []*db.Entity
-	if dbList, err = n.table.GetByIdsSimple(ids); err != nil {
+	if dbList, err = n.table.GetByIdsSimple(ctx, ids); err != nil {
 		return
 	}
 	list = make([]*m.Entity, len(dbList))
@@ -285,7 +286,7 @@ func (n *Entity) GetByIdsSimple(ids []common.EntityId) (list []*m.Entity, err er
 }
 
 // Delete ...
-func (n *Entity) Delete(id common.EntityId) (err error) {
+func (n *Entity) Delete(ctx context.Context, id common.EntityId) (err error) {
 
 	transaction := true
 	tx := n.db.Begin()
@@ -304,7 +305,7 @@ func (n *Entity) Delete(id common.EntityId) (err error) {
 	}()
 
 	table := &db.Entities{Db: tx}
-	if err = table.Delete(id); err != nil {
+	if err = table.Delete(ctx, id); err != nil {
 		return
 	}
 
@@ -312,10 +313,10 @@ func (n *Entity) Delete(id common.EntityId) (err error) {
 }
 
 // List ...
-func (n *Entity) List(limit, offset int64, orderBy, sort string, autoLoad bool, query, plugin *string, areaId *int64) (list []*m.Entity, total int64, err error) {
+func (n *Entity) List(ctx context.Context, limit, offset int64, orderBy, sort string, autoLoad bool, query, plugin *string, areaId *int64) (list []*m.Entity, total int64, err error) {
 
 	var dbList []*db.Entity
-	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort, autoLoad, query, plugin, areaId); err != nil {
+	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort, autoLoad, query, plugin, areaId); err != nil {
 		return
 	}
 
@@ -328,10 +329,10 @@ func (n *Entity) List(limit, offset int64, orderBy, sort string, autoLoad bool, 
 }
 
 // GetByType ...
-func (n *Entity) GetByType(t string, limit, offset int64) (list []*m.Entity, err error) {
+func (n *Entity) GetByType(ctx context.Context, t string, limit, offset int64) (list []*m.Entity, err error) {
 
 	var dbList []*db.Entity
-	if dbList, err = n.table.GetByType(t, int(limit), int(offset)); err != nil {
+	if dbList, err = n.table.GetByType(ctx, t, int(limit), int(offset)); err != nil {
 		return
 	}
 
@@ -344,19 +345,19 @@ func (n *Entity) GetByType(t string, limit, offset int64) (list []*m.Entity, err
 }
 
 // UpdateSettings ...
-func (n *Entity) UpdateSettings(entity common.EntityId, settings m.Attributes) (err error) {
+func (n *Entity) UpdateSettings(ctx context.Context, entity common.EntityId, settings m.Attributes) (err error) {
 	b, _ := json.Marshal(m.EntitySettings{
 		Settings: settings,
 	})
-	err = n.table.UpdateSettings(entity, b)
+	err = n.table.UpdateSettings(ctx, entity, b)
 	return
 }
 
 // Update ...
-func (n *Entity) Update(ver *m.Entity) (err error) {
+func (n *Entity) Update(ctx context.Context, ver *m.Entity) (err error) {
 
 	var oldVer *m.Entity
-	if oldVer, err = n.GetById(ver.Id); err != nil {
+	if oldVer, err = n.GetById(ctx, ver.Id); err != nil {
 		return
 	}
 
@@ -377,17 +378,17 @@ func (n *Entity) Update(ver *m.Entity) (err error) {
 	}()
 
 	table := db.Entities{Db: tx}
-	if err = table.Update(n.toDb(ver)); err != nil {
+	if err = table.Update(ctx, n.toDb(ver)); err != nil {
 		return
 	}
 
 	entityActionAdaptor := GetEntityActionAdaptor(tx)
-	if err = entityActionAdaptor.DeleteByEntityId(ver.Id); err != nil {
+	if err = entityActionAdaptor.DeleteByEntityId(ctx, ver.Id); err != nil {
 		return
 	}
 
 	entityStateAdaptor := GetEntityStateAdaptor(tx)
-	if err = entityStateAdaptor.DeleteByEntityId(ver.Id); err != nil {
+	if err = entityStateAdaptor.DeleteByEntityId(ctx, ver.Id); err != nil {
 		return
 	}
 
@@ -395,7 +396,7 @@ func (n *Entity) Update(ver *m.Entity) (err error) {
 	for _, action := range ver.Actions {
 		action.EntityId = ver.Id
 	}
-	if err = entityActionAdaptor.AddMultiple(ver.Actions); err != nil {
+	if err = entityActionAdaptor.AddMultiple(ctx, ver.Actions); err != nil {
 		log.Error(err.Error())
 		return
 	}
@@ -404,7 +405,7 @@ func (n *Entity) Update(ver *m.Entity) (err error) {
 	for _, state := range ver.States {
 		state.EntityId = ver.Id
 	}
-	if err = entityStateAdaptor.AddMultiple(ver.States); err != nil {
+	if err = entityStateAdaptor.AddMultiple(ctx, ver.States); err != nil {
 		log.Errorf(err.Error())
 		return
 	}
@@ -418,7 +419,7 @@ func (n *Entity) Update(ver *m.Entity) (err error) {
 			}
 		}
 		if !exist {
-			if err = n.table.DeleteMetric(oldVer.Id, oldMetric.Id); err != nil {
+			if err = n.table.DeleteMetric(ctx, oldVer.Id, oldMetric.Id); err != nil {
 				return
 			}
 		}
@@ -433,11 +434,11 @@ func (n *Entity) Update(ver *m.Entity) (err error) {
 			}
 		}
 		if !exist {
-			if err = n.table.AppendMetric(ver.Id, metricAdaptor.toDb(metric)); err != nil {
+			if err = n.table.AppendMetric(ctx, ver.Id, metricAdaptor.toDb(metric)); err != nil {
 				return
 			}
 		} else {
-			if err = metricAdaptor.Update(metric); err != nil {
+			if err = metricAdaptor.Update(ctx, metric); err != nil {
 				return
 			}
 		}
@@ -452,7 +453,7 @@ func (n *Entity) Update(ver *m.Entity) (err error) {
 			}
 		}
 		if !exist {
-			if err = n.table.DeleteScript(oldVer.Id, oldScript.Id); err != nil {
+			if err = n.table.DeleteScript(ctx, oldVer.Id, oldScript.Id); err != nil {
 				return
 			}
 		}
@@ -467,7 +468,7 @@ func (n *Entity) Update(ver *m.Entity) (err error) {
 			}
 		}
 		if !exist {
-			if err = n.table.AppendScript(ver.Id, scriptAdaptor.toDb(script)); err != nil {
+			if err = n.table.AppendScript(ctx, ver.Id, scriptAdaptor.toDb(script)); err != nil {
 				return
 			}
 		}
@@ -477,9 +478,9 @@ func (n *Entity) Update(ver *m.Entity) (err error) {
 }
 
 // Search ...
-func (n *Entity) Search(query string, limit, offset int64) (list []*m.Entity, total int64, err error) {
+func (n *Entity) Search(ctx context.Context, query string, limit, offset int64) (list []*m.Entity, total int64, err error) {
 	var dbList []*db.Entity
-	if dbList, total, err = n.table.Search(query, int(limit), int(offset)); err != nil {
+	if dbList, total, err = n.table.Search(ctx, query, int(limit), int(offset)); err != nil {
 		return
 	}
 
@@ -492,25 +493,25 @@ func (n *Entity) Search(query string, limit, offset int64) (list []*m.Entity, to
 }
 
 // AppendMetric ...
-func (n *Entity) AppendMetric(entityId common.EntityId, metric *m.Metric) (err error) {
+func (n *Entity) AppendMetric(ctx context.Context, entityId common.EntityId, metric *m.Metric) (err error) {
 	metricAdaptor := GetMetricAdaptor(n.db, nil)
-	err = n.table.AppendMetric(entityId, metricAdaptor.toDb(metric))
+	err = n.table.AppendMetric(ctx, entityId, metricAdaptor.toDb(metric))
 	return
 }
 
 // DeleteMetric ...
-func (n *Entity) DeleteMetric(entityId common.EntityId, metric *m.Metric) (err error) {
-	err = n.table.DeleteMetric(entityId, metric.Id)
+func (n *Entity) DeleteMetric(ctx context.Context, entityId common.EntityId, metric *m.Metric) (err error) {
+	err = n.table.DeleteMetric(ctx, entityId, metric.Id)
 	return
 }
 
 // UpdateAutoload ...
-func (n *Entity) UpdateAutoload(entityId common.EntityId, autoLoad bool) (err error) {
-	err = n.table.UpdateAutoload(entityId, autoLoad)
+func (n *Entity) UpdateAutoload(ctx context.Context, entityId common.EntityId, autoLoad bool) (err error) {
+	err = n.table.UpdateAutoload(ctx, entityId, autoLoad)
 	return
 }
 
-func (n *Entity) preloadMetric(ver *m.Entity) {
+func (n *Entity) preloadMetric(ctx context.Context, ver *m.Entity) {
 
 	var err error
 
@@ -526,7 +527,7 @@ func (n *Entity) preloadMetric(ver *m.Entity) {
 			optionItems[i] = item.Name
 		}
 
-		if ver.Metrics[i].Data, err = bucketMetricBucketAdaptor.SimpleListWithSoftRange(nil, nil, metric.Id, common.String(common.MetricRange24H.String()), optionItems); err != nil {
+		if ver.Metrics[i].Data, err = bucketMetricBucketAdaptor.SimpleListWithSoftRange(ctx, nil, nil, metric.Id, common.String(common.MetricRange24H.String()), optionItems); err != nil {
 			log.Error(err.Error())
 			return
 		}

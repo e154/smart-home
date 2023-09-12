@@ -19,6 +19,7 @@
 package mqtt_authenticator
 
 import (
+	"context"
 	"fmt"
 	"reflect"
 	"sync"
@@ -100,7 +101,7 @@ func (a *Authenticator) Authenticate(login string, pass interface{}) (err error)
 	}
 
 	var user *m.User
-	if user, err = a.adaptors.User.GetByNickname(login); err != nil {
+	if user, err = a.adaptors.User.GetByNickname(context.Background(), login); err != nil {
 		err = errors.Wrap(apperr.ErrUnauthorized, fmt.Sprintf("email %s", login))
 		return
 	} else if !user.CheckPass(password) {

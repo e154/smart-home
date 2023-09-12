@@ -53,11 +53,11 @@ func (n *ConditionEndpoint) Add(ctx context.Context, condition *m.Condition) (re
 		return
 	}
 
-	if condition.Id, err = n.adaptors.Condition.Add(condition); err != nil {
+	if condition.Id, err = n.adaptors.Condition.Add(ctx, condition); err != nil {
 		return
 	}
 
-	if result, err = n.adaptors.Condition.GetById(condition.Id); err != nil {
+	if result, err = n.adaptors.Condition.GetById(ctx, condition.Id); err != nil {
 		return
 	}
 
@@ -71,7 +71,7 @@ func (n *ConditionEndpoint) Add(ctx context.Context, condition *m.Condition) (re
 // GetById ...
 func (n *ConditionEndpoint) GetById(ctx context.Context, id int64) (result *m.Condition, err error) {
 
-	result, err = n.adaptors.Condition.GetById(id)
+	result, err = n.adaptors.Condition.GetById(ctx, id)
 
 	return
 }
@@ -79,7 +79,7 @@ func (n *ConditionEndpoint) GetById(ctx context.Context, id int64) (result *m.Co
 // Update ...
 func (n *ConditionEndpoint) Update(ctx context.Context, params *m.Condition) (result *m.Condition, errs validator.ValidationErrorsTranslations, err error) {
 
-	_, err = n.adaptors.Condition.GetById(params.Id)
+	_, err = n.adaptors.Condition.GetById(ctx, params.Id)
 	if err != nil {
 		return
 	}
@@ -89,11 +89,11 @@ func (n *ConditionEndpoint) Update(ctx context.Context, params *m.Condition) (re
 		return
 	}
 
-	if err = n.adaptors.Condition.Update(params); err != nil {
+	if err = n.adaptors.Condition.Update(ctx, params); err != nil {
 		return
 	}
 
-	if result, err = n.adaptors.Condition.GetById(params.Id); err != nil {
+	if result, err = n.adaptors.Condition.GetById(ctx, params.Id); err != nil {
 		return
 	}
 
@@ -107,7 +107,7 @@ func (n *ConditionEndpoint) Update(ctx context.Context, params *m.Condition) (re
 // GetList ...
 func (n *ConditionEndpoint) GetList(ctx context.Context, pagination common.PageParams) (result []*m.Condition, total int64, err error) {
 
-	result, total, err = n.adaptors.Condition.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
+	result, total, err = n.adaptors.Condition.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
 
 	return
 }
@@ -116,12 +116,12 @@ func (n *ConditionEndpoint) GetList(ctx context.Context, pagination common.PageP
 func (n *ConditionEndpoint) Delete(ctx context.Context, id int64) (err error) {
 
 	var area *m.Condition
-	area, err = n.adaptors.Condition.GetById(id)
+	area, err = n.adaptors.Condition.GetById(ctx, id)
 	if err != nil {
 		return
 	}
 
-	if err = n.adaptors.Condition.Delete(area.Id); err != nil {
+	if err = n.adaptors.Condition.Delete(ctx, area.Id); err != nil {
 		return
 	}
 
@@ -139,7 +139,7 @@ func (n *ConditionEndpoint) Search(ctx context.Context, query string, limit, off
 		limit = common.DefaultPageSize
 	}
 
-	result, total, err = n.adaptors.Condition.Search(query, int(limit), int(offset))
+	result, total, err = n.adaptors.Condition.Search(ctx, query, int(limit), int(offset))
 
 	return
 }

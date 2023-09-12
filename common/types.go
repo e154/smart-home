@@ -188,6 +188,8 @@ const (
 	AttributeFloat = AttributeType("float")
 	// AttributeImage ...
 	AttributeImage = AttributeType("image")
+	// AttributePoint ...
+	AttributePoint = AttributeType("point")
 	//DEPRECATED
 	AttributeArray = AttributeType("array")
 	//DEPRECATED

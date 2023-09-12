@@ -19,6 +19,8 @@
 package adaptors
 
 import (
+	"context"
+
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/db"
@@ -29,9 +31,9 @@ import (
 
 // IEntityAction ...
 type IEntityAction interface {
-	Add(ver *m.EntityAction) (id int64, err error)
-	DeleteByEntityId(id common.EntityId) (err error)
-	AddMultiple(items []*m.EntityAction) (err error)
+	Add(ctx context.Context, ver *m.EntityAction) (id int64, err error)
+	DeleteByEntityId(ctx context.Context, id common.EntityId) (err error)
+	AddMultiple(ctx context.Context, items []*m.EntityAction) (err error)
 	fromDb(dbVer *db.EntityAction) (ver *m.EntityAction)
 	toDb(ver *m.EntityAction) (dbVer *db.EntityAction)
 }
@@ -52,10 +54,10 @@ func GetEntityActionAdaptor(d *gorm.DB) IEntityAction {
 }
 
 // Add ...
-func (n *EntityAction) Add(ver *m.EntityAction) (id int64, err error) {
+func (n *EntityAction) Add(ctx context.Context, ver *m.EntityAction) (id int64, err error) {
 
 	dbVer := n.toDb(ver)
-	if id, err = n.table.Add(dbVer); err != nil {
+	if id, err = n.table.Add(ctx, dbVer); err != nil {
 		return
 	}
 
@@ -63,13 +65,17 @@ func (n *EntityAction) Add(ver *m.EntityAction) (id int64, err error) {
 }
 
 // DeleteByEntityId ...
-func (n *EntityAction) DeleteByEntityId(id common.EntityId) (err error) {
-	err = n.table.DeleteByEntityId(id)
+func (n *EntityAction) DeleteByEntityId(ctx context.Context, id common.EntityId) (err error) {
+	err = n.table.DeleteByEntityId(ctx, id)
 	return
 }
 
 // AddMultiple ...
-func (n *EntityAction) AddMultiple(items []*m.EntityAction) (err error) {
+func (n *EntityAction) AddMultiple(ctx context.Context, items []*m.EntityAction) (err error) {
+
+	if len(items) == 0 {
+		return
+	}
 
 	insertRecords := make([]*db.EntityAction, 0, len(items))
 
@@ -80,7 +86,7 @@ func (n *EntityAction) AddMultiple(items []*m.EntityAction) (err error) {
 		insertRecords = append(insertRecords, n.toDb(ver))
 	}
 
-	if err = n.table.AddMultiple(insertRecords); err != nil {
+	if err = n.table.AddMultiple(ctx, insertRecords); err != nil {
 		err = errors.Wrap(apperr.ErrEntityActionAdd, err.Error())
 	}
 

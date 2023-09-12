@@ -69,7 +69,6 @@ test_system:
 	go test -v ./tests/plugins/weather_met
 	go test -v ./tests/plugins/weather_owm
 	go test -v ./tests/plugins/zigbee2mqtt
-	go test -v ./tests/plugins/zone
 
 test:
 	@echo MARK: unit tests

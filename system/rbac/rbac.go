@@ -116,7 +116,7 @@ func (f *AccessFilter) AuthInterceptor(ctx context.Context, req interface{}, inf
 
 	// check access filter
 	var accessList access_list.AccessList
-	if accessList, err = f.accessListService.GetFullAccessList(claims.RoleName); err != nil {
+	if accessList, err = f.accessListService.GetFullAccessList(ctx, claims.RoleName); err != nil {
 		return nil, f.internalServerError
 	}
 
@@ -130,7 +130,7 @@ func (f *AccessFilter) AuthInterceptor(ctx context.Context, req interface{}, inf
 }
 
 func (f *AccessFilter) getUser(userId int64, handler grpc.UnaryHandler, ctx context.Context, req interface{}) (interface{}, error) {
-	user, err := f.adaptors.User.GetById(userId)
+	user, err := f.adaptors.User.GetById(context.Background(), userId)
 	if err != nil {
 		return nil, f.internalServerError
 	}

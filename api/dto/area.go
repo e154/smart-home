@@ -144,8 +144,8 @@ func ToArea(area *m.Area) (obj *api.Area) {
 	}
 	for _, location := range area.Polygon {
 		obj.Polygon = append(obj.Polygon, &api.AreaLocation{
-			Lat: float32(location.Lat),
-			Lon: float32(location.Lon),
+			Lat: location.Lat,
+			Lon: location.Lon,
 		})
 	}
 	return

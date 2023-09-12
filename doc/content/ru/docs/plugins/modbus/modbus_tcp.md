@@ -100,13 +100,14 @@ result = ModbusTcp func, addr, count, command
 
 ```coffeescript
 # функция-обработчик события действий:
-entityAction = (entityId, actionName)->
+entityAction = (entityId, actionName, args)->
 ```
 
 |  значение  | описание  |
 |-------------|---------|
 | entityId | уникальное id устройства  |
 | actionName | системное наименование действия  |
+| args | Type: Attribute |
 
 {{< alert color="warning" >}}Объект **Action** доступен в скриптах действий и скриптах закрепленных за устройством.{{< /alert >}}
 ```coffeescript
@@ -151,7 +152,7 @@ checkStatus = ->
   print res.time
 
 # функция-обработчик события действий:
-entityAction = (entityId, actionName)->
+entityAction = (entityId, actionName, args)->
   switch actionName
     when 'ON' then doOnAction()
     when 'OFF' then doOffAction()

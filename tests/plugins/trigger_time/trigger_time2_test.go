@@ -19,16 +19,16 @@
 package trigger_time
 
 import (
+	"context"
 	"testing"
 	"time"
-
-	"github.com/e154/smart-home/common/events"
 
 	. "github.com/smartystreets/goconvey/convey"
 	"go.uber.org/atomic"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/triggers"
 	"github.com/e154/smart-home/system/automation"
@@ -83,10 +83,10 @@ entityAction = (entityId, actionName)->
 					Script:      task3Script,
 				},
 			}
-			err = adaptors.Entity.Add(sensorEnt)
+			err = adaptors.Entity.Add(context.Background(), sensorEnt)
 			ctx.So(err, ShouldBeNil)
 
-			sensorEnt, err = adaptors.Entity.GetById(sensorEnt.Id)
+			sensorEnt, err = adaptors.Entity.GetById(context.Background(), sensorEnt.Id)
 			ctx.So(err, ShouldBeNil)
 
 			eventBus.Publish("system/entities/"+sensorEnt.Id.String(), events.EventCreatedEntity{
@@ -114,7 +114,7 @@ entityAction = (entityId, actionName)->
 				EntityId:         common.NewEntityId(string(sensorEnt.Id)),
 				EntityActionName: common.String(sensorEnt.Actions[0].Name),
 			}
-			action.Id, err = adaptors.Action.Add(action)
+			action.Id, err = adaptors.Action.Add(context.Background(), action)
 			So(err, ShouldBeNil)
 
 			//TASK3

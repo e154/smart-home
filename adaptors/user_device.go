@@ -19,6 +19,7 @@
 package adaptors
 
 import (
+	"context"
 	"encoding/json"
 
 	"gorm.io/gorm"
@@ -29,9 +30,9 @@ import (
 
 // IUserDevice ...
 type IUserDevice interface {
-	Add(ver *m.UserDevice) (id int64, err error)
-	GetByUserId(userId int64) (list []*m.UserDevice, err error)
-	Delete(id int64) (err error)
+	Add(ctx context.Context, ver *m.UserDevice) (id int64, err error)
+	GetByUserId(ctx context.Context, userId int64) (list []*m.UserDevice, err error)
+	Delete(ctx context.Context, id int64) (err error)
 	fromDb(dbVer *db.UserDevice) (ver *m.UserDevice)
 	toDb(ver *m.UserDevice) (dbVer *db.UserDevice)
 }
@@ -52,9 +53,9 @@ func GetUserDeviceAdaptor(d *gorm.DB) IUserDevice {
 }
 
 // Add ...
-func (n *UserDevice) Add(ver *m.UserDevice) (id int64, err error) {
+func (n *UserDevice) Add(ctx context.Context, ver *m.UserDevice) (id int64, err error) {
 
-	if id, err = n.table.Add(n.toDb(ver)); err != nil {
+	if id, err = n.table.Add(ctx, n.toDb(ver)); err != nil {
 		return
 	}
 
@@ -62,10 +63,10 @@ func (n *UserDevice) Add(ver *m.UserDevice) (id int64, err error) {
 }
 
 // GetByUserId ...
-func (n *UserDevice) GetByUserId(userId int64) (list []*m.UserDevice, err error) {
+func (n *UserDevice) GetByUserId(ctx context.Context, userId int64) (list []*m.UserDevice, err error) {
 
 	var dbList []*db.UserDevice
-	if dbList, err = n.table.GetByUserId(userId); err != nil {
+	if dbList, err = n.table.GetByUserId(ctx, userId); err != nil {
 		return
 	}
 
@@ -77,8 +78,8 @@ func (n *UserDevice) GetByUserId(userId int64) (list []*m.UserDevice, err error)
 }
 
 // Delete ...
-func (n *UserDevice) Delete(id int64) (err error) {
-	err = n.table.Delete(id)
+func (n *UserDevice) Delete(ctx context.Context, id int64) (err error) {
+	err = n.table.Delete(ctx, id)
 	return
 }
 

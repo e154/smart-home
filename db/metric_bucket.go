@@ -19,6 +19,7 @@
 package db
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -49,15 +50,15 @@ func (d *MetricBucket) TableName() string {
 }
 
 // Add ...
-func (n MetricBuckets) Add(metric *MetricBucket) (err error) {
-	if err = n.Db.Create(&metric).Error; err != nil {
+func (n MetricBuckets) Add(ctx context.Context, metric *MetricBucket) (err error) {
+	if err = n.Db.WithContext(ctx).Create(&metric).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMetricBucketAdd, err.Error())
 	}
 	return
 }
 
 // SimpleListWithSoftRange ...
-func (n *MetricBuckets) SimpleListWithSoftRange(from, to time.Time, metricId int64, optionItems []string) (list []*MetricBucket, err error) {
+func (n *MetricBuckets) SimpleListWithSoftRange(ctx context.Context, from, to time.Time, metricId int64, optionItems []string) (list []*MetricBucket, err error) {
 	var num int64 = 1
 	t := from.Sub(to).Seconds()
 	if t > 3600 {
@@ -83,14 +84,14 @@ GROUP BY round(extract('epoch' from c.time) / %[1]d)
 order by time asc
 LIMIT 3600`
 	q = fmt.Sprintf(q, num)
-	if err = n.Db.Raw(q, metricId, from.Format(time.RFC3339), to.Format(time.RFC3339)).Scan(&list).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Raw(q, metricId, from.Format(time.RFC3339), to.Format(time.RFC3339)).Scan(&list).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMetricBucketGet, err.Error())
 	}
 	return
 }
 
 // SimpleListByRangeType ...
-func (n *MetricBuckets) SimpleListByRangeType(metricId int64, metricRange common.MetricRange, optionItems []string) (list []*MetricBucket, err error) {
+func (n *MetricBuckets) SimpleListByRangeType(ctx context.Context, metricId int64, metricRange common.MetricRange, optionItems []string) (list []*MetricBucket, err error) {
 	var str string
 	for i, item := range optionItems {
 		str += fmt.Sprintf(" '%s', trunc(avg((value ->> '%[1]s')::numeric), 2)", item)
@@ -158,7 +159,7 @@ where b.metric_id = ? and b.time > NOW() - interval '1 hour'
 limit 3600`
 	}
 	list = make([]*MetricBucket, 0)
-	if err = n.Db.Raw(q, metricId).Scan(&list).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Raw(q, metricId).Scan(&list).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMetricBucketGet, err.Error())
 	}
 
@@ -166,7 +167,7 @@ limit 3600`
 }
 
 // Simple24HPreview ...
-func (n *MetricBuckets) Simple24HPreview(metricId int64, optionItems []string) (list []*MetricBucket, err error) {
+func (n *MetricBuckets) Simple24HPreview(ctx context.Context, metricId int64, optionItems []string) (list []*MetricBucket, err error) {
 	list = make([]*MetricBucket, 0)
 	var str string
 	for i, item := range optionItems {
@@ -185,15 +186,15 @@ GROUP BY round(extract('epoch' from c.time) / 250)
 order by time asc
 LIMIT 345`
 
-	if err = n.Db.Raw(q, metricId).Scan(&list).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Raw(q, metricId).Scan(&list).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMetricBucketGet, err.Error())
 	}
 	return
 }
 
 // DeleteOldest ...
-func (n *MetricBuckets) DeleteOldest(days int) (err error) {
-	err = n.Db.Delete(&MetricBucket{}, fmt.Sprintf(`time < now() - interval '%d days'`, days)).Error
+func (n *MetricBuckets) DeleteOldest(ctx context.Context, days int) (err error) {
+	err = n.Db.WithContext(ctx).Delete(&MetricBucket{}, fmt.Sprintf(`time < now() - interval '%d days'`, days)).Error
 	if err != nil {
 		err = errors.Wrap(apperr.ErrMetricBucketDelete, err.Error())
 	}
@@ -201,32 +202,32 @@ func (n *MetricBuckets) DeleteOldest(days int) (err error) {
 }
 
 // DeleteByMetricId ...
-func (n MetricBuckets) DeleteByMetricId(metricId int64) (err error) {
-	if err = n.Db.Delete(&MetricBucket{}, "metric_id = ?", metricId).Error; err != nil {
+func (n MetricBuckets) DeleteByMetricId(ctx context.Context, metricId int64) (err error) {
+	if err = n.Db.WithContext(ctx).Delete(&MetricBucket{}, "metric_id = ?", metricId).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMetricBucketDelete, err.Error())
 	}
 	return
 }
 
 // DeleteById ...
-func (n MetricBuckets) DeleteById(id int64) (err error) {
-	if err = n.Db.Delete(&MetricBucket{}, "id = ?", id).Error; err != nil {
+func (n MetricBuckets) DeleteById(ctx context.Context, id int64) (err error) {
+	if err = n.Db.WithContext(ctx).Delete(&MetricBucket{}, "id = ?", id).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMetricBucketDelete, err.Error())
 	}
 	return
 }
 
 // CreateHypertable ...
-func (n MetricBuckets) CreateHypertable() (err error) {
-	if err = n.Db.Raw(`SELECT create_hypertable('metric_bucket', 'time', migrate_data=>'TRUE')`).Error; err != nil {
+func (n MetricBuckets) CreateHypertable(ctx context.Context) (err error) {
+	if err = n.Db.WithContext(ctx).Raw(`SELECT create_hypertable('metric_bucket', 'time', migrate_data=>'TRUE')`).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMetricBucketAdd, err.Error())
 	}
 	return
 }
 
 // AddMultiple ...
-func (n *MetricBuckets) AddMultiple(buckets []*MetricBucket) (err error) {
-	if err = n.Db.Create(&buckets).Error; err != nil {
+func (n *MetricBuckets) AddMultiple(ctx context.Context, buckets []*MetricBucket) (err error) {
+	if err = n.Db.WithContext(ctx).Create(&buckets).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMetricBucketAdd, err.Error())
 	}
 	return

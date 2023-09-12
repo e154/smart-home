@@ -34,7 +34,6 @@ import (
 	"github.com/e154/smart-home/plugins/weather_owm"
 	"github.com/e154/smart-home/plugins/webpush"
 	"github.com/e154/smart-home/plugins/zigbee2mqtt"
-	"github.com/e154/smart-home/plugins/zone"
 
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
@@ -83,14 +82,13 @@ func (n *MigrationPlugins) Up(ctx context.Context, adaptors *adaptors.Adaptors) 
 	n.addPlugin("weather_owm", false, false, true, weather_owm.Version)
 	n.addPlugin("mqtt", true, false, true, mqtt.Version)
 	n.addPlugin("zigbee2mqtt", false, false, true, zigbee2mqtt.Version)
-	n.addPlugin("zone", true, false, true, zone.Version)
 	n.addPlugin("html5_notify", true, false, false, html5_notify.Version)
 	n.addPlugin("webpush", true, false, false, webpush.Version)
 	return nil
 }
 
 func (n *MigrationPlugins) addPlugin(name string, enabled, system, actor bool, version string) (node *m.Plugin) {
-	_ = n.adaptors.Plugin.CreateOrUpdate(&m.Plugin{
+	_ = n.adaptors.Plugin.CreateOrUpdate(context.Background(), &m.Plugin{
 		Name:    name,
 		Version: version,
 		Enabled: enabled,

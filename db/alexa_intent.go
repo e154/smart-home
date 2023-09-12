@@ -19,6 +19,7 @@
 package db
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -51,17 +52,17 @@ func (d *AlexaIntent) TableName() string {
 }
 
 // Add ...
-func (n AlexaIntents) Add(v *AlexaIntent) (err error) {
-	if err = n.Db.Create(&v).Error; err != nil {
+func (n AlexaIntents) Add(ctx context.Context, v *AlexaIntent) (err error) {
+	if err = n.Db.WithContext(ctx).Create(&v).Error; err != nil {
 		err = errors.Wrap(apperr.ErrAlexaIntentAdd, err.Error())
 	}
 	return
 }
 
 // GetByName ...
-func (n AlexaIntents) GetByName(name string) (intent *AlexaIntent, err error) {
+func (n AlexaIntents) GetByName(ctx context.Context, name string) (intent *AlexaIntent, err error) {
 	intent = &AlexaIntent{}
-	if err = n.Db.Model(intent).Where("name = ?", name).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(intent).Where("name = ?", name).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			err = errors.Wrap(apperr.ErrAlexaIntentNotFound, fmt.Sprintf("name \"w%s\"", name))
 			return
@@ -72,8 +73,8 @@ func (n AlexaIntents) GetByName(name string) (intent *AlexaIntent, err error) {
 }
 
 // Update ...
-func (n AlexaIntents) Update(v *AlexaIntent) (err error) {
-	err = n.Db.Model(v).Where("name = ? and alexa_skill_id = ?", v.Name, v.AlexaSkillId).Updates(map[string]interface{}{
+func (n AlexaIntents) Update(ctx context.Context, v *AlexaIntent) (err error) {
+	err = n.Db.WithContext(ctx).Model(v).Where("name = ? and alexa_skill_id = ?", v.Name, v.AlexaSkillId).Updates(map[string]interface{}{
 		"name":        v.Name,
 		"description": v.Description,
 		"script_id":   v.ScriptId,
@@ -85,8 +86,8 @@ func (n AlexaIntents) Update(v *AlexaIntent) (err error) {
 }
 
 // Delete ...
-func (n AlexaIntents) Delete(v *AlexaIntent) (err error) {
-	if err = n.Db.Delete(&AlexaIntent{}, "name = ? and alexa_skill_id = ?", v.Name, v.AlexaSkillId).Error; err != nil {
+func (n AlexaIntents) Delete(ctx context.Context, v *AlexaIntent) (err error) {
+	if err = n.Db.WithContext(ctx).Delete(&AlexaIntent{}, "name = ? and alexa_skill_id = ?", v.Name, v.AlexaSkillId).Error; err != nil {
 		err = errors.Wrap(apperr.ErrAlexaIntentDelete, err.Error())
 	}
 	return

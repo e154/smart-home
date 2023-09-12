@@ -1,6 +1,7 @@
 package example1
 
 import (
+	"context"
 	"fmt"
 	"os"
 
@@ -24,33 +25,33 @@ func NewSupervisor(adaptors *adaptors.Adaptors) *Supervisor {
 	}
 }
 
-func (e *Supervisor) addEntities(scripts []*m.Script, area *m.Area) (entities []*m.Entity, err error) {
+func (e *Supervisor) addEntities(ctx context.Context, scripts []*m.Script, area *m.Area) (entities []*m.Entity, err error) {
 
 	var script *m.Script
 	if len(scripts) > 0 {
 		script = scripts[0]
 	}
 
-	entity1 := e.addL3("l3n1", "192.168.0.247", script, area)
-	entity2 := e.addL3("l3n2", "192.168.0.242", script, area)
-	entity3 := e.addL3("l3n3", "192.168.0.244", script, area)
-	entity4 := e.addL3("l3n4", "192.168.0.243", script, area)
-	entity5 := e.addL3("l3n5", "192.168.0.240", script, area)
+	entity1 := e.addL3(ctx, "l3n1", "192.168.0.247", script, area)
+	entity2 := e.addL3(ctx, "l3n2", "192.168.0.242", script, area)
+	entity3 := e.addL3(ctx, "l3n3", "192.168.0.244", script, area)
+	entity4 := e.addL3(ctx, "l3n4", "192.168.0.243", script, area)
+	entity5 := e.addL3(ctx, "l3n5", "192.168.0.240", script, area)
 
-	tgBot := e.addTgBot("clavicus", os.Getenv("SH_TG_BOT_TOKEN"), script, area)
-	sensorEntity := e.addSensor("api", scripts[1], area)
+	tgBot := e.addTgBot(ctx, "clavicus", os.Getenv("SH_TG_BOT_TOKEN"), script, area)
+	sensorEntity := e.addSensor(ctx, "api", scripts[1], area)
 
 	entities = []*m.Entity{entity1, entity2, entity3, entity4, entity5, tgBot, sensorEntity}
 
 	return
 }
 
-func (e *Supervisor) addL3(name, host string, script *m.Script, area *m.Area) (ent *m.Entity) {
+func (e *Supervisor) addL3(ctx context.Context, name, host string, script *m.Script, area *m.Area) (ent *m.Entity) {
 
 	id := common.EntityId(fmt.Sprintf("cgminer.%s", name))
 
 	var err error
-	if ent, err = e.adaptors.Entity.GetById(id); err == nil {
+	if ent, err = e.adaptors.Entity.GetById(ctx, id); err == nil {
 		return
 	}
 
@@ -167,10 +168,10 @@ func (e *Supervisor) addL3(name, host string, script *m.Script, area *m.Area) (e
 		},
 	}
 
-	err = e.adaptors.Entity.Add(ent)
+	err = e.adaptors.Entity.Add(ctx, ent)
 	So(err, ShouldBeNil)
 
-	_, err = e.adaptors.EntityStorage.Add(&m.EntityStorage{
+	_, err = e.adaptors.EntityStorage.Add(ctx, &m.EntityStorage{
 		EntityId:   ent.Id,
 		Attributes: ent.Attributes.Serialize(),
 	})
@@ -179,12 +180,12 @@ func (e *Supervisor) addL3(name, host string, script *m.Script, area *m.Area) (e
 	return
 }
 
-func (e *Supervisor) addTgBot(name, token string, script *m.Script, area *m.Area) (ent *m.Entity) {
+func (e *Supervisor) addTgBot(ctx context.Context, name, token string, script *m.Script, area *m.Area) (ent *m.Entity) {
 
 	id := common.EntityId(fmt.Sprintf("%s.%s", telegram.Name, name))
 
 	var err error
-	if ent, err = e.adaptors.Entity.GetById(id); err == nil {
+	if ent, err = e.adaptors.Entity.GetById(ctx, id); err == nil {
 		return
 	}
 
@@ -206,9 +207,9 @@ func (e *Supervisor) addTgBot(name, token string, script *m.Script, area *m.Area
 		},
 		Area: area,
 	}
-	err = e.adaptors.Entity.Add(ent)
+	err = e.adaptors.Entity.Add(ctx, ent)
 	So(err, ShouldBeNil)
-	_, err = e.adaptors.EntityStorage.Add(&m.EntityStorage{
+	_, err = e.adaptors.EntityStorage.Add(ctx, &m.EntityStorage{
 		EntityId:   ent.Id,
 		Attributes: ent.Attributes.Serialize(),
 	})
@@ -217,12 +218,12 @@ func (e *Supervisor) addTgBot(name, token string, script *m.Script, area *m.Area
 	return
 }
 
-func (e *Supervisor) addSensor(name string, script *m.Script, area *m.Area) (ent *m.Entity) {
+func (e *Supervisor) addSensor(ctx context.Context, name string, script *m.Script, area *m.Area) (ent *m.Entity) {
 
 	id := common.EntityId(fmt.Sprintf("cgminer.%s", name))
 
 	var err error
-	if ent, err = e.adaptors.Entity.GetById(id); err == nil {
+	if ent, err = e.adaptors.Entity.GetById(ctx, id); err == nil {
 		return
 	}
 
@@ -260,9 +261,9 @@ func (e *Supervisor) addSensor(name string, script *m.Script, area *m.Area) (ent
 		},
 		Area: area,
 	}
-	err = e.adaptors.Entity.Add(ent)
+	err = e.adaptors.Entity.Add(ctx, ent)
 	So(err, ShouldBeNil)
-	_, err = e.adaptors.EntityStorage.Add(&m.EntityStorage{
+	_, err = e.adaptors.EntityStorage.Add(ctx, &m.EntityStorage{
 		EntityId:   ent.Id,
 		Attributes: ent.Attributes.Serialize(),
 	})

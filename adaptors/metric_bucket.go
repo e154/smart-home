@@ -19,6 +19,7 @@
 package adaptors
 
 import (
+	"context"
 	"encoding/json"
 	"time"
 
@@ -31,14 +32,14 @@ import (
 
 // IMetricBucket ...
 type IMetricBucket interface {
-	Add(ver *m.MetricDataItem) error
-	AddMultiple(items []*m.MetricDataItem) (err error)
-	SimpleListWithSoftRange(_from, _to *time.Time, metricId int64, _metricRange *string, optionItems []string) (list []*m.MetricDataItem, err error)
-	Simple24HPreview(metricId int64, optionItems []string) (list []*m.MetricDataItem, err error)
-	DeleteOldest(days int) (err error)
-	DeleteById(id int64) (err error)
-	DeleteByMetricId(metricId int64) (err error)
-	CreateHypertable() (err error)
+	Add(ctx context.Context, ver *m.MetricDataItem) error
+	AddMultiple(ctx context.Context, items []*m.MetricDataItem) (err error)
+	SimpleListWithSoftRange(ctx context.Context, _from, _to *time.Time, metricId int64, _metricRange *string, optionItems []string) (list []*m.MetricDataItem, err error)
+	Simple24HPreview(ctx context.Context, metricId int64, optionItems []string) (list []*m.MetricDataItem, err error)
+	DeleteOldest(ctx context.Context, days int) (err error)
+	DeleteById(ctx context.Context, id int64) (err error)
+	DeleteByMetricId(ctx context.Context, metricId int64) (err error)
+	CreateHypertable(ctx context.Context) (err error)
 	fromDb(dbVer *db.MetricBucket) (ver *m.MetricDataItem)
 	toDb(ver *m.MetricDataItem) (dbVer *db.MetricBucket)
 }
@@ -61,12 +62,12 @@ func GetMetricBucketAdaptor(d *gorm.DB, orm *orm.Orm) IMetricBucket {
 }
 
 // Add ...
-func (n *MetricBucket) Add(ver *m.MetricDataItem) error {
-	return n.table.Add(n.toDb(ver))
+func (n *MetricBucket) Add(ctx context.Context, ver *m.MetricDataItem) error {
+	return n.table.Add(ctx, n.toDb(ver))
 }
 
 // AddMultiple ...
-func (n *MetricBucket) AddMultiple(items []*m.MetricDataItem) (err error) {
+func (n *MetricBucket) AddMultiple(ctx context.Context, items []*m.MetricDataItem) (err error) {
 
 	insertRecords := make([]*db.MetricBucket, 0, len(items))
 	for _, ver := range items {
@@ -74,24 +75,24 @@ func (n *MetricBucket) AddMultiple(items []*m.MetricDataItem) (err error) {
 		insertRecords = append(insertRecords, dbVer)
 	}
 
-	err = n.table.AddMultiple(insertRecords)
+	err = n.table.AddMultiple(ctx, insertRecords)
 
 	return
 }
 
 // SimpleListWithSoftRange ...
-func (n *MetricBucket) SimpleListWithSoftRange(_from, _to *time.Time, metricId int64, _metricRange *string, optionItems []string) (list []*m.MetricDataItem, err error) {
+func (n *MetricBucket) SimpleListWithSoftRange(ctx context.Context, _from, _to *time.Time, metricId int64, _metricRange *string, optionItems []string) (list []*m.MetricDataItem, err error) {
 
 	var dbList []*db.MetricBucket
 
 	if _metricRange != nil && _from == nil && _to == nil {
-		if dbList, err = n.table.SimpleListByRangeType(metricId, common.MetricRange(common.StringValue(_metricRange)), optionItems); err != nil {
+		if dbList, err = n.table.SimpleListByRangeType(ctx, metricId, common.MetricRange(common.StringValue(_metricRange)), optionItems); err != nil {
 			return
 		}
 	}
 
 	if _from != nil && _to != nil && _metricRange == nil {
-		if dbList, err = n.table.SimpleListWithSoftRange(common.TimeValue(_from), common.TimeValue(_to), metricId, optionItems); err != nil {
+		if dbList, err = n.table.SimpleListWithSoftRange(ctx, common.TimeValue(_from), common.TimeValue(_to), metricId, optionItems); err != nil {
 			return
 		}
 	}
@@ -104,9 +105,9 @@ func (n *MetricBucket) SimpleListWithSoftRange(_from, _to *time.Time, metricId i
 }
 
 // Simple24HPreview ...
-func (n *MetricBucket) Simple24HPreview(metricId int64, optionItems []string) (list []*m.MetricDataItem, err error) {
+func (n *MetricBucket) Simple24HPreview(ctx context.Context, metricId int64, optionItems []string) (list []*m.MetricDataItem, err error) {
 	var dbList []*db.MetricBucket
-	if dbList, err = n.table.Simple24HPreview(metricId, optionItems); err != nil {
+	if dbList, err = n.table.Simple24HPreview(ctx, metricId, optionItems); err != nil {
 		return
 	}
 
@@ -118,26 +119,26 @@ func (n *MetricBucket) Simple24HPreview(metricId int64, optionItems []string) (l
 }
 
 // DeleteOldest ...
-func (n *MetricBucket) DeleteOldest(days int) (err error) {
-	err = n.table.DeleteOldest(days)
+func (n *MetricBucket) DeleteOldest(ctx context.Context, days int) (err error) {
+	err = n.table.DeleteOldest(ctx, days)
 	return
 }
 
 // DeleteById ...
-func (n *MetricBucket) DeleteById(id int64) (err error) {
-	err = n.table.DeleteById(id)
+func (n *MetricBucket) DeleteById(ctx context.Context, id int64) (err error) {
+	err = n.table.DeleteById(ctx, id)
 	return
 }
 
 // DeleteByMetricId ...
-func (n *MetricBucket) DeleteByMetricId(metricId int64) (err error) {
-	err = n.table.DeleteByMetricId(metricId)
+func (n *MetricBucket) DeleteByMetricId(ctx context.Context, metricId int64) (err error) {
+	err = n.table.DeleteByMetricId(ctx, metricId)
 	return
 }
 
 // CreateHypertable ...
-func (n *MetricBucket) CreateHypertable() (err error) {
-	err = n.table.CreateHypertable()
+func (n *MetricBucket) CreateHypertable(ctx context.Context) (err error) {
+	err = n.table.CreateHypertable(ctx)
 	return
 }
 

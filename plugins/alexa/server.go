@@ -19,6 +19,7 @@
 package alexa
 
 import (
+	"context"
 	"net/http"
 	"os"
 	"sync"
@@ -107,7 +108,7 @@ func (s *Server) Start() {
 
 func (s *Server) init() {
 
-	list, err := s.adaptors.AlexaSkill.ListEnabled(999, 0)
+	list, err := s.adaptors.AlexaSkill.ListEnabled(context.Background(), 999, 0)
 	if err != nil {
 		log.Error(err.Error())
 		return

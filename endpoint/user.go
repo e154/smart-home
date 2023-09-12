@@ -88,7 +88,7 @@ func (n *UserEndpoint) Add(ctx context.Context, params *m.User,
 	}
 
 	var id int64
-	if id, err = n.adaptors.User.Add(user); err != nil {
+	if id, err = n.adaptors.User.Add(ctx, user); err != nil {
 		return
 	}
 
@@ -100,7 +100,7 @@ func (n *UserEndpoint) Add(ctx context.Context, params *m.User,
 // GetById ...
 func (n *UserEndpoint) GetById(ctx context.Context, userId int64) (result *m.User, err error) {
 
-	result, err = n.adaptors.User.GetById(userId)
+	result, err = n.adaptors.User.GetById(ctx, userId)
 
 	return
 }
@@ -109,7 +109,7 @@ func (n *UserEndpoint) GetById(ctx context.Context, userId int64) (result *m.Use
 func (n *UserEndpoint) Delete(ctx context.Context, userId int64) (err error) {
 
 	var user *m.User
-	user, err = n.adaptors.User.GetById(userId)
+	user, err = n.adaptors.User.GetById(ctx, userId)
 	if err != nil {
 		return
 	}
@@ -119,7 +119,7 @@ func (n *UserEndpoint) Delete(ctx context.Context, userId int64) (err error) {
 		return
 	}
 
-	err = n.adaptors.User.Delete(user.Id)
+	err = n.adaptors.User.Delete(ctx, user.Id)
 
 	return
 }
@@ -127,7 +127,7 @@ func (n *UserEndpoint) Delete(ctx context.Context, userId int64) (err error) {
 // GetList ...
 func (n *UserEndpoint) GetList(ctx context.Context, pagination common.PageParams) (result []*m.User, total int64, err error) {
 
-	result, total, err = n.adaptors.User.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
+	result, total, err = n.adaptors.User.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
 
 	return
 }
@@ -136,7 +136,7 @@ func (n *UserEndpoint) GetList(ctx context.Context, pagination common.PageParams
 func (n *UserEndpoint) Update(ctx context.Context, params *m.User) (result *m.User, errs validator.ValidationErrorsTranslations, err error) {
 
 	var user *m.User
-	user, err = n.adaptors.User.GetById(params.Id)
+	user, err = n.adaptors.User.GetById(ctx, params.Id)
 	if err != nil {
 		return
 	}
@@ -166,7 +166,7 @@ func (n *UserEndpoint) Update(ctx context.Context, params *m.User) (result *m.Us
 		return
 	}
 
-	if err = n.adaptors.User.Update(user); err != nil {
+	if err = n.adaptors.User.Update(ctx, user); err != nil {
 		return
 	}
 
@@ -179,7 +179,7 @@ func (n *UserEndpoint) Update(ctx context.Context, params *m.User) (result *m.Us
 func (n *UserEndpoint) UpdateStatus(ctx context.Context, userId int64, newStatus string) (err error) {
 
 	var user *m.User
-	user, err = n.adaptors.User.GetById(userId)
+	user, err = n.adaptors.User.GetById(ctx, userId)
 	if err != nil {
 		return
 	}
@@ -193,7 +193,7 @@ func (n *UserEndpoint) UpdateStatus(ctx context.Context, userId int64, newStatus
 		user.Status = "blocked"
 	}
 
-	err = n.adaptors.User.Update(user)
+	err = n.adaptors.User.Update(ctx, user)
 
 	return
 }

@@ -24,7 +24,7 @@ description: >
 Пример реализации обработчика `entityAction`:
 
 ```javascript
-entityAction = (entityId, actionName) => {
+entityAction = (entityId, actionName, args) => {
   // Код обработки действия
 };
 ```

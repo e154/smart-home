@@ -94,10 +94,10 @@ export interface ApiArea {
 }
 
 export interface ApiAreaLocation {
-  /** @format float */
-  lat: number;
-  /** @format float */
-  lon: number;
+  /** @format double */
+  lat?: number;
+  /** @format double */
+  lon?: number;
 }
 
 export interface ApiAttribute {
@@ -114,6 +114,7 @@ export interface ApiAttribute {
   /** @format date-time */
   time?: string;
   imageUrl?: string;
+  point?: string;
 }
 
 export interface ApiAutomationRequest {
@@ -385,6 +386,7 @@ export interface ApiEntityAction {
 export interface ApiEntityCallActionRequest {
   id?: string;
   name?: string;
+  attributes?: Record<string, ApiAttribute>;
 }
 
 export interface ApiEntityParent {
@@ -1124,6 +1126,7 @@ export enum ApiTypes {
   MAP = "MAP",
   TIME = "TIME",
   IMAGE = "IMAGE",
+  POINT = "POINT",
 }
 
 export interface ApiUpdateEntityRequestAction {

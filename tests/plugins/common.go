@@ -43,7 +43,6 @@ import (
 	"github.com/e154/smart-home/plugins/telegram"
 	"github.com/e154/smart-home/plugins/weather"
 	"github.com/e154/smart-home/plugins/zigbee2mqtt"
-	"github.com/e154/smart-home/plugins/zone"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/phayes/freeport"
 	"github.com/smartystreets/goconvey/convey"
@@ -224,22 +223,6 @@ func GetNewScene(id string, scripts []*m.Script) *m.Entity {
 	}
 }
 
-// GetNewZone ...
-func GetNewZone() *m.Entity {
-	setings := zone.NewSettings()
-	setings[zone.AttrLat].Value = 54.9022
-	setings[zone.AttrLon].Value = 83.0335
-	setings[zone.AttrElevation].Value = 150
-	setings[zone.AttrTimezone].Value = 7
-	return &m.Entity{
-		Id:          "zone.home",
-		Description: "main geo zone",
-		PluginName:  "zone",
-		AutoLoad:    true,
-		Settings:    setings,
-	}
-}
-
 // GetNewNode ...
 func GetNewNode(name string) *m.Entity {
 	settings := node.NewSettings()
@@ -411,7 +394,7 @@ func AddPlugin(adaptors *adaptors.Adaptors, name string, opts ...m.AttributeValu
 	if len(opts) > 0 {
 		plugin.Settings = opts[0]
 	}
-	err = adaptors.Plugin.CreateOrUpdate(plugin)
+	err = adaptors.Plugin.CreateOrUpdate(context.Background(), plugin)
 	return
 }
 
@@ -543,13 +526,13 @@ func AddScript(name, src string, adaptors *adaptors.Adaptors, scriptService scri
 		return
 	}
 
-	script.Id, err = adaptors.Script.Add(script)
+	script.Id, err = adaptors.Script.Add(context.Background(), script)
 
 	return
 }
 
 func AddTrigger(trigger *m.Trigger, adaptors *adaptors.Adaptors, eventBus bus.Bus) (err error) {
-	if trigger.Id, err = adaptors.Trigger.Add(trigger); err != nil {
+	if trigger.Id, err = adaptors.Trigger.Add(context.Background(), trigger); err != nil {
 		return
 	}
 	eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", trigger.Id), events.EventAddedTrigger{
@@ -560,7 +543,7 @@ func AddTrigger(trigger *m.Trigger, adaptors *adaptors.Adaptors, eventBus bus.Bu
 
 func AddTask(newTask *m.NewTask, adaptors *adaptors.Adaptors, eventBus bus.Bus) (err error) {
 	var task1Id int64
-	if task1Id, err = adaptors.Task.Add(newTask); err != nil {
+	if task1Id, err = adaptors.Task.Add(context.Background(), newTask); err != nil {
 		return
 	}
 	eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", task1Id), events.EventAddedTask{
@@ -586,7 +569,6 @@ func WaitSupervisor(eventBus bus.Bus) {
 
 	time.Sleep(time.Millisecond * 500)
 }
-
 
 func WaitStateChanged(eventBus bus.Bus) (ok bool) {
 

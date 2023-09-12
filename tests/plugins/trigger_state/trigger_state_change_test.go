@@ -19,11 +19,11 @@
 package trigger_state
 
 import (
+	"context"
 	"fmt"
 	"sync"
 	"testing"
 	"time"
-	"context"
 
 	"github.com/e154/smart-home/common/events"
 
@@ -100,7 +100,7 @@ automationTriggerStateChanged = (msg)->
 				BaseTopic:  "zigbee2mqtt",
 			}
 			var err error
-			zigbeeServer.Id, err = adaptors.Zigbee2mqtt.Add(zigbeeServer)
+			zigbeeServer.Id, err = adaptors.Zigbee2mqtt.Add(context.Background(), zigbeeServer)
 			So(err, ShouldBeNil)
 
 			// add zigbee2mqtt_device
@@ -114,12 +114,12 @@ automationTriggerStateChanged = (msg)->
 				Status:        "active",
 				Payload:       []byte("{}"),
 			}
-			err = adaptors.Zigbee2mqttDevice.Add(butonDevice)
+			err = adaptors.Zigbee2mqttDevice.Add(context.Background(), butonDevice)
 			So(err, ShouldBeNil)
 
 			automation.Start()
 			mqttServer.Start()
-			zigbee2mqtt.Start()
+			zigbee2mqtt.Start(context.Background())
 			supervisor.Start(context.Background())
 			WaitSupervisor(eventBus)
 
@@ -147,7 +147,7 @@ automationTriggerStateChanged = (msg)->
 			// add entity
 			// ------------------------------------------------
 			buttonEnt := GetNewButton(fmt.Sprintf("zigbee2mqtt.%s", zigbeeButtonId), []*m.Script{buttonScript})
-			err = adaptors.Entity.Add(buttonEnt)
+			err = adaptors.Entity.Add(context.Background(), buttonEnt)
 			So(err, ShouldBeNil)
 
 			eventBus.Publish("system/entities/"+buttonEnt.Id.String(), events.EventCreatedEntity{

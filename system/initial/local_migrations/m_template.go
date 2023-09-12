@@ -93,9 +93,9 @@ func (t *MigrationTemplates) Up(ctx context.Context, adaptors *adaptors.Adaptors
 
 		var tpl *m.Template
 		if templateType == m.TemplateTypeTemplate {
-			tpl, err = t.adaptors.Template.GetByName(name)
+			tpl, err = t.adaptors.Template.GetByName(ctx, name)
 		} else {
-			tpl, err = t.adaptors.Template.GetItemByName(name)
+			tpl, err = t.adaptors.Template.GetItemByName(ctx, name)
 		}
 
 		if err == nil || tpl != nil {
@@ -114,7 +114,7 @@ func (t *MigrationTemplates) Up(ctx context.Context, adaptors *adaptors.Adaptors
 			ParentName: parent,
 		}
 
-		err = t.adaptors.Template.Create(template)
+		err = t.adaptors.Template.Create(ctx, template)
 		So(err, ShouldBeNil)
 	}
 

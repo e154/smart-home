@@ -19,6 +19,7 @@
 package db
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -59,10 +60,10 @@ func (d *Template) TableName() string {
 }
 
 // UpdateOrCreate ...
-func (n Templates) UpdateOrCreate(tpl *Template) (err error) {
+func (n Templates) UpdateOrCreate(ctx context.Context, tpl *Template) (err error) {
 
-	if err = n.Db.Create(tpl).Error; err != nil {
-		if err = n.Update(tpl); err != nil {
+	if err = n.Db.WithContext(ctx).Create(tpl).Error; err != nil {
+		if err = n.Update(ctx, tpl); err != nil {
 			err = errors.Wrap(apperr.ErrTemplateUpdate, err.Error())
 			return
 		}
@@ -72,18 +73,18 @@ func (n Templates) UpdateOrCreate(tpl *Template) (err error) {
 }
 
 // Create ...
-func (n Templates) Create(tpl *Template) (err error) {
-	if err = n.Db.Create(tpl).Error; err != nil {
+func (n Templates) Create(ctx context.Context, tpl *Template) (err error) {
+	if err = n.Db.WithContext(ctx).Create(tpl).Error; err != nil {
 		err = errors.Wrap(apperr.ErrTemplateAdd, err.Error())
 	}
 	return
 }
 
 // GetByName ...
-func (n Templates) GetByName(name, itemType string) (*Template, error) {
+func (n Templates) GetByName(ctx context.Context, name, itemType string) (*Template, error) {
 
 	tpl := &Template{}
-	err := n.Db.Model(tpl).
+	err := n.Db.WithContext(ctx).Model(tpl).
 		Where("name = ? and type = ?", name, itemType).
 		First(&tpl).Error
 
@@ -99,10 +100,10 @@ func (n Templates) GetByName(name, itemType string) (*Template, error) {
 }
 
 // GetItemsSortedList ...
-func (n Templates) GetItemsSortedList() (count int64, newItems []string, err error) {
+func (n Templates) GetItemsSortedList(ctx context.Context) (count int64, newItems []string, err error) {
 
 	items := make([]*Template, 0)
-	err = n.Db.Model(&Template{}).
+	err = n.Db.WithContext(ctx).Model(&Template{}).
 		Where("type = 'item' and status = 'active'").
 		Find(&items).
 		Error
@@ -136,8 +137,8 @@ func (n Templates) GetItemsSortedList() (count int64, newItems []string, err err
 }
 
 // Update ...
-func (n Templates) Update(m *Template) error {
-	err := n.Db.Model(&Template{Name: m.Name}).Updates(map[string]interface{}{
+func (n Templates) Update(ctx context.Context, m *Template) error {
+	err := n.Db.WithContext(ctx).Model(&Template{Name: m.Name}).Updates(map[string]interface{}{
 		"name":        m.Name,
 		"description": m.Description,
 		"status":      m.Status,
@@ -153,8 +154,8 @@ func (n Templates) Update(m *Template) error {
 }
 
 // UpdateStatus ...
-func (n Templates) UpdateStatus(m *Template) error {
-	err := n.Db.Model(&Template{Name: m.Name}).Updates(map[string]interface{}{
+func (n Templates) UpdateStatus(ctx context.Context, m *Template) error {
+	err := n.Db.WithContext(ctx).Model(&Template{Name: m.Name}).Updates(map[string]interface{}{
 		"status": m.Status,
 	}).Error
 
@@ -165,18 +166,18 @@ func (n Templates) UpdateStatus(m *Template) error {
 }
 
 // Delete ...
-func (n Templates) Delete(name string) (err error) {
-	if err = n.Db.Delete(&Template{Name: name}).Error; err != nil {
+func (n Templates) Delete(ctx context.Context, name string) (err error) {
+	if err = n.Db.WithContext(ctx).Delete(&Template{Name: name}).Error; err != nil {
 		err = errors.Wrap(apperr.ErrTemplateDelete, err.Error())
 	}
 	return
 }
 
 // GetItemsTree ...
-func (n Templates) GetItemsTree() (tree []*TemplateTree, err error) {
+func (n Templates) GetItemsTree(ctx context.Context) (tree []*TemplateTree, err error) {
 
 	var items []*Template
-	if items, err = n.GetList("item"); err != nil {
+	if items, err = n.GetList(ctx, "item"); err != nil {
 		err = errors.Wrap(apperr.ErrTemplateGet, err.Error())
 		return
 	}
@@ -190,7 +191,7 @@ func (n Templates) GetItemsTree() (tree []*TemplateTree, err error) {
 				Nodes:       make([]*TemplateTree, 0),
 				Status:      item.Status,
 			}
-			n.renderTreeRecursive(items, branch, branch.Name)
+			n.renderTreeRecursive(ctx, items, branch, branch.Name)
 			tree = append(tree, branch)
 		}
 	}
@@ -199,9 +200,9 @@ func (n Templates) GetItemsTree() (tree []*TemplateTree, err error) {
 }
 
 // GetList ...
-func (n Templates) GetList(templateType string) ([]*Template, error) {
+func (n Templates) GetList(ctx context.Context, templateType string) ([]*Template, error) {
 	items := make([]*Template, 0)
-	err := n.Db.Model(&Template{}).
+	err := n.Db.WithContext(ctx).Model(&Template{}).
 		Where("type = ?", templateType).
 		Find(&items).
 		Error
@@ -214,9 +215,9 @@ func (n Templates) GetList(templateType string) ([]*Template, error) {
 }
 
 // Search ...
-func (n *Templates) Search(query string, limit, offset int) (items []*Template, total int64, err error) {
+func (n *Templates) Search(ctx context.Context, query string, limit, offset int) (items []*Template, total int64, err error) {
 
-	q := n.Db.Model(&Template{}).
+	q := n.Db.WithContext(ctx).Model(&Template{}).
 		Where("name LIKE ?", "%"+query+"%").
 		Where("type = 'template'")
 
@@ -238,7 +239,7 @@ func (n *Templates) Search(query string, limit, offset int) (items []*Template, 
 	return
 }
 
-func (n Templates) renderTreeRecursive(i []*Template, t *TemplateTree, c string) {
+func (n Templates) renderTreeRecursive(ctx context.Context, i []*Template, t *TemplateTree, c string) {
 
 	for _, item := range i {
 		if item.ParentName != nil && *item.ParentName == c {
@@ -248,20 +249,20 @@ func (n Templates) renderTreeRecursive(i []*Template, t *TemplateTree, c string)
 			tree.Nodes = make([]*TemplateTree, 0) // fix - nodes: null
 			tree.Status = item.Status
 			t.Nodes = append(t.Nodes, tree)
-			n.renderTreeRecursive(i, tree, item.Name)
+			n.renderTreeRecursive(ctx, i, tree, item.Name)
 		}
 	}
 }
 
 // UpdateItemsTree ...
-func (n Templates) UpdateItemsTree(tree []*TemplateTree, parent string) error {
+func (n Templates) UpdateItemsTree(ctx context.Context, tree []*TemplateTree, parent string) error {
 
 	for _, v := range tree {
 		if parent != "" {
-			go n.emailItemParentUpdate(v.Name, parent)
+			go n.emailItemParentUpdate(ctx, v.Name, parent)
 		}
 
-		err := n.Db.Model(&Template{Name: v.Name}).Updates(map[string]interface{}{
+		err := n.Db.WithContext(ctx).Model(&Template{Name: v.Name}).Updates(map[string]interface{}{
 			"parent": nil,
 		}).Error
 		if err != nil {
@@ -272,28 +273,28 @@ func (n Templates) UpdateItemsTree(tree []*TemplateTree, parent string) error {
 			continue
 		}
 
-		n.updateTreeRecursive(v.Nodes, v.Name)
+		n.updateTreeRecursive(ctx, v.Nodes, v.Name)
 	}
 
 	return nil
 }
 
-func (n Templates) emailItemParentUpdate(name, parent string) {
+func (n Templates) emailItemParentUpdate(ctx context.Context, name, parent string) {
 
-	_ = n.Db.Model(&Template{}).
+	_ = n.Db.WithContext(ctx).Model(&Template{}).
 		Where("name = ?", name).
 		Updates(map[string]interface{}{
 			"parent": parent,
 		}).Error
 }
 
-func (n Templates) updateTreeRecursive(t []*TemplateTree, parent string) {
+func (n Templates) updateTreeRecursive(ctx context.Context, t []*TemplateTree, parent string) {
 
 	for _, v := range t {
 		if parent != "" {
-			go n.emailItemParentUpdate(v.Name, parent)
+			go n.emailItemParentUpdate(ctx, v.Name, parent)
 		}
-		n.updateTreeRecursive(v.Nodes, v.Name)
+		n.updateTreeRecursive(ctx, v.Nodes, v.Name)
 	}
 
 }

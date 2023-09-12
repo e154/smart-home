@@ -19,6 +19,7 @@
 package html5_notify
 
 import (
+	"context"
 	"strconv"
 	"strings"
 
@@ -53,8 +54,8 @@ func New() supervisor.Pluggable {
 }
 
 // Load ...
-func (p *plugin) Load(service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(service); err != nil {
+func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
+	if err = p.Plugin.Load(ctx, service); err != nil {
 		return
 	}
 
@@ -76,8 +77,8 @@ func (p *plugin) asyncLoad() (err error) {
 }
 
 // Unload ...
-func (p *plugin) Unload() (err error) {
-	if err = p.Plugin.Unload(); err != nil {
+func (p *plugin) Unload(ctx context.Context) (err error) {
+	if err = p.Plugin.Unload(ctx); err != nil {
 		return
 	}
 
@@ -120,7 +121,7 @@ func (p *plugin) Save(msg notify.Message) (addresses []string, message *m.Messag
 		Attributes: msg.Attributes,
 	}
 	var err error
-	if message.Id, err = p.Adaptors.Message.Add(message); err != nil {
+	if message.Id, err = p.Adaptors.Message.Add(context.Background(), message); err != nil {
 		log.Error(err.Error())
 	}
 

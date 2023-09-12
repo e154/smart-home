@@ -19,6 +19,8 @@
 package adaptors
 
 import (
+	"context"
+
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"gorm.io/gorm"
@@ -26,14 +28,14 @@ import (
 
 // IScript ...
 type IScript interface {
-	Add(script *m.Script) (id int64, err error)
-	GetById(scriptId int64) (script *m.Script, err error)
-	GetByName(name string) (script *m.Script, err error)
-	Update(script *m.Script) (err error)
-	Delete(scriptId int64) (err error)
-	List(limit, offset int64, orderBy, sort string, query *string) (list []*m.Script, total int64, err error)
-	Search(query string, limit, offset int64) (list []*m.Script, total int64, err error)
-	Statistic() (statistic *m.ScriptsStatistic, err error)
+	Add(ctx context.Context, script *m.Script) (id int64, err error)
+	GetById(ctx context.Context, scriptId int64) (script *m.Script, err error)
+	GetByName(ctx context.Context, name string) (script *m.Script, err error)
+	Update(ctx context.Context, script *m.Script) (err error)
+	Delete(ctx context.Context, scriptId int64) (err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string, query *string) (list []*m.Script, total int64, err error)
+	Search(ctx context.Context, query string, limit, offset int64) (list []*m.Script, total int64, err error)
+	Statistic(ctx context.Context) (statistic *m.ScriptsStatistic, err error)
 	fromDb(dbScript *db.Script) (script *m.Script, err error)
 	toDb(script *m.Script) (dbScript *db.Script)
 }
@@ -54,17 +56,17 @@ func GetScriptAdaptor(d *gorm.DB) IScript {
 }
 
 // Add ...
-func (n *Script) Add(script *m.Script) (id int64, err error) {
+func (n *Script) Add(ctx context.Context, script *m.Script) (id int64, err error) {
 	dbScript := n.toDb(script)
-	id, err = n.table.Add(dbScript)
+	id, err = n.table.Add(ctx, dbScript)
 	return
 }
 
 // GetById ...
-func (n *Script) GetById(scriptId int64) (script *m.Script, err error) {
+func (n *Script) GetById(ctx context.Context, scriptId int64) (script *m.Script, err error) {
 
 	var dbScript *db.Script
-	if dbScript, err = n.table.GetById(scriptId); err != nil {
+	if dbScript, err = n.table.GetById(ctx, scriptId); err != nil {
 		return
 	}
 
@@ -74,10 +76,10 @@ func (n *Script) GetById(scriptId int64) (script *m.Script, err error) {
 }
 
 // GetByName ...
-func (n *Script) GetByName(name string) (script *m.Script, err error) {
+func (n *Script) GetByName(ctx context.Context, name string) (script *m.Script, err error) {
 
 	var dbScript *db.Script
-	if dbScript, err = n.table.GetByName(name); err != nil {
+	if dbScript, err = n.table.GetByName(ctx, name); err != nil {
 		return
 	}
 
@@ -87,20 +89,20 @@ func (n *Script) GetByName(name string) (script *m.Script, err error) {
 }
 
 // Update ...
-func (n *Script) Update(script *m.Script) (err error) {
+func (n *Script) Update(ctx context.Context, script *m.Script) (err error) {
 	dbScript := n.toDb(script)
-	err = n.table.Update(dbScript)
+	err = n.table.Update(ctx, dbScript)
 	return
 }
 
 // Delete ...
-func (n *Script) Delete(scriptId int64) (err error) {
-	err = n.table.Delete(scriptId)
+func (n *Script) Delete(ctx context.Context, scriptId int64) (err error) {
+	err = n.table.Delete(ctx, scriptId)
 	return
 }
 
 // List ...
-func (n *Script) List(limit, offset int64, orderBy, sort string, query *string) (list []*m.Script, total int64, err error) {
+func (n *Script) List(ctx context.Context, limit, offset int64, orderBy, sort string, query *string) (list []*m.Script, total int64, err error) {
 
 	if sort == "" {
 		sort = "id"
@@ -110,7 +112,7 @@ func (n *Script) List(limit, offset int64, orderBy, sort string, query *string) 
 	}
 
 	var dbList []*db.Script
-	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort, query); err != nil {
+	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort, query); err != nil {
 		return
 	}
 
@@ -124,9 +126,9 @@ func (n *Script) List(limit, offset int64, orderBy, sort string, query *string) 
 }
 
 // Search ...
-func (n *Script) Search(query string, limit, offset int64) (list []*m.Script, total int64, err error) {
+func (n *Script) Search(ctx context.Context, query string, limit, offset int64) (list []*m.Script, total int64, err error) {
 	var dbList []*db.Script
-	if dbList, total, err = n.table.Search(query, int(limit), int(offset)); err != nil {
+	if dbList, total, err = n.table.Search(ctx, query, int(limit), int(offset)); err != nil {
 		return
 	}
 
@@ -139,9 +141,9 @@ func (n *Script) Search(query string, limit, offset int64) (list []*m.Script, to
 	return
 }
 
-func (n *Script) Statistic() (statistic *m.ScriptsStatistic, err error) {
+func (n *Script) Statistic(ctx context.Context) (statistic *m.ScriptsStatistic, err error) {
 	var dbVer *db.ScriptsStatistic
-	if dbVer, err = n.table.Statistic(); err != nil {
+	if dbVer, err = n.table.Statistic(ctx); err != nil {
 		return
 	}
 	statistic = &m.ScriptsStatistic{

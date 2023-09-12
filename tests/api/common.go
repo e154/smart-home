@@ -19,6 +19,8 @@
 package api
 
 import (
+	"context"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -36,7 +38,7 @@ func AddPlugin(adaptors *adaptors.Adaptors, name string, opts ...m.AttributeValu
 	if len(opts) > 0 {
 		plugin.Settings = opts[0]
 	}
-	err = adaptors.Plugin.CreateOrUpdate(plugin)
+	err = adaptors.Plugin.CreateOrUpdate(context.Background(), plugin)
 	return
 }
 
@@ -47,7 +49,7 @@ func AddArea(adaptors *adaptors.Adaptors, name string, _ ...m.Attributes) (area 
 		Description: "description " + name,
 	}
 
-	area.Id, err = adaptors.Area.Add(area)
+	area.Id, err = adaptors.Area.Add(context.Background(), area)
 	return
 }
 
@@ -70,7 +72,7 @@ func AddScript(name, src string, adaptors *adaptors.Adaptors, scriptService scri
 		return
 	}
 
-	script.Id, err = adaptors.Script.Add(script)
+	script.Id, err = adaptors.Script.Add(context.Background(), script)
 
 	return
 }

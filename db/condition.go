@@ -19,6 +19,7 @@
 package db
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -48,8 +49,8 @@ func (d *Condition) TableName() string {
 }
 
 // Add ...
-func (t Conditions) Add(condition *Condition) (id int64, err error) {
-	if err = t.Db.Create(&condition).Error; err != nil {
+func (t Conditions) Add(ctx context.Context, condition *Condition) (id int64, err error) {
+	if err = t.Db.WithContext(ctx).Create(&condition).Error; err != nil {
 		err = errors.Wrap(apperr.ErrConditionAdd, err.Error())
 		return
 	}
@@ -58,9 +59,10 @@ func (t Conditions) Add(condition *Condition) (id int64, err error) {
 }
 
 // GetById ...
-func (t Conditions) GetById(id int64) (condition *Condition, err error) {
+func (t Conditions) GetById(ctx context.Context, id int64) (condition *Condition, err error) {
 	condition = &Condition{Id: id}
 	err = t.Db.
+		WithContext(ctx).
 		Model(condition).
 		Preload("Script").
 		First(&condition).Error
@@ -75,31 +77,31 @@ func (t Conditions) GetById(id int64) (condition *Condition, err error) {
 }
 
 // Update ...
-func (t Conditions) Update(m *Condition) (err error) {
-	if err = t.Db.Model(&Condition{}).Where("id = ?", m.Id).Updates(m).Error; err != nil {
+func (t Conditions) Update(ctx context.Context, m *Condition) (err error) {
+	if err = t.Db.WithContext(ctx).Model(&Condition{}).Where("id = ?", m.Id).Updates(m).Error; err != nil {
 		err = errors.Wrap(apperr.ErrConditionUpdate, err.Error())
 	}
 	return
 }
 
 // Delete ...
-func (t Conditions) Delete(id int64) (err error) {
-	if err = t.Db.Delete(&Condition{}, "id = ?", id).Error; err != nil {
+func (t Conditions) Delete(ctx context.Context, id int64) (err error) {
+	if err = t.Db.WithContext(ctx).Delete(&Condition{}, "id = ?", id).Error; err != nil {
 		err = errors.Wrap(apperr.ErrConditionDelete, err.Error())
 	}
 	return
 }
 
 // List ...
-func (t *Conditions) List(limit, offset int, orderBy, sort string) (list []*Condition, total int64, err error) {
+func (t *Conditions) List(ctx context.Context, limit, offset int, orderBy, sort string) (list []*Condition, total int64, err error) {
 
-	if err = t.Db.Model(Condition{}).Count(&total).Error; err != nil {
+	if err = t.Db.WithContext(ctx).Model(Condition{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrConditionList, err.Error())
 		return
 	}
 
 	list = make([]*Condition, 0)
-	q := t.Db.Model(&Condition{}).
+	q := t.Db.WithContext(ctx).Model(&Condition{}).
 		Limit(limit).
 		Offset(offset)
 
@@ -115,9 +117,9 @@ func (t *Conditions) List(limit, offset int, orderBy, sort string) (list []*Cond
 }
 
 // Search ...q
-func (t *Conditions) Search(query string, limit, offset int) (list []*Condition, total int64, err error) {
+func (t *Conditions) Search(ctx context.Context, query string, limit, offset int) (list []*Condition, total int64, err error) {
 
-	q := t.Db.Model(&Condition{}).
+	q := t.Db.WithContext(ctx).Model(&Condition{}).
 		Where("name LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {

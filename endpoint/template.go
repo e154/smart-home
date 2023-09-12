@@ -19,6 +19,8 @@
 package endpoint
 
 import (
+	"context"
+
 	m "github.com/e154/smart-home/models"
 	"github.com/go-playground/validator/v10"
 )
@@ -36,43 +38,43 @@ func NewTemplateEndpoint(common *CommonEndpoint) *TemplateEndpoint {
 }
 
 // UpdateOrCreate ...
-func (t *TemplateEndpoint) UpdateOrCreate(params *m.Template) (errs validator.ValidationErrorsTranslations, err error) {
+func (t *TemplateEndpoint) UpdateOrCreate(ctx context.Context, params *m.Template) (errs validator.ValidationErrorsTranslations, err error) {
 
 	var ok bool
 	if ok, errs = t.validation.Valid(params); !ok {
 		return
 	}
 
-	err = t.adaptors.Template.UpdateOrCreate(params)
+	err = t.adaptors.Template.UpdateOrCreate(ctx, params)
 	return
 }
 
 // UpdateStatus ...
-func (t *TemplateEndpoint) UpdateStatus(params *m.Template) (errs validator.ValidationErrorsTranslations, err error) {
+func (t *TemplateEndpoint) UpdateStatus(ctx context.Context, params *m.Template) (errs validator.ValidationErrorsTranslations, err error) {
 
 	var ok bool
 	if ok, errs = t.validation.Valid(params); !ok {
 		return
 	}
 
-	err = t.adaptors.Template.UpdateStatus(params)
+	err = t.adaptors.Template.UpdateStatus(ctx, params)
 	return
 }
 
 // GetByName ...
-func (t *TemplateEndpoint) GetByName(name string) (result *m.Template, err error) {
-	result, err = t.adaptors.Template.GetByName(name)
+func (t *TemplateEndpoint) GetByName(ctx context.Context, name string) (result *m.Template, err error) {
+	result, err = t.adaptors.Template.GetByName(ctx, name)
 	if err != nil {
 		return
 	}
 
-	err = t.adaptors.Template.GetMarkers(result)
+	err = t.adaptors.Template.GetMarkers(ctx, result)
 	return
 }
 
 // GetItemByName ...
-func (t *TemplateEndpoint) GetItemByName(name string) (result *m.Template, err error) {
-	result, err = t.adaptors.Template.GetItemByName(name)
+func (t *TemplateEndpoint) GetItemByName(ctx context.Context, name string) (result *m.Template, err error) {
+	result, err = t.adaptors.Template.GetItemByName(ctx, name)
 	if err != nil {
 		return
 	}
@@ -80,48 +82,48 @@ func (t *TemplateEndpoint) GetItemByName(name string) (result *m.Template, err e
 }
 
 // GetItemsSortedList ...
-func (t *TemplateEndpoint) GetItemsSortedList() (count int64, items []string, err error) {
-	count, items, err = t.adaptors.Template.GetItemsSortedList()
+func (t *TemplateEndpoint) GetItemsSortedList(ctx context.Context) (count int64, items []string, err error) {
+	count, items, err = t.adaptors.Template.GetItemsSortedList(ctx)
 
 	return
 }
 
 // GetList ...
-func (t *TemplateEndpoint) GetList() (count int64, templates []*m.Template, err error) {
-	templates, err = t.adaptors.Template.GetList(m.TemplateTypeTemplate)
+func (t *TemplateEndpoint) GetList(ctx context.Context) (count int64, templates []*m.Template, err error) {
+	templates, err = t.adaptors.Template.GetList(ctx, m.TemplateTypeTemplate)
 
 	return
 }
 
 // Delete ...
-func (t *TemplateEndpoint) Delete(name string) (err error) {
-	err = t.adaptors.Template.Delete(name)
+func (t *TemplateEndpoint) Delete(ctx context.Context, name string) (err error) {
+	err = t.adaptors.Template.Delete(ctx, name)
 	return
 }
 
 // GetItemsTree ...
-func (t *TemplateEndpoint) GetItemsTree() (tree []*m.TemplateTree, err error) {
-	tree, err = t.adaptors.Template.GetItemsTree()
+func (t *TemplateEndpoint) GetItemsTree(ctx context.Context) (tree []*m.TemplateTree, err error) {
+	tree, err = t.adaptors.Template.GetItemsTree(ctx)
 	return
 }
 
 // UpdateItemsTree ...
-func (t *TemplateEndpoint) UpdateItemsTree(tree []*m.TemplateTree) (err error) {
-	err = t.adaptors.Template.UpdateItemsTree(tree)
+func (t *TemplateEndpoint) UpdateItemsTree(ctx context.Context, tree []*m.TemplateTree) (err error) {
+	err = t.adaptors.Template.UpdateItemsTree(ctx, tree)
 	return
 }
 
 // Search ...
-func (t *TemplateEndpoint) Search(query string, limit, offset int) (result []*m.Template, total int64, err error) {
-	result, total, err = t.adaptors.Template.Search(query, limit, offset)
+func (t *TemplateEndpoint) Search(ctx context.Context, query string, limit, offset int) (result []*m.Template, total int64, err error) {
+	result, total, err = t.adaptors.Template.Search(ctx, query, limit, offset)
 	return
 }
 
 // Preview ...
-func (t *TemplateEndpoint) Preview(template *m.TemplateContent) (data string, err error) {
+func (t *TemplateEndpoint) Preview(ctx context.Context, template *m.TemplateContent) (data string, err error) {
 
 	var items []*m.Template
-	if items, err = t.adaptors.Template.GetList(m.TemplateTypeItem); err != nil {
+	if items, err = t.adaptors.Template.GetList(ctx, m.TemplateTypeItem); err != nil {
 		return
 	}
 

@@ -49,11 +49,11 @@ func (l *LogEndpoint) Add(ctx context.Context, log *m.Log) (result *m.Log, errs 
 	}
 
 	var id int64
-	if id, err = l.adaptors.Log.Add(log); err != nil {
+	if id, err = l.adaptors.Log.Add(ctx, log); err != nil {
 		return
 	}
 
-	result, err = l.adaptors.Log.GetById(id)
+	result, err = l.adaptors.Log.GetById(ctx, id)
 
 	return
 }
@@ -61,7 +61,7 @@ func (l *LogEndpoint) Add(ctx context.Context, log *m.Log) (result *m.Log, errs 
 // GetById ...
 func (l *LogEndpoint) GetById(ctx context.Context, id int64) (log *m.Log, err error) {
 
-	log, err = l.adaptors.Log.GetById(id)
+	log, err = l.adaptors.Log.GetById(ctx, id)
 
 	return
 }
@@ -82,7 +82,7 @@ func (l *LogEndpoint) GetList(ctx context.Context, pagination common.PageParams,
 		queryObj.Levels = strings.Split(strings.Replace(*query, "'", "", -1), ",")
 	}
 
-	list, total, err = l.adaptors.Log.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, queryObj)
+	list, total, err = l.adaptors.Log.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, queryObj)
 
 	return
 }
@@ -90,7 +90,7 @@ func (l *LogEndpoint) GetList(ctx context.Context, pagination common.PageParams,
 // Search ...
 func (l *LogEndpoint) Search(ctx context.Context, query string, limit, offset int) (list []*m.Log, total int64, err error) {
 
-	list, total, err = l.adaptors.Log.Search(query, limit, offset)
+	list, total, err = l.adaptors.Log.Search(ctx, query, limit, offset)
 
 	return
 }
@@ -98,12 +98,12 @@ func (l *LogEndpoint) Search(ctx context.Context, query string, limit, offset in
 // Delete ...
 func (l *LogEndpoint) Delete(ctx context.Context, logId int64) (err error) {
 
-	_, err = l.adaptors.Log.GetById(logId)
+	_, err = l.adaptors.Log.GetById(ctx, logId)
 	if err != nil {
 		return
 	}
 
-	err = l.adaptors.Log.Delete(logId)
+	err = l.adaptors.Log.Delete(ctx, logId)
 
 	return
 }

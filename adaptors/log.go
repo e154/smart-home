@@ -19,6 +19,8 @@
 package adaptors
 
 import (
+	"context"
+
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"gorm.io/gorm"
@@ -26,13 +28,13 @@ import (
 
 // ILog ...
 type ILog interface {
-	Add(ver *m.Log) (id int64, err error)
-	AddMultiple(items []*m.Log) (err error)
-	GetById(verId int64) (ver *m.Log, err error)
-	Delete(verId int64) (err error)
-	List(limit, offset int64, orderBy, sort string, queryObj *m.LogQuery) (list []*m.Log, total int64, err error)
-	Search(query string, limit, offset int) (list []*m.Log, total int64, err error)
-	DeleteOldest(days int) (err error)
+	Add(ctx context.Context, ver *m.Log) (id int64, err error)
+	AddMultiple(ctx context.Context, items []*m.Log) (err error)
+	GetById(ctx context.Context, verId int64) (ver *m.Log, err error)
+	Delete(ctx context.Context, verId int64) (err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string, queryObj *m.LogQuery) (list []*m.Log, total int64, err error)
+	Search(ctx context.Context, query string, limit, offset int) (list []*m.Log, total int64, err error)
+	DeleteOldest(ctx context.Context, days int) (err error)
 	fromDb(dbVer *db.Log) (ver *m.Log)
 	toDb(ver *m.Log) (dbVer *db.Log)
 }
@@ -53,10 +55,10 @@ func GetLogAdaptor(d *gorm.DB) ILog {
 }
 
 // Add ...
-func (n *Log) Add(ver *m.Log) (id int64, err error) {
+func (n *Log) Add(ctx context.Context, ver *m.Log) (id int64, err error) {
 
 	dbVer := n.toDb(ver)
-	if id, err = n.table.Add(dbVer); err != nil {
+	if id, err = n.table.Add(ctx, dbVer); err != nil {
 		return
 	}
 
@@ -64,7 +66,7 @@ func (n *Log) Add(ver *m.Log) (id int64, err error) {
 }
 
 // AddMultiple ...
-func (n *Log) AddMultiple(items []*m.Log) (err error) {
+func (n *Log) AddMultiple(ctx context.Context, items []*m.Log) (err error) {
 
 	insertRecords := make([]*db.Log, 0, len(items))
 	for _, ver := range items {
@@ -72,16 +74,16 @@ func (n *Log) AddMultiple(items []*m.Log) (err error) {
 		insertRecords = append(insertRecords, dbVer)
 	}
 
-	err = n.table.AddMultiple(insertRecords)
+	err = n.table.AddMultiple(ctx, insertRecords)
 
 	return
 }
 
 // GetById ...
-func (n *Log) GetById(verId int64) (ver *m.Log, err error) {
+func (n *Log) GetById(ctx context.Context, verId int64) (ver *m.Log, err error) {
 
 	var dbVer *db.Log
-	if dbVer, err = n.table.GetById(verId); err != nil {
+	if dbVer, err = n.table.GetById(ctx, verId); err != nil {
 		return
 	}
 
@@ -91,13 +93,13 @@ func (n *Log) GetById(verId int64) (ver *m.Log, err error) {
 }
 
 // Delete ...
-func (n *Log) Delete(verId int64) (err error) {
-	err = n.table.Delete(verId)
+func (n *Log) Delete(ctx context.Context, verId int64) (err error) {
+	err = n.table.Delete(ctx, verId)
 	return
 }
 
 // List ...
-func (n *Log) List(limit, offset int64, orderBy, sort string, queryObj *m.LogQuery) (list []*m.Log, total int64, err error) {
+func (n *Log) List(ctx context.Context, limit, offset int64, orderBy, sort string, queryObj *m.LogQuery) (list []*m.Log, total int64, err error) {
 
 	var dbList []*db.Log
 	var dbQueryObj *db.LogQuery
@@ -110,7 +112,7 @@ func (n *Log) List(limit, offset int64, orderBy, sort string, queryObj *m.LogQue
 		}
 	}
 
-	if dbList, total, err = n.table.List(int(limit), int(offset), orderBy, sort, dbQueryObj); err != nil {
+	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort, dbQueryObj); err != nil {
 		return
 	}
 
@@ -124,9 +126,9 @@ func (n *Log) List(limit, offset int64, orderBy, sort string, queryObj *m.LogQue
 }
 
 // Search ...
-func (n *Log) Search(query string, limit, offset int) (list []*m.Log, total int64, err error) {
+func (n *Log) Search(ctx context.Context, query string, limit, offset int) (list []*m.Log, total int64, err error) {
 	var dbList []*db.Log
-	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
+	if dbList, total, err = n.table.Search(ctx, query, limit, offset); err != nil {
 		return
 	}
 
@@ -140,8 +142,8 @@ func (n *Log) Search(query string, limit, offset int) (list []*m.Log, total int6
 }
 
 // DeleteOldest ...
-func (n *Log) DeleteOldest(days int) (err error) {
-	err = n.table.DeleteOldest(days)
+func (n *Log) DeleteOldest(ctx context.Context, days int) (err error) {
+	err = n.table.DeleteOldest(ctx, days)
 	return
 }
 

@@ -19,6 +19,7 @@
 package db
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -51,8 +52,8 @@ func (d *UserDevice) TableName() string {
 }
 
 // Add ...
-func (d *UserDevices) Add(device *UserDevice) (id int64, err error) {
-	if err = d.Db.Create(&device).Error; err != nil {
+func (d *UserDevices) Add(ctx context.Context, device *UserDevice) (id int64, err error) {
+	if err = d.Db.WithContext(ctx).Create(&device).Error; err != nil {
 		var pgErr *pq.Error
 		if errors.As(err, &pgErr) {
 			switch pgErr.Code {
@@ -73,9 +74,9 @@ func (d *UserDevices) Add(device *UserDevice) (id int64, err error) {
 }
 
 // GetByUserId ...
-func (d *UserDevices) GetByUserId(id int64) (devices []*UserDevice, err error) {
+func (d *UserDevices) GetByUserId(ctx context.Context, id int64) (devices []*UserDevice, err error) {
 	devices = make([]*UserDevice, 0)
-	err = d.Db.Model(&UserDevice{}).
+	err = d.Db.WithContext(ctx).Model(&UserDevice{}).
 		Where("user_id = ?", id).
 		Find(&devices).
 		Error
@@ -87,8 +88,8 @@ func (d *UserDevices) GetByUserId(id int64) (devices []*UserDevice, err error) {
 }
 
 // Delete ...
-func (d *UserDevices) Delete(id int64) (err error) {
-	if err = d.Db.Delete(&UserDevice{}, "id = ?", id).Error; err != nil {
+func (d *UserDevices) Delete(ctx context.Context, id int64) (err error) {
+	if err = d.Db.WithContext(ctx).Delete(&UserDevice{}, "id = ?", id).Error; err != nil {
 		err = errors.Wrap(apperr.ErrUserDeviceDelete, err.Error())
 	}
 	return

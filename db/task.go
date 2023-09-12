@@ -19,6 +19,7 @@
 package db
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -56,8 +57,8 @@ func (d *Task) TableName() string {
 }
 
 // Add ...
-func (n Tasks) Add(task *Task) (id int64, err error) {
-	if err = n.Db.Create(&task).Error; err != nil {
+func (n Tasks) Add(ctx context.Context, task *Task) (id int64, err error) {
+	if err = n.Db.WithContext(ctx).Create(&task).Error; err != nil {
 		err = errors.Wrap(apperr.ErrTaskAdd, err.Error())
 		return
 	}
@@ -66,9 +67,9 @@ func (n Tasks) Add(task *Task) (id int64, err error) {
 }
 
 // GetById ...
-func (n Tasks) GetById(taskId int64) (task *Task, err error) {
+func (n Tasks) GetById(ctx context.Context, taskId int64) (task *Task, err error) {
 	task = &Task{}
-	err = n.Db.Model(task).
+	err = n.Db.WithContext(ctx).Model(task).
 		Where("id = ?", taskId).
 		Preload("Triggers").
 		Preload("Triggers.Script").
@@ -93,7 +94,7 @@ func (n Tasks) GetById(taskId int64) (task *Task, err error) {
 }
 
 // Update ...
-func (n Tasks) Update(m *Task) (err error) {
+func (n Tasks) Update(ctx context.Context, m *Task) (err error) {
 	q := map[string]interface{}{
 		"name":        m.Name,
 		"description": m.Description,
@@ -102,7 +103,7 @@ func (n Tasks) Update(m *Task) (err error) {
 		"enabled":     m.Enabled,
 	}
 
-	if err = n.Db.Model(&Task{Id: m.Id}).Updates(q).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(&Task{Id: m.Id}).Updates(q).Error; err != nil {
 		err = errors.Wrap(apperr.ErrTaskUpdate, err.Error())
 		return
 	}
@@ -110,8 +111,8 @@ func (n Tasks) Update(m *Task) (err error) {
 }
 
 // Delete ...
-func (n Tasks) Delete(id int64) (err error) {
-	if err = n.Db.Delete(&Task{Id: id}).Error; err != nil {
+func (n Tasks) Delete(ctx context.Context, id int64) (err error) {
+	if err = n.Db.WithContext(ctx).Delete(&Task{Id: id}).Error; err != nil {
 		err = errors.Wrap(apperr.ErrTaskDelete, err.Error())
 		return
 	}
@@ -119,8 +120,8 @@ func (n Tasks) Delete(id int64) (err error) {
 }
 
 // Enable ...
-func (n Tasks) Enable(id int64) (err error) {
-	if err = n.Db.Model(&Task{Id: id}).Updates(map[string]interface{}{"enabled": true}).Error; err != nil {
+func (n Tasks) Enable(ctx context.Context, id int64) (err error) {
+	if err = n.Db.WithContext(ctx).Model(&Task{Id: id}).Updates(map[string]interface{}{"enabled": true}).Error; err != nil {
 		err = errors.Wrap(apperr.ErrTaskUpdate, err.Error())
 		return
 	}
@@ -128,8 +129,8 @@ func (n Tasks) Enable(id int64) (err error) {
 }
 
 // Disable ...
-func (n Tasks) Disable(id int64) (err error) {
-	if err = n.Db.Model(&Task{Id: id}).Updates(map[string]interface{}{"enabled": false}).Error; err != nil {
+func (n Tasks) Disable(ctx context.Context, id int64) (err error) {
+	if err = n.Db.WithContext(ctx).Model(&Task{Id: id}).Updates(map[string]interface{}{"enabled": false}).Error; err != nil {
 		err = errors.Wrap(apperr.ErrTaskUpdate, err.Error())
 		return
 	}
@@ -137,15 +138,15 @@ func (n Tasks) Disable(id int64) (err error) {
 }
 
 // List ...
-func (n *Tasks) List(limit, offset int, orderBy, sort string, onlyEnabled bool) (list []*Task, total int64, err error) {
+func (n Tasks) List(ctx context.Context, limit, offset int, orderBy, sort string, onlyEnabled bool) (list []*Task, total int64, err error) {
 
-	if err = n.Db.Model(Task{}).Count(&total).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(Task{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrTaskList, err.Error())
 		return
 	}
 
 	list = make([]*Task, 0)
-	q := n.Db.Model(&Task{})
+	q := n.Db.WithContext(ctx).Model(&Task{})
 
 	if onlyEnabled {
 		q = q.Where("enabled = ?", true)
@@ -175,9 +176,9 @@ func (n *Tasks) List(limit, offset int, orderBy, sort string, onlyEnabled bool) 
 }
 
 // Search ...
-func (n *Tasks) Search(query string, limit, offset int) (list []*Task, total int64, err error) {
+func (n Tasks) Search(ctx context.Context, query string, limit, offset int) (list []*Task, total int64, err error) {
 
-	q := n.Db.Model(&Task{}).
+	q := n.Db.WithContext(ctx).Model(&Task{}).
 		Where("name LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
@@ -198,48 +199,48 @@ func (n *Tasks) Search(query string, limit, offset int) (list []*Task, total int
 }
 
 // AppendTrigger ...
-func (n *Tasks) AppendTrigger(id int64, trigger *Trigger) (err error) {
-	if err = n.Db.Model(&Task{Id: id}).Association("Triggers").Append(trigger); err != nil {
+func (n Tasks) AppendTrigger(ctx context.Context, id int64, trigger *Trigger) (err error) {
+	if err = n.Db.WithContext(ctx).Model(&Task{Id: id}).Association("Triggers").Append(trigger); err != nil {
 		err = errors.Wrap(apperr.ErrTaskAppendTrigger, err.Error())
 	}
 	return
 }
 
 // DeleteTrigger ...
-func (n *Tasks) DeleteTrigger(id, triggerId int64) (err error) {
-	if err = n.Db.Model(&Task{Id: id}).Association("Triggers").Delete(&Trigger{Id: triggerId}); err != nil {
+func (n Tasks) DeleteTrigger(ctx context.Context, id, triggerId int64) (err error) {
+	if err = n.Db.WithContext(ctx).Model(&Task{Id: id}).Association("Triggers").Delete(&Trigger{Id: triggerId}); err != nil {
 		err = errors.Wrap(apperr.ErrTaskDeleteTrigger, err.Error())
 	}
 	return
 }
 
 // AppendCondition ...
-func (n *Tasks) AppendCondition(id int64, condition *Condition) (err error) {
-	if err = n.Db.Model(&Task{Id: id}).Association("Conditions").Append(condition); err != nil {
+func (n Tasks) AppendCondition(ctx context.Context, id int64, condition *Condition) (err error) {
+	if err = n.Db.WithContext(ctx).Model(&Task{Id: id}).Association("Conditions").Append(condition); err != nil {
 		err = errors.Wrap(apperr.ErrTaskAppendCondition, err.Error())
 	}
 	return
 }
 
 // DeleteCondition ...
-func (n *Tasks) DeleteCondition(id, conditionId int64) (err error) {
-	if err = n.Db.Model(&Task{Id: id}).Association("Conditions").Delete(&Condition{Id: conditionId}); err != nil {
+func (n Tasks) DeleteCondition(ctx context.Context, id, conditionId int64) (err error) {
+	if err = n.Db.WithContext(ctx).Model(&Task{Id: id}).Association("Conditions").Delete(&Condition{Id: conditionId}); err != nil {
 		err = errors.Wrap(apperr.ErrTaskDeleteCondition, err.Error())
 	}
 	return
 }
 
 // AppendAction ...
-func (n *Tasks) AppendAction(id int64, action *Action) (err error) {
-	if err = n.Db.Model(&Task{Id: id}).Association("Actions").Append(action); err != nil {
+func (n Tasks) AppendAction(ctx context.Context, id int64, action *Action) (err error) {
+	if err = n.Db.WithContext(ctx).Model(&Task{Id: id}).Association("Actions").Append(action); err != nil {
 		err = errors.Wrap(apperr.ErrTaskAppendAction, err.Error())
 	}
 	return
 }
 
 // DeleteAction ...
-func (n *Tasks) DeleteAction(id, actionId int64) (err error) {
-	if err = n.Db.Model(&Task{Id: id}).Association("Actions").Delete(&Action{Id: actionId}); err != nil {
+func (n Tasks) DeleteAction(ctx context.Context, id, actionId int64) (err error) {
+	if err = n.Db.WithContext(ctx).Model(&Task{Id: id}).Association("Actions").Delete(&Action{Id: actionId}); err != nil {
 		err = errors.Wrap(apperr.ErrTaskDeleteAction, err.Error())
 	}
 	return

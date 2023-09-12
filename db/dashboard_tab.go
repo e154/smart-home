@@ -19,6 +19,7 @@
 package db
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -56,8 +57,8 @@ func (d *DashboardTab) TableName() string {
 }
 
 // Add ...
-func (n DashboardTabs) Add(tab *DashboardTab) (id int64, err error) {
-	if err = n.Db.Create(&tab).Error; err != nil {
+func (n DashboardTabs) Add(ctx context.Context, tab *DashboardTab) (id int64, err error) {
+	if err = n.Db.WithContext(ctx).Create(&tab).Error; err != nil {
 		err = errors.Wrap(apperr.ErrDashboardTabAdd, err.Error())
 		return
 	}
@@ -66,9 +67,9 @@ func (n DashboardTabs) Add(tab *DashboardTab) (id int64, err error) {
 }
 
 // GetById ...
-func (n DashboardTabs) GetById(id int64) (tab *DashboardTab, err error) {
+func (n DashboardTabs) GetById(ctx context.Context, id int64) (tab *DashboardTab, err error) {
 	tab = &DashboardTab{}
-	err = n.Db.Model(tab).
+	err = n.Db.WithContext(ctx).Model(tab).
 		Where("id = ?", id).
 		Preload("Cards").
 		Preload("Cards.Items").
@@ -86,7 +87,7 @@ func (n DashboardTabs) GetById(id int64) (tab *DashboardTab, err error) {
 }
 
 // Update ...
-func (n DashboardTabs) Update(m *DashboardTab) (err error) {
+func (n DashboardTabs) Update(ctx context.Context, m *DashboardTab) (err error) {
 	q := map[string]interface{}{
 		"name":         m.Name,
 		"icon":         m.Icon,
@@ -98,30 +99,31 @@ func (n DashboardTabs) Update(m *DashboardTab) (err error) {
 		"dashboard_id": m.DashboardId,
 	}
 
-	if err = n.Db.Model(&DashboardTab{Id: m.Id}).Updates(q).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(&DashboardTab{Id: m.Id}).Updates(q).Error; err != nil {
 		err = errors.Wrap(apperr.ErrDashboardTabUpdate, err.Error())
 	}
 	return
 }
 
 // Delete ...
-func (n DashboardTabs) Delete(id int64) (err error) {
-	if err = n.Db.Delete(&DashboardTab{Id: id}).Error; err != nil {
+func (n DashboardTabs) Delete(ctx context.Context, id int64) (err error) {
+	if err = n.Db.WithContext(ctx).Delete(&DashboardTab{Id: id}).Error; err != nil {
 		err = errors.Wrap(apperr.ErrDashboardTabDelete, err.Error())
 	}
 	return
 }
 
 // List ...
-func (n *DashboardTabs) List(limit, offset int, orderBy, sort string) (list []*DashboardTab, total int64, err error) {
+func (n *DashboardTabs) List(ctx context.Context, limit, offset int, orderBy, sort string) (list []*DashboardTab, total int64, err error) {
 
-	if err = n.Db.Model(DashboardTab{}).Count(&total).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(DashboardTab{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrDashboardTabList, err.Error())
 		return
 	}
 
 	list = make([]*DashboardTab, 0)
 	q := n.Db.
+		WithContext(ctx).
 		Preload("Cards").
 		Preload("Cards.Items").
 		Limit(limit).

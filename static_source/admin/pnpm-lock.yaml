@@ -128,6 +128,9 @@ dependencies:
   vue3-selecto:
     specifier: ^1.12.0
     version: 1.12.0
+  vue3-slider:
+    specifier: ^1.9.0
+    version: 1.9.0(vue@3.2.47)
   web-storage-cache:
     specifier: ^1.1.1
     version: 1.1.1
@@ -9218,6 +9221,15 @@ packages:
     resolution: {integrity: sha512-C9M8Mlv+Jf5ynY+AW8D63p6lkoVSZ9tZrbgXw5wn2P/+59IgTqVz3cyO6+YPrlxg7ez/qgHa/MXMs0oHkdt6Mg==}
     dependencies:
       selecto: 1.26.0
+    dev: false
+
+  /vue3-slider@1.9.0(vue@3.2.47):
+    resolution: {integrity: sha512-S+ojp3A21FiOM389Xp/bdUKSzjxcsTaDwI4N1aWVPoNh9//E8M+dqs1Ufjh86LulPAWLCN0ZR6eaD8jLZZ574g==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      vue: ^3.0.0
+    dependencies:
+      vue: 3.2.47
     dev: false
 
   /vue@3.2.47:

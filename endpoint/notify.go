@@ -67,7 +67,7 @@ func (n *NotifyEndpoint) Send(ctx context.Context, params *m.NewNotifrMessage) (
 
 	var render *m.TemplateRender
 	if params.BodyType == "template" && params.Template != nil && params.Params != nil {
-		if render, err = n.adaptors.Template.Render(common.StringValue(params.Template), params.Params); err != nil {
+		if render, err = n.adaptors.Template.Render(ctx, common.StringValue(params.Template), params.Params); err != nil {
 			return
 		}
 	}

@@ -15,6 +15,7 @@ import { Dialog } from '@/components/Dialog'
 import Viewer from "@/components/JsonViewer/JsonViewer.vue";
 import {Core} from "@/views/Dashboard/core";
 import {useEmitt} from "@/hooks/web/useEmitt";
+import {useCache} from "@/hooks/web/useCache";
 
 const {push, currentRoute} = useRouter()
 const remember = ref(false)
@@ -22,6 +23,7 @@ const {register, elFormRef, methods} = useForm()
 const appStore = useAppStore()
 const counter = ref(0);
 const {t} = useI18n()
+const { wsCache } = useCache()
 
 interface TableObject {
   tableList: ApiDashboard[]
@@ -36,11 +38,12 @@ interface Params {
   sort?: string;
 }
 
+const cachePref = 'dashboard'
 const tableObject = reactive<TableObject>(
     {
       tableList: [],
       loading: false,
-      sort: '-createdAt'
+      sort: wsCache.get(cachePref+'Sort') || '-createdAt'
     },
 );
 
@@ -95,13 +98,17 @@ const columns: TableColumn[] = [
   }
 ]
 const paginationObj = ref<Pagination>({
-  currentPage: 1,
-  pageSize: 50,
+  currentPage: wsCache.get(cachePref+'CurrentPage') || 1,
+  pageSize: wsCache.get(cachePref+'PageSize') || 50,
   total: 0,
 })
 
 const getList = async () => {
   tableObject.loading = true
+
+  wsCache.set(cachePref+'CurrentPage', paginationObj.value.currentPage)
+  wsCache.set(cachePref+'PageSize', paginationObj.value.pageSize)
+  wsCache.set(cachePref+'Sort', tableObject.sort)
 
   let params: Params = {
     page: paginationObj.value.currentPage,

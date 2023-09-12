@@ -54,7 +54,7 @@ func (d DeveloperToolsEndpoint) StateList(ctx context.Context) (states []m.Entit
 // SetEntityState ...
 func (d DeveloperToolsEndpoint) SetEntityState(ctx context.Context, entityId string, newState *string, attrs map[string]interface{}) (errs validator.ValidationErrorsTranslations, err error) {
 
-	_, err = d.adaptors.Entity.GetById(common.EntityId(entityId))
+	_, err = d.adaptors.Entity.GetById(ctx, common.EntityId(entityId))
 	if err != nil {
 		return
 	}
@@ -77,7 +77,7 @@ func (d DeveloperToolsEndpoint) EventList(ctx context.Context) (events []bus.Sta
 // TaskCallTrigger ...
 func (d *DeveloperToolsEndpoint) TaskCallTrigger(ctx context.Context, id int64, name string) (err error) {
 
-	if _, err = d.adaptors.Trigger.GetById(id); err != nil {
+	if _, err = d.adaptors.Trigger.GetById(ctx, id); err != nil {
 		return
 	}
 
@@ -92,7 +92,7 @@ func (d *DeveloperToolsEndpoint) TaskCallTrigger(ctx context.Context, id int64, 
 // TaskCallAction ...
 func (d *DeveloperToolsEndpoint) TaskCallAction(ctx context.Context, id int64, name string) (err error) {
 
-	if _, err = d.adaptors.Action.GetById(id); err != nil {
+	if _, err = d.adaptors.Action.GetById(ctx, id); err != nil {
 		return
 	}
 
@@ -107,7 +107,7 @@ func (d *DeveloperToolsEndpoint) TaskCallAction(ctx context.Context, id int64, n
 // ReloadEntity ...
 func (d *DeveloperToolsEndpoint) ReloadEntity(ctx context.Context, id common.EntityId) (err error) {
 
-	_, err = d.adaptors.Entity.GetById(id)
+	_, err = d.adaptors.Entity.GetById(ctx, id)
 	if err != nil {
 		return
 	}
@@ -122,7 +122,7 @@ func (d *DeveloperToolsEndpoint) ReloadEntity(ctx context.Context, id common.Ent
 // EntitySetState ...
 func (d *DeveloperToolsEndpoint) EntitySetState(ctx context.Context, id common.EntityId, name string) (err error) {
 
-	_, err = d.adaptors.Entity.GetById(id)
+	_, err = d.adaptors.Entity.GetById(ctx, id)
 	if err != nil {
 		return
 	}

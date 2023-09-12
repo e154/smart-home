@@ -1,6 +1,7 @@
 package example1
 
 import (
+	"context"
 	"fmt"
 	"os"
 
@@ -24,24 +25,24 @@ func NewScriptManager(adaptors *adaptors.Adaptors,
 	}
 }
 
-func (s *ScriptManager) addScripts() (scripts []*m.Script, err error) {
+func (s *ScriptManager) addScripts(ctx context.Context) (scripts []*m.Script, err error) {
 	// L3+ script
 	var script1 *m.Script
-	if script1, err = s.addScript("l3+_script_v1", sourceScript1, "l3+ script v1"); err != nil {
+	if script1, err = s.addScript(ctx, "l3+_script_v1", sourceScript1, "l3+ script v1"); err != nil {
 		return
 	}
 	// api monitor
 	var script2 *m.Script
-	if script2, err = s.addScript("sensor_script_v1", fmt.Sprintf(sourceScript2, os.Getenv("LC_ADDRESS")), "sensor script v1"); err != nil {
+	if script2, err = s.addScript(ctx, "sensor_script_v1", fmt.Sprintf(sourceScript2, os.Getenv("LC_ADDRESS")), "sensor script v1"); err != nil {
 		return
 	}
 	scripts = []*m.Script{script1, script2}
 	return
 }
 
-func (s *ScriptManager) addScript(name, source, desc string) (script *m.Script, err error) {
+func (s *ScriptManager) addScript(ctx context.Context, name, source, desc string) (script *m.Script, err error) {
 
-	if script, err = s.adaptors.Script.GetByName(name); err == nil {
+	if script, err = s.adaptors.Script.GetByName(ctx, name); err == nil {
 		return
 	}
 
@@ -58,7 +59,7 @@ func (s *ScriptManager) addScript(name, source, desc string) (script *m.Script, 
 	err = engineScript.Compile()
 	So(err, ShouldBeNil)
 
-	script.Id, err = s.adaptors.Script.Add(script)
+	script.Id, err = s.adaptors.Script.Add(ctx, script)
 	So(err, ShouldBeNil)
 	return
 }

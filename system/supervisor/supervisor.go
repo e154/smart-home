@@ -107,7 +107,7 @@ func (e *supervisor) Start(ctx context.Context) (err error) {
 	//DEPRECATED
 	e.scriptService.PushStruct("entityManager", NewSupervisorBind(e))
 
-	e.pluginManager.Start()
+	e.pluginManager.Start(ctx)
 
 	_ = e.eventBus.Subscribe("system/services/scripts", e.handlerSystemScripts)
 	e.eventBus.Publish("system/services/supervisor", events.EventServiceStarted{Service: "Supervisor"})
@@ -125,7 +125,7 @@ func (e *supervisor) Shutdown(ctx context.Context) (err error) {
 	e.scriptService.PopStruct("supervisor")
 	e.scriptService.PopStruct("entityManager")
 
-	e.pluginManager.Shutdown()
+	e.pluginManager.Shutdown(ctx)
 
 	_ = e.eventBus.Unsubscribe("system/entities/+", e.eventHandler)
 	_ = e.eventBus.Unsubscribe("system/plugins/+", e.eventHandler)
@@ -171,7 +171,7 @@ func (e *supervisor) LoadEntities() {
 	var err error
 
 LOOP:
-	entities, _, err = e.adaptors.Entity.List(perPage, perPage*page, "", "", true, nil, nil, nil)
+	entities, _, err = e.adaptors.Entity.List(context.Background(), perPage, perPage*page, "", "", true, nil, nil, nil)
 	if err != nil {
 		log.Error(err.Error())
 		return
@@ -236,7 +236,7 @@ func (e *supervisor) SetMetric(id common.EntityId, name string, value map[string
 			continue
 		}
 
-		err = e.adaptors.MetricBucket.Add(&m.MetricDataItem{
+		err = e.adaptors.MetricBucket.Add(context.Background(), &m.MetricDataItem{
 			Value:    value,
 			MetricId: metric.Id,
 			Time:     time.Now(),
@@ -331,7 +331,7 @@ func (e *supervisor) List() (entities []m.EntityShort, err error) {
 					optionItems[i] = item.Name
 				}
 
-				if entities[i].Metrics[j].Data, err = e.adaptors.MetricBucket.Simple24HPreview(metric.Id, optionItems); err != nil {
+				if entities[i].Metrics[j].Data, err = e.adaptors.MetricBucket.Simple24HPreview(context.Background(), metric.Id, optionItems); err != nil {
 					log.Error(err.Error())
 					return
 				}
@@ -400,7 +400,7 @@ func (e *supervisor) Spawn(constructor ActorConstructor) (actor PluginActor) {
 		Settings:   settings,
 	})
 
-	_ = e.adaptors.Entity.Add(&m.Entity{
+	_ = e.adaptors.Entity.Add(context.Background(), &m.Entity{
 		Id:          entityId,
 		Description: info.Description,
 		PluginName:  info.PluginName,
@@ -474,7 +474,7 @@ func (e *supervisor) eventStateChangedHandler(msg events.EventStateChanged) {
 	}
 
 	go func() {
-		_, err := e.adaptors.EntityStorage.Add(&m.EntityStorage{
+		_, err := e.adaptors.EntityStorage.Add(context.Background(), &m.EntityStorage{
 			State:      state,
 			EntityId:   msg.EntityId,
 			Attributes: msg.NewState.Attributes.Serialize(),
@@ -501,7 +501,7 @@ func (e *supervisor) eventLastState(msg events.EventGetLastState) {
 	info := actor.Actor.Info()
 
 	if actor.CurrentState.LastChanged == nil && actor.CurrentState.LastUpdated == nil {
-		entity, _ := e.adaptors.Entity.GetById(msg.EntityId)
+		entity, _ := e.adaptors.Entity.GetById(context.Background(), msg.EntityId)
 		actor.CurrentState.Attributes = entity.Attributes
 	}
 
@@ -524,7 +524,7 @@ func (e *supervisor) eventLoadedPlugin(msg events.EventLoadedPlugin) (err error)
 
 LOOP:
 
-	if entities, err = e.adaptors.Entity.GetByType(msg.PluginName, perPage, perPage*page); err != nil {
+	if entities, err = e.adaptors.Entity.GetByType(context.Background(), msg.PluginName, perPage, perPage*page); err != nil {
 		log.Error(err.Error())
 		return
 	}
@@ -559,7 +559,7 @@ func (e *supervisor) eventUnloadedPlugin(msg events.EventUnloadedPlugin) {
 
 func (e *supervisor) eventCreatedEntity(msg events.EventCreatedEntity) {
 
-	entity, err := e.adaptors.Entity.GetById(msg.EntityId)
+	entity, err := e.adaptors.Entity.GetById(context.Background(), msg.EntityId)
 	if err != nil {
 		return
 	}
@@ -575,7 +575,7 @@ func (e *supervisor) eventCreatedEntity(msg events.EventCreatedEntity) {
 
 func (e *supervisor) eventUpdatedEntity(msg events.EventUpdatedEntity) {
 
-	entity, err := e.adaptors.Entity.GetById(msg.EntityId)
+	entity, err := e.adaptors.Entity.GetById(context.Background(), msg.EntityId)
 	if err != nil {
 		return
 	}
@@ -591,7 +591,7 @@ func (e *supervisor) eventUnloadEntity(msg events.CommandUnloadEntity) {
 }
 
 func (e *supervisor) eventLoadEntity(msg events.CommandLoadEntity) {
-	entity, _ := e.adaptors.Entity.GetById(msg.EntityId)
+	entity, _ := e.adaptors.Entity.GetById(context.Background(), msg.EntityId)
 	if err := e.AddEntity(entity); err != nil {
 		log.Warnf("%s, %s", entity.Id, err.Error())
 	}

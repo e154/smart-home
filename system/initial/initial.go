@@ -135,7 +135,7 @@ func (n *Initial) checkForUpgrade() {
 		fmt.Println("")
 	}()
 
-	v, err := n.adaptors.Variable.GetByName("initial_version")
+	v, err := n.adaptors.Variable.GetByName(context.Background(), "initial_version")
 	if err != nil {
 
 		if errors.Is(err, apperr.ErrNotFound) {
@@ -143,7 +143,7 @@ func (n *Initial) checkForUpgrade() {
 				Name:  "initial_version",
 				Value: fmt.Sprintf("%d", 1),
 			}
-			err = n.adaptors.Variable.Add(v)
+			err = n.adaptors.Variable.Add(context.Background(), v)
 			So(err, ShouldBeNil)
 		}
 	}
@@ -157,7 +157,7 @@ func (n *Initial) checkForUpgrade() {
 	}
 
 	v.Value = currentVersion
-	err = n.adaptors.Variable.Update(v)
+	err = n.adaptors.Variable.Update(context.Background(), v)
 	So(err, ShouldBeNil)
 }
 

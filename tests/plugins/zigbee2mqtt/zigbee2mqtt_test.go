@@ -157,7 +157,7 @@ automationAction = (entityId)->
 				BaseTopic:  "zigbee2mqtt",
 			}
 			var err error
-			zigbeeServer.Id, err = adaptors.Zigbee2mqtt.Add(zigbeeServer)
+			zigbeeServer.Id, err = adaptors.Zigbee2mqtt.Add(context.Background(), zigbeeServer)
 			So(err, ShouldBeNil)
 
 			// add zigbee2mqtt_device
@@ -171,7 +171,7 @@ automationAction = (entityId)->
 				Status:        "active",
 				Payload:       []byte("{}"),
 			}
-			err = adaptors.Zigbee2mqttDevice.Add(butonDevice)
+			err = adaptors.Zigbee2mqttDevice.Add(context.Background(), butonDevice)
 			So(err, ShouldBeNil)
 
 			plugDevice := &m.Zigbee2mqttDevice{
@@ -184,7 +184,7 @@ automationAction = (entityId)->
 				Status:        "active",
 				Payload:       []byte("{}"),
 			}
-			err = adaptors.Zigbee2mqttDevice.Add(plugDevice)
+			err = adaptors.Zigbee2mqttDevice.Add(context.Background(), plugDevice)
 			So(err, ShouldBeNil)
 
 			// add scripts
@@ -208,7 +208,7 @@ automationAction = (entityId)->
 			// add entity
 			// ------------------------------------------------
 			buttonEnt := GetNewButton(fmt.Sprintf("zigbee2mqtt.%s", zigbeeButtonId), []*m.Script{buttonScript})
-			err = adaptors.Entity.Add(buttonEnt)
+			err = adaptors.Entity.Add(context.Background(), buttonEnt)
 			So(err, ShouldBeNil)
 
 			plugEnt := GetNewPlug(fmt.Sprintf("zigbee2mqtt.%s", zigbeePlugId), []*m.Script{plugScript})
@@ -224,7 +224,7 @@ automationAction = (entityId)->
 					Script:      plugActionOnOffScript,
 				},
 			}
-			err = adaptors.Entity.Add(plugEnt)
+			err = adaptors.Entity.Add(context.Background(), plugEnt)
 			So(err, ShouldBeNil)
 
 			time.Sleep(time.Second)
@@ -255,14 +255,14 @@ automationAction = (entityId)->
 				Name:   "check plug state",
 				Script: task1Script,
 			}
-			condition1.Id, err = adaptors.Condition.Add(condition1)
+			condition1.Id, err = adaptors.Condition.Add(context.Background(), condition1)
 			So(err, ShouldBeNil)
 
 			condition2 := &m.Condition{
 				Name:   "check plug state",
 				Script: task2Script,
 			}
-			condition2.Id, err = adaptors.Condition.Add(condition2)
+			condition2.Id, err = adaptors.Condition.Add(context.Background(), condition2)
 			So(err, ShouldBeNil)
 
 			// actions
@@ -271,14 +271,14 @@ automationAction = (entityId)->
 				Name:   "action on Plug",
 				Script: task1Script,
 			}
-			action1.Id, err = adaptors.Action.Add(action1)
+			action1.Id, err = adaptors.Action.Add(context.Background(), action1)
 			So(err, ShouldBeNil)
 
 			action2 := &m.Action{
 				Name:   "action on Plug",
 				Script: task2Script,
 			}
-			action2.Id, err = adaptors.Action.Add(action2)
+			action2.Id, err = adaptors.Action.Add(context.Background(), action2)
 			So(err, ShouldBeNil)
 
 			// tasks
@@ -310,7 +310,7 @@ automationAction = (entityId)->
 			// ------------------------------------------------
 
 			automation.Start()
-			go zigbee2mqtt.Start()
+			go zigbee2mqtt.Start(context.Background())
 
 			supervisor.Start(context.Background())
 			WaitSupervisor(eventBus)

@@ -20,7 +20,6 @@ package sensor
 
 import (
 	"fmt"
-
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
@@ -131,7 +130,7 @@ func (e *Actor) runAction(msg events.EventCallEntityAction) {
 	if action.ScriptEngine == nil {
 		return
 	}
-	if _, err := action.ScriptEngine.AssertFunction(FuncEntityAction, msg.EntityId, action.Name); err != nil {
+	if _, err := action.ScriptEngine.AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
 		log.Error(err.Error())
 	}
 }

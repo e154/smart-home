@@ -19,6 +19,8 @@
 package adaptors
 
 import (
+	"context"
+
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
@@ -28,19 +30,19 @@ import (
 
 // ITemplate ...
 type ITemplate interface {
-	UpdateOrCreate(ver *m.Template) (err error)
-	Create(ver *m.Template) (err error)
-	UpdateStatus(ver *m.Template) (err error)
-	GetList(templateType m.TemplateType) (items []*m.Template, err error)
-	GetByName(name string) (ver *m.Template, err error)
-	GetItemByName(name string) (ver *m.Template, err error)
-	GetItemsSortedList() (count int64, items []string, err error)
-	Delete(name string) (err error)
-	GetItemsTree() (tree []*m.TemplateTree, err error)
-	UpdateItemsTree(tree []*m.TemplateTree) (err error)
-	Search(query string, limit, offset int) (list []*m.Template, total int64, err error)
-	GetMarkers(template *m.Template) (err error)
-	Render(name string, params map[string]interface{}) (render *m.TemplateRender, err error)
+	UpdateOrCreate(ctx context.Context, ver *m.Template) (err error)
+	Create(ctx context.Context, ver *m.Template) (err error)
+	UpdateStatus(ctx context.Context, ver *m.Template) (err error)
+	GetList(ctx context.Context, templateType m.TemplateType) (items []*m.Template, err error)
+	GetByName(ctx context.Context, name string) (ver *m.Template, err error)
+	GetItemByName(ctx context.Context, name string) (ver *m.Template, err error)
+	GetItemsSortedList(ctx context.Context) (count int64, items []string, err error)
+	Delete(ctx context.Context, name string) (err error)
+	GetItemsTree(ctx context.Context) (tree []*m.TemplateTree, err error)
+	UpdateItemsTree(ctx context.Context, tree []*m.TemplateTree) (err error)
+	Search(ctx context.Context, query string, limit, offset int) (list []*m.Template, total int64, err error)
+	GetMarkers(ctx context.Context, template *m.Template) (err error)
+	Render(ctx context.Context, name string, params map[string]interface{}) (render *m.TemplateRender, err error)
 	fromDb(dbVer *db.Template) (ver *m.Template)
 	toDb(ver *m.Template) (dbVer *db.Template)
 }
@@ -61,10 +63,10 @@ func GetTemplateAdaptor(d *gorm.DB) ITemplate {
 }
 
 // UpdateOrCreate ...
-func (n *Template) UpdateOrCreate(ver *m.Template) (err error) {
+func (n *Template) UpdateOrCreate(ctx context.Context, ver *m.Template) (err error) {
 
 	dbVer := n.toDb(ver)
-	if err = n.table.UpdateOrCreate(dbVer); err != nil {
+	if err = n.table.UpdateOrCreate(ctx, dbVer); err != nil {
 		return
 	}
 
@@ -72,10 +74,10 @@ func (n *Template) UpdateOrCreate(ver *m.Template) (err error) {
 }
 
 // Create ...
-func (n *Template) Create(ver *m.Template) (err error) {
+func (n *Template) Create(ctx context.Context, ver *m.Template) (err error) {
 
 	dbVer := n.toDb(ver)
-	if err = n.table.Create(dbVer); err != nil {
+	if err = n.table.Create(ctx, dbVer); err != nil {
 		return
 	}
 
@@ -83,10 +85,10 @@ func (n *Template) Create(ver *m.Template) (err error) {
 }
 
 // UpdateStatus ...
-func (n *Template) UpdateStatus(ver *m.Template) (err error) {
+func (n *Template) UpdateStatus(ctx context.Context, ver *m.Template) (err error) {
 
 	dbVer := n.toDb(ver)
-	if err = n.table.UpdateStatus(dbVer); err != nil {
+	if err = n.table.UpdateStatus(ctx, dbVer); err != nil {
 		return
 	}
 
@@ -94,10 +96,10 @@ func (n *Template) UpdateStatus(ver *m.Template) (err error) {
 }
 
 // GetList ...
-func (n *Template) GetList(templateType m.TemplateType) (items []*m.Template, err error) {
+func (n *Template) GetList(ctx context.Context, templateType m.TemplateType) (items []*m.Template, err error) {
 
 	var dbItems []*db.Template
-	if dbItems, err = n.table.GetList(templateType.String()); err != nil {
+	if dbItems, err = n.table.GetList(ctx, templateType.String()); err != nil {
 		return
 	}
 
@@ -110,10 +112,10 @@ func (n *Template) GetList(templateType m.TemplateType) (items []*m.Template, er
 }
 
 // GetByName ...
-func (n *Template) GetByName(name string) (ver *m.Template, err error) {
+func (n *Template) GetByName(ctx context.Context, name string) (ver *m.Template, err error) {
 
 	var dbVer *db.Template
-	if dbVer, err = n.table.GetByName(name, "template"); err != nil {
+	if dbVer, err = n.table.GetByName(ctx, name, "template"); err != nil {
 		return
 	}
 
@@ -122,10 +124,10 @@ func (n *Template) GetByName(name string) (ver *m.Template, err error) {
 }
 
 // GetItemByName ...
-func (n *Template) GetItemByName(name string) (ver *m.Template, err error) {
+func (n *Template) GetItemByName(ctx context.Context, name string) (ver *m.Template, err error) {
 
 	var dbVer *db.Template
-	if dbVer, err = n.table.GetByName(name, "item"); err != nil {
+	if dbVer, err = n.table.GetByName(ctx, name, "item"); err != nil {
 		return
 	}
 
@@ -134,22 +136,22 @@ func (n *Template) GetItemByName(name string) (ver *m.Template, err error) {
 }
 
 // GetItemsSortedList ...
-func (n *Template) GetItemsSortedList() (count int64, items []string, err error) {
-	count, items, err = n.table.GetItemsSortedList()
+func (n *Template) GetItemsSortedList(ctx context.Context) (count int64, items []string, err error) {
+	count, items, err = n.table.GetItemsSortedList(ctx)
 	return
 }
 
 // Delete ...
-func (n *Template) Delete(name string) (err error) {
-	err = n.table.Delete(name)
+func (n *Template) Delete(ctx context.Context, name string) (err error) {
+	err = n.table.Delete(ctx, name)
 	return
 }
 
 // GetItemsTree ...
-func (n *Template) GetItemsTree() (tree []*m.TemplateTree, err error) {
+func (n *Template) GetItemsTree(ctx context.Context) (tree []*m.TemplateTree, err error) {
 
 	var dbTree []*db.TemplateTree
-	if dbTree, err = n.table.GetItemsTree(); err != nil {
+	if dbTree, err = n.table.GetItemsTree(ctx); err != nil {
 		return
 	}
 
@@ -160,14 +162,14 @@ func (n *Template) GetItemsTree() (tree []*m.TemplateTree, err error) {
 }
 
 // UpdateItemsTree ...
-func (n *Template) UpdateItemsTree(tree []*m.TemplateTree) (err error) {
+func (n *Template) UpdateItemsTree(ctx context.Context, tree []*m.TemplateTree) (err error) {
 
 	dbTree := make([]*db.TemplateTree, 0)
 	if err = common.Copy(&dbTree, &tree, common.JsonEngine); err != nil {
 		return
 	}
 
-	if err = n.table.UpdateItemsTree(dbTree, ""); err != nil {
+	if err = n.table.UpdateItemsTree(ctx, dbTree, ""); err != nil {
 		return
 	}
 
@@ -175,16 +177,16 @@ func (n *Template) UpdateItemsTree(tree []*m.TemplateTree) (err error) {
 }
 
 // Search ...
-func (n *Template) Search(query string, limit, offset int) (list []*m.Template, total int64, err error) {
+func (n *Template) Search(ctx context.Context, query string, limit, offset int) (list []*m.Template, total int64, err error) {
 	var dbList []*db.Template
-	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
+	if dbList, total, err = n.table.Search(ctx, query, limit, offset); err != nil {
 		return
 	}
 
 	list = make([]*m.Template, 0)
 	for _, dbVer := range dbList {
 		ver := n.fromDb(dbVer)
-		_ = n.GetMarkers(ver)
+		_ = n.GetMarkers(ctx, ver)
 		list = append(list, ver)
 	}
 
@@ -192,7 +194,7 @@ func (n *Template) Search(query string, limit, offset int) (list []*m.Template, 
 }
 
 // GetMarkers ...
-func (n *Template) GetMarkers(template *m.Template) (err error) {
+func (n *Template) GetMarkers(ctx context.Context, template *m.Template) (err error) {
 
 	var templateContent *m.TemplateContent
 	var items m.Templates
@@ -201,7 +203,7 @@ func (n *Template) GetMarkers(template *m.Template) (err error) {
 		return
 	}
 
-	if items, err = n.GetList(m.TemplateTypeItem); err != nil {
+	if items, err = n.GetList(ctx, m.TemplateTypeItem); err != nil {
 		return
 	}
 
@@ -213,13 +215,13 @@ func (n *Template) GetMarkers(template *m.Template) (err error) {
 }
 
 // Render ...
-func (n *Template) Render(name string, params map[string]interface{}) (render *m.TemplateRender, err error) {
+func (n *Template) Render(ctx context.Context, name string, params map[string]interface{}) (render *m.TemplateRender, err error) {
 
 	var item *m.Template
 	var template *m.TemplateContent
 	var items m.Templates
 
-	if item, err = n.GetByName(name); err != nil {
+	if item, err = n.GetByName(ctx, name); err != nil {
 		return
 	}
 
@@ -227,7 +229,7 @@ func (n *Template) Render(name string, params map[string]interface{}) (render *m
 		return
 	}
 
-	if items, err = n.GetList(m.TemplateTypeItem); err != nil {
+	if items, err = n.GetList(ctx, m.TemplateTypeItem); err != nil {
 		return
 	}
 

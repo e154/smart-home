@@ -48,11 +48,11 @@ func (t *DashboardTabEndpoint) Add(ctx context.Context, tab *m.DashboardTab) (re
 	}
 
 	var id int64
-	if id, err = t.adaptors.DashboardTab.Add(tab); err != nil {
+	if id, err = t.adaptors.DashboardTab.Add(ctx, tab); err != nil {
 		return
 	}
 
-	result, err = t.adaptors.DashboardTab.GetById(id)
+	result, err = t.adaptors.DashboardTab.GetById(ctx, id)
 
 	return
 }
@@ -60,11 +60,11 @@ func (t *DashboardTabEndpoint) Add(ctx context.Context, tab *m.DashboardTab) (re
 // GetById ...
 func (t *DashboardTabEndpoint) GetById(ctx context.Context, id int64) (tab *m.DashboardTab, err error) {
 
-	if tab, err = t.adaptors.DashboardTab.GetById(id); err != nil {
+	if tab, err = t.adaptors.DashboardTab.GetById(ctx, id); err != nil {
 		return
 	}
 
-	err = t.preloadEntities(tab)
+	err = t.preloadEntities(ctx, tab)
 
 	return
 }
@@ -73,7 +73,7 @@ func (t *DashboardTabEndpoint) GetById(ctx context.Context, id int64) (tab *m.Da
 func (i *DashboardTabEndpoint) Update(ctx context.Context, params *m.DashboardTab) (result *m.DashboardTab, errs validator.ValidationErrorsTranslations, err error) {
 
 	var board *m.DashboardTab
-	if board, err = i.adaptors.DashboardTab.GetById(params.Id); err != nil {
+	if board, err = i.adaptors.DashboardTab.GetById(ctx, params.Id); err != nil {
 		return
 	}
 
@@ -86,11 +86,11 @@ func (i *DashboardTabEndpoint) Update(ctx context.Context, params *m.DashboardTa
 		return
 	}
 
-	if err = i.adaptors.DashboardTab.Update(board); err != nil {
+	if err = i.adaptors.DashboardTab.Update(ctx, board); err != nil {
 		return
 	}
 
-	result, err = i.adaptors.DashboardTab.GetById(params.Id)
+	result, err = i.adaptors.DashboardTab.GetById(ctx, params.Id)
 
 	return
 }
@@ -98,13 +98,13 @@ func (i *DashboardTabEndpoint) Update(ctx context.Context, params *m.DashboardTa
 // GetList ...
 func (t *DashboardTabEndpoint) GetList(ctx context.Context, pagination common.PageParams) (list []*m.DashboardTab, total int64, err error) {
 
-	list, total, err = t.adaptors.DashboardTab.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
+	list, total, err = t.adaptors.DashboardTab.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
 	if err != nil {
 		return
 	}
 
 	for _, tab := range list {
-		err = t.preloadEntities(tab)
+		err = t.preloadEntities(ctx, tab)
 	}
 
 	return
@@ -113,17 +113,17 @@ func (t *DashboardTabEndpoint) GetList(ctx context.Context, pagination common.Pa
 // Delete ...
 func (t *DashboardTabEndpoint) Delete(ctx context.Context, id int64) (err error) {
 
-	_, err = t.adaptors.DashboardTab.GetById(id)
+	_, err = t.adaptors.DashboardTab.GetById(ctx, id)
 	if err != nil {
 		return
 	}
 
-	err = t.adaptors.DashboardTab.Delete(id)
+	err = t.adaptors.DashboardTab.Delete(ctx, id)
 
 	return
 }
 
-func (c *DashboardTabEndpoint) preloadEntities(tab *m.DashboardTab) (err error) {
+func (c *DashboardTabEndpoint) preloadEntities(ctx context.Context, tab *m.DashboardTab) (err error) {
 
 	// get child entities
 	entityMap := make(map[common.EntityId]*m.Entity)
@@ -141,7 +141,7 @@ func (c *DashboardTabEndpoint) preloadEntities(tab *m.DashboardTab) (err error) 
 	}
 
 	var entites []*m.Entity
-	if entites, err = c.adaptors.Entity.GetByIds(entityIds); err != nil {
+	if entites, err = c.adaptors.Entity.GetByIds(ctx, entityIds); err != nil {
 		return
 	}
 

@@ -19,6 +19,7 @@
 package db
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -46,8 +47,8 @@ func (d *RunStory) TableName() string {
 }
 
 // Add ...
-func (n RunHistory) Add(story *RunStory) (id int64, err error) {
-	if err = n.Db.Create(&story).Error; err != nil {
+func (n RunHistory) Add(ctx context.Context, story *RunStory) (id int64, err error) {
+	if err = n.Db.WithContext(ctx).Create(&story).Error; err != nil {
 		err = errors.Wrap(apperr.ErrRunStoryAdd, err.Error())
 		return
 	}
@@ -56,26 +57,26 @@ func (n RunHistory) Add(story *RunStory) (id int64, err error) {
 }
 
 // Update ...
-func (n RunHistory) Update(m *RunStory) (err error) {
+func (n RunHistory) Update(ctx context.Context, m *RunStory) (err error) {
 	q := map[string]interface{}{
 		"end": m.End,
 	}
-	if err = n.Db.Model(&RunStory{Id: m.Id}).Updates(q).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(&RunStory{Id: m.Id}).Updates(q).Error; err != nil {
 		err = errors.Wrap(apperr.ErrRunStoryUpdate, err.Error())
 	}
 	return
 }
 
 // List ...
-func (n *RunHistory) List(limit, offset int, orderBy, sort string) (list []*RunStory, total int64, err error) {
+func (n *RunHistory) List(ctx context.Context, limit, offset int, orderBy, sort string) (list []*RunStory, total int64, err error) {
 
-	if err = n.Db.Model(RunStory{}).Count(&total).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(RunStory{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrRunStoryList, err.Error())
 		return
 	}
 
 	list = make([]*RunStory, 0)
-	q := n.Db.Model(&RunStory{}).
+	q := n.Db.WithContext(ctx).Model(&RunStory{}).
 		Limit(limit).
 		Offset(offset)
 

@@ -1,6 +1,8 @@
 package endpoint
 
 import (
+	"context"
+
 	"github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/common/apperr"
 	m "github.com/e154/smart-home/models"
@@ -20,7 +22,7 @@ func NewStreamEndpoint(common *CommonEndpoint, stream *stream.Stream) *StreamEnd
 	}
 }
 
-func (s *StreamEndpoint) Subscribe(server api.StreamService_SubscribeServer) error {
+func (s *StreamEndpoint) Subscribe(ctx context.Context, server api.StreamService_SubscribeServer) error {
 
 	var user *m.User
 	request, err := server.Recv()
@@ -34,7 +36,7 @@ func (s *StreamEndpoint) Subscribe(server api.StreamService_SubscribeServer) err
 		return apperr.ErrTokenIsDeprecated
 	}
 
-	if user, err = s.adaptors.User.GetById(claims.UserId); err != nil {
+	if user, err = s.adaptors.User.GetById(ctx, claims.UserId); err != nil {
 		return err
 	}
 

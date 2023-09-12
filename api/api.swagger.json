@@ -6652,11 +6652,11 @@
       "properties": {
         "lat": {
           "type": "number",
-          "format": "float"
+          "format": "double"
         },
         "lon": {
           "type": "number",
-          "format": "float"
+          "format": "double"
         }
       }
     },
@@ -6700,6 +6700,9 @@
           "format": "date-time"
         },
         "imageUrl": {
+          "type": "string"
+        },
+        "point": {
           "type": "string"
         }
       }
@@ -7357,6 +7360,12 @@
         },
         "name": {
           "type": "string"
+        },
+        "attributes": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/apiAttribute"
+          }
         }
       }
     },
@@ -9254,7 +9263,8 @@
         "ARRAY",
         "MAP",
         "TIME",
-        "IMAGE"
+        "IMAGE",
+        "POINT"
       ],
       "default": "INT"
     },

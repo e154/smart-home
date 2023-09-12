@@ -19,6 +19,7 @@
 package scene
 
 import (
+	"context"
 	"fmt"
 	"sync"
 
@@ -59,8 +60,8 @@ func New() supervisor.Pluggable {
 }
 
 // Load ...
-func (p *plugin) Load(service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(service); err != nil {
+func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
+	if err = p.Plugin.Load(ctx, service); err != nil {
 		return
 	}
 
@@ -72,8 +73,8 @@ func (p *plugin) Load(service supervisor.Service) (err error) {
 }
 
 // Unload ...
-func (p *plugin) Unload() (err error) {
-	if err = p.Plugin.Unload(); err != nil {
+func (p *plugin) Unload(ctx context.Context) (err error) {
+	if err = p.Plugin.Unload(ctx); err != nil {
 		return
 	}
 
@@ -112,7 +113,7 @@ func (p *plugin) addOrUpdateEntity(entity *m.Entity, attributes m.AttributeValue
 			Description: "apply scene",
 			EntityId:    entity.Id,
 		}
-		if action.Id, err = p.Adaptors.EntityAction.Add(action); err != nil {
+		if action.Id, err = p.Adaptors.EntityAction.Add(context.Background(), action); err != nil {
 			return
 		}
 	}
