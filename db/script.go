@@ -47,12 +47,12 @@ type Script struct {
 	Source               string
 	Description          string
 	Compiled             string
-	AlexaIntents         int `gorm:"-"`
-	EntityActions        int `gorm:"-"`
-	EntityScripts        int `gorm:"-"`
-	AutomationTriggers   int `gorm:"-"`
-	AutomationConditions int `gorm:"-"`
-	AutomationActions    int `gorm:"-"`
+	AlexaIntents         int `gorm:"->"`
+	EntityActions        int `gorm:"->"`
+	EntityScripts        int `gorm:"->"`
+	AutomationTriggers   int `gorm:"->"`
+	AutomationConditions int `gorm:"->"`
+	AutomationActions    int `gorm:"->"`
 	CreatedAt            time.Time
 	UpdatedAt            time.Time
 }
@@ -226,7 +226,8 @@ func (n *Scripts) Statistic(ctx context.Context) (statistic *ScriptsStatistic, e
 	}
 	err = n.Db.WithContext(ctx).Raw(`
 select count(scripts.id),
-       (exists(select * from alexa_intents where script_id = scripts.id) or exists(select * from entity_actions where script_id = scripts.id) or
+       (exists(select * from alexa_intents where script_id = scripts.id) or 
+        exists(select * from entity_actions where script_id = scripts.id) or
         exists(select * from entity_scripts where script_id = scripts.id) or
         exists(select * from triggers where script_id = scripts.id)       or
         exists(select * from conditions where script_id = scripts.id)     or
