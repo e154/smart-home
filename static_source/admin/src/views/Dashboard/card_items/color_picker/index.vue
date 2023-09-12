@@ -38,7 +38,7 @@ const currentColorPicker = computed<ItemPayloadColorPicker>(() => props.item?.pa
 
 const _cache = new Cache()
 const getValue = debounce(() => {
-  if (currentColorPicker.value.color != undefined) {
+  if (!value.value && currentColorPicker.value.color != undefined) {
     value.value = currentColorPicker.value.color
   }
 

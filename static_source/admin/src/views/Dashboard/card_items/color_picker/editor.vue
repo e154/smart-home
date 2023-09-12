@@ -47,7 +47,7 @@ const updateCurrentState = () => {
 
     <ElRow :gutter="24">
       <ElCol :span="12" :xs="12">
-        <ElFormItem :label="$t('dashboard.editor.colorPicker.color')" prop="color">
+        <ElFormItem :label="$t('dashboard.editor.colorPicker.defaultColor')" prop="color">
           <ElColorPicker show-alpha v-model="currentItem.payload.colorPicker.color"/>
         </ElFormItem>
       </ElCol>

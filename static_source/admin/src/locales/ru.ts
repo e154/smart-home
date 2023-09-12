@@ -527,6 +527,20 @@ export default {
       MAP: 'Карта',
       SLIDER: 'Ползунок',
       COLOR_PICKER: 'Цветовая паллитра',
+      tooltip: 'Подсказка',
+      slider: {
+        options: 'Параметры слайдера',
+        color: 'Цвет',
+        trackColor: 'Цвет трека',
+        height: 'Толщина полоски',
+        step: 'Шаг',
+        min: 'Минимальное значение',
+        max: 'Максимальное значение',
+      },
+      colorPicker: {
+        options: 'Параметры выбора цвета',
+        defaultColor: 'Цвет по умолчанию'
+      },
       chart: {
         type: "Тип",
         metric_index: "Индекс метрики",

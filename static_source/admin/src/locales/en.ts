@@ -527,6 +527,7 @@ export default {
             MAP: 'Map',
             SLIDER: 'Slider',
             COLOR_PICKER: 'Color Picker',
+            tooltip: 'Tooltip',
             slider: {
                 options: 'Slider Options',
                 color: 'Color',
@@ -535,6 +536,10 @@ export default {
                 step: 'Step',
                 min: 'Min',
                 max: 'Max',
+            },
+            colorPicker: {
+                options: 'Color picker options',
+                defaultColor: 'Default color'
             },
             chart: {
                 type: 'Type',
