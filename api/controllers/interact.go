@@ -21,6 +21,7 @@ package controllers
 import (
 	"context"
 
+	"github.com/e154/smart-home/api/dto"
 	"github.com/e154/smart-home/api/stub/api"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
@@ -39,7 +40,9 @@ func NewControllerInteract(common *ControllerCommon) ControllerInteract {
 
 func (c ControllerInteract) EntityCallAction(ctx context.Context, req *api.EntityCallActionRequest) (*emptypb.Empty, error) {
 
-	errs, err := c.endpoint.Interact.EntityCallAction(ctx, req.Id, req.Name, nil)
+	attributes := dto.AttributeFromApi(req.Attributes)
+	arg := attributes.Serialize()
+	errs, err := c.endpoint.Interact.EntityCallAction(ctx, req.Id, req.Name, arg)
 	if err != nil {
 		return nil, c.error(ctx, errs, err)
 	}

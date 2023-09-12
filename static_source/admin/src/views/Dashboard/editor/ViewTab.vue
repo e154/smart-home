@@ -23,7 +23,7 @@ const props = defineProps({
 
 const reloadKey = ref(0);
 const reload = debounce(() => {
-  console.log('reload tab')
+  // console.log('reload tab')
   reloadKey.value += 1
 }, 100)
 

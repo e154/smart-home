@@ -66,6 +66,7 @@
     "vue3-moveable": "^0.26.1",
     "vue3-openlayers": "2.0.0-0",
     "vue3-selecto": "^1.12.0",
+    "vue3-slider": "^1.9.0",
     "web-storage-cache": "^1.1.1",
     "websocket-ts": "^1.1.1"
   },

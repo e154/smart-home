@@ -7360,6 +7360,12 @@
         },
         "name": {
           "type": "string"
+        },
+        "attributes": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/apiAttribute"
+          }
         }
       }
     },

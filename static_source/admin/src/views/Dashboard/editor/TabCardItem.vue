@@ -178,7 +178,7 @@ const updateCardItem = async () => {
                   <ElOption
                       v-for="item in itemTypes"
                       :key="item.value"
-                      :label="item.label"
+                      :label="$t('dashboard.editor.'+item.label)"
                       :value="item.value"
                   />
 

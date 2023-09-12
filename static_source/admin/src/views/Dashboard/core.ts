@@ -27,6 +27,7 @@ import {useBus} from "@/views/Dashboard/bus";
 import {debounce} from "lodash-es";
 import {ref} from "vue";
 import {bool} from "vue-types";
+import {ItemPayloadSlider} from "@/views/Dashboard/card_items/slider/types";
 
 const {bus} = useBus()
 
@@ -76,6 +77,7 @@ export interface ItemPayloadImage {
   image?: ApiImage;
 }
 
+//todo: shouldn't be here, so will be optimize!!!
 export interface ItemPayload {
   text?: ItemPayloadText;
   image?: ItemPayloadImage;
@@ -85,6 +87,7 @@ export interface ItemPayload {
   progress?: ItemPayloadProgress;
   chart?: ItemPayloadChart;
   map?: ItemPayloadMap;
+  slider?: ItemPayloadSlider;
 }
 
 export interface ItemParams {
@@ -242,6 +245,10 @@ export class CardItem {
           }
           requestCurrentState(entityId)
         }
+      }
+      if (!this.payload.slider) {
+        this.payload.slider = {
+        } as ItemPayloadSlider;
       }
     }
   }

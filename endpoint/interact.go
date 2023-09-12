@@ -3,10 +3,8 @@ package endpoint
 import (
 	"context"
 
-	"github.com/e154/smart-home/common/events"
-
 	"github.com/e154/smart-home/common"
-	"github.com/go-playground/validator/v10"
+	"github.com/e154/smart-home/common/events"
 )
 
 // InteractEndpoint ...
@@ -22,7 +20,7 @@ func NewInteractEndpoint(common *CommonEndpoint) *InteractEndpoint {
 }
 
 // EntityCallAction ...
-func (d InteractEndpoint) EntityCallAction(ctx context.Context, entityId string, action string, args map[string]interface{}) (errs validator.ValidationErrorsTranslations, err error) {
+func (d InteractEndpoint) EntityCallAction(ctx context.Context, entityId string, action string, args map[string]interface{}) (errs map[string]string, err error) {
 
 	id := common.EntityId(entityId)
 	_, err = d.adaptors.Entity.GetById(ctx, id)

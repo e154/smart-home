@@ -72,6 +72,10 @@ func (n *EntityState) DeleteByEntityId(ctx context.Context, entityId common.Enti
 // AddMultiple ...
 func (n *EntityState) AddMultiple(ctx context.Context, items []*m.EntityState) (err error) {
 
+	if len(items) == 0 {
+		return
+	}
+
 	insertRecords := make([]*db.EntityState, 0, len(items))
 
 	for _, ver := range items {

@@ -386,6 +386,7 @@ export interface ApiEntityAction {
 export interface ApiEntityCallActionRequest {
   id?: string;
   name?: string;
+  attributes?: Record<string, ApiAttribute>;
 }
 
 export interface ApiEntityParent {
