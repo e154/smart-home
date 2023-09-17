@@ -85,7 +85,7 @@ export const HintDictionaryCoffee = {
         {text: 'entity.getSettings()', displayText: 'entity.getSettings'},
         {text: 'entity.setMetric(name, value)', displayText: 'entity.setMetric'},
         {text: 'entity.callAction(name, args)', displayText: 'entity.callAction'},
-        {text: 'entityAction = (entityId, actionName)->', displayText: 'entityAction'},
+        {text: 'entityAction = (entityId, actionName, args)->', displayText: 'entityAction'},
 
         // telegram
         {text: 'telegramAction = (entityId, actionName)->', displayText: 'telegramAction'},

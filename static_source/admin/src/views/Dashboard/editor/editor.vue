@@ -130,7 +130,7 @@ const getBackgroundColor = () => {
   <div class="components-container dashboard-container" style="margin: 0" v-if="!loading" :style="getBackgroundColor()">
 
   <splitpanes class="default-theme" horizontal>
-    <pane min-size="10" max-size="90" :size="50">
+    <pane min-size="10" max-size="90" :size="50" class="top-container">
         <ElTabs
             v-model="activeTabIdx"
             @edit="handleTabsEdit"
@@ -145,35 +145,33 @@ const getBackgroundColor = () => {
           </ElTabPane>
         </ElTabs>
     </pane>
-    <pane>
-      <div class="bottom-container">
-        <ElTabs v-model="core.mainTab" >
-          <!-- main -->
-          <ElTabPane :label="$t('dashboard.mainTab')" name="main">
-            <TabSettings v-if="core.current" :core="core"/>
-          </ElTabPane>
-          <!-- /main -->
+    <pane class="bottom-container">
+      <ElTabs v-model="core.mainTab" >
+        <!-- main -->
+        <ElTabPane :label="$t('dashboard.mainTab')" name="main">
+          <TabSettings v-if="core.current" :core="core"/>
+        </ElTabPane>
+        <!-- /main -->
 
-          <!-- tabs -->
-          <ElTabPane :label="$t('dashboard.tabsTab')" name="tabs">
-            <TabEditor v-if="core.current" :tab="activeTab" :core="core"/>
-          </ElTabPane>
-          <!-- /tabs -->
+        <!-- tabs -->
+        <ElTabPane :label="$t('dashboard.tabsTab')" name="tabs">
+          <TabEditor v-if="core.current" :tab="activeTab" :core="core"/>
+        </ElTabPane>
+        <!-- /tabs -->
 
-          <!-- cards -->
-          <ElTabPane :label="$t('dashboard.cardsTab')" name="cards">
-            <TabCard v-if="core.current && activeTab" :tab="activeTab" :core="core"/>
-          </ElTabPane>
-          <!-- /cards -->
+        <!-- cards -->
+        <ElTabPane :label="$t('dashboard.cardsTab')" name="cards">
+          <TabCard v-if="core.current && activeTab" :tab="activeTab" :core="core"/>
+        </ElTabPane>
+        <!-- /cards -->
 
-          <!-- cardItems -->
-          <ElTabPane :label="$t('dashboard.cardItemsTab')" name="cardItems">
-            <TabCardItem v-if="core.current && activeTab && activeCard" :card="activeCard" :core="core"/>
-          </ElTabPane>
-          <!-- /cardItems -->
+        <!-- cardItems -->
+        <ElTabPane :label="$t('dashboard.cardItemsTab')" name="cardItems">
+          <TabCardItem v-if="core.current && activeTab && activeCard" :card="activeCard" :core="core"/>
+        </ElTabPane>
+        <!-- /cardItems -->
 
-        </ElTabs>
-      </div>
+      </ElTabs>
     </pane>
   </splitpanes>
 

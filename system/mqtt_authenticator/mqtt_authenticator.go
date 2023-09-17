@@ -127,7 +127,7 @@ func (a *Authenticator) Register(fn func(login, password string) (err error)) (e
 	rv := reflect.ValueOf(fn)
 
 	for _, v := range a.handlers {
-		if v == rv {
+		if v == rv || v.Pointer() == rv.Pointer() {
 			return
 		}
 	}
@@ -147,7 +147,7 @@ func (a *Authenticator) Unregister(fn func(login, password string) (err error)) 
 	rv := reflect.ValueOf(fn)
 
 	for i, v := range a.handlers {
-		if v == rv {
+		if v == rv || v.Pointer() == rv.Pointer() {
 			a.handlers = append(a.handlers[:i], a.handlers[i+1:]...)
 		}
 	}

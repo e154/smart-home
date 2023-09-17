@@ -256,7 +256,7 @@ const getUrl = (image?: ApiImage): string | undefined => {
           :updateWhileInteracting="true"
       >
         <ol-source-vector ref="vectorsource">
-          <ol-animation-fade :duration="4000" v-if="loaded" :key="reloadKey">
+          <ol-animation-fade :duration="4000" :key="reloadKey">
             <ol-feature v-for="(marker, index) in markers" :key="index">
               <ol-geom-point :coordinates="marker.position"/>
               <ol-style>

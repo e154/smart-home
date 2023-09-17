@@ -258,7 +258,7 @@ func (a *Api) Shutdown(ctx context.Context) (err error) {
 		err = a.lis.Close()
 	}
 
-	a.eventBus.Publish("system/services/api", events.EventServiceStopped{})
+	a.eventBus.Publish("system/services/api", events.EventServiceStopped{Service: "Api"})
 
 	return
 }

@@ -116,7 +116,7 @@ func (m *Mqtt) Shutdown() (err error) {
 		err = m.server.Stop(ctx)
 	}
 
-	m.eventBus.Publish("system/services/mqtt", events.EventServiceStopped{})
+	m.eventBus.Publish("system/services/mqtt", events.EventServiceStopped{Service: "Mqtt"})
 	return
 }
 

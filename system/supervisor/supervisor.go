@@ -132,7 +132,7 @@ func (e *supervisor) Shutdown(ctx context.Context) (err error) {
 
 	e.actors.Range(func(key, value interface{}) bool {
 		actor := value.(*actorInfo)
-		actor.quit <- struct{}{}
+		close(actor.quit)
 		e.actors.Delete(key)
 		return true
 	})
@@ -506,11 +506,10 @@ func (e *supervisor) eventLastState(msg events.EventGetLastState) {
 	}
 
 	e.eventBus.Publish("system/entities/"+msg.EntityId.String(), events.EventLastStateChanged{
-		StorageSave: false,
-		PluginName:  info.PluginName,
-		EntityId:    info.Id,
-		OldState:    *actor.CurrentState,
-		NewState:    *actor.CurrentState,
+		PluginName: info.PluginName,
+		EntityId:   info.Id,
+		OldState:   *actor.CurrentState,
+		NewState:   *actor.CurrentState,
 	})
 }
 
@@ -692,7 +691,7 @@ func (e *supervisor) unsafeRemove(id common.EntityId) {
 		return
 	}
 	actor := item.(*actorInfo)
-	actor.quit <- struct{}{}
+	close(actor.quit)
 	e.actors.Delete(id)
 }
 

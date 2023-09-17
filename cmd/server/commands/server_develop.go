@@ -16,15 +16,16 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
+//go:build !production
+// +build !production
+
 package commands
 
 import (
 	"fmt"
-
 	. "github.com/e154/smart-home/cmd/server/container"
 	"github.com/e154/smart-home/common/app"
 	"github.com/e154/smart-home/system/initial"
-	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/version"
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
@@ -40,11 +41,9 @@ var (
 			fmt.Printf(version.ShortVersionBanner, "")
 
 			app.Do(BuildContainer, fx.Invoke(func(
-				logger *logging.Logging,
-				dbSaver logging.ISaver,
 				_ *initial.Initial,
 			) {
-				logger.SetDbSaver(dbSaver)
+
 			}))
 
 		},

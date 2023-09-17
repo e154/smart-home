@@ -232,6 +232,38 @@ WHERE ST_Contains(a.polygon::geometry,
 	return
 }
 
+func (a *Areas) PointInsideAriaById(ctx context.Context, point Point, areaId int64) (inside bool, err error) {
+
+	var list []*Area
+	if list, err = a.ListByPoint(ctx, point, 999, 0); err != nil {
+		return
+	}
+
+	for _, area := range list {
+		if inside = areaId == area.Id; inside {
+			return
+		}
+	}
+
+	return
+}
+
+func (a *Areas) PointInsideAriaByName(ctx context.Context, point Point, areaName string) (inside bool, err error) {
+
+	var list []*Area
+	if list, err = a.ListByPoint(ctx, point, 999, 0); err != nil {
+		return
+	}
+
+	for _, area := range list {
+		if inside = areaName == area.Name; inside {
+			return
+		}
+	}
+
+	return
+}
+
 func (a *Areas) GetDistance(ctx context.Context, point Point, areaId int64) (distance float64, err error) {
 
 	const query = `

@@ -96,7 +96,7 @@ func (a *automation) Start() (err error) {
 func (a *automation) Shutdown() (err error) {
 	a.taskManager.Shutdown()
 	a.triggerManager.Shutdown()
-	a.eventBus.Publish("system/services/automation", events.EventServiceStopped{})
+	a.eventBus.Publish("system/services/automation", events.EventServiceStopped{Service: "Automation"})
 	return
 }
 

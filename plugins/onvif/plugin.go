@@ -16,7 +16,7 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package sensor
+package onvif
 
 import (
 	"context"
@@ -35,7 +35,7 @@ import (
 )
 
 var (
-	log = logger.MustGetLogger("plugins.sensor")
+	log = logger.MustGetLogger("plugins.onvif")
 )
 
 var _ supervisor.Pluggable = (*plugin)(nil)
@@ -160,16 +160,19 @@ func (p *plugin) Version() string {
 // Options ...
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
-		Triggers:           false,
 		Actors:             true,
 		ActorCustomAttrs:   true,
-		ActorAttrs:         nil,
+		ActorAttrs:         NewAttr(),
 		ActorCustomActions: true,
-		ActorActions:       nil,
-		ActorCustomStates:  true,
-		ActorStates:        nil,
-		ActorCustomSetts:   true,
-		ActorSetts:         nil,
-		Setts:              nil,
+		ActorActions:       supervisor.ToEntityActionShort(NewActions()),
+		ActorStates:        supervisor.ToEntityStateShort(NewStates()),
+		ActorSetts:         NewSettings(),
+		Javascript:         m.PluginOptionsJs{
+			Methods:   nil,
+			Objects:   map[string]string{
+				"Camera": "",
+			},
+			Variables: nil,
+		},
 	}
 }

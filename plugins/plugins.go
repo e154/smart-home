@@ -36,6 +36,7 @@ import (
 	_ "github.com/e154/smart-home/plugins/neural_network"
 	_ "github.com/e154/smart-home/plugins/node"
 	_ "github.com/e154/smart-home/plugins/notify"
+	_ "github.com/e154/smart-home/plugins/onvif"
 	_ "github.com/e154/smart-home/plugins/scene"
 	_ "github.com/e154/smart-home/plugins/script"
 	_ "github.com/e154/smart-home/plugins/sensor"

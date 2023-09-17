@@ -2,6 +2,7 @@ package local_migrations
 
 import (
 	"context"
+	"github.com/e154/smart-home/plugins/onvif"
 
 	"github.com/e154/smart-home/plugins/alexa"
 	"github.com/e154/smart-home/plugins/cgminer"
@@ -84,6 +85,7 @@ func (n *MigrationPlugins) Up(ctx context.Context, adaptors *adaptors.Adaptors) 
 	n.addPlugin("zigbee2mqtt", false, false, true, zigbee2mqtt.Version)
 	n.addPlugin("html5_notify", true, false, false, html5_notify.Version)
 	n.addPlugin("webpush", true, false, false, webpush.Version)
+	n.addPlugin("onvif", false, false, true, onvif.Version)
 	return nil
 }
 

@@ -39,6 +39,8 @@ type IArea interface {
 	ListByPoint(ctx context.Context, point m.Point, limit, offset int64) (list []*m.Area, err error)
 	Search(ctx context.Context, query string, limit, offset int64) (list []*m.Area, total int64, err error)
 	GetDistance(ctx context.Context, point m.Point, areaId int64) (distance float64, err error)
+	PointInsideAriaById(ctx context.Context, point *m.Point, areaId int64) (inside bool, err error)
+	PointInsideAriaByName(ctx context.Context, point *m.Point, areaName int64) (inside bool, err error)
 	fromDb(dbVer *db.Area) (ver *m.Area)
 	toDb(ver *m.Area) (dbVer *db.Area)
 }
@@ -119,6 +121,18 @@ func (a *Area) ListByPoint(ctx context.Context, point m.Point, limit, offset int
 	for i, dbVer := range dbList {
 		list[i] = a.fromDb(dbVer)
 	}
+	return
+}
+
+// PointInsideAriaById ...
+func (a *Area) PointInsideAriaById(ctx context.Context, point *m.Point, areaId int64) (inside bool, err error) {
+	inside, err = a.table.PointInsideAriaById(ctx, db.Point{Lon: point.Lon, Lat: point.Lat}, areaId)
+	return
+}
+
+// PointInsideAriaByName ...
+func (a *Area) PointInsideAriaByName(ctx context.Context, point *m.Point, areaName int64) (inside bool, err error) {
+	inside, err = a.table.PointInsideAriaById(ctx, db.Point{Lon: point.Lon, Lat: point.Lat}, areaName)
 	return
 }
 

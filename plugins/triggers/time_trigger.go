@@ -115,13 +115,13 @@ func (t *TimeTrigger) Unsubscribe(options Subscriber) error {
 	if schedule == "" {
 		return fmt.Errorf("error static cast to string %v", options.Payload)
 	}
-	callback := reflect.ValueOf(options.Handler)
+	rv := reflect.ValueOf(options.Handler)
 
 	t.Lock()
 	defer t.Unlock()
 
 	for i, sub := range t.subscribers[schedule] {
-		if sub.callback == callback {
+		if sub.callback == rv || sub.callback.Pointer() == rv.Pointer() {
 			t.scheduler.Remove(sub.entryID)
 			t.subscribers[schedule] = append(t.subscribers[schedule][:i], t.subscribers[schedule][i+1:]...)
 		}
