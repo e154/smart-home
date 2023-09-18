@@ -19,7 +19,9 @@
 package models
 
 import (
+	"encoding/hex"
 	"fmt"
+	"github.com/e154/smart-home/common/encryptor"
 	"os"
 	"path/filepath"
 	"testing"
@@ -43,6 +45,10 @@ func TestMain(m *testing.M) {
 
 	container = BuildContainer()
 	err := container.Invoke(func(logger *logging.Logging) {
+
+		// encryptor
+		b, _ := hex.DecodeString("7abf835e883087d3dc87be2c24ea2faee948f03cf28ebe6d7c119c2ccedc9ab2")
+		encryptor.SetKey(b)
 
 		time.Sleep(time.Millisecond * 500)
 

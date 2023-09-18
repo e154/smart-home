@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/encryptor"
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
@@ -96,8 +97,7 @@ func (e *Actor) destroy() {
 
 // Spawn ...
 func (e *Actor) Spawn() supervisor.PluginActor {
-	address := fmt.Sprintf("%s:%d", e.Setts[AttrAddress].String(), e.Setts[AttrOnvifPort].Int64())
-	e.client.Start(e.Setts[AttrUserName].String(), e.Setts[AttrPassword].String(), address)
+	e.client.Start(e.Setts[AttrUserName].String(), e.Setts[AttrPassword].Decrypt(), e.Setts[AttrAddress].String(), e.Setts[AttrOnvifPort].Int64())
 	return e
 }
 
@@ -186,11 +186,11 @@ func (e *Actor) prepareMotionAlarm(event *MotionAlarm) {
 
 func (e *Actor) prepareStreamList(event *StreamList) {
 	var attrs = m.AttributeValue{}
-	for i, item := range event.List {
-		attrs[fmt.Sprintf("stream%d", i+1)] = item
-		if i >= 5 {
-			break
-		}
+	if len(event.List) > 0 {
+		attrs[AttrStreamUri], _ = encryptor.Encrypt(event.List[0])
+	}
+	if event.SnapshotUri != nil {
+		attrs[AttrSnapshotUri], _ = encryptor.Encrypt(common.StringValue(event.SnapshotUri))
 	}
 	e.SetState(supervisor.EntityStateParams{
 		NewState:        common.String(AttrConnected),

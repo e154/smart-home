@@ -212,6 +212,7 @@ export const useAppStore = defineStore('app', {
     RemoveToken() {
       wsCache.delete('accessToken')
       wsCache.delete('currentUser')
+      this.user = null;
       this.token = null;
     },
     setBreadcrumb(breadcrumb: boolean) {

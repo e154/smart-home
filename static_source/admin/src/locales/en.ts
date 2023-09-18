@@ -341,7 +341,7 @@ export default {
         automationActions: 'Automation Actions',
         main: 'Main',
         source: 'Source',
-        info1: 'Use the keyboard shortcut Ctrl + Space to use autocomplete',
+        info1: 'Use the keyboard shortcut Ctrl + Space to autocomplete',
         stat_total_name: 'Total scripts',
         stat_total_descr: '',
         stat_used_name: 'Scripts used',

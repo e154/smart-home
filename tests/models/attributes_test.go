@@ -20,6 +20,8 @@ package models
 
 import (
 	"encoding/json"
+	"fmt"
+	"github.com/e154/smart-home/common/encryptor"
 	"testing"
 
 	"github.com/e154/smart-home/common"
@@ -32,6 +34,7 @@ func TestAttributes(t *testing.T) {
 	const data = `
 {
   "s": "string",
+  "d": "e0a342c056b7da409ef11c872e361ace3e72c3849abe51da834fa250b833f40ebe078f0cecef23544338c9",
   "p": [42.86754085166162, 74.57289978531306],
   "i": 123,
   "f": 456.123,
@@ -152,8 +155,14 @@ func TestAttributes(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(changed, ShouldEqual, true)
 
+			data, err := encryptor.Encrypt("foo")
+			So(err, ShouldBeNil)
+			fmt.Println(data)
+
 			So(attrs["s"].Value, ShouldEqual, "string")
 			So(attrs["s"].String(), ShouldEqual, "string")
+			So(attrs["d"].Value, ShouldEqual, "e0a342c056b7da409ef11c872e361ace3e72c3849abe51da834fa250b833f40ebe078f0cecef23544338c9")
+			So(attrs["d"].Decrypt(), ShouldEqual, "foo")
 			So(attrs["p"].Value, ShouldResemble, []interface{}{42.86754085166162, 74.57289978531306})
 			So(attrs["p"].Point().Lat, ShouldEqual, 74.57289978531306)
 			So(attrs["p"].Point().Lon, ShouldEqual, 42.86754085166162)

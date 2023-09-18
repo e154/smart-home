@@ -25,5 +25,6 @@ func MigrationList(adaptors *adaptors.Adaptors,
 		local_migrations.NewMigrationEntity(adaptors, endpoint),
 		local_migrations.NewMigrationAutomations(adaptors, endpoint),
 		local_migrations.NewMigrationDashboard(adaptors),
+		local_migrations.NewMigrationEncryptor(adaptors),
 	}
 }

@@ -3,6 +3,8 @@ package onvif
 import (
 	"context"
 	"fmt"
+	"github.com/e154/smart-home/common"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -29,6 +31,7 @@ var (
 
 type Client struct {
 	username, password, address string
+	port                        int64
 	cli                         gonvif.Client
 	mediaProfile                *schema.Profile
 	media2Profile               *media2Wsdl.MediaProfile
@@ -46,7 +49,7 @@ func NewClient(handler func(interface{})) *Client {
 	}
 }
 
-func (s *Client) Start(username, password, address string) (err error) {
+func (s *Client) Start(username, password, address string, port int64) (err error) {
 	if s.isStarted.Load() {
 		return
 	}
@@ -55,6 +58,7 @@ func (s *Client) Start(username, password, address string) (err error) {
 	s.username = username
 	s.password = password
 	s.address = address
+	s.port = port
 
 	s.quit = make(chan struct{})
 
@@ -86,7 +90,7 @@ func (s *Client) Start(username, password, address string) (err error) {
 			}
 
 			// Connect to the Onvif device.
-			s.cli, err = gonvif.New(fmt.Sprintf("http://%s", address), username, password, false)
+			s.cli, err = gonvif.New(fmt.Sprintf("http://%s:%d", address, port), username, password, false)
 			if err != nil {
 				continue
 			}
@@ -104,7 +108,9 @@ func (s *Client) Start(username, password, address string) (err error) {
 				continue
 			}
 
-			go s.actorHandler(&StreamList{List: streamList})
+			snapshotURI := s.GetSnapshotURI()
+
+			go s.actorHandler(&StreamList{List: streamList, SnapshotUri: snapshotURI})
 
 			err = s.eventServiceSubscribe()
 		}
@@ -159,7 +165,7 @@ func (s *Client) GetStreamList() ([]string, error) {
 			ProfileToken: s.mediaProfile.Token,
 		})
 		if resp != nil && resp.MediaUri != nil {
-			list = append(list, resp.MediaUri.Uri)
+			list = append(list, s.prepareUri(resp.MediaUri.Uri))
 		}
 	}
 
@@ -169,11 +175,31 @@ func (s *Client) GetStreamList() ([]string, error) {
 			ProfileToken: s.media2Profile.Token,
 		})
 		if resp != nil {
-			list = append(list, resp.Uri)
+			list = append(list, s.prepareUri(resp.Uri))
 		}
 	}
 
 	return list, nil
+}
+
+func (s *Client) GetSnapshotURI() *string {
+	var uri string
+	if media, err := s.cli.Media(); err == nil {
+		resp, _ := media.GetSnapshotUri(&media1Wsdl.GetSnapshotUri{
+			ProfileToken: s.mediaProfile.Token,
+		})
+		uri = resp.MediaUri.Uri
+	}
+	if media, err := s.cli.Media2(); err == nil {
+		resp, _ := media.GetSnapshotUri(&media2Wsdl.GetSnapshotUri{
+			ProfileToken: s.mediaProfile.Token,
+		})
+		uri = resp.Uri
+	}
+	if uri == "" {
+		return nil
+	}
+	return common.String(s.prepareUri(uri))
 }
 
 func (s *Client) ContinuousMove(X, Y float32) error {
@@ -268,17 +294,14 @@ func (s *Client) getOptions() error {
 		if s.media2Profile != nil {
 			configurationToken = s.media2Profile.Configurations.PTZ.Token
 		}
-		resp, err := ptz.GetConfigurationOptions(&ptzWsdl.GetConfigurationOptions{
+		configurationOptions, err := ptz.GetConfigurationOptions(&ptzWsdl.GetConfigurationOptions{
 			ConfigurationToken: configurationToken,
 		})
 		if err == nil {
-			s.pTZConfigurationOptions = resp.PTZConfigurationOptions
+			s.pTZConfigurationOptions = configurationOptions.PTZConfigurationOptions
 		}
 	}
 
-	//debug.Println(s.pTZConfigurationOptions)
-	//debug.Println(s.mediaProfile)
-	//debug.Println(s.media2Profile)
 	return nil
 }
 
@@ -363,14 +386,14 @@ func (s *Client) eventHandler(messages []*wsnt.NotificationMessage) {
 }
 
 func (s *Client) prepareMotionAlarm(msg *wsnt.NotificationMessage) {
-	if msg.Message.Message != nil && msg.Message.Message.PropertyOperation != "Changed" {
+	if msg.Message.Message == nil || msg.Message.Message.PropertyOperation != "Changed" {
 		return
 	}
 	var state = false
 	var t time.Time
 	if msg.Message.Message != nil && msg.Message.Message.Data != nil &&
-		msg.Message.Message.Data.ElementItem != nil && len(msg.Message.Message.Data.ElementItem) > 0 {
-		state = msg.Message.Message.Data.ElementItem[0].Value == "true"
+		msg.Message.Message.Data.SimpleItem != nil && len(msg.Message.Message.Data.SimpleItem) > 0 {
+		state = msg.Message.Message.Data.SimpleItem[0].Value == "true"
 	}
 	if msg.Message.Message != nil && msg.Message.Message.UTCTime != nil {
 		t = msg.Message.Message.UTCTime.Time
@@ -380,4 +403,8 @@ func (s *Client) prepareMotionAlarm(msg *wsnt.NotificationMessage) {
 
 func (s *Client) prepareImagingService(msg *wsnt.NotificationMessage) {
 
+}
+
+func (s *Client) prepareUri(uri string) string {
+	return strings.ReplaceAll(uri, s.address, fmt.Sprintf("%s:%s@%s", s.username, s.password, s.address))
 }

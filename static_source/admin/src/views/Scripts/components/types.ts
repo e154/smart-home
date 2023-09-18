@@ -12,6 +12,7 @@ export const HintDictionaryCoffee = {
         {text: 'parseFloat', displayText: 'parseFloat'},
         {text: 'indexOf', displayText: 'indexOf'},
         {text: 'substring', displayText: 'substring'},
+        {text: 'Decrypt(val)', displayText: 'Decrypt'},
 
         // notifr
         {text: 'notifr.newMessage()', displayText: 'notifr.newMessage'},

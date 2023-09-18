@@ -20,8 +20,10 @@ package initial
 
 import (
 	"context"
+	"encoding/hex"
 	"errors"
 	"fmt"
+	"github.com/e154/smart-home/common/encryptor"
 
 	"go.uber.org/fx"
 
@@ -135,12 +137,13 @@ func (n *Initial) checkForUpgrade() {
 		fmt.Println("")
 	}()
 
-	v, err := n.adaptors.Variable.GetByName(context.Background(), "initial_version")
+	const name = "initialVersion"
+	v, err := n.adaptors.Variable.GetByName(context.Background(), name)
 	if err != nil {
 
 		if errors.Is(err, apperr.ErrNotFound) {
 			v = m.Variable{
-				Name:  "initial_version",
+				Name:  name,
 				Value: fmt.Sprintf("%d", 1),
 			}
 			err = n.adaptors.Variable.Add(context.Background(), v)
@@ -163,7 +166,12 @@ func (n *Initial) checkForUpgrade() {
 
 // Start ...
 func (n *Initial) Start(ctx context.Context) (err error) {
-	//n.checkForUpgrade()
+	n.checkForUpgrade()
+
+	variable, _ := n.adaptors.Variable.GetByName(ctx, "encryptor")
+	val, _ := hex.DecodeString(variable.Value)
+	encryptor.SetKey(val)
+
 	_ = n.supervisor.Start(ctx)
 	_ = n.automation.Start()
 	go func() {

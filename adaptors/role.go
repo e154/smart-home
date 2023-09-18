@@ -20,6 +20,8 @@ package adaptors
 
 import (
 	"context"
+	"github.com/e154/smart-home/common/apperr"
+	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
@@ -133,7 +135,10 @@ func (n *Role) Search(ctx context.Context, query string, limit, offset int64) (l
 
 // GetAccessList ...
 func (n *Role) GetAccessList(ctx context.Context, role *m.Role) (err error) {
-
+	if role == nil {
+		err = errors.Wrap(apperr.ErrPermissionGet, "role is nil")
+		return
+	}
 	role.AccessList = make(map[string][]string)
 	permissionAdaptor := GetPermissionAdaptor(n.db)
 	var permissions []*m.Permission

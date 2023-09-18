@@ -18,8 +18,6 @@
 
 package supervisor
 
-import m "github.com/e154/smart-home/models"
-
 // ScriptBind ...
 type ScriptBind struct {
 	actor PluginActor
@@ -38,9 +36,4 @@ func (s *ScriptBind) SetState(params EntityStateParams) {
 // GetSettings  ...
 func (s *ScriptBind) GetSettings() map[string]interface{} {
 	return s.actor.Settings().Serialize()
-}
-
-// SetAttribute  ...
-func (s *ScriptBind) SetAttribute(params m.AttributeValue) {
-
 }

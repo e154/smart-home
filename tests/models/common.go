@@ -30,6 +30,10 @@ func NetAttr() m.Attributes {
 			Name: "s",
 			Type: common.AttributeString,
 		},
+		"d": {
+			Name: "d",
+			Type: common.AttributeEncrypted,
+		},
 		"p": {
 			Name: "p",
 			Type: common.AttributePoint,

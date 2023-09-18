@@ -28,9 +28,7 @@ func (n *MigrationEntity) Up(ctx context.Context, adaptors *adaptors.Adaptors) e
 	}
 
 	d := dto.NewDto()
-	for _, raw := range []string{iqairEntityRaw, internetCheckEntityRaw, uptimeEntityRaw,
-		cpumetricEntityRaw, memoryEntityRaw, memoryAppRaw, hddEntityRaw, logsEntityRaw,
-		nodeEntityRaw, versionEntityRaw, updatedEntityRaw} {
+	for _, raw := range []string{} {
 		req := &api.Entity{}
 		_ = json.Unmarshal([]byte(raw), req)
 		entity := d.Entity.ImportEntity(req)

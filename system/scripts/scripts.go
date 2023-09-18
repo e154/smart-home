@@ -20,6 +20,7 @@ package scripts
 
 import (
 	"context"
+	"github.com/e154/smart-home/common/encryptor"
 
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
@@ -131,4 +132,5 @@ func (s *scriptService) bind() {
 	s.PushStruct("Storage", bind.NewStorageBind(s.storage))
 	s.PushStruct("http", bind.NewHttpBind(s.crawler))
 	s.PushStruct("HTTP", bind.NewHttpBind(s.crawler))
+	s.PushStruct("Decrypt", encryptor.Decrypt)
 }

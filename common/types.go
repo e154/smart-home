@@ -190,6 +190,8 @@ const (
 	AttributeImage = AttributeType("image")
 	// AttributePoint ...
 	AttributePoint = AttributeType("point")
+	// AttributeEncrypted ...
+	AttributeEncrypted = AttributeType("encrypted")
 	//DEPRECATED
 	AttributeArray = AttributeType("array")
 	//DEPRECATED

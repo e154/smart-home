@@ -29,7 +29,7 @@ func (n *MigrationAutomations) Up(ctx context.Context, adaptors *adaptors.Adapto
 	}
 
 	d := dto.NewDto()
-	for _, raw := range []string{internetCheckAutomationRaw, hddCheckAutomationRaw} {
+	for _, raw := range []string{} {
 		req := &api.Task{}
 		if err = json.Unmarshal([]byte(raw), req); err != nil {
 			return

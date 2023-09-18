@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/encryptor"
 	m "github.com/e154/smart-home/models"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"strconv"
@@ -75,6 +76,12 @@ func attributeFromApi(apiAttr map[string]*api.Attribute) (attributes m.Attribute
 			point[1], _ = strconv.ParseFloat(arr[1], 64)
 			attr.Value = point
 			attr.Type = common.AttributePoint
+		case api.Types_ENCRYPTED:
+			value, err := encryptor.Encrypt(v.GetEncrypted())
+			if err == nil {
+				attr.Value = value
+			}
+			attr.Type = common.AttributeEncrypted
 		}
 		attributes[k] = attr
 	}
@@ -114,6 +121,9 @@ func AttributeToApi(attributes m.Attributes) (apiAttr map[string]*api.Attribute)
 		case "point":
 			apiAttr[k].Type = api.Types_POINT
 			apiAttr[k].Point = fmt.Sprintf("[%f, %f]", v.Point().Lon, v.Point().Lat)
+		case "encrypted":
+			apiAttr[k].Type = api.Types_ENCRYPTED
+			apiAttr[k].Encrypted = common.String(v.Decrypt())
 		}
 	}
 	return

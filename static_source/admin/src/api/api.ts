@@ -2,9 +2,14 @@ import {Api} from '@/api/stub';
 import {useCache} from "@/hooks/web/useCache";
 import {ElMessage, ElNotification} from "element-plus";
 import {useI18n} from "@/hooks/web/useI18n";
+import {useAppStoreWithOut} from "@/store/modules/app";
+import {resetRouter} from "@/router";
+import {useTagsViewStore} from "@/store/modules/tagsView";
 
 const {t} = useI18n()
 const {wsCache} = useCache()
+const appStore = useAppStoreWithOut()
+const tagsViewStore = useTagsViewStore()
 
 const api = new Api({
   baseURL: import.meta.env.VITE_API_BASEPATH as string || '/', // url = base url + request url
@@ -55,7 +60,11 @@ api.instance.interceptors.response.use(
         return
       }
 
-      // UserModule.ResetToken();
+      appStore.RemoveToken()
+      //wsCache.clear()
+
+      tagsViewStore.delAllViews()
+      resetRouter() // 重置静态路由表
       location.reload() // To prevent bugs from vue-router
       return
     }

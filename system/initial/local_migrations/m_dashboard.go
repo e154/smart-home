@@ -10,7 +10,6 @@ import (
 
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
-	. "github.com/e154/smart-home/system/initial/assertions"
 )
 
 type MigrationDashboard struct {
@@ -49,11 +48,11 @@ func (n *MigrationDashboard) Up(ctx context.Context, adaptors *adaptors.Adaptors
 		n.adaptors = adaptors
 	}
 
-	err := n.addDashboard(ctx, "devDashboard", devDashboardRaw)
-	So(err, ShouldBeNil)
-
-	err = n.addDashboard(ctx, "mainDashboard", mainDashboardRaw)
-	So(err, ShouldBeNil)
+	//err := n.addDashboard(ctx, "devDashboard", devDashboardRaw)
+	//So(err, ShouldBeNil)
+	//
+	//err = n.addDashboard(ctx, "mainDashboard", mainDashboardRaw)
+	//So(err, ShouldBeNil)
 
 	return nil
 }

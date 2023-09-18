@@ -41,46 +41,26 @@ const (
 	AttrConnected = "connected"
 	AttrOffline   = "offline"
 
-	AttrStream1 = "stream1"
-	AttrStream2 = "stream2"
-	AttrStream3 = "stream3"
-	AttrStream4 = "stream4"
-	AttrStream5 = "stream5"
-	AttrStream6 = "stream6"
+	AttrStreamUri   = "streamUri"
+	AttrSnapshotUri = "snapshotUri"
 
 	AttrMotion     = "motion"
 	AttrMotionTime = "motionTime"
 
-	ActionContinuousMove = "continuousMove"
+	ActionContinuousMove     = "continuousMove"
 	ActionStopContinuousMove = "stopContinuousMove"
 )
 
 // NewAttr ...
 func NewAttr() m.Attributes {
 	return m.Attributes{
-		AttrStream1: {
-			Name: AttrStream1,
-			Type: common.AttributeString,
+		AttrStreamUri: {
+			Name: AttrStreamUri,
+			Type: common.AttributeEncrypted,
 		},
-		AttrStream2: {
-			Name: AttrStream2,
-			Type: common.AttributeString,
-		},
-		AttrStream3: {
-			Name: AttrStream3,
-			Type: common.AttributeString,
-		},
-		AttrStream4: {
-			Name: AttrStream4,
-			Type: common.AttributeString,
-		},
-		AttrStream5: {
-			Name: AttrStream5,
-			Type: common.AttributeString,
-		},
-		AttrStream6: {
-			Name: AttrStream6,
-			Type: common.AttributeString,
+		AttrSnapshotUri: {
+			Name: AttrSnapshotUri,
+			Type: common.AttributeEncrypted,
 		},
 		AttrMotion: {
 			Name: AttrMotion,
@@ -114,7 +94,7 @@ func NewSettings() map[string]*m.Attribute {
 		},
 		AttrPassword: {
 			Name: AttrPassword,
-			Type: common.AttributeString,
+			Type: common.AttributeEncrypted,
 		},
 	}
 }
@@ -159,5 +139,6 @@ type ConnectionStatus struct {
 }
 
 type StreamList struct {
-	List []string
+	List        []string
+	SnapshotUri *string
 }
