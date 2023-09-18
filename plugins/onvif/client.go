@@ -3,11 +3,12 @@ package onvif
 import (
 	"context"
 	"fmt"
-	"github.com/e154/smart-home/common"
 	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"github.com/e154/smart-home/common"
 
 	wsnt "github.com/eyetowers/gonvif/pkg/generated/onvif/docs_oasisopen_org/wsn/b2"
 	deviceWsdl "github.com/eyetowers/gonvif/pkg/generated/onvif/www_onvif_org/ver10/device/wsdl"

@@ -4,8 +4,9 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"errors"
-	"golang.org/x/crypto/chacha20poly1305"
 	"io"
+
+	"golang.org/x/crypto/chacha20poly1305"
 )
 
 var additionalData = []byte("SMART-HOME")

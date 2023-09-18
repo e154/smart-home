@@ -23,6 +23,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+
 	"github.com/e154/smart-home/common/encryptor"
 
 	"go.uber.org/fx"

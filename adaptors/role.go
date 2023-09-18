@@ -20,6 +20,7 @@ package adaptors
 
 import (
 	"context"
+
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/pkg/errors"
 

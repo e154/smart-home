@@ -167,9 +167,9 @@ func (p *plugin) Options() m.PluginOptions {
 		ActorActions:       supervisor.ToEntityActionShort(NewActions()),
 		ActorStates:        supervisor.ToEntityStateShort(NewStates()),
 		ActorSetts:         NewSettings(),
-		Javascript:         m.PluginOptionsJs{
-			Methods:   nil,
-			Objects:   map[string]string{
+		Javascript: m.PluginOptionsJs{
+			Methods: nil,
+			Objects: map[string]string{
 				"Camera": "",
 			},
 			Variables: nil,

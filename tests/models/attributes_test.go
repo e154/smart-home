@@ -21,8 +21,9 @@ package models
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/e154/smart-home/common/encryptor"
 	"testing"
+
+	"github.com/e154/smart-home/common/encryptor"
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"

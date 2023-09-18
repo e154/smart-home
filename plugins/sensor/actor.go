@@ -20,6 +20,7 @@ package sensor
 
 import (
 	"fmt"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"

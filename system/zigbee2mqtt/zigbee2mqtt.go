@@ -66,7 +66,7 @@ func NewZigbee2mqtt(lc fx.Lifecycle,
 
 	lc.Append(fx.Hook{
 		OnStart: zigbee2mqtt.Start,
-		OnStop: zigbee2mqtt.Shutdown,
+		OnStop:  zigbee2mqtt.Shutdown,
 	})
 	return zigbee2mqtt
 }

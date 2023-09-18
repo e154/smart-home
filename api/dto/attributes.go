@@ -20,13 +20,14 @@ package dto
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
+
 	"github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/encryptor"
 	m "github.com/e154/smart-home/models"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"strconv"
-	"strings"
 )
 
 // AttributeFromApi ...

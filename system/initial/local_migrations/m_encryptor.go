@@ -3,6 +3,7 @@ package local_migrations
 import (
 	"context"
 	"encoding/hex"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common/encryptor"
 	m "github.com/e154/smart-home/models"

@@ -71,5 +71,5 @@ type PluginOptions struct {
 	ActorCustomSetts   bool                         `json:"actor_custom_setts"`
 	ActorSetts         Attributes                   `json:"actor_setts"`
 	Setts              Attributes                   `json:"setts"`
-	Javascript         PluginOptionsJs      `json:"javascript"`
+	Javascript         PluginOptionsJs              `json:"javascript"`
 }

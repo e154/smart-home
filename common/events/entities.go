@@ -35,10 +35,10 @@ type EventStateChanged struct {
 
 // EventLastStateChanged ...
 type EventLastStateChanged struct {
-	PluginName  string               `json:"plugin_name"`
-	EntityId    common.EntityId      `json:"entity_id"`
-	OldState    bus.EventEntityState `json:"old_state"`
-	NewState    bus.EventEntityState `json:"new_state"`
+	PluginName string               `json:"plugin_name"`
+	EntityId   common.EntityId      `json:"entity_id"`
+	OldState   bus.EventEntityState `json:"old_state"`
+	NewState   bus.EventEntityState `json:"new_state"`
 }
 
 // EventGetLastState ...

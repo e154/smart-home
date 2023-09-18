@@ -67,7 +67,6 @@ func TestEncryptorEncryptDecryptString(t *testing.T) {
 	require.Equal(t, data, "foobar")
 }
 
-
 func BenchmarkEncryptor_Encrypt(t *testing.B) {
 	key := make([]byte, keyLength)
 	_, err := rand.Read(key)
@@ -112,5 +111,3 @@ func BenchmarkEncryptor_Decrypt(t *testing.B) {
 		require.Equal(t, pt, data)
 	}
 }
-
-
