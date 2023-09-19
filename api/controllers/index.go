@@ -40,8 +40,8 @@ func NewControllerIndex(common *ControllerCommon) ControllerIndex {
 }
 
 // Index ...
-func (c ControllerIndex) Index(publicAssets embed.FS) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (c ControllerIndex) Index(publicAssets embed.FS) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		b := map[string]interface{}{
 			"server_url":     c.ControllerCommon.appConfig.ApiFullAddress(),
 			"run_mode":       c.ControllerCommon.appConfig.Mode,
@@ -54,5 +54,5 @@ func (c ControllerIndex) Index(publicAssets embed.FS) func(w http.ResponseWriter
 			http.Error(w, fmt.Sprintf("index: couldn't parse template: %v", err), http.StatusInternalServerError)
 			return
 		}
-	}
+	})
 }

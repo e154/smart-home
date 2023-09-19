@@ -22,6 +22,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"github.com/labstack/echo/v4"
 	"net/http"
 	"strings"
 
@@ -157,6 +158,11 @@ func (c ControllerCommon) error(_ context.Context, errs validator.ValidationErro
 		log.Errorf("%+v\n", err)
 		return status.Error(codes.Internal, err.Error())
 	}
+}
+
+// ERROR ...
+func (c ControllerCommon) ERROR(ctx echo.Context, err error) error {
+	return nil
 }
 
 // Pagination ...

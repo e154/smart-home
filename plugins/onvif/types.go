@@ -34,13 +34,14 @@ const (
 
 	Version = "0.0.1"
 
-	AttrAddress   = "address"
-	AttrOnvifPort = "onvifPort"
-	AttrRtspPort  = "rtspPort"
-	AttrUserName  = "userName"
-	AttrPassword  = "password"
-	AttrConnected = "connected"
-	AttrOffline   = "offline"
+	AttrAddress              = "address"
+	AttrOnvifPort            = "onvifPort"
+	AttrRtspPort             = "rtspPort"
+	AttrUserName             = "userName"
+	AttrPassword             = "password"
+	AttrConnected            = "connected"
+	AttrOffline              = "offline"
+	AttrRequireAuthorization = "requireAuthorization"
 
 	AttrStreamUri   = "streamUri"
 	AttrSnapshotUri = "snapshotUri"
@@ -96,6 +97,11 @@ func NewSettings() map[string]*m.Attribute {
 		AttrPassword: {
 			Name: AttrPassword,
 			Type: common.AttributeEncrypted,
+		},
+		AttrRequireAuthorization: {
+			Name:  AttrRequireAuthorization,
+			Type:  common.AttributeBool,
+			Value: true,
 		},
 	}
 }

@@ -93,12 +93,16 @@ func NewActor(entity *m.Entity,
 }
 
 func (e *Actor) destroy() {
-	e.client.Shutdown()
+	go e.client.Shutdown()
 }
 
 // Spawn ...
 func (e *Actor) Spawn() supervisor.PluginActor {
-	e.client.Start(e.Setts[AttrUserName].String(), e.Setts[AttrPassword].Decrypt(), e.Setts[AttrAddress].String(), e.Setts[AttrOnvifPort].Int64())
+	e.client.Start(e.Setts[AttrUserName].String(),
+		e.Setts[AttrPassword].Decrypt(),
+		e.Setts[AttrAddress].String(),
+		e.Setts[AttrOnvifPort].Int64(),
+		e.Setts[AttrRequireAuthorization].Bool())
 	return e
 }
 

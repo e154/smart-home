@@ -90,7 +90,10 @@ func (a Attribute) Int64() int64 {
 }
 
 // Time ...
-func (a Attribute) Time() time.Time {
+func (a *Attribute) Time() time.Time {
+	if a == nil || a.Value == nil {
+		return time.Time{}
+	}
 	if value, ok := a.Value.(time.Time); ok {
 		return value
 	}
@@ -103,8 +106,8 @@ func (a Attribute) Time() time.Time {
 }
 
 // Bool ...
-func (a Attribute) Bool() bool {
-	if a.Value == nil {
+func (a *Attribute) Bool() bool {
+	if a == nil || a.Value == nil {
 		return false
 	}
 	if value, ok := a.Value.(bool); ok {
@@ -114,8 +117,8 @@ func (a Attribute) Bool() bool {
 }
 
 // Float64 ...
-func (a Attribute) Float64() float64 {
-	if a.Value == nil {
+func (a *Attribute) Float64() float64 {
+	if a == nil || a.Value == nil {
 		return 0
 	}
 	if value, ok := a.Value.(float64); ok {

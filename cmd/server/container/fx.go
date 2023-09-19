@@ -18,14 +18,6 @@
 
 package container
 
-import (
-	"github.com/e154/smart-home/common/logger"
-)
-
-var (
-	log = logger.MustGetLogger("fx")
-)
-
 // Printer ...
 type Printer struct {
 }
@@ -37,5 +29,5 @@ func NewPrinter() *Printer {
 
 // Printf ...
 func (p *Printer) Printf(msg string, fields ...interface{}) {
-	log.Infof(msg, fields...)
+	//fmt.Fprintln(os.Stderr, fmt.Sprintf(msg, fields...))
 }

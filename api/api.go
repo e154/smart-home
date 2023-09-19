@@ -22,16 +22,16 @@ import (
 	"context"
 	"embed"
 	"fmt"
+	"github.com/e154/smart-home/common/events"
+	"github.com/tmc/grpc-websocket-proxy/wsproxy"
 	"net"
 	"net/http"
 	"strings"
 
-	"github.com/e154/smart-home/common/events"
-	"github.com/e154/smart-home/system/bus"
-
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"github.com/rs/cors"
-	"github.com/tmc/grpc-websocket-proxy/wsproxy"
+	echopprof "github.com/hiko1129/echo-pprof"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 	"golang.org/x/sync/errgroup"
@@ -42,6 +42,7 @@ import (
 	gw "github.com/e154/smart-home/api/stub/api"
 	publicAssets "github.com/e154/smart-home/build"
 	"github.com/e154/smart-home/common/logger"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/rbac"
 )
 
@@ -59,6 +60,7 @@ type Api struct {
 	filter      *rbac.AccessFilter
 	cfg         Config
 	lis         net.Listener
+	echo        *echo.Echo
 	httpServer  *http.Server
 	grpcServer  *grpc.Server
 	eventBus    bus.Bus
@@ -197,49 +199,43 @@ func (a *Api) Start() (err error) {
 	})
 
 	// HTTP
-	httpv1 := http.NewServeMux()
-	httpv1.HandleFunc("/", a.controllers.Index.Index(publicAssets.F))
-	httpv1.Handle("/v1/", grpcHandlerFunc(a.grpcServer, mux))
-	httpv1.Handle("/ws", wsproxy.WebsocketProxy(mux))
-	httpv1.HandleFunc("/v1/image/upload", a.controllers.Image.MuxUploadImage())
+	a.echo = echo.New()
 
-	// uploaded and other static files
-	fileServer := http.FileServer(http.Dir("./data/file_storage"))
-	httpv1.HandleFunc("/upload/", func(w http.ResponseWriter, r *http.Request) {
-		r.RequestURI = strings.ReplaceAll(r.RequestURI, "/upload/", "/")
-		r.URL, _ = r.URL.Parse(r.RequestURI)
-		fileServer.ServeHTTP(w, r)
-	})
+	if a.cfg.Debug {
+		var format = `INFO	api/v1	[${method}] ${uri} ${status} ${latency_human} ${error}` + "\n"
 
-	staticServer := http.FileServer(http.Dir("./data/static"))
-	httpv1.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
-		r.RequestURI = strings.ReplaceAll(r.RequestURI, "/static/", "/")
-		r.URL, _ = r.URL.Parse(r.RequestURI)
-		staticServer.ServeHTTP(w, r)
-	})
+		log.Info("debug enabled")
+		DefaultLoggerConfig := middleware.LoggerConfig{
+			Skipper:          middleware.DefaultSkipper,
+			Format:           format,
+			CustomTimeFormat: "2006-01-02 15:04:05.00000",
+		}
+		a.echo.Use(middleware.LoggerWithConfig(DefaultLoggerConfig))
+		a.echo.Debug = true
 
-	// public
-	httpv1.Handle("/public/", http.StripPrefix("/", http.FileServer(http.FS(publicAssets.F))))
-
-	// swagger
-	if a.cfg.Swagger {
-		httpv1.Handle("/swagger-ui/", http.StripPrefix("/", http.FileServer(http.FS(assets))))
-		httpv1.Handle("/api.swagger.json", http.StripPrefix("/", http.FileServer(http.FS(assets))))
+		// automatically add routers for net/http/pprof
+		// e.g. /debug/pprof, /debug/pprof/heap, etc.
+		if a.cfg.Debug {
+			log.Info("pprof enabled")
+			echopprof.Wrap(a.echo)
+		}
+	} else {
+		log.Info("debug disabled")
 	}
 
-	cors := cors.New(cors.Options{
-		AllowedOrigins:   []string{"*"},
-		AllowedMethods:   []string{"HEAD", "GET", "POST", "PUT", "DELETE"},
-		AllowedHeaders:   []string{"*"},
-		AllowCredentials: false,
-		Debug:            a.cfg.Debug,
-	})
+	a.echo.HideBanner = true
+	a.echo.HidePort = true
 
-	a.httpServer = &http.Server{Addr: fmt.Sprintf(":%d", a.cfg.HttpPort), Handler: cors.Handler(httpv1)}
-	group.Go(func() error {
-		return a.httpServer.ListenAndServe()
-	})
-	log.Infof("Serving HTTP server at %d", a.cfg.HttpPort)
+	a.registerHandlers(mux)
+
+	go func() {
+		if err := a.echo.Start(a.cfg.String()); err != nil {
+			if err.Error() != "http: Server closed" {
+				log.Error(err.Error())
+			}
+		}
+	}()
+	log.Infof("server started at %s", a.cfg.String())
 
 	a.eventBus.Publish("system/services/api", events.EventServiceStarted{Service: "Api"})
 
@@ -248,8 +244,8 @@ func (a *Api) Start() (err error) {
 
 // Shutdown ...
 func (a *Api) Shutdown(ctx context.Context) (err error) {
-	if a.httpServer != nil {
-		err = a.httpServer.Shutdown(ctx)
+	if a.echo != nil {
+		err = a.echo.Shutdown(ctx)
 	}
 	if a.grpcServer != nil {
 		a.grpcServer.Stop()
@@ -271,4 +267,49 @@ func (a *Api) CustomMatcher(key string) (string, bool) {
 	default:
 		return runtime.DefaultHeaderMatcher(key)
 	}
+}
+
+func (a *Api) registerHandlers(mux *runtime.ServeMux) {
+
+	// Swagger
+	if a.cfg.Swagger {
+		var contentHandler = echo.WrapHandler(http.StripPrefix("/", http.FileServer(http.FS(assets))))
+		a.echo.GET("/swagger-ui/*", contentHandler)
+		a.echo.GET("/api.swagger.json", contentHandler)
+	}
+
+	// Base
+	a.echo.GET("/", echo.WrapHandler(a.controllers.Index.Index(publicAssets.F)))
+	a.echo.Any("/ws", echo.WrapHandler(wsproxy.WebsocketProxy(mux)))
+	a.echo.Any("/v1/*", echo.WrapHandler(grpcHandlerFunc(a.grpcServer, mux)))
+	a.echo.Any("/v1/image/upload", echo.WrapHandler(a.controllers.Image.MuxUploadImage()))
+
+	// uploaded and other static files
+	fileServer := http.FileServer(http.Dir("./data/file_storage"))
+	a.echo.Any("/upload/", echo.WrapHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		r.RequestURI = strings.ReplaceAll(r.RequestURI, "/upload/", "/")
+		r.URL, _ = r.URL.Parse(r.RequestURI)
+		fileServer.ServeHTTP(w, r)
+	})))
+	staticServer := http.FileServer(http.Dir("./data/static"))
+	a.echo.Any("/static/", echo.WrapHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		r.RequestURI = strings.ReplaceAll(r.RequestURI, "/static/", "/")
+		r.URL, _ = r.URL.Parse(r.RequestURI)
+		staticServer.ServeHTTP(w, r)
+	})))
+
+	// public
+	a.echo.GET("/public/", echo.WrapHandler(http.StripPrefix("/", http.FileServer(http.FS(publicAssets.F)))))
+
+	// media
+	a.echo.Any("/stream/:entity_id/mse", a.controllers.Media.StreamMSE)
+
+	// Cors
+	a.echo.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins:     []string{"*"},
+		AllowHeaders:     []string{"*"},
+		AllowCredentials: false,
+		AllowMethods:     []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete, http.MethodHead},
+	}))
+
 }

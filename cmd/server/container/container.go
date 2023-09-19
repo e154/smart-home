@@ -37,6 +37,7 @@ import (
 	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/logging_db"
 	"github.com/e154/smart-home/system/logging_ws"
+	"github.com/e154/smart-home/system/media"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/mqtt_authenticator"
@@ -78,6 +79,7 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 			MigrationList,
 			localMigrations.NewMigrations,
 			NewDemo,
+			media.NewMedia,
 			initial.NewInitial,
 			NewMqttConfig,
 			mqtt_authenticator.NewAuthenticator,

@@ -56,6 +56,7 @@ type Controllers struct {
 	MessageDelivery   ControllerMessageDelivery
 	Index             ControllerIndex
 	Mqtt              ControllerMqtt
+	Media             ControllerMedia
 }
 
 // NewControllers ...
@@ -94,5 +95,6 @@ func NewControllers(adaptors *adaptors.Adaptors,
 		MessageDelivery:   NewControllerMessageDelivery(common),
 		Index:             NewControllerIndex(common),
 		Mqtt:              NewControllerMqtt(common),
+		Media:             NewControllerMedia(common),
 	}
 }

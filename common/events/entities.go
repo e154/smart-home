@@ -97,7 +97,8 @@ type CommandLoadEntity struct {
 
 // EventEntityLoaded ...
 type EventEntityLoaded struct {
-	EntityId common.EntityId `json:"entity_id"`
+	EntityId   common.EntityId `json:"entity_id"`
+	PluginName string          `json:"plugin_name"`
 }
 
 // EventEntitySetState ...

@@ -100,8 +100,8 @@ func (c ControllerImage) UploadImage(ctx context.Context, req *api.UploadImageRe
 }
 
 // MuxUploadImage ...
-func (c ControllerImage) MuxUploadImage() func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (c ControllerImage) MuxUploadImage() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		if err := r.ParseMultipartForm(8 << 20); err != nil {
 			log.Error(err.Error())
@@ -127,7 +127,7 @@ func (c ControllerImage) MuxUploadImage() func(w http.ResponseWriter, r *http.Re
 			"images": resultImages,
 			"errors": errs,
 		})
-	}
+	})
 }
 
 // GetImageListByDate ...

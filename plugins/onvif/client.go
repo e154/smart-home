@@ -3,6 +3,7 @@ package onvif
 import (
 	"context"
 	"fmt"
+	"regexp"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -33,6 +34,7 @@ var (
 type Client struct {
 	username, password, address string
 	port                        int64
+	requireAuthorization        bool
 	cli                         gonvif.Client
 	mediaProfile                *schema.Profile
 	media2Profile               *media2Wsdl.MediaProfile
@@ -50,7 +52,7 @@ func NewClient(handler func(interface{})) *Client {
 	}
 }
 
-func (s *Client) Start(username, password, address string, port int64) (err error) {
+func (s *Client) Start(username, password, address string, port int64, requireAuthorization bool) (err error) {
 	if s.isStarted.Load() {
 		return
 	}
@@ -60,6 +62,7 @@ func (s *Client) Start(username, password, address string, port int64) (err erro
 	s.password = password
 	s.address = address
 	s.port = port
+	s.requireAuthorization = requireAuthorization
 
 	s.quit = make(chan struct{})
 
@@ -406,6 +409,12 @@ func (s *Client) prepareImagingService(msg *wsnt.NotificationMessage) {
 
 }
 
+var re = regexp.MustCompile(`(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}`)
+
 func (s *Client) prepareUri(uri string) string {
-	return strings.ReplaceAll(uri, s.address, fmt.Sprintf("%s:%s@%s", s.username, s.password, s.address))
+	if !s.requireAuthorization || !re.MatchString(uri) {
+		return uri
+	}
+	ip := re.FindString(uri)
+	return strings.ReplaceAll(uri, ip, fmt.Sprintf("%s:%s@%s", s.username, s.password, ip))
 }

@@ -23,7 +23,6 @@ import (
 
 	"github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/location"
 	m "github.com/e154/smart-home/models"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -60,9 +59,9 @@ func (a ControllerAuth) Signin(ctx context.Context, _ *emptypb.Empty) (resp *api
 	var user *m.User
 	var accessToken string
 
-	info, _ := location.GetRegionInfo()
+	//info, _ := location.GetRegionInfo()
 
-	if user, accessToken, err = a.endpoint.Auth.SignIn(ctx, username, pass, info.Ip); err != nil {
+	if user, accessToken, err = a.endpoint.Auth.SignIn(ctx, username, pass, ""); err != nil {
 		return nil, internalServerError
 	}
 

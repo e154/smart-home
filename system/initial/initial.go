@@ -23,14 +23,13 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-
-	"github.com/e154/smart-home/common/encryptor"
-
+	"github.com/e154/smart-home/system/media"
 	"go.uber.org/fx"
 
 	. "github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api"
 	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/encryptor"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	_ "github.com/e154/smart-home/plugins"
@@ -81,7 +80,8 @@ func NewInitial(lc fx.Lifecycle,
 	_ *logging_ws.LoggingWs,
 	localMigrations *localMigrations.Migrations,
 	demo *demo.Demos,
-	_ *scheduler.Scheduler) *Initial {
+	_ *scheduler.Scheduler,
+	_ *media.Media) *Initial {
 	initial := &Initial{
 		migrations:      migrations,
 		adaptors:        adaptors,

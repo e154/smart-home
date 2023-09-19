@@ -74,9 +74,7 @@ func NewStreamService(lc fx.Lifecycle,
 func (s *Stream) Start(_ context.Context) error {
 	_ = s.eventBus.Subscribe("system/entities/+", s.eventHandler.eventHandler)
 	_ = s.eventBus.Subscribe("system/plugins/html5_notify", s.eventHandler.eventHandler)
-	_ = s.eventBus.Subscribe("system/automation/tasks/+", s.eventHandler.eventHandler)
-	_ = s.eventBus.Subscribe("system/automation/triggers/+", s.eventHandler.eventHandler)
-	_ = s.eventBus.Subscribe("system/automation/actions/+", s.eventHandler.eventHandler)
+	_ = s.eventBus.Subscribe("system/automation/#", s.eventHandler.eventHandler)
 	_ = s.eventBus.Subscribe(webpush.TopicPluginWebpush, s.eventHandler.eventHandler)
 	_ = s.eventBus.Subscribe("system/services/mqtt", s.eventHandler.eventHandler)
 	s.eventBus.Publish("system/services/stream", events.EventServiceStarted{Service: "Stream"})
@@ -87,9 +85,7 @@ func (s *Stream) Start(_ context.Context) error {
 func (s *Stream) Shutdown(_ context.Context) error {
 	_ = s.eventBus.Unsubscribe("system/entities/+", s.eventHandler.eventHandler)
 	_ = s.eventBus.Unsubscribe("system/plugins/html5_notify", s.eventHandler.eventHandler)
-	_ = s.eventBus.Unsubscribe("system/automation/tasks/+", s.eventHandler.eventHandler)
-	_ = s.eventBus.Unsubscribe("system/automation/triggers/+", s.eventHandler.eventHandler)
-	_ = s.eventBus.Unsubscribe("system/automation/actions/+", s.eventHandler.eventHandler)
+	_ = s.eventBus.Unsubscribe("system/automation/#", s.eventHandler.eventHandler)
 	_ = s.eventBus.Unsubscribe("system/services/mqtt", s.eventHandler.eventHandler)
 	_ = s.eventBus.Unsubscribe(webpush.TopicPluginWebpush, s.eventHandler.eventHandler)
 	s.sessions.Range(func(key, value interface{}) bool {

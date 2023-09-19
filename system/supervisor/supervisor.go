@@ -372,7 +372,7 @@ func (e *supervisor) Spawn(constructor ActorConstructor) (actor PluginActor) {
 	go func() {
 		defer func() {
 
-			log.Infof("unload entity %v", entityId)
+			log.Infof("unload entity '%v'", entityId)
 
 			var err error
 			var plugin CrudActor
@@ -659,7 +659,8 @@ func (e *supervisor) AddEntity(entity *m.Entity) (err error) {
 	}
 
 	e.eventBus.Publish("system/entities/"+entity.Id.String(), events.EventEntityLoaded{
-		EntityId: entity.Id,
+		EntityId:   entity.Id,
+		PluginName: entity.PluginName,
 	})
 
 	return

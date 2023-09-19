@@ -22,6 +22,8 @@ import slider from './slider/index.vue';
 import sliderEditor from './slider/editor.vue';
 import colorPicker from './color_picker/index.vue';
 import colorPickerEditor from './color_picker/editor.vue';
+import streamPlayer from './stream_player/index.vue';
+import streamPlayerEditor from './stream_player/editor.vue';
 
 export const CardItemName = (name: string): any => {
   switch (name) {
@@ -47,6 +49,8 @@ export const CardItemName = (name: string): any => {
       return slider;
     case 'colorPicker':
       return colorPicker;
+    case 'streamPlayer':
+      return streamPlayer;
     default:
       // console.error(`unknown card name "${name}"`);
       return dummy;
@@ -77,6 +81,8 @@ export const CardEditorName = (name: string): any => {
       return sliderEditor;
     case 'colorPicker':
       return colorPickerEditor;
+    case 'streamPlayer':
+      return streamPlayerEditor;
     default:
       // console.error(`unknown card name "${name}"`);
       return dummyEditor;
@@ -99,5 +105,6 @@ export const CardItemList: ItemsType[] = [
   {label: 'ENTITY_STORAGE', value: 'entityStorage'},
   {label: 'MAP', value: 'map'},
   {label: 'SLIDER', value: 'slider'},
-  {label: 'COLOR_PICKER', value: 'colorPicker'}
+  {label: 'COLOR_PICKER', value: 'colorPicker'},
+  {label: 'STREAM_PLAYER', value: 'streamPlayer'}
 ];
