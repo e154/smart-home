@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net"
 	"net/url"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -130,7 +129,7 @@ func RTSPServer() {
 	l, err := net.Listen("tcp", Storage.ServerRTSPPort())
 	if err != nil {
 		log.Error(err.Error())
-		os.Exit(1)
+		return
 	}
 	defer func() {
 		err := l.Close()
@@ -142,7 +141,7 @@ func RTSPServer() {
 		conn, err := l.Accept()
 		if err != nil {
 			log.Error(err.Error())
-			os.Exit(1)
+			return
 		}
 		go RTSPServerClientHandle(conn)
 	}

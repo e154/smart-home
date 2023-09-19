@@ -1,7 +1,6 @@
 package media
 
 import (
-	"os"
 	"time"
 
 	"github.com/imdario/mergo"
@@ -44,7 +43,7 @@ func NewStreamCore() *StorageST {
 			err = mergo.Merge(&channel, ch)
 			if err != nil {
 				log.Error(err.Error())
-				os.Exit(1)
+				//os.Exit(1)
 			}
 			channel.clients = make(map[string]ClientST)
 			channel.ack = time.Now().Add(-255 * time.Hour)

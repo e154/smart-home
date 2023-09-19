@@ -160,9 +160,39 @@ func (c ControllerCommon) error(_ context.Context, errs validator.ValidationErro
 	}
 }
 
+// HTTP400 ...
+func (c ControllerCommon) HTTP400(ctx echo.Context, err error) error {
+	return ctx.HTML(http.StatusBadRequest, err.Error())
+}
+
+// HTTP401 ...
+func (c ControllerCommon) HTTP401(ctx echo.Context, err error) error {
+	return ctx.HTML(http.StatusUnauthorized, err.Error())
+}
+
+// HTTP404 ...
+func (c ControllerCommon) HTTP404(ctx echo.Context, err error) error {
+	return ctx.HTML(http.StatusNotFound, err.Error())
+}
+
+// HTTP500 ...
+func (c ControllerCommon) HTTP500(ctx echo.Context, err error) error {
+	return ctx.HTML(http.StatusInternalServerError, err.Error())
+}
+
 // ERROR ...
 func (c ControllerCommon) ERROR(ctx echo.Context, err error) error {
-	return nil
+	switch {
+
+	case errors.Is(err, apperr.ErrInvalidRequest):
+		return c.HTTP400(ctx, err)
+	case errors.Is(err, apperr.ErrUnauthorized):
+		return c.HTTP401(ctx, err)
+	case errors.Is(err, apperr.ErrNotFound):
+		return c.HTTP404(ctx, err)
+	default:
+		return c.HTTP500(ctx, err)
+	}
 }
 
 // Pagination ...

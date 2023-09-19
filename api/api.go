@@ -286,23 +286,27 @@ func (a *Api) registerHandlers(mux *runtime.ServeMux) {
 
 	// uploaded and other static files
 	fileServer := http.FileServer(http.Dir("./data/file_storage"))
-	a.echo.Any("/upload/", echo.WrapHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	a.echo.Any("/upload/*", echo.WrapHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		r.RequestURI = strings.ReplaceAll(r.RequestURI, "/upload/", "/")
 		r.URL, _ = r.URL.Parse(r.RequestURI)
 		fileServer.ServeHTTP(w, r)
 	})))
 	staticServer := http.FileServer(http.Dir("./data/static"))
-	a.echo.Any("/static/", echo.WrapHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	a.echo.Any("/static/*", echo.WrapHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		r.RequestURI = strings.ReplaceAll(r.RequestURI, "/static/", "/")
 		r.URL, _ = r.URL.Parse(r.RequestURI)
 		staticServer.ServeHTTP(w, r)
 	})))
 
 	// public
-	a.echo.GET("/public/", echo.WrapHandler(http.StripPrefix("/", http.FileServer(http.FS(publicAssets.F)))))
+	a.echo.GET("/public/*", echo.WrapHandler(http.StripPrefix("/", http.FileServer(http.FS(publicAssets.F)))))
 
 	// media
 	a.echo.Any("/stream/:entity_id/mse", a.controllers.Media.StreamMSE)
+	a.echo.Any("/stream/:entity_id/hlsll/live/init.mp4", a.controllers.Media.StreamHLSLLInit)
+	a.echo.Any("/stream/:entity_id/hlsll/live/index.m3u8", a.controllers.Media.StreamHLSLLM3U8)
+	a.echo.Any("/stream/:entity_id/hlsll/live/segment/:segment/:any", a.controllers.Media.StreamHLSLLM4Segment)
+	a.echo.Any("/stream/:entity_id/hlsll/live/fragment/:segment/:fragment/:any", a.controllers.Media.StreamHLSLLM4Fragment)
 
 	// Cors
 	a.echo.Use(middleware.CORSWithConfig(middleware.CORSConfig{

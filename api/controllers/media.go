@@ -1,12 +1,13 @@
 package controllers
 
 import (
-	"fmt"
 	"github.com/deepch/vdk/format/mp4f"
+	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/system/media"
 	"github.com/gobwas/ws"
 	"github.com/gobwas/ws/wsutil"
 	"github.com/labstack/echo/v4"
+	"github.com/pkg/errors"
 	"time"
 )
 
@@ -33,8 +34,6 @@ func (c ControllerMedia) StreamMSE(ctx echo.Context) error {
 	token := ctx.Param("token")
 	clientIp := ctx.RealIP()
 	channel := "0"
-
-	fmt.Println(entityId, token, clientIp)
 
 	defer func() {
 		err = conn.Close()
@@ -122,14 +121,11 @@ func (c ControllerMedia) StreamMSE(ctx echo.Context) error {
 				return c.ERROR(ctx, err)
 			}
 		case <-controlExit:
-			log.Info("Client Reader Exit")
-			return c.ERROR(ctx, err)
+			return c.ERROR(ctx, errors.Wrap(apperr.ErrInvalidRequest, "Client Reader Exit"))
 		case <-noClient.C:
-			log.Info("Client OffLine Exit")
-			return c.ERROR(ctx, err)
+			return c.ERROR(ctx, errors.Wrap(apperr.ErrInvalidRequest, "Client OffLine Exit"))
 		case <-noVideo.C:
-			log.Info(media.ErrorStreamNoVideo.Error())
-			return c.ERROR(ctx, err)
+			return c.ERROR(ctx, errors.Wrap(apperr.ErrInvalidRequest, media.ErrorStreamNoVideo.Error()))
 		case pck := <-ch:
 			if pck.IsKeyFrame {
 				noVideo.Reset(10 * time.Second)
@@ -155,4 +151,20 @@ func (c ControllerMedia) StreamMSE(ctx echo.Context) error {
 			}
 		}
 	}
+}
+
+func (c ControllerMedia) StreamHLSLLInit(ctx echo.Context) error {
+	return nil
+}
+
+func (c ControllerMedia) StreamHLSLLM3U8(ctx echo.Context) error {
+	return nil
+}
+
+func (c ControllerMedia) StreamHLSLLM4Segment(ctx echo.Context) error {
+	return nil
+}
+
+func (c ControllerMedia) StreamHLSLLM4Fragment(ctx echo.Context) error {
+	return nil
 }
