@@ -43,9 +43,6 @@ const (
 	AttrOffline              = "offline"
 	AttrRequireAuthorization = "requireAuthorization"
 
-	AttrStreamUri   = "streamUri"
-	AttrSnapshotUri = "snapshotUri"
-
 	AttrMotion     = "motion"
 	AttrMotionTime = "motionTime"
 
@@ -56,14 +53,6 @@ const (
 // NewAttr ...
 func NewAttr() m.Attributes {
 	return m.Attributes{
-		AttrStreamUri: {
-			Name: AttrStreamUri,
-			Type: common.AttributeEncrypted,
-		},
-		AttrSnapshotUri: {
-			Name: AttrSnapshotUri,
-			Type: common.AttributeEncrypted,
-		},
 		AttrMotion: {
 			Name: AttrMotion,
 			Type: common.AttributeBool,

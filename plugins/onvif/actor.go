@@ -20,13 +20,12 @@ package onvif
 
 import (
 	"fmt"
-
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/encryptor"
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
+	"github.com/e154/smart-home/system/media"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/supervisor"
 )
@@ -93,6 +92,7 @@ func NewActor(entity *m.Entity,
 }
 
 func (e *Actor) destroy() {
+	e.eventBus.Publish("system/media", media.EventRemoveList{Name: e.Id.String()})
 	go e.client.Shutdown()
 }
 
@@ -190,16 +190,8 @@ func (e *Actor) prepareMotionAlarm(event *MotionAlarm) {
 }
 
 func (e *Actor) prepareStreamList(event *StreamList) {
-	var attrs = m.AttributeValue{}
-	if len(event.List) > 0 {
-		attrs[AttrStreamUri], _ = encryptor.Encrypt(event.List[0])
-	}
-	if event.SnapshotUri != nil {
-		attrs[AttrSnapshotUri], _ = encryptor.Encrypt(common.StringValue(event.SnapshotUri))
-	}
-	e.SetState(supervisor.EntityStateParams{
-		NewState:        common.String(AttrConnected),
-		AttributeValues: attrs,
-		StorageSave:     true,
+	e.eventBus.Publish("system/media", media.EventUpdateList{
+		Name:     e.Id.String(),
+		Channels: event.List,
 	})
 }

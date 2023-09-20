@@ -43,13 +43,11 @@ func (c ControllerMedia) StreamMSE(ctx echo.Context) error {
 		log.Debug("Client Full Exit")
 	}()
 	if !media.Storage.StreamChannelExist(entityId, channel) {
-		log.Error(media.ErrorStreamNotFound.Error())
-		return c.ERROR(ctx, err)
+		return c.ERROR(ctx, media.ErrorStreamNotFound)
 	}
 
 	if !media.RemoteAuthorization("WS", entityId, channel, token, clientIp) {
-		log.Error(media.ErrorStreamUnauthorized.Error())
-		return c.ERROR(ctx, err)
+		return c.ERROR(ctx, media.ErrorStreamUnauthorized)
 	}
 
 	media.Storage.StreamChannelRun(entityId, channel)

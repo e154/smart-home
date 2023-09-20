@@ -2,9 +2,8 @@ package media
 
 import (
 	"context"
-	"github.com/e154/smart-home/common/events"
+	"fmt"
 	"github.com/e154/smart-home/common/logger"
-	"github.com/e154/smart-home/plugins/onvif"
 	"github.com/e154/smart-home/system/bus"
 	"go.uber.org/fx"
 )
@@ -39,13 +38,13 @@ func (r *Media) Start(ctx context.Context) (err error) {
 	go RTSPServer()
 	go Storage.StreamChannelRunAll()
 
-	_ = r.eventBus.Subscribe("system/entities/+", r.eventHandler)
+	_ = r.eventBus.Subscribe("system/media/#", r.eventHandler)
 
 	return
 }
 
 func (r *Media) Shutdown(ctx context.Context) (err error) {
-	_ = r.eventBus.Unsubscribe("system/entities/+", r.eventHandler)
+	_ = r.eventBus.Unsubscribe("system/media/#", r.eventHandler)
 
 	Storage.StopAll()
 	return
@@ -55,51 +54,42 @@ func (r *Media) Shutdown(ctx context.Context) (err error) {
 func (r *Media) eventHandler(_ string, message interface{}) {
 
 	switch event := message.(type) {
-	case events.EventEntityUnloaded:
-		go r.eventEntityUnloaded(event)
-	case events.EventEntityLoaded:
-		go r.eventEntityLoaded(event)
-	case events.EventStateChanged:
-		go r.eventStateChanged(event)
+	case EventRemoveList:
+		go r.eventRemoveList(event)
+	case EventUpdateList:
+		go r.eventUpdateList(event)
 	}
 }
 
-func (r *Media) eventEntityUnloaded(event events.EventEntityUnloaded) {
-	if event.PluginName != onvif.Name {
+func (r *Media) eventRemoveList(event EventRemoveList) {
+	if event.Name == "" {
 		return
 	}
-	if err := Storage.StreamDelete(event.EntityId.String()); err != nil {
+	if err := Storage.StreamDelete(event.Name); err != nil {
 		log.Error(err.Error())
 	}
 }
 
-func (r *Media) eventEntityLoaded(event events.EventEntityLoaded) {
-	if event.PluginName != onvif.Name {
-		return
-	}
-}
-
-func (r *Media) eventStateChanged(event events.EventStateChanged) {
-	if event.PluginName != onvif.Name {
-		return
-	}
-	streamUri := event.NewState.Attributes[onvif.AttrStreamUri].Decrypt()
-	if streamUri == "" {
+func (r *Media) eventUpdateList(event EventUpdateList) {
+	if event.Name == "" || len(event.Channels) == 0 {
 		return
 	}
 
 	// add/update stream
 	payload := StreamST{
-		Name: event.EntityId.String(),
-		Channels: map[string]ChannelST{
-			"0": {
-				URL:      streamUri,
-				OnDemand: true,
-			},
-		},
+		Name:     event.Name,
+		Channels: make(map[string]ChannelST),
 	}
-	if err := Storage.StreamAdd(event.EntityId.String(), payload); err != nil {
-		if err = Storage.StreamEdit(event.EntityId.String(), payload); err != nil {
+
+	for i, item := range event.Channels {
+		payload.Channels[fmt.Sprintf("%d", i)] = ChannelST{
+			URL:      item,
+			OnDemand: true,
+		}
+	}
+
+	if err := Storage.StreamAdd(event.Name, payload); err != nil {
+		if err = Storage.StreamEdit(event.Name, payload); err != nil {
 			log.Error(err.Error())
 		}
 	}
