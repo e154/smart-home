@@ -25,16 +25,16 @@ func StreamServerRunStreamDo(streamID string, channelID string) {
 		log.Info("Run stream")
 		opt, err := Storage.StreamChannelControl(streamID, channelID)
 		if err != nil {
-			log.Info("Exit", err)
+			//log.Info("Exit", err)
 			return
 		}
 		if opt.OnDemand && !Storage.ClientHas(streamID, channelID) {
-			log.Info("Stop stream no client")
+			//log.Info("Stop stream no client")
 			return
 		}
 		status, err = StreamServerRunStream(streamID, channelID, opt)
 		if status > 0 {
-			log.Info("Stream exit by signal or not client")
+			//log.Info("Stream exit by signal or not client")
 			return
 		}
 		if err != nil {

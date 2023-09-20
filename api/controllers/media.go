@@ -1,14 +1,13 @@
 package controllers
 
 import (
+	"time"
+
 	"github.com/deepch/vdk/format/mp4f"
-	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/system/media"
 	"github.com/gobwas/ws"
 	"github.com/gobwas/ws/wsutil"
 	"github.com/labstack/echo/v4"
-	"github.com/pkg/errors"
-	"time"
 )
 
 // ControllerMedia ...
@@ -27,66 +26,76 @@ func (c ControllerMedia) StreamMSE(ctx echo.Context) error {
 
 	conn, _, _, err := ws.UpgradeHTTP(ctx.Request(), ctx.Response().Writer)
 	if err != nil {
-		return c.ERROR(ctx, err)
+		log.Error(err.Error())
+		return nil
 	}
-
-	entityId := ctx.Param("entity_id")
-	token := ctx.Param("token")
-	clientIp := ctx.RealIP()
-	channel := "0"
 
 	defer func() {
 		err = conn.Close()
 		if err != nil {
-			log.Error(err.Error())
+			log.Errorf(err.Error())
 		}
-		log.Debug("Client Full Exit")
 	}()
+
+	entityId := ctx.Param("entity_id")
+	token := ctx.Param("token")
+	clientIp := ctx.RealIP()
+	channel := ctx.Param("channel")
+
 	if !media.Storage.StreamChannelExist(entityId, channel) {
-		return c.ERROR(ctx, media.ErrorStreamNotFound)
+		log.Error(media.ErrorStreamNotFound.Error())
+		return nil
 	}
 
 	if !media.RemoteAuthorization("WS", entityId, channel, token, clientIp) {
-		return c.ERROR(ctx, media.ErrorStreamUnauthorized)
+		log.Error(media.ErrorStreamUnauthorized.Error())
+		return nil
 	}
 
 	media.Storage.StreamChannelRun(entityId, channel)
 	err = conn.SetWriteDeadline(time.Now().Add(5 * time.Second))
 	if err != nil {
-		return c.ERROR(ctx, err)
+		log.Error(err.Error())
+		return nil
 	}
 	cid, ch, _, err := media.Storage.ClientAdd(entityId, channel, media.MSE)
 	if err != nil {
-		return c.ERROR(ctx, err)
+		log.Error(err.Error())
+		return nil
 	}
 	defer media.Storage.ClientDelete(entityId, cid, channel)
 	codecs, err := media.Storage.StreamChannelCodecs(entityId, channel)
 	if err != nil {
-		return c.ERROR(ctx, err)
+		log.Error(err.Error())
+		return nil
 	}
 	muxerMSE := mp4f.NewMuxer(nil)
 	err = muxerMSE.WriteHeader(codecs)
 	if err != nil {
-		return c.ERROR(ctx, err)
+		log.Error(err.Error())
+		return nil
 	}
 	meta, init := muxerMSE.GetInit(codecs)
 	err = wsutil.WriteServerMessage(conn, ws.OpBinary, append([]byte{9}, meta...))
 	if err != nil {
-		return c.ERROR(ctx, err)
+		log.Error(err.Error())
+		return nil
 	}
 	err = wsutil.WriteServerMessage(conn, ws.OpBinary, init)
 	if err != nil {
-		return c.ERROR(ctx, err)
+		log.Error(err.Error())
+		return nil
 	}
 	var videoStart bool
 	controlExit := make(chan struct{})
 	noClient := time.NewTimer(10 * time.Second)
 	go func() {
+		var header ws.Header
 		defer func() {
 			close(controlExit)
 		}()
 		for {
-			header, _, err := wsutil.NextReader(conn, ws.StateServerSide)
+			header, _, err = wsutil.NextReader(conn, ws.StateServerSide)
 			if err != nil {
 				return
 			}
@@ -101,29 +110,29 @@ func (c ControllerMedia) StreamMSE(ctx echo.Context) error {
 	noVideo := time.NewTimer(10 * time.Second)
 	pingTicker := time.NewTicker(500 * time.Millisecond)
 	defer pingTicker.Stop()
-	defer log.Debug("client exit")
+	var buf []byte
 	for {
 		select {
 
 		case <-pingTicker.C:
-			err = conn.SetWriteDeadline(time.Now().Add(3 * time.Second))
-			if err != nil {
-				return c.ERROR(ctx, err)
+			if err = conn.SetWriteDeadline(time.Now().Add(3 * time.Second)); err != nil {
+				log.Error(err.Error())
+				return nil
 			}
-			buf, err := ws.CompileFrame(ws.NewPingFrame(nil))
-			if err != nil {
-				return c.ERROR(ctx, err)
+			if buf, err = ws.CompileFrame(ws.NewPingFrame(nil)); err != nil {
+				log.Error(err.Error())
+				return nil
 			}
-			_, err = conn.Write(buf)
-			if err != nil {
-				return c.ERROR(ctx, err)
+			if _, err = conn.Write(buf); err != nil {
+				log.Error(err.Error())
+				return nil
 			}
 		case <-controlExit:
-			return c.ERROR(ctx, errors.Wrap(apperr.ErrInvalidRequest, "Client Reader Exit"))
+			return nil
 		case <-noClient.C:
-			return c.ERROR(ctx, errors.Wrap(apperr.ErrInvalidRequest, "Client OffLine Exit"))
+			return nil
 		case <-noVideo.C:
-			return c.ERROR(ctx, errors.Wrap(apperr.ErrInvalidRequest, media.ErrorStreamNoVideo.Error()))
+			return nil
 		case pck := <-ch:
 			if pck.IsKeyFrame {
 				noVideo.Reset(10 * time.Second)
@@ -132,19 +141,20 @@ func (c ControllerMedia) StreamMSE(ctx echo.Context) error {
 			if !videoStart {
 				continue
 			}
-			ready, buf, err := muxerMSE.WritePacket(*pck, false)
-			if err != nil {
-				return c.ERROR(ctx, err)
+			var ready bool
+			if ready, buf, err = muxerMSE.WritePacket(*pck, false); err != nil {
+				log.Error(err.Error())
+				return nil
 			}
 			if ready {
-				err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
-				if err != nil {
-					return c.ERROR(ctx, err)
+				if err = conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
+					log.Error(err.Error())
+					return nil
 				}
 				//err = websocket.Message.Send(ws, buf)
-				err = wsutil.WriteServerMessage(conn, ws.OpBinary, buf)
-				if err != nil {
-					return c.ERROR(ctx, err)
+				if err = wsutil.WriteServerMessage(conn, ws.OpBinary, buf); err != nil {
+					log.Error(err.Error())
+					return nil
 				}
 			}
 		}

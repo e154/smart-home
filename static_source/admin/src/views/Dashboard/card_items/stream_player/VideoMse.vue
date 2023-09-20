@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onBeforeUnmount, PropType, ref} from "vue";
+import {onMounted, onBeforeUnmount, PropType, ref, onUnmounted} from "vue";
 import { CardItem } from "@/views/Dashboard/core";
 import {Websocket, WebsocketBuilder} from "websocket-ts";
 
@@ -32,7 +32,7 @@ onMounted(async () => {
   startPlay()
 })
 
-onBeforeUnmount(() => {
+onUnmounted(() => {
   stopPlay()
 })
 
@@ -44,7 +44,8 @@ const getUrl = (): string => {
   if (!props.item?.entityId) {
     return ""
   }
-  let uri = (import.meta.env.VITE_API_BASEPATH as string || '/') + '/stream/'+ props.item.entityId +'/mse';
+  //todo: add channel select
+  let uri = (import.meta.env.VITE_API_BASEPATH as string || '/') + '/stream/'+ props.item.entityId +'/channel/0/mse';
   uri = uri.replace("http", "ws")
   uri = uri.replace("https", "wss")
   return uri;
@@ -92,6 +93,8 @@ const stopPlay = () => {
     return
   }
   ws.close()
+  ws = null
+  videoEl.value = null
 }
 
 const pushPacket = () => {

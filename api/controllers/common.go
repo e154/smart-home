@@ -182,6 +182,11 @@ func (c ControllerCommon) HTTP500(ctx echo.Context, err error) error {
 
 // ERROR ...
 func (c ControllerCommon) ERROR(ctx echo.Context, err error) error {
+
+	if e := ctx.Request().Context().Err(); e != nil {
+		return nil
+	}
+
 	switch {
 
 	case errors.Is(err, apperr.ErrInvalidRequest):

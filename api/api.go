@@ -302,11 +302,11 @@ func (a *Api) registerHandlers(mux *runtime.ServeMux) {
 	a.echo.GET("/public/*", echo.WrapHandler(http.StripPrefix("/", http.FileServer(http.FS(publicAssets.F)))))
 
 	// media
-	a.echo.Any("/stream/:entity_id/mse", a.controllers.Media.StreamMSE)
-	a.echo.Any("/stream/:entity_id/hlsll/live/init.mp4", a.controllers.Media.StreamHLSLLInit)
-	a.echo.Any("/stream/:entity_id/hlsll/live/index.m3u8", a.controllers.Media.StreamHLSLLM3U8)
-	a.echo.Any("/stream/:entity_id/hlsll/live/segment/:segment/:any", a.controllers.Media.StreamHLSLLM4Segment)
-	a.echo.Any("/stream/:entity_id/hlsll/live/fragment/:segment/:fragment/:any", a.controllers.Media.StreamHLSLLM4Fragment)
+	a.echo.Any("/stream/:entity_id/channel/:channel/mse", a.controllers.Media.StreamMSE)
+	a.echo.Any("/stream/:entity_id/channel/:channel/hlsll/live/init.mp4", a.controllers.Media.StreamHLSLLInit)
+	a.echo.Any("/stream/:entity_id/channel/:channel/hlsll/live/index.m3u8", a.controllers.Media.StreamHLSLLM3U8)
+	a.echo.Any("/stream/:entity_id/channel/:channel/hlsll/live/segment/:segment/:any", a.controllers.Media.StreamHLSLLM4Segment)
+	a.echo.Any("/stream/:entity_id/channel/:channel/hlsll/live/fragment/:segment/:fragment/:any", a.controllers.Media.StreamHLSLLM4Fragment)
 
 	// Cors
 	a.echo.Use(middleware.CORSWithConfig(middleware.CORSConfig{

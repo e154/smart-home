@@ -1,7 +1,7 @@
 package media
 
 import (
-	"errors"
+	"github.com/e154/smart-home/common/apperr"
 	"net"
 	"sync"
 	"time"
@@ -27,19 +27,19 @@ const (
 // Default stream errors
 var (
 	Success                         = "success"
-	ErrorStreamNotFound             = errors.New("stream not found")
-	ErrorStreamAlreadyExists        = errors.New("stream already exists")
-	ErrorStreamChannelAlreadyExists = errors.New("stream channel already exists")
-	ErrorStreamNotHLSSegments       = errors.New("stream hls not ts seq found")
-	ErrorStreamNoVideo              = errors.New("stream no video")
-	ErrorStreamNoClients            = errors.New("stream no clients")
-	ErrorStreamRestart              = errors.New("stream restart")
-	ErrorStreamStopCoreSignal       = errors.New("stream stop core signal")
-	ErrorStreamStopRTSPSignal       = errors.New("stream stop rtsp signal")
-	ErrorStreamChannelNotFound      = errors.New("stream channel not found")
-	ErrorStreamChannelCodecNotFound = errors.New("stream channel codec not ready, possible stream offline")
-	ErrorStreamsLen0                = errors.New("streams len zero")
-	ErrorStreamUnauthorized         = errors.New("stream request unauthorized")
+	ErrorStreamNotFound             = apperr.New("stream not found", apperr.ErrNotFound)
+	ErrorStreamAlreadyExists        = apperr.New("stream already exists", apperr.ErrInvalidRequest)
+	ErrorStreamChannelAlreadyExists = apperr.New("stream channel already exists", apperr.ErrInvalidRequest)
+	ErrorStreamNotHLSSegments       = apperr.New("stream hls not ts seq found", apperr.ErrNotFound)
+	ErrorStreamNoVideo              = apperr.New("stream no video", apperr.ErrNotFound)
+	ErrorStreamNoClients            = apperr.New("stream no clients", apperr.ErrNotFound)
+	ErrorStreamRestart              = apperr.New("stream restart", apperr.ErrInternal)
+	ErrorStreamStopCoreSignal       = apperr.New("stream stop core signal", apperr.ErrInternal)
+	ErrorStreamStopRTSPSignal       = apperr.New("stream stop rtsp signal", apperr.ErrInternal)
+	ErrorStreamChannelNotFound      = apperr.New("stream channel not found", apperr.ErrNotFound)
+	ErrorStreamChannelCodecNotFound = apperr.New("stream channel codec not ready, possible stream offline", apperr.ErrInternal)
+	ErrorStreamsLen0                = apperr.New("streams len zero", apperr.ErrInternal)
+	ErrorStreamUnauthorized         = apperr.New("stream request unauthorized", apperr.ErrUnauthorized)
 )
 
 // StorageST main storage struct
@@ -52,27 +52,27 @@ type StorageST struct {
 
 // ServerST server storage section
 type ServerST struct {
-	Debug              bool         `json:"debug" groups:"api,config"`
+	Debug bool `json:"debug" groups:"api,config"`
 	//LogLevel           logrus.Level `json:"log_level" groups:"api,config"`
-	HTTPDemo           bool         `json:"http_demo" groups:"api,config"`
-	HTTPDebug          bool         `json:"http_debug" groups:"api,config"`
-	HTTPLogin          string       `json:"http_login" groups:"api,config"`
-	HTTPPassword       string       `json:"http_password" groups:"api,config"`
-	HTTPDir            string       `json:"http_dir" groups:"api,config"`
-	HTTPPort           string       `json:"http_port" groups:"api,config"`
-	RTSPPort           string       `json:"rtsp_port" groups:"api,config"`
-	HTTPS              bool         `json:"https" groups:"api,config"`
-	HTTPSPort          string       `json:"https_port" groups:"api,config"`
-	HTTPSCert          string       `json:"https_cert" groups:"api,config"`
-	HTTPSKey           string       `json:"https_key" groups:"api,config"`
-	HTTPSAutoTLSEnable bool         `json:"https_auto_tls" groups:"api,config"`
-	HTTPSAutoTLSName   string       `json:"https_auto_tls_name" groups:"api,config"`
-	ICEServers         []string     `json:"ice_servers" groups:"api,config"`
-	ICEUsername        string       `json:"ice_username" groups:"api,config"`
-	ICECredential      string       `json:"ice_credential" groups:"api,config"`
-	Token              Token        `json:"token,omitempty" groups:"api,config"`
-	WebRTCPortMin      uint16       `json:"webrtc_port_min" groups:"api,config"`
-	WebRTCPortMax      uint16       `json:"webrtc_port_max" groups:"api,config"`
+	HTTPDemo           bool     `json:"http_demo" groups:"api,config"`
+	HTTPDebug          bool     `json:"http_debug" groups:"api,config"`
+	HTTPLogin          string   `json:"http_login" groups:"api,config"`
+	HTTPPassword       string   `json:"http_password" groups:"api,config"`
+	HTTPDir            string   `json:"http_dir" groups:"api,config"`
+	HTTPPort           string   `json:"http_port" groups:"api,config"`
+	RTSPPort           string   `json:"rtsp_port" groups:"api,config"`
+	HTTPS              bool     `json:"https" groups:"api,config"`
+	HTTPSPort          string   `json:"https_port" groups:"api,config"`
+	HTTPSCert          string   `json:"https_cert" groups:"api,config"`
+	HTTPSKey           string   `json:"https_key" groups:"api,config"`
+	HTTPSAutoTLSEnable bool     `json:"https_auto_tls" groups:"api,config"`
+	HTTPSAutoTLSName   string   `json:"https_auto_tls_name" groups:"api,config"`
+	ICEServers         []string `json:"ice_servers" groups:"api,config"`
+	ICEUsername        string   `json:"ice_username" groups:"api,config"`
+	ICECredential      string   `json:"ice_credential" groups:"api,config"`
+	Token              Token    `json:"token,omitempty" groups:"api,config"`
+	WebRTCPortMin      uint16   `json:"webrtc_port_min" groups:"api,config"`
+	WebRTCPortMax      uint16   `json:"webrtc_port_max" groups:"api,config"`
 }
 
 // Token auth
