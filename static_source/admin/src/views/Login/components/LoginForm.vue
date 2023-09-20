@@ -82,6 +82,7 @@ const {register, elFormRef, methods} = useForm()
 const loading = ref(false)
 const iconColor = '#999'
 const redirect = ref<string>('')
+const ipAddress = ref();
 
 watch(
     () => currentRoute.value,
@@ -92,6 +93,16 @@ watch(
       immediate: true
     }
 )
+
+const getIpAddress = async () => {
+  fetch('https://api.ipify.org?format=json')
+      .then(x => x.json())
+      .then(({ ip }) => {
+        ipAddress.value = ip;
+      });
+}
+
+getIpAddress()
 
 // 登录
 const signIn = async () => {
@@ -108,7 +119,7 @@ const signIn = async () => {
 
       try {
         const resp = await api.v1.authServiceSignin({
-          headers: {Authorization: 'Basic ' + btoa(username + ':' + password)}
+          headers: {Authorization: 'Basic ' + btoa(username + ':' + password), ip: ipAddress.value}
         });
 
         const {accessToken, currentUser} = resp.data as ApiSigninResponse;

@@ -61,7 +61,12 @@ func (a ControllerAuth) Signin(ctx context.Context, _ *emptypb.Empty) (resp *api
 
 	//info, _ := location.GetRegionInfo()
 
-	if user, accessToken, err = a.endpoint.Auth.SignIn(ctx, username, pass, ""); err != nil {
+	var ip string
+	if len(meta["ip"]) == 1 {
+		ip = meta["ip"][0]
+	}
+
+	if user, accessToken, err = a.endpoint.Auth.SignIn(ctx, username, pass, ip); err != nil {
 		return nil, internalServerError
 	}
 

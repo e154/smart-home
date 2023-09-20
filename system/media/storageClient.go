@@ -1,6 +1,7 @@
 package media
 
 import (
+	"github.com/google/uuid"
 	"time"
 
 	"github.com/deepch/vdk/av"
@@ -15,10 +16,7 @@ func (obj *StorageST) ClientAdd(streamID string, channelID string, mode int) (st
 		return "", nil, nil, ErrorStreamNotFound
 	}
 	//Generate UUID client
-	cid, err := generateUUID()
-	if err != nil {
-		return "", nil, nil, err
-	}
+	cid := uuid.New().String()
 	chAV := make(chan *av.Packet, 2000)
 	chRTP := make(chan *[]byte, 2000)
 	channelTmp, ok := streamTmp.Channels[channelID]

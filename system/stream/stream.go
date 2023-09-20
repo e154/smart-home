@@ -22,12 +22,11 @@ import (
 	"context"
 	"sync"
 
-	"github.com/e154/smart-home/common/events"
-
 	"github.com/google/uuid"
 	"go.uber.org/fx"
 
 	"github.com/e154/smart-home/api/stub/api"
+	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/webpush"

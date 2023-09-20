@@ -9,8 +9,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/e154/smart-home/common"
-
 	wsnt "github.com/eyetowers/gonvif/pkg/generated/onvif/docs_oasisopen_org/wsn/b2"
 	deviceWsdl "github.com/eyetowers/gonvif/pkg/generated/onvif/www_onvif_org/ver10/device/wsdl"
 	eventsWsdl "github.com/eyetowers/gonvif/pkg/generated/onvif/www_onvif_org/ver10/events/wsdl"
@@ -19,6 +17,8 @@ import (
 	media2Wsdl "github.com/eyetowers/gonvif/pkg/generated/onvif/www_onvif_org/ver20/media/wsdl"
 	ptzWsdl "github.com/eyetowers/gonvif/pkg/generated/onvif/www_onvif_org/ver20/ptz/wsdl"
 	"github.com/eyetowers/gonvif/pkg/gonvif"
+
+	"github.com/e154/smart-home/common"
 )
 
 const (
@@ -36,8 +36,8 @@ type Client struct {
 	port                        int64
 	requireAuthorization        bool
 	cli                         gonvif.Client
-	mediaProfile                *schema.Profile
-	media2Profile               *media2Wsdl.MediaProfile
+	mediaProfiles               []*schema.Profile
+	media2Profiles              []*media2Wsdl.MediaProfile
 	capabilities                *schema.Capabilities
 	pTZConfigurationOptions     *schema.PTZConfigurationOptions
 	isStarted                   atomic.Bool
@@ -149,7 +149,7 @@ func (s *Client) GetCapabilities() error {
 
 func (s *Client) GetStreamList() ([]string, error) {
 
-	var list = make([]string, 0, 1)
+	var list = make([]string, 0)
 
 	var protocol schema.TransportProtocol
 	protocol = schema.TransportProtocolTCP
@@ -159,27 +159,31 @@ func (s *Client) GetStreamList() ([]string, error) {
 	var stream schema.StreamType
 	stream = schema.StreamTypeRTPUnicast
 	if media, err := s.cli.Media(); err == nil {
-		resp, _ := media.GetStreamUri(&media1Wsdl.GetStreamUri{
-			StreamSetup: &schema.StreamSetup{
-				Transport: &schema.Transport{
-					Protocol: &protocol,
+		for _, profile := range s.mediaProfiles {
+			resp, _ := media.GetStreamUri(&media1Wsdl.GetStreamUri{
+				StreamSetup: &schema.StreamSetup{
+					Transport: &schema.Transport{
+						Protocol: &protocol,
+					},
+					Stream: &stream,
 				},
-				Stream: &stream,
-			},
-			ProfileToken: s.mediaProfile.Token,
-		})
-		if resp != nil && resp.MediaUri != nil {
-			list = append(list, s.prepareUri(resp.MediaUri.Uri))
+				ProfileToken: profile.Token,
+			})
+			if resp != nil && resp.MediaUri != nil {
+				list = append(list, s.prepareUri(resp.MediaUri.Uri))
+			}
 		}
 	}
 
 	if media, err := s.cli.Media2(); err == nil {
-		resp, _ := media.GetStreamUri(&media2Wsdl.GetStreamUri{
-			Protocol:     string(protocol),
-			ProfileToken: s.media2Profile.Token,
-		})
-		if resp != nil {
-			list = append(list, s.prepareUri(resp.Uri))
+		for _, profile := range s.media2Profiles {
+			resp, _ := media.GetStreamUri(&media2Wsdl.GetStreamUri{
+				Protocol:     string(protocol),
+				ProfileToken: profile.Token,
+			})
+			if resp != nil {
+				list = append(list, s.prepareUri(resp.Uri))
+			}
 		}
 	}
 
@@ -190,13 +194,13 @@ func (s *Client) GetSnapshotURI() *string {
 	var uri string
 	if media, err := s.cli.Media(); err == nil {
 		resp, _ := media.GetSnapshotUri(&media1Wsdl.GetSnapshotUri{
-			ProfileToken: s.mediaProfile.Token,
+			ProfileToken: s.mediaProfiles[profileIndex].Token,
 		})
 		uri = resp.MediaUri.Uri
 	}
 	if media, err := s.cli.Media2(); err == nil {
 		resp, _ := media.GetSnapshotUri(&media2Wsdl.GetSnapshotUri{
-			ProfileToken: s.mediaProfile.Token,
+			ProfileToken: s.mediaProfiles[profileIndex].Token,
 		})
 		uri = resp.Uri
 	}
@@ -213,7 +217,7 @@ func (s *Client) ContinuousMove(X, Y float32) error {
 		return err
 	}
 
-	options := s.pTZConfigurationOptions.Spaces.ContinuousPanTiltVelocitySpace[0]
+	options := s.pTZConfigurationOptions.Spaces.ContinuousPanTiltVelocitySpace[profileIndex]
 	if Y > options.YRange.Max {
 		Y = options.YRange.Max
 	}
@@ -229,11 +233,11 @@ func (s *Client) ContinuousMove(X, Y float32) error {
 	}
 
 	var profileToken *schema.ReferenceToken
-	if s.mediaProfile != nil {
-		profileToken = s.mediaProfile.Token
+	if s.mediaProfiles != nil {
+		profileToken = s.mediaProfiles[profileIndex].Token
 	}
-	if s.media2Profile != nil {
-		profileToken = s.media2Profile.Token
+	if s.media2Profiles != nil {
+		profileToken = s.media2Profiles[profileIndex].Token
 	}
 	_, err = ptz.ContinuousMove(&ptzWsdl.ContinuousMove{
 		ProfileToken: profileToken,
@@ -255,11 +259,11 @@ func (s *Client) StopContinuousMove() error {
 	}
 
 	var profileToken *schema.ReferenceToken
-	if s.mediaProfile != nil {
-		profileToken = s.mediaProfile.Token
+	if s.mediaProfiles != nil {
+		profileToken = s.mediaProfiles[profileIndex].Token
 	}
-	if s.media2Profile != nil {
-		profileToken = s.media2Profile.Token
+	if s.media2Profiles != nil {
+		profileToken = s.media2Profiles[profileIndex].Token
 	}
 	_, err = ptz.Stop(&ptzWsdl.Stop{
 		ProfileToken: profileToken,
@@ -274,7 +278,7 @@ func (s *Client) getOptions() error {
 		var resp *media1Wsdl.GetProfilesResponse
 		resp, err = media.GetProfiles(&media1Wsdl.GetProfiles{})
 		if err == nil {
-			s.mediaProfile = resp.Profiles[profileIndex]
+			s.mediaProfiles = resp.Profiles
 		}
 	}
 
@@ -284,7 +288,7 @@ func (s *Client) getOptions() error {
 			Type: []string{"All"},
 		})
 		if err == nil {
-			s.media2Profile = resp.Profiles[profileIndex]
+			s.media2Profiles = resp.Profiles
 		}
 	}
 
@@ -292,11 +296,11 @@ func (s *Client) getOptions() error {
 	ptz, err := s.cli.PTZ()
 	if err == nil {
 		var configurationToken *schema.ReferenceToken
-		if s.mediaProfile != nil {
-			configurationToken = s.mediaProfile.PTZConfiguration.Token
+		if s.mediaProfiles != nil {
+			configurationToken = s.mediaProfiles[profileIndex].PTZConfiguration.Token
 		}
-		if s.media2Profile != nil {
-			configurationToken = s.media2Profile.Configurations.PTZ.Token
+		if s.media2Profiles != nil {
+			configurationToken = s.media2Profiles[profileIndex].Configurations.PTZ.Token
 		}
 		configurationOptions, err := ptz.GetConfigurationOptions(&ptzWsdl.GetConfigurationOptions{
 			ConfigurationToken: configurationToken,
@@ -397,7 +401,7 @@ func (s *Client) prepareMotionAlarm(msg *wsnt.NotificationMessage) {
 	var t time.Time
 	if msg.Message.Message != nil && msg.Message.Message.Data != nil &&
 		msg.Message.Message.Data.SimpleItem != nil && len(msg.Message.Message.Data.SimpleItem) > 0 {
-		state = msg.Message.Message.Data.SimpleItem[0].Value == "true"
+		state = msg.Message.Message.Data.SimpleItem[profileIndex].Value == "true"
 	}
 	if msg.Message.Message != nil && msg.Message.Message.UTCTime != nil {
 		t = msg.Message.Message.UTCTime.Time

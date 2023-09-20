@@ -79,11 +79,11 @@ func (c ControllerMedia) StreamMSE(ctx echo.Context) error {
 		return c.ERROR(ctx, err)
 	}
 	var videoStart bool
-	controlExit := make(chan bool, 10)
+	controlExit := make(chan struct{})
 	noClient := time.NewTimer(10 * time.Second)
 	go func() {
 		defer func() {
-			controlExit <- true
+			close(controlExit)
 		}()
 		for {
 			header, _, err := wsutil.NextReader(conn, ws.StateServerSide)

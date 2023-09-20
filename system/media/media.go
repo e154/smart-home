@@ -35,9 +35,8 @@ func NewMedia(lc fx.Lifecycle,
 }
 
 func (r *Media) Start(ctx context.Context) (err error) {
-	go RTSPServer()
+	//go RTSPServer()
 	go Storage.StreamChannelRunAll()
-
 	_ = r.eventBus.Subscribe("system/media/#", r.eventHandler)
 
 	return
