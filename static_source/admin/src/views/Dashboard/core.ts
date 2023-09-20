@@ -1065,7 +1065,13 @@ export class Core {
       }
     }
 
+    this.sortTabs();
+
     this.updateCurrentTab();
+  }
+
+  sortTabs() {
+    this.tabs.sort(sortTabs);
   }
 
   async fetchEntity(id: string): Promise<ApiEntity> {
@@ -1304,6 +1310,18 @@ export class Core {
     // bus.emit('update_tab', this.currentTabId);
   }
 } // \Core
+
+function sortTabs(t1: Tab, t2: Tab) {
+  if (t1.weight > t2.weight) {
+    return 1;
+  }
+
+  if (t1.weight < t2.weight) {
+    return -1;
+  }
+
+  return 0;
+}
 
 function sortCards(n1: Card, n2: Card) {
   if (n1.weight > n2.weight) {

@@ -52,7 +52,6 @@ type Supervisor interface {
 	EnablePlugin(context.Context, string) error
 	DisablePlugin(context.Context, string) error
 	PluginList() (list []PluginInfo, total int64, err error)
-	LoadEntities()
 	SetMetric(common.EntityId, string, map[string]float32)
 	SetState(common.EntityId, EntityStateParams) error
 	GetEntityById(common.EntityId) (m.EntityShort, error)

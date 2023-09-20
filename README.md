@@ -227,6 +227,7 @@ Thank you for your understanding!
 * [amx](https://www.amx.com/en-US)
 * [Home Assistant](https://www.home-assistant.io/integrations/)
 * [Majordomo](https://majordomohome.com)
+* [Domoticz](https://www.domoticz.com/)
 
 ### LICENSE
 

@@ -22,11 +22,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/jackc/pgx/v5/pgconn"
 	"strings"
 	"time"
 
 	"github.com/jackc/pgerrcode"
-	"github.com/lib/pq"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 
@@ -57,7 +57,7 @@ func (d *Area) TableName() string {
 // Add ...
 func (n *Areas) Add(ctx context.Context, area *Area) (id int64, err error) {
 	if err = n.Db.WithContext(ctx).Create(&area).Error; err != nil {
-		var pgErr *pq.Error
+		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
 			switch pgErr.Code {
 			case pgerrcode.UniqueViolation:
@@ -148,15 +148,27 @@ where id not in (
 }
 
 // Update ...
-func (n *Areas) Update(ctx context.Context, m *Area) (err error) {
-	err = n.Db.WithContext(ctx).Model(&Area{Id: m.Id}).Updates(map[string]interface{}{
-		"name":        m.Name,
-		"description": m.Description,
-		"payload":     m.Payload,
-		"polygon":     m.Polygon,
+func (n *Areas) Update(ctx context.Context, area *Area) (err error) {
+	err = n.Db.WithContext(ctx).Model(&Area{Id: area.Id}).Updates(map[string]interface{}{
+		"name":        area.Name,
+		"description": area.Description,
+		"payload":     area.Payload,
+		"polygon":     area.Polygon,
 	}).Error
 
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case pgerrcode.UniqueViolation:
+				if strings.Contains(pgErr.Message, "name_at_areas_unq") {
+					err = errors.Wrap(apperr.ErrAreaUpdate, fmt.Sprintf("area name \"%s\" not unique", area.Name))
+					return
+				}
+			default:
+				fmt.Printf("unknown code \"%s\"\n", pgErr.Code)
+			}
+		}
 		err = errors.Wrap(apperr.ErrAreaUpdate, err.Error())
 	}
 	return

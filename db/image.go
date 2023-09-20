@@ -22,6 +22,9 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"github.com/jackc/pgerrcode"
+	"github.com/jackc/pgx/v5/pgconn"
+	"strings"
 	"time"
 
 	"github.com/e154/smart-home/common/apperr"
@@ -55,6 +58,18 @@ func (m *Image) TableName() string {
 // Add ...
 func (n Images) Add(ctx context.Context, v *Image) (id int64, err error) {
 	if err = n.Db.WithContext(ctx).Create(&v).Error; err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case pgerrcode.UniqueViolation:
+				if strings.Contains(pgErr.Message, "images_pkey") {
+					err = errors.Wrap(apperr.ErrImageAdd, fmt.Sprintf("image name \"%s\" not unique", v.Id))
+					return
+				}
+			default:
+				fmt.Printf("unknown code \"%s\"\n", pgErr.Code)
+			}
+		}
 		err = errors.Wrap(apperr.ErrImageAdd, err.Error())
 		return
 	}
@@ -190,6 +205,18 @@ ORDER BY created_at`, filter).
 // AddMultiple ...
 func (n *Images) AddMultiple(ctx context.Context, images []*Image) (err error) {
 	if err = n.Db.WithContext(ctx).Create(&images).Error; err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case pgerrcode.UniqueViolation:
+				if strings.Contains(pgErr.Message, "images_pkey") {
+					err = errors.Wrap(apperr.ErrImageAdd, "multiple insert")
+					return
+				}
+			default:
+				fmt.Printf("unknown code \"%s\"\n", pgErr.Code)
+			}
+		}
 		err = errors.Wrap(apperr.ErrImageAdd, err.Error())
 	}
 	return

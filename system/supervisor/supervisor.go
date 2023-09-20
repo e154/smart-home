@@ -52,6 +52,7 @@ type supervisor struct {
 	scriptService scripts.ScriptService
 	actors        sync.Map
 	quit          chan struct{}
+	entitiesWg    *sync.WaitGroup
 }
 
 // NewSupervisor ...
@@ -69,12 +70,14 @@ func NewSupervisor(lc fx.Lifecycle,
 		scriptService: scriptService,
 		actors:        sync.Map{},
 		quit:          make(chan struct{}),
+		entitiesWg:    &sync.WaitGroup{},
 	}
 	s.pluginManager = &pluginManager{
 		adaptors:       adaptors,
 		isStarted:      atomic.NewBool(false),
 		eventBus:       eventBus,
-		enabledPlugins: make(map[string]bool),
+		enabledPlugins: sync.Map{},
+		pluginsWg:      &sync.WaitGroup{},
 		service: &service{
 			bus:           bus,
 			supervisor:    s,
@@ -120,22 +123,15 @@ func (e *supervisor) Start(ctx context.Context) (err error) {
 // Shutdown ...
 func (e *supervisor) Shutdown(ctx context.Context) (err error) {
 
-	_ = e.eventBus.Unsubscribe("system/services/scripts", e.handlerSystemScripts)
+	e.pluginManager.Shutdown(ctx)
+	e.entitiesWg.Wait()
 
 	e.scriptService.PopStruct("supervisor")
 	e.scriptService.PopStruct("entityManager")
 
-	e.pluginManager.Shutdown(ctx)
-
+	_ = e.eventBus.Unsubscribe("system/services/scripts", e.handlerSystemScripts)
 	_ = e.eventBus.Unsubscribe("system/entities/+", e.eventHandler)
 	_ = e.eventBus.Unsubscribe("system/plugins/+", e.eventHandler)
-
-	e.actors.Range(func(key, value interface{}) bool {
-		actor := value.(*actorInfo)
-		close(actor.quit)
-		e.actors.Delete(key)
-		return true
-	})
 
 	e.eventBus.Publish("system/services/supervisor", events.EventServiceStopped{Service: "Supervisor"})
 
@@ -160,33 +156,6 @@ func (e *supervisor) handlerSystemScripts(_ string, event interface{}) {
 		e.scriptService.PushStruct("supervisor", NewSupervisorBind(e))
 		//DEPRECATED
 		e.scriptService.PushStruct("entityManager", NewSupervisorBind(e))
-	}
-}
-
-func (e *supervisor) LoadEntities() {
-
-	var page int64
-	var entities []*m.Entity
-	const perPage = 500
-	var err error
-
-LOOP:
-	entities, _, err = e.adaptors.Entity.List(context.Background(), perPage, perPage*page, "", "", true, nil, nil, nil)
-	if err != nil {
-		log.Error(err.Error())
-		return
-	}
-
-	// add entities from database
-	for _, entity := range entities {
-		if err = e.AddEntity(entity); err != nil {
-			log.Warnf("%s, %s", entity.Id, err.Error())
-		}
-	}
-
-	if len(entities) != 0 {
-		page++
-		goto LOOP
 	}
 }
 
@@ -373,6 +342,7 @@ func (e *supervisor) Spawn(constructor ActorConstructor) (actor PluginActor) {
 		defer func() {
 
 			log.Infof("unload entity '%v'", entityId)
+			e.entitiesWg.Done()
 
 			var err error
 			var plugin CrudActor
@@ -387,6 +357,7 @@ func (e *supervisor) Spawn(constructor ActorConstructor) (actor PluginActor) {
 			})
 		}()
 
+		e.entitiesWg.Add(1)
 		<-actorInfo.quit
 	}()
 
@@ -529,9 +500,11 @@ LOOP:
 	}
 
 	for _, entity := range entities {
-		if err := e.AddEntity(entity); err != nil {
-			log.Warnf("%s, %s", entity.Id, err.Error())
-		}
+		go func(entity *m.Entity) {
+			if err := e.AddEntity(entity); err != nil {
+				log.Warnf("%s, %s", entity.Id, err.Error())
+			}
+		}(entity)
 	}
 
 	if len(entities) != 0 {
@@ -645,8 +618,10 @@ func (e *supervisor) getCrudActor(entityId common.EntityId) (result CrudActor, e
 // AddEntity ...
 func (e *supervisor) AddEntity(entity *m.Entity) (err error) {
 
-	if _, ok := e.enabledPlugins[entity.PluginName]; !ok {
-		return
+	if value, ok := e.enabledPlugins.Load(entity.PluginName); ok {
+		 if enabled, _ := value.(bool); !enabled {
+			 return
+		 }
 	}
 
 	var crudActor CrudActor

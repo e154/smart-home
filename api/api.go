@@ -273,7 +273,7 @@ func (a *Api) registerHandlers(mux *runtime.ServeMux) {
 
 	// Swagger
 	if a.cfg.Swagger {
-		var contentHandler = echo.WrapHandler(http.StripPrefix("/", http.FileServer(http.FS(assets))))
+		var contentHandler = echo.WrapHandler(http.FileServer(http.FS(assets)))
 		a.echo.GET("/swagger-ui/*", contentHandler)
 		a.echo.GET("/api.swagger.json", contentHandler)
 	}

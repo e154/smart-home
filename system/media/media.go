@@ -68,7 +68,6 @@ func (r *Media) eventEntityUnloaded(event events.EventEntityUnloaded) {
 	if event.PluginName != onvif.Name {
 		return
 	}
-	// remove stream from list
 	if err := Storage.StreamDelete(event.EntityId.String()); err != nil {
 		log.Error(err.Error())
 	}

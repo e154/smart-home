@@ -19,42 +19,39 @@
 package scripts
 
 import (
-	"encoding/hex"
 	"fmt"
-	"github.com/e154/smart-home/common/encryptor"
-	"os"
-	"path/filepath"
+	m "github.com/e154/smart-home/models"
 	"testing"
-	"time"
 
-	. "github.com/e154/smart-home/tests/scripts/container"
-	"go.uber.org/dig"
+	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/system/scripts"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
-func init() {
-	apppath := filepath.Join(os.Getenv("PWD"), "../..")
-	_ = os.Chdir(apppath)
-}
+func Test13(t *testing.T) {
 
-var (
-	container *dig.Container
-)
+	Convey("scripts run syn command", t, func(ctx C) {
+		err := container.Invoke(func(adaptors *adaptors.Adaptors,
+			scriptService scripts.ScriptService) {
 
-func TestMain(m *testing.M) {
+			script1 := &m.Script{
+				Lang:        "coffeescript",
+				Name:        "test28",
+				Source:      coffeeScript28,
+			}
 
-	container = BuildContainer()
-	err := container.Invoke(func() {
+			engine1, err := scriptService.NewEngine(script1)
+			So(err, ShouldBeNil)
+			err = engine1.Compile()
+			So(err, ShouldBeNil)
 
-		// encryptor
-		b, _ := hex.DecodeString("7abf835e883087d3dc87be2c24ea2faee948f03cf28ebe6d7c119c2ccedc9ab2")
-		encryptor.SetKey(b)
+			result, err := engine1.Do()
+			So(err, ShouldBeNil)
 
-		time.Sleep(time.Millisecond * 500)
-
-		os.Exit(m.Run())
+			So(result, ShouldEqual, "foo")
+		})
+		if err != nil {
+			fmt.Println(err.Error())
+		}
 	})
-
-	if err != nil {
-		fmt.Println("error:", dig.RootCause(err))
-	}
 }

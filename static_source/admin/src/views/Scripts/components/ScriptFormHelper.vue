@@ -55,6 +55,8 @@ const save = async () => {
           loading.value = false
         })
     if (res) {
+      currentScript.value = res.data as ApiScript
+      dialogSource.value = currentScript.value.source
       ElMessage({
         title: t('Success'),
         message: t('message.updatedSuccessfully'),

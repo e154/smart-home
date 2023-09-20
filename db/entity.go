@@ -22,6 +22,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/jackc/pgerrcode"
+	"github.com/jackc/pgx/v5/pgconn"
+	"strings"
 	"time"
 
 	"github.com/e154/smart-home/common/apperr"
@@ -67,6 +70,18 @@ func (d *Entity) TableName() string {
 // Add ...
 func (n Entities) Add(ctx context.Context, v *Entity) (err error) {
 	if err = n.Db.WithContext(ctx).Create(&v).Error; err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case pgerrcode.UniqueViolation:
+				if strings.Contains(pgErr.Message, "entities_pkey") {
+					err = errors.Wrap(apperr.ErrEntityAdd, fmt.Sprintf("entity name \"%s\" not unique", v.Id))
+					return
+				}
+			default:
+				fmt.Printf("unknown code \"%s\"\n", pgErr.Code)
+			}
+		}
 		err = errors.Wrap(apperr.ErrEntityAdd, err.Error())
 	}
 	return

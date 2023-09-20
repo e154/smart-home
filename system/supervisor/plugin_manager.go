@@ -21,6 +21,7 @@ package supervisor
 import (
 	"context"
 	"fmt"
+	"sync"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common/apperr"
@@ -36,7 +37,8 @@ type pluginManager struct {
 	isStarted      *atomic.Bool
 	service        *service
 	eventBus       bus.Bus
-	enabledPlugins map[string]bool
+	enabledPlugins sync.Map
+	pluginsWg      *sync.WaitGroup
 }
 
 // Start ...
@@ -44,7 +46,7 @@ func (p *pluginManager) Start(ctx context.Context) {
 	if p.isStarted.Load() {
 		return
 	}
-	p.isStarted.Store(true)
+	defer p.isStarted.Store(true)
 
 	p.loadPlugins(ctx)
 
@@ -57,19 +59,17 @@ func (p *pluginManager) Shutdown(ctx context.Context) {
 	if !p.isStarted.Load() {
 		return
 	}
-	p.isStarted.Store(false)
+	defer p.isStarted.Store(false)
 
-	for name, ok := range p.enabledPlugins {
-		if !ok {
-			continue
+	p.enabledPlugins.Range(func(name, value any) bool {
+		if enabled, _ := value.(bool); !enabled {
+			return true
 		}
-		log.Infof("unload plugin '%s'", name)
-		if item, ok := pluginList.Load(name); ok {
-			plugin := item.(Pluggable)
-			_ = plugin.Unload(ctx)
-		}
-		p.enabledPlugins[name] = false
-	}
+		_ = p.unloadPlugin(ctx, name.(string))
+		return true
+	})
+
+	p.pluginsWg.Wait()
 
 	log.Info("Shutdown")
 }
@@ -109,9 +109,11 @@ LOOP:
 	}
 
 	for _, pl := range loadList {
-		if err = p.loadPlugin(ctx, pl.Name); err != nil {
-			log.Errorf("plugin name '%s', %s", pl.Name, err.Error())
-		}
+		go func(pl *m.Plugin) {
+			if err = p.loadPlugin(ctx, pl.Name); err != nil {
+				log.Errorf("plugin name '%s', %s", pl.Name, err.Error())
+			}
+		}(pl)
 	}
 
 	if len(loadList) != 0 {
@@ -124,7 +126,7 @@ LOOP:
 
 func (p *pluginManager) loadPlugin(ctx context.Context, name string) (err error) {
 
-	if p.enabledPlugins[name] {
+	if p.PluginIsLoaded(name) {
 		err = errors.Wrap(ErrPluginIsLoaded, name)
 		return
 	}
@@ -140,7 +142,9 @@ func (p *pluginManager) loadPlugin(ctx context.Context, name string) (err error)
 		return
 	}
 
-	p.enabledPlugins[name] = true
+	p.enabledPlugins.Store(name, true)
+
+	p.pluginsWg.Add(1)
 
 	p.eventBus.Publish("system/plugins/"+name, events.EventLoadedPlugin{
 		PluginName: string(name),
@@ -151,7 +155,7 @@ func (p *pluginManager) loadPlugin(ctx context.Context, name string) (err error)
 
 func (p *pluginManager) unloadPlugin(ctx context.Context, name string) (err error) {
 
-	if !p.enabledPlugins[name] {
+	if !p.PluginIsLoaded(name) {
 		err = errors.Wrap(ErrPluginNotLoaded, name)
 		return
 	}
@@ -164,7 +168,9 @@ func (p *pluginManager) unloadPlugin(ctx context.Context, name string) (err erro
 		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("name %s", name))
 	}
 
-	p.enabledPlugins[name] = false
+	p.enabledPlugins.Store(name, false)
+
+	p.pluginsWg.Done()
 
 	p.eventBus.Publish("system/plugins/+", events.EventUnloadedPlugin{
 		PluginName: string(name),
@@ -269,7 +275,7 @@ func (p *pluginManager) PluginList() (list []PluginInfo, total int64, err error)
 		list = append(list, PluginInfo{
 			Name:    plugin.Name(),
 			Version: plugin.Version(),
-			Enabled: p.enabledPlugins[plugin.Name()],
+			Enabled: p.PluginIsLoaded(plugin.Name()),
 			System:  plugin.Type() == PluginBuiltIn,
 		})
 		return true
@@ -277,6 +283,9 @@ func (p *pluginManager) PluginList() (list []PluginInfo, total int64, err error)
 	return
 }
 
-func (p *pluginManager) PluginIsLoaded(name string) bool {
-	return p.enabledPlugins[name]
+func (p *pluginManager) PluginIsLoaded(name string) (loaded bool) {
+	if value, ok := p.enabledPlugins.Load(name); ok {
+		loaded, _ = value.(bool)
+	}
+	return
 }

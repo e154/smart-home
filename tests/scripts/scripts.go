@@ -395,5 +395,13 @@ list = Storage.search 'foo'
 store list
 `
 
+// test13
+// ------------------------------------------------
+const coffeeScript28 = `
+"use strict";
+
+encryptedStr = Encrypt('foo') 
+Decrypt(encryptedStr)
+`
 // test...
 // ------------------------------------------------

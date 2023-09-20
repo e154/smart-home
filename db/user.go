@@ -23,12 +23,15 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
-	"github.com/e154/smart-home/common/apperr"
-
+	"github.com/jackc/pgerrcode"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
+
+	"github.com/e154/smart-home/common/apperr"
 )
 
 // Users ...
@@ -76,6 +79,22 @@ func (u *User) TableName() string {
 func (u *Users) Add(ctx context.Context, user *User) (id int64, err error) {
 
 	if err = u.Db.WithContext(ctx).Create(&user).Error; err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case pgerrcode.UniqueViolation:
+				if strings.Contains(pgErr.Message, "nickname_2_users_unq") {
+					err = errors.Wrap(apperr.ErrUserAdd, fmt.Sprintf("user name \"%s\" not unique", user.Nickname))
+					return
+				}
+				if strings.Contains(pgErr.Message, "email_2_users_unq") {
+					err = errors.Wrap(apperr.ErrUserAdd, fmt.Sprintf("user email \"%s\" not unique", user.Email))
+					return
+				}
+			default:
+				fmt.Printf("unknown code \"%s\"\n", pgErr.Code)
+			}
+		}
 		err = errors.Wrap(apperr.ErrUserAdd, err.Error())
 		return
 	}
@@ -207,6 +226,22 @@ func (u *Users) Update(ctx context.Context, user *User) (err error) {
 		q["encrypted_password"] = user.EncryptedPassword
 	}
 	if err = u.Db.WithContext(ctx).Model(&User{Id: user.Id}).Updates(q).Error; err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case pgerrcode.UniqueViolation:
+				if strings.Contains(pgErr.Message, "nickname_2_users_unq") {
+					err = errors.Wrap(apperr.ErrUserUpdate, fmt.Sprintf("user name \"%s\" not unique", user.Nickname))
+					return
+				}
+				if strings.Contains(pgErr.Message, "email_2_users_unq") {
+					err = errors.Wrap(apperr.ErrUserUpdate, fmt.Sprintf("user email \"%s\" not unique", user.Email))
+					return
+				}
+			default:
+				fmt.Printf("unknown code \"%s\"\n", pgErr.Code)
+			}
+		}
 		err = errors.Wrap(apperr.ErrUserUpdate, err.Error())
 	}
 	return

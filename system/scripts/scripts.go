@@ -130,8 +130,9 @@ func (s *scriptService) bind() {
 	s.PushStruct("Log", &bind.LogBind{})
 	s.PushFunctions("ExecuteSync", bind.ExecuteSync)
 	s.PushFunctions("ExecuteAsync", bind.ExecuteAsync)
+	s.PushFunctions("Encrypt", encryptor.Encrypt)
+	s.PushFunctions("Decrypt", encryptor.Decrypt)
 	s.PushStruct("Storage", bind.NewStorageBind(s.storage))
 	s.PushStruct("http", bind.NewHttpBind(s.crawler))
 	s.PushStruct("HTTP", bind.NewHttpBind(s.crawler))
-	s.PushStruct("Decrypt", encryptor.Decrypt)
 }
