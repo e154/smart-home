@@ -113,7 +113,7 @@ loop();
 
 <template>
   <div ref="el" :class="[{'hidden': item.hidden}]">
-      <div style="position: absolute; left:0; top:0;" ref="stick">
+      <div style="position: absolute; left:0; top:0; cursor: pointer;" ref="stick">
         <ElImage :src="getUrl()">
           <template #error>
             <div class="image-slot">

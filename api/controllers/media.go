@@ -43,7 +43,7 @@ func (c ControllerMedia) StreamMSE(ctx echo.Context) error {
 	channel := ctx.Param("channel")
 
 	if !media.Storage.StreamChannelExist(entityId, channel) {
-		log.Error(media.ErrorStreamNotFound.Error())
+		//log.Error(media.ErrorStreamNotFound.Error())
 		return nil
 	}
 

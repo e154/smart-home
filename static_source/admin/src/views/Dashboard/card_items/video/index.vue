@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import {computed, onMounted, onBeforeUnmount, PropType, ref, unref, watch} from "vue";
-import {Card, CardItem, Core, Tab} from "@/views/Dashboard/core";
+import {computed, onBeforeUnmount, onMounted, PropType, ref, unref, watch} from "vue";
+import {CardItem, requestCurrentState} from "@/views/Dashboard/core";
 import VideoMse from "@/views/Dashboard/card_items/video/VideoMse.vue";
+import {debounce} from "lodash-es";
+import {playerType} from "@/views/Dashboard/card_items/video/types";
+import VideoYou from "@/views/Dashboard/card_items/video/VideoYou.vue";
 
 // ---------------------------------
 // common
@@ -18,7 +21,6 @@ const el = ref(null)
 onMounted(async () => {
   // store dom element moveable
   props.item.setTarget(el.value)
-
 })
 
 onBeforeUnmount(() => {
@@ -30,13 +32,14 @@ onBeforeUnmount(() => {
 // ---------------------------------
 
 const reloadKey = ref(0)
-const reload = () => {
+const reload = debounce(() => {
   reloadKey.value += 1
-}
+}, 500)
 
 watch(
-    () => props.item?.entityId,
-    (val?: string) => {
+    () => props.item,
+    (val?: CardItem) => {
+      if (!val) return;
       reload()
     },
     {
@@ -44,14 +47,17 @@ watch(
     }
 )
 
+requestCurrentState(props.item?.entityId);
+
 </script>
 
 <template>
   <div ref="el" :class="[{'hidden': item.hidden}]">
-    <VideoMse :item="item" v-if="item" :key="reloadKey"/>
+    <VideoMse :item="item" v-if="item && item.payload.video.playerType === playerType.onvifMse" :key="reloadKey"/>
+    <VideoYou :item="item" v-if="item && item.payload.video.playerType === playerType.youtube"  :key="reloadKey"/>
   </div>
 </template>
 
-<style lang="less" >
+<style lang="less">
 
 </style>

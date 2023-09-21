@@ -67,7 +67,7 @@ func NewActor(entity *m.Entity,
 		actionPool:  make(chan events.EventCallEntityAction, 10),
 		isStarted:   atomic.NewBool(false),
 		adaptors:    adaptors,
-		AccessToken: settings[AttrToken].String(),
+		AccessToken: settings[AttrToken].Decrypt(),
 		msgPool:     make(chan string, 99),
 	}
 
@@ -103,6 +103,7 @@ func NewActor(entity *m.Entity,
 
 // Spawn ...
 func (p *Actor) Spawn() supervisor.PluginActor {
+	_ = p.Start()
 	return p
 }
 
@@ -335,4 +336,20 @@ func (p *Actor) genKeyboard() (menu *tele.ReplyMarkup) {
 	}
 	menu.Reply(menu.Split(3, row)...)
 	return
+}
+
+//todo: prepare state
+func (e *Actor) updateState(connected bool) {
+	info := e.Info()
+	var newStat = AttrOffline
+	if connected {
+		newStat = AttrConnected
+	}
+	if info.State != nil && info.State.Name == newStat {
+		return
+	}
+	e.SetState(supervisor.EntityStateParams{
+		NewState:    common.String(newStat),
+		StorageSave: true,
+	})
 }

@@ -126,6 +126,7 @@ func (p *plugin) Options() m.PluginOptions {
 		ActorCustomAttrs:   true,
 		ActorAttrs:         NewAttr(),
 		ActorSetts:         NewSettings(),
+		ActorStates:        supervisor.ToEntityStateShort(NewStates()),
 	}
 }
 
@@ -144,7 +145,6 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 	}
 	p.actors[entity.Id] = actor
 	p.Supervisor.Spawn(actor.Spawn)
-	_ = actor.Start()
 	return
 }
 
