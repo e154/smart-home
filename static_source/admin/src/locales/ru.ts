@@ -527,6 +527,8 @@ export default {
       MAP: 'Карта',
       SLIDER: 'Ползунок',
       COLOR_PICKER: 'Цветовая паллитра',
+      STREAM_PLAYER: 'Video player',
+      JOYSTICK: 'Joystick',
       tooltip: 'Подсказка',
       slider: {
         options: 'Параметры слайдера',

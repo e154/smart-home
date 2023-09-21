@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {computed, onMounted, onBeforeUnmount, PropType, ref, unref, watch} from "vue";
 import {Card, CardItem, Core, Tab} from "@/views/Dashboard/core";
-import VideoMse from "@/views/Dashboard/card_items/stream_player/VideoMse.vue";
+import VideoMse from "@/views/Dashboard/card_items/video/VideoMse.vue";
 
 // ---------------------------------
 // common
@@ -37,7 +37,6 @@ const reload = () => {
 watch(
     () => props.item?.entityId,
     (val?: string) => {
-      console.log('----')
       reload()
     },
     {
@@ -48,7 +47,7 @@ watch(
 </script>
 
 <template>
-  <div ref="el">
+  <div ref="el" :class="[{'hidden': item.hidden}]">
     <VideoMse :item="item" v-if="item" :key="reloadKey"/>
   </div>
 </template>

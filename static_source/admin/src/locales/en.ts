@@ -527,6 +527,8 @@ export default {
             MAP: 'Map',
             SLIDER: 'Slider',
             COLOR_PICKER: 'Color Picker',
+            STREAM_PLAYER: 'Video player',
+            JOYSTICK: 'Joystick',
             tooltip: 'Tooltip',
             slider: {
                 options: 'Slider Options',

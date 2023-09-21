@@ -115,7 +115,7 @@ const updateCurrentState = () => {
             <ElOption
                 v-for="p in currentItem.entityActions"
                 :key="p.value"
-                :label="p.label"
+                :label="p.label + ' (' +p.value +')'"
                 :value="p.value"/>
           </ElSelect>
         </ElFormItem>

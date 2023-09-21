@@ -61,12 +61,15 @@ const startPlay = () => {
     return
   }
   const mse = new MediaSource()
+  if (!videoEl.value) {
+    return;
+  }
   videoEl.value.src = window.URL.createObjectURL(mse)
   mse.addEventListener('sourceopen', function () {
     ws = new WebSocket(getUrl())
     ws.binaryType = 'arraybuffer'
     ws.onopen = function (event) {
-      console.log('Connect to ws')
+      // console.log('Connect to ws')
     }
     ws.onmessage = function (event) {
       const data = new Uint8Array(event.data)
@@ -85,6 +88,12 @@ const startPlay = () => {
         readPacket(event.data)
       }
     }
+    ws.onclose = function(e) {
+      // console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
+      setTimeout(function() {
+        startPlay();
+      }, 1000);
+    };
   }, false)
 }
 

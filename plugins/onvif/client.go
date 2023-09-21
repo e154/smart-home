@@ -212,6 +212,10 @@ func (s *Client) GetSnapshotURI() *string {
 
 func (s *Client) ContinuousMove(X, Y float32) error {
 
+	if X == 0 && Y == 0 {
+		return nil
+	}
+
 	ptz, err := s.cli.PTZ()
 	if err != nil {
 		return err
@@ -248,6 +252,9 @@ func (s *Client) ContinuousMove(X, Y float32) error {
 			},
 		},
 	})
+	if err != nil {
+		log.Warn(err.Error())
+	}
 	return err
 }
 
@@ -268,6 +275,9 @@ func (s *Client) StopContinuousMove() error {
 	_, err = ptz.Stop(&ptzWsdl.Stop{
 		ProfileToken: profileToken,
 	})
+	if err != nil {
+		log.Warn(err.Error())
+	}
 	return err
 }
 

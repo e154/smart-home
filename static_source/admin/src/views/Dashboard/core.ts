@@ -29,6 +29,7 @@ import {ref} from "vue";
 import {bool} from "vue-types";
 import {ItemPayloadSlider} from "@/views/Dashboard/card_items/slider/types";
 import {ItemPayloadColorPicker} from "@/views/Dashboard/card_items/color_picker/types";
+import {ItemPayloadJoystick} from "@/views/Dashboard/card_items/joystick/types";
 
 const {bus} = useBus()
 
@@ -90,6 +91,7 @@ export interface ItemPayload {
   map?: ItemPayloadMap;
   slider?: ItemPayloadSlider;
   colorPicker?: ItemPayloadColorPicker;
+  joystick?: ItemPayloadJoystick;
 }
 
 export interface ItemParams {
@@ -255,6 +257,10 @@ export class CardItem {
       if (!this.payload.colorPicker) {
         this.payload.colorPicker = {
         } as ItemPayloadColorPicker;
+      }
+      if (!this.payload.joystick) {
+        this.payload.joystick = {
+        } as ItemPayloadJoystick;
       }
     }
   }

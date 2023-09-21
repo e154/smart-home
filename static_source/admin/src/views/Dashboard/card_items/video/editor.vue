@@ -38,9 +38,7 @@ const props = defineProps({
 
     <CommonEditor :item="item" :core="core"/>
 
-    <ElDivider content-position="left">Dummy options</ElDivider>
-
-    [Unknown item type "{{item.type}}"]
+    <div class="mb-20px"></div>
 
   </div>
 </template>
