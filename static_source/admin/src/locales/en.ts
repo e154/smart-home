@@ -566,6 +566,14 @@ export default {
                 itemValue: 'Item Value',
                 itemDescription: 'Item Description',
                 barOptions: 'Bar Options'
+            },
+            joystick: {
+                options: 'Joystick Options',
+                startAction: 'Start Action',
+                endAction: 'End Action',
+            },
+            video: {
+                options: 'Video Options'
             }
         }
     },

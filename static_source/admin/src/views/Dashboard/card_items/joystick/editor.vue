@@ -46,7 +46,7 @@ const onSelectImage = (index: number, image: ApiImage) => {
 
     <CommonEditor :item="item" :core="core"/>
 
-    <ElDivider content-position="left">Joystick options</ElDivider>
+    <ElDivider content-position="left">{{ $t('dashboard.editor.joystick.options') }}</ElDivider>
 
     <ElFormItem :label="$t('dashboard.editor.image')" prop="image">
       <ImageSearch v-model="currentItem.payload.joystick.stickImage" @change="onSelectImage(index, ...arguments)"/>
@@ -55,7 +55,7 @@ const onSelectImage = (index: number, image: ApiImage) => {
     <ElRow :gutter="24" v-if="currentItem.entity">
 
       <ElCol :span="12" :xs="12">
-        <ElFormItem :label="$t('dashboard.editor.startAction')" prop="startAction" :aria-disabled="!currentItem.entity">
+        <ElFormItem :label="$t('dashboard.editor.joystick.startAction')" prop="startAction" :aria-disabled="!currentItem.entity">
           <ElSelect
               v-model="currentItem.payload.joystick.startAction"
               clearable
@@ -71,7 +71,7 @@ const onSelectImage = (index: number, image: ApiImage) => {
         </ElFormItem>
       </ElCol>
       <ElCol :span="12" :xs="12">
-        <ElFormItem :label="$t('dashboard.editor.endAction')" prop="endAction" :aria-disabled="!currentItem.entity">
+        <ElFormItem :label="$t('dashboard.editor.joystick.endAction')" prop="endAction" :aria-disabled="!currentItem.entity">
           <ElSelect
               v-model="currentItem.payload.joystick.endAction"
               clearable

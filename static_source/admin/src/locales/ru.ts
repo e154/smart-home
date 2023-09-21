@@ -566,6 +566,14 @@ export default {
         itemValue: "Значение элемента",
         itemDescription: "Описание элемента",
         barOptions: "Параметры столбца"
+      },
+      joystick: {
+        options: 'Параметры управления',
+        startAction: 'Действие при начале движения',
+        endAction: 'Действие при окончании движения',
+      },
+      video: {
+        options: 'Параметры видео',
       }
     }
   },
