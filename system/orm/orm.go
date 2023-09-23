@@ -124,6 +124,14 @@ func (o *Orm) Start() (err error) {
 	// SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
 	db.SetConnMaxLifetime(time.Duration(o.cfg.ConnMaxLifeTime) * time.Minute)
 
+	// get server version
+	row := o.db.Raw("SHOW server_version").Row()
+	if err = row.Scan(&o.serverVersion); err != nil {
+		return
+	}
+
+	log.Infof("database version %s", o.serverVersion)
+
 	err = o.Check()
 
 	return
@@ -167,13 +175,6 @@ func (o *Orm) checkServerVersion() (err error) {
 		return
 	}
 
-	// get server version
-	row = o.db.Raw("SHOW server_version").Row()
-	if err = row.Scan(&o.serverVersion); err != nil {
-		return
-	}
-
-	log.Infof("database version %s", o.serverVersion)
 	strArr := strings.Split(o.serverVersion, " ")
 	if len(strArr) > 1 {
 		o.serverVersion = strArr[0]

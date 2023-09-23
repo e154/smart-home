@@ -19,54 +19,38 @@
 package scene
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/e154/smart-home/common/events"
 
-	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
 // Actor ...
 type Actor struct {
 	supervisor.BaseActor
-	adaptors      *adaptors.Adaptors
-	scriptService scripts.ScriptService
-	scriptEngine  *scripts.Engine
-	eventPool     chan events.EventCallScene
-	stateMu       *sync.Mutex
+	eventPool chan events.EventCallScene
+	stateMu   *sync.Mutex
 }
 
 // NewActor ...
 func NewActor(entity *m.Entity,
-	params map[string]interface{},
-	adaptors *adaptors.Adaptors,
-	scriptService scripts.ScriptService,
-	visor supervisor.Supervisor) (actor *Actor, err error) {
+	service supervisor.Service) (actor *Actor, err error) {
 
 	actor = &Actor{
-		BaseActor:     supervisor.NewBaseActor(entity, scriptService, adaptors),
-		adaptors:      adaptors,
-		scriptService: scriptService,
-		eventPool:     make(chan events.EventCallScene, 10),
-		stateMu:       &sync.Mutex{},
+		BaseActor: supervisor.NewBaseActor(entity, service),
+		eventPool: make(chan events.EventCallScene, 99),
+		stateMu:   &sync.Mutex{},
 	}
 
-	actor.Supervisor = visor
-	_, _ = actor.Attrs.Deserialize(params)
-
-	// todo move to baseActor
-	if len(entity.Scripts) != 0 {
-		if actor.scriptEngine, err = scriptService.NewEngine(entity.Scripts[0]); err != nil {
-			return
+	if actor.ScriptEngine == nil {
+		if actor.ScriptEngine, err = service.ScriptService().NewEngine(entity.Scripts[0]); err != nil {
+			log.Error(err.Error())
 		}
-		_, _ = actor.scriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
-		actor.scriptEngine.PushStruct("Actor", supervisor.NewScriptBind(actor))
-		_, _ = actor.scriptEngine.Do()
 	}
+	actor.ScriptEngine.PushStruct("Actor", supervisor.NewScriptBind(actor))
+	_, _ = actor.ScriptEngine.Do()
 
 	// action worker
 	go func() {
@@ -78,9 +62,12 @@ func NewActor(entity *m.Entity,
 	return
 }
 
-// Spawn ...
-func (e *Actor) Spawn() supervisor.PluginActor {
-	return e
+func (e *Actor) Destroy() {
+	close(e.eventPool)
+}
+
+func (e *Actor) Spawn() {
+
 }
 
 func (e *Actor) addEvent(event events.EventCallScene) {
@@ -88,8 +75,7 @@ func (e *Actor) addEvent(event events.EventCallScene) {
 }
 
 func (e *Actor) runEvent(msg events.EventCallScene) {
-
-	if _, err := e.scriptEngine.AssertFunction(FuncSceneEvent, msg.EntityId); err != nil {
+	if _, err := e.ScriptEngine.AssertFunction(FuncSceneEvent, msg.EntityId); err != nil {
 		log.Error(err.Error())
 	}
 }

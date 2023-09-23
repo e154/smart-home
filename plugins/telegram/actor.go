@@ -28,13 +28,10 @@ import (
 	"go.uber.org/atomic"
 	tele "gopkg.in/telebot.v3"
 
-	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/supervisor"
 	"github.com/e154/smart-home/version"
 )
@@ -43,8 +40,6 @@ import (
 type Actor struct {
 	supervisor.BaseActor
 	isStarted   *atomic.Bool
-	eventBus    bus.Bus
-	adaptors    *adaptors.Adaptors
 	AccessToken string
 	bot         *tele.Bot
 	msgPool     chan string
@@ -53,25 +48,18 @@ type Actor struct {
 
 // NewActor ...
 func NewActor(entity *m.Entity,
-	visor supervisor.Supervisor,
-	scriptService scripts.ScriptService,
-	eventBus bus.Bus,
-	adaptors *adaptors.Adaptors) (*Actor, error) {
+	service supervisor.Service) (*Actor, error) {
 
 	settings := NewSettings()
 	_, _ = settings.Deserialize(entity.Settings.Serialize())
 
 	actor := &Actor{
-		BaseActor:   supervisor.NewBaseActor(entity, scriptService, adaptors),
-		eventBus:    eventBus,
+		BaseActor:   supervisor.NewBaseActor(entity, service),
 		actionPool:  make(chan events.EventCallEntityAction, 10),
 		isStarted:   atomic.NewBool(false),
-		adaptors:    adaptors,
 		AccessToken: settings[AttrToken].Decrypt(),
 		msgPool:     make(chan string, 99),
 	}
-
-	actor.Supervisor = visor
 
 	if actor.Attrs == nil {
 		actor.Attrs = NewAttr()
@@ -89,8 +77,6 @@ func NewActor(entity *m.Entity,
 		}
 	}
 
-	actor.DeserializeAttr(entity.Attributes.Serialize())
-
 	// action worker
 	go func() {
 		for msg := range actor.actionPool {
@@ -101,15 +87,20 @@ func NewActor(entity *m.Entity,
 	return actor, nil
 }
 
-// Spawn ...
-func (p *Actor) Spawn() supervisor.PluginActor {
-	_ = p.Start()
-	return p
+func (p *Actor) Destroy() {
+	if !p.isStarted.Load() {
+		return
+	}
+	if p.bot != nil {
+		p.bot.Stop()
+	}
+	close(p.msgPool)
+	p.isStarted.Store(false)
 }
 
-// Start ...
-func (p *Actor) Start() (err error) {
+func (p *Actor) Spawn() {
 
+	var err error
 	if p.isStarted.Load() {
 		return
 	}
@@ -142,7 +133,6 @@ func (p *Actor) Start() (err error) {
 
 	go func() {
 		var list []m.TelegramChat
-		var err error
 		for msg := range p.msgPool {
 			if list, err = p.getChatList(); err != nil {
 				continue
@@ -156,18 +146,6 @@ func (p *Actor) Start() (err error) {
 	}()
 
 	return
-}
-
-// Stop ...
-func (p *Actor) Stop() {
-	if !p.isStarted.Load() {
-		return
-	}
-	if p.bot != nil {
-		p.bot.Stop()
-	}
-	close(p.msgPool)
-	p.isStarted.Store(false)
 }
 
 // Send ...
@@ -205,14 +183,14 @@ func (p *Actor) sendMsg(body string, chatId int64) (messageID int, err error) {
 }
 
 func (p *Actor) getChatList() (list []m.TelegramChat, err error) {
-	list, _, err = p.adaptors.TelegramChat.List(context.Background(), 999, 0, "", "", p.Id)
+	list, _, err = p.Service.Adaptors().TelegramChat.List(context.Background(), 999, 0, "", "", p.Id)
 	return
 }
 
 // UpdateStatus ...
 func (p *Actor) UpdateStatus() (err error) {
 
-	oldState := p.GetEventState(p)
+	oldState := p.GetEventState()
 	now := p.Now(oldState)
 
 	var attributeValues = make(m.AttributeValue)
@@ -236,12 +214,12 @@ func (p *Actor) UpdateStatus() (err error) {
 	}
 	p.AttrMu.Unlock()
 
-	p.eventBus.Publish("system/entities/"+p.Id.String(), events.EventStateChanged{
+	p.Service.EventBus().Publish("system/entities/"+p.Id.String(), events.EventStateChanged{
 		StorageSave: true,
 		PluginName:  p.Id.PluginName(),
 		EntityId:    p.Id,
 		OldState:    oldState,
-		NewState:    p.GetEventState(p),
+		NewState:    p.GetEventState(),
 	})
 
 	return
@@ -256,7 +234,7 @@ func (p *Actor) commandStart(c tele.Context) (err error) {
 	)
 
 	text = fmt.Sprintf(banner, version.GetHumanVersion(), text)
-	_ = p.adaptors.TelegramChat.Add(context.Background(), m.TelegramChat{
+	_ = p.Service.Adaptors().TelegramChat.Add(context.Background(), m.TelegramChat{
 		EntityId: p.Id,
 		ChatId:   chat.ID,
 		Username: user.Username,
@@ -284,7 +262,7 @@ func (p *Actor) commandQuit(c tele.Context) (err error) {
 		chat = c.Chat()
 	)
 
-	_ = p.adaptors.TelegramChat.Delete(context.Background(), p.Id, chat.ID)
+	_ = p.Service.Adaptors().TelegramChat.Delete(context.Background(), p.Id, chat.ID)
 	err = c.Send("/quit -unsubscribe from bot\n/start - subscriber again")
 	return
 }
@@ -338,7 +316,7 @@ func (p *Actor) genKeyboard() (menu *tele.ReplyMarkup) {
 	return
 }
 
-//todo: prepare state
+// todo: prepare state
 func (e *Actor) updateState(connected bool) {
 	info := e.Info()
 	var newStat = AttrOffline

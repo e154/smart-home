@@ -43,11 +43,11 @@ func NewDeveloperToolsEndpoint(common *CommonEndpoint) *DeveloperToolsEndpoint {
 
 // StateList ...
 func (d DeveloperToolsEndpoint) StateList(ctx context.Context) (states []m.EntityShort, total int64, err error) {
-	states, err = d.supervisor.List()
-	if err != nil {
-		return
-	}
-	total = int64(len(states))
+	//states, err = d.supervisor.List()
+	//if err != nil {
+	//	return
+	//}
+	//total = int64(len(states))
 	return
 }
 

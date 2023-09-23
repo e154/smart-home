@@ -29,10 +29,8 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/supervisor"
 	messagebird "github.com/messagebird/go-rest-api"
 	"github.com/messagebird/go-rest-api/balance"
@@ -42,8 +40,6 @@ import (
 // Actor ...
 type Actor struct {
 	supervisor.BaseActor
-	eventBus    bus.Bus
-	adaptors    *adaptors.Adaptors
 	AccessToken string
 	Name        string
 	balanceLock *sync.Mutex
@@ -51,11 +47,9 @@ type Actor struct {
 
 // NewActor ...
 func NewActor(settings m.Attributes,
-	visor supervisor.Supervisor,
-	eventBus bus.Bus,
-	adaptors *adaptors.Adaptors) *Actor {
+	service supervisor.Service) *Actor {
 
-	accessToken := settings[AttrAccessKey].String()
+	accessToken := settings[AttrAccessKey].Decrypt()
 
 	actor := &Actor{
 		BaseActor: supervisor.BaseActor{
@@ -64,10 +58,8 @@ func NewActor(settings m.Attributes,
 			EntityType: Name,
 			AttrMu:     &sync.RWMutex{},
 			Attrs:      NewAttr(),
-			Supervisor: visor,
+			Service:    service,
 		},
-		eventBus:    eventBus,
-		adaptors:    adaptors,
 		AccessToken: accessToken,
 		Name:        settings[AttrName].String(),
 		balanceLock: &sync.Mutex{},
@@ -76,9 +68,12 @@ func NewActor(settings m.Attributes,
 	return actor
 }
 
-// Spawn ...
-func (p *Actor) Spawn() supervisor.PluginActor {
-	return p
+func (p *Actor) Destroy() {
+
+}
+
+func (p *Actor) Spawn() {
+
 }
 
 // Send ...
@@ -170,7 +165,7 @@ func (p *Actor) UpdateBalance() (bal Balance, err error) {
 	p.balanceLock.Lock()
 	defer p.balanceLock.Unlock()
 
-	oldState := p.GetEventState(p)
+	oldState := p.GetEventState()
 	now := p.Now(oldState)
 
 	var b *balance.Balance
@@ -213,12 +208,12 @@ func (p *Actor) UpdateBalance() (bal Balance, err error) {
 	}
 	p.AttrMu.Unlock()
 
-	p.eventBus.Publish("system/entities/"+p.Id.String(), events.EventStateChanged{
+	p.Service.EventBus().Publish("system/entities/"+p.Id.String(), events.EventStateChanged{
 		StorageSave: true,
 		PluginName:  p.Id.PluginName(),
 		EntityId:    p.Id,
 		OldState:    oldState,
-		NewState:    p.GetEventState(p),
+		NewState:    p.GetEventState(),
 	})
 
 	return

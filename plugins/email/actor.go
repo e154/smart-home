@@ -29,7 +29,6 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/supervisor"
 	"gopkg.in/gomail.v2"
 )
@@ -37,7 +36,6 @@ import (
 // Actor ...
 type Actor struct {
 	supervisor.BaseActor
-	eventBus bus.Bus
 	adaptors *adaptors.Adaptors
 	Auth     string
 	Pass     string
@@ -48,9 +46,7 @@ type Actor struct {
 
 // NewActor ...
 func NewActor(settings m.Attributes,
-	visor supervisor.Supervisor,
-	eventBus bus.Bus,
-	adaptors *adaptors.Adaptors) *Actor {
+	service supervisor.Service) *Actor {
 
 	actor := &Actor{
 		BaseActor: supervisor.BaseActor{
@@ -58,10 +54,8 @@ func NewActor(settings m.Attributes,
 			Name:       Name,
 			EntityType: Name,
 			AttrMu:     &sync.RWMutex{},
-			Supervisor: visor,
+			Service:    service,
 		},
-		eventBus: eventBus,
-		adaptors: adaptors,
 		Auth:     settings[AttrAuth].String(),
 		Pass:     settings[AttrPass].String(),
 		Smtp:     settings[AttrSmtp].String(),
@@ -72,9 +66,13 @@ func NewActor(settings m.Attributes,
 	return actor
 }
 
+func (p *Actor) Destroy() {
+
+}
+
 // Spawn ...
-func (p *Actor) Spawn() supervisor.PluginActor {
-	return p
+func (p *Actor) Spawn() {
+
 }
 
 // Send ...
@@ -118,7 +116,7 @@ func (e *Actor) Send(address string, message *m.Message) error {
 // UpdateStatus ...
 func (p *Actor) UpdateStatus() (err error) {
 
-	oldState := p.GetEventState(p)
+	oldState := p.GetEventState()
 	now := p.Now(oldState)
 
 	var attributeValues = make(m.AttributeValue)
@@ -142,12 +140,12 @@ func (p *Actor) UpdateStatus() (err error) {
 	}
 	p.AttrMu.Unlock()
 
-	p.eventBus.Publish("system/entities/"+p.Id.String(), events.EventStateChanged{
+	p.Service.EventBus().Publish("system/entities/"+p.Id.String(), events.EventStateChanged{
 		StorageSave: true,
 		PluginName:  p.Id.PluginName(),
 		EntityId:    p.Id,
 		OldState:    oldState,
-		NewState:    p.GetEventState(p),
+		NewState:    p.GetEventState(),
 	})
 
 	return

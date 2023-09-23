@@ -19,43 +19,28 @@
 package onvif
 
 import (
-	"fmt"
-	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/media"
-	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
 // Actor ...
 type Actor struct {
 	supervisor.BaseActor
-	adaptors      *adaptors.Adaptors
-	scriptService scripts.ScriptService
-	eventBus      bus.Bus
-	client        *Client
+	client *Client
 }
 
 // NewActor ...
 func NewActor(entity *m.Entity,
-	visor supervisor.Supervisor,
-	adaptors *adaptors.Adaptors,
-	scriptService scripts.ScriptService,
-	eventBus bus.Bus) (actor *Actor) {
+	service supervisor.Service) (actor *Actor) {
 
 	actor = &Actor{
-		BaseActor:     supervisor.NewBaseActor(entity, scriptService, adaptors),
-		adaptors:      adaptors,
-		scriptService: scriptService,
-		eventBus:      eventBus,
+		BaseActor: supervisor.NewBaseActor(entity, service),
 	}
 
 	actor.client = NewClient(actor.eventHandler)
-
-	actor.Supervisor = visor
 
 	clientBind := NewClientBind(actor.client)
 
@@ -65,13 +50,11 @@ func NewActor(entity *m.Entity,
 			// bind
 			a.ScriptEngine.PushStruct("Actor", supervisor.NewScriptBind(actor))
 			a.ScriptEngine.PushStruct("Camera", clientBind)
-			_, _ = a.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
 			_, _ = a.ScriptEngine.Do()
 		}
 	}
 
 	if actor.ScriptEngine != nil {
-		_, _ = actor.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
 		actor.ScriptEngine.PushStruct("Actor", supervisor.NewScriptBind(actor))
 		actor.ScriptEngine.PushStruct("Camera", clientBind)
 	}
@@ -91,55 +74,55 @@ func NewActor(entity *m.Entity,
 	return actor
 }
 
-func (e *Actor) destroy() {
-	e.eventBus.Publish("system/media", media.EventRemoveList{Name: e.Id.String()})
-	go e.client.Shutdown()
+func (a *Actor) Destroy() {
+	a.Service.EventBus().Publish("system/media", media.EventRemoveList{Name: a.Id.String()})
+	go a.client.Shutdown()
 }
 
 // Spawn ...
-func (e *Actor) Spawn() supervisor.PluginActor {
-	e.client.Start(e.Setts[AttrUserName].String(),
-		e.Setts[AttrPassword].Decrypt(),
-		e.Setts[AttrAddress].String(),
-		e.Setts[AttrOnvifPort].Int64(),
-		e.Setts[AttrRequireAuthorization].Bool())
-	return e
+func (a *Actor) Spawn() {
+	a.client.Start(a.Setts[AttrUserName].String(),
+		a.Setts[AttrPassword].Decrypt(),
+		a.Setts[AttrAddress].String(),
+		a.Setts[AttrOnvifPort].Int64(),
+		a.Setts[AttrRequireAuthorization].Bool())
+	return
 }
 
 // SetState ...
-func (e *Actor) SetState(params supervisor.EntityStateParams) error {
+func (a *Actor) SetState(params supervisor.EntityStateParams) error {
 
-	oldState := e.GetEventState(e)
+	oldState := a.GetEventState()
 
-	e.Now(oldState)
+	a.Now(oldState)
 
 	if params.NewState != nil {
-		state := e.States[*params.NewState]
-		e.State = &state
-		e.State.ImageUrl = state.ImageUrl
+		state := a.States[*params.NewState]
+		a.State = &state
+		a.State.ImageUrl = state.ImageUrl
 	}
 
-	e.AttrMu.Lock()
-	_, _ = e.Attrs.Deserialize(params.AttributeValues)
-	e.AttrMu.Unlock()
+	a.AttrMu.Lock()
+	_, _ = a.Attrs.Deserialize(params.AttributeValues)
+	a.AttrMu.Unlock()
 
-	e.eventBus.Publish("system/entities/"+e.Id.String(), events.EventStateChanged{
+	a.Service.EventBus().Publish("system/entities/"+a.Id.String(), events.EventStateChanged{
 		StorageSave: params.StorageSave,
-		PluginName:  e.Id.PluginName(),
-		EntityId:    e.Id,
+		PluginName:  a.Id.PluginName(),
+		EntityId:    a.Id,
 		OldState:    oldState,
-		NewState:    e.GetEventState(e),
+		NewState:    a.GetEventState(),
 	})
 
 	return nil
 }
 
-func (e *Actor) addAction(event events.EventCallEntityAction) {
-	e.runAction(event)
+func (a *Actor) addAction(event events.EventCallEntityAction) {
+	a.runAction(event)
 }
 
-func (e *Actor) runAction(msg events.EventCallEntityAction) {
-	action, ok := e.Actions[msg.ActionName]
+func (a *Actor) runAction(msg events.EventCallEntityAction) {
+	action, ok := a.Actions[msg.ActionName]
 	if !ok {
 		log.Warnf("action %s not found", msg.ActionName)
 		return
@@ -152,19 +135,19 @@ func (e *Actor) runAction(msg events.EventCallEntityAction) {
 	}
 }
 
-func (e *Actor) eventHandler(msg interface{}) {
+func (a *Actor) eventHandler(msg interface{}) {
 	switch v := msg.(type) {
 	case *StreamList:
-		go e.prepareStreamList(v)
+		go a.prepareStreamList(v)
 	case *ConnectionStatus:
-		go e.updateState(v)
+		go a.updateState(v)
 	case *MotionAlarm:
-		go e.prepareMotionAlarm(v)
+		go a.prepareMotionAlarm(v)
 	}
 }
 
-func (e *Actor) updateState(event *ConnectionStatus) {
-	info := e.Info()
+func (a *Actor) updateState(event *ConnectionStatus) {
+	info := a.Info()
 	var newStat = AttrOffline
 	if event.Connected {
 		newStat = AttrConnected
@@ -172,14 +155,14 @@ func (e *Actor) updateState(event *ConnectionStatus) {
 	if info.State != nil && info.State.Name == newStat {
 		return
 	}
-	e.SetState(supervisor.EntityStateParams{
+	a.SetState(supervisor.EntityStateParams{
 		NewState:    common.String(newStat),
 		StorageSave: true,
 	})
 }
 
-func (e *Actor) prepareMotionAlarm(event *MotionAlarm) {
-	e.SetState(supervisor.EntityStateParams{
+func (a *Actor) prepareMotionAlarm(event *MotionAlarm) {
+	a.SetState(supervisor.EntityStateParams{
 		NewState: common.String(AttrConnected),
 		AttributeValues: m.AttributeValue{
 			AttrMotion:     event.State,
@@ -189,9 +172,9 @@ func (e *Actor) prepareMotionAlarm(event *MotionAlarm) {
 	})
 }
 
-func (e *Actor) prepareStreamList(event *StreamList) {
-	e.eventBus.Publish("system/media", media.EventUpdateList{
-		Name:     e.Id.String(),
+func (a *Actor) prepareStreamList(event *StreamList) {
+	a.Service.EventBus().Publish("system/media", media.EventUpdateList{
+		Name:     a.Id.String(),
 		Channels: event.List,
 	})
 }

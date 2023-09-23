@@ -24,8 +24,8 @@ import (
 )
 
 const (
-	// EntityMemory ...
-	EntityMemory = string("memory_app")
+	// EntityMemoryApp ...
+	EntityMemoryApp = string("memory_app")
 
 	// AttrAlloc ...
 	AttrAlloc = "alloc"
@@ -83,3 +83,24 @@ func NewAttr() m.Attributes {
 		},
 	}
 }
+
+func NewMetrics() []*m.Metric {
+	return []*m.Metric{
+		{
+			Name:        "memory_app",
+			Description: "App metric",
+			Options: m.MetricOptions{
+				Items: []m.MetricOptionsItem{
+					{
+						Name:        "alloc",
+						Description: "",
+						Color:       "#C2C2C2",
+						Translate:   "alloc",
+						Label:       "%",
+					},
+				},
+			},
+		},
+	}
+}
+

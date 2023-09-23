@@ -24,8 +24,6 @@ import (
 )
 
 const (
-	//icon = "clock-o"
-
 	// AttrUptimeTotal ...
 	AttrUptimeTotal = "total"
 	// AttrUptimeAppStarted ...

@@ -137,3 +137,23 @@ func NewActions() map[string]supervisor.ActorAction {
 		},
 	}
 }
+
+func NewMetrics() []*m.Metric {
+	return []*m.Metric{
+		{
+			Name:        "hdd_usage",
+			Description: "HDD usage",
+			Options: m.MetricOptions{
+				Items: []m.MetricOptionsItem{
+					{
+						Name:        "used_percent",
+						Description: "used percent",
+						Color:       "#C2C2C2",
+						Translate:   "",
+						Label:       "%",
+					},
+				},
+			},
+		},
+	}
+}

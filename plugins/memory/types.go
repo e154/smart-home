@@ -60,3 +60,23 @@ func NewAttr() m.Attributes {
 		},
 	}
 }
+
+func NewMetrics() []*m.Metric {
+	return []*m.Metric{
+		{
+			Name:        "memory",
+			Description: "RAM metric",
+			Options: m.MetricOptions{
+				Items: []m.MetricOptionsItem{
+					{
+						Name:        "used_percent",
+						Description: "",
+						Color:       "#C2C2C2",
+						Translate:   "used_percent",
+						Label:       "%",
+					},
+				},
+			},
+		},
+	}
+}

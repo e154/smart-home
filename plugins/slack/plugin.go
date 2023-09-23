@@ -50,20 +50,10 @@ func New() supervisor.Pluggable {
 
 // Load ...
 func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(ctx, service); err != nil {
+	if err = p.Plugin.Load(ctx, service, nil); err != nil {
 		return
 	}
 
-	go func() {
-		if err = p.asyncLoad(); err != nil {
-			log.Error(err.Error())
-		}
-	}()
-
-	return nil
-}
-
-func (p *plugin) asyncLoad() (err error) {
 
 	// load settings
 	var settings m.Attributes
@@ -79,7 +69,8 @@ func (p *plugin) asyncLoad() (err error) {
 
 	// register slack provider
 	var provider *Provider
-	provider, err = NewProvider(settings, p.Adaptors)
+	provider, err = NewProvider(settings, service.Adaptors())
+
 	notify.ProviderManager.AddProvider(Name, provider)
 
 	return

@@ -24,8 +24,6 @@ import (
 	"time"
 
 	"github.com/e154/smart-home/common/events"
-	"github.com/e154/smart-home/system/initial/local_migrations"
-
 	. "github.com/smartystreets/goconvey/convey"
 	"go.uber.org/atomic"
 
@@ -33,7 +31,6 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/scheduler"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/e154/smart-home/tests/plugins"
@@ -54,14 +51,12 @@ sceneEvent = (args)->
 			scriptService scripts.ScriptService,
 			supervisor supervisor.Supervisor,
 			automation automation.Automation,
-			eventBus bus.Bus,
-			scheduler *scheduler.Scheduler) {
+			eventBus bus.Bus) {
 
 			// register plugins
-			err := local_migrations.NewMigrationPlugins(adaptors).Up(context.TODO(), nil)
-			So(err, ShouldBeNil)
+			err := AddPlugin(adaptors, "scene")
+			ctx.So(err, ShouldBeNil)
 
-			scheduler.Start(context.TODO())
 			automation.Start()
 			supervisor.Start(context.Background())
 			WaitSupervisor(eventBus)
@@ -94,7 +89,6 @@ sceneEvent = (args)->
 
 					supervisor.CallScene(romanticEnt.Id, nil)
 					time.Sleep(time.Millisecond * 500)
-
 					So(counter.Load(), ShouldBeGreaterThanOrEqualTo, 1)
 				})
 			})

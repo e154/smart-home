@@ -22,13 +22,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"testing"
 	"time"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/plugins/node"
-	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
@@ -46,7 +46,6 @@ func TestNode(t *testing.T) {
 			supervisor supervisor.Supervisor,
 			zigbee2mqtt zigbee2mqtt.Zigbee2mqtt,
 			mqttServer mqtt.MqttServ,
-			automation automation.Automation,
 			eventBus bus.Bus) {
 
 			// register plugins
@@ -54,7 +53,6 @@ func TestNode(t *testing.T) {
 			ctx.So(err, ShouldBeNil)
 
 			go mqttServer.Start()
-			automation.Start()
 			supervisor.Start(context.Background())
 			WaitSupervisor(eventBus)
 
@@ -77,27 +75,14 @@ func TestNode(t *testing.T) {
 
 			t.Run("ping", func(t *testing.T) {
 				Convey("case", t, func(ctx C) {
-					ch := make(chan struct{})
+					ch := make(chan interface{})
 					fn := func(topic string, msg interface{}) {
-						switch v := msg.(type) {
-						case events.EventStateChanged:
-							if v.PluginName != "node" {
-								return
-							}
-							ctx.So(v.OldState.State, ShouldNotBeNil)
-							ctx.So(v.OldState.State.Name, ShouldEqual, "wait")
-							ctx.So(v.NewState.State, ShouldNotBeNil)
-							ctx.So(v.NewState.State.Name, ShouldEqual, "connected")
-							ctx.So(v.NewState.Attributes[node.AttrThread].Int64(), ShouldEqual, 1)
-							ctx.So(v.NewState.Attributes[node.AttrRps].Int64(), ShouldEqual, 2)
-							ctx.So(v.NewState.Attributes[node.AttrMin].Int64(), ShouldEqual, 3)
-							ctx.So(v.NewState.Attributes[node.AttrMax].Int64(), ShouldEqual, 4)
-							ctx.So(v.NewState.Attributes[node.AttrStartedAt].Time(), ShouldEqual, now)
-							ch <- struct{}{}
-						}
+						ch <- msg
 					}
 					_ = eventBus.Subscribe("system/entities/+", fn)
 					defer func() { _ = eventBus.Unsubscribe("system/entities/+", fn) }()
+
+					time.Sleep(time.Second)
 
 					b, err := json.Marshal(node.MessageStatus{
 						Status:    "enabled",
@@ -115,14 +100,35 @@ func TestNode(t *testing.T) {
 					defer ticker.Stop()
 
 					var ok bool
-					select {
-					case <-ch:
-						ok = true
-					case <-ticker.C:
+					for {
+						select {
+						case msg := <-ch:
+							switch v := msg.(type) {
+							case events.EventEntityLoaded:
+							case events.EventStateChanged:
+								if v.PluginName != "node" {
+									continue
+								}
+								ctx.So(v.OldState.State, ShouldNotBeNil)
+								ctx.So(v.OldState.State.Name, ShouldEqual, "wait")
+								ctx.So(v.NewState.State, ShouldNotBeNil)
+								ctx.So(v.NewState.State.Name, ShouldEqual, "connected")
+								ctx.So(v.NewState.Attributes[node.AttrThread].Int64(), ShouldEqual, 1)
+								ctx.So(v.NewState.Attributes[node.AttrRps].Int64(), ShouldEqual, 2)
+								ctx.So(v.NewState.Attributes[node.AttrMin].Int64(), ShouldEqual, 3)
+								ctx.So(v.NewState.Attributes[node.AttrMax].Int64(), ShouldEqual, 4)
+								ctx.So(v.NewState.Attributes[node.AttrStartedAt].Time(), ShouldEqual, now)
+								ok = true
+								ctx.So(ok, ShouldBeTrue)
+								break
+							default:
+								fmt.Printf("unknown msg type %s\n\r", reflect.TypeOf(v))
+							}
+							return
+						case <-ticker.C:
+							return
+						}
 					}
-
-					ctx.So(ok, ShouldBeTrue)
-
 				})
 			})
 

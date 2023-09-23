@@ -49,14 +49,14 @@ func New() supervisor.Pluggable {
 
 // Load ...
 func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(ctx, service); err != nil {
+	if err = p.Plugin.Load(ctx, service, nil); err != nil {
 		return
 	}
 
-	p.notify = NewNotify(p.Adaptors, p.ScriptService)
+	p.notify = NewNotify(service.Adaptors(), service.ScriptService())
 	_ = p.notify.Start()
 
-	_ = p.EventBus.Subscribe(TopicNotify, p.eventHandler)
+	_ = p.Service.EventBus().Subscribe(TopicNotify, p.eventHandler)
 
 	return nil
 }
@@ -67,7 +67,7 @@ func (p *plugin) Unload(ctx context.Context) (err error) {
 		return
 	}
 
-	_ = p.EventBus.Unsubscribe(TopicNotify, p.eventHandler)
+	_ = p.Service.EventBus().Unsubscribe(TopicNotify, p.eventHandler)
 
 	_ = p.notify.Shutdown()
 

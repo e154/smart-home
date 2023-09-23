@@ -20,16 +20,9 @@ package weather_met
 
 import (
 	"context"
-	"fmt"
-	"sync"
-
 	"github.com/e154/smart-home/plugins/weather"
 	"github.com/e154/smart-home/system/supervisor"
 
-	"github.com/pkg/errors"
-
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/scheduler"
@@ -54,8 +47,6 @@ func init() {
 
 type plugin struct {
 	*supervisor.Plugin
-	actorsLock *sync.Mutex
-	actors     map[common.EntityId]*Actor
 	weather    *WeatherMet
 	task       scheduler.EntryID
 }
@@ -64,25 +55,23 @@ type plugin struct {
 func New() supervisor.Pluggable {
 	return &plugin{
 		Plugin:     supervisor.NewPlugin(),
-		actorsLock: &sync.Mutex{},
-		actors:     make(map[common.EntityId]*Actor),
 	}
 }
 
 // Load ...
 func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(ctx, service); err != nil {
+	if err = p.Plugin.Load(ctx, service, p.ActorConstructor); err != nil {
 		return
 	}
 
-	_ = p.EventBus.Subscribe("system/entities/+", p.eventHandler)
+	_ = p.Service.EventBus().Subscribe("system/entities/+", p.eventHandler)
 
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-	p.task, err = p.Scheduler.AddFunc("0 */30 * * * *", func() {
-		for _, actor := range p.actors {
+	p.task, err = p.Service.Scheduler().AddFunc("0 */30 * * * *", func() {
+		p.Actors.Range(func(key, value any) bool {
+			actor := value.(*Actor)
 			actor.update()
-		}
+			return true
+		})
 	})
 
 	return
@@ -93,9 +82,15 @@ func (p *plugin) Unload(ctx context.Context) (err error) {
 	if err = p.Plugin.Unload(ctx); err != nil {
 		return
 	}
-	p.Scheduler.Remove(p.task)
-	_ = p.EventBus.Unsubscribe("system/entities/+", p.eventHandler)
+	p.Service.Scheduler().Remove(p.task)
+	_ = p.Service.EventBus().Unsubscribe("system/entities/+", p.eventHandler)
 	return nil
+}
+
+// ActorConstructor ...
+func (p *plugin) ActorConstructor(entity *m.Entity) (actor supervisor.PluginActor, err error) {
+	actor = NewActor(entity, p.Service)
+	return
 }
 
 // Name ...
@@ -105,41 +100,6 @@ func (p plugin) Name() string {
 
 func (p *plugin) eventHandler(_ string, msg interface{}) {
 
-}
-
-// AddOrUpdateActor ...
-func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	if _, ok := p.actors[entity.Id]; ok {
-		return
-	}
-
-	actor := NewActor(entity, p.Supervisor, p.Adaptors, p.ScriptService, p.EventBus, p.Crawler)
-	p.actors[entity.Id] = actor
-	p.Supervisor.Spawn(actor.Spawn)
-
-	return
-}
-
-// RemoveActor ...
-func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
-
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	actor, ok := p.actors[entityId]
-	if !ok {
-		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("failed remove \"%s\"", entityId))
-		return
-	}
-
-	actor.destroy()
-
-	delete(p.actors, entityId)
-
-	return
 }
 
 // Type ...

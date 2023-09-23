@@ -22,7 +22,6 @@ import (
 	"github.com/e154/smart-home/plugins/node"
 	"github.com/e154/smart-home/plugins/notify"
 	"github.com/e154/smart-home/plugins/scene"
-	"github.com/e154/smart-home/plugins/script"
 	"github.com/e154/smart-home/plugins/sensor"
 	"github.com/e154/smart-home/plugins/slack"
 	"github.com/e154/smart-home/plugins/sun"
@@ -71,7 +70,6 @@ func (n *MigrationPlugins) Up(ctx context.Context, adaptors *adaptors.Adaptors) 
 	n.addPlugin("node", true, true, true, node.Version)
 	n.addPlugin("notify", true, true, false, notify.Version)
 	n.addPlugin("scene", true, false, true, scene.Version)
-	n.addPlugin("script", true, false, true, script.Version)
 	n.addPlugin("sensor", true, false, true, sensor.Version)
 	n.addPlugin("slack", true, false, false, slack.Version)
 	n.addPlugin("sun", true, false, true, sun.Version)

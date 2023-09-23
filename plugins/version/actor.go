@@ -19,14 +19,12 @@
 package version
 
 import (
-	"fmt"
+	m "github.com/e154/smart-home/models"
 	"runtime"
 	"sync"
 
 	"github.com/e154/smart-home/common/events"
 
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/supervisor"
 	"github.com/e154/smart-home/version"
 )
@@ -34,34 +32,29 @@ import (
 // Actor ...
 type Actor struct {
 	supervisor.BaseActor
-	eventBus   bus.Bus
 	updateLock *sync.Mutex
 }
 
 // NewActor ...
-func NewActor(visor supervisor.Supervisor,
-	eventBus bus.Bus) *Actor {
+func NewActor(entity *m.Entity,
+	service supervisor.Service) *Actor {
 
 	actor := &Actor{
-		BaseActor: supervisor.BaseActor{
-			Id:                common.EntityId(fmt.Sprintf("%s.%s", EntityVersion, Name)),
-			Name:              Name,
-			EntityType:        EntityVersion,
-			UnitOfMeasurement: "",
-			AttrMu:            &sync.RWMutex{},
-			Attrs:             NewAttr(),
-			Supervisor:        visor,
-		},
-		eventBus:   eventBus,
+		BaseActor: supervisor.NewBaseActor(entity, service),
 		updateLock: &sync.Mutex{},
 	}
-
+	if actor.Attrs == nil {
+		actor.Attrs = NewAttr()
+	}
 	return actor
 }
 
-// Spawn ...
-func (e *Actor) Spawn() supervisor.PluginActor {
-	return e
+func (u *Actor) Destroy() {
+
+}
+
+func (u *Actor) Spawn() {
+
 }
 
 func (u *Actor) selfUpdate() {
@@ -69,7 +62,7 @@ func (u *Actor) selfUpdate() {
 	u.updateLock.Lock()
 	defer u.updateLock.Unlock()
 
-	oldState := u.GetEventState(u)
+	oldState := u.GetEventState()
 	u.Now(oldState)
 
 	var s runtime.MemStats
@@ -86,11 +79,11 @@ func (u *Actor) selfUpdate() {
 	u.Attrs[AttrGoVersion].Value = version.GoVersion
 	u.AttrMu.Unlock()
 
-	u.eventBus.Publish("system/entities/"+u.Id.String(), events.EventStateChanged{
+	u.Service.EventBus().Publish("system/entities/"+u.Id.String(), events.EventStateChanged{
 		StorageSave: false,
 		PluginName:  u.Id.PluginName(),
 		EntityId:    u.Id,
 		OldState:    oldState,
-		NewState:    u.GetEventState(u),
+		NewState:    u.GetEventState(),
 	})
 }

@@ -19,7 +19,6 @@
 package memory
 
 import (
-	"fmt"
 	"sync"
 
 	m "github.com/e154/smart-home/models"
@@ -30,7 +29,6 @@ import (
 	"github.com/shirou/gopsutil/v3/mem"
 
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
@@ -40,26 +38,15 @@ type Actor struct {
 	total       metrics.Gauge
 	free        metrics.Gauge
 	usedPercent metrics.GaugeFloat64
-	eventBus    bus.Bus
 	updateLock  *sync.Mutex
 }
 
 // NewActor ...
-func NewActor(visor supervisor.Supervisor,
-	eventBus bus.Bus,
-	entity *m.Entity) *Actor {
+func NewActor(entity *m.Entity,
+	service supervisor.Service) *Actor {
 
 	actor := &Actor{
-		BaseActor: supervisor.BaseActor{
-			Id:                common.EntityId(fmt.Sprintf("%s.%s", EntityMemory, Name)),
-			Name:              Name,
-			EntityType:        EntityMemory,
-			UnitOfMeasurement: "GHz",
-			AttrMu:            &sync.RWMutex{},
-			Attrs:             NewAttr(),
-			Supervisor:        visor,
-		},
-		eventBus:    eventBus,
+		BaseActor: supervisor.NewBaseActor(entity, service),
 		total:       metrics.NewGauge(),
 		free:        metrics.NewGauge(),
 		usedPercent: metrics.NewGaugeFloat64(),
@@ -73,9 +60,13 @@ func NewActor(visor supervisor.Supervisor,
 	return actor
 }
 
+func (u *Actor) Destroy() {
+
+}
+
 // Spawn ...
-func (e *Actor) Spawn() supervisor.PluginActor {
-	return e
+func (u *Actor) Spawn() {
+	return
 }
 
 func (u *Actor) selfUpdate() {
@@ -83,7 +74,7 @@ func (u *Actor) selfUpdate() {
 	u.updateLock.Lock()
 	defer u.updateLock.Unlock()
 
-	oldState := u.GetEventState(u)
+	oldState := u.GetEventState()
 	u.Now(oldState)
 
 	v, _ := mem.VirtualMemory()
@@ -103,11 +94,11 @@ func (u *Actor) selfUpdate() {
 	//	"used_percent": usedPercent,
 	//})
 
-	u.eventBus.Publish("system/entities/"+u.Id.String(), events.EventStateChanged{
+	u.Service.EventBus().Publish("system/entities/"+u.Id.String(), events.EventStateChanged{
 		StorageSave: false,
 		PluginName:  u.Id.PluginName(),
 		EntityId:    u.Id,
 		OldState:    oldState,
-		NewState:    u.GetEventState(u),
+		NewState:    u.GetEventState(),
 	})
 }

@@ -19,7 +19,6 @@
 package logs
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/e154/smart-home/common/events"
@@ -28,7 +27,6 @@ import (
 	"github.com/rcrowley/go-metrics"
 
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
@@ -43,25 +41,15 @@ type Actor struct {
 	WarnTotal     metrics.Counter
 	WarnToday     metrics.Counter
 	WarnYesterday metrics.Counter
-	eventBus      bus.Bus
 	updateLock    *sync.Mutex
 }
 
 // NewActor ...
-func NewActor(visor supervisor.Supervisor,
-	eventBus bus.Bus, entity *m.Entity) *Actor {
+func NewActor(entity *m.Entity,
+	service supervisor.Service) *Actor {
 
 	actor := &Actor{
-		BaseActor: supervisor.BaseActor{
-			Id:                common.EntityId(fmt.Sprintf("%s.%s", EntityLogs, Name)),
-			Name:              Name,
-			EntityType:        EntityLogs,
-			UnitOfMeasurement: "",
-			AttrMu:            &sync.RWMutex{},
-			Attrs:             NewAttr(),
-			Supervisor:        visor,
-		},
-		eventBus:      eventBus,
+		BaseActor:     supervisor.NewBaseActor(entity, service),
 		ErrTotal:      metrics.NewCounter(),
 		ErrToday:      metrics.NewCounter(),
 		ErrYesterday:  metrics.NewCounter(),
@@ -84,9 +72,13 @@ func NewActor(visor supervisor.Supervisor,
 	return actor
 }
 
-func (e *Actor) Spawn() supervisor.PluginActor {
+func (a *Actor) Destroy() {
+
+}
+
+func (e *Actor) Spawn() {
 	go e.selfUpdate()
-	return e
+	return
 }
 
 func (u *Actor) selfUpdate() {
@@ -94,7 +86,7 @@ func (u *Actor) selfUpdate() {
 	u.updateLock.Lock()
 	defer u.updateLock.Unlock()
 
-	oldState := u.GetEventState(u)
+	oldState := u.GetEventState()
 	u.Now(oldState)
 
 	u.AttrMu.Lock()
@@ -106,12 +98,12 @@ func (u *Actor) selfUpdate() {
 	u.Attrs[AttrWarnYesterday].Value = u.WarnYesterday.Count()
 	u.AttrMu.Unlock()
 
-	u.eventBus.Publish("system/entities/"+u.Id.String(), events.EventStateChanged{
+	u.Service.EventBus().Publish("system/entities/"+u.Id.String(), events.EventStateChanged{
 		StorageSave: true,
 		PluginName:  u.Id.PluginName(),
 		EntityId:    u.Id,
 		OldState:    oldState,
-		NewState:    u.GetEventState(u),
+		NewState:    u.GetEventState(),
 	})
 }
 

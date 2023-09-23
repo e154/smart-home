@@ -147,7 +147,7 @@ func (p *pluginManager) loadPlugin(ctx context.Context, name string) (err error)
 	p.pluginsWg.Add(1)
 
 	p.eventBus.Publish("system/plugins/"+name, events.EventLoadedPlugin{
-		PluginName: string(name),
+		PluginName: name,
 	})
 
 	return
@@ -285,7 +285,7 @@ func (p *pluginManager) PluginList() (list []PluginInfo, total int64, err error)
 
 func (p *pluginManager) PluginIsLoaded(name string) (loaded bool) {
 	if value, ok := p.enabledPlugins.Load(name); ok {
-		loaded, _ = value.(bool)
+		loaded = value.(bool)
 	}
 	return
 }

@@ -16,13 +16,11 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-//go:build (linux && !mips64 && !mips64le) || darwin
-// +build linux,!mips64,!mips64le darwin
-
 package uptime
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/e154/smart-home/system/supervisor"
@@ -49,59 +47,50 @@ func init() {
 
 type plugin struct {
 	*supervisor.Plugin
-	entity     *Actor
+	actor      *Actor
 	ticker     *time.Ticker
-	pause      time.Duration
 	storyModel *m.RunStory
-	quit       chan struct{}
 }
 
 // New ...
 func New() supervisor.Pluggable {
 	return &plugin{
 		Plugin: supervisor.NewPlugin(),
-		pause:  60,
 	}
 }
 
 // Load ...
 func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(ctx, service); err != nil {
+	if err = p.Plugin.Load(ctx, service, nil); err != nil {
 		return
 	}
 
-	p.entity = NewActor(p.Supervisor, p.EventBus)
-	p.quit = make(chan struct{})
+	var entity = &m.Entity{
+		Id:         common.EntityId(fmt.Sprintf("%s.%s", EntitySensor, Name)),
+		PluginName: Name,
+		Attributes: NewAttr(),
+	}
+	p.actor = NewActor(entity, service)
 
 	p.storyModel = &m.RunStory{
 		Start: time.Now(),
 	}
+	if err = p.AddPluginActor(p.actor, entity); err != nil {
+		return
+	}
 
-	p.storyModel.Id, err = p.Adaptors.RunHistory.Add(context.Background(), p.storyModel)
-
+	p.storyModel.Id, err = p.Service.Adaptors().RunHistory.Add(context.Background(), p.storyModel)
 	if err != nil {
 		log.Error(err.Error())
 		return nil
 	}
 
-	p.Supervisor.Spawn(p.entity.Spawn)
-
-	p.entity.update()
-
 	go func() {
-		ticker := time.NewTicker(time.Second * p.pause)
-		defer func() {
-			ticker.Stop()
-			close(p.quit)
-		}()
+		const pause = 60
+		p.ticker = time.NewTicker(time.Second * pause)
 
-		for {
-			select {
-			case <-p.quit:
-				return
-			case <-ticker.C:
-				p.entity.update()
-			}
+		for range p.ticker.C {
+			p.actor.update()
 		}
 	}()
 	return nil
@@ -109,13 +98,16 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 
 // Unload ...
 func (p *plugin) Unload(ctx context.Context) (err error) {
+	if p.ticker != nil {
+		p.ticker.Stop()
+		p.ticker = nil
+	}
 	if err = p.Plugin.Unload(ctx); err != nil {
 		return
 	}
 
-	p.quit <- struct{}{}
 	p.storyModel.End = common.Time(time.Now())
-	if err = p.Adaptors.RunHistory.Update(context.Background(), p.storyModel); err != nil {
+	if err = p.Service.Adaptors().RunHistory.Update(context.Background(), p.storyModel); err != nil {
 		log.Error(err.Error())
 	}
 	return

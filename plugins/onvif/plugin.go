@@ -20,13 +20,8 @@ package onvif
 
 import (
 	"context"
-	"fmt"
 	"sync"
 
-	"github.com/pkg/errors"
-
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
@@ -47,7 +42,6 @@ func init() {
 type plugin struct {
 	*supervisor.Plugin
 	actorsLock *sync.Mutex
-	actors     map[common.EntityId]*Actor
 	mqttServ   mqtt.MqttServ
 	mqttClient mqtt.MqttCli
 }
@@ -57,36 +51,29 @@ func New() supervisor.Pluggable {
 	return &plugin{
 		Plugin:     supervisor.NewPlugin(),
 		actorsLock: &sync.Mutex{},
-		actors:     make(map[common.EntityId]*Actor),
 	}
 }
 
 // Load ...
 func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(ctx, service); err != nil {
+	if err = p.Plugin.Load(ctx, service, p.ActorConstructor); err != nil {
 		return
 	}
-
-	_ = p.EventBus.Subscribe("system/entities/+", p.eventHandler)
-
-	return nil
+	_ = p.Service.EventBus().Subscribe("system/entities/+", p.eventHandler)
+	return
 }
 
 // Unload ...
 func (p *plugin) Unload(ctx context.Context) (err error) {
-	if err = p.Plugin.Unload(ctx); err != nil {
-		return
-	}
+	_ = p.Service.EventBus().Unsubscribe("system/entities/+", p.eventHandler)
+	err = p.Plugin.Unload(ctx)
+	return
+}
 
-	_ = p.EventBus.Unsubscribe("system/entities/+", p.eventHandler)
-
-	// remove actors
-	for entityId, actor := range p.actors {
-		actor.destroy()
-		delete(p.actors, entityId)
-	}
-
-	return nil
+// ActorConstructor ...
+func (p *plugin) ActorConstructor(entity *m.Entity) (actor supervisor.PluginActor, err error) {
+	actor = NewActor(entity, p.Service)
+	return
 }
 
 // Name ...
@@ -99,47 +86,13 @@ func (p *plugin) eventHandler(topic string, msg interface{}) {
 	switch v := msg.(type) {
 	case events.EventStateChanged:
 	case events.EventCallEntityAction:
-		actor, ok := p.actors[v.EntityId]
+		value, ok := p.Actors.Load(v.EntityId)
 		if !ok {
 			return
 		}
+		actor := value.(*Actor)
 		actor.addAction(v)
 	}
-}
-
-// AddOrUpdateActor ...
-func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	if _, ok := p.actors[entity.Id]; ok {
-		return
-	}
-
-	actor := NewActor(entity, p.Supervisor, p.Adaptors, p.ScriptService, p.EventBus)
-	p.actors[entity.Id] = actor
-	p.Supervisor.Spawn(actor.Spawn)
-
-	return
-}
-
-// RemoveActor ...
-func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
-
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	actor, ok := p.actors[entityId]
-	if !ok {
-		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("failed remove \"%s\"", entityId))
-		return
-	}
-
-	actor.destroy()
-
-	delete(p.actors, entityId)
-
-	return
 }
 
 // Type ...

@@ -26,14 +26,13 @@ import (
 	"github.com/shirou/gopsutil/v3/disk"
 
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/supervisor"
 	"github.com/rcrowley/go-metrics"
 )
 
 // Actor ...
 type Actor struct {
-	*supervisor.BaseActor
+	supervisor.BaseActor
 	cores           int64
 	model           string
 	total           metrics.Gauge
@@ -41,15 +40,13 @@ type Actor struct {
 	usedPercent     metrics.GaugeFloat64
 	allCpuPrevTotal float64
 	allCpuPrevIdle  float64
-	eventBus        bus.Bus
 	updateLock      *sync.Mutex
 	MountPoint      string
 }
 
 // NewActor ...
 func NewActor(entity *m.Entity,
-	visor supervisor.Supervisor,
-	eventBus bus.Bus) *Actor {
+	service supervisor.Service) *Actor {
 
 	var mountPoint string
 	if _mountPoint, ok := entity.Settings[AttrMountPoint]; ok {
@@ -60,22 +57,11 @@ func NewActor(entity *m.Entity,
 	}
 
 	actor := &Actor{
-		BaseActor: &supervisor.BaseActor{
-			Id:                entity.Id,
-			Name:              entity.Id.Name(),
-			EntityType:        EntityHDD,
-			UnitOfMeasurement: "",
-			AttrMu:            &sync.RWMutex{},
-			Attrs:             NewAttr(),
-			Supervisor:        visor,
-			Metric:            entity.Metrics,
-		},
-		eventBus:   eventBus,
+		BaseActor:  supervisor.NewBaseActor(entity, service),
 		updateLock: &sync.Mutex{},
 		MountPoint: mountPoint,
 	}
 
-	actor.Supervisor = visor
 	actor.Attrs = NewAttr()
 	actor.Setts = entity.Settings
 
@@ -90,12 +76,16 @@ func NewActor(entity *m.Entity,
 	return actor
 }
 
-// Spawn ...
-func (e *Actor) Spawn() supervisor.PluginActor {
-	return e
+func (a *Actor) Destroy() {
+
 }
 
-func (e *Actor) runAction(msg events.EventCallEntityAction) {
+// Spawn ...
+func (e *Actor) Spawn() {
+
+}
+
+func (e *Actor) runAction(_ events.EventCallEntityAction) {
 	go e.selfUpdate()
 }
 
@@ -104,7 +94,7 @@ func (u *Actor) selfUpdate() {
 	u.updateLock.Lock()
 	defer u.updateLock.Unlock()
 
-	oldState := u.GetEventState(u)
+	oldState := u.GetEventState()
 	u.Now(oldState)
 
 	var mountPoint = "/"
@@ -125,11 +115,11 @@ func (u *Actor) selfUpdate() {
 		u.Attrs[AttrInodesUsedPercent].Value = r.InodesUsedPercent
 		u.AttrMu.Unlock()
 	}
-	u.eventBus.Publish("system/entities/"+u.Id.String(), events.EventStateChanged{
+	u.Service.EventBus().Publish("system/entities/"+u.Id.String(), events.EventStateChanged{
 		StorageSave: false,
 		PluginName:  u.Id.PluginName(),
 		EntityId:    u.Id,
 		OldState:    oldState,
-		NewState:    u.GetEventState(u),
+		NewState:    u.GetEventState(),
 	})
 }

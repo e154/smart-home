@@ -55,20 +55,9 @@ func New() supervisor.Pluggable {
 
 // Load ...
 func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(ctx, service); err != nil {
+	if err = p.Plugin.Load(ctx, service, nil); err != nil {
 		return
 	}
-
-	go func() {
-		if err = p.asyncLoad(); err != nil {
-			log.Error(err.Error())
-		}
-	}()
-
-	return nil
-}
-
-func (p *plugin) asyncLoad() (err error) {
 
 	// load settings
 	var settings m.Attributes
@@ -88,9 +77,9 @@ func (p *plugin) asyncLoad() (err error) {
 			return
 		}
 		var model *m.Plugin
-		model, _ = p.Adaptors.Plugin.GetByName(context.Background(), Name)
+		model, _ = p.Service.Adaptors().Plugin.GetByName(context.Background(), Name)
 		model.Settings = settings.Serialize()
-		_ = p.Adaptors.Plugin.Update(context.Background(), model)
+		_ = p.Service.Adaptors().Plugin.Update(context.Background(), model)
 	}
 
 	p.VAPIDPrivateKey = settings[AttrPrivateKey].String()
@@ -98,7 +87,7 @@ func (p *plugin) asyncLoad() (err error) {
 
 	log.Infof(`Used public key: "%s"`, p.VAPIDPublicKey)
 
-	_ = p.EventBus.Subscribe(TopicPluginWebpush, p.eventHandler)
+	_ = p.Service.EventBus().Subscribe(TopicPluginWebpush, p.eventHandler)
 
 	// register webpush provider
 	notify.ProviderManager.AddProvider(Name, p)
@@ -114,7 +103,7 @@ func (p *plugin) Unload(ctx context.Context) (err error) {
 
 	notify.ProviderManager.RemoveProvider(Name)
 
-	_ = p.EventBus.Unsubscribe(TopicPluginWebpush, p.eventHandler)
+	_ = p.Service.EventBus().Unsubscribe(TopicPluginWebpush, p.eventHandler)
 
 	return nil
 }
@@ -153,7 +142,7 @@ func (p *plugin) Save(msg notify.Message) (addresses []string, message *m.Messag
 		Attributes: msg.Attributes,
 	}
 	var err error
-	if message.Id, err = p.Adaptors.Message.Add(context.Background(), message); err != nil {
+	if message.Id, err = p.Service.Adaptors().Message.Add(context.Background(), message); err != nil {
 		log.Error(err.Error())
 	}
 
@@ -176,7 +165,7 @@ func (p *plugin) Send(address string, message *m.Message) (err error) {
 
 	userId, _ := strconv.ParseInt(address, 0, 64)
 	var userDevices []*m.UserDevice
-	if userDevices, err = p.Adaptors.UserDevice.GetByUserId(context.Background(), userId); err != nil {
+	if userDevices, err = p.Service.Adaptors().UserDevice.GetByUserId(context.Background(), userId); err != nil {
 		return
 	}
 
@@ -208,7 +197,7 @@ func (p *plugin) sendPush(userDevice *m.UserDevice, msgTitle, msgBody string) (e
 	var statusCode int
 	var responseBody []byte
 	statusCode, responseBody, err = SendNotification(message, userDevice.Subscription, &Options{
-		Crawler:         p.Crawler,
+		Crawler:         p.Service.Crawler(),
 		VAPIDPublicKey:  p.VAPIDPublicKey,
 		VAPIDPrivateKey: p.VAPIDPrivateKey,
 		TTL:             30,
@@ -220,7 +209,7 @@ func (p *plugin) sendPush(userDevice *m.UserDevice, msgTitle, msgBody string) (e
 	if statusCode != 201 {
 		log.Warn(string(responseBody))
 		go func() {
-			_ = p.Adaptors.UserDevice.Delete(context.Background(), userDevice.Id)
+			_ = p.Service.Adaptors().UserDevice.Delete(context.Background(), userDevice.Id)
 			log.Infof("remove user device %d", userDevice.Id)
 		}()
 		return
@@ -242,7 +231,7 @@ func (p *plugin) eventHandler(_ string, event interface{}) {
 }
 
 func (p *plugin) sendPublicKey(event EventGetWebPushPublicKey) {
-	p.EventBus.Publish(TopicPluginWebpush, EventNewWebPushPublicKey{
+	p.Service.EventBus().Publish(TopicPluginWebpush, EventNewWebPushPublicKey{
 		UserID:    event.UserID,
 		PublicKey: p.VAPIDPublicKey,
 	})
@@ -250,7 +239,7 @@ func (p *plugin) sendPublicKey(event EventGetWebPushPublicKey) {
 
 func (p *plugin) updateSubscribe(event EventAddWebPushSubscription) {
 
-	if _, err := p.Adaptors.UserDevice.Add(context.Background(), &m.UserDevice{
+	if _, err := p.Service.Adaptors().UserDevice.Add(context.Background(), &m.UserDevice{
 		UserId:       event.UserID,
 		Subscription: event.Subscription,
 	}); err != nil {

@@ -20,27 +20,19 @@ package zigbee2mqtt
 
 import (
 	"context"
-	"fmt"
 	"sync"
 
 	"github.com/e154/smart-home/common/events"
-
-	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
 // Actor ...
 type Actor struct {
 	supervisor.BaseActor
-	eventBus          bus.Bus
-	adaptors          *adaptors.Adaptors
-	scriptService     scripts.ScriptService
-	zigbee2mqttDevice *m.Zigbee2mqttDevice
 	message           *Message
+	zigbee2mqttDevice *m.Zigbee2mqttDevice
 	mqttMessageQueue  chan *Message
 	actionPool        chan events.EventCallEntityAction
 	newMsgMu          *sync.Mutex
@@ -49,48 +41,33 @@ type Actor struct {
 
 // NewActor ...
 func NewActor(entity *m.Entity,
-	params map[string]interface{},
-	adaptors *adaptors.Adaptors,
-	scriptService scripts.ScriptService,
-	visor supervisor.Supervisor,
-	eventBus bus.Bus) (actor *Actor, err error) {
+	service supervisor.Service) (actor *Actor, err error) {
 
 	var zigbee2mqttDevice *m.Zigbee2mqttDevice
-	if zigbee2mqttDevice, err = adaptors.Zigbee2mqttDevice.GetById(context.Background(), entity.Id.Name()); err != nil {
-		return nil, err
+	if zigbee2mqttDevice, err = service.Adaptors().Zigbee2mqttDevice.GetById(context.Background(), entity.Id.Name()); err != nil {
+		return
 	}
 
 	actor = &Actor{
-		BaseActor:         supervisor.NewBaseActor(entity, scriptService, adaptors),
-		eventBus:          eventBus,
-		adaptors:          adaptors,
-		scriptService:     scriptService,
-		zigbee2mqttDevice: zigbee2mqttDevice,
+		BaseActor:         supervisor.NewBaseActor(entity, service),
 		message:           NewMessage(),
 		mqttMessageQueue:  make(chan *Message, 10),
 		actionPool:        make(chan events.EventCallEntityAction, 10),
 		newMsgMu:          &sync.Mutex{},
 		stateMu:           &sync.Mutex{},
+		zigbee2mqttDevice: zigbee2mqttDevice,
 	}
-
-	actor.Supervisor = visor
-	_, _ = actor.Attrs.Deserialize(params)
 
 	// Actions
 	for _, a := range actor.Actions {
 		if a.ScriptEngine != nil {
-			_, _ = a.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
 			a.ScriptEngine.PushStruct("Actor", supervisor.NewScriptBind(actor))
 			_, _ = a.ScriptEngine.Do()
 		}
 	}
 
 	if actor.ScriptEngine != nil {
-		// message
 		actor.ScriptEngine.PushStruct("message", actor.message)
-
-		// binds
-		_, _ = actor.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
 		actor.ScriptEngine.PushStruct("Actor", supervisor.NewScriptBind(actor))
 	}
 
@@ -111,30 +88,21 @@ func NewActor(entity *m.Entity,
 	return
 }
 
-// Spawn ...
-func (e *Actor) Spawn() supervisor.PluginActor {
-	return e
+func (e *Actor) Destroy() {
+
+}
+
+func (e *Actor) Spawn() {
+
 }
 
 // SetState ...
 func (e *Actor) SetState(params supervisor.EntityStateParams) error {
-	if !e.setState(params) {
-		return nil
-	}
 
-	//message := NewMessage()
-	//message.NewState = params
-	//
-	//e.mqttMessageQueue <- message
-
-	return nil
-}
-
-func (e *Actor) setState(params supervisor.EntityStateParams) (changed bool) {
 	e.stateMu.Lock()
 	defer e.stateMu.Unlock()
 
-	oldState := e.GetEventState(e)
+	oldState := e.GetEventState()
 	now := e.Now(oldState)
 
 	if params.NewState != nil {
@@ -143,8 +111,10 @@ func (e *Actor) setState(params supervisor.EntityStateParams) (changed bool) {
 		}
 	}
 
-	e.AttrMu.Lock()
+	var changed bool
 	var err error
+
+	e.AttrMu.Lock()
 	if changed, err = e.Attrs.Deserialize(params.AttributeValues); !changed {
 		if err != nil {
 			log.Warn(err.Error())
@@ -155,21 +125,21 @@ func (e *Actor) setState(params supervisor.EntityStateParams) (changed bool) {
 			//fmt.Println("delta", delta)
 			if delta < 200 {
 				e.AttrMu.Unlock()
-				return
+				return nil
 			}
 		}
 	}
 	e.AttrMu.Unlock()
 
-	e.eventBus.Publish("system/entities/"+e.Id.String(), events.EventStateChanged{
+	e.Service.EventBus().Publish("system/entities/"+e.Id.String(), events.EventStateChanged{
 		PluginName:  e.Id.PluginName(),
 		EntityId:    e.Id,
 		OldState:    oldState,
-		NewState:    e.GetEventState(e),
+		NewState:    e.GetEventState(),
 		StorageSave: params.StorageSave,
 	})
 
-	return
+	return nil
 }
 
 func (e *Actor) mqttOnPublish(client mqtt.MqttCli, msg mqtt.Message) {

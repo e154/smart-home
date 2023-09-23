@@ -73,6 +73,12 @@ func (c *Scheduler) Start(ctx context.Context) error {
 				log.Error(err.Error())
 			}
 		}()
+		go func() {
+			log.Info("deleting obsolete run history entries ...")
+			if err := c.adaptors.RunHistory.DeleteOldest(ctx, 60); err != nil {
+				log.Error(err.Error())
+			}
+		}()
 	})
 
 	c.cron.Start()

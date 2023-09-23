@@ -20,6 +20,8 @@ package updater
 
 import (
 	"context"
+	"fmt"
+	"github.com/e154/smart-home/common"
 	"time"
 
 	"github.com/e154/smart-home/common/events"
@@ -46,48 +48,39 @@ func init() {
 
 type plugin struct {
 	*supervisor.Plugin
-	pause time.Duration
-	actor *Actor
-	quit  chan struct{}
+	actor  *Actor
+	ticker *time.Ticker
 }
 
 // New ...
 func New() supervisor.Pluggable {
 	return &plugin{
 		Plugin: supervisor.NewPlugin(),
-		pause:  24,
 	}
 }
 
 // Load ...
 func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(ctx, service); err != nil {
+	if err = p.Plugin.Load(ctx, service, nil); err != nil {
 		return
 	}
 
-	p.actor = NewActor(p.Supervisor, p.EventBus, p.Crawler)
+	entity := &m.Entity{
+		Id:         common.EntityId(fmt.Sprintf("%s.%s", EntityUpdater, Name)),
+		PluginName: Name,
+		Attributes: NewAttr(),
+	}
+	p.actor = NewActor(entity, service)
+	p.AddPluginActor(p.actor, entity)
 
-	p.Supervisor.Spawn(p.actor.Spawn)
-	p.actor.check()
-	p.quit = make(chan struct{})
-
-	_ = p.EventBus.Subscribe("system/entities/+", p.eventHandler)
+	_ = p.Service.EventBus().Subscribe("system/entities/+", p.eventHandler)
 
 	go func() {
-		ticker := time.NewTicker(time.Hour * p.pause)
+		const pause = 24
+		p.ticker = time.NewTicker(time.Hour * pause)
 
-		defer func() {
-			ticker.Stop()
-			close(p.quit)
-		}()
-
-		for {
-			select {
-			case <-p.quit:
-				return
-			case <-ticker.C:
-				p.actor.check()
-			}
+		for range p.ticker.C {
+			p.actor.check()
 		}
 	}()
 
@@ -100,8 +93,11 @@ func (p *plugin) Unload(ctx context.Context) (err error) {
 		return
 	}
 
-	p.quit <- struct{}{}
-	_ = p.EventBus.Unsubscribe("system/entities/+", p.eventHandler)
+	if p.ticker != nil {
+		p.ticker.Stop()
+	}
+
+	_ = p.Service.EventBus().Unsubscribe("system/entities/+", p.eventHandler)
 	return
 }
 

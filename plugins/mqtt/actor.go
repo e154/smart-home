@@ -1,24 +1,17 @@
 package mqtt
 
 import (
-	"fmt"
 	"sync"
 
-	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
 // Actor ...
 type Actor struct {
 	supervisor.BaseActor
-	eventBus         bus.Bus
-	adaptors         *adaptors.Adaptors
-	scriptService    scripts.ScriptService
 	message          *Message
 	mqttMessageQueue chan *Message
 	actionPool       chan events.EventCallEntityAction
@@ -29,18 +22,11 @@ type Actor struct {
 
 // NewActor ...
 func NewActor(entity *m.Entity,
-	params map[string]interface{},
-	adaptors *adaptors.Adaptors,
-	scriptService scripts.ScriptService,
-	visor supervisor.Supervisor,
-	eventBus bus.Bus,
+	service supervisor.Service,
 	mqttClient mqtt.MqttCli) (actor *Actor, err error) {
 
 	actor = &Actor{
-		BaseActor:        supervisor.NewBaseActor(entity, scriptService, adaptors),
-		eventBus:         eventBus,
-		adaptors:         adaptors,
-		scriptService:    scriptService,
+		BaseActor:        supervisor.NewBaseActor(entity, service),
 		message:          NewMessage(),
 		mqttMessageQueue: make(chan *Message, 10),
 		actionPool:       make(chan events.EventCallEntityAction, 10),
@@ -49,29 +35,18 @@ func NewActor(entity *m.Entity,
 		stateMu:          &sync.Mutex{},
 	}
 
-	actor.Supervisor = visor
-	_, _ = actor.Attrs.Deserialize(params)
-
 	// Actions
 	for _, a := range actor.Actions {
 		if a.ScriptEngine != nil {
-			_, _ = a.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
 			a.ScriptEngine.PushStruct("Actor", supervisor.NewScriptBind(actor))
 			_, _ = a.ScriptEngine.Do()
 		}
 	}
 
 	if actor.ScriptEngine != nil {
-		// message
 		actor.ScriptEngine.PushStruct("message", actor.message)
-
-		// binds
-		_, _ = actor.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
 		actor.ScriptEngine.PushStruct("Actor", supervisor.NewScriptBind(actor))
 	}
-
-	actor.Supervisor = visor
-	actor.Setts = entity.Settings
 
 	if actor.Setts == nil {
 		actor.Setts = NewSettings()
@@ -94,20 +69,20 @@ func NewActor(entity *m.Entity,
 	return
 }
 
-func (e *Actor) destroy() {
+func (e *Actor) Destroy() {
 	if e.Setts != nil && e.Setts[AttrSubscribeTopic] != nil {
 		e.mqttClient.Unsubscribe(e.Setts[AttrSubscribeTopic].String())
 	}
 }
 
 // Spawn ...
-func (e *Actor) Spawn() supervisor.PluginActor {
+func (e *Actor) Spawn() {
 
 	if e.Setts != nil && e.Setts[AttrSubscribeTopic] != nil {
 		_ = e.mqttClient.Subscribe(e.Setts[AttrSubscribeTopic].String(), e.mqttOnPublish)
 	}
 
-	return e
+	return
 }
 
 // SetState ...
@@ -115,7 +90,7 @@ func (e *Actor) SetState(params supervisor.EntityStateParams) error {
 	e.stateMu.Lock()
 	defer e.stateMu.Unlock()
 
-	oldState := e.GetEventState(e)
+	oldState := e.GetEventState()
 	now := e.Now(oldState)
 
 	if params.NewState != nil {
@@ -142,11 +117,11 @@ func (e *Actor) SetState(params supervisor.EntityStateParams) error {
 	}
 	e.AttrMu.Unlock()
 
-	e.eventBus.Publish("system/entities/"+e.Id.String(), events.EventStateChanged{
+	e.Service.EventBus().Publish("system/entities/"+e.Id.String(), events.EventStateChanged{
 		PluginName:  e.Id.PluginName(),
 		EntityId:    e.Id,
 		OldState:    oldState,
-		NewState:    e.GetEventState(e),
+		NewState:    e.GetEventState(),
 		StorageSave: params.StorageSave,
 	})
 

@@ -74,3 +74,23 @@ func NewAttr() m.Attributes {
 		},
 	}
 }
+
+func NewMetrics() []*m.Metric {
+	return []*m.Metric{
+		{
+			Name:        "cpuspeed",
+			Description: "Cpu metric",
+			Options: m.MetricOptions{
+				Items: []m.MetricOptionsItem{
+					{
+						Name:        "all",
+						Description: "",
+						Color:       "#C2C2C2",
+						Translate:   "all",
+						Label:       "GHz",
+					},
+				},
+			},
+		},
+	}
+}

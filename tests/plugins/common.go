@@ -38,7 +38,6 @@ import (
 	"github.com/e154/smart-home/plugins/moon"
 	"github.com/e154/smart-home/plugins/node"
 	"github.com/e154/smart-home/plugins/scene"
-	"github.com/e154/smart-home/plugins/script"
 	"github.com/e154/smart-home/plugins/sun"
 	"github.com/e154/smart-home/plugins/telegram"
 	"github.com/e154/smart-home/plugins/weather"
@@ -190,27 +189,6 @@ func GetNewPlug(id string, scrits []*m.Script) *m.Entity {
 	}
 }
 
-// GetNewScript ...
-func GetNewScript(id string, scrits []*m.Script) *m.Entity {
-	return &m.Entity{
-		Id:          common.EntityId(id),
-		Description: "MiJia power plug ZigBee",
-		PluginName:  script.EntityScript,
-		Scripts:     scrits,
-		Attributes:  m.Attributes{},
-		AutoLoad:    true,
-		States: []*m.EntityState{
-			{
-				Name:        "ON",
-				Description: "on state",
-			},
-			{
-				Name:        "OFF",
-				Description: "off state",
-			},
-		},
-	}
-}
 
 // GetNewScene ...
 func GetNewScene(id string, scripts []*m.Script) *m.Entity {

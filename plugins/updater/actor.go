@@ -20,17 +20,13 @@ package updater
 
 import (
 	"encoding/json"
-	"fmt"
+	m "github.com/e154/smart-home/models"
 	"sync"
 	"time"
 
 	"github.com/Masterminds/semver"
-	"go.uber.org/atomic"
-
-	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/web"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/supervisor"
 	"github.com/e154/smart-home/version"
 )
@@ -38,19 +34,16 @@ import (
 // Actor ...
 type Actor struct {
 	supervisor.BaseActor
-	eventBus          bus.Bus
 	checkLock         *sync.Mutex
 	latestVersion     string
 	latestDownloadUrl string
 	latestVersionTime time.Time
 	lastCheck         time.Time
 	currentVersion    *semver.Version
-	crawler           web.Crawler
 }
 
 // NewActor ...
-func NewActor(visor supervisor.Supervisor,
-	eventBus bus.Bus, crawler web.Crawler) *Actor {
+func NewActor(entity *m.Entity, service supervisor.Service) *Actor {
 
 	var v = "v0.0.1"
 	if version.VersionString != "?" {
@@ -61,29 +54,30 @@ func NewActor(visor supervisor.Supervisor,
 		log.Error(err.Error())
 	}
 
-	return &Actor{
-		BaseActor: supervisor.BaseActor{
-			Id:          common.EntityId(fmt.Sprintf("%s.%s", EntityUpdater, Name)),
-			Name:        Name,
-			Description: "sun plugin",
-			EntityType:  EntityUpdater,
-			Value:       atomic.NewString(supervisor.StateAwait),
-			AttrMu:      &sync.RWMutex{},
-			Attrs:       NewAttr(),
-			Supervisor:  visor,
-			States:      NewStates(),
-			Actions:     NewActions(),
-		},
-		eventBus:       eventBus,
+	actor := &Actor{
+		BaseActor:      supervisor.NewBaseActor(entity, service),
 		checkLock:      &sync.Mutex{},
 		currentVersion: currentVersion,
-		crawler:        crawler,
 	}
+
+	if actor.Actions == nil {
+		actor.Actions = NewActions()
+	}
+
+	if actor.States == nil {
+		actor.States = NewStates()
+	}
+
+	return actor
 }
 
-// Spawn ...
-func (e *Actor) Spawn() supervisor.PluginActor {
-	return e
+func (e *Actor) Destroy() {
+
+}
+
+func (e *Actor) Spawn() {
+	e.check()
+
 }
 
 func (e *Actor) setState(v string) {
@@ -123,7 +117,7 @@ func (e *Actor) check() {
 	e.setState(supervisor.StateInProcess)
 
 	var body []byte
-	if _, body, err = e.crawler.Probe(web.Request{Method: "GET", Url: uri, Timeout: 5 * time.Second}); err != nil {
+	if _, body, err = e.Service.Crawler().Probe(web.Request{Method: "GET", Url: uri, Timeout: 5 * time.Second}); err != nil {
 		return
 	}
 
@@ -151,7 +145,7 @@ func (e *Actor) check() {
 		}
 	}
 
-	oldState := e.GetEventState(e)
+	oldState := e.GetEventState()
 
 	e.AttrMu.Lock()
 	e.Attrs[AttrUpdaterLatestVersion].Value = e.latestVersion
@@ -160,10 +154,10 @@ func (e *Actor) check() {
 	e.Attrs[AttrUpdaterLatestCheck].Value = e.lastCheck
 	e.AttrMu.Unlock()
 
-	e.eventBus.Publish("system/entities/"+e.Id.String(), events.EventStateChanged{
+	e.Service.EventBus().Publish("system/entities/"+e.Id.String(), events.EventStateChanged{
 		PluginName: e.Id.PluginName(),
 		EntityId:   e.Id,
 		OldState:   oldState,
-		NewState:   e.GetEventState(e),
+		NewState:   e.GetEventState(),
 	})
 }

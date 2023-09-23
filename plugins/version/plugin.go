@@ -20,6 +20,8 @@ package version
 
 import (
 	"context"
+	"fmt"
+	"github.com/e154/smart-home/common"
 	"time"
 
 	"github.com/e154/smart-home/system/supervisor"
@@ -51,12 +53,17 @@ func New() supervisor.Pluggable {
 
 // Load ...
 func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(ctx, service); err != nil {
+	if err = p.Plugin.Load(ctx, service, nil); err != nil {
 		return
 	}
 
-	p.actor = NewActor(service.Supervisor(), service.EventBus())
-	p.Supervisor.Spawn(p.actor.Spawn)
+	entity := &m.Entity{
+		Id:         common.EntityId(fmt.Sprintf("%s.%s", EntityVersion, Name)),
+		PluginName: Name,
+		Attributes: NewAttr(),
+	}
+	p.actor = NewActor(entity, service)
+	p.AddPluginActor(p.actor, entity)
 
 	go func() {
 		p.ticker = time.NewTicker(time.Second * time.Duration(p.pause))

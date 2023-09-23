@@ -20,8 +20,7 @@ package hdd
 
 import (
 	"context"
-	"sync"
-
+	"fmt"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
@@ -36,62 +35,40 @@ func init() {
 
 type plugin struct {
 	*supervisor.Plugin
-	actorsLock *sync.Mutex
-	actors     map[common.EntityId]*Actor
 }
 
 // New ...
 func New() supervisor.Pluggable {
 	p := &plugin{
-		Plugin:     supervisor.NewPlugin(),
-		actorsLock: &sync.Mutex{},
-		actors:     make(map[common.EntityId]*Actor),
+		Plugin: supervisor.NewPlugin(),
 	}
 	return p
 }
 
 // Load ...
 func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(ctx, service); err != nil {
+	if err = p.Plugin.Load(ctx, service, p.ActorConstructor); err != nil {
 		return
 	}
-	_ = p.EventBus.Subscribe("system/entities/+", p.eventHandler)
-	return nil
+
+	if list, _ := p.Service.Adaptors().Entity.GetByType(ctx, Name, 5, 0); len(list) == 0 {
+		entity := &m.Entity{
+			Id:         common.EntityId(fmt.Sprintf("%s.%s", EntityHDD, Name)),
+			PluginName: Name,
+			Attributes: NewAttr(),
+			Metrics:    NewMetrics(),
+		}
+		_ = p.Service.Adaptors().Entity.Add(context.Background(), entity)
+	}
+
+	_ = p.Service.EventBus().Subscribe("system/entities/+", p.eventHandler)
+	return
 }
 
 // Unload ...
 func (p *plugin) Unload(ctx context.Context) (err error) {
-	if err = p.Plugin.Unload(ctx); err != nil {
-		return
-	}
-	_ = p.EventBus.Unsubscribe("system/entities/+", p.eventHandler)
-	return nil
-}
-
-// AddOrUpdateActor ...
-func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	if _, ok := p.actors[entity.Id]; ok {
-		return
-	}
-
-	actor := NewActor(entity, p.Supervisor, p.EventBus)
-	p.actors[entity.Id] = actor
-	p.Supervisor.Spawn(actor.Spawn)
-
-	return
-}
-
-// RemoveActor ...
-func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
-
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	delete(p.actors, entityId)
-
+	_ = p.Service.EventBus().Unsubscribe("system/entities/+", p.eventHandler)
+	err = p.Plugin.Unload(ctx)
 	return
 }
 
@@ -105,12 +82,22 @@ func (p *plugin) eventHandler(topic string, msg interface{}) {
 	switch v := msg.(type) {
 	case events.EventStateChanged:
 	case events.EventCallEntityAction:
-		actor, ok := p.actors[v.EntityId]
+		value, ok := p.Actors.Load(v.EntityId)
 		if !ok {
 			return
 		}
+		actor, _ := value.(*Actor)
 		actor.runAction(v)
 	}
+}
+
+// ActorConstructor ...
+func (p *plugin) ActorConstructor(entity *m.Entity) (actor supervisor.PluginActor, err error) {
+	actor = NewActor(entity, p.Service)
+	if entity.Metrics == nil {
+		entity.Metrics = NewMetrics()
+	}
+	return
 }
 
 // Type ...

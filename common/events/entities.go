@@ -62,12 +62,12 @@ type EventCallScene struct {
 }
 
 // EventAddedActor ...
-type EventAddedActor struct {
-	PluginName string          `json:"plugin_name"`
-	EntityId   common.EntityId `json:"entity_id"`
-	Attributes m.Attributes    `json:"attributes"`
-	Settings   m.Attributes    `json:"settings"` //???
-}
+//type EventAddedActor struct {
+//	PluginName string          `json:"plugin_name"`
+//	EntityId   common.EntityId `json:"entity_id"`
+//	Attributes m.Attributes    `json:"attributes"`
+//	Settings   m.Attributes    `json:"settings"` //???
+//}
 
 // EventCreatedEntity ...
 type EventCreatedEntity struct {

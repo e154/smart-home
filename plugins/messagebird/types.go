@@ -86,7 +86,7 @@ func NewSettings() m.Attributes {
 	return map[string]*m.Attribute{
 		AttrAccessKey: {
 			Name: AttrAccessKey,
-			Type: common.AttributeString,
+			Type: common.AttributeEncrypted,
 		},
 		AttrName: {
 			Name: AttrName,

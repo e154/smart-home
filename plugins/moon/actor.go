@@ -23,22 +23,17 @@ import (
 	"sync"
 	"time"
 
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/system/scripts"
-
 	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/common/astronomics/moonphase"
 	"github.com/e154/smart-home/common/astronomics/suncalc"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
 // Actor ...
 type Actor struct {
 	supervisor.BaseActor
-	eventBus      bus.Bus
 	positionLock  *sync.Mutex
 	lat, lon      float64
 	moonAzimuth   float64
@@ -49,18 +44,12 @@ type Actor struct {
 
 // NewActor ...
 func NewActor(entity *m.Entity,
-	visor supervisor.Supervisor,
-	adaptors *adaptors.Adaptors,
-	scriptService scripts.ScriptService,
-	eventBus bus.Bus) *Actor {
+	service supervisor.Service) *Actor {
 
 	actor := &Actor{
-		BaseActor:    supervisor.NewBaseActor(entity, scriptService, adaptors),
-		eventBus:     eventBus,
+		BaseActor:    supervisor.NewBaseActor(entity, service),
 		positionLock: &sync.Mutex{},
 	}
-
-	actor.Supervisor = visor
 
 	if actor.Attrs == nil {
 		actor.Attrs = NewAttr()
@@ -75,10 +64,12 @@ func NewActor(entity *m.Entity,
 	return actor
 }
 
-// Spawn ...
-func (e *Actor) Spawn() supervisor.PluginActor {
+func (a *Actor) Destroy() {
+
+}
+
+func (e *Actor) Spawn() {
 	e.UpdateMoonPosition(time.Now())
-	return e
 }
 
 func (e *Actor) setPosition(settings m.Attributes) {
@@ -103,7 +94,7 @@ func (e *Actor) UpdateMoonPosition(now time.Time) {
 	e.positionLock.Lock()
 	defer e.positionLock.Unlock()
 
-	oldState := e.GetEventState(e)
+	oldState := e.GetEventState()
 
 	e.Now(oldState)
 
@@ -163,11 +154,11 @@ func (e *Actor) UpdateMoonPosition(now time.Time) {
 
 	e.DeserializeAttr(attributeValues)
 
-	e.eventBus.Publish("system/entities/"+e.Id.String(), events.EventStateChanged{
+	e.Service.EventBus().Publish("system/entities/"+e.Id.String(), events.EventStateChanged{
 		StorageSave: true,
 		PluginName:  e.Id.PluginName(),
 		EntityId:    e.Id,
 		OldState:    oldState,
-		NewState:    e.GetEventState(e),
+		NewState:    e.GetEventState(),
 	})
 }

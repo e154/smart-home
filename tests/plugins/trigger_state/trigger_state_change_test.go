@@ -21,7 +21,6 @@ package trigger_state
 import (
 	"context"
 	"fmt"
-	"sync"
 	"testing"
 	"time"
 
@@ -104,7 +103,7 @@ automationTriggerStateChanged = (msg)->
 			So(err, ShouldBeNil)
 
 			// add zigbee2mqtt_device
-			butonDevice := &m.Zigbee2mqttDevice{
+			buttonDevice := &m.Zigbee2mqttDevice{
 				Id:            zigbeeButtonId,
 				Zigbee2mqttId: zigbeeServer.Id,
 				Name:          zigbeeButtonId,
@@ -114,7 +113,7 @@ automationTriggerStateChanged = (msg)->
 				Status:        "active",
 				Payload:       []byte("{}"),
 			}
-			err = adaptors.Zigbee2mqttDevice.Add(context.Background(), butonDevice)
+			err = adaptors.Zigbee2mqttDevice.Add(context.Background(), buttonDevice)
 			So(err, ShouldBeNil)
 
 			automation.Start()
@@ -125,12 +124,11 @@ automationTriggerStateChanged = (msg)->
 
 			var counter atomic.Int32
 			var lastStat atomic.String
-			var wg sync.WaitGroup
-			wg.Add(2)
+			ch := make(chan struct{})
 			scriptService.PushFunctions("Done", func(state string) {
 				lastStat.Store(state)
 				counter.Inc()
-				wg.Done()
+				close(ch)
 			})
 
 			time.Sleep(time.Millisecond * 500)
@@ -167,6 +165,8 @@ automationTriggerStateChanged = (msg)->
 			err = AddTrigger(trigger, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
+			time.Sleep(time.Millisecond * 700)
+
 			//TASK1
 			newTask := &m.NewTask{
 				Name:       "Toggle plug ON",
@@ -177,20 +177,26 @@ automationTriggerStateChanged = (msg)->
 			err = AddTask(newTask, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
-			time.Sleep(time.Millisecond * 500)
+			time.Sleep(time.Millisecond * 700)
 
 			// ------------------------------------------------
 
 			mqttCli := mqttServer.NewClient("cli2")
 			err = mqttCli.Publish("zigbee2mqtt/"+zigbeeButtonId, []byte(`{"battery":100,"action":"double","linkquality":134,"voltage":3042}`))
 			So(err, ShouldBeNil)
-			time.Sleep(time.Millisecond * 100)
 			err = mqttCli.Publish("zigbee2mqtt/"+zigbeeButtonId, []byte(`{"battery":100,"click":"double","linkquality":134,"voltage":3042}`))
 			So(err, ShouldBeNil)
+			time.Sleep(time.Millisecond * 700)
 
-			time.Sleep(time.Second)
 
-			wg.Wait()
+			timer := time.NewTimer(time.Second * 2)
+			defer timer.Stop()
+
+			select {
+			case <-timer.C:
+			case <-ch:
+
+			}
 
 			time.Sleep(time.Second)
 

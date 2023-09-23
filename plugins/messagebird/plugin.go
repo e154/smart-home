@@ -54,20 +54,9 @@ func New() supervisor.Pluggable {
 
 // Load ...
 func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(ctx, service); err != nil {
+	if err = p.Plugin.Load(ctx, service, nil); err != nil {
 		return
 	}
-
-	go func() {
-		if err = p.asyncLoad(); err != nil {
-			log.Error(err.Error())
-		}
-	}()
-
-	return nil
-}
-
-func (p *plugin) asyncLoad() (err error) {
 
 	// load settings
 	var settings m.Attributes
@@ -82,8 +71,8 @@ func (p *plugin) asyncLoad() (err error) {
 	}
 
 	// add actor
-	p.actor = NewActor(settings, p.Supervisor, p.EventBus, p.Adaptors)
-	p.Supervisor.Spawn(p.actor.Spawn)
+	p.actor = NewActor(settings, p.Service)
+
 	go func() { _, _ = p.actor.UpdateBalance() }()
 
 	// register messagebird provider
@@ -138,7 +127,7 @@ func (p *plugin) Save(msg notify.Message) (addresses []string, message *m.Messag
 		Attributes: msg.Attributes,
 	}
 	var err error
-	if message.Id, err = p.Adaptors.Message.Add(context.Background(), message); err != nil {
+	if message.Id, err = p.Service.Adaptors().Message.Add(context.Background(), message); err != nil {
 		log.Error(err.Error())
 	}
 

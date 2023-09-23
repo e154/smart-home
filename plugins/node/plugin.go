@@ -20,12 +20,6 @@ package node
 
 import (
 	"context"
-	"fmt"
-	"sync"
-
-	"github.com/pkg/errors"
-
-	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
@@ -45,8 +39,6 @@ func init() {
 
 type plugin struct {
 	*supervisor.Plugin
-	actorsLock *sync.Mutex
-	actors     map[common.EntityId]*Actor
 	mqttServ   mqtt.MqttServ
 	mqttClient mqtt.MqttCli
 }
@@ -54,22 +46,20 @@ type plugin struct {
 // New ...
 func New() supervisor.Pluggable {
 	return &plugin{
-		Plugin:     supervisor.NewPlugin(),
-		actorsLock: &sync.Mutex{},
-		actors:     make(map[common.EntityId]*Actor),
+		Plugin: supervisor.NewPlugin(),
 	}
 }
 
 // Load ...
 func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(ctx, service); err != nil {
+	if err = p.Plugin.Load(ctx, service, p.ActorConstructor); err != nil {
 		return
 	}
 
 	p.mqttServ = service.MqttServ()
+	_ = p.mqttServ.Authenticator().Register(p.Authenticator)
 
 	p.mqttClient = p.mqttServ.NewClient("plugins.node")
-	_ = p.mqttServ.Authenticator().Register(p.Authenticator)
 
 	return nil
 }
@@ -83,56 +73,18 @@ func (p *plugin) Unload(ctx context.Context) (err error) {
 	p.mqttServ.RemoveClient("plugins.node")
 	_ = p.mqttServ.Authenticator().Unregister(p.Authenticator)
 
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	// remove actors
-	for entityId, actor := range p.actors {
-		actor.destroy()
-		delete(p.actors, entityId)
-	}
-
 	return nil
+}
+
+// ActorConstructor ...
+func (p *plugin) ActorConstructor(entity *m.Entity) (actor supervisor.PluginActor, err error) {
+	actor = NewActor(entity, p.Service, p.mqttClient)
+	return
 }
 
 // Name ...
 func (p *plugin) Name() string {
 	return Name
-}
-
-// AddOrUpdateActor ...
-func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	if _, ok := p.actors[entity.Id]; ok {
-		return
-	}
-
-	actor := NewActor(entity, p.Supervisor, p.Adaptors, p.ScriptService, p.EventBus, p.mqttClient)
-	p.actors[entity.Id] = actor
-	p.Supervisor.Spawn(actor.Spawn)
-
-	return
-}
-
-// RemoveActor ...
-func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
-
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	actor, ok := p.actors[entityId]
-	if !ok {
-		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("failed remove \"%s\"", entityId))
-		return
-	}
-
-	actor.destroy()
-
-	delete(p.actors, entityId)
-
-	return
 }
 
 // Type ...
@@ -157,30 +109,33 @@ func (p *plugin) pushToNode() {
 // Authenticator ...
 func (p *plugin) Authenticator(login, password string) (err error) {
 
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	for _, actor := range p.actors {
+	var exist = false
+	p.Actors.Range(func(key, value any) bool {
+		actor := value.(*Actor)
 		attrs := actor.Settings()
 
 		if _login, ok := attrs[AttrNodeLogin]; !ok || _login.String() != login {
-			continue
+			exist = true
+			return true
 		}
 
 		if _password, ok := attrs[AttrNodePass]; !ok || _password.String() != password {
-			continue
+			exist = true
+			return true
 		}
 
 		err = nil
-		return
+		return false
 
 		// todo add encripted password
 		//if ok := common.CheckPasswordHash(password, settings[AttrNodePass].String()); ok {
 		//	return
 		//}
-	}
+	})
 
-	err = apperr.ErrBadLoginOrPassword
+	if !exist {
+		err = apperr.ErrBadLoginOrPassword
+	}
 
 	return
 }
@@ -188,16 +143,9 @@ func (p *plugin) Authenticator(login, password string) (err error) {
 // Options ...
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
-		Triggers:           false,
-		Actors:             true,
-		ActorCustomAttrs:   false,
-		ActorAttrs:         NewAttr(),
-		ActorCustomActions: false,
-		ActorActions:       nil,
-		ActorCustomStates:  false,
-		ActorStates:        supervisor.ToEntityStateShort(NewStates()),
-		ActorCustomSetts:   false,
-		ActorSetts:         NewSettings(),
-		Setts:              nil,
+		Actors:      true,
+		ActorAttrs:  NewAttr(),
+		ActorStates: supervisor.ToEntityStateShort(NewStates()),
+		ActorSetts:  NewSettings(),
 	}
 }

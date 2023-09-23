@@ -25,7 +25,6 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/e154/smart-home/common/events"
@@ -34,10 +33,8 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/supervisor"
 	"github.com/sfreiberg/gotwilio"
 )
@@ -45,8 +42,6 @@ import (
 // Actor ...
 type Actor struct {
 	supervisor.BaseActor
-	eventBus  bus.Bus
-	adaptors  *adaptors.Adaptors
 	from      string
 	sid       string
 	authToken string
@@ -54,24 +49,18 @@ type Actor struct {
 
 // NewActor ...
 func NewActor(settings m.Attributes,
-	visor supervisor.Supervisor,
-	eventBus bus.Bus,
-	adaptors *adaptors.Adaptors) *Actor {
+	service supervisor.Service) *Actor {
 
 	sid := settings[AttrSid].String()
 	authToken := settings[AttrAuthToken].String()
 
+	entity := &m.Entity{
+		Id: common.EntityId(fmt.Sprintf("%s.%s", Name, Name)),
+		PluginName: Name,
+		Attributes: NewAttr(),
+	}
 	actor := &Actor{
-		BaseActor: supervisor.BaseActor{
-			Id:         common.EntityId(fmt.Sprintf("%s.%s", Name, Name)),
-			Name:       Name,
-			EntityType: Name,
-			AttrMu:     &sync.RWMutex{},
-			Attrs:      NewAttr(),
-			Supervisor: visor,
-		},
-		eventBus:  eventBus,
-		adaptors:  adaptors,
+		BaseActor: supervisor.NewBaseActor(entity, service),
 		sid:       sid,
 		from:      settings[AttrFrom].String(),
 		authToken: authToken,
@@ -80,9 +69,12 @@ func NewActor(settings m.Attributes,
 	return actor
 }
 
-// Spawn ...
-func (p *Actor) Spawn() supervisor.PluginActor {
-	return p
+func (e *Actor) Destroy() {
+
+}
+
+func (p *Actor) Spawn() {
+
 }
 
 // Send ...
@@ -197,7 +189,7 @@ func (e *Actor) Balance() (balance Balance, err error) {
 // UpdateBalance ...
 func (p *Actor) UpdateBalance() (err error) {
 
-	oldState := p.GetEventState(p)
+	oldState := p.GetEventState()
 	now := p.Now(oldState)
 
 	var balance Balance
@@ -236,12 +228,12 @@ func (p *Actor) UpdateBalance() (err error) {
 	}
 	p.AttrMu.Unlock()
 
-	p.eventBus.Publish("system/entities/"+p.Id.String(), events.EventStateChanged{
+	p.Service.EventBus().Publish("system/entities/"+p.Id.String(), events.EventStateChanged{
 		StorageSave: true,
 		PluginName:  p.Id.PluginName(),
 		EntityId:    p.Id,
 		OldState:    oldState,
-		NewState:    p.GetEventState(p),
+		NewState:    p.GetEventState(),
 	})
 
 	return

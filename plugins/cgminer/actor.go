@@ -20,47 +20,34 @@ package cgminer
 
 import (
 	"fmt"
-
-	"github.com/e154/smart-home/common/events"
-
-	"github.com/e154/smart-home/common/apperr"
-
 	"github.com/pkg/errors"
 
-	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/cgminer/bitmine"
-	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
 // Actor ...
 type Actor struct {
 	supervisor.BaseActor
-	eventBus   bus.Bus
 	miner      IMiner
 	actionPool chan events.EventCallEntityAction
 }
 
 // NewActor ...
 func NewActor(entity *m.Entity,
-	visor supervisor.Supervisor,
-	adaptors *adaptors.Adaptors,
-	scriptService scripts.ScriptService,
-	eventBus bus.Bus) (actor *Actor, err error) {
+	service supervisor.Service) (actor *Actor, err error) {
 
 	actor = &Actor{
-		BaseActor:  supervisor.NewBaseActor(entity, scriptService, adaptors),
-		eventBus:   eventBus,
+		BaseActor:  supervisor.NewBaseActor(entity, service),
 		actionPool: make(chan events.EventCallEntityAction, 10),
 	}
 
 	//if actor.ParentId == nil {
 	//	log.Warnf("entity %s, parent is nil", actor.Id)
 	//}
-
-	actor.Supervisor = visor
 
 	if actor.Attrs == nil {
 		actor.Attrs = NewAttr()
@@ -146,13 +133,11 @@ func NewActor(entity *m.Entity,
 			// bind
 			a.ScriptEngine.PushStruct("Actor", supervisor.NewScriptBind(actor))
 			a.ScriptEngine.PushFunction("Miner", actor.miner.Bind())
-			_, _ = a.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
 			_, _ = a.ScriptEngine.Do()
 		}
 	}
 
 	if actor.ScriptEngine != nil {
-		_, _ = actor.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
 		actor.ScriptEngine.PushStruct("Actor", supervisor.NewScriptBind(actor))
 	}
 
@@ -166,16 +151,19 @@ func NewActor(entity *m.Entity,
 	return
 }
 
+func (a *Actor) Destroy() {
+
+}
+
 // Spawn ...
-func (e *Actor) Spawn() supervisor.PluginActor {
-	e.Update()
-	return e
+func (e *Actor) Spawn() {
+
 }
 
 // SetState ...
 func (e *Actor) SetState(params supervisor.EntityStateParams) error {
 
-	oldState := e.GetEventState(e)
+	oldState := e.GetEventState()
 
 	e.Now(oldState)
 
@@ -189,12 +177,12 @@ func (e *Actor) SetState(params supervisor.EntityStateParams) error {
 	_, _ = e.Attrs.Deserialize(params.AttributeValues)
 	e.AttrMu.Unlock()
 
-	e.eventBus.Publish("system/entities/"+e.Id.String(), events.EventStateChanged{
+	e.Service.EventBus().Publish("system/entities/"+e.Id.String(), events.EventStateChanged{
 		StorageSave: params.StorageSave,
 		PluginName:  e.Id.PluginName(),
 		EntityId:    e.Id,
 		OldState:    oldState,
-		NewState:    e.GetEventState(e),
+		NewState:    e.GetEventState(),
 	})
 
 	return nil

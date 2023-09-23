@@ -3,11 +3,6 @@ package mqtt
 import (
 	"context"
 	"fmt"
-	"sync"
-
-	"github.com/pkg/errors"
-
-	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
@@ -28,8 +23,6 @@ func init() {
 
 type plugin struct {
 	*supervisor.Plugin
-	actorsLock *sync.Mutex
-	actors     map[string]*Actor
 	mqttServ   mqtt.MqttServ
 	mqttClient mqtt.MqttCli
 }
@@ -37,22 +30,20 @@ type plugin struct {
 // New ...
 func New() supervisor.Pluggable {
 	return &plugin{
-		Plugin:     supervisor.NewPlugin(),
-		actorsLock: &sync.Mutex{},
-		actors:     make(map[string]*Actor),
+		Plugin: supervisor.NewPlugin(),
 	}
 }
 
 // Load ...
 func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(ctx, service); err != nil {
+	if err = p.Plugin.Load(ctx, service, p.ActorConstructor); err != nil {
 		return
 	}
 
 	p.mqttServ = service.MqttServ()
 
 	p.mqttClient = p.mqttServ.NewClient("plugins.mqtt")
-	if err := p.EventBus.Subscribe("system/entities/+", p.eventHandler); err != nil {
+	if err := p.Service.EventBus().Subscribe("system/entities/+", p.eventHandler); err != nil {
 		log.Error(err.Error())
 	}
 
@@ -68,79 +59,23 @@ func (p plugin) Unload(ctx context.Context) (err error) {
 	}
 
 	p.mqttServ.RemoveClient("plugins.mqtt")
-	_ = p.EventBus.Unsubscribe("system/entities/+", p.eventHandler)
-
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	// remove actors
-	for entityId, actor := range p.actors {
-		actor.destroy()
-		delete(p.actors, entityId)
-	}
+	_ = p.Service.EventBus().Unsubscribe("system/entities/+", p.eventHandler)
 
 	_ = p.mqttServ.Authenticator().Unregister(p.Authenticator)
 
 	return
 }
 
+// ActorConstructor ...
+func (p *plugin) ActorConstructor(entity *m.Entity) (actor supervisor.PluginActor, err error) {
+	actor, err = NewActor(entity, p.Service, p.mqttClient)
+	return
+}
+
+
 // Name ...
 func (p plugin) Name() string {
 	return Name
-}
-
-// AddOrUpdateActor ...
-func (p *plugin) AddOrUpdateActor(entity *m.Entity) error {
-	return p.addOrUpdateEntity(entity, entity.Attributes.Serialize())
-}
-
-// RemoveActor ...
-func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
-	return p.removeEntity(entityId.Name())
-}
-
-func (p *plugin) addOrUpdateEntity(entity *m.Entity, attributes m.AttributeValue) (err error) {
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	name := entity.Id.Name()
-	if _, ok := p.actors[name]; ok {
-		return
-	}
-
-	if actor, ok := p.actors[name]; ok {
-		// update
-		_ = actor.SetState(supervisor.EntityStateParams{
-			AttributeValues: attributes,
-		})
-		return
-	}
-
-	var actor *Actor
-	if actor, err = NewActor(entity, attributes,
-		p.Adaptors, p.ScriptService, p.Supervisor, p.EventBus, p.mqttClient); err != nil {
-		return
-	}
-	p.actors[name] = actor
-	p.Supervisor.Spawn(p.actors[name].Spawn)
-
-	return
-}
-
-func (p *plugin) removeEntity(name string) (err error) {
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	if _, ok := p.actors[name]; !ok {
-		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("failed remove '%s", name))
-		return
-	}
-
-	p.actors[name].destroy()
-
-	delete(p.actors, name)
-
-	return
 }
 
 func (p *plugin) topic(bridgeId string) string {
@@ -151,14 +86,12 @@ func (p *plugin) eventHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
 	case events.EventCallEntityAction:
-		actor, ok := p.actors[v.EntityId.Name()]
+		value, ok := p.Actors.Load(v.EntityId)
 		if !ok {
 			return
 		}
+		actor := value.(*Actor)
 		actor.addAction(v)
-
-	default:
-		//fmt.Printf("new event: %v\n", reflect.TypeOf(v).String())
 	}
 }
 
@@ -194,30 +127,33 @@ func (p *plugin) Options() m.PluginOptions {
 // Authenticator ...
 func (p *plugin) Authenticator(login, password string) (err error) {
 
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	for _, actor := range p.actors {
+	var exist = false
+	p.Actors.Range(func(key, value any) bool {
+		actor := value.(*Actor)
 		attrs := actor.Settings()
 
 		if _login, ok := attrs[AttrMqttLogin]; !ok || _login.String() != login {
-			continue
+			exist = true
+			return true
 		}
 
 		if _password, ok := attrs[AttrMqttPass]; !ok || _password.String() != password {
-			continue
+			exist = true
+			return true
 		}
 
 		err = nil
-		return
+		return false
 
 		// todo add encripted password
 		//if ok := common.CheckPasswordHash(password, settings[AttrNodePass].String()); ok {
 		//	return
 		//}
-	}
+	})
 
-	err = apperr.ErrBadLoginOrPassword
+	if !exist {
+		err = apperr.ErrBadLoginOrPassword
+	}
 
 	return
 }

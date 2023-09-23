@@ -54,43 +54,34 @@ type Supervisor interface {
 	PluginList() (list []PluginInfo, total int64, err error)
 	SetMetric(common.EntityId, string, map[string]float32)
 	SetState(common.EntityId, EntityStateParams) error
-	GetEntityById(common.EntityId) (m.EntityShort, error)
 	GetActorById(common.EntityId) (PluginActor, error)
-	List() ([]m.EntityShort, error)
-	Spawn(ActorConstructor) PluginActor
-	Remove(common.EntityId)
 	CallAction(common.EntityId, string, map[string]interface{})
 	CallScene(common.EntityId, map[string]interface{})
 	AddEntity(*m.Entity) error
+	GetEntityById(common.EntityId) (m.EntityShort, error)
 	UpdateEntity(*m.Entity) error
+	UnloadEntity(common.EntityId)
 	EntityIsLoaded(id common.EntityId) (loaded bool)
 	PluginIsLoaded(name string) (loaded bool)
+	GetService() Service
 }
 
 // PluginActor ...
 type PluginActor interface {
-
-	// Spawn ...
-	Spawn() PluginActor
-
-	// Attributes ...
+	Spawn()
+	Destroy()
 	Attributes() m.Attributes
-
-	// Settings ...
 	Settings() m.Attributes
-
-	// Metrics ...
 	Metrics() []*m.Metric
-
-	// SetState ...
 	SetState(EntityStateParams) error
-
-	// Info ...
 	Info() ActorInfo
+	GetCurrentState() *bus.EventEntityState
+	SetCurrentState(bus.EventEntityState)
+	GetEventState() (eventState bus.EventEntityState)
 }
 
 // ActorConstructor ...
-type ActorConstructor func() PluginActor
+type ActorConstructor func(*m.Entity) (PluginActor, error)
 
 // ActorAction ...
 type ActorAction struct {
@@ -238,16 +229,14 @@ type Pluggable interface {
 	Depends() []string
 	Version() string
 	Options() m.PluginOptions
+	EntityIsLoaded(id common.EntityId) bool
+	GetActor(id common.EntityId) (pla PluginActor, err error)
+	AddOrUpdateActor(*m.Entity) error
+	RemoveActor(common.EntityId) error
 }
 
 // Installable ...
 type Installable interface {
 	Install() error
 	Uninstall() error
-}
-
-// CrudActor ...
-type CrudActor interface {
-	AddOrUpdateActor(*m.Entity) error
-	RemoveActor(common.EntityId) error
 }

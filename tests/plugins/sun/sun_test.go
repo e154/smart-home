@@ -71,7 +71,7 @@ func TestSun(t *testing.T) {
 				_ = eventBus.Unsubscribe("system/entities/+", fn)
 			}()
 
-			sun := sunPlugin.NewActor(sunEnt, supervisor, adaptors, scriptService, eventBus)
+			sun := sunPlugin.NewActor(sunEnt, supervisor.GetService())
 
 			t.Run("entity", func(t *testing.T) {
 				Convey("phase", t, func(ctx C) {

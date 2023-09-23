@@ -58,14 +58,14 @@ func New() supervisor.Pluggable {
 
 // Load ...
 func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(ctx, service); err != nil {
+	if err = p.Plugin.Load(ctx, service, nil); err != nil {
 		return
 	}
 
 	// register trigger
 	if triggersPlugin, ok := service.Plugins()[triggers.Name]; ok {
 		if p.registrar, ok = triggersPlugin.(triggers.IRegistrar); ok {
-			if err = p.registrar.RegisterTrigger(NewTrigger(p.EventBus)); err != nil {
+			if err = p.registrar.RegisterTrigger(NewTrigger(p.Service.EventBus())); err != nil {
 				log.Error(err.Error())
 				return
 			}
@@ -73,15 +73,15 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 	}
 
 	// run server
-	p.server = NewServer(p.Adaptors,
+	p.server = NewServer(p.Service.Adaptors(),
 		NewConfig(service.AppConfig()),
-		p.ScriptService,
+		p.Service.ScriptService(),
 		service.GateClient(),
-		p.EventBus)
+		p.Service.EventBus())
 
 	p.server.Start()
 
-	_ = p.EventBus.Subscribe(TopicPluginAlexa, p.eventHandler)
+	_ = p.Service.EventBus().Subscribe(TopicPluginAlexa, p.eventHandler)
 
 	return nil
 }
@@ -92,7 +92,7 @@ func (p *plugin) Unload(ctx context.Context) (err error) {
 		return
 	}
 
-	_ = p.EventBus.Unsubscribe(TopicPluginAlexa, p.eventHandler)
+	_ = p.Service.EventBus().Unsubscribe(TopicPluginAlexa, p.eventHandler)
 
 	p.server.Stop()
 	p.server = nil

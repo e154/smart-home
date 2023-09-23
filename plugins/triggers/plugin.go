@@ -61,7 +61,7 @@ func New() supervisor.Pluggable {
 
 // Load ...
 func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(ctx, service); err != nil {
+	if err = p.Plugin.Load(ctx, service, nil); err != nil {
 		return
 	}
 
@@ -89,9 +89,9 @@ func (p *plugin) attachTrigger() {
 	defer p.mu.Unlock()
 
 	// init triggers ...
-	p.triggers[StateChangeName] = NewStateChangedTrigger(p.EventBus)
-	p.triggers[SystemName] = NewSystemTrigger(p.EventBus)
-	p.triggers[TimeName] = NewTimeTrigger(p.EventBus, p.Scheduler)
+	p.triggers[StateChangeName] = NewStateChangedTrigger(p.Service.EventBus())
+	p.triggers[SystemName] = NewSystemTrigger(p.Service.EventBus())
+	p.triggers[TimeName] = NewTimeTrigger(p.Service.EventBus(), p.Service.Scheduler())
 
 	wg := &sync.WaitGroup{}
 
