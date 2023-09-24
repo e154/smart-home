@@ -44,14 +44,6 @@ func NewActor(entity *m.Entity,
 		stateMu:   &sync.Mutex{},
 	}
 
-	if actor.ScriptEngine == nil {
-		if actor.ScriptEngine, err = service.ScriptService().NewEngine(entity.Scripts[0]); err != nil {
-			log.Error(err.Error())
-		}
-	}
-	actor.ScriptEngine.PushStruct("Actor", supervisor.NewScriptBind(actor))
-	_, _ = actor.ScriptEngine.Do()
-
 	// action worker
 	go func() {
 		for msg := range actor.eventPool {

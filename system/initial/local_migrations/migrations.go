@@ -69,7 +69,7 @@ func (t *Migrations) Up(ctx context.Context, adaptors *adaptors.Adaptors, ver st
 			return
 		}
 
-		for _, migration := range t.list[position:len(t.list)] {
+		for _, migration := range t.list[position+1:len(t.list)] {
 			if err = ctx.Err(); err != nil {
 				log.Error(err.Error())
 				return

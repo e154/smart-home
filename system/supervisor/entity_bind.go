@@ -38,48 +38,8 @@ func NewEntityBind(id common.EntityId, manager Supervisor) *EntityBind {
 	}
 }
 
-// SetState ...
-func (e *EntityBind) SetState(stateName string) {
-	_ = e.manager.SetState(e.Id, EntityStateParams{
-		NewState: common.String(stateName),
-	})
-}
-
-// SetAttributes ...
-func (e *EntityBind) SetAttributes(params m.AttributeValue) {
-	_ = e.manager.SetState(e.Id, EntityStateParams{
-		AttributeValues: params,
-	})
-}
-
-// GetAttributes ...
-func (e *EntityBind) GetAttributes() m.AttributeValue {
-
-	entity, err := e.manager.GetEntityById(e.Id)
-	if err != nil {
-		log.Error(err.Error())
+func GetEntityBind(manager Supervisor) func(entityId string) *EntityBind {
+	return func(entityId string) *EntityBind {
+		return NewEntityBind(common.EntityId(entityId), manager)
 	}
-
-	return entity.Attributes.Serialize()
-}
-
-// GetSettings ...
-func (e *EntityBind) GetSettings() m.AttributeValue {
-
-	entity, err := e.manager.GetEntityById(e.Id)
-	if err != nil {
-		log.Error(err.Error())
-	}
-
-	return entity.Settings.Serialize()
-}
-
-// SetMetric ...
-func (e *EntityBind) SetMetric(name string, value map[string]float32) {
-	e.manager.SetMetric(e.Id, name, value)
-}
-
-// CallAction ...
-func (e *EntityBind) CallAction(action string, arg map[string]interface{}) {
-	e.manager.CallAction(e.Id, action, arg)
 }

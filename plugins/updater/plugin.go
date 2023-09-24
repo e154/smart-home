@@ -71,7 +71,7 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 		Attributes: NewAttr(),
 	}
 	p.actor = NewActor(entity, service)
-	p.AddPluginActor(p.actor, entity)
+	p.AddActor(p.actor, entity)
 
 	_ = p.Service.EventBus().Subscribe("system/entities/+", p.eventHandler)
 

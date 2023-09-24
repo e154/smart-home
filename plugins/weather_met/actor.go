@@ -57,19 +57,6 @@ func NewActor(entity *m.Entity,
 		actor.Setts = weather.NewSettings()
 	}
 
-	// Actions
-	for _, a := range actor.Actions {
-		if a.ScriptEngine != nil {
-			// bind
-			a.ScriptEngine.PushStruct("Actor", supervisor.NewScriptBind(actor))
-			_, _ = a.ScriptEngine.Do()
-		}
-	}
-
-	if actor.ScriptEngine != nil {
-		actor.ScriptEngine.PushStruct("Actor", supervisor.NewScriptBind(actor))
-	}
-
 	// zone
 	if lon, ok := actor.Setts[weather.AttrLon]; ok {
 		actor.Zone.Lon = lon.Float64()

@@ -155,9 +155,10 @@ func (e *Actor) check() {
 	e.AttrMu.Unlock()
 
 	go e.SaveState(events.EventStateChanged{
-		PluginName: e.Id.PluginName(),
-		EntityId:   e.Id,
-		OldState:   oldState,
-		NewState:   e.GetEventState(),
+		PluginName:  e.Id.PluginName(),
+		EntityId:    e.Id,
+		OldState:    oldState,
+		NewState:    e.GetEventState(),
+		StorageSave: true,
 	})
 }

@@ -99,9 +99,16 @@ func (e *supervisor) Start(ctx context.Context) (err error) {
 	_ = e.eventBus.Subscribe("system/entities/+", e.eventHandler)
 	_ = e.eventBus.Subscribe("system/plugins/+", e.eventHandler)
 
-	e.scriptService.PushStruct("supervisor", NewSupervisorBind(e))
-	//DEPRECATED
-	e.scriptService.PushStruct("entityManager", NewSupervisorBind(e))
+	e.scriptService.PushFunctions("GetEntity", GetEntityBind(e))
+	e.scriptService.PushFunctions("SetState", SetStateBind(e))
+	e.scriptService.PushFunctions("SetStateName", SetStateNameBind(e))
+	e.scriptService.PushFunctions("GetState", GetStateBind(e))
+	e.scriptService.PushFunctions("SetAttributes", SetAttributesBind(e))
+	e.scriptService.PushFunctions("GetAttributes", GetAttributesBind(e))
+	e.scriptService.PushFunctions("GetSettings", GetSettingsBind(e))
+	e.scriptService.PushFunctions("SetMetric", SetMetricBind(e))
+	e.scriptService.PushFunctions("CallAction", CallActionBind(e))
+	e.scriptService.PushFunctions("CallScene", CallSceneBind(e))
 
 	e.pluginManager.Start(ctx)
 
@@ -119,8 +126,15 @@ func (e *supervisor) Shutdown(ctx context.Context) (err error) {
 	e.pluginManager.Shutdown(ctx)
 	e.entitiesWg.Wait()
 
-	e.scriptService.PopStruct("supervisor")
-	e.scriptService.PopStruct("entityManager")
+	e.scriptService.PopFunction("GetEntity")
+	e.scriptService.PopFunction("SetState")
+	e.scriptService.PopFunction("SetStateName")
+	e.scriptService.PopFunction("SetAttributes")
+	e.scriptService.PopFunction("GetAttributes")
+	e.scriptService.PopFunction("GetSettings")
+	e.scriptService.PopFunction("SetMetric")
+	e.scriptService.PopFunction("CallAction")
+	e.scriptService.PopFunction("CallScene")
 
 	_ = e.eventBus.Unsubscribe("system/services/scripts", e.handlerSystemScripts)
 	_ = e.eventBus.Unsubscribe("system/entities/+", e.eventHandler)
@@ -146,9 +160,16 @@ func (e *supervisor) handlerSystemScripts(_ string, event interface{}) {
 
 	switch event.(type) {
 	case events.EventServiceStarted, events.EventServiceRestarted:
-		e.scriptService.PushStruct("supervisor", NewSupervisorBind(e))
-		//DEPRECATED
-		e.scriptService.PushStruct("entityManager", NewSupervisorBind(e))
+		e.scriptService.PushFunctions("GetEntity", GetEntityBind(e))
+		e.scriptService.PushFunctions("SetState", SetStateBind(e))
+		e.scriptService.PushFunctions("SetStateName", SetStateBind(e))
+		e.scriptService.PushFunctions("GetState", GetStateBind(e))
+		e.scriptService.PushFunctions("SetAttributes", SetAttributesBind(e))
+		e.scriptService.PushFunctions("GetAttributes", GetAttributesBind(e))
+		e.scriptService.PushFunctions("GetSettings", GetSettingsBind(e))
+		e.scriptService.PushFunctions("SetMetric", SetMetricBind(e))
+		e.scriptService.PushFunctions("CallAction", CallActionBind(e))
+		e.scriptService.PushFunctions("CallScene", CallSceneBind(e))
 	}
 }
 
@@ -171,10 +192,6 @@ func (e *supervisor) SetState(id common.EntityId, params EntityStateParams) (err
 		return
 	}
 
-	// store old state
-	//currentState := GetEventState(actor.Actor)
-	//actor.CurrentState = &currentState
-
 	err = pla.SetState(params)
 
 	return
@@ -187,12 +204,12 @@ func (e *supervisor) EntityIsLoaded(id common.EntityId) (loaded bool) {
 		return
 	}
 
-	pluginRaw, err := e.GetPlugin(id.PluginName())
+	value, err := e.GetPlugin(id.PluginName())
 	if err != nil {
 		return
 	}
 
-	plugin := pluginRaw.(Pluggable)
+	plugin := value.(Pluggable)
 	loaded = plugin.EntityIsLoaded(id)
 
 	return
@@ -217,11 +234,11 @@ func (e *supervisor) GetActorById(id common.EntityId) (pla PluginActor, err erro
 		return
 	}
 
-	var pluginRaw interface{}
-	if pluginRaw, err = e.GetPlugin(id.PluginName()); err != nil {
+	var value interface{}
+	if value, err = e.GetPlugin(id.PluginName()); err != nil {
 		return
 	}
-	plugin := pluginRaw.(Pluggable)
+	plugin := value.(Pluggable)
 
 	pla, err = plugin.GetActor(id)
 
@@ -239,9 +256,9 @@ func (e *supervisor) eventHandler(_ string, message interface{}) {
 	case events.EventUpdatedEntity:
 		go e.eventUpdatedEntity(msg)
 	case events.CommandUnloadEntity:
-		go e.eventUnloadEntity(msg)
+		go e.commandUnloadEntity(msg)
 	case events.CommandLoadEntity:
-		go e.eventLoadEntity(msg)
+		go e.commandLoadEntity(msg)
 	case events.EventEntitySetState:
 		go e.eventEntitySetState(msg)
 	case events.EventGetLastState:
@@ -336,11 +353,11 @@ func (e *supervisor) eventUpdatedEntity(msg events.EventUpdatedEntity) {
 	}
 }
 
-func (e *supervisor) eventUnloadEntity(msg events.CommandUnloadEntity) {
+func (e *supervisor) commandUnloadEntity(msg events.CommandUnloadEntity) {
 	e.UnloadEntity(msg.EntityId)
 }
 
-func (e *supervisor) eventLoadEntity(msg events.CommandLoadEntity) {
+func (e *supervisor) commandLoadEntity(msg events.CommandLoadEntity) {
 	entity, err := e.adaptors.Entity.GetById(context.Background(), msg.EntityId)
 	if err != nil {
 		return
@@ -391,11 +408,12 @@ func (e *supervisor) AddEntity(entity *m.Entity) (err error) {
 		err = errors.Wrap(ErrPluginNotLoaded, entity.PluginName)
 		return
 	}
-	pluginRaw, err := e.GetPlugin(entity.PluginName)
-	if err != nil {
+
+	var value interface{}
+	if value, err = e.GetPlugin(entity.PluginName); err != nil {
 		return
 	}
-	plugin := pluginRaw.(Pluggable)
+	plugin := value.(Pluggable)
 	err = plugin.AddOrUpdateActor(entity)
 	return
 }
@@ -408,12 +426,12 @@ func (e *supervisor) UpdateEntity(entity *m.Entity) (err error) {
 		return
 	}
 
-	pluginRaw, err := e.GetPlugin(entity.PluginName)
-	if err != nil {
+	var value interface{}
+	if value, err = e.GetPlugin(entity.PluginName); err != nil {
 		return
 	}
 
-	plugin := pluginRaw.(Pluggable)
+	plugin := value.(Pluggable)
 
 	err = plugin.AddOrUpdateActor(entity)
 
@@ -427,12 +445,12 @@ func (e *supervisor) UnloadEntity(id common.EntityId) {
 		return
 	}
 
-	pluginRaw, err := e.GetPlugin(id.PluginName())
+	value, err := e.GetPlugin(id.PluginName())
 	if err != nil {
 		return
 	}
 
-	plugin := pluginRaw.(Pluggable)
+	plugin := value.(Pluggable)
 	plugin.RemoveActor(id)
 }
 

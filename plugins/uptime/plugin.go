@@ -75,7 +75,7 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 	p.storyModel = &m.RunStory{
 		Start: time.Now(),
 	}
-	if err = p.AddPluginActor(p.actor, entity); err != nil {
+	if err = p.AddActor(p.actor, entity); err != nil {
 		return
 	}
 

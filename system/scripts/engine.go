@@ -65,6 +65,14 @@ func NewEngine(s *m.Script, functions, structures *Pull) (engine *Engine, err er
 		}
 	}
 
+	if functions == nil {
+		functions = NewPull()
+	}
+
+	if structures == nil {
+		structures = NewPull()
+	}
+
 	engine = &Engine{
 		model:      s,
 		buf:        make([]string, 0),

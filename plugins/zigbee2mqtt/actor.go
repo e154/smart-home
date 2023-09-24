@@ -61,14 +61,13 @@ func NewActor(entity *m.Entity,
 	// Actions
 	for _, a := range actor.Actions {
 		if a.ScriptEngine != nil {
-			a.ScriptEngine.PushStruct("Actor", supervisor.NewScriptBind(actor))
+			a.ScriptEngine.PushStruct("message", actor.message)
 			_, _ = a.ScriptEngine.Do()
 		}
 	}
 
 	if actor.ScriptEngine != nil {
 		actor.ScriptEngine.PushStruct("message", actor.message)
-		actor.ScriptEngine.PushStruct("Actor", supervisor.NewScriptBind(actor))
 	}
 
 	// mqtt worker

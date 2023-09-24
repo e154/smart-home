@@ -25,19 +25,6 @@ func NewActor(entity *m.Entity,
 		network2:   NewNetwork2(service.EventBus()),
 	}
 
-	// Actions
-	for _, a := range actor.Actions {
-		if a.ScriptEngine != nil {
-			// bind
-			a.ScriptEngine.PushStruct("Actor", supervisor.NewScriptBind(actor))
-			_, _ = a.ScriptEngine.Do()
-		}
-	}
-
-	if actor.ScriptEngine != nil {
-		actor.ScriptEngine.PushStruct("Actor", supervisor.NewScriptBind(actor))
-	}
-
 	// action worker
 	go func() {
 		for msg := range actor.actionPool {

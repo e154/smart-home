@@ -1,4 +1,4 @@
-	// This file is part of the Smart Home
+// This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
 // Copyright (C) 2016-2021, Filippov Alex
 //
@@ -20,46 +20,43 @@ package scripts
 
 import (
 	"fmt"
+	m "github.com/e154/smart-home/models"
 	"testing"
 
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func Test2(t *testing.T) {
+func fooBind(num int64) func(j string) string {
+	return func(j string) string {
+		return fmt.Sprintf("%d_%s", num, j)
+	}
+}
 
-	//var state string
-	//store = func(i interface{}) {
-	//	state = fmt.Sprintf("%v", i)
-	//}
+func Test14(t *testing.T) {
 
-	//var script1 *m.Script
-	Convey("require external library", t, func(ctx C) {
+	Convey("scripts run syn command", t, func(ctx C) {
 		err := container.Invoke(func(adaptors *adaptors.Adaptors,
-			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService) {
 
-			//todo: fix
-			//storeRegisterCallback(scriptService)
-			//
-			//script1 = &m.Script{
-			//	Lang:        "coffeescript",
-			//	Name:        "test2",
-			//	Source:      coffeeScript2,
-			//	Description: "test2",
-			//}
-			//
-			//engine1, err := scriptService.NewEngine(script1)
-			//So(err, ShouldBeNil)
-			//err = engine1.Compile()
-			//So(err, ShouldBeNil)
-			//
-			//_, err = engine1.Do()
-			//So(err, ShouldBeNil)
-			//
-			//So(state, ShouldEqual, "123-bar-Jan")
+			script1 := &m.Script{
+				Lang:        "coffeescript",
+				Name:        "test28",
+				Source:      "foo 'bar'",
+			}
+
+			scriptService.PushFunctions("foo", fooBind(12))
+
+			engine1, err := scriptService.NewEngine(script1)
+			So(err, ShouldBeNil)
+			err = engine1.Compile()
+			So(err, ShouldBeNil)
+
+			result, err := engine1.Do()
+			So(err, ShouldBeNil)
+
+			So(result, ShouldEqual, "12_bar")
 		})
 		if err != nil {
 			fmt.Println(err.Error())

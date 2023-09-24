@@ -71,7 +71,7 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 	}
 
 	p.actor = NewActor(entity, p.Service)
-	p.AddPluginActor(p.actor, entity)
+	p.AddActor(p.actor, entity)
 
 	go func() {
 

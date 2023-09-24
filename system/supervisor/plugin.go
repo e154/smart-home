@@ -137,16 +137,15 @@ func (p *Plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 
 	item, ok := p.Actors.Load(entity.Id)
 	if ok && item != nil {
-		log.Warnf("entityId '%v' exist", entity.Id)
-		return
+		_ = p.RemoveActor(entity.Id)
 	}
 
-	err = p.AddPluginActor(pla, entity)
+	err = p.AddActor(pla, entity)
 
 	return
 }
 
-func (p *Plugin) AddPluginActor(pla PluginActor, entity *m.Entity) (err error) {
+func (p *Plugin) AddActor(pla PluginActor, entity *m.Entity) (err error) {
 
 	if entity == nil {
 		return
@@ -154,7 +153,7 @@ func (p *Plugin) AddPluginActor(pla PluginActor, entity *m.Entity) (err error) {
 
 	pla.Spawn()
 	p.Actors.Store(entity.Id, pla)
-	log.Infof("loaded entity '%v'", entity.Id)
+	log.Infof("entity '%v' loaded", entity.Id)
 
 	currentState := pla.GetEventState()
 	pla.SetCurrentState(currentState)

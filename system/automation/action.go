@@ -31,6 +31,9 @@ import (
 	"go.uber.org/atomic"
 )
 
+// ActionFunc ...
+const ActionFunc = "automationAction"
+
 // Action ...
 type Action struct {
 	model         *m.Action

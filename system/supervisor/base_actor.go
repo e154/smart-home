@@ -131,7 +131,12 @@ func NewBaseActor(entity *m.Entity,
 			if action.ScriptEngine, err = service.ScriptService().NewEngine(a.Script); err != nil {
 				log.Error(err.Error())
 			}
-			_, _ = action.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
+			if _, err = action.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id)); err != nil {
+				log.Error(err.Error())
+			}
+			if _, err = action.ScriptEngine.Do(); err != nil {
+				log.Error(err.Error())
+			}
 		}
 
 		if a.Image != nil {
@@ -141,18 +146,23 @@ func NewBaseActor(entity *m.Entity,
 	}
 
 	// Scripts
-	if len(entity.Scripts) != 0 {
-		if actor.ScriptEngine, err = service.ScriptService().NewEngine(entity.Scripts[0]); err != nil {
+	if actor.ScriptEngine, err = service.ScriptService().NewEngine(nil); err == nil {
+		if _, err = actor.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id)); err != nil {
 			log.Error(err.Error())
 		}
-		_, _ = actor.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
-		_, _ = actor.ScriptEngine.Do()
 
-	} else {
-		if actor.ScriptEngine, err = service.ScriptService().NewEngine(nil); err != nil {
-			log.Error(err.Error())
+		if entity.Scripts != nil {
+			for _, script := range entity.Scripts {
+				if _, err = actor.ScriptEngine.EvalString(script.Compiled); err != nil {
+					log.Error(err.Error())
+				}
+			}
 		}
-		_, _ = actor.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
+
+		//_, err = actor.ScriptEngine.Do()
+		//if err != nil {
+		//	log.Error(err.Error())
+		//}
 	}
 
 	return actor

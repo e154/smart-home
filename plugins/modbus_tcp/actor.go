@@ -60,14 +60,13 @@ func NewActor(entity *m.Entity,
 	for _, a := range actor.Actions {
 		if a.ScriptEngine != nil {
 			// bind
-			a.ScriptEngine.PushStruct("Actor", supervisor.NewScriptBind(actor))
 			a.ScriptEngine.PushFunction("ModbusTcp", NewModbusTcp(service.EventBus(), actor))
 			_, _ = a.ScriptEngine.Do()
 		}
 	}
 
 	if actor.ScriptEngine != nil {
-		actor.ScriptEngine.PushStruct("Actor", supervisor.NewScriptBind(actor))
+		actor.ScriptEngine.PushFunction("ModbusTcp", NewModbusTcp(service.EventBus(), actor))
 	}
 
 	// action worker

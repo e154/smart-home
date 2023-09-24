@@ -16,24 +16,36 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package supervisor
+package scripts
 
-// ScriptBind ...
-type ScriptBind struct {
-	actor PluginActor
-}
+import (
+	"fmt"
+	"testing"
 
-// NewScriptBind  ...
-func NewScriptBind(actor PluginActor) *ScriptBind {
-	return &ScriptBind{actor: actor}
-}
+	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/system/scripts"
+	. "github.com/smartystreets/goconvey/convey"
+)
 
-// SetState  ...
-func (s *ScriptBind) SetState(params EntityStateParams) {
-	_ = s.actor.SetState(params)
-}
+func Test15(t *testing.T) {
 
-// GetSettings  ...
-func (s *ScriptBind) GetSettings() map[string]interface{} {
-	return s.actor.Settings().Serialize()
+	Convey("scripts run syn command", t, func(ctx C) {
+		err := container.Invoke(func(adaptors *adaptors.Adaptors,
+			scriptService scripts.ScriptService) {
+
+
+			scriptService.PushFunctions("foo", fooBind(12))
+
+			engine1, err := scriptService.NewEngine(nil)
+			So(err, ShouldBeNil)
+
+			result, err := engine1.EvalString("foo('bar')")
+			So(err, ShouldBeNil)
+
+			So(result, ShouldEqual, "12_bar")
+		})
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+	})
 }
