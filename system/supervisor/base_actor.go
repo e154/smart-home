@@ -19,7 +19,9 @@
 package supervisor
 
 import (
+	"context"
 	"fmt"
+	"github.com/e154/smart-home/common/events"
 	"sync"
 	"time"
 
@@ -220,13 +222,6 @@ func (e *BaseActor) Now(oldState bus.EventEntityState) time.Time {
 	return now
 }
 
-// SetMetric ...
-func (e *BaseActor) SetMetric(id common.EntityId, name string, value map[string]float32) {
-	if e.Service.Supervisor() != nil {
-		e.Service.Supervisor().SetMetric(id, name, value)
-	}
-}
-
 // Settings ...
 func (e *BaseActor) Settings() m.Attributes {
 	e.settingsLock()
@@ -304,4 +299,98 @@ func (e *BaseActor) GetEventState() (eventState bus.EventEntityState) {
 	}
 
 	return
+}
+
+func (e *BaseActor) SaveState(msg events.EventStateChanged) {
+
+	go e.updateMetric(msg.NewState)
+
+	if msg.NewState.Compare(msg.OldState) {
+		return
+	}
+
+	currentState := e.GetCurrentState()
+	if currentState != nil && currentState.Compare(msg.NewState) {
+		return
+	}
+
+	e.SetCurrentState(msg.NewState)
+
+	// store state to db
+	var state string
+	if msg.NewState.State != nil {
+		state = msg.NewState.State.Name
+	}
+
+	go e.Service.EventBus().Publish("system/entities/"+msg.EntityId.String(), msg)
+
+	if !msg.StorageSave {
+		return
+	}
+
+	go func() {
+		_, err := e.Service.Adaptors().EntityStorage.Add(context.Background(), &m.EntityStorage{
+			State:      state,
+			EntityId:   msg.EntityId,
+			Attributes: msg.NewState.Attributes.Serialize(),
+		})
+		if err != nil {
+			log.Error(err.Error())
+		}
+	}()
+}
+
+func (e *BaseActor) updateMetric(state bus.EventEntityState) {
+
+	if e.Metric == nil {
+		return
+	}
+
+	var data = make(map[string]float32)
+	var name string
+
+	for _, metric := range e.Metric {
+		for _, prop := range metric.Options.Items {
+			if value, ok := state.Attributes[prop.Name]; ok {
+				name = metric.Name
+				switch value.Type {
+				case common.AttributeInt:
+					data[prop.Name] = float32(value.Int64())
+				case common.AttributeFloat:
+					data[prop.Name] = common.Rounding32(value.Float64(), 2)
+				}
+			}
+		}
+	}
+
+	if len(data) == 0 || name == "" {
+		return
+	}
+
+	e.AddMetric(name, data)
+
+}
+
+func (e *BaseActor) AddMetric(name string, value map[string]float32) {
+
+	if e.Metric == nil {
+		return
+	}
+
+	var err error
+	for _, metric := range e.Metric {
+		if metric.Name != name {
+			continue
+		}
+
+		err = e.Service.Adaptors().MetricBucket.Add(context.Background(), &m.MetricDataItem{
+			Value:    value,
+			MetricId: metric.Id,
+			Time:     time.Now(),
+		})
+
+		if err != nil {
+			log.Errorf(err.Error())
+		}
+	}
 }

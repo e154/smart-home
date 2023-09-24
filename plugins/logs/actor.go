@@ -72,7 +72,7 @@ func NewActor(entity *m.Entity,
 	return actor
 }
 
-func (a *Actor) Destroy() {
+func (e *Actor) Destroy() {
 
 }
 
@@ -81,56 +81,56 @@ func (e *Actor) Spawn() {
 	return
 }
 
-func (u *Actor) selfUpdate() {
+func (e *Actor) selfUpdate() {
 
-	u.updateLock.Lock()
-	defer u.updateLock.Unlock()
+	e.updateLock.Lock()
+	defer e.updateLock.Unlock()
 
-	oldState := u.GetEventState()
-	u.Now(oldState)
+	oldState := e.GetEventState()
+	e.Now(oldState)
 
-	u.AttrMu.Lock()
-	u.Attrs[AttrErrTotal].Value = u.ErrTotal.Count()
-	u.Attrs[AttrErrToday].Value = u.ErrToday.Count()
-	u.Attrs[AttrErrYesterday].Value = u.ErrYesterday.Count()
-	u.Attrs[AttrWarnTotal].Value = u.WarnTotal.Count()
-	u.Attrs[AttrWarnToday].Value = u.WarnToday.Count()
-	u.Attrs[AttrWarnYesterday].Value = u.WarnYesterday.Count()
-	u.AttrMu.Unlock()
+	e.AttrMu.Lock()
+	e.Attrs[AttrErrTotal].Value = e.ErrTotal.Count()
+	e.Attrs[AttrErrToday].Value = e.ErrToday.Count()
+	e.Attrs[AttrErrYesterday].Value = e.ErrYesterday.Count()
+	e.Attrs[AttrWarnTotal].Value = e.WarnTotal.Count()
+	e.Attrs[AttrWarnToday].Value = e.WarnToday.Count()
+	e.Attrs[AttrWarnYesterday].Value = e.WarnYesterday.Count()
+	e.AttrMu.Unlock()
 
-	u.Service.EventBus().Publish("system/entities/"+u.Id.String(), events.EventStateChanged{
+	go e.SaveState(events.EventStateChanged{
 		StorageSave: true,
-		PluginName:  u.Id.PluginName(),
-		EntityId:    u.Id,
+		PluginName:  e.Id.PluginName(),
+		EntityId:    e.Id,
 		OldState:    oldState,
-		NewState:    u.GetEventState(),
+		NewState:    e.GetEventState(),
 	})
 }
 
-func (u *Actor) LogsHook(level common.LogLevel) {
+func (e *Actor) LogsHook(level common.LogLevel) {
 
 	switch level {
 	case common.LogLevelError:
-		u.ErrTotal.Inc(1)
-		u.ErrToday.Inc(1)
+		e.ErrTotal.Inc(1)
+		e.ErrToday.Inc(1)
 	case common.LogLevelWarning:
-		u.WarnTotal.Inc(1)
-		u.WarnToday.Inc(1)
+		e.WarnTotal.Inc(1)
+		e.WarnToday.Inc(1)
 	//case common.LogLevelInfo:
 	//case common.LogLevelDebug:
 	default:
 		return
 	}
-	u.selfUpdate()
+	e.selfUpdate()
 }
 
-func (u *Actor) UpdateDay() {
-	u.ErrYesterday.Clear()
-	u.ErrYesterday.Inc(u.ErrToday.Count())
-	u.WarnYesterday.Clear()
-	u.WarnYesterday.Inc(u.WarnToday.Count())
-	u.ErrToday.Clear()
-	u.WarnToday.Clear()
+func (e *Actor) UpdateDay() {
+	e.ErrYesterday.Clear()
+	e.ErrYesterday.Inc(e.ErrToday.Count())
+	e.WarnYesterday.Clear()
+	e.WarnYesterday.Inc(e.WarnToday.Count())
+	e.ErrToday.Clear()
+	e.WarnToday.Clear()
 
-	u.selfUpdate()
+	e.selfUpdate()
 }

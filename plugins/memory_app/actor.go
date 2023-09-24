@@ -50,43 +50,43 @@ func NewActor(entity *m.Entity,
 	return actor
 }
 
-func (u *Actor) Destroy() {
+func (e *Actor) Destroy() {
 
 }
 
-func (u *Actor) Spawn() {
+func (e *Actor) Spawn() {
 
 }
 
-func (u *Actor) selfUpdate() {
+func (e *Actor) selfUpdate() {
 
-	u.updateLock.Lock()
-	defer u.updateLock.Unlock()
+	e.updateLock.Lock()
+	defer e.updateLock.Unlock()
 
-	oldState := u.GetEventState()
-	u.Now(oldState)
+	oldState := e.GetEventState()
+	e.Now(oldState)
 
 	var s runtime.MemStats
 	runtime.ReadMemStats(&s)
 
-	u.AttrMu.Lock()
-	u.Attrs[AttrAlloc].Value = s.Alloc
-	u.Attrs[AttrHeapAlloc].Value = s.HeapAlloc
-	u.Attrs[AttrTotalAlloc].Value = s.TotalAlloc
-	u.Attrs[AttrSys].Value = s.Sys
-	u.Attrs[AttrNumGC].Value = s.NumGC
-	u.Attrs[AttrLastGC].Value = time.Unix(0, int64(s.LastGC))
-	u.AttrMu.Unlock()
+	e.AttrMu.Lock()
+	e.Attrs[AttrAlloc].Value = s.Alloc
+	e.Attrs[AttrHeapAlloc].Value = s.HeapAlloc
+	e.Attrs[AttrTotalAlloc].Value = s.TotalAlloc
+	e.Attrs[AttrSys].Value = s.Sys
+	e.Attrs[AttrNumGC].Value = s.NumGC
+	e.Attrs[AttrLastGC].Value = time.Unix(0, int64(s.LastGC))
+	e.AttrMu.Unlock()
 
-	//u.SetMetric(u.Id, "memory_app", map[string]float32{
+	//e.SetMetric(e.Id, "memory_app", map[string]float32{
 	//	"total_alloc": float32(s.TotalAlloc),
 	//})
 
-	u.Service.EventBus().Publish("system/entities/"+u.Id.String(), events.EventStateChanged{
+	go e.SaveState(events.EventStateChanged{
 		StorageSave: false,
-		PluginName:  u.Id.PluginName(),
-		EntityId:    u.Id,
+		PluginName:  e.Id.PluginName(),
+		EntityId:    e.Id,
 		OldState:    oldState,
-		NewState:    u.GetEventState(),
+		NewState:    e.GetEventState(),
 	})
 }

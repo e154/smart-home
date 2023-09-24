@@ -20,8 +20,6 @@ package email
 
 import (
 	"fmt"
-	"sync"
-
 	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/common/apperr"
@@ -48,30 +46,29 @@ type Actor struct {
 func NewActor(settings m.Attributes,
 	service supervisor.Service) *Actor {
 
+	entity := &m.Entity{
+		Id:         common.EntityId(fmt.Sprintf("%s.%s", Name, Name)),
+		PluginName: Name,
+	}
+
 	actor := &Actor{
-		BaseActor: supervisor.BaseActor{
-			Id:         common.EntityId(fmt.Sprintf("%s.%s", Name, Name)),
-			Name:       Name,
-			EntityType: Name,
-			AttrMu:     &sync.RWMutex{},
-			Service:    service,
-		},
-		Auth:     settings[AttrAuth].String(),
-		Pass:     settings[AttrPass].String(),
-		Smtp:     settings[AttrSmtp].String(),
-		Port:     settings[AttrPort].Int64(),
-		Sender:   settings[AttrSender].String(),
+		BaseActor: supervisor.NewBaseActor(entity, service),
+		Auth:      settings[AttrAuth].String(),
+		Pass:      settings[AttrPass].String(),
+		Smtp:      settings[AttrSmtp].String(),
+		Port:      settings[AttrPort].Int64(),
+		Sender:    settings[AttrSender].String(),
 	}
 
 	return actor
 }
 
-func (p *Actor) Destroy() {
+func (e *Actor) Destroy() {
 
 }
 
 // Spawn ...
-func (p *Actor) Spawn() {
+func (e *Actor) Spawn() {
 
 }
 
@@ -114,17 +111,17 @@ func (e *Actor) Send(address string, message *m.Message) error {
 }
 
 // UpdateStatus ...
-func (p *Actor) UpdateStatus() (err error) {
+func (e *Actor) UpdateStatus() (err error) {
 
-	oldState := p.GetEventState()
-	now := p.Now(oldState)
+	oldState := e.GetEventState()
+	now := e.Now(oldState)
 
 	var attributeValues = make(m.AttributeValue)
 	// ...
 
-	p.AttrMu.Lock()
+	e.AttrMu.Lock()
 	var changed bool
-	if changed, err = p.Attrs.Deserialize(attributeValues); !changed {
+	if changed, err = e.Attrs.Deserialize(attributeValues); !changed {
 		if err != nil {
 			log.Warn(err.Error())
 		}
@@ -133,19 +130,19 @@ func (p *Actor) UpdateStatus() (err error) {
 			delta := now.Sub(*oldState.LastUpdated).Milliseconds()
 			//fmt.Println("delta", delta)
 			if delta < 200 {
-				p.AttrMu.Unlock()
+				e.AttrMu.Unlock()
 				return
 			}
 		}
 	}
-	p.AttrMu.Unlock()
+	e.AttrMu.Unlock()
 
-	p.Service.EventBus().Publish("system/entities/"+p.Id.String(), events.EventStateChanged{
+	go e.SaveState(events.EventStateChanged{
 		StorageSave: true,
-		PluginName:  p.Id.PluginName(),
-		EntityId:    p.Id,
+		PluginName:  e.Id.PluginName(),
+		EntityId:    e.Id,
 		OldState:    oldState,
-		NewState:    p.GetEventState(),
+		NewState:    e.GetEventState(),
 	})
 
 	return

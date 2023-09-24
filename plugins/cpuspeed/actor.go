@@ -72,7 +72,7 @@ func NewActor(entity *m.Entity,
 	return actor
 }
 
-func (a *Actor) Destroy() {
+func (e *Actor) Destroy() {
 
 }
 
@@ -81,13 +81,13 @@ func (e *Actor) Spawn() {
 
 }
 
-func (u *Actor) selfUpdate() {
+func (e *Actor) selfUpdate() {
 
-	u.updateLock.Lock()
-	defer u.updateLock.Unlock()
+	e.updateLock.Lock()
+	defer e.updateLock.Unlock()
 
-	oldState := u.GetEventState()
-	u.Now(oldState)
+	oldState := e.GetEventState()
+	e.Now(oldState)
 
 	// export CGO_ENABLED=1
 	timeStats, err := cpu.Times(false)
@@ -99,37 +99,37 @@ func (u *Actor) selfUpdate() {
 	}
 
 	total := timeStats[0].Total()
-	diffIdle := timeStats[0].Idle - u.allCpuPrevIdle
-	diffTotal := total - u.allCpuPrevTotal
+	diffIdle := timeStats[0].Idle - e.allCpuPrevIdle
+	diffTotal := total - e.allCpuPrevTotal
 	all := common.Rounding(100*(diffTotal-diffIdle)/diffTotal, 2)
-	if v := u.loadMin.Value(); v == 0 || all < v {
-		u.loadMin.Update(all)
+	if v := e.loadMin.Value(); v == 0 || all < v {
+		e.loadMin.Update(all)
 	}
-	if v := u.loadMax.Value(); v == 0 || all > v {
-		u.loadMax.Update(all)
+	if v := e.loadMax.Value(); v == 0 || all > v {
+		e.loadMax.Update(all)
 	}
 
-	u.all.Update(all)
-	u.allCpuPrevTotal = total
-	u.allCpuPrevIdle = timeStats[0].Idle
+	e.all.Update(all)
+	e.allCpuPrevTotal = total
+	e.allCpuPrevIdle = timeStats[0].Idle
 
-	u.AttrMu.Lock()
-	u.Attrs[AttrCpuCores].Value = u.cores
-	u.Attrs[AttrCpuMhz].Value = u.mhz
-	u.Attrs[AttrCpuAll].Value = u.all.Value()
-	u.Attrs[AttrLoadMax].Value = u.loadMax.Value()
-	u.Attrs[AttrLoadMin].Value = u.loadMin.Value()
-	u.AttrMu.Unlock()
+	e.AttrMu.Lock()
+	e.Attrs[AttrCpuCores].Value = e.cores
+	e.Attrs[AttrCpuMhz].Value = e.mhz
+	e.Attrs[AttrCpuAll].Value = e.all.Value()
+	e.Attrs[AttrLoadMax].Value = e.loadMax.Value()
+	e.Attrs[AttrLoadMin].Value = e.loadMin.Value()
+	e.AttrMu.Unlock()
 
-	//u.SetMetric(u.Id, "cpuspeed", map[string]float32{
-	//	"all": common.Rounding32(u.all.Value(), 2),
+	//e.SetMetric(e.Id, "cpuspeed", map[string]float32{
+	//	"all": common.Rounding32(e.all.Value(), 2),
 	//})
 
-	u.Service.EventBus().Publish("system/entities/"+u.Id.String(), events.EventStateChanged{
+	go e.SaveState(events.EventStateChanged{
 		StorageSave: false,
-		PluginName:  u.Id.PluginName(),
-		EntityId:    u.Id,
+		PluginName:  e.Id.PluginName(),
+		EntityId:    e.Id,
 		OldState:    oldState,
-		NewState:    u.GetEventState(),
+		NewState:    e.GetEventState(),
 	})
 }

@@ -106,7 +106,7 @@ func (a *Actor) SetState(params supervisor.EntityStateParams) error {
 	_, _ = a.Attrs.Deserialize(params.AttributeValues)
 	a.AttrMu.Unlock()
 
-	a.Service.EventBus().Publish("system/entities/"+a.Id.String(), events.EventStateChanged{
+	go a.SaveState(events.EventStateChanged{
 		StorageSave: params.StorageSave,
 		PluginName:  a.Id.PluginName(),
 		EntityId:    a.Id,

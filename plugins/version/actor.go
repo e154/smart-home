@@ -49,41 +49,41 @@ func NewActor(entity *m.Entity,
 	return actor
 }
 
-func (u *Actor) Destroy() {
+func (e *Actor) Destroy() {
 
 }
 
-func (u *Actor) Spawn() {
+func (e *Actor) Spawn() {
 
 }
 
-func (u *Actor) selfUpdate() {
+func (e *Actor) selfUpdate() {
 
-	u.updateLock.Lock()
-	defer u.updateLock.Unlock()
+	e.updateLock.Lock()
+	defer e.updateLock.Unlock()
 
-	oldState := u.GetEventState()
-	u.Now(oldState)
+	oldState := e.GetEventState()
+	e.Now(oldState)
 
 	var s runtime.MemStats
 	runtime.ReadMemStats(&s)
 
-	u.AttrMu.Lock()
-	u.Attrs[AttrVersion].Value = version.VersionString
-	u.Attrs[AttrRevision].Value = version.RevisionString
-	u.Attrs[AttrRevisionURL].Value = version.RevisionURLString
-	u.Attrs[AttrGenerated].Value = version.GeneratedString
-	u.Attrs[AttrDevelopers].Value = version.DevelopersString
-	u.Attrs[AttrBuildNum].Value = version.BuildNumString
-	u.Attrs[AttrDockerImage].Value = version.DockerImageString
-	u.Attrs[AttrGoVersion].Value = version.GoVersion
-	u.AttrMu.Unlock()
+	e.AttrMu.Lock()
+	e.Attrs[AttrVersion].Value = version.VersionString
+	e.Attrs[AttrRevision].Value = version.RevisionString
+	e.Attrs[AttrRevisionURL].Value = version.RevisionURLString
+	e.Attrs[AttrGenerated].Value = version.GeneratedString
+	e.Attrs[AttrDevelopers].Value = version.DevelopersString
+	e.Attrs[AttrBuildNum].Value = version.BuildNumString
+	e.Attrs[AttrDockerImage].Value = version.DockerImageString
+	e.Attrs[AttrGoVersion].Value = version.GoVersion
+	e.AttrMu.Unlock()
 
-	u.Service.EventBus().Publish("system/entities/"+u.Id.String(), events.EventStateChanged{
+	go e.SaveState(events.EventStateChanged{
 		StorageSave: false,
-		PluginName:  u.Id.PluginName(),
-		EntityId:    u.Id,
+		PluginName:  e.Id.PluginName(),
+		EntityId:    e.Id,
 		OldState:    oldState,
-		NewState:    u.GetEventState(),
+		NewState:    e.GetEventState(),
 	})
 }

@@ -20,12 +20,10 @@ package supervisor
 
 import (
 	"context"
-	"sync"
-	"time"
-
 	"github.com/pkg/errors"
 	"go.uber.org/atomic"
 	"go.uber.org/fx"
+	"sync"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -154,37 +152,6 @@ func (e *supervisor) handlerSystemScripts(_ string, event interface{}) {
 	}
 }
 
-func (e *supervisor) updateMetric(pla PluginActor, state bus.EventEntityState) {
-	metrics := pla.Metrics()
-	if metrics == nil {
-		return
-	}
-
-	var data = make(map[string]float32)
-	var name string
-
-	for _, metric := range metrics {
-		for _, prop := range metric.Options.Items {
-			if value, ok := state.Attributes[prop.Name]; ok {
-				name = metric.Name
-				switch value.Type {
-				case common.AttributeInt:
-					data[prop.Name] = float32(value.Int64())
-				case common.AttributeFloat:
-					data[prop.Name] = common.Rounding32(value.Float64(), 2)
-				}
-			}
-		}
-	}
-
-	if len(data) == 0 || name == "" {
-		return
-	}
-
-	e.SetMetric(state.EntityId, name, data)
-
-}
-
 // SetMetric ...
 func (e *supervisor) SetMetric(id common.EntityId, name string, value map[string]float32) {
 
@@ -193,21 +160,7 @@ func (e *supervisor) SetMetric(id common.EntityId, name string, value map[string
 		return
 	}
 
-	for _, metric := range pla.Metrics() {
-		if metric.Name != name {
-			continue
-		}
-
-		err = e.adaptors.MetricBucket.Add(context.Background(), &m.MetricDataItem{
-			Value:    value,
-			MetricId: metric.Id,
-			Time:     time.Now(),
-		})
-
-		if err != nil {
-			log.Errorf(err.Error())
-		}
-	}
+	pla.AddMetric(name, value)
 }
 
 // SetState ...
@@ -279,8 +232,6 @@ func (e *supervisor) GetActorById(id common.EntityId) (pla PluginActor, err erro
 func (e *supervisor) eventHandler(_ string, message interface{}) {
 
 	switch msg := message.(type) {
-	case events.EventStateChanged:
-		go e.eventStateChangedHandler(msg)
 	case events.EventLoadedPlugin:
 		go func() { _ = e.eventLoadedPlugin(msg) }()
 	case events.EventCreatedEntity:
@@ -296,48 +247,6 @@ func (e *supervisor) eventHandler(_ string, message interface{}) {
 	case events.EventGetLastState:
 		go e.eventLastState(msg)
 	}
-}
-
-func (e *supervisor) eventStateChangedHandler(msg events.EventStateChanged) {
-
-	pla, err := e.GetActorById(msg.EntityId)
-	if err != nil {
-		return
-	}
-
-	go e.updateMetric(pla, msg.NewState)
-
-	if msg.NewState.Compare(msg.OldState) {
-		return
-	}
-
-	currentState := pla.GetCurrentState()
-	if currentState != nil && currentState.Compare(msg.NewState) {
-		return
-	}
-
-	pla.SetCurrentState(msg.NewState)
-
-	// store state to db
-	var state string
-	if msg.NewState.State != nil {
-		state = msg.NewState.State.Name
-	}
-
-	if !msg.StorageSave {
-		return
-	}
-
-	go func() {
-		_, err = e.adaptors.EntityStorage.Add(context.Background(), &m.EntityStorage{
-			State:      state,
-			EntityId:   msg.EntityId,
-			Attributes: msg.NewState.Attributes.Serialize(),
-		})
-		if err != nil {
-			log.Error(err.Error())
-		}
-	}()
 }
 
 func (e *supervisor) eventLastState(msg events.EventGetLastState) {

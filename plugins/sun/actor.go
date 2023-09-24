@@ -166,7 +166,7 @@ func (e *Actor) UpdateSunPosition(now time.Time) {
 
 	e.DeserializeAttr(attributeValues)
 
-	e.Service.EventBus().Publish("system/entities/"+e.Id.String(), events.EventStateChanged{
+	go e.SaveState(events.EventStateChanged{
 		StorageSave: true,
 		PluginName:  e.Id.PluginName(),
 		EntityId:    e.Id,

@@ -76,7 +76,7 @@ func NewActor(entity *m.Entity,
 	return actor
 }
 
-func (a *Actor) Destroy() {
+func (e *Actor) Destroy() {
 
 }
 
@@ -89,37 +89,37 @@ func (e *Actor) runAction(_ events.EventCallEntityAction) {
 	go e.selfUpdate()
 }
 
-func (u *Actor) selfUpdate() {
+func (e *Actor) selfUpdate() {
 
-	u.updateLock.Lock()
-	defer u.updateLock.Unlock()
+	e.updateLock.Lock()
+	defer e.updateLock.Unlock()
 
-	oldState := u.GetEventState()
-	u.Now(oldState)
+	oldState := e.GetEventState()
+	e.Now(oldState)
 
 	var mountPoint = "/"
-	if u.MountPoint != "" {
-		mountPoint = u.MountPoint
+	if e.MountPoint != "" {
+		mountPoint = e.MountPoint
 	}
 
 	if r, err := disk.Usage(mountPoint); err == nil {
-		u.AttrMu.Lock()
-		u.Attrs[AttrFstype].Value = r.Fstype
-		u.Attrs[AttrTotal].Value = r.Total
-		u.Attrs[AttrFree].Value = r.Free
-		u.Attrs[AttrUsed].Value = r.Used
-		u.Attrs[AttrUsedPercent].Value = r.UsedPercent
-		u.Attrs[AttrInodesTotal].Value = r.InodesTotal
-		u.Attrs[AttrInodesUsed].Value = r.InodesUsed
-		u.Attrs[AttrInodesFree].Value = r.InodesFree
-		u.Attrs[AttrInodesUsedPercent].Value = r.InodesUsedPercent
-		u.AttrMu.Unlock()
+		e.AttrMu.Lock()
+		e.Attrs[AttrFstype].Value = r.Fstype
+		e.Attrs[AttrTotal].Value = r.Total
+		e.Attrs[AttrFree].Value = r.Free
+		e.Attrs[AttrUsed].Value = r.Used
+		e.Attrs[AttrUsedPercent].Value = r.UsedPercent
+		e.Attrs[AttrInodesTotal].Value = r.InodesTotal
+		e.Attrs[AttrInodesUsed].Value = r.InodesUsed
+		e.Attrs[AttrInodesFree].Value = r.InodesFree
+		e.Attrs[AttrInodesUsedPercent].Value = r.InodesUsedPercent
+		e.AttrMu.Unlock()
 	}
-	u.Service.EventBus().Publish("system/entities/"+u.Id.String(), events.EventStateChanged{
+	go e.SaveState(events.EventStateChanged{
 		StorageSave: false,
-		PluginName:  u.Id.PluginName(),
-		EntityId:    u.Id,
+		PluginName:  e.Id.PluginName(),
+		EntityId:    e.Id,
 		OldState:    oldState,
-		NewState:    u.GetEventState(),
+		NewState:    e.GetEventState(),
 	})
 }

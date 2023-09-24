@@ -78,6 +78,7 @@ type PluginActor interface {
 	GetCurrentState() *bus.EventEntityState
 	SetCurrentState(bus.EventEntityState)
 	GetEventState() (eventState bus.EventEntityState)
+	AddMetric(name string, value map[string]float32)
 }
 
 // ActorConstructor ...

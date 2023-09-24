@@ -167,7 +167,7 @@ func (e *Actor) updateStatus() {
 		e.State = &state
 	}
 
-	e.Service.EventBus().Publish("system/entities/"+e.Id.String(), events.EventStateChanged{
+	go e.SaveState(events.EventStateChanged{
 		PluginName: e.Id.PluginName(),
 		EntityId:   e.Id,
 		OldState:   oldState,

@@ -73,7 +73,7 @@ func (e *Actor) Destroy() {
 
 }
 
-func (p *Actor) Spawn() {
+func (e *Actor) Spawn() {
 
 }
 
@@ -187,10 +187,10 @@ func (e *Actor) Balance() (balance Balance, err error) {
 }
 
 // UpdateBalance ...
-func (p *Actor) UpdateBalance() (err error) {
+func (e *Actor) UpdateBalance() (err error) {
 
-	oldState := p.GetEventState()
-	now := p.Now(oldState)
+	oldState := e.GetEventState()
+	now := e.Now(oldState)
 
 	var balance Balance
 	if common.TestMode() {
@@ -200,7 +200,7 @@ func (p *Actor) UpdateBalance() (err error) {
 			AccountSid: "XXX",
 		}
 	} else {
-		if balance, err = p.Balance(); err != nil {
+		if balance, err = e.Balance(); err != nil {
 			return
 		}
 	}
@@ -210,9 +210,9 @@ func (p *Actor) UpdateBalance() (err error) {
 	attributeValues[AttrSid] = balance.AccountSid
 	attributeValues[AttrCurrency] = balance.Currency
 
-	p.AttrMu.Lock()
+	e.AttrMu.Lock()
 	var changed bool
-	if changed, err = p.Attrs.Deserialize(attributeValues); !changed {
+	if changed, err = e.Attrs.Deserialize(attributeValues); !changed {
 		if err != nil {
 			log.Warn(err.Error())
 		}
@@ -221,19 +221,19 @@ func (p *Actor) UpdateBalance() (err error) {
 			delta := now.Sub(*oldState.LastUpdated).Milliseconds()
 			//fmt.Println("delta", delta)
 			if delta < 200 {
-				p.AttrMu.Unlock()
+				e.AttrMu.Unlock()
 				return
 			}
 		}
 	}
-	p.AttrMu.Unlock()
+	e.AttrMu.Unlock()
 
-	p.Service.EventBus().Publish("system/entities/"+p.Id.String(), events.EventStateChanged{
+	go e.SaveState(events.EventStateChanged{
 		StorageSave: true,
-		PluginName:  p.Id.PluginName(),
-		EntityId:    p.Id,
+		PluginName:  e.Id.PluginName(),
+		EntityId:    e.Id,
 		OldState:    oldState,
-		NewState:    p.GetEventState(),
+		NewState:    e.GetEventState(),
 	})
 
 	return

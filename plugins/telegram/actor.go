@@ -87,58 +87,58 @@ func NewActor(entity *m.Entity,
 	return actor, nil
 }
 
-func (p *Actor) Destroy() {
-	if !p.isStarted.Load() {
+func (e *Actor) Destroy() {
+	if !e.isStarted.Load() {
 		return
 	}
-	if p.bot != nil {
-		p.bot.Stop()
+	if e.bot != nil {
+		e.bot.Stop()
 	}
-	close(p.msgPool)
-	p.isStarted.Store(false)
+	close(e.msgPool)
+	e.isStarted.Store(false)
 }
 
-func (p *Actor) Spawn() {
+func (e *Actor) Spawn() {
 
 	var err error
-	if p.isStarted.Load() {
+	if e.isStarted.Load() {
 		return
 	}
 	defer func() {
 		if err == nil {
-			p.isStarted.Store(true)
+			e.isStarted.Store(true)
 		}
 	}()
 
 	if !common.TestMode() {
 
 		pref := tele.Settings{
-			Token:  p.AccessToken,
+			Token:  e.AccessToken,
 			Poller: &tele.LongPoller{Timeout: 10 * time.Second},
 		}
 
-		p.bot, err = tele.NewBot(pref)
+		e.bot, err = tele.NewBot(pref)
 		if err != nil {
 			err = errors.Wrap(apperr.ErrInternal, err.Error())
 			return
 		}
 
-		p.bot.Handle("/help", p.commandHelp)
-		p.bot.Handle("/start", p.commandStart)
-		p.bot.Handle("/quit", p.commandQuit)
-		p.bot.Handle(tele.OnText, p.commandAction)
+		e.bot.Handle("/help", e.commandHelp)
+		e.bot.Handle("/start", e.commandStart)
+		e.bot.Handle("/quit", e.commandQuit)
+		e.bot.Handle(tele.OnText, e.commandAction)
 
-		go p.bot.Start()
+		go e.bot.Start()
 	}
 
 	go func() {
 		var list []m.TelegramChat
-		for msg := range p.msgPool {
-			if list, err = p.getChatList(); err != nil {
+		for msg := range e.msgPool {
+			if list, err = e.getChatList(); err != nil {
 				continue
 			}
 			for _, chat := range list {
-				if _, err = p.sendMsg(msg, chat.ChatId); err != nil {
+				if _, err = e.sendMsg(msg, chat.ChatId); err != nil {
 					log.Warn(err.Error())
 				}
 			}
@@ -149,18 +149,18 @@ func (p *Actor) Spawn() {
 }
 
 // Send ...
-func (p *Actor) Send(message string) (err error) {
-	if !p.isStarted.Load() {
+func (e *Actor) Send(message string) (err error) {
+	if !e.isStarted.Load() {
 		return
 	}
-	p.msgPool <- message
+	e.msgPool <- message
 	return
 }
 
-func (p *Actor) sendMsg(body string, chatId int64) (messageID int, err error) {
+func (e *Actor) sendMsg(body string, chatId int64) (messageID int, err error) {
 	defer func() {
 		if err == nil {
-			go func() { _ = p.UpdateStatus() }()
+			go func() { _ = e.UpdateStatus() }()
 			log.Infof("Sent message '%s' to chatId '%d'", body, chatId)
 		}
 	}()
@@ -169,12 +169,12 @@ func (p *Actor) sendMsg(body string, chatId int64) (messageID int, err error) {
 		return
 	}
 	var chat *tele.Chat
-	if chat, err = p.bot.ChatByID(chatId); err != nil {
+	if chat, err = e.bot.ChatByID(chatId); err != nil {
 		log.Error(err.Error())
 		return
 	}
 	var msg *tele.Message
-	if msg, err = p.bot.Send(chat, body); err != nil {
+	if msg, err = e.bot.Send(chat, body); err != nil {
 		log.Error(err.Error())
 		return
 	}
@@ -182,23 +182,23 @@ func (p *Actor) sendMsg(body string, chatId int64) (messageID int, err error) {
 	return
 }
 
-func (p *Actor) getChatList() (list []m.TelegramChat, err error) {
-	list, _, err = p.Service.Adaptors().TelegramChat.List(context.Background(), 999, 0, "", "", p.Id)
+func (e *Actor) getChatList() (list []m.TelegramChat, err error) {
+	list, _, err = e.Service.Adaptors().TelegramChat.List(context.Background(), 999, 0, "", "", e.Id)
 	return
 }
 
 // UpdateStatus ...
-func (p *Actor) UpdateStatus() (err error) {
+func (e *Actor) UpdateStatus() (err error) {
 
-	oldState := p.GetEventState()
-	now := p.Now(oldState)
+	oldState := e.GetEventState()
+	now := e.Now(oldState)
 
 	var attributeValues = make(m.AttributeValue)
 	// ...
 
-	p.AttrMu.Lock()
+	e.AttrMu.Lock()
 	var changed bool
-	if changed, err = p.Attrs.Deserialize(attributeValues); !changed {
+	if changed, err = e.Attrs.Deserialize(attributeValues); !changed {
 		if err != nil {
 			log.Warn(err.Error())
 		}
@@ -207,25 +207,25 @@ func (p *Actor) UpdateStatus() (err error) {
 			delta := now.Sub(*oldState.LastUpdated).Milliseconds()
 			//fmt.Println("delta", delta)
 			if delta < 200 {
-				p.AttrMu.Unlock()
+				e.AttrMu.Unlock()
 				return
 			}
 		}
 	}
-	p.AttrMu.Unlock()
+	e.AttrMu.Unlock()
 
-	p.Service.EventBus().Publish("system/entities/"+p.Id.String(), events.EventStateChanged{
+	go e.SaveState(events.EventStateChanged{
 		StorageSave: true,
-		PluginName:  p.Id.PluginName(),
-		EntityId:    p.Id,
+		PluginName:  e.Id.PluginName(),
+		EntityId:    e.Id,
 		OldState:    oldState,
-		NewState:    p.GetEventState(),
+		NewState:    e.GetEventState(),
 	})
 
 	return
 }
 
-func (p *Actor) commandStart(c tele.Context) (err error) {
+func (e *Actor) commandStart(c tele.Context) (err error) {
 
 	var (
 		user = c.Sender()
@@ -234,58 +234,58 @@ func (p *Actor) commandStart(c tele.Context) (err error) {
 	)
 
 	text = fmt.Sprintf(banner, version.GetHumanVersion(), text)
-	_ = p.Service.Adaptors().TelegramChat.Add(context.Background(), m.TelegramChat{
-		EntityId: p.Id,
+	_ = e.Service.Adaptors().TelegramChat.Add(context.Background(), m.TelegramChat{
+		EntityId: e.Id,
 		ChatId:   chat.ID,
 		Username: user.Username,
 	})
-	err = c.Send(text, p.genKeyboard())
+	err = c.Send(text, e.genKeyboard())
 	return
 }
 
-func (p *Actor) commandHelp(c tele.Context) (err error) {
+func (e *Actor) commandHelp(c tele.Context) (err error) {
 
 	builder := &strings.Builder{}
-	if len(p.Actions) > 0 {
-		for _, action := range p.Actions {
+	if len(e.Actions) > 0 {
+		for _, action := range e.Actions {
 			builder.WriteString(fmt.Sprintf("/%s - %s\n", action.Name, action.Description))
 		}
 	}
 	builder.WriteString(help)
-	err = c.Send(builder.String(), p.genKeyboard())
+	err = c.Send(builder.String(), e.genKeyboard())
 	return err
 }
 
-func (p *Actor) commandQuit(c tele.Context) (err error) {
+func (e *Actor) commandQuit(c tele.Context) (err error) {
 
 	var (
 		chat = c.Chat()
 	)
 
-	_ = p.Service.Adaptors().TelegramChat.Delete(context.Background(), p.Id, chat.ID)
+	_ = e.Service.Adaptors().TelegramChat.Delete(context.Background(), e.Id, chat.ID)
 	err = c.Send("/quit -unsubscribe from bot\n/start - subscriber again")
 	return
 }
 
-func (p *Actor) commandAction(c tele.Context) (err error) {
+func (e *Actor) commandAction(c tele.Context) (err error) {
 
 	var (
 		text = c.Text()
 	)
 
-	p.runAction(events.EventCallEntityAction{
+	e.runAction(events.EventCallEntityAction{
 		ActionName: strings.Replace(text, "/", "", 1),
-		EntityId:   p.Id,
+		EntityId:   e.Id,
 	})
 	return
 }
 
-func (p *Actor) addAction(event events.EventCallEntityAction) {
-	p.actionPool <- event
+func (e *Actor) addAction(event events.EventCallEntityAction) {
+	e.actionPool <- event
 }
 
-func (p *Actor) runAction(msg events.EventCallEntityAction) {
-	action, ok := p.Actions[msg.ActionName]
+func (e *Actor) runAction(msg events.EventCallEntityAction) {
+	action, ok := e.Actions[msg.ActionName]
 	if !ok {
 		log.Warnf("action %s not found", msg.ActionName)
 		return
@@ -303,13 +303,13 @@ func (p *Actor) runAction(msg events.EventCallEntityAction) {
 // [button][button][button]
 // [button][button][button]
 // [button][button][button]
-func (p *Actor) genKeyboard() (menu *tele.ReplyMarkup) {
+func (e *Actor) genKeyboard() (menu *tele.ReplyMarkup) {
 	menu = &tele.ReplyMarkup{ResizeKeyboard: true}
 	var row []tele.Btn
-	if len(p.Actions) == 0 {
+	if len(e.Actions) == 0 {
 		return
 	}
-	for k := range p.Actions {
+	for k := range e.Actions {
 		row = append(row, menu.Text(fmt.Sprintf("/%s", k)))
 	}
 	menu.Reply(menu.Split(3, row)...)
