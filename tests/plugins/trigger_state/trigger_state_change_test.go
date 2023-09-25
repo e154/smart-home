@@ -67,6 +67,7 @@ zigbee2mqttEvent = ->
   SetState ENTITY_ID,
     'new_state': state.toUpperCase()
     'attribute_values': attrs
+    'storage_save': true
 `
 
 		task1SourceScript = `
@@ -167,7 +168,7 @@ automationTriggerStateChanged = (msg)->
 			err = AddTrigger(trigger, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
-			time.Sleep(time.Millisecond * 700)
+			time.Sleep(time.Millisecond * 500)
 
 			//TASK1
 			newTask := &m.NewTask{
@@ -179,18 +180,19 @@ automationTriggerStateChanged = (msg)->
 			err = AddTask(newTask, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
-			time.Sleep(time.Millisecond * 700)
+			time.Sleep(time.Millisecond * 500)
 
 			// ------------------------------------------------
 
 			mqttCli := mqttServer.NewClient("cli2")
 			err = mqttCli.Publish("zigbee2mqtt/"+zigbeeButtonId, []byte(`{"battery":100,"action":"double","linkquality":134,"voltage":3042}`))
 			So(err, ShouldBeNil)
+			time.Sleep(time.Millisecond * 500)
 			err = mqttCli.Publish("zigbee2mqtt/"+zigbeeButtonId, []byte(`{"battery":100,"click":"double","linkquality":134,"voltage":3042}`))
 			So(err, ShouldBeNil)
-			time.Sleep(time.Millisecond * 700)
+			time.Sleep(time.Millisecond * 500)
 
-			timer := time.NewTimer(time.Second * 2)
+			timer := time.NewTimer(time.Second * 4)
 			defer timer.Stop()
 
 			select {
