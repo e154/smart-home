@@ -65,6 +65,12 @@ jobs:
           echo -e "machine github.com\n  login ${{ secrets.GITHUBTOKEN }}" > ~/.netrc
           make get_deps
 
+      - name: Build public
+        id: build-public
+        env:
+          NODE_OPTIONS: "--max_old_space_size=4096"
+        run: make build_public
+
       - name: Unit tests
         id: test-code
         run: make test
@@ -75,6 +81,4 @@ jobs:
 
       - name: trying to build
         id: build-all
-        env:
-          NODE_OPTIONS: "--max_old_space_size=4096"
-        run: make all
+        run: make build_server build_cli build_structure build_common_structure build_archive docker_image
