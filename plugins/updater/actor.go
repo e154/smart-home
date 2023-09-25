@@ -130,7 +130,7 @@ func (e *Actor) check() {
 
 	e.lastCheck = time.Now()
 	e.latestVersion = data.TagName
-	e.latestVersionTime = data.CreatedAt
+	e.latestVersionTime = data.CreatedAt.UTC()
 	for _, asset := range data.Assets {
 		e.latestDownloadUrl = asset.BrowserDownloadUrl
 	}

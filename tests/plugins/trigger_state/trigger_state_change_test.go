@@ -128,7 +128,9 @@ automationTriggerStateChanged = (msg)->
 			scriptService.PushFunctions("Done", func(state string) {
 				lastStat.Store(state)
 				counter.Inc()
-				close(ch)
+				if counter.Load() > 1 {
+					close(ch)
+				}
 			})
 
 			time.Sleep(time.Millisecond * 500)
@@ -187,7 +189,6 @@ automationTriggerStateChanged = (msg)->
 			err = mqttCli.Publish("zigbee2mqtt/"+zigbeeButtonId, []byte(`{"battery":100,"click":"double","linkquality":134,"voltage":3042}`))
 			So(err, ShouldBeNil)
 			time.Sleep(time.Millisecond * 700)
-
 
 			timer := time.NewTimer(time.Second * 2)
 			defer timer.Stop()

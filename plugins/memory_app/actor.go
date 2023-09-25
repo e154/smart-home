@@ -75,7 +75,7 @@ func (e *Actor) selfUpdate() {
 	e.Attrs[AttrTotalAlloc].Value = s.TotalAlloc
 	e.Attrs[AttrSys].Value = s.Sys
 	e.Attrs[AttrNumGC].Value = s.NumGC
-	e.Attrs[AttrLastGC].Value = time.Unix(0, int64(s.LastGC))
+	e.Attrs[AttrLastGC].Value = time.Unix(0, int64(s.LastGC)).UTC()
 	e.AttrMu.Unlock()
 
 	//e.SetMetric(e.Id, "memory_app", map[string]float32{
