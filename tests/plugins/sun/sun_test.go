@@ -90,9 +90,7 @@ func TestSun(t *testing.T) {
 					ctx.So(err, ShouldBeNil)
 					sun.UpdateSunPosition(time.Date(2021, 5, 27, 23, 0, 0, 0, loc))
 
-					time.Sleep(time.Second * 2)
-
-					ticker := time.NewTimer(time.Second * 2)
+					ticker := time.NewTimer(time.Second * 5)
 					defer ticker.Stop()
 
 					var msg events.EventStateChanged
