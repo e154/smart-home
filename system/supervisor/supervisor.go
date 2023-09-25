@@ -311,7 +311,7 @@ LOOP:
 
 	for _, entity := range entities {
 		go func(entity *m.Entity) {
-			if err := e.AddEntity(entity); err != nil {
+			if err = e.AddEntity(entity); err != nil {
 				log.Warnf("%s, %s", entity.Id, err.Error())
 			}
 		}(entity)
