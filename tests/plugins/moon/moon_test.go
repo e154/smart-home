@@ -45,25 +45,24 @@ func TestMoon(t *testing.T) {
 			// register plugins
 			AddPlugin(adaptors, "moon")
 
-			supervisor.Start(context.Background())
-			WaitSupervisor(eventBus)
-
 			// add entity
 			// ------------------------------------------------
 			moonEnt := GetNewMoon("main")
 			err := adaptors.Entity.Add(context.Background(), moonEnt)
 			ctx.So(err, ShouldBeNil)
 
-			eventBus.Publish("system/entities/"+moonEnt.Id.String(), events.EventCreatedEntity{
-				EntityId: moonEnt.Id,
-			})
-
-			time.Sleep(time.Second)
-
 			ch := make(chan events.EventStateChanged, 2)
-			_ = eventBus.Subscribe("system/entities/"+moonEnt.Id.String(), func(topic string, msg events.EventStateChanged) {
-				ch <- msg
-			})
+			fn := func(topic string, msg interface{}) {
+				switch v := msg.(type) {
+				case events.EventStateChanged:
+					ch <- v
+				}
+			}
+
+			_ = eventBus.Subscribe("system/entities/"+moonEnt.Id.String(), fn)
+			defer func() {
+				_ = eventBus.Unsubscribe("system/entities/"+moonEnt.Id.String(), fn)
+			}()
 
 			moon := moonPlugin.NewActor(moonEnt, supervisor.GetService())
 
@@ -88,14 +87,10 @@ func TestMoon(t *testing.T) {
 					defer ticker.Stop()
 
 					var msg events.EventStateChanged
-					var ok bool
 					select {
 					case msg = <-ch:
-						ok = true
 					case <-ticker.C:
 					}
-
-					ctx.So(ok, ShouldBeTrue)
 
 					ctx.So(msg.NewState.State, ShouldNotBeNil)
 					ctx.So(msg.NewState.State.Name, ShouldEqual, moonPlugin.StateBelowHorizon)

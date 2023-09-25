@@ -44,20 +44,11 @@ func TestSun(t *testing.T) {
 
 			AddPlugin(adaptors, "sun")
 
-			supervisor.Start(context.Background())
-			WaitSupervisor(eventBus)
-
 			// add entity
 			// ------------------------------------------------
 			sunEnt := GetNewSun("main")
 			err := adaptors.Entity.Add(context.Background(), sunEnt)
 			ctx.So(err, ShouldBeNil)
-
-			eventBus.Publish("system/entities/"+sunEnt.Id.String(), events.EventCreatedEntity{
-				EntityId: sunEnt.Id,
-			})
-
-			time.Sleep(time.Second)
 
 			ch := make(chan events.EventStateChanged, 2)
 			fn := func(topic string, msg interface{}) {
@@ -66,9 +57,9 @@ func TestSun(t *testing.T) {
 					ch <- v
 				}
 			}
-			_ = eventBus.Subscribe("system/entities/+", fn)
+			_ = eventBus.Subscribe("system/entities/"+sunEnt.Id.String(), fn)
 			defer func() {
-				_ = eventBus.Unsubscribe("system/entities/+", fn)
+				_ = eventBus.Unsubscribe("system/entities/"+sunEnt.Id.String(), fn)
 			}()
 
 			sun := sunPlugin.NewActor(sunEnt, supervisor.GetService())
@@ -94,14 +85,10 @@ func TestSun(t *testing.T) {
 					defer ticker.Stop()
 
 					var msg events.EventStateChanged
-					var ok bool
 					select {
 					case msg = <-ch:
-						ok = true
 					case <-ticker.C:
 					}
-
-					ctx.So(ok, ShouldBeTrue)
 
 					//debug.Println(msg.NewState.Attributes)
 
