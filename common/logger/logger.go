@@ -36,7 +36,7 @@ func MustGetLogger(p string) *Logger {
 
 // Error ...
 func (l *Logger) Error(format string, args ...interface{}) {
-	zap.L().Named(l.p).Sugar().Error(format)
+	zap.L().Named(l.p).Sugar().Error(format, args)
 }
 
 // Errorf ...

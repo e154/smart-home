@@ -70,6 +70,7 @@ type Supervisor interface {
 type PluginActor interface {
 	Spawn()
 	Destroy()
+	StopWatchers()
 	Attributes() m.Attributes
 	Settings() m.Attributes
 	Metrics() []*m.Metric
@@ -86,11 +87,11 @@ type ActorConstructor func(*m.Entity) (PluginActor, error)
 
 // ActorAction ...
 type ActorAction struct {
-	Name         string          `json:"name"`
-	Description  string          `json:"description"`
-	ImageUrl     *string         `json:"image_url"`
-	Icon         *string         `json:"icon"`
-	ScriptEngine *scripts.Engine `json:"-"`
+	Name         string                 `json:"name"`
+	Description  string                 `json:"description"`
+	ImageUrl     *string                `json:"image_url"`
+	Icon         *string                `json:"icon"`
+	ScriptEngine *scripts.EngineWatcher `json:"-"`
 }
 
 // ToEntityActionShort ...

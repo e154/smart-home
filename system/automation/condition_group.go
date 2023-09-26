@@ -50,6 +50,12 @@ func (c *ConditionGroup) AddCondition(condition *Condition) {
 	c.rules = append(c.rules, condition)
 }
 
+func (c *ConditionGroup) Stop() {
+	for _, condition := range c.rules {
+		condition.Stop()
+	}
+}
+
 // Check ...
 func (c *ConditionGroup) Check(entityId *common.EntityId) (state bool, err error) {
 	c.Lock()

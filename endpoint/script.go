@@ -21,6 +21,7 @@ package endpoint
 import (
 	"context"
 	"fmt"
+	"github.com/e154/smart-home/common/events"
 	"strconv"
 	"strings"
 
@@ -46,7 +47,7 @@ func NewScriptEndpoint(common *CommonEndpoint) *ScriptEndpoint {
 }
 
 // Add ...
-func (n *ScriptEndpoint) Add(ctx context.Context, params *m.Script) (result *m.Script, errs validator.ValidationErrorsTranslations, err error) {
+func (n *ScriptEndpoint) Add(ctx context.Context, params *m.Script) (script *m.Script, errs validator.ValidationErrorsTranslations, err error) {
 
 	var ok bool
 	if ok, errs = n.validation.Valid(params); !ok {
@@ -69,7 +70,14 @@ func (n *ScriptEndpoint) Add(ctx context.Context, params *m.Script) (result *m.S
 		return
 	}
 
-	result, err = n.adaptors.Script.GetById(ctx, id)
+	if script, err = n.adaptors.Script.GetById(ctx, id); err != nil {
+		return
+	}
+
+	n.eventBus.Publish(fmt.Sprintf("system/scripts/%d", script.Id), events.EventCreatedScript{
+		ScriptId: script.Id,
+		Script:   script,
+	})
 
 	return
 }
@@ -105,7 +113,14 @@ func (n *ScriptEndpoint) Copy(ctx context.Context, scriptId int64) (script *m.Sc
 		return
 	}
 
-	script, err = n.adaptors.Script.GetById(ctx, id)
+	if script, err = n.adaptors.Script.GetById(ctx, id); err != nil {
+		return
+	}
+
+	n.eventBus.Publish(fmt.Sprintf("system/scripts/%d", script.Id), events.EventCreatedScript{
+		ScriptId: script.Id,
+		Script:   script,
+	})
 
 	return
 }
@@ -144,7 +159,14 @@ func (n *ScriptEndpoint) Update(ctx context.Context, params *m.Script) (result *
 		return
 	}
 
-	result, err = n.adaptors.Script.GetById(ctx, script.Id)
+	if result, err = n.adaptors.Script.GetById(ctx, script.Id); err != nil {
+		return
+	}
+
+	n.eventBus.Publish(fmt.Sprintf("system/scripts/%d", script.Id), events.EventUpdatedScript{
+		ScriptId: script.Id,
+		Script:   script,
+	})
 
 	return
 }
@@ -171,7 +193,13 @@ func (n *ScriptEndpoint) DeleteScriptById(ctx context.Context, scriptId int64) (
 		return
 	}
 
-	err = n.adaptors.Script.Delete(ctx, script.Id)
+	if err = n.adaptors.Script.Delete(ctx, script.Id); err != nil {
+		return
+	}
+
+	n.eventBus.Publish(fmt.Sprintf("system/scripts/%d", script.Id), events.EventScriptDeleted{
+		ScriptId: script.Id,
+	})
 
 	return
 }

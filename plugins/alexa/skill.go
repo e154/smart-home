@@ -34,7 +34,7 @@ type Skill struct {
 	model         *m.AlexaSkill
 	scriptService scripts.ScriptService
 	eventBus      bus.Bus
-	engine        *scripts.Engine
+	engine        *scripts.EngineWatcher
 	jsBind        *AlexaBind
 }
 
@@ -53,12 +53,11 @@ func NewSkill(model *m.AlexaSkill,
 	}
 
 	if model.Script != nil {
-		skill.engine, _ = scriptService.NewEngine(model.Script)
-		if err := skill.engine.Compile(); err != nil {
-			log.Error(err.Error())
-		}
-		skill.engine.PushStruct("Alexa", skill.jsBind)
-		_, _ = skill.engine.Do()
+		skill.engine, _ = scriptService.NewEngineWatcher(model.Script)
+		skill.engine.Spawn(func(engine *scripts.Engine) {
+			skill.engine.Engine().PushStruct("Alexa", skill.jsBind)
+			_, _ = skill.engine.Engine().Do()
+		})
 	}
 
 	return
@@ -75,7 +74,7 @@ func (h *Skill) OnLaunch(_ *gin.Context, req *Request, resp *Response) {
 		return
 	}
 	h.jsBind.update(req, resp)
-	if _, err := h.engine.AssertFunction("skillOnLaunch"); err != nil {
+	if _, err := h.engine.Engine().AssertFunction("skillOnLaunch"); err != nil {
 		log.Error(err.Error())
 	}
 }
@@ -90,11 +89,11 @@ func (h *Skill) OnIntent(_ *gin.Context, req *Request, resp *Response) {
 		exist = true
 
 		h.jsBind.update(req, resp)
-		if _, err := h.engine.EvalScript(intent.Script); err != nil {
+		if _, err := h.engine.Engine().EvalScript(intent.Script); err != nil {
 			log.Error(fmt.Sprintf("%+v", err))
 			return
 		}
-		if _, err := h.engine.AssertFunction("skillOnIntent"); err != nil {
+		if _, err := h.engine.Engine().AssertFunction("skillOnIntent"); err != nil {
 			log.Error(fmt.Sprintf("%+v", err))
 			return
 		}
@@ -113,7 +112,7 @@ func (h *Skill) OnSessionEnded(_ *gin.Context, req *Request, resp *Response) {
 	}
 
 	h.jsBind.update(req, resp)
-	if _, err := h.engine.AssertFunction("skillOnSessionEnd"); err != nil {
+	if _, err := h.engine.Engine().AssertFunction("skillOnSessionEnd"); err != nil {
 		log.Error(err.Error())
 	}
 }

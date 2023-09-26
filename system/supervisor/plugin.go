@@ -70,7 +70,7 @@ func (p *Plugin) Unload(ctx context.Context) error {
 
 	p.Actors.Range(func(key, value any) bool {
 		if pla, ok := value.(PluginActor); ok {
-			p.removeActor(pla)
+			p.removePluginActor(pla)
 		}
 		return true
 	})
@@ -158,13 +158,6 @@ func (p *Plugin) AddActor(pla PluginActor, entity *m.Entity) (err error) {
 	currentState := pla.GetEventState()
 	pla.SetCurrentState(currentState)
 
-	//p.Service.EventBus().Publish("system/entities/"+entity.Id.String(), events.EventAddedActor{
-	//	PluginName: info.PluginName,
-	//	EntityId:   entity.Id,
-	//	Attributes: attr,
-	//	Settings:   settings,
-	//})
-
 	p.Service.EventBus().Publish("system/entities/"+entity.Id.String(), events.EventEntityLoaded{
 		EntityId:   entity.Id,
 		PluginName: entity.PluginName,
@@ -199,16 +192,17 @@ func (p *Plugin) RemoveActor(entityId common.EntityId) (err error) {
 	}
 
 	pla := item.(PluginActor)
-	p.removeActor(pla)
+	p.removePluginActor(pla)
 	return
 }
 
-func (p *Plugin) removeActor(pla PluginActor) {
+func (p *Plugin) removePluginActor(pla PluginActor) {
 
 	info := pla.Info()
 	entityId := info.Id
 
 	pla.Destroy()
+	pla.StopWatchers()
 	p.Actors.Delete(entityId)
 
 	p.Service.EventBus().Publish("system/entities/"+entityId.String(), events.EventEntityUnloaded{

@@ -20,6 +20,7 @@ package models
 
 import (
 	"encoding/json"
+	"strconv"
 	"time"
 
 	"github.com/e154/smart-home/common"
@@ -55,4 +56,10 @@ func (v *Variable) SetObj(obj interface{}) (err error) {
 	}
 	v.Value = string(b)
 	return
+}
+
+// GetBool ...
+func (v *Variable) GetBool() bool {
+	b, _ := strconv.ParseBool(v.Value)
+	return b
 }

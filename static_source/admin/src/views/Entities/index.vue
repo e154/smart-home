@@ -170,7 +170,7 @@ onMounted(() => {
   setTimeout(() => {
     stream.subscribe('event_entity_loaded', currentID.value, onStateChanged);
     stream.subscribe('event_entity_unloaded', currentID.value, onStateChanged);
-  }, 1000)
+  }, 200)
 })
 
 onUnmounted(() => {

@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import {useI18n} from '@/hooks/web/useI18n'
 import {Table} from '@/components/Table'
-import {reactive, ref, watch} from 'vue'
+import {onMounted, onUnmounted, reactive, ref, watch} from 'vue'
 import {useAppStore} from "@/store/modules/app";
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
-import {ElSwitch} from 'element-plus'
+import {ElMessage, ElSwitch, ElButton} from 'element-plus'
 import {ApiPlugin} from "@/api/stub";
 import {useForm} from "@/hooks/web/useForm";
 import {useRouter} from "vue-router";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {EventStateChange} from "@/api/stream_types";
+import {UUID} from "uuid-generator-ts";
+import stream from "@/api/stream";
 
 const {push, currentRoute} = useRouter()
 const remember = ref(false)
@@ -61,6 +64,26 @@ const paginationObj = ref<Pagination>({
   total: 0,
 })
 const currentID = ref('')
+
+const onStateChanged = (event: EventStateChange) => {
+  console.log('--qwe')
+  getList()
+}
+
+onMounted(() => {
+  const uuid = new UUID()
+  currentID.value = uuid.getDashFreeUUID()
+
+  setTimeout(() => {
+    stream.subscribe('event_plugin_loaded', currentID.value, onStateChanged);
+    stream.subscribe('event_plugin_unloaded', currentID.value, onStateChanged);
+  }, 200)
+})
+
+onUnmounted(() => {
+  stream.unsubscribe('event_plugin_loaded', currentID.value);
+  stream.unsubscribe('event_plugin_unloaded', currentID.value);
+})
 
 const getList = async () => {
   tableObject.loading = true
@@ -118,6 +141,28 @@ const selectRow = (row) => {
   push(`/etc/plugins/edit/${name}`)
 }
 
+const enable = async (plugin: ApiPlugin) => {
+  if (!plugin?.name) return;
+  await api.v1.pluginServiceEnablePlugin(plugin.name);
+  ElMessage({
+    title: t('Success'),
+    message: t('message.requestSentSuccessfully'),
+    type: 'success',
+    duration: 2000
+  });
+}
+
+const disable = async (plugin: ApiPlugin) => {
+  if (!plugin?.name) return;
+  await api.v1.pluginServiceDisablePlugin(plugin.name);
+  ElMessage({
+    title: t('Success'),
+    message: t('message.requestSentSuccessfully'),
+    type: 'success',
+    duration: 2000
+  });
+}
+
 </script>
 
 <template>
@@ -136,12 +181,14 @@ const selectRow = (row) => {
         @current-change="selectRow"
     >
       <template #status="{ row }">
-
         <div class="w-[100%] text-center">
-          <Icon icon="noto:green-circle" class="mr-5px" v-if="row?.isLoaded"/>
-          <Icon icon="noto:red-circle" class="mr-5px" v-if="!row?.isLoaded"/>
+          <ElButton :link="true" @click.prevent.stop="enable(row)" v-if="!row?.isLoaded">
+            <Icon icon="noto:red-circle" class="mr-5px"/>
+          </ElButton>
+          <ElButton :link="true" @click.prevent.stop="disable(row)" v-if="row?.isLoaded">
+            <Icon icon="noto:green-circle" class="mr-5px"/>
+          </ElButton>
         </div>
-
       </template>
     </Table>
   </ContentWrap>

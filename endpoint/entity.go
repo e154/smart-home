@@ -99,7 +99,14 @@ func (n *EntityEndpoint) Import(ctx context.Context, entity *m.Entity) (err erro
 		}
 	}
 
-	err = n.adaptors.Entity.Import(ctx, entity)
+	if err = n.adaptors.Entity.Import(ctx, entity); err != nil {
+		return
+	}
+
+	n.eventBus.Publish("system/entities/"+entity.Id.String(), events.EventCreatedEntity{
+		EntityId: entity.Id,
+	})
+
 	return
 }
 

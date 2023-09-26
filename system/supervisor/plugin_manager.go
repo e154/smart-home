@@ -146,7 +146,7 @@ func (p *pluginManager) loadPlugin(ctx context.Context, name string) (err error)
 
 	p.pluginsWg.Add(1)
 
-	p.eventBus.Publish("system/plugins/"+name, events.EventLoadedPlugin{
+	p.eventBus.Publish("system/plugins/"+name, events.EventPluginLoaded{
 		PluginName: name,
 	})
 
@@ -172,7 +172,7 @@ func (p *pluginManager) unloadPlugin(ctx context.Context, name string) (err erro
 
 	p.pluginsWg.Done()
 
-	p.eventBus.Publish("system/plugins/+", events.EventUnloadedPlugin{
+	p.eventBus.Publish("system/plugins/+", events.EventPluginUnloaded{
 		PluginName: string(name),
 	})
 

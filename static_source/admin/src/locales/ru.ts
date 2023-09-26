@@ -579,10 +579,12 @@ export default {
   },
   settings: {
     dashboardOptions: 'Настройки панели',
-    mainDarkDashboard: 'Main Dark Dashboard',
-    mainLightDashboard: 'Main Light Dashboard',
-    devDarkDashboard: 'Dev Dark Dashboard',
-    devLightDashboard: 'Dev Light Dashboard'
+    mainDarkDashboard: 'Основная тёмная панель управления',
+    mainLightDashboard: 'Основная светлая панель управления',
+    devDarkDashboard: 'Тёмная разработческая панель управления',
+    devLightDashboard: 'Светлая разработческая панель управления',
+    scriptsOptions: 'Параметры скриптов',
+    restartComponentIfScriptChanged: 'Перезапустить компонент, если скрипт изменился'
   },
   tools: {
     eventBus: {

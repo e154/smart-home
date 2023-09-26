@@ -37,7 +37,6 @@ func init() {
 type plugin struct {
 	*supervisor.Plugin
 	ticker *time.Ticker
-	actor  *Actor
 }
 
 // New ...
@@ -50,7 +49,7 @@ func New() supervisor.Pluggable {
 
 // Load ...
 func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(ctx, service, nil); err != nil {
+	if err = p.Plugin.Load(ctx, service, p.ActorConstructor); err != nil {
 		return
 	}
 
@@ -66,15 +65,16 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 		err = p.Service.Adaptors().Entity.Add(context.Background(), entity)
 	}
 
-	p.actor = NewActor(entity, p.Service)
-	p.AddActor(p.actor, entity)
-
 	go func() {
 		const pause = 10
 		p.ticker = time.NewTicker(time.Second * time.Duration(pause))
 
 		for range p.ticker.C {
-			p.actor.selfUpdate()
+			p.Actors.Range(func(key, value any) bool {
+				actor, _ := value.(*Actor)
+				actor.selfUpdate()
+				return true
+			})
 		}
 	}()
 
@@ -87,9 +87,15 @@ func (p *plugin) Unload(ctx context.Context) (err error) {
 		p.ticker.Stop()
 		p.ticker = nil
 	}
-	p.actor = nil
-	if err = p.Plugin.Unload(ctx); err != nil {
-		return
+	err = p.Plugin.Unload(ctx)
+	return
+}
+
+// ActorConstructor ...
+func (p *plugin) ActorConstructor(entity *m.Entity) (actor supervisor.PluginActor, err error) {
+	actor = NewActor(entity, p.Service)
+	if entity.Metrics == nil {
+		entity.Metrics = NewMetrics()
 	}
 	return
 }

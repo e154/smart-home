@@ -72,7 +72,7 @@ func NewStreamService(lc fx.Lifecycle,
 // Start ...
 func (s *Stream) Start(_ context.Context) error {
 	_ = s.eventBus.Subscribe("system/entities/+", s.eventHandler.eventHandler)
-	_ = s.eventBus.Subscribe("system/plugins/html5_notify", s.eventHandler.eventHandler)
+	_ = s.eventBus.Subscribe("system/plugins/+", s.eventHandler.eventHandler)
 	_ = s.eventBus.Subscribe("system/automation/#", s.eventHandler.eventHandler)
 	_ = s.eventBus.Subscribe(webpush.TopicPluginWebpush, s.eventHandler.eventHandler)
 	_ = s.eventBus.Subscribe("system/services/mqtt", s.eventHandler.eventHandler)
@@ -83,7 +83,7 @@ func (s *Stream) Start(_ context.Context) error {
 // Shutdown ...
 func (s *Stream) Shutdown(_ context.Context) error {
 	_ = s.eventBus.Unsubscribe("system/entities/+", s.eventHandler.eventHandler)
-	_ = s.eventBus.Unsubscribe("system/plugins/html5_notify", s.eventHandler.eventHandler)
+	_ = s.eventBus.Unsubscribe("system/plugins/+", s.eventHandler.eventHandler)
 	_ = s.eventBus.Unsubscribe("system/automation/#", s.eventHandler.eventHandler)
 	_ = s.eventBus.Unsubscribe("system/services/mqtt", s.eventHandler.eventHandler)
 	_ = s.eventBus.Unsubscribe(webpush.TopicPluginWebpush, s.eventHandler.eventHandler)

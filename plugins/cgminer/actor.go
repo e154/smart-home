@@ -129,15 +129,15 @@ func NewActor(entity *m.Entity,
 
 	// Actions
 	for _, a := range actor.Actions {
-		if a.ScriptEngine != nil {
+		if a.ScriptEngine.Engine() != nil {
 			// bind
-			a.ScriptEngine.PushFunction("Miner", actor.miner.Bind())
-			_, _ = a.ScriptEngine.Do()
+			a.ScriptEngine.Engine().PushFunction("Miner", actor.miner.Bind())
+			_, _ = a.ScriptEngine.Engine().Do()
 		}
 	}
 
-	if actor.ScriptEngine != nil {
-		actor.ScriptEngine.PushFunction("Miner", actor.miner.Bind())
+	if actor.ScriptEngine.Engine() != nil {
+		actor.ScriptEngine.Engine().PushFunction("Miner", actor.miner.Bind())
 	}
 
 	// action worker
@@ -202,10 +202,10 @@ func (e *Actor) runAction(msg events.EventCallEntityAction) {
 		log.Warnf("action %s not found", msg.ActionName)
 		return
 	}
-	if action.ScriptEngine == nil {
+	if action.ScriptEngine.Engine() == nil {
 		return
 	}
-	if _, err := action.ScriptEngine.AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
+	if _, err := action.ScriptEngine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
 		log.Error(err.Error())
 	}
 }

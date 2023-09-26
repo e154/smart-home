@@ -39,7 +39,7 @@ type Action struct {
 	model         *m.Action
 	scriptService scripts.ScriptService
 	eventBus      bus.Bus
-	scriptEngine  *scripts.Engine
+	scriptEngine  *scripts.EngineWatcher
 	inProcess     atomic.Bool
 	sync.Mutex
 }
@@ -56,15 +56,23 @@ func NewAction(scriptService scripts.ScriptService,
 	}
 
 	if model.Script != nil {
-		if action.scriptEngine, err = scriptService.NewEngine(model.Script); err != nil {
+		if action.scriptEngine, err = scriptService.NewEngineWatcher(model.Script); err != nil {
 			return
 		}
 
-		if _, err = action.scriptEngine.Do(); err != nil {
-			return
-		}
+		action.scriptEngine.Spawn(func(engine *scripts.Engine) {
+			if _, err = engine.Do(); err != nil {
+				return
+			}
 
-		action.scriptEngine.PushStruct("Action", NewActionBind(action))
+			engine.PushStruct("Action", NewActionBind(action))
+
+			if model.EntityId != nil {
+				if _, err = engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", model.EntityId.String())); err != nil {
+					log.Error(err.Error())
+				}
+			}
+		})
 	}
 
 	eventBus.Subscribe(fmt.Sprintf("system/automation/actions/%d", model.Id), action.actionHandler)
@@ -73,6 +81,9 @@ func NewAction(scriptService scripts.ScriptService,
 }
 
 func (a *Action) Remove() {
+	if a.scriptEngine != nil {
+		a.scriptEngine.Stop()
+	}
 	a.eventBus.Unsubscribe(fmt.Sprintf("system/automation/actions/%d", a.model.Id), a.actionHandler)
 }
 
@@ -84,7 +95,7 @@ func (a *Action) Run(entityId *common.EntityId) (result string, err error) {
 	//log.Infof("run action")
 
 	if a.scriptEngine != nil {
-		if result, err = a.scriptEngine.AssertFunction(ActionFunc, entityId); err != nil {
+		if result, err = a.scriptEngine.Engine().AssertFunction(ActionFunc, entityId); err != nil {
 			log.Error(err.Error())
 		}
 	}

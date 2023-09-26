@@ -23,6 +23,7 @@ import (
 	"github.com/pkg/errors"
 	"go.uber.org/atomic"
 	"go.uber.org/fx"
+	"runtime/debug"
 	"sync"
 
 	"github.com/e154/smart-home/adaptors"
@@ -44,9 +45,10 @@ var (
 
 type supervisor struct {
 	*pluginManager
-	scriptService scripts.ScriptService
-	quit          chan struct{}
-	entitiesWg    *sync.WaitGroup
+	scriptService     scripts.ScriptService
+	entitiesWg        *sync.WaitGroup
+	eventScriptSubsMx sync.RWMutex
+	eventScriptSubs   map[int64]map[common.EntityId]struct{}
 }
 
 // NewSupervisor ...
@@ -61,9 +63,9 @@ func NewSupervisor(lc fx.Lifecycle,
 	scheduler *scheduler.Scheduler,
 	crawler web.Crawler) Supervisor {
 	s := &supervisor{
-		scriptService: scriptService,
-		quit:          make(chan struct{}),
-		entitiesWg:    &sync.WaitGroup{},
+		scriptService:   scriptService,
+		entitiesWg:      &sync.WaitGroup{},
+		eventScriptSubs: make(map[int64]map[common.EntityId]struct{}),
 	}
 	s.pluginManager = &pluginManager{
 		adaptors:       adaptors,
@@ -98,17 +100,9 @@ func (e *supervisor) Start(ctx context.Context) (err error) {
 	// event subscribe
 	_ = e.eventBus.Subscribe("system/entities/+", e.eventHandler)
 	_ = e.eventBus.Subscribe("system/plugins/+", e.eventHandler)
+	_ = e.eventBus.Subscribe("system/scripts/+", e.eventHandler)
 
-	e.scriptService.PushFunctions("GetEntity", GetEntityBind(e))
-	e.scriptService.PushFunctions("SetState", SetStateBind(e))
-	e.scriptService.PushFunctions("SetStateName", SetStateNameBind(e))
-	e.scriptService.PushFunctions("GetState", GetStateBind(e))
-	e.scriptService.PushFunctions("SetAttributes", SetAttributesBind(e))
-	e.scriptService.PushFunctions("GetAttributes", GetAttributesBind(e))
-	e.scriptService.PushFunctions("GetSettings", GetSettingsBind(e))
-	e.scriptService.PushFunctions("SetMetric", SetMetricBind(e))
-	e.scriptService.PushFunctions("CallAction", CallActionBind(e))
-	e.scriptService.PushFunctions("CallScene", CallSceneBind(e))
+	e.bindScripts()
 
 	e.pluginManager.Start(ctx)
 
@@ -139,6 +133,7 @@ func (e *supervisor) Shutdown(ctx context.Context) (err error) {
 	_ = e.eventBus.Unsubscribe("system/services/scripts", e.handlerSystemScripts)
 	_ = e.eventBus.Unsubscribe("system/entities/+", e.eventHandler)
 	_ = e.eventBus.Unsubscribe("system/plugins/+", e.eventHandler)
+	_ = e.eventBus.Unsubscribe("system/scripts/+", e.eventHandler)
 
 	e.eventBus.Publish("system/services/supervisor", events.EventServiceStopped{Service: "Supervisor"})
 
@@ -160,17 +155,21 @@ func (e *supervisor) handlerSystemScripts(_ string, event interface{}) {
 
 	switch event.(type) {
 	case events.EventServiceStarted, events.EventServiceRestarted:
-		e.scriptService.PushFunctions("GetEntity", GetEntityBind(e))
-		e.scriptService.PushFunctions("SetState", SetStateBind(e))
-		e.scriptService.PushFunctions("SetStateName", SetStateBind(e))
-		e.scriptService.PushFunctions("GetState", GetStateBind(e))
-		e.scriptService.PushFunctions("SetAttributes", SetAttributesBind(e))
-		e.scriptService.PushFunctions("GetAttributes", GetAttributesBind(e))
-		e.scriptService.PushFunctions("GetSettings", GetSettingsBind(e))
-		e.scriptService.PushFunctions("SetMetric", SetMetricBind(e))
-		e.scriptService.PushFunctions("CallAction", CallActionBind(e))
-		e.scriptService.PushFunctions("CallScene", CallSceneBind(e))
+		e.bindScripts()
 	}
+}
+
+func (e *supervisor) bindScripts() {
+	e.scriptService.PushFunctions("GetEntity", GetEntityBind(e))
+	e.scriptService.PushFunctions("SetState", SetStateBind(e))
+	e.scriptService.PushFunctions("SetStateName", SetStateBind(e))
+	e.scriptService.PushFunctions("GetState", GetStateBind(e))
+	e.scriptService.PushFunctions("SetAttributes", SetAttributesBind(e))
+	e.scriptService.PushFunctions("GetAttributes", GetAttributesBind(e))
+	e.scriptService.PushFunctions("GetSettings", GetSettingsBind(e))
+	e.scriptService.PushFunctions("SetMetric", SetMetricBind(e))
+	e.scriptService.PushFunctions("CallAction", CallActionBind(e))
+	e.scriptService.PushFunctions("CallScene", CallSceneBind(e))
 }
 
 // SetMetric ...
@@ -192,7 +191,10 @@ func (e *supervisor) SetState(id common.EntityId, params EntityStateParams) (err
 		return
 	}
 
-	err = pla.SetState(params)
+	if err = pla.SetState(params); err != nil {
+		debug.PrintStack()
+		log.Error(err.Error())
+	}
 
 	return
 }
@@ -249,7 +251,7 @@ func (e *supervisor) GetActorById(id common.EntityId) (pla PluginActor, err erro
 func (e *supervisor) eventHandler(_ string, message interface{}) {
 
 	switch msg := message.(type) {
-	case events.EventLoadedPlugin:
+	case events.EventPluginLoaded:
 		go func() { _ = e.eventLoadedPlugin(msg) }()
 	case events.EventCreatedEntity:
 		go e.eventCreatedEntity(msg)
@@ -263,6 +265,14 @@ func (e *supervisor) eventHandler(_ string, message interface{}) {
 		go e.eventEntitySetState(msg)
 	case events.EventGetLastState:
 		go e.eventLastState(msg)
+	case events.EventUpdatedScript:
+		go e.eventUpdatedScript(msg)
+	case events.EventScriptDeleted:
+		go e.eventScriptDeleted(msg)
+	case events.EventEntityLoaded:
+		go e.eventEntityLoaded(msg)
+	case events.EventEntityUnloaded:
+		go e.eventEntityUnloaded(msg)
 	}
 }
 
@@ -294,7 +304,7 @@ func (e *supervisor) eventLastState(msg events.EventGetLastState) {
 	})
 }
 
-func (e *supervisor) eventLoadedPlugin(msg events.EventLoadedPlugin) (err error) {
+func (e *supervisor) eventLoadedPlugin(msg events.EventPluginLoaded) (err error) {
 
 	log.Infof("Load plugin '%s' entities", msg.PluginName)
 
@@ -342,8 +352,11 @@ func (e *supervisor) eventCreatedEntity(msg events.EventCreatedEntity) {
 }
 
 func (e *supervisor) eventUpdatedEntity(msg events.EventUpdatedEntity) {
+	e.updatedEntityById(msg.EntityId)
+}
 
-	entity, err := e.adaptors.Entity.GetById(context.Background(), msg.EntityId)
+func (e *supervisor) updatedEntityById(entityId common.EntityId) {
+	entity, err := e.adaptors.Entity.GetById(context.Background(), entityId)
 	if err != nil || !entity.AutoLoad {
 		return
 	}
@@ -457,3 +470,92 @@ func (e *supervisor) UnloadEntity(id common.EntityId) {
 func (e *supervisor) GetService() Service {
 	return e.service
 }
+
+//
+// watch to see if the scripts change
+//
+func (e *supervisor) eventUpdatedScript(msg events.EventUpdatedScript) {
+
+	if _, ok := e.eventScriptSubs[msg.ScriptId]; !ok {
+		return
+	}
+
+	variable, err := e.adaptors.Variable.GetByName(context.Background(), "restartComponentIfScriptChanged")
+	if err != nil || !variable.GetBool() {
+		return
+	}
+
+	e.eventScriptSubsMx.RLock()
+	defer e.eventScriptSubsMx.RUnlock()
+
+	for entityId, _ := range e.eventScriptSubs[msg.ScriptId] {
+		go e.updatedEntityById(entityId)
+	}
+}
+
+func (e *supervisor) eventScriptDeleted(msg events.EventScriptDeleted) {
+
+	if _, ok := e.eventScriptSubs[msg.ScriptId]; !ok {
+		return
+	}
+
+	variable, err := e.adaptors.Variable.GetByName(context.Background(), "restartComponentIfScriptChanged")
+	if err != nil || !variable.GetBool() {
+		return
+	}
+
+	e.eventScriptSubsMx.RLock()
+	defer e.eventScriptSubsMx.RUnlock()
+
+	for entityId, _ := range e.eventScriptSubs[msg.ScriptId] {
+		go e.UnloadEntity(entityId)
+	}
+}
+
+func (e *supervisor) eventEntityLoaded(msg events.EventEntityLoaded) {
+	go e.updateScriptWatcher(msg.EntityId)
+}
+
+func (e *supervisor) updateScriptWatcher(entityId common.EntityId) {
+
+	e.eventScriptSubsMx.Lock()
+	defer e.eventScriptSubsMx.Unlock()
+
+	entity, err := e.adaptors.Entity.GetById(context.Background(), entityId)
+	if err != nil {
+		return
+	}
+
+	if entity.Scripts != nil {
+		for _, script := range entity.Scripts {
+			if e.eventScriptSubs[script.Id] == nil {
+				e.eventScriptSubs[script.Id] = make(map[common.EntityId]struct{})
+			}
+			e.eventScriptSubs[script.Id][entity.Id] = struct{}{}
+		}
+	}
+
+	if entity.Actions != nil {
+		for _, action := range entity.Actions {
+			if action.ScriptId != nil {
+				if e.eventScriptSubs[*action.ScriptId] == nil {
+					e.eventScriptSubs[*action.ScriptId] = make(map[common.EntityId]struct{})
+				}
+				e.eventScriptSubs[*action.ScriptId][entity.Id] = struct{}{}
+			}
+		}
+	}
+}
+
+func (e *supervisor) eventEntityUnloaded(msg events.EventEntityUnloaded) {
+
+	e.eventScriptSubsMx.Lock()
+	defer e.eventScriptSubsMx.Unlock()
+
+	for scriptId, _ := range e.eventScriptSubs {
+		delete(e.eventScriptSubs[scriptId], msg.EntityId)
+	}
+}
+//
+// \watch to see if the scripts change
+//

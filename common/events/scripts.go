@@ -18,12 +18,21 @@
 
 package events
 
-// EventPluginLoaded ...
-type EventPluginLoaded struct {
-	PluginName string `json:"plugin_name"`
+import m "github.com/e154/smart-home/models"
+
+// EventCreatedScript ...
+type EventCreatedScript struct {
+	ScriptId int64     `json:"script_id"`
+	Script   *m.Script `json:"script"`
 }
 
-// EventPluginUnloaded ...
-type EventPluginUnloaded struct {
-	PluginName string `json:"plugin_name"`
+// EventUpdatedScript ...
+type EventUpdatedScript struct {
+	ScriptId int64     `json:"script_id"`
+	Script   *m.Script `json:"script"`
+}
+
+// EventScriptDeleted ...
+type EventScriptDeleted struct {
+	ScriptId int64 `json:"script_id"`
 }

@@ -30,14 +30,17 @@ import (
 func NewCondition(scriptService scripts.ScriptService,
 	model *m.Condition) (condition *Condition, err error) {
 
-	var scriptEngine *scripts.Engine
-	if scriptEngine, err = scriptService.NewEngine(model.Script); err != nil {
+	var scriptEngine *scripts.EngineWatcher
+	if scriptEngine, err = scriptService.NewEngineWatcher(model.Script); err != nil {
 		return
 	}
 
-	if _, err = scriptEngine.Do(); err != nil {
-		return
-	}
+	scriptEngine.Spawn(func(engine *scripts.Engine) {
+		engine.PushStruct("Condition", NewConditionBind(condition))
+		if _, err = engine.Do(); err != nil {
+			return
+		}
+	})
 
 	condition = &Condition{
 		model:        model,
@@ -45,8 +48,6 @@ func NewCondition(scriptService scripts.ScriptService,
 		lastStatus:   atomic.Bool{},
 		scriptEngine: scriptEngine,
 	}
-
-	scriptEngine.PushStruct("Condition", NewConditionBind(condition))
 
 	return
 }
@@ -56,13 +57,19 @@ type Condition struct {
 	model        *m.Condition
 	inProcess    atomic.Bool
 	lastStatus   atomic.Bool
-	scriptEngine *scripts.Engine
+	scriptEngine *scripts.EngineWatcher
+}
+
+func (r *Condition) Stop() {
+	if r.scriptEngine != nil {
+		r.scriptEngine.Stop()
+	}
 }
 
 // Check ...
 func (r *Condition) Check(ctx context.Context) (result string, err error) {
 
-	if result, err = r.scriptEngine.AssertFunction(ConditionFunc, ctx.Value("entityId")); err != nil {
+	if result, err = r.scriptEngine.Engine().AssertFunction(ConditionFunc, ctx.Value("entityId")); err != nil {
 		log.Error(err.Error())
 	}
 

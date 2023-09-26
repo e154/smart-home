@@ -23,6 +23,7 @@ import (
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/media"
+	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
@@ -46,15 +47,18 @@ func NewActor(entity *m.Entity,
 
 	// Actions
 	for _, a := range actor.Actions {
-		if a.ScriptEngine != nil {
-			// bind
-			a.ScriptEngine.PushStruct("Camera", clientBind)
-			_, _ = a.ScriptEngine.Do()
+		if a.ScriptEngine.Engine() != nil {
+			a.ScriptEngine.Spawn(func(engine *scripts.Engine) {
+				engine.PushStruct("Camera", clientBind)
+				_, _ = engine.Do()
+			})
 		}
 	}
 
-	if actor.ScriptEngine != nil {
-		actor.ScriptEngine.PushStruct("Camera", clientBind)
+	if actor.ScriptEngine.Engine() != nil {
+		actor.ScriptEngine.Spawn(func(engine *scripts.Engine) {
+			engine.PushStruct("Camera", clientBind)
+		})
 	}
 
 	if actor.Attrs == nil {
@@ -125,10 +129,10 @@ func (a *Actor) runAction(msg events.EventCallEntityAction) {
 		log.Warnf("action %s not found", msg.ActionName)
 		return
 	}
-	if action.ScriptEngine == nil {
+	if action.ScriptEngine.Engine() == nil {
 		return
 	}
-	if _, err := action.ScriptEngine.AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
+	if _, err := action.ScriptEngine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
 		log.Error(err.Error())
 	}
 }

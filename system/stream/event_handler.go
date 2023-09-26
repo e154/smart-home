@@ -20,7 +20,6 @@ package stream
 
 import (
 	"encoding/json"
-
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/plugins/webpush"
 )
@@ -63,8 +62,10 @@ func (e *eventHandler) eventHandler(_ string, message interface{}) {
 		go e.eventDirectMessage(v.UserID, v.Query, v.Message)
 
 	// plugins
-	case events.EventLoadedPlugin:
-	case events.EventUnloadedPlugin:
+	case events.EventPluginLoaded:
+		go e.event(message)
+	case events.EventPluginUnloaded:
+		go e.event(message)
 
 	// tasks
 	case events.EventTaskLoaded:

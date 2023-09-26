@@ -60,15 +60,15 @@ func NewActor(entity *m.Entity,
 
 	// Actions
 	for _, a := range actor.Actions {
-		if a.ScriptEngine != nil {
+		if a.ScriptEngine.Engine() != nil {
 			// bind
-			a.ScriptEngine.PushFunction("ModbusRtu", NewModbusRtu(service.EventBus(), actor))
-			_, _ = a.ScriptEngine.Do()
+			a.ScriptEngine.Engine().PushFunction("ModbusRtu", NewModbusRtu(service.EventBus(), actor))
+			_, _ = a.ScriptEngine.Engine().Do()
 		}
 	}
 
-	if actor.ScriptEngine != nil {
-		actor.ScriptEngine.PushFunction("ModbusRtu", NewModbusRtu(service.EventBus(), actor))
+	if actor.ScriptEngine.Engine() != nil {
+		actor.ScriptEngine.Engine().PushFunction("ModbusRtu", NewModbusRtu(service.EventBus(), actor))
 	}
 
 	// action worker
@@ -127,7 +127,7 @@ func (e *Actor) runAction(msg events.EventCallEntityAction) {
 		log.Warnf("action %s not found", msg.ActionName)
 		return
 	}
-	if _, err := action.ScriptEngine.AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
+	if _, err := action.ScriptEngine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
 		log.Error(err.Error())
 	}
 }

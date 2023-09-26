@@ -60,14 +60,14 @@ func NewActor(entity *m.Entity,
 
 	// Actions
 	for _, a := range actor.Actions {
-		if a.ScriptEngine != nil {
-			a.ScriptEngine.PushStruct("message", actor.message)
-			_, _ = a.ScriptEngine.Do()
+		if a.ScriptEngine.Engine() != nil {
+			a.ScriptEngine.Engine().PushStruct("message", actor.message)
+			_, _ = a.ScriptEngine.Engine().Do()
 		}
 	}
 
-	if actor.ScriptEngine != nil {
-		actor.ScriptEngine.PushStruct("message", actor.message)
+	if actor.ScriptEngine.Engine() != nil {
+		actor.ScriptEngine.Engine().PushStruct("message", actor.message)
 	}
 
 	// mqtt worker
@@ -156,10 +156,10 @@ func (e *Actor) mqttNewMessage(message *Message) {
 	defer e.newMsgMu.Unlock()
 
 	e.message.Update(message)
-	if e.ScriptEngine == nil {
+	if e.ScriptEngine.Engine() == nil {
 		return
 	}
-	if _, err := e.ScriptEngine.AssertFunction(FuncZigbee2mqttEvent); err != nil {
+	if _, err := e.ScriptEngine.Engine().AssertFunction(FuncZigbee2mqttEvent); err != nil {
 		log.Error(err.Error())
 		return
 	}
@@ -175,10 +175,10 @@ func (e *Actor) runAction(msg events.EventCallEntityAction) {
 		log.Warnf("action %s not found", msg.ActionName)
 		return
 	}
-	if action.ScriptEngine == nil {
+	if action.ScriptEngine.Engine() == nil {
 		return
 	}
-	if _, err := action.ScriptEngine.AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
+	if _, err := action.ScriptEngine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
 		log.Error(err.Error())
 	}
 }

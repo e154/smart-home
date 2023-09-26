@@ -38,7 +38,6 @@ func init() {
 type plugin struct {
 	*supervisor.Plugin
 	ticker *time.Ticker
-	actor  *Actor
 }
 
 // New ...
@@ -51,10 +50,7 @@ func New() supervisor.Pluggable {
 
 // Load ...
 func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(ctx, service, nil); err != nil {
-		return
-	}
-	if p.actor != nil {
+	if err = p.Plugin.Load(ctx, service, p.ActorConstructor); err != nil {
 		return
 	}
 
@@ -64,14 +60,11 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 			Id:          common.EntityId(fmt.Sprintf("%s.%s", EntityMemoryApp, Name)),
 			Description: "App metric",
 			PluginName:  Name,
-			Metrics: NewMetrics(),
-			Attributes: NewAttr(),
+			Metrics:     NewMetrics(),
+			Attributes:  NewAttr(),
 		}
 		err = p.Service.Adaptors().Entity.Add(context.Background(), entity)
 	}
-
-	p.actor = NewActor(entity, p.Service)
-	p.AddActor(p.actor, entity)
 
 	go func() {
 
@@ -79,7 +72,11 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 		p.ticker = time.NewTicker(time.Second * time.Duration(pause))
 
 		for range p.ticker.C {
-			p.actor.selfUpdate()
+			p.Actors.Range(func(key, value any) bool {
+				actor, _ := value.(*Actor)
+				actor.selfUpdate()
+				return true
+			})
 		}
 	}()
 	return
@@ -87,14 +84,20 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 
 // Unload ...
 func (p *plugin) Unload(ctx context.Context) (err error) {
-	if err = p.Plugin.Unload(ctx); err != nil {
-		return
-	}
 	if p.ticker != nil {
 		p.ticker.Stop()
 		p.ticker = nil
 	}
-	p.actor = nil
+	err = p.Plugin.Unload(ctx)
+	return
+}
+
+// ActorConstructor ...
+func (p *plugin) ActorConstructor(entity *m.Entity) (actor supervisor.PluginActor, err error) {
+	actor = NewActor(entity, p.Service)
+	if entity.Metrics == nil {
+		entity.Metrics = NewMetrics()
+	}
 	return
 }
 

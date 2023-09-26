@@ -94,6 +94,7 @@ func GetSettingsBind(manager Supervisor) func(entityId string) m.AttributeValue 
 		entity, err := manager.GetEntityById(common.EntityId(entityId))
 		if err != nil {
 			log.Errorf(fmt.Sprintf("plugin: '%s' %s", common.EntityId(entityId).PluginName(), err.Error()))
+			return nil
 		}
 
 		return entity.Settings.Serialize()

@@ -19,7 +19,6 @@
 package messagebird
 
 import (
-	"fmt"
 	"sync"
 	"time"
 
@@ -46,16 +45,11 @@ type Actor struct {
 }
 
 // NewActor ...
-func NewActor(settings m.Attributes,
+func NewActor(entity *m.Entity,
+	settings m.Attributes,
 	service supervisor.Service) *Actor {
 
 	accessToken := settings[AttrAccessKey].Decrypt()
-
-	entity := &m.Entity{
-		Id:         common.EntityId(fmt.Sprintf("%s.%s", Name, Name)),
-		PluginName: Name,
-		Attributes: NewAttr(),
-	}
 
 	actor := &Actor{
 		BaseActor:   supervisor.NewBaseActor(entity, service),

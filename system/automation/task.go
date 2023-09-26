@@ -176,6 +176,8 @@ func (t *Task) Stop() {
 		action.Remove()
 	}
 	t.actions = make(map[int64]*Action)
+
+	t.conditionGroup.Stop()
 	t.conditionGroup = nil
 
 	t.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", t.model.Id), events.EventTaskUnloaded{

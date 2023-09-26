@@ -48,7 +48,6 @@ func init() {
 
 type plugin struct {
 	*supervisor.Plugin
-	actor  *Actor
 	ticker *time.Ticker
 }
 
@@ -61,17 +60,19 @@ func New() supervisor.Pluggable {
 
 // Load ...
 func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(ctx, service, nil); err != nil {
+	if err = p.Plugin.Load(ctx, service, p.ActorConstructor); err != nil {
 		return
 	}
 
-	entity := &m.Entity{
-		Id:         common.EntityId(fmt.Sprintf("%s.%s", EntityUpdater, Name)),
-		PluginName: Name,
-		Attributes: NewAttr(),
+	var entity *m.Entity
+	if entity, err = p.Service.Adaptors().Entity.GetById(context.Background(), common.EntityId(fmt.Sprintf("%s.%s", EntityUpdater, Name))); err != nil {
+		entity = &m.Entity{
+			Id:         common.EntityId(fmt.Sprintf("%s.%s", EntityUpdater, Name)),
+			PluginName: Name,
+			Attributes: NewAttr(),
+		}
+		err = p.Service.Adaptors().Entity.Add(context.Background(), entity)
 	}
-	p.actor = NewActor(entity, service)
-	p.AddActor(p.actor, entity)
 
 	_ = p.Service.EventBus().Subscribe("system/entities/+", p.eventHandler)
 
@@ -80,7 +81,11 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 		p.ticker = time.NewTicker(time.Hour * pause)
 
 		for range p.ticker.C {
-			p.actor.check()
+			p.Actors.Range(func(key, value any) bool {
+				actor, _ := value.(*Actor)
+				actor.check()
+				return true
+			})
 		}
 	}()
 
@@ -89,15 +94,19 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 
 // Unload ...
 func (p *plugin) Unload(ctx context.Context) (err error) {
-	if err = p.Plugin.Unload(ctx); err != nil {
-		return
-	}
-
 	if p.ticker != nil {
 		p.ticker.Stop()
 	}
 
+	_ = p.Plugin.Unload(ctx)
+
 	_ = p.Service.EventBus().Unsubscribe("system/entities/+", p.eventHandler)
+	return
+}
+
+// ActorConstructor ...
+func (p *plugin) ActorConstructor(entity *m.Entity) (actor supervisor.PluginActor, err error) {
+	actor = NewActor(entity, p.Service)
 	return
 }
 
@@ -125,12 +134,10 @@ func (p *plugin) eventHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
 	case events.EventCallEntityAction:
-		if v.EntityId != p.actor.Id {
-			return
-		}
-
-		if v.ActionName == "check" {
-			p.actor.check()
+		value, ok := p.Actors.Load(v.EntityId)
+		if ok && value != nil {
+			actor := value.(*Actor)
+			actor.check()
 		}
 	}
 }

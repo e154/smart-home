@@ -57,8 +57,8 @@ const updateCurrentState = () => {
               :placeholder="$t('dashboard.editor.video.pleaseSelectPlayerType')"
               style="width: 100%"
           >
-            <ElOption label="Onvif Mse" value="onvifMse"/>
-            <ElOption label="Youtube" value="youtube"/>
+            <ElOption label="ONVIF MSE" value="onvifMse"/>
+            <ElOption label="YOUTUBE" value="youtube"/>
           </ElSelect>
         </ElFormItem>
       </ElCol>

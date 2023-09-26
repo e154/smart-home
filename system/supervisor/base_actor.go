@@ -22,6 +22,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/e154/smart-home/common/events"
+	"runtime/debug"
 	"sync"
 	"time"
 
@@ -50,7 +51,7 @@ type BaseActor struct {
 	Attrs             m.Attributes
 	Actions           map[string]ActorAction
 	States            map[string]ActorState
-	ScriptEngine      *scripts.Engine
+	ScriptEngine      *scripts.EngineWatcher
 	Icon              *string
 	ImageUrl          *string
 	UnitOfMeasurement string
@@ -128,15 +129,17 @@ func NewBaseActor(entity *m.Entity,
 		}
 
 		if a.Script != nil {
-			if action.ScriptEngine, err = service.ScriptService().NewEngine(a.Script); err != nil {
+			if action.ScriptEngine, err = service.ScriptService().NewEngineWatcher(a.Script); err != nil {
 				log.Error(err.Error())
 			}
-			if _, err = action.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id)); err != nil {
-				log.Error(err.Error())
-			}
-			if _, err = action.ScriptEngine.Do(); err != nil {
-				log.Error(err.Error())
-			}
+			action.ScriptEngine.Spawn(func(engine *scripts.Engine) {
+				if _, err = engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id)); err != nil {
+					log.Error(err.Error())
+				}
+				if _, err = engine.Do(); err != nil {
+					log.Error(err.Error())
+				}
+			})
 		}
 
 		if a.Image != nil {
@@ -146,18 +149,21 @@ func NewBaseActor(entity *m.Entity,
 	}
 
 	// Scripts
-	if actor.ScriptEngine, err = service.ScriptService().NewEngine(nil); err == nil {
-		if _, err = actor.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id)); err != nil {
-			log.Error(err.Error())
-		}
+	if actor.ScriptEngine, err = service.ScriptService().NewEngineWatcher(nil); err == nil {
+		actor.ScriptEngine.Spawn(func(engine *scripts.Engine) {
+			if _, err = engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id)); err != nil {
+				log.Error(err.Error())
+			}
 
-		if entity.Scripts != nil {
-			for _, script := range entity.Scripts {
-				if _, err = actor.ScriptEngine.EvalString(script.Compiled); err != nil {
-					log.Error(err.Error())
+			if entity.Scripts != nil {
+				for _, script := range entity.Scripts {
+					if _, err = engine.EvalString(script.Compiled); err != nil {
+						log.Error(err.Error())
+					}
 				}
 			}
-		}
+		})
+
 
 		//_, err = actor.ScriptEngine.Do()
 		//if err != nil {
@@ -166,6 +172,17 @@ func NewBaseActor(entity *m.Entity,
 	}
 
 	return actor
+}
+
+func (e *BaseActor) StopWatchers() {
+	if e.ScriptEngine != nil {
+		e.ScriptEngine.Stop()
+	}
+	for _, a := range e.Actions {
+		if a.ScriptEngine != nil {
+			a.ScriptEngine.Stop()
+		}
+	}
 }
 
 // Metrics ...
@@ -393,6 +410,11 @@ func (e *BaseActor) AddMetric(name string, value map[string]float32) {
 			continue
 		}
 
+		if metric.Id == 0 {
+			fmt.Printf("check metric for %s", e.Id.String())
+			return
+		}
+
 		err = e.Service.Adaptors().MetricBucket.Add(context.Background(), &m.MetricDataItem{
 			Value:    value,
 			MetricId: metric.Id,
@@ -400,7 +422,8 @@ func (e *BaseActor) AddMetric(name string, value map[string]float32) {
 		})
 
 		if err != nil {
-			log.Errorf(err.Error())
+			log.Errorf(err.Error(), value, metric.Id)
+			debug.PrintStack()
 		}
 	}
 }

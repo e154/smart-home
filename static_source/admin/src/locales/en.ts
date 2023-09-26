@@ -582,7 +582,9 @@ export default {
         mainDarkDashboard: 'Main Dark Dashboard',
         mainLightDashboard: 'Main Light Dashboard',
         devDarkDashboard: 'Dev Dark Dashboard',
-        devLightDashboard: 'Dev Light Dashboard'
+        devLightDashboard: 'Dev Light Dashboard',
+        scriptsOptions: 'Настройки скриптов',
+        restartComponentIfScriptChanged: 'Restart component if script changed'
     },
     tools: {
         eventBus: {
