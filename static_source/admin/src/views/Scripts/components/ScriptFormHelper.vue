@@ -41,7 +41,6 @@ const fetch = async () => {
 }
 
 const save = async () => {
-    loading.value = true
     const body = {
       lang: currentScript.value?.lang,
       name: currentScript.value?.name,
@@ -50,9 +49,6 @@ const save = async () => {
     }
     const res = await api.v1.scriptServiceUpdateScriptById(scriptId.value, body)
         .catch(() => {
-        })
-        .finally(() => {
-          loading.value = false
         })
     if (res) {
       currentScript.value = res.data as ApiScript

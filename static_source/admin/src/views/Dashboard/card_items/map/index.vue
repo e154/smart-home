@@ -126,7 +126,7 @@ const markers = ref<Marker[]>([])
 
 const _cache = new Cache()
 const update = debounce(() => {
-  console.log('update')
+  // console.log('update')
 
   loaded.value = false
   markers.value = []

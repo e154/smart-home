@@ -23,24 +23,24 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/e154/smart-home/common/logger"
-
-	"github.com/e154/smart-home/adaptors"
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/access_list"
-	"github.com/e154/smart-home/system/jwt_manager"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+
+	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common/logger"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/access_list"
+	"github.com/e154/smart-home/system/jwt_manager"
 )
 
 var (
 	log = logger.MustGetLogger("rbac")
 )
 
-// AccessFilter ...
-type AccessFilter struct {
+// GrpcAccessFilter ...
+type GrpcAccessFilter struct {
 	adaptors            *adaptors.Adaptors
 	jwtManager          jwt_manager.JwtManager
 	accessListService   access_list.AccessListService
@@ -48,12 +48,12 @@ type AccessFilter struct {
 	config              *m.AppConfig
 }
 
-// NewAccessFilter ...
-func NewAccessFilter(adaptors *adaptors.Adaptors,
+// NewGrpcAccessFilter ...
+func NewGrpcAccessFilter(adaptors *adaptors.Adaptors,
 	jwtManager jwt_manager.JwtManager,
 	accessListService access_list.AccessListService,
-	config *m.AppConfig) *AccessFilter {
-	return &AccessFilter{
+	config *m.AppConfig) *GrpcAccessFilter {
+	return &GrpcAccessFilter{
 		adaptors:            adaptors,
 		jwtManager:          jwtManager,
 		accessListService:   accessListService,
@@ -62,7 +62,7 @@ func NewAccessFilter(adaptors *adaptors.Adaptors,
 	}
 }
 
-func (f *AccessFilter) accessDecision(params string, accessList access_list.AccessList) bool {
+func (f *GrpcAccessFilter) accessDecision(params string, accessList access_list.AccessList) bool {
 
 	for _, levels := range accessList {
 		for _, item := range levels {
@@ -78,7 +78,7 @@ func (f *AccessFilter) accessDecision(params string, accessList access_list.Acce
 }
 
 // AuthInterceptor ...
-func (f *AccessFilter) AuthInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+func (f *GrpcAccessFilter) AuthInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 
 	if f.config.GodMode {
 		return f.getUser(1, handler, ctx, req)
@@ -126,10 +126,10 @@ func (f *AccessFilter) AuthInterceptor(ctx context.Context, req interface{}, inf
 
 	log.Warnf(fmt.Sprintf("access denied: role(%s) url(%s)", claims.RoleName, info.FullMethod))
 
-	return nil, f.internalServerError
+	return nil, status.Error(codes.PermissionDenied, "PermissionDenied")
 }
 
-func (f *AccessFilter) getUser(userId int64, handler grpc.UnaryHandler, ctx context.Context, req interface{}) (interface{}, error) {
+func (f *GrpcAccessFilter) getUser(userId int64, handler grpc.UnaryHandler, ctx context.Context, req interface{}) (interface{}, error) {
 	user, err := f.adaptors.User.GetById(context.Background(), userId)
 	if err != nil {
 		return nil, f.internalServerError

@@ -2,6 +2,9 @@
 import {onMounted, onBeforeUnmount, PropType, ref, onUnmounted} from "vue";
 import { CardItem } from "@/views/Dashboard/core";
 import {Websocket, WebsocketBuilder} from "websocket-ts";
+import {ApiSigninResponse} from "@/api/stub";
+import {useCache} from "@/hooks/web/useCache";
+const {wsCache} = useCache()
 
 // ---------------------------------
 // common
@@ -45,9 +48,11 @@ const getUrl = (): string => {
     return ""
   }
   //todo: add channel select
-  let uri = (import.meta.env.VITE_API_BASEPATH as string || '/') + '/stream/'+ props.item.entityId +'/channel/0/mse';
-  uri = uri.replace("http", "ws")
+  const accessToken = wsCache.get("accessToken")
+  let uri = import.meta.env.VITE_API_BASEPATH as string || window.location.origin;
+  uri = uri + '/stream/'+ props.item.entityId +'/channel/0/mse?access_token=' + accessToken;
   uri = uri.replace("https", "wss")
+  uri = uri.replace("http", "ws")
   return uri;
 }
 

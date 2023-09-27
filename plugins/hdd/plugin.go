@@ -118,10 +118,8 @@ func (p *plugin) Version() string {
 // Options ...
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
-		ActorAttrs:         NewAttr(),
-		ActorSetts:         NewSettings(),
-		ActorActions:       supervisor.ToEntityActionShort(NewActions()),
-		ActorCustomActions: false,
-		ActorCustomSetts:   false,
+		ActorAttrs:   NewAttr(),
+		ActorSetts:   NewSettings(),
+		ActorActions: supervisor.ToEntityActionShort(NewActions()),
 	}
 }

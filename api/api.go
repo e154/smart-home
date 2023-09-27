@@ -22,8 +22,6 @@ import (
 	"context"
 	"embed"
 	"fmt"
-	"github.com/e154/smart-home/common/events"
-	"github.com/tmc/grpc-websocket-proxy/wsproxy"
 	"net"
 	"net/http"
 	"strings"
@@ -32,6 +30,7 @@ import (
 	echopprof "github.com/hiko1129/echo-pprof"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/tmc/grpc-websocket-proxy/wsproxy"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 	"golang.org/x/sync/errgroup"
@@ -41,6 +40,7 @@ import (
 	"github.com/e154/smart-home/api/controllers"
 	gw "github.com/e154/smart-home/api/stub/api"
 	publicAssets "github.com/e154/smart-home/build"
+	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/rbac"
@@ -57,7 +57,8 @@ var (
 // Api ...
 type Api struct {
 	controllers *controllers.Controllers
-	filter      *rbac.AccessFilter
+	grpcFilter  *rbac.GrpcAccessFilter
+	echoFilter  *rbac.EchoAccessFilter
 	cfg         Config
 	lis         net.Listener
 	echo        *echo.Echo
@@ -68,12 +69,14 @@ type Api struct {
 
 // NewApi ...
 func NewApi(controllers *controllers.Controllers,
-	filter *rbac.AccessFilter,
+	grpcFilter *rbac.GrpcAccessFilter,
+	echoFilter *rbac.EchoAccessFilter,
 	cfg Config,
 	eventBus bus.Bus) (api *Api) {
 	api = &Api{
 		controllers: controllers,
-		filter:      filter,
+		grpcFilter:  grpcFilter,
+		echoFilter:  echoFilter,
 		cfg:         cfg,
 		eventBus:    eventBus,
 	}
@@ -104,7 +107,7 @@ func (a *Api) Start() (err error) {
 	}
 
 	a.grpcServer = grpc.NewServer(
-		grpc.UnaryInterceptor(a.filter.AuthInterceptor),
+		grpc.UnaryInterceptor(a.grpcFilter.AuthInterceptor),
 	)
 	gw.RegisterAuthServiceServer(a.grpcServer, a.controllers.Auth)
 	gw.RegisterStreamServiceServer(a.grpcServer, a.controllers.Stream)
@@ -200,6 +203,10 @@ func (a *Api) Start() (err error) {
 
 	// HTTP
 	a.echo = echo.New()
+	a.echo.Use(middleware.BodyLimitWithConfig(middleware.BodyLimitConfig{
+		Skipper: middleware.DefaultSkipper,
+		Limit:   "5M",
+	}))
 
 	if a.cfg.Debug {
 		var format = `INFO	api/v1	[${method}] ${uri} ${status} ${latency_human} ${error}` + "\n"
@@ -278,13 +285,14 @@ func (a *Api) registerHandlers(mux *runtime.ServeMux) {
 		a.echo.GET("/api.swagger.json", contentHandler)
 	}
 
-	// Base
-	a.echo.GET("/", echo.WrapHandler(a.controllers.Index.Index(publicAssets.F)))
-	a.echo.Any("/ws", echo.WrapHandler(wsproxy.WebsocketProxy(mux)))
+	// base api
 	a.echo.Any("/v1/*", echo.WrapHandler(grpcHandlerFunc(a.grpcServer, mux)))
-	a.echo.Any("/v1/image/upload", echo.WrapHandler(a.controllers.Image.MuxUploadImage()))
+	a.echo.Any("/ws", echo.WrapHandler(wsproxy.WebsocketProxy(mux)))
 
-	// uploaded and other static files
+	// static files
+	a.echo.GET("/", echo.WrapHandler(a.controllers.Index.Index(publicAssets.F)))
+	a.echo.Any("/v1/image/upload", a.echoFilter.Auth(echo.WrapHandler(a.controllers.Image.MuxUploadImage()))) //Auth
+	a.echo.GET("/public/*", echo.WrapHandler(http.StripPrefix("/", http.FileServer(http.FS(publicAssets.F)))))
 	fileServer := http.FileServer(http.Dir("./data/file_storage"))
 	a.echo.Any("/upload/*", echo.WrapHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		r.RequestURI = strings.ReplaceAll(r.RequestURI, "/upload/", "/")
@@ -298,15 +306,12 @@ func (a *Api) registerHandlers(mux *runtime.ServeMux) {
 		staticServer.ServeHTTP(w, r)
 	})))
 
-	// public
-	a.echo.GET("/public/*", echo.WrapHandler(http.StripPrefix("/", http.FileServer(http.FS(publicAssets.F)))))
-
 	// media
-	a.echo.Any("/stream/:entity_id/channel/:channel/mse", a.controllers.Media.StreamMSE)
-	a.echo.Any("/stream/:entity_id/channel/:channel/hlsll/live/init.mp4", a.controllers.Media.StreamHLSLLInit)
-	a.echo.Any("/stream/:entity_id/channel/:channel/hlsll/live/index.m3u8", a.controllers.Media.StreamHLSLLM3U8)
-	a.echo.Any("/stream/:entity_id/channel/:channel/hlsll/live/segment/:segment/:any", a.controllers.Media.StreamHLSLLM4Segment)
-	a.echo.Any("/stream/:entity_id/channel/:channel/hlsll/live/fragment/:segment/:fragment/:any", a.controllers.Media.StreamHLSLLM4Fragment)
+	a.echo.Any("/stream/:entity_id/channel/:channel/mse", a.echoFilter.Auth(a.controllers.Media.StreamMSE)) //Auth
+	//a.echo.Any("/stream/:entity_id/channel/:channel/hlsll/live/init.mp4", a.controllers.Media.StreamHLSLLInit)
+	//a.echo.Any("/stream/:entity_id/channel/:channel/hlsll/live/index.m3u8", a.controllers.Media.StreamHLSLLM3U8)
+	//a.echo.Any("/stream/:entity_id/channel/:channel/hlsll/live/segment/:segment/:any", a.controllers.Media.StreamHLSLLM4Segment)
+	//a.echo.Any("/stream/:entity_id/channel/:channel/hlsll/live/fragment/:segment/:fragment/:any", a.controllers.Media.StreamHLSLLM4Fragment)
 
 	// Cors
 	a.echo.Use(middleware.CORSWithConfig(middleware.CORSConfig{

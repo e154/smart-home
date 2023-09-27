@@ -65,8 +65,14 @@
             ],
             layout: "StandaloneLayout",
             requestInterceptor: function(req) {
-                req.headers.Authorization = localStorage.getItem('token')
-                return req
+                try {
+                    let {v} = JSON.parse(localStorage.getItem('accessToken'))
+                    v = v.replaceAll("\"", "")
+                    req.headers.Authorization = v
+                    return req
+                } catch (e) {
+                    console.warn(e)
+                }
             }
         });
         // End Swagger UI call region

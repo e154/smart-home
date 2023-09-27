@@ -73,8 +73,10 @@ func attributeFromApi(apiAttr map[string]*api.Attribute) (attributes m.Attribute
 			str = strings.ReplaceAll(str, "]", "")
 			str = strings.ReplaceAll(str, " ", "")
 			arr := strings.Split(str, ",")
-			point[0], _ = strconv.ParseFloat(arr[0], 64)
-			point[1], _ = strconv.ParseFloat(arr[1], 64)
+			if len(arr) == 2 {
+				point[0], _ = strconv.ParseFloat(arr[0], 64)
+				point[1], _ = strconv.ParseFloat(arr[1], 64)
+			}
 			attr.Value = point
 			attr.Type = common.AttributePoint
 		case api.Types_ENCRYPTED:
