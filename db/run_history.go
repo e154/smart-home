@@ -94,7 +94,14 @@ func (n *RunHistory) List(ctx context.Context, limit, offset int, orderBy, sort 
 
 // DeleteOldest ...
 func (n *RunHistory) DeleteOldest(ctx context.Context, days int) (err error) {
-	err = n.Db.WithContext(ctx).Delete(&RunStory{}, fmt.Sprintf(`start < now() - interval '%d days'`, days)).Error
+	story := &RunStory{}
+	if err = n.Db.WithContext(ctx).Last(&story).Error; err != nil {
+		err = errors.Wrap(apperr.ErrLogDelete, err.Error())
+		return
+	}
+	err = n.Db.WithContext(ctx).Delete(&RunStory{},
+		fmt.Sprintf(`start < CAST('%s' AS DATE) - interval '%d days'`,
+			story.Start.UTC().Format("2006-01-02 15:04:05"), days)).Error
 	if err != nil {
 		err = errors.Wrap(apperr.ErrEntityStorageDelete, err.Error())
 	}

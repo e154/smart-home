@@ -379,6 +379,8 @@ func (e *BaseActor) updateMetric(state bus.EventEntityState) {
 					data[prop.Name] = float32(value.Int64())
 				case common.AttributeFloat:
 					data[prop.Name] = common.Rounding32(value.Float64(), 2)
+				//case common.AttributePoint:
+				//	data[prop.Name] = value.Point()
 				}
 			}
 		}

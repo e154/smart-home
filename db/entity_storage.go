@@ -150,7 +150,14 @@ func (n *EntityStorages) ListByEntityId(ctx context.Context, limit, offset int, 
 
 // DeleteOldest ...
 func (n *EntityStorages) DeleteOldest(ctx context.Context, days int) (err error) {
-	err = n.Db.WithContext(ctx).Delete(&EntityStorage{}, fmt.Sprintf(`created_at < now() - interval '%d days'`, days)).Error
+	storage := &EntityStorage{}
+	if err = n.Db.WithContext(ctx).Last(&storage).Error; err != nil {
+		err = errors.Wrap(apperr.ErrLogDelete, err.Error())
+		return
+	}
+	err = n.Db.WithContext(ctx).Delete(&EntityStorage{},
+		fmt.Sprintf(`created_at < CAST('%s' AS DATE) - interval '%d days'`,
+			storage.CreatedAt.UTC().Format("2006-01-02 15:04:05"), days)).Error
 	if err != nil {
 		err = errors.Wrap(apperr.ErrEntityStorageDelete, err.Error())
 	}

@@ -71,29 +71,29 @@ func (c *Scheduler) Start(ctx context.Context) error {
 			cron.SecondOptional|cron.Minute|cron.Hour|cron.Dom|cron.Month|cron.Dow|cron.Descriptor,
 		)))
 
-	// every day at 00:00 am
-	c.cron.AddFunc("0 0 0 * * *", func() {
+	// every hour
+	c.cron.AddFunc("0 0 * * * *", func() {
 		go func() {
-			log.Info("deleting obsolete metric entries ...")
-			if err := c.adaptors.MetricBucket.DeleteOldest(ctx, 60); err != nil {
+			//log.Info("deleting obsolete metric entries ...")
+			if err := c.adaptors.MetricBucket.DeleteOldest(context.Background(), 60); err != nil {
 				log.Error(err.Error())
 			}
 		}()
 		go func() {
-			log.Info("deleting obsolete log entries ...")
-			if err := c.adaptors.Log.DeleteOldest(ctx, 60); err != nil {
+			//log.Info("deleting obsolete log entries ...")
+			if err := c.adaptors.Log.DeleteOldest(context.Background(), 60); err != nil {
 				log.Error(err.Error())
 			}
 		}()
 		go func() {
-			log.Info("deleting obsolete entity storage entries ...")
-			if err := c.adaptors.EntityStorage.DeleteOldest(ctx, 60); err != nil {
+			//log.Info("deleting obsolete entity storage entries ...")
+			if err := c.adaptors.EntityStorage.DeleteOldest(context.Background(), 60); err != nil {
 				log.Error(err.Error())
 			}
 		}()
 		go func() {
-			log.Info("deleting obsolete run history entries ...")
-			if err := c.adaptors.RunHistory.DeleteOldest(ctx, 60); err != nil {
+			//log.Info("deleting obsolete run history entries ...")
+			if err := c.adaptors.RunHistory.DeleteOldest(context.Background(), 60); err != nil {
 				log.Error(err.Error())
 			}
 		}()

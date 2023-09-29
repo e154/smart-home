@@ -194,7 +194,14 @@ LIMIT 345`
 
 // DeleteOldest ...
 func (n *MetricBuckets) DeleteOldest(ctx context.Context, days int) (err error) {
-	err = n.Db.WithContext(ctx).Delete(&MetricBucket{}, fmt.Sprintf(`time < now() - interval '%d days'`, days)).Error
+	bucket := &MetricBucket{}
+	if err = n.Db.WithContext(ctx).Last(&bucket).Error; err != nil {
+		err = errors.Wrap(apperr.ErrLogDelete, err.Error())
+		return
+	}
+	err = n.Db.WithContext(ctx).Delete(&MetricBucket{},
+		fmt.Sprintf(`time < CAST('%s' AS DATE) - interval '%d days'`,
+			bucket.Time.UTC().Format("2006-01-02 15:04:05"), days)).Error
 	if err != nil {
 		err = errors.Wrap(apperr.ErrMetricBucketDelete, err.Error())
 	}
