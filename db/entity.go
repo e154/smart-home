@@ -91,8 +91,7 @@ func (n Entities) Add(ctx context.Context, v *Entity) (err error) {
 // Update ...
 func (n Entities) Update(ctx context.Context, v *Entity) (err error) {
 
-	err = n.Db.WithContext(ctx).Model(v).
-		Session(&gorm.Session{FullSaveAssociations: true}).
+	err = n.Db.WithContext(ctx).
 		Omit("Metrics.*").
 		Omit("Scripts.*").
 		Save(v).Error

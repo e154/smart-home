@@ -198,7 +198,7 @@ fetch()
 
       <!-- telemetry -->
       <el-tab-pane :label="$t('automation.telemetry')" name="telemetry" :lazy="true">
-        <TaskTelemetry ref="writeRef" :task="currentTask"/>
+        <TaskTelemetry :task="currentTask"/>
       </el-tab-pane>
       <!-- /telemetry -->
 

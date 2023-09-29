@@ -21,7 +21,6 @@ package adaptors
 import (
 	"context"
 	"fmt"
-
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"gorm.io/gorm"
@@ -77,42 +76,8 @@ func (n *Task) Import(ctx context.Context, ver *m.Task) (err error) {
 	}()
 
 	table := db.Tasks{Db: tx}
-	if ver.Id, err = table.Add(ctx, n.toDb(ver)); err != nil {
-		return
-	}
 
-	//conditions
-	conditionAdaptor := GetConditionAdaptor(tx)
-	for _, condition := range ver.Conditions {
-		if condition.Id, err = conditionAdaptor.Add(ctx, condition); err != nil {
-			return
-		}
-		if err = table.AppendCondition(ctx, ver.Id, conditionAdaptor.toDb(condition)); err != nil {
-			return
-		}
-	}
-
-	//triggers
-	triggerAdaptor := GetTriggerAdaptor(tx)
-	for _, trigger := range ver.Triggers {
-		if trigger.Id, err = triggerAdaptor.Add(ctx, trigger); err != nil {
-			return
-		}
-		if err = table.AppendTrigger(ctx, ver.Id, triggerAdaptor.toDb(trigger)); err != nil {
-			return
-		}
-	}
-
-	//actions
-	actionAdaptor := GetActionAdaptor(tx)
-	for _, action := range ver.Actions {
-		if action.Id, err = actionAdaptor.Add(context.Background(), action); err != nil {
-			return
-		}
-		if err = table.AppendAction(ctx, ver.Id, actionAdaptor.toDb(action)); err != nil {
-			return
-		}
-	}
+	ver.Id, err = table.Add(ctx, n.toDb(ver))
 
 	return
 }
@@ -136,52 +101,37 @@ func (n *Task) Add(ctx context.Context, ver *m.NewTask) (taskId int64, err error
 		}
 	}()
 
-	table := db.Tasks{Db: tx}
-	taskId, err = table.Add(ctx, &db.Task{
+	task := &db.Task{
 		Name:        ver.Name,
 		Description: ver.Description,
 		Enabled:     ver.Enabled,
 		Condition:   ver.Condition,
 		AreaId:      ver.AreaId,
-	})
-	if err != nil {
-		return
-	}
-
-	//conditions
-	conditionAdaptor := GetConditionAdaptor(tx)
-	for _, id := range ver.ConditionIds {
-		if err = table.AppendCondition(ctx, taskId, conditionAdaptor.toDb(&m.Condition{Id: id})); err != nil {
-			return
-		}
 	}
 
 	//triggers
-	triggerAdaptor := GetTriggerAdaptor(tx)
 	for _, id := range ver.TriggerIds {
-		if err = table.AppendTrigger(ctx, taskId, triggerAdaptor.toDb(&m.Trigger{Id: id})); err != nil {
-			return
-		}
+		task.Triggers = append(task.Triggers, &db.Trigger{Id: id})
+	}
+
+	//conditions
+	for _, id := range ver.ConditionIds {
+		task.Conditions = append(task.Conditions, &db.Condition{Id: id})
 	}
 
 	//actions
-	actionAdaptor := GetActionAdaptor(tx)
 	for _, id := range ver.ActionIds {
-		if err = table.AppendAction(ctx, taskId, actionAdaptor.toDb(&m.Action{Id: id})); err != nil {
-			return
-		}
+		task.Actions = append(task.Actions, &db.Action{Id: id})
 	}
+
+	table := db.Tasks{Db: tx}
+	taskId, err = table.Add(ctx, task)
 
 	return
 }
 
 // Update ...
 func (n *Task) Update(ctx context.Context, ver *m.UpdateTask) (err error) {
-
-	var oldVer *m.Task
-	if oldVer, err = n.GetById(ctx, ver.Id); err != nil {
-		return
-	}
 
 	transaction := true
 	tx := n.db.Begin()
@@ -199,106 +149,46 @@ func (n *Task) Update(ctx context.Context, ver *m.UpdateTask) (err error) {
 		}
 	}()
 
-	table := db.Tasks{Db: tx}
-	if err = table.Update(ctx, &db.Task{
+	task := &db.Task{
 		Id:          ver.Id,
 		Name:        ver.Name,
 		Description: ver.Description,
 		Enabled:     ver.Enabled,
 		Condition:   ver.Condition,
 		AreaId:      ver.AreaId,
-	}); err != nil {
-		return
-	}
-
-	//conditions
-	for _, oldCondition := range oldVer.Conditions {
-		var exist bool
-		for _, id := range ver.ConditionIds {
-			if id == oldCondition.Id {
-				exist = true
-			}
-		}
-		if !exist {
-			if err = n.table.DeleteCondition(ctx, oldVer.Id, oldCondition.Id); err != nil {
-				return
-			}
-		}
-	}
-
-	conditionAdaptor := GetConditionAdaptor(tx)
-	for _, id := range ver.ConditionIds {
-		var exist bool
-		for _, oldCondition := range oldVer.Conditions {
-			if id == oldCondition.Id {
-				exist = true
-			}
-		}
-		if !exist {
-			if err = n.table.AppendCondition(ctx, ver.Id, conditionAdaptor.toDb(&m.Condition{Id: id})); err != nil {
-				return
-			}
-		}
 	}
 
 	//triggers
-	for _, oldTrigger := range oldVer.Triggers {
-		var exist bool
-		for _, id := range ver.TriggerIds {
-			if id == oldTrigger.Id {
-				exist = true
-			}
-		}
-		if !exist {
-			if err = n.table.DeleteTrigger(ctx, oldVer.Id, oldTrigger.Id); err != nil {
-				return
-			}
-		}
+	for _, id := range ver.TriggerIds {
+		task.Triggers = append(task.Triggers, &db.Trigger{Id: id})
 	}
 
-	triggerAdaptor := GetTriggerAdaptor(tx)
-	for _, id := range ver.TriggerIds {
-		var exist bool
-		for _, oldTrigger := range oldVer.Triggers {
-			if id == oldTrigger.Id {
-				exist = true
-			}
-		}
-		if !exist {
-			if err = n.table.AppendTrigger(ctx, ver.Id, triggerAdaptor.toDb(&m.Trigger{Id: id})); err != nil {
-				return
-			}
-		}
+	//conditions
+	for _, id := range ver.ConditionIds {
+		task.Conditions = append(task.Conditions, &db.Condition{Id: id})
 	}
 
 	//actions
-	for _, oldAction := range oldVer.Actions {
-		var exist bool
-		for _, id := range ver.ActionIds {
-			if id == oldAction.Id {
-				exist = true
-			}
-		}
-		if !exist {
-			if err = n.table.DeleteAction(ctx, oldVer.Id, oldAction.Id); err != nil {
-				return
-			}
-		}
+	for _, id := range ver.ActionIds {
+		task.Actions = append(task.Actions, &db.Action{Id: id})
 	}
 
-	actionAdaptor := GetActionAdaptor(tx)
-	for _, id := range ver.ActionIds {
-		var exist bool
-		for _, oldAction := range oldVer.Actions {
-			if id == oldAction.Id {
-				exist = true
-			}
-		}
-		if !exist {
-			if err = n.table.AppendAction(ctx, ver.Id, actionAdaptor.toDb(&m.Action{Id: id})); err != nil {
-				return
-			}
-		}
+	table := db.Tasks{Db: tx}
+
+	if err = table.DeleteTrigger(ctx, ver.Id); err != nil {
+		return
+	}
+
+	if err = table.DeleteCondition(ctx, ver.Id); err != nil {
+		return
+	}
+
+	if err = table.DeleteAction(ctx, ver.Id); err != nil {
+		return
+	}
+
+	if err = table.Update(ctx, task); err != nil {
+		return
 	}
 
 	return
@@ -424,6 +314,21 @@ func (n *Task) toDb(ver *m.Task) (dbVer *db.Task) {
 		CreatedAt:   ver.CreatedAt,
 		UpdatedAt:   ver.UpdatedAt,
 		AreaId:      ver.AreaId,
+	}
+	if len(ver.Triggers) > 0 {
+		for _, tr := range ver.Triggers {
+			dbVer.Triggers = append(dbVer.Triggers, &db.Trigger{Id: tr.Id})
+		}
+	}
+	if len(ver.Conditions) > 0 {
+		for _, tr := range ver.Conditions {
+			dbVer.Conditions = append(dbVer.Conditions, &db.Condition{Id: tr.Id})
+		}
+	}
+	if len(ver.Actions) > 0 {
+		for _, tr := range ver.Actions {
+			dbVer.Actions = append(dbVer.Actions, &db.Action{Id: tr.Id})
+		}
 	}
 
 	return
