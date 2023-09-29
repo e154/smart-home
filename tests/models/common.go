@@ -19,6 +19,8 @@
 package models
 
 import (
+	"context"
+	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 )
@@ -96,4 +98,30 @@ func NetAttr() m.Attributes {
 		},
 	}
 
+}
+
+func NetSettings() m.Attributes {
+	return m.Attributes{
+		"s": {
+			Name: "s",
+			Type: common.AttributeString,
+			Value: "s",
+		},
+	}
+
+}
+
+// AddPlugin ...
+func AddPlugin(adaptors *adaptors.Adaptors, name string, opts ...m.AttributeValue) (err error) {
+	plugin := &m.Plugin{
+		Name:    name,
+		Version: "0.0.1",
+		Enabled: true,
+		System:  true,
+	}
+	if len(opts) > 0 {
+		plugin.Settings = opts[0]
+	}
+	err = adaptors.Plugin.CreateOrUpdate(context.Background(), plugin)
+	return
 }

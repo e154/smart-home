@@ -51,7 +51,7 @@ type BaseActor struct {
 	Attrs             m.Attributes
 	Actions           map[string]ActorAction
 	States            map[string]ActorState
-	ScriptEngine      *scripts.EngineWatcher
+	ScriptEngines     []*scripts.EngineWatcher
 	Icon              *string
 	ImageUrl          *string
 	UnitOfMeasurement string
@@ -148,35 +148,29 @@ func NewBaseActor(entity *m.Entity,
 		actor.Actions[a.Name] = action
 	}
 
-	// Scripts
-	if actor.ScriptEngine, err = service.ScriptService().NewEngineWatcher(nil); err == nil {
-		actor.ScriptEngine.Spawn(func(engine *scripts.Engine) {
-			if _, err = engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id)); err != nil {
-				log.Error(err.Error())
-			}
-
-			if entity.Scripts != nil {
-				for _, script := range entity.Scripts {
-					if _, err = engine.EvalString(script.Compiled); err != nil {
+	if entity.Scripts != nil {
+		for _, script := range entity.Scripts {
+			var scriptEngine *scripts.EngineWatcher
+			if scriptEngine, err = service.ScriptService().NewEngineWatcher(script); err == nil {
+				scriptEngine.Spawn(func(engine *scripts.Engine) {
+					if _, err = engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id)); err != nil {
 						log.Error(err.Error())
 					}
+				})
+				if _, err = scriptEngine.Engine().Do(); err != nil {
+					log.Error(err.Error())
 				}
 			}
-		})
-
-
-		//_, err = actor.ScriptEngine.Do()
-		//if err != nil {
-		//	log.Error(err.Error())
-		//}
+			actor.ScriptEngines = append(actor.ScriptEngines, scriptEngine)
+		}
 	}
 
 	return actor
 }
 
 func (e *BaseActor) StopWatchers() {
-	if e.ScriptEngine != nil {
-		e.ScriptEngine.Stop()
+	for _, engine := range e.ScriptEngines {
+		engine.Stop()
 	}
 	for _, a := range e.Actions {
 		if a.ScriptEngine != nil {

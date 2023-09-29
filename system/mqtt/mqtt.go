@@ -26,25 +26,24 @@ import (
 	"sync"
 	"time"
 
-	"github.com/e154/smart-home/common/events"
-	"github.com/e154/smart-home/system/bus"
-
-	"github.com/e154/smart-home/common/logger"
-
 	"github.com/DrmagicE/gmqtt"
 	_ "github.com/DrmagicE/gmqtt/persistence"
 	"github.com/DrmagicE/gmqtt/pkg/codes"
 	"github.com/DrmagicE/gmqtt/pkg/packets"
 	"github.com/DrmagicE/gmqtt/server"
 	_ "github.com/DrmagicE/gmqtt/topicalias/fifo"
+	"go.uber.org/fx"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
+
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/common/logger"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/mqtt/admin"
 	"github.com/e154/smart-home/system/mqtt_authenticator"
 	"github.com/e154/smart-home/system/scripts"
-	"go.uber.org/fx"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 )
 
 var (

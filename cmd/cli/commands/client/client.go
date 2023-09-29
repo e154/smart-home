@@ -16,6 +16,7 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
+// Package client
 // The following command will run pingmq as a client, subscribing to /ping/failure/+
 // topic and receiving any failed ping attempts.
 //

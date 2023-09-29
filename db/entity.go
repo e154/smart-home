@@ -69,7 +69,8 @@ func (d *Entity) TableName() string {
 
 // Add ...
 func (n Entities) Add(ctx context.Context, v *Entity) (err error) {
-	if err = n.Db.WithContext(ctx).Create(&v).Error; err != nil {
+	err = n.Db.WithContext(ctx).Omit("Metrics.*").Omit("Scripts.*").Create(&v).Error
+	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
 			switch pgErr.Code {
@@ -89,31 +90,14 @@ func (n Entities) Add(ctx context.Context, v *Entity) (err error) {
 
 // Update ...
 func (n Entities) Update(ctx context.Context, v *Entity) (err error) {
-	q := map[string]interface{}{
-		"image_id":    v.ImageId,
-		"area_id":     v.AreaId,
-		"parent_id":   v.ParentId,
-		"description": v.Description,
-		"plugin_name": v.PluginName,
-		"icon":        v.Icon,
-		"payload":     v.Payload,
-		"settings":    v.Settings,
-		"auto_load":   v.AutoLoad,
-	}
 
-	if err = n.Db.WithContext(ctx).Model(&Entity{Id: v.Id}).Updates(q).Error; err != nil {
-		err = errors.Wrap(apperr.ErrEntityUpdate, err.Error())
-	}
-	return
-}
+	err = n.Db.WithContext(ctx).Model(v).
+		Session(&gorm.Session{FullSaveAssociations: true}).
+		Omit("Metrics.*").
+		Omit("Scripts.*").
+		Save(v).Error
 
-// UpdateSettings ...
-func (n Entities) UpdateSettings(ctx context.Context, entityId common.EntityId, settings []byte) (err error) {
-	q := map[string]interface{}{
-		"settings": settings,
-	}
-
-	if err = n.Db.WithContext(ctx).Model(&Entity{Id: entityId}).Updates(q).Error; err != nil {
+	if err != nil {
 		err = errors.Wrap(apperr.ErrEntityUpdate, err.Error())
 	}
 	return
@@ -321,22 +305,6 @@ func (n *Entities) Search(ctx context.Context, query string, limit, offset int) 
 	return
 }
 
-// AppendMetric ...
-func (n Entities) AppendMetric(ctx context.Context, id common.EntityId, metric *Metric) (err error) {
-	if err = n.Db.WithContext(ctx).Model(&Entity{Id: id}).Association("Metrics").Append(&metric); err != nil {
-		err = errors.Wrap(apperr.ErrEntityAppendMetric, err.Error())
-	}
-	return
-}
-
-// DeleteMetric ...
-func (n Entities) DeleteMetric(ctx context.Context, id common.EntityId, metricId int64) (err error) {
-	if err = n.Db.WithContext(ctx).Model(&Entity{Id: id}).Association("Metrics").Delete(&Metric{Id: metricId}); err != nil {
-		err = errors.Wrap(apperr.ErrEntityDeleteMetric, err.Error())
-	}
-	return
-}
-
 // UpdateAutoload ...
 func (n Entities) UpdateAutoload(ctx context.Context, entityId common.EntityId, autoLoad bool) (err error) {
 	q := map[string]interface{}{
@@ -349,34 +317,10 @@ func (n Entities) UpdateAutoload(ctx context.Context, entityId common.EntityId, 
 	return
 }
 
-// ReplaceMetric ...
-func (n Entities) ReplaceMetric(ctx context.Context, id common.EntityId, metric Metric) (err error) {
-	if err = n.Db.WithContext(ctx).Model(&Entity{Id: id}).Association("Metrics").Replace(&metric); err != nil {
-		err = errors.Wrap(apperr.ErrEntityReplaceMetric, err.Error())
-	}
-	return
-}
-
-// AppendScript ...
-func (n Entities) AppendScript(ctx context.Context, id common.EntityId, script *Script) (err error) {
-	if err = n.Db.WithContext(ctx).Model(&Entity{Id: id}).Association("Scripts").Append(script); err != nil {
-		err = errors.Wrap(apperr.ErrEntityAppendScript, err.Error())
-	}
-	return
-}
-
-// DeleteScript ...
-func (n Entities) DeleteScript(ctx context.Context, id common.EntityId, scriptId int64) (err error) {
-	if err = n.Db.WithContext(ctx).Model(&Entity{Id: id}).Association("Scripts").Delete(&Script{Id: scriptId}); err != nil {
+// DeleteScripts ...
+func (n Entities) DeleteScripts(ctx context.Context, id common.EntityId) (err error) {
+	if err = n.Db.WithContext(ctx).Model(&Entity{Id: id}).Association("Scripts").Clear(); err != nil {
 		err = errors.Wrap(apperr.ErrEntityDeleteScript, err.Error())
-	}
-	return
-}
-
-// ReplaceScript ...
-func (n Entities) ReplaceScript(ctx context.Context, id common.EntityId, script *Script) (err error) {
-	if err = n.Db.WithContext(ctx).Model(&Entity{Id: id}).Association("Scripts").Replace(script); err != nil {
-		err = errors.Wrap(apperr.ErrEntityReplaceScript, err.Error())
 	}
 	return
 }

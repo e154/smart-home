@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2023, Filippov Alex
+// Copyright (C) 2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -16,7 +16,7 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package mqtt_client
+package mqtt_bridge
 
 // Config ...
 type Config struct {
@@ -29,4 +29,6 @@ type Config struct {
 	Username       string
 	Password       string
 	Qos            byte
+	Direction      Direction
+	Topics         []string
 }

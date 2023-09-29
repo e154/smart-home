@@ -67,8 +67,12 @@ func NewActor(entity *m.Entity,
 		}
 	}
 
-	if actor.ScriptEngine.Engine() != nil {
-		actor.ScriptEngine.Engine().PushFunction("ModbusRtu", NewModbusRtu(service.EventBus(), actor))
+	for _, engine := range actor.ScriptEngines {
+		engine.Spawn(func(engine *scripts.Engine) {
+			engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
+			engine.PushFunction("ModbusRtu", NewModbusRtu(service.EventBus(), actor))
+			engine.Do()
+		})
 	}
 
 	// action worker

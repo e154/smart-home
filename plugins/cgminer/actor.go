@@ -20,6 +20,7 @@ package cgminer
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/system/scripts"
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common/apperr"
@@ -136,8 +137,14 @@ func NewActor(entity *m.Entity,
 		}
 	}
 
-	if actor.ScriptEngine.Engine() != nil {
-		actor.ScriptEngine.Engine().PushFunction("Miner", actor.miner.Bind())
+	for _, engine := range actor.ScriptEngines {
+		engine.Spawn(func(engine *scripts.Engine) {
+			if _, err = engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id)); err != nil {
+				log.Error(err.Error())
+			}
+			engine.PushFunction("Miner", actor.miner.Bind())
+			engine.Do()
+		})
 	}
 
 	// action worker

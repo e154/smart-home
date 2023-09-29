@@ -16,25 +16,21 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package modbus_tcp
+package mqtt_bridge
 
 import (
-	"fmt"
-	"github.com/e154/smart-home/system/scripts"
-	"sync"
-
+	"context"
 	"github.com/e154/smart-home/common/events"
-
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/plugins/node"
 	"github.com/e154/smart-home/system/supervisor"
+	"strings"
 )
 
 // Actor ...
 type Actor struct {
 	supervisor.BaseActor
 	actionPool chan events.EventCallEntityAction
-	stateMu    *sync.Mutex
+	bridge     *MqttBridge
 }
 
 // NewActor ...
@@ -44,34 +40,28 @@ func NewActor(entity *m.Entity,
 	actor = &Actor{
 		BaseActor:  supervisor.NewBaseActor(entity, service),
 		actionPool: make(chan events.EventCallEntityAction, 10),
-		stateMu:    &sync.Mutex{},
 	}
 
-	if actor.Attrs == nil {
-		actor.Attrs = NewAttr()
+	var topics []string
+	topics = strings.Split(entity.Settings[AttrTopics].String(), ",")
+
+	config := &Config{
+		KeepAlive:      int(entity.Settings[AttrKeepAlive].Int64()),
+		PingTimeout:    int(entity.Settings[AttrPingTimeout].Int64()),
+		Broker:         entity.Settings[AttrBroker].String(),
+		ClientID:       entity.Settings[AttrClientID].String(),
+		ConnectTimeout: int(entity.Settings[AttrConnectTimeout].Int64()),
+		CleanSession:   entity.Settings[AttrCleanSession].Bool(),
+		Username:       entity.Settings[AttrUsername].String(),
+		Password:       entity.Settings[AttrPassword].Decrypt(),
+		Qos:            byte(entity.Settings[AttrQos].Int64()),
+		Direction:      Direction(entity.Settings[AttrDirection].String()),
+		Topics:         topics,
 	}
 
-	if actor.Setts == nil {
-		actor.Setts = NewSettings()
-	}
-
-	actor.DeserializeAttr(entity.Attributes.Serialize())
-
-	// Actions
-	for _, a := range actor.Actions {
-		if a.ScriptEngine.Engine() != nil {
-			// bind
-			a.ScriptEngine.Engine().PushFunction("ModbusTcp", NewModbusTcp(service.EventBus(), actor))
-			_, _ = a.ScriptEngine.Engine().Do()
-		}
-	}
-
-	for _, engine := range actor.ScriptEngines {
-		engine.Spawn(func(engine *scripts.Engine) {
-			engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
-			engine.PushFunction("ModbusTcp", NewModbusTcp(service.EventBus(), actor))
-			engine.Do()
-		})
+	var err error
+	if actor.bridge, err = NewMqttBridge(config, service.MqttServ(), actor); err != nil {
+		log.Error(err.Error())
 	}
 
 	// action worker
@@ -85,11 +75,17 @@ func NewActor(entity *m.Entity,
 }
 
 func (e *Actor) Destroy() {
-
+	close(e.actionPool)
+	if err := e.bridge.Shutdown(context.Background()); err != nil {
+		log.Error(err.Error())
+	}
 }
 
+// Spawn ...
 func (e *Actor) Spawn() {
-
+	if err := e.bridge.Start(context.Background()); err != nil {
+		log.Error(err.Error())
+	}
 }
 
 // SetState ...
@@ -110,11 +106,11 @@ func (e *Actor) SetState(params supervisor.EntityStateParams) error {
 	e.AttrMu.Unlock()
 
 	go e.SaveState(events.EventStateChanged{
+		StorageSave: params.StorageSave,
 		PluginName:  e.Id.PluginName(),
 		EntityId:    e.Id,
 		OldState:    oldState,
 		NewState:    e.GetEventState(),
-		StorageSave: params.StorageSave,
 	})
 
 	return nil
@@ -136,12 +132,4 @@ func (e *Actor) runAction(msg events.EventCallEntityAction) {
 	if _, err := action.ScriptEngine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
 		log.Error(err.Error())
 	}
-}
-
-func (e *Actor) localTopic(r string) string {
-	var parent string
-	if e.ParentId != nil {
-		parent = e.ParentId.Name()
-	}
-	return fmt.Sprintf("%s/%s/%s", node.TopicPluginNode, parent, r)
 }

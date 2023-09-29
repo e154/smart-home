@@ -16,17 +16,15 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package mqtt_client
+package container
 
-// Config ...
-type Config struct {
-	KeepAlive      int
-	PingTimeout    int
-	Broker         string
-	ClientID       string
-	ConnectTimeout int
-	CleanSession   bool
-	Username       string
-	Password       string
-	Qos            byte
+import "go.uber.org/fx"
+
+// FxNull ...
+type FxNull struct {
+}
+
+// Append ...
+func (FxNull) Append(hook fx.Hook) {
+
 }

@@ -21,11 +21,11 @@ package mqtt
 import (
 	"context"
 
-	"github.com/pkg/errors"
-
 	"github.com/DrmagicE/gmqtt/config"
 	"github.com/DrmagicE/gmqtt/retained"
 	"github.com/DrmagicE/gmqtt/server"
+	"github.com/pkg/errors"
+
 	"github.com/e154/smart-home/system/mqtt/admin"
 	"github.com/e154/smart-home/system/mqtt_authenticator"
 )
