@@ -122,6 +122,9 @@ dependencies:
   vue-types:
     specifier: ^5.0.2
     version: 5.0.2(vue@3.2.47)
+  vue-web-terminal:
+    specifier: '3'
+    version: 3.1.8(vue@3.2.47)
   vue3-moveable:
     specifier: ^0.26.1
     version: 0.26.1
@@ -3916,6 +3919,14 @@ packages:
     engines: {node: '>= 10'}
     dev: true
 
+  /clipboard@2.0.11:
+    resolution: {integrity: sha512-C+0bbOqkezLIsmWSvlsXS0Q0bmkugu7jcfMIACB+RDEntIzQIkdr148we28AfSloQLRdZlYL/QYyrq05j/3Faw==}
+    dependencies:
+      good-listener: 1.2.2
+      select: 1.1.2
+      tiny-emitter: 2.1.0
+    dev: false
+
   /cliui@6.0.0:
     resolution: {integrity: sha512-t6wbgtoCXvAzst7QgXxJYqPt0usEfbgQdftEPbLL/cvv6HPE5VgvqCuAIDR0NgU52ds6rFwqrgakNLrHEjCbrQ==}
     dependencies:
@@ -4427,6 +4438,10 @@ packages:
   /delayed-stream@1.0.0:
     resolution: {integrity: sha512-ZySD7Nf91aLB0RxL4KGrKHBXl7Eds1DAmEdcoVawXnLD7SDhpNgtuII2aAkg7a7QS41jxPSZ17p4VdGnMHk3MQ==}
     engines: {node: '>=0.4.0'}
+    dev: false
+
+  /delegate@3.2.0:
+    resolution: {integrity: sha512-IofjkYBZaZivn0V8nnsMJGBr4jVLxHDheKSW88PyxS5QC4Vo9ZbZVvhzlSxY87fVq3STR6r+4cGepyHkcWOQSw==}
     dev: false
 
   /detect-file@1.0.0:
@@ -5491,6 +5506,12 @@ packages:
   /globjoin@0.1.4:
     resolution: {integrity: sha512-xYfnw62CKG8nLkZBfWbhWwDw02CHty86jfPcc2cr3ZfeuK9ysoVPPEUxf21bAD/rWAgk52SuBrLJlefNy8mvFg==}
     dev: true
+
+  /good-listener@1.2.2:
+    resolution: {integrity: sha512-goW1b+d9q/HIwbVYZzZ6SsTr4IgE+WA44A0GmPIQstuOrgsFcT7VEJ48nmr9GaRtNu0XTKacFLGnBPAM6Afouw==}
+    dependencies:
+      delegate: 3.2.0
+    dev: false
 
   /graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
@@ -7966,6 +7987,10 @@ packages:
       compute-scroll-into-view: 1.0.20
     dev: false
 
+  /select@1.1.2:
+    resolution: {integrity: sha512-OwpTSOfy6xSs1+pwcNrv0RBMOzI39Lp3qQKUTPVVPRjCdNa5JH/oPRiqsesIskK8TVgmRiHwO4KXlV2Li9dANA==}
+    dev: false
+
   /selecto@1.26.0:
     resolution: {integrity: sha512-cEFKdv5rmkF6pf2OScQJllaNp4UJy/FvviB40ZaMSHrQCxC72X/Q6uhzW1tlb2RE+0danvUNJTs64cI9VXtUyg==}
     dependencies:
@@ -9171,6 +9196,15 @@ packages:
       '@vue/devtools-api': 6.5.0
       vue: 3.2.47
 
+  /vue-json-viewer@3.0.4(vue@3.2.47):
+    resolution: {integrity: sha512-pnC080rTub6YjccthVSNQod2z9Sl5IUUq46srXtn6rxwhW8QM4rlYn+CTSLFKXWfw+N3xv77Cioxw7B4XUKIbQ==}
+    peerDependencies:
+      vue: ^3.2.2
+    dependencies:
+      clipboard: 2.0.11
+      vue: 3.2.47
+    dev: false
+
   /vue-lite-youtube-embed@1.2.0(vue@3.2.47):
     resolution: {integrity: sha512-XJxuvxldm5AuX/OzVUECd1MVE+QMFGk4sDIMtruETFVPZDnnXWXdq+hZtqAtgWUpmKxX9MCOObCvxNwVZ5uArQ==}
     peerDependencies:
@@ -9222,6 +9256,14 @@ packages:
     dependencies:
       is-plain-object: 5.0.0
       vue: 3.2.47
+    dev: false
+
+  /vue-web-terminal@3.1.8(vue@3.2.47):
+    resolution: {integrity: sha512-fz+vHXGZV438HWqD92i2YBEtyeHYDQWpyfmtCvv7ABK7hM+L13wQxmjg5XSJLacwnWUPMbsJE9piRwiB5Xx5Cg==}
+    dependencies:
+      vue-json-viewer: 3.0.4(vue@3.2.47)
+    transitivePeerDependencies:
+      - vue
     dev: false
 
   /vue3-moveable@0.26.1:

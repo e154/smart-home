@@ -39,6 +39,7 @@ interface AppState {
   footer: boolean
   theme: ThemeTypes
   fixedMenu: boolean
+  terminal: boolean
 }
 
 export const useAppStore = defineStore('app', {
@@ -73,6 +74,7 @@ export const useAppStore = defineStore('app', {
       greyMode: false, // 是否开始灰色模式，用于特殊悼念日
       dynamicRouter: wsCache.get('dynamicRouter') || false, // 是否动态路由
       fixedMenu: wsCache.get('fixedMenu') || false, // 是否固定菜单
+      terminal: wsCache.get('terminal') || false,
 
       layout: wsCache.get('layout') || 'classic', // layout布局
       isDark: wsCache.get('isDark') || false, // 是否是暗黑模式
@@ -163,6 +165,9 @@ export const useAppStore = defineStore('app', {
     },
     getFixedMenu(): boolean {
       return this.fixedMenu
+    },
+    getTerminal(): boolean {
+      return this.terminal
     },
     getPageLoading(): boolean {
       return this.pageLoading
@@ -261,6 +266,10 @@ export const useAppStore = defineStore('app', {
     setFixedMenu(fixedMenu: boolean) {
       wsCache.set('fixedMenu', fixedMenu)
       this.fixedMenu = fixedMenu
+    },
+    setTerminal(terminal: boolean) {
+      wsCache.set('terminal', terminal)
+      this.terminal = terminal
     },
     setPageLoading(pageLoading: boolean) {
       this.pageLoading = pageLoading
