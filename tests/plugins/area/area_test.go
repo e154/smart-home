@@ -109,7 +109,7 @@ func TestArea(t *testing.T) {
 			area2.Id, err = adaptors.Area.Add(context.Background(), area2)
 			So(err, ShouldBeNil)
 
-			distance, err := adaptors.Area.GetDistance(context.Background(), m.Point{Lon: 74.57289978531306, Lat: 42.86754085166162}, area2.Id)
+			distance, err := adaptors.Area.GetDistanceToArea(context.Background(), m.Point{Lon: 74.57289978531306, Lat: 42.86754085166162}, area2.Id)
 			So(err, ShouldBeNil)
 
 			So(math.Ceil(distance*100)/100, ShouldEqual, 44.84)
