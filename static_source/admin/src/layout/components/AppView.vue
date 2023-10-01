@@ -2,7 +2,7 @@
 import {useTagsViewStore} from '@/store/modules/tagsView'
 import {useAppStore} from '@/store/modules/app'
 import {Footer} from '@/components/Footer'
-import {computed, onMounted} from 'vue'
+import {computed, onMounted, onUnmounted} from 'vue'
 import {Terminal} from "@/components/Terminal";
 
 const appStore = useAppStore()
@@ -31,6 +31,10 @@ const onKeydown = ( event ) => {
 
 onMounted(() => {
   document.addEventListener("keydown", onKeydown)
+})
+
+onUnmounted(() => {
+  document.removeEventListener("keydown", onKeydown)
 })
 
 </script>

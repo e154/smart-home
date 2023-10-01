@@ -158,6 +158,14 @@ fetch()
         label: t('scripts.info1'),
         keys: ['scripts']
       },
+      {
+        label: t('scripts.info2'),
+        keys: ['scripts']
+      },
+      {
+        label: t('scripts.info3'),
+        keys: ['scripts']
+      },
     ]"
         />
         <ScriptEditor v-model="currentScript"/>

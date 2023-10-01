@@ -47,5 +47,6 @@ func MigrationList(adaptors *adaptors.Adaptors,
 		local_migrations.NewMigrationJavascript(adaptors),
 		local_migrations.NewMigrationMqttBridge(adaptors),
 		local_migrations.NewMigrationScheduler(adaptors),
+		local_migrations.NewMigrationJavascriptV2(adaptors),
 	}
 }

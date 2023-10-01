@@ -19,7 +19,9 @@
 package supervisor
 
 import (
+	"context"
 	"fmt"
+	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 )
@@ -98,5 +100,34 @@ func GetSettingsBind(manager Supervisor) func(entityId string) m.AttributeValue 
 		}
 
 		return entity.Settings.Serialize()
+	}
+}
+
+func GetDistanceToAreaBind(adaptors *adaptors.Adaptors) func(areaId int64, point m.Point) float64 {
+	return func(areaId int64, point m.Point) float64 {
+		if distance, err := adaptors.Area.GetDistanceToArea(context.Background(), point, areaId); err == nil {
+			return distance
+		}
+		return 0
+	}
+}
+
+
+func GetDistanceBetweenPointsBind(adaptors *adaptors.Adaptors) func(point1, point2 m.Point) float64 {
+	return func(point1, point2 m.Point) float64 {
+		if distance, err := adaptors.Area.GetDistanceBetweenPoints(context.Background(), point1, point2); err == nil {
+			return distance
+		}
+		return 0
+	}
+}
+
+
+func PointInsideAriaBind(adaptors *adaptors.Adaptors) func(areaId int64, point m.Point) bool {
+	return func(areaId int64, point m.Point) bool {
+		if inside, err := adaptors.Area.PointInsideAriaById(context.Background(), &point, areaId); err == nil {
+			return inside
+		}
+		return false
 	}
 }

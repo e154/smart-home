@@ -129,6 +129,8 @@ func (e *supervisor) Shutdown(ctx context.Context) (err error) {
 	e.scriptService.PopFunction("SetMetric")
 	e.scriptService.PopFunction("CallAction")
 	e.scriptService.PopFunction("CallScene")
+	e.scriptService.PopFunction("GetDistance")
+	e.scriptService.PopFunction("PointInsideAria")
 
 	_ = e.eventBus.Unsubscribe("system/services/scripts", e.handlerSystemScripts)
 	_ = e.eventBus.Unsubscribe("system/entities/+", e.eventHandler)
@@ -161,15 +163,18 @@ func (e *supervisor) handlerSystemScripts(_ string, event interface{}) {
 
 func (e *supervisor) bindScripts() {
 	e.scriptService.PushFunctions("GetEntity", GetEntityBind(e))
-	e.scriptService.PushFunctions("SetState", SetStateBind(e))
-	e.scriptService.PushFunctions("SetStateName", SetStateBind(e))
-	e.scriptService.PushFunctions("GetState", GetStateBind(e))
-	e.scriptService.PushFunctions("SetAttributes", SetAttributesBind(e))
-	e.scriptService.PushFunctions("GetAttributes", GetAttributesBind(e))
-	e.scriptService.PushFunctions("GetSettings", GetSettingsBind(e))
-	e.scriptService.PushFunctions("SetMetric", SetMetricBind(e))
-	e.scriptService.PushFunctions("CallAction", CallActionBind(e))
-	e.scriptService.PushFunctions("CallScene", CallSceneBind(e))
+	e.scriptService.PushFunctions("EntitySetState", SetStateBind(e))
+	e.scriptService.PushFunctions("EntitySetStateName", SetStateBind(e))
+	e.scriptService.PushFunctions("EntityGetState", GetStateBind(e))
+	e.scriptService.PushFunctions("EntitySetAttributes", SetAttributesBind(e))
+	e.scriptService.PushFunctions("EntityGetAttributes", GetAttributesBind(e))
+	e.scriptService.PushFunctions("EntityGetSettings", GetSettingsBind(e))
+	e.scriptService.PushFunctions("EntitySetMetric", SetMetricBind(e))
+	e.scriptService.PushFunctions("EntityCallAction", CallActionBind(e))
+	e.scriptService.PushFunctions("EntityCallScene", CallSceneBind(e))
+	e.scriptService.PushFunctions("GeoDistanceToArea", GetDistanceToAreaBind(e.adaptors))
+	e.scriptService.PushFunctions("GeoDistanceBetweenPoints", GetDistanceBetweenPointsBind(e.adaptors))
+	e.scriptService.PushFunctions("GeoPointInsideAria", PointInsideAriaBind(e.adaptors))
 }
 
 // SetMetric ...
@@ -471,9 +476,7 @@ func (e *supervisor) GetService() Service {
 	return e.service
 }
 
-//
 // watch to see if the scripts change
-//
 func (e *supervisor) eventUpdatedScript(msg events.EventUpdatedScript) {
 
 	if _, ok := e.eventScriptSubs[msg.ScriptId]; !ok {
@@ -556,6 +559,7 @@ func (e *supervisor) eventEntityUnloaded(msg events.EventEntityUnloaded) {
 		delete(e.eventScriptSubs[scriptId], msg.EntityId)
 	}
 }
+
 //
 // \watch to see if the scripts change
 //

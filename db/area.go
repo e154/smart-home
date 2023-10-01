@@ -276,7 +276,7 @@ func (a *Areas) PointInsideAriaByName(ctx context.Context, point Point, areaName
 	return
 }
 
-func (a *Areas) GetDistance(ctx context.Context, point Point, areaId int64) (distance float64, err error) {
+func (a *Areas) GetDistanceToArea(ctx context.Context, point Point, areaId int64) (distance float64, err error) {
 
 	const query = `
 select st_distance(
@@ -284,6 +284,23 @@ select st_distance(
    ST_Transform((select polygon from areas where id = %d)::geometry, 4326)
 )`
 	q := fmt.Sprintf(query, point.Lat, point.Lon, areaId)
+	err = a.Db.WithContext(ctx).Raw(q).Scan(&distance).Error
+	if err != nil {
+		err = errors.Wrap(apperr.ErrAreaList, err.Error())
+		return
+	}
+
+	return
+}
+
+func (a *Areas) GetDistanceBetweenPoints(ctx context.Context, point1, point2 Point) (distance float64, err error) {
+
+	const query = `
+select st_distance(
+   ST_Transform(ST_GeomFromText('POINT (%f %f)', 4326)::geometry, 4326),
+   ST_Transform(ST_GeomFromText('POINT (%f %f)', 4326)::geometry, 4326)
+)`
+	q := fmt.Sprintf(query, point1.Lat, point1.Lon, point2.Lat, point2.Lon)
 	err = a.Db.WithContext(ctx).Raw(q).Scan(&distance).Error
 	if err != nil {
 		err = errors.Wrap(apperr.ErrAreaList, err.Error())

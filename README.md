@@ -1,12 +1,8 @@
 # The program complex **Smart House**
 
 [Project site](https://e154.github.io/smart-home/) |
-[Configurator](https://github.com/e154/smart-home-configurator/) |
 [Mobile Gate](https://github.com/e154/smart-home-gate/) |
-[Node](https://github.com/e154/smart-home-node/) |
-[Smart home Socket](https://github.com/e154/smart-home-socket/) |
-[Modbus device controller](https://github.com/e154/smart-home-modbus-ctrl-v1/) |
-[Mobile app](https://github.com/e154/smart-home-app/)
+[Node](https://github.com/e154/smart-home-node/)
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/e154/smart-home)](https://goreportcard.com/report/github.com/e154/smart-home)
 ![status](https://img.shields.io/badge/status-beta-yellow.svg)

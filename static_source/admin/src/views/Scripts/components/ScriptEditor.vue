@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import {nextTick, onMounted, PropType, ref, unref, watch} from 'vue'
+import {nextTick, onMounted, onUnmounted, PropType, ref, unref, watch} from 'vue'
 import Codemirror, {CmComponentRef, CodeMirror} from "codemirror-editor-vue3";
 import type {Editor, EditorConfiguration} from "codemirror";
 import {ApiScript} from "@/api/stub";
+import prettier from 'prettier/standalone';
+import parserBabel from 'prettier/parser-babel';
 
 // codemirror
 // placeholder
@@ -24,6 +26,7 @@ import {HintDictionaryCoffee} from "@/views/Scripts/components/types";
 import {useAppStore} from "@/store/modules/app";
 import {bool} from "vue-types";
 import {useEmitt} from "@/hooks/web/useEmitt";
+import stream from "@/api/stream";
 
 const emit = defineEmits(['change', 'update:modelValue'])
 const appStore = useAppStore()
@@ -37,7 +40,7 @@ const props = defineProps({
 
 const { emitter } = useEmitt()
 const sourceScript = ref('')
-const cmComponentRef = ref<CmComponentRef>(null);
+const cmComponentRef = ref<CmComponentRef>();
 const cminstance = ref<Editor>();
 
 const cmOptions: EditorConfiguration = {
@@ -80,7 +83,13 @@ onMounted(() => {
   cminstance.value = cmComponentRef.value?.cminstance;
   cminstance.value?.focus();
 
+  document.onkeydown = onKeydown
 })
+
+onUnmounted(() => {
+  document.onkeydown = null
+})
+
 
 watch(
     () => props.modelValue,
@@ -122,6 +131,62 @@ const showEditorHint = (e: KeyboardEvent, handle: Function) => {
 
 const onChange = (val: string, cm: any) => {
   emitter.emit('updateSource', val)
+}
+
+const autoFormatSelection = () => {
+  let plugins = [parserBabel]
+  let parser = "babel"
+  if (props.modelValue?.lang == 'coffeescript') {
+    console.warn("coffeescript prettier plugin not installed")
+    return
+  }
+  const code = cminstance.value?.getValue(); // Получите весь код из редактора
+  const formattedCode = prettier.format(code, {
+    "singleQuote": true, // Использовать одинарные кавычки для строк
+    "semi": true, // Добавлять точку с запятой в конце выражений
+    "trailingComma": "none", // Не использовать запятую в конце массивов и объектов
+    "tabWidth": 2, // Количество пробелов для одного уровня отступа
+    "printWidth": 80, // Максимальная длина строки кода
+    parser: parser,
+    plugins: plugins
+  });
+
+  // Замените весь код отформатированным кодом
+  cminstance.value?.setValue(formattedCode);
+}
+
+const commentSelectedText = () => {
+  const fromLine = cminstance.value?.getCursor("from").line; // Начальная строка выделения
+  const toLine = cminstance.value?.getCursor("to").line; // Конечная строка выделения
+  let commentSymbol = "// "; // Символ комментария (можно изменить по вашему желанию)
+
+  if (props.modelValue?.lang == 'coffeescript') {
+    commentSymbol = "#"
+  }
+
+  // Перебираем строки выделенного текста и добавляем комментарии
+  for (var i = fromLine; i <= toLine; i++) {
+    let lineText = cminstance.value?.getLine(i);
+    if (lineText?.startsWith(commentSymbol)) {
+      lineText = lineText?.replace(commentSymbol, "")
+      cminstance.value?.replaceRange(lineText, { line: i, ch: 0 }, { line: i, ch: lineText.length+3 }); // Добавляем комментарий
+    } else {
+      cminstance.value?.replaceRange(commentSymbol + lineText, { line: i, ch: 0 }, { line: i, ch: lineText.length }); // Добавляем комментарий
+    }
+  }
+}
+
+const onKeydown = ( e ) => {
+  var evtobj = window.event? event : e
+  // console.log(e);
+  // 191 = /
+  if (e.metaKey && evtobj.keyCode == 191) {
+    commentSelectedText()
+  }
+  // 70 = F
+  if (e.metaKey && evtobj.keyCode == 70) {
+    autoFormatSelection()
+  }
 }
 
 </script>
