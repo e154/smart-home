@@ -26,7 +26,6 @@ import {ApiLog} from "@/api/stub";
 import {parseTime} from "@/utils";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
-import {debounce} from "lodash-es";
 import api from "@/api/api";
 
 const appStore = useAppStore()
@@ -132,7 +131,7 @@ onUnmounted(() => {
   </terminal>
 </template>
 
-<style>
+<style lang="less">
 
 .terminal-header {
   background-color: #959598;
@@ -141,7 +140,11 @@ onUnmounted(() => {
 }
 .t-log-box {
   display: block;
-  margin-block-start: 0.3em;
-  margin-block-end: 0.3em;
+  margin-block-start: 0;
+  margin-block-end: 0;
+}
+.t-ask-input, .t-window, .t-window div, .t-window p {
+  font-size: 11px;
+  font-family: Monaco,Menlo,Consolas,monospace;
 }
 </style>

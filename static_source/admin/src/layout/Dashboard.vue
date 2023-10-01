@@ -5,7 +5,6 @@ import { Backtop } from '@/components/Backtop'
 import { Setting } from '@/components/Setting'
 import { useRenderLayout } from './components/useRenderLayout'
 import { useDesign } from '@/hooks/web/useDesign'
-import {Terminal} from "@/components/Terminal";
 
 const { getPrefixCls } = useDesign()
 
@@ -62,7 +61,6 @@ export default defineComponent({
 
         <Setting></Setting>
 
-        <Terminal></Terminal>
       </section>
     )
   }
