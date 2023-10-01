@@ -20,6 +20,7 @@ package scheduler
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/system/bus"
@@ -75,25 +76,26 @@ func (c *Scheduler) Start(ctx context.Context) error {
 	c.cron.AddFunc("0 0 * * * *", func() {
 		go func() {
 			//log.Info("deleting obsolete metric entries ...")
-			if err := c.adaptors.MetricBucket.DeleteOldest(context.Background(), 60); err != nil {
+			if err := c.adaptors.MetricBucket.DeleteOldest(context.Background(), c.getDays("clearMetricsDays", 60)); err != nil {
 				log.Error(err.Error())
 			}
 		}()
 		go func() {
 			//log.Info("deleting obsolete log entries ...")
-			if err := c.adaptors.Log.DeleteOldest(context.Background(), 60); err != nil {
+			if err := c.adaptors.Log.DeleteOldest(context.Background(), c.getDays("clearLogsDays", 60)); err != nil {
 				log.Error(err.Error())
 			}
 		}()
 		go func() {
+
 			//log.Info("deleting obsolete entity storage entries ...")
-			if err := c.adaptors.EntityStorage.DeleteOldest(context.Background(), 60); err != nil {
+			if err := c.adaptors.EntityStorage.DeleteOldest(context.Background(), c.getDays("clearEntityStorageDays", 60)); err != nil {
 				log.Error(err.Error())
 			}
 		}()
 		go func() {
 			//log.Info("deleting obsolete run history entries ...")
-			if err := c.adaptors.RunHistory.DeleteOldest(context.Background(), 60); err != nil {
+			if err := c.adaptors.RunHistory.DeleteOldest(context.Background(), c.getDays("clearRunHistoryDays", 60)); err != nil {
 				log.Error(err.Error())
 			}
 		}()
@@ -125,4 +127,14 @@ func (c *Scheduler) AddFunc(spec string, cmd func()) (id EntryID, err error) {
 
 func (c *Scheduler) Remove(id EntryID) {
 	c.cron.Remove(cron.EntryID(id))
+}
+
+func (c *Scheduler) getDays(varName string, def int) int {
+	if clearMetricsDays, err := c.adaptors.Variable.GetByName(context.Background(), varName); err == nil {
+		var days int
+		if days, err = strconv.Atoi(clearMetricsDays.Value); err == nil {
+			return days
+		}
+	}
+	return def
 }

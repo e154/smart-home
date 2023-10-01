@@ -583,8 +583,13 @@ export default {
         mainLightDashboard: 'Main Light Dashboard',
         devDarkDashboard: 'Dev Dark Dashboard',
         devLightDashboard: 'Dev Light Dashboard',
-        scriptsOptions: 'Настройки скриптов',
-        restartComponentIfScriptChanged: 'Restart component if script changed'
+        scriptsOptions: 'Scripts Settings',
+        restartComponentIfScriptChanged: 'Restart component if script changed',
+        clearHistory: 'Clear History',
+        clearMetricsDays: 'Clear Metrics Days',
+        clearLogsDays: 'Clear Logs Days',
+        clearEntityStorageDays: 'Clear Entity Storage Days',
+        clearRunHistoryDays: 'Clear Run History Days',
     },
     tools: {
         eventBus: {

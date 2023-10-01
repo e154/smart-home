@@ -584,7 +584,12 @@ export default {
     devDarkDashboard: 'Тёмная разработческая панель управления',
     devLightDashboard: 'Светлая разработческая панель управления',
     scriptsOptions: 'Параметры скриптов',
-    restartComponentIfScriptChanged: 'Перезапустить компонент, если скрипт изменился'
+    restartComponentIfScriptChanged: 'Перезапустить компонент, если скрипт изменился',
+    clearHistory: 'Настройки удаления истории в днях',
+    clearMetricsDays: 'Удаление метрик',
+    clearLogsDays: 'Очистка логов',
+    clearEntityStorageDays: 'История состояния Entity',
+    clearRunHistoryDays: 'История запусков системы',
   },
   tools: {
     eventBus: {
