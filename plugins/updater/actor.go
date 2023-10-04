@@ -88,14 +88,8 @@ func (e *Actor) setState(v string) {
 		e.State = &state
 		e.Value.Store(supervisor.StateOk)
 		return
-	case supervisor.StateAwait, supervisor.StateOk, supervisor.StateInProcess:
-		state := e.States["enabled"]
-		e.State = &state
 	case supervisor.StateError:
 		state := e.States["error"]
-		e.State = &state
-	default:
-		state := e.States["disabled"]
 		e.State = &state
 	}
 
@@ -114,8 +108,6 @@ func (e *Actor) check() {
 		e.checkLock.Unlock()
 	}()
 
-	e.setState(supervisor.StateInProcess)
-
 	var body []byte
 	if _, body, err = e.Service.Crawler().Probe(web.Request{Method: "GET", Url: uri, Timeout: 5 * time.Second}); err != nil {
 		return
@@ -125,8 +117,6 @@ func (e *Actor) check() {
 	if err = json.Unmarshal(body, &data); err != nil {
 		return
 	}
-
-	e.setState(supervisor.StateOk)
 
 	e.lastCheck = time.Now()
 	e.latestVersion = data.TagName

@@ -81,14 +81,6 @@ func NewAttr() m.Attributes {
 // NewStates ...
 func NewStates() map[string]supervisor.ActorState {
 	return map[string]supervisor.ActorState{
-		"enabled": {
-			Name:        "enabled",
-			Description: "Enabled",
-		},
-		"disabled": {
-			Name:        "disabled",
-			Description: "Disabled",
-		},
 		"error": {
 			Name:        "error",
 			Description: "Error",

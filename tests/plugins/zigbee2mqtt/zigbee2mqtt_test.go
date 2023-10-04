@@ -61,7 +61,7 @@ zigbee2mqttEvent = ->
     attrs.click = payload.click
     attrs.action = ""
     state = payload.click + "_click"
-  SetState ENTITY_ID,
+  EntitySetState ENTITY_ID,
     'new_state': state.toUpperCase()
     'attribute_values': attrs
 `
@@ -79,7 +79,7 @@ zigbee2mqttEvent = ->
     'state': payload.state
     'temperature': payload.temperature
     'voltage': payload.voltage
-  SetState ENTITY_ID,
+  EntitySetState ENTITY_ID,
     'new_state': payload.state
     'attribute_values': attrs
 `

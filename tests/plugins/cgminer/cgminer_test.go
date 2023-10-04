@@ -45,7 +45,7 @@ ifError =(res)->
 checkStatus =->
     stats = Miner.stats()
     if ifError(stats)
-        SetState ENTITY_ID,
+        EntitySetState ENTITY_ID,
             'new_state': 'ERROR'
         return
     p = unmarshal stats.result
@@ -63,7 +63,7 @@ checkStatus =->
         fan2: p.fan2
     }
 
-    SetState ENTITY_ID,
+    EntitySetState ENTITY_ID,
         new_state: 'ENABLED'
         attribute_values: attrs
         storage_save: true
@@ -71,14 +71,14 @@ checkStatus =->
 checkSum =->
     summary = Miner.summary()
     if ifError(summary)
-        SetState ENTITY_ID,
+        EntitySetState ENTITY_ID,
             'new_state': 'ERROR'
         return
     p = unmarshal summary.result
     attrs = {}
     attrs["ghs_av"] = p["GHS av"] 
     attrs["hardware_errors"] = p["Hardware Errors"] 
-    SetState ENTITY_ID,
+    EntitySetState ENTITY_ID,
         new_state: 'ENABLED'
         attribute_values: attrs
         storage_save: true
@@ -86,14 +86,14 @@ checkSum =->
 checkDevs =->
     devs = Miner.devs()
     if ifError(devs)
-        SetState ENTITY_ID,
+        EntitySetState ENTITY_ID,
             'new_state': 'ERROR'
         return
     p = unmarshal devs.result
     attrs = {}
     attrs["ghs_av"] = p["GHS av"] 
     attrs["hardware_errors"] = p["Hardware Errors"] 
-    SetState ENTITY_ID,
+    EntitySetState ENTITY_ID,
         new_state: 'ENABLED'
         attribute_values: attrs
         storage_save: true
@@ -101,7 +101,7 @@ checkDevs =->
 checkPools =->
     pools = Miner.pools()
     if ifError(pools)
-        SetState ENTITY_ID,
+        EntitySetState ENTITY_ID,
             'new_state': 'ERROR'
         return
     p = unmarshal pools.result
@@ -134,7 +134,7 @@ checkPools =->
 checkVer =(entityId)->
     ver = Miner.version()
     if ifError(ver)
-        SetState ENTITY_ID,
+        EntitySetState ENTITY_ID,
             'new_state': 'ERROR'
         return
     p = unmarshal ver.result

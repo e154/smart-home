@@ -109,7 +109,7 @@ onUnmounted(() => {
       :context="context"
       :auto-help="false"
       :init-log="initLog"
-      :drag-conf="{width: 700, height: 500, init:{ x: 50, y: 50 }}">
+      :drag-conf="{zIndex: 9999, width: 700, height: 500, init:{ x: 50, y: 50 }}">
     <template #header>
       <div class="terminal-header">
         Terminal
