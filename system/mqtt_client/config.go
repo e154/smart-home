@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,13 +20,13 @@ package mqtt_client
 
 // Config ...
 type Config struct {
-	KeepAlive      int    `json:"keep_alive"`
-	PingTimeout    int    `json:"ping_timeout"`
-	Broker         string `json:"broker"`
-	ClientID       string `json:"client_id"`
-	ConnectTimeout int    `json:"connect_timeout"`
-	CleanSession   bool   `json:"clean_session"`
-	Username       string `json:"username"`
-	Password       string `json:"password"`
-	Qos            byte   `json:"qos"`
+	KeepAlive      int
+	PingTimeout    int
+	Broker         string
+	ClientID       string
+	ConnectTimeout int
+	CleanSession   bool
+	Username       string
+	Password       string
+	Qos            byte
 }

@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,7 @@
 package adaptors
 
 import (
+	"context"
 	"encoding/json"
 	"strings"
 	"time"
@@ -29,24 +30,24 @@ import (
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // IUser ...
 type IUser interface {
-	Add(user *m.User) (id int64, err error)
-	GetById(userId int64) (user *m.User, err error)
-	GetByNickname(nick string) (user *m.User, err error)
-	GetByEmail(email string) (user *m.User, err error)
-	GetByAuthenticationToken(token string) (user *m.User, err error)
-	GetByResetPassToken(token string) (user *m.User, err error)
-	Update(user *m.User) (err error)
-	Delete(userId int64) (err error)
-	List(limit, offset int64, orderBy, sort string) (list []*m.User, total int64, err error)
-	SignIn(u *m.User, ipv4 string) (err error)
-	GenResetPassToken(u *m.User) (token string, err error)
-	ClearResetPassToken(u *m.User) (err error)
-	ClearToken(u *m.User) (err error)
+	Add(ctx context.Context, user *m.User) (id int64, err error)
+	GetById(ctx context.Context, userId int64) (user *m.User, err error)
+	GetByNickname(ctx context.Context, nick string) (user *m.User, err error)
+	GetByEmail(ctx context.Context, email string) (user *m.User, err error)
+	GetByAuthenticationToken(ctx context.Context, token string) (user *m.User, err error)
+	GetByResetPassToken(ctx context.Context, token string) (user *m.User, err error)
+	Update(ctx context.Context, user *m.User) (err error)
+	Delete(ctx context.Context, userId int64) (err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.User, total int64, err error)
+	SignIn(ctx context.Context, u *m.User, ipv4 string) (err error)
+	GenResetPassToken(ctx context.Context, u *m.User) (token string, err error)
+	ClearResetPassToken(ctx context.Context, u *m.User) (err error)
+	ClearToken(ctx context.Context, u *m.User) (err error)
 	fromDb(dbUser *db.User) (user *m.User)
 	toDb(user *m.User) (dbUser *db.User)
 }
@@ -67,96 +68,96 @@ func GetUserAdaptor(d *gorm.DB) IUser {
 }
 
 // Add ...
-func (n *User) Add(user *m.User) (id int64, err error) {
+func (n *User) Add(ctx context.Context, user *m.User) (id int64, err error) {
 
 	dbUser := n.toDb(user)
 	_ = dbUser.History.UnmarshalJSON([]byte("[]"))
-	if id, err = n.table.Add(dbUser); err != nil {
+	if id, err = n.table.Add(ctx, dbUser); err != nil {
 		return
 	}
 
 	metaAdaptor := GetUserMetaAdaptor(n.db)
 	for _, meta := range user.Meta {
 		meta.UserId = id
-		_, _ = metaAdaptor.UpdateOrCreate(meta)
+		_, _ = metaAdaptor.UpdateOrCreate(ctx, meta)
 	}
 
 	return
 }
 
 // GetById ...
-func (n *User) GetById(userId int64) (user *m.User, err error) {
+func (n *User) GetById(ctx context.Context, userId int64) (user *m.User, err error) {
 
 	var dbUser *db.User
-	if dbUser, err = n.table.GetById(userId); err != nil {
+	if dbUser, err = n.table.GetById(ctx, userId); err != nil {
 		return
 	}
 
 	user = n.fromDb(dbUser)
 
 	roleAdaptor := GetRoleAdaptor(n.db)
-	err = roleAdaptor.GetAccessList(user.Role)
+	err = roleAdaptor.GetAccessList(ctx, user.Role)
 
 	return
 }
 
 // GetByNickname ...
-func (n *User) GetByNickname(nick string) (user *m.User, err error) {
+func (n *User) GetByNickname(ctx context.Context, nick string) (user *m.User, err error) {
 
 	var dbUser *db.User
-	if dbUser, err = n.table.GetByNickname(nick); err != nil {
+	if dbUser, err = n.table.GetByNickname(ctx, nick); err != nil {
 		return
 	}
 
 	user = n.fromDb(dbUser)
 
 	roleAdaptor := GetRoleAdaptor(n.db)
-	err = roleAdaptor.GetAccessList(user.Role)
+	err = roleAdaptor.GetAccessList(ctx, user.Role)
 
 	return
 }
 
 // GetByEmail ...
-func (n *User) GetByEmail(email string) (user *m.User, err error) {
+func (n *User) GetByEmail(ctx context.Context, email string) (user *m.User, err error) {
 
 	var dbUser *db.User
-	if dbUser, err = n.table.GetByEmail(email); err != nil {
+	if dbUser, err = n.table.GetByEmail(ctx, email); err != nil {
 		return
 	}
 
 	user = n.fromDb(dbUser)
 
 	roleAdaptor := GetRoleAdaptor(n.db)
-	err = roleAdaptor.GetAccessList(user.Role)
+	err = roleAdaptor.GetAccessList(ctx, user.Role)
 
 	return
 }
 
 // GetByAuthenticationToken ...
-func (n *User) GetByAuthenticationToken(token string) (user *m.User, err error) {
+func (n *User) GetByAuthenticationToken(ctx context.Context, token string) (user *m.User, err error) {
 
 	var dbUser *db.User
-	if dbUser, err = n.table.GetByAuthenticationToken(token); err != nil {
+	if dbUser, err = n.table.GetByAuthenticationToken(ctx, token); err != nil {
 		return
 	}
 
 	user = n.fromDb(dbUser)
 
 	roleAdaptor := GetRoleAdaptor(n.db)
-	err = roleAdaptor.GetAccessList(user.Role)
+	err = roleAdaptor.GetAccessList(ctx, user.Role)
 
 	return
 }
 
 // GetByResetPassToken ...
-func (n *User) GetByResetPassToken(token string) (user *m.User, err error) {
+func (n *User) GetByResetPassToken(ctx context.Context, token string) (user *m.User, err error) {
 
 	if utf8.RuneCountInString(token) > 255 {
 		return
 	}
 
 	var dbUser *db.User
-	if dbUser, err = n.table.GetByResetPassToken(token); err != nil {
+	if dbUser, err = n.table.GetByResetPassToken(ctx, token); err != nil {
 		return
 	}
 
@@ -168,36 +169,36 @@ func (n *User) GetByResetPassToken(token string) (user *m.User, err error) {
 		err = apperr.ErrTokenIsDeprecated
 	}
 
-	_ = n.ClearResetPassToken(user)
+	_ = n.ClearResetPassToken(ctx, user)
 
 	return
 }
 
 // Update ...
-func (n *User) Update(user *m.User) (err error) {
+func (n *User) Update(ctx context.Context, user *m.User) (err error) {
 
 	dbUser := n.toDb(user)
-	if err = n.table.Update(dbUser); err != nil {
+	if err = n.table.Update(ctx, dbUser); err != nil {
 		return
 	}
 
 	metaAdaptor := GetUserMetaAdaptor(n.db)
 	for _, meta := range user.Meta {
 		meta.UserId = user.Id
-		_, _ = metaAdaptor.UpdateOrCreate(meta)
+		_, _ = metaAdaptor.UpdateOrCreate(ctx, meta)
 	}
 
 	return
 }
 
 // Delete ...
-func (n *User) Delete(userId int64) (err error) {
-	err = n.table.Delete(userId)
+func (n *User) Delete(ctx context.Context, userId int64) (err error) {
+	err = n.table.Delete(ctx, userId)
 	return
 }
 
 // List ...
-func (n *User) List(limit, offset int64, orderBy, sort string) (list []*m.User, total int64, err error) {
+func (n *User) List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.User, total int64, err error) {
 
 	if sort == "" {
 		sort = "id"
@@ -207,7 +208,7 @@ func (n *User) List(limit, offset int64, orderBy, sort string) (list []*m.User, 
 	}
 
 	var dbList []*db.User
-	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
+	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort); err != nil {
 		return
 	}
 
@@ -221,7 +222,7 @@ func (n *User) List(limit, offset int64, orderBy, sort string) (list []*m.User, 
 }
 
 // SignIn ...
-func (n *User) SignIn(u *m.User, ipv4 string) (err error) {
+func (n *User) SignIn(ctx context.Context, u *m.User, ipv4 string) (err error) {
 
 	// update count
 	u.SignInCount += 1
@@ -242,39 +243,39 @@ func (n *User) SignIn(u *m.User, ipv4 string) (err error) {
 	u.UpdateHistory(currentT, currentIp)
 
 	dbUser := n.toDb(u)
-	err = n.table.Update(dbUser)
+	err = n.table.Update(ctx, dbUser)
 
 	return
 }
 
 // GenResetPassToken ...
-func (n *User) GenResetPassToken(u *m.User) (token string, err error) {
+func (n *User) GenResetPassToken(ctx context.Context, u *m.User) (token string, err error) {
 
 	for {
 		token = common.RandStr(50, common.Alphanum)
 		u.ResetPasswordToken = token
 
-		if _, err = n.table.GetByResetPassToken(token); err != nil {
+		if _, err = n.table.GetByResetPassToken(ctx, token); err != nil {
 			break
 		}
 	}
 
-	err = n.table.NewResetPassToken(u.Id, u.ResetPasswordToken)
+	err = n.table.NewResetPassToken(ctx, u.Id, u.ResetPasswordToken)
 
 	return
 }
 
 // ClearResetPassToken ...
-func (n *User) ClearResetPassToken(u *m.User) (err error) {
+func (n *User) ClearResetPassToken(ctx context.Context, u *m.User) (err error) {
 
-	err = n.table.ClearResetPassToken(u.Id)
+	err = n.table.ClearResetPassToken(ctx, u.Id)
 	return
 }
 
 // ClearToken ...
-func (n *User) ClearToken(u *m.User) (err error) {
+func (n *User) ClearToken(ctx context.Context, u *m.User) (err error) {
 
-	err = n.table.ClearToken(u.Id)
+	err = n.table.ClearToken(ctx, u.Id)
 
 	return
 }

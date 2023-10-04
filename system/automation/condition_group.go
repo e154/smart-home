@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -23,17 +23,17 @@ import (
 	"sync"
 	"time"
 
-	"github.com/e154/smart-home/common"
 	"go.uber.org/atomic"
+
+	"github.com/e154/smart-home/common"
 )
 
 // NewConditionGroup ...
-func NewConditionGroup(automation *automation,
-	t common.ConditionType) *ConditionGroup {
+func NewConditionGroup(t common.ConditionType) *ConditionGroup {
 	return &ConditionGroup{
-		automation: automation,
 		t:          t,
 		lastStatus: atomic.Bool{},
+		Mutex:      sync.Mutex{},
 	}
 }
 
@@ -41,7 +41,6 @@ func NewConditionGroup(automation *automation,
 type ConditionGroup struct {
 	rules      []*Condition
 	t          common.ConditionType
-	automation *automation
 	lastStatus atomic.Bool
 	sync.Mutex
 }
@@ -49,6 +48,12 @@ type ConditionGroup struct {
 // AddCondition ...
 func (c *ConditionGroup) AddCondition(condition *Condition) {
 	c.rules = append(c.rules, condition)
+}
+
+func (c *ConditionGroup) Stop() {
+	for _, condition := range c.rules {
+		condition.Stop()
+	}
 }
 
 // Check ...

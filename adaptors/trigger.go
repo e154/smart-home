@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,19 +19,27 @@
 package adaptors
 
 import (
+	"context"
 	"encoding/json"
+	"time"
+
 	"github.com/e154/smart-home/common"
-	"github.com/jinzhu/gorm"
 
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	gormbulk "github.com/t-tiger/gorm-bulk-insert"
+	"gorm.io/gorm"
 )
 
 // ITrigger ...
 type ITrigger interface {
-	DeleteByTaskId(id int64) (err error)
-	AddMultiple(items []*m.Trigger) (err error)
+	Add(ctx context.Context, ver *m.Trigger) (id int64, err error)
+	GetById(ctx context.Context, id int64) (metric *m.Trigger, err error)
+	Update(ctx context.Context, ver *m.Trigger) error
+	Delete(ctx context.Context, deviceId int64) (err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Trigger, total int64, err error)
+	Search(ctx context.Context, query string, limit, offset int) (list []*m.Trigger, total int64, err error)
+	Enable(ctx context.Context, id int64) (err error)
+	Disable(ctx context.Context, id int64) (err error)
 	fromDb(dbVer *db.Trigger) (ver *m.Trigger)
 	toDb(ver *m.Trigger) (dbVer *db.Trigger)
 }
@@ -51,22 +59,82 @@ func GetTriggerAdaptor(d *gorm.DB) ITrigger {
 	}
 }
 
-// DeleteByTaskId ...
-func (n *Trigger) DeleteByTaskId(id int64) (err error) {
-	err = n.table.DeleteByTaskId(id)
+// Add ...
+func (n *Trigger) Add(ctx context.Context, ver *m.Trigger) (id int64, err error) {
+	id, err = n.table.Add(ctx, n.toDb(ver))
 	return
 }
 
-// AddMultiple ...
-func (n *Trigger) AddMultiple(items []*m.Trigger) (err error) {
+// GetById ...
+func (n *Trigger) GetById(ctx context.Context, id int64) (metric *m.Trigger, err error) {
+	var dbVer *db.Trigger
+	if dbVer, err = n.table.GetById(ctx, id); err != nil {
+		return
+	}
+	metric = n.fromDb(dbVer)
+	return
+}
 
-	insertRecords := make([]interface{}, 0, len(items))
+// GetByIdWithData ...
+func (n *Trigger) GetByIdWithData(ctx context.Context, id int64, from, to *time.Time, metricRange *string) (metric *m.Trigger, err error) {
+	var dbVer *db.Trigger
+	if dbVer, err = n.table.GetById(ctx, id); err != nil {
+		return
+	}
+	metric = n.fromDb(dbVer)
+	return
+}
 
-	for _, ver := range items {
-		insertRecords = append(insertRecords, n.toDb(ver))
+// Update ...
+func (n *Trigger) Update(ctx context.Context, ver *m.Trigger) error {
+	return n.table.Update(ctx, n.toDb(ver))
+}
+
+// Delete ...
+func (n *Trigger) Delete(ctx context.Context, deviceId int64) (err error) {
+	err = n.table.Delete(ctx, deviceId)
+	return
+}
+
+// List ...
+func (n *Trigger) List(ctx context.Context, limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Trigger, total int64, err error) {
+	var dbList []*db.Trigger
+	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort, onlyEnabled); err != nil {
+		return
 	}
 
-	err = gormbulk.BulkInsert(n.db, insertRecords, len(insertRecords))
+	list = make([]*m.Trigger, len(dbList))
+	for i, dbVer := range dbList {
+		list[i] = n.fromDb(dbVer)
+	}
+
+	return
+}
+
+// Search ...
+func (n *Trigger) Search(ctx context.Context, query string, limit, offset int) (list []*m.Trigger, total int64, err error) {
+	var dbList []*db.Trigger
+	if dbList, total, err = n.table.Search(ctx, query, limit, offset); err != nil {
+		return
+	}
+
+	list = make([]*m.Trigger, len(dbList))
+	for i, dbVer := range dbList {
+		list[i] = n.fromDb(dbVer)
+	}
+
+	return
+}
+
+// Enable ...
+func (n *Trigger) Enable(ctx context.Context, id int64) (err error) {
+	err = n.table.Enable(ctx, id)
+	return
+}
+
+// Disable ...
+func (n *Trigger) Disable(ctx context.Context, id int64) (err error) {
+	err = n.table.Disable(ctx, id)
 	return
 }
 
@@ -75,9 +143,11 @@ func (n *Trigger) fromDb(dbVer *db.Trigger) (ver *m.Trigger) {
 		Id:         dbVer.Id,
 		Name:       dbVer.Name,
 		EntityId:   dbVer.EntityId,
-		TaskId:     dbVer.TaskId,
 		ScriptId:   dbVer.ScriptId,
 		PluginName: dbVer.PluginName,
+		Enabled:    dbVer.Enabled,
+		CreatedAt:  dbVer.CreatedAt,
+		UpdatedAt:  dbVer.UpdatedAt,
 	}
 	// script
 	if dbVer.Script != nil {
@@ -103,13 +173,19 @@ func (n *Trigger) toDb(ver *m.Trigger) (dbVer *db.Trigger) {
 		Id:         ver.Id,
 		Name:       ver.Name,
 		EntityId:   ver.EntityId,
-		TaskId:     ver.TaskId,
 		ScriptId:   ver.ScriptId,
 		PluginName: ver.PluginName,
+		Enabled:    ver.Enabled,
+		CreatedAt:  ver.CreatedAt,
+		UpdatedAt:  ver.UpdatedAt,
 	}
 
 	if ver.Script != nil {
 		dbVer.ScriptId = common.Int64(ver.Script.Id)
+	}
+
+	if ver.Entity != nil {
+		dbVer.EntityId = common.NewEntityId(ver.Entity.Id.String())
 	}
 
 	// serialize payload

@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -22,48 +22,32 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common/astronomics/suncalc"
 	"github.com/e154/smart-home/common/events"
-	"github.com/e154/smart-home/common/web"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/weather"
-	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 // Actor ...
 type Actor struct {
-	entity_manager.BaseActor
+	supervisor.BaseActor
 	Zone
-	adaptors      *adaptors.Adaptors
-	scriptService scripts.ScriptService
-	eventBus      bus.Bus
-	actionPool    chan events.EventCallAction
-	weather       *WeatherOwm
-	winter        bool
-	theme         string
+	actionPool chan events.EventCallEntityAction
+	weather    *WeatherOwm
+	winter     bool
+	theme      string
 }
 
 // NewActor ...
 func NewActor(entity *m.Entity,
-	entityManager entity_manager.EntityManager,
-	adaptors *adaptors.Adaptors,
-	scriptService scripts.ScriptService,
-	eventBus bus.Bus,
-	crawler web.Crawler) *Actor {
+	service supervisor.Service) *Actor {
 
 	actor := &Actor{
-		BaseActor:     entity_manager.NewBaseActor(entity, scriptService, adaptors),
-		adaptors:      adaptors,
-		scriptService: scriptService,
-		eventBus:      eventBus,
-		actionPool:    make(chan events.EventCallAction, 10),
-		weather:       NewWeatherOwm(adaptors, crawler),
+		BaseActor:  supervisor.NewBaseActor(entity, service),
+		actionPool: make(chan events.EventCallEntityAction, 10),
+		weather:    NewWeatherOwm(service.Adaptors(), service.Crawler()),
 	}
-
-	actor.Manager = entityManager
 
 	if actor.Attrs == nil {
 		actor.Attrs = weather.BaseForecast()
@@ -71,21 +55,6 @@ func NewActor(entity *m.Entity,
 
 	if actor.Setts == nil {
 		actor.Setts = NewSettings()
-	}
-
-	// Actions
-	for _, a := range actor.Actions {
-		if a.ScriptEngine != nil {
-			// bind
-			a.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
-			_, _ = a.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
-			_, _ = a.ScriptEngine.Do()
-		}
-	}
-
-	if actor.ScriptEngine != nil {
-		_, _ = actor.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
-		actor.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
 	}
 
 	// zone
@@ -116,42 +85,41 @@ func NewActor(entity *m.Entity,
 	return actor
 }
 
-func (e *Actor) destroy() {
+func (e *Actor) Destroy() {
 
 }
 
 // Spawn ...
-func (e *Actor) Spawn() entity_manager.PluginActor {
-	_ = e.updateForecast()
-	return e
+func (e *Actor) Spawn() {
+	go e.updateForecast()
 }
 
 // SetState ...
-func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
+func (e *Actor) SetState(params supervisor.EntityStateParams) error {
 	return nil
 }
 
-func (e *Actor) addAction(event events.EventCallAction) {
+func (e *Actor) addAction(event events.EventCallEntityAction) {
 	e.actionPool <- event
 }
 
-func (e *Actor) runAction(msg events.EventCallAction) {
+func (e *Actor) runAction(msg events.EventCallEntityAction) {
 	action, ok := e.Actions[msg.ActionName]
 	if !ok {
 		log.Warnf("action %s not found", msg.ActionName)
 		return
 	}
-	if action.ScriptEngine == nil {
+	if action.ScriptEngine.Engine() == nil {
 		return
 	}
-	if _, err := action.ScriptEngine.AssertFunction(FuncEntityAction, msg.EntityId, action.Name); err != nil {
+	if _, err := action.ScriptEngine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
 		log.Error(err.Error())
 	}
 }
 
 func (e *Actor) update() {
 
-	oldState := e.GetEventState(e)
+	oldState := e.GetEventState()
 
 	e.Now(oldState)
 
@@ -159,11 +127,11 @@ func (e *Actor) update() {
 		return
 	}
 
-	e.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
+	go e.SaveState(events.EventStateChanged{
 		PluginName:  e.Id.PluginName(),
 		EntityId:    e.Id,
 		OldState:    oldState,
-		NewState:    e.GetEventState(e),
+		NewState:    e.GetEventState(),
 		StorageSave: true,
 	})
 

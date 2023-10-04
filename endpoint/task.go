@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,13 +20,14 @@ package endpoint
 
 import (
 	"context"
+	"fmt"
+
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/go-playground/validator/v10"
 )
@@ -44,23 +45,24 @@ func NewTaskEndpoint(common *CommonEndpoint) *TaskEndpoint {
 }
 
 // Add ...
-func (n *TaskEndpoint) Add(ctx context.Context, task *m.Task) (result *m.Task, errs validator.ValidationErrorsTranslations, err error) {
+func (n *TaskEndpoint) Add(ctx context.Context, task *m.NewTask) (result *m.Task, errs validator.ValidationErrorsTranslations, err error) {
 
 	var ok bool
 	if ok, errs = n.validation.Valid(task); !ok {
 		return
 	}
 
-	if err = n.adaptors.Task.Add(task); err != nil {
+	var id int64
+	if id, err = n.adaptors.Task.Add(ctx, task); err != nil {
 		return
 	}
 
-	if result, err = n.adaptors.Task.GetById(task.Id); err != nil {
+	if result, err = n.adaptors.Task.GetById(ctx, id); err != nil {
 		return
 	}
 
-	n.eventBus.Publish(bus.TopicAutomation, events.EventAddedTask{
-		Id: task.Id,
+	n.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", result.Id), events.EventAddedTask{
+		Id: id,
 	})
 
 	return
@@ -117,15 +119,15 @@ func (n *TaskEndpoint) Import(ctx context.Context, task *m.Task) (result *m.Task
 		}
 	}
 
-	if err = n.adaptors.Task.Import(task); err != nil {
+	if err = n.adaptors.Task.Import(ctx, task); err != nil {
 		return
 	}
 
-	if result, err = n.adaptors.Task.GetById(task.Id); err != nil {
+	if result, err = n.adaptors.Task.GetById(ctx, task.Id); err != nil {
 		return
 	}
 
-	n.eventBus.Publish(bus.TopicAutomation, events.EventAddedTask{
+	n.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", result.Id), events.EventAddedTask{
 		Id: task.Id,
 	})
 
@@ -133,22 +135,22 @@ func (n *TaskEndpoint) Import(ctx context.Context, task *m.Task) (result *m.Task
 }
 
 // Update ...
-func (n *TaskEndpoint) Update(ctx context.Context, task *m.Task) (result *m.Task, errs validator.ValidationErrorsTranslations, err error) {
+func (n *TaskEndpoint) Update(ctx context.Context, task *m.UpdateTask) (result *m.Task, errs validator.ValidationErrorsTranslations, err error) {
 
 	var ok bool
 	if ok, errs = n.validation.Valid(task); !ok {
 		return
 	}
 
-	if err = n.adaptors.Task.Update(task); err != nil {
+	if err = n.adaptors.Task.Update(ctx, task); err != nil {
 		return
 	}
 
-	if result, err = n.adaptors.Task.GetById(task.Id); err != nil {
+	if result, err = n.adaptors.Task.GetById(ctx, task.Id); err != nil {
 		return
 	}
 
-	n.eventBus.Publish(bus.TopicAutomation, events.EventUpdateTask{
+	n.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", result.Id), events.EventUpdateTask{
 		Id: task.Id,
 	})
 
@@ -158,57 +160,60 @@ func (n *TaskEndpoint) Update(ctx context.Context, task *m.Task) (result *m.Task
 // GetById ...
 func (n *TaskEndpoint) GetById(ctx context.Context, id int64) (task *m.Task, errs validator.ValidationErrorsTranslations, err error) {
 
-	task, err = n.adaptors.Task.GetById(id)
-
+	if task, err = n.adaptors.Task.GetById(ctx, id); err != nil {
+		return
+	}
+	task.IsLoaded = n.automation.TaskIsLoaded(id)
+	task.Telemetry = n.automation.TaskTelemetry(id)
 	return
 }
 
 // Delete ...
 func (n *TaskEndpoint) Delete(ctx context.Context, id int64) (err error) {
-
-	if err = n.adaptors.Task.Delete(id); err != nil {
+	if err = n.adaptors.Task.Delete(ctx, id); err != nil {
 		return
 	}
 
-	n.eventBus.Publish(bus.TopicAutomation, events.EventRemoveTask{
+	n.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", id), events.EventRemoveTask{
 		Id: id,
 	})
-
 	return
 }
 
 // Enable ...
 func (n *TaskEndpoint) Enable(ctx context.Context, id int64) (err error) {
 
-	if err = n.adaptors.Task.Enable(id); err != nil {
+	if err = n.adaptors.Task.Enable(ctx, id); err != nil {
 		return
 	}
 
-	n.eventBus.Publish(bus.TopicAutomation, events.EventEnableTask{
+	n.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", id), events.EventEnableTask{
 		Id: id,
 	})
-
 	return
 }
 
 // Disable ...
 func (n *TaskEndpoint) Disable(ctx context.Context, id int64) (err error) {
 
-	if err = n.adaptors.Task.Disable(id); err != nil {
+	if err = n.adaptors.Task.Disable(ctx, id); err != nil {
 		return
 	}
 
-	n.eventBus.Publish(bus.TopicAutomation, events.EventDisableTask{
+	n.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", id), events.EventDisableTask{
 		Id: id,
 	})
-
 	return
 }
 
 // List ...
-func (n *TaskEndpoint) List(ctx context.Context, pagination common.PageParams) (list []*m.Task, total int64, errs validator.ValidationErrorsTranslations, err error) {
+func (n *TaskEndpoint) List(ctx context.Context, pagination common.PageParams) (tasks []*m.Task, total int64, errs validator.ValidationErrorsTranslations, err error) {
 
-	list, total, err = n.adaptors.Task.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, false)
-
+	if tasks, total, err = n.adaptors.Task.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, false); err != nil {
+		return
+	}
+	for _, task := range tasks {
+		task.IsLoaded = n.automation.TaskIsLoaded(task.Id)
+	}
 	return
 }

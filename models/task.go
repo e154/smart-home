@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -22,6 +22,7 @@ import (
 	"time"
 
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/telemetry"
 )
 
 // Task ...
@@ -30,11 +31,14 @@ type Task struct {
 	Name        string               `json:"name" validate:"required,lte=255"`
 	Description string               `json:"description" validate:"lte=255"`
 	Enabled     bool                 `json:"enabled"`
+	IsLoaded    bool                 `json:"is_loaded"`
 	Condition   common.ConditionType `json:"condition" validate:"required,oneof=or and"`
 	Triggers    []*Trigger           `json:"triggers" validate:"dive"`
 	Conditions  []*Condition         `json:"conditions" validate:"dive"`
 	Actions     []*Action            `json:"actions" validate:"dive"`
 	Area        *Area                `json:"area"`
+	AreaId      *int64               `json:"area_id"`
+	Telemetry   telemetry.Telemetry  `json:"telemetry"`
 	CreatedAt   time.Time            `json:"created_at"`
 	UpdatedAt   time.Time            `json:"updated_at"`
 }
@@ -52,4 +56,33 @@ func (t *Task) AddCondition(c *Condition) {
 // AddAction ...
 func (t *Task) AddAction(a *Action) {
 	t.Actions = append(t.Actions, a)
+}
+
+// NewTask ...
+type NewTask struct {
+	Name         string               `json:"name" validate:"required,lte=255"`
+	Description  string               `json:"description" validate:"lte=255"`
+	Enabled      bool                 `json:"enabled"`
+	IsLoaded     bool                 `json:"is_loaded"`
+	Condition    common.ConditionType `json:"condition" validate:"required,oneof=or and"`
+	TriggerIds   []int64              `json:"triggers" validate:"dive"`
+	ConditionIds []int64              `json:"conditions" validate:"dive"`
+	ActionIds    []int64              `json:"actions" validate:"dive"`
+	Area         *Area                `json:"area"`
+	AreaId       *int64               `json:"area_id"`
+}
+
+// UpdateTask ...
+type UpdateTask struct {
+	Id           int64                `json:"id"`
+	Name         string               `json:"name" validate:"required,lte=255"`
+	Description  string               `json:"description" validate:"lte=255"`
+	Enabled      bool                 `json:"enabled"`
+	IsLoaded     bool                 `json:"is_loaded"`
+	Condition    common.ConditionType `json:"condition" validate:"required,oneof=or and"`
+	TriggerIds   []int64              `json:"triggers" validate:"dive"`
+	ConditionIds []int64              `json:"conditions" validate:"dive"`
+	ActionIds    []int64              `json:"actions" validate:"dive"`
+	Area         *Area                `json:"area"`
+	AreaId       *int64               `json:"area_id"`
 }

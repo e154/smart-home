@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,7 +19,6 @@
 package messagebird
 
 import (
-	"fmt"
 	"sync"
 	"time"
 
@@ -29,11 +28,9 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/supervisor"
 	messagebird "github.com/messagebird/go-rest-api"
 	"github.com/messagebird/go-rest-api/balance"
 	"github.com/messagebird/go-rest-api/sms"
@@ -41,33 +38,21 @@ import (
 
 // Actor ...
 type Actor struct {
-	entity_manager.BaseActor
-	eventBus    bus.Bus
-	adaptors    *adaptors.Adaptors
+	supervisor.BaseActor
 	AccessToken string
 	Name        string
 	balanceLock *sync.Mutex
 }
 
 // NewActor ...
-func NewActor(settings m.Attributes,
-	entityManager entity_manager.EntityManager,
-	eventBus bus.Bus,
-	adaptors *adaptors.Adaptors) *Actor {
+func NewActor(entity *m.Entity,
+	settings m.Attributes,
+	service supervisor.Service) *Actor {
 
-	accessToken := settings[AttrAccessKey].String()
+	accessToken := settings[AttrAccessKey].Decrypt()
 
 	actor := &Actor{
-		BaseActor: entity_manager.BaseActor{
-			Id:         common.EntityId(fmt.Sprintf("%s.%s", Name, Name)),
-			Name:       Name,
-			EntityType: Name,
-			AttrMu:     &sync.RWMutex{},
-			Attrs:      NewAttr(),
-			Manager:    entityManager,
-		},
-		eventBus:    eventBus,
-		adaptors:    adaptors,
+		BaseActor:   supervisor.NewBaseActor(entity, service),
 		AccessToken: accessToken,
 		Name:        settings[AttrName].String(),
 		balanceLock: &sync.Mutex{},
@@ -76,13 +61,16 @@ func NewActor(settings m.Attributes,
 	return actor
 }
 
-// Spawn ...
-func (p *Actor) Spawn() entity_manager.PluginActor {
-	return p
+func (e *Actor) Destroy() {
+
+}
+
+func (e *Actor) Spawn() {
+
 }
 
 // Send ...
-func (p *Actor) Send(phone string, message *m.Message) (err error) {
+func (e *Actor) Send(phone string, message *m.Message) (err error) {
 
 	params := &sms.Params{
 		Type:       "sms",
@@ -99,11 +87,11 @@ func (p *Actor) Send(phone string, message *m.Message) (err error) {
 		}
 	} else {
 		var client *messagebird.Client
-		if client, err = p.client(); err != nil {
+		if client, err = e.client(); err != nil {
 			return
 		}
 
-		if msg, err = sms.Create(client, p.Name, []string{phone}, attr[AttrBody].String(), params); err != nil {
+		if msg, err = sms.Create(client, e.Name, []string{phone}, attr[AttrBody].String(), params); err != nil {
 			mbErr, ok := err.(messagebird.ErrorResponse)
 			if !ok {
 				err = errors.Wrap(err, "can`t static cast to messagebird.ErrorResponse")
@@ -116,7 +104,7 @@ func (p *Actor) Send(phone string, message *m.Message) (err error) {
 	}
 
 	defer func() {
-		go func() { _, _ = p.UpdateBalance() }()
+		go func() { _, _ = e.UpdateBalance() }()
 	}()
 
 	log.Infof("SMS id(%s) successfully sent to phone '%s'", msg.ID, phone)
@@ -131,7 +119,7 @@ func (p *Actor) Send(phone string, message *m.Message) (err error) {
 		if i > 15 {
 			return
 		}
-		if status, err = p.GetStatus(msg.ID); err != nil {
+		if status, err = e.GetStatus(msg.ID); err != nil {
 			return
 		}
 		if status == StatusDelivered {
@@ -145,13 +133,13 @@ func (p *Actor) Send(phone string, message *m.Message) (err error) {
 }
 
 // GetStatus ...
-func (p *Actor) GetStatus(smsId string) (string, error) {
+func (e *Actor) GetStatus(smsId string) (string, error) {
 
 	if common.TestMode() {
 		return StatusDelivered, nil
 	}
 
-	client, err := p.client()
+	client, err := e.client()
 	if err != nil {
 		return "", err
 	}
@@ -165,13 +153,13 @@ func (p *Actor) GetStatus(smsId string) (string, error) {
 }
 
 // UpdateBalance ...
-func (p *Actor) UpdateBalance() (bal Balance, err error) {
+func (e *Actor) UpdateBalance() (bal Balance, err error) {
 
-	p.balanceLock.Lock()
-	defer p.balanceLock.Unlock()
+	e.balanceLock.Lock()
+	defer e.balanceLock.Unlock()
 
-	oldState := p.GetEventState(p)
-	now := p.Now(oldState)
+	oldState := e.GetEventState()
+	now := e.Now(oldState)
 
 	var b *balance.Balance
 	if common.TestMode() {
@@ -182,7 +170,7 @@ func (p *Actor) UpdateBalance() (bal Balance, err error) {
 		}
 	} else {
 		var client *messagebird.Client
-		if client, err = p.client(); err != nil {
+		if client, err = e.client(); err != nil {
 			return
 		}
 		if b, err = balance.Read(client); err != nil {
@@ -195,9 +183,9 @@ func (p *Actor) UpdateBalance() (bal Balance, err error) {
 	attributeValues[AttrType] = b.Type
 	attributeValues[AttrAmount] = b.Amount
 
-	p.AttrMu.Lock()
+	e.AttrMu.Lock()
 	var changed bool
-	if changed, err = p.Attrs.Deserialize(attributeValues); !changed {
+	if changed, err = e.Attrs.Deserialize(attributeValues); !changed {
 		if err != nil {
 			log.Warn(err.Error())
 		}
@@ -206,29 +194,29 @@ func (p *Actor) UpdateBalance() (bal Balance, err error) {
 			delta := now.Sub(*oldState.LastUpdated).Milliseconds()
 			//fmt.Println("delta", delta)
 			if delta < 200 {
-				p.AttrMu.Unlock()
+				e.AttrMu.Unlock()
 				return
 			}
 		}
 	}
-	p.AttrMu.Unlock()
+	e.AttrMu.Unlock()
 
-	p.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
+	go e.SaveState(events.EventStateChanged{
 		StorageSave: true,
-		PluginName:  p.Id.PluginName(),
-		EntityId:    p.Id,
+		PluginName:  e.Id.PluginName(),
+		EntityId:    e.Id,
 		OldState:    oldState,
-		NewState:    p.GetEventState(p),
+		NewState:    e.GetEventState(),
 	})
 
 	return
 }
 
-func (p *Actor) client() (client *messagebird.Client, err error) {
-	if p.AccessToken == "" {
+func (e *Actor) client() (client *messagebird.Client, err error) {
+	if e.AccessToken == "" {
 		err = apperr.ErrBadActorSettingsParameters
 		return
 	}
-	client = messagebird.New(p.AccessToken)
+	client = messagebird.New(e.AccessToken)
 	return
 }

@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -24,7 +24,7 @@ import (
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 const (
@@ -356,99 +356,99 @@ var (
 )
 
 // GetActorState ...
-func GetActorState(state, theme string, n, w bool) (actorState entity_manager.ActorState) {
+func GetActorState(state, theme string, n, w bool) (actorState supervisor.ActorState) {
 	switch state {
 	case StateClearSky:
-		actorState = entity_manager.ActorState{Name: StateClearSky, Description: "clear sky", ImageUrl: GetImagePath(StateClearSky, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateClearSky, Description: "clear sky", ImageUrl: GetImagePath(StateClearSky, theme, n, w)}
 	case StateFair:
-		actorState = entity_manager.ActorState{Name: StateFair, Description: "fair", ImageUrl: GetImagePath(StateFair, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateFair, Description: "fair", ImageUrl: GetImagePath(StateFair, theme, n, w)}
 	case StatePartlyCloudy:
-		actorState = entity_manager.ActorState{Name: StatePartlyCloudy, Description: "partly cloudy", ImageUrl: GetImagePath(StatePartlyCloudy, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StatePartlyCloudy, Description: "partly cloudy", ImageUrl: GetImagePath(StatePartlyCloudy, theme, n, w)}
 	case StateCloudy:
-		actorState = entity_manager.ActorState{Name: StateCloudy, Description: "cloudy", ImageUrl: GetImagePath(StateCloudy, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateCloudy, Description: "cloudy", ImageUrl: GetImagePath(StateCloudy, theme, n, w)}
 	case StateRainShowers:
-		actorState = entity_manager.ActorState{Name: StateRainShowers, Description: "rain showers", ImageUrl: GetImagePath(StateRainShowers, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateRainShowers, Description: "rain showers", ImageUrl: GetImagePath(StateRainShowers, theme, n, w)}
 	case StateRainShowersAndThunder:
-		actorState = entity_manager.ActorState{Name: StateRainShowersAndThunder, Description: "rain showers and thunder", ImageUrl: GetImagePath(StateRainShowersAndThunder, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateRainShowersAndThunder, Description: "rain showers and thunder", ImageUrl: GetImagePath(StateRainShowersAndThunder, theme, n, w)}
 	case StateSleetShowers:
-		actorState = entity_manager.ActorState{Name: StateSleetShowers, Description: "sleet showers", ImageUrl: GetImagePath(StateSleetShowers, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateSleetShowers, Description: "sleet showers", ImageUrl: GetImagePath(StateSleetShowers, theme, n, w)}
 	case StateSnowShowers:
-		actorState = entity_manager.ActorState{Name: StateSnowShowers, Description: "snow showers", ImageUrl: GetImagePath(StateSnowShowers, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateSnowShowers, Description: "snow showers", ImageUrl: GetImagePath(StateSnowShowers, theme, n, w)}
 	case StateRain:
-		actorState = entity_manager.ActorState{Name: StateRain, Description: "rain", ImageUrl: GetImagePath(StateRain, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateRain, Description: "rain", ImageUrl: GetImagePath(StateRain, theme, n, w)}
 	case StateHeavyRain:
-		actorState = entity_manager.ActorState{Name: StateHeavyRain, Description: "heavy rain", ImageUrl: GetImagePath(StateHeavyRain, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateHeavyRain, Description: "heavy rain", ImageUrl: GetImagePath(StateHeavyRain, theme, n, w)}
 	case StateHeavyRainAndThunder:
-		actorState = entity_manager.ActorState{Name: StateHeavyRainAndThunder, Description: "heavy rain and thunder", ImageUrl: GetImagePath(StateHeavyRainAndThunder, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateHeavyRainAndThunder, Description: "heavy rain and thunder", ImageUrl: GetImagePath(StateHeavyRainAndThunder, theme, n, w)}
 	case StateSleet:
-		actorState = entity_manager.ActorState{Name: StateSleet, Description: "sleet", ImageUrl: GetImagePath(StateSleet, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateSleet, Description: "sleet", ImageUrl: GetImagePath(StateSleet, theme, n, w)}
 	case StateSnow:
-		actorState = entity_manager.ActorState{Name: StateSnow, Description: "snow", ImageUrl: GetImagePath(StateSnow, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateSnow, Description: "snow", ImageUrl: GetImagePath(StateSnow, theme, n, w)}
 	case StateSnowAndThunder:
-		actorState = entity_manager.ActorState{Name: StateSnowAndThunder, Description: "snow and thunder", ImageUrl: GetImagePath(StateSnowAndThunder, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateSnowAndThunder, Description: "snow and thunder", ImageUrl: GetImagePath(StateSnowAndThunder, theme, n, w)}
 	case StateFog:
-		actorState = entity_manager.ActorState{Name: StateFog, Description: "fog", ImageUrl: GetImagePath(StateFog, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateFog, Description: "fog", ImageUrl: GetImagePath(StateFog, theme, n, w)}
 	case StateSleetShowersAndThunder:
-		actorState = entity_manager.ActorState{Name: StateSleetShowersAndThunder, Description: "sleet showers and thunder", ImageUrl: GetImagePath(StateSleetShowersAndThunder, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateSleetShowersAndThunder, Description: "sleet showers and thunder", ImageUrl: GetImagePath(StateSleetShowersAndThunder, theme, n, w)}
 	case StateSnowShowersAndThunder:
-		actorState = entity_manager.ActorState{Name: StateSnowShowersAndThunder, Description: "snow showers and thunder", ImageUrl: GetImagePath(StateSnowShowersAndThunder, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateSnowShowersAndThunder, Description: "snow showers and thunder", ImageUrl: GetImagePath(StateSnowShowersAndThunder, theme, n, w)}
 	case StateRainAndThunder:
-		actorState = entity_manager.ActorState{Name: StateRainAndThunder, Description: "rain and thunder", ImageUrl: GetImagePath(StateRainAndThunder, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateRainAndThunder, Description: "rain and thunder", ImageUrl: GetImagePath(StateRainAndThunder, theme, n, w)}
 	case StateSleetAndThunder:
-		actorState = entity_manager.ActorState{Name: StateSleetAndThunder, Description: "sleet and thunder", ImageUrl: GetImagePath(StateSleetAndThunder, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateSleetAndThunder, Description: "sleet and thunder", ImageUrl: GetImagePath(StateSleetAndThunder, theme, n, w)}
 	case StateLightRainShowersAndThunder:
-		actorState = entity_manager.ActorState{Name: StateLightRainShowersAndThunder, Description: "light rain showers and thunder", ImageUrl: GetImagePath(StateLightRainShowersAndThunder, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateLightRainShowersAndThunder, Description: "light rain showers and thunder", ImageUrl: GetImagePath(StateLightRainShowersAndThunder, theme, n, w)}
 	case StateHeavyRainShowersAndThunder:
-		actorState = entity_manager.ActorState{Name: StateHeavyRainShowersAndThunder, Description: "heavy rain showers and thunder", ImageUrl: GetImagePath(StateHeavyRainShowersAndThunder, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateHeavyRainShowersAndThunder, Description: "heavy rain showers and thunder", ImageUrl: GetImagePath(StateHeavyRainShowersAndThunder, theme, n, w)}
 	case StateLightSleetShowersAndThunder:
-		actorState = entity_manager.ActorState{Name: StateLightSleetShowersAndThunder, Description: "light sleet showers and thunder", ImageUrl: GetImagePath(StateLightSleetShowersAndThunder, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateLightSleetShowersAndThunder, Description: "light sleet showers and thunder", ImageUrl: GetImagePath(StateLightSleetShowersAndThunder, theme, n, w)}
 	case StateHeavySleetShowersAndThunder:
-		actorState = entity_manager.ActorState{Name: StateHeavySleetShowersAndThunder, Description: "heavy sleet showers and thunder", ImageUrl: GetImagePath(StateHeavySleetShowersAndThunder, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateHeavySleetShowersAndThunder, Description: "heavy sleet showers and thunder", ImageUrl: GetImagePath(StateHeavySleetShowersAndThunder, theme, n, w)}
 	case StateLightSnowShowersAndThunder:
-		actorState = entity_manager.ActorState{Name: StateLightSnowShowersAndThunder, Description: "light snow showers and thunder", ImageUrl: GetImagePath(StateLightSnowShowersAndThunder, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateLightSnowShowersAndThunder, Description: "light snow showers and thunder", ImageUrl: GetImagePath(StateLightSnowShowersAndThunder, theme, n, w)}
 	case StateHeavySnowShowersAndThunder:
-		actorState = entity_manager.ActorState{Name: StateHeavySnowShowersAndThunder, Description: "heavy snow showers and thunder", ImageUrl: GetImagePath(StateHeavySnowShowersAndThunder, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateHeavySnowShowersAndThunder, Description: "heavy snow showers and thunder", ImageUrl: GetImagePath(StateHeavySnowShowersAndThunder, theme, n, w)}
 	case StateLightRainAndThunder:
-		actorState = entity_manager.ActorState{Name: StateLightRainAndThunder, Description: "light rain and thunder", ImageUrl: GetImagePath(StateLightRainAndThunder, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateLightRainAndThunder, Description: "light rain and thunder", ImageUrl: GetImagePath(StateLightRainAndThunder, theme, n, w)}
 	case StateLightSleetAndThunder:
-		actorState = entity_manager.ActorState{Name: StateLightSleetAndThunder, Description: "light sleet and thunder", ImageUrl: GetImagePath(StateLightSleetAndThunder, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateLightSleetAndThunder, Description: "light sleet and thunder", ImageUrl: GetImagePath(StateLightSleetAndThunder, theme, n, w)}
 	case StateHeavySleetAndThunder:
-		actorState = entity_manager.ActorState{Name: StateHeavySleetAndThunder, Description: "heavy sleet and thunder", ImageUrl: GetImagePath(StateHeavySleetAndThunder, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateHeavySleetAndThunder, Description: "heavy sleet and thunder", ImageUrl: GetImagePath(StateHeavySleetAndThunder, theme, n, w)}
 	case StateLightSnowAndThunder:
-		actorState = entity_manager.ActorState{Name: StateLightSnowAndThunder, Description: "light snow and thunder", ImageUrl: GetImagePath(StateLightSnowAndThunder, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateLightSnowAndThunder, Description: "light snow and thunder", ImageUrl: GetImagePath(StateLightSnowAndThunder, theme, n, w)}
 	case StateHeavySnowAndThunder:
-		actorState = entity_manager.ActorState{Name: StateHeavySnowAndThunder, Description: "heavy snow and thunder", ImageUrl: GetImagePath(StateHeavySnowAndThunder, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateHeavySnowAndThunder, Description: "heavy snow and thunder", ImageUrl: GetImagePath(StateHeavySnowAndThunder, theme, n, w)}
 	case StateLightRainShowers:
-		actorState = entity_manager.ActorState{Name: StateLightRainShowers, Description: "light rain showers", ImageUrl: GetImagePath(StateLightRainShowers, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateLightRainShowers, Description: "light rain showers", ImageUrl: GetImagePath(StateLightRainShowers, theme, n, w)}
 	case StateHeavyRainShowers:
-		actorState = entity_manager.ActorState{Name: StateHeavyRainShowers, Description: "heavy rain showers", ImageUrl: GetImagePath(StateHeavyRainShowers, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateHeavyRainShowers, Description: "heavy rain showers", ImageUrl: GetImagePath(StateHeavyRainShowers, theme, n, w)}
 	case StateLightSleetShowers:
-		actorState = entity_manager.ActorState{Name: StateLightSleetShowers, Description: "light sleet showers", ImageUrl: GetImagePath(StateLightSleetShowers, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateLightSleetShowers, Description: "light sleet showers", ImageUrl: GetImagePath(StateLightSleetShowers, theme, n, w)}
 	case StateHeavySleetShowers:
-		actorState = entity_manager.ActorState{Name: StateHeavySleetShowers, Description: "heavy sleet showers", ImageUrl: GetImagePath(StateHeavySleetShowers, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateHeavySleetShowers, Description: "heavy sleet showers", ImageUrl: GetImagePath(StateHeavySleetShowers, theme, n, w)}
 	case StateLightSnowShowers:
-		actorState = entity_manager.ActorState{Name: StateLightSnowShowers, Description: "light snow showers", ImageUrl: GetImagePath(StateLightSnowShowers, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateLightSnowShowers, Description: "light snow showers", ImageUrl: GetImagePath(StateLightSnowShowers, theme, n, w)}
 	case StateHeavySnowShowers:
-		actorState = entity_manager.ActorState{Name: StateHeavySnowShowers, Description: "heavy snow showers", ImageUrl: GetImagePath(StateHeavySnowShowers, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateHeavySnowShowers, Description: "heavy snow showers", ImageUrl: GetImagePath(StateHeavySnowShowers, theme, n, w)}
 	case StateLightRain:
-		actorState = entity_manager.ActorState{Name: StateLightRain, Description: "light rain", ImageUrl: GetImagePath(StateLightRain, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateLightRain, Description: "light rain", ImageUrl: GetImagePath(StateLightRain, theme, n, w)}
 	case StateLightSleet:
-		actorState = entity_manager.ActorState{Name: StateLightSleet, Description: "light sleet", ImageUrl: GetImagePath(StateLightSleet, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateLightSleet, Description: "light sleet", ImageUrl: GetImagePath(StateLightSleet, theme, n, w)}
 	case StateHeavySleet:
-		actorState = entity_manager.ActorState{Name: StateHeavySleet, Description: "heavy sleet", ImageUrl: GetImagePath(StateHeavySleet, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateHeavySleet, Description: "heavy sleet", ImageUrl: GetImagePath(StateHeavySleet, theme, n, w)}
 	case StateLightSnow:
-		actorState = entity_manager.ActorState{Name: StateLightSnow, Description: "light snow", ImageUrl: GetImagePath(StateLightSnow, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateLightSnow, Description: "light snow", ImageUrl: GetImagePath(StateLightSnow, theme, n, w)}
 	case StateHeavySnow:
-		actorState = entity_manager.ActorState{Name: StateHeavySnow, Description: "heavy snow", ImageUrl: GetImagePath(StateHeavySnow, theme, n, w)}
+		actorState = supervisor.ActorState{Name: StateHeavySnow, Description: "heavy snow", ImageUrl: GetImagePath(StateHeavySnow, theme, n, w)}
 	}
 
 	return
 }
 
 // NewActorStates ...
-func NewActorStates(n, w bool) (states map[string]entity_manager.ActorState) {
+func NewActorStates(n, w bool) (states map[string]supervisor.ActorState) {
 	const theme = "yr"
-	states = map[string]entity_manager.ActorState{
+	states = map[string]supervisor.ActorState{
 		StateClearSky:                    GetActorState(StateClearSky, theme, n, w),
 		StateFair:                        GetActorState(StateFair, theme, n, w),
 		StatePartlyCloudy:                GetActorState(StatePartlyCloudy, theme, n, w),

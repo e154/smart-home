@@ -18,7 +18,7 @@ The "sensor" plugin also implements a JavaScript handler called `entityAction`. 
 Example implementation of the `entityAction` handler:
 
 ```javascript
-entityAction = (entityId, actionName) => {
+entityAction = (entityId, actionName, args) => {
   // Action handling code
 };
 ```

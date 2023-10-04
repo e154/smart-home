@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -24,16 +24,14 @@ import (
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 const (
 	// Name ...
 	Name = "node"
-	// EntityNode ...
-	EntityNode = string("node")
 	// TopicPluginNode ...
-	TopicPluginNode = "plugin.node"
+	TopicPluginNode = "system/plugins/node"
 
 	Version = "0.0.1"
 )
@@ -102,9 +100,9 @@ func NewSettings() m.Attributes {
 }
 
 // NewStates ...
-func NewStates() (states map[string]entity_manager.ActorState) {
+func NewStates() (states map[string]supervisor.ActorState) {
 
-	states = map[string]entity_manager.ActorState{
+	states = map[string]supervisor.ActorState{
 		"wait": {
 			Name:        "wait",
 			Description: "Wait",

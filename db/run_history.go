@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,13 +19,14 @@
 package db
 
 import (
+	"context"
 	"fmt"
 	"time"
 
 	"github.com/e154/smart-home/common/apperr"
 
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // RunHistory ...
@@ -46,8 +47,8 @@ func (d *RunStory) TableName() string {
 }
 
 // Add ...
-func (n RunHistory) Add(story *RunStory) (id int64, err error) {
-	if err = n.Db.Create(&story).Error; err != nil {
+func (n RunHistory) Add(ctx context.Context, story *RunStory) (id int64, err error) {
+	if err = n.Db.WithContext(ctx).Create(&story).Error; err != nil {
 		err = errors.Wrap(apperr.ErrRunStoryAdd, err.Error())
 		return
 	}
@@ -56,26 +57,26 @@ func (n RunHistory) Add(story *RunStory) (id int64, err error) {
 }
 
 // Update ...
-func (n RunHistory) Update(m *RunStory) (err error) {
+func (n RunHistory) Update(ctx context.Context, m *RunStory) (err error) {
 	q := map[string]interface{}{
 		"end": m.End,
 	}
-	if err = n.Db.Model(&RunStory{Id: m.Id}).Updates(q).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(&RunStory{Id: m.Id}).Updates(q).Error; err != nil {
 		err = errors.Wrap(apperr.ErrRunStoryUpdate, err.Error())
 	}
 	return
 }
 
 // List ...
-func (n *RunHistory) List(limit, offset int64, orderBy, sort string) (list []*RunStory, total int64, err error) {
+func (n *RunHistory) List(ctx context.Context, limit, offset int, orderBy, sort string) (list []*RunStory, total int64, err error) {
 
-	if err = n.Db.Model(RunStory{}).Count(&total).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(RunStory{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrRunStoryList, err.Error())
 		return
 	}
 
 	list = make([]*RunStory, 0)
-	q := n.Db.Model(&RunStory{}).
+	q := n.Db.WithContext(ctx).Model(&RunStory{}).
 		Limit(limit).
 		Offset(offset)
 
@@ -88,5 +89,21 @@ func (n *RunHistory) List(limit, offset int64, orderBy, sort string) (list []*Ru
 		err = errors.Wrap(apperr.ErrRunStoryList, err.Error())
 	}
 
+	return
+}
+
+// DeleteOldest ...
+func (n *RunHistory) DeleteOldest(ctx context.Context, days int) (err error) {
+	story := &RunStory{}
+	if err = n.Db.WithContext(ctx).Last(&story).Error; err != nil {
+		err = errors.Wrap(apperr.ErrLogDelete, err.Error())
+		return
+	}
+	err = n.Db.WithContext(ctx).Delete(&RunStory{},
+		fmt.Sprintf(`start < CAST('%s' AS DATE) - interval '%d days'`,
+			story.Start.UTC().Format("2006-01-02 15:04:05"), days)).Error
+	if err != nil {
+		err = errors.Wrap(apperr.ErrEntityStorageDelete, err.Error())
+	}
 	return
 }

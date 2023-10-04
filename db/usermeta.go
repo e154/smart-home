@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,9 +19,11 @@
 package db
 
 import (
+	"context"
+
 	"github.com/e154/smart-home/common/apperr"
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // UserMetas ...
@@ -43,15 +45,15 @@ func (m *UserMeta) TableName() string {
 }
 
 // UpdateOrCreate ...
-func (m *UserMetas) UpdateOrCreate(meta *UserMeta) (id int64, err error) {
+func (m *UserMetas) UpdateOrCreate(ctx context.Context, meta *UserMeta) (id int64, err error) {
 
-	err = m.Db.Model(&UserMeta{}).
+	err = m.Db.WithContext(ctx).Model(&UserMeta{}).
 		Where("user_id = ? and key = ?", meta.UserId, meta.Key).
 		Updates(map[string]interface{}{"value": meta.Value}).
 		Error
 
 	if err != nil {
-		if err = m.Db.Create(&meta).Error; err != nil {
+		if err = m.Db.WithContext(ctx).Create(&meta).Error; err != nil {
 			err = errors.Wrap(apperr.ErrUserMetaAdd, err.Error())
 			return
 		}

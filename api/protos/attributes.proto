@@ -15,6 +15,8 @@ enum Types {
   MAP = 5;
   TIME = 6;
   IMAGE = 7;
+  POINT = 8;
+  ENCRYPTED = 9;
 }
 
 message Attribute {
@@ -28,4 +30,6 @@ message Attribute {
   map<string, Attribute> map = 8;
   optional google.protobuf.Timestamp time = 9;
   optional string image_url = 10;
+  string point = 11;
+  optional string encrypted = 12;
 }

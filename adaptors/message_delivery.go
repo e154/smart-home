@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,9 +20,10 @@ package adaptors
 
 import (
 	"context"
+
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // IMessageDelivery ...
@@ -53,13 +54,13 @@ func GetMessageDeliveryAdaptor(d *gorm.DB) IMessageDelivery {
 
 // Add ...
 func (n *MessageDelivery) Add(ctx context.Context, msg *m.MessageDelivery) (id int64, err error) {
-	id, err = n.table.Add(n.toDb(msg))
+	id, err = n.table.Add(ctx, n.toDb(msg))
 	return
 }
 
 // SetStatus ...
 func (n *MessageDelivery) SetStatus(ctx context.Context, msg *m.MessageDelivery) (err error) {
-	err = n.table.SetStatus(n.toDb(msg))
+	err = n.table.SetStatus(ctx, n.toDb(msg))
 	return
 }
 
@@ -74,7 +75,7 @@ func (n *MessageDelivery) List(ctx context.Context, limit, offset int64, orderBy
 			Types:     query.Types,
 		}
 	}
-	if dbList, total, err = n.table.List(limit, offset, orderBy, sort, queryObj); err != nil {
+	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort, queryObj); err != nil {
 		return
 	}
 
@@ -89,7 +90,7 @@ func (n *MessageDelivery) List(ctx context.Context, limit, offset int64, orderBy
 // GetAllUncompleted ...
 func (n *MessageDelivery) GetAllUncompleted(ctx context.Context, limit, offset int64) (list []*m.MessageDelivery, total int64, err error) {
 	var dbList []*db.MessageDelivery
-	if dbList, total, err = n.table.GetAllUncompleted(limit, offset); err != nil {
+	if dbList, total, err = n.table.GetAllUncompleted(ctx, int(limit), int(offset)); err != nil {
 		return
 	}
 
@@ -103,7 +104,7 @@ func (n *MessageDelivery) GetAllUncompleted(ctx context.Context, limit, offset i
 
 // Delete ...
 func (n *MessageDelivery) Delete(ctx context.Context, id int64) (err error) {
-	err = n.table.Delete(id)
+	err = n.table.Delete(ctx, id)
 	return
 }
 
@@ -111,7 +112,7 @@ func (n *MessageDelivery) Delete(ctx context.Context, id int64) (err error) {
 func (n *MessageDelivery) GetById(ctx context.Context, id int64) (ver *m.MessageDelivery, err error) {
 
 	var dbVer *db.MessageDelivery
-	if dbVer, err = n.table.GetById(id); err != nil {
+	if dbVer, err = n.table.GetById(ctx, id); err != nil {
 		return
 	}
 

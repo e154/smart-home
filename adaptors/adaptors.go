@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,8 +21,8 @@ package adaptors
 import (
 	"context"
 
-	"github.com/jinzhu/gorm"
 	"go.uber.org/fx"
+	"gorm.io/gorm"
 
 	"github.com/e154/smart-home/common/logger"
 	"github.com/e154/smart-home/models"
@@ -146,7 +146,6 @@ func (a *Adaptors) Commit() error {
 	if !a.isTx {
 		return nil
 	}
-	a.isTx = false
 	return a.db.Commit().Error
 }
 

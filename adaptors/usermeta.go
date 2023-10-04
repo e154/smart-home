@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,14 +19,16 @@
 package adaptors
 
 import (
+	"context"
+
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // IUserMeta ...
 type IUserMeta interface {
-	UpdateOrCreate(meta *m.UserMeta) (id int64, err error)
+	UpdateOrCreate(ctx context.Context, meta *m.UserMeta) (id int64, err error)
 	fromDb(dbMeta *db.UserMeta) (meta *m.UserMeta)
 	toDb(meta *m.UserMeta) (dbMeta *db.UserMeta)
 }
@@ -47,10 +49,10 @@ func GetUserMetaAdaptor(d *gorm.DB) *UserMeta {
 }
 
 // UpdateOrCreate ...
-func (n *UserMeta) UpdateOrCreate(meta *m.UserMeta) (id int64, err error) {
+func (n *UserMeta) UpdateOrCreate(ctx context.Context, meta *m.UserMeta) (id int64, err error) {
 
 	dbMeta := n.toDb(meta)
-	if id, err = n.table.UpdateOrCreate(dbMeta); err != nil {
+	if id, err = n.table.UpdateOrCreate(ctx, dbMeta); err != nil {
 		return
 	}
 

@@ -1,27 +1,40 @@
+// This file is part of the Smart Home
+// Program complex distribution https://github.com/e154/smart-home
+// Copyright (C) 2023, Filippov Alex
+//
+// This library is free software: you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Library General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.  If not, see
+// <https://www.gnu.org/licenses/>.
+
 package mqtt
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/system/scripts"
 	"sync"
 
-	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 // Actor ...
 type Actor struct {
-	entity_manager.BaseActor
-	eventBus         bus.Bus
-	adaptors         *adaptors.Adaptors
-	scriptService    scripts.ScriptService
+	supervisor.BaseActor
 	message          *Message
 	mqttMessageQueue chan *Message
-	actionPool       chan events.EventCallAction
+	actionPool       chan events.EventCallEntityAction
 	mqttClient       mqtt.MqttCli
 	newMsgMu         *sync.Mutex
 	stateMu          *sync.Mutex
@@ -29,49 +42,33 @@ type Actor struct {
 
 // NewActor ...
 func NewActor(entity *m.Entity,
-	params map[string]interface{},
-	adaptors *adaptors.Adaptors,
-	scriptService scripts.ScriptService,
-	entityManager entity_manager.EntityManager,
-	eventBus bus.Bus,
+	service supervisor.Service,
 	mqttClient mqtt.MqttCli) (actor *Actor, err error) {
 
 	actor = &Actor{
-		BaseActor:        entity_manager.NewBaseActor(entity, scriptService, adaptors),
-		eventBus:         eventBus,
-		adaptors:         adaptors,
-		scriptService:    scriptService,
+		BaseActor:        supervisor.NewBaseActor(entity, service),
 		message:          NewMessage(),
 		mqttMessageQueue: make(chan *Message, 10),
-		actionPool:       make(chan events.EventCallAction, 10),
+		actionPool:       make(chan events.EventCallEntityAction, 10),
 		mqttClient:       mqttClient,
 		newMsgMu:         &sync.Mutex{},
 		stateMu:          &sync.Mutex{},
 	}
 
-	actor.Manager = entityManager
-	_, _ = actor.Attrs.Deserialize(params)
-
 	// Actions
 	for _, a := range actor.Actions {
-		if a.ScriptEngine != nil {
-			_, _ = a.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
-			a.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
-			_, _ = a.ScriptEngine.Do()
+		if a.ScriptEngine.Engine() != nil {
+			_, _ = a.ScriptEngine.Engine().Do()
 		}
 	}
 
-	if actor.ScriptEngine != nil {
-		// message
-		actor.ScriptEngine.PushStruct("message", actor.message)
-
-		// binds
-		_, _ = actor.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
-		actor.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
+	for _, engine := range actor.ScriptEngines {
+		engine.Spawn(func(engine *scripts.Engine) {
+			engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
+			engine.PushStruct("message", actor.message)
+			engine.Do()
+		})
 	}
-
-	actor.Manager = entityManager
-	actor.Setts = entity.Settings
 
 	if actor.Setts == nil {
 		actor.Setts = NewSettings()
@@ -94,28 +91,28 @@ func NewActor(entity *m.Entity,
 	return
 }
 
-func (e *Actor) destroy() {
+func (e *Actor) Destroy() {
 	if e.Setts != nil && e.Setts[AttrSubscribeTopic] != nil {
 		e.mqttClient.Unsubscribe(e.Setts[AttrSubscribeTopic].String())
 	}
 }
 
 // Spawn ...
-func (e *Actor) Spawn() entity_manager.PluginActor {
+func (e *Actor) Spawn() {
 
 	if e.Setts != nil && e.Setts[AttrSubscribeTopic] != nil {
 		_ = e.mqttClient.Subscribe(e.Setts[AttrSubscribeTopic].String(), e.mqttOnPublish)
 	}
 
-	return e
+	return
 }
 
 // SetState ...
-func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
+func (e *Actor) SetState(params supervisor.EntityStateParams) error {
 	e.stateMu.Lock()
 	defer e.stateMu.Unlock()
 
-	oldState := e.GetEventState(e)
+	oldState := e.GetEventState()
 	now := e.Now(oldState)
 
 	if params.NewState != nil {
@@ -142,11 +139,11 @@ func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
 	}
 	e.AttrMu.Unlock()
 
-	e.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
+	go e.SaveState(events.EventStateChanged{
 		PluginName:  e.Id.PluginName(),
 		EntityId:    e.Id,
 		OldState:    oldState,
-		NewState:    e.GetEventState(e),
+		NewState:    e.GetEventState(),
 		StorageSave: params.StorageSave,
 	})
 
@@ -169,29 +166,28 @@ func (e *Actor) mqttNewMessage(message *Message) {
 	defer e.newMsgMu.Unlock()
 
 	e.message.Update(message)
-	if e.ScriptEngine == nil {
-		return
-	}
-	if _, err := e.ScriptEngine.AssertFunction(FuncMqttEvent); err != nil {
-		log.Error(err.Error())
-		return
+	for _, engine := range e.ScriptEngines {
+		if _, err := engine.Engine().AssertFunction(FuncMqttEvent); err != nil {
+			log.Error(err.Error())
+			return
+		}
 	}
 }
 
-func (e *Actor) addAction(event events.EventCallAction) {
+func (e *Actor) addAction(event events.EventCallEntityAction) {
 	e.actionPool <- event
 }
 
-func (e *Actor) runAction(msg events.EventCallAction) {
+func (e *Actor) runAction(msg events.EventCallEntityAction) {
 	action, ok := e.Actions[msg.ActionName]
 	if !ok {
 		log.Warnf("action %s not found", msg.ActionName)
 		return
 	}
-	if action.ScriptEngine == nil {
+	if action.ScriptEngine.Engine() == nil {
 		return
 	}
-	if _, err := action.ScriptEngine.AssertFunction(FuncEntityAction, msg.EntityId, action.Name); err != nil {
+	if _, err := action.ScriptEngine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
 		log.Error(err.Error())
 	}
 }

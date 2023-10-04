@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -47,6 +47,9 @@ type Endpoint struct {
 	Mqtt              *MqttEndpoint
 	Plugin            *PluginEndpoint
 	PluginActor       *PluginActorEndpoint
+	Action            *ActionEndpoint
+	Condition         *ConditionEndpoint
+	Trigger           *TriggerEndpoint
 	Task              *TaskEndpoint
 	Area              *AreaEndpoint
 	Interact          *InteractEndpoint
@@ -81,6 +84,9 @@ func NewEndpoint(backup *backup.Backup, stream *stream.Stream, common *CommonEnd
 		Mqtt:              NewMqttEndpoint(common),
 		Plugin:            NewPluginEndpoint(common),
 		PluginActor:       NewPluginActorEndpoint(common),
+		Action:            NewActionEndpoint(common),
+		Condition:         NewConditionEndpoint(common),
+		Trigger:           NewTriggerEndpoint(common),
 		Task:              NewTaskEndpoint(common),
 		Area:              NewAreaEndpoint(common),
 		Interact:          NewInteractEndpoint(common),

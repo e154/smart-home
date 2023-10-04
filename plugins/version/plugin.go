@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,48 +19,62 @@
 package version
 
 import (
+	"context"
+	"fmt"
+	"github.com/e154/smart-home/common"
 	"time"
 
+	"github.com/e154/smart-home/system/supervisor"
+
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/plugins"
 )
 
-var _ plugins.Plugable = (*plugin)(nil)
+var _ supervisor.Pluggable = (*plugin)(nil)
 
 func init() {
-	plugins.RegisterPlugin(Name, New)
+	supervisor.RegisterPlugin(Name, New)
 }
 
 type plugin struct {
-	*plugins.Plugin
+	*supervisor.Plugin
 	pause  uint
-	actor  *Actor
 	ticker *time.Ticker
 }
 
 // New ...
-func New() plugins.Plugable {
+func New() supervisor.Pluggable {
 	p := &plugin{
-		Plugin: plugins.NewPlugin(),
+		Plugin: supervisor.NewPlugin(),
 		pause:  10,
 	}
 	return p
 }
 
 // Load ...
-func (p *plugin) Load(service plugins.Service) (err error) {
-	if err = p.Plugin.Load(service); err != nil {
+func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
+	if err = p.Plugin.Load(ctx, service, p.ActorConstructor); err != nil {
 		return
 	}
 
-	p.actor = NewActor(service.EntityManager(), service.EventBus())
-	p.EntityManager.Spawn(p.actor.Spawn)
+	var entity *m.Entity
+	if entity, err = p.Service.Adaptors().Entity.GetById(context.Background(), common.EntityId(fmt.Sprintf("%s.%s", EntityVersion, Name))); err != nil {
+		entity = &m.Entity{
+			Id:         common.EntityId(fmt.Sprintf("%s.%s", EntityVersion, Name)),
+			PluginName: Name,
+			Attributes: NewAttr(),
+		}
+		err = p.Service.Adaptors().Entity.Add(context.Background(), entity)
+	}
 
 	go func() {
 		p.ticker = time.NewTicker(time.Second * time.Duration(p.pause))
 
 		for range p.ticker.C {
-			p.actor.selfUpdate()
+			p.Actors.Range(func(key, value any) bool {
+				actor, _ := value.(*Actor)
+				actor.selfUpdate()
+				return true
+			})
 		}
 	}()
 
@@ -68,16 +82,19 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 }
 
 // Unload ...
-func (p *plugin) Unload() (err error) {
-
-	if err = p.Plugin.Unload(); err != nil {
-		return
-	}
+func (p *plugin) Unload(ctx context.Context) (err error) {
 	if p.ticker != nil {
 		p.ticker.Stop()
 		p.ticker = nil
 	}
+	p.Plugin.Unload(ctx)
 	return nil
+}
+
+// ActorConstructor ...
+func (p *plugin) ActorConstructor(entity *m.Entity) (actor supervisor.PluginActor, err error) {
+	actor = NewActor(entity, p.Service)
+	return
 }
 
 // Name ...
@@ -86,8 +103,8 @@ func (p plugin) Name() string {
 }
 
 // Type ...
-func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginInstallable
+func (p *plugin) Type() supervisor.PluginType {
+	return supervisor.PluginInstallable
 }
 
 // Depends ...

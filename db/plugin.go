@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,11 +19,13 @@
 package db
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 
 	"github.com/e154/smart-home/common/apperr"
 )
@@ -49,8 +51,8 @@ func (d Plugin) TableName() string {
 }
 
 // Add ...
-func (n Plugins) Add(plugin Plugin) (err error) {
-	if err = n.Db.Create(&plugin).Error; err != nil {
+func (n Plugins) Add(ctx context.Context, plugin *Plugin) (err error) {
+	if err = n.Db.WithContext(ctx).Create(&plugin).Error; err != nil {
 		err = errors.Wrap(apperr.ErrPluginAdd, err.Error())
 		return
 	}
@@ -58,11 +60,17 @@ func (n Plugins) Add(plugin Plugin) (err error) {
 }
 
 // CreateOrUpdate ...
-func (n Plugins) CreateOrUpdate(v Plugin) (err error) {
-	err = n.Db.Model(&Plugin{}).
-		Set("gorm:insert_option",
-			fmt.Sprintf("ON CONFLICT (name) DO UPDATE SET version = '%s', enabled = '%t', system = '%t', settings = '%s', actor = '%t'", v.Version, v.Enabled, v.System, v.Settings, v.Actor)).
-		Create(&v).Error
+func (n Plugins) CreateOrUpdate(ctx context.Context, v *Plugin) (err error) {
+	err = n.Db.WithContext(ctx).Model(&Plugin{}).Clauses(clause.OnConflict{
+		Columns: []clause.Column{{Name: "name"}},
+		DoUpdates: clause.Assignments(map[string]interface{}{
+			"version":  v.Version,
+			"enabled":  v.Enabled,
+			"system":   v.System,
+			"settings": v.System,
+			"actor":    v.Actor,
+		}),
+	}).Create(&v).Error
 	if err != nil {
 		err = errors.Wrap(apperr.ErrPluginUpdate, err.Error())
 	}
@@ -70,33 +78,38 @@ func (n Plugins) CreateOrUpdate(v Plugin) (err error) {
 }
 
 // Update ...
-func (n Plugins) Update(m Plugin) (err error) {
-	if err = n.Db.Model(&Plugin{Name: m.Name}).Updates(m).Error; err != nil {
+func (n Plugins) Update(ctx context.Context, m *Plugin) (err error) {
+	if err = n.Db.WithContext(ctx).Model(&Plugin{Name: m.Name}).Updates(m).Error; err != nil {
 		err = errors.Wrap(apperr.ErrPluginUpdate, err.Error())
 	}
 	return
 }
 
 // Delete ...
-func (n Plugins) Delete(name string) (err error) {
-	if err = n.Db.Delete(&Plugin{Name: name}).Error; err != nil {
+func (n Plugins) Delete(ctx context.Context, name string) (err error) {
+	if err = n.Db.WithContext(ctx).Delete(&Plugin{Name: name}).Error; err != nil {
 		err = errors.Wrap(apperr.ErrPluginDelete, err.Error())
 	}
 	return
 }
 
 // List ...
-func (n Plugins) List(limit, offset int64, orderBy, sort string) (list []Plugin, total int64, err error) {
+func (n Plugins) List(ctx context.Context, limit, offset int, orderBy, sort string, onlyEnabled bool) (list []*Plugin, total int64, err error) {
 
-	if err = n.Db.Model(Plugin{}).Count(&total).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(&Plugin{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrPluginList, err.Error())
 		return
 	}
 
-	list = make([]Plugin, 0)
-	q := n.Db.Model(&Plugin{}).
+	list = make([]*Plugin, 0)
+	q := n.Db.WithContext(ctx).Model(&Plugin{}).
 		Limit(limit).
 		Offset(offset)
+
+	if onlyEnabled {
+		q = q.
+			Where("enabled is true")
+	}
 
 	if sort != "" && orderBy != "" {
 		q = q.
@@ -111,9 +124,9 @@ func (n Plugins) List(limit, offset int64, orderBy, sort string) (list []Plugin,
 }
 
 // Search ...
-func (n Plugins) Search(query string, limit, offset int64) (list []Plugin, total int64, err error) {
+func (n Plugins) Search(ctx context.Context, query string, limit, offset int) (list []*Plugin, total int64, err error) {
 
-	q := n.Db.Model(&Plugin{}).
+	q := n.Db.WithContext(ctx).Model(&Plugin{}).
 		Where("name LIKE ? and actor=true and enabled=true", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
@@ -126,7 +139,7 @@ func (n Plugins) Search(query string, limit, offset int64) (list []Plugin, total
 		Offset(offset).
 		Order("name ASC")
 
-	list = make([]Plugin, 0)
+	list = make([]*Plugin, 0)
 	if err = q.Find(&list).Error; err != nil {
 		err = errors.Wrap(apperr.ErrPluginSearch, err.Error())
 	}
@@ -135,10 +148,10 @@ func (n Plugins) Search(query string, limit, offset int64) (list []Plugin, total
 }
 
 // GetByName ...
-func (n Plugins) GetByName(name string) (plugin Plugin, err error) {
+func (n Plugins) GetByName(ctx context.Context, name string) (plugin *Plugin, err error) {
 
-	plugin = Plugin{}
-	err = n.Db.Model(plugin).
+	plugin = &Plugin{}
+	err = n.Db.WithContext(ctx).Model(plugin).
 		Where("name = ?", name).
 		First(&plugin).
 		Error

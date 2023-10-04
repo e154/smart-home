@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -22,6 +22,7 @@ import (
 	"github.com/e154/smart-home/common"
 )
 
+// todo: check
 // EntityShort ...
 type EntityShort struct {
 	Id          common.EntityId     `json:"id"`

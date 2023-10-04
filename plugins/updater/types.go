@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -23,7 +23,7 @@ import (
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 // GithubRelease ...
@@ -79,16 +79,8 @@ func NewAttr() m.Attributes {
 }
 
 // NewStates ...
-func NewStates() map[string]entity_manager.ActorState {
-	return map[string]entity_manager.ActorState{
-		"enabled": {
-			Name:        "enabled",
-			Description: "Enabled",
-		},
-		"disabled": {
-			Name:        "disabled",
-			Description: "Disabled",
-		},
+func NewStates() map[string]supervisor.ActorState {
+	return map[string]supervisor.ActorState{
 		"error": {
 			Name:        "error",
 			Description: "Error",
@@ -101,8 +93,8 @@ func NewStates() map[string]entity_manager.ActorState {
 }
 
 // NewActions ...
-func NewActions() map[string]entity_manager.ActorAction {
-	return map[string]entity_manager.ActorAction{
+func NewActions() map[string]supervisor.ActorAction {
+	return map[string]supervisor.ActorAction{
 		"check": {
 			Name:        "check",
 			Description: "Check version",

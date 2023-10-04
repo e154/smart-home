@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -24,39 +24,40 @@ import (
 
 // Pull ...
 type Pull struct {
-	sync.Mutex
-	heap map[string]interface{}
+	heap sync.Map
 }
 
 // NewPull ...
 func NewPull() *Pull {
 	return &Pull{
-		heap: make(map[string]interface{}),
+		heap: sync.Map{},
 	}
 }
 
 // Get ...
 func (p *Pull) Get(name string) (value interface{}, ok bool) {
-	p.Lock()
-	value, ok = p.heap[name]
-	p.Unlock()
+	value, ok = p.heap.Load(name)
 	return
 }
 
-// Add ...
-func (p *Pull) Add(name string, s interface{}) {
-	p.Lock()
-	defer p.Unlock()
+// Push ...
+func (p *Pull) Push(name string, s interface{}) {
+	p.heap.Store(name, s)
+}
 
-	p.heap[name] = s
+// Pop ...
+func (p *Pull) Pop(name string) {
+	p.heap.Delete(name)
 }
 
 // Purge ...
 func (p *Pull) Purge() {
-	p.Lock()
-	defer p.Unlock()
+	p.heap.Range(func(key, value interface{}) bool {
+		p.heap.Delete(key)
+		return true
+	})
+}
 
-	for k := range p.heap {
-		delete(p.heap, k)
-	}
+func (p *Pull) Range(f func(key, value interface{}) bool) {
+	p.heap.Range(f)
 }

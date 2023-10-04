@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -40,9 +40,9 @@ func NewControllerAutomation(common *ControllerCommon) ControllerAutomation {
 // AddTask ...
 func (c ControllerAutomation) AddTask(ctx context.Context, req *api.NewTaskRequest) (*api.Task, error) {
 
-	task := c.dto.Automation.AddTask(req)
+	newTask := c.dto.Automation.AddTask(req)
 
-	task, errs, err := c.endpoint.Task.Add(ctx, task)
+	task, errs, err := c.endpoint.Task.Add(ctx, newTask)
 	if len(errs) != 0 || err != nil {
 		return nil, c.error(ctx, errs, err)
 	}
@@ -53,9 +53,9 @@ func (c ControllerAutomation) AddTask(ctx context.Context, req *api.NewTaskReque
 // UpdateTask ...
 func (c ControllerAutomation) UpdateTask(ctx context.Context, req *api.UpdateTaskRequest) (*api.Task, error) {
 
-	task := c.dto.Automation.UpdateTask(req)
+	updateTask := c.dto.Automation.UpdateTask(req)
 
-	task, errs, err := c.endpoint.Task.Update(ctx, task)
+	task, errs, err := c.endpoint.Task.Update(ctx, updateTask)
 	if len(errs) != 0 || err != nil {
 		return nil, c.error(ctx, errs, err)
 	}
@@ -112,6 +112,16 @@ func (c ControllerAutomation) DisableTask(ctx context.Context, req *api.DisableT
 	if err := c.endpoint.Task.Disable(ctx, req.Id); err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
+
+	return &emptypb.Empty{}, nil
+}
+
+// ImportTask ...
+func (c ControllerAutomation) ImportTask(ctx context.Context, req *api.Task) (*emptypb.Empty, error) {
+
+	//if err := c.endpoint.Task.Disable(ctx, req.Id); err != nil {
+	//	return nil, c.error(ctx, nil, err)
+	//}
 
 	return &emptypb.Empty{}, nil
 }

@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -76,6 +76,12 @@ func (t *TimeTrigger) AsyncAttach(wg *sync.WaitGroup) {
 
 // Subscribe ...
 func (t *TimeTrigger) Subscribe(options Subscriber) error {
+	if options.Payload == nil {
+		return fmt.Errorf("payload is nil")
+	}
+	if _, ok := options.Payload[CronOptionTrigger]; !ok {
+		return fmt.Errorf("cron attribute is nil")
+	}
 	schedule := options.Payload[CronOptionTrigger].String()
 	if schedule == "" {
 		return fmt.Errorf("error static cast to string %v", options.Payload)
@@ -102,26 +108,24 @@ func (t *TimeTrigger) Subscribe(options Subscriber) error {
 
 // Unsubscribe ...
 func (t *TimeTrigger) Unsubscribe(options Subscriber) error {
+	if options.Payload == nil {
+		return fmt.Errorf("payload is nil")
+	}
 	schedule := options.Payload[CronOptionTrigger].String()
 	if schedule == "" {
 		return fmt.Errorf("error static cast to string %v", options.Payload)
 	}
-	callback := reflect.ValueOf(options.Handler)
+	rv := reflect.ValueOf(options.Handler)
 
 	t.Lock()
 	defer t.Unlock()
 
 	for i, sub := range t.subscribers[schedule] {
-		if sub.callback == callback {
+		if sub.callback == rv || sub.callback.Pointer() == rv.Pointer() {
 			t.scheduler.Remove(sub.entryID)
 			t.subscribers[schedule] = append(t.subscribers[schedule][:i], t.subscribers[schedule][i+1:]...)
 		}
 	}
 
 	return nil
-}
-
-// CallManual ...
-func (t *TimeTrigger) CallManual() {
-	log.Warn("method not implemented")
 }

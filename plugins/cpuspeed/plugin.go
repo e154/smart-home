@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,99 +19,85 @@
 package cpuspeed
 
 import (
+	"context"
 	"fmt"
+	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/system/supervisor"
 	"time"
 
-	"github.com/e154/smart-home/common"
-
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/plugins"
 )
 
-var _ plugins.Plugable = (*plugin)(nil)
+var _ supervisor.Pluggable = (*plugin)(nil)
 
 func init() {
-	plugins.RegisterPlugin(Name, New)
+	supervisor.RegisterPlugin(Name, New)
 }
 
 type plugin struct {
-	*plugins.Plugin
+	*supervisor.Plugin
 	ticker *time.Ticker
-	pause  uint
-	actor  *Actor
 }
 
 // New ...
-func New() plugins.Plugable {
+func New() supervisor.Pluggable {
 	p := &plugin{
-		Plugin: plugins.NewPlugin(),
-		pause:  10,
+		Plugin: supervisor.NewPlugin(),
 	}
 	return p
 }
 
 // Load ...
-func (p *plugin) Load(service plugins.Service) (err error) {
-	if err = p.Plugin.Load(service); err != nil {
-		return
-	}
-	return p.load()
-}
-
-// Unload ...
-func (p *plugin) Unload() (err error) {
-	if err = p.Plugin.Unload(); err != nil {
-		return
-	}
-	return p.unload()
-}
-
-// load ...
-func (p *plugin) load() (err error) {
-
-	if p.actor != nil {
+func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
+	if err = p.Plugin.Load(ctx, service, p.ActorConstructor); err != nil {
 		return
 	}
 
 	var entity *m.Entity
-	if entity, err = p.Adaptors.Entity.GetById(common.EntityId(fmt.Sprintf("%s.%s", EntityCpuspeed, Name))); err == nil {
-
+	if entity, err = p.Service.Adaptors().Entity.GetById(context.Background(), common.EntityId(fmt.Sprintf("%s.%s", EntityCpuspeed, Name))); err != nil {
+		entity = &m.Entity{
+			Id:          common.EntityId(fmt.Sprintf("%s.%s", EntityCpuspeed, Name)),
+			Description: "cpu usage",
+			PluginName:  Name,
+			Metrics: NewMetrics(),
+			Attributes: NewAttr(),
+		}
+		err = p.Service.Adaptors().Entity.Add(context.Background(), entity)
 	}
 
-	p.actor = NewActor(p.EntityManager, p.EventBus, entity)
-	p.EntityManager.Spawn(p.actor.Spawn)
-
 	go func() {
-		ticker := time.NewTicker(time.Second * time.Duration(p.pause))
+		const pause = 10
+		p.ticker = time.NewTicker(time.Second * time.Duration(pause))
 
-		for {
-			select {
-			case <-ticker.C:
-				p.actor.selfUpdate()
-			}
+		for range p.ticker.C {
+			p.Actors.Range(func(key, value any) bool {
+				actor, _ := value.(*Actor)
+				actor.selfUpdate()
+				return true
+			})
 		}
 	}()
 
-	return nil
+	return
 }
 
-// unload ...
-func (p *plugin) unload() (err error) {
+// Unload ...
+func (p *plugin) Unload(ctx context.Context) (err error) {
 	if p.ticker != nil {
 		p.ticker.Stop()
 		p.ticker = nil
 	}
-	return nil
+	err = p.Plugin.Unload(ctx)
+	return
 }
 
-// AddOrUpdateActor ...
-func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
-	return p.load()
-}
-
-// RemoveActor ...
-func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
-	return p.unload()
+// ActorConstructor ...
+func (p *plugin) ActorConstructor(entity *m.Entity) (actor supervisor.PluginActor, err error) {
+	actor = NewActor(entity, p.Service)
+	if entity.Metrics == nil {
+		entity.Metrics = NewMetrics()
+	}
+	return
 }
 
 // Name ...
@@ -120,8 +106,8 @@ func (p plugin) Name() string {
 }
 
 // Type ...
-func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginInstallable
+func (p *plugin) Type() supervisor.PluginType {
+	return supervisor.PluginInstallable
 }
 
 // Depends ...

@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -138,13 +138,13 @@ func (j *jwtManager) getSecretKey() (hmacKey []byte, err error) {
 	}
 
 	var variable m.Variable
-	if variable, err = j.adaptors.Variable.GetByName("hmacKey"); err != nil {
+	if variable, err = j.adaptors.Variable.GetByName(context.Background(), "hmacKey"); err != nil {
 		variable = m.Variable{
 			System: true,
 			Name:   "hmacKey",
 			Value:  common.ComputeHmac256(),
 		}
-		if err = j.adaptors.Variable.Add(variable); err != nil {
+		if err = j.adaptors.Variable.Add(context.Background(), variable); err != nil {
 			log.Error(err.Error())
 		}
 	}

@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,7 @@
 package weather_owm
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/url"
@@ -34,7 +35,7 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/weather"
-	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 const (
@@ -74,7 +75,7 @@ func (p *WeatherOwm) GetForecast(params Zone, now time.Time, settings map[string
 
 	// current weather
 	if len(zone.Weatherdata.Daily) > 0 {
-		var state entity_manager.ActorState
+		var state supervisor.ActorState
 		if len(zone.Weatherdata.Current.Weather) > 0 {
 			state = WeatherCondition(zone.Weatherdata.Current.Weather[0])
 		}
@@ -100,7 +101,7 @@ func (p *WeatherOwm) GetForecast(params Zone, now time.Time, settings map[string
 		if len(zone.Weatherdata.Daily) < i {
 			return
 		}
-		var state entity_manager.ActorState
+		var state supervisor.ActorState
 		if len(zone.Weatherdata.Daily[i].Weather) > 0 {
 			state = WeatherCondition(zone.Weatherdata.Daily[i].Weather[0])
 		}
@@ -177,7 +178,7 @@ func (p *WeatherOwm) fetchFromLocalStorage(name string) (zone Zone, err error) {
 	log.Debugf("fetch from local storage")
 
 	var variable m.Variable
-	if variable, err = p.adaptors.Variable.GetByName(fmt.Sprintf("weather_owm.%s", name)); err != nil {
+	if variable, err = p.adaptors.Variable.GetByName(context.Background(), fmt.Sprintf("weather_owm.%s", name)); err != nil {
 		return
 	}
 
@@ -196,7 +197,7 @@ func (p *WeatherOwm) saveToLocalStorage(zone Zone) (err error) {
 		return
 	}
 
-	err = p.adaptors.Variable.CreateOrUpdate(m.Variable{
+	err = p.adaptors.Variable.CreateOrUpdate(context.Background(), m.Variable{
 		System:   true,
 		Name:     fmt.Sprintf("weather_owm.%s", zone.Name),
 		Value:    string(b),

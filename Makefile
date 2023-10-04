@@ -1,6 +1,6 @@
 .PHONY: get_deps fmt
 .DEFAULT_GOAL := build
-build: get_deps build_public build_server build_cli
+build: build_public build_server build_cli
 tests: lint test
 all: build build_structure build_common_structure build_archive docker_image
 deploy: docker_image_upload
@@ -34,7 +34,7 @@ GENERATED_VAR=${PROJECT}/version.GeneratedString
 DEVELOPERS_VAR=${PROJECT}/version.DevelopersString
 BUILD_NUMBER_VAR=${PROJECT}/version.BuildNumString
 DOCKER_IMAGE_VAR=${PROJECT}/version.DockerImageString
-GO_BUILD_LDFLAGS= -X ${VERSION_VAR}=${RELEASE_VERSION} -X ${REV_VAR}=${REV_VALUE} -X ${REV_URL_VAR}=${REV_URL_VALUE} -X ${GENERATED_VAR}=${GENERATED_VALUE} -X ${DEVELOPERS_VAR}=${DEVELOPERS_VALUE} -X ${BUILD_NUMBER_VAR}=${BUILD_NUMBER_VALUE} -X ${DOCKER_IMAGE_VAR}=${DOCKER_IMAGE_VER}
+GO_BUILD_LDFLAGS= -s -w -X ${VERSION_VAR}=${RELEASE_VERSION} -X ${REV_VAR}=${REV_VALUE} -X ${REV_URL_VAR}=${REV_URL_VALUE} -X ${GENERATED_VAR}=${GENERATED_VALUE} -X ${DEVELOPERS_VAR}=${DEVELOPERS_VALUE} -X ${BUILD_NUMBER_VAR}=${BUILD_NUMBER_VALUE} -X ${DOCKER_IMAGE_VAR}=${DOCKER_IMAGE_VER}
 GO_BUILD_FLAGS= -a -installsuffix cgo -v --ldflags '${GO_BUILD_LDFLAGS}'
 GO_BUILD_ENV= CGO_ENABLED=0
 GO_BUILD_TAGS= -tags 'production'
@@ -44,9 +44,30 @@ test_system:
 	cp ${ROOT}/conf/config.dev.json ${ROOT}/conf/config.json
 	go test -v ./tests/api
 	go test -v ./tests/models
-	go test -v ./tests/plugins
 	go test -v ./tests/scripts
 	go test -v ./tests/system
+	go test -v ./tests/plugins/alexa
+	go test -v ./tests/plugins/area
+	go test -v ./tests/plugins/cgminer
+	go test -v ./tests/plugins/email
+	go test -v ./tests/plugins/messagebird
+	#go test -v ./tests/plugins/modbus_rtu
+	#go test -v ./tests/plugins/modbus_tcp
+	go test -v ./tests/plugins/moon
+	go test -v ./tests/plugins/node
+	go test -v ./tests/plugins/scene
+	go test -v ./tests/plugins/sensor
+	go test -v ./tests/plugins/sun
+	go test -v ./tests/plugins/telegram
+	go test -v ./tests/plugins/trigger_alexa
+	go test -v ./tests/plugins/trigger_empty
+	go test -v ./tests/plugins/trigger_state
+	go test -v ./tests/plugins/trigger_system
+	go test -v ./tests/plugins/trigger_time
+	go test -v ./tests/plugins/twilio
+	go test -v ./tests/plugins/weather_met
+	go test -v ./tests/plugins/weather_owm
+	go test -v ./tests/plugins/zigbee2mqtt
 
 test:
 	@echo MARK: unit tests
@@ -98,12 +119,15 @@ build_public:
 	node -v  && \
 	echo -e "npm version.\n"  && \
 	npm -v  && \
-	cd ${ROOT}/static_source/public && \
-	npm i && \
-	npm run build:prod && \
+	npm i -g pnpm  && \
+	echo -e "pnpm version.\n"  && \
+	pnpm -v && \
+	cd ${ROOT}/static_source/admin && \
+	pnpm i && \
+	pnpm run build:pro && \
 	rm -rf ${ROOT}/build/public && \
 	mkdir -p ${ROOT}/build && \
-	mv ${ROOT}/static_source/public/dist ${ROOT}/build/public
+	mv ${ROOT}/static_source/admin/dist-pro ${ROOT}/build/public
 
 server:
 	@echo "Building http server"
@@ -155,7 +179,7 @@ build_structure:
 	cp -r ${ROOT}/snapshots ${SERVER_DIR}
 	cp ${ROOT}/LICENSE ${SERVER_DIR}
 	cp ${ROOT}/README* ${SERVER_DIR}
-	cp ${ROOT}/contributors.txt ${SERVER_DIR}
+	cp ${ROOT}/CONTRIBUTING.md ${SERVER_DIR}
 	cp ${ROOT}/bin/docker/Dockerfile ${SERVER_DIR}
 	cp ${ROOT}/bin/server-installer.sh ${SERVER_DIR}
 	chmod +x ${SERVER_DIR}/data/scripts/ping.sh
@@ -179,7 +203,7 @@ build_common_structure:
 	cp -r ${ROOT}/snapshots ${COMMON_DIR}
 	cp ${ROOT}/LICENSE ${COMMON_DIR}
 	cp ${ROOT}/README* ${COMMON_DIR}
-	cp ${ROOT}/contributors.txt ${COMMON_DIR}
+	cp ${ROOT}/CONTRIBUTING.md ${COMMON_DIR}
 	cp ${ROOT}/bin/docker/Dockerfile ${COMMON_DIR}
 	cp ${ROOT}/bin/server-installer.sh ${COMMON_DIR}
 	chmod +x ${COMMON_DIR}/data/scripts/ping.sh
@@ -252,4 +276,4 @@ clean:
 
 front_client:
 	@echo MARK: generate front client lib
-	npx swagger-typescript-api@12.0.4 --axios -p ./api/api.swagger.json -o ./static_source/public/src/api -n stub_new.ts
+	npx swagger-typescript-api@12.0.4 --axios -p ./api/api.swagger.json -o ./static_source/admin/src/api -n stub_new.ts

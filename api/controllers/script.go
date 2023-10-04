@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,6 +20,8 @@ package controllers
 
 import (
 	"context"
+
+	"github.com/e154/smart-home/api/dto"
 
 	"github.com/e154/smart-home/api/stub/api"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -51,7 +53,7 @@ func (c ControllerScript) AddScript(ctx context.Context, req *api.NewScriptReque
 // GetScriptById ...
 func (c ControllerScript) GetScriptById(ctx context.Context, req *api.GetScriptRequest) (*api.Script, error) {
 
-	script, err := c.endpoint.Script.GetById(ctx, int64(req.Id))
+	script, err := c.endpoint.Script.GetById(ctx, req.Id)
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
@@ -71,10 +73,10 @@ func (c ControllerScript) UpdateScriptById(ctx context.Context, req *api.UpdateS
 }
 
 // GetScriptList ...
-func (c ControllerScript) GetScriptList(ctx context.Context, req *api.PaginationRequest) (*api.GetScriptListResult, error) {
+func (c ControllerScript) GetScriptList(ctx context.Context, req *api.ScriptPaginationRequest) (*api.GetScriptListResult, error) {
 
 	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
-	items, total, err := c.endpoint.Script.GetList(ctx, pagination)
+	items, total, err := c.endpoint.Script.GetList(ctx, pagination, req.Query)
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
@@ -97,7 +99,7 @@ func (c ControllerScript) SearchScript(ctx context.Context, req *api.SearchReque
 // DeleteScriptById ...
 func (c ControllerScript) DeleteScriptById(ctx context.Context, req *api.DeleteScriptRequest) (*emptypb.Empty, error) {
 
-	if err := c.endpoint.Script.DeleteScriptById(ctx, int64(req.Id)); err != nil {
+	if err := c.endpoint.Script.DeleteScriptById(ctx, req.Id); err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
 
@@ -107,7 +109,7 @@ func (c ControllerScript) DeleteScriptById(ctx context.Context, req *api.DeleteS
 // ExecScriptById ...
 func (c ControllerScript) ExecScriptById(ctx context.Context, req *api.ExecScriptRequest) (*api.ExecScriptResult, error) {
 
-	result, err := c.endpoint.Script.Execute(ctx, int64(req.Id))
+	result, err := c.endpoint.Script.Execute(ctx, req.Id)
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
@@ -129,10 +131,21 @@ func (c ControllerScript) ExecSrcScriptById(ctx context.Context, req *api.ExecSr
 // CopyScriptById ...
 func (c ControllerScript) CopyScriptById(ctx context.Context, req *api.CopyScriptRequest) (*api.Script, error) {
 
-	script, err := c.endpoint.Script.Copy(ctx, int64(req.Id))
+	script, err := c.endpoint.Script.Copy(ctx, req.Id)
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
 
 	return c.dto.Script.ToGScript(script), nil
+}
+
+// GetStatistic ...
+func (c ControllerScript) GetStatistic(ctx context.Context, _ *emptypb.Empty) (*api.Statistics, error) {
+
+	statistic, err := c.endpoint.Script.Statistic(ctx)
+	if err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return dto.GetStatistic(statistic), nil
 }

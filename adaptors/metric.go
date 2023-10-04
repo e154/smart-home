@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,7 @@
 package adaptors
 
 import (
+	"context"
 	"encoding/json"
 	"time"
 
@@ -26,21 +27,21 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/cache"
 	"github.com/e154/smart-home/system/orm"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // IMetric ...
 type IMetric interface {
-	Add(ver *m.Metric) (id int64, err error)
-	GetById(id int64) (metric *m.Metric, err error)
-	GetByIdWithData(id int64, from, to *time.Time, metricRange *string) (metric *m.Metric, err error)
-	Update(ver *m.Metric) error
-	Delete(deviceId int64) (err error)
-	AddMultiple(items []*m.Metric) (err error)
-	List(limit, offset int64, orderBy, sort string) (list []*m.Metric, total int64, err error)
-	Search(query string, limit, offset int) (list []*m.Metric, total int64, err error)
-	fromDb(dbVer db.Metric) (ver *m.Metric)
-	toDb(ver *m.Metric) (dbVer db.Metric)
+	Add(ctx context.Context, ver *m.Metric) (id int64, err error)
+	GetById(ctx context.Context, id int64) (metric *m.Metric, err error)
+	GetByIdWithData(ctx context.Context, id int64, from, to *time.Time, metricRange *string) (metric *m.Metric, err error)
+	Update(ctx context.Context, ver *m.Metric) error
+	Delete(ctx context.Context, deviceId int64) (err error)
+	AddMultiple(ctx context.Context, items []*m.Metric) (err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.Metric, total int64, err error)
+	Search(ctx context.Context, query string, limit, offset int) (list []*m.Metric, total int64, err error)
+	fromDb(dbVer *db.Metric) (ver *m.Metric)
+	toDb(ver *m.Metric) (dbVer *db.Metric)
 }
 
 // Metric ...
@@ -64,15 +65,15 @@ func GetMetricAdaptor(d *gorm.DB, orm *orm.Orm) IMetric {
 }
 
 // Add ...
-func (n *Metric) Add(ver *m.Metric) (id int64, err error) {
-	id, err = n.table.Add(n.toDb(ver))
+func (n *Metric) Add(ctx context.Context, ver *m.Metric) (id int64, err error) {
+	id, err = n.table.Add(ctx, n.toDb(ver))
 	return
 }
 
 // GetById ...
-func (n *Metric) GetById(id int64) (metric *m.Metric, err error) {
-	var dbVer db.Metric
-	if dbVer, err = n.table.GetById(id); err != nil {
+func (n *Metric) GetById(ctx context.Context, id int64) (metric *m.Metric, err error) {
+	var dbVer *db.Metric
+	if dbVer, err = n.table.GetById(ctx, id); err != nil {
 		return
 	}
 	metric = n.fromDb(dbVer)
@@ -83,7 +84,7 @@ func (n *Metric) GetById(id int64) (metric *m.Metric, err error) {
 	}
 
 	metricBucketAdaptor := GetMetricBucketAdaptor(n.db, nil)
-	if metric.Data, err = metricBucketAdaptor.Simple24HPreview(metric.Id, optionItems); err != nil {
+	if metric.Data, err = metricBucketAdaptor.Simple24HPreview(ctx, metric.Id, optionItems); err != nil {
 		log.Error(err.Error())
 		return
 	}
@@ -92,9 +93,9 @@ func (n *Metric) GetById(id int64) (metric *m.Metric, err error) {
 }
 
 // GetByIdWithData ...
-func (n *Metric) GetByIdWithData(id int64, from, to *time.Time, metricRange *string) (metric *m.Metric, err error) {
-	var dbVer db.Metric
-	if dbVer, err = n.table.GetById(id); err != nil {
+func (n *Metric) GetByIdWithData(ctx context.Context, id int64, from, to *time.Time, metricRange *string) (metric *m.Metric, err error) {
+	var dbVer *db.Metric
+	if dbVer, err = n.table.GetById(ctx, id); err != nil {
 		return
 	}
 	metric = n.fromDb(dbVer)
@@ -105,7 +106,7 @@ func (n *Metric) GetByIdWithData(id int64, from, to *time.Time, metricRange *str
 	}
 
 	metricBucketAdaptor := GetMetricBucketAdaptor(n.db, nil)
-	if metric.Data, err = metricBucketAdaptor.SimpleListWithSoftRange(from, to, id, metricRange, optionItems); err != nil {
+	if metric.Data, err = metricBucketAdaptor.SimpleListWithSoftRange(ctx, from, to, id, metricRange, optionItems); err != nil {
 		log.Error(err.Error())
 		return
 	}
@@ -114,40 +115,32 @@ func (n *Metric) GetByIdWithData(id int64, from, to *time.Time, metricRange *str
 }
 
 // Update ...
-func (n *Metric) Update(ver *m.Metric) error {
-	return n.table.Update(n.toDb(ver))
+func (n *Metric) Update(ctx context.Context, ver *m.Metric) error {
+	return n.table.Update(ctx, n.toDb(ver))
 }
 
 // Delete ...
-func (n *Metric) Delete(deviceId int64) (err error) {
-	err = n.table.Delete(deviceId)
+func (n *Metric) Delete(ctx context.Context, deviceId int64) (err error) {
+	err = n.table.Delete(ctx, deviceId)
 	return
 }
 
 // AddMultiple ...
-func (n *Metric) AddMultiple(items []*m.Metric) (err error) {
+func (n *Metric) AddMultiple(ctx context.Context, items []*m.Metric) (err error) {
 
-	//TODO not work
-	//insertRecords := make([]interface{}, 0, len(items))
-	//for _, ver := range items {
-	//	insertRecords = append(insertRecords, n.toDb(ver))
-	//}
-	//
-	//err = gormbulk.BulkInsert(n.db, insertRecords, len(insertRecords))
-
+	insertRecords := make([]*db.Metric, 0, len(items))
 	for _, ver := range items {
-		if _, err = n.table.Add(n.toDb(ver)); err != nil {
-			return
-		}
+		insertRecords = append(insertRecords, n.toDb(ver))
 	}
 
+	err = n.table.AddMultiple(ctx, insertRecords)
 	return
 }
 
 // List ...
-func (n *Metric) List(limit, offset int64, orderBy, sort string) (list []*m.Metric, total int64, err error) {
-	var dbList []db.Metric
-	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
+func (n *Metric) List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.Metric, total int64, err error) {
+	var dbList []*db.Metric
+	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort); err != nil {
 		return
 	}
 
@@ -160,9 +153,9 @@ func (n *Metric) List(limit, offset int64, orderBy, sort string) (list []*m.Metr
 }
 
 // Search ...
-func (n *Metric) Search(query string, limit, offset int) (list []*m.Metric, total int64, err error) {
-	var dbList []db.Metric
-	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
+func (n *Metric) Search(ctx context.Context, query string, limit, offset int) (list []*m.Metric, total int64, err error) {
+	var dbList []*db.Metric
+	if dbList, total, err = n.table.Search(ctx, query, limit, offset); err != nil {
 		return
 	}
 
@@ -174,7 +167,7 @@ func (n *Metric) Search(query string, limit, offset int) (list []*m.Metric, tota
 	return
 }
 
-func (n *Metric) fromDb(dbVer db.Metric) (ver *m.Metric) {
+func (n *Metric) fromDb(dbVer *db.Metric) (ver *m.Metric) {
 	ver = &m.Metric{
 		Id:          dbVer.Id,
 		Name:        dbVer.Name,
@@ -190,7 +183,7 @@ func (n *Metric) fromDb(dbVer db.Metric) (ver *m.Metric) {
 
 	if dbVer.Data != nil && len(dbVer.Data) > 0 {
 		metricBucketAdaptor := GetMetricBucketAdaptor(n.db, nil)
-		ver.Data = make([]m.MetricDataItem, len(dbVer.Data))
+		ver.Data = make([]*m.MetricDataItem, len(dbVer.Data))
 		for i, dbVer := range dbVer.Data {
 			ver.Data[i] = metricBucketAdaptor.fromDb(dbVer)
 		}
@@ -201,8 +194,8 @@ func (n *Metric) fromDb(dbVer db.Metric) (ver *m.Metric) {
 	return
 }
 
-func (n *Metric) toDb(ver *m.Metric) (dbVer db.Metric) {
-	dbVer = db.Metric{
+func (n *Metric) toDb(ver *m.Metric) (dbVer *db.Metric) {
+	dbVer = &db.Metric{
 		Id:          ver.Id,
 		Name:        ver.Name,
 		Type:        ver.Type,

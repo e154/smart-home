@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,13 +21,14 @@ package endpoint
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/e154/smart-home/common/apperr"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/email"
 	"github.com/e154/smart-home/plugins/notify"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/pkg/errors"
-	"time"
 )
 
 const (
@@ -50,7 +51,7 @@ func NewAuthEndpoint(common *CommonEndpoint) *AuthEndpoint {
 // SignIn ...
 func (a *AuthEndpoint) SignIn(ctx context.Context, email, password string, ip string) (user *m.User, accessToken string, err error) {
 
-	if user, err = a.adaptors.User.GetByEmail(email); err != nil {
+	if user, err = a.adaptors.User.GetByEmail(ctx, email); err != nil {
 		err = errors.Wrap(apperr.ErrUnauthorized, fmt.Sprintf("email %s", email))
 		return
 	} else if !user.CheckPass(password) {
@@ -66,7 +67,7 @@ func (a *AuthEndpoint) SignIn(ctx context.Context, email, password string, ip st
 		return
 	}
 
-	if err = a.adaptors.User.SignIn(user, ip); err != nil {
+	if err = a.adaptors.User.SignIn(ctx, user, ip); err != nil {
 		err = errors.Wrap(apperr.ErrUnauthorized, err.Error())
 		return
 	}
@@ -78,7 +79,7 @@ func (a *AuthEndpoint) SignIn(ctx context.Context, email, password string, ip st
 
 // SignOut ...
 func (a *AuthEndpoint) SignOut(ctx context.Context, user *m.User) (err error) {
-	err = a.adaptors.User.ClearToken(user)
+	err = a.adaptors.User.ClearToken(ctx, user)
 	if err != nil {
 		err = errors.Wrap(apperr.ErrNotAllowed, err.Error())
 		return
@@ -97,7 +98,7 @@ func (a *AuthEndpoint) PasswordReset(ctx context.Context, userEmail string, toke
 		}
 
 		var user *m.User
-		if user, err = a.adaptors.User.GetByResetPassToken(*token); err != nil {
+		if user, err = a.adaptors.User.GetByResetPassToken(ctx, *token); err != nil {
 			return
 		}
 
@@ -107,7 +108,7 @@ func (a *AuthEndpoint) PasswordReset(ctx context.Context, userEmail string, toke
 
 		user.ResetPasswordToken = ""
 		user.ResetPasswordSentAt = nil
-		if err = a.adaptors.User.Update(user); err == nil {
+		if err = a.adaptors.User.Update(ctx, user); err == nil {
 			log.Warnf("The password for the %s user has just been updated", user.Email)
 		}
 
@@ -115,18 +116,18 @@ func (a *AuthEndpoint) PasswordReset(ctx context.Context, userEmail string, toke
 	}
 
 	var user *m.User
-	if user, err = a.adaptors.User.GetByEmail(userEmail); err != nil {
+	if user, err = a.adaptors.User.GetByEmail(ctx, userEmail); err != nil {
 		err = errors.Wrap(apperr.ErrNotAllowed, err.Error())
 		return
 	}
 
-	if user.ResetPasswordSentAt != nil && time.Now().Before(*user.ResetPasswordSentAt){
+	if user.ResetPasswordSentAt != nil && time.Now().Before(*user.ResetPasswordSentAt) {
 		err = errors.Wrap(apperr.ErrNotAllowed, "reset request already exists")
 		return
 	}
 
 	var resetToken string
-	if resetToken, err = a.adaptors.User.GenResetPassToken(user); err != nil {
+	if resetToken, err = a.adaptors.User.GenResetPassToken(ctx, user); err != nil {
 		err = errors.Wrap(apperr.ErrNotAllowed, err.Error())
 		return
 	}
@@ -139,7 +140,7 @@ func (a *AuthEndpoint) PasswordReset(ctx context.Context, userEmail string, toke
 	}
 
 	var render *m.TemplateRender
-	if render, err = a.adaptors.Template.Render("password_reset", renderParams); err != nil {
+	if render, err = a.adaptors.Template.Render(ctx, "password_reset", renderParams); err != nil {
 		return
 	}
 
@@ -157,6 +158,6 @@ func (a *AuthEndpoint) PasswordReset(ctx context.Context, userEmail string, toke
 
 // AccessList ...
 func (a *AuthEndpoint) AccessList(ctx context.Context, user *m.User, accessListService access_list.AccessListService) (accessList *access_list.AccessList, err error) {
-	accessList = accessListService.List()
+	accessList = accessListService.List(ctx)
 	return
 }

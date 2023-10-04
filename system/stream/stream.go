@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -26,6 +26,7 @@ import (
 	"go.uber.org/fx"
 
 	"github.com/e154/smart-home/api/stub/api"
+	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/webpush"
@@ -70,20 +71,28 @@ func NewStreamService(lc fx.Lifecycle,
 
 // Start ...
 func (s *Stream) Start(_ context.Context) error {
-	_ = s.eventBus.Subscribe(bus.TopicEntities, s.eventHandler.eventHandler)
+	_ = s.eventBus.Subscribe("system/entities/+", s.eventHandler.eventHandler)
+	_ = s.eventBus.Subscribe("system/plugins/+", s.eventHandler.eventHandler)
+	_ = s.eventBus.Subscribe("system/automation/#", s.eventHandler.eventHandler)
 	_ = s.eventBus.Subscribe(webpush.TopicPluginWebpush, s.eventHandler.eventHandler)
+	_ = s.eventBus.Subscribe("system/services/mqtt", s.eventHandler.eventHandler)
+	s.eventBus.Publish("system/services/stream", events.EventServiceStarted{Service: "Stream"})
 	return nil
 }
 
 // Shutdown ...
 func (s *Stream) Shutdown(_ context.Context) error {
-	_ = s.eventBus.Unsubscribe(bus.TopicEntities, s.eventHandler.eventHandler)
+	_ = s.eventBus.Unsubscribe("system/entities/+", s.eventHandler.eventHandler)
+	_ = s.eventBus.Unsubscribe("system/plugins/+", s.eventHandler.eventHandler)
+	_ = s.eventBus.Unsubscribe("system/automation/#", s.eventHandler.eventHandler)
+	_ = s.eventBus.Unsubscribe("system/services/mqtt", s.eventHandler.eventHandler)
 	_ = s.eventBus.Unsubscribe(webpush.TopicPluginWebpush, s.eventHandler.eventHandler)
 	s.sessions.Range(func(key, value interface{}) bool {
 		cli := value.(*Client)
 		cli.Close()
 		return true
 	})
+	s.eventBus.Publish("system/services/stream", events.EventServiceStopped{Service: "Stream"})
 	return nil
 }
 

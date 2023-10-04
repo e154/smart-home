@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,10 +20,10 @@ package endpoint
 
 import (
 	"context"
-
-	events2 "github.com/e154/smart-home/common/events"
+	"fmt"
 
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/go-playground/validator/v10"
@@ -43,24 +43,24 @@ func NewDeveloperToolsEndpoint(common *CommonEndpoint) *DeveloperToolsEndpoint {
 
 // StateList ...
 func (d DeveloperToolsEndpoint) StateList(ctx context.Context) (states []m.EntityShort, total int64, err error) {
-	states, err = d.entityManager.List()
-	if err != nil {
-		return
-	}
-	total = int64(len(states))
+	//states, err = d.supervisor.List()
+	//if err != nil {
+	//	return
+	//}
+	//total = int64(len(states))
 	return
 }
 
 // SetEntityState ...
 func (d DeveloperToolsEndpoint) SetEntityState(ctx context.Context, entityId string, newState *string, attrs map[string]interface{}) (errs validator.ValidationErrorsTranslations, err error) {
 
-	_, err = d.adaptors.Entity.GetById(common.EntityId(entityId))
+	_, err = d.adaptors.Entity.GetById(ctx, common.EntityId(entityId))
 	if err != nil {
 		return
 	}
 
-	d.eventBus.Publish(bus.TopicEntities, events2.EventEntitySetState{
-		Id:              common.EntityId(entityId),
+	d.eventBus.Publish("system/entities/"+entityId, events.EventEntitySetState{
+		EntityId:        common.EntityId(entityId),
 		NewState:        newState,
 		AttributeValues: attrs,
 	})
@@ -70,24 +70,20 @@ func (d DeveloperToolsEndpoint) SetEntityState(ctx context.Context, entityId str
 
 // EventList ...
 func (d DeveloperToolsEndpoint) EventList(ctx context.Context) (events []bus.Stat, total int64, err error) {
-	events, err = d.eventBus.Stat()
-	if err != nil {
-		return
-	}
-	total = int64(len(events))
+	events, total, err = d.eventBus.Stat()
 	return
 }
 
 // TaskCallTrigger ...
 func (d *DeveloperToolsEndpoint) TaskCallTrigger(ctx context.Context, id int64, name string) (err error) {
 
-	if _, err = d.adaptors.Task.GetById(id); err != nil {
+	if _, err = d.adaptors.Trigger.GetById(ctx, id); err != nil {
 		return
 	}
 
-	d.eventBus.Publish(bus.TopicAutomation, events2.EventCallTaskTrigger{
-		Id:   id,
-		Name: name,
+	d.eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", id), events.EventCallTrigger{
+		Id:  id,
+		Ctx: context.Background(),
 	})
 
 	return
@@ -96,13 +92,13 @@ func (d *DeveloperToolsEndpoint) TaskCallTrigger(ctx context.Context, id int64, 
 // TaskCallAction ...
 func (d *DeveloperToolsEndpoint) TaskCallAction(ctx context.Context, id int64, name string) (err error) {
 
-	if _, err = d.adaptors.Task.GetById(id); err != nil {
+	if _, err = d.adaptors.Action.GetById(ctx, id); err != nil {
 		return
 	}
 
-	d.eventBus.Publish(bus.TopicAutomation, events2.EventCallTaskAction{
-		Id:   id,
-		Name: name,
+	d.eventBus.Publish(fmt.Sprintf("system/automation/actions/%d", id), events.EventCallAction{
+		Id:  id,
+		Ctx: context.Background(),
 	})
 
 	return
@@ -111,13 +107,13 @@ func (d *DeveloperToolsEndpoint) TaskCallAction(ctx context.Context, id int64, n
 // ReloadEntity ...
 func (d *DeveloperToolsEndpoint) ReloadEntity(ctx context.Context, id common.EntityId) (err error) {
 
-	_, err = d.adaptors.Entity.GetById(id)
+	_, err = d.adaptors.Entity.GetById(ctx, id)
 	if err != nil {
 		return
 	}
 
-	d.eventBus.Publish(bus.TopicEntities, events2.EventUpdatedEntity{
-		Id: id,
+	d.eventBus.Publish("system/entities/"+id.String(), events.EventUpdatedEntity{
+		EntityId: id,
 	})
 
 	return
@@ -126,15 +122,20 @@ func (d *DeveloperToolsEndpoint) ReloadEntity(ctx context.Context, id common.Ent
 // EntitySetState ...
 func (d *DeveloperToolsEndpoint) EntitySetState(ctx context.Context, id common.EntityId, name string) (err error) {
 
-	_, err = d.adaptors.Entity.GetById(id)
+	_, err = d.adaptors.Entity.GetById(ctx, id)
 	if err != nil {
 		return
 	}
 
-	d.eventBus.Publish(bus.TopicEntities, events2.EventEntitySetState{
-		Id:       id,
+	d.eventBus.Publish("system/entities/"+id.String(), events.EventEntitySetState{
+		EntityId: id,
 		NewState: common.String(name),
 	})
 
 	return
+}
+
+// GetEventBusState ...
+func (d *DeveloperToolsEndpoint) GetEventBusState() (bus.Stats, int64, error) {
+	return d.eventBus.Stat()
 }

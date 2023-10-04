@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,7 @@
 package scripts
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -94,21 +95,21 @@ func Test12(t *testing.T) {
 			_, err = engine.Do()
 			So(err, ShouldBeNil)
 
-			_, err = adaptors.Variable.GetByName("foo")
+			_, err = adaptors.Variable.GetByName(context.Background(), "foo")
 			So(err, ShouldNotBeNil)
 
 			storageService.Serialize()
-			storage, err := adaptors.Variable.GetByName("foo")
+			storage, err := adaptors.Variable.GetByName(context.Background(), "foo")
 			So(err, ShouldBeNil)
 			So(storage.Value, ShouldEqual, `{"bar":"foo"}`)
 
-			err = adaptors.Variable.CreateOrUpdate(m.Variable{
+			err = adaptors.Variable.CreateOrUpdate(context.Background(), m.Variable{
 				Name:  "foo2",
 				Value: `{"foo":"bar"}`,
 			})
 			So(err, ShouldBeNil)
 
-			storage, err = adaptors.Variable.GetByName("foo2")
+			storage, err = adaptors.Variable.GetByName(context.Background(), "foo2")
 			So(err, ShouldBeNil)
 			So(storage.Value, ShouldEqual, `{"foo":"bar"}`)
 		})

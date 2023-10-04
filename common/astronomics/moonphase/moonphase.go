@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -221,7 +221,7 @@ func meanPhase(sdate float64, k float64) float64 {
 }
 
 func truePhase(k float64, phase float64) float64 {
-	k += phase                  // Add phase to new moon time
+	k += phase                  // AddEntity phase to new moon time
 	var t float64 = k / 1236.85 // Time in Julian centures from 1900 January 0.5
 	var t2 float64 = t * t
 	var t3 float64 = t2 * t

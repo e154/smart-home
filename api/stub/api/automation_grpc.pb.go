@@ -33,6 +33,8 @@ type AutomationServiceClient interface {
 	EnableTask(ctx context.Context, in *EnableTaskRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// disable task
 	DisableTask(ctx context.Context, in *DisableTaskRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// import task
+	ImportTask(ctx context.Context, in *Task, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type automationServiceClient struct {
@@ -106,6 +108,15 @@ func (c *automationServiceClient) DisableTask(ctx context.Context, in *DisableTa
 	return out, nil
 }
 
+func (c *automationServiceClient) ImportTask(ctx context.Context, in *Task, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/api.AutomationService/ImportTask", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AutomationServiceServer is the server API for AutomationService service.
 // All implementations should embed UnimplementedAutomationServiceServer
 // for forward compatibility
@@ -124,6 +135,8 @@ type AutomationServiceServer interface {
 	EnableTask(context.Context, *EnableTaskRequest) (*emptypb.Empty, error)
 	// disable task
 	DisableTask(context.Context, *DisableTaskRequest) (*emptypb.Empty, error)
+	// import task
+	ImportTask(context.Context, *Task) (*emptypb.Empty, error)
 }
 
 // UnimplementedAutomationServiceServer should be embedded to have forward compatible implementations.
@@ -150,6 +163,9 @@ func (UnimplementedAutomationServiceServer) EnableTask(context.Context, *EnableT
 }
 func (UnimplementedAutomationServiceServer) DisableTask(context.Context, *DisableTaskRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DisableTask not implemented")
+}
+func (UnimplementedAutomationServiceServer) ImportTask(context.Context, *Task) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ImportTask not implemented")
 }
 
 // UnsafeAutomationServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -289,6 +305,24 @@ func _AutomationService_DisableTask_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AutomationService_ImportTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Task)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AutomationServiceServer).ImportTask(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.AutomationService/ImportTask",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AutomationServiceServer).ImportTask(ctx, req.(*Task))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AutomationService_ServiceDesc is the grpc.ServiceDesc for AutomationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -323,6 +357,10 @@ var AutomationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DisableTask",
 			Handler:    _AutomationService_DisableTask_Handler,
+		},
+		{
+			MethodName: "ImportTask",
+			Handler:    _AutomationService_ImportTask_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

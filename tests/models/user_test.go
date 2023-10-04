@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,7 @@
 package models
 
 import (
+	"context"
 	"strings"
 	"testing"
 
@@ -44,11 +45,11 @@ func TestUser(t *testing.T) {
 			userRole := &m.Role{
 				Name: "user_role",
 			}
-			err := adaptors.Role.Add(userRole)
+			err := adaptors.Role.Add(context.Background(), userRole)
 			So(err, ShouldBeNil)
 
 			var counter int
-			for pack, item := range *accessList.List() {
+			for pack, item := range *accessList.List(context.Background()) {
 				for right := range item {
 					if strings.Contains(right, "read") ||
 						strings.Contains(right, "view") ||
@@ -60,7 +61,7 @@ func TestUser(t *testing.T) {
 						}
 
 						counter++
-						_, err = adaptors.Permission.Add(permission)
+						_, err = adaptors.Permission.Add(context.Background(), permission)
 						So(err, ShouldBeNil)
 					}
 				}
@@ -91,10 +92,10 @@ func TestUser(t *testing.T) {
 			err = validate.Struct(user)
 			So(err, ShouldBeNil)
 
-			user.Id, err = adaptors.User.Add(user)
+			user.Id, err = adaptors.User.Add(context.Background(), user)
 			So(err, ShouldBeNil)
 
-			user, err = adaptors.User.GetById(user.Id)
+			user, err = adaptors.User.GetById(context.Background(), user.Id)
 			So(err, ShouldBeNil)
 
 			//debug.Println(user)

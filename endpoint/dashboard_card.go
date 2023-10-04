@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -51,11 +51,11 @@ func (c *DashboardCardEndpoint) Add(ctx context.Context, card *m.DashboardCard) 
 	}
 
 	var id int64
-	if id, err = c.adaptors.DashboardCard.Add(card); err != nil {
+	if id, err = c.adaptors.DashboardCard.Add(ctx, card); err != nil {
 		return
 	}
 
-	result, err = c.adaptors.DashboardCard.GetById(id)
+	result, err = c.adaptors.DashboardCard.GetById(ctx, id)
 
 	return
 }
@@ -63,11 +63,11 @@ func (c *DashboardCardEndpoint) Add(ctx context.Context, card *m.DashboardCard) 
 // GetById ...
 func (c *DashboardCardEndpoint) GetById(ctx context.Context, id int64) (card *m.DashboardCard, err error) {
 
-	if card, err = c.adaptors.DashboardCard.GetById(id); err != nil {
+	if card, err = c.adaptors.DashboardCard.GetById(ctx, id); err != nil {
 		return
 	}
 
-	err = c.preloadEntities(card)
+	err = c.preloadEntities(ctx, card)
 
 	return
 }
@@ -76,7 +76,7 @@ func (c *DashboardCardEndpoint) GetById(ctx context.Context, id int64) (card *m.
 func (i *DashboardCardEndpoint) Update(ctx context.Context, params *m.DashboardCard) (result *m.DashboardCard, errs validator.ValidationErrorsTranslations, err error) {
 
 	var card *m.DashboardCard
-	if card, err = i.adaptors.DashboardCard.GetById(params.Id); err != nil {
+	if card, err = i.adaptors.DashboardCard.GetById(ctx, params.Id); err != nil {
 		return
 	}
 
@@ -90,11 +90,11 @@ func (i *DashboardCardEndpoint) Update(ctx context.Context, params *m.DashboardC
 		return
 	}
 
-	if err = i.adaptors.DashboardCard.Update(card); err != nil {
+	if err = i.adaptors.DashboardCard.Update(ctx, card); err != nil {
 		return
 	}
 
-	result, err = i.adaptors.DashboardCard.GetById(params.Id)
+	result, err = i.adaptors.DashboardCard.GetById(ctx, params.Id)
 
 	return
 }
@@ -102,13 +102,13 @@ func (i *DashboardCardEndpoint) Update(ctx context.Context, params *m.DashboardC
 // GetList ...
 func (c *DashboardCardEndpoint) GetList(ctx context.Context, pagination common.PageParams) (list []*m.DashboardCard, total int64, err error) {
 
-	list, total, err = c.adaptors.DashboardCard.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
+	list, total, err = c.adaptors.DashboardCard.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
 	if err != nil {
 		return
 	}
 
 	for _, card := range list {
-		err = c.preloadEntities(card)
+		err = c.preloadEntities(ctx, card)
 	}
 
 	return
@@ -117,12 +117,12 @@ func (c *DashboardCardEndpoint) GetList(ctx context.Context, pagination common.P
 // Delete ...
 func (c *DashboardCardEndpoint) Delete(ctx context.Context, id int64) (err error) {
 
-	_, err = c.adaptors.DashboardCard.GetById(id)
+	_, err = c.adaptors.DashboardCard.GetById(ctx, id)
 	if err != nil {
 		return
 	}
 
-	err = c.adaptors.DashboardCard.Delete(id)
+	err = c.adaptors.DashboardCard.Delete(ctx, id)
 
 	return
 }
@@ -131,16 +131,16 @@ func (c *DashboardCardEndpoint) Delete(ctx context.Context, id int64) (err error
 func (c *DashboardCardEndpoint) Import(ctx context.Context, card *m.DashboardCard) (result *m.DashboardCard, err error) {
 
 	var cardId int64
-	if cardId, err = c.adaptors.DashboardCard.Import(card); err != nil {
+	if cardId, err = c.adaptors.DashboardCard.Import(ctx, card); err != nil {
 		return
 	}
 
-	result, err = c.adaptors.DashboardCard.GetById(cardId)
+	result, err = c.adaptors.DashboardCard.GetById(ctx, cardId)
 
 	return
 }
 
-func (c *DashboardCardEndpoint) preloadEntities(card *m.DashboardCard) (err error) {
+func (c *DashboardCardEndpoint) preloadEntities(ctx context.Context, card *m.DashboardCard) (err error) {
 
 	// get child entities
 	entityMap := make(map[common.EntityId]*m.Entity)
@@ -156,7 +156,7 @@ func (c *DashboardCardEndpoint) preloadEntities(card *m.DashboardCard) (err erro
 	}
 
 	var entites []*m.Entity
-	if entites, err = c.adaptors.Entity.GetByIds(entityIds); err != nil {
+	if entites, err = c.adaptors.Entity.GetByIds(ctx, entityIds); err != nil {
 		return
 	}
 

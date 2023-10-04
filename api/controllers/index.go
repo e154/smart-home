@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -40,8 +40,8 @@ func NewControllerIndex(common *ControllerCommon) ControllerIndex {
 }
 
 // Index ...
-func (c ControllerIndex) Index(publicAssets embed.FS) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (c ControllerIndex) Index(publicAssets embed.FS) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		b := map[string]interface{}{
 			"server_url":     c.ControllerCommon.appConfig.ApiFullAddress(),
 			"run_mode":       c.ControllerCommon.appConfig.Mode,
@@ -54,5 +54,5 @@ func (c ControllerIndex) Index(publicAssets embed.FS) func(w http.ResponseWriter
 			http.Error(w, fmt.Sprintf("index: couldn't parse template: %v", err), http.StatusInternalServerError)
 			return
 		}
-	}
+	})
 }

@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,16 +19,17 @@
 package adaptors
 
 import (
+	"context"
 	"encoding/json"
 
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // IMessage ...
 type IMessage interface {
-	Add(msg *m.Message) (id int64, err error)
+	Add(ctx context.Context, msg *m.Message) (id int64, err error)
 	fromDb(dbVer *db.Message) (ver *m.Message)
 	toDb(ver *m.Message) (dbVer *db.Message)
 }
@@ -47,8 +48,8 @@ func GetMessageAdaptor(d *gorm.DB) IMessage {
 }
 
 // Add ...
-func (n *Message) Add(msg *m.Message) (id int64, err error) {
-	id, err = n.table.Add(n.toDb(msg))
+func (n *Message) Add(ctx context.Context, msg *m.Message) (id int64, err error) {
+	id, err = n.table.Add(ctx, n.toDb(msg))
 	return
 }
 

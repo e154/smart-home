@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,13 +19,14 @@
 package db
 
 import (
+	"context"
 	"encoding/json"
 	"time"
 
 	"github.com/e154/smart-home/common/apperr"
 
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // Messages ...
@@ -49,8 +50,8 @@ func (d *Message) TableName() string {
 }
 
 // Add ...
-func (n Messages) Add(msg *Message) (id int64, err error) {
-	if err = n.Db.Create(msg).Error; err != nil {
+func (n Messages) Add(ctx context.Context, msg *Message) (id int64, err error) {
+	if err = n.Db.WithContext(ctx).Create(msg).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMessageAdd, err.Error())
 		return
 	}

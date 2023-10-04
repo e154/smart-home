@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -46,7 +46,7 @@ import (
 	"{{.Dir}}/common"
 	m "{{.Dir}}/models"
 	"{{.Dir}}/system/bus"
-	"{{.Dir}}/system/entity_manager"
+	"{{.Dir}}/system/supervisor"
 )
 
 type Actor struct {
@@ -55,13 +55,13 @@ type Actor struct {
 }
 
 func NewActor(entity *m.Entity,
-	entityManager entity_manager.EntityManager,
+	visor supervisor.Supervisor,
 	eventBus bus.Bus) *Actor {
 
 	name := entity.Id.Name()
 
 	actor := &Actor{
-		BaseActor: entity_manager.BaseActor{
+		BaseActor: supervisor.BaseActor{
 			Id:          common.EntityId(fmt.Sprintf("%s.%s", Entity{{.PluginName}}, name)),
 			Name:        name,
 			Description: "{{.PluginName}} plugin",
@@ -69,8 +69,8 @@ func NewActor(entity *m.Entity,
 			AttrMu:      &sync.RWMutex{},
 			Attrs:       entity.Attributes,
 			Setts:       entity.Settings,
-			Manager:     entityManager,
-			States:      NewStates(),
+			Supervisor:  visor,
+			Items:      NewStates(),
 			Actions:     NewActions(),
 		},
 		eventBus: eventBus,
@@ -84,11 +84,11 @@ func NewActor(entity *m.Entity,
 }
 
 func (e *Actor) Spawn() entity_manager.PluginActor {
-	e.Update()
+	e.UpdateEntity()
 	return e
 }
 
-func (e *Actor) Update() {
+func (e *Actor) UpdateEntity() {
 
 }
 
@@ -186,12 +186,12 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 	defer p.actorsLock.Unlock()
 
 	if _, ok := p.actors[entity.Id]; ok {
-		p.actors[entity.Id].Update()
+		p.actors[entity.Id].UpdateEntity()
 		return
 	}
 
-	p.actors[entity.Id] = NewActor(entity, p.EntityManager, p.EventBus)
-	p.EntityManager.Spawn(p.actors[entity.Id].Spawn)
+	p.actors[entity.Id] = NewActor(entity, p.Supervisor, p.EventBus)
+	p.Supervisor.Spawn(p.actors[entity.Id].Spawn)
 
 	return
 }
@@ -219,7 +219,7 @@ func (p *plugin) updateForAll() {
 	defer p.actorsLock.Unlock()
 
 	for _, actor := range p.actors {
-		actor.Update()
+		actor.UpdateEntity()
 	}
 }
 

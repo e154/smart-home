@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -50,11 +50,11 @@ func (n *RoleEndpoint) Add(ctx context.Context, params *m.Role) (result *m.Role,
 		return
 	}
 
-	if err = n.adaptors.Role.Add(params); err != nil {
+	if err = n.adaptors.Role.Add(ctx, params); err != nil {
 		return
 	}
 
-	result, err = n.adaptors.Role.GetByName(params.Name)
+	result, err = n.adaptors.Role.GetByName(ctx, params.Name)
 
 	return
 }
@@ -62,7 +62,7 @@ func (n *RoleEndpoint) Add(ctx context.Context, params *m.Role) (result *m.Role,
 // GetByName ...
 func (n *RoleEndpoint) GetByName(ctx context.Context, name string) (result *m.Role, err error) {
 
-	result, err = n.adaptors.Role.GetByName(name)
+	result, err = n.adaptors.Role.GetByName(ctx, name)
 
 	return
 }
@@ -71,7 +71,7 @@ func (n *RoleEndpoint) GetByName(ctx context.Context, name string) (result *m.Ro
 func (n *RoleEndpoint) Update(ctx context.Context, params *m.Role) (result *m.Role, errs validator.ValidationErrorsTranslations, err error) {
 
 	var role *m.Role
-	role, err = n.adaptors.Role.GetByName(params.Name)
+	role, err = n.adaptors.Role.GetByName(ctx, params.Name)
 	if err != nil {
 		return
 	}
@@ -89,11 +89,11 @@ func (n *RoleEndpoint) Update(ctx context.Context, params *m.Role) (result *m.Ro
 		return
 	}
 
-	if err = n.adaptors.Role.Update(role); err != nil {
+	if err = n.adaptors.Role.Update(ctx, role); err != nil {
 		return
 	}
 
-	role, err = n.adaptors.Role.GetByName(params.Name)
+	role, err = n.adaptors.Role.GetByName(ctx, params.Name)
 	if err != nil {
 		if errors.Is(err, apperr.ErrNotFound) {
 			return
@@ -106,7 +106,7 @@ func (n *RoleEndpoint) Update(ctx context.Context, params *m.Role) (result *m.Ro
 // GetList ...
 func (n *RoleEndpoint) GetList(ctx context.Context, pagination common.PageParams) (result []*m.Role, total int64, err error) {
 
-	result, total, err = n.adaptors.Role.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
+	result, total, err = n.adaptors.Role.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
 	return
 }
 
@@ -118,12 +118,12 @@ func (n *RoleEndpoint) Delete(ctx context.Context, name string) (err error) {
 		return
 	}
 
-	_, err = n.adaptors.Role.GetByName(name)
+	_, err = n.adaptors.Role.GetByName(ctx, name)
 	if err != nil {
 		return
 	}
 
-	err = n.adaptors.Role.Delete(name)
+	err = n.adaptors.Role.Delete(ctx, name)
 
 	return
 }
@@ -135,7 +135,7 @@ func (n *RoleEndpoint) Search(ctx context.Context, query string, limit, offset i
 		limit = common.DefaultPageSize
 	}
 
-	result, total, err = n.adaptors.Role.Search(query, limit, offset)
+	result, total, err = n.adaptors.Role.Search(ctx, query, limit, offset)
 
 	return
 }
@@ -145,12 +145,12 @@ func (n *RoleEndpoint) GetAccessList(ctx context.Context, roleName string,
 	accessListService access_list.AccessListService) (accessList access_list.AccessList, err error) {
 
 	var role *m.Role
-	role, err = n.adaptors.Role.GetByName(roleName)
+	role, err = n.adaptors.Role.GetByName(ctx, roleName)
 	if err != nil {
 		return
 	}
 
-	accessList, err = accessListService.GetFullAccessList(role.Name)
+	accessList, err = accessListService.GetFullAccessList(ctx, role.Name)
 
 	return
 }
@@ -159,7 +159,7 @@ func (n *RoleEndpoint) GetAccessList(ctx context.Context, roleName string,
 func (n *RoleEndpoint) UpdateAccessList(ctx context.Context, roleName string, accessListDif map[string]map[string]bool) (err error) {
 
 	var role *m.Role
-	role, err = n.adaptors.Role.GetByName(roleName)
+	role, err = n.adaptors.Role.GetByName(ctx, roleName)
 	if err != nil {
 		return
 	}
@@ -195,7 +195,7 @@ func (n *RoleEndpoint) UpdateAccessList(ctx context.Context, roleName string, ac
 			}
 
 			if len(delPerms) > 0 {
-				if err = tx.Permission.Delete(roleName, packName, delPerms); err != nil {
+				if err = tx.Permission.Delete(ctx, roleName, packName, delPerms); err != nil {
 					return
 				}
 				delPerms = []string{}
@@ -205,7 +205,7 @@ func (n *RoleEndpoint) UpdateAccessList(ctx context.Context, roleName string, ac
 
 	if len(addPerms) > 0 {
 		for _, perm := range addPerms {
-			_, _ = tx.Permission.Add(perm)
+			_, _ = tx.Permission.Add(ctx, perm)
 		}
 	}
 

@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,7 @@
 package db
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -26,8 +27,8 @@ import (
 	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/e154/smart-home/common"
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // Metrics ...
@@ -38,7 +39,7 @@ type Metrics struct {
 // Metric ...
 type Metric struct {
 	Id          int64 `gorm:"primary_key"`
-	Data        []MetricBucket
+	Data        []*MetricBucket
 	Name        string
 	Description string
 	Options     json.RawMessage `gorm:"type:jsonb;not null"`
@@ -53,8 +54,8 @@ func (Metric) TableName() string {
 }
 
 // Add ...
-func (n Metrics) Add(metric Metric) (id int64, err error) {
-	if err = n.Db.Create(&metric).Error; err != nil {
+func (n Metrics) Add(ctx context.Context, metric *Metric) (id int64, err error) {
+	if err = n.Db.WithContext(ctx).Create(&metric).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMetricAdd, err.Error())
 		return
 	}
@@ -63,9 +64,9 @@ func (n Metrics) Add(metric Metric) (id int64, err error) {
 }
 
 // GetById ...
-func (n Metrics) GetById(id int64) (metric Metric, err error) {
-	metric = Metric{Id: id}
-	if err = n.Db.First(&metric).Error; err != nil {
+func (n Metrics) GetById(ctx context.Context, id int64) (metric *Metric, err error) {
+	metric = &Metric{Id: id}
+	if err = n.Db.WithContext(ctx).First(&metric).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			err = errors.Wrap(apperr.ErrMetricNotFound, fmt.Sprintf("id \"%d\"", id))
 			return
@@ -76,37 +77,37 @@ func (n Metrics) GetById(id int64) (metric Metric, err error) {
 }
 
 // Update ...
-func (n Metrics) Update(m Metric) (err error) {
+func (n Metrics) Update(ctx context.Context, m *Metric) (err error) {
 	q := map[string]interface{}{
 		"name":        m.Name,
 		"description": m.Description,
 		"options":     m.Options,
 		"type":        m.Type,
 	}
-	if err = n.Db.Model(&Metric{}).Where("id = ?", m.Id).Updates(q).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(&Metric{}).Where("id = ?", m.Id).Updates(q).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMetricUpdate, err.Error())
 	}
 	return
 }
 
 // Delete ...
-func (n Metrics) Delete(id int64) (err error) {
-	if err = n.Db.Delete(&Metric{}, "id = ?", id).Error; err != nil {
+func (n Metrics) Delete(ctx context.Context, id int64) (err error) {
+	if err = n.Db.WithContext(ctx).Delete(&Metric{}, "id = ?", id).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMetricDelete, err.Error())
 	}
 	return
 }
 
 // List ...
-func (n *Metrics) List(limit, offset int64, orderBy, sort string) (list []Metric, total int64, err error) {
+func (n *Metrics) List(ctx context.Context, limit, offset int, orderBy, sort string) (list []*Metric, total int64, err error) {
 
-	if err = n.Db.Model(Metric{}).Count(&total).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(Metric{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMetricList, err.Error())
 		return
 	}
 
-	list = make([]Metric, 0)
-	q := n.Db.Model(&Metric{}).
+	list = make([]*Metric, 0)
+	q := n.Db.WithContext(ctx).Model(&Metric{}).
 		Limit(limit).
 		Offset(offset)
 
@@ -122,9 +123,9 @@ func (n *Metrics) List(limit, offset int64, orderBy, sort string) (list []Metric
 }
 
 // Search ...q
-func (n *Metrics) Search(query string, limit, offset int) (list []Metric, total int64, err error) {
+func (n *Metrics) Search(ctx context.Context, query string, limit, offset int) (list []*Metric, total int64, err error) {
 
-	q := n.Db.Model(&Metric{}).
+	q := n.Db.WithContext(ctx).Model(&Metric{}).
 		Where("name LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
@@ -137,10 +138,18 @@ func (n *Metrics) Search(query string, limit, offset int) (list []Metric, total 
 		Offset(offset).
 		Order("name ASC")
 
-	list = make([]Metric, 0)
+	list = make([]*Metric, 0)
 	err = q.Find(&list).Error
 	if err != nil {
 		err = errors.Wrap(apperr.ErrMetricSearch, err.Error())
+	}
+	return
+}
+
+// AddMultiple ...
+func (n *Metrics) AddMultiple(ctx context.Context, metrics []*Metric) (err error) {
+	if err = n.Db.WithContext(ctx).Create(&metrics).Error; err != nil {
+		err = errors.Wrap(apperr.ErrMetricAdd, err.Error())
 	}
 	return
 }

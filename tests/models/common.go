@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,8 @@
 package models
 
 import (
+	"context"
+	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 )
@@ -29,6 +31,14 @@ func NetAttr() m.Attributes {
 		"s": {
 			Name: "s",
 			Type: common.AttributeString,
+		},
+		"d": {
+			Name: "d",
+			Type: common.AttributeEncrypted,
+		},
+		"p": {
+			Name: "p",
+			Type: common.AttributePoint,
 		},
 		"i": {
 			Name: "i",
@@ -88,4 +98,30 @@ func NetAttr() m.Attributes {
 		},
 	}
 
+}
+
+func NetSettings() m.Attributes {
+	return m.Attributes{
+		"s": {
+			Name: "s",
+			Type: common.AttributeString,
+			Value: "s",
+		},
+	}
+
+}
+
+// AddPlugin ...
+func AddPlugin(adaptors *adaptors.Adaptors, name string, opts ...m.AttributeValue) (err error) {
+	plugin := &m.Plugin{
+		Name:    name,
+		Version: "0.0.1",
+		Enabled: true,
+		System:  true,
+	}
+	if len(opts) > 0 {
+		plugin.Settings = opts[0]
+	}
+	err = adaptors.Plugin.CreateOrUpdate(context.Background(), plugin)
+	return
 }

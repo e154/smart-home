@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,80 +19,67 @@
 package node
 
 import (
-	"fmt"
-	"sync"
-
-	"github.com/pkg/errors"
-
-	"github.com/e154/smart-home/common"
+	"context"
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/plugins"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 var (
 	log = logger.MustGetLogger("plugins.node")
 )
 
-var _ plugins.Plugable = (*plugin)(nil)
+var _ supervisor.Pluggable = (*plugin)(nil)
 
 func init() {
-	plugins.RegisterPlugin(Name, New)
+	supervisor.RegisterPlugin(Name, New)
 }
 
 type plugin struct {
-	*plugins.Plugin
-	actorsLock *sync.Mutex
-	actors     map[common.EntityId]*Actor
+	*supervisor.Plugin
 	mqttServ   mqtt.MqttServ
 	mqttClient mqtt.MqttCli
 }
 
 // New ...
-func New() plugins.Plugable {
+func New() supervisor.Pluggable {
 	return &plugin{
-		Plugin:     plugins.NewPlugin(),
-		actorsLock: &sync.Mutex{},
-		actors:     make(map[common.EntityId]*Actor),
+		Plugin: supervisor.NewPlugin(),
 	}
 }
 
 // Load ...
-func (p *plugin) Load(service plugins.Service) (err error) {
-	if err = p.Plugin.Load(service); err != nil {
+func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
+	if err = p.Plugin.Load(ctx, service, p.ActorConstructor); err != nil {
 		return
 	}
 
 	p.mqttServ = service.MqttServ()
+	_ = p.mqttServ.Authenticator().Register(p.Authenticator)
 
 	p.mqttClient = p.mqttServ.NewClient("plugins.node")
-	_ = p.mqttServ.Authenticator().Register(p.Authenticator)
 
 	return nil
 }
 
 // Unload ...
-func (p *plugin) Unload() (err error) {
-	if err = p.Plugin.Unload(); err != nil {
+func (p *plugin) Unload(ctx context.Context) (err error) {
+	if err = p.Plugin.Unload(ctx); err != nil {
 		return
 	}
 
 	p.mqttServ.RemoveClient("plugins.node")
 	_ = p.mqttServ.Authenticator().Unregister(p.Authenticator)
 
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	// remove actors
-	for entityId, actor := range p.actors {
-		actor.destroy()
-		delete(p.actors, entityId)
-	}
-
 	return nil
+}
+
+// ActorConstructor ...
+func (p *plugin) ActorConstructor(entity *m.Entity) (actor supervisor.PluginActor, err error) {
+	actor = NewActor(entity, p.Service, p.mqttClient)
+	return
 }
 
 // Name ...
@@ -100,44 +87,9 @@ func (p *plugin) Name() string {
 	return Name
 }
 
-// AddOrUpdateActor ...
-func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	if _, ok := p.actors[entity.Id]; ok {
-		return
-	}
-
-	actor := NewActor(entity, p.EntityManager, p.Adaptors, p.ScriptService, p.EventBus, p.mqttClient)
-	p.actors[entity.Id] = actor
-	p.EntityManager.Spawn(actor.Spawn)
-
-	return
-}
-
-// RemoveActor ...
-func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
-
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	actor, ok := p.actors[entityId]
-	if !ok {
-		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("failed remove \"%s\"", entityId))
-		return
-	}
-
-	actor.destroy()
-
-	delete(p.actors, entityId)
-
-	return
-}
-
 // Type ...
-func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginBuiltIn
+func (p *plugin) Type() supervisor.PluginType {
+	return supervisor.PluginBuiltIn
 }
 
 // Depends ...
@@ -157,30 +109,33 @@ func (p *plugin) pushToNode() {
 // Authenticator ...
 func (p *plugin) Authenticator(login, password string) (err error) {
 
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	for _, actor := range p.actors {
+	var exist = false
+	p.Actors.Range(func(key, value any) bool {
+		actor := value.(*Actor)
 		attrs := actor.Settings()
 
 		if _login, ok := attrs[AttrNodeLogin]; !ok || _login.String() != login {
-			continue
+			exist = true
+			return true
 		}
 
 		if _password, ok := attrs[AttrNodePass]; !ok || _password.String() != password {
-			continue
+			exist = true
+			return true
 		}
 
 		err = nil
-		return
+		return false
 
 		// todo add encripted password
 		//if ok := common.CheckPasswordHash(password, settings[AttrNodePass].String()); ok {
 		//	return
 		//}
-	}
+	})
 
-	err = apperr.ErrBadLoginOrPassword
+	if !exist {
+		err = apperr.ErrBadLoginOrPassword
+	}
 
 	return
 }
@@ -188,16 +143,9 @@ func (p *plugin) Authenticator(login, password string) (err error) {
 // Options ...
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
-		Triggers:           false,
-		Actors:             true,
-		ActorCustomAttrs:   false,
-		ActorAttrs:         NewAttr(),
-		ActorCustomActions: false,
-		ActorActions:       nil,
-		ActorCustomStates:  false,
-		ActorStates:        entity_manager.ToEntityStateShort(NewStates()),
-		ActorCustomSetts:   false,
-		ActorSetts:         NewSettings(),
-		Setts:              nil,
+		Actors:      true,
+		ActorAttrs:  NewAttr(),
+		ActorStates: supervisor.ToEntityStateShort(NewStates()),
+		ActorSetts:  NewSettings(),
 	}
 }

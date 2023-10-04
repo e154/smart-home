@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -26,22 +26,24 @@ import (
 	"sync"
 	"time"
 
-	"github.com/e154/smart-home/common/logger"
-
 	"github.com/DrmagicE/gmqtt"
 	_ "github.com/DrmagicE/gmqtt/persistence"
 	"github.com/DrmagicE/gmqtt/pkg/codes"
 	"github.com/DrmagicE/gmqtt/pkg/packets"
 	"github.com/DrmagicE/gmqtt/server"
 	_ "github.com/DrmagicE/gmqtt/topicalias/fifo"
+	"go.uber.org/fx"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
+
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/common/logger"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/mqtt/admin"
 	"github.com/e154/smart-home/system/mqtt_authenticator"
 	"github.com/e154/smart-home/system/scripts"
-	"go.uber.org/fx"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 )
 
 var (
@@ -53,9 +55,12 @@ type Mqtt struct {
 	cfg           *Config
 	server        GMqttServer
 	authenticator mqtt_authenticator.MqttAuthenticator
+	isStarted     bool
 	clientsLock   *sync.Mutex
 	clients       map[string]MqttCli
 	admin         *admin.Admin
+	scriptService scripts.ScriptService
+	eventBus      bus.Bus
 }
 
 // NewMqtt ...
@@ -63,7 +68,7 @@ func NewMqtt(lc fx.Lifecycle,
 	cfg *Config,
 	authenticator mqtt_authenticator.MqttAuthenticator,
 	scriptService scripts.ScriptService,
-) (mqtt MqttServ) {
+	eventBus bus.Bus) (mqtt MqttServ) {
 
 	mqtt = &Mqtt{
 		cfg:           cfg,
@@ -71,10 +76,9 @@ func NewMqtt(lc fx.Lifecycle,
 		clientsLock:   &sync.Mutex{},
 		clients:       make(map[string]MqttCli),
 		admin:         admin.New(),
+		scriptService: scriptService,
+		eventBus:      eventBus,
 	}
-
-	// javascript binding
-	scriptService.PushStruct("Mqtt", NewMqttBind(mqtt))
 
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) (err error) {
@@ -91,7 +95,13 @@ func NewMqtt(lc fx.Lifecycle,
 
 // Shutdown ...
 func (m *Mqtt) Shutdown() (err error) {
+	if !m.isStarted {
+		return
+	}
+
 	log.Info("Server exiting")
+
+	m.scriptService.PopStruct("Mqtt")
 
 	m.clientsLock.Lock()
 	for name, cli := range m.clients {
@@ -104,16 +114,28 @@ func (m *Mqtt) Shutdown() (err error) {
 		ctx, _ := context.WithDeadline(context.Background(), time.Now().Add(100*time.Millisecond))
 		err = m.server.Stop(ctx)
 	}
+
+	m.eventBus.Publish("system/services/mqtt", events.EventServiceStopped{Service: "Mqtt"})
 	return
 }
 
 // Start ...
 func (m *Mqtt) Start() {
 
-	ln, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%d", m.cfg.Port))
+	if m.isStarted {
+		return
+	}
+
+	ln, err := net.Listen("tcp", fmt.Sprintf(":%d", m.cfg.Port))
 	if err != nil {
 		log.Error(err.Error())
 	}
+
+	defer func() {
+		if err == nil {
+			m.isStarted = true
+		}
+	}()
 
 	options := []server.Options{
 		server.WithTCPListener(ln),
@@ -121,6 +143,9 @@ func (m *Mqtt) Start() {
 		server.WithHook(server.Hooks{
 			OnBasicAuth:  m.onBasicAuth,
 			OnMsgArrived: m.onMsgArrived,
+			OnConnected: func(ctx context.Context, client server.Client) {
+				m.eventBus.Publish("system/services/mqtt", events.EventMqttNewClient{})
+			},
 		}),
 	}
 
@@ -133,11 +158,15 @@ func (m *Mqtt) Start() {
 
 	log.Infof("Serving MQTT server at tcp://[::]:%d", m.cfg.Port)
 
+	m.scriptService.PushStruct("Mqtt", NewMqttBind(m))
+
 	go func() {
 		if err = m.server.Run(); err != nil {
 			log.Error(err.Error())
 		}
 	}()
+
+	m.eventBus.Publish("system/services/mqtt", events.EventServiceStarted{Service: "Mqtt"})
 }
 
 // OnMsgArrived ...

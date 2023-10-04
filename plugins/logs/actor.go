@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,7 +19,6 @@
 package logs
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/e154/smart-home/common/events"
@@ -28,13 +27,12 @@ import (
 	"github.com/rcrowley/go-metrics"
 
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 // Actor ...
 type Actor struct {
-	entity_manager.BaseActor
+	supervisor.BaseActor
 	cores         int64
 	model         string
 	ErrTotal      metrics.Counter
@@ -43,25 +41,15 @@ type Actor struct {
 	WarnTotal     metrics.Counter
 	WarnToday     metrics.Counter
 	WarnYesterday metrics.Counter
-	eventBus      bus.Bus
 	updateLock    *sync.Mutex
 }
 
 // NewActor ...
-func NewActor(entityManager entity_manager.EntityManager,
-	eventBus bus.Bus, entity *m.Entity) *Actor {
+func NewActor(entity *m.Entity,
+	service supervisor.Service) *Actor {
 
 	actor := &Actor{
-		BaseActor: entity_manager.BaseActor{
-			Id:                common.EntityId(fmt.Sprintf("%s.%s", EntityLogs, Name)),
-			Name:              Name,
-			EntityType:        EntityLogs,
-			UnitOfMeasurement: "",
-			AttrMu:            &sync.RWMutex{},
-			Attrs:             NewAttr(),
-			Manager:           entityManager,
-		},
-		eventBus:      eventBus,
+		BaseActor:     supervisor.NewBaseActor(entity, service),
 		ErrTotal:      metrics.NewCounter(),
 		ErrToday:      metrics.NewCounter(),
 		ErrYesterday:  metrics.NewCounter(),
@@ -84,61 +72,65 @@ func NewActor(entityManager entity_manager.EntityManager,
 	return actor
 }
 
-func (e *Actor) Spawn() entity_manager.PluginActor {
-	go e.selfUpdate()
-	return e
+func (e *Actor) Destroy() {
+
 }
 
-func (u *Actor) selfUpdate() {
+func (e *Actor) Spawn() {
+	go e.selfUpdate()
+	return
+}
 
-	u.updateLock.Lock()
-	defer u.updateLock.Unlock()
+func (e *Actor) selfUpdate() {
 
-	oldState := u.GetEventState(u)
-	u.Now(oldState)
+	e.updateLock.Lock()
+	defer e.updateLock.Unlock()
 
-	u.AttrMu.Lock()
-	u.Attrs[AttrErrTotal].Value = u.ErrTotal.Count()
-	u.Attrs[AttrErrToday].Value = u.ErrToday.Count()
-	u.Attrs[AttrErrYesterday].Value = u.ErrYesterday.Count()
-	u.Attrs[AttrWarnTotal].Value = u.WarnTotal.Count()
-	u.Attrs[AttrWarnToday].Value = u.WarnToday.Count()
-	u.Attrs[AttrWarnYesterday].Value = u.WarnYesterday.Count()
-	u.AttrMu.Unlock()
+	oldState := e.GetEventState()
+	e.Now(oldState)
 
-	u.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
+	e.AttrMu.Lock()
+	e.Attrs[AttrErrTotal].Value = e.ErrTotal.Count()
+	e.Attrs[AttrErrToday].Value = e.ErrToday.Count()
+	e.Attrs[AttrErrYesterday].Value = e.ErrYesterday.Count()
+	e.Attrs[AttrWarnTotal].Value = e.WarnTotal.Count()
+	e.Attrs[AttrWarnToday].Value = e.WarnToday.Count()
+	e.Attrs[AttrWarnYesterday].Value = e.WarnYesterday.Count()
+	e.AttrMu.Unlock()
+
+	go e.SaveState(events.EventStateChanged{
 		StorageSave: true,
-		PluginName:  u.Id.PluginName(),
-		EntityId:    u.Id,
+		PluginName:  e.Id.PluginName(),
+		EntityId:    e.Id,
 		OldState:    oldState,
-		NewState:    u.GetEventState(u),
+		NewState:    e.GetEventState(),
 	})
 }
 
-func (u *Actor) LogsHook(level common.LogLevel) {
+func (e *Actor) LogsHook(level common.LogLevel) {
 
 	switch level {
 	case common.LogLevelError:
-		u.ErrTotal.Inc(1)
-		u.ErrToday.Inc(1)
+		e.ErrTotal.Inc(1)
+		e.ErrToday.Inc(1)
 	case common.LogLevelWarning:
-		u.WarnTotal.Inc(1)
-		u.WarnToday.Inc(1)
+		e.WarnTotal.Inc(1)
+		e.WarnToday.Inc(1)
 	//case common.LogLevelInfo:
 	//case common.LogLevelDebug:
 	default:
 		return
 	}
-	u.selfUpdate()
+	e.selfUpdate()
 }
 
-func (u *Actor) UpdateDay() {
-	u.ErrYesterday.Clear()
-	u.ErrYesterday.Inc(u.ErrToday.Count())
-	u.WarnYesterday.Clear()
-	u.WarnYesterday.Inc(u.WarnToday.Count())
-	u.ErrToday.Clear()
-	u.WarnToday.Clear()
+func (e *Actor) UpdateDay() {
+	e.ErrYesterday.Clear()
+	e.ErrYesterday.Inc(e.ErrToday.Count())
+	e.WarnYesterday.Clear()
+	e.WarnYesterday.Inc(e.WarnToday.Count())
+	e.ErrToday.Clear()
+	e.WarnToday.Clear()
 
-	u.selfUpdate()
+	e.selfUpdate()
 }

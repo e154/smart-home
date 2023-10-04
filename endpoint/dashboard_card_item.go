@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -48,11 +48,11 @@ func (c *DashboardCardItemEndpoint) Add(ctx context.Context, card *m.DashboardCa
 	}
 
 	var id int64
-	if id, err = c.adaptors.DashboardCardItem.Add(card); err != nil {
+	if id, err = c.adaptors.DashboardCardItem.Add(ctx, card); err != nil {
 		return
 	}
 
-	result, err = c.adaptors.DashboardCardItem.GetById(id)
+	result, err = c.adaptors.DashboardCardItem.GetById(ctx, id)
 
 	return
 }
@@ -60,7 +60,7 @@ func (c *DashboardCardItemEndpoint) Add(ctx context.Context, card *m.DashboardCa
 // GetById ...
 func (c *DashboardCardItemEndpoint) GetById(ctx context.Context, id int64) (card *m.DashboardCardItem, err error) {
 
-	card, err = c.adaptors.DashboardCardItem.GetById(id)
+	card, err = c.adaptors.DashboardCardItem.GetById(ctx, id)
 
 	return
 }
@@ -69,7 +69,7 @@ func (c *DashboardCardItemEndpoint) GetById(ctx context.Context, id int64) (card
 func (i *DashboardCardItemEndpoint) Update(ctx context.Context, params *m.DashboardCardItem) (result *m.DashboardCardItem, errs validator.ValidationErrorsTranslations, err error) {
 
 	var board *m.DashboardCardItem
-	if board, err = i.adaptors.DashboardCardItem.GetById(params.Id); err != nil {
+	if board, err = i.adaptors.DashboardCardItem.GetById(ctx, params.Id); err != nil {
 		return
 	}
 
@@ -82,11 +82,11 @@ func (i *DashboardCardItemEndpoint) Update(ctx context.Context, params *m.Dashbo
 		return
 	}
 
-	if err = i.adaptors.DashboardCardItem.Update(board); err != nil {
+	if err = i.adaptors.DashboardCardItem.Update(ctx, board); err != nil {
 		return
 	}
 
-	result, err = i.adaptors.DashboardCardItem.GetById(params.Id)
+	result, err = i.adaptors.DashboardCardItem.GetById(ctx, params.Id)
 
 	return
 }
@@ -94,7 +94,7 @@ func (i *DashboardCardItemEndpoint) Update(ctx context.Context, params *m.Dashbo
 // GetList ...
 func (c *DashboardCardItemEndpoint) GetList(ctx context.Context, pagination common.PageParams) (list []*m.DashboardCardItem, total int64, err error) {
 
-	list, total, err = c.adaptors.DashboardCardItem.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
+	list, total, err = c.adaptors.DashboardCardItem.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
 
 	return
 }
@@ -102,12 +102,12 @@ func (c *DashboardCardItemEndpoint) GetList(ctx context.Context, pagination comm
 // Delete ...
 func (c *DashboardCardItemEndpoint) Delete(ctx context.Context, id int64) (err error) {
 
-	_, err = c.adaptors.DashboardCardItem.GetById(id)
+	_, err = c.adaptors.DashboardCardItem.GetById(ctx, id)
 	if err != nil {
 		return
 	}
 
-	err = c.adaptors.DashboardCardItem.Delete(id)
+	err = c.adaptors.DashboardCardItem.Delete(ctx, id)
 
 	return
 }

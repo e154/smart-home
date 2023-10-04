@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,7 @@
 package db
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -26,8 +27,8 @@ import (
 	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/e154/smart-home/common"
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // EntityStorages ...
@@ -50,8 +51,8 @@ func (d *EntityStorage) TableName() string {
 }
 
 // Add ...
-func (n *EntityStorages) Add(v EntityStorage) (id int64, err error) {
-	if err = n.Db.Create(&v).Error; err != nil {
+func (n *EntityStorages) Add(ctx context.Context, v EntityStorage) (id int64, err error) {
+	if err = n.Db.WithContext(ctx).Create(&v).Error; err != nil {
 		err = errors.Wrap(apperr.ErrEntityStorageAdd, err.Error())
 		return
 	}
@@ -60,9 +61,9 @@ func (n *EntityStorages) Add(v EntityStorage) (id int64, err error) {
 }
 
 // GetLastByEntityId ...
-func (n *EntityStorages) GetLastByEntityId(entityId common.EntityId) (v EntityStorage, err error) {
+func (n *EntityStorages) GetLastByEntityId(ctx context.Context, entityId common.EntityId) (v EntityStorage, err error) {
 	v = EntityStorage{}
-	err = n.Db.Model(&EntityStorage{}).
+	err = n.Db.WithContext(ctx).Model(&EntityStorage{}).
 		Order("created_at desc").
 		First(&v, "entity_id = ?", entityId).
 		Error
@@ -79,15 +80,15 @@ func (n *EntityStorages) GetLastByEntityId(entityId common.EntityId) (v EntitySt
 }
 
 // List ...
-func (n *EntityStorages) List(limit, offset int64, orderBy, sort string) (list []EntityStorage, total int64, err error) {
+func (n *EntityStorages) List(ctx context.Context, limit, offset int, orderBy, sort string) (list []EntityStorage, total int64, err error) {
 
-	if err = n.Db.Model(EntityStorage{}).Count(&total).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(EntityStorage{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrEntityStorageList, err.Error())
 		return
 	}
 
 	list = make([]EntityStorage, 0)
-	q := n.Db.Model(&EntityStorage{}).
+	q := n.Db.WithContext(ctx).Model(&EntityStorage{}).
 		Limit(limit).
 		Offset(offset)
 
@@ -107,9 +108,13 @@ func (n *EntityStorages) List(limit, offset int64, orderBy, sort string) (list [
 }
 
 // ListByEntityId ...
-func (n *EntityStorages) ListByEntityId(limit, offset int64, orderBy, sort string, entityId common.EntityId, startDate, endDate *time.Time) (list []EntityStorage, total int64, err error) {
+func (n *EntityStorages) ListByEntityId(ctx context.Context, limit, offset int, orderBy, sort string, entityId *common.EntityId, startDate, endDate *time.Time) (list []EntityStorage, total int64, err error) {
 
-	q := n.Db.Model(&EntityStorage{}).Where("entity_id = ?", entityId)
+	q := n.Db.WithContext(ctx).Model(&EntityStorage{})
+
+	if entityId != nil {
+		q = q.Where("entity_id = ?", entityId)
+	}
 
 	if startDate != nil {
 		q = q.Where("created_at >= ?", &startDate)
@@ -144,8 +149,15 @@ func (n *EntityStorages) ListByEntityId(limit, offset int64, orderBy, sort strin
 }
 
 // DeleteOldest ...
-func (n *EntityStorages) DeleteOldest(days int) (err error) {
-	err = n.Db.Delete(&EntityStorage{}, fmt.Sprintf(`created_at < now() - interval '%d days'`, days)).Error
+func (n *EntityStorages) DeleteOldest(ctx context.Context, days int) (err error) {
+	storage := &EntityStorage{}
+	if err = n.Db.WithContext(ctx).Last(&storage).Error; err != nil {
+		err = errors.Wrap(apperr.ErrLogDelete, err.Error())
+		return
+	}
+	err = n.Db.WithContext(ctx).Delete(&EntityStorage{},
+		fmt.Sprintf(`created_at < CAST('%s' AS DATE) - interval '%d days'`,
+			storage.CreatedAt.UTC().Format("2006-01-02 15:04:05"), days)).Error
 	if err != nil {
 		err = errors.Wrap(apperr.ErrEntityStorageDelete, err.Error())
 	}

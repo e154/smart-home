@@ -1,56 +1,46 @@
+// This file is part of the Smart Home
+// Program complex distribution https://github.com/e154/smart-home
+// Copyright (C) 2023, Filippov Alex
+//
+// This library is free software: you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Library General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.  If not, see
+// <https://www.gnu.org/licenses/>.
+
 package neural_network
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/adaptors"
+
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 type Actor struct {
-	entity_manager.BaseActor
-	eventBus      bus.Bus
-	adaptors      *adaptors.Adaptors
-	scriptService scripts.ScriptService
-	actionPool    chan events.EventCallAction
-	network1      *Network1
-	network2      *Network2
+	supervisor.BaseActor
+	actionPool chan events.EventCallEntityAction
+	network1   *Network1
+	network2   *Network2
 }
 
 func NewActor(entity *m.Entity,
-	entityManager entity_manager.EntityManager,
-	adaptors *adaptors.Adaptors,
-	scriptService scripts.ScriptService,
-	eventBus bus.Bus) *Actor {
+	service supervisor.Service) *Actor {
 
 	actor := &Actor{
-		BaseActor:     entity_manager.NewBaseActor(entity, scriptService, adaptors),
-		adaptors:      adaptors,
-		scriptService: scriptService,
-		eventBus:      eventBus,
-		actionPool:    make(chan events.EventCallAction, 10),
-		network1:      NewNetwork1(eventBus),
-		network2:      NewNetwork2(eventBus, entityManager),
-	}
-
-	actor.Manager = entityManager
-
-	// Actions
-	for _, a := range actor.Actions {
-		if a.ScriptEngine != nil {
-			// bind
-			a.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
-			_, _ = a.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
-			_, _ = a.ScriptEngine.Do()
-		}
-	}
-
-	if actor.ScriptEngine != nil {
-		_, _ = actor.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
-		actor.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
+		BaseActor:  supervisor.NewBaseActor(entity, service),
+		actionPool: make(chan events.EventCallEntityAction, 10),
+		network1:   NewNetwork1(service.EventBus()),
+		network2:   NewNetwork2(service.EventBus()),
 	}
 
 	// action worker
@@ -63,26 +53,20 @@ func NewActor(entity *m.Entity,
 	return actor
 }
 
-func (e *Actor) destroy() {
+func (e *Actor) Destroy() {
 	if e.network2 != nil {
 		e.network2.Stop()
 	}
 }
 
-func (e *Actor) Spawn() entity_manager.PluginActor {
-	e.Update()
-	return e
+func (e *Actor) Spawn() {
 }
 
-func (e *Actor) Update() {
-
-}
-
-func (e *Actor) addAction(event events.EventCallAction) {
+func (e *Actor) addAction(event events.EventCallEntityAction) {
 	e.actionPool <- event
 }
 
-func (e *Actor) runAction(msg events.EventCallAction) {
+func (e *Actor) runAction(msg events.EventCallEntityAction) {
 	action, ok := e.Actions[msg.ActionName]
 	if !ok {
 		log.Warnf("action %s not found", msg.ActionName)
@@ -102,10 +86,4 @@ func (e *Actor) runAction(msg events.EventCallAction) {
 	default:
 		fmt.Sprintf("unknown comand: %s", action.Name)
 	}
-}
-
-func (e *Actor) Start() {
-}
-
-func (e *Actor) Stop() {
 }

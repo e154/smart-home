@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -33,10 +33,13 @@ func NewUserDto() User {
 	return User{}
 }
 
-// FromAddUser ...
-func (u User) FromAddUser(req *api.NewtUserRequest) (user *m.User) {
+// AddUserRequest ...
+func (u User) AddUserRequest(req *api.NewtUserRequest) (user *m.User) {
 	user = &m.User{}
 	_ = common.Copy(&user, req, common.JsonEngine)
+	if req.ImageId != nil {
+		_ = user.ImageId.Scan(*req.ImageId)
+	}
 	return
 }
 
@@ -177,9 +180,12 @@ func (u User) ToListResult(list []*m.User, total uint64, pagination common.PageP
 	}
 }
 
-// FromUpdateUserRequest ...
-func (u User) FromUpdateUserRequest(req *api.UpdateUserRequest) (user *m.User) {
+// UpdateUserByIdRequest ...
+func (u User) UpdateUserByIdRequest(req *api.UpdateUserRequest) (user *m.User) {
 	user = &m.User{}
 	_ = common.Copy(&user, req, common.JsonEngine)
+	if req.ImageId != nil {
+		_ = user.ImageId.Scan(*req.ImageId)
+	}
 	return
 }

@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,17 +19,23 @@
 package adaptors
 
 import (
+	"context"
+	"time"
+
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/gorm"
-	gormbulk "github.com/t-tiger/gorm-bulk-insert"
+	"gorm.io/gorm"
 )
 
 // IAction ...
 type IAction interface {
-	DeleteByTaskId(id int64) (err error)
-	AddMultiple(items []*m.Action) (err error)
+	Add(ctx context.Context, ver *m.Action) (id int64, err error)
+	GetById(ctx context.Context, id int64) (metric *m.Action, err error)
+	Update(ctx context.Context, ver *m.Action) error
+	Delete(ctx context.Context, deviceId int64) (err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.Action, total int64, err error)
+	Search(ctx context.Context, query string, limit, offset int) (list []*m.Action, total int64, err error)
 	fromDb(dbVer *db.Action) (ver *m.Action)
 	toDb(ver *m.Action) (dbVer *db.Action)
 }
@@ -49,22 +55,70 @@ func GetActionAdaptor(d *gorm.DB) IAction {
 	}
 }
 
-// DeleteByTaskId ...
-func (n *Action) DeleteByTaskId(id int64) (err error) {
-	err = n.table.DeleteByTaskId(id)
+// Add ...
+func (n *Action) Add(ctx context.Context, ver *m.Action) (id int64, err error) {
+	id, err = n.table.Add(ctx, n.toDb(ver))
 	return
 }
 
-// AddMultiple ...
-func (n *Action) AddMultiple(items []*m.Action) (err error) {
+// GetById ...
+func (n *Action) GetById(ctx context.Context, id int64) (metric *m.Action, err error) {
+	var dbVer *db.Action
+	if dbVer, err = n.table.GetById(ctx, id); err != nil {
+		return
+	}
+	metric = n.fromDb(dbVer)
+	return
+}
 
-	insertRecords := make([]interface{}, 0, len(items))
+// GetByIdWithData ...
+func (n *Action) GetByIdWithData(ctx context.Context, id int64, from, to *time.Time, metricRange *string) (metric *m.Action, err error) {
+	var dbVer *db.Action
+	if dbVer, err = n.table.GetById(ctx, id); err != nil {
+		return
+	}
+	metric = n.fromDb(dbVer)
+	return
+}
 
-	for _, ver := range items {
-		insertRecords = append(insertRecords, n.toDb(ver))
+// Update ...
+func (n *Action) Update(ctx context.Context, ver *m.Action) error {
+	return n.table.Update(ctx, n.toDb(ver))
+}
+
+// Delete ...
+func (n *Action) Delete(ctx context.Context, deviceId int64) (err error) {
+	err = n.table.Delete(ctx, deviceId)
+	return
+}
+
+// List ...
+func (n *Action) List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.Action, total int64, err error) {
+	var dbList []*db.Action
+	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort); err != nil {
+		return
 	}
 
-	err = gormbulk.BulkInsert(n.db, insertRecords, len(insertRecords))
+	list = make([]*m.Action, len(dbList))
+	for i, dbVer := range dbList {
+		list[i] = n.fromDb(dbVer)
+	}
+
+	return
+}
+
+// Search ...
+func (n *Action) Search(ctx context.Context, query string, limit, offset int) (list []*m.Action, total int64, err error) {
+	var dbList []*db.Action
+	if dbList, total, err = n.table.Search(ctx, query, limit, offset); err != nil {
+		return
+	}
+
+	list = make([]*m.Action, len(dbList))
+	for i, dbVer := range dbList {
+		list[i] = n.fromDb(dbVer)
+	}
+
 	return
 }
 
@@ -72,10 +126,11 @@ func (n *Action) fromDb(dbVer *db.Action) (ver *m.Action) {
 	ver = &m.Action{
 		Id:               dbVer.Id,
 		Name:             dbVer.Name,
-		TaskId:           dbVer.TaskId,
 		ScriptId:         dbVer.ScriptId,
 		EntityId:         dbVer.EntityId,
 		EntityActionName: dbVer.EntityActionName,
+		CreatedAt:        dbVer.CreatedAt,
+		UpdatedAt:        dbVer.UpdatedAt,
 	}
 	// script
 	if dbVer.Script != nil {
@@ -94,10 +149,15 @@ func (n *Action) toDb(ver *m.Action) (dbVer *db.Action) {
 	dbVer = &db.Action{
 		Id:               ver.Id,
 		Name:             ver.Name,
-		TaskId:           ver.TaskId,
 		ScriptId:         ver.ScriptId,
 		EntityId:         ver.EntityId,
 		EntityActionName: ver.EntityActionName,
+		CreatedAt:        ver.CreatedAt,
+		UpdatedAt:        ver.UpdatedAt,
+	}
+
+	if ver.Entity != nil {
+		dbVer.EntityId = common.NewEntityId(ver.Entity.Id.String())
 	}
 
 	if ver.Script != nil {

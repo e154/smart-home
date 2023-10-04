@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -41,7 +41,7 @@ package {{.Package}}
 
 import (
 	"fmt"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 	"time"
 )
 
@@ -63,8 +63,8 @@ func (d *{{.Name}}) TableName() string {
 	return "{{.Name}}"
 }
 
-// Add ...
-func (n {{.Name}}s) Add(ver *{{.Name}}) (id int64, err error) {
+// AddEntity ...
+func (n {{.Name}}s) AddEntity(ver *{{.Name}}) (id int64, err error) {
 	if err = n.Db.Create(&ver).Error; err != nil {
 		return
 	}
@@ -79,8 +79,8 @@ func (n {{.Name}}s) GetById(id int64) (ver *{{.Name}}, err error) {
 	return
 }
 
-// Update ...
-func (n {{.Name}}s) Update(m *{{.Name}}) (err error) {
+// UpdateEntity ...
+func (n {{.Name}}s) UpdateEntity(m *{{.Name}}) (err error) {
 	q := map[string]interface{}{
 		"name":        m.Name,
 	}

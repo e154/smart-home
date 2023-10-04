@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,53 +19,44 @@
 package email
 
 import (
+	"context"
 	"strings"
+
+	"github.com/e154/smart-home/system/supervisor"
 
 	"github.com/e154/smart-home/common/logger"
 
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/notify"
-	"github.com/e154/smart-home/system/plugins"
 )
 
 var (
 	log = logger.MustGetLogger("plugins.email")
 )
 
-var _ plugins.Plugable = (*plugin)(nil)
+var _ supervisor.Pluggable = (*plugin)(nil)
 
 func init() {
-	plugins.RegisterPlugin(Name, New)
+	supervisor.RegisterPlugin(Name, New)
 }
 
 type plugin struct {
-	*plugins.Plugin
+	*supervisor.Plugin
 	actor *Actor
 }
 
 // New ...
-func New() plugins.Plugable {
+func New() supervisor.Pluggable {
 	return &plugin{
-		Plugin: plugins.NewPlugin(),
+		Plugin: supervisor.NewPlugin(),
 	}
 }
 
 // Load ...
-func (p *plugin) Load(service plugins.Service) (err error) {
-	if err = p.Plugin.Load(service); err != nil {
+func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
+	if err = p.Plugin.Load(ctx, service, nil); err != nil {
 		return
 	}
-
-	go func() {
-		if err = p.asyncLoad(); err != nil {
-			log.Error(err.Error())
-		}
-	}()
-
-	return nil
-}
-
-func (p *plugin) asyncLoad() (err error) {
 
 	// load settings
 	var settings m.Attributes
@@ -80,8 +71,7 @@ func (p *plugin) asyncLoad() (err error) {
 	}
 
 	// add actor
-	p.actor = NewActor(settings, p.EntityManager, p.EventBus, p.Adaptors)
-	p.EntityManager.Spawn(p.actor.Spawn)
+	p.actor = NewActor(settings, service)
 
 	// register email provider
 	notify.ProviderManager.AddProvider(Name, p)
@@ -90,8 +80,8 @@ func (p *plugin) asyncLoad() (err error) {
 }
 
 // Unload ...
-func (p *plugin) Unload() (err error) {
-	if err = p.Plugin.Unload(); err != nil {
+func (p *plugin) Unload(ctx context.Context) (err error) {
+	if err = p.Plugin.Unload(ctx); err != nil {
 		return
 	}
 
@@ -106,8 +96,8 @@ func (p *plugin) Name() string {
 }
 
 // Type ...
-func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginInstallable
+func (p *plugin) Type() supervisor.PluginType {
+	return supervisor.PluginInstallable
 }
 
 // Depends ...
@@ -134,7 +124,7 @@ func (p *plugin) Save(msg notify.Message) (addresses []string, message *m.Messag
 		Attributes: msg.Attributes,
 	}
 	var err error
-	if message.Id, err = p.Adaptors.Message.Add(message); err != nil {
+	if message.Id, err = p.Service.Adaptors().Message.Add(context.Background(), message); err != nil {
 		log.Error(err.Error())
 	}
 

@@ -1,39 +1,53 @@
+// This file is part of the Smart Home
+// Program complex distribution https://github.com/e154/smart-home
+// Copyright (C) 2023, Filippov Alex
+//
+// This library is free software: you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Library General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.  If not, see
+// <https://www.gnu.org/licenses/>.
+
 package neural_network
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/events"
-	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/julioguillermo/staticneurogenetic"
 	"math"
 	"math/rand"
 	"time"
+
+	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/system/bus"
+	"github.com/julioguillermo/staticneurogenetic"
 )
 
 const fileName = "oxo.bin"
 
 type Network2 struct {
-	train2        bool
-	entityManager entity_manager.EntityManager
-	eventBus      bus.Bus
-	game          *Game
-	actor         entity_manager.PluginActor
-	entityId      common.EntityId
-	agents        *staticneurogenetic.SNG
-	moves         int
-	individual    int
+	train2     bool
+	eventBus   bus.Bus
+	game       *Game
+	entityId   common.EntityId
+	agents     *staticneurogenetic.SNG
+	moves      int
+	individual int
 }
 
-func NewNetwork2(eventBus bus.Bus,
-	entityManager entity_manager.EntityManager) (net *Network2) {
+func NewNetwork2(eventBus bus.Bus) (net *Network2) {
 	net = &Network2{
-		eventBus:      eventBus,
-		train2:        true,
-		game:          NewGame(),
-		entityManager: entityManager,
-		entityId:      "sensor.ticTacToe",
+		eventBus: eventBus,
+		train2:   true,
+		game:     NewGame(),
+		entityId: "sensor.ticTacToe",
 	}
 	net.Start()
 	return net
@@ -45,8 +59,7 @@ const (
 )
 
 func (e *Network2) Start() {
-	e.actor, _ = e.entityManager.GetActorById(e.entityId)
-	_ = e.eventBus.Subscribe(bus.TopicEntities, e.eventHandler)
+	_ = e.eventBus.Subscribe("system/entities/"+e.entityId.Name(), e.eventHandler)
 
 	rand.Seed(int64(time.Now().Nanosecond()))
 	var err error
@@ -71,7 +84,7 @@ func (e *Network2) Start() {
 }
 
 func (e *Network2) Stop() {
-	_ = e.eventBus.Unsubscribe(bus.TopicEntities, e.eventHandler)
+	_ = e.eventBus.Unsubscribe("system/entities/"+e.entityId.String(), e.eventHandler)
 	if err := e.agents.SaveAsBin(fileName); err != nil {
 		log.Error(err.Error())
 	}
@@ -81,7 +94,7 @@ func (e *Network2) Stop() {
 func (e *Network2) eventHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
-	case events.EventCallAction:
+	case events.EventCallEntityAction:
 	case events.EventStateChanged:
 		if v.EntityId != e.entityId {
 			return
@@ -138,7 +151,12 @@ func (e *Network2) eventHandler(_ string, msg interface{}) {
 }
 
 func (e *Network2) sendMoveCommand(row, col int) {
-	e.entityManager.CallAction(e.entityId, fmt.Sprintf("B_R%dC%d", row, col), nil)
+	e.eventBus.Publish("system/entities/"+e.entityId.String(), events.EventCallEntityAction{
+		PluginName: e.entityId.PluginName(),
+		EntityId:   e.entityId,
+		ActionName: fmt.Sprintf("B_R%dC%d", row, col),
+		Args:       nil,
+	})
 }
 
 func (e *Network2) MakeMove() {
@@ -175,9 +193,7 @@ func (e *Network2) Train2() {
 
 	e.agents.ResetFitness()
 
-
 	for k := 0; k < 50; k++ {
-
 
 		generation := e.agents.GetGeneration()
 		fmt.Println("generation:", generation)

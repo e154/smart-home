@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,84 +19,71 @@
 package telegram
 
 import (
+	"context"
 	"fmt"
-	"sync"
-
-	"github.com/e154/smart-home/common/events"
-
-	"github.com/e154/smart-home/common/apperr"
-
-	"github.com/e154/smart-home/common/logger"
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/notify"
-	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/plugins"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 var (
 	log = logger.MustGetLogger("plugins.telegram")
 )
 
-var _ plugins.Plugable = (*plugin)(nil)
+var _ supervisor.Pluggable = (*plugin)(nil)
 
 func init() {
-	plugins.RegisterPlugin(Name, New)
+	supervisor.RegisterPlugin(Name, New)
 }
 
 type plugin struct {
-	*plugins.Plugin
-	actorsLock *sync.RWMutex
-	actors     map[common.EntityId]*Actor
+	*supervisor.Plugin
 }
 
 // New ...
-func New() plugins.Plugable {
+func New() supervisor.Pluggable {
 	return &plugin{
-		Plugin:     plugins.NewPlugin(),
-		actorsLock: &sync.RWMutex{},
-		actors:     make(map[common.EntityId]*Actor),
+		Plugin: supervisor.NewPlugin(),
 	}
 }
 
 // Load ...
-func (p *plugin) Load(service plugins.Service) (err error) {
-	if err = p.Plugin.Load(service); err != nil {
+func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
+	if err = p.Plugin.Load(ctx, service, p.ActorConstructor); err != nil {
 		return
 	}
-
-	go func() {
-		if err = p.asyncLoad(); err != nil {
-			log.Error(err.Error())
-		}
-	}()
-
-	return nil
-}
-
-func (p *plugin) asyncLoad() (err error) {
 
 	// register telegram provider
 	notify.ProviderManager.AddProvider(Name, p)
 
-	_ = p.EventBus.Subscribe(bus.TopicEntities, p.eventHandler)
+	_ = p.Service.EventBus().Subscribe("system/entities/+", p.eventHandler)
 
 	return
 }
 
 // Unload ...
-func (p *plugin) Unload() (err error) {
-	if err = p.Plugin.Unload(); err != nil {
+func (p *plugin) Unload(ctx context.Context) (err error) {
+	if err = p.Plugin.Unload(ctx); err != nil {
 		return
 	}
 
-	_ = p.EventBus.Unsubscribe(bus.TopicEntities, p.eventHandler)
+	_ = p.Service.EventBus().Unsubscribe("system/entities/+", p.eventHandler)
 
 	notify.ProviderManager.RemoveProvider(Name)
 
 	return nil
+}
+
+// ActorConstructor ...
+func (p *plugin) ActorConstructor(entity *m.Entity) (actor supervisor.PluginActor, err error) {
+	actor, err = NewActor(entity, p.Service)
+	return
 }
 
 // Name ...
@@ -105,8 +92,8 @@ func (p *plugin) Name() string {
 }
 
 // Type ...
-func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginInstallable
+func (p *plugin) Type() supervisor.PluginType {
+	return supervisor.PluginInstallable
 }
 
 // Depends ...
@@ -128,41 +115,8 @@ func (p *plugin) Options() m.PluginOptions {
 		ActorCustomAttrs:   true,
 		ActorAttrs:         NewAttr(),
 		ActorSetts:         NewSettings(),
+		ActorStates:        supervisor.ToEntityStateShort(NewStates()),
 	}
-}
-
-// AddOrUpdateActor ...
-func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	if _, ok := p.actors[entity.Id]; ok {
-		return
-	}
-
-	var actor *Actor
-	if actor, err = NewActor(entity, p.EntityManager, p.ScriptService, p.EventBus, p.Adaptors); err != nil {
-		return
-	}
-	p.actors[entity.Id] = actor
-	p.EntityManager.Spawn(actor.Spawn)
-	_ = actor.Start()
-	return
-}
-
-// RemoveActor ...
-func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	if _, ok := p.actors[entityId]; !ok {
-		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("entityId \"%s\"", entityId))
-		return
-	}
-
-	p.actors[entityId].Stop()
-	delete(p.actors, entityId)
-	return
 }
 
 // Save ...
@@ -172,7 +126,7 @@ func (p *plugin) Save(msg notify.Message) (addresses []string, message *m.Messag
 		Attributes: msg.Attributes,
 	}
 	var err error
-	if message.Id, err = p.Adaptors.Message.Add(message); err != nil {
+	if message.Id, err = p.Service.Adaptors().Message.Add(context.Background(), message); err != nil {
 		log.Error(err.Error())
 	}
 
@@ -191,15 +145,14 @@ func (p *plugin) Send(name string, message *m.Message) (err error) {
 
 	body := params[AttrBody].String()
 
-	p.actorsLock.RLock()
-	defer p.actorsLock.RUnlock()
-
-	actor, ok := p.actors[common.EntityId(fmt.Sprintf("telegram.%s", name))]
-	if ok {
-		_ = actor.Send(body)
-	} else {
+	entityId := common.EntityId(fmt.Sprintf("telegram.%s", name))
+	value, ok := p.Actors.Load(entityId)
+	if !ok {
 		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("bot \"%s\"", name))
+		return
 	}
+	actor := value.(*Actor)
+	_ = actor.Send(body)
 
 	return
 }
@@ -213,11 +166,12 @@ func (p *plugin) eventHandler(topic string, msg interface{}) {
 
 	switch v := msg.(type) {
 	case events.EventStateChanged:
-	case events.EventCallAction:
-		actor, ok := p.actors[v.EntityId]
+	case events.EventCallEntityAction:
+		value, ok := p.Actors.Load(v.EntityId)
 		if !ok {
 			return
 		}
+		actor := value.(*Actor)
 		actor.addAction(v)
 	}
 }

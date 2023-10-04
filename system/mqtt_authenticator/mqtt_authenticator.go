@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,7 @@
 package mqtt_authenticator
 
 import (
+	"context"
 	"fmt"
 	"reflect"
 	"sync"
@@ -100,7 +101,7 @@ func (a *Authenticator) Authenticate(login string, pass interface{}) (err error)
 	}
 
 	var user *m.User
-	if user, err = a.adaptors.User.GetByNickname(login); err != nil {
+	if user, err = a.adaptors.User.GetByNickname(context.Background(), login); err != nil {
 		err = errors.Wrap(apperr.ErrUnauthorized, fmt.Sprintf("email %s", login))
 		return
 	} else if !user.CheckPass(password) {
@@ -126,7 +127,7 @@ func (a *Authenticator) Register(fn func(login, password string) (err error)) (e
 	rv := reflect.ValueOf(fn)
 
 	for _, v := range a.handlers {
-		if v == rv {
+		if v == rv || v.Pointer() == rv.Pointer() {
 			return
 		}
 	}
@@ -146,7 +147,7 @@ func (a *Authenticator) Unregister(fn func(login, password string) (err error)) 
 	rv := reflect.ValueOf(fn)
 
 	for i, v := range a.handlers {
-		if v == rv {
+		if v == rv || v.Pointer() == rv.Pointer() {
 			a.handlers = append(a.handlers[:i], a.handlers[i+1:]...)
 		}
 	}

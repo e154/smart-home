@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -39,7 +39,7 @@ var (
 // Client ...
 type Client struct {
 	cfg *Config
-	sync.Mutex
+	mx sync.Mutex
 	client     MQTT.Client
 	subscribes map[string]Subscribe
 }
@@ -80,8 +80,8 @@ func NewClient(cfg *Config) (client *Client, err error) {
 // Connect ...
 func (c *Client) Connect() (err error) {
 
-	c.Lock()
-	defer c.Unlock()
+	c.mx.Lock()
+	defer c.mx.Unlock()
 
 	log.Infof("Connect to server %s", c.cfg.Broker)
 
@@ -96,19 +96,18 @@ func (c *Client) Connect() (err error) {
 // Disconnect ...
 func (c *Client) Disconnect() {
 
-	c.Lock()
+	c.mx.Lock()
+	defer c.mx.Unlock()
+
 	if c.client == nil {
-		c.Unlock()
 		return
 	}
-	c.Unlock()
 
-	c.UnsubscribeAll()
+	c.unsubscribeAll()
 
-	c.Lock()
+	c.mx.Lock()
 	c.client.Disconnect(250)
 	//c.client = nil
-	c.Unlock()
 }
 
 // Subscribe ...
@@ -119,8 +118,8 @@ func (c *Client) Subscribe(topic string, qos byte, callback MQTT.MessageHandler)
 		return
 	}
 
-	c.Lock()
-	defer c.Unlock()
+	c.mx.Lock()
+	defer c.mx.Unlock()
 
 	if _, ok := c.subscribes[topic]; !ok {
 		c.subscribes[topic] = Subscribe{
@@ -141,8 +140,8 @@ func (c *Client) Subscribe(topic string, qos byte, callback MQTT.MessageHandler)
 // Unsubscribe ...
 func (c *Client) Unsubscribe(topic string) (err error) {
 
-	c.Lock()
-	defer c.Unlock()
+	c.mx.Lock()
+	defer c.mx.Unlock()
 
 	if token := c.client.Unsubscribe(topic); token.Wait() && token.Error() != nil {
 		log.Error(token.Error().Error())
@@ -151,10 +150,10 @@ func (c *Client) Unsubscribe(topic string) (err error) {
 	return
 }
 
-// UnsubscribeAll ...
-func (c *Client) UnsubscribeAll() {
-	c.Lock()
-	defer c.Unlock()
+// unsubscribeAll ...
+func (c *Client) unsubscribeAll() {
+	c.mx.Lock()
+	defer c.mx.Unlock()
 
 	for topic := range c.subscribes {
 		if token := c.client.Unsubscribe(topic); token.Error() != nil {
@@ -166,8 +165,8 @@ func (c *Client) UnsubscribeAll() {
 
 // Publish ...
 func (c *Client) Publish(topic string, payload interface{}) (err error) {
-	c.Lock()
-	defer c.Unlock()
+	c.mx.Lock()
+	defer c.mx.Unlock()
 
 	if c.client != nil && (c.client.IsConnected()) {
 		c.client.Publish(topic, c.cfg.Qos, false, payload)
@@ -177,16 +176,16 @@ func (c *Client) Publish(topic string, payload interface{}) (err error) {
 
 // IsConnected ...
 func (c *Client) IsConnected() bool {
-	c.Lock()
-	defer c.Unlock()
+	c.mx.Lock()
+	defer c.mx.Unlock()
 
 	return c.client.IsConnectionOpen()
 }
 
 func (c *Client) onConnectionLostHandler(client MQTT.Client, e error) {
 
-	c.Lock()
-	defer c.Unlock()
+	c.mx.Lock()
+	defer c.mx.Unlock()
 
 	log.Debug("connection lost...")
 
@@ -199,8 +198,8 @@ func (c *Client) onConnectionLostHandler(client MQTT.Client, e error) {
 
 func (c *Client) onConnect(client MQTT.Client) {
 
-	c.Lock()
-	defer c.Unlock()
+	c.mx.Lock()
+	defer c.mx.Unlock()
 
 	log.Debug("connected...")
 

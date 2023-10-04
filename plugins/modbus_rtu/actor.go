@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -24,45 +24,29 @@ import (
 
 	"github.com/e154/smart-home/common/events"
 
-	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/node"
-	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 // Actor ...
 type Actor struct {
-	entity_manager.BaseActor
-	adaptors      *adaptors.Adaptors
+	supervisor.BaseActor
 	scriptService scripts.ScriptService
-	eventBus      bus.Bus
-	actionPool    chan events.EventCallAction
+	actionPool    chan events.EventCallEntityAction
 	stateMu       *sync.Mutex
 }
 
 // NewActor ...
 func NewActor(entity *m.Entity,
-	entityManager entity_manager.EntityManager,
-	adaptors *adaptors.Adaptors,
-	scriptService scripts.ScriptService,
-	eventBus bus.Bus) (actor *Actor) {
+	service supervisor.Service) (actor *Actor) {
 
 	actor = &Actor{
-		BaseActor:     entity_manager.NewBaseActor(entity, scriptService, adaptors),
-		adaptors:      adaptors,
-		scriptService: scriptService,
-		eventBus:      eventBus,
-		actionPool:    make(chan events.EventCallAction, 10),
-		stateMu:       &sync.Mutex{},
+		BaseActor:  supervisor.NewBaseActor(entity, service),
+		actionPool: make(chan events.EventCallEntityAction, 10),
+		stateMu:    &sync.Mutex{},
 	}
-
-	//if actor.ParentId == nil {
-	//	log.Warnf("entity %s, parent is nil", actor.Id)
-	//}
-
-	actor.Manager = entityManager
 
 	if actor.Attrs == nil {
 		actor.Attrs = NewAttr()
@@ -76,18 +60,19 @@ func NewActor(entity *m.Entity,
 
 	// Actions
 	for _, a := range actor.Actions {
-		if a.ScriptEngine != nil {
+		if a.ScriptEngine.Engine() != nil {
 			// bind
-			a.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
-			_, _ = a.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
-			a.ScriptEngine.PushFunction("ModbusRtu", NewModbusRtu(eventBus, actor))
-			_, _ = a.ScriptEngine.Do()
+			a.ScriptEngine.Engine().PushFunction("ModbusRtu", NewModbusRtu(service.EventBus(), actor))
+			_, _ = a.ScriptEngine.Engine().Do()
 		}
 	}
 
-	if actor.ScriptEngine != nil {
-		_, _ = actor.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
-		actor.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
+	for _, engine := range actor.ScriptEngines {
+		engine.Spawn(func(engine *scripts.Engine) {
+			engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
+			engine.PushFunction("ModbusRtu", NewModbusRtu(service.EventBus(), actor))
+			engine.Do()
+		})
 	}
 
 	// action worker
@@ -100,15 +85,18 @@ func NewActor(entity *m.Entity,
 	return actor
 }
 
-// Spawn ...
-func (e *Actor) Spawn() entity_manager.PluginActor {
-	return e
+func (e *Actor) Destroy() {
+
+}
+
+func (e *Actor) Spawn() {
+
 }
 
 // SetState ...
-func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
+func (e *Actor) SetState(params supervisor.EntityStateParams) error {
 
-	oldState := e.GetEventState(e)
+	oldState := e.GetEventState()
 
 	e.Now(oldState)
 
@@ -122,28 +110,28 @@ func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
 	_, _ = e.Attrs.Deserialize(params.AttributeValues)
 	e.AttrMu.Unlock()
 
-	e.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
+	go e.SaveState(events.EventStateChanged{
 		PluginName:  e.Id.PluginName(),
 		EntityId:    e.Id,
 		OldState:    oldState,
-		NewState:    e.GetEventState(e),
+		NewState:    e.GetEventState(),
 		StorageSave: params.StorageSave,
 	})
 
 	return nil
 }
 
-func (e *Actor) addAction(event events.EventCallAction) {
+func (e *Actor) addAction(event events.EventCallEntityAction) {
 	e.actionPool <- event
 }
 
-func (e *Actor) runAction(msg events.EventCallAction) {
+func (e *Actor) runAction(msg events.EventCallEntityAction) {
 	action, ok := e.Actions[msg.ActionName]
 	if !ok {
 		log.Warnf("action %s not found", msg.ActionName)
 		return
 	}
-	if _, err := action.ScriptEngine.AssertFunction(FuncEntityAction, msg.EntityId, action.Name); err != nil {
+	if _, err := action.ScriptEngine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
 		log.Error(err.Error())
 	}
 }

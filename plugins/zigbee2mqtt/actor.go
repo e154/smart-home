@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,78 +19,61 @@
 package zigbee2mqtt
 
 import (
+	"context"
 	"fmt"
+	"github.com/e154/smart-home/system/scripts"
 	"sync"
 
 	"github.com/e154/smart-home/common/events"
-
-	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 // Actor ...
 type Actor struct {
-	entity_manager.BaseActor
-	eventBus          bus.Bus
-	adaptors          *adaptors.Adaptors
-	scriptService     scripts.ScriptService
-	zigbee2mqttDevice *m.Zigbee2mqttDevice
+	supervisor.BaseActor
 	message           *Message
+	zigbee2mqttDevice *m.Zigbee2mqttDevice
 	mqttMessageQueue  chan *Message
-	actionPool        chan events.EventCallAction
+	actionPool        chan events.EventCallEntityAction
 	newMsgMu          *sync.Mutex
 	stateMu           *sync.Mutex
 }
 
 // NewActor ...
 func NewActor(entity *m.Entity,
-	params map[string]interface{},
-	adaptors *adaptors.Adaptors,
-	scriptService scripts.ScriptService,
-	entityManager entity_manager.EntityManager,
-	eventBus bus.Bus) (actor *Actor, err error) {
+	service supervisor.Service) (actor *Actor, err error) {
 
 	var zigbee2mqttDevice *m.Zigbee2mqttDevice
-	if zigbee2mqttDevice, err = adaptors.Zigbee2mqttDevice.GetById(entity.Id.Name()); err != nil {
-		return nil, err
+	if zigbee2mqttDevice, err = service.Adaptors().Zigbee2mqttDevice.GetById(context.Background(), entity.Id.Name()); err != nil {
+		return
 	}
 
 	actor = &Actor{
-		BaseActor:         entity_manager.NewBaseActor(entity, scriptService, adaptors),
-		eventBus:          eventBus,
-		adaptors:          adaptors,
-		scriptService:     scriptService,
-		zigbee2mqttDevice: zigbee2mqttDevice,
+		BaseActor:         supervisor.NewBaseActor(entity, service),
 		message:           NewMessage(),
 		mqttMessageQueue:  make(chan *Message, 10),
-		actionPool:        make(chan events.EventCallAction, 10),
+		actionPool:        make(chan events.EventCallEntityAction, 10),
 		newMsgMu:          &sync.Mutex{},
 		stateMu:           &sync.Mutex{},
+		zigbee2mqttDevice: zigbee2mqttDevice,
 	}
-
-	actor.Manager = entityManager
-	_, _ = actor.Attrs.Deserialize(params)
 
 	// Actions
 	for _, a := range actor.Actions {
-		if a.ScriptEngine != nil {
-			_, _ = a.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
-			a.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
-			_, _ = a.ScriptEngine.Do()
+		if a.ScriptEngine.Engine() != nil {
+			a.ScriptEngine.Engine().PushStruct("message", actor.message)
+			_, _ = a.ScriptEngine.Engine().Do()
 		}
 	}
 
-	if actor.ScriptEngine != nil {
-		// message
-		actor.ScriptEngine.PushStruct("message", actor.message)
-
-		// binds
-		_, _ = actor.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
-		actor.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
+	for _, engine := range actor.ScriptEngines {
+		engine.Spawn(func(engine *scripts.Engine) {
+			engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
+			engine.PushStruct("message", actor.message)
+			engine.Do()
+		})
 	}
 
 	// mqtt worker
@@ -110,30 +93,21 @@ func NewActor(entity *m.Entity,
 	return
 }
 
-// Spawn ...
-func (e *Actor) Spawn() entity_manager.PluginActor {
-	return e
+func (e *Actor) Destroy() {
+
+}
+
+func (e *Actor) Spawn() {
+
 }
 
 // SetState ...
-func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
-	if !e.setState(params) {
-		return nil
-	}
+func (e *Actor) SetState(params supervisor.EntityStateParams) error {
 
-	message := NewMessage()
-	message.NewState = params
-
-	e.mqttMessageQueue <- message
-
-	return nil
-}
-
-func (e *Actor) setState(params entity_manager.EntityStateParams) (changed bool) {
 	e.stateMu.Lock()
 	defer e.stateMu.Unlock()
 
-	oldState := e.GetEventState(e)
+	oldState := e.GetEventState()
 	now := e.Now(oldState)
 
 	if params.NewState != nil {
@@ -142,8 +116,10 @@ func (e *Actor) setState(params entity_manager.EntityStateParams) (changed bool)
 		}
 	}
 
-	e.AttrMu.Lock()
+	var changed bool
 	var err error
+
+	e.AttrMu.Lock()
 	if changed, err = e.Attrs.Deserialize(params.AttributeValues); !changed {
 		if err != nil {
 			log.Warn(err.Error())
@@ -154,21 +130,21 @@ func (e *Actor) setState(params entity_manager.EntityStateParams) (changed bool)
 			//fmt.Println("delta", delta)
 			if delta < 200 {
 				e.AttrMu.Unlock()
-				return
+				return nil
 			}
 		}
 	}
 	e.AttrMu.Unlock()
 
-	e.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
+	go e.SaveState(events.EventStateChanged{
 		PluginName:  e.Id.PluginName(),
 		EntityId:    e.Id,
 		OldState:    oldState,
-		NewState:    e.GetEventState(e),
+		NewState:    e.GetEventState(),
 		StorageSave: params.StorageSave,
 	})
 
-	return
+	return nil
 }
 
 func (e *Actor) mqttOnPublish(client mqtt.MqttCli, msg mqtt.Message) {
@@ -186,29 +162,28 @@ func (e *Actor) mqttNewMessage(message *Message) {
 	defer e.newMsgMu.Unlock()
 
 	e.message.Update(message)
-	if e.ScriptEngine == nil {
-		return
-	}
-	if _, err := e.ScriptEngine.AssertFunction(FuncZigbee2mqttEvent); err != nil {
-		log.Error(err.Error())
-		return
+	for _, engine := range e.ScriptEngines {
+		if _, err := engine.Engine().AssertFunction(FuncZigbee2mqttEvent); err != nil {
+			log.Error(err.Error())
+			return
+		}
 	}
 }
 
-func (e *Actor) addAction(event events.EventCallAction) {
+func (e *Actor) addAction(event events.EventCallEntityAction) {
 	e.actionPool <- event
 }
 
-func (e *Actor) runAction(msg events.EventCallAction) {
+func (e *Actor) runAction(msg events.EventCallEntityAction) {
 	action, ok := e.Actions[msg.ActionName]
 	if !ok {
 		log.Warnf("action %s not found", msg.ActionName)
 		return
 	}
-	if action.ScriptEngine == nil {
+	if action.ScriptEngine.Engine() == nil {
 		return
 	}
-	if _, err := action.ScriptEngine.AssertFunction(FuncEntityAction, msg.EntityId, action.Name); err != nil {
+	if _, err := action.ScriptEngine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
 		log.Error(err.Error())
 	}
 }

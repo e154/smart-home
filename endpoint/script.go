@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,6 +21,7 @@ package endpoint
 import (
 	"context"
 	"fmt"
+	"github.com/e154/smart-home/common/events"
 	"strconv"
 	"strings"
 
@@ -46,7 +47,7 @@ func NewScriptEndpoint(common *CommonEndpoint) *ScriptEndpoint {
 }
 
 // Add ...
-func (n *ScriptEndpoint) Add(ctx context.Context, params *m.Script) (result *m.Script, errs validator.ValidationErrorsTranslations, err error) {
+func (n *ScriptEndpoint) Add(ctx context.Context, params *m.Script) (script *m.Script, errs validator.ValidationErrorsTranslations, err error) {
 
 	var ok bool
 	if ok, errs = n.validation.Valid(params); !ok {
@@ -65,11 +66,18 @@ func (n *ScriptEndpoint) Add(ctx context.Context, params *m.Script) (result *m.S
 	}
 
 	var id int64
-	if id, err = n.adaptors.Script.Add(params); err != nil {
+	if id, err = n.adaptors.Script.Add(ctx, params); err != nil {
 		return
 	}
 
-	result, err = n.adaptors.Script.GetById(id)
+	if script, err = n.adaptors.Script.GetById(ctx, id); err != nil {
+		return
+	}
+
+	n.eventBus.Publish(fmt.Sprintf("system/scripts/%d", script.Id), events.EventCreatedScript{
+		ScriptId: script.Id,
+		Script:   script,
+	})
 
 	return
 }
@@ -77,7 +85,7 @@ func (n *ScriptEndpoint) Add(ctx context.Context, params *m.Script) (result *m.S
 // GetById ...
 func (n *ScriptEndpoint) GetById(ctx context.Context, scriptId int64) (result *m.Script, err error) {
 
-	result, err = n.adaptors.Script.GetById(scriptId)
+	result, err = n.adaptors.Script.GetById(ctx, scriptId)
 
 	return
 }
@@ -85,7 +93,7 @@ func (n *ScriptEndpoint) GetById(ctx context.Context, scriptId int64) (result *m
 // Copy ...
 func (n *ScriptEndpoint) Copy(ctx context.Context, scriptId int64) (script *m.Script, err error) {
 
-	script, err = n.adaptors.Script.GetById(scriptId)
+	script, err = n.adaptors.Script.GetById(ctx, scriptId)
 	if err != nil {
 		return
 	}
@@ -101,11 +109,18 @@ func (n *ScriptEndpoint) Copy(ctx context.Context, scriptId int64) (script *m.Sc
 	}
 
 	var id int64
-	if id, err = n.adaptors.Script.Add(script); err != nil {
+	if id, err = n.adaptors.Script.Add(ctx, script); err != nil {
 		return
 	}
 
-	script, err = n.adaptors.Script.GetById(id)
+	if script, err = n.adaptors.Script.GetById(ctx, id); err != nil {
+		return
+	}
+
+	n.eventBus.Publish(fmt.Sprintf("system/scripts/%d", script.Id), events.EventCreatedScript{
+		ScriptId: script.Id,
+		Script:   script,
+	})
 
 	return
 }
@@ -114,7 +129,7 @@ func (n *ScriptEndpoint) Copy(ctx context.Context, scriptId int64) (script *m.Sc
 func (n *ScriptEndpoint) Update(ctx context.Context, params *m.Script) (result *m.Script, errs validator.ValidationErrorsTranslations, err error) {
 
 	var script *m.Script
-	script, err = n.adaptors.Script.GetById(params.Id)
+	script, err = n.adaptors.Script.GetById(ctx, params.Id)
 	if err != nil {
 		return
 	}
@@ -140,19 +155,26 @@ func (n *ScriptEndpoint) Update(ctx context.Context, params *m.Script) (result *
 		return
 	}
 
-	if err = n.adaptors.Script.Update(script); err != nil {
+	if err = n.adaptors.Script.Update(ctx, script); err != nil {
 		return
 	}
 
-	result, err = n.adaptors.Script.GetById(script.Id)
+	if result, err = n.adaptors.Script.GetById(ctx, script.Id); err != nil {
+		return
+	}
+
+	n.eventBus.Publish(fmt.Sprintf("system/scripts/%d", script.Id), events.EventUpdatedScript{
+		ScriptId: script.Id,
+		Script:   script,
+	})
 
 	return
 }
 
 // GetList ...
-func (n *ScriptEndpoint) GetList(ctx context.Context, pagination common.PageParams) (result []*m.Script, total int64, err error) {
+func (n *ScriptEndpoint) GetList(ctx context.Context, pagination common.PageParams, query *string) (result []*m.Script, total int64, err error) {
 
-	result, total, err = n.adaptors.Script.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
+	result, total, err = n.adaptors.Script.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, query)
 
 	return
 }
@@ -166,12 +188,18 @@ func (n *ScriptEndpoint) DeleteScriptById(ctx context.Context, scriptId int64) (
 	}
 
 	var script *m.Script
-	script, err = n.adaptors.Script.GetById(scriptId)
+	script, err = n.adaptors.Script.GetById(ctx, scriptId)
 	if err != nil {
 		return
 	}
 
-	err = n.adaptors.Script.Delete(script.Id)
+	if err = n.adaptors.Script.Delete(ctx, script.Id); err != nil {
+		return
+	}
+
+	n.eventBus.Publish(fmt.Sprintf("system/scripts/%d", script.Id), events.EventScriptDeleted{
+		ScriptId: script.Id,
+	})
 
 	return
 }
@@ -180,7 +208,7 @@ func (n *ScriptEndpoint) DeleteScriptById(ctx context.Context, scriptId int64) (
 func (n *ScriptEndpoint) Execute(ctx context.Context, scriptId int64) (result string, err error) {
 
 	var script *m.Script
-	script, err = n.adaptors.Script.GetById(scriptId)
+	script, err = n.adaptors.Script.GetById(ctx, scriptId)
 	if err != nil {
 		return
 	}
@@ -224,7 +252,54 @@ func (n *ScriptEndpoint) ExecuteSource(ctx context.Context, script *m.Script) (r
 // Search ...
 func (n *ScriptEndpoint) Search(ctx context.Context, query string, limit, offset int64) (devices []*m.Script, total int64, err error) {
 
-	devices, total, err = n.adaptors.Script.Search(query, limit, offset)
+	devices, total, err = n.adaptors.Script.Search(ctx, query, limit, offset)
 
+	return
+}
+
+// Statistic ...
+func (n *ScriptEndpoint) Statistic(ctx context.Context) (statistic []*m.Statistic, err error) {
+	var stat *m.ScriptsStatistic
+	if stat, err = n.adaptors.Script.Statistic(ctx); err != nil {
+		return
+	}
+	statistic = []*m.Statistic{
+		{
+			Name:        "scripts.stat_total_name",
+			Description: "scripts.stat_total_descr",
+			Value:       stat.Total,
+			Diff:        0,
+		},
+		{
+			Name:        "scripts.stat_used_name",
+			Description: "scripts.stat_used_descr",
+			Value:       stat.Used,
+			Diff:        0,
+		},
+		{
+			Name:        "scripts.stat_unused_name",
+			Description: "scripts.stat_unused_descr",
+			Value:       stat.Unused,
+			Diff:        0,
+		},
+		{
+			Name:        "scripts.stat_js_name",
+			Description: "scripts.stat_js_descr",
+			Value:       stat.JavaScript,
+			Diff:        0,
+		},
+		{
+			Name:        "scripts.stat_cs_name",
+			Description: "scripts.stat_cs_descr",
+			Value:       stat.CoffeeScript,
+			Diff:        0,
+		},
+		{
+			Name:        "scripts.stat_ts_name",
+			Description: "scripts.stat_ts_descr",
+			Value:       stat.TypeScript,
+			Diff:        0,
+		},
+	}
 	return
 }

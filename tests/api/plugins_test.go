@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -31,9 +31,7 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api/controllers"
 	gw "github.com/e154/smart-home/api/stub/api"
-	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
 )
@@ -44,14 +42,12 @@ func TestPlugins(t *testing.T) {
 		err := container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService,
-			entityManager entity_manager.EntityManager,
 			eventBus bus.Bus,
-			pluginManager common.PluginManager,
 			controllers *controllers.Controllers,
 			dialer *container2.Dialer) {
 
 			eventBus.Purge()
-			scriptService.Purge()
+			scriptService.Restart()
 
 			err := migrations.Purge()
 			ctx.So(err, ShouldBeNil)

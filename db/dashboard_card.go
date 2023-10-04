@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,13 +19,15 @@
 package db
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/e154/smart-home/common"
 	"time"
 
-	"github.com/jinzhu/gorm"
+	"github.com/e154/smart-home/common"
+
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 
 	"github.com/e154/smart-home/common/apperr"
 )
@@ -60,8 +62,8 @@ func (d *DashboardCard) TableName() string {
 }
 
 // Add ...
-func (n DashboardCards) Add(card *DashboardCard) (id int64, err error) {
-	if err = n.Db.Create(&card).Error; err != nil {
+func (n DashboardCards) Add(ctx context.Context, card *DashboardCard) (id int64, err error) {
+	if err = n.Db.WithContext(ctx).Create(&card).Error; err != nil {
 		err = errors.Wrap(apperr.ErrDashboardCardAdd, err.Error())
 		return
 	}
@@ -70,9 +72,9 @@ func (n DashboardCards) Add(card *DashboardCard) (id int64, err error) {
 }
 
 // GetById ...
-func (n DashboardCards) GetById(id int64) (card *DashboardCard, err error) {
+func (n DashboardCards) GetById(ctx context.Context, id int64) (card *DashboardCard, err error) {
 	card = &DashboardCard{Id: id}
-	err = n.Db.Model(card).
+	err = n.Db.WithContext(ctx).Model(card).
 		Preload("Items").
 		First(&card).
 		Error
@@ -88,7 +90,7 @@ func (n DashboardCards) GetById(id int64) (card *DashboardCard, err error) {
 }
 
 // Update ...
-func (n DashboardCards) Update(m *DashboardCard) (err error) {
+func (n DashboardCards) Update(ctx context.Context, m *DashboardCard) (err error) {
 	q := map[string]interface{}{
 		"title":            m.Title,
 		"height":           m.Height,
@@ -102,30 +104,30 @@ func (n DashboardCards) Update(m *DashboardCard) (err error) {
 		"entity_id":        m.EntityId,
 	}
 
-	if err = n.Db.Model(&DashboardCard{Id: m.Id}).Updates(q).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(&DashboardCard{Id: m.Id}).Updates(q).Error; err != nil {
 		err = errors.Wrap(apperr.ErrDashboardCardUpdate, err.Error())
 	}
 	return
 }
 
 // Delete ...
-func (n DashboardCards) Delete(id int64) (err error) {
-	if err = n.Db.Delete(&DashboardCard{Id: id}).Error; err != nil {
+func (n DashboardCards) Delete(ctx context.Context, id int64) (err error) {
+	if err = n.Db.WithContext(ctx).Delete(&DashboardCard{Id: id}).Error; err != nil {
 		err = errors.Wrap(apperr.ErrDashboardCardDelete, err.Error())
 	}
 	return
 }
 
 // List ...
-func (n *DashboardCards) List(limit, offset int64, orderBy, sort string) (list []*DashboardCard, total int64, err error) {
+func (n *DashboardCards) List(ctx context.Context, limit, offset int, orderBy, sort string) (list []*DashboardCard, total int64, err error) {
 
-	if err = n.Db.Model(DashboardCard{}).Count(&total).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(DashboardCard{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrDashboardCardList, err.Error())
 		return
 	}
 
 	list = make([]*DashboardCard, 0)
-	q := n.Db.Model(&DashboardCard{}).
+	q := n.Db.WithContext(ctx).Model(&DashboardCard{}).
 		Preload("Items").
 		Limit(limit).
 		Offset(offset)

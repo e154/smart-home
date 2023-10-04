@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,14 +19,18 @@
 package db
 
 import (
+	"context"
 	"fmt"
+	"github.com/jackc/pgerrcode"
+	"github.com/jackc/pgx/v5/pgconn"
+	"strings"
 	"time"
 
 	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/e154/smart-home/common"
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // EntityActions ...
@@ -57,8 +61,20 @@ func (d *EntityAction) TableName() string {
 }
 
 // Add ...
-func (n EntityActions) Add(v *EntityAction) (id int64, err error) {
-	if err = n.Db.Create(&v).Error; err != nil {
+func (n EntityActions) Add(ctx context.Context, v *EntityAction) (id int64, err error) {
+	if err = n.Db.WithContext(ctx).Create(&v).Error; err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case pgerrcode.UniqueViolation:
+				if strings.Contains(pgErr.Message, "name_at_entity_actions_unq") {
+					err = errors.Wrap(apperr.ErrEntityActionAdd, fmt.Sprintf("action name \"%s\" not unique", v.Name))
+					return
+				}
+			default:
+				fmt.Printf("unknown code \"%s\"\n", pgErr.Code)
+			}
+		}
 		err = errors.Wrap(apperr.ErrEntityActionAdd, err.Error())
 		return
 	}
@@ -67,9 +83,9 @@ func (n EntityActions) Add(v *EntityAction) (id int64, err error) {
 }
 
 // GetById ...
-func (n EntityActions) GetById(id int64) (v *EntityAction, err error) {
+func (n EntityActions) GetById(ctx context.Context, id int64) (v *EntityAction, err error) {
 	v = &EntityAction{Id: id}
-	if err = n.Db.First(&v).Error; err != nil {
+	if err = n.Db.WithContext(ctx).First(&v).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			err = errors.Wrap(apperr.ErrEntityActionNotFound, fmt.Sprintf("id \"%d\"", id))
 			return
@@ -80,8 +96,8 @@ func (n EntityActions) GetById(id int64) (v *EntityAction, err error) {
 }
 
 // Update ...
-func (n EntityActions) Update(m *EntityAction) (err error) {
-	err = n.Db.Model(&EntityAction{Id: m.Id}).Updates(map[string]interface{}{
+func (n EntityActions) Update(ctx context.Context, m *EntityAction) (err error) {
+	err = n.Db.WithContext(ctx).Model(&EntityAction{Id: m.Id}).Updates(map[string]interface{}{
 		"name":        m.Name,
 		"description": m.Description,
 		"icon":        m.Icon,
@@ -92,29 +108,41 @@ func (n EntityActions) Update(m *EntityAction) (err error) {
 	}).Error
 
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case pgerrcode.UniqueViolation:
+				if strings.Contains(pgErr.Message, "name_at_entity_actions_unq") {
+					err = errors.Wrap(apperr.ErrEntityActionUpdate, fmt.Sprintf("action name \"%s\" not unique", m.Name))
+					return
+				}
+			default:
+				fmt.Printf("unknown code \"%s\"\n", pgErr.Code)
+			}
+		}
 		err = errors.Wrap(apperr.ErrEntityActionUpdate, err.Error())
 	}
 	return
 }
 
 // DeleteByEntityId ...
-func (n EntityActions) DeleteByEntityId(deviceId common.EntityId) (err error) {
-	if err = n.Db.Delete(&EntityAction{}, "entity_id = ?", deviceId).Error; err != nil {
+func (n EntityActions) DeleteByEntityId(ctx context.Context, deviceId common.EntityId) (err error) {
+	if err = n.Db.WithContext(ctx).Delete(&EntityAction{}, "entity_id = ?", deviceId).Error; err != nil {
 		err = errors.Wrap(apperr.ErrEntityActionDelete, err.Error())
 	}
 	return
 }
 
 // List ...
-func (n *EntityActions) List(limit, offset int64, orderBy, sort string) (list []*EntityAction, total int64, err error) {
+func (n *EntityActions) List(ctx context.Context, limit, offset int, orderBy, sort string) (list []*EntityAction, total int64, err error) {
 
-	if err = n.Db.Model(EntityAction{}).Count(&total).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(EntityAction{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrEntityActionList, err.Error())
 		return
 	}
 
 	list = make([]*EntityAction, 0)
-	err = n.Db.
+	err = n.Db.WithContext(ctx).
 		Limit(limit).
 		Offset(offset).
 		Order(fmt.Sprintf("%s %s", sort, orderBy)).
@@ -123,6 +151,26 @@ func (n *EntityActions) List(limit, offset int64, orderBy, sort string) (list []
 
 	if err != nil {
 		err = errors.Wrap(apperr.ErrEntityActionList, err.Error())
+	}
+	return
+}
+
+// AddMultiple ...
+func (n *EntityActions) AddMultiple(ctx context.Context, actions []*EntityAction) (err error) {
+	if err = n.Db.WithContext(ctx).Create(&actions).Error; err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case pgerrcode.UniqueViolation:
+				if strings.Contains(pgErr.Message, "name_at_entity_states_unq") {
+					err = errors.Wrap(apperr.ErrEntityActionAdd, "multiple insert")
+					return
+				}
+			default:
+				fmt.Printf("unknown code \"%s\"\n", pgErr.Code)
+			}
+		}
+		err = errors.Wrap(apperr.ErrEntityActionAdd, err.Error())
 	}
 	return
 }

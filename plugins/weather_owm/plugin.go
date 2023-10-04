@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,20 +19,12 @@
 package weather_owm
 
 import (
-	"fmt"
-	"sync"
-
-	"github.com/pkg/errors"
-
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/apperr"
+	"context"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/weather"
-	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/plugins"
 	"github.com/e154/smart-home/system/scheduler"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 const (
@@ -44,57 +36,58 @@ var (
 	log = logger.MustGetLogger("plugins.owm")
 )
 
-var _ plugins.Plugable = (*plugin)(nil)
+var _ supervisor.Pluggable = (*plugin)(nil)
 
 func init() {
-	plugins.RegisterPlugin(Name, New)
+	supervisor.RegisterPlugin(Name, New)
 }
 
 type plugin struct {
-	*plugins.Plugin
-	actorsLock *sync.Mutex
-	actors     map[common.EntityId]*Actor
-	service    common.PluginManager
-	weather    *WeatherOwm
-	task       scheduler.EntryID
+	*supervisor.Plugin
+	weather *WeatherOwm
+	task    scheduler.EntryID
 }
 
 // New ...
-func New() plugins.Plugable {
+func New() supervisor.Pluggable {
 	return &plugin{
-		Plugin:     plugins.NewPlugin(),
-		actorsLock: &sync.Mutex{},
-		actors:     make(map[common.EntityId]*Actor),
+		Plugin: supervisor.NewPlugin(),
 	}
 }
 
 // Load ...
-func (p *plugin) Load(service plugins.Service) (err error) {
-	if err = p.Plugin.Load(service); err != nil {
+func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
+	if err = p.Plugin.Load(ctx, service, p.ActorConstructor); err != nil {
 		return
 	}
 
-	_ = p.EventBus.Subscribe(bus.TopicEntities, p.eventHandler)
+	_ = p.Service.EventBus().Subscribe("system/entities/+", p.eventHandler)
 
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-	p.task, err = p.Scheduler.AddFunc("0 */30 * * * *", func() {
-		for _, actor := range p.actors {
+	p.task, err = p.Service.Scheduler().AddFunc("0 */30 * * * *", func() {
+		p.Actors.Range(func(key, value any) bool {
+			actor := value.(*Actor)
 			actor.update()
-		}
+			return true
+		})
 	})
 
 	return
 }
 
 // Unload ...
-func (p *plugin) Unload() (err error) {
-	if err = p.Plugin.Unload(); err != nil {
+func (p *plugin) Unload(ctx context.Context) (err error) {
+	if err = p.Plugin.Unload(ctx); err != nil {
 		return
 	}
-	p.Scheduler.Remove(p.task)
-	_ = p.EventBus.Unsubscribe(bus.TopicEntities, p.eventHandler)
+	p.Service.Scheduler().Remove(p.task)
+	_ = p.Service.EventBus().Unsubscribe("system/entities/+", p.eventHandler)
 	return nil
+}
+
+// ActorConstructor ...
+func (p *plugin) ActorConstructor(entity *m.Entity) (actor supervisor.PluginActor, err error) {
+	actor = NewActor(entity, p.Service)
+	return
 }
 
 // Name ...
@@ -106,44 +99,9 @@ func (p *plugin) eventHandler(_ string, msg interface{}) {
 
 }
 
-// AddOrUpdateActor ...
-func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	if _, ok := p.actors[entity.Id]; ok {
-		return
-	}
-
-	actor := NewActor(entity, p.EntityManager, p.Adaptors, p.ScriptService, p.EventBus, p.Crawler)
-	p.actors[entity.Id] = actor
-	p.EntityManager.Spawn(actor.Spawn)
-
-	return
-}
-
-// RemoveActor ...
-func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
-
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	actor, ok := p.actors[entityId]
-	if !ok {
-		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("failed remove \"%s\"", entityId))
-		return
-	}
-
-	actor.destroy()
-
-	delete(p.actors, entityId)
-
-	return
-}
-
 // Type ...
-func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginInstallable
+func (p *plugin) Type() supervisor.PluginType {
+	return supervisor.PluginInstallable
 }
 
 // Depends ...
@@ -161,7 +119,7 @@ func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
 		Actors:      true,
 		ActorAttrs:  weather.BaseForecast(),
-		ActorStates: entity_manager.ToEntityStateShort(weather.NewActorStates(false, false)),
+		ActorStates: supervisor.ToEntityStateShort(weather.NewActorStates(false, false)),
 		ActorSetts:  NewSettings(),
 	}
 }

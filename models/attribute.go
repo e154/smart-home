@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -28,6 +28,7 @@ import (
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/debug"
+	"github.com/e154/smart-home/common/encryptor"
 )
 
 // Attribute ...
@@ -44,6 +45,19 @@ func (a Attribute) String() string {
 	}
 	if value, ok := a.Value.(string); ok {
 		return value
+	}
+	return fmt.Sprintf("%v", a.Value)
+}
+
+// Decrypt ...
+func (a Attribute) Decrypt() string {
+	if a.Value == nil {
+		return ""
+	}
+	if value, ok := a.Value.(string); ok {
+		if str, err := encryptor.Decrypt(value); err == nil {
+			return str
+		}
 	}
 	return fmt.Sprintf("%v", a.Value)
 }
@@ -76,7 +90,10 @@ func (a Attribute) Int64() int64 {
 }
 
 // Time ...
-func (a Attribute) Time() time.Time {
+func (a *Attribute) Time() time.Time {
+	if a == nil || a.Value == nil {
+		return time.Time{}
+	}
 	if value, ok := a.Value.(time.Time); ok {
 		return value
 	}
@@ -89,8 +106,8 @@ func (a Attribute) Time() time.Time {
 }
 
 // Bool ...
-func (a Attribute) Bool() bool {
-	if a.Value == nil {
+func (a *Attribute) Bool() bool {
+	if a == nil || a.Value == nil {
 		return false
 	}
 	if value, ok := a.Value.(bool); ok {
@@ -100,8 +117,8 @@ func (a Attribute) Bool() bool {
 }
 
 // Float64 ...
-func (a Attribute) Float64() float64 {
-	if a.Value == nil {
+func (a *Attribute) Float64() float64 {
+	if a == nil || a.Value == nil {
 		return 0
 	}
 	if value, ok := a.Value.(float64); ok {
@@ -118,6 +135,19 @@ func (a Attribute) Map() Attributes {
 	return nil
 }
 
+// Point ...
+func (a Attribute) Point() (point Point) {
+	if a.Value == nil {
+		return
+	}
+	if value, ok := a.Value.([]interface{}); ok {
+		point.Lat, _ = strconv.ParseFloat(fmt.Sprintf("%v", value[1]), 64)
+		point.Lon, _ = strconv.ParseFloat(fmt.Sprintf("%v", value[0]), 64)
+		return
+	}
+	return
+}
+
 // AttributeValue ...
 type AttributeValue map[string]interface{}
 
@@ -130,51 +160,53 @@ func (a Attributes) Serialize() (to AttributeValue) {
 	var serialize func(from Attributes, to AttributeValue)
 	serialize = func(from Attributes, to AttributeValue) {
 
-		for kFrom, vFrom := range from {
-			switch vFrom.Type {
+		for keyFrom, valueFromRaw := range from {
+			switch valueFromRaw.Type {
 			case common.AttributeString:
 			case common.AttributeInt:
 			case common.AttributeTime:
 			case common.AttributeBool:
 			case common.AttributeFloat:
 			case common.AttributeImage:
+			case common.AttributePoint:
+			case common.AttributeEncrypted:
 			case common.AttributeArray:
 
 				arr := make([]interface{}, 0)
 
-				if attrs, ok := vFrom.Value.([]interface{}); ok {
-					for _, attr := range attrs {
-						switch t5 := attr.(type) {
+				if valueRawList, ok := valueFromRaw.Value.([]interface{}); ok {
+					for _, valueRaw := range valueRawList {
+						switch value := valueRaw.(type) {
 						case float64, float32:
 						case int64, int32:
 						case Attributes:
-							t12 := AttributeValue{}
-							serialize(t5, t12)
-							arr = append(arr, t12)
+							attr := AttributeValue{}
+							serialize(value, attr)
+							arr = append(arr, attr)
 							continue
 						default:
-							log.Warnf("unknown type %s", reflect.TypeOf(t5).String())
+							log.Warnf("unknown type %s", reflect.TypeOf(value).String())
 						}
-						arr = append(arr, attr)
+						arr = append(arr, valueRaw)
 					}
 				}
 
-				to[kFrom] = arr
+				to[keyFrom] = arr
 
 				continue
 			case common.AttributeMap:
-				if t6, ok := vFrom.Value.(Attributes); ok {
-					to2 := AttributeValue{}
-					serialize(t6, to2)
-					to[kFrom] = to2
+				if attrs, ok := valueFromRaw.Value.(Attributes); ok {
+					attr := AttributeValue{}
+					serialize(attrs, attr)
+					to[keyFrom] = attr
 				}
 				continue
 			default:
-				log.Warnf("unknown type %s", vFrom.Type)
+				log.Warnf("unknown type %s", valueFromRaw.Type)
 				continue
 			}
 
-			to[kFrom] = vFrom.Value
+			to[keyFrom] = valueFromRaw.Value
 		}
 	}
 
@@ -190,14 +222,14 @@ func (a Attributes) Deserialize(data AttributeValue) (changed bool, err error) {
 	var deserialize func(from AttributeValue, to Attributes)
 	deserialize = func(from AttributeValue, to Attributes) {
 
-		for kFrom, vFrom := range from {
-			if vFrom == nil {
+		for keyFrom, valueFromRaw := range from {
+			if valueFromRaw == nil {
 				continue
 			}
-			switch vFromCasted := vFrom.(type) {
+			switch valueFrom := valueFromRaw.(type) {
 			case map[string]interface{}:
-				if _, ok := to[kFrom]; ok {
-					switch value := to[kFrom].Value.(type) {
+				if _, ok := to[keyFrom]; ok {
+					switch value := to[keyFrom].Value.(type) {
 					case map[string]interface{}:
 						attrs := make(Attributes)
 						for k, values := range value {
@@ -205,24 +237,24 @@ func (a Attributes) Deserialize(data AttributeValue) (changed bool, err error) {
 								attrs[k] = &Attribute{
 									Name:  val["name"].(string),
 									Type:  common.AttributeType(val["type"].(string)),
-									Value: vFromCasted[k],
+									Value: valueFrom[k],
 								}
 							}
 						}
-						deserialize(vFromCasted, attrs)
-						to[kFrom].Value = attrs
+						deserialize(valueFrom, attrs)
+						to[keyFrom].Value = attrs
 
 					case Attributes:
-						deserialize(vFromCasted, value)
+						deserialize(valueFrom, value)
 					default:
-						log.Warnf("unknown type %s (%v)", reflect.TypeOf(to[kFrom].Value).String(), vFrom)
+						log.Warnf("unknown type %s (%v)", reflect.TypeOf(to[keyFrom].Value).String(), valueFromRaw)
 					}
 				}
 				continue
 			case AttributeValue:
-				if _, ok := to[kFrom]; ok {
-					if attrs, ok := to[kFrom].Value.(Attributes); ok {
-						deserialize(vFromCasted, attrs)
+				if _, ok := to[keyFrom]; ok {
+					if attrs, ok := to[keyFrom].Value.(Attributes); ok {
+						deserialize(valueFrom, attrs)
 					}
 				}
 				continue
@@ -235,55 +267,55 @@ func (a Attributes) Deserialize(data AttributeValue) (changed bool, err error) {
 
 				var arr []interface{}
 
-				for i, t5 := range vFromCasted {
+				for i, valueRaw := range valueFrom {
 
-					switch t4 := t5.(type) {
+					switch value := valueRaw.(type) {
 					case int64, int32:
 					case float64, float32:
 					case bool:
 					case time.Time:
 					case AttributeValue:
-						if t2, ok := to[kFrom].Value.([]Attributes); ok {
-							if len(t2) == 0 || len(t2) < i {
+						if items, ok := to[keyFrom].Value.([]Attributes); ok {
+							if len(items) == 0 || len(items) < i {
 								continue
 							}
-							deserialize(t4, t2[i])
-							arr = append(arr, t2[i])
+							deserialize(value, items[i])
+							arr = append(arr, items[i])
 						}
 						continue
 					case map[string]interface{}:
-						if t2, ok := to[kFrom].Value.([]Attributes); ok {
-							if len(t2) == 0 || len(t2) < i {
+						if items, ok := to[keyFrom].Value.([]Attributes); ok {
+							if len(items) == 0 || len(items) < i {
 								continue
 							}
-							deserialize(t4, t2[i])
-							arr = append(arr, t2[i])
+							deserialize(value, items[i])
+							arr = append(arr, items[i])
 						}
 						continue
 					default:
-						log.Warnf("unknown type %s", reflect.TypeOf(t5).String())
+						log.Warnf("unknown type %s", reflect.TypeOf(valueRaw).String())
 					}
-					arr = append(arr, t5)
+					arr = append(arr, valueRaw)
 
 				}
 
-				t3 := to[kFrom]
-				t3.Value = arr
-				to[kFrom] = t3
+				value := to[keyFrom]
+				value.Value = arr
+				to[keyFrom] = value
 
 				continue
 			default:
-				log.Warnf("unknown type %s (%v)", reflect.TypeOf(vFrom).String(), vFrom)
+				log.Warnf("unknown type %s (%v)", reflect.TypeOf(valueFromRaw).String(), valueFromRaw)
 			}
 
-			if v, ok := to[kFrom]; ok {
-				to[kFrom] = &Attribute{
+			if v, ok := to[keyFrom]; ok {
+				to[keyFrom] = &Attribute{
 					Name:  v.Name,
 					Type:  v.Type,
-					Value: vFrom,
+					Value: valueFromRaw,
 				}
 
-				if fmt.Sprintf("%v", vFrom) != fmt.Sprintf("%v", v.Value) {
+				if fmt.Sprintf("%v", valueFromRaw) != fmt.Sprintf("%v", v.Value) {
 					changed = true
 				}
 			}
@@ -309,6 +341,8 @@ func (a Attributes) Signature() (signature Attributes) {
 			case common.AttributeBool:
 			case common.AttributeFloat:
 			case common.AttributeImage:
+			case common.AttributePoint:
+			case common.AttributeEncrypted:
 			case common.AttributeArray:
 
 				if attrs, ok := vFrom.Value.([]interface{}); ok {
@@ -396,6 +430,8 @@ func (a Attribute) Compare(b *Attribute) (ident bool) {
 	case common.AttributeBool:
 	case common.AttributeFloat:
 	case common.AttributeImage:
+	case common.AttributePoint:
+	case common.AttributeEncrypted:
 	case common.AttributeArray:
 		return
 	}
@@ -409,4 +445,5 @@ func init() {
 	gob.Register(time.Time{})
 	gob.Register(Attributes{})
 	gob.Register(map[string]interface{}{})
+	gob.Register([]interface{}{})
 }

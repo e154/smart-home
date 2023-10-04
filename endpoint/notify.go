@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -67,7 +67,7 @@ func (n *NotifyEndpoint) Send(ctx context.Context, params *m.NewNotifrMessage) (
 
 	var render *m.TemplateRender
 	if params.BodyType == "template" && params.Template != nil && params.Params != nil {
-		if render, err = n.adaptors.Template.Render(common.StringValue(params.Template), params.Params); err != nil {
+		if render, err = n.adaptors.Template.Render(ctx, common.StringValue(params.Template), params.Params); err != nil {
 			return
 		}
 	}

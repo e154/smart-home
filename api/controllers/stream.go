@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,8 @@
 package controllers
 
 import (
+	"context"
+
 	"github.com/e154/smart-home/api/stub/api"
 )
 
@@ -36,5 +38,5 @@ func NewControllerStream(common *ControllerCommon) ControllerStream {
 
 // Subscribe ...
 func (a ControllerStream) Subscribe(server api.StreamService_SubscribeServer) error {
-	return a.endpoint.Stream.Subscribe(server)
+	return a.endpoint.Stream.Subscribe(context.Background(), server)
 }

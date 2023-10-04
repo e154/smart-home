@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,18 +19,20 @@
 package adaptors
 
 import (
+	"context"
+
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type IDashboardCard interface {
-	Add(ver *m.DashboardCard) (id int64, err error)
-	GetById(mapId int64) (ver *m.DashboardCard, err error)
-	Update(ver *m.DashboardCard) (err error)
-	Delete(id int64) (err error)
-	Import(card *m.DashboardCard) (cardId int64, err error)
-	List(limit, offset int64, orderBy, sort string) (list []*m.DashboardCard, total int64, err error)
+	Add(ctx context.Context, ver *m.DashboardCard) (id int64, err error)
+	GetById(ctx context.Context, mapId int64) (ver *m.DashboardCard, err error)
+	Update(ctx context.Context, ver *m.DashboardCard) (err error)
+	Delete(ctx context.Context, id int64) (err error)
+	Import(ctx context.Context, card *m.DashboardCard) (cardId int64, err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.DashboardCard, total int64, err error)
 	fromDb(dbVer *db.DashboardCard) (ver *m.DashboardCard)
 	toDb(ver *m.DashboardCard) (dbVer *db.DashboardCard)
 }
@@ -51,17 +53,17 @@ func GetDashboardCardAdaptor(d *gorm.DB) IDashboardCard {
 }
 
 // Add ...
-func (n *DashboardCard) Add(ver *m.DashboardCard) (id int64, err error) {
+func (n *DashboardCard) Add(ctx context.Context, ver *m.DashboardCard) (id int64, err error) {
 	dbVer := n.toDb(ver)
-	id, err = n.table.Add(dbVer)
+	id, err = n.table.Add(ctx, dbVer)
 	return
 }
 
 // GetById ...
-func (n *DashboardCard) GetById(mapId int64) (ver *m.DashboardCard, err error) {
+func (n *DashboardCard) GetById(ctx context.Context, mapId int64) (ver *m.DashboardCard, err error) {
 
 	var dbVer *db.DashboardCard
-	if dbVer, err = n.table.GetById(mapId); err != nil {
+	if dbVer, err = n.table.GetById(ctx, mapId); err != nil {
 		return
 	}
 
@@ -71,7 +73,7 @@ func (n *DashboardCard) GetById(mapId int64) (ver *m.DashboardCard, err error) {
 }
 
 // Update ...
-func (n *DashboardCard) Update(ver *m.DashboardCard) (err error) {
+func (n *DashboardCard) Update(ctx context.Context, ver *m.DashboardCard) (err error) {
 
 	transaction := true
 	tx := n.db.Begin()
@@ -92,14 +94,14 @@ func (n *DashboardCard) Update(ver *m.DashboardCard) (err error) {
 	table := db.DashboardCards{Db: tx}
 
 	dbVer := n.toDb(ver)
-	if err = table.Update(dbVer); err != nil {
+	if err = table.Update(ctx, dbVer); err != nil {
 		return
 	}
 
 	// items
 	itemAdaptor := GetDashboardCardItemAdaptor(tx)
 	for _, item := range ver.Items {
-		if err = itemAdaptor.Update(item); err != nil {
+		if err = itemAdaptor.Update(ctx, item); err != nil {
 			return
 		}
 	}
@@ -108,13 +110,13 @@ func (n *DashboardCard) Update(ver *m.DashboardCard) (err error) {
 }
 
 // Delete ...
-func (n *DashboardCard) Delete(id int64) (err error) {
-	err = n.table.Delete(id)
+func (n *DashboardCard) Delete(ctx context.Context, id int64) (err error) {
+	err = n.table.Delete(ctx, id)
 	return
 }
 
 // Import ...
-func (n *DashboardCard) Import(card *m.DashboardCard) (cardId int64, err error) {
+func (n *DashboardCard) Import(ctx context.Context, card *m.DashboardCard) (cardId int64, err error) {
 
 	transaction := true
 	tx := n.db.Begin()
@@ -138,7 +140,7 @@ func (n *DashboardCard) Import(card *m.DashboardCard) (cardId int64, err error) 
 	card.Id = 0
 	card.Title = card.Title + " [IMPORTED]"
 
-	if cardId, err = cardAdaptor.Add(card); err != nil {
+	if cardId, err = cardAdaptor.Add(ctx, card); err != nil {
 		return
 	}
 
@@ -147,7 +149,7 @@ func (n *DashboardCard) Import(card *m.DashboardCard) (cardId int64, err error) 
 		for _, item := range card.Items {
 			item.Id = 0
 			item.DashboardCardId = cardId
-			if _, err = cardItemAdaptor.Add(item); err != nil {
+			if _, err = cardItemAdaptor.Add(ctx, item); err != nil {
 				return
 			}
 		}
@@ -157,7 +159,7 @@ func (n *DashboardCard) Import(card *m.DashboardCard) (cardId int64, err error) 
 }
 
 // List ...
-func (n *DashboardCard) List(limit, offset int64, orderBy, sort string) (list []*m.DashboardCard, total int64, err error) {
+func (n *DashboardCard) List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.DashboardCard, total int64, err error) {
 
 	if sort == "" {
 		sort = "name"
@@ -167,7 +169,7 @@ func (n *DashboardCard) List(limit, offset int64, orderBy, sort string) (list []
 	}
 
 	var dbList []*db.DashboardCard
-	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
+	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort); err != nil {
 		return
 	}
 

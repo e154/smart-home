@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,7 @@
 package alexa
 
 import (
+	"context"
 	"net/http"
 	"os"
 	"sync"
@@ -107,7 +108,7 @@ func (s *Server) Start() {
 
 func (s *Server) init() {
 
-	list, err := s.adaptors.AlexaSkill.ListEnabled(999, 0)
+	list, err := s.adaptors.AlexaSkill.ListEnabled(context.Background(), 999, 0)
 	if err != nil {
 		log.Error(err.Error())
 		return

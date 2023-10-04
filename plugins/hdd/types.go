@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,7 @@ package hdd
 import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 const (
@@ -129,11 +129,31 @@ func NewSettings() map[string]*m.Attribute {
 }
 
 // entity action list
-func NewActions() map[string]entity_manager.ActorAction {
-	return map[string]entity_manager.ActorAction{
+func NewActions() map[string]supervisor.ActorAction {
+	return map[string]supervisor.ActorAction{
 		ActionCheck: {
 			Name:        ActionCheck,
 			Description: "check disk",
+		},
+	}
+}
+
+func NewMetrics() []*m.Metric {
+	return []*m.Metric{
+		{
+			Name:        "hdd_usage",
+			Description: "HDD usage",
+			Options: m.MetricOptions{
+				Items: []m.MetricOptionsItem{
+					{
+						Name:        "used_percent",
+						Description: "used percent",
+						Color:       "#C2C2C2",
+						Translate:   "",
+						Label:       "%",
+					},
+				},
+			},
 		},
 	}
 }

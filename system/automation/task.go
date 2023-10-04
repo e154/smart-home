@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,48 +19,42 @@
 package automation
 
 import (
+	"context"
 	"fmt"
-	"github.com/e154/smart-home/common"
+	"sync"
 
-	"github.com/e154/smart-home/common/apperr"
-
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/plugins/triggers"
-	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/scripts"
-	"github.com/pkg/errors"
 	"go.uber.org/atomic"
+
+	"github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/common/telemetry"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/bus"
+	"github.com/e154/smart-home/system/scripts"
 )
 
 // Task ...
 type Task struct {
 	model          *m.Task
-	automation     *automation
+	eventBus       bus.Bus
 	conditionGroup *ConditionGroup
-	actions        map[string]*Action
+	actions        map[int64]*Action
 	script         *scripts.Engine
 	enabled        atomic.Bool
 	scriptService  scripts.ScriptService
-	entityManager  entity_manager.EntityManager
-	triggers       map[string]*Trigger
-	rawPlugin      triggers.IGetTrigger
+	sync.Mutex
+	telemetry telemetry.Telemetry
 }
 
 // NewTask ...
-func NewTask(automation *automation,
+func NewTask(eventBus bus.Bus,
 	scriptService scripts.ScriptService,
-	model *m.Task,
-	entityManager entity_manager.EntityManager,
-	rawPlugin triggers.IGetTrigger) *Task {
+	model *m.Task) *Task {
 	return &Task{
 		model:         model,
-		automation:    automation,
+		eventBus:      eventBus,
 		enabled:       atomic.Bool{},
 		scriptService: scriptService,
-		entityManager: entityManager,
-		triggers:      make(map[string]*Trigger),
-		actions:       make(map[string]*Action),
-		rawPlugin:     rawPlugin,
+		actions:       make(map[int64]*Action),
 	}
 }
 
@@ -74,36 +68,55 @@ func (t *Task) Name() string {
 	return t.model.Name
 }
 
-func (t *Task) addTrigger(model *m.Trigger) (err error) {
+func (t *Task) triggerHandler(_ string, msg interface{}) {
 
-	if _, ok := t.triggers[model.Name]; ok {
-		err = errors.Wrap(apperr.ErrInternal, fmt.Sprintf("trigger %s exist", model.Name))
+	if t == nil || !t.enabled.Load() {
 		return
 	}
 
-	var tr *Trigger
-	if tr, err = NewTrigger(t.scriptService, t.model.Name, model, t.rawPlugin, t.triggerHandler); err != nil {
-		log.Error(err.Error())
-		return
-	}
+	switch v := msg.(type) {
+	case events.EventTriggerCompleted:
+		taskCtx, taskSpan := telemetry.Start(v.Ctx, "task")
+		taskSpan.SetAttributes("id", t.model.Id)
 
-	t.triggers[model.Name] = tr
+		var actionCtx context.Context
+		defer func() {
+			taskSpan.End()
 
-	_ = tr.Start()
+			t.Lock()
+			t.telemetry = telemetry.Unpack(actionCtx)
+			t.Unlock()
+		}()
 
-	return
-}
-
-func (t *Task) triggerHandler(entityId *common.EntityId) {
-	result, err := t.conditionGroup.Check(entityId)
-	if err != nil || !result {
-		return
-	}
-
-	for _, acion := range t.actions {
-		if _, err = acion.Run(entityId); err != nil {
-			log.Error(err.Error())
+		conditionsCtx, span := telemetry.Start(taskCtx, "conditions")
+		result, err := t.conditionGroup.Check(v.EntityId)
+		if err != nil || !result {
+			if err != nil {
+				span.SetStatus(telemetry.Error, err.Error())
+			}
+			span.End()
+			return
 		}
+		span.End()
+
+		for _, action := range t.actions {
+			if actionCtx != nil {
+				conditionsCtx = actionCtx
+			}
+			actionCtx, span = telemetry.Start(conditionsCtx, "actions")
+			span.SetAttributes("id", action.model.Id)
+			if _, err = action.Run(v.EntityId); err != nil {
+				log.Error(err.Error())
+				span.SetStatus(telemetry.Error, err.Error())
+			}
+			span.End()
+		}
+
+		//fmt.Println("time spent", timeSpent.Microseconds())
+		t.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", t.model.Id), events.EventTaskCompleted{
+			Id:  t.model.Id,
+			Ctx: actionCtx,
+		})
 	}
 }
 
@@ -114,24 +127,24 @@ func (t *Task) Start() {
 	}
 	t.enabled.Store(true)
 
-	log.Infof("task %d start", t.Id())
+	//log.Infof("task %d start", t.Id())
 
 	// add actions
 	for _, model := range t.model.Actions {
-		action, err := NewAction(t.scriptService, t.entityManager, model)
+		action, err := NewAction(t.scriptService, t.eventBus, model)
 		if err != nil {
 			log.Error(err.Error())
 			continue
 		}
-		t.actions[model.Name] = action
+		t.actions[model.Id] = action
 	}
 
 	// add condition group
-	t.conditionGroup = NewConditionGroup(t.automation, t.model.Condition)
+	t.conditionGroup = NewConditionGroup(t.model.Condition)
 
 	// add conditions
 	for _, model := range t.model.Conditions {
-		condition, err := NewCondition(t.scriptService, model, t.entityManager)
+		condition, err := NewCondition(t.scriptService, model)
 		if err != nil {
 			log.Error(err.Error())
 			continue
@@ -141,10 +154,12 @@ func (t *Task) Start() {
 
 	// add triggers
 	for _, model := range t.model.Triggers {
-		if err := t.addTrigger(model); err != nil {
-			log.Error(err.Error())
-		}
+		t.eventBus.Subscribe(fmt.Sprintf("system/automation/triggers/%d", model.Id), t.triggerHandler)
 	}
+
+	t.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", t.model.Id), events.EventTaskLoaded{
+		Id: t.model.Id,
+	})
 }
 
 // Stop ...
@@ -153,25 +168,25 @@ func (t *Task) Stop() {
 		return
 	}
 	t.enabled.Store(false)
-	log.Infof("task %d stopped", t.Id())
-	for _, trigger := range t.triggers {
-		_ = trigger.Stop()
+	//log.Infof("task %d stopped", t.Id())
+	for _, model := range t.model.Triggers {
+		t.eventBus.Unsubscribe(fmt.Sprintf("system/automation/triggers/%d", model.Id), t.triggerHandler)
 	}
-	t.triggers = make(map[string]*Trigger)
-	t.actions = make(map[string]*Action)
+	for _, action := range t.actions {
+		action.Remove()
+	}
+	t.actions = make(map[int64]*Action)
+
+	t.conditionGroup.Stop()
 	t.conditionGroup = nil
+
+	t.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", t.model.Id), events.EventTaskUnloaded{
+		Id: t.model.Id,
+	})
 }
 
-// CallTrigger ...
-func (t *Task) CallTrigger(name string) {
-	if tr, ok := t.triggers[name]; ok {
-		tr.Call()
-	}
-}
-
-// CallAction ...
-func (t *Task) CallAction(name string) {
-	if action, ok := t.actions[name]; ok {
-		_, _ = action.Run(nil)
-	}
+func (t *Task) Telemetry() telemetry.Telemetry {
+	t.Lock()
+	defer t.Unlock()
+	return t.telemetry
 }

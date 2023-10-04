@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -45,7 +45,7 @@ func NewControllerUser(common *ControllerCommon) ControllerUser {
 // AddUser ...
 func (c ControllerUser) AddUser(ctx context.Context, req *api.NewtUserRequest) (userFull *api.UserFull, err error) {
 
-	user := c.dto.User.FromAddUser(req)
+	user := c.dto.User.AddUserRequest(req)
 
 	if req.Password == req.PasswordRepeat {
 		_ = user.SetPass(req.Password)
@@ -80,7 +80,7 @@ func (c ControllerUser) GetUserById(ctx context.Context, req *api.GetUserByIdReq
 // UpdateUserById ...
 func (c ControllerUser) UpdateUserById(ctx context.Context, req *api.UpdateUserRequest) (*api.UserFull, error) {
 
-	user := c.dto.User.FromUpdateUserRequest(req)
+	user := c.dto.User.UpdateUserByIdRequest(req)
 
 	if req.Password != req.PasswordRepeat {
 		st := status.New(codes.InvalidArgument, "One or more fields are invalid")

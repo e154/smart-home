@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,49 +19,72 @@
 package automation
 
 import (
+	"fmt"
 	"sync"
+
+	"github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/system/bus"
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/scripts"
 	"go.uber.org/atomic"
 )
+
+// ActionFunc ...
+const ActionFunc = "automationAction"
 
 // Action ...
 type Action struct {
 	model         *m.Action
 	scriptService scripts.ScriptService
-	entityManager entity_manager.EntityManager
-	scriptEngine  *scripts.Engine
+	eventBus      bus.Bus
+	scriptEngine  *scripts.EngineWatcher
 	inProcess     atomic.Bool
 	sync.Mutex
 }
 
 // NewAction ...
 func NewAction(scriptService scripts.ScriptService,
-	entityManager entity_manager.EntityManager,
+	eventBus bus.Bus,
 	model *m.Action) (action *Action, err error) {
 
 	action = &Action{
 		scriptService: scriptService,
-		entityManager: entityManager,
+		eventBus:      eventBus,
 		model:         model,
 	}
 
 	if model.Script != nil {
-		if action.scriptEngine, err = scriptService.NewEngine(model.Script); err != nil {
+		if action.scriptEngine, err = scriptService.NewEngineWatcher(model.Script); err != nil {
 			return
 		}
 
-		if _, err = action.scriptEngine.Do(); err != nil {
-			return
-		}
+		action.scriptEngine.Spawn(func(engine *scripts.Engine) {
+			if _, err = engine.Do(); err != nil {
+				return
+			}
 
-		action.scriptEngine.PushStruct("Action", NewActionBind(action))
+			engine.PushStruct("Action", NewActionBind(action))
+
+			if model.EntityId != nil {
+				if _, err = engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", model.EntityId.String())); err != nil {
+					log.Error(err.Error())
+				}
+			}
+		})
 	}
 
+	eventBus.Subscribe(fmt.Sprintf("system/automation/actions/%d", model.Id), action.actionHandler)
+
 	return
+}
+
+func (a *Action) Remove() {
+	if a.scriptEngine != nil {
+		a.scriptEngine.Stop()
+	}
+	a.eventBus.Unsubscribe(fmt.Sprintf("system/automation/actions/%d", a.model.Id), a.actionHandler)
 }
 
 // Run ...
@@ -69,15 +92,34 @@ func (a *Action) Run(entityId *common.EntityId) (result string, err error) {
 	a.Lock()
 	defer a.Unlock()
 
+	//log.Infof("run action")
+
 	if a.scriptEngine != nil {
-		if result, err = a.scriptEngine.AssertFunction(ActionFunc, entityId); err != nil {
+		if result, err = a.scriptEngine.Engine().AssertFunction(ActionFunc, entityId); err != nil {
 			log.Error(err.Error())
 		}
 	}
 
 	if a.model.EntityId != nil && a.model.EntityActionName != nil {
-		a.entityManager.CallAction(*a.model.EntityId, *a.model.EntityActionName, nil)
+		id := *a.model.EntityId
+		action := *a.model.EntityActionName
+		a.eventBus.Publish("system/entities/"+id.String(), events.EventCallEntityAction{
+			PluginName: id.PluginName(),
+			EntityId:   id,
+			ActionName: action,
+		})
 	}
 
+	a.eventBus.Publish(fmt.Sprintf("system/automation/actions/%d", a.model.Id), events.EventActionCompleted{
+		Id: a.model.Id,
+	})
+
 	return
+}
+
+func (a *Action) actionHandler(_ string, msg interface{}) {
+	switch msg.(type) {
+	case events.EventCallAction:
+		a.Run(nil)
+	}
 }

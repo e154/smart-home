@@ -1,0 +1,111 @@
+2023/09/19 18:12:23 http: panic serving [::1]:61359: runtime error: invalid memory address or nil pointer dereference
+goroutine 4931 [running]:
+net/http.(*conn).serve.func1()
+	/opt/local/lib/go/src/net/http/server.go:1854 +0xb0
+panic({0x1056bc440, 0x106891f60})
+	/opt/local/lib/go/src/runtime/panic.go:890 +0x258
+github.com/e154/smart-home/system/media.(*MuxerHLS).GetIndexM3u8(0x0, 0x1a, 0x16)
+	/Users/delta54/workspace/golang/src/github.com/e154/smart-home/system/media/hlsMuxer.go:158 +0x24
+github.com/e154/smart-home/system/media.(*StorageST).HLSMuxerM3U8(0x1400067e000, {0x1400142e1ec, 0xa}, {0x1400142e1ff, 0x1}, 0x102d938e4?, 0x14004a877b8?)
+	/Users/delta54/workspace/golang/src/github.com/e154/smart-home/system/media/storageStreamChannel.go:374 +0x130
+github.com/e154/smart-home/system/media.HTTPAPIServerStreamHLSLLM3U8(0x1400109a800)
+	/Users/delta54/workspace/golang/src/github.com/e154/smart-home/system/media/apiHTTPHLSLL.go:57 +0x590
+github.com/gin-gonic/gin.(*Context).Next(...)
+	/Users/delta54/workspace/golang/pkg/mod/github.com/gin-gonic/gin@v1.9.1/context.go:174
+github.com/e154/smart-home/system/media.CrossOrigin.func1(0x1400109a800)
+	/Users/delta54/workspace/golang/src/github.com/e154/smart-home/system/media/apiHTTPRouter.go:278 +0x328
+github.com/gin-gonic/gin.(*Context).Next(...)
+	/Users/delta54/workspace/golang/pkg/mod/github.com/gin-gonic/gin@v1.9.1/context.go:174
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest(0x14000682340, 0x1400109a800)
+	/Users/delta54/workspace/golang/pkg/mod/github.com/gin-gonic/gin@v1.9.1/gin.go:620 +0x54c
+github.com/gin-gonic/gin.(*Engine).ServeHTTP(0x14000682340, {0x1059adb10?, 0x140007a4000}, 0x1400109a000)
+	/Users/delta54/workspace/golang/pkg/mod/github.com/gin-gonic/gin@v1.9.1/gin.go:576 +0x1d4
+net/http.serverHandler.ServeHTTP({0x14002ef6090?}, {0x1059adb10, 0x140007a4000}, 0x1400109a000)
+	/opt/local/lib/go/src/net/http/server.go:2936 +0x2d8
+net/http.(*conn).serve(0x14000f84090, {0x1059af278, 0x14000318c90})
+	/opt/local/lib/go/src/net/http/server.go:1995 +0x560
+created by net/http.(*Server).Serve
+	/opt/local/lib/go/src/net/http/server.go:3089 +0x520
+2023/09/19 18:12:23 http: panic serving [::1]:61189: runtime error: invalid memory address or nil pointer dereference
+goroutine 2270 [running]:
+net/http.(*conn).serve.func1()
+	/opt/local/lib/go/src/net/http/server.go:1854 +0xb0
+panic({0x1056bc440, 0x106891f60})
+	/opt/local/lib/go/src/runtime/panic.go:890 +0x258
+github.com/e154/smart-home/system/media.(*MuxerHLS).GetIndexM3u8(0x0, 0x1a, 0x16)
+	/Users/delta54/workspace/golang/src/github.com/e154/smart-home/system/media/hlsMuxer.go:158 +0x24
+github.com/e154/smart-home/system/media.(*StorageST).HLSMuxerM3U8(0x1400067e000, {0x1400142e78c, 0xa}, {0x1400142e79f, 0x1}, 0x102d938e4?, 0x14004a837b8?)
+	/Users/delta54/workspace/golang/src/github.com/e154/smart-home/system/media/storageStreamChannel.go:374 +0x130
+github.com/e154/smart-home/system/media.HTTPAPIServerStreamHLSLLM3U8(0x14001070500)
+	/Users/delta54/workspace/golang/src/github.com/e154/smart-home/system/media/apiHTTPHLSLL.go:57 +0x590
+github.com/gin-gonic/gin.(*Context).Next(...)
+	/Users/delta54/workspace/golang/pkg/mod/github.com/gin-gonic/gin@v1.9.1/context.go:174
+github.com/e154/smart-home/system/media.CrossOrigin.func1(0x14001070500)
+	/Users/delta54/workspace/golang/src/github.com/e154/smart-home/system/media/apiHTTPRouter.go:278 +0x328
+github.com/gin-gonic/gin.(*Context).Next(...)
+	/Users/delta54/workspace/golang/pkg/mod/github.com/gin-gonic/gin@v1.9.1/context.go:174
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest(0x14000682340, 0x14001070500)
+	/Users/delta54/workspace/golang/pkg/mod/github.com/gin-gonic/gin@v1.9.1/gin.go:620 +0x54c
+github.com/gin-gonic/gin.(*Engine).ServeHTTP(0x14000682340, {0x1059adb10?, 0x140007a41c0}, 0x1400109a300)
+	/Users/delta54/workspace/golang/pkg/mod/github.com/gin-gonic/gin@v1.9.1/gin.go:576 +0x1d4
+net/http.serverHandler.ServeHTTP({0x14001a8a480?}, {0x1059adb10, 0x140007a41c0}, 0x1400109a300)
+	/opt/local/lib/go/src/net/http/server.go:2936 +0x2d8
+net/http.(*conn).serve(0x14000eb1a70, {0x1059af278, 0x14000318c90})
+	/opt/local/lib/go/src/net/http/server.go:1995 +0x560
+created by net/http.(*Server).Serve
+	/opt/local/lib/go/src/net/http/server.go:3089 +0x520
+2023/09/19 18:12:23 http: panic serving [::1]:61360: runtime error: invalid memory address or nil pointer dereference
+goroutine 4933 [running]:
+net/http.(*conn).serve.func1()
+	/opt/local/lib/go/src/net/http/server.go:1854 +0xb0
+panic({0x1056bc440, 0x106891f60})
+	/opt/local/lib/go/src/runtime/panic.go:890 +0x258
+github.com/e154/smart-home/system/media.(*MuxerHLS).GetIndexM3u8(0x0, 0x1a, 0x16)
+	/Users/delta54/workspace/golang/src/github.com/e154/smart-home/system/media/hlsMuxer.go:158 +0x24
+github.com/e154/smart-home/system/media.(*StorageST).HLSMuxerM3U8(0x1400067e000, {0x1400142ea2c, 0xa}, {0x1400142ea3f, 0x1}, 0x102d93804?, 0x140009537b8?)
+	/Users/delta54/workspace/golang/src/github.com/e154/smart-home/system/media/storageStreamChannel.go:374 +0x130
+github.com/e154/smart-home/system/media.HTTPAPIServerStreamHLSLLM3U8(0x1400109a500)
+	/Users/delta54/workspace/golang/src/github.com/e154/smart-home/system/media/apiHTTPHLSLL.go:57 +0x590
+github.com/gin-gonic/gin.(*Context).Next(...)
+	/Users/delta54/workspace/golang/pkg/mod/github.com/gin-gonic/gin@v1.9.1/context.go:174
+github.com/e154/smart-home/system/media.CrossOrigin.func1(0x1400109a500)
+	/Users/delta54/workspace/golang/src/github.com/e154/smart-home/system/media/apiHTTPRouter.go:278 +0x328
+github.com/gin-gonic/gin.(*Context).Next(...)
+	/Users/delta54/workspace/golang/pkg/mod/github.com/gin-gonic/gin@v1.9.1/context.go:174
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest(0x14000682340, 0x1400109a500)
+	/Users/delta54/workspace/golang/pkg/mod/github.com/gin-gonic/gin@v1.9.1/gin.go:620 +0x54c
+github.com/gin-gonic/gin.(*Engine).ServeHTTP(0x14000682340, {0x1059adb10?, 0x140007a48c0}, 0x1400109a400)
+	/Users/delta54/workspace/golang/pkg/mod/github.com/gin-gonic/gin@v1.9.1/gin.go:576 +0x1d4
+net/http.serverHandler.ServeHTTP({0x14002ef62a0?}, {0x1059adb10, 0x140007a48c0}, 0x1400109a400)
+	/opt/local/lib/go/src/net/http/server.go:2936 +0x2d8
+net/http.(*conn).serve(0x14000f84360, {0x1059af278, 0x14000318c90})
+	/opt/local/lib/go/src/net/http/server.go:1995 +0x560
+created by net/http.(*Server).Serve
+	/opt/local/lib/go/src/net/http/server.go:3089 +0x520
+2023/09/19 18:12:23 http: panic serving [::1]:61374: runtime error: invalid memory address or nil pointer dereference
+goroutine 5542 [running]:
+net/http.(*conn).serve.func1()
+	/opt/local/lib/go/src/net/http/server.go:1854 +0xb0
+panic({0x1056bc440, 0x106891f60})
+	/opt/local/lib/go/src/runtime/panic.go:890 +0x258
+github.com/e154/smart-home/system/media.(*MuxerHLS).GetIndexM3u8(0x0, 0x1a, 0x16)
+	/Users/delta54/workspace/golang/src/github.com/e154/smart-home/system/media/hlsMuxer.go:158 +0x24
+github.com/e154/smart-home/system/media.(*StorageST).HLSMuxerM3U8(0x1400067e000, {0x1400142ebac, 0xa}, {0x1400142ebbf, 0x1}, 0x102d938e4?, 0x140042817b8?)
+	/Users/delta54/workspace/golang/src/github.com/e154/smart-home/system/media/storageStreamChannel.go:374 +0x130
+github.com/e154/smart-home/system/media.HTTPAPIServerStreamHLSLLM3U8(0x1400109aa00)
+	/Users/delta54/workspace/golang/src/github.com/e154/smart-home/system/media/apiHTTPHLSLL.go:57 +0x590
+github.com/gin-gonic/gin.(*Context).Next(...)
+	/Users/delta54/workspace/golang/pkg/mod/github.com/gin-gonic/gin@v1.9.1/context.go:174
+github.com/e154/smart-home/system/media.CrossOrigin.func1(0x1400109aa00)
+	/Users/delta54/workspace/golang/src/github.com/e154/smart-home/system/media/apiHTTPRouter.go:278 +0x328
+github.com/gin-gonic/gin.(*Context).Next(...)
+	/Users/delta54/workspace/golang/pkg/mod/github.com/gin-gonic/gin@v1.9.1/context.go:174
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest(0x14000682340, 0x1400109aa00)
+	/Users/delta54/workspace/golang/pkg/mod/github.com/gin-gonic/gin@v1.9.1/gin.go:620 +0x54c
+github.com/gin-gonic/gin.(*Engine).ServeHTTP(0x14000682340, {0x1059adb10?, 0x140007a5260}, 0x1400109a900)
+	/Users/delta54/workspace/golang/pkg/mod/github.com/gin-gonic/gin@v1.9.1/gin.go:576 +0x1d4
+net/http.serverHandler.ServeHTTP({0x14002830630?}, {0x1059adb10, 0x140007a5260}, 0x1400109a900)
+	/opt/local/lib/go/src/net/http/server.go:2936 +0x2d8
+net/http.(*conn).serve(0x14001068870, {0x1059af278, 0x14000318c90})
+	/opt/local/lib/go/src/net/http/server.go:1995 +0x560
+created by net/http.(*Server).Serve

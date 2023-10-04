@@ -7,9 +7,12 @@ import "google/api/annotations.proto";
 import "protoc-gen-swagger/options/annotations.proto";
 import "google/protobuf/empty.proto";
 
+import "attributes.proto";
+
 message EntityCallActionRequest {
   string id = 1;
   string name = 2;
+  map<string, Attribute> attributes = 14;
 }
 
 service InteractService {
@@ -17,7 +20,7 @@ service InteractService {
   // entity call action
   rpc EntityCallAction (EntityCallActionRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/v1/interact/entity_call_action"
+      post: "/v1/interact/entity/call_action"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {

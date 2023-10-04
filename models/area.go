@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -18,9 +18,25 @@
 
 package models
 
+import (
+	"time"
+)
+
 // Area ...
 type Area struct {
-	Id          int64  `json:"id"`
-	Name        string `json:"name" validate:"required"`
-	Description string `json:"description"`
+	Id          int64     `json:"id"`
+	Name        string    `json:"name" validate:"required"`
+	Description string    `json:"description"`
+	Polygon     []Point   `json:"polygon"`
+	Zoom        float32   `json:"zoom"`
+	Center      Point     `json:"center"`
+	Resolution  float32   `json:"resolution"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}
+
+type AreaPayload struct {
+	Zoom       float32 `json:"zoom"`
+	Center     Point   `json:"center"`
+	Resolution float32 `json:"resolution"`
 }

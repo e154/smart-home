@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -44,7 +44,7 @@ type Metric struct {
 	Name        string            `json:"name" validate:"max=254;required"`
 	Description string            `json:"description" validate:"max=254"`
 	Options     MetricOptions     `json:"options"`
-	Data        []MetricDataItem  `json:"data"`
+	Data        []*MetricDataItem `json:"data"`
 	Type        common.MetricType `json:"type" validate:"required"`
 	Ranges      []string          `json:"ranges"`
 	UpdatedAt   time.Time         `json:"updated_at"`

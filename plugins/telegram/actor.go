@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,61 +19,47 @@
 package telegram
 
 import (
+	"context"
 	"fmt"
 	"strings"
-
-	"github.com/e154/smart-home/common/events"
-
-	"github.com/e154/smart-home/common/apperr"
+	"time"
 
 	"github.com/pkg/errors"
-
-	tgbotapi "github.com/Syfaro/telegram-bot-api"
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/version"
 	"go.uber.org/atomic"
+	tele "gopkg.in/telebot.v3"
+
+	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/events"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/supervisor"
+	"github.com/e154/smart-home/version"
 )
 
 // Actor ...
 type Actor struct {
-	entity_manager.BaseActor
+	supervisor.BaseActor
 	isStarted   *atomic.Bool
-	eventBus    bus.Bus
-	adaptors    *adaptors.Adaptors
 	AccessToken string
-	bot         *tgbotapi.BotAPI
-	commandPool chan Command
+	bot         *tele.Bot
 	msgPool     chan string
-	actionPool  chan events.EventCallAction
+	actionPool  chan events.EventCallEntityAction
 }
 
 // NewActor ...
 func NewActor(entity *m.Entity,
-	entityManager entity_manager.EntityManager,
-	scriptService scripts.ScriptService,
-	eventBus bus.Bus,
-	adaptors *adaptors.Adaptors) (*Actor, error) {
+	service supervisor.Service) (*Actor, error) {
 
 	settings := NewSettings()
 	_, _ = settings.Deserialize(entity.Settings.Serialize())
 
 	actor := &Actor{
-		BaseActor:   entity_manager.NewBaseActor(entity, scriptService, adaptors),
-		eventBus:    eventBus,
-		actionPool:  make(chan events.EventCallAction, 10),
+		BaseActor:   supervisor.NewBaseActor(entity, service),
+		actionPool:  make(chan events.EventCallEntityAction, 10),
 		isStarted:   atomic.NewBool(false),
-		adaptors:    adaptors,
-		AccessToken: settings[AttrToken].String(),
-		commandPool: make(chan Command, 99),
+		AccessToken: settings[AttrToken].Decrypt(),
 		msgPool:     make(chan string, 99),
 	}
-
-	actor.Manager = entityManager
 
 	if actor.Attrs == nil {
 		actor.Attrs = NewAttr()
@@ -83,19 +69,13 @@ func NewActor(entity *m.Entity,
 		actor.Setts = NewSettings()
 	}
 
-	//if actor.Actions == nil {
-	//	actor.Actions = NewActions()
-	//}
-
 	// Actions
 	for _, a := range actor.Actions {
-		if a.ScriptEngine != nil {
+		if a.ScriptEngine.Engine() != nil {
 			// bind
-			_, _ = a.ScriptEngine.Do()
+			_, _ = a.ScriptEngine.Engine().Do()
 		}
 	}
-
-	actor.DeserializeAttr(entity.Attributes.Serialize())
 
 	// action worker
 	go func() {
@@ -107,66 +87,58 @@ func NewActor(entity *m.Entity,
 	return actor, nil
 }
 
-// Spawn ...
-func (p *Actor) Spawn() entity_manager.PluginActor {
-	return p
+func (e *Actor) Destroy() {
+	if !e.isStarted.Load() {
+		return
+	}
+	if e.bot != nil {
+		e.bot.Stop()
+	}
+	close(e.msgPool)
+	e.isStarted.Store(false)
 }
 
-// Start ...
-func (p *Actor) Start() (err error) {
+func (e *Actor) Spawn() {
 
-	if p.isStarted.Load() {
+	var err error
+	if e.isStarted.Load() {
 		return
 	}
 	defer func() {
 		if err == nil {
-			p.isStarted.Store(true)
+			e.isStarted.Store(true)
 		}
 	}()
 
 	if !common.TestMode() {
-		p.bot, err = tgbotapi.NewBotAPI(p.AccessToken)
+
+		pref := tele.Settings{
+			Token:  e.AccessToken,
+			Poller: &tele.LongPoller{Timeout: 10 * time.Second},
+		}
+
+		e.bot, err = tele.NewBot(pref)
 		if err != nil {
 			err = errors.Wrap(apperr.ErrInternal, err.Error())
 			return
 		}
 
-		log.Infof("Authorized on account %s", p.bot.Self.UserName)
+		e.bot.Handle("/help", e.commandHelp)
+		e.bot.Handle("/start", e.commandStart)
+		e.bot.Handle("/quit", e.commandQuit)
+		e.bot.Handle(tele.OnText, e.commandAction)
 
-		u := tgbotapi.NewUpdate(0)
-		u.Timeout = 60
-		var updates tgbotapi.UpdatesChannel
-		if updates, err = p.bot.GetUpdatesChan(u); err != nil {
-			log.Error(err.Error())
-			return
-		}
-
-		go func() {
-			for update := range updates {
-				p.commandPool <- Command{
-					ChatId:   update.Message.Chat.ID,
-					Text:     update.Message.Text,
-					UserName: update.Message.From.UserName,
-				}
-			}
-		}()
+		go e.bot.Start()
 	}
 
 	go func() {
-		for v := range p.commandPool {
-			p.commandHandler(v)
-		}
-	}()
-
-	go func() {
 		var list []m.TelegramChat
-		var err error
-		for msg := range p.msgPool {
-			if list, err = p.getChatList(); err != nil {
+		for msg := range e.msgPool {
+			if list, err = e.getChatList(); err != nil {
 				continue
 			}
 			for _, chat := range list {
-				if _, err = p.sendMsg(msg, chat.ChatId); err != nil {
+				if _, err = e.sendMsg(msg, chat.ChatId); err != nil {
 					log.Warn(err.Error())
 				}
 			}
@@ -176,45 +148,19 @@ func (p *Actor) Start() (err error) {
 	return
 }
 
-// Stop ...
-func (p *Actor) Stop() {
-	if !p.isStarted.Load() {
-		return
-	}
-	if p.bot != nil {
-		p.bot.StopReceivingUpdates()
-	}
-	close(p.commandPool)
-	close(p.msgPool)
-	p.isStarted.Store(false)
-}
-
 // Send ...
-func (p *Actor) Send(message string) (err error) {
-	if !p.isStarted.Load() {
+func (e *Actor) Send(message string) (err error) {
+	if !e.isStarted.Load() {
 		return
 	}
-	p.msgPool <- message
+	e.msgPool <- message
 	return
 }
 
-func (p *Actor) commandHandler(cmd Command) {
-	switch cmd.Text {
-	case "/start":
-		p.commandStart(cmd)
-	case "/help":
-		p.commandHelp(cmd)
-	case "/quit":
-		p.commandQuit(cmd)
-	default:
-		p.commandAction(cmd)
-	}
-}
-
-func (p *Actor) sendMsg(body string, chatId int64) (messageID int, err error) {
+func (e *Actor) sendMsg(body string, chatId int64) (messageID int, err error) {
 	defer func() {
 		if err == nil {
-			go func() { _ = p.UpdateStatus() }()
+			go func() { _ = e.UpdateStatus() }()
 			log.Infof("Sent message '%s' to chatId '%d'", body, chatId)
 		}
 	}()
@@ -222,33 +168,37 @@ func (p *Actor) sendMsg(body string, chatId int64) (messageID int, err error) {
 		messageID = 123
 		return
 	}
-	msgCfg := tgbotapi.NewMessage(chatId, body)
-	p.genKeyboard(msgCfg)
-	var msg tgbotapi.Message
-	if msg, err = p.bot.Send(msgCfg); err != nil {
+	var chat *tele.Chat
+	if chat, err = e.bot.ChatByID(chatId); err != nil {
+		log.Error(err.Error())
 		return
 	}
-	messageID = msg.MessageID
+	var msg *tele.Message
+	if msg, err = e.bot.Send(chat, body); err != nil {
+		log.Error(err.Error())
+		return
+	}
+	messageID = msg.ID
 	return
 }
 
-func (p *Actor) getChatList() (list []m.TelegramChat, err error) {
-	list, _, err = p.adaptors.TelegramChat.List(999, 0, "", "", p.Id)
+func (e *Actor) getChatList() (list []m.TelegramChat, err error) {
+	list, _, err = e.Service.Adaptors().TelegramChat.List(context.Background(), 999, 0, "", "", e.Id)
 	return
 }
 
 // UpdateStatus ...
-func (p *Actor) UpdateStatus() (err error) {
+func (e *Actor) UpdateStatus() (err error) {
 
-	oldState := p.GetEventState(p)
-	now := p.Now(oldState)
+	oldState := e.GetEventState()
+	now := e.Now(oldState)
 
 	var attributeValues = make(m.AttributeValue)
 	// ...
 
-	p.AttrMu.Lock()
+	e.AttrMu.Lock()
 	var changed bool
-	if changed, err = p.Attrs.Deserialize(attributeValues); !changed {
+	if changed, err = e.Attrs.Deserialize(attributeValues); !changed {
 		if err != nil {
 			log.Warn(err.Error())
 		}
@@ -257,72 +207,93 @@ func (p *Actor) UpdateStatus() (err error) {
 			delta := now.Sub(*oldState.LastUpdated).Milliseconds()
 			//fmt.Println("delta", delta)
 			if delta < 200 {
-				p.AttrMu.Unlock()
+				e.AttrMu.Unlock()
 				return
 			}
 		}
 	}
-	p.AttrMu.Unlock()
+	e.AttrMu.Unlock()
 
-	p.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
+	go e.SaveState(events.EventStateChanged{
 		StorageSave: true,
-		PluginName:  p.Id.PluginName(),
-		EntityId:    p.Id,
+		PluginName:  e.Id.PluginName(),
+		EntityId:    e.Id,
 		OldState:    oldState,
-		NewState:    p.GetEventState(p),
+		NewState:    e.GetEventState(),
 	})
 
 	return
 }
 
-func (p *Actor) commandStart(cmd Command) {
-	text := fmt.Sprintf(banner, version.GetHumanVersion(), cmd.Text)
-	_ = p.adaptors.TelegramChat.Add(m.TelegramChat{
-		EntityId: p.Id,
-		ChatId:   cmd.ChatId,
-		Username: cmd.UserName,
+func (e *Actor) commandStart(c tele.Context) (err error) {
+
+	var (
+		user = c.Sender()
+		chat = c.Chat()
+		text = c.Text()
+	)
+
+	text = fmt.Sprintf(banner, version.GetHumanVersion(), text)
+	_ = e.Service.Adaptors().TelegramChat.Add(context.Background(), m.TelegramChat{
+		EntityId: e.Id,
+		ChatId:   chat.ID,
+		Username: user.Username,
 	})
-	_, _ = p.sendMsg(text, cmd.ChatId)
+	err = c.Send(text, e.genKeyboard())
+	return
 }
 
-func (p *Actor) commandHelp(cmd Command) {
+func (e *Actor) commandHelp(c tele.Context) (err error) {
+
 	builder := &strings.Builder{}
-	if len(p.Actions) > 0 {
-		for _, action := range p.Actions {
+	if len(e.Actions) > 0 {
+		for _, action := range e.Actions {
 			builder.WriteString(fmt.Sprintf("/%s - %s\n", action.Name, action.Description))
 		}
 	}
 	builder.WriteString(help)
-	_, _ = p.sendMsg(builder.String(), cmd.ChatId)
+	err = c.Send(builder.String(), e.genKeyboard())
+	return err
 }
 
-func (p *Actor) commandQuit(cmd Command) {
-	_ = p.adaptors.TelegramChat.Delete(p.Id, cmd.ChatId)
-	_, _ = p.sendMsg("/quit -unsubscribe from bot\n/start - subscriber again", cmd.ChatId)
+func (e *Actor) commandQuit(c tele.Context) (err error) {
+
+	var (
+		chat = c.Chat()
+	)
+
+	_ = e.Service.Adaptors().TelegramChat.Delete(context.Background(), e.Id, chat.ID)
+	err = c.Send("/quit -unsubscribe from bot\n/start - subscriber again")
+	return
 }
 
-// todo add command args
-func (p *Actor) commandAction(cmd Command) {
-	p.runAction(events.EventCallAction{
-		ActionName: strings.Replace(cmd.Text, "/", "", 1),
-		EntityId:   p.Id,
+func (e *Actor) commandAction(c tele.Context) (err error) {
+
+	var (
+		text = c.Text()
+	)
+
+	e.runAction(events.EventCallEntityAction{
+		ActionName: strings.Replace(text, "/", "", 1),
+		EntityId:   e.Id,
 	})
+	return
 }
 
-func (p *Actor) addAction(event events.EventCallAction) {
-	p.actionPool <- event
+func (e *Actor) addAction(event events.EventCallEntityAction) {
+	e.actionPool <- event
 }
 
-func (p *Actor) runAction(msg events.EventCallAction) {
-	action, ok := p.Actions[msg.ActionName]
+func (e *Actor) runAction(msg events.EventCallEntityAction) {
+	action, ok := e.Actions[msg.ActionName]
 	if !ok {
 		log.Warnf("action %s not found", msg.ActionName)
 		return
 	}
-	if action.ScriptEngine == nil {
+	if action.ScriptEngine.Engine() == nil {
 		return
 	}
-	if _, err := action.ScriptEngine.AssertFunction(FuncEntityAction, msg.EntityId, action.Name); err != nil {
+	if _, err := action.ScriptEngine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
 		log.Error(err.Error())
 		return
 	}
@@ -332,24 +303,31 @@ func (p *Actor) runAction(msg events.EventCallAction) {
 // [button][button][button]
 // [button][button][button]
 // [button][button][button]
-func (p *Actor) genKeyboard(msgCfg tgbotapi.MessageConfig) {
-	var row []tgbotapi.KeyboardButton
-	var rows [][]tgbotapi.KeyboardButton
-	var counter = 0
-	if len(p.Actions) == 0 {
+func (e *Actor) genKeyboard() (menu *tele.ReplyMarkup) {
+	menu = &tele.ReplyMarkup{ResizeKeyboard: true}
+	var row []tele.Btn
+	if len(e.Actions) == 0 {
 		return
 	}
-	for k := range p.Actions {
-		counter++
-		if counter >= 3 {
-			counter = 1
-			rows = append(rows, row)
-			row = []tgbotapi.KeyboardButton{}
-		}
-		row = append(row, tgbotapi.NewKeyboardButton(fmt.Sprintf("/%s", k)))
+	for k := range e.Actions {
+		row = append(row, menu.Text(fmt.Sprintf("/%s", k)))
 	}
-	if counter < 3 {
-		rows = append(rows, row)
+	menu.Reply(menu.Split(3, row)...)
+	return
+}
+
+// todo: prepare state
+func (e *Actor) updateState(connected bool) {
+	info := e.Info()
+	var newStat = AttrOffline
+	if connected {
+		newStat = AttrConnected
 	}
-	msgCfg.ReplyMarkup = tgbotapi.NewReplyKeyboard(rows...)
+	if info.State != nil && info.State.Name == newStat {
+		return
+	}
+	e.SetState(supervisor.EntityStateParams{
+		NewState:    common.String(newStat),
+		StorageSave: true,
+	})
 }

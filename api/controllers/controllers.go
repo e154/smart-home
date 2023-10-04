@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -37,6 +37,9 @@ type Controllers struct {
 	Plugin            ControllerPlugin
 	Zigbee2mqtt       ControllerZigbee2mqtt
 	Entity            ControllerEntity
+	Action            ControllerAction
+	Condition         ControllerCondition
+	Trigger           ControllerTrigger
 	Automation        ControllerAutomation
 	Area              ControllerArea
 	Dev               ControllerDeveloperTools
@@ -52,6 +55,8 @@ type Controllers struct {
 	Backup            ControllerBackup
 	MessageDelivery   ControllerMessageDelivery
 	Index             ControllerIndex
+	Mqtt              ControllerMqtt
+	Media             ControllerMedia
 }
 
 // NewControllers ...
@@ -59,7 +64,7 @@ func NewControllers(adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
 	command *endpoint.Endpoint,
 	_ *handlers.EventHandler,
-	appConfig  *m.AppConfig) *Controllers {
+	appConfig *m.AppConfig) *Controllers {
 	common := NewControllerCommon(adaptors, accessList, command, appConfig)
 	return &Controllers{
 		Auth:              NewControllerAuth(common),
@@ -71,6 +76,9 @@ func NewControllers(adaptors *adaptors.Adaptors,
 		Plugin:            NewControllerPlugin(common),
 		Zigbee2mqtt:       NewControllerZigbee2mqtt(common),
 		Entity:            NewControllerEntity(common),
+		Action:            NewControllerAction(common),
+		Condition:         NewControllerCondition(common),
+		Trigger:           NewControllerTrigger(common),
 		Automation:        NewControllerAutomation(common),
 		Area:              NewControllerArea(common),
 		Dev:               NewControllerDeveloperTools(common),
@@ -86,5 +94,7 @@ func NewControllers(adaptors *adaptors.Adaptors,
 		Backup:            NewControllerBackup(common),
 		MessageDelivery:   NewControllerMessageDelivery(common),
 		Index:             NewControllerIndex(common),
+		Mqtt:              NewControllerMqtt(common),
+		Media:             NewControllerMedia(common),
 	}
 }

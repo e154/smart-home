@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -82,9 +82,4 @@ func (t *SystemTrigger) Subscribe(options Subscriber) error {
 func (t *SystemTrigger) Unsubscribe(options Subscriber) error {
 	log.Infof("unsubscribe topic %s", TopicSystem)
 	return t.msgQueue.Unsubscribe(TopicSystem, options.Handler)
-}
-
-// CallManual ...
-func (t *SystemTrigger) CallManual() {
-	log.Warn("method not implemented")
 }

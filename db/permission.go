@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,9 +19,11 @@
 package db
 
 import (
+	"context"
+
 	"github.com/e154/smart-home/common/apperr"
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // Permissions ...
@@ -44,8 +46,8 @@ func (m *Permission) TableName() string {
 }
 
 // Add ...
-func (n Permissions) Add(permission *Permission) (id int64, err error) {
-	if err = n.Db.Create(&permission).Error; err != nil {
+func (n Permissions) Add(ctx context.Context, permission *Permission) (id int64, err error) {
+	if err = n.Db.WithContext(ctx).Create(&permission).Error; err != nil {
 		err = errors.Wrap(apperr.ErrPermissionAdd, err.Error())
 		return
 	}
@@ -54,9 +56,9 @@ func (n Permissions) Add(permission *Permission) (id int64, err error) {
 }
 
 // Delete ...
-func (n Permissions) Delete(roleName, packageName string, levelName []string) (err error) {
+func (n Permissions) Delete(ctx context.Context, roleName, packageName string, levelName []string) (err error) {
 
-	err = n.Db.
+	err = n.Db.WithContext(ctx).
 		Delete(&Permission{}, "role_name = ? and package_name = ? and level_name in (?)", roleName, packageName, levelName).
 		Error
 	if err != nil {
@@ -67,10 +69,10 @@ func (n Permissions) Delete(roleName, packageName string, levelName []string) (e
 }
 
 // GetAllPermissions ...
-func (n Permissions) GetAllPermissions(name string) (permissions []*Permission, err error) {
+func (n Permissions) GetAllPermissions(ctx context.Context, name string) (permissions []*Permission, err error) {
 
 	permissions = make([]*Permission, 0)
-	err = n.Db.Raw(`
+	err = n.Db.WithContext(ctx).Raw(`
 WITH RECURSIVE r AS (
     SELECT name, description, parent, created_at, updated_at, 1 AS level
     FROM roles

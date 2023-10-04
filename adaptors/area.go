@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,20 +19,29 @@
 package adaptors
 
 import (
+	"context"
+	"encoding/json"
+
+	"gorm.io/gorm"
+
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/gorm"
 )
 
 // IArea ...
 type IArea interface {
-	Add(ver *m.Area) (id int64, err error)
-	GetById(verId int64) (ver *m.Area, err error)
-	GetByName(name string) (ver *m.Area, err error)
-	Update(ver *m.Area) (err error)
-	DeleteByName(name string) (err error)
-	List(limit, offset int64, orderBy, sort string) (list []*m.Area, total int64, err error)
-	Search(query string, limit, offset int64) (list []*m.Area, total int64, err error)
+	Add(ctx context.Context, ver *m.Area) (id int64, err error)
+	GetById(ctx context.Context, verId int64) (ver *m.Area, err error)
+	GetByName(ctx context.Context, name string) (ver *m.Area, err error)
+	Update(ctx context.Context, ver *m.Area) (err error)
+	DeleteByName(ctx context.Context, name string) (err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.Area, total int64, err error)
+	ListByPoint(ctx context.Context, point m.Point, limit, offset int64) (list []*m.Area, err error)
+	Search(ctx context.Context, query string, limit, offset int64) (list []*m.Area, total int64, err error)
+	GetDistanceToArea(ctx context.Context, point m.Point, areaId int64) (distance float64, err error)
+	GetDistanceBetweenPoints(ctx context.Context, point1, point2 m.Point) (distance float64, err error)
+	PointInsideAriaById(ctx context.Context, point *m.Point, areaId int64) (inside bool, err error)
+	PointInsideAriaByName(ctx context.Context, point *m.Point, areaName int64) (inside bool, err error)
 	fromDb(dbVer *db.Area) (ver *m.Area)
 	toDb(ver *m.Area) (dbVer *db.Area)
 }
@@ -53,9 +62,9 @@ func GetAreaAdaptor(d *gorm.DB) IArea {
 }
 
 // Add ...
-func (n *Area) Add(ver *m.Area) (id int64, err error) {
+func (a *Area) Add(ctx context.Context, ver *m.Area) (id int64, err error) {
 
-	if id, err = n.table.Add(n.toDb(ver)); err != nil {
+	if id, err = a.table.Add(ctx, a.toDb(ver)); err != nil {
 		return
 	}
 
@@ -63,64 +72,10 @@ func (n *Area) Add(ver *m.Area) (id int64, err error) {
 }
 
 // GetById ...
-func (n *Area) GetById(verId int64) (ver *m.Area, err error) {
+func (a *Area) GetById(ctx context.Context, verId int64) (ver *m.Area, err error) {
 
 	var dbVer *db.Area
-	if dbVer, err = n.table.GetById(verId); err != nil {
-		return
-	}
-
-	ver = n.fromDb(dbVer)
-
-	return
-}
-
-// Update ...
-func (n *Area) Update(ver *m.Area) (err error) {
-	err = n.table.Update(n.toDb(ver))
-	return
-}
-
-// DeleteByName ...
-func (n *Area) DeleteByName(name string) (err error) {
-	err = n.table.DeleteByName(name)
-	return
-}
-
-// List ...
-func (n *Area) List(limit, offset int64, orderBy, sort string) (list []*m.Area, total int64, err error) {
-	var dbList []*db.Area
-	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
-		return
-	}
-
-	list = make([]*m.Area, len(dbList))
-	for i, dbVer := range dbList {
-		list[i] = n.fromDb(dbVer)
-	}
-	return
-}
-
-// Search ...
-func (n *Area) Search(query string, limit, offset int64) (list []*m.Area, total int64, err error) {
-	var dbList []*db.Area
-	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
-		return
-	}
-
-	list = make([]*m.Area, len(dbList))
-	for i, dbVer := range dbList {
-		list[i] = n.fromDb(dbVer)
-	}
-
-	return
-}
-
-// GetByName ...
-func (a *Area) GetByName(name string) (ver *m.Area, err error) {
-
-	var dbVer *db.Area
-	if dbVer, err = a.table.GetByName(name); err != nil {
+	if dbVer, err = a.table.GetById(ctx, verId); err != nil {
 		return
 	}
 
@@ -129,22 +84,142 @@ func (a *Area) GetByName(name string) (ver *m.Area, err error) {
 	return
 }
 
-func (n *Area) fromDb(dbVer *db.Area) (ver *m.Area) {
-	ver = &m.Area{
-		Id:          dbVer.Id,
-		Name:        dbVer.Name,
-		Description: dbVer.Description,
+// Update ...
+func (a *Area) Update(ctx context.Context, ver *m.Area) (err error) {
+	err = a.table.Update(ctx, a.toDb(ver))
+	return
+}
+
+// DeleteByName ...
+func (a *Area) DeleteByName(ctx context.Context, name string) (err error) {
+	err = a.table.DeleteByName(ctx, name)
+	return
+}
+
+// List ...
+func (a *Area) List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.Area, total int64, err error) {
+	var dbList []*db.Area
+	if dbList, total, err = a.table.List(ctx, int(limit), int(offset), orderBy, sort); err != nil {
+		return
+	}
+
+	list = make([]*m.Area, len(dbList))
+	for i, dbVer := range dbList {
+		list[i] = a.fromDb(dbVer)
+	}
+	return
+}
+
+// ListByPoint ...
+func (a *Area) ListByPoint(ctx context.Context, point m.Point, limit, offset int64) (list []*m.Area, err error) {
+
+	var dbList []*db.Area
+	if dbList, err = a.table.ListByPoint(ctx, db.Point{Lon: point.Lon, Lat: point.Lat}, int(limit), int(offset)); err != nil {
+		return
+	}
+
+	list = make([]*m.Area, len(dbList))
+	for i, dbVer := range dbList {
+		list[i] = a.fromDb(dbVer)
+	}
+	return
+}
+
+// PointInsideAriaById ...
+func (a *Area) PointInsideAriaById(ctx context.Context, point *m.Point, areaId int64) (inside bool, err error) {
+	inside, err = a.table.PointInsideAriaById(ctx, db.Point{Lon: point.Lon, Lat: point.Lat}, areaId)
+	return
+}
+
+// PointInsideAriaByName ...
+func (a *Area) PointInsideAriaByName(ctx context.Context, point *m.Point, areaName int64) (inside bool, err error) {
+	inside, err = a.table.PointInsideAriaById(ctx, db.Point{Lon: point.Lon, Lat: point.Lat}, areaName)
+	return
+}
+
+// Search ...
+func (a *Area) Search(ctx context.Context, query string, limit, offset int64) (list []*m.Area, total int64, err error) {
+	var dbList []*db.Area
+	if dbList, total, err = a.table.Search(ctx, query, int(limit), int(offset)); err != nil {
+		return
+	}
+
+	list = make([]*m.Area, len(dbList))
+	for i, dbVer := range dbList {
+		list[i] = a.fromDb(dbVer)
 	}
 
 	return
 }
 
-func (n *Area) toDb(ver *m.Area) (dbVer *db.Area) {
+// GetByName ...
+func (a *Area) GetByName(ctx context.Context, name string) (ver *m.Area, err error) {
+
+	var dbVer *db.Area
+	if dbVer, err = a.table.GetByName(ctx, name); err != nil {
+		return
+	}
+
+	ver = a.fromDb(dbVer)
+
+	return
+}
+
+// GetDistance ...
+func (a *Area) GetDistanceToArea(ctx context.Context, point m.Point, areaId int64) (distance float64, err error) {
+	distance, err = a.table.GetDistanceToArea(ctx, db.Point{Lon: point.Lon, Lat: point.Lat}, areaId)
+	return
+}
+
+func (a *Area) fromDb(dbVer *db.Area) (ver *m.Area) {
+	ver = &m.Area{
+		Id:          dbVer.Id,
+		Name:        dbVer.Name,
+		Description: dbVer.Description,
+		CreatedAt:   dbVer.CreatedAt,
+		UpdatedAt:   dbVer.UpdatedAt,
+	}
+	if dbVer.Polygon != nil {
+		for _, point := range dbVer.Polygon.Points {
+			ver.Polygon = append(ver.Polygon, m.Point{
+				Lon: point.Lon,
+				Lat: point.Lat,
+			})
+		}
+	}
+	if len(dbVer.Payload) > 0 {
+		payload := &m.AreaPayload{}
+		_ = json.Unmarshal(dbVer.Payload, payload)
+		ver.Zoom = payload.Zoom
+		ver.Center = payload.Center
+		ver.Resolution = payload.Resolution
+	}
+
+	return
+}
+
+func (a *Area) toDb(ver *m.Area) (dbVer *db.Area) {
 	dbVer = &db.Area{
 		Id:          ver.Id,
 		Name:        ver.Name,
 		Description: ver.Description,
+		CreatedAt:   ver.CreatedAt,
+		UpdatedAt:   ver.UpdatedAt,
 	}
-
+	if ver.Polygon != nil && len(ver.Polygon) > 2 {
+		dbVer.Polygon = &db.Polygon{}
+		for _, point := range ver.Polygon {
+			dbVer.Polygon.Points = append(dbVer.Polygon.Points, db.Point{
+				Lon: float64(point.Lon),
+				Lat: float64(point.Lat),
+			})
+		}
+	}
+	b, _ := json.Marshal(m.AreaPayload{
+		Zoom:       ver.Zoom,
+		Center:     ver.Center,
+		Resolution: ver.Resolution,
+	})
+	_ = dbVer.Payload.UnmarshalJSON(b)
 	return
 }

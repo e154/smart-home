@@ -1,6 +1,25 @@
+// This file is part of the Smart Home
+// Program complex distribution https://github.com/e154/smart-home
+// Copyright (C) 2023, Filippov Alex
+//
+// This library is free software: you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Library General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.  If not, see
+// <https://www.gnu.org/licenses/>.
+
 package example1
 
 import (
+	"context"
 	"fmt"
 	"os"
 
@@ -14,43 +33,43 @@ import (
 	. "github.com/e154/smart-home/system/initial/assertions"
 )
 
-type EntityManager struct {
+type Supervisor struct {
 	adaptors *adaptors.Adaptors
 }
 
-func NewEntityManager(adaptors *adaptors.Adaptors) *EntityManager {
-	return &EntityManager{
+func NewSupervisor(adaptors *adaptors.Adaptors) *Supervisor {
+	return &Supervisor{
 		adaptors: adaptors,
 	}
 }
 
-func (e *EntityManager) addEntities(scripts []*m.Script, area *m.Area) (entities []*m.Entity, err error) {
+func (e *Supervisor) addEntities(ctx context.Context, scripts []*m.Script, area *m.Area) (entities []*m.Entity, err error) {
 
 	var script *m.Script
 	if len(scripts) > 0 {
 		script = scripts[0]
 	}
 
-	entity1 := e.addL3("l3n1", "192.168.0.247", script, area)
-	entity2 := e.addL3("l3n2", "192.168.0.242", script, area)
-	entity3 := e.addL3("l3n3", "192.168.0.244", script, area)
-	entity4 := e.addL3("l3n4", "192.168.0.243", script, area)
-	entity5 := e.addL3("l3n5", "192.168.0.240", script, area)
+	entity1 := e.addL3(ctx, "l3n1", "192.168.0.247", script, area)
+	entity2 := e.addL3(ctx, "l3n2", "192.168.0.242", script, area)
+	entity3 := e.addL3(ctx, "l3n3", "192.168.0.244", script, area)
+	entity4 := e.addL3(ctx, "l3n4", "192.168.0.243", script, area)
+	entity5 := e.addL3(ctx, "l3n5", "192.168.0.240", script, area)
 
-	tgBot := e.addTgBot("clavicus", os.Getenv("SH_TG_BOT_TOKEN"), script, area)
-	sensorEntity := e.addSensor("api", scripts[1], area)
+	tgBot := e.addTgBot(ctx, "clavicus", os.Getenv("SH_TG_BOT_TOKEN"), script, area)
+	sensorEntity := e.addSensor(ctx, "api", scripts[1], area)
 
 	entities = []*m.Entity{entity1, entity2, entity3, entity4, entity5, tgBot, sensorEntity}
 
 	return
 }
 
-func (e *EntityManager) addL3(name, host string, script *m.Script, area *m.Area) (ent *m.Entity) {
+func (e *Supervisor) addL3(ctx context.Context, name, host string, script *m.Script, area *m.Area) (ent *m.Entity) {
 
 	id := common.EntityId(fmt.Sprintf("cgminer.%s", name))
 
 	var err error
-	if ent, err = e.adaptors.Entity.GetById(id); err == nil {
+	if ent, err = e.adaptors.Entity.GetById(ctx, id); err == nil {
 		return
 	}
 
@@ -167,10 +186,10 @@ func (e *EntityManager) addL3(name, host string, script *m.Script, area *m.Area)
 		},
 	}
 
-	err = e.adaptors.Entity.Add(ent)
+	err = e.adaptors.Entity.Add(ctx, ent)
 	So(err, ShouldBeNil)
 
-	_, err = e.adaptors.EntityStorage.Add(&m.EntityStorage{
+	_, err = e.adaptors.EntityStorage.Add(ctx, &m.EntityStorage{
 		EntityId:   ent.Id,
 		Attributes: ent.Attributes.Serialize(),
 	})
@@ -179,12 +198,12 @@ func (e *EntityManager) addL3(name, host string, script *m.Script, area *m.Area)
 	return
 }
 
-func (e *EntityManager) addTgBot(name, token string, script *m.Script, area *m.Area) (ent *m.Entity) {
+func (e *Supervisor) addTgBot(ctx context.Context, name, token string, script *m.Script, area *m.Area) (ent *m.Entity) {
 
 	id := common.EntityId(fmt.Sprintf("%s.%s", telegram.Name, name))
 
 	var err error
-	if ent, err = e.adaptors.Entity.GetById(id); err == nil {
+	if ent, err = e.adaptors.Entity.GetById(ctx, id); err == nil {
 		return
 	}
 
@@ -206,9 +225,9 @@ func (e *EntityManager) addTgBot(name, token string, script *m.Script, area *m.A
 		},
 		Area: area,
 	}
-	err = e.adaptors.Entity.Add(ent)
+	err = e.adaptors.Entity.Add(ctx, ent)
 	So(err, ShouldBeNil)
-	_, err = e.adaptors.EntityStorage.Add(&m.EntityStorage{
+	_, err = e.adaptors.EntityStorage.Add(ctx, &m.EntityStorage{
 		EntityId:   ent.Id,
 		Attributes: ent.Attributes.Serialize(),
 	})
@@ -217,12 +236,12 @@ func (e *EntityManager) addTgBot(name, token string, script *m.Script, area *m.A
 	return
 }
 
-func (e *EntityManager) addSensor(name string, script *m.Script, area *m.Area) (ent *m.Entity) {
+func (e *Supervisor) addSensor(ctx context.Context, name string, script *m.Script, area *m.Area) (ent *m.Entity) {
 
 	id := common.EntityId(fmt.Sprintf("cgminer.%s", name))
 
 	var err error
-	if ent, err = e.adaptors.Entity.GetById(id); err == nil {
+	if ent, err = e.adaptors.Entity.GetById(ctx, id); err == nil {
 		return
 	}
 
@@ -260,9 +279,9 @@ func (e *EntityManager) addSensor(name string, script *m.Script, area *m.Area) (
 		},
 		Area: area,
 	}
-	err = e.adaptors.Entity.Add(ent)
+	err = e.adaptors.Entity.Add(ctx, ent)
 	So(err, ShouldBeNil)
-	_, err = e.adaptors.EntityStorage.Add(&m.EntityStorage{
+	_, err = e.adaptors.EntityStorage.Add(ctx, &m.EntityStorage{
 		EntityId:   ent.Id,
 		Attributes: ent.Attributes.Serialize(),
 	})

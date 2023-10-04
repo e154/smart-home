@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -29,9 +29,9 @@ const (
 	// Name ...
 	Name = "triggers"
 	// TopicSystemStart ...
-	TopicSystemStart = "system_start"
+	TopicSystemStart = "system/event/start" //todo move
 	// TopicSystemStop ...
-	TopicSystemStop = "system_stop"
+	TopicSystemStop = "system/event/stop" //todo move
 
 	Version = "0.0.1"
 )
@@ -55,7 +55,6 @@ type ITrigger interface {
 	Subscribe(Subscriber) error
 	Unsubscribe(Subscriber) error
 	FunctionName() string
-	CallManual()
 }
 
 // Subscriber ...

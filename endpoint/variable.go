@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -46,7 +46,7 @@ func (v *VariableEndpoint) Add(ctx context.Context, variable m.Variable) (errs v
 		return
 	}
 
-	err = v.adaptors.Variable.CreateOrUpdate(variable)
+	err = v.adaptors.Variable.CreateOrUpdate(ctx, variable)
 
 	return
 }
@@ -54,7 +54,7 @@ func (v *VariableEndpoint) Add(ctx context.Context, variable m.Variable) (errs v
 // GetById ...
 func (v *VariableEndpoint) GetById(ctx context.Context, name string) (variable m.Variable, err error) {
 
-	variable, err = v.adaptors.Variable.GetByName(name)
+	variable, err = v.adaptors.Variable.GetByName(ctx, name)
 
 	return
 }
@@ -67,7 +67,7 @@ func (v *VariableEndpoint) Update(ctx context.Context, variable m.Variable) (err
 		return
 	}
 
-	err = v.adaptors.Variable.CreateOrUpdate(variable)
+	err = v.adaptors.Variable.CreateOrUpdate(ctx, variable)
 
 	return
 }
@@ -75,13 +75,13 @@ func (v *VariableEndpoint) Update(ctx context.Context, variable m.Variable) (err
 // GetList ...
 func (v *VariableEndpoint) GetList(ctx context.Context, pagination common.PageParams) (list []m.Variable, total int64, err error) {
 
-	list, total, err = v.adaptors.Variable.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, false)
+	list, total, err = v.adaptors.Variable.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, false)
 	return
 }
 
 // Delete ...
 func (v *VariableEndpoint) Delete(ctx context.Context, name string) (err error) {
 
-	err = v.adaptors.Variable.Delete(name)
+	err = v.adaptors.Variable.Delete(ctx, name)
 	return
 }

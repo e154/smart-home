@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -18,7 +18,7 @@
 
 package zigbee2mqtt
 
-import "github.com/e154/smart-home/system/entity_manager"
+import "github.com/e154/smart-home/system/supervisor"
 
 // NewMessage ...
 func NewMessage() (m *Message) {
@@ -30,14 +30,14 @@ func NewMessage() (m *Message) {
 
 // Message ...
 type Message struct {
-	Payload   string                           `json:"payload"`
-	Topic     string                           `json:"topic"`
-	Qos       uint8                            `json:"qos"`
-	Duplicate bool                             `json:"duplicate"`
-	storage   Storage                          `json:"storage"`
-	Error     string                           `json:"error"`
-	Success   bool                             `json:"success"`
-	NewState  entity_manager.EntityStateParams `json:"new_state"`
+	storage   Storage
+	Payload   string                       `json:"payload"`
+	Topic     string                       `json:"topic"`
+	Qos       uint8                        `json:"qos"`
+	Duplicate bool                         `json:"duplicate"`
+	Error     string                       `json:"error"`
+	Success   bool                         `json:"success"`
+	NewState  supervisor.EntityStateParams `json:"new_state"`
 }
 
 func (m *Message) clearError() {

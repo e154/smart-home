@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,29 +20,30 @@ package initial
 
 import (
 	"context"
+	"encoding/hex"
 	"errors"
 	"fmt"
-
-	"github.com/e154/smart-home/system/scheduler"
+	"github.com/e154/smart-home/system/media"
 	"go.uber.org/fx"
 
 	. "github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api"
-	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/encryptor"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	_ "github.com/e154/smart-home/plugins"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/automation"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/gate_client"
 	. "github.com/e154/smart-home/system/initial/assertions"
 	"github.com/e154/smart-home/system/initial/demo"
 	localMigrations "github.com/e154/smart-home/system/initial/local_migrations"
 	"github.com/e154/smart-home/system/logging_ws"
 	"github.com/e154/smart-home/system/migrations"
+	"github.com/e154/smart-home/system/scheduler"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/supervisor"
 	"github.com/e154/smart-home/system/validation"
 )
 
@@ -56,8 +57,7 @@ type Initial struct {
 	adaptors        *Adaptors
 	scriptService   scripts.ScriptService
 	accessList      access_list.AccessListService
-	entityManager   entity_manager.EntityManager
-	pluginManager   common.PluginManager
+	supervisor      supervisor.Supervisor
 	automation      automation.Automation
 	api             *api.Api
 	gateClient      *gate_client.GateClient
@@ -72,8 +72,7 @@ func NewInitial(lc fx.Lifecycle,
 	adaptors *Adaptors,
 	scriptService scripts.ScriptService,
 	accessList access_list.AccessListService,
-	entityManager entity_manager.EntityManager,
-	pluginManager common.PluginManager,
+	supervisor supervisor.Supervisor,
 	automation automation.Automation,
 	api *api.Api,
 	gateClient *gate_client.GateClient,
@@ -81,14 +80,14 @@ func NewInitial(lc fx.Lifecycle,
 	_ *logging_ws.LoggingWs,
 	localMigrations *localMigrations.Migrations,
 	demo *demo.Demos,
-	_ *scheduler.Scheduler) *Initial {
+	_ *scheduler.Scheduler,
+	_ *media.Media) *Initial {
 	initial := &Initial{
 		migrations:      migrations,
 		adaptors:        adaptors,
 		scriptService:   scriptService,
 		accessList:      accessList,
-		entityManager:   entityManager,
-		pluginManager:   pluginManager,
+		supervisor:      supervisor,
 		automation:      automation,
 		api:             api,
 		gateClient:      gateClient,
@@ -139,16 +138,16 @@ func (n *Initial) checkForUpgrade() {
 		fmt.Println("")
 	}()
 
-
-	v, err := n.adaptors.Variable.GetByName("initial_version")
+	const name = "initialVersion"
+	v, err := n.adaptors.Variable.GetByName(context.Background(), name)
 	if err != nil {
 
 		if errors.Is(err, apperr.ErrNotFound) {
 			v = m.Variable{
-				Name:  "initial_version",
+				Name:  name,
 				Value: fmt.Sprintf("%d", 1),
 			}
-			err = n.adaptors.Variable.Add(v)
+			err = n.adaptors.Variable.Add(context.Background(), v)
 			So(err, ShouldBeNil)
 		}
 	}
@@ -162,15 +161,19 @@ func (n *Initial) checkForUpgrade() {
 	}
 
 	v.Value = currentVersion
-	err = n.adaptors.Variable.Update(v)
+	err = n.adaptors.Variable.Update(context.Background(), v)
 	So(err, ShouldBeNil)
 }
 
 // Start ...
 func (n *Initial) Start(ctx context.Context) (err error) {
 	n.checkForUpgrade()
-	n.entityManager.SetPluginManager(n.pluginManager)
-	n.pluginManager.Start()
+
+	variable, _ := n.adaptors.Variable.GetByName(ctx, "encryptor")
+	val, _ := hex.DecodeString(variable.Value)
+	encryptor.SetKey(val)
+
+	_ = n.supervisor.Start(ctx)
 	_ = n.automation.Start()
 	go func() {
 		_ = n.api.Start()

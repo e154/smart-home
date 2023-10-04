@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,14 +19,15 @@
 package db
 
 import (
+	"context"
 	"fmt"
 	"time"
 
 	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/e154/smart-home/common"
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // Logs ...
@@ -56,8 +57,8 @@ func (m *Log) TableName() string {
 }
 
 // Add ...
-func (n Logs) Add(v *Log) (id int64, err error) {
-	if err = n.Db.Create(&v).Error; err != nil {
+func (n Logs) Add(ctx context.Context, v *Log) (id int64, err error) {
+	if err = n.Db.WithContext(ctx).Create(&v).Error; err != nil {
 		err = errors.Wrap(apperr.ErrLogAdd, err.Error())
 		return
 	}
@@ -66,9 +67,9 @@ func (n Logs) Add(v *Log) (id int64, err error) {
 }
 
 // GetById ...
-func (n Logs) GetById(id int64) (v *Log, err error) {
+func (n Logs) GetById(ctx context.Context, id int64) (v *Log, err error) {
 	v = &Log{Id: id}
-	if err = n.Db.First(&v).Error; err != nil {
+	if err = n.Db.WithContext(ctx).First(&v).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			err = errors.Wrap(apperr.ErrLogNotFound, fmt.Sprintf("id \"%d\"", id))
 			return
@@ -79,17 +80,17 @@ func (n Logs) GetById(id int64) (v *Log, err error) {
 }
 
 // Delete ...
-func (n Logs) Delete(mapId int64) (err error) {
-	if err = n.Db.Delete(&Log{Id: mapId}).Error; err != nil {
+func (n Logs) Delete(ctx context.Context, mapId int64) (err error) {
+	if err = n.Db.WithContext(ctx).Delete(&Log{Id: mapId}).Error; err != nil {
 		err = errors.Wrap(apperr.ErrLogDelete, err.Error())
 	}
 	return
 }
 
 // List ...
-func (n *Logs) List(limit, offset int64, orderBy, sort string, queryObj *LogQuery) (list []*Log, total int64, err error) {
+func (n *Logs) List(ctx context.Context, limit, offset int, orderBy, sort string, queryObj *LogQuery) (list []*Log, total int64, err error) {
 
-	q := n.Db.Model(Log{})
+	q := n.Db.WithContext(ctx).Model(Log{})
 
 	if queryObj != nil {
 		if queryObj.StartDate != nil {
@@ -123,9 +124,9 @@ func (n *Logs) List(limit, offset int64, orderBy, sort string, queryObj *LogQuer
 }
 
 // Search ...
-func (n *Logs) Search(query string, limit, offset int) (list []*Log, total int64, err error) {
+func (n *Logs) Search(ctx context.Context, query string, limit, offset int) (list []*Log, total int64, err error) {
 
-	q := n.Db.Model(&Log{}).
+	q := n.Db.WithContext(ctx).Model(&Log{}).
 		Where("body LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
@@ -147,10 +148,26 @@ func (n *Logs) Search(query string, limit, offset int) (list []*Log, total int64
 }
 
 // DeleteOldest ...
-func (n *Logs) DeleteOldest(days int) (err error) {
-	err = n.Db.Delete(&Log{}, fmt.Sprintf(`created_at < now() - interval '%d days'`, days)).Error
+func (n *Logs) DeleteOldest(ctx context.Context, days int) (err error) {
+
+	log := &Log{}
+	if err = n.Db.WithContext(ctx).Last(&log).Error; err != nil {
+		err = errors.Wrap(apperr.ErrLogDelete, err.Error())
+		return
+	}
+	err = n.Db.WithContext(ctx).Delete(&Log{},
+		fmt.Sprintf(`created_at < CAST('%s' AS DATE) - interval '%d days'`,
+			log.CreatedAt.UTC().Format("2006-01-02 15:04:05"), days)).Error
 	if err != nil {
 		err = errors.Wrap(apperr.ErrLogDelete, err.Error())
+	}
+	return
+}
+
+// AddMultiple ...
+func (n *Logs) AddMultiple(ctx context.Context, logs []*Log) (err error) {
+	if err = n.Db.WithContext(ctx).Create(&logs).Error; err != nil {
+		err = errors.Wrap(apperr.ErrLogAdd, err.Error())
 	}
 	return
 }

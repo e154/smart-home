@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,7 +20,10 @@ package models
 
 import (
 	"encoding/json"
+	"fmt"
 	"testing"
+
+	"github.com/e154/smart-home/common/encryptor"
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -32,6 +35,8 @@ func TestAttributes(t *testing.T) {
 	const data = `
 {
   "s": "string",
+  "d": "e0a342c056b7da409ef11c872e361ace3e72c3849abe51da834fa250b833f40ebe078f0cecef23544338c9",
+  "p": [42.86754085166162, 74.57289978531306],
   "i": 123,
   "f": 456.123,
   "b": true,
@@ -48,12 +53,15 @@ func TestAttributes(t *testing.T) {
     }
   }
 }`
-
 	const sourceAttrs = `
 {
   "ozone": {
     "name": "ozone",
     "type": "float"
+  },
+  "position": {
+    "name": "position",
+    "type": "point"
   },
   "datetime": {
     "name": "datetime",
@@ -116,6 +124,7 @@ func TestAttributes(t *testing.T) {
 }`
 	const sourceAttrsValue = `{
   "ozone": null,
+  "position": [42.86754085166162, 74.57289978531306],
   "datetime": "2021-04-21T23:20:07.829185+07:00",
   "humidity": 78.4,
   "attribution": "Weather forecast from met.no, delivered by the Norwegian Meteorological Institute.",
@@ -147,8 +156,17 @@ func TestAttributes(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(changed, ShouldEqual, true)
 
+			data, err := encryptor.Encrypt("foo")
+			So(err, ShouldBeNil)
+			fmt.Println(data)
+
 			So(attrs["s"].Value, ShouldEqual, "string")
 			So(attrs["s"].String(), ShouldEqual, "string")
+			So(attrs["d"].Value, ShouldEqual, "e0a342c056b7da409ef11c872e361ace3e72c3849abe51da834fa250b833f40ebe078f0cecef23544338c9")
+			So(attrs["d"].Decrypt(), ShouldEqual, "foo")
+			So(attrs["p"].Value, ShouldResemble, []interface{}{42.86754085166162, 74.57289978531306})
+			So(attrs["p"].Point().Lat, ShouldEqual, 74.57289978531306)
+			So(attrs["p"].Point().Lon, ShouldEqual, 42.86754085166162)
 			So(attrs["i"].Value, ShouldEqual, 123)
 			So(attrs["i"].Int64(), ShouldEqual, 123)
 			So(attrs["f"].Value, ShouldEqual, 456.123)
@@ -194,6 +212,8 @@ func TestAttributes(t *testing.T) {
 
 			So(attrs["attribution"].Value, ShouldEqual, "Weather forecast from met.no, delivered by the Norwegian Meteorological Institute.")
 			So(attrs["ozone"].Value, ShouldBeEmpty)
+			So(attrs["position"].Value, ShouldNotBeEmpty)
+			So(attrs["position"].Value, ShouldResemble, []interface{}{42.86754085166162, 74.57289978531306})
 			So(attrs["datetime"].Value, ShouldEqual, "2021-04-21T23:20:07.829185+07:00")
 			So(attrs["humidity"].Value, ShouldEqual, 78.4)
 			m := attrs["forecast_day1"].Map()
@@ -221,6 +241,7 @@ func TestAttributes(t *testing.T) {
 
 			s := attrs.Serialize()
 			So(s["s"], ShouldEqual, "string")
+			So(s["p"], ShouldResemble, []interface{}{42.86754085166162, 74.57289978531306})
 			So(s["i"], ShouldEqual, 123)
 			So(s["f"], ShouldEqual, 456.123)
 			So(s["b"], ShouldEqual, true)
@@ -256,6 +277,9 @@ func TestAttributes(t *testing.T) {
 			So(s["s"].Name, ShouldEqual, "s")
 			So(s["s"].Value, ShouldBeNil)
 			So(s["s"].Type, ShouldEqual, common.AttributeString)
+			So(s["p"].Name, ShouldEqual, "p")
+			So(s["p"].Value, ShouldBeNil)
+			So(s["p"].Type, ShouldEqual, common.AttributePoint)
 			So(s["i"].Name, ShouldEqual, "i")
 			So(s["i"].Value, ShouldBeNil)
 			So(s["i"].Type, ShouldEqual, common.AttributeInt)
@@ -318,6 +342,8 @@ func TestAttributes(t *testing.T) {
 
 			So(cpy["s"].Value, ShouldEqual, "string")
 			So(cpy["s"].String(), ShouldEqual, "string")
+			So(cpy["p"].Value, ShouldResemble, []interface{}{42.86754085166162, 74.57289978531306})
+			So(cpy["p"].Point(), ShouldResemble, m.Point{Lon: 42.86754085166162, Lat: 74.57289978531306})
 			So(cpy["i"].Value, ShouldEqual, 123)
 			So(cpy["i"].Int64(), ShouldEqual, 123)
 			So(cpy["f"].Value, ShouldEqual, 456.123)
@@ -364,6 +390,8 @@ func TestAttributes(t *testing.T) {
 
 			So(cpy["s"].Value, ShouldEqual, "string")
 			So(cpy["s"].String(), ShouldEqual, "string")
+			So(cpy["p"].Value, ShouldResemble, []interface{}{42.86754085166162, 74.57289978531306})
+			So(cpy["p"].Point(), ShouldResemble, m.Point{Lon: 42.86754085166162, Lat: 74.57289978531306})
 			So(cpy["i"].Value, ShouldEqual, 123)
 			So(cpy["i"].Int64(), ShouldEqual, 123)
 			So(cpy["f"].Value, ShouldEqual, 456.123)
@@ -410,6 +438,8 @@ func TestAttributes(t *testing.T) {
 
 			So(cpy["s"].Value, ShouldEqual, "string")
 			So(cpy["s"].String(), ShouldEqual, "string")
+			So(cpy["p"].Value, ShouldResemble, []interface{}{42.86754085166162, 74.57289978531306})
+			So(cpy["p"].Point(), ShouldResemble, m.Point{Lon: 42.86754085166162, Lat: 74.57289978531306})
 			So(cpy["i"].Value, ShouldEqual, 123)
 			So(cpy["i"].Int64(), ShouldEqual, 123)
 			So(cpy["f"].Value, ShouldEqual, 456.123)

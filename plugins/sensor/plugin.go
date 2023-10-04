@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,76 +19,63 @@
 package sensor
 
 import (
-	"fmt"
-	"sync"
-
+	"context"
 	"github.com/e154/smart-home/common/events"
-
-	"github.com/e154/smart-home/common/apperr"
-
 	"github.com/e154/smart-home/common/logger"
-	"github.com/pkg/errors"
-
-	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/plugins"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 var (
 	log = logger.MustGetLogger("plugins.sensor")
 )
 
-var _ plugins.Plugable = (*plugin)(nil)
+var _ supervisor.Pluggable = (*plugin)(nil)
 
 func init() {
-	plugins.RegisterPlugin(Name, New)
+	supervisor.RegisterPlugin(Name, New)
 }
 
 type plugin struct {
-	*plugins.Plugin
-	actorsLock *sync.Mutex
-	actors     map[common.EntityId]*Actor
+	*supervisor.Plugin
 	mqttServ   mqtt.MqttServ
 	mqttClient mqtt.MqttCli
 }
 
 // New ...
-func New() plugins.Plugable {
+func New() supervisor.Pluggable {
 	return &plugin{
-		Plugin:     plugins.NewPlugin(),
-		actorsLock: &sync.Mutex{},
-		actors:     make(map[common.EntityId]*Actor),
+		Plugin: supervisor.NewPlugin(),
 	}
 }
 
 // Load ...
-func (p *plugin) Load(service plugins.Service) (err error) {
-	if err = p.Plugin.Load(service); err != nil {
+func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
+	if err = p.Plugin.Load(ctx, service, p.ActorConstructor); err != nil {
 		return
 	}
 
-	_ = p.EventBus.Subscribe(bus.TopicEntities, p.eventHandler)
+	_ = p.Service.EventBus().Subscribe("system/entities/+", p.eventHandler)
 
 	return nil
 }
 
 // Unload ...
-func (p *plugin) Unload() (err error) {
-	if err = p.Plugin.Unload(); err != nil {
+func (p *plugin) Unload(ctx context.Context) (err error) {
+	if err = p.Plugin.Unload(ctx); err != nil {
 		return
 	}
 
-	_ = p.EventBus.Unsubscribe(bus.TopicEntities, p.eventHandler)
-
-	// remove actors
-	for entityId, actor := range p.actors {
-		actor.destroy()
-		delete(p.actors, entityId)
-	}
+	_ = p.Service.EventBus().Unsubscribe("system/entities/+", p.eventHandler)
 
 	return nil
+}
+
+// ActorConstructor ...
+func (p *plugin) ActorConstructor(entity *m.Entity) (actor supervisor.PluginActor, err error) {
+	actor = NewActor(entity, p.Service)
+	return
 }
 
 // Name ...
@@ -100,53 +87,19 @@ func (p *plugin) eventHandler(topic string, msg interface{}) {
 
 	switch v := msg.(type) {
 	case events.EventStateChanged:
-	case events.EventCallAction:
-		actor, ok := p.actors[v.EntityId]
+	case events.EventCallEntityAction:
+		value, ok := p.Actors.Load(v.EntityId)
 		if !ok {
 			return
 		}
+		actor := value.(*Actor)
 		actor.addAction(v)
 	}
 }
 
-// AddOrUpdateActor ...
-func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	if _, ok := p.actors[entity.Id]; ok {
-		return
-	}
-
-	actor := NewActor(entity, p.EntityManager, p.Adaptors, p.ScriptService, p.EventBus)
-	p.actors[entity.Id] = actor
-	p.EntityManager.Spawn(actor.Spawn)
-
-	return
-}
-
-// RemoveActor ...
-func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
-
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	actor, ok := p.actors[entityId]
-	if !ok {
-		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("failed remove \"%s\"", entityId))
-		return
-	}
-
-	actor.destroy()
-
-	delete(p.actors, entityId)
-
-	return
-}
-
 // Type ...
-func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginInstallable
+func (p *plugin) Type() supervisor.PluginType {
+	return supervisor.PluginInstallable
 }
 
 // Depends ...

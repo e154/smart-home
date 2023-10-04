@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -18,7 +18,11 @@
 
 package models
 
-import "github.com/e154/smart-home/common"
+import (
+	"time"
+
+	"github.com/e154/smart-home/common"
+)
 
 // TriggerPayload ...
 type TriggerPayload struct {
@@ -29,11 +33,14 @@ type TriggerPayload struct {
 type Trigger struct {
 	Id         int64            `json:"id"`
 	Name       string           `json:"name" validate:"required,lte=255"`
-	TaskId     int64            `json:"task_id"`
 	Entity     *Entity          `json:"entity"`
 	EntityId   *common.EntityId `json:"entity_id"`
 	Script     *Script          `json:"script"`
 	ScriptId   *int64           `json:"script_id"`
 	PluginName string           `json:"plugin_name" validate:"required,lte=255"`
 	Payload    Attributes       `json:"payload"`
+	Enabled    bool             `json:"enabled"`
+	IsLoaded   bool             `json:"is_loaded"`
+	CreatedAt  time.Time        `json:"created_at"`
+	UpdatedAt  time.Time        `json:"updated_at"`
 }

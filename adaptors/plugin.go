@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,24 +19,25 @@
 package adaptors
 
 import (
+	"context"
 	"encoding/json"
 
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // IPlugin ...
 type IPlugin interface {
-	Add(plugin m.Plugin) error
-	CreateOrUpdate(ver m.Plugin) error
-	Update(plugin m.Plugin) error
-	Delete(pluginId string) error
-	List(limit, offset int64, orderBy, sort string) (list []m.Plugin, total int64, err error)
-	Search(query string, limit, offset int64) (list []m.Plugin, total int64, err error)
-	GetByName(name string) (ver m.Plugin, err error)
-	fromDb(dbVer db.Plugin) (plugin m.Plugin)
-	toDb(plugin m.Plugin) (dbVer db.Plugin)
+	Add(ctx context.Context, plugin *m.Plugin) error
+	CreateOrUpdate(ctx context.Context, ver *m.Plugin) error
+	Update(ctx context.Context, plugin *m.Plugin) error
+	Delete(ctx context.Context, pluginId string) error
+	List(ctx context.Context, limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Plugin, total int64, err error)
+	Search(ctx context.Context, query string, limit, offset int64) (list []*m.Plugin, total int64, err error)
+	GetByName(ctx context.Context, name string) (ver *m.Plugin, err error)
+	fromDb(dbVer *db.Plugin) (plugin *m.Plugin)
+	toDb(plugin *m.Plugin) (dbVer *db.Plugin)
 }
 
 // Plugin ...
@@ -55,37 +56,37 @@ func GetPluginAdaptor(d *gorm.DB) IPlugin {
 }
 
 // Add ...
-func (p *Plugin) Add(plugin m.Plugin) (err error) {
-	err = p.table.Add(p.toDb(plugin))
+func (p *Plugin) Add(ctx context.Context, plugin *m.Plugin) (err error) {
+	err = p.table.Add(ctx, p.toDb(plugin))
 	return
 }
 
 // CreateOrUpdate ...
-func (p *Plugin) CreateOrUpdate(plugin m.Plugin) (err error) {
-	err = p.table.CreateOrUpdate(p.toDb(plugin))
+func (p *Plugin) CreateOrUpdate(ctx context.Context, plugin *m.Plugin) (err error) {
+	err = p.table.CreateOrUpdate(ctx, p.toDb(plugin))
 	return
 }
 
 // Update ...
-func (p *Plugin) Update(plugin m.Plugin) (err error) {
-	err = p.table.Update(p.toDb(plugin))
+func (p *Plugin) Update(ctx context.Context, plugin *m.Plugin) (err error) {
+	err = p.table.Update(ctx, p.toDb(plugin))
 	return
 }
 
 // Delete ...
-func (p *Plugin) Delete(name string) (err error) {
-	err = p.table.Delete(name)
+func (p *Plugin) Delete(ctx context.Context, name string) (err error) {
+	err = p.table.Delete(ctx, name)
 	return
 }
 
 // List ...
-func (p *Plugin) List(limit, offset int64, orderBy, sort string) (list []m.Plugin, total int64, err error) {
-	var dbList []db.Plugin
-	if dbList, total, err = p.table.List(limit, offset, orderBy, sort); err != nil {
+func (p *Plugin) List(ctx context.Context, limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Plugin, total int64, err error) {
+	var dbList []*db.Plugin
+	if dbList, total, err = p.table.List(ctx, int(limit), int(offset), orderBy, sort, onlyEnabled); err != nil {
 		return
 	}
 
-	list = make([]m.Plugin, len(dbList))
+	list = make([]*m.Plugin, len(dbList))
 	for i, dbVer := range dbList {
 		list[i] = p.fromDb(dbVer)
 	}
@@ -93,13 +94,13 @@ func (p *Plugin) List(limit, offset int64, orderBy, sort string) (list []m.Plugi
 }
 
 // Search ...
-func (p *Plugin) Search(query string, limit, offset int64) (list []m.Plugin, total int64, err error) {
-	var dbList []db.Plugin
-	if dbList, total, err = p.table.Search(query, limit, offset); err != nil {
+func (p *Plugin) Search(ctx context.Context, query string, limit, offset int64) (list []*m.Plugin, total int64, err error) {
+	var dbList []*db.Plugin
+	if dbList, total, err = p.table.Search(ctx, query, int(limit), int(offset)); err != nil {
 		return
 	}
 
-	list = make([]m.Plugin, len(dbList))
+	list = make([]*m.Plugin, len(dbList))
 	for i, dbVer := range dbList {
 		list[i] = p.fromDb(dbVer)
 	}
@@ -108,10 +109,10 @@ func (p *Plugin) Search(query string, limit, offset int64) (list []m.Plugin, tot
 }
 
 // GetByName ...
-func (p *Plugin) GetByName(name string) (ver m.Plugin, err error) {
+func (p *Plugin) GetByName(ctx context.Context, name string) (ver *m.Plugin, err error) {
 
-	var dbVer db.Plugin
-	if dbVer, err = p.table.GetByName(name); err != nil {
+	var dbVer *db.Plugin
+	if dbVer, err = p.table.GetByName(ctx, name); err != nil {
 		return
 	}
 
@@ -120,8 +121,8 @@ func (p *Plugin) GetByName(name string) (ver m.Plugin, err error) {
 	return
 }
 
-func (p *Plugin) fromDb(dbVer db.Plugin) (ver m.Plugin) {
-	ver = m.Plugin{
+func (p *Plugin) fromDb(dbVer *db.Plugin) (ver *m.Plugin) {
+	ver = &m.Plugin{
 		Name:    dbVer.Name,
 		Version: dbVer.Version,
 		Enabled: dbVer.Enabled,
@@ -138,8 +139,8 @@ func (p *Plugin) fromDb(dbVer db.Plugin) (ver m.Plugin) {
 	return
 }
 
-func (p *Plugin) toDb(ver m.Plugin) (dbVer db.Plugin) {
-	dbVer = db.Plugin{
+func (p *Plugin) toDb(ver *m.Plugin) (dbVer *db.Plugin) {
+	dbVer = &db.Plugin{
 		Name:    ver.Name,
 		Version: ver.Version,
 		Enabled: ver.Enabled,

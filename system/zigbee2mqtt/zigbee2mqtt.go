@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,6 +21,9 @@ package zigbee2mqtt
 import (
 	"context"
 	"sync"
+
+	"github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/system/bus"
 
 	"github.com/e154/smart-home/common/apperr"
 
@@ -45,40 +48,37 @@ type zigbee2mqtt struct {
 	isStarted   atomic.Bool
 	bridgesLock *sync.Mutex
 	bridges     map[int64]*Bridge
+	eventBus    bus.Bus
 }
 
 // NewZigbee2mqtt ...
 func NewZigbee2mqtt(lc fx.Lifecycle,
 	mqtt mqtt.MqttServ,
-	adaptors *adaptors.Adaptors) Zigbee2mqtt {
+	adaptors *adaptors.Adaptors,
+	eventBus bus.Bus) Zigbee2mqtt {
 	zigbee2mqtt := &zigbee2mqtt{
 		mqtt:        mqtt,
 		adaptors:    adaptors,
 		bridgesLock: &sync.Mutex{},
 		bridges:     make(map[int64]*Bridge),
+		eventBus:    eventBus,
 	}
 
 	lc.Append(fx.Hook{
-		OnStart: func(ctx context.Context) error {
-			zigbee2mqtt.Start()
-			return nil
-		},
-		OnStop: func(ctx context.Context) error {
-			zigbee2mqtt.Shutdown()
-			return nil
-		},
+		OnStart: zigbee2mqtt.Start,
+		OnStop:  zigbee2mqtt.Shutdown,
 	})
 	return zigbee2mqtt
 }
 
 // Start ...
-func (z *zigbee2mqtt) Start() {
+func (z *zigbee2mqtt) Start(ctx context.Context) (err error) {
 	if z.isStarted.Load() {
 		return
 	}
 	z.isStarted.Store(true)
 
-	models, _, err := z.adaptors.Zigbee2mqtt.List(99, 0)
+	models, _, err := z.adaptors.Zigbee2mqtt.List(ctx, 99, 0)
 	if err != nil {
 		log.Error(err.Error())
 	}
@@ -89,7 +89,7 @@ func (z *zigbee2mqtt) Start() {
 			BaseTopic:  "zigbee2mqtt",
 			PermitJoin: true,
 		}
-		model.Id, err = z.adaptors.Zigbee2mqtt.Add(model)
+		model.Id, err = z.adaptors.Zigbee2mqtt.Add(ctx, model)
 		if err != nil {
 			log.Error(err.Error())
 			return
@@ -110,10 +110,14 @@ func (z *zigbee2mqtt) Start() {
 		z.bridges[model.Id] = bridge
 		z.bridgesLock.Unlock()
 	}
+
+	z.eventBus.Publish("system/services/zigbee2mqtt", events.EventServiceStarted{Service: "Zigbee2mqtt"})
+
+	return
 }
 
 // Shutdown ...
-func (z *zigbee2mqtt) Shutdown() {
+func (z *zigbee2mqtt) Shutdown(ctx context.Context) (err error) {
 	if !z.isStarted.Load() {
 		return
 	}
@@ -122,18 +126,22 @@ func (z *zigbee2mqtt) Shutdown() {
 		bridge.Stop(context.Background())
 	}
 	_ = z.mqtt.Authenticator().Unregister(z.Authenticator)
+
+	z.eventBus.Publish("system/services/zigbee2mqtt", events.EventServiceStopped{Service: "Zigbee2mqtt"})
+
+	return
 }
 
 // AddBridge ...
 func (z *zigbee2mqtt) AddBridge(model *m.Zigbee2mqtt) (err error) {
 
-	model.Id, err = z.adaptors.Zigbee2mqtt.Add(model)
+	model.Id, err = z.adaptors.Zigbee2mqtt.Add(context.Background(), model)
 	if err != nil {
 		log.Error(err.Error())
 		return
 	}
 
-	if model, err = z.adaptors.Zigbee2mqtt.GetById(model.Id); err != nil {
+	if model, err = z.adaptors.Zigbee2mqtt.GetById(context.Background(), model.Id); err != nil {
 		return
 	}
 
@@ -195,11 +203,11 @@ func (z *zigbee2mqtt) UpdateBridge(model *m.Zigbee2mqtt) (result *m.Zigbee2mqtt,
 		return
 	}
 
-	if err = z.adaptors.Zigbee2mqtt.Update(model); err != nil {
+	if err = z.adaptors.Zigbee2mqtt.Update(context.Background(), model); err != nil {
 		return
 	}
 
-	result, err = z.adaptors.Zigbee2mqtt.GetById(model.Id)
+	result, err = z.adaptors.Zigbee2mqtt.GetById(context.Background(), model.Id)
 	bridge.UpdateModel(result)
 
 	return
@@ -218,7 +226,7 @@ func (z *zigbee2mqtt) DeleteBridge(bridgeId int64) (err error) {
 		return
 	}
 
-	err = z.adaptors.Zigbee2mqtt.Delete(bridgeId)
+	err = z.adaptors.Zigbee2mqtt.Delete(context.Background(), bridgeId)
 
 	return
 }

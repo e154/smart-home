@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -34,63 +34,25 @@ func NewAutomationDto() Automation {
 }
 
 // AddTask ...
-func (r Automation) AddTask(obj *api.NewTaskRequest) (task *m.Task) {
+func (r Automation) AddTask(obj *api.NewTaskRequest) (task *m.NewTask) {
 	if obj == nil {
 		return
 	}
-	task = &m.Task{
-		Name:        obj.Name,
-		Description: obj.Description,
-		Enabled:     obj.Enabled,
-		Condition:   common.ConditionType(obj.Condition),
-		Triggers:    make([]*m.Trigger, 0, len(obj.Triggers)),
-		Conditions:  make([]*m.Condition, 0, len(obj.Conditions)),
-		Actions:     make([]*m.Action, 0, len(obj.Actions)),
-	}
-	// area
-	if obj.Area != nil {
-		task.Area = &m.Area{
-			Id:          obj.Area.Id,
-			Name:        obj.Area.Name,
-			Description: obj.Area.Description,
-		}
-	}
-	// triggers
-	for _, t := range obj.Triggers {
-		trigger := &m.Trigger{
-			Name:       t.Name,
-			PluginName: t.PluginName,
-			ScriptId:   t.ScriptId,
-			EntityId:   common.NewEntityIdFromPtr(t.EntityId),
-			Payload:    AttributeFromApi(t.Attributes),
-		}
-		task.Triggers = append(task.Triggers, trigger)
-	}
-	// conditions
-	for _, c := range obj.Conditions {
-		condition := &m.Condition{
-			Name: c.Name,
-		}
-		if c.Script != nil {
-			condition.ScriptId = c.Script.Id
-		}
-		task.Conditions = append(task.Conditions, condition)
-	}
-	// actions
-	for _, a := range obj.Actions {
-		action := &m.Action{
-			Name:             a.Name,
-			EntityId:         common.NewEntityIdFromPtr(a.EntityId),
-			EntityActionName: a.EntityActionName,
-			ScriptId:         a.ScriptId,
-		}
-		task.Actions = append(task.Actions, action)
+	task = &m.NewTask{
+		Name:         obj.Name,
+		Description:  obj.Description,
+		Enabled:      obj.Enabled,
+		Condition:    common.ConditionType(obj.Condition),
+		TriggerIds:   obj.TriggerIds,
+		ConditionIds: obj.ConditionIds,
+		ActionIds:    obj.ActionIds,
+		AreaId:       obj.AreaId,
 	}
 	return
 }
 
 // ImportTask ...
-func (r Automation) ImportTask(obj *api.NewTaskRequest) (task *m.Task) {
+func (r Automation) ImportTask(obj *api.Task) (task *m.Task) {
 	if obj == nil {
 		return
 	}
@@ -102,17 +64,10 @@ func (r Automation) ImportTask(obj *api.NewTaskRequest) (task *m.Task) {
 		Triggers:    make([]*m.Trigger, 0, len(obj.Triggers)),
 		Conditions:  make([]*m.Condition, 0, len(obj.Conditions)),
 		Actions:     make([]*m.Action, 0, len(obj.Actions)),
+		AreaId:      obj.AreaId,
 	}
-	// area
-	if obj.Area != nil {
-		task.Area = &m.Area{
-			Id:          obj.Area.Id,
-			Name:        obj.Area.Name,
-			Description: obj.Area.Description,
-		}
-	}
-	// triggers
 
+	// triggers
 	for _, t := range obj.Triggers {
 		trigger := &m.Trigger{
 			Name:       t.Name,
@@ -149,59 +104,19 @@ func (r Automation) ImportTask(obj *api.NewTaskRequest) (task *m.Task) {
 }
 
 // UpdateTask ...
-func (r Automation) UpdateTask(obj *api.UpdateTaskRequest) (task *m.Task) {
-	task = &m.Task{
-		Id:          obj.Id,
-		Name:        obj.Name,
-		Description: obj.Description,
-		Enabled:     obj.Enabled,
-		Condition:   common.ConditionType(obj.Condition),
-		Triggers:    make([]*m.Trigger, 0, len(obj.Triggers)),
-		Conditions:  make([]*m.Condition, 0, len(obj.Conditions)),
-		Actions:     make([]*m.Action, 0, len(obj.Actions)),
+func (r Automation) UpdateTask(obj *api.UpdateTaskRequest) (task *m.UpdateTask) {
+	task = &m.UpdateTask{
+		Id:           obj.Id,
+		Name:         obj.Name,
+		Description:  obj.Description,
+		Enabled:      obj.Enabled,
+		Condition:    common.ConditionType(obj.Condition),
+		TriggerIds:   obj.TriggerIds,
+		ConditionIds: obj.ConditionIds,
+		ActionIds:    obj.ActionIds,
+		AreaId:       obj.AreaId,
 	}
-	// area
-	if obj.Area != nil {
-		task.Area = &m.Area{
-			Id:          obj.Area.Id,
-			Name:        obj.Area.Name,
-			Description: obj.Area.Description,
-		}
-	}
-	// triggers
-	for _, t := range obj.Triggers {
-		trigger := &m.Trigger{
-			Name:       t.Name,
-			PluginName: t.PluginName,
-			EntityId:   common.NewEntityIdFromPtr(t.EntityId),
-			Payload:    AttributeFromApi(t.Attributes),
-			ScriptId:   t.ScriptId,
-		}
-		if t.Script != nil {
-			trigger.ScriptId = common.Int64(t.Script.Id)
-		}
-		task.Triggers = append(task.Triggers, trigger)
-	}
-	// conditions
-	for _, c := range obj.Conditions {
-		condition := &m.Condition{
-			Name: c.Name,
-		}
-		if c.Script != nil {
-			condition.ScriptId = c.Script.Id
-		}
-		task.Conditions = append(task.Conditions, condition)
-	}
-	// actions
-	for _, a := range obj.Actions {
-		action := &m.Action{
-			Name:             a.Name,
-			EntityId:         common.NewEntityIdFromPtr(a.EntityId),
-			EntityActionName: a.EntityActionName,
-			ScriptId:         a.ScriptId,
-		}
-		task.Actions = append(task.Actions, action)
-	}
+
 	return
 }
 
@@ -233,7 +148,9 @@ func (r Automation) GetTask(task *m.Task) (obj *api.Task) {
 		Name:        task.Name,
 		Description: task.Description,
 		Enabled:     task.Enabled,
+		IsLoaded:    common.Bool(task.IsLoaded),
 		Area:        ToArea(task.Area),
+		AreaId:      task.AreaId,
 		Condition:   string(task.Condition),
 		CreatedAt:   timestamppb.New(task.CreatedAt),
 		UpdatedAt:   timestamppb.New(task.UpdatedAt),
@@ -242,35 +159,50 @@ func (r Automation) GetTask(task *m.Task) (obj *api.Task) {
 	// triggers
 	for _, tr := range task.Triggers {
 		obj.Triggers = append(obj.Triggers, &api.Trigger{
-			Name:       tr.Name,
-			Script:     ToGScript(tr.Script),
-			ScriptId:   tr.ScriptId,
-			PluginName: tr.PluginName,
-			Entity:     ToEntity(tr.Entity),
-			EntityId:   tr.EntityId.StringPtr(),
-			Attributes: AttributeToApi(tr.Payload),
+			Id:   tr.Id,
+			Name: tr.Name,
 		})
+		obj.TriggerIds = append(obj.TriggerIds, tr.Id)
 	}
 
 	// conditions
 	for _, con := range task.Conditions {
 		obj.Conditions = append(obj.Conditions, &api.Condition{
-			Name:   con.Name,
-			Script: ToGScript(con.Script),
+			Id:   con.Id,
+			Name: con.Name,
 		})
+		obj.ConditionIds = append(obj.ConditionIds, con.Id)
 	}
 
 	// actions
-	for _, con := range task.Actions {
+	for _, action := range task.Actions {
 		obj.Actions = append(obj.Actions, &api.Action{
-			Id:               nil,
-			Name:             con.Name,
-			Script:           ToGScript(con.Script),
-			ScriptId:         con.ScriptId,
-			EntityId:         con.EntityId.StringPtr(),
-			Entity:           ToEntity(con.Entity),
-			EntityActionName: con.EntityActionName,
+			Id:   action.Id,
+			Name: action.Name,
 		})
+		obj.ActionIds = append(obj.ActionIds, action.Id)
+	}
+
+	// telemetry
+	if task.Telemetry != nil {
+		obj.Telemetry = make([]*api.TelemetryItem, 0)
+	}
+
+	for _, item := range task.Telemetry {
+		stateItem := &api.TelemetryItem{
+			Name:         item.Name,
+			Num:          int32(item.Num),
+			Start:        item.Start.UnixNano(),
+			End:          nil,
+			TimeEstimate: int64(item.TimeEstimate),
+			Attributes:   item.Attributes,
+			Status:       string(item.Status),
+			Level:        int32(item.Level),
+		}
+		if item.End != nil {
+			stateItem.End = common.Int64(item.End.UnixNano())
+		}
+		obj.Telemetry = append(obj.Telemetry, stateItem)
 	}
 
 	return

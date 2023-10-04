@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,20 +19,21 @@
 package adaptors
 
 import (
+	"context"
+
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
-	gormbulk "github.com/t-tiger/gorm-bulk-insert"
+	"gorm.io/gorm"
 )
 
 // IEntityState ...
 type IEntityState interface {
-	Add(ver *m.EntityState) (id int64, err error)
-	DeleteByEntityId(entityId common.EntityId) (err error)
-	AddMultiple(items []*m.EntityState) (err error)
+	Add(ctx context.Context, ver *m.EntityState) (id int64, err error)
+	DeleteByEntityId(ctx context.Context, entityId common.EntityId) (err error)
+	AddMultiple(ctx context.Context, items []*m.EntityState) (err error)
 	fromDb(dbVer *db.EntityState) (ver *m.EntityState)
 	toDb(ver *m.EntityState) (dbVer *db.EntityState)
 }
@@ -52,10 +53,10 @@ func GetEntityStateAdaptor(d *gorm.DB) IEntityState {
 }
 
 // Add ...
-func (n *EntityState) Add(ver *m.EntityState) (id int64, err error) {
+func (n *EntityState) Add(ctx context.Context, ver *m.EntityState) (id int64, err error) {
 
 	dbVer := n.toDb(ver)
-	if id, err = n.table.Add(dbVer); err != nil {
+	if id, err = n.table.Add(ctx, dbVer); err != nil {
 		return
 	}
 
@@ -63,15 +64,19 @@ func (n *EntityState) Add(ver *m.EntityState) (id int64, err error) {
 }
 
 // DeleteByEntityId ...
-func (n *EntityState) DeleteByEntityId(entityId common.EntityId) (err error) {
-	err = n.table.DeleteByEntityId(entityId)
+func (n *EntityState) DeleteByEntityId(ctx context.Context, entityId common.EntityId) (err error) {
+	err = n.table.DeleteByEntityId(ctx, entityId)
 	return
 }
 
 // AddMultiple ...
-func (n *EntityState) AddMultiple(items []*m.EntityState) (err error) {
+func (n *EntityState) AddMultiple(ctx context.Context, items []*m.EntityState) (err error) {
 
-	insertRecords := make([]interface{}, 0, len(items))
+	if len(items) == 0 {
+		return
+	}
+
+	insertRecords := make([]*db.EntityState, 0, len(items))
 
 	for _, ver := range items {
 		//if ver.ImageId == 0 {
@@ -80,7 +85,7 @@ func (n *EntityState) AddMultiple(items []*m.EntityState) (err error) {
 		insertRecords = append(insertRecords, n.toDb(ver))
 	}
 
-	if err = gormbulk.BulkInsert(n.db, insertRecords, len(insertRecords)); err != nil {
+	if err = n.table.AddMultiple(ctx, insertRecords); err != nil {
 		err = errors.Wrap(apperr.ErrEntityStateAdd, err.Error())
 	}
 

@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -22,51 +22,54 @@ import (
 	"context"
 
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/scripts"
 	"go.uber.org/atomic"
 )
 
 // NewCondition ...
 func NewCondition(scriptService scripts.ScriptService,
-	model *m.Condition,
-	entityManager entity_manager.EntityManager) (condition *Condition, err error) {
+	model *m.Condition) (condition *Condition, err error) {
 
-	var scriptEngine *scripts.Engine
-	if scriptEngine, err = scriptService.NewEngine(model.Script); err != nil {
+	var scriptEngine *scripts.EngineWatcher
+	if scriptEngine, err = scriptService.NewEngineWatcher(model.Script); err != nil {
 		return
 	}
 
-	if _, err = scriptEngine.Do(); err != nil {
-		return
-	}
+	scriptEngine.Spawn(func(engine *scripts.Engine) {
+		engine.PushStruct("Condition", NewConditionBind(condition))
+		if _, err = engine.Do(); err != nil {
+			return
+		}
+	})
 
 	condition = &Condition{
-		model:         model,
-		inProcess:     atomic.Bool{},
-		lastStatus:    atomic.Bool{},
-		scriptEngine:  scriptEngine,
-		entityManager: entityManager,
+		model:        model,
+		inProcess:    atomic.Bool{},
+		lastStatus:   atomic.Bool{},
+		scriptEngine: scriptEngine,
 	}
-
-	scriptEngine.PushStruct("Condition", NewConditionBind(condition))
 
 	return
 }
 
 // Condition ...
 type Condition struct {
-	model         *m.Condition
-	inProcess     atomic.Bool
-	lastStatus    atomic.Bool
-	scriptEngine  *scripts.Engine
-	entityManager entity_manager.EntityManager
+	model        *m.Condition
+	inProcess    atomic.Bool
+	lastStatus   atomic.Bool
+	scriptEngine *scripts.EngineWatcher
+}
+
+func (r *Condition) Stop() {
+	if r.scriptEngine != nil {
+		r.scriptEngine.Stop()
+	}
 }
 
 // Check ...
 func (r *Condition) Check(ctx context.Context) (result string, err error) {
 
-	if result, err = r.scriptEngine.AssertFunction(ConditionFunc, ctx.Value("entityId")); err != nil {
+	if result, err = r.scriptEngine.Engine().AssertFunction(ConditionFunc, ctx.Value("entityId")); err != nil {
 		log.Error(err.Error())
 	}
 

@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -58,8 +58,8 @@ func New{{.Name}}(common *CommonEndpoint) *{{.Name}} {
 	}
 }
 
-// Add ...
-func (n *{{.Name}}) Add(params m.{{.ModelName}}) (result m.{{.ModelName}}, errs validator.ValidationErrorsTranslations, err error) {
+// AddEntity ...
+func (n *{{.Name}}) AddEntity(params m.{{.ModelName}}) (result m.{{.ModelName}}, errs validator.ValidationErrorsTranslations, err error) {
 
 	var ok bool
 	if ok, errs = n.validation.Valid(params); !ok {
@@ -67,7 +67,7 @@ func (n *{{.Name}}) Add(params m.{{.ModelName}}) (result m.{{.ModelName}}, errs 
 	}
 
 	var id int64
-	if id, err = n.adaptors.{{.AdaptorName}}.Add(params); err != nil {
+	if id, err = n.adaptors.{{.AdaptorName}}.AddEntity(params); err != nil {
 		return
 	}
 
@@ -84,8 +84,8 @@ func (n *{{.Name}}) GetById(id int64) (result m.{{.ModelName}}, err error) {
 	return
 }
 
-// Update ...
-func (n *{{.Name}}) Update(params m.{{.ModelName}}) (result m.{{.ModelName}}, errs validator.ValidationErrorsTranslations, err error) {
+// UpdateEntity ...
+func (n *{{.Name}}) UpdateEntity(params m.{{.ModelName}}) (result m.{{.ModelName}}, errs validator.ValidationErrorsTranslations, err error) {
 
 	var user m.{{.ModelName}}
 	if user, err = n.adaptors.{{.AdaptorName}}.GetById(params.Id); err != nil {
@@ -99,7 +99,7 @@ func (n *{{.Name}}) Update(params m.{{.ModelName}}) (result m.{{.ModelName}}, er
 		return 
 	}
 
-	if err = n.adaptors.{{.AdaptorName}}.Update(user); err != nil {
+	if err = n.adaptors.{{.AdaptorName}}.UpdateEntity(user); err != nil {
 		return
 	}
 

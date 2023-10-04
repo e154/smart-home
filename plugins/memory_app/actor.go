@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,42 +19,27 @@
 package memory_app
 
 import (
-	"fmt"
 	"runtime"
 	"sync"
 	"time"
 
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
-
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 // Actor ...
 type Actor struct {
-	entity_manager.BaseActor
-	eventBus   bus.Bus
+	supervisor.BaseActor
 	updateLock *sync.Mutex
 }
 
 // NewActor ...
-func NewActor(entityManager entity_manager.EntityManager,
-	eventBus bus.Bus,
-	entity *m.Entity) *Actor {
+func NewActor(entity *m.Entity,
+	service supervisor.Service) *Actor {
 
 	actor := &Actor{
-		BaseActor: entity_manager.BaseActor{
-			Id:                common.EntityId(fmt.Sprintf("%s.%s", EntityMemory, Name)),
-			Name:              Name,
-			EntityType:        EntityMemory,
-			UnitOfMeasurement: "GHz",
-			AttrMu:            &sync.RWMutex{},
-			Attrs:             NewAttr(),
-			Manager:           entityManager,
-		},
-		eventBus:   eventBus,
+		BaseActor:  supervisor.NewBaseActor(entity, service),
 		updateLock: &sync.Mutex{},
 	}
 
@@ -65,40 +50,43 @@ func NewActor(entityManager entity_manager.EntityManager,
 	return actor
 }
 
-// Spawn ...
-func (e *Actor) Spawn() entity_manager.PluginActor {
-	return e
+func (e *Actor) Destroy() {
+
 }
 
-func (u *Actor) selfUpdate() {
+func (e *Actor) Spawn() {
 
-	u.updateLock.Lock()
-	defer u.updateLock.Unlock()
+}
 
-	oldState := u.GetEventState(u)
-	u.Now(oldState)
+func (e *Actor) selfUpdate() {
+
+	e.updateLock.Lock()
+	defer e.updateLock.Unlock()
+
+	oldState := e.GetEventState()
+	e.Now(oldState)
 
 	var s runtime.MemStats
 	runtime.ReadMemStats(&s)
 
-	u.AttrMu.Lock()
-	u.Attrs[AttrAlloc].Value = s.Alloc
-	u.Attrs[AttrHeapAlloc].Value = s.HeapAlloc
-	u.Attrs[AttrTotalAlloc].Value = s.TotalAlloc
-	u.Attrs[AttrSys].Value = s.Sys
-	u.Attrs[AttrNumGC].Value = s.NumGC
-	u.Attrs[AttrLastGC].Value = time.Unix(0, int64(s.LastGC))
-	u.AttrMu.Unlock()
+	e.AttrMu.Lock()
+	e.Attrs[AttrAlloc].Value = s.Alloc
+	e.Attrs[AttrHeapAlloc].Value = s.HeapAlloc
+	e.Attrs[AttrTotalAlloc].Value = s.TotalAlloc
+	e.Attrs[AttrSys].Value = s.Sys
+	e.Attrs[AttrNumGC].Value = s.NumGC
+	e.Attrs[AttrLastGC].Value = time.Unix(0, int64(s.LastGC)).UTC()
+	e.AttrMu.Unlock()
 
-	//u.SetMetric(u.Id, "memory_app", map[string]float32{
+	//e.SetMetric(e.Id, "memory_app", map[string]float32{
 	//	"total_alloc": float32(s.TotalAlloc),
 	//})
 
-	u.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
+	go e.SaveState(events.EventStateChanged{
 		StorageSave: false,
-		PluginName:  u.Id.PluginName(),
-		EntityId:    u.Id,
+		PluginName:  e.Id.PluginName(),
+		EntityId:    e.Id,
 		OldState:    oldState,
-		NewState:    u.GetEventState(u),
+		NewState:    e.GetEventState(),
 	})
 }

@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -50,11 +50,11 @@ func (i *ImageEndpoint) Add(ctx context.Context, params *m.Image) (image *m.Imag
 	}
 
 	var id int64
-	if id, err = i.adaptors.Image.Add(params); err != nil {
+	if id, err = i.adaptors.Image.Add(ctx, params); err != nil {
 		return
 	}
 
-	image, err = i.adaptors.Image.GetById(id)
+	image, err = i.adaptors.Image.GetById(ctx, id)
 
 	return
 }
@@ -67,7 +67,7 @@ func (i *ImageEndpoint) GetById(ctx context.Context, imageId int64) (image *m.Im
 		return
 	}
 
-	image, err = i.adaptors.Image.GetById(imageId)
+	image, err = i.adaptors.Image.GetById(ctx, imageId)
 
 	return
 }
@@ -76,7 +76,7 @@ func (i *ImageEndpoint) GetById(ctx context.Context, imageId int64) (image *m.Im
 func (i *ImageEndpoint) Update(ctx context.Context, params *m.Image) (result *m.Image, errs validator.ValidationErrorsTranslations, err error) {
 
 	var image *m.Image
-	if image, err = i.adaptors.Image.GetById(params.Id); err != nil {
+	if image, err = i.adaptors.Image.GetById(ctx, params.Id); err != nil {
 		return
 	}
 
@@ -89,11 +89,11 @@ func (i *ImageEndpoint) Update(ctx context.Context, params *m.Image) (result *m.
 		return
 	}
 
-	if err = i.adaptors.Image.Update(image); err != nil {
+	if err = i.adaptors.Image.Update(ctx, image); err != nil {
 		return
 	}
 
-	result, err = i.adaptors.Image.GetById(params.Id)
+	result, err = i.adaptors.Image.GetById(ctx, params.Id)
 
 	return
 }
@@ -107,11 +107,11 @@ func (i *ImageEndpoint) Delete(ctx context.Context, imageId int64) (errs validat
 	}
 
 	var image *m.Image
-	if image, err = i.adaptors.Image.GetById(imageId); err != nil {
+	if image, err = i.adaptors.Image.GetById(ctx, imageId); err != nil {
 		return
 	}
 
-	err = i.adaptors.Image.Delete(image.Id)
+	err = i.adaptors.Image.Delete(ctx, image.Id)
 
 	return
 }
@@ -132,7 +132,7 @@ func (i *ImageEndpoint) Upload(ctx context.Context, files map[string][]*multipar
 
 		reader := bufio.NewReader(file)
 		var newImage *m.Image
-		if newImage, err = i.adaptors.Image.UploadImage(reader, fileHeader[0].Filename); err != nil {
+		if newImage, err = i.adaptors.Image.UploadImage(ctx, reader, fileHeader[0].Filename); err != nil {
 			errs = append(errs, err)
 		} else {
 			fileList = append(fileList, newImage)
@@ -147,7 +147,7 @@ func (i *ImageEndpoint) Upload(ctx context.Context, files map[string][]*multipar
 // GetList ...
 func (i *ImageEndpoint) GetList(ctx context.Context, pagination common.PageParams) (items []*m.Image, total int64, err error) {
 
-	items, total, err = i.adaptors.Image.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
+	items, total, err = i.adaptors.Image.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
 
 	return
 }
@@ -155,7 +155,7 @@ func (i *ImageEndpoint) GetList(ctx context.Context, pagination common.PageParam
 // GetListByDate ...
 func (i *ImageEndpoint) GetListByDate(ctx context.Context, filter string) (images []*m.Image, err error) {
 
-	images, err = i.adaptors.Image.GetAllByDate(filter)
+	images, err = i.adaptors.Image.GetAllByDate(ctx, filter)
 
 	return
 }
@@ -163,7 +163,7 @@ func (i *ImageEndpoint) GetListByDate(ctx context.Context, filter string) (image
 // GetFilterList ...
 func (i *ImageEndpoint) GetFilterList(ctx context.Context) (filterList []*m.ImageFilterList, err error) {
 
-	filterList, err = i.adaptors.Image.GetFilterList()
+	filterList, err = i.adaptors.Image.GetFilterList(ctx)
 
 	return
 }

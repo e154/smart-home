@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -25,6 +25,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/system/bus"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -35,12 +38,10 @@ import (
 	"github.com/e154/smart-home/plugins/moon"
 	"github.com/e154/smart-home/plugins/node"
 	"github.com/e154/smart-home/plugins/scene"
-	"github.com/e154/smart-home/plugins/script"
 	"github.com/e154/smart-home/plugins/sun"
 	"github.com/e154/smart-home/plugins/telegram"
 	"github.com/e154/smart-home/plugins/weather"
 	"github.com/e154/smart-home/plugins/zigbee2mqtt"
-	"github.com/e154/smart-home/plugins/zone"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/phayes/freeport"
 	"github.com/smartystreets/goconvey/convey"
@@ -188,27 +189,6 @@ func GetNewPlug(id string, scrits []*m.Script) *m.Entity {
 	}
 }
 
-// GetNewScript ...
-func GetNewScript(id string, scrits []*m.Script) *m.Entity {
-	return &m.Entity{
-		Id:          common.EntityId(id),
-		Description: "MiJia power plug ZigBee",
-		PluginName:  script.EntityScript,
-		Scripts:     scrits,
-		Attributes:  m.Attributes{},
-		AutoLoad:    true,
-		States: []*m.EntityState{
-			{
-				Name:        "ON",
-				Description: "on state",
-			},
-			{
-				Name:        "OFF",
-				Description: "off state",
-			},
-		},
-	}
-}
 
 // GetNewScene ...
 func GetNewScene(id string, scripts []*m.Script) *m.Entity {
@@ -218,22 +198,6 @@ func GetNewScene(id string, scripts []*m.Script) *m.Entity {
 		PluginName:  scene.EntityScene,
 		Scripts:     scripts,
 		AutoLoad:    true,
-	}
-}
-
-// GetNewZone ...
-func GetNewZone() *m.Entity {
-	setings := zone.NewSettings()
-	setings[zone.AttrLat].Value = 54.9022
-	setings[zone.AttrLon].Value = 83.0335
-	setings[zone.AttrElevation].Value = 150
-	setings[zone.AttrTimezone].Value = 7
-	return &m.Entity{
-		Id:          "zone.home",
-		Description: "main geo zone",
-		PluginName:  "zone",
-		AutoLoad:    true,
-		Settings:    setings,
 	}
 }
 
@@ -399,7 +363,7 @@ func GetNewTelegram(name string) *m.Entity {
 
 // AddPlugin ...
 func AddPlugin(adaptors *adaptors.Adaptors, name string, opts ...m.AttributeValue) (err error) {
-	plugin := m.Plugin{
+	plugin := &m.Plugin{
 		Name:    name,
 		Version: "0.0.1",
 		Enabled: true,
@@ -408,7 +372,7 @@ func AddPlugin(adaptors *adaptors.Adaptors, name string, opts ...m.AttributeValu
 	if len(opts) > 0 {
 		plugin.Settings = opts[0]
 	}
-	err = adaptors.Plugin.CreateOrUpdate(plugin)
+	err = adaptors.Plugin.CreateOrUpdate(context.Background(), plugin)
 	return
 }
 
@@ -435,9 +399,7 @@ func Wait(t time.Duration, ch chan interface{}) (ok bool) {
 	select {
 	case <-ch:
 		ok = true
-		break
 	case <-ticker.C:
-		break
 	}
 	return
 }
@@ -542,7 +504,65 @@ func AddScript(name, src string, adaptors *adaptors.Adaptors, scriptService scri
 		return
 	}
 
-	script.Id, err = adaptors.Script.Add(script)
+	script.Id, err = adaptors.Script.Add(context.Background(), script)
 
+	return
+}
+
+func AddTrigger(trigger *m.Trigger, adaptors *adaptors.Adaptors, eventBus bus.Bus) (err error) {
+	if trigger.Id, err = adaptors.Trigger.Add(context.Background(), trigger); err != nil {
+		return
+	}
+	eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", trigger.Id), events.EventAddedTrigger{
+		Id: trigger.Id,
+	})
+	return
+}
+
+func AddTask(newTask *m.NewTask, adaptors *adaptors.Adaptors, eventBus bus.Bus) (err error) {
+	var task1Id int64
+	if task1Id, err = adaptors.Task.Add(context.Background(), newTask); err != nil {
+		return
+	}
+	eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", task1Id), events.EventAddedTask{
+		Id: task1Id,
+	})
+	return
+}
+
+func WaitSupervisor(eventBus bus.Bus) {
+
+	ch := make(chan interface{})
+	defer close(ch)
+	fn := func(_ string, msg interface{}) {
+		switch msg.(type) {
+		case events.EventServiceStarted:
+			ch <- struct{}{}
+		}
+	}
+	eventBus.Subscribe("system/services/supervisor", fn)
+	defer eventBus.Unsubscribe("system/services/supervisor", fn)
+
+	Wait(1, ch)
+
+	time.Sleep(time.Millisecond * 500)
+}
+
+func WaitStateChanged(eventBus bus.Bus) (ok bool) {
+
+	ch := make(chan interface{})
+	defer close(ch)
+	fn := func(_ string, msg interface{}) {
+		switch msg.(type) {
+		case events.EventStateChanged:
+			ch <- struct{}{}
+		}
+	}
+	eventBus.Subscribe("system/entities/+", fn)
+	defer eventBus.Unsubscribe("system/entities/+", fn)
+
+	ok = Wait(1, ch)
+
+	time.Sleep(time.Millisecond * 500)
 	return
 }

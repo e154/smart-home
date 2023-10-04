@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -18,11 +18,14 @@
 
 package models
 
+import "time"
+
 // Condition ...
 type Condition struct {
-	Id       int64   `json:"id"`
-	Name     string  `json:"name" validate:"required,lte=255"`
-	TaskId   int64   `json:"task_id"`
-	Script   *Script `json:"script"`
-	ScriptId int64   `json:"script_id" validate:"required"`
+	Id        int64     `json:"id"`
+	Name      string    `json:"name" validate:"required,lte=255"`
+	Script    *Script   `json:"script"`
+	ScriptId  int64     `json:"script_id" validate:"required"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }

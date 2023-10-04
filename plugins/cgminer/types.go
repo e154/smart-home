@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,7 @@ package cgminer
 import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 const (
@@ -104,9 +104,9 @@ func NewSettings() m.Attributes {
 }
 
 // state list entity
-func NewStates() (states map[string]entity_manager.ActorState) {
+func NewStates() (states map[string]supervisor.ActorState) {
 
-	states = map[string]entity_manager.ActorState{
+	states = map[string]supervisor.ActorState{
 		StateEnabled: {
 			Name:        StateEnabled,
 			Description: "Enabled",
@@ -125,8 +125,8 @@ func NewStates() (states map[string]entity_manager.ActorState) {
 }
 
 // entity action list
-func NewActions() map[string]entity_manager.ActorAction {
-	return map[string]entity_manager.ActorAction{
+func NewActions() map[string]supervisor.ActorAction {
+	return map[string]supervisor.ActorAction{
 		ActionEnabled: {
 			Name:        "Enable",
 			Description: "enable action",

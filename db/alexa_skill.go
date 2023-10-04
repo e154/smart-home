@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,14 +19,15 @@
 package db
 
 import (
+	"context"
 	"fmt"
 	"time"
 
 	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/e154/smart-home/common"
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // AlexaSkills ...
@@ -53,8 +54,8 @@ func (d *AlexaSkill) TableName() string {
 }
 
 // Add ...
-func (n AlexaSkills) Add(v *AlexaSkill) (id int64, err error) {
-	if err = n.Db.Create(&v).Error; err != nil {
+func (n AlexaSkills) Add(ctx context.Context, v *AlexaSkill) (id int64, err error) {
+	if err = n.Db.WithContext(ctx).Create(&v).Error; err != nil {
 		err = errors.Wrap(apperr.ErrAlexaSkillAdd, err.Error())
 		return
 	}
@@ -63,9 +64,9 @@ func (n AlexaSkills) Add(v *AlexaSkill) (id int64, err error) {
 }
 
 // GetById ...
-func (n AlexaSkills) GetById(id int64) (v *AlexaSkill, err error) {
+func (n AlexaSkills) GetById(ctx context.Context, id int64) (v *AlexaSkill, err error) {
 	v = &AlexaSkill{Id: id}
-	err = n.Db.Model(v).
+	err = n.Db.WithContext(ctx).Model(v).
 		Preload("Script").
 		Preload("Intents").
 		Preload("Intents.Script").
@@ -87,15 +88,15 @@ func (n AlexaSkills) GetById(id int64) (v *AlexaSkill, err error) {
 }
 
 // List ...
-func (n *AlexaSkills) List(limit, offset int64, orderBy, sort string) (list []*AlexaSkill, total int64, err error) {
+func (n *AlexaSkills) List(ctx context.Context, limit, offset int, orderBy, sort string) (list []*AlexaSkill, total int64, err error) {
 
-	if err = n.Db.Model(AlexaSkill{}).Count(&total).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(AlexaSkill{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrAlexaSkillList, err.Error())
 		return
 	}
 
 	list = make([]*AlexaSkill, 0)
-	q := n.Db.Model(&AlexaSkill{}).
+	q := n.Db.WithContext(ctx).Model(&AlexaSkill{}).
 		Limit(limit).
 		Offset(offset)
 
@@ -112,10 +113,10 @@ func (n *AlexaSkills) List(limit, offset int64, orderBy, sort string) (list []*A
 }
 
 // ListEnabled ...
-func (n *AlexaSkills) ListEnabled(limit, offset int64) (list []*AlexaSkill, err error) {
+func (n *AlexaSkills) ListEnabled(ctx context.Context, limit, offset int) (list []*AlexaSkill, err error) {
 
 	list = make([]*AlexaSkill, 0)
-	err = n.Db.Model(&AlexaSkill{}).
+	err = n.Db.WithContext(ctx).Model(&AlexaSkill{}).
 		Where("status = 'enabled'").
 		Limit(limit).
 		Offset(offset).
@@ -138,24 +139,25 @@ func (n *AlexaSkills) ListEnabled(limit, offset int64) (list []*AlexaSkill, err 
 }
 
 func (n AlexaSkills) preload(v *AlexaSkill) (err error) {
-	err = n.Db.Model(v).
-		Related(&v.Intents).Error
-
-	if err != nil {
-		err = errors.Wrap(err, "get related intents failed")
-		return
-	}
-
-	for _, intent := range v.Intents {
-		intent.Script = &Script{Id: intent.ScriptId}
-		err = n.Db.Model(intent).
-			Related(intent.Script).Error
-	}
+	//todo fix
+	//err = n.Db.Model(v).
+	//	Related(&v.Intents).Error
+	//
+	//if err != nil {
+	//	err = errors.Wrap(err, "get related intents failed")
+	//	return
+	//}
+	//
+	//for _, intent := range v.Intents {
+	//	intent.Script = &Script{Id: intent.ScriptId}
+	//	err = n.Db.Model(intent).
+	//		Related(intent.Script).Error
+	//}
 	return
 }
 
 // Update ...
-func (n AlexaSkills) Update(v *AlexaSkill) (err error) {
+func (n AlexaSkills) Update(ctx context.Context, v *AlexaSkill) (err error) {
 	q := map[string]interface{}{
 		"skill_id":    v.SkillId,
 		"status":      v.Status,
@@ -164,15 +166,15 @@ func (n AlexaSkills) Update(v *AlexaSkill) (err error) {
 	if v.ScriptId != nil {
 		q["script_id"] = common.Int64Value(v.ScriptId)
 	}
-	if err = n.Db.Model(&AlexaSkill{}).Where("id = ?", v.Id).Updates(q).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(&AlexaSkill{}).Where("id = ?", v.Id).Updates(q).Error; err != nil {
 		err = errors.Wrap(apperr.ErrAlexaSkillUpdate, err.Error())
 	}
 	return
 }
 
 // Delete ...
-func (n AlexaSkills) Delete(id int64) (err error) {
-	if err = n.Db.Delete(&AlexaSkill{}, "id = ?", id).Error; err != nil {
+func (n AlexaSkills) Delete(ctx context.Context, id int64) (err error) {
+	if err = n.Db.WithContext(ctx).Delete(&AlexaSkill{}, "id = ?", id).Error; err != nil {
 		err = errors.Wrap(apperr.ErrAlexaSkillDelete, err.Error())
 	}
 	return

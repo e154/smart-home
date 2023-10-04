@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -60,8 +60,8 @@ func (c ControllerDeveloperTools) ReloadEntity(ctx context.Context, req *api.Rel
 	return &emptypb.Empty{}, nil
 }
 
-// TaskCallTrigger ...
-func (c ControllerDeveloperTools) TaskCallTrigger(ctx context.Context, req *api.AutomationRequest) (*emptypb.Empty, error) {
+// CallTrigger ...
+func (c ControllerDeveloperTools) CallTrigger(ctx context.Context, req *api.AutomationRequest) (*emptypb.Empty, error) {
 
 	if err := c.endpoint.DeveloperTools.TaskCallTrigger(ctx, req.Id, req.Name); err != nil {
 		return nil, c.error(ctx, nil, err)
@@ -70,12 +70,23 @@ func (c ControllerDeveloperTools) TaskCallTrigger(ctx context.Context, req *api.
 	return &emptypb.Empty{}, nil
 }
 
-// TaskCallAction ...
-func (c ControllerDeveloperTools) TaskCallAction(ctx context.Context, req *api.AutomationRequest) (*emptypb.Empty, error) {
+// CallAction ...
+func (c ControllerDeveloperTools) CallAction(ctx context.Context, req *api.AutomationRequest) (*emptypb.Empty, error) {
 
 	if err := c.endpoint.DeveloperTools.TaskCallAction(ctx, req.Id, req.Name); err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
 
 	return &emptypb.Empty{}, nil
+}
+
+// GetEventBusStateList ...
+func (c ControllerDeveloperTools) GetEventBusStateList(ctx context.Context, _ *api.PaginationRequest) (*api.EventBusStateListResult, error) {
+
+	state, total, err := c.endpoint.DeveloperTools.GetEventBusState()
+	if err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return c.dto.DeveloperTools.GetEventBusState(state, total), nil
 }

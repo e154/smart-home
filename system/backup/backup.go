@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -27,9 +27,9 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 	"go.uber.org/fx"
+	"gorm.io/gorm"
 
 	app "github.com/e154/smart-home/common/app"
 	"github.com/e154/smart-home/common/apperr"
@@ -165,7 +165,7 @@ func (b *Backup) restore(name string) (err error) {
 		return
 	}
 
-	log.Info("Purge database")
+	log.Info("Restart database")
 
 	if err = b.db.Exec(`DROP SCHEMA IF EXISTS "public" CASCADE;`).Error; err != nil {
 		err = errors.Wrap(fmt.Errorf("failed exec sql command"), err.Error())

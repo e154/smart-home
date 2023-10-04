@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -41,16 +41,11 @@ func NewControllerEntityStorage(common *ControllerCommon) ControllerEntityStorag
 // GetEntityStorageList ...
 func (c ControllerEntityStorage) GetEntityStorageList(ctx context.Context, req *api.GetEntityStorageRequest) (*api.GetEntityStorageResult, error) {
 
-	entity, err := c.endpoint.Entity.GetById(ctx, common.EntityId(req.EntityId))
-	if err != nil {
-		return nil, c.error(ctx, nil, err)
-	}
-
 	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
-	items, total, err := c.endpoint.EntityStorage.GetList(ctx, common.EntityId(req.EntityId), pagination, req.StartDate, req.EndDate)
+	items, total, err := c.endpoint.EntityStorage.GetList(ctx, common.NewEntityIdFromPtr(req.EntityId), pagination, req.StartDate, req.EndDate)
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
 
-	return c.dto.EntityStorage.List(items, uint64(total), pagination, entity), nil
+	return c.dto.EntityStorage.List(items, uint64(total), pagination), nil
 }

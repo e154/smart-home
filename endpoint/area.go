@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -50,11 +50,11 @@ func (n *AreaEndpoint) Add(ctx context.Context, params *m.Area) (result *m.Area,
 		return
 	}
 
-	if _, err = n.adaptors.Area.Add(params); err != nil {
+	if _, err = n.adaptors.Area.Add(ctx, params); err != nil {
 		return
 	}
 
-	result, err = n.adaptors.Area.GetByName(params.Name)
+	result, err = n.adaptors.Area.GetByName(ctx, params.Name)
 
 	return
 }
@@ -62,7 +62,7 @@ func (n *AreaEndpoint) Add(ctx context.Context, params *m.Area) (result *m.Area,
 // GetById ...
 func (n *AreaEndpoint) GetById(ctx context.Context, id int64) (result *m.Area, err error) {
 
-	result, err = n.adaptors.Area.GetById(id)
+	result, err = n.adaptors.Area.GetById(ctx, id)
 
 	return
 }
@@ -70,36 +70,33 @@ func (n *AreaEndpoint) GetById(ctx context.Context, id int64) (result *m.Area, e
 // GetByName ...
 func (n *AreaEndpoint) GetByName(ctx context.Context, name string) (result *m.Area, err error) {
 
-	result, err = n.adaptors.Area.GetByName(name)
+	result, err = n.adaptors.Area.GetByName(ctx, name)
 
 	return
 }
 
 // Update ...
-func (n *AreaEndpoint) Update(ctx context.Context, params *m.Area) (result *m.Area, errs validator.ValidationErrorsTranslations, err error) {
+func (n *AreaEndpoint) Update(ctx context.Context, params *m.Area) (area *m.Area, errs validator.ValidationErrorsTranslations, err error) {
 
-	var area *m.Area
-	area, err = n.adaptors.Area.GetById(params.Id)
+	area, err = n.adaptors.Area.GetById(ctx, params.Id)
 	if err != nil {
 		return
 	}
 
 	area.Name = params.Name
 	area.Description = params.Description
+	area.Zoom = params.Zoom
+	area.Center = params.Center
+	area.Resolution = params.Resolution
+	area.Polygon = params.Polygon
 
 	var ok bool
 	if ok, errs = n.validation.Valid(area); !ok {
 		return
 	}
 
-	if err = n.adaptors.Area.Update(area); err != nil {
+	if err = n.adaptors.Area.Update(ctx, area); err != nil {
 		return
-	}
-
-	result = &m.Area{
-		Id:          area.Id,
-		Name:        area.Name,
-		Description: area.Description,
 	}
 
 	return
@@ -108,7 +105,7 @@ func (n *AreaEndpoint) Update(ctx context.Context, params *m.Area) (result *m.Ar
 // GetList ...
 func (n *AreaEndpoint) GetList(ctx context.Context, pagination common.PageParams) (result []*m.Area, total int64, err error) {
 
-	result, total, err = n.adaptors.Area.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
+	result, total, err = n.adaptors.Area.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
 	if err != nil {
 	}
 	return
@@ -118,12 +115,12 @@ func (n *AreaEndpoint) GetList(ctx context.Context, pagination common.PageParams
 func (n *AreaEndpoint) Delete(ctx context.Context, id int64) (err error) {
 
 	var area *m.Area
-	area, err = n.adaptors.Area.GetById(id)
+	area, err = n.adaptors.Area.GetById(ctx, id)
 	if err != nil {
 		return
 	}
 
-	err = n.adaptors.Area.DeleteByName(area.Name)
+	err = n.adaptors.Area.DeleteByName(ctx, area.Name)
 
 	return
 }
@@ -135,7 +132,7 @@ func (n *AreaEndpoint) Search(ctx context.Context, query string, limit, offset i
 		limit = common.DefaultPageSize
 	}
 
-	result, total, err = n.adaptors.Area.Search(query, limit, offset)
+	result, total, err = n.adaptors.Area.Search(ctx, query, limit, offset)
 
 	return
 }

@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,72 +19,54 @@
 package html5_notify
 
 import (
+	"context"
 	"strconv"
 	"strings"
 
-	"github.com/e154/smart-home/common/events"
-	"github.com/e154/smart-home/system/bus"
+	"github.com/e154/smart-home/system/supervisor"
 
+	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
 
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/notify"
-	"github.com/e154/smart-home/system/plugins"
 )
 
 var (
 	log = logger.MustGetLogger("plugins.html5_notify")
 )
 
-var _ plugins.Plugable = (*plugin)(nil)
+var _ supervisor.Pluggable = (*plugin)(nil)
 
 func init() {
-	plugins.RegisterPlugin(Name, New)
+	supervisor.RegisterPlugin(Name, New)
 }
 
 type plugin struct {
-	*plugins.Plugin
+	*supervisor.Plugin
 }
 
 // New ...
-func New() plugins.Plugable {
+func New() supervisor.Pluggable {
 	return &plugin{
-		Plugin: plugins.NewPlugin(),
+		Plugin: supervisor.NewPlugin(),
 	}
 }
 
 // Load ...
-func (p *plugin) Load(service plugins.Service) (err error) {
-	if err = p.Plugin.Load(service); err != nil {
+func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
+	if err = p.Plugin.Load(ctx, service, nil); err != nil {
 		return
 	}
-
-	go func() {
-		if err = p.asyncLoad(); err != nil {
-			log.Error(err.Error())
-		}
-	}()
-
-	return nil
-}
-
-func (p *plugin) asyncLoad() (err error) {
-
-	// register html5_notify provider
 	notify.ProviderManager.AddProvider(Name, p)
-
 	return
 }
 
 // Unload ...
-func (p *plugin) Unload() (err error) {
-	if err = p.Plugin.Unload(); err != nil {
-		return
-	}
-
+func (p *plugin) Unload(ctx context.Context) (err error) {
 	notify.ProviderManager.RemoveProvider(Name)
-
-	return nil
+	err = p.Plugin.Unload(ctx)
+	return
 }
 
 // Name ...
@@ -93,8 +75,8 @@ func (p *plugin) Name() string {
 }
 
 // Type ...
-func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginInstallable
+func (p *plugin) Type() supervisor.PluginType {
+	return supervisor.PluginInstallable
 }
 
 // Depends ...
@@ -121,7 +103,7 @@ func (p *plugin) Save(msg notify.Message) (addresses []string, message *m.Messag
 		Attributes: msg.Attributes,
 	}
 	var err error
-	if message.Id, err = p.Adaptors.Message.Add(message); err != nil {
+	if message.Id, err = p.Service.Adaptors().Message.Add(context.Background(), message); err != nil {
 		log.Error(err.Error())
 	}
 
@@ -140,7 +122,7 @@ func (p *plugin) Send(address string, message *m.Message) (err error) {
 	attr := NewMessageParams()
 	_, _ = attr.Deserialize(message.Attributes)
 
-	p.EventBus.Publish(bus.TopicEntities, events.EventDirectMessage{
+	p.Service.EventBus().Publish("system/plugins/html5_notify", events.EventDirectMessage{
 		UserID: userID,
 		Query:  "html5_notify",
 		Message: Notification{

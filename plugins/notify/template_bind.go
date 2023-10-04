@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,8 @@
 package notify
 
 import (
+	"context"
+
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 )
@@ -37,7 +39,7 @@ func NewTemplateBind(adaptor *adaptors.Adaptors) *TemplateBind {
 
 // Render ...
 func (t *TemplateBind) Render(templateName string, params map[string]interface{}) *m.TemplateRender {
-	render, err := t.adaptor.Template.Render(templateName, params)
+	render, err := t.adaptor.Template.Render(context.Background(), templateName, params)
 	if err != nil {
 		return nil
 	}

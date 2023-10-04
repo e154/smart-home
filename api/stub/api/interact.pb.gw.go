@@ -79,7 +79,7 @@ func RegisterInteractServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.InteractService/EntityCallAction", runtime.WithHTTPPathPattern("/v1/interact/entity_call_action"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.InteractService/EntityCallAction", runtime.WithHTTPPathPattern("/v1/interact/entity/call_action"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -143,7 +143,7 @@ func RegisterInteractServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.InteractService/EntityCallAction", runtime.WithHTTPPathPattern("/v1/interact/entity_call_action"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.InteractService/EntityCallAction", runtime.WithHTTPPathPattern("/v1/interact/entity/call_action"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -163,7 +163,7 @@ func RegisterInteractServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 }
 
 var (
-	pattern_InteractService_EntityCallAction_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "interact", "entity_call_action"}, ""))
+	pattern_InteractService_EntityCallAction_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"v1", "interact", "entity", "call_action"}, ""))
 )
 
 var (

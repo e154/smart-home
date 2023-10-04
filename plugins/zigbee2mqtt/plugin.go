@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,144 +19,93 @@
 package zigbee2mqtt
 
 import (
+	"context"
 	"fmt"
+	"github.com/e154/smart-home/common"
 	"strings"
 	"sync"
 
 	"github.com/e154/smart-home/common/events"
 
-	"github.com/pkg/errors"
-
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/plugins"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 var (
 	log = logger.MustGetLogger("plugins.zigbee2mqtt")
 )
 
-var _ plugins.Plugable = (*plugin)(nil)
+var _ supervisor.Pluggable = (*plugin)(nil)
 
 func init() {
-	plugins.RegisterPlugin(Name, New)
+	supervisor.RegisterPlugin(Name, New)
 }
 
 type plugin struct {
-	*plugins.Plugin
-	actorsLock *sync.Mutex
-	actors     map[string]*Actor
+	*supervisor.Plugin
 	mqttServ   mqtt.MqttServ
 	mqttClient mqtt.MqttCli
 	mqttSubs   sync.Map
 }
 
 // New ...
-func New() plugins.Plugable {
+func New() supervisor.Pluggable {
 	return &plugin{
-		Plugin:     plugins.NewPlugin(),
-		actorsLock: &sync.Mutex{},
-		actors:     make(map[string]*Actor),
-		mqttSubs:   sync.Map{},
+		Plugin:   supervisor.NewPlugin(),
+		mqttSubs: sync.Map{},
 	}
 }
 
 // Load ...
-func (p *plugin) Load(service plugins.Service) (err error) {
-	if err = p.Plugin.Load(service); err != nil {
+func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
+	if err = p.Plugin.Load(ctx, service, p.ActorConstructor); err != nil {
 		return
 	}
 
 	p.mqttServ = service.MqttServ()
 
 	p.mqttClient = p.mqttServ.NewClient("plugins.zigbee2mqtt")
-	if err := p.EventBus.Subscribe(bus.TopicEntities, p.eventHandler); err != nil {
+	if err := p.Service.EventBus().Subscribe("system/entities/+", p.eventHandler); err != nil {
 		log.Error(err.Error())
 	}
 	return nil
 }
 
 // Unload ...
-func (p plugin) Unload() (err error) {
-	if err = p.Plugin.Unload(); err != nil {
+func (p *plugin) Unload(ctx context.Context) (err error) {
+	if err = p.Plugin.Unload(ctx); err != nil {
 		return
 	}
 
 	p.mqttServ.RemoveClient("plugins.zigbee2mqtt")
-	_ = p.EventBus.Unsubscribe(bus.TopicEntities, p.eventHandler)
+	_ = p.Service.EventBus().Unsubscribe("system/entities/+", p.eventHandler)
 	return
 }
 
-// Name ...
-func (p plugin) Name() string {
-	return Name
-}
+// ActorConstructor ...
+func (p *plugin) ActorConstructor(entity *m.Entity) (supervisor.PluginActor, error) {
 
-// AddOrUpdateActor ...
-func (p *plugin) AddOrUpdateActor(entity *m.Entity) error {
-	return p.addOrUpdateEntity(entity, entity.Attributes.Serialize())
-}
-
-// RemoveActor ...
-func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
-	return p.removeEntity(entityId.Name())
-}
-
-func (p *plugin) addOrUpdateEntity(entity *m.Entity, attributes m.AttributeValue) (err error) {
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	name := entity.Id.Name()
-	if _, ok := p.actors[name]; ok {
-		return
+	actor, err := NewActor(entity, p.Service)
+	if err != nil {
+		return nil, err
 	}
-
-	if actor, ok := p.actors[name]; ok {
-		// update
-		_ = actor.SetState(entity_manager.EntityStateParams{
-			AttributeValues: attributes,
-		})
-		return
-	}
-
-	var actor *Actor
-	if actor, err = NewActor(entity, attributes,
-		p.Adaptors, p.ScriptService, p.EntityManager, p.EventBus); err != nil {
-		return
-	}
-	p.actors[name] = actor
-	p.EntityManager.Spawn(p.actors[name].Spawn)
-
 	var br *m.Zigbee2mqtt
-	if br, err = p.Adaptors.Zigbee2mqtt.GetById(actor.zigbee2mqttDevice.Zigbee2mqttId); err != nil {
-		return
+	if br, err = p.Service.Adaptors().Zigbee2mqtt.GetById(context.Background(), actor.zigbee2mqttDevice.Zigbee2mqttId); err != nil {
+		return nil, err
 	}
 
 	if _, ok := p.mqttSubs.Load(br.Id); !ok {
 		_ = p.mqttClient.Subscribe(p.topic(br.BaseTopic), p.mqttOnPublish)
 		p.mqttSubs.Store(br.Id, nil)
 	}
-
-	return
+	return actor, nil
 }
 
-func (p *plugin) removeEntity(name string) (err error) {
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	if _, ok := p.actors[name]; !ok {
-		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("failed remove '%s", name))
-		return
-	}
-
-	delete(p.actors, name)
-
-	return
+// Name ...
+func (p plugin) Name() string {
+	return Name
 }
 
 func (p *plugin) topic(bridgeId string) string {
@@ -171,49 +120,29 @@ func (p *plugin) mqttOnPublish(client mqtt.MqttCli, msg mqtt.Message) {
 		return
 	}
 
-	var actor *Actor
-	var err error
-	if actor, err = p.getActorByZigbeeDeviceId(topic[1]); err != nil {
-		//log.Warn(err.Error())
-		return
+	value, ok := p.Actors.Load(common.EntityId(fmt.Sprintf("zigbee2mqtt.%s", topic[1])))
+	if ok {
+		actor := value.(*Actor)
+		actor.mqttOnPublish(client, msg)
 	}
-
-	actor.mqttOnPublish(client, msg)
-}
-
-func (p *plugin) getActorByZigbeeDeviceId(deviceId string) (actor *Actor, err error) {
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	for _, actor = range p.actors {
-		if actor.zigbee2mqttDevice.Id == deviceId {
-			return
-		}
-	}
-
-	err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("device \"%s\" not found", deviceId))
-
-	return
 }
 
 func (p *plugin) eventHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
-	case events.EventCallAction:
-		actor, ok := p.actors[v.EntityId.Name()]
+	case events.EventCallEntityAction:
+		value, ok := p.Actors.Load(v.EntityId)
 		if !ok {
 			return
 		}
+		actor := value.(*Actor)
 		actor.addAction(v)
-
-	default:
-		//fmt.Printf("new event: %v\n", reflect.TypeOf(v).String())
 	}
 }
 
 // Type ...
-func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginInstallable
+func (p *plugin) Type() supervisor.PluginType {
+	return supervisor.PluginInstallable
 }
 
 // Depends ...
@@ -229,16 +158,12 @@ func (p *plugin) Version() string {
 // Options ...
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
-		Triggers:         false,
-		Actors:           true,
-		ActorCustomAttrs: true,
-		//ActorAttrs:         NewAttr(),
+		Triggers:           false,
+		Actors:             true,
+		ActorCustomAttrs:   true,
 		ActorCustomActions: true,
-		//ActorActions:       entity_manager.ToEntityActionShort(NewActions()),
-		ActorCustomStates: true,
-		//ActorStates:        entity_manager.ToEntityStateShort(NewStates()),
-		ActorCustomSetts: true,
-		//ActorSetts:         NewSettings(),
-		Setts: nil,
+		ActorCustomStates:  true,
+		ActorCustomSetts:   true,
+		Setts:              nil,
 	}
 }

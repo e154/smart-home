@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,20 +19,22 @@
 package adaptors
 
 import (
+	"context"
+
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // IZigbee2mqttDevice ...
 type IZigbee2mqttDevice interface {
-	Add(ver *m.Zigbee2mqttDevice) (err error)
-	GetById(id string) (ver *m.Zigbee2mqttDevice, err error)
-	Update(ver *m.Zigbee2mqttDevice) (err error)
-	Delete(id string) (err error)
-	List(limit, offset int64) (list []*m.Zigbee2mqttDevice, total int64, err error)
-	ListByBridgeId(bridgeId, limit, offset int64, orderBy, sort string) (list []*m.Zigbee2mqttDevice, total int64, err error)
-	Search(query string, limit, offset int64) (list []*m.Zigbee2mqttDevice, total int64, err error)
+	Add(ctx context.Context, ver *m.Zigbee2mqttDevice) (err error)
+	GetById(ctx context.Context, id string) (ver *m.Zigbee2mqttDevice, err error)
+	Update(ctx context.Context, ver *m.Zigbee2mqttDevice) (err error)
+	Delete(ctx context.Context, id string) (err error)
+	List(ctx context.Context, limit, offset int64) (list []*m.Zigbee2mqttDevice, total int64, err error)
+	ListByBridgeId(ctx context.Context, bridgeId, limit, offset int64, orderBy, sort string) (list []*m.Zigbee2mqttDevice, total int64, err error)
+	Search(ctx context.Context, query string, limit, offset int64) (list []*m.Zigbee2mqttDevice, total int64, err error)
 	fromDb(dbVer *db.Zigbee2mqttDevice) (ver *m.Zigbee2mqttDevice)
 	toDb(ver *m.Zigbee2mqttDevice) (dbVer *db.Zigbee2mqttDevice)
 }
@@ -53,18 +55,18 @@ func GetZigbee2mqttDeviceAdaptor(d *gorm.DB) IZigbee2mqttDevice {
 }
 
 // Add ...
-func (n *Zigbee2mqttDevice) Add(ver *m.Zigbee2mqttDevice) (err error) {
+func (n *Zigbee2mqttDevice) Add(ctx context.Context, ver *m.Zigbee2mqttDevice) (err error) {
 
-	err = n.table.Add(n.toDb(ver))
+	err = n.table.Add(ctx, n.toDb(ver))
 
 	return
 }
 
 // GetById ...
-func (n *Zigbee2mqttDevice) GetById(id string) (ver *m.Zigbee2mqttDevice, err error) {
+func (n *Zigbee2mqttDevice) GetById(ctx context.Context, id string) (ver *m.Zigbee2mqttDevice, err error) {
 
 	var dbVer *db.Zigbee2mqttDevice
-	if dbVer, err = n.table.GetById(id); err != nil {
+	if dbVer, err = n.table.GetById(ctx, id); err != nil {
 		return
 	}
 
@@ -74,22 +76,22 @@ func (n *Zigbee2mqttDevice) GetById(id string) (ver *m.Zigbee2mqttDevice, err er
 }
 
 // Update ...
-func (n *Zigbee2mqttDevice) Update(ver *m.Zigbee2mqttDevice) (err error) {
+func (n *Zigbee2mqttDevice) Update(ctx context.Context, ver *m.Zigbee2mqttDevice) (err error) {
 	dbVer := n.toDb(ver)
-	err = n.table.Update(dbVer)
+	err = n.table.Update(ctx, dbVer)
 	return
 }
 
 // Delete ...
-func (n *Zigbee2mqttDevice) Delete(id string) (err error) {
-	err = n.table.Delete(id)
+func (n *Zigbee2mqttDevice) Delete(ctx context.Context, id string) (err error) {
+	err = n.table.Delete(ctx, id)
 	return
 }
 
 // List ...
-func (n *Zigbee2mqttDevice) List(limit, offset int64) (list []*m.Zigbee2mqttDevice, total int64, err error) {
+func (n *Zigbee2mqttDevice) List(ctx context.Context, limit, offset int64) (list []*m.Zigbee2mqttDevice, total int64, err error) {
 	var dbList []*db.Zigbee2mqttDevice
-	if dbList, total, err = n.table.List(limit, offset); err != nil {
+	if dbList, total, err = n.table.List(ctx, int(limit), int(offset)); err != nil {
 		return
 	}
 
@@ -103,9 +105,9 @@ func (n *Zigbee2mqttDevice) List(limit, offset int64) (list []*m.Zigbee2mqttDevi
 }
 
 // ListByBridgeId ...
-func (n *Zigbee2mqttDevice) ListByBridgeId(bridgeId, limit, offset int64, orderBy, sort string) (list []*m.Zigbee2mqttDevice, total int64, err error) {
+func (n *Zigbee2mqttDevice) ListByBridgeId(ctx context.Context, bridgeId, limit, offset int64, orderBy, sort string) (list []*m.Zigbee2mqttDevice, total int64, err error) {
 	var dbList []*db.Zigbee2mqttDevice
-	if dbList, total, err = n.table.ListByBridgeId(bridgeId, limit, offset, orderBy, sort); err != nil {
+	if dbList, total, err = n.table.ListByBridgeId(ctx, bridgeId, int(limit), int(offset), orderBy, sort); err != nil {
 		return
 	}
 
@@ -119,9 +121,9 @@ func (n *Zigbee2mqttDevice) ListByBridgeId(bridgeId, limit, offset int64, orderB
 }
 
 // Search ...
-func (n *Zigbee2mqttDevice) Search(query string, limit, offset int64) (list []*m.Zigbee2mqttDevice, total int64, err error) {
+func (n *Zigbee2mqttDevice) Search(ctx context.Context, query string, limit, offset int64) (list []*m.Zigbee2mqttDevice, total int64, err error) {
 	var dbList []*db.Zigbee2mqttDevice
-	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
+	if dbList, total, err = n.table.Search(ctx, query, int(limit), int(offset)); err != nil {
 		return
 	}
 

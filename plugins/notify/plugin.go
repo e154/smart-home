@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,53 +19,55 @@
 package notify
 
 import (
+	"context"
+
 	"github.com/e154/smart-home/common/logger"
-	"github.com/e154/smart-home/system/plugins"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 var (
 	log = logger.MustGetLogger("plugins.notify")
 )
 
-var _ plugins.Plugable = (*plugin)(nil)
+var _ supervisor.Pluggable = (*plugin)(nil)
 
 func init() {
-	plugins.RegisterPlugin(Name, New)
+	supervisor.RegisterPlugin(Name, New)
 }
 
 type plugin struct {
-	*plugins.Plugin
+	*supervisor.Plugin
 	notify Notify
 }
 
 // New ...
-func New() plugins.Plugable {
+func New() supervisor.Pluggable {
 	return &plugin{
-		Plugin: plugins.NewPlugin(),
+		Plugin: supervisor.NewPlugin(),
 	}
 }
 
 // Load ...
-func (p *plugin) Load(service plugins.Service) (err error) {
-	if err = p.Plugin.Load(service); err != nil {
+func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
+	if err = p.Plugin.Load(ctx, service, nil); err != nil {
 		return
 	}
 
-	p.notify = NewNotify(p.Adaptors, p.ScriptService)
+	p.notify = NewNotify(service.Adaptors(), service.ScriptService())
 	_ = p.notify.Start()
 
-	_ = p.EventBus.Subscribe(TopicNotify, p.eventHandler)
+	_ = p.Service.EventBus().Subscribe(TopicNotify, p.eventHandler)
 
 	return nil
 }
 
 // Unload ...
-func (p *plugin) Unload() (err error) {
-	if err = p.Plugin.Unload(); err != nil {
+func (p *plugin) Unload(ctx context.Context) (err error) {
+	if err = p.Plugin.Unload(ctx); err != nil {
 		return
 	}
 
-	_ = p.EventBus.Unsubscribe(TopicNotify, p.eventHandler)
+	_ = p.Service.EventBus().Unsubscribe(TopicNotify, p.eventHandler)
 
 	_ = p.notify.Shutdown()
 
@@ -86,8 +88,8 @@ func (p *plugin) Name() string {
 }
 
 // Type ...
-func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginBuiltIn
+func (p *plugin) Type() supervisor.PluginType {
+	return supervisor.PluginBuiltIn
 }
 
 // Depends ...

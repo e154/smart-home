@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,10 +19,14 @@
 package db
 
 import (
+	"context"
+	"fmt"
+	"time"
+
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // Triggers ...
@@ -34,25 +38,145 @@ type Triggers struct {
 type Trigger struct {
 	Id         int64 `gorm:"primary_key"`
 	Name       string
-	Task       *Task
-	TaskId     int64
 	Entity     *Entity
 	EntityId   *common.EntityId
 	Script     *Script
 	ScriptId   *int64
 	PluginName string
 	Payload    string
+	Enabled    bool
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
 }
 
 // TableName ...
-func (d *Trigger) TableName() string {
+func (*Trigger) TableName() string {
 	return "triggers"
 }
 
-// DeleteByTaskId ...
-func (n Triggers) DeleteByTaskId(id int64) (err error) {
-	if err = n.Db.Delete(&Trigger{}, "task_id = ?", id).Error; err != nil {
+// Add ...
+func (t Triggers) Add(ctx context.Context, trigger *Trigger) (id int64, err error) {
+	if err = t.Db.WithContext(ctx).Create(&trigger).Error; err != nil {
+		err = errors.Wrap(apperr.ErrTriggerAdd, err.Error())
+		return
+	}
+	id = trigger.Id
+	return
+}
+
+// GetById ...
+func (t Triggers) GetById(ctx context.Context, id int64) (trigger *Trigger, err error) {
+	trigger = &Trigger{}
+	err = t.Db.WithContext(ctx).Model(trigger).
+		Where("id = ?", id).
+		Preload("Entity").
+		Preload("Script").
+		First(&trigger).
+		Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = errors.Wrap(apperr.ErrTriggerNotFound, fmt.Sprintf("id \"%d\"", id))
+			return
+		}
+		err = errors.Wrap(apperr.ErrTriggerGet, err.Error())
+	}
+
+	return
+}
+
+// Update ...
+func (t Triggers) Update(ctx context.Context, m *Trigger) (err error) {
+	q := map[string]interface{}{
+		"name":        m.Name,
+		"plugin_name": m.PluginName,
+		"payload":     m.Payload,
+		"enabled":     m.Enabled,
+		"script_id":   m.ScriptId,
+		"entity_id":   m.EntityId,
+	}
+	if err = t.Db.WithContext(ctx).Model(&Trigger{}).Where("id = ?", m.Id).Updates(q).Error; err != nil {
+		err = errors.Wrap(apperr.ErrTriggerUpdate, err.Error())
+	}
+	return
+}
+
+// Delete ...
+func (t Triggers) Delete(ctx context.Context, id int64) (err error) {
+	if err = t.Db.WithContext(ctx).Delete(&Trigger{}, "id = ?", id).Error; err != nil {
 		err = errors.Wrap(apperr.ErrTriggerDelete, err.Error())
+	}
+	return
+}
+
+// List ...
+func (t Triggers) List(ctx context.Context, limit, offset int, orderBy, sort string, onlyEnabled bool) (list []*Trigger, total int64, err error) {
+
+	if err = t.Db.WithContext(ctx).Model(Trigger{}).Count(&total).Error; err != nil {
+		err = errors.Wrap(apperr.ErrTriggerList, err.Error())
+		return
+	}
+
+	list = make([]*Trigger, 0)
+	q := t.Db.WithContext(ctx).Model(&Trigger{})
+
+	if onlyEnabled {
+		q = q.Where("enabled = ?", true)
+	}
+
+	q = q.Preload("Entity").
+		Preload("Script").
+		Limit(limit).
+		Offset(offset)
+
+	if sort != "" && orderBy != "" {
+		q = q.
+			Order(fmt.Sprintf("%s %s", sort, orderBy))
+	}
+
+	if err = q.Find(&list).Error; err != nil {
+		err = errors.Wrap(apperr.ErrTriggerList, err.Error())
+	}
+	return
+}
+
+// Search ...q
+func (t Triggers) Search(ctx context.Context, query string, limit, offset int) (list []*Trigger, total int64, err error) {
+
+	q := t.Db.WithContext(ctx).Model(&Trigger{}).
+		Where("name LIKE ?", "%"+query+"%")
+
+	if err = q.Count(&total).Error; err != nil {
+		err = errors.Wrap(apperr.ErrTriggerSearch, err.Error())
+		return
+	}
+
+	q = q.
+		Limit(limit).
+		Offset(offset).
+		Order("name ASC")
+
+	list = make([]*Trigger, 0)
+	err = q.Find(&list).Error
+	if err != nil {
+		err = errors.Wrap(apperr.ErrTriggerSearch, err.Error())
+	}
+	return
+}
+
+// Enable ...
+func (t Triggers) Enable(ctx context.Context, id int64) (err error) {
+	if err = t.Db.Model(&Trigger{Id: id}).Updates(map[string]interface{}{"enabled": true}).Error; err != nil {
+		err = errors.Wrap(apperr.ErrTriggerUpdate, err.Error())
+		return
+	}
+	return
+}
+
+// Disable ...
+func (t Triggers) Disable(ctx context.Context, id int64) (err error) {
+	if err = t.Db.Model(&Trigger{Id: id}).Updates(map[string]interface{}{"enabled": false}).Error; err != nil {
+		err = errors.Wrap(apperr.ErrTriggerUpdate, err.Error())
+		return
 	}
 	return
 }

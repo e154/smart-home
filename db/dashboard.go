@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,14 +19,15 @@
 package db
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"time"
 
 	"github.com/jackc/pgerrcode"
-	"github.com/jinzhu/gorm"
-	"github.com/lib/pq"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 
 	"github.com/e154/smart-home/common/apperr"
 )
@@ -55,9 +56,9 @@ func (d *Dashboard) TableName() string {
 }
 
 // Add ...
-func (n Dashboards) Add(board *Dashboard) (id int64, err error) {
-	if err = n.Db.Create(&board).Error; err != nil {
-		var pgErr *pq.Error
+func (n Dashboards) Add(ctx context.Context, board *Dashboard) (id int64, err error) {
+	if err = n.Db.WithContext(ctx).Create(&board).Error; err != nil {
+		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
 			switch pgErr.Code {
 			case pgerrcode.UniqueViolation:
@@ -77,9 +78,9 @@ func (n Dashboards) Add(board *Dashboard) (id int64, err error) {
 }
 
 // GetById ...
-func (n Dashboards) GetById(id int64) (board *Dashboard, err error) {
+func (n Dashboards) GetById(ctx context.Context, id int64) (board *Dashboard, err error) {
 	board = &Dashboard{}
-	err = n.Db.Model(board).
+	err = n.Db.WithContext(ctx).Model(board).
 		Where("id = ?", id).
 		Preload("Area").
 		Preload("Tabs").
@@ -99,41 +100,53 @@ func (n Dashboards) GetById(id int64) (board *Dashboard, err error) {
 }
 
 // Update ...
-func (n Dashboards) Update(m *Dashboard) (err error) {
+func (n Dashboards) Update(ctx context.Context, board *Dashboard) (err error) {
 	q := map[string]interface{}{
-		"name":        m.Name,
-		"description": m.Description,
-		"enabled":     m.Enabled,
-		"area_id":     m.AreaId,
+		"name":        board.Name,
+		"description": board.Description,
+		"enabled":     board.Enabled,
+		"area_id":     board.AreaId,
 	}
 
-	if err = n.Db.Model(&Dashboard{Id: m.Id}).Updates(q).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(&Dashboard{Id: board.Id}).Updates(q).Error; err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case pgerrcode.UniqueViolation:
+				if strings.Contains(pgErr.Message, "name_at_dashboards_unq") {
+					err = errors.Wrap(apperr.ErrDashboardUpdate, fmt.Sprintf("dashboard name \"%s\" not unique", board.Name))
+					return
+				}
+			default:
+				fmt.Printf("unknown code \"%s\"\n", pgErr.Code)
+			}
+		}
 		err = errors.Wrap(apperr.ErrDashboardUpdate, err.Error())
 	}
 	return
 }
 
 // Delete ...
-func (n Dashboards) Delete(id int64) (err error) {
+func (n Dashboards) Delete(ctx context.Context, id int64) (err error) {
 	if id == 0 {
 		return
 	}
-	if err = n.Db.Delete(&Dashboard{Id: id}).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Delete(&Dashboard{Id: id}).Error; err != nil {
 		err = errors.Wrap(apperr.ErrDashboardDelete, err.Error())
 	}
 	return
 }
 
 // List ...
-func (n *Dashboards) List(limit, offset int64, orderBy, sort string) (list []*Dashboard, total int64, err error) {
+func (n *Dashboards) List(ctx context.Context, limit, offset int, orderBy, sort string) (list []*Dashboard, total int64, err error) {
 
-	if err = n.Db.Model(Dashboard{}).Count(&total).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(Dashboard{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrDashboardGet, err.Error())
 		return
 	}
 
 	list = make([]*Dashboard, 0)
-	q := n.Db.
+	q := n.Db.WithContext(ctx).
 		Preload("Area").
 		Preload("Tabs").
 		Preload("Tabs.Cards").
@@ -157,7 +170,7 @@ func (n *Dashboards) List(limit, offset int64, orderBy, sort string) (list []*Da
 }
 
 // Search ...
-func (d *Dashboards) Search(query string, limit, offset int64) (list []*Dashboard, total int64, err error) {
+func (d *Dashboards) Search(ctx context.Context, query string, limit, offset int) (list []*Dashboard, total int64, err error) {
 
 	q := d.Db.Model(&Dashboard{}).
 		Where("name LIKE ?", "%"+query+"%")

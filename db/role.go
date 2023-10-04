@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,14 +19,15 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"time"
 
 	"github.com/e154/smart-home/common/apperr"
 
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // Roles ...
@@ -52,8 +53,8 @@ func (m *Role) TableName() string {
 }
 
 // Add ...
-func (n Roles) Add(role *Role) (err error) {
-	if err = n.Db.Create(&role).Error; err != nil {
+func (n Roles) Add(ctx context.Context, role *Role) (err error) {
+	if err = n.Db.WithContext(ctx).Create(&role).Error; err != nil {
 		err = errors.Wrap(apperr.ErrRoleAdd, err.Error())
 		return
 	}
@@ -61,10 +62,10 @@ func (n Roles) Add(role *Role) (err error) {
 }
 
 // GetByName ...
-func (n Roles) GetByName(name string) (role *Role, err error) {
+func (n Roles) GetByName(ctx context.Context, name string) (role *Role, err error) {
 
 	role = &Role{Name: name}
-	err = n.Db.First(&role).Error
+	err = n.Db.WithContext(ctx).First(&role).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			err = errors.Wrap(apperr.ErrRoleNotFound, fmt.Sprintf("name \"%s\"", name))
@@ -74,14 +75,14 @@ func (n Roles) GetByName(name string) (role *Role, err error) {
 		return
 	}
 
-	err = n.RelData(role)
+	err = n.RelData(ctx, role)
 
 	return
 }
 
 // Update ...
-func (n Roles) Update(m *Role) (err error) {
-	err = n.Db.Model(&Role{Name: m.Name}).Updates(map[string]interface{}{
+func (n Roles) Update(ctx context.Context, m *Role) (err error) {
+	err = n.Db.WithContext(ctx).Model(&Role{Name: m.Name}).Updates(map[string]interface{}{
 		"description": m.Description,
 		"parent":      m.RoleName,
 	}).Error
@@ -93,23 +94,23 @@ func (n Roles) Update(m *Role) (err error) {
 }
 
 // Delete ...
-func (n Roles) Delete(name string) (err error) {
-	if err = n.Db.Delete(&Role{Name: name}).Error; err != nil {
+func (n Roles) Delete(ctx context.Context, name string) (err error) {
+	if err = n.Db.WithContext(ctx).Delete(&Role{Name: name}).Error; err != nil {
 		err = errors.Wrap(apperr.ErrRoleDelete, err.Error())
 	}
 	return
 }
 
 // List ...
-func (n *Roles) List(limit, offset int64, orderBy, sort string) (list []*Role, total int64, err error) {
+func (n *Roles) List(ctx context.Context, limit, offset int, orderBy, sort string) (list []*Role, total int64, err error) {
 
-	if err = n.Db.Model(Role{}).Count(&total).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(Role{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrRoleList, err.Error())
 		return
 	}
 
 	list = make([]*Role, 0)
-	err = n.Db.
+	err = n.Db.WithContext(ctx).
 		Limit(limit).
 		Offset(offset).
 		Order(fmt.Sprintf("%s %s", sort, orderBy)).
@@ -122,16 +123,16 @@ func (n *Roles) List(limit, offset int64, orderBy, sort string) (list []*Role, t
 	}
 
 	for _, role := range list {
-		_ = n.RelData(role)
+		_ = n.RelData(ctx, role)
 	}
 
 	return
 }
 
 // Search ...
-func (n *Roles) Search(query string, limit, offset int64) (list []*Role, total int64, err error) {
+func (n *Roles) Search(ctx context.Context, query string, limit, offset int) (list []*Role, total int64, err error) {
 
-	q := n.Db.Model(&Role{}).
+	q := n.Db.WithContext(ctx).Model(&Role{}).
 		Where("name LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
@@ -153,12 +154,12 @@ func (n *Roles) Search(query string, limit, offset int64) (list []*Role, total i
 }
 
 // RelData ...
-func (n *Roles) RelData(role *Role) (err error) {
+func (n *Roles) RelData(ctx context.Context, role *Role) (err error) {
 
 	// get parent
 	if role.RoleName.Valid {
 		role.Role = &Role{}
-		err = n.Db.Model(role).
+		err = n.Db.WithContext(ctx).Model(role).
 			Where("name = ?", role.RoleName.String).
 			Find(&role.Role).
 			Error
@@ -169,7 +170,7 @@ func (n *Roles) RelData(role *Role) (err error) {
 
 	// get children
 	role.Children = make([]*Role, 0)
-	err = n.Db.Model(role).
+	err = n.Db.WithContext(ctx).Model(role).
 		Where("parent = ?", role.Name).
 		Find(&role.Children).
 		Error

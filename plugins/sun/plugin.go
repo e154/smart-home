@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,85 +19,58 @@
 package sun
 
 import (
-	"fmt"
-	"sync"
+	"context"
 	"time"
 
-	"github.com/pkg/errors"
-
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/plugins"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 var (
 	log = logger.MustGetLogger("plugins.sun")
 )
 
-var _ plugins.Plugable = (*plugin)(nil)
+var _ supervisor.Pluggable = (*plugin)(nil)
 
 func init() {
-	plugins.RegisterPlugin(Name, New)
+	supervisor.RegisterPlugin(Name, New)
 }
 
 type plugin struct {
-	*plugins.Plugin
-	actorsLock *sync.Mutex
-	actors     map[string]*Actor
-	pause      time.Duration
-	quit       chan struct{}
+	*supervisor.Plugin
+	ticker *time.Ticker
 }
 
 // New ...
-func New() plugins.Plugable {
+func New() supervisor.Pluggable {
 	return &plugin{
-		Plugin:     plugins.NewPlugin(),
-		actorsLock: &sync.Mutex{},
-		actors:     make(map[string]*Actor),
-		pause:      240,
+		Plugin: supervisor.NewPlugin(),
 	}
 }
 
 // Load ...
-func (p *plugin) Load(service plugins.Service) (err error) {
-	if err = p.Plugin.Load(service); err != nil {
+func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
+	if err = p.Plugin.Load(ctx, service, p.ActorConstructor); err != nil {
 		return
 	}
 
-	p.quit = make(chan struct{})
-
 	go func() {
-		ticker := time.NewTicker(time.Second * p.pause)
+		const pause = 240
+		p.ticker = time.NewTicker(time.Second * pause)
 
-		defer func() {
-			ticker.Stop()
-			close(p.quit)
-		}()
-
-		for {
-			select {
-			case <-p.quit:
-				return
-			case <-ticker.C:
-				p.updatePositionForAll()
-			}
+		for range p.ticker.C {
+			p.updatePositionForAll()
 		}
 	}()
 
 	return nil
 }
 
-// Unload ...
-func (p *plugin) Unload() (err error) {
-	if err = p.Plugin.Unload(); err != nil {
-		return
-	}
-
-	p.quit <- struct{}{}
-	return nil
+// ActorConstructor ...
+func (p *plugin) ActorConstructor(entity *m.Entity) (actor supervisor.PluginActor, err error) {
+	actor = NewActor(entity, p.Service)
+	return
 }
 
 // Name ...
@@ -105,57 +78,18 @@ func (p *plugin) Name() string {
 	return Name
 }
 
-// AddOrUpdateActor ...
-func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	if _, ok := p.actors[entity.Id.Name()]; ok {
-		p.actors[entity.Id.Name()].setPosition(entity.Settings)
-		p.actors[entity.Id.Name()].UpdateSunPosition(time.Now())
-		return
-	}
-
-	p.actors[entity.Id.Name()] = NewActor(entity, p.EntityManager, p.Adaptors, p.ScriptService, p.EventBus)
-	p.EntityManager.Spawn(p.actors[entity.Id.Name()].Spawn)
-
-	return
-}
-
-// RemoveActor ...
-func (p *plugin) RemoveActor(entityId common.EntityId) error {
-	return p.removeEntity(entityId.Name())
-}
-
-func (p *plugin) removeEntity(name string) (err error) {
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	if _, ok := p.actors[name]; !ok {
-		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("failed remove \"%s\"", name))
-		return
-	}
-
-	delete(p.actors, name)
-
-	return
-}
-
 func (p *plugin) updatePositionForAll() {
-	//fmt.Println("updatePositionForAll")
-
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
 	now := time.Now()
-	for _, actor := range p.actors {
+	p.Actors.Range(func(key, value any) bool {
+		actor := value.(*Actor)
 		actor.UpdateSunPosition(now)
-	}
+		return true
+	})
 }
 
 // Type ...
-func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginBuiltIn
+func (p *plugin) Type() supervisor.PluginType {
+	return supervisor.PluginBuiltIn
 }
 
 // Depends ...
@@ -174,6 +108,6 @@ func (p *plugin) Options() m.PluginOptions {
 		Actors:      true,
 		ActorAttrs:  NewAttr(),
 		ActorSetts:  NewSettings(),
-		ActorStates: entity_manager.ToEntityStateShort(NewStates()),
+		ActorStates: supervisor.ToEntityStateShort(NewStates()),
 	}
 }

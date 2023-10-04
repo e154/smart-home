@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,8 +19,13 @@
 package dto
 
 import (
+	"fmt"
+	"strconv"
+	"strings"
+
 	"github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/encryptor"
 	m "github.com/e154/smart-home/models"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -61,6 +66,25 @@ func attributeFromApi(apiAttr map[string]*api.Attribute) (attributes m.Attribute
 		case api.Types_TIME:
 			attr.Value = v.GetTime().AsTime()
 			attr.Type = common.AttributeTime
+		case api.Types_POINT:
+			point := []interface{}{0.0, 0.0}
+			str := v.GetPoint()
+			str = strings.ReplaceAll(str, "[", "")
+			str = strings.ReplaceAll(str, "]", "")
+			str = strings.ReplaceAll(str, " ", "")
+			arr := strings.Split(str, ",")
+			if len(arr) == 2 {
+				point[0], _ = strconv.ParseFloat(arr[0], 64)
+				point[1], _ = strconv.ParseFloat(arr[1], 64)
+			}
+			attr.Value = point
+			attr.Type = common.AttributePoint
+		case api.Types_ENCRYPTED:
+			value, err := encryptor.Encrypt(v.GetEncrypted())
+			if err == nil {
+				attr.Value = value
+			}
+			attr.Type = common.AttributeEncrypted
 		}
 		attributes[k] = attr
 	}
@@ -97,6 +121,12 @@ func AttributeToApi(attributes m.Attributes) (apiAttr map[string]*api.Attribute)
 		case "image":
 			apiAttr[k].Type = api.Types_IMAGE
 			apiAttr[k].ImageUrl = common.String(v.String())
+		case "point":
+			apiAttr[k].Type = api.Types_POINT
+			apiAttr[k].Point = fmt.Sprintf("[%f, %f]", v.Point().Lon, v.Point().Lat)
+		case "encrypted":
+			apiAttr[k].Type = api.Types_ENCRYPTED
+			apiAttr[k].Encrypted = common.String(v.Decrypt())
 		}
 	}
 	return

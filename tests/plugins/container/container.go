@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -28,7 +28,6 @@ import (
 	"github.com/e154/smart-home/system/backup"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/config"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/initial"
 	"github.com/e154/smart-home/system/jwt_manager"
@@ -38,11 +37,11 @@ import (
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/mqtt_authenticator"
 	"github.com/e154/smart-home/system/orm"
-	plugins2 "github.com/e154/smart-home/system/plugins"
 	"github.com/e154/smart-home/system/scheduler"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/storage"
 	"github.com/e154/smart-home/system/stream"
+	"github.com/e154/smart-home/system/supervisor"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	"go.uber.org/dig"
 	"go.uber.org/fx"
@@ -74,8 +73,7 @@ func BuildContainer() (container *dig.Container) {
 	_ = container.Provide(logging.NewLogger)
 	_ = container.Provide(logging_db.NewLogDbSaver)
 	_ = container.Provide(storage.NewStorage)
-	_ = container.Provide(plugins2.NewPluginManager)
-	_ = container.Provide(entity_manager.NewEntityManager)
+	_ = container.Provide(supervisor.NewSupervisor)
 	_ = container.Provide(automation.NewAutomation)
 	_ = container.Provide(bus.NewBus)
 	_ = container.Provide(endpoint.NewCommonEndpoint)
@@ -83,7 +81,7 @@ func BuildContainer() (container *dig.Container) {
 	_ = container.Provide(jwt_manager.NewJwtManager)
 
 	_ = container.Provide(func() (conf *models.AppConfig, err error) {
-		conf, err = config.ReadConfig("conf", "config.json", "")
+		conf, err = config.ReadConfig("tests/data", "config.json", "")
 		conf.PgName = "smart_home_test"
 		conf.Logging = false
 		return

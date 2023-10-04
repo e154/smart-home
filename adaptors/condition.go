@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,16 +19,22 @@
 package adaptors
 
 import (
+	"context"
+	"time"
+
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/gorm"
-	gormbulk "github.com/t-tiger/gorm-bulk-insert"
+	"gorm.io/gorm"
 )
 
 // ICondition ...
 type ICondition interface {
-	DeleteByTaskId(id int64) (err error)
-	AddMultiple(items []*m.Condition) (err error)
+	Add(ctx context.Context, ver *m.Condition) (id int64, err error)
+	GetById(ctx context.Context, id int64) (metric *m.Condition, err error)
+	Update(ctx context.Context, ver *m.Condition) error
+	Delete(ctx context.Context, deviceId int64) (err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.Condition, total int64, err error)
+	Search(ctx context.Context, query string, limit, offset int) (list []*m.Condition, total int64, err error)
 	fromDb(dbVer *db.Condition) (ver *m.Condition)
 	toDb(ver *m.Condition) (dbVer *db.Condition)
 }
@@ -48,31 +54,80 @@ func GetConditionAdaptor(d *gorm.DB) ICondition {
 	}
 }
 
-// DeleteByTaskId ...
-func (n *Condition) DeleteByTaskId(id int64) (err error) {
-	err = n.table.DeleteByTaskId(id)
+// Add ...
+func (n *Condition) Add(ctx context.Context, ver *m.Condition) (id int64, err error) {
+	id, err = n.table.Add(ctx, n.toDb(ver))
 	return
 }
 
-// AddMultiple ...
-func (n *Condition) AddMultiple(items []*m.Condition) (err error) {
+// GetById ...
+func (n *Condition) GetById(ctx context.Context, id int64) (metric *m.Condition, err error) {
+	var dbVer *db.Condition
+	if dbVer, err = n.table.GetById(ctx, id); err != nil {
+		return
+	}
+	metric = n.fromDb(dbVer)
+	return
+}
 
-	insertRecords := make([]interface{}, 0, len(items))
+// GetByIdWithData ...
+func (n *Condition) GetByIdWithData(ctx context.Context, id int64, from, to *time.Time, metricRange *string) (metric *m.Condition, err error) {
+	var dbVer *db.Condition
+	if dbVer, err = n.table.GetById(ctx, id); err != nil {
+		return
+	}
+	metric = n.fromDb(dbVer)
+	return
+}
 
-	for _, ver := range items {
-		insertRecords = append(insertRecords, n.toDb(ver))
+// Update ...
+func (n *Condition) Update(ctx context.Context, ver *m.Condition) error {
+	return n.table.Update(ctx, n.toDb(ver))
+}
+
+// Delete ...
+func (n *Condition) Delete(ctx context.Context, deviceId int64) (err error) {
+	err = n.table.Delete(ctx, deviceId)
+	return
+}
+
+// List ...
+func (n *Condition) List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.Condition, total int64, err error) {
+	var dbList []*db.Condition
+	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort); err != nil {
+		return
 	}
 
-	err = gormbulk.BulkInsert(n.db, insertRecords, len(insertRecords))
+	list = make([]*m.Condition, len(dbList))
+	for i, dbVer := range dbList {
+		list[i] = n.fromDb(dbVer)
+	}
+
+	return
+}
+
+// Search ...
+func (n *Condition) Search(ctx context.Context, query string, limit, offset int) (list []*m.Condition, total int64, err error) {
+	var dbList []*db.Condition
+	if dbList, total, err = n.table.Search(ctx, query, limit, offset); err != nil {
+		return
+	}
+
+	list = make([]*m.Condition, len(dbList))
+	for i, dbVer := range dbList {
+		list[i] = n.fromDb(dbVer)
+	}
+
 	return
 }
 
 func (n *Condition) fromDb(dbVer *db.Condition) (ver *m.Condition) {
 	ver = &m.Condition{
-		Id:       dbVer.Id,
-		Name:     dbVer.Name,
-		TaskId:   dbVer.TaskId,
-		ScriptId: dbVer.ScriptId,
+		Id:        dbVer.Id,
+		Name:      dbVer.Name,
+		ScriptId:  dbVer.ScriptId,
+		CreatedAt: dbVer.CreatedAt,
+		UpdatedAt: dbVer.UpdatedAt,
 	}
 	// script
 	if dbVer.Script != nil {
@@ -84,10 +139,11 @@ func (n *Condition) fromDb(dbVer *db.Condition) (ver *m.Condition) {
 
 func (n *Condition) toDb(ver *m.Condition) (dbVer *db.Condition) {
 	dbVer = &db.Condition{
-		Id:       ver.Id,
-		Name:     ver.Name,
-		TaskId:   ver.TaskId,
-		ScriptId: ver.ScriptId,
+		Id:        ver.Id,
+		Name:      ver.Name,
+		ScriptId:  ver.ScriptId,
+		CreatedAt: ver.CreatedAt,
+		UpdatedAt: ver.UpdatedAt,
 	}
 
 	if ver.Script != nil {

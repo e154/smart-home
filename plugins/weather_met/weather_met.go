@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,7 @@
 package weather_met
 
 import (
+	"context"
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
@@ -133,7 +134,7 @@ func (p *WeatherMet) fetchFromLocalStorage(name string) (zone Zone, err error) {
 	log.Debugf("fetch from local storage")
 
 	var variable m.Variable
-	if variable, err = p.adaptors.Variable.GetByName(fmt.Sprintf("weather_met.%s", name)); err != nil {
+	if variable, err = p.adaptors.Variable.GetByName(context.Background(), fmt.Sprintf("weather_met.%s", name)); err != nil {
 		return
 	}
 
@@ -159,7 +160,7 @@ func (p *WeatherMet) saveToLocalStorage(zone Zone) (err error) {
 		EntityId: common.NewEntityId(fmt.Sprintf("weather_met.%s", zone.Name)),
 	}
 
-	err = p.adaptors.Variable.CreateOrUpdate(model)
+	err = p.adaptors.Variable.CreateOrUpdate(context.Background(), model)
 
 	return
 }

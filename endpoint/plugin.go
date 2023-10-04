@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,11 +21,12 @@ package endpoint
 import (
 	"context"
 
+	"github.com/e154/smart-home/system/supervisor"
+
 	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/plugins"
 	"github.com/pkg/errors"
 )
 
@@ -43,19 +44,24 @@ func NewPluginEndpoint(common *CommonEndpoint) *PluginEndpoint {
 
 // Enable ...
 func (p *PluginEndpoint) Enable(ctx context.Context, pluginName string) (err error) {
-	err = p.pluginManager.EnablePlugin(pluginName)
+	err = p.supervisor.EnablePlugin(ctx, pluginName)
 	return
 }
 
 // Disable ...
 func (p *PluginEndpoint) Disable(ctx context.Context, pluginName string) (err error) {
-	err = p.pluginManager.DisablePlugin(pluginName)
+	err = p.supervisor.DisablePlugin(ctx, pluginName)
 	return
 }
 
 // GetList ...
-func (p *PluginEndpoint) GetList(ctx context.Context, pagination common.PageParams) (list []m.Plugin, total int64, err error) {
-	list, total, err = p.adaptors.Plugin.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
+func (p *PluginEndpoint) GetList(ctx context.Context, pagination common.PageParams) (plugins []*m.Plugin, total int64, err error) {
+	if plugins, total, err = p.adaptors.Plugin.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, false); err != nil {
+		return
+	}
+	for _, plugin := range plugins {
+		plugin.IsLoaded = p.supervisor.PluginIsLoaded(plugin.Name)
+	}
 	return
 }
 
@@ -63,11 +69,11 @@ func (p *PluginEndpoint) GetList(ctx context.Context, pagination common.PagePara
 func (p *PluginEndpoint) GetOptions(ctx context.Context, pluginName string) (options m.PluginOptions, err error) {
 
 	var pl interface{}
-	if pl, err = p.pluginManager.GetPlugin(pluginName); err != nil {
+	if pl, err = p.supervisor.GetPlugin(pluginName); err != nil {
 		return
 	}
 
-	plugin, ok := pl.(plugins.Plugable)
+	plugin, ok := pl.(supervisor.Pluggable)
 	if !ok {
 		return
 	}
@@ -78,15 +84,18 @@ func (p *PluginEndpoint) GetOptions(ctx context.Context, pluginName string) (opt
 }
 
 // GetByName ...
-func (p *PluginEndpoint) GetByName(ctx context.Context, pluginName string) (plugin m.Plugin, err error) {
-	plugin, err = p.adaptors.Plugin.GetByName(pluginName)
+func (p *PluginEndpoint) GetByName(ctx context.Context, pluginName string) (plugin *m.Plugin, err error) {
+	if plugin, err = p.adaptors.Plugin.GetByName(ctx, pluginName); err != nil {
+		return
+	}
+	plugin.IsLoaded = p.supervisor.PluginIsLoaded(plugin.Name)
 	return
 }
 
 // Search ...
-func (n *PluginEndpoint) Search(ctx context.Context, query string, limit, offset int64) (result []m.Plugin, total int64, err error) {
+func (n *PluginEndpoint) Search(ctx context.Context, query string, limit, offset int64) (result []*m.Plugin, total int64, err error) {
 
-	result, total, err = n.adaptors.Plugin.Search(query, limit, offset)
+	result, total, err = n.adaptors.Plugin.Search(ctx, query, limit, offset)
 	if err != nil {
 		err = errors.Wrap(apperr.ErrInternal, err.Error())
 	}
@@ -96,22 +105,22 @@ func (n *PluginEndpoint) Search(ctx context.Context, query string, limit, offset
 // UpdateSettings ...
 func (n *PluginEndpoint) UpdateSettings(ctx context.Context, name string, settings m.Attributes) (err error) {
 
-	var plugin m.Plugin
-	if plugin, err = n.adaptors.Plugin.GetByName(name); err != nil {
+	var plugin *m.Plugin
+	if plugin, err = n.adaptors.Plugin.GetByName(ctx, name); err != nil {
 		return
 	}
 
 	plugin.Settings = settings.Serialize()
 
-	if err = n.adaptors.Plugin.Update(plugin); err != nil {
+	if err = n.adaptors.Plugin.Update(ctx, plugin); err != nil {
 		return
 	}
 
-	if err = n.pluginManager.DisablePlugin(name); err != nil {
+	if err = n.supervisor.DisablePlugin(ctx, name); err != nil {
 		return
 	}
 
-	err = n.pluginManager.EnablePlugin(name)
+	err = n.supervisor.EnablePlugin(ctx, name)
 
 	return
 }

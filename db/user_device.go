@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,15 +19,16 @@
 package db
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/jackc/pgx/v5/pgconn"
 	"strings"
 	"time"
 
 	"github.com/jackc/pgerrcode"
-	"github.com/jinzhu/gorm"
-	"github.com/lib/pq"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 
 	"github.com/e154/smart-home/common/apperr"
 )
@@ -51,9 +52,9 @@ func (d *UserDevice) TableName() string {
 }
 
 // Add ...
-func (d *UserDevices) Add(device *UserDevice) (id int64, err error) {
-	if err = d.Db.Create(&device).Error; err != nil {
-		var pgErr *pq.Error
+func (d *UserDevices) Add(ctx context.Context, device *UserDevice) (id int64, err error) {
+	if err = d.Db.WithContext(ctx).Create(&device).Error; err != nil {
+		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
 			switch pgErr.Code {
 			case pgerrcode.UniqueViolation:
@@ -73,9 +74,9 @@ func (d *UserDevices) Add(device *UserDevice) (id int64, err error) {
 }
 
 // GetByUserId ...
-func (d *UserDevices) GetByUserId(id int64) (devices []*UserDevice, err error) {
+func (d *UserDevices) GetByUserId(ctx context.Context, id int64) (devices []*UserDevice, err error) {
 	devices = make([]*UserDevice, 0)
-	err = d.Db.Model(&UserDevice{}).
+	err = d.Db.WithContext(ctx).Model(&UserDevice{}).
 		Where("user_id = ?", id).
 		Find(&devices).
 		Error
@@ -87,8 +88,8 @@ func (d *UserDevices) GetByUserId(id int64) (devices []*UserDevice, err error) {
 }
 
 // Delete ...
-func (d *UserDevices) Delete(id int64) (err error) {
-	if err = d.Db.Delete(&UserDevice{}, "id = ?", id).Error; err != nil {
+func (d *UserDevices) Delete(ctx context.Context, id int64) (err error) {
+	if err = d.Db.WithContext(ctx).Delete(&UserDevice{}, "id = ?", id).Error; err != nil {
 		err = errors.Wrap(apperr.ErrUserDeviceDelete, err.Error())
 	}
 	return

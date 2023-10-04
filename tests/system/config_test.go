@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -43,10 +43,10 @@ func TestConfig(t *testing.T) {
 						ctx.So(conf.PgUser, ShouldEqual, "smart_home")
 						ctx.So(conf.PgPass, ShouldEqual, "smart_home")
 						ctx.So(conf.PgHost, ShouldEqual, "127.0.0.1")
-						ctx.So(conf.PgName, ShouldEqual, "smart_home")
+						ctx.So(conf.PgName, ShouldEqual, "smart_home_test")
 						ctx.So(conf.PgPort, ShouldEqual, "5432")
-						ctx.So(conf.PgDebug, ShouldEqual, false)
-						ctx.So(conf.PgLogger, ShouldEqual, false)
+						ctx.So(conf.PgDebug, ShouldEqual, true)
+						ctx.So(conf.PgLogger, ShouldEqual, true)
 						ctx.So(conf.PgMaxIdleConns, ShouldEqual, 10)
 						ctx.So(conf.PgMaxOpenConns, ShouldEqual, 50)
 						ctx.So(conf.PgConnMaxLifeTime, ShouldEqual, 30)

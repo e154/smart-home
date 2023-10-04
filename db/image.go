@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,14 +19,18 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
+	"github.com/jackc/pgerrcode"
+	"github.com/jackc/pgx/v5/pgconn"
+	"strings"
 	"time"
 
 	"github.com/e154/smart-home/common/apperr"
 
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 // Images ...
@@ -52,8 +56,20 @@ func (m *Image) TableName() string {
 }
 
 // Add ...
-func (n Images) Add(v *Image) (id int64, err error) {
-	if err = n.Db.Create(&v).Error; err != nil {
+func (n Images) Add(ctx context.Context, v *Image) (id int64, err error) {
+	if err = n.Db.WithContext(ctx).Create(&v).Error; err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case pgerrcode.UniqueViolation:
+				if strings.Contains(pgErr.Message, "images_pkey") {
+					err = errors.Wrap(apperr.ErrImageAdd, fmt.Sprintf("image name \"%s\" not unique", v.Id))
+					return
+				}
+			default:
+				fmt.Printf("unknown code \"%s\"\n", pgErr.Code)
+			}
+		}
 		err = errors.Wrap(apperr.ErrImageAdd, err.Error())
 		return
 	}
@@ -62,9 +78,9 @@ func (n Images) Add(v *Image) (id int64, err error) {
 }
 
 // GetById ...
-func (n Images) GetById(id int64) (v *Image, err error) {
+func (n Images) GetById(ctx context.Context, id int64) (v *Image, err error) {
 	v = &Image{Id: id}
-	if err = n.Db.First(&v).Error; err != nil {
+	if err = n.Db.WithContext(ctx).First(&v).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			err = errors.Wrap(apperr.ErrImageNotFound, fmt.Sprintf("id \"%d\"", id))
 			return
@@ -75,9 +91,9 @@ func (n Images) GetById(id int64) (v *Image, err error) {
 }
 
 // GetByImageName ...
-func (n Images) GetByImageName(imageName string) (v *Image, err error) {
+func (n Images) GetByImageName(ctx context.Context, imageName string) (v *Image, err error) {
 	v = &Image{}
-	if err = n.Db.Model(v).Where("image = ?", imageName).First(&v).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(v).Where("image = ?", imageName).First(&v).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			err = errors.Wrap(apperr.ErrImageNotFound, fmt.Sprintf("name \"%s\"", imageName))
 			return
@@ -89,8 +105,8 @@ func (n Images) GetByImageName(imageName string) (v *Image, err error) {
 }
 
 // Update ...
-func (n Images) Update(m *Image) (err error) {
-	err = n.Db.Model(&Image{Id: m.Id}).Updates(map[string]interface{}{
+func (n Images) Update(ctx context.Context, m *Image) (err error) {
+	err = n.Db.WithContext(ctx).Model(&Image{Id: m.Id}).Updates(map[string]interface{}{
 		"title": m.Title,
 		"Name":  m.Name,
 	}).Error
@@ -102,8 +118,8 @@ func (n Images) Update(m *Image) (err error) {
 }
 
 // Delete ...
-func (n Images) Delete(mapId int64) (err error) {
-	if err = n.Db.Delete(&Image{Id: mapId}).Error; err != nil {
+func (n Images) Delete(ctx context.Context, mapId int64) (err error) {
+	if err = n.Db.WithContext(ctx).Delete(&Image{Id: mapId}).Error; err != nil {
 		err = errors.Wrap(apperr.ErrImageDelete, err.Error())
 		return
 	}
@@ -111,15 +127,15 @@ func (n Images) Delete(mapId int64) (err error) {
 }
 
 // List ...
-func (n *Images) List(limit, offset int64, orderBy, sort string) (list []*Image, total int64, err error) {
+func (n *Images) List(ctx context.Context, limit, offset int, orderBy, sort string) (list []*Image, total int64, err error) {
 
-	if err = n.Db.Model(Image{}).Count(&total).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(Image{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrImageList, err.Error())
 		return
 	}
 
 	list = make([]*Image, 0)
-	err = n.Db.
+	err = n.Db.WithContext(ctx).
 		Limit(limit).
 		Offset(offset).
 		Order(fmt.Sprintf("%s %s", sort, orderBy)).
@@ -140,11 +156,11 @@ type ImageFilterList struct {
 }
 
 // GetFilterList ...
-func (n *Images) GetFilterList() (images []*ImageFilterList, err error) {
+func (n *Images) GetFilterList(ctx context.Context) (images []*ImageFilterList, err error) {
 
 	image := &Image{}
 	var rows *sql.Rows
-	rows, err = n.Db.Raw(`
+	rows, err = n.Db.WithContext(ctx).Raw(`
 SELECT
 	to_char(created_at,'YYYY-mm-dd') as date, COUNT( created_at) as count
 FROM ` + image.TableName() + `
@@ -166,13 +182,13 @@ ORDER BY date`).Rows()
 }
 
 // GetAllByDate ...
-func (n *Images) GetAllByDate(filter string) (images []*Image, err error) {
+func (n *Images) GetAllByDate(ctx context.Context, filter string) (images []*Image, err error) {
 
 	//fmt.Println("filter", filter)
 
 	images = make([]*Image, 0)
 	image := &Image{}
-	err = n.Db.Raw(`
+	err = n.Db.WithContext(ctx).Raw(`
 SELECT *
 FROM `+image.TableName()+`
 WHERE to_char(created_at,'YYYY-mm-dd') = ?
@@ -182,6 +198,26 @@ ORDER BY created_at`, filter).
 
 	if err != nil {
 		err = errors.Wrap(apperr.ErrImageList, err.Error())
+	}
+	return
+}
+
+// AddMultiple ...
+func (n *Images) AddMultiple(ctx context.Context, images []*Image) (err error) {
+	if err = n.Db.WithContext(ctx).Create(&images).Error; err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case pgerrcode.UniqueViolation:
+				if strings.Contains(pgErr.Message, "images_pkey") {
+					err = errors.Wrap(apperr.ErrImageAdd, "multiple insert")
+					return
+				}
+			default:
+				fmt.Printf("unknown code \"%s\"\n", pgErr.Code)
+			}
+		}
+		err = errors.Wrap(apperr.ErrImageAdd, err.Error())
 	}
 	return
 }

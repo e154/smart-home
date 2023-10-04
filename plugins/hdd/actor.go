@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -26,14 +26,13 @@ import (
 	"github.com/shirou/gopsutil/v3/disk"
 
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/supervisor"
 	"github.com/rcrowley/go-metrics"
 )
 
 // Actor ...
 type Actor struct {
-	*entity_manager.BaseActor
+	supervisor.BaseActor
 	cores           int64
 	model           string
 	total           metrics.Gauge
@@ -41,15 +40,13 @@ type Actor struct {
 	usedPercent     metrics.GaugeFloat64
 	allCpuPrevTotal float64
 	allCpuPrevIdle  float64
-	eventBus        bus.Bus
 	updateLock      *sync.Mutex
 	MountPoint      string
 }
 
 // NewActor ...
 func NewActor(entity *m.Entity,
-	entityManager entity_manager.EntityManager,
-	eventBus bus.Bus) *Actor {
+	service supervisor.Service) *Actor {
 
 	var mountPoint string
 	if _mountPoint, ok := entity.Settings[AttrMountPoint]; ok {
@@ -60,22 +57,11 @@ func NewActor(entity *m.Entity,
 	}
 
 	actor := &Actor{
-		BaseActor: &entity_manager.BaseActor{
-			Id:                entity.Id,
-			Name:              entity.Id.Name(),
-			EntityType:        EntityHDD,
-			UnitOfMeasurement: "",
-			AttrMu:            &sync.RWMutex{},
-			Attrs:             NewAttr(),
-			Manager:           entityManager,
-			Metric:            entity.Metrics,
-		},
-		eventBus:   eventBus,
+		BaseActor:  supervisor.NewBaseActor(entity, service),
 		updateLock: &sync.Mutex{},
 		MountPoint: mountPoint,
 	}
 
-	actor.Manager = entityManager
 	actor.Attrs = NewAttr()
 	actor.Setts = entity.Settings
 
@@ -90,46 +76,50 @@ func NewActor(entity *m.Entity,
 	return actor
 }
 
-// Spawn ...
-func (e *Actor) Spawn() entity_manager.PluginActor {
-	return e
+func (e *Actor) Destroy() {
+
 }
 
-func (e *Actor) runAction(msg events.EventCallAction) {
+// Spawn ...
+func (e *Actor) Spawn() {
+
+}
+
+func (e *Actor) runAction(_ events.EventCallEntityAction) {
 	go e.selfUpdate()
 }
 
-func (u *Actor) selfUpdate() {
+func (e *Actor) selfUpdate() {
 
-	u.updateLock.Lock()
-	defer u.updateLock.Unlock()
+	e.updateLock.Lock()
+	defer e.updateLock.Unlock()
 
-	oldState := u.GetEventState(u)
-	u.Now(oldState)
+	oldState := e.GetEventState()
+	e.Now(oldState)
 
 	var mountPoint = "/"
-	if u.MountPoint != "" {
-		mountPoint = u.MountPoint
+	if e.MountPoint != "" {
+		mountPoint = e.MountPoint
 	}
 
 	if r, err := disk.Usage(mountPoint); err == nil {
-		u.AttrMu.Lock()
-		u.Attrs[AttrFstype].Value = r.Fstype
-		u.Attrs[AttrTotal].Value = r.Total
-		u.Attrs[AttrFree].Value = r.Free
-		u.Attrs[AttrUsed].Value = r.Used
-		u.Attrs[AttrUsedPercent].Value = r.UsedPercent
-		u.Attrs[AttrInodesTotal].Value = r.InodesTotal
-		u.Attrs[AttrInodesUsed].Value = r.InodesUsed
-		u.Attrs[AttrInodesFree].Value = r.InodesFree
-		u.Attrs[AttrInodesUsedPercent].Value = r.InodesUsedPercent
-		u.AttrMu.Unlock()
+		e.AttrMu.Lock()
+		e.Attrs[AttrFstype].Value = r.Fstype
+		e.Attrs[AttrTotal].Value = r.Total
+		e.Attrs[AttrFree].Value = r.Free
+		e.Attrs[AttrUsed].Value = r.Used
+		e.Attrs[AttrUsedPercent].Value = r.UsedPercent
+		e.Attrs[AttrInodesTotal].Value = r.InodesTotal
+		e.Attrs[AttrInodesUsed].Value = r.InodesUsed
+		e.Attrs[AttrInodesFree].Value = r.InodesFree
+		e.Attrs[AttrInodesUsedPercent].Value = r.InodesUsedPercent
+		e.AttrMu.Unlock()
 	}
-	u.eventBus.Publish(bus.TopicEntities, events.EventStateChanged{
+	go e.SaveState(events.EventStateChanged{
 		StorageSave: false,
-		PluginName:  u.Id.PluginName(),
-		EntityId:    u.Id,
+		PluginName:  e.Id.PluginName(),
+		EntityId:    e.Id,
 		OldState:    oldState,
-		NewState:    u.GetEventState(u),
+		NewState:    e.GetEventState(),
 	})
 }

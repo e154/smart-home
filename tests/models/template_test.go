@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,7 @@
 package models
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -154,13 +155,13 @@ func TestTemplate(t *testing.T) {
 			}
 
 			for _, template := range templates {
-				err := adaptors.Template.UpdateOrCreate(template)
+				err := adaptors.Template.UpdateOrCreate(context.Background(), template)
 				So(err, ShouldBeNil)
 			}
 
 			// Lorem ipsum dolor sit amet
 			// ------------------------------------------------
-			render, err := adaptors.Template.Render("template1", map[string]interface{}{
+			render, err := adaptors.Template.Render(context.Background(), "template1", map[string]interface{}{
 				"var1": "consectetur adipiscing elit",
 				"var2": "ut labore et dolore magna aliqua.",
 			})
@@ -170,7 +171,7 @@ func TestTemplate(t *testing.T) {
 
 			// Activate code: 12345
 			// ------------------------------------------------
-			render, err = adaptors.Template.Render("template2", map[string]interface{}{
+			render, err = adaptors.Template.Render(context.Background(), "template2", map[string]interface{}{
 				"code": 12345,
 			})
 			So(err, ShouldBeNil)
@@ -179,7 +180,7 @@ func TestTemplate(t *testing.T) {
 
 			// warning message
 			// ------------------------------------------------
-			render, err = adaptors.Template.Render("template3", nil)
+			render, err = adaptors.Template.Render(context.Background(), "template3", nil)
 			So(err, ShouldBeNil)
 			So(render.Subject, ShouldEqual, "")
 			So(render.Body, ShouldEqual, "some warning message")

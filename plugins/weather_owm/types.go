@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -24,7 +24,7 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/weather"
-	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 const (
@@ -320,7 +320,7 @@ func NewSettings() map[string]*m.Attribute {
 // "main": "Rain",
 // "description": "небольшой дождь",
 // "icon": "10d"
-func WeatherCondition(w ProductWeather) (state entity_manager.ActorState) {
+func WeatherCondition(w ProductWeather) (state supervisor.ActorState) {
 
 	//fmt.Println("------")
 	//debug.Println(w)

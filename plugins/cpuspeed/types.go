@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -71,6 +71,26 @@ func NewAttr() m.Attributes {
 		AttrLoadMax: {
 			Name: AttrLoadMax,
 			Type: common.AttributeFloat,
+		},
+	}
+}
+
+func NewMetrics() []*m.Metric {
+	return []*m.Metric{
+		{
+			Name:        "cpuspeed",
+			Description: "Cpu metric",
+			Options: m.MetricOptions{
+				Items: []m.MetricOptionsItem{
+					{
+						Name:        "all",
+						Description: "",
+						Color:       "#C2C2C2",
+						Translate:   "all",
+						Label:       "GHz",
+					},
+				},
+			},
 		},
 	}
 }

@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,9 @@
 package endpoint
 
 import (
+	"context"
+
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/system/mqtt/admin"
 )
@@ -35,18 +38,18 @@ func NewMqttEndpoint(common *CommonEndpoint) *MqttEndpoint {
 	}
 }
 
-// GetClients ...
-func (m *MqttEndpoint) GetClients(limit, offset uint) (list []*admin.ClientInfo, total uint32, err error) {
+// GetClientList ...
+func (m *MqttEndpoint) GetClientList(ctx context.Context, pagination common.PageParams) (list []*admin.ClientInfo, total uint32, err error) {
 	if m.mqtt.Admin() == nil {
 		err = apperr.ErrMqttServerNoWorked
 		return
 	}
-	list, total, err = m.mqtt.Admin().GetClients(limit, offset)
+	list, total, err = m.mqtt.Admin().GetClients(uint(pagination.Limit), uint(pagination.Offset))
 	return
 }
 
-// GetClient ...
-func (m *MqttEndpoint) GetClient(clientId string) (client *admin.ClientInfo, err error) {
+// GetClientById ...
+func (m *MqttEndpoint) GetClientById(ctx context.Context, clientId string) (client *admin.ClientInfo, err error) {
 	if m.mqtt.Admin() == nil {
 		err = apperr.ErrMqttServerNoWorked
 		return
@@ -75,13 +78,17 @@ func (m *MqttEndpoint) GetSession(clientId string) (session *admin.SessionInfo, 
 	return
 }
 
-// GetSubscriptions ...
-func (m *MqttEndpoint) GetSubscriptions(clientId string, limit, offset uint) (list []*admin.SubscriptionInfo, total int, err error) {
+// GetSubscriptionList ...
+func (m *MqttEndpoint) GetSubscriptionList(ctx context.Context, clientId *string, pagination common.PageParams) (list []*admin.SubscriptionInfo, total int, err error) {
 	if m.mqtt.Admin() == nil {
 		err = apperr.ErrMqttServerNoWorked
 		return
 	}
-	list, total, err = m.mqtt.Admin().GetSubscriptions(clientId, limit, offset)
+	if clientId == nil {
+		err = apperr.ErrBadRequestParams
+		return
+	}
+	list, total, err = m.mqtt.Admin().GetSubscriptions(*clientId, uint(pagination.Limit), uint(pagination.Offset))
 	return
 }
 
