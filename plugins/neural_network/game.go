@@ -20,8 +20,6 @@ package neural_network
 
 import (
 	"fmt"
-	"math/rand"
-	"time"
 )
 
 type GameState int
@@ -122,7 +120,7 @@ func (g *Game) PrintBoard() {
 }
 
 func (g *Game) getRandomMove() (int, int) {
-	var availableMoves [][2]int
+	/*var availableMoves [][2]int
 
 	for i, row := range g.Board {
 		for j, cell := range row {
@@ -138,7 +136,10 @@ func (g *Game) getRandomMove() (int, int) {
 
 	rand.Seed(time.Now().UnixNano())
 	randomIndex := rand.Intn(len(availableMoves))
-	return availableMoves[randomIndex][0], availableMoves[randomIndex][1]
+	return availableMoves[randomIndex][0], availableMoves[randomIndex][1]*/
+	board := [3][3]rune{}
+	bestMove := findBestMove(board, g.Player)
+	return bestMove.Row, bestMove.Col
 }
 
 func (g *Game) getBoardState() []float64 {
