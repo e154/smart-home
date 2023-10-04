@@ -23,24 +23,10 @@ type Move struct {
 	Col int
 }
 
-type Player rune
-
-func (p Player) getOpponent() rune {
-	if p == 'X' {
-		return 'O'
-	} else {
-		return 'X'
-	}
-}
-
-func (p Player) Rune() rune {
-	return rune(p)
-}
-
 // This function returns true if there are moves
 // remaining on the board. It returns false if
 // there are no moves left to play.
-func isMovesLeft(board [3][3]rune) bool {
+func isMovesLeft(board [3][3]GameState) bool {
 	for i := 0; i < 3; i++ {
 		for j := 0; j < 3; j++ {
 			if board[i][j] == 0 {
@@ -53,13 +39,13 @@ func isMovesLeft(board [3][3]rune) bool {
 
 // This is the evaluation function as discussed
 // in the previous article
-func evaluate(b [3][3]rune, player Player) int {
+func evaluate(b [3][3]GameState, player GameState) int {
 	// Checking for Rows for X or O victory.
 	for row := 0; row < 3; row++ {
 		if b[row][0] == b[row][1] && b[row][1] == b[row][2] {
-			if b[row][0] == player.Rune() {
+			if b[row][0] == player {
 				return 10
-			} else if b[row][0] == player.getOpponent() {
+			} else if b[row][0] == player.opponent() {
 				return -10
 			}
 		}
@@ -68,9 +54,9 @@ func evaluate(b [3][3]rune, player Player) int {
 	// Checking for Columns for X or O victory.
 	for col := 0; col < 3; col++ {
 		if b[0][col] == b[1][col] && b[1][col] == b[2][col] {
-			if b[0][col] == player.Rune() {
+			if b[0][col] == player {
 				return 10
-			} else if b[0][col] == player.getOpponent() {
+			} else if b[0][col] == player.opponent() {
 				return -10
 			}
 		}
@@ -78,17 +64,17 @@ func evaluate(b [3][3]rune, player Player) int {
 
 	// Checking for Diagonals for X or O victory.
 	if b[0][0] == b[1][1] && b[1][1] == b[2][2] {
-		if b[0][0] == player.Rune() {
+		if b[0][0] == player {
 			return 10
-		} else if b[0][0] == player.getOpponent() {
+		} else if b[0][0] == player.opponent() {
 			return -10
 		}
 	}
 
 	if b[0][2] == b[1][1] && b[1][1] == b[2][0] {
-		if b[0][2] == player.Rune() {
+		if b[0][2] == player {
 			return 10
-		} else if b[0][2] == player.getOpponent() {
+		} else if b[0][2] == player.opponent() {
 			return -10
 		}
 	}
@@ -101,7 +87,7 @@ func evaluate(b [3][3]rune, player Player) int {
 // considers all the possible ways
 // the game can go and returns the
 // value of the board
-func minimax(board [3][3]rune, depth int, isMax bool, player Player) int {
+func minimax(board [3][3]GameState, depth int, isMax bool, player GameState) int {
 	score := evaluate(board, player)
 
 	// If Maximizer has won the game
@@ -134,7 +120,7 @@ func minimax(board [3][3]rune, depth int, isMax bool, player Player) int {
 				if board[i][j] == 0 {
 
 					// Make the move
-					board[i][j] = player.Rune()
+					board[i][j] = player
 
 					// Call minimax recursively
 					// and choose the maximum value
@@ -159,7 +145,7 @@ func minimax(board [3][3]rune, depth int, isMax bool, player Player) int {
 			if board[i][j] == 0 {
 
 				// Make the move
-				board[i][j] = player.getOpponent()
+				board[i][j] = player.opponent()
 
 				// Call minimax recursively and
 				// choose the minimum value
@@ -175,7 +161,7 @@ func minimax(board [3][3]rune, depth int, isMax bool, player Player) int {
 
 // This will return the best possible
 // move for the player
-func findBestMove(board [3][3]rune, player Player) Move {
+func findBestMove(board [3][3]GameState, player GameState) Move {
 	bestVal := -1000
 	bestMove := Move{-1, -1}
 
@@ -190,7 +176,7 @@ func findBestMove(board [3][3]rune, player Player) Move {
 			if board[i][j] == 0 {
 
 				// Make the move
-				board[i][j] = player.Rune()
+				board[i][j] = player
 
 				// Compute the evaluation function
 				// for this move.

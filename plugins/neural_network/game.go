@@ -120,25 +120,7 @@ func (g *Game) PrintBoard() {
 }
 
 func (g *Game) getRandomMove() (int, int) {
-	/*var availableMoves [][2]int
-
-	for i, row := range g.Board {
-		for j, cell := range row {
-			if cell == Empty {
-				availableMoves = append(availableMoves, [2]int{i, j})
-			}
-		}
-	}
-
-	if len(availableMoves) == 0 {
-		return -1, -1
-	}
-
-	rand.Seed(time.Now().UnixNano())
-	randomIndex := rand.Intn(len(availableMoves))
-	return availableMoves[randomIndex][0], availableMoves[randomIndex][1]*/
-	board := [3][3]rune{}
-	bestMove := findBestMove(board, g.Player)
+	bestMove := findBestMove(g.Board, g.Player)
 	return bestMove.Row, bestMove.Col
 }
 

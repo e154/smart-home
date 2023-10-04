@@ -25,37 +25,37 @@ import (
 
 func TestMinMax(t *testing.T) {
 
-	board := [3][3]rune{
-		{'X', 'O', 'X'},
-		{'O', 'X', 'O'},
-		{0, 0, 0},
+	board := [3][3]GameState{
+		{X, O, X},
+		{O, X, O},
+		{Empty, Empty, Empty},
 	}
 
-	bestMove := findBestMove(board, 'O')
+	bestMove := findBestMove(board, O)
 	require.Equal(t, bestMove.Row, 2)
 	require.Equal(t, bestMove.Col, 0)
 
-	board = [3][3]rune{
-		{'X', 'O', 'X'},
-		{'O', 'O', 'X'},
-		{0, 0, 0},
+	board = [3][3]GameState{
+		{X, O, X},
+		{O, O, X},
+		{Empty, Empty, Empty},
 	}
 
-	bestMove = findBestMove(board, 'X')
+	bestMove = findBestMove(board, X)
 	require.Equal(t, bestMove.Row, 2)
 	require.Equal(t, bestMove.Col, 2)
 
-	bestMove = findBestMove(board, 'O')
+	bestMove = findBestMove(board, O)
 	require.Equal(t, bestMove.Row, 2)
 	require.Equal(t, bestMove.Col, 1)
 
-	board = [3][3]rune{
-		{'X', 'O', 'X'},
-		{'O', 'O', 'X'},
-		{0, 0, 0},
+	board = [3][3]GameState{
+		{X, O, X},
+		{O, O, X},
+		{Empty, Empty, Empty},
 	}
 
-	bestMove = findBestMove(board, 'X')
+	bestMove = findBestMove(board, X)
 	require.Equal(t, bestMove.Row, 2)
 	require.Equal(t, bestMove.Col, 2)
 }
