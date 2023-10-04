@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,15 +20,15 @@ package scripts
 
 import (
 	"fmt"
+	"runtime/debug"
 	"strings"
 	"sync"
-
-	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/pkg/errors"
 
 	"github.com/dop251/goja"
 	. "github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/system/scripts/eventloop"
 )
 
@@ -202,6 +202,7 @@ func (j *Javascript) AssertFunction(f string, args ...interface{}) (result strin
 	defer func() {
 		if r := recover(); r != nil {
 			log.Warn("Recovered")
+			debug.PrintStack()
 		}
 	}()
 	if assertFunc, ok := goja.AssertFunction(j.vm.Get(f)); ok {

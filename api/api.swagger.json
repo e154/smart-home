@@ -6704,6 +6704,9 @@
         },
         "point": {
           "type": "string"
+        },
+        "encrypted": {
+          "type": "string"
         }
       }
     },
@@ -9264,7 +9267,8 @@
         "MAP",
         "TIME",
         "IMAGE",
-        "POINT"
+        "POINT",
+        "ENCRYPTED"
       ],
       "default": "INT"
     },

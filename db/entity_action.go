@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,6 +21,9 @@ package db
 import (
 	"context"
 	"fmt"
+	"github.com/jackc/pgerrcode"
+	"github.com/jackc/pgx/v5/pgconn"
+	"strings"
 	"time"
 
 	"github.com/e154/smart-home/common/apperr"
@@ -60,6 +63,18 @@ func (d *EntityAction) TableName() string {
 // Add ...
 func (n EntityActions) Add(ctx context.Context, v *EntityAction) (id int64, err error) {
 	if err = n.Db.WithContext(ctx).Create(&v).Error; err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case pgerrcode.UniqueViolation:
+				if strings.Contains(pgErr.Message, "name_at_entity_actions_unq") {
+					err = errors.Wrap(apperr.ErrEntityActionAdd, fmt.Sprintf("action name \"%s\" not unique", v.Name))
+					return
+				}
+			default:
+				fmt.Printf("unknown code \"%s\"\n", pgErr.Code)
+			}
+		}
 		err = errors.Wrap(apperr.ErrEntityActionAdd, err.Error())
 		return
 	}
@@ -93,6 +108,18 @@ func (n EntityActions) Update(ctx context.Context, m *EntityAction) (err error) 
 	}).Error
 
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case pgerrcode.UniqueViolation:
+				if strings.Contains(pgErr.Message, "name_at_entity_actions_unq") {
+					err = errors.Wrap(apperr.ErrEntityActionUpdate, fmt.Sprintf("action name \"%s\" not unique", m.Name))
+					return
+				}
+			default:
+				fmt.Printf("unknown code \"%s\"\n", pgErr.Code)
+			}
+		}
 		err = errors.Wrap(apperr.ErrEntityActionUpdate, err.Error())
 	}
 	return
@@ -131,6 +158,18 @@ func (n *EntityActions) List(ctx context.Context, limit, offset int, orderBy, so
 // AddMultiple ...
 func (n *EntityActions) AddMultiple(ctx context.Context, actions []*EntityAction) (err error) {
 	if err = n.Db.WithContext(ctx).Create(&actions).Error; err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case pgerrcode.UniqueViolation:
+				if strings.Contains(pgErr.Message, "name_at_entity_states_unq") {
+					err = errors.Wrap(apperr.ErrEntityActionAdd, "multiple insert")
+					return
+				}
+			default:
+				fmt.Printf("unknown code \"%s\"\n", pgErr.Code)
+			}
+		}
 		err = errors.Wrap(apperr.ErrEntityActionAdd, err.Error())
 	}
 	return

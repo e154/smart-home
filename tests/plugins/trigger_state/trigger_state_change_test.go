@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,6 @@ package trigger_state
 import (
 	"context"
 	"fmt"
-	"sync"
 	"testing"
 	"time"
 
@@ -65,9 +64,10 @@ zigbee2mqttEvent = ->
     attrs.click = payload.click
     attrs.action = ""
     state = payload.click + "_click"
-  Actor.setState
+  EntitySetState ENTITY_ID,
     'new_state': state.toUpperCase()
     'attribute_values': attrs
+    'storage_save': true
 `
 
 		task1SourceScript = `
@@ -104,7 +104,7 @@ automationTriggerStateChanged = (msg)->
 			So(err, ShouldBeNil)
 
 			// add zigbee2mqtt_device
-			butonDevice := &m.Zigbee2mqttDevice{
+			buttonDevice := &m.Zigbee2mqttDevice{
 				Id:            zigbeeButtonId,
 				Zigbee2mqttId: zigbeeServer.Id,
 				Name:          zigbeeButtonId,
@@ -114,7 +114,7 @@ automationTriggerStateChanged = (msg)->
 				Status:        "active",
 				Payload:       []byte("{}"),
 			}
-			err = adaptors.Zigbee2mqttDevice.Add(context.Background(), butonDevice)
+			err = adaptors.Zigbee2mqttDevice.Add(context.Background(), buttonDevice)
 			So(err, ShouldBeNil)
 
 			automation.Start()
@@ -125,12 +125,13 @@ automationTriggerStateChanged = (msg)->
 
 			var counter atomic.Int32
 			var lastStat atomic.String
-			var wg sync.WaitGroup
-			wg.Add(2)
+			ch := make(chan struct{})
 			scriptService.PushFunctions("Done", func(state string) {
 				lastStat.Store(state)
 				counter.Inc()
-				wg.Done()
+				if counter.Load() > 1 {
+					close(ch)
+				}
 			})
 
 			time.Sleep(time.Millisecond * 500)
@@ -167,6 +168,8 @@ automationTriggerStateChanged = (msg)->
 			err = AddTrigger(trigger, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
+			time.Sleep(time.Millisecond * 500)
+
 			//TASK1
 			newTask := &m.NewTask{
 				Name:       "Toggle plug ON",
@@ -184,13 +187,19 @@ automationTriggerStateChanged = (msg)->
 			mqttCli := mqttServer.NewClient("cli2")
 			err = mqttCli.Publish("zigbee2mqtt/"+zigbeeButtonId, []byte(`{"battery":100,"action":"double","linkquality":134,"voltage":3042}`))
 			So(err, ShouldBeNil)
-			time.Sleep(time.Millisecond * 100)
+			time.Sleep(time.Millisecond * 500)
 			err = mqttCli.Publish("zigbee2mqtt/"+zigbeeButtonId, []byte(`{"battery":100,"click":"double","linkquality":134,"voltage":3042}`))
 			So(err, ShouldBeNil)
+			time.Sleep(time.Millisecond * 500)
 
-			time.Sleep(time.Second)
+			timer := time.NewTimer(time.Second * 4)
+			defer timer.Stop()
 
-			wg.Wait()
+			select {
+			case <-timer.C:
+			case <-ch:
+
+			}
 
 			time.Sleep(time.Second)
 

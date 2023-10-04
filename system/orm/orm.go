@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -82,7 +82,7 @@ func NewOrm(lc fx.Lifecycle,
 // Start ...
 func (o *Orm) Start() (err error) {
 
-	log.Infof("database connect %s", o.cfg.String())
+	log.Infof("database connect %s", strings.ReplaceAll(o.cfg.String(), "password="+o.cfg.Password, "password=*****"))
 
 	newLogger := gormLogger.New(
 		goLog.New(os.Stdout, "\r\n", goLog.LstdFlags), // io writer
@@ -106,9 +106,9 @@ func (o *Orm) Start() (err error) {
 		return
 	}
 
-	//if o.cfg.Debug {
-	//	o.db.Logger.LogMode(dbLogger.Info)
-	//}
+	if o.cfg.Debug {
+		o.db.Logger.LogMode(gormLogger.Info)
+	}
 
 	var db *sql.DB
 	if db, err = o.db.DB(); err != nil {
@@ -123,6 +123,14 @@ func (o *Orm) Start() (err error) {
 
 	// SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
 	db.SetConnMaxLifetime(time.Duration(o.cfg.ConnMaxLifeTime) * time.Minute)
+
+	// get server version
+	row := o.db.Raw("SHOW server_version").Row()
+	if err = row.Scan(&o.serverVersion); err != nil {
+		return
+	}
+
+	log.Infof("database version %s", o.serverVersion)
 
 	err = o.Check()
 
@@ -154,7 +162,7 @@ func (o *Orm) Check() (err error) {
 		return
 	}
 
-	err = o.checkExtensions()
+	err = o.CheckExtensions()
 
 	return
 }
@@ -167,13 +175,6 @@ func (o *Orm) checkServerVersion() (err error) {
 		return
 	}
 
-	// get server version
-	row = o.db.Raw("SHOW server_version").Row()
-	if err = row.Scan(&o.serverVersion); err != nil {
-		return
-	}
-
-	log.Infof("database version %s", o.serverVersion)
 	strArr := strings.Split(o.serverVersion, " ")
 	if len(strArr) > 1 {
 		o.serverVersion = strArr[0]
@@ -207,7 +208,11 @@ func (o *Orm) checkAvailableExtensions(availableExtensions []AvailableExtension,
 	return
 }
 
-func (o *Orm) checkExtensions() (err error) {
+func (o *Orm) CheckExtensions() (err error) {
+
+	o.db.Exec(`CREATE EXTENSION IF NOT EXISTS pgcrypto CASCADE;`)
+	//o.db.Exec(`CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;`)
+	o.db.Exec(`CREATE EXTENSION IF NOT EXISTS Postgis CASCADE;`)
 
 	// check extensions
 	if err = o.db.Raw("select * from pg_available_extensions").Scan(&o.availableExtensions).Error; err != nil {
@@ -232,25 +237,22 @@ func (o *Orm) checkExtensions() (err error) {
 	if !extCrypto {
 		log.Warn("please install pgcrypto extension for postgresql database (maybe need install postgresql-contrib)\r")
 	} else {
-		o.db.Exec(`CREATE EXTENSION IF NOT EXISTS pgcrypto CASCADE;`)
 		if o.checkAvailableExtensions(o.availableExtensions, "pgcrypto") {
 			log.Warn("extension 'pgcrypto' installed but not enabled, enable it: CREATE EXTENSION IF NOT EXISTS pgcrypto CASCADE;\n\r")
 		}
 	}
 
-	if !o.extTimescaledb {
-		log.Warn("please install timescaledb extension, website: https://docs.timescale.com/v1.1/getting-started/installation)\r")
-	} else {
-		o.db.Exec(`CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;`)
-		if o.checkAvailableExtensions(o.availableExtensions, "timescaledb") {
-			log.Warn("extension 'timescaledb' installed but not enabled, enable it: CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;\n\r")
-		}
-	}
+	//if !o.extTimescaledb {
+	//	log.Warn("please install timescaledb extension, website: https://docs.timescale.com/v1.1/getting-started/installation)\r")
+	//} else {
+	//	if o.checkAvailableExtensions(o.availableExtensions, "timescaledb") {
+	//		log.Warn("extension 'timescaledb' installed but not enabled, enable it: CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;\n\r")
+	//	}
+	//}
 
 	if !extPostgis {
 		log.Warn("please install Postgis extension\r")
 	} else {
-		o.db.Exec(`CREATE EXTENSION IF NOT EXISTS Postgis CASCADE;`)
 		if o.checkAvailableExtensions(o.availableExtensions, "postgis") {
 			log.Warn("extension 'Postgis' installed but not enabled, enable it: CREATE EXTENSION IF NOT EXISTS Postgis CASCADE;\n\r")
 		}

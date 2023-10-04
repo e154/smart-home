@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -18,14 +18,6 @@
 
 package automation
 
-import (
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/events"
-)
-
-// ActionFunc ...
-const ActionFunc = "automationAction"
-
 // Javascript Binding
 //
 // Action
@@ -38,14 +30,4 @@ type ActionBind struct {
 // NewActionBind...
 func NewActionBind(action *Action) *ActionBind {
 	return &ActionBind{action: action}
-}
-
-// CallAction ...
-func (e *ActionBind) CallAction(id common.EntityId, action string, arg map[string]interface{}) {
-	e.action.eventBus.Publish("system/entities/"+id.String(), events.EventCallEntityAction{
-		PluginName: id.PluginName(),
-		EntityId:   id,
-		ActionName: action,
-		Args:       arg,
-	})
 }

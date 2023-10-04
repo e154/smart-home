@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,7 +19,6 @@
 package cpuspeed
 
 import (
-	"fmt"
 	"sync"
 
 	m "github.com/e154/smart-home/models"
@@ -30,7 +29,6 @@ import (
 	"github.com/shirou/gopsutil/v3/cpu"
 
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
@@ -45,26 +43,15 @@ type Actor struct {
 	loadMax         metrics.GaugeFloat64
 	allCpuPrevTotal float64
 	allCpuPrevIdle  float64
-	eventBus        bus.Bus
 	updateLock      *sync.Mutex
 }
 
 // NewActor ...
-func NewActor(visor supervisor.Supervisor,
-	eventBus bus.Bus,
-	entity *m.Entity) *Actor {
+func NewActor(entity *m.Entity,
+	service supervisor.Service) *Actor {
 
 	actor := &Actor{
-		BaseActor: supervisor.BaseActor{
-			Id:                common.EntityId(fmt.Sprintf("%s.%s", EntityCpuspeed, Name)),
-			Name:              Name,
-			EntityType:        EntityCpuspeed,
-			UnitOfMeasurement: "GHz",
-			AttrMu:            &sync.RWMutex{},
-			Attrs:             NewAttr(),
-			Supervisor:        visor,
-		},
-		eventBus:   eventBus,
+		BaseActor:  supervisor.NewBaseActor(entity, service),
 		all:        metrics.NewGaugeFloat64(),
 		loadMin:    metrics.NewGaugeFloat64(),
 		loadMax:    metrics.NewGaugeFloat64(),
@@ -85,18 +72,22 @@ func NewActor(visor supervisor.Supervisor,
 	return actor
 }
 
-// Spawn ...
-func (e *Actor) Spawn() supervisor.PluginActor {
-	return e
+func (e *Actor) Destroy() {
+
 }
 
-func (u *Actor) selfUpdate() {
+// Spawn ...
+func (e *Actor) Spawn() {
 
-	u.updateLock.Lock()
-	defer u.updateLock.Unlock()
+}
 
-	oldState := u.GetEventState(u)
-	u.Now(oldState)
+func (e *Actor) selfUpdate() {
+
+	e.updateLock.Lock()
+	defer e.updateLock.Unlock()
+
+	oldState := e.GetEventState()
+	e.Now(oldState)
 
 	// export CGO_ENABLED=1
 	timeStats, err := cpu.Times(false)
@@ -108,37 +99,37 @@ func (u *Actor) selfUpdate() {
 	}
 
 	total := timeStats[0].Total()
-	diffIdle := timeStats[0].Idle - u.allCpuPrevIdle
-	diffTotal := total - u.allCpuPrevTotal
+	diffIdle := timeStats[0].Idle - e.allCpuPrevIdle
+	diffTotal := total - e.allCpuPrevTotal
 	all := common.Rounding(100*(diffTotal-diffIdle)/diffTotal, 2)
-	if v := u.loadMin.Value(); v == 0 || all < v {
-		u.loadMin.Update(all)
+	if v := e.loadMin.Value(); v == 0 || all < v {
+		e.loadMin.Update(all)
 	}
-	if v := u.loadMax.Value(); v == 0 || all > v {
-		u.loadMax.Update(all)
+	if v := e.loadMax.Value(); v == 0 || all > v {
+		e.loadMax.Update(all)
 	}
 
-	u.all.Update(all)
-	u.allCpuPrevTotal = total
-	u.allCpuPrevIdle = timeStats[0].Idle
+	e.all.Update(all)
+	e.allCpuPrevTotal = total
+	e.allCpuPrevIdle = timeStats[0].Idle
 
-	u.AttrMu.Lock()
-	u.Attrs[AttrCpuCores].Value = u.cores
-	u.Attrs[AttrCpuMhz].Value = u.mhz
-	u.Attrs[AttrCpuAll].Value = u.all.Value()
-	u.Attrs[AttrLoadMax].Value = u.loadMax.Value()
-	u.Attrs[AttrLoadMin].Value = u.loadMin.Value()
-	u.AttrMu.Unlock()
+	e.AttrMu.Lock()
+	e.Attrs[AttrCpuCores].Value = e.cores
+	e.Attrs[AttrCpuMhz].Value = e.mhz
+	e.Attrs[AttrCpuAll].Value = e.all.Value()
+	e.Attrs[AttrLoadMax].Value = e.loadMax.Value()
+	e.Attrs[AttrLoadMin].Value = e.loadMin.Value()
+	e.AttrMu.Unlock()
 
-	//u.SetMetric(u.Id, "cpuspeed", map[string]float32{
-	//	"all": common.Rounding32(u.all.Value(), 2),
+	//e.SetMetric(e.Id, "cpuspeed", map[string]float32{
+	//	"all": common.Rounding32(e.all.Value(), 2),
 	//})
 
-	u.eventBus.Publish("system/entities/"+u.Id.String(), events.EventStateChanged{
+	go e.SaveState(events.EventStateChanged{
 		StorageSave: false,
-		PluginName:  u.Id.PluginName(),
-		EntityId:    u.Id,
+		PluginName:  e.Id.PluginName(),
+		EntityId:    e.Id,
 		OldState:    oldState,
-		NewState:    u.GetEventState(u),
+		NewState:    e.GetEventState(),
 	})
 }

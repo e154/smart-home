@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,53 +19,29 @@
 package scene
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/e154/smart-home/common/events"
 
-	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
 // Actor ...
 type Actor struct {
 	supervisor.BaseActor
-	adaptors      *adaptors.Adaptors
-	scriptService scripts.ScriptService
-	scriptEngine  *scripts.Engine
-	eventPool     chan events.EventCallScene
-	stateMu       *sync.Mutex
+	eventPool chan events.EventCallScene
+	stateMu   *sync.Mutex
 }
 
 // NewActor ...
 func NewActor(entity *m.Entity,
-	params map[string]interface{},
-	adaptors *adaptors.Adaptors,
-	scriptService scripts.ScriptService,
-	visor supervisor.Supervisor) (actor *Actor, err error) {
+	service supervisor.Service) (actor *Actor, err error) {
 
 	actor = &Actor{
-		BaseActor:     supervisor.NewBaseActor(entity, scriptService, adaptors),
-		adaptors:      adaptors,
-		scriptService: scriptService,
-		eventPool:     make(chan events.EventCallScene, 10),
-		stateMu:       &sync.Mutex{},
-	}
-
-	actor.Supervisor = visor
-	_, _ = actor.Attrs.Deserialize(params)
-
-	// todo move to baseActor
-	if len(entity.Scripts) != 0 {
-		if actor.scriptEngine, err = scriptService.NewEngine(entity.Scripts[0]); err != nil {
-			return
-		}
-		_, _ = actor.scriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
-		actor.scriptEngine.PushStruct("Actor", supervisor.NewScriptBind(actor))
-		_, _ = actor.scriptEngine.Do()
+		BaseActor: supervisor.NewBaseActor(entity, service),
+		eventPool: make(chan events.EventCallScene, 99),
+		stateMu:   &sync.Mutex{},
 	}
 
 	// action worker
@@ -78,9 +54,12 @@ func NewActor(entity *m.Entity,
 	return
 }
 
-// Spawn ...
-func (e *Actor) Spawn() supervisor.PluginActor {
-	return e
+func (e *Actor) Destroy() {
+	close(e.eventPool)
+}
+
+func (e *Actor) Spawn() {
+
 }
 
 func (e *Actor) addEvent(event events.EventCallScene) {
@@ -88,8 +67,10 @@ func (e *Actor) addEvent(event events.EventCallScene) {
 }
 
 func (e *Actor) runEvent(msg events.EventCallScene) {
-
-	if _, err := e.scriptEngine.AssertFunction(FuncSceneEvent, msg.EntityId); err != nil {
-		log.Error(err.Error())
+	for _, engine := range e.ScriptEngines {
+		if _, err := engine.Engine().AssertFunction(FuncSceneEvent, msg.EntityId); err != nil {
+			log.Error(err.Error())
+			return
+		}
 	}
 }

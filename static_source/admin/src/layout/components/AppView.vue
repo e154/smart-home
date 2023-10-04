@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { useTagsViewStore } from '@/store/modules/tagsView'
-import { useAppStore } from '@/store/modules/app'
-import { Footer } from '@/components/Footer'
-import { computed } from 'vue'
+import {useTagsViewStore} from '@/store/modules/tagsView'
+import {useAppStore} from '@/store/modules/app'
+import {Footer} from '@/components/Footer'
+import {computed, onMounted, onUnmounted} from 'vue'
+import {Terminal} from "@/components/Terminal";
 
 const appStore = useAppStore()
 
@@ -17,6 +18,25 @@ const tagsViewStore = useTagsViewStore()
 const getCaches = computed((): string[] => {
   return tagsViewStore.getCachedViews
 })
+
+const onKeydown = ( event ) => {
+  // console.log(event.key);
+  if (event.key === "Escape") {
+    appStore.setTerminal(false)
+  }
+  if (event.key === "`") {
+    appStore.setTerminal(!appStore.getTerminal)
+  }
+}
+
+onMounted(() => {
+  document.addEventListener("keydown", onKeydown)
+})
+
+onUnmounted(() => {
+  document.removeEventListener("keydown", onKeydown)
+})
+
 </script>
 
 <template>
@@ -50,4 +70,5 @@ const getCaches = computed((): string[] => {
     </router-view>
   </section>
   <Footer v-if="footer" />
+  <Terminal/>
 </template>

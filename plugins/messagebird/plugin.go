@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,6 +20,8 @@ package messagebird
 
 import (
 	"context"
+	"fmt"
+	"github.com/e154/smart-home/common"
 	"strings"
 
 	"github.com/e154/smart-home/system/supervisor"
@@ -42,7 +44,6 @@ func init() {
 
 type plugin struct {
 	*supervisor.Plugin
-	actor *Actor
 }
 
 // New ...
@@ -54,37 +55,20 @@ func New() supervisor.Pluggable {
 
 // Load ...
 func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(ctx, service); err != nil {
+	if err = p.Plugin.Load(ctx, service, p.ActorConstructor); err != nil {
 		return
 	}
 
-	go func() {
-		if err = p.asyncLoad(); err != nil {
-			log.Error(err.Error())
+	var entity *m.Entity
+	if entity, err = p.Service.Adaptors().Entity.GetById(context.Background(), common.EntityId(fmt.Sprintf("%s.%s", Name, Name))); err != nil {
+		entity = &m.Entity{
+			Id:         common.EntityId(fmt.Sprintf("%s.%s", Name, Name)),
+			PluginName: Name,
+			Attributes: NewAttr(),
+			AutoLoad:   true,
 		}
-	}()
-
-	return nil
-}
-
-func (p *plugin) asyncLoad() (err error) {
-
-	// load settings
-	var settings m.Attributes
-	settings, err = p.LoadSettings(p)
-	if err != nil {
-		log.Warn(err.Error())
-		settings = NewSettings()
+		err = p.Service.Adaptors().Entity.Add(context.Background(), entity)
 	}
-
-	if settings == nil {
-		settings = NewSettings()
-	}
-
-	// add actor
-	p.actor = NewActor(settings, p.Supervisor, p.EventBus, p.Adaptors)
-	p.Supervisor.Spawn(p.actor.Spawn)
-	go func() { _, _ = p.actor.UpdateBalance() }()
 
 	// register messagebird provider
 	notify.ProviderManager.AddProvider(Name, p)
@@ -101,6 +85,24 @@ func (p *plugin) Unload(ctx context.Context) (err error) {
 	notify.ProviderManager.RemoveProvider(Name)
 
 	return nil
+}
+
+func (p *plugin) ActorConstructor(entity *m.Entity) (supervisor.PluginActor, error) {
+
+	var settings m.Attributes
+	var err error
+	settings, err = p.LoadSettings(p)
+	if err != nil {
+		log.Warn(err.Error())
+	}
+
+	if settings == nil {
+		settings = NewSettings()
+	}
+
+	actor := NewActor(entity, settings, p.Service)
+	go func() { _, _ = actor.UpdateBalance() }()
+	return actor, nil
 }
 
 // Name ...
@@ -138,7 +140,7 @@ func (p *plugin) Save(msg notify.Message) (addresses []string, message *m.Messag
 		Attributes: msg.Attributes,
 	}
 	var err error
-	if message.Id, err = p.Adaptors.Message.Add(context.Background(), message); err != nil {
+	if message.Id, err = p.Service.Adaptors().Message.Add(context.Background(), message); err != nil {
 		log.Error(err.Error())
 	}
 
@@ -151,7 +153,11 @@ func (p *plugin) Save(msg notify.Message) (addresses []string, message *m.Messag
 
 // Send ...
 func (p *plugin) Send(address string, message *m.Message) (err error) {
-	err = p.actor.Send(address, message)
+	p.Actors.Range(func(key, value any) bool {
+		actor, _ := value.(*Actor)
+		actor.Send(address, message)
+		return true
+	})
 	return
 }
 

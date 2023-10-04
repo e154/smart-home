@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -35,11 +35,10 @@ type EventStateChanged struct {
 
 // EventLastStateChanged ...
 type EventLastStateChanged struct {
-	StorageSave bool                 `json:"storage_save"`
-	PluginName  string               `json:"plugin_name"`
-	EntityId    common.EntityId      `json:"entity_id"`
-	OldState    bus.EventEntityState `json:"old_state"`
-	NewState    bus.EventEntityState `json:"new_state"`
+	PluginName string               `json:"plugin_name"`
+	EntityId   common.EntityId      `json:"entity_id"`
+	OldState   bus.EventEntityState `json:"old_state"`
+	NewState   bus.EventEntityState `json:"new_state"`
 }
 
 // EventGetLastState ...
@@ -63,12 +62,12 @@ type EventCallScene struct {
 }
 
 // EventAddedActor ...
-type EventAddedActor struct {
-	PluginName string          `json:"plugin_name"`
-	EntityId   common.EntityId `json:"entity_id"`
-	Attributes m.Attributes    `json:"attributes"`
-	Settings   m.Attributes    `json:"settings"` //???
-}
+//type EventAddedActor struct {
+//	PluginName string          `json:"plugin_name"`
+//	EntityId   common.EntityId `json:"entity_id"`
+//	Attributes m.Attributes    `json:"attributes"`
+//	Settings   m.Attributes    `json:"settings"` //???
+//}
 
 // EventCreatedEntity ...
 type EventCreatedEntity struct {
@@ -98,7 +97,8 @@ type CommandLoadEntity struct {
 
 // EventEntityLoaded ...
 type EventEntityLoaded struct {
-	EntityId common.EntityId `json:"entity_id"`
+	EntityId   common.EntityId `json:"entity_id"`
+	PluginName string          `json:"plugin_name"`
 }
 
 // EventEntitySetState ...

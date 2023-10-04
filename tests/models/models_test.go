@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,11 +19,14 @@
 package models
 
 import (
+	"encoding/hex"
 	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
 	"time"
+
+	"github.com/e154/smart-home/common/encryptor"
 
 	"github.com/e154/smart-home/system/logging"
 	. "github.com/e154/smart-home/tests/models/container"
@@ -43,6 +46,10 @@ func TestMain(m *testing.M) {
 
 	container = BuildContainer()
 	err := container.Invoke(func(logger *logging.Logging) {
+
+		// encryptor
+		b, _ := hex.DecodeString("7abf835e883087d3dc87be2c24ea2faee948f03cf28ebe6d7c119c2ccedc9ab2")
+		encryptor.SetKey(b)
 
 		time.Sleep(time.Millisecond * 500)
 

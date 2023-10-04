@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,6 +21,7 @@ package telegram
 import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 const (
@@ -39,6 +40,9 @@ const (
 const (
 	// StatusDelivered ...
 	StatusDelivered = "delivered"
+
+	AttrConnected = "connected"
+	AttrOffline   = "offline"
 )
 
 const (
@@ -70,10 +74,28 @@ func NewSettings() m.Attributes {
 	return map[string]*m.Attribute{
 		AttrToken: {
 			Name: AttrToken,
-			Type: common.AttributeString,
+			Type: common.AttributeEncrypted,
 		},
 	}
 }
+
+// NewStates ...
+func NewStates() (states map[string]supervisor.ActorState) {
+
+	states = map[string]supervisor.ActorState{
+		AttrConnected: {
+			Name:        AttrConnected,
+			Description: "connected",
+		},
+		AttrOffline: {
+			Name:        AttrOffline,
+			Description: "offline",
+		},
+	}
+
+	return
+}
+
 
 // Command ...
 type Command struct {

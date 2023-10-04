@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -16,13 +16,11 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-//go:build (linux && !mips64 && !mips64le) || darwin
-// +build linux,!mips64,!mips64le darwin
-
 package uptime
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/e154/smart-home/system/supervisor"
@@ -49,59 +47,43 @@ func init() {
 
 type plugin struct {
 	*supervisor.Plugin
-	entity     *Actor
 	ticker     *time.Ticker
-	pause      time.Duration
 	storyModel *m.RunStory
-	quit       chan struct{}
 }
 
 // New ...
 func New() supervisor.Pluggable {
 	return &plugin{
 		Plugin: supervisor.NewPlugin(),
-		pause:  60,
 	}
 }
 
 // Load ...
 func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(ctx, service); err != nil {
+	if err = p.Plugin.Load(ctx, service, p.ActorConstructor); err != nil {
 		return
 	}
 
-	p.entity = NewActor(p.Supervisor, p.EventBus)
-	p.quit = make(chan struct{})
-
-	p.storyModel = &m.RunStory{
-		Start: time.Now(),
+	var entity *m.Entity
+	if entity, err = p.Service.Adaptors().Entity.GetById(context.Background(), common.EntityId(fmt.Sprintf("%s.%s", EntitySensor, Name))); err != nil {
+		entity = &m.Entity{
+			Id:         common.EntityId(fmt.Sprintf("%s.%s", EntitySensor, Name)),
+			PluginName: Name,
+			Attributes: NewAttr(),
+		}
+		err = p.Service.Adaptors().Entity.Add(context.Background(), entity)
 	}
-
-	p.storyModel.Id, err = p.Adaptors.RunHistory.Add(context.Background(), p.storyModel)
-
-	if err != nil {
-		log.Error(err.Error())
-		return nil
-	}
-
-	p.Supervisor.Spawn(p.entity.Spawn)
-
-	p.entity.update()
 
 	go func() {
-		ticker := time.NewTicker(time.Second * p.pause)
-		defer func() {
-			ticker.Stop()
-			close(p.quit)
-		}()
+		const pause = 60
+		p.ticker = time.NewTicker(time.Second * pause)
 
-		for {
-			select {
-			case <-p.quit:
-				return
-			case <-ticker.C:
-				p.entity.update()
-			}
+		for range p.ticker.C {
+			p.Actors.Range(func(key, value any) bool {
+				actor, _ := value.(*Actor)
+				actor.update()
+				return true
+			})
 		}
 	}()
 	return nil
@@ -109,13 +91,33 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 
 // Unload ...
 func (p *plugin) Unload(ctx context.Context) (err error) {
+	if p.ticker != nil {
+		p.ticker.Stop()
+		p.ticker = nil
+	}
 	if err = p.Plugin.Unload(ctx); err != nil {
 		return
 	}
 
-	p.quit <- struct{}{}
 	p.storyModel.End = common.Time(time.Now())
-	if err = p.Adaptors.RunHistory.Update(context.Background(), p.storyModel); err != nil {
+	if err = p.Service.Adaptors().RunHistory.Update(context.Background(), p.storyModel); err != nil {
+		log.Error(err.Error())
+	}
+	return
+}
+
+// ActorConstructor ...
+func (p *plugin) ActorConstructor(entity *m.Entity) (actor supervisor.PluginActor, err error) {
+	actor = NewActor(entity, p.Service)
+	p.storyModel = &m.RunStory{
+		Start: time.Now(),
+	}
+	if err = p.AddActor(actor, entity); err != nil {
+		return
+	}
+
+	p.storyModel.Id, err = p.Service.Adaptors().RunHistory.Add(context.Background(), p.storyModel)
+	if err != nil {
 		log.Error(err.Error())
 	}
 	return

@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -28,6 +28,7 @@ import (
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/debug"
+	"github.com/e154/smart-home/common/encryptor"
 )
 
 // Attribute ...
@@ -44,6 +45,19 @@ func (a Attribute) String() string {
 	}
 	if value, ok := a.Value.(string); ok {
 		return value
+	}
+	return fmt.Sprintf("%v", a.Value)
+}
+
+// Decrypt ...
+func (a Attribute) Decrypt() string {
+	if a.Value == nil {
+		return ""
+	}
+	if value, ok := a.Value.(string); ok {
+		if str, err := encryptor.Decrypt(value); err == nil {
+			return str
+		}
 	}
 	return fmt.Sprintf("%v", a.Value)
 }
@@ -76,7 +90,10 @@ func (a Attribute) Int64() int64 {
 }
 
 // Time ...
-func (a Attribute) Time() time.Time {
+func (a *Attribute) Time() time.Time {
+	if a == nil || a.Value == nil {
+		return time.Time{}
+	}
 	if value, ok := a.Value.(time.Time); ok {
 		return value
 	}
@@ -89,8 +106,8 @@ func (a Attribute) Time() time.Time {
 }
 
 // Bool ...
-func (a Attribute) Bool() bool {
-	if a.Value == nil {
+func (a *Attribute) Bool() bool {
+	if a == nil || a.Value == nil {
 		return false
 	}
 	if value, ok := a.Value.(bool); ok {
@@ -100,8 +117,8 @@ func (a Attribute) Bool() bool {
 }
 
 // Float64 ...
-func (a Attribute) Float64() float64 {
-	if a.Value == nil {
+func (a *Attribute) Float64() float64 {
+	if a == nil || a.Value == nil {
 		return 0
 	}
 	if value, ok := a.Value.(float64); ok {
@@ -152,6 +169,7 @@ func (a Attributes) Serialize() (to AttributeValue) {
 			case common.AttributeFloat:
 			case common.AttributeImage:
 			case common.AttributePoint:
+			case common.AttributeEncrypted:
 			case common.AttributeArray:
 
 				arr := make([]interface{}, 0)
@@ -324,6 +342,7 @@ func (a Attributes) Signature() (signature Attributes) {
 			case common.AttributeFloat:
 			case common.AttributeImage:
 			case common.AttributePoint:
+			case common.AttributeEncrypted:
 			case common.AttributeArray:
 
 				if attrs, ok := vFrom.Value.([]interface{}); ok {
@@ -412,6 +431,7 @@ func (a Attribute) Compare(b *Attribute) (ident bool) {
 	case common.AttributeFloat:
 	case common.AttributeImage:
 	case common.AttributePoint:
+	case common.AttributeEncrypted:
 	case common.AttributeArray:
 		return
 	}

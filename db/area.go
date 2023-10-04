@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -22,11 +22,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/jackc/pgx/v5/pgconn"
 	"strings"
 	"time"
 
 	"github.com/jackc/pgerrcode"
-	"github.com/lib/pq"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 
@@ -57,7 +57,7 @@ func (d *Area) TableName() string {
 // Add ...
 func (n *Areas) Add(ctx context.Context, area *Area) (id int64, err error) {
 	if err = n.Db.WithContext(ctx).Create(&area).Error; err != nil {
-		var pgErr *pq.Error
+		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
 			switch pgErr.Code {
 			case pgerrcode.UniqueViolation:
@@ -148,15 +148,27 @@ where id not in (
 }
 
 // Update ...
-func (n *Areas) Update(ctx context.Context, m *Area) (err error) {
-	err = n.Db.WithContext(ctx).Model(&Area{Id: m.Id}).Updates(map[string]interface{}{
-		"name":        m.Name,
-		"description": m.Description,
-		"payload":     m.Payload,
-		"polygon":     m.Polygon,
+func (n *Areas) Update(ctx context.Context, area *Area) (err error) {
+	err = n.Db.WithContext(ctx).Model(&Area{Id: area.Id}).Updates(map[string]interface{}{
+		"name":        area.Name,
+		"description": area.Description,
+		"payload":     area.Payload,
+		"polygon":     area.Polygon,
 	}).Error
 
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case pgerrcode.UniqueViolation:
+				if strings.Contains(pgErr.Message, "name_at_areas_unq") {
+					err = errors.Wrap(apperr.ErrAreaUpdate, fmt.Sprintf("area name \"%s\" not unique", area.Name))
+					return
+				}
+			default:
+				fmt.Printf("unknown code \"%s\"\n", pgErr.Code)
+			}
+		}
 		err = errors.Wrap(apperr.ErrAreaUpdate, err.Error())
 	}
 	return
@@ -232,7 +244,39 @@ WHERE ST_Contains(a.polygon::geometry,
 	return
 }
 
-func (a *Areas) GetDistance(ctx context.Context, point Point, areaId int64) (distance float64, err error) {
+func (a *Areas) PointInsideAriaById(ctx context.Context, point Point, areaId int64) (inside bool, err error) {
+
+	var list []*Area
+	if list, err = a.ListByPoint(ctx, point, 999, 0); err != nil {
+		return
+	}
+
+	for _, area := range list {
+		if inside = areaId == area.Id; inside {
+			return
+		}
+	}
+
+	return
+}
+
+func (a *Areas) PointInsideAriaByName(ctx context.Context, point Point, areaName string) (inside bool, err error) {
+
+	var list []*Area
+	if list, err = a.ListByPoint(ctx, point, 999, 0); err != nil {
+		return
+	}
+
+	for _, area := range list {
+		if inside = areaName == area.Name; inside {
+			return
+		}
+	}
+
+	return
+}
+
+func (a *Areas) GetDistanceToArea(ctx context.Context, point Point, areaId int64) (distance float64, err error) {
 
 	const query = `
 select st_distance(
@@ -240,6 +284,23 @@ select st_distance(
    ST_Transform((select polygon from areas where id = %d)::geometry, 4326)
 )`
 	q := fmt.Sprintf(query, point.Lat, point.Lon, areaId)
+	err = a.Db.WithContext(ctx).Raw(q).Scan(&distance).Error
+	if err != nil {
+		err = errors.Wrap(apperr.ErrAreaList, err.Error())
+		return
+	}
+
+	return
+}
+
+func (a *Areas) GetDistanceBetweenPoints(ctx context.Context, point1, point2 Point) (distance float64, err error) {
+
+	const query = `
+select st_distance(
+   ST_Transform(ST_GeomFromText('POINT (%f %f)', 4326)::geometry, 4326),
+   ST_Transform(ST_GeomFromText('POINT (%f %f)', 4326)::geometry, 4326)
+)`
+	q := fmt.Sprintf(query, point1.Lat, point1.Lon, point2.Lat, point2.Lon)
 	err = a.Db.WithContext(ctx).Raw(q).Scan(&distance).Error
 	if err != nil {
 		err = errors.Wrap(apperr.ErrAreaList, err.Error())

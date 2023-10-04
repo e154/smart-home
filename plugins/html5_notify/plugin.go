@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -55,36 +55,18 @@ func New() supervisor.Pluggable {
 
 // Load ...
 func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(ctx, service); err != nil {
+	if err = p.Plugin.Load(ctx, service, nil); err != nil {
 		return
 	}
-
-	go func() {
-		if err = p.asyncLoad(); err != nil {
-			log.Error(err.Error())
-		}
-	}()
-
-	return nil
-}
-
-func (p *plugin) asyncLoad() (err error) {
-
-	// register html5_notify provider
 	notify.ProviderManager.AddProvider(Name, p)
-
 	return
 }
 
 // Unload ...
 func (p *plugin) Unload(ctx context.Context) (err error) {
-	if err = p.Plugin.Unload(ctx); err != nil {
-		return
-	}
-
 	notify.ProviderManager.RemoveProvider(Name)
-
-	return nil
+	err = p.Plugin.Unload(ctx)
+	return
 }
 
 // Name ...
@@ -121,7 +103,7 @@ func (p *plugin) Save(msg notify.Message) (addresses []string, message *m.Messag
 		Attributes: msg.Attributes,
 	}
 	var err error
-	if message.Id, err = p.Adaptors.Message.Add(context.Background(), message); err != nil {
+	if message.Id, err = p.Service.Adaptors().Message.Add(context.Background(), message); err != nil {
 		log.Error(err.Error())
 	}
 
@@ -140,7 +122,7 @@ func (p *plugin) Send(address string, message *m.Message) (err error) {
 	attr := NewMessageParams()
 	_, _ = attr.Deserialize(message.Attributes)
 
-	p.EventBus.Publish("system/plugins/html5_notify", events.EventDirectMessage{
+	p.Service.EventBus().Publish("system/plugins/html5_notify", events.EventDirectMessage{
 		UserID: userID,
 		Query:  "html5_notify",
 		Message: Notification{

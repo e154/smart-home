@@ -5,8 +5,8 @@ import {computed, h, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
 import {useAppStore} from "@/store/modules/app";
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
-import {ElButton, ElTag} from 'element-plus'
-import {ApiAction} from "@/api/stub";
+import {ElButton, ElMessage, ElTag} from 'element-plus'
+import {ApiAction, ApiTrigger} from "@/api/stub";
 import {useForm} from "@/hooks/web/useForm";
 import {useRouter} from "vue-router";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
@@ -95,6 +95,11 @@ const columns: TableColumn[] = [
     field: 'name',
     label: t('automation.actions.name'),
     sortable: true,
+  },
+  {
+    field: 'operations',
+    label: t('automation.triggers.operations'),
+    width: "100px",
   },
   {
     field: 'createdAt',
@@ -218,6 +223,21 @@ const tableRowClassName = (data) => {
   return style
 }
 
+const callAction = async (action: ApiAction) => {
+  if (!action?.id) return;
+  await api.v1.developerToolsServiceTaskCallAction({id: action.id})
+      .catch(() => {
+      })
+      .finally(() => {
+        ElMessage({
+          title: t('Success'),
+          message: t('message.callSuccessful'),
+          type: 'success',
+          duration: 2000
+        })
+      })
+}
+
 </script>
 
 <template>
@@ -244,6 +264,14 @@ const tableRowClassName = (data) => {
         <span @click.prevent.stop="selectRow(row)" style="cursor: pointer">
           {{ row.name }}
         </span>
+      </template>
+
+      <template #operations="{ row }">
+
+        <ElButton :link="true" @click.prevent.stop="callAction(row)">
+          {{ $t('main.call') }}
+        </ElButton>
+
       </template>
 
     </Table>

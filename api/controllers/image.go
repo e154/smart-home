@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -100,8 +100,8 @@ func (c ControllerImage) UploadImage(ctx context.Context, req *api.UploadImageRe
 }
 
 // MuxUploadImage ...
-func (c ControllerImage) MuxUploadImage() func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (c ControllerImage) MuxUploadImage() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		if err := r.ParseMultipartForm(8 << 20); err != nil {
 			log.Error(err.Error())
@@ -127,7 +127,7 @@ func (c ControllerImage) MuxUploadImage() func(w http.ResponseWriter, r *http.Re
 			"images": resultImages,
 			"errors": errs,
 		})
-	}
+	})
 }
 
 // GetImageListByDate ...

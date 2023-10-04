@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,14 +19,12 @@
 package version
 
 import (
-	"fmt"
+	m "github.com/e154/smart-home/models"
 	"runtime"
 	"sync"
 
 	"github.com/e154/smart-home/common/events"
 
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/supervisor"
 	"github.com/e154/smart-home/version"
 )
@@ -34,63 +32,58 @@ import (
 // Actor ...
 type Actor struct {
 	supervisor.BaseActor
-	eventBus   bus.Bus
 	updateLock *sync.Mutex
 }
 
 // NewActor ...
-func NewActor(visor supervisor.Supervisor,
-	eventBus bus.Bus) *Actor {
+func NewActor(entity *m.Entity,
+	service supervisor.Service) *Actor {
 
 	actor := &Actor{
-		BaseActor: supervisor.BaseActor{
-			Id:                common.EntityId(fmt.Sprintf("%s.%s", EntityVersion, Name)),
-			Name:              Name,
-			EntityType:        EntityVersion,
-			UnitOfMeasurement: "",
-			AttrMu:            &sync.RWMutex{},
-			Attrs:             NewAttr(),
-			Supervisor:        visor,
-		},
-		eventBus:   eventBus,
+		BaseActor: supervisor.NewBaseActor(entity, service),
 		updateLock: &sync.Mutex{},
 	}
-
+	if actor.Attrs == nil {
+		actor.Attrs = NewAttr()
+	}
 	return actor
 }
 
-// Spawn ...
-func (e *Actor) Spawn() supervisor.PluginActor {
-	return e
+func (e *Actor) Destroy() {
+
 }
 
-func (u *Actor) selfUpdate() {
+func (e *Actor) Spawn() {
 
-	u.updateLock.Lock()
-	defer u.updateLock.Unlock()
+}
 
-	oldState := u.GetEventState(u)
-	u.Now(oldState)
+func (e *Actor) selfUpdate() {
+
+	e.updateLock.Lock()
+	defer e.updateLock.Unlock()
+
+	oldState := e.GetEventState()
+	e.Now(oldState)
 
 	var s runtime.MemStats
 	runtime.ReadMemStats(&s)
 
-	u.AttrMu.Lock()
-	u.Attrs[AttrVersion].Value = version.VersionString
-	u.Attrs[AttrRevision].Value = version.RevisionString
-	u.Attrs[AttrRevisionURL].Value = version.RevisionURLString
-	u.Attrs[AttrGenerated].Value = version.GeneratedString
-	u.Attrs[AttrDevelopers].Value = version.DevelopersString
-	u.Attrs[AttrBuildNum].Value = version.BuildNumString
-	u.Attrs[AttrDockerImage].Value = version.DockerImageString
-	u.Attrs[AttrGoVersion].Value = version.GoVersion
-	u.AttrMu.Unlock()
+	e.AttrMu.Lock()
+	e.Attrs[AttrVersion].Value = version.VersionString
+	e.Attrs[AttrRevision].Value = version.RevisionString
+	e.Attrs[AttrRevisionURL].Value = version.RevisionURLString
+	e.Attrs[AttrGenerated].Value = version.GeneratedString
+	e.Attrs[AttrDevelopers].Value = version.DevelopersString
+	e.Attrs[AttrBuildNum].Value = version.BuildNumString
+	e.Attrs[AttrDockerImage].Value = version.DockerImageString
+	e.Attrs[AttrGoVersion].Value = version.GoVersion
+	e.AttrMu.Unlock()
 
-	u.eventBus.Publish("system/entities/"+u.Id.String(), events.EventStateChanged{
+	go e.SaveState(events.EventStateChanged{
 		StorageSave: false,
-		PluginName:  u.Id.PluginName(),
-		EntityId:    u.Id,
+		PluginName:  e.Id.PluginName(),
+		EntityId:    e.Id,
 		OldState:    oldState,
-		NewState:    u.GetEventState(u),
+		NewState:    e.GetEventState(),
 	})
 }

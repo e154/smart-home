@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -27,50 +27,41 @@ import (
 
 	"github.com/e154/smart-home/common/events"
 
-	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
 // Actor ...
 type Actor struct {
 	supervisor.BaseActor
-	adaptors      *adaptors.Adaptors
-	scriptService scripts.ScriptService
-	eventBus      bus.Bus
-	mqttClient    mqtt.MqttCli
-	stateMu       *sync.Mutex
-	quit          chan struct{}
-	lastPing      time.Time
-	lastState     m.AttributeValue
+	mqttClient mqtt.MqttCli
+	stateMu    *sync.Mutex
+	quit       chan struct{}
+	lastPing   time.Time
+	lastState  m.AttributeValue
 }
 
 // NewActor ...
 func NewActor(entity *m.Entity,
-	visor supervisor.Supervisor,
-	adaptors *adaptors.Adaptors,
-	scriptService scripts.ScriptService,
-	eventBus bus.Bus,
+	service supervisor.Service,
 	mqttClient mqtt.MqttCli) (actor *Actor) {
 
 	actor = &Actor{
-		BaseActor:     supervisor.NewBaseActor(entity, scriptService, adaptors),
-		adaptors:      adaptors,
-		scriptService: scriptService,
-		eventBus:      eventBus,
-		mqttClient:    mqttClient,
-		stateMu:       &sync.Mutex{},
-		lastPing:      time.Time{},
-		lastState:     m.AttributeValue{},
+		BaseActor:  supervisor.NewBaseActor(entity, service),
+		mqttClient: mqttClient,
+		stateMu:    &sync.Mutex{},
+		lastPing:   time.Time{},
+		lastState:  m.AttributeValue{},
 	}
 
-	actor.Supervisor = visor
-	actor.Attrs = NewAttr()
-	actor.States = NewStates()
-	actor.Setts = entity.Settings
+	if actor.Attrs == nil {
+		actor.Attrs = NewAttr()
+	}
+
+	if actor.States == nil {
+		actor.States = NewStates()
+	}
 
 	if actor.Setts == nil {
 		actor.Setts = NewSettings()
@@ -79,24 +70,24 @@ func NewActor(entity *m.Entity,
 	return actor
 }
 
-func (e *Actor) destroy() {
+func (e *Actor) Destroy() {
 
 	e.mqttClient.Unsubscribe(e.mqttTopic("resp/+"))
 	e.mqttClient.Unsubscribe(e.mqttTopic("ping"))
-	_ = e.eventBus.Unsubscribe(e.localTopic("req/+"), e.onMessage)
+	_ = e.Service.EventBus().Unsubscribe(e.localTopic("req/+"), e.onMessage)
 
-	e.quit <- struct{}{}
+	close(e.quit)
 }
 
 // Spawn ...
-func (e *Actor) Spawn() supervisor.PluginActor {
-
-	e.quit = make(chan struct{})
+func (e *Actor) Spawn() {
 
 	state := e.States["wait"]
 	e.State = &state
 
 	go func() {
+		e.quit = make(chan struct{})
+
 		ticker := time.NewTicker(time.Second)
 		defer ticker.Stop()
 
@@ -106,20 +97,18 @@ func (e *Actor) Spawn() supervisor.PluginActor {
 				e.updateStatus()
 
 			case <-e.quit:
-				//close(e.quit)
 				return
 			}
 		}
 	}()
 
 	// local sub
-	_ = e.eventBus.Subscribe(e.localTopic("req/+"), e.onMessage)
+	_ = e.Service.EventBus().Subscribe(e.localTopic("req/+"), e.onMessage)
 
 	// mqtt sub
 	_ = e.mqttClient.Subscribe(e.mqttTopic("resp/+"), e.mqttOnMessage)
 	_ = e.mqttClient.Subscribe(e.mqttTopic("ping"), e.ping)
 
-	return e
 }
 
 // event from plugin.node/nodeName/req
@@ -141,7 +130,7 @@ func (e *Actor) mqttOnMessage(_ mqtt.MqttCli, msg mqtt.Message) {
 	}
 	items := strings.Split(msg.Topic, "/")
 	entityId := items[len(items)-1]
-	e.eventBus.Publish(e.localTopic(fmt.Sprintf("resp/%s", entityId)), resp)
+	e.Service.EventBus().Publish(e.localTopic(fmt.Sprintf("resp/%s", entityId)), resp)
 }
 
 // event from home/node/nodeName/ping
@@ -163,7 +152,7 @@ func (e *Actor) updateStatus() {
 		state = "connected"
 	}
 
-	oldState := e.GetEventState(e)
+	oldState := e.GetEventState()
 	e.Now(oldState)
 
 	e.AttrMu.Lock()
@@ -178,11 +167,11 @@ func (e *Actor) updateStatus() {
 		e.State = &state
 	}
 
-	e.eventBus.Publish("system/entities/"+e.Id.String(), events.EventStateChanged{
+	go e.SaveState(events.EventStateChanged{
 		PluginName: e.Id.PluginName(),
 		EntityId:   e.Id,
 		OldState:   oldState,
-		NewState:   e.GetEventState(e),
+		NewState:   e.GetEventState(),
 	})
 }
 

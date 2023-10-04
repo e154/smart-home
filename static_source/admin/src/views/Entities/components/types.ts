@@ -63,6 +63,7 @@ export interface Attribute {
     time?: string;
     imageUrl?: string;
     point?: string;
+    encrypted?: string;
 }
 
 export interface Entity {

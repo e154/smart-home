@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -58,7 +58,11 @@ func (d *Task) TableName() string {
 
 // Add ...
 func (n Tasks) Add(ctx context.Context, task *Task) (id int64, err error) {
-	if err = n.Db.WithContext(ctx).Create(&task).Error; err != nil {
+	if err = n.Db.WithContext(ctx).
+		Omit("Conditions.*").
+		Omit("Actions.*").
+		Omit("Triggers.*").
+		Create(&task).Error; err != nil {
 		err = errors.Wrap(apperr.ErrTaskAdd, err.Error())
 		return
 	}
@@ -95,17 +99,14 @@ func (n Tasks) GetById(ctx context.Context, taskId int64) (task *Task, err error
 
 // Update ...
 func (n Tasks) Update(ctx context.Context, m *Task) (err error) {
-	q := map[string]interface{}{
-		"name":        m.Name,
-		"description": m.Description,
-		"condition":   m.Condition,
-		"area_id":     m.AreaId,
-		"enabled":     m.Enabled,
-	}
 
-	if err = n.Db.WithContext(ctx).Model(&Task{Id: m.Id}).Updates(q).Error; err != nil {
+	err = n.Db.WithContext(ctx).
+		Omit("Conditions.*").
+		Omit("Actions.*").
+		Omit("Triggers.*").
+		Save(m).Error
+	if err != nil {
 		err = errors.Wrap(apperr.ErrTaskUpdate, err.Error())
-		return
 	}
 	return
 }
@@ -198,49 +199,25 @@ func (n Tasks) Search(ctx context.Context, query string, limit, offset int) (lis
 	return
 }
 
-// AppendTrigger ...
-func (n Tasks) AppendTrigger(ctx context.Context, id int64, trigger *Trigger) (err error) {
-	if err = n.Db.WithContext(ctx).Model(&Task{Id: id}).Association("Triggers").Append(trigger); err != nil {
-		err = errors.Wrap(apperr.ErrTaskAppendTrigger, err.Error())
-	}
-	return
-}
-
 // DeleteTrigger ...
-func (n Tasks) DeleteTrigger(ctx context.Context, id, triggerId int64) (err error) {
-	if err = n.Db.WithContext(ctx).Model(&Task{Id: id}).Association("Triggers").Delete(&Trigger{Id: triggerId}); err != nil {
+func (n Tasks) DeleteTrigger(ctx context.Context, id int64) (err error) {
+	if err = n.Db.WithContext(ctx).Model(&Task{Id: id}).Association("Triggers").Clear(); err != nil {
 		err = errors.Wrap(apperr.ErrTaskDeleteTrigger, err.Error())
 	}
 	return
 }
 
-// AppendCondition ...
-func (n Tasks) AppendCondition(ctx context.Context, id int64, condition *Condition) (err error) {
-	if err = n.Db.WithContext(ctx).Model(&Task{Id: id}).Association("Conditions").Append(condition); err != nil {
-		err = errors.Wrap(apperr.ErrTaskAppendCondition, err.Error())
-	}
-	return
-}
-
 // DeleteCondition ...
-func (n Tasks) DeleteCondition(ctx context.Context, id, conditionId int64) (err error) {
-	if err = n.Db.WithContext(ctx).Model(&Task{Id: id}).Association("Conditions").Delete(&Condition{Id: conditionId}); err != nil {
+func (n Tasks) DeleteCondition(ctx context.Context, id int64) (err error) {
+	if err = n.Db.WithContext(ctx).Model(&Task{Id: id}).Association("Conditions").Clear(); err != nil {
 		err = errors.Wrap(apperr.ErrTaskDeleteCondition, err.Error())
 	}
 	return
 }
 
-// AppendAction ...
-func (n Tasks) AppendAction(ctx context.Context, id int64, action *Action) (err error) {
-	if err = n.Db.WithContext(ctx).Model(&Task{Id: id}).Association("Actions").Append(action); err != nil {
-		err = errors.Wrap(apperr.ErrTaskAppendAction, err.Error())
-	}
-	return
-}
-
 // DeleteAction ...
-func (n Tasks) DeleteAction(ctx context.Context, id, actionId int64) (err error) {
-	if err = n.Db.WithContext(ctx).Model(&Task{Id: id}).Association("Actions").Delete(&Action{Id: actionId}); err != nil {
+func (n Tasks) DeleteAction(ctx context.Context, id int64) (err error) {
+	if err = n.Db.WithContext(ctx).Model(&Task{Id: id}).Association("Actions").Clear(); err != nil {
 		err = errors.Wrap(apperr.ErrTaskDeleteAction, err.Error())
 	}
 	return

@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -25,6 +25,7 @@ import (
 
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 
 	"github.com/e154/smart-home/common/apperr"
 )
@@ -60,10 +61,16 @@ func (n Plugins) Add(ctx context.Context, plugin *Plugin) (err error) {
 
 // CreateOrUpdate ...
 func (n Plugins) CreateOrUpdate(ctx context.Context, v *Plugin) (err error) {
-	err = n.Db.WithContext(ctx).Model(&Plugin{}).
-		Set("gorm:insert_option",
-			fmt.Sprintf("ON CONFLICT (name) DO UPDATE SET version = '%s', enabled = '%t', system = '%t', settings = '%s', actor = '%t'", v.Version, v.Enabled, v.System, v.Settings, v.Actor)).
-		Create(&v).Error
+	err = n.Db.WithContext(ctx).Model(&Plugin{}).Clauses(clause.OnConflict{
+		Columns: []clause.Column{{Name: "name"}},
+		DoUpdates: clause.Assignments(map[string]interface{}{
+			"version":  v.Version,
+			"enabled":  v.Enabled,
+			"system":   v.System,
+			"settings": v.System,
+			"actor":    v.Actor,
+		}),
+	}).Create(&v).Error
 	if err != nil {
 		err = errors.Wrap(apperr.ErrPluginUpdate, err.Error())
 	}

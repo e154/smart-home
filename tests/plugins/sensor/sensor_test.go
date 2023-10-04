@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -42,14 +42,13 @@ func TestSensor(t *testing.T) {
 checkStatus =->
     res = HTTP.get("http://%s:%d/?t=12345678")
     if res.error 
-        Actor.setState
+        EntitySetState ENTITY_ID,
             'new_state': 'ERROR'
         return
     p = unmarshal res.body
     attrs =
         paid_rewards: p.user.paid_rewards
-
-    Actor.setState
+    EntitySetState ENTITY_ID,
         new_state: 'ENABLED'
         attribute_values: attrs
         storage_save: true

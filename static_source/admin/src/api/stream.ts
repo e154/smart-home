@@ -13,7 +13,9 @@ class Stream {
     if (this.ws) {
       return;
     }
-    url = url.replace('http', 'ws') + '/ws?access_token=' + accessToken;
+    url = url.replace("https", "wss")
+    url = url.replace("http", "ws")
+    url = url + '/ws?access_token=' + accessToken;
     this.ws = new WebsocketBuilder(url)
       .onOpen((ws: Websocket, ev: Event) => this.onOpen(ws, ev, accessToken))
       .onClose((ws: Websocket, ev: CloseEvent) => this.onClose(ws, ev))

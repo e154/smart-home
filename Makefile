@@ -56,7 +56,6 @@ test_system:
 	go test -v ./tests/plugins/moon
 	go test -v ./tests/plugins/node
 	go test -v ./tests/plugins/scene
-	go test -v ./tests/plugins/script
 	go test -v ./tests/plugins/sensor
 	go test -v ./tests/plugins/sun
 	go test -v ./tests/plugins/telegram

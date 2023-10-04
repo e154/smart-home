@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,50 +19,115 @@
 package supervisor
 
 import (
+	"context"
+	"fmt"
+	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 )
 
-// SupervisorBind ...
-type SupervisorBind struct {
-	manager Supervisor
+func SetStateBind(manager Supervisor) func(entityId string, params EntityStateParams) {
+	return func(entityId string, params EntityStateParams) {
+		_ = manager.SetState(common.EntityId(entityId), params)
+	}
 }
 
-// NewSupervisorBind ...
-func NewSupervisorBind(manager Supervisor) *SupervisorBind {
-	return &SupervisorBind{manager: manager}
+func SetStateNameBind(manager Supervisor) func(entityId, stateName string) {
+	return func(entityId, stateName string) {
+		_ = manager.SetState(common.EntityId(entityId), EntityStateParams{
+			NewState: common.String(stateName),
+		})
+	}
 }
 
-// GetEntity ...
-func (e *SupervisorBind) GetEntity(id common.EntityId) *EntityBind {
-	return NewEntityBind(id, e.manager)
+func GetStateBind(manager Supervisor) func(entityId string) *m.EntityStateShort {
+	return func(entityId string) *m.EntityStateShort {
+		entity, err := manager.GetEntityById(common.EntityId(entityId))
+		if err != nil {
+			log.Error(err.Error())
+			return nil
+		}
+		return entity.State
+	}
 }
 
-// SetState ...
-func (e *SupervisorBind) SetState(id common.EntityId, stateName string) {
-	_ = e.manager.SetState(id, EntityStateParams{
-		NewState: common.String(stateName),
-	})
+func SetAttributesBind(manager Supervisor) func(entityId string, params m.AttributeValue) {
+	return func(entityId string, params m.AttributeValue) {
+		_ = manager.SetState(common.EntityId(entityId), EntityStateParams{
+			AttributeValues: params,
+		})
+	}
 }
 
-// SetAttribute ...
-func (e *SupervisorBind) SetAttribute(id common.EntityId, params m.AttributeValue) {
-	_ = e.manager.SetState(id, EntityStateParams{
-		AttributeValues: params,
-	})
+func GetAttributesBind(manager Supervisor) func(entityId string) m.AttributeValue {
+	return func(entityId string) m.AttributeValue {
+		entity, err := manager.GetEntityById(common.EntityId(entityId))
+		if err != nil {
+			log.Error(err.Error())
+		}
+
+		return entity.Attributes.Serialize()
+	}
 }
 
-// SetMetric ...
-func (e *SupervisorBind) SetMetric(id common.EntityId, name string, value map[string]float32) {
-	e.manager.SetMetric(id, name, value)
+func SetMetricBind(manager Supervisor) func(entityId, name string, value map[string]float32) {
+	return func(entityId, name string, value map[string]float32) {
+		manager.SetMetric(common.EntityId(entityId), name, value)
+	}
 }
 
-// CallAction ...
-func (e *SupervisorBind) CallAction(id common.EntityId, action string, arg map[string]interface{}) {
-	e.manager.CallAction(id, action, arg)
+func CallActionBind(manager Supervisor) func(entityId, action string, value map[string]interface{}) {
+	return func(entityId, action string, value map[string]interface{}) {
+		manager.CallAction(common.EntityId(entityId), action, value)
+	}
 }
 
-// CallScene ...
-func (e *SupervisorBind) CallScene(id common.EntityId, arg map[string]interface{}) {
-	e.manager.CallScene(id, arg)
+func CallSceneBind(manager Supervisor) func(entityId string, value map[string]interface{}) {
+	return func(entityId string, value map[string]interface{}) {
+		manager.CallScene(common.EntityId(entityId), value)
+	}
+}
+
+func GetSettingsBind(manager Supervisor) func(entityId string) m.AttributeValue {
+	return func(entityId string) m.AttributeValue {
+		if entityId == "" {
+			return make(m.AttributeValue)
+		}
+		entity, err := manager.GetEntityById(common.EntityId(entityId))
+		if err != nil {
+			log.Errorf(fmt.Sprintf("plugin: '%s' %s", common.EntityId(entityId).PluginName(), err.Error()))
+			return nil
+		}
+
+		return entity.Settings.Serialize()
+	}
+}
+
+func GetDistanceToAreaBind(adaptors *adaptors.Adaptors) func(areaId int64, point m.Point) float64 {
+	return func(areaId int64, point m.Point) float64 {
+		if distance, err := adaptors.Area.GetDistanceToArea(context.Background(), point, areaId); err == nil {
+			return distance
+		}
+		return 0
+	}
+}
+
+
+func GetDistanceBetweenPointsBind(adaptors *adaptors.Adaptors) func(point1, point2 m.Point) float64 {
+	return func(point1, point2 m.Point) float64 {
+		if distance, err := adaptors.Area.GetDistanceBetweenPoints(context.Background(), point1, point2); err == nil {
+			return distance
+		}
+		return 0
+	}
+}
+
+
+func PointInsideAriaBind(adaptors *adaptors.Adaptors) func(areaId int64, point m.Point) bool {
+	return func(areaId int64, point m.Point) bool {
+		if inside, err := adaptors.Area.PointInsideAriaById(context.Background(), &point, areaId); err == nil {
+			return inside
+		}
+		return false
+	}
 }

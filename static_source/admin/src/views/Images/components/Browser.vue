@@ -7,6 +7,8 @@ import api from "@/api/api";
 import {useEmitt} from "@/hooks/web/useEmitt";
 import {createImageViewer} from "@/components/ImageViewer";
 import {propTypes} from "@/utils/propTypes";
+import {useCache} from "@/hooks/web/useCache";
+const {wsCache} = useCache()
 
 const { t } = useI18n()
 
@@ -119,7 +121,9 @@ const onSuccess: UploadProps['onSuccess'] = (image: ApiImage, uploadFile) => {
 }
 
 const getUploadURL = () => {
-  return import.meta.env.VITE_API_BASEPATH as string + '/v1/image/upload'
+  const uri = import.meta.env.VITE_API_BASEPATH as string || window.location.origin;
+  const accessToken = wsCache.get("accessToken")
+  return uri + '/v1/image/upload?access_token=' + accessToken;
 }
 
 const handleRemove: UploadProps['onRemove'] = ( image: ApiImage, uploadFiles) => {

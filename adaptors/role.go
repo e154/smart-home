@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,6 +20,9 @@ package adaptors
 
 import (
 	"context"
+
+	"github.com/e154/smart-home/common/apperr"
+	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
@@ -133,7 +136,10 @@ func (n *Role) Search(ctx context.Context, query string, limit, offset int64) (l
 
 // GetAccessList ...
 func (n *Role) GetAccessList(ctx context.Context, role *m.Role) (err error) {
-
+	if role == nil {
+		err = errors.Wrap(apperr.ErrPermissionGet, "role is nil")
+		return
+	}
 	role.AccessList = make(map[string][]string)
 	permissionAdaptor := GetPermissionAdaptor(n.db)
 	var permissions []*m.Permission

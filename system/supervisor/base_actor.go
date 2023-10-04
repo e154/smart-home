@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,13 +19,15 @@
 package supervisor
 
 import (
+	"context"
 	"fmt"
+	"github.com/e154/smart-home/common/events"
+	"runtime/debug"
 	"sync"
 	"time"
 
 	"github.com/e154/smart-home/common/apperr"
 
-	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
@@ -41,7 +43,6 @@ type BaseActor struct {
 	Name              string
 	Description       string
 	EntityType        string
-	Supervisor        Supervisor
 	State             *ActorState
 	Area              *m.Area
 	Metric            []*m.Metric
@@ -50,7 +51,7 @@ type BaseActor struct {
 	Attrs             m.Attributes
 	Actions           map[string]ActorAction
 	States            map[string]ActorState
-	ScriptEngine      *scripts.Engine
+	ScriptEngines     []*scripts.EngineWatcher
 	Icon              *string
 	ImageUrl          *string
 	UnitOfMeasurement string
@@ -59,23 +60,23 @@ type BaseActor struct {
 	AutoLoad          bool
 	LastChanged       *time.Time
 	LastUpdated       *time.Time
-	adaptors          *adaptors.Adaptors
 	SettingsMu        *sync.RWMutex
 	Setts             m.Attributes
+	Service           Service
+	currentStateMu    *sync.RWMutex
+	currentState      *bus.EventEntityState
 }
 
 // NewBaseActor ...
 func NewBaseActor(entity *m.Entity,
-	scriptService scripts.ScriptService,
-	adaptors *adaptors.Adaptors) BaseActor {
+	service Service) BaseActor {
 	actor := BaseActor{
-		adaptors:          adaptors,
+		Service:           service,
 		Id:                common.EntityId(fmt.Sprintf("%s.%s", entity.PluginName, entity.Id.Name())),
 		Name:              entity.Id.Name(),
 		Description:       entity.Description,
 		EntityType:        entity.PluginName,
 		ParentId:          entity.ParentId,
-		Supervisor:        nil,
 		State:             nil,
 		Area:              entity.Area,
 		Hidden:            entity.Hidden,
@@ -85,7 +86,7 @@ func NewBaseActor(entity *m.Entity,
 		ImageUrl:          nil,
 		UnitOfMeasurement: "",
 		Scripts:           entity.Scripts,
-		Value:             nil,
+		Value:             atomic.NewString(StateAwait),
 		LastChanged:       nil,
 		LastUpdated:       nil,
 		AutoLoad:          entity.AutoLoad,
@@ -93,6 +94,7 @@ func NewBaseActor(entity *m.Entity,
 		Attrs:             entity.Attributes.Copy(),
 		SettingsMu:        &sync.RWMutex{},
 		Setts:             entity.Settings,
+		currentStateMu:    &sync.RWMutex{},
 	}
 
 	// Image
@@ -127,9 +129,17 @@ func NewBaseActor(entity *m.Entity,
 		}
 
 		if a.Script != nil {
-			if action.ScriptEngine, err = scriptService.NewEngine(a.Script); err != nil {
+			if action.ScriptEngine, err = service.ScriptService().NewEngineWatcher(a.Script); err != nil {
 				log.Error(err.Error())
 			}
+			action.ScriptEngine.Spawn(func(engine *scripts.Engine) {
+				if _, err = engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id)); err != nil {
+					log.Error(err.Error())
+				}
+				if _, err = engine.Do(); err != nil {
+					log.Error(err.Error())
+				}
+			})
 		}
 
 		if a.Image != nil {
@@ -138,26 +148,35 @@ func NewBaseActor(entity *m.Entity,
 		actor.Actions[a.Name] = action
 	}
 
-	// Scripts
-	if len(entity.Scripts) != 0 {
-		if actor.ScriptEngine, err = scriptService.NewEngine(entity.Scripts[0]); err != nil {
-			log.Error(err.Error())
-		}
-
-		_, _ = actor.ScriptEngine.Do()
-
-	} else {
-		if actor.ScriptEngine, err = scriptService.NewEngine(nil); err != nil {
-			log.Error(err.Error())
+	if entity.Scripts != nil {
+		for _, script := range entity.Scripts {
+			var scriptEngine *scripts.EngineWatcher
+			if scriptEngine, err = service.ScriptService().NewEngineWatcher(script); err == nil {
+				scriptEngine.Spawn(func(engine *scripts.Engine) {
+					if _, err = engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id)); err != nil {
+						log.Error(err.Error())
+					}
+				})
+				if _, err = scriptEngine.Engine().Do(); err != nil {
+					log.Error(err.Error())
+				}
+			}
+			actor.ScriptEngines = append(actor.ScriptEngines, scriptEngine)
 		}
 	}
 
 	return actor
 }
 
-// GetEventState ...
-func (b *BaseActor) GetEventState(actor PluginActor) bus.EventEntityState {
-	return GetEventState(actor)
+func (e *BaseActor) StopWatchers() {
+	for _, engine := range e.ScriptEngines {
+		engine.Stop()
+	}
+	for _, a := range e.Actions {
+		if a.ScriptEngine != nil {
+			a.ScriptEngine.Stop()
+		}
+	}
 }
 
 // Metrics ...
@@ -224,13 +243,6 @@ func (e *BaseActor) Now(oldState bus.EventEntityState) time.Time {
 	return now
 }
 
-// SetMetric ...
-func (e *BaseActor) SetMetric(id common.EntityId, name string, value map[string]float32) {
-	if e.Supervisor != nil {
-		e.Supervisor.SetMetric(id, name, value)
-	}
-}
-
 // Settings ...
 func (e *BaseActor) Settings() m.Attributes {
 	e.settingsLock()
@@ -259,5 +271,155 @@ func (e *BaseActor) attrLock() {
 func (e *BaseActor) settingsLock() {
 	if e.SettingsMu == nil { //todo: check race condition
 		e.SettingsMu = &sync.RWMutex{}
+	}
+}
+
+func (e *BaseActor) GetCurrentState() *bus.EventEntityState {
+	e.currentStateMu.RLock()
+	defer e.currentStateMu.RUnlock()
+	return e.currentState
+}
+
+func (e *BaseActor) SetCurrentState(state bus.EventEntityState) {
+	e.currentStateMu.Lock()
+	e.currentState = &state
+	e.currentStateMu.Unlock()
+}
+
+func (e *BaseActor) GetEventState() (eventState bus.EventEntityState) {
+
+	attrs := e.Attributes()
+	setts := e.Settings()
+
+	var state *bus.EntityState
+
+	info := e.Info()
+	if info.State != nil {
+		state = &bus.EntityState{
+			Name:        info.State.Name,
+			Description: info.State.Description,
+			ImageUrl:    info.State.ImageUrl,
+			Icon:        info.State.Icon,
+		}
+	}
+
+	eventState = bus.EventEntityState{
+		EntityId:   info.Id,
+		Value:      info.Value,
+		State:      state,
+		Attributes: attrs,
+		Settings:   setts,
+	}
+
+	if info.LastChanged != nil {
+		eventState.LastChanged = common.Time(*info.LastChanged)
+	}
+
+	if info.LastUpdated != nil {
+		eventState.LastUpdated = common.Time(*info.LastUpdated)
+	}
+
+	return
+}
+
+func (e *BaseActor) SaveState(msg events.EventStateChanged) {
+
+	go e.updateMetric(msg.NewState)
+
+	if msg.NewState.Compare(msg.OldState) {
+		return
+	}
+
+	currentState := e.GetCurrentState()
+	if currentState != nil && currentState.Compare(msg.NewState) {
+		return
+	}
+
+	e.SetCurrentState(msg.NewState)
+
+	// store state to db
+	var state string
+	if msg.NewState.State != nil {
+		state = msg.NewState.State.Name
+	}
+
+	go e.Service.EventBus().Publish("system/entities/"+msg.EntityId.String(), msg)
+
+	if !msg.StorageSave {
+		return
+	}
+
+	go func() {
+		_, err := e.Service.Adaptors().EntityStorage.Add(context.Background(), &m.EntityStorage{
+			State:      state,
+			EntityId:   msg.EntityId,
+			Attributes: msg.NewState.Attributes.Serialize(),
+		})
+		if err != nil {
+			log.Error(err.Error())
+		}
+	}()
+}
+
+func (e *BaseActor) updateMetric(state bus.EventEntityState) {
+
+	if e.Metric == nil {
+		return
+	}
+
+	var data = make(map[string]float32)
+	var name string
+
+	for _, metric := range e.Metric {
+		for _, prop := range metric.Options.Items {
+			if value, ok := state.Attributes[prop.Name]; ok {
+				name = metric.Name
+				switch value.Type {
+				case common.AttributeInt:
+					data[prop.Name] = float32(value.Int64())
+				case common.AttributeFloat:
+					data[prop.Name] = common.Rounding32(value.Float64(), 2)
+				//case common.AttributePoint:
+				//	data[prop.Name] = value.Point()
+				}
+			}
+		}
+	}
+
+	if len(data) == 0 || name == "" {
+		return
+	}
+
+	e.AddMetric(name, data)
+
+}
+
+func (e *BaseActor) AddMetric(name string, value map[string]float32) {
+
+	if e.Metric == nil {
+		return
+	}
+
+	var err error
+	for _, metric := range e.Metric {
+		if metric.Name != name {
+			continue
+		}
+
+		if metric.Id == 0 {
+			fmt.Printf("check metric for %s", e.Id.String())
+			return
+		}
+
+		err = e.Service.Adaptors().MetricBucket.Add(context.Background(), &m.MetricDataItem{
+			Value:    value,
+			MetricId: metric.Id,
+			Time:     time.Now(),
+		})
+
+		if err != nil {
+			log.Errorf(err.Error(), value, metric.Id)
+			debug.PrintStack()
+		}
 	}
 }

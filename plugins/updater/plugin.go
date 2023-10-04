@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,6 +20,8 @@ package updater
 
 import (
 	"context"
+	"fmt"
+	"github.com/e154/smart-home/common"
 	"time"
 
 	"github.com/e154/smart-home/common/events"
@@ -46,48 +48,44 @@ func init() {
 
 type plugin struct {
 	*supervisor.Plugin
-	pause time.Duration
-	actor *Actor
-	quit  chan struct{}
+	ticker *time.Ticker
 }
 
 // New ...
 func New() supervisor.Pluggable {
 	return &plugin{
 		Plugin: supervisor.NewPlugin(),
-		pause:  24,
 	}
 }
 
 // Load ...
 func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(ctx, service); err != nil {
+	if err = p.Plugin.Load(ctx, service, p.ActorConstructor); err != nil {
 		return
 	}
 
-	p.actor = NewActor(p.Supervisor, p.EventBus, p.Crawler)
+	var entity *m.Entity
+	if entity, err = p.Service.Adaptors().Entity.GetById(context.Background(), common.EntityId(fmt.Sprintf("%s.%s", EntityUpdater, Name))); err != nil {
+		entity = &m.Entity{
+			Id:         common.EntityId(fmt.Sprintf("%s.%s", EntityUpdater, Name)),
+			PluginName: Name,
+			Attributes: NewAttr(),
+		}
+		err = p.Service.Adaptors().Entity.Add(context.Background(), entity)
+	}
 
-	p.Supervisor.Spawn(p.actor.Spawn)
-	p.actor.check()
-	p.quit = make(chan struct{})
-
-	_ = p.EventBus.Subscribe("system/entities/+", p.eventHandler)
+	_ = p.Service.EventBus().Subscribe("system/entities/+", p.eventHandler)
 
 	go func() {
-		ticker := time.NewTicker(time.Hour * p.pause)
+		const pause = 24
+		p.ticker = time.NewTicker(time.Hour * pause)
 
-		defer func() {
-			ticker.Stop()
-			close(p.quit)
-		}()
-
-		for {
-			select {
-			case <-p.quit:
-				return
-			case <-ticker.C:
-				p.actor.check()
-			}
+		for range p.ticker.C {
+			p.Actors.Range(func(key, value any) bool {
+				actor, _ := value.(*Actor)
+				actor.check()
+				return true
+			})
 		}
 	}()
 
@@ -96,12 +94,19 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 
 // Unload ...
 func (p *plugin) Unload(ctx context.Context) (err error) {
-	if err = p.Plugin.Unload(ctx); err != nil {
-		return
+	if p.ticker != nil {
+		p.ticker.Stop()
 	}
 
-	p.quit <- struct{}{}
-	_ = p.EventBus.Unsubscribe("system/entities/+", p.eventHandler)
+	_ = p.Plugin.Unload(ctx)
+
+	_ = p.Service.EventBus().Unsubscribe("system/entities/+", p.eventHandler)
+	return
+}
+
+// ActorConstructor ...
+func (p *plugin) ActorConstructor(entity *m.Entity) (actor supervisor.PluginActor, err error) {
+	actor = NewActor(entity, p.Service)
 	return
 }
 
@@ -129,12 +134,10 @@ func (p *plugin) eventHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
 	case events.EventCallEntityAction:
-		if v.EntityId != p.actor.Id {
-			return
-		}
-
-		if v.ActionName == "check" {
-			p.actor.check()
+		value, ok := p.Actors.Load(v.EntityId)
+		if ok && value != nil {
+			actor := value.(*Actor)
+			actor.check()
 		}
 	}
 }

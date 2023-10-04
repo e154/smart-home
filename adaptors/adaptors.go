@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -136,30 +136,23 @@ func NewAdaptors(lc fx.Lifecycle,
 
 // Begin ...
 func (a Adaptors) Begin() (adaptors *Adaptors) {
-	//adaptors = NewAdaptors(nil, a.db.Begin(), nil, nil, nil)
-	//adaptors.isTx = true
-	adaptors = &a
-	adaptors.db.Begin()
+	adaptors = NewAdaptors(nil, a.db.Begin(), nil, nil, nil)
+	adaptors.isTx = true
 	return
 }
 
 // Commit ...
 func (a *Adaptors) Commit() error {
-	//if !a.isTx {
-	//	return nil
-	//}
-	//a.isTx = false
-	//return a.db.Commit().Error
-	a.db.Commit()
-	return nil
+	if !a.isTx {
+		return nil
+	}
+	return a.db.Commit().Error
 }
 
 // Rollback ...
 func (a *Adaptors) Rollback() error {
-	//if !a.isTx {
-	//	return nil
-	//}
-	//return a.db.Rollback().Error
-	a.db.Rollback()
-	return nil
+	if !a.isTx {
+		return nil
+	}
+	return a.db.Rollback().Error
 }

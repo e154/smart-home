@@ -1,3 +1,21 @@
+// This file is part of the Smart Home
+// Program complex distribution https://github.com/e154/smart-home
+// Copyright (C) 2023, Filippov Alex
+//
+// This library is free software: you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Library General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.  If not, see
+// <https://www.gnu.org/licenses/>.
+
 package neural_network
 
 import (
@@ -9,7 +27,6 @@ import (
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/supervisor"
 	"github.com/julioguillermo/staticneurogenetic"
 )
 
@@ -17,24 +34,20 @@ const fileName = "oxo.bin"
 
 type Network2 struct {
 	train2     bool
-	supervisor supervisor.Supervisor
 	eventBus   bus.Bus
 	game       *Game
-	actor      supervisor.PluginActor
 	entityId   common.EntityId
 	agents     *staticneurogenetic.SNG
 	moves      int
 	individual int
 }
 
-func NewNetwork2(eventBus bus.Bus,
-	supervisor supervisor.Supervisor) (net *Network2) {
+func NewNetwork2(eventBus bus.Bus) (net *Network2) {
 	net = &Network2{
-		eventBus:   eventBus,
-		train2:     true,
-		game:       NewGame(),
-		supervisor: supervisor,
-		entityId:   "sensor.ticTacToe",
+		eventBus: eventBus,
+		train2:   true,
+		game:     NewGame(),
+		entityId: "sensor.ticTacToe",
 	}
 	net.Start()
 	return net
@@ -46,7 +59,6 @@ const (
 )
 
 func (e *Network2) Start() {
-	e.actor, _ = e.supervisor.GetActorById(e.entityId)
 	_ = e.eventBus.Subscribe("system/entities/"+e.entityId.Name(), e.eventHandler)
 
 	rand.Seed(int64(time.Now().Nanosecond()))
@@ -139,7 +151,12 @@ func (e *Network2) eventHandler(_ string, msg interface{}) {
 }
 
 func (e *Network2) sendMoveCommand(row, col int) {
-	e.supervisor.CallAction(e.entityId, fmt.Sprintf("B_R%dC%d", row, col), nil)
+	e.eventBus.Publish("system/entities/"+e.entityId.String(), events.EventCallEntityAction{
+		PluginName: e.entityId.PluginName(),
+		EntityId:   e.entityId,
+		ActionName: fmt.Sprintf("B_R%dC%d", row, col),
+		Args:       nil,
+	})
 }
 
 func (e *Network2) MakeMove() {

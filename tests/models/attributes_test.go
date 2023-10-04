@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,7 +20,10 @@ package models
 
 import (
 	"encoding/json"
+	"fmt"
 	"testing"
+
+	"github.com/e154/smart-home/common/encryptor"
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -32,6 +35,7 @@ func TestAttributes(t *testing.T) {
 	const data = `
 {
   "s": "string",
+  "d": "e0a342c056b7da409ef11c872e361ace3e72c3849abe51da834fa250b833f40ebe078f0cecef23544338c9",
   "p": [42.86754085166162, 74.57289978531306],
   "i": 123,
   "f": 456.123,
@@ -152,8 +156,14 @@ func TestAttributes(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(changed, ShouldEqual, true)
 
+			data, err := encryptor.Encrypt("foo")
+			So(err, ShouldBeNil)
+			fmt.Println(data)
+
 			So(attrs["s"].Value, ShouldEqual, "string")
 			So(attrs["s"].String(), ShouldEqual, "string")
+			So(attrs["d"].Value, ShouldEqual, "e0a342c056b7da409ef11c872e361ace3e72c3849abe51da834fa250b833f40ebe078f0cecef23544338c9")
+			So(attrs["d"].Decrypt(), ShouldEqual, "foo")
 			So(attrs["p"].Value, ShouldResemble, []interface{}{42.86754085166162, 74.57289978531306})
 			So(attrs["p"].Point().Lat, ShouldEqual, 74.57289978531306)
 			So(attrs["p"].Point().Lon, ShouldEqual, 42.86754085166162)

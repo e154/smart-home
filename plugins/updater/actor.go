@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,17 +20,13 @@ package updater
 
 import (
 	"encoding/json"
-	"fmt"
+	m "github.com/e154/smart-home/models"
 	"sync"
 	"time"
 
 	"github.com/Masterminds/semver"
-	"go.uber.org/atomic"
-
-	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/web"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/supervisor"
 	"github.com/e154/smart-home/version"
 )
@@ -38,19 +34,16 @@ import (
 // Actor ...
 type Actor struct {
 	supervisor.BaseActor
-	eventBus          bus.Bus
 	checkLock         *sync.Mutex
 	latestVersion     string
 	latestDownloadUrl string
 	latestVersionTime time.Time
 	lastCheck         time.Time
 	currentVersion    *semver.Version
-	crawler           web.Crawler
 }
 
 // NewActor ...
-func NewActor(visor supervisor.Supervisor,
-	eventBus bus.Bus, crawler web.Crawler) *Actor {
+func NewActor(entity *m.Entity, service supervisor.Service) *Actor {
 
 	var v = "v0.0.1"
 	if version.VersionString != "?" {
@@ -61,29 +54,30 @@ func NewActor(visor supervisor.Supervisor,
 		log.Error(err.Error())
 	}
 
-	return &Actor{
-		BaseActor: supervisor.BaseActor{
-			Id:          common.EntityId(fmt.Sprintf("%s.%s", EntityUpdater, Name)),
-			Name:        Name,
-			Description: "sun plugin",
-			EntityType:  EntityUpdater,
-			Value:       atomic.NewString(supervisor.StateAwait),
-			AttrMu:      &sync.RWMutex{},
-			Attrs:       NewAttr(),
-			Supervisor:  visor,
-			States:      NewStates(),
-			Actions:     NewActions(),
-		},
-		eventBus:       eventBus,
+	actor := &Actor{
+		BaseActor:      supervisor.NewBaseActor(entity, service),
 		checkLock:      &sync.Mutex{},
 		currentVersion: currentVersion,
-		crawler:        crawler,
 	}
+
+	if actor.Actions == nil {
+		actor.Actions = NewActions()
+	}
+
+	if actor.States == nil {
+		actor.States = NewStates()
+	}
+
+	return actor
 }
 
-// Spawn ...
-func (e *Actor) Spawn() supervisor.PluginActor {
-	return e
+func (e *Actor) Destroy() {
+
+}
+
+func (e *Actor) Spawn() {
+	e.check()
+
 }
 
 func (e *Actor) setState(v string) {
@@ -94,14 +88,8 @@ func (e *Actor) setState(v string) {
 		e.State = &state
 		e.Value.Store(supervisor.StateOk)
 		return
-	case supervisor.StateAwait, supervisor.StateOk, supervisor.StateInProcess:
-		state := e.States["enabled"]
-		e.State = &state
 	case supervisor.StateError:
 		state := e.States["error"]
-		e.State = &state
-	default:
-		state := e.States["disabled"]
 		e.State = &state
 	}
 
@@ -120,10 +108,8 @@ func (e *Actor) check() {
 		e.checkLock.Unlock()
 	}()
 
-	e.setState(supervisor.StateInProcess)
-
 	var body []byte
-	if _, body, err = e.crawler.Probe(web.Request{Method: "GET", Url: uri, Timeout: 5 * time.Second}); err != nil {
+	if _, body, err = e.Service.Crawler().Probe(web.Request{Method: "GET", Url: uri, Timeout: 5 * time.Second}); err != nil {
 		return
 	}
 
@@ -132,11 +118,9 @@ func (e *Actor) check() {
 		return
 	}
 
-	e.setState(supervisor.StateOk)
-
 	e.lastCheck = time.Now()
 	e.latestVersion = data.TagName
-	e.latestVersionTime = data.CreatedAt
+	e.latestVersionTime = data.CreatedAt.UTC()
 	for _, asset := range data.Assets {
 		e.latestDownloadUrl = asset.BrowserDownloadUrl
 	}
@@ -151,7 +135,7 @@ func (e *Actor) check() {
 		}
 	}
 
-	oldState := e.GetEventState(e)
+	oldState := e.GetEventState()
 
 	e.AttrMu.Lock()
 	e.Attrs[AttrUpdaterLatestVersion].Value = e.latestVersion
@@ -160,10 +144,11 @@ func (e *Actor) check() {
 	e.Attrs[AttrUpdaterLatestCheck].Value = e.lastCheck
 	e.AttrMu.Unlock()
 
-	e.eventBus.Publish("system/entities/"+e.Id.String(), events.EventStateChanged{
-		PluginName: e.Id.PluginName(),
-		EntityId:   e.Id,
-		OldState:   oldState,
-		NewState:   e.GetEventState(e),
+	go e.SaveState(events.EventStateChanged{
+		PluginName:  e.Id.PluginName(),
+		EntityId:    e.Id,
+		OldState:    oldState,
+		NewState:    e.GetEventState(),
+		StorageSave: true,
 	})
 }

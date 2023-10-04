@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -25,13 +25,12 @@ import (
 	"time"
 
 	"github.com/jackc/pgerrcode"
-	"github.com/lib/pq"
-
-	"github.com/e154/smart-home/common/apperr"
-
-	. "github.com/e154/smart-home/common"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
+
+	. "github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
 )
 
 // Scripts ...
@@ -74,7 +73,7 @@ func (d *Script) TableName() string {
 // Add ...
 func (n Scripts) Add(ctx context.Context, script *Script) (id int64, err error) {
 	if err = n.Db.WithContext(ctx).Create(&script).Error; err != nil {
-		var pgErr *pq.Error
+		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
 			switch pgErr.Code {
 			case pgerrcode.UniqueViolation:
@@ -144,15 +143,27 @@ from scripts where name = ?`, name).
 }
 
 // Update ...
-func (n Scripts) Update(ctx context.Context, m *Script) (err error) {
-	err = n.Db.WithContext(ctx).Model(&Script{Id: m.Id}).Updates(map[string]interface{}{
-		"name":        m.Name,
-		"description": m.Description,
-		"lang":        m.Lang,
-		"source":      m.Source,
-		"compiled":    m.Compiled,
+func (n Scripts) Update(ctx context.Context, script *Script) (err error) {
+	err = n.Db.WithContext(ctx).Model(&Script{Id: script.Id}).Updates(map[string]interface{}{
+		"name":        script.Name,
+		"description": script.Description,
+		"lang":        script.Lang,
+		"source":      script.Source,
+		"compiled":    script.Compiled,
 	}).Error
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case pgerrcode.UniqueViolation:
+				if strings.Contains(pgErr.Message, "name_at_scripts_unq") {
+					err = errors.Wrap(apperr.ErrScriptUpdate, fmt.Sprintf("script name \"%s\" not unique", script.Name))
+					return
+				}
+			default:
+				fmt.Printf("unknown code \"%s\"\n", pgErr.Code)
+			}
+		}
 		err = errors.Wrap(apperr.ErrScriptUpdate, err.Error())
 	}
 	return

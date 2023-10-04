@@ -21,3 +21,4 @@ cli-*
 server-*
 build/public/*
 build/admin/*
+smart-home-common.tar.gz

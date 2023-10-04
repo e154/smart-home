@@ -63,7 +63,7 @@ const currentItem = computed(() => props.item as CardItem)
             <ElOption
                 v-for="p in currentItem.entityActions"
                 :key="p.value"
-                :label="p.label"
+                :label="p.label + ' (' +p.value +')'"
                 :value="p.value"/>
           </ElSelect>
 

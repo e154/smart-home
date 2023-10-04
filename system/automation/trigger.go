@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -37,7 +37,7 @@ import (
 
 // Trigger ...
 type Trigger struct {
-	scriptEngine  *scripts.Engine
+	scriptEngine  *scripts.EngineWatcher
 	scriptService scripts.ScriptService
 	lastStatus    atomic.Bool
 	model         *m.Trigger
@@ -107,15 +107,24 @@ func NewTrigger(
 
 	if model.Script != nil {
 
-		if tr.scriptEngine, err = scriptService.NewEngine(model.Script); err != nil {
+		if tr.scriptEngine, err = scriptService.NewEngineWatcher(model.Script); err != nil {
 			return
 		}
+		tr.scriptEngine.Spawn(func(engine *scripts.Engine) {
 
-		tr.scriptEngine.PushStruct("Trigger", NewTriggerBind(tr))
+			engine.PushStruct("Trigger", NewTriggerBind(tr))
 
-		if _, err = tr.scriptEngine.Do(); err != nil {
-			return
-		}
+			if model.EntityId != nil {
+				if _, err = engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", model.EntityId.String())); err != nil {
+					log.Error(err.Error())
+				}
+			}
+
+			if _, err = engine.Do(); err != nil {
+				return
+			}
+		})
+
 	}
 
 	return
@@ -128,7 +137,7 @@ func (tr *Trigger) Check(msg interface{}) (state bool, err error) {
 
 	if tr.scriptEngine != nil {
 		var result string
-		if result, err = tr.scriptEngine.AssertFunction(tr.triggerPlugin.FunctionName(), msg); err != nil {
+		if result, err = tr.scriptEngine.Engine().AssertFunction(tr.triggerPlugin.FunctionName(), msg); err != nil {
 			log.Error(err.Error())
 		}
 
@@ -171,6 +180,9 @@ func (tr *Trigger) Start() {
 // Stop ...
 func (tr *Trigger) Stop() {
 	log.Infof("stop trigger '%s'", tr.name)
+	if tr.scriptEngine != nil {
+		tr.scriptEngine.Stop()
+	}
 	tr.eventBus.Unsubscribe(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), tr.eventHandler)
 	tr.triggerPlugin.Unsubscribe(tr.subscriber)
 	tr.eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), events.EventTriggerUnloaded{

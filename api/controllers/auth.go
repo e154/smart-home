@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,10 +20,8 @@ package controllers
 
 import (
 	"context"
-
 	"github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/location"
 	m "github.com/e154/smart-home/models"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -60,9 +58,14 @@ func (a ControllerAuth) Signin(ctx context.Context, _ *emptypb.Empty) (resp *api
 	var user *m.User
 	var accessToken string
 
-	info, _ := location.GetRegionInfo()
+	//info, _ := location.GetRegionInfo()
 
-	if user, accessToken, err = a.endpoint.Auth.SignIn(ctx, username, pass, info.Ip); err != nil {
+	var ip string
+	if len(meta["ip"]) == 1 {
+		ip = meta["ip"][0]
+	}
+
+	if user, accessToken, err = a.endpoint.Auth.SignIn(ctx, username, pass, ip); err != nil {
 		return nil, internalServerError
 	}
 

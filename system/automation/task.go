@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -176,6 +176,8 @@ func (t *Task) Stop() {
 		action.Remove()
 	}
 	t.actions = make(map[int64]*Action)
+
+	t.conditionGroup.Stop()
 	t.conditionGroup = nil
 
 	t.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", t.model.Id), events.EventTaskUnloaded{

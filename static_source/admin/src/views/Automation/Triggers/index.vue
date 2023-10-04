@@ -308,9 +308,9 @@ const callTrigger = async (trigger: ApiTrigger) => {
         </ElTag>
       </template>
 
-      <template #operations="{ row, $index }">
+      <template #operations="{ row }">
 
-        <ElButton :link="true" @click.prevent.stop="callTrigger(row, $index)" :disabled="!row?.isLoaded">
+        <ElButton :link="true" @click.prevent.stop="callTrigger(row)" :disabled="!row?.isLoaded">
           {{ $t('main.call') }}
         </ElButton>
 

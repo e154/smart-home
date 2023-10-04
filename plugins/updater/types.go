@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -81,14 +81,6 @@ func NewAttr() m.Attributes {
 // NewStates ...
 func NewStates() map[string]supervisor.ActorState {
 	return map[string]supervisor.ActorState{
-		"enabled": {
-			Name:        "enabled",
-			Description: "Enabled",
-		},
-		"disabled": {
-			Name:        "disabled",
-			Description: "Disabled",
-		},
 		"error": {
 			Name:        "error",
 			Description: "Error",

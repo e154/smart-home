@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -22,11 +22,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/jackc/pgx/v5/pgconn"
 	"strings"
 	"time"
 
 	"github.com/jackc/pgerrcode"
-	"github.com/lib/pq"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 
@@ -54,7 +54,7 @@ func (d *UserDevice) TableName() string {
 // Add ...
 func (d *UserDevices) Add(ctx context.Context, device *UserDevice) (id int64, err error) {
 	if err = d.Db.WithContext(ctx).Create(&device).Error; err != nil {
-		var pgErr *pq.Error
+		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
 			switch pgErr.Code {
 			case pgerrcode.UniqueViolation:

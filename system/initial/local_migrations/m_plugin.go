@@ -1,7 +1,27 @@
+// This file is part of the Smart Home
+// Program complex distribution https://github.com/e154/smart-home
+// Copyright (C) 2023, Filippov Alex
+//
+// This library is free software: you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Library General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.  If not, see
+// <https://www.gnu.org/licenses/>.
+
 package local_migrations
 
 import (
 	"context"
+
+	"github.com/e154/smart-home/plugins/onvif"
 
 	"github.com/e154/smart-home/plugins/alexa"
 	"github.com/e154/smart-home/plugins/cgminer"
@@ -20,7 +40,6 @@ import (
 	"github.com/e154/smart-home/plugins/node"
 	"github.com/e154/smart-home/plugins/notify"
 	"github.com/e154/smart-home/plugins/scene"
-	"github.com/e154/smart-home/plugins/script"
 	"github.com/e154/smart-home/plugins/sensor"
 	"github.com/e154/smart-home/plugins/slack"
 	"github.com/e154/smart-home/plugins/sun"
@@ -61,7 +80,7 @@ func (n *MigrationPlugins) Up(ctx context.Context, adaptors *adaptors.Adaptors) 
 	n.addPlugin("modbus_rtu", false, false, true, modbus_rtu.Version)
 	n.addPlugin("modbus_tcp", false, false, true, modbus_tcp.Version)
 	n.addPlugin("moon", true, false, true, moon.Version)
-	n.addPlugin("memory", true, false, true, memory.Version)
+	n.addPlugin("memory", true, false, false, memory.Version)
 	n.addPlugin("memory_app", true, false, false, memory_app.Version)
 	n.addPlugin("hdd", true, false, true, hdd.Version)
 	n.addPlugin("logs", true, false, false, logs.Version)
@@ -69,7 +88,6 @@ func (n *MigrationPlugins) Up(ctx context.Context, adaptors *adaptors.Adaptors) 
 	n.addPlugin("node", true, true, true, node.Version)
 	n.addPlugin("notify", true, true, false, notify.Version)
 	n.addPlugin("scene", true, false, true, scene.Version)
-	n.addPlugin("script", true, false, true, script.Version)
 	n.addPlugin("sensor", true, false, true, sensor.Version)
 	n.addPlugin("slack", true, false, false, slack.Version)
 	n.addPlugin("sun", true, false, true, sun.Version)
@@ -84,6 +102,7 @@ func (n *MigrationPlugins) Up(ctx context.Context, adaptors *adaptors.Adaptors) 
 	n.addPlugin("zigbee2mqtt", false, false, true, zigbee2mqtt.Version)
 	n.addPlugin("html5_notify", true, false, false, html5_notify.Version)
 	n.addPlugin("webpush", true, false, false, webpush.Version)
+	n.addPlugin("onvif", false, false, true, onvif.Version)
 	return nil
 }
 

@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,8 +20,6 @@ package email
 
 import (
 	"fmt"
-	"sync"
-
 	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/common/apperr"
@@ -29,7 +27,6 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/supervisor"
 	"gopkg.in/gomail.v2"
 )
@@ -37,7 +34,6 @@ import (
 // Actor ...
 type Actor struct {
 	supervisor.BaseActor
-	eventBus bus.Bus
 	adaptors *adaptors.Adaptors
 	Auth     string
 	Pass     string
@@ -48,33 +44,32 @@ type Actor struct {
 
 // NewActor ...
 func NewActor(settings m.Attributes,
-	visor supervisor.Supervisor,
-	eventBus bus.Bus,
-	adaptors *adaptors.Adaptors) *Actor {
+	service supervisor.Service) *Actor {
+
+	entity := &m.Entity{
+		Id:         common.EntityId(fmt.Sprintf("%s.%s", Name, Name)),
+		PluginName: Name,
+	}
 
 	actor := &Actor{
-		BaseActor: supervisor.BaseActor{
-			Id:         common.EntityId(fmt.Sprintf("%s.%s", Name, Name)),
-			Name:       Name,
-			EntityType: Name,
-			AttrMu:     &sync.RWMutex{},
-			Supervisor: visor,
-		},
-		eventBus: eventBus,
-		adaptors: adaptors,
-		Auth:     settings[AttrAuth].String(),
-		Pass:     settings[AttrPass].String(),
-		Smtp:     settings[AttrSmtp].String(),
-		Port:     settings[AttrPort].Int64(),
-		Sender:   settings[AttrSender].String(),
+		BaseActor: supervisor.NewBaseActor(entity, service),
+		Auth:      settings[AttrAuth].String(),
+		Pass:      settings[AttrPass].String(),
+		Smtp:      settings[AttrSmtp].String(),
+		Port:      settings[AttrPort].Int64(),
+		Sender:    settings[AttrSender].String(),
 	}
 
 	return actor
 }
 
+func (e *Actor) Destroy() {
+
+}
+
 // Spawn ...
-func (p *Actor) Spawn() supervisor.PluginActor {
-	return p
+func (e *Actor) Spawn() {
+
 }
 
 // Send ...
@@ -116,17 +111,17 @@ func (e *Actor) Send(address string, message *m.Message) error {
 }
 
 // UpdateStatus ...
-func (p *Actor) UpdateStatus() (err error) {
+func (e *Actor) UpdateStatus() (err error) {
 
-	oldState := p.GetEventState(p)
-	now := p.Now(oldState)
+	oldState := e.GetEventState()
+	now := e.Now(oldState)
 
 	var attributeValues = make(m.AttributeValue)
 	// ...
 
-	p.AttrMu.Lock()
+	e.AttrMu.Lock()
 	var changed bool
-	if changed, err = p.Attrs.Deserialize(attributeValues); !changed {
+	if changed, err = e.Attrs.Deserialize(attributeValues); !changed {
 		if err != nil {
 			log.Warn(err.Error())
 		}
@@ -135,19 +130,19 @@ func (p *Actor) UpdateStatus() (err error) {
 			delta := now.Sub(*oldState.LastUpdated).Milliseconds()
 			//fmt.Println("delta", delta)
 			if delta < 200 {
-				p.AttrMu.Unlock()
+				e.AttrMu.Unlock()
 				return
 			}
 		}
 	}
-	p.AttrMu.Unlock()
+	e.AttrMu.Unlock()
 
-	p.eventBus.Publish("system/entities/"+p.Id.String(), events.EventStateChanged{
+	go e.SaveState(events.EventStateChanged{
 		StorageSave: true,
-		PluginName:  p.Id.PluginName(),
-		EntityId:    p.Id,
+		PluginName:  e.Id.PluginName(),
+		EntityId:    e.Id,
 		OldState:    oldState,
-		NewState:    p.GetEventState(p),
+		NewState:    e.GetEventState(),
 	})
 
 	return

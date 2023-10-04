@@ -341,7 +341,9 @@ export default {
         automationActions: 'Automation Actions',
         main: 'Main',
         source: 'Source',
-        info1: 'Use the keyboard shortcut Ctrl + Space to use autocomplete',
+        info1: 'Use the keyboard shortcut "Ctrl + Space" to autocomplete',
+        info2: 'Use the keyboard shortcut "Meta + /" to comment code',
+        info3: 'Use the keyboard shortcut "Meta + F" to format code',
         stat_total_name: 'Total scripts',
         stat_total_descr: '',
         stat_used_name: 'Scripts used',
@@ -527,6 +529,8 @@ export default {
             MAP: 'Map',
             SLIDER: 'Slider',
             COLOR_PICKER: 'Color Picker',
+            STREAM_PLAYER: 'Video player',
+            JOYSTICK: 'Joystick',
             tooltip: 'Tooltip',
             slider: {
                 options: 'Slider Options',
@@ -564,6 +568,14 @@ export default {
                 itemValue: 'Item Value',
                 itemDescription: 'Item Description',
                 barOptions: 'Bar Options'
+            },
+            joystick: {
+                options: 'Joystick Options',
+                startAction: 'Start Action',
+                endAction: 'End Action',
+            },
+            video: {
+                options: 'Video Options'
             }
         }
     },
@@ -572,7 +584,14 @@ export default {
         mainDarkDashboard: 'Main Dark Dashboard',
         mainLightDashboard: 'Main Light Dashboard',
         devDarkDashboard: 'Dev Dark Dashboard',
-        devLightDashboard: 'Dev Light Dashboard'
+        devLightDashboard: 'Dev Light Dashboard',
+        scriptsOptions: 'Scripts Settings',
+        restartComponentIfScriptChanged: 'Restart component if script changed',
+        clearHistory: 'Clear History',
+        clearMetricsDays: 'Clear Metrics Days',
+        clearLogsDays: 'Clear Logs Days',
+        clearEntityStorageDays: 'Clear Entity Storage Days',
+        clearRunHistoryDays: 'Clear Run History Days',
     },
     tools: {
         eventBus: {

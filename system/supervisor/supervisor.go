@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,18 +20,14 @@ package supervisor
 
 import (
 	"context"
-	"fmt"
-	"sort"
-	"sync"
-	"time"
-
 	"github.com/pkg/errors"
 	"go.uber.org/atomic"
 	"go.uber.org/fx"
+	"runtime/debug"
+	"sync"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
 	"github.com/e154/smart-home/common/web"
@@ -49,9 +45,10 @@ var (
 
 type supervisor struct {
 	*pluginManager
-	scriptService scripts.ScriptService
-	actors        sync.Map
-	quit          chan struct{}
+	scriptService     scripts.ScriptService
+	entitiesWg        *sync.WaitGroup
+	eventScriptSubsMx sync.RWMutex
+	eventScriptSubs   map[int64]map[common.EntityId]struct{}
 }
 
 // NewSupervisor ...
@@ -66,15 +63,16 @@ func NewSupervisor(lc fx.Lifecycle,
 	scheduler *scheduler.Scheduler,
 	crawler web.Crawler) Supervisor {
 	s := &supervisor{
-		scriptService: scriptService,
-		actors:        sync.Map{},
-		quit:          make(chan struct{}),
+		scriptService:   scriptService,
+		entitiesWg:      &sync.WaitGroup{},
+		eventScriptSubs: make(map[int64]map[common.EntityId]struct{}),
 	}
 	s.pluginManager = &pluginManager{
 		adaptors:       adaptors,
 		isStarted:      atomic.NewBool(false),
 		eventBus:       eventBus,
-		enabledPlugins: make(map[string]bool),
+		enabledPlugins: sync.Map{},
+		pluginsWg:      &sync.WaitGroup{},
 		service: &service{
 			bus:           bus,
 			supervisor:    s,
@@ -102,10 +100,9 @@ func (e *supervisor) Start(ctx context.Context) (err error) {
 	// event subscribe
 	_ = e.eventBus.Subscribe("system/entities/+", e.eventHandler)
 	_ = e.eventBus.Subscribe("system/plugins/+", e.eventHandler)
+	_ = e.eventBus.Subscribe("system/scripts/+", e.eventHandler)
 
-	e.scriptService.PushStruct("supervisor", NewSupervisorBind(e))
-	//DEPRECATED
-	e.scriptService.PushStruct("entityManager", NewSupervisorBind(e))
+	e.bindScripts()
 
 	e.pluginManager.Start(ctx)
 
@@ -120,22 +117,25 @@ func (e *supervisor) Start(ctx context.Context) (err error) {
 // Shutdown ...
 func (e *supervisor) Shutdown(ctx context.Context) (err error) {
 
-	_ = e.eventBus.Unsubscribe("system/services/scripts", e.handlerSystemScripts)
-
-	e.scriptService.PopStruct("supervisor")
-	e.scriptService.PopStruct("entityManager")
-
 	e.pluginManager.Shutdown(ctx)
+	e.entitiesWg.Wait()
 
+	e.scriptService.PopFunction("GetEntity")
+	e.scriptService.PopFunction("SetState")
+	e.scriptService.PopFunction("SetStateName")
+	e.scriptService.PopFunction("SetAttributes")
+	e.scriptService.PopFunction("GetAttributes")
+	e.scriptService.PopFunction("GetSettings")
+	e.scriptService.PopFunction("SetMetric")
+	e.scriptService.PopFunction("CallAction")
+	e.scriptService.PopFunction("CallScene")
+	e.scriptService.PopFunction("GetDistance")
+	e.scriptService.PopFunction("PointInsideAria")
+
+	_ = e.eventBus.Unsubscribe("system/services/scripts", e.handlerSystemScripts)
 	_ = e.eventBus.Unsubscribe("system/entities/+", e.eventHandler)
 	_ = e.eventBus.Unsubscribe("system/plugins/+", e.eventHandler)
-
-	e.actors.Range(func(key, value interface{}) bool {
-		actor := value.(*actorInfo)
-		actor.quit <- struct{}{}
-		e.actors.Delete(key)
-		return true
-	})
+	_ = e.eventBus.Unsubscribe("system/scripts/+", e.eventHandler)
 
 	e.eventBus.Publish("system/services/supervisor", events.EventServiceStopped{Service: "Supervisor"})
 
@@ -157,261 +157,97 @@ func (e *supervisor) handlerSystemScripts(_ string, event interface{}) {
 
 	switch event.(type) {
 	case events.EventServiceStarted, events.EventServiceRestarted:
-		e.scriptService.PushStruct("supervisor", NewSupervisorBind(e))
-		//DEPRECATED
-		e.scriptService.PushStruct("entityManager", NewSupervisorBind(e))
+		e.bindScripts()
 	}
 }
 
-func (e *supervisor) LoadEntities() {
-
-	var page int64
-	var entities []*m.Entity
-	const perPage = 500
-	var err error
-
-LOOP:
-	entities, _, err = e.adaptors.Entity.List(context.Background(), perPage, perPage*page, "", "", true, nil, nil, nil)
-	if err != nil {
-		log.Error(err.Error())
-		return
-	}
-
-	// add entities from database
-	for _, entity := range entities {
-		if err = e.AddEntity(entity); err != nil {
-			log.Warnf("%s, %s", entity.Id, err.Error())
-		}
-	}
-
-	if len(entities) != 0 {
-		page++
-		goto LOOP
-	}
-}
-
-func (e *supervisor) updateMetric(actor *actorInfo, state bus.EventEntityState) {
-	metrics := actor.Actor.Metrics()
-	if metrics == nil {
-		return
-	}
-
-	var data = make(map[string]float32)
-	var name string
-
-	for _, metric := range metrics {
-		for _, prop := range metric.Options.Items {
-			if value, ok := state.Attributes[prop.Name]; ok {
-				name = metric.Name
-				switch value.Type {
-				case common.AttributeInt:
-					data[prop.Name] = float32(value.Int64())
-				case common.AttributeFloat:
-					data[prop.Name] = common.Rounding32(value.Float64(), 2)
-				}
-			}
-		}
-	}
-
-	if len(data) == 0 || name == "" {
-		return
-	}
-
-	e.SetMetric(state.EntityId, name, data)
-
+func (e *supervisor) bindScripts() {
+	e.scriptService.PushFunctions("GetEntity", GetEntityBind(e))
+	e.scriptService.PushFunctions("EntitySetState", SetStateBind(e))
+	e.scriptService.PushFunctions("EntitySetStateName", SetStateBind(e))
+	e.scriptService.PushFunctions("EntityGetState", GetStateBind(e))
+	e.scriptService.PushFunctions("EntitySetAttributes", SetAttributesBind(e))
+	e.scriptService.PushFunctions("EntityGetAttributes", GetAttributesBind(e))
+	e.scriptService.PushFunctions("EntityGetSettings", GetSettingsBind(e))
+	e.scriptService.PushFunctions("EntitySetMetric", SetMetricBind(e))
+	e.scriptService.PushFunctions("EntityCallAction", CallActionBind(e))
+	e.scriptService.PushFunctions("EntityCallScene", CallSceneBind(e))
+	e.scriptService.PushFunctions("GeoDistanceToArea", GetDistanceToAreaBind(e.adaptors))
+	e.scriptService.PushFunctions("GeoDistanceBetweenPoints", GetDistanceBetweenPointsBind(e.adaptors))
+	e.scriptService.PushFunctions("GeoPointInsideAria", PointInsideAriaBind(e.adaptors))
 }
 
 // SetMetric ...
 func (e *supervisor) SetMetric(id common.EntityId, name string, value map[string]float32) {
 
-	item, ok := e.actors.Load(id)
-	if !ok {
+	pla, err := e.GetActorById(id)
+	if err != nil {
 		return
 	}
-	actor := item.(*actorInfo)
 
-	var err error
-	for _, metric := range actor.Actor.Metrics() {
-		if metric.Name != name {
-			continue
-		}
-
-		err = e.adaptors.MetricBucket.Add(context.Background(), &m.MetricDataItem{
-			Value:    value,
-			MetricId: metric.Id,
-			Time:     time.Now(),
-		})
-
-		if err != nil {
-			log.Errorf(err.Error())
-		}
-	}
+	pla.AddMetric(name, value)
 }
 
 // SetState ...
 func (e *supervisor) SetState(id common.EntityId, params EntityStateParams) (err error) {
 
-	item, ok := e.actors.Load(id)
-	if !ok {
-		err = apperr.ErrNotFound
+	pla, err := e.GetActorById(id)
+	if err != nil {
 		return
 	}
-	actor := item.(*actorInfo)
 
-	// store old state
-	currentState := GetEventState(actor.Actor)
-	actor.CurrentState = &currentState
-
-	err = actor.Actor.SetState(params)
+	if err = pla.SetState(params); err != nil {
+		debug.PrintStack()
+		log.Error(err.Error())
+	}
 
 	return
 }
 
 // EntityIsLoaded ...
 func (e *supervisor) EntityIsLoaded(id common.EntityId) (loaded bool) {
-	_, loaded = e.actors.Load(id)
+
+	if !e.PluginIsLoaded(id.PluginName()) {
+		return
+	}
+
+	value, err := e.GetPlugin(id.PluginName())
+	if err != nil {
+		return
+	}
+
+	plugin := value.(Pluggable)
+	loaded = plugin.EntityIsLoaded(id)
+
 	return
 }
 
 // GetEntityById ...
 func (e *supervisor) GetEntityById(id common.EntityId) (entity m.EntityShort, err error) {
 
-	item, ok := e.actors.Load(id)
-	if !ok {
-		err = apperr.ErrNotFound
+	var pla PluginActor
+	if pla, err = e.GetActorById(id); err != nil {
 		return
 	}
-	actor := item.(*actorInfo)
-	entity = NewEntity(actor.Actor)
+	entity = NewEntity(pla)
 	return
 }
 
 // GetActorById ...
-func (e *supervisor) GetActorById(id common.EntityId) (actor PluginActor, err error) {
+func (e *supervisor) GetActorById(id common.EntityId) (pla PluginActor, err error) {
 
-	item, ok := e.actors.Load(id)
-	if !ok {
-		err = apperr.ErrNotFound
-		return
-	}
-	actor = item.(*actorInfo).Actor
-	return
-}
-
-// List ...
-func (e *supervisor) List() (entities []m.EntityShort, err error) {
-
-	// sort index
-	var index = make([]string, 0)
-	e.actors.Range(func(key, value interface{}) bool {
-		actor := value.(*actorInfo)
-		info := actor.Actor.Info()
-		index = append(index, info.Id.String())
-		return true
-	})
-	sort.Strings(index)
-
-	entities = make([]m.EntityShort, 0, len(index))
-	var i int
-	for _, n := range index {
-
-		item, ok := e.actors.Load(n)
-		if !ok {
-			continue
-		}
-		actor := item.(*actorInfo)
-		entities = append(entities, NewEntity(actor.Actor))
-
-		// metric preview
-		if len(entities[i].Metrics) > 0 {
-
-			for j, metric := range entities[i].Metrics {
-				var optionItems = make([]string, len(metric.Options.Items))
-				for i, item := range metric.Options.Items {
-					optionItems[i] = item.Name
-				}
-
-				if entities[i].Metrics[j].Data, err = e.adaptors.MetricBucket.Simple24HPreview(context.Background(), metric.Id, optionItems); err != nil {
-					log.Error(err.Error())
-					return
-				}
-			}
-		}
-		i++
-	}
-	return
-}
-
-// Spawn ...
-func (e *supervisor) Spawn(constructor ActorConstructor) (actor PluginActor) {
-
-	actor = constructor()
-	info := actor.Info()
-
-	defer func(entityId common.EntityId) {
-		log.Infof("loaded entity '%v'", entityId)
-	}(info.Id)
-
-	var entityId = info.Id
-
-	item, ok := e.actors.Load(entityId)
-	if ok && item != nil {
-		log.Warnf("entityId '%v' exist", entityId)
-		actor = item.(PluginActor)
+	if !e.PluginIsLoaded(id.PluginName()) {
+		err = errors.Wrap(ErrPluginNotLoaded, id.PluginName())
 		return
 	}
 
-	currentState := GetEventState(actor)
-	actorInfo := &actorInfo{
-		Actor:        actor,
-		quit:         make(chan struct{}),
-		CurrentState: &currentState,
+	var value interface{}
+	if value, err = e.GetPlugin(id.PluginName()); err != nil {
+		return
 	}
-	e.actors.Store(entityId, actorInfo)
+	plugin := value.(Pluggable)
 
-	go func() {
-		defer func() {
-
-			log.Infof("unload entity %v", entityId)
-
-			var err error
-			var plugin CrudActor
-			if plugin, err = e.getCrudActor(entityId); err != nil {
-				return
-			}
-			_ = plugin.RemoveActor(entityId)
-
-			e.eventBus.Publish("system/entities/"+entityId.String(), events.EventEntityUnloaded{
-				PluginName: info.PluginName,
-				EntityId:   entityId,
-			})
-		}()
-
-		<-actorInfo.quit
-	}()
-
-	attr := actor.Attributes()
-	settings := actor.Settings()
-
-	e.eventBus.Publish("system/entities/"+entityId.String(), events.EventAddedActor{
-		PluginName: info.PluginName,
-		EntityId:   entityId,
-		Attributes: attr,
-		Settings:   settings,
-	})
-
-	_ = e.adaptors.Entity.Add(context.Background(), &m.Entity{
-		Id:          entityId,
-		Description: info.Description,
-		PluginName:  info.PluginName,
-		Icon:        info.Icon,
-		Area:        info.Area,
-		Hidden:      info.Hidde,
-		AutoLoad:    info.AutoLoad,
-		ParentId:    info.ParentId,
-		Attributes:  attr.Signature(),
-		Settings:    settings,
-	})
+	pla, err = plugin.GetActor(id)
 
 	return
 }
@@ -420,101 +256,60 @@ func (e *supervisor) Spawn(constructor ActorConstructor) (actor PluginActor) {
 func (e *supervisor) eventHandler(_ string, message interface{}) {
 
 	switch msg := message.(type) {
-	case events.EventStateChanged:
-		go e.eventStateChangedHandler(msg)
-	case events.EventLoadedPlugin:
+	case events.EventPluginLoaded:
 		go func() { _ = e.eventLoadedPlugin(msg) }()
-	case events.EventUnloadedPlugin:
-		go e.eventUnloadedPlugin(msg)
 	case events.EventCreatedEntity:
 		go e.eventCreatedEntity(msg)
 	case events.EventUpdatedEntity:
 		go e.eventUpdatedEntity(msg)
 	case events.CommandUnloadEntity:
-		go e.eventUnloadEntity(msg)
+		go e.commandUnloadEntity(msg)
 	case events.CommandLoadEntity:
-		go e.eventLoadEntity(msg)
+		go e.commandLoadEntity(msg)
 	case events.EventEntitySetState:
 		go e.eventEntitySetState(msg)
 	case events.EventGetLastState:
 		go e.eventLastState(msg)
+	case events.EventUpdatedScript:
+		go e.eventUpdatedScript(msg)
+	case events.EventScriptDeleted:
+		go e.eventScriptDeleted(msg)
+	case events.EventEntityLoaded:
+		go e.eventEntityLoaded(msg)
+	case events.EventEntityUnloaded:
+		go e.eventEntityUnloaded(msg)
 	}
-}
-
-func (e *supervisor) eventStateChangedHandler(msg events.EventStateChanged) {
-
-	item, ok := e.actors.Load(msg.EntityId)
-	if !ok {
-		return
-	}
-	actor := item.(*actorInfo)
-
-	go e.updateMetric(actor, msg.NewState)
-
-	if msg.NewState.Compare(msg.OldState) {
-		return
-	}
-
-	if actor.CurrentState != nil {
-		if actor.CurrentState.Compare(msg.NewState) {
-			return
-		}
-	}
-
-	actor.CurrentState = &msg.NewState
-
-	// store state to db
-	var state string
-	if msg.NewState.State != nil {
-		state = msg.NewState.State.Name
-	}
-
-	if !msg.StorageSave {
-		return
-	}
-
-	go func() {
-		_, err := e.adaptors.EntityStorage.Add(context.Background(), &m.EntityStorage{
-			State:      state,
-			EntityId:   msg.EntityId,
-			Attributes: msg.NewState.Attributes.Serialize(),
-		})
-		if err != nil {
-			log.Error(err.Error())
-		}
-	}()
 }
 
 func (e *supervisor) eventLastState(msg events.EventGetLastState) {
 
-	item, ok := e.actors.Load(msg.EntityId)
-	if !ok {
+	pla, err := e.GetActorById(msg.EntityId)
+	if err != nil {
 		return
 	}
-	actor := item.(*actorInfo)
 
-	if actor.CurrentState == nil {
-		currentState := GetEventState(actor.Actor)
-		actor.CurrentState = &currentState
+	if pla.GetCurrentState() == nil {
+		currentState := pla.GetEventState()
+		pla.SetCurrentState(currentState)
 	}
 
-	info := actor.Actor.Info()
+	info := pla.Info()
 
-	if actor.CurrentState.LastChanged == nil && actor.CurrentState.LastUpdated == nil {
+	currentState := pla.GetCurrentState()
+	if currentState.LastChanged == nil && currentState.LastUpdated == nil {
 		entity, _ := e.adaptors.Entity.GetById(context.Background(), msg.EntityId)
-		actor.CurrentState.Attributes = entity.Attributes
+		currentState.Attributes = entity.Attributes
 	}
 
 	e.eventBus.Publish("system/entities/"+msg.EntityId.String(), events.EventLastStateChanged{
-		StorageSave: false,
-		PluginName:  info.PluginName,
-		EntityId:    info.Id,
-		OldState:    *actor.CurrentState,
-		NewState:    *actor.CurrentState,
+		PluginName: info.PluginName,
+		EntityId:   info.Id,
+		OldState:   *currentState,
+		NewState:   *currentState,
 	})
 }
 
-func (e *supervisor) eventLoadedPlugin(msg events.EventLoadedPlugin) (err error) {
+func (e *supervisor) eventLoadedPlugin(msg events.EventPluginLoaded) (err error) {
 
 	log.Infof("Load plugin '%s' entities", msg.PluginName)
 
@@ -530,9 +325,11 @@ LOOP:
 	}
 
 	for _, entity := range entities {
-		if err := e.AddEntity(entity); err != nil {
-			log.Warnf("%s, %s", entity.Id, err.Error())
-		}
+		go func(entity *m.Entity) {
+			if err = e.AddEntity(entity); err != nil {
+				log.Warnf("%s, %s", entity.Id, err.Error())
+			}
+		}(entity)
 	}
 
 	if len(entities) != 0 {
@@ -541,20 +338,6 @@ LOOP:
 	}
 
 	return
-}
-
-func (e *supervisor) eventUnloadedPlugin(msg events.EventUnloadedPlugin) {
-
-	log.Infof("Unload plugin '%s' entities", msg.PluginName)
-
-	e.actors.Range(func(key, value interface{}) bool {
-		entityId := key.(common.EntityId)
-		if entityId.PluginName() != msg.PluginName {
-			return true
-		}
-		e.unsafeRemove(entityId)
-		return true
-	})
 }
 
 func (e *supervisor) eventCreatedEntity(msg events.EventCreatedEntity) {
@@ -574,9 +357,12 @@ func (e *supervisor) eventCreatedEntity(msg events.EventCreatedEntity) {
 }
 
 func (e *supervisor) eventUpdatedEntity(msg events.EventUpdatedEntity) {
+	e.updatedEntityById(msg.EntityId)
+}
 
-	entity, err := e.adaptors.Entity.GetById(context.Background(), msg.EntityId)
-	if err != nil {
+func (e *supervisor) updatedEntityById(entityId common.EntityId) {
+	entity, err := e.adaptors.Entity.GetById(context.Background(), entityId)
+	if err != nil || !entity.AutoLoad {
 		return
 	}
 
@@ -585,14 +371,21 @@ func (e *supervisor) eventUpdatedEntity(msg events.EventUpdatedEntity) {
 	}
 }
 
-func (e *supervisor) eventUnloadEntity(msg events.CommandUnloadEntity) {
-
-	e.Remove(msg.EntityId)
+func (e *supervisor) commandUnloadEntity(msg events.CommandUnloadEntity) {
+	e.UnloadEntity(msg.EntityId)
 }
 
-func (e *supervisor) eventLoadEntity(msg events.CommandLoadEntity) {
-	entity, _ := e.adaptors.Entity.GetById(context.Background(), msg.EntityId)
-	if err := e.AddEntity(entity); err != nil {
+func (e *supervisor) commandLoadEntity(msg events.CommandLoadEntity) {
+	entity, err := e.adaptors.Entity.GetById(context.Background(), msg.EntityId)
+	if err != nil {
+		return
+	}
+
+	if !entity.AutoLoad {
+		return
+	}
+
+	if err = e.AddEntity(entity); err != nil {
 		log.Warnf("%s, %s", entity.Id, err.Error())
 	}
 }
@@ -626,109 +419,147 @@ func (e *supervisor) CallScene(id common.EntityId, arg map[string]interface{}) {
 	})
 }
 
-func (e *supervisor) getCrudActor(entityId common.EntityId) (result CrudActor, err error) {
-	var plugin interface{}
-	if plugin, err = e.getPlugin(entityId.PluginName()); err != nil {
-		err = errors.Wrap(apperr.ErrInternal, err.Error())
-		return
-	}
-
-	var ok bool
-	if result, ok = plugin.(CrudActor); ok {
-		return
-		//...
-	} else {
-		err = errors.Wrap(apperr.ErrInternal, fmt.Sprintf("can`t static cast '%s' to plugins.CrudActor", entityId.PluginName()))
-	}
-	return
-}
-
 // AddEntity ...
 func (e *supervisor) AddEntity(entity *m.Entity) (err error) {
 
-	if _, ok := e.enabledPlugins[entity.PluginName]; !ok {
+	if !e.PluginIsLoaded(entity.PluginName) {
+		err = errors.Wrap(ErrPluginNotLoaded, entity.PluginName)
 		return
 	}
 
-	var crudActor CrudActor
-	if crudActor, err = e.getCrudActor(entity.Id); err != nil {
+	var value interface{}
+	if value, err = e.GetPlugin(entity.PluginName); err != nil {
 		return
 	}
-
-	if err = crudActor.AddOrUpdateActor(entity); err != nil {
-		return
-	}
-
-	e.eventBus.Publish("system/entities/"+entity.Id.String(), events.EventEntityLoaded{
-		EntityId: entity.Id,
-	})
-
+	plugin := value.(Pluggable)
+	err = plugin.AddOrUpdateActor(entity)
 	return
 }
 
 // UpdateEntity ...
 func (e *supervisor) UpdateEntity(entity *m.Entity) (err error) {
 
-	e.unsafeRemove(entity.Id)
+	if !e.PluginIsLoaded(entity.PluginName) {
+		err = errors.Wrap(ErrPluginNotLoaded, entity.PluginName)
+		return
+	}
 
-	//todo fix
-	time.Sleep(time.Millisecond * 1000)
+	var value interface{}
+	if value, err = e.GetPlugin(entity.PluginName); err != nil {
+		return
+	}
 
-	_ = e.AddEntity(entity)
+	plugin := value.(Pluggable)
+
+	err = plugin.AddOrUpdateActor(entity)
 
 	return
 }
 
-// Remove ...
-func (e *supervisor) Remove(id common.EntityId) {
+// UnloadEntity ...
+func (e *supervisor) UnloadEntity(id common.EntityId) {
 
-	e.unsafeRemove(id)
-}
-
-func (e *supervisor) unsafeRemove(id common.EntityId) {
-
-	item, ok := e.actors.Load(id)
-	if !ok {
+	if !e.PluginIsLoaded(id.PluginName()) {
 		return
 	}
-	actor := item.(*actorInfo)
-	actor.quit <- struct{}{}
-	e.actors.Delete(id)
+
+	value, err := e.GetPlugin(id.PluginName())
+	if err != nil {
+		return
+	}
+
+	plugin := value.(Pluggable)
+	plugin.RemoveActor(id)
 }
 
-// GetEventState ...
-func GetEventState(actor PluginActor) (eventState bus.EventEntityState) {
+func (e *supervisor) GetService() Service {
+	return e.service
+}
 
-	attrs := actor.Attributes()
-	setts := actor.Settings()
+// watch to see if the scripts change
+func (e *supervisor) eventUpdatedScript(msg events.EventUpdatedScript) {
 
-	var state *bus.EntityState
+	if _, ok := e.eventScriptSubs[msg.ScriptId]; !ok {
+		return
+	}
 
-	info := actor.Info()
-	if info.State != nil {
-		state = &bus.EntityState{
-			Name:        info.State.Name,
-			Description: info.State.Description,
-			ImageUrl:    info.State.ImageUrl,
-			Icon:        info.State.Icon,
+	variable, err := e.adaptors.Variable.GetByName(context.Background(), "restartComponentIfScriptChanged")
+	if err != nil || !variable.GetBool() {
+		return
+	}
+
+	e.eventScriptSubsMx.RLock()
+	defer e.eventScriptSubsMx.RUnlock()
+
+	for entityId, _ := range e.eventScriptSubs[msg.ScriptId] {
+		go e.updatedEntityById(entityId)
+	}
+}
+
+func (e *supervisor) eventScriptDeleted(msg events.EventScriptDeleted) {
+
+	if _, ok := e.eventScriptSubs[msg.ScriptId]; !ok {
+		return
+	}
+
+	variable, err := e.adaptors.Variable.GetByName(context.Background(), "restartComponentIfScriptChanged")
+	if err != nil || !variable.GetBool() {
+		return
+	}
+
+	e.eventScriptSubsMx.RLock()
+	defer e.eventScriptSubsMx.RUnlock()
+
+	for entityId, _ := range e.eventScriptSubs[msg.ScriptId] {
+		go e.UnloadEntity(entityId)
+	}
+}
+
+func (e *supervisor) eventEntityLoaded(msg events.EventEntityLoaded) {
+	go e.updateScriptWatcher(msg.EntityId)
+}
+
+func (e *supervisor) updateScriptWatcher(entityId common.EntityId) {
+
+	e.eventScriptSubsMx.Lock()
+	defer e.eventScriptSubsMx.Unlock()
+
+	entity, err := e.adaptors.Entity.GetById(context.Background(), entityId)
+	if err != nil {
+		return
+	}
+
+	if entity.Scripts != nil {
+		for _, script := range entity.Scripts {
+			if e.eventScriptSubs[script.Id] == nil {
+				e.eventScriptSubs[script.Id] = make(map[common.EntityId]struct{})
+			}
+			e.eventScriptSubs[script.Id][entity.Id] = struct{}{}
 		}
 	}
 
-	eventState = bus.EventEntityState{
-		EntityId:   info.Id,
-		Value:      info.Value,
-		State:      state,
-		Attributes: attrs,
-		Settings:   setts,
+	if entity.Actions != nil {
+		for _, action := range entity.Actions {
+			if action.ScriptId != nil {
+				if e.eventScriptSubs[*action.ScriptId] == nil {
+					e.eventScriptSubs[*action.ScriptId] = make(map[common.EntityId]struct{})
+				}
+				e.eventScriptSubs[*action.ScriptId][entity.Id] = struct{}{}
+			}
+		}
 	}
-
-	if info.LastChanged != nil {
-		eventState.LastChanged = common.Time(*info.LastChanged)
-	}
-
-	if info.LastUpdated != nil {
-		eventState.LastUpdated = common.Time(*info.LastUpdated)
-	}
-
-	return
 }
+
+func (e *supervisor) eventEntityUnloaded(msg events.EventEntityUnloaded) {
+
+	e.eventScriptSubsMx.Lock()
+	defer e.eventScriptSubsMx.Unlock()
+
+	for scriptId, _ := range e.eventScriptSubs {
+		delete(e.eventScriptSubs[scriptId], msg.EntityId)
+	}
+}
+
+//
+// \watch to see if the scripts change
+//

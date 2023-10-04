@@ -46,10 +46,6 @@ const getCardItemName = (item: CardItem): string => {
       v-bind:class="'class-'+card.currentID"
       :style="{
         'transform': `scale(${zoom})`,
-        'position': 'relative',
-        'overflow': 'hidden',
-        'width': '100%',
-        'height': `100%`,
         'background-color': card.background || 'inherit'}"
   >
     <component
@@ -69,6 +65,7 @@ const getCardItemName = (item: CardItem): string => {
 
 .item-card {
   position: relative;
+  overflow: hidden;
   width: 100%;
   height: 100%;
 }

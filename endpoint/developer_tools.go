@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -43,11 +43,11 @@ func NewDeveloperToolsEndpoint(common *CommonEndpoint) *DeveloperToolsEndpoint {
 
 // StateList ...
 func (d DeveloperToolsEndpoint) StateList(ctx context.Context) (states []m.EntityShort, total int64, err error) {
-	states, err = d.supervisor.List()
-	if err != nil {
-		return
-	}
-	total = int64(len(states))
+	//states, err = d.supervisor.List()
+	//if err != nil {
+	//	return
+	//}
+	//total = int64(len(states))
 	return
 }
 

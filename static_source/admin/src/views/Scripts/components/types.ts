@@ -12,6 +12,8 @@ export const HintDictionaryCoffee = {
         {text: 'parseFloat', displayText: 'parseFloat'},
         {text: 'indexOf', displayText: 'indexOf'},
         {text: 'substring', displayText: 'substring'},
+        {text: 'Encrypt(val)', displayText: 'Encrypt'},
+        {text: 'Decrypt(val)', displayText: 'Decrypt'},
 
         // notifr
         {text: 'notifr.newMessage()', displayText: 'notifr.newMessage'},
@@ -33,7 +35,11 @@ export const HintDictionaryCoffee = {
         {text: 'push(key, value)', displayText: 'push'},
         {text: 'getByName(key)', displayText: 'getByName'},
         {text: 'search(key)', displayText: 'search'},
-        {text: 'pop(key)', displayText: 'Storage.pop'},
+
+        // geo
+        {text: 'GeoDistanceToArea(areaId, point)', displayText: 'GeoDistanceToArea'},
+        {text: 'GeoPointInsideAria(areaId, point)', displayText: 'GeoPointInsideAria'},
+        {text: 'GeoDistanceBetweenPoints(point1, point2)', displayText: 'GeoDistanceBetweenPoints'},
 
         // http
         {text: 'http.get(url)', displayText: 'http.get'},
@@ -43,7 +49,7 @@ export const HintDictionaryCoffee = {
 
         // mqtt
         {text: 'Mqtt.publish(topic, payload, qos, retain)', displayText: 'Mqtt.publish'},
-        {text: 'mqttEvent = (entityId, actionName) ->', displayText: 'mqttEvent'},
+        {text: 'mqttEvent = (ENTITY_ID, actionName) ->', displayText: 'mqttEvent'},
         {text: 'message', displayText: 'message'},
         {text: 'message.payload', displayText: 'message.payload'},
         {text: 'message.topic', displayText: 'message.topic'},
@@ -55,40 +61,36 @@ export const HintDictionaryCoffee = {
         {text: 'message.new_state', displayText: 'message.new_state'},
 
         // automation
-        {text: 'automationAction = (entityId)->', displayText: 'automationAction'},
         {text: 'Action', displayText: 'Action'},
-        {text: 'Action.callAction(id, action, args)', displayText: 'Action.callAction'},
-        {text: 'automationCondition = (entityId)->', displayText: 'automationCondition'},
         {text: 'Condition', displayText: 'Condition'},
         {text: 'Trigger', displayText: 'Trigger'},
+        {text: 'automationAction = (ENTITY_ID)->', displayText: 'automationAction'},
+        {text: 'automationCondition = (ENTITY_ID)->', displayText: 'automationCondition'},
         {text: 'automationTriggerAlexa = (msg) ->', displayText: 'automationTriggerAlexa'},
         {text: 'automationTriggerTime = (msg) ->', displayText: 'automationTriggerTime'},
         {text: 'automationTriggerStateChanged = (msg)->', displayText: 'automationTriggerStateChanged'},
         {text: 'automationTriggerSystem = (msg)->', displayText: 'automationTriggerSystem'},
 
         // entity manager
-        {text: 'entityManager.getEntity(id)', displayText: 'entityManager.getEntity'},
-        {text: 'entityManager.setState(id, state)', displayText: 'entityManager.setState'},
-        {text: 'entityManager.setAttributes(id, attr)', displayText: 'entityManager.setAttributes'},
-        {text: 'entityManager.setMetric(id, name, value)', displayText: 'entityManager.setMetric'},
-        {text: 'entityManager.callAction(id, action, args)', displayText: 'entityManager.callAction'},
-        {text: 'entityManager.callScene(id, args)', displayText: 'entityManager.callScene'},
-
-        // actor
-        {text: 'Actor.setState(attr)', displayText: 'Actor.setState'},
-        {text: 'Actor.getSettings()', displayText: 'Actor.getSettings'},
+        {text: 'EntitySetState(ENTITY_ID, state)', displayText: 'EntitySetState'},
+        {text: 'EntitySetStateName(ENTITY_ID, name)', displayText: 'EntitySetStateName'},
+        {text: 'EntityGetState(ENTITY_ID)', displayText: 'EntityGetState'},
+        {text: 'EntitySetAttributes(ENTITY_ID, attr)', displayText: 'EntitySetAttributes'},
+        {text: 'EntitySetMetric(ENTITY_ID, name, value)', displayText: 'EntitySetMetric'},
+        {text: 'EntityCallAction(ENTITY_ID, action, args)', displayText: 'EntityCallAction'},
+        {text: 'EntityCallScene(ENTITY_ID, args)', displayText: 'EntityCallScene'},
+        {text: 'EntityGetSettings(ENTITY_ID)', displayText: 'EntityGetSettings'},
+        {text: 'EntityGetAttributes(ENTITY_ID)', displayText: 'EntityGetAttributes'},
 
         // entity
-        {text: 'entity.setState(state)', displayText: 'entity.setState'},
-        {text: 'entity.setAttributes(attr)', displayText: 'entity.setAttributes'},
-        {text: 'entity.getAttributes()', displayText: 'entity.getAttributes'},
-        {text: 'entity.getSettings()', displayText: 'entity.getSettings'},
-        {text: 'entity.setMetric(name, value)', displayText: 'entity.setMetric'},
-        {text: 'entity.callAction(name, args)', displayText: 'entity.callAction'},
-        {text: 'entityAction = (entityId, actionName)->', displayText: 'entityAction'},
+        {text: 'entityAction = (ENTITY_ID, actionName, args)->', displayText: 'entityAction'},
 
         // telegram
-        {text: 'telegramAction = (entityId, actionName)->', displayText: 'telegramAction'},
+        {text: 'telegramAction = (ENTITY_ID, actionName)->', displayText: 'telegramAction'},
+
+        // camera
+        {text: 'Camera.continuousMove(x, y)', displayText: 'Camera.continuousMove'},
+        {text: 'Camera.stopContinuousMove(attr)', displayText: 'Camera.stopContinuousMove'},
 
         // alexa
         {text: 'skillOnLaunch = ()->', displayText: 'skillOnLaunch'},

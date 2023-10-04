@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -52,6 +52,12 @@ func (i Plugins) Less(a, b int) bool {
 	return i[a].Name < i[b].Name
 }
 
+type PluginOptionsJs struct {
+	Methods   map[string]string `json:"methods"`
+	Objects   map[string]string `json:"objects"`
+	Variables map[string]string `json:"variables"`
+}
+
 // PluginOptions ...
 type PluginOptions struct {
 	Triggers           bool                         `json:"triggers"`
@@ -65,4 +71,5 @@ type PluginOptions struct {
 	ActorCustomSetts   bool                         `json:"actor_custom_setts"`
 	ActorSetts         Attributes                   `json:"actor_setts"`
 	Setts              Attributes                   `json:"setts"`
+	Javascript         PluginOptionsJs              `json:"javascript"`
 }

@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -22,6 +22,34 @@ package access_list
 // todo fix
 const DATA = `
 {
+ "action": {
+    "create": {
+      "actions": [
+        "/api.ActionService/AddAction"
+      ],
+      "description": ""
+    },
+    "read": {
+      "actions": [
+        "/api.ActionService/GetActionById",
+        "/api.ActionService/GetActionList",
+		"/api.ActionService/SearchAction"
+      ],
+      "description": ""
+    },
+    "update": {
+      "actions": [
+        "/api.ActionService/UpdateAction"
+      ],
+      "description": ""
+    },
+    "delete": {
+      "actions": [
+        "/api.ActionService/DeleteAction"
+      ],
+      "description": ""
+    }
+  },
   "area": {
     "create": {
       "actions": [
@@ -32,7 +60,8 @@ const DATA = `
     "read": {
       "actions": [
         "/api.AreaService/GetAreaById",
-        "/api.AreaService/GetAreaList"
+        "/api.AreaService/GetAreaList",
+		"/api.AreaService/SearchArea"
       ],
       "description": ""
     },
@@ -45,12 +74,6 @@ const DATA = `
     "delete": {
       "actions": [
         "/api.AreaService/DeleteArea"
-      ],
-      "description": ""
-    },
-    "search": {
-      "actions": [
-        "/api.AreaService/SearchArea"
       ],
       "description": ""
     }
@@ -78,7 +101,8 @@ const DATA = `
   "automation": {
     "create": {
       "actions": [
-        "/api.AutomationService/AddTask"
+        "/api.AutomationService/AddTask",
+        "/api.AutomationService/ImportTask"
       ],
       "description": ""
     },
@@ -100,6 +124,36 @@ const DATA = `
     "delete": {
       "actions": [
         "/api.AutomationService/DeleteTask"
+      ],
+      "description": ""
+    }
+  },
+  "condition": {
+    "create": {
+      "actions": [
+        "/api.ConditionService/AddCondition"
+      ],
+      "description": ""
+    },
+    "read": {
+      "actions": [
+        "/api.ConditionService/GetById",
+        "/api.ConditionService/GetConditionList",
+        "/api.ConditionService/SearchCondition"
+      ],
+      "description": ""
+    },
+    "update": {
+      "actions": [
+        "/api.ConditionService/UpdateCondition",
+        "/api.ConditionService/DisableCondition",
+        "/api.ConditionService/EnableCondition"
+      ],
+      "description": ""
+    },
+    "delete": {
+      "actions": [
+        "/api.ConditionService/DeleteCondition"
       ],
       "description": ""
     }
@@ -135,7 +189,8 @@ const DATA = `
     "read": {
       "actions": [
         "/api.DashboardService/GetDashboardById",
-        "/api.DashboardService/GetDashboardList"
+        "/api.DashboardService/GetDashboardList",
+        "/api.DashboardService/SearchDashboard"
       ],
       "description": ""
     },
@@ -148,12 +203,6 @@ const DATA = `
     "delete": {
       "actions": [
         "/api.DashboardService/DeleteDashboard"
-      ],
-      "description": ""
-    },
-    "search": {
-      "actions": [
-        "/api.DashboardService/SearchDashboard"
       ],
       "description": ""
     }
@@ -277,25 +326,22 @@ const DATA = `
     "read": {
       "actions": [
         "/api.EntityService/GetEntity",
-        "/api.EntityService/GetEntityList"
+        "/api.EntityService/GetEntityList",
+		"/api.EntityService/SearchEntity"
       ],
       "description": ""
     },
     "update": {
       "actions": [
-        "/api.EntityService/UpdateEntity"
+        "/api.EntityService/UpdateEntity",
+        "/api.EntityService/EnabledEntity",
+        "/api.EntityService/DisabledEntity"
       ],
       "description": ""
     },
     "delete": {
       "actions": [
         "/api.EntityService/DeleteEntity"
-      ],
-      "description": ""
-    },
-    "search": {
-      "actions": [
-        "/api.EntityService/SearchEntity"
       ],
       "description": ""
     }
@@ -354,6 +400,14 @@ const DATA = `
       "description": ""
     }
   },
+  "messages": {
+    "read": {
+      "actions": [
+        "/api.MessageDeliveryService/GetMessageDeliveryList"
+      ],
+      "description": ""
+    }
+  },
   "metric": {
     "read": {
       "actions": [
@@ -362,24 +416,30 @@ const DATA = `
       "description": ""
     }
   },
+  "mqtt": {
+    "read": {
+      "actions": [
+  		"/api.MqttService/GetClientById",
+        "/api.MqttService/GetSubscriptionList",
+        "/api.MqttService/GetClientList"
+      ],
+      "description": ""
+    }
+  },
   "plugin": {
     "read": {
       "actions": [
         "/api.PluginService/GetPluginList",
-        "/api.PluginService/GetPluginOptions"
+        "/api.PluginService/GetPlugin",
+		"/api.PluginService/SearchPlugin"
       ],
       "description": ""
     },
     "update": {
       "actions": [
+        "/api.PluginService/UpdatePluginSettings",
         "/api.PluginService/DisablePlugin",
         "/api.PluginService/EnablePlugin"
-      ],
-      "description": ""
-    },
-    "search": {
-      "actions": [
-        "/api.PluginService/SearchPlugin,"
       ],
       "description": ""
     }
@@ -395,6 +455,7 @@ const DATA = `
       "actions": [
         "/api.RoleService/GetRoleList",
         "/api.RoleService/GetRoleAccessList",
+        "/api.RoleService/SearchRoleByName",
         "/api.RoleService/GetRoleByName"
       ],
       "description": ""
@@ -409,12 +470,6 @@ const DATA = `
     "delete": {
       "actions": [
         "/api.RoleService/DeleteRoleByName"
-      ],
-      "description": ""
-    },
-    "search": {
-      "actions": [
-        "/api.RoleService/SearchRoleByName"
       ],
       "description": ""
     }
@@ -432,6 +487,8 @@ const DATA = `
     "read": {
       "actions": [
         "/api.ScriptService/GetScriptList",
+        "/api.ScriptService/GetStatistic",
+        "/api.ScriptService/SearchScript",
         "/api.ScriptService/GetScriptById"
       ],
       "description": ""
@@ -447,12 +504,6 @@ const DATA = `
         "/api.ScriptService/DeleteScriptById"
       ],
       "description": ""
-    },
-    "search": {
-      "actions": [
-        "/api.ScriptService/SearchScript"
-      ],
-      "description": ""
     }
   },
   "stream": {
@@ -463,10 +514,40 @@ const DATA = `
       "description": ""
     }
   },
+  "trigger": {
+    "create": {
+      "actions": [
+        "/api.TriggerService/AddTrigger"
+      ],
+      "description": ""
+    },
+    "read": {
+      "actions": [
+        "/api.TriggerService/GetTriggerById",
+        "/api.TriggerService/SearchTrigger",
+        "/api.TriggerService/GetTriggerList"
+      ],
+      "description": ""
+    },
+    "update": {
+      "actions": [
+        "/api.TriggerService/UpdateTrigger",
+        "/api.TriggerService/EnableTrigger",
+        "/api.TriggerService/DisableTrigger"
+      ],
+      "description": ""
+    },
+    "delete": {
+      "actions": [
+        "/api.TriggerService/DeleteTrigger"
+      ],
+      "description": ""
+    }
+  },
   "user": {
     "create": {
       "actions": [
-        "/api.UserService/AddUserRequest"
+        "/api.UserService/AddUser"
       ],
       "description": ""
     },
@@ -532,6 +613,7 @@ const DATA = `
         "/api.Zigbee2mqttService/GetBridgeList",
         "/api.Zigbee2mqttService/GetZigbee2mqttBridge",
         "/api.Zigbee2mqttService/DeviceList",
+        "/api.Zigbee2mqttService/SearchDevice",
         "/api.Zigbee2mqttService/Networkmap"
       ],
       "description": ""
@@ -547,12 +629,6 @@ const DATA = `
     "delete": {
       "actions": [
         "/api.Zigbee2mqttService/DeleteBridgeById"
-      ],
-      "description": ""
-    },
-    "search": {
-      "actions": [
-        "/api.Zigbee2mqttService/SearchDevice"
       ],
       "description": ""
     }

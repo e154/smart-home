@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -127,7 +127,7 @@ func (a *Authenticator) Register(fn func(login, password string) (err error)) (e
 	rv := reflect.ValueOf(fn)
 
 	for _, v := range a.handlers {
-		if v == rv {
+		if v == rv || v.Pointer() == rv.Pointer() {
 			return
 		}
 	}
@@ -147,7 +147,7 @@ func (a *Authenticator) Unregister(fn func(login, password string) (err error)) 
 	rv := reflect.ValueOf(fn)
 
 	for i, v := range a.handlers {
-		if v == rv {
+		if v == rv || v.Pointer() == rv.Pointer() {
 			a.handlers = append(a.handlers[:i], a.handlers[i+1:]...)
 		}
 	}

@@ -3,7 +3,7 @@ import {useI18n} from '@/hooks/web/useI18n'
 import {Table} from '@/components/Table'
 import {PropType, reactive, ref, watch} from 'vue'
 import {useAppStore} from "@/store/modules/app";
-import {ElButton, ElTag, ElImage, ElImageViewer} from 'element-plus'
+import {ElButton, ElTag, ElImage, ElImageViewer, ElInput} from 'element-plus'
 import {TableColumn} from '@/types/table'
 import {ApiAttribute} from "@/api/stub";
 import {useForm} from "@/hooks/web/useForm";
@@ -101,6 +101,8 @@ const getValue = (attr: Attribute): any => {
       return attr.map;
     case 'IMAGE':
       return getUrl(attr.imageUrl);
+    case 'ENCRYPTED':
+      return attr.encrypted;
   }
 }
 

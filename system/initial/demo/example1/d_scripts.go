@@ -1,3 +1,21 @@
+// This file is part of the Smart Home
+// Program complex distribution https://github.com/e154/smart-home
+// Copyright (C) 2023, Filippov Alex
+//
+// This library is free software: you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Library General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.  If not, see
+// <https://www.gnu.org/licenses/>.
+
 package example1
 
 import (
@@ -74,7 +92,7 @@ ifError =(res)->
 checkStatus =->
     stats = Miner.stats()
     if ifError(stats)
-        Actor.setState
+        SetState ENTITY_ID,
             'new_state': 'ERROR'
         return
     p = JSON.parse(stats.result)
@@ -105,7 +123,7 @@ checkStatus =->
         status = 'WARNING'
     if p.temp1 >= 60 || p.temp2 >= 60 || p.temp3 >= 60 || p.temp4 >= 60
         status = 'WARNING'
-    Actor.setState
+    SetState ENTITY_ID,
         new_state: status
         attribute_values: attrs
         storage_save: false
@@ -117,7 +135,7 @@ entityAction = (entityId, actionName)->
 # automation
 # ##################################
 automationTriggerTime = (msg)->
-    supervisor.callAction(msg.entity_id, 'CHECK', {})
+    CallAction(msg.entity_id, 'CHECK', {})
     return false
 
 automationTriggerStateChanged = (msg)->
@@ -133,27 +151,25 @@ automationTriggerStateChanged = (msg)->
 
 automationCondition = (entityId)->
     #print '---condition---'
-    entity = supervisor.getEntity(entityId)
-    if !entity
-        return false
-    if entity.state && (entity.state.name == 'WARNING' || entity.state.name == 'ERROR')
+    state = GetState(entityId)
+    if state && (state.name == 'WARNING' || state.name == 'ERROR')
         return true
     return false
 
 automationAction = (entityId)->
     #print '---action---'
-    entity = supervisor.getEntity(entityId)
-    attr = entity.getAttributes()
-    sendMsg(format(entityId, entity.state.name, attr))
+    attr = GetAttributes(entityId)
+    state = GetState(entityId)
+    sendMsg(format(entityId, state.name, attr))
 
 # telegram
 # ##################################
 telegramSendReport =->
     entities = ['cgminer.l3n1','cgminer.l3n2','cgminer.l3n3','cgminer.l3n4','cgminer.l3n5']
     for entityId, i in entities
-        entity = supervisor.getEntity(entityId)
-        attr = entity.getAttributes()
-        sendMsg(format(entityId, entity.state.name, attr))
+        state = GetState(entityId)
+        attr = GetAttributes(entityId)
+        sendMsg(format(entityId, state.name, attr))
 
 format =(entityId, stateName, attr)->
 	return entityId + " status: " + stateName + "\\r\\n" +
@@ -196,14 +212,14 @@ const sourceScript2 = `
 checkStatus =->
     res = http.get("%s")
     if res.error 
-        Actor.setState
+        SetState ENTITY_ID,
             'new_state': 'ERROR'
         return
     p = JSON.parse(res.body)
     attrs =
         paid_rewards: p.user.paid_rewards
 
-    Actor.setState
+    SetState ENTITY_ID,
         new_state: 'ENABLED'
         attribute_values: attrs
         storage_save: true
@@ -215,6 +231,6 @@ entityAction = (entityId, actionName)->
 # automation
 # ##################################
 automationTriggerTime = (msg)->
-    supervisor.callAction(msg.entity_id, 'CHECK', {})
+    CallAction(msg.entity_id, 'CHECK', {})
     return false
 `

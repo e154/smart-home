@@ -1,8 +1,25 @@
+// This file is part of the Smart Home
+// Program complex distribution https://github.com/e154/smart-home
+// Copyright (C) 2023, Filippov Alex
+//
+// This library is free software: you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Library General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.  If not, see
+// <https://www.gnu.org/licenses/>.
+
 package stream
 
 import (
 	"encoding/json"
-
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/plugins/webpush"
 )
@@ -45,8 +62,10 @@ func (e *eventHandler) eventHandler(_ string, message interface{}) {
 		go e.eventDirectMessage(v.UserID, v.Query, v.Message)
 
 	// plugins
-	case events.EventLoadedPlugin:
-	case events.EventUnloadedPlugin:
+	case events.EventPluginLoaded:
+		go e.event(message)
+	case events.EventPluginUnloaded:
+		go e.event(message)
 
 	// tasks
 	case events.EventTaskLoaded:

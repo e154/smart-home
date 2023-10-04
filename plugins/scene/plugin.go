@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,15 +20,8 @@ package scene
 
 import (
 	"context"
-	"fmt"
-	"sync"
-
 	"github.com/e154/smart-home/common/events"
 
-	"github.com/pkg/errors"
-
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/supervisor"
@@ -46,29 +39,21 @@ func init() {
 
 type plugin struct {
 	*supervisor.Plugin
-	actorsLock *sync.Mutex
-	actors     map[string]*Actor
 }
 
 // New ...
 func New() supervisor.Pluggable {
 	return &plugin{
-		Plugin:     supervisor.NewPlugin(),
-		actorsLock: &sync.Mutex{},
-		actors:     make(map[string]*Actor),
+		Plugin: supervisor.NewPlugin(),
 	}
 }
 
 // Load ...
 func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(ctx, service); err != nil {
+	if err = p.Plugin.Load(ctx, service, p.ActorConstructor); err != nil {
 		return
 	}
-
-	if err := p.EventBus.Subscribe("system/entities/+", p.eventHandler); err != nil {
-		log.Error(err.Error())
-	}
-
+	_ = p.Service.EventBus().Subscribe("system/entities/+", p.eventHandler)
 	return nil
 }
 
@@ -77,9 +62,13 @@ func (p *plugin) Unload(ctx context.Context) (err error) {
 	if err = p.Plugin.Unload(ctx); err != nil {
 		return
 	}
+	_ = p.Service.EventBus().Unsubscribe("system/entities/+", p.eventHandler)
+	return
+}
 
-	_ = p.EventBus.Unsubscribe("system/entities/+", p.eventHandler)
-
+// ActorConstructor ...
+func (p *plugin) ActorConstructor(entity *m.Entity) (actor supervisor.PluginActor, err error) {
+	actor, err = NewActor(entity, p.Service)
 	return
 }
 
@@ -88,87 +77,27 @@ func (p plugin) Name() string {
 	return Name
 }
 
-// AddOrUpdateActor ...
-func (p *plugin) AddOrUpdateActor(entity *m.Entity) error {
-	return p.addOrUpdateEntity(entity, entity.Attributes.Serialize())
-}
-
-// RemoveActor ...
-func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
-	return p.removeEntity(entityId.Name())
-}
-
-func (p *plugin) addOrUpdateEntity(entity *m.Entity, attributes m.AttributeValue) (err error) {
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	name := entity.Id.Name()
-	if _, ok := p.actors[name]; ok {
-		return
-	}
-
-	if len(entity.Actions) == 0 {
-		var action = &m.EntityAction{
-			Name:        "apply",
-			Description: "apply scene",
-			EntityId:    entity.Id,
-		}
-		if action.Id, err = p.Adaptors.EntityAction.Add(context.Background(), action); err != nil {
-			return
-		}
-	}
-
-	if actor, ok := p.actors[name]; ok {
-		// update
-		_ = actor.SetState(supervisor.EntityStateParams{
-			AttributeValues: attributes,
-		})
-		return
-	}
-
-	var actor *Actor
-	if actor, err = NewActor(entity, attributes,
-		p.Adaptors, p.ScriptService, p.Supervisor); err != nil {
-		return
-	}
-	p.actors[name] = actor
-	p.Supervisor.Spawn(p.actors[name].Spawn)
-
-	return
-}
-
-func (p *plugin) removeEntity(name string) (err error) {
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	if _, ok := p.actors[name]; !ok {
-		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("failed remove \"%s\"", name))
-		return
-	}
-
-	delete(p.actors, name)
-
-	return
-}
-
 func (p *plugin) eventHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
 	case events.EventCallEntityAction:
-		actor, ok := p.actors[v.EntityId.Name()]
+		value, ok := p.Actors.Load(v.EntityId)
 		if !ok {
 			return
 		}
+		actor := value.(*Actor)
 		actor.addEvent(events.EventCallScene{
 			PluginName: v.PluginName,
 			EntityId:   v.EntityId,
 			Args:       v.Args,
 		})
+
 	case events.EventCallScene:
-		actor, ok := p.actors[v.EntityId.Name()]
+		value, ok := p.Actors.Load(v.EntityId)
 		if !ok {
 			return
 		}
+		actor := value.(*Actor)
 		actor.addEvent(v)
 
 	default:

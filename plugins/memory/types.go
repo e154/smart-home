@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -57,6 +57,26 @@ func NewAttr() m.Attributes {
 		AttrUsedPercent: {
 			Name: AttrUsedPercent,
 			Type: common.AttributeFloat,
+		},
+	}
+}
+
+func NewMetrics() []*m.Metric {
+	return []*m.Metric{
+		{
+			Name:        "memory",
+			Description: "RAM metric",
+			Options: m.MetricOptions{
+				Items: []m.MetricOptionsItem{
+					{
+						Name:        "used_percent",
+						Description: "",
+						Color:       "#C2C2C2",
+						Translate:   "used_percent",
+						Label:       "%",
+					},
+				},
+			},
 		},
 	}
 }

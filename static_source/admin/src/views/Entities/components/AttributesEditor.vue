@@ -92,6 +92,7 @@ const loadFromPlugin = async () => {
         <ElOption label="Map" value="MAP"/>
         <ElOption label="Image" value="IMAGE"/>
         <ElOption label="Point" value="POINT"/>
+        <ElOption label="Encrypted" value="ENCRYPTED"/>
       </ElSelect>
     </template>
 
@@ -113,6 +114,9 @@ const loadFromPlugin = async () => {
       </div>
       <div v-if="row.type === 'POINT'">
         <ElInput type="string" v-model="row.point"/>
+      </div>
+      <div v-if="row.type === 'ENCRYPTED'">
+        <ElInput type="password" v-model="row.encrypted" show-password/>
       </div>
       <ElSelect
           v-model="row.bool"

@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -37,6 +37,7 @@ import (
 	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/logging_db"
 	"github.com/e154/smart-home/system/logging_ws"
+	"github.com/e154/smart-home/system/media"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/mqtt_authenticator"
@@ -78,12 +79,14 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 			MigrationList,
 			localMigrations.NewMigrations,
 			NewDemo,
+			media.NewMedia,
 			initial.NewInitial,
 			NewMqttConfig,
 			mqtt_authenticator.NewAuthenticator,
 			mqtt.NewMqtt,
 			access_list.NewAccessListService,
-			rbac.NewAccessFilter,
+			rbac.NewGrpcAccessFilter,
+			rbac.NewEchoAccessFilter,
 			NewZigbee2mqttConfig,
 			zigbee2mqtt.NewZigbee2mqtt,
 			storage.NewStorage,

@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,6 +20,8 @@ package version
 
 import (
 	"context"
+	"fmt"
+	"github.com/e154/smart-home/common"
 	"time"
 
 	"github.com/e154/smart-home/system/supervisor"
@@ -36,7 +38,6 @@ func init() {
 type plugin struct {
 	*supervisor.Plugin
 	pause  uint
-	actor  *Actor
 	ticker *time.Ticker
 }
 
@@ -51,18 +52,29 @@ func New() supervisor.Pluggable {
 
 // Load ...
 func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(ctx, service); err != nil {
+	if err = p.Plugin.Load(ctx, service, p.ActorConstructor); err != nil {
 		return
 	}
 
-	p.actor = NewActor(service.Supervisor(), service.EventBus())
-	p.Supervisor.Spawn(p.actor.Spawn)
+	var entity *m.Entity
+	if entity, err = p.Service.Adaptors().Entity.GetById(context.Background(), common.EntityId(fmt.Sprintf("%s.%s", EntityVersion, Name))); err != nil {
+		entity = &m.Entity{
+			Id:         common.EntityId(fmt.Sprintf("%s.%s", EntityVersion, Name)),
+			PluginName: Name,
+			Attributes: NewAttr(),
+		}
+		err = p.Service.Adaptors().Entity.Add(context.Background(), entity)
+	}
 
 	go func() {
 		p.ticker = time.NewTicker(time.Second * time.Duration(p.pause))
 
 		for range p.ticker.C {
-			p.actor.selfUpdate()
+			p.Actors.Range(func(key, value any) bool {
+				actor, _ := value.(*Actor)
+				actor.selfUpdate()
+				return true
+			})
 		}
 	}()
 
@@ -71,15 +83,18 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 
 // Unload ...
 func (p *plugin) Unload(ctx context.Context) (err error) {
-
-	if err = p.Plugin.Unload(ctx); err != nil {
-		return
-	}
 	if p.ticker != nil {
 		p.ticker.Stop()
 		p.ticker = nil
 	}
+	p.Plugin.Unload(ctx)
 	return nil
+}
+
+// ActorConstructor ...
+func (p *plugin) ActorConstructor(entity *m.Entity) (actor supervisor.PluginActor, err error) {
+	actor = NewActor(entity, p.Service)
+	return
 }
 
 // Name ...

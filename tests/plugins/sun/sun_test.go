@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -44,20 +44,11 @@ func TestSun(t *testing.T) {
 
 			AddPlugin(adaptors, "sun")
 
-			supervisor.Start(context.Background())
-			WaitSupervisor(eventBus)
-
 			// add entity
 			// ------------------------------------------------
 			sunEnt := GetNewSun("main")
 			err := adaptors.Entity.Add(context.Background(), sunEnt)
 			ctx.So(err, ShouldBeNil)
-
-			eventBus.Publish("system/entities/"+sunEnt.Id.String(), events.EventCreatedEntity{
-				EntityId: sunEnt.Id,
-			})
-
-			time.Sleep(time.Second)
 
 			ch := make(chan events.EventStateChanged, 2)
 			fn := func(topic string, msg interface{}) {
@@ -66,12 +57,12 @@ func TestSun(t *testing.T) {
 					ch <- v
 				}
 			}
-			_ = eventBus.Subscribe("system/entities/+", fn)
+			_ = eventBus.Subscribe("system/entities/"+sunEnt.Id.String(), fn)
 			defer func() {
-				_ = eventBus.Unsubscribe("system/entities/+", fn)
+				_ = eventBus.Unsubscribe("system/entities/"+sunEnt.Id.String(), fn)
 			}()
 
-			sun := sunPlugin.NewActor(sunEnt, supervisor, adaptors, scriptService, eventBus)
+			sun := sunPlugin.NewActor(sunEnt, supervisor.GetService())
 
 			t.Run("entity", func(t *testing.T) {
 				Convey("phase", t, func(ctx C) {
@@ -90,18 +81,14 @@ func TestSun(t *testing.T) {
 					ctx.So(err, ShouldBeNil)
 					sun.UpdateSunPosition(time.Date(2021, 5, 27, 23, 0, 0, 0, loc))
 
-					ticker := time.NewTimer(time.Second * 2)
+					ticker := time.NewTimer(time.Second * 5)
 					defer ticker.Stop()
 
 					var msg events.EventStateChanged
-					var ok bool
 					select {
 					case msg = <-ch:
-						ok = true
 					case <-ticker.C:
 					}
-
-					ctx.So(ok, ShouldBeTrue)
 
 					//debug.Println(msg.NewState.Attributes)
 

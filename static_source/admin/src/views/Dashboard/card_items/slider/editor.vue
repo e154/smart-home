@@ -45,17 +45,22 @@ const updateCurrentState = () => {
 
     <ElDivider content-position="left">{{ $t('dashboard.editor.slider.options') }}</ElDivider>
 
-    <ElFormItem :label="$t('dashboard.editor.type')" prop="type">
-      <ElSelect
-          v-model="currentItem.payload.slider.orientation"
-          :placeholder="$t('dashboard.editor.pleaseSelectOrientation')"
-          style="width: 100%"
-      >
-        <ElOption label="Horizontal" value="horizontal"/>
-        <ElOption label="Vertical" value="vertical"/>
-        <ElOption label="Circular" value="circular"/>
-      </ElSelect>
-    </ElFormItem>
+    <ElRow :gutter="24">
+      <ElCol :span="12" :xs="12">
+        <ElFormItem :label="$t('dashboard.editor.type')" prop="type">
+          <ElSelect
+              v-model="currentItem.payload.slider.orientation"
+              :placeholder="$t('dashboard.editor.pleaseSelectOrientation')"
+              style="width: 100%"
+          >
+            <ElOption label="Horizontal" value="horizontal"/>
+            <ElOption label="Vertical" value="vertical"/>
+            <ElOption label="Circular" value="circular"/>
+          </ElSelect>
+        </ElFormItem>
+      </ElCol>
+      <ElCol :span="12" :xs="12"/>
+    </ElRow>
 
     <ElRow :gutter="24">
       <ElCol :span="12" :xs="12">
@@ -115,7 +120,7 @@ const updateCurrentState = () => {
             <ElOption
                 v-for="p in currentItem.entityActions"
                 :key="p.value"
-                :label="p.label"
+                :label="p.label + ' (' +p.value +')'"
                 :value="p.value"/>
           </ElSelect>
         </ElFormItem>

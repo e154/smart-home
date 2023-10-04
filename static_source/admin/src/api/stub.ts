@@ -115,6 +115,7 @@ export interface ApiAttribute {
   time?: string;
   imageUrl?: string;
   point?: string;
+  encrypted?: string;
 }
 
 export interface ApiAutomationRequest {
@@ -1127,6 +1128,7 @@ export enum ApiTypes {
   TIME = "TIME",
   IMAGE = "IMAGE",
   POINT = "POINT",
+  ENCRYPTED = "ENCRYPTED",
 }
 
 export interface ApiUpdateEntityRequestAction {

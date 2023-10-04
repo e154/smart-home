@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -61,7 +61,7 @@ func New() supervisor.Pluggable {
 
 // Load ...
 func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(ctx, service); err != nil {
+	if err = p.Plugin.Load(ctx, service, nil); err != nil {
 		return
 	}
 
@@ -89,9 +89,9 @@ func (p *plugin) attachTrigger() {
 	defer p.mu.Unlock()
 
 	// init triggers ...
-	p.triggers[StateChangeName] = NewStateChangedTrigger(p.EventBus)
-	p.triggers[SystemName] = NewSystemTrigger(p.EventBus)
-	p.triggers[TimeName] = NewTimeTrigger(p.EventBus, p.Scheduler)
+	p.triggers[StateChangeName] = NewStateChangedTrigger(p.Service.EventBus())
+	p.triggers[SystemName] = NewSystemTrigger(p.Service.EventBus())
+	p.triggers[TimeName] = NewTimeTrigger(p.Service.EventBus(), p.Service.Scheduler())
 
 	wg := &sync.WaitGroup{}
 

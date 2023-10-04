@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,7 +19,6 @@
 package memory
 
 import (
-	"fmt"
 	"sync"
 
 	m "github.com/e154/smart-home/models"
@@ -30,7 +29,6 @@ import (
 	"github.com/shirou/gopsutil/v3/mem"
 
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
@@ -40,26 +38,15 @@ type Actor struct {
 	total       metrics.Gauge
 	free        metrics.Gauge
 	usedPercent metrics.GaugeFloat64
-	eventBus    bus.Bus
 	updateLock  *sync.Mutex
 }
 
 // NewActor ...
-func NewActor(visor supervisor.Supervisor,
-	eventBus bus.Bus,
-	entity *m.Entity) *Actor {
+func NewActor(entity *m.Entity,
+	service supervisor.Service) *Actor {
 
 	actor := &Actor{
-		BaseActor: supervisor.BaseActor{
-			Id:                common.EntityId(fmt.Sprintf("%s.%s", EntityMemory, Name)),
-			Name:              Name,
-			EntityType:        EntityMemory,
-			UnitOfMeasurement: "GHz",
-			AttrMu:            &sync.RWMutex{},
-			Attrs:             NewAttr(),
-			Supervisor:        visor,
-		},
-		eventBus:    eventBus,
+		BaseActor: supervisor.NewBaseActor(entity, service),
 		total:       metrics.NewGauge(),
 		free:        metrics.NewGauge(),
 		usedPercent: metrics.NewGaugeFloat64(),
@@ -73,41 +60,45 @@ func NewActor(visor supervisor.Supervisor,
 	return actor
 }
 
-// Spawn ...
-func (e *Actor) Spawn() supervisor.PluginActor {
-	return e
+func (e *Actor) Destroy() {
+
 }
 
-func (u *Actor) selfUpdate() {
+// Spawn ...
+func (e *Actor) Spawn() {
+	return
+}
 
-	u.updateLock.Lock()
-	defer u.updateLock.Unlock()
+func (e *Actor) selfUpdate() {
 
-	oldState := u.GetEventState(u)
-	u.Now(oldState)
+	e.updateLock.Lock()
+	defer e.updateLock.Unlock()
+
+	oldState := e.GetEventState()
+	e.Now(oldState)
 
 	v, _ := mem.VirtualMemory()
-	u.total.Update(int64(v.Total))
-	u.free.Update(int64(v.Free))
+	e.total.Update(int64(v.Total))
+	e.free.Update(int64(v.Free))
 
 	usedPercent := common.Rounding32(v.UsedPercent, 2)
-	u.usedPercent.Update(float64(usedPercent))
+	e.usedPercent.Update(float64(usedPercent))
 
-	u.AttrMu.Lock()
-	u.Attrs[AttrTotal].Value = v.Total
-	u.Attrs[AttrFree].Value = v.Free
-	u.Attrs[AttrUsedPercent].Value = usedPercent
-	u.AttrMu.Unlock()
+	e.AttrMu.Lock()
+	e.Attrs[AttrTotal].Value = v.Total
+	e.Attrs[AttrFree].Value = v.Free
+	e.Attrs[AttrUsedPercent].Value = usedPercent
+	e.AttrMu.Unlock()
 
-	//u.SetMetric(u.Id, "memory", map[string]float32{
+	//e.SetMetric(e.Id, "memory", map[string]float32{
 	//	"used_percent": usedPercent,
 	//})
 
-	u.eventBus.Publish("system/entities/"+u.Id.String(), events.EventStateChanged{
+	go e.SaveState(events.EventStateChanged{
 		StorageSave: false,
-		PluginName:  u.Id.PluginName(),
-		EntityId:    u.Id,
+		PluginName:  e.Id.PluginName(),
+		EntityId:    e.Id,
 		OldState:    oldState,
-		NewState:    u.GetEventState(u),
+		NewState:    e.GetEventState(),
 	})
 }

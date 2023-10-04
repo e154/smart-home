@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -25,7 +25,6 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/e154/smart-home/common/events"
@@ -34,10 +33,8 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/supervisor"
 	"github.com/sfreiberg/gotwilio"
 )
@@ -45,8 +42,6 @@ import (
 // Actor ...
 type Actor struct {
 	supervisor.BaseActor
-	eventBus  bus.Bus
-	adaptors  *adaptors.Adaptors
 	from      string
 	sid       string
 	authToken string
@@ -54,24 +49,18 @@ type Actor struct {
 
 // NewActor ...
 func NewActor(settings m.Attributes,
-	visor supervisor.Supervisor,
-	eventBus bus.Bus,
-	adaptors *adaptors.Adaptors) *Actor {
+	service supervisor.Service) *Actor {
 
 	sid := settings[AttrSid].String()
 	authToken := settings[AttrAuthToken].String()
 
+	entity := &m.Entity{
+		Id: common.EntityId(fmt.Sprintf("%s.%s", Name, Name)),
+		PluginName: Name,
+		Attributes: NewAttr(),
+	}
 	actor := &Actor{
-		BaseActor: supervisor.BaseActor{
-			Id:         common.EntityId(fmt.Sprintf("%s.%s", Name, Name)),
-			Name:       Name,
-			EntityType: Name,
-			AttrMu:     &sync.RWMutex{},
-			Attrs:      NewAttr(),
-			Supervisor: visor,
-		},
-		eventBus:  eventBus,
-		adaptors:  adaptors,
+		BaseActor: supervisor.NewBaseActor(entity, service),
 		sid:       sid,
 		from:      settings[AttrFrom].String(),
 		authToken: authToken,
@@ -80,9 +69,12 @@ func NewActor(settings m.Attributes,
 	return actor
 }
 
-// Spawn ...
-func (p *Actor) Spawn() supervisor.PluginActor {
-	return p
+func (e *Actor) Destroy() {
+
+}
+
+func (e *Actor) Spawn() {
+
 }
 
 // Send ...
@@ -195,10 +187,10 @@ func (e *Actor) Balance() (balance Balance, err error) {
 }
 
 // UpdateBalance ...
-func (p *Actor) UpdateBalance() (err error) {
+func (e *Actor) UpdateBalance() (err error) {
 
-	oldState := p.GetEventState(p)
-	now := p.Now(oldState)
+	oldState := e.GetEventState()
+	now := e.Now(oldState)
 
 	var balance Balance
 	if common.TestMode() {
@@ -208,7 +200,7 @@ func (p *Actor) UpdateBalance() (err error) {
 			AccountSid: "XXX",
 		}
 	} else {
-		if balance, err = p.Balance(); err != nil {
+		if balance, err = e.Balance(); err != nil {
 			return
 		}
 	}
@@ -218,9 +210,9 @@ func (p *Actor) UpdateBalance() (err error) {
 	attributeValues[AttrSid] = balance.AccountSid
 	attributeValues[AttrCurrency] = balance.Currency
 
-	p.AttrMu.Lock()
+	e.AttrMu.Lock()
 	var changed bool
-	if changed, err = p.Attrs.Deserialize(attributeValues); !changed {
+	if changed, err = e.Attrs.Deserialize(attributeValues); !changed {
 		if err != nil {
 			log.Warn(err.Error())
 		}
@@ -229,19 +221,19 @@ func (p *Actor) UpdateBalance() (err error) {
 			delta := now.Sub(*oldState.LastUpdated).Milliseconds()
 			//fmt.Println("delta", delta)
 			if delta < 200 {
-				p.AttrMu.Unlock()
+				e.AttrMu.Unlock()
 				return
 			}
 		}
 	}
-	p.AttrMu.Unlock()
+	e.AttrMu.Unlock()
 
-	p.eventBus.Publish("system/entities/"+p.Id.String(), events.EventStateChanged{
+	go e.SaveState(events.EventStateChanged{
 		StorageSave: true,
-		PluginName:  p.Id.PluginName(),
-		EntityId:    p.Id,
+		PluginName:  e.Id.PluginName(),
+		EntityId:    e.Id,
 		OldState:    oldState,
-		NewState:    p.GetEventState(p),
+		NewState:    e.GetEventState(),
 	})
 
 	return

@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -61,7 +61,7 @@ zigbee2mqttEvent = ->
     attrs.click = payload.click
     attrs.action = ""
     state = payload.click + "_click"
-  Actor.setState
+  EntitySetState ENTITY_ID,
     'new_state': state.toUpperCase()
     'attribute_values': attrs
 `
@@ -79,7 +79,7 @@ zigbee2mqttEvent = ->
     'state': payload.state
     'temperature': payload.temperature
     'voltage': payload.voltage
-  Actor.setState
+  EntitySetState ENTITY_ID,
     'new_state': payload.state
     'attribute_values': attrs
 `
@@ -100,7 +100,7 @@ automationTriggerStateChanged = (msg)->
 
 automationCondition = (entityId)->
     #print '---condition---'
-    entity = supervisor.getEntity('zigbee2mqtt.` + zigbeePlugId + `')
+    entity = GetEntity('zigbee2mqtt.` + zigbeePlugId + `')
     if !entity
         return false
     if !entity.state || entity.state.name == 'OFF'
@@ -109,16 +109,16 @@ automationCondition = (entityId)->
 
 automationAction = (entityId)->
     #print '---action---'
-    Action.callAction('zigbee2mqtt.` + zigbeePlugId + `', 'ON', {})
+    CallAction('zigbee2mqtt.` + zigbeePlugId + `', 'ON', {})
 `
 
 		task2SourceScript = `
 automationTriggerStateChanged = (msg)->
-    #print '---trigger---2'
+    #print '---trigger---'
     p = unmarshal msg.payload
     return p.new_state.state.name == 'DOUBLE_CLICK'
 
-automationentityManager = (entityId)->
+automationCondition = (entityId)->
     print '---condition---'
     entity = Condition.getEntity('zigbee2mqtt.` + zigbeePlugId + `')
     if !entity || !entity.state 
@@ -129,7 +129,7 @@ automationentityManager = (entityId)->
 
 automationAction = (entityId)->
     #print '---action---'
-    Action.callAction('zigbee2mqtt.` + zigbeePlugId + `', 'OFF', {})
+    CallAction('zigbee2mqtt.` + zigbeePlugId + `', 'OFF', {})
 `
 	)
 

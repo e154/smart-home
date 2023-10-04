@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,10 +21,8 @@ package logs
 import (
 	"context"
 	"fmt"
-
-	"github.com/e154/smart-home/system/supervisor"
-
 	"github.com/e154/smart-home/system/scheduler"
+	"github.com/e154/smart-home/system/supervisor"
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -39,7 +37,6 @@ func init() {
 
 type plugin struct {
 	*supervisor.Plugin
-	pause   uint
 	actor   *Actor
 	entryId scheduler.EntryID
 }
@@ -48,60 +45,44 @@ type plugin struct {
 func New() supervisor.Pluggable {
 	p := &plugin{
 		Plugin: supervisor.NewPlugin(),
-		pause:  10,
 	}
 	return p
 }
 
 // Load ...
 func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(ctx, service); err != nil {
+	if err = p.Plugin.Load(ctx, service, nil); err != nil {
 		return
 	}
 	// every day at 00:00 am
-	p.entryId, err = p.Scheduler.AddFunc("0 0 0 * * *", func() {
+	p.entryId, err = p.Service.Scheduler().AddFunc("0 0 0 * * *", func() {
 		p.actor.UpdateDay()
 	})
-	return p.load(service)
-}
-
-// Unload ...
-func (p *plugin) Unload(ctx context.Context) (err error) {
-	if err = p.Plugin.Unload(ctx); err != nil {
-		return
-	}
-	p.Scheduler.Remove(p.entryId)
-	return p.unload()
-}
-
-// Load ...
-func (p *plugin) load(service supervisor.Service) (err error) {
-
 	var entity *m.Entity
-	if entity, err = p.Adaptors.Entity.GetById(context.Background(), common.EntityId(fmt.Sprintf("%s.%s", EntityLogs, Name))); err == nil {
-
+	if entity, err = p.Service.Adaptors().Entity.GetById(context.Background(), common.EntityId(fmt.Sprintf("%s.%s", EntityLogs, Name))); err != nil {
+		entity = &m.Entity{
+			Id:         common.EntityId(fmt.Sprintf("%s.%s", EntityLogs, Name)),
+			PluginName: "logs",
+			Attributes: NewAttr(),
+		}
+		if err = p.Service.Adaptors().Entity.Add(context.Background(), entity); err != nil {
+			return
+		}
 	}
 
-	p.actor = NewActor(p.Supervisor, p.EventBus, entity)
-	p.Supervisor.Spawn(p.actor.Spawn)
+	p.actor = NewActor(entity, service)
+	p.AddActor(p.actor, entity)
 
 	logging.LogsHook = p.actor.LogsHook
 
 	return
 }
 
-func (p *plugin) unload() (err error) {
+// Unload ...
+func (p *plugin) Unload(ctx context.Context) (err error) {
+	p.Service.Scheduler().Remove(p.entryId)
+	err = p.Plugin.Unload(ctx)
 	return
-}
-
-// AddOrUpdateActor ...
-func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
-	return p.load(nil)
-}
-
-// RemoveActor ...
-func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
-	return p.unload()
 }
 
 // Name ...
@@ -126,7 +107,5 @@ func (p *plugin) Version() string {
 
 // Options ...
 func (p *plugin) Options() m.PluginOptions {
-	return m.PluginOptions{
-		ActorAttrs: NewAttr(),
-	}
+	return m.PluginOptions{}
 }

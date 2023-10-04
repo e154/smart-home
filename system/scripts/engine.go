@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -63,6 +63,14 @@ func NewEngine(s *m.Script, functions, structures *Pull) (engine *Engine, err er
 		s = &m.Script{
 			Lang: ScriptLangJavascript,
 		}
+	}
+
+	if functions == nil {
+		functions = NewPull()
+	}
+
+	if structures == nil {
+		structures = NewPull()
 	}
 
 	engine = &Engine{

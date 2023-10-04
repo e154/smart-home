@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -31,6 +31,7 @@ type IRunHistory interface {
 	Add(sctx context.Context, tory *m.RunStory) (id int64, err error)
 	Update(ctx context.Context, story *m.RunStory) (err error)
 	List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.RunStory, total int64, err error)
+	DeleteOldest(ctx context.Context, days int) (err error)
 	fromDb(dbVer *db.RunStory) (story *m.RunStory)
 	toDb(story *m.RunStory) (dbVer *db.RunStory, err error)
 }
@@ -82,6 +83,12 @@ func (n *RunHistory) List(ctx context.Context, limit, offset int64, orderBy, sor
 	for i, dbVer := range dbList {
 		list[i] = n.fromDb(dbVer)
 	}
+	return
+}
+
+// DeleteOldest ...
+func (n *RunHistory) DeleteOldest(ctx context.Context, days int) (err error) {
+	err = n.table.DeleteOldest(ctx, days)
 	return
 }
 

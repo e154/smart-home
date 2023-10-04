@@ -341,7 +341,9 @@ export default {
     automationActions: "Действия автоматизации",
     main: "Основное",
     source: "Исходный код",
-    info1: "Используйте сочетание клавиш Ctrl + Пробел для использования автозаполнения",
+    info1: 'Используйте сочетание клавиш "Ctrl + Пробел" для использования автозаполнения',
+    info2: 'Используйте комбинацию клавиш "Meta + /" для комментирования кода.',
+    info3: 'Используйте комбинацию клавиш "Meta + F" для форматирования кода.',
     stat_total_name: "Всего скриптов",
     stat_total_descr: "",
     stat_used_name: "Используемые скрипты",
@@ -527,6 +529,8 @@ export default {
       MAP: 'Карта',
       SLIDER: 'Ползунок',
       COLOR_PICKER: 'Цветовая паллитра',
+      STREAM_PLAYER: 'Video player',
+      JOYSTICK: 'Joystick',
       tooltip: 'Подсказка',
       slider: {
         options: 'Параметры слайдера',
@@ -564,15 +568,30 @@ export default {
         itemValue: "Значение элемента",
         itemDescription: "Описание элемента",
         barOptions: "Параметры столбца"
+      },
+      joystick: {
+        options: 'Параметры управления',
+        startAction: 'Действие при начале движения',
+        endAction: 'Действие при окончании движения',
+      },
+      video: {
+        options: 'Параметры видео',
       }
     }
   },
   settings: {
     dashboardOptions: 'Настройки панели',
-    mainDarkDashboard: 'Main Dark Dashboard',
-    mainLightDashboard: 'Main Light Dashboard',
-    devDarkDashboard: 'Dev Dark Dashboard',
-    devLightDashboard: 'Dev Light Dashboard'
+    mainDarkDashboard: 'Основная тёмная панель управления',
+    mainLightDashboard: 'Основная светлая панель управления',
+    devDarkDashboard: 'Тёмная разработческая панель управления',
+    devLightDashboard: 'Светлая разработческая панель управления',
+    scriptsOptions: 'Параметры скриптов',
+    restartComponentIfScriptChanged: 'Перезапустить компонент, если скрипт изменился',
+    clearHistory: 'Настройки удаления истории в днях',
+    clearMetricsDays: 'Удаление метрик',
+    clearLogsDays: 'Очистка логов',
+    clearEntityStorageDays: 'История состояния Entity',
+    clearRunHistoryDays: 'История запусков системы',
   },
   tools: {
     eventBus: {

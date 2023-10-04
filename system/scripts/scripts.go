@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,6 +21,8 @@ package scripts
 import (
 	"context"
 
+	"github.com/e154/smart-home/common/encryptor"
+
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
 	"github.com/e154/smart-home/common/web"
@@ -38,6 +40,7 @@ var (
 // ScriptService ...
 type ScriptService interface {
 	NewEngine(s *m.Script) (*Engine, error)
+	NewEngineWatcher(scr *m.Script) (*EngineWatcher, error)
 	PushStruct(name string, s interface{})
 	PopStruct(name string)
 	PushFunctions(name string, s interface{})
@@ -92,6 +95,15 @@ func (s *scriptService) NewEngine(scr *m.Script) (*Engine, error) {
 	return NewEngine(scr, s.structures, s.functions)
 }
 
+// NewEngineWatcher ...
+func (s *scriptService) NewEngineWatcher(scr *m.Script) (*EngineWatcher, error) {
+	engine, err := NewEngine(scr, s.structures, s.functions)
+	if err != nil {
+		return nil, err
+	}
+	return NewEngineWatched(engine, s, s.eventBus), nil
+}
+
 // PushStruct ...
 func (s *scriptService) PushStruct(name string, str interface{}) {
 	log.Infof("register structure: '%s'", name)
@@ -128,6 +140,8 @@ func (s *scriptService) bind() {
 	s.PushStruct("Log", &bind.LogBind{})
 	s.PushFunctions("ExecuteSync", bind.ExecuteSync)
 	s.PushFunctions("ExecuteAsync", bind.ExecuteAsync)
+	s.PushFunctions("Encrypt", encryptor.Encrypt)
+	s.PushFunctions("Decrypt", encryptor.Decrypt)
 	s.PushStruct("Storage", bind.NewStorageBind(s.storage))
 	s.PushStruct("http", bind.NewHttpBind(s.crawler))
 	s.PushStruct("HTTP", bind.NewHttpBind(s.crawler))

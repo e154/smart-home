@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,11 +21,11 @@ package mqtt
 import (
 	"context"
 
-	"github.com/pkg/errors"
-
 	"github.com/DrmagicE/gmqtt/config"
 	"github.com/DrmagicE/gmqtt/retained"
 	"github.com/DrmagicE/gmqtt/server"
+	"github.com/pkg/errors"
+
 	"github.com/e154/smart-home/system/mqtt/admin"
 	"github.com/e154/smart-home/system/mqtt_authenticator"
 )

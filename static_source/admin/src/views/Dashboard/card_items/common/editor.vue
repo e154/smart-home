@@ -148,7 +148,7 @@ const removeAction = (index: number) => {
   <!-- /hide on-->
 
   <!-- button options -->
-  <div v-if="!['button', 'chart', 'map', 'slider'].includes(item.type)">
+  <div v-if="!['button', 'chart', 'map', 'slider', 'streamPlayer'].includes(item.type)">
     <ElDivider content-position="left">{{$t('dashboard.editor.buttonOptions') }}</ElDivider>
     <ElRow :gutter="24">
       <ElCol :span="12" :xs="12">

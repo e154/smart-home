@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,17 +19,12 @@
 package uptime
 
 import (
-	"fmt"
-	"sync"
 	"time"
 
-	"github.com/e154/smart-home/common/events"
-
-	"github.com/shirou/gopsutil/v3/host"
 	"go.uber.org/atomic"
 
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/bus"
+	"github.com/e154/smart-home/common/events"
+	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
@@ -38,40 +33,37 @@ type Actor struct {
 	supervisor.BaseActor
 	appStarted time.Time
 	total      *atomic.Uint64
-	eventBus   bus.Bus
 }
 
 // NewActor ...
-func NewActor(visor supervisor.Supervisor,
-	eventBus bus.Bus) *Actor {
-	return &Actor{
-		BaseActor: supervisor.BaseActor{
-			Id:                common.EntityId(fmt.Sprintf("%s.%s", EntitySensor, Name)),
-			Name:              Name,
-			EntityType:        EntitySensor,
-			UnitOfMeasurement: "days",
-			AttrMu:            &sync.RWMutex{},
-			Attrs:             NewAttr(),
-			Supervisor:        visor,
-		},
-		eventBus:   eventBus,
+func NewActor(entity *m.Entity,
+	service supervisor.Service) *Actor {
+	actor := &Actor{
+		BaseActor:  supervisor.NewBaseActor(entity, service),
 		appStarted: time.Now(),
 		total:      atomic.NewUint64(0),
 	}
+	if actor.Attrs == nil {
+		actor.Attrs = NewAttr()
+	}
+	return actor
 }
 
-// Spawn ...
-func (e *Actor) Spawn() supervisor.PluginActor {
-	return e
+func (e *Actor) Destroy() {
+
+}
+
+func (e *Actor) Spawn() {
+	e.update()
 }
 
 func (e *Actor) update() {
 
-	oldState := e.GetEventState(e)
+	oldState := e.GetEventState()
 
 	e.Now(oldState)
 
-	total, err := host.Uptime()
+	total, err := GetUptime()
 	if err != nil {
 		return
 	}
@@ -83,10 +75,10 @@ func (e *Actor) update() {
 	e.Attrs[AttrUptimeAppStarted].Value = e.appStarted
 	e.AttrMu.Unlock()
 
-	e.eventBus.Publish("system/entities/"+e.Id.String(), events.EventStateChanged{
+	go e.SaveState(events.EventStateChanged{
 		PluginName: e.Id.PluginName(),
 		EntityId:   e.Id,
 		OldState:   oldState,
-		NewState:   e.GetEventState(e),
+		NewState:   e.GetEventState(),
 	})
 }

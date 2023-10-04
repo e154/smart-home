@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -38,7 +38,10 @@ type IArea interface {
 	List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.Area, total int64, err error)
 	ListByPoint(ctx context.Context, point m.Point, limit, offset int64) (list []*m.Area, err error)
 	Search(ctx context.Context, query string, limit, offset int64) (list []*m.Area, total int64, err error)
-	GetDistance(ctx context.Context, point m.Point, areaId int64) (distance float64, err error)
+	GetDistanceToArea(ctx context.Context, point m.Point, areaId int64) (distance float64, err error)
+	GetDistanceBetweenPoints(ctx context.Context, point1, point2 m.Point) (distance float64, err error)
+	PointInsideAriaById(ctx context.Context, point *m.Point, areaId int64) (inside bool, err error)
+	PointInsideAriaByName(ctx context.Context, point *m.Point, areaName int64) (inside bool, err error)
 	fromDb(dbVer *db.Area) (ver *m.Area)
 	toDb(ver *m.Area) (dbVer *db.Area)
 }
@@ -122,6 +125,18 @@ func (a *Area) ListByPoint(ctx context.Context, point m.Point, limit, offset int
 	return
 }
 
+// PointInsideAriaById ...
+func (a *Area) PointInsideAriaById(ctx context.Context, point *m.Point, areaId int64) (inside bool, err error) {
+	inside, err = a.table.PointInsideAriaById(ctx, db.Point{Lon: point.Lon, Lat: point.Lat}, areaId)
+	return
+}
+
+// PointInsideAriaByName ...
+func (a *Area) PointInsideAriaByName(ctx context.Context, point *m.Point, areaName int64) (inside bool, err error) {
+	inside, err = a.table.PointInsideAriaById(ctx, db.Point{Lon: point.Lon, Lat: point.Lat}, areaName)
+	return
+}
+
 // Search ...
 func (a *Area) Search(ctx context.Context, query string, limit, offset int64) (list []*m.Area, total int64, err error) {
 	var dbList []*db.Area
@@ -151,8 +166,8 @@ func (a *Area) GetByName(ctx context.Context, name string) (ver *m.Area, err err
 }
 
 // GetDistance ...
-func (a *Area) GetDistance(ctx context.Context, point m.Point, areaId int64) (distance float64, err error) {
-	distance, err = a.table.GetDistance(ctx, db.Point{Lon: point.Lon, Lat: point.Lat}, areaId)
+func (a *Area) GetDistanceToArea(ctx context.Context, point m.Point, areaId int64) (distance float64, err error) {
+	distance, err = a.table.GetDistanceToArea(ctx, db.Point{Lon: point.Lon, Lat: point.Lat}, areaId)
 	return
 }
 

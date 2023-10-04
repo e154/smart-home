@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -22,13 +22,11 @@ import (
 	"context"
 	"sync"
 
-	"github.com/e154/smart-home/system/supervisor"
-
-	"github.com/e154/smart-home/common/logger"
-
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/triggers"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 var (
@@ -58,14 +56,14 @@ func New() supervisor.Pluggable {
 
 // Load ...
 func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(ctx, service); err != nil {
+	if err = p.Plugin.Load(ctx, service, nil); err != nil {
 		return
 	}
 
 	// register trigger
 	if triggersPlugin, ok := service.Plugins()[triggers.Name]; ok {
 		if p.registrar, ok = triggersPlugin.(triggers.IRegistrar); ok {
-			if err = p.registrar.RegisterTrigger(NewTrigger(p.EventBus)); err != nil {
+			if err = p.registrar.RegisterTrigger(NewTrigger(p.Service.EventBus())); err != nil {
 				log.Error(err.Error())
 				return
 			}
@@ -73,15 +71,15 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 	}
 
 	// run server
-	p.server = NewServer(p.Adaptors,
+	p.server = NewServer(p.Service.Adaptors(),
 		NewConfig(service.AppConfig()),
-		p.ScriptService,
+		p.Service.ScriptService(),
 		service.GateClient(),
-		p.EventBus)
+		p.Service.EventBus())
 
 	p.server.Start()
 
-	_ = p.EventBus.Subscribe(TopicPluginAlexa, p.eventHandler)
+	_ = p.Service.EventBus().Subscribe(TopicPluginAlexa, p.eventHandler)
 
 	return nil
 }
@@ -92,7 +90,7 @@ func (p *plugin) Unload(ctx context.Context) (err error) {
 		return
 	}
 
-	_ = p.EventBus.Unsubscribe(TopicPluginAlexa, p.eventHandler)
+	_ = p.Service.EventBus().Unsubscribe(TopicPluginAlexa, p.eventHandler)
 
 	p.server.Stop()
 	p.server = nil

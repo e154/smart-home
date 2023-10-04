@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2021, Filippov Alex
+// Copyright (C) 2016-2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -26,25 +26,24 @@ import (
 	"sync"
 	"time"
 
-	"github.com/e154/smart-home/common/events"
-	"github.com/e154/smart-home/system/bus"
-
-	"github.com/e154/smart-home/common/logger"
-
 	"github.com/DrmagicE/gmqtt"
 	_ "github.com/DrmagicE/gmqtt/persistence"
 	"github.com/DrmagicE/gmqtt/pkg/codes"
 	"github.com/DrmagicE/gmqtt/pkg/packets"
 	"github.com/DrmagicE/gmqtt/server"
 	_ "github.com/DrmagicE/gmqtt/topicalias/fifo"
+	"go.uber.org/fx"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
+
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/common/logger"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/mqtt/admin"
 	"github.com/e154/smart-home/system/mqtt_authenticator"
 	"github.com/e154/smart-home/system/scripts"
-	"go.uber.org/fx"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 )
 
 var (
@@ -116,7 +115,7 @@ func (m *Mqtt) Shutdown() (err error) {
 		err = m.server.Stop(ctx)
 	}
 
-	m.eventBus.Publish("system/services/mqtt", events.EventServiceStopped{})
+	m.eventBus.Publish("system/services/mqtt", events.EventServiceStopped{Service: "Mqtt"})
 	return
 }
 
