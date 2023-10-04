@@ -318,9 +318,9 @@ const tableRowClassName = (data) => {
       {{ t('automation.addNew') }}
     </ElButton>
 
-    <ElButton class="flex mb-20px items-left" type="primary" @click="showImportDialog()" plain>
-      {{ t('automation.import') }}
-    </ElButton>
+<!--    <ElButton class="flex mb-20px items-left" type="primary" @click="showImportDialog()" plain>-->
+<!--      {{ t('automation.import') }}-->
+<!--    </ElButton>-->
 
     <Table
         :selection="false"

@@ -233,10 +233,10 @@ fetch()
         {{ t('main.save') }}
       </ElButton>
 
-      <ElButton type="primary" @click="exportTask()">
-        <Icon icon="uil:file-export" class="mr-5px"/>
-        {{ t('main.export') }}
-      </ElButton>
+<!--      <ElButton type="primary" @click="exportTask()">-->
+<!--        <Icon icon="uil:file-export" class="mr-5px"/>-->
+<!--        {{ t('main.export') }}-->
+<!--      </ElButton>-->
 
       <ElButton type="default" @click="fetch()">
         {{ t('main.loadFromServer') }}

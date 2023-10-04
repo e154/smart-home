@@ -188,7 +188,6 @@ func (a *taskManager) updateTask(id int64) {
 	if err != nil {
 		return
 	}
-	log.Infof("reload task %d", id)
 
 	a.addTask(task)
 }
