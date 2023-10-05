@@ -18,13 +18,10 @@ A condition defines an additional check that needs to be performed before execut
 Example implementation of a condition handler:
 ```coffeescript
 automationCondition = (entityId)->
-    #print '---condition---'
-    entity = Condition.getEntityById('zigbee2mqtt.` + zigbeePlugId + `')
+    entity = EntityGetState(entityId)
     if !entity || !entity.state 
         return false
     if entity.state.name == 'ON'
         return true
     return false
 ```
-
-Please note that a condition is an optional component. If a condition is present, a check will be performed before executing the actions. If the condition returns a positive result, the actions will be executed. Otherwise, if the condition returns a negative result or is not specified, the actions will be executed without further checking.

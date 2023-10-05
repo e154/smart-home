@@ -19,6 +19,5 @@ description: >
 Пример реализации обработчика:
 ```coffeescript
 automationAction = (entityId)->
-    #print '---action---'
-    Action.callAction('zigbee2mqtt.` + zigbeePlugId + `', 'ON', {})
+    EntityCallAction(entityId, 'ON', {})
 ```

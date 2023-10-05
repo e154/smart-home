@@ -24,8 +24,7 @@ In the **Smart Home** system, there is a "memory" plugin that allows you to disp
 Here's an example of using the "memory" plugin to retrieve RAM parameters:
 
 ```javascript
-const entity = entityManager.getEntity('memory.memory')
-const ramParams = entity.getAttributes()
+const ramParams = EntityGetAttributes('memory.memory')
 console.log(ramParams.total);
 console.log(ramParams.free);
 console.log(ramParams.used_percent);

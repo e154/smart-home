@@ -39,7 +39,7 @@ entityAction = (entityId, actionName, args) => {
 Пример использования обработчика `entityAction`:
 
 ```javascript
-entityManager.callAction('sensor.sensor123', 'turnOn');
+EntityCallAction('sensor.sensor123', 'turnOn');
 ```
 
 В этом примере вызывается обработчик `entityAction` с идентификатором устройства "sensor123" и именем действия "turnOn".

@@ -32,8 +32,7 @@ description: >
 Пример использования плагина "moon" для получения параметров луны:
 
 ```javascript
-const entity = entityManager.getEntity('moon.moon1')
-const moonParams = entity.getAttributes()
+const moonParams = EntityGetAttributes('moon.moon1')
 console.log(moonParams.horizonState);
 console.log(moonParams.phase);
 console.log(moonParams.azimuth);

@@ -34,8 +34,7 @@ description: >
 Пример использования плагина "cpuspeed" для получения параметров CPU:
 
 ```javascript
-const entity = entityManager.getEntity('cpuspeed.cpuspeed')
-const cpuParams = entity.getAttributes()
+const cpuParams = EntityGetAttributes('cpuspeed.cpuspeed')
 console.log(cpuParams.cores);
 console.log(cpuParams.mhz);
 console.log(cpuParams.all);

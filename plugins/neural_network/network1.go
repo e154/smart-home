@@ -43,12 +43,7 @@ func NewNetwork1(eventBus bus.Bus) (net *Network1) {
 	return net
 }
 
-// Train2 ...
-// 0 Атаковать
-// 1 Красться
-// 2 Убегать
-// 3 Ничего не делать
-// 4 Сдох
+// Train222 ...
 func (e *Network1) Train222() {
 	var data = training.Examples{
 		{[]float64{0.5, 1, 1}, []float64{0}},

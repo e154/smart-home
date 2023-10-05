@@ -93,6 +93,14 @@ onMounted(() => {
   contentEl.value = document.getElementsByClassName(`${variables.namespace}-layout-content`)[0]
   unref(contentEl) &&
     (unref(contentEl) as Element).addEventListener('transitionend', contentResizeHandler)
+
+  echartRef.on('datazoom', function (evt) {
+    // const option = echartRef.getOption();
+    // const axis = echartRef.getModel().option.xAxis[0];
+    // const start = option.dataZoom[0].startValue
+    // const end = option.dataZoom[0].endValue
+    // console.log(axis.data[start], axis.data[end]);
+  });
 })
 
 onBeforeUnmount(() => {

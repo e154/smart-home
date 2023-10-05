@@ -126,7 +126,7 @@ state = {
   storage_save: true
 } 
 # сохранение состояния 
-Actor.setState(state)
+EntitySetState ENTITY_ID, state
 ```
 
 |  значение  | описание  |

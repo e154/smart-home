@@ -54,7 +54,7 @@ mqttEvent = ->
     'state': payload.state
     'temperature': payload.temperature
     'voltage': payload.voltage
-  Actor.setState
+  EntitySetState ENTITY_ID,
     'new_state': payload.state
     'attribute_values': attrs
 ```
