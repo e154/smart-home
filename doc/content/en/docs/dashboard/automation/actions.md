@@ -18,6 +18,5 @@ Actions define the tasks that need to be performed when the scenario is executed
 Example implementation of an action handler:
 ```coffeescript
 automationAction = (entityId)->
-    #print '---action---'
-    Action.callAction('zigbee2mqtt.` + zigbeePlugId + `', 'ON', {})
+    EntityCallAction(entityId, 'ON', {})
 ```

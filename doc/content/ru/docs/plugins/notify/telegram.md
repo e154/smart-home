@@ -76,8 +76,8 @@ telegramAction = (entityId, actionName)->
 telegramSendReport =->
   entities = ['device.l3n1','device.l3n2','device.l3n3','device.l3n4']
   for entityId, i in entities
-    entity = entityManager.getEntity(entityId)
-    attr = entity.getAttributes()
+    entity = GetEntity(entityId)
+    attr = EntityGetAttributes(entityId)
     sendMsg(format(entityId, entity.state.name, attr))
   
 telegramAction = (entityId, actionName)->

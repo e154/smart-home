@@ -47,6 +47,9 @@ export const HintDictionaryCoffee = {
         {text: 'http.put(url, body)', displayText: 'http.put'},
         {text: 'http.delete(url)', displayText: 'http.delete'},
 
+        // zigbee2mqttEvent
+        {text: 'zigbee2mqttEvent = (message) ->', displayText: 'zigbee2mqttEvent'},
+
         // mqtt
         {text: 'Mqtt.publish(topic, payload, qos, retain)', displayText: 'Mqtt.publish'},
         {text: 'mqttEvent = (ENTITY_ID, actionName) ->', displayText: 'mqttEvent'},
@@ -72,6 +75,7 @@ export const HintDictionaryCoffee = {
         {text: 'automationTriggerSystem = (msg)->', displayText: 'automationTriggerSystem'},
 
         // entity manager
+        {text: 'GetEntity(ENTITY_ID)', displayText: 'GetEntity'},
         {text: 'EntitySetState(ENTITY_ID, state)', displayText: 'EntitySetState'},
         {text: 'EntitySetStateName(ENTITY_ID, name)', displayText: 'EntitySetStateName'},
         {text: 'EntityGetState(ENTITY_ID)', displayText: 'EntityGetState'},

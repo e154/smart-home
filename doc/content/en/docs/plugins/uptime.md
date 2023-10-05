@@ -22,8 +22,7 @@ In the **Smart Home** system, there is a plugin called "uptime" that allows disp
 Here's an example of using the "uptime" plugin to retrieve uptime parameters:
 
 ```javascript
-const entity = entityManager.getEntity('uptime.uptime')
-const uptimeParams = entity.getAttributes()
+const uptimeParams = EntityGetAttributes('uptime.uptime')
 console.log(uptimeParams.total);
 console.log(uptimeParams.app_started);
 ```

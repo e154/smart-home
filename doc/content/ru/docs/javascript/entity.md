@@ -79,70 +79,43 @@ description: >
 }
 ```
 
+### методы объекта Entity
+
+```coffeescript
+EntitySetState(ENTITY_ID, attr)
+EntitySetStateName(ENTITY_ID, stateName)
+EntityGetState(ENTITY_ID)
+EntitySetAttributes(ENTITY_ID, attr)
+EntitySetMetric(ENTITY_ID, name, value)
+EntityCallAction(ENTITY_ID, action, args)
+EntityCallScene(ENTITY_ID, args)
+EntityGetSettings(ENTITY_ID)
+EntityGetAttributes(ENTITY_ID)
+```
+
 Абстрактный объект "Entity" в проекте **Smart Home** предоставляет следующие методы:
 
-1. `setState(state)`: Этот метод позволяет установить состояние устройства. Вы передаете новое состояние в качестве 
-2. аргумента `state`, которое будет применено к устройству. Например:
+1. `EntitySetState(ENTITY_ID, attr)`: Этот метод используется для установки состояния конкретной сущности (`ENTITY_ID`) путем предоставления набора атрибутов (`attr`). С его помощью, скорее всего, можно обновлять состояние сущности новыми значениями атрибутов.
 
-```javascript
-entity.setState('on');
-```
+2. `EntitySetStateName(ENTITY_ID, stateName)`: Этот метод устанавливает состояние сущности (`ENTITY_ID`) в определенное именованное состояние (`stateName`). Он используется, когда необходимо изменить состояние сущности на предопределенное.
 
-2. `setAttributes(attributes)`: Этот метод используется для установки атрибутов устройства. Вы передаете объект 
-3. `attributes` в качестве аргумента, содержащий новые атрибуты, которые нужно применить к устройству. Пример использования:
+3. `EntityGetState(ENTITY_ID)`: Этот метод извлекает текущее состояние указанной сущности (`ENTITY_ID`). Он позволяет запрашивать текущее состояние сущности.
 
-```javascript
-const newAttributes = {
-  brightness: 80,
-  color: 'red',
-};
+4. `EntitySetAttributes(ENTITY_ID, attr)`: Аналогично `EntitySetState`, этот метод устанавливает атрибуты для определенной сущности (`ENTITY_ID`). Он может использоваться, когда нужно обновить атрибуты без изменения состояния.
 
-entity.setAttributes(newAttributes);
-```
+5. `EntitySetMetric(ENTITY_ID, name, value)`: Этот метод устанавливает метрику для указанной сущности (`ENTITY_ID`). Метрики часто используются для измерения и записи различных аспектов поведения или производительности сущности.
 
-3. `getAttributes()`: Данный метод позволяет получить текущие атрибуты устройства. Он возвращает объект с текущими 
-4. значениями атрибутов. Пример использования:
+6. `EntityCallAction(ENTITY_ID, action, args)`: Этот метод используется для вызова или выполнения определенного действия (`action`), связанного с сущностью (`ENTITY_ID`), и предоставления необходимых аргументов (`args`) для этого действия.
 
-```javascript
-const attributes = entity.getAttributes();
-console.log(attributes);
-```
+7. `EntityCallScene(ENTITY_ID, args)`: Подобно `EntityCallAction`, этот метод используется для вызова или выполнения сцены, связанной с сущностью (`ENTITY_ID`), и предоставления необходимых аргументов (`args`) для этой сцены.
 
-4. `setMetric(metric, value)`: С помощью этого метода можно установить метрику устройства. Вы передаете имя метрики в 
-5. аргументе `metric` и значение метрики в аргументе `value`. Пример использования:
+8. `EntityGetSettings(ENTITY_ID)`: Этот метод извлекает настройки или конфигурацию для указанной сущности (`ENTITY_ID`). Он позволяет получать доступ к настройкам, связанным с сущностью.
 
-```javascript
-entity.setMetric('temperature', 25);
-```
-
-5. `callAction(action, params)`: Данный метод позволяет вызвать определенное действие на устройстве. Вы передаете имя 
-6. действия в аргументе `action` и необходимые параметры в аргументе `params`. Пример использования:
-
-```javascript
-entity.callAction('turnOn');
-```
+9. `EntityGetAttributes(ENTITY_ID)`: Этот метод извлекает все атрибуты, связанные с определенной сущностью (`ENTITY_ID`). Он предоставляет способ получения подробной информации о атрибутах сущности.
 
 Методы объекта "Entity" предоставляют удобные возможности для управления состоянием, атрибутами, метриками и выполнения 
 действий на устройстве. Вы можете использовать эти методы для создания логики управления устройствами в вашем проекте 
 **Smart Home**.
 
 
-### методы объекта Entity
 
-```coffeescript
-Entity
-  .setState(stateName)
-  .setAttributes(key, attrs)
-  .getAttributes() -> attrs
-  .setMetric(name, value)
-  .callAction(name, value)
-  .getSettings() -> map[string]any
-```
-
-|  значение  | описание  |
-|-------------|---------|
-| setState | изменить текущее состояние, **stateName** - наименования будущего состояния|
-| setAttributes | изменить атрибуты текущего состояния, **attr** - map параметрый {key:val} |
-| getAttributes | текущее атрибуты устройства, **attrs** - map параметрый {key:val} |
-| setMetric | обновить метрики устройства, **name** - наименование метрики, **attr** - map параметрый {key:val}|
-| callAction | иcполнение команды на устройстве, **actionName** - наименование команды, **args** - map параметрый {key:val}|

@@ -22,8 +22,7 @@ description: >
 Пример использования плагина "uptime" для получения параметров времени работы:
 
 ```javascript
-const entity = entityManager.getEntity('uptime.uptime')
-const uptimeParams = entity.getAttributes()
+const uptimeParams = EntityGetAttributes('uptime.uptime')
 console.log(uptimeParams.total);
 console.log(uptimeParams.app_started);
 ```

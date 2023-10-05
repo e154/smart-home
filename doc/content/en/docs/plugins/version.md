@@ -23,8 +23,7 @@ The "version" plugin provides access to this information, which is useful for tr
 Here's an example of using the "version" plugin:
 
 ```javascript
-const entity = entityManager.getEntity('version.version')
-const versionInfo = entity.getAttributes()
+const versionInfo = EntityGetAttributes('version.version')
 console.log("Project version:", versionInfo.version);
 console.log("Revision:", versionInfo.revision);
 console.log("Revision URL:", versionInfo.revision_url);

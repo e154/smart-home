@@ -30,8 +30,7 @@ In the **Smart Home** system, there is a "memory_app" plugin that provides the d
 Here's an example of using the "memory_app" plugin to retrieve application memory parameters:
 
 ```javascript
-const entity = entityManager.getEntity('memory.memory')
-const memoryParams = entity.getAttributes()
+const memoryParams = EntityGetAttributes('memory.memory')
 console.log(memoryParams.alloc);
 console.log(memoryParams.heap_alloc);
 console.log(memoryParams.total_alloc);

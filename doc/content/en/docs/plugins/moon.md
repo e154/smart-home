@@ -32,8 +32,7 @@ Additionally, the "moon" plugin has settings `lat` and `lon`, which allow specif
 Here's an example of using the "moon" plugin to retrieve moon parameters:
 
 ```javascript
-const entity = entityManager.getEntity('moon.moon1')
-const moonParams = entity.getAttributes()
+const moonParams = EntityGetAttributes('moon.moon1')
 console.log(moonParams.horizonState);
 console.log(moonParams.phase);
 console.log(moonParams.azimuth);

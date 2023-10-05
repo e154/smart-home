@@ -40,9 +40,8 @@ Additionally, the "hdd" plugin has a `mount_point` settings option that allows y
 Here's an example of using the "hdd" plugin to retrieve hard disk parameters:
 
 ```javascript
-const entity = entityManager.getEntity('hdd.hdd1')
-const hddParams = entity.getAttributes()
-const hddSettings = entity.getSettings()
+const hddParams = EntityGetAttributes('hdd.hdd1')
+const hddSettings = EntityGetSettings('hdd.hdd1')
 console.log(hddSettings.mount_point);
 console.log(hddParams.path);
 console.log(hddParams.fstype);

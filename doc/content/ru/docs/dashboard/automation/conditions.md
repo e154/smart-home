@@ -20,15 +20,10 @@ description: >
 Пример реализации обработчика:
 ```coffeescript
 automationCondition = (entityId)->
-    #print '---condition---'
-    entity = Condition.getEntityById('zigbee2mqtt.` + zigbeePlugId + `')
+    entity = EntityGetState(entityId)
     if !entity || !entity.state 
         return false
     if entity.state.name == 'ON'
         return true
     return false
 ```
-
-Обратите внимание, что условие (Condition) является опциональным компонентом. Если условие присутствует, то перед выполнением 
-действий будет выполнена проверка условия. Если условие возвращает положительный результат, то действия будут выполнены. 
-В противном случае, если условие возвращает отрицательный результат или не указано, действия будут выполнены без дополнительной проверки.

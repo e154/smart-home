@@ -40,8 +40,7 @@ description: >
 Пример использования плагина "hdd" для получения параметров жесткого диска:
 
 ```javascript
-const entity = entityManager.getEntity('hdd.hdd1')
-const hddParams = entity.getAttributes()
+const hddParams = EntityGetAttributes('hdd.hdd1')
 const hddSettings = entity.getSettings()
 console.log(hddSettings.mount_point);
 console.log(hddParams.path);

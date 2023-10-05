@@ -19,8 +19,7 @@ description: >
 Пример использования плагина "updated":
 
 ```javascript
-const entity = entityManager.getEntity('updater.updater')
-const updateInfo = entity.getAttributes()
+const updateInfo = EntityGetAttributes('updater.updater')
 
 console.log("Latest version:", updateInfo.latest_version);
 console.log("Latest version time:", updateInfo.latest_version_time);

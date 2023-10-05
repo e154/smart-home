@@ -24,8 +24,7 @@ description: >
 Пример использования плагина "memory" для получения параметров оперативной памяти:
 
 ```javascript
-const entity = entityManager.getEntity('memory.memory')
-const ramParams = entity.getAttributes()
+const ramParams = EntityGetAttributes('memory.memory')
 console.log(ramParams.total);
 console.log(ramParams.free);
 console.log(ramParams.used_percent);

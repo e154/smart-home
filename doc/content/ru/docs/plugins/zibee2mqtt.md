@@ -22,12 +22,12 @@ description: >
 5. `storage`: Объект `Storage`, предоставляющий доступ к хранилищу данных для кеширования и получения произвольных значений.
 6. `error`: Строка, содержащая информацию об ошибке, если таковая возникла при обработке сообщения.
 7. `success`: Булево значение, указывающее на успешное выполнение операции или обработку сообщения.
-8. `new_state`: Объект `Actor.StateParams`, представляющий новое состояние актора после выполнения операции.
+8. `new_state`: Объект `StateParams`, представляющий новое состояние актора после выполнения операции.
 
 Пример использования обработчика `zigbee2mqttEvent`:
 
 ```javascript
-function zigbee2mqttEvent() {
+function zigbee2mqttEvent(message) {
     console.log("Received MQTT message:");
     console.log("Payload:", message.payload);
     console.log("Topic:", message.topic);
@@ -51,7 +51,7 @@ function zigbee2mqttEvent() {
 дополнительных операций на основе полученных данных.
 
 ```coffeescript
-zigbee2mqttEvent = ->
+zigbee2mqttEvent =(message)->
 #print '---mqtt new event from plug---'
   if !message || message.topic.includes('/set')
     return
@@ -63,13 +63,13 @@ zigbee2mqttEvent = ->
     'state': payload.state
     'temperature': payload.temperature
     'voltage': payload.voltage
-  Actor.setState
+  EntitySetState ENTITY_ID,
     'new_state': payload.state
     'attribute_values': attrs
 ```
 
 ```coffeescript
-zigbee2mqttEvent = ->
+zigbee2mqttEvent =(message)->
   #print '---mqtt new event from button---'
   if !message
     return
@@ -86,7 +86,7 @@ zigbee2mqttEvent = ->
     attrs.click = payload.click
     attrs.action = ""
     state = payload.click + "_click"
-  Actor.setState
+  EntitySetState ENTITY_ID,
     'new_state': state.toUpperCase()
     'attribute_values': attrs
 ```

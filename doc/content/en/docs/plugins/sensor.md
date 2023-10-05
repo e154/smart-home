@@ -30,7 +30,7 @@ The `entityAction` handler allows you to perform the necessary logic in response
 Example usage of the `entityAction` handler:
 
 ```javascript
-entityManager.callAction('sensor.sensor123', 'turnOn');
+EntityCallAction('sensor.sensor123', 'turnOn');
 ```
 
 In this example, the `entityAction` handler is called with the device identifier "sensor123" and the action name "turnOn". Inside the handler, you can define the logic associated with executing the required action for the specified device.
