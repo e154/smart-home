@@ -36,7 +36,9 @@ func MustGetLogger(p string) *Logger {
 
 // Error ...
 func (l *Logger) Error(format string, args ...interface{}) {
-	zap.L().Named(l.p).Sugar().Error(format, args)
+	v := []interface{}{format}
+	v = append(v, args...)
+	zap.L().Named(l.p).Sugar().Error(v...)
 }
 
 // Errorf ...
@@ -46,7 +48,9 @@ func (l *Logger) Errorf(format string, args ...interface{}) {
 
 // Warn ...
 func (l *Logger) Warn(format string, args ...interface{}) {
-	zap.L().Named(l.p).Sugar().Warn(format)
+	v := []interface{}{format}
+	v = append(v, args...)
+	zap.L().Named(l.p).Sugar().Warn(v...)
 }
 
 // Warnf ...
@@ -56,7 +60,9 @@ func (l *Logger) Warnf(format string, args ...interface{}) {
 
 // Info ...
 func (l *Logger) Info(format string, args ...interface{}) {
-	zap.L().Named(l.p).Sugar().Info(format)
+	v := []interface{}{format}
+	v = append(v, args...)
+	zap.L().Named(l.p).Sugar().Info(v...)
 }
 
 // Infof ...
@@ -66,7 +72,9 @@ func (l *Logger) Infof(format string, args ...interface{}) {
 
 // Debug ...
 func (l *Logger) Debug(format string, args ...interface{}) {
-	zap.L().Named(l.p).Sugar().Debug(format)
+	v := []interface{}{format}
+	v = append(v, args...)
+	zap.L().Named(l.p).Sugar().Debug(v...)
 }
 
 // Debugf ...
@@ -76,7 +84,9 @@ func (l *Logger) Debugf(format string, args ...interface{}) {
 
 // Fatal ...
 func (l *Logger) Fatal(format string, args ...interface{}) {
-	zap.L().Named(l.p).Sugar().Fatal(format)
+	v := []interface{}{format}
+	v = append(v, args...)
+	zap.L().Named(l.p).Sugar().Fatal(v...)
 }
 
 // Fatalf ...
