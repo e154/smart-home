@@ -1,4 +1,4 @@
-<!doctype html><html lang=ru class=no-js>
+<!doctype html><html lang=en class=no-js>
 <head>
 <meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
@@ -14,38 +14,37 @@
 <link rel=icon type=image/png href=/smart-home/favicons/android-96x96.png sizes=96x96>
 <link rel=icon type=image/png href=/smart-home/favicons/android-144x144.png sizes=144x144>
 <link rel=icon type=image/png href=/smart-home/favicons/android-192x192.png sizes=192x192>
-<title>MQTT | Умный дом</title>
-<meta name=description content="Система проекта Smart Home включает встроенный MQTT брокер, что позволяет обмениваться сообщениями и управлять
-устройствами в умном доме с помощью …">
+<title>MQTT | Smart home</title>
+<meta name=description content="The Smart Home project system includes a built-in MQTT broker, which allows for message exchange and device control in the smart home using the MQTT …">
 <meta property="og:title" content="MQTT">
-<meta property="og:description" content="Програмный комплекс">
+<meta property="og:description" content="The program complex">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://e154.github.io/smart-home/docs/dashboard/mqtt/"><meta property="og:site_name" content="Умный дом">
+<meta property="og:url" content="https://e154.github.io/smart-home/docs/dashboard/mqtt/"><meta property="og:site_name" content="Smart home">
 <meta itemprop=name content="MQTT">
-<meta itemprop=description content="Програмный комплекс"><meta name=twitter:card content="summary">
+<meta itemprop=description content="The program complex"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="MQTT">
-<meta name=twitter:description content="Програмный комплекс">
-<link rel=preload href=/smart-home/scss/main.min.8ebd0f8570c5c2da16785e52cb8f20394c6d706e75009a748bfe4c38f7ae92c1.css as=style>
-<link href=/smart-home/scss/main.min.8ebd0f8570c5c2da16785e52cb8f20394c6d706e75009a748bfe4c38f7ae92c1.css rel=stylesheet integrity>
+<meta name=twitter:description content="The program complex">
+<link rel=preload href=/smart-home/scss/main.min.bd5285b713d3061549a6bfd34e5f4ec6775ede36672a3088260f0d420050647f.css as=style>
+<link href=/smart-home/scss/main.min.bd5285b713d3061549a6bfd34e5f4ec6775ede36672a3088260f0d420050647f.css rel=stylesheet integrity>
 <script src=https://code.jquery.com/jquery-3.5.1.min.js integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin=anonymous></script>
 </head>
 <body class=td-section>
 <header>
 <nav class="js-navbar-scroll navbar navbar-expand navbar-dark flex-column flex-md-row td-navbar">
 <a class=navbar-brand href=/smart-home/>
-<span class=navbar-logo></span><span class="text-uppercase font-weight-bold">Умный дом</span>
+<span class=navbar-logo></span><span class="text-uppercase font-weight-bold">Smart home</span>
 </a>
 <div class="td-navbar-nav-scroll ml-md-auto" id=main_navbar>
 <ul class="navbar-nav mt-2 mt-lg-0">
 <li class="nav-item mr-4 mb-2 mb-lg-0">
-<a class="nav-link active" href=/smart-home/docs/><span class=active>Документация</span></a>
+<a class="nav-link active" href=/smart-home/docs/><span class=active>Documentation</span></a>
 </li>
 <li class="nav-item dropdown mr-4 d-none d-lg-block">
 <a class="nav-link dropdown-toggle" href=# id=navbarDropdown role=button data-toggle=dropdown aria-haspopup=true aria-expanded=false>
-Русский
+English
 </a>
 <div class=dropdown-menu aria-labelledby=navbarDropdownMenuLink>
-<a class=dropdown-item href=/smart-home/en/docs/dashboard/mqtt/>English</a>
+<a class=dropdown-item href=/smart-home/ru/docs/dashboard/mqtt/>Русский</a>
 </div>
 </li>
 </ul>
@@ -75,35 +74,24 @@ This the multi-page printable view of this section.
 <ul>
 </ul>
 <div class=content>
-<p>Система проекта <strong>Smart Home</strong> включает встроенный MQTT брокер, что позволяет обмениваться сообщениями и управлять
-устройствами в умном доме с помощью протокола MQTT (Message Queuing Telemetry Transport).</p>
-<p>MQTT - это легковесный протокол обмена сообщениями, разработанный для обмена данными между устройствами в сетях с
-ограниченной пропускной способностью или низкой надежностью соединения. Он основан на модели издатель-подписчик
-(publisher-subscriber) и обеспечивает надежную доставку сообщений между устройствами.</p>
-<p>Встроенный MQTT брокер в проекте <strong>Smart Home</strong> предоставляет серверную часть для обработки MQTT сообщений.
-Он выполняет следующие функции:</p>
+<p>The <strong>Smart Home</strong> project system includes a built-in MQTT broker, which allows for message exchange and device control in the smart home using the MQTT (Message Queuing Telemetry Transport) protocol.</p>
+<p>MQTT is a lightweight messaging protocol designed for exchanging data between devices in networks with limited bandwidth or unreliable connections. It is based on the publisher-subscriber model and provides reliable message delivery between devices.</p>
+<p>The built-in MQTT broker in the <strong>Smart Home</strong> project provides the server-side component for handling MQTT messages. It performs the following functions:</p>
 <ol>
 <li>
-<p>Поддержка издателей и подписчиков: MQTT брокер принимает сообщения от издателей (publishers) и перенаправляет их
-подписчикам (subscribers). Это позволяет устройствам в умном доме обмениваться данными и управляться друг другом.</p>
+<p>Publisher and Subscriber Support: The MQTT broker accepts messages from publishers and forwards them to subscribers. This enables devices in the smart home to exchange data and control each other.</p>
 </li>
 <li>
-<p>Топики и фильтрация: MQTT брокер использует понятие &ldquo;топика&rdquo; (topic) для классификации сообщений. Подписчики могут
-подписываться на определенные топики, чтобы получать только интересующие их данные. Брокер выполняет фильтрацию
-сообщений и пересылает их только тем подписчикам, которые подписаны на соответствующие топики.</p>
+<p>Topics and Filtering: The MQTT broker uses the concept of &ldquo;topics&rdquo; to classify messages. Subscribers can subscribe to specific topics to receive only the data they are interested in. The broker filters messages and forwards them only to subscribers subscribed to the corresponding topics.</p>
 </li>
 <li>
-<p>Гарантированная доставка сообщений: MQTT брокер обеспечивает надежную доставку сообщений, гарантируя, что сообщения
-будут доставлены подписчикам даже при временных проблемах с соединением или недоступности устройств.</p>
+<p>Guaranteed Message Delivery: The MQTT broker ensures reliable message delivery, guaranteeing that messages will be delivered to subscribers even in case of temporary connection issues or device unavailability.</p>
 </li>
 <li>
-<p>Управление доступом: MQTT брокер предоставляет возможности для аутентификации и авторизации, что позволяет контролировать
-доступ к различным топикам и ограничивать доступ к устройствам и данным в умном доме.</p>
+<p>Access Control: The MQTT broker provides authentication and authorization capabilities, allowing control over access to different topics and restricting access to devices and data in the smart home.</p>
 </li>
 </ol>
-<p>Встроенный MQTT брокер в проекте <strong>Smart Home</strong> упрощает взаимодействие и интеграцию устройств в умном доме. Он предоставляет
-стабильную и эффективную среду для обмена данными и управления устройствами с использованием протокола MQTT. Это позволяет
-создавать сложные сценарии автоматизации, контролировать состояние устройств и обмениваться данными между различ</p>
+<p>The built-in MQTT broker in the <strong>Smart Home</strong> project simplifies the interaction and integration of devices in the smart home. It provides a stable and efficient environment for data exchange and device control using the MQTT protocol. This enables the creation of complex automation scenarios, monitoring device states, and exchanging data between different devices.</p>
 </div>
 </div>
 </main>
@@ -124,8 +112,8 @@ This the multi-page printable view of this section.
 </ul>
 </div>
 <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-<small class=text-white>&copy; 2023 Разработано при поддержке <a href=http://e154.ru>e154.ru</a></small>
-<div><small class="ml-1 text-white">Код лицензии <a href=https://github.com/e154/smart-home/blob/master/LICENSE>MIT</a> документы <a href=http://creativecommons.org/licenses/by/3.0/>CC BY 3.0</a></small></div>
+<small class=text-white>&copy; 2023 Powered by <a href=http://e154.ru>e154.ru</a></small>
+<div><small class="ml-1 text-white"><a href=https://github.com/e154/smart-home/blob/master/LICENSE>MIT</a> License Code Documents <a href=http://creativecommons.org/licenses/by/3.0/>CC BY 3.0</a></small></div>
 </div>
 </div>
 </div>

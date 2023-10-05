@@ -1,4 +1,4 @@
-<!doctype html><html lang=ru class=no-js>
+<!doctype html><html lang=en class=no-js>
 <head>
 <meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
@@ -13,52 +13,48 @@
 <link rel=icon type=image/png href=/smart-home/favicons/android-96x96.png sizes=96x96>
 <link rel=icon type=image/png href=/smart-home/favicons/android-144x144.png sizes=144x144>
 <link rel=icon type=image/png href=/smart-home/favicons/android-192x192.png sizes=192x192>
-<title>Zigbee2mqtt | Умный дом</title>
-<meta name=description content="Плагин &ldquo;Zigbee2mqtt&rdquo; является частью системы и предоставляет интеграцию между Zigbee-устройствами и MQTT-брокером. Этот
-плагин позволяет …">
+<title>Zigbee2mqtt | Smart home</title>
+<meta name=description content="The &ldquo;Zigbee2mqtt&rdquo; plugin is part of the system and provides integration between Zigbee devices and an MQTT broker. This plugin allows you …">
 <meta property="og:title" content="Zigbee2mqtt">
-<meta property="og:description" content="Плагин &ldquo;Zigbee2mqtt&rdquo; является частью системы и предоставляет интеграцию между Zigbee-устройствами и MQTT-брокером. Этот плагин позволяет контролировать и управлять Zigbee-устройствами через MQTT-сообщения.
-В плагине &ldquo;Zigbee2mqtt&rdquo; реализован JavaScript-обработчик zigbee2mqttEvent, который не принимает параметры. Внутри обработчика доступен объект message, представляющий информацию о полученном MQTT-сообщении.
-Свойства объекта message включают:
- payload: Значение сообщения, представленное в виде словаря (map), где ключи являются строками, а значения могут быть любого типа. topic: Топик MQTT-сообщения, указывающий на источник или назначение сообщения.">
+<meta property="og:description" content="The &ldquo;Zigbee2mqtt&rdquo; plugin is part of the system and provides integration between Zigbee devices and an MQTT broker. This plugin allows you to control and manage Zigbee devices through MQTT messages.
+The &ldquo;Zigbee2mqtt&rdquo; plugin implements a JavaScript handler called zigbee2mqttEvent, which doesn&rsquo;t take any parameters. Inside the handler, there is an accessible message object that represents the information of the received MQTT message.
+The properties of the message object include:">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://e154.github.io/smart-home/docs/plugins/zibee2mqtt/"><meta property="article:section" content="docs">
 <meta property="article:published_time" content="2021-10-20T00:00:00+00:00">
-<meta property="article:modified_time" content="2023-06-20T11:59:09+06:00"><meta property="og:site_name" content="Умный дом">
+<meta property="article:modified_time" content="2023-10-05T15:47:49+06:00"><meta property="og:site_name" content="Smart home">
 <meta itemprop=name content="Zigbee2mqtt">
-<meta itemprop=description content="Плагин &ldquo;Zigbee2mqtt&rdquo; является частью системы и предоставляет интеграцию между Zigbee-устройствами и MQTT-брокером. Этот плагин позволяет контролировать и управлять Zigbee-устройствами через MQTT-сообщения.
-В плагине &ldquo;Zigbee2mqtt&rdquo; реализован JavaScript-обработчик zigbee2mqttEvent, который не принимает параметры. Внутри обработчика доступен объект message, представляющий информацию о полученном MQTT-сообщении.
-Свойства объекта message включают:
- payload: Значение сообщения, представленное в виде словаря (map), где ключи являются строками, а значения могут быть любого типа. topic: Топик MQTT-сообщения, указывающий на источник или назначение сообщения."><meta itemprop=datePublished content="2021-10-20T00:00:00+00:00">
-<meta itemprop=dateModified content="2023-06-20T11:59:09+06:00">
-<meta itemprop=wordCount content="292">
+<meta itemprop=description content="The &ldquo;Zigbee2mqtt&rdquo; plugin is part of the system and provides integration between Zigbee devices and an MQTT broker. This plugin allows you to control and manage Zigbee devices through MQTT messages.
+The &ldquo;Zigbee2mqtt&rdquo; plugin implements a JavaScript handler called zigbee2mqttEvent, which doesn&rsquo;t take any parameters. Inside the handler, there is an accessible message object that represents the information of the received MQTT message.
+The properties of the message object include:"><meta itemprop=datePublished content="2021-10-20T00:00:00+00:00">
+<meta itemprop=dateModified content="2023-10-05T15:47:49+06:00">
+<meta itemprop=wordCount content="358">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Zigbee2mqtt">
-<meta name=twitter:description content="Плагин &ldquo;Zigbee2mqtt&rdquo; является частью системы и предоставляет интеграцию между Zigbee-устройствами и MQTT-брокером. Этот плагин позволяет контролировать и управлять Zigbee-устройствами через MQTT-сообщения.
-В плагине &ldquo;Zigbee2mqtt&rdquo; реализован JavaScript-обработчик zigbee2mqttEvent, который не принимает параметры. Внутри обработчика доступен объект message, представляющий информацию о полученном MQTT-сообщении.
-Свойства объекта message включают:
- payload: Значение сообщения, представленное в виде словаря (map), где ключи являются строками, а значения могут быть любого типа. topic: Топик MQTT-сообщения, указывающий на источник или назначение сообщения.">
-<link rel=preload href=/smart-home/scss/main.min.8ebd0f8570c5c2da16785e52cb8f20394c6d706e75009a748bfe4c38f7ae92c1.css as=style>
-<link href=/smart-home/scss/main.min.8ebd0f8570c5c2da16785e52cb8f20394c6d706e75009a748bfe4c38f7ae92c1.css rel=stylesheet integrity>
+<meta name=twitter:description content="The &ldquo;Zigbee2mqtt&rdquo; plugin is part of the system and provides integration between Zigbee devices and an MQTT broker. This plugin allows you to control and manage Zigbee devices through MQTT messages.
+The &ldquo;Zigbee2mqtt&rdquo; plugin implements a JavaScript handler called zigbee2mqttEvent, which doesn&rsquo;t take any parameters. Inside the handler, there is an accessible message object that represents the information of the received MQTT message.
+The properties of the message object include:">
+<link rel=preload href=/smart-home/scss/main.min.bd5285b713d3061549a6bfd34e5f4ec6775ede36672a3088260f0d420050647f.css as=style>
+<link href=/smart-home/scss/main.min.bd5285b713d3061549a6bfd34e5f4ec6775ede36672a3088260f0d420050647f.css rel=stylesheet integrity>
 <script src=https://code.jquery.com/jquery-3.5.1.min.js integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin=anonymous></script>
 </head>
 <body class=td-page>
 <header>
 <nav class="js-navbar-scroll navbar navbar-expand navbar-dark flex-column flex-md-row td-navbar">
 <a class=navbar-brand href=/smart-home/>
-<span class=navbar-logo></span><span class="text-uppercase font-weight-bold">Умный дом</span>
+<span class=navbar-logo></span><span class="text-uppercase font-weight-bold">Smart home</span>
 </a>
 <div class="td-navbar-nav-scroll ml-md-auto" id=main_navbar>
 <ul class="navbar-nav mt-2 mt-lg-0">
 <li class="nav-item mr-4 mb-2 mb-lg-0">
-<a class="nav-link active" href=/smart-home/docs/><span class=active>Документация</span></a>
+<a class="nav-link active" href=/smart-home/docs/><span class=active>Documentation</span></a>
 </li>
 <li class="nav-item dropdown mr-4 d-none d-lg-block">
 <a class="nav-link dropdown-toggle" href=# id=navbarDropdown role=button data-toggle=dropdown aria-haspopup=true aria-expanded=false>
-Русский
+English
 </a>
 <div class=dropdown-menu aria-labelledby=navbarDropdownMenuLink>
-<a class=dropdown-item href=/smart-home/en/docs/plugins/zibee2mqtt/>English</a>
+<a class=dropdown-item href=/smart-home/ru/docs/plugins/zibee2mqtt/>Русский</a>
 </div>
 </li>
 </ul>
@@ -79,15 +75,15 @@
 <nav class="collapse td-sidebar-nav" id=td-section-nav>
 <div class="nav-item dropdown d-block d-lg-none">
 <a class="nav-link dropdown-toggle" href=# id=navbarDropdown role=button data-toggle=dropdown aria-haspopup=true aria-expanded=false>
-Русский
+English
 </a>
 <div class=dropdown-menu aria-labelledby=navbarDropdownMenuLink>
-<a class=dropdown-item href=/smart-home/en/docs/plugins/zibee2mqtt/>English</a>
+<a class=dropdown-item href=/smart-home/ru/docs/plugins/zibee2mqtt/>Русский</a>
 </div>
 </div>
 <ul class="td-sidebar-nav__section pr-md-3 ul-0">
 <li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id=m-smart-homedocs-li>
-<a href=/smart-home/docs/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section tree-root" id=m-smart-homedocs><span>Документация</span></a>
+<a href=/smart-home/docs/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section tree-root" id=m-smart-homedocs><span>Documentation</span></a>
 <ul class=ul-1>
 <li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homedocsdashboard-li>
 <a href=/smart-home/docs/dashboard/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocsdashboard><span>Dashboard</span></a>
@@ -112,12 +108,12 @@
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homedocsjavascript-li>
 <a href=/smart-home/docs/javascript/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocsjavascript><span>Javascript</span></a>
 <ul class="ul-2 foldable">
-<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascriptactor-li>
-<a href=/smart-home/docs/javascript/actor/ title=Actor class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascriptactor><span>actor</span></a>
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascriptencryption-li>
+<a href=/smart-home/docs/javascript/encryption/ title=Encryption class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascriptencryption><span>encryption</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascriptgeo-li>
+<a href=/smart-home/docs/javascript/geo/ title=Geography class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascriptgeo><span>geography</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascriptentity-li>
-<a href=/smart-home/docs/javascript/entity/ title=Устройство class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascriptentity><span>entity</span></a>
-</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascriptentity_manager-li>
-<a href=/smart-home/docs/javascript/entity_manager/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascriptentity_manager><span>entityManager</span></a>
+<a href=/smart-home/docs/javascript/entity/ title=Entity class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascriptentity><span>entity</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascripthex2arr-li>
 <a href=/smart-home/docs/javascript/hex2arr/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascripthex2arr><span>hex2arr</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascriptmarshal-li>
@@ -129,13 +125,13 @@
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascriptunmarshal-li>
 <a href=/smart-home/docs/javascript/unmarshal/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascriptunmarshal><span>unmarshal</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascriptexecute-li>
-<a href=/smart-home/docs/javascript/execute/ title="Выполнение системных команд" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascriptexecute><span>execute</span></a>
+<a href=/smart-home/docs/javascript/execute/ title=Execute class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascriptexecute><span>execute</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascriptlog-li>
-<a href=/smart-home/docs/javascript/log/ title=Логирование class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascriptlog><span>log</span></a>
+<a href=/smart-home/docs/javascript/log/ title=Log class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascriptlog><span>log</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascriptstorage-li>
-<a href=/smart-home/docs/javascript/storage/ title="Временное хранилище" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascriptstorage><span>storage</span></a>
+<a href=/smart-home/docs/javascript/storage/ title=Storage class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascriptstorage><span>storage</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascripthttp-li>
-<a href=/smart-home/docs/javascript/http/ title="http запросы" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascripthttp><span>http</span></a>
+<a href=/smart-home/docs/javascript/http/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascripthttp><span>http</span></a>
 </li>
 </ul>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id=m-smart-homedocsplugins-li>
@@ -186,10 +182,10 @@
 <a href=/smart-home/docs/plugins/notify/slack/ title=Slack class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsnotifyslack><span>slack</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsnotifytelegram-li>
 <a href=/smart-home/docs/plugins/notify/telegram/ title=Telegram class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsnotifytelegram><span>telegram</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsnotifytemplate-li>
+<a href=/smart-home/docs/plugins/notify/template/ title=Templates class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsnotifytemplate><span>templates</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsnotifytwilio-li>
 <a href=/smart-home/docs/plugins/notify/twilio/ title=Twilio class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsnotifytwilio><span>twilio</span></a>
-</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsnotifytemplate-li>
-<a href=/smart-home/docs/plugins/notify/template/ title="Шаблон сообщения" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsnotifytemplate><span>шаблоны</span></a>
 </li>
 </ul>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsscene-li>
@@ -217,8 +213,6 @@
 </ul>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child active-path" id=m-smart-homedocspluginszibee2mqtt-li>
 <a href=/smart-home/docs/plugins/zibee2mqtt/ title=Zigbee2mqtt class="align-left pl-0 active td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginszibee2mqtt><span class=td-sidebar-nav-active-item>zigbee2mqtt</span></a>
-</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginszone-li>
-<a href=/smart-home/docs/plugins/zone/ title=Zone class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginszone><span>zone</span></a>
 </li>
 </ul>
 </li>
@@ -230,10 +224,10 @@
 </aside>
 <aside class="d-none d-xl-block col-xl-2 td-sidebar-toc d-print-none">
 <div class="td-page-meta ml-2 pb-1 pt-2 mb-0">
-<a href=https://github.com/e154/smart-home/edit/master/content/ru/docs/plugins/zibee2mqtt.md target=_blank><i class="fa fa-edit fa-fw"></i> Отредактировать страницу</a>
-<a href="https://github.com/e154/smart-home/new/master/content/ru/docs/plugins/zibee2mqtt.md?filename=change-me.md&value=---%0Atitle%3A+%22Long+Page+Title%22%0AlinkTitle%3A+%22Short+Nav+Title%22%0Aweight%3A+100%0Adescription%3A+%3E-%0A+++++Page+description+for+heading+and+indexes.%0A---%0A%0A%23%23+Heading%0A%0AEdit+this+template+to+create+your+new+page.%0A%0A%2A+Give+it+a+good+name%2C+ending+in+%60.md%60+-+e.g.+%60getting-started.md%60%0A%2A+Edit+the+%22front+matter%22+section+at+the+top+of+the+page+%28weight+controls+how+its+ordered+amongst+other+pages+in+the+same+directory%3B+lowest+number+first%29.%0A%2A+Add+a+good+commit+message+at+the+bottom+of+the+page+%28%3C80+characters%3B+use+the+extended+description+field+for+more+detail%29.%0A%2A+Create+a+new+branch+so+you+can+preview+your+new+file+and+request+a+review+via+Pull+Request.%0A" target=_blank><i class="fa fa-edit fa-fw"></i> Create child page</a>
-<a href="https://github.com/e154/smart-home/issues/new?title=Zigbee2mqtt" target=_blank><i class="fab fa-github fa-fw"></i> Предложить изменения документации</a>
-<a href=https://github.com/e154/smart-home/issues/new target=_blank><i class="fas fa-tasks fa-fw"></i> Предложить доработки по проекту</a>
+<a href=https://github.com/e154/smart-home/edit/master/content/en/docs/plugins/zibee2mqtt.md target=_blank><i class="fa fa-edit fa-fw"></i> Edit this page</a>
+<a href="https://github.com/e154/smart-home/new/master/content/en/docs/plugins/zibee2mqtt.md?filename=change-me.md&value=---%0Atitle%3A+%22Long+Page+Title%22%0AlinkTitle%3A+%22Short+Nav+Title%22%0Aweight%3A+100%0Adescription%3A+%3E-%0A+++++Page+description+for+heading+and+indexes.%0A---%0A%0A%23%23+Heading%0A%0AEdit+this+template+to+create+your+new+page.%0A%0A%2A+Give+it+a+good+name%2C+ending+in+%60.md%60+-+e.g.+%60getting-started.md%60%0A%2A+Edit+the+%22front+matter%22+section+at+the+top+of+the+page+%28weight+controls+how+its+ordered+amongst+other+pages+in+the+same+directory%3B+lowest+number+first%29.%0A%2A+Add+a+good+commit+message+at+the+bottom+of+the+page+%28%3C80+characters%3B+use+the+extended+description+field+for+more+detail%29.%0A%2A+Create+a+new+branch+so+you+can+preview+your+new+file+and+request+a+review+via+Pull+Request.%0A" target=_blank><i class="fa fa-edit fa-fw"></i> Create child page</a>
+<a href="https://github.com/e154/smart-home/issues/new?title=Zigbee2mqtt" target=_blank><i class="fab fa-github fa-fw"></i> Create documentation issue</a>
+<a href=https://github.com/e154/smart-home/issues/new target=_blank><i class="fas fa-tasks fa-fw"></i> Create project issue</a>
 <a id=print href=https://e154.github.io/smart-home/docs/plugins/_print/><i class="fa fa-print fa-fw"></i> Print entire section</a>
 </div>
 </aside>
@@ -241,7 +235,7 @@
 <nav aria-label=breadcrumb class="d-none d-md-block d-print-none">
 <ol class="breadcrumb spb-1">
 <li class=breadcrumb-item>
-<a href=https://e154.github.io/smart-home/docs/>Документация</a>
+<a href=https://e154.github.io/smart-home/docs/>Documentation</a>
 </li>
 <li class=breadcrumb-item>
 <a href=https://e154.github.io/smart-home/docs/plugins/>Plugins</a>
@@ -255,23 +249,21 @@
 <h1>Zigbee2mqtt</h1>
 <header class=article-meta>
 </header>
-<p>Плагин &ldquo;Zigbee2mqtt&rdquo; является частью системы и предоставляет интеграцию между Zigbee-устройствами и MQTT-брокером. Этот
-плагин позволяет контролировать и управлять Zigbee-устройствами через MQTT-сообщения.</p>
-<p>В плагине &ldquo;Zigbee2mqtt&rdquo; реализован JavaScript-обработчик <code>zigbee2mqttEvent</code>, который не принимает параметры. Внутри
-обработчика доступен объект <code>message</code>, представляющий информацию о полученном MQTT-сообщении.</p>
-<p>Свойства объекта <code>message</code> включают:</p>
+<p>The &ldquo;Zigbee2mqtt&rdquo; plugin is part of the system and provides integration between Zigbee devices and an MQTT broker. This plugin allows you to control and manage Zigbee devices through MQTT messages.</p>
+<p>The &ldquo;Zigbee2mqtt&rdquo; plugin implements a JavaScript handler called <code>zigbee2mqttEvent</code>, which doesn&rsquo;t take any parameters. Inside the handler, there is an accessible <code>message</code> object that represents the information of the received MQTT message.</p>
+<p>The properties of the <code>message</code> object include:</p>
 <ol>
-<li><code>payload</code>: Значение сообщения, представленное в виде словаря (map), где ключи являются строками, а значения могут быть любого типа.</li>
-<li><code>topic</code>: Топик MQTT-сообщения, указывающий на источник или назначение сообщения.</li>
-<li><code>qos</code>: Уровень качества обслуживания (Quality of Service) MQTT-сообщения.</li>
-<li><code>duplicate</code>: Флаг, указывающий, является ли сообщение дубликатом.</li>
-<li><code>storage</code>: Объект <code>Storage</code>, предоставляющий доступ к хранилищу данных для кеширования и получения произвольных значений.</li>
-<li><code>error</code>: Строка, содержащая информацию об ошибке, если таковая возникла при обработке сообщения.</li>
-<li><code>success</code>: Булево значение, указывающее на успешное выполнение операции или обработку сообщения.</li>
-<li><code>new_state</code>: Объект <code>Actor.StateParams</code>, представляющий новое состояние актора после выполнения операции.</li>
+<li><code>payload</code>: The value of the message, represented as a dictionary (map) where the keys are strings and the values can be of any type.</li>
+<li><code>topic</code>: The MQTT message topic, indicating the source or destination of the message.</li>
+<li><code>qos</code>: The Quality of Service level of the MQTT message.</li>
+<li><code>duplicate</code>: A flag indicating whether the message is a duplicate.</li>
+<li><code>storage</code>: A <code>Storage</code> object that provides access to a data store for caching and retrieving arbitrary values.</li>
+<li><code>error</code>: A string containing information about an error if one occurred during message processing.</li>
+<li><code>success</code>: A boolean value indicating the successful completion of an operation or message processing.</li>
+<li><code>new_state</code>: An <code>StateParams</code> object representing the new state of an actor after an operation is performed.</li>
 </ol>
-<p>Пример использования обработчика <code>zigbee2mqttEvent</code>:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#204a87;font-weight:700>function</span> <span style=color:#000>zigbee2mqttEvent</span><span style=color:#000;font-weight:700>()</span> <span style=color:#000;font-weight:700>{</span>
+<p>Here&rsquo;s an example of using the <code>zigbee2mqttEvent</code> handler:</p>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#204a87;font-weight:700>function</span> <span style=color:#000>zigbee2mqttEvent</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>message</span><span style=color:#000;font-weight:700>)</span> <span style=color:#000;font-weight:700>{</span>
     <span style=color:#000>console</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>log</span><span style=color:#000;font-weight:700>(</span><span style=color:#4e9a06>&#34;Received MQTT message:&#34;</span><span style=color:#000;font-weight:700>);</span>
     <span style=color:#000>console</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>log</span><span style=color:#000;font-weight:700>(</span><span style=color:#4e9a06>&#34;Payload:&#34;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>message</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span><span style=color:#000;font-weight:700>);</span>
     <span style=color:#000>console</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>log</span><span style=color:#000;font-weight:700>(</span><span style=color:#4e9a06>&#34;Topic:&#34;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>message</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>topic</span><span style=color:#000;font-weight:700>);</span>
@@ -285,14 +277,14 @@
         <span style=color:#000>console</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>log</span><span style=color:#000;font-weight:700>(</span><span style=color:#4e9a06>&#34;New state:&#34;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>message</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>new_state</span><span style=color:#000;font-weight:700>);</span>
     <span style=color:#000;font-weight:700>}</span>
 
-    <span style=color:#8f5902;font-style:italic>// Доступ к хранилищу
+    <span style=color:#8f5902;font-style:italic>// Accessing the storage
 </span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>value</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>message</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>storage</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>getByName</span><span style=color:#000;font-weight:700>(</span><span style=color:#4e9a06>&#34;key&#34;</span><span style=color:#000;font-weight:700>);</span>
     <span style=color:#000>console</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>log</span><span style=color:#000;font-weight:700>(</span><span style=color:#4e9a06>&#34;Value from storage:&#34;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>value</span><span style=color:#000;font-weight:700>);</span>
 <span style=color:#000;font-weight:700>}</span>
-</code></pre></div><p>Обработчик <code>zigbee2mqttEvent</code> может быть использован для обработки входящих MQTT-сообщений, а также для выполнения
-дополнительных операций на основе полученных данных.</p>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>zigbee2mqttEvent = </span><span style=color:#000>-&gt;</span>
-<span style=color:#8f5902;font-style:italic>#print &#39;---mqtt new event from plug---&#39;
+</code></pre></div><p>The <code>zigbee2mqttEvent</code> handler can be used to process incoming MQTT messages and perform additional operations based on the received data.</p>
+<p>Here&rsquo;s an example in CoffeeScript:</p>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>zigbee2mqttEvent</span> <span style=color:#ce5c00;font-weight:700>=</span><span style=color:#000>(message)-&gt;</span>
+  <span style=color:#8f5902;font-style:italic># Print &#39;---mqtt new event from plug---&#39;
 </span><span style=color:#8f5902;font-style:italic></span>  <span style=color:#204a87;font-weight:700>if</span> <span style=color:#ce5c00;font-weight:700>!</span><span style=color:#000>message</span> <span style=color:#ce5c00;font-weight:700>||</span> <span style=color:#000>message</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>topic</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>includes</span><span style=color:#000;font-weight:700>(</span><span style=color:#4e9a06>&#39;/set&#39;</span><span style=color:#000;font-weight:700>)</span>
     <span style=color:#204a87;font-weight:700>return</span>
   <span style=color:#000>payload = </span><span style=color:#000>unmarshal</span> <span style=color:#000>message</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
@@ -303,11 +295,11 @@
     <span style=color:#4e9a06>&#39;state&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000>payload</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>state</span>
     <span style=color:#4e9a06>&#39;temperature&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000>payload</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>temperature</span>
     <span style=color:#4e9a06>&#39;voltage&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000>payload</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>voltage</span>
-  <span style=color:#000>Actor</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>setState</span>
+  <span style=color:#000>EntitySetState</span> <span style=color:#000>ENTITY_ID</span><span style=color:#000;font-weight:700>,</span>
     <span style=color:#4e9a06>&#39;new_state&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000>payload</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>state</span>
     <span style=color:#4e9a06>&#39;attribute_values&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000>attrs</span>
-</code></pre></div><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>zigbee2mqttEvent = </span><span style=color:#000>-&gt;</span>
-  <span style=color:#8f5902;font-style:italic>#print &#39;---mqtt new event from button---&#39;
+</code></pre></div><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>zigbee2mqttEvent</span> <span style=color:#ce5c00;font-weight:700>=</span><span style=color:#000>(message)-&gt;</span>
+  <span style=color:#8f5902;font-style:italic># Print &#39;---mqtt new event from button---&#39;
 </span><span style=color:#8f5902;font-style:italic></span>  <span style=color:#204a87;font-weight:700>if</span> <span style=color:#ce5c00;font-weight:700>!</span><span style=color:#000>message</span>
     <span style=color:#204a87;font-weight:700>return</span>
   <span style=color:#000>payload = </span><span style=color:#000>unmarshal</span> <span style=color:#000>message</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
@@ -323,12 +315,12 @@
     <span style=color:#000>attrs.click = </span><span style=color:#000>payload</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>click</span>
     <span style=color:#000>attrs.action = </span><span style=color:#4e9a06>&#34;&#34;</span>
     <span style=color:#000>state = </span><span style=color:#000>payload</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>click</span> <span style=color:#ce5c00;font-weight:700>+</span> <span style=color:#4e9a06>&#34;_click&#34;</span>
-  <span style=color:#000>Actor</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>setState</span>
+  <span style=color:#000>EntitySetState</span> <span style=color:#000>ENTITY_ID</span><span style=color:#000;font-weight:700>,</span>
     <span style=color:#4e9a06>&#39;new_state&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000>state</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>toUpperCase</span><span style=color:#000;font-weight:700>()</span>
     <span style=color:#4e9a06>&#39;attribute_values&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000>attrs</span>
 </code></pre></div>
 <div class="text-muted mt-5 pt-3 border-top">
-Изменено 20.06.2023: <a href=https://github.com/e154/smart-home/commit/4f7f3b2f4f7e2529b1f5457029f2ed16264ead36>Merge pull request #225 from e154/develop (4f7f3b2)</a>
+Last modified October 5, 2023: <a href=https://github.com/e154/smart-home/commit/0ad9070fd3a5cbe557738e5e34c64c1590a401b8>Merge pull request #242 from e154/develop (0ad9070)</a>
 </div>
 </div>
 </main>
@@ -349,8 +341,8 @@
 </ul>
 </div>
 <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-<small class=text-white>&copy; 2023 Разработано при поддержке <a href=http://e154.ru>e154.ru</a></small>
-<div><small class="ml-1 text-white">Код лицензии <a href=https://github.com/e154/smart-home/blob/master/LICENSE>MIT</a> документы <a href=http://creativecommons.org/licenses/by/3.0/>CC BY 3.0</a></small></div>
+<small class=text-white>&copy; 2023 Powered by <a href=http://e154.ru>e154.ru</a></small>
+<div><small class="ml-1 text-white"><a href=https://github.com/e154/smart-home/blob/master/LICENSE>MIT</a> License Code Documents <a href=http://creativecommons.org/licenses/by/3.0/>CC BY 3.0</a></small></div>
 </div>
 </div>
 </div>

@@ -1,0 +1,433 @@
+<!doctype html><html lang=ru class=no-js>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<meta name=generator content="Hugo 0.89.4"><link rel=canonical type=text/html href=https://e154.github.io/smart-home/ru/docs/dashboard/>
+<meta name=ROBOTS content="NOINDEX, NOFOLLOW">
+<link rel="shortcut icon" href=/smart-home/favicons/favicon.ico>
+<link rel=apple-touch-icon href=/smart-home/favicons/apple-touch-icon-180x180.png sizes=180x180>
+<link rel=icon type=image/png href=/smart-home/favicons/favicon-16x16.png sizes=16x16>
+<link rel=icon type=image/png href=/smart-home/favicons/favicon-32x32.png sizes=32x32>
+<link rel=icon type=image/png href=/smart-home/favicons/android-36x36.png sizes=36x36>
+<link rel=icon type=image/png href=/smart-home/favicons/android-48x48.png sizes=48x48>
+<link rel=icon type=image/png href=/smart-home/favicons/android-72x72.png sizes=72x72>
+<link rel=icon type=image/png href=/smart-home/favicons/android-96x96.png sizes=96x96>
+<link rel=icon type=image/png href=/smart-home/favicons/android-144x144.png sizes=144x144>
+<link rel=icon type=image/png href=/smart-home/favicons/android-192x192.png sizes=192x192>
+<title>Dashboard | Умный дом</title>
+<meta name=description content="
+
+     
+
+
+ 
+ 
+Проект Smart Home включает в себя мощный конструктор панели управления (dashboard), который позволяет пользователям
+создавать …">
+<meta property="og:title" content="Dashboard">
+<meta property="og:description" content="Програмный комплекс">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://e154.github.io/smart-home/ru/docs/dashboard/"><meta property="og:site_name" content="Умный дом">
+<meta itemprop=name content="Dashboard">
+<meta itemprop=description content="Програмный комплекс"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="Dashboard">
+<meta name=twitter:description content="Програмный комплекс">
+<link rel=preload href=/smart-home/scss/main.min.bd5285b713d3061549a6bfd34e5f4ec6775ede36672a3088260f0d420050647f.css as=style>
+<link href=/smart-home/scss/main.min.bd5285b713d3061549a6bfd34e5f4ec6775ede36672a3088260f0d420050647f.css rel=stylesheet integrity>
+<script src=https://code.jquery.com/jquery-3.5.1.min.js integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin=anonymous></script>
+</head>
+<body class=td-section>
+<header>
+<nav class="js-navbar-scroll navbar navbar-expand navbar-dark flex-column flex-md-row td-navbar">
+<a class=navbar-brand href=/smart-home/ru/>
+<span class=navbar-logo></span><span class="text-uppercase font-weight-bold">Умный дом</span>
+</a>
+<div class="td-navbar-nav-scroll ml-md-auto" id=main_navbar>
+<ul class="navbar-nav mt-2 mt-lg-0">
+<li class="nav-item mr-4 mb-2 mb-lg-0">
+<a class="nav-link active" href=/smart-home/ru/docs/><span class=active>Документация</span></a>
+</li>
+<li class="nav-item dropdown mr-4 d-none d-lg-block">
+<a class="nav-link dropdown-toggle" href=# id=navbarDropdown role=button data-toggle=dropdown aria-haspopup=true aria-expanded=false>
+Русский
+</a>
+<div class=dropdown-menu aria-labelledby=navbarDropdownMenuLink>
+<a class=dropdown-item href=/smart-home/docs/dashboard/>English</a>
+</div>
+</li>
+</ul>
+</div>
+<div class="navbar-nav d-none d-lg-block">
+</div>
+</nav>
+</header>
+<div class="container-fluid td-outer">
+<div class=td-main>
+<div class="row flex-xl-nowrap">
+<div class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none">
+</div>
+<div class="d-none d-xl-block col-xl-2 td-toc d-print-none">
+</div>
+<main class="col-12 col-md-9 col-xl-8 pl-md-5" role=main>
+<div class=td-content>
+<div class="pageinfo pageinfo-primary d-print-none">
+<p>
+This the multi-page printable view of this section.
+<a href=# onclick="return print(),!1">Click here to print</a>.
+</p><p>
+<a href=/smart-home/ru/docs/dashboard/>Return to the regular view of this page</a>.
+</p>
+</div>
+<h1 class=title>Dashboard</h1>
+<ul>
+<li>1: <a href=#pg-6bea25be625ccc9f997ef24efc5fe445>Entity</a></li>
+<li>2: <a href=#pg-92a1ce490d5b2270e82a38d7ec4e5f5e>Automation</a></li>
+<ul>
+<li>2.1: <a href=#pg-663b794f38e2652ec4da941b3cce1ac3>Actions</a></li>
+<li>2.2: <a href=#pg-f398915e040cbcdbf88478a38ed8f7c1>Conditions</a></li>
+<li>2.3: <a href=#pg-649333aa8bab35b619f6967595405b2d>Triggers</a></li>
+</ul>
+<li>3: <a href=#pg-4177dcddfec763697e168bfb1da48ab1>MQTT</a></li>
+<ul>
+</ul>
+</ul>
+<div class=content>
+<figure>
+<img src=/smart-home/dashboard1.png>
+</figure>
+<p> </p>
+<p> </p>
+<p>Проект <strong>Smart Home</strong> включает в себя мощный конструктор панели управления (dashboard), который позволяет пользователям
+создавать индивидуальные пользовательские интерфейсы для контроля и управления своим умным домом.</p>
+<p>Конструктор панели управления предоставляет гибкий и интуитивно понятный способ настройки визуального представления
+умного дома. Пользователи могут создавать персонализированные панели управления, располагая виджеты и элементы управления
+в удобном для них порядке.</p>
+<p>С использованием конструктора панели управления, вы можете добавлять и настраивать различные виджеты, такие как кнопки
+управления, ползунки, датчики, графики и многое другое. Вы можете выбирать и располагать эти виджеты на панели управления
+таким образом, чтобы отображать и контролировать нужные вам устройства и функции.</p>
+<p>Конструктор панели управления также предоставляет возможность создавать пользовательские макеты и группы виджетов для
+организации и структурирования панели управления. Это позволяет пользователю создавать несколько панелей управления для
+разных зон или функциональных областей умного дома.</p>
+<p>Благодаря гибким настройкам и функциям конструктора панели управления, вы можете создавать уникальные пользовательские
+интерфейсы, отображающие и управляющие вашими устройствами и системами умного дома так, как вам удобно. Вы можете выбирать
+цветовые схемы, шрифты, размещение виджетов и другие параметры, чтобы создать панель управления, которая соответствует вашим предпочтениям и стилю.</p>
+<p>В документации проекта <strong>Smart Home</strong> вы найдете подробные инструкции по использованию конструктора панели управления, а
+также примеры создания и настройки пользовательских интерфейсов. Это позволит вам создать индивидуальный и удобный
+пользовательский опыт для управления вашим умным домом и взаимодействия с его функциями.</p>
+</div>
+</div>
+<div class=td-content style=page-break-before:always>
+<h1 id=pg-6bea25be625ccc9f997ef24efc5fe445>1 - Entity</h1>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>+---------------------+
+<span style=color:#000;font-weight:700>|</span>       Entity        <span style=color:#000;font-weight:700>|</span>
++---------------------+
+<span style=color:#000;font-weight:700>|</span>      Actions        <span style=color:#000;font-weight:700>|</span>
+<span style=color:#000;font-weight:700>|</span>      State          <span style=color:#000;font-weight:700>|</span>
+<span style=color:#000;font-weight:700>|</span>    Attributes       <span style=color:#000;font-weight:700>|</span>
+<span style=color:#000;font-weight:700>|</span>     Settings        <span style=color:#000;font-weight:700>|</span>
+<span style=color:#000;font-weight:700>|</span>      Metrics        <span style=color:#000;font-weight:700>|</span>
+<span style=color:#000;font-weight:700>|</span>      Storage        <span style=color:#000;font-weight:700>|</span>
++---------------------+
+</code></pre></div><p>Это простая схема, которая представляет объект &ldquo;Entity&rdquo;.
+Каждый компонент имеет свою роль и функциональность в управлении и мониторинге объекта &ldquo;Entity&rdquo; в умном доме.</p>
+<p>Объект &ldquo;Entity&rdquo; является центральным элементом системы Smart Home и объединяет различные аспекты объекта, его состояния,
+атрибутов, действий, настроек и метрик. Это позволяет системе эффективно управлять и контролировать объекты в умном доме.</p>
+<p>Вот подробное описание компонентов объекта &ldquo;Entity&rdquo;:</p>
+<ol>
+<li>
+<p>Actions (Действия): Объект &ldquo;Entity&rdquo; может принимать и обрабатывать различные действия или команды. Действия представляют
+собой операции, которые можно выполнить над объектом, такие как включение, выключение, изменение параметров и т.д.</p>
+</li>
+<li>
+<p>State (Состояние): Объект &ldquo;Entity&rdquo; имеет список состояний, в которые он может переходить. В каждый конкретный момент
+времени объект может находиться только в одном состоянии. Примеры состояний могут включать &ldquo;Включено&rdquo;, &ldquo;Выключено&rdquo;,
+&ldquo;Режим ожидания&rdquo;, &ldquo;Воспроизведение&rdquo; и т.д.</p>
+</li>
+<li>
+<p>Attributes (Атрибуты): Атрибуты представляют собой хранилище состояния объекта. Это заранее определенный перечень
+полей и свойств, который содержит информацию о текущем состоянии объекта. Атрибуты могут быть представлены в виде map[string]any,
+где ключ - имя атрибута, а значение - соответствующее значение атрибута.</p>
+</li>
+<li>
+<p>Settings (Настройки): Настройки объекта &ldquo;Entity&rdquo; представляют собой неизменяемый заранее определенный перечень полей и свойств.
+Они определяют конфигурационные параметры объекта, которые могут быть установлены во время его настройки. Настройки также могут
+быть представлены в виде map[string]any.</p>
+</li>
+<li>
+<p>Metrics (Метрики): Метрики объекта &ldquo;Entity&rdquo; представляют собой информацию о его атрибутах или состоянии, которая используется
+для мониторинга и измерения производительности или поведения объекта. Метрики могут включать такие данные, как среднее значение
+атрибута, количество изменений состояния и т.д.</p>
+</li>
+<li>
+<p>Storage (Хранилище): Хранилище объекта &ldquo;Entity&rdquo; предоставляет историю изменений его состояния или атрибутов. Оно записывает
+и сохраняет предыдущие значения, позволяя отслеживать и анализировать историю изменений объекта. Хранилище может использоваться
+для отображения графиков, аналитики или выполнения других операций с историческими данными объекта.</p>
+</li>
+</ol>
+<p>Объект &ldquo;Entity&rdquo; собирает все эти компоненты вместе, обеспечивая унифицированный и гибкий подход
+к управлению и мониторингу различных устройств и систем в умном доме.</p>
+<p>В системе Smart Home каждый объект &ldquo;Entity&rdquo; реализован на основе определенного плагина. Плагины предоставляют различные
+функциональности и возможности для объектов &ldquo;Entity&rdquo; в системе. Некоторые популярные плагины, которые могут быть
+использованы для создания объектов &ldquo;Entity&rdquo;, включают плагины sensor, mqtt, weather, automation, и другие.</p>
+<p>Когда создается новый объект &ldquo;Entity&rdquo;, он связывается с определенным плагином, который определяет его функциональность и
+возможности. Например, если объект &ldquo;Entity&rdquo; представляет собой датчик, то для его реализации может использоваться плагин
+sensor. Если объект &ldquo;Entity&rdquo; предназначен для взаимодействия с брокером MQTT, то для него может быть использован плагин mqtt.</p>
+<p>Каждый плагин предоставляет свои собственные хэндлеры (обработчики) и методы, которые позволяют объектам &ldquo;Entity&rdquo; выполнять
+определенные действия, получать данные, отправлять сообщения и т.д.</p>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>              +-----------------------+
+              <span style=color:#000;font-weight:700>|</span>                       <span style=color:#000;font-weight:700>|</span>
+              <span style=color:#000;font-weight:700>|</span>     Smart Home        <span style=color:#000;font-weight:700>|</span>
+              <span style=color:#000;font-weight:700>|</span>                       <span style=color:#000;font-weight:700>|</span>
+              +-----------------------+
+                         <span style=color:#000;font-weight:700>|</span>
+                         <span style=color:#000;font-weight:700>|</span>
+                         v
+              +-----------------------+
+              <span style=color:#000;font-weight:700>|</span>                       <span style=color:#000;font-weight:700>|</span>
+              <span style=color:#000;font-weight:700>|</span>       Entities        <span style=color:#000;font-weight:700>|</span>
+              <span style=color:#000;font-weight:700>|</span>                       <span style=color:#000;font-weight:700>|</span>
+              +-----------------------+
+                         <span style=color:#000;font-weight:700>|</span>
+                         <span style=color:#000;font-weight:700>|</span>
+                         v
+   +----------------------------------------+
+   <span style=color:#000;font-weight:700>|</span>                                        <span style=color:#000;font-weight:700>|</span>
+   <span style=color:#000;font-weight:700>|</span>              Plugins                   <span style=color:#000;font-weight:700>|</span>
+   <span style=color:#000;font-weight:700>|</span>                                        <span style=color:#000;font-weight:700>|</span>
+   +----------------------------------------+
+   <span style=color:#000;font-weight:700>|</span>             <span style=color:#000;font-weight:700>|</span>           <span style=color:#000;font-weight:700>|</span>              <span style=color:#000;font-weight:700>|</span>
+   <span style=color:#000;font-weight:700>|</span>             <span style=color:#000;font-weight:700>|</span>           <span style=color:#000;font-weight:700>|</span>              <span style=color:#000;font-weight:700>|</span>
+   v             v           v              v
++----------+ +----------+ +----------+ +----------+
+<span style=color:#000;font-weight:700>|</span>          <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span>          <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span>          <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span>          <span style=color:#000;font-weight:700>|</span>
+<span style=color:#000;font-weight:700>|</span>  Plugin  <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span>  Plugin  <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span>  Plugin  <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span>  Plugin  <span style=color:#000;font-weight:700>|</span>
+<span style=color:#000;font-weight:700>|</span>          <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span>          <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span>          <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span>          <span style=color:#000;font-weight:700>|</span>
++----------+ +----------+ +----------+ +----------+
+   <span style=color:#000;font-weight:700>|</span>             <span style=color:#000;font-weight:700>|</span>           <span style=color:#000;font-weight:700>|</span>              <span style=color:#000;font-weight:700>|</span>
+   <span style=color:#000;font-weight:700>|</span>             <span style=color:#000;font-weight:700>|</span>           <span style=color:#000;font-weight:700>|</span>              <span style=color:#000;font-weight:700>|</span>
+   v             v           v              v
++----------+ +----------+ +----------+ +----------+
+<span style=color:#000;font-weight:700>|</span>          <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span>          <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span>          <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span>          <span style=color:#000;font-weight:700>|</span>
+<span style=color:#000;font-weight:700>|</span> Entity <span style=color:#0000cf;font-weight:700>1</span> <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span> Entity <span style=color:#0000cf;font-weight:700>2</span> <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span> Entity <span style=color:#0000cf;font-weight:700>3</span> <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span> Entity <span style=color:#0000cf;font-weight:700>4</span> <span style=color:#000;font-weight:700>|</span>
+<span style=color:#000;font-weight:700>|</span>          <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span>          <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span>          <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span>          <span style=color:#000;font-weight:700>|</span>
++----------+ +----------+ +----------+ +----------+
+
+                     ^
+                     <span style=color:#000;font-weight:700>|</span>
+                     <span style=color:#000;font-weight:700>|</span>
+              +------------------+
+              <span style=color:#000;font-weight:700>|</span>                  <span style=color:#000;font-weight:700>|</span>
+              <span style=color:#000;font-weight:700>|</span>  Automation      <span style=color:#000;font-weight:700>|</span>
+              <span style=color:#000;font-weight:700>|</span>                  <span style=color:#000;font-weight:700>|</span>
+              +------------------+
+</code></pre></div><p>На схеме представлена общая структура связи между объектами &ldquo;Entity&rdquo;, плагинами и компонентом автоматизации в системе Smart Home.</p>
+<ol>
+<li>Smart Home является центральной частью системы и координирует взаимодействие между всеми компонентами.</li>
+<li>Объекты &ldquo;Entity&rdquo; представляют конкретные устройства, датчики или другие компоненты в системе. Каждый объект &ldquo;Entity&rdquo; может использовать определенный плагин для своей реализации.</li>
+<li>Плагины предоставляют функциональность и возможности для объектов &ldquo;Entity&rdquo;. Они содержат логику и методы, которые позволяют объектам &ldquo;Entity&rdquo; взаимодействовать с внешними устройствами, собирать данные, отправлять команды и т.д.</li>
+<li>Компонент автоматизации отвечает за создание сценариев и запуск определенных действий на основе условий и триггеров. Он может использовать объекты &ldquo;Entity&rdquo; и их плагины для определения условий, триггеров и действий в сценариях.</li>
+</ol>
+<p>Такая структура позволяет системе Smart Home быть гибкой и расширяемой, так как новые плагины и объекты &ldquo;Entity&rdquo; могут быть добавлены,
+а компонент автоматизации может использовать их для создания разнообразных сценариев и автоматизации действий.</p>
+</div>
+<div class=td-content style=page-break-before:always>
+<h1 id=pg-92a1ce490d5b2270e82a38d7ec4e5f5e>2 - Automation</h1>
+<p>В системе присутствует компонент &ldquo;Automation&rdquo;, который предназначен для реализации сценариев и автоматизированных ответов
+на определенные действия или события. Он позволяет создавать и настраивать автоматические действия, которые выполняются при
+выполнении определенных условий или триггеров.</p>
+<p>Компонент &ldquo;Automation&rdquo; предоставляет возможности для создания сложных сценариев, объединения нескольких действий, проверки
+условий и взаимодействия с различными устройствами или сервисами в системе. Каждый сценарий включает в себя три основных
+компонента: триггеры (Triggers), условия (Conditions) и действия (Actions).</p>
+<p>Вот схематическое представление работы сценария автоматизации:</p>
+<pre tabindex=0><code>              +----------------+
+              |   Triggers     |
+              |   (Триггеры)   |
+              +-------+--------+
+                      |
+                      v
+              +----------------+
+              |  Conditions    |
+              |  (Условия)     |
+              +-------+--------+
+                      |
+                      v
+              +----------------+
+              |   Actions      |
+              |   (Действия)   |
+              +----------------+
+</code></pre><ol>
+<li>
+<p>Триггеры (Triggers):</p>
+<ul>
+<li>Триггеры инициируют выполнение сценария. Они могут быть связаны с событиями, такими как изменение состояния устройства, получение команды от пользователя, срабатывание таймера и другие.</li>
+</ul>
+</li>
+<li>
+<p>Условия (Conditions):</p>
+<ul>
+<li>Условия определяют, должны ли быть выполнены дополнительные проверки, чтобы сценарий мог быть выполнен. Например, условие может проверять текущее время суток, состояние определенного устройства или другие факторы.</li>
+</ul>
+</li>
+<li>
+<p>Действия (Actions):</p>
+<ul>
+<li>Действия определяют задачи, которые должны быть выполнены при выполнении сценария. Это может быть изменение состояния устройств, отправка команды другому устройству, выполнение HTTP-запроса, отправка уведомления и другие действия.</li>
+</ul>
+</li>
+</ol>
+<p>Вся система автоматизации строится вокруг этих компонентов, позволяя создавать сложные сценарии, которые реагируют на события и выполняют определенные задачи в умном доме.</p>
+</div>
+<div class=td-content style=page-break-before:always>
+<h1 id=pg-663b794f38e2652ec4da941b3cce1ac3>2.1 - Actions</h1>
+<figure>
+<img src=/smart-home/actions_window1.png>
+</figure>
+<p> </p>
+<p> </p>
+<p>Действия определяют задачи, которые должны быть выполнены при выполнении сценария. Это может быть изменение состояния
+устройств, отправка команды другому устройству, выполнение HTTP-запроса, отправка уведомления и другие действия.</p>
+<p>Пример реализации обработчика:</p>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>automationAction = </span><span style=color:#000>(entityId)-&gt;</span>
+    <span style=color:#000>EntityCallAction</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>entityId</span><span style=color:#000;font-weight:700>,</span> <span style=color:#4e9a06>&#39;ON&#39;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000;font-weight:700>{})</span>
+</code></pre></div>
+</div>
+<div class=td-content style=page-break-before:always>
+<h1 id=pg-f398915e040cbcdbf88478a38ed8f7c1>2.2 - Conditions</h1>
+<figure>
+<img src=/smart-home/condition_window1.png>
+</figure>
+<p> </p>
+<p> </p>
+<p>Условие определяет дополнительную проверку, которая должна быть выполнена перед выполнением сценария. Это условие может
+проверять текущее состояние устройства или другие факторы. Условие является опциональным компонентом, и если оно присутствует,
+то выполнение сценария будет зависеть от его результата.</p>
+<p>Пример реализации обработчика:</p>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>automationCondition = </span><span style=color:#000>(entityId)-&gt;</span>
+    <span style=color:#000>entity = </span><span style=color:#000>EntityGetState</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>entityId</span><span style=color:#000;font-weight:700>)</span>
+    <span style=color:#204a87;font-weight:700>if</span> <span style=color:#ce5c00;font-weight:700>!</span><span style=color:#000>entity</span> <span style=color:#ce5c00;font-weight:700>||</span> <span style=color:#ce5c00;font-weight:700>!</span><span style=color:#000>entity</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>state</span> 
+        <span style=color:#204a87;font-weight:700>return</span> <span style=color:#204a87;font-weight:700>false</span>
+    <span style=color:#204a87;font-weight:700>if</span> <span style=color:#000>entity</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>state</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>name</span> <span style=color:#ce5c00;font-weight:700>==</span> <span style=color:#4e9a06>&#39;ON&#39;</span>
+        <span style=color:#204a87;font-weight:700>return</span> <span style=color:#204a87;font-weight:700>true</span>
+    <span style=color:#204a87;font-weight:700>return</span> <span style=color:#204a87;font-weight:700>false</span>
+</code></pre></div>
+</div>
+<div class=td-content style=page-break-before:always>
+<h1 id=pg-649333aa8bab35b619f6967595405b2d>2.3 - Triggers</h1>
+<figure>
+<img src=/smart-home/trigger_window1.png>
+</figure>
+<p> </p>
+<p> </p>
+<p>Каждый тип триггера имеет свой собственный обработчик (handler) для выполнения соответствующих действий.</p>
+<p>Вот примеры различных типов триггеров и соответствующих им обработчиков:</p>
+<ol>
+<li><code>TriggerAlexa</code>:</li>
+</ol>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>automationTriggerAlexa = </span><span style=color:#000>(msg) -&gt;</span>
+  <span style=color:#000>p = </span><span style=color:#000>unmarshal</span> <span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
+  <span style=color:#000>Done</span> <span style=color:#000>p</span>
+  <span style=color:#204a87;font-weight:700>return</span> <span style=color:#204a87;font-weight:700>false</span>
+</code></pre></div><p>Обработчик <code>automationTriggerAlexa</code> вызывается в ответ на триггер от Amazon Alexa. Он принимает объект сообщения <code>msg</code>
+и может выполнять определенные действия, связанные с этим триггером.</p>
+<ol start=2>
+<li><code>TriggerStateChanged</code>:</li>
+</ol>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>automationTriggerStateChanged = </span><span style=color:#000>(msg) -&gt;</span>
+  <span style=color:#000>print</span> <span style=color:#4e9a06>&#39;---trigger---&#39;</span>
+  <span style=color:#000>p = </span><span style=color:#000>unmarshal</span> <span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
+  <span style=color:#000>Done</span> <span style=color:#000>p</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>new_state</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>state</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>name</span>
+  <span style=color:#204a87;font-weight:700>return</span> <span style=color:#204a87;font-weight:700>false</span>
+</code></pre></div><p>Обработчик <code>automationTriggerStateChanged</code> вызывается при изменении состояния устройства. Он принимает объект сообщения
+<code>msg</code> и может выполнить определенные действия на основе нового состояния устройства.</p>
+<ol start=3>
+<li><code>TriggerSystem</code>:</li>
+</ol>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>automationTriggerSystem = </span><span style=color:#000>(msg) -&gt;</span>
+  <span style=color:#000>p = </span><span style=color:#000>unmarshal</span> <span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
+  <span style=color:#000>Done</span> <span style=color:#000>p</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>event</span>
+  <span style=color:#204a87;font-weight:700>return</span> <span style=color:#204a87;font-weight:700>false</span>
+</code></pre></div><p>Обработчик <code>automationTriggerSystem</code> вызывается в ответ на события системы. Он принимает объект сообщения <code>msg</code> и может
+выполнить определенные действия, связанные с этим событием.</p>
+<ol start=4>
+<li><code>TriggerTime</code>:</li>
+</ol>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>automationTriggerTime = </span><span style=color:#000>(msg) -&gt;</span>
+  <span style=color:#000>p = </span><span style=color:#000>unmarshal</span> <span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
+  <span style=color:#000>Done</span> <span style=color:#000>p</span>
+  <span style=color:#204a87;font-weight:700>return</span> <span style=color:#204a87;font-weight:700>false</span>
+</code></pre></div><p>Обработчик <code>automationTriggerTime</code> вызывается по истечении определенного времени. Он принимает объект сообщения <code>msg</code> и
+может выполнить определенные действия, связанные с этим временем.</p>
+<p>Каждый обработчик триггера может выполнять необходимую логику в ответ на соответствующий триггер, а затем возвращать
+значение <code>false</code>, чтобы указать, что дальнейшая обработка не требуется.</p>
+<p>Пример реализации:</p>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>automationTriggerStateChanged = </span><span style=color:#000>(msg)-&gt;</span>
+    <span style=color:#8f5902;font-style:italic>#print &#39;---trigger---&#39;
+</span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#000>p = </span><span style=color:#000>unmarshal</span> <span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
+    <span style=color:#204a87;font-weight:700>if</span> <span style=color:#ce5c00;font-weight:700>!</span><span style=color:#000>p</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>new_state</span> <span style=color:#ce5c00;font-weight:700>||</span> <span style=color:#ce5c00;font-weight:700>!</span><span style=color:#000>p</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>new_state</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>state</span>
+        <span style=color:#204a87;font-weight:700>return</span> <span style=color:#204a87;font-weight:700>false</span>
+    <span style=color:#204a87;font-weight:700>return</span> <span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>new_state</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>state</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>name</span> <span style=color:#ce5c00;font-weight:700>==</span> <span style=color:#4e9a06>&#39;DOUBLE_CLICK&#39;</span>
+</code></pre></div>
+</div>
+<div class=td-content style=page-break-before:always>
+<h1 id=pg-4177dcddfec763697e168bfb1da48ab1>3 - MQTT</h1>
+<p>Система проекта <strong>Smart Home</strong> включает встроенный MQTT брокер, что позволяет обмениваться сообщениями и управлять
+устройствами в умном доме с помощью протокола MQTT (Message Queuing Telemetry Transport).</p>
+<p>MQTT - это легковесный протокол обмена сообщениями, разработанный для обмена данными между устройствами в сетях с
+ограниченной пропускной способностью или низкой надежностью соединения. Он основан на модели издатель-подписчик
+(publisher-subscriber) и обеспечивает надежную доставку сообщений между устройствами.</p>
+<p>Встроенный MQTT брокер в проекте <strong>Smart Home</strong> предоставляет серверную часть для обработки MQTT сообщений.
+Он выполняет следующие функции:</p>
+<ol>
+<li>
+<p>Поддержка издателей и подписчиков: MQTT брокер принимает сообщения от издателей (publishers) и перенаправляет их
+подписчикам (subscribers). Это позволяет устройствам в умном доме обмениваться данными и управляться друг другом.</p>
+</li>
+<li>
+<p>Топики и фильтрация: MQTT брокер использует понятие &ldquo;топика&rdquo; (topic) для классификации сообщений. Подписчики могут
+подписываться на определенные топики, чтобы получать только интересующие их данные. Брокер выполняет фильтрацию
+сообщений и пересылает их только тем подписчикам, которые подписаны на соответствующие топики.</p>
+</li>
+<li>
+<p>Гарантированная доставка сообщений: MQTT брокер обеспечивает надежную доставку сообщений, гарантируя, что сообщения
+будут доставлены подписчикам даже при временных проблемах с соединением или недоступности устройств.</p>
+</li>
+<li>
+<p>Управление доступом: MQTT брокер предоставляет возможности для аутентификации и авторизации, что позволяет контролировать
+доступ к различным топикам и ограничивать доступ к устройствам и данным в умном доме.</p>
+</li>
+</ol>
+<p>Встроенный MQTT брокер в проекте <strong>Smart Home</strong> упрощает взаимодействие и интеграцию устройств в умном доме. Он предоставляет
+стабильную и эффективную среду для обмена данными и управления устройствами с использованием протокола MQTT. Это позволяет
+создавать сложные сценарии автоматизации, контролировать состояние устройств и обмениваться данными между различ</p>
+</div>
+</main>
+</div>
+</div>
+<footer class="bg-dark py-5 row d-print-none">
+<div class="container-fluid mx-sm-5">
+<div class=row>
+<div class="col-6 col-sm-4 text-xs-center order-sm-2">
+</div>
+<div class="col-6 col-sm-4 text-right text-xs-center order-sm-3">
+<ul class="list-inline mb-0">
+<li class="list-inline-item mx-2 h3" data-toggle=tooltip data-placement=top title=GitHub aria-label=GitHub>
+<a class=text-white target=_blank rel=noopener href=https://github.com/e154/smart-home aria-label=GitHub>
+<i class="fab fa-github"></i>
+</a>
+</li>
+</ul>
+</div>
+<div class="col-12 col-sm-4 text-center py-2 order-sm-2">
+<small class=text-white>&copy; 2023 Разработано при поддержке <a href=http://e154.ru>e154.ru</a></small>
+<div><small class="ml-1 text-white">Код лицензии <a href=https://github.com/e154/smart-home/blob/master/LICENSE>MIT</a> документы <a href=http://creativecommons.org/licenses/by/3.0/>CC BY 3.0</a></small></div>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js integrity=sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js integrity=sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF crossorigin=anonymous></script>
+<script src=/smart-home/js/tabpane-persist.js></script>
+<script src=/smart-home/js/main.min.307d9740a83ff885dafd50af6ce4f79e2146b78e74ee078b11b627d0d02146a9.js integrity="sha256-MH2XQKg/+IXa/VCvbOT3niFGt4507geLEbYn0NAhRqk=" crossorigin=anonymous></script>
+</body>
+</html>
