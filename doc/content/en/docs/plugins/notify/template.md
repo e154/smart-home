@@ -1,7 +1,7 @@
 
 ---
-title: "Шаблон сообщения"
-linkTitle: "шаблоны"
+title: "Templates"
+linkTitle: "templates"
 date: 2021-10-20
 description: >
 
