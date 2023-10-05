@@ -47,7 +47,7 @@ func TestTriggerStateChange(t *testing.T) {
 		zigbeeButtonId = "0x00158d00031c8ef3"
 
 		buttonSourceScript = `# {"battery":100,"click":"long","duration":1515,"linkquality":126,"voltage":3042}
-zigbee2mqttEvent = ->
+zigbee2mqttEvent =(message)->
   #print '---mqtt new event from button---'
   if !message
     return
