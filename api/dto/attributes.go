@@ -23,52 +23,72 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/e154/smart-home/api/stub/api"
+	stub "github.com/e154/smart-home/api/stub"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/encryptor"
 	m "github.com/e154/smart-home/models"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // AttributeFromApi ...
-func AttributeFromApi(apiAttr map[string]*api.Attribute) (attributes m.Attributes) {
+func AttributeFromApi(apiAttr map[string]stub.ApiAttribute) (attributes m.Attributes) {
 	return attributeFromApi(apiAttr)
 }
 
-func attributeFromApi(apiAttr map[string]*api.Attribute) (attributes m.Attributes) {
+func attributeFromApi(apiAttr map[string]stub.ApiAttribute) (attributes m.Attributes) {
 	attributes = make(m.Attributes)
 	for k, v := range apiAttr {
 		attr := &m.Attribute{
 			Name: v.Name,
 		}
 		switch v.Type {
-		case api.Types_INT:
-			attr.Value = v.GetInt()
+		case stub.INT:
+			if v.Int == nil {
+				continue
+			}
+			attr.Value = *v.Int
 			attr.Type = common.AttributeInt
-		case api.Types_STRING:
-			attr.Value = v.GetString_()
+		case stub.STRING:
+			if v.String == nil {
+				continue
+			}
+			attr.Value = *v.String
 			attr.Type = common.AttributeString
-		case api.Types_BOOL:
-			attr.Value = v.GetBool()
+		case stub.BOOL:
+			if v.Bool == nil {
+				continue
+			}
+			attr.Value = *v.Bool
 			attr.Type = common.AttributeBool
-		case api.Types_FLOAT:
-			attr.Value = v.GetFloat()
+		case stub.FLOAT:
+			if v.Float == nil {
+
+			}
+			attr.Value = *v.Float
 			attr.Type = common.AttributeFloat
-		case api.Types_IMAGE:
-			attr.Value = v.GetImageUrl()
+		case stub.IMAGE:
+			if v.ImageUrl == nil {
+
+			}
+			attr.Value = *v.ImageUrl
 			attr.Type = common.AttributeImage
-		case api.Types_ARRAY:
-			//	attr.Value = v.GetArray()
+		case stub.ARRAY:
+			//	attr.Value = v.Array
 			attr.Type = common.AttributeArray
-		case api.Types_MAP:
+		case stub.MAP:
 			attr.Type = common.AttributeMap
-			attr.Value = AttributeFromApi(v.GetMap())
-		case api.Types_TIME:
-			attr.Value = v.GetTime().AsTime()
+			//attr.Value = AttributeFromApi(v.Map)
+		case stub.TIME:
+			if v.Time == nil {
+				continue
+			}
+			attr.Value = *v.Time
 			attr.Type = common.AttributeTime
-		case api.Types_POINT:
+		case stub.POINT:
+			if v.Point == nil {
+				continue
+			}
 			point := []interface{}{0.0, 0.0}
-			str := v.GetPoint()
+			str := *v.Point
 			str = strings.ReplaceAll(str, "[", "")
 			str = strings.ReplaceAll(str, "]", "")
 			str = strings.ReplaceAll(str, " ", "")
@@ -79,8 +99,11 @@ func attributeFromApi(apiAttr map[string]*api.Attribute) (attributes m.Attribute
 			}
 			attr.Value = point
 			attr.Type = common.AttributePoint
-		case api.Types_ENCRYPTED:
-			value, err := encryptor.Encrypt(v.GetEncrypted())
+		case stub.ENCRYPTED:
+			if v.Encrypted == nil {
+				continue
+			}
+			value, err := encryptor.Encrypt(*v.Encrypted)
 			if err == nil {
 				attr.Value = value
 			}
@@ -92,42 +115,44 @@ func attributeFromApi(apiAttr map[string]*api.Attribute) (attributes m.Attribute
 }
 
 // AttributeToApi ...
-func AttributeToApi(attributes m.Attributes) (apiAttr map[string]*api.Attribute) {
-	apiAttr = make(map[string]*api.Attribute)
+func AttributeToApi(attributes m.Attributes) (apiAttr map[string]stub.ApiAttribute) {
+	apiAttr = make(map[string]stub.ApiAttribute)
+	var attr stub.ApiAttribute
 	for k, v := range attributes {
-		apiAttr[k] = &api.Attribute{
+		attr = stub.ApiAttribute{
 			Name: v.Name,
 		}
 		switch v.Type {
 		case "int":
-			apiAttr[k].Type = api.Types_INT
-			apiAttr[k].Int = common.Int64(v.Int64())
+			attr.Type = stub.INT
+			attr.Int = common.Int64(v.Int64())
 		case "string":
-			apiAttr[k].Type = api.Types_STRING
-			apiAttr[k].String_ = common.String(v.String())
+			attr.Type = stub.STRING
+			attr.String = common.String(v.String())
 		case "bool":
-			apiAttr[k].Type = api.Types_BOOL
-			apiAttr[k].Bool = common.Bool(v.Bool())
+			attr.Type = stub.BOOL
+			attr.Bool = common.Bool(v.Bool())
 		case "float":
-			apiAttr[k].Type = api.Types_FLOAT
-			apiAttr[k].Float = common.Float32(float32(v.Float64()))
+			attr.Type = stub.FLOAT
+			attr.Float = common.Float32(float32(v.Float64()))
 		case "array":
-			apiAttr[k].Type = api.Types_ARRAY
+			attr.Type = stub.ARRAY
 		case "map":
-			apiAttr[k].Type = api.Types_MAP
+			attr.Type = stub.MAP
 		case "time":
-			apiAttr[k].Type = api.Types_TIME
-			apiAttr[k].Time = timestamppb.New(v.Time())
+			attr.Type = stub.TIME
+			attr.Time = common.Time(v.Time())
 		case "image":
-			apiAttr[k].Type = api.Types_IMAGE
-			apiAttr[k].ImageUrl = common.String(v.String())
+			attr.Type = stub.IMAGE
+			attr.ImageUrl = common.String(v.String())
 		case "point":
-			apiAttr[k].Type = api.Types_POINT
-			apiAttr[k].Point = fmt.Sprintf("[%f, %f]", v.Point().Lon, v.Point().Lat)
+			attr.Type = stub.POINT
+			attr.Point = common.String(fmt.Sprintf("[%f, %f]", v.Point().Lon, v.Point().Lat))
 		case "encrypted":
-			apiAttr[k].Type = api.Types_ENCRYPTED
-			apiAttr[k].Encrypted = common.String(v.Decrypt())
+			attr.Type = stub.ENCRYPTED
+			attr.Encrypted = common.String(v.Decrypt())
 		}
+		apiAttr[k] = attr
 	}
 	return
 }

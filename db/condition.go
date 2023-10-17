@@ -38,7 +38,7 @@ type Condition struct {
 	Id        int64 `gorm:"primary_key"`
 	Name      string
 	Script    *Script
-	ScriptId  int64
+	ScriptId  *int64
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

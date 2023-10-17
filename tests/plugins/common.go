@@ -189,7 +189,6 @@ func GetNewPlug(id string, scrits []*m.Script) *m.Entity {
 	}
 }
 
-
 // GetNewScene ...
 func GetNewScene(id string, scripts []*m.Script) *m.Entity {
 	return &m.Entity{

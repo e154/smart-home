@@ -15,7 +15,7 @@ class Stream {
     }
     url = url.replace("https", "wss")
     url = url.replace("http", "ws")
-    url = url + '/ws?access_token=' + accessToken;
+    url = url + '/v1/ws?access_token=' + accessToken;
     this.ws = new WebsocketBuilder(url)
       .onOpen((ws: Websocket, ev: Event) => this.onOpen(ws, ev, accessToken))
       .onClose((ws: Websocket, ev: CloseEvent) => this.onClose(ws, ev))
@@ -52,9 +52,9 @@ class Stream {
   private onMessage(ws: Websocket, ev: MessageEvent): any {
     let m: StreamResponse;
     try {
-      const {result} = JSON.parse(ev.data);
+      const result = JSON.parse(ev.data);
       m = result;
-      const body: any = JSON.parse(atob(m.body));
+      const body: any = JSON.parse(atob(result.body));
       m.body = body;
     } catch {
       console.debug('from the stream came a string value');

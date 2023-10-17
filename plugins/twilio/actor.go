@@ -55,7 +55,7 @@ func NewActor(settings m.Attributes,
 	authToken := settings[AttrAuthToken].String()
 
 	entity := &m.Entity{
-		Id: common.EntityId(fmt.Sprintf("%s.%s", Name, Name)),
+		Id:         common.EntityId(fmt.Sprintf("%s.%s", Name, Name)),
 		PluginName: Name,
 		Attributes: NewAttr(),
 	}

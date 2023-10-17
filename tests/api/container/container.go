@@ -83,7 +83,6 @@ func BuildContainer() (container *dig.Container) {
 	_ = container.Provide(endpoint.NewEndpoint)
 	_ = container.Provide(handlers.NewEventHandler)
 	_ = container.Provide(controllers.NewControllers)
-	_ = container.Provide(NewDialer)
 	_ = container.Provide(jwt_manager.NewJwtManager)
 
 	_ = container.Provide(func() (conf *models.AppConfig, err error) {

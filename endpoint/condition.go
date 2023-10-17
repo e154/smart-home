@@ -22,13 +22,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/e154/smart-home/common/events"
-
-	"github.com/e154/smart-home/common/apperr"
-
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
-	"github.com/go-playground/validator/v10"
 )
 
 // ConditionEndpoint ...
@@ -44,12 +41,11 @@ func NewConditionEndpoint(common *CommonEndpoint) *ConditionEndpoint {
 }
 
 // Add ...
-func (n *ConditionEndpoint) Add(ctx context.Context, condition *m.Condition) (result *m.Condition, errs validator.ValidationErrorsTranslations, err error) {
+func (n *ConditionEndpoint) Add(ctx context.Context, condition *m.Condition) (result *m.Condition, err error) {
 
-	var ok bool
-	if ok, errs = n.validation.Valid(condition); !ok {
+	if ok, errs := n.validation.Valid(condition); !ok {
 		err = apperr.ErrInvalidRequest
-		apperr.SetContext(err, errs)
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
@@ -77,15 +73,16 @@ func (n *ConditionEndpoint) GetById(ctx context.Context, id int64) (result *m.Co
 }
 
 // Update ...
-func (n *ConditionEndpoint) Update(ctx context.Context, params *m.Condition) (result *m.Condition, errs validator.ValidationErrorsTranslations, err error) {
+func (n *ConditionEndpoint) Update(ctx context.Context, params *m.Condition) (result *m.Condition, err error) {
 
 	_, err = n.adaptors.Condition.GetById(ctx, params.Id)
 	if err != nil {
 		return
 	}
 
-	var ok bool
-	if ok, errs = n.validation.Valid(params); !ok {
+	if ok, errs := n.validation.Valid(params); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 

@@ -19,38 +19,40 @@
 package stream
 
 import (
-	"io"
-
-	"github.com/e154/smart-home/api/stub/api"
+	"encoding/json"
 	m "github.com/e154/smart-home/models"
+	"github.com/gorilla/websocket"
+	"sync"
 )
 
 // Client ...
 type Client struct {
 	closed bool
-	server api.StreamService_SubscribeServer
+	ws     *websocket.Conn
 	user   *m.User
+	Mu     sync.Mutex
 }
 
 // NewClient ...
-func NewClient(server api.StreamService_SubscribeServer, user *m.User) *Client {
-	return &Client{server: server, user: user}
+func NewClient(ws *websocket.Conn, user *m.User) *Client {
+	return &Client{ws: ws, user: user}
 }
 
 // WritePump ...
 func (c *Client) WritePump(f func(*Client, string, string, []byte)) (err error) {
 
-	var in *api.Request
+	var data []byte
+	var messageType int
 	for !c.closed {
-		in, err = c.server.Recv()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
+		messageType, data, err = c.ws.ReadMessage()
+		if messageType == -1 || err != nil {
+			err = nil
 			return
 		}
 
-		f(c, in.Id, in.Query, in.Body)
+		msg := &Message{}
+		_ = json.Unmarshal(data, msg)
+		f(c, msg.Id, msg.Query, msg.Body)
 	}
 
 	return
@@ -63,11 +65,19 @@ func (c *Client) Close() {
 
 // Send ...
 func (c *Client) Send(id, query string, body []byte) (err error) {
-	err = c.server.Send(&api.Response{
+	c.Mu.Lock()
+	defer c.Mu.Unlock()
+
+	if c.closed {
+		return
+	}
+
+	b, _ := json.Marshal(&Message{
 		Id:    id,
 		Query: query,
 		Body:  body,
 	})
+	err = c.ws.WriteMessage(websocket.TextMessage, b)
 	if err != nil {
 		c.closed = true
 	}

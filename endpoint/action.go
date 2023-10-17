@@ -28,7 +28,6 @@ import (
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/go-playground/validator/v10"
 )
 
 // ActionEndpoint ...
@@ -44,12 +43,11 @@ func NewActionEndpoint(common *CommonEndpoint) *ActionEndpoint {
 }
 
 // Add ...
-func (n *ActionEndpoint) Add(ctx context.Context, action *m.Action) (result *m.Action, errs validator.ValidationErrorsTranslations, err error) {
+func (n *ActionEndpoint) Add(ctx context.Context, action *m.Action) (result *m.Action, err error) {
 
-	var ok bool
-	if ok, errs = n.validation.Valid(action); !ok {
+	if ok, errs := n.validation.Valid(action); !ok {
 		err = apperr.ErrInvalidRequest
-		apperr.SetContext(err, errs)
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
@@ -77,15 +75,16 @@ func (n *ActionEndpoint) GetById(ctx context.Context, id int64) (result *m.Actio
 }
 
 // Update ...
-func (n *ActionEndpoint) Update(ctx context.Context, params *m.Action) (result *m.Action, errs validator.ValidationErrorsTranslations, err error) {
+func (n *ActionEndpoint) Update(ctx context.Context, params *m.Action) (result *m.Action, err error) {
 
 	_, err = n.adaptors.Action.GetById(ctx, params.Id)
 	if err != nil {
 		return
 	}
 
-	var ok bool
-	if ok, errs = n.validation.Valid(params); !ok {
+	if ok, errs := n.validation.Valid(params); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 

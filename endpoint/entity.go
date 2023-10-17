@@ -20,7 +20,6 @@ package endpoint
 
 import (
 	"context"
-
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
@@ -28,7 +27,6 @@ import (
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/scripts"
-	"github.com/go-playground/validator/v10"
 )
 
 // EntityEndpoint ...
@@ -44,10 +42,11 @@ func NewEntityEndpoint(common *CommonEndpoint) *EntityEndpoint {
 }
 
 // Add ...
-func (n *EntityEndpoint) Add(ctx context.Context, entity *m.Entity) (result *m.Entity, errs validator.ValidationErrorsTranslations, err error) {
+func (n *EntityEndpoint) Add(ctx context.Context, entity *m.Entity) (result *m.Entity, err error) {
 
-	var ok bool
-	if ok, errs = n.validation.Valid(entity); !ok {
+	if ok, errs := n.validation.Valid(entity); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
@@ -120,7 +119,7 @@ func (n *EntityEndpoint) GetById(ctx context.Context, id common.EntityId) (resul
 }
 
 // Update ...
-func (n *EntityEndpoint) Update(ctx context.Context, params *m.Entity) (result *m.Entity, errs validator.ValidationErrorsTranslations, err error) {
+func (n *EntityEndpoint) Update(ctx context.Context, params *m.Entity) (result *m.Entity, err error) {
 
 	var entity *m.Entity
 	if entity, err = n.adaptors.Entity.GetById(ctx, params.Id); err != nil {
@@ -131,8 +130,9 @@ func (n *EntityEndpoint) Update(ctx context.Context, params *m.Entity) (result *
 	entity.Settings = params.Settings
 	entity.Attributes = params.Attributes
 
-	var ok bool
-	if ok, errs = n.validation.Valid(entity); !ok {
+	if ok, errs := n.validation.Valid(entity); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 

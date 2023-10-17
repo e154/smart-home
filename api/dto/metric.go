@@ -19,16 +19,15 @@
 package dto
 
 import (
-	"github.com/e154/smart-home/api/stub/api"
+	stub "github.com/e154/smart-home/api/stub"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func Metric(metric *m.Metric) (object *api.Metric) {
-	var options = &api.MetricOption{}
+func Metric(metric *m.Metric) (object *stub.ApiMetric) {
+	var options = &stub.ApiMetricOption{}
 	for _, item := range metric.Options.Items {
-		options.Items = append(options.Items, &api.MetricOptionItem{
+		options.Items = append(options.Items, stub.ApiMetricOptionItem{
 			Name:        item.Name,
 			Description: item.Description,
 			Color:       item.Color,
@@ -37,16 +36,16 @@ func Metric(metric *m.Metric) (object *api.Metric) {
 		})
 	}
 
-	var data = make([]*api.MetricOptionData, 0, len(metric.Data))
+	var data = make([]stub.ApiMetricOptionData, 0, len(metric.Data))
 	for _, item := range metric.Data {
-		data = append(data, &api.MetricOptionData{
+		data = append(data, stub.ApiMetricOptionData{
 			Value:    item.Value,
 			MetricId: item.MetricId,
-			Time:     timestamppb.New(item.Time),
+			Time:     item.Time,
 		})
 	}
 
-	object = &api.Metric{
+	object = &stub.ApiMetric{
 		Id:          metric.Id,
 		Name:        metric.Name,
 		Description: metric.Description,
@@ -54,22 +53,22 @@ func Metric(metric *m.Metric) (object *api.Metric) {
 		Data:        data,
 		Type:        string(metric.Type),
 		Ranges:      metric.Ranges,
-		CreatedAt:   timestamppb.New(metric.CreatedAt),
-		UpdatedAt:   timestamppb.New(metric.UpdatedAt),
+		CreatedAt:   metric.CreatedAt,
+		UpdatedAt:   metric.UpdatedAt,
 	}
 
 	return
 }
 
-func Metrics(metrics []*m.Metric) (objects []*api.Metric) {
-	objects = make([]*api.Metric, 0, len(metrics))
+func Metrics(metrics []*m.Metric) (objects []stub.ApiMetric) {
+	objects = make([]stub.ApiMetric, 0, len(metrics))
 	for _, metric := range metrics {
-		objects = append(objects, Metric(metric))
+		objects = append(objects, *Metric(metric))
 	}
 	return
 }
 
-func AddMetric(objects []*api.Metric) (metrics []*m.Metric) {
+func AddMetric(objects []stub.ApiMetric) (metrics []*m.Metric) {
 	metrics = make([]*m.Metric, 0, len(objects))
 	for _, obj := range objects {
 		if obj.Options == nil {

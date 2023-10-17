@@ -25,7 +25,7 @@ type Condition struct {
 	Id        int64     `json:"id"`
 	Name      string    `json:"name" validate:"required,lte=255"`
 	Script    *Script   `json:"script"`
-	ScriptId  int64     `json:"script_id" validate:"required"`
+	ScriptId  *int64    `json:"script_id" validate:"required"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }

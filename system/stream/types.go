@@ -18,7 +18,9 @@
 
 package stream
 
-import m "github.com/e154/smart-home/models"
+import (
+	m "github.com/e154/smart-home/models"
+)
 
 // BroadcastClient ...
 type BroadcastClient interface {
@@ -34,4 +36,10 @@ type IDirectMessage interface {
 type IStreamClient interface {
 	GetUser() *m.User
 	Send(id string, query string, body []byte) error
+}
+
+type Message struct {
+	Id    string `json:"id"`
+	Query string `json:"query"`
+	Body  []byte `json:"body"`
 }

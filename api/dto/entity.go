@@ -20,11 +20,10 @@ package dto
 
 import (
 	"fmt"
+	stub "github.com/e154/smart-home/api/stub"
 
-	"github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Entity ...
@@ -36,7 +35,7 @@ func NewEntityDto() Entity {
 }
 
 // AddEntity ...
-func (r Entity) AddEntity(obj *api.NewEntityRequest) (entity *m.Entity) {
+func (r Entity) AddEntity(obj *stub.ApiNewEntityRequest) (entity *m.Entity) {
 
 	entity = &m.Entity{
 		Id:          common.EntityId(fmt.Sprintf("%s.%s", obj.PluginName, obj.Name)),
@@ -94,7 +93,7 @@ func (r Entity) AddEntity(obj *api.NewEntityRequest) (entity *m.Entity) {
 }
 
 // UpdateEntity ...
-func (r Entity) UpdateEntity(obj *api.UpdateEntityRequest) (entity *m.Entity) {
+func (r Entity) UpdateEntity(obj *stub.EntityServiceUpdateEntityJSONBody) (entity *m.Entity) {
 	entity = &m.Entity{
 		Id:          common.EntityId(obj.Id),
 		Description: obj.Description,
@@ -154,64 +153,47 @@ func (r Entity) UpdateEntity(obj *api.UpdateEntityRequest) (entity *m.Entity) {
 }
 
 // ToSearchResult ...
-func (r Entity) ToSearchResult(list []*m.Entity) *api.SearchEntityResult {
+func (r Entity) ToSearchResult(list []*m.Entity) *stub.ApiSearchEntityResult {
 
-	items := make([]*api.EntityShort, 0, len(list))
+	items := make([]stub.ApiEntityShort, 0, len(list))
 
 	for _, i := range list {
-		items = append(items, r.ToEntityShort(i))
+		items = append(items, *r.ToEntityShort(i))
 	}
 
-	return &api.SearchEntityResult{
+	return &stub.ApiSearchEntityResult{
 		Items: items,
 	}
 }
 
 // ToListResult ...
-func (r Entity) ToListResult(list []*m.Entity, total uint64, pagination common.PageParams) *api.GetEntityListResult {
+func (r Entity) ToListResult(list []*m.Entity) []*stub.ApiEntity {
 
-	items := make([]*api.Entity, 0, len(list))
+	items := make([]*stub.ApiEntity, 0, len(list))
 
 	for _, i := range list {
-		items = append(items, r.ToEntity(i))
+		items = append(items, ToEntity(i))
 	}
 
-	return &api.GetEntityListResult{
-		Items: items,
-		Meta: &api.Meta{
-			Limit: uint64(pagination.Limit),
-			Page:  pagination.PageReq,
-			Total: total,
-			Sort:  pagination.SortReq,
-		},
-	}
-}
-
-// ToEntity ...
-func (r Entity) ToEntity(entity *m.Entity) (obj *api.Entity) {
-	if entity == nil {
-		return
-	}
-	obj = ToEntity(entity)
-	return
+	return items
 }
 
 // ToEntityShort ...
-func (r Entity) ToEntityShort(entity *m.Entity) (obj *api.EntityShort) {
+func (r Entity) ToEntityShort(entity *m.Entity) (obj *stub.ApiEntityShort) {
 	imageDto := NewImageDto()
-	obj = &api.EntityShort{
+	obj = &stub.ApiEntityShort{
 		Id:          entity.Id.String(),
 		PluginName:  entity.PluginName,
 		Description: entity.Description,
 		Icon:        entity.Icon,
 		AutoLoad:    entity.AutoLoad,
-		CreatedAt:   timestamppb.New(entity.CreatedAt),
-		UpdatedAt:   timestamppb.New(entity.UpdatedAt),
+		CreatedAt:   entity.CreatedAt,
+		UpdatedAt:   entity.UpdatedAt,
 		ParentId:    entity.ParentId.StringPtr(),
 	}
 	// area
 	if entity.Area != nil {
-		obj.Area = &api.Area{
+		obj.Area = &stub.ApiArea{
 			Id:          entity.Area.Id,
 			Name:        entity.Area.Name,
 			Description: entity.Area.Description,
@@ -226,31 +208,31 @@ func (r Entity) ToEntityShort(entity *m.Entity) (obj *api.EntityShort) {
 }
 
 // ToEntity ...
-func ToEntity(entity *m.Entity) (obj *api.Entity) {
+func ToEntity(entity *m.Entity) (obj *stub.ApiEntity) {
 	if entity == nil {
 		return
 	}
 	imageDto := NewImageDto()
 	scriptDto := NewScriptDto()
-	obj = &api.Entity{
+	obj = &stub.ApiEntity{
 		Id:          entity.Id.String(),
 		PluginName:  entity.PluginName,
 		Description: entity.Description,
 		Icon:        entity.Icon,
 		AutoLoad:    entity.AutoLoad,
 		IsLoaded:    common.Bool(entity.IsLoaded),
-		Actions:     make([]*api.EntityAction, 0, len(entity.Actions)),
-		States:      make([]*api.EntityState, 0, len(entity.States)),
-		Scripts:     make([]*api.Script, 0, len(entity.Scripts)),
-		CreatedAt:   timestamppb.New(entity.CreatedAt),
-		UpdatedAt:   timestamppb.New(entity.UpdatedAt),
+		Actions:     make([]stub.ApiEntityAction, 0, len(entity.Actions)),
+		States:      make([]stub.ApiEntityState, 0, len(entity.States)),
+		Scripts:     make([]stub.ApiScript, 0, len(entity.Scripts)),
+		CreatedAt:   entity.CreatedAt,
+		UpdatedAt:   entity.UpdatedAt,
 		Attributes:  AttributeToApi(entity.Attributes),
 		Settings:    AttributeToApi(entity.Settings),
 		Metrics:     Metrics(entity.Metrics),
 	}
 	// area
 	if entity.Area != nil {
-		obj.Area = &api.Area{
+		obj.Area = &stub.ApiArea{
 			Id:          entity.Area.Id,
 			Name:        entity.Area.Name,
 			Description: entity.Area.Description,
@@ -262,13 +244,13 @@ func ToEntity(entity *m.Entity) (obj *api.Entity) {
 	}
 	// parent
 	if entity.ParentId != nil {
-		obj.Parent = &api.EntityParent{
+		obj.Parent = &stub.ApiEntityParent{
 			Id: entity.ParentId.String(),
 		}
 	}
 	// actions
 	for _, a := range entity.Actions {
-		action := &api.EntityAction{
+		action := stub.ApiEntityAction{
 			Name:        a.Name,
 			Description: a.Description,
 			Icon:        a.Icon,
@@ -280,13 +262,13 @@ func ToEntity(entity *m.Entity) (obj *api.Entity) {
 		}
 		// script
 		if a.Script != nil {
-			action.Script = scriptDto.ToGScript(a.Script)
+			action.Script = scriptDto.GetStubScript(a.Script)
 		}
 		obj.Actions = append(obj.Actions, action)
 	}
 	// states
 	for _, s := range entity.States {
-		state := &api.EntityState{
+		state := stub.ApiEntityState{
 			Name:        s.Name,
 			Description: s.Description,
 			Icon:        s.Icon,
@@ -301,14 +283,14 @@ func ToEntity(entity *m.Entity) (obj *api.Entity) {
 	}
 	// scripts
 	for _, s := range entity.Scripts {
-		script := scriptDto.ToGScript(s)
-		obj.Scripts = append(obj.Scripts, script)
+		script := scriptDto.GetStubScript(s)
+		obj.Scripts = append(obj.Scripts, *script)
 		obj.ScriptIds = append(obj.ScriptIds, s.Id)
 	}
 	return
 }
 
-func (r Entity) ImportEntity(from *api.Entity) (to *m.Entity) {
+func (r Entity) ImportEntity(from *stub.ApiEntity) (to *m.Entity) {
 
 	areaId, area := ImportArea(from.Area)
 	var parentId *common.EntityId
@@ -337,13 +319,13 @@ func (r Entity) ImportEntity(from *api.Entity) (to *m.Entity) {
 
 	// ACTIONS
 	for _, action := range from.Actions {
-		imageId, image := ImportImage(action.Image)
+		imageId, img := ImportImage(action.Image)
 		scriptId, script := ImportScript(action.Script)
 		to.Actions = append(to.Actions, &m.EntityAction{
 			Name:        action.Name,
 			Description: action.Description,
 			Icon:        action.Icon,
-			Image:       image,
+			Image:       img,
 			ImageId:     imageId,
 			Script:      script,
 			ScriptId:    scriptId,
@@ -353,12 +335,12 @@ func (r Entity) ImportEntity(from *api.Entity) (to *m.Entity) {
 
 	// STATES
 	for _, state := range from.States {
-		imageId, image := ImportImage(state.Image)
+		imageId, img := ImportImage(state.Image)
 		to.States = append(to.States, &m.EntityState{
 			Name:        state.Name,
 			Description: state.Description,
 			Icon:        state.Icon,
-			Image:       image,
+			Image:       img,
 			ImageId:     imageId,
 			Style:       state.Style,
 		})
@@ -366,7 +348,7 @@ func (r Entity) ImportEntity(from *api.Entity) (to *m.Entity) {
 
 	// SCRIPTS
 	for _, script := range from.Scripts {
-		_, _script := ImportScript(script)
+		_, _script := ImportScript(&script)
 		to.Scripts = append(to.Scripts, _script)
 	}
 

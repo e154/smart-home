@@ -62,18 +62,18 @@ const (
 func NewSettings() m.Attributes {
 	return m.Attributes{
 		AttrKeepAlive: {
-			Name: AttrKeepAlive,
-			Type: common.AttributeInt,
+			Name:  AttrKeepAlive,
+			Type:  common.AttributeInt,
 			Value: 3,
 		},
 		AttrPingTimeout: {
-			Name: AttrPingTimeout,
-			Type: common.AttributeInt,
+			Name:  AttrPingTimeout,
+			Type:  common.AttributeInt,
 			Value: 3,
 		},
 		AttrBroker: {
-			Name: AttrBroker,
-			Type: common.AttributeString,
+			Name:  AttrBroker,
+			Type:  common.AttributeString,
 			Value: "tcp://server:port",
 		},
 		AttrClientID: {
@@ -81,13 +81,13 @@ func NewSettings() m.Attributes {
 			Type: common.AttributeString,
 		},
 		AttrConnectTimeout: {
-			Name: AttrConnectTimeout,
-			Type: common.AttributeInt,
+			Name:  AttrConnectTimeout,
+			Type:  common.AttributeInt,
 			Value: 3,
 		},
 		AttrCleanSession: {
-			Name: AttrCleanSession,
-			Type: common.AttributeBool,
+			Name:  AttrCleanSession,
+			Type:  common.AttributeBool,
 			Value: false,
 		},
 		AttrUsername: {
@@ -99,18 +99,18 @@ func NewSettings() m.Attributes {
 			Type: common.AttributeEncrypted,
 		},
 		AttrQos: {
-			Name: AttrQos,
-			Type: common.AttributeInt,
+			Name:  AttrQos,
+			Type:  common.AttributeInt,
 			Value: 0,
 		},
 		AttrDirection: {
-			Name: AttrDirection,
-			Type: common.AttributeString,
+			Name:  AttrDirection,
+			Type:  common.AttributeString,
 			Value: DirectionIn,
 		},
 		AttrTopics: {
-			Name: AttrTopics,
-			Type: common.AttributeString,
+			Name:  AttrTopics,
+			Type:  common.AttributeString,
 			Value: "owntracks/#",
 		},
 	}

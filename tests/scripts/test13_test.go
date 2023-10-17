@@ -35,9 +35,9 @@ func Test13(t *testing.T) {
 			scriptService scripts.ScriptService) {
 
 			script1 := &m.Script{
-				Lang:        "coffeescript",
-				Name:        "test28",
-				Source:      coffeeScript28,
+				Lang:   "coffeescript",
+				Name:   "test28",
+				Source: coffeeScript28,
 			}
 
 			engine1, err := scriptService.NewEngine(script1)

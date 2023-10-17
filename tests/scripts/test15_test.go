@@ -33,7 +33,6 @@ func Test15(t *testing.T) {
 		err := container.Invoke(func(adaptors *adaptors.Adaptors,
 			scriptService scripts.ScriptService) {
 
-
 			scriptService.PushFunctions("foo", fooBind(12))
 
 			engine1, err := scriptService.NewEngine(nil)

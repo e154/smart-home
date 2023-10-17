@@ -19,12 +19,10 @@
 package controllers
 
 import (
-	"context"
+	"github.com/e154/smart-home/api/stub"
+	"github.com/labstack/echo/v4"
 
 	"github.com/e154/smart-home/api/dto"
-
-	"github.com/e154/smart-home/api/stub/api"
-	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 // ControllerScript ...
@@ -33,119 +31,134 @@ type ControllerScript struct {
 }
 
 // NewControllerScript ...
-func NewControllerScript(common *ControllerCommon) ControllerScript {
-	return ControllerScript{
+func NewControllerScript(common *ControllerCommon) *ControllerScript {
+	return &ControllerScript{
 		ControllerCommon: common,
 	}
 }
 
 // AddScript ...
-func (c ControllerScript) AddScript(ctx context.Context, req *api.NewScriptRequest) (*api.Script, error) {
+func (c ControllerScript) ScriptServiceAddScript(ctx echo.Context, _ stub.ScriptServiceAddScriptParams) error {
 
-	script, errs, err := c.endpoint.Script.Add(ctx, c.dto.Script.FromNewScriptRequest(req))
-	if len(errs) != 0 || err != nil {
-		return nil, c.error(ctx, errs, err)
+	obj := &stub.ApiNewScriptRequest{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Script.ToGScript(script), nil
+	script, err := c.endpoint.Script.Add(ctx.Request().Context(), c.dto.Script.FromNewScriptRequest(obj))
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP201(ctx, ResponseWithObj(ctx, c.dto.Script.GetStubScript(script)))
 }
 
 // GetScriptById ...
-func (c ControllerScript) GetScriptById(ctx context.Context, req *api.GetScriptRequest) (*api.Script, error) {
+func (c ControllerScript) ScriptServiceGetScriptById(ctx echo.Context, id int64) error {
 
-	script, err := c.endpoint.Script.GetById(ctx, req.Id)
+	script, err := c.endpoint.Script.GetById(ctx.Request().Context(), id)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Script.ToGScript(script), nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, c.dto.Script.GetStubScript(script)))
 }
 
 // UpdateScriptById ...
-func (c ControllerScript) UpdateScriptById(ctx context.Context, req *api.UpdateScriptRequest) (*api.Script, error) {
+func (c ControllerScript) ScriptServiceUpdateScriptById(ctx echo.Context, id int64, _ stub.ScriptServiceUpdateScriptByIdParams) error {
 
-	script, errs, err := c.endpoint.Script.Update(ctx, c.dto.Script.FromUpdateScriptRequest(req))
-	if len(errs) != 0 || err != nil {
-		return nil, c.error(ctx, errs, err)
+	obj := &stub.ScriptServiceUpdateScriptByIdJSONBody{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Script.ToGScript(script), nil
+	script, err := c.endpoint.Script.Update(ctx.Request().Context(), c.dto.Script.FromUpdateScriptRequest(obj, id))
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, c.dto.Script.GetStubScript(script)))
 }
 
 // GetScriptList ...
-func (c ControllerScript) GetScriptList(ctx context.Context, req *api.ScriptPaginationRequest) (*api.GetScriptListResult, error) {
+func (c ControllerScript) ScriptServiceGetScriptList(ctx echo.Context, params stub.ScriptServiceGetScriptListParams) error {
 
-	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
-	items, total, err := c.endpoint.Script.GetList(ctx, pagination, req.Query)
+	pagination := c.Pagination(params.Page, params.Limit, params.Sort)
+	items, total, err := c.endpoint.Script.GetList(ctx.Request().Context(), pagination, params.Query)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Script.ToListResult(items, uint64(total), pagination), nil
+	return c.HTTP200(ctx, ResponseWithList(ctx, c.dto.Script.ToListResult(items), total, pagination))
 }
 
 // SearchScript ...
-func (c ControllerScript) SearchScript(ctx context.Context, req *api.SearchRequest) (*api.SearchScriptListResult, error) {
+func (c ControllerScript) ScriptServiceSearchScript(ctx echo.Context, params stub.ScriptServiceSearchScriptParams) error {
 
-	search := c.Search(req.Query, req.Limit, req.Offset)
-	items, _, err := c.endpoint.Script.Search(ctx, search.Query, search.Limit, search.Offset)
+	search := c.Search(params.Query, params.Limit, params.Offset)
+	items, _, err := c.endpoint.Script.Search(ctx.Request().Context(), search.Query, search.Limit, search.Offset)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Script.ToSearchResult(items), nil
+	return c.HTTP200(ctx, c.dto.Script.ToSearchResult(items))
 }
 
 // DeleteScriptById ...
-func (c ControllerScript) DeleteScriptById(ctx context.Context, req *api.DeleteScriptRequest) (*emptypb.Empty, error) {
+func (c ControllerScript) ScriptServiceDeleteScriptById(ctx echo.Context, id int64) error {
 
-	if err := c.endpoint.Script.DeleteScriptById(ctx, req.Id); err != nil {
-		return nil, c.error(ctx, nil, err)
+	if err := c.endpoint.Script.DeleteScriptById(ctx.Request().Context(), id); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
 
 // ExecScriptById ...
-func (c ControllerScript) ExecScriptById(ctx context.Context, req *api.ExecScriptRequest) (*api.ExecScriptResult, error) {
+func (c ControllerScript) ScriptServiceExecScriptById(ctx echo.Context, id int64) error {
 
-	result, err := c.endpoint.Script.Execute(ctx, req.Id)
+	result, err := c.endpoint.Script.Execute(ctx.Request().Context(), id)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return &api.ExecScriptResult{Result: result}, nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, &stub.ApiExecScriptResult{Result: result}))
 }
 
 // ExecSrcScriptById ...
-func (c ControllerScript) ExecSrcScriptById(ctx context.Context, req *api.ExecSrcScriptRequest) (*api.ExecScriptResult, error) {
+func (c ControllerScript) ScriptServiceExecSrcScriptById(ctx echo.Context, _ stub.ScriptServiceExecSrcScriptByIdParams) error {
 
-	result, err := c.endpoint.Script.ExecuteSource(ctx, c.dto.Script.FromExecSrcScriptRequest(req))
-	if err != nil {
-		return nil, c.error(ctx, nil, err)
+	obj := &stub.ApiExecSrcScriptRequest{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &api.ExecScriptResult{Result: result}, nil
+	result, err := c.endpoint.Script.ExecuteSource(ctx.Request().Context(), c.dto.Script.FromExecSrcScriptRequest(obj))
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, &stub.ApiExecScriptResult{Result: result}))
 }
 
 // CopyScriptById ...
-func (c ControllerScript) CopyScriptById(ctx context.Context, req *api.CopyScriptRequest) (*api.Script, error) {
+func (c ControllerScript) ScriptServiceCopyScriptById(ctx echo.Context, id int64) error {
 
-	script, err := c.endpoint.Script.Copy(ctx, req.Id)
+	script, err := c.endpoint.Script.Copy(ctx.Request().Context(), id)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Script.ToGScript(script), nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, c.dto.Script.GetStubScript(script)))
 }
 
 // GetStatistic ...
-func (c ControllerScript) GetStatistic(ctx context.Context, _ *emptypb.Empty) (*api.Statistics, error) {
+func (c ControllerScript) ScriptServiceGetStatistic(ctx echo.Context) error {
 
-	statistic, err := c.endpoint.Script.Statistic(ctx)
+	statistic, err := c.endpoint.Script.Statistic(ctx.Request().Context())
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return dto.GetStatistic(statistic), nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, dto.GetStatistic(statistic)))
 }

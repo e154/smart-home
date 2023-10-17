@@ -20,6 +20,7 @@ package adaptors
 
 import (
 	"context"
+	"github.com/e154/smart-home/common"
 	"time"
 
 	"github.com/e154/smart-home/db"
@@ -147,7 +148,7 @@ func (n *Condition) toDb(ver *m.Condition) (dbVer *db.Condition) {
 	}
 
 	if ver.Script != nil {
-		dbVer.ScriptId = ver.Script.Id
+		dbVer.ScriptId = common.Int64(ver.Script.Id)
 	}
 
 	return

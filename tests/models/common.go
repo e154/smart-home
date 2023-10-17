@@ -103,8 +103,8 @@ func NetAttr() m.Attributes {
 func NetSettings() m.Attributes {
 	return m.Attributes{
 		"s": {
-			Name: "s",
-			Type: common.AttributeString,
+			Name:  "s",
+			Type:  common.AttributeString,
 			Value: "s",
 		},
 	}

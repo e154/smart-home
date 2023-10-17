@@ -20,11 +20,10 @@ package endpoint
 
 import (
 	"context"
-	"strings"
-	"time"
-
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"strings"
+	"time"
 )
 
 // MessageDeliveryEndpoint ...
@@ -40,17 +39,21 @@ func NewMessageDeliveryEndpoint(common *CommonEndpoint) *MessageDeliveryEndpoint
 }
 
 // List ...
-func (n *MessageDeliveryEndpoint) List(ctx context.Context, pagination common.PageParams, query *string, startDate, endDate *string) (result []*m.MessageDelivery, total int64, err error) {
+func (n *MessageDeliveryEndpoint) List(ctx context.Context, pagination common.PageParams, query *string, startDate, endDate *time.Time) (result []*m.MessageDelivery, total int64, err error) {
 
-	queryObj := &m.MessageDeliveryQuery{}
-	if startDate != nil {
-		date, _ := time.Parse("2006-01-02", *startDate)
-		queryObj.StartDate = &date
+	queryObj := &m.MessageDeliveryQuery{
+		StartDate: startDate,
+		EndDate:   endDate,
+		Types:     nil,
 	}
-	if endDate != nil {
-		date, _ := time.Parse("2006-01-02", *endDate)
-		queryObj.EndDate = &date
-	}
+	//if startDate != nil {
+	//	date, _ := time.Parse("2006-01-02", *startDate)
+	//	queryObj.StartDate = &date
+	//}
+	//if endDate != nil {
+	//	date, _ := time.Parse("2006-01-02", *endDate)
+	//	queryObj.EndDate = &date
+	//}
 	if query != nil {
 		queryObj.Types = strings.Split(*query, ",")
 	}

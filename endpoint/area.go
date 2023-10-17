@@ -25,7 +25,6 @@ import (
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/go-playground/validator/v10"
 )
 
 // AreaEndpoint ...
@@ -41,12 +40,11 @@ func NewAreaEndpoint(common *CommonEndpoint) *AreaEndpoint {
 }
 
 // Add ...
-func (n *AreaEndpoint) Add(ctx context.Context, params *m.Area) (result *m.Area, errs validator.ValidationErrorsTranslations, err error) {
+func (n *AreaEndpoint) Add(ctx context.Context, params *m.Area) (result *m.Area, err error) {
 
-	var ok bool
-	if ok, errs = n.validation.Valid(params); !ok {
+	if ok, errs := n.validation.Valid(params); !ok {
 		err = apperr.ErrInvalidRequest
-		apperr.SetContext(err, errs)
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
@@ -76,7 +74,7 @@ func (n *AreaEndpoint) GetByName(ctx context.Context, name string) (result *m.Ar
 }
 
 // Update ...
-func (n *AreaEndpoint) Update(ctx context.Context, params *m.Area) (area *m.Area, errs validator.ValidationErrorsTranslations, err error) {
+func (n *AreaEndpoint) Update(ctx context.Context, params *m.Area) (area *m.Area, err error) {
 
 	area, err = n.adaptors.Area.GetById(ctx, params.Id)
 	if err != nil {
@@ -90,8 +88,9 @@ func (n *AreaEndpoint) Update(ctx context.Context, params *m.Area) (area *m.Area
 	area.Resolution = params.Resolution
 	area.Polygon = params.Polygon
 
-	var ok bool
-	if ok, errs = n.validation.Valid(area); !ok {
+	if ok, errs := n.validation.Valid(area); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 

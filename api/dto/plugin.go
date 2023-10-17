@@ -19,7 +19,7 @@
 package dto
 
 import (
-	"github.com/e154/smart-home/api/stub/api"
+	stub "github.com/e154/smart-home/api/stub"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 )
@@ -33,20 +33,12 @@ func NewPluginDto() Plugin {
 }
 
 // ToPluginListResult ...
-func (p Plugin) ToPluginListResult(items []*m.Plugin, total uint64, pagination common.PageParams) (result *api.GetPluginListResult) {
+func (p Plugin) ToPluginListResult(plugins []*m.Plugin) []*stub.ApiPluginShort {
 
-	result = &api.GetPluginListResult{
-		Items: make([]*api.PluginShort, 0, len(items)),
-		Meta: &api.Meta{
-			Limit: uint64(pagination.Limit),
-			Page:  pagination.PageReq,
-			Total: total,
-			Sort:  pagination.SortReq,
-		},
-	}
+	var items = make([]*stub.ApiPluginShort, 0, len(plugins))
 
-	for _, item := range items {
-		result.Items = append(result.Items, &api.PluginShort{
+	for _, item := range plugins {
+		items = append(items, &stub.ApiPluginShort{
 			Name:     item.Name,
 			Version:  item.Version,
 			Enabled:  item.Enabled,
@@ -55,15 +47,15 @@ func (p Plugin) ToPluginListResult(items []*m.Plugin, total uint64, pagination c
 		})
 	}
 
-	return
+	return items
 }
 
 // Options ...
-func (p Plugin) Options(options m.PluginOptions) (result *api.PluginOptionsResult) {
+func (p Plugin) Options(options m.PluginOptions) (result *stub.ApiPluginOptionsResult) {
 
-	var actions = make(map[string]*api.PluginOptionsResult_EntityAction)
+	var actions = make(map[string]stub.ApiPluginOptionsResultEntityAction)
 	for k, v := range options.ActorActions {
-		actions[k] = &api.PluginOptionsResult_EntityAction{
+		actions[k] = stub.ApiPluginOptionsResultEntityAction{
 			Name:        v.Name,
 			Description: v.Description,
 			ImageUrl:    common.StringValue(v.ImageUrl),
@@ -71,9 +63,9 @@ func (p Plugin) Options(options m.PluginOptions) (result *api.PluginOptionsResul
 		}
 	}
 
-	var states = make(map[string]*api.PluginOptionsResult_EntityState)
+	var states = make(map[string]stub.ApiPluginOptionsResultEntityState)
 	for k, v := range options.ActorStates {
-		states[k] = &api.PluginOptionsResult_EntityState{
+		states[k] = stub.ApiPluginOptionsResultEntityState{
 			Name:        v.Name,
 			Description: v.Description,
 			ImageUrl:    common.StringValue(v.ImageUrl),
@@ -81,7 +73,7 @@ func (p Plugin) Options(options m.PluginOptions) (result *api.PluginOptionsResul
 		}
 	}
 
-	result = &api.PluginOptionsResult{
+	result = &stub.ApiPluginOptionsResult{
 		Triggers:           options.Triggers,
 		Actors:             options.Actors,
 		ActorCustomAttrs:   options.ActorCustomAttrs,
@@ -98,12 +90,12 @@ func (p Plugin) Options(options m.PluginOptions) (result *api.PluginOptionsResul
 }
 
 // ToSearchResult ...
-func (p Plugin) ToSearchResult(list []*m.Plugin) *api.SearchPluginResult {
+func (p Plugin) ToSearchResult(list []*m.Plugin) *stub.ApiSearchPluginResult {
 
-	items := make([]*api.PluginShort, 0, len(list))
+	items := make([]stub.ApiPluginShort, 0, len(list))
 
 	for _, i := range list {
-		items = append(items, &api.PluginShort{
+		items = append(items, stub.ApiPluginShort{
 			Name:    i.Name,
 			Version: i.Version,
 			Enabled: i.Enabled,
@@ -111,20 +103,20 @@ func (p Plugin) ToSearchResult(list []*m.Plugin) *api.SearchPluginResult {
 		})
 	}
 
-	return &api.SearchPluginResult{
+	return &stub.ApiSearchPluginResult{
 		Items: items,
 	}
 }
 
-func (p Plugin) ToGetPlugin(plugin *m.Plugin, options m.PluginOptions) (result *api.Plugin) {
+func (p Plugin) ToGetPlugin(plugin *m.Plugin, options m.PluginOptions) (result *stub.ApiPlugin) {
 
-	var settings = make(map[string]*api.Attribute)
+	var settings = make(map[string]stub.ApiAttribute)
 	if options.Setts != nil && plugin.Settings != nil {
 		setts := options.Setts.Copy()
 		setts.Deserialize(plugin.Settings)
 		settings = AttributeToApi(setts)
 	}
-	result = &api.Plugin{
+	result = &stub.ApiPlugin{
 		Name:     plugin.Name,
 		Version:  plugin.Version,
 		Enabled:  plugin.Enabled,

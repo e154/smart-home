@@ -96,7 +96,6 @@ func NewStates() (states map[string]supervisor.ActorState) {
 	return
 }
 
-
 // Command ...
 type Command struct {
 	UserName, Text string

@@ -19,11 +19,9 @@
 package dto
 
 import (
-	"github.com/e154/smart-home/api/stub/api"
-	"github.com/e154/smart-home/common"
+	stub "github.com/e154/smart-home/api/stub"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Zigbee2mqtt ...
@@ -35,7 +33,7 @@ func NewZigbee2mqttDto() Zigbee2mqtt {
 }
 
 // AddZigbee2MqttBridgeRequest ...
-func (u Zigbee2mqtt) AddZigbee2MqttBridgeRequest(obj *api.NewZigbee2MqttRequest) (bridge *m.Zigbee2mqtt) {
+func (u Zigbee2mqtt) AddZigbee2MqttBridgeRequest(obj *stub.ApiNewZigbee2mqttRequest) (bridge *m.Zigbee2mqtt) {
 	bridge = &m.Zigbee2mqtt{
 		Name:       obj.Name,
 		Login:      obj.Login,
@@ -47,8 +45,8 @@ func (u Zigbee2mqtt) AddZigbee2MqttBridgeRequest(obj *api.NewZigbee2MqttRequest)
 }
 
 // AddZigbee2MqttBridgeResult ...
-func (u Zigbee2mqtt) AddZigbee2MqttBridgeResult(bridge *m.Zigbee2mqtt) (obj *api.Zigbee2Mqtt) {
-	obj = &api.Zigbee2Mqtt{
+func (u Zigbee2mqtt) AddZigbee2MqttBridgeResult(bridge *m.Zigbee2mqtt) (obj stub.ApiZigbee2mqtt) {
+	obj = stub.ApiZigbee2mqtt{
 		ScanInProcess: false,
 		LastScan:      nil,
 		Networkmap:    "",
@@ -58,15 +56,15 @@ func (u Zigbee2mqtt) AddZigbee2MqttBridgeResult(bridge *m.Zigbee2mqtt) (obj *api
 		Login:         bridge.Login,
 		PermitJoin:    bridge.PermitJoin,
 		BaseTopic:     bridge.BaseTopic,
-		CreatedAt:     timestamppb.New(bridge.CreatedAt),
-		UpdatedAt:     timestamppb.New(bridge.UpdatedAt),
+		CreatedAt:     bridge.CreatedAt,
+		UpdatedAt:     bridge.UpdatedAt,
 	}
 	return
 }
 
 // ToZigbee2mqttInfo ...
-func (u Zigbee2mqtt) ToZigbee2mqttInfo(info *zigbee2mqtt.Zigbee2mqttBridge) (obj *api.Zigbee2Mqtt) {
-	obj = &api.Zigbee2Mqtt{
+func (u Zigbee2mqtt) ToZigbee2mqttInfo(info *zigbee2mqtt.Zigbee2mqttBridge) (obj *stub.ApiZigbee2mqtt) {
+	obj = &stub.ApiZigbee2mqtt{
 		ScanInProcess: info.ScanInProcess,
 		Networkmap:    info.Networkmap,
 		Status:        info.Status,
@@ -75,19 +73,17 @@ func (u Zigbee2mqtt) ToZigbee2mqttInfo(info *zigbee2mqtt.Zigbee2mqttBridge) (obj
 		Login:         info.Login,
 		PermitJoin:    info.PermitJoin,
 		BaseTopic:     info.BaseTopic,
-		CreatedAt:     timestamppb.New(info.CreatedAt),
-		UpdatedAt:     timestamppb.New(info.UpdatedAt),
-	}
-	if info.LastScan != nil {
-		obj.LastScan = timestamppb.New(*info.LastScan)
+		LastScan:      info.LastScan,
+		CreatedAt:     info.CreatedAt,
+		UpdatedAt:     info.UpdatedAt,
 	}
 	return
 }
 
 // UpdateBridgeByIdRequest ...
-func (u Zigbee2mqtt) UpdateBridgeByIdRequest(obj *api.UpdateBridgeRequest) (bridge *m.Zigbee2mqtt) {
+func (u Zigbee2mqtt) UpdateBridgeByIdRequest(obj *stub.Zigbee2mqttServiceUpdateBridgeByIdJSONBody, id int64) (bridge *m.Zigbee2mqtt) {
 	bridge = &m.Zigbee2mqtt{
-		Id:         obj.Id,
+		Id:         id,
 		Name:       obj.Name,
 		Login:      obj.Login,
 		Password:   obj.Password,
@@ -98,51 +94,43 @@ func (u Zigbee2mqtt) UpdateBridgeByIdRequest(obj *api.UpdateBridgeRequest) (brid
 }
 
 // UpdateBridgeByIdResult ...
-func (u Zigbee2mqtt) UpdateBridgeByIdResult(bridge *m.Zigbee2mqtt) (obj *api.Zigbee2Mqtt) {
-	obj = &api.Zigbee2Mqtt{
+func (u Zigbee2mqtt) UpdateBridgeByIdResult(bridge *m.Zigbee2mqtt) (obj *stub.ApiZigbee2mqtt) {
+	obj = &stub.ApiZigbee2mqtt{
 		Id:         bridge.Id,
 		Name:       bridge.Name,
 		Login:      bridge.Login,
 		PermitJoin: bridge.PermitJoin,
 		BaseTopic:  bridge.BaseTopic,
-		CreatedAt:  timestamppb.New(bridge.CreatedAt),
-		UpdatedAt:  timestamppb.New(bridge.UpdatedAt),
+		CreatedAt:  bridge.CreatedAt,
+		UpdatedAt:  bridge.UpdatedAt,
 	}
 	return
 }
 
 // GetBridgeListResult ...
-func (u Zigbee2mqtt) GetBridgeListResult(list []*zigbee2mqtt.Zigbee2mqttBridge, total uint64, pagination common.PageParams) (obj *api.GetBridgeListResult) {
-	items := make([]*api.Zigbee2MqttShort, 0, len(list))
+func (u Zigbee2mqtt) GetBridgeListResult(list []*zigbee2mqtt.Zigbee2mqttBridge) []*stub.ApiZigbee2mqttShort {
+	items := make([]*stub.ApiZigbee2mqttShort, 0, len(list))
 	for _, item := range list {
-		items = append(items, &api.Zigbee2MqttShort{
+		items = append(items, &stub.ApiZigbee2mqttShort{
 			Id:         item.Id,
 			Name:       item.Name,
 			Login:      item.Login,
 			PermitJoin: item.PermitJoin,
 			BaseTopic:  item.BaseTopic,
-			CreatedAt:  timestamppb.New(item.CreatedAt),
-			UpdatedAt:  timestamppb.New(item.UpdatedAt),
+			CreatedAt:  item.CreatedAt,
+			UpdatedAt:  item.UpdatedAt,
 		})
 	}
-	obj = &api.GetBridgeListResult{
-		Items: items,
-		Meta: &api.Meta{
-			Limit: uint64(pagination.Limit),
-			Page:  pagination.PageReq,
-			Total: total,
-			Sort:  pagination.SortReq,
-		},
-	}
-	return
+
+	return items
 }
 
 // ToZigbee2MqttDevice ...
-func (u Zigbee2mqtt) ToZigbee2MqttDevice(device *m.Zigbee2mqttDevice) (obj *api.Zigbee2MqttDevice) {
+func (u Zigbee2mqtt) ToZigbee2MqttDevice(device *m.Zigbee2mqttDevice) (obj *stub.ApiZigbee2mqttDevice) {
 
-	return &api.Zigbee2MqttDevice{
+	return &stub.ApiZigbee2mqttDevice{
 		Id:            device.Id,
-		Zigbee2MqttId: device.Zigbee2mqttId,
+		Zigbee2mqttId: device.Zigbee2mqttId,
 		Name:          device.Name,
 		Type:          device.Type,
 		Model:         device.Model,
@@ -151,41 +139,33 @@ func (u Zigbee2mqtt) ToZigbee2MqttDevice(device *m.Zigbee2mqttDevice) (obj *api.
 		Functions:     device.Functions,
 		ImageUrl:      device.ImageUrl,
 		Status:        device.Status,
-		CreatedAt:     timestamppb.New(device.CreatedAt),
-		UpdatedAt:     timestamppb.New(device.UpdatedAt),
+		CreatedAt:     device.CreatedAt,
+		UpdatedAt:     device.UpdatedAt,
 	}
 }
 
 // SearchDevice ...
-func (u Zigbee2mqtt) SearchDevice(list []*m.Zigbee2mqttDevice) (obj *api.SearchDeviceResult) {
+func (u Zigbee2mqtt) SearchDevice(list []*m.Zigbee2mqttDevice) (obj *stub.ApiSearchDeviceResult) {
 
-	items := make([]*api.Zigbee2MqttDevice, 0, len(list))
+	items := make([]stub.ApiZigbee2mqttDevice, 0, len(list))
 
 	for _, i := range list {
-		items = append(items, u.ToZigbee2MqttDevice(i))
+		items = append(items, *u.ToZigbee2MqttDevice(i))
 	}
 
-	return &api.SearchDeviceResult{
+	return &stub.ApiSearchDeviceResult{
 		Items: items,
 	}
 }
 
 // ToListResult ...
-func (u Zigbee2mqtt) ToListResult(list []*m.Zigbee2mqttDevice, total uint64, pagination common.PageParams) *api.DeviceListResult {
+func (u Zigbee2mqtt) ToListResult(list []*m.Zigbee2mqttDevice) []*stub.ApiZigbee2mqttDevice {
 
-	items := make([]*api.Zigbee2MqttDevice, 0, len(list))
+	items := make([]*stub.ApiZigbee2mqttDevice, 0, len(list))
 
 	for _, i := range list {
 		items = append(items, u.ToZigbee2MqttDevice(i))
 	}
 
-	return &api.DeviceListResult{
-		Items: items,
-		Meta: &api.Meta{
-			Limit: uint64(pagination.Limit),
-			Page:  pagination.PageReq,
-			Total: total,
-			Sort:  pagination.SortReq,
-		},
-	}
+	return items
 }

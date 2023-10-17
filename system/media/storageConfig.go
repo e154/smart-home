@@ -44,14 +44,14 @@ func NewStreamCore() *StorageST {
 	//}
 	//debug = tmp.Server.Debug
 	instance.Server = ServerST{
-		Debug:              false,
-		HTTPDemo:           true,
-		HTTPDebug:          false,
-		HTTPLogin:          "demo",
-		HTTPPassword:       "demo",
-		HTTPDir:            "static_source/media",
-		HTTPPort:           ":8083",
-		RTSPPort:           ":5541",
+		Debug:        false,
+		HTTPDemo:     true,
+		HTTPDebug:    false,
+		HTTPLogin:    "demo",
+		HTTPPassword: "demo",
+		HTTPDir:      "static_source/media",
+		HTTPPort:     ":8083",
+		RTSPPort:     ":5541",
 	}
 	instance.Streams = make(map[string]StreamST)
 	var err error

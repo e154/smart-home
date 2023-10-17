@@ -24,7 +24,6 @@ import (
 	"github.com/e154/smart-home/common/apperr"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/alexa"
-	"github.com/go-playground/validator/v10"
 )
 
 // AlexaSkillEndpoint ...
@@ -40,10 +39,11 @@ func NewAlexaSkillEndpoint(common *CommonEndpoint) *AlexaSkillEndpoint {
 }
 
 // Add ...
-func (n *AlexaSkillEndpoint) Add(ctx context.Context, params *m.AlexaSkill) (result *m.AlexaSkill, errs validator.ValidationErrorsTranslations, err error) {
+func (n *AlexaSkillEndpoint) Add(ctx context.Context, params *m.AlexaSkill) (result *m.AlexaSkill, err error) {
 
-	var ok bool
-	if ok, errs = n.validation.Valid(params); !ok {
+	if ok, errs := n.validation.Valid(params); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
@@ -73,10 +73,11 @@ func (n *AlexaSkillEndpoint) GetById(ctx context.Context, appId int64) (result *
 }
 
 // Update ...
-func (n *AlexaSkillEndpoint) Update(ctx context.Context, params *m.AlexaSkill) (skill *m.AlexaSkill, errs validator.ValidationErrorsTranslations, err error) {
+func (n *AlexaSkillEndpoint) Update(ctx context.Context, params *m.AlexaSkill) (skill *m.AlexaSkill, err error) {
 
-	var ok bool
-	if ok, errs = n.validation.Valid(params); !ok {
+	if ok, errs := n.validation.Valid(params); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 

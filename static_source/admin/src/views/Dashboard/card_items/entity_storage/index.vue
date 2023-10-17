@@ -194,9 +194,9 @@ const getList = debounce( async () => {
   if (res) {
     const {items, meta} = res.data;
     tableObject.tableList = items;
-    paginationObj.value.pageSize = meta.limit;
-    paginationObj.value.currentPage = meta.page;
-    paginationObj.value.total = meta.total;
+    paginationObj.value.pageSize = meta.pagination.limit;
+    paginationObj.value.currentPage = meta.pagination.page;
+    paginationObj.value.total = meta.pagination.total;
   } else {
     tableObject.tableList = [];
   }

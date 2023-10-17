@@ -19,10 +19,8 @@
 package controllers
 
 import (
-	"context"
-
-	"github.com/e154/smart-home/api/stub/api"
-	"google.golang.org/protobuf/types/known/emptypb"
+	"github.com/e154/smart-home/api/stub"
+	"github.com/labstack/echo/v4"
 )
 
 // ControllerZigbee2mqtt ...
@@ -31,158 +29,183 @@ type ControllerZigbee2mqtt struct {
 }
 
 // NewControllerZigbee2mqtt ...
-func NewControllerZigbee2mqtt(common *ControllerCommon) ControllerZigbee2mqtt {
-	return ControllerZigbee2mqtt{
+func NewControllerZigbee2mqtt(common *ControllerCommon) *ControllerZigbee2mqtt {
+	return &ControllerZigbee2mqtt{
 		ControllerCommon: common,
 	}
 }
 
 // AddZigbee2MqttBridge ...
-func (c ControllerZigbee2mqtt) AddZigbee2MqttBridge(ctx context.Context, req *api.NewZigbee2MqttRequest) (*api.Zigbee2Mqtt, error) {
+func (c ControllerZigbee2mqtt) Zigbee2mqttServiceAddZigbee2mqttBridge(ctx echo.Context, _ stub.Zigbee2mqttServiceAddZigbee2mqttBridgeParams) error {
 
-	bridge := c.dto.Zigbee2mqtt.AddZigbee2MqttBridgeRequest(req)
-
-	result, errs, err := c.endpoint.Zigbee2mqtt.AddBridge(ctx, bridge)
-	if len(errs) != 0 || err != nil {
-		return nil, c.error(ctx, errs, err)
+	obj := &stub.ApiNewZigbee2mqttRequest{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Zigbee2mqtt.AddZigbee2MqttBridgeResult(result), nil
+	bridge := c.dto.Zigbee2mqtt.AddZigbee2MqttBridgeRequest(obj)
+
+	result, err := c.endpoint.Zigbee2mqtt.AddBridge(ctx.Request().Context(), bridge)
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP201(ctx, ResponseWithObj(ctx, c.dto.Zigbee2mqtt.AddZigbee2MqttBridgeResult(result)))
 }
 
 // GetZigbee2MqttBridge ...
-func (c ControllerZigbee2mqtt) GetZigbee2MqttBridge(ctx context.Context, req *api.GetBridgeRequest) (*api.Zigbee2Mqtt, error) {
+func (c ControllerZigbee2mqtt) Zigbee2mqttServiceGetZigbee2mqttBridge(ctx echo.Context, id int64) error {
 
-	info, err := c.endpoint.Zigbee2mqtt.GetBridgeById(ctx, req.Id)
+	bridge, err := c.endpoint.Zigbee2mqtt.GetBridgeById(ctx.Request().Context(), id)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Zigbee2mqtt.ToZigbee2mqttInfo(info), nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, c.dto.Zigbee2mqtt.ToZigbee2mqttInfo(bridge)))
 }
 
 // UpdateBridgeById ...
-func (c ControllerZigbee2mqtt) UpdateBridgeById(ctx context.Context, req *api.UpdateBridgeRequest) (*api.Zigbee2Mqtt, error) {
+func (c ControllerZigbee2mqtt) Zigbee2mqttServiceUpdateBridgeById(ctx echo.Context, id int64, _ stub.Zigbee2mqttServiceUpdateBridgeByIdParams) error {
 
-	bridge := c.dto.Zigbee2mqtt.UpdateBridgeByIdRequest(req)
-
-	bridge, errs, err := c.endpoint.Zigbee2mqtt.UpdateBridge(ctx, bridge)
-	if len(errs) != 0 || err != nil {
-		return nil, c.error(ctx, errs, err)
+	obj := &stub.Zigbee2mqttServiceUpdateBridgeByIdJSONBody{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Zigbee2mqtt.UpdateBridgeByIdResult(bridge), nil
+	bridge := c.dto.Zigbee2mqtt.UpdateBridgeByIdRequest(obj, id)
+
+	bridge, err := c.endpoint.Zigbee2mqtt.UpdateBridge(ctx.Request().Context(), bridge)
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, c.dto.Zigbee2mqtt.UpdateBridgeByIdResult(bridge)))
 }
 
 // GetBridgeList ...
-func (c ControllerZigbee2mqtt) GetBridgeList(ctx context.Context, req *api.PaginationRequest) (*api.GetBridgeListResult, error) {
+func (c ControllerZigbee2mqtt) Zigbee2mqttServiceGetBridgeList(ctx echo.Context, params stub.Zigbee2mqttServiceGetBridgeListParams) error {
 
-	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
-	items, total, err := c.endpoint.Zigbee2mqtt.GetBridgeList(ctx, pagination)
+	pagination := c.Pagination(params.Page, params.Limit, params.Sort)
+	items, total, err := c.endpoint.Zigbee2mqtt.GetBridgeList(ctx.Request().Context(), pagination)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Zigbee2mqtt.GetBridgeListResult(items, uint64(total), pagination), nil
+	return c.HTTP200(ctx, ResponseWithList(ctx, c.dto.Zigbee2mqtt.GetBridgeListResult(items), total, pagination))
 }
 
 // DeleteBridgeById ...
-func (c ControllerZigbee2mqtt) DeleteBridgeById(ctx context.Context, req *api.DeleteBridgeRequest) (*emptypb.Empty, error) {
+func (c ControllerZigbee2mqtt) Zigbee2mqttServiceDeleteBridgeById(ctx echo.Context, id int64) error {
 
-	err := c.endpoint.Zigbee2mqtt.Delete(ctx, req.Id)
+	err := c.endpoint.Zigbee2mqtt.Delete(ctx.Request().Context(), id)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
 
 // ResetBridgeById ...
-func (c ControllerZigbee2mqtt) ResetBridgeById(ctx context.Context, req *api.ResetBridgeRequest) (*emptypb.Empty, error) {
+func (c ControllerZigbee2mqtt) Zigbee2mqttServiceResetBridgeById(ctx echo.Context, id int64) error {
 
-	err := c.endpoint.Zigbee2mqtt.ResetBridge(ctx, req.Id)
+	err := c.endpoint.Zigbee2mqtt.ResetBridge(ctx.Request().Context(), id)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
 
 // DeviceBan ...
-func (c ControllerZigbee2mqtt) DeviceBan(ctx context.Context, req *api.DeviceBanRequest) (*emptypb.Empty, error) {
+func (c ControllerZigbee2mqtt) Zigbee2mqttServiceDeviceBan(ctx echo.Context, _ stub.Zigbee2mqttServiceDeviceBanParams) error {
 
-	err := c.endpoint.Zigbee2mqtt.DeviceBan(ctx, req.Id, req.FriendlyName)
-	if err != nil {
-		return nil, c.error(ctx, nil, err)
+	obj := &stub.ApiDeviceBanRequest{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	err := c.endpoint.Zigbee2mqtt.DeviceBan(ctx.Request().Context(), obj.Id, obj.FriendlyName)
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
 
 // DeviceWhitelist ...
-func (c ControllerZigbee2mqtt) DeviceWhitelist(ctx context.Context, req *api.DeviceWhitelistRequest) (*emptypb.Empty, error) {
+func (c ControllerZigbee2mqtt) Zigbee2mqttServiceDeviceWhitelist(ctx echo.Context, params stub.Zigbee2mqttServiceDeviceWhitelistParams) error {
 
-	err := c.endpoint.Zigbee2mqtt.DeviceWhitelist(ctx, req.Id, req.FriendlyName)
-	if err != nil {
-		return nil, c.error(ctx, nil, err)
+	obj := &stub.ApiDeviceWhitelistRequest{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	err := c.endpoint.Zigbee2mqtt.DeviceWhitelist(ctx.Request().Context(), obj.Id, obj.FriendlyName)
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
 
 // DeviceRename ...
-func (c ControllerZigbee2mqtt) DeviceRename(ctx context.Context, req *api.DeviceRenameRequest) (*emptypb.Empty, error) {
+func (c ControllerZigbee2mqtt) Zigbee2mqttServiceDeviceRename(ctx echo.Context, params stub.Zigbee2mqttServiceDeviceRenameParams) error {
 
-	err := c.endpoint.Zigbee2mqtt.DeviceRename(ctx, req.FriendlyName, req.NewName)
-	if err != nil {
-		return nil, c.error(ctx, nil, err)
+	obj := &stub.ApiDeviceRenameRequest{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	err := c.endpoint.Zigbee2mqtt.DeviceRename(ctx.Request().Context(), obj.FriendlyName, obj.NewName)
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
 
 // SearchDevice ...
-func (c ControllerZigbee2mqtt) SearchDevice(ctx context.Context, req *api.SearchRequest) (*api.SearchDeviceResult, error) {
+func (c ControllerZigbee2mqtt) Zigbee2mqttServiceSearchDevice(ctx echo.Context, params stub.Zigbee2mqttServiceSearchDeviceParams) error {
 
-	search := c.Search(req.Query, req.Limit, req.Offset)
-	items, _, err := c.endpoint.Zigbee2mqtt.SearchDevice(ctx, search)
+	search := c.Search(params.Query, params.Limit, params.Offset)
+	items, _, err := c.endpoint.Zigbee2mqtt.SearchDevice(ctx.Request().Context(), search)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Zigbee2mqtt.SearchDevice(items), nil
+	return c.HTTP200(ctx, c.dto.Zigbee2mqtt.SearchDevice(items))
 }
 
 // Networkmap ...
-func (c ControllerZigbee2mqtt) Networkmap(ctx context.Context, req *api.NetworkmapRequest) (*api.NetworkmapResponse, error) {
+func (c ControllerZigbee2mqtt) Zigbee2mqttServiceNetworkmap(ctx echo.Context, id int64) error {
 
-	networkMap, err := c.endpoint.Zigbee2mqtt.Networkmap(ctx, req.Id)
+	networkMap, err := c.endpoint.Zigbee2mqtt.Networkmap(ctx.Request().Context(), id)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return &api.NetworkmapResponse{Networkmap: networkMap}, nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, &stub.ApiNetworkmapResponse{Networkmap: networkMap}))
 }
 
 // UpdateNetworkmap ...
-func (c ControllerZigbee2mqtt) UpdateNetworkmap(ctx context.Context, req *api.NetworkmapRequest) (*emptypb.Empty, error) {
+func (c ControllerZigbee2mqtt) Zigbee2mqttServiceUpdateNetworkmap(ctx echo.Context, id int64) error {
 
-	err := c.endpoint.Zigbee2mqtt.UpdateNetworkmap(ctx, req.Id)
+	err := c.endpoint.Zigbee2mqtt.UpdateNetworkmap(ctx.Request().Context(), id)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
 
 // DeviceList ...
-func (c ControllerZigbee2mqtt) DeviceList(ctx context.Context, req *api.DeviceListRequest) (*api.DeviceListResult, error) {
+func (c ControllerZigbee2mqtt) Zigbee2mqttServiceDeviceList(ctx echo.Context, id int64, params stub.Zigbee2mqttServiceDeviceListParams) error {
 
-	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
-	items, total, err := c.endpoint.Zigbee2mqtt.DeviceList(ctx, req.Id, pagination)
+	pagination := c.Pagination(params.Page, params.Limit, params.Sort)
+	items, total, err := c.endpoint.Zigbee2mqtt.DeviceList(ctx.Request().Context(), id, pagination)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Zigbee2mqtt.ToListResult(items, uint64(total), pagination), nil
+	return c.HTTP200(ctx, ResponseWithList(ctx, c.dto.Zigbee2mqtt.ToListResult(items), total, pagination))
 }

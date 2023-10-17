@@ -29,7 +29,6 @@ import (
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/scripts"
-	"github.com/go-playground/validator/v10"
 )
 
 // TaskEndpoint ...
@@ -45,10 +44,11 @@ func NewTaskEndpoint(common *CommonEndpoint) *TaskEndpoint {
 }
 
 // Add ...
-func (n *TaskEndpoint) Add(ctx context.Context, task *m.NewTask) (result *m.Task, errs validator.ValidationErrorsTranslations, err error) {
+func (n *TaskEndpoint) Add(ctx context.Context, task *m.NewTask) (result *m.Task, err error) {
 
-	var ok bool
-	if ok, errs = n.validation.Valid(task); !ok {
+	if ok, errs := n.validation.Valid(task); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
@@ -69,10 +69,11 @@ func (n *TaskEndpoint) Add(ctx context.Context, task *m.NewTask) (result *m.Task
 }
 
 // Import ...
-func (n *TaskEndpoint) Import(ctx context.Context, task *m.Task) (result *m.Task, errs validator.ValidationErrorsTranslations, err error) {
+func (n *TaskEndpoint) Import(ctx context.Context, task *m.Task) (result *m.Task, err error) {
 
-	var ok bool
-	if ok, errs = n.validation.Valid(task); !ok {
+	if ok, errs := n.validation.Valid(task); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
@@ -135,10 +136,11 @@ func (n *TaskEndpoint) Import(ctx context.Context, task *m.Task) (result *m.Task
 }
 
 // Update ...
-func (n *TaskEndpoint) Update(ctx context.Context, task *m.UpdateTask) (result *m.Task, errs validator.ValidationErrorsTranslations, err error) {
+func (n *TaskEndpoint) Update(ctx context.Context, task *m.UpdateTask) (result *m.Task, err error) {
 
-	var ok bool
-	if ok, errs = n.validation.Valid(task); !ok {
+	if ok, errs := n.validation.Valid(task); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
@@ -158,7 +160,7 @@ func (n *TaskEndpoint) Update(ctx context.Context, task *m.UpdateTask) (result *
 }
 
 // GetById ...
-func (n *TaskEndpoint) GetById(ctx context.Context, id int64) (task *m.Task, errs validator.ValidationErrorsTranslations, err error) {
+func (n *TaskEndpoint) GetById(ctx context.Context, id int64) (task *m.Task, err error) {
 
 	if task, err = n.adaptors.Task.GetById(ctx, id); err != nil {
 		return
@@ -207,7 +209,7 @@ func (n *TaskEndpoint) Disable(ctx context.Context, id int64) (err error) {
 }
 
 // List ...
-func (n *TaskEndpoint) List(ctx context.Context, pagination common.PageParams) (tasks []*m.Task, total int64, errs validator.ValidationErrorsTranslations, err error) {
+func (n *TaskEndpoint) List(ctx context.Context, pagination common.PageParams) (tasks []*m.Task, total int64, err error) {
 
 	if tasks, total, err = n.adaptors.Task.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, false); err != nil {
 		return

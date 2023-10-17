@@ -20,10 +20,10 @@ package endpoint
 
 import (
 	"context"
+	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/go-playground/validator/v10"
 )
 
 // VariableEndpoint ...
@@ -39,10 +39,11 @@ func NewVariableEndpoint(common *CommonEndpoint) *VariableEndpoint {
 }
 
 // Add ...
-func (v *VariableEndpoint) Add(ctx context.Context, variable m.Variable) (errs validator.ValidationErrorsTranslations, err error) {
+func (v *VariableEndpoint) Add(ctx context.Context, variable m.Variable) (err error) {
 
-	var ok bool
-	if ok, errs = v.validation.Valid(variable); !ok {
+	if ok, errs := v.validation.Valid(variable); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
@@ -60,10 +61,11 @@ func (v *VariableEndpoint) GetById(ctx context.Context, name string) (variable m
 }
 
 // Update ...
-func (v *VariableEndpoint) Update(ctx context.Context, variable m.Variable) (errs validator.ValidationErrorsTranslations, err error) {
+func (v *VariableEndpoint) Update(ctx context.Context, variable m.Variable) (err error) {
 
-	var ok bool
-	if ok, errs = v.validation.Valid(variable); !ok {
+	if ok, errs := v.validation.Valid(variable); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 

@@ -84,11 +84,16 @@ func (o *Orm) Start() (err error) {
 
 	log.Infof("database connect %s", strings.ReplaceAll(o.cfg.String(), "password="+o.cfg.Password, "password=*****"))
 
+	var logLevel = gormLogger.Silent
+	if o.cfg.Debug {
+		logLevel = gormLogger.Info
+	}
+
 	newLogger := gormLogger.New(
 		goLog.New(os.Stdout, "\r\n", goLog.LstdFlags), // io writer
 		gormLogger.Config{
 			SlowThreshold:             time.Second,       // Slow SQL threshold
-			LogLevel:                  gormLogger.Silent, // Log level
+			LogLevel:                  logLevel, // Log level
 			IgnoreRecordNotFoundError: true,              // Ignore ErrRecordNotFound error for logger
 			ParameterizedQueries:      true,              // Don't include params in the SQL log
 			Colorful:                  false,             // Disable color
@@ -106,9 +111,7 @@ func (o *Orm) Start() (err error) {
 		return
 	}
 
-	if o.cfg.Debug {
-		o.db.Logger.LogMode(gormLogger.Info)
-	}
+
 
 	var db *sql.DB
 	if db, err = o.db.DB(); err != nil {

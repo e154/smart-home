@@ -20,13 +20,11 @@ package endpoint
 
 import (
 	"context"
-
 	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
-	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
 )
 
@@ -43,10 +41,11 @@ func NewRoleEndpoint(common *CommonEndpoint) *RoleEndpoint {
 }
 
 // Add ...
-func (n *RoleEndpoint) Add(ctx context.Context, params *m.Role) (result *m.Role, errs validator.ValidationErrorsTranslations, err error) {
+func (n *RoleEndpoint) Add(ctx context.Context, params *m.Role) (result *m.Role, err error) {
 
-	var ok bool
-	if ok, errs = n.validation.Valid(params); !ok {
+	if ok, errs := n.validation.Valid(params); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
@@ -68,7 +67,7 @@ func (n *RoleEndpoint) GetByName(ctx context.Context, name string) (result *m.Ro
 }
 
 // Update ...
-func (n *RoleEndpoint) Update(ctx context.Context, params *m.Role) (result *m.Role, errs validator.ValidationErrorsTranslations, err error) {
+func (n *RoleEndpoint) Update(ctx context.Context, params *m.Role) (result *m.Role, err error) {
 
 	var role *m.Role
 	role, err = n.adaptors.Role.GetByName(ctx, params.Name)
@@ -84,8 +83,9 @@ func (n *RoleEndpoint) Update(ctx context.Context, params *m.Role) (result *m.Ro
 		}
 	}
 
-	var ok bool
-	if ok, errs = n.validation.Valid(params); !ok {
+	if ok, errs := n.validation.Valid(params); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 

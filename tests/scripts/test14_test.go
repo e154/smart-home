@@ -41,9 +41,9 @@ func Test14(t *testing.T) {
 			scriptService scripts.ScriptService) {
 
 			script1 := &m.Script{
-				Lang:        "coffeescript",
-				Name:        "test28",
-				Source:      "foo 'bar'",
+				Lang:   "coffeescript",
+				Name:   "test28",
+				Source: "foo 'bar'",
 			}
 
 			scriptService.PushFunctions("foo", fooBind(12))

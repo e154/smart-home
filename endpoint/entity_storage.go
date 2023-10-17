@@ -39,17 +39,17 @@ func NewEntityStorageEndpoint(common *CommonEndpoint) *EntityStorageEndpoint {
 }
 
 // GetList ...
-func (i *EntityStorageEndpoint) GetList(ctx context.Context, entityId *common.EntityId, pagination common.PageParams, _startDate, _endDate *string) (result *m.EntityStorageList, total int64, err error) {
+func (i *EntityStorageEndpoint) GetList(ctx context.Context, entityId *common.EntityId, pagination common.PageParams, startDate, endDate *time.Time) (result *m.EntityStorageList, total int64, err error) {
 
-	var startDate, endDate *time.Time
-	if _startDate != nil {
-		date, _ := time.Parse("2006-01-02", *_startDate)
-		startDate = &date
-	}
-	if _endDate != nil {
-		date, _ := time.Parse("2006-01-02", *_endDate)
-		endDate = &date
-	}
+	//var startDate, endDate *time.Time
+	//if _startDate != nil {
+	//	date, _ := time.Parse("2006-01-02", *_startDate)
+	//	startDate = &date
+	//}
+	//if _endDate != nil {
+	//	date, _ := time.Parse("2006-01-02", *_endDate)
+	//	endDate = &date
+	//}
 
 	var items []*m.EntityStorage
 	if items, total, err = i.adaptors.EntityStorage.ListByEntityId(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, entityId, startDate, endDate); err != nil {

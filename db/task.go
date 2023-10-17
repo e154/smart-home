@@ -58,11 +58,10 @@ func (d *Task) TableName() string {
 
 // Add ...
 func (n Tasks) Add(ctx context.Context, task *Task) (id int64, err error) {
-	if err = n.Db.WithContext(ctx).
-		Omit("Conditions.*").
-		Omit("Actions.*").
-		Omit("Triggers.*").
-		Create(&task).Error; err != nil {
+	err = n.Db.WithContext(ctx).
+		Omit("Triggers.*", "Conditions.*", "Actions.*").
+		Create(&task).Error
+	if err != nil {
 		err = errors.Wrap(apperr.ErrTaskAdd, err.Error())
 		return
 	}
@@ -98,13 +97,10 @@ func (n Tasks) GetById(ctx context.Context, taskId int64) (task *Task, err error
 }
 
 // Update ...
-func (n Tasks) Update(ctx context.Context, m *Task) (err error) {
-
+func (n Tasks) Update(ctx context.Context, task *Task) (err error) {
 	err = n.Db.WithContext(ctx).
-		Omit("Conditions.*").
-		Omit("Actions.*").
-		Omit("Triggers.*").
-		Save(m).Error
+		Omit("Triggers.*", "Conditions.*", "Actions.*").
+		Save(task).Error
 	if err != nil {
 		err = errors.Wrap(apperr.ErrTaskUpdate, err.Error())
 	}

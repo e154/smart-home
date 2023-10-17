@@ -19,10 +19,9 @@
 package dto
 
 import (
-	"github.com/e154/smart-home/api/stub/api"
+	stub "github.com/e154/smart-home/api/stub"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Action ...
@@ -33,8 +32,8 @@ func NewActionDto() Action {
 	return Action{}
 }
 
-// AddAction ...
-func (r Action) AddAction(from *api.NewActionRequest) (action *m.Action) {
+// Add ...
+func (r Action) Add(from *stub.ApiNewActionRequest) (action *m.Action) {
 	action = &m.Action{
 		Name:             from.Name,
 		ScriptId:         from.ScriptId,
@@ -44,10 +43,10 @@ func (r Action) AddAction(from *api.NewActionRequest) (action *m.Action) {
 	return
 }
 
-// UpdateAction ...
-func (r Action) UpdateAction(from *api.UpdateActionRequest) (action *m.Action) {
+// Update ...
+func (r Action) Update(from *stub.ActionServiceUpdateActionJSONBody, id int64) (action *m.Action) {
 	action = &m.Action{
-		Id:               from.Id,
+		Id:               id,
 		Name:             from.Name,
 		ScriptId:         from.ScriptId,
 		EntityId:         common.NewEntityIdFromPtr(from.EntityId),
@@ -57,60 +56,52 @@ func (r Action) UpdateAction(from *api.UpdateActionRequest) (action *m.Action) {
 }
 
 // ToSearchResult ...
-func (r Action) ToSearchResult(list []*m.Action) *api.SearchActionResult {
+func (r Action) ToSearchResult(list []*m.Action) *stub.ApiSearchActionResult {
 
-	items := make([]*api.Action, 0, len(list))
+	items := make([]stub.ApiAction, 0, len(list))
 
 	for _, i := range list {
 		items = append(items, r.ToAction(i))
 	}
 
-	return &api.SearchActionResult{
+	return &stub.ApiSearchActionResult{
 		Items: items,
 	}
 }
 
 // ToListResult ...
-func (r Action) ToListResult(list []*m.Action, total uint64, pagination common.PageParams) *api.GetActionListResult {
+func (r Action) ToListResult(list []*m.Action) []stub.ApiAction {
 
-	items := make([]*api.Action, 0, len(list))
+	items := make([]stub.ApiAction, 0, len(list))
 
 	for _, i := range list {
 		items = append(items, r.ToAction(i))
 	}
 
-	return &api.GetActionListResult{
-		Items: items,
-		Meta: &api.Meta{
-			Limit: uint64(pagination.Limit),
-			Page:  pagination.PageReq,
-			Total: total,
-			Sort:  pagination.SortReq,
-		},
-	}
+	return items
 }
 
 // ToAction ...
-func (r Action) ToAction(action *m.Action) (obj *api.Action) {
+func (r Action) ToAction(action *m.Action) (obj stub.ApiAction) {
 	obj = ToAction(action)
 	return
 }
 
 // ToAction ...
-func ToAction(action *m.Action) (obj *api.Action) {
+func ToAction(action *m.Action) (obj stub.ApiAction) {
 	if action == nil {
 		return
 	}
-	obj = &api.Action{
-		Id:               action.Id,
-		Name:             action.Name,
-		ScriptId:         action.ScriptId,
-		Script:           ToScript(action.Script),
-		EntityId:         action.EntityId.StringPtr(),
-		Entity:           ToEntity(action.Entity),
+	obj = stub.ApiAction{
+		Id:       action.Id,
+		Name:     action.Name,
+		ScriptId: action.ScriptId,
+		//Script:           GetStubScript(action.Script),
+		EntityId: action.EntityId.StringPtr(),
+		//Entity:           ToEntity(action.Entity),
 		EntityActionName: action.EntityActionName,
-		CreatedAt:        timestamppb.New(action.CreatedAt),
-		UpdatedAt:        timestamppb.New(action.UpdatedAt),
+		CreatedAt:        action.CreatedAt,
+		UpdatedAt:        action.UpdatedAt,
 	}
 	return
 }

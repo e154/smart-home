@@ -85,22 +85,6 @@ func (n *Task) Import(ctx context.Context, ver *m.Task) (err error) {
 // Add ...
 func (n *Task) Add(ctx context.Context, ver *m.NewTask) (taskId int64, err error) {
 
-	transaction := true
-	tx := n.db.Begin()
-	if err = tx.Error; err != nil {
-		tx = n.db
-		transaction = false
-	}
-	defer func() {
-		if err != nil && transaction {
-			tx.Rollback()
-			return
-		}
-		if transaction {
-			err = tx.Commit().Error
-		}
-	}()
-
 	task := &db.Task{
 		Name:        ver.Name,
 		Description: ver.Description,
@@ -124,8 +108,7 @@ func (n *Task) Add(ctx context.Context, ver *m.NewTask) (taskId int64, err error
 		task.Actions = append(task.Actions, &db.Action{Id: id})
 	}
 
-	table := db.Tasks{Db: tx}
-	taskId, err = table.Add(ctx, task)
+	taskId, err = n.table.Add(ctx, task)
 
 	return
 }

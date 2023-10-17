@@ -72,24 +72,7 @@ func (n *Entity) Add(ctx context.Context, ver *m.Entity) (err error) {
 		return
 	}
 
-	transaction := true
-	tx := n.db.Begin()
-	if err = tx.Error; err != nil {
-		tx = n.db
-		transaction = false
-	}
-	defer func() {
-		if err != nil && transaction {
-			tx.Rollback()
-			return
-		}
-		if transaction {
-			err = tx.Commit().Error
-		}
-	}()
-
-	table := db.Entities{Db: tx}
-	err = table.Add(ctx, n.toDb(ver))
+	err = n.table.Add(ctx, n.toDb(ver))
 
 	return
 }

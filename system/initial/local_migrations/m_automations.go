@@ -20,10 +20,6 @@ package local_migrations
 
 import (
 	"context"
-	"encoding/json"
-
-	"github.com/e154/smart-home/api/dto"
-	"github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/endpoint"
 
 	"github.com/e154/smart-home/adaptors"
@@ -42,21 +38,21 @@ func NewMigrationAutomations(adaptors *adaptors.Adaptors, endpoint *endpoint.End
 }
 
 func (n *MigrationAutomations) Up(ctx context.Context, adaptors *adaptors.Adaptors) (err error) {
-	if adaptors != nil {
-		n.adaptors = adaptors
-	}
-
-	d := dto.NewDto()
-	for _, raw := range []string{} {
-		req := &api.Task{}
-		if err = json.Unmarshal([]byte(raw), req); err != nil {
-			return
-		}
-		task := d.Automation.ImportTask(req)
-		if _, _, err = n.endpoint.Task.Import(ctx, task); err != nil {
-			return err
-		}
-	}
+	//if adaptors != nil {
+	//	n.adaptors = adaptors
+	//}
+	//
+	//d := dto.NewDto()
+	//for _, raw := range []string{} {
+	//	req := &api.Task{}
+	//	if err = json.Unmarshal([]byte(raw), req); err != nil {
+	//		return
+	//	}
+	//	task := d.Automation.ImportTask(req)
+	//	if _, _, err = n.endpoint.Task.Import(ctx, task); err != nil {
+	//		return err
+	//	}
+	//}
 
 	return
 }

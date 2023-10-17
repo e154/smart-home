@@ -70,7 +70,6 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 		const pause = 10
 		p.ticker = time.NewTicker(time.Second * time.Duration(pause))
 
-
 		for range p.ticker.C {
 			p.Actors.Range(func(key, value any) bool {
 				actor, _ := value.(*Actor)

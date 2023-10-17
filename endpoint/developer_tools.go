@@ -26,7 +26,6 @@ import (
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/go-playground/validator/v10"
 )
 
 // DeveloperToolsEndpoint ...
@@ -52,7 +51,7 @@ func (d DeveloperToolsEndpoint) StateList(ctx context.Context) (states []m.Entit
 }
 
 // SetEntityState ...
-func (d DeveloperToolsEndpoint) SetEntityState(ctx context.Context, entityId string, newState *string, attrs map[string]interface{}) (errs validator.ValidationErrorsTranslations, err error) {
+func (d DeveloperToolsEndpoint) SetEntityState(ctx context.Context, entityId string, newState *string, attrs map[string]interface{}) (err error) {
 
 	_, err = d.adaptors.Entity.GetById(ctx, common.EntityId(entityId))
 	if err != nil {

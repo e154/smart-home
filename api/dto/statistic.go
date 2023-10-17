@@ -19,16 +19,16 @@
 package dto
 
 import (
-	"github.com/e154/smart-home/api/stub/api"
+	stub "github.com/e154/smart-home/api/stub"
 	m "github.com/e154/smart-home/models"
 )
 
-func GetStatistic(statistic []*m.Statistic) (result *api.Statistics) {
-	result = &api.Statistics{
-		Items: make([]*api.Statistic, 0, len(statistic)),
+func GetStatistic(statistic []*m.Statistic) (result stub.ApiStatistics) {
+	result = stub.ApiStatistics{
+		Items: make([]stub.ApiStatistic, 0, len(statistic)),
 	}
 	for _, item := range statistic {
-		result.Items = append(result.Items, &api.Statistic{
+		result.Items = append(result.Items, stub.ApiStatistic{
 			Name:        item.Name,
 			Description: item.Description,
 			Value:       item.Value,

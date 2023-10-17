@@ -19,10 +19,9 @@
 package controllers
 
 import (
-	"context"
+	"github.com/labstack/echo/v4"
 
-	"github.com/e154/smart-home/api/stub/api"
-	"google.golang.org/protobuf/types/known/emptypb"
+	"github.com/e154/smart-home/api/stub"
 )
 
 // ControllerTrigger ...
@@ -31,99 +30,105 @@ type ControllerTrigger struct {
 }
 
 // NewControllerTrigger ...
-func NewControllerTrigger(common *ControllerCommon) ControllerTrigger {
-	return ControllerTrigger{
+func NewControllerTrigger(common *ControllerCommon) *ControllerTrigger {
+	return &ControllerTrigger{
 		ControllerCommon: common,
 	}
 }
 
 // AddTrigger ...
-func (c ControllerTrigger) AddTrigger(ctx context.Context, req *api.NewTriggerRequest) (*api.Trigger, error) {
+func (c ControllerTrigger) TriggerServiceAddTrigger(ctx echo.Context, _ stub.TriggerServiceAddTriggerParams) error {
 
-	trigger := c.dto.Trigger.AddTrigger(req)
-
-	trigger, errs, err := c.endpoint.Trigger.Add(ctx, trigger)
-	if len(errs) != 0 || err != nil {
-		return nil, c.error(ctx, errs, err)
+	obj := &stub.ApiNewTriggerRequest{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Trigger.ToTrigger(trigger), nil
+	trigger, err := c.endpoint.Trigger.Add(ctx.Request().Context(), c.dto.Trigger.AddTrigger(obj))
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP201(ctx, ResponseWithObj(ctx, c.dto.Trigger.ToTrigger(trigger)))
 }
 
 // UpdateTrigger ...
-func (c ControllerTrigger) UpdateTrigger(ctx context.Context, req *api.UpdateTriggerRequest) (*api.Trigger, error) {
+func (c ControllerTrigger) TriggerServiceUpdateTrigger(ctx echo.Context, id int64, _ stub.TriggerServiceUpdateTriggerParams) error {
 
-	trigger := c.dto.Trigger.UpdateTrigger(req)
-
-	trigger, errs, err := c.endpoint.Trigger.Update(ctx, trigger)
-	if len(errs) != 0 || err != nil {
-		return nil, c.error(ctx, errs, err)
+	obj := &stub.TriggerServiceUpdateTriggerJSONBody{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Trigger.ToTrigger(trigger), nil
+	trigger, err := c.endpoint.Trigger.Update(ctx.Request().Context(), c.dto.Trigger.UpdateTrigger(obj, id))
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, c.dto.Trigger.ToTrigger(trigger)))
 }
 
 // GetTriggerById ...
-func (c ControllerTrigger) GetTriggerById(ctx context.Context, req *api.GetTriggerRequest) (*api.Trigger, error) {
+func (c ControllerTrigger) TriggerServiceGetTriggerById(ctx echo.Context, id int64) error {
 
-	trigger, err := c.endpoint.Trigger.GetById(ctx, req.Id)
+	trigger, err := c.endpoint.Trigger.GetById(ctx.Request().Context(), id)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Trigger.ToTrigger(trigger), nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, c.dto.Trigger.ToTrigger(trigger)))
 }
 
 // GetTriggerList ...
-func (c ControllerTrigger) GetTriggerList(ctx context.Context, req *api.PaginationRequest) (*api.GetTriggerListResult, error) {
+func (c ControllerTrigger) TriggerServiceGetTriggerList(ctx echo.Context, params stub.TriggerServiceGetTriggerListParams) error {
 
-	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
-	items, total, err := c.endpoint.Trigger.GetList(ctx, pagination)
+	pagination := c.Pagination(params.Page, params.Limit, params.Sort)
+	items, total, err := c.endpoint.Trigger.GetList(ctx.Request().Context(), pagination)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Trigger.ToListResult(items, uint64(total), pagination), nil
+	return c.HTTP200(ctx, ResponseWithList(ctx, c.dto.Trigger.ToListResult(items), total, pagination))
 }
 
 // DeleteTrigger ...
-func (c ControllerTrigger) DeleteTrigger(ctx context.Context, req *api.DeleteTriggerRequest) (*emptypb.Empty, error) {
+func (c ControllerTrigger) TriggerServiceDeleteTrigger(ctx echo.Context, id int64) error {
 
-	if err := c.endpoint.Trigger.Delete(ctx, req.Id); err != nil {
-		return nil, c.error(ctx, nil, err)
+	if err := c.endpoint.Trigger.Delete(ctx.Request().Context(), id); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
 
 // SearchTrigger ...
-func (c ControllerTrigger) SearchTrigger(ctx context.Context, req *api.SearchRequest) (*api.SearchTriggerResult, error) {
+func (c ControllerTrigger) TriggerServiceSearchTrigger(ctx echo.Context, params stub.TriggerServiceSearchTriggerParams) error {
 
-	search := c.Search(req.Query, req.Limit, req.Offset)
-	items, _, err := c.endpoint.Trigger.Search(ctx, search.Query, search.Limit, search.Offset)
+	search := c.Search(params.Query, params.Limit, params.Offset)
+	items, _, err := c.endpoint.Trigger.Search(ctx.Request().Context(), search.Query, search.Limit, search.Offset)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Trigger.ToSearchResult(items), nil
+	return c.HTTP200(ctx, c.dto.Trigger.ToSearchResult(items))
 }
 
 // EnableTrigger ...
-func (c ControllerTrigger) EnableTrigger(ctx context.Context, req *api.EnableTriggerRequest) (*emptypb.Empty, error) {
+func (c ControllerTrigger) TriggerServiceEnableTrigger(ctx echo.Context, id int64) error {
 
-	if err := c.endpoint.Trigger.Enable(ctx, req.Id); err != nil {
-		return nil, c.error(ctx, nil, err)
+	if err := c.endpoint.Trigger.Enable(ctx.Request().Context(), id); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
 
 // DisableTrigger ...
-func (c ControllerTrigger) DisableTrigger(ctx context.Context, req *api.DisableTriggerRequest) (*emptypb.Empty, error) {
+func (c ControllerTrigger) TriggerServiceDisableTrigger(ctx echo.Context, id int64) error {
 
-	if err := c.endpoint.Trigger.Disable(ctx, req.Id); err != nil {
-		return nil, c.error(ctx, nil, err)
+	if err := c.endpoint.Trigger.Disable(ctx.Request().Context(), id); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }

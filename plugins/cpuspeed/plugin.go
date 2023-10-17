@@ -59,8 +59,8 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 			Id:          common.EntityId(fmt.Sprintf("%s.%s", EntityCpuspeed, Name)),
 			Description: "cpu usage",
 			PluginName:  Name,
-			Metrics: NewMetrics(),
-			Attributes: NewAttr(),
+			Metrics:     NewMetrics(),
+			Attributes:  NewAttr(),
 		}
 		err = p.Service.Adaptors().Entity.Add(context.Background(), entity)
 	}

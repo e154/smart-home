@@ -19,10 +19,8 @@
 package dto
 
 import (
-	"github.com/e154/smart-home/api/stub/api"
-	"github.com/e154/smart-home/common"
+	stub "github.com/e154/smart-home/api/stub"
 	m "github.com/e154/smart-home/models"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // DashboardTab ...
@@ -33,7 +31,7 @@ func NewDashboardTabDto() DashboardTab {
 	return DashboardTab{}
 }
 
-func (r DashboardTab) AddDashboardTab(obj *api.NewDashboardTabRequest) (ver *m.DashboardTab) {
+func (r DashboardTab) AddDashboardTab(obj *stub.ApiNewDashboardTabRequest) (ver *m.DashboardTab) {
 	ver = &m.DashboardTab{
 		Name:        obj.Name,
 		ColumnWidth: int(obj.ColumnWidth),
@@ -47,9 +45,9 @@ func (r DashboardTab) AddDashboardTab(obj *api.NewDashboardTabRequest) (ver *m.D
 	return
 }
 
-func (r DashboardTab) UpdateDashboardTab(obj *api.UpdateDashboardTabRequest) (ver *m.DashboardTab) {
+func (r DashboardTab) UpdateDashboardTab(obj *stub.DashboardTabServiceUpdateDashboardTabJSONBody, id int64) (ver *m.DashboardTab) {
 	ver = &m.DashboardTab{
-		Id:          obj.Id,
+		Id:          id,
 		Name:        obj.Name,
 		Icon:        obj.Icon,
 		ColumnWidth: int(obj.ColumnWidth),
@@ -63,37 +61,29 @@ func (r DashboardTab) UpdateDashboardTab(obj *api.UpdateDashboardTabRequest) (ve
 }
 
 // ToListResult ...
-func (r DashboardTab) ToListResult(list []*m.DashboardTab, total uint64, pagination common.PageParams) *api.GetDashboardTabListResult {
+func (r DashboardTab) ToListResult(list []*m.DashboardTab) []*stub.ApiDashboardTab {
 
-	items := make([]*api.DashboardTabShort, 0, len(list))
+	items := make([]*stub.ApiDashboardTab, 0, len(list))
 
 	for _, i := range list {
 		items = append(items, ToDashboardTabShort(i))
 	}
 
-	return &api.GetDashboardTabListResult{
-		Items: items,
-		Meta: &api.Meta{
-			Limit: uint64(pagination.Limit),
-			Page:  pagination.PageReq,
-			Total: total,
-			Sort:  pagination.SortReq,
-		},
-	}
+	return items
 }
 
 // ToDashboardTab ...
-func (r DashboardTab) ToDashboardTab(ver *m.DashboardTab) (obj *api.DashboardTab) {
+func (r DashboardTab) ToDashboardTab(ver *m.DashboardTab) (obj *stub.ApiDashboardTab) {
 	obj = ToDashboardTab(ver)
 	return
 }
 
 // ToDashboardTab ...
-func ToDashboardTab(ver *m.DashboardTab) (obj *api.DashboardTab) {
+func ToDashboardTab(ver *m.DashboardTab) (obj *stub.ApiDashboardTab) {
 	if ver == nil {
 		return
 	}
-	obj = &api.DashboardTab{
+	obj = &stub.ApiDashboardTab{
 		Id:          ver.Id,
 		Name:        ver.Name,
 		Icon:        ver.Icon,
@@ -103,31 +93,31 @@ func ToDashboardTab(ver *m.DashboardTab) (obj *api.DashboardTab) {
 		Enabled:     ver.Enabled,
 		Weight:      int32(ver.Weight),
 		DashboardId: ver.DashboardId,
-		Cards:       make([]*api.DashboardCard, 0, len(ver.Cards)),
-		Entities:    make(map[string]*api.Entity),
-		CreatedAt:   timestamppb.New(ver.CreatedAt),
-		UpdatedAt:   timestamppb.New(ver.UpdatedAt),
+		Cards:       make([]stub.ApiDashboardCard, 0, len(ver.Cards)),
+		Entities:    make(map[string]stub.ApiEntity),
+		CreatedAt:   ver.CreatedAt,
+		UpdatedAt:   ver.UpdatedAt,
 	}
 
 	// Cards
 	for _, card := range ver.Cards {
-		obj.Cards = append(obj.Cards, ToDashboardCard(card))
+		obj.Cards = append(obj.Cards, *ToDashboardCard(card))
 	}
 
 	// Entities
 	for key, entity := range ver.Entities {
-		obj.Entities[key.String()] = ToEntity(entity)
+		obj.Entities[key.String()] = *ToEntity(entity)
 	}
 
 	return
 }
 
 // ToDashboardTabShort ...
-func ToDashboardTabShort(ver *m.DashboardTab) (obj *api.DashboardTabShort) {
+func ToDashboardTabShort(ver *m.DashboardTab) (obj *stub.ApiDashboardTab) {
 	if ver == nil {
 		return
 	}
-	obj = &api.DashboardTabShort{
+	obj = &stub.ApiDashboardTab{
 		Id:          ver.Id,
 		Name:        ver.Name,
 		Icon:        ver.Icon,
@@ -137,13 +127,13 @@ func ToDashboardTabShort(ver *m.DashboardTab) (obj *api.DashboardTabShort) {
 		Enabled:     ver.Enabled,
 		Weight:      int32(ver.Weight),
 		DashboardId: ver.DashboardId,
-		CreatedAt:   timestamppb.New(ver.CreatedAt),
-		UpdatedAt:   timestamppb.New(ver.UpdatedAt),
+		CreatedAt:   ver.CreatedAt,
+		UpdatedAt:   ver.UpdatedAt,
 	}
 	return
 }
 
-func ImportDashboardTab(obj *api.DashboardTab) (ver *m.DashboardTab) {
+func ImportDashboardTab(obj *stub.ApiDashboardTab) (ver *m.DashboardTab) {
 	ver = &m.DashboardTab{
 		Id:          obj.Id,
 		Name:        obj.Name,
@@ -159,7 +149,7 @@ func ImportDashboardTab(obj *api.DashboardTab) (ver *m.DashboardTab) {
 
 	// cards
 	for _, cardObj := range obj.Cards {
-		ver.Cards = append(ver.Cards, ImportDashboardCard(cardObj))
+		ver.Cards = append(ver.Cards, ImportDashboardCard(&cardObj))
 	}
 
 	return

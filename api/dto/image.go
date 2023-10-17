@@ -19,10 +19,9 @@
 package dto
 
 import (
-	"github.com/e154/smart-home/api/stub/api"
+	stub "github.com/e154/smart-home/api/stub"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Image ...
@@ -34,8 +33,8 @@ func NewImageDto() Image {
 }
 
 // ToImage ...
-func (i Image) ToImage(image *m.Image) (result *api.Image) {
-	result = &api.Image{
+func (i Image) ToImage(image *m.Image) (result *stub.ApiImage) {
+	result = &stub.ApiImage{
 		Id:        image.Id,
 		Thumb:     image.Thumb,
 		Image:     image.Image,
@@ -44,13 +43,13 @@ func (i Image) ToImage(image *m.Image) (result *api.Image) {
 		Size:      image.Size,
 		Name:      image.Name,
 		Url:       image.Url,
-		CreatedAt: timestamppb.New(image.CreatedAt),
+		CreatedAt: image.CreatedAt,
 	}
 	return
 }
 
 // FromNewImageRequest ...
-func (i Image) FromNewImageRequest(req *api.NewImageRequest) (image *m.Image) {
+func (i Image) FromNewImageRequest(req *stub.ApiNewImageRequest) (image *m.Image) {
 	image = &m.Image{
 		Thumb:    req.Thumb,
 		Image:    req.Image,
@@ -62,34 +61,25 @@ func (i Image) FromNewImageRequest(req *api.NewImageRequest) (image *m.Image) {
 }
 
 // FromUpdateImageRequest ...
-func (i Image) FromUpdateImageRequest(req *api.UpdateImageRequest) (image *m.Image) {
+func (i Image) FromUpdateImageRequest(req *stub.ImageServiceUpdateImageByIdJSONBody, id int64) (image *m.Image) {
 	image = &m.Image{
-		Id:       int64(req.Id),
+		Id:       id,
 		Thumb:    req.Thumb,
 		Image:    req.Image,
 		MimeType: req.MimeType,
 		Title:    req.Title,
 		Name:     req.Name,
-		Size:     int64(req.Size),
+		Size:     req.Size,
 	}
 	return
 }
 
 // ToImageListResult ...
-func (i Image) ToImageListResult(items []*m.Image, total uint64, pagination common.PageParams) (result *api.GetImageListResult) {
+func (i Image) ToImageListResult(images []*m.Image) []*stub.ApiImage {
 
-	result = &api.GetImageListResult{
-		Items: make([]*api.Image, 0, len(items)),
-		Meta: &api.Meta{
-			Limit: uint64(pagination.Limit),
-			Page:  pagination.PageReq,
-			Total: total,
-			Sort:  pagination.SortReq,
-		},
-	}
-
-	for _, item := range items {
-		result.Items = append(result.Items, &api.Image{
+	var items = make([]*stub.ApiImage, 0, len(images))
+	for _, item := range images {
+		items = append(items, &stub.ApiImage{
 			Id:        item.Id,
 			Thumb:     item.Thumb,
 			Url:       item.Url,
@@ -98,22 +88,22 @@ func (i Image) ToImageListResult(items []*m.Image, total uint64, pagination comm
 			Title:     item.Title,
 			Size:      item.Size,
 			Name:      item.Name,
-			CreatedAt: timestamppb.New(item.CreatedAt),
+			CreatedAt: item.CreatedAt,
 		})
 	}
 
-	return
+	return items
 }
 
 // ToImageList ...
-func (i Image) ToImageList(items []*m.Image) (result *api.GetImageListByDateResult) {
+func (i Image) ToImageList(items []*m.Image) (result *stub.ApiGetImageListByDateResult) {
 
-	result = &api.GetImageListByDateResult{
-		Items: make([]*api.Image, 0, len(items)),
+	result = &stub.ApiGetImageListByDateResult{
+		Items: make([]stub.ApiImage, 0, len(items)),
 	}
 
 	for _, item := range items {
-		result.Items = append(result.Items, &api.Image{
+		result.Items = append(result.Items, stub.ApiImage{
 			Id:        item.Id,
 			Thumb:     item.Thumb,
 			Url:       item.Url,
@@ -122,7 +112,7 @@ func (i Image) ToImageList(items []*m.Image) (result *api.GetImageListByDateResu
 			Title:     item.Title,
 			Size:      item.Size,
 			Name:      item.Name,
-			CreatedAt: timestamppb.New(item.CreatedAt),
+			CreatedAt: item.CreatedAt,
 		})
 	}
 
@@ -130,14 +120,14 @@ func (i Image) ToImageList(items []*m.Image) (result *api.GetImageListByDateResu
 }
 
 // ToFilterList ...
-func (i Image) ToFilterList(items []*m.ImageFilterList) (result *api.GetImageFilterListResult) {
+func (i Image) ToFilterList(items []*m.ImageFilterList) (result stub.ApiGetImageFilterListResult) {
 
-	result = &api.GetImageFilterListResult{
-		Items: make([]*api.GetImageFilterListResultFilter, 0, len(items)),
+	result = stub.ApiGetImageFilterListResult{
+		Items: make([]stub.GetImageFilterListResultfilter, 0, len(items)),
 	}
 
 	for _, item := range items {
-		result.Items = append(result.Items, &api.GetImageFilterListResultFilter{
+		result.Items = append(result.Items, stub.GetImageFilterListResultfilter{
 			Date:  item.Date,
 			Count: int32(item.Count),
 		})
@@ -146,7 +136,7 @@ func (i Image) ToFilterList(items []*m.ImageFilterList) (result *api.GetImageFil
 	return
 }
 
-func ImportImage(from *api.Image) (*int64, *m.Image) {
+func ImportImage(from *stub.ApiImage) (*int64, *m.Image) {
 	if from == nil {
 		return nil, nil
 	}

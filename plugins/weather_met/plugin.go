@@ -47,14 +47,14 @@ func init() {
 
 type plugin struct {
 	*supervisor.Plugin
-	weather    *WeatherMet
-	task       scheduler.EntryID
+	weather *WeatherMet
+	task    scheduler.EntryID
 }
 
 // New ...
 func New() supervisor.Pluggable {
 	return &plugin{
-		Plugin:     supervisor.NewPlugin(),
+		Plugin: supervisor.NewPlugin(),
 	}
 }
 

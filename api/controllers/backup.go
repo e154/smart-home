@@ -19,10 +19,9 @@
 package controllers
 
 import (
-	"context"
+	"github.com/labstack/echo/v4"
 
-	"github.com/e154/smart-home/api/stub/api"
-	"google.golang.org/protobuf/types/known/emptypb"
+	"github.com/e154/smart-home/api/stub"
 )
 
 // ControllerBackup ...
@@ -31,40 +30,45 @@ type ControllerBackup struct {
 }
 
 // NewControllerBackup ...
-func NewControllerBackup(common *ControllerCommon) ControllerBackup {
-	return ControllerBackup{
+func NewControllerBackup(common *ControllerCommon) *ControllerBackup {
+	return &ControllerBackup{
 		ControllerCommon: common,
 	}
 }
 
 // NewBackup ...
-func (c ControllerBackup) NewBackup(ctx context.Context, _ *emptypb.Empty) (*emptypb.Empty, error) {
+func (c ControllerBackup) BackupServiceNewBackup(ctx echo.Context, _ stub.BackupServiceNewBackupParams) error {
 
-	err := c.endpoint.Backup.New(ctx)
+	err := c.endpoint.Backup.New(ctx.Request().Context())
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
 
 // RestoreBackup ...
-func (c ControllerBackup) RestoreBackup(ctx context.Context, req *api.RestoreBackupRequest) (*emptypb.Empty, error) {
+func (c ControllerBackup) BackupServiceRestoreBackup(ctx echo.Context, _ stub.BackupServiceRestoreBackupParams) error {
 
-	err := c.endpoint.Backup.Restore(ctx, req.Name)
-	if err != nil {
-		return nil, c.error(ctx, nil, err)
+	obj := &stub.ApiRestoreBackupRequest{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	err := c.endpoint.Backup.Restore(ctx.Request().Context(), obj.Name)
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
 
 // GetBackupList ...
-func (c ControllerBackup) GetBackupList(ctx context.Context, _ *emptypb.Empty) (*api.GetBackupListResult, error) {
+func (c ControllerBackup) BackupServiceGetBackupList(ctx echo.Context) error {
 
-	result := c.endpoint.Backup.GetList(ctx)
+	result := c.endpoint.Backup.GetList(ctx.Request().Context())
 
-	return &api.GetBackupListResult{
+	return c.HTTP200(ctx, ResponseWithObj(ctx, &stub.ApiGetBackupListResult{
 		Items: result,
-	}, nil
+	}))
 }

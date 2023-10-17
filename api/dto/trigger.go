@@ -19,10 +19,9 @@
 package dto
 
 import (
-	"github.com/e154/smart-home/api/stub/api"
+	stub "github.com/e154/smart-home/api/stub"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Trigger ...
@@ -34,7 +33,7 @@ func NewTriggerDto() Trigger {
 }
 
 // AddTrigger ...
-func (r Trigger) AddTrigger(from *api.NewTriggerRequest) (action *m.Trigger) {
+func (r Trigger) AddTrigger(from *stub.ApiNewTriggerRequest) (action *m.Trigger) {
 	action = &m.Trigger{
 		Name:       from.Name,
 		EntityId:   common.NewEntityIdFromPtr(from.EntityId),
@@ -47,9 +46,9 @@ func (r Trigger) AddTrigger(from *api.NewTriggerRequest) (action *m.Trigger) {
 }
 
 // UpdateTrigger ...
-func (r Trigger) UpdateTrigger(from *api.UpdateTriggerRequest) (action *m.Trigger) {
+func (r Trigger) UpdateTrigger(from *stub.TriggerServiceUpdateTriggerJSONBody, id int64) (action *m.Trigger) {
 	action = &m.Trigger{
-		Id:         from.Id,
+		Id:         id,
 		Name:       from.Name,
 		EntityId:   common.NewEntityIdFromPtr(from.EntityId),
 		ScriptId:   from.ScriptId,
@@ -61,63 +60,55 @@ func (r Trigger) UpdateTrigger(from *api.UpdateTriggerRequest) (action *m.Trigge
 }
 
 // ToSearchResult ...
-func (r Trigger) ToSearchResult(list []*m.Trigger) *api.SearchTriggerResult {
+func (r Trigger) ToSearchResult(list []*m.Trigger) *stub.ApiSearchTriggerResult {
 
-	items := make([]*api.Trigger, 0, len(list))
+	items := make([]stub.ApiTrigger, 0, len(list))
 
 	for _, i := range list {
-		items = append(items, r.ToTrigger(i))
+		items = append(items, *r.ToTrigger(i))
 	}
 
-	return &api.SearchTriggerResult{
+	return &stub.ApiSearchTriggerResult{
 		Items: items,
 	}
 }
 
 // ToListResult ...
-func (r Trigger) ToListResult(list []*m.Trigger, total uint64, pagination common.PageParams) *api.GetTriggerListResult {
+func (r Trigger) ToListResult(list []*m.Trigger) []*stub.ApiTrigger {
 
-	items := make([]*api.Trigger, 0, len(list))
+	items := make([]*stub.ApiTrigger, 0, len(list))
 
 	for _, i := range list {
 		items = append(items, r.ToTrigger(i))
 	}
 
-	return &api.GetTriggerListResult{
-		Items: items,
-		Meta: &api.Meta{
-			Limit: uint64(pagination.Limit),
-			Page:  pagination.PageReq,
-			Total: total,
-			Sort:  pagination.SortReq,
-		},
-	}
+	return items
 }
 
 // ToTrigger ...
-func (r Trigger) ToTrigger(action *m.Trigger) (obj *api.Trigger) {
+func (r Trigger) ToTrigger(action *m.Trigger) (obj *stub.ApiTrigger) {
 	obj = ToTrigger(action)
 	return
 }
 
 // ToTrigger ...
-func ToTrigger(trigger *m.Trigger) (obj *api.Trigger) {
+func ToTrigger(trigger *m.Trigger) (obj *stub.ApiTrigger) {
 	if trigger == nil {
 		return
 	}
-	obj = &api.Trigger{
+	obj = &stub.ApiTrigger{
 		Id:         trigger.Id,
 		Name:       trigger.Name,
 		Entity:     ToEntity(trigger.Entity),
 		EntityId:   trigger.EntityId.StringPtr(),
-		Script:     ToScript(trigger.Script),
+		Script:     GetStubScript(trigger.Script),
 		ScriptId:   trigger.ScriptId,
 		PluginName: trigger.PluginName,
 		Enabled:    trigger.Enabled,
 		IsLoaded:   common.Bool(trigger.IsLoaded),
 		Attributes: AttributeToApi(trigger.Payload),
-		CreatedAt:  timestamppb.New(trigger.CreatedAt),
-		UpdatedAt:  timestamppb.New(trigger.UpdatedAt),
+		CreatedAt:  trigger.CreatedAt,
+		UpdatedAt:  trigger.UpdatedAt,
 	}
 	return
 }

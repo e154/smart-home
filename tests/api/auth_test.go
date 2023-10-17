@@ -19,66 +19,56 @@
 package api
 
 import (
-	"fmt"
 	"testing"
-
-	container2 "github.com/e154/smart-home/tests/api/container"
-
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/api/controllers"
-	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/migrations"
-	"github.com/e154/smart-home/system/scripts"
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestAuth(t *testing.T) {
 
-	Convey("auth", t, func(ctx C) {
-		err := container.Invoke(func(adaptors *adaptors.Adaptors,
-			migrations *migrations.Migrations,
-			scriptService scripts.ScriptService,
-			eventBus bus.Bus,
-			controllers *controllers.Controllers,
-			dialer *container2.Dialer) {
-
-			//eventBus.Restart()
-			//scriptService.Restart()
-			//
-			//err := migrations.Restart()
-			//ctx.So(err, ShouldBeNil)
-			//
-			//c := context.Background()
-			//conn, err := grpc.DialContext(c, "", grpc.WithInsecure(), grpc.WithContextDialer(dialer.Call()))
-			//if err != nil {
-			//	log.Fatal(err)
-			//}
-			//defer conn.Close()
-			//
-			//client := gw.NewAuthServiceClient(conn)
-
-			t.Run("signin", func(t *testing.T) {
-				Convey("", t, func(ctx C) {
-					ctx.Println("test not implemented")
-				})
-			})
-
-			t.Run("signout", func(t *testing.T) {
-				Convey("", t, func(ctx C) {
-					ctx.Println("test not implemented")
-				})
-			})
-
-			t.Run("access_list", func(t *testing.T) {
-				Convey("", t, func(ctx C) {
-					ctx.Println("test not implemented")
-				})
-			})
-
-		})
-
-		if err != nil {
-			fmt.Println(err.Error())
-		}
-	})
+	//Convey("auth", t, func(ctx C) {
+	//	err := container.Invoke(func(adaptors *adaptors.Adaptors,
+	//		migrations *migrations.Migrations,
+	//		scriptService scripts.ScriptService,
+	//		eventBus bus.Bus,
+	//		controllers *controllers.Controllers,
+	//		dialer *container2.Dialer) {
+	//
+	//		//eventBus.Restart()
+	//		//scriptService.Restart()
+	//		//
+	//		//err := migrations.Restart()
+	//		//ctx.So(err, ShouldBeNil)
+	//		//
+	//		//c := context.Background()
+	//		//conn, err := grpc.DialContext(c, "", grpc.WithInsecure(), grpc.WithContextDialer(dialer.Call()))
+	//		//if err != nil {
+	//		//	log.Fatal(err)
+	//		//}
+	//		//defer conn.Close()
+	//		//
+	//		//client := gw.NewAuthServiceClient(conn)
+	//
+	//		t.Run("signin", func(t *testing.T) {
+	//			Convey("", t, func(ctx C) {
+	//				ctx.Println("test not implemented")
+	//			})
+	//		})
+	//
+	//		t.Run("signout", func(t *testing.T) {
+	//			Convey("", t, func(ctx C) {
+	//				ctx.Println("test not implemented")
+	//			})
+	//		})
+	//
+	//		t.Run("access_list", func(t *testing.T) {
+	//			Convey("", t, func(ctx C) {
+	//				ctx.Println("test not implemented")
+	//			})
+	//		})
+	//
+	//	})
+	//
+	//	if err != nil {
+	//		fmt.Println(err.Error())
+	//	}
+	//})
 }

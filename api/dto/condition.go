@@ -19,10 +19,8 @@
 package dto
 
 import (
-	"github.com/e154/smart-home/api/stub/api"
-	"github.com/e154/smart-home/common"
+	stub "github.com/e154/smart-home/api/stub"
 	m "github.com/e154/smart-home/models"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Condition ...
@@ -34,7 +32,7 @@ func NewConditionDto() Condition {
 }
 
 // AddCondition ...
-func (r Condition) AddCondition(from *api.NewConditionRequest) (action *m.Condition) {
+func (r Condition) AddCondition(from *stub.ApiNewConditionRequest) (action *m.Condition) {
 	action = &m.Condition{
 		Name:     from.Name,
 		ScriptId: from.ScriptId,
@@ -43,9 +41,9 @@ func (r Condition) AddCondition(from *api.NewConditionRequest) (action *m.Condit
 }
 
 // UpdateCondition ...
-func (r Condition) UpdateCondition(from *api.UpdateConditionRequest) (action *m.Condition) {
+func (r Condition) UpdateCondition(from *stub.ConditionServiceUpdateConditionJSONBody, id int64) (action *m.Condition) {
 	action = &m.Condition{
-		Id:       from.Id,
+		Id:       id,
 		Name:     from.Name,
 		ScriptId: from.ScriptId,
 	}
@@ -53,57 +51,44 @@ func (r Condition) UpdateCondition(from *api.UpdateConditionRequest) (action *m.
 }
 
 // ToSearchResult ...
-func (r Condition) ToSearchResult(list []*m.Condition) *api.SearchConditionResult {
+func (r Condition) ToSearchResult(list []*m.Condition) *stub.ApiSearchConditionResult {
 
-	items := make([]*api.Condition, 0, len(list))
+	items := make([]stub.ApiCondition, 0, len(list))
 
 	for _, i := range list {
-		items = append(items, r.ToCondition(i))
+		condition := ToCondition(i)
+		items = append(items, *condition)
 	}
 
-	return &api.SearchConditionResult{
+	return &stub.ApiSearchConditionResult{
 		Items: items,
 	}
 }
 
 // ToListResult ...
-func (r Condition) ToListResult(list []*m.Condition, total uint64, pagination common.PageParams) *api.GetConditionListResult {
+func (r Condition) ToListResult(list []*m.Condition) []*stub.ApiCondition {
 
-	items := make([]*api.Condition, 0, len(list))
+	items := make([]*stub.ApiCondition, 0, len(list))
 
 	for _, i := range list {
-		items = append(items, r.ToCondition(i))
+		items = append(items, ToCondition(i))
 	}
 
-	return &api.GetConditionListResult{
-		Items: items,
-		Meta: &api.Meta{
-			Limit: uint64(pagination.Limit),
-			Page:  pagination.PageReq,
-			Total: total,
-			Sort:  pagination.SortReq,
-		},
-	}
+	return items
 }
 
 // ToCondition ...
-func (r Condition) ToCondition(action *m.Condition) (obj *api.Condition) {
-	obj = ToCondition(action)
-	return
-}
-
-// ToCondition ...
-func ToCondition(cond *m.Condition) (obj *api.Condition) {
+func ToCondition(cond *m.Condition) (obj *stub.ApiCondition) {
 	if cond == nil {
 		return
 	}
-	obj = &api.Condition{
+	obj = &stub.ApiCondition{
 		Id:        cond.Id,
 		Name:      cond.Name,
 		ScriptId:  cond.ScriptId,
-		Script:    ToScript(cond.Script),
-		CreatedAt: timestamppb.New(cond.CreatedAt),
-		UpdatedAt: timestamppb.New(cond.UpdatedAt),
+		Script:    GetStubScript(cond.Script),
+		CreatedAt: cond.CreatedAt,
+		UpdatedAt: cond.UpdatedAt,
 	}
 
 	return

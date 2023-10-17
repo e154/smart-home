@@ -33,8 +33,8 @@ type ControllerIndex struct {
 }
 
 // NewControllerIndex ...
-func NewControllerIndex(common *ControllerCommon) ControllerIndex {
-	return ControllerIndex{
+func NewControllerIndex(common *ControllerCommon) *ControllerIndex {
+	return &ControllerIndex{
 		ControllerCommon: common,
 	}
 }

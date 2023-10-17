@@ -54,7 +54,6 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 		return
 	}
 
-
 	// load settings
 	var settings m.Attributes
 	settings, err = p.LoadSettings(p)

@@ -19,11 +19,10 @@
 package controllers
 
 import (
-	"context"
+	"github.com/e154/smart-home/api/stub"
+	"github.com/labstack/echo/v4"
 
 	"github.com/e154/smart-home/common"
-
-	"github.com/e154/smart-home/api/stub/api"
 )
 
 // ControllerEntityStorage ...
@@ -32,20 +31,20 @@ type ControllerEntityStorage struct {
 }
 
 // NewControllerEntityStorage ...
-func NewControllerEntityStorage(common *ControllerCommon) ControllerEntityStorage {
-	return ControllerEntityStorage{
+func NewControllerEntityStorage(common *ControllerCommon) *ControllerEntityStorage {
+	return &ControllerEntityStorage{
 		ControllerCommon: common,
 	}
 }
 
 // GetEntityStorageList ...
-func (c ControllerEntityStorage) GetEntityStorageList(ctx context.Context, req *api.GetEntityStorageRequest) (*api.GetEntityStorageResult, error) {
+func (c ControllerEntityStorage) EntityStorageServiceGetEntityStorageList(ctx echo.Context, params stub.EntityStorageServiceGetEntityStorageListParams) error {
 
-	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
-	items, total, err := c.endpoint.EntityStorage.GetList(ctx, common.NewEntityIdFromPtr(req.EntityId), pagination, req.StartDate, req.EndDate)
+	pagination := c.Pagination(params.Page, params.Limit, params.Sort)
+	items, total, err := c.endpoint.EntityStorage.GetList(ctx.Request().Context(), common.NewEntityIdFromPtr(params.EntityId), pagination, params.StartDate, params.EndDate)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.EntityStorage.List(items, uint64(total), pagination), nil
+	return c.HTTP200(ctx, ResponseWithList(ctx, c.dto.EntityStorage.ToListResult(items), total, pagination))
 }

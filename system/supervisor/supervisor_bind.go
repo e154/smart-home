@@ -112,7 +112,6 @@ func GetDistanceToAreaBind(adaptors *adaptors.Adaptors) func(areaId int64, point
 	}
 }
 
-
 func GetDistanceBetweenPointsBind(adaptors *adaptors.Adaptors) func(point1, point2 m.Point) float64 {
 	return func(point1, point2 m.Point) float64 {
 		if distance, err := adaptors.Area.GetDistanceBetweenPoints(context.Background(), point1, point2); err == nil {
@@ -121,7 +120,6 @@ func GetDistanceBetweenPointsBind(adaptors *adaptors.Adaptors) func(point1, poin
 		return 0
 	}
 }
-
 
 func PointInsideAriaBind(adaptors *adaptors.Adaptors) func(areaId int64, point m.Point) bool {
 	return func(areaId int64, point m.Point) bool {

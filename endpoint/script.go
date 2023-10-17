@@ -30,7 +30,6 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/scripts"
-	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
 )
 
@@ -47,10 +46,11 @@ func NewScriptEndpoint(common *CommonEndpoint) *ScriptEndpoint {
 }
 
 // Add ...
-func (n *ScriptEndpoint) Add(ctx context.Context, params *m.Script) (script *m.Script, errs validator.ValidationErrorsTranslations, err error) {
+func (n *ScriptEndpoint) Add(ctx context.Context, params *m.Script) (script *m.Script, err error) {
 
-	var ok bool
-	if ok, errs = n.validation.Valid(params); !ok {
+	if ok, errs := n.validation.Valid(params); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
@@ -126,7 +126,7 @@ func (n *ScriptEndpoint) Copy(ctx context.Context, scriptId int64) (script *m.Sc
 }
 
 // Update ...
-func (n *ScriptEndpoint) Update(ctx context.Context, params *m.Script) (result *m.Script, errs validator.ValidationErrorsTranslations, err error) {
+func (n *ScriptEndpoint) Update(ctx context.Context, params *m.Script) (result *m.Script, err error) {
 
 	var script *m.Script
 	script, err = n.adaptors.Script.GetById(ctx, params.Id)
@@ -139,8 +139,9 @@ func (n *ScriptEndpoint) Update(ctx context.Context, params *m.Script) (result *
 		return
 	}
 
-	var ok bool
-	if ok, errs = n.validation.Valid(params); !ok {
+	if ok, errs := n.validation.Valid(params); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 

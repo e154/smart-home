@@ -44,20 +44,19 @@ const (
 
 // Default stream errors
 var (
-	Success                         = "success"
-	ErrorStreamNotFound             = apperr.New("stream not found", apperr.ErrNotFound)
-	ErrorStreamAlreadyExists        = apperr.New("stream already exists", apperr.ErrInvalidRequest)
-	ErrorStreamChannelAlreadyExists = apperr.New("stream channel already exists", apperr.ErrInvalidRequest)
-	ErrorStreamNotHLSSegments       = apperr.New("stream hls not ts seq found", apperr.ErrNotFound)
-	ErrorStreamNoVideo              = apperr.New("stream no video", apperr.ErrNotFound)
-	ErrorStreamNoClients            = apperr.New("stream no clients", apperr.ErrNotFound)
-	ErrorStreamRestart              = apperr.New("stream restart", apperr.ErrInternal)
-	ErrorStreamStopCoreSignal       = apperr.New("stream stop core signal", apperr.ErrInternal)
-	ErrorStreamStopRTSPSignal       = apperr.New("stream stop rtsp signal", apperr.ErrInternal)
-	ErrorStreamChannelNotFound      = apperr.New("stream channel not found", apperr.ErrNotFound)
-	ErrorStreamChannelCodecNotFound = apperr.New("stream channel codec not ready, possible stream offline", apperr.ErrInternal)
-	ErrorStreamsLen0                = apperr.New("streams len zero", apperr.ErrInternal)
-	ErrorStreamUnauthorized         = apperr.New("stream request unauthorized", apperr.ErrUnauthorized)
+	ErrorStreamNotFound             = apperr.ErrorWithCode("STREAM_NOT_FOUND", "stream not found", apperr.ErrNotFound)
+	ErrorStreamAlreadyExists        = apperr.ErrorWithCode("STREAM_ALREADY_EXISTS", "stream already exists", apperr.ErrInvalidRequest)
+	ErrorStreamChannelAlreadyExists = apperr.ErrorWithCode("STREAM_CHANNEL_ALREADY_EXISTS", "stream channel already exists", apperr.ErrInvalidRequest)
+	ErrorStreamNotHLSSegments       = apperr.ErrorWithCode("STREAM_HLS_NOT_TS_SEQ_FOUND", "stream hls not ts seq found", apperr.ErrNotFound)
+	ErrorStreamNoVideo              = apperr.ErrorWithCode("STREAM_NO_VIDEO", "stream no video", apperr.ErrNotFound)
+	ErrorStreamNoClients            = apperr.ErrorWithCode("STREAM_NO_CLIENTS", "stream no clients", apperr.ErrNotFound)
+	ErrorStreamRestart              = apperr.ErrorWithCode("STREAM_RESTART", "stream restart", apperr.ErrInternal)
+	ErrorStreamStopCoreSignal       = apperr.ErrorWithCode("STREAM_STOP_CORE_SIGNAL", "stream stop core signal", apperr.ErrInternal)
+	ErrorStreamStopRTSPSignal       = apperr.ErrorWithCode("STREAM_STOP_RTSP_SIGNAL", "stream stop rtsp signal", apperr.ErrInternal)
+	ErrorStreamChannelNotFound      = apperr.ErrorWithCode("STREAM_CHANNEL_NOT_FOUND", "stream channel not found", apperr.ErrNotFound)
+	ErrorStreamChannelCodecNotFound = apperr.ErrorWithCode("STREAM_CHANNEL_CODEC_NOT_READY,_POSSIBLE_STREAM_OFFLINE", "stream channel codec not ready, possible stream offline", apperr.ErrInternal)
+	ErrorStreamsLen0                = apperr.ErrorWithCode("STREAMS_LEN_ZERO", "streams len zero", apperr.ErrInternal)
+	ErrorStreamUnauthorized         = apperr.ErrorWithCode("STREAM_REQUEST_UNAUTHORIZED", "stream request unauthorized", apperr.ErrUnauthorized)
 )
 
 // StorageST main storage struct

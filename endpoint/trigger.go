@@ -27,7 +27,6 @@ import (
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/go-playground/validator/v10"
 )
 
 // TriggerEndpoint ...
@@ -43,12 +42,11 @@ func NewTriggerEndpoint(common *CommonEndpoint) *TriggerEndpoint {
 }
 
 // Add ...
-func (n *TriggerEndpoint) Add(ctx context.Context, trigger *m.Trigger) (result *m.Trigger, errs validator.ValidationErrorsTranslations, err error) {
+func (n *TriggerEndpoint) Add(ctx context.Context, trigger *m.Trigger) (result *m.Trigger, err error) {
 
-	var ok bool
-	if ok, errs = n.validation.Valid(trigger); !ok {
+	if ok, errs := n.validation.Valid(trigger); !ok {
 		err = apperr.ErrInvalidRequest
-		apperr.SetContext(err, errs)
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
@@ -76,15 +74,16 @@ func (n *TriggerEndpoint) GetById(ctx context.Context, id int64) (trigger *m.Tri
 }
 
 // Update ...
-func (n *TriggerEndpoint) Update(ctx context.Context, trigger *m.Trigger) (result *m.Trigger, errs validator.ValidationErrorsTranslations, err error) {
+func (n *TriggerEndpoint) Update(ctx context.Context, trigger *m.Trigger) (result *m.Trigger, err error) {
 
 	_, err = n.adaptors.Trigger.GetById(ctx, trigger.Id)
 	if err != nil {
 		return
 	}
 
-	var ok bool
-	if ok, errs = n.validation.Valid(trigger); !ok {
+	if ok, errs := n.validation.Valid(trigger); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 

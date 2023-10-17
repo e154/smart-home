@@ -19,10 +19,9 @@
 package dto
 
 import (
-	"github.com/e154/smart-home/api/stub/api"
+	stub "github.com/e154/smart-home/api/stub"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Area ...
@@ -34,7 +33,7 @@ func NewAreaDto() Area {
 }
 
 // AddArea ...
-func (r Area) AddArea(from *api.NewAreaRequest) (area *m.Area) {
+func (r Area) AddArea(from *stub.ApiNewAreaRequest) (area *m.Area) {
 	area = &m.Area{
 		Name:        from.Name,
 		Description: from.Description,
@@ -59,9 +58,9 @@ func (r Area) AddArea(from *api.NewAreaRequest) (area *m.Area) {
 }
 
 // UpdateArea ...
-func (r Area) UpdateArea(from *api.UpdateAreaRequest) (area *m.Area) {
+func (r Area) UpdateArea(from *stub.AreaServiceUpdateAreaJSONBody, id int64) (area *m.Area) {
 	area = &m.Area{
-		Id:          from.Id,
+		Id:          id,
 		Name:        from.Name,
 		Description: from.Description,
 		Polygon:     make([]m.Point, 0),
@@ -84,66 +83,52 @@ func (r Area) UpdateArea(from *api.UpdateAreaRequest) (area *m.Area) {
 }
 
 // ToSearchResult ...
-func (r Area) ToSearchResult(list []*m.Area) *api.SearchAreaResult {
+func (r Area) ToSearchResult(list []*m.Area) stub.ApiSearchAreaResult {
 
-	items := make([]*api.Area, 0, len(list))
+	items := make([]stub.ApiArea, 0, len(list))
 
 	for _, i := range list {
-		items = append(items, r.ToArea(i))
+		items = append(items, *ToArea(i))
 	}
 
-	return &api.SearchAreaResult{
+	return stub.ApiSearchAreaResult{
 		Items: items,
 	}
 }
 
 // ToListResult ...
-func (r Area) ToListResult(list []*m.Area, total uint64, pagination common.PageParams) *api.GetAreaListResult {
+func (r Area) ToListResult(list []*m.Area) []stub.ApiArea {
 
-	items := make([]*api.Area, 0, len(list))
+	items := make([]stub.ApiArea, 0, len(list))
 
 	for _, i := range list {
-		items = append(items, r.ToArea(i))
+		items = append(items, *ToArea(i))
 	}
 
-	return &api.GetAreaListResult{
-		Items: items,
-		Meta: &api.Meta{
-			Limit: uint64(pagination.Limit),
-			Page:  pagination.PageReq,
-			Total: total,
-			Sort:  pagination.SortReq,
-		},
-	}
+	return items
 }
 
 // ToArea ...
-func (r Area) ToArea(area *m.Area) (obj *api.Area) {
-	obj = ToArea(area)
-	return
-}
-
-// ToArea ...
-func ToArea(area *m.Area) (obj *api.Area) {
+func ToArea(area *m.Area) (obj *stub.ApiArea) {
 	if area == nil {
 		return
 	}
-	obj = &api.Area{
+	obj = &stub.ApiArea{
 		Id:          area.Id,
 		Name:        area.Name,
 		Description: area.Description,
-		Polygon:     make([]*api.AreaLocation, 0, len(area.Polygon)),
-		Center: &api.AreaLocation{
+		Polygon:     make([]stub.ApiAreaLocation, 0, len(area.Polygon)),
+		Center: &stub.ApiAreaLocation{
 			Lat: area.Center.Lat,
 			Lon: area.Center.Lon,
 		},
 		Zoom:       area.Zoom,
 		Resolution: area.Resolution,
-		CreatedAt:  timestamppb.New(area.CreatedAt),
-		UpdatedAt:  timestamppb.New(area.UpdatedAt),
+		CreatedAt:  area.CreatedAt,
+		UpdatedAt:  area.UpdatedAt,
 	}
 	for _, location := range area.Polygon {
-		obj.Polygon = append(obj.Polygon, &api.AreaLocation{
+		obj.Polygon = append(obj.Polygon, stub.ApiAreaLocation{
 			Lat: location.Lat,
 			Lon: location.Lon,
 		})
@@ -151,7 +136,7 @@ func ToArea(area *m.Area) (obj *api.Area) {
 	return
 }
 
-func ImportArea(from *api.Area) (*int64, *m.Area) {
+func ImportArea(from *stub.ApiArea) (*int64, *m.Area) {
 	if from == nil {
 		return nil, nil
 	}

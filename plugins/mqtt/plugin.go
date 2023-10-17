@@ -90,7 +90,6 @@ func (p *plugin) ActorConstructor(entity *m.Entity) (actor supervisor.PluginActo
 	return
 }
 
-
 // Name ...
 func (p plugin) Name() string {
 	return Name

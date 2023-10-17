@@ -40,7 +40,7 @@ func NewActor(entity *m.Entity,
 	service supervisor.Service) *Actor {
 
 	actor := &Actor{
-		BaseActor: supervisor.NewBaseActor(entity, service),
+		BaseActor:  supervisor.NewBaseActor(entity, service),
 		updateLock: &sync.Mutex{},
 	}
 	if actor.Attrs == nil {
