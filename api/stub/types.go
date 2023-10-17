@@ -644,9 +644,9 @@ type ApiMetricOption struct {
 
 // ApiMetricOptionData defines model for apiMetricOptionData.
 type ApiMetricOptionData struct {
-	MetricId int64              `json:"metricId"`
-	Time     time.Time          `json:"time"`
-	Value    map[string]float32 `json:"value"`
+	MetricId *int64                 `json:"metricId,omitempty"`
+	Time     time.Time              `json:"time"`
+	Value    map[string]interface{} `json:"value"`
 }
 
 // ApiMetricOptionItem defines model for apiMetricOptionItem.

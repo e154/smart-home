@@ -392,12 +392,7 @@ func (n *Entity) preloadMetric(ctx context.Context, ver *m.Entity) {
 	bucketMetricBucketAdaptor := GetMetricBucketAdaptor(n.db, nil)
 	for i, metric := range ver.Metrics {
 
-		var optionItems = make([]string, len(metric.Options.Items))
-		for i, item := range metric.Options.Items {
-			optionItems[i] = item.Name
-		}
-
-		if ver.Metrics[i].Data, err = bucketMetricBucketAdaptor.SimpleListWithSoftRange(ctx, nil, nil, metric.Id, common.String(common.MetricRange24H.String()), optionItems); err != nil {
+		if ver.Metrics[i].Data, err = bucketMetricBucketAdaptor.SimpleListWithSoftRange(ctx, nil, nil, metric.Id, common.String(common.MetricRange24H.String())); err != nil {
 			log.Error(err.Error())
 			return
 		}

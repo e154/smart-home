@@ -52,7 +52,7 @@ type Supervisor interface {
 	EnablePlugin(context.Context, string) error
 	DisablePlugin(context.Context, string) error
 	PluginList() (list []PluginInfo, total int64, err error)
-	SetMetric(common.EntityId, string, map[string]float32)
+	SetMetric(common.EntityId, string, map[string]interface{})
 	SetState(common.EntityId, EntityStateParams) error
 	GetActorById(common.EntityId) (PluginActor, error)
 	CallAction(common.EntityId, string, map[string]interface{})
@@ -79,7 +79,7 @@ type PluginActor interface {
 	GetCurrentState() *bus.EventEntityState
 	SetCurrentState(bus.EventEntityState)
 	GetEventState() (eventState bus.EventEntityState)
-	AddMetric(name string, value map[string]float32)
+	AddMetric(name string, value map[string]interface{})
 }
 
 // ActorConstructor ...

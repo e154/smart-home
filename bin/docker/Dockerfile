@@ -15,7 +15,6 @@ EXPOSE 3002
 EXPOSE 3003
 EXPOSE 1883
 
-ENV PG_LOGGER="false"
 ENV PG_USER="smart_home"
 ENV PG_PASS="smart_home"
 ENV PG_HOST="postgres"

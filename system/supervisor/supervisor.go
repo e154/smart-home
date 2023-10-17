@@ -178,7 +178,7 @@ func (e *supervisor) bindScripts() {
 }
 
 // SetMetric ...
-func (e *supervisor) SetMetric(id common.EntityId, name string, value map[string]float32) {
+func (e *supervisor) SetMetric(id common.EntityId, name string, value map[string]interface{}) {
 
 	pla, err := e.GetActorById(id)
 	if err != nil {

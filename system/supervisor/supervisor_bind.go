@@ -70,8 +70,8 @@ func GetAttributesBind(manager Supervisor) func(entityId string) m.AttributeValu
 	}
 }
 
-func SetMetricBind(manager Supervisor) func(entityId, name string, value map[string]float32) {
-	return func(entityId, name string, value map[string]float32) {
+func SetMetricBind(manager Supervisor) func(entityId, name string, value map[string]interface{}) {
+	return func(entityId, name string, value map[string]interface{}) {
 		manager.SetMetric(common.EntityId(entityId), name, value)
 	}
 }

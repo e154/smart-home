@@ -58,7 +58,7 @@ func (n MetricBuckets) Add(ctx context.Context, metric *MetricBucket) (err error
 }
 
 // SimpleListWithSoftRange ...
-func (n *MetricBuckets) SimpleListWithSoftRange(ctx context.Context, from, to time.Time, metricId int64, optionItems []string) (list []*MetricBucket, err error) {
+func (n *MetricBuckets) SimpleListWithSoftRange(ctx context.Context, from, to time.Time, metricId int64) (list []*MetricBucket, err error) {
 	var num int64 = 1
 	t := from.Sub(to).Seconds()
 	if t > 3600 {
@@ -66,18 +66,9 @@ func (n *MetricBuckets) SimpleListWithSoftRange(ctx context.Context, from, to ti
 	}
 
 	list = make([]*MetricBucket, 0)
-	var str string
-	for i, item := range optionItems {
-		str += fmt.Sprintf(" '%s', trunc(avg((value ->> '%[1]s')::numeric), 2)", item)
-		if i+1 < len(optionItems) {
-			str += ","
-		}
-	}
 
 	q := `SELECT TIMESTAMP WITH TIME ZONE 'epoch' +
-       INTERVAL '1 second' * round(extract('epoch' from time) / %[1]d) * %[1]d as time,  json_build_object(
-` + str + `
-    ) as value
+       INTERVAL '1 second' * round(extract('epoch' from time) / %[1]d) * %[1]d as time, value
 FROM metric_bucket c
 WHERE c.metric_id = ? and c.time between ? and ?
 GROUP BY round(extract('epoch' from c.time) / %[1]d)
@@ -91,65 +82,47 @@ LIMIT 3600`
 }
 
 // SimpleListByRangeType ...
-func (n *MetricBuckets) SimpleListByRangeType(ctx context.Context, metricId int64, metricRange common.MetricRange, optionItems []string) (list []*MetricBucket, err error) {
-	var str string
-	for i, item := range optionItems {
-		str += fmt.Sprintf(" '%s', trunc(avg((value ->> '%[1]s')::numeric), 2)", item)
-		if i+1 < len(optionItems) {
-			str += ","
-		}
-	}
-
+func (n *MetricBuckets) SimpleListByRangeType(ctx context.Context, metricId int64, metricRange common.MetricRange) (list []*MetricBucket, err error) {
 	var q string
 	switch metricRange {
 	case common.MetricRange6H:
 		q = `SELECT TIMESTAMP WITH TIME ZONE 'epoch' +
-       INTERVAL '1 second' * round(extract('epoch' from time) / 6) * 6 as time,  json_build_object(
-` + str + `
-    ) as value
+       INTERVAL '1 second' * round(extract('epoch' from time) / 6) * 6 as time, value
 FROM metric_bucket c
 WHERE c.metric_id = ? and c.time > NOW() - interval '6 hour'
-GROUP BY round(extract('epoch' from c.time) / 6)
+GROUP BY round(extract('epoch' from c.time) / 6), value
 order by time asc
 LIMIT 3600`
 	case common.MetricRange12H:
 		q = `SELECT TIMESTAMP WITH TIME ZONE 'epoch' +
-       INTERVAL '1 second' * round(extract('epoch' from time) / 12) * 12 as time,  json_build_object(
-` + str + `
-    ) as value
+       INTERVAL '1 second' * round(extract('epoch' from time) / 12) * 12 as time, value
 FROM metric_bucket c
 WHERE c.metric_id = ? and c.time > NOW() - interval '12 hour'
-GROUP BY round(extract('epoch' from c.time) / 12)
+GROUP BY round(extract('epoch' from c.time) / 12), value
 order by time asc
 LIMIT 3600`
 	case common.MetricRange24H:
 		q = `SELECT TIMESTAMP WITH TIME ZONE 'epoch' +
-       INTERVAL '1 second' * round(extract('epoch' from time) / 24) * 24 as time,  json_build_object(
-` + str + `
-    ) as value
+       INTERVAL '1 second' * round(extract('epoch' from time) / 24) * 24 as time, value
 FROM metric_bucket c
 WHERE c.metric_id = ? and c.time > NOW() - interval '24 hour'
-GROUP BY round(extract('epoch' from c.time) / 24)
+GROUP BY round(extract('epoch' from c.time) / 24), value
 order by time asc
 LIMIT 3600`
 	case common.MetricRange7d:
 		q = `SELECT TIMESTAMP WITH TIME ZONE 'epoch' +
-       INTERVAL '1 second' * round(extract('epoch' from time) / 168) * 168 as time,  json_build_object(
-` + str + `
-    ) as value
+       INTERVAL '1 second' * round(extract('epoch' from time) / 168) * 168 as time, value
 FROM metric_bucket c
 WHERE c.metric_id = ? and c.time > NOW() - interval '7 days'
-GROUP BY round(extract('epoch' from c.time) / 168)
+GROUP BY round(extract('epoch' from c.time) / 168), value
 order by time asc
 LIMIT 3600`
 	case common.MetricRange30d, common.MetricRange1m:
 		q = `SELECT TIMESTAMP WITH TIME ZONE 'epoch' +
-       INTERVAL '1 second' * round(extract('epoch' from time) / 720) * 720 as time,  json_build_object(
-` + str + `
-    ) as value
+       INTERVAL '1 second' * round(extract('epoch' from time) / 720) * 720 as time, value
 FROM metric_bucket c
 WHERE c.metric_id = ? and c.time > NOW() - interval '1 month'
-GROUP BY round(extract('epoch' from c.time) / 720)
+GROUP BY round(extract('epoch' from c.time) / 720), value
 order by time asc
 LIMIT 3600`
 	default:
@@ -167,22 +140,14 @@ limit 3600`
 }
 
 // Simple24HPreview ...
-func (n *MetricBuckets) Simple24HPreview(ctx context.Context, metricId int64, optionItems []string) (list []*MetricBucket, err error) {
+func (n *MetricBuckets) Simple24HPreview(ctx context.Context, metricId int64) (list []*MetricBucket, err error) {
 	list = make([]*MetricBucket, 0)
-	var str string
-	for i, item := range optionItems {
-		str += fmt.Sprintf(" '%s', trunc(avg((value ->> '%[1]s')::numeric), 2)", item)
-		if i+1 < len(optionItems) {
-			str += ","
-		}
-	}
+
 	q := `SELECT TIMESTAMP WITH TIME ZONE 'epoch' +
-       INTERVAL '1 second' * round(extract('epoch' from time) / 250) * 250 as time,  json_build_object(
-` + str + `
-    ) as value
+       INTERVAL '1 second' * round(extract('epoch' from time) / 250) * 250 as time, value
 FROM metric_bucket c
 WHERE c.metric_id = ? and c.time > NOW() - interval '1 day'
-GROUP BY round(extract('epoch' from c.time) / 250)
+GROUP BY round(extract('epoch' from c.time) / 250), value
 order by time asc
 LIMIT 345`
 

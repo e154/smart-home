@@ -34,8 +34,8 @@ import (
 type IMetricBucket interface {
 	Add(ctx context.Context, ver *m.MetricDataItem) error
 	AddMultiple(ctx context.Context, items []*m.MetricDataItem) (err error)
-	SimpleListWithSoftRange(ctx context.Context, _from, _to *time.Time, metricId int64, _metricRange *string, optionItems []string) (list []*m.MetricDataItem, err error)
-	Simple24HPreview(ctx context.Context, metricId int64, optionItems []string) (list []*m.MetricDataItem, err error)
+	SimpleListWithSoftRange(ctx context.Context, _from, _to *time.Time, metricId int64, _metricRange *string) (list []*m.MetricDataItem, err error)
+	Simple24HPreview(ctx context.Context, metricId int64) (list []*m.MetricDataItem, err error)
 	DeleteOldest(ctx context.Context, days int) (err error)
 	DeleteById(ctx context.Context, id int64) (err error)
 	DeleteByMetricId(ctx context.Context, metricId int64) (err error)
@@ -81,18 +81,18 @@ func (n *MetricBucket) AddMultiple(ctx context.Context, items []*m.MetricDataIte
 }
 
 // SimpleListWithSoftRange ...
-func (n *MetricBucket) SimpleListWithSoftRange(ctx context.Context, _from, _to *time.Time, metricId int64, _metricRange *string, optionItems []string) (list []*m.MetricDataItem, err error) {
+func (n *MetricBucket) SimpleListWithSoftRange(ctx context.Context, _from, _to *time.Time, metricId int64, _metricRange *string) (list []*m.MetricDataItem, err error) {
 
 	var dbList []*db.MetricBucket
 
 	if _metricRange != nil && _from == nil && _to == nil {
-		if dbList, err = n.table.SimpleListByRangeType(ctx, metricId, common.MetricRange(common.StringValue(_metricRange)), optionItems); err != nil {
+		if dbList, err = n.table.SimpleListByRangeType(ctx, metricId, common.MetricRange(common.StringValue(_metricRange))); err != nil {
 			return
 		}
 	}
 
 	if _from != nil && _to != nil && _metricRange == nil {
-		if dbList, err = n.table.SimpleListWithSoftRange(ctx, common.TimeValue(_from), common.TimeValue(_to), metricId, optionItems); err != nil {
+		if dbList, err = n.table.SimpleListWithSoftRange(ctx, common.TimeValue(_from), common.TimeValue(_to), metricId); err != nil {
 			return
 		}
 	}
@@ -105,9 +105,9 @@ func (n *MetricBucket) SimpleListWithSoftRange(ctx context.Context, _from, _to *
 }
 
 // Simple24HPreview ...
-func (n *MetricBucket) Simple24HPreview(ctx context.Context, metricId int64, optionItems []string) (list []*m.MetricDataItem, err error) {
+func (n *MetricBucket) Simple24HPreview(ctx context.Context, metricId int64) (list []*m.MetricDataItem, err error) {
 	var dbList []*db.MetricBucket
-	if dbList, err = n.table.Simple24HPreview(ctx, metricId, optionItems); err != nil {
+	if dbList, err = n.table.Simple24HPreview(ctx, metricId); err != nil {
 		return
 	}
 
@@ -150,7 +150,7 @@ func (n *MetricBucket) fromDb(dbVer *db.MetricBucket) (ver *m.MetricDataItem) {
 
 	// deserialize value
 	b, _ := dbVer.Value.MarshalJSON()
-	value := make(map[string]float32)
+	value := make(map[string]interface{})
 	_ = json.Unmarshal(b, &value)
 	ver.Value = value
 

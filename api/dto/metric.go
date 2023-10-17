@@ -40,7 +40,6 @@ func Metric(metric *m.Metric) (object *stub.ApiMetric) {
 	for _, item := range metric.Data {
 		data = append(data, stub.ApiMetricOptionData{
 			Value:    item.Value,
-			MetricId: item.MetricId,
 			Time:     item.Time,
 		})
 	}

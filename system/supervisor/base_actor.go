@@ -367,7 +367,7 @@ func (e *BaseActor) updateMetric(state bus.EventEntityState) {
 		return
 	}
 
-	var data = make(map[string]float32)
+	var data = make(map[string]interface{})
 	var name string
 
 	for _, metric := range e.Metric {
@@ -381,6 +381,14 @@ func (e *BaseActor) updateMetric(state bus.EventEntityState) {
 					data[prop.Name] = common.Rounding32(value.Float64(), 2)
 					//case common.AttributePoint:
 					//	data[prop.Name] = value.Point()
+				case common.AttributeString:
+					data[prop.Name] = value.String()
+				case common.AttributePoint:
+					data[prop.Name] = value.Point()
+				case common.AttributeMap:
+					data[prop.Name] = value.Map()
+				default:
+					log.Warnf("unimplemented type %s", value.Type)
 				}
 			}
 		}
@@ -394,7 +402,7 @@ func (e *BaseActor) updateMetric(state bus.EventEntityState) {
 
 }
 
-func (e *BaseActor) AddMetric(name string, value map[string]float32) {
+func (e *BaseActor) AddMetric(name string, value map[string]interface{}) {
 
 	if e.Metric == nil {
 		return

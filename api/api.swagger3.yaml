@@ -5338,13 +5338,12 @@ components:
             $ref: '#/components/schemas/apiMetricOptionItem'
     apiMetricOptionData:
       type: object
-      required: [ value, metricId, time ]
+      required: [ value, time ]
       properties:
         value:
           type: object
           additionalProperties:
-            type: number
-            format: float
+            x-go-type: interface{}
         metricId:
           type: integer
           format: int64

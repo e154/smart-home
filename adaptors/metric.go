@@ -78,13 +78,8 @@ func (n *Metric) GetById(ctx context.Context, id int64) (metric *m.Metric, err e
 	}
 	metric = n.fromDb(dbVer)
 
-	var optionItems = make([]string, len(metric.Options.Items))
-	for i, item := range metric.Options.Items {
-		optionItems[i] = item.Name
-	}
-
 	metricBucketAdaptor := GetMetricBucketAdaptor(n.db, nil)
-	if metric.Data, err = metricBucketAdaptor.Simple24HPreview(ctx, metric.Id, optionItems); err != nil {
+	if metric.Data, err = metricBucketAdaptor.Simple24HPreview(ctx, metric.Id); err != nil {
 		log.Error(err.Error())
 		return
 	}
@@ -106,7 +101,7 @@ func (n *Metric) GetByIdWithData(ctx context.Context, id int64, from, to *time.T
 	}
 
 	metricBucketAdaptor := GetMetricBucketAdaptor(n.db, nil)
-	if metric.Data, err = metricBucketAdaptor.SimpleListWithSoftRange(ctx, from, to, id, metricRange, optionItems); err != nil {
+	if metric.Data, err = metricBucketAdaptor.SimpleListWithSoftRange(ctx, from, to, id, metricRange); err != nil {
 		log.Error(err.Error())
 		return
 	}
