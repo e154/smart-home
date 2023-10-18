@@ -45,7 +45,7 @@ func TestConfig(t *testing.T) {
 						ctx.So(conf.PgHost, ShouldEqual, "127.0.0.1")
 						ctx.So(conf.PgName, ShouldEqual, "smart_home_test")
 						ctx.So(conf.PgPort, ShouldEqual, "5432")
-						ctx.So(conf.PgDebug, ShouldEqual, true)
+						ctx.So(conf.PgDebug, ShouldEqual, false)
 						ctx.So(conf.PgMaxIdleConns, ShouldEqual, 10)
 						ctx.So(conf.PgMaxOpenConns, ShouldEqual, 50)
 						ctx.So(conf.PgConnMaxLifeTime, ShouldEqual, 30)
