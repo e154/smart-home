@@ -43,7 +43,7 @@ api.instance.interceptors.response.use(
     const res = response.data;
 
     ElMessage({
-      message: res.message || t('Error'),
+      message: res.error.message || t('Error'),
       type: 'error',
       duration: 5 * 1000
     });

@@ -599,6 +599,7 @@ type ApiLog struct {
 type ApiMessage struct {
 	Attributes map[string]string `json:"attributes"`
 	CreatedAt  time.Time         `json:"createdAt"`
+	EntityId   *string           `json:"entityId,omitempty"`
 	Id         int64             `json:"id"`
 	Type       string            `json:"type"`
 	UpdatedAt  time.Time         `json:"updatedAt"`

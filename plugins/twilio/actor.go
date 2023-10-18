@@ -19,9 +19,11 @@
 package twilio
 
 import (
+	"context"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/e154/smart-home/plugins/notify"
 	"net/http"
 	"net/url"
 	"strings"
@@ -45,36 +47,35 @@ type Actor struct {
 	from      string
 	sid       string
 	authToken string
+	notify    *notify.Notify
 }
 
 // NewActor ...
-func NewActor(settings m.Attributes,
+func NewActor(entity *m.Entity,
 	service supervisor.Service) *Actor {
 
-	sid := settings[AttrSid].String()
-	authToken := settings[AttrAuthToken].String()
+	sid := entity.Settings[AttrSid].String()
+	authToken := entity.Settings[AttrAuthToken].String()
 
-	entity := &m.Entity{
-		Id:         common.EntityId(fmt.Sprintf("%s.%s", Name, Name)),
-		PluginName: Name,
-		Attributes: NewAttr(),
-	}
 	actor := &Actor{
 		BaseActor: supervisor.NewBaseActor(entity, service),
 		sid:       sid,
-		from:      settings[AttrFrom].String(),
+		from:      entity.Settings[AttrFrom].String(),
 		authToken: authToken,
+		notify:    notify.NewNotify(service.Adaptors()),
 	}
 
 	return actor
 }
 
 func (e *Actor) Destroy() {
-
+	e.Service.EventBus().Unsubscribe(notify.TopicNotify, e.eventHandler)
+	e.notify.Shutdown()
 }
 
 func (e *Actor) Spawn() {
-
+	e.Service.EventBus().Subscribe(notify.TopicNotify, e.eventHandler, false)
+	e.notify.Start()
 }
 
 // Send ...
@@ -246,4 +247,37 @@ func (e *Actor) client() (client *gotwilio.Twilio, err error) {
 	}
 	client = gotwilio.NewTwilioClient(e.sid, e.authToken)
 	return
+}
+
+// Save ...
+func (e *Actor) Save(msg notify.Message) (addresses []string, message *m.Message) {
+	message = &m.Message{
+		Type:       Name,
+		Attributes: msg.Attributes,
+	}
+	var err error
+	if message.Id, err = e.Service.Adaptors().Message.Add(context.Background(), message); err != nil {
+		log.Error(err.Error())
+	}
+
+	attr := NewMessageParams()
+	_, _ = attr.Deserialize(message.Attributes)
+
+	addresses = strings.Split(attr[AttrPhone].String(), ",")
+	return
+}
+
+// MessageParams ...
+func (e *Actor) MessageParams() m.Attributes {
+	return NewMessageParams()
+}
+
+func (e *Actor) eventHandler(_ string, event interface{}) {
+
+	switch v := event.(type) {
+	case notify.Message:
+		if v.EntityId != nil && *v.EntityId == e.Id {
+			e.notify.SaveAndSend(v, e)
+		}
+	}
 }

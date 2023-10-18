@@ -43,9 +43,8 @@ description: >
 
 ```coffeescript
 msg = notifr.newMessage();
-msg.type = 'telegram';
+msg.entity_id = 'telegram.name';
 msg.attributes = {
-  'name': 'clavicus',
   'body': 'some text msg'
 };
 
@@ -86,9 +85,8 @@ switch actionName
 
 sendMsg =(body)->
   msg = notifr.newMessage();
-  msg.type = 'telegram';
+  msg.entity_id = 'telegram.name';
   msg.attributes = {
-    'name': 'clavicus',
     'body': body
   };
   notifr.send(msg);

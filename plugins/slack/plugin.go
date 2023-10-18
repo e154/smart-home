@@ -50,28 +50,9 @@ func New() supervisor.Pluggable {
 
 // Load ...
 func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(ctx, service, nil); err != nil {
+	if err = p.Plugin.Load(ctx, service, p.ActorConstructor); err != nil {
 		return
 	}
-
-	// load settings
-	var settings m.Attributes
-	settings, err = p.LoadSettings(p)
-	if err != nil {
-		log.Warn(err.Error())
-		settings = NewSettings()
-	}
-
-	if settings == nil {
-		settings = NewSettings()
-	}
-
-	// register slack provider
-	var provider *Provider
-	provider, err = NewProvider(settings, service.Adaptors())
-
-	notify.ProviderManager.AddProvider(Name, provider)
-
 	return
 }
 
@@ -80,10 +61,13 @@ func (p *plugin) Unload(ctx context.Context) (err error) {
 	if err = p.Plugin.Unload(ctx); err != nil {
 		return
 	}
-
-	notify.ProviderManager.RemoveProvider(Name)
-
 	return nil
+}
+
+// ActorConstructor ...
+func (p *plugin) ActorConstructor(entity *m.Entity) (actor supervisor.PluginActor, err error) {
+	actor = NewActor(entity, p.Service)
+	return
 }
 
 // Name ...
@@ -109,6 +93,6 @@ func (p *plugin) Version() string {
 // Options ...
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
-		Setts: NewSettings(),
+		ActorSetts: NewSettings(),
 	}
 }

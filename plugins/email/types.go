@@ -74,7 +74,7 @@ func NewSettings() m.Attributes {
 		},
 		AttrPass: {
 			Name: AttrPass,
-			Type: common.AttributeString,
+			Type: common.AttributeEncrypted,
 		},
 		AttrSmtp: {
 			Name: AttrSmtp,

@@ -44,6 +44,7 @@ func init() {
 
 type plugin struct {
 	*supervisor.Plugin
+	notify *notify.Notify
 }
 
 // New ...
@@ -58,14 +59,17 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 	if err = p.Plugin.Load(ctx, service, nil); err != nil {
 		return
 	}
-	notify.ProviderManager.AddProvider(Name, p)
+	p.notify = notify.NewNotify(service.Adaptors())
+	p.notify.Start()
+	_ = p.Service.EventBus().Subscribe(notify.TopicNotify, p.eventHandler, false)
 	return
 }
 
 // Unload ...
 func (p *plugin) Unload(ctx context.Context) (err error) {
-	notify.ProviderManager.RemoveProvider(Name)
+	_ = p.Service.EventBus().Unsubscribe(notify.TopicNotify, p.eventHandler)
 	err = p.Plugin.Unload(ctx)
+	p.notify.Shutdown()
 	return
 }
 
@@ -92,7 +96,7 @@ func (p *plugin) Version() string {
 // Options ...
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
-		Setts: NewSettings(),
+		ActorSetts: NewSettings(),
 	}
 }
 
@@ -151,4 +155,14 @@ func (p *plugin) Send(address string, message *m.Message) (err error) {
 // MessageParams ...
 func (p *plugin) MessageParams() m.Attributes {
 	return NewMessageParams()
+}
+
+func (p *plugin) eventHandler(_ string, event interface{}) {
+
+	switch v := event.(type) {
+	case notify.Message:
+		if v.Type == Name {
+			p.notify.SaveAndSend(v, p)
+		}
+	}
 }

@@ -39,8 +39,8 @@ type Stat struct {
 
 // Message ...
 type Message struct {
-	From       common.EntityId  `json:"from"`
 	Type       string           `json:"type"`
+	EntityId   *common.EntityId `json:"entity_id"`
 	Attributes m.AttributeValue `json:"attributes"`
 }
 
@@ -49,13 +49,6 @@ func NewMessage() *Message {
 	return &Message{
 		Attributes: make(m.AttributeValue),
 	}
-}
-
-// ProviderRegistrar ...
-type ProviderRegistrar interface {
-	AddProvider(name string, provider Provider)
-	RemoveProvider(name string)
-	Provider(name string) (provider Provider, err error)
 }
 
 // Provider ...

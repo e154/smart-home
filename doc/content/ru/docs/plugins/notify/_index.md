@@ -63,4 +63,5 @@ Telegram: Предоставляет возможность отправлять
 |-------------|---------|
 | from |    type: string   |
 | type |    type: string   |
+| entity_id |    type: string   |
 | attributes |   type: map[string]string  |

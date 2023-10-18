@@ -29,8 +29,8 @@ const (
 	Name = "telegram"
 	// AttrToken ...
 	AttrToken = "token"
-	// AttrName ...
-	AttrName = "name"
+	// AttrChatID ...
+	AttrChatID = "chat_id"
 	// AttrBody ...
 	AttrBody = "body"
 
@@ -58,9 +58,9 @@ func NewAttr() m.Attributes {
 // NewMessageParams ...
 func NewMessageParams() m.Attributes {
 	return map[string]*m.Attribute{
-		AttrName: {
-			Name: AttrName,
-			Type: common.AttributeString,
+		AttrChatID: {
+			Name: AttrChatID,
+			Type: common.AttributeInt,
 		},
 		AttrBody: {
 			Name: AttrBody,

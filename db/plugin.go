@@ -22,7 +22,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -67,7 +66,7 @@ func (n Plugins) CreateOrUpdate(ctx context.Context, v *Plugin) (err error) {
 			"version":  v.Version,
 			"enabled":  v.Enabled,
 			"system":   v.System,
-			"settings": v.System,
+			"settings": v.Settings,
 			"actor":    v.Actor,
 		}),
 	}).Create(&v).Error
@@ -79,7 +78,12 @@ func (n Plugins) CreateOrUpdate(ctx context.Context, v *Plugin) (err error) {
 
 // Update ...
 func (n Plugins) Update(ctx context.Context, m *Plugin) (err error) {
-	if err = n.Db.WithContext(ctx).Model(&Plugin{Name: m.Name}).Updates(m).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Model(&Plugin{}).Where("name = ?", m.Name).Updates(map[string]interface{}{
+		"enabled":  m.Enabled,
+		"system":   m.System,
+		"actor":    m.Actor,
+		"settings": m.Settings,
+	}).Error; err != nil {
 		err = errors.Wrap(apperr.ErrPluginUpdate, err.Error())
 	}
 	return

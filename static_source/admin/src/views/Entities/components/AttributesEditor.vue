@@ -2,7 +2,7 @@
 import {useI18n} from '@/hooks/web/useI18n'
 import {Table} from '@/components/Table'
 import {computed, PropType, reactive, ref, unref, watch} from 'vue'
-import {ElButton, ElInput, ElSelect, ElOption} from 'element-plus'
+import {ElButton, ElInput, ElInputNumber, ElSelect, ElOption} from 'element-plus'
 import {Attribute, EntityAction, EntityAttribute} from "@/views/Entities/components/types";
 import {TableColumn} from "@/types/table";
 import {propTypes} from "@/utils/propTypes";
@@ -103,8 +103,8 @@ const loadFromPlugin = async () => {
       <div v-if="row.type === 'IMAGE'">
         <ElInput type="string" v-model="row.imageUrl"/>
       </div>
-      <div v-if="row.type === 'INT'">
-        <ElInput type="number" v-model="row.int"/>
+      <div v-if="row.type === 'INT'" class="w-[100%]">
+        <ElInputNumber  v-model="row.int" class="w-[100%]"/>
       </div>
       <div v-if="row.type === 'FLOAT'">
         <ElInput type="number" v-model="row.float"/>

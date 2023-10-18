@@ -20,47 +20,59 @@ package slack
 
 import (
 	"context"
-	"strings"
-
 	"github.com/e154/smart-home/common/apperr"
-
-	"github.com/e154/smart-home/adaptors"
-	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/notify"
 	"github.com/nlopes/slack"
+	"strings"
+
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
-// Provider ...
-type Provider struct {
-	adaptors *adaptors.Adaptors
+// Actor ...
+type Actor struct {
+	supervisor.BaseActor
+	notify   *notify.Notify
 	Token    string
 	UserName string
 	api      *slack.Client
 }
 
-// NewProvider ...
-func NewProvider(attrs m.Attributes,
-	adaptors *adaptors.Adaptors) (p *Provider, err error) {
+// NewActor ...
+func NewActor(entity *m.Entity,
+	service supervisor.Service) *Actor {
 
-	token := attrs[AttrToken].String()
-	p = &Provider{
-		adaptors: adaptors,
-		Token:    token,
-		UserName: attrs[AttrUserName].String(),
-		api:      slack.New(token),
+	token := entity.Settings[AttrToken].Decrypt()
+
+	actor := &Actor{
+		BaseActor: supervisor.NewBaseActor(entity, service),
+		notify:    notify.NewNotify(service.Adaptors()),
+		UserName:  entity.Settings[AttrUserName].String(),
+		Token:     token,
+		api:       slack.New(token),
 	}
 
-	return
+	return actor
+}
+
+func (e *Actor) Destroy() {
+	e.Service.EventBus().Unsubscribe(notify.TopicNotify, e.eventHandler)
+	e.notify.Shutdown()
+}
+
+func (e *Actor) Spawn() {
+	e.notify.Start()
+	e.Service.EventBus().Subscribe(notify.TopicNotify, e.eventHandler, false)
 }
 
 // Save ...
-func (e *Provider) Save(msg notify.Message) (addresses []string, message *m.Message) {
+func (e *Actor) Save(msg notify.Message) (addresses []string, message *m.Message) {
 	message = &m.Message{
 		Type:       Name,
 		Attributes: msg.Attributes,
 	}
 	var err error
-	if message.Id, err = e.adaptors.Message.Add(context.Background(), message); err != nil {
+	if message.Id, err = e.Service.Adaptors().Message.Add(context.Background(), message); err != nil {
 		log.Error(err.Error())
 	}
 
@@ -72,7 +84,7 @@ func (e *Provider) Save(msg notify.Message) (addresses []string, message *m.Mess
 }
 
 // Send ...
-func (e *Provider) Send(address string, message *m.Message) (err error) {
+func (e *Actor) Send(address string, message *m.Message) (err error) {
 
 	if e.Token == "" || e.UserName == "" {
 		return apperr.ErrBadActorSettingsParameters
@@ -102,6 +114,16 @@ func (e *Provider) Send(address string, message *m.Message) (err error) {
 // MessageParams ...
 // Channel
 // Text
-func (e *Provider) MessageParams() m.Attributes {
+func (e *Actor) MessageParams() m.Attributes {
 	return NewAttr()
+}
+
+func (e *Actor) eventHandler(_ string, event interface{}) {
+
+	switch v := event.(type) {
+	case notify.Message:
+		if v.EntityId != nil && *v.EntityId == e.Id {
+			e.notify.SaveAndSend(v, e)
+		}
+	}
 }

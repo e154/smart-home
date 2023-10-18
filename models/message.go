@@ -18,7 +18,9 @@
 
 package models
 
-import "time"
+import (
+	"time"
+)
 
 // MessageType ...
 type MessageType string
@@ -51,4 +53,5 @@ type NewNotifrMessage struct {
 	Webpush      *string                `json:"webpush"`
 	Params       map[string]interface{} `json:"params"`
 	Address      string                 `json:"address"`
+	ChatID       int64                  `json:"chat_id"`
 }

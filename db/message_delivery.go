@@ -21,6 +21,7 @@ package db
 import (
 	"context"
 	"fmt"
+	"github.com/e154/smart-home/common"
 	"time"
 
 	"github.com/e154/smart-home/common/apperr"
@@ -40,6 +41,7 @@ type MessageDelivery struct {
 	Message            *Message
 	MessageId          int64
 	Address            string
+	EntityId           *common.EntityId
 	Status             string
 	ErrorMessageStatus *string `gorm:"column:error_system_code"`
 	ErrorMessageBody   *string `gorm:"column:error_system_message"`

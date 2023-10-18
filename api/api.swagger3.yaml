@@ -5251,6 +5251,8 @@ components:
           format: int64
         type:
           type: string
+        entityId:
+          type: string
         attributes:
           type: object
           additionalProperties:

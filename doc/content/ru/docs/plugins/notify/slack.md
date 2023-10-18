@@ -23,7 +23,7 @@ description: >
 
 ```coffeescript
 msg = notifr.newMessage();
-msg.type = 'slack';
+msg.entity_id = 'slack.name';
 msg.attributes = {
   'channel': '#ch',
   'text': 'some text'
@@ -45,7 +45,7 @@ msg.attributes = {
 
 sendMsg =(body)->
   msg = notifr.newMessage();
-    msg.type = 'slack';
+    msg.entity_id = 'slack.name';
     msg.attributes = {
       'channel': '#ch',
       'text': 'some text'

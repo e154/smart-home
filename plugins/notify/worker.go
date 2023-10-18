@@ -24,30 +24,41 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"go.uber.org/atomic"
 )
 
 // Worker ...
 type Worker struct {
-	adaptor   *adaptors.Adaptors
-	inProcess *atomic.Bool
+	adaptor *adaptors.Adaptors
 }
 
 // NewWorker ...
 func NewWorker(adaptor *adaptors.Adaptors) *Worker {
-
-	worker := &Worker{
-		inProcess: atomic.NewBool(false),
-		adaptor:   adaptor,
+	return &Worker{
+		adaptor: adaptor,
 	}
-
-	return worker
 }
 
-func (n *Worker) send(msg *m.MessageDelivery, provider Provider) {
+func (n *Worker) SaveAndSend(msg Message, provider Provider) {
+	addresses, message := provider.Save(msg)
 
-	n.inProcess.Store(true)
-	defer n.inProcess.Store(false)
+	var err error
+
+	for _, address := range addresses {
+		messageDelivery := &m.MessageDelivery{
+			Message:   message,
+			MessageId: message.Id,
+			EntityId:  msg.EntityId,
+			Status:    m.MessageStatusInProgress,
+			Address:   address,
+		}
+		if messageDelivery.Id, err = n.adaptor.MessageDelivery.Add(context.Background(), messageDelivery); err != nil {
+			log.Error(err.Error())
+		}
+		n.Send(messageDelivery, provider)
+	}
+}
+
+func (n *Worker) Send(msg *m.MessageDelivery, provider Provider) {
 
 	if err := provider.Send(msg.Address, msg.Message); err != nil {
 		msg.Status = m.MessageStatusError
@@ -56,9 +67,4 @@ func (n *Worker) send(msg *m.MessageDelivery, provider Provider) {
 		msg.Status = m.MessageStatusSucceed
 	}
 	_ = n.adaptor.MessageDelivery.SetStatus(context.Background(), msg)
-}
-
-// InWork ...
-func (w *Worker) InWork() bool {
-	return w.inProcess.Load()
 }
