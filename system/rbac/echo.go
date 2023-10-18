@@ -25,6 +25,7 @@ import (
 	"github.com/e154/smart-home/api/controllers"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/jwt_manager"
@@ -32,6 +33,10 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
+)
+
+var (
+	log = logger.MustGetLogger("rbac")
 )
 
 // EchoAccessFilter ...
