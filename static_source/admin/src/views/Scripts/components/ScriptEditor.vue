@@ -184,7 +184,7 @@ const onKeydown = ( e ) => {
     commentSelectedText()
   }
   // 70 = F
-  if (e.metaKey && evtobj.keyCode == 70) {
+  if (e.metaKey && e.shiftKey && evtobj.keyCode == 70) {
     autoFormatSelection()
   }
 }

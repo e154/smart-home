@@ -343,7 +343,7 @@ export default {
         source: 'Source',
         info1: 'Use the keyboard shortcut "Ctrl + Space" to autocomplete',
         info2: 'Use the keyboard shortcut "Meta + /" to comment code',
-        info3: 'Use the keyboard shortcut "Meta + F" to format code',
+        info3: 'Use the keyboard shortcut "Shift + Meta + F" to format code',
         stat_total_name: 'Total scripts',
         stat_total_descr: '',
         stat_used_name: 'Scripts used',
