@@ -578,7 +578,8 @@ export default {
         options: 'Параметры видео',
       },
       entityStorage: {
-        entities: 'Устройства'
+        entities: 'Устройства',
+        showFilter: 'Показывать фильтры'
       }
     }
   },

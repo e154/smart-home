@@ -578,7 +578,8 @@ export default {
                 options: 'Video Options'
             },
             entityStorage: {
-                entities: 'Entities'
+                entities: 'Entities',
+                showFilter: 'Show Filter'
             }
         }
     },

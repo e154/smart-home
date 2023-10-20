@@ -284,7 +284,17 @@ getList()
       </template>
     </Dialog>
 
-    <div class="mb-20px" v-if="item.payload.entityStorage?.entityIds?.length">
+    <Form
+        v-if="item.payload.entityStorage?.filter"
+        :schema="schema"
+        label-position="top"
+        label-width="auto"
+        hide-required-asterisk
+        @change="onFormChange"
+        @register="register"
+    />
+
+    <div class="mb-20px" v-if="item.payload.entityStorage?.entityIds?.length && item.payload.entityStorage?.filter">
         <ElCheckboxGroup v-model="selectedEntities" size="small">
           <ElCheckboxButton
               v-for="entity in item.payload.entityStorage.entityIds"
