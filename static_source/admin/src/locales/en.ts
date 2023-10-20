@@ -576,6 +576,9 @@ export default {
             },
             video: {
                 options: 'Video Options'
+            },
+            entityStorage: {
+                entities: 'Entities'
             }
         }
     },

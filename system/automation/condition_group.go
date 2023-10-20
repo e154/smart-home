@@ -74,16 +74,16 @@ func (c *ConditionGroup) Check(entityId *common.EntityId) (state bool, err error
 	wg.Add(total)
 
 	for _, r := range c.rules {
-		go func() {
+		go func(condition *Condition) {
 			defer func() {
 				wg.Done()
 			}()
 			bg, _ := context.WithTimeout(context.Background(), time.Second)
 			ctx := context.WithValue(bg, "entityId", entityId)
-			if _, err = r.Check(ctx); err != nil {
+			if _, err = condition.Check(ctx); err != nil {
 				log.Error(err.Error())
 			}
-		}()
+		}(r)
 	}
 
 	wg.Wait()
@@ -102,6 +102,9 @@ func (c *ConditionGroup) Check(entityId *common.EntityId) (state bool, err error
 		for _, r := range c.rules {
 			if !r.Status() {
 				state = false
+			}
+			if !state {
+				return
 			}
 		}
 	}

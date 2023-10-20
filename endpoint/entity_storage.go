@@ -39,7 +39,7 @@ func NewEntityStorageEndpoint(common *CommonEndpoint) *EntityStorageEndpoint {
 }
 
 // GetList ...
-func (i *EntityStorageEndpoint) GetList(ctx context.Context, entityId *common.EntityId, pagination common.PageParams, startDate, endDate *time.Time) (result *m.EntityStorageList, total int64, err error) {
+func (i *EntityStorageEndpoint) GetList(ctx context.Context, entityIds []*common.EntityId, pagination common.PageParams, startDate, endDate *time.Time) (result *m.EntityStorageList, total int64, err error) {
 
 	//var startDate, endDate *time.Time
 	//if _startDate != nil {
@@ -52,7 +52,7 @@ func (i *EntityStorageEndpoint) GetList(ctx context.Context, entityId *common.En
 	//}
 
 	var items []*m.EntityStorage
-	if items, total, err = i.adaptors.EntityStorage.ListByEntityId(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, entityId, startDate, endDate); err != nil {
+	if items, total, err = i.adaptors.EntityStorage.ListByEntityId(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, entityIds, startDate, endDate); err != nil {
 		return
 	}
 

@@ -104,10 +104,10 @@ const loadFromPlugin = async () => {
         <ElInput type="string" v-model="row.imageUrl"/>
       </div>
       <div v-if="row.type === 'INT'" class="w-[100%]">
-        <ElInputNumber  v-model="row.int" class="w-[100%]"/>
+        <ElInputNumber v-model="row.int" class="w-[100%]"/>
       </div>
       <div v-if="row.type === 'FLOAT'">
-        <ElInput type="number" v-model="row.float"/>
+        <ElInputNumber v-model="row.float"/>
       </div>
       <div v-if="row.type === 'ARRAY'">
         <ElInput type="string" v-model="row.array"/>
@@ -151,5 +151,7 @@ const loadFromPlugin = async () => {
 </template>
 
 <style lang="less">
-
+.el-input-number {
+  width: 100%;
+}
 </style>

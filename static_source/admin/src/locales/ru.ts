@@ -576,6 +576,9 @@ export default {
       },
       video: {
         options: 'Параметры видео',
+      },
+      entityStorage: {
+        entities: 'Устройства'
       }
     }
   },

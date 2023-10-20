@@ -8,7 +8,7 @@ import {useAppStore} from "@/store/modules/app";
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
 import {UUID} from 'uuid-generator-ts'
-import {ElButton} from 'element-plus'
+import {ElButton, ElRow, ElCol, ElCheckboxGroup, ElCheckboxButton} from 'element-plus'
 import {ApiEntity, ApiEntityStorage} from "@/api/stub";
 import {useForm} from "@/hooks/web/useForm";
 import {parseTime} from "@/utils";
@@ -25,6 +25,7 @@ const appStore = useAppStore()
 const {t} = useI18n()
 const dialogVisible = ref(false)
 const dialogSource = ref({})
+const selectedEntities = ref([])
 
 interface TableObject {
   tableList: ApiEntityStorage[]
@@ -146,7 +147,7 @@ const columns: TableColumn[] = [
   {
     field: 'entityId',
     label: t('entityStorage.entityId'),
-    width: "200px",
+    width: "250px",
   },
 ]
 const paginationObj = ref<Pagination>({
@@ -185,6 +186,15 @@ const getList = debounce( async () => {
     endDate: tableObject.endDate,
   }
 
+  if (props.item?.payload.entityStorage?.entityIds?.length ) {
+
+    if (selectedEntities.value.length == 0) {
+      params.entityId = props.item?.payload.entityStorage?.entityIds.join(",")
+    } else {
+      params.entityId = selectedEntities.value.join(",")
+    }
+  }
+
   const res = await api.v1.entityStorageServiceGetEntityStorageList(params)
       .catch(() => {
       })
@@ -211,6 +221,25 @@ watch(
     () => paginationObj.value.currentPage,
     () => {
       getList()
+    }
+)
+
+
+watch(
+    () => selectedEntities.value,
+    () => {
+      getList()
+    }
+)
+
+
+watch(
+    () => props.item,
+    () => {
+      selectedEntities.value = props.item?.payload.entityStorage?.entityIds || []
+    },
+    {
+      immediate: true
     }
 )
 
@@ -254,6 +283,17 @@ getList()
         <ElButton @click="dialogVisible = false">{{ t('main.closeDialog') }}</ElButton>
       </template>
     </Dialog>
+
+    <div class="mb-20px" v-if="item.payload.entityStorage?.entityIds?.length">
+        <ElCheckboxGroup v-model="selectedEntities" size="small">
+          <ElCheckboxButton
+              v-for="entity in item.payload.entityStorage.entityIds"
+              :key="entity"
+              :label="entity">
+            {{ entity }}
+          </ElCheckboxButton>
+        </ElCheckboxGroup>
+    </div>
 
     <Table
         v-model:pageSize="paginationObj.pageSize"

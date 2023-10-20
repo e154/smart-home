@@ -93,12 +93,12 @@ func ToAction(action *m.Action) (obj stub.ApiAction) {
 		return
 	}
 	obj = stub.ApiAction{
-		Id:       action.Id,
-		Name:     action.Name,
-		ScriptId: action.ScriptId,
-		//Script:           GetStubScript(action.Script),
-		EntityId: action.EntityId.StringPtr(),
-		//Entity:           ToEntity(action.Entity),
+		Id:               action.Id,
+		Name:             action.Name,
+		ScriptId:         action.ScriptId,
+		Script:           GetStubScript(action.Script),
+		EntityId:         action.EntityId.StringPtr(),
+		Entity:           ToEntity(action.Entity),
 		EntityActionName: action.EntityActionName,
 		CreatedAt:        action.CreatedAt,
 		UpdatedAt:        action.UpdatedAt,

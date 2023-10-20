@@ -167,7 +167,7 @@ func (e *Actor) mqttNewMessage(message *Message) {
 
 	e.message.Update(message)
 	for _, engine := range e.ScriptEngines {
-		if _, err := engine.Engine().AssertFunction(FuncMqttEvent); err != nil {
+		if _, err := engine.Engine().AssertFunction(FuncMqttEvent, message); err != nil {
 			log.Error(err.Error())
 			return
 		}

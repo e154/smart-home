@@ -165,9 +165,15 @@ func (a *Area) GetByName(ctx context.Context, name string) (ver *m.Area, err err
 	return
 }
 
-// GetDistance ...
+// GetDistanceToArea ...
 func (a *Area) GetDistanceToArea(ctx context.Context, point m.Point, areaId int64) (distance float64, err error) {
 	distance, err = a.table.GetDistanceToArea(ctx, db.Point{Lon: point.Lon, Lat: point.Lat}, areaId)
+	return
+}
+
+// GetDistanceBetweenPoints ...
+func (a *Area) GetDistanceBetweenPoints(ctx context.Context, point1, point2 m.Point) (distance float64, err error) {
+	distance, err = a.table.GetDistanceBetweenPoints(ctx, db.Point{Lon: point1.Lon, Lat: point1.Lat}, db.Point{Lon: point2.Lon, Lat: point2.Lat})
 	return
 }
 

@@ -50,58 +50,6 @@ func (r Automation) AddTask(obj *stub.ApiNewTaskRequest) (task *m.NewTask) {
 	return
 }
 
-// ImportTask ...
-func (r Automation) ImportTask(obj *stub.ApiTask) (task *m.Task) {
-	if obj == nil {
-		return
-	}
-	//task = &m.Task{
-	//	Name:        obj.Name,
-	//	Description: obj.Description,
-	//	Enabled:     obj.Enabled,
-	//	Condition:   common.ConditionType(obj.Condition),
-	//	Triggers:    make([]*m.Trigger, 0, len(obj.Triggers)),
-	//	Conditions:  make([]*m.Condition, 0, len(obj.Conditions)),
-	//	Actions:     make([]*m.Action, 0, len(obj.Actions)),
-	//	AreaId:      obj.AreaId,
-	//}
-	//
-	//// triggers
-	//for _, t := range obj.Triggers {
-	//	trigger := &m.Trigger{
-	//		Name:       t.Name,
-	//		PluginName: t.PluginName,
-	//		ScriptId:   t.ScriptId,
-	//		EntityId:   common.NewEntityIdFromPtr(t.EntityId),
-	//		Payload:    AttributeFromApi(t.Attributes),
-	//	}
-	//	task.Triggers = append(task.Triggers, trigger)
-	//}
-	//// conditions
-	//for _, c := range obj.Conditions {
-	//	condition := &m.Condition{
-	//		Name: c.Name,
-	//	}
-	//	if c.Script != nil {
-	//		_, script := ImportScript(c.Script)
-	//		condition.ScriptId = c.Script.Id
-	//		condition.Script = script
-	//	}
-	//	task.Conditions = append(task.Conditions, condition)
-	//}
-	//// actions
-	//for _, a := range obj.Actions {
-	//	action := &m.Action{
-	//		Name:             a.Name,
-	//		EntityId:         common.NewEntityIdFromPtr(a.EntityId),
-	//		EntityActionName: a.EntityActionName,
-	//		ScriptId:         a.ScriptId,
-	//	}
-	//	task.Actions = append(task.Actions, action)
-	//}
-	return
-}
-
 // UpdateTask ...
 func (r Automation) UpdateTask(obj *stub.AutomationServiceUpdateTaskJSONBody, id int64) (task *m.UpdateTask) {
 	task = &m.UpdateTask{

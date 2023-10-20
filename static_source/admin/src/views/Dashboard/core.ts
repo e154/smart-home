@@ -16,6 +16,10 @@ import {Attribute, EventStateChange, GetAttrValue} from '@/api/stream_types';
 import {UUID} from 'uuid-generator-ts';
 import {Compare, Resolve} from '@/views/Dashboard/render';
 import stream from '@/api/stream';
+import {useBus} from "@/views/Dashboard/bus";
+import {debounce} from "lodash-es";
+import {ref} from "vue";
+import {bool} from "vue-types";
 import {ItemPayloadButton} from '@/views/Dashboard/card_items/button/types';
 import {ItemPayloadText} from '@/views/Dashboard/card_items/text/types';
 import {ItemPayloadState} from '@/views/Dashboard/card_items/state/types';
@@ -23,14 +27,11 @@ import {ItemPayloadLogs} from '@/views/Dashboard/card_items/logs/types';
 import {ItemPayloadProgress} from '@/views/Dashboard/card_items/progress/types';
 import {ItemPayloadChart} from '@/views/Dashboard/card_items/chart/types';
 import {ItemPayloadMap, Marker} from '@/views/Dashboard/card_items/map/types';
-import {useBus} from "@/views/Dashboard/bus";
-import {debounce} from "lodash-es";
-import {ref} from "vue";
-import {bool} from "vue-types";
 import {ItemPayloadSlider} from "@/views/Dashboard/card_items/slider/types";
 import {ItemPayloadColorPicker} from "@/views/Dashboard/card_items/color_picker/types";
 import {ItemPayloadJoystick} from "@/views/Dashboard/card_items/joystick/types";
 import {ItemPayloadVideo} from "@/views/Dashboard/card_items/video/types";
+import {ItemPayloadEntityStorage} from "@/views/Dashboard/card_items/entity_storage/types";
 
 const {bus} = useBus()
 
@@ -94,6 +95,7 @@ export interface ItemPayload {
   colorPicker?: ItemPayloadColorPicker;
   joystick?: ItemPayloadJoystick;
   video?: ItemPayloadVideo;
+  entityStorage?: ItemPayloadEntityStorage;
 }
 
 export interface ItemParams {
@@ -267,6 +269,10 @@ export class CardItem {
       if (!this.payload.video) {
         this.payload.video = {
         } as ItemPayloadVideo;
+      }
+      if (!this.payload.entityStorage) {
+        this.payload.entityStorage = {
+        } as ItemPayloadEntityStorage;
       }
     }
   }

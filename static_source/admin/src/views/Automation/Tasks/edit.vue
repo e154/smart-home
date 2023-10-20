@@ -73,6 +73,7 @@ const prepareForSave = async () => {
       triggerIds: triggerIds.value ,
       conditionIds: conditionIds.value,
       actionIds: actionIds.value,
+      areaId: con.area?.id,
     }
   }
 }

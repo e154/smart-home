@@ -303,7 +303,7 @@ func NewSettings() map[string]*m.Attribute {
 		},
 		AttrAppid: {
 			Name: AttrAppid,
-			Type: common.AttributeString,
+			Type: common.AttributeEncrypted,
 		},
 		AttrUnits: {
 			Name: AttrUnits,

@@ -68,6 +68,8 @@ func (m *MqttBridge) Start(ctx context.Context) (err error) {
 		SetKeepAlive(time.Duration(m.cfg.KeepAlive) * time.Second).
 		SetPingTimeout(time.Duration(m.cfg.PingTimeout) * time.Second).
 		SetConnectTimeout(time.Duration(m.cfg.ConnectTimeout) * time.Second).
+		SetMaxReconnectInterval(time.Minute).
+		SetAutoReconnect(true).
 		SetCleanSession(m.cfg.CleanSession).
 		SetOnConnectHandler(m.onConnect).
 		SetConnectionLostHandler(m.onConnectionLostHandler).

@@ -21,6 +21,7 @@ package controllers
 import (
 	"github.com/e154/smart-home/api/stub"
 	"github.com/labstack/echo/v4"
+	"strings"
 
 	"github.com/e154/smart-home/common"
 )
@@ -41,7 +42,16 @@ func NewControllerEntityStorage(common *ControllerCommon) *ControllerEntityStora
 func (c ControllerEntityStorage) EntityStorageServiceGetEntityStorageList(ctx echo.Context, params stub.EntityStorageServiceGetEntityStorageListParams) error {
 
 	pagination := c.Pagination(params.Page, params.Limit, params.Sort)
-	items, total, err := c.endpoint.EntityStorage.GetList(ctx.Request().Context(), common.NewEntityIdFromPtr(params.EntityId), pagination, params.StartDate, params.EndDate)
+
+	var entityIds []*common.EntityId
+	if params.EntityId != nil {
+		arr := strings.Split(*params.EntityId, ",")
+		for _, item := range arr {
+			entityIds = append(entityIds, common.NewEntityId(item))
+		}
+	}
+
+	items, total, err := c.endpoint.EntityStorage.GetList(ctx.Request().Context(), entityIds, pagination, params.StartDate, params.EndDate)
 	if err != nil {
 		return c.ERROR(ctx, err)
 	}

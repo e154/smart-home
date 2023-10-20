@@ -108,12 +108,17 @@ func (n *EntityStorages) List(ctx context.Context, limit, offset int, orderBy, s
 }
 
 // ListByEntityId ...
-func (n *EntityStorages) ListByEntityId(ctx context.Context, limit, offset int, orderBy, sort string, entityId *common.EntityId, startDate, endDate *time.Time) (list []EntityStorage, total int64, err error) {
+func (n *EntityStorages) ListByEntityId(ctx context.Context, limit, offset int, orderBy, sort string, entityIds []*common.EntityId, startDate, endDate *time.Time) (list []EntityStorage, total int64, err error) {
 
 	q := n.Db.WithContext(ctx).Model(&EntityStorage{})
 
-	if entityId != nil {
-		q = q.Where("entity_id = ?", entityId)
+
+	if entityIds != nil && len(entityIds) > 0 {
+		var ids = make([]string, 0, len(entityIds))
+		for _, id := range entityIds {
+			ids = append(ids, id.String())
+		}
+		q = q.Where("entity_id in (?)", ids)
 	}
 
 	if startDate != nil {

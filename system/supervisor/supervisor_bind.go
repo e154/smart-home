@@ -114,10 +114,12 @@ func GetDistanceToAreaBind(adaptors *adaptors.Adaptors) func(areaId int64, point
 
 func GetDistanceBetweenPointsBind(adaptors *adaptors.Adaptors) func(point1, point2 m.Point) float64 {
 	return func(point1, point2 m.Point) float64 {
-		if distance, err := adaptors.Area.GetDistanceBetweenPoints(context.Background(), point1, point2); err == nil {
-			return distance
+		distance, err := adaptors.Area.GetDistanceBetweenPoints(context.Background(), point1, point2)
+		if err != nil {
+			log.Error(err.Error())
+			return 0
 		}
-		return 0
+		return distance
 	}
 }
 
