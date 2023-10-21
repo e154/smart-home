@@ -65,6 +65,16 @@ response = http.headers(headers).post(url, body)
 ### пример кода
 
 ```coffeescript
+# auth
+# ##################################
+
+res = http.digestAuth('user','password').download(uri);
+
+res = http.basicAuth('user','password').download(uri);
+
+res = http.download(uri);
+
+
 # GET http
 # ##################################
 

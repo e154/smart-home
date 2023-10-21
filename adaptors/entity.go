@@ -494,6 +494,8 @@ func (n *Entity) toDb(ver *m.Entity) (dbVer *db.Entity) {
 		ParentId:    ver.ParentId,
 		AreaId:      ver.AreaId,
 		ImageId:     ver.ImageId,
+		CreatedAt:   ver.CreatedAt,
+		UpdatedAt:   ver.UpdatedAt,
 	}
 
 	// serialize payload

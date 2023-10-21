@@ -29,10 +29,16 @@ const (
 	Name = "telegram"
 	// AttrToken ...
 	AttrToken = "token"
+	// AttrPin ...
+	AttrPin = "pin"
 	// AttrChatID ...
 	AttrChatID = "chat_id"
 	// AttrBody ...
 	AttrBody = "body"
+	// AttrUri ...
+	AttrUri = "uri"
+	// FilePath ...
+	AttrFilePath = "file_path"
 
 	Version = "0.0.1"
 )
@@ -66,6 +72,14 @@ func NewMessageParams() m.Attributes {
 			Name: AttrBody,
 			Type: common.AttributeString,
 		},
+		AttrUri: {
+			Name: AttrUri,
+			Type: common.AttributeString,
+		},
+		AttrFilePath: {
+			Name: AttrFilePath,
+			Type: common.AttributeString,
+		},
 	}
 }
 
@@ -74,6 +88,10 @@ func NewSettings() m.Attributes {
 	return map[string]*m.Attribute{
 		AttrToken: {
 			Name: AttrToken,
+			Type: common.AttributeEncrypted,
+		},
+		AttrPin: {
+			Name: AttrPin,
 			Type: common.AttributeEncrypted,
 		},
 	}

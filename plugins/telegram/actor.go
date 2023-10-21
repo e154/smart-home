@@ -21,7 +21,6 @@ package telegram
 import (
 	"context"
 	"fmt"
-	"github.com/e154/smart-home/plugins/notify"
 	"strconv"
 	"strings"
 	"time"
@@ -34,6 +33,7 @@ import (
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/plugins/notify"
 	"github.com/e154/smart-home/system/supervisor"
 	"github.com/e154/smart-home/version"
 )
@@ -141,37 +141,16 @@ func (e *Actor) Spawn() {
 	return
 }
 
-// Send ...
-func (e *Actor) send(message string, chatID *int64) (err error) {
-	if !e.isStarted.Load() {
-		return
-	}
+func (e *Actor) sendMsg(message *m.Message, chatId int64) (messageID int, err error) {
 
-	if chatID != nil {
-		if _, err = e.sendMsg(message, *chatID); err != nil {
-			log.Warn(err.Error())
-		}
-		return
-	}
-
-	var list []m.TelegramChat
-	if list, err = e.getChatList(); err != nil {
-		return
-	}
-	for _, chat := range list {
-		if _, err = e.sendMsg(message, chat.ChatId); err != nil {
-			log.Warn(err.Error())
-		}
-	}
-
-	return
-}
-
-func (e *Actor) sendMsg(body string, chatId int64) (messageID int, err error) {
+	var msg *tele.Message
 	defer func() {
 		if err == nil {
+			if msg != nil {
+				messageID = msg.ID
+			}
 			//go func() { _ = e.UpdateStatus() }()
-			log.Infof("Sent message '%s' to chatId '%d'", body, chatId)
+			log.Infof("Sent message '%s' to chatId '%d'", message.Attributes, chatId)
 		}
 	}()
 	if common.TestMode() {
@@ -183,12 +162,22 @@ func (e *Actor) sendMsg(body string, chatId int64) (messageID int, err error) {
 		log.Error(err.Error())
 		return
 	}
-	var msg *tele.Message
-	if msg, err = e.bot.Send(chat, body); err != nil {
-		log.Error(err.Error())
-		return
+
+	params := NewMessageParams()
+	_, _ = params.Deserialize(message.Attributes)
+
+	var body interface{}
+	body = params[AttrBody].String()
+
+	if uri := params[AttrUri].String(); uri != "" {
+		body = &tele.Photo{File: tele.FromURL(uri)}
 	}
-	messageID = msg.ID
+
+	if uri := params[AttrFilePath].String(); uri != "" {
+		body = &tele.Photo{File: tele.FromDisk(uri)}
+	}
+
+	msg, err = e.bot.Send(chat, body)
 	return
 }
 
@@ -243,12 +232,20 @@ func (e *Actor) commandStart(c tele.Context) (err error) {
 		text = c.Text()
 	)
 
+	if pin := e.Setts[AttrPin].Decrypt(); pin != "" {
+		if enterdPin := strings.Replace(text, "/start ", "", -1); pin != enterdPin {
+			log.Warn("pin not equal")
+			return
+		}
+	}
+
 	text = fmt.Sprintf(banner, version.GetHumanVersion(), text)
 	_ = e.Service.Adaptors().TelegramChat.Add(context.Background(), m.TelegramChat{
 		EntityId: e.Id,
 		ChatId:   chat.ID,
 		Username: user.Username,
 	})
+	log.Infof("user '%s' added to chat", user.Username)
 	err = c.Send(text, e.genKeyboard())
 	return
 }
@@ -382,10 +379,9 @@ func (e *Actor) Save(msg notify.Message) (addresses []string, message *m.Message
 
 // Send ...
 func (e *Actor) Send(address string, message *m.Message) (err error) {
-	params := NewMessageParams()
-	_, _ = params.Deserialize(message.Attributes)
-
-	body := params[AttrBody].String()
+	if !e.isStarted.Load() {
+		return
+	}
 
 	var chatID *int64
 	if address != "" && address != "broadcast" {
@@ -395,7 +391,22 @@ func (e *Actor) Send(address string, message *m.Message) (err error) {
 		}
 	}
 
-	_ = e.send(body, chatID)
+	if chatID != nil {
+		if _, err = e.sendMsg(message, *chatID); err != nil {
+			log.Warn(err.Error())
+		}
+		return
+	}
+
+	var list []m.TelegramChat
+	if list, err = e.getChatList(); err != nil {
+		return
+	}
+	for _, chat := range list {
+		if _, err = e.sendMsg(message, chat.ChatId); err != nil {
+			log.Warn(err.Error())
+		}
+	}
 
 	return
 }

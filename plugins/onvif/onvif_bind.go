@@ -16,24 +16,19 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package web
+package onvif
 
-import (
-	"time"
-)
+import "github.com/e154/smart-home/common"
 
-// Request ...
-type Request struct {
-	Method  string
-	Url     string
-	Body    []byte
-	Headers []map[string]string
-	Timeout time.Duration
+func GetSnapshotUriBind(plugin *plugin) func(entityId string) string  {
+	return func(entityId string) string {
+		return plugin.GetSnapshotUri(common.EntityId(entityId))
+	}
 }
 
-type Crawler interface {
-	BasicAuth(username, password string) Crawler
-	DigestAuth(username, password string) Crawler
-	Download(options Request) (filePath string, err error)
-	Probe(Request) (int, []byte, error)
+// experimental method ...
+func DownloadSnapshotBind(plugin *plugin) func(entityId string) string  {
+	return func(entityId string) string {
+		return plugin.DownloadSnapshotDigest(common.EntityId(entityId))
+	}
 }

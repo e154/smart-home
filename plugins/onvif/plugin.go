@@ -20,8 +20,10 @@ package onvif
 
 import (
 	"context"
+	"github.com/e154/smart-home/common/web"
 	"sync"
 
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
@@ -60,11 +62,15 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 		return
 	}
 	_ = p.Service.EventBus().Subscribe("system/entities/+", p.eventHandler)
+	p.Service.ScriptService().PushFunctions("OnvifGetSnapshotUri", GetSnapshotUriBind(p))
+	p.Service.ScriptService().PushFunctions("DownloadSnapshot", DownloadSnapshotBind(p))
 	return
 }
 
 // Unload ...
 func (p *plugin) Unload(ctx context.Context) (err error) {
+	p.Service.ScriptService().PopFunction("OnvifGetSnapshotUri")
+	p.Service.ScriptService().PopFunction("DownloadSnapshot")
 	_ = p.Service.EventBus().Unsubscribe("system/entities/+", p.eventHandler)
 	err = p.Plugin.Unload(ctx)
 	return
@@ -128,4 +134,33 @@ func (p *plugin) Options() m.PluginOptions {
 			Variables: nil,
 		},
 	}
+}
+
+func (p *plugin) GetSnapshotUri(entityId common.EntityId) string {
+	if value, ok := p.Actors.Load(entityId); ok {
+		actor := value.(*Actor)
+		return actor.GetSnapshotUri()
+	}
+	return ""
+}
+
+// experimental method ...
+func (p *plugin) DownloadSnapshotDigest(entityId common.EntityId) (filePath string) {
+	value, ok := p.Actors.Load(entityId)
+	if !ok {
+		return
+	}
+	actor := value.(*Actor)
+
+	crawler := web.New()
+	crawler.DigestAuth(actor.Setts[AttrUserName].String(),
+		actor.Setts[AttrPassword].Decrypt())
+
+	var err error
+	filePath, err = crawler.Download(web.Request{Method: "GET", Url: actor.GetSnapshotUri()})
+	if err != nil {
+		log.Error(err.Error())
+	}
+
+	return
 }

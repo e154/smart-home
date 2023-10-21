@@ -126,9 +126,19 @@ func (n *EntityEndpoint) Update(ctx context.Context, params *m.Entity) (result *
 		return
 	}
 
-	_ = common.Copy(entity, params, common.JsonEngine)
-	entity.Settings = params.Settings
+	entity.Description = params.Description
+	entity.PluginName = params.PluginName
+	entity.Icon = params.Icon
+	entity.ImageId = params.ImageId
+	entity.Actions = params.Actions
+	entity.States = params.States
+	entity.AreaId = params.AreaId
+	entity.Metrics = params.Metrics
+	entity.Scripts = params.Scripts
+	entity.Hidden = params.Hidden
 	entity.Attributes = params.Attributes
+	entity.Settings = params.Settings
+	entity.ParentId = params.ParentId
 
 	if ok, errs := n.validation.Valid(entity); !ok {
 		err = apperr.ErrInvalidRequest

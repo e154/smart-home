@@ -36,8 +36,10 @@ const (
 // GeoLocationFromIP ...
 func GeoLocationFromIP(ip string) (location m.GeoLocation, err error) {
 
+	crawler := web.New()
+
 	var body []byte
-	if _, body, err = web.Probe(web.Request{Method: "GET", Url: fmt.Sprintf("%s/%s", IpApi, ip)}); err != nil {
+	if _, body, err = crawler.Probe(web.Request{Method: "GET", Url: fmt.Sprintf("%s/%s", IpApi, ip)}); err != nil {
 		return
 	}
 	location = m.GeoLocation{}
@@ -49,8 +51,10 @@ func GeoLocationFromIP(ip string) (location m.GeoLocation, err error) {
 // GetRegionInfo ...
 func GetRegionInfo() (info m.RegionInfo, err error) {
 
+	crawler := web.New()
+
 	var body []byte
-	if _, body, err = web.Probe(web.Request{Method: "GET", Url: IPAPI}); err != nil {
+	if _, body, err = crawler.Probe(web.Request{Method: "GET", Url: IPAPI}); err != nil {
 		return
 	}
 	info = m.RegionInfo{}
