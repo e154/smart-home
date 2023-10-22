@@ -225,7 +225,7 @@ const tableRowClassName = (data) => {
 
 const callAction = async (action: ApiAction) => {
   if (!action?.id) return;
-  await api.v1.developerToolsServiceTaskCallAction({id: action.id})
+  await api.v1.developerToolsServiceCallAction({id: action.id})
       .catch(() => {
       })
       .finally(() => {

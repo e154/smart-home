@@ -36,7 +36,8 @@ func SetStateBind(manager Supervisor) func(entityId string, params EntityStatePa
 func SetStateNameBind(manager Supervisor) func(entityId, stateName string) {
 	return func(entityId, stateName string) {
 		_ = manager.SetState(common.EntityId(entityId), EntityStateParams{
-			NewState: common.String(stateName),
+			NewState:    common.String(stateName),
+			StorageSave: true,
 		})
 	}
 }

@@ -162,6 +162,11 @@ func NewBaseActor(entity *m.Entity,
 					log.Error(err.Error())
 				}
 			}
+			go func() {
+				if _ , err = scriptEngine.Engine().AssertFunction("init"); err != nil {
+					log.Error(err.Error())
+				}
+			}()
 			actor.ScriptEngines = append(actor.ScriptEngines, scriptEngine)
 		}
 	}

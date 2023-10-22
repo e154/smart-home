@@ -19,7 +19,7 @@ const {t} = useI18n()
 
 const writeRef = ref<ComponentRef<typeof Form>>()
 const loading = ref(true)
-const triggerId = computed(() => route.params.id as number);
+const triggerId = computed(() => +route.params.id);
 const currentRow = ref<Nullable<ApiTrigger>>(null)
 
 const fetch = async () => {
@@ -123,7 +123,7 @@ fetch()
 
     <div style="text-align: right">
 
-      <ElButton type="success" @click="callTrigger()" :disabled="!row?.isLoaded">
+      <ElButton type="success" @click="callTrigger()">
         {{ t('main.call') }}
       </ElButton>
 

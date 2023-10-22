@@ -165,7 +165,7 @@ func (e *supervisor) handlerSystemScripts(_ string, event interface{}) {
 func (e *supervisor) bindScripts() {
 	e.scriptService.PushFunctions("GetEntity", GetEntityBind(e))
 	e.scriptService.PushFunctions("EntitySetState", SetStateBind(e))
-	e.scriptService.PushFunctions("EntitySetStateName", SetStateBind(e))
+	e.scriptService.PushFunctions("EntitySetStateName", SetStateNameBind(e))
 	e.scriptService.PushFunctions("EntityGetState", GetStateBind(e))
 	e.scriptService.PushFunctions("EntitySetAttributes", SetAttributesBind(e))
 	e.scriptService.PushFunctions("EntityGetAttributes", GetAttributesBind(e))
