@@ -1256,7 +1256,7 @@ export class Core {
       return;
     }
 
-    // this.bus.$emit('update_tab', this.currentTabId);
+    bus.emit('update_tab', this.currentTabId);
 
     return this.tabs[this.activeTab].cards[this.activeCard].update();
   }
