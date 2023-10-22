@@ -144,6 +144,12 @@ func (n *TaskEndpoint) Update(ctx context.Context, task *m.UpdateTask) (result *
 		return
 	}
 
+	if result, err = n.adaptors.Task.GetById(ctx, task.Id); err != nil {
+		return
+	}
+
+	task.CreatedAt = result.CreatedAt
+	task.UpdatedAt = result.UpdatedAt
 	if err = n.adaptors.Task.Update(ctx, task); err != nil {
 		return
 	}

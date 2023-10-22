@@ -20,6 +20,7 @@ package dto
 
 import (
 	"fmt"
+
 	stub "github.com/e154/smart-home/api/stub"
 
 	m "github.com/e154/smart-home/models"

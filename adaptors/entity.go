@@ -22,10 +22,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
+
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
-	"strings"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"

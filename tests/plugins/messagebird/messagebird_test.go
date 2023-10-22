@@ -20,11 +20,11 @@ package messagebird
 
 import (
 	"context"
-	"github.com/e154/smart-home/common"
 	"testing"
 	"time"
 
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/messagebird"
 	"github.com/e154/smart-home/plugins/notify"

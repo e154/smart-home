@@ -20,10 +20,11 @@ package mqtt_bridge
 
 import (
 	"context"
+	"strings"
+
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/supervisor"
-	"strings"
 )
 
 // Actor ...

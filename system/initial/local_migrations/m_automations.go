@@ -20,6 +20,7 @@ package local_migrations
 
 import (
 	"context"
+
 	"github.com/e154/smart-home/endpoint"
 
 	"github.com/e154/smart-home/adaptors"

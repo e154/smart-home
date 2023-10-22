@@ -22,10 +22,11 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/jackc/pgerrcode"
-	"github.com/jackc/pgx/v5/pgconn"
 	"strings"
 	"time"
+
+	"github.com/jackc/pgerrcode"
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"github.com/e154/smart-home/common/apperr"
 
@@ -47,7 +48,7 @@ type Image struct {
 	Title     string
 	Size      int64
 	Name      string
-	CreatedAt time.Time
+	CreatedAt time.Time `gorm:"<-:create"`
 }
 
 // TableName ...

@@ -20,6 +20,7 @@ package weather_owm
 
 import (
 	"context"
+
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/weather"

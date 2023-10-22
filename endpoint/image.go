@@ -21,8 +21,9 @@ package endpoint
 import (
 	"bufio"
 	"context"
-	"github.com/e154/smart-home/common/apperr"
 	"mime/multipart"
+
+	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"

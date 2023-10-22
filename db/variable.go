@@ -41,7 +41,7 @@ type Variable struct {
 	Value     string
 	System    bool
 	EntityId  *common.EntityId
-	CreatedAt time.Time
+	CreatedAt time.Time `gorm:"<-:create"`
 	UpdatedAt time.Time
 }
 

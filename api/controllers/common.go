@@ -3,11 +3,12 @@ package controllers
 import (
 	"encoding/base64"
 	"encoding/json"
-	"github.com/e154/smart-home/api/dto"
-	"github.com/e154/smart-home/system/access_list"
 	"io"
 	"net/http"
 	"strings"
+
+	"github.com/e154/smart-home/api/dto"
+	"github.com/e154/smart-home/system/access_list"
 
 	"github.com/iancoleman/strcase"
 	"github.com/labstack/echo/v4"

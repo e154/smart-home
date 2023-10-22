@@ -47,7 +47,7 @@ type Task struct {
 	Triggers    []*Trigger   `gorm:"many2many:task_triggers;"`
 	AreaId      *int64
 	Area        *Area
-	CreatedAt   time.Time
+	CreatedAt   time.Time `gorm:"<-:create"`
 	UpdatedAt   time.Time
 }
 

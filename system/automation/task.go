@@ -154,7 +154,7 @@ func (t *Task) Start() {
 
 	// add triggers
 	for _, model := range t.model.Triggers {
-		t.eventBus.Subscribe(fmt.Sprintf("system/automation/triggers/%d", model.Id), t.triggerHandler)
+		t.eventBus.Subscribe(fmt.Sprintf("system/automation/triggers/%d", model.Id), t.triggerHandler, false)
 	}
 
 	t.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", t.model.Id), events.EventTaskLoaded{

@@ -19,9 +19,10 @@
 package version
 
 import (
-	m "github.com/e154/smart-home/models"
 	"runtime"
 	"sync"
+
+	m "github.com/e154/smart-home/models"
 
 	"github.com/e154/smart-home/common/events"
 

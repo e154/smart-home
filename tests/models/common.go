@@ -20,6 +20,7 @@ package models
 
 import (
 	"context"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"

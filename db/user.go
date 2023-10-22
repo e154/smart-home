@@ -64,7 +64,7 @@ type User struct {
 	ResetPasswordSentAt *time.Time
 	CurrentSignInAt     *time.Time
 	LastSignInAt        *time.Time
-	CreatedAt           time.Time
+	CreatedAt           time.Time `gorm:"<-:create"`
 	UpdatedAt           time.Time
 	DeletedAt           *time.Time
 	History             json.RawMessage `gorm:"type:jsonb;not null"`

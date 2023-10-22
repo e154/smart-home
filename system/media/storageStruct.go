@@ -19,10 +19,11 @@
 package media
 
 import (
-	"github.com/e154/smart-home/common/apperr"
 	"net"
 	"sync"
 	"time"
+
+	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/deepch/vdk/av"
 )

@@ -20,10 +20,11 @@ package slack
 
 import (
 	"context"
+	"strings"
+
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/plugins/notify"
 	"github.com/nlopes/slack"
-	"strings"
 
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/supervisor"

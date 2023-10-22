@@ -66,7 +66,7 @@ func NewTriggerManager(eventBus bus.Bus,
 func (a *triggerManager) Start() {
 
 	a.load()
-	_ = a.eventBus.Subscribe("system/automation/triggers/+", a.eventHandler)
+	_ = a.eventBus.Subscribe("system/automation/triggers/+", a.eventHandler, false)
 	a.isStarted.Store(true)
 
 	log.Info("Started")

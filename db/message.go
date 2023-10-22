@@ -40,7 +40,7 @@ type Message struct {
 	Type      string
 	Payload   json.RawMessage `gorm:"type:jsonb;not null"`
 	Statuses  []*MessageDelivery
-	CreatedAt time.Time
+	CreatedAt time.Time `gorm:"<-:create"`
 	UpdatedAt time.Time
 }
 

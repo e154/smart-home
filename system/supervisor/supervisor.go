@@ -20,11 +20,12 @@ package supervisor
 
 import (
 	"context"
+	"runtime/debug"
+	"sync"
+
 	"github.com/pkg/errors"
 	"go.uber.org/atomic"
 	"go.uber.org/fx"
-	"runtime/debug"
-	"sync"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -491,7 +492,7 @@ func (e *supervisor) eventUpdatedScript(msg events.EventUpdatedScript) {
 	e.eventScriptSubsMx.RLock()
 	defer e.eventScriptSubsMx.RUnlock()
 
-	for entityId, _ := range e.eventScriptSubs[msg.ScriptId] {
+	for entityId := range e.eventScriptSubs[msg.ScriptId] {
 		go e.updatedEntityById(entityId)
 	}
 }
@@ -510,7 +511,7 @@ func (e *supervisor) eventScriptDeleted(msg events.EventScriptDeleted) {
 	e.eventScriptSubsMx.RLock()
 	defer e.eventScriptSubsMx.RUnlock()
 
-	for entityId, _ := range e.eventScriptSubs[msg.ScriptId] {
+	for entityId := range e.eventScriptSubs[msg.ScriptId] {
 		go e.UnloadEntity(entityId)
 	}
 }
@@ -555,7 +556,7 @@ func (e *supervisor) eventEntityUnloaded(msg events.EventEntityUnloaded) {
 	e.eventScriptSubsMx.Lock()
 	defer e.eventScriptSubsMx.Unlock()
 
-	for scriptId, _ := range e.eventScriptSubs {
+	for scriptId := range e.eventScriptSubs {
 		delete(e.eventScriptSubs[scriptId], msg.EntityId)
 	}
 }

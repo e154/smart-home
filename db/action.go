@@ -44,7 +44,7 @@ type Action struct {
 	Entity           *Entity
 	EntityId         *common.EntityId
 	EntityActionName *string
-	CreatedAt        time.Time
+	CreatedAt        time.Time `gorm:"<-:create"`
 	UpdatedAt        time.Time
 }
 

@@ -20,6 +20,7 @@ package stream
 
 import (
 	"encoding/json"
+
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/plugins/webpush"
 )

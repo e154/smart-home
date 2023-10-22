@@ -20,9 +20,10 @@ package stream
 
 import (
 	"encoding/json"
+	"sync"
+
 	m "github.com/e154/smart-home/models"
 	"github.com/gorilla/websocket"
-	"sync"
 )
 
 // Client ...

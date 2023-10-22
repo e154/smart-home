@@ -45,7 +45,7 @@ type Trigger struct {
 	PluginName string
 	Payload    string
 	Enabled    bool
-	CreatedAt  time.Time
+	CreatedAt  time.Time `gorm:"<-:create"`
 	UpdatedAt  time.Time
 }
 

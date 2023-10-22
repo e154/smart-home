@@ -19,10 +19,11 @@
 package controllers
 
 import (
-	"github.com/e154/smart-home/api/stub"
-	"github.com/labstack/echo/v4"
 	"reflect"
 	"testing"
+
+	"github.com/e154/smart-home/api/stub"
+	"github.com/labstack/echo/v4"
 )
 
 func TestControllerAction_ActionServiceAddAction(t *testing.T) {

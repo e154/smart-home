@@ -39,11 +39,13 @@ func (_ EntityStorage) ToListResult(list *m.EntityStorageList) []*stub.ApiEntity
 		attributes := list.Attributes[item.EntityId].Copy()
 		attributes.Deserialize(item.Attributes)
 		items = append(items, &stub.ApiEntityStorage{
-			Id:         item.Id,
-			EntityId:   string(item.EntityId),
-			State:      item.State,
-			Attributes: AttributeToApi(attributes),
-			CreatedAt:  item.CreatedAt,
+			Id:                item.Id,
+			EntityId:          string(item.EntityId),
+			EntityDescription: item.EntityDescription,
+			State:             item.State,
+			StateDescription:  item.StateDescription,
+			Attributes:        AttributeToApi(attributes),
+			CreatedAt:         item.CreatedAt,
 		})
 	}
 

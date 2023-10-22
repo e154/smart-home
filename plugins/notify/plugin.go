@@ -55,7 +55,6 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 	p.Service.ScriptService().PushStruct("notifr", NewNotifyBind(service.EventBus()))
 	p.Service.ScriptService().PushStruct("template", NewTemplateBind(service.Adaptors()))
 
-
 	return nil
 }
 

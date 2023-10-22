@@ -21,9 +21,10 @@ package webpush
 import (
 	"context"
 	"encoding/json"
-	"github.com/e154/smart-home/common/encryptor"
 	"strconv"
 	"strings"
+
+	"github.com/e154/smart-home/common/encryptor"
 
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"

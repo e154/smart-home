@@ -9,7 +9,7 @@ import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
 import {UUID} from 'uuid-generator-ts'
 import {ElButton, ElRow, ElCol, ElCheckboxGroup, ElCheckboxButton} from 'element-plus'
-import {ApiEntity, ApiEntityStorage} from "@/api/stub";
+import {ApiEntity, ApiEntityStorage, ApiEntityStorageFilter} from "@/api/stub";
 import {useForm} from "@/hooks/web/useForm";
 import {parseTime} from "@/utils";
 import stream from "@/api/stream";
@@ -26,6 +26,7 @@ const {t} = useI18n()
 const dialogVisible = ref(false)
 const dialogSource = ref({})
 const selectedEntities = ref([])
+const filterList = ref([])
 
 interface TableObject {
   tableList: ApiEntityStorage[]
@@ -138,17 +139,16 @@ const columns: TableColumn[] = [
     field: 'state',
     label: t('entityStorage.state'),
     sortable: true,
-    width: "200px",
-  },
-  {
-    field: 'attributes',
-    label: t('entityStorage.attributes'),
   },
   {
     field: 'entityId',
-    label: t('entityStorage.entityId'),
-    width: "250px",
+    label: t('entityStorage.entity'),
+    sortable: true,
   },
+  // {
+  //   field: 'entityId',
+  //   label: t('entityStorage.entityId'),
+  // },
 ]
 const paginationObj = ref<Pagination>({
   currentPage: 1,
@@ -202,8 +202,9 @@ const getList = debounce( async () => {
         tableObject.loading = false
       })
   if (res) {
-    const {items, meta} = res.data;
+    const {items, filter, meta} = res.data;
     tableObject.tableList = items;
+    filterList.value = filter
     paginationObj.value.pageSize = meta.pagination.limit;
     paginationObj.value.currentPage = meta.pagination.page;
     paginationObj.value.total = meta.pagination.total;
@@ -320,6 +321,12 @@ getList()
     >
       <template #attributes="{row}">
         <span>{{ Object.keys(row.attributes).length || $t('entityStorage.nothing') }}</span>
+      </template>
+      <template #entityId="{row}">
+        <span>{{ row.entity_description }}</span>
+      </template>
+      <template #state="{row}">
+        <span>{{ row.state_description }}</span>
       </template>
     </Table>
 

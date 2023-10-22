@@ -19,9 +19,10 @@
 package controllers
 
 import (
+	"strings"
+
 	"github.com/e154/smart-home/api/stub"
 	"github.com/labstack/echo/v4"
-	"strings"
 
 	"github.com/e154/smart-home/common"
 )
@@ -43,11 +44,11 @@ func (c ControllerEntityStorage) EntityStorageServiceGetEntityStorageList(ctx ec
 
 	pagination := c.Pagination(params.Page, params.Limit, params.Sort)
 
-	var entityIds []*common.EntityId
+	var entityIds []common.EntityId
 	if params.EntityId != nil {
 		arr := strings.Split(*params.EntityId, ",")
 		for _, item := range arr {
-			entityIds = append(entityIds, common.NewEntityId(item))
+			entityIds = append(entityIds, common.EntityId(item))
 		}
 	}
 

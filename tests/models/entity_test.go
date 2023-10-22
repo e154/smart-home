@@ -20,13 +20,14 @@ package models
 
 import (
 	"context"
+	"testing"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/migrations"
 	. "github.com/smartystreets/goconvey/convey"
-	"testing"
 )
 
 func TestEntity(t *testing.T) {

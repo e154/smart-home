@@ -21,9 +21,10 @@ package cpuspeed
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/supervisor"
-	"time"
 
 	m "github.com/e154/smart-home/models"
 )

@@ -20,14 +20,14 @@ package onvif
 
 import "github.com/e154/smart-home/common"
 
-func GetSnapshotUriBind(plugin *plugin) func(entityId string) string  {
+func GetSnapshotUriBind(plugin *plugin) func(entityId string) string {
 	return func(entityId string) string {
 		return plugin.GetSnapshotUri(common.EntityId(entityId))
 	}
 }
 
 // experimental method ...
-func DownloadSnapshotBind(plugin *plugin) func(entityId string) string  {
+func DownloadSnapshotBind(plugin *plugin) func(entityId string) string {
 	return func(entityId string) string {
 		return plugin.DownloadSnapshotDigest(common.EntityId(entityId))
 	}

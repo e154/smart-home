@@ -21,10 +21,11 @@ package supervisor
 import (
 	"context"
 	"fmt"
-	"github.com/e154/smart-home/common/events"
 	"runtime/debug"
 	"sync"
 	"time"
+
+	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/common/apperr"
 

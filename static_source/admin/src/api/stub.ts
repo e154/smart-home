@@ -440,11 +440,18 @@ export interface ApiEntityState {
   style: string;
 }
 
+export interface ApiEntityStorageFilter {
+  entityId: string;
+  description: string;
+}
+
 export interface ApiEntityStorage {
   /** @format int64 */
   id: number;
   entityId: string;
+  entity_description: string;
   state: string;
+  state_description: string;
   attributes: Record<string, ApiAttribute>;
   /** @format date-time */
   createdAt: string;
@@ -521,8 +528,9 @@ export interface ApiGetEntityListResult {
 }
 
 export interface ApiGetEntityStorageResult {
-  items?: ApiEntityStorage[];
-  meta?: ApiMeta;
+  items: ApiEntityStorage[];
+  filter: ApiEntityStorageFilter[];
+  meta: ApiMeta;
 }
 
 export interface ApiGetImageFilterListResult {
@@ -617,6 +625,7 @@ export interface ApiMessage {
   /** @format int64 */
   id: number;
   type: string;
+  entityId?: string;
   attributes: Record<string, string>;
   /** @format date-time */
   createdAt: string;
@@ -638,13 +647,17 @@ export interface ApiMessageDelivery {
   updatedAt: string;
 }
 
-export interface ApiMeta {
+export interface ApiPagination {
   /** @format uint64 */
   limit: number;
   /** @format uint64 */
   page: number;
   /** @format uint64 */
   total: number;
+}
+
+export interface ApiMeta {
+  pagination: ApiPagination;
   sort: string;
 }
 

@@ -21,6 +21,10 @@ package rbac
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"regexp"
+	"strings"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api/controllers"
 	"github.com/e154/smart-home/common"
@@ -30,9 +34,6 @@ import (
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/jwt_manager"
 	"github.com/labstack/echo/v4"
-	"net/http"
-	"regexp"
-	"strings"
 )
 
 var (

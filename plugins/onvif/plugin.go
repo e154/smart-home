@@ -20,8 +20,9 @@ package onvif
 
 import (
 	"context"
-	"github.com/e154/smart-home/common/web"
 	"sync"
+
+	"github.com/e154/smart-home/common/web"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/events"

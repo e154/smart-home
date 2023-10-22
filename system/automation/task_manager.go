@@ -67,7 +67,7 @@ func NewTaskManager(
 // Start ...
 func (a *taskManager) Start() {
 	a.load()
-	_ = a.eventBus.Subscribe("system/automation/tasks/+", a.eventHandler)
+	_ = a.eventBus.Subscribe("system/automation/tasks/+", a.eventHandler, false)
 
 	log.Info("Started")
 }

@@ -20,9 +20,10 @@ package scripts
 
 import (
 	"fmt"
+	"sync"
+
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/system/bus"
-	"sync"
 )
 
 type EngineWatcher struct {

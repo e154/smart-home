@@ -400,11 +400,19 @@ type ApiEntityState struct {
 
 // ApiEntityStorage defines model for apiEntityStorage.
 type ApiEntityStorage struct {
-	Attributes map[string]ApiAttribute `json:"attributes"`
-	CreatedAt  time.Time               `json:"createdAt"`
-	EntityId   string                  `json:"entityId"`
-	Id         int64                   `json:"id"`
-	State      string                  `json:"state"`
+	Attributes        map[string]ApiAttribute `json:"attributes"`
+	CreatedAt         time.Time               `json:"createdAt"`
+	EntityId          string                  `json:"entityId"`
+	EntityDescription string                  `json:"entity_description"`
+	Id                int64                   `json:"id"`
+	State             string                  `json:"state"`
+	StateDescription  string                  `json:"state_description"`
+}
+
+// ApiEntityStorageFilter defines model for apiEntityStorageFilter.
+type ApiEntityStorageFilter struct {
+	Description string `json:"description"`
+	EntityId    string `json:"entityId"`
 }
 
 // ApiEventBusStateListResult defines model for apiEventBusStateListResult.
@@ -493,8 +501,9 @@ type ApiGetEntityListResult struct {
 
 // ApiGetEntityStorageResult defines model for apiGetEntityStorageResult.
 type ApiGetEntityStorageResult struct {
-	Items *[]ApiEntityStorage `json:"items,omitempty"`
-	Meta  *ApiMeta            `json:"meta,omitempty"`
+	Filter []ApiEntityStorageFilter `json:"filter"`
+	Items  []ApiEntityStorage       `json:"items"`
+	Meta   ApiMeta                  `json:"meta"`
 }
 
 // ApiGetImageFilterListResult defines model for apiGetImageFilterListResult.
@@ -619,10 +628,8 @@ type ApiMessageDelivery struct {
 
 // ApiMeta defines model for apiMeta.
 type ApiMeta struct {
-	Limit uint64 `json:"limit"`
-	Page  uint64 `json:"page"`
-	Sort  string `json:"sort"`
-	Total uint64 `json:"total"`
+	Pagination ApiPagination `json:"pagination"`
+	Sort       string        `json:"sort"`
 }
 
 // ApiMetric defines model for apiMetric.
@@ -852,6 +859,13 @@ type ApiNewtUserRequest struct {
 	PasswordRepeat string         `json:"passwordRepeat"`
 	RoleName       string         `json:"roleName"`
 	Status         *string        `json:"status,omitempty"`
+}
+
+// ApiPagination defines model for apiPagination.
+type ApiPagination struct {
+	Limit uint64 `json:"limit"`
+	Page  uint64 `json:"page"`
+	Total uint64 `json:"total"`
 }
 
 // ApiPasswordResetRequest defines model for apiPasswordResetRequest.

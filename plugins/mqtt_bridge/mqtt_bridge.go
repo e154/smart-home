@@ -20,9 +20,10 @@ package mqtt_bridge
 
 import (
 	"context"
+	"time"
+
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/supervisor"
-	"time"
 
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/google/uuid"

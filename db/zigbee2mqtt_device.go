@@ -49,7 +49,7 @@ type Zigbee2mqttDevice struct {
 	Status        string
 	Functions     pq.StringArray  `gorm:"type:varchar(100)[]"`
 	Payload       json.RawMessage `gorm:"type:jsonb;not null"`
-	CreatedAt     time.Time
+	CreatedAt     time.Time       `gorm:"<-:create"`
 	UpdatedAt     time.Time
 }
 

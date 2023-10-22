@@ -20,11 +20,12 @@ package endpoint
 
 import (
 	"context"
-	"github.com/e154/smart-home/common/apperr"
+
+	"github.com/jinzhu/copier"
 
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/copier"
 )
 
 // DashboardTabEndpoint ...

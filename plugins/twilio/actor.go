@@ -23,11 +23,12 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/e154/smart-home/plugins/notify"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/e154/smart-home/plugins/notify"
 
 	"github.com/e154/smart-home/common/events"
 

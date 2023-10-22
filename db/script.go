@@ -46,13 +46,13 @@ type Script struct {
 	Source               string
 	Description          string
 	Compiled             string
-	AlexaIntents         int `gorm:"->"`
-	EntityActions        int `gorm:"->"`
-	EntityScripts        int `gorm:"->"`
-	AutomationTriggers   int `gorm:"->"`
-	AutomationConditions int `gorm:"->"`
-	AutomationActions    int `gorm:"->"`
-	CreatedAt            time.Time
+	AlexaIntents         int       `gorm:"->"`
+	EntityActions        int       `gorm:"->"`
+	EntityScripts        int       `gorm:"->"`
+	AutomationTriggers   int       `gorm:"->"`
+	AutomationConditions int       `gorm:"->"`
+	AutomationActions    int       `gorm:"->"`
+	CreatedAt            time.Time `gorm:"<-:create"`
 	UpdatedAt            time.Time
 }
 

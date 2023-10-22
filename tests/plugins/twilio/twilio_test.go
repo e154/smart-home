@@ -20,6 +20,9 @@ package twilio
 
 import (
 	"context"
+	"testing"
+	"time"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -30,8 +33,6 @@ import (
 	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/e154/smart-home/tests/plugins"
 	. "github.com/smartystreets/goconvey/convey"
-	"testing"
-	"time"
 )
 
 func TestTwilio(t *testing.T) {
@@ -52,9 +53,9 @@ func TestTwilio(t *testing.T) {
 			settings[twilio.AttrFrom].Value = "YYYY"
 
 			sensorEnt := &m.Entity{
-				Id:          common.EntityId("twilio.twilio"),
-				PluginName:  "twilio",
-				AutoLoad:    true,
+				Id:         common.EntityId("twilio.twilio"),
+				PluginName: "twilio",
+				AutoLoad:   true,
 			}
 			sensorEnt.Settings = settings
 			err := adaptors.Entity.Add(context.Background(), sensorEnt)

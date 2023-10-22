@@ -39,8 +39,8 @@ func Metric(metric *m.Metric) (object *stub.ApiMetric) {
 	var data = make([]stub.ApiMetricOptionData, 0, len(metric.Data))
 	for _, item := range metric.Data {
 		data = append(data, stub.ApiMetricOptionData{
-			Value:    item.Value,
-			Time:     item.Time,
+			Value: item.Value,
+			Time:  item.Time,
 		})
 	}
 

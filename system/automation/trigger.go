@@ -170,7 +170,7 @@ func (tr *Trigger) EntityId() *common.EntityId {
 func (tr *Trigger) Start() {
 	log.Infof("start trigger '%s'", tr.name)
 	tr.triggerPlugin.Subscribe(tr.subscriber)
-	tr.eventBus.Subscribe(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), tr.eventHandler)
+	tr.eventBus.Subscribe(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), tr.eventHandler, false)
 	tr.eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), events.EventTriggerLoaded{
 		Id: tr.model.Id,
 	})

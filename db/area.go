@@ -22,9 +22,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/jackc/pgx/v5/pgconn"
 	"strings"
 	"time"
+
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"github.com/jackc/pgerrcode"
 	"github.com/pkg/errors"
@@ -45,7 +46,7 @@ type Area struct {
 	Description string
 	Polygon     *Polygon
 	Payload     json.RawMessage `gorm:"type:jsonb;not null"`
-	CreatedAt   time.Time
+	CreatedAt   time.Time       `gorm:"<-:create"`
 	UpdatedAt   time.Time
 }
 

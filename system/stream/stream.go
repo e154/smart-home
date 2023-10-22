@@ -20,10 +20,11 @@ package stream
 
 import (
 	"context"
-	"github.com/gorilla/websocket"
-	"github.com/labstack/echo/v4"
 	"net/http"
 	"sync"
+
+	"github.com/gorilla/websocket"
+	"github.com/labstack/echo/v4"
 
 	"github.com/google/uuid"
 	"go.uber.org/fx"

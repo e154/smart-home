@@ -92,11 +92,11 @@ func (o *Orm) Start() (err error) {
 	newLogger := gormLogger.New(
 		goLog.New(os.Stdout, "\r\n", goLog.LstdFlags), // io writer
 		gormLogger.Config{
-			SlowThreshold:             time.Second,       // Slow SQL threshold
-			LogLevel:                  logLevel, // Log level
-			IgnoreRecordNotFoundError: true,              // Ignore ErrRecordNotFound error for logger
-			ParameterizedQueries:      true,              // Don't include params in the SQL log
-			Colorful:                  false,             // Disable color
+			SlowThreshold:             time.Second, // Slow SQL threshold
+			LogLevel:                  logLevel,    // Log level
+			IgnoreRecordNotFoundError: true,        // Ignore ErrRecordNotFound error for logger
+			ParameterizedQueries:      true,        // Don't include params in the SQL log
+			Colorful:                  false,       // Disable color
 		},
 	)
 
@@ -110,8 +110,6 @@ func (o *Orm) Start() (err error) {
 		err = nil
 		return
 	}
-
-
 
 	var db *sql.DB
 	if db, err = o.db.DB(); err != nil {

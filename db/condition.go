@@ -39,7 +39,7 @@ type Condition struct {
 	Name      string
 	Script    *Script
 	ScriptId  *int64
-	CreatedAt time.Time
+	CreatedAt time.Time `gorm:"<-:create"`
 	UpdatedAt time.Time
 }
 

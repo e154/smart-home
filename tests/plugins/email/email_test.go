@@ -20,11 +20,11 @@ package email
 
 import (
 	"context"
-	"github.com/e154/smart-home/common"
 	"testing"
 	"time"
 
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/email"
 	"github.com/e154/smart-home/plugins/notify"
@@ -55,9 +55,9 @@ func TestEmail(t *testing.T) {
 			settings[email.AttrSender].Value = "XXX"
 
 			sensorEnt := &m.Entity{
-				Id:          common.EntityId("email.email"),
-				PluginName:  "email",
-				AutoLoad:    true,
+				Id:         common.EntityId("email.email"),
+				PluginName: "email",
+				AutoLoad:   true,
 			}
 			sensorEnt.Settings = settings
 			err := adaptors.Entity.Add(context.Background(), sensorEnt)

@@ -21,14 +21,15 @@ package scripts
 import (
 	"encoding/hex"
 	"fmt"
-	"github.com/e154/smart-home/common/encryptor"
 	"os"
 	"path/filepath"
 	"testing"
 	"time"
 
-	. "github.com/e154/smart-home/tests/scripts/container"
 	"go.uber.org/dig"
+
+	"github.com/e154/smart-home/common/encryptor"
+	. "github.com/e154/smart-home/tests/scripts/container"
 )
 
 func init() {

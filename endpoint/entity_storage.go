@@ -39,7 +39,8 @@ func NewEntityStorageEndpoint(common *CommonEndpoint) *EntityStorageEndpoint {
 }
 
 // GetList ...
-func (i *EntityStorageEndpoint) GetList(ctx context.Context, entityIds []*common.EntityId, pagination common.PageParams, startDate, endDate *time.Time) (result *m.EntityStorageList, total int64, err error) {
+func (i *EntityStorageEndpoint) GetList(ctx context.Context, entityIds []common.EntityId, pagination common.PageParams,
+	startDate, endDate *time.Time) (result *m.EntityStorageList, total int64, err error) {
 
 	//var startDate, endDate *time.Time
 	//if _startDate != nil {
@@ -52,31 +53,47 @@ func (i *EntityStorageEndpoint) GetList(ctx context.Context, entityIds []*common
 	//}
 
 	var items []*m.EntityStorage
-	if items, total, err = i.adaptors.EntityStorage.ListByEntityId(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, entityIds, startDate, endDate); err != nil {
+	if items, total, err = i.adaptors.EntityStorage.ListByEntityId(ctx, pagination.Limit, pagination.Offset,
+		pagination.Order, pagination.SortBy, entityIds, startDate, endDate); err != nil {
 		return
 	}
 
-	var idsMap = map[common.EntityId]struct{}{}
+	var entitiesList = map[common.EntityId]*m.Entity{}
 
 	for j := range items {
-		idsMap[items[j].EntityId] = struct{}{}
+		entitiesList[items[j].EntityId] = nil
 	}
 
-	var ids []common.EntityId
-	ids = make([]common.EntityId, 0, len(idsMap))
-	for id := range idsMap {
-		ids = append(ids, id)
+	if len(entityIds) == 0 {
+		for id := range entitiesList {
+			entityIds = append(entityIds, id)
+		}
 	}
 
 	var entities []*m.Entity
-	if entities, err = i.adaptors.Entity.GetByIdsSimple(ctx, ids); err != nil {
+	if entities, err = i.adaptors.Entity.GetByIdsSimple(ctx, entityIds); err != nil {
 		return
 	}
 
 	attributes := make(map[common.EntityId]m.Attributes)
 
 	for _, entity := range entities {
+		entitiesList[entity.Id] = entity
 		attributes[entity.Id] = entity.Attributes
+	}
+
+	for _, item := range items {
+		item.StateDescription = item.State
+		item.EntityDescription = entitiesList[item.EntityId].Id.String()
+		if entitiesList[item.EntityId].Description != "" {
+			item.EntityDescription = entitiesList[item.EntityId].Description
+		}
+		for _, state := range entitiesList[item.EntityId].States {
+			if state.Name == item.State && state.Description != "" {
+				item.StateDescription = state.Description
+				continue
+			}
+		}
 	}
 
 	result = &m.EntityStorageList{

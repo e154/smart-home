@@ -20,10 +20,11 @@ package endpoint
 
 import (
 	"context"
-	"github.com/e154/smart-home/common"
-	m "github.com/e154/smart-home/models"
 	"strings"
 	"time"
+
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 )
 
 // MessageDeliveryEndpoint ...

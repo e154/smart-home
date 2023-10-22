@@ -52,7 +52,7 @@ type DashboardCardItem struct {
 	Payload         json.RawMessage `gorm:"type:jsonb;not null"`
 	Hidden          bool
 	Frozen          bool
-	CreatedAt       time.Time
+	CreatedAt       time.Time `gorm:"<-:create"`
 	UpdatedAt       time.Time
 }
 

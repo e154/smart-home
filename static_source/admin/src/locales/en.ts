@@ -414,6 +414,7 @@ export default {
         aWeekAgo: 'A week ago',
         state: 'State',
         attributes: 'Attributes',
+        entity: 'Entity',
         entityId: 'Entity ID',
         nothing: '-'
     },

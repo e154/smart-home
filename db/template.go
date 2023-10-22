@@ -49,8 +49,8 @@ type Template struct {
 	Content     string
 	Status      string
 	Type        string
-	ParentName  *string `gorm:"column:parent"`
-	CreatedAt   time.Time
+	ParentName  *string   `gorm:"column:parent"`
+	CreatedAt   time.Time `gorm:"<-:create"`
 	UpdatedAt   time.Time
 }
 

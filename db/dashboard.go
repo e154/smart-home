@@ -46,7 +46,7 @@ type Dashboard struct {
 	AreaId      *int64
 	Area        *Area
 	Tabs        []*DashboardTab
-	CreatedAt   time.Time
+	CreatedAt   time.Time `gorm:"<-:create"`
 	UpdatedAt   time.Time
 }
 

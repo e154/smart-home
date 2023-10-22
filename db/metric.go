@@ -45,7 +45,7 @@ type Metric struct {
 	Options     json.RawMessage `gorm:"type:jsonb;not null"`
 	Type        common.MetricType
 	UpdatedAt   time.Time
-	CreatedAt   time.Time
+	CreatedAt   time.Time `gorm:"<-:create"`
 }
 
 // TableName ...

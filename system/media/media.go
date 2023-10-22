@@ -21,6 +21,7 @@ package media
 import (
 	"context"
 	"fmt"
+
 	"github.com/e154/smart-home/common/logger"
 	"github.com/e154/smart-home/system/bus"
 	"go.uber.org/fx"

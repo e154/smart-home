@@ -21,6 +21,7 @@ package adaptors
 import (
 	"context"
 	"fmt"
+
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"gorm.io/gorm"
@@ -139,6 +140,8 @@ func (n *Task) Update(ctx context.Context, ver *m.UpdateTask) (err error) {
 		Enabled:     ver.Enabled,
 		Condition:   ver.Condition,
 		AreaId:      ver.AreaId,
+		CreatedAt:   ver.CreatedAt,
+		UpdatedAt:   ver.UpdatedAt,
 	}
 
 	//triggers
@@ -294,9 +297,9 @@ func (n *Task) toDb(ver *m.Task) (dbVer *db.Task) {
 		Description: ver.Description,
 		Enabled:     ver.Enabled,
 		Condition:   ver.Condition,
+		AreaId:      ver.AreaId,
 		CreatedAt:   ver.CreatedAt,
 		UpdatedAt:   ver.UpdatedAt,
-		AreaId:      ver.AreaId,
 	}
 	if len(ver.Triggers) > 0 {
 		for _, tr := range ver.Triggers {

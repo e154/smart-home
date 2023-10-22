@@ -21,9 +21,10 @@ package endpoint
 import (
 	"context"
 	"fmt"
-	"github.com/e154/smart-home/common/events"
 	"strconv"
 	"strings"
+
+	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/common/apperr"
 

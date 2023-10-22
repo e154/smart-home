@@ -25,7 +25,7 @@ import (
 // MetricDataItem ...
 type MetricDataItem struct {
 	Value    map[string]interface{} `json:"value"`
-	Metric   *Metric            `json:"metric"`
-	MetricId int64              `json:"metric_id"`
-	Time     time.Time          `json:"time"`
+	Metric   *Metric                `json:"metric"`
+	MetricId int64                  `json:"metric_id"`
+	Time     time.Time              `json:"time"`
 }
