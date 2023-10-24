@@ -98,6 +98,7 @@ func (g *Bridge) Stop(ctx context.Context) {
 		return
 	}
 	g.isStarted = false
+	g.mqtt.RemoveClient(fmt.Sprintf("bridge_%v", g.model.Name))
 	g.mqttClient.UnsubscribeAll()
 }
 

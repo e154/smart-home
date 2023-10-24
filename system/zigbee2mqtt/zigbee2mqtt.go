@@ -139,16 +139,6 @@ func (z *zigbee2mqtt) Shutdown(ctx context.Context) (err error) {
 // AddBridge ...
 func (z *zigbee2mqtt) AddBridge(model *m.Zigbee2mqtt) (err error) {
 
-	model.Id, err = z.adaptors.Zigbee2mqtt.Add(context.Background(), model)
-	if err != nil {
-		log.Error(err.Error())
-		return
-	}
-
-	if model, err = z.adaptors.Zigbee2mqtt.GetById(context.Background(), model.Id); err != nil {
-		return
-	}
-
 	z.bridgesLock.Lock()
 	defer z.bridgesLock.Unlock()
 
@@ -198,11 +188,7 @@ func (z *zigbee2mqtt) DeleteBridge(bridgeId int64) (err error) {
 	if bridge, err = z.unsafeGetBridge(bridgeId); err == nil {
 		bridge.Stop(context.Background())
 		delete(z.bridges, bridgeId)
-	} else {
-		return
 	}
-
-	err = z.adaptors.Zigbee2mqtt.Delete(context.Background(), bridgeId)
 
 	return
 }

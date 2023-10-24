@@ -69,7 +69,7 @@ func (p *WeatherOwm) GetForecast(params Zone, now time.Time, settings map[string
 
 	var zone Zone
 	if zone, err = p.FetchData(params.Name, params.Lat, params.Lon, now, settings); err != nil {
-		log.Errorf("%+v", err)
+		log.Error(err.Error())
 		return
 	}
 

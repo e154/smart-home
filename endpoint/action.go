@@ -73,7 +73,7 @@ func (n *ActionEndpoint) GetById(ctx context.Context, id int64) (result *m.Actio
 }
 
 // Update ...
-func (n *ActionEndpoint) Update(ctx context.Context, params *m.Action) (result *m.Action, err error) {
+func (n *ActionEndpoint) Update(ctx context.Context, params *m.Action) (action *m.Action, err error) {
 
 	_, err = n.adaptors.Action.GetById(ctx, params.Id)
 	if err != nil {
@@ -90,12 +90,13 @@ func (n *ActionEndpoint) Update(ctx context.Context, params *m.Action) (result *
 		return
 	}
 
-	if result, err = n.adaptors.Action.GetById(ctx, params.Id); err != nil {
+	if action, err = n.adaptors.Action.GetById(ctx, params.Id); err != nil {
 		return
 	}
 
-	n.eventBus.Publish(fmt.Sprintf("system/models/actions/%d", result.Id), events.EventUpdatedActionModel{
-		Id: result.Id,
+	n.eventBus.Publish(fmt.Sprintf("system/models/actions/%d", action.Id), events.EventUpdatedActionModel{
+		Id: action.Id,
+		Action: action,
 	})
 
 	return

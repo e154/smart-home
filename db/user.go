@@ -218,9 +218,6 @@ func (u *Users) Update(ctx context.Context, user *User) (err error) {
 		"reset_password_sent_at": user.ResetPasswordSentAt,
 		"current_sign_in_at":     user.CurrentSignInAt,
 		"last_sign_in_at":        user.LastSignInAt,
-		"created_at":             user.CreatedAt,
-		"updated_at":             user.UpdatedAt,
-		"deleted_at":             user.DeletedAt,
 	}
 	if user.EncryptedPassword != "" {
 		q["encrypted_password"] = user.EncryptedPassword

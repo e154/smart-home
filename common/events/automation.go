@@ -22,6 +22,7 @@ import (
 	"context"
 
 	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 )
 
 // Tasks
@@ -150,7 +151,8 @@ type EventRemovedActionModel struct {
 
 // EventUpdatedActionModel ...
 type EventUpdatedActionModel struct {
-	Id int64 `json:"id"`
+	Id     int64     `json:"id"`
+	Action *m.Action `json:"action"`
 }
 
 // EventActionLoaded ...
