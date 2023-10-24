@@ -100,8 +100,9 @@ func (e *supervisor) Start(ctx context.Context) (err error) {
 
 	// event subscribe
 	_ = e.eventBus.Subscribe("system/entities/+", e.eventHandler)
+	_ = e.eventBus.Subscribe("system/models/entities/+", e.eventHandler)
 	_ = e.eventBus.Subscribe("system/plugins/+", e.eventHandler)
-	_ = e.eventBus.Subscribe("system/scripts/+", e.eventHandler)
+	_ = e.eventBus.Subscribe("system/models/scripts/+", e.eventHandler)
 
 	e.bindScripts()
 
@@ -135,8 +136,9 @@ func (e *supervisor) Shutdown(ctx context.Context) (err error) {
 
 	_ = e.eventBus.Unsubscribe("system/services/scripts", e.handlerSystemScripts)
 	_ = e.eventBus.Unsubscribe("system/entities/+", e.eventHandler)
+	_ = e.eventBus.Unsubscribe("system/models/entities/+", e.eventHandler)
 	_ = e.eventBus.Unsubscribe("system/plugins/+", e.eventHandler)
-	_ = e.eventBus.Unsubscribe("system/scripts/+", e.eventHandler)
+	_ = e.eventBus.Unsubscribe("system/models/scripts/+", e.eventHandler)
 
 	e.eventBus.Publish("system/services/supervisor", events.EventServiceStopped{Service: "Supervisor"})
 
@@ -259,9 +261,9 @@ func (e *supervisor) eventHandler(_ string, message interface{}) {
 	switch msg := message.(type) {
 	case events.EventPluginLoaded:
 		go func() { _ = e.eventLoadedPlugin(msg) }()
-	case events.EventCreatedEntity:
+	case events.EventCreatedEntityModel:
 		go e.eventCreatedEntity(msg)
-	case events.EventUpdatedEntity:
+	case events.EventUpdatedEntityModel:
 		go e.eventUpdatedEntity(msg)
 	case events.CommandUnloadEntity:
 		go e.commandUnloadEntity(msg)
@@ -271,9 +273,9 @@ func (e *supervisor) eventHandler(_ string, message interface{}) {
 		go e.eventEntitySetState(msg)
 	case events.EventGetLastState:
 		go e.eventLastState(msg)
-	case events.EventUpdatedScript:
+	case events.EventUpdatedScriptModel:
 		go e.eventUpdatedScript(msg)
-	case events.EventScriptDeleted:
+	case events.EventRemovedScriptModel:
 		go e.eventScriptDeleted(msg)
 	case events.EventEntityLoaded:
 		go e.eventEntityLoaded(msg)
@@ -341,7 +343,7 @@ LOOP:
 	return
 }
 
-func (e *supervisor) eventCreatedEntity(msg events.EventCreatedEntity) {
+func (e *supervisor) eventCreatedEntity(msg events.EventCreatedEntityModel) {
 
 	entity, err := e.adaptors.Entity.GetById(context.Background(), msg.EntityId)
 	if err != nil {
@@ -357,7 +359,7 @@ func (e *supervisor) eventCreatedEntity(msg events.EventCreatedEntity) {
 	}
 }
 
-func (e *supervisor) eventUpdatedEntity(msg events.EventUpdatedEntity) {
+func (e *supervisor) eventUpdatedEntity(msg events.EventUpdatedEntityModel) {
 	e.updatedEntityById(msg.EntityId)
 }
 
@@ -478,7 +480,7 @@ func (e *supervisor) GetService() Service {
 }
 
 // watch to see if the scripts change
-func (e *supervisor) eventUpdatedScript(msg events.EventUpdatedScript) {
+func (e *supervisor) eventUpdatedScript(msg events.EventUpdatedScriptModel) {
 
 	if _, ok := e.eventScriptSubs[msg.ScriptId]; !ok {
 		return
@@ -497,7 +499,7 @@ func (e *supervisor) eventUpdatedScript(msg events.EventUpdatedScript) {
 	}
 }
 
-func (e *supervisor) eventScriptDeleted(msg events.EventScriptDeleted) {
+func (e *supervisor) eventScriptDeleted(msg events.EventRemovedScriptModel) {
 
 	if _, ok := e.eventScriptSubs[msg.ScriptId]; !ok {
 		return

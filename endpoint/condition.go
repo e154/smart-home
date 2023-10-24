@@ -57,7 +57,7 @@ func (n *ConditionEndpoint) Add(ctx context.Context, condition *m.Condition) (re
 		return
 	}
 
-	n.eventBus.Publish(fmt.Sprintf("system/automation/conditions/%d", result.Id), events.EventAddedCondition{
+	n.eventBus.Publish(fmt.Sprintf("system/models/conditions/%d", result.Id), events.EventAddedConditionModel{
 		Id: result.Id,
 	})
 
@@ -94,7 +94,7 @@ func (n *ConditionEndpoint) Update(ctx context.Context, params *m.Condition) (re
 		return
 	}
 
-	n.eventBus.Publish(fmt.Sprintf("system/automation/conditions/%d", result.Id), events.EventUpdatedCondition{
+	n.eventBus.Publish(fmt.Sprintf("system/models/conditions/%d", result.Id), events.EventUpdatedConditionModel{
 		Id: result.Id,
 	})
 
@@ -122,7 +122,7 @@ func (n *ConditionEndpoint) Delete(ctx context.Context, id int64) (err error) {
 		return
 	}
 
-	n.eventBus.Publish(fmt.Sprintf("system/automation/conditions/%d", id), events.EventRemovedCondition{
+	n.eventBus.Publish(fmt.Sprintf("system/models/conditions/%d", id), events.EventRemovedConditionModel{
 		Id: id,
 	})
 

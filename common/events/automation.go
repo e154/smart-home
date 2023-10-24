@@ -32,28 +32,28 @@ type EventTaskCompleted struct {
 	Ctx context.Context `json:"ctx"`
 }
 
-// EventEnableTask ...
-type EventEnableTask struct {
+// CommandEnableTask ...
+type CommandEnableTask struct {
 	Id int64 `json:"id"`
 }
 
-// EventDisableTask ...
-type EventDisableTask struct {
+// CommandDisableTask ...
+type CommandDisableTask struct {
 	Id int64 `json:"id"`
 }
 
-// EventAddedTask ...
-type EventAddedTask struct {
+// EventCreatedTaskModel ...
+type EventCreatedTaskModel struct {
 	Id int64 `json:"id"`
 }
 
-// EventRemoveTask ...
-type EventRemoveTask struct {
+// EventRemovedTaskModel ...
+type EventRemovedTaskModel struct {
 	Id int64 `json:"id"`
 }
 
-// EventUpdateTask ...
-type EventUpdateTask struct {
+// EventUpdatedTaskModel ...
+type EventUpdatedTaskModel struct {
 	Id int64 `json:"id"`
 }
 
@@ -77,13 +77,13 @@ type EventTriggerCompleted struct {
 	Ctx      context.Context        `json:"ctx"`
 }
 
-// EventEnableTrigger ...
-type EventEnableTrigger struct {
+// CommandEnableTrigger ...
+type CommandEnableTrigger struct {
 	Id int64 `json:"id"`
 }
 
-// EventDisableTrigger ...
-type EventDisableTrigger struct {
+// CommandDisableTrigger ...
+type CommandDisableTrigger struct {
 	Id int64 `json:"id"`
 }
 
@@ -93,18 +93,18 @@ type EventCallTrigger struct {
 	Ctx context.Context `json:"ctx"`
 }
 
-// EventAddedTrigger ...
-type EventAddedTrigger struct {
+// EventCreatedTriggerModel ...
+type EventCreatedTriggerModel struct {
 	Id int64 `json:"id"`
 }
 
-// EventRemovedTrigger ...
-type EventRemovedTrigger struct {
+// EventRemovedTriggerModel ...
+type EventRemovedTriggerModel struct {
 	Id int64 `json:"id"`
 }
 
-// EventUpdatedTrigger ...
-type EventUpdatedTrigger struct {
+// EventUpdatedTriggerModel ...
+type EventUpdatedTriggerModel struct {
 	Id int64 `json:"id"`
 }
 
@@ -138,18 +138,18 @@ type EventCallAction struct {
 	Ctx context.Context `json:"ctx"`
 }
 
-// EventAddedAction ...
-type EventAddedAction struct {
+// EventAddedActionModel ...
+type EventAddedActionModel struct {
 	Id int64 `json:"id"`
 }
 
-// EventRemovedAction ...
-type EventRemovedAction struct {
+// EventRemovedActionModel ...
+type EventRemovedActionModel struct {
 	Id int64 `json:"id"`
 }
 
-// EventUpdatedAction ...
-type EventUpdatedAction struct {
+// EventUpdatedActionModel ...
+type EventUpdatedActionModel struct {
 	Id int64 `json:"id"`
 }
 
@@ -166,17 +166,17 @@ type EventActionUnloaded struct {
 // Conditions
 // ------------------------------------------------
 
-// EventAddedCondition ...
-type EventAddedCondition struct {
+// EventAddedConditionModel ...
+type EventAddedConditionModel struct {
 	Id int64 `json:"id"`
 }
 
-// EventRemovedCondition ...
-type EventRemovedCondition struct {
+// EventRemovedConditionModel ...
+type EventRemovedConditionModel struct {
 	Id int64 `json:"id"`
 }
 
-// EventUpdatedCondition ...
-type EventUpdatedCondition struct {
+// EventUpdatedConditionModel ...
+type EventUpdatedConditionModel struct {
 	Id int64 `json:"id"`
 }

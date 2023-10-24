@@ -21,12 +21,10 @@ package endpoint
 import (
 	"context"
 	"fmt"
-
 	"github.com/e154/smart-home/common/events"
 
-	"github.com/e154/smart-home/common/apperr"
-
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
 	m "github.com/e154/smart-home/models"
 )
 
@@ -59,7 +57,7 @@ func (n *ActionEndpoint) Add(ctx context.Context, action *m.Action) (result *m.A
 		return
 	}
 
-	n.eventBus.Publish(fmt.Sprintf("system/automation/actions/%d", result.Id), events.EventAddedAction{
+	n.eventBus.Publish(fmt.Sprintf("system/models/actions/%d", result.Id), events.EventAddedActionModel{
 		Id: action.Id,
 	})
 
@@ -96,7 +94,7 @@ func (n *ActionEndpoint) Update(ctx context.Context, params *m.Action) (result *
 		return
 	}
 
-	n.eventBus.Publish(fmt.Sprintf("system/automation/actions/%d", result.Id), events.EventUpdatedAction{
+	n.eventBus.Publish(fmt.Sprintf("system/models/actions/%d", result.Id), events.EventUpdatedActionModel{
 		Id: result.Id,
 	})
 
@@ -123,7 +121,7 @@ func (n *ActionEndpoint) Delete(ctx context.Context, id int64) (err error) {
 		return
 	}
 
-	n.eventBus.Publish(fmt.Sprintf("system/automation/actions/%d", id), events.EventRemovedAction{
+	n.eventBus.Publish(fmt.Sprintf("system/models/actions/%d", id), events.EventRemovedActionModel{
 		Id: id,
 	})
 

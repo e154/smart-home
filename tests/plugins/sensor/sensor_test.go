@@ -42,13 +42,13 @@ func TestSensor(t *testing.T) {
 checkStatus =->
     res = HTTP.get("http://%s:%d/?t=12345678")
     if res.error 
-        EntitySetState ENTITY_ID,
+        EntitySetStateName ENTITY_ID,
             'new_state': 'ERROR'
         return
     p = unmarshal res.body
     attrs =
         paid_rewards: p.user.paid_rewards
-    EntitySetState ENTITY_ID,
+    EntitySetStateName ENTITY_ID,
         new_state: 'ENABLED'
         attribute_values: attrs
         storage_save: true
@@ -124,7 +124,7 @@ entityAction = (entityId, actionName)->
 			})
 			So(err, ShouldBeNil)
 
-			eventBus.Publish("system/entities/"+sensorEnt.Id.String(), events.EventCreatedEntity{
+			eventBus.Publish("system/models/entities/"+sensorEnt.Id.String(), events.EventCreatedEntityModel{
 				EntityId: sensorEnt.Id,
 			})
 

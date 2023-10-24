@@ -45,7 +45,7 @@ ifError =(res)->
 checkStatus =->
     stats = Miner.stats()
     if ifError(stats)
-        EntitySetState ENTITY_ID,
+        EntitySetStateName ENTITY_ID,
             'new_state': 'ERROR'
         return
     p = unmarshal stats.result
@@ -63,7 +63,7 @@ checkStatus =->
         fan2: p.fan2
     }
 
-    EntitySetState ENTITY_ID,
+    EntitySetStateName ENTITY_ID,
         new_state: 'ENABLED'
         attribute_values: attrs
         storage_save: true
@@ -71,14 +71,14 @@ checkStatus =->
 checkSum =->
     summary = Miner.summary()
     if ifError(summary)
-        EntitySetState ENTITY_ID,
+        EntitySetStateName ENTITY_ID,
             'new_state': 'ERROR'
         return
     p = unmarshal summary.result
     attrs = {}
     attrs["ghs_av"] = p["GHS av"] 
     attrs["hardware_errors"] = p["Hardware Errors"] 
-    EntitySetState ENTITY_ID,
+    EntitySetStateName ENTITY_ID,
         new_state: 'ENABLED'
         attribute_values: attrs
         storage_save: true
@@ -86,14 +86,14 @@ checkSum =->
 checkDevs =->
     devs = Miner.devs()
     if ifError(devs)
-        EntitySetState ENTITY_ID,
+        EntitySetStateName ENTITY_ID,
             'new_state': 'ERROR'
         return
     p = unmarshal devs.result
     attrs = {}
     attrs["ghs_av"] = p["GHS av"] 
     attrs["hardware_errors"] = p["Hardware Errors"] 
-    EntitySetState ENTITY_ID,
+    EntitySetStateName ENTITY_ID,
         new_state: 'ENABLED'
         attribute_values: attrs
         storage_save: true
@@ -101,7 +101,7 @@ checkDevs =->
 checkPools =->
     pools = Miner.pools()
     if ifError(pools)
-        EntitySetState ENTITY_ID,
+        EntitySetStateName ENTITY_ID,
             'new_state': 'ERROR'
         return
     p = unmarshal pools.result
@@ -134,7 +134,7 @@ checkPools =->
 checkVer =(entityId)->
     ver = Miner.version()
     if ifError(ver)
-        EntitySetState ENTITY_ID,
+        EntitySetStateName ENTITY_ID,
             'new_state': 'ERROR'
         return
     p = unmarshal ver.result
@@ -303,7 +303,7 @@ entityAction = (entityId, actionName)->
 			})
 			So(err, ShouldBeNil)
 
-			eventBus.Publish("system/entities/"+l3Ent.Id.String(), events.EventCreatedEntity{
+			eventBus.Publish("system/models/entities/"+l3Ent.Id.String(), events.EventCreatedEntityModel{
 				EntityId: l3Ent.Id,
 			})
 

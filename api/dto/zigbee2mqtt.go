@@ -21,7 +21,6 @@ package dto
 import (
 	stub "github.com/e154/smart-home/api/stub"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/zigbee2mqtt"
 )
 
 // Zigbee2mqtt ...
@@ -63,19 +62,21 @@ func (u Zigbee2mqtt) AddZigbee2MqttBridgeResult(bridge *m.Zigbee2mqtt) (obj stub
 }
 
 // ToZigbee2mqttInfo ...
-func (u Zigbee2mqtt) ToZigbee2mqttInfo(info *zigbee2mqtt.Zigbee2mqttBridge) (obj *stub.ApiZigbee2mqtt) {
+func (u Zigbee2mqtt) ToZigbee2mqttInfo(bridge *m.Zigbee2mqtt) (obj *stub.ApiZigbee2mqtt) {
 	obj = &stub.ApiZigbee2mqtt{
-		ScanInProcess: info.ScanInProcess,
-		Networkmap:    info.Networkmap,
-		Status:        info.Status,
-		Id:            info.Id,
-		Name:          info.Name,
-		Login:         info.Login,
-		PermitJoin:    info.PermitJoin,
-		BaseTopic:     info.BaseTopic,
-		LastScan:      info.LastScan,
-		CreatedAt:     info.CreatedAt,
-		UpdatedAt:     info.UpdatedAt,
+		Id:         bridge.Id,
+		Name:       bridge.Name,
+		Login:      bridge.Login,
+		PermitJoin: bridge.PermitJoin,
+		BaseTopic:  bridge.BaseTopic,
+		CreatedAt:  bridge.CreatedAt,
+		UpdatedAt:  bridge.UpdatedAt,
+	}
+	if bridge.Info != nil {
+		obj.ScanInProcess = bridge.Info.ScanInProcess
+		obj.Networkmap = bridge.Info.Networkmap
+		obj.Status = bridge.Info.Status
+		obj.LastScan = bridge.Info.LastScan
 	}
 	return
 }
@@ -108,7 +109,7 @@ func (u Zigbee2mqtt) UpdateBridgeByIdResult(bridge *m.Zigbee2mqtt) (obj *stub.Ap
 }
 
 // GetBridgeListResult ...
-func (u Zigbee2mqtt) GetBridgeListResult(list []*zigbee2mqtt.Zigbee2mqttBridge) []*stub.ApiZigbee2mqttShort {
+func (u Zigbee2mqtt) GetBridgeListResult(list []*m.Zigbee2mqtt) []*stub.ApiZigbee2mqttShort {
 	items := make([]*stub.ApiZigbee2mqttShort, 0, len(list))
 	for _, item := range list {
 		items = append(items, &stub.ApiZigbee2mqttShort{

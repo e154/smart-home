@@ -75,7 +75,7 @@ func (n *ScriptEndpoint) Add(ctx context.Context, params *m.Script) (script *m.S
 		return
 	}
 
-	n.eventBus.Publish(fmt.Sprintf("system/scripts/%d", script.Id), events.EventCreatedScript{
+	n.eventBus.Publish(fmt.Sprintf("system/models/scripts/%d", script.Id), events.EventCreatedScriptModel{
 		ScriptId: script.Id,
 		Script:   script,
 	})
@@ -118,7 +118,7 @@ func (n *ScriptEndpoint) Copy(ctx context.Context, scriptId int64) (script *m.Sc
 		return
 	}
 
-	n.eventBus.Publish(fmt.Sprintf("system/scripts/%d", script.Id), events.EventCreatedScript{
+	n.eventBus.Publish(fmt.Sprintf("system/models/scripts/%d", script.Id), events.EventCreatedScriptModel{
 		ScriptId: script.Id,
 		Script:   script,
 	})
@@ -165,7 +165,7 @@ func (n *ScriptEndpoint) Update(ctx context.Context, params *m.Script) (result *
 		return
 	}
 
-	n.eventBus.Publish(fmt.Sprintf("system/scripts/%d", script.Id), events.EventUpdatedScript{
+	n.eventBus.Publish(fmt.Sprintf("system/models/scripts/%d", script.Id), events.EventUpdatedScriptModel{
 		ScriptId: script.Id,
 		Script:   script,
 	})
@@ -199,7 +199,7 @@ func (n *ScriptEndpoint) DeleteScriptById(ctx context.Context, scriptId int64) (
 		return
 	}
 
-	n.eventBus.Publish(fmt.Sprintf("system/scripts/%d", script.Id), events.EventScriptDeleted{
+	n.eventBus.Publish(fmt.Sprintf("system/models/scripts/%d", script.Id), events.EventRemovedScriptModel{
 		ScriptId: script.Id,
 	})
 

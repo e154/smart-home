@@ -69,13 +69,13 @@ type EventCallScene struct {
 //	Settings   m.Attributes    `json:"settings"` //???
 //}
 
-// EventCreatedEntity ...
-type EventCreatedEntity struct {
+// EventCreatedEntityModel ...
+type EventCreatedEntityModel struct {
 	EntityId common.EntityId `json:"entity_id"`
 }
 
-// EventUpdatedEntity ...
-type EventUpdatedEntity struct {
+// EventUpdatedEntityModel ...
+type EventUpdatedEntityModel struct {
 	EntityId common.EntityId `json:"entity_id"`
 }
 

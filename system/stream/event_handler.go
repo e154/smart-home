@@ -47,8 +47,8 @@ func (e *eventHandler) eventHandler(_ string, message interface{}) {
 		go e.eventStateChangedHandler(message)
 	case events.EventLastStateChanged:
 		go e.eventStateChangedHandler(message)
-	case events.EventCreatedEntity:
-	case events.EventUpdatedEntity:
+	case events.EventCreatedEntityModel:
+	case events.EventUpdatedEntityModel:
 	case events.CommandUnloadEntity:
 	case events.EventEntityLoaded:
 		go e.event(message)

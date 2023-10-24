@@ -362,6 +362,7 @@ export default {
     zigbee2mqtt: {
         id: 'ID',
         name: 'Name',
+        baseTopic: 'Base Topic',
         login: 'Login',
         permitJoin: 'Permit Join',
         addNew: 'Add bridge',

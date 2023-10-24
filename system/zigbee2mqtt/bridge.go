@@ -480,7 +480,7 @@ func (g *Bridge) UpdateModel(model *m.Zigbee2mqtt) {
 }
 
 // Info ...
-func (g *Bridge) Info() (info *Zigbee2mqttBridge) {
+func (g *Bridge) Info() (info *m.Zigbee2mqttInfo) {
 
 	g.networkmapLock.Lock()
 	g.settingsLock.Lock()
@@ -496,8 +496,7 @@ func (g *Bridge) Info() (info *Zigbee2mqttBridge) {
 
 	_ = common.Copy(&model, g.model, common.JsonEngine)
 
-	info = &Zigbee2mqttBridge{
-		Zigbee2mqtt:   model,
+	info = &m.Zigbee2mqttInfo{
 		ScanInProcess: g.scanInProcess,
 		LastScan:      g.lastScan,
 		Networkmap:    g.networkmap,

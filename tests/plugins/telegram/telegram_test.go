@@ -84,7 +84,7 @@ telegramAction = (entityId, actionName)->
 			})
 			So(err, ShouldBeNil)
 
-			eventBus.Publish("system/entities/"+tgEnt.Id.String(), events.EventCreatedEntity{
+			eventBus.Publish("system/models/entities/"+tgEnt.Id.String(), events.EventCreatedEntityModel{
 				EntityId: tgEnt.Id,
 			})
 

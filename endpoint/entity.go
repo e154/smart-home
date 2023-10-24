@@ -60,7 +60,7 @@ func (n *EntityEndpoint) Add(ctx context.Context, entity *m.Entity) (result *m.E
 		return
 	}
 
-	n.eventBus.Publish("system/entities/"+entity.Id.String(), events.EventCreatedEntity{
+	n.eventBus.Publish("system/models/entities/"+entity.Id.String(), events.EventCreatedEntityModel{
 		EntityId: result.Id,
 	})
 
@@ -103,7 +103,7 @@ func (n *EntityEndpoint) Import(ctx context.Context, entity *m.Entity) (err erro
 		return
 	}
 
-	n.eventBus.Publish("system/entities/"+entity.Id.String(), events.EventCreatedEntity{
+	n.eventBus.Publish("system/models/entities/"+entity.Id.String(), events.EventCreatedEntityModel{
 		EntityId: entity.Id,
 	})
 
@@ -156,7 +156,7 @@ func (n *EntityEndpoint) Update(ctx context.Context, params *m.Entity) (result *
 		return
 	}
 
-	n.eventBus.Publish("system/entities/"+entity.Id.String(), events.EventUpdatedEntity{
+	n.eventBus.Publish("system/models/entities/"+entity.Id.String(), events.EventUpdatedEntityModel{
 		EntityId: result.Id,
 	})
 
@@ -194,7 +194,7 @@ func (n *EntityEndpoint) Delete(ctx context.Context, id common.EntityId) (err er
 		return
 	}
 
-	n.eventBus.Publish("system/entities/"+id.String(), events.CommandUnloadEntity{
+	n.eventBus.Publish("system/models/entities/"+id.String(), events.CommandUnloadEntity{
 		EntityId: id,
 	})
 

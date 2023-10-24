@@ -20,12 +20,14 @@ package endpoint
 
 import (
 	"context"
-	"github.com/e154/smart-home/common/apperr"
+	"fmt"
+	"github.com/e154/smart-home/common/events"
+
+	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/zigbee2mqtt"
-	"github.com/pkg/errors"
 )
 
 // Zigbee2mqttEndpoint ...
@@ -41,7 +43,7 @@ func NewZigbee2mqttEndpoint(common *CommonEndpoint) *Zigbee2mqttEndpoint {
 }
 
 // AddBridge ...
-func (n *Zigbee2mqttEndpoint) AddBridge(_ context.Context, params *m.Zigbee2mqtt) (result *m.Zigbee2mqtt, err error) {
+func (n *Zigbee2mqttEndpoint) AddBridge(ctx context.Context, params *m.Zigbee2mqtt) (bridge *m.Zigbee2mqtt, err error) {
 
 	if ok, errs := n.validation.Valid(params); !ok {
 		err = apperr.ErrInvalidRequest
@@ -49,45 +51,40 @@ func (n *Zigbee2mqttEndpoint) AddBridge(_ context.Context, params *m.Zigbee2mqtt
 		return
 	}
 
-	if err = n.zigbee2mqtt.AddBridge(params); err != nil {
+	params.Id, err = n.adaptors.Zigbee2mqtt.Add(ctx, params)
+	if err != nil {
+		log.Error(err.Error())
 		return
 	}
 
-	result, err = n.zigbee2mqtt.GetBridgeById(params.Id)
-	if err != nil {
-		if errors.Is(err, apperr.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(apperr.ErrInternal, err.Error())
+	if bridge, err = n.adaptors.Zigbee2mqtt.GetById(ctx, params.Id); err != nil {
 		return
 	}
+
+	n.eventBus.Publish(fmt.Sprintf("system/models/zigbee2mqtt/%d", bridge.Id), events.EventCreatedZigbee2mqttModel{
+		Id:     bridge.Id,
+		Bridge: bridge,
+	})
 
 	return
 }
 
 // GetBridgeById ...
-func (n *Zigbee2mqttEndpoint) GetBridgeById(_ context.Context, id int64) (result *zigbee2mqtt.Zigbee2mqttBridge, err error) {
+func (n *Zigbee2mqttEndpoint) GetBridgeById(ctx context.Context, id int64) (bridge *m.Zigbee2mqtt, err error) {
 
-	result, err = n.zigbee2mqtt.GetBridgeInfo(id)
-	if err != nil {
-		if errors.Is(err, apperr.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(apperr.ErrInternal, err.Error())
+	if bridge, err = n.adaptors.Zigbee2mqtt.GetById(ctx, id); err != nil {
 		return
 	}
+
+	bridge.Info, _ = n.zigbee2mqtt.GetBridgeInfo(id)
+
 	return
 }
 
 // UpdateBridge ...
-func (n *Zigbee2mqttEndpoint) UpdateBridge(_ context.Context, params *m.Zigbee2mqtt) (bridge *m.Zigbee2mqtt, err error) {
+func (n *Zigbee2mqttEndpoint) UpdateBridge(ctx context.Context, params *m.Zigbee2mqtt) (bridge *m.Zigbee2mqtt, err error) {
 
-	bridge, err = n.zigbee2mqtt.GetBridgeById(params.Id)
-	if err != nil {
-		if errors.Is(err, apperr.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(apperr.ErrInternal, err.Error())
+	if bridge, err = n.adaptors.Zigbee2mqtt.GetById(ctx, params.Id); err != nil {
 		return
 	}
 
@@ -103,38 +100,42 @@ func (n *Zigbee2mqttEndpoint) UpdateBridge(_ context.Context, params *m.Zigbee2m
 		return
 	}
 
-	if err = n.adaptors.Zigbee2mqtt.Update(context.Background(), bridge); err != nil {
+	if err = n.adaptors.Zigbee2mqtt.Update(ctx, bridge); err != nil {
 		return
 	}
 
-	if err = n.zigbee2mqtt.UpdateBridge(bridge); err != nil {
-		err = errors.Wrap(apperr.ErrInternal, err.Error())
-	}
+	n.eventBus.Publish(fmt.Sprintf("system/models/zigbee2mqtt/%d", bridge.Id), events.EventUpdatedZigbee2mqttModel{
+		Id:     bridge.Id,
+		Bridge: bridge,
+	})
+
 	return
 }
 
 // GetBridgeList ...
-func (n *Zigbee2mqttEndpoint) GetBridgeList(_ context.Context, pagination common.PageParams) (result []*zigbee2mqtt.Zigbee2mqttBridge, total int64, err error) {
+func (n *Zigbee2mqttEndpoint) GetBridgeList(ctx context.Context, pagination common.PageParams) (list []*m.Zigbee2mqtt, total int64, err error) {
 
-	result, total, err = n.zigbee2mqtt.ListBridges(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
-	if err != nil {
-		err = errors.Wrap(apperr.ErrInternal, err.Error())
+	if list, total, err = n.adaptors.Zigbee2mqtt.List(ctx, pagination.Limit, pagination.Offset); err != nil {
+		return
+	}
+
+	for _, br := range list {
+		br.Info, _ = n.zigbee2mqtt.GetBridgeInfo(br.Id)
 	}
 
 	return
 }
 
 // Delete ...
-func (n *Zigbee2mqttEndpoint) Delete(_ context.Context, id int64) (err error) {
+func (n *Zigbee2mqttEndpoint) Delete(ctx context.Context, id int64) (err error) {
 
-	err = n.zigbee2mqtt.DeleteBridge(id)
-	if err != nil {
-		if errors.Is(err, apperr.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(apperr.ErrInternal, err.Error())
+	if err = n.adaptors.Zigbee2mqtt.Delete(ctx, id); err != nil {
 		return
 	}
+
+	n.eventBus.Publish(fmt.Sprintf("system/models/zigbee2mqtt/%d", id), events.EventRemovedZigbee2mqttModel{
+		Id: id,
+	})
 
 	return
 }

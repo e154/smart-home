@@ -67,6 +67,7 @@ func (a *triggerManager) Start() {
 
 	a.load()
 	_ = a.eventBus.Subscribe("system/automation/triggers/+", a.eventHandler, false)
+	_ = a.eventBus.Subscribe("system/models/triggers/+", a.eventHandler, false)
 	a.isStarted.Store(true)
 
 	log.Info("Started")
@@ -77,6 +78,7 @@ func (a *triggerManager) Shutdown() {
 
 	a.unload()
 	_ = a.eventBus.Unsubscribe("system/automation/triggers/+", a.eventHandler)
+	_ = a.eventBus.Unsubscribe("system/models/triggers/+", a.eventHandler)
 
 	log.Info("Shutdown")
 }
@@ -84,16 +86,16 @@ func (a *triggerManager) Shutdown() {
 func (a *triggerManager) eventHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
-	case events.EventEnableTrigger:
+	case events.CommandEnableTrigger:
 		go a.updateTrigger(v.Id)
-	case events.EventDisableTrigger:
+	case events.CommandDisableTrigger:
 		go a.removeTrigger(v.Id)
 
-	case events.EventUpdatedTrigger:
+	case events.EventUpdatedTriggerModel:
 		go a.updateTrigger(v.Id)
-	case events.EventAddedTrigger:
+	case events.EventCreatedTriggerModel:
 		go a.updateTrigger(v.Id)
-	case events.EventRemovedTrigger:
+	case events.EventRemovedTriggerModel:
 		go a.removeTrigger(v.Id)
 	}
 }

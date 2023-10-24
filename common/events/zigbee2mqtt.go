@@ -20,19 +20,19 @@ package events
 
 import m "github.com/e154/smart-home/models"
 
-// EventCreatedScriptModel ...
-type EventCreatedScriptModel struct {
-	ScriptId int64     `json:"script_id"`
-	Script   *m.Script `json:"script"`
+// EventCreatedZigbee2mqttModel ...
+type EventCreatedZigbee2mqttModel struct {
+	Id     int64          `json:"id"`
+	Bridge *m.Zigbee2mqtt `json:"bridge"`
 }
 
-// EventUpdatedScriptModel ...
-type EventUpdatedScriptModel struct {
-	ScriptId int64     `json:"script_id"`
-	Script   *m.Script `json:"script"`
+// EventUpdatedZigbee2mqttModel ...
+type EventUpdatedZigbee2mqttModel struct {
+	Id     int64          `json:"id"`
+	Bridge *m.Zigbee2mqtt `json:"bridge"`
 }
 
-// EventRemovedScriptModel ...
-type EventRemovedScriptModel struct {
-	ScriptId int64 `json:"script_id"`
+// EventRemovedZigbee2mqttModel ...
+type EventRemovedZigbee2mqttModel struct {
+	Id int64 `json:"id"`
 }

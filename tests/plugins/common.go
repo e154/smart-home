@@ -512,7 +512,7 @@ func AddTrigger(trigger *m.Trigger, adaptors *adaptors.Adaptors, eventBus bus.Bu
 	if trigger.Id, err = adaptors.Trigger.Add(context.Background(), trigger); err != nil {
 		return
 	}
-	eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", trigger.Id), events.EventAddedTrigger{
+	eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", trigger.Id), events.EventCreatedTriggerModel{
 		Id: trigger.Id,
 	})
 	return
@@ -523,7 +523,7 @@ func AddTask(newTask *m.NewTask, adaptors *adaptors.Adaptors, eventBus bus.Bus) 
 	if task1Id, err = adaptors.Task.Add(context.Background(), newTask); err != nil {
 		return
 	}
-	eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", task1Id), events.EventAddedTask{
+	eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", task1Id), events.EventCreatedTaskModel{
 		Id: task1Id,
 	})
 	return

@@ -20,6 +20,7 @@ package endpoint
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/e154/smart-home/common/apperr"
 	m "github.com/e154/smart-home/models"
@@ -57,7 +58,7 @@ func (n *AlexaSkillEndpoint) Add(ctx context.Context, params *m.AlexaSkill) (res
 		return
 	}
 
-	n.eventBus.Publish(alexa.TopicPluginAlexa, alexa.EventAlexaAddSkill{
+	n.eventBus.Publish(fmt.Sprintf("system/models/alexa/skill/%d", params.Id), alexa.EventAddedAlexaSkillModel{
 		Skill: result,
 	})
 
@@ -90,7 +91,7 @@ func (n *AlexaSkillEndpoint) Update(ctx context.Context, params *m.AlexaSkill) (
 		return
 	}
 
-	n.eventBus.Publish(alexa.TopicPluginAlexa, alexa.EventAlexaUpdateSkill{
+	n.eventBus.Publish(fmt.Sprintf("system/models/alexa/skill/%d", skill.Id), alexa.EventUpdatedAlexaSkillModel{
 		Skill: skill,
 	})
 
@@ -123,7 +124,7 @@ func (n *AlexaSkillEndpoint) Delete(ctx context.Context, skillId int64) (err err
 		return
 	}
 
-	n.eventBus.Publish(alexa.TopicPluginAlexa, alexa.EventAlexaDeleteSkill{
+	n.eventBus.Publish(fmt.Sprintf("system/models/alexa/skill/%d", skillId), alexa.EventDeletedAlexaSkill{
 		Skill: skill,
 	})
 

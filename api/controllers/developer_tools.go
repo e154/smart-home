@@ -37,7 +37,7 @@ func NewControllerDeveloperTools(common *ControllerCommon) *ControllerDeveloperT
 	}
 }
 
-// EntitySetState ...
+// EntitySetStateName ...
 func (c ControllerDeveloperTools) DeveloperToolsServiceEntitySetState(ctx echo.Context, _ stub.DeveloperToolsServiceEntitySetStateParams) error {
 
 	obj := &stub.ApiEntityRequest{}
@@ -45,7 +45,7 @@ func (c ControllerDeveloperTools) DeveloperToolsServiceEntitySetState(ctx echo.C
 		return c.ERROR(ctx, err)
 	}
 
-	err := c.endpoint.DeveloperTools.EntitySetState(ctx.Request().Context(), common.EntityId(obj.Id), obj.Name)
+	err := c.endpoint.DeveloperTools.EntitySetStateName(ctx.Request().Context(), common.EntityId(obj.Id), obj.Name)
 	if err != nil {
 		return c.ERROR(ctx, err)
 	}

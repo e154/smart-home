@@ -58,7 +58,7 @@ func (n *TriggerEndpoint) Add(ctx context.Context, trigger *m.Trigger) (result *
 		return
 	}
 
-	n.eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", trigger.Id), events.EventAddedTrigger{
+	n.eventBus.Publish(fmt.Sprintf("system/models/triggers/%d", trigger.Id), events.EventCreatedTriggerModel{
 		Id: trigger.Id,
 	})
 
@@ -95,7 +95,7 @@ func (n *TriggerEndpoint) Update(ctx context.Context, trigger *m.Trigger) (resul
 		return
 	}
 
-	n.eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", trigger.Id), events.EventUpdatedTrigger{
+	n.eventBus.Publish(fmt.Sprintf("system/models/triggers/%d", trigger.Id), events.EventUpdatedTriggerModel{
 		Id: trigger.Id,
 	})
 
@@ -129,7 +129,7 @@ func (n *TriggerEndpoint) Delete(ctx context.Context, id int64) (err error) {
 		return
 	}
 
-	n.eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", trigger.Id), events.EventRemovedTrigger{
+	n.eventBus.Publish(fmt.Sprintf("system/models/triggers/%d", trigger.Id), events.EventRemovedTriggerModel{
 		Id: trigger.Id,
 	})
 
@@ -155,7 +155,7 @@ func (n *TriggerEndpoint) Enable(ctx context.Context, id int64) (err error) {
 		return
 	}
 
-	n.eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", id), events.EventEnableTrigger{
+	n.eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", id), events.CommandEnableTrigger{
 		Id: id,
 	})
 
@@ -169,7 +169,7 @@ func (n *TriggerEndpoint) Disable(ctx context.Context, id int64) (err error) {
 		return
 	}
 
-	n.eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", id), events.EventDisableTrigger{
+	n.eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", id), events.CommandDisableTrigger{
 		Id: id,
 	})
 

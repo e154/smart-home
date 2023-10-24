@@ -20,6 +20,7 @@ const props = defineProps({
 
 const rules = {
   name: [required()],
+  baseTopic: [required()],
   description: []
 }
 

@@ -362,6 +362,7 @@ export default {
   zigbee2mqtt: {
     id: "ID",
     name: "Название",
+    baseTopic: 'Канал',
     login: "Логин",
     permitJoin: "Разрешить присоединение",
     addNew: "Добавить мост",

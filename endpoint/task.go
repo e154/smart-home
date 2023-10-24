@@ -61,7 +61,7 @@ func (n *TaskEndpoint) Add(ctx context.Context, task *m.NewTask) (result *m.Task
 		return
 	}
 
-	n.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", result.Id), events.EventAddedTask{
+	n.eventBus.Publish(fmt.Sprintf("system/models/tasks/%d", result.Id), events.EventCreatedTaskModel{
 		Id: id,
 	})
 
@@ -128,7 +128,7 @@ func (n *TaskEndpoint) Import(ctx context.Context, task *m.Task) (result *m.Task
 		return
 	}
 
-	n.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", result.Id), events.EventAddedTask{
+	n.eventBus.Publish(fmt.Sprintf("system/models/tasks/%d", result.Id), events.EventCreatedTaskModel{
 		Id: task.Id,
 	})
 
@@ -158,7 +158,7 @@ func (n *TaskEndpoint) Update(ctx context.Context, task *m.UpdateTask) (result *
 		return
 	}
 
-	n.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", result.Id), events.EventUpdateTask{
+	n.eventBus.Publish(fmt.Sprintf("system/models/tasks/%d", result.Id), events.EventUpdatedTaskModel{
 		Id: task.Id,
 	})
 
@@ -182,7 +182,7 @@ func (n *TaskEndpoint) Delete(ctx context.Context, id int64) (err error) {
 		return
 	}
 
-	n.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", id), events.EventRemoveTask{
+	n.eventBus.Publish(fmt.Sprintf("system/models/tasks/%d", id), events.EventRemovedTaskModel{
 		Id: id,
 	})
 	return
@@ -195,7 +195,7 @@ func (n *TaskEndpoint) Enable(ctx context.Context, id int64) (err error) {
 		return
 	}
 
-	n.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", id), events.EventEnableTask{
+	n.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", id), events.CommandEnableTask{
 		Id: id,
 	})
 	return
@@ -208,7 +208,7 @@ func (n *TaskEndpoint) Disable(ctx context.Context, id int64) (err error) {
 		return
 	}
 
-	n.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", id), events.EventDisableTask{
+	n.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", id), events.CommandDisableTask{
 		Id: id,
 	})
 	return

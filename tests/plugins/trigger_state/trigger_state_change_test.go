@@ -64,7 +64,7 @@ zigbee2mqttEvent =(message)->
     attrs.click = payload.click
     attrs.action = ""
     state = payload.click + "_click"
-  EntitySetState ENTITY_ID,
+  EntitySetStateName ENTITY_ID,
     'new_state': state.toUpperCase()
     'attribute_values': attrs
     'storage_save': true
@@ -151,7 +151,7 @@ automationTriggerStateChanged = (msg)->
 			err = adaptors.Entity.Add(context.Background(), buttonEnt)
 			So(err, ShouldBeNil)
 
-			eventBus.Publish("system/entities/"+buttonEnt.Id.String(), events.EventCreatedEntity{
+			eventBus.Publish("system/models/entities/"+buttonEnt.Id.String(), events.EventCreatedEntityModel{
 				EntityId: buttonEnt.Id,
 			})
 

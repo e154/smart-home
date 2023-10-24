@@ -50,8 +50,8 @@ func (d DeveloperToolsEndpoint) StateList(ctx context.Context) (states []m.Entit
 	return
 }
 
-// SetEntityState ...
-func (d DeveloperToolsEndpoint) SetEntityState(ctx context.Context, entityId string, newState *string, attrs map[string]interface{}) (err error) {
+// EntitySetState ...
+func (d DeveloperToolsEndpoint) EntitySetState(ctx context.Context, entityId string, newState *string, attrs map[string]interface{}) (err error) {
 
 	_, err = d.adaptors.Entity.GetById(ctx, common.EntityId(entityId))
 	if err != nil {
@@ -111,15 +111,15 @@ func (d *DeveloperToolsEndpoint) ReloadEntity(ctx context.Context, id common.Ent
 		return
 	}
 
-	d.eventBus.Publish("system/entities/"+id.String(), events.EventUpdatedEntity{
+	d.eventBus.Publish("system/models/entities/"+id.String(), events.EventUpdatedEntityModel{
 		EntityId: id,
 	})
 
 	return
 }
 
-// EntitySetState ...
-func (d *DeveloperToolsEndpoint) EntitySetState(ctx context.Context, id common.EntityId, name string) (err error) {
+// EntitySetStateName ...
+func (d *DeveloperToolsEndpoint) EntitySetStateName(ctx context.Context, id common.EntityId, name string) (err error) {
 
 	_, err = d.adaptors.Entity.GetById(ctx, id)
 	if err != nil {

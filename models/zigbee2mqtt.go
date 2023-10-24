@@ -22,6 +22,13 @@ import (
 	"time"
 )
 
+type Zigbee2mqttInfo struct {
+	ScanInProcess bool       `json:"scan_in_process"`
+	LastScan      *time.Time `json:"last_scan"`
+	Networkmap    string     `json:"networkmap"`
+	Status        string     `json:"status"`
+}
+
 // Zigbee2mqtt ...
 type Zigbee2mqtt struct {
 	Id                int64                `json:"id"`
@@ -32,6 +39,7 @@ type Zigbee2mqtt struct {
 	Devices           []*Zigbee2mqttDevice `json:"devices"`
 	PermitJoin        bool                 `json:"permit_join"`
 	BaseTopic         string               `json:"base_topic"`
+	Info              *Zigbee2mqttInfo     `json:"info"`
 	CreatedAt         time.Time            `json:"created_at"`
 	UpdatedAt         time.Time            `json:"updated_at"`
 }
