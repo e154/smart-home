@@ -36,6 +36,17 @@ const schema = reactive<FormSchema[]>([
     }
   },
   {
+    field: 'baseTopic',
+    label: t('zigbee2mqtt.baseTopic'),
+    component: 'Input',
+    colProps: {
+      span: 24
+    },
+    componentProps: {
+      placeholder: t('zigbee2mqtt.baseTopic')
+    }
+  },
+  {
     field: 'login',
     label: t('zigbee2mqtt.login'),
     component: 'Input',

@@ -36,12 +36,12 @@ type IArea interface {
 	Update(ctx context.Context, ver *m.Area) (err error)
 	DeleteByName(ctx context.Context, name string) (err error)
 	List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.Area, total int64, err error)
-	ListByPoint(ctx context.Context, point m.Point, limit, offset int64) (list []*m.Area, err error)
+	//ListByPoint(ctx context.Context, point m.Point, limit, offset int64) (list []*m.Area, err error)
 	Search(ctx context.Context, query string, limit, offset int64) (list []*m.Area, total int64, err error)
-	GetDistanceToArea(ctx context.Context, point m.Point, areaId int64) (distance float64, err error)
-	GetDistanceBetweenPoints(ctx context.Context, point1, point2 m.Point) (distance float64, err error)
-	PointInsideAriaById(ctx context.Context, point *m.Point, areaId int64) (inside bool, err error)
-	PointInsideAriaByName(ctx context.Context, point *m.Point, areaName int64) (inside bool, err error)
+	//GetDistanceToArea(ctx context.Context, point m.Point, areaId int64) (distance float64, err error)
+	//GetDistanceBetweenPoints(ctx context.Context, point1, point2 m.Point) (distance float64, err error)
+	//PointInsideAriaById(ctx context.Context, point *m.Point, areaId int64) (inside bool, err error)
+	//PointInsideAriaByName(ctx context.Context, point *m.Point, areaName int64) (inside bool, err error)
 	fromDb(dbVer *db.Area) (ver *m.Area)
 	toDb(ver *m.Area) (dbVer *db.Area)
 }
@@ -111,31 +111,19 @@ func (a *Area) List(ctx context.Context, limit, offset int64, orderBy, sort stri
 }
 
 // ListByPoint ...
-func (a *Area) ListByPoint(ctx context.Context, point m.Point, limit, offset int64) (list []*m.Area, err error) {
-
-	var dbList []*db.Area
-	if dbList, err = a.table.ListByPoint(ctx, db.Point{Lon: point.Lon, Lat: point.Lat}, int(limit), int(offset)); err != nil {
-		return
-	}
-
-	list = make([]*m.Area, len(dbList))
-	for i, dbVer := range dbList {
-		list[i] = a.fromDb(dbVer)
-	}
-	return
-}
-
-// PointInsideAriaById ...
-func (a *Area) PointInsideAriaById(ctx context.Context, point *m.Point, areaId int64) (inside bool, err error) {
-	inside, err = a.table.PointInsideAriaById(ctx, db.Point{Lon: point.Lon, Lat: point.Lat}, areaId)
-	return
-}
-
-// PointInsideAriaByName ...
-func (a *Area) PointInsideAriaByName(ctx context.Context, point *m.Point, areaName int64) (inside bool, err error) {
-	inside, err = a.table.PointInsideAriaById(ctx, db.Point{Lon: point.Lon, Lat: point.Lat}, areaName)
-	return
-}
+//func (a *Area) ListByPoint(ctx context.Context, point m.Point, limit, offset int64) (list []*m.Area, err error) {
+//
+//	var dbList []*db.Area
+//	if dbList, err = a.table.ListByPoint(ctx, db.Point{Lon: point.Lon, Lat: point.Lat}, int(limit), int(offset)); err != nil {
+//		return
+//	}
+//
+//	list = make([]*m.Area, len(dbList))
+//	for i, dbVer := range dbList {
+//		list[i] = a.fromDb(dbVer)
+//	}
+//	return
+//}
 
 // Search ...
 func (a *Area) Search(ctx context.Context, query string, limit, offset int64) (list []*m.Area, total int64, err error) {
@@ -165,17 +153,29 @@ func (a *Area) GetByName(ctx context.Context, name string) (ver *m.Area, err err
 	return
 }
 
-// GetDistanceToArea ...
-func (a *Area) GetDistanceToArea(ctx context.Context, point m.Point, areaId int64) (distance float64, err error) {
-	distance, err = a.table.GetDistanceToArea(ctx, db.Point{Lon: point.Lon, Lat: point.Lat}, areaId)
-	return
-}
+// PointInsideAriaById ...
+//func (a *Area) PointInsideAriaById(ctx context.Context, point *m.Point, areaId int64) (inside bool, err error) {
+//	inside, err = a.table.PointInsideAriaById(ctx, db.Point{Lon: point.Lon, Lat: point.Lat}, areaId)
+//	return
+//}
+//
+//// PointInsideAriaByName ...
+//func (a *Area) PointInsideAriaByName(ctx context.Context, point *m.Point, areaName int64) (inside bool, err error) {
+//	inside, err = a.table.PointInsideAriaById(ctx, db.Point{Lon: point.Lon, Lat: point.Lat}, areaName)
+//	return
+//}
 
-// GetDistanceBetweenPoints ...
-func (a *Area) GetDistanceBetweenPoints(ctx context.Context, point1, point2 m.Point) (distance float64, err error) {
-	distance, err = a.table.GetDistanceBetweenPoints(ctx, db.Point{Lon: point1.Lon, Lat: point1.Lat}, db.Point{Lon: point2.Lon, Lat: point2.Lat})
-	return
-}
+// GetDistanceToArea ...
+//func (a *Area) GetDistanceToArea(ctx context.Context, point m.Point, areaId int64) (distance float64, err error) {
+//	distance, err = a.table.GetDistanceToArea(ctx, db.Point{Lon: point.Lon, Lat: point.Lat}, areaId)
+//	return
+//}
+//
+//// GetDistanceBetweenPoints ...
+//func (a *Area) GetDistanceBetweenPoints(ctx context.Context, point1, point2 m.Point) (distance float64, err error) {
+//	distance, err = a.table.GetDistanceBetweenPoints(ctx, db.Point{Lon: point1.Lon, Lat: point1.Lat}, db.Point{Lon: point2.Lon, Lat: point2.Lat})
+//	return
+//}
 
 func (a *Area) fromDb(dbVer *db.Area) (ver *m.Area) {
 	ver = &m.Area{

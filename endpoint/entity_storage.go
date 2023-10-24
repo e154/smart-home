@@ -82,13 +82,18 @@ func (i *EntityStorageEndpoint) GetList(ctx context.Context, entityIds []common.
 		attributes[entity.Id] = entity.Attributes
 	}
 
+	var ok bool
+	var entity *m.Entity
 	for _, item := range items {
 		item.StateDescription = item.State
-		item.EntityDescription = entitiesList[item.EntityId].Id.String()
-		if entitiesList[item.EntityId].Description != "" {
-			item.EntityDescription = entitiesList[item.EntityId].Description
+		if entity, ok = entitiesList[item.EntityId]; !ok {
+			continue
 		}
-		for _, state := range entitiesList[item.EntityId].States {
+		item.EntityDescription = entity.Id.String()
+		if entity.Description != "" {
+			item.EntityDescription = entity.Description
+		}
+		for _, state := range entity.States {
 			if state.Name == item.State && state.Description != "" {
 				item.StateDescription = state.Description
 				continue

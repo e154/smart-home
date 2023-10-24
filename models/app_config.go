@@ -55,7 +55,6 @@ type AppConfig struct {
 	AlexaPort                      int            `json:"alexa_port" env:"ALEXA_PORT"`
 	MobileHost                     string         `json:"mobile_host" env:"MOBILE_HOST"`
 	MobilePort                     int            `json:"mobile_port" env:"MOBILE_PORT"`
-	ApiGrpcPort                    int            `json:"api_grpc_port" env:"API_GRPC_PORT"`
 	ApiHttpPort                    int            `json:"api_http_port" env:"API_HTTP_PORT"`
 	ApiSwagger                     bool           `json:"api_swagger" env:"API_SWAGGER"`
 	Lang                           string         `json:"lang" env:"LANG"`

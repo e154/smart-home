@@ -21,6 +21,7 @@ package supervisor
 import (
 	"context"
 	"fmt"
+	"github.com/e154/smart-home/common/location"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -107,29 +108,28 @@ func GetSettingsBind(manager Supervisor) func(entityId string) m.AttributeValue 
 
 func GetDistanceToAreaBind(adaptors *adaptors.Adaptors) func(areaId int64, point m.Point) float64 {
 	return func(areaId int64, point m.Point) float64 {
-		if distance, err := adaptors.Area.GetDistanceToArea(context.Background(), point, areaId); err == nil {
-			return distance
+		area, err := adaptors.Area.GetById(context.Background(), areaId)
+		if err != nil {
+			log.Error(err.Error())
+			return 0
 		}
-		return 0
+		return location.GetDistanceToPolygon(point, area.Polygon)
 	}
 }
 
 func GetDistanceBetweenPointsBind(adaptors *adaptors.Adaptors) func(point1, point2 m.Point) float64 {
 	return func(point1, point2 m.Point) float64 {
-		distance, err := adaptors.Area.GetDistanceBetweenPoints(context.Background(), point1, point2)
-		if err != nil {
-			log.Error(err.Error())
-			return 0
-		}
-		return distance
+		return location.GetDistanceBetweenPoints(point1, point2)
 	}
 }
 
 func PointInsideAriaBind(adaptors *adaptors.Adaptors) func(areaId int64, point m.Point) bool {
 	return func(areaId int64, point m.Point) bool {
-		if inside, err := adaptors.Area.PointInsideAriaById(context.Background(), &point, areaId); err == nil {
-			return inside
+		area, err := adaptors.Area.GetById(context.Background(), areaId)
+		if err != nil {
+			log.Error(err.Error())
+			return false
 		}
-		return false
+		return location.PointInsidePolygon(point, area.Polygon)
 	}
 }

@@ -20,7 +20,6 @@ package endpoint
 
 import (
 	"context"
-
 	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/e154/smart-home/common"
@@ -92,9 +91,10 @@ func (n *Zigbee2mqttEndpoint) UpdateBridge(_ context.Context, params *m.Zigbee2m
 		return
 	}
 
-	bridge.Password = params.Password
+	bridge.Name = params.Name
 	bridge.BaseTopic = params.BaseTopic
 	bridge.Login = params.Login
+	bridge.Password = params.Password
 	bridge.PermitJoin = params.PermitJoin
 
 	if ok, errs := n.validation.Valid(params); !ok {
@@ -103,10 +103,13 @@ func (n *Zigbee2mqttEndpoint) UpdateBridge(_ context.Context, params *m.Zigbee2m
 		return
 	}
 
-	if bridge, err = n.zigbee2mqtt.UpdateBridge(bridge); err != nil {
-		err = errors.Wrap(apperr.ErrInternal, err.Error())
+	if err = n.adaptors.Zigbee2mqtt.Update(context.Background(), bridge); err != nil {
+		return
 	}
 
+	if err = n.zigbee2mqtt.UpdateBridge(bridge); err != nil {
+		err = errors.Wrap(apperr.ErrInternal, err.Error())
+	}
 	return
 }
 

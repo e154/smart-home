@@ -192,23 +192,21 @@ func (z *zigbee2mqtt) ListBridges(limit, offset int64, order, sortBy string) (br
 }
 
 // UpdateBridge ...
-func (z *zigbee2mqtt) UpdateBridge(model *m.Zigbee2mqtt) (result *m.Zigbee2mqtt, err error) {
+func (z *zigbee2mqtt) UpdateBridge(model *m.Zigbee2mqtt) (err error) {
 	z.bridgesLock.Lock()
 	defer z.bridgesLock.Unlock()
-
+	
 	var bridge *Bridge
 	if bridge, err = z.unsafeGetBridge(model.Id); err == nil {
-
+		bridge.Stop(context.Background())
+		delete(z.bridges, model.Id)
 	} else {
 		return
 	}
 
-	if err = z.adaptors.Zigbee2mqtt.Update(context.Background(), model); err != nil {
-		return
-	}
-
-	result, err = z.adaptors.Zigbee2mqtt.GetById(context.Background(), model.Id)
-	bridge.UpdateModel(result)
+	bridge = NewBridge(z.mqtt, z.adaptors, model)
+	bridge.Start()
+	z.bridges[model.Id] = bridge
 
 	return
 }

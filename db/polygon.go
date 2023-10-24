@@ -20,11 +20,11 @@ package db
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/pkg/errors"
-	"github.com/twpayne/go-geom"
-	"github.com/twpayne/go-geom/encoding/ewkbhex"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -38,34 +38,34 @@ type Polygon struct {
 	Points []Point
 }
 
-func (p Polygon) GormValue(ctx context.Context, db *gorm.DB) clause.Expr {
+func (p *Polygon) GormValue(ctx context.Context, db *gorm.DB) clause.Expr {
 	points, _ := formatPoints(p.Points)
 	return clause.Expr{
-		SQL:  "ST_Polygon(?::geometry, 4326)",
-		Vars: []interface{}{fmt.Sprintf("LINESTRING(%s)", points)},
+		SQL:  "?::polygon",
+		Vars: []interface{}{fmt.Sprintf("(%s)", points)},
 	}
 }
 
 func (p *Polygon) Scan(src any) (err error) {
-	var geometry geom.T
-	if geometry, err = ewkbhex.Decode(src.(string)); err != nil {
-		return errors.Wrap(errors.New("decode value"), err.Error())
+	value := fmt.Sprintf("%v", src)
+	value = strings.ReplaceAll(value, "(", "[")
+	value = strings.ReplaceAll(value, ")", "]")
+
+	data := [][]float64{}
+	if err = json.Unmarshal([]byte(value), &data); err != nil {
+		return
 	}
-	polygon, ok := geometry.(*geom.Polygon)
-	if !ok {
-		return errors.New("geometry is not a point")
-	}
-	for _, point := range polygon.Coords()[0] {
+	for _, point := range data {
 		p.Points = append(p.Points, Point{
-			Lon: point.X(),
-			Lat: point.Y(),
+			Lon: point[0],
+			Lat: point[1],
 		})
 	}
 	return nil
 }
 
 func (Polygon) GormDataType() string {
-	return "geometry"
+	return "polygon"
 }
 
 func formatPoints(polygonPoints []Point) (string, error) {
@@ -84,10 +84,10 @@ func formatPoints(polygonPoints []Point) (string, error) {
 
 	var points string
 	for _, loc := range point {
-		points += fmt.Sprintf("%f %f,", loc.Lon, loc.Lat)
+		points += fmt.Sprintf("(%f, %f),", loc.Lon, loc.Lat)
 	}
 
-	points += fmt.Sprintf("%f %f", point[0].Lon, point[0].Lat)
+	points += fmt.Sprintf("(%f, %f)", point[0].Lon, point[0].Lat)
 
 	return points, nil
 }

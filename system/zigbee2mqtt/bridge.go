@@ -119,7 +119,7 @@ func (g *Bridge) onBridgePublish(client mqtt.MqttCli, message mqtt.Message) {
 	case "event":
 		g.onEvent(client, message)
 	default:
-		log.Warnf("unknown topic %v", topic)
+		log.Warnf("unknown topic %v", message.Topic)
 	}
 }
 
@@ -470,10 +470,11 @@ func (g *Bridge) UpdateModel(model *m.Zigbee2mqtt) {
 	g.modelLock.Lock()
 	defer g.modelLock.Unlock()
 
-	g.model.Login = model.Login
+	g.model.Name = model.Name
 	g.model.BaseTopic = model.BaseTopic
-	g.model.PermitJoin = model.PermitJoin
+	g.model.Login = model.Login
 	g.model.EncryptedPassword = model.EncryptedPassword
+	g.model.PermitJoin = model.PermitJoin
 
 	g.configPermitJoin(g.model.PermitJoin)
 }

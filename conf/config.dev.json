@@ -27,7 +27,6 @@
   "mqtt_deliver_mode": 1,
   "logging": true,
   "colored_logging": false,
-  "api_grpc_port": 3010,
   "api_http_port": 3011,
   "api_swagger": true,
   "domain": "localhost",

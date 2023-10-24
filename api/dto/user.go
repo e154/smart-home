@@ -39,6 +39,7 @@ func (u User) AddUserRequest(req *stub.ApiNewtUserRequest) (user *m.User) {
 	if req.ImageId != nil {
 		_ = user.ImageId.Scan(*req.ImageId)
 	}
+	user.RoleName = req.RoleName
 	return
 }
 

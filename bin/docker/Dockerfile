@@ -1,8 +1,8 @@
-FROM golang:1.19 as build
+FROM golang:1.20 as build
 RUN update-ca-certificates
 MAINTAINER Filippov Alex <support@e154.ru>
 
-FROM postgis/postgis:11-3.3
+FROM scratch
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=build /etc/passwd /etc/passwd
 ENTRYPOINT ["/server"]
@@ -43,7 +43,6 @@ ENV ALEXA_HOST=""
 ENV ALEXA_PORT="3003"
 ENV MOBILE_HOST=""
 ENV MOBILE_PORT="3002"
-ENV API_GRPC_PORT="3000"
 ENV API_HTTP_PORT="3001"
 ENV API_SWAGGER="true"
 ENV LANG="EN"

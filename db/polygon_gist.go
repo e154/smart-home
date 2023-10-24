@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2023, Filippov Alex
+// Copyright (C) 2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -16,22 +16,4 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package container
-
-import (
-	"github.com/e154/smart-home/api"
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/models"
-)
-
-// NewApiConfig ...
-func NewApiConfig(cfg *models.AppConfig) api.Config {
-	if cfg.ApiHttpPort == 0 {
-		cfg.ApiHttpPort = 3001
-	}
-	return api.Config{
-		HttpPort: cfg.ApiHttpPort,
-		Swagger:  cfg.ApiSwagger,
-		Debug:    cfg.Mode == common.DebugMode,
-	}
-}
+package db

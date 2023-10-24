@@ -21,9 +21,10 @@ REV_URL_VALUE=https://${PROJECT}/commit/${REV_VALUE}
 GENERATED_VALUE=$(shell date -u +'%Y-%m-%dT%H:%M:%S%z')
 DEVELOPERS_VALUE=delta54<support@e154.ru>
 BUILD_NUMBER_VALUE=$(shell echo ${TRAVIS_BUILD_NUMBER})
+RELEASE_VERSION ?= v0.1.0
 
 IMAGE=smart-home-${EXEC}
-DOCKER_ACCOUNT=e154
+DOCKER_ACCOUNT ?= 192.168.43.127:5000
 DOCKER_IMAGE_VER=${DOCKER_ACCOUNT}/${IMAGE}:${RELEASE_VERSION}
 DOCKER_IMAGE_LATEST=${DOCKER_ACCOUNT}/${IMAGE}:latest
 
@@ -100,18 +101,18 @@ svgo:
 
 build_server:
 	@echo MARK: build server
-	${GO_BUILD_ENV} GOOS=linux GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-amd64
+	#${GO_BUILD_ENV} GOOS=linux GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-amd64
 	${GO_BUILD_ENV} GOOS=linux GOARCH=arm GOARM=7 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-7
-	${GO_BUILD_ENV} GOOS=linux GOARCH=arm GOARM=6 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-6
-	${GO_BUILD_ENV} GOOS=linux GOARCH=arm GOARM=5 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-5
-	${GO_BUILD_ENV} GOOS=darwin GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-darwin-10.6-amd64
-	${GO_BUILD_ENV} GOOS=darwin GOARCH=arm64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-darwin-10.6-arm64
+	#${GO_BUILD_ENV} GOOS=linux GOARCH=arm GOARM=6 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-6
+	#${GO_BUILD_ENV} GOOS=linux GOARCH=arm GOARM=5 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-5
+	#${GO_BUILD_ENV} GOOS=darwin GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-darwin-10.6-amd64
+	#${GO_BUILD_ENV} GOOS=darwin GOARCH=arm64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-darwin-10.6-arm64
 
 build_cli:
 	@echo MARK: build cli
-	cd ${ROOT}/cmd/cli && ${GO_BUILD_ENV} GOOS=linux GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${CLI}-linux-amd64
-	cd ${ROOT}/cmd/cli && ${GO_BUILD_ENV} GOOS=darwin GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${CLI}-darwin-10.6-amd64
-	cd ${ROOT}/cmd/cli && ${GO_BUILD_ENV} GOOS=darwin GOARCH=arm64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${CLI}-darwin-10.6-arm64
+	#cd ${ROOT}/cmd/cli && ${GO_BUILD_ENV} GOOS=linux GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${CLI}-linux-amd64
+	#cd ${ROOT}/cmd/cli && ${GO_BUILD_ENV} GOOS=darwin GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${CLI}-darwin-10.6-amd64
+	#cd ${ROOT}/cmd/cli && ${GO_BUILD_ENV} GOOS=darwin GOARCH=arm64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${CLI}-darwin-10.6-arm64
 
 build_public:
 	@echo MARK: build public
@@ -119,11 +120,9 @@ build_public:
 	node -v  && \
 	echo -e "npm version.\n"  && \
 	npm -v  && \
-	npm i -g pnpm  && \
 	echo -e "pnpm version.\n"  && \
 	pnpm -v && \
 	cd ${ROOT}/static_source/admin && \
-	pnpm i && \
 	pnpm run build:pro && \
 	rm -rf ${ROOT}/build/public && \
 	mkdir -p ${ROOT}/build && \
@@ -148,15 +147,7 @@ build_structure:
 	cp ${ROOT}/bin/docker/Dockerfile ${SERVER_DIR}
 	cp ${ROOT}/bin/server-installer.sh ${SERVER_DIR}
 	chmod +x ${SERVER_DIR}/data/scripts/ping.sh
-	cp ${ROOT}/${EXEC}-linux-amd64 ${SERVER_DIR}
 	cp ${ROOT}/${EXEC}-linux-arm-7 ${SERVER_DIR}
-	cp ${ROOT}/${EXEC}-linux-arm-6 ${SERVER_DIR}
-	cp ${ROOT}/${EXEC}-linux-arm-5 ${SERVER_DIR}
-	cp ${ROOT}/${EXEC}-darwin-10.6-amd64 ${SERVER_DIR}
-	cp ${ROOT}/${EXEC}-darwin-10.6-arm64 ${SERVER_DIR}
-	cp ${ROOT}/${CLI}-darwin-10.6-amd64 ${SERVER_DIR}
-	cp ${ROOT}/${CLI}-darwin-10.6-arm64 ${SERVER_DIR}
-	cp ${ROOT}/${CLI}-linux-amd64 ${SERVER_DIR}
 	cp ${ROOT}/bin/server ${SERVER_DIR}
 
 build_common_structure:
@@ -215,10 +206,10 @@ docs_deploy:
 	echo -e "Done documentation deploy.\n"
 
 docker_image:
-	cd ${SERVER_DIR} && ls -ll && docker buildx build --platform linux/amd64,linux/arm/v7 -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
+	cd ${SERVER_DIR} && ls -ll && docker build -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
 
 docker_image_upload:
-	echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
+	#echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
 	docker tag ${DOCKER_ACCOUNT}/${IMAGE} ${DOCKER_IMAGE_VER}
 	echo -e "docker tag ${DOCKER_ACCOUNT}/${IMAGE} ${DOCKER_IMAGE_LATEST}"
 	docker tag ${DOCKER_ACCOUNT}/${IMAGE} ${DOCKER_IMAGE_LATEST}
@@ -228,16 +219,7 @@ docker_image_upload:
 clean:
 	@echo MARK: clean
 	rm -rf ${SERVER_DIR}
-	rm -f ${ROOT}/${EXEC}-linux-amd64
 	rm -f ${ROOT}/${EXEC}-linux-arm-7
-	rm -f ${ROOT}/${EXEC}-linux-arm-6
-	rm -f ${ROOT}/${EXEC}-linux-arm-5
-	rm -f ${ROOT}/${EXEC}-darwin-10.6-amd64
-	rm -f ${ROOT}/${EXEC}-darwin-10.6-arm64
-	rm -f ${ROOT}/${CLI}-linux-amd64
-	rm -f ${ROOT}/${CLI}-darwin-10.6-amd64
-	rm -f ${ROOT}/${CLI}-darwin-10.6-arm64
-	rm -f ${HOME}/${ARCHIVE}
 
 front_client:
 	@echo MARK: generate front client lib

@@ -33,7 +33,7 @@ type Zigbee2mqtt interface {
 	GetBridgeById(id int64) (*m.Zigbee2mqtt, error)
 	GetBridgeInfo(id int64) (*Zigbee2mqttBridge, error)
 	ListBridges(limit, offset int64, order, sortBy string) (models []*Zigbee2mqttBridge, total int64, err error)
-	UpdateBridge(model *m.Zigbee2mqtt) (result *m.Zigbee2mqtt, err error)
+	UpdateBridge(model *m.Zigbee2mqtt) (err error)
 	DeleteBridge(bridgeId int64) (err error)
 	ResetBridge(bridgeId int64) (err error)
 	BridgeDeviceBan(bridgeId int64, friendlyName string) (err error)

@@ -38,7 +38,7 @@ type taskManager struct {
 	scriptService scripts.ScriptService
 	supervisor    supervisor.Supervisor
 	adaptors      *adaptors.Adaptors
-	taskCount     atomic.Uint64
+	taskCount     *atomic.Uint64
 	isStarted     *atomic.Bool
 	rawPlugin     triggers.IGetTrigger
 	sync.Mutex
@@ -59,6 +59,7 @@ func NewTaskManager(
 		supervisor:    sup,
 		adaptors:      adaptors,
 		isStarted:     atomic.NewBool(false),
+		taskCount:     atomic.NewUint64(0),
 	}
 
 	return

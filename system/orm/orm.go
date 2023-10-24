@@ -213,7 +213,7 @@ func (o *Orm) CheckExtensions() (err error) {
 
 	o.db.Exec(`CREATE EXTENSION IF NOT EXISTS pgcrypto CASCADE;`)
 	//o.db.Exec(`CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;`)
-	o.db.Exec(`CREATE EXTENSION IF NOT EXISTS Postgis CASCADE;`)
+	//o.db.Exec(`CREATE EXTENSION IF NOT EXISTS Postgis CASCADE;`)
 
 	// check extensions
 	if err = o.db.Raw("select * from pg_available_extensions").Scan(&o.availableExtensions).Error; err != nil {
@@ -221,15 +221,15 @@ func (o *Orm) CheckExtensions() (err error) {
 	}
 
 	var extCrypto bool
-	var extPostgis bool
+	//var extPostgis bool
 	for _, ext := range o.availableExtensions {
 		switch ext.Name {
 		case "pgcrypto":
 			extCrypto = true
 		case "timescaledb":
 			o.extTimescaledb = true
-		case "postgis":
-			extPostgis = true
+		//case "postgis":
+		//	extPostgis = true
 		default:
 
 		}
@@ -251,13 +251,13 @@ func (o *Orm) CheckExtensions() (err error) {
 	//	}
 	//}
 
-	if !extPostgis {
-		log.Warn("please install Postgis extension\r")
-	} else {
-		if o.checkAvailableExtensions(o.availableExtensions, "postgis") {
-			log.Warn("extension 'Postgis' installed but not enabled, enable it: CREATE EXTENSION IF NOT EXISTS Postgis CASCADE;\n\r")
-		}
-	}
+	//if !extPostgis {
+	//	log.Warn("please install Postgis extension\r")
+	//} else {
+	//	if o.checkAvailableExtensions(o.availableExtensions, "postgis") {
+	//		log.Warn("extension 'Postgis' installed but not enabled, enable it: CREATE EXTENSION IF NOT EXISTS Postgis CASCADE;\n\r")
+	//	}
+	//}
 
 	return
 }
