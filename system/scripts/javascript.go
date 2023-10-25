@@ -194,6 +194,9 @@ func (j *Javascript) coffeeCompile() (result goja.Value, err error) {
 // Do ...
 func (j *Javascript) Do() (result string, err error) {
 	result, err = j.unsafeRun(j.program)
+	if err != nil {
+		err = errors.Wrapf(err, "script id:%d ", j.engine.ScriptId())
+	}
 	return
 }
 
