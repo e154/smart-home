@@ -62,6 +62,7 @@ func (d DeveloperToolsEndpoint) EntitySetState(ctx context.Context, entityId str
 		EntityId:        common.EntityId(entityId),
 		NewState:        newState,
 		AttributeValues: attrs,
+		StorageSave:     true,
 	})
 
 	return
@@ -127,8 +128,9 @@ func (d *DeveloperToolsEndpoint) EntitySetStateName(ctx context.Context, id comm
 	}
 
 	d.eventBus.Publish("system/entities/"+id.String(), events.EventEntitySetState{
-		EntityId: id,
-		NewState: common.String(name),
+		EntityId:    id,
+		NewState:    common.String(name),
+		StorageSave: true,
 	})
 
 	return

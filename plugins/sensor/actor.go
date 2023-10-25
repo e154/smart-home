@@ -93,7 +93,7 @@ func (e *Actor) addAction(event events.EventCallEntityAction) {
 func (e *Actor) runAction(msg events.EventCallEntityAction) {
 	action, ok := e.Actions[msg.ActionName]
 	if !ok {
-		log.Warnf("action %s not found", msg.ActionName)
+		log.Warnf("action '%s' not found", msg.ActionName)
 		return
 	}
 	if action.ScriptEngine.Engine() == nil {
