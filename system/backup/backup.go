@@ -42,7 +42,7 @@ var (
 
 // Backup ...
 type Backup struct {
-	cfg          *BackupConfig
+	cfg          *Config
 	Options      []string
 	db           *gorm.DB
 	restoreImage string
@@ -50,7 +50,7 @@ type Backup struct {
 
 // NewBackup ...
 func NewBackup(lc fx.Lifecycle,
-	cfg *BackupConfig,
+	cfg *Config,
 	db *gorm.DB) *Backup {
 
 	backup := &Backup{

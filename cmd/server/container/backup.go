@@ -24,8 +24,8 @@ import (
 )
 
 // NewBackupConfig ...
-func NewBackupConfig(cfg *models.AppConfig) *backup.BackupConfig {
-	return &backup.BackupConfig{
+func NewBackupConfig(cfg *models.AppConfig) *backup.Config {
+	return &backup.Config{
 		Path:   cfg.SnapshotDir,
 		PgUser: cfg.PgUser,
 		PgPass: cfg.PgPass,
