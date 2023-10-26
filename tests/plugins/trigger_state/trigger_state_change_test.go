@@ -64,7 +64,7 @@ zigbee2mqttEvent =(message)->
     attrs.click = payload.click
     attrs.action = ""
     state = payload.click + "_click"
-  EntitySetStateName ENTITY_ID,
+  EntitySetState ENTITY_ID,
     'new_state': state.toUpperCase()
     'attribute_values': attrs
     'storage_save': true

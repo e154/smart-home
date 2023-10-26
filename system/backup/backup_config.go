@@ -18,8 +18,8 @@
 
 package backup
 
-// BackupConfig ...
-type BackupConfig struct {
+// Config ...
+type Config struct {
 	Path   string
 	PgUser string
 	PgPass string

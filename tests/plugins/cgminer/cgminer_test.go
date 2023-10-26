@@ -20,6 +20,7 @@ package cgminer
 
 import (
 	"context"
+	"github.com/e154/smart-home/common/debug"
 	"testing"
 	"time"
 
@@ -45,8 +46,7 @@ ifError =(res)->
 checkStatus =->
     stats = Miner.stats()
     if ifError(stats)
-        EntitySetStateName ENTITY_ID,
-            'new_state': 'ERROR'
+        EntitySetStateName ENTITY_ID, 'ERROR'
         return
     p = unmarshal stats.result
     attrs = {
@@ -63,7 +63,7 @@ checkStatus =->
         fan2: p.fan2
     }
 
-    EntitySetStateName ENTITY_ID,
+    EntitySetState ENTITY_ID,
         new_state: 'ENABLED'
         attribute_values: attrs
         storage_save: true
@@ -71,14 +71,13 @@ checkStatus =->
 checkSum =->
     summary = Miner.summary()
     if ifError(summary)
-        EntitySetStateName ENTITY_ID,
-            'new_state': 'ERROR'
+        EntitySetStateName ENTITY_ID, 'ERROR'
         return
     p = unmarshal summary.result
     attrs = {}
     attrs["ghs_av"] = p["GHS av"] 
     attrs["hardware_errors"] = p["Hardware Errors"] 
-    EntitySetStateName ENTITY_ID,
+    EntitySetState ENTITY_ID,
         new_state: 'ENABLED'
         attribute_values: attrs
         storage_save: true
@@ -86,14 +85,13 @@ checkSum =->
 checkDevs =->
     devs = Miner.devs()
     if ifError(devs)
-        EntitySetStateName ENTITY_ID,
-            'new_state': 'ERROR'
+        EntitySetStateName ENTITY_ID, 'ERROR'
         return
     p = unmarshal devs.result
     attrs = {}
     attrs["ghs_av"] = p["GHS av"] 
     attrs["hardware_errors"] = p["Hardware Errors"] 
-    EntitySetStateName ENTITY_ID,
+    EntitySetState ENTITY_ID,
         new_state: 'ENABLED'
         attribute_values: attrs
         storage_save: true
@@ -101,8 +99,7 @@ checkDevs =->
 checkPools =->
     pools = Miner.pools()
     if ifError(pools)
-        EntitySetStateName ENTITY_ID,
-            'new_state': 'ERROR'
+        EntitySetStateName ENTITY_ID, 'ERROR'
         return
     p = unmarshal pools.result
     So(p.length, 'ShouldEqual', '4')
@@ -134,8 +131,7 @@ checkPools =->
 checkVer =(entityId)->
     ver = Miner.version()
     if ifError(ver)
-        EntitySetStateName ENTITY_ID,
-            'new_state': 'ERROR'
+        EntitySetStateName ENTITY_ID, 'ERROR'
         return
     p = unmarshal ver.result
     So(p.API, 'ShouldEqual', '3.1')
@@ -323,6 +319,8 @@ entityAction = (entityId, actionName)->
 
 					lastState, err := adaptors.EntityStorage.GetLastByEntityId(context.Background(), l3Ent.Id)
 					ctx.So(err, ShouldBeNil)
+
+					debug.Println(lastState)
 
 					ctx.So(lastState.Attributes["chain1_temp_chip"], ShouldEqual, 0)
 					ctx.So(lastState.Attributes["chain1_temp_pcb"], ShouldEqual, 0)

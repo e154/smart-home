@@ -42,13 +42,12 @@ func TestSensor(t *testing.T) {
 checkStatus =->
     res = HTTP.get("http://%s:%d/?t=12345678")
     if res.error 
-        EntitySetStateName ENTITY_ID,
-            'new_state': 'ERROR'
+        EntitySetStateName ENTITY_ID, 'ERROR'
         return
     p = unmarshal res.body
     attrs =
         paid_rewards: p.user.paid_rewards
-    EntitySetStateName ENTITY_ID,
+    EntitySetState ENTITY_ID,
         new_state: 'ENABLED'
         attribute_values: attrs
         storage_save: true
