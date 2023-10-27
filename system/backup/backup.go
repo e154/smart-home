@@ -22,7 +22,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"os/exec"
 	"path"
 	"path/filepath"
 	"time"
@@ -43,7 +42,6 @@ var (
 // Backup ...
 type Backup struct {
 	cfg          *Config
-	Options      []string
 	db           *gorm.DB
 	restoreImage string
 }
@@ -84,24 +82,13 @@ func (b *Backup) Shutdown(ctx context.Context) (err error) {
 func (b *Backup) New() (err error) {
 	log.Info("create new backup")
 
-	options := b.dumpOptions()
-
 	tmpDir := path.Join(os.TempDir(), "smart_home")
 	if err = os.MkdirAll(tmpDir, 0755); err != nil {
 		return
 	}
 
-	// filename
-	filename := path.Join(tmpDir, "database.sql")
-	options = append(options, "-f", filename)
-
-	cmd := exec.Command("pg_dump", options...)
-	cmd.Env = append(os.Environ(), fmt.Sprintf("PGPASSWORD=%s", b.cfg.PgPass))
-
-	log.Infof("run command %s", cmd.String())
-
-	_, err = cmd.CombinedOutput()
-	if err != nil {
+	var filename = path.Join(tmpDir, "database.sql")
+	if err = NewLocal(b.cfg).New(filename); err != nil {
 		return
 	}
 
@@ -165,31 +152,25 @@ func (b *Backup) restore(name string) (err error) {
 		return
 	}
 
-	log.Info("Restart database")
+	log.Info("drop database")
 
 	if err = b.db.Exec(`DROP SCHEMA IF EXISTS "public" CASCADE;`).Error; err != nil {
 		err = errors.Wrap(fmt.Errorf("failed exec sql command"), err.Error())
 		return
 	}
+
 	if err = b.db.Exec(`CREATE SCHEMA "public";`).Error; err != nil {
 		err = errors.Wrap(fmt.Errorf("failed exec sql command"), err.Error())
 		return
 	}
 
-	options := b.restoreOptions()
-
-	options = append(options, "-f", path.Join(tmpDir, "database.sql"))
-
-	cmd := exec.Command("psql", options...)
-	cmd.Env = append(os.Environ(), fmt.Sprintf("PGPASSWORD=%s", b.cfg.PgPass))
-
-	log.Infof("command: %s", cmd.String())
-
-	if _, err = cmd.CombinedOutput(); err != nil {
-		err = errors.Wrap(fmt.Errorf("failed combine command"), err.Error())
+	log.Info("restore database dump")
+	var filename = path.Join(tmpDir, "database.sql")
+	if err = NewLocal(b.cfg).Restore(filename); err != nil {
 		return
 	}
 
+	log.Info("restore files")
 	d := path.Join("data", "file_storage")
 	log.Infof("remove data dir")
 	_ = os.RemoveAll(d)
@@ -207,70 +188,4 @@ func (b *Backup) restore(name string) (err error) {
 	log.Info("complete")
 
 	return
-}
-
-func (b Backup) dumpOptions() []string {
-	options := b.Options
-
-	// db name
-	if b.cfg.PgName != "" {
-		options = append(options, "-d")
-		options = append(options, b.cfg.PgName)
-	}
-
-	// host
-	if b.cfg.PgHost != "" {
-		options = append(options, "-h")
-		options = append(options, b.cfg.PgHost)
-	}
-
-	// port
-	if b.cfg.PgPort != "" {
-		options = append(options, "-p")
-		options = append(options, b.cfg.PgPort)
-	}
-
-	// user
-	if b.cfg.PgUser != "" {
-		options = append(options, "-U")
-		options = append(options, b.cfg.PgUser)
-	}
-
-	// compress level
-	//options = append(options, "-Z", "9")
-
-	// formats
-	options = append(options, "-F", "p")
-
-	return options
-}
-
-func (b Backup) restoreOptions() []string {
-	options := b.Options
-
-	// db name
-	if b.cfg.PgName != "" {
-		options = append(options, "-d")
-		options = append(options, b.cfg.PgName)
-	}
-
-	// host
-	if b.cfg.PgHost != "" {
-		options = append(options, "-h")
-		options = append(options, b.cfg.PgHost)
-	}
-
-	// port
-	if b.cfg.PgPort != "" {
-		options = append(options, "-p")
-		options = append(options, b.cfg.PgPort)
-	}
-
-	// user
-	if b.cfg.PgUser != "" {
-		options = append(options, "-U")
-		options = append(options, b.cfg.PgUser)
-	}
-
-	return options
 }

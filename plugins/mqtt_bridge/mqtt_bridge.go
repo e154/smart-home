@@ -122,11 +122,11 @@ func (m *MqttBridge) onConnectionLostHandler(client MQTT.Client, e error) {
 		StorageSave: true,
 	})
 
-	if e != nil {
-		log.Debug("connection lost...", e.Error())
-	} else {
-		log.Debug("connection lost...")
-	}
+	//if e != nil {
+	//	log.Debugf("connection lost... %s", e.Error())
+	//} else {
+	//	log.Debug("connection lost...")
+	//}
 
 	for _, topic := range m.cfg.Topics {
 		if token := m.client.Unsubscribe(topic); token.Error() != nil {
@@ -153,7 +153,7 @@ func (m *MqttBridge) directionBoth(client MQTT.Client) {
 func (m *MqttBridge) directionIn(client MQTT.Client) {
 
 	for _, topic := range m.cfg.Topics {
-		log.Debugf("subscribe: %s", topic)
+		//log.Debugf("subscribe: %s", topic)
 		if token := client.Subscribe(topic, m.cfg.Qos, m.clientMessageHandler); token.Wait() && token.Error() != nil {
 			log.Error(token.Error().Error())
 		}

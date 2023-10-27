@@ -23,6 +23,7 @@ import (
 	"reflect"
 	"sort"
 	"sync"
+	"time"
 
 	"github.com/pkg/errors"
 
@@ -88,7 +89,14 @@ func (b *bus) subscribe(topic string, fn interface{}, options ...interface{}) er
 
 	go func() {
 		for args := range h.queue {
-			h.callback.Call(args)
+			go func() {
+				startTime := time.Now()
+				h.callback.Call(args)
+				t := time.Now().Sub(startTime).Microseconds()
+				if t > 1000 {
+					fmt.Printf("long call! topic %s, fn: %s, Microseconds: %d\n\r", topic, reflect.ValueOf(fn).String(), t)
+				}
+			}()
 		}
 	}()
 
@@ -108,7 +116,7 @@ func (b *bus) subscribe(topic string, fn interface{}, options ...interface{}) er
 
 	// sand last message value
 	if b.sub[topic].lastMsg != nil {
-		h.callback.Call(b.sub[topic].lastMsg)
+		go h.callback.Call(b.sub[topic].lastMsg)
 	}
 
 	return nil

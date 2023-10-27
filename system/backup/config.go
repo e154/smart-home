@@ -20,10 +20,10 @@ package backup
 
 // Config ...
 type Config struct {
-	Path   string
-	PgUser string
-	PgPass string
-	PgHost string
-	PgName string
-	PgPort string
+	Path      string
+	PgUser    string
+	PgPass    string
+	PgHost    string
+	PgName    string
+	PgPort    string
 }

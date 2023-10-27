@@ -199,9 +199,19 @@ func (o *Orm) checkServerVersion() (err error) {
 	return
 }
 
-func (o *Orm) checkAvailableExtensions(availableExtensions []AvailableExtension, extName string) (exist bool) {
-	for _, ext := range availableExtensions {
-		if ext.Name == extName && ext.InstalledVersion == nil {
+func (o *Orm) CheckAvailableExtension(extName string) (exist bool) {
+	for _, ext := range o.availableExtensions {
+		if ext.Name == extName {
+			exist = true
+			return
+		}
+	}
+	return
+}
+
+func (o *Orm) CheckInstalledExtension(extName string) (exist bool) {
+	for _, ext := range o.availableExtensions {
+		if ext.Name == extName && ext.InstalledVersion != nil {
 			exist = true
 			return
 		}
@@ -211,53 +221,27 @@ func (o *Orm) checkAvailableExtensions(availableExtensions []AvailableExtension,
 
 func (o *Orm) CheckExtensions() (err error) {
 
-	o.db.Exec(`CREATE EXTENSION IF NOT EXISTS pgcrypto CASCADE;`)
-	//o.db.Exec(`CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;`)
-	//o.db.Exec(`CREATE EXTENSION IF NOT EXISTS Postgis CASCADE;`)
-
 	// check extensions
 	if err = o.db.Raw("select * from pg_available_extensions").Scan(&o.availableExtensions).Error; err != nil {
 		return
 	}
 
-	var extCrypto bool
-	//var extPostgis bool
-	for _, ext := range o.availableExtensions {
-		switch ext.Name {
-		case "pgcrypto":
-			extCrypto = true
-		case "timescaledb":
-			o.extTimescaledb = true
-		//case "postgis":
-		//	extPostgis = true
-		default:
-
-		}
-	}
-
-	if !extCrypto {
+	if !o.CheckAvailableExtension("pgcrypto") {
 		log.Warn("please install pgcrypto extension for postgresql database (maybe need install postgresql-contrib)\r")
 	} else {
-		if o.checkAvailableExtensions(o.availableExtensions, "pgcrypto") {
-			log.Warn("extension 'pgcrypto' installed but not enabled, enable it: CREATE EXTENSION IF NOT EXISTS pgcrypto CASCADE;\n\r")
+		if !o.CheckInstalledExtension("pgcrypto") {
+			o.db.Exec(`CREATE EXTENSION IF NOT EXISTS pgcrypto CASCADE;`)
 		}
 	}
 
-	//if !o.extTimescaledb {
-	//	log.Warn("please install timescaledb extension, website: https://docs.timescale.com/v1.1/getting-started/installation)\r")
-	//} else {
-	//	if o.checkAvailableExtensions(o.availableExtensions, "timescaledb") {
-	//		log.Warn("extension 'timescaledb' installed but not enabled, enable it: CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;\n\r")
-	//	}
-	//}
-
-	//if !extPostgis {
-	//	log.Warn("please install Postgis extension\r")
-	//} else {
-	//	if o.checkAvailableExtensions(o.availableExtensions, "postgis") {
-	//		log.Warn("extension 'Postgis' installed but not enabled, enable it: CREATE EXTENSION IF NOT EXISTS Postgis CASCADE;\n\r")
-	//	}
-	//}
+	if !o.CheckAvailableExtension("timescaledb") {
+		log.Warn("please install timescaledb extension, website: https://docs.timescale.com/v1.1/getting-started/installation)\r")
+	} else {
+		if !o.CheckInstalledExtension("timescaledb") {
+			o.db.Exec(`CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;`)
+		}
+		o.db.Exec(`SELECT create_hypertable('metric_bucket', 'time', migrate_data => true, if_not_exists => TRUE);`)
+	}
 
 	return
 }

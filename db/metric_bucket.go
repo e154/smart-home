@@ -24,16 +24,17 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/apperr"
-
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
+
+	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
 )
 
 // MetricBuckets ...
 type MetricBuckets struct {
-	Db *gorm.DB
+	Db        *gorm.DB
+	Timescale bool
 }
 
 // MetricBucket ...
@@ -67,72 +68,80 @@ func (n *MetricBuckets) SimpleListWithSoftRange(ctx context.Context, from, to ti
 
 	list = make([]*MetricBucket, 0)
 
-	q := `SELECT TIMESTAMP WITH TIME ZONE 'epoch' +
-       INTERVAL '1 second' * round(extract('epoch' from time) / %[1]d) * %[1]d as time, value
+	if n.Timescale {
+		q := `SELECT time_bucket('%d seconds', time) AS time, value
 FROM metric_bucket c
 WHERE c.metric_id = ? and c.time between ? and ?
-GROUP BY round(extract('epoch' from c.time) / %[1]d)
-order by time asc
+GROUP BY time, value
+ORDER BY time ASC
 LIMIT 3600`
-	q = fmt.Sprintf(q, num)
+		q = fmt.Sprintf(q, num)
+		if err = n.Db.WithContext(ctx).Raw(q, metricId, from.Format(time.RFC3339), to.Format(time.RFC3339)).Scan(&list).Error; err != nil {
+			err = errors.Wrap(apperr.ErrMetricBucketGet, err.Error())
+		}
+		return
+	}
+
+	q := `SELECT  time, value
+FROM metric_bucket c
+WHERE c.metric_id = ? and c.time between ? and ?
+ORDER BY time ASC;`
+
 	if err = n.Db.WithContext(ctx).Raw(q, metricId, from.Format(time.RFC3339), to.Format(time.RFC3339)).Scan(&list).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMetricBucketGet, err.Error())
 	}
+
 	return
 }
 
 // SimpleListByRangeType ...
 func (n *MetricBuckets) SimpleListByRangeType(ctx context.Context, metricId int64, metricRange common.MetricRange) (list []*MetricBucket, err error) {
-	var q string
+
+	var interval string
+	var r string
+
 	switch metricRange {
 	case common.MetricRange6H:
-		q = `SELECT TIMESTAMP WITH TIME ZONE 'epoch' +
-       INTERVAL '1 second' * round(extract('epoch' from time) / 6) * 6 as time, value
-FROM metric_bucket c
-WHERE c.metric_id = ? and c.time > NOW() - interval '6 hour'
-GROUP BY round(extract('epoch' from c.time) / 6), value
-order by time asc
-LIMIT 3600`
+		interval = "6 seconds"
+		r = "6 hour"
 	case common.MetricRange12H:
-		q = `SELECT TIMESTAMP WITH TIME ZONE 'epoch' +
-       INTERVAL '1 second' * round(extract('epoch' from time) / 12) * 12 as time, value
-FROM metric_bucket c
-WHERE c.metric_id = ? and c.time > NOW() - interval '12 hour'
-GROUP BY round(extract('epoch' from c.time) / 12), value
-order by time asc
-LIMIT 3600`
+		interval = "12 seconds"
+		r = "12 hour"
 	case common.MetricRange24H:
-		q = `SELECT TIMESTAMP WITH TIME ZONE 'epoch' +
-       INTERVAL '1 second' * round(extract('epoch' from time) / 24) * 24 as time, value
-FROM metric_bucket c
-WHERE c.metric_id = ? and c.time > NOW() - interval '24 hour'
-GROUP BY round(extract('epoch' from c.time) / 24), value
-order by time asc
-LIMIT 3600`
+		interval = "15 seconds"
+		r = "24 hour"
 	case common.MetricRange7d:
-		q = `SELECT TIMESTAMP WITH TIME ZONE 'epoch' +
-       INTERVAL '1 second' * round(extract('epoch' from time) / 168) * 168 as time, value
-FROM metric_bucket c
-WHERE c.metric_id = ? and c.time > NOW() - interval '7 days'
-GROUP BY round(extract('epoch' from c.time) / 168), value
-order by time asc
-LIMIT 3600`
+		interval = "2 minutes"
+		r = "7 days"
 	case common.MetricRange30d, common.MetricRange1m:
-		q = `SELECT TIMESTAMP WITH TIME ZONE 'epoch' +
-       INTERVAL '1 second' * round(extract('epoch' from time) / 720) * 720 as time, value
-FROM metric_bucket c
-WHERE c.metric_id = ? and c.time > NOW() - interval '1 month'
-GROUP BY round(extract('epoch' from c.time) / 720), value
-order by time asc
-LIMIT 3600`
+		interval = "7 minutes"
+		r = "30 days"
 	default:
-		q = `SELECT b.*
-from metric_bucket b
-where b.metric_id = ? and b.time > NOW() - interval '1 hour'
-limit 3600`
+		err = errors.Wrap(apperr.ErrMetricBucketGet, fmt.Sprintf("unknown filter %s", metricRange))
+		return
 	}
+
 	list = make([]*MetricBucket, 0)
-	if err = n.Db.WithContext(ctx).Raw(q, metricId).Scan(&list).Error; err != nil {
+
+	if n.Timescale {
+		var q = `SELECT time_bucket('%s', time) AS time, value
+FROM metric_bucket c
+WHERE c.metric_id = ? and c.time > NOW() - interval '%s'
+GROUP BY time, value
+ORDER BY time ASC
+LIMIT 3600`
+		if err = n.Db.WithContext(ctx).Raw(fmt.Sprintf(q, interval, r), metricId).Scan(&list).Error; err != nil {
+			err = errors.Wrap(apperr.ErrMetricBucketGet, err.Error())
+		}
+		return
+	}
+
+	q := `SELECT  time, value
+FROM metric_bucket c
+WHERE c.metric_id = ? and c.time > NOW() - interval '%s'
+ORDER BY time ASC;`
+
+	if err = n.Db.WithContext(ctx).Raw(fmt.Sprintf(q, r), metricId).Scan(&list).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMetricBucketGet, err.Error())
 	}
 
@@ -143,13 +152,24 @@ limit 3600`
 func (n *MetricBuckets) Simple24HPreview(ctx context.Context, metricId int64) (list []*MetricBucket, err error) {
 	list = make([]*MetricBucket, 0)
 
-	q := `SELECT TIMESTAMP WITH TIME ZONE 'epoch' +
-       INTERVAL '1 second' * round(extract('epoch' from time) / 250) * 250 as time, value
+	if n.Timescale {
+		q := `SELECT time_bucket('250 seconds', time) AS time, value
 FROM metric_bucket c
-WHERE c.metric_id = ? and c.time > NOW() - interval '1 day'
-GROUP BY round(extract('epoch' from c.time) / 250), value
-order by time asc
+WHERE c.metric_id = ? and c.time > NOW() - interval '24 hour'
+GROUP BY time, value
+ORDER BY time ASC
 LIMIT 345`
+
+		if err = n.Db.WithContext(ctx).Raw(q, metricId).Scan(&list).Error; err != nil {
+			err = errors.Wrap(apperr.ErrMetricBucketGet, err.Error())
+		}
+		return
+	}
+
+	q := `SELECT  time, value
+FROM metric_bucket c
+WHERE c.metric_id = ? and c.time > NOW() - interval '24 hour'
+ORDER BY time ASC`
 
 	if err = n.Db.WithContext(ctx).Raw(q, metricId).Scan(&list).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMetricBucketGet, err.Error())
@@ -185,14 +205,6 @@ func (n MetricBuckets) DeleteByMetricId(ctx context.Context, metricId int64) (er
 func (n MetricBuckets) DeleteById(ctx context.Context, id int64) (err error) {
 	if err = n.Db.WithContext(ctx).Delete(&MetricBucket{}, "id = ?", id).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMetricBucketDelete, err.Error())
-	}
-	return
-}
-
-// CreateHypertable ...
-func (n MetricBuckets) CreateHypertable(ctx context.Context) (err error) {
-	if err = n.Db.WithContext(ctx).Raw(`SELECT create_hypertable('metric_bucket', 'time', migrate_data=>'TRUE')`).Error; err != nil {
-		err = errors.Wrap(apperr.ErrMetricBucketAdd, err.Error())
 	}
 	return
 }

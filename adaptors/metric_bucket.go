@@ -23,11 +23,12 @@ import (
 	"encoding/json"
 	"time"
 
+	"gorm.io/gorm"
+
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/orm"
-	"gorm.io/gorm"
 )
 
 // IMetricBucket ...
@@ -39,7 +40,6 @@ type IMetricBucket interface {
 	DeleteOldest(ctx context.Context, days int) (err error)
 	DeleteById(ctx context.Context, id int64) (err error)
 	DeleteByMetricId(ctx context.Context, metricId int64) (err error)
-	CreateHypertable(ctx context.Context) (err error)
 	fromDb(dbVer *db.MetricBucket) (ver *m.MetricDataItem)
 	toDb(ver *m.MetricDataItem) (dbVer *db.MetricBucket)
 }
@@ -49,15 +49,17 @@ type MetricBucket struct {
 	IMetricBucket
 	table *db.MetricBuckets
 	db    *gorm.DB
-	orm   *orm.Orm
 }
 
 // GetMetricBucketAdaptor ...
 func GetMetricBucketAdaptor(d *gorm.DB, orm *orm.Orm) IMetricBucket {
+	table := &db.MetricBuckets{Db: d}
+	if orm != nil {
+		table.Timescale = orm.CheckInstalledExtension("timescaledb")
+	}
 	return &MetricBucket{
-		table: &db.MetricBuckets{Db: d},
+		table: table,
 		db:    d,
-		orm:   orm,
 	}
 }
 
@@ -133,12 +135,6 @@ func (n *MetricBucket) DeleteById(ctx context.Context, id int64) (err error) {
 // DeleteByMetricId ...
 func (n *MetricBucket) DeleteByMetricId(ctx context.Context, metricId int64) (err error) {
 	err = n.table.DeleteByMetricId(ctx, metricId)
-	return
-}
-
-// CreateHypertable ...
-func (n *MetricBucket) CreateHypertable(ctx context.Context) (err error) {
-	err = n.table.CreateHypertable(ctx)
 	return
 }
 

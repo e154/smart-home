@@ -300,7 +300,12 @@ func (e *supervisor) eventLastState(msg events.EventGetLastState) {
 
 	currentState := pla.GetCurrentState()
 	if currentState.LastChanged == nil && currentState.LastUpdated == nil {
-		entity, _ := e.adaptors.Entity.GetById(context.Background(), msg.EntityId)
+		entity, err := e.adaptors.Entity.GetById(context.Background(), msg.EntityId)
+		if err != nil {
+			log.Error(err.Error())
+			debug.PrintStack()
+			return
+		}
 		currentState.Attributes = entity.Attributes
 	}
 

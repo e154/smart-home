@@ -53,7 +53,7 @@ func NewActor(entity *m.Entity,
 	actor = &Actor{
 		BaseActor:         supervisor.NewBaseActor(entity, service),
 		mqttMessageQueue:  make(chan *Message, 10),
-		actionPool:        make(chan events.EventCallEntityAction, 10),
+		actionPool:        make(chan events.EventCallEntityAction, 1000),
 		newMsgMu:          &sync.Mutex{},
 		stateMu:           &sync.Mutex{},
 		zigbee2mqttDevice: zigbee2mqttDevice,
