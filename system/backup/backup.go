@@ -21,14 +21,15 @@ package backup
 import (
 	"context"
 	"fmt"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 	"os"
 	"path"
-	"path/filepath"
 	"time"
 
 	"github.com/pkg/errors"
 	"go.uber.org/fx"
-	"gorm.io/gorm"
+	"path/filepath"
 
 	app "github.com/e154/smart-home/common/app"
 	"github.com/e154/smart-home/common/apperr"
@@ -42,18 +43,14 @@ var (
 // Backup ...
 type Backup struct {
 	cfg          *Config
-	db           *gorm.DB
 	restoreImage string
 }
 
 // NewBackup ...
-func NewBackup(lc fx.Lifecycle,
-	cfg *Config,
-	db *gorm.DB) *Backup {
+func NewBackup(lc fx.Lifecycle, cfg *Config) *Backup {
 
 	backup := &Backup{
 		cfg: cfg,
-		db:  db,
 	}
 
 	lc.Append(fx.Hook{
@@ -87,12 +84,17 @@ func (b *Backup) New() (err error) {
 		return
 	}
 
-	var filename = path.Join(tmpDir, "database.sql")
-	if err = NewLocal(b.cfg).New(filename); err != nil {
+	if err = NewLocal(b.cfg).New(tmpDir); err != nil {
+		log.Error(err.Error())
 		return
 	}
 
-	err = zipit([]string{path.Join("data", "file_storage"), filename}, path.Join(b.cfg.Path, fmt.Sprintf("%s.zip", time.Now().Format("2006-01-02T15:04:05.999"))))
+	err = zipit([]string{
+		path.Join("data", "file_storage"),
+		path.Join(tmpDir, "data.sql"),
+		path.Join(tmpDir, "scheme.sql"),
+	},
+		path.Join(b.cfg.Path, fmt.Sprintf("%s.zip", time.Now().Format("2006-01-02T15:04:05.999"))))
 	if err != nil {
 		return
 	}
@@ -154,23 +156,44 @@ func (b *Backup) restore(name string) (err error) {
 
 	log.Info("drop database")
 
-	if err = b.db.Exec(`DROP SCHEMA IF EXISTS "public" CASCADE;`).Error; err != nil {
+	var db *gorm.DB
+	db, err = gorm.Open(postgres.Open(b.cfg.String()), &gorm.Config{})
+	if err != nil {
+		return
+	}
+	defer func() {
+		if db, err := db.DB(); err == nil {
+			_ = db.Close()
+		}
+	}()
+
+	if err = db.Exec(`DROP SCHEMA IF EXISTS "public" CASCADE;`).Error; err != nil {
 		err = errors.Wrap(fmt.Errorf("failed exec sql command"), err.Error())
 		return
 	}
 
-	if err = b.db.Exec(`CREATE SCHEMA "public";`).Error; err != nil {
+	if err = db.Exec(`CREATE SCHEMA "public";`).Error; err != nil {
 		err = errors.Wrap(fmt.Errorf("failed exec sql command"), err.Error())
 		return
 	}
 
-	log.Info("restore database dump")
-	var filename = path.Join(tmpDir, "database.sql")
+	db.Exec(`CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;`)
+
+	log.Info("restore database scheme")
+	var filename = path.Join(tmpDir, "scheme.sql")
 	if err = NewLocal(b.cfg).Restore(filename); err != nil {
 		return
 	}
 
-	log.Info("restore files")
+	db.Exec(`SELECT create_hypertable('metric_bucket', 'time', migrate_data => true, if_not_exists => TRUE);`)
+
+	log.Info("restore database data")
+	filename = path.Join(tmpDir, "data.sql")
+	if err = NewLocal(b.cfg).Restore(filename); err != nil {
+		return
+	}
+
+	log.Info("restore files ...")
 	d := path.Join("data", "file_storage")
 	log.Infof("remove data dir")
 	_ = os.RemoveAll(d)
@@ -185,7 +208,7 @@ func (b *Backup) restore(name string) (err error) {
 	log.Infof("remove tmp dir %s", tmpDir)
 	_ = os.RemoveAll(tmpDir)
 
-	log.Info("complete")
+	log.Info("complete ...")
 
 	return
 }

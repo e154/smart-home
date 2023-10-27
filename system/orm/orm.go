@@ -22,6 +22,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"github.com/e154/smart-home/system/backup"
 	goLog "log"
 	"os"
 	"strings"
@@ -56,7 +57,8 @@ const (
 
 // NewOrm ...
 func NewOrm(lc fx.Lifecycle,
-	cfg *Config) (orm *Orm, db *gorm.DB, err error) {
+	cfg *Config,
+	_ *backup.Backup) (orm *Orm, db *gorm.DB, err error) {
 
 	orm = &Orm{
 		cfg:                 cfg,

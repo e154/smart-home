@@ -23,6 +23,7 @@ import (
 	"github.com/pkg/errors"
 	"os"
 	"os/exec"
+	"path"
 )
 
 type Local struct {
@@ -33,17 +34,27 @@ func NewLocal(cfg *Config) *Local {
 	return &Local{cfg: cfg}
 }
 
-func (l *Local) New(filename string) (err error) {
+func (l *Local) New(tmpDir string) (err error) {
 
 	options := l.dumpOptions()
 
-	// filename
-	options = append(options, "-f", filename)
+	// get data
+	var dataFile = path.Join(tmpDir, "data.sql")
+	cmd := exec.Command("pg_dump", append(options, "-a", "-f", dataFile)...)
+	cmd.Env = append(os.Environ(), fmt.Sprintf("PGPASSWORD=%s", l.cfg.Password))
 
-	cmd := exec.Command("pg_dump", options...)
-	cmd.Env = append(os.Environ(), fmt.Sprintf("PGPASSWORD=%s", l.cfg.PgPass))
+	log.Infof("run command: %s", cmd.String())
 
-	log.Infof("run command %s", cmd.String())
+	if _, err = cmd.CombinedOutput(); err != nil {
+		return err
+	}
+
+	// get scheme
+	var schemeFile = path.Join(tmpDir, "scheme.sql")
+	cmd = exec.Command("pg_dump", append(options, "-s", "-f", schemeFile)...)
+	cmd.Env = append(os.Environ(), fmt.Sprintf("PGPASSWORD=%s", l.cfg.Password))
+
+	log.Infof("run command: %s", cmd.String())
 
 	_, err = cmd.CombinedOutput()
 
@@ -54,10 +65,10 @@ func (l *Local) Restore(path string) (err error) {
 
 	options := l.restoreOptions()
 
-	options = append(options, "-f", path)
+	options = append(options, "-v", path)
 
-	cmd := exec.Command("psql", options...)
-	cmd.Env = append(os.Environ(), fmt.Sprintf("PGPASSWORD=%s", l.cfg.PgPass))
+	cmd := exec.Command("pg_restore", options...)
+	cmd.Env = append(os.Environ(), fmt.Sprintf("PGPASSWORD=%s", l.cfg.Password))
 
 	log.Infof("command: %s", cmd.String())
 
@@ -72,30 +83,33 @@ func (l *Local) dumpOptions() []string {
 	options := []string{}
 
 	// db name
-	if l.cfg.PgName != "" {
-		options = append(options, "-d", l.cfg.PgName)
+	if l.cfg.Name != "" {
+		options = append(options, "-d", l.cfg.Name)
 	}
 
 	// host
-	if l.cfg.PgHost != "" {
-		options = append(options, "-h", l.cfg.PgHost)
+	if l.cfg.Host != "" {
+		options = append(options, "-h", l.cfg.Host)
 	}
 
 	// port
-	if l.cfg.PgPort != "" {
-		options = append(options, "-p", l.cfg.PgPort)
+	if l.cfg.Port != "" {
+		options = append(options, "-p", l.cfg.Port)
 	}
 
 	// user
-	if l.cfg.PgUser != "" {
-		options = append(options, "-U", l.cfg.PgUser)
+	if l.cfg.User != "" {
+		options = append(options, "-U", l.cfg.User)
 	}
 
 	// compress level
 	//options = append(options, "-Z", "9")
 
 	// formats
-	options = append(options, "-F", "p")
+	options = append(options, "-F", "t")
+
+	// etc
+	options = append(options, "-w", "-v", "--quote-all-identifiers", "-b", "-O", "-x")
 
 	return options
 }
@@ -105,23 +119,23 @@ func (l *Local) restoreOptions() []string {
 	options := []string{}
 
 	// db name
-	if l.cfg.PgName != "" {
-		options = append(options, "-d", l.cfg.PgName)
+	if l.cfg.Name != "" {
+		options = append(options, "-d", l.cfg.Name)
 	}
 
 	// host
-	if l.cfg.PgHost != "" {
-		options = append(options, "-h", l.cfg.PgHost)
+	if l.cfg.Host != "" {
+		options = append(options, "-h", l.cfg.Host)
 	}
 
 	// port
-	if l.cfg.PgPort != "" {
-		options = append(options, "-p", l.cfg.PgPort)
+	if l.cfg.Port != "" {
+		options = append(options, "-p", l.cfg.Port)
 	}
 
 	// user
-	if l.cfg.PgUser != "" {
-		options = append(options, "-U", l.cfg.PgUser)
+	if l.cfg.User != "" {
+		options = append(options, "-U", l.cfg.User)
 	}
 
 	return options

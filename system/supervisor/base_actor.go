@@ -362,7 +362,7 @@ func (e *BaseActor) SaveState(msg events.EventStateChanged) {
 			Attributes: msg.NewState.Attributes.Serialize(),
 		})
 		if err != nil {
-			log.Error(err.Error())
+			//log.Error(err.Error())
 		}
 	}()
 }

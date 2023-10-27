@@ -65,7 +65,6 @@ func Kill() error {
 }
 
 func Do(builder func(opt fx.Option) (app *fx.App), options fx.Option) {
-LOOP:
 	app := builder(options)
 
 	Start(app)
@@ -73,9 +72,4 @@ LOOP:
 	Work()
 
 	Stop(app)
-
-	if IsRestart {
-		IsRestart = false
-		goto LOOP
-	}
 }

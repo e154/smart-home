@@ -18,12 +18,21 @@
 
 package backup
 
+import "fmt"
+
 // Config ...
 type Config struct {
-	Path      string
-	PgUser    string
-	PgPass    string
-	PgHost    string
-	PgName    string
-	PgPort    string
+	Path     string
+	Name     string
+	User     string
+	Password string
+	Host     string
+	Port     string
+}
+
+// String ...
+func (c Config) String() string {
+
+	// parseTime https://github.com/go-sql-driver/mysql#parsetime
+	return fmt.Sprintf("dbname=%s user=%s password=%s host=%s port=%s sslmode=disable", c.Name, c.User, c.Password, c.Host, c.Port)
 }
