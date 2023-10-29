@@ -174,7 +174,7 @@ func (a *Api) registerHandlers() {
 	v1.GET("/areas/search", a.echoFilter.Auth(wrapper.AreaServiceSearchArea))
 	v1.GET("/backups", a.echoFilter.Auth(wrapper.BackupServiceGetBackupList))
 	v1.POST("/backups", a.echoFilter.Auth(wrapper.BackupServiceNewBackup))
-	v1.POST("/backup/upload", wrapper.BackupServiceUploadBackup)
+	v1.POST("/backup/upload", a.echoFilter.Auth(wrapper.BackupServiceUploadBackup))
 	v1.POST("/backup/apply", a.echoFilter.Auth(wrapper.BackupServiceApplyState))
 	v1.POST("/backup/rollback", a.echoFilter.Auth(wrapper.BackupServiceRevertState))
 	v1.PUT("/backup/:name", a.echoFilter.Auth(wrapper.BackupServiceRestoreBackup))
