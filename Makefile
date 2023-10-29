@@ -138,10 +138,10 @@ server:
 build_structure:
 	@echo MARK: create app structure
 	mkdir -p ${SERVER_DIR}
+	mkdir -p ${SERVER_DIR}/snapshots
 	cd ${SERVER_DIR}
 	cp -r ${ROOT}/conf ${SERVER_DIR}
 	cp -r ${ROOT}/data ${SERVER_DIR}
-	cp -r ${ROOT}/snapshots ${SERVER_DIR}
 	cp ${ROOT}/LICENSE ${SERVER_DIR}
 	cp ${ROOT}/README* ${SERVER_DIR}
 	cp ${ROOT}/CONTRIBUTING.md ${SERVER_DIR}
@@ -162,10 +162,10 @@ build_structure:
 build_common_structure:
 	@echo MARK: create common structure
 	mkdir -p ${COMMON_DIR}
+	mkdir -p ${COMMON_DIR}/snapshots
 	cd ${COMMON_DIR}
 	cp -r ${ROOT}/conf ${COMMON_DIR}
 	cp -r ${ROOT}/data ${COMMON_DIR}
-	cp -r ${ROOT}/snapshots ${COMMON_DIR}
 	cp ${ROOT}/LICENSE ${COMMON_DIR}
 	cp ${ROOT}/README* ${COMMON_DIR}
 	cp ${ROOT}/CONTRIBUTING.md ${COMMON_DIR}
