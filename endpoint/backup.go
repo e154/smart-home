@@ -19,7 +19,12 @@
 package endpoint
 
 import (
+	"bufio"
 	"context"
+	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
+	m "github.com/e154/smart-home/models"
+	"mime/multipart"
 
 	"github.com/e154/smart-home/system/backup"
 )
@@ -40,7 +45,7 @@ func NewBackupEndpoint(common *CommonEndpoint, backup *backup.Backup) *BackupEnd
 
 // New ...
 func (b *BackupEndpoint) New(ctx context.Context) (err error) {
-	err = b.backup.New()
+	go b.backup.New()
 	return
 }
 
@@ -51,7 +56,62 @@ func (b *BackupEndpoint) Restore(ctx context.Context, name string) (err error) {
 }
 
 // GetList ...
-func (b *BackupEndpoint) GetList(ctx context.Context) (list []string) {
-	list = b.backup.List()
+func (b *BackupEndpoint) GetList(ctx context.Context, pagination common.PageParams) (items []*m.Backup, total int64, err error) {
+	items, total, err = b.backup.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
+	return
+}
+
+// Upload ...
+func (b *BackupEndpoint) Upload(ctx context.Context, files map[string][]*multipart.FileHeader) (fileList []*m.Backup, errs []error) {
+
+	fileList = make([]*m.Backup, 0)
+	errs = make([]error, 0)
+
+	for _, fileHeader := range files {
+
+		file, err := fileHeader[0].Open()
+		if err != nil {
+			errs = append(errs, err)
+			continue
+		}
+
+		reader := bufio.NewReader(file)
+		var newbackup *m.Backup
+		newbackup, err = b.backup.UploadBackup(ctx, reader, fileHeader[0].Filename)
+		if err != nil {
+			errs = append(errs, err)
+			continue
+		}
+		fileList = append(fileList, newbackup)
+
+		file.Close()
+	}
+
+	return
+}
+
+func (b *BackupEndpoint) Delete(ctx context.Context, name string) (err error) {
+
+	var list []*m.Backup
+	list, _, err = b.backup.List(ctx, 999, 0, "", "")
+	for _, file := range list {
+		if name == file.Name {
+			err = b.backup.Delete(file.Name)
+			return
+		}
+	}
+
+	err = apperr.ErrBackupNotFound
+
+	return
+}
+
+func (b *BackupEndpoint) ApplyChanges(ctx context.Context) (err error) {
+	err = b.backup.ApplyChanges()
+	return
+}
+
+func (b *BackupEndpoint) RollbackChanges(ctx context.Context) (err error) {
+	err = b.backup.RollbackChanges()
 	return
 }

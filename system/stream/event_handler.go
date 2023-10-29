@@ -91,6 +91,14 @@ func (e *eventHandler) eventHandler(_ string, message interface{}) {
 	// mqtt
 	case events.EventMqttNewClient:
 		go e.event(message)
+
+	// backup
+	case events.EventCreatedBackup:
+		go e.event(message)
+	case events.EventRemovedBackup:
+		go e.event(message)
+	case events.EventUploadedBackup:
+		go e.event(message)
 	}
 }
 

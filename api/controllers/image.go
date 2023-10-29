@@ -102,14 +102,8 @@ func (c ControllerImage) ImageServiceDeleteImageById(ctx echo.Context, id int64)
 	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
 
-// UploadImage ...
-func (c ControllerImage) ImageServiceUploadImage(ctx echo.Context, _ stub.ImageServiceUploadImageParams) error {
-
-	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
-}
-
 // MuxUploadImage ...
-func (c ControllerImage) ImageServiceMuxUploadImage(ctx echo.Context) error {
+func (c ControllerImage) ImageServiceUploadImage(ctx echo.Context, _ stub.ImageServiceUploadImageParams) error {
 
 	r := ctx.Request()
 

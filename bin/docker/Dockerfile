@@ -1,10 +1,12 @@
-FROM golang:1.20 as build
-RUN update-ca-certificates
+FROM postgres:15 as postgres
 MAINTAINER Filippov Alex <support@e154.ru>
 
-FROM scratch
-COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY --from=build /etc/passwd /etc/passwd
+FROM debian:12-slim
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libpq5 ca-certificates
+RUN update-ca-certificates
+COPY --from=postgres /usr/lib/postgresql/15/bin/pg_dump /usr/local/bin
+COPY --from=postgres /usr/lib/postgresql/15/bin/pg_restore /usr/local/bin
 ENTRYPOINT ["/server"]
 USER nobody
 ADD . /

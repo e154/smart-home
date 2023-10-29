@@ -16,40 +16,17 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package mqtt
+package models
 
 import (
-	"github.com/e154/smart-home/common"
-	m "github.com/e154/smart-home/models"
+	"os"
+	"time"
 )
 
-const (
-	// Name ...
-	Name = "mqtt"
-	// EntityMqtt ...
-	EntityMqtt = string("mqtt")
-)
-
-const (
-	// FuncMqttEvent ...
-	FuncMqttEvent = "mqttEvent"
-	// FuncEntityAction ...
-	FuncEntityAction = "entityAction"
-
-	Version = "0.1.0"
-)
-
-const (
-	// AttrSubscribeTopic ...
-	AttrSubscribeTopic = "subscribe_topic"
-)
-
-// NewSettings ...
-func NewSettings() m.Attributes {
-	return m.Attributes{
-		AttrSubscribeTopic: {
-			Name: AttrSubscribeTopic,
-			Type: common.AttributeString,
-		},
-	}
+type Backup struct {
+	Name     string
+	Size     int64
+	MimeType string
+	FileMode os.FileMode
+	ModTime  time.Time
 }

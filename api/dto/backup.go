@@ -16,40 +16,32 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package mqtt
+package dto
 
 import (
-	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/api/stub"
 	m "github.com/e154/smart-home/models"
 )
 
-const (
-	// Name ...
-	Name = "mqtt"
-	// EntityMqtt ...
-	EntityMqtt = string("mqtt")
-)
+// Backup ...
+type Backup struct{}
 
-const (
-	// FuncMqttEvent ...
-	FuncMqttEvent = "mqttEvent"
-	// FuncEntityAction ...
-	FuncEntityAction = "entityAction"
+// NewBackupDto ...
+func NewBackupDto() Backup {
+	return Backup{}
+}
 
-	Version = "0.1.0"
-)
+func (b *Backup) ToBackupListResult(images []*m.Backup) []*stub.ApiBackup {
 
-const (
-	// AttrSubscribeTopic ...
-	AttrSubscribeTopic = "subscribe_topic"
-)
-
-// NewSettings ...
-func NewSettings() m.Attributes {
-	return m.Attributes{
-		AttrSubscribeTopic: {
-			Name: AttrSubscribeTopic,
-			Type: common.AttributeString,
-		},
+	var items = make([]*stub.ApiBackup, 0, len(images))
+	for _, item := range images {
+		items = append(items, &stub.ApiBackup{
+			FileMode: uint32(item.FileMode),
+			ModTime:  item.ModTime,
+			Name:     item.Name,
+			Size:     item.Size,
+		})
 	}
+
+	return items
 }

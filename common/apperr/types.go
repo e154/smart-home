@@ -287,4 +287,7 @@ var (
 	ErrUserDeviceGet    = ErrorWithCode("USER_DEVICE_GET_ERROR", "failed to get device list", ErrInternal)
 	ErrUserDeviceDelete = ErrorWithCode("USER_DEVICE_DELETE_ERROR", "failed to delete user device", ErrInternal)
 	ErrUserDeviceAdd    = ErrorWithCode("USER_DEVICE_ADD_ERROR", "failed to add user device", ErrInternal)
+
+	ErrBackupNotFound = ErrorWithCode("BACKUP_NOT_FOUND_ERROR", "backup not found", ErrNotFound)
+	ErrBackupNameNotUnique = ErrorWithCode("BACKUP_NAME_NOT_UNIQUE", "backup name not unique", ErrInvalidRequest)
 )

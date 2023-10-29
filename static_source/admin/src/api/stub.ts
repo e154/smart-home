@@ -485,6 +485,7 @@ export interface ApiGetAreaListResult {
 
 export interface ApiGetBackupListResult {
   items: string[];
+  meta?: ApiMeta;
 }
 
 export interface ApiGetBridgeListResult {
@@ -596,6 +597,16 @@ export interface ApiGetVariableListResult {
   meta?: ApiMeta;
 }
 
+export interface ApiBackup {
+  name: string;
+  /** @format int64 */
+  size: number;
+  /** @format uint32 */
+  fileMode: number;
+  /** @format date-time */
+  modTime: string;
+}
+
 export interface ApiImage {
   /** @format int64 */
   id: number;
@@ -681,9 +692,9 @@ export interface ApiMetricOption {
 }
 
 export interface ApiMetricOptionData {
-  value: Record<string, number>;
+  value: Record<string, any>;
   /** @format int64 */
-  metricId: number;
+  metricId?: number;
   /** @format date-time */
   time: string;
 }
@@ -1189,14 +1200,6 @@ export interface ApiUpdateEntityRequestState {
   /** @format int64 */
   imageId?: number;
   style: string;
-}
-
-export interface ApiUploadImageRequest {
-  /**
-   * @format byte
-   * @pattern ^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$
-   */
-  body?: string;
 }
 
 export interface ApiUserFull {
@@ -2049,9 +2052,56 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags BackupService
+     * @name BackupServiceGetBackupList
+     * @summary get backup list
+     * @request GET:/v1/backups
+     * @secure
+     */
+    backupServiceGetBackupList: (
+      query?: {
+        /**
+         * Field on which to sort and its direction
+         * @example "-created_at"
+         */
+        sort?: string;
+        /**
+         * Page number of the requested result set
+         * @format uint64
+         * @default 1
+         * @example 1
+         */
+        page?: number;
+        /**
+         * The number of results returned on a page
+         * @format uint64
+         */
+        limit?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        ApiGetBackupListResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
+        path: `/v1/backups`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags BackupService
      * @name BackupServiceNewBackup
      * @summary new backup
-     * @request POST:/v1/backup
+     * @request POST:/v1/backups
      * @secure
      */
     backupServiceNewBackup: (data: ApiDisablePluginResult, params: RequestParams = {}) =>
@@ -2063,7 +2113,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
           };
         }
       >({
-        path: `/v1/backup`,
+        path: `/v1/backups`,
         method: "POST",
         body: data,
         secure: true,
@@ -2076,25 +2126,33 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags BackupService
-     * @name BackupServiceRestoreBackup
-     * @summary restore backup
-     * @request PUT:/v1/backup/restore
+     * @name BackupServiceUploadBackup
+     * @summary upload backup file
+     * @request POST:/v1/backup/upload
      * @secure
      */
-    backupServiceRestoreBackup: (data: ApiRestoreBackupRequest, params: RequestParams = {}) =>
+    backupServiceUploadBackup: (
+      data: {
+        filename?: File[];
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<
-        ApiDisablePluginResult,
-        {
-          error?: GenericErrorResponse & {
-            code?: "UNAUTHORIZED";
-          };
-        }
+        ApiBackup,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
       >({
-        path: `/v1/backup/restore`,
-        method: "PUT",
+        path: `/v1/backup/upload`,
+        method: "POST",
         body: data,
         secure: true,
-        type: ContentType.Json,
+        type: ContentType.FormData,
         format: "json",
         ...params,
       }),
@@ -2103,22 +2161,98 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags BackupService
-     * @name BackupServiceGetBackupList
-     * @summary get backup list
-     * @request GET:/v1/backups
+     * @name BackupServiceApplyState
+     * @summary apply state
+     * @request POST:/v1/backup/apply
      * @secure
      */
-    backupServiceGetBackupList: (params: RequestParams = {}) =>
+    backupServiceApplyState: (params: RequestParams = {}) =>
       this.request<
-        ApiGetBackupListResult,
+        void,
         {
           error?: GenericErrorResponse & {
             code?: "UNAUTHORIZED";
           };
         }
       >({
-        path: `/v1/backups`,
-        method: "GET",
+        path: `/v1/backup/apply`,
+        method: "POST",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags BackupService
+     * @name BackupServiceRevertState
+     * @summary revert state
+     * @request POST:/v1/backup/rollback
+     * @secure
+     */
+    backupServiceRevertState: (params: RequestParams = {}) =>
+      this.request<
+        void,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
+        path: `/v1/backup/rollback`,
+        method: "POST",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags BackupService
+     * @name BackupServiceRestoreBackup
+     * @summary restore backup
+     * @request PUT:/v1/backup/{name}
+     * @secure
+     */
+    backupServiceRestoreBackup: (name: string, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
+        path: `/v1/backup/${name}`,
+        method: "PUT",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags BackupService
+     * @name BackupServiceDeleteBackup
+     * @summary delete backup
+     * @request DELETE:/v1/backup/{name}
+     * @secure
+     */
+    backupServiceDeleteBackup: (name: string, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
+        path: `/v1/backup/${name}`,
+        method: "DELETE",
         secure: true,
         format: "json",
         ...params,
@@ -3712,7 +3846,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request POST:/v1/image/upload
      * @secure
      */
-    imageServiceUploadImage: (data: ApiUploadImageRequest, params: RequestParams = {}) =>
+    imageServiceUploadImage: (
+      data: {
+        filename?: File[];
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<
         ApiImage,
         | {
@@ -3728,7 +3867,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         method: "POST",
         body: data,
         secure: true,
-        type: ContentType.Json,
+        type: ContentType.FormData,
         format: "json",
         ...params,
       }),
@@ -6411,29 +6550,25 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
-  };
-  ws = {
+
     /**
      * No description
      *
      * @tags StreamService
      * @name StreamServiceSubscribe
-     * @request GET:/ws
+     * @request GET:/v1/ws
      * @secure
      */
     streamServiceSubscribe: (params: RequestParams = {}) =>
       this.request<
-        {
-          result?: ApiResponse;
-          error?: RpcStatus;
-        },
+        ApiResponse,
         {
           error?: GenericErrorResponse & {
             code?: "UNAUTHORIZED";
           };
         }
       >({
-        path: `/ws`,
+        path: `/v1/ws`,
         method: "GET",
         secure: true,
         format: "json",

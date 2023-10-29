@@ -52,15 +52,27 @@ type ServerInterface interface {
 	// search area
 	// (GET /v1/areas/search)
 	AreaServiceSearchArea(ctx echo.Context, params AreaServiceSearchAreaParams) error
-	// new backup
-	// (POST /v1/backup)
-	BackupServiceNewBackup(ctx echo.Context, params BackupServiceNewBackupParams) error
+	// apply state
+	// (POST /v1/backup/apply)
+	BackupServiceApplyState(ctx echo.Context, params BackupServiceApplyStateParams) error
+	// revert state
+	// (POST /v1/backup/rollback)
+	BackupServiceRevertState(ctx echo.Context, params BackupServiceRevertStateParams) error
+	// upload backup file
+	// (POST /v1/backup/upload)
+	BackupServiceUploadBackup(ctx echo.Context, params BackupServiceUploadBackupParams) error
+	// delete backup
+	// (DELETE /v1/backup/{name})
+	BackupServiceDeleteBackup(ctx echo.Context, name string) error
 	// restore backup
-	// (PUT /v1/backup/restore)
-	BackupServiceRestoreBackup(ctx echo.Context, params BackupServiceRestoreBackupParams) error
+	// (PUT /v1/backup/{name})
+	BackupServiceRestoreBackup(ctx echo.Context, name string) error
 	// get backup list
 	// (GET /v1/backups)
-	BackupServiceGetBackupList(ctx echo.Context) error
+	BackupServiceGetBackupList(ctx echo.Context, params BackupServiceGetBackupListParams) error
+	// new backup
+	// (POST /v1/backups)
+	BackupServiceNewBackup(ctx echo.Context, params BackupServiceNewBackupParams) error
 	// add new condition
 	// (POST /v1/condition)
 	ConditionServiceAddCondition(ctx echo.Context, params ConditionServiceAddConditionParams) error
@@ -803,6 +815,169 @@ func (w *ServerInterfaceWrapper) AreaServiceSearchArea(ctx echo.Context) error {
 	return err
 }
 
+// BackupServiceApplyState converts echo context to params.
+func (w *ServerInterfaceWrapper) BackupServiceApplyState(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(ApiKeyAuthScopes, []string{})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params BackupServiceApplyStateParams
+
+	headers := ctx.Request().Header
+	// ------------- Optional header parameter "Accept" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
+		var Accept AcceptJSON
+		n := len(valueList)
+		if n != 1 {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for Accept, got %d", n))
+		}
+
+		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter Accept: %s", err))
+		}
+
+		params.Accept = &Accept
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.BackupServiceApplyState(ctx, params)
+	return err
+}
+
+// BackupServiceRevertState converts echo context to params.
+func (w *ServerInterfaceWrapper) BackupServiceRevertState(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(ApiKeyAuthScopes, []string{})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params BackupServiceRevertStateParams
+
+	headers := ctx.Request().Header
+	// ------------- Optional header parameter "Accept" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
+		var Accept AcceptJSON
+		n := len(valueList)
+		if n != 1 {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for Accept, got %d", n))
+		}
+
+		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter Accept: %s", err))
+		}
+
+		params.Accept = &Accept
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.BackupServiceRevertState(ctx, params)
+	return err
+}
+
+// BackupServiceUploadBackup converts echo context to params.
+func (w *ServerInterfaceWrapper) BackupServiceUploadBackup(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(ApiKeyAuthScopes, []string{})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params BackupServiceUploadBackupParams
+
+	headers := ctx.Request().Header
+	// ------------- Optional header parameter "Accept" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
+		var Accept AcceptJSON
+		n := len(valueList)
+		if n != 1 {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for Accept, got %d", n))
+		}
+
+		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter Accept: %s", err))
+		}
+
+		params.Accept = &Accept
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.BackupServiceUploadBackup(ctx, params)
+	return err
+}
+
+// BackupServiceDeleteBackup converts echo context to params.
+func (w *ServerInterfaceWrapper) BackupServiceDeleteBackup(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "name" -------------
+	var name string
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "name", runtime.ParamLocationPath, ctx.Param("name"), &name)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter name: %s", err))
+	}
+
+	ctx.Set(ApiKeyAuthScopes, []string{})
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.BackupServiceDeleteBackup(ctx, name)
+	return err
+}
+
+// BackupServiceRestoreBackup converts echo context to params.
+func (w *ServerInterfaceWrapper) BackupServiceRestoreBackup(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "name" -------------
+	var name string
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "name", runtime.ParamLocationPath, ctx.Param("name"), &name)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter name: %s", err))
+	}
+
+	ctx.Set(ApiKeyAuthScopes, []string{})
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.BackupServiceRestoreBackup(ctx, name)
+	return err
+}
+
+// BackupServiceGetBackupList converts echo context to params.
+func (w *ServerInterfaceWrapper) BackupServiceGetBackupList(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(ApiKeyAuthScopes, []string{})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params BackupServiceGetBackupListParams
+	// ------------- Optional query parameter "sort" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "sort", ctx.QueryParams(), &params.Sort)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter sort: %s", err))
+	}
+
+	// ------------- Optional query parameter "page" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "page", ctx.QueryParams(), &params.Page)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter page: %s", err))
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", ctx.QueryParams(), &params.Limit)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter limit: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.BackupServiceGetBackupList(ctx, params)
+	return err
+}
+
 // BackupServiceNewBackup converts echo context to params.
 func (w *ServerInterfaceWrapper) BackupServiceNewBackup(ctx echo.Context) error {
 	var err error
@@ -831,48 +1006,6 @@ func (w *ServerInterfaceWrapper) BackupServiceNewBackup(ctx echo.Context) error 
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.BackupServiceNewBackup(ctx, params)
-	return err
-}
-
-// BackupServiceRestoreBackup converts echo context to params.
-func (w *ServerInterfaceWrapper) BackupServiceRestoreBackup(ctx echo.Context) error {
-	var err error
-
-	ctx.Set(ApiKeyAuthScopes, []string{})
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params BackupServiceRestoreBackupParams
-
-	headers := ctx.Request().Header
-	// ------------- Optional header parameter "Accept" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
-		var Accept AcceptJSON
-		n := len(valueList)
-		if n != 1 {
-			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for Accept, got %d", n))
-		}
-
-		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter Accept: %s", err))
-		}
-
-		params.Accept = &Accept
-	}
-
-	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.BackupServiceRestoreBackup(ctx, params)
-	return err
-}
-
-// BackupServiceGetBackupList converts echo context to params.
-func (w *ServerInterfaceWrapper) BackupServiceGetBackupList(ctx echo.Context) error {
-	var err error
-
-	ctx.Set(ApiKeyAuthScopes, []string{})
-
-	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.BackupServiceGetBackupList(ctx)
 	return err
 }
 
@@ -4479,9 +4612,13 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.PUT(baseURL+"/v1/area/:id", wrapper.AreaServiceUpdateArea)
 	router.GET(baseURL+"/v1/areas", wrapper.AreaServiceGetAreaList)
 	router.GET(baseURL+"/v1/areas/search", wrapper.AreaServiceSearchArea)
-	router.POST(baseURL+"/v1/backup", wrapper.BackupServiceNewBackup)
-	router.PUT(baseURL+"/v1/backup/restore", wrapper.BackupServiceRestoreBackup)
+	router.POST(baseURL+"/v1/backup/apply", wrapper.BackupServiceApplyState)
+	router.POST(baseURL+"/v1/backup/rollback", wrapper.BackupServiceRevertState)
+	router.POST(baseURL+"/v1/backup/upload", wrapper.BackupServiceUploadBackup)
+	router.DELETE(baseURL+"/v1/backup/:name", wrapper.BackupServiceDeleteBackup)
+	router.PUT(baseURL+"/v1/backup/:name", wrapper.BackupServiceRestoreBackup)
 	router.GET(baseURL+"/v1/backups", wrapper.BackupServiceGetBackupList)
+	router.POST(baseURL+"/v1/backups", wrapper.BackupServiceNewBackup)
 	router.POST(baseURL+"/v1/condition", wrapper.ConditionServiceAddCondition)
 	router.DELETE(baseURL+"/v1/condition/:id", wrapper.ConditionServiceDeleteCondition)
 	router.GET(baseURL+"/v1/condition/:id", wrapper.ConditionServiceGetConditionById)

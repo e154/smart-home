@@ -137,11 +137,17 @@ func (i *ImageEndpoint) Upload(ctx context.Context, files map[string][]*multipar
 
 		reader := bufio.NewReader(file)
 		var newImage *m.Image
-		if newImage, err = i.adaptors.Image.UploadImage(ctx, reader, fileHeader[0].Filename); err != nil {
+		newImage, err = m.UploadImage(ctx, reader, fileHeader[0].Filename)
+		if err != nil {
 			errs = append(errs, err)
-		} else {
-			fileList = append(fileList, newImage)
+			continue
 		}
+		newImage.Id, err = i.adaptors.Image.Add(ctx, newImage)
+		if err != nil {
+			errs = append(errs, err)
+			continue
+		}
+		fileList = append(fileList, newImage)
 
 		file.Close()
 	}

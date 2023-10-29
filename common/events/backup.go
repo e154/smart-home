@@ -16,40 +16,16 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package mqtt
+package events
 
-import (
-	"github.com/e154/smart-home/common"
-	m "github.com/e154/smart-home/models"
-)
+type EventCreatedBackup struct {
+	Name string `json:"name"`
+}
 
-const (
-	// Name ...
-	Name = "mqtt"
-	// EntityMqtt ...
-	EntityMqtt = string("mqtt")
-)
+type EventRemovedBackup struct {
+	Name string `json:"name"`
+}
 
-const (
-	// FuncMqttEvent ...
-	FuncMqttEvent = "mqttEvent"
-	// FuncEntityAction ...
-	FuncEntityAction = "entityAction"
-
-	Version = "0.1.0"
-)
-
-const (
-	// AttrSubscribeTopic ...
-	AttrSubscribeTopic = "subscribe_topic"
-)
-
-// NewSettings ...
-func NewSettings() m.Attributes {
-	return m.Attributes{
-		AttrSubscribeTopic: {
-			Name: AttrSubscribeTopic,
-			Type: common.AttributeString,
-		},
-	}
+type EventUploadedBackup struct {
+	Name string `json:"name"`
 }

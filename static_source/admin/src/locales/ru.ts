@@ -248,7 +248,8 @@ export default {
     operations: "Операции",
     name: "Название",
     addNew: "Добавить новое резервное копирование",
-    restore: "Восстановить"
+    restore: "Восстановить",
+    size: 'Размер'
   },
   messageDelivery: {
     id: "ID",

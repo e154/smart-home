@@ -75,7 +75,7 @@ func (a *Api) Start() (err error) {
 	a.echo = echo.New()
 	a.echo.Use(middleware.BodyLimitWithConfig(middleware.BodyLimitConfig{
 		Skipper: middleware.DefaultSkipper,
-		Limit:   "5M",
+		Limit:   "128M",
 	}))
 	a.echo.Use(middleware.Recover())
 
@@ -172,9 +172,13 @@ func (a *Api) registerHandlers() {
 	v1.PUT("/area/:id", a.echoFilter.Auth(wrapper.AreaServiceUpdateArea))
 	v1.GET("/areas", a.echoFilter.Auth(wrapper.AreaServiceGetAreaList))
 	v1.GET("/areas/search", a.echoFilter.Auth(wrapper.AreaServiceSearchArea))
-	v1.POST("/backup", a.echoFilter.Auth(wrapper.BackupServiceNewBackup))
-	v1.PUT("/backup/restore", a.echoFilter.Auth(wrapper.BackupServiceRestoreBackup))
 	v1.GET("/backups", a.echoFilter.Auth(wrapper.BackupServiceGetBackupList))
+	v1.POST("/backups", a.echoFilter.Auth(wrapper.BackupServiceNewBackup))
+	v1.POST("/backup/upload", wrapper.BackupServiceUploadBackup)
+	v1.POST("/backup/apply", a.echoFilter.Auth(wrapper.BackupServiceApplyState))
+	v1.POST("/backup/rollback", a.echoFilter.Auth(wrapper.BackupServiceRevertState))
+	v1.PUT("/backup/:name", a.echoFilter.Auth(wrapper.BackupServiceRestoreBackup))
+	v1.DELETE("/backup/:name", a.echoFilter.Auth(wrapper.BackupServiceDeleteBackup))
 	v1.POST("/condition", a.echoFilter.Auth(wrapper.ConditionServiceAddCondition))
 	v1.DELETE("/condition/:id", a.echoFilter.Auth(wrapper.ConditionServiceDeleteCondition))
 	v1.GET("/condition/:id", a.echoFilter.Auth(wrapper.ConditionServiceGetConditionById))
@@ -304,7 +308,7 @@ func (a *Api) registerHandlers() {
 
 	// static files
 	a.echo.GET("/", echo.WrapHandler(a.controllers.Index(publicAssets.F)))
-	a.echo.Any("/v1/image/upload", a.echoFilter.Auth(a.controllers.ImageServiceMuxUploadImage)) //Auth
+	//a.echo.Any("/v1/image/upload", a.echoFilter.Auth(a.controllers.ImageServiceMuxUploadImage)) //Auth
 	a.echo.GET("/public/*", echo.WrapHandler(http.StripPrefix("/", http.FileServer(http.FS(publicAssets.F)))))
 	fileServer := http.FileServer(http.Dir("./data/file_storage"))
 	a.echo.Any("/upload/*", echo.WrapHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -318,6 +322,14 @@ func (a *Api) registerHandlers() {
 		r.URL, _ = r.URL.Parse(r.RequestURI)
 		staticServer.ServeHTTP(w, r)
 	})))
+	snapshotServer := http.FileServer(http.Dir("./snapshots"))
+	//a.echo.Any("/v1/backup/upload", a.echo
+	//Filter.Auth(a.controllers.BackupServiceMuxUploadBackup)) //Auth
+	a.echo.GET("/snapshots/*", a.echoFilter.Auth(echo.WrapHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		r.RequestURI = strings.ReplaceAll(r.RequestURI, "/snapshots/", "/")
+		r.URL, _ = r.URL.Parse(r.RequestURI)
+		snapshotServer.ServeHTTP(w, r)
+	}))))
 
 	// media
 	a.echo.Any("/stream/:entity_id/channel/:channel/mse", a.echoFilter.Auth(a.controllers.StreamMSE)) //Auth

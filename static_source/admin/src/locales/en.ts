@@ -248,7 +248,8 @@ export default {
         operations: 'Operations',
         name: 'Name',
         addNew: 'Add new backup',
-        restore: 'Restore'
+        restore: 'Restore',
+        size: 'Size'
     },
     messageDelivery: {
         id: 'ID',

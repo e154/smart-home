@@ -109,7 +109,7 @@ func (l *Local) dumpOptions() []string {
 	options = append(options, "-F", "t")
 
 	// etc
-	options = append(options, "-w", "-v", "--quote-all-identifiers", "-b", "-O", "-x")
+	options = append(options, "-w", "-v", "--disable-triggers", "--quote-all-identifiers", "-b", "-O", "-x")
 
 	return options
 }

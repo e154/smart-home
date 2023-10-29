@@ -10,8 +10,8 @@ vendor/*
 /api/server/v2/docs/docs.go
 /api/server/v2/docs/swagger/swagger.json
 .DS_Store
-snapshots/*
-!snapshots/.gitignore
+snapshots--/*
+!snapshots--/.gitignore
 bee.json
 /api/server/golang-swaggerui-example/
 /conf/notify.json

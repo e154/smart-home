@@ -5,6 +5,8 @@ package stub
 
 import (
 	"time"
+
+	openapi_types "github.com/deepmap/oapi-codegen/pkg/types"
 )
 
 const (
@@ -140,6 +142,14 @@ type ApiAttribute struct {
 type ApiAutomationRequest struct {
 	Id   int64  `json:"id"`
 	Name string `json:"name"`
+}
+
+// ApiBackup defines model for apiBackup.
+type ApiBackup struct {
+	FileMode uint32    `json:"fileMode"`
+	ModTime  time.Time `json:"modTime"`
+	Name     string    `json:"name"`
+	Size     int64     `json:"size"`
 }
 
 // ApiBusStateItem defines model for apiBusStateItem.
@@ -449,6 +459,7 @@ type ApiGetAreaListResult struct {
 // ApiGetBackupListResult defines model for apiGetBackupListResult.
 type ApiGetBackupListResult struct {
 	Items []string `json:"items"`
+	Meta  *ApiMeta `json:"meta,omitempty"`
 }
 
 // ApiGetBridgeListResult defines model for apiGetBridgeListResult.
@@ -940,11 +951,6 @@ type ApiResponse struct {
 	Query *string `json:"query,omitempty"`
 }
 
-// ApiRestoreBackupRequest defines model for apiRestoreBackupRequest.
-type ApiRestoreBackupRequest struct {
-	Name string `json:"name"`
-}
-
 // ApiRole defines model for apiRole.
 type ApiRole struct {
 	AccessList  *ApiRoleAccessList `json:"accessList,omitempty"`
@@ -1142,11 +1148,6 @@ type ApiUpdateEntityRequestState struct {
 	Style       string  `json:"style"`
 }
 
-// ApiUploadImageRequest defines model for apiUploadImageRequest.
-type ApiUploadImageRequest struct {
-	Body *[]byte `json:"body,omitempty"`
-}
-
 // ApiUserFull defines model for apiUserFull.
 type ApiUserFull struct {
 	AuthenticationToken string             `json:"authenticationToken"`
@@ -1322,6 +1323,11 @@ type HTTP409 struct {
 	Error *GenericErrorResponse `json:"error,omitempty"`
 }
 
+// HTTP413 defines model for HTTP-413.
+type HTTP413 struct {
+	Error *GenericErrorResponse `json:"error,omitempty"`
+}
+
 // ActionServiceAddActionParams defines parameters for ActionServiceAddAction.
 type ActionServiceAddActionParams struct {
 	Accept *AcceptJSON `json:"Accept,omitempty"`
@@ -1400,16 +1406,43 @@ type AreaServiceSearchAreaParams struct {
 	Limit  *SearchLimit  `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
+// BackupServiceApplyStateParams defines parameters for BackupServiceApplyState.
+type BackupServiceApplyStateParams struct {
+	Accept *AcceptJSON `json:"Accept,omitempty"`
+}
+
+// BackupServiceRevertStateParams defines parameters for BackupServiceRevertState.
+type BackupServiceRevertStateParams struct {
+	Accept *AcceptJSON `json:"Accept,omitempty"`
+}
+
+// BackupServiceUploadBackupMultipartBody defines parameters for BackupServiceUploadBackup.
+type BackupServiceUploadBackupMultipartBody struct {
+	Filename *[]openapi_types.File `json:"filename,omitempty"`
+}
+
+// BackupServiceUploadBackupParams defines parameters for BackupServiceUploadBackup.
+type BackupServiceUploadBackupParams struct {
+	Accept *AcceptJSON `json:"Accept,omitempty"`
+}
+
+// BackupServiceGetBackupListParams defines parameters for BackupServiceGetBackupList.
+type BackupServiceGetBackupListParams struct {
+	// Sort Field on which to sort and its direction
+	Sort *ListSort `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// Page Page number of the requested result set
+	Page *ListPage `form:"page,omitempty" json:"page,omitempty"`
+
+	// Limit The number of results returned on a page
+	Limit *ListLimit `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
 // BackupServiceNewBackupJSONBody defines parameters for BackupServiceNewBackup.
 type BackupServiceNewBackupJSONBody = map[string]interface{}
 
 // BackupServiceNewBackupParams defines parameters for BackupServiceNewBackup.
 type BackupServiceNewBackupParams struct {
-	Accept *AcceptJSON `json:"Accept,omitempty"`
-}
-
-// BackupServiceRestoreBackupParams defines parameters for BackupServiceRestoreBackup.
-type BackupServiceRestoreBackupParams struct {
 	Accept *AcceptJSON `json:"Accept,omitempty"`
 }
 
@@ -1713,6 +1746,11 @@ type EntityStorageServiceGetEntityStorageListParams struct {
 // ImageServiceAddImageParams defines parameters for ImageServiceAddImage.
 type ImageServiceAddImageParams struct {
 	Accept *AcceptJSON `json:"Accept,omitempty"`
+}
+
+// ImageServiceUploadImageMultipartBody defines parameters for ImageServiceUploadImage.
+type ImageServiceUploadImageMultipartBody struct {
+	Filename *[]openapi_types.File `json:"filename,omitempty"`
 }
 
 // ImageServiceUploadImageParams defines parameters for ImageServiceUploadImage.
@@ -2163,11 +2201,11 @@ type AreaServiceAddAreaJSONRequestBody = ApiNewAreaRequest
 // AreaServiceUpdateAreaJSONRequestBody defines body for AreaServiceUpdateArea for application/json ContentType.
 type AreaServiceUpdateAreaJSONRequestBody AreaServiceUpdateAreaJSONBody
 
+// BackupServiceUploadBackupMultipartRequestBody defines body for BackupServiceUploadBackup for multipart/form-data ContentType.
+type BackupServiceUploadBackupMultipartRequestBody BackupServiceUploadBackupMultipartBody
+
 // BackupServiceNewBackupJSONRequestBody defines body for BackupServiceNewBackup for application/json ContentType.
 type BackupServiceNewBackupJSONRequestBody = BackupServiceNewBackupJSONBody
-
-// BackupServiceRestoreBackupJSONRequestBody defines body for BackupServiceRestoreBackup for application/json ContentType.
-type BackupServiceRestoreBackupJSONRequestBody = ApiRestoreBackupRequest
 
 // ConditionServiceAddConditionJSONRequestBody defines body for ConditionServiceAddCondition for application/json ContentType.
 type ConditionServiceAddConditionJSONRequestBody = ApiNewConditionRequest
@@ -2229,8 +2267,8 @@ type EntityServiceUpdateEntityJSONRequestBody EntityServiceUpdateEntityJSONBody
 // ImageServiceAddImageJSONRequestBody defines body for ImageServiceAddImage for application/json ContentType.
 type ImageServiceAddImageJSONRequestBody = ApiNewImageRequest
 
-// ImageServiceUploadImageJSONRequestBody defines body for ImageServiceUploadImage for application/json ContentType.
-type ImageServiceUploadImageJSONRequestBody = ApiUploadImageRequest
+// ImageServiceUploadImageMultipartRequestBody defines body for ImageServiceUploadImage for multipart/form-data ContentType.
+type ImageServiceUploadImageMultipartRequestBody ImageServiceUploadImageMultipartBody
 
 // ImageServiceUpdateImageByIdJSONRequestBody defines body for ImageServiceUpdateImageById for application/json ContentType.
 type ImageServiceUpdateImageByIdJSONRequestBody ImageServiceUpdateImageByIdJSONBody

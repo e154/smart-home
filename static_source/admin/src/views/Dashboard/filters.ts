@@ -114,7 +114,7 @@ function toTitleCase(value: string, ...args: string[]): string {
   );
 }
 
-function formatBytes(value: string, decimals = 2): number | string {
+export function formatBytes(value: string, decimals = 2): number | string {
   const bytes = parseInt(value);
 
   if (bytes === 0) {

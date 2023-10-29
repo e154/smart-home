@@ -1,24 +1,33 @@
 <script setup lang="ts">
 import {useI18n} from '@/hooks/web/useI18n'
 import {Table} from '@/components/Table'
-import {computed, reactive, ref, h} from 'vue'
+import {h, onMounted, onUnmounted, reactive, ref} from 'vue'
 import {useAppStore} from "@/store/modules/app";
-import {Pagination, TableColumn} from '@/types/table'
+import {TableColumn} from '@/types/table'
 import api from "@/api/api";
-import {ElButton, ElMessage, ElPopconfirm} from 'element-plus'
+import {ElButton, ElCol, ElMessage, ElPopconfirm, ElRow, ElUpload, UploadProps} from 'element-plus'
 import {useForm} from "@/hooks/web/useForm";
 import {useRouter} from "vue-router";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {ApiBackup} from "@/api/stub";
+import {parseTime} from "@/utils";
+import {formatBytes} from "@/views/Dashboard/filters";
+import {useCache} from "@/hooks/web/useCache";
+import {useIcon} from "@/hooks/web/useIcon";
+import {UUID} from "uuid-generator-ts";
+import stream from "@/api/stream";
+
+const Sun = useIcon({icon: 'emojione-monotone:sun', color: '#fde047'})
 
 const {push, currentRoute} = useRouter()
 const remember = ref(false)
 const {register, elFormRef, methods} = useForm()
 const appStore = useAppStore()
+const {wsCache} = useCache()
 const {t} = useI18n()
-const isMobile = computed(() => appStore.getMobile)
 
 interface TableObject {
-  tableList: string[]
+  tableList: ApiBackup[]
   loading: boolean
 }
 
@@ -35,27 +44,44 @@ const tableObject = reactive<TableObject>(
     }
 );
 
+const currentID = ref('')
+
 const columns: TableColumn[] = [
   {
     field: 'name',
     label: t('backup.name'),
     sortable: true,
-    formatter: (row: string) => {
+  },
+  {
+    field: 'size',
+    label: t('backup.size'),
+    width: "100px",
+    formatter: (row: ApiBackup) => {
       return h(
           'span',
-          row
+          formatBytes(row.size.toString(), 2)
       )
     }
-
   },
   {
     field: 'operations',
     label: t('backup.operations'),
     width: "150px",
   },
+  {
+    field: 'modTime',
+    label: t('main.createdAt'),
+    type: 'time',
+    sortable: true,
+    width: "150px",
+    formatter: (row: ApiBackup) => {
+      return h(
+          'span',
+          parseTime(row.modTime)
+      )
+    }
+  },
 ]
-
-const currentID = ref('')
 
 const getList = async () => {
   tableObject.loading = true
@@ -73,14 +99,11 @@ const getList = async () => {
   }
 }
 
-getList()
-
 const addNew = async () => {
   api.v1.backupServiceNewBackup({})
       .catch(() => {
       })
       .finally(() => {
-        getList();
       })
   ElMessage({
     title: t('Success'),
@@ -91,7 +114,7 @@ const addNew = async () => {
 }
 
 const restore = async (name: string) => {
-  api.v1.backupServiceRestoreBackup({name: name})
+  api.v1.backupServiceRestoreBackup(name)
       .catch(() => {
       })
       .finally(() => {
@@ -107,14 +130,111 @@ const restore = async (name: string) => {
   }, 2000)
 }
 
+const remove = async (backup: ApiBackup) => {
+  api.v1.backupServiceDeleteBackup(backup.name)
+      .catch(() => {
+      })
+      .finally(() => {
+      })
+
+  setTimeout(async () => {
+    ElMessage({
+      title: t('Success'),
+      message: t('message.callSuccessful'),
+      type: 'success',
+      duration: 2000
+    });
+  }, 2000)
+}
+
+const getUploadURL = () => {
+  const uri = import.meta.env.VITE_API_BASEPATH as string || window.location.origin;
+  const accessToken = wsCache.get("accessToken")
+  return uri + '/v1/backup/upload?access_token=' + accessToken;
+}
+
+
+const getDownloadURL = (file: ApiBackup) => {
+  const uri = import.meta.env.VITE_API_BASEPATH as string || window.location.origin;
+  const accessToken = wsCache.get("accessToken")
+  return uri + '/snapshots/' + file.name + '?access_token=' + accessToken;
+}
+
+const onSuccess: UploadProps['onSuccess'] = (file: ApiBackup, uploadFile) => {
+  ElMessage({
+    message: t('message.uploadSuccessfully'),
+    type: 'success',
+    duration: 2000
+  })
+}
+
+const forceFileDownload = (file: ApiBackup) => {
+  const link = document.createElement('a')
+  link.href = getDownloadURL(file)
+  link.setAttribute('download', file.name)
+  document.body.appendChild(link)
+  link.click()
+}
+
+const onEventhandler = () => {
+  getList()
+}
+
+onMounted(() => {
+  const uuid = new UUID()
+  currentID.value = uuid.getDashFreeUUID()
+
+  setTimeout(() => {
+    stream.subscribe('event_created_backup', currentID.value, onEventhandler);
+    stream.subscribe('event_removed_backup', currentID.value, onEventhandler);
+    stream.subscribe('event_uploaded_backup', currentID.value, onEventhandler);
+  }, 1000)
+})
+
+onUnmounted(() => {
+  stream.unsubscribe('event_created_backup', currentID.value);
+  stream.unsubscribe('event_removed_backup', currentID.value);
+  stream.unsubscribe('event_uploaded_backup', currentID.value);
+})
+
+getList()
+
 </script>
 
 <template>
   <ContentWrap>
-    <ElButton class="flex mb-20px items-left" type="primary" @click="addNew()" plain>
-      <Icon icon="ep:plus" class="mr-5px"/>
-      {{ t('backup.addNew') }}
-    </ElButton>
+    <ElRow class="file-manager-body mb-20px">
+      <ElCol>
+        <ElButton class="flex mb-20px items-left" type="primary" @click="addNew()" plain>
+          <Icon icon="iconoir:database-restore" class="mr-5px"/>
+          {{ t('backup.addNew') }}
+        </ElButton>
+
+<!--        <ElButton class="flex mb-20px items-left" type="primary" @click="addNew()" plain>-->
+<!--          {{ t('backup.apply') }}-->
+<!--        </ElButton>-->
+
+<!--        <ElButton class="flex mb-20px items-left" type="primary" @click="addNew()" plain>-->
+<!--          {{ t('backup.rollback') }}-->
+<!--        </ElButton>-->
+
+
+        <ElUpload
+            class="upload-demo"
+            :action="getUploadURL()"
+            :multiple="true"
+            :on-success="onSuccess"
+            :auto-upload="true"
+        >
+          <ElButton type="primary" plain>
+            <Icon icon="material-symbols:upload" class="mr-5px"/>
+            Click to upload
+          </ElButton>
+        </ElUpload>
+      </ElCol>
+    </ElRow>
+
+
     <Table
         :selection="false"
         :columns="columns"
@@ -132,12 +252,30 @@ const restore = async (name: string) => {
             @confirm="restore(row)"
         >
           <template #reference>
-            <ElButton class="flex items-right" type="danger" plain>
-              {{ t('backup.restore') }}
+            <ElButton class="flex items-right" type="danger" link>
+              <Icon icon="ic:baseline-restore" class="mr-5px"/>
             </ElButton>
           </template>
         </ElPopconfirm>
 
+        <ElButton class="flex items-right" link @click="forceFileDownload(row)">
+          <Icon icon="material-symbols:download" class="mr-5px" />
+        </ElButton>
+
+        <ElPopconfirm
+            :confirm-button-text="$t('main.ok')"
+            :cancel-button-text="$t('main.no')"
+            width="250"
+            style="margin-left: 10px;"
+            :title="$t('main.are_you_sure_to_do_want_this?')"
+            @confirm="remove(row)"
+        >
+          <template #reference>
+            <ElButton class="flex items-right" link>
+              <Icon icon="mdi:remove" class="mr-5px"/>
+            </ElButton>
+          </template>
+        </ElPopconfirm>
 
       </template>
     </Table>

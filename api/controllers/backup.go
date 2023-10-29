@@ -19,10 +19,13 @@
 package controllers
 
 import (
+	"github.com/e154/smart-home/common/apperr"
 	"github.com/labstack/echo/v4"
 
 	"github.com/e154/smart-home/api/stub"
 )
+
+const maxMemory = 128 << 20
 
 // ControllerBackup ...
 type ControllerBackup struct {
@@ -48,14 +51,9 @@ func (c ControllerBackup) BackupServiceNewBackup(ctx echo.Context, _ stub.Backup
 }
 
 // RestoreBackup ...
-func (c ControllerBackup) BackupServiceRestoreBackup(ctx echo.Context, _ stub.BackupServiceRestoreBackupParams) error {
+func (c ControllerBackup) BackupServiceRestoreBackup(ctx echo.Context, name string) error {
 
-	obj := &stub.ApiRestoreBackupRequest{}
-	if err := c.Body(ctx, obj); err != nil {
-		return c.ERROR(ctx, err)
-	}
-
-	err := c.endpoint.Backup.Restore(ctx.Request().Context(), obj.Name)
+	err := c.endpoint.Backup.Restore(ctx.Request().Context(), name)
 	if err != nil {
 		return c.ERROR(ctx, err)
 	}
@@ -64,11 +62,73 @@ func (c ControllerBackup) BackupServiceRestoreBackup(ctx echo.Context, _ stub.Ba
 }
 
 // GetBackupList ...
-func (c ControllerBackup) BackupServiceGetBackupList(ctx echo.Context) error {
+func (c ControllerBackup) BackupServiceGetBackupList(ctx echo.Context, params stub.BackupServiceGetBackupListParams) error {
 
-	result := c.endpoint.Backup.GetList(ctx.Request().Context())
+	pagination := c.Pagination(params.Page, params.Limit, params.Sort)
+	items, total, err := c.endpoint.Backup.GetList(ctx.Request().Context(), pagination)
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
 
-	return c.HTTP200(ctx, ResponseWithObj(ctx, &stub.ApiGetBackupListResult{
-		Items: result,
-	}))
+	return c.HTTP200(ctx, ResponseWithList(ctx, c.dto.Backup.ToBackupListResult(items), total, pagination))
+}
+
+// DeleteBackup ...
+func (c ControllerBackup) BackupServiceDeleteBackup(ctx echo.Context, name string) error {
+
+	if err := c.endpoint.Backup.Delete(ctx.Request().Context(), name); err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
+}
+
+// BackupServiceMuxUploadBackup ...
+func (c ControllerBackup) BackupServiceUploadBackup(ctx echo.Context, _ stub.BackupServiceUploadBackupParams) error {
+
+	r := ctx.Request()
+
+	if err := r.ParseMultipartForm(maxMemory); err != nil {
+		log.Error(err.Error())
+	}
+
+	form := r.MultipartForm
+	if len(form.File) == 0 {
+		return c.ERROR(ctx, apperr.ErrInvalidRequest)
+	}
+
+	list, errs := c.endpoint.Backup.Upload(r.Context(), form.File)
+
+	var resultBackups = make([]interface{}, 0)
+
+	for _, file := range list {
+		resultBackups = append(resultBackups, map[string]string{
+			"name": file.Name,
+		})
+	}
+
+	return c.HTTP200(ctx, map[string]interface{}{
+		"files":  resultBackups,
+		"errors": errs,
+	})
+}
+
+// BackupServiceApplyChanges ...
+func (c ControllerBackup) BackupServiceApplyState(ctx echo.Context, _ stub.BackupServiceApplyStateParams) error {
+	err := c.endpoint.Backup.ApplyChanges(ctx.Request().Context())
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
+}
+
+// BackupServiceRevertState ...
+func (c ControllerBackup) BackupServiceRevertState(ctx echo.Context, _ stub.BackupServiceRevertStateParams) error {
+	err := c.endpoint.Backup.RollbackChanges(ctx.Request().Context())
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
