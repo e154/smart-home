@@ -43,7 +43,8 @@ export default {
         reloadSuccessful: 'Reload successful',
         importedSuccessful: 'Imported successful',
         requestSentSuccessfully: 'Request sent successfully',
-        corruptedJsonFormat: 'Corrupted Json Format'
+        corruptedJsonFormat: 'Corrupted Json Format',
+        startedRestoreProcess: 'Started the recovery process, the system will reboot soon'
     },
     common: {
         inputText: 'Please input',
@@ -247,9 +248,11 @@ export default {
     backup: {
         operations: 'Operations',
         name: 'Name',
-        addNew: 'Add new backup',
-        restore: 'Restore',
-        size: 'Size'
+        addNew: 'Create new snapshot',
+        size: 'Size',
+        uploadDump: 'Upload snapshot',
+        restoreSnapshot: 'Restore the snapshot ?',
+        removeSnapshot: 'Remove the snapshot ?'
     },
     messageDelivery: {
         id: 'ID',

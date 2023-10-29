@@ -33,6 +33,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"sort"
 	"time"
 
 	"github.com/pkg/errors"
@@ -92,6 +93,19 @@ func (b *Backup) Shutdown(ctx context.Context) (err error) {
 func (b *Backup) New() (err error) {
 	log.Info("create new backup")
 
+	var db *gorm.DB
+	db, err = gorm.Open(postgres.Open(b.cfg.String()), &gorm.Config{})
+	if err != nil {
+		return
+	}
+	defer func() {
+		if _db, err := db.DB(); err == nil {
+			_ = _db.Close()
+		}
+	}()
+
+	db.Exec(`DROP SCHEMA IF EXISTS "public_old" CASCADE;`)
+
 	tmpDir := path.Join(os.TempDir(), "smart_home")
 	if err = os.MkdirAll(tmpDir, 0755); err != nil {
 		return
@@ -125,7 +139,7 @@ func (b *Backup) New() (err error) {
 }
 
 // List ...
-func (b *Backup) List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.Backup, total int64, err error) {
+func (b *Backup) List(ctx context.Context, limit, offset int64, orderBy, s string) (list m.Backups, total int64, err error) {
 
 	_ = filepath.Walk(b.cfg.Path, func(path string, info os.FileInfo, err error) error {
 		if info.Name() == ".gitignore" || info.Name() == b.cfg.Path || info.IsDir() {
@@ -143,6 +157,7 @@ func (b *Backup) List(ctx context.Context, limit, offset int64, orderBy, sort st
 		return nil
 	})
 	//todo: add pagination
+	sort.Sort(list)
 	return
 }
 
@@ -151,6 +166,12 @@ func (b *Backup) Restore(name string) (err error) {
 	if name == "" {
 		return
 	}
+
+	b.eventBus.Publish("system/services/backup", events.EventStartedRestore{
+		Name: name,
+	})
+
+	time.Sleep(2 * time.Second)
 
 	b.restoreImage = name
 	app.Restore = true
@@ -232,6 +253,24 @@ func (b *Backup) ApplyChanges() (err error) {
 func (b *Backup) restore(name string) (err error) {
 	log.Infof("restore backup file %s", name)
 
+	var list []*m.Backup
+	if list, _, err = b.List(context.Background(), 999, 0, "", ""); err != nil {
+		return
+	}
+
+	var exist bool
+	for _, file := range list {
+		if name == file.Name {
+			exist = true
+			break
+		}
+	}
+
+	if !exist {
+		err = apperr.ErrBackupNotFound
+		return
+	}
+
 	file := path.Join(b.cfg.Path, name)
 
 	_, err = os.Stat(file)
@@ -294,7 +333,7 @@ func (b *Backup) restore(name string) (err error) {
 		return
 	}
 
-	db.Exec(`SELECT create_hypertable('metric_bucket', 'time', migrate_data => true, if_not_exists => TRUE);`)
+	//db.Exec(`SELECT create_hypertable('metric_bucket', 'time', migrate_data => true, if_not_exists => TRUE);`)
 
 	log.Info("restore database data")
 	filename = path.Join(tmpDir, "data.sql")

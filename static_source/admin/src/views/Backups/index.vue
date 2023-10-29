@@ -113,8 +113,8 @@ const addNew = async () => {
   });
 }
 
-const restore = async (name: string) => {
-  api.v1.backupServiceRestoreBackup(name)
+const restore = async (backup: ApiBackup) => {
+  api.v1.backupServiceRestoreBackup(backup.name)
       .catch(() => {
       })
       .finally(() => {
@@ -180,6 +180,14 @@ const onEventhandler = () => {
   getList()
 }
 
+const onEventStartedRestoreHandler = () => {
+  ElMessage({
+    message: t('message.startedRestoreProcess'),
+    type: 'warning',
+    duration: 0
+  })
+}
+
 onMounted(() => {
   const uuid = new UUID()
   currentID.value = uuid.getDashFreeUUID()
@@ -188,6 +196,7 @@ onMounted(() => {
     stream.subscribe('event_created_backup', currentID.value, onEventhandler);
     stream.subscribe('event_removed_backup', currentID.value, onEventhandler);
     stream.subscribe('event_uploaded_backup', currentID.value, onEventhandler);
+    stream.subscribe('event_started_restore', currentID.value, onEventStartedRestoreHandler);
   }, 1000)
 })
 
@@ -195,6 +204,7 @@ onUnmounted(() => {
   stream.unsubscribe('event_created_backup', currentID.value);
   stream.unsubscribe('event_removed_backup', currentID.value);
   stream.unsubscribe('event_uploaded_backup', currentID.value);
+  stream.unsubscribe('event_started_restore', currentID.value);
 })
 
 getList()
@@ -228,7 +238,7 @@ getList()
         >
           <ElButton type="primary" plain>
             <Icon icon="material-symbols:upload" class="mr-5px"/>
-            Click to upload
+            {{ $t('backup.uploadDump') }}
           </ElButton>
         </ElUpload>
       </ElCol>
@@ -246,9 +256,9 @@ getList()
         <ElPopconfirm
             :confirm-button-text="$t('main.ok')"
             :cancel-button-text="$t('main.no')"
-            width="250"
+            width="auto"
             style="margin-left: 10px;"
-            :title="$t('main.are_you_sure_to_do_want_this?')"
+            :title="$t('backup.restoreSnapshot')"
             @confirm="restore(row)"
         >
           <template #reference>
@@ -265,9 +275,9 @@ getList()
         <ElPopconfirm
             :confirm-button-text="$t('main.ok')"
             :cancel-button-text="$t('main.no')"
-            width="250"
+            width="auto"
             style="margin-left: 10px;"
-            :title="$t('main.are_you_sure_to_do_want_this?')"
+            :title="$t('backup.removeSnapshot')"
             @confirm="remove(row)"
         >
           <template #reference>

@@ -29,3 +29,7 @@ type EventRemovedBackup struct {
 type EventUploadedBackup struct {
 	Name string `json:"name"`
 }
+
+type EventStartedRestore struct {
+	Name string `json:"name"`
+}

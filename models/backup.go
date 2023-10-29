@@ -30,3 +30,14 @@ type Backup struct {
 	FileMode os.FileMode
 	ModTime  time.Time
 }
+
+type Backups []*Backup
+
+// Len ...
+func (l Backups) Len() int { return len(l) }
+
+// Swap ...
+func (l Backups) Swap(i, j int) { l[i], l[j] = l[j], l[i] }
+
+// Less ...
+func (l Backups) Less(i, j int) bool { return l[i].ModTime.UnixNano() > l[j].ModTime.UnixNano() }

@@ -43,7 +43,8 @@ export default {
     reloadSuccessful: "Перезагрузка успешна",
     importedSuccessful: "Успешно импортировано",
     requestSentSuccessfully: "Запрос успешно отправлен",
-    corruptedJsonFormat: "Искаженный формат JSON"
+    corruptedJsonFormat: "Искаженный формат JSON",
+    startedRestoreProcess: 'Запущен процесс восстановления, скоро система перезагрузится'
   },
   common: {
     inputText: 'Пожалуйста, введите',
@@ -247,9 +248,11 @@ export default {
   backup: {
     operations: "Операции",
     name: "Название",
-    addNew: "Добавить новое резервное копирование",
-    restore: "Восстановить",
-    size: 'Размер'
+    addNew: "Создать резервную копию",
+    size: 'Размер',
+    uploadDump: 'Загрузить резервную копию',
+    restoreSnapshot: 'Восстановить резервную копию? ',
+    removeSnapshot: 'Удалить резервную копию ?'
   },
   messageDelivery: {
     id: "ID",

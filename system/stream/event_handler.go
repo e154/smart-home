@@ -99,6 +99,8 @@ func (e *eventHandler) eventHandler(_ string, message interface{}) {
 		go e.event(message)
 	case events.EventUploadedBackup:
 		go e.event(message)
+	case events.EventStartedRestore:
+		go e.event(message)
 	}
 }
 

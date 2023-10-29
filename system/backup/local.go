@@ -20,7 +20,6 @@ package backup
 
 import (
 	"fmt"
-	"github.com/pkg/errors"
 	"os"
 	"os/exec"
 	"path"
@@ -45,8 +44,11 @@ func (l *Local) New(tmpDir string) (err error) {
 
 	log.Infof("run command: %s", cmd.String())
 
-	if _, err = cmd.CombinedOutput(); err != nil {
-		return err
+	var b []byte
+	b, err = cmd.CombinedOutput()
+	fmt.Fprintln(os.Stdout, string(b))
+	if err != nil {
+		return
 	}
 
 	// get scheme
@@ -56,7 +58,11 @@ func (l *Local) New(tmpDir string) (err error) {
 
 	log.Infof("run command: %s", cmd.String())
 
-	_, err = cmd.CombinedOutput()
+	b, err = cmd.CombinedOutput()
+	fmt.Fprintln(os.Stdout, string(b))
+	if err != nil {
+		return
+	}
 
 	return
 }
@@ -72,8 +78,11 @@ func (l *Local) Restore(path string) (err error) {
 
 	log.Infof("command: %s", cmd.String())
 
-	if _, err = cmd.CombinedOutput(); err != nil {
-		err = errors.Wrap(fmt.Errorf("failed combine command"), err.Error())
+	var b []byte
+	b, err = cmd.CombinedOutput()
+	fmt.Fprintln(os.Stdout, string(b))
+	if err != nil {
+		return
 	}
 
 	return
