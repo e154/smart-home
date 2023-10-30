@@ -876,6 +876,7 @@ export interface ApiNewTaskRequest {
 
 export interface ApiNewTriggerRequest {
   name: string;
+  description: string;
   entity?: ApiEntity;
   entityId?: string;
   script?: ApiScript;
@@ -884,6 +885,8 @@ export interface ApiNewTriggerRequest {
   pluginName: string;
   attributes: Record<string, ApiAttribute>;
   enabled: boolean;
+  /** @format int64 */
+  areaId?: number;
 }
 
 export interface ApiNewVariableRequest {
@@ -1152,11 +1155,15 @@ export interface ApiTrigger {
   /** @format int64 */
   id: number;
   name: string;
+  description: string;
   entity?: ApiEntity;
   entityId?: string;
   script?: ApiScript;
   /** @format int64 */
   scriptId?: number;
+  area?: ApiArea;
+  /** @format int64 */
+  areaId?: number;
   pluginName: string;
   attributes: Record<string, ApiAttribute>;
   enabled: boolean;
@@ -5572,11 +5579,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       id: number,
       data: {
         name: string;
+        description: string;
         entity?: ApiEntity;
         entityId?: string;
         script?: ApiScript;
         /** @format int64 */
         scriptId?: number;
+        /** @format int64 */
+        areaId?: number;
         pluginName: string;
         attributes: Record<string, ApiAttribute>;
         enabled: boolean;

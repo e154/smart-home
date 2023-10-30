@@ -832,14 +832,16 @@ type ApiNewTaskRequest struct {
 
 // ApiNewTriggerRequest defines model for apiNewTriggerRequest.
 type ApiNewTriggerRequest struct {
-	Attributes map[string]ApiAttribute `json:"attributes"`
-	Enabled    bool                    `json:"enabled"`
-	Entity     *ApiEntity              `json:"entity,omitempty"`
-	EntityId   *string                 `json:"entityId,omitempty"`
-	Name       string                  `json:"name"`
-	PluginName string                  `json:"pluginName"`
-	Script     *ApiScript              `json:"script,omitempty"`
-	ScriptId   *int64                  `json:"scriptId,omitempty"`
+	AreaId      *int64                  `json:"areaId,omitempty"`
+	Attributes  map[string]ApiAttribute `json:"attributes"`
+	Description string                  `json:"description"`
+	Enabled     bool                    `json:"enabled"`
+	Entity      *ApiEntity              `json:"entity,omitempty"`
+	EntityId    *string                 `json:"entityId,omitempty"`
+	Name        string                  `json:"name"`
+	PluginName  string                  `json:"pluginName"`
+	Script      *ApiScript              `json:"script,omitempty"`
+	ScriptId    *int64                  `json:"scriptId,omitempty"`
 }
 
 // ApiNewVariableRequest defines model for apiNewVariableRequest.
@@ -1111,19 +1113,22 @@ type ApiTelemetryItem struct {
 
 // ApiTrigger defines model for apiTrigger.
 type ApiTrigger struct {
-	Attributes map[string]ApiAttribute `json:"attributes"`
-	Completed  *bool                   `json:"completed,omitempty"`
-	CreatedAt  time.Time               `json:"createdAt"`
-	Enabled    bool                    `json:"enabled"`
-	Entity     *ApiEntity              `json:"entity,omitempty"`
-	EntityId   *string                 `json:"entityId,omitempty"`
-	Id         int64                   `json:"id"`
-	IsLoaded   *bool                   `json:"isLoaded,omitempty"`
-	Name       string                  `json:"name"`
-	PluginName string                  `json:"pluginName"`
-	Script     *ApiScript              `json:"script,omitempty"`
-	ScriptId   *int64                  `json:"scriptId,omitempty"`
-	UpdatedAt  time.Time               `json:"updatedAt"`
+	Area        *ApiArea                `json:"area,omitempty"`
+	AreaId      *int64                  `json:"areaId,omitempty"`
+	Attributes  map[string]ApiAttribute `json:"attributes"`
+	Completed   *bool                   `json:"completed,omitempty"`
+	CreatedAt   time.Time               `json:"createdAt"`
+	Description string                  `json:"description"`
+	Enabled     bool                    `json:"enabled"`
+	Entity      *ApiEntity              `json:"entity,omitempty"`
+	EntityId    *string                 `json:"entityId,omitempty"`
+	Id          int64                   `json:"id"`
+	IsLoaded    *bool                   `json:"isLoaded,omitempty"`
+	Name        string                  `json:"name"`
+	PluginName  string                  `json:"pluginName"`
+	Script      *ApiScript              `json:"script,omitempty"`
+	ScriptId    *int64                  `json:"scriptId,omitempty"`
+	UpdatedAt   time.Time               `json:"updatedAt"`
 }
 
 // ApiTypes defines model for apiTypes.
@@ -2026,14 +2031,16 @@ type TriggerServiceAddTriggerParams struct {
 
 // TriggerServiceUpdateTriggerJSONBody defines parameters for TriggerServiceUpdateTrigger.
 type TriggerServiceUpdateTriggerJSONBody struct {
-	Attributes map[string]ApiAttribute `json:"attributes"`
-	Enabled    bool                    `json:"enabled"`
-	Entity     *ApiEntity              `json:"entity,omitempty"`
-	EntityId   *string                 `json:"entityId,omitempty"`
-	Name       string                  `json:"name"`
-	PluginName string                  `json:"pluginName"`
-	Script     *ApiScript              `json:"script,omitempty"`
-	ScriptId   *int64                  `json:"scriptId,omitempty"`
+	AreaId      *int64                  `json:"areaId,omitempty"`
+	Attributes  map[string]ApiAttribute `json:"attributes"`
+	Description string                  `json:"description"`
+	Enabled     bool                    `json:"enabled"`
+	Entity      *ApiEntity              `json:"entity,omitempty"`
+	EntityId    *string                 `json:"entityId,omitempty"`
+	Name        string                  `json:"name"`
+	PluginName  string                  `json:"pluginName"`
+	Script      *ApiScript              `json:"script,omitempty"`
+	ScriptId    *int64                  `json:"scriptId,omitempty"`
 }
 
 // TriggerServiceUpdateTriggerParams defines parameters for TriggerServiceUpdateTrigger.

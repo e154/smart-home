@@ -88,7 +88,7 @@ func (r Area) ToSearchResult(list []*m.Area) stub.ApiSearchAreaResult {
 	items := make([]stub.ApiArea, 0, len(list))
 
 	for _, i := range list {
-		items = append(items, *ToArea(i))
+		items = append(items, *GetStubArea(i))
 	}
 
 	return stub.ApiSearchAreaResult{
@@ -102,14 +102,14 @@ func (r Area) ToListResult(list []*m.Area) []stub.ApiArea {
 	items := make([]stub.ApiArea, 0, len(list))
 
 	for _, i := range list {
-		items = append(items, *ToArea(i))
+		items = append(items, *GetStubArea(i))
 	}
 
 	return items
 }
 
-// ToArea ...
-func ToArea(area *m.Area) (obj *stub.ApiArea) {
+// GetStubArea ...
+func GetStubArea(area *m.Area) (obj *stub.ApiArea) {
 	if area == nil {
 		return
 	}

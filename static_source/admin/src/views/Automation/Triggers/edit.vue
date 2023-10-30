@@ -46,8 +46,10 @@ const save = async () => {
     const tr = (await write?.getFormData()) as ApiTrigger;
     let data = {
       name: tr.name,
+      description: tr.description,
       entityId: tr.entity?.id || null,
       scriptId: tr.script?.id || null,
+      areaId: tr.area?.id || null,
       pluginName: tr.pluginName,
       attributes: {},
       enabled: tr.enabled,

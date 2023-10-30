@@ -96,7 +96,7 @@ func ToDashboard(ver *m.Dashboard) (obj *stub.ApiDashboard) {
 		Description: ver.Description,
 		Enabled:     ver.Enabled,
 		AreaId:      ver.AreaId,
-		Area:        ToArea(ver.Area),
+		Area:        GetStubArea(ver.Area),
 		Tabs:        make([]stub.ApiDashboardTab, 0, len(ver.Tabs)),
 		Entities:    make(map[string]stub.ApiEntity),
 		CreatedAt:   ver.CreatedAt,

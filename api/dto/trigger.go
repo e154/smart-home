@@ -35,12 +35,14 @@ func NewTriggerDto() Trigger {
 // AddTrigger ...
 func (r Trigger) AddTrigger(from *stub.ApiNewTriggerRequest) (action *m.Trigger) {
 	action = &m.Trigger{
-		Name:       from.Name,
-		EntityId:   common.NewEntityIdFromPtr(from.EntityId),
-		ScriptId:   from.ScriptId,
-		PluginName: from.PluginName,
-		Payload:    AttributeFromApi(from.Attributes),
-		Enabled:    from.Enabled,
+		Name:        from.Name,
+		Description: from.Description,
+		EntityId:    common.NewEntityIdFromPtr(from.EntityId),
+		ScriptId:    from.ScriptId,
+		AreaId:      from.AreaId,
+		PluginName:  from.PluginName,
+		Payload:     AttributeFromApi(from.Attributes),
+		Enabled:     from.Enabled,
 	}
 	return
 }
@@ -48,13 +50,15 @@ func (r Trigger) AddTrigger(from *stub.ApiNewTriggerRequest) (action *m.Trigger)
 // UpdateTrigger ...
 func (r Trigger) UpdateTrigger(from *stub.TriggerServiceUpdateTriggerJSONBody, id int64) (action *m.Trigger) {
 	action = &m.Trigger{
-		Id:         id,
-		Name:       from.Name,
-		EntityId:   common.NewEntityIdFromPtr(from.EntityId),
-		ScriptId:   from.ScriptId,
-		PluginName: from.PluginName,
-		Payload:    AttributeFromApi(from.Attributes),
-		Enabled:    from.Enabled,
+		Id:          id,
+		Name:        from.Name,
+		Description: from.Description,
+		EntityId:    common.NewEntityIdFromPtr(from.EntityId),
+		ScriptId:    from.ScriptId,
+		AreaId:      from.AreaId,
+		PluginName:  from.PluginName,
+		Payload:     AttributeFromApi(from.Attributes),
+		Enabled:     from.Enabled,
 	}
 	return
 }
@@ -97,18 +101,21 @@ func ToTrigger(trigger *m.Trigger) (obj *stub.ApiTrigger) {
 		return
 	}
 	obj = &stub.ApiTrigger{
-		Id:         trigger.Id,
-		Name:       trigger.Name,
-		Entity:     ToEntity(trigger.Entity),
-		EntityId:   trigger.EntityId.StringPtr(),
-		Script:     GetStubScript(trigger.Script),
-		ScriptId:   trigger.ScriptId,
-		PluginName: trigger.PluginName,
-		Enabled:    trigger.Enabled,
-		IsLoaded:   common.Bool(trigger.IsLoaded),
-		Attributes: AttributeToApi(trigger.Payload),
-		CreatedAt:  trigger.CreatedAt,
-		UpdatedAt:  trigger.UpdatedAt,
+		Id:          trigger.Id,
+		Name:        trigger.Name,
+		Description: trigger.Description,
+		Entity:      ToEntity(trigger.Entity),
+		EntityId:    trigger.EntityId.StringPtr(),
+		Script:      GetStubScript(trigger.Script),
+		ScriptId:    trigger.ScriptId,
+		AreaId:      trigger.AreaId,
+		Area:        GetStubArea(trigger.Area),
+		PluginName:  trigger.PluginName,
+		Enabled:     trigger.Enabled,
+		IsLoaded:    common.Bool(trigger.IsLoaded),
+		Attributes:  AttributeToApi(trigger.Payload),
+		CreatedAt:   trigger.CreatedAt,
+		UpdatedAt:   trigger.UpdatedAt,
 	}
 	return
 }

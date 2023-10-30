@@ -88,7 +88,7 @@ func (r Automation) GetTask(task *m.Task) (obj *stub.ApiTask) {
 		Description: task.Description,
 		Enabled:     task.Enabled,
 		IsLoaded:    common.Bool(task.IsLoaded),
-		Area:        ToArea(task.Area),
+		Area:        GetStubArea(task.Area),
 		AreaId:      task.AreaId,
 		Condition:   string(task.Condition),
 		CreatedAt:   task.CreatedAt,

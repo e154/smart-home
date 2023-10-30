@@ -50,7 +50,7 @@ func (c ControllerArea) AreaServiceAddArea(ctx echo.Context, _ stub.AreaServiceA
 		return c.ERROR(ctx, err)
 	}
 
-	return c.HTTP201(ctx, ResponseWithObj(ctx, dto.ToArea(area)))
+	return c.HTTP201(ctx, ResponseWithObj(ctx, dto.GetStubArea(area)))
 }
 
 // UpdateArea ...
@@ -66,7 +66,7 @@ func (c ControllerArea) AreaServiceUpdateArea(ctx echo.Context, id int64, _ stub
 		return c.ERROR(ctx, err)
 	}
 
-	return c.HTTP200(ctx, ResponseWithObj(ctx, dto.ToArea(area)))
+	return c.HTTP200(ctx, ResponseWithObj(ctx, dto.GetStubArea(area)))
 }
 
 // GetAreaById ...
@@ -77,7 +77,7 @@ func (c ControllerArea) AreaServiceGetAreaById(ctx echo.Context, id int64) error
 		return c.ERROR(ctx, err)
 	}
 
-	return c.HTTP200(ctx, ResponseWithObj(ctx, dto.ToArea(area)))
+	return c.HTTP200(ctx, ResponseWithObj(ctx, dto.GetStubArea(area)))
 }
 
 // GetAreaList ...
