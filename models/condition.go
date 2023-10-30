@@ -22,10 +22,13 @@ import "time"
 
 // Condition ...
 type Condition struct {
-	Id        int64     `json:"id"`
-	Name      string    `json:"name" validate:"required,lte=255"`
-	Script    *Script   `json:"script"`
-	ScriptId  *int64    `json:"script_id" validate:"required"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	Id          int64     `json:"id"`
+	Name        string    `json:"name" validate:"required,lte=255"`
+	Script      *Script   `json:"script"`
+	ScriptId    *int64    `json:"script_id" validate:"required"`
+	AreaId      *int64    `json:"area_id"`
+	Area        *Area     `json:"area"`
+	Description string    `json:"description"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }

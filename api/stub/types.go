@@ -185,12 +185,15 @@ type ApiClient struct {
 
 // ApiCondition defines model for apiCondition.
 type ApiCondition struct {
-	CreatedAt time.Time  `json:"createdAt"`
-	Id        int64      `json:"id"`
-	Name      string     `json:"name"`
-	Script    *ApiScript `json:"script,omitempty"`
-	ScriptId  *int64     `json:"scriptId,omitempty"`
-	UpdatedAt time.Time  `json:"updatedAt"`
+	Area        *ApiArea   `json:"area,omitempty"`
+	AreaId      *int64     `json:"areaId,omitempty"`
+	CreatedAt   time.Time  `json:"createdAt"`
+	Description string     `json:"description"`
+	Id          int64      `json:"id"`
+	Name        string     `json:"name"`
+	Script      *ApiScript `json:"script,omitempty"`
+	ScriptId    *int64     `json:"scriptId,omitempty"`
+	UpdatedAt   time.Time  `json:"updatedAt"`
 }
 
 // ApiCurrentUser defines model for apiCurrentUser.
@@ -704,9 +707,10 @@ type ApiNewAreaRequest struct {
 
 // ApiNewConditionRequest defines model for apiNewConditionRequest.
 type ApiNewConditionRequest struct {
-	Name     string     `json:"name"`
-	Script   *ApiScript `json:"script,omitempty"`
-	ScriptId *int64     `json:"scriptId,omitempty"`
+	AreaId      *int64 `json:"areaId,omitempty"`
+	Description string `json:"description"`
+	Name        string `json:"name"`
+	ScriptId    *int64 `json:"scriptId,omitempty"`
 }
 
 // ApiNewDashboardCardItemRequest defines model for apiNewDashboardCardItemRequest.
@@ -1463,9 +1467,10 @@ type ConditionServiceGetConditionByIdParams struct {
 
 // ConditionServiceUpdateConditionJSONBody defines parameters for ConditionServiceUpdateCondition.
 type ConditionServiceUpdateConditionJSONBody struct {
-	Name     string     `json:"name"`
-	Script   *ApiScript `json:"script,omitempty"`
-	ScriptId *int64     `json:"scriptId,omitempty"`
+	AreaId      *int64 `json:"areaId,omitempty"`
+	Description string `json:"description"`
+	Name        string `json:"name"`
+	ScriptId    *int64 `json:"scriptId,omitempty"`
 }
 
 // ConditionServiceUpdateConditionParams defines parameters for ConditionServiceUpdateCondition.

@@ -34,8 +34,10 @@ func NewConditionDto() Condition {
 // AddCondition ...
 func (r Condition) AddCondition(from *stub.ApiNewConditionRequest) (action *m.Condition) {
 	action = &m.Condition{
-		Name:     from.Name,
-		ScriptId: from.ScriptId,
+		Name:        from.Name,
+		Description: from.Description,
+		ScriptId:    from.ScriptId,
+		AreaId:      from.AreaId,
 	}
 	return
 }
@@ -43,9 +45,11 @@ func (r Condition) AddCondition(from *stub.ApiNewConditionRequest) (action *m.Co
 // UpdateCondition ...
 func (r Condition) UpdateCondition(from *stub.ConditionServiceUpdateConditionJSONBody, id int64) (action *m.Condition) {
 	action = &m.Condition{
-		Id:       id,
-		Name:     from.Name,
-		ScriptId: from.ScriptId,
+		Id:          id,
+		Name:        from.Name,
+		Description: from.Description,
+		ScriptId:    from.ScriptId,
+		AreaId:      from.AreaId,
 	}
 	return
 }
@@ -83,12 +87,15 @@ func ToCondition(cond *m.Condition) (obj *stub.ApiCondition) {
 		return
 	}
 	obj = &stub.ApiCondition{
-		Id:        cond.Id,
-		Name:      cond.Name,
-		ScriptId:  cond.ScriptId,
-		Script:    GetStubScript(cond.Script),
-		CreatedAt: cond.CreatedAt,
-		UpdatedAt: cond.UpdatedAt,
+		Id:          cond.Id,
+		Name:        cond.Name,
+		Description: cond.Description,
+		ScriptId:    cond.ScriptId,
+		AreaId:      cond.AreaId,
+		Script:      GetStubScript(cond.Script),
+		Area:        GetStubArea(cond.Area),
+		CreatedAt:   cond.CreatedAt,
+		UpdatedAt:   cond.UpdatedAt,
 	}
 
 	return

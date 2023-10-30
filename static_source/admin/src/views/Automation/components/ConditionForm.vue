@@ -36,6 +36,29 @@ const schema = reactive<FormSchema[]>([
     }
   },
   {
+    field: 'description',
+    label: t('automation.description'),
+    component: 'Input',
+    colProps: {
+      span: 24
+    },
+    componentProps: {
+      placeholder: t('automation.description')
+    }
+  },
+  {
+    field: 'area',
+    label: t('automation.area'),
+    value: null,
+    component: 'Area',
+    colProps: {
+      span: 24
+    },
+    componentProps: {
+      placeholder: t('automation.area'),
+    }
+  },
+  {
     field: 'script',
     label: t('automation.conditions.script'),
     component: 'Script',

@@ -634,15 +634,18 @@ paths:
           application/json:
             schema:
               type: object
-              required: [ name ]
+              required: [ name, description ]
               properties:
                 name:
+                  type: string
+                description:
                   type: string
                 scriptId:
                   type: integer
                   format: int64
-                script:
-                  $ref: '#/components/schemas/apiScript'
+                areaId:
+                  type: integer
+                  format: int64
         required: true
       responses:
         200:
@@ -4562,18 +4565,25 @@ components:
           format: date-time
     apiCondition:
       type: object
-      required: [ id, name, createdAt, updatedAt ]
+      required: [ id, name, description, createdAt, updatedAt ]
       properties:
         id:
           type: integer
           format: int64
         name:
           type: string
+        description:
+          type: string
         scriptId:
           type: integer
           format: int64
         script:
           $ref: '#/components/schemas/apiScript'
+        area:
+          $ref: '#/components/schemas/apiArea'
+        areaId:
+          type: integer
+          format: int64
         createdAt:
           type: string
           format: date-time
@@ -5552,15 +5562,18 @@ components:
           format: float
     apiNewConditionRequest:
       type: object
-      required: [ name ]
+      required: [ name, description ]
       properties:
         name:
+          type: string
+        description:
           type: string
         scriptId:
           type: integer
           format: int64
-        script:
-          $ref: '#/components/schemas/apiScript'
+        areaId:
+          type: integer
+          format: int64
     apiNewDashboardCardItemRequest:
       type: object
       required: [ title, type, weight, enabled, dashboardCardId, payload, hidden, frozen ]

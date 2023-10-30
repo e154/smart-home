@@ -184,9 +184,13 @@ export interface ApiCondition {
   /** @format int64 */
   id: number;
   name: string;
+  description: string;
   /** @format int64 */
   scriptId?: number;
   script?: ApiScript;
+  area?: ApiArea;
+  /** @format int64 */
+  areaId?: number;
   /** @format date-time */
   createdAt: string;
   /** @format date-time */
@@ -734,9 +738,11 @@ export interface ApiNewAreaRequest {
 
 export interface ApiNewConditionRequest {
   name: string;
+  description: string;
   /** @format int64 */
   scriptId?: number;
-  script?: ApiScript;
+  /** @format int64 */
+  areaId?: number;
 }
 
 export interface ApiNewDashboardCardItemRequest {
@@ -2336,9 +2342,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       id: number,
       data: {
         name: string;
+        description: string;
         /** @format int64 */
         scriptId?: number;
-        script?: ApiScript;
+        /** @format int64 */
+        areaId?: number;
       },
       params: RequestParams = {},
     ) =>

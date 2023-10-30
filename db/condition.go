@@ -35,12 +35,15 @@ type Conditions struct {
 
 // Condition ...
 type Condition struct {
-	Id        int64 `gorm:"primary_key"`
-	Name      string
-	Script    *Script
-	ScriptId  *int64
-	CreatedAt time.Time `gorm:"<-:create"`
-	UpdatedAt time.Time
+	Id          int64 `gorm:"primary_key"`
+	Name        string
+	Script      *Script
+	ScriptId    *int64
+	AreaId      *int64
+	Area        *Area
+	Description string
+	CreatedAt   time.Time `gorm:"<-:create"`
+	UpdatedAt   time.Time
 }
 
 // TableName ...
@@ -65,6 +68,7 @@ func (t Conditions) GetById(ctx context.Context, id int64) (condition *Condition
 		WithContext(ctx).
 		Model(condition).
 		Preload("Script").
+		Preload("Area").
 		First(&condition).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -78,7 +82,15 @@ func (t Conditions) GetById(ctx context.Context, id int64) (condition *Condition
 
 // Update ...
 func (t Conditions) Update(ctx context.Context, m *Condition) (err error) {
-	if err = t.Db.WithContext(ctx).Model(&Condition{}).Where("id = ?", m.Id).Updates(m).Error; err != nil {
+
+	q := map[string]interface{}{
+		"name":        m.Name,
+		"description": m.Description,
+		"script_id":   m.ScriptId,
+		"area_id":     m.AreaId,
+	}
+
+	if err = t.Db.WithContext(ctx).Model(&Condition{}).Where("id = ?", m.Id).Updates(q).Error; err != nil {
 		err = errors.Wrap(apperr.ErrConditionUpdate, err.Error())
 	}
 	return
