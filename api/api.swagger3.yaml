@@ -131,17 +131,18 @@ paths:
           application/json:
             schema:
               type: object
-              required: [ name ]
+              required: [ name, description ]
               properties:
                 name:
+                  type: string
+                description:
                   type: string
                 scriptId:
                   type: integer
                   format: int64
-                script:
-                  $ref: '#/components/schemas/apiScript'
-                entity:
-                  $ref: '#/components/schemas/apiEntity'
+                areaId:
+                  type: integer
+                  format: int64
                 entityId:
                   type: string
                 entityActionName:
@@ -4383,18 +4384,25 @@ components:
           $ref: '#/components/schemas/apiAccessList'
     apiAction:
       type: object
-      required: [ id, name, createdAt, updatedAt ]
+      required: [ id, name, description, createdAt, updatedAt ]
       properties:
         id:
           type: integer
           format: int64
         name:
           type: string
+        description:
+          type: string
         scriptId:
           type: integer
           format: int64
         script:
           $ref: '#/components/schemas/apiScript'
+        areaId:
+          type: integer
+          format: int64
+        area:
+          $ref: '#/components/schemas/apiArea'
         entity:
           $ref: '#/components/schemas/apiEntity'
         entityId:
@@ -5525,17 +5533,18 @@ components:
           type: string
     apiNewActionRequest:
       type: object
-      required: [ name ]
+      required: [ name, description ]
       properties:
         name:
+          type: string
+        description:
           type: string
         scriptId:
           type: integer
           format: int64
-        script:
-          $ref: '#/components/schemas/apiScript'
-        entity:
-          $ref: '#/components/schemas/apiEntity'
+        areaId:
+          type: integer
+          format: int64
         entityId:
           type: string
         entityActionName:

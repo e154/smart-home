@@ -6,7 +6,7 @@ import {useAppStore} from "@/store/modules/app";
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
 import {ElButton, ElMessage, ElTag} from 'element-plus'
-import {ApiAction, ApiTrigger} from "@/api/stub";
+import {ApiAction, ApiCondition, ApiTrigger} from "@/api/stub";
 import {useForm} from "@/hooks/web/useForm";
 import {useRouter} from "vue-router";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
@@ -95,6 +95,30 @@ const columns: TableColumn[] = [
     field: 'name',
     label: t('automation.actions.name'),
     sortable: true,
+    width: "150px"
+  },
+  {
+    field: 'areaId',
+    label: t('automation.area'),
+    width: "100px",
+    sortable: true,
+    formatter: (row: ApiCondition) => {
+      return h(
+          'span',
+          row.area?.name
+      )
+    }
+  },
+  {
+    field: 'description',
+    label: t('automation.description'),
+    sortable: true,
+    formatter: (row: ApiCondition) => {
+      return h(
+          'span',
+          row?.description || t('automation.nothing')
+      )
+    }
   },
   {
     field: 'operations',

@@ -80,6 +80,7 @@ const columns: TableColumn[] = [
     field: 'name',
     label: t('automation.conditions.name'),
     sortable: true,
+    width: "150px"
   },
   {
     field: 'areaId',

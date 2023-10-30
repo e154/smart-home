@@ -44,6 +44,9 @@ type Action struct {
 	Entity           *Entity
 	EntityId         *common.EntityId
 	EntityActionName *string
+	AreaId           *int64
+	Area             *Area
+	Description      string
 	CreatedAt        time.Time `gorm:"<-:create"`
 	UpdatedAt        time.Time
 }
@@ -70,6 +73,7 @@ func (t Actions) GetById(ctx context.Context, id int64) (action *Action, err err
 		Where("id = ?", id).
 		Preload("Entity").
 		Preload("Script").
+		Preload("Area").
 		First(&action).
 		Error
 	if err != nil {
@@ -86,8 +90,10 @@ func (t Actions) GetById(ctx context.Context, id int64) (action *Action, err err
 func (t Actions) Update(ctx context.Context, m *Action) (err error) {
 	q := map[string]interface{}{
 		"name":               m.Name,
+		"description":        m.Description,
 		"script_id":          m.ScriptId,
 		"entity_id":          m.EntityId,
+		"area_id":            m.AreaId,
 		"entity_action_name": m.EntityActionName,
 	}
 	if err = t.Db.WithContext(ctx).Model(&Action{}).Where("id = ?", m.Id).Updates(q).Error; err != nil {

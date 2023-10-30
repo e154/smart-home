@@ -46,8 +46,10 @@ const save = async () => {
     const act = (await write?.getFormData()) as ApiAction;
     const data = {
       name: act.name,
+      description: act.description,
       scriptId: act.script?.id,
       entityId: act.entity?.id,
+      areaId: act.area?.id,
       entityActionName: act.entityActionName,
     }
     const res = await api.v1.actionServiceUpdateAction(actionId.value, data)

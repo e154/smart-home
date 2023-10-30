@@ -36,7 +36,9 @@ func NewActionDto() Action {
 func (r Action) Add(from *stub.ApiNewActionRequest) (action *m.Action) {
 	action = &m.Action{
 		Name:             from.Name,
+		Description:      from.Description,
 		ScriptId:         from.ScriptId,
+		AreaId:           from.AreaId,
 		EntityId:         common.NewEntityIdFromPtr(from.EntityId),
 		EntityActionName: from.EntityActionName,
 	}
@@ -48,7 +50,9 @@ func (r Action) Update(from *stub.ActionServiceUpdateActionJSONBody, id int64) (
 	action = &m.Action{
 		Id:               id,
 		Name:             from.Name,
+		Description:      from.Description,
 		ScriptId:         from.ScriptId,
+		AreaId:           from.AreaId,
 		EntityId:         common.NewEntityIdFromPtr(from.EntityId),
 		EntityActionName: from.EntityActionName,
 	}
@@ -95,8 +99,11 @@ func ToAction(action *m.Action) (obj stub.ApiAction) {
 	obj = stub.ApiAction{
 		Id:               action.Id,
 		Name:             action.Name,
+		Description:      action.Description,
 		ScriptId:         action.ScriptId,
 		Script:           GetStubScript(action.Script),
+		AreaId:           action.AreaId,
+		Area:             GetStubArea(action.Area),
 		EntityId:         action.EntityId.StringPtr(),
 		Entity:           ToEntity(action.Entity),
 		EntityActionName: action.EntityActionName,

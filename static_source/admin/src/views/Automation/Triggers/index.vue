@@ -98,7 +98,7 @@ const columns: TableColumn[] = [
     field: 'name',
     label: t('automation.triggers.name'),
     sortable: true,
-    width: "200px"
+    width: "150px"
   },
   {
     field: 'areaId',

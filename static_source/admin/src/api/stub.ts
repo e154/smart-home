@@ -75,9 +75,13 @@ export interface ApiAction {
   /** @format int64 */
   id: number;
   name: string;
+  description: string;
   /** @format int64 */
   scriptId?: number;
   script?: ApiScript;
+  /** @format int64 */
+  areaId?: number;
+  area?: ApiArea;
   entity?: ApiEntity;
   entityId?: string;
   entityActionName?: string;
@@ -717,10 +721,11 @@ export interface ApiNetworkmapResponse {
 
 export interface ApiNewActionRequest {
   name: string;
+  description: string;
   /** @format int64 */
   scriptId?: number;
-  script?: ApiScript;
-  entity?: ApiEntity;
+  /** @format int64 */
+  areaId?: number;
   entityId?: string;
   entityActionName?: string;
 }
@@ -1711,10 +1716,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       id: number,
       data: {
         name: string;
+        description: string;
         /** @format int64 */
         scriptId?: number;
-        script?: ApiScript;
-        entity?: ApiEntity;
+        /** @format int64 */
+        areaId?: number;
         entityId?: string;
         entityActionName?: string;
       },

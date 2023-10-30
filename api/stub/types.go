@@ -91,8 +91,11 @@ type ApiAccessListResponse struct {
 
 // ApiAction defines model for apiAction.
 type ApiAction struct {
+	Area             *ApiArea   `json:"area,omitempty"`
+	AreaId           *int64     `json:"areaId,omitempty"`
 	Completed        *bool      `json:"completed,omitempty"`
 	CreatedAt        time.Time  `json:"createdAt"`
+	Description      string     `json:"description"`
 	Entity           *ApiEntity `json:"entity,omitempty"`
 	EntityActionName *string    `json:"entityActionName,omitempty"`
 	EntityId         *string    `json:"entityId,omitempty"`
@@ -687,12 +690,12 @@ type ApiNetworkmapResponse struct {
 
 // ApiNewActionRequest defines model for apiNewActionRequest.
 type ApiNewActionRequest struct {
-	Entity           *ApiEntity `json:"entity,omitempty"`
-	EntityActionName *string    `json:"entityActionName,omitempty"`
-	EntityId         *string    `json:"entityId,omitempty"`
-	Name             string     `json:"name"`
-	Script           *ApiScript `json:"script,omitempty"`
-	ScriptId         *int64     `json:"scriptId,omitempty"`
+	AreaId           *int64  `json:"areaId,omitempty"`
+	Description      string  `json:"description"`
+	EntityActionName *string `json:"entityActionName,omitempty"`
+	EntityId         *string `json:"entityId,omitempty"`
+	Name             string  `json:"name"`
+	ScriptId         *int64  `json:"scriptId,omitempty"`
 }
 
 // ApiNewAreaRequest defines model for apiNewAreaRequest.
@@ -1344,12 +1347,12 @@ type ActionServiceAddActionParams struct {
 
 // ActionServiceUpdateActionJSONBody defines parameters for ActionServiceUpdateAction.
 type ActionServiceUpdateActionJSONBody struct {
-	Entity           *ApiEntity `json:"entity,omitempty"`
-	EntityActionName *string    `json:"entityActionName,omitempty"`
-	EntityId         *string    `json:"entityId,omitempty"`
-	Name             string     `json:"name"`
-	Script           *ApiScript `json:"script,omitempty"`
-	ScriptId         *int64     `json:"scriptId,omitempty"`
+	AreaId           *int64  `json:"areaId,omitempty"`
+	Description      string  `json:"description"`
+	EntityActionName *string `json:"entityActionName,omitempty"`
+	EntityId         *string `json:"entityId,omitempty"`
+	Name             string  `json:"name"`
+	ScriptId         *int64  `json:"scriptId,omitempty"`
 }
 
 // ActionServiceUpdateActionParams defines parameters for ActionServiceUpdateAction.
