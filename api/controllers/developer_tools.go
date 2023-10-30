@@ -100,15 +100,13 @@ func (c ControllerDeveloperTools) DeveloperToolsServiceCallAction(ctx echo.Conte
 }
 
 // GetEventBusStateList ...
-func (c ControllerDeveloperTools) DeveloperToolsServiceGetEventBusStateList(ctx echo.Context, _ stub.DeveloperToolsServiceGetEventBusStateListParams) error {
+func (c ControllerDeveloperTools) DeveloperToolsServiceGetEventBusStateList(ctx echo.Context, params stub.DeveloperToolsServiceGetEventBusStateListParams) error {
 
-	items, total, err := c.endpoint.DeveloperTools.GetEventBusState()
+	pagination := c.Pagination(params.Page, params.Limit, params.Sort)
+	items, total, err := c.endpoint.DeveloperTools.GetEventBusState(ctx.Request().Context(), pagination)
 	if err != nil {
 		return c.ERROR(ctx, err)
 	}
 
-	pagination := common.PageParams{
-		Limit: total,
-	}
 	return c.HTTP200(ctx, ResponseWithList(ctx, c.dto.DeveloperTools.ToListResult(items), total, pagination))
 }

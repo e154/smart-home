@@ -64,12 +64,12 @@ func NewSettings() m.Attributes {
 		AttrKeepAlive: {
 			Name:  AttrKeepAlive,
 			Type:  common.AttributeInt,
-			Value: 3,
+			Value: 15,
 		},
 		AttrPingTimeout: {
 			Name:  AttrPingTimeout,
 			Type:  common.AttributeInt,
-			Value: 3,
+			Value: 10,
 		},
 		AttrBroker: {
 			Name:  AttrBroker,
@@ -83,7 +83,7 @@ func NewSettings() m.Attributes {
 		AttrConnectTimeout: {
 			Name:  AttrConnectTimeout,
 			Type:  common.AttributeInt,
-			Value: 3,
+			Value: 30,
 		},
 		AttrCleanSession: {
 			Name:  AttrCleanSession,

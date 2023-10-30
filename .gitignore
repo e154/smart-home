@@ -5,16 +5,11 @@ vendor/*
 /smart-home
 /conf/config.json
 /conf/dbconfig.yml
-/api/server/v1/docs/docs.go
-/api/server/v1/docs/swagger/swagger.json
-/api/server/v2/docs/docs.go
-/api/server/v2/docs/swagger/swagger.json
 .DS_Store
 snapshots/*
 !snapshots/.gitignore
 bee.json
 /api/server/golang-swaggerui-example/
-/conf/notify.json
 /cmd/pingmq/pingmq
 ._*
 cli-*

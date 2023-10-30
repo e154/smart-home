@@ -32,7 +32,5 @@ type Config struct {
 
 // String ...
 func (c Config) String() string {
-
-	// parseTime https://github.com/go-sql-driver/mysql#parsetime
 	return fmt.Sprintf("dbname=%s user=%s password=%s host=%s port=%s sslmode=disable", c.Name, c.User, c.Password, c.Host, c.Port)
 }

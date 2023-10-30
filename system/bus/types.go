@@ -19,6 +19,7 @@
 package bus
 
 import (
+	"context"
 	"reflect"
 )
 
@@ -34,7 +35,7 @@ type Bus interface {
 	// Unsubscribe handler from the given topic
 	Unsubscribe(topic string, fn interface{}) error
 	// Stat ...
-	Stat() (stats Stats, total int64, err error)
+	Stat(ctx context.Context, limit, offset int64, orderBy, sort string) (stats Stats, total int64, err error)
 	// Purge ...
 	Purge()
 }

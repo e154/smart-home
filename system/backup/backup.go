@@ -23,26 +23,26 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/events"
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 	"io"
 	"net/http"
 	"os"
 	"path"
+	"path/filepath"
 	"sort"
 	"time"
 
 	"github.com/pkg/errors"
 	"go.uber.org/fx"
-	"path/filepath"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 
+	"github.com/e154/smart-home/common"
 	app "github.com/e154/smart-home/common/app"
 	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/bus"
 )
 
 var (
@@ -116,7 +116,7 @@ func (b *Backup) New() (err error) {
 		return
 	}
 
-	backupName := fmt.Sprintf("%s.zip", time.Now().Format("2006-01-02T15:04:05.999"))
+	backupName := fmt.Sprintf("%s.zip", time.Now().UTC().Format("2006-01-02T15:04:05.999"))
 	err = zipit([]string{
 		path.Join("data", "file_storage"),
 		path.Join(tmpDir, "data.sql"),

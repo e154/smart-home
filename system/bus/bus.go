@@ -19,6 +19,7 @@
 package bus
 
 import (
+	"context"
 	"fmt"
 	"reflect"
 	"sort"
@@ -180,11 +181,11 @@ func (b *bus) Purge() {
 	}
 }
 
-// todo: fix ...
-func (b *bus) Stat() (stats Stats, total int64, err error) {
+func (b *bus) Stat(ctx context.Context, limit, offset int64, _, _ string) (result Stats, total int64, err error) {
 	b.RLock()
 	defer b.RUnlock()
 
+	var stats Stats
 	for topic, subs := range b.sub {
 		stats = append(stats, Stat{
 			Topic:       topic,
@@ -195,6 +196,17 @@ func (b *bus) Stat() (stats Stats, total int64, err error) {
 	sort.Sort(stats)
 
 	total = int64(len(stats))
+
+	if offset > total {
+		offset = total
+	}
+
+	end := offset + limit
+	if end > total {
+		end = total
+	}
+
+	result = stats[offset:end]
 
 	return
 }

@@ -68,12 +68,6 @@ func (d DeveloperToolsEndpoint) EntitySetState(ctx context.Context, entityId str
 	return
 }
 
-// EventList ...
-func (d DeveloperToolsEndpoint) EventList(ctx context.Context) (events []bus.Stat, total int64, err error) {
-	events, total, err = d.eventBus.Stat()
-	return
-}
-
 // TaskCallTrigger ...
 func (d *DeveloperToolsEndpoint) TaskCallTrigger(ctx context.Context, id int64, name string) (err error) {
 
@@ -137,6 +131,6 @@ func (d *DeveloperToolsEndpoint) EntitySetStateName(ctx context.Context, id comm
 }
 
 // GetEventBusState ...
-func (d *DeveloperToolsEndpoint) GetEventBusState() (bus.Stats, int64, error) {
-	return d.eventBus.Stat()
+func (d *DeveloperToolsEndpoint) GetEventBusState(ctx context.Context, pagination common.PageParams) (bus.Stats, int64, error) {
+	return d.eventBus.Stat(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
 }
