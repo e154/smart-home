@@ -20,6 +20,8 @@ package db
 
 import (
 	"context"
+	"crypto/md5"
+	"encoding/hex"
 	"fmt"
 	"strings"
 	"time"
@@ -38,22 +40,27 @@ type Scripts struct {
 	Db *gorm.DB
 }
 
+type ScriptInfo struct {
+	AlexaIntents         int `gorm:"->"`
+	EntityActions        int `gorm:"->"`
+	EntityScripts        int `gorm:"->"`
+	AutomationTriggers   int `gorm:"->"`
+	AutomationConditions int `gorm:"->"`
+	AutomationActions    int `gorm:"->"`
+}
+
 // Script ...
 type Script struct {
-	Id                   int64 `gorm:"primary_key"`
-	Lang                 ScriptLang
-	Name                 string
-	Source               string
-	Description          string
-	Compiled             string
-	AlexaIntents         int       `gorm:"->"`
-	EntityActions        int       `gorm:"->"`
-	EntityScripts        int       `gorm:"->"`
-	AutomationTriggers   int       `gorm:"->"`
-	AutomationConditions int       `gorm:"->"`
-	AutomationActions    int       `gorm:"->"`
-	CreatedAt            time.Time `gorm:"<-:create"`
-	UpdatedAt            time.Time
+	ScriptInfo
+	Id          int64 `gorm:"primary_key"`
+	Lang        ScriptLang
+	Name        string
+	Source      string
+	Description string
+	Compiled    string
+	Versions    []*ScriptVersion
+	CreatedAt   time.Time `gorm:"<-:create"`
+	UpdatedAt   time.Time
 }
 
 type ScriptsStatistic struct {
@@ -95,17 +102,10 @@ func (n Scripts) Add(ctx context.Context, script *Script) (id int64, err error) 
 // GetById ...
 func (n Scripts) GetById(ctx context.Context, scriptId int64) (script *Script, err error) {
 	script = &Script{}
-	err = n.Db.WithContext(ctx).Raw(`
-select scripts.*,
-       (select count(*) from alexa_intents where script_id = scripts.id)  as alexa_intents,
-       (select count(*) from entity_actions where script_id = scripts.id) as entity_actions,
-       (select count(*) from entity_scripts where script_id = scripts.id) as entity_scripts,
-       (select count(*) from triggers where script_id = scripts.id)       as automation_triggers,
-       (select count(*) from conditions where script_id = scripts.id)     as automation_conditions,
-       (select count(*) from actions where script_id = scripts.id)        as automation_actions
-from scripts where id = ?`, scriptId).
-		First(script).
-		Error
+	err = n.Db.WithContext(ctx).Model(script).
+		Where("id = ?", scriptId).
+		Preload("Versions").
+		First(&script).Error
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -114,23 +114,29 @@ from scripts where id = ?`, scriptId).
 		}
 		err = errors.Wrap(apperr.ErrScriptGet, err.Error())
 	}
+
+	err = n.Db.WithContext(ctx).Raw(`
+	select
+	      (select count(*) from alexa_intents where script_id = scripts.id)  as alexa_intents,
+	      (select count(*) from entity_actions where script_id = scripts.id) as entity_actions,
+	      (select count(*) from entity_scripts where script_id = scripts.id) as entity_scripts,
+	      (select count(*) from triggers where script_id = scripts.id)       as automation_triggers,
+	      (select count(*) from conditions where script_id = scripts.id)     as automation_conditions,
+	      (select count(*) from actions where script_id = scripts.id)        as automation_actions
+	from scripts where id = ?`, scriptId).
+		First(&script.ScriptInfo).
+		Error
+
 	return
 }
 
 // GetByName ...
 func (n Scripts) GetByName(ctx context.Context, name string) (script *Script, err error) {
 	script = &Script{}
-	err = n.Db.WithContext(ctx).Raw(`
-select scripts.*,
-       (select count(*) from alexa_intents where script_id = scripts.id)  as alexa_intents,
-       (select count(*) from entity_actions where script_id = scripts.id) as entity_actions,
-       (select count(*) from entity_scripts where script_id = scripts.id) as entity_scripts,
-       (select count(*) from triggers where script_id = scripts.id)       as automation_triggers,
-       (select count(*) from conditions where script_id = scripts.id)     as automation_conditions,
-       (select count(*) from actions where script_id = scripts.id)        as automation_actions
-from scripts where name = ?`, name).
-		First(script).
-		Error
+	err = n.Db.WithContext(ctx).Model(script).
+		Where("name = ?", name).
+		Preload("Versions").
+		First(&script).Error
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -139,6 +145,19 @@ from scripts where name = ?`, name).
 		}
 		err = errors.Wrap(apperr.ErrScriptGet, err.Error())
 	}
+
+	err = n.Db.WithContext(ctx).Raw(`
+	select 
+	      (select count(*) from alexa_intents where script_id = scripts.id)  as alexa_intents,
+	      (select count(*) from entity_actions where script_id = scripts.id) as entity_actions,
+	      (select count(*) from entity_scripts where script_id = scripts.id) as entity_scripts,
+	      (select count(*) from triggers where script_id = scripts.id)       as automation_triggers,
+	      (select count(*) from conditions where script_id = scripts.id)     as automation_conditions,
+	      (select count(*) from actions where script_id = scripts.id)        as automation_actions
+	from scripts where name = ?`, name).
+		First(&script.ScriptInfo).
+		Error
+
 	return
 }
 
@@ -165,7 +184,31 @@ func (n Scripts) Update(ctx context.Context, script *Script) (err error) {
 			}
 		}
 		err = errors.Wrap(apperr.ErrScriptUpdate, err.Error())
+		return
 	}
+
+	hash := md5.Sum([]byte(script.Source))
+	version := &ScriptVersion{
+		Lang:     script.Lang,
+		Source:   script.Source,
+		ScriptId: script.Id,
+		Sum:      []byte(hex.EncodeToString(hash[:])),
+	}
+	_ = n.Db.WithContext(ctx).Create(version).Error
+
+	q := `delete from script_versions
+where id not in (
+    select id
+    from script_versions
+    where script_id = ?
+    order by created_at desc
+    limit 10
+) and script_id = ?`
+	if _, err = n.Db.WithContext(ctx).Raw(q, script.Id, script.Id).Rows(); err != nil {
+		err = errors.Wrap(apperr.ErrScriptVersionDelete, err.Error())
+		return
+	}
+
 	return
 }
 

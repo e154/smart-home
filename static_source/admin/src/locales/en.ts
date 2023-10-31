@@ -361,7 +361,10 @@ export default {
         stat_ts_name: 'Total typescript scripts',
         stat_ts_descr: '',
         showModalDialog: 'Edit current script',
-        modalWindow: 'Current script'
+        modalWindow: 'Current script',
+        restoreVersion: 'Restore',
+        scriptVersions: 'Versions',
+        viewVersion: 'View'
     },
     zigbee2mqtt: {
         id: 'ID',

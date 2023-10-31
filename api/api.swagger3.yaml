@@ -2427,7 +2427,7 @@ paths:
           application/json:
             schema:
               type: object
-              required: [settings]
+              required: [ settings ]
               properties:
                 settings:
                   type: object
@@ -2562,7 +2562,7 @@ paths:
           application/json:
             schema:
               type: object
-              required: [description]
+              required: [ description ]
               properties:
                 description:
                   type: string
@@ -2648,7 +2648,7 @@ paths:
           application/json:
             schema:
               type: object
-              required: [accessListDiff]
+              required: [ accessListDiff ]
               properties:
                 accessListDiff:
                   type: object
@@ -2814,7 +2814,7 @@ paths:
           application/json:
             schema:
               type: object
-              required: [lang, name, source, description]
+              required: [ lang, name, source, description ]
               properties:
                 lang:
                   type: string
@@ -3344,7 +3344,7 @@ paths:
           application/json:
             schema:
               type: object
-              required: [name, description, pluginName, attributes, enabled]
+              required: [ name, description, pluginName, attributes, enabled ]
               properties:
                 name:
                   type: string
@@ -3583,7 +3583,7 @@ paths:
           application/json:
             schema:
               type: object
-              required: [nickname, firstName, lang, email, status, lang, roleName, password, passwordRepeat]
+              required: [ nickname, firstName, lang, email, status, lang, roleName, password, passwordRepeat ]
               properties:
                 nickname:
                   type: string
@@ -3744,7 +3744,7 @@ paths:
           application/json:
             schema:
               type: object
-              required: [value]
+              required: [ value ]
               properties:
                 value:
                   type: string
@@ -3928,7 +3928,7 @@ paths:
           application/json:
             schema:
               type: object
-              required: [name, login, permitJoin, baseTopic]
+              required: [ name, login, permitJoin, baseTopic ]
               properties:
                 name:
                   type: string
@@ -4852,7 +4852,7 @@ components:
           format: date-time
     apiDeviceBanRequest:
       type: object
-      required: [id, friendlyName]
+      required: [ id, friendlyName ]
       properties:
         id:
           type: integer
@@ -4871,7 +4871,7 @@ components:
           $ref: '#/components/schemas/apiMeta'
     apiDeviceRenameRequest:
       type: object
-      required: [friendlyName, newName]
+      required: [ friendlyName, newName ]
       properties:
         friendlyName:
           type: string
@@ -4879,7 +4879,7 @@ components:
           type: string
     apiDeviceWhitelistRequest:
       type: object
-      required: [id, friendlyName]
+      required: [ id, friendlyName ]
       properties:
         id:
           type: integer
@@ -4967,7 +4967,7 @@ components:
           type: string
     apiEntityCallActionRequest:
       type: object
-      required: [id, name, attributes]
+      required: [ id, name, attributes ]
       properties:
         id:
           type: string
@@ -5033,7 +5033,7 @@ components:
           type: string
     apiEntityStorageFilter:
       type: object
-      required: [entityId, description]
+      required: [ entityId, description ]
       properties:
         entityId:
           type: string
@@ -5073,13 +5073,13 @@ components:
           $ref: '#/components/schemas/apiMeta'
     apiExecScriptResult:
       type: object
-      required: [result]
+      required: [ result ]
       properties:
         result:
           type: string
     apiExecSrcScriptRequest:
       type: object
-      required: [lang, name, source, description]
+      required: [ lang, name, source, description ]
       properties:
         lang:
           type: string
@@ -5201,7 +5201,7 @@ components:
           $ref: '#/components/schemas/apiMeta'
     apiGetEntityStorageResult:
       type: object
-      required: [items, filter, meta]
+      required: [ items, filter, meta ]
       properties:
         items:
           type: array
@@ -5341,7 +5341,7 @@ components:
           $ref: '#/components/schemas/apiMeta'
     apiBackup:
       type: object
-      required: [name, size, fileMode, modTime]
+      required: [ name, size, fileMode, modTime ]
       properties:
         name:
           type: string
@@ -5441,7 +5441,7 @@ components:
           format: date-time
     apiPagination:
       type: object
-      required: [ limit, page, total]
+      required: [ limit, page, total ]
       properties:
         limit:
           type: integer
@@ -5527,7 +5527,7 @@ components:
           type: string
     apiNetworkmapResponse:
       type: object
-      required: [networkmap]
+      required: [ networkmap ]
       properties:
         networkmap:
           type: string
@@ -5785,7 +5785,7 @@ components:
           type: string
     apiNewScriptRequest:
       type: object
-      required: [lang, name, source, description]
+      required: [ lang, name, source, description ]
       properties:
         lang:
           type: string
@@ -5827,7 +5827,7 @@ components:
           format: int64
     apiNewTriggerRequest:
       type: object
-      required: [name, description, pluginName, attributes, enabled]
+      required: [ name, description, pluginName, attributes, enabled ]
       properties:
         name:
           type: string
@@ -5855,7 +5855,7 @@ components:
           format: int64
     apiNewVariableRequest:
       type: object
-      required: [name, value]
+      required: [ name, value ]
       properties:
         name:
           type: string
@@ -5863,7 +5863,7 @@ components:
           type: string
     apiNewZigbee2mqttRequest:
       type: object
-      required: [name, login, permitJoin, baseTopic]
+      required: [ name, login, permitJoin, baseTopic ]
       properties:
         name:
           type: string
@@ -5877,7 +5877,7 @@ components:
           type: string
     apiNewtUserRequest:
       type: object
-      required: [nickname, email, roleName, password, passwordRepeat]
+      required: [ nickname, email, roleName, password, passwordRepeat ]
       properties:
         nickname:
           type: string
@@ -5906,7 +5906,7 @@ components:
             $ref: '#/components/schemas/apiUserMeta'
     apiPasswordResetRequest:
       type: object
-      required: [email]
+      required: [ email ]
       properties:
         email:
           type: string
@@ -6038,7 +6038,7 @@ components:
           type: string
     apiRole:
       type: object
-      required: [ name, description, children, createdAt, updatedAt]
+      required: [ name, description, children, createdAt, updatedAt ]
       properties:
         parent:
           $ref: '#/components/schemas/apiRole'
@@ -6060,7 +6060,7 @@ components:
           format: date-time
     apiRoleAccessList:
       type: object
-      required: [levels]
+      required: [ levels ]
       properties:
         levels:
           type: object
@@ -6074,9 +6074,23 @@ components:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/apiAccessLevels'
+    apiScriptVersion:
+      type: object
+      required: [ id, lang, source, createdAt ]
+      properties:
+        id:
+          type: integer
+          format: int64
+        lang:
+          type: string
+        source:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
     apiScript:
       type: object
-      required: [ id, name, lang, source, description, createdAt, updatedAt ]
+      required: [ id, name, lang, source, description, versions, createdAt, updatedAt ]
       properties:
         id:
           type: integer
@@ -6091,6 +6105,10 @@ components:
           type: string
         scriptInfo:
           $ref: '#/components/schemas/apiScriptInfo'
+        versions:
+          type: array
+          items:
+            $ref: '#/components/schemas/apiScriptVersion'
         createdAt:
           type: string
           format: date-time
@@ -6201,7 +6219,7 @@ components:
             $ref: '#/components/schemas/apiTrigger'
     apiSigninResponse:
       type: object
-      required: [accessToken]
+      required: [ accessToken ]
       properties:
         currentUser:
           $ref: '#/components/schemas/apiCurrentUser'
@@ -6209,7 +6227,7 @@ components:
           type: string
     apiStatistic:
       type: object
-      required: [name, description, value, diff]
+      required: [ name, description, value, diff ]
       properties:
         name:
           type: string
@@ -6223,7 +6241,7 @@ components:
           format: int32
     apiStatistics:
       type: object
-      required: [items]
+      required: [ items ]
       properties:
         items:
           type: array
@@ -6343,7 +6361,7 @@ components:
           format: int32
     apiTrigger:
       type: object
-      required: [ id, name, description, pluginName, enabled, createdAt, updatedAt, attributes]
+      required: [ id, name, description, pluginName, enabled, createdAt, updatedAt, attributes ]
       properties:
         id:
           type: integer
@@ -6433,8 +6451,8 @@ components:
           type: string
     apiUserFull:
       type: object
-      required: [id, nickname, email, status, signInCount, role, roleName, lang, createdAt, updatedAt,
-                 authenticationToken, history, meta]
+      required: [ id, nickname, email, status, signInCount, role, roleName, lang, createdAt, updatedAt,
+                  authenticationToken, history, meta ]
       properties:
         id:
           type: integer
@@ -6496,7 +6514,7 @@ components:
           format: date-time
     apiUserFullParent:
       type: object
-      required: [id, nickname]
+      required: [ id, nickname ]
       properties:
         id:
           type: integer
@@ -6505,7 +6523,7 @@ components:
           type: string
     apiUserHistory:
       type: object
-      required: [ip, time]
+      required: [ ip, time ]
       properties:
         ip:
           type: string
@@ -6514,7 +6532,7 @@ components:
           format: date-time
     apiUserMeta:
       type: object
-      required: [key, value]
+      required: [ key, value ]
       properties:
         key:
           type: string
@@ -6522,7 +6540,7 @@ components:
           type: string
     apiUserShot:
       type: object
-      required: [id, nickname, email, status, lang, role, roleName, createdAt, updatedAt]
+      required: [ id, nickname, email, status, lang, role, roleName, createdAt, updatedAt ]
       properties:
         id:
           type: integer
@@ -6555,7 +6573,7 @@ components:
           format: date-time
     apiUserShotParent:
       type: object
-      required: [id, nickname]
+      required: [ id, nickname ]
       properties:
         id:
           type: integer
@@ -6564,7 +6582,7 @@ components:
           type: string
     apiVariable:
       type: object
-      required: [name, value, system, createdAt, updatedAt]
+      required: [ name, value, system, createdAt, updatedAt ]
       properties:
         name:
           type: string
@@ -6580,7 +6598,7 @@ components:
           format: date-time
     apiZigbee2mqtt:
       type: object
-      required: [scanInProcess,networkmap, status, id, name, login, permitJoin, baseTopic, createdAt, updatedAt]
+      required: [ scanInProcess,networkmap, status, id, name, login, permitJoin, baseTopic, createdAt, updatedAt ]
       properties:
         scanInProcess:
           type: boolean
@@ -6610,7 +6628,7 @@ components:
           format: date-time
     apiZigbee2mqttDevice:
       type: object
-      required: [id, zigbee2mqttId, name, type, model, description, manufacturer, functions, imageUrl, status, createdAt, updatedAt]
+      required: [ id, zigbee2mqttId, name, type, model, description, manufacturer, functions, imageUrl, status, createdAt, updatedAt ]
       properties:
         id:
           type: string
@@ -6643,7 +6661,7 @@ components:
           format: date-time
     apiZigbee2mqttShort:
       type: object
-      required: [id, name, login, permitJoin, baseTopic, createdAt, updatedAt]
+      required: [ id, name, login, permitJoin, baseTopic, createdAt, updatedAt ]
       properties:
         id:
           type: integer

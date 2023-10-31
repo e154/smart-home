@@ -117,8 +117,17 @@ func GetStubScript(script *m.Script) (result *stub.ApiScript) {
 			AutomationConditions: int32(script.Info.AutomationConditions),
 			AutomationActions:    int32(script.Info.AutomationActions),
 		},
+		Versions:  make([]stub.ApiScriptVersion, 0, len(script.Versions)),
 		CreatedAt: script.CreatedAt,
 		UpdatedAt: script.UpdatedAt,
+	}
+	for _, version := range script.Versions {
+		result.Versions = append(result.Versions, stub.ApiScriptVersion{
+			CreatedAt: version.CreatedAt,
+			Id:        version.Id,
+			Lang:      string(version.Lang),
+			Source:    version.Source,
+		})
 	}
 	return
 }

@@ -72,6 +72,7 @@ type Adaptors struct {
 	DashboardTab      IDashboardTab
 	DashboardCard     IDashboardCard
 	DashboardCardItem IDashboardCardItem
+	ScriptVersion     IScriptVersion
 }
 
 // NewAdaptors ...
@@ -117,6 +118,7 @@ func NewAdaptors(lc fx.Lifecycle,
 		DashboardTab:      GetDashboardTabAdaptor(db),
 		DashboardCard:     GetDashboardCardAdaptor(db),
 		DashboardCardItem: GetDashboardCardItemAdaptor(db),
+		ScriptVersion:     GetScriptVersionAdaptor(db),
 	}
 
 	if lc != nil {

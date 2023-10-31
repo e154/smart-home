@@ -1020,6 +1020,15 @@ export interface ApiRoleAccessListResult {
   levels: Record<string, ApiAccessLevels>;
 }
 
+export interface ApiScriptVersion {
+  /** @format int64 */
+  id: number;
+  lang: string;
+  source: string;
+  /** @format date-time */
+  createdAt: string;
+}
+
 export interface ApiScript {
   /** @format int64 */
   id: number;
@@ -1028,6 +1037,7 @@ export interface ApiScript {
   source: string;
   description: string;
   scriptInfo?: ApiScriptInfo;
+  versions: ApiScriptVersion[];
   /** @format date-time */
   createdAt: string;
   /** @format date-time */

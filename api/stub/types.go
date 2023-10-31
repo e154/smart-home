@@ -983,14 +983,15 @@ type ApiRoleAccessListResult struct {
 
 // ApiScript defines model for apiScript.
 type ApiScript struct {
-	CreatedAt   time.Time      `json:"createdAt"`
-	Description string         `json:"description"`
-	Id          int64          `json:"id"`
-	Lang        string         `json:"lang"`
-	Name        string         `json:"name"`
-	ScriptInfo  *ApiScriptInfo `json:"scriptInfo,omitempty"`
-	Source      string         `json:"source"`
-	UpdatedAt   time.Time      `json:"updatedAt"`
+	CreatedAt   time.Time          `json:"createdAt"`
+	Description string             `json:"description"`
+	Id          int64              `json:"id"`
+	Lang        string             `json:"lang"`
+	Name        string             `json:"name"`
+	ScriptInfo  *ApiScriptInfo     `json:"scriptInfo,omitempty"`
+	Source      string             `json:"source"`
+	UpdatedAt   time.Time          `json:"updatedAt"`
+	Versions    []ApiScriptVersion `json:"versions"`
 }
 
 // ApiScriptInfo defines model for apiScriptInfo.
@@ -1001,6 +1002,14 @@ type ApiScriptInfo struct {
 	AutomationTriggers   int32 `json:"automationTriggers"`
 	EntityActions        int32 `json:"entityActions"`
 	EntityScripts        int32 `json:"entityScripts"`
+}
+
+// ApiScriptVersion defines model for apiScriptVersion.
+type ApiScriptVersion struct {
+	CreatedAt time.Time `json:"createdAt"`
+	Id        int64     `json:"id"`
+	Lang      string    `json:"lang"`
+	Source    string    `json:"source"`
 }
 
 // ApiSearchActionResult defines model for apiSearchActionResult.

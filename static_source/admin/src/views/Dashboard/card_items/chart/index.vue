@@ -12,6 +12,7 @@ import {useI18n} from "@/hooks/web/useI18n";
 import {string} from "vue-types";
 import {debounce} from "lodash-es";
 import {Cache, GetTokens, RenderText} from "@/views/Dashboard/render";
+import {ApplyFilter} from "@/views/Dashboard/filters";
 
 const {bus} = useBus()
 const { t } = useI18n()
@@ -91,8 +92,8 @@ const prepareMetric = (metric: ApiMetric): ChartDataInterface => {
       if (!props.item.payload.chart?.filter) {
         dataSets[totalLabels[l]].data.push(metric.data[t].value[totalLabels[l]]);
       } else {
-        const qwe = applyFilter(metric.data[t].value[totalLabels[l]], props.item.payload.chart?.filter);
-        dataSets[totalLabels[l]].data.push(qwe);
+        const data = applyFilter(metric.data[t].value[totalLabels[l]], props.item.payload.chart?.filter);
+        dataSets[totalLabels[l]].data.push(data);
       }
     }
   }

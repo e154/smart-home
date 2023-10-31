@@ -290,4 +290,8 @@ var (
 
 	ErrBackupNotFound = ErrorWithCode("BACKUP_NOT_FOUND_ERROR", "backup not found", ErrNotFound)
 	ErrBackupNameNotUnique = ErrorWithCode("BACKUP_NAME_NOT_UNIQUE", "backup name not unique", ErrInvalidRequest)
+
+	ErrScriptVersionAdd      = ErrorWithCode("SCRIPTVERSION_DEVICE_ADD_ERROR", "failed to add script version", ErrInternal)
+	ErrScriptVersionList     = ErrorWithCode("SCRIPTVERSION_DEVICE_LIST_ERROR", "failed to list script version", ErrInternal)
+	ErrScriptVersionDelete   = ErrorWithCode("SCRIPTVERSION_DEVICE_DELETE_ERROR", "failed to delete script version", ErrInternal)
 )

@@ -361,7 +361,10 @@ export default {
     stat_ts_name: "Всего скриптов на TypeScript",
     stat_ts_descr: "",
     showModalDialog: 'Редактировать выбранный скрипт',
-    modalWindow: 'Выбранный скрипт'
+    modalWindow: 'Выбранный скрипт',
+    restoreVersion: 'Восстановить',
+    scriptVersions: 'Версии',
+    viewVersion: 'Просмотреть'
   },
   zigbee2mqtt: {
     id: "ID",

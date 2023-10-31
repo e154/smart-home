@@ -26,15 +26,16 @@ import (
 
 // Script ...
 type Script struct {
-	Id          int64       `json:"id"`
-	Lang        ScriptLang  `json:"lang" validate:"required"`
-	Name        string      `json:"name" validate:"max=254,required"`
-	Source      string      `json:"source"`
-	Description string      `json:"description"`
-	Compiled    string      `json:"-"`
-	CreatedAt   time.Time   `json:"created_at"`
-	UpdatedAt   time.Time   `json:"updated_at"`
-	Info        *ScriptInfo `json:"info"`
+	Id          int64            `json:"id"`
+	Lang        ScriptLang       `json:"lang" validate:"required"`
+	Name        string           `json:"name" validate:"max=254,required"`
+	Source      string           `json:"source"`
+	Description string           `json:"description"`
+	Compiled    string           `json:"-"`
+	Versions    []*ScriptVersion `json:"versions"`
+	CreatedAt   time.Time        `json:"created_at"`
+	UpdatedAt   time.Time        `json:"updated_at"`
+	Info        *ScriptInfo      `json:"info"`
 }
 
 type ScriptInfo struct {
@@ -53,4 +54,11 @@ type ScriptsStatistic struct {
 	CoffeeScript int32
 	TypeScript   int32
 	JavaScript   int32
+}
+
+type ScriptVersion struct {
+	Id        int64      `json:"id"`
+	Lang      ScriptLang `json:"lang" validate:"required"`
+	Source    string     `json:"source"`
+	CreatedAt time.Time  `json:"created_at"`
 }
