@@ -36,10 +36,10 @@ const keyClick = (key: string) => {
       ]"
   >
     <div v-if="title" :class="[`${prefixCls}__header`, 'flex items-center']">
-      <span :class="[`${prefixCls}__title`, 'text-16px font-bold']">{{ title }}</span>
+      <span :class="[`${prefixCls}__title`, 'text-14px font-bold']">{{ title }}</span>
     </div>
     <div :class="`${prefixCls}__content`">
-      <p v-for="(item, $index) in schema" :key="$index" class="text-14px mt-15px">
+      <p v-for="(item, $index) in schema" :key="$index" class="text-12px mt-10px">
         <Highlight
           :keys="typeof item === 'string' ? [] : item.keys"
           :color="highlightColor"

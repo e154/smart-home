@@ -23,6 +23,7 @@ import (
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"gorm.io/gorm"
+	"sort"
 )
 
 // IScript ...
@@ -185,6 +186,7 @@ func (n *Script) fromDb(dbVer *db.Script) (ver *m.Script, err error) {
 				CreatedAt: version.CreatedAt,
 			})
 		}
+		sort.Sort(ver.Versions)
 	}
 	return
 }

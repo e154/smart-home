@@ -26,16 +26,16 @@ import (
 
 // Script ...
 type Script struct {
-	Id          int64            `json:"id"`
-	Lang        ScriptLang       `json:"lang" validate:"required"`
-	Name        string           `json:"name" validate:"max=254,required"`
-	Source      string           `json:"source"`
-	Description string           `json:"description"`
-	Compiled    string           `json:"-"`
-	Versions    []*ScriptVersion `json:"versions"`
-	CreatedAt   time.Time        `json:"created_at"`
-	UpdatedAt   time.Time        `json:"updated_at"`
-	Info        *ScriptInfo      `json:"info"`
+	Id          int64          `json:"id"`
+	Lang        ScriptLang     `json:"lang" validate:"required"`
+	Name        string         `json:"name" validate:"max=254,required"`
+	Source      string         `json:"source"`
+	Description string         `json:"description"`
+	Compiled    string         `json:"-"`
+	Versions    ScriptVersions `json:"versions"`
+	CreatedAt   time.Time      `json:"created_at"`
+	UpdatedAt   time.Time      `json:"updated_at"`
+	Info        *ScriptInfo    `json:"info"`
 }
 
 type ScriptInfo struct {
@@ -54,6 +54,14 @@ type ScriptsStatistic struct {
 	CoffeeScript int32
 	TypeScript   int32
 	JavaScript   int32
+}
+
+type ScriptVersions []*ScriptVersion
+
+func (l ScriptVersions) Len() int      { return len(l) }
+func (l ScriptVersions) Swap(i, j int) { l[i], l[j] = l[j], l[i] }
+func (l ScriptVersions) Less(i, j int) bool {
+	return l[i].CreatedAt.UnixNano() > l[j].CreatedAt.UnixNano()
 }
 
 type ScriptVersion struct {

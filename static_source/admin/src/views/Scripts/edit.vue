@@ -128,22 +128,22 @@ const remove = async () => {
 
 const view = async (version: ApiScriptVersion) => {
   currentScriptVersion.value = {
+    lang: version.lang,
     source: version.source,
     createdAt: version.createdAt,
   } as ApiScript
 }
 
-const rollback = async (version: ApiScriptVersion) => {
+const rollback = async () => {
   let script = unref(currentScript.value) as ApiScript;
-  script.source = version.source
   currentScript.value = {
-    id: currentScript.value.id,
-    name: currentScript.value.name,
-    description: currentScript.value.description,
-    scriptInfo: currentScript.value.scriptInfo,
-    versions: currentScript.value.versions,
-    lang: version.lang,
-    source: version.source
+    id: script.id,
+    name: script.name,
+    description: script.description,
+    scriptInfo: script.scriptInfo,
+    versions: script.versions,
+    lang: currentScriptVersion.value?.lang || script.lang,
+    source: currentScriptVersion.value?.source || script.source,
   }  as ApiScript;
 }
 
@@ -241,30 +241,26 @@ fetch()
                       :timestamp="parseTime(version.createdAt)"
                       type="primary"
                       placement="top"
-                  >
-
-                    <ElButton class="mr-10px version-element" type="default" link @click="rollback(version)">
-                      <Icon icon="ic:baseline-restore" class="mr-5px"/>
-                      {{ $t('scripts.restoreVersion') }}
-                    </ElButton>
-
-                    <ElButton class="mr-10px version-element" type="default" link @click="view(version)">
-                      <Icon icon="carbon:view" class="mr-5px"/>
-                      {{ $t('scripts.viewVersion') }}
-                    </ElButton>
-
-                  </ElTimelineItem>
+                      class="cursor-pointer"
+                      @click="view(version)"
+                  />
                 </ElTimeline>
               </ElScrollbar>
             </ElCard>
           </ElCol>
-          <ElCol :span="18" :xs="18">
-            <ScriptEditor v-model="currentScriptVersion"/>
+          <ElCol :span="18" style="padding-bottom: 30px">
+
             <div v-if="currentScriptVersion">
-              <p style="font-size: 11px;">
-                {{ $t('main.createdAt')}}: {{ parseTime(currentScriptVersion.createdAt) }}
-              </p>
+                <ScriptEditor v-model="currentScriptVersion"/>
             </div>
+
+            <div v-if="currentScriptVersion">
+                <ElButton class="mr-10px left" type="default" @click="rollback(version)">
+                  <Icon icon="ic:baseline-restore" class="mr-5px"/>
+                  {{ $t('scripts.restoreVersion') }}
+                </ElButton>
+            </div>
+
           </ElCol>
         </ElRow>
 

@@ -33,11 +33,6 @@ type Backup struct {
 
 type Backups []*Backup
 
-// Len ...
-func (l Backups) Len() int { return len(l) }
-
-// Swap ...
-func (l Backups) Swap(i, j int) { l[i], l[j] = l[j], l[i] }
-
-// Less ...
+func (l Backups) Len() int           { return len(l) }
+func (l Backups) Swap(i, j int)      { l[i], l[j] = l[j], l[i] }
 func (l Backups) Less(i, j int) bool { return l[i].ModTime.UnixNano() > l[j].ModTime.UnixNano() }
