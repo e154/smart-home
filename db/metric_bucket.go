@@ -125,7 +125,7 @@ WHERE c.metric_id = ? and c.time > ? and c.time < ?
 GROUP BY mins
 ORDER BY mins ASC
 LIMIT 3600`
-		if err = n.Db.WithContext(ctx).Raw(fmt.Sprintf(q, interval, str), metricId, from.Format(time.RFC3339), to.Format(time.RFC3339)).Scan(&list).Error; err != nil {
+		if err = n.Db.WithContext(ctx).Raw(fmt.Sprintf(q, interval, str), metricId, from.UTC().Format(time.RFC3339), to.UTC().Format(time.RFC3339)).Scan(&list).Error; err != nil {
 			err = errors.Wrap(apperr.ErrMetricBucketGet, err.Error())
 		}
 
@@ -143,7 +143,7 @@ WHERE c.metric_id = ? and c.time > ? and c.time < ?
 GROUP BY round(extract('epoch' from c.time) / %[1]d)
 order by time asc
 LIMIT 3600`
-	if err = n.Db.WithContext(ctx).Raw(fmt.Sprintf(q, num, str), metricId, from.Format(time.RFC3339), to.Format(time.RFC3339)).Scan(&list).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Raw(fmt.Sprintf(q, num, str), metricId, from.UTC().Format(time.RFC3339), to.UTC().Format(time.RFC3339)).Scan(&list).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMetricBucketGet, err.Error())
 	}
 

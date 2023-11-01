@@ -65,15 +65,49 @@ const prepareMetric = (metric: ApiMetric): ChartDataInterface => {
     labels:  chartData.value?.labels || [],
     datasets: chartData.value?.datasets || [],
   };
-  if (metric.data.length > 0) {
-    _chartData.lastTime = metric.data[metric.data.length -1].time
-  }
 
+  // exit if no data
   if (!props.item?.entity?.metrics || !props.item.payload.chart?.props || props.item.payload.chart?.props.length == 0) {
     return _chartData;
   }
 
+  // add time last item
+  if (metric.data.length > 0) {
+    _chartData.lastTime = metric.data[metric.data.length -1].time
+  }
+
   let totalLabels: Array<string> = props.item.payload.chart?.props;
+
+  // update only
+  if (_chartData.datasets.length) {
+
+    for (const t in metric.data) {
+      _chartData.labels.push(parseTime(metric.data[t].time) as string);
+      for (const l in totalLabels) {
+        for (const j in _chartData.datasets) {
+          if (_chartData.datasets[j].label == totalLabels[l]) {
+            if (!props.item.payload.chart?.filter) {
+              _chartData.datasets[j].data.push(metric.data[t].value[totalLabels[l]]);
+            } else {
+              const data = applyFilter(metric.data[t].value[totalLabels[l]], props.item.payload.chart?.filter);
+              _chartData.datasets[j].data.push(data);
+            }
+          }
+        }
+      }
+    }
+
+    // 3600 max item per data
+    const diff = _chartData.datasets.length - 3600;
+    if (diff > 0) {
+      _chartData.labels.slice(diff)
+      _chartData.datasets.slice(diff)
+    }
+
+    return _chartData
+  } // \update only
+
+  // create full data
   let dataSets = new Map<string, ChartDataSet>();
 
   // create data sets
@@ -104,12 +138,6 @@ const prepareMetric = (metric: ApiMetric): ChartDataInterface => {
 
   for (const l in totalLabels) {
     _chartData.datasets.push(dataSets[totalLabels[l]]);
-  }
-
-  const diff = _chartData.datasets.length - 3600;
-  if (diff > 0) {
-    _chartData.labels.slice(diff)
-    _chartData.datasets.slice(diff)
   }
 
   // console.log(_chartData);
