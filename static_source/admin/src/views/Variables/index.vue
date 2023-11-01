@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {useI18n} from '@/hooks/web/useI18n'
 import {Table} from '@/components/Table'
-import {computed, reactive, ref, watch} from 'vue'
+import {computed, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
 import {useAppStore} from "@/store/modules/app";
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
@@ -11,13 +11,14 @@ import {useForm} from "@/hooks/web/useForm";
 import {useRouter} from "vue-router";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
 import {useCache} from "@/hooks/web/useCache";
+import {UUID} from "uuid-generator-ts";
+import stream from "@/api/stream";
+import {EventStateChange} from "@/api/stream_types";
 
 const {push, currentRoute} = useRouter()
 const remember = ref(false)
 const {register, elFormRef, methods} = useForm()
-const appStore = useAppStore()
 const {t} = useI18n()
-const isMobile = computed(() => appStore.getMobile)
 const { wsCache } = useCache()
 
 interface TableObject {
@@ -60,7 +61,6 @@ const paginationObj = ref<Pagination>({
   total: 0,
   pageSizes: [50, 100, 150, 250],
 })
-const currentID = ref('')
 
 const getList = async () => {
   tableObject.loading = true
@@ -125,6 +125,27 @@ const selectRow = (row) => {
   const {name} = row
   push(`/etc/variables/edit/${name}`)
 }
+
+const currentID = ref('')
+
+const onStateChanged = (event: EventStateChange) => {
+  getList()
+}
+
+onMounted(() => {
+  const uuid = new UUID()
+  currentID.value = uuid.getDashFreeUUID()
+
+  setTimeout(() => {
+    stream.subscribe('event_removed_variable_model', currentID.value, onStateChanged);
+    stream.subscribe('event_updated_variable_model', currentID.value, onStateChanged);
+  }, 200)
+})
+
+onUnmounted(() => {
+  stream.unsubscribe('event_removed_variable_model', currentID.value);
+  stream.unsubscribe('event_updated_variable_model', currentID.value);
+})
 
 </script>
 

@@ -29,6 +29,26 @@ const (
 	TIME      ApiTypes = "TIME"
 )
 
+// Defines values for MetricRange.
+const (
+	MetricRangeN12h MetricRange = "12h"
+	MetricRangeN1m  MetricRange = "1m"
+	MetricRangeN24h MetricRange = "24h"
+	MetricRangeN30d MetricRange = "30d"
+	MetricRangeN6h  MetricRange = "6h"
+	MetricRangeN7d  MetricRange = "7d"
+)
+
+// Defines values for MetricServiceGetMetricParamsRange.
+const (
+	MetricServiceGetMetricParamsRangeN12h MetricServiceGetMetricParamsRange = "12h"
+	MetricServiceGetMetricParamsRangeN1m  MetricServiceGetMetricParamsRange = "1m"
+	MetricServiceGetMetricParamsRangeN24h MetricServiceGetMetricParamsRange = "24h"
+	MetricServiceGetMetricParamsRangeN30d MetricServiceGetMetricParamsRange = "30d"
+	MetricServiceGetMetricParamsRangeN6h  MetricServiceGetMetricParamsRange = "6h"
+	MetricServiceGetMetricParamsRangeN7d  MetricServiceGetMetricParamsRange = "7d"
+)
+
 // AccessListListOfString defines model for AccessListListOfString.
 type AccessListListOfString struct {
 	Items []string `json:"items"`
@@ -1291,6 +1311,12 @@ type ApiZigbee2mqttShort struct {
 // AcceptJSON defines model for Accept-JSON.
 type AcceptJSON = string
 
+// DateFrom defines model for dateFrom.
+type DateFrom = time.Time
+
+// DateTo defines model for dateTo.
+type DateTo = time.Time
+
 // EndDate defines model for endDate.
 type EndDate = time.Time
 
@@ -1305,6 +1331,12 @@ type ListPage = uint64
 
 // ListSort defines model for listSort.
 type ListSort = string
+
+// MetricId defines model for metricId.
+type MetricId = int64
+
+// MetricRange defines model for metricRange.
+type MetricRange string
 
 // Query defines model for query.
 type Query = string
@@ -1849,11 +1881,14 @@ type MessageDeliveryServiceGetMessageDeliveryListParams struct {
 
 // MetricServiceGetMetricParams defines parameters for MetricServiceGetMetric.
 type MetricServiceGetMetricParams struct {
-	Id    int64      `form:"id" json:"id"`
-	Range *string    `form:"range,omitempty" json:"range,omitempty"`
-	From  *time.Time `form:"from,omitempty" json:"from,omitempty"`
-	To    *time.Time `form:"to,omitempty" json:"to,omitempty"`
+	Id    MetricId                           `form:"id" json:"id"`
+	Range *MetricServiceGetMetricParamsRange `form:"range,omitempty" json:"range,omitempty"`
+	From  *DateFrom                          `form:"from,omitempty" json:"from,omitempty"`
+	To    *DateTo                            `form:"to,omitempty" json:"to,omitempty"`
 }
+
+// MetricServiceGetMetricParamsRange defines parameters for MetricServiceGetMetric.
+type MetricServiceGetMetricParamsRange string
 
 // MqttServiceGetClientListParams defines parameters for MqttServiceGetClientList.
 type MqttServiceGetClientListParams struct {

@@ -2201,26 +2201,10 @@ paths:
       summary: get metric
       operationId: MetricService_GetMetric
       parameters:
-        - name: id
-          in: query
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - name: range
-          in: query
-          schema:
-            type: string
-        - name: from
-          in: query
-          schema:
-            type: string
-            format: date-time
-        - name: to
-          in: query
-          schema:
-            type: string
-            format: date-time
+        - $ref: '#/components/parameters/metricId'
+        - $ref: '#/components/parameters/metricRange'
+        - $ref: '#/components/parameters/dateFrom'
+        - $ref: '#/components/parameters/dateTo'
       responses:
         200:
           description: A successful response.
@@ -4225,6 +4209,37 @@ components:
       schema:
         type: integer
         format: int64
+    metricId:
+      name: id
+      in: query
+      required: true
+      schema:
+        type: integer
+        format: int64
+    metricRange:
+      name: range
+      in: query
+      schema:
+        type: string
+        enum:
+          - 6h
+          - 12h
+          - 24h
+          - 7d
+          - 30d
+          - 1m
+    dateFrom:
+      name: from
+      in: query
+      schema:
+        type: string
+        format: date-time
+    dateTo:
+      name: to
+      in: query
+      schema:
+        type: string
+        format: date-time
     listSort:
       name: sort
       in: query

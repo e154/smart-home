@@ -29,7 +29,6 @@ import (
 	"time"
 
 	"github.com/Masterminds/semver"
-	"github.com/e154/smart-home/common/logger"
 	_ "github.com/lib/pq"
 	"go.uber.org/fx"
 	"gorm.io/driver/postgres"
@@ -47,10 +46,6 @@ type Orm struct {
 	serverVersion       string
 }
 
-var (
-	log = logger.MustGetLogger("orm")
-)
-
 const (
 	minimalDbVersion = ">= 9.6.0"
 )
@@ -66,7 +61,7 @@ func NewOrm(lc fx.Lifecycle,
 	}
 
 	if err = orm.Start(); err != nil {
-		log.Error(err.Error())
+		fmt.Fprintf(os.Stderr, err.Error())
 		return
 	}
 
@@ -84,7 +79,7 @@ func NewOrm(lc fx.Lifecycle,
 // Start ...
 func (o *Orm) Start() (err error) {
 
-	log.Infof("database connect %s", strings.ReplaceAll(o.cfg.String(), "password="+o.cfg.Password, "password=*****"))
+	fmt.Fprintf(os.Stdout, "database connected to %s\r\n", strings.ReplaceAll(o.cfg.String(), "password="+o.cfg.Password, "password=*****"))
 
 	var logLevel = gormLogger.Silent
 	if o.cfg.Debug {
@@ -133,7 +128,7 @@ func (o *Orm) Start() (err error) {
 		return
 	}
 
-	log.Infof("database version %s", o.serverVersion)
+	fmt.Fprintf(os.Stdout, "database version %s\r\n", o.serverVersion)
 
 	err = o.Check()
 
@@ -149,7 +144,7 @@ func (o *Orm) DB() *sql.DB {
 // Shutdown ...
 func (o *Orm) Shutdown() (err error) {
 	if o.db != nil {
-		log.Info("database shutdown")
+		fmt.Fprintf(os.Stdout, "database shutdown\r\n")
 		var db *sql.DB
 		if db, err = o.db.DB(); err != nil {
 			return
@@ -161,11 +156,18 @@ func (o *Orm) Shutdown() (err error) {
 
 func (o *Orm) Check() (err error) {
 
+	var timeZone string
+	o.db.Raw("SHOW timezone").Scan(&timeZone)
+
+	fmt.Fprintf(os.Stdout, "database timezone: %s\n\r", timeZone)
+
 	if err = o.checkServerVersion(); err != nil {
 		return
 	}
 
-	err = o.CheckExtensions()
+	if err = o.CheckExtensions(); err != nil {
+		return
+	}
 
 	return
 }
@@ -229,7 +231,7 @@ func (o *Orm) CheckExtensions() (err error) {
 	}
 
 	if !o.CheckAvailableExtension("pgcrypto") {
-		log.Warn("please install pgcrypto extension for postgresql database (maybe need install postgresql-contrib)\r")
+		fmt.Fprintf(os.Stdout, "please install pgcrypto extension for postgresql database (maybe need install postgresql-contrib)\r")
 	} else {
 		if !o.CheckInstalledExtension("pgcrypto") {
 			o.db.Exec(`CREATE EXTENSION IF NOT EXISTS pgcrypto CASCADE;`)
@@ -237,7 +239,7 @@ func (o *Orm) CheckExtensions() (err error) {
 	}
 
 	if !o.CheckAvailableExtension("timescaledb") {
-		log.Warn("please install timescaledb extension, website: https://docs.timescale.com/v1.1/getting-started/installation)\r")
+		fmt.Fprintf(os.Stdout, "please install timescaledb extension, website: https://docs.timescale.com/v1.1/getting-started/installation)\r")
 	} else {
 		if !o.CheckInstalledExtension("timescaledb") {
 			o.db.Exec(`CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;`)

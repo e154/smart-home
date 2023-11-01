@@ -21,6 +21,7 @@ package adaptors
 import (
 	"context"
 	"fmt"
+	"github.com/e154/smart-home/system/orm"
 
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
@@ -46,13 +47,15 @@ type Task struct {
 	ITask
 	table *db.Tasks
 	db    *gorm.DB
+	orm   *orm.Orm
 }
 
 // GetTaskAdaptor ...
-func GetTaskAdaptor(d *gorm.DB) ITask {
+func GetTaskAdaptor(d *gorm.DB, orm *orm.Orm) ITask {
 	return &Task{
 		table: &db.Tasks{Db: d},
 		db:    d,
+		orm:   orm,
 	}
 }
 
@@ -261,7 +264,7 @@ func (n *Task) fromDb(dbVer *db.Task) (ver *m.Task) {
 	}
 
 	// triggers
-	triggerAdaptor := GetTriggerAdaptor(n.db)
+	triggerAdaptor := GetTriggerAdaptor(n.db, n.orm)
 	for _, dbVer := range dbVer.Triggers {
 		tr := triggerAdaptor.fromDb(dbVer)
 		ver.Triggers = append(ver.Triggers, tr)
@@ -275,7 +278,7 @@ func (n *Task) fromDb(dbVer *db.Task) (ver *m.Task) {
 	}
 
 	// actions
-	actionAdaptor := GetActionAdaptor(n.db)
+	actionAdaptor := GetActionAdaptor(n.db, n.orm)
 	for _, dbVer := range dbVer.Actions {
 		act := actionAdaptor.fromDb(dbVer)
 		ver.Actions = append(ver.Actions, act)

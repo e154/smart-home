@@ -22,6 +22,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/e154/smart-home/system/orm"
 	"strings"
 
 	"github.com/e154/smart-home/common/apperr"
@@ -55,13 +56,15 @@ type Entity struct {
 	IEntity
 	table *db.Entities
 	db    *gorm.DB
+	orm   *orm.Orm
 }
 
 // GetEntityAdaptor ...
-func GetEntityAdaptor(d *gorm.DB) IEntity {
+func GetEntityAdaptor(d *gorm.DB, orm *orm.Orm) IEntity {
 	return &Entity{
 		table: &db.Entities{Db: d},
 		db:    d,
+		orm:   orm,
 	}
 }
 
@@ -390,10 +393,15 @@ func (n *Entity) preloadMetric(ctx context.Context, ver *m.Entity) {
 	if ver.Metrics == nil || len(ver.Metrics) == 0 {
 		return
 	}
-	bucketMetricBucketAdaptor := GetMetricBucketAdaptor(n.db, nil)
+	bucketMetricBucketAdaptor := GetMetricBucketAdaptor(n.db, n.orm)
 	for i, metric := range ver.Metrics {
 
-		if ver.Metrics[i].Data, err = bucketMetricBucketAdaptor.SimpleListWithSoftRange(ctx, nil, nil, metric.Id, common.String(common.MetricRange24H.String())); err != nil {
+		var optionItems = make([]string, len(metric.Options.Items))
+		for i, item := range metric.Options.Items {
+			optionItems[i] = item.Name
+		}
+
+		if ver.Metrics[i].Data, err = bucketMetricBucketAdaptor.List(ctx, nil, nil, metric.Id, optionItems, common.MetricRange24H.Ptr()); err != nil {
 			log.Error(err.Error())
 			return
 		}

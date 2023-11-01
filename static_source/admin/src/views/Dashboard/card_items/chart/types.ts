@@ -36,6 +36,7 @@ export interface ChartDataSet {
 export interface ChartDataInterface {
   labels: Array<string>;
   datasets: Array<ChartDataSet>;
+  lastTime?: string;
 }
 
 export const RangeList: ItemsType[] = [

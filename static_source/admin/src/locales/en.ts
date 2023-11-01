@@ -605,6 +605,8 @@ export default {
         clearLogsDays: 'Clear Logs Days',
         clearEntityStorageDays: 'Clear Entity Storage Days',
         clearRunHistoryDays: 'Clear Run History Days',
+        time: 'Time',
+        timezone: 'Timezone, default Asia/Colombo'
     },
     tools: {
         eventBus: {

@@ -23,6 +23,7 @@ import (
 
 	"github.com/e154/smart-home/api/dto"
 	"github.com/e154/smart-home/api/stub"
+	"github.com/e154/smart-home/common"
 )
 
 // ControllerMetric ...
@@ -37,10 +38,14 @@ func NewControllerMetric(common *ControllerCommon) *ControllerMetric {
 	}
 }
 
-// GetMetric ...
+// MetricServiceGetMetric ...
 func (c ControllerMetric) MetricServiceGetMetric(ctx echo.Context, params stub.MetricServiceGetMetricParams) error {
 
-	metric, err := c.endpoint.Metric.GetByIdWithData(ctx.Request().Context(), params.From, params.To, params.Id, params.Range)
+	var metricRange *string
+	if params.Range != nil {
+		metricRange = common.String(string(*params.Range))
+	}
+	metric, err := c.endpoint.Metric.GetByIdWithData(ctx.Request().Context(), params.From, params.To, params.Id, metricRange)
 	if err != nil {
 		return c.ERROR(ctx, err)
 	}

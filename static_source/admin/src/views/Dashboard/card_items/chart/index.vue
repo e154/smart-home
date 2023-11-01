@@ -60,13 +60,17 @@ const applyFilter = (value: any, filter: string): any => {
 }
 
 const prepareMetric = (metric: ApiMetric): ChartDataInterface => {
-  let chartData: ChartDataInterface = {
-    labels: [],
-    datasets: [],
+  // console.log(metric)
+  let _chartData: ChartDataInterface = {
+    labels:  chartData.value?.labels || [],
+    datasets: chartData.value?.datasets || [],
   };
+  if (metric.data.length > 0) {
+    _chartData.lastTime = metric.data[metric.data.length -1].time
+  }
 
   if (!props.item?.entity?.metrics || !props.item.payload.chart?.props || props.item.payload.chart?.props.length == 0) {
-    return chartData;
+    return _chartData;
   }
 
   let totalLabels: Array<string> = props.item.payload.chart?.props;
@@ -87,7 +91,7 @@ const prepareMetric = (metric: ApiMetric): ChartDataInterface => {
 
   // add data to sets
   for (const t in metric.data) {
-    chartData.labels.push(parseTime(metric.data[t].time) as string);
+    _chartData.labels.push(parseTime(metric.data[t].time) as string);
     for (const l in totalLabels) {
       if (!props.item.payload.chart?.filter) {
         dataSets[totalLabels[l]].data.push(metric.data[t].value[totalLabels[l]]);
@@ -99,16 +103,24 @@ const prepareMetric = (metric: ApiMetric): ChartDataInterface => {
   }
 
   for (const l in totalLabels) {
-    chartData.datasets.push(dataSets[totalLabels[l]]);
+    _chartData.datasets.push(dataSets[totalLabels[l]]);
   }
-  // console.log(chartData);
-  return chartData;
+
+  const diff = _chartData.datasets.length - 3600;
+  if (diff > 0) {
+    _chartData.labels.slice(diff)
+    _chartData.datasets.slice(diff)
+  }
+
+  // console.log(_chartData);
+  return _chartData;
 }
 
-const fetchMetric = async (id: number): Promise<ApiMetric> => {
+const fetchMetric = async (id: number, from?: string): Promise<ApiMetric> => {
   const {data} = await api.v1.metricServiceGetMetric({
     id: id,
     range: props.item?.payload?.chart?.range || '24h',
+    from: from,
   });
 
   return data;
@@ -117,6 +129,7 @@ const fetchMetric = async (id: number): Promise<ApiMetric> => {
 const chartData = ref<{
   labels: Array<string>
   datasets: Array<ChartDataSet>
+  lastTime?: string
 }>({
   labels: [],
   datasets: []
@@ -472,7 +485,7 @@ const prepareData = debounce( async ()  => {
   let metric = props.item.entity.metrics[props.item.payload.chart?.metric_index || 0];
 
   if (metric?.id) {
-    metric = await fetchMetric(metric.id!);
+    metric = await fetchMetric(metric.id!, chartData.value?.lastTime);
   }
   chartData.value = prepareMetric(metric);
 

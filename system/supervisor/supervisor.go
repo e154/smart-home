@@ -22,6 +22,7 @@ import (
 	"context"
 	"runtime/debug"
 	"sync"
+	"time"
 
 	"github.com/pkg/errors"
 	"go.uber.org/atomic"
@@ -34,6 +35,7 @@ import (
 	"github.com/e154/smart-home/common/web"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
+	"github.com/e154/smart-home/system/cache"
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scheduler"
@@ -50,6 +52,7 @@ type supervisor struct {
 	entitiesWg        *sync.WaitGroup
 	eventScriptSubsMx sync.RWMutex
 	eventScriptSubs   map[int64]map[common.EntityId]struct{}
+	cache             cache.Cache
 }
 
 // NewSupervisor ...
@@ -68,6 +71,7 @@ func NewSupervisor(lc fx.Lifecycle,
 		entitiesWg:      &sync.WaitGroup{},
 		eventScriptSubs: make(map[int64]map[common.EntityId]struct{}),
 	}
+	s.cache, _ = cache.NewCache("memory", `{"interval":60}`)
 	s.pluginManager = &pluginManager{
 		adaptors:       adaptors,
 		isStarted:      atomic.NewBool(false),
@@ -286,6 +290,17 @@ func (e *supervisor) eventHandler(_ string, message interface{}) {
 
 func (e *supervisor) eventLastState(msg events.EventGetLastState) {
 
+	if e.cache.IsExist(msg.EntityId.String()) {
+		v := e.cache.Get(msg.EntityId.String())
+		state, ok := v.(events.EventLastStateChanged)
+		if !ok {
+			return
+		}
+		e.eventBus.Publish("system/entities/"+msg.EntityId.String(), state)
+		return
+	}
+	e.cache.Put(msg.EntityId.String(), nil, 60*time.Second)
+
 	pla, err := e.GetActorById(msg.EntityId)
 	if err != nil {
 		return
@@ -309,12 +324,15 @@ func (e *supervisor) eventLastState(msg events.EventGetLastState) {
 		currentState.Attributes = entity.Attributes
 	}
 
-	e.eventBus.Publish("system/entities/"+msg.EntityId.String(), events.EventLastStateChanged{
+	state := events.EventLastStateChanged{
 		PluginName: info.PluginName,
 		EntityId:   info.Id,
 		OldState:   *currentState,
 		NewState:   *currentState,
-	})
+	}
+	e.cache.Delete(msg.EntityId.String())
+	e.cache.Put(msg.EntityId.String(), state, 60*time.Second)
+	e.eventBus.Publish("system/entities/"+msg.EntityId.String(), state)
 }
 
 func (e *supervisor) eventLoadedPlugin(msg events.EventPluginLoaded) (err error) {

@@ -1156,6 +1156,7 @@ export class Core {
   // events
   // ---------------------------------
   onStateChanged(event: EventStateChange) {
+    // console.log('onStateChanged', event.entity_id);
     for (const index in this.tabs) {
       this.tabs[index].onStateChanged(event);
     }

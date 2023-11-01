@@ -66,7 +66,6 @@ const paginationObj = ref<Pagination>({
 const currentID = ref('')
 
 const onStateChanged = (event: EventStateChange) => {
-  console.log('--qwe')
   getList()
 }
 

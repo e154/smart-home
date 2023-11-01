@@ -118,6 +118,10 @@ func (m MetricRange) String() string {
 	return string(m)
 }
 
+func (m MetricRange) Ptr() *MetricRange {
+	return &m
+}
+
 // EntityId ...
 type EntityId string
 

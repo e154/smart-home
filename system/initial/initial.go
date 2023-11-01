@@ -23,6 +23,9 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/system/bus"
+	"gorm.io/gorm"
 
 	"github.com/e154/smart-home/system/media"
 	"go.uber.org/fx"
@@ -65,6 +68,8 @@ type Initial struct {
 	validation      *validation.Validate
 	localMigrations *localMigrations.Migrations
 	demo            *demo.Demos
+	eventBus        bus.Bus
+	db              *gorm.DB
 }
 
 // NewInitial ...
@@ -82,7 +87,9 @@ func NewInitial(lc fx.Lifecycle,
 	localMigrations *localMigrations.Migrations,
 	demo *demo.Demos,
 	_ *scheduler.Scheduler,
-	_ *media.Media) *Initial {
+	_ *media.Media,
+	db *gorm.DB,
+	eventBus bus.Bus) *Initial {
 	initial := &Initial{
 		migrations:      migrations,
 		adaptors:        adaptors,
@@ -95,6 +102,8 @@ func NewInitial(lc fx.Lifecycle,
 		validation:      validation,
 		localMigrations: localMigrations,
 		demo:            demo,
+		db:              db,
+		eventBus:        eventBus,
 	}
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) (err error) {
@@ -174,6 +183,8 @@ func (n *Initial) Start(ctx context.Context) (err error) {
 	val, _ := hex.DecodeString(variable.Value)
 	encryptor.SetKey(val)
 
+	_ = n.eventBus.Subscribe("system/models/variables/+", n.eventHandler)
+
 	_ = n.supervisor.Start(ctx)
 	_ = n.automation.Start()
 	go func() {
@@ -185,6 +196,17 @@ func (n *Initial) Start(ctx context.Context) (err error) {
 
 // Shutdown ...
 func (n *Initial) Shutdown(ctx context.Context) (err error) {
+	_ = n.eventBus.Unsubscribe("system/models/variables/+", n.eventHandler)
 	_ = n.api.Shutdown(ctx)
 	return
+}
+
+func (n *Initial) eventHandler(_ string, message interface{}) {
+	switch v := message.(type) {
+	case events.EventUpdatedVariableModel:
+		if v.Name == "timezone" && v.Value != "" {
+			log.Infof("update database timezone to: \"%s\"", v.Value)
+			n.db.Exec(`SET TIME ZONE '?';`, v.Value)
+		}
+	}
 }

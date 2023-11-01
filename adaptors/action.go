@@ -20,6 +20,7 @@ package adaptors
 
 import (
 	"context"
+	"github.com/e154/smart-home/system/orm"
 	"time"
 
 	"github.com/e154/smart-home/common"
@@ -45,13 +46,15 @@ type Action struct {
 	IAction
 	table *db.Actions
 	db    *gorm.DB
+	orm   *orm.Orm
 }
 
 // GetActionAdaptor ...
-func GetActionAdaptor(d *gorm.DB) IAction {
+func GetActionAdaptor(d *gorm.DB, orm *orm.Orm) IAction {
 	return &Action{
 		table: &db.Actions{Db: d},
 		db:    d,
+		orm:   orm,
 	}
 }
 
@@ -146,7 +149,7 @@ func (n *Action) fromDb(dbVer *db.Action) (ver *m.Action) {
 	}
 	// entity
 	if dbVer.Entity != nil {
-		entityAdaptor := GetEntityAdaptor(n.db)
+		entityAdaptor := GetEntityAdaptor(n.db, n.orm)
 		ver.Entity = entityAdaptor.fromDb(dbVer.Entity)
 	}
 	return

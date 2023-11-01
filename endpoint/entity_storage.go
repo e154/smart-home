@@ -20,6 +20,7 @@ package endpoint
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/e154/smart-home/common"
@@ -42,15 +43,18 @@ func NewEntityStorageEndpoint(common *CommonEndpoint) *EntityStorageEndpoint {
 func (i *EntityStorageEndpoint) GetList(ctx context.Context, entityIds []common.EntityId, pagination common.PageParams,
 	startDate, endDate *time.Time) (result *m.EntityStorageList, total int64, err error) {
 
-	//var startDate, endDate *time.Time
-	//if _startDate != nil {
-	//	date, _ := time.Parse("2006-01-02", *_startDate)
-	//	startDate = &date
-	//}
-	//if _endDate != nil {
-	//	date, _ := time.Parse("2006-01-02", *_endDate)
-	//	endDate = &date
-	//}
+	keyResult := fmt.Sprintf("entity_storage_%d_%d_%s_%s_%v_%s_%s", pagination.Limit, pagination.Offset,
+		pagination.Order, pagination.SortBy, entityIds, startDate, endDate)
+
+	keyTotal := fmt.Sprintf("%s_total", keyResult)
+
+	if i.cache.IsExist(keyResult) {
+		v := i.cache.Get(keyResult)
+		vTotal := i.cache.Get(keyTotal)
+		result = v.(*m.EntityStorageList)
+		total = vTotal.(int64)
+		return
+	}
 
 	var items []*m.EntityStorage
 	if items, total, err = i.adaptors.EntityStorage.ListByEntityId(ctx, pagination.Limit, pagination.Offset,
@@ -105,6 +109,9 @@ func (i *EntityStorageEndpoint) GetList(ctx context.Context, entityIds []common.
 		Items:      items,
 		Attributes: attributes,
 	}
+
+	i.cache.Put(keyResult, result, 10*time.Second)
+	i.cache.Put(keyTotal, total, 10*time.Second)
 
 	return
 }

@@ -21,6 +21,7 @@ package adaptors
 import (
 	"context"
 	"encoding/json"
+	"github.com/e154/smart-home/system/orm"
 	"time"
 
 	"github.com/e154/smart-home/common"
@@ -49,13 +50,15 @@ type Trigger struct {
 	ITrigger
 	table *db.Triggers
 	db    *gorm.DB
+	orm   *orm.Orm
 }
 
 // GetTriggerAdaptor ...
-func GetTriggerAdaptor(d *gorm.DB) ITrigger {
+func GetTriggerAdaptor(d *gorm.DB, orm *orm.Orm) ITrigger {
 	return &Trigger{
 		table: &db.Triggers{Db: d},
 		db:    d,
+		orm:   orm,
 	}
 }
 
@@ -158,7 +161,7 @@ func (n *Trigger) fromDb(dbVer *db.Trigger) (ver *m.Trigger) {
 	}
 	// entity
 	if dbVer.Entity != nil {
-		entityAdaptor := GetEntityAdaptor(n.db)
+		entityAdaptor := GetEntityAdaptor(n.db, n.orm)
 		ver.Entity = entityAdaptor.fromDb(dbVer.Entity)
 	}
 	// aea

@@ -604,6 +604,8 @@ export default {
     clearLogsDays: 'Очистка логов',
     clearEntityStorageDays: 'История состояния Entity',
     clearRunHistoryDays: 'История запусков системы',
+    time: 'Время',
+    timezone: 'Часовой пояс'
   },
   tools: {
     eventBus: {

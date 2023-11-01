@@ -20,6 +20,8 @@ package endpoint
 
 import (
 	"context"
+	"fmt"
+	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/common/apperr"
 
@@ -48,7 +50,14 @@ func (v *VariableEndpoint) Add(ctx context.Context, variable m.Variable) (err er
 		return
 	}
 
-	err = v.adaptors.Variable.CreateOrUpdate(ctx, variable)
+	if err = v.adaptors.Variable.CreateOrUpdate(ctx, variable); err != nil {
+		return
+	}
+
+	v.eventBus.Publish(fmt.Sprintf("system/models/variables/%s", variable.Name), events.EventUpdatedVariableModel{
+		Name:  variable.Name,
+		Value: variable.Value,
+	})
 
 	return
 }
@@ -70,7 +79,14 @@ func (v *VariableEndpoint) Update(ctx context.Context, variable m.Variable) (err
 		return
 	}
 
-	err = v.adaptors.Variable.CreateOrUpdate(ctx, variable)
+	if err = v.adaptors.Variable.CreateOrUpdate(ctx, variable); err != nil {
+		return
+	}
+
+	v.eventBus.Publish(fmt.Sprintf("system/models/variables/%s", variable.Name), events.EventUpdatedVariableModel{
+		Name:  variable.Name,
+		Value: variable.Value,
+	})
 
 	return
 }
@@ -85,6 +101,13 @@ func (v *VariableEndpoint) GetList(ctx context.Context, pagination common.PagePa
 // Delete ...
 func (v *VariableEndpoint) Delete(ctx context.Context, name string) (err error) {
 
-	err = v.adaptors.Variable.Delete(ctx, name)
+	if err = v.adaptors.Variable.Delete(ctx, name); err != nil {
+		return
+	}
+
+	v.eventBus.Publish(fmt.Sprintf("system/models/variables/%s", name), events.EventRemovedVariableModel{
+		Name: name,
+	})
+
 	return
 }

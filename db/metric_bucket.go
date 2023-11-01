@@ -41,6 +41,7 @@ type MetricBuckets struct {
 type MetricBucket struct {
 	Value    json.RawMessage `gorm:"type:jsonb;not null"`
 	Metric   *Metric
+	Mins     time.Time `gorm:"->"`
 	MetricId int64
 	Time     time.Time
 }
@@ -58,122 +59,89 @@ func (n MetricBuckets) Add(ctx context.Context, metric *MetricBucket) (err error
 	return
 }
 
-// SimpleListWithSoftRange ...
-func (n *MetricBuckets) SimpleListWithSoftRange(ctx context.Context, from, to time.Time, metricId int64) (list []*MetricBucket, err error) {
-	var num int64 = 1
-	t := from.Sub(to).Seconds()
-	if t > 3600 {
-		num = int64(t / 3600)
+// List ...
+func (n *MetricBuckets) List(ctx context.Context, metricId int64, optionItems []string, rFrom, rTo *time.Time, metricRange *common.MetricRange) (list []*MetricBucket, err error) {
+
+	var str string
+	for i, item := range optionItems {
+		str += fmt.Sprintf(" '%s', trunc(avg((value ->> '%[1]s')::numeric), 2)", item)
+		if i+1 < len(optionItems) {
+			str += ","
+		}
+	}
+
+	var interval string
+	var from time.Time
+	var to = time.Now()
+
+	if rTo != nil {
+		to = common.TimeValue(rTo)
+	}
+
+	if metricRange != nil {
+		switch *metricRange {
+		case common.MetricRange6H:
+			interval = "6 seconds"
+			from = to.Add(-6 * time.Hour)
+		case common.MetricRange12H:
+			interval = "12 seconds"
+			from = to.Add(-12 * time.Hour)
+		case common.MetricRange24H:
+			interval = "24 seconds"
+			from = to.Add(-24 * time.Hour)
+		case common.MetricRange7d:
+			interval = "2 minutes"
+			from = to.Add(-24 * 7 * time.Hour)
+		case common.MetricRange30d, common.MetricRange1m:
+			interval = "7 minutes"
+			from = to.Add(-24 * 30 * time.Hour)
+		default:
+			err = errors.Wrap(apperr.ErrMetricBucketGet, fmt.Sprintf("unknown filter %s", metricRange))
+			return
+		}
+	} else {
+		var num int64 = 1
+		t := from.Sub(to).Seconds()
+		if t > 3600 {
+			num = int64(t / 3600)
+		}
+		interval = fmt.Sprintf("%d seconds", num)
+	}
+
+	if rFrom != nil {
+		from = common.TimeValue(rFrom)
 	}
 
 	list = make([]*MetricBucket, 0)
 
+	// c.time between ? and ?
 	if n.Timescale {
-		q := `SELECT time_bucket('%d seconds', time) AS time, value
+		var q = `SELECT time_bucket('%s', time) AS mins, json_build_object(%s) as value
 FROM metric_bucket c
-WHERE c.metric_id = ? and c.time between ? and ?
-GROUP BY time, value
-ORDER BY time ASC
-LIMIT 3600`
-		q = fmt.Sprintf(q, num)
-		if err = n.Db.WithContext(ctx).Raw(q, metricId, from.Format(time.RFC3339), to.Format(time.RFC3339)).Scan(&list).Error; err != nil {
+WHERE c.metric_id = ? and c.time > ? and c.time < ? 
+GROUP BY mins
+ORDER BY mins ASC`
+		if err = n.Db.WithContext(ctx).Raw(fmt.Sprintf(q, interval, str), metricId, from.Format(time.RFC3339), to.Format(time.RFC3339)).Scan(&list).Error; err != nil {
 			err = errors.Wrap(apperr.ErrMetricBucketGet, err.Error())
 		}
+
+		for _, metric := range list {
+			metric.Time = metric.Mins
+		}
+
 		return
 	}
 
+	//todo: fix
 	q := `SELECT  time, value
 FROM metric_bucket c
-WHERE c.metric_id = ? and c.time between ? and ?
+WHERE c.metric_id = ? and c.time > ? and c.time < ? 
 ORDER BY time ASC;`
 
 	if err = n.Db.WithContext(ctx).Raw(q, metricId, from.Format(time.RFC3339), to.Format(time.RFC3339)).Scan(&list).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMetricBucketGet, err.Error())
 	}
 
-	return
-}
-
-// SimpleListByRangeType ...
-func (n *MetricBuckets) SimpleListByRangeType(ctx context.Context, metricId int64, metricRange common.MetricRange) (list []*MetricBucket, err error) {
-
-	var interval string
-	var r string
-
-	switch metricRange {
-	case common.MetricRange6H:
-		interval = "6 seconds"
-		r = "6 hour"
-	case common.MetricRange12H:
-		interval = "12 seconds"
-		r = "12 hour"
-	case common.MetricRange24H:
-		interval = "15 seconds"
-		r = "24 hour"
-	case common.MetricRange7d:
-		interval = "2 minutes"
-		r = "7 days"
-	case common.MetricRange30d, common.MetricRange1m:
-		interval = "7 minutes"
-		r = "30 days"
-	default:
-		err = errors.Wrap(apperr.ErrMetricBucketGet, fmt.Sprintf("unknown filter %s", metricRange))
-		return
-	}
-
-	list = make([]*MetricBucket, 0)
-
-	if n.Timescale {
-		var q = `SELECT time_bucket('%s', time) AS time, value
-FROM metric_bucket c
-WHERE c.metric_id = ? and c.time > NOW() - interval '%s'
-GROUP BY time, value
-ORDER BY time ASC
-LIMIT 3600`
-		if err = n.Db.WithContext(ctx).Raw(fmt.Sprintf(q, interval, r), metricId).Scan(&list).Error; err != nil {
-			err = errors.Wrap(apperr.ErrMetricBucketGet, err.Error())
-		}
-		return
-	}
-
-	q := `SELECT  time, value
-FROM metric_bucket c
-WHERE c.metric_id = ? and c.time > NOW() - interval '%s'
-ORDER BY time ASC;`
-
-	if err = n.Db.WithContext(ctx).Raw(fmt.Sprintf(q, r), metricId).Scan(&list).Error; err != nil {
-		err = errors.Wrap(apperr.ErrMetricBucketGet, err.Error())
-	}
-
-	return
-}
-
-// Simple24HPreview ...
-func (n *MetricBuckets) Simple24HPreview(ctx context.Context, metricId int64) (list []*MetricBucket, err error) {
-	list = make([]*MetricBucket, 0)
-
-	if n.Timescale {
-		q := `SELECT time_bucket('250 seconds', time) AS time, value
-FROM metric_bucket c
-WHERE c.metric_id = ? and c.time > NOW() - interval '24 hour'
-GROUP BY time, value
-ORDER BY time ASC
-LIMIT 345`
-
-		if err = n.Db.WithContext(ctx).Raw(q, metricId).Scan(&list).Error; err != nil {
-			err = errors.Wrap(apperr.ErrMetricBucketGet, err.Error())
-		}
-		return
-	}
-
-	q := `SELECT  time, value
-FROM metric_bucket c
-WHERE c.metric_id = ? and c.time > NOW() - interval '24 hour'
-ORDER BY time ASC`
-
-	if err = n.Db.WithContext(ctx).Raw(q, metricId).Scan(&list).Error; err != nil {
-		err = errors.Wrap(apperr.ErrMetricBucketGet, err.Error())
-	}
 	return
 }
 
