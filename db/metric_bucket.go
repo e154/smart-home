@@ -99,17 +99,20 @@ func (n *MetricBuckets) List(ctx context.Context, metricId int64, optionItems []
 			err = errors.Wrap(apperr.ErrMetricBucketGet, fmt.Sprintf("unknown filter %s", metricRange))
 			return
 		}
-	} else {
-		var num int64 = 1
-		t := from.Sub(to).Seconds()
-		if t > 3600 {
-			num = int64(t / 3600)
-		}
-		interval = fmt.Sprintf("%d seconds", num)
 	}
 
 	if rFrom != nil {
 		from = common.TimeValue(rFrom)
+	}
+
+	var num int64 = 1
+	t := from.Sub(to).Seconds()
+	if t > 3600 {
+		num = int64(t / 3600)
+	}
+
+	if metricRange == nil {
+		interval = fmt.Sprintf("%d seconds", num)
 	}
 
 	list = make([]*MetricBucket, 0)
@@ -120,7 +123,8 @@ func (n *MetricBuckets) List(ctx context.Context, metricId int64, optionItems []
 FROM metric_bucket c
 WHERE c.metric_id = ? and c.time > ? and c.time < ? 
 GROUP BY mins
-ORDER BY mins ASC`
+ORDER BY mins ASC
+LIMIT 3600`
 		if err = n.Db.WithContext(ctx).Raw(fmt.Sprintf(q, interval, str), metricId, from.Format(time.RFC3339), to.Format(time.RFC3339)).Scan(&list).Error; err != nil {
 			err = errors.Wrap(apperr.ErrMetricBucketGet, err.Error())
 		}
@@ -132,13 +136,14 @@ ORDER BY mins ASC`
 		return
 	}
 
-	//todo: fix
-	q := `SELECT  time, value
+	q := `SELECT TIMESTAMP WITH TIME ZONE 'epoch' +
+       INTERVAL '1 second' * round(extract('epoch' from time) / %[1]d) * %[1]d as time, json_build_object(%s) as value
 FROM metric_bucket c
 WHERE c.metric_id = ? and c.time > ? and c.time < ? 
-ORDER BY time ASC;`
-
-	if err = n.Db.WithContext(ctx).Raw(q, metricId, from.Format(time.RFC3339), to.Format(time.RFC3339)).Scan(&list).Error; err != nil {
+GROUP BY round(extract('epoch' from c.time) / %[1]d)
+order by time asc
+LIMIT 3600`
+	if err = n.Db.WithContext(ctx).Raw(fmt.Sprintf(q, num, str), metricId, from.Format(time.RFC3339), to.Format(time.RFC3339)).Scan(&list).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMetricBucketGet, err.Error())
 	}
 
