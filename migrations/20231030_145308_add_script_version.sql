@@ -9,6 +9,7 @@ create table script_versions
             on update cascade on delete cascade,
     lang       scripts_lang             default 'javascript'::scripts_lang not null,
     source     text,
+    sum        bytea,
     created_at timestamp with time zone default CURRENT_TIMESTAMP
 );
 

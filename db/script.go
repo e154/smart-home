@@ -194,7 +194,10 @@ func (n Scripts) Update(ctx context.Context, script *Script) (err error) {
 		ScriptId: script.Id,
 		Sum:      []byte(hex.EncodeToString(hash[:])),
 	}
-	_ = n.Db.WithContext(ctx).Create(version).Error
+	if err = n.Db.WithContext(ctx).Create(version).Error; err != nil {
+		err = errors.Wrap(apperr.ErrScriptVersionAdd, err.Error())
+		return
+	}
 
 	q := `delete from script_versions
 where id not in (
