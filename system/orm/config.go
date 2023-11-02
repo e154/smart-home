@@ -31,7 +31,6 @@ type Config struct {
 	Host            string
 	Port            string
 	Debug           bool
-	Logger          bool
 	MaxIdleConns    int
 	MaxOpenConns    int
 	ConnMaxLifeTime int

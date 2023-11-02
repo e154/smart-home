@@ -20,10 +20,11 @@ package mqtt_bridge
 
 import (
 	"context"
+	"strings"
+
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/supervisor"
-	"strings"
 )
 
 // Actor ...
@@ -39,7 +40,7 @@ func NewActor(entity *m.Entity,
 
 	actor = &Actor{
 		BaseActor:  supervisor.NewBaseActor(entity, service),
-		actionPool: make(chan events.EventCallEntityAction, 10),
+		actionPool: make(chan events.EventCallEntityAction, 1000),
 	}
 
 	var topics []string

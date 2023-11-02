@@ -28,7 +28,6 @@ import (
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/scripts"
-	"github.com/go-playground/validator/v10"
 )
 
 // EntityEndpoint ...
@@ -44,10 +43,11 @@ func NewEntityEndpoint(common *CommonEndpoint) *EntityEndpoint {
 }
 
 // Add ...
-func (n *EntityEndpoint) Add(ctx context.Context, entity *m.Entity) (result *m.Entity, errs validator.ValidationErrorsTranslations, err error) {
+func (n *EntityEndpoint) Add(ctx context.Context, entity *m.Entity) (result *m.Entity, err error) {
 
-	var ok bool
-	if ok, errs = n.validation.Valid(entity); !ok {
+	if ok, errs := n.validation.Valid(entity); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
@@ -60,7 +60,7 @@ func (n *EntityEndpoint) Add(ctx context.Context, entity *m.Entity) (result *m.E
 		return
 	}
 
-	n.eventBus.Publish("system/entities/"+entity.Id.String(), events.EventCreatedEntity{
+	n.eventBus.Publish("system/models/entities/"+entity.Id.String(), events.EventCreatedEntityModel{
 		EntityId: result.Id,
 	})
 
@@ -103,7 +103,7 @@ func (n *EntityEndpoint) Import(ctx context.Context, entity *m.Entity) (err erro
 		return
 	}
 
-	n.eventBus.Publish("system/entities/"+entity.Id.String(), events.EventCreatedEntity{
+	n.eventBus.Publish("system/models/entities/"+entity.Id.String(), events.EventCreatedEntityModel{
 		EntityId: entity.Id,
 	})
 
@@ -120,19 +120,30 @@ func (n *EntityEndpoint) GetById(ctx context.Context, id common.EntityId) (resul
 }
 
 // Update ...
-func (n *EntityEndpoint) Update(ctx context.Context, params *m.Entity) (result *m.Entity, errs validator.ValidationErrorsTranslations, err error) {
+func (n *EntityEndpoint) Update(ctx context.Context, params *m.Entity) (result *m.Entity, err error) {
 
 	var entity *m.Entity
 	if entity, err = n.adaptors.Entity.GetById(ctx, params.Id); err != nil {
 		return
 	}
 
-	_ = common.Copy(entity, params, common.JsonEngine)
-	entity.Settings = params.Settings
+	entity.Description = params.Description
+	entity.PluginName = params.PluginName
+	entity.Icon = params.Icon
+	entity.ImageId = params.ImageId
+	entity.Actions = params.Actions
+	entity.States = params.States
+	entity.AreaId = params.AreaId
+	entity.Metrics = params.Metrics
+	entity.Scripts = params.Scripts
+	entity.Hidden = params.Hidden
 	entity.Attributes = params.Attributes
+	entity.Settings = params.Settings
+	entity.ParentId = params.ParentId
 
-	var ok bool
-	if ok, errs = n.validation.Valid(entity); !ok {
+	if ok, errs := n.validation.Valid(entity); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
@@ -145,7 +156,7 @@ func (n *EntityEndpoint) Update(ctx context.Context, params *m.Entity) (result *
 		return
 	}
 
-	n.eventBus.Publish("system/entities/"+entity.Id.String(), events.EventUpdatedEntity{
+	n.eventBus.Publish("system/models/entities/"+entity.Id.String(), events.EventUpdatedEntityModel{
 		EntityId: result.Id,
 	})
 
@@ -183,7 +194,7 @@ func (n *EntityEndpoint) Delete(ctx context.Context, id common.EntityId) (err er
 		return
 	}
 
-	n.eventBus.Publish("system/entities/"+id.String(), events.CommandUnloadEntity{
+	n.eventBus.Publish("system/models/entities/"+id.String(), events.CommandUnloadEntity{
 		EntityId: id,
 	})
 

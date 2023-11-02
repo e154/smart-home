@@ -21,9 +21,10 @@ package cpuspeed
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/supervisor"
-	"time"
 
 	m "github.com/e154/smart-home/models"
 )
@@ -59,8 +60,8 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 			Id:          common.EntityId(fmt.Sprintf("%s.%s", EntityCpuspeed, Name)),
 			Description: "cpu usage",
 			PluginName:  Name,
-			Metrics: NewMetrics(),
-			Attributes: NewAttr(),
+			Metrics:     NewMetrics(),
+			Attributes:  NewAttr(),
 		}
 		err = p.Service.Adaptors().Entity.Add(context.Background(), entity)
 	}

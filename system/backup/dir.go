@@ -19,7 +19,6 @@
 package backup
 
 import (
-	"fmt"
 	"io"
 	"os"
 	"path"
@@ -74,11 +73,11 @@ func Copy(src string, dst string) error {
 
 		if fd.IsDir() {
 			if err = Copy(srcfp, dstfp); err != nil {
-				fmt.Println(err)
+				return err
 			}
 		} else {
 			if err = File(srcfp, dstfp); err != nil {
-				fmt.Println(err)
+				return err
 			}
 		}
 	}

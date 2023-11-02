@@ -224,18 +224,18 @@ type EventAlexaAction struct {
 	Payload    interface{} `json:"payload"`
 }
 
-// EventAlexaAddSkill ...
-type EventAlexaAddSkill struct {
+// EventAddedAlexaSkillModel ...
+type EventAddedAlexaSkillModel struct {
 	Skill *m.AlexaSkill
 }
 
-// EventAlexaUpdateSkill ...
-type EventAlexaUpdateSkill struct {
+// EventUpdatedAlexaSkillModel ...
+type EventUpdatedAlexaSkillModel struct {
 	Skill *m.AlexaSkill
 }
 
-// EventAlexaDeleteSkill ...
-type EventAlexaDeleteSkill struct {
+// EventDeletedAlexaSkill ...
+type EventDeletedAlexaSkill struct {
 	Skill *m.AlexaSkill
 }
 

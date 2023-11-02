@@ -75,7 +75,7 @@ func NewAction(scriptService scripts.ScriptService,
 		})
 	}
 
-	eventBus.Subscribe(fmt.Sprintf("system/automation/actions/%d", model.Id), action.actionHandler)
+	eventBus.Subscribe(fmt.Sprintf("system/automation/actions/%d", model.Id), action.actionHandler, false)
 
 	return
 }

@@ -5,7 +5,7 @@ import {computed, PropType, reactive, ref, unref, watch} from 'vue'
 import {useAppStore} from "@/store/modules/app";
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
-import {ElButton, ElTableColumn, ElSwitch, ElImageViewer, ElTag, ElInput, ElSelect, ElOption} from 'element-plus'
+import {ElButton, ElTableColumn, ElSwitch, ElImageViewer, ElTag, ElInput, ElInputNumber, ElSelect, ElOption} from 'element-plus'
 import {ApiAttribute} from "@/api/stub";
 import {useForm} from "@/hooks/web/useForm";
 import {useRouter} from "vue-router";
@@ -112,14 +112,20 @@ const save = async () => {
       <div v-if="row.type === 'IMAGE'">
         <el-input type="string" v-model="row.imageUrl"/>
       </div>
-      <div v-if="row.type === 'INT'">
-        <el-input type="number" v-model="row.int"/>
+      <div v-if="row.type === 'INT'" class="w-[100%]">
+        <ElInputNumber  v-model="row.int" class="w-[100%]"/>
       </div>
       <div v-if="row.type === 'FLOAT'">
         <el-input type="number" v-model="row.float"/>
       </div>
       <div v-if="row.type === 'ARRAY'">
         <el-input type="string" v-model="row.array"/>
+      </div>
+      <div v-if="row.type === 'POINT'">
+        <el-input type="string" v-model="row.point"/>
+      </div>
+      <div v-if="row.type === 'ENCRYPTED'">
+        <el-input type="password" v-model="row.encrypted" show-password/>
       </div>
       <el-select v-model="row.bool" placeholder="please select value" v-if="row.type === 'BOOL'">
         <el-option

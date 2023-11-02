@@ -22,9 +22,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/jackc/pgx/v5/pgconn"
 	"strings"
 	"time"
+
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"github.com/jackc/pgerrcode"
 	"github.com/pkg/errors"
@@ -45,7 +46,7 @@ type Area struct {
 	Description string
 	Polygon     *Polygon
 	Payload     json.RawMessage `gorm:"type:jsonb;not null"`
-	CreatedAt   time.Time
+	CreatedAt   time.Time       `gorm:"<-:create"`
 	UpdatedAt   time.Time
 }
 
@@ -215,97 +216,97 @@ func (n *Areas) GetById(ctx context.Context, areaId int64) (area *Area, err erro
 	return
 }
 
-func (a *Areas) ListByPoint(ctx context.Context, point Point, limit, offset int) (list []*Area, err error) {
+//func (a *Areas) ListByPoint(ctx context.Context, point Point, limit, offset int) (list []*Area, err error) {
+//
+//	// https://postgis.net/docs/ST_Point.html
+//	// geometry ST_Point(float x, float y);
+//	// For geodetic coordinates, X is longitude and Y is latitude
+//
+//	const query = `
+//SELECT *
+//		FROM areas as a
+//WHERE ST_Contains(a.polygon::geometry,
+//		ST_Transform(
+//			ST_GeomFromText('POINT(%f %f)', 4326), 4326
+//		)
+//	)`
+//
+//	list = make([]*Area, 0)
+//	q := fmt.Sprintf(query, point.Lon, point.Lat)
+//
+//	err = a.Db.WithContext(ctx).Raw(q).
+//		Limit(limit).
+//		Offset(offset).Scan(&list).Error
+//	if err != nil {
+//		err = errors.Wrap(apperr.ErrAreaList, err.Error())
+//		return
+//	}
+//
+//	return
+//}
 
-	// https://postgis.net/docs/ST_Point.html
-	// geometry ST_Point(float x, float y);
-	// For geodetic coordinates, X is longitude and Y is latitude
-
-	const query = `
-SELECT *
-		FROM areas as a
-WHERE ST_Contains(a.polygon::geometry,
-		ST_Transform(
-			ST_GeomFromText('POINT(%f %f)', 4326), 4326
-		)
-	)`
-
-	list = make([]*Area, 0)
-	q := fmt.Sprintf(query, point.Lon, point.Lat)
-
-	err = a.Db.WithContext(ctx).Raw(q).
-		Limit(limit).
-		Offset(offset).Scan(&list).Error
-	if err != nil {
-		err = errors.Wrap(apperr.ErrAreaList, err.Error())
-		return
-	}
-
-	return
-}
-
-func (a *Areas) PointInsideAriaById(ctx context.Context, point Point, areaId int64) (inside bool, err error) {
-
-	var list []*Area
-	if list, err = a.ListByPoint(ctx, point, 999, 0); err != nil {
-		return
-	}
-
-	for _, area := range list {
-		if inside = areaId == area.Id; inside {
-			return
-		}
-	}
-
-	return
-}
-
-func (a *Areas) PointInsideAriaByName(ctx context.Context, point Point, areaName string) (inside bool, err error) {
-
-	var list []*Area
-	if list, err = a.ListByPoint(ctx, point, 999, 0); err != nil {
-		return
-	}
-
-	for _, area := range list {
-		if inside = areaName == area.Name; inside {
-			return
-		}
-	}
-
-	return
-}
-
-func (a *Areas) GetDistanceToArea(ctx context.Context, point Point, areaId int64) (distance float64, err error) {
-
-	const query = `
-select st_distance(
-   ST_Transform(ST_GeomFromText('POINT (%f %f)', 4326)::geometry, 4326),
-   ST_Transform((select polygon from areas where id = %d)::geometry, 4326)
-)`
-	q := fmt.Sprintf(query, point.Lat, point.Lon, areaId)
-	err = a.Db.WithContext(ctx).Raw(q).Scan(&distance).Error
-	if err != nil {
-		err = errors.Wrap(apperr.ErrAreaList, err.Error())
-		return
-	}
-
-	return
-}
-
-func (a *Areas) GetDistanceBetweenPoints(ctx context.Context, point1, point2 Point) (distance float64, err error) {
-
-	const query = `
-select st_distance(
-   ST_Transform(ST_GeomFromText('POINT (%f %f)', 4326)::geometry, 4326),
-   ST_Transform(ST_GeomFromText('POINT (%f %f)', 4326)::geometry, 4326)
-)`
-	q := fmt.Sprintf(query, point1.Lat, point1.Lon, point2.Lat, point2.Lon)
-	err = a.Db.WithContext(ctx).Raw(q).Scan(&distance).Error
-	if err != nil {
-		err = errors.Wrap(apperr.ErrAreaList, err.Error())
-		return
-	}
-
-	return
-}
+//func (a *Areas) PointInsideAriaById(ctx context.Context, point Point, areaId int64) (inside bool, err error) {
+//
+//	var list []*Area
+//	if list, err = a.ListByPoint(ctx, point, 999, 0); err != nil {
+//		return
+//	}
+//
+//	for _, area := range list {
+//		if inside = areaId == area.Id; inside {
+//			return
+//		}
+//	}
+//
+//	return
+//}
+//
+//func (a *Areas) PointInsideAriaByName(ctx context.Context, point Point, areaName string) (inside bool, err error) {
+//
+//	var list []*Area
+//	if list, err = a.ListByPoint(ctx, point, 999, 0); err != nil {
+//		return
+//	}
+//
+//	for _, area := range list {
+//		if inside = areaName == area.Name; inside {
+//			return
+//		}
+//	}
+//
+//	return
+//}
+//
+//func (a *Areas) GetDistanceToArea(ctx context.Context, point Point, areaId int64) (distance float64, err error) {
+//
+//	const query = `
+//select st_distance(
+//   ST_Transform(ST_GeomFromText('POINT (%f %f)', 4326)::geometry, 4326),
+//   ST_Transform((select polygon from areas where id = %d)::geometry, 4326)
+//)`
+//	q := fmt.Sprintf(query, point.Lat, point.Lon, areaId)
+//	err = a.Db.WithContext(ctx).Raw(q).Scan(&distance).Error
+//	if err != nil {
+//		err = errors.Wrap(apperr.ErrAreaList, err.Error())
+//		return
+//	}
+//
+//	return
+//}
+//
+//func (a *Areas) GetDistanceBetweenPoints(ctx context.Context, point1, point2 Point) (distance float64, err error) {
+//
+//	const query = `
+//select st_distance(
+//   ST_Transform(ST_GeomFromText('POINT (%f %f)', 4326)::geometry, 4326),
+//   ST_Transform(ST_GeomFromText('POINT (%f %f)', 4326)::geometry, 4326)
+//)`
+//	q := fmt.Sprintf(query, point1.Lat, point1.Lon, point2.Lat, point2.Lon)
+//	err = a.Db.WithContext(ctx).Raw(q).Scan(&distance).Error
+//	if err != nil {
+//		err = errors.Wrap(apperr.ErrAreaList, err.Error())
+//		return
+//	}
+//
+//	return
+//}

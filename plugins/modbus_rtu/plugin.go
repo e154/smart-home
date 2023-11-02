@@ -20,6 +20,7 @@ package modbus_rtu
 
 import (
 	"context"
+
 	"github.com/e154/smart-home/system/supervisor"
 
 	"github.com/e154/smart-home/common/events"

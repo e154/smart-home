@@ -19,9 +19,8 @@
 package controllers
 
 import (
-	"context"
-
-	"github.com/e154/smart-home/api/stub/api"
+	"github.com/e154/smart-home/api/stub"
+	"github.com/labstack/echo/v4"
 )
 
 // ControllerMqtt ...
@@ -30,43 +29,43 @@ type ControllerMqtt struct {
 }
 
 // NewControllerMqtt ...
-func NewControllerMqtt(common *ControllerCommon) ControllerMqtt {
-	return ControllerMqtt{
+func NewControllerMqtt(common *ControllerCommon) *ControllerMqtt {
+	return &ControllerMqtt{
 		ControllerCommon: common,
 	}
 }
 
 // GetClientById ...
-func (c ControllerMqtt) GetClientById(ctx context.Context, req *api.GetClientRequest) (*api.Client, error) {
+func (c ControllerMqtt) MqttServiceGetClientById(ctx echo.Context, id string) error {
 
-	client, err := c.endpoint.Mqtt.GetClientById(ctx, req.Id)
+	client, err := c.endpoint.Mqtt.GetClientById(ctx.Request().Context(), id)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Mqtt.GetClientById(client), nil
+	return c.HTTP201(ctx, ResponseWithObj(ctx, c.dto.Mqtt.GetClientById(client)))
 }
 
 // GetClientList ...
-func (c ControllerMqtt) GetClientList(ctx context.Context, req *api.PaginationRequest) (*api.GetClientListResult, error) {
+func (c ControllerMqtt) MqttServiceGetClientList(ctx echo.Context, params stub.MqttServiceGetClientListParams) error {
 
-	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
-	items, total, err := c.endpoint.Mqtt.GetClientList(ctx, pagination)
+	pagination := c.Pagination(params.Page, params.Limit, params.Sort)
+	items, total, err := c.endpoint.Mqtt.GetClientList(ctx.Request().Context(), pagination)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Mqtt.ToListResult(items, uint64(total), pagination), nil
+	return c.HTTP200(ctx, ResponseWithList(ctx, c.dto.Mqtt.ToListResult(items), int64(total), pagination))
 }
 
 // GetSubscriptionList ...
-func (c ControllerMqtt) GetSubscriptionList(ctx context.Context, req *api.SubscriptionPaginationRequest) (*api.GetSubscriptionListResult, error) {
+func (c ControllerMqtt) MqttServiceGetSubscriptionList(ctx echo.Context, params stub.MqttServiceGetSubscriptionListParams) error {
 
-	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
-	items, total, err := c.endpoint.Mqtt.GetSubscriptionList(ctx, req.ClientId, pagination)
+	pagination := c.Pagination(params.Page, params.Limit, params.Sort)
+	items, total, err := c.endpoint.Mqtt.GetSubscriptionList(ctx.Request().Context(), params.ClientId, pagination)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Mqtt.GetSubscriptionList(items, uint64(total), pagination), nil
+	return c.HTTP200(ctx, ResponseWithList(ctx, c.dto.Mqtt.GetSubscriptionList(items), int64(total), pagination))
 }

@@ -19,21 +19,30 @@
 package backup
 
 import (
+	"bufio"
+	"bytes"
 	"context"
 	"fmt"
+	"io"
+	"net/http"
 	"os"
-	"os/exec"
 	"path"
 	"path/filepath"
+	"sort"
 	"time"
 
 	"github.com/pkg/errors"
 	"go.uber.org/fx"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
+	"github.com/e154/smart-home/common"
 	app "github.com/e154/smart-home/common/app"
 	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/bus"
 )
 
 var (
@@ -42,20 +51,21 @@ var (
 
 // Backup ...
 type Backup struct {
-	cfg          *BackupConfig
-	Options      []string
-	db           *gorm.DB
+	cfg          *Config
+	eventBus     bus.Bus
 	restoreImage string
 }
 
 // NewBackup ...
-func NewBackup(lc fx.Lifecycle,
-	cfg *BackupConfig,
-	db *gorm.DB) *Backup {
+func NewBackup(lc fx.Lifecycle, eventBus bus.Bus, cfg *Config) *Backup {
+
+	if cfg.Path == "" {
+		cfg.Path = "snapshots"
+	}
 
 	backup := &Backup{
-		cfg: cfg,
-		db:  db,
+		cfg:      cfg,
+		eventBus: eventBus,
 	}
 
 	lc.Append(fx.Hook{
@@ -75,7 +85,6 @@ func (b *Backup) Shutdown(ctx context.Context) (err error) {
 			log.Errorf("%+v", err)
 			return
 		}
-		app.IsRestart = true
 	}
 	return
 }
@@ -84,28 +93,36 @@ func (b *Backup) Shutdown(ctx context.Context) (err error) {
 func (b *Backup) New() (err error) {
 	log.Info("create new backup")
 
-	options := b.dumpOptions()
+	var db *gorm.DB
+	db, err = gorm.Open(postgres.Open(b.cfg.String()), &gorm.Config{})
+	if err != nil {
+		return
+	}
+	defer func() {
+		if _db, err := db.DB(); err == nil {
+			_ = _db.Close()
+		}
+	}()
+
+	db.Exec(`DROP SCHEMA IF EXISTS "public_old" CASCADE;`)
 
 	tmpDir := path.Join(os.TempDir(), "smart_home")
 	if err = os.MkdirAll(tmpDir, 0755); err != nil {
 		return
 	}
 
-	// filename
-	filename := path.Join(tmpDir, "database.sql")
-	options = append(options, "-f", filename)
-
-	cmd := exec.Command("pg_dump", options...)
-	cmd.Env = append(os.Environ(), fmt.Sprintf("PGPASSWORD=%s", b.cfg.PgPass))
-
-	log.Infof("run command %s", cmd.String())
-
-	_, err = cmd.CombinedOutput()
-	if err != nil {
+	if err = NewLocal(b.cfg).New(tmpDir); err != nil {
+		log.Error(err.Error())
 		return
 	}
 
-	err = zipit([]string{path.Join("data", "file_storage"), filename}, path.Join(b.cfg.Path, fmt.Sprintf("%s.zip", time.Now().Format("2006-01-02T15:04:05.999"))))
+	backupName := fmt.Sprintf("%s.zip", time.Now().UTC().Format("2006-01-02T15:04:05.999"))
+	err = zipit([]string{
+		path.Join("data", "file_storage"),
+		path.Join(tmpDir, "data.sql"),
+		path.Join(tmpDir, "scheme.sql"),
+	},
+		path.Join(b.cfg.Path, backupName))
 	if err != nil {
 		return
 	}
@@ -114,11 +131,15 @@ func (b *Backup) New() (err error) {
 
 	log.Info("complete")
 
+	b.eventBus.Publish("system/services/backup", events.EventCreatedBackup{
+		Name: backupName,
+	})
+
 	return
 }
 
 // List ...
-func (b *Backup) List() (list []string) {
+func (b *Backup) List(ctx context.Context, limit, offset int64, orderBy, s string) (list m.Backups, total int64, err error) {
 
 	_ = filepath.Walk(b.cfg.Path, func(path string, info os.FileInfo, err error) error {
 		if info.Name() == ".gitignore" || info.Name() == b.cfg.Path || info.IsDir() {
@@ -127,9 +148,16 @@ func (b *Backup) List() (list []string) {
 		if info.Name()[0:1] == "." {
 			return nil
 		}
-		list = append(list, info.Name())
+		list = append(list, &m.Backup{
+			Name:     info.Name(),
+			Size:     info.Size(),
+			FileMode: info.Mode(),
+			ModTime:  info.ModTime(),
+		})
 		return nil
 	})
+	//todo: add pagination
+	sort.Sort(list)
 	return
 }
 
@@ -139,10 +167,84 @@ func (b *Backup) Restore(name string) (err error) {
 		return
 	}
 
+	b.eventBus.Publish("system/services/backup", events.EventStartedRestore{
+		Name: name,
+	})
+
+	time.Sleep(2 * time.Second)
+
 	b.restoreImage = name
+	app.Restore = true
 
 	log.Info("try to shutdown")
 	err = app.Kill()
+
+	return
+}
+
+func (b *Backup) RollbackChanges() (err error) {
+
+	var db *gorm.DB
+	db, err = gorm.Open(postgres.Open(b.cfg.String()), &gorm.Config{})
+	if err != nil {
+		return
+	}
+
+	defer func() {
+		if _db, err := db.DB(); err == nil {
+			_ = _db.Close()
+		}
+	}()
+
+	if err = db.Exec(`DROP EXTENSION IF EXISTS timescaledb CASCADE;`).Error; err != nil {
+		err = errors.Wrap(fmt.Errorf("failed drop extension timescaledb"), err.Error())
+		return
+	}
+
+	if err = db.Exec(`ALTER SCHEMA "public_old" RENAME TO "public";`).Error; err != nil {
+		err = errors.Wrap(fmt.Errorf("failed rename public scheme"), err.Error())
+		return
+	}
+
+	if err = db.Exec(`DROP SCHEMA IF EXISTS "public_old" CASCADE;`).Error; err != nil {
+		err = errors.Wrap(fmt.Errorf("failed drop schema"), err.Error())
+		return
+	}
+
+	if err = db.Exec(`CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;`).Error; err != nil {
+		err = errors.Wrap(fmt.Errorf("failed create extension if not exists timescaledb"), err.Error())
+	}
+
+	return
+}
+
+func (b *Backup) ApplyChanges() (err error) {
+
+	var db *gorm.DB
+	db, err = gorm.Open(postgres.Open(b.cfg.String()), &gorm.Config{})
+	if err != nil {
+		return
+	}
+
+	defer func() {
+		if _db, err := db.DB(); err == nil {
+			_ = _db.Close()
+		}
+	}()
+
+	if err = db.Exec(`DROP EXTENSION IF EXISTS timescaledb CASCADE;`).Error; err != nil {
+		err = errors.Wrap(fmt.Errorf("failed drop extension timescaledb"), err.Error())
+		return
+	}
+
+	if err = db.Exec(`DROP SCHEMA IF EXISTS "public_old" CASCADE;`).Error; err != nil {
+		err = errors.Wrap(fmt.Errorf("failed drop schema"), err.Error())
+		return
+	}
+
+	if err = db.Exec(`CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;`).Error; err != nil {
+		err = errors.Wrap(fmt.Errorf("failed create extension if not exists timescaledb"), err.Error())
+	}
 
 	return
 }
@@ -151,11 +253,29 @@ func (b *Backup) Restore(name string) (err error) {
 func (b *Backup) restore(name string) (err error) {
 	log.Infof("restore backup file %s", name)
 
+	var list []*m.Backup
+	if list, _, err = b.List(context.Background(), 999, 0, "", ""); err != nil {
+		return
+	}
+
+	var exist bool
+	for _, file := range list {
+		if name == file.Name {
+			exist = true
+			break
+		}
+	}
+
+	if !exist {
+		err = apperr.ErrBackupNotFound
+		return
+	}
+
 	file := path.Join(b.cfg.Path, name)
 
 	_, err = os.Stat(file)
 	if os.IsNotExist(err) {
-		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("path %s", file))
+		err = errors.Wrap(apperr.ErrBackupNotFound, fmt.Sprintf("path %s", file))
 		return
 	}
 
@@ -165,31 +285,65 @@ func (b *Backup) restore(name string) (err error) {
 		return
 	}
 
-	log.Info("Restart database")
+	log.Info("drop database")
 
-	if err = b.db.Exec(`DROP SCHEMA IF EXISTS "public" CASCADE;`).Error; err != nil {
-		err = errors.Wrap(fmt.Errorf("failed exec sql command"), err.Error())
+	var db *gorm.DB
+	db, err = gorm.Open(postgres.Open(b.cfg.String()), &gorm.Config{})
+	if err != nil {
 		return
 	}
-	if err = b.db.Exec(`CREATE SCHEMA "public";`).Error; err != nil {
-		err = errors.Wrap(fmt.Errorf("failed exec sql command"), err.Error())
-		return
-	}
+	defer func() {
 
-	options := b.restoreOptions()
+		if _db, err := db.DB(); err == nil {
+			_ = _db.Close()
+		}
+	}()
 
-	options = append(options, "-f", path.Join(tmpDir, "database.sql"))
-
-	cmd := exec.Command("psql", options...)
-	cmd.Env = append(os.Environ(), fmt.Sprintf("PGPASSWORD=%s", b.cfg.PgPass))
-
-	log.Infof("command: %s", cmd.String())
-
-	if _, err = cmd.CombinedOutput(); err != nil {
-		err = errors.Wrap(fmt.Errorf("failed combine command"), err.Error())
+	if err = db.Exec(`DROP EXTENSION IF EXISTS timescaledb CASCADE;`).Error; err != nil {
+		err = errors.Wrap(fmt.Errorf("failed drop extension timescaledb"), err.Error())
 		return
 	}
 
+	if err = db.Exec(`CREATE SCHEMA IF NOT EXISTS "public";`).Error; err != nil {
+		err = errors.Wrap(fmt.Errorf("failed create public schema"), err.Error())
+		return
+	}
+
+	if err = db.Exec(`DROP SCHEMA IF EXISTS "public_old" CASCADE;`).Error; err != nil {
+		err = errors.Wrap(fmt.Errorf("failed drop public_old schema"), err.Error())
+		return
+	}
+
+	if err = db.Exec(`ALTER SCHEMA "public" RENAME TO "public_old";`).Error; err != nil {
+		err = errors.Wrap(fmt.Errorf("failed rename public scheme"), err.Error())
+		return
+	}
+
+	if err = db.Exec(`CREATE SCHEMA IF NOT EXISTS "public";`).Error; err != nil {
+		err = errors.Wrap(fmt.Errorf("failed create public schema"), err.Error())
+		return
+	}
+
+	db.Exec(`CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;`)
+	db.Exec(`SELECT timescaledb_pre_restore();`)
+
+	log.Info("restore database scheme")
+	var filename = path.Join(tmpDir, "scheme.sql")
+	if err = NewLocal(b.cfg).Restore(filename); err != nil {
+		return
+	}
+
+	//db.Exec(`SELECT create_hypertable('metric_bucket', 'time', migrate_data => true, if_not_exists => TRUE);`)
+
+	log.Info("restore database data")
+	filename = path.Join(tmpDir, "data.sql")
+	if err = NewLocal(b.cfg).Restore(filename); err != nil {
+		return
+	}
+
+	db.Exec(`SELECT timescaledb_post_restore();`)
+
+	log.Info("restore files ...")
 	d := path.Join("data", "file_storage")
 	log.Infof("remove data dir")
 	_ = os.RemoveAll(d)
@@ -204,73 +358,91 @@ func (b *Backup) restore(name string) (err error) {
 	log.Infof("remove tmp dir %s", tmpDir)
 	_ = os.RemoveAll(tmpDir)
 
-	log.Info("complete")
+	log.Info("complete ...")
 
 	return
 }
 
-func (b Backup) dumpOptions() []string {
-	options := b.Options
+// Delete ...
+func (b *Backup) Delete(name string) (err error) {
+	log.Infof("remove backup file %s", name)
 
-	// db name
-	if b.cfg.PgName != "" {
-		options = append(options, "-d")
-		options = append(options, b.cfg.PgName)
+	file := path.Join(b.cfg.Path, name)
+
+	_, err = os.Stat(file)
+	if os.IsNotExist(err) {
+		err = errors.Wrap(apperr.ErrBackupNotFound, fmt.Sprintf("path %s", file))
+		return
 	}
 
-	// host
-	if b.cfg.PgHost != "" {
-		options = append(options, "-h")
-		options = append(options, b.cfg.PgHost)
+	if err = os.RemoveAll(file); err != nil {
+		return
 	}
 
-	// port
-	if b.cfg.PgPort != "" {
-		options = append(options, "-p")
-		options = append(options, b.cfg.PgPort)
-	}
+	b.eventBus.Publish("system/services/backup", events.EventRemovedBackup{
+		Name: name,
+	})
 
-	// user
-	if b.cfg.PgUser != "" {
-		options = append(options, "-U")
-		options = append(options, b.cfg.PgUser)
-	}
-
-	// compress level
-	//options = append(options, "-Z", "9")
-
-	// formats
-	options = append(options, "-F", "p")
-
-	return options
+	return
 }
 
-func (b Backup) restoreOptions() []string {
-	options := b.Options
+// UploadBackup ...
+func (b *Backup) UploadBackup(ctx context.Context, reader *bufio.Reader, fileName string) (newFile *m.Backup, err error) {
 
-	// db name
-	if b.cfg.PgName != "" {
-		options = append(options, "-d")
-		options = append(options, b.cfg.PgName)
+	var list []*m.Backup
+	if list, _, err = b.List(ctx, 999, 0, "", ""); err != nil {
+		return
 	}
 
-	// host
-	if b.cfg.PgHost != "" {
-		options = append(options, "-h")
-		options = append(options, b.cfg.PgHost)
+	for _, file := range list {
+		if fileName == file.Name {
+			err = apperr.ErrBackupNameNotUnique
+			return
+		}
 	}
 
-	// port
-	if b.cfg.PgPort != "" {
-		options = append(options, "-p")
-		options = append(options, b.cfg.PgPort)
+	buffer := bytes.NewBuffer(make([]byte, 0))
+	part := make([]byte, 128)
+
+	var count int
+	for {
+		if count, err = reader.Read(part); err != nil {
+			break
+		}
+		buffer.Write(part[:count])
+	}
+	if err != io.EOF {
+	} else {
+		err = nil
 	}
 
-	// user
-	if b.cfg.PgUser != "" {
-		options = append(options, "-U")
-		options = append(options, b.cfg.PgUser)
+	contentType := http.DetectContentType(buffer.Bytes())
+	log.Infof("Content-type from buffer, %s", contentType)
+
+	//create destination file making sure the path is writeable.
+	var dst *os.File
+	filePath := filepath.Join(b.cfg.Path, fileName)
+	if dst, err = os.Create(filePath); err != nil {
+		return
 	}
 
-	return options
+	defer dst.Close()
+
+	//copy the uploaded file to the destination file
+	if _, err = io.Copy(dst, buffer); err != nil {
+		return
+	}
+
+	size, _ := common.GetFileSize(filePath)
+	newFile = &m.Backup{
+		Name:     fileName,
+		Size:     size,
+		MimeType: contentType,
+	}
+
+	b.eventBus.Publish("system/services/backup", events.EventUploadedBackup{
+		Name: fileName,
+	})
+
+	return
 }

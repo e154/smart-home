@@ -22,6 +22,8 @@ import (
 	"context"
 	"time"
 
+	"github.com/e154/smart-home/common"
+
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"gorm.io/gorm"
@@ -123,31 +125,44 @@ func (n *Condition) Search(ctx context.Context, query string, limit, offset int)
 
 func (n *Condition) fromDb(dbVer *db.Condition) (ver *m.Condition) {
 	ver = &m.Condition{
-		Id:        dbVer.Id,
-		Name:      dbVer.Name,
-		ScriptId:  dbVer.ScriptId,
-		CreatedAt: dbVer.CreatedAt,
-		UpdatedAt: dbVer.UpdatedAt,
+		Id:          dbVer.Id,
+		Name:        dbVer.Name,
+		Description: dbVer.Description,
+		ScriptId:    dbVer.ScriptId,
+		AreaId:      dbVer.AreaId,
+		CreatedAt:   dbVer.CreatedAt,
+		UpdatedAt:   dbVer.UpdatedAt,
 	}
 	// script
 	if dbVer.Script != nil {
 		scriptAdaptor := GetScriptAdaptor(n.db)
 		ver.Script, _ = scriptAdaptor.fromDb(dbVer.Script)
 	}
+	// area
+	if dbVer.Area != nil {
+		areaAdaptor := GetAreaAdaptor(n.db)
+		ver.Area = areaAdaptor.fromDb(dbVer.Area)
+	}
 	return
 }
 
 func (n *Condition) toDb(ver *m.Condition) (dbVer *db.Condition) {
 	dbVer = &db.Condition{
-		Id:        ver.Id,
-		Name:      ver.Name,
-		ScriptId:  ver.ScriptId,
-		CreatedAt: ver.CreatedAt,
-		UpdatedAt: ver.UpdatedAt,
+		Id:          ver.Id,
+		Name:        ver.Name,
+		Description: ver.Description,
+		ScriptId:    ver.ScriptId,
+		AreaId:      ver.AreaId,
+		CreatedAt:   ver.CreatedAt,
+		UpdatedAt:   ver.UpdatedAt,
 	}
 
 	if ver.Script != nil {
-		dbVer.ScriptId = ver.Script.Id
+		dbVer.ScriptId = common.Int64(ver.Script.Id)
+	}
+
+	if ver.Area != nil {
+		dbVer.AreaId = common.Int64(ver.Area.Id)
 	}
 
 	return

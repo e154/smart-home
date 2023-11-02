@@ -21,7 +21,7 @@ package mqtt
 import (
 	"context"
 	"fmt"
-	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
@@ -65,8 +65,6 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 		log.Error(err.Error())
 	}
 
-	_ = p.mqttServ.Authenticator().Register(p.Authenticator)
-
 	return nil
 }
 
@@ -79,8 +77,6 @@ func (p plugin) Unload(ctx context.Context) (err error) {
 	p.mqttServ.RemoveClient("plugins.mqtt")
 	_ = p.Service.EventBus().Unsubscribe("system/entities/+", p.eventHandler)
 
-	_ = p.mqttServ.Authenticator().Unregister(p.Authenticator)
-
 	return
 }
 
@@ -89,7 +85,6 @@ func (p *plugin) ActorConstructor(entity *m.Entity) (actor supervisor.PluginActo
 	actor, err = NewActor(entity, p.Service, p.mqttClient)
 	return
 }
-
 
 // Name ...
 func (p plugin) Name() string {
@@ -140,38 +135,4 @@ func (p *plugin) Options() m.PluginOptions {
 		ActorSetts:         NewSettings(),
 		Setts:              nil,
 	}
-}
-
-// Authenticator ...
-func (p *plugin) Authenticator(login, password string) (err error) {
-
-	var exist = false
-	p.Actors.Range(func(key, value any) bool {
-		actor := value.(*Actor)
-		attrs := actor.Settings()
-
-		if _login, ok := attrs[AttrMqttLogin]; !ok || _login.String() != login {
-			exist = true
-			return true
-		}
-
-		if _password, ok := attrs[AttrMqttPass]; !ok || _password.String() != password {
-			exist = true
-			return true
-		}
-
-		err = nil
-		return false
-
-		// todo add encripted password
-		//if ok := common.CheckPasswordHash(password, settings[AttrNodePass].String()); ok {
-		//	return
-		//}
-	})
-
-	if !exist {
-		err = apperr.ErrBadLoginOrPassword
-	}
-
-	return
 }

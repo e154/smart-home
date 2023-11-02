@@ -44,7 +44,7 @@ type AlexaSkill struct {
 	Status      common.StatusType
 	Script      *Script
 	ScriptId    *int64
-	CreatedAt   time.Time
+	CreatedAt   time.Time `gorm:"<-:create"`
 	UpdatedAt   time.Time
 }
 

@@ -19,10 +19,8 @@
 package controllers
 
 import (
-	"context"
-
-	"github.com/e154/smart-home/api/stub/api"
-	"google.golang.org/protobuf/types/known/emptypb"
+	"github.com/e154/smart-home/api/stub"
+	"github.com/labstack/echo/v4"
 )
 
 // ControllerDashboardTab ...
@@ -31,67 +29,73 @@ type ControllerDashboardTab struct {
 }
 
 // NewControllerDashboardTab ...
-func NewControllerDashboardTab(common *ControllerCommon) ControllerDashboardTab {
-	return ControllerDashboardTab{
+func NewControllerDashboardTab(common *ControllerCommon) *ControllerDashboardTab {
+	return &ControllerDashboardTab{
 		ControllerCommon: common,
 	}
 }
 
 // AddDashboardTab ...
-func (c ControllerDashboardTab) AddDashboardTab(ctx context.Context, req *api.NewDashboardTabRequest) (*api.DashboardTab, error) {
+func (c ControllerDashboardTab) DashboardTabServiceAddDashboardTab(ctx echo.Context, _ stub.DashboardTabServiceAddDashboardTabParams) error {
 
-	board := c.dto.DashboardTab.AddDashboardTab(req)
-
-	board, errs, err := c.endpoint.DashboardTab.Add(ctx, board)
-	if len(errs) != 0 || err != nil {
-		return nil, c.error(ctx, errs, err)
+	obj := &stub.ApiNewDashboardTabRequest{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.DashboardTab.ToDashboardTab(board), nil
+	board, err := c.endpoint.DashboardTab.Add(ctx.Request().Context(), c.dto.DashboardTab.AddDashboardTab(obj))
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP201(ctx, ResponseWithObj(ctx, c.dto.DashboardTab.ToDashboardTab(board)))
 }
 
 // UpdateDashboardTab ...
-func (c ControllerDashboardTab) UpdateDashboardTab(ctx context.Context, req *api.UpdateDashboardTabRequest) (*api.DashboardTab, error) {
+func (c ControllerDashboardTab) DashboardTabServiceUpdateDashboardTab(ctx echo.Context, id int64, _ stub.DashboardTabServiceUpdateDashboardTabParams) error {
 
-	board := c.dto.DashboardTab.UpdateDashboardTab(req)
-
-	board, errs, err := c.endpoint.DashboardTab.Update(ctx, board)
-	if len(errs) != 0 || err != nil {
-		return nil, c.error(ctx, errs, err)
+	obj := &stub.DashboardTabServiceUpdateDashboardTabJSONBody{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.DashboardTab.ToDashboardTab(board), nil
+	tab, err := c.endpoint.DashboardTab.Update(ctx.Request().Context(), c.dto.DashboardTab.UpdateDashboardTab(obj, id))
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, c.dto.DashboardTab.ToDashboardTab(tab)))
 }
 
 // GetDashboardTabById ...
-func (c ControllerDashboardTab) GetDashboardTabById(ctx context.Context, req *api.GetDashboardTabRequest) (*api.DashboardTab, error) {
+func (c ControllerDashboardTab) DashboardTabServiceGetDashboardTabById(ctx echo.Context, id int64) error {
 
-	board, err := c.endpoint.DashboardTab.GetById(ctx, req.Id)
+	tab, err := c.endpoint.DashboardTab.GetById(ctx.Request().Context(), id)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.DashboardTab.ToDashboardTab(board), nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, c.dto.DashboardTab.ToDashboardTab(tab)))
 }
 
 // GetDashboardTabList ...
-func (c ControllerDashboardTab) GetDashboardTabList(ctx context.Context, req *api.PaginationRequest) (*api.GetDashboardTabListResult, error) {
+func (c ControllerDashboardTab) DashboardTabServiceGetDashboardTabList(ctx echo.Context, params stub.DashboardTabServiceGetDashboardTabListParams) error {
 
-	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
-	items, total, err := c.endpoint.DashboardTab.GetList(ctx, pagination)
+	pagination := c.Pagination(params.Page, params.Limit, params.Sort)
+	items, total, err := c.endpoint.DashboardTab.GetList(ctx.Request().Context(), pagination)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.DashboardTab.ToListResult(items, uint64(total), pagination), nil
+	return c.HTTP200(ctx, ResponseWithList(ctx, c.dto.DashboardTab.ToListResult(items), total, pagination))
 }
 
 // DeleteDashboardTab ...
-func (c ControllerDashboardTab) DeleteDashboardTab(ctx context.Context, req *api.DeleteDashboardTabRequest) (*emptypb.Empty, error) {
+func (c ControllerDashboardTab) DashboardTabServiceDeleteDashboardTab(ctx echo.Context, id int64) error {
 
-	if err := c.endpoint.DashboardTab.Delete(ctx, req.Id); err != nil {
-		return nil, c.error(ctx, nil, err)
+	if err := c.endpoint.DashboardTab.Delete(ctx.Request().Context(), id); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }

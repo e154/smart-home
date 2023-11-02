@@ -21,10 +21,11 @@ package db
 import (
 	"context"
 	"fmt"
-	"github.com/jackc/pgerrcode"
-	"github.com/jackc/pgx/v5/pgconn"
 	"strings"
 	"time"
+
+	"github.com/jackc/pgerrcode"
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"github.com/e154/smart-home/common/apperr"
 
@@ -49,7 +50,7 @@ type EntityState struct {
 	Image       *Image
 	ImageId     *int64
 	Style       string
-	CreatedAt   time.Time
+	CreatedAt   time.Time `gorm:"<-:create"`
 	UpdatedAt   time.Time
 }
 

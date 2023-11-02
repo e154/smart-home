@@ -118,6 +118,10 @@ func (m MetricRange) String() string {
 	return string(m)
 }
 
+func (m MetricRange) Ptr() *MetricRange {
+	return &m
+}
+
 // EntityId ...
 type EntityId string
 
@@ -224,7 +228,7 @@ type PageParams struct {
 	Offset  int64  `json:"offset" validate:"required,gte=0,lte=1000"`
 	Order   string `json:"order" validate:"required,oneof=created_at"`
 	SortBy  string `json:"sort_by" validate:"required,oneof=desc asc"`
-	PageReq uint64
+	PageReq int64
 	SortReq string
 }
 

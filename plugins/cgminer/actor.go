@@ -20,6 +20,7 @@ package cgminer
 
 import (
 	"fmt"
+
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/pkg/errors"
 
@@ -43,7 +44,7 @@ func NewActor(entity *m.Entity,
 
 	actor = &Actor{
 		BaseActor:  supervisor.NewBaseActor(entity, service),
-		actionPool: make(chan events.EventCallEntityAction, 10),
+		actionPool: make(chan events.EventCallEntityAction, 1000),
 	}
 
 	//if actor.ParentId == nil {

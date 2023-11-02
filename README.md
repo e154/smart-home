@@ -132,20 +132,7 @@ Run these two commands in your terminal to add Homebrew to your PATH:
 eval "$(/opt/homebrew/bin/brew shellenv)"
 ```
 
-install protobuf v3
-```bash
-brew update && brew install protobuf@3
-```
-
-```bash
-go install \
-    github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway \
-    github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2 \
-    google.golang.org/protobuf/cmd/protoc-gen-go \
-    google.golang.org/grpc/cmd/protoc-gen-go-grpc
-```
-
-download from https://github.com/grpc-ecosystem/grpc-gateway/releases/tag/v2.14.0
+install github.com/deepmap/oapi-codegen version v1.13.0
 
 generate api stub
 ```bash

@@ -22,13 +22,13 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"github.com/e154/smart-home/system/backup"
 	goLog "log"
 	"os"
 	"strings"
 	"time"
 
 	"github.com/Masterminds/semver"
-	"github.com/e154/smart-home/common/logger"
 	_ "github.com/lib/pq"
 	"go.uber.org/fx"
 	"gorm.io/driver/postgres"
@@ -46,17 +46,14 @@ type Orm struct {
 	serverVersion       string
 }
 
-var (
-	log = logger.MustGetLogger("orm")
-)
-
 const (
 	minimalDbVersion = ">= 9.6.0"
 )
 
 // NewOrm ...
 func NewOrm(lc fx.Lifecycle,
-	cfg *Config) (orm *Orm, db *gorm.DB, err error) {
+	cfg *Config,
+	_ *backup.Backup) (orm *Orm, db *gorm.DB, err error) {
 
 	orm = &Orm{
 		cfg:                 cfg,
@@ -64,7 +61,7 @@ func NewOrm(lc fx.Lifecycle,
 	}
 
 	if err = orm.Start(); err != nil {
-		log.Error(err.Error())
+		fmt.Fprintf(os.Stderr, err.Error())
 		return
 	}
 
@@ -82,16 +79,21 @@ func NewOrm(lc fx.Lifecycle,
 // Start ...
 func (o *Orm) Start() (err error) {
 
-	log.Infof("database connect %s", strings.ReplaceAll(o.cfg.String(), "password="+o.cfg.Password, "password=*****"))
+	fmt.Fprintf(os.Stdout, "database connected to %s\r\n", strings.ReplaceAll(o.cfg.String(), "password="+o.cfg.Password, "password=*****"))
+
+	var logLevel = gormLogger.Silent
+	if o.cfg.Debug {
+		logLevel = gormLogger.Info
+	}
 
 	newLogger := gormLogger.New(
 		goLog.New(os.Stdout, "\r\n", goLog.LstdFlags), // io writer
 		gormLogger.Config{
-			SlowThreshold:             time.Second,       // Slow SQL threshold
-			LogLevel:                  gormLogger.Silent, // Log level
-			IgnoreRecordNotFoundError: true,              // Ignore ErrRecordNotFound error for logger
-			ParameterizedQueries:      true,              // Don't include params in the SQL log
-			Colorful:                  false,             // Disable color
+			SlowThreshold:             time.Second, // Slow SQL threshold
+			LogLevel:                  logLevel,    // Log level
+			IgnoreRecordNotFoundError: true,        // Ignore ErrRecordNotFound error for logger
+			ParameterizedQueries:      true,        // Don't include params in the SQL log
+			Colorful:                  false,       // Disable color
 		},
 	)
 
@@ -104,10 +106,6 @@ func (o *Orm) Start() (err error) {
 		// it for DI
 		err = nil
 		return
-	}
-
-	if o.cfg.Debug {
-		o.db.Logger.LogMode(gormLogger.Info)
 	}
 
 	var db *sql.DB
@@ -130,7 +128,7 @@ func (o *Orm) Start() (err error) {
 		return
 	}
 
-	log.Infof("database version %s", o.serverVersion)
+	fmt.Fprintf(os.Stdout, "database version %s\r\n", o.serverVersion)
 
 	err = o.Check()
 
@@ -146,7 +144,7 @@ func (o *Orm) DB() *sql.DB {
 // Shutdown ...
 func (o *Orm) Shutdown() (err error) {
 	if o.db != nil {
-		log.Info("database shutdown")
+		fmt.Fprintf(os.Stdout, "database shutdown\r\n")
 		var db *sql.DB
 		if db, err = o.db.DB(); err != nil {
 			return
@@ -158,11 +156,18 @@ func (o *Orm) Shutdown() (err error) {
 
 func (o *Orm) Check() (err error) {
 
+	var timeZone string
+	o.db.Raw("SHOW timezone").Scan(&timeZone)
+
+	fmt.Fprintf(os.Stdout, "database timezone: %s\n\r", timeZone)
+
 	if err = o.checkServerVersion(); err != nil {
 		return
 	}
 
-	err = o.CheckExtensions()
+	if err = o.CheckExtensions(); err != nil {
+		return
+	}
 
 	return
 }
@@ -198,9 +203,19 @@ func (o *Orm) checkServerVersion() (err error) {
 	return
 }
 
-func (o *Orm) checkAvailableExtensions(availableExtensions []AvailableExtension, extName string) (exist bool) {
-	for _, ext := range availableExtensions {
-		if ext.Name == extName && ext.InstalledVersion == nil {
+func (o *Orm) CheckAvailableExtension(extName string) (exist bool) {
+	for _, ext := range o.availableExtensions {
+		if ext.Name == extName {
+			exist = true
+			return
+		}
+	}
+	return
+}
+
+func (o *Orm) CheckInstalledExtension(extName string) (exist bool) {
+	for _, ext := range o.availableExtensions {
+		if ext.Name == extName && ext.InstalledVersion != nil {
 			exist = true
 			return
 		}
@@ -210,52 +225,26 @@ func (o *Orm) checkAvailableExtensions(availableExtensions []AvailableExtension,
 
 func (o *Orm) CheckExtensions() (err error) {
 
-	o.db.Exec(`CREATE EXTENSION IF NOT EXISTS pgcrypto CASCADE;`)
-	//o.db.Exec(`CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;`)
-	o.db.Exec(`CREATE EXTENSION IF NOT EXISTS Postgis CASCADE;`)
-
 	// check extensions
 	if err = o.db.Raw("select * from pg_available_extensions").Scan(&o.availableExtensions).Error; err != nil {
 		return
 	}
 
-	var extCrypto bool
-	var extPostgis bool
-	for _, ext := range o.availableExtensions {
-		switch ext.Name {
-		case "pgcrypto":
-			extCrypto = true
-		case "timescaledb":
-			o.extTimescaledb = true
-		case "postgis":
-			extPostgis = true
-		default:
-
+	if !o.CheckAvailableExtension("pgcrypto") {
+		fmt.Fprintf(os.Stdout, "please install pgcrypto extension for postgresql database (maybe need install postgresql-contrib)\r")
+	} else {
+		if !o.CheckInstalledExtension("pgcrypto") {
+			o.db.Exec(`CREATE EXTENSION IF NOT EXISTS pgcrypto CASCADE;`)
 		}
 	}
 
-	if !extCrypto {
-		log.Warn("please install pgcrypto extension for postgresql database (maybe need install postgresql-contrib)\r")
+	if !o.CheckAvailableExtension("timescaledb") {
+		fmt.Fprintf(os.Stdout, "please install timescaledb extension, website: https://docs.timescale.com/v1.1/getting-started/installation)\r")
 	} else {
-		if o.checkAvailableExtensions(o.availableExtensions, "pgcrypto") {
-			log.Warn("extension 'pgcrypto' installed but not enabled, enable it: CREATE EXTENSION IF NOT EXISTS pgcrypto CASCADE;\n\r")
+		if !o.CheckInstalledExtension("timescaledb") {
+			o.db.Exec(`CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;`)
 		}
-	}
-
-	//if !o.extTimescaledb {
-	//	log.Warn("please install timescaledb extension, website: https://docs.timescale.com/v1.1/getting-started/installation)\r")
-	//} else {
-	//	if o.checkAvailableExtensions(o.availableExtensions, "timescaledb") {
-	//		log.Warn("extension 'timescaledb' installed but not enabled, enable it: CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;\n\r")
-	//	}
-	//}
-
-	if !extPostgis {
-		log.Warn("please install Postgis extension\r")
-	} else {
-		if o.checkAvailableExtensions(o.availableExtensions, "postgis") {
-			log.Warn("extension 'Postgis' installed but not enabled, enable it: CREATE EXTENSION IF NOT EXISTS Postgis CASCADE;\n\r")
-		}
+		o.db.Exec(`SELECT create_hypertable('metric_bucket', 'time', migrate_data => true, if_not_exists => TRUE);`)
 	}
 
 	return

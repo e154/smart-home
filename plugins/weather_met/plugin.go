@@ -20,6 +20,7 @@ package weather_met
 
 import (
 	"context"
+
 	"github.com/e154/smart-home/plugins/weather"
 	"github.com/e154/smart-home/system/supervisor"
 
@@ -47,14 +48,14 @@ func init() {
 
 type plugin struct {
 	*supervisor.Plugin
-	weather    *WeatherMet
-	task       scheduler.EntryID
+	weather *WeatherMet
+	task    scheduler.EntryID
 }
 
 // New ...
 func New() supervisor.Pluggable {
 	return &plugin{
-		Plugin:     supervisor.NewPlugin(),
+		Plugin: supervisor.NewPlugin(),
 	}
 }
 

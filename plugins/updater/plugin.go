@@ -21,8 +21,9 @@ package updater
 import (
 	"context"
 	"fmt"
-	"github.com/e154/smart-home/common"
 	"time"
+
+	"github.com/e154/smart-home/common"
 
 	"github.com/e154/smart-home/common/events"
 

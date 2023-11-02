@@ -21,7 +21,6 @@ package endpoint
 import (
 	"context"
 
-	"github.com/go-playground/validator/v10"
 	"github.com/jinzhu/copier"
 	"github.com/pkg/errors"
 
@@ -43,10 +42,11 @@ func NewDashboardEndpoint(common *CommonEndpoint) *DashboardEndpoint {
 }
 
 // Add ...
-func (d *DashboardEndpoint) Add(ctx context.Context, board *m.Dashboard) (result *m.Dashboard, errs validator.ValidationErrorsTranslations, err error) {
+func (d *DashboardEndpoint) Add(ctx context.Context, board *m.Dashboard) (result *m.Dashboard, err error) {
 
-	var ok bool
-	if ok, errs = d.validation.Valid(board); !ok {
+	if ok, errs := d.validation.Valid(board); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
@@ -85,7 +85,7 @@ func (d *DashboardEndpoint) Search(ctx context.Context, query string, limit, off
 }
 
 // Update ...
-func (i *DashboardEndpoint) Update(ctx context.Context, params *m.Dashboard) (result *m.Dashboard, errs validator.ValidationErrorsTranslations, err error) {
+func (i *DashboardEndpoint) Update(ctx context.Context, params *m.Dashboard) (result *m.Dashboard, err error) {
 
 	var board *m.Dashboard
 	if board, err = i.adaptors.Dashboard.GetById(ctx, params.Id); err != nil {
@@ -96,8 +96,9 @@ func (i *DashboardEndpoint) Update(ctx context.Context, params *m.Dashboard) (re
 		return
 	}
 
-	var ok bool
-	if ok, errs = i.validation.Valid(params); !ok {
+	if ok, errs := i.validation.Valid(params); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 

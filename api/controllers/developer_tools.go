@@ -19,11 +19,10 @@
 package controllers
 
 import (
-	"context"
+	"github.com/e154/smart-home/api/stub"
+	"github.com/labstack/echo/v4"
 
-	"github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/common"
-	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 // ControllerDeveloperTools ...
@@ -32,61 +31,82 @@ type ControllerDeveloperTools struct {
 }
 
 // NewControllerDeveloperTools ...
-func NewControllerDeveloperTools(common *ControllerCommon) ControllerDeveloperTools {
-	return ControllerDeveloperTools{
+func NewControllerDeveloperTools(common *ControllerCommon) *ControllerDeveloperTools {
+	return &ControllerDeveloperTools{
 		ControllerCommon: common,
 	}
 }
 
-// EntitySetState ...
-func (c ControllerDeveloperTools) EntitySetState(ctx context.Context, req *api.EntityRequest) (*emptypb.Empty, error) {
+// EntitySetStateName ...
+func (c ControllerDeveloperTools) DeveloperToolsServiceEntitySetState(ctx echo.Context, _ stub.DeveloperToolsServiceEntitySetStateParams) error {
 
-	err := c.endpoint.DeveloperTools.EntitySetState(ctx, common.EntityId(req.Id), req.Name)
-	if err != nil {
-		return nil, c.error(ctx, nil, err)
+	obj := &stub.ApiEntityRequest{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	err := c.endpoint.DeveloperTools.EntitySetStateName(ctx.Request().Context(), common.EntityId(obj.Id), obj.Name)
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
 
 // ReloadEntity ...
-func (c ControllerDeveloperTools) ReloadEntity(ctx context.Context, req *api.ReloadRequest) (*emptypb.Empty, error) {
+func (c ControllerDeveloperTools) DeveloperToolsServiceReloadEntity(ctx echo.Context, _ stub.DeveloperToolsServiceReloadEntityParams) error {
 
-	err := c.endpoint.DeveloperTools.ReloadEntity(ctx, common.EntityId(req.Id))
-	if err != nil {
-		return nil, c.error(ctx, nil, err)
+	obj := &stub.ApiReloadRequest{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	err := c.endpoint.DeveloperTools.ReloadEntity(ctx.Request().Context(), common.EntityId(obj.Id))
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
 
 // CallTrigger ...
-func (c ControllerDeveloperTools) CallTrigger(ctx context.Context, req *api.AutomationRequest) (*emptypb.Empty, error) {
+func (c ControllerDeveloperTools) DeveloperToolsServiceCallTrigger(ctx echo.Context, _ stub.DeveloperToolsServiceCallTriggerParams) error {
 
-	if err := c.endpoint.DeveloperTools.TaskCallTrigger(ctx, req.Id, req.Name); err != nil {
-		return nil, c.error(ctx, nil, err)
+	obj := &stub.ApiAutomationRequest{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	if err := c.endpoint.DeveloperTools.TaskCallTrigger(ctx.Request().Context(), obj.Id, obj.Name); err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
 
 // CallAction ...
-func (c ControllerDeveloperTools) CallAction(ctx context.Context, req *api.AutomationRequest) (*emptypb.Empty, error) {
+func (c ControllerDeveloperTools) DeveloperToolsServiceCallAction(ctx echo.Context, _ stub.DeveloperToolsServiceCallActionParams) error {
 
-	if err := c.endpoint.DeveloperTools.TaskCallAction(ctx, req.Id, req.Name); err != nil {
-		return nil, c.error(ctx, nil, err)
+	obj := &stub.ApiAutomationRequest{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	if err := c.endpoint.DeveloperTools.TaskCallAction(ctx.Request().Context(), obj.Id, obj.Name); err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
 
 // GetEventBusStateList ...
-func (c ControllerDeveloperTools) GetEventBusStateList(ctx context.Context, _ *api.PaginationRequest) (*api.EventBusStateListResult, error) {
+func (c ControllerDeveloperTools) DeveloperToolsServiceGetEventBusStateList(ctx echo.Context, params stub.DeveloperToolsServiceGetEventBusStateListParams) error {
 
-	state, total, err := c.endpoint.DeveloperTools.GetEventBusState()
+	pagination := c.Pagination(params.Page, params.Limit, params.Sort)
+	items, total, err := c.endpoint.DeveloperTools.GetEventBusState(ctx.Request().Context(), pagination)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.DeveloperTools.GetEventBusState(state, total), nil
+	return c.HTTP200(ctx, ResponseWithList(ctx, c.dto.DeveloperTools.ToListResult(items), total, pagination))
 }

@@ -19,9 +19,8 @@
 package controllers
 
 import (
-	"context"
-
-	"github.com/e154/smart-home/api/stub/api"
+	"github.com/e154/smart-home/common/apperr"
+	"github.com/labstack/echo/v4"
 )
 
 // ControllerStream ...
@@ -30,13 +29,24 @@ type ControllerStream struct {
 }
 
 // NewControllerStream ...
-func NewControllerStream(common *ControllerCommon) ControllerStream {
-	return ControllerStream{
+func NewControllerStream(common *ControllerCommon) *ControllerStream {
+	return &ControllerStream{
 		ControllerCommon: common,
 	}
 }
 
 // Subscribe ...
-func (a ControllerStream) Subscribe(server api.StreamService_SubscribeServer) error {
-	return a.endpoint.Stream.Subscribe(context.Background(), server)
+func (c ControllerStream) StreamServiceSubscribe(ctx echo.Context) error {
+
+	currentUser, err := c.currentUser(ctx)
+	if err != nil {
+		return c.ERROR(ctx, apperr.ErrUnauthorized)
+	}
+
+	if err = c.endpoint.Stream.Subscribe(ctx, currentUser); err != nil {
+		log.Error(err.Error())
+		return c.ERROR(ctx, err)
+	}
+
+	return nil
 }

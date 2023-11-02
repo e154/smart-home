@@ -19,10 +19,9 @@
 package controllers
 
 import (
-	"context"
+	"github.com/labstack/echo/v4"
 
-	"github.com/e154/smart-home/api/stub/api"
-	"google.golang.org/protobuf/types/known/emptypb"
+	"github.com/e154/smart-home/api/stub"
 )
 
 // ControllerAction ...
@@ -31,79 +30,85 @@ type ControllerAction struct {
 }
 
 // NewControllerAction ...
-func NewControllerAction(common *ControllerCommon) ControllerAction {
-	return ControllerAction{
+func NewControllerAction(common *ControllerCommon) *ControllerAction {
+	return &ControllerAction{
 		ControllerCommon: common,
 	}
 }
 
 // AddAction ...
-func (c ControllerAction) AddAction(ctx context.Context, req *api.NewActionRequest) (*api.Action, error) {
+func (c ControllerAction) ActionServiceAddAction(ctx echo.Context, _ stub.ActionServiceAddActionParams) error {
 
-	action := c.dto.Action.AddAction(req)
-
-	action, errs, err := c.endpoint.Action.Add(ctx, action)
-	if len(errs) != 0 || err != nil {
-		return nil, c.error(ctx, errs, err)
+	obj := &stub.ApiNewActionRequest{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Action.ToAction(action), nil
+	action, err := c.endpoint.Action.Add(ctx.Request().Context(), c.dto.Action.Add(obj))
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP201(ctx, ResponseWithObj(ctx, c.dto.Action.ToAction(action)))
 }
 
 // UpdateAction ...
-func (c ControllerAction) UpdateAction(ctx context.Context, req *api.UpdateActionRequest) (*api.Action, error) {
+func (c ControllerAction) ActionServiceUpdateAction(ctx echo.Context, id int64, _ stub.ActionServiceUpdateActionParams) error {
 
-	action := c.dto.Action.UpdateAction(req)
-
-	action, errs, err := c.endpoint.Action.Update(ctx, action)
-	if len(errs) != 0 || err != nil {
-		return nil, c.error(ctx, errs, err)
+	obj := &stub.ActionServiceUpdateActionJSONBody{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Action.ToAction(action), nil
+	action, err := c.endpoint.Action.Update(ctx.Request().Context(), c.dto.Action.Update(obj, id))
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, c.dto.Action.ToAction(action)))
 }
 
 // GetActionById ...
-func (c ControllerAction) GetActionById(ctx context.Context, req *api.GetActionRequest) (*api.Action, error) {
+func (c ControllerAction) ActionServiceGetActionById(ctx echo.Context, id int64) error {
 
-	action, err := c.endpoint.Action.GetById(ctx, req.Id)
+	action, err := c.endpoint.Action.GetById(ctx.Request().Context(), id)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Action.ToAction(action), nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, c.dto.Action.ToAction(action)))
 }
 
 // GetActionList ...
-func (c ControllerAction) GetActionList(ctx context.Context, req *api.PaginationRequest) (*api.GetActionListResult, error) {
+func (c ControllerAction) ActionServiceGetActionList(ctx echo.Context, params stub.ActionServiceGetActionListParams) error {
 
-	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
-	items, total, err := c.endpoint.Action.GetList(ctx, pagination)
+	pagination := c.Pagination(params.Page, params.Limit, params.Sort)
+	items, total, err := c.endpoint.Action.GetList(ctx.Request().Context(), pagination)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Action.ToListResult(items, uint64(total), pagination), nil
+	return c.HTTP200(ctx, ResponseWithList(ctx, c.dto.Action.ToListResult(items), total, pagination))
 }
 
 // DeleteAction ...
-func (c ControllerAction) DeleteAction(ctx context.Context, req *api.DeleteActionRequest) (*emptypb.Empty, error) {
+func (c ControllerAction) ActionServiceDeleteAction(ctx echo.Context, id int64) error {
 
-	if err := c.endpoint.Action.Delete(ctx, req.Id); err != nil {
-		return nil, c.error(ctx, nil, err)
+	if err := c.endpoint.Action.Delete(ctx.Request().Context(), id); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
 
 // SearchAction ...
-func (c ControllerAction) SearchAction(ctx context.Context, req *api.SearchRequest) (*api.SearchActionResult, error) {
+func (c ControllerAction) ActionServiceSearchAction(ctx echo.Context, params stub.ActionServiceSearchActionParams) error {
 
-	search := c.Search(req.Query, req.Limit, req.Offset)
-	items, _, err := c.endpoint.Action.Search(ctx, search.Query, search.Limit, search.Offset)
+	search := c.Search(params.Query, params.Limit, params.Offset)
+	items, _, err := c.endpoint.Action.Search(ctx.Request().Context(), search.Query, search.Limit, search.Offset)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Action.ToSearchResult(items), nil
+	return c.HTTP200(ctx, c.dto.Action.ToSearchResult(items))
 }

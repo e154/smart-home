@@ -19,13 +19,11 @@
 package controllers
 
 import (
-	"context"
-	"time"
+	"github.com/labstack/echo/v4"
 
 	"github.com/e154/smart-home/api/dto"
+	"github.com/e154/smart-home/api/stub"
 	"github.com/e154/smart-home/common"
-
-	"github.com/e154/smart-home/api/stub/api"
 )
 
 // ControllerMetric ...
@@ -34,26 +32,23 @@ type ControllerMetric struct {
 }
 
 // NewControllerMetric ...
-func NewControllerMetric(common *ControllerCommon) ControllerMetric {
-	return ControllerMetric{
+func NewControllerMetric(common *ControllerCommon) *ControllerMetric {
+	return &ControllerMetric{
 		ControllerCommon: common,
 	}
 }
 
-// GetMetric ...
-func (c ControllerMetric) GetMetric(ctx context.Context, req *api.GetMetricRequest) (*api.Metric, error) {
+// MetricServiceGetMetric ...
+func (c ControllerMetric) MetricServiceGetMetric(ctx echo.Context, params stub.MetricServiceGetMetricParams) error {
 
-	var from, to *time.Time
-	if req.From != nil {
-		from = common.Time(req.From.AsTime())
+	var metricRange *string
+	if params.Range != nil {
+		metricRange = common.String(string(*params.Range))
 	}
-	if req.To != nil {
-		to = common.Time(req.To.AsTime())
-	}
-	metric, err := c.endpoint.Metric.GetByIdWithData(ctx, from, to, req.Id, req.Range)
+	metric, err := c.endpoint.Metric.GetByIdWithData(ctx.Request().Context(), params.StartDate, params.EndDate, params.Id, metricRange)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return dto.Metric(metric), nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, dto.Metric(metric)))
 }

@@ -78,7 +78,7 @@ sceneEvent = (args)->
 			err = adaptors.Entity.Add(context.Background(), romanticEnt)
 			So(err, ShouldBeNil)
 
-			eventBus.Publish("system/entities/"+romanticEnt.Id.String(), events.EventCreatedEntity{
+			eventBus.Publish("system/models/entities/"+romanticEnt.Id.String(), events.EventCreatedEntityModel{
 				EntityId: romanticEnt.Id,
 			})
 

@@ -26,14 +26,10 @@ import (
 
 // NewApiConfig ...
 func NewApiConfig(cfg *models.AppConfig) api.Config {
-	if cfg.ApiGrpcPort == 0 {
-		cfg.ApiGrpcPort = 3000
-	}
 	if cfg.ApiHttpPort == 0 {
 		cfg.ApiHttpPort = 3001
 	}
 	return api.Config{
-		GrpcPort: cfg.ApiGrpcPort,
 		HttpPort: cfg.ApiHttpPort,
 		Swagger:  cfg.ApiSwagger,
 		Debug:    cfg.Mode == common.DebugMode,

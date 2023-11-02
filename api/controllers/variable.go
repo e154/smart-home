@@ -19,10 +19,9 @@
 package controllers
 
 import (
-	"context"
+	"github.com/labstack/echo/v4"
 
-	"github.com/e154/smart-home/api/stub/api"
-	"google.golang.org/protobuf/types/known/emptypb"
+	"github.com/e154/smart-home/api/stub"
 )
 
 // ControllerVariable ...
@@ -31,67 +30,75 @@ type ControllerVariable struct {
 }
 
 // NewControllerVariable ...
-func NewControllerVariable(common *ControllerCommon) ControllerVariable {
-	return ControllerVariable{
+func NewControllerVariable(common *ControllerCommon) *ControllerVariable {
+	return &ControllerVariable{
 		ControllerCommon: common,
 	}
 }
 
 // AddVariable ...
-func (c ControllerVariable) AddVariable(ctx context.Context, req *api.NewVariableRequest) (*api.Variable, error) {
+func (c ControllerVariable) VariableServiceAddVariable(ctx echo.Context, _ stub.VariableServiceAddVariableParams) error {
 
-	variable := c.dto.Variable.AddVariable(req)
-
-	errs, err := c.endpoint.Variable.Add(ctx, variable)
-	if len(errs) != 0 || err != nil {
-		return nil, c.error(ctx, errs, err)
+	obj := &stub.ApiNewVariableRequest{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Variable.ToVariable(variable), nil
+	variable := c.dto.Variable.AddVariable(obj)
+
+	if err := c.endpoint.Variable.Add(ctx.Request().Context(), variable); err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP201(ctx, ResponseWithObj(ctx, c.dto.Variable.ToVariable(variable)))
 }
 
 // UpdateVariable ...
-func (c ControllerVariable) UpdateVariable(ctx context.Context, req *api.UpdateVariableRequest) (*api.Variable, error) {
+func (c ControllerVariable) VariableServiceUpdateVariable(ctx echo.Context, name string, _ stub.VariableServiceUpdateVariableParams) error {
 
-	variable := c.dto.Variable.UpdateVariable(req)
-
-	errs, err := c.endpoint.Variable.Update(ctx, variable)
-	if len(errs) != 0 || err != nil {
-		return nil, c.error(ctx, errs, err)
+	obj := &stub.VariableServiceUpdateVariableJSONBody{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Variable.ToVariable(variable), nil
+	variable := c.dto.Variable.UpdateVariable(obj, name)
+
+	if err := c.endpoint.Variable.Update(ctx.Request().Context(), variable); err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, c.dto.Variable.ToVariable(variable)))
 }
 
 // GetVariableByName ...
-func (c ControllerVariable) GetVariableByName(ctx context.Context, req *api.GetVariableRequest) (*api.Variable, error) {
+func (c ControllerVariable) VariableServiceGetVariableByName(ctx echo.Context, name string) error {
 
-	variable, err := c.endpoint.Variable.GetById(ctx, req.Name)
+	variable, err := c.endpoint.Variable.GetById(ctx.Request().Context(), name)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Variable.ToVariable(variable), nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, c.dto.Variable.ToVariable(variable)))
 }
 
 // GetVariableList ...
-func (c ControllerVariable) GetVariableList(ctx context.Context, req *api.PaginationRequest) (*api.GetVariableListResult, error) {
+func (c ControllerVariable) VariableServiceGetVariableList(ctx echo.Context, params stub.VariableServiceGetVariableListParams) error {
 
-	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
-	items, total, err := c.endpoint.Variable.GetList(ctx, pagination)
+	pagination := c.Pagination(params.Page, params.Limit, params.Sort)
+	items, total, err := c.endpoint.Variable.GetList(ctx.Request().Context(), pagination)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Variable.ToListResult(items, uint64(total), pagination), nil
+	return c.HTTP200(ctx, ResponseWithList(ctx, c.dto.Variable.ToListResult(items), total, pagination))
 }
 
 // DeleteVariable ...
-func (c ControllerVariable) DeleteVariable(ctx context.Context, req *api.DeleteVariableRequest) (*emptypb.Empty, error) {
+func (c ControllerVariable) VariableServiceDeleteVariable(ctx echo.Context, name string) error {
 
-	if err := c.endpoint.Variable.Delete(ctx, req.Name); err != nil {
-		return nil, c.error(ctx, nil, err)
+	if err := c.endpoint.Variable.Delete(ctx.Request().Context(), name); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }

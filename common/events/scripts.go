@@ -20,19 +20,19 @@ package events
 
 import m "github.com/e154/smart-home/models"
 
-// EventCreatedScript ...
-type EventCreatedScript struct {
+// EventCreatedScriptModel ...
+type EventCreatedScriptModel struct {
 	ScriptId int64     `json:"script_id"`
 	Script   *m.Script `json:"script"`
 }
 
-// EventUpdatedScript ...
-type EventUpdatedScript struct {
+// EventUpdatedScriptModel ...
+type EventUpdatedScriptModel struct {
 	ScriptId int64     `json:"script_id"`
 	Script   *m.Script `json:"script"`
 }
 
-// EventScriptDeleted ...
-type EventScriptDeleted struct {
+// EventRemovedScriptModel ...
+type EventRemovedScriptModel struct {
 	ScriptId int64 `json:"script_id"`
 }

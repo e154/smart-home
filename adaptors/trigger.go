@@ -21,6 +21,7 @@ package adaptors
 import (
 	"context"
 	"encoding/json"
+	"github.com/e154/smart-home/system/orm"
 	"time"
 
 	"github.com/e154/smart-home/common"
@@ -49,13 +50,15 @@ type Trigger struct {
 	ITrigger
 	table *db.Triggers
 	db    *gorm.DB
+	orm   *orm.Orm
 }
 
 // GetTriggerAdaptor ...
-func GetTriggerAdaptor(d *gorm.DB) ITrigger {
+func GetTriggerAdaptor(d *gorm.DB, orm *orm.Orm) ITrigger {
 	return &Trigger{
 		table: &db.Triggers{Db: d},
 		db:    d,
+		orm:   orm,
 	}
 }
 
@@ -140,14 +143,16 @@ func (n *Trigger) Disable(ctx context.Context, id int64) (err error) {
 
 func (n *Trigger) fromDb(dbVer *db.Trigger) (ver *m.Trigger) {
 	ver = &m.Trigger{
-		Id:         dbVer.Id,
-		Name:       dbVer.Name,
-		EntityId:   dbVer.EntityId,
-		ScriptId:   dbVer.ScriptId,
-		PluginName: dbVer.PluginName,
-		Enabled:    dbVer.Enabled,
-		CreatedAt:  dbVer.CreatedAt,
-		UpdatedAt:  dbVer.UpdatedAt,
+		Id:          dbVer.Id,
+		Name:        dbVer.Name,
+		Description: dbVer.Description,
+		EntityId:    dbVer.EntityId,
+		ScriptId:    dbVer.ScriptId,
+		AreaId:      dbVer.AreaId,
+		PluginName:  dbVer.PluginName,
+		Enabled:     dbVer.Enabled,
+		CreatedAt:   dbVer.CreatedAt,
+		UpdatedAt:   dbVer.UpdatedAt,
 	}
 	// script
 	if dbVer.Script != nil {
@@ -156,8 +161,13 @@ func (n *Trigger) fromDb(dbVer *db.Trigger) (ver *m.Trigger) {
 	}
 	// entity
 	if dbVer.Entity != nil {
-		entityAdaptor := GetEntityAdaptor(n.db)
+		entityAdaptor := GetEntityAdaptor(n.db, n.orm)
 		ver.Entity = entityAdaptor.fromDb(dbVer.Entity)
+	}
+	// aea
+	if dbVer.Area != nil {
+		entityAdaptor := GetAreaAdaptor(n.db)
+		ver.Area = entityAdaptor.fromDb(dbVer.Area)
 	}
 
 	// deserialize payload
@@ -170,14 +180,16 @@ func (n *Trigger) fromDb(dbVer *db.Trigger) (ver *m.Trigger) {
 
 func (n *Trigger) toDb(ver *m.Trigger) (dbVer *db.Trigger) {
 	dbVer = &db.Trigger{
-		Id:         ver.Id,
-		Name:       ver.Name,
-		EntityId:   ver.EntityId,
-		ScriptId:   ver.ScriptId,
-		PluginName: ver.PluginName,
-		Enabled:    ver.Enabled,
-		CreatedAt:  ver.CreatedAt,
-		UpdatedAt:  ver.UpdatedAt,
+		Id:          ver.Id,
+		Name:        ver.Name,
+		Description: ver.Description,
+		EntityId:    ver.EntityId,
+		ScriptId:    ver.ScriptId,
+		AreaId:      ver.AreaId,
+		PluginName:  ver.PluginName,
+		Enabled:     ver.Enabled,
+		CreatedAt:   ver.CreatedAt,
+		UpdatedAt:   ver.UpdatedAt,
 	}
 
 	if ver.Script != nil {
@@ -186,6 +198,10 @@ func (n *Trigger) toDb(ver *m.Trigger) (dbVer *db.Trigger) {
 
 	if ver.Entity != nil {
 		dbVer.EntityId = common.NewEntityId(ver.Entity.Id.String())
+	}
+
+	if ver.Area != nil {
+		dbVer.AreaId = common.Int64(ver.Area.Id)
 	}
 
 	// serialize payload

@@ -30,14 +30,14 @@ It also implements a JavaScript handler called `mqttEvent`. This handler is desi
 Here's an example implementation of the `mqttEvent` handler:
 
 ```javascript
-mqttEvent = (entityId, actionName) => {
+function mqttEvent(message) {
   // Action handling code
 };
 ```
 
 Example usage of the `mqttEvent` handler:
 ```coffeescript
-mqttEvent = ->
+mqttEvent =(message)->
   #print '---mqtt new event from plug---'
   if !message || message.topic.includes('/set')
     return

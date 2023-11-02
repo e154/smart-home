@@ -20,8 +20,9 @@ package mqtt
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/system/scripts"
 	"sync"
+
+	"github.com/e154/smart-home/system/scripts"
 
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
@@ -49,7 +50,7 @@ func NewActor(entity *m.Entity,
 		BaseActor:        supervisor.NewBaseActor(entity, service),
 		message:          NewMessage(),
 		mqttMessageQueue: make(chan *Message, 10),
-		actionPool:       make(chan events.EventCallEntityAction, 10),
+		actionPool:       make(chan events.EventCallEntityAction, 1000),
 		mqttClient:       mqttClient,
 		newMsgMu:         &sync.Mutex{},
 		stateMu:          &sync.Mutex{},
@@ -167,7 +168,7 @@ func (e *Actor) mqttNewMessage(message *Message) {
 
 	e.message.Update(message)
 	for _, engine := range e.ScriptEngines {
-		if _, err := engine.Engine().AssertFunction(FuncMqttEvent); err != nil {
+		if _, err := engine.Engine().AssertFunction(FuncMqttEvent, message); err != nil {
 			log.Error(err.Error())
 			return
 		}

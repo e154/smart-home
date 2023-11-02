@@ -20,6 +20,7 @@ const props = defineProps({
 
 const rules = {
   name: [required()],
+  baseTopic: [required()],
   description: []
 }
 
@@ -33,6 +34,17 @@ const schema = reactive<FormSchema[]>([
     },
     componentProps: {
       placeholder: t('zigbee2mqtt.name')
+    }
+  },
+  {
+    field: 'baseTopic',
+    label: t('zigbee2mqtt.baseTopic'),
+    component: 'Input',
+    colProps: {
+      span: 24
+    },
+    componentProps: {
+      placeholder: t('zigbee2mqtt.baseTopic')
     }
   },
   {

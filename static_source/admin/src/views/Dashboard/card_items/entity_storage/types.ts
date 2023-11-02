@@ -1,3 +1,4 @@
-export interface ItemPayloadLogs {
-  limit: number
+export interface ItemPayloadEntityStorage {
+  entityIds: string[]
+  filter: boolean
 }

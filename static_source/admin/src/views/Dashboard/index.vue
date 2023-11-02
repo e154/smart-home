@@ -125,9 +125,9 @@ const getList = async () => {
   if (res) {
     const {items, meta} = res.data;
     tableObject.tableList = items;
-    paginationObj.value.currentPage = meta.page;
-    paginationObj.value.total = meta.total;
-    counter.value = meta.total + 1
+    paginationObj.value.currentPage = meta.pagination.page;
+    paginationObj.value.total = meta.pagination.total;
+    counter.value = meta.pagination.total + 1
   } else {
     tableObject.tableList = [];
   }

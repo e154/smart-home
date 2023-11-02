@@ -38,8 +38,8 @@ var (
 
 // Client ...
 type Client struct {
-	cfg *Config
-	mx sync.Mutex
+	cfg        *Config
+	mx         sync.Mutex
 	client     MQTT.Client
 	subscribes map[string]Subscribe
 }

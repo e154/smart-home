@@ -85,4 +85,6 @@ type UpdateTask struct {
 	ActionIds    []int64              `json:"actions" validate:"dive"`
 	Area         *Area                `json:"area"`
 	AreaId       *int64               `json:"area_id"`
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
 }

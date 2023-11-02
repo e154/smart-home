@@ -19,10 +19,8 @@
 package controllers
 
 import (
-	"context"
-
-	"github.com/e154/smart-home/api/stub/api"
-	"google.golang.org/protobuf/types/known/emptypb"
+	"github.com/e154/smart-home/api/stub"
+	"github.com/labstack/echo/v4"
 )
 
 // ControllerDashboardCardItem ...
@@ -31,67 +29,73 @@ type ControllerDashboardCardItem struct {
 }
 
 // NewControllerDashboardCardItem ...
-func NewControllerDashboardCardItem(common *ControllerCommon) ControllerDashboardCardItem {
-	return ControllerDashboardCardItem{
+func NewControllerDashboardCardItem(common *ControllerCommon) *ControllerDashboardCardItem {
+	return &ControllerDashboardCardItem{
 		ControllerCommon: common,
 	}
 }
 
 // AddDashboardCardItem ...
-func (c ControllerDashboardCardItem) AddDashboardCardItem(ctx context.Context, req *api.NewDashboardCardItemRequest) (*api.DashboardCardItem, error) {
+func (c ControllerDashboardCardItem) DashboardCardItemServiceAddDashboardCardItem(ctx echo.Context, _ stub.DashboardCardItemServiceAddDashboardCardItemParams) error {
 
-	board := c.dto.DashboardCardItem.AddDashboardCardItem(req)
-
-	board, errs, err := c.endpoint.DashboardCardItem.Add(ctx, board)
-	if len(errs) != 0 || err != nil {
-		return nil, c.error(ctx, errs, err)
+	obj := &stub.ApiNewDashboardCardItemRequest{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.DashboardCardItem.ToDashboardCardItem(board), nil
+	cardItem, err := c.endpoint.DashboardCardItem.Add(ctx.Request().Context(), c.dto.DashboardCardItem.AddDashboardCardItem(obj))
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP201(ctx, ResponseWithObj(ctx, c.dto.DashboardCardItem.ToDashboardCardItem(cardItem)))
 }
 
 // UpdateDashboardCardItem ...
-func (c ControllerDashboardCardItem) UpdateDashboardCardItem(ctx context.Context, req *api.UpdateDashboardCardItemRequest) (*api.DashboardCardItem, error) {
+func (c ControllerDashboardCardItem) DashboardCardItemServiceUpdateDashboardCardItem(ctx echo.Context, id int64, _ stub.DashboardCardItemServiceUpdateDashboardCardItemParams) error {
 
-	board := c.dto.DashboardCardItem.UpdateDashboardCardItem(req)
-
-	board, errs, err := c.endpoint.DashboardCardItem.Update(ctx, board)
-	if len(errs) != 0 || err != nil {
-		return nil, c.error(ctx, errs, err)
+	obj := &stub.DashboardCardItemServiceUpdateDashboardCardItemJSONBody{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.DashboardCardItem.ToDashboardCardItem(board), nil
+	cardItem, err := c.endpoint.DashboardCardItem.Update(ctx.Request().Context(), c.dto.DashboardCardItem.UpdateDashboardCardItem(obj, id))
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, c.dto.DashboardCardItem.ToDashboardCardItem(cardItem)))
 }
 
 // GetDashboardCardItemById ...
-func (c ControllerDashboardCardItem) GetDashboardCardItemById(ctx context.Context, req *api.GetDashboardCardItemRequest) (*api.DashboardCardItem, error) {
+func (c ControllerDashboardCardItem) DashboardCardItemServiceGetDashboardCardItemById(ctx echo.Context, id int64) error {
 
-	board, err := c.endpoint.DashboardCardItem.GetById(ctx, req.Id)
+	cardItem, err := c.endpoint.DashboardCardItem.GetById(ctx.Request().Context(), id)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.DashboardCardItem.ToDashboardCardItem(board), nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, c.dto.DashboardCardItem.ToDashboardCardItem(cardItem)))
 }
 
 // GetDashboardCardItemList ...
-func (c ControllerDashboardCardItem) GetDashboardCardItemList(ctx context.Context, req *api.PaginationRequest) (*api.GetDashboardCardItemListResult, error) {
+func (c ControllerDashboardCardItem) DashboardCardItemServiceGetDashboardCardItemList(ctx echo.Context, params stub.DashboardCardItemServiceGetDashboardCardItemListParams) error {
 
-	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
-	items, total, err := c.endpoint.DashboardCardItem.GetList(ctx, pagination)
+	pagination := c.Pagination(params.Page, params.Limit, params.Sort)
+	items, total, err := c.endpoint.DashboardCardItem.GetList(ctx.Request().Context(), pagination)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.DashboardCardItem.ToListResult(items, uint64(total), pagination), nil
+	return c.HTTP200(ctx, ResponseWithList(ctx, c.dto.DashboardCardItem.ToListResult(items), total, pagination))
 }
 
 // DeleteDashboardCardItem ...
-func (c ControllerDashboardCardItem) DeleteDashboardCardItem(ctx context.Context, req *api.DeleteDashboardCardItemRequest) (*emptypb.Empty, error) {
+func (c ControllerDashboardCardItem) DashboardCardItemServiceDeleteDashboardCardItem(ctx echo.Context, id int64) error {
 
-	if err := c.endpoint.DashboardCardItem.Delete(ctx, req.Id); err != nil {
-		return nil, c.error(ctx, nil, err)
+	if err := c.endpoint.DashboardCardItem.Delete(ctx.Request().Context(), id); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }

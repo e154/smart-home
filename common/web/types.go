@@ -32,5 +32,8 @@ type Request struct {
 }
 
 type Crawler interface {
+	BasicAuth(username, password string) Crawler
+	DigestAuth(username, password string) Crawler
+	Download(options Request) (filePath string, err error)
 	Probe(Request) (int, []byte, error)
 }

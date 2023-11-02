@@ -66,7 +66,6 @@ const paginationObj = ref<Pagination>({
 const currentID = ref('')
 
 const onStateChanged = (event: EventStateChange) => {
-  console.log('--qwe')
   getList()
 }
 
@@ -103,8 +102,8 @@ const getList = async () => {
   if (res) {
     const {items, meta} = res.data;
     tableObject.tableList = items;
-    paginationObj.value.currentPage = meta.page;
-    paginationObj.value.total = meta.total;
+    paginationObj.value.currentPage = meta.pagination.page;
+    paginationObj.value.total = meta.pagination.total;
   } else {
     tableObject.tableList = [];
   }

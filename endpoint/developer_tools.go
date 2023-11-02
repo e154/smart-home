@@ -26,7 +26,6 @@ import (
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/go-playground/validator/v10"
 )
 
 // DeveloperToolsEndpoint ...
@@ -51,8 +50,8 @@ func (d DeveloperToolsEndpoint) StateList(ctx context.Context) (states []m.Entit
 	return
 }
 
-// SetEntityState ...
-func (d DeveloperToolsEndpoint) SetEntityState(ctx context.Context, entityId string, newState *string, attrs map[string]interface{}) (errs validator.ValidationErrorsTranslations, err error) {
+// EntitySetState ...
+func (d DeveloperToolsEndpoint) EntitySetState(ctx context.Context, entityId string, newState *string, attrs map[string]interface{}) (err error) {
 
 	_, err = d.adaptors.Entity.GetById(ctx, common.EntityId(entityId))
 	if err != nil {
@@ -63,14 +62,9 @@ func (d DeveloperToolsEndpoint) SetEntityState(ctx context.Context, entityId str
 		EntityId:        common.EntityId(entityId),
 		NewState:        newState,
 		AttributeValues: attrs,
+		StorageSave:     true,
 	})
 
-	return
-}
-
-// EventList ...
-func (d DeveloperToolsEndpoint) EventList(ctx context.Context) (events []bus.Stat, total int64, err error) {
-	events, total, err = d.eventBus.Stat()
 	return
 }
 
@@ -112,15 +106,15 @@ func (d *DeveloperToolsEndpoint) ReloadEntity(ctx context.Context, id common.Ent
 		return
 	}
 
-	d.eventBus.Publish("system/entities/"+id.String(), events.EventUpdatedEntity{
+	d.eventBus.Publish("system/models/entities/"+id.String(), events.EventUpdatedEntityModel{
 		EntityId: id,
 	})
 
 	return
 }
 
-// EntitySetState ...
-func (d *DeveloperToolsEndpoint) EntitySetState(ctx context.Context, id common.EntityId, name string) (err error) {
+// EntitySetStateName ...
+func (d *DeveloperToolsEndpoint) EntitySetStateName(ctx context.Context, id common.EntityId, name string) (err error) {
 
 	_, err = d.adaptors.Entity.GetById(ctx, id)
 	if err != nil {
@@ -128,14 +122,15 @@ func (d *DeveloperToolsEndpoint) EntitySetState(ctx context.Context, id common.E
 	}
 
 	d.eventBus.Publish("system/entities/"+id.String(), events.EventEntitySetState{
-		EntityId: id,
-		NewState: common.String(name),
+		EntityId:    id,
+		NewState:    common.String(name),
+		StorageSave: true,
 	})
 
 	return
 }
 
 // GetEventBusState ...
-func (d *DeveloperToolsEndpoint) GetEventBusState() (bus.Stats, int64, error) {
-	return d.eventBus.Stat()
+func (d *DeveloperToolsEndpoint) GetEventBusState(ctx context.Context, pagination common.PageParams) (bus.Stats, int64, error) {
+	return d.eventBus.Stat(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
 }

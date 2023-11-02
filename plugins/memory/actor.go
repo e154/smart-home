@@ -46,7 +46,7 @@ func NewActor(entity *m.Entity,
 	service supervisor.Service) *Actor {
 
 	actor := &Actor{
-		BaseActor: supervisor.NewBaseActor(entity, service),
+		BaseActor:   supervisor.NewBaseActor(entity, service),
 		total:       metrics.NewGauge(),
 		free:        metrics.NewGauge(),
 		usedPercent: metrics.NewGaugeFloat64(),

@@ -125,8 +125,8 @@ func (n *NotifyEndpoint) Send(ctx context.Context, params *m.NewNotifrMessage) (
 		n.eventBus.Publish(notify.TopicNotify, notify.Message{
 			Type: telegram.Name,
 			Attributes: map[string]interface{}{
-				telegram.AttrName: params.Address,
-				telegram.AttrBody: body,
+				telegram.AttrChatID: params.ChatID,
+				telegram.AttrBody:   body,
 			},
 		})
 	case "html5_notify":

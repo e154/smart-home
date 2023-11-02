@@ -33,7 +33,6 @@ type AppConfig struct {
 	PgName                         string         `json:"pg_name" env:"PG_NAME"`
 	PgPort                         string         `json:"pg_port" env:"PG_PORT"`
 	PgDebug                        bool           `json:"pg_debug" env:"PG_DEBUG"`
-	PgLogger                       bool           `json:"pg_logger" env:"PG_LOGGER"`
 	PgMaxIdleConns                 int            `json:"pg_max_idle_conns" env:"PG_MAX_IDLE_CONNS"`
 	PgMaxOpenConns                 int            `json:"pg_max_open_conns" env:"PG_MAX_OPEN_CONNS"`
 	PgConnMaxLifeTime              int            `json:"pg_conn_max_life_time" env:"PG_CONN_MAX_LIFE_TIME"`
@@ -56,7 +55,6 @@ type AppConfig struct {
 	AlexaPort                      int            `json:"alexa_port" env:"ALEXA_PORT"`
 	MobileHost                     string         `json:"mobile_host" env:"MOBILE_HOST"`
 	MobilePort                     int            `json:"mobile_port" env:"MOBILE_PORT"`
-	ApiGrpcPort                    int            `json:"api_grpc_port" env:"API_GRPC_PORT"`
 	ApiHttpPort                    int            `json:"api_http_port" env:"API_HTTP_PORT"`
 	ApiSwagger                     bool           `json:"api_swagger" env:"API_SWAGGER"`
 	Lang                           string         `json:"lang" env:"LANG"`

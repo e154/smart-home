@@ -19,10 +19,9 @@
 package controllers
 
 import (
-	"context"
+	"github.com/labstack/echo/v4"
 
-	"github.com/e154/smart-home/api/stub/api"
-	"google.golang.org/protobuf/types/known/emptypb"
+	"github.com/e154/smart-home/api/stub"
 )
 
 // ControllerAutomation ...
@@ -31,97 +30,99 @@ type ControllerAutomation struct {
 }
 
 // NewControllerAutomation ...
-func NewControllerAutomation(common *ControllerCommon) ControllerAutomation {
-	return ControllerAutomation{
+func NewControllerAutomation(common *ControllerCommon) *ControllerAutomation {
+	return &ControllerAutomation{
 		ControllerCommon: common,
 	}
 }
 
 // AddTask ...
-func (c ControllerAutomation) AddTask(ctx context.Context, req *api.NewTaskRequest) (*api.Task, error) {
+func (c ControllerAutomation) AutomationServiceAddTask(ctx echo.Context, _ stub.AutomationServiceAddTaskParams) error {
 
-	newTask := c.dto.Automation.AddTask(req)
-
-	task, errs, err := c.endpoint.Task.Add(ctx, newTask)
-	if len(errs) != 0 || err != nil {
-		return nil, c.error(ctx, errs, err)
+	obj := &stub.ApiNewTaskRequest{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Automation.GetTask(task), nil
+	task, err := c.endpoint.Task.Add(ctx.Request().Context(), c.dto.Automation.AddTask(obj))
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP201(ctx, ResponseWithObj(ctx, c.dto.Automation.GetTask(task)))
 }
 
 // UpdateTask ...
-func (c ControllerAutomation) UpdateTask(ctx context.Context, req *api.UpdateTaskRequest) (*api.Task, error) {
+func (c ControllerAutomation) AutomationServiceUpdateTask(ctx echo.Context, id int64, _ stub.AutomationServiceUpdateTaskParams) error {
 
-	updateTask := c.dto.Automation.UpdateTask(req)
-
-	task, errs, err := c.endpoint.Task.Update(ctx, updateTask)
-	if len(errs) != 0 || err != nil {
-		return nil, c.error(ctx, errs, err)
+	obj := &stub.AutomationServiceUpdateTaskJSONBody{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Automation.GetTask(task), nil
+	task, err := c.endpoint.Task.Update(ctx.Request().Context(), c.dto.Automation.UpdateTask(obj, id))
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, c.dto.Automation.GetTask(task)))
 }
 
 // GetTask ...
-func (c ControllerAutomation) GetTask(ctx context.Context, req *api.GetTaskRequest) (*api.Task, error) {
+func (c ControllerAutomation) AutomationServiceGetTask(ctx echo.Context, id int64) error {
 
-	task, errs, err := c.endpoint.Task.GetById(ctx, req.Id)
+	task, err := c.endpoint.Task.GetById(ctx.Request().Context(), id)
 	if err != nil {
-		return nil, c.error(ctx, errs, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Automation.GetTask(task), nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, c.dto.Automation.GetTask(task)))
 }
 
 // GetTaskList ...
-func (c ControllerAutomation) GetTaskList(ctx context.Context, req *api.PaginationRequest) (*api.GetTaskListResult, error) {
+func (c ControllerAutomation) AutomationServiceGetTaskList(ctx echo.Context, params stub.AutomationServiceGetTaskListParams) error {
 
-	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
-	items, total, errs, err := c.endpoint.Task.List(ctx, pagination)
+	pagination := c.Pagination(params.Page, params.Limit, params.Sort)
+	items, total, err := c.endpoint.Task.List(ctx.Request().Context(), pagination)
 	if err != nil {
-		return nil, c.error(ctx, errs, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Automation.GetTaskList(items, uint64(total), pagination), nil
+	return c.HTTP200(ctx, ResponseWithList(ctx, c.dto.Automation.ToListResult(items), total, pagination))
 }
 
 // DeleteTask ...
-func (c ControllerAutomation) DeleteTask(ctx context.Context, req *api.DeleteTaskRequest) (*emptypb.Empty, error) {
+func (c ControllerAutomation) AutomationServiceDeleteTask(ctx echo.Context, id int64) error {
 
-	if err := c.endpoint.Task.Delete(ctx, req.Id); err != nil {
-		return nil, c.error(ctx, nil, err)
+	if err := c.endpoint.Task.Delete(ctx.Request().Context(), id); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
 
 // EnableTask ...
-func (c ControllerAutomation) EnableTask(ctx context.Context, req *api.EnableTaskRequest) (*emptypb.Empty, error) {
+func (c ControllerAutomation) AutomationServiceEnableTask(ctx echo.Context, id int64) error {
 
-	if err := c.endpoint.Task.Enable(ctx, req.Id); err != nil {
-		return nil, c.error(ctx, nil, err)
+	if err := c.endpoint.Task.Enable(ctx.Request().Context(), id); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
 
 // DisableTask ...
-func (c ControllerAutomation) DisableTask(ctx context.Context, req *api.DisableTaskRequest) (*emptypb.Empty, error) {
+func (c ControllerAutomation) AutomationServiceDisableTask(ctx echo.Context, id int64) error {
 
-	if err := c.endpoint.Task.Disable(ctx, req.Id); err != nil {
-		return nil, c.error(ctx, nil, err)
+	if err := c.endpoint.Task.Disable(ctx.Request().Context(), id); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
 
 // ImportTask ...
-func (c ControllerAutomation) ImportTask(ctx context.Context, req *api.Task) (*emptypb.Empty, error) {
+func (c ControllerAutomation) AutomationServiceImportTask(ctx echo.Context, _ stub.AutomationServiceImportTaskParams) error {
 
-	//if err := c.endpoint.Task.Disable(ctx, req.Id); err != nil {
-	//	return nil, c.error(ctx, nil, err)
-	//}
-
-	return &emptypb.Empty{}, nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }

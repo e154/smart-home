@@ -21,6 +21,7 @@ package adaptors
 import (
 	"context"
 	"encoding/json"
+	"github.com/e154/smart-home/common"
 	"time"
 
 	"github.com/e154/smart-home/db"
@@ -33,8 +34,7 @@ import (
 // IMetric ...
 type IMetric interface {
 	Add(ctx context.Context, ver *m.Metric) (id int64, err error)
-	GetById(ctx context.Context, id int64) (metric *m.Metric, err error)
-	GetByIdWithData(ctx context.Context, id int64, from, to *time.Time, metricRange *string) (metric *m.Metric, err error)
+	GetByIdWithData(ctx context.Context, id int64, from, to *time.Time, metricRange *common.MetricRange) (metric *m.Metric, err error)
 	Update(ctx context.Context, ver *m.Metric) error
 	Delete(ctx context.Context, deviceId int64) (err error)
 	AddMultiple(ctx context.Context, items []*m.Metric) (err error)
@@ -70,30 +70,8 @@ func (n *Metric) Add(ctx context.Context, ver *m.Metric) (id int64, err error) {
 	return
 }
 
-// GetById ...
-func (n *Metric) GetById(ctx context.Context, id int64) (metric *m.Metric, err error) {
-	var dbVer *db.Metric
-	if dbVer, err = n.table.GetById(ctx, id); err != nil {
-		return
-	}
-	metric = n.fromDb(dbVer)
-
-	var optionItems = make([]string, len(metric.Options.Items))
-	for i, item := range metric.Options.Items {
-		optionItems[i] = item.Name
-	}
-
-	metricBucketAdaptor := GetMetricBucketAdaptor(n.db, nil)
-	if metric.Data, err = metricBucketAdaptor.Simple24HPreview(ctx, metric.Id, optionItems); err != nil {
-		log.Error(err.Error())
-		return
-	}
-
-	return
-}
-
 // GetByIdWithData ...
-func (n *Metric) GetByIdWithData(ctx context.Context, id int64, from, to *time.Time, metricRange *string) (metric *m.Metric, err error) {
+func (n *Metric) GetByIdWithData(ctx context.Context, id int64, from, to *time.Time, metricRange *common.MetricRange) (metric *m.Metric, err error) {
 	var dbVer *db.Metric
 	if dbVer, err = n.table.GetById(ctx, id); err != nil {
 		return
@@ -105,8 +83,8 @@ func (n *Metric) GetByIdWithData(ctx context.Context, id int64, from, to *time.T
 		optionItems[i] = item.Name
 	}
 
-	metricBucketAdaptor := GetMetricBucketAdaptor(n.db, nil)
-	if metric.Data, err = metricBucketAdaptor.SimpleListWithSoftRange(ctx, from, to, id, metricRange, optionItems); err != nil {
+	metricBucketAdaptor := GetMetricBucketAdaptor(n.db, n.orm)
+	if metric.Data, err = metricBucketAdaptor.List(ctx, from, to, id, optionItems, metricRange); err != nil {
 		log.Error(err.Error())
 		return
 	}
@@ -182,7 +160,7 @@ func (n *Metric) fromDb(dbVer *db.Metric) (ver *m.Metric) {
 	_ = json.Unmarshal(b, &ver.Options)
 
 	if dbVer.Data != nil && len(dbVer.Data) > 0 {
-		metricBucketAdaptor := GetMetricBucketAdaptor(n.db, nil)
+		metricBucketAdaptor := GetMetricBucketAdaptor(n.db, n.orm)
 		ver.Data = make([]*m.MetricDataItem, len(dbVer.Data))
 		for i, dbVer := range dbVer.Data {
 			ver.Data[i] = metricBucketAdaptor.fromDb(dbVer)

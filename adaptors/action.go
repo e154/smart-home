@@ -20,6 +20,7 @@ package adaptors
 
 import (
 	"context"
+	"github.com/e154/smart-home/system/orm"
 	"time"
 
 	"github.com/e154/smart-home/common"
@@ -45,13 +46,15 @@ type Action struct {
 	IAction
 	table *db.Actions
 	db    *gorm.DB
+	orm   *orm.Orm
 }
 
 // GetActionAdaptor ...
-func GetActionAdaptor(d *gorm.DB) IAction {
+func GetActionAdaptor(d *gorm.DB, orm *orm.Orm) IAction {
 	return &Action{
 		table: &db.Actions{Db: d},
 		db:    d,
+		orm:   orm,
 	}
 }
 
@@ -126,8 +129,10 @@ func (n *Action) fromDb(dbVer *db.Action) (ver *m.Action) {
 	ver = &m.Action{
 		Id:               dbVer.Id,
 		Name:             dbVer.Name,
+		Description:      dbVer.Description,
 		ScriptId:         dbVer.ScriptId,
 		EntityId:         dbVer.EntityId,
+		AreaId:           dbVer.AreaId,
 		EntityActionName: dbVer.EntityActionName,
 		CreatedAt:        dbVer.CreatedAt,
 		UpdatedAt:        dbVer.UpdatedAt,
@@ -137,9 +142,14 @@ func (n *Action) fromDb(dbVer *db.Action) (ver *m.Action) {
 		scriptAdaptor := GetScriptAdaptor(n.db)
 		ver.Script, _ = scriptAdaptor.fromDb(dbVer.Script)
 	}
+	// area
+	if dbVer.Area != nil {
+		scriptAdaptor := GetAreaAdaptor(n.db)
+		ver.Area = scriptAdaptor.fromDb(dbVer.Area)
+	}
 	// entity
 	if dbVer.Entity != nil {
-		entityAdaptor := GetEntityAdaptor(n.db)
+		entityAdaptor := GetEntityAdaptor(n.db, n.orm)
 		ver.Entity = entityAdaptor.fromDb(dbVer.Entity)
 	}
 	return
@@ -149,8 +159,10 @@ func (n *Action) toDb(ver *m.Action) (dbVer *db.Action) {
 	dbVer = &db.Action{
 		Id:               ver.Id,
 		Name:             ver.Name,
+		Description:      ver.Description,
 		ScriptId:         ver.ScriptId,
 		EntityId:         ver.EntityId,
+		AreaId:           ver.AreaId,
 		EntityActionName: ver.EntityActionName,
 		CreatedAt:        ver.CreatedAt,
 		UpdatedAt:        ver.UpdatedAt,
@@ -162,6 +174,10 @@ func (n *Action) toDb(ver *m.Action) (dbVer *db.Action) {
 
 	if ver.Script != nil {
 		dbVer.ScriptId = common.Int64(ver.Script.Id)
+	}
+
+	if ver.Area != nil {
+		dbVer.AreaId = common.Int64(ver.Area.Id)
 	}
 
 	return

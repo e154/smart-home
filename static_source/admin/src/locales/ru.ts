@@ -43,7 +43,8 @@ export default {
     reloadSuccessful: "Перезагрузка успешна",
     importedSuccessful: "Успешно импортировано",
     requestSentSuccessfully: "Запрос успешно отправлен",
-    corruptedJsonFormat: "Искаженный формат JSON"
+    corruptedJsonFormat: "Искаженный формат JSON",
+    startedRestoreProcess: 'Запущен процесс восстановления, скоро система перезагрузится'
   },
   common: {
     inputText: 'Пожалуйста, введите',
@@ -247,8 +248,11 @@ export default {
   backup: {
     operations: "Операции",
     name: "Название",
-    addNew: "Добавить новое резервное копирование",
-    restore: "Восстановить"
+    addNew: "Создать резервную копию",
+    size: 'Размер',
+    uploadDump: 'Загрузить резервную копию',
+    restoreSnapshot: 'Восстановить резервную копию? ',
+    removeSnapshot: 'Удалить резервную копию ?'
   },
   messageDelivery: {
     id: "ID",
@@ -343,7 +347,7 @@ export default {
     source: "Исходный код",
     info1: 'Используйте сочетание клавиш "Ctrl + Пробел" для использования автозаполнения',
     info2: 'Используйте комбинацию клавиш "Meta + /" для комментирования кода.',
-    info3: 'Используйте комбинацию клавиш "Meta + F" для форматирования кода.',
+    info3: 'Используйте комбинацию клавиш "Shift + Meta + F" для форматирования кода.',
     stat_total_name: "Всего скриптов",
     stat_total_descr: "",
     stat_used_name: "Используемые скрипты",
@@ -357,11 +361,15 @@ export default {
     stat_ts_name: "Всего скриптов на TypeScript",
     stat_ts_descr: "",
     showModalDialog: 'Редактировать выбранный скрипт',
-    modalWindow: 'Выбранный скрипт'
+    modalWindow: 'Выбранный скрипт',
+    restoreVersion: 'Восстановить',
+    scriptVersions: 'Версии',
+    viewVersion: 'Просмотреть'
   },
   zigbee2mqtt: {
     id: "ID",
     name: "Название",
+    baseTopic: 'Канал',
     login: "Логин",
     permitJoin: "Разрешить присоединение",
     addNew: "Добавить мост",
@@ -576,6 +584,10 @@ export default {
       },
       video: {
         options: 'Параметры видео',
+      },
+      entityStorage: {
+        entities: 'Устройства',
+        showFilter: 'Показывать фильтры'
       }
     }
   },
@@ -592,6 +604,8 @@ export default {
     clearLogsDays: 'Очистка логов',
     clearEntityStorageDays: 'История состояния Entity',
     clearRunHistoryDays: 'История запусков системы',
+    time: 'Время',
+    timezone: 'Часовой пояс'
   },
   tools: {
     eventBus: {

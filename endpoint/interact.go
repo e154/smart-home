@@ -38,11 +38,10 @@ func NewInteractEndpoint(common *CommonEndpoint) *InteractEndpoint {
 }
 
 // EntityCallAction ...
-func (d InteractEndpoint) EntityCallAction(ctx context.Context, entityId string, action string, args map[string]interface{}) (errs map[string]string, err error) {
+func (d InteractEndpoint) EntityCallAction(ctx context.Context, entityId string, action string, args map[string]interface{}) (err error) {
 
 	id := common.EntityId(entityId)
-	_, err = d.adaptors.Entity.GetById(ctx, id)
-	if err != nil {
+	if _, err = d.adaptors.Entity.GetById(ctx, id); err != nil {
 		return
 	}
 

@@ -20,6 +20,7 @@ package onvif
 
 import (
 	"fmt"
+
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
@@ -31,7 +32,8 @@ import (
 // Actor ...
 type Actor struct {
 	supervisor.BaseActor
-	client *Client
+	client      *Client
+	snapshotUri *string
 }
 
 // NewActor ...
@@ -178,8 +180,13 @@ func (a *Actor) prepareMotionAlarm(event *MotionAlarm) {
 }
 
 func (a *Actor) prepareStreamList(event *StreamList) {
+	a.snapshotUri = event.SnapshotUri
 	a.Service.EventBus().Publish("system/media", media.EventUpdateList{
 		Name:     a.Id.String(),
 		Channels: event.List,
 	})
+}
+
+func (a *Actor) GetSnapshotUri() string {
+	return common.StringValue(a.snapshotUri)
 }

@@ -33,7 +33,6 @@ func NewOrmConfig(cfg *models.AppConfig) *orm.Config {
 		Host:            cfg.PgHost,
 		Port:            cfg.PgPort,
 		Debug:           cfg.PgDebug,
-		Logger:          cfg.PgLogger,
 		MaxIdleConns:    cfg.PgMaxIdleConns,
 		MaxOpenConns:    cfg.PgMaxOpenConns,
 		ConnMaxLifeTime: cfg.PgConnMaxLifeTime,

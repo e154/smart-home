@@ -20,11 +20,11 @@ package endpoint
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/e154/smart-home/common/apperr"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/alexa"
-	"github.com/go-playground/validator/v10"
 )
 
 // AlexaSkillEndpoint ...
@@ -40,10 +40,11 @@ func NewAlexaSkillEndpoint(common *CommonEndpoint) *AlexaSkillEndpoint {
 }
 
 // Add ...
-func (n *AlexaSkillEndpoint) Add(ctx context.Context, params *m.AlexaSkill) (result *m.AlexaSkill, errs validator.ValidationErrorsTranslations, err error) {
+func (n *AlexaSkillEndpoint) Add(ctx context.Context, params *m.AlexaSkill) (result *m.AlexaSkill, err error) {
 
-	var ok bool
-	if ok, errs = n.validation.Valid(params); !ok {
+	if ok, errs := n.validation.Valid(params); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
@@ -57,7 +58,7 @@ func (n *AlexaSkillEndpoint) Add(ctx context.Context, params *m.AlexaSkill) (res
 		return
 	}
 
-	n.eventBus.Publish(alexa.TopicPluginAlexa, alexa.EventAlexaAddSkill{
+	n.eventBus.Publish(fmt.Sprintf("system/models/alexa/skill/%d", params.Id), alexa.EventAddedAlexaSkillModel{
 		Skill: result,
 	})
 
@@ -73,10 +74,11 @@ func (n *AlexaSkillEndpoint) GetById(ctx context.Context, appId int64) (result *
 }
 
 // Update ...
-func (n *AlexaSkillEndpoint) Update(ctx context.Context, params *m.AlexaSkill) (skill *m.AlexaSkill, errs validator.ValidationErrorsTranslations, err error) {
+func (n *AlexaSkillEndpoint) Update(ctx context.Context, params *m.AlexaSkill) (skill *m.AlexaSkill, err error) {
 
-	var ok bool
-	if ok, errs = n.validation.Valid(params); !ok {
+	if ok, errs := n.validation.Valid(params); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
@@ -89,7 +91,7 @@ func (n *AlexaSkillEndpoint) Update(ctx context.Context, params *m.AlexaSkill) (
 		return
 	}
 
-	n.eventBus.Publish(alexa.TopicPluginAlexa, alexa.EventAlexaUpdateSkill{
+	n.eventBus.Publish(fmt.Sprintf("system/models/alexa/skill/%d", skill.Id), alexa.EventUpdatedAlexaSkillModel{
 		Skill: skill,
 	})
 
@@ -122,7 +124,7 @@ func (n *AlexaSkillEndpoint) Delete(ctx context.Context, skillId int64) (err err
 		return
 	}
 
-	n.eventBus.Publish(alexa.TopicPluginAlexa, alexa.EventAlexaDeleteSkill{
+	n.eventBus.Publish(fmt.Sprintf("system/models/alexa/skill/%d", skillId), alexa.EventDeletedAlexaSkill{
 		Skill: skill,
 	})
 

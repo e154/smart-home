@@ -19,69 +19,59 @@
 package api
 
 import (
-	"fmt"
 	"testing"
-
-	container2 "github.com/e154/smart-home/tests/api/container"
-
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/api/controllers"
-	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/migrations"
-	"github.com/e154/smart-home/system/scripts"
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestArea(t *testing.T) {
 
-	Convey("auth", t, func(ctx C) {
-		err := container.Invoke(func(adaptors *adaptors.Adaptors,
-			migrations *migrations.Migrations,
-			scriptService scripts.ScriptService,
-			eventBus bus.Bus,
-			controllers *controllers.Controllers,
-			dialer *container2.Dialer) {
-
-			t.Run("create", func(t *testing.T) {
-				Convey("", t, func(ctx C) {
-					_, _ = ctx.Println("test not implemented")
-				})
-			})
-
-			t.Run("update", func(t *testing.T) {
-				Convey("", t, func(ctx C) {
-					_, _ = ctx.Println("test not implemented")
-				})
-			})
-
-			t.Run("get by id", func(t *testing.T) {
-				Convey("", t, func(ctx C) {
-					_, _ = ctx.Println("test not implemented")
-				})
-			})
-
-			t.Run("list", func(t *testing.T) {
-				Convey("", t, func(ctx C) {
-					_, _ = ctx.Println("test not implemented")
-				})
-			})
-
-			t.Run("remove", func(t *testing.T) {
-				Convey("", t, func(ctx C) {
-					_, _ = ctx.Println("test not implemented")
-				})
-			})
-
-			t.Run("search", func(t *testing.T) {
-				Convey("", t, func(ctx C) {
-					_, _ = ctx.Println("test not implemented")
-				})
-			})
-
-		})
-
-		if err != nil {
-			fmt.Println(err.Error())
-		}
-	})
+	//Convey("auth", t, func(ctx C) {
+	//	err := container.Invoke(func(adaptors *adaptors.Adaptors,
+	//		migrations *migrations.Migrations,
+	//		scriptService scripts.ScriptService,
+	//		eventBus bus.Bus,
+	//		controllers *controllers.Controllers,
+	//		dialer *container2.Dialer) {
+	//
+	//		t.Run("create", func(t *testing.T) {
+	//			Convey("", t, func(ctx C) {
+	//				_, _ = ctx.Println("test not implemented")
+	//			})
+	//		})
+	//
+	//		t.Run("update", func(t *testing.T) {
+	//			Convey("", t, func(ctx C) {
+	//				_, _ = ctx.Println("test not implemented")
+	//			})
+	//		})
+	//
+	//		t.Run("get by id", func(t *testing.T) {
+	//			Convey("", t, func(ctx C) {
+	//				_, _ = ctx.Println("test not implemented")
+	//			})
+	//		})
+	//
+	//		t.Run("list", func(t *testing.T) {
+	//			Convey("", t, func(ctx C) {
+	//				_, _ = ctx.Println("test not implemented")
+	//			})
+	//		})
+	//
+	//		t.Run("remove", func(t *testing.T) {
+	//			Convey("", t, func(ctx C) {
+	//				_, _ = ctx.Println("test not implemented")
+	//			})
+	//		})
+	//
+	//		t.Run("search", func(t *testing.T) {
+	//			Convey("", t, func(ctx C) {
+	//				_, _ = ctx.Println("test not implemented")
+	//			})
+	//		})
+	//
+	//	})
+	//
+	//	if err != nil {
+	//		fmt.Println(err.Error())
+	//	}
+	//})
 }

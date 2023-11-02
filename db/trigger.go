@@ -36,17 +36,20 @@ type Triggers struct {
 
 // Trigger ...
 type Trigger struct {
-	Id         int64 `gorm:"primary_key"`
-	Name       string
-	Entity     *Entity
-	EntityId   *common.EntityId
-	Script     *Script
-	ScriptId   *int64
-	PluginName string
-	Payload    string
-	Enabled    bool
-	CreatedAt  time.Time
-	UpdatedAt  time.Time
+	Id          int64 `gorm:"primary_key"`
+	Name        string
+	Entity      *Entity
+	EntityId    *common.EntityId
+	Script      *Script
+	ScriptId    *int64
+	PluginName  string
+	Payload     string
+	Enabled     bool
+	AreaId      *int64
+	Area        *Area
+	Description string
+	CreatedAt   time.Time `gorm:"<-:create"`
+	UpdatedAt   time.Time
 }
 
 // TableName ...
@@ -71,6 +74,7 @@ func (t Triggers) GetById(ctx context.Context, id int64) (trigger *Trigger, err 
 		Where("id = ?", id).
 		Preload("Entity").
 		Preload("Script").
+		Preload("Area").
 		First(&trigger).
 		Error
 	if err != nil {
@@ -88,11 +92,13 @@ func (t Triggers) GetById(ctx context.Context, id int64) (trigger *Trigger, err 
 func (t Triggers) Update(ctx context.Context, m *Trigger) (err error) {
 	q := map[string]interface{}{
 		"name":        m.Name,
+		"description": m.Description,
 		"plugin_name": m.PluginName,
 		"payload":     m.Payload,
 		"enabled":     m.Enabled,
 		"script_id":   m.ScriptId,
 		"entity_id":   m.EntityId,
+		"area_id":     m.AreaId,
 	}
 	if err = t.Db.WithContext(ctx).Model(&Trigger{}).Where("id = ?", m.Id).Updates(q).Error; err != nil {
 		err = errors.Wrap(apperr.ErrTriggerUpdate, err.Error())
@@ -125,6 +131,7 @@ func (t Triggers) List(ctx context.Context, limit, offset int, orderBy, sort str
 
 	q = q.Preload("Entity").
 		Preload("Script").
+		Preload("Area").
 		Limit(limit).
 		Offset(offset)
 

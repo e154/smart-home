@@ -42,7 +42,7 @@ type AlexaIntent struct {
 	Script       *Script
 	ScriptId     int64
 	Description  string
-	CreatedAt    time.Time
+	CreatedAt    time.Time `gorm:"<-:create"`
 	UpdatedAt    time.Time
 }
 

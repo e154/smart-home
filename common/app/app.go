@@ -29,7 +29,7 @@ import (
 	"go.uber.org/fx"
 )
 
-var IsRestart bool
+var Restore bool
 
 // Start ...
 func Start(app *fx.App) {
@@ -52,7 +52,11 @@ func Work() {
 
 // Stop ...
 func Stop(app *fx.App) {
-	stopCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	t := 15 * time.Second
+	if Restore {
+		t = 15 * time.Minute
+	}
+	stopCtx, cancel := context.WithTimeout(context.Background(), t)
 	defer cancel()
 	if err := app.Stop(stopCtx); err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -65,7 +69,6 @@ func Kill() error {
 }
 
 func Do(builder func(opt fx.Option) (app *fx.App), options fx.Option) {
-LOOP:
 	app := builder(options)
 
 	Start(app)
@@ -73,9 +76,4 @@ LOOP:
 	Work()
 
 	Stop(app)
-
-	if IsRestart {
-		IsRestart = false
-		goto LOOP
-	}
 }

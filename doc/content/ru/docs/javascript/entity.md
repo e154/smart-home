@@ -97,21 +97,90 @@ EntityGetAttributes(ENTITY_ID)
 
 1. `EntitySetState(ENTITY_ID, attr)`: Этот метод используется для установки состояния конкретной сущности (`ENTITY_ID`) путем предоставления набора атрибутов (`attr`). С его помощью, скорее всего, можно обновлять состояние сущности новыми значениями атрибутов.
 
+    ```javascript
+    const attrs = {
+        foo: bar,
+    }
+    const stateName = 'connected'
+    EntitySetState(ENTITY_ID, {
+        new_state: stateName,
+        attribute_values: attrs,
+        storage_save: true
+    });
+    ```
+
 2. `EntitySetStateName(ENTITY_ID, stateName)`: Этот метод устанавливает состояние сущности (`ENTITY_ID`) в определенное именованное состояние (`stateName`). Он используется, когда необходимо изменить состояние сущности на предопределенное.
+
+    ```javascript
+    const stateName = 'connected'
+    EntitySetStateName(ENTITY_ID, stateName);
+    ```
 
 3. `EntityGetState(ENTITY_ID)`: Этот метод извлекает текущее состояние указанной сущности (`ENTITY_ID`). Он позволяет запрашивать текущее состояние сущности.
 
+    ```javascript
+  
+    const currentState = EntityGetState(ENTITY_ID);
+    print(marshal(homeState))
+    // out: {"name":"connected","description":"connected","image_url":null,"icon":null}
+    ```
+   
 4. `EntitySetAttributes(ENTITY_ID, attr)`: Аналогично `EntitySetState`, этот метод устанавливает атрибуты для определенной сущности (`ENTITY_ID`). Он может использоваться, когда нужно обновить атрибуты без изменения состояния.
+
+    ```javascript
+    const attrs = {
+        foo: bar,
+    }
+    const stateName = 'connected'
+    EntitySetAttributes(ENTITY_ID, attrs);
+    ```
 
 5. `EntitySetMetric(ENTITY_ID, name, value)`: Этот метод устанавливает метрику для указанной сущности (`ENTITY_ID`). Метрики часто используются для измерения и записи различных аспектов поведения или производительности сущности.
 
+    ```javascript
+    const attrs = {
+        foo: bar,
+    }
+    const metricName = 'counter'
+    EntitySetMetric(ENTITY_ID, name, attrs);
+    ```
+
 6. `EntityCallAction(ENTITY_ID, action, args)`: Этот метод используется для вызова или выполнения определенного действия (`action`), связанного с сущностью (`ENTITY_ID`), и предоставления необходимых аргументов (`args`) для этого действия.
+
+    ```javascript
+    const attrs = {
+        foo: bar,
+    }
+    const action = 'ENABLE'
+    EntityCallAction(ENTITY_ID, action, attrs);
+    ```
 
 7. `EntityCallScene(ENTITY_ID, args)`: Подобно `EntityCallAction`, этот метод используется для вызова или выполнения сцены, связанной с сущностью (`ENTITY_ID`), и предоставления необходимых аргументов (`args`) для этой сцены.
 
+    ```javascript
+    const attrs = {
+        foo: bar,
+    }
+    EntityCallScene(ENTITY_ID, attrs);
+    ```
+   
 8. `EntityGetSettings(ENTITY_ID)`: Этот метод извлекает настройки или конфигурацию для указанной сущности (`ENTITY_ID`). Он позволяет получать доступ к настройкам, связанным с сущностью.
 
+    ```javascript
+    const settings = EntityGetSettings(ENTITY_ID);
+    print(marshal(settings))
+    // out: {"username":"zigbee2mqtt","cleanSession":false,"keepAlive":15,"direction":"in","topics":"owntracks/#","pingTimeout":10,"connectTimeout":30,"qos":0}
+
+    ```
+
 9. `EntityGetAttributes(ENTITY_ID)`: Этот метод извлекает все атрибуты, связанные с определенной сущностью (`ENTITY_ID`). Он предоставляет способ получения подробной информации о атрибутах сущности.
+
+    ```javascript
+    const attrs = EntityGetAttributes(ENTITY_ID);
+    print(marshal(attrs))
+    // out: {"username":"zigbee2mqtt","cleanSession":false,"keepAlive":15,"direction":"in","topics":"owntracks/#","pingTimeout":10,"connectTimeout":30,"qos":0}
+
+    ```
 
 Методы объекта "Entity" предоставляют удобные возможности для управления состоянием, атрибутами, метриками и выполнения 
 действий на устройстве. Вы можете использовать эти методы для создания логики управления устройствами в вашем проекте 

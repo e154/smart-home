@@ -151,7 +151,7 @@ automationTriggerStateChanged = (msg)->
 			err = adaptors.Entity.Add(context.Background(), buttonEnt)
 			So(err, ShouldBeNil)
 
-			eventBus.Publish("system/entities/"+buttonEnt.Id.String(), events.EventCreatedEntity{
+			eventBus.Publish("system/models/entities/"+buttonEnt.Id.String(), events.EventCreatedEntityModel{
 				EntityId: buttonEnt.Id,
 			})
 

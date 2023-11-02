@@ -19,9 +19,10 @@
 package version
 
 import (
-	m "github.com/e154/smart-home/models"
 	"runtime"
 	"sync"
+
+	m "github.com/e154/smart-home/models"
 
 	"github.com/e154/smart-home/common/events"
 
@@ -40,7 +41,7 @@ func NewActor(entity *m.Entity,
 	service supervisor.Service) *Actor {
 
 	actor := &Actor{
-		BaseActor: supervisor.NewBaseActor(entity, service),
+		BaseActor:  supervisor.NewBaseActor(entity, service),
 		updateLock: &sync.Mutex{},
 	}
 	if actor.Attrs == nil {

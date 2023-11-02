@@ -18,7 +18,11 @@
 
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/e154/smart-home/common"
+)
 
 // MessageStatus ...
 type MessageStatus string
@@ -43,13 +47,14 @@ type MessageDeliveryQuery struct {
 
 // MessageDelivery ...
 type MessageDelivery struct {
-	Id                 int64         `json:"id"`
-	Message            *Message      `json:"message"`
-	MessageId          int64         `json:"message_id"`
-	Address            string        `json:"address"`
-	Status             MessageStatus `json:"status"`
-	ErrorMessageStatus *string       `json:"error_message_status"`
-	ErrorMessageBody   *string       `json:"error_message_body"`
-	CreatedAt          time.Time     `json:"created_at"`
-	UpdatedAt          time.Time     `json:"updated_at"`
+	Id                 int64            `json:"id"`
+	Message            *Message         `json:"message"`
+	MessageId          int64            `json:"message_id"`
+	Address            string           `json:"address"`
+	EntityId           *common.EntityId `json:"entity_id"`
+	Status             MessageStatus    `json:"status"`
+	ErrorMessageStatus *string          `json:"error_message_status"`
+	ErrorMessageBody   *string          `json:"error_message_body"`
+	CreatedAt          time.Time        `json:"created_at"`
+	UpdatedAt          time.Time        `json:"updated_at"`
 }

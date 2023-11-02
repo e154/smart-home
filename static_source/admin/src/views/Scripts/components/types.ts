@@ -46,6 +46,9 @@ export const HintDictionaryCoffee = {
         {text: 'http.post(url, body)', displayText: 'http.post'},
         {text: 'http.put(url, body)', displayText: 'http.put'},
         {text: 'http.delete(url)', displayText: 'http.delete'},
+        {text: 'http.digestAuth(username, password)', displayText: 'http.digestAuth'},
+        {text: 'http.basicAuth(username, password)', displayText: 'http.basicAuth'},
+        {text: 'http.download(url)', displayText: 'http.download'},
 
         // zigbee2mqttEvent
         {text: 'zigbee2mqttEvent = (message) ->', displayText: 'zigbee2mqttEvent'},

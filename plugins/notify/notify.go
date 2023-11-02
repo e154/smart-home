@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2023, Filippov Alex
+// Copyright (C) 2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,195 +19,45 @@
 package notify
 
 import (
-	"context"
-	"time"
-
+	"github.com/alitto/pond"
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/scripts"
-	"go.uber.org/atomic"
 )
 
 const (
-	queueSize = 30
+	maxWorkers = 5
+	minWorkers = 1
 )
 
-// Notify ...
-type Notify interface {
-	Shutdown() error
-	Start() (err error)
-	Stat() *Stat
-	Repeat(msg *m.MessageDelivery)
-	Send(msg Message)
-}
-
-// notify ...
-type notify struct {
-	adaptor       *adaptors.Adaptors
-	stat          *Stat
-	isStarted     *atomic.Bool
-	scriptService scripts.ScriptService
-	workers       []*Worker
-	queue         chan *m.MessageDelivery
-	*manager
+type Notify struct {
+	adaptors *adaptors.Adaptors
+	pool     *pond.WorkerPool
 }
 
 // NewNotify ...
-func NewNotify(
-	adaptor *adaptors.Adaptors,
-	scriptService scripts.ScriptService) Notify {
-
-	n := &notify{
-		adaptor:   adaptor,
-		isStarted: atomic.NewBool(false),
-		queue:     make(chan *m.MessageDelivery, queueSize),
-		manager:   ProviderManager,
-	}
-
-	// workers
-	n.workers = []*Worker{
-		NewWorker(adaptor),
-		NewWorker(adaptor),
-		NewWorker(adaptor),
-	}
-
-	scriptService.PushStruct("notifr", NewNotifyBind(n))
-	scriptService.PushStruct("template", NewTemplateBind(adaptor))
-
-	return n
-}
-
-// Shutdown ...
-func (n *notify) Shutdown() error {
-	n.stop()
-	return nil
-}
-
-// Start ...
-func (n *notify) Start() (err error) {
-
-	if n.isStarted.Load() {
-		return
-	}
-	n.isStarted.Store(true)
-
-	n.updateStat()
-
-	go func() {
-
-		defer func() {
-			n.workers = make([]*Worker, 0)
-		}()
-
-		for {
-			var worker *Worker
-			for _, w := range n.workers {
-				if w.InWork() {
-					continue
-				}
-				worker = w
-			}
-			if worker == nil {
-				time.Sleep(time.Millisecond * 500)
-				continue
-			}
-
-			for event := range n.queue {
-				provider, err := n.Provider(event.Message.Type)
-				if err != nil {
-					log.Error(err.Error())
-					continue
-				}
-				worker.send(event, provider)
-			}
-			time.Sleep(time.Millisecond * 500)
-		}
-	}()
-
-	n.read()
-
-	return
-}
-
-func (n *notify) stop() {
-
-	close(n.queue)
-	n.isStarted.Store(false)
-}
-
-// Send ...
-func (n notify) Send(msg Message) {
-
-	if !n.isStarted.Load() {
-		return
-	}
-
-	n.save(msg)
-}
-
-func (n *notify) save(event Message) {
-
-	provider, err := n.Provider(event.Type)
-	if err != nil {
-		log.Error(err.Error())
-		return
-	}
-
-	addresses, message := provider.Save(event)
-
-	for _, address := range addresses {
-		messageDelivery := &m.MessageDelivery{
-			Message:   message,
-			MessageId: message.Id,
-			Status:    m.MessageStatusInProgress,
-			Address:   address,
-		}
-		if messageDelivery.Id, err = n.adaptor.MessageDelivery.Add(context.Background(), messageDelivery); err != nil {
-			log.Error(err.Error())
-		}
-
-		n.queue <- messageDelivery
+func NewNotify(adaptors *adaptors.Adaptors) *Notify {
+	return &Notify{
+		adaptors: adaptors,
+		pool:     pond.New(maxWorkers, 0, pond.MinWorkers(minWorkers)),
 	}
 }
 
-func (n *notify) read() {
-
-	messageDeliveries, _, err := n.adaptor.MessageDelivery.GetAllUncompleted(context.Background(), 99, 0)
-	if err != nil {
-		log.Error(err.Error())
-	}
-
-	for _, msg := range messageDeliveries {
-		n.queue <- msg
-	}
+func (n *Notify) Start() {
+	n.pool.RunningWorkers()
 }
 
-// Stat ...
-func (n *notify) Stat() *Stat {
-	return n.stat
+func (n *Notify) Shutdown() {
+	n.pool.StopAndWait()
 }
 
-func (n *notify) updateStat() {
-
-	stat := &Stat{
-		Workers: len(n.workers),
-	}
-
-	if stat.Workers == 0 {
-		return
-	}
-
-	n.stat = stat
+func (n *Notify) Send(msg *m.MessageDelivery, provider Provider) {
+	n.pool.Submit(func() {
+		NewWorker(n.adaptors).Send(msg, provider)
+	})
 }
 
-// Repeat ...
-func (n *notify) Repeat(msg *m.MessageDelivery) {
-	if !n.isStarted.Load() {
-		return
-	}
-
-	msg.Status = m.MessageStatusInProgress
-	_ = n.adaptor.MessageDelivery.SetStatus(context.Background(), msg)
-
-	n.queue <- msg
+func (n *Notify) SaveAndSend(msg Message, provider Provider) {
+	n.pool.Submit(func() {
+		NewWorker(n.adaptors).SaveAndSend(msg, provider)
+	})
 }

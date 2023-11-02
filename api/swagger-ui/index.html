@@ -52,7 +52,7 @@
     window.onload = function () {
         // Begin Swagger UI call region
         const ui = SwaggerUIBundle({
-            url: "/api.swagger.json",
+            url: "/api.swagger3.yaml",
             dom_id: '#swagger-ui',
             docExpansion: 'none',
             deepLinking: true,
@@ -65,14 +65,17 @@
             ],
             layout: "StandaloneLayout",
             requestInterceptor: function(req) {
-                try {
-                    let {v} = JSON.parse(localStorage.getItem('accessToken'))
-                    v = v.replaceAll("\"", "")
-                    req.headers.Authorization = v
-                    return req
-                } catch (e) {
-                    console.warn(e)
+                if (!req.headers.Authorization) {
+                    try {
+                        let {v} = JSON.parse(localStorage.getItem('accessToken'))
+                        v = v.replaceAll("\"", "")
+                        req.headers.Authorization = v
+                        return req
+                    } catch (e) {
+
+                    }
                 }
+                return req
             }
         });
         // End Swagger UI call region

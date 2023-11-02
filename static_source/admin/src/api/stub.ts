@@ -9,50 +9,62 @@
  * ---------------------------------------------------------------
  */
 
+/**
+ * Generic Error Response
+ * Generic Error Response
+ */
+export interface GenericErrorResponse {
+  message?: string;
+  code?: string;
+}
+
 export interface AccessListListOfString {
-  items?: string[];
+  items: string[];
 }
 
 export interface GetImageFilterListResultfilter {
   date: string;
   /** @format int32 */
-  count?: number;
+  count: number;
 }
 
 export interface UpdateDashboardCardRequestItem {
   /** @format int64 */
-  id?: number;
-  title?: string;
-  type?: string;
+  id: number;
+  title: string;
+  type: string;
   /** @format int32 */
-  weight?: number;
-  enabled?: boolean;
+  weight: number;
+  enabled: boolean;
   entityId?: string;
-  /** @format byte */
-  payload?: string;
-  hidden?: boolean;
-  frozen?: boolean;
+  /**
+   * @format byte
+   * @pattern ^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$
+   */
+  payload: string;
+  hidden: boolean;
+  frozen: boolean;
   showOn?: string[];
   hideOn?: string[];
 }
 
 export interface UpdateRoleAccessListRequestAccessListDiff {
-  items?: Record<string, boolean>;
+  items: Record<string, boolean>;
 }
 
 export interface ApiAccessItem {
-  actions?: string[];
-  method?: string;
-  description?: string;
-  roleName?: string;
+  actions: string[];
+  method: string;
+  description: string;
+  roleName: string;
 }
 
 export interface ApiAccessLevels {
-  items?: Record<string, ApiAccessItem>;
+  items: Record<string, ApiAccessItem>;
 }
 
 export interface ApiAccessList {
-  levels?: Record<string, ApiAccessLevels>;
+  levels: Record<string, ApiAccessLevels>;
 }
 
 export interface ApiAccessListResponse {
@@ -61,48 +73,52 @@ export interface ApiAccessListResponse {
 
 export interface ApiAction {
   /** @format int64 */
-  id?: number;
-  name?: string;
+  id: number;
+  name: string;
+  description: string;
   /** @format int64 */
   scriptId?: number;
   script?: ApiScript;
+  /** @format int64 */
+  areaId?: number;
+  area?: ApiArea;
   entity?: ApiEntity;
   entityId?: string;
   entityActionName?: string;
   completed?: boolean;
   /** @format date-time */
-  createdAt?: string;
+  createdAt: string;
   /** @format date-time */
-  updatedAt?: string;
+  updatedAt: string;
 }
 
 export interface ApiArea {
   /** @format int64 */
-  id?: number;
-  name?: string;
-  description?: string;
-  polygon?: ApiAreaLocation[];
+  id: number;
+  name: string;
+  description: string;
+  polygon: ApiAreaLocation[];
   center?: ApiAreaLocation;
   /** @format float */
-  zoom?: number;
+  zoom: number;
   /** @format float */
-  resolution?: number;
+  resolution: number;
   /** @format date-time */
-  createdAt?: string;
+  createdAt: string;
   /** @format date-time */
-  updatedAt?: string;
+  updatedAt: string;
 }
 
 export interface ApiAreaLocation {
   /** @format double */
-  lat?: number;
+  lat: number;
   /** @format double */
-  lon?: number;
+  lon: number;
 }
 
 export interface ApiAttribute {
-  name?: string;
-  type?: ApiTypes;
+  name: string;
+  type: ApiTypes;
   /** @format int64 */
   int?: number;
   string?: string;
@@ -120,65 +136,69 @@ export interface ApiAttribute {
 
 export interface ApiAutomationRequest {
   /** @format int64 */
-  id?: number;
-  name?: string;
+  id: number;
+  name: string;
 }
 
 export interface ApiBusStateItem {
-  topic?: string;
+  topic: string;
   /** @format int32 */
-  subscribers?: number;
+  subscribers: number;
 }
 
 export interface ApiClient {
-  clientId?: string;
-  username?: string;
-  /** @format int64 */
-  keepAlive?: number;
+  clientId: string;
+  username: string;
+  /** @format uint16 */
+  keepAlive: number;
   /** @format int32 */
-  version?: number;
-  willRetain?: boolean;
-  /** @format int64 */
-  willQos?: number;
-  willTopic?: string;
-  willPayload?: string;
-  remoteAddr?: string;
-  localAddr?: string;
-  /** @format int64 */
-  subscriptionsCurrent?: number;
-  /** @format int64 */
-  subscriptionsTotal?: number;
+  version: number;
+  willRetain: boolean;
+  /** @format uint8 */
+  willQos: number;
+  willTopic: string;
+  willPayload: string;
+  remoteAddr: string;
+  localAddr: string;
+  /** @format uint32 */
+  subscriptionsCurrent: number;
+  /** @format uint32 */
+  subscriptionsTotal: number;
   /** @format uint64 */
-  packetsReceivedBytes?: number;
+  packetsReceivedBytes: number;
   /** @format uint64 */
-  packetsReceivedNums?: number;
+  packetsReceivedNums: number;
   /** @format uint64 */
-  packetsSendBytes?: number;
+  packetsSendBytes: number;
   /** @format uint64 */
-  packetsSendNums?: number;
+  packetsSendNums: number;
   /** @format uint64 */
-  messageDropped?: number;
-  /** @format int64 */
-  inflightLen?: number;
-  /** @format int64 */
-  queueLen?: number;
+  messageDropped: number;
+  /** @format uint32 */
+  inflightLen: number;
+  /** @format uint32 */
+  queueLen: number;
   /** @format date-time */
-  connectedAt?: string;
+  connectedAt: string;
   /** @format date-time */
   disconnectedAt?: string;
 }
 
 export interface ApiCondition {
   /** @format int64 */
-  id?: number;
-  name?: string;
+  id: number;
+  name: string;
+  description: string;
   /** @format int64 */
   scriptId?: number;
   script?: ApiScript;
+  area?: ApiArea;
+  /** @format int64 */
+  areaId?: number;
   /** @format date-time */
-  createdAt?: string;
+  createdAt: string;
   /** @format date-time */
-  updatedAt?: string;
+  updatedAt: string;
 }
 
 export interface ApiCurrentUser {
@@ -209,18 +229,18 @@ export interface ApiCurrentUser {
 export interface ApiDashboard {
   /** @format int64 */
   id: number;
-  name?: string;
-  description?: string;
-  enabled?: boolean;
+  name: string;
+  description: string;
+  enabled: boolean;
   /** @format int64 */
   areaId?: number;
   area?: ApiArea;
-  tabs?: ApiDashboardTab[];
-  entities?: Record<string, ApiEntity>;
+  tabs: ApiDashboardTab[];
+  entities: Record<string, ApiEntity>;
   /** @format date-time */
-  createdAt?: string;
+  createdAt: string;
   /** @format date-time */
-  updatedAt?: string;
+  updatedAt: string;
 }
 
 export interface ApiDashboardCard {
@@ -231,22 +251,25 @@ export interface ApiDashboardCard {
   height: number;
   /** @format int32 */
   width: number;
-  background: string;
+  background?: string;
   /** @format int32 */
   weight: number;
   enabled: boolean;
   /** @format int64 */
   dashboardTabId: number;
-  /** @format byte */
-  payload?: string;
+  /**
+   * @format byte
+   * @pattern ^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$
+   */
+  payload: string;
   items: ApiDashboardCardItem[];
-  entities: Map<string, ApiEntity>;
+  entities: Record<string, ApiEntity>;
   hidden: boolean;
-  entityId: string;
+  entityId?: string;
   /** @format date-time */
-  createdAt?: string;
+  createdAt: string;
   /** @format date-time */
-  updatedAt?: string;
+  updatedAt: string;
 }
 
 export interface ApiDashboardCardItem {
@@ -259,29 +282,32 @@ export interface ApiDashboardCardItem {
   enabled: boolean;
   /** @format int64 */
   dashboardCardId: number;
-  entityId: string;
-  /** @format byte */
-  payload?: string;
+  entityId?: string;
+  /**
+   * @format byte
+   * @pattern ^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$
+   */
+  payload: string;
   hidden: boolean;
   frozen: boolean;
   /** @format date-time */
-  createdAt?: string;
+  createdAt: string;
   /** @format date-time */
-  updatedAt?: string;
+  updatedAt: string;
 }
 
 export interface ApiDashboardShort {
   /** @format int64 */
-  id?: number;
-  name?: string;
-  description?: string;
-  enabled?: boolean;
+  id: number;
+  name: string;
+  description: string;
+  enabled: boolean;
   /** @format int64 */
   areaId?: number;
   /** @format date-time */
-  createdAt?: string;
+  createdAt: string;
   /** @format date-time */
-  updatedAt?: string;
+  updatedAt: string;
 }
 
 export interface ApiDashboardTab {
@@ -291,7 +317,7 @@ export interface ApiDashboardTab {
   /** @format int32 */
   columnWidth: number;
   gap: boolean;
-  background: string;
+  background?: string;
   icon: string;
   enabled: boolean;
   /** @format int32 */
@@ -299,11 +325,11 @@ export interface ApiDashboardTab {
   /** @format int64 */
   dashboardId: number;
   cards: ApiDashboardCard[];
-  entities: Map<string, ApiEntity>;
+  entities: Record<string, ApiEntity>;
   /** @format date-time */
-  createdAt?: string;
+  createdAt: string;
   /** @format date-time */
-  updatedAt?: string;
+  updatedAt: string;
 }
 
 export interface ApiDashboardTabShort {
@@ -328,24 +354,24 @@ export interface ApiDashboardTabShort {
 
 export interface ApiDeviceBanRequest {
   /** @format int64 */
-  id?: number;
-  friendlyName?: string;
+  id: number;
+  friendlyName: string;
 }
 
 export interface ApiDeviceListResult {
-  items?: ApiZigbee2MqttDevice[];
+  items: ApiZigbee2MqttDevice[];
   meta?: ApiMeta;
 }
 
 export interface ApiDeviceRenameRequest {
-  friendlyName?: string;
-  newName?: string;
+  friendlyName: string;
+  newName: string;
 }
 
 export interface ApiDeviceWhitelistRequest {
   /** @format int64 */
-  id?: number;
-  friendlyName?: string;
+  id: number;
+  friendlyName: string;
 }
 
 export type ApiDisablePluginResult = object;
@@ -353,26 +379,26 @@ export type ApiDisablePluginResult = object;
 export type ApiEnablePluginResult = object;
 
 export interface ApiEntity {
-  id?: string;
-  pluginName?: string;
-  description?: string;
+  id: string;
+  pluginName: string;
+  description: string;
   area?: ApiArea;
   image?: ApiImage;
   icon?: string;
-  autoLoad?: boolean;
+  autoLoad: boolean;
   parent?: ApiEntityParent;
-  actions?: ApiEntityAction[];
-  states?: ApiEntityState[];
-  scripts?: ApiScript[];
-  scriptIds?: number[];
-  attributes?: Record<string, ApiAttribute>;
-  settings?: Record<string, ApiAttribute>;
-  metrics?: ApiMetric[];
+  actions: ApiEntityAction[];
+  states: ApiEntityState[];
+  scripts: ApiScript[];
+  scriptIds: number[];
+  attributes: Record<string, ApiAttribute>;
+  settings: Record<string, ApiAttribute>;
+  metrics: ApiMetric[];
   isLoaded?: boolean;
   /** @format date-time */
-  createdAt?: string;
+  createdAt: string;
   /** @format date-time */
-  updatedAt?: string;
+  updatedAt: string;
 }
 
 export interface ApiEntityAction {
@@ -381,37 +407,37 @@ export interface ApiEntityAction {
   icon?: string;
   image?: ApiImage;
   script?: ApiScript;
-  type?: string;
+  type: string;
 }
 
 export interface ApiEntityCallActionRequest {
-  id?: string;
-  name?: string;
-  attributes?: Record<string, ApiAttribute>;
+  id: string;
+  name: string;
+  attributes: Record<string, ApiAttribute>;
 }
 
 export interface ApiEntityParent {
-  id?: string;
+  id: string;
 }
 
 export interface ApiEntityRequest {
-  id?: string;
-  name?: string;
+  id: string;
+  name: string;
 }
 
 export interface ApiEntityShort {
-  id?: string;
-  pluginName?: string;
-  description?: string;
+  id: string;
+  pluginName: string;
+  description: string;
   area?: ApiArea;
   image?: ApiImage;
   icon?: string;
-  autoLoad?: boolean;
+  autoLoad: boolean;
   parentId?: string;
   /** @format date-time */
-  createdAt?: string;
+  createdAt: string;
   /** @format date-time */
-  updatedAt?: string;
+  updatedAt: string;
 }
 
 export interface ApiEntityState {
@@ -419,455 +445,491 @@ export interface ApiEntityState {
   description: string;
   icon?: string;
   image?: ApiImage;
-  style?: string;
+  style: string;
+}
+
+export interface ApiEntityStorageFilter {
+  entityId: string;
+  description: string;
 }
 
 export interface ApiEntityStorage {
   /** @format int64 */
-  id?: number;
-  entityId?: string;
-  state?: string;
-  attributes?: Record<string, ApiAttribute>;
+  id: number;
+  entityId: string;
+  entity_description: string;
+  state: string;
+  state_description: string;
+  attributes: Record<string, ApiAttribute>;
   /** @format date-time */
-  createdAt?: string;
+  createdAt: string;
 }
 
 export interface ApiEventBusStateListResult {
-  items?: ApiBusStateItem[];
+  items: ApiBusStateItem[];
   meta?: ApiMeta;
 }
 
 export interface ApiExecScriptResult {
-  result?: string;
+  result: string;
 }
 
 export interface ApiExecSrcScriptRequest {
-  lang?: string;
-  name?: string;
-  source?: string;
-  description?: string;
+  lang: string;
+  name: string;
+  source: string;
+  description: string;
 }
 
 export interface ApiGetActionListResult {
-  items?: ApiAction[];
+  items: ApiAction[];
   meta?: ApiMeta;
 }
 
 export interface ApiGetAreaListResult {
-  items?: ApiArea[];
+  items: ApiArea[];
   meta?: ApiMeta;
 }
 
 export interface ApiGetBackupListResult {
-  items?: string[];
+  items: string[];
+  meta?: ApiMeta;
 }
 
 export interface ApiGetBridgeListResult {
-  items?: ApiZigbee2MqttShort[];
+  items: ApiZigbee2MqttShort[];
   meta?: ApiMeta;
 }
 
 export interface ApiGetClientListResult {
-  items?: ApiClient[];
+  items: ApiClient[];
   meta?: ApiMeta;
 }
 
 export interface ApiGetConditionListResult {
-  items?: ApiCondition[];
+  items: ApiCondition[];
   meta?: ApiMeta;
 }
 
 export interface ApiGetDashboardCardItemListResult {
-  items?: ApiDashboardCardItem[];
+  items: ApiDashboardCardItem[];
   meta?: ApiMeta;
 }
 
 export interface ApiGetDashboardCardListResult {
-  items?: ApiDashboardCard[];
+  items: ApiDashboardCard[];
   meta?: ApiMeta;
 }
 
 export interface ApiGetDashboardListResult {
-  items?: ApiDashboardShort[];
+  items: ApiDashboardShort[];
   meta?: ApiMeta;
 }
 
 export interface ApiGetDashboardTabListResult {
-  items?: ApiDashboardTabShort[];
+  items: ApiDashboardTabShort[];
   meta?: ApiMeta;
 }
 
 export interface ApiGetEntityListResult {
-  items?: ApiEntity[];
+  items: ApiEntity[];
   meta?: ApiMeta;
 }
 
 export interface ApiGetEntityStorageResult {
-  items?: ApiEntityStorage[];
-  meta?: ApiMeta;
+  items: ApiEntityStorage[];
+  filter: ApiEntityStorageFilter[];
+  meta: ApiMeta;
 }
 
 export interface ApiGetImageFilterListResult {
-  items?: GetImageFilterListResultfilter[];
+  items: GetImageFilterListResultfilter[];
 }
 
 export interface ApiGetImageListByDateResult {
-  items?: ApiImage[];
+  items: ApiImage[];
 }
 
 export interface ApiGetImageListResult {
-  items?: ApiImage[];
+  items: ApiImage[];
   meta?: ApiMeta;
 }
 
 export interface ApiGetLogListResult {
-  items?: ApiLog[];
+  items: ApiLog[];
   meta?: ApiMeta;
 }
 
 export interface ApiGetMessageDeliveryListResult {
-  items?: ApiMessageDelivery[];
+  items: ApiMessageDelivery[];
   meta?: ApiMeta;
 }
 
 export interface ApiGetPluginListResult {
-  items?: ApiPluginShort[];
+  items: ApiPluginShort[];
   meta?: ApiMeta;
 }
 
 export interface ApiGetRoleListResult {
-  items?: ApiRole[];
+  items: ApiRole[];
   meta?: ApiMeta;
 }
 
 export interface ApiGetScriptListResult {
-  items?: ApiScript[];
+  items: ApiScript[];
   meta?: ApiMeta;
 }
 
 export interface ApiGetSubscriptionListResult {
-  items?: ApiSubscription[];
+  items: ApiSubscription[];
   meta?: ApiMeta;
 }
 
 export interface ApiGetTaskListResult {
-  items?: ApiTask[];
+  items: ApiTask[];
   meta?: ApiMeta;
 }
 
 export interface ApiGetTriggerListResult {
-  items?: ApiTrigger[];
+  items: ApiTrigger[];
   meta?: ApiMeta;
 }
 
 export interface ApiGetUserListResult {
-  items?: ApiUserShot[];
+  items: ApiUserShot[];
   meta?: ApiMeta;
 }
 
 export interface ApiGetVariableListResult {
-  items?: ApiVariable[];
+  items: ApiVariable[];
   meta?: ApiMeta;
+}
+
+export interface ApiBackup {
+  name: string;
+  /** @format int64 */
+  size: number;
+  /** @format uint32 */
+  fileMode: number;
+  /** @format date-time */
+  modTime: string;
 }
 
 export interface ApiImage {
   /** @format int64 */
   id: number;
-  thumb?: string;
+  thumb: string;
   url: string;
-  image?: string;
-  mimeType?: string;
-  title?: string;
+  image: string;
+  mimeType: string;
+  title: string;
   /** @format int64 */
-  size?: number;
-  name?: string;
+  size: number;
+  name: string;
   /** @format date-time */
-  createdAt?: string;
+  createdAt: string;
 }
 
 export interface ApiLog {
   /** @format int64 */
-  id?: number;
-  level?: string;
-  body?: string;
-  owner?: string;
+  id: number;
+  level: string;
+  body: string;
+  owner: string;
   /** @format date-time */
-  createdAt?: string;
+  createdAt: string;
 }
 
 export interface ApiMessage {
   /** @format int64 */
-  id?: number;
-  type?: string;
-  attributes?: Record<string, string>;
+  id: number;
+  type: string;
+  entityId?: string;
+  attributes: Record<string, string>;
   /** @format date-time */
-  createdAt?: string;
+  createdAt: string;
   /** @format date-time */
-  updatedAt?: string;
+  updatedAt: string;
 }
 
 export interface ApiMessageDelivery {
   /** @format int64 */
-  id?: number;
-  message?: ApiMessage;
-  address?: string;
-  status?: string;
+  id: number;
+  message: ApiMessage;
+  address: string;
+  status: string;
   errorMessageStatus?: string;
   errorMessageBody?: string;
   /** @format date-time */
-  createdAt?: string;
+  createdAt: string;
   /** @format date-time */
-  updatedAt?: string;
+  updatedAt: string;
+}
+
+export interface ApiPagination {
+  /** @format uint64 */
+  limit: number;
+  /** @format uint64 */
+  page: number;
+  /** @format uint64 */
+  total: number;
 }
 
 export interface ApiMeta {
-  /** @format uint64 */
-  limit?: number;
-  /** @format uint64 */
-  page?: number;
-  /** @format uint64 */
-  total?: number;
-  sort?: string;
+  pagination: ApiPagination;
+  sort: string;
 }
 
 export interface ApiMetric {
   /** @format int64 */
-  id?: number;
-  name?: string;
-  description?: string;
+  id: number;
+  name: string;
+  description: string;
   options?: ApiMetricOption;
-  data?: ApiMetricOptionData[];
-  type?: string;
-  ranges?: string[];
+  data: ApiMetricOptionData[];
+  type: string;
+  ranges: string[];
   /** @format date-time */
-  createdAt?: string;
+  createdAt: string;
   /** @format date-time */
-  updatedAt?: string;
+  updatedAt: string;
 }
 
 export interface ApiMetricOption {
-  items?: ApiMetricOptionItem[];
+  items: ApiMetricOptionItem[];
 }
 
 export interface ApiMetricOptionData {
-  value?: Record<string, number>;
+  value: Record<string, any>;
   /** @format int64 */
   metricId?: number;
   /** @format date-time */
-  time?: string;
+  time: string;
 }
 
 export interface ApiMetricOptionItem {
-  name?: string;
-  description?: string;
-  color?: string;
-  translate?: string;
-  label?: string;
+  name: string;
+  description: string;
+  color: string;
+  translate: string;
+  label: string;
 }
 
 export interface ApiNetworkmapResponse {
-  networkmap?: string;
+  networkmap: string;
 }
 
 export interface ApiNewActionRequest {
-  name?: string;
+  name: string;
+  description: string;
   /** @format int64 */
   scriptId?: number;
-  script?: ApiScript;
-  entity?: ApiEntity;
+  /** @format int64 */
+  areaId?: number;
   entityId?: string;
   entityActionName?: string;
 }
 
 export interface ApiNewAreaRequest {
-  name?: string;
-  description?: string;
-  polygon?: ApiAreaLocation[];
+  name: string;
+  description: string;
+  polygon: ApiAreaLocation[];
   center?: ApiAreaLocation;
   /** @format float */
-  zoom?: number;
+  zoom: number;
   /** @format float */
-  resolution?: number;
+  resolution: number;
 }
 
 export interface ApiNewConditionRequest {
-  name?: string;
+  name: string;
+  description: string;
   /** @format int64 */
-  scriptId?: string;
-  script?: ApiScript;
+  scriptId?: number;
+  /** @format int64 */
+  areaId?: number;
 }
 
 export interface ApiNewDashboardCardItemRequest {
-  title?: string;
-  type?: string;
+  title: string;
+  type: string;
   /** @format int32 */
-  weight?: number;
-  enabled?: boolean;
+  weight: number;
+  enabled: boolean;
   /** @format int64 */
-  dashboardCardId?: number;
+  dashboardCardId: number;
   entityId?: string;
-  /** @format byte */
-  payload?: string;
-  hidden?: boolean;
-  frozen?: boolean;
+  /**
+   * @format byte
+   * @pattern ^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$
+   */
+  payload: string;
+  hidden: boolean;
+  frozen: boolean;
 }
 
 export interface ApiNewDashboardCardRequest {
-  title?: string;
+  title: string;
   /** @format int32 */
-  height?: number;
+  height: number;
   /** @format int32 */
-  width?: number;
+  width: number;
   background?: string;
   /** @format int32 */
-  weight?: number;
-  enabled?: boolean;
+  weight: number;
+  enabled: boolean;
   /** @format int64 */
-  dashboardTabId?: number;
-  /** @format byte */
-  payload?: string;
-  hidden?: boolean;
+  dashboardTabId: number;
+  /**
+   * @format byte
+   * @pattern ^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$
+   */
+  payload: string;
+  hidden: boolean;
   entityId?: string;
 }
 
 export interface ApiNewDashboardRequest {
-  name?: string;
-  description?: string;
-  enabled?: boolean;
+  name: string;
+  description: string;
+  enabled: boolean;
   /** @format int64 */
   areaId?: number;
 }
 
 export interface ApiNewDashboardTabRequest {
-  name?: string;
+  name: string;
   /** @format int32 */
-  columnWidth?: number;
-  gap?: boolean;
+  columnWidth: number;
+  gap: boolean;
   background?: string;
-  icon?: string;
-  enabled?: boolean;
+  icon: string;
+  enabled: boolean;
   /** @format int32 */
-  weight?: number;
+  weight: number;
   /** @format int64 */
-  dashboardId?: number;
+  dashboardId: number;
 }
 
 export interface ApiNewEntityRequest {
-  name?: string;
-  pluginName?: string;
-  description?: string;
+  name: string;
+  pluginName: string;
+  description: string;
   /** @format int64 */
   areaId?: number;
   icon?: string;
   /** @format int64 */
   imageId?: number;
-  autoLoad?: boolean;
+  autoLoad: boolean;
   parentId?: string;
-  actions?: ApiNewEntityRequestAction[];
-  states?: ApiNewEntityRequestState[];
-  attributes?: Record<string, ApiAttribute>;
-  settings?: Record<string, ApiAttribute>;
-  metrics?: ApiMetric[];
-  scriptIds?: number[];
+  actions: ApiNewEntityRequestAction[];
+  states: ApiNewEntityRequestState[];
+  attributes: Record<string, ApiAttribute>;
+  settings: Record<string, ApiAttribute>;
+  metrics: ApiMetric[];
+  scriptIds: number[];
 }
 
 export interface ApiNewEntityRequestAction {
-  name?: string;
-  description?: string;
+  name: string;
+  description: string;
   icon?: string;
   /** @format int64 */
   imageId?: number;
   /** @format int64 */
-  scriptId?: string;
-  type?: string;
+  scriptId?: number;
+  type: string;
 }
 
 export interface ApiNewEntityRequestState {
-  name?: string;
-  description?: string;
+  name: string;
+  description: string;
   icon?: string;
   /** @format int64 */
   imageId?: number;
-  style?: string;
+  style: string;
 }
 
 export interface ApiNewImageRequest {
-  thumb?: string;
-  image?: string;
-  mimeType?: string;
-  title?: string;
+  thumb: string;
+  image: string;
+  mimeType: string;
+  title: string;
   /** @format int64 */
-  size?: number;
-  name?: string;
+  size: number;
+  name: string;
 }
 
 export interface ApiNewRoleRequest {
-  name?: string;
-  description?: string;
+  name: string;
+  description: string;
   parent?: string;
 }
 
 export interface ApiNewScriptRequest {
-  lang?: string;
-  name?: string;
-  source?: string;
-  description?: string;
+  lang: string;
+  name: string;
+  source: string;
+  description: string;
 }
 
 export interface ApiNewTaskRequest {
-  name?: string;
-  description?: string;
-  enabled?: boolean;
-  condition?: string;
-  triggerIds?: number[];
-  conditionIds?: number[];
-  actionIds?: number[];
+  name: string;
+  description: string;
+  enabled: boolean;
+  condition: string;
+  triggerIds: number[];
+  conditionIds: number[];
+  actionIds: number[];
   /** @format int64 */
-  areaId?: string;
+  areaId?: number;
 }
 
 export interface ApiNewTriggerRequest {
-  name?: string;
+  name: string;
+  description: string;
   entity?: ApiEntity;
   entityId?: string;
   script?: ApiScript;
   /** @format int64 */
   scriptId?: number;
-  pluginName?: string;
-  attributes?: Record<string, ApiAttribute>;
-  enabled?: boolean;
+  pluginName: string;
+  attributes: Record<string, ApiAttribute>;
+  enabled: boolean;
+  /** @format int64 */
+  areaId?: number;
 }
 
 export interface ApiNewVariableRequest {
-  name?: string;
-  value?: string;
+  name: string;
+  value: string;
 }
 
 export interface ApiNewZigbee2MqttRequest {
-  name?: string;
-  login?: string;
+  name: string;
+  login: string;
   password?: string;
-  permitJoin?: boolean;
-  baseTopic?: string;
+  permitJoin: boolean;
+  baseTopic: string;
 }
 
 export interface ApiNewtUserRequest {
-  nickname?: string;
+  nickname: string;
   firstName?: string;
   lastName?: string;
-  password?: string;
-  passwordRepeat?: string;
-  email?: string;
+  password: string;
+  passwordRepeat: string;
+  email: string;
   status?: string;
   lang?: string;
   /** @format int64 */
-  imageId?: string;
-  roleName?: string;
+  imageId?: number;
+  roleName: string;
   meta?: ApiUserMeta[];
 }
 
 export interface ApiPasswordResetRequest {
-  email?: string;
+  email: string;
   token?: string;
   newPassword?: string;
 }
@@ -877,244 +939,261 @@ export interface ApiPlugin {
   version: string;
   enabled: boolean;
   system: boolean;
-  actor?: boolean;
-  settings?: Record<string, ApiAttribute>;
+  actor: boolean;
+  settings: Record<string, ApiAttribute>;
   options?: ApiPluginOptionsResult;
   isLoaded?: boolean;
 }
 
 export interface ApiPluginOptionsResult {
-  triggers?: boolean;
-  actors?: boolean;
-  actorCustomAttrs?: boolean;
-  actorAttrs?: Record<string, ApiAttribute>;
-  actorCustomActions?: boolean;
-  actorActions?: Record<string, ApiPluginOptionsResultEntityAction>;
-  actorCustomStates?: boolean;
-  actorStates?: Record<string, ApiPluginOptionsResultEntityState>;
-  actorCustomSetts?: boolean;
-  actorSetts?: Record<string, ApiAttribute>;
-  setts?: Record<string, ApiAttribute>;
+  triggers: boolean;
+  actors: boolean;
+  actorCustomAttrs: boolean;
+  actorAttrs: Record<string, ApiAttribute>;
+  actorCustomActions: boolean;
+  actorActions: Record<string, ApiPluginOptionsResultEntityAction>;
+  actorCustomStates: boolean;
+  actorStates: Record<string, ApiPluginOptionsResultEntityState>;
+  actorCustomSetts: boolean;
+  actorSetts: Record<string, ApiAttribute>;
+  setts: Record<string, ApiAttribute>;
 }
 
 export interface ApiPluginOptionsResultEntityAction {
-  name?: string;
-  description?: string;
-  imageUrl?: string;
-  icon?: string;
+  name: string;
+  description: string;
+  imageUrl: string;
+  icon: string;
 }
 
 export interface ApiPluginOptionsResultEntityState {
-  name?: string;
-  description?: string;
-  imageUrl?: string;
-  icon?: string;
+  name: string;
+  description: string;
+  imageUrl: string;
+  icon: string;
 }
 
 export interface ApiPluginShort {
-  name?: string;
-  version?: string;
-  enabled?: boolean;
-  system?: boolean;
+  name: string;
+  version: string;
+  enabled: boolean;
+  system: boolean;
   actor?: boolean;
   isLoaded?: boolean;
 }
 
 export interface ApiReloadRequest {
-  id?: string;
+  id: string;
 }
 
 export interface ApiResponse {
   id?: string;
   query?: string;
-  /** @format byte */
+  /**
+   * @format byte
+   * @pattern ^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$
+   */
   body?: string;
 }
 
 export interface ApiRestoreBackupRequest {
-  name?: string;
+  name: string;
 }
 
 export interface ApiRole {
   parent?: ApiRole;
   name: string;
-  description?: string;
-  children?: ApiRole[];
+  description: string;
+  children: ApiRole[];
   accessList?: ApiRoleAccessList;
   /** @format date-time */
-  createdAt?: string;
+  createdAt: string;
   /** @format date-time */
-  updatedAt?: string;
+  updatedAt: string;
 }
 
 export interface ApiRoleAccessList {
-  levels?: Record<string, AccessListListOfString>;
+  levels: Record<string, AccessListListOfString>;
 }
 
 export interface ApiRoleAccessListResult {
-  levels?: Record<string, ApiAccessLevels>;
+  levels: Record<string, ApiAccessLevels>;
+}
+
+export interface ApiScriptVersion {
+  /** @format int64 */
+  id: number;
+  lang: string;
+  source: string;
+  /** @format date-time */
+  createdAt: string;
 }
 
 export interface ApiScript {
   /** @format int64 */
-  id?: number;
-  lang?: string;
-  name?: string;
-  source?: string;
-  description?: string;
+  id: number;
+  lang: string;
+  name: string;
+  source: string;
+  description: string;
   scriptInfo?: ApiScriptInfo;
+  versions: ApiScriptVersion[];
   /** @format date-time */
-  createdAt?: string;
+  createdAt: string;
   /** @format date-time */
-  updatedAt?: string;
+  updatedAt: string;
 }
 
 export interface ApiScriptInfo {
   /** @format int32 */
-  alexaIntents?: number;
+  alexaIntents: number;
   /** @format int32 */
-  entityActions?: number;
+  entityActions: number;
   /** @format int32 */
-  entityScripts?: number;
+  entityScripts: number;
   /** @format int32 */
-  automationTriggers?: number;
+  automationTriggers: number;
   /** @format int32 */
-  automationConditions?: number;
+  automationConditions: number;
   /** @format int32 */
-  automationActions?: number;
+  automationActions: number;
 }
 
 export interface ApiSearchActionResult {
-  items?: ApiAction[];
+  items: ApiAction[];
 }
 
 export interface ApiSearchAreaResult {
-  items?: ApiArea[];
+  items: ApiArea[];
 }
 
 export interface ApiSearchConditionResult {
-  items?: ApiCondition[];
+  items: ApiCondition[];
 }
 
 export interface ApiSearchDashboardResult {
-  items?: ApiDashboard[];
+  items: ApiDashboard[];
 }
 
 export interface ApiSearchDeviceResult {
-  items?: ApiZigbee2MqttDevice[];
+  items: ApiZigbee2MqttDevice[];
 }
 
 export interface ApiSearchEntityResult {
-  items?: ApiEntityShort[];
+  items: ApiEntityShort[];
 }
 
 export interface ApiSearchPluginResult {
-  items?: ApiPluginShort[];
+  items: ApiPluginShort[];
 }
 
 export interface ApiSearchRoleListResult {
-  items?: ApiRole[];
+  items: ApiRole[];
 }
 
 export interface ApiSearchScriptListResult {
-  items?: ApiScript[];
+  items: ApiScript[];
 }
 
 export interface ApiSearchTriggerResult {
-  items?: ApiTrigger[];
+  items: ApiTrigger[];
 }
 
 export interface ApiSigninResponse {
   currentUser?: ApiCurrentUser;
-  accessToken?: string;
+  accessToken: string;
 }
 
 export interface ApiStatistic {
-  name?: string;
-  description?: string;
+  name: string;
+  description: string;
   /** @format int32 */
-  value?: number;
+  value: number;
   /** @format int32 */
-  diff?: number;
+  diff: number;
 }
 
 export interface ApiStatistics {
-  items?: ApiStatistic[];
+  items: ApiStatistic[];
 }
 
 export interface ApiSubscription {
-  /** @format int64 */
-  id?: number;
-  clientId?: string;
-  topicName?: string;
-  name?: string;
-  /** @format int64 */
-  qos?: number;
-  noLocal?: boolean;
-  retainAsPublished?: boolean;
-  /** @format int64 */
-  retainHandling?: number;
+  /** @format uint32 */
+  id: number;
+  clientId: string;
+  topicName: string;
+  name: string;
+  /** @format uint32 */
+  qos: number;
+  noLocal: boolean;
+  retainAsPublished: boolean;
+  /** @format uint32 */
+  retainHandling: number;
 }
 
 export interface ApiTask {
   /** @format int64 */
-  id?: number;
-  name?: string;
-  description?: string;
-  enabled?: boolean;
-  condition?: string;
-  triggers?: ApiTrigger[];
-  conditions?: ApiCondition[];
-  actions?: ApiAction[];
+  id: number;
+  name: string;
+  description: string;
+  enabled: boolean;
+  condition: string;
+  triggers: ApiTrigger[];
+  conditions: ApiCondition[];
+  actions: ApiAction[];
   area?: ApiArea;
   /** @format int64 */
   areaId?: number;
   isLoaded?: boolean;
-  triggerIds?: number[];
-  conditionIds?: number[];
-  actionIds?: number[];
+  triggerIds: number[];
+  conditionIds: number[];
+  actionIds: number[];
   completed?: boolean;
-  telemetry?: ApiTelemetryItem[];
+  telemetry: ApiTelemetryItem[];
   /** @format date-time */
-  createdAt?: string;
+  createdAt: string;
   /** @format date-time */
-  updatedAt?: string;
+  updatedAt: string;
 }
 
 export interface ApiTelemetryItem {
-  name?: string;
+  name: string;
   /** @format int32 */
-  num?: number;
+  num: number;
   /** @format int64 */
-  start?: number;
+  start: number;
   /** @format int64 */
   end?: number;
   /** @format int64 */
-  timeEstimate?: number;
-  attributes?: Record<string, string>;
-  status?: string;
+  timeEstimate: number;
+  attributes: Record<string, string>;
+  status: string;
   /** @format int32 */
-  level?: number;
+  level: number;
 }
 
 export interface ApiTrigger {
   /** @format int64 */
-  id?: number;
-  name?: string;
+  id: number;
+  name: string;
+  description: string;
   entity?: ApiEntity;
   entityId?: string;
   script?: ApiScript;
   /** @format int64 */
   scriptId?: number;
-  pluginName?: string;
-  attributes?: Record<string, ApiAttribute>;
-  enabled?: boolean;
+  area?: ApiArea;
+  /** @format int64 */
+  areaId?: number;
+  pluginName: string;
+  attributes: Record<string, ApiAttribute>;
+  enabled: boolean;
   isLoaded?: boolean;
   completed?: boolean;
   /** @format date-time */
-  createdAt?: string;
+  createdAt: string;
   /** @format date-time */
-  updatedAt?: string;
+  updatedAt: string;
 }
 
 /** @default "INT" */
@@ -1132,54 +1211,49 @@ export enum ApiTypes {
 }
 
 export interface ApiUpdateEntityRequestAction {
-  name?: string;
-  description?: string;
+  name: string;
+  description: string;
   icon?: string;
   /** @format int64 */
   imageId?: number;
   /** @format int64 */
   scriptId?: number;
-  type?: string;
+  type: string;
 }
 
 export interface ApiUpdateEntityRequestState {
-  name?: string;
-  description?: string;
+  name: string;
+  description: string;
   icon?: string;
   /** @format int64 */
   imageId?: number;
-  style?: string;
-}
-
-export interface ApiUploadImageRequest {
-  /** @format byte */
-  body?: string;
+  style: string;
 }
 
 export interface ApiUserFull {
   /** @format int64 */
-  id?: number;
-  nickname?: string;
+  id: number;
+  nickname: string;
   firstName?: string;
   lastName?: string;
-  email?: string;
-  status?: string;
-  history?: ApiUserHistory[];
+  email: string;
+  status: string;
+  history: ApiUserHistory[];
   image?: ApiImage;
   /** @format int64 */
-  signInCount?: number;
-  meta?: ApiUserMeta[];
-  role?: ApiRole;
-  roleName?: string;
-  lang?: string;
-  authenticationToken?: string;
+  signInCount: number;
+  meta: ApiUserMeta[];
+  role: ApiRole;
+  roleName: string;
+  lang: string;
+  authenticationToken: string;
   currentSignInIp?: string;
   lastSignInIp?: string;
   user?: ApiUserFullParent;
   /** @format date-time */
-  createdAt?: string;
+  createdAt: string;
   /** @format date-time */
-  updatedAt?: string;
+  updatedAt: string;
   /** @format date-time */
   currentSignInAt?: string;
   /** @format date-time */
@@ -1192,103 +1266,103 @@ export interface ApiUserFull {
 
 export interface ApiUserFullParent {
   /** @format int64 */
-  id?: number;
-  nickname?: string;
+  id: number;
+  nickname: string;
 }
 
 export interface ApiUserHistory {
-  ip?: string;
+  ip: string;
   /** @format date-time */
-  time?: string;
+  time: string;
 }
 
 export interface ApiUserMeta {
-  key?: string;
-  value?: string;
+  key: string;
+  value: string;
 }
 
 export interface ApiUserShot {
   /** @format int64 */
-  id?: number;
-  nickname?: string;
+  id: number;
+  nickname: string;
   firstName?: string;
   lastName?: string;
-  email?: string;
-  status?: string;
+  email: string;
+  status: string;
   image?: ApiImage;
-  lang?: string;
-  role?: ApiRole;
-  roleName?: string;
+  lang: string;
+  role: ApiRole;
+  roleName: string;
   user?: ApiUserShotParent;
   /** @format date-time */
-  createdAt?: string;
+  createdAt: string;
   /** @format date-time */
-  updatedAt?: string;
+  updatedAt: string;
 }
 
 export interface ApiUserShotParent {
   /** @format int64 */
-  id?: number;
-  nickname?: string;
+  id: number;
+  nickname: string;
 }
 
 export interface ApiVariable {
   name: string;
   value: string;
-  system?: boolean;
+  system: boolean;
   /** @format date-time */
-  createdAt?: string;
+  createdAt: string;
   /** @format date-time */
-  updatedAt?: string;
+  updatedAt: string;
 }
 
 export interface ApiZigbee2Mqtt {
-  scanInProcess?: boolean;
+  scanInProcess: boolean;
   /** @format date-time */
   lastScan?: string;
-  networkmap?: string;
-  status?: string;
+  networkmap: string;
+  status: string;
   /** @format int64 */
-  id?: number;
-  name?: string;
-  login?: string;
-  permitJoin?: boolean;
-  baseTopic?: string;
+  id: number;
+  name: string;
+  login: string;
+  permitJoin: boolean;
+  baseTopic: string;
   /** @format date-time */
-  createdAt?: string;
+  createdAt: string;
   /** @format date-time */
-  updatedAt?: string;
+  updatedAt: string;
 }
 
 export interface ApiZigbee2MqttDevice {
-  id?: string;
+  id: string;
   /** @format int64 */
-  zigbee2mqttId?: number;
-  name?: string;
-  type?: string;
-  model?: string;
-  description?: string;
-  manufacturer?: string;
-  functions?: string[];
-  imageUrl?: string;
-  status?: string;
+  zigbee2mqttId: number;
+  name: string;
+  type: string;
+  model: string;
+  description: string;
+  manufacturer: string;
+  functions: string[];
+  imageUrl: string;
+  status: string;
   /** @format date-time */
-  createdAt?: string;
+  createdAt: string;
   /** @format date-time */
-  updatedAt?: string;
+  updatedAt: string;
 }
 
 export interface ApiZigbee2MqttShort {
   /** @format int64 */
-  id?: number;
-  name?: string;
-  login?: string;
-  permitJoin?: boolean;
-  baseTopic?: string;
+  id: number;
+  name: string;
+  login: string;
+  permitJoin: boolean;
+  baseTopic: string;
   /** @format date-time */
-  createdAt?: string;
+  createdAt: string;
   /** @format date-time */
-  updatedAt?: string;
+  updatedAt: string;
 }
 
 /**
@@ -1460,7 +1534,7 @@ export class HttpClient<SecurityDataType = unknown> {
   private format?: ResponseType;
 
   constructor({ securityWorker, secure, format, ...axiosConfig }: ApiConfig<SecurityDataType> = {}) {
-    this.instance = axios.create({ ...axiosConfig, baseURL: axiosConfig.baseURL || "" });
+    this.instance = axios.create({ ...axiosConfig, baseURL: axiosConfig.baseURL || "/" });
     this.secure = secure;
     this.format = format;
     this.securityWorker = securityWorker;
@@ -1549,11 +1623,12 @@ export class HttpClient<SecurityDataType = unknown> {
 /**
  * @title Smart home api
  * @version 1.0
+ * @baseUrl /
  * @contact Alex Filippov <support@e154.ru> (https://e154.github.io/smart-home/)
  *
  * This documentation describes APIs found under https://github.com/e154/smart-home
  */
-export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
+export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
   v1 = {
     /**
      * No description
@@ -1565,7 +1640,14 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @secure
      */
     authServiceAccessList: (params: RequestParams = {}) =>
-      this.request<ApiAccessListResponse, RpcStatus>({
+      this.request<
+        ApiAccessListResponse,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/access_list`,
         method: "GET",
         secure: true,
@@ -1582,11 +1664,21 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request POST:/v1/action
      * @secure
      */
-    actionServiceAddAction: (body: ApiNewActionRequest, params: RequestParams = {}) =>
-      this.request<ApiAction, RpcStatus>({
+    actionServiceAddAction: (data: ApiNewActionRequest, params: RequestParams = {}) =>
+      this.request<
+        ApiAction,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/action`,
         method: "POST",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
         format: "json",
@@ -1603,27 +1695,19 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @secure
      */
     actionServiceGetActionById: (id: number, params: RequestParams = {}) =>
-      this.request<ApiAction, RpcStatus>({
+      this.request<
+        ApiAction,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
         path: `/v1/action/${id}`,
         method: "GET",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags ActionService
-     * @name ActionServiceDeleteAction
-     * @summary delete action
-     * @request DELETE:/v1/action/{id}
-     * @secure
-     */
-    actionServiceDeleteAction: (id: number, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
-        path: `/v1/action/${id}`,
-        method: "DELETE",
         secure: true,
         format: "json",
         ...params,
@@ -1640,23 +1724,62 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     actionServiceUpdateAction: (
       id: number,
-      body: {
-        name?: string;
+      data: {
+        name: string;
+        description: string;
         /** @format int64 */
         scriptId?: number;
-        script?: ApiScript;
-        entity?: ApiEntity;
+        /** @format int64 */
+        areaId?: number;
         entityId?: string;
         entityActionName?: string;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiAction, RpcStatus>({
+      this.request<
+        ApiAction,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/action/${id}`,
         method: "PUT",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags ActionService
+     * @name ActionServiceDeleteAction
+     * @summary delete action
+     * @request DELETE:/v1/action/{id}
+     * @secure
+     */
+    actionServiceDeleteAction: (id: number, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
+        path: `/v1/action/${id}`,
+        method: "DELETE",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -1672,15 +1795,34 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     actionServiceGetActionList: (
       query?: {
-        /** @format uint64 */
-        page?: number;
-        /** @format uint64 */
-        limit?: number;
+        /**
+         * Field on which to sort and its direction
+         * @example "-created_at"
+         */
         sort?: string;
+        /**
+         * Page number of the requested result set
+         * @format uint64
+         * @default 1
+         * @example 1
+         */
+        page?: number;
+        /**
+         * The number of results returned on a page
+         * @format uint64
+         */
+        limit?: number;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiGetActionListResult, RpcStatus>({
+      this.request<
+        ApiGetActionListResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/actions`,
         method: "GET",
         query: query,
@@ -1702,13 +1844,20 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
       query?: {
         query?: string;
         /** @format int64 */
-        limit?: number;
-        /** @format int64 */
         offset?: number;
+        /** @format int64 */
+        limit?: number;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiSearchActionResult, RpcStatus>({
+      this.request<
+        ApiSearchActionResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/actions/search`,
         method: "GET",
         query: query,
@@ -1726,11 +1875,21 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request POST:/v1/area
      * @secure
      */
-    areaServiceAddArea: (body: ApiNewAreaRequest, params: RequestParams = {}) =>
-      this.request<ApiArea, RpcStatus>({
+    areaServiceAddArea: (data: ApiNewAreaRequest, params: RequestParams = {}) =>
+      this.request<
+        ApiArea,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/area`,
         method: "POST",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
         format: "json",
@@ -1747,27 +1906,19 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @secure
      */
     areaServiceGetAreaById: (id: number, params: RequestParams = {}) =>
-      this.request<ApiArea, RpcStatus>({
+      this.request<
+        ApiArea,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
         path: `/v1/area/${id}`,
         method: "GET",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags AreaService
-     * @name AreaServiceDeleteArea
-     * @summary delete area
-     * @request DELETE:/v1/area/{id}
-     * @secure
-     */
-    areaServiceDeleteArea: (id: number, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
-        path: `/v1/area/${id}`,
-        method: "DELETE",
         secure: true,
         format: "json",
         ...params,
@@ -1784,24 +1935,62 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     areaServiceUpdateArea: (
       id: number,
-      body: {
-        name?: string;
-        description?: string;
-        polygon?: ApiAreaLocation[];
+      data: {
+        name: string;
+        description: string;
+        polygon: ApiAreaLocation[];
         center?: ApiAreaLocation;
         /** @format float */
-        zoom?: number;
+        zoom: number;
         /** @format float */
-        resolution?: number;
+        resolution: number;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiArea, RpcStatus>({
+      this.request<
+        ApiArea,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/area/${id}`,
         method: "PUT",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags AreaService
+     * @name AreaServiceDeleteArea
+     * @summary delete area
+     * @request DELETE:/v1/area/{id}
+     * @secure
+     */
+    areaServiceDeleteArea: (id: number, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
+        path: `/v1/area/${id}`,
+        method: "DELETE",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -1817,15 +2006,34 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     areaServiceGetAreaList: (
       query?: {
-        /** @format uint64 */
-        page?: number;
-        /** @format uint64 */
-        limit?: number;
+        /**
+         * Field on which to sort and its direction
+         * @example "-created_at"
+         */
         sort?: string;
+        /**
+         * Page number of the requested result set
+         * @format uint64
+         * @default 1
+         * @example 1
+         */
+        page?: number;
+        /**
+         * The number of results returned on a page
+         * @format uint64
+         */
+        limit?: number;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiGetAreaListResult, RpcStatus>({
+      this.request<
+        ApiGetAreaListResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/areas`,
         method: "GET",
         query: query,
@@ -1847,57 +2055,24 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
       query?: {
         query?: string;
         /** @format int64 */
-        limit?: number;
-        /** @format int64 */
         offset?: number;
+        /** @format int64 */
+        limit?: number;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiSearchAreaResult, RpcStatus>({
+      this.request<
+        ApiSearchAreaResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/areas/search`,
         method: "GET",
         query: query,
         secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags BackupService
-     * @name BackupServiceNewBackup
-     * @summary new backup
-     * @request POST:/v1/backup
-     * @secure
-     */
-    backupServiceNewBackup: (body: ApiDisablePluginResult, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
-        path: `/v1/backup`,
-        method: "POST",
-        body: body,
-        secure: true,
-        type: ContentType.Json,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags BackupService
-     * @name BackupServiceRestoreBackup
-     * @summary restore backup
-     * @request PUT:/v1/backup/restore
-     * @secure
-     */
-    backupServiceRestoreBackup: (body: ApiRestoreBackupRequest, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
-        path: `/v1/backup/restore`,
-        method: "PUT",
-        body: body,
-        secure: true,
-        type: ContentType.Json,
         format: "json",
         ...params,
       }),
@@ -1911,10 +2086,202 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request GET:/v1/backups
      * @secure
      */
-    backupServiceGetBackupList: (params: RequestParams = {}) =>
-      this.request<ApiGetBackupListResult, RpcStatus>({
+    backupServiceGetBackupList: (
+      query?: {
+        /**
+         * Field on which to sort and its direction
+         * @example "-created_at"
+         */
+        sort?: string;
+        /**
+         * Page number of the requested result set
+         * @format uint64
+         * @default 1
+         * @example 1
+         */
+        page?: number;
+        /**
+         * The number of results returned on a page
+         * @format uint64
+         */
+        limit?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        ApiGetBackupListResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/backups`,
         method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags BackupService
+     * @name BackupServiceNewBackup
+     * @summary new backup
+     * @request POST:/v1/backups
+     * @secure
+     */
+    backupServiceNewBackup: (data: ApiDisablePluginResult, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
+        path: `/v1/backups`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags BackupService
+     * @name BackupServiceUploadBackup
+     * @summary upload backup file
+     * @request POST:/v1/backup/upload
+     * @secure
+     */
+    backupServiceUploadBackup: (
+      data: {
+        filename?: File[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        ApiBackup,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
+        path: `/v1/backup/upload`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.FormData,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags BackupService
+     * @name BackupServiceApplyState
+     * @summary apply state
+     * @request POST:/v1/backup/apply
+     * @secure
+     */
+    backupServiceApplyState: (params: RequestParams = {}) =>
+      this.request<
+        void,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
+        path: `/v1/backup/apply`,
+        method: "POST",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags BackupService
+     * @name BackupServiceRevertState
+     * @summary revert state
+     * @request POST:/v1/backup/rollback
+     * @secure
+     */
+    backupServiceRevertState: (params: RequestParams = {}) =>
+      this.request<
+        void,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
+        path: `/v1/backup/rollback`,
+        method: "POST",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags BackupService
+     * @name BackupServiceRestoreBackup
+     * @summary restore backup
+     * @request PUT:/v1/backup/{name}
+     * @secure
+     */
+    backupServiceRestoreBackup: (name: string, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
+        path: `/v1/backup/${name}`,
+        method: "PUT",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags BackupService
+     * @name BackupServiceDeleteBackup
+     * @summary delete backup
+     * @request DELETE:/v1/backup/{name}
+     * @secure
+     */
+    backupServiceDeleteBackup: (name: string, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
+        path: `/v1/backup/${name}`,
+        method: "DELETE",
         secure: true,
         format: "json",
         ...params,
@@ -1929,11 +2296,21 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request POST:/v1/condition
      * @secure
      */
-    conditionServiceAddCondition: (body: ApiNewConditionRequest, params: RequestParams = {}) =>
-      this.request<ApiCondition, RpcStatus>({
+    conditionServiceAddCondition: (data: ApiNewConditionRequest, params: RequestParams = {}) =>
+      this.request<
+        ApiCondition,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/condition`,
         method: "POST",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
         format: "json",
@@ -1950,27 +2327,19 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @secure
      */
     conditionServiceGetConditionById: (id: number, params: RequestParams = {}) =>
-      this.request<ApiCondition, RpcStatus>({
+      this.request<
+        ApiCondition,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
         path: `/v1/condition/${id}`,
         method: "GET",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags ConditionService
-     * @name ConditionServiceDeleteCondition
-     * @summary delete condition
-     * @request DELETE:/v1/condition/{id}
-     * @secure
-     */
-    conditionServiceDeleteCondition: (id: number, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
-        path: `/v1/condition/${id}`,
-        method: "DELETE",
         secure: true,
         format: "json",
         ...params,
@@ -1987,20 +2356,60 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     conditionServiceUpdateCondition: (
       id: number,
-      body: {
-        name?: string;
+      data: {
+        name: string;
+        description: string;
         /** @format int64 */
         scriptId?: number;
-        script?: ApiScript;
+        /** @format int64 */
+        areaId?: number;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiCondition, RpcStatus>({
+      this.request<
+        ApiCondition,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/condition/${id}`,
         method: "PUT",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags ConditionService
+     * @name ConditionServiceDeleteCondition
+     * @summary delete condition
+     * @request DELETE:/v1/condition/{id}
+     * @secure
+     */
+    conditionServiceDeleteCondition: (id: number, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
+        path: `/v1/condition/${id}`,
+        method: "DELETE",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -2016,15 +2425,34 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     conditionServiceGetConditionList: (
       query?: {
-        /** @format uint64 */
-        page?: number;
-        /** @format uint64 */
-        limit?: number;
+        /**
+         * Field on which to sort and its direction
+         * @example "-created_at"
+         */
         sort?: string;
+        /**
+         * Page number of the requested result set
+         * @format uint64
+         * @default 1
+         * @example 1
+         */
+        page?: number;
+        /**
+         * The number of results returned on a page
+         * @format uint64
+         */
+        limit?: number;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiGetConditionListResult, RpcStatus>({
+      this.request<
+        ApiGetConditionListResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/conditions`,
         method: "GET",
         query: query,
@@ -2046,13 +2474,20 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
       query?: {
         query?: string;
         /** @format int64 */
-        limit?: number;
-        /** @format int64 */
         offset?: number;
+        /** @format int64 */
+        limit?: number;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiSearchConditionResult, RpcStatus>({
+      this.request<
+        ApiSearchConditionResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/conditions/search`,
         method: "GET",
         query: query,
@@ -2070,11 +2505,21 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request POST:/v1/dashboard
      * @secure
      */
-    dashboardServiceAddDashboard: (body: ApiNewDashboardRequest, params: RequestParams = {}) =>
-      this.request<ApiDashboard, RpcStatus>({
+    dashboardServiceAddDashboard: (data: ApiNewDashboardRequest, params: RequestParams = {}) =>
+      this.request<
+        ApiDashboard,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/dashboard`,
         method: "POST",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
         format: "json",
@@ -2091,27 +2536,19 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @secure
      */
     dashboardServiceGetDashboardById: (id: number, params: RequestParams = {}) =>
-      this.request<ApiDashboard, RpcStatus>({
+      this.request<
+        ApiDashboard,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
         path: `/v1/dashboard/${id}`,
         method: "GET",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags DashboardService
-     * @name DashboardServiceDeleteDashboard
-     * @summary delete dashboard
-     * @request DELETE:/v1/dashboard/{id}
-     * @secure
-     */
-    dashboardServiceDeleteDashboard: (id: number, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
-        path: `/v1/dashboard/${id}`,
-        method: "DELETE",
         secure: true,
         format: "json",
         ...params,
@@ -2128,21 +2565,59 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     dashboardServiceUpdateDashboard: (
       id: number,
-      body: {
-        name?: string;
-        description?: string;
-        enabled?: boolean;
+      data: {
+        name: string;
+        description: string;
+        enabled: boolean;
         /** @format int64 */
         areaId?: number;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiDashboard, RpcStatus>({
+      this.request<
+        ApiDashboard,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/dashboard/${id}`,
         method: "PUT",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags DashboardService
+     * @name DashboardServiceDeleteDashboard
+     * @summary delete dashboard
+     * @request DELETE:/v1/dashboard/{id}
+     * @secure
+     */
+    dashboardServiceDeleteDashboard: (id: number, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
+        path: `/v1/dashboard/${id}`,
+        method: "DELETE",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -2156,11 +2631,21 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request POST:/v1/dashboard_card
      * @secure
      */
-    dashboardCardServiceAddDashboardCard: (body: ApiNewDashboardCardRequest, params: RequestParams = {}) =>
-      this.request<ApiDashboardCard, RpcStatus>({
+    dashboardCardServiceAddDashboardCard: (data: ApiNewDashboardCardRequest, params: RequestParams = {}) =>
+      this.request<
+        ApiDashboardCard,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/dashboard_card`,
         method: "POST",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
         format: "json",
@@ -2176,11 +2661,21 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request POST:/v1/dashboard_card/import
      * @secure
      */
-    dashboardCardServiceImportDashboardCard: (body: ApiDashboardCard, params: RequestParams = {}) =>
-      this.request<ApiDashboardCard, RpcStatus>({
+    dashboardCardServiceImportDashboardCard: (data: ApiDashboardCard, params: RequestParams = {}) =>
+      this.request<
+        ApiDashboardCard,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/dashboard_card/import`,
         method: "POST",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
         format: "json",
@@ -2196,28 +2691,20 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request GET:/v1/dashboard_card/{id}
      * @secure
      */
-    dashboardCardServiceGetDashboardCardById: (id: string, params: RequestParams = {}) =>
-      this.request<ApiDashboardCard, RpcStatus>({
+    dashboardCardServiceGetDashboardCardById: (id: number, params: RequestParams = {}) =>
+      this.request<
+        ApiDashboardCard,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
         path: `/v1/dashboard_card/${id}`,
         method: "GET",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags DashboardCardService
-     * @name DashboardCardServiceDeleteDashboardCard
-     * @summary delete dashboard_card
-     * @request DELETE:/v1/dashboard_card/{id}
-     * @secure
-     */
-    dashboardCardServiceDeleteDashboardCard: (id: number, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
-        path: `/v1/dashboard_card/${id}`,
-        method: "DELETE",
         secure: true,
         format: "json",
         ...params,
@@ -2234,32 +2721,73 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     dashboardCardServiceUpdateDashboardCard: (
       id: number,
-      body: {
-        title?: string;
+      data: {
+        title: string;
         /** @format int32 */
-        height?: number;
+        height: number;
         /** @format int32 */
-        width?: number;
+        width: number;
         background?: string;
         /** @format int32 */
-        weight?: number;
-        enabled?: boolean;
+        weight: number;
+        enabled: boolean;
         /** @format int64 */
-        dashboardTabId?: number;
-        /** @format byte */
-        payload?: string;
-        items?: UpdateDashboardCardRequestItem[];
-        hidden?: boolean;
+        dashboardTabId: number;
+        /**
+         * @format byte
+         * @pattern ^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$
+         */
+        payload: string;
+        items: UpdateDashboardCardRequestItem[];
+        hidden: boolean;
         entityId?: string;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiDashboardCard, RpcStatus>({
+      this.request<
+        ApiDashboardCard,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/dashboard_card/${id}`,
         method: "PUT",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags DashboardCardService
+     * @name DashboardCardServiceDeleteDashboardCard
+     * @summary delete dashboard_card
+     * @request DELETE:/v1/dashboard_card/{id}
+     * @secure
+     */
+    dashboardCardServiceDeleteDashboardCard: (id: number, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
+        path: `/v1/dashboard_card/${id}`,
+        method: "DELETE",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -2273,11 +2801,21 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request POST:/v1/dashboard_card_item
      * @secure
      */
-    dashboardCardItemServiceAddDashboardCardItem: (body: ApiNewDashboardCardItemRequest, params: RequestParams = {}) =>
-      this.request<ApiDashboardCardItem, RpcStatus>({
+    dashboardCardItemServiceAddDashboardCardItem: (data: ApiNewDashboardCardItemRequest, params: RequestParams = {}) =>
+      this.request<
+        ApiDashboardCardItem,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/dashboard_card_item`,
         method: "POST",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
         format: "json",
@@ -2293,28 +2831,20 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request GET:/v1/dashboard_card_item/{id}
      * @secure
      */
-    dashboardCardItemServiceGetDashboardCardItemById: (id: string, params: RequestParams = {}) =>
-      this.request<ApiDashboardCardItem, RpcStatus>({
+    dashboardCardItemServiceGetDashboardCardItemById: (id: number, params: RequestParams = {}) =>
+      this.request<
+        ApiDashboardCardItem,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
         path: `/v1/dashboard_card_item/${id}`,
         method: "GET",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags DashboardCardItemService
-     * @name DashboardCardItemServiceDeleteDashboardCardItem
-     * @summary delete dashboard_card_item
-     * @request DELETE:/v1/dashboard_card_item/{id}
-     * @secure
-     */
-    dashboardCardItemServiceDeleteDashboardCardItem: (id: number, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
-        path: `/v1/dashboard_card_item/${id}`,
-        method: "DELETE",
         secure: true,
         format: "json",
         ...params,
@@ -2330,29 +2860,70 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @secure
      */
     dashboardCardItemServiceUpdateDashboardCardItem: (
-      id: string,
-      body: {
-        title?: string;
-        type?: string;
+      id: number,
+      data: {
+        title: string;
+        type: string;
         /** @format int32 */
-        weight?: number;
-        enabled?: boolean;
+        weight: number;
+        enabled: boolean;
         /** @format int64 */
-        dashboardCardId?: number;
+        dashboardCardId: number;
         entityId?: string;
-        /** @format byte */
-        payload?: string;
-        hidden?: boolean;
-        frozen?: boolean;
+        /**
+         * @format byte
+         * @pattern ^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$
+         */
+        payload: string;
+        hidden: boolean;
+        frozen: boolean;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiDashboardCardItem, RpcStatus>({
+      this.request<
+        ApiDashboardCardItem,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/dashboard_card_item/${id}`,
         method: "PUT",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags DashboardCardItemService
+     * @name DashboardCardItemServiceDeleteDashboardCardItem
+     * @summary delete dashboard_card_item
+     * @request DELETE:/v1/dashboard_card_item/{id}
+     * @secure
+     */
+    dashboardCardItemServiceDeleteDashboardCardItem: (id: number, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
+        path: `/v1/dashboard_card_item/${id}`,
+        method: "DELETE",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -2368,15 +2939,34 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     dashboardCardItemServiceGetDashboardCardItemList: (
       query?: {
-        /** @format uint64 */
-        page?: number;
-        /** @format uint64 */
-        limit?: number;
+        /**
+         * Field on which to sort and its direction
+         * @example "-created_at"
+         */
         sort?: string;
+        /**
+         * Page number of the requested result set
+         * @format uint64
+         * @default 1
+         * @example 1
+         */
+        page?: number;
+        /**
+         * The number of results returned on a page
+         * @format uint64
+         */
+        limit?: number;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiGetDashboardCardItemListResult, RpcStatus>({
+      this.request<
+        ApiGetDashboardCardItemListResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/dashboard_card_items`,
         method: "GET",
         query: query,
@@ -2396,15 +2986,34 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     dashboardCardServiceGetDashboardCardList: (
       query?: {
-        /** @format uint64 */
-        page?: number;
-        /** @format uint64 */
-        limit?: number;
+        /**
+         * Field on which to sort and its direction
+         * @example "-created_at"
+         */
         sort?: string;
+        /**
+         * Page number of the requested result set
+         * @format uint64
+         * @default 1
+         * @example 1
+         */
+        page?: number;
+        /**
+         * The number of results returned on a page
+         * @format uint64
+         */
+        limit?: number;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiGetDashboardCardListResult, RpcStatus>({
+      this.request<
+        ApiGetDashboardCardListResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/dashboard_cards`,
         method: "GET",
         query: query,
@@ -2422,11 +3031,21 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request POST:/v1/dashboard_tab
      * @secure
      */
-    dashboardTabServiceAddDashboardTab: (body: ApiNewDashboardTabRequest, params: RequestParams = {}) =>
-      this.request<ApiDashboardTab, RpcStatus>({
+    dashboardTabServiceAddDashboardTab: (data: ApiNewDashboardTabRequest, params: RequestParams = {}) =>
+      this.request<
+        ApiDashboardTab,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/dashboard_tab`,
         method: "POST",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
         format: "json",
@@ -2442,28 +3061,20 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request GET:/v1/dashboard_tab/{id}
      * @secure
      */
-    dashboardTabServiceGetDashboardTabById: (id: string, params: RequestParams = {}) =>
-      this.request<ApiDashboardTab, RpcStatus>({
+    dashboardTabServiceGetDashboardTabById: (id: number, params: RequestParams = {}) =>
+      this.request<
+        ApiDashboardTab,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
         path: `/v1/dashboard_tab/${id}`,
         method: "GET",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags DashboardTabService
-     * @name DashboardTabServiceDeleteDashboardTab
-     * @summary delete dashboard_tab
-     * @request DELETE:/v1/dashboard_tab/{id}
-     * @secure
-     */
-    dashboardTabServiceDeleteDashboardTab: (id: number, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
-        path: `/v1/dashboard_tab/${id}`,
-        method: "DELETE",
         secure: true,
         format: "json",
         ...params,
@@ -2480,27 +3091,65 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     dashboardTabServiceUpdateDashboardTab: (
       id: number,
-      body: {
-        name?: string;
+      data: {
+        name: string;
         /** @format int32 */
-        columnWidth?: number;
-        gap?: boolean;
+        columnWidth: number;
+        gap: boolean;
         background?: string;
-        icon?: string;
-        enabled?: boolean;
+        icon: string;
+        enabled: boolean;
         /** @format int32 */
-        weight?: number;
+        weight: number;
         /** @format int64 */
-        dashboardId?: number;
+        dashboardId: number;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiDashboardTab, RpcStatus>({
+      this.request<
+        ApiDashboardTab,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/dashboard_tab/${id}`,
         method: "PUT",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags DashboardTabService
+     * @name DashboardTabServiceDeleteDashboardTab
+     * @summary delete dashboard_tab
+     * @request DELETE:/v1/dashboard_tab/{id}
+     * @secure
+     */
+    dashboardTabServiceDeleteDashboardTab: (id: number, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
+        path: `/v1/dashboard_tab/${id}`,
+        method: "DELETE",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -2516,15 +3165,34 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     dashboardTabServiceGetDashboardTabList: (
       query?: {
-        /** @format uint64 */
-        page?: number;
-        /** @format uint64 */
-        limit?: number;
+        /**
+         * Field on which to sort and its direction
+         * @example "-created_at"
+         */
         sort?: string;
+        /**
+         * Page number of the requested result set
+         * @format uint64
+         * @default 1
+         * @example 1
+         */
+        page?: number;
+        /**
+         * The number of results returned on a page
+         * @format uint64
+         */
+        limit?: number;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiGetDashboardTabListResult, RpcStatus>({
+      this.request<
+        ApiGetDashboardTabListResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/dashboard_tabs`,
         method: "GET",
         query: query,
@@ -2544,15 +3212,34 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     dashboardServiceGetDashboardList: (
       query?: {
-        /** @format uint64 */
-        page?: number;
-        /** @format uint64 */
-        limit?: number;
+        /**
+         * Field on which to sort and its direction
+         * @example "-created_at"
+         */
         sort?: string;
+        /**
+         * Page number of the requested result set
+         * @format uint64
+         * @default 1
+         * @example 1
+         */
+        page?: number;
+        /**
+         * The number of results returned on a page
+         * @format uint64
+         */
+        limit?: number;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiGetDashboardListResult, RpcStatus>({
+      this.request<
+        ApiGetDashboardListResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/dashboards`,
         method: "GET",
         query: query,
@@ -2570,11 +3257,21 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request POST:/v1/dashboards/import
      * @secure
      */
-    dashboardServiceImportDashboard: (body: ApiDashboard, params: RequestParams = {}) =>
-      this.request<ApiDashboard, RpcStatus>({
+    dashboardServiceImportDashboard: (data: ApiDashboard, params: RequestParams = {}) =>
+      this.request<
+        ApiDashboard,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/dashboards/import`,
         method: "POST",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
         format: "json",
@@ -2594,13 +3291,20 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
       query?: {
         query?: string;
         /** @format int64 */
-        limit?: number;
-        /** @format int64 */
         offset?: number;
+        /** @format int64 */
+        limit?: number;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiSearchDashboardResult, RpcStatus>({
+      this.request<
+        ApiSearchDashboardResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/dashboards/search`,
         method: "GET",
         query: query,
@@ -2613,17 +3317,25 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * No description
      *
      * @tags DeveloperToolsService
-     * @name DeveloperToolsServiceTaskCallAction
-     * @summary task call action
+     * @name DeveloperToolsServiceCallAction
+     * @summary call action
      * @request POST:/v1/developer_tools/automation/call_action
      * @secure
      */
-    developerToolsServiceTaskCallAction: (body: ApiAutomationRequest, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
+    developerToolsServiceCallAction: (data: ApiAutomationRequest, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/developer_tools/automation/call_action`,
         method: "POST",
-        body: body,
+        body: data,
         secure: true,
+        type: ContentType.Json,
         format: "json",
         ...params,
       }),
@@ -2637,12 +3349,23 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request POST:/v1/developer_tools/automation/call_trigger
      * @secure
      */
-    developerToolsServiceCallTrigger: (body: ApiAutomationRequest, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
+    developerToolsServiceCallTrigger: (data: ApiAutomationRequest, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/developer_tools/automation/call_trigger`,
         method: "POST",
-        body: body,
+        body: data,
         secure: true,
+        type: ContentType.Json,
         format: "json",
         ...params,
       }),
@@ -2658,15 +3381,34 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     developerToolsServiceGetEventBusStateList: (
       query?: {
-        /** @format uint64 */
-        page?: number;
-        /** @format uint64 */
-        limit?: number;
+        /**
+         * Field on which to sort and its direction
+         * @example "-created_at"
+         */
         sort?: string;
+        /**
+         * Page number of the requested result set
+         * @format uint64
+         * @default 1
+         * @example 1
+         */
+        page?: number;
+        /**
+         * The number of results returned on a page
+         * @format uint64
+         */
+        limit?: number;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiEventBusStateListResult, RpcStatus>({
+      this.request<
+        ApiEventBusStateListResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/developer_tools/bus/state`,
         method: "GET",
         query: query,
@@ -2684,11 +3426,21 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request POST:/v1/developer_tools/entity/reload
      * @secure
      */
-    developerToolsServiceReloadEntity: (body: ApiReloadRequest, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
+    developerToolsServiceReloadEntity: (data: ApiReloadRequest, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/developer_tools/entity/reload`,
         method: "POST",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
         format: "json",
@@ -2704,11 +3456,21 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request POST:/v1/developer_tools/entity/set_state
      * @secure
      */
-    developerToolsServiceEntitySetState: (body: ApiEntityRequest, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
+    developerToolsServiceEntitySetState: (data: ApiEntityRequest, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/developer_tools/entity/set_state`,
         method: "POST",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
         format: "json",
@@ -2726,11 +3488,23 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     entityServiceGetEntityList: (
       query?: {
-        /** @format uint64 */
-        page?: number;
-        /** @format uint64 */
-        limit?: number;
+        /**
+         * Field on which to sort and its direction
+         * @example "-created_at"
+         */
         sort?: string;
+        /**
+         * Page number of the requested result set
+         * @format uint64
+         * @default 1
+         * @example 1
+         */
+        page?: number;
+        /**
+         * The number of results returned on a page
+         * @format uint64
+         */
+        limit?: number;
         query?: string;
         plugin?: string;
         /** @format int64 */
@@ -2738,7 +3512,14 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiGetEntityListResult, RpcStatus>({
+      this.request<
+        ApiGetEntityListResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/entities`,
         method: "GET",
         query: query,
@@ -2756,11 +3537,21 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request POST:/v1/entities/import
      * @secure
      */
-    entityServiceImportEntity: (body: ApiEntity, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
+    entityServiceImportEntity: (data: ApiEntity, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/entities/import`,
         method: "POST",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
         format: "json",
@@ -2776,11 +3567,21 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request POST:/v1/entity
      * @secure
      */
-    entityServiceAddEntity: (body: ApiNewEntityRequest, params: RequestParams = {}) =>
-      this.request<ApiEntity, RpcStatus>({
+    entityServiceAddEntity: (data: ApiNewEntityRequest, params: RequestParams = {}) =>
+      this.request<
+        ApiEntity,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/entity`,
         method: "POST",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
         format: "json",
@@ -2800,13 +3601,20 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
       query?: {
         query?: string;
         /** @format int64 */
-        limit?: number;
-        /** @format int64 */
         offset?: number;
+        /** @format int64 */
+        limit?: number;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiSearchEntityResult, RpcStatus>({
+      this.request<
+        ApiSearchEntityResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/entity/search`,
         method: "GET",
         query: query,
@@ -2825,27 +3633,19 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @secure
      */
     entityServiceGetEntity: (id: string, params: RequestParams = {}) =>
-      this.request<ApiEntity, RpcStatus>({
+      this.request<
+        ApiEntity,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
         path: `/v1/entity/${id}`,
         method: "GET",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags EntityService
-     * @name EntityServiceDeleteEntity
-     * @summary delete entity
-     * @request DELETE:/v1/entity/{id}
-     * @secure
-     */
-    entityServiceDeleteEntity: (id: string, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
-        path: `/v1/entity/${id}`,
-        method: "DELETE",
         secure: true,
         format: "json",
         ...params,
@@ -2862,32 +3662,71 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     entityServiceUpdateEntity: (
       id: string,
-      body: {
+      data: {
+        id: string;
         name?: string;
-        pluginName?: string;
-        description?: string;
+        pluginName: string;
+        description: string;
         /** @format int64 */
         areaId?: number;
         icon?: string;
         /** @format int64 */
         imageId?: number;
-        autoLoad?: boolean;
+        autoLoad: boolean;
         parentId?: string;
-        actions?: ApiUpdateEntityRequestAction[];
-        states?: ApiUpdateEntityRequestState[];
-        attributes?: Record<string, ApiAttribute>;
-        settings?: Record<string, ApiAttribute>;
-        scriptIds?: number[];
-        metrics?: ApiMetric[];
+        actions: ApiUpdateEntityRequestAction[];
+        states: ApiUpdateEntityRequestState[];
+        attributes: Record<string, ApiAttribute>;
+        settings: Record<string, ApiAttribute>;
+        scriptIds: number[];
+        metrics: ApiMetric[];
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiEntity, RpcStatus>({
+      this.request<
+        ApiEntity,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/entity/${id}`,
         method: "PUT",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags EntityService
+     * @name EntityServiceDeleteEntity
+     * @summary delete entity
+     * @request DELETE:/v1/entity/{id}
+     * @secure
+     */
+    entityServiceDeleteEntity: (id: string, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
+        path: `/v1/entity/${id}`,
+        method: "DELETE",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -2902,7 +3741,17 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @secure
      */
     entityServiceDisabledEntity: (id: string, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/entity/${id}/disable`,
         method: "POST",
         secure: true,
@@ -2920,7 +3769,17 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @secure
      */
     entityServiceEnabledEntity: (id: string, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/entity/${id}/enable`,
         method: "POST",
         secure: true,
@@ -2938,18 +3797,39 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     entityStorageServiceGetEntityStorageList: (
       query?: {
-        /** @format uint64 */
-        page?: number;
-        /** @format uint64 */
-        limit?: number;
+        /**
+         * Field on which to sort and its direction
+         * @example "-created_at"
+         */
         sort?: string;
-        entityId?: string;
+        /**
+         * Page number of the requested result set
+         * @format uint64
+         * @default 1
+         * @example 1
+         */
+        page?: number;
+        /**
+         * The number of results returned on a page
+         * @format uint64
+         */
+        limit?: number;
+        /** @format date-time */
         startDate?: string;
+        /** @format date-time */
         endDate?: string;
+        entityId?: string;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiGetEntityStorageResult, RpcStatus>({
+      this.request<
+        ApiGetEntityStorageResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/entity_storage`,
         method: "GET",
         query: query,
@@ -2967,11 +3847,21 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request POST:/v1/image
      * @secure
      */
-    imageServiceAddImage: (body: ApiNewImageRequest, params: RequestParams = {}) =>
-      this.request<ApiImage, RpcStatus>({
+    imageServiceAddImage: (data: ApiNewImageRequest, params: RequestParams = {}) =>
+      this.request<
+        ApiImage,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/image`,
         method: "POST",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
         format: "json",
@@ -2987,13 +3877,28 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request POST:/v1/image/upload
      * @secure
      */
-    imageServiceUploadImage: (body: ApiUploadImageRequest, params: RequestParams = {}) =>
-      this.request<ApiImage, RpcStatus>({
+    imageServiceUploadImage: (
+      data: {
+        filename?: File[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        ApiImage,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/image/upload`,
         method: "POST",
-        body: body,
+        body: data,
         secure: true,
-        type: ContentType.Json,
+        type: ContentType.FormData,
         format: "json",
         ...params,
       }),
@@ -3007,28 +3912,20 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request GET:/v1/image/{id}
      * @secure
      */
-    imageServiceGetImageById: (id: string, params: RequestParams = {}) =>
-      this.request<ApiImage, RpcStatus>({
+    imageServiceGetImageById: (id: number, params: RequestParams = {}) =>
+      this.request<
+        ApiImage,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
         path: `/v1/image/${id}`,
         method: "GET",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags ImageService
-     * @name ImageServiceDeleteImageById
-     * @summary delete image by id
-     * @request DELETE:/v1/image/{id}
-     * @secure
-     */
-    imageServiceDeleteImageById: (id: number, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
-        path: `/v1/image/${id}`,
-        method: "DELETE",
         secure: true,
         format: "json",
         ...params,
@@ -3044,24 +3941,62 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @secure
      */
     imageServiceUpdateImageById: (
-      id: string,
-      body: {
-        thumb?: string;
-        image?: string;
-        mimeType?: string;
-        title?: string;
+      id: number,
+      data: {
+        thumb: string;
+        image: string;
+        mimeType: string;
+        title: string;
         /** @format int64 */
-        size?: number;
-        name?: string;
+        size: number;
+        name: string;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiImage, RpcStatus>({
+      this.request<
+        ApiImage,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/image/${id}`,
         method: "PUT",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags ImageService
+     * @name ImageServiceDeleteImageById
+     * @summary delete image by id
+     * @request DELETE:/v1/image/{id}
+     * @secure
+     */
+    imageServiceDeleteImageById: (id: number, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
+        path: `/v1/image/${id}`,
+        method: "DELETE",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -3077,15 +4012,34 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     imageServiceGetImageList: (
       query?: {
-        /** @format uint64 */
-        page?: number;
-        /** @format uint64 */
-        limit?: number;
+        /**
+         * Field on which to sort and its direction
+         * @example "-created_at"
+         */
         sort?: string;
+        /**
+         * Page number of the requested result set
+         * @format uint64
+         * @default 1
+         * @example 1
+         */
+        page?: number;
+        /**
+         * The number of results returned on a page
+         * @format uint64
+         */
+        limit?: number;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiGetImageListResult, RpcStatus>({
+      this.request<
+        ApiGetImageListResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/images`,
         method: "GET",
         query: query,
@@ -3104,7 +4058,14 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @secure
      */
     imageServiceGetImageFilterList: (params: RequestParams = {}) =>
-      this.request<ApiGetImageFilterListResult, RpcStatus>({
+      this.request<
+        ApiGetImageFilterListResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/images/filter_list`,
         method: "GET",
         secure: true,
@@ -3127,7 +4088,14 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiGetImageListByDateResult, RpcStatus>({
+      this.request<
+        ApiGetImageListByDateResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/images/filtered`,
         method: "GET",
         query: query,
@@ -3145,13 +4113,22 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request POST:/v1/interact/entity/call_action
      * @secure
      */
-    interactServiceEntityCallAction: (body: ApiEntityCallActionRequest, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
+    interactServiceEntityCallAction: (data: ApiEntityCallActionRequest, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/interact/entity/call_action`,
         method: "POST",
-        body: body,
+        body: data,
         secure: true,
-        type: ContentType.Json,
         format: "json",
         ...params,
       }),
@@ -3166,18 +4143,39 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     logServiceGetLogList: (
       query?: {
-        /** @format uint64 */
-        page?: number;
-        /** @format uint64 */
-        limit?: number;
+        /**
+         * Field on which to sort and its direction
+         * @example "-created_at"
+         */
         sort?: string;
-        query?: string;
+        /**
+         * Page number of the requested result set
+         * @format uint64
+         * @default 1
+         * @example 1
+         */
+        page?: number;
+        /**
+         * The number of results returned on a page
+         * @format uint64
+         */
+        limit?: number;
+        /** @format date-time */
         startDate?: string;
+        /** @format date-time */
         endDate?: string;
+        query?: string;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiGetLogListResult, RpcStatus>({
+      this.request<
+        ApiGetLogListResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/logs`,
         method: "GET",
         query: query,
@@ -3197,18 +4195,39 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     messageDeliveryServiceGetMessageDeliveryList: (
       query?: {
-        /** @format uint64 */
-        page?: number;
-        /** @format uint64 */
-        limit?: number;
+        /**
+         * Field on which to sort and its direction
+         * @example "-created_at"
+         */
         sort?: string;
-        messageType?: string;
+        /**
+         * Page number of the requested result set
+         * @format uint64
+         * @default 1
+         * @example 1
+         */
+        page?: number;
+        /**
+         * The number of results returned on a page
+         * @format uint64
+         */
+        limit?: number;
+        /** @format date-time */
         startDate?: string;
+        /** @format date-time */
         endDate?: string;
+        messageType?: string;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiGetMessageDeliveryListResult, RpcStatus>({
+      this.request<
+        ApiGetMessageDeliveryListResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/message_delivery`,
         method: "GET",
         query: query,
@@ -3227,18 +4246,25 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @secure
      */
     metricServiceGetMetric: (
-      query?: {
+      query: {
         /** @format int64 */
-        id?: number;
-        range?: string;
+        id: number;
+        range?: "6h" | "12h" | "24h" | "7d" | "30d" | "1m";
         /** @format date-time */
-        from?: string;
+        startDate?: string;
         /** @format date-time */
-        to?: string;
+        endDate?: string;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiMetric, RpcStatus>({
+      this.request<
+        ApiMetric,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/metric`,
         method: "GET",
         query: query,
@@ -3252,12 +4278,22 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      *
      * @tags MqttService
      * @name MqttServiceGetClientById
-     * @summary get mqtt by id
+     * @summary get client by id
      * @request GET:/v1/mqtt/client/{id}
      * @secure
      */
     mqttServiceGetClientById: (id: string, params: RequestParams = {}) =>
-      this.request<ApiClient, RpcStatus>({
+      this.request<
+        ApiClient,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
         path: `/v1/mqtt/client/${id}`,
         method: "GET",
         secure: true,
@@ -3270,21 +4306,40 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      *
      * @tags MqttService
      * @name MqttServiceGetClientList
-     * @summary get mqtt list
+     * @summary get client list
      * @request GET:/v1/mqtt/clients
      * @secure
      */
     mqttServiceGetClientList: (
       query?: {
-        /** @format uint64 */
-        page?: number;
-        /** @format uint64 */
-        limit?: number;
+        /**
+         * Field on which to sort and its direction
+         * @example "-created_at"
+         */
         sort?: string;
+        /**
+         * Page number of the requested result set
+         * @format uint64
+         * @default 1
+         * @example 1
+         */
+        page?: number;
+        /**
+         * The number of results returned on a page
+         * @format uint64
+         */
+        limit?: number;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiGetClientListResult, RpcStatus>({
+      this.request<
+        ApiGetClientListResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/mqtt/clients`,
         method: "GET",
         query: query,
@@ -3304,16 +4359,35 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     mqttServiceGetSubscriptionList: (
       query?: {
-        /** @format uint64 */
-        page?: number;
-        /** @format uint64 */
-        limit?: number;
+        /**
+         * Field on which to sort and its direction
+         * @example "-created_at"
+         */
         sort?: string;
+        /**
+         * Page number of the requested result set
+         * @format uint64
+         * @default 1
+         * @example 1
+         */
+        page?: number;
+        /**
+         * The number of results returned on a page
+         * @format uint64
+         */
+        limit?: number;
         clientId?: string;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiGetSubscriptionListResult, RpcStatus>({
+      this.request<
+        ApiGetSubscriptionListResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/mqtt/subscriptions`,
         method: "GET",
         query: query,
@@ -3331,11 +4405,21 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request POST:/v1/password_reset
      * @secure
      */
-    authServicePasswordReset: (body: ApiPasswordResetRequest, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
+    authServicePasswordReset: (data: ApiPasswordResetRequest, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/password_reset`,
         method: "POST",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
         format: "json",
@@ -3352,7 +4436,17 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @secure
      */
     pluginServiceGetPlugin: (name: string, params: RequestParams = {}) =>
-      this.request<ApiPlugin, RpcStatus>({
+      this.request<
+        ApiPlugin,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
         path: `/v1/plugin/${name}`,
         method: "GET",
         secure: true,
@@ -3370,7 +4464,17 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @secure
      */
     pluginServiceDisablePlugin: (name: string, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/plugin/${name}/disable`,
         method: "POST",
         secure: true,
@@ -3388,7 +4492,17 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @secure
      */
     pluginServiceEnablePlugin: (name: string, params: RequestParams = {}) =>
-      this.request<ApiEnablePluginResult, RpcStatus>({
+      this.request<
+        ApiEnablePluginResult,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/plugin/${name}/enable`,
         method: "POST",
         secure: true,
@@ -3407,15 +4521,25 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     pluginServiceUpdatePluginSettings: (
       name: string,
-      body: {
-        settings?: Record<string, ApiAttribute>;
+      data: {
+        settings: Record<string, ApiAttribute>;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/plugin/${name}/settings`,
         method: "PUT",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
         format: "json",
@@ -3433,15 +4557,34 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     pluginServiceGetPluginList: (
       query?: {
-        /** @format uint64 */
-        page?: number;
-        /** @format uint64 */
-        limit?: number;
+        /**
+         * Field on which to sort and its direction
+         * @example "-created_at"
+         */
         sort?: string;
+        /**
+         * Page number of the requested result set
+         * @format uint64
+         * @default 1
+         * @example 1
+         */
+        page?: number;
+        /**
+         * The number of results returned on a page
+         * @format uint64
+         */
+        limit?: number;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiGetPluginListResult, RpcStatus>({
+      this.request<
+        ApiGetPluginListResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/plugins`,
         method: "GET",
         query: query,
@@ -3463,13 +4606,20 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
       query?: {
         query?: string;
         /** @format int64 */
-        limit?: number;
-        /** @format int64 */
         offset?: number;
+        /** @format int64 */
+        limit?: number;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiSearchPluginResult, RpcStatus>({
+      this.request<
+        ApiSearchPluginResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/plugins/search`,
         method: "GET",
         query: query,
@@ -3487,11 +4637,21 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request POST:/v1/role
      * @secure
      */
-    roleServiceAddRole: (body: ApiNewRoleRequest, params: RequestParams = {}) =>
-      this.request<ApiRole, RpcStatus>({
+    roleServiceAddRole: (data: ApiNewRoleRequest, params: RequestParams = {}) =>
+      this.request<
+        ApiRole,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/role`,
         method: "POST",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
         format: "json",
@@ -3508,27 +4668,19 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @secure
      */
     roleServiceGetRoleByName: (name: string, params: RequestParams = {}) =>
-      this.request<ApiRole, RpcStatus>({
+      this.request<
+        ApiRole,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
         path: `/v1/role/${name}`,
         method: "GET",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags RoleService
-     * @name RoleServiceDeleteRoleByName
-     * @summary delete role by name
-     * @request DELETE:/v1/role/{name}
-     * @secure
-     */
-    roleServiceDeleteRoleByName: (name: string, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
-        path: `/v1/role/${name}`,
-        method: "DELETE",
         secure: true,
         format: "json",
         ...params,
@@ -3545,18 +4697,56 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     roleServiceUpdateRoleByName: (
       name: string,
-      body: {
-        description?: string;
+      data: {
+        description: string;
         parent?: string;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiRole, RpcStatus>({
+      this.request<
+        ApiRole,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/role/${name}`,
         method: "PUT",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags RoleService
+     * @name RoleServiceDeleteRoleByName
+     * @summary delete role by name
+     * @request DELETE:/v1/role/{name}
+     * @secure
+     */
+    roleServiceDeleteRoleByName: (name: string, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
+        path: `/v1/role/${name}`,
+        method: "DELETE",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -3571,7 +4761,14 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @secure
      */
     roleServiceGetRoleAccessList: (name: string, params: RequestParams = {}) =>
-      this.request<ApiRoleAccessListResult, RpcStatus>({
+      this.request<
+        ApiRoleAccessListResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/role/${name}/access_list`,
         method: "GET",
         secure: true,
@@ -3590,15 +4787,25 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     roleServiceUpdateRoleAccessList: (
       name: string,
-      body: {
-        accessListDiff?: Record<string, UpdateRoleAccessListRequestAccessListDiff>;
+      data: {
+        accessListDiff: Record<string, UpdateRoleAccessListRequestAccessListDiff>;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiRoleAccessListResult, RpcStatus>({
+      this.request<
+        ApiRoleAccessListResult,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/role/${name}/access_list`,
         method: "PUT",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
         format: "json",
@@ -3616,15 +4823,34 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     roleServiceGetRoleList: (
       query?: {
-        /** @format uint64 */
-        page?: number;
-        /** @format uint64 */
-        limit?: number;
+        /**
+         * Field on which to sort and its direction
+         * @example "-created_at"
+         */
         sort?: string;
+        /**
+         * Page number of the requested result set
+         * @format uint64
+         * @default 1
+         * @example 1
+         */
+        page?: number;
+        /**
+         * The number of results returned on a page
+         * @format uint64
+         */
+        limit?: number;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiGetRoleListResult, RpcStatus>({
+      this.request<
+        ApiGetRoleListResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/roles`,
         method: "GET",
         query: query,
@@ -3646,13 +4872,20 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
       query?: {
         query?: string;
         /** @format int64 */
-        limit?: number;
-        /** @format int64 */
         offset?: number;
+        /** @format int64 */
+        limit?: number;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiSearchRoleListResult, RpcStatus>({
+      this.request<
+        ApiSearchRoleListResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/roles/search`,
         method: "GET",
         query: query,
@@ -3670,11 +4903,21 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request POST:/v1/script
      * @secure
      */
-    scriptServiceAddScript: (body: ApiNewScriptRequest, params: RequestParams = {}) =>
-      this.request<ApiScript, RpcStatus>({
+    scriptServiceAddScript: (data: ApiNewScriptRequest, params: RequestParams = {}) =>
+      this.request<
+        ApiScript,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/script`,
         method: "POST",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
         format: "json",
@@ -3690,11 +4933,21 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request POST:/v1/script/exec_src
      * @secure
      */
-    scriptServiceExecSrcScriptById: (body: ApiExecSrcScriptRequest, params: RequestParams = {}) =>
-      this.request<ApiExecScriptResult, RpcStatus>({
+    scriptServiceExecSrcScriptById: (data: ApiExecSrcScriptRequest, params: RequestParams = {}) =>
+      this.request<
+        ApiExecScriptResult,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/script/exec_src`,
         method: "POST",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
         format: "json",
@@ -3711,27 +4964,19 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @secure
      */
     scriptServiceGetScriptById: (id: number, params: RequestParams = {}) =>
-      this.request<ApiScript, RpcStatus>({
+      this.request<
+        ApiScript,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
         path: `/v1/script/${id}`,
         method: "GET",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags ScriptService
-     * @name ScriptServiceDeleteScriptById
-     * @summary delete script by id
-     * @request DELETE:/v1/script/{id}
-     * @secure
-     */
-    scriptServiceDeleteScriptById: (id: number, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
-        path: `/v1/script/${id}`,
-        method: "DELETE",
         secure: true,
         format: "json",
         ...params,
@@ -3748,20 +4993,58 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     scriptServiceUpdateScriptById: (
       id: number,
-      body: {
-        lang?: string;
-        name?: string;
-        source?: string;
-        description?: string;
+      data: {
+        lang: string;
+        name: string;
+        source: string;
+        description: string;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiScript, RpcStatus>({
+      this.request<
+        ApiScript,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/script/${id}`,
         method: "PUT",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags ScriptService
+     * @name ScriptServiceDeleteScriptById
+     * @summary delete script by id
+     * @request DELETE:/v1/script/{id}
+     * @secure
+     */
+    scriptServiceDeleteScriptById: (id: number, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
+        path: `/v1/script/${id}`,
+        method: "DELETE",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -3776,7 +5059,17 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @secure
      */
     scriptServiceCopyScriptById: (id: number, params: RequestParams = {}) =>
-      this.request<ApiScript, RpcStatus>({
+      this.request<
+        ApiScript,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/script/${id}/copy`,
         method: "POST",
         secure: true,
@@ -3794,7 +5087,17 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @secure
      */
     scriptServiceExecScriptById: (id: number, params: RequestParams = {}) =>
-      this.request<ApiExecScriptResult, RpcStatus>({
+      this.request<
+        ApiExecScriptResult,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/script/${id}/exec`,
         method: "POST",
         secure: true,
@@ -3813,16 +5116,35 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     scriptServiceGetScriptList: (
       query?: {
-        /** @format uint64 */
-        page?: number;
-        /** @format uint64 */
-        limit?: number;
+        /**
+         * Field on which to sort and its direction
+         * @example "-created_at"
+         */
         sort?: string;
+        /**
+         * Page number of the requested result set
+         * @format uint64
+         * @default 1
+         * @example 1
+         */
+        page?: number;
+        /**
+         * The number of results returned on a page
+         * @format uint64
+         */
+        limit?: number;
         query?: string;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiGetScriptListResult, RpcStatus>({
+      this.request<
+        ApiGetScriptListResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/scripts`,
         method: "GET",
         query: query,
@@ -3844,13 +5166,20 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
       query?: {
         query?: string;
         /** @format int64 */
-        limit?: number;
-        /** @format int64 */
         offset?: number;
+        /** @format int64 */
+        limit?: number;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiSearchScriptListResult, RpcStatus>({
+      this.request<
+        ApiSearchScriptListResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/scripts/search`,
         method: "GET",
         query: query,
@@ -3869,7 +5198,14 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @secure
      */
     scriptServiceGetStatistic: (params: RequestParams = {}) =>
-      this.request<ApiStatistics, RpcStatus>({
+      this.request<
+        ApiStatistics,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/scripts/statistic`,
         method: "GET",
         secure: true,
@@ -3887,10 +5223,20 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @secure
      */
     authServiceSignin: (params: RequestParams = {}) =>
-      this.request<ApiSigninResponse, RpcStatus>({
+      this.request<
+        ApiSigninResponse,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/signin`,
         method: "POST",
-        secure: false,
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -3905,7 +5251,17 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @secure
      */
     authServiceSignout: (params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/signout`,
         method: "POST",
         secure: true,
@@ -3922,11 +5278,21 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request POST:/v1/task
      * @secure
      */
-    automationServiceAddTask: (body: ApiNewTaskRequest, params: RequestParams = {}) =>
-      this.request<ApiTask, RpcStatus>({
+    automationServiceAddTask: (data: ApiNewTaskRequest, params: RequestParams = {}) =>
+      this.request<
+        ApiTask,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/task`,
         method: "POST",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
         format: "json",
@@ -3943,27 +5309,19 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @secure
      */
     automationServiceGetTask: (id: number, params: RequestParams = {}) =>
-      this.request<ApiTask, RpcStatus>({
+      this.request<
+        ApiTask,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
         path: `/v1/task/${id}`,
         method: "GET",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags AutomationService
-     * @name AutomationServiceDeleteTask
-     * @summary delete task
-     * @request DELETE:/v1/task/{id}
-     * @secure
-     */
-    automationServiceDeleteTask: (id: number, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
-        path: `/v1/task/${id}`,
-        method: "DELETE",
         secure: true,
         format: "json",
         ...params,
@@ -3980,25 +5338,63 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     automationServiceUpdateTask: (
       id: number,
-      body: {
-        name?: string;
-        description?: string;
-        enabled?: boolean;
-        condition?: string;
-        triggerIds?: number[];
-        conditionIds?: number[];
-        actionIds?: number[];
+      data: {
+        name: string;
+        description: string;
+        enabled: boolean;
+        condition: string;
+        triggerIds: number[];
+        conditionIds: number[];
+        actionIds: number[];
         /** @format int64 */
         areaId?: number;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiTask, RpcStatus>({
+      this.request<
+        ApiTask,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/task/${id}`,
         method: "PUT",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags AutomationService
+     * @name AutomationServiceDeleteTask
+     * @summary delete task
+     * @request DELETE:/v1/task/{id}
+     * @secure
+     */
+    automationServiceDeleteTask: (id: number, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
+        path: `/v1/task/${id}`,
+        method: "DELETE",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -4013,7 +5409,17 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @secure
      */
     automationServiceDisableTask: (id: number, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/task/${id}/disable`,
         method: "POST",
         secure: true,
@@ -4031,7 +5437,17 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @secure
      */
     automationServiceEnableTask: (id: number, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/task/${id}/enable`,
         method: "POST",
         secure: true,
@@ -4050,15 +5466,34 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     automationServiceGetTaskList: (
       query?: {
-        /** @format uint64 */
-        page?: number;
-        /** @format uint64 */
-        limit?: number;
+        /**
+         * Field on which to sort and its direction
+         * @example "-created_at"
+         */
         sort?: string;
+        /**
+         * Page number of the requested result set
+         * @format uint64
+         * @default 1
+         * @example 1
+         */
+        page?: number;
+        /**
+         * The number of results returned on a page
+         * @format uint64
+         */
+        limit?: number;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiGetTaskListResult, RpcStatus>({
+      this.request<
+        ApiGetTaskListResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/tasks`,
         method: "GET",
         query: query,
@@ -4076,11 +5511,21 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request POST:/v1/tasks/import
      * @secure
      */
-    automationServiceImportTask: (body: ApiTask, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
+    automationServiceImportTask: (data: ApiTask, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/tasks/import`,
         method: "POST",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
         format: "json",
@@ -4096,11 +5541,21 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request POST:/v1/trigger
      * @secure
      */
-    triggerServiceAddTrigger: (body: ApiNewTriggerRequest, params: RequestParams = {}) =>
-      this.request<ApiTrigger, RpcStatus>({
+    triggerServiceAddTrigger: (data: ApiNewTriggerRequest, params: RequestParams = {}) =>
+      this.request<
+        ApiTrigger,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/trigger`,
         method: "POST",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
         format: "json",
@@ -4117,27 +5572,19 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @secure
      */
     triggerServiceGetTriggerById: (id: number, params: RequestParams = {}) =>
-      this.request<ApiTrigger, RpcStatus>({
+      this.request<
+        ApiTrigger,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
         path: `/v1/trigger/${id}`,
         method: "GET",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags TriggerService
-     * @name TriggerServiceDeleteTrigger
-     * @summary delete trigger
-     * @request DELETE:/v1/trigger/{id}
-     * @secure
-     */
-    triggerServiceDeleteTrigger: (id: number, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
-        path: `/v1/trigger/${id}`,
-        method: "DELETE",
         secure: true,
         format: "json",
         ...params,
@@ -4154,25 +5601,66 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     triggerServiceUpdateTrigger: (
       id: number,
-      body: {
-        name?: string;
+      data: {
+        name: string;
+        description: string;
         entity?: ApiEntity;
         entityId?: string;
         script?: ApiScript;
         /** @format int64 */
         scriptId?: number;
-        pluginName?: string;
-        attributes?: Record<string, ApiAttribute>;
-        enabled?: boolean;
+        /** @format int64 */
+        areaId?: number;
+        pluginName: string;
+        attributes: Record<string, ApiAttribute>;
+        enabled: boolean;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiTrigger, RpcStatus>({
+      this.request<
+        ApiTrigger,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/trigger/${id}`,
         method: "PUT",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags TriggerService
+     * @name TriggerServiceDeleteTrigger
+     * @summary delete trigger
+     * @request DELETE:/v1/trigger/{id}
+     * @secure
+     */
+    triggerServiceDeleteTrigger: (id: number, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
+        path: `/v1/trigger/${id}`,
+        method: "DELETE",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -4188,15 +5676,34 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     triggerServiceGetTriggerList: (
       query?: {
-        /** @format uint64 */
-        page?: number;
-        /** @format uint64 */
-        limit?: number;
+        /**
+         * Field on which to sort and its direction
+         * @example "-created_at"
+         */
         sort?: string;
+        /**
+         * Page number of the requested result set
+         * @format uint64
+         * @default 1
+         * @example 1
+         */
+        page?: number;
+        /**
+         * The number of results returned on a page
+         * @format uint64
+         */
+        limit?: number;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiGetTriggerListResult, RpcStatus>({
+      this.request<
+        ApiGetTriggerListResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/triggers`,
         method: "GET",
         query: query,
@@ -4218,13 +5725,20 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
       query?: {
         query?: string;
         /** @format int64 */
-        limit?: number;
-        /** @format int64 */
         offset?: number;
+        /** @format int64 */
+        limit?: number;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiSearchTriggerResult, RpcStatus>({
+      this.request<
+        ApiSearchTriggerResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/triggers/search`,
         method: "GET",
         query: query,
@@ -4243,7 +5757,17 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @secure
      */
     triggerServiceDisableTrigger: (id: number, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/triggers/${id}/disable`,
         method: "POST",
         secure: true,
@@ -4261,7 +5785,17 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @secure
      */
     triggerServiceEnableTrigger: (id: number, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/triggers/${id}/enable`,
         method: "POST",
         secure: true,
@@ -4278,11 +5812,21 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request POST:/v1/user
      * @secure
      */
-    userServiceAddUser: (body: ApiNewtUserRequest, params: RequestParams = {}) =>
-      this.request<ApiUserFull, RpcStatus>({
+    userServiceAddUser: (data: ApiNewtUserRequest, params: RequestParams = {}) =>
+      this.request<
+        ApiUserFull,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/user`,
         method: "POST",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
         format: "json",
@@ -4299,27 +5843,19 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @secure
      */
     userServiceGetUserById: (id: number, params: RequestParams = {}) =>
-      this.request<ApiUserFull, RpcStatus>({
+      this.request<
+        ApiUserFull,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
         path: `/v1/user/${id}`,
         method: "GET",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags UserService
-     * @name UserServiceDeleteUserById
-     * @summary delete user by id
-     * @request DELETE:/v1/user/{id}
-     * @secure
-     */
-    userServiceDeleteUserById: (id: number, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
-        path: `/v1/user/${id}`,
-        method: "DELETE",
         secure: true,
         format: "json",
         ...params,
@@ -4336,28 +5872,66 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     userServiceUpdateUserById: (
       id: number,
-      body: {
-        nickname?: string;
-        firstName?: string;
+      data: {
+        nickname: string;
+        firstName: string;
         lastName?: string;
-        password?: string;
-        passwordRepeat?: string;
-        email?: string;
-        status?: string;
-        lang?: string;
+        password: string;
+        passwordRepeat: string;
+        email: string;
+        status: string;
+        lang: string;
         /** @format int64 */
         imageId?: number;
-        roleName?: string;
+        roleName: string;
         meta?: ApiUserMeta[];
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiUserFull, RpcStatus>({
+      this.request<
+        ApiUserFull,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/user/${id}`,
         method: "PUT",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags UserService
+     * @name UserServiceDeleteUserById
+     * @summary delete user by id
+     * @request DELETE:/v1/user/{id}
+     * @secure
+     */
+    userServiceDeleteUserById: (id: number, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
+        path: `/v1/user/${id}`,
+        method: "DELETE",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -4373,15 +5947,34 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     userServiceGetUserList: (
       query?: {
-        /** @format uint64 */
-        page?: number;
-        /** @format uint64 */
-        limit?: number;
+        /**
+         * Field on which to sort and its direction
+         * @example "-created_at"
+         */
         sort?: string;
+        /**
+         * Page number of the requested result set
+         * @format uint64
+         * @default 1
+         * @example 1
+         */
+        page?: number;
+        /**
+         * The number of results returned on a page
+         * @format uint64
+         */
+        limit?: number;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiGetUserListResult, RpcStatus>({
+      this.request<
+        ApiGetUserListResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/users`,
         method: "GET",
         query: query,
@@ -4399,11 +5992,21 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request POST:/v1/variable
      * @secure
      */
-    variableServiceAddVariable: (body: ApiNewVariableRequest, params: RequestParams = {}) =>
-      this.request<ApiVariable, RpcStatus>({
+    variableServiceAddVariable: (data: ApiNewVariableRequest, params: RequestParams = {}) =>
+      this.request<
+        ApiVariable,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/variable`,
         method: "POST",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
         format: "json",
@@ -4420,27 +6023,19 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @secure
      */
     variableServiceGetVariableByName: (name: string, params: RequestParams = {}) =>
-      this.request<ApiVariable, RpcStatus>({
+      this.request<
+        ApiVariable,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
         path: `/v1/variable/${name}`,
         method: "GET",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags VariableService
-     * @name VariableServiceDeleteVariable
-     * @summary delete variable
-     * @request DELETE:/v1/variable/{name}
-     * @secure
-     */
-    variableServiceDeleteVariable: (name: string, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
-        path: `/v1/variable/${name}`,
-        method: "DELETE",
         secure: true,
         format: "json",
         ...params,
@@ -4457,17 +6052,55 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     variableServiceUpdateVariable: (
       name: string,
-      body: {
-        value?: string;
+      data: {
+        value: string;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiVariable, RpcStatus>({
+      this.request<
+        ApiVariable,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/variable/${name}`,
         method: "PUT",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags VariableService
+     * @name VariableServiceDeleteVariable
+     * @summary delete variable
+     * @request DELETE:/v1/variable/{name}
+     * @secure
+     */
+    variableServiceDeleteVariable: (name: string, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
+        path: `/v1/variable/${name}`,
+        method: "DELETE",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -4483,15 +6116,34 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     variableServiceGetVariableList: (
       query?: {
-        /** @format uint64 */
-        page?: number;
-        /** @format uint64 */
-        limit?: number;
+        /**
+         * Field on which to sort and its direction
+         * @example "-created_at"
+         */
         sort?: string;
+        /**
+         * Page number of the requested result set
+         * @format uint64
+         * @default 1
+         * @example 1
+         */
+        page?: number;
+        /**
+         * The number of results returned on a page
+         * @format uint64
+         */
+        limit?: number;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiGetVariableListResult, RpcStatus>({
+      this.request<
+        ApiGetVariableListResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/variables`,
         method: "GET",
         query: query,
@@ -4511,15 +6163,34 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     zigbee2MqttServiceGetBridgeList: (
       query?: {
-        /** @format uint64 */
-        page?: number;
-        /** @format uint64 */
-        limit?: number;
+        /**
+         * Field on which to sort and its direction
+         * @example "-created_at"
+         */
         sort?: string;
+        /**
+         * Page number of the requested result set
+         * @format uint64
+         * @default 1
+         * @example 1
+         */
+        page?: number;
+        /**
+         * The number of results returned on a page
+         * @format uint64
+         */
+        limit?: number;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiGetBridgeListResult, RpcStatus>({
+      this.request<
+        ApiGetBridgeListResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/zigbee2mqtt/bridge`,
         method: "GET",
         query: query,
@@ -4537,11 +6208,21 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request POST:/v1/zigbee2mqtt/bridge
      * @secure
      */
-    zigbee2MqttServiceAddZigbee2MqttBridge: (body: ApiNewZigbee2MqttRequest, params: RequestParams = {}) =>
-      this.request<ApiZigbee2Mqtt, RpcStatus>({
+    zigbee2MqttServiceAddZigbee2MqttBridge: (data: ApiNewZigbee2MqttRequest, params: RequestParams = {}) =>
+      this.request<
+        ApiZigbee2Mqtt,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/zigbee2mqtt/bridge`,
         method: "POST",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
         format: "json",
@@ -4558,7 +6239,17 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @secure
      */
     zigbee2MqttServiceGetZigbee2MqttBridge: (id: number, params: RequestParams = {}) =>
-      this.request<ApiZigbee2Mqtt, RpcStatus>({
+      this.request<
+        ApiZigbee2Mqtt,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
         path: `/v1/zigbee2mqtt/bridge/${id}`,
         method: "GET",
         secure: true,
@@ -4576,7 +6267,17 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @secure
      */
     zigbee2MqttServiceDeleteBridgeById: (id: number, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
         path: `/v1/zigbee2mqtt/bridge/${id}`,
         method: "DELETE",
         secure: true,
@@ -4595,19 +6296,29 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      */
     zigbee2MqttServiceUpdateBridgeById: (
       id: number,
-      body: {
-        name?: string;
-        login?: string;
+      data: {
+        name: string;
+        login: string;
         password?: string;
-        permitJoin?: boolean;
-        baseTopic?: string;
+        permitJoin: boolean;
+        baseTopic: string;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiZigbee2Mqtt, RpcStatus>({
+      this.request<
+        ApiZigbee2Mqtt,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/zigbee2mqtt/bridge/${id}/bridge`,
         method: "PUT",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
         format: "json",
@@ -4626,15 +6337,37 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
     zigbee2MqttServiceDeviceList: (
       id: number,
       query?: {
-        /** @format uint64 */
-        page?: number;
-        /** @format uint64 */
-        limit?: number;
+        /**
+         * Field on which to sort and its direction
+         * @example "-created_at"
+         */
         sort?: string;
+        /**
+         * Page number of the requested result set
+         * @format uint64
+         * @default 1
+         * @example 1
+         */
+        page?: number;
+        /**
+         * The number of results returned on a page
+         * @format uint64
+         */
+        limit?: number;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiDeviceListResult, RpcStatus>({
+      this.request<
+        ApiDeviceListResult,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
         path: `/v1/zigbee2mqtt/bridge/${id}/devices`,
         method: "GET",
         query: query,
@@ -4652,8 +6385,18 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request GET:/v1/zigbee2mqtt/bridge/{id}/networkmap
      * @secure
      */
-    zigbee2MqttServiceNetworkmap: (id: string, params: RequestParams = {}) =>
-      this.request<ApiNetworkmapResponse, RpcStatus>({
+    zigbee2MqttServiceNetworkmap: (id: number, params: RequestParams = {}) =>
+      this.request<
+        ApiNetworkmapResponse,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
         path: `/v1/zigbee2mqtt/bridge/${id}/networkmap`,
         method: "GET",
         secure: true,
@@ -4670,8 +6413,18 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request POST:/v1/zigbee2mqtt/bridge/{id}/networkmap
      * @secure
      */
-    zigbee2MqttServiceUpdateNetworkmap: (id: string, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
+    zigbee2MqttServiceUpdateNetworkmap: (id: number, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/zigbee2mqtt/bridge/${id}/networkmap`,
         method: "POST",
         secure: true,
@@ -4688,8 +6441,18 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request POST:/v1/zigbee2mqtt/bridge/{id}/reset
      * @secure
      */
-    zigbee2MqttServiceResetBridgeById: (id: string, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
+    zigbee2MqttServiceResetBridgeById: (id: number, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/zigbee2mqtt/bridge/${id}/reset`,
         method: "POST",
         secure: true,
@@ -4706,11 +6469,21 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request POST:/v1/zigbee2mqtt/device_ban
      * @secure
      */
-    zigbee2MqttServiceDeviceBan: (body: ApiDeviceBanRequest, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
+    zigbee2MqttServiceDeviceBan: (data: ApiDeviceBanRequest, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/zigbee2mqtt/device_ban`,
         method: "POST",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
         format: "json",
@@ -4726,11 +6499,21 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request POST:/v1/zigbee2mqtt/device_rename
      * @secure
      */
-    zigbee2MqttServiceDeviceRename: (body: ApiDeviceRenameRequest, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
+    zigbee2MqttServiceDeviceRename: (data: ApiDeviceRenameRequest, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/zigbee2mqtt/device_rename`,
         method: "POST",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
         format: "json",
@@ -4746,11 +6529,21 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
      * @request POST:/v1/zigbee2mqtt/device_whitelist
      * @secure
      */
-    zigbee2MqttServiceDeviceWhitelist: (body: ApiDeviceWhitelistRequest, params: RequestParams = {}) =>
-      this.request<ApiDisablePluginResult, RpcStatus>({
+    zigbee2MqttServiceDeviceWhitelist: (data: ApiDeviceWhitelistRequest, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
         path: `/v1/zigbee2mqtt/device_whitelist`,
         method: "POST",
-        body: body,
+        body: data,
         secure: true,
         type: ContentType.Json,
         format: "json",
@@ -4770,13 +6563,20 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
       query?: {
         query?: string;
         /** @format int64 */
-        limit?: number;
-        /** @format int64 */
         offset?: number;
+        /** @format int64 */
+        limit?: number;
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiSearchDeviceResult, RpcStatus>({
+      this.request<
+        ApiSearchDeviceResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
         path: `/v1/zigbee2mqtt/search_device`,
         method: "GET",
         query: query,
@@ -4784,36 +6584,26 @@ export class  Api<SecurityDataType extends unknown> extends HttpClient<SecurityD
         format: "json",
         ...params,
       }),
-  };
-  ws = {
+
     /**
      * No description
      *
      * @tags StreamService
      * @name StreamServiceSubscribe
-     * @request GET:/ws
+     * @request GET:/v1/ws
      * @secure
      */
-    streamServiceSubscribe: (
-      query?: {
-        id?: string;
-        query?: string;
-        /** @format byte */
-        body?: string;
-        accessToken?: string;
-      },
-      params: RequestParams = {},
-    ) =>
+    streamServiceSubscribe: (params: RequestParams = {}) =>
       this.request<
+        ApiResponse,
         {
-          result?: ApiResponse;
-          error?: RpcStatus;
-        },
-        RpcStatus
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
       >({
-        path: `/ws`,
+        path: `/v1/ws`,
         method: "GET",
-        query: query,
         secure: true,
         format: "json",
         ...params,

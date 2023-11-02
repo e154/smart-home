@@ -21,6 +21,7 @@ package telegram
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -32,6 +33,7 @@ import (
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/plugins/notify"
 	"github.com/e154/smart-home/system/supervisor"
 	"github.com/e154/smart-home/version"
 )
@@ -42,8 +44,8 @@ type Actor struct {
 	isStarted   *atomic.Bool
 	AccessToken string
 	bot         *tele.Bot
-	msgPool     chan string
 	actionPool  chan events.EventCallEntityAction
+	notify      *notify.Notify
 }
 
 // NewActor ...
@@ -55,10 +57,10 @@ func NewActor(entity *m.Entity,
 
 	actor := &Actor{
 		BaseActor:   supervisor.NewBaseActor(entity, service),
-		actionPool:  make(chan events.EventCallEntityAction, 10),
+		actionPool:  make(chan events.EventCallEntityAction, 1000),
 		isStarted:   atomic.NewBool(false),
 		AccessToken: settings[AttrToken].Decrypt(),
-		msgPool:     make(chan string, 99),
+		notify:      notify.NewNotify(service.Adaptors()),
 	}
 
 	if actor.Attrs == nil {
@@ -91,10 +93,12 @@ func (e *Actor) Destroy() {
 	if !e.isStarted.Load() {
 		return
 	}
+	e.Service.EventBus().Unsubscribe(notify.TopicNotify, e.eventHandler)
+	e.notify.Shutdown()
+
 	if e.bot != nil {
 		e.bot.Stop()
 	}
-	close(e.msgPool)
 	e.isStarted.Store(false)
 }
 
@@ -131,37 +135,22 @@ func (e *Actor) Spawn() {
 		go e.bot.Start()
 	}
 
-	go func() {
-		var list []m.TelegramChat
-		for msg := range e.msgPool {
-			if list, err = e.getChatList(); err != nil {
-				continue
-			}
-			for _, chat := range list {
-				if _, err = e.sendMsg(msg, chat.ChatId); err != nil {
-					log.Warn(err.Error())
-				}
-			}
-		}
-	}()
+	e.Service.EventBus().Subscribe(notify.TopicNotify, e.eventHandler, false)
+	e.notify.Start()
 
 	return
 }
 
-// Send ...
-func (e *Actor) Send(message string) (err error) {
-	if !e.isStarted.Load() {
-		return
-	}
-	e.msgPool <- message
-	return
-}
+func (e *Actor) sendMsg(message *m.Message, chatId int64) (messageID int, err error) {
 
-func (e *Actor) sendMsg(body string, chatId int64) (messageID int, err error) {
+	var msg *tele.Message
 	defer func() {
 		if err == nil {
-			go func() { _ = e.UpdateStatus() }()
-			log.Infof("Sent message '%s' to chatId '%d'", body, chatId)
+			if msg != nil {
+				messageID = msg.ID
+			}
+			//go func() { _ = e.UpdateStatus() }()
+			log.Infof("Sent message '%s' to chatId '%d'", message.Attributes, chatId)
 		}
 	}()
 	if common.TestMode() {
@@ -173,12 +162,22 @@ func (e *Actor) sendMsg(body string, chatId int64) (messageID int, err error) {
 		log.Error(err.Error())
 		return
 	}
-	var msg *tele.Message
-	if msg, err = e.bot.Send(chat, body); err != nil {
-		log.Error(err.Error())
-		return
+
+	params := NewMessageParams()
+	_, _ = params.Deserialize(message.Attributes)
+
+	var body interface{}
+	body = params[AttrBody].String()
+
+	if uri := params[AttrUri].String(); uri != "" {
+		body = &tele.Photo{File: tele.FromURL(uri)}
 	}
-	messageID = msg.ID
+
+	if uri := params[AttrFilePath].String(); uri != "" {
+		body = &tele.Photo{File: tele.FromDisk(uri)}
+	}
+
+	msg, err = e.bot.Send(chat, body)
 	return
 }
 
@@ -233,12 +232,20 @@ func (e *Actor) commandStart(c tele.Context) (err error) {
 		text = c.Text()
 	)
 
+	if pin := e.Setts[AttrPin].Decrypt(); pin != "" {
+		if enterdPin := strings.Replace(text, "/start ", "", -1); pin != enterdPin {
+			log.Warn("pin not equal")
+			return
+		}
+	}
+
 	text = fmt.Sprintf(banner, version.GetHumanVersion(), text)
 	_ = e.Service.Adaptors().TelegramChat.Add(context.Background(), m.TelegramChat{
 		EntityId: e.Id,
 		ChatId:   chat.ID,
 		Username: user.Username,
 	})
+	log.Infof("user '%s' added to chat", user.Username)
 	err = c.Send(text, e.genKeyboard())
 	return
 }
@@ -274,8 +281,12 @@ func (e *Actor) commandAction(c tele.Context) (err error) {
 	)
 
 	e.runAction(events.EventCallEntityAction{
-		ActionName: strings.Replace(text, "/", "", 1),
+		ActionName: text,
 		EntityId:   e.Id,
+		Args: map[string]interface{}{
+			"chatId":   c.Chat().ID,
+			"username": c.Chat().Username,
+		},
 	})
 	return
 }
@@ -285,17 +296,25 @@ func (e *Actor) addAction(event events.EventCallEntityAction) {
 }
 
 func (e *Actor) runAction(msg events.EventCallEntityAction) {
-	action, ok := e.Actions[msg.ActionName]
-	if !ok {
-		log.Warnf("action %s not found", msg.ActionName)
+	actionName := strings.Replace(msg.ActionName, "/", "", 1)
+	if action, ok := e.Actions[actionName]; ok {
+		if action.ScriptEngine.Engine() == nil {
+			return
+		}
+		if _, err := action.ScriptEngine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
+			log.Error(err.Error())
+			return
+		}
 		return
 	}
-	if action.ScriptEngine.Engine() == nil {
-		return
-	}
-	if _, err := action.ScriptEngine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
-		log.Error(err.Error())
-		return
+
+	if e.ScriptEngines != nil {
+		for _, engine := range e.ScriptEngines {
+			if _, err := engine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, msg.ActionName, msg.Args); err != nil {
+				log.Error(err.Error())
+				return
+			}
+		}
 	}
 }
 
@@ -330,4 +349,79 @@ func (e *Actor) updateState(connected bool) {
 		NewState:    common.String(newStat),
 		StorageSave: true,
 	})
+}
+
+// Save ...
+func (e *Actor) Save(msg notify.Message) (addresses []string, message *m.Message) {
+	message = &m.Message{
+		Type:       Name,
+		Attributes: msg.Attributes,
+	}
+	var err error
+	if message.Id, err = e.Service.Adaptors().Message.Add(context.Background(), message); err != nil {
+		log.Error(err.Error())
+	}
+
+	attr := NewMessageParams()
+	_, _ = attr.Deserialize(message.Attributes)
+
+	params := NewMessageParams()
+	_, _ = params.Deserialize(message.Attributes)
+
+	if val := params[AttrChatID].Int64(); val != 0 {
+		addresses = []string{fmt.Sprintf("%d", val)}
+	} else {
+		addresses = []string{"broadcast"}
+	}
+
+	return
+}
+
+// Send ...
+func (e *Actor) Send(address string, message *m.Message) (err error) {
+	if !e.isStarted.Load() {
+		return
+	}
+
+	var chatID *int64
+	if address != "" && address != "broadcast" {
+		var val int64
+		if val, err = strconv.ParseInt(address, 10, 64); err == nil {
+			chatID = common.Int64(val)
+		}
+	}
+
+	if chatID != nil {
+		if _, err = e.sendMsg(message, *chatID); err != nil {
+			log.Warn(err.Error())
+		}
+		return
+	}
+
+	var list []m.TelegramChat
+	if list, err = e.getChatList(); err != nil {
+		return
+	}
+	for _, chat := range list {
+		if _, err = e.sendMsg(message, chat.ChatId); err != nil {
+			log.Warn(err.Error())
+		}
+	}
+
+	return
+}
+
+// MessageParams ...
+func (e *Actor) MessageParams() m.Attributes {
+	return NewMessageParams()
+}
+
+func (e *Actor) eventHandler(topic string, msg interface{}) {
+
+	switch v := msg.(type) {
+	case notify.Message:
+		if v.EntityId != nil && v.EntityId.PluginName() == Name {
+			e.notify.SaveAndSend(v, e)
+		}
+	}
 }

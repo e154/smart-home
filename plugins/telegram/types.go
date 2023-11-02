@@ -29,10 +29,16 @@ const (
 	Name = "telegram"
 	// AttrToken ...
 	AttrToken = "token"
-	// AttrName ...
-	AttrName = "name"
+	// AttrPin ...
+	AttrPin = "pin"
+	// AttrChatID ...
+	AttrChatID = "chat_id"
 	// AttrBody ...
 	AttrBody = "body"
+	// AttrUri ...
+	AttrUri = "uri"
+	// FilePath ...
+	AttrFilePath = "file_path"
 
 	Version = "0.0.1"
 )
@@ -58,12 +64,20 @@ func NewAttr() m.Attributes {
 // NewMessageParams ...
 func NewMessageParams() m.Attributes {
 	return map[string]*m.Attribute{
-		AttrName: {
-			Name: AttrName,
-			Type: common.AttributeString,
+		AttrChatID: {
+			Name: AttrChatID,
+			Type: common.AttributeInt,
 		},
 		AttrBody: {
 			Name: AttrBody,
+			Type: common.AttributeString,
+		},
+		AttrUri: {
+			Name: AttrUri,
+			Type: common.AttributeString,
+		},
+		AttrFilePath: {
+			Name: AttrFilePath,
 			Type: common.AttributeString,
 		},
 	}
@@ -74,6 +88,10 @@ func NewSettings() m.Attributes {
 	return map[string]*m.Attribute{
 		AttrToken: {
 			Name: AttrToken,
+			Type: common.AttributeEncrypted,
+		},
+		AttrPin: {
+			Name: AttrPin,
 			Type: common.AttributeEncrypted,
 		},
 	}
@@ -95,7 +113,6 @@ func NewStates() (states map[string]supervisor.ActorState) {
 
 	return
 }
-
 
 // Command ...
 type Command struct {

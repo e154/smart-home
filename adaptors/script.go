@@ -20,10 +20,10 @@ package adaptors
 
 import (
 	"context"
-
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"gorm.io/gorm"
+	"sort"
 )
 
 // IScript ...
@@ -175,6 +175,18 @@ func (n *Script) fromDb(dbVer *db.Script) (ver *m.Script, err error) {
 			AutomationConditions: dbVer.AutomationConditions,
 			AutomationActions:    dbVer.AutomationActions,
 		},
+	}
+	if dbVer.Versions != nil {
+		ver.Versions = make([]*m.ScriptVersion, 0, len(dbVer.Versions))
+		for _, version := range dbVer.Versions {
+			ver.Versions = append(ver.Versions, &m.ScriptVersion{
+				Id:        version.Id,
+				Lang:      version.Lang,
+				Source:    version.Source,
+				CreatedAt: version.CreatedAt,
+			})
+		}
+		sort.Sort(ver.Versions)
 	}
 	return
 }

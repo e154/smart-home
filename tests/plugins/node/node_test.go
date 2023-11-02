@@ -63,7 +63,7 @@ func TestNode(t *testing.T) {
 			err = adaptors.Entity.Add(context.Background(), nodeEnt)
 			ctx.So(err, ShouldBeNil)
 
-			eventBus.Publish("system/entities/"+nodeEnt.Id.String(), events.EventCreatedEntity{
+			eventBus.Publish("system/models/entities/"+nodeEnt.Id.String(), events.EventCreatedEntityModel{
 				EntityId: nodeEnt.Id,
 			})
 

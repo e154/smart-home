@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import {computed, ref, unref} from 'vue'
+import {computed, nextTick, ref, unref} from 'vue'
 import {useI18n} from '@/hooks/web/useI18n'
-import {ElButton, ElPopconfirm, ElDescriptions, ElDescriptionsItem, ElTabs, ElTabPane, ElMessage} from 'element-plus'
+import {ElButton, ElPopconfirm, ElDescriptions, ElDescriptionsItem, ElTabs, ElTabPane, ElMessage,
+  ElTimeline, ElTimelineItem, ElCard, ElRow, ElCol, ElScrollbar} from 'element-plus'
 import {useForm} from '@/hooks/web/useForm'
 import {useCache} from '@/hooks/web/useCache'
 import {useAppStore} from '@/store/modules/app'
@@ -10,7 +11,7 @@ import {useRoute, useRouter} from 'vue-router'
 import {useValidator} from '@/hooks/web/useValidator'
 import api from "@/api/api";
 import Form from './components/Form.vue'
-import {ApiScript} from "@/api/stub";
+import {ApiScript, ApiScriptVersion} from "@/api/stub";
 import ScriptEditor from "@/views/Scripts/components/ScriptEditor.vue";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
 import {useEmitt} from "@/hooks/web/useEmitt";
@@ -29,8 +30,11 @@ const writeRef = ref<ComponentRef<typeof Form>>()
 const loading = ref(false)
 const scriptId = computed(() => route.params.id as number);
 const currentScript = ref<Nullable<ApiScript>>(null)
+const currentScriptVersion = ref<Nullable<ApiScript>>(null)
 const activeTab = ref('source')
 const sourceScript = ref('')
+import {parseTime} from "@/utils";
+const { emitter } = useEmitt()
 
 const fetch = async () => {
   loading.value = true
@@ -122,6 +126,27 @@ const remove = async () => {
   }
 }
 
+const view = async (version: ApiScriptVersion) => {
+  currentScriptVersion.value = {
+    lang: version.lang,
+    source: version.source,
+    createdAt: version.createdAt,
+  } as ApiScript
+}
+
+const rollback = async () => {
+  let script = unref(currentScript.value) as ApiScript;
+  currentScript.value = {
+    id: script.id,
+    name: script.name,
+    description: script.description,
+    scriptInfo: script.scriptInfo,
+    versions: script.versions,
+    lang: currentScriptVersion.value?.lang || script.lang,
+    source: currentScriptVersion.value?.source || script.source,
+  }  as ApiScript;
+}
+
 useEmitt({
   name: 'updateSource',
   callback: (val: string) => {
@@ -132,6 +157,17 @@ useEmitt({
   }
 })
 
+const updateCurrentTab = (tab: any, ev: any) => {
+  const {index, paneName} = tab;
+  if (paneName == 'source' || paneName == 'versions') {
+    emitter.emit('updateEditor')
+  }
+}
+
+// elscroll 实例
+const scrollbarRef = ref<ComponentRef<typeof ElScrollbar>>()
+
+
 fetch()
 
 </script>
@@ -139,7 +175,7 @@ fetch()
 <template>
   <ContentWrap>
 
-    <ElTabs class="demo-tabs" v-model="activeTab">
+    <ElTabs class="demo-tabs" v-model="activeTab" @tab-click="updateCurrentTab">
       <!-- main -->
       <ElTabPane :label="$t('scripts.main')" name="main">
 
@@ -152,7 +188,7 @@ fetch()
       <ElTabPane :label="$t('scripts.source')" name="source">
         <Infotip
             :show-index="false"
-            title="Info"
+            title="INFO"
             :schema="[
       {
         label: t('scripts.info1'),
@@ -168,7 +204,7 @@ fetch()
       },
     ]"
         />
-        <ScriptEditor v-model="currentScript"/>
+        <ScriptEditor v-model="currentScript" class="mb-20px"/>
       </ElTabPane>
       <!-- /source -->
 
@@ -190,6 +226,46 @@ fetch()
         </ElDescriptions>
       </ElTabPane>
       <!-- /info -->
+
+      <!-- versions -->
+      <ElTabPane :label="$t('scripts.scriptVersions')" name="versions">
+
+        <ElRow :gutter="24" class="mb-20px">
+          <ElCol :span="6" :xs="6">
+            <ElCard shadow="never" class="item-card-editor">
+              <ElScrollbar ref="scrollbarRef" class="h-full" height="500px">
+                <ElTimeline v-if="currentScript && currentScript?.versions">
+                  <ElTimelineItem
+                      v-for="(version, index) in currentScript?.versions"
+                      :key="index"
+                      :timestamp="parseTime(version.createdAt)"
+                      type="primary"
+                      placement="top"
+                      class="cursor-pointer"
+                      @click="view(version)"
+                  />
+                </ElTimeline>
+              </ElScrollbar>
+            </ElCard>
+          </ElCol>
+          <ElCol :span="18" style="padding-bottom: 30px">
+
+            <div v-if="currentScriptVersion">
+                <ScriptEditor v-model="currentScriptVersion"/>
+            </div>
+
+            <div v-if="currentScriptVersion">
+                <ElButton class="mr-10px left" type="default" @click="rollback(version)">
+                  <Icon icon="ic:baseline-restore" class="mr-5px"/>
+                  {{ $t('scripts.restoreVersion') }}
+                </ElButton>
+            </div>
+
+          </ElCol>
+        </ElRow>
+
+      </ElTabPane>
+      <!-- /versions -->
     </ElTabs>
 
     <div style="text-align: right">

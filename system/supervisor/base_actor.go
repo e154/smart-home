@@ -21,10 +21,11 @@ package supervisor
 import (
 	"context"
 	"fmt"
-	"github.com/e154/smart-home/common/events"
 	"runtime/debug"
 	"sync"
 	"time"
+
+	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/common/apperr"
 
@@ -161,6 +162,11 @@ func NewBaseActor(entity *m.Entity,
 					log.Error(err.Error())
 				}
 			}
+			go func() {
+				if _ , err = scriptEngine.Engine().AssertFunction("init"); err != nil {
+					log.Error(err.Error())
+				}
+			}()
 			actor.ScriptEngines = append(actor.ScriptEngines, scriptEngine)
 		}
 	}
@@ -356,7 +362,7 @@ func (e *BaseActor) SaveState(msg events.EventStateChanged) {
 			Attributes: msg.NewState.Attributes.Serialize(),
 		})
 		if err != nil {
-			log.Error(err.Error())
+			//log.Error(err.Error())
 		}
 	}()
 }
@@ -367,7 +373,7 @@ func (e *BaseActor) updateMetric(state bus.EventEntityState) {
 		return
 	}
 
-	var data = make(map[string]float32)
+	var data = make(map[string]interface{})
 	var name string
 
 	for _, metric := range e.Metric {
@@ -379,8 +385,16 @@ func (e *BaseActor) updateMetric(state bus.EventEntityState) {
 					data[prop.Name] = float32(value.Int64())
 				case common.AttributeFloat:
 					data[prop.Name] = common.Rounding32(value.Float64(), 2)
-				//case common.AttributePoint:
-				//	data[prop.Name] = value.Point()
+					//case common.AttributePoint:
+					//	data[prop.Name] = value.Point()
+				case common.AttributeString:
+					data[prop.Name] = value.String()
+				case common.AttributePoint:
+					data[prop.Name] = value.Point()
+				case common.AttributeMap:
+					data[prop.Name] = value.Map()
+				default:
+					log.Warnf("unimplemented type %s", value.Type)
 				}
 			}
 		}
@@ -394,7 +408,7 @@ func (e *BaseActor) updateMetric(state bus.EventEntityState) {
 
 }
 
-func (e *BaseActor) AddMetric(name string, value map[string]float32) {
+func (e *BaseActor) AddMetric(name string, value map[string]interface{}) {
 
 	if e.Metric == nil {
 		return

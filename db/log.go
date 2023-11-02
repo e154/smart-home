@@ -41,7 +41,7 @@ type Log struct {
 	Body      string
 	Level     common.LogLevel
 	Owner     string
-	CreatedAt time.Time
+	CreatedAt time.Time `gorm:"<-:create"`
 }
 
 // LogQuery ...
