@@ -23,14 +23,14 @@
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://e154.github.io/smart-home/ru/docs/javascript/entity/"><meta property="article:section" content="docs">
 <meta property="article:published_time" content="2021-11-20T00:00:00+00:00">
-<meta property="article:modified_time" content="2023-10-05T15:47:49+06:00"><meta property="og:site_name" content="Умный дом">
+<meta property="article:modified_time" content="2023-11-02T20:22:01+06:00"><meta property="og:site_name" content="Умный дом">
 <meta itemprop=name content="Устройство">
 <meta itemprop=description content="В проекте Smart Home объект &ldquo;Entity&rdquo; является основной единицей и главным объектом, который хранит состояние и настройки устройства.
 &ldquo;Entity&rdquo; представляет собой абстракцию конкретного устройства в умном доме. Он содержит информацию о типе устройства, его идентификаторе, текущем состоянии и других настройках.
 Основные атрибуты &ldquo;Entity&rdquo; включают:
   Тип устройства: Определяет категорию или класс устройства, например, &ldquo;светильник&rdquo;, &ldquo;термостат&rdquo;, &ldquo;дверной замок&rdquo; и т.д. Это позволяет классифицировать устройства и определить доступные для них операции и настройки."><meta itemprop=datePublished content="2021-11-20T00:00:00+00:00">
-<meta itemprop=dateModified content="2023-10-05T15:47:49+06:00">
-<meta itemprop=wordCount content="534">
+<meta itemprop=dateModified content="2023-11-02T20:22:01+06:00">
+<meta itemprop=wordCount content="634">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Устройство">
 <meta name=twitter:description content="В проекте Smart Home объект &ldquo;Entity&rdquo; является основной единицей и главным объектом, который хранит состояние и настройки устройства.
@@ -88,7 +88,14 @@
 <li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id=m-smart-homerudocs-li>
 <a href=/smart-home/ru/docs/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section tree-root" id=m-smart-homerudocs><span>Документация</span></a>
 <ul class=ul-1>
-<li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homerudocsdashboard-li>
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homerudocsinstall-li>
+<a href=/smart-home/ru/docs/install/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homerudocsinstall><span>Установка</span></a>
+<ul class="ul-2 foldable">
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocsinstallpostgresql-li>
+<a href=/smart-home/ru/docs/install/postgresql/ title class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homerudocsinstallpostgresql><span>Postgresql</span></a>
+</li>
+</ul>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homerudocsdashboard-li>
 <a href=/smart-home/ru/docs/dashboard/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homerudocsdashboard><span>Dashboard</span></a>
 <ul class="ul-2 foldable">
 <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocsdashboardentity-li>
@@ -347,37 +354,79 @@
 <ol>
 <li>
 <p><code>EntitySetState(ENTITY_ID, attr)</code>: Этот метод используется для установки состояния конкретной сущности (<code>ENTITY_ID</code>) путем предоставления набора атрибутов (<code>attr</code>). С его помощью, скорее всего, можно обновлять состояние сущности новыми значениями атрибутов.</p>
-</li>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>attrs</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000;font-weight:700>{</span>
+    <span style=color:#000>foo</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000>bar</span><span style=color:#000;font-weight:700>,</span>
+<span style=color:#000;font-weight:700>}</span>
+<span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>stateName</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#4e9a06>&#39;connected&#39;</span>
+<span style=color:#000>EntitySetState</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>ENTITY_ID</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000;font-weight:700>{</span>
+    <span style=color:#000>new_state</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000>stateName</span><span style=color:#000;font-weight:700>,</span>
+    <span style=color:#000>attribute_values</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000>attrs</span><span style=color:#000;font-weight:700>,</span>
+    <span style=color:#000>storage_save</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>true</span>
+<span style=color:#000;font-weight:700>});</span>
+</code></pre></div></li>
 <li>
 <p><code>EntitySetStateName(ENTITY_ID, stateName)</code>: Этот метод устанавливает состояние сущности (<code>ENTITY_ID</code>) в определенное именованное состояние (<code>stateName</code>). Он используется, когда необходимо изменить состояние сущности на предопределенное.</p>
-</li>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>stateName</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#4e9a06>&#39;connected&#39;</span>
+<span style=color:#000>EntitySetStateName</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>ENTITY_ID</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>stateName</span><span style=color:#000;font-weight:700>);</span>
+</code></pre></div></li>
 <li>
 <p><code>EntityGetState(ENTITY_ID)</code>: Этот метод извлекает текущее состояние указанной сущности (<code>ENTITY_ID</code>). Он позволяет запрашивать текущее состояние сущности.</p>
-</li>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript>
+<span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>currentState</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>EntityGetState</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>ENTITY_ID</span><span style=color:#000;font-weight:700>);</span>
+<span style=color:#000>print</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>marshal</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>homeState</span><span style=color:#000;font-weight:700>))</span>
+<span style=color:#8f5902;font-style:italic>// out: {&#34;name&#34;:&#34;connected&#34;,&#34;description&#34;:&#34;connected&#34;,&#34;image_url&#34;:null,&#34;icon&#34;:null}
+</span></code></pre></div></li>
 <li>
 <p><code>EntitySetAttributes(ENTITY_ID, attr)</code>: Аналогично <code>EntitySetState</code>, этот метод устанавливает атрибуты для определенной сущности (<code>ENTITY_ID</code>). Он может использоваться, когда нужно обновить атрибуты без изменения состояния.</p>
-</li>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>attrs</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000;font-weight:700>{</span>
+    <span style=color:#000>foo</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000>bar</span><span style=color:#000;font-weight:700>,</span>
+<span style=color:#000;font-weight:700>}</span>
+<span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>stateName</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#4e9a06>&#39;connected&#39;</span>
+<span style=color:#000>EntitySetAttributes</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>ENTITY_ID</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>attrs</span><span style=color:#000;font-weight:700>);</span>
+</code></pre></div></li>
 <li>
 <p><code>EntitySetMetric(ENTITY_ID, name, value)</code>: Этот метод устанавливает метрику для указанной сущности (<code>ENTITY_ID</code>). Метрики часто используются для измерения и записи различных аспектов поведения или производительности сущности.</p>
-</li>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>attrs</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000;font-weight:700>{</span>
+    <span style=color:#000>foo</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000>bar</span><span style=color:#000;font-weight:700>,</span>
+<span style=color:#000;font-weight:700>}</span>
+<span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>metricName</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#4e9a06>&#39;counter&#39;</span>
+<span style=color:#000>EntitySetMetric</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>ENTITY_ID</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>name</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>attrs</span><span style=color:#000;font-weight:700>);</span>
+</code></pre></div></li>
 <li>
 <p><code>EntityCallAction(ENTITY_ID, action, args)</code>: Этот метод используется для вызова или выполнения определенного действия (<code>action</code>), связанного с сущностью (<code>ENTITY_ID</code>), и предоставления необходимых аргументов (<code>args</code>) для этого действия.</p>
-</li>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>attrs</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000;font-weight:700>{</span>
+    <span style=color:#000>foo</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000>bar</span><span style=color:#000;font-weight:700>,</span>
+<span style=color:#000;font-weight:700>}</span>
+<span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>action</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#4e9a06>&#39;ENABLE&#39;</span>
+<span style=color:#000>EntityCallAction</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>ENTITY_ID</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>action</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>attrs</span><span style=color:#000;font-weight:700>);</span>
+</code></pre></div></li>
 <li>
 <p><code>EntityCallScene(ENTITY_ID, args)</code>: Подобно <code>EntityCallAction</code>, этот метод используется для вызова или выполнения сцены, связанной с сущностью (<code>ENTITY_ID</code>), и предоставления необходимых аргументов (<code>args</code>) для этой сцены.</p>
-</li>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>attrs</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000;font-weight:700>{</span>
+    <span style=color:#000>foo</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000>bar</span><span style=color:#000;font-weight:700>,</span>
+<span style=color:#000;font-weight:700>}</span>
+<span style=color:#000>EntityCallScene</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>ENTITY_ID</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>attrs</span><span style=color:#000;font-weight:700>);</span>
+</code></pre></div></li>
 <li>
 <p><code>EntityGetSettings(ENTITY_ID)</code>: Этот метод извлекает настройки или конфигурацию для указанной сущности (<code>ENTITY_ID</code>). Он позволяет получать доступ к настройкам, связанным с сущностью.</p>
-</li>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>settings</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>EntityGetSettings</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>ENTITY_ID</span><span style=color:#000;font-weight:700>);</span>
+<span style=color:#000>print</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>marshal</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>settings</span><span style=color:#000;font-weight:700>))</span>
+<span style=color:#8f5902;font-style:italic>// out: {&#34;username&#34;:&#34;zigbee2mqtt&#34;,&#34;cleanSession&#34;:false,&#34;keepAlive&#34;:15,&#34;direction&#34;:&#34;in&#34;,&#34;topics&#34;:&#34;owntracks/#&#34;,&#34;pingTimeout&#34;:10,&#34;connectTimeout&#34;:30,&#34;qos&#34;:0}
+</span><span style=color:#8f5902;font-style:italic></span>
+</code></pre></div></li>
 <li>
 <p><code>EntityGetAttributes(ENTITY_ID)</code>: Этот метод извлекает все атрибуты, связанные с определенной сущностью (<code>ENTITY_ID</code>). Он предоставляет способ получения подробной информации о атрибутах сущности.</p>
-</li>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>attrs</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>EntityGetAttributes</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>ENTITY_ID</span><span style=color:#000;font-weight:700>);</span>
+<span style=color:#000>print</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>marshal</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>attrs</span><span style=color:#000;font-weight:700>))</span>
+<span style=color:#8f5902;font-style:italic>// out: {&#34;username&#34;:&#34;zigbee2mqtt&#34;,&#34;cleanSession&#34;:false,&#34;keepAlive&#34;:15,&#34;direction&#34;:&#34;in&#34;,&#34;topics&#34;:&#34;owntracks/#&#34;,&#34;pingTimeout&#34;:10,&#34;connectTimeout&#34;:30,&#34;qos&#34;:0}
+</span><span style=color:#8f5902;font-style:italic></span>
+</code></pre></div></li>
 </ol>
 <p>Методы объекта &ldquo;Entity&rdquo; предоставляют удобные возможности для управления состоянием, атрибутами, метриками и выполнения
 действий на устройстве. Вы можете использовать эти методы для создания логики управления устройствами в вашем проекте
 <strong>Smart Home</strong>.</p>
 <div class="text-muted mt-5 pt-3 border-top">
-Изменено 05.10.2023: <a href=https://github.com/e154/smart-home/commit/0ad9070fd3a5cbe557738e5e34c64c1590a401b8>Merge pull request #242 from e154/develop (0ad9070)</a>
+Изменено 02.11.2023: <a href=https://github.com/e154/smart-home/commit/85b132cca98aebec3c26f42a148652dfed5598bc>Develop (#245) (85b132c)</a>
 </div>
 </div>
 </main>

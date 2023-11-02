@@ -35,12 +35,12 @@ Supported devices:
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://e154.github.io/smart-home/docs/plugins/cgminer/bitmine/"><meta property="article:section" content="docs">
 <meta property="article:published_time" content="2021-10-20T00:00:00+00:00">
-<meta property="article:modified_time" content="2023-10-05T15:47:49+06:00"><meta property="og:site_name" content="Smart home">
+<meta property="article:modified_time" content="2023-11-02T20:22:01+06:00"><meta property="og:site_name" content="Smart home">
 <meta itemprop=name content="Bitmine">
 <meta itemprop=description content="Working with Bitmine Antminer ASIC devices.
 Supported devices:
  S9 S7 L3 L3 D3 T9  JavaScript Properties  Miner Base Entity // Constant with the unique device ID const ENTITY_ID; const result = Miner .stats() .devs() .summary() .pools() .addPool(url) .version() .enable(poolId) .disable(poolId) .delete(poolId) .switchPool(poolId) .restart();    Property Description     result Type: Object (Result)       Property Description     stats Type: Method, statistics   devs Type: Method, statistics   summary Type: Method, statistics   pools Type: Method, server list   addPool Type: Method, add server   version Type: Method, firmware version   enable Type: Method, enable server   disable Type: Method, disable server   delete Type: Method, delete server   switchPool Type: Method, switch server   restart Type: Method, soft device restart     Result Object const result = { error: false, errMessage: &#34;&#34;, result: &#34;&#34; };    Property Description     error Type: boolean, error indicator   errMessage Type: string, human-readable error message   result Type: string, JSON object in string format, if the request is completed without errors     entityAction Function entityAction = (entityId, actionName, args) => { }    Property Description     entityId Type: string, ID of the entity sending the message   actionName Type: string, name of the action, in uppercase without the &lsquo;/&rsquo; symbol   args Type: map[string]any     EntityStateParams Object const entityStateParams = { &#34;new_state&#34;: &#34;&#34;, &#34;attribute_values&#34;: {}, &#34;settings_value&#34;: {}, &#34;storage_save&#34;: true };    Property Description     new_state Type: *string, name of the new state   attribute_values Type: Object, new state of the entity&rsquo;s attributes   settings_value Type: Object, new state of the entity&rsquo;s settings   storage_save Type: boolean, indicator to save the new state to the database     Code Example # cgminer # ##################################  ifError =(res)-> return !"><meta itemprop=datePublished content="2021-10-20T00:00:00+00:00">
-<meta itemprop=dateModified content="2023-10-05T15:47:49+06:00">
+<meta itemprop=dateModified content="2023-11-02T20:22:01+06:00">
 <meta itemprop=wordCount content="301">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Bitmine">
@@ -98,7 +98,14 @@ English
 <li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id=m-smart-homedocs-li>
 <a href=/smart-home/docs/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section tree-root" id=m-smart-homedocs><span>Documentation</span></a>
 <ul class=ul-1>
-<li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homedocsdashboard-li>
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homedocsinstall-li>
+<a href=/smart-home/docs/install/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocsinstall><span>Install</span></a>
+<ul class="ul-2 foldable">
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsinstallpostgresql-li>
+<a href=/smart-home/docs/install/postgresql/ title class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsinstallpostgresql><span>Postgresql</span></a>
+</li>
+</ul>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homedocsdashboard-li>
 <a href=/smart-home/docs/dashboard/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocsdashboard><span>Dashboard</span></a>
 <ul class="ul-2 foldable">
 <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsdashboardentity-li>
@@ -495,7 +502,7 @@ English
     <span style=color:#204a87;font-weight:700>when</span> <span style=color:#4e9a06>&#39;SUM&#39;</span> <span style=color:#204a87;font-weight:700>then</span> <span style=color:#000>checkSum</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>args</span><span style=color:#000;font-weight:700>)</span>
 </code></pre></div>
 <div class="text-muted mt-5 pt-3 border-top">
-Last modified October 5, 2023: <a href=https://github.com/e154/smart-home/commit/0ad9070fd3a5cbe557738e5e34c64c1590a401b8>Merge pull request #242 from e154/develop (0ad9070)</a>
+Last modified November 2, 2023: <a href=https://github.com/e154/smart-home/commit/85b132cca98aebec3c26f42a148652dfed5598bc>Develop (#245) (85b132c)</a>
 </div>
 </div>
 </main>

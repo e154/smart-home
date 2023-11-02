@@ -245,31 +245,73 @@ This the multi-page printable view of this section.
 <ol>
 <li>
 <p><code>EntitySetState(ENTITY_ID, attr)</code>: This method is used to set the state of a specific entity (<code>ENTITY_ID</code>) by providing a set of attributes (<code>attr</code>). It likely allows you to update the state of an entity with new attribute values.</p>
-</li>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>attrs</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000;font-weight:700>{</span>
+    <span style=color:#000>foo</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000>bar</span><span style=color:#000;font-weight:700>,</span>
+<span style=color:#000;font-weight:700>}</span>
+<span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>stateName</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#4e9a06>&#39;connected&#39;</span>
+<span style=color:#000>EntitySetState</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>ENTITY_ID</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000;font-weight:700>{</span>
+    <span style=color:#000>new_state</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000>stateName</span><span style=color:#000;font-weight:700>,</span>
+    <span style=color:#000>attribute_values</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000>attrs</span><span style=color:#000;font-weight:700>,</span>
+    <span style=color:#000>storage_save</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>true</span>
+<span style=color:#000;font-weight:700>});</span>
+</code></pre></div></li>
 <li>
 <p><code>EntitySetStateName(ENTITY_ID, stateName)</code>: This method sets the state of an entity (<code>ENTITY_ID</code>) to a specific named state (<code>stateName</code>). It&rsquo;s used when you want to change the state of an entity to a predefined state.</p>
-</li>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>stateName</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#4e9a06>&#39;connected&#39;</span>
+<span style=color:#000>EntitySetStateName</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>ENTITY_ID</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>stateName</span><span style=color:#000;font-weight:700>);</span>
+</code></pre></div></li>
 <li>
 <p><code>EntityGetState(ENTITY_ID)</code>: This method retrieves the current state of a specified entity (<code>ENTITY_ID</code>). It allows you to query the current state of the entity.</p>
-</li>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript>
+<span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>currentState</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>EntityGetState</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>ENTITY_ID</span><span style=color:#000;font-weight:700>);</span>
+<span style=color:#000>print</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>marshal</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>homeState</span><span style=color:#000;font-weight:700>))</span>
+<span style=color:#8f5902;font-style:italic>// out: {&#34;name&#34;:&#34;connected&#34;,&#34;description&#34;:&#34;connected&#34;,&#34;image_url&#34;:null,&#34;icon&#34;:null}
+</span></code></pre></div></li>
 <li>
 <p><code>EntitySetAttributes(ENTITY_ID, attr)</code>: Similar to <code>EntitySetState</code>, this method sets attributes for a specific entity (<code>ENTITY_ID</code>). It may be used when you want to update attributes without changing the state.</p>
-</li>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>attrs</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000;font-weight:700>{</span>
+    <span style=color:#000>foo</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000>bar</span><span style=color:#000;font-weight:700>,</span>
+<span style=color:#000;font-weight:700>}</span>
+<span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>stateName</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#4e9a06>&#39;connected&#39;</span>
+<span style=color:#000>EntitySetAttributes</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>ENTITY_ID</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>attrs</span><span style=color:#000;font-weight:700>);</span>
+</code></pre></div></li>
 <li>
 <p><code>EntitySetMetric(ENTITY_ID, name, value)</code>: This method sets a metric for the specified entity (<code>ENTITY_ID</code>). Metrics are often used to measure and record various aspects of an entity&rsquo;s behavior or performance.</p>
-</li>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>attrs</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000;font-weight:700>{</span>
+    <span style=color:#000>foo</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000>bar</span><span style=color:#000;font-weight:700>,</span>
+<span style=color:#000;font-weight:700>}</span>
+<span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>metricName</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#4e9a06>&#39;counter&#39;</span>
+<span style=color:#000>EntitySetMetric</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>ENTITY_ID</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>name</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>attrs</span><span style=color:#000;font-weight:700>);</span>
+</code></pre></div></li>
 <li>
 <p><code>EntityCallAction(ENTITY_ID, action, args)</code>: This method is used to trigger or call a specific action (<code>action</code>) associated with the entity (<code>ENTITY_ID</code>) and provides any necessary arguments (<code>args</code>) for that action.</p>
-</li>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>attrs</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000;font-weight:700>{</span>
+    <span style=color:#000>foo</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000>bar</span><span style=color:#000;font-weight:700>,</span>
+<span style=color:#000;font-weight:700>}</span>
+<span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>action</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#4e9a06>&#39;ENABLE&#39;</span>
+<span style=color:#000>EntityCallAction</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>ENTITY_ID</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>action</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>attrs</span><span style=color:#000;font-weight:700>);</span>
+</code></pre></div></li>
 <li>
 <p><code>EntityCallScene(ENTITY_ID, args)</code>: Similar to <code>EntityCallAction</code>, this method is used to call or trigger a scene associated with the entity (<code>ENTITY_ID</code>) and provides any required arguments (<code>args</code>) for that scene.</p>
-</li>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>attrs</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000;font-weight:700>{</span>
+    <span style=color:#000>foo</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000>bar</span><span style=color:#000;font-weight:700>,</span>
+<span style=color:#000;font-weight:700>}</span>
+<span style=color:#000>EntityCallScene</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>ENTITY_ID</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>attrs</span><span style=color:#000;font-weight:700>);</span>
+</code></pre></div></li>
 <li>
 <p><code>EntityGetSettings(ENTITY_ID)</code>: This method retrieves the settings or configuration for the specified entity (<code>ENTITY_ID</code>). It allows you to access and query the settings associated with an entity.</p>
-</li>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>settings</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>EntityGetSettings</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>ENTITY_ID</span><span style=color:#000;font-weight:700>);</span>
+<span style=color:#000>print</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>marshal</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>settings</span><span style=color:#000;font-weight:700>))</span>
+<span style=color:#8f5902;font-style:italic>// out: {&#34;username&#34;:&#34;zigbee2mqtt&#34;,&#34;cleanSession&#34;:false,&#34;keepAlive&#34;:15,&#34;direction&#34;:&#34;in&#34;,&#34;topics&#34;:&#34;owntracks/#&#34;,&#34;pingTimeout&#34;:10,&#34;connectTimeout&#34;:30,&#34;qos&#34;:0}
+</span><span style=color:#8f5902;font-style:italic></span>
+</code></pre></div></li>
 <li>
 <p><code>EntityGetAttributes(ENTITY_ID)</code>: This method retrieves all attributes associated with a specific entity (<code>ENTITY_ID</code>). It provides a way to obtain detailed information about the entity&rsquo;s attributes.</p>
-</li>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>attrs</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>EntityGetAttributes</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>ENTITY_ID</span><span style=color:#000;font-weight:700>);</span>
+<span style=color:#000>print</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>marshal</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>attrs</span><span style=color:#000;font-weight:700>))</span>
+<span style=color:#8f5902;font-style:italic>// out: {&#34;username&#34;:&#34;zigbee2mqtt&#34;,&#34;cleanSession&#34;:false,&#34;keepAlive&#34;:15,&#34;direction&#34;:&#34;in&#34;,&#34;topics&#34;:&#34;owntracks/#&#34;,&#34;pingTimeout&#34;:10,&#34;connectTimeout&#34;:30,&#34;qos&#34;:0}
+</span><span style=color:#8f5902;font-style:italic></span>
+</code></pre></div></li>
 </ol>
 <p>The methods of the &ldquo;Entity&rdquo; object provide convenient capabilities for managing the device&rsquo;s state, attributes, metrics, and executing actions on the device. You can use these methods to create device control logic in your <strong>Smart Home</strong> project.</p>
 </div>
@@ -656,7 +698,17 @@ This function is available in any system script.
 </table>
 <hr>
 <h3 id=пример-кода>пример кода</h3>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#8f5902;font-style:italic># GET http
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#8f5902;font-style:italic># auth
+</span><span style=color:#8f5902;font-style:italic># ##################################
+</span><span style=color:#8f5902;font-style:italic></span>
+<span style=color:#000>res = </span><span style=color:#000>http</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>digestAuth</span><span style=color:#000;font-weight:700>(</span><span style=color:#4e9a06>&#39;user&#39;</span><span style=color:#000;font-weight:700>,</span><span style=color:#4e9a06>&#39;password&#39;</span><span style=color:#000;font-weight:700>).</span><span style=color:#000>download</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>uri</span><span style=color:#000;font-weight:700>);</span>
+
+<span style=color:#000>res = </span><span style=color:#000>http</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>basicAuth</span><span style=color:#000;font-weight:700>(</span><span style=color:#4e9a06>&#39;user&#39;</span><span style=color:#000;font-weight:700>,</span><span style=color:#4e9a06>&#39;password&#39;</span><span style=color:#000;font-weight:700>).</span><span style=color:#000>download</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>uri</span><span style=color:#000;font-weight:700>);</span>
+
+<span style=color:#000>res = </span><span style=color:#000>http</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>download</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>uri</span><span style=color:#000;font-weight:700>);</span>
+
+
+<span style=color:#8f5902;font-style:italic># GET http
 </span><span style=color:#8f5902;font-style:italic># ##################################
 </span><span style=color:#8f5902;font-style:italic></span>
 <span style=color:#000>res = </span><span style=color:#000>http</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>get</span><span style=color:#000;font-weight:700>(</span><span style=color:#4e9a06>&#34;%s&#34;</span><span style=color:#000;font-weight:700>)</span>

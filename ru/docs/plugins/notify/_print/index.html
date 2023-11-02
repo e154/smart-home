@@ -157,6 +157,10 @@ Telegram: Предоставляет возможность отправлять
 <td>type: string</td>
 </tr>
 <tr>
+<td>entity_id</td>
+<td>type: string</td>
+</tr>
+<tr>
 <td>attributes</td>
 <td>type: map[string]string</td>
 </tr>
@@ -302,7 +306,7 @@ Telegram: Предоставляет возможность отправлять
 <h3 id=новое-сообщение>Новое сообщение</h3>
 <p>создает объект сообщения</p>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>msg = </span><span style=color:#000>notifr</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>newMessage</span><span style=color:#000;font-weight:700>();</span>
-<span style=color:#000>msg.type = </span><span style=color:#4e9a06>&#39;messagebird&#39;</span><span style=color:#000;font-weight:700>;</span>
+<span style=color:#000>msg.entity_id = </span><span style=color:#4e9a06>&#39;messagebird.name&#39;</span><span style=color:#000;font-weight:700>;</span>
 <span style=color:#000>msg.attributes = </span><span style=color:#000;font-weight:700>{</span>
   <span style=color:#4e9a06>&#39;phone&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;+79990000001&#39;</span><span style=color:#000;font-weight:700>,</span>
   <span style=color:#4e9a06>&#39;body&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;some text&#39;</span>
@@ -333,7 +337,7 @@ Telegram: Предоставляет возможность отправлять
 </span><span style=color:#8f5902;font-style:italic></span>
 <span style=color:#000>sendMsg</span> <span style=color:#ce5c00;font-weight:700>=</span><span style=color:#000>(body)-&gt;</span>
   <span style=color:#000>msg = </span><span style=color:#000>notifr</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>newMessage</span><span style=color:#000;font-weight:700>();</span>
-  <span style=color:#000>msg.type = </span><span style=color:#4e9a06>&#39;messagebird&#39;</span><span style=color:#000;font-weight:700>;</span>
+  <span style=color:#000>msg.entity_id = </span><span style=color:#4e9a06>&#39;messagebird.name&#39;</span><span style=color:#000;font-weight:700>;</span>
   <span style=color:#000>msg.attributes = </span><span style=color:#000;font-weight:700>{</span>
     <span style=color:#4e9a06>&#39;phone&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;+79990000001&#39;</span><span style=color:#000;font-weight:700>,</span>
     <span style=color:#4e9a06>&#39;body&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;some text&#39;</span>
@@ -354,7 +358,7 @@ Telegram: Предоставляет возможность отправлять
 <h3 id=новое-сообщение>Новое сообщение</h3>
 <p>создает объект сообщения</p>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>msg = </span><span style=color:#000>notifr</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>newMessage</span><span style=color:#000;font-weight:700>();</span>
-<span style=color:#000>msg.type = </span><span style=color:#4e9a06>&#39;slack&#39;</span><span style=color:#000;font-weight:700>;</span>
+<span style=color:#000>msg.entity_id = </span><span style=color:#4e9a06>&#39;slack.name&#39;</span><span style=color:#000;font-weight:700>;</span>
 <span style=color:#000>msg.attributes = </span><span style=color:#000;font-weight:700>{</span>
   <span style=color:#4e9a06>&#39;channel&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;#ch&#39;</span><span style=color:#000;font-weight:700>,</span>
   <span style=color:#4e9a06>&#39;text&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;some text&#39;</span>
@@ -385,7 +389,7 @@ Telegram: Предоставляет возможность отправлять
 </span><span style=color:#8f5902;font-style:italic></span>
 <span style=color:#000>sendMsg</span> <span style=color:#ce5c00;font-weight:700>=</span><span style=color:#000>(body)-&gt;</span>
   <span style=color:#000>msg = </span><span style=color:#000>notifr</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>newMessage</span><span style=color:#000;font-weight:700>();</span>
-    <span style=color:#000>msg.type = </span><span style=color:#4e9a06>&#39;slack&#39;</span><span style=color:#000;font-weight:700>;</span>
+    <span style=color:#000>msg.entity_id = </span><span style=color:#4e9a06>&#39;slack.name&#39;</span><span style=color:#000;font-weight:700>;</span>
     <span style=color:#000>msg.attributes = </span><span style=color:#000;font-weight:700>{</span>
       <span style=color:#4e9a06>&#39;channel&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;#ch&#39;</span><span style=color:#000;font-weight:700>,</span>
       <span style=color:#4e9a06>&#39;text&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;some text&#39;</span>
@@ -424,9 +428,8 @@ Telegram: Предоставляет возможность отправлять
 <h3 id=новое-сообщение>Новое сообщение</h3>
 <p>создает объект сообщения</p>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>msg = </span><span style=color:#000>notifr</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>newMessage</span><span style=color:#000;font-weight:700>();</span>
-<span style=color:#000>msg.type = </span><span style=color:#4e9a06>&#39;telegram&#39;</span><span style=color:#000;font-weight:700>;</span>
+<span style=color:#000>msg.entity_id = </span><span style=color:#4e9a06>&#39;telegram.name&#39;</span><span style=color:#000;font-weight:700>;</span>
 <span style=color:#000>msg.attributes = </span><span style=color:#000;font-weight:700>{</span>
-  <span style=color:#4e9a06>&#39;name&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;clavicus&#39;</span><span style=color:#000;font-weight:700>,</span>
   <span style=color:#4e9a06>&#39;body&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;some text msg&#39;</span>
 <span style=color:#000;font-weight:700>};</span>
 
@@ -485,9 +488,8 @@ Telegram: Предоставляет возможность отправлять
 
 <span style=color:#000>sendMsg</span> <span style=color:#ce5c00;font-weight:700>=</span><span style=color:#000>(body)-&gt;</span>
   <span style=color:#000>msg = </span><span style=color:#000>notifr</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>newMessage</span><span style=color:#000;font-weight:700>();</span>
-  <span style=color:#000>msg.type = </span><span style=color:#4e9a06>&#39;telegram&#39;</span><span style=color:#000;font-weight:700>;</span>
+  <span style=color:#000>msg.entity_id = </span><span style=color:#4e9a06>&#39;telegram.name&#39;</span><span style=color:#000;font-weight:700>;</span>
   <span style=color:#000>msg.attributes = </span><span style=color:#000;font-weight:700>{</span>
-    <span style=color:#4e9a06>&#39;name&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;clavicus&#39;</span><span style=color:#000;font-weight:700>,</span>
     <span style=color:#4e9a06>&#39;body&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000>body</span>
   <span style=color:#000;font-weight:700>};</span>
   <span style=color:#000>notifr</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>send</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>msg</span><span style=color:#000;font-weight:700>);</span>
@@ -514,7 +516,7 @@ Telegram: Предоставляет возможность отправлять
 <h3 id=новое-сообщение>Новое сообщение</h3>
 <p>создает объект сообщения</p>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>msg = </span><span style=color:#000>notifr</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>newMessage</span><span style=color:#000;font-weight:700>();</span>
-<span style=color:#000>msg.type = </span><span style=color:#4e9a06>&#39;twilio&#39;</span><span style=color:#000;font-weight:700>;</span>
+<span style=color:#000>msg.entity_id = </span><span style=color:#4e9a06>&#39;twilio.name&#39;</span><span style=color:#000;font-weight:700>;</span>
 <span style=color:#000>msg.attributes = </span><span style=color:#000;font-weight:700>{</span>
   <span style=color:#4e9a06>&#39;phone&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;+79990000001&#39;</span><span style=color:#000;font-weight:700>,</span>
   <span style=color:#4e9a06>&#39;body&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;some text&#39;</span>
@@ -545,7 +547,7 @@ Telegram: Предоставляет возможность отправлять
 </span><span style=color:#8f5902;font-style:italic></span>
 <span style=color:#000>sendMsg</span> <span style=color:#ce5c00;font-weight:700>=</span><span style=color:#000>(body)-&gt;</span>
   <span style=color:#000>msg = </span><span style=color:#000>notifr</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>newMessage</span><span style=color:#000;font-weight:700>();</span>
-  <span style=color:#000>msg.type = </span><span style=color:#4e9a06>&#39;twilio&#39;</span><span style=color:#000;font-weight:700>;</span>
+  <span style=color:#000>msg.entity_id = </span><span style=color:#4e9a06>&#39;twilio.name&#39;</span><span style=color:#000;font-weight:700>;</span>
   <span style=color:#000>msg.attributes = </span><span style=color:#000;font-weight:700>{</span>
     <span style=color:#4e9a06>&#39;phone&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;+79990000001&#39;</span><span style=color:#000;font-weight:700>,</span>
     <span style=color:#4e9a06>&#39;body&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;some text&#39;</span>

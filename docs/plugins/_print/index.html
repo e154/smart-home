@@ -1008,11 +1008,11 @@ Incomplete article
 </span><span style=color:#8f5902;font-style:italic></span><span style=color:#000;font-weight:700>};</span>
 </code></pre></div><p>It also implements a JavaScript handler called <code>mqttEvent</code>. This handler is designed to process actions related to &ldquo;entity&rdquo; type devices based on the &ldquo;sensor&rdquo; plugin.</p>
 <p>Here&rsquo;s an example implementation of the <code>mqttEvent</code> handler:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#000>mqttEvent</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000;font-weight:700>(</span><span style=color:#000>entityId</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>actionName</span><span style=color:#000;font-weight:700>)</span> <span style=color:#000;font-weight:700>=&gt;</span> <span style=color:#000;font-weight:700>{</span>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#204a87;font-weight:700>function</span> <span style=color:#000>mqttEvent</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>message</span><span style=color:#000;font-weight:700>)</span> <span style=color:#000;font-weight:700>{</span>
   <span style=color:#8f5902;font-style:italic>// Action handling code
 </span><span style=color:#8f5902;font-style:italic></span><span style=color:#000;font-weight:700>};</span>
 </code></pre></div><p>Example usage of the <code>mqttEvent</code> handler:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>mqttEvent = </span><span style=color:#000>-&gt;</span>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>mqttEvent</span> <span style=color:#ce5c00;font-weight:700>=</span><span style=color:#000>(message)-&gt;</span>
   <span style=color:#8f5902;font-style:italic>#print &#39;---mqtt new event from plug---&#39;
 </span><span style=color:#8f5902;font-style:italic></span>  <span style=color:#204a87;font-weight:700>if</span> <span style=color:#ce5c00;font-weight:700>!</span><span style=color:#000>message</span> <span style=color:#ce5c00;font-weight:700>||</span> <span style=color:#000>message</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>topic</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>includes</span><span style=color:#000;font-weight:700>(</span><span style=color:#4e9a06>&#39;/set&#39;</span><span style=color:#000;font-weight:700>)</span>
     <span style=color:#204a87;font-weight:700>return</span>
@@ -1270,7 +1270,7 @@ Incomplete article
 <p>New Message:</p>
 <p>Creates a message object.</p>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>msg = </span><span style=color:#000>notifr</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>newMessage</span><span style=color:#000;font-weight:700>();</span>
-<span style=color:#000>msg.type = </span><span style=color:#4e9a06>&#39;messagebird&#39;</span><span style=color:#000;font-weight:700>;</span>
+<span style=color:#000>msg.entity_id = </span><span style=color:#4e9a06>&#39;messagebird.name&#39;</span><span style=color:#000;font-weight:700>;</span>
 <span style=color:#000>msg.attributes = </span><span style=color:#000;font-weight:700>{</span>
   <span style=color:#4e9a06>&#39;phone&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;+79990000001&#39;</span><span style=color:#000;font-weight:700>,</span>
   <span style=color:#4e9a06>&#39;body&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;some text&#39;</span>
@@ -1300,7 +1300,7 @@ Incomplete article
 </span><span style=color:#8f5902;font-style:italic></span>
 <span style=color:#000>sendMsg</span> <span style=color:#ce5c00;font-weight:700>=</span><span style=color:#000>(body)-&gt;</span>
   <span style=color:#000>msg = </span><span style=color:#000>notifr</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>newMessage</span><span style=color:#000;font-weight:700>();</span>
-  <span style=color:#000>msg.type = </span><span style=color:#4e9a06>&#39;messagebird&#39;</span><span style=color:#000;font-weight:700>;</span>
+  <span style=color:#000>msg.entity_id = </span><span style=color:#4e9a06>&#39;messagebird.name&#39;</span><span style=color:#000;font-weight:700>;</span>
   <span style=color:#000>msg.attributes = </span><span style=color:#000;font-weight:700>{</span>
     <span style=color:#4e9a06>&#39;phone&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;+79990000001&#39;</span><span style=color:#000;font-weight:700>,</span>
     <span style=color:#4e9a06>&#39;body&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;some text&#39;</span>
@@ -1321,7 +1321,7 @@ Incomplete article
 <p>New Message:</p>
 <p>Creates a message object.</p>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>msg = </span><span style=color:#000>notifr</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>newMessage</span><span style=color:#000;font-weight:700>();</span>
-<span style=color:#000>msg.type = </span><span style=color:#4e9a06>&#39;slack&#39;</span><span style=color:#000;font-weight:700>;</span>
+<span style=color:#000>msg.entity_id = </span><span style=color:#4e9a06>&#39;slack.name&#39;</span><span style=color:#000;font-weight:700>;</span>
 <span style=color:#000>msg.attributes = </span><span style=color:#000;font-weight:700>{</span>
   <span style=color:#4e9a06>&#39;channel&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;#ch&#39;</span><span style=color:#000;font-weight:700>,</span>
   <span style=color:#4e9a06>&#39;text&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;some text&#39;</span>
@@ -1351,7 +1351,7 @@ Incomplete article
 </span><span style=color:#8f5902;font-style:italic></span>
 <span style=color:#000>sendMsg</span> <span style=color:#ce5c00;font-weight:700>=</span><span style=color:#000>(body)-&gt;</span>
   <span style=color:#000>msg = </span><span style=color:#000>notifr</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>newMessage</span><span style=color:#000;font-weight:700>();</span>
-    <span style=color:#000>msg.type = </span><span style=color:#4e9a06>&#39;slack&#39;</span><span style=color:#000;font-weight:700>;</span>
+    <span style=color:#000>msg.entity_id = </span><span style=color:#4e9a06>&#39;slack.name&#39;</span><span style=color:#000;font-weight:700>;</span>
     <span style=color:#000>msg.attributes = </span><span style=color:#000;font-weight:700>{</span>
       <span style=color:#4e9a06>&#39;channel&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;#ch&#39;</span><span style=color:#000;font-weight:700>,</span>
       <span style=color:#4e9a06>&#39;text&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;some text&#39;</span>
@@ -1387,7 +1387,7 @@ Incomplete article
 <p>New Message:</p>
 <p>Creates a message object.</p>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>msg = </span><span style=color:#000>notifr</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>newMessage</span><span style=color:#000;font-weight:700>();</span>
-<span style=color:#000>msg.type = </span><span style=color:#4e9a06>&#39;telegram&#39;</span><span style=color:#000;font-weight:700>;</span>
+<span style=color:#000>msg.entity_id = </span><span style=color:#4e9a06>&#39;telegram.name&#39;</span><span style=color:#000;font-weight:700>;</span>
 <span style=color:#000>msg.attributes = </span><span style=color:#000;font-weight:700>{</span>
   <span style=color:#4e9a06>&#39;name&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;clavicus&#39;</span><span style=color:#000;font-weight:700>,</span>
   <span style=color:#4e9a06>&#39;body&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;some text msg&#39;</span>
@@ -1448,7 +1448,7 @@ Incomplete article
 
 <span style=color:#000>sendMsg</span> <span style=color:#ce5c00;font-weight:700>=</span><span style=color:#000>(body)-&gt;</span>
   <span style=color:#000>msg = </span><span style=color:#000>notifr</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>newMessage</span><span style=color:#000;font-weight:700>();</span>
-  <span style=color:#000>msg.type = </span><span style=color:#4e9a06>&#39;telegram&#39;</span><span style=color:#000;font-weight:700>;</span>
+  <span style=color:#000>msg.entity_id = </span><span style=color:#4e9a06>&#39;telegram.name&#39;</span><span style=color:#000;font-weight:700>;</span>
   <span style=color:#000>msg.attributes = </span><span style=color:#000;font-weight:700>{</span>
     <span style=color:#4e9a06>&#39;name&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;clavicus&#39;</span><span style=color:#000;font-weight:700>,</span>
     <span style=color:#4e9a06>&#39;body&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000>body</span>
@@ -1529,7 +1529,7 @@ Incomplete article
 <h3 id=new-message>New Message</h3>
 <p>Creates a message object</p>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>msg = </span><span style=color:#000>notifr</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>newMessage</span><span style=color:#000;font-weight:700>();</span>
-<span style=color:#000>msg.type = </span><span style=color:#4e9a06>&#39;twilio&#39;</span><span style=color:#000;font-weight:700>;</span>
+<span style=color:#000>msg.entity_id = </span><span style=color:#4e9a06>&#39;twilio.name&#39;</span><span style=color:#000;font-weight:700>;</span>
 <span style=color:#000>msg.attributes = </span><span style=color:#000;font-weight:700>{</span>
   <span style=color:#4e9a06>&#39;phone&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;+79990000001&#39;</span><span style=color:#000;font-weight:700>,</span>
   <span style=color:#4e9a06>&#39;body&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;some text&#39;</span>
@@ -1560,7 +1560,7 @@ Incomplete article
 </span><span style=color:#8f5902;font-style:italic></span>
 <span style=color:#000>sendMsg</span> <span style=color:#ce5c00;font-weight:700>=</span><span style=color:#000>(body)-&gt;</span>
   <span style=color:#000>msg = </span><span style=color:#000>notifr</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>newMessage</span><span style=color:#000;font-weight:700>();</span>
-  <span style=color:#000>msg.type = </span><span style=color:#4e9a06>&#39;twilio&#39;</span><span style=color:#000;font-weight:700>;</span>
+  <span style=color:#000>msg.entity_id = </span><span style=color:#4e9a06>&#39;twilio.name&#39;</span><span style=color:#000;font-weight:700>;</span>
   <span style=color:#000>msg.attributes = </span><span style=color:#000;font-weight:700>{</span>
     <span style=color:#4e9a06>&#39;phone&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;+79990000001&#39;</span><span style=color:#000;font-weight:700>,</span>
     <span style=color:#4e9a06>&#39;body&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;some text&#39;</span>
