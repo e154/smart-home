@@ -36,24 +36,24 @@ type EntitySettings struct {
 
 // Entity ...
 type Entity struct {
+	Actions     []*EntityAction  `json:"actions"`
+	States      []*EntityState   `json:"states"`
+	Metrics     []*Metric        `json:"metrics"`
+	Scripts     []*Script        `json:"scripts"`
+	CreatedAt   time.Time        `json:"created_at"`
+	UpdatedAt   time.Time        `json:"updated_at"`
 	Id          common.EntityId  `json:"id"`
 	Description string           `json:"description"`
 	PluginName  string           `json:"plugin_name" validate:"required"`
 	Icon        *string          `json:"icon"`
 	Image       *Image           `json:"image"`
 	ImageId     *int64           `json:"image_id"`
-	Actions     []*EntityAction  `json:"actions"`
-	States      []*EntityState   `json:"states"`
 	Area        *Area            `json:"area"`
 	AreaId      *int64           `json:"area_id"`
-	Metrics     []*Metric        `json:"metrics"`
-	Scripts     []*Script        `json:"scripts"`
-	Hidden      bool             `json:"hidden"`
 	Attributes  Attributes       `json:"attributes"`
 	Settings    Attributes       `json:"settings"`
+	ParentId    *common.EntityId `json:"parent_id"`
+	Hidden      bool             `json:"hidden"`
 	AutoLoad    bool             `json:"auto_load"`
 	IsLoaded    bool             `json:"is_loaded"`
-	ParentId    *common.EntityId `json:"parent_id"`
-	CreatedAt   time.Time        `json:"created_at"`
-	UpdatedAt   time.Time        `json:"updated_at"`
 }

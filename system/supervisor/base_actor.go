@@ -163,7 +163,7 @@ func NewBaseActor(entity *m.Entity,
 				}
 			}
 			go func() {
-				if _ , err = scriptEngine.Engine().AssertFunction("init"); err != nil {
+				if _, err = scriptEngine.Engine().AssertFunction("init"); err != nil {
 					log.Error(err.Error())
 				}
 			}()

@@ -19,16 +19,16 @@
 package models
 
 import (
-	"os"
+	"io/fs"
 	"time"
 )
 
 type Backup struct {
-	Name     string
-	Size     int64
-	MimeType string
-	FileMode os.FileMode
 	ModTime  time.Time
+	Name     string
+	MimeType string
+	Size     int64
+	FileMode fs.FileMode
 }
 
 type Backups []*Backup

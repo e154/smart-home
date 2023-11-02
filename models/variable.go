@@ -28,13 +28,13 @@ import (
 
 // Variable ...
 type Variable struct {
+	CreatedAt time.Time        `json:"created_at"`
+	UpdatedAt time.Time        `json:"updated_at"`
 	Name      string           `json:"name"`
 	Value     string           `json:"value"`
-	System    bool             `json:"system"`
 	EntityId  *common.EntityId `json:"entity_id"`
+	System    bool             `json:"system"`
 	Changed   bool
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
 }
 
 // NewVariable ...

@@ -27,20 +27,20 @@ import (
 
 // Task ...
 type Task struct {
-	Id          int64                `json:"id"`
-	Name        string               `json:"name" validate:"required,lte=255"`
-	Description string               `json:"description" validate:"lte=255"`
-	Enabled     bool                 `json:"enabled"`
-	IsLoaded    bool                 `json:"is_loaded"`
-	Condition   common.ConditionType `json:"condition" validate:"required,oneof=or and"`
 	Triggers    []*Trigger           `json:"triggers" validate:"dive"`
 	Conditions  []*Condition         `json:"conditions" validate:"dive"`
 	Actions     []*Action            `json:"actions" validate:"dive"`
-	Area        *Area                `json:"area"`
-	AreaId      *int64               `json:"area_id"`
 	Telemetry   telemetry.Telemetry  `json:"telemetry"`
 	CreatedAt   time.Time            `json:"created_at"`
 	UpdatedAt   time.Time            `json:"updated_at"`
+	Name        string               `json:"name" validate:"required,lte=255"`
+	Description string               `json:"description" validate:"lte=255"`
+	Condition   common.ConditionType `json:"condition" validate:"required,oneof=or and"`
+	Id          int64                `json:"id"`
+	Area        *Area                `json:"area"`
+	AreaId      *int64               `json:"area_id"`
+	Enabled     bool                 `json:"enabled"`
+	IsLoaded    bool                 `json:"is_loaded"`
 }
 
 // AddTrigger ...
@@ -60,31 +60,31 @@ func (t *Task) AddAction(a *Action) {
 
 // NewTask ...
 type NewTask struct {
-	Name         string               `json:"name" validate:"required,lte=255"`
-	Description  string               `json:"description" validate:"lte=255"`
-	Enabled      bool                 `json:"enabled"`
-	IsLoaded     bool                 `json:"is_loaded"`
-	Condition    common.ConditionType `json:"condition" validate:"required,oneof=or and"`
 	TriggerIds   []int64              `json:"triggers" validate:"dive"`
 	ConditionIds []int64              `json:"conditions" validate:"dive"`
 	ActionIds    []int64              `json:"actions" validate:"dive"`
+	Name         string               `json:"name" validate:"required,lte=255"`
+	Description  string               `json:"description" validate:"lte=255"`
+	Condition    common.ConditionType `json:"condition" validate:"required,oneof=or and"`
 	Area         *Area                `json:"area"`
 	AreaId       *int64               `json:"area_id"`
+	Enabled      bool                 `json:"enabled"`
+	IsLoaded     bool                 `json:"is_loaded"`
 }
 
 // UpdateTask ...
 type UpdateTask struct {
-	Id           int64                `json:"id"`
-	Name         string               `json:"name" validate:"required,lte=255"`
-	Description  string               `json:"description" validate:"lte=255"`
-	Enabled      bool                 `json:"enabled"`
-	IsLoaded     bool                 `json:"is_loaded"`
-	Condition    common.ConditionType `json:"condition" validate:"required,oneof=or and"`
-	TriggerIds   []int64              `json:"triggers" validate:"dive"`
-	ConditionIds []int64              `json:"conditions" validate:"dive"`
-	ActionIds    []int64              `json:"actions" validate:"dive"`
-	Area         *Area                `json:"area"`
-	AreaId       *int64               `json:"area_id"`
+	TriggerIds   []int64 `json:"triggers" validate:"dive"`
+	ConditionIds []int64 `json:"conditions" validate:"dive"`
+	ActionIds    []int64 `json:"actions" validate:"dive"`
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
+	Name         string               `json:"name" validate:"required,lte=255"`
+	Description  string               `json:"description" validate:"lte=255"`
+	Condition    common.ConditionType `json:"condition" validate:"required,oneof=or and"`
+	Id           int64                `json:"id"`
+	Area         *Area                `json:"area"`
+	AreaId       *int64               `json:"area_id"`
+	Enabled      bool                 `json:"enabled"`
+	IsLoaded     bool                 `json:"is_loaded"`
 }
