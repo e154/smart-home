@@ -144,11 +144,11 @@ const prepareMetric = (metric: ApiMetric): ChartDataInterface => {
   return _chartData;
 }
 
-const fetchMetric = async (id: number, from?: string): Promise<ApiMetric> => {
+const fetchMetric = async (id: number, startDate?: string): Promise<ApiMetric> => {
   const {data} = await api.v1.metricServiceGetMetric({
     id: id,
     range: props.item?.payload?.chart?.range || '24h',
-    from: from,
+    startDate: startDate,
   });
 
   return data;

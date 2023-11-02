@@ -2692,18 +2692,18 @@ func (w *ServerInterfaceWrapper) MetricServiceGetMetric(ctx echo.Context) error 
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter range: %s", err))
 	}
 
-	// ------------- Optional query parameter "from" -------------
+	// ------------- Optional query parameter "startDate" -------------
 
-	err = runtime.BindQueryParameter("form", true, false, "from", ctx.QueryParams(), &params.From)
+	err = runtime.BindQueryParameter("form", true, false, "startDate", ctx.QueryParams(), &params.StartDate)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter from: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter startDate: %s", err))
 	}
 
-	// ------------- Optional query parameter "to" -------------
+	// ------------- Optional query parameter "endDate" -------------
 
-	err = runtime.BindQueryParameter("form", true, false, "to", ctx.QueryParams(), &params.To)
+	err = runtime.BindQueryParameter("form", true, false, "endDate", ctx.QueryParams(), &params.EndDate)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter to: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter endDate: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshalled arguments

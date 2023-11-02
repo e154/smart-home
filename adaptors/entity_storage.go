@@ -33,8 +33,7 @@ import (
 type IEntityStorage interface {
 	Add(ctx context.Context, ver *m.EntityStorage) (id int64, err error)
 	GetLastByEntityId(ctx context.Context, entityId common.EntityId) (ver *m.EntityStorage, err error)
-	List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.EntityStorage, total int64, err error)
-	ListByEntityId(ctx context.Context, limit, offset int64, orderBy, sort string, entityIds []common.EntityId, startDate, endDate *time.Time) (list []*m.EntityStorage, total int64, err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string, entityIds []common.EntityId, startDate, endDate *time.Time) (list []*m.EntityStorage, total int64, err error)
 	DeleteOldest(ctx context.Context, days int) (err error)
 	fromDb(dbVer db.EntityStorage) (ver *m.EntityStorage)
 	toDb(ver *m.EntityStorage) (dbVer db.EntityStorage)
@@ -71,24 +70,10 @@ func (n *EntityStorage) GetLastByEntityId(ctx context.Context, entityId common.E
 	return
 }
 
-// List ...
-func (n *EntityStorage) List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.EntityStorage, total int64, err error) {
-	var dbList []db.EntityStorage
-	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort); err != nil {
-		return
-	}
-
-	list = make([]*m.EntityStorage, len(dbList))
-	for i, dbVer := range dbList {
-		list[i] = n.fromDb(dbVer)
-	}
-	return
-}
-
 // ListByEntityId ...
-func (n *EntityStorage) ListByEntityId(ctx context.Context, limit, offset int64, orderBy, sort string, entityIds []common.EntityId, startDate, endDate *time.Time) (list []*m.EntityStorage, total int64, err error) {
+func (n *EntityStorage) List(ctx context.Context, limit, offset int64, orderBy, sort string, entityIds []common.EntityId, startDate, endDate *time.Time) (list []*m.EntityStorage, total int64, err error) {
 	var dbList []db.EntityStorage
-	if dbList, total, err = n.table.ListByEntityId(ctx, int(limit), int(offset), orderBy, sort, entityIds, startDate, endDate); err != nil {
+	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort, entityIds, startDate, endDate); err != nil {
 		return
 	}
 

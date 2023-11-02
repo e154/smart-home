@@ -1311,12 +1311,6 @@ type ApiZigbee2mqttShort struct {
 // AcceptJSON defines model for Accept-JSON.
 type AcceptJSON = string
 
-// DateFrom defines model for dateFrom.
-type DateFrom = time.Time
-
-// DateTo defines model for dateTo.
-type DateTo = time.Time
-
 // EndDate defines model for endDate.
 type EndDate = time.Time
 
@@ -1881,10 +1875,10 @@ type MessageDeliveryServiceGetMessageDeliveryListParams struct {
 
 // MetricServiceGetMetricParams defines parameters for MetricServiceGetMetric.
 type MetricServiceGetMetricParams struct {
-	Id    MetricId                           `form:"id" json:"id"`
-	Range *MetricServiceGetMetricParamsRange `form:"range,omitempty" json:"range,omitempty"`
-	From  *DateFrom                          `form:"from,omitempty" json:"from,omitempty"`
-	To    *DateTo                            `form:"to,omitempty" json:"to,omitempty"`
+	Id        MetricId                           `form:"id" json:"id"`
+	Range     *MetricServiceGetMetricParamsRange `form:"range,omitempty" json:"range,omitempty"`
+	StartDate *StartDate                         `form:"startDate,omitempty" json:"startDate,omitempty"`
+	EndDate   *EndDate                           `form:"endDate,omitempty" json:"endDate,omitempty"`
 }
 
 // MetricServiceGetMetricParamsRange defines parameters for MetricServiceGetMetric.

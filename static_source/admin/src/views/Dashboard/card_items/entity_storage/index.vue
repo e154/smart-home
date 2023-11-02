@@ -33,7 +33,7 @@ interface TableObject {
   params?: any
   loading: boolean
   sort?: string
-  query?: string
+  entityId?: string
   startDate?: string;
   endDate?: string;
 }
@@ -42,7 +42,7 @@ interface Params {
   page?: number;
   limit?: number;
   sort?: string;
-  query?: string;
+  entityId?: string;
   startDate?: string;
   endDate?: string;
 }
@@ -214,7 +214,20 @@ const getList = debounce( async () => {
 }, 100)
 
 const onStateChanged = (event: EventStateChange) => {
-  getList()
+
+  if (props.item?.payload.entityStorage?.entityIds?.length ) {
+    if (selectedEntities.value.length == 0) {
+      if (props.item?.payload.entityStorage?.entityIds.includes(event.entity_id)) {
+        getList()
+      }
+    } else {
+      if (selectedEntities.value.includes(event.entity_id)) {
+        getList()
+      }
+    }
+  } else {
+    getList()
+  }
 }
 
 

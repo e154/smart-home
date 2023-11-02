@@ -4249,11 +4249,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       query: {
         /** @format int64 */
         id: number;
-        range?: string;
+        range?: "6h" | "12h" | "24h" | "7d" | "30d" | "1m";
         /** @format date-time */
-        from?: string;
+        startDate?: string;
         /** @format date-time */
-        to?: string;
+        endDate?: string;
       },
       params: RequestParams = {},
     ) =>

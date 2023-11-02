@@ -45,7 +45,7 @@ func (c ControllerMetric) MetricServiceGetMetric(ctx echo.Context, params stub.M
 	if params.Range != nil {
 		metricRange = common.String(string(*params.Range))
 	}
-	metric, err := c.endpoint.Metric.GetByIdWithData(ctx.Request().Context(), params.From, params.To, params.Id, metricRange)
+	metric, err := c.endpoint.Metric.GetByIdWithData(ctx.Request().Context(), params.StartDate, params.EndDate, params.Id, metricRange)
 	if err != nil {
 		return c.ERROR(ctx, err)
 	}

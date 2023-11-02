@@ -2203,8 +2203,8 @@ paths:
       parameters:
         - $ref: '#/components/parameters/metricId'
         - $ref: '#/components/parameters/metricRange'
-        - $ref: '#/components/parameters/dateFrom'
-        - $ref: '#/components/parameters/dateTo'
+        - $ref: '#/components/parameters/startDate'
+        - $ref: '#/components/parameters/endDate'
       responses:
         200:
           description: A successful response.
@@ -4228,18 +4228,6 @@ components:
           - 7d
           - 30d
           - 1m
-    dateFrom:
-      name: from
-      in: query
-      schema:
-        type: string
-        format: date-time
-    dateTo:
-      name: to
-      in: query
-      schema:
-        type: string
-        format: date-time
     listSort:
       name: sort
       in: query

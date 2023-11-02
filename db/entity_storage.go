@@ -80,35 +80,7 @@ func (n *EntityStorages) GetLastByEntityId(ctx context.Context, entityId common.
 }
 
 // List ...
-func (n *EntityStorages) List(ctx context.Context, limit, offset int, orderBy, sort string) (list []EntityStorage, total int64, err error) {
-
-	if err = n.Db.WithContext(ctx).Model(EntityStorage{}).Count(&total).Error; err != nil {
-		err = errors.Wrap(apperr.ErrEntityStorageList, err.Error())
-		return
-	}
-
-	list = make([]EntityStorage, 0)
-	q := n.Db.WithContext(ctx).Model(&EntityStorage{}).
-		Limit(limit).
-		Offset(offset)
-
-	if sort != "" && orderBy != "" {
-		q = q.
-			Order(fmt.Sprintf("%s %s", sort, orderBy))
-	}
-
-	err = q.
-		Find(&list).
-		Error
-	if err != nil {
-		err = errors.Wrap(apperr.ErrEntityStorageList, err.Error())
-		return
-	}
-	return
-}
-
-// ListByEntityId ...
-func (n *EntityStorages) ListByEntityId(ctx context.Context, limit, offset int, orderBy, sort string, entityIds []common.EntityId, startDate, endDate *time.Time) (list []EntityStorage, total int64, err error) {
+func (n *EntityStorages) List(ctx context.Context, limit, offset int, orderBy, sort string, entityIds []common.EntityId, startDate, endDate *time.Time) (list []EntityStorage, total int64, err error) {
 
 	q := n.Db.WithContext(ctx).Model(&EntityStorage{})
 
@@ -121,10 +93,10 @@ func (n *EntityStorages) ListByEntityId(ctx context.Context, limit, offset int, 
 	}
 
 	if startDate != nil {
-		q = q.Where("created_at >= ?", &startDate)
+		q = q.Where("created_at > ?", startDate.UTC().Format(time.RFC3339))
 	}
 	if endDate != nil {
-		q = q.Where("created_at <= ?", &endDate)
+		q = q.Where("created_at <= ?", endDate.UTC().Format(time.RFC3339))
 	}
 
 	if err = q.Count(&total).Error; err != nil {
