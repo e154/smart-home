@@ -35,14 +35,14 @@ type HttpBind struct {
 	headers []map[string]string
 }
 
-func NewHttpBind(crawler web.Crawler) *HttpBind {
-	return &HttpBind{crawler: crawler}
+func NewHttpBind() *HttpBind {
+	return &HttpBind{crawler: web.New()}
 }
 
 // Get ...
 func (h *HttpBind) Get(url string) (response HttpResponse) {
 	//log.Infof("call [GET ] request %s", url)
-	_, body, err := h.crawler.Probe(web.Request{Method: "GET", Url: url})
+	_, body, err := h.crawler.Probe(web.Request{Method: "GET", Url: url, Headers: h.headers})
 	if err != nil {
 		response.Error = true
 		response.ErrorMessage = err.Error()
@@ -96,4 +96,23 @@ func (h *HttpBind) Headers(headers []map[string]string) *HttpBind {
 		crawler: h.crawler,
 		headers: headers,
 	}
+}
+
+func (h *HttpBind) BasicAuth(username, password string) *HttpBind {
+	return &HttpBind{crawler: web.New().BasicAuth(username, password)}
+}
+
+func (h *HttpBind) DigestAuth(username, password string) *HttpBind {
+	return &HttpBind{crawler: web.New().DigestAuth(username, password)}
+}
+
+func (h *HttpBind) Download(uri string) (response HttpResponse) {
+	filePath, err := h.crawler.Download(web.Request{Method: "GET", Url: uri})
+	if err != nil {
+		response.Error = true
+		response.ErrorMessage = err.Error()
+		return
+	}
+	response.Body = filePath
+	return
 }

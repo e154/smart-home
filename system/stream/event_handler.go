@@ -20,6 +20,7 @@ package stream
 
 import (
 	"encoding/json"
+
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/plugins/webpush"
 )
@@ -46,8 +47,8 @@ func (e *eventHandler) eventHandler(_ string, message interface{}) {
 		go e.eventStateChangedHandler(message)
 	case events.EventLastStateChanged:
 		go e.eventStateChangedHandler(message)
-	case events.EventCreatedEntity:
-	case events.EventUpdatedEntity:
+	case events.EventCreatedEntityModel:
+	case events.EventUpdatedEntityModel:
 	case events.CommandUnloadEntity:
 	case events.EventEntityLoaded:
 		go e.event(message)
@@ -89,6 +90,22 @@ func (e *eventHandler) eventHandler(_ string, message interface{}) {
 
 	// mqtt
 	case events.EventMqttNewClient:
+		go e.event(message)
+
+	// backup
+	case events.EventCreatedBackup:
+		go e.event(message)
+	case events.EventRemovedBackup:
+		go e.event(message)
+	case events.EventUploadedBackup:
+		go e.event(message)
+	case events.EventStartedRestore:
+		go e.event(message)
+
+	// variables
+	case events.EventRemovedVariableModel:
+		go e.event(message)
+	case events.EventUpdatedVariableModel:
 		go e.event(message)
 	}
 }

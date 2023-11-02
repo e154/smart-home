@@ -52,7 +52,7 @@ type DashboardCard struct {
 	Payload        json.RawMessage `gorm:"type:jsonb;not null"`
 	EntityId       *common.EntityId
 	Hidden         bool
-	CreatedAt      time.Time
+	CreatedAt      time.Time `gorm:"<-:create"`
 	UpdatedAt      time.Time
 }
 

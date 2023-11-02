@@ -50,7 +50,7 @@ type DashboardTab struct {
 	DashboardId int64
 	Dashboard   *Dashboard
 	Cards       []*DashboardCard
-	CreatedAt   time.Time
+	CreatedAt   time.Time `gorm:"<-:create"`
 	UpdatedAt   time.Time
 }
 

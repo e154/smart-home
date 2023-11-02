@@ -33,6 +33,9 @@ type Action struct {
 	Entity           *Entity          `json:"entity"`
 	EntityId         *common.EntityId `json:"entity_id"`
 	EntityActionName *string          `json:"entity_action_name"`
+	AreaId           *int64           `json:"area_id"`
+	Area             *Area            `json:"area"`
+	Description      string           `json:"description"`
 	CreatedAt        time.Time        `json:"created_at"`
 	UpdatedAt        time.Time        `json:"updated_at"`
 }

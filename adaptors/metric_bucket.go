@@ -23,23 +23,22 @@ import (
 	"encoding/json"
 	"time"
 
+	"gorm.io/gorm"
+
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/orm"
-	"gorm.io/gorm"
 )
 
 // IMetricBucket ...
 type IMetricBucket interface {
 	Add(ctx context.Context, ver *m.MetricDataItem) error
 	AddMultiple(ctx context.Context, items []*m.MetricDataItem) (err error)
-	SimpleListWithSoftRange(ctx context.Context, _from, _to *time.Time, metricId int64, _metricRange *string, optionItems []string) (list []*m.MetricDataItem, err error)
-	Simple24HPreview(ctx context.Context, metricId int64, optionItems []string) (list []*m.MetricDataItem, err error)
+	List(ctx context.Context, from, to *time.Time, metricId int64, optionItems []string, metricRange *common.MetricRange) (list []*m.MetricDataItem, err error)
 	DeleteOldest(ctx context.Context, days int) (err error)
 	DeleteById(ctx context.Context, id int64) (err error)
 	DeleteByMetricId(ctx context.Context, metricId int64) (err error)
-	CreateHypertable(ctx context.Context) (err error)
 	fromDb(dbVer *db.MetricBucket) (ver *m.MetricDataItem)
 	toDb(ver *m.MetricDataItem) (dbVer *db.MetricBucket)
 }
@@ -49,15 +48,17 @@ type MetricBucket struct {
 	IMetricBucket
 	table *db.MetricBuckets
 	db    *gorm.DB
-	orm   *orm.Orm
 }
 
 // GetMetricBucketAdaptor ...
 func GetMetricBucketAdaptor(d *gorm.DB, orm *orm.Orm) IMetricBucket {
+	table := &db.MetricBuckets{Db: d}
+	if orm != nil {
+		table.Timescale = orm.CheckAvailableExtension("timescaledb") && orm.CheckInstalledExtension("timescaledb")
+	}
 	return &MetricBucket{
-		table: &db.MetricBuckets{Db: d},
+		table: table,
 		db:    d,
-		orm:   orm,
 	}
 }
 
@@ -80,34 +81,11 @@ func (n *MetricBucket) AddMultiple(ctx context.Context, items []*m.MetricDataIte
 	return
 }
 
-// SimpleListWithSoftRange ...
-func (n *MetricBucket) SimpleListWithSoftRange(ctx context.Context, _from, _to *time.Time, metricId int64, _metricRange *string, optionItems []string) (list []*m.MetricDataItem, err error) {
+// List ...
+func (n *MetricBucket) List(ctx context.Context, from, to *time.Time, metricId int64, optionItems []string, metricRange *common.MetricRange) (list []*m.MetricDataItem, err error) {
 
 	var dbList []*db.MetricBucket
-
-	if _metricRange != nil && _from == nil && _to == nil {
-		if dbList, err = n.table.SimpleListByRangeType(ctx, metricId, common.MetricRange(common.StringValue(_metricRange)), optionItems); err != nil {
-			return
-		}
-	}
-
-	if _from != nil && _to != nil && _metricRange == nil {
-		if dbList, err = n.table.SimpleListWithSoftRange(ctx, common.TimeValue(_from), common.TimeValue(_to), metricId, optionItems); err != nil {
-			return
-		}
-	}
-
-	list = make([]*m.MetricDataItem, len(dbList))
-	for i, dbVer := range dbList {
-		list[i] = n.fromDb(dbVer)
-	}
-	return
-}
-
-// Simple24HPreview ...
-func (n *MetricBucket) Simple24HPreview(ctx context.Context, metricId int64, optionItems []string) (list []*m.MetricDataItem, err error) {
-	var dbList []*db.MetricBucket
-	if dbList, err = n.table.Simple24HPreview(ctx, metricId, optionItems); err != nil {
+	if dbList, err = n.table.List(ctx, metricId, optionItems, from, to, metricRange); err != nil {
 		return
 	}
 
@@ -136,12 +114,6 @@ func (n *MetricBucket) DeleteByMetricId(ctx context.Context, metricId int64) (er
 	return
 }
 
-// CreateHypertable ...
-func (n *MetricBucket) CreateHypertable(ctx context.Context) (err error) {
-	err = n.table.CreateHypertable(ctx)
-	return
-}
-
 func (n *MetricBucket) fromDb(dbVer *db.MetricBucket) (ver *m.MetricDataItem) {
 	ver = &m.MetricDataItem{
 		MetricId: dbVer.MetricId,
@@ -150,7 +122,7 @@ func (n *MetricBucket) fromDb(dbVer *db.MetricBucket) (ver *m.MetricDataItem) {
 
 	// deserialize value
 	b, _ := dbVer.Value.MarshalJSON()
-	value := make(map[string]float32)
+	value := make(map[string]interface{})
 	_ = json.Unmarshal(b, &value)
 	ver.Value = value
 

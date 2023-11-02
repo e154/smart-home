@@ -29,7 +29,7 @@ Creates a message object
 
 ```coffeescript
 msg = notifr.newMessage();
-msg.type = 'twilio';
+msg.entity_id = 'twilio.name';
 msg.attributes = {
   'phone': '+79990000001',
   'body': 'some text'
@@ -51,7 +51,7 @@ msg.attributes = {
 
 sendMsg =(body)->
   msg = notifr.newMessage();
-  msg.type = 'twilio';
+  msg.entity_id = 'twilio.name';
   msg.attributes = {
     'phone': '+79990000001',
     'body': 'some text'

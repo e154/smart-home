@@ -144,7 +144,9 @@ func (m *Mqtt) Start() {
 			OnBasicAuth:  m.onBasicAuth,
 			OnMsgArrived: m.onMsgArrived,
 			OnConnected: func(ctx context.Context, client server.Client) {
-				m.eventBus.Publish("system/services/mqtt", events.EventMqttNewClient{})
+				m.eventBus.Publish("system/services/mqtt", events.EventMqttNewClient{
+					ClientId: client.ClientOptions().ClientID,
+				})
 			},
 		}),
 	}

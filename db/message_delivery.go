@@ -23,6 +23,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/e154/smart-home/common"
+
 	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/pkg/errors"
@@ -40,10 +42,11 @@ type MessageDelivery struct {
 	Message            *Message
 	MessageId          int64
 	Address            string
+	EntityId           *common.EntityId
 	Status             string
-	ErrorMessageStatus *string `gorm:"column:error_system_code"`
-	ErrorMessageBody   *string `gorm:"column:error_system_message"`
-	CreatedAt          time.Time
+	ErrorMessageStatus *string   `gorm:"column:error_system_code"`
+	ErrorMessageBody   *string   `gorm:"column:error_system_message"`
+	CreatedAt          time.Time `gorm:"<-:create"`
 	UpdatedAt          time.Time
 }
 

@@ -19,10 +19,8 @@
 package dto
 
 import (
-	"github.com/e154/smart-home/api/stub/api"
-	"github.com/e154/smart-home/common"
+	stub "github.com/e154/smart-home/api/stub"
 	m "github.com/e154/smart-home/models"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Log ...
@@ -34,42 +32,34 @@ func NewLogDto() Log {
 }
 
 // ToListResult ...
-func (r Log) ToListResult(list []*m.Log, total uint64, pagination common.PageParams) *api.GetLogListResult {
+func (r Log) ToListResult(list []*m.Log) []*stub.ApiLog {
 
-	items := make([]*api.Log, 0, len(list))
+	items := make([]*stub.ApiLog, 0, len(list))
 
 	for _, i := range list {
 		items = append(items, r.ToLog(i))
 	}
 
-	return &api.GetLogListResult{
-		Items: items,
-		Meta: &api.Meta{
-			Limit: uint64(pagination.Limit),
-			Page:  pagination.PageReq,
-			Total: total,
-			Sort:  pagination.SortReq,
-		},
-	}
+	return items
 }
 
 // ToLog ...
-func (r Log) ToLog(log *m.Log) (obj *api.Log) {
+func (r Log) ToLog(log *m.Log) (obj *stub.ApiLog) {
 	obj = ToLog(log)
 	return
 }
 
 // ToLog ...
-func ToLog(log *m.Log) (obj *api.Log) {
+func ToLog(log *m.Log) (obj *stub.ApiLog) {
 	if log == nil {
 		return
 	}
-	obj = &api.Log{
+	obj = &stub.ApiLog{
 		Id:        log.Id,
 		Body:      log.Body,
 		Level:     string(log.Level),
 		Owner:     log.Owner,
-		CreatedAt: timestamppb.New(log.CreatedAt),
+		CreatedAt: log.CreatedAt,
 	}
 	return
 }

@@ -21,14 +21,11 @@ package endpoint
 import (
 	"context"
 	"fmt"
-
 	"github.com/e154/smart-home/common/events"
 
-	"github.com/e154/smart-home/common/apperr"
-
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
 	m "github.com/e154/smart-home/models"
-	"github.com/go-playground/validator/v10"
 )
 
 // ActionEndpoint ...
@@ -44,12 +41,11 @@ func NewActionEndpoint(common *CommonEndpoint) *ActionEndpoint {
 }
 
 // Add ...
-func (n *ActionEndpoint) Add(ctx context.Context, action *m.Action) (result *m.Action, errs validator.ValidationErrorsTranslations, err error) {
+func (n *ActionEndpoint) Add(ctx context.Context, action *m.Action) (result *m.Action, err error) {
 
-	var ok bool
-	if ok, errs = n.validation.Valid(action); !ok {
+	if ok, errs := n.validation.Valid(action); !ok {
 		err = apperr.ErrInvalidRequest
-		apperr.SetContext(err, errs)
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
@@ -61,7 +57,7 @@ func (n *ActionEndpoint) Add(ctx context.Context, action *m.Action) (result *m.A
 		return
 	}
 
-	n.eventBus.Publish(fmt.Sprintf("system/automation/actions/%d", result.Id), events.EventAddedAction{
+	n.eventBus.Publish(fmt.Sprintf("system/models/actions/%d", result.Id), events.EventAddedActionModel{
 		Id: action.Id,
 	})
 
@@ -77,15 +73,16 @@ func (n *ActionEndpoint) GetById(ctx context.Context, id int64) (result *m.Actio
 }
 
 // Update ...
-func (n *ActionEndpoint) Update(ctx context.Context, params *m.Action) (result *m.Action, errs validator.ValidationErrorsTranslations, err error) {
+func (n *ActionEndpoint) Update(ctx context.Context, params *m.Action) (action *m.Action, err error) {
 
 	_, err = n.adaptors.Action.GetById(ctx, params.Id)
 	if err != nil {
 		return
 	}
 
-	var ok bool
-	if ok, errs = n.validation.Valid(params); !ok {
+	if ok, errs := n.validation.Valid(params); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
@@ -93,12 +90,13 @@ func (n *ActionEndpoint) Update(ctx context.Context, params *m.Action) (result *
 		return
 	}
 
-	if result, err = n.adaptors.Action.GetById(ctx, params.Id); err != nil {
+	if action, err = n.adaptors.Action.GetById(ctx, params.Id); err != nil {
 		return
 	}
 
-	n.eventBus.Publish(fmt.Sprintf("system/automation/actions/%d", result.Id), events.EventUpdatedAction{
-		Id: result.Id,
+	n.eventBus.Publish(fmt.Sprintf("system/models/actions/%d", action.Id), events.EventUpdatedActionModel{
+		Id:     action.Id,
+		Action: action,
 	})
 
 	return
@@ -124,7 +122,7 @@ func (n *ActionEndpoint) Delete(ctx context.Context, id int64) (err error) {
 		return
 	}
 
-	n.eventBus.Publish(fmt.Sprintf("system/automation/actions/%d", id), events.EventRemovedAction{
+	n.eventBus.Publish(fmt.Sprintf("system/models/actions/%d", id), events.EventRemovedActionModel{
 		Id: id,
 	})
 

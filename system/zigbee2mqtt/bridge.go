@@ -98,6 +98,7 @@ func (g *Bridge) Stop(ctx context.Context) {
 		return
 	}
 	g.isStarted = false
+	g.mqtt.RemoveClient(fmt.Sprintf("bridge_%v", g.model.Name))
 	g.mqttClient.UnsubscribeAll()
 }
 
@@ -119,7 +120,7 @@ func (g *Bridge) onBridgePublish(client mqtt.MqttCli, message mqtt.Message) {
 	case "event":
 		g.onEvent(client, message)
 	default:
-		log.Warnf("unknown topic %v", topic)
+		log.Warnf("unknown topic %v", message.Topic)
 	}
 }
 
@@ -470,16 +471,17 @@ func (g *Bridge) UpdateModel(model *m.Zigbee2mqtt) {
 	g.modelLock.Lock()
 	defer g.modelLock.Unlock()
 
-	g.model.Login = model.Login
+	g.model.Name = model.Name
 	g.model.BaseTopic = model.BaseTopic
-	g.model.PermitJoin = model.PermitJoin
+	g.model.Login = model.Login
 	g.model.EncryptedPassword = model.EncryptedPassword
+	g.model.PermitJoin = model.PermitJoin
 
 	g.configPermitJoin(g.model.PermitJoin)
 }
 
 // Info ...
-func (g *Bridge) Info() (info *Zigbee2mqttBridge) {
+func (g *Bridge) Info() (info *m.Zigbee2mqttInfo) {
 
 	g.networkmapLock.Lock()
 	g.settingsLock.Lock()
@@ -495,8 +497,7 @@ func (g *Bridge) Info() (info *Zigbee2mqttBridge) {
 
 	_ = common.Copy(&model, g.model, common.JsonEngine)
 
-	info = &Zigbee2mqttBridge{
-		Zigbee2mqtt:   model,
+	info = &m.Zigbee2mqttInfo{
 		ScanInProcess: g.scanInProcess,
 		LastScan:      g.lastScan,
 		Networkmap:    g.networkmap,

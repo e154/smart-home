@@ -19,10 +19,8 @@
 package dto
 
 import (
-	"github.com/e154/smart-home/api/stub/api"
-	"github.com/e154/smart-home/common"
+	stub "github.com/e154/smart-home/api/stub"
 	"github.com/e154/smart-home/system/mqtt/admin"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Mqtt ...
@@ -34,17 +32,17 @@ func NewMqttDto() Mqtt {
 }
 
 // GetClientById ...
-func (r Mqtt) GetClientById(from *admin.ClientInfo) (client *api.Client) {
+func (r Mqtt) GetClientById(from *admin.ClientInfo) (client *stub.ApiClient) {
 	if from == nil {
 		return
 	}
-	client = &api.Client{
+	client = &stub.ApiClient{
 		ClientId:             from.ClientID,
 		Username:             from.Username,
-		KeepAlive:            uint32(from.KeepAlive),
+		KeepAlive:            from.KeepAlive,
 		Version:              from.Version,
 		WillRetain:           from.WillRetain,
-		WillQos:              uint32(from.WillQos),
+		WillQos:              from.WillQos,
 		WillTopic:            from.WillTopic,
 		WillPayload:          from.WillPayload,
 		RemoteAddr:           from.RemoteAddr,
@@ -58,40 +56,31 @@ func (r Mqtt) GetClientById(from *admin.ClientInfo) (client *api.Client) {
 		MessageDropped:       from.MessageDropped,
 		InflightLen:          from.InflightLen,
 		QueueLen:             from.QueueLen,
-		ConnectedAt:          timestamppb.New(from.ConnectedAt),
+		ConnectedAt:          from.ConnectedAt,
+		DisconnectedAt:       from.DisconnectedAt,
 	}
-	if from.DisconnectedAt != nil {
-		client.DisconnectedAt = timestamppb.New(*from.DisconnectedAt)
-	}
+
 	return
 }
 
 // ToListResult ...
-func (r Mqtt) ToListResult(list []*admin.ClientInfo, total uint64, pagination common.PageParams) *api.GetClientListResult {
+func (r Mqtt) ToListResult(list []*admin.ClientInfo) []*stub.ApiClient {
 
-	items := make([]*api.Client, 0, len(list))
+	items := make([]*stub.ApiClient, 0, len(list))
 
 	for _, i := range list {
 		items = append(items, r.GetClientById(i))
 	}
 
-	return &api.GetClientListResult{
-		Items: items,
-		Meta: &api.Meta{
-			Limit: uint64(pagination.Limit),
-			Page:  pagination.PageReq,
-			Total: total,
-			Sort:  pagination.SortReq,
-		},
-	}
+	return items
 }
 
 // GetSubscriptiontById ...
-func (r Mqtt) GetSubscriptiontById(from *admin.SubscriptionInfo) (client *api.Subscription) {
+func (r Mqtt) GetSubscriptiontById(from *admin.SubscriptionInfo) (client *stub.ApiSubscription) {
 	if from == nil {
 		return
 	}
-	client = &api.Subscription{
+	client = &stub.ApiSubscription{
 		Id:                from.Id,
 		ClientId:          from.ClientID,
 		TopicName:         from.TopicName,
@@ -105,21 +94,13 @@ func (r Mqtt) GetSubscriptiontById(from *admin.SubscriptionInfo) (client *api.Su
 }
 
 // GetSubscriptionList ...
-func (r Mqtt) GetSubscriptionList(list []*admin.SubscriptionInfo, total uint64, pagination common.PageParams) *api.GetSubscriptionListResult {
+func (r Mqtt) GetSubscriptionList(list []*admin.SubscriptionInfo) []*stub.ApiSubscription {
 
-	items := make([]*api.Subscription, 0, len(list))
+	items := make([]*stub.ApiSubscription, 0, len(list))
 
 	for _, i := range list {
 		items = append(items, r.GetSubscriptiontById(i))
 	}
 
-	return &api.GetSubscriptionListResult{
-		Items: items,
-		Meta: &api.Meta{
-			Limit: uint64(pagination.Limit),
-			Page:  pagination.PageReq,
-			Total: total,
-			Sort:  pagination.SortReq,
-		},
-	}
+	return items
 }

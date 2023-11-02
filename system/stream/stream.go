@@ -20,12 +20,15 @@ package stream
 
 import (
 	"context"
+	"net/http"
 	"sync"
+
+	"github.com/gorilla/websocket"
+	"github.com/labstack/echo/v4"
 
 	"github.com/google/uuid"
 	"go.uber.org/fx"
 
-	"github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
@@ -35,6 +38,10 @@ import (
 
 var (
 	log = logger.MustGetLogger("stream")
+)
+
+var (
+	upgrader = websocket.Upgrader{}
 )
 
 // Stream ...
@@ -72,10 +79,13 @@ func NewStreamService(lc fx.Lifecycle,
 // Start ...
 func (s *Stream) Start(_ context.Context) error {
 	_ = s.eventBus.Subscribe("system/entities/+", s.eventHandler.eventHandler)
+	_ = s.eventBus.Subscribe("system/models/entities/+", s.eventHandler.eventHandler)
+	_ = s.eventBus.Subscribe("system/models/variables/+", s.eventHandler.eventHandler)
 	_ = s.eventBus.Subscribe("system/plugins/+", s.eventHandler.eventHandler)
 	_ = s.eventBus.Subscribe("system/automation/#", s.eventHandler.eventHandler)
 	_ = s.eventBus.Subscribe(webpush.TopicPluginWebpush, s.eventHandler.eventHandler)
 	_ = s.eventBus.Subscribe("system/services/mqtt", s.eventHandler.eventHandler)
+	_ = s.eventBus.Subscribe("system/services/backup", s.eventHandler.eventHandler)
 	s.eventBus.Publish("system/services/stream", events.EventServiceStarted{Service: "Stream"})
 	return nil
 }
@@ -83,9 +93,12 @@ func (s *Stream) Start(_ context.Context) error {
 // Shutdown ...
 func (s *Stream) Shutdown(_ context.Context) error {
 	_ = s.eventBus.Unsubscribe("system/entities/+", s.eventHandler.eventHandler)
+	_ = s.eventBus.Unsubscribe("system/models/entities/+", s.eventHandler.eventHandler)
+	_ = s.eventBus.Unsubscribe("system/models/variables/+", s.eventHandler.eventHandler)
 	_ = s.eventBus.Unsubscribe("system/plugins/+", s.eventHandler.eventHandler)
 	_ = s.eventBus.Unsubscribe("system/automation/#", s.eventHandler.eventHandler)
 	_ = s.eventBus.Unsubscribe("system/services/mqtt", s.eventHandler.eventHandler)
+	_ = s.eventBus.Unsubscribe("system/services/backup", s.eventHandler.eventHandler)
 	_ = s.eventBus.Unsubscribe(webpush.TopicPluginWebpush, s.eventHandler.eventHandler)
 	s.sessions.Range(func(key, value interface{}) bool {
 		cli := value.(*Client)
@@ -100,7 +113,9 @@ func (s *Stream) Shutdown(_ context.Context) error {
 func (s *Stream) Broadcast(query string, message []byte) {
 	s.sessions.Range(func(key, value interface{}) bool {
 		cli := value.(*Client)
-		_ = cli.Send(uuid.NewString(), query, message)
+		go func() {
+			_ = cli.Send(uuid.NewString(), query, message)
+		}()
 		return true
 	})
 }
@@ -112,7 +127,9 @@ func (s *Stream) DirectMessage(userID int64, query string, message []byte) {
 		if userID != 0 && cli.user.Id != userID {
 			return true
 		}
-		_ = cli.Send(uuid.NewString(), query, message)
+		go func() {
+			_ = cli.Send(uuid.NewString(), query, message)
+		}()
 		return true
 	})
 }
@@ -140,21 +157,28 @@ func (s *Stream) UnSubscribe(command string) {
 }
 
 // NewConnection ...
-func (s *Stream) NewConnection(server api.StreamService_SubscribeServer, user *m.User) error {
+func (s *Stream) NewConnection(ctx echo.Context, user *m.User) error {
+
+	upgrader.CheckOrigin = func(r *http.Request) bool {
+		return true
+	}
+	ws, err := upgrader.Upgrade(ctx.Response(), ctx.Request(), nil)
+	if err != nil {
+		return err
+	}
+	defer ws.Close()
 
 	id := uuid.NewString()
-	client := NewClient(server, user)
+	client := NewClient(ws, user)
 	defer func() {
 		log.Infof("websocket session closed, email: '%s'", user.Email)
 		s.sessions.Delete(id)
 	}()
 
 	s.sessions.Store(id, client)
-
 	log.Infof("new websocket session established, email: '%s'", user.Email)
 
-	err := client.WritePump(s.Recv)
-	return err
+	return client.WritePump(s.Recv)
 }
 
 // Recv ...

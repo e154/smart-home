@@ -28,8 +28,7 @@ In the **Smart Home** system, there is a "cpuspeed" plugin that provides CPU par
 Here's an example of using the "cpuspeed" plugin to retrieve CPU parameters:
 
 ```javascript
-const entity = entityManager.getEntity('cpuspeed.cpuspeed')
-const cpuParams = entity.getAttributes()
+const cpuParams = EntityGetAttributes('cpuspeed.cpuspeed')
 console.log(cpuParams.cores);
 console.log(cpuParams.mhz);
 console.log(cpuParams.all);

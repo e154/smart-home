@@ -1,4 +1,4 @@
-	// This file is part of the Smart Home
+// This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
 // Copyright (C) 2016-2023, Filippov Alex
 //

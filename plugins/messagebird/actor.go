@@ -19,8 +19,12 @@
 package messagebird
 
 import (
+	"context"
+	"strings"
 	"sync"
 	"time"
+
+	"github.com/e154/smart-home/plugins/notify"
 
 	"github.com/e154/smart-home/common/events"
 
@@ -41,20 +45,27 @@ type Actor struct {
 	supervisor.BaseActor
 	AccessToken string
 	Name        string
+	notify      *notify.Notify
 	balanceLock *sync.Mutex
 }
 
 // NewActor ...
 func NewActor(entity *m.Entity,
-	settings m.Attributes,
 	service supervisor.Service) *Actor {
 
-	accessToken := settings[AttrAccessKey].Decrypt()
+	var token, name string
+	if val, ok := entity.Settings[AttrAccessKey]; ok {
+		token = val.Decrypt()
+	}
+	if val, ok := entity.Settings[AttrName]; ok {
+		name = val.Decrypt()
+	}
 
 	actor := &Actor{
 		BaseActor:   supervisor.NewBaseActor(entity, service),
-		AccessToken: accessToken,
-		Name:        settings[AttrName].String(),
+		AccessToken: token,
+		Name:        name,
+		notify:      notify.NewNotify(service.Adaptors()),
 		balanceLock: &sync.Mutex{},
 	}
 
@@ -62,11 +73,13 @@ func NewActor(entity *m.Entity,
 }
 
 func (e *Actor) Destroy() {
-
+	e.Service.EventBus().Unsubscribe(notify.TopicNotify, e.eventHandler)
+	e.notify.Shutdown()
 }
 
 func (e *Actor) Spawn() {
-
+	e.Service.EventBus().Subscribe(notify.TopicNotify, e.eventHandler, false)
+	e.notify.Start()
 }
 
 // Send ...
@@ -219,4 +232,37 @@ func (e *Actor) client() (client *messagebird.Client, err error) {
 	}
 	client = messagebird.New(e.AccessToken)
 	return
+}
+
+// Save ...
+func (e *Actor) Save(msg notify.Message) (addresses []string, message *m.Message) {
+	message = &m.Message{
+		Type:       Name,
+		Attributes: msg.Attributes,
+	}
+	var err error
+	if message.Id, err = e.Service.Adaptors().Message.Add(context.Background(), message); err != nil {
+		log.Error(err.Error())
+	}
+
+	attr := NewMessageParams()
+	_, _ = attr.Deserialize(message.Attributes)
+
+	addresses = strings.Split(attr[AttrPhone].String(), ",")
+	return
+}
+
+// MessageParams ...
+func (e *Actor) MessageParams() m.Attributes {
+	return NewMessageParams()
+}
+
+func (e *Actor) eventHandler(_ string, event interface{}) {
+
+	switch v := event.(type) {
+	case notify.Message:
+		if v.EntityId != nil && *v.EntityId == e.Id {
+			e.notify.SaveAndSend(v, e)
+		}
+	}
 }

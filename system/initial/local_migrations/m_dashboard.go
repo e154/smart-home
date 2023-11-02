@@ -20,14 +20,8 @@ package local_migrations
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
-
-	"github.com/e154/smart-home/api/dto"
-	"github.com/e154/smart-home/api/stub/api"
 
 	"github.com/e154/smart-home/adaptors"
-	m "github.com/e154/smart-home/models"
 )
 
 type MigrationDashboard struct {
@@ -42,23 +36,23 @@ func NewMigrationDashboard(adaptors *adaptors.Adaptors) *MigrationDashboard {
 
 func (n *MigrationDashboard) addDashboard(ctx context.Context, name, src string) error {
 
-	req := &api.Dashboard{}
-	_ = json.Unmarshal([]byte(src), req)
+	//req := &api.Dashboard{}
+	//_ = json.Unmarshal([]byte(src), req)
+	//
+	//board := dto.ImportDashboard(req)
+	//
+	//var err error
+	//if board.Id, err = n.adaptors.Dashboard.Import(ctx, board); err != nil {
+	//	return err
+	//}
+	//
+	//err = n.adaptors.Variable.CreateOrUpdate(ctx, m.Variable{
+	//	Name:   name,
+	//	Value:  fmt.Sprintf("%d", board.Id),
+	//	System: true,
+	//})
 
-	board := dto.ImportDashboard(req)
-
-	var err error
-	if board.Id, err = n.adaptors.Dashboard.Import(ctx, board); err != nil {
-		return err
-	}
-
-	err = n.adaptors.Variable.CreateOrUpdate(ctx, m.Variable{
-		Name:   name,
-		Value:  fmt.Sprintf("%d", board.Id),
-		System: true,
-	})
-
-	return err
+	return nil
 }
 
 func (n *MigrationDashboard) Up(ctx context.Context, adaptors *adaptors.Adaptors) error {

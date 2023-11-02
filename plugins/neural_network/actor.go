@@ -38,7 +38,7 @@ func NewActor(entity *m.Entity,
 
 	actor := &Actor{
 		BaseActor:  supervisor.NewBaseActor(entity, service),
-		actionPool: make(chan events.EventCallEntityAction, 10),
+		actionPool: make(chan events.EventCallEntityAction, 1000),
 		network1:   NewNetwork1(service.EventBus()),
 		network2:   NewNetwork2(service.EventBus()),
 	}

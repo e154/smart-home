@@ -42,6 +42,7 @@ type Dto struct {
 	MessageDelivery   MessageDelivery
 	DeveloperTools    DeveloperTools
 	Mqtt              Mqtt
+	Backup            Backup
 }
 
 // NewDto ...
@@ -69,5 +70,6 @@ func NewDto() Dto {
 		MessageDelivery:   NewMessageDeliveryDto(),
 		DeveloperTools:    NewDeveloperToolsDto(),
 		Mqtt:              NewMqttDto(),
+		Backup:            NewBackupDto(),
 	}
 }

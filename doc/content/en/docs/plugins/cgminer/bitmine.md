@@ -94,18 +94,6 @@ entityAction = (entityId, actionName, args) => {
 
 ----------------
 
-### Actor Object
-
-```javascript
-Actor.setState(entityStateParams);
-```
-| Property  | Description  |
-|-------------|---------|
-| setState |    Type: Method, update the entity's status   |
-| entityStateParams |   Type: Object EntityStateParams |
-
-----------------
-
 ### EntityStateParams Object
 
 ```javascript
@@ -137,7 +125,7 @@ ifError =(res)->
 checkStatus =(args)->
   stats = Miner.stats()
   if ifError(stats)
-    Actor.setState
+    EntitySetState ENTITY_ID,
       'new_state': 'ERROR'
     return
   p = JSON.parse(stats.result)
@@ -146,7 +134,7 @@ checkStatus =(args)->
 checkSum =(args)->
   summary = Miner.summary()
   if ifError(summary)
-    Actor.setState
+    EntitySetState ENTITY_ID,
       'new_state': 'ERROR'
     return
   p = JSON.parse(summary.result)

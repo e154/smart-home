@@ -21,13 +21,12 @@ package endpoint
 import (
 	"context"
 
-	"github.com/e154/smart-home/system/supervisor"
-
-	"github.com/e154/smart-home/common/apperr"
+	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
 	m "github.com/e154/smart-home/models"
-	"github.com/pkg/errors"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 // PluginEndpoint ...

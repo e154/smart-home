@@ -12,6 +12,7 @@ import {useI18n} from "@/hooks/web/useI18n";
 import {string} from "vue-types";
 import {debounce} from "lodash-es";
 import {Cache, GetTokens, RenderText} from "@/views/Dashboard/render";
+import {ApplyFilter} from "@/views/Dashboard/filters";
 
 const {bus} = useBus()
 const { t } = useI18n()
@@ -59,16 +60,54 @@ const applyFilter = (value: any, filter: string): any => {
 }
 
 const prepareMetric = (metric: ApiMetric): ChartDataInterface => {
-  let chartData: ChartDataInterface = {
-    labels: [],
-    datasets: [],
+  // console.log(metric)
+  let _chartData: ChartDataInterface = {
+    labels:  chartData.value?.labels || [],
+    datasets: chartData.value?.datasets || [],
   };
 
+  // exit if no data
   if (!props.item?.entity?.metrics || !props.item.payload.chart?.props || props.item.payload.chart?.props.length == 0) {
-    return chartData;
+    return _chartData;
+  }
+
+  // add time last item
+  if (metric.data.length > 0) {
+    _chartData.lastTime = metric.data[metric.data.length -1].time
   }
 
   let totalLabels: Array<string> = props.item.payload.chart?.props;
+
+  // update only
+  if (_chartData.datasets.length) {
+
+    for (const t in metric.data) {
+      _chartData.labels.push(parseTime(metric.data[t].time) as string);
+      for (const l in totalLabels) {
+        for (const j in _chartData.datasets) {
+          if (_chartData.datasets[j].label == totalLabels[l]) {
+            if (!props.item.payload.chart?.filter) {
+              _chartData.datasets[j].data.push(metric.data[t].value[totalLabels[l]]);
+            } else {
+              const data = applyFilter(metric.data[t].value[totalLabels[l]], props.item.payload.chart?.filter);
+              _chartData.datasets[j].data.push(data);
+            }
+          }
+        }
+      }
+    }
+
+    // 3600 max item per data
+    const diff = _chartData.datasets.length - 3600;
+    if (diff > 0) {
+      _chartData.labels.slice(diff)
+      _chartData.datasets.slice(diff)
+    }
+
+    return _chartData
+  } // \update only
+
+  // create full data
   let dataSets = new Map<string, ChartDataSet>();
 
   // create data sets
@@ -86,28 +125,30 @@ const prepareMetric = (metric: ApiMetric): ChartDataInterface => {
 
   // add data to sets
   for (const t in metric.data) {
-    chartData.labels.push(parseTime(metric.data[t].time) as string);
+    _chartData.labels.push(parseTime(metric.data[t].time) as string);
     for (const l in totalLabels) {
       if (!props.item.payload.chart?.filter) {
         dataSets[totalLabels[l]].data.push(metric.data[t].value[totalLabels[l]]);
       } else {
-        const qwe = applyFilter(metric.data[t].value[totalLabels[l]], props.item.payload.chart?.filter);
-        dataSets[totalLabels[l]].data.push(qwe);
+        const data = applyFilter(metric.data[t].value[totalLabels[l]], props.item.payload.chart?.filter);
+        dataSets[totalLabels[l]].data.push(data);
       }
     }
   }
 
   for (const l in totalLabels) {
-    chartData.datasets.push(dataSets[totalLabels[l]]);
+    _chartData.datasets.push(dataSets[totalLabels[l]]);
   }
-  // console.log(chartData);
-  return chartData;
+
+  // console.log(_chartData);
+  return _chartData;
 }
 
-const fetchMetric = async (id: number): Promise<ApiMetric> => {
+const fetchMetric = async (id: number, startDate?: string): Promise<ApiMetric> => {
   const {data} = await api.v1.metricServiceGetMetric({
     id: id,
     range: props.item?.payload?.chart?.range || '24h',
+    startDate: startDate,
   });
 
   return data;
@@ -116,6 +157,7 @@ const fetchMetric = async (id: number): Promise<ApiMetric> => {
 const chartData = ref<{
   labels: Array<string>
   datasets: Array<ChartDataSet>
+  lastTime?: string
 }>({
   labels: [],
   datasets: []
@@ -471,7 +513,7 @@ const prepareData = debounce( async ()  => {
   let metric = props.item.entity.metrics[props.item.payload.chart?.metric_index || 0];
 
   if (metric?.id) {
-    metric = await fetchMetric(metric.id!);
+    metric = await fetchMetric(metric.id!, chartData.value?.lastTime);
   }
   chartData.value = prepareMetric(metric);
 

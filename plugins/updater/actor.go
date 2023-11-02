@@ -20,9 +20,10 @@ package updater
 
 import (
 	"encoding/json"
-	m "github.com/e154/smart-home/models"
 	"sync"
 	"time"
+
+	m "github.com/e154/smart-home/models"
 
 	"github.com/Masterminds/semver"
 	"github.com/e154/smart-home/common/events"

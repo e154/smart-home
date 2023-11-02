@@ -20,10 +20,10 @@ package scripts
 
 import (
 	"fmt"
-	m "github.com/e154/smart-home/models"
 	"testing"
 
 	"github.com/e154/smart-home/adaptors"
+	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/scripts"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -41,9 +41,9 @@ func Test14(t *testing.T) {
 			scriptService scripts.ScriptService) {
 
 			script1 := &m.Script{
-				Lang:        "coffeescript",
-				Name:        "test28",
-				Source:      "foo 'bar'",
+				Lang:   "coffeescript",
+				Name:   "test28",
+				Source: "foo 'bar'",
 			}
 
 			scriptService.PushFunctions("foo", fooBind(12))

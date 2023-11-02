@@ -20,13 +20,14 @@ package models
 
 import (
 	"context"
+	"testing"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/migrations"
 	. "github.com/smartystreets/goconvey/convey"
-	"testing"
 )
 
 func TestEntity(t *testing.T) {
@@ -61,12 +62,12 @@ func TestEntity(t *testing.T) {
 
 			// add image
 			image1 := &m.Image{
-				Url:       "foo",
-				Name:      "foo",
+				Url:  "foo",
+				Name: "foo",
 			}
 			image2 := &m.Image{
-				Url:       "bar",
-				Name:      "bar",
+				Url:  "bar",
+				Name: "bar",
 			}
 			image1.Id, err = adaptors.Image.Add(context.Background(), image1)
 			So(err, ShouldBeNil)
@@ -80,7 +81,7 @@ func TestEntity(t *testing.T) {
 						Id:         common.EntityId("sensor.entity1"),
 						PluginName: "sensor",
 						AutoLoad:   true,
-						ImageId: common.Int64(image1.Id),
+						ImageId:    common.Int64(image1.Id),
 						Scripts: []*m.Script{
 							script1,
 						},
@@ -88,7 +89,7 @@ func TestEntity(t *testing.T) {
 							{
 								Name:     "ACTION1",
 								ScriptId: common.Int64(script1.Id),
-								ImageId: common.Int64(image2.Id),
+								ImageId:  common.Int64(image2.Id),
 							},
 						},
 						States: []*m.EntityState{

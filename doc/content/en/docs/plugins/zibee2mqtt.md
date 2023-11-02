@@ -20,12 +20,12 @@ The properties of the `message` object include:
 5. `storage`: A `Storage` object that provides access to a data store for caching and retrieving arbitrary values.
 6. `error`: A string containing information about an error if one occurred during message processing.
 7. `success`: A boolean value indicating the successful completion of an operation or message processing.
-8. `new_state`: An `Actor.StateParams` object representing the new state of an actor after an operation is performed.
+8. `new_state`: An `StateParams` object representing the new state of an actor after an operation is performed.
 
 Here's an example of using the `zigbee2mqttEvent` handler:
 
 ```javascript
-function zigbee2mqttEvent() {
+function zigbee2mqttEvent(message) {
     console.log("Received MQTT message:");
     console.log("Payload:", message.payload);
     console.log("Topic:", message.topic);
@@ -50,7 +50,7 @@ The `zigbee2mqttEvent` handler can be used to process incoming MQTT messages and
 Here's an example in CoffeeScript:
 
 ```coffeescript
-zigbee2mqttEvent = ->
+zigbee2mqttEvent =(message)->
   # Print '---mqtt new event from plug---'
   if !message || message.topic.includes('/set')
     return
@@ -62,13 +62,13 @@ zigbee2mqttEvent = ->
     'state': payload.state
     'temperature': payload.temperature
     'voltage': payload.voltage
-  Actor.setState
+  EntitySetState ENTITY_ID,
     'new_state': payload.state
     'attribute_values': attrs
 ```
 
 ```coffeescript
-zigbee2mqttEvent = ->
+zigbee2mqttEvent =(message)->
   # Print '---mqtt new event from button---'
   if !message
     return
@@ -85,7 +85,7 @@ zigbee2mqttEvent = ->
     attrs.click = payload.click
     attrs.action = ""
     state = payload.click + "_click"
-  Actor.setState
+  EntitySetState ENTITY_ID,
     'new_state': state.toUpperCase()
     'attribute_values': attrs
 ```

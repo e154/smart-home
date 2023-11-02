@@ -40,7 +40,7 @@ type TelegramChat struct {
 	EntityId  common.EntityId
 	ChatId    int64
 	Username  string
-	CreatedAt time.Time
+	CreatedAt time.Time `gorm:"<-:create"`
 }
 
 // TableName ...

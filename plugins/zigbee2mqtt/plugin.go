@@ -21,9 +21,10 @@ package zigbee2mqtt
 import (
 	"context"
 	"fmt"
-	"github.com/e154/smart-home/common"
 	"strings"
 	"sync"
+
+	"github.com/e154/smart-home/common"
 
 	"github.com/e154/smart-home/common/events"
 

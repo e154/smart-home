@@ -23,9 +23,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/go-playground/validator/v10"
 )
 
 // LogEndpoint ...
@@ -41,10 +42,11 @@ func NewLogEndpoint(common *CommonEndpoint) *LogEndpoint {
 }
 
 // Add ...
-func (l *LogEndpoint) Add(ctx context.Context, log *m.Log) (result *m.Log, errs validator.ValidationErrorsTranslations, err error) {
+func (l *LogEndpoint) Add(ctx context.Context, log *m.Log) (result *m.Log, err error) {
 
-	var ok bool
-	if ok, errs = l.validation.Valid(log); !ok {
+	if ok, errs := l.validation.Valid(log); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
@@ -67,17 +69,21 @@ func (l *LogEndpoint) GetById(ctx context.Context, id int64) (log *m.Log, err er
 }
 
 // GetList ...
-func (l *LogEndpoint) GetList(ctx context.Context, pagination common.PageParams, query, startDate, endDate *string) (list []*m.Log, total int64, err error) {
+func (l *LogEndpoint) GetList(ctx context.Context, pagination common.PageParams, query *string, startDate, endDate *time.Time) (list []*m.Log, total int64, err error) {
 
-	var queryObj = &m.LogQuery{}
-	if startDate != nil {
-		date, _ := time.Parse("2006-01-02T15:04:05.999Z07", *startDate)
-		queryObj.StartDate = &date
+	var queryObj = &m.LogQuery{
+		StartDate: startDate,
+		EndDate:   endDate,
+		Levels:    nil,
 	}
-	if endDate != nil {
-		date, _ := time.Parse("2006-01-02T15:04:05.999Z07", *endDate)
-		queryObj.EndDate = &date
-	}
+	//if startDate != nil {
+	//	date, _ := time.Parse("2006-01-02T15:04:05.999Z07", *startDate)
+	//	queryObj.StartDate = &date
+	//}
+	//if endDate != nil {
+	//	date, _ := time.Parse("2006-01-02T15:04:05.999Z07", *endDate)
+	//	queryObj.EndDate = &date
+	//}
 	if query != nil {
 		queryObj.Levels = strings.Split(strings.Replace(*query, "'", "", -1), ",")
 	}

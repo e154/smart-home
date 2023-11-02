@@ -22,9 +22,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/jackc/pgx/v5/pgconn"
 	"strings"
 	"time"
+
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"github.com/jackc/pgerrcode"
 	"github.com/pkg/errors"
@@ -43,7 +44,7 @@ type UserDevice struct {
 	Id               int64 `gorm:"primary_key"`
 	UserId           int64
 	PushRegistration json.RawMessage `gorm:"type:jsonb;not null"`
-	CreatedAt        time.Time
+	CreatedAt        time.Time       `gorm:"<-:create"`
 }
 
 // TableName ...

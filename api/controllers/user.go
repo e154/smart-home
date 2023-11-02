@@ -19,15 +19,11 @@
 package controllers
 
 import (
-	"context"
+	"github.com/e154/smart-home/api/stub"
+	"github.com/e154/smart-home/common/apperr"
+	"github.com/labstack/echo/v4"
 
-	"github.com/e154/smart-home/api/stub/api"
 	m "github.com/e154/smart-home/models"
-	"github.com/go-playground/validator/v10"
-	"google.golang.org/genproto/googleapis/rpc/errdetails"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 // ControllerUser ...
@@ -36,91 +32,95 @@ type ControllerUser struct {
 }
 
 // NewControllerUser ...
-func NewControllerUser(common *ControllerCommon) ControllerUser {
-	return ControllerUser{
+func NewControllerUser(common *ControllerCommon) *ControllerUser {
+	return &ControllerUser{
 		ControllerCommon: common,
 	}
 }
 
 // AddUser ...
-func (c ControllerUser) AddUser(ctx context.Context, req *api.NewtUserRequest) (userFull *api.UserFull, err error) {
+func (c ControllerUser) UserServiceAddUser(ctx echo.Context, _ stub.UserServiceAddUserParams) error {
 
-	user := c.dto.User.AddUserRequest(req)
-
-	if req.Password == req.PasswordRepeat {
-		_ = user.SetPass(req.Password)
+	obj := &stub.ApiNewtUserRequest{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	var currentUser *m.User
-	if currentUser, err = c.currentUser(ctx); err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
+	user := c.dto.User.AddUserRequest(obj)
+
+	if obj.Password == obj.PasswordRepeat {
+		_ = user.SetPass(obj.Password)
 	}
 
-	var errs validator.ValidationErrorsTranslations
+	currentUser, err := c.currentUser(ctx)
+	if err != nil {
+		return c.ERROR(ctx, apperr.ErrInternal)
+	}
+
 	var userF *m.User
-	userF, errs, err = c.endpoint.User.Add(ctx, user, currentUser)
-	if len(errs) != 0 || err != nil {
-		return nil, c.error(ctx, errs, err)
+	userF, err = c.endpoint.User.Add(ctx.Request().Context(), user, currentUser)
+	if err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.User.ToUserFull(userF), nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, c.dto.User.ToUserFull(userF)))
 }
 
 // GetUserById ...
-func (c ControllerUser) GetUserById(ctx context.Context, req *api.GetUserByIdRequest) (*api.UserFull, error) {
+func (c ControllerUser) UserServiceGetUserById(ctx echo.Context, id int64) error {
 
-	user, err := c.endpoint.User.GetById(ctx, int64(req.Id))
+	user, err := c.endpoint.User.GetById(ctx.Request().Context(), id)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.User.ToUserFull(user), nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, c.dto.User.ToUserFull(user)))
 }
 
 // UpdateUserById ...
-func (c ControllerUser) UpdateUserById(ctx context.Context, req *api.UpdateUserRequest) (*api.UserFull, error) {
+func (c ControllerUser) UserServiceUpdateUserById(ctx echo.Context, id int64, _ stub.UserServiceUpdateUserByIdParams) error {
 
-	user := c.dto.User.UpdateUserByIdRequest(req)
-
-	if req.Password != req.PasswordRepeat {
-		st := status.New(codes.InvalidArgument, "One or more fields are invalid")
-		st, _ = st.WithDetails(&errdetails.BadRequest_FieldViolation{
-			Field:       "password",
-			Description: "field not valid",
-		})
-		return nil, st.Err()
+	obj := &stub.UserServiceUpdateUserByIdJSONBody{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	if req.Password != "" {
-		_ = user.SetPass(req.Password)
+	user := c.dto.User.UpdateUserByIdRequest(obj, id)
+
+	if obj.Password != obj.PasswordRepeat {
+		return c.ERROR(ctx, apperr.ErrPassNotValid)
 	}
 
-	user, errs, err := c.endpoint.User.Update(ctx, user)
-	if len(errs) != 0 || err != nil {
-		return nil, c.error(ctx, errs, err)
+	if obj.Password != "" {
+		_ = user.SetPass(obj.Password)
 	}
 
-	return c.dto.User.ToUserFull(user), nil
+	user, err := c.endpoint.User.Update(ctx.Request().Context(), user)
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, c.dto.User.ToUserFull(user)))
 }
 
 // GetUserList ...
-func (c ControllerUser) GetUserList(ctx context.Context, req *api.PaginationRequest) (*api.GetUserListResult, error) {
+func (c ControllerUser) UserServiceGetUserList(ctx echo.Context, params stub.UserServiceGetUserListParams) error {
 
-	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
-	items, total, err := c.endpoint.User.GetList(ctx, pagination)
+	pagination := c.Pagination(params.Page, params.Limit, params.Sort)
+	items, total, err := c.endpoint.User.GetList(ctx.Request().Context(), pagination)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.User.ToListResult(items, uint64(total), pagination), nil
+	return c.HTTP200(ctx, ResponseWithList(ctx, c.dto.User.ToListResult(items), total, pagination))
 }
 
 // DeleteUserById ...
-func (c ControllerUser) DeleteUserById(ctx context.Context, req *api.DeleteUserRequest) (*emptypb.Empty, error) {
+func (c ControllerUser) UserServiceDeleteUserById(ctx echo.Context, id int64) error {
 
-	if err := c.endpoint.User.Delete(ctx, int64(req.Id)); err != nil {
-		return nil, c.error(ctx, nil, err)
+	if err := c.endpoint.User.Delete(ctx.Request().Context(), id); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }

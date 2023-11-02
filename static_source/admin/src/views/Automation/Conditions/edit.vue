@@ -46,7 +46,9 @@ const save = async () => {
     const con = (await write?.getFormData()) as ApiCondition;
     const data = {
       name: con.name,
+      description: con.description,
       scriptId: con.script?.id,
+      areaId: con.area?.id,
     }
     const res = await api.v1.conditionServiceUpdateCondition(conditionId.value, data)
         .catch(() => {

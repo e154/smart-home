@@ -19,8 +19,9 @@
 package media
 
 import (
-	"github.com/google/uuid"
 	"time"
+
+	"github.com/google/uuid"
 
 	"github.com/deepch/vdk/av"
 )

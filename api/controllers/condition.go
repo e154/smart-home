@@ -19,10 +19,9 @@
 package controllers
 
 import (
-	"context"
-
-	"github.com/e154/smart-home/api/stub/api"
-	"google.golang.org/protobuf/types/known/emptypb"
+	"github.com/e154/smart-home/api/dto"
+	"github.com/e154/smart-home/api/stub"
+	"github.com/labstack/echo/v4"
 )
 
 // ControllerCondition ...
@@ -31,79 +30,85 @@ type ControllerCondition struct {
 }
 
 // NewControllerCondition ...
-func NewControllerCondition(common *ControllerCommon) ControllerCondition {
-	return ControllerCondition{
+func NewControllerCondition(common *ControllerCommon) *ControllerCondition {
+	return &ControllerCondition{
 		ControllerCommon: common,
 	}
 }
 
 // AddCondition ...
-func (c ControllerCondition) AddCondition(ctx context.Context, req *api.NewConditionRequest) (*api.Condition, error) {
+func (c ControllerCondition) ConditionServiceAddCondition(ctx echo.Context, _ stub.ConditionServiceAddConditionParams) error {
 
-	condition := c.dto.Condition.AddCondition(req)
-
-	condition, errs, err := c.endpoint.Condition.Add(ctx, condition)
-	if len(errs) != 0 || err != nil {
-		return nil, c.error(ctx, errs, err)
+	obj := &stub.ApiNewConditionRequest{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Condition.ToCondition(condition), nil
+	condition, err := c.endpoint.Condition.Add(ctx.Request().Context(), c.dto.Condition.AddCondition(obj))
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP201(ctx, ResponseWithObj(ctx, dto.ToCondition(condition)))
 }
 
 // UpdateCondition ...
-func (c ControllerCondition) UpdateCondition(ctx context.Context, req *api.UpdateConditionRequest) (*api.Condition, error) {
+func (c ControllerCondition) ConditionServiceUpdateCondition(ctx echo.Context, id int64, _ stub.ConditionServiceUpdateConditionParams) error {
 
-	condition := c.dto.Condition.UpdateCondition(req)
-
-	condition, errs, err := c.endpoint.Condition.Update(ctx, condition)
-	if len(errs) != 0 || err != nil {
-		return nil, c.error(ctx, errs, err)
+	obj := &stub.ConditionServiceUpdateConditionJSONBody{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Condition.ToCondition(condition), nil
+	condition, err := c.endpoint.Condition.Update(ctx.Request().Context(), c.dto.Condition.UpdateCondition(obj, id))
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, dto.ToCondition(condition)))
 }
 
 // GetConditionById ...
-func (c ControllerCondition) GetConditionById(ctx context.Context, req *api.GetConditionRequest) (*api.Condition, error) {
+func (c ControllerCondition) ConditionServiceGetConditionById(ctx echo.Context, id int64, _ stub.ConditionServiceGetConditionByIdParams) error {
 
-	condition, err := c.endpoint.Condition.GetById(ctx, req.Id)
+	condition, err := c.endpoint.Condition.GetById(ctx.Request().Context(), id)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Condition.ToCondition(condition), nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, dto.ToCondition(condition)))
 }
 
 // GetConditionList ...
-func (c ControllerCondition) GetConditionList(ctx context.Context, req *api.PaginationRequest) (*api.GetConditionListResult, error) {
+func (c ControllerCondition) ConditionServiceGetConditionList(ctx echo.Context, params stub.ConditionServiceGetConditionListParams) error {
 
-	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
-	items, total, err := c.endpoint.Condition.GetList(ctx, pagination)
+	pagination := c.Pagination(params.Page, params.Limit, params.Sort)
+	items, total, err := c.endpoint.Condition.GetList(ctx.Request().Context(), pagination)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Condition.ToListResult(items, uint64(total), pagination), nil
+	return c.HTTP200(ctx, ResponseWithList(ctx, c.dto.Condition.ToListResult(items), total, pagination))
 }
 
 // DeleteCondition ...
-func (c ControllerCondition) DeleteCondition(ctx context.Context, req *api.DeleteConditionRequest) (*emptypb.Empty, error) {
+func (c ControllerCondition) ConditionServiceDeleteCondition(ctx echo.Context, id int64) error {
 
-	if err := c.endpoint.Condition.Delete(ctx, req.Id); err != nil {
-		return nil, c.error(ctx, nil, err)
+	if err := c.endpoint.Condition.Delete(ctx.Request().Context(), id); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
 
 // SearchCondition ...
-func (c ControllerCondition) SearchCondition(ctx context.Context, req *api.SearchRequest) (*api.SearchConditionResult, error) {
+func (c ControllerCondition) ConditionServiceSearchCondition(ctx echo.Context, params stub.ConditionServiceSearchConditionParams) error {
 
-	search := c.Search(req.Query, req.Limit, req.Offset)
-	items, _, err := c.endpoint.Condition.Search(ctx, search.Query, search.Limit, search.Offset)
+	search := c.Search(params.Query, params.Limit, params.Offset)
+	items, _, err := c.endpoint.Condition.Search(ctx.Request().Context(), search.Query, search.Limit, search.Offset)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Condition.ToSearchResult(items), nil
+	return c.HTTP200(ctx, c.dto.Condition.ToSearchResult(items))
 }

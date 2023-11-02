@@ -20,6 +20,7 @@ package cgminer
 
 import (
 	"context"
+	"github.com/e154/smart-home/common/debug"
 	"testing"
 	"time"
 
@@ -45,8 +46,7 @@ ifError =(res)->
 checkStatus =->
     stats = Miner.stats()
     if ifError(stats)
-        EntitySetState ENTITY_ID,
-            'new_state': 'ERROR'
+        EntitySetStateName ENTITY_ID, 'ERROR'
         return
     p = unmarshal stats.result
     attrs = {
@@ -71,8 +71,7 @@ checkStatus =->
 checkSum =->
     summary = Miner.summary()
     if ifError(summary)
-        EntitySetState ENTITY_ID,
-            'new_state': 'ERROR'
+        EntitySetStateName ENTITY_ID, 'ERROR'
         return
     p = unmarshal summary.result
     attrs = {}
@@ -86,8 +85,7 @@ checkSum =->
 checkDevs =->
     devs = Miner.devs()
     if ifError(devs)
-        EntitySetState ENTITY_ID,
-            'new_state': 'ERROR'
+        EntitySetStateName ENTITY_ID, 'ERROR'
         return
     p = unmarshal devs.result
     attrs = {}
@@ -101,8 +99,7 @@ checkDevs =->
 checkPools =->
     pools = Miner.pools()
     if ifError(pools)
-        EntitySetState ENTITY_ID,
-            'new_state': 'ERROR'
+        EntitySetStateName ENTITY_ID, 'ERROR'
         return
     p = unmarshal pools.result
     So(p.length, 'ShouldEqual', '4')
@@ -134,8 +131,7 @@ checkPools =->
 checkVer =(entityId)->
     ver = Miner.version()
     if ifError(ver)
-        EntitySetState ENTITY_ID,
-            'new_state': 'ERROR'
+        EntitySetStateName ENTITY_ID, 'ERROR'
         return
     p = unmarshal ver.result
     So(p.API, 'ShouldEqual', '3.1')
@@ -303,7 +299,7 @@ entityAction = (entityId, actionName)->
 			})
 			So(err, ShouldBeNil)
 
-			eventBus.Publish("system/entities/"+l3Ent.Id.String(), events.EventCreatedEntity{
+			eventBus.Publish("system/models/entities/"+l3Ent.Id.String(), events.EventCreatedEntityModel{
 				EntityId: l3Ent.Id,
 			})
 
@@ -323,6 +319,8 @@ entityAction = (entityId, actionName)->
 
 					lastState, err := adaptors.EntityStorage.GetLastByEntityId(context.Background(), l3Ent.Id)
 					ctx.So(err, ShouldBeNil)
+
+					debug.Println(lastState)
 
 					ctx.So(lastState.Attributes["chain1_temp_chip"], ShouldEqual, 0)
 					ctx.So(lastState.Attributes["chain1_temp_pcb"], ShouldEqual, 0)

@@ -6,7 +6,7 @@ import {useAppStore} from "@/store/modules/app";
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
 import {ElButton, ElMessage, ElTag} from 'element-plus'
-import {ApiTrigger} from "@/api/stub";
+import {ApiTask, ApiTrigger} from "@/api/stub";
 import {useForm} from "@/hooks/web/useForm";
 import {useRouter} from "vue-router";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
@@ -98,12 +98,35 @@ const columns: TableColumn[] = [
     field: 'name',
     label: t('automation.triggers.name'),
     sortable: true,
-    width: "200px"
+    width: "150px"
+  },
+  {
+    field: 'areaId',
+    label: t('automation.area'),
+    width: "100px",
+    sortable: true,
+    formatter: (row: ApiTrigger) => {
+      return h(
+          'span',
+          row.area?.name
+      )
+    }
   },
   {
     field: 'pluginName',
     label: t('automation.triggers.pluginName'),
     sortable: true,
+  },
+  {
+    field: 'description',
+    label: t('automation.description'),
+    sortable: true,
+    formatter: (row: ApiTrigger) => {
+      return h(
+          'span',
+          row?.description || t('automation.nothing')
+      )
+    }
   },
   {
     field: 'operations',
@@ -171,8 +194,8 @@ const getList = async () => {
   if (res) {
     const {items, meta} = res.data;
     tableObject.tableList = items;
-    paginationObj.value.currentPage = meta.page;
-    paginationObj.value.total = meta.total;
+    paginationObj.value.currentPage = meta.pagination.page;
+    paginationObj.value.total = meta.pagination.total;
   } else {
     tableObject.tableList = [];
   }

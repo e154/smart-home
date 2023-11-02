@@ -18,4 +18,6 @@
 
 package events
 
-type EventMqttNewClient struct{}
+type EventMqttNewClient struct {
+	ClientId string
+}

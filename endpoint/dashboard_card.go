@@ -25,7 +25,6 @@ import (
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/go-playground/validator/v10"
 	"github.com/jinzhu/copier"
 	"github.com/pkg/errors"
 )
@@ -43,10 +42,11 @@ func NewDashboardCardEndpoint(common *CommonEndpoint) *DashboardCardEndpoint {
 }
 
 // Add ...
-func (c *DashboardCardEndpoint) Add(ctx context.Context, card *m.DashboardCard) (result *m.DashboardCard, errs validator.ValidationErrorsTranslations, err error) {
+func (c *DashboardCardEndpoint) Add(ctx context.Context, card *m.DashboardCard) (result *m.DashboardCard, err error) {
 
-	var ok bool
-	if ok, errs = c.validation.Valid(card); !ok {
+	if ok, errs := c.validation.Valid(card); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
@@ -73,7 +73,7 @@ func (c *DashboardCardEndpoint) GetById(ctx context.Context, id int64) (card *m.
 }
 
 // Update ...
-func (i *DashboardCardEndpoint) Update(ctx context.Context, params *m.DashboardCard) (result *m.DashboardCard, errs validator.ValidationErrorsTranslations, err error) {
+func (i *DashboardCardEndpoint) Update(ctx context.Context, params *m.DashboardCard) (result *m.DashboardCard, err error) {
 
 	var card *m.DashboardCard
 	if card, err = i.adaptors.DashboardCard.GetById(ctx, params.Id); err != nil {
@@ -85,8 +85,9 @@ func (i *DashboardCardEndpoint) Update(ctx context.Context, params *m.DashboardC
 		return
 	}
 
-	var ok bool
-	if ok, errs = i.validation.Valid(params); !ok {
+	if ok, errs := i.validation.Valid(params); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 

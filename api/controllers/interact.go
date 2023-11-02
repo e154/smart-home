@@ -19,11 +19,10 @@
 package controllers
 
 import (
-	"context"
+	"github.com/e154/smart-home/api/stub"
+	"github.com/labstack/echo/v4"
 
 	"github.com/e154/smart-home/api/dto"
-	"github.com/e154/smart-home/api/stub/api"
-	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 // ControllerInteract ...
@@ -32,20 +31,24 @@ type ControllerInteract struct {
 }
 
 // NewControllerInteract ...
-func NewControllerInteract(common *ControllerCommon) ControllerInteract {
-	return ControllerInteract{
+func NewControllerInteract(common *ControllerCommon) *ControllerInteract {
+	return &ControllerInteract{
 		ControllerCommon: common,
 	}
 }
 
-func (c ControllerInteract) EntityCallAction(ctx context.Context, req *api.EntityCallActionRequest) (*emptypb.Empty, error) {
+func (c ControllerInteract) InteractServiceEntityCallAction(ctx echo.Context, _ stub.InteractServiceEntityCallActionParams) error {
 
-	attributes := dto.AttributeFromApi(req.Attributes)
-	arg := attributes.Serialize()
-	errs, err := c.endpoint.Interact.EntityCallAction(ctx, req.Id, req.Name, arg)
-	if err != nil {
-		return nil, c.error(ctx, errs, err)
+	obj := &stub.ApiEntityCallActionRequest{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	attributes := dto.AttributeFromApi(obj.Attributes)
+	err := c.endpoint.Interact.EntityCallAction(ctx.Request().Context(), obj.Id, obj.Name, attributes.Serialize())
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }

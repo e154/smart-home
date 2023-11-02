@@ -60,11 +60,11 @@ func NewSettings() m.Attributes {
 	return map[string]*m.Attribute{
 		AttrPublicKey: {
 			Name: AttrPublicKey,
-			Type: common.AttributeString,
+			Type: common.AttributeEncrypted,
 		},
 		AttrPrivateKey: {
 			Name: AttrPrivateKey,
-			Type: common.AttributeString,
+			Type: common.AttributeEncrypted,
 		},
 	}
 }

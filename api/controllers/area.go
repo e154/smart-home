@@ -19,10 +19,10 @@
 package controllers
 
 import (
-	"context"
+	"github.com/e154/smart-home/api/dto"
+	"github.com/labstack/echo/v4"
 
-	"github.com/e154/smart-home/api/stub/api"
-	"google.golang.org/protobuf/types/known/emptypb"
+	"github.com/e154/smart-home/api/stub"
 )
 
 // ControllerArea ...
@@ -31,79 +31,85 @@ type ControllerArea struct {
 }
 
 // NewControllerArea ...
-func NewControllerArea(common *ControllerCommon) ControllerArea {
-	return ControllerArea{
+func NewControllerArea(common *ControllerCommon) *ControllerArea {
+	return &ControllerArea{
 		ControllerCommon: common,
 	}
 }
 
 // AddArea ...
-func (c ControllerArea) AddArea(ctx context.Context, req *api.NewAreaRequest) (*api.Area, error) {
+func (c ControllerArea) AreaServiceAddArea(ctx echo.Context, _ stub.AreaServiceAddAreaParams) error {
 
-	area := c.dto.Area.AddArea(req)
-
-	area, errs, err := c.endpoint.Area.Add(ctx, area)
-	if len(errs) != 0 || err != nil {
-		return nil, c.error(ctx, errs, err)
+	obj := &stub.ApiNewAreaRequest{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Area.ToArea(area), nil
+	area, err := c.endpoint.Area.Add(ctx.Request().Context(), c.dto.Area.AddArea(obj))
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP201(ctx, ResponseWithObj(ctx, dto.GetStubArea(area)))
 }
 
 // UpdateArea ...
-func (c ControllerArea) UpdateArea(ctx context.Context, req *api.UpdateAreaRequest) (*api.Area, error) {
+func (c ControllerArea) AreaServiceUpdateArea(ctx echo.Context, id int64, _ stub.AreaServiceUpdateAreaParams) error {
 
-	area := c.dto.Area.UpdateArea(req)
-
-	area, errs, err := c.endpoint.Area.Update(ctx, area)
-	if len(errs) != 0 || err != nil {
-		return nil, c.error(ctx, errs, err)
+	obj := &stub.AreaServiceUpdateAreaJSONBody{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Area.ToArea(area), nil
+	area, err := c.endpoint.Area.Update(ctx.Request().Context(), c.dto.Area.UpdateArea(obj, id))
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, dto.GetStubArea(area)))
 }
 
 // GetAreaById ...
-func (c ControllerArea) GetAreaById(ctx context.Context, req *api.GetAreaRequest) (*api.Area, error) {
+func (c ControllerArea) AreaServiceGetAreaById(ctx echo.Context, id int64) error {
 
-	area, err := c.endpoint.Area.GetById(ctx, req.Id)
+	area, err := c.endpoint.Area.GetById(ctx.Request().Context(), id)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Area.ToArea(area), nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, dto.GetStubArea(area)))
 }
 
 // GetAreaList ...
-func (c ControllerArea) GetAreaList(ctx context.Context, req *api.PaginationRequest) (*api.GetAreaListResult, error) {
+func (c ControllerArea) AreaServiceGetAreaList(ctx echo.Context, params stub.AreaServiceGetAreaListParams) error {
 
-	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
-	items, total, err := c.endpoint.Area.GetList(ctx, pagination)
+	pagination := c.Pagination(params.Page, params.Limit, params.Sort)
+	items, total, err := c.endpoint.Area.GetList(ctx.Request().Context(), pagination)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Area.ToListResult(items, uint64(total), pagination), nil
+	return c.HTTP200(ctx, ResponseWithList(ctx, c.dto.Area.ToListResult(items), total, pagination))
 }
 
 // DeleteArea ...
-func (c ControllerArea) DeleteArea(ctx context.Context, req *api.DeleteAreaRequest) (*emptypb.Empty, error) {
+func (c ControllerArea) AreaServiceDeleteArea(ctx echo.Context, id int64) error {
 
-	if err := c.endpoint.Area.Delete(ctx, req.Id); err != nil {
-		return nil, c.error(ctx, nil, err)
+	if err := c.endpoint.Area.Delete(ctx.Request().Context(), id); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
 
 // SearchArea ...
-func (c ControllerArea) SearchArea(ctx context.Context, req *api.SearchRequest) (*api.SearchAreaResult, error) {
+func (c ControllerArea) AreaServiceSearchArea(ctx echo.Context, params stub.AreaServiceSearchAreaParams) error {
 
-	search := c.Search(req.Query, req.Limit, req.Offset)
-	items, _, err := c.endpoint.Area.Search(ctx, search.Query, search.Limit, search.Offset)
+	search := c.Search(params.Query, params.Limit, params.Offset)
+	items, _, err := c.endpoint.Area.Search(ctx.Request().Context(), search.Query, search.Limit, search.Offset)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Area.ToSearchResult(items), nil
+	return c.HTTP200(ctx, c.dto.Area.ToSearchResult(items))
 }

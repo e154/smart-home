@@ -34,8 +34,8 @@ type ControllerMedia struct {
 }
 
 // NewControllerMedia ...
-func NewControllerMedia(common *ControllerCommon) ControllerMedia {
-	return ControllerMedia{
+func NewControllerMedia(common *ControllerCommon) *ControllerMedia {
+	return &ControllerMedia{
 		ControllerCommon: common,
 	}
 }

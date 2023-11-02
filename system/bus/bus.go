@@ -19,10 +19,12 @@
 package bus
 
 import (
+	"context"
 	"fmt"
 	"reflect"
 	"sort"
 	"sync"
+	"time"
 
 	"github.com/pkg/errors"
 
@@ -88,7 +90,14 @@ func (b *bus) subscribe(topic string, fn interface{}, options ...interface{}) er
 
 	go func() {
 		for args := range h.queue {
-			h.callback.Call(args)
+			go func() {
+				startTime := time.Now()
+				h.callback.Call(args)
+				t := time.Now().Sub(startTime).Microseconds()
+				if t > 5000 {
+					fmt.Printf("long call! topic %s, fn: %s, Microseconds: %d\n\r", topic, reflect.ValueOf(fn).String(), t)
+				}
+			}()
 		}
 	}()
 
@@ -108,7 +117,7 @@ func (b *bus) subscribe(topic string, fn interface{}, options ...interface{}) er
 
 	// sand last message value
 	if b.sub[topic].lastMsg != nil {
-		h.callback.Call(b.sub[topic].lastMsg)
+		go h.callback.Call(b.sub[topic].lastMsg)
 	}
 
 	return nil
@@ -172,11 +181,11 @@ func (b *bus) Purge() {
 	}
 }
 
-// todo: fix ...
-func (b *bus) Stat() (stats Stats, total int64, err error) {
+func (b *bus) Stat(ctx context.Context, limit, offset int64, _, _ string) (result Stats, total int64, err error) {
 	b.RLock()
 	defer b.RUnlock()
 
+	var stats Stats
 	for topic, subs := range b.sub {
 		stats = append(stats, Stat{
 			Topic:       topic,
@@ -187,6 +196,17 @@ func (b *bus) Stat() (stats Stats, total int64, err error) {
 	sort.Sort(stats)
 
 	total = int64(len(stats))
+
+	if offset > total {
+		offset = total
+	}
+
+	end := offset + limit
+	if end > total {
+		end = total
+	}
+
+	result = stats[offset:end]
 
 	return
 }

@@ -20,6 +20,7 @@ package models
 
 import (
 	"context"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -103,8 +104,8 @@ func NetAttr() m.Attributes {
 func NetSettings() m.Attributes {
 	return m.Attributes{
 		"s": {
-			Name: "s",
-			Type: common.AttributeString,
+			Name:  "s",
+			Type:  common.AttributeString,
 			Value: "s",
 		},
 	}

@@ -19,11 +19,10 @@
 package controllers
 
 import (
-	"context"
-	"net/http"
-
-	"github.com/e154/smart-home/api/stub/api"
-	"google.golang.org/protobuf/types/known/emptypb"
+	"github.com/e154/smart-home/api/stub"
+	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
+	"github.com/labstack/echo/v4"
 )
 
 // ControllerImage ...
@@ -32,118 +31,121 @@ type ControllerImage struct {
 }
 
 // NewControllerImage ...
-func NewControllerImage(common *ControllerCommon) ControllerImage {
-	return ControllerImage{
+func NewControllerImage(common *ControllerCommon) *ControllerImage {
+	return &ControllerImage{
 		ControllerCommon: common,
 	}
 }
 
 // AddImage ...
-func (c ControllerImage) AddImage(ctx context.Context, req *api.NewImageRequest) (*api.Image, error) {
+func (c ControllerImage) ImageServiceAddImage(ctx echo.Context, _ stub.ImageServiceAddImageParams) error {
 
-	image, errs, err := c.endpoint.Image.Add(ctx, c.dto.Image.FromNewImageRequest(req))
-	if len(errs) != 0 || err != nil {
-		return nil, c.error(ctx, errs, err)
+	obj := &stub.ApiNewImageRequest{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Image.ToImage(image), nil
+	image, err := c.endpoint.Image.Add(ctx.Request().Context(), c.dto.Image.FromNewImageRequest(obj))
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP201(ctx, ResponseWithObj(ctx, c.dto.Image.ToImage(image)))
 }
 
 // GetImageById ...
-func (c ControllerImage) GetImageById(ctx context.Context, req *api.GetImageRequest) (*api.Image, error) {
+func (c ControllerImage) ImageServiceGetImageById(ctx echo.Context, id int64) error {
 
-	image, errs, err := c.endpoint.Image.GetById(ctx, int64(req.Id))
+	image, err := c.endpoint.Image.GetById(ctx.Request().Context(), id)
 	if err != nil {
-		return nil, c.error(ctx, errs, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Image.ToImage(image), nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, c.dto.Image.ToImage(image)))
 }
 
 // UpdateImageById ...
-func (c ControllerImage) UpdateImageById(ctx context.Context, req *api.UpdateImageRequest) (*api.Image, error) {
+func (c ControllerImage) ImageServiceUpdateImageById(ctx echo.Context, id int64, _ stub.ImageServiceUpdateImageByIdParams) error {
 
-	image, errs, err := c.endpoint.Image.Update(ctx, c.dto.Image.FromUpdateImageRequest(req))
-	if len(errs) != 0 || err != nil {
-		return nil, c.error(ctx, errs, err)
+	obj := &stub.ImageServiceUpdateImageByIdJSONBody{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Image.ToImage(image), nil
+	image, err := c.endpoint.Image.Update(ctx.Request().Context(), c.dto.Image.FromUpdateImageRequest(obj, id))
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, c.dto.Image.ToImage(image)))
 }
 
 // GetImageList ...
-func (c ControllerImage) GetImageList(ctx context.Context, req *api.PaginationRequest) (*api.GetImageListResult, error) {
+func (c ControllerImage) ImageServiceGetImageList(ctx echo.Context, params stub.ImageServiceGetImageListParams) error {
 
-	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
-	items, total, err := c.endpoint.Image.GetList(ctx, pagination)
+	pagination := c.Pagination(params.Page, params.Limit, params.Sort)
+	items, total, err := c.endpoint.Image.GetList(ctx.Request().Context(), pagination)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Image.ToImageListResult(items, uint64(total), pagination), nil
+	return c.HTTP200(ctx, ResponseWithList(ctx, c.dto.Image.ToImageListResult(items), total, pagination))
 }
 
 // DeleteImageById ...
-func (c ControllerImage) DeleteImageById(ctx context.Context, req *api.DeleteImageRequest) (*emptypb.Empty, error) {
+func (c ControllerImage) ImageServiceDeleteImageById(ctx echo.Context, id int64) error {
 
-	if errs, err := c.endpoint.Image.Delete(ctx, int64(req.Id)); err != nil {
-		return nil, c.error(ctx, errs, err)
+	if err := c.endpoint.Image.Delete(ctx.Request().Context(), id); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
-}
-
-// UploadImage ...
-func (c ControllerImage) UploadImage(ctx context.Context, req *api.UploadImageRequest) (*api.Image, error) {
-
-	return nil, nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
 
 // MuxUploadImage ...
-func (c ControllerImage) MuxUploadImage() http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func (c ControllerImage) ImageServiceUploadImage(ctx echo.Context, _ stub.ImageServiceUploadImageParams) error {
 
-		if err := r.ParseMultipartForm(8 << 20); err != nil {
-			log.Error(err.Error())
-		}
+	r := ctx.Request()
 
-		form := r.MultipartForm
-		if len(form.File) == 0 {
-			c.writeErr(403, "bad request", w)
-			return
-		}
+	if err := r.ParseMultipartForm(8 << 20); err != nil {
+		log.Error(err.Error())
+	}
 
-		images, errs := c.endpoint.Image.Upload(r.Context(), form.File)
+	form := r.MultipartForm
+	if len(form.File) == 0 {
+		return c.ERROR(ctx, apperr.ErrInvalidRequest)
+	}
 
-		var resultImages = make([]interface{}, 0)
+	images, errs := c.endpoint.Image.Upload(r.Context(), form.File)
 
-		for _, img := range images {
-			resultImages = append(resultImages, map[string]int64{
-				"id": img.Id,
-			})
-		}
+	var resultImages = make([]interface{}, 0)
 
-		c.writeJson(w, map[string]interface{}{
-			"images": resultImages,
-			"errors": errs,
+	for _, img := range images {
+		resultImages = append(resultImages, map[string]int64{
+			"id": img.Id,
 		})
+	}
+
+	return c.HTTP200(ctx, map[string]interface{}{
+		"images": resultImages,
+		"errors": errs,
 	})
 }
 
 // GetImageListByDate ...
-func (c ControllerImage) GetImageListByDate(ctx context.Context, request *api.GetImageListByDateRequest) (*api.GetImageListByDateResult, error) {
-	images, err := c.endpoint.Image.GetListByDate(ctx, request.Filter)
+func (c ControllerImage) ImageServiceGetImageListByDate(ctx echo.Context, request stub.ImageServiceGetImageListByDateParams) error {
+	images, err := c.endpoint.Image.GetListByDate(ctx.Request().Context(), common.StringValue(request.Filter))
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
-	return c.dto.Image.ToImageList(images), nil
+	return c.HTTP200(ctx, c.dto.Image.ToImageList(images))
 }
 
 // GetImageFilterList ...
-func (c ControllerImage) GetImageFilterList(ctx context.Context, empty *emptypb.Empty) (*api.GetImageFilterListResult, error) {
-	filters, err := c.endpoint.Image.GetFilterList(ctx)
+func (c ControllerImage) ImageServiceGetImageFilterList(ctx echo.Context) error {
+	filters, err := c.endpoint.Image.GetFilterList(ctx.Request().Context())
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
-	return c.dto.Image.ToFilterList(filters), nil
+	return c.HTTP200(ctx, c.dto.Image.ToFilterList(filters))
 }

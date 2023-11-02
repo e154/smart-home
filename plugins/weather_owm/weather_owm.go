@@ -69,7 +69,7 @@ func (p *WeatherOwm) GetForecast(params Zone, now time.Time, settings map[string
 
 	var zone Zone
 	if zone, err = p.FetchData(params.Name, params.Lat, params.Lon, now, settings); err != nil {
-		log.Errorf("%+v", err)
+		log.Error(err.Error())
 		return
 	}
 
@@ -216,7 +216,7 @@ func (p *WeatherOwm) fetchFromServer(lat, lon float64, settings map[string]*m.At
 	params.Add("cnt", "48")
 
 	if appid, ok := settings[AttrAppid]; ok {
-		params.Add("appid", appid.String())
+		params.Add("appid", appid.Decrypt())
 	}
 
 	if units, ok := settings[AttrUnits]; ok {

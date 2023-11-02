@@ -24,8 +24,7 @@ description: >
 
 
 ```javascript
-const entity = entityManager.getEntity('version.version')
-const versionInfo = entity.getAttributes()
+const versionInfo = EntityGetAttributes('version.version')
 console.log("Project version:", versionInfo.version);
 console.log("Revision:", versionInfo.revision);
 console.log("Revision URL:", versionInfo.revision_url);

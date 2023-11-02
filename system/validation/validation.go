@@ -23,16 +23,14 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/e154/smart-home/common/logger"
-
 	"github.com/go-playground/locales/en"
-	"github.com/go-playground/locales/es"
 	"github.com/go-playground/locales/ru"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	en_translations "github.com/go-playground/validator/v10/translations/en"
 	"go.uber.org/fx"
 
+	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 )
 
@@ -70,7 +68,7 @@ func (v *Validate) Start(_ context.Context) (err error) {
 	log.Info("start ...")
 
 	_en := en.New()
-	uni := ut.New(_en, _en, ru.New(), es.New())
+	uni := ut.New(_en, _en, ru.New())
 
 	var ok bool
 	if v.trans, ok = uni.GetTranslator(v.lang); !ok {

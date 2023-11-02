@@ -26,18 +26,18 @@ import (
 
 // DashboardTab ...
 type DashboardTab struct {
-	Id          int64                       `json:"id"`
+	Cards       []*DashboardCard            `json:"cards"`
+	CreatedAt   time.Time                   `json:"created_at"`
+	UpdatedAt   time.Time                   `json:"updated_at"`
 	Name        string                      `json:"name" validate:"required"`
-	ColumnWidth int                         `json:"column_width"`
-	Gap         bool                        `json:"gap"`
-	Background  *string                     `json:"background"`
 	Icon        string                      `json:"icon"`
-	Enabled     bool                        `json:"enabled"`
+	Id          int64                       `json:"id"`
+	ColumnWidth int                         `json:"column_width"`
+	Background  *string                     `json:"background"`
 	Weight      int                         `json:"weight"`
 	DashboardId int64                       `json:"dashboard_id" validate:"required"`
 	Dashboard   *Dashboard                  `json:"dashboard"`
-	Cards       []*DashboardCard            `json:"cards"`
 	Entities    map[common.EntityId]*Entity `json:"entities"`
-	CreatedAt   time.Time                   `json:"created_at"`
-	UpdatedAt   time.Time                   `json:"updated_at"`
+	Gap         bool                        `json:"gap"`
+	Enabled     bool                        `json:"enabled"`
 }

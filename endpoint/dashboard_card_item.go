@@ -21,9 +21,10 @@ package endpoint
 import (
 	"context"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/go-playground/validator/v10"
 	"github.com/jinzhu/copier"
 )
 
@@ -40,15 +41,16 @@ func NewDashboardCardItemEndpoint(common *CommonEndpoint) *DashboardCardItemEndp
 }
 
 // Add ...
-func (c *DashboardCardItemEndpoint) Add(ctx context.Context, card *m.DashboardCardItem) (result *m.DashboardCardItem, errs validator.ValidationErrorsTranslations, err error) {
+func (c *DashboardCardItemEndpoint) Add(ctx context.Context, cardItem *m.DashboardCardItem) (result *m.DashboardCardItem, err error) {
 
-	var ok bool
-	if ok, errs = c.validation.Valid(card); !ok {
+	if ok, errs := c.validation.Valid(cardItem); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
 	var id int64
-	if id, err = c.adaptors.DashboardCardItem.Add(ctx, card); err != nil {
+	if id, err = c.adaptors.DashboardCardItem.Add(ctx, cardItem); err != nil {
 		return
 	}
 
@@ -66,27 +68,27 @@ func (c *DashboardCardItemEndpoint) GetById(ctx context.Context, id int64) (card
 }
 
 // Update ...
-func (i *DashboardCardItemEndpoint) Update(ctx context.Context, params *m.DashboardCardItem) (result *m.DashboardCardItem, errs validator.ValidationErrorsTranslations, err error) {
+func (c *DashboardCardItemEndpoint) Update(ctx context.Context, params *m.DashboardCardItem) (result *m.DashboardCardItem, err error) {
 
-	var board *m.DashboardCardItem
-	if board, err = i.adaptors.DashboardCardItem.GetById(ctx, params.Id); err != nil {
+	var cardItem *m.DashboardCardItem
+	if cardItem, err = c.adaptors.DashboardCardItem.GetById(ctx, params.Id); err != nil {
 		return
 	}
 
-	if err = copier.Copy(&board, &params); err != nil {
+	if err = copier.Copy(&cardItem, &params); err != nil {
 		return
 	}
 
-	var ok bool
-	if ok, errs = i.validation.Valid(params); !ok {
+	if ok, errs := c.validation.Valid(params); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
+		return
+	}
+	if err = c.adaptors.DashboardCardItem.Update(ctx, cardItem); err != nil {
 		return
 	}
 
-	if err = i.adaptors.DashboardCardItem.Update(ctx, board); err != nil {
-		return
-	}
-
-	result, err = i.adaptors.DashboardCardItem.GetById(ctx, params.Id)
+	result, err = c.adaptors.DashboardCardItem.GetById(ctx, params.Id)
 
 	return
 }

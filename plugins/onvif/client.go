@@ -125,6 +125,10 @@ func (s *Client) Start(username, password, address string, port int64, requireAu
 				continue
 			}
 
+			if len(s.mediaProfiles) == 0 {
+				continue
+			}
+
 			var streamList []string
 			if streamList, err = s.GetStreamList(); err != nil {
 				continue

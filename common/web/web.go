@@ -20,28 +20,144 @@ package web
 
 import (
 	"bytes"
+	"encoding/base64"
+	"fmt"
 	"io"
 	"net"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/logger"
+)
+
+var (
+	log = logger.MustGetLogger("web")
 )
 
 type crawler struct {
+	headers            []map[string]string
+	digestAuth         bool
+	basicAuth          bool
+	username, password string
+	dig                *DigestHeaders
 }
 
 func New() Crawler {
 	return &crawler{}
 }
 
-// Probe ...
-func (crawler) Probe(options Request) (status int, body []byte, err error) {
-	return Probe(options)
+func (c *crawler) BasicAuth(username, password string) Crawler {
+	c.username = username
+	c.password = password
+	c.basicAuth = true
+	return c
+}
+
+func (c *crawler) DigestAuth(username, password string) Crawler {
+	c.username = username
+	c.password = password
+	c.digestAuth = true
+	return c
 }
 
 // Probe ...
-func Probe(options Request) (status int, body []byte, err error) {
+func (c *crawler) Probe(options Request) (status int, body []byte, err error) {
+
+	var req *http.Request
+	if req, err = c.prepareRequest(options); err != nil {
+		return
+	}
+
+	if err = c.auth(req, options.Url); err != nil {
+		return
+	}
+
+	var timeout = time.Second * 2
+	if options.Timeout > 0 {
+		timeout = options.Timeout
+	}
+
+	var resp *http.Response
+	if resp, err = c.doIt(req, timeout); err != nil {
+		return
+	}
+
+	status = resp.StatusCode
+
+	defer resp.Body.Close()
+	body, err = io.ReadAll(resp.Body)
+
+	return
+}
+
+// Probe ...
+func (c *crawler) Download(options Request) (filePath string, err error) {
+
+	defer func() {
+		if err != nil {
+			fmt.Printf("%v", err.Error())
+		}
+	}()
+
+	var req *http.Request
+	if req, err = c.prepareRequest(options); err != nil {
+		return
+	}
+
+	if err = c.auth(req, options.Url); err != nil {
+		return
+	}
+
+	var timeout = time.Second * 2
+	if options.Timeout > 0 {
+		timeout = options.Timeout
+	}
+
+	var resp *http.Response
+	if resp, err = c.doIt(req, timeout); err != nil {
+		return
+	}
+
+	defer resp.Body.Close()
+
+	var f *os.File
+	f, err = os.CreateTemp("/tmp", "*.jpeg")
+	if err != nil {
+		return
+	}
+
+	filePath = f.Name()
+	if _, err = io.Copy(f, resp.Body); err != nil {
+		return
+	}
+
+	log.Infof("file downloaded to '%s' ...", filePath)
+
+	return
+}
+
+func (c *crawler) doIt(req *http.Request, timeout time.Duration) (resp *http.Response, err error) {
+
+	netTransport := &http.Transport{
+		DialContext: (&net.Dialer{
+			Timeout: timeout,
+		}).DialContext,
+		TLSHandshakeTimeout: timeout,
+	}
+
+	client := &http.Client{
+		Timeout:   timeout,
+		Transport: netTransport,
+	}
+
+	resp, err = client.Do(req)
+
+	return
+}
+
+func (c *crawler) prepareRequest(options Request) (req *http.Request, err error) {
 
 	if options.Url == "" {
 		err = apperr.ErrBadRequestParams
@@ -56,7 +172,6 @@ func Probe(options Request) (status int, body []byte, err error) {
 		}
 	}
 
-	var req *http.Request
 	if req, err = http.NewRequest(options.Method, options.Url, r); err != nil {
 		return
 	}
@@ -70,32 +185,26 @@ func Probe(options Request) (status int, body []byte, err error) {
 		}
 	}
 
-	var timeout = time.Second * 2
-	if options.Timeout > 0 {
-		timeout = options.Timeout
-	}
-
-	netTransport := &http.Transport{
-		DialContext: (&net.Dialer{
-			Timeout: timeout,
-		}).DialContext,
-		TLSHandshakeTimeout: timeout,
-	}
-
-	client := &http.Client{
-		Timeout:   timeout,
-		Transport: netTransport,
-	}
-
-	var resp *http.Response
-	if resp, err = client.Do(req); err != nil {
-		return
-	}
-
-	status = resp.StatusCode
-
-	defer resp.Body.Close()
-	body, err = io.ReadAll(resp.Body)
-
 	return
+}
+
+func (c *crawler) auth(req *http.Request, uri string) (err error) {
+
+	if c.basicAuth {
+		auth := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", c.username, c.password)))
+		c.headers = append(c.headers, map[string]string{
+			"Authorization": "Basic " + auth,
+		})
+		req.Header.Add("Authorization", "Basic "+auth)
+	}
+
+	if c.digestAuth || c.dig != nil {
+		c.dig = &DigestHeaders{}
+		c.dig, err = c.dig.Auth(c.username, c.password, uri)
+		if err != nil {
+			return
+		}
+		c.dig.ApplyAuth(req)
+	}
+	return err
 }

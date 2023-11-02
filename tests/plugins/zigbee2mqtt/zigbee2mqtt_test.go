@@ -44,7 +44,7 @@ func TestZigbee2mqtt(t *testing.T) {
 		zigbeePlugId   = "0x00158d0001bc27f2"
 
 		buttonSourceScript = `# {"battery":100,"click":"long","duration":1515,"linkquality":126,"voltage":3042}
-zigbee2mqttEvent = ->
+zigbee2mqttEvent =(message)->
   #print '---mqtt new event from button---'
   if !message
     return
@@ -67,7 +67,7 @@ zigbee2mqttEvent = ->
 `
 
 		plugSourceScript = `# {"consumption":0.07,"linkquality":102,"power":0,"state":"ON","temperature":35,"voltage":240.5}
-zigbee2mqttEvent = ->
+zigbee2mqttEvent =(message)->
   #print '---mqtt new event from plug---'
   if !message || message.topic.includes('/set')
     return

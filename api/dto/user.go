@@ -19,10 +19,9 @@
 package dto
 
 import (
-	"github.com/e154/smart-home/api/stub/api"
+	stub "github.com/e154/smart-home/api/stub"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // User ...
@@ -34,20 +33,21 @@ func NewUserDto() User {
 }
 
 // AddUserRequest ...
-func (u User) AddUserRequest(req *api.NewtUserRequest) (user *m.User) {
+func (u User) AddUserRequest(req *stub.ApiNewtUserRequest) (user *m.User) {
 	user = &m.User{}
 	_ = common.Copy(&user, req, common.JsonEngine)
 	if req.ImageId != nil {
 		_ = user.ImageId.Scan(*req.ImageId)
 	}
+	user.RoleName = req.RoleName
 	return
 }
 
 // ToUserFull ...
-func (u User) ToUserFull(user *m.User) (result *api.UserFull) {
+func (u User) ToUserFull(user *m.User) (result *stub.ApiUserFull) {
 	roleDto := NewRoleDto()
 	imageDto := NewImageDto()
-	result = &api.UserFull{
+	result = &stub.ApiUserFull{
 		Id:                  user.Id,
 		Nickname:            user.Nickname,
 		FirstName:           common.String(user.FirstName),
@@ -55,12 +55,16 @@ func (u User) ToUserFull(user *m.User) (result *api.UserFull) {
 		Email:               user.Email,
 		Status:              user.Status,
 		SignInCount:         user.SignInCount,
-		Role:                roleDto.ToGRole(user.Role),
+		Role:                roleDto.GetStubRole(user.Role),
 		RoleName:            user.RoleName,
 		Lang:                user.Lang,
 		AuthenticationToken: common.StringValue(user.AuthenticationToken),
-		CreatedAt:           timestamppb.New(user.CreatedAt),
-		UpdatedAt:           timestamppb.New(user.UpdatedAt),
+		CurrentSignInAt:     user.CurrentSignInAt,
+		LastSignInAt:        user.LastSignInAt,
+		ResetPasswordSentAt: user.ResetPasswordSentAt,
+		DeletedAt:           user.DeletedAt,
+		CreatedAt:           user.CreatedAt,
+		UpdatedAt:           user.UpdatedAt,
 	}
 
 	if user.LastSignInIp != "" {
@@ -73,20 +77,20 @@ func (u User) ToUserFull(user *m.User) (result *api.UserFull) {
 
 	// history
 	if user.History != nil {
-		result.History = make([]*api.UserHistory, 0, len(user.History))
+		result.History = make([]stub.ApiUserHistory, 0, len(user.History))
 		for _, h := range user.History {
-			result.History = append(result.History, &api.UserHistory{
+			result.History = append(result.History, stub.ApiUserHistory{
 				Ip:   h.Ip,
-				Time: timestamppb.New(h.Time),
+				Time: h.Time,
 			})
 		}
 	}
 
 	// meta
 	if user.Meta != nil {
-		result.Meta = make([]*api.UserMeta, 0, len(user.Meta))
+		result.Meta = make([]stub.ApiUserMeta, 0, len(user.Meta))
 		for _, m := range user.Meta {
-			result.Meta = append(result.Meta, &api.UserMeta{
+			result.Meta = append(result.Meta, stub.ApiUserMeta{
 				Key:   m.Key,
 				Value: m.Value,
 			})
@@ -98,27 +102,9 @@ func (u User) ToUserFull(user *m.User) (result *api.UserFull) {
 		result.Image = imageDto.ToImage(user.Image)
 	}
 
-	// todo fix time
-	// times ...
-	if user.CurrentSignInAt != nil {
-		result.CurrentSignInAt = timestamppb.New(common.TimeValue(user.CurrentSignInAt))
-	}
-	// times ...
-	if user.LastSignInAt != nil {
-		result.LastSignInAt = timestamppb.New(common.TimeValue(user.LastSignInAt))
-	}
-	// times ...
-	if user.ResetPasswordSentAt != nil {
-		result.ResetPasswordSentAt = timestamppb.New(common.TimeValue(user.ResetPasswordSentAt))
-	}
-	// times ...
-	if user.DeletedAt != nil {
-		result.DeletedAt = timestamppb.New(common.TimeValue(user.DeletedAt))
-	}
-
 	// parent
 	if user.User != nil {
-		result.User = &api.UserFull_Parent{
+		result.User = &stub.ApiUserFullParent{
 			Id:       user.User.Id,
 			Nickname: user.User.Nickname,
 		}
@@ -127,11 +113,11 @@ func (u User) ToUserFull(user *m.User) (result *api.UserFull) {
 }
 
 // ToUserShot ...
-func (u User) ToUserShot(user *m.User) (result *api.UserShot) {
+func (u User) ToUserShot(user *m.User) (result *stub.ApiUserShot) {
 
 	roleDto := NewRoleDto()
 	imageDto := NewImageDto()
-	result = &api.UserShot{
+	result = &stub.ApiUserShot{
 		Id:        user.Id,
 		Nickname:  user.Nickname,
 		FirstName: common.String(user.FirstName),
@@ -139,10 +125,10 @@ func (u User) ToUserShot(user *m.User) (result *api.UserShot) {
 		Email:     user.Email,
 		Status:    user.Status,
 		Lang:      user.Lang,
-		Role:      roleDto.ToGRole(user.Role),
+		Role:      roleDto.GetStubRole(user.Role),
 		RoleName:  user.RoleName,
-		CreatedAt: timestamppb.New(user.CreatedAt),
-		UpdatedAt: timestamppb.New(user.UpdatedAt),
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
 	}
 
 	// image
@@ -152,7 +138,7 @@ func (u User) ToUserShot(user *m.User) (result *api.UserShot) {
 
 	// parent
 	if user.User != nil {
-		result.User = &api.UserShot_Parent{
+		result.User = &stub.ApiUserShotParent{
 			Id:       user.User.Id,
 			Nickname: user.User.Nickname,
 		}
@@ -161,31 +147,24 @@ func (u User) ToUserShot(user *m.User) (result *api.UserShot) {
 }
 
 // ToListResult ...
-func (u User) ToListResult(list []*m.User, total uint64, pagination common.PageParams) *api.GetUserListResult {
+func (u User) ToListResult(list []*m.User) []*stub.ApiUserShot {
 
-	items := make([]*api.UserShot, 0, len(list))
+	items := make([]*stub.ApiUserShot, 0, len(list))
 
 	for _, i := range list {
 		items = append(items, u.ToUserShot(i))
 	}
 
-	return &api.GetUserListResult{
-		Items: items,
-		Meta: &api.Meta{
-			Limit: uint64(pagination.Limit),
-			Page:  pagination.PageReq,
-			Total: total,
-			Sort:  pagination.SortReq,
-		},
-	}
+	return items
 }
 
 // UpdateUserByIdRequest ...
-func (u User) UpdateUserByIdRequest(req *api.UpdateUserRequest) (user *m.User) {
+func (u User) UpdateUserByIdRequest(req *stub.UserServiceUpdateUserByIdJSONBody, id int64) (user *m.User) {
 	user = &m.User{}
 	_ = common.Copy(&user, req, common.JsonEngine)
 	if req.ImageId != nil {
 		_ = user.ImageId.Scan(*req.ImageId)
 	}
+	user.Id = id
 	return
 }

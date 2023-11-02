@@ -403,5 +403,6 @@ const coffeeScript28 = `
 encryptedStr = Encrypt('foo') 
 Decrypt(encryptedStr)
 `
+
 // test...
 // ------------------------------------------------

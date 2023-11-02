@@ -19,12 +19,10 @@
 package controllers
 
 import (
-	"context"
-
-	"google.golang.org/protobuf/types/known/emptypb"
+	"github.com/e154/smart-home/api/stub"
+	"github.com/labstack/echo/v4"
 
 	"github.com/e154/smart-home/api/dto"
-	"github.com/e154/smart-home/api/stub/api"
 )
 
 // ControllerPlugin ...
@@ -33,78 +31,83 @@ type ControllerPlugin struct {
 }
 
 // NewControllerPlugin ...
-func NewControllerPlugin(common *ControllerCommon) ControllerPlugin {
-	return ControllerPlugin{
+func NewControllerPlugin(common *ControllerCommon) *ControllerPlugin {
+	return &ControllerPlugin{
 		ControllerCommon: common,
 	}
 }
 
 // GetPluginList ...
-func (c ControllerPlugin) GetPluginList(ctx context.Context, req *api.PaginationRequest) (*api.GetPluginListResult, error) {
+func (c ControllerPlugin) PluginServiceGetPluginList(ctx echo.Context, params stub.PluginServiceGetPluginListParams) error {
 
-	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
-	items, total, err := c.endpoint.Plugin.GetList(ctx, pagination)
+	pagination := c.Pagination(params.Page, params.Limit, params.Sort)
+	items, total, err := c.endpoint.Plugin.GetList(ctx.Request().Context(), pagination)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Plugin.ToPluginListResult(items, uint64(total), pagination), nil
+	return c.HTTP200(ctx, ResponseWithList(ctx, c.dto.Plugin.ToPluginListResult(items), total, pagination))
 }
 
 // EnablePlugin ...
-func (c ControllerPlugin) EnablePlugin(ctx context.Context, req *api.EnablePluginRequest) (*api.EnablePluginResult, error) {
+func (c ControllerPlugin) PluginServiceEnablePlugin(ctx echo.Context, name string) error {
 
-	if err := c.endpoint.Plugin.Enable(ctx, req.Name); err != nil {
-		return nil, c.error(ctx, nil, err)
+	if err := c.endpoint.Plugin.Enable(ctx.Request().Context(), name); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &api.EnablePluginResult{}, nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
 
 // DisablePlugin ...
-func (c ControllerPlugin) DisablePlugin(ctx context.Context, req *api.DisablePluginRequest) (*api.DisablePluginResult, error) {
+func (c ControllerPlugin) PluginServiceDisablePlugin(ctx echo.Context, name string) error {
 
-	if err := c.endpoint.Plugin.Disable(ctx, req.Name); err != nil {
-		return nil, c.error(ctx, nil, err)
+	if err := c.endpoint.Plugin.Disable(ctx.Request().Context(), name); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &api.DisablePluginResult{}, nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
 
 // SearchPlugin ...
-func (c ControllerPlugin) SearchPlugin(ctx context.Context, req *api.SearchRequest) (*api.SearchPluginResult, error) {
+func (c ControllerPlugin) PluginServiceSearchPlugin(ctx echo.Context, params stub.PluginServiceSearchPluginParams) error {
 
-	search := c.Search(req.Query, req.Limit, req.Offset)
-	items, _, err := c.endpoint.Plugin.Search(ctx, search.Query, search.Limit, search.Offset)
+	search := c.Search(params.Query, params.Limit, params.Offset)
+	items, _, err := c.endpoint.Plugin.Search(ctx.Request().Context(), search.Query, search.Limit, search.Offset)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Plugin.ToSearchResult(items), nil
+	return c.HTTP200(ctx, c.dto.Plugin.ToSearchResult(items))
 }
 
 // GetPlugin ...
-func (c ControllerPlugin) GetPlugin(ctx context.Context, req *api.GetPluginRequest) (*api.Plugin, error) {
+func (c ControllerPlugin) PluginServiceGetPlugin(ctx echo.Context, name string) error {
 
-	plugin, err := c.endpoint.Plugin.GetByName(ctx, req.Name)
+	plugin, err := c.endpoint.Plugin.GetByName(ctx.Request().Context(), name)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	options, err := c.endpoint.Plugin.GetOptions(ctx, req.Name)
+	options, err := c.endpoint.Plugin.GetOptions(ctx.Request().Context(), name)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Plugin.ToGetPlugin(plugin, options), nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, c.dto.Plugin.ToGetPlugin(plugin, options)))
 }
 
 // UpdatePluginSettings ...
-func (c ControllerPlugin) UpdatePluginSettings(ctx context.Context, req *api.UpdatePluginSettingsRequest) (*emptypb.Empty, error) {
+func (c ControllerPlugin) PluginServiceUpdatePluginSettings(ctx echo.Context, name string, _ stub.PluginServiceUpdatePluginSettingsParams) error {
 
-	if err := c.endpoint.Plugin.UpdateSettings(ctx, req.Name, dto.AttributeFromApi(req.Settings)); err != nil {
-		return nil, c.error(ctx, nil, err)
+	obj := &stub.PluginServiceUpdatePluginSettingsJSONBody{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	if err := c.endpoint.Plugin.UpdateSettings(ctx.Request().Context(), name, dto.AttributeFromApi(obj.Settings)); err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }

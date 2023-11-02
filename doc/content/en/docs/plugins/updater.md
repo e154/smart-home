@@ -17,8 +17,7 @@ The "updated" plugin allows the system to check for updates and provides informa
 Here's an example of using the "updated" plugin:
 
 ```javascript
-const entity = entityManager.getEntity('updater.updater')
-const updateInfo = entity.getAttributes()
+const updateInfo = EntityGetAttributes('updater.updater')
 
 console.log("Latest version:", updateInfo.latest_version);
 console.log("Latest version time:", updateInfo.latest_version_time);

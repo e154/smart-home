@@ -19,11 +19,11 @@
 package controllers
 
 import (
-	"context"
+	"github.com/e154/smart-home/api/dto"
+	"github.com/e154/smart-home/api/stub"
+	"github.com/labstack/echo/v4"
 
-	"github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/common"
-	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 // ControllerEntity ...
@@ -32,108 +32,117 @@ type ControllerEntity struct {
 }
 
 // NewControllerEntity ...
-func NewControllerEntity(common *ControllerCommon) ControllerEntity {
-	return ControllerEntity{
+func NewControllerEntity(common *ControllerCommon) *ControllerEntity {
+	return &ControllerEntity{
 		ControllerCommon: common,
 	}
 }
 
 // AddEntity ...
-func (c ControllerEntity) AddEntity(ctx context.Context, req *api.NewEntityRequest) (*api.Entity, error) {
+func (c ControllerEntity) EntityServiceAddEntity(ctx echo.Context, _ stub.EntityServiceAddEntityParams) error {
 
-	entity := c.dto.Entity.AddEntity(req)
-
-	entity, errs, err := c.endpoint.Entity.Add(ctx, entity)
-	if len(errs) != 0 || err != nil {
-		return nil, c.error(ctx, errs, err)
+	obj := &stub.ApiNewEntityRequest{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Entity.ToEntity(entity), nil
+	entity, err := c.endpoint.Entity.Add(ctx.Request().Context(), c.dto.Entity.AddEntity(obj))
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, dto.ToEntity(entity)))
 }
 
 // ImportEntity ...
-func (c ControllerEntity) ImportEntity(ctx context.Context, req *api.Entity) (*emptypb.Empty, error) {
+func (c ControllerEntity) EntityServiceImportEntity(ctx echo.Context, _ stub.EntityServiceImportEntityParams) error {
 
-	entity := c.dto.Entity.ImportEntity(req)
-
-	err := c.endpoint.Entity.Import(ctx, entity)
-	if err != nil {
-		return nil, c.error(ctx, nil, err)
+	obj := &stub.ApiEntity{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	err := c.endpoint.Entity.Import(ctx.Request().Context(), c.dto.Entity.ImportEntity(obj))
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
 
 // UpdateEntity ...
-func (c ControllerEntity) UpdateEntity(ctx context.Context, req *api.UpdateEntityRequest) (*api.Entity, error) {
+func (c ControllerEntity) EntityServiceUpdateEntity(ctx echo.Context, id string, _ stub.EntityServiceUpdateEntityParams) error {
 
-	entity := c.dto.Entity.UpdateEntity(req)
-
-	entity, errs, err := c.endpoint.Entity.Update(ctx, entity)
-	if len(errs) != 0 || err != nil {
-		return nil, c.error(ctx, errs, err)
+	obj := &stub.EntityServiceUpdateEntityJSONBody{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Entity.ToEntity(entity), nil
+	entity, err := c.endpoint.Entity.Update(ctx.Request().Context(), c.dto.Entity.UpdateEntity(obj))
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, dto.ToEntity(entity)))
 }
 
 // GetEntity ...
-func (c ControllerEntity) GetEntity(ctx context.Context, req *api.GetEntityRequest) (*api.Entity, error) {
+func (c ControllerEntity) EntityServiceGetEntity(ctx echo.Context, id string) error {
 
-	entity, err := c.endpoint.Entity.GetById(ctx, common.EntityId(req.Id))
+	entity, err := c.endpoint.Entity.GetById(ctx.Request().Context(), common.EntityId(id))
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Entity.ToEntity(entity), nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, dto.ToEntity(entity)))
 }
 
 // GetEntityList ...
-func (c ControllerEntity) GetEntityList(ctx context.Context, req *api.EntityPaginationRequest) (*api.GetEntityListResult, error) {
+func (c ControllerEntity) EntityServiceGetEntityList(ctx echo.Context, params stub.EntityServiceGetEntityListParams) error {
 
-	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
-	items, total, err := c.endpoint.Entity.List(ctx, pagination, req.Query, req.Plugin, req.Area)
+	pagination := c.Pagination(params.Page, params.Limit, params.Sort)
+	items, total, err := c.endpoint.Entity.List(ctx.Request().Context(), pagination, params.Query, params.Plugin, params.Area)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Entity.ToListResult(items, uint64(total), pagination), nil
+	return c.HTTP200(ctx, ResponseWithList(ctx, c.dto.Entity.ToListResult(items), total, pagination))
 }
 
 // DeleteEntity ...
-func (c ControllerEntity) DeleteEntity(ctx context.Context, req *api.DeleteEntityRequest) (*emptypb.Empty, error) {
+func (c ControllerEntity) EntityServiceDeleteEntity(ctx echo.Context, id string) error {
 
-	if err := c.endpoint.Entity.Delete(ctx, common.EntityId(req.Id)); err != nil {
-		return nil, c.error(ctx, nil, err)
+	if err := c.endpoint.Entity.Delete(ctx.Request().Context(), common.EntityId(id)); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
 
 // SearchEntity ...
-func (c ControllerEntity) SearchEntity(ctx context.Context, req *api.SearchRequest) (*api.SearchEntityResult, error) {
+func (c ControllerEntity) EntityServiceSearchEntity(ctx echo.Context, params stub.EntityServiceSearchEntityParams) error {
 
-	search := c.Search(req.Query, req.Limit, req.Offset)
-	items, _, err := c.endpoint.Entity.Search(ctx, search.Query, search.Limit, search.Offset)
+	search := c.Search(params.Query, params.Limit, params.Offset)
+	items, _, err := c.endpoint.Entity.Search(ctx.Request().Context(), search.Query, search.Limit, search.Offset)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Entity.ToSearchResult(items), nil
+	return c.HTTP200(ctx, c.dto.Entity.ToSearchResult(items))
 }
 
-func (c ControllerEntity) EnabledEntity(ctx context.Context, req *api.EnableEntityRequest) (*emptypb.Empty, error) {
-	if err := c.endpoint.Entity.Enable(ctx, common.EntityId(req.Id)); err != nil {
-		return nil, c.error(ctx, nil, err)
+func (c ControllerEntity) EntityServiceEnabledEntity(ctx echo.Context, id string) error {
+	if err := c.endpoint.Entity.Enable(ctx.Request().Context(), common.EntityId(id)); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
 
-func (c ControllerEntity) DisabledEntity(ctx context.Context, req *api.DisableEntityRequest) (*emptypb.Empty, error) {
-	if err := c.endpoint.Entity.Disable(ctx, common.EntityId(req.Id)); err != nil {
-		return nil, c.error(ctx, nil, err)
+func (c ControllerEntity) EntityServiceDisabledEntity(ctx echo.Context, id string) error {
+	if err := c.endpoint.Entity.Disable(ctx.Request().Context(), common.EntityId(id)); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }

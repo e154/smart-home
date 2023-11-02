@@ -20,10 +20,10 @@ package sensor
 
 import (
 	"context"
+
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
@@ -39,8 +39,6 @@ func init() {
 
 type plugin struct {
 	*supervisor.Plugin
-	mqttServ   mqtt.MqttServ
-	mqttClient mqtt.MqttCli
 }
 
 // New ...

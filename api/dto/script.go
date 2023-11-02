@@ -19,10 +19,9 @@
 package dto
 
 import (
-	"github.com/e154/smart-home/api/stub/api"
+	stub "github.com/e154/smart-home/api/stub"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Script ...
@@ -34,7 +33,7 @@ func NewScriptDto() Script {
 }
 
 // FromNewScriptRequest ...
-func (s Script) FromNewScriptRequest(req *api.NewScriptRequest) (script *m.Script) {
+func (s Script) FromNewScriptRequest(req *stub.ApiNewScriptRequest) (script *m.Script) {
 	script = &m.Script{
 		Lang:        common.ScriptLang(req.Lang),
 		Name:        req.Name,
@@ -45,9 +44,9 @@ func (s Script) FromNewScriptRequest(req *api.NewScriptRequest) (script *m.Scrip
 }
 
 // FromUpdateScriptRequest ...
-func (s Script) FromUpdateScriptRequest(req *api.UpdateScriptRequest) (script *m.Script) {
+func (s Script) FromUpdateScriptRequest(req *stub.ScriptServiceUpdateScriptByIdJSONBody, id int64) (script *m.Script) {
 	script = &m.Script{
-		Id:          req.Id,
+		Id:          id,
 		Lang:        common.ScriptLang(req.Lang),
 		Name:        req.Name,
 		Source:      req.Source,
@@ -57,7 +56,7 @@ func (s Script) FromUpdateScriptRequest(req *api.UpdateScriptRequest) (script *m
 }
 
 // FromExecSrcScriptRequest ...
-func (s Script) FromExecSrcScriptRequest(req *api.ExecSrcScriptRequest) (script *m.Script) {
+func (s Script) FromExecSrcScriptRequest(req *stub.ApiExecSrcScriptRequest) (script *m.Script) {
 	script = &m.Script{
 		Lang:        common.ScriptLang(req.Lang),
 		Name:        req.Name,
@@ -67,58 +66,50 @@ func (s Script) FromExecSrcScriptRequest(req *api.ExecSrcScriptRequest) (script 
 	return
 }
 
-// ToScript ...
-func (s Script) ToGScript(script *m.Script) (result *api.Script) {
-	result = ToScript(script)
+// GetStubScript ...
+func (s Script) GetStubScript(script *m.Script) (result *stub.ApiScript) {
+	result = GetStubScript(script)
 	return
 }
 
 // ToSearchResult ...
-func (s Script) ToSearchResult(list []*m.Script) *api.SearchScriptListResult {
+func (s Script) ToSearchResult(list []*m.Script) *stub.ApiSearchScriptListResult {
 
-	items := make([]*api.Script, 0, len(list))
+	items := make([]stub.ApiScript, 0, len(list))
 
 	for _, i := range list {
-		items = append(items, s.ToGScript(i))
+		items = append(items, *s.GetStubScript(i))
 	}
 
-	return &api.SearchScriptListResult{
+	return &stub.ApiSearchScriptListResult{
 		Items: items,
 	}
 }
 
 // ToListResult ...
-func (s Script) ToListResult(list []*m.Script, total uint64, pagination common.PageParams) *api.GetScriptListResult {
+func (s Script) ToListResult(list []*m.Script) []*stub.ApiScript {
 
-	items := make([]*api.Script, 0, len(list))
+	items := make([]*stub.ApiScript, 0, len(list))
 
 	for _, i := range list {
-		items = append(items, s.ToGScript(i))
+		items = append(items, s.GetStubScript(i))
 	}
 
-	return &api.GetScriptListResult{
-		Items: items,
-		Meta: &api.Meta{
-			Limit: uint64(pagination.Limit),
-			Page:  pagination.PageReq,
-			Total: total,
-			Sort:  pagination.SortReq,
-		},
-	}
+	return items
 }
 
-// ToScript ...
-func ToScript(script *m.Script) (result *api.Script) {
+// GetStubScript ...
+func GetStubScript(script *m.Script) (result *stub.ApiScript) {
 	if script == nil {
 		return
 	}
-	result = &api.Script{
+	result = &stub.ApiScript{
 		Id:          script.Id,
 		Lang:        string(script.Lang),
 		Name:        script.Name,
 		Source:      script.Source,
 		Description: script.Description,
-		ScriptInfo: &api.ScriptInfo{
+		ScriptInfo: &stub.ApiScriptInfo{
 			AlexaIntents:         int32(script.Info.AlexaIntents),
 			EntityActions:        int32(script.Info.EntityActions),
 			EntityScripts:        int32(script.Info.EntityScripts),
@@ -126,13 +117,22 @@ func ToScript(script *m.Script) (result *api.Script) {
 			AutomationConditions: int32(script.Info.AutomationConditions),
 			AutomationActions:    int32(script.Info.AutomationActions),
 		},
-		CreatedAt: timestamppb.New(script.CreatedAt),
-		UpdatedAt: timestamppb.New(script.UpdatedAt),
+		Versions:  make([]stub.ApiScriptVersion, 0, len(script.Versions)),
+		CreatedAt: script.CreatedAt,
+		UpdatedAt: script.UpdatedAt,
+	}
+	for _, version := range script.Versions {
+		result.Versions = append(result.Versions, stub.ApiScriptVersion{
+			CreatedAt: version.CreatedAt,
+			Id:        version.Id,
+			Lang:      string(version.Lang),
+			Source:    version.Source,
+		})
 	}
 	return
 }
 
-func ImportScript(from *api.Script) (*int64, *m.Script) {
+func ImportScript(from *stub.ApiScript) (*int64, *m.Script) {
 	if from == nil {
 		return nil, nil
 	}

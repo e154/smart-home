@@ -6,7 +6,7 @@ import {useAppStore} from "@/store/modules/app";
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
 import {ElButton, ElTag} from 'element-plus'
-import {ApiCondition} from "@/api/stub";
+import {ApiCondition, ApiTask} from "@/api/stub";
 import {useForm} from "@/hooks/web/useForm";
 import {useRouter} from "vue-router";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
@@ -80,6 +80,30 @@ const columns: TableColumn[] = [
     field: 'name',
     label: t('automation.conditions.name'),
     sortable: true,
+    width: "150px"
+  },
+  {
+    field: 'areaId',
+    label: t('automation.area'),
+    width: "100px",
+    sortable: true,
+    formatter: (row: ApiCondition) => {
+      return h(
+          'span',
+          row.area?.name
+      )
+    }
+  },
+  {
+    field: 'description',
+    label: t('automation.description'),
+    sortable: true,
+    formatter: (row: ApiCondition) => {
+      return h(
+          'span',
+          row?.description || t('automation.nothing')
+      )
+    }
   },
   {
     field: 'createdAt',
@@ -137,8 +161,8 @@ const getList = async () => {
   if (res) {
     const {items, meta} = res.data;
     tableObject.tableList = items;
-    paginationObj.value.currentPage = meta.page;
-    paginationObj.value.total = meta.total;
+    paginationObj.value.currentPage = meta.pagination.page;
+    paginationObj.value.total = meta.pagination.total;
   } else {
     tableObject.tableList = [];
   }

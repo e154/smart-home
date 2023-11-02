@@ -26,7 +26,7 @@ import {HintDictionaryCoffee} from "@/views/Scripts/components/types";
 import {useAppStore} from "@/store/modules/app";
 import {bool} from "vue-types";
 import {useEmitt} from "@/hooks/web/useEmitt";
-import stream from "@/api/stream";
+import {ElMessage} from "element-plus";
 
 const emit = defineEmits(['change', 'update:modelValue'])
 const appStore = useAppStore()
@@ -96,8 +96,8 @@ watch(
     async (val?: ApiScript) => {
       await nextTick()
       if (val?.source === unref(sourceScript)) return
-      sourceScript.value = val?.source || '';
       if (val) {
+        sourceScript.value = val?.source || '';
         switch (val.lang) {
           case 'coffeescript':
             cmOptions.mode = "application/vnd.coffeescript"
@@ -119,9 +119,8 @@ watch(
 watch(
     () => appStore.getIsDark,
     (val: bool) => {
-      console.log('change theme')
       cminstance.value?.setOption("theme", appStore.getIsDark ? "darcula" : "mdn-like")
-      // cminstance.value?.refresh()
+      cminstance.value?.refresh()
     }
 )
 
@@ -184,10 +183,21 @@ const onKeydown = ( e ) => {
     commentSelectedText()
   }
   // 70 = F
-  if (e.metaKey && evtobj.keyCode == 70) {
+  if (e.metaKey && e.shiftKey && evtobj.keyCode == 70) {
     autoFormatSelection()
   }
 }
+
+useEmitt({
+  name: 'updateEditor',
+  callback: (val: string) => {
+    setTimeout(() => {
+      console.log('update editor')
+      cminstance.value?.refresh()
+      cminstance.value?.focus();
+    }, 100)
+  }
+})
 
 </script>
 

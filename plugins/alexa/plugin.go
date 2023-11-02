@@ -79,7 +79,7 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 
 	p.server.Start()
 
-	_ = p.Service.EventBus().Subscribe(TopicPluginAlexa, p.eventHandler)
+	_ = p.Service.EventBus().Subscribe("system/models/alexa/skills/#", p.eventHandler)
 
 	return nil
 }
@@ -90,7 +90,7 @@ func (p *plugin) Unload(ctx context.Context) (err error) {
 		return
 	}
 
-	_ = p.Service.EventBus().Unsubscribe(TopicPluginAlexa, p.eventHandler)
+	_ = p.Service.EventBus().Unsubscribe("system/models/alexa/skills/#", p.eventHandler)
 
 	p.server.Stop()
 	p.server = nil
@@ -143,11 +143,11 @@ func (p *plugin) Server() IServer {
 func (p *plugin) eventHandler(_ string, event interface{}) {
 
 	switch v := event.(type) {
-	case EventAlexaAddSkill:
+	case EventAddedAlexaSkillModel:
 		p.server.AddSkill(v.Skill)
-	case EventAlexaUpdateSkill:
+	case EventUpdatedAlexaSkillModel:
 		p.server.UpdateSkill(v.Skill)
-	case EventAlexaDeleteSkill:
+	case EventDeletedAlexaSkill:
 		p.server.DeleteSkill(v.Skill)
 	}
 }

@@ -186,6 +186,10 @@ func (s *Engine) AssertFunction(f string, arg ...interface{}) (result string, er
 
 	s.IsRun = true
 	result, err = s.script.AssertFunction(f, arg...)
+	if err != nil {
+		err = errors.Wrapf(err, "script id:%d ", s.ScriptId())
+		return
+	}
 
 	// reset buffer
 	s.buf = []string{}
@@ -212,4 +216,8 @@ func (s *Engine) File(path string) ([]byte, error) {
 		return nil, err
 	}
 	return b, nil
+}
+
+func (s *Engine) ScriptId() int64 {
+	return s.model.Id
 }

@@ -1,10 +1,12 @@
-FROM golang:1.19 as build
-RUN update-ca-certificates
+FROM postgres:15 as postgres
 MAINTAINER Filippov Alex <support@e154.ru>
 
-FROM postgis/postgis:11-3.3
-COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY --from=build /etc/passwd /etc/passwd
+FROM debian:12-slim
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libpq5 ca-certificates
+RUN update-ca-certificates
+COPY --from=postgres /usr/lib/postgresql/15/bin/pg_dump /usr/local/bin
+COPY --from=postgres /usr/lib/postgresql/15/bin/pg_restore /usr/local/bin
 ENTRYPOINT ["/server"]
 USER nobody
 ADD . /
@@ -15,7 +17,6 @@ EXPOSE 3002
 EXPOSE 3003
 EXPOSE 1883
 
-ENV PG_LOGGER="false"
 ENV PG_USER="smart_home"
 ENV PG_PASS="smart_home"
 ENV PG_HOST="postgres"
@@ -44,7 +45,6 @@ ENV ALEXA_HOST=""
 ENV ALEXA_PORT="3003"
 ENV MOBILE_HOST=""
 ENV MOBILE_PORT="3002"
-ENV API_GRPC_PORT="3000"
 ENV API_HTTP_PORT="3001"
 ENV API_SWAGGER="true"
 ENV LANG="EN"

@@ -37,7 +37,6 @@ func init() {
 
 type plugin struct {
 	*supervisor.Plugin
-	notify Notify
 }
 
 // New ...
@@ -53,33 +52,23 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 		return
 	}
 
-	p.notify = NewNotify(service.Adaptors(), service.ScriptService())
-	_ = p.notify.Start()
-
-	_ = p.Service.EventBus().Subscribe(TopicNotify, p.eventHandler)
+	p.Service.ScriptService().PushStruct("notifr", NewNotifyBind(service.EventBus()))
+	p.Service.ScriptService().PushStruct("template", NewTemplateBind(service.Adaptors()))
 
 	return nil
 }
 
 // Unload ...
 func (p *plugin) Unload(ctx context.Context) (err error) {
+
+	p.Service.ScriptService().PopStruct("notifr")
+	p.Service.ScriptService().PopStruct("template")
+
 	if err = p.Plugin.Unload(ctx); err != nil {
 		return
 	}
 
-	_ = p.Service.EventBus().Unsubscribe(TopicNotify, p.eventHandler)
-
-	_ = p.notify.Shutdown()
-
 	return nil
-}
-
-func (p *plugin) eventHandler(_ string, msg interface{}) {
-
-	switch v := msg.(type) {
-	case Message:
-		p.notify.Send(v)
-	}
 }
 
 // Name ...

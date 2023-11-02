@@ -12,21 +12,19 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Library General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
+// You should have received c copy of the GNU Lesser General Public
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
 package controllers
 
 import (
-	"context"
-	"github.com/e154/smart-home/api/stub/api"
+	"github.com/e154/smart-home/api/stub"
+	"github.com/labstack/echo/v4"
+
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
 	m "github.com/e154/smart-home/models"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
-	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 // ControllerAuth ...
@@ -35,92 +33,88 @@ type ControllerAuth struct {
 }
 
 // NewControllerAuth ...
-func NewControllerAuth(common *ControllerCommon) ControllerAuth {
-	return ControllerAuth{
+func NewControllerAuth(common *ControllerCommon) *ControllerAuth {
+	return &ControllerAuth{
 		ControllerCommon: common,
 	}
 }
 
 // Signin ...
-func (a ControllerAuth) Signin(ctx context.Context, _ *emptypb.Empty) (resp *api.SigninResponse, err error) {
+func (c ControllerAuth) AuthServiceSignin(ctx echo.Context) error {
 
-	var internalServerError = status.Error(codes.Unauthenticated, "user is not found")
-	meta, ok := metadata.FromIncomingContext(ctx)
-	if !ok {
-		return nil, internalServerError
-	}
-	if len(meta["authorization"]) != 1 {
-		return nil, internalServerError
-	}
-
-	username, pass, _ := a.parseBasicAuth(meta["authorization"][0])
+	username, pass, _ := c.parseBasicAuth(ctx.Request().Header.Get("authorization"))
 
 	var user *m.User
 	var accessToken string
 
-	//info, _ := location.GetRegionInfo()
-
 	var ip string
-	if len(meta["ip"]) == 1 {
-		ip = meta["ip"][0]
+	if _ip := ctx.Request().Header.Get("ip"); _ip != "" {
+		if ok, _ := c.validation.ValidVar(_ip, "ip", "required,ipv4"); ok {
+			ip = _ip
+		}
 	}
 
-	if user, accessToken, err = a.endpoint.Auth.SignIn(ctx, username, pass, ip); err != nil {
-		return nil, internalServerError
+	var err error
+	if user, accessToken, err = c.endpoint.Auth.SignIn(ctx.Request().Context(), username, pass, ip); err != nil {
+		return c.ERROR(ctx, apperr.ErrUnauthorized)
 	}
 
-	currentUser := &api.CurrentUser{}
+	currentUser := &stub.ApiCurrentUser{}
 	_ = common.Copy(&currentUser, &user, common.JsonEngine)
 
-	resp = &api.SigninResponse{
+	resp := &stub.ApiSigninResponse{
 		CurrentUser: currentUser,
 		AccessToken: accessToken,
 	}
 
-	return
+	return c.HTTP200(ctx, ResponseWithObj(ctx, resp))
 }
 
 // Signout ...
-func (a ControllerAuth) Signout(ctx context.Context, _ *emptypb.Empty) (*emptypb.Empty, error) {
+func (c ControllerAuth) AuthServiceSignout(ctx echo.Context) error {
 
-	var internalServerError = status.Error(codes.PermissionDenied, "Permission Denied")
-	currentUser, err := a.currentUser(ctx)
+	currentUser, err := c.currentUser(ctx)
 	if err != nil {
-		return nil, internalServerError
+		return c.ERROR(ctx, apperr.ErrUnauthorized)
 	}
 
-	if err := a.endpoint.Auth.SignOut(ctx, currentUser); err != nil {
-		return nil, internalServerError
+	if err = c.endpoint.Auth.SignOut(ctx.Request().Context(), currentUser); err != nil {
+		return c.ERROR(ctx, apperr.ErrUnauthorized)
 	}
 
-	return &emptypb.Empty{}, nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
 
 // AccessList ...
-func (a ControllerAuth) AccessList(ctx context.Context, _ *emptypb.Empty) (*api.AccessListResponse, error) {
+func (c ControllerAuth) AuthServiceAccessList(ctx echo.Context) error {
 
-	var internalServerError = status.Error(codes.PermissionDenied, "Permission Denied")
-	currentUser, err := a.currentUser(ctx)
+	currentUser, err := c.currentUser(ctx)
 	if err != nil {
-		return nil, internalServerError
+		return c.ERROR(ctx, apperr.ErrUnauthorized)
 	}
 
-	accessList, err := a.endpoint.Auth.AccessList(ctx, currentUser, a.accessList)
+	accessList, err := c.endpoint.Auth.AccessList(ctx.Request().Context(), currentUser, c.accessList)
 	if err != nil {
-		return nil, internalServerError
+		return c.ERROR(ctx, apperr.ErrUnauthorized)
 	}
 
-	result := &api.AccessListResponse{
-		AccessList: a.dto.Role.ToAccessListResult(*accessList),
+	resp := &stub.ApiAccessListResponse{
+		AccessList: c.dto.Role.ToAccessListResult(accessList),
 	}
 
-	return result, nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, resp))
 }
 
 // PasswordReset ...
-func (a ControllerAuth) PasswordReset(ctx context.Context, req *api.PasswordResetRequest) (*emptypb.Empty, error) {
-	if err := a.endpoint.Auth.PasswordReset(ctx, req.Email, req.Token, req.NewPassword); err != nil {
-		return nil, status.Error(codes.Unauthenticated, "user is not found")
+func (c ControllerAuth) AuthServicePasswordReset(ctx echo.Context, _ stub.AuthServicePasswordResetParams) error {
+
+	obj := &stub.ApiPasswordResetRequest{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
-	return &emptypb.Empty{}, nil
+
+	if err := c.endpoint.Auth.PasswordReset(ctx.Request().Context(), obj.Email, obj.Token, obj.NewPassword); err != nil {
+		return c.ERROR(ctx, apperr.ErrUserNotFound)
+	}
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }

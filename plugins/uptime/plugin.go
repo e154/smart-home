@@ -64,6 +64,10 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 		return
 	}
 
+	p.storyModel = &m.RunStory{
+		Start: time.Now(),
+	}
+
 	var entity *m.Entity
 	if entity, err = p.Service.Adaptors().Entity.GetById(context.Background(), common.EntityId(fmt.Sprintf("%s.%s", EntitySensor, Name))); err != nil {
 		entity = &m.Entity{
@@ -99,6 +103,9 @@ func (p *plugin) Unload(ctx context.Context) (err error) {
 		return
 	}
 
+	if p.storyModel == nil {
+		return
+	}
 	p.storyModel.End = common.Time(time.Now())
 	if err = p.Service.Adaptors().RunHistory.Update(context.Background(), p.storyModel); err != nil {
 		log.Error(err.Error())
@@ -109,9 +116,7 @@ func (p *plugin) Unload(ctx context.Context) (err error) {
 // ActorConstructor ...
 func (p *plugin) ActorConstructor(entity *m.Entity) (actor supervisor.PluginActor, err error) {
 	actor = NewActor(entity, p.Service)
-	p.storyModel = &m.RunStory{
-		Start: time.Now(),
-	}
+
 	if err = p.AddActor(actor, entity); err != nil {
 		return
 	}

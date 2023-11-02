@@ -47,7 +47,7 @@ func (n *MigrationJavascriptV2) Up(ctx context.Context, adaptors *adaptors.Adapt
 
 	var engine *scripts.Engine
 	for _, script := range list {
-		script.Source = strings.ReplaceAll(script.Source, "SetState", "EntitySetState")
+		script.Source = strings.ReplaceAll(script.Source, "SetState", "EntitySetStateName")
 		script.Source = strings.ReplaceAll(script.Source, "SetStateName", "EntitySetStateName")
 		script.Source = strings.ReplaceAll(script.Source, "GetState", "EntityGetState")
 		script.Source = strings.ReplaceAll(script.Source, "SetAttributes", "EntitySetAttributes")

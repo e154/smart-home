@@ -37,8 +37,7 @@ description: >
 Пример использования плагина "memory_app" для получения параметров памяти приложения:
 
 ```javascript
-const entity = entityManager.getEntity('memory.memory')
-const memoryParams = entity.getAttributes()
+const memoryParams = EntityGetAttributes('memory.memory')
 console.log(memoryParams.alloc);
 console.log(memoryParams.heap_alloc);
 console.log(memoryParams.total_alloc);

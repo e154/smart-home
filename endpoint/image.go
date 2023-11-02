@@ -23,9 +23,10 @@ import (
 	"context"
 	"mime/multipart"
 
+	"github.com/e154/smart-home/common/apperr"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/go-playground/validator/v10"
 	"github.com/jinzhu/copier"
 )
 
@@ -42,10 +43,11 @@ func NewImageEndpoint(common *CommonEndpoint) *ImageEndpoint {
 }
 
 // Add ...
-func (i *ImageEndpoint) Add(ctx context.Context, params *m.Image) (image *m.Image, errs validator.ValidationErrorsTranslations, err error) {
+func (i *ImageEndpoint) Add(ctx context.Context, params *m.Image) (image *m.Image, err error) {
 
-	var ok bool
-	if ok, errs = i.validation.Valid(params); !ok {
+	if ok, errs := i.validation.Valid(params); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
@@ -60,10 +62,11 @@ func (i *ImageEndpoint) Add(ctx context.Context, params *m.Image) (image *m.Imag
 }
 
 // GetById ...
-func (i *ImageEndpoint) GetById(ctx context.Context, imageId int64) (image *m.Image, errs validator.ValidationErrorsTranslations, err error) {
+func (i *ImageEndpoint) GetById(ctx context.Context, imageId int64) (image *m.Image, err error) {
 
-	var ok bool
-	if ok, errs = i.validation.ValidVar(imageId, "id", "required,numeric"); !ok {
+	if ok, errs := i.validation.ValidVar(imageId, "id", "required,numeric"); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
@@ -73,7 +76,7 @@ func (i *ImageEndpoint) GetById(ctx context.Context, imageId int64) (image *m.Im
 }
 
 // Update ...
-func (i *ImageEndpoint) Update(ctx context.Context, params *m.Image) (result *m.Image, errs validator.ValidationErrorsTranslations, err error) {
+func (i *ImageEndpoint) Update(ctx context.Context, params *m.Image) (result *m.Image, err error) {
 
 	var image *m.Image
 	if image, err = i.adaptors.Image.GetById(ctx, params.Id); err != nil {
@@ -84,8 +87,9 @@ func (i *ImageEndpoint) Update(ctx context.Context, params *m.Image) (result *m.
 		return
 	}
 
-	var ok bool
-	if ok, errs = i.validation.Valid(params); !ok {
+	if ok, errs := i.validation.Valid(params); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
@@ -99,10 +103,11 @@ func (i *ImageEndpoint) Update(ctx context.Context, params *m.Image) (result *m.
 }
 
 // Delete ...
-func (i *ImageEndpoint) Delete(ctx context.Context, imageId int64) (errs validator.ValidationErrorsTranslations, err error) {
+func (i *ImageEndpoint) Delete(ctx context.Context, imageId int64) (err error) {
 
-	var ok bool
-	if ok, errs = i.validation.ValidVar(imageId, "id", "required,numeric"); !ok {
+	if ok, errs := i.validation.ValidVar(imageId, "id", "required,numeric"); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
@@ -132,11 +137,17 @@ func (i *ImageEndpoint) Upload(ctx context.Context, files map[string][]*multipar
 
 		reader := bufio.NewReader(file)
 		var newImage *m.Image
-		if newImage, err = i.adaptors.Image.UploadImage(ctx, reader, fileHeader[0].Filename); err != nil {
+		newImage, err = m.UploadImage(ctx, reader, fileHeader[0].Filename)
+		if err != nil {
 			errs = append(errs, err)
-		} else {
-			fileList = append(fileList, newImage)
+			continue
 		}
+		newImage.Id, err = i.adaptors.Image.Add(ctx, newImage)
+		if err != nil {
+			errs = append(errs, err)
+			continue
+		}
+		fileList = append(fileList, newImage)
 
 		file.Close()
 	}

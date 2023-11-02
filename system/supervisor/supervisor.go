@@ -20,11 +20,13 @@ package supervisor
 
 import (
 	"context"
+	"runtime/debug"
+	"sync"
+	"time"
+
 	"github.com/pkg/errors"
 	"go.uber.org/atomic"
 	"go.uber.org/fx"
-	"runtime/debug"
-	"sync"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -33,6 +35,7 @@ import (
 	"github.com/e154/smart-home/common/web"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
+	"github.com/e154/smart-home/system/cache"
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scheduler"
@@ -49,6 +52,7 @@ type supervisor struct {
 	entitiesWg        *sync.WaitGroup
 	eventScriptSubsMx sync.RWMutex
 	eventScriptSubs   map[int64]map[common.EntityId]struct{}
+	cache             cache.Cache
 }
 
 // NewSupervisor ...
@@ -67,6 +71,7 @@ func NewSupervisor(lc fx.Lifecycle,
 		entitiesWg:      &sync.WaitGroup{},
 		eventScriptSubs: make(map[int64]map[common.EntityId]struct{}),
 	}
+	s.cache, _ = cache.NewCache("memory", `{"interval":60}`)
 	s.pluginManager = &pluginManager{
 		adaptors:       adaptors,
 		isStarted:      atomic.NewBool(false),
@@ -99,8 +104,9 @@ func (e *supervisor) Start(ctx context.Context) (err error) {
 
 	// event subscribe
 	_ = e.eventBus.Subscribe("system/entities/+", e.eventHandler)
+	_ = e.eventBus.Subscribe("system/models/entities/+", e.eventHandler)
 	_ = e.eventBus.Subscribe("system/plugins/+", e.eventHandler)
-	_ = e.eventBus.Subscribe("system/scripts/+", e.eventHandler)
+	_ = e.eventBus.Subscribe("system/models/scripts/+", e.eventHandler)
 
 	e.bindScripts()
 
@@ -134,8 +140,9 @@ func (e *supervisor) Shutdown(ctx context.Context) (err error) {
 
 	_ = e.eventBus.Unsubscribe("system/services/scripts", e.handlerSystemScripts)
 	_ = e.eventBus.Unsubscribe("system/entities/+", e.eventHandler)
+	_ = e.eventBus.Unsubscribe("system/models/entities/+", e.eventHandler)
 	_ = e.eventBus.Unsubscribe("system/plugins/+", e.eventHandler)
-	_ = e.eventBus.Unsubscribe("system/scripts/+", e.eventHandler)
+	_ = e.eventBus.Unsubscribe("system/models/scripts/+", e.eventHandler)
 
 	e.eventBus.Publish("system/services/supervisor", events.EventServiceStopped{Service: "Supervisor"})
 
@@ -164,7 +171,7 @@ func (e *supervisor) handlerSystemScripts(_ string, event interface{}) {
 func (e *supervisor) bindScripts() {
 	e.scriptService.PushFunctions("GetEntity", GetEntityBind(e))
 	e.scriptService.PushFunctions("EntitySetState", SetStateBind(e))
-	e.scriptService.PushFunctions("EntitySetStateName", SetStateBind(e))
+	e.scriptService.PushFunctions("EntitySetStateName", SetStateNameBind(e))
 	e.scriptService.PushFunctions("EntityGetState", GetStateBind(e))
 	e.scriptService.PushFunctions("EntitySetAttributes", SetAttributesBind(e))
 	e.scriptService.PushFunctions("EntityGetAttributes", GetAttributesBind(e))
@@ -178,7 +185,7 @@ func (e *supervisor) bindScripts() {
 }
 
 // SetMetric ...
-func (e *supervisor) SetMetric(id common.EntityId, name string, value map[string]float32) {
+func (e *supervisor) SetMetric(id common.EntityId, name string, value map[string]interface{}) {
 
 	pla, err := e.GetActorById(id)
 	if err != nil {
@@ -258,9 +265,9 @@ func (e *supervisor) eventHandler(_ string, message interface{}) {
 	switch msg := message.(type) {
 	case events.EventPluginLoaded:
 		go func() { _ = e.eventLoadedPlugin(msg) }()
-	case events.EventCreatedEntity:
+	case events.EventCreatedEntityModel:
 		go e.eventCreatedEntity(msg)
-	case events.EventUpdatedEntity:
+	case events.EventUpdatedEntityModel:
 		go e.eventUpdatedEntity(msg)
 	case events.CommandUnloadEntity:
 		go e.commandUnloadEntity(msg)
@@ -270,9 +277,9 @@ func (e *supervisor) eventHandler(_ string, message interface{}) {
 		go e.eventEntitySetState(msg)
 	case events.EventGetLastState:
 		go e.eventLastState(msg)
-	case events.EventUpdatedScript:
+	case events.EventUpdatedScriptModel:
 		go e.eventUpdatedScript(msg)
-	case events.EventScriptDeleted:
+	case events.EventRemovedScriptModel:
 		go e.eventScriptDeleted(msg)
 	case events.EventEntityLoaded:
 		go e.eventEntityLoaded(msg)
@@ -282,6 +289,17 @@ func (e *supervisor) eventHandler(_ string, message interface{}) {
 }
 
 func (e *supervisor) eventLastState(msg events.EventGetLastState) {
+
+	if e.cache.IsExist(msg.EntityId.String()) {
+		v := e.cache.Get(msg.EntityId.String())
+		state, ok := v.(events.EventLastStateChanged)
+		if !ok {
+			return
+		}
+		e.eventBus.Publish("system/entities/"+msg.EntityId.String(), state)
+		return
+	}
+	e.cache.Put(msg.EntityId.String(), nil, 60*time.Second)
 
 	pla, err := e.GetActorById(msg.EntityId)
 	if err != nil {
@@ -297,16 +315,24 @@ func (e *supervisor) eventLastState(msg events.EventGetLastState) {
 
 	currentState := pla.GetCurrentState()
 	if currentState.LastChanged == nil && currentState.LastUpdated == nil {
-		entity, _ := e.adaptors.Entity.GetById(context.Background(), msg.EntityId)
+		entity, err := e.adaptors.Entity.GetById(context.Background(), msg.EntityId)
+		if err != nil {
+			log.Error(err.Error())
+			debug.PrintStack()
+			return
+		}
 		currentState.Attributes = entity.Attributes
 	}
 
-	e.eventBus.Publish("system/entities/"+msg.EntityId.String(), events.EventLastStateChanged{
+	state := events.EventLastStateChanged{
 		PluginName: info.PluginName,
 		EntityId:   info.Id,
 		OldState:   *currentState,
 		NewState:   *currentState,
-	})
+	}
+	e.cache.Delete(msg.EntityId.String())
+	e.cache.Put(msg.EntityId.String(), state, 60*time.Second)
+	e.eventBus.Publish("system/entities/"+msg.EntityId.String(), state)
 }
 
 func (e *supervisor) eventLoadedPlugin(msg events.EventPluginLoaded) (err error) {
@@ -340,7 +366,7 @@ LOOP:
 	return
 }
 
-func (e *supervisor) eventCreatedEntity(msg events.EventCreatedEntity) {
+func (e *supervisor) eventCreatedEntity(msg events.EventCreatedEntityModel) {
 
 	entity, err := e.adaptors.Entity.GetById(context.Background(), msg.EntityId)
 	if err != nil {
@@ -356,7 +382,7 @@ func (e *supervisor) eventCreatedEntity(msg events.EventCreatedEntity) {
 	}
 }
 
-func (e *supervisor) eventUpdatedEntity(msg events.EventUpdatedEntity) {
+func (e *supervisor) eventUpdatedEntity(msg events.EventUpdatedEntityModel) {
 	e.updatedEntityById(msg.EntityId)
 }
 
@@ -477,7 +503,7 @@ func (e *supervisor) GetService() Service {
 }
 
 // watch to see if the scripts change
-func (e *supervisor) eventUpdatedScript(msg events.EventUpdatedScript) {
+func (e *supervisor) eventUpdatedScript(msg events.EventUpdatedScriptModel) {
 
 	if _, ok := e.eventScriptSubs[msg.ScriptId]; !ok {
 		return
@@ -491,12 +517,12 @@ func (e *supervisor) eventUpdatedScript(msg events.EventUpdatedScript) {
 	e.eventScriptSubsMx.RLock()
 	defer e.eventScriptSubsMx.RUnlock()
 
-	for entityId, _ := range e.eventScriptSubs[msg.ScriptId] {
+	for entityId := range e.eventScriptSubs[msg.ScriptId] {
 		go e.updatedEntityById(entityId)
 	}
 }
 
-func (e *supervisor) eventScriptDeleted(msg events.EventScriptDeleted) {
+func (e *supervisor) eventScriptDeleted(msg events.EventRemovedScriptModel) {
 
 	if _, ok := e.eventScriptSubs[msg.ScriptId]; !ok {
 		return
@@ -510,7 +536,7 @@ func (e *supervisor) eventScriptDeleted(msg events.EventScriptDeleted) {
 	e.eventScriptSubsMx.RLock()
 	defer e.eventScriptSubsMx.RUnlock()
 
-	for entityId, _ := range e.eventScriptSubs[msg.ScriptId] {
+	for entityId := range e.eventScriptSubs[msg.ScriptId] {
 		go e.UnloadEntity(entityId)
 	}
 }
@@ -555,7 +581,7 @@ func (e *supervisor) eventEntityUnloaded(msg events.EventEntityUnloaded) {
 	e.eventScriptSubsMx.Lock()
 	defer e.eventScriptSubsMx.Unlock()
 
-	for scriptId, _ := range e.eventScriptSubs {
+	for scriptId := range e.eventScriptSubs {
 		delete(e.eventScriptSubs[scriptId], msg.EntityId)
 	}
 }

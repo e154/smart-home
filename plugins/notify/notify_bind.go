@@ -18,15 +18,17 @@
 
 package notify
 
+import "github.com/e154/smart-home/system/bus"
+
 // NotifyBind ...
 type NotifyBind struct {
-	notify *notify
+	eventBus bus.Bus
 }
 
 // NewNotifyBind ...
-func NewNotifyBind(notify *notify) *NotifyBind {
+func NewNotifyBind(eventBus bus.Bus) *NotifyBind {
 	return &NotifyBind{
-		notify: notify,
+		eventBus: eventBus,
 	}
 }
 
@@ -37,5 +39,5 @@ func (b *NotifyBind) NewMessage() *Message {
 
 // Send ...
 func (b *NotifyBind) Send(msg Message) {
-	b.notify.Send(msg)
+	b.eventBus.Publish(TopicNotify, msg)
 }

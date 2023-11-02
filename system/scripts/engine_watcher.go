@@ -20,9 +20,10 @@ package scripts
 
 import (
 	"fmt"
+	"sync"
+
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/system/bus"
-	"sync"
 )
 
 type EngineWatcher struct {
@@ -42,7 +43,7 @@ func NewEngineWatched(engine *Engine, s *scriptService, eventBus bus.Bus) *Engin
 	}
 
 	if engine.model != nil && engine.model.Id != 0 {
-		_ = eventBus.Subscribe(fmt.Sprintf("system/scripts/%d", engine.model.Id), w.eventHandler)
+		_ = eventBus.Subscribe(fmt.Sprintf("system/models/scripts/%d", engine.model.Id), w.eventHandler)
 	}
 
 	return w
@@ -50,7 +51,7 @@ func NewEngineWatched(engine *Engine, s *scriptService, eventBus bus.Bus) *Engin
 
 func (w *EngineWatcher) Stop() {
 	if w.engine.model != nil && w.engine.model.Id != 0 {
-		_ = w.eventBus.Unsubscribe(fmt.Sprintf("system/scripts/%d", w.engine.model.Id), w.eventHandler)
+		_ = w.eventBus.Unsubscribe(fmt.Sprintf("system/models/scripts/%d", w.engine.model.Id), w.eventHandler)
 	}
 }
 
@@ -74,14 +75,14 @@ func (w *EngineWatcher) Engine() *Engine {
 func (w *EngineWatcher) eventHandler(_ string, message interface{}) {
 
 	switch msg := message.(type) {
-	case events.EventUpdatedScript:
+	case events.EventUpdatedScriptModel:
 		go w.eventUpdatedScript(msg)
-	case events.EventScriptDeleted:
+	case events.EventRemovedScriptModel:
 		go w.eventScriptDeleted(msg)
 	}
 }
 
-func (w *EngineWatcher) eventUpdatedScript(msg events.EventUpdatedScript) {
+func (w *EngineWatcher) eventUpdatedScript(msg events.EventUpdatedScriptModel) {
 
 	if msg.Script == nil {
 		return
@@ -103,9 +104,9 @@ func (w *EngineWatcher) eventUpdatedScript(msg events.EventUpdatedScript) {
 	log.Infof("script '%s' (%d) updated", msg.Script.Name, msg.ScriptId)
 }
 
-func (w *EngineWatcher) eventScriptDeleted(msg events.EventScriptDeleted) {
+func (w *EngineWatcher) eventScriptDeleted(msg events.EventRemovedScriptModel) {
 	if w.engine.model != nil {
-		_ = w.eventBus.Unsubscribe(fmt.Sprintf("system/scripts/%d", w.engine.model.Id), w.eventHandler)
+		_ = w.eventBus.Unsubscribe(fmt.Sprintf("system/models/scripts/%d", w.engine.model.Id), w.eventHandler)
 	}
 
 	var err error

@@ -21,6 +21,8 @@ package adaptors
 import (
 	"context"
 	"fmt"
+	"github.com/e154/smart-home/system/orm"
+
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"gorm.io/gorm"
@@ -45,13 +47,15 @@ type Task struct {
 	ITask
 	table *db.Tasks
 	db    *gorm.DB
+	orm   *orm.Orm
 }
 
 // GetTaskAdaptor ...
-func GetTaskAdaptor(d *gorm.DB) ITask {
+func GetTaskAdaptor(d *gorm.DB, orm *orm.Orm) ITask {
 	return &Task{
 		table: &db.Tasks{Db: d},
 		db:    d,
+		orm:   orm,
 	}
 }
 
@@ -85,22 +89,6 @@ func (n *Task) Import(ctx context.Context, ver *m.Task) (err error) {
 // Add ...
 func (n *Task) Add(ctx context.Context, ver *m.NewTask) (taskId int64, err error) {
 
-	transaction := true
-	tx := n.db.Begin()
-	if err = tx.Error; err != nil {
-		tx = n.db
-		transaction = false
-	}
-	defer func() {
-		if err != nil && transaction {
-			tx.Rollback()
-			return
-		}
-		if transaction {
-			err = tx.Commit().Error
-		}
-	}()
-
 	task := &db.Task{
 		Name:        ver.Name,
 		Description: ver.Description,
@@ -124,8 +112,7 @@ func (n *Task) Add(ctx context.Context, ver *m.NewTask) (taskId int64, err error
 		task.Actions = append(task.Actions, &db.Action{Id: id})
 	}
 
-	table := db.Tasks{Db: tx}
-	taskId, err = table.Add(ctx, task)
+	taskId, err = n.table.Add(ctx, task)
 
 	return
 }
@@ -156,6 +143,8 @@ func (n *Task) Update(ctx context.Context, ver *m.UpdateTask) (err error) {
 		Enabled:     ver.Enabled,
 		Condition:   ver.Condition,
 		AreaId:      ver.AreaId,
+		CreatedAt:   ver.CreatedAt,
+		UpdatedAt:   ver.UpdatedAt,
 	}
 
 	//triggers
@@ -275,7 +264,7 @@ func (n *Task) fromDb(dbVer *db.Task) (ver *m.Task) {
 	}
 
 	// triggers
-	triggerAdaptor := GetTriggerAdaptor(n.db)
+	triggerAdaptor := GetTriggerAdaptor(n.db, n.orm)
 	for _, dbVer := range dbVer.Triggers {
 		tr := triggerAdaptor.fromDb(dbVer)
 		ver.Triggers = append(ver.Triggers, tr)
@@ -289,7 +278,7 @@ func (n *Task) fromDb(dbVer *db.Task) (ver *m.Task) {
 	}
 
 	// actions
-	actionAdaptor := GetActionAdaptor(n.db)
+	actionAdaptor := GetActionAdaptor(n.db, n.orm)
 	for _, dbVer := range dbVer.Actions {
 		act := actionAdaptor.fromDb(dbVer)
 		ver.Actions = append(ver.Actions, act)
@@ -311,9 +300,9 @@ func (n *Task) toDb(ver *m.Task) (dbVer *db.Task) {
 		Description: ver.Description,
 		Enabled:     ver.Enabled,
 		Condition:   ver.Condition,
+		AreaId:      ver.AreaId,
 		CreatedAt:   ver.CreatedAt,
 		UpdatedAt:   ver.UpdatedAt,
-		AreaId:      ver.AreaId,
 	}
 	if len(ver.Triggers) > 0 {
 		for _, tr := range ver.Triggers {

@@ -59,7 +59,7 @@ func NewSettings() map[string]*m.Attribute {
 	return map[string]*m.Attribute{
 		AttrToken: {
 			Name: AttrToken,
-			Type: common.AttributeString,
+			Type: common.AttributeEncrypted,
 		},
 		AttrUserName: {
 			Name: AttrUserName,

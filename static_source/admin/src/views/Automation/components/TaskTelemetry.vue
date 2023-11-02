@@ -117,6 +117,9 @@ const renderItem = (params, api) => {
 var colors = ['#7b9ce1','#bd6d6c','#75d874','#e0bc78','#dc77dc','#72b362','#7b9ce1','#bd6d6c','#75d874','#e0bc78','#dc77dc','#72b362'];
 
 const getID = (attrs: Record<string, string>) => {
+  if (!attrs) {
+    return ''
+  }
   if (attrs['id']) {
     return `(id: ${attrs['id']})` || ''
   } else {
@@ -128,6 +131,10 @@ const getOptions = () => {
   let startTime = 0;
   let categories = [];
   let data = [];
+
+  if (!telemetry.value) {
+    return
+  }
 
   for (const item of telemetry.value) {
     const label = `level${item.level}`

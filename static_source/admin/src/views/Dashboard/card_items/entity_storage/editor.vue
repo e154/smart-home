@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import {computed, PropType, ref, unref, watch} from "vue";
 import {Card, CardItem, Core, Tab} from "@/views/Dashboard/core";
-import {ElDivider} from 'element-plus'
-import {Vuuri} from "@/views/Dashboard/Vuuri"
-import {useBus} from "@/views/Dashboard/bus";
-import ViewCard from "@/views/Dashboard/editor/ViewCard.vue";
+import {ElDivider, ElRow, ElCol, ElFormItem, ElSwitch} from 'element-plus'
 import CommonEditor from "@/views/Dashboard/card_items/common/editor.vue";
 import {useI18n} from "@/hooks/web/useI18n";
+import EntitiesSearch from "@/views/Entities/components/EntitiesSearch.vue";
 
 const {t} = useI18n()
+
+const entityIds = ref([])
 
 // ---------------------------------
 // common
@@ -25,6 +25,8 @@ const props = defineProps({
   },
 })
 
+const currentItem = computed(() => props.item as CardItem)
+
 // ---------------------------------
 // component methods
 // ---------------------------------
@@ -37,9 +39,25 @@ const props = defineProps({
 
     <CommonEditor :item="item" :core="core"/>
 
-    <ElDivider content-position="left">Logs options</ElDivider>
+    <ElDivider content-position="left">Entity storage options</ElDivider>
 
-<!--    todo: add pagination limits-->
+    <ElRow :gutter="24">
+      <ElCol :span="24">
+        <ElFormItem :label="$t('dashboard.editor.entity_storage.entities')" prop="entityIds">
+          <EntitiesSearch v-model="currentItem.payload.entityStorage.entityIds"/>
+        </ElFormItem>
+      </ElCol>
+    </ElRow>
+
+    <ElRow :gutter="24">
+      <ElCol :span="12" :xs="12">
+        <ElFormItem :label="$t('dashboard.editor.entity_storage.showFilter')" prop="filter">
+          <ElSwitch v-model="currentItem.payload.entityStorage.filter"/>
+        </ElFormItem>
+      </ElCol>
+      <ElCol :span="12" :xs="12"/>
+    </ElRow>
+
   </div>
 </template>
 

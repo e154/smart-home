@@ -21,8 +21,9 @@ package zigbee2mqtt
 import (
 	"context"
 	"fmt"
-	"github.com/e154/smart-home/system/scripts"
 	"sync"
+
+	"github.com/e154/smart-home/system/scripts"
 
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
@@ -33,7 +34,6 @@ import (
 // Actor ...
 type Actor struct {
 	supervisor.BaseActor
-	message           *Message
 	zigbee2mqttDevice *m.Zigbee2mqttDevice
 	mqttMessageQueue  chan *Message
 	actionPool        chan events.EventCallEntityAction
@@ -52,9 +52,8 @@ func NewActor(entity *m.Entity,
 
 	actor = &Actor{
 		BaseActor:         supervisor.NewBaseActor(entity, service),
-		message:           NewMessage(),
 		mqttMessageQueue:  make(chan *Message, 10),
-		actionPool:        make(chan events.EventCallEntityAction, 10),
+		actionPool:        make(chan events.EventCallEntityAction, 1000),
 		newMsgMu:          &sync.Mutex{},
 		stateMu:           &sync.Mutex{},
 		zigbee2mqttDevice: zigbee2mqttDevice,
@@ -63,7 +62,6 @@ func NewActor(entity *m.Entity,
 	// Actions
 	for _, a := range actor.Actions {
 		if a.ScriptEngine.Engine() != nil {
-			a.ScriptEngine.Engine().PushStruct("message", actor.message)
 			_, _ = a.ScriptEngine.Engine().Do()
 		}
 	}
@@ -71,7 +69,6 @@ func NewActor(entity *m.Entity,
 	for _, engine := range actor.ScriptEngines {
 		engine.Spawn(func(engine *scripts.Engine) {
 			engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
-			engine.PushStruct("message", actor.message)
 			engine.Do()
 		})
 	}
@@ -161,9 +158,8 @@ func (e *Actor) mqttNewMessage(message *Message) {
 	e.newMsgMu.Lock()
 	defer e.newMsgMu.Unlock()
 
-	e.message.Update(message)
 	for _, engine := range e.ScriptEngines {
-		if _, err := engine.Engine().AssertFunction(FuncZigbee2mqttEvent); err != nil {
+		if _, err := engine.Engine().AssertFunction(FuncZigbee2mqttEvent, message); err != nil {
 			log.Error(err.Error())
 			return
 		}

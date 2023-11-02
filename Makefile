@@ -131,52 +131,17 @@ build_public:
 
 server:
 	@echo "Building http server"
-	cd ${ROOT}/api/protos/ && \
 	mkdir -p ${ROOT}/api/stub && \
-	protoc -I. \
-      -I${GOPATH}/src \
-      -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0/third_party/googleapis \
-      -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0 \
-      --grpc-gateway_out=logtostderr=true:${ROOT}/api/stub \
-      *.proto
-
-	@echo "Building grpc server"
-	cd ${ROOT}/api/protos/ && \
-	mkdir -p ${ROOT}/api/stub && \
-	protoc -I. \
-      -I${GOPATH}/src \
-      -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0/third_party/googleapis \
-      -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0 \
-      --go-grpc_out=require_unimplemented_servers=false:${ROOT}/api/stub \
-      *.proto
-
-	@echo "Building protobuf files"
-	cd ${ROOT}/api/protos/ && \
-	mkdir -p ${ROOT}/api/stub && \
-	protoc -I. \
-      -I${GOPATH}/src \
-      -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0/third_party/googleapis \
-      -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0 \
-      --go_out=${ROOT}/api/stub \
-      *.proto
-
-	@echo "Building swagger.json"
-	cd ${ROOT}/api/protos/ && \
-	protoc -I. \
-	  -I${GOPATH}/src \
-	  -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0/third_party/googleapis \
-	  -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway/v2@v2.5.0/protoc-gen-openapiv2 \
-	  -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0 \
-	  --openapiv2_out=allow_merge=true,merge_file_name=api,logtostderr=true:${ROOT}/api \
-	  *.proto
+	oapi-codegen -generate server -package stub ${ROOT}/api/api.swagger3.yaml > ${ROOT}/api/stub/server.go && \
+	oapi-codegen -generate types -package stub ${ROOT}/api/api.swagger3.yaml > ${ROOT}/api/stub/types.go
 
 build_structure:
 	@echo MARK: create app structure
 	mkdir -p ${SERVER_DIR}
+	mkdir -p ${SERVER_DIR}/snapshots
 	cd ${SERVER_DIR}
 	cp -r ${ROOT}/conf ${SERVER_DIR}
 	cp -r ${ROOT}/data ${SERVER_DIR}
-	cp -r ${ROOT}/snapshots ${SERVER_DIR}
 	cp ${ROOT}/LICENSE ${SERVER_DIR}
 	cp ${ROOT}/README* ${SERVER_DIR}
 	cp ${ROOT}/CONTRIBUTING.md ${SERVER_DIR}
@@ -197,10 +162,10 @@ build_structure:
 build_common_structure:
 	@echo MARK: create common structure
 	mkdir -p ${COMMON_DIR}
+	mkdir -p ${COMMON_DIR}/snapshots
 	cd ${COMMON_DIR}
 	cp -r ${ROOT}/conf ${COMMON_DIR}
 	cp -r ${ROOT}/data ${COMMON_DIR}
-	cp -r ${ROOT}/snapshots ${COMMON_DIR}
 	cp ${ROOT}/LICENSE ${COMMON_DIR}
 	cp ${ROOT}/README* ${COMMON_DIR}
 	cp ${ROOT}/CONTRIBUTING.md ${COMMON_DIR}
@@ -276,4 +241,4 @@ clean:
 
 front_client:
 	@echo MARK: generate front client lib
-	npx swagger-typescript-api@12.0.4 --axios -p ./api/api.swagger.json -o ./static_source/admin/src/api -n stub_new.ts
+	npx swagger-typescript-api@12.0.4 --axios -p ./api/api.swagger3.yaml -o ./static_source/admin/src/api -n stub_new.ts

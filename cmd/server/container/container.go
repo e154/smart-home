@@ -85,7 +85,6 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 			mqtt_authenticator.NewAuthenticator,
 			mqtt.NewMqtt,
 			access_list.NewAccessListService,
-			rbac.NewGrpcAccessFilter,
 			rbac.NewEchoAccessFilter,
 			NewZigbee2mqttConfig,
 			zigbee2mqtt.NewZigbee2mqtt,

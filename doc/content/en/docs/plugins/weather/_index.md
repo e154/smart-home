@@ -79,8 +79,7 @@ Example usage of the "weather" plugin's basic properties:
 const weatherPlugin = new WeatherPlugin();
 
 // Get current weather data
-const entity = entityManager.getEntity('weather_owm.weather1')
-const currentWeather = entity.getAttributes()
+const currentWeather = EntityGetAttributes('weather_owm.weather1')
 console.log(currentWeather.main);
 console.log(currentWeather.datetime);
 console.log(currentWeather.humidity);
@@ -91,8 +90,7 @@ console.log(currentWeather.wind_bearing);
 console.log(currentWeather.wind_speed);
 
 // Get weather data for the first day of the forecast
-const entity = entityManager.getEntity('weather_owm.weather1')
-const day1Weather = entity.getAttributes()
+const day1Weather = EntityGetAttributes('weather_owm.weather1')
 console.log(day1Weather.day1_main);
 console.log(day1Weather.day1_datetime);
 console.log(day1Weather.day1_humidity);

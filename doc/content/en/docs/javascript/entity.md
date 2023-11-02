@@ -72,66 +72,108 @@ The "Entity" serves as the main device abstraction in the **Smart Home** project
 }
 ```
 
-The abstract "Entity" object in the **Smart Home** project provides the following methods:
-
-1. `setState(state)`: This method allows you to set the device state. You pass the new state as the `state` argument, which will be applied to the device. For example:
-
-```javascript
-entity.setState('on');
-```
-
-2. `setAttributes(attributes)`: This method is used to set the device attributes. You pass an `attributes` object as an argument, which contains the new attributes to be applied to the device. Example usage:
-
-```javascript
-const newAttributes = {
-  brightness: 80,
-  color: 'red',
-};
-
-entity.setAttributes(newAttributes);
-```
-
-3. `getAttributes()`: This method allows you to retrieve the current device attributes. It returns an object with the current attribute values. Example usage:
-
-```javascript
-const attributes = entity.getAttributes();
-console.log(attributes);
-```
-
-4. `setMetric(metric, value)`: This method allows you to set the device metric. You pass the
-
-metric name as the `metric` argument and the metric value as the `value` argument. Example usage:
-
-```javascript
-entity.setMetric('temperature', 25);
-```
-
-5. `callAction(action, params)`: This method allows you to invoke a specific action on the device. You pass the action name as the `action` argument and any required parameters as the `params` argument. Example usage:
-
-```javascript
-entity.callAction('turnOn');
-```
-
-The methods of the "Entity" object provide convenient capabilities for managing the device's state, attributes, metrics, and executing actions on the device. You can use these methods to create device control logic in your **Smart Home** project.
-
 ### Entity Object Methods
 
 ```coffeescript
-Entity
-  .setState(stateName)
-  .setAttributes(key, attrs)
-  .getAttributes() -> attrs
-  .setMetric(name, value)
-  .callAction(name, value)
-  .getSettings() -> map[string]any
+EntitySetState(ENTITY_ID, attr)
+EntitySetStateName(ENTITY_ID, stateName)
+EntityGetState(ENTITY_ID)
+EntitySetAttributes(ENTITY_ID, attr)
+EntitySetMetric(ENTITY_ID, name, value)
+EntityCallAction(ENTITY_ID, action, args)
+EntityCallScene(ENTITY_ID, args)
+EntityGetSettings(ENTITY_ID)
+EntityGetAttributes(ENTITY_ID)
 ```
 
-| Method | Description |
-|--------|-------------|
-| `setState` | Sets the current state of the device. `stateName` - name of the future state. |
-| `setAttributes` | Sets the attributes of the current device state. `key` - map parameter {key:val} |
-| `getAttributes` | Retrieves the current attributes of the device. `attrs` - map parameter {key:val} |
-| `setMetric` | Updates the metrics of the device. `name` - metric name, `value` - map parameter {key:val} |
-| `callAction` | Executes a command on the device. `actionName` - name of the command, `args` - map parameter {key:val} |
-| `getSettings` | Retrieves the settings of the device. `settings` - map parameter {key:val} |
+The abstract "Entity" object in the **Smart Home** project provides the following methods:
+
+1. `EntitySetState(ENTITY_ID, attr)`: This method is used to set the state of a specific entity (`ENTITY_ID`) by providing a set of attributes (`attr`). It likely allows you to update the state of an entity with new attribute values.
+
+    ```javascript
+    const attrs = {
+        foo: bar,
+    }
+    const stateName = 'connected'
+    EntitySetState(ENTITY_ID, {
+        new_state: stateName,
+        attribute_values: attrs,
+        storage_save: true
+    });
+    ```
+
+2. `EntitySetStateName(ENTITY_ID, stateName)`: This method sets the state of an entity (`ENTITY_ID`) to a specific named state (`stateName`). It's used when you want to change the state of an entity to a predefined state.
+
+    ```javascript
+    const stateName = 'connected'
+    EntitySetStateName(ENTITY_ID, stateName);
+    ```
+
+3. `EntityGetState(ENTITY_ID)`: This method retrieves the current state of a specified entity (`ENTITY_ID`). It allows you to query the current state of the entity.
+
+    ```javascript
+  
+    const currentState = EntityGetState(ENTITY_ID);
+    print(marshal(homeState))
+    // out: {"name":"connected","description":"connected","image_url":null,"icon":null}
+    ```
+
+4. `EntitySetAttributes(ENTITY_ID, attr)`: Similar to `EntitySetState`, this method sets attributes for a specific entity (`ENTITY_ID`). It may be used when you want to update attributes without changing the state.
+
+    ```javascript
+    const attrs = {
+        foo: bar,
+    }
+    const stateName = 'connected'
+    EntitySetAttributes(ENTITY_ID, attrs);
+    ```
+
+5. `EntitySetMetric(ENTITY_ID, name, value)`: This method sets a metric for the specified entity (`ENTITY_ID`). Metrics are often used to measure and record various aspects of an entity's behavior or performance.
+
+    ```javascript
+    const attrs = {
+        foo: bar,
+    }
+    const metricName = 'counter'
+    EntitySetMetric(ENTITY_ID, name, attrs);
+    ```
+
+6. `EntityCallAction(ENTITY_ID, action, args)`: This method is used to trigger or call a specific action (`action`) associated with the entity (`ENTITY_ID`) and provides any necessary arguments (`args`) for that action.
+
+    ```javascript
+    const attrs = {
+        foo: bar,
+    }
+    const action = 'ENABLE'
+    EntityCallAction(ENTITY_ID, action, attrs);
+    ```
+
+7. `EntityCallScene(ENTITY_ID, args)`: Similar to `EntityCallAction`, this method is used to call or trigger a scene associated with the entity (`ENTITY_ID`) and provides any required arguments (`args`) for that scene.
+
+    ```javascript
+    const attrs = {
+        foo: bar,
+    }
+    EntityCallScene(ENTITY_ID, attrs);
+    ```
+
+8. `EntityGetSettings(ENTITY_ID)`: This method retrieves the settings or configuration for the specified entity (`ENTITY_ID`). It allows you to access and query the settings associated with an entity.
+
+    ```javascript
+    const settings = EntityGetSettings(ENTITY_ID);
+    print(marshal(settings))
+    // out: {"username":"zigbee2mqtt","cleanSession":false,"keepAlive":15,"direction":"in","topics":"owntracks/#","pingTimeout":10,"connectTimeout":30,"qos":0}
+
+    ```
+
+9. `EntityGetAttributes(ENTITY_ID)`: This method retrieves all attributes associated with a specific entity (`ENTITY_ID`). It provides a way to obtain detailed information about the entity's attributes.
+
+    ```javascript
+    const attrs = EntityGetAttributes(ENTITY_ID);
+    print(marshal(attrs))
+    // out: {"username":"zigbee2mqtt","cleanSession":false,"keepAlive":15,"direction":"in","topics":"owntracks/#","pingTimeout":10,"connectTimeout":30,"qos":0}
+
+    ```
+
+The methods of the "Entity" object provide convenient capabilities for managing the device's state, attributes, metrics, and executing actions on the device. You can use these methods to create device control logic in your **Smart Home** project.
 

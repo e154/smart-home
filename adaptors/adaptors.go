@@ -72,6 +72,7 @@ type Adaptors struct {
 	DashboardTab      IDashboardTab
 	DashboardCard     IDashboardCard
 	DashboardCardItem IDashboardCardItem
+	ScriptVersion     IScriptVersion
 }
 
 // NewAdaptors ...
@@ -91,7 +92,7 @@ func NewAdaptors(lc fx.Lifecycle,
 		UserDevice:        GetUserDeviceAdaptor(db),
 		Image:             GetImageAdaptor(db),
 		Variable:          GetVariableAdaptor(db),
-		Entity:            GetEntityAdaptor(db),
+		Entity:            GetEntityAdaptor(db, orm),
 		EntityState:       GetEntityStateAdaptor(db),
 		EntityAction:      GetEntityActionAdaptor(db),
 		EntityStorage:     GetEntityStorageAdaptor(db),
@@ -106,10 +107,10 @@ func NewAdaptors(lc fx.Lifecycle,
 		Metric:            GetMetricAdaptor(db, orm),
 		MetricBucket:      GetMetricBucketAdaptor(db, orm),
 		Area:              GetAreaAdaptor(db),
-		Action:            GetActionAdaptor(db),
+		Action:            GetActionAdaptor(db, orm),
 		Condition:         GetConditionAdaptor(db),
-		Trigger:           GetTriggerAdaptor(db),
-		Task:              GetTaskAdaptor(db),
+		Trigger:           GetTriggerAdaptor(db, orm),
+		Task:              GetTaskAdaptor(db, orm),
 		RunHistory:        GetRunHistoryAdaptor(db),
 		Plugin:            GetPluginAdaptor(db),
 		TelegramChat:      GetTelegramChannelAdaptor(db),
@@ -117,6 +118,7 @@ func NewAdaptors(lc fx.Lifecycle,
 		DashboardTab:      GetDashboardTabAdaptor(db),
 		DashboardCard:     GetDashboardCardAdaptor(db),
 		DashboardCardItem: GetDashboardCardItemAdaptor(db),
+		ScriptVersion:     GetScriptVersionAdaptor(db),
 	}
 
 	if lc != nil {

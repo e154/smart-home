@@ -20,11 +20,7 @@ package telegram
 
 import (
 	"context"
-	"fmt"
-	"github.com/pkg/errors"
 
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
@@ -59,9 +55,6 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 		return
 	}
 
-	// register telegram provider
-	notify.ProviderManager.AddProvider(Name, p)
-
 	_ = p.Service.EventBus().Subscribe("system/entities/+", p.eventHandler)
 
 	return
@@ -74,8 +67,6 @@ func (p *plugin) Unload(ctx context.Context) (err error) {
 	}
 
 	_ = p.Service.EventBus().Unsubscribe("system/entities/+", p.eventHandler)
-
-	notify.ProviderManager.RemoveProvider(Name)
 
 	return nil
 }
@@ -117,49 +108,6 @@ func (p *plugin) Options() m.PluginOptions {
 		ActorSetts:         NewSettings(),
 		ActorStates:        supervisor.ToEntityStateShort(NewStates()),
 	}
-}
-
-// Save ...
-func (p *plugin) Save(msg notify.Message) (addresses []string, message *m.Message) {
-	message = &m.Message{
-		Type:       Name,
-		Attributes: msg.Attributes,
-	}
-	var err error
-	if message.Id, err = p.Service.Adaptors().Message.Add(context.Background(), message); err != nil {
-		log.Error(err.Error())
-	}
-
-	attr := NewMessageParams()
-	_, _ = attr.Deserialize(message.Attributes)
-
-	addresses = []string{attr[AttrName].String()}
-
-	return
-}
-
-// Send ...
-func (p *plugin) Send(name string, message *m.Message) (err error) {
-	params := NewMessageParams()
-	_, _ = params.Deserialize(message.Attributes)
-
-	body := params[AttrBody].String()
-
-	entityId := common.EntityId(fmt.Sprintf("telegram.%s", name))
-	value, ok := p.Actors.Load(entityId)
-	if !ok {
-		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("bot \"%s\"", name))
-		return
-	}
-	actor := value.(*Actor)
-	_ = actor.Send(body)
-
-	return
-}
-
-// MessageParams ...
-func (p *plugin) MessageParams() m.Attributes {
-	return NewMessageParams()
 }
 
 func (p *plugin) eventHandler(topic string, msg interface{}) {

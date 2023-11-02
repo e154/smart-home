@@ -20,9 +20,6 @@ package twilio
 
 import (
 	"context"
-	"fmt"
-	"github.com/e154/smart-home/common"
-	"strings"
 
 	"github.com/e154/smart-home/system/supervisor"
 
@@ -56,31 +53,9 @@ func New() supervisor.Pluggable {
 
 // Load ...
 func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(ctx, service, nil); err != nil {
+	if err = p.Plugin.Load(ctx, service, p.ActorConstructor); err != nil {
 		return
 	}
-
-	// load settings
-	var settings m.Attributes
-	settings, err = p.LoadSettings(p)
-	if err != nil {
-		log.Warn(err.Error())
-		settings = NewSettings()
-	}
-
-	if settings == nil {
-		settings = NewSettings()
-	}
-
-	// add actor
-	p.actor = NewActor(settings, p.Service)
-	p.Actors.Store(common.EntityId(fmt.Sprintf("%s.%s", Name, Name)), p.actor)
-
-	go func() { _ = p.actor.UpdateBalance() }()
-
-	// register twilio provider
-	notify.ProviderManager.AddProvider(Name, p)
-
 	return
 }
 
@@ -89,10 +64,13 @@ func (p *plugin) Unload(ctx context.Context) (err error) {
 	if err = p.Plugin.Unload(ctx); err != nil {
 		return
 	}
-
-	notify.ProviderManager.RemoveProvider(Name)
-
 	return nil
+}
+
+// ActorConstructor ...
+func (p *plugin) ActorConstructor(entity *m.Entity) (actor supervisor.PluginActor, err error) {
+	actor = NewActor(entity, p.Service)
+	return
 }
 
 // Name ...
@@ -118,36 +96,8 @@ func (p *plugin) Version() string {
 // Options ...
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
+		Actors:     true,
 		ActorAttrs: NewAttr(),
-		Setts:      NewSettings(),
+		ActorSetts: NewSettings(),
 	}
-}
-
-// Save ...
-func (p *plugin) Save(msg notify.Message) (addresses []string, message *m.Message) {
-	message = &m.Message{
-		Type:       Name,
-		Attributes: msg.Attributes,
-	}
-	var err error
-	if message.Id, err = p.Service.Adaptors().Message.Add(context.Background(), message); err != nil {
-		log.Error(err.Error())
-	}
-
-	attr := NewMessageParams()
-	_, _ = attr.Deserialize(message.Attributes)
-
-	addresses = strings.Split(attr[AttrPhone].String(), ",")
-	return
-}
-
-// Send ...
-func (p *plugin) Send(address string, message *m.Message) (err error) {
-	err = p.actor.Send(address, message)
-	return
-}
-
-// MessageParams ...
-func (p *plugin) MessageParams() m.Attributes {
-	return NewMessageParams()
 }

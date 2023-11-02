@@ -29,7 +29,7 @@ description: >
 
 ```coffeescript
 msg = notifr.newMessage();
-msg.type = 'messagebird';
+msg.entity_id = 'messagebird.name';
 msg.attributes = {
   'phone': '+79990000001',
   'body': 'some text'
@@ -51,7 +51,7 @@ msg.attributes = {
 
 sendMsg =(body)->
   msg = notifr.newMessage();
-  msg.type = 'messagebird';
+  msg.entity_id = 'messagebird.name';
   msg.attributes = {
     'phone': '+79990000001',
     'body': 'some text'

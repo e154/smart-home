@@ -24,13 +24,13 @@ import (
 )
 
 // NewBackupConfig ...
-func NewBackupConfig(cfg *models.AppConfig) *backup.BackupConfig {
-	return &backup.BackupConfig{
-		Path:   cfg.SnapshotDir,
-		PgUser: cfg.PgUser,
-		PgPass: cfg.PgPass,
-		PgHost: cfg.PgHost,
-		PgName: cfg.PgName,
-		PgPort: cfg.PgPort,
+func NewBackupConfig(cfg *models.AppConfig) *backup.Config {
+	return &backup.Config{
+		Path:     cfg.SnapshotDir,
+		Name:     cfg.PgName,
+		User:     cfg.PgUser,
+		Password: cfg.PgPass,
+		Host:     cfg.PgHost,
+		Port:     cfg.PgPort,
 	}
 }

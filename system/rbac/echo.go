@@ -21,14 +21,23 @@ package rbac
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"regexp"
+	"strings"
+
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/api/controllers"
+	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/jwt_manager"
 	"github.com/labstack/echo/v4"
-	"net/http"
-	"regexp"
-	"strings"
+)
+
+var (
+	log = logger.MustGetLogger("rbac")
 )
 
 // EchoAccessFilter ...
@@ -66,37 +75,38 @@ func (f *EchoAccessFilter) Auth(next echo.HandlerFunc) echo.HandlerFunc {
 		// get access token from meta
 		var accessToken = f.getAccessToken(c)
 		if accessToken == "" {
-			return c.HTML(http.StatusUnauthorized, "UNAUTHORIZED")
+			return f.HTTP401(c, apperr.ErrUnauthorized)
 		}
 
 		claims, err := f.jwtManager.Verify(accessToken)
 		if err != nil {
-			return c.HTML(http.StatusUnauthorized, "UNAUTHORIZED")
+			return f.HTTP401(c, apperr.ErrUnauthorized)
 		}
 
 		// if id == 1 is admin
 		if claims.UserId == 1 || claims.RoleName == "admin" {
 			if err = f.getUser(claims.UserId, c); err != nil {
-				return c.HTML(http.StatusUnauthorized, "UNAUTHORIZED")
+				return f.HTTP401(c, apperr.ErrUnauthorized)
 			}
+			return next(c)
 		}
 
 		var accessList access_list.AccessList
 		if accessList, err = f.accessListService.GetFullAccessList(c.Request().Context(), claims.RoleName); err != nil {
-			return c.HTML(http.StatusUnauthorized, "UNAUTHORIZED")
+			return f.HTTP401(c, apperr.ErrUnauthorized)
 		}
 
 		// check access filter
 		if ret := f.accessDecision(requestURI.Path, method, accessList); ret {
 			if err = f.getUser(claims.UserId, c); err != nil {
-				return c.HTML(http.StatusUnauthorized, "UNAUTHORIZED")
+				return f.HTTP401(c, apperr.ErrUnauthorized)
 			}
 			return next(c)
 		}
 
 		log.Warnf(fmt.Sprintf("access denied: role(%s) [%s] url(%s)", claims.RoleName, method, requestURI.Path))
 
-		c.Error(c.HTML(http.StatusUnauthorized, "UNAUTHORIZED"))
+		c.Error(f.HTTP401(c, apperr.ErrUnauthorized))
 
 		return nil
 	}
@@ -122,7 +132,6 @@ func (f *EchoAccessFilter) accessDecision(params, method string, accessList acce
 	return false
 }
 
-
 func (f *EchoAccessFilter) getAccessToken(c echo.Context) (accessToken string) {
 	accessToken = c.Request().Header.Get("authorization")
 	if accessToken != "" {
@@ -130,4 +139,18 @@ func (f *EchoAccessFilter) getAccessToken(c echo.Context) (accessToken string) {
 	}
 	accessToken = c.Request().URL.Query().Get("access_token")
 	return
+}
+
+// HTTP401 ...
+func (f *EchoAccessFilter) HTTP401(ctx echo.Context, err error) error {
+	e := apperr.GetError(err)
+	if e != nil {
+		return ctx.JSON(http.StatusUnauthorized, controllers.ResponseWithError(ctx, &controllers.ErrorBase{
+			Code:    common.String(e.Code()),
+			Message: common.String(e.Message()),
+		}))
+	}
+	return ctx.JSON(http.StatusUnauthorized, controllers.ResponseWithError(ctx, &controllers.ErrorBase{
+		Code: common.String("UNAUTHORIZED"),
+	}))
 }

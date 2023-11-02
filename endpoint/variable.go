@@ -20,10 +20,13 @@ package endpoint
 
 import (
 	"context"
+	"fmt"
+	"github.com/e154/smart-home/common/events"
+
+	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/go-playground/validator/v10"
 )
 
 // VariableEndpoint ...
@@ -39,14 +42,22 @@ func NewVariableEndpoint(common *CommonEndpoint) *VariableEndpoint {
 }
 
 // Add ...
-func (v *VariableEndpoint) Add(ctx context.Context, variable m.Variable) (errs validator.ValidationErrorsTranslations, err error) {
+func (v *VariableEndpoint) Add(ctx context.Context, variable m.Variable) (err error) {
 
-	var ok bool
-	if ok, errs = v.validation.Valid(variable); !ok {
+	if ok, errs := v.validation.Valid(variable); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
-	err = v.adaptors.Variable.CreateOrUpdate(ctx, variable)
+	if err = v.adaptors.Variable.CreateOrUpdate(ctx, variable); err != nil {
+		return
+	}
+
+	v.eventBus.Publish(fmt.Sprintf("system/models/variables/%s", variable.Name), events.EventUpdatedVariableModel{
+		Name:  variable.Name,
+		Value: variable.Value,
+	})
 
 	return
 }
@@ -60,14 +71,22 @@ func (v *VariableEndpoint) GetById(ctx context.Context, name string) (variable m
 }
 
 // Update ...
-func (v *VariableEndpoint) Update(ctx context.Context, variable m.Variable) (errs validator.ValidationErrorsTranslations, err error) {
+func (v *VariableEndpoint) Update(ctx context.Context, variable m.Variable) (err error) {
 
-	var ok bool
-	if ok, errs = v.validation.Valid(variable); !ok {
+	if ok, errs := v.validation.Valid(variable); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
-	err = v.adaptors.Variable.CreateOrUpdate(ctx, variable)
+	if err = v.adaptors.Variable.CreateOrUpdate(ctx, variable); err != nil {
+		return
+	}
+
+	v.eventBus.Publish(fmt.Sprintf("system/models/variables/%s", variable.Name), events.EventUpdatedVariableModel{
+		Name:  variable.Name,
+		Value: variable.Value,
+	})
 
 	return
 }
@@ -82,6 +101,13 @@ func (v *VariableEndpoint) GetList(ctx context.Context, pagination common.PagePa
 // Delete ...
 func (v *VariableEndpoint) Delete(ctx context.Context, name string) (err error) {
 
-	err = v.adaptors.Variable.Delete(ctx, name)
+	if err = v.adaptors.Variable.Delete(ctx, name); err != nil {
+		return
+	}
+
+	v.eventBus.Publish(fmt.Sprintf("system/models/variables/%s", name), events.EventRemovedVariableModel{
+		Name: name,
+	})
+
 	return
 }

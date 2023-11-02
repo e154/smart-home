@@ -46,6 +46,12 @@ export const HintDictionaryCoffee = {
         {text: 'http.post(url, body)', displayText: 'http.post'},
         {text: 'http.put(url, body)', displayText: 'http.put'},
         {text: 'http.delete(url)', displayText: 'http.delete'},
+        {text: 'http.digestAuth(username, password)', displayText: 'http.digestAuth'},
+        {text: 'http.basicAuth(username, password)', displayText: 'http.basicAuth'},
+        {text: 'http.download(url)', displayText: 'http.download'},
+
+        // zigbee2mqttEvent
+        {text: 'zigbee2mqttEvent = (message) ->', displayText: 'zigbee2mqttEvent'},
 
         // mqtt
         {text: 'Mqtt.publish(topic, payload, qos, retain)', displayText: 'Mqtt.publish'},
@@ -64,14 +70,15 @@ export const HintDictionaryCoffee = {
         {text: 'Action', displayText: 'Action'},
         {text: 'Condition', displayText: 'Condition'},
         {text: 'Trigger', displayText: 'Trigger'},
-        {text: 'automationAction = (ENTITY_ID)->', displayText: 'automationAction'},
-        {text: 'automationCondition = (ENTITY_ID)->', displayText: 'automationCondition'},
+        {text: 'automationAction = (entityId)->', displayText: 'automationAction'},
+        {text: 'automationCondition = (entityId)->', displayText: 'automationCondition'},
         {text: 'automationTriggerAlexa = (msg) ->', displayText: 'automationTriggerAlexa'},
         {text: 'automationTriggerTime = (msg) ->', displayText: 'automationTriggerTime'},
         {text: 'automationTriggerStateChanged = (msg)->', displayText: 'automationTriggerStateChanged'},
         {text: 'automationTriggerSystem = (msg)->', displayText: 'automationTriggerSystem'},
 
         // entity manager
+        {text: 'GetEntity(ENTITY_ID)', displayText: 'GetEntity'},
         {text: 'EntitySetState(ENTITY_ID, state)', displayText: 'EntitySetState'},
         {text: 'EntitySetStateName(ENTITY_ID, name)', displayText: 'EntitySetStateName'},
         {text: 'EntityGetState(ENTITY_ID)', displayText: 'EntityGetState'},

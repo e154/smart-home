@@ -130,9 +130,9 @@ func (c *Scheduler) Remove(id EntryID) {
 }
 
 func (c *Scheduler) getDays(varName string, def int) int {
-	if clearMetricsDays, err := c.adaptors.Variable.GetByName(context.Background(), varName); err == nil {
+	if variable, err := c.adaptors.Variable.GetByName(context.Background(), varName); err == nil {
 		var days int
-		if days, err = strconv.Atoi(clearMetricsDays.Value); err == nil {
+		if days, err = strconv.Atoi(variable.Value); err == nil {
 			return days
 		}
 	}

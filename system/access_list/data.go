@@ -298,7 +298,7 @@ const DATA = `
     },
     "entity_set_state": {
       "actions": [
-        "/api.DeveloperToolsService/EntitySetState"
+        "/api.DeveloperToolsService/EntitySetStateName"
       ],
       "description": ""
     },

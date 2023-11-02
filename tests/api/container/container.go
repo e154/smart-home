@@ -53,9 +53,11 @@ import (
 func BuildContainer() (container *dig.Container) {
 
 	container = dig.New()
-	_ = container.Provide(NewOrmConfig)
 	_ = container.Provide(web.New)
 	_ = container.Provide(validation.NewValidate)
+	_ = container.Provide(NewBackupConfig)
+	_ = container.Provide(backup.NewBackup)
+	_ = container.Provide(NewOrmConfig)
 	_ = container.Provide(orm.NewOrm)
 	_ = container.Provide(NewMigrationsConfig)
 	_ = container.Provide(migrations.NewMigrations)
@@ -63,8 +65,6 @@ func BuildContainer() (container *dig.Container) {
 	_ = container.Provide(scheduler.NewScheduler)
 	_ = container.Provide(scripts.NewScriptService)
 	_ = container.Provide(initial.NewInitial)
-	_ = container.Provide(NewBackupConfig)
-	_ = container.Provide(backup.NewBackup)
 	_ = container.Provide(NewMqtt)
 	_ = container.Provide(NewMqttCli)
 	_ = container.Provide(mqtt_authenticator.NewAuthenticator)
@@ -83,7 +83,6 @@ func BuildContainer() (container *dig.Container) {
 	_ = container.Provide(endpoint.NewEndpoint)
 	_ = container.Provide(handlers.NewEventHandler)
 	_ = container.Provide(controllers.NewControllers)
-	_ = container.Provide(NewDialer)
 	_ = container.Provide(jwt_manager.NewJwtManager)
 
 	_ = container.Provide(func() (conf *models.AppConfig, err error) {

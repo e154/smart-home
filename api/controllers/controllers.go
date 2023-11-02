@@ -19,82 +19,83 @@
 package controllers
 
 import (
-	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/endpoint"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/stream/handlers"
+	"github.com/e154/smart-home/system/validation"
 )
 
 // Controllers ...
 type Controllers struct {
-	Auth              ControllerAuth
-	Stream            ControllerStream
-	User              ControllerUser
-	Role              ControllerRole
-	Script            ControllerScript
-	Image             ControllerImage
-	Plugin            ControllerPlugin
-	Zigbee2mqtt       ControllerZigbee2mqtt
-	Entity            ControllerEntity
-	Action            ControllerAction
-	Condition         ControllerCondition
-	Trigger           ControllerTrigger
-	Automation        ControllerAutomation
-	Area              ControllerArea
-	Dev               ControllerDeveloperTools
-	Interact          ControllerInteract
-	Logs              ControllerLogs
-	Dashboard         ControllerDashboard
-	DashboardCardItem ControllerDashboardCardItem
-	DashboardCard     ControllerDashboardCard
-	DashboardTab      ControllerDashboardTab
-	Variable          ControllerVariable
-	EntityStorage     ControllerEntityStorage
-	Metric            ControllerMetric
-	Backup            ControllerBackup
-	MessageDelivery   ControllerMessageDelivery
-	Index             ControllerIndex
-	Mqtt              ControllerMqtt
-	Media             ControllerMedia
+	*ControllerAuth
+	*ControllerStream
+	*ControllerUser
+	*ControllerRole
+	*ControllerScript
+	*ControllerImage
+	*ControllerPlugin
+	*ControllerZigbee2mqtt
+	*ControllerEntity
+	*ControllerAction
+	*ControllerCondition
+	*ControllerTrigger
+	*ControllerAutomation
+	*ControllerArea
+	*ControllerDeveloperTools
+	*ControllerInteract
+	*ControllerLogs
+	*ControllerDashboard
+	*ControllerDashboardCardItem
+	*ControllerDashboardCard
+	*ControllerDashboardTab
+	*ControllerVariable
+	*ControllerEntityStorage
+	*ControllerMetric
+	*ControllerBackup
+	*ControllerMessageDelivery
+	*ControllerIndex
+	*ControllerMqtt
+	*ControllerMedia
 }
 
 // NewControllers ...
-func NewControllers(adaptors *adaptors.Adaptors,
+func NewControllers(
 	accessList access_list.AccessListService,
-	command *endpoint.Endpoint,
+	endpoint *endpoint.Endpoint,
 	_ *handlers.EventHandler,
-	appConfig *m.AppConfig) *Controllers {
-	common := NewControllerCommon(adaptors, accessList, command, appConfig)
+	appConfig *m.AppConfig,
+	validation *validation.Validate) *Controllers {
+	common := NewControllerCommon(endpoint, accessList, appConfig, validation)
 	return &Controllers{
-		Auth:              NewControllerAuth(common),
-		Stream:            NewControllerStream(common),
-		User:              NewControllerUser(common),
-		Role:              NewControllerRole(common),
-		Script:            NewControllerScript(common),
-		Image:             NewControllerImage(common),
-		Plugin:            NewControllerPlugin(common),
-		Zigbee2mqtt:       NewControllerZigbee2mqtt(common),
-		Entity:            NewControllerEntity(common),
-		Action:            NewControllerAction(common),
-		Condition:         NewControllerCondition(common),
-		Trigger:           NewControllerTrigger(common),
-		Automation:        NewControllerAutomation(common),
-		Area:              NewControllerArea(common),
-		Dev:               NewControllerDeveloperTools(common),
-		Interact:          NewControllerInteract(common),
-		Logs:              NewControllerLogs(common),
-		Dashboard:         NewControllerDashboard(common),
-		DashboardCardItem: NewControllerDashboardCardItem(common),
-		DashboardCard:     NewControllerDashboardCard(common),
-		DashboardTab:      NewControllerDashboardTab(common),
-		Variable:          NewControllerVariable(common),
-		EntityStorage:     NewControllerEntityStorage(common),
-		Metric:            NewControllerMetric(common),
-		Backup:            NewControllerBackup(common),
-		MessageDelivery:   NewControllerMessageDelivery(common),
-		Index:             NewControllerIndex(common),
-		Mqtt:              NewControllerMqtt(common),
-		Media:             NewControllerMedia(common),
+		ControllerAuth:              NewControllerAuth(common),
+		ControllerStream:            NewControllerStream(common),
+		ControllerUser:              NewControllerUser(common),
+		ControllerRole:              NewControllerRole(common),
+		ControllerScript:            NewControllerScript(common),
+		ControllerImage:             NewControllerImage(common),
+		ControllerPlugin:            NewControllerPlugin(common),
+		ControllerZigbee2mqtt:       NewControllerZigbee2mqtt(common),
+		ControllerEntity:            NewControllerEntity(common),
+		ControllerAction:            NewControllerAction(common),
+		ControllerCondition:         NewControllerCondition(common),
+		ControllerTrigger:           NewControllerTrigger(common),
+		ControllerAutomation:        NewControllerAutomation(common),
+		ControllerArea:              NewControllerArea(common),
+		ControllerDeveloperTools:    NewControllerDeveloperTools(common),
+		ControllerInteract:          NewControllerInteract(common),
+		ControllerLogs:              NewControllerLogs(common),
+		ControllerDashboard:         NewControllerDashboard(common),
+		ControllerDashboardCardItem: NewControllerDashboardCardItem(common),
+		ControllerDashboardCard:     NewControllerDashboardCard(common),
+		ControllerDashboardTab:      NewControllerDashboardTab(common),
+		ControllerVariable:          NewControllerVariable(common),
+		ControllerEntityStorage:     NewControllerEntityStorage(common),
+		ControllerMetric:            NewControllerMetric(common),
+		ControllerBackup:            NewControllerBackup(common),
+		ControllerMessageDelivery:   NewControllerMessageDelivery(common),
+		ControllerIndex:             NewControllerIndex(common),
+		ControllerMqtt:              NewControllerMqtt(common),
+		ControllerMedia:             NewControllerMedia(common),
 	}
 }

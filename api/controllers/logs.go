@@ -19,9 +19,8 @@
 package controllers
 
 import (
-	"context"
-
-	"github.com/e154/smart-home/api/stub/api"
+	"github.com/e154/smart-home/api/stub"
+	"github.com/labstack/echo/v4"
 )
 
 // ControllerLogs ...
@@ -30,20 +29,20 @@ type ControllerLogs struct {
 }
 
 // NewControllerLogs ...
-func NewControllerLogs(common *ControllerCommon) ControllerLogs {
-	return ControllerLogs{
+func NewControllerLogs(common *ControllerCommon) *ControllerLogs {
+	return &ControllerLogs{
 		ControllerCommon: common,
 	}
 }
 
 // GetLogList ...
-func (c ControllerLogs) GetLogList(ctx context.Context, req *api.LogPaginationRequest) (*api.GetLogListResult, error) {
+func (c ControllerLogs) LogServiceGetLogList(ctx echo.Context, params stub.LogServiceGetLogListParams) error {
 
-	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
-	items, total, err := c.endpoint.Log.GetList(ctx, pagination, req.Query, req.StartDate, req.EndDate)
+	pagination := c.Pagination(params.Page, params.Limit, params.Sort)
+	items, total, err := c.endpoint.Log.GetList(ctx.Request().Context(), pagination, params.Query, params.StartDate, params.EndDate)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Log.ToListResult(items, uint64(total), pagination), nil
+	return c.HTTP200(ctx, ResponseWithList(ctx, c.dto.Log.ToListResult(items), total, pagination))
 }

@@ -20,6 +20,7 @@ package endpoint
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/e154/smart-home/common"
@@ -39,50 +40,78 @@ func NewEntityStorageEndpoint(common *CommonEndpoint) *EntityStorageEndpoint {
 }
 
 // GetList ...
-func (i *EntityStorageEndpoint) GetList(ctx context.Context, entityId *common.EntityId, pagination common.PageParams, _startDate, _endDate *string) (result *m.EntityStorageList, total int64, err error) {
+func (i *EntityStorageEndpoint) GetList(ctx context.Context, entityIds []common.EntityId, pagination common.PageParams,
+	startDate, endDate *time.Time) (result *m.EntityStorageList, total int64, err error) {
 
-	var startDate, endDate *time.Time
-	if _startDate != nil {
-		date, _ := time.Parse("2006-01-02", *_startDate)
-		startDate = &date
-	}
-	if _endDate != nil {
-		date, _ := time.Parse("2006-01-02", *_endDate)
-		endDate = &date
-	}
+	keyResult := fmt.Sprintf("entity_storage_%d_%d_%s_%s_%v_%s_%s", pagination.Limit, pagination.Offset,
+		pagination.Order, pagination.SortBy, entityIds, startDate, endDate)
 
-	var items []*m.EntityStorage
-	if items, total, err = i.adaptors.EntityStorage.ListByEntityId(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, entityId, startDate, endDate); err != nil {
+	keyTotal := fmt.Sprintf("%s_total", keyResult)
+
+	if i.cache.IsExist(keyResult) {
+		v := i.cache.Get(keyResult)
+		vTotal := i.cache.Get(keyTotal)
+		result = v.(*m.EntityStorageList)
+		total = vTotal.(int64)
 		return
 	}
 
-	var idsMap = map[common.EntityId]struct{}{}
-
-	for j := range items {
-		idsMap[items[j].EntityId] = struct{}{}
+	var items []*m.EntityStorage
+	if items, total, err = i.adaptors.EntityStorage.List(ctx, pagination.Limit, pagination.Offset,
+		pagination.Order, pagination.SortBy, entityIds, startDate, endDate); err != nil {
+		return
 	}
 
-	var ids []common.EntityId
-	ids = make([]common.EntityId, 0, len(idsMap))
-	for id := range idsMap {
-		ids = append(ids, id)
+	var entitiesList = map[common.EntityId]*m.Entity{}
+
+	for j := range items {
+		entitiesList[items[j].EntityId] = nil
+	}
+
+	if len(entityIds) == 0 {
+		for id := range entitiesList {
+			entityIds = append(entityIds, id)
+		}
 	}
 
 	var entities []*m.Entity
-	if entities, err = i.adaptors.Entity.GetByIdsSimple(ctx, ids); err != nil {
+	if entities, err = i.adaptors.Entity.GetByIdsSimple(ctx, entityIds); err != nil {
 		return
 	}
 
 	attributes := make(map[common.EntityId]m.Attributes)
 
 	for _, entity := range entities {
+		entitiesList[entity.Id] = entity
 		attributes[entity.Id] = entity.Attributes
+	}
+
+	var ok bool
+	var entity *m.Entity
+	for _, item := range items {
+		item.StateDescription = item.State
+		if entity, ok = entitiesList[item.EntityId]; !ok {
+			continue
+		}
+		item.EntityDescription = entity.Id.String()
+		if entity.Description != "" {
+			item.EntityDescription = entity.Description
+		}
+		for _, state := range entity.States {
+			if state.Name == item.State && state.Description != "" {
+				item.StateDescription = state.Description
+				continue
+			}
+		}
 	}
 
 	result = &m.EntityStorageList{
 		Items:      items,
 		Attributes: attributes,
 	}
+
+	i.cache.Put(keyResult, result, 10*time.Second)
+	i.cache.Put(keyTotal, total, 10*time.Second)
 
 	return
 }

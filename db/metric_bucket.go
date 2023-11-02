@@ -24,22 +24,24 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/apperr"
-
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
+
+	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
 )
 
 // MetricBuckets ...
 type MetricBuckets struct {
-	Db *gorm.DB
+	Db        *gorm.DB
+	Timescale bool
 }
 
 // MetricBucket ...
 type MetricBucket struct {
 	Value    json.RawMessage `gorm:"type:jsonb;not null"`
 	Metric   *Metric
+	Mins     time.Time `gorm:"->"`
 	MetricId int64
 	Time     time.Time
 }
@@ -57,138 +59,94 @@ func (n MetricBuckets) Add(ctx context.Context, metric *MetricBucket) (err error
 	return
 }
 
-// SimpleListWithSoftRange ...
-func (n *MetricBuckets) SimpleListWithSoftRange(ctx context.Context, from, to time.Time, metricId int64, optionItems []string) (list []*MetricBucket, err error) {
+// List ...
+func (n *MetricBuckets) List(ctx context.Context, metricId int64, optionItems []string, rFrom, rTo *time.Time, metricRange *common.MetricRange) (list []*MetricBucket, err error) {
+
+	var str string
+	for i, item := range optionItems {
+		str += fmt.Sprintf(" '%s', trunc(avg((value ->> '%[1]s')::numeric), 2)", item)
+		if i+1 < len(optionItems) {
+			str += ","
+		}
+	}
+
+	var interval string
+	var from time.Time
+	var to = time.Now()
+
+	if rTo != nil {
+		to = common.TimeValue(rTo)
+	}
+
+	if metricRange != nil {
+		switch *metricRange {
+		case common.MetricRange6H:
+			interval = "6 seconds"
+			from = to.Add(-6 * time.Hour)
+		case common.MetricRange12H:
+			interval = "12 seconds"
+			from = to.Add(-12 * time.Hour)
+		case common.MetricRange24H:
+			interval = "24 seconds"
+			from = to.Add(-24 * time.Hour)
+		case common.MetricRange7d:
+			interval = "2 minutes"
+			from = to.Add(-24 * 7 * time.Hour)
+		case common.MetricRange30d, common.MetricRange1m:
+			interval = "7 minutes"
+			from = to.Add(-24 * 30 * time.Hour)
+		default:
+			err = errors.Wrap(apperr.ErrMetricBucketGet, fmt.Sprintf("unknown filter %s", metricRange))
+			return
+		}
+	}
+
+	if rFrom != nil {
+		from = common.TimeValue(rFrom)
+	}
+
 	var num int64 = 1
 	t := from.Sub(to).Seconds()
 	if t > 3600 {
 		num = int64(t / 3600)
 	}
 
+	if metricRange == nil {
+		interval = fmt.Sprintf("%d seconds", num)
+	}
+
 	list = make([]*MetricBucket, 0)
-	var str string
-	for i, item := range optionItems {
-		str += fmt.Sprintf(" '%s', trunc(avg((value ->> '%[1]s')::numeric), 2)", item)
-		if i+1 < len(optionItems) {
-			str += ","
+
+	// c.time between ? and ?
+	if n.Timescale {
+		var q = `SELECT time_bucket('%s', time) AS mins, json_build_object(%s) as value
+FROM metric_bucket c
+WHERE c.metric_id = ? and c.time > ? and c.time < ? 
+GROUP BY mins
+ORDER BY mins ASC
+LIMIT 3600`
+		if err = n.Db.WithContext(ctx).Raw(fmt.Sprintf(q, interval, str), metricId, from.UTC().Format(time.RFC3339), to.UTC().Format(time.RFC3339)).Scan(&list).Error; err != nil {
+			err = errors.Wrap(apperr.ErrMetricBucketGet, err.Error())
 		}
+
+		for _, metric := range list {
+			metric.Time = metric.Mins
+		}
+
+		return
 	}
 
 	q := `SELECT TIMESTAMP WITH TIME ZONE 'epoch' +
-       INTERVAL '1 second' * round(extract('epoch' from time) / %[1]d) * %[1]d as time,  json_build_object(
-` + str + `
-    ) as value
+       INTERVAL '1 second' * round(extract('epoch' from time) / %[1]d) * %[1]d as time, json_build_object(%s) as value
 FROM metric_bucket c
-WHERE c.metric_id = ? and c.time between ? and ?
+WHERE c.metric_id = ? and c.time > ? and c.time < ? 
 GROUP BY round(extract('epoch' from c.time) / %[1]d)
 order by time asc
 LIMIT 3600`
-	q = fmt.Sprintf(q, num)
-	if err = n.Db.WithContext(ctx).Raw(q, metricId, from.Format(time.RFC3339), to.Format(time.RFC3339)).Scan(&list).Error; err != nil {
-		err = errors.Wrap(apperr.ErrMetricBucketGet, err.Error())
-	}
-	return
-}
-
-// SimpleListByRangeType ...
-func (n *MetricBuckets) SimpleListByRangeType(ctx context.Context, metricId int64, metricRange common.MetricRange, optionItems []string) (list []*MetricBucket, err error) {
-	var str string
-	for i, item := range optionItems {
-		str += fmt.Sprintf(" '%s', trunc(avg((value ->> '%[1]s')::numeric), 2)", item)
-		if i+1 < len(optionItems) {
-			str += ","
-		}
-	}
-
-	var q string
-	switch metricRange {
-	case common.MetricRange6H:
-		q = `SELECT TIMESTAMP WITH TIME ZONE 'epoch' +
-       INTERVAL '1 second' * round(extract('epoch' from time) / 6) * 6 as time,  json_build_object(
-` + str + `
-    ) as value
-FROM metric_bucket c
-WHERE c.metric_id = ? and c.time > NOW() - interval '6 hour'
-GROUP BY round(extract('epoch' from c.time) / 6)
-order by time asc
-LIMIT 3600`
-	case common.MetricRange12H:
-		q = `SELECT TIMESTAMP WITH TIME ZONE 'epoch' +
-       INTERVAL '1 second' * round(extract('epoch' from time) / 12) * 12 as time,  json_build_object(
-` + str + `
-    ) as value
-FROM metric_bucket c
-WHERE c.metric_id = ? and c.time > NOW() - interval '12 hour'
-GROUP BY round(extract('epoch' from c.time) / 12)
-order by time asc
-LIMIT 3600`
-	case common.MetricRange24H:
-		q = `SELECT TIMESTAMP WITH TIME ZONE 'epoch' +
-       INTERVAL '1 second' * round(extract('epoch' from time) / 24) * 24 as time,  json_build_object(
-` + str + `
-    ) as value
-FROM metric_bucket c
-WHERE c.metric_id = ? and c.time > NOW() - interval '24 hour'
-GROUP BY round(extract('epoch' from c.time) / 24)
-order by time asc
-LIMIT 3600`
-	case common.MetricRange7d:
-		q = `SELECT TIMESTAMP WITH TIME ZONE 'epoch' +
-       INTERVAL '1 second' * round(extract('epoch' from time) / 168) * 168 as time,  json_build_object(
-` + str + `
-    ) as value
-FROM metric_bucket c
-WHERE c.metric_id = ? and c.time > NOW() - interval '7 days'
-GROUP BY round(extract('epoch' from c.time) / 168)
-order by time asc
-LIMIT 3600`
-	case common.MetricRange30d, common.MetricRange1m:
-		q = `SELECT TIMESTAMP WITH TIME ZONE 'epoch' +
-       INTERVAL '1 second' * round(extract('epoch' from time) / 720) * 720 as time,  json_build_object(
-` + str + `
-    ) as value
-FROM metric_bucket c
-WHERE c.metric_id = ? and c.time > NOW() - interval '1 month'
-GROUP BY round(extract('epoch' from c.time) / 720)
-order by time asc
-LIMIT 3600`
-	default:
-		q = `SELECT b.*
-from metric_bucket b
-where b.metric_id = ? and b.time > NOW() - interval '1 hour'
-limit 3600`
-	}
-	list = make([]*MetricBucket, 0)
-	if err = n.Db.WithContext(ctx).Raw(q, metricId).Scan(&list).Error; err != nil {
+	if err = n.Db.WithContext(ctx).Raw(fmt.Sprintf(q, num, str), metricId, from.UTC().Format(time.RFC3339), to.UTC().Format(time.RFC3339)).Scan(&list).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMetricBucketGet, err.Error())
 	}
 
-	return
-}
-
-// Simple24HPreview ...
-func (n *MetricBuckets) Simple24HPreview(ctx context.Context, metricId int64, optionItems []string) (list []*MetricBucket, err error) {
-	list = make([]*MetricBucket, 0)
-	var str string
-	for i, item := range optionItems {
-		str += fmt.Sprintf(" '%s', trunc(avg((value ->> '%[1]s')::numeric), 2)", item)
-		if i+1 < len(optionItems) {
-			str += ","
-		}
-	}
-	q := `SELECT TIMESTAMP WITH TIME ZONE 'epoch' +
-       INTERVAL '1 second' * round(extract('epoch' from time) / 250) * 250 as time,  json_build_object(
-` + str + `
-    ) as value
-FROM metric_bucket c
-WHERE c.metric_id = ? and c.time > NOW() - interval '1 day'
-GROUP BY round(extract('epoch' from c.time) / 250)
-order by time asc
-LIMIT 345`
-
-	if err = n.Db.WithContext(ctx).Raw(q, metricId).Scan(&list).Error; err != nil {
-		err = errors.Wrap(apperr.ErrMetricBucketGet, err.Error())
-	}
 	return
 }
 
@@ -220,14 +178,6 @@ func (n MetricBuckets) DeleteByMetricId(ctx context.Context, metricId int64) (er
 func (n MetricBuckets) DeleteById(ctx context.Context, id int64) (err error) {
 	if err = n.Db.WithContext(ctx).Delete(&MetricBucket{}, "id = ?", id).Error; err != nil {
 		err = errors.Wrap(apperr.ErrMetricBucketDelete, err.Error())
-	}
-	return
-}
-
-// CreateHypertable ...
-func (n MetricBuckets) CreateHypertable(ctx context.Context) (err error) {
-	if err = n.Db.WithContext(ctx).Raw(`SELECT create_hypertable('metric_bucket', 'time', migrate_data=>'TRUE')`).Error; err != nil {
-		err = errors.Wrap(apperr.ErrMetricBucketAdd, err.Error())
 	}
 	return
 }

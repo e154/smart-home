@@ -21,10 +21,11 @@ package endpoint
 import (
 	"context"
 
-	"github.com/e154/smart-home/common"
-	m "github.com/e154/smart-home/models"
-	"github.com/go-playground/validator/v10"
 	"github.com/jinzhu/copier"
+
+	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
+	m "github.com/e154/smart-home/models"
 )
 
 // DashboardTabEndpoint ...
@@ -40,10 +41,11 @@ func NewDashboardTabEndpoint(common *CommonEndpoint) *DashboardTabEndpoint {
 }
 
 // Add ...
-func (t *DashboardTabEndpoint) Add(ctx context.Context, tab *m.DashboardTab) (result *m.DashboardTab, errs validator.ValidationErrorsTranslations, err error) {
+func (t *DashboardTabEndpoint) Add(ctx context.Context, tab *m.DashboardTab) (result *m.DashboardTab, err error) {
 
-	var ok bool
-	if ok, errs = t.validation.Valid(tab); !ok {
+	if ok, errs := t.validation.Valid(tab); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
@@ -70,27 +72,28 @@ func (t *DashboardTabEndpoint) GetById(ctx context.Context, id int64) (tab *m.Da
 }
 
 // Update ...
-func (i *DashboardTabEndpoint) Update(ctx context.Context, params *m.DashboardTab) (result *m.DashboardTab, errs validator.ValidationErrorsTranslations, err error) {
+func (t *DashboardTabEndpoint) Update(ctx context.Context, params *m.DashboardTab) (result *m.DashboardTab, err error) {
 
-	var board *m.DashboardTab
-	if board, err = i.adaptors.DashboardTab.GetById(ctx, params.Id); err != nil {
+	var tab *m.DashboardTab
+	if tab, err = t.adaptors.DashboardTab.GetById(ctx, params.Id); err != nil {
 		return
 	}
 
-	if err = copier.Copy(&board, &params); err != nil {
+	if err = copier.Copy(&tab, &params); err != nil {
 		return
 	}
 
-	var ok bool
-	if ok, errs = i.validation.Valid(params); !ok {
+	if ok, errs := t.validation.Valid(tab); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
-	if err = i.adaptors.DashboardTab.Update(ctx, board); err != nil {
+	if err = t.adaptors.DashboardTab.Update(ctx, tab); err != nil {
 		return
 	}
 
-	result, err = i.adaptors.DashboardTab.GetById(ctx, params.Id)
+	result, err = t.adaptors.DashboardTab.GetById(ctx, params.Id)
 
 	return
 }
@@ -123,7 +126,7 @@ func (t *DashboardTabEndpoint) Delete(ctx context.Context, id int64) (err error)
 	return
 }
 
-func (c *DashboardTabEndpoint) preloadEntities(ctx context.Context, tab *m.DashboardTab) (err error) {
+func (t *DashboardTabEndpoint) preloadEntities(ctx context.Context, tab *m.DashboardTab) (err error) {
 
 	// get child entities
 	entityMap := make(map[common.EntityId]*m.Entity)
@@ -140,12 +143,12 @@ func (c *DashboardTabEndpoint) preloadEntities(ctx context.Context, tab *m.Dashb
 		entityIds = append(entityIds, entityId)
 	}
 
-	var entites []*m.Entity
-	if entites, err = c.adaptors.Entity.GetByIds(ctx, entityIds); err != nil {
+	var entities []*m.Entity
+	if entities, err = t.adaptors.Entity.GetByIds(ctx, entityIds); err != nil {
 		return
 	}
 
-	for _, entity := range entites {
+	for _, entity := range entities {
 		entityMap[entity.Id] = entity
 	}
 

@@ -35,14 +35,14 @@ entityAction = (entityId, actionName, args) => {
 Пример реализации обработчика `mqttEvent`:
 
 ```javascript
-mqttEvent = (entityId, actionName) => {
+function mqttEvent(message) {
   // Код обработки действия
 };
 ```
 
 Пример использования обработчика mqttEvent:
 ```coffeescript
-mqttEvent = ->
+mqttEvent =(message)->
   #print '---mqtt new event from plug---'
   if !message || message.topic.includes('/set')
     return
@@ -54,7 +54,7 @@ mqttEvent = ->
     'state': payload.state
     'temperature': payload.temperature
     'voltage': payload.voltage
-  Actor.setState
+  EntitySetState ENTITY_ID,
     'new_state': payload.state
     'attribute_values': attrs
 ```

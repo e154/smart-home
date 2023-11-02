@@ -43,7 +43,7 @@ type Zigbee2mqtt struct {
 	EncryptedPassword string
 	PermitJoin        bool
 	BaseTopic         string
-	CreatedAt         time.Time
+	CreatedAt         time.Time `gorm:"<-:create"`
 	UpdatedAt         time.Time
 }
 

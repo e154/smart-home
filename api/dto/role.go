@@ -19,11 +19,9 @@
 package dto
 
 import (
-	"github.com/e154/smart-home/api/stub/api"
-	"github.com/e154/smart-home/common"
+	stub "github.com/e154/smart-home/api/stub"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Role ...
@@ -35,94 +33,92 @@ func NewRoleDto() Role {
 }
 
 // FromNewRoleRequest ...
-func (r Role) FromNewRoleRequest(from *api.NewRoleRequest) (to *m.Role) {
+func (r Role) FromNewRoleRequest(from *stub.ApiNewRoleRequest) (to *m.Role) {
 	to = &m.Role{
 		Name:        from.Name,
 		Description: from.Description,
 	}
-	if from.Parent != "" {
+	if from.Parent != nil {
 		to.Parent = &m.Role{
-			Name: from.Parent,
+			Name: *from.Parent,
 		}
 	}
 	return
 }
 
 // FromUpdateRoleRequest ...
-func (r Role) FromUpdateRoleRequest(from *api.UpdateRoleRequest) (to *m.Role) {
+func (r Role) FromUpdateRoleRequest(from *stub.RoleServiceUpdateRoleByNameJSONBody, name string) (to *m.Role) {
 	to = &m.Role{
-		Name:        from.Name,
+		Name:        name,
 		Description: from.Description,
 	}
-	if from.Parent != "" {
+	if from.Parent != nil {
 		to.Parent = &m.Role{
-			Name: from.Parent,
+			Name: *from.Parent,
 		}
 	}
 	return
 }
 
 // ToSearchResult ...
-func (r Role) ToSearchResult(list []*m.Role) *api.SearchRoleListResult {
+func (r Role) ToSearchResult(list []*m.Role) *stub.ApiSearchRoleListResult {
 
-	items := make([]*api.Role, 0, len(list))
+	items := make([]stub.ApiRole, 0, len(list))
 
 	for _, i := range list {
-		items = append(items, r.ToGRole(i))
+		items = append(items, r.GetStubRole(i))
 	}
 
-	return &api.SearchRoleListResult{
+	return &stub.ApiSearchRoleListResult{
 		Items: items,
 	}
 }
 
 // ToListResult ...
-func (r Role) ToListResult(list []*m.Role, total uint64, pagination common.PageParams) *api.GetRoleListResult {
+func (r Role) ToListResult(list []*m.Role) []stub.ApiRole {
 
-	items := make([]*api.Role, 0, len(list))
+	items := make([]stub.ApiRole, 0, len(list))
 
 	for _, i := range list {
-		items = append(items, r.ToGRole(i))
+		items = append(items, r.GetStubRole(i))
 	}
 
-	return &api.GetRoleListResult{
-		Items: items,
-		Meta: &api.Meta{
-			Limit: uint64(pagination.Limit),
-			Page:  pagination.PageReq,
-			Total: total,
-			Sort:  pagination.SortReq,
-		},
-	}
+	return items
 }
 
-// ToGRole ...
-func (r Role) ToGRole(from *m.Role) (to *api.Role) {
-	to = &api.Role{
+// GetStubRole ...
+func (r Role) GetStubRole(from *m.Role) (to stub.ApiRole) {
+	to = stub.ApiRole{
 		Name:        from.Name,
 		Description: from.Description,
 		AccessList:  nil,
-		CreatedAt:   timestamppb.New(from.CreatedAt),
-		UpdatedAt:   timestamppb.New(from.UpdatedAt),
+		CreatedAt:   from.CreatedAt,
+		UpdatedAt:   from.UpdatedAt,
 	}
 	if from.Parent != nil {
-		to.Parent = r.ToGRole(from.Parent)
+		role := r.GetStubRole(from.Parent)
+		to.Parent = &role
 	}
 	if len(from.Children) > 0 {
 		for _, ch := range from.Children {
-			to.Children = append(to.Children, r.ToGRole(ch))
+			to.Children = append(to.Children, r.GetStubRole(ch))
 		}
 	}
 	if from.AccessList != nil {
-		to.AccessList = &api.Role_AccessList{
-			Levels: make(map[string]*api.Role_AccessList_ListOfString),
+		to.AccessList = &stub.ApiRoleAccessList{
+			Levels: make(map[string]stub.AccessListListOfString),
 		}
 		for levelName, levels := range from.AccessList {
-			for _, item := range levels {
-				if _, ok := to.AccessList.Levels[levelName]; !ok {
-					to.AccessList.Levels[levelName] = &api.Role_AccessList_ListOfString{}
+			if len(levels) > 0 {
+				var items []string
+				for _, item := range levels {
+					items = append(items, item)
 				}
-				to.AccessList.Levels[levelName].Items = append(to.AccessList.Levels[levelName].Items, item)
+				if _, ok := to.AccessList.Levels[levelName]; !ok {
+					to.AccessList.Levels[levelName] = stub.AccessListListOfString{
+						Items: items,
+					}
+				}
 			}
 		}
 	}
@@ -130,18 +126,18 @@ func (r Role) ToGRole(from *m.Role) (to *api.Role) {
 }
 
 // ToRoleAccessListResult ...
-func (r Role) ToRoleAccessListResult(accessList access_list.AccessList) *api.RoleAccessListResult {
-	res := &api.RoleAccessListResult{
-		Levels: make(map[string]*api.AccessLevels),
+func (r Role) ToRoleAccessListResult(accessList access_list.AccessList) *stub.ApiRoleAccessListResult {
+	res := &stub.ApiRoleAccessListResult{
+		Levels: make(map[string]stub.ApiAccessLevels),
 	}
 	for levelName, levels := range accessList {
 		for itemName, item := range levels {
 			if _, ok := res.Levels[levelName]; !ok {
-				res.Levels[levelName] = &api.AccessLevels{
-					Items: make(map[string]*api.AccessItem),
+				res.Levels[levelName] = stub.ApiAccessLevels{
+					Items: make(map[string]stub.ApiAccessItem),
 				}
 			}
-			res.Levels[levelName].Items[itemName] = &api.AccessItem{
+			res.Levels[levelName].Items[itemName] = stub.ApiAccessItem{
 				Actions:     item.Actions,
 				Method:      item.Method,
 				Description: item.Description,
@@ -153,18 +149,18 @@ func (r Role) ToRoleAccessListResult(accessList access_list.AccessList) *api.Rol
 }
 
 // ToAccessListResult ...
-func (r Role) ToAccessListResult(accessList access_list.AccessList) *api.AccessList {
-	res := &api.AccessList{
-		Levels: make(map[string]*api.AccessLevels),
+func (r Role) ToAccessListResult(accessList *access_list.AccessList) *stub.ApiAccessList {
+	res := &stub.ApiAccessList{
+		Levels: make(map[string]stub.ApiAccessLevels),
 	}
-	for levelName, levels := range accessList {
+	for levelName, levels := range *accessList {
 		for itemName, item := range levels {
 			if _, ok := res.Levels[levelName]; !ok {
-				res.Levels[levelName] = &api.AccessLevels{
-					Items: make(map[string]*api.AccessItem),
+				res.Levels[levelName] = stub.ApiAccessLevels{
+					Items: make(map[string]stub.ApiAccessItem),
 				}
 			}
-			res.Levels[levelName].Items[itemName] = &api.AccessItem{
+			res.Levels[levelName].Items[itemName] = stub.ApiAccessItem{
 				Actions:     item.Actions,
 				Method:      item.Method,
 				Description: item.Description,
@@ -175,8 +171,8 @@ func (r Role) ToAccessListResult(accessList access_list.AccessList) *api.AccessL
 	return res
 }
 
-// FromUpdateRoleAccessListRequest ...
-func (r Role) FromUpdateRoleAccessListRequest(req *api.UpdateRoleAccessListRequest) (accessListDif map[string]map[string]bool) {
+// UpdateRoleAccessList ...
+func (r Role) UpdateRoleAccessList(req *stub.RoleServiceUpdateRoleAccessListJSONBody, name string) (accessListDif map[string]map[string]bool) {
 
 	accessListDif = make(map[string]map[string]bool)
 

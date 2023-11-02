@@ -25,7 +25,6 @@ import (
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/go-playground/validator/v10"
 )
 
 // UserEndpoint ...
@@ -42,15 +41,16 @@ func NewUserEndpoint(common *CommonEndpoint) *UserEndpoint {
 
 // Add ...
 func (n *UserEndpoint) Add(ctx context.Context, params *m.User,
-	currentUser *m.User) (result *m.User, errs validator.ValidationErrorsTranslations, err error) {
+	currentUser *m.User) (result *m.User, err error) {
 
 	user := &m.User{}
 	if err = common.Copy(&user, &params); err != nil {
 		return
 	}
 
-	var ok bool
-	if ok, errs = n.validation.Valid(params); !ok {
+	if ok, errs := n.validation.Valid(params); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
@@ -83,7 +83,9 @@ func (n *UserEndpoint) Add(ctx context.Context, params *m.User,
 		user.Status = "blocked"
 	}
 
-	if ok, errs = n.validation.Valid(params); !ok {
+	if ok, errs := n.validation.Valid(params); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
@@ -133,7 +135,7 @@ func (n *UserEndpoint) GetList(ctx context.Context, pagination common.PageParams
 }
 
 // Update ...
-func (n *UserEndpoint) Update(ctx context.Context, params *m.User) (result *m.User, errs validator.ValidationErrorsTranslations, err error) {
+func (n *UserEndpoint) Update(ctx context.Context, params *m.User) (result *m.User, err error) {
 
 	var user *m.User
 	user, err = n.adaptors.User.GetById(ctx, params.Id)
@@ -161,8 +163,9 @@ func (n *UserEndpoint) Update(ctx context.Context, params *m.User) (result *m.Us
 		}
 	}
 
-	var ok bool
-	if ok, errs = n.validation.Valid(params); !ok {
+	if ok, errs := n.validation.Valid(params); !ok {
+		err = apperr.ErrInvalidRequest
+		apperr.SetValidationErrors(err, errs)
 		return
 	}
 

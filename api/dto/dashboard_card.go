@@ -19,10 +19,9 @@
 package dto
 
 import (
-	"github.com/e154/smart-home/api/stub/api"
+	stub "github.com/e154/smart-home/api/stub"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // DashboardCard ...
@@ -33,7 +32,7 @@ func NewDashboardCardDto() DashboardCard {
 	return DashboardCard{}
 }
 
-func (r DashboardCard) AddDashboardCard(obj *api.NewDashboardCardRequest) (ver *m.DashboardCard) {
+func (r DashboardCard) AddDashboardCard(obj *stub.ApiNewDashboardCardRequest) (ver *m.DashboardCard) {
 	ver = &m.DashboardCard{
 		Title:          obj.Title,
 		Height:         int(obj.Height),
@@ -51,9 +50,9 @@ func (r DashboardCard) AddDashboardCard(obj *api.NewDashboardCardRequest) (ver *
 	return
 }
 
-func (r DashboardCard) UpdateDashboardCard(obj *api.UpdateDashboardCardRequest) (ver *m.DashboardCard) {
+func (r DashboardCard) UpdateDashboardCard(obj *stub.DashboardCardServiceUpdateDashboardCardJSONBody, id int64) (ver *m.DashboardCard) {
 	ver = &m.DashboardCard{
-		Id:             obj.Id,
+		Id:             id,
 		Title:          obj.Title,
 		Height:         int(obj.Height),
 		Width:          int(obj.Width),
@@ -76,7 +75,7 @@ func (r DashboardCard) UpdateDashboardCard(obj *api.UpdateDashboardCardRequest) 
 			Type:            item.Type,
 			Weight:          int(item.Weight),
 			Enabled:         item.Enabled,
-			DashboardCardId: obj.Id,
+			DashboardCardId: id,
 			Payload:         item.Payload,
 			Hidden:          item.Hidden,
 			Frozen:          item.Frozen,
@@ -91,37 +90,23 @@ func (r DashboardCard) UpdateDashboardCard(obj *api.UpdateDashboardCardRequest) 
 }
 
 // ToListResult ...
-func (r DashboardCard) ToListResult(list []*m.DashboardCard, total uint64, pagination common.PageParams) *api.GetDashboardCardListResult {
+func (r DashboardCard) ToListResult(list []*m.DashboardCard) []*stub.ApiDashboardCard {
 
-	items := make([]*api.DashboardCard, 0, len(list))
+	items := make([]*stub.ApiDashboardCard, 0, len(list))
 
 	for _, i := range list {
 		items = append(items, ToDashboardCard(i))
 	}
 
-	return &api.GetDashboardCardListResult{
-		Items: items,
-		Meta: &api.Meta{
-			Limit: uint64(pagination.Limit),
-			Page:  pagination.PageReq,
-			Total: total,
-			Sort:  pagination.SortReq,
-		},
-	}
+	return items
 }
 
 // ToDashboardCard ...
-func (r DashboardCard) ToDashboardCard(ver *m.DashboardCard) (obj *api.DashboardCard) {
-	obj = ToDashboardCard(ver)
-	return
-}
-
-// ToDashboardCard ...
-func ToDashboardCard(ver *m.DashboardCard) (obj *api.DashboardCard) {
+func ToDashboardCard(ver *m.DashboardCard) (obj *stub.ApiDashboardCard) {
 	if ver == nil {
 		return
 	}
-	obj = &api.DashboardCard{
+	obj = &stub.ApiDashboardCard{
 		Id:             ver.Id,
 		Title:          ver.Title,
 		Height:         int32(ver.Height),
@@ -132,9 +117,9 @@ func ToDashboardCard(ver *m.DashboardCard) (obj *api.DashboardCard) {
 		DashboardTabId: ver.DashboardTabId,
 		Payload:        ver.Payload,
 		Hidden:         ver.Hidden,
-		Entities:       make(map[string]*api.Entity),
-		CreatedAt:      timestamppb.New(ver.CreatedAt),
-		UpdatedAt:      nil,
+		Entities:       make(map[string]stub.ApiEntity),
+		CreatedAt:      ver.CreatedAt,
+		UpdatedAt:      ver.UpdatedAt,
 	}
 
 	if ver.EntityId != nil && *ver.EntityId != "" {
@@ -143,18 +128,22 @@ func ToDashboardCard(ver *m.DashboardCard) (obj *api.DashboardCard) {
 
 	// Items
 	for _, item := range ver.Items {
-		obj.Items = append(obj.Items, ToDashboardCardItem(item))
+		cardItem := ToDashboardCardItem(item)
+		obj.Items = append(obj.Items, *cardItem)
 	}
 
 	// Entities
 	for key, entity := range ver.Entities {
-		obj.Entities[key.String()] = ToEntity(entity)
+		obj.Entities[key.String()] = *ToEntity(entity)
 	}
 
 	return
 }
 
-func ImportDashboardCard(obj *api.DashboardCard) (ver *m.DashboardCard) {
+func ImportDashboardCard(obj *stub.ApiDashboardCard) (ver *m.DashboardCard) {
+	if obj == nil {
+		return
+	}
 	ver = &m.DashboardCard{
 		Id:             obj.Id,
 		Title:          obj.Title,
@@ -175,7 +164,7 @@ func ImportDashboardCard(obj *api.DashboardCard) (ver *m.DashboardCard) {
 
 	// items
 	for _, itemObj := range obj.Items {
-		ver.Items = append(ver.Items, ImportDashboardCardItem(itemObj))
+		ver.Items = append(ver.Items, ImportDashboardCardItem(&itemObj))
 	}
 
 	return

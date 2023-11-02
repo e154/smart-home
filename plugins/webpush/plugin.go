@@ -24,11 +24,12 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/e154/smart-home/system/supervisor"
+	"github.com/e154/smart-home/common/encryptor"
 
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/notify"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 var (
@@ -44,6 +45,7 @@ func init() {
 type plugin struct {
 	*supervisor.Plugin
 	VAPIDPublicKey, VAPIDPrivateKey string
+	notify                          *notify.Notify
 }
 
 // New ...
@@ -59,6 +61,9 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 		return
 	}
 
+	p.notify = notify.NewNotify(service.Adaptors())
+	p.notify.Start()
+
 	// load settings
 	var settings m.Attributes
 	settings, err = p.LoadSettings(p)
@@ -70,27 +75,26 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 	if settings == nil {
 		settings = NewSettings()
 	}
-	if settings[AttrPrivateKey].String() == "" || settings[AttrPublicKey].String() == "" {
+	if settings[AttrPrivateKey].Decrypt() == "" || settings[AttrPublicKey].Decrypt() == "" {
 		log.Info(`Keys not found, will be generate`)
 
-		if settings[AttrPrivateKey].Value, settings[AttrPublicKey].Value, err = GenerateVAPIDKeys(); err != nil {
+		if p.VAPIDPrivateKey, p.VAPIDPublicKey, err = GenerateVAPIDKeys(); err != nil {
 			return
 		}
+
+		settings[AttrPrivateKey].Value, _ = encryptor.Encrypt(p.VAPIDPrivateKey)
+		settings[AttrPublicKey].Value, _ = encryptor.Encrypt(p.VAPIDPublicKey)
+
 		var model *m.Plugin
 		model, _ = p.Service.Adaptors().Plugin.GetByName(context.Background(), Name)
 		model.Settings = settings.Serialize()
 		_ = p.Service.Adaptors().Plugin.Update(context.Background(), model)
 	}
 
-	p.VAPIDPrivateKey = settings[AttrPrivateKey].String()
-	p.VAPIDPublicKey = settings[AttrPublicKey].String()
-
 	log.Infof(`Used public key: "%s"`, p.VAPIDPublicKey)
 
 	_ = p.Service.EventBus().Subscribe(TopicPluginWebpush, p.eventHandler)
-
-	// register webpush provider
-	notify.ProviderManager.AddProvider(Name, p)
+	_ = p.Service.EventBus().Subscribe(notify.TopicNotify, p.eventHandler, false)
 
 	return
 }
@@ -101,8 +105,9 @@ func (p *plugin) Unload(ctx context.Context) (err error) {
 		return
 	}
 
-	notify.ProviderManager.RemoveProvider(Name)
+	p.notify.Shutdown()
 
+	_ = p.Service.EventBus().Unsubscribe(notify.TopicNotify, p.eventHandler)
 	_ = p.Service.EventBus().Unsubscribe(TopicPluginWebpush, p.eventHandler)
 
 	return nil
@@ -227,6 +232,10 @@ func (p *plugin) eventHandler(_ string, event interface{}) {
 		p.updateSubscribe(v)
 	case EventGetWebPushPublicKey:
 		p.sendPublicKey(v)
+	case notify.Message:
+		if v.Type == Name {
+			p.notify.SaveAndSend(v, p)
+		}
 	}
 }
 

@@ -19,7 +19,7 @@ const {t} = useI18n()
 
 const writeRef = ref<ComponentRef<typeof Form>>()
 const loading = ref(true)
-const triggerId = computed(() => route.params.id as number);
+const triggerId = computed(() => +route.params.id);
 const currentRow = ref<Nullable<ApiTrigger>>(null)
 
 const fetch = async () => {
@@ -46,8 +46,10 @@ const save = async () => {
     const tr = (await write?.getFormData()) as ApiTrigger;
     let data = {
       name: tr.name,
+      description: tr.description,
       entityId: tr.entity?.id || null,
       scriptId: tr.script?.id || null,
+      areaId: tr.area?.id || null,
       pluginName: tr.pluginName,
       attributes: {},
       enabled: tr.enabled,
@@ -123,7 +125,7 @@ fetch()
 
     <div style="text-align: right">
 
-      <ElButton type="success" @click="callTrigger()" :disabled="!row?.isLoaded">
+      <ElButton type="success" @click="callTrigger()">
         {{ t('main.call') }}
       </ElButton>
 

@@ -38,7 +38,7 @@ type taskManager struct {
 	scriptService scripts.ScriptService
 	supervisor    supervisor.Supervisor
 	adaptors      *adaptors.Adaptors
-	taskCount     atomic.Uint64
+	taskCount     *atomic.Uint64
 	isStarted     *atomic.Bool
 	rawPlugin     triggers.IGetTrigger
 	sync.Mutex
@@ -59,6 +59,7 @@ func NewTaskManager(
 		supervisor:    sup,
 		adaptors:      adaptors,
 		isStarted:     atomic.NewBool(false),
+		taskCount:     atomic.NewUint64(0),
 	}
 
 	return
@@ -67,7 +68,8 @@ func NewTaskManager(
 // Start ...
 func (a *taskManager) Start() {
 	a.load()
-	_ = a.eventBus.Subscribe("system/automation/tasks/+", a.eventHandler)
+	_ = a.eventBus.Subscribe("system/models/tasks/+", a.eventHandler, false)
+	_ = a.eventBus.Subscribe("system/automation/tasks/+", a.eventHandler, false)
 
 	log.Info("Started")
 }
@@ -75,6 +77,7 @@ func (a *taskManager) Start() {
 // Shutdown ...
 func (a *taskManager) Shutdown() {
 	a.unload()
+	_ = a.eventBus.Unsubscribe("system/models/tasks/+", a.eventHandler)
 	_ = a.eventBus.Unsubscribe("system/automation/tasks/+", a.eventHandler)
 	log.Info("Shutdown")
 }
@@ -140,16 +143,16 @@ LOOP:
 func (a *taskManager) eventHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
-	case events.EventEnableTask:
+	case events.CommandEnableTask:
 		go a.updateTask(v.Id)
-	case events.EventDisableTask:
+	case events.CommandDisableTask:
 		go a.removeTask(v.Id)
 
-	case events.EventUpdateTask:
+	case events.EventUpdatedTaskModel:
 		go a.updateTask(v.Id)
-	case events.EventAddedTask:
+	case events.EventCreatedTaskModel:
 		go a.updateTask(v.Id)
-	case events.EventRemoveTask:
+	case events.EventRemovedTaskModel:
 		go a.removeTask(v.Id)
 	}
 }

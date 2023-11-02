@@ -42,7 +42,7 @@ type EntityStorage struct {
 	EntityId   common.EntityId
 	State      string
 	Attributes json.RawMessage `gorm:"type:jsonb;not null"`
-	CreatedAt  time.Time
+	CreatedAt  time.Time       `gorm:"<-:create"`
 }
 
 // TableName ...
@@ -80,47 +80,23 @@ func (n *EntityStorages) GetLastByEntityId(ctx context.Context, entityId common.
 }
 
 // List ...
-func (n *EntityStorages) List(ctx context.Context, limit, offset int, orderBy, sort string) (list []EntityStorage, total int64, err error) {
-
-	if err = n.Db.WithContext(ctx).Model(EntityStorage{}).Count(&total).Error; err != nil {
-		err = errors.Wrap(apperr.ErrEntityStorageList, err.Error())
-		return
-	}
-
-	list = make([]EntityStorage, 0)
-	q := n.Db.WithContext(ctx).Model(&EntityStorage{}).
-		Limit(limit).
-		Offset(offset)
-
-	if sort != "" && orderBy != "" {
-		q = q.
-			Order(fmt.Sprintf("%s %s", sort, orderBy))
-	}
-
-	err = q.
-		Find(&list).
-		Error
-	if err != nil {
-		err = errors.Wrap(apperr.ErrEntityStorageList, err.Error())
-		return
-	}
-	return
-}
-
-// ListByEntityId ...
-func (n *EntityStorages) ListByEntityId(ctx context.Context, limit, offset int, orderBy, sort string, entityId *common.EntityId, startDate, endDate *time.Time) (list []EntityStorage, total int64, err error) {
+func (n *EntityStorages) List(ctx context.Context, limit, offset int, orderBy, sort string, entityIds []common.EntityId, startDate, endDate *time.Time) (list []EntityStorage, total int64, err error) {
 
 	q := n.Db.WithContext(ctx).Model(&EntityStorage{})
 
-	if entityId != nil {
-		q = q.Where("entity_id = ?", entityId)
+	if entityIds != nil && len(entityIds) > 0 {
+		var ids = make([]string, 0, len(entityIds))
+		for _, id := range entityIds {
+			ids = append(ids, id.String())
+		}
+		q = q.Where("entity_id in (?)", ids)
 	}
 
 	if startDate != nil {
-		q = q.Where("created_at >= ?", &startDate)
+		q = q.Where("created_at > ?", startDate.UTC().Format(time.RFC3339))
 	}
 	if endDate != nil {
-		q = q.Where("created_at <= ?", &endDate)
+		q = q.Where("created_at <= ?", endDate.UTC().Format(time.RFC3339))
 	}
 
 	if err = q.Count(&total).Error; err != nil {

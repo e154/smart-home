@@ -73,6 +73,7 @@ const prepareForSave = async () => {
       triggerIds: triggerIds.value ,
       conditionIds: conditionIds.value,
       actionIds: actionIds.value,
+      areaId: con.area?.id,
     }
   }
 }
@@ -126,7 +127,7 @@ const exportTask = async () => {
 
 const callAction = async (name: string) => {
   // todo: fix
-  await api.v1.developerToolsServiceTaskCallAction({ id: taskId.value || 0, name: name })
+  await api.v1.developerToolsServiceCallAction({ id: taskId.value || 0, name: name })
       .catch(() => {
       })
       .finally(() => {
@@ -179,8 +180,6 @@ useEmitt({
     callTrigger(name)
   }
 })
-
-
 
 fetch()
 

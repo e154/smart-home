@@ -26,9 +26,11 @@ import (
 
 // EntityStorage ...
 type EntityStorage struct {
-	Id         int64           `json:"id"`
-	State      string          `json:"state"`
-	EntityId   common.EntityId `json:"entity_id"`
-	Attributes AttributeValue  `json:"attributes"`
-	CreatedAt  time.Time       `json:"created_at"`
+	Id                int64
+	State             string
+	StateDescription  string
+	EntityId          common.EntityId
+	EntityDescription string
+	Attributes        AttributeValue
+	CreatedAt         time.Time
 }

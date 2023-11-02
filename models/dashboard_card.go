@@ -27,21 +27,21 @@ import (
 
 // DashboardCard ...
 type DashboardCard struct {
-	Id             int64                       `json:"id"`
+	Payload        json.RawMessage             `json:"payload"`
+	Items          []*DashboardCardItem        `json:"items"`
+	CreatedAt      time.Time                   `json:"created_at"`
+	UpdatedAt      time.Time                   `json:"updated_at"`
 	Title          string                      `json:"title" validate:"required"`
+	Id             int64                       `json:"id"`
 	Height         int                         `json:"height" validate:"required"`
 	Width          int                         `json:"width" validate:"required"`
 	Background     *string                     `json:"background"`
 	Weight         int                         `json:"weight"`
-	Enabled        bool                        `json:"enabled"`
 	DashboardTabId int64                       `json:"dashboard_tab_id" validate:"required"`
 	DashboardTab   *DashboardTab               `json:"dashboard_tab"`
-	Payload        json.RawMessage             `json:"payload"`
-	Items          []*DashboardCardItem        `json:"items"`
 	Entities       map[common.EntityId]*Entity `json:"entities"`
-	Hidden         bool                        `json:"hidden"`
 	EntityId       *common.EntityId            `json:"entity_id"`
 	Entity         *Entity                     `json:"entity"`
-	CreatedAt      time.Time                   `json:"created_at"`
-	UpdatedAt      time.Time                   `json:"updated_at"`
+	Enabled        bool                        `json:"enabled"`
+	Hidden         bool                        `json:"hidden"`
 }

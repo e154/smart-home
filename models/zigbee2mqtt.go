@@ -22,16 +22,24 @@ import (
 	"time"
 )
 
+type Zigbee2mqttInfo struct {
+	Networkmap    string     `json:"networkmap"`
+	Status        string     `json:"status"`
+	LastScan      *time.Time `json:"last_scan"`
+	ScanInProcess bool       `json:"scan_in_process"`
+}
+
 // Zigbee2mqtt ...
 type Zigbee2mqtt struct {
-	Id                int64                `json:"id"`
-	Name              string               `json:"name" validate:"required,max=254"`
-	Login             string               `json:"login"`
-	Password          *string              `json:"password"`
-	EncryptedPassword string               `json:"encrypted_password"`
 	Devices           []*Zigbee2mqttDevice `json:"devices"`
-	PermitJoin        bool                 `json:"permit_join"`
-	BaseTopic         string               `json:"base_topic"`
 	CreatedAt         time.Time            `json:"created_at"`
 	UpdatedAt         time.Time            `json:"updated_at"`
+	Name              string               `json:"name" validate:"required,max=254"`
+	Login             string               `json:"login"`
+	EncryptedPassword string               `json:"encrypted_password"`
+	BaseTopic         string               `json:"base_topic"`
+	Id                int64                `json:"id"`
+	Password          *string              `json:"password"`
+	Info              *Zigbee2mqttInfo     `json:"info"`
+	PermitJoin        bool                 `json:"permit_join"`
 }

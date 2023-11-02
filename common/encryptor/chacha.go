@@ -24,7 +24,12 @@ import (
 	"errors"
 	"io"
 
+	"github.com/e154/smart-home/common/logger"
 	"golang.org/x/crypto/chacha20poly1305"
+)
+
+var (
+	log = logger.MustGetLogger("encryptor")
 )
 
 var additionalData = []byte("SMART-HOME")
@@ -121,4 +126,23 @@ func Decrypt(value string) (string, error) {
 	b, _ := hex.DecodeString(value)
 	decr, err := encryptor.Decrypt(b)
 	return string(decr), err
+}
+
+func EncryptBind(data string) string {
+	value, err := Encrypt(data)
+	if err != nil {
+
+		log.Error(err.Error())
+		return ""
+	}
+	return value
+}
+
+func DecryptBind(data string) string {
+	value, err := Decrypt(data)
+	if err != nil {
+		log.Error(err.Error())
+		return ""
+	}
+	return value
 }

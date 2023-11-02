@@ -22,10 +22,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/jackc/pgerrcode"
-	"github.com/jackc/pgx/v5/pgconn"
 	"strings"
 	"time"
+
+	"github.com/jackc/pgerrcode"
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"github.com/e154/smart-home/common/apperr"
 
@@ -58,7 +59,7 @@ type Entity struct {
 	Storage     []*EntityStorage
 	AutoLoad    bool
 	ParentId    *common.EntityId `gorm:"column:parent_id"`
-	CreatedAt   time.Time
+	CreatedAt   time.Time        `gorm:"<-:create"`
 	UpdatedAt   time.Time
 }
 
@@ -166,6 +167,7 @@ func (n Entities) GetByIdsSimple(ctx context.Context, ids []common.EntityId) (li
 
 	list = make([]*Entity, 0)
 	err = n.Db.WithContext(ctx).Model(Entity{}).
+		Preload("States").
 		Where("id IN (?)", ids).
 		Find(&list).Error
 

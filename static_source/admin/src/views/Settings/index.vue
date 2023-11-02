@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import {useI18n} from '@/hooks/web/useI18n'
-import {ref} from 'vue'
+import {onMounted, onUnmounted, ref} from 'vue'
 import {useAppStore} from "@/store/modules/app";
 import api from "@/api/api";
-import {ElCol, ElDivider, ElForm, ElFormItem, ElRow, ElSwitch, ElInputNumber} from 'element-plus'
+import {ElCol, ElDivider, ElForm, ElFormItem, ElRow, ElSwitch, ElInputNumber, ElInput} from 'element-plus'
 import {ApiDashboard} from '@/api/stub';
 import DashboardSearch from "@/views/Dashboard/components/DashboardSearch.vue";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {UUID} from "uuid-generator-ts";
+import stream from "@/api/stream";
+import {EventStateChange} from "@/api/stream_types";
+import {debounce} from "lodash-es";
 
 const appStore = useAppStore()
 
@@ -22,6 +26,7 @@ export interface Settings {
   clearLogsDays?: number;
   clearEntityStorageDays?: number;
   clearRunHistoryDays?: number;
+  timezone?: string;
 }
 
 const settings = ref<Settings>({} as Settings)
@@ -58,6 +63,12 @@ const getIntegerVar = async (name: string) => {
   });
 }
 
+const getStringVar = async (name: string) => {
+  await api.v1.variableServiceGetVariableByName(name).then((resp) => {
+    settings.value[name] = resp.data?.value;
+  });
+}
+
 const getSettings = async () => {
   loading.value = true
   await Promise.all([
@@ -69,12 +80,13 @@ const getSettings = async () => {
     getIntegerVar('clearMetricsDays'),
     getIntegerVar('clearLogsDays'),
     getIntegerVar('clearEntityStorageDays'),
-    getIntegerVar('clearRunHistoryDays')
+    getIntegerVar('clearRunHistoryDays'),
+    getStringVar('timezone')
   ])
   loading.value = false
 }
 
-const changedVariable = (name: string) => {
+const changedVariable = debounce((name: string) => {
   let value = ''
   if (settings.value[name] != undefined) {
     value = settings.value[name] + ''
@@ -83,7 +95,29 @@ const changedVariable = (name: string) => {
     value = settings.value[name]?.id + ''
   }
   api.v1.variableServiceUpdateVariable(name, {value: value})
+}, 500)
+
+const currentID = ref('')
+
+const onStateChanged = (event: EventStateChange) => {
+  getSettings()
 }
+
+onMounted(() => {
+  const uuid = new UUID()
+  currentID.value = uuid.getDashFreeUUID()
+
+  setTimeout(() => {
+    stream.subscribe('event_removed_variable_model', currentID.value, onStateChanged);
+    stream.subscribe('event_updated_variable_model', currentID.value, onStateChanged);
+  }, 200)
+})
+
+onUnmounted(() => {
+  stream.unsubscribe('event_removed_variable_model', currentID.value);
+  stream.unsubscribe('event_updated_variable_model', currentID.value);
+})
+
 
 getSettings()
 
@@ -156,6 +190,16 @@ getSettings()
       <ElCol :span="12" :xs="12">
         <ElFormItem :label="$t('settings.clearRunHistoryDays')" prop="clearRunHistoryDays">
           <ElInputNumber size="small" v-model="settings.clearRunHistoryDays"  @update:modelValue="changedVariable('clearRunHistoryDays')"/>
+        </ElFormItem>
+      </ElCol>
+    </ElRow>
+
+    <ElDivider content-position="left">{{$t('settings.time')}}</ElDivider>
+
+    <ElRow :gutter="24">
+      <ElCol :span="12" :xs="12">
+        <ElFormItem :label="$t('settings.timezone')" prop="timezone">
+          <ElInput size="small" v-model="settings.timezone" @update:modelValue="changedVariable('timezone')"/>
         </ElFormItem>
       </ElCol>
     </ElRow>

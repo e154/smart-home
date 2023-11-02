@@ -25,7 +25,6 @@ import (
 
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
-	"github.com/e154/smart-home/common/web"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/scripts/bind"
@@ -54,7 +53,6 @@ type scriptService struct {
 	functions  *Pull
 	structures *Pull
 	storage    *storage.Storage
-	crawler    web.Crawler
 	eventBus   bus.Bus
 }
 
@@ -62,7 +60,6 @@ type scriptService struct {
 func NewScriptService(lc fx.Lifecycle,
 	cfg *m.AppConfig,
 	storage *storage.Storage,
-	crawler web.Crawler,
 	eventBus bus.Bus) ScriptService {
 
 	s := &scriptService{
@@ -70,7 +67,6 @@ func NewScriptService(lc fx.Lifecycle,
 		functions:  NewPull(),
 		structures: NewPull(),
 		storage:    storage,
-		crawler:    crawler,
 		eventBus:   eventBus,
 	}
 
@@ -140,9 +136,9 @@ func (s *scriptService) bind() {
 	s.PushStruct("Log", &bind.LogBind{})
 	s.PushFunctions("ExecuteSync", bind.ExecuteSync)
 	s.PushFunctions("ExecuteAsync", bind.ExecuteAsync)
-	s.PushFunctions("Encrypt", encryptor.Encrypt)
-	s.PushFunctions("Decrypt", encryptor.Decrypt)
+	s.PushFunctions("Encrypt", encryptor.EncryptBind)
+	s.PushFunctions("Decrypt", encryptor.DecryptBind)
 	s.PushStruct("Storage", bind.NewStorageBind(s.storage))
-	s.PushStruct("http", bind.NewHttpBind(s.crawler))
-	s.PushStruct("HTTP", bind.NewHttpBind(s.crawler))
+	s.PushStruct("http", bind.NewHttpBind())
+	s.PushStruct("HTTP", bind.NewHttpBind())
 }

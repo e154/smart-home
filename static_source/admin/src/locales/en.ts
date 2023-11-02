@@ -43,7 +43,8 @@ export default {
         reloadSuccessful: 'Reload successful',
         importedSuccessful: 'Imported successful',
         requestSentSuccessfully: 'Request sent successfully',
-        corruptedJsonFormat: 'Corrupted Json Format'
+        corruptedJsonFormat: 'Corrupted Json Format',
+        startedRestoreProcess: 'Started the recovery process, the system will reboot soon'
     },
     common: {
         inputText: 'Please input',
@@ -247,8 +248,11 @@ export default {
     backup: {
         operations: 'Operations',
         name: 'Name',
-        addNew: 'Add new backup',
-        restore: 'Restore'
+        addNew: 'Create new snapshot',
+        size: 'Size',
+        uploadDump: 'Upload snapshot',
+        restoreSnapshot: 'Restore the snapshot ?',
+        removeSnapshot: 'Remove the snapshot ?'
     },
     messageDelivery: {
         id: 'ID',
@@ -343,7 +347,7 @@ export default {
         source: 'Source',
         info1: 'Use the keyboard shortcut "Ctrl + Space" to autocomplete',
         info2: 'Use the keyboard shortcut "Meta + /" to comment code',
-        info3: 'Use the keyboard shortcut "Meta + F" to format code',
+        info3: 'Use the keyboard shortcut "Shift + Meta + F" to format code',
         stat_total_name: 'Total scripts',
         stat_total_descr: '',
         stat_used_name: 'Scripts used',
@@ -357,11 +361,15 @@ export default {
         stat_ts_name: 'Total typescript scripts',
         stat_ts_descr: '',
         showModalDialog: 'Edit current script',
-        modalWindow: 'Current script'
+        modalWindow: 'Current script',
+        restoreVersion: 'Restore',
+        scriptVersions: 'Versions',
+        viewVersion: 'View'
     },
     zigbee2mqtt: {
         id: 'ID',
         name: 'Name',
+        baseTopic: 'Base Topic',
         login: 'Login',
         permitJoin: 'Permit Join',
         addNew: 'Add bridge',
@@ -414,6 +422,7 @@ export default {
         aWeekAgo: 'A week ago',
         state: 'State',
         attributes: 'Attributes',
+        entity: 'Entity',
         entityId: 'Entity ID',
         nothing: '-'
     },
@@ -576,6 +585,10 @@ export default {
             },
             video: {
                 options: 'Video Options'
+            },
+            entityStorage: {
+                entities: 'Entities',
+                showFilter: 'Show Filter'
             }
         }
     },
@@ -592,6 +605,8 @@ export default {
         clearLogsDays: 'Clear Logs Days',
         clearEntityStorageDays: 'Clear Entity Storage Days',
         clearRunHistoryDays: 'Clear Run History Days',
+        time: 'Time',
+        timezone: 'Timezone, default Asia/Colombo'
     },
     tools: {
         eventBus: {

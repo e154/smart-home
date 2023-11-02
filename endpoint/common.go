@@ -24,6 +24,7 @@ import (
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/bus"
+	"github.com/e154/smart-home/system/cache"
 	"github.com/e154/smart-home/system/jwt_manager"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
@@ -45,6 +46,7 @@ type CommonEndpoint struct {
 	validation    *validation.Validate
 	appConfig     *m.AppConfig
 	automation    automation.Automation
+	cache         cache.Cache
 }
 
 // NewCommonEndpoint ...
@@ -60,6 +62,7 @@ func NewCommonEndpoint(adaptors *adaptors.Adaptors,
 	appConfig *m.AppConfig,
 	automation automation.Automation,
 ) *CommonEndpoint {
+	cache, _ := cache.NewCache("memory", `{"interval":60}`)
 	return &CommonEndpoint{
 		adaptors:      adaptors,
 		accessList:    accessList,
@@ -72,5 +75,6 @@ func NewCommonEndpoint(adaptors *adaptors.Adaptors,
 		validation:    validation,
 		appConfig:     appConfig,
 		automation:    automation,
+		cache:         cache,
 	}
 }

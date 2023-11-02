@@ -117,7 +117,7 @@ state = {
   storage_save: true
 } 
 # Save the state 
-Actor.setState(state)
+EntitySetState ENTITY_ID, state
 ```
 
 |  Value   | Description |

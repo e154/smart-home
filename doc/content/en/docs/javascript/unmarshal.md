@@ -6,9 +6,9 @@ description: >
 
 ---
 
-В JavaScript-окружении доступна функция `unmarshal`, которая преобразует JSON-строку в объект с помощью функции `JSON.parse`.
+In the JavaScript environment, there is a `unmarshal` function available that converts a JSON string into an object using the `JSON.parse` function.
 
-Пример реализации функции `unmarshal`:
+Example implementation of the `unmarshal` function:
 
 ```javascript
 function unmarshal(j) {
@@ -16,7 +16,7 @@ function unmarshal(j) {
 }
 ```
 
-Пример использования функции `unmarshal`:
+Example of using the `unmarshal` function:
 
 ```javascript
 var jsonStr = '{"name":"John","age":30,"city":"New York"}';
@@ -24,4 +24,4 @@ var obj = unmarshal(jsonStr);
 console.log(obj); // { name: "John", age: 30, city: "New York" }
 ```
 
-В этом примере функция `unmarshal` принимает JSON-строку `jsonStr` и использует функцию `JSON.parse` для преобразования строки в объект. Результатом выполнения функции будет объект, содержащий данные из JSON-строки.
+In this example, the `unmarshal` function takes the JSON string `jsonStr` and uses the `JSON.parse` function to convert the string into an object. The result of the function will be an object containing the data from the JSON string.

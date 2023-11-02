@@ -19,12 +19,10 @@
 package controllers
 
 import (
-	"context"
-
-	"google.golang.org/protobuf/types/known/emptypb"
+	"github.com/labstack/echo/v4"
 
 	"github.com/e154/smart-home/api/dto"
-	"github.com/e154/smart-home/api/stub/api"
+	"github.com/e154/smart-home/api/stub"
 )
 
 // ControllerDashboard ...
@@ -33,90 +31,101 @@ type ControllerDashboard struct {
 }
 
 // NewControllerDashboard ...
-func NewControllerDashboard(common *ControllerCommon) ControllerDashboard {
-	return ControllerDashboard{
+func NewControllerDashboard(common *ControllerCommon) *ControllerDashboard {
+	return &ControllerDashboard{
 		ControllerCommon: common,
 	}
 }
 
 // AddDashboard ...
-func (c ControllerDashboard) AddDashboard(ctx context.Context, req *api.NewDashboardRequest) (*api.Dashboard, error) {
+func (c ControllerDashboard) DashboardServiceAddDashboard(ctx echo.Context, _ stub.DashboardServiceAddDashboardParams) error {
 
-	board := c.dto.Dashboard.AddDashboard(req)
-
-	board, errs, err := c.endpoint.Dashboard.Add(ctx, board)
-	if len(errs) != 0 || err != nil {
-		return nil, c.error(ctx, errs, err)
+	obj := &stub.ApiNewDashboardRequest{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Dashboard.ToDashboard(board), nil
+	board, err := c.endpoint.Dashboard.Add(ctx.Request().Context(), c.dto.Dashboard.AddDashboard(obj))
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP201(ctx, ResponseWithObj(ctx, c.dto.Dashboard.ToDashboard(board)))
 }
 
 // UpdateDashboard ...
-func (c ControllerDashboard) UpdateDashboard(ctx context.Context, req *api.UpdateDashboardRequest) (*api.Dashboard, error) {
+func (c ControllerDashboard) DashboardServiceUpdateDashboard(ctx echo.Context, id int64, _ stub.DashboardServiceUpdateDashboardParams) error {
 
-	board := c.dto.Dashboard.UpdateDashboard(req)
-
-	board, errs, err := c.endpoint.Dashboard.Update(ctx, board)
-	if len(errs) != 0 || err != nil {
-		return nil, c.error(ctx, errs, err)
+	obj := &stub.DashboardServiceUpdateDashboardJSONBody{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Dashboard.ToDashboard(board), nil
+	board, err := c.endpoint.Dashboard.Update(ctx.Request().Context(), c.dto.Dashboard.UpdateDashboard(obj, id))
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, c.dto.Dashboard.ToDashboard(board)))
 }
 
 // GetDashboardById ...
-func (c ControllerDashboard) GetDashboardById(ctx context.Context, req *api.GetDashboardRequest) (*api.Dashboard, error) {
+func (c ControllerDashboard) DashboardServiceGetDashboardById(ctx echo.Context, id int64) error {
 
-	board, err := c.endpoint.Dashboard.GetById(ctx, req.Id)
+	board, err := c.endpoint.Dashboard.GetById(ctx.Request().Context(), id)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Dashboard.ToDashboard(board), nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, c.dto.Dashboard.ToDashboard(board)))
 }
 
 // GetDashboardList ...
-func (c ControllerDashboard) GetDashboardList(ctx context.Context, req *api.PaginationRequest) (*api.GetDashboardListResult, error) {
+func (c ControllerDashboard) DashboardServiceGetDashboardList(ctx echo.Context, params stub.DashboardServiceGetDashboardListParams) error {
 
-	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
-	items, total, err := c.endpoint.Dashboard.GetList(ctx, pagination)
+	pagination := c.Pagination(params.Page, params.Limit, params.Sort)
+	items, total, err := c.endpoint.Dashboard.GetList(ctx.Request().Context(), pagination)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Dashboard.ToListResult(items, uint64(total), pagination), nil
+	return c.HTTP200(ctx, ResponseWithList(ctx, c.dto.Dashboard.ToListResult(items), total, pagination))
 }
 
 // DeleteDashboard ...
-func (c ControllerDashboard) DeleteDashboard(ctx context.Context, req *api.DeleteDashboardRequest) (*emptypb.Empty, error) {
+func (c ControllerDashboard) DashboardServiceDeleteDashboard(ctx echo.Context, id int64) error {
 
-	if err := c.endpoint.Dashboard.Delete(ctx, req.Id); err != nil {
-		return nil, c.error(ctx, nil, err)
+	if err := c.endpoint.Dashboard.Delete(ctx.Request().Context(), id); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
 
 // ImportDashboard ...
-func (c ControllerDashboard) ImportDashboard(ctx context.Context, req *api.Dashboard) (*api.Dashboard, error) {
+func (c ControllerDashboard) DashboardServiceImportDashboard(ctx echo.Context, _ stub.DashboardServiceImportDashboardParams) error {
 
-	board, err := c.endpoint.Dashboard.Import(ctx, dto.ImportDashboard(req))
-	if err != nil {
-		return nil, c.error(ctx, nil, err)
+	obj := &stub.ApiDashboard{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Dashboard.ToDashboard(board), nil
+	board, err := c.endpoint.Dashboard.Import(ctx.Request().Context(), dto.ImportDashboard(obj))
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, c.dto.Dashboard.ToDashboard(board)))
 }
 
 // SearchDashboard ...
-func (c ControllerDashboard) SearchDashboard(ctx context.Context, req *api.SearchRequest) (*api.SearchDashboardResult, error) {
+func (c ControllerDashboard) DashboardServiceSearchDashboard(ctx echo.Context, params stub.DashboardServiceSearchDashboardParams) error {
 
-	search := c.Search(req.Query, req.Limit, req.Offset)
-	items, _, err := c.endpoint.Dashboard.Search(ctx, search.Query, search.Limit, search.Offset)
+	search := c.Search(params.Query, params.Limit, params.Offset)
+	items, _, err := c.endpoint.Dashboard.Search(ctx.Request().Context(), search.Query, search.Limit, search.Offset)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Dashboard.ToSearchResult(items), nil
+	return c.HTTP200(ctx, c.dto.Dashboard.ToSearchResult(items))
 }

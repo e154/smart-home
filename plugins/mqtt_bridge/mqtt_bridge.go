@@ -20,9 +20,10 @@ package mqtt_bridge
 
 import (
 	"context"
+	"time"
+
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/supervisor"
-	"time"
 
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/google/uuid"
@@ -68,6 +69,8 @@ func (m *MqttBridge) Start(ctx context.Context) (err error) {
 		SetKeepAlive(time.Duration(m.cfg.KeepAlive) * time.Second).
 		SetPingTimeout(time.Duration(m.cfg.PingTimeout) * time.Second).
 		SetConnectTimeout(time.Duration(m.cfg.ConnectTimeout) * time.Second).
+		SetMaxReconnectInterval(time.Minute).
+		SetAutoReconnect(true).
 		SetCleanSession(m.cfg.CleanSession).
 		SetOnConnectHandler(m.onConnect).
 		SetConnectionLostHandler(m.onConnectionLostHandler).
@@ -119,7 +122,11 @@ func (m *MqttBridge) onConnectionLostHandler(client MQTT.Client, e error) {
 		StorageSave: true,
 	})
 
-	log.Debug("connection lost...")
+	//if e != nil {
+	//	log.Debugf("connection lost... %s", e.Error())
+	//} else {
+	//	log.Debug("connection lost...")
+	//}
 
 	for _, topic := range m.cfg.Topics {
 		if token := m.client.Unsubscribe(topic); token.Error() != nil {
@@ -146,7 +153,7 @@ func (m *MqttBridge) directionBoth(client MQTT.Client) {
 func (m *MqttBridge) directionIn(client MQTT.Client) {
 
 	for _, topic := range m.cfg.Topics {
-		log.Debugf("subscribe: %s", topic)
+		//log.Debugf("subscribe: %s", topic)
 		if token := client.Subscribe(topic, m.cfg.Qos, m.clientMessageHandler); token.Wait() && token.Error() != nil {
 			log.Error(token.Error().Error())
 		}

@@ -19,10 +19,8 @@
 package dto
 
 import (
-	"github.com/e154/smart-home/api/stub/api"
-	"github.com/e154/smart-home/common"
+	stub "github.com/e154/smart-home/api/stub"
 	m "github.com/e154/smart-home/models"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Dashboard ...
@@ -33,7 +31,7 @@ func NewDashboardDto() Dashboard {
 	return Dashboard{}
 }
 
-func (r Dashboard) AddDashboard(obj *api.NewDashboardRequest) (ver *m.Dashboard) {
+func (r Dashboard) AddDashboard(obj *stub.ApiNewDashboardRequest) (ver *m.Dashboard) {
 	ver = &m.Dashboard{
 		Name:        obj.Name,
 		Description: obj.Description,
@@ -43,9 +41,9 @@ func (r Dashboard) AddDashboard(obj *api.NewDashboardRequest) (ver *m.Dashboard)
 	return
 }
 
-func (r Dashboard) UpdateDashboard(obj *api.UpdateDashboardRequest) (ver *m.Dashboard) {
+func (r Dashboard) UpdateDashboard(obj *stub.DashboardServiceUpdateDashboardJSONBody, id int64) (ver *m.Dashboard) {
 	ver = &m.Dashboard{
-		Id:          obj.Id,
+		Id:          id,
 		Name:        obj.Name,
 		Description: obj.Description,
 		Enabled:     obj.Enabled,
@@ -55,95 +53,88 @@ func (r Dashboard) UpdateDashboard(obj *api.UpdateDashboardRequest) (ver *m.Dash
 }
 
 // ToListResult ...
-func (r Dashboard) ToListResult(list []*m.Dashboard, total uint64, pagination common.PageParams) *api.GetDashboardListResult {
+func (r Dashboard) ToListResult(list []*m.Dashboard) []*stub.ApiDashboardShort {
 
-	items := make([]*api.DashboardShort, 0, len(list))
+	items := make([]*stub.ApiDashboardShort, 0, len(list))
 
 	for _, i := range list {
 		items = append(items, ToDashboardShort(i))
 	}
 
-	return &api.GetDashboardListResult{
-		Items: items,
-		Meta: &api.Meta{
-			Limit: uint64(pagination.Limit),
-			Page:  pagination.PageReq,
-			Total: total,
-			Sort:  pagination.SortReq,
-		},
-	}
+	return items
 }
 
 // ToDashboard ...
-func (r Dashboard) ToDashboard(ver *m.Dashboard) (obj *api.Dashboard) {
+func (r Dashboard) ToDashboard(ver *m.Dashboard) (obj *stub.ApiDashboard) {
 	obj = ToDashboard(ver)
 	return
 }
 
 // ToSearchResult ...
-func (r Dashboard) ToSearchResult(list []*m.Dashboard) *api.SearchDashboardResult {
+func (r Dashboard) ToSearchResult(list []*m.Dashboard) *stub.ApiSearchDashboardResult {
 
-	items := make([]*api.Dashboard, 0, len(list))
+	items := make([]stub.ApiDashboard, 0, len(list))
 
 	for _, i := range list {
-		items = append(items, r.ToDashboard(i))
+		item := r.ToDashboard(i)
+		items = append(items, *item)
 	}
 
-	return &api.SearchDashboardResult{
+	return &stub.ApiSearchDashboardResult{
 		Items: items,
 	}
 }
 
 // ToDashboard ...
-func ToDashboard(ver *m.Dashboard) (obj *api.Dashboard) {
+func ToDashboard(ver *m.Dashboard) (obj *stub.ApiDashboard) {
 	if ver == nil {
 		return
 	}
-	obj = &api.Dashboard{
+	obj = &stub.ApiDashboard{
 		Id:          ver.Id,
 		Name:        ver.Name,
 		Description: ver.Description,
 		Enabled:     ver.Enabled,
 		AreaId:      ver.AreaId,
-		Area:        ToArea(ver.Area),
-		Tabs:        make([]*api.DashboardTab, 0, len(ver.Tabs)),
-		Entities:    make(map[string]*api.Entity),
-		CreatedAt:   timestamppb.New(ver.CreatedAt),
-		UpdatedAt:   timestamppb.New(ver.UpdatedAt),
+		Area:        GetStubArea(ver.Area),
+		Tabs:        make([]stub.ApiDashboardTab, 0, len(ver.Tabs)),
+		Entities:    make(map[string]stub.ApiEntity),
+		CreatedAt:   ver.CreatedAt,
+		UpdatedAt:   ver.UpdatedAt,
 	}
 
 	// Tabs
 	for _, tab := range ver.Tabs {
-		obj.Tabs = append(obj.Tabs, ToDashboardTab(tab))
+		obj.Tabs = append(obj.Tabs, *ToDashboardTab(tab))
 	}
 
 	// Entities
 	for key, entity := range ver.Entities {
-		obj.Entities[key.String()] = ToEntity(entity)
+		obj.Entities[key.String()] = *ToEntity(entity)
 	}
 
 	return
 }
 
 // ToDashboardShort ...
-func ToDashboardShort(ver *m.Dashboard) (obj *api.DashboardShort) {
+func ToDashboardShort(ver *m.Dashboard) (obj *stub.ApiDashboardShort) {
 	if ver == nil {
 		return
 	}
-	obj = &api.DashboardShort{
+	obj = &stub.ApiDashboardShort{
 		Id:          ver.Id,
 		Name:        ver.Name,
 		Description: ver.Description,
 		Enabled:     ver.Enabled,
 		AreaId:      ver.AreaId,
-		CreatedAt:   timestamppb.New(ver.CreatedAt),
-		UpdatedAt:   timestamppb.New(ver.UpdatedAt),
+		CreatedAt:   ver.CreatedAt,
+		UpdatedAt:   ver.UpdatedAt,
 	}
 	return
 }
 
 // ImportDashboard ...
-func ImportDashboard(obj *api.Dashboard) (ver *m.Dashboard) {
+func ImportDashboard(obj *stub.ApiDashboard) (ver *m.Dashboard) {
 	ver = &m.Dashboard{
 		Id:          obj.Id,
 		Name:        obj.Name,
@@ -155,7 +146,7 @@ func ImportDashboard(obj *api.Dashboard) (ver *m.Dashboard) {
 
 	// tabs
 	for _, tabObj := range obj.Tabs {
-		ver.Tabs = append(ver.Tabs, ImportDashboardTab(tabObj))
+		ver.Tabs = append(ver.Tabs, ImportDashboardTab(&tabObj))
 	}
 
 	return

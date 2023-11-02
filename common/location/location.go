@@ -21,6 +21,8 @@ package location
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/golang/geo/s1"
+	"github.com/golang/geo/s2"
 
 	"github.com/e154/smart-home/common/web"
 	m "github.com/e154/smart-home/models"
@@ -36,8 +38,10 @@ const (
 // GeoLocationFromIP ...
 func GeoLocationFromIP(ip string) (location m.GeoLocation, err error) {
 
+	crawler := web.New()
+
 	var body []byte
-	if _, body, err = web.Probe(web.Request{Method: "GET", Url: fmt.Sprintf("%s/%s", IpApi, ip)}); err != nil {
+	if _, body, err = crawler.Probe(web.Request{Method: "GET", Url: fmt.Sprintf("%s/%s", IpApi, ip)}); err != nil {
 		return
 	}
 	location = m.GeoLocation{}
@@ -49,12 +53,95 @@ func GeoLocationFromIP(ip string) (location m.GeoLocation, err error) {
 // GetRegionInfo ...
 func GetRegionInfo() (info m.RegionInfo, err error) {
 
+	crawler := web.New()
+
 	var body []byte
-	if _, body, err = web.Probe(web.Request{Method: "GET", Url: IPAPI}); err != nil {
+	if _, body, err = crawler.Probe(web.Request{Method: "GET", Url: IPAPI}); err != nil {
 		return
 	}
 	info = m.RegionInfo{}
 	err = json.Unmarshal(body, &info)
 
+	return
+}
+
+const (
+	earthRadiusKm    = 6371.0
+	earthRadiusMiles = 3959.0
+)
+
+const (
+	Miles      = string("M")
+	Kilometers = string("K")
+)
+
+// GetDistanceBetweenPoints ...
+func GetDistanceBetweenPoints(point1, point2 m.Point, unit ...string) (distance float64) {
+
+	point := s2.PointFromLatLng(s2.LatLngFromDegrees(point1.Lat, point1.Lon))
+	minDistance := point.Distance(
+		s2.PointFromLatLng(
+			s2.LatLngFromDegrees(point2.Lat, point2.Lon),
+		),
+	)
+
+	distance = angleToDistance(minDistance, unit...)
+
+	return
+}
+
+// GetDistanceToPolygon ...
+func GetDistanceToPolygon(point1 m.Point, polygon1 []m.Point, unit ...string) (distance float64) {
+
+	point := s2.PointFromLatLng(s2.LatLngFromDegrees(point1.Lat, point1.Lon))
+
+	var points []s2.Point
+	for _, point := range polygon1 {
+		points = append(points, s2.PointFromLatLng(s2.LatLngFromDegrees(point.Lat, point.Lon)))
+	}
+
+	loop := s2.LoopFromPoints(points)
+
+	var minDistance s1.Angle
+	minDistanceSet := false
+	for _, vertex := range loop.Vertices() {
+		distance := point.Distance(s2.PointFromLatLng(s2.LatLngFromPoint(vertex)))
+		if !minDistanceSet || distance < minDistance {
+			minDistance = distance
+			minDistanceSet = true
+		}
+	}
+
+	distance = angleToDistance(minDistance, unit...)
+
+	return
+}
+
+func PointInsidePolygon(point1 m.Point, polygon1 []m.Point) bool {
+
+	point := s2.PointFromLatLng(s2.LatLngFromDegrees(point1.Lat, point1.Lon))
+
+	var points []s2.Point
+	for _, point := range polygon1 {
+		points = append(points, s2.PointFromLatLng(s2.LatLngFromDegrees(point.Lat, point.Lon)))
+	}
+
+	loop := s2.LoopFromPoints(points)
+
+	return !loop.ContainsPoint(point)
+}
+
+// Преобразовать угол в расстояние с учетом радиуса Земли.
+func angleToDistance(angle s1.Angle, unit ...string) (distance float64) {
+	if len(unit) > 0 {
+		switch unit[0] {
+		case Miles:
+			distance = float64(angle.Radians()) * earthRadiusMiles
+		case Kilometers:
+			distance = float64(angle.Radians()) * earthRadiusKm
+		}
+	} else {
+		distance = float64(angle.Radians()) * earthRadiusKm
+	}
 	return
 }

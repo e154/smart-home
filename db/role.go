@@ -43,7 +43,7 @@ type Role struct {
 	RoleName    sql.NullString `gorm:"column:parent"`
 	Children    []*Role
 	Permissions []*Permission
-	CreatedAt   time.Time
+	CreatedAt   time.Time `gorm:"<-:create"`
 	UpdatedAt   time.Time
 }
 

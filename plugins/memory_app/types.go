@@ -103,4 +103,3 @@ func NewMetrics() []*m.Metric {
 		},
 	}
 }
-

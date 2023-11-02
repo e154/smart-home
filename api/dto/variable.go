@@ -19,10 +19,8 @@
 package dto
 
 import (
-	"github.com/e154/smart-home/api/stub/api"
-	"github.com/e154/smart-home/common"
+	stub "github.com/e154/smart-home/api/stub"
 	m "github.com/e154/smart-home/models"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Variable ...
@@ -34,7 +32,7 @@ func NewVariableDto() Variable {
 }
 
 // AddVariable ...
-func (r Variable) AddVariable(from *api.NewVariableRequest) (ver m.Variable) {
+func (r Variable) AddVariable(from *stub.ApiNewVariableRequest) (ver m.Variable) {
 	ver = m.Variable{
 		Name:  from.Name,
 		Value: from.Value,
@@ -43,51 +41,43 @@ func (r Variable) AddVariable(from *api.NewVariableRequest) (ver m.Variable) {
 }
 
 // UpdateVariable ...
-func (r Variable) UpdateVariable(obj *api.UpdateVariableRequest) (ver m.Variable) {
+func (r Variable) UpdateVariable(obj *stub.VariableServiceUpdateVariableJSONBody, name string) (ver m.Variable) {
 	ver = m.Variable{
-		Name:  obj.Name,
+		Name:  name,
 		Value: obj.Value,
 	}
 	return
 }
 
 // ToListResult ...
-func (r Variable) ToListResult(list []m.Variable, total uint64, pagination common.PageParams) *api.GetVariableListResult {
+func (r Variable) ToListResult(list []m.Variable) []*stub.ApiVariable {
 
-	items := make([]*api.Variable, 0, len(list))
+	items := make([]*stub.ApiVariable, 0, len(list))
 
 	for _, i := range list {
 		items = append(items, r.ToVariable(i))
 	}
 
-	return &api.GetVariableListResult{
-		Items: items,
-		Meta: &api.Meta{
-			Limit: uint64(pagination.Limit),
-			Page:  pagination.PageReq,
-			Total: total,
-			Sort:  pagination.SortReq,
-		},
-	}
+	return items
 }
 
 // ToVariable ...
-func (r Variable) ToVariable(ver m.Variable) (obj *api.Variable) {
+func (r Variable) ToVariable(ver m.Variable) (obj *stub.ApiVariable) {
 	obj = ToVariable(ver)
 	return
 }
 
 // ToVariable ...
-func ToVariable(ver m.Variable) (obj *api.Variable) {
+func ToVariable(ver m.Variable) (obj *stub.ApiVariable) {
 	if ver.Name == "" {
 		return
 	}
-	obj = &api.Variable{
+	obj = &stub.ApiVariable{
 		Name:      ver.Name,
 		Value:     ver.Value,
 		System:    ver.System,
-		CreatedAt: timestamppb.New(ver.CreatedAt),
-		UpdatedAt: timestamppb.New(ver.UpdatedAt),
+		CreatedAt: ver.CreatedAt,
+		UpdatedAt: ver.UpdatedAt,
 	}
 	return
 }

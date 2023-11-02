@@ -94,18 +94,6 @@ entityAction = (entityId, actionName, args)->
 
 ----------------
 
-### Обект Actor
-
-```coffeescript
-Actor.setState(entityStateParams)
-```
-| значение   | описание               |
-|-------------|-------------------|
-| setState  | type: метод, обновление статуса сущности |
-| entityStateParams  | type: Object EntityStateParams |
-
-----------------
-
 ### объект EntityStateParams
 
 ```coffeescript
@@ -137,7 +125,7 @@ ifError =(res)->
 checkStatus =->
   stats = Miner.stats()
   if ifError(stats)
-    Actor.setState
+    EntitySetState ENTITY_ID,
       'new_state': 'ERROR'
     return
   p = JSON.parse(stats.result)
@@ -146,7 +134,7 @@ checkStatus =->
 checkSum =->
   summary = Miner.summary()
   if ifError(summary)
-    Actor.setState
+    EntitySetState ENTITY_ID,
       'new_state': 'ERROR'
     return
   p = JSON.parse(summary.result)

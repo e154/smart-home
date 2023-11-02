@@ -19,10 +19,9 @@
 package controllers
 
 import (
-	"context"
+	"github.com/labstack/echo/v4"
 
-	"github.com/e154/smart-home/api/stub/api"
-	"google.golang.org/protobuf/types/known/emptypb"
+	"github.com/e154/smart-home/api/stub"
 )
 
 // ControllerRole ...
@@ -31,105 +30,116 @@ type ControllerRole struct {
 }
 
 // NewControllerRole ...
-func NewControllerRole(common *ControllerCommon) ControllerRole {
-	return ControllerRole{
+func NewControllerRole(common *ControllerCommon) *ControllerRole {
+	return &ControllerRole{
 		ControllerCommon: common,
 	}
 }
 
 // GetRoleAccessList ...
-func (c ControllerRole) GetRoleAccessList(ctx context.Context, req *api.GetRoleAccessListRequest) (*api.RoleAccessListResult, error) {
+func (c ControllerRole) RoleServiceGetRoleAccessList(ctx echo.Context, name string) error {
 
-	accessList, err := c.endpoint.Role.GetAccessList(ctx, req.Name, c.accessList)
+	accessList, err := c.endpoint.Role.GetAccessList(ctx.Request().Context(), name, c.accessList)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Role.ToRoleAccessListResult(accessList), nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, c.dto.Role.ToRoleAccessListResult(accessList)))
 }
 
 // UpdateRoleAccessList ...
-func (c ControllerRole) UpdateRoleAccessList(ctx context.Context, req *api.UpdateRoleAccessListRequest) (*api.RoleAccessListResult, error) {
+func (c ControllerRole) RoleServiceUpdateRoleAccessList(ctx echo.Context, name string, _ stub.RoleServiceUpdateRoleAccessListParams) error {
 
-	if err := c.endpoint.Role.UpdateAccessList(ctx, req.Name, c.dto.Role.FromUpdateRoleAccessListRequest(req)); err != nil {
-		return nil, c.error(ctx, nil, err)
+	obj := &stub.RoleServiceUpdateRoleAccessListJSONBody{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	accessList, err := c.endpoint.Role.GetAccessList(ctx, req.Name, c.accessList)
+	if err := c.endpoint.Role.UpdateAccessList(ctx.Request().Context(), name, c.dto.Role.UpdateRoleAccessList(obj, name)); err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	accessList, err := c.endpoint.Role.GetAccessList(ctx.Request().Context(), name, c.accessList)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Role.ToRoleAccessListResult(accessList), nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, c.dto.Role.ToRoleAccessListResult(accessList)))
 }
 
 // AddRole ...
-func (c ControllerRole) AddRole(ctx context.Context, req *api.NewRoleRequest) (*api.Role, error) {
+func (c ControllerRole) RoleServiceAddRole(ctx echo.Context, _ stub.RoleServiceAddRoleParams) error {
 
-	role := c.dto.Role.FromNewRoleRequest(req)
-
-	role, errs, err := c.endpoint.Role.Add(ctx, role)
-	if len(errs) != 0 || err != nil {
-		return nil, c.error(ctx, errs, err)
+	obj := &stub.ApiNewRoleRequest{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Role.ToGRole(role), nil
+	role, err := c.endpoint.Role.Add(ctx.Request().Context(), c.dto.Role.FromNewRoleRequest(obj))
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP201(ctx, ResponseWithObj(ctx, c.dto.Role.GetStubRole(role)))
 }
 
 // GetRoleByName ...
-func (c ControllerRole) GetRoleByName(ctx context.Context, req *api.GetRoleRequest) (*api.Role, error) {
+func (c ControllerRole) RoleServiceGetRoleByName(ctx echo.Context, name string) error {
 
-	role, err := c.endpoint.Role.GetByName(ctx, req.Name)
+	role, err := c.endpoint.Role.GetByName(ctx.Request().Context(), name)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Role.ToGRole(role), nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, c.dto.Role.GetStubRole(role)))
 }
 
 // UpdateRoleByName ...
-func (c ControllerRole) UpdateRoleByName(ctx context.Context, req *api.UpdateRoleRequest) (*api.Role, error) {
+func (c ControllerRole) RoleServiceUpdateRoleByName(ctx echo.Context, name string, _ stub.RoleServiceUpdateRoleByNameParams) error {
 
-	role := c.dto.Role.FromUpdateRoleRequest(req)
-
-	role, errs, err := c.endpoint.Role.Update(ctx, role)
-	if len(errs) != 0 || err != nil {
-		return nil, c.error(ctx, errs, err)
+	obj := &stub.RoleServiceUpdateRoleByNameJSONBody{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Role.ToGRole(role), nil
+	role, err := c.endpoint.Role.Update(ctx.Request().Context(), c.dto.Role.FromUpdateRoleRequest(obj, name))
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, c.dto.Role.GetStubRole(role)))
 }
 
 // GetRoleList ...
-func (c ControllerRole) GetRoleList(ctx context.Context, req *api.PaginationRequest) (*api.GetRoleListResult, error) {
+func (c ControllerRole) RoleServiceGetRoleList(ctx echo.Context, params stub.RoleServiceGetRoleListParams) error {
 
-	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
-	items, total, err := c.endpoint.Role.GetList(ctx, pagination)
+	pagination := c.Pagination(params.Page, params.Limit, params.Sort)
+	items, total, err := c.endpoint.Role.GetList(ctx.Request().Context(), pagination)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Role.ToListResult(items, uint64(total), pagination), nil
+	return c.HTTP200(ctx, ResponseWithList(ctx, c.dto.Role.ToListResult(items), total, pagination))
 }
 
 // SearchRoleByName ...
-func (c ControllerRole) SearchRoleByName(ctx context.Context, req *api.SearchRequest) (*api.SearchRoleListResult, error) {
+func (c ControllerRole) RoleServiceSearchRoleByName(ctx echo.Context, params stub.RoleServiceSearchRoleByNameParams) error {
 
-	search := c.Search(req.Query, req.Limit, req.Offset)
-	items, _, err := c.endpoint.Role.Search(ctx, search.Query, search.Limit, search.Offset)
+	search := c.Search(params.Query, params.Limit, params.Offset)
+	items, _, err := c.endpoint.Role.Search(ctx.Request().Context(), search.Query, search.Limit, search.Offset)
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return c.ERROR(ctx, err)
 	}
 
-	return c.dto.Role.ToSearchResult(items), nil
+	return c.HTTP200(ctx, c.dto.Role.ToSearchResult(items))
 }
 
 // DeleteRoleByName ...
-func (c ControllerRole) DeleteRoleByName(ctx context.Context, req *api.DeleteRoleRequest) (*emptypb.Empty, error) {
+func (c ControllerRole) RoleServiceDeleteRoleByName(ctx echo.Context, name string) error {
 
-	if err := c.endpoint.Role.Delete(ctx, req.Name); err != nil {
-		return nil, c.error(ctx, nil, err)
+	if err := c.endpoint.Role.Delete(ctx.Request().Context(), name); err != nil {
+		return c.ERROR(ctx, err)
 	}
 
-	return &emptypb.Empty{}, nil
+	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }

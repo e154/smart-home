@@ -21,6 +21,8 @@ package supervisor
 import (
 	"context"
 	"fmt"
+	"github.com/e154/smart-home/common/location"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -35,7 +37,8 @@ func SetStateBind(manager Supervisor) func(entityId string, params EntityStatePa
 func SetStateNameBind(manager Supervisor) func(entityId, stateName string) {
 	return func(entityId, stateName string) {
 		_ = manager.SetState(common.EntityId(entityId), EntityStateParams{
-			NewState: common.String(stateName),
+			NewState:    common.String(stateName),
+			StorageSave: true,
 		})
 	}
 }
@@ -70,8 +73,8 @@ func GetAttributesBind(manager Supervisor) func(entityId string) m.AttributeValu
 	}
 }
 
-func SetMetricBind(manager Supervisor) func(entityId, name string, value map[string]float32) {
-	return func(entityId, name string, value map[string]float32) {
+func SetMetricBind(manager Supervisor) func(entityId, name string, value map[string]interface{}) {
+	return func(entityId, name string, value map[string]interface{}) {
 		manager.SetMetric(common.EntityId(entityId), name, value)
 	}
 }
@@ -105,29 +108,28 @@ func GetSettingsBind(manager Supervisor) func(entityId string) m.AttributeValue 
 
 func GetDistanceToAreaBind(adaptors *adaptors.Adaptors) func(areaId int64, point m.Point) float64 {
 	return func(areaId int64, point m.Point) float64 {
-		if distance, err := adaptors.Area.GetDistanceToArea(context.Background(), point, areaId); err == nil {
-			return distance
+		area, err := adaptors.Area.GetById(context.Background(), areaId)
+		if err != nil {
+			log.Error(err.Error())
+			return 0
 		}
-		return 0
+		return location.GetDistanceToPolygon(point, area.Polygon)
 	}
 }
-
 
 func GetDistanceBetweenPointsBind(adaptors *adaptors.Adaptors) func(point1, point2 m.Point) float64 {
 	return func(point1, point2 m.Point) float64 {
-		if distance, err := adaptors.Area.GetDistanceBetweenPoints(context.Background(), point1, point2); err == nil {
-			return distance
-		}
-		return 0
+		return location.GetDistanceBetweenPoints(point1, point2)
 	}
 }
 
-
 func PointInsideAriaBind(adaptors *adaptors.Adaptors) func(areaId int64, point m.Point) bool {
 	return func(areaId int64, point m.Point) bool {
-		if inside, err := adaptors.Area.PointInsideAriaById(context.Background(), &point, areaId); err == nil {
-			return inside
+		area, err := adaptors.Area.GetById(context.Background(), areaId)
+		if err != nil {
+			log.Error(err.Error())
+			return false
 		}
-		return false
+		return location.PointInsidePolygon(point, area.Polygon)
 	}
 }

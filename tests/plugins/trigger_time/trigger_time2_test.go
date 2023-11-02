@@ -89,7 +89,7 @@ entityAction = (entityId, actionName)->
 			sensorEnt, err = adaptors.Entity.GetById(context.Background(), sensorEnt.Id)
 			ctx.So(err, ShouldBeNil)
 
-			eventBus.Publish("system/entities/"+sensorEnt.Id.String(), events.EventCreatedEntity{
+			eventBus.Publish("system/models/entities/"+sensorEnt.Id.String(), events.EventCreatedEntityModel{
 				EntityId: sensorEnt.Id,
 			})
 

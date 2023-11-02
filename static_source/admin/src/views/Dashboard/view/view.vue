@@ -93,7 +93,8 @@ fetchDashboard()
         v-for="(tab, index) in core.tabs"
         :label="tab.name"
         :key="index"
-        :class="[{'gap': tab.gap}]">
+        :class="[{'gap': tab.gap}]"
+        :lazy="true">
       <ViewTab :tab="tab" :key="index" :core="core"/>
     </ElTabPane>
   </ElTabs>
