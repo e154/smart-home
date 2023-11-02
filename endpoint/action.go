@@ -95,7 +95,7 @@ func (n *ActionEndpoint) Update(ctx context.Context, params *m.Action) (action *
 	}
 
 	n.eventBus.Publish(fmt.Sprintf("system/models/actions/%d", action.Id), events.EventUpdatedActionModel{
-		Id: action.Id,
+		Id:     action.Id,
 		Action: action,
 	})
 

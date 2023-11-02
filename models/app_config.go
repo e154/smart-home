@@ -32,34 +32,34 @@ type AppConfig struct {
 	PgHost                         string         `json:"pg_host" env:"PG_HOST"`
 	PgName                         string         `json:"pg_name" env:"PG_NAME"`
 	PgPort                         string         `json:"pg_port" env:"PG_PORT"`
-	PgDebug                        bool           `json:"pg_debug" env:"PG_DEBUG"`
+	SnapshotDir                    string         `json:"snapshot_dir" env:"SNAPSHOT_DIR"`
+	Mode                           common.RunMode `json:"mode" env:"MODE"`
+	AlexaHost                      string         `json:"alexa_host" env:"ALEXA_HOST"`
+	MobileHost                     string         `json:"mobile_host" env:"MOBILE_HOST"`
+	Lang                           string         `json:"lang" env:"LANG"`
+	Domain                         string         `json:"domain" env:"DOMAIN"`
 	PgMaxIdleConns                 int            `json:"pg_max_idle_conns" env:"PG_MAX_IDLE_CONNS"`
 	PgMaxOpenConns                 int            `json:"pg_max_open_conns" env:"PG_MAX_OPEN_CONNS"`
 	PgConnMaxLifeTime              int            `json:"pg_conn_max_life_time" env:"PG_CONN_MAX_LIFE_TIME"`
-	AutoMigrate                    bool           `json:"auto_migrate" env:"AUTO_MIGRATE"`
-	SnapshotDir                    string         `json:"snapshot_dir" env:"SNAPSHOT_DIR"`
-	Mode                           common.RunMode `json:"mode" env:"MODE"`
 	MqttPort                       int            `json:"mqtt_port" env:"MQTT_PORT"`
 	MqttRetryInterval              time.Duration  `json:"mqtt_retry_interval" env:"MQTT_RETRY_INTERVAL"`
 	MqttRetryCheckInterval         time.Duration  `json:"mqtt_retry_check_interval" env:"MQTT_RETRY_CHECK_INTERVAL"`
 	MqttSessionExpiryInterval      time.Duration  `json:"mqtt_session_expiry_interval" env:"MQTT_SESSION_EXPIRY_INTERVAL"`
 	MqttSessionExpireCheckInterval time.Duration  `json:"mqtt_session_expire_check_interval" env:"MQTT_SESSION_EXPIRE_CHECK_INTERVAL"`
-	MqttQueueQos0Messages          bool           `json:"mqtt_queue_qos_0_messages" env:"MQTT_QUEUE_QOS_0_MESSAGES"`
 	MqttMaxInflight                int            `json:"mqtt_max_inflight" env:"MQTT_MAX_INFLIGHT"`
 	MqttMaxAwaitRel                int            `json:"mqtt_max_await_rel" env:"MQTT_MAX_AWAIT_REL"`
 	MqttMaxMsgQueue                int            `json:"mqtt_max_msg_queue" env:"MQTT_MAX_MSG_QUEUE"`
 	MqttDeliverMode                int            `json:"mqtt_deliver_mode" env:"MQTT_DELIVER_MODE"`
-	Logging                        bool           `json:"logging" env:"LOGGING"`
-	ColoredLogging                 bool           `json:"colored_logging" env:"COLORED_LOGGING"`
-	AlexaHost                      string         `json:"alexa_host" env:"ALEXA_HOST"`
 	AlexaPort                      int            `json:"alexa_port" env:"ALEXA_PORT"`
-	MobileHost                     string         `json:"mobile_host" env:"MOBILE_HOST"`
 	MobilePort                     int            `json:"mobile_port" env:"MOBILE_PORT"`
 	ApiHttpPort                    int            `json:"api_http_port" env:"API_HTTP_PORT"`
+	PgDebug                        bool           `json:"pg_debug" env:"PG_DEBUG"`
+	AutoMigrate                    bool           `json:"auto_migrate" env:"AUTO_MIGRATE"`
+	MqttQueueQos0Messages          bool           `json:"mqtt_queue_qos_0_messages" env:"MQTT_QUEUE_QOS_0_MESSAGES"`
+	Logging                        bool           `json:"logging" env:"LOGGING"`
+	ColoredLogging                 bool           `json:"colored_logging" env:"COLORED_LOGGING"`
 	ApiSwagger                     bool           `json:"api_swagger" env:"API_SWAGGER"`
-	Lang                           string         `json:"lang" env:"LANG"`
 	GodMode                        bool           `json:"god_mode" env:"GOD_MODE"`
-	Domain                         string         `json:"domain" env:"DOMAIN"`
 	Https                          bool           `json:"https" env:"HTTPS"`
 }
 

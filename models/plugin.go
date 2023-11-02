@@ -27,10 +27,10 @@ type PluginSettings struct {
 type Plugin struct {
 	Name     string         `json:"name"`
 	Version  string         `json:"version"`
+	Settings AttributeValue `json:"settings"`
 	Enabled  bool           `json:"enabled"`
 	System   bool           `json:"system"`
 	Actor    bool           `json:"actor"`
-	Settings AttributeValue `json:"settings"`
 	IsLoaded bool           `json:"is_loaded"`
 }
 
@@ -60,16 +60,16 @@ type PluginOptionsJs struct {
 
 // PluginOptions ...
 type PluginOptions struct {
+	Javascript         PluginOptionsJs              `json:"javascript"`
+	ActorAttrs         Attributes                   `json:"actor_attrs"`
+	ActorActions       map[string]EntityActionShort `json:"actor_actions"`
+	ActorStates        map[string]EntityStateShort  `json:"actor_states"`
+	ActorSetts         Attributes                   `json:"actor_setts"`
+	Setts              Attributes                   `json:"setts"`
 	Triggers           bool                         `json:"triggers"`
 	Actors             bool                         `json:"actors"`
 	ActorCustomAttrs   bool                         `json:"actor_custom_attrs"`
-	ActorAttrs         Attributes                   `json:"actor_attrs"`
 	ActorCustomActions bool                         `json:"actor_custom_actions"`
-	ActorActions       map[string]EntityActionShort `json:"actor_actions"`
 	ActorCustomStates  bool                         `json:"actor_custom_states"`
-	ActorStates        map[string]EntityStateShort  `json:"actor_states"`
 	ActorCustomSetts   bool                         `json:"actor_custom_setts"`
-	ActorSetts         Attributes                   `json:"actor_setts"`
-	Setts              Attributes                   `json:"setts"`
-	Javascript         PluginOptionsJs              `json:"javascript"`
 }

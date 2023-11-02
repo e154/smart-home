@@ -86,8 +86,8 @@ func (n *MetricBucket) List(ctx context.Context, from, to *time.Time, metricId i
 
 	var dbList []*db.MetricBucket
 	if dbList, err = n.table.List(ctx, metricId, optionItems, from, to, metricRange); err != nil {
-			return
-		}
+		return
+	}
 
 	list = make([]*m.MetricDataItem, len(dbList))
 	for i, dbVer := range dbList {
