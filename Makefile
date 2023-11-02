@@ -215,7 +215,7 @@ docs_deploy:
 	echo -e "Done documentation deploy.\n"
 
 docker_image:
-	cd ${SERVER_DIR} && ls -ll && docker buildx build --platform linux/amd64,linux/arm/v7 -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
+	cd ${SERVER_DIR} && ls -ll && docker build -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
 
 docker_image_upload:
 	echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
