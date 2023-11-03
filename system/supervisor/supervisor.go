@@ -518,7 +518,9 @@ func (e *supervisor) eventUpdatedScript(msg events.EventUpdatedScriptModel) {
 	defer e.eventScriptSubsMx.RUnlock()
 
 	for entityId := range e.eventScriptSubs[msg.ScriptId] {
-		go e.updatedEntityById(entityId)
+		go func(entityId common.EntityId) {
+			e.updatedEntityById(entityId)
+		}(entityId)
 	}
 }
 
@@ -537,7 +539,9 @@ func (e *supervisor) eventScriptDeleted(msg events.EventRemovedScriptModel) {
 	defer e.eventScriptSubsMx.RUnlock()
 
 	for entityId := range e.eventScriptSubs[msg.ScriptId] {
-		go e.UnloadEntity(entityId)
+		go func(entityId common.EntityId) {
+			e.UnloadEntity(entityId)
+		}(entityId)
 	}
 }
 

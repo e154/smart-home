@@ -273,6 +273,7 @@ func (a Attributes) Deserialize(data AttributeValue) (changed bool, err error) {
 					case int64, int32:
 					case float64, float32:
 					case bool:
+					case string:
 					case time.Time:
 					case AttributeValue:
 						if items, ok := to[keyFrom].Value.([]Attributes); ok {

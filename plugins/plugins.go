@@ -41,6 +41,7 @@ import (
 	_ "github.com/e154/smart-home/plugins/scene"
 	_ "github.com/e154/smart-home/plugins/sensor"
 	_ "github.com/e154/smart-home/plugins/slack"
+	_ "github.com/e154/smart-home/plugins/speedtest"
 	_ "github.com/e154/smart-home/plugins/sun"
 	_ "github.com/e154/smart-home/plugins/telegram"
 	_ "github.com/e154/smart-home/plugins/triggers"
