@@ -90,7 +90,7 @@ func (n *MetricBuckets) List(ctx context.Context, metricId int64, optionItems []
 			interval = "24 seconds"
 			from = to.Add(-24 * time.Hour)
 		case common.MetricRange7d:
-			interval = "2 minutes"
+			interval = "150 seconds"
 			from = to.Add(-24 * 7 * time.Hour)
 		case common.MetricRange30d, common.MetricRange1m:
 			interval = "7 minutes"

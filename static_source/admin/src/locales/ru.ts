@@ -575,7 +575,8 @@ export default {
         addChartItem: "Добавить элемент диаграммы",
         itemValue: "Значение элемента",
         itemDescription: "Описание элемента",
-        barOptions: "Параметры столбца"
+        barOptions: "Параметры столбца",
+        dataZoom: 'Масштабирование'
       },
       joystick: {
         options: 'Параметры управления',

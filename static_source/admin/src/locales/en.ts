@@ -576,7 +576,8 @@ export default {
                 addChartItem: 'Add Chart Item',
                 itemValue: 'Item Value',
                 itemDescription: 'Item Description',
-                barOptions: 'Bar Options'
+                barOptions: 'Bar Options',
+                dataZoom: 'Data Zoom'
             },
             joystick: {
                 options: 'Joystick Options',

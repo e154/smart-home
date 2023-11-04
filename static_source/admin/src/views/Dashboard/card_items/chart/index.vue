@@ -588,6 +588,15 @@ watch(
     }
 )
 
+watch(
+    () => props.item.hidden,
+    (val?: boolean) => {
+      if (!val) {
+        reload();
+      }
+    }
+)
+
 // requestCurrentState(props.item?.entityId);
 prepareData();
 

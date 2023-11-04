@@ -77,6 +77,8 @@ export interface CompareProp {
   key: string;
   comparison: comparisonType;
   value: string;
+  entity?: { id?: string };
+  entityId?: string;
 }
 
 export interface ItemPayloadImage {
@@ -517,8 +519,17 @@ export class CardItem {
       updated = true
     }
 
+    // ...
+    let exist: boolean
+    for (const prop of this.hideOn) {
+      if (prop.entityId == event.entity_id) {
+        exist = true
+        break;
+      }
+    }
+
     // for base entity
-    if (!this.entityId || event.entity_id != this.entityId) {
+    if (!exist && (!this.entityId || event.entity_id != this.entityId)) {
       if (updated) {
         this.update();
       }

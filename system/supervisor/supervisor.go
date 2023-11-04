@@ -208,6 +208,8 @@ func (e *supervisor) SetState(id common.EntityId, params EntityStateParams) (err
 		log.Error(err.Error())
 	}
 
+	e.cache.Delete(id.String())
+
 	return
 }
 
@@ -496,6 +498,8 @@ func (e *supervisor) UnloadEntity(id common.EntityId) {
 
 	plugin := value.(Pluggable)
 	plugin.RemoveActor(id)
+
+	e.cache.Delete(id.String())
 }
 
 func (e *supervisor) GetService() Service {
