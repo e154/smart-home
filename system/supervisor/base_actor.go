@@ -414,6 +414,8 @@ func (e *BaseActor) AddMetric(name string, value map[string]interface{}) {
 		return
 	}
 
+	var updated bool
+
 	var err error
 	for _, metric := range e.Metric {
 		if metric.Name != name {
@@ -435,5 +437,15 @@ func (e *BaseActor) AddMetric(name string, value map[string]interface{}) {
 			log.Errorf(err.Error(), value, metric.Id)
 			debug.PrintStack()
 		}
+
+		updated = true
 	}
+
+	if !updated {
+		return
+	}
+
+	e.Service.EventBus().Publish("system/entities/%s"+e.Id.String(), events.EventUpdatedMetric{
+		EntityId: e.Id,
+	})
 }

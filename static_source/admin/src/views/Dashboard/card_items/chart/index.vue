@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, onMounted, PropType, ref, unref, watch} from "vue";
+import {computed, onMounted, onUnmounted, PropType, ref, unref, watch} from "vue";
 import {Card, CardItem, Core, requestCurrentState, Tab} from "@/views/Dashboard/core";
 import {ApiMetric} from "@/api/stub";
 import {ChartDataInterface, ChartDataSet} from "@/views/Dashboard/card_items/chart/types";
@@ -13,6 +13,8 @@ import {string} from "vue-types";
 import {debounce} from "lodash-es";
 import {Cache, GetTokens, RenderText} from "@/views/Dashboard/render";
 import {ApplyFilter} from "@/views/Dashboard/filters";
+import {UUID} from "uuid-generator-ts";
+import stream from "@/api/stream";
 
 const {bus} = useBus()
 const { t } = useI18n()
@@ -26,13 +28,35 @@ const props = defineProps({
   },
 })
 
+const currentItem = computed(()=> props.item as CardItem)
+
+const onEventhandler = (event) => {
+  const {entity_id} = event;
+
+  if (entity_id != currentItem.value.entityId) {
+    return
+  }
+
+  prepareData();
+}
+
+const currentID = ref('')
 const el = ref(null)
 onMounted(() => {
   // store dom element moveable
   props.item.setTarget(el.value)
+
+  const uuid = new UUID()
+  currentID.value = uuid.getDashFreeUUID()
+
+  setTimeout(() => {
+    stream.subscribe('event_updated_metric', currentID.value, onEventhandler);
+  }, 1000)
 })
 
-const currentItem = computed(()=> props.item as CardItem)
+onUnmounted(() => {
+  stream.unsubscribe('event_updated_metric', currentID.value);
+})
 
 // ---------------------------------
 // component methods
@@ -545,7 +569,7 @@ const reload = debounce(() => {
 watch(
     () => props.item.lastEvent,
     (val?: CardItem) => {
-      prepareData();
+      // prepareData();
     },
     {
       deep: true,
@@ -564,7 +588,8 @@ watch(
     }
 )
 
-requestCurrentState(props.item?.entityId);
+// requestCurrentState(props.item?.entityId);
+prepareData();
 
 </script>
 

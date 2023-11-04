@@ -79,6 +79,11 @@ type EventUpdatedEntityModel struct {
 	EntityId common.EntityId `json:"entity_id"`
 }
 
+// EventUpdatedMetric ...
+type EventUpdatedMetric struct {
+	EntityId common.EntityId `json:"entity_id"`
+}
+
 // CommandUnloadEntity ...
 type CommandUnloadEntity struct {
 	EntityId common.EntityId `json:"entity_id"`
