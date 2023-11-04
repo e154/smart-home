@@ -140,11 +140,12 @@ func (e *Actor) updateState(state *speedtest.Server) {
 	e.DeserializeAttr(attributeValues)
 
 	go e.SaveState(events.EventStateChanged{
-		StorageSave: state != nil,
-		PluginName:  e.Id.PluginName(),
-		EntityId:    e.Id,
-		OldState:    oldState,
-		NewState:    e.GetEventState(),
+		StorageSave:     state != nil,
+		PluginName:      e.Id.PluginName(),
+		EntityId:        e.Id,
+		OldState:        oldState,
+		NewState:        e.GetEventState(),
+		DoNotSaveMetric: state == nil,
 	})
 }
 

@@ -330,7 +330,9 @@ func (e *BaseActor) GetEventState() (eventState bus.EventEntityState) {
 
 func (e *BaseActor) SaveState(msg events.EventStateChanged) {
 
-	go e.updateMetric(msg.NewState)
+	if !msg.DoNotSaveMetric {
+		go e.updateMetric(msg.NewState)
+	}
 
 	if msg.NewState.Compare(msg.OldState) {
 		return

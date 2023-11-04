@@ -57,7 +57,7 @@ func (l *MetricEndpoint) GetByIdWithData(ctx context.Context, from, to *time.Tim
 		return
 	}
 
-	l.cache.Put(key, metric, 10*time.Second)
+	l.cache.Put(key, metric, 5*time.Second)
 
 	return
 }
