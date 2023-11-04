@@ -569,8 +569,8 @@ requestCurrentState(props.item?.entityId);
 </script>
 
 <template>
-  <div ref="el" class="h-[100%] w-[100%]">
-    <Echart v-if="item.entity && loaded" :options="chartOptions" :key="reloadKey"/>
+  <div ref="el" :class="[{'hidden': item.hidden}]" class="h-[100%] w-[100%]">
+    <Echart v-if="item.enabled && item.entity && loaded" :options="chartOptions" :key="reloadKey"/>
   </div>
 </template>
 

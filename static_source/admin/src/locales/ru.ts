@@ -588,8 +588,11 @@ export default {
       entityStorage: {
         entities: 'Устройства',
         showFilter: 'Показывать фильтры'
-      }
-    }
+      },
+      defaultIcon: 'Default Icon',
+      iconSize: 'Icon Size',
+      iconColor: 'Icon Color'
+    },
   },
   settings: {
     dashboardOptions: 'Настройки панели',

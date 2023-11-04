@@ -5,7 +5,7 @@ import {Vuuri} from "@/views/Dashboard/Vuuri"
 import {useBus} from "@/views/Dashboard/bus";
 import ViewCard from "@/views/Dashboard/editor/ViewCard.vue";
 import {ElDivider, ElOption, ElCollapse, ElFormItem, ElSwitch, ElCol, ElRow, ElButton, ElSelect,
-  ElPopconfirm, ElForm, ElCard, ElCollapseItem} from 'element-plus'
+  ElPopconfirm, ElForm, ElCard, ElCollapseItem, ElInput, ElColorPicker, ElInputNumber} from 'element-plus'
 import {ApiEntity, ApiImage} from "@/api/stub";
 import EntitySearch from "@/views/Entities/components/EntitySearch.vue";
 import ShowOn from "@/views/Dashboard/card_items/common/show-on.vue";
@@ -214,6 +214,24 @@ const removeAction = (index: number) => {
                 <ElFormItem :label="$t('dashboard.editor.image')" prop="image">
                     <ImageSearch v-model="prop.image" @change="onSelectImageForAction(index, ...arguments)"/>
                 </ElFormItem>
+
+                <ElRow :gutter="24">
+                  <ElCol :span="8" :xs="8">
+                    <ElFormItem :label="$t('dashboard.editor.icon')" prop="icon">
+                      <ElInput v-model="prop.icon" />
+                    </ElFormItem>
+                  </ElCol>
+                  <ElCol :span="8" :xs="8">
+                    <ElFormItem :label="$t('dashboard.editor.iconColor')" prop="iconColor">
+                      <ElColorPicker show-alpha v-model="prop.iconColor"/>
+                    </ElFormItem>
+                  </ElCol>
+                  <ElCol :span="8" :xs="8">
+                    <ElFormItem :label="$t('dashboard.editor.iconSize')" prop="iconSize">
+                      <ElInputNumber size="small" v-model="prop.iconSize" :min="1" :value-on-clear="12"/>
+                    </ElFormItem>
+                  </ElCol>
+                </ElRow>
 
                 <ElRow>
                   <ElCol>

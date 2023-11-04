@@ -62,7 +62,7 @@ class Stream {
     }
 
     if (m.query == 'html5_notify') {
-      const {result} = JSON.parse(ev.data);
+      const result = JSON.parse(ev.data);
       m = result;
       const body: EventHTML5Notify = JSON.parse(atob(m.body));
       // console.log(body)

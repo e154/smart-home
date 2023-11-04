@@ -589,7 +589,10 @@ export default {
             entityStorage: {
                 entities: 'Entities',
                 showFilter: 'Show Filter'
-            }
+            },
+            defaultIcon: 'Default Icon',
+            iconSize: 'Icon Size',
+            iconColor: 'Icon Color'
         }
     },
     settings: {

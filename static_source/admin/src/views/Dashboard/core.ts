@@ -40,6 +40,9 @@ export interface ButtonAction {
   entity?: { id?: string };
   action: string;
   image?: ApiImage | null;
+  icon?: string;
+  iconColor?: string;
+  iconSize?: number;
 }
 
 export interface Position {
@@ -147,7 +150,7 @@ export class CardItem {
   private _type: string;
   private _entityActions: Action[] = [];
   private _entityStates: State[] = [];
-  private _lastEvents?: Map<string, EventStateChange> = {} as Map<string, EventStateChange> ;
+  private _lastEvents?: Map<string, EventStateChange> = {} as Map<string, EventStateChange>;
 
   constructor(item: ApiDashboardCardItem) {
     this.id = item.id;
@@ -203,7 +206,11 @@ export class CardItem {
       if (!this.payload.state) {
         this.payload.state = {
           items: [],
-          default_image: undefined
+          default_image: undefined,
+          defaultImage: undefined,
+          defaultIcon: undefined,
+          defaultIconColor: undefined,
+          defaultIconSize: undefined,
         } as ItemPayloadState;
       }
       if (!this.payload.text) {
@@ -240,7 +247,7 @@ export class CardItem {
       }
       if (!this.payload?.map) {
         this.payload.map = {
-         markers: []
+          markers: []
         } as ItemPayloadMap;
       } else {
         if (!this.payload.map?.markers) {
@@ -255,24 +262,19 @@ export class CardItem {
         }
       }
       if (!this.payload.slider) {
-        this.payload.slider = {
-        } as ItemPayloadSlider;
+        this.payload.slider = {} as ItemPayloadSlider;
       }
       if (!this.payload.colorPicker) {
-        this.payload.colorPicker = {
-        } as ItemPayloadColorPicker;
+        this.payload.colorPicker = {} as ItemPayloadColorPicker;
       }
       if (!this.payload.joystick) {
-        this.payload.joystick = {
-        } as ItemPayloadJoystick;
+        this.payload.joystick = {} as ItemPayloadJoystick;
       }
       if (!this.payload.video) {
-        this.payload.video = {
-        } as ItemPayloadVideo;
+        this.payload.video = {} as ItemPayloadVideo;
       }
       if (!this.payload.entityStorage) {
-        this.payload.entityStorage = {
-        } as ItemPayloadEntityStorage;
+        this.payload.entityStorage = {} as ItemPayloadEntityStorage;
       }
     }
   }
@@ -291,6 +293,9 @@ export class CardItem {
         entity: entity,
         action: action.action,
         image: action.image,
+        icon: action.icon,
+        iconColor: action.iconColor,
+        iconSize: action.iconSize,
       });
     }
     const payload = btoa(unescape(encodeURIComponent(JSON.stringify({
@@ -684,13 +689,13 @@ export class Card {
       snapThreshold: 5,
       maxSnapElementGuidelineDistance: null,
       elementGuidelines: this.itemList,
-      snapDirections: {"top":true,"left":true,"bottom":true,"right":true,"center":true,"middle":true},
-      elementSnapDirections: {"top":true,"left":true,"bottom":true,"right":true,"center":true,"middle":true},
+      snapDirections: {"top": true, "left": true, "bottom": true, "right": true, "center": true, "middle": true},
+      elementSnapDirections: {"top": true, "left": true, "bottom": true, "right": true, "center": true, "middle": true},
       isDisplaySnapDigit: true,
       isDisplayInnerSnapDigit: false,
       snapGap: true,
 
-      renderDirections: ["nw","n","ne","w","e","sw","s","se"],
+      renderDirections: ["nw", "n", "ne", "w", "e", "sw", "s", "se"],
       snapDigit: 5,
       snapGridWidth: 5,
       snapGridHeight: 5,
@@ -838,9 +843,9 @@ export class Card {
   }
 
   itemList = ref([])
-  updateItemList = debounce( () => {
+  updateItemList = debounce(() => {
     if (!this._document) return;
-    const container = this._document.querySelector('.class-'+this.currentID)
+    const container = this._document.querySelector('.class-' + this.currentID)
     if (!container) return;
     const cubeElements = container.querySelectorAll(".movable");
     this.itemList.value = Array.from(cubeElements)
@@ -1051,7 +1056,8 @@ export class Core {
   secondTab = '1';
   editorDisabled = false;
 
-  constructor() {}
+  constructor() {
+  }
 
   currentBoard(current: ApiDashboard) {
     this.current = current;
@@ -1174,7 +1180,7 @@ export class Core {
   }
 
   async updateTab() {
-    if (this.activeTab<0) {
+    if (this.activeTab < 0) {
       return;
     }
 
@@ -1214,7 +1220,7 @@ export class Core {
   // cards
   // ---------------------------------
   onSelectedCard(id: number) {
-    if (this.activeTab<0) {
+    if (this.activeTab < 0) {
       return;
     }
     // console.log(`select card id:${id}`);
@@ -1232,7 +1238,7 @@ export class Core {
   }
 
   async createCard() {
-    if (this.activeTab<0 || !this.currentTabId) {
+    if (this.activeTab < 0 || !this.currentTabId) {
       return;
     }
 
@@ -1263,7 +1269,7 @@ export class Core {
   }
 
   async removeCard() {
-    if (this.activeTab<0 || !this.currentCardId) {
+    if (this.activeTab < 0 || !this.currentCardId) {
       return;
     }
 
@@ -1287,7 +1293,7 @@ export class Core {
   }
 
   async importCard(card: ApiDashboardCard) {
-    if (this.activeTab<0 || !this.currentTabId) {
+    if (this.activeTab < 0 || !this.currentTabId) {
       return;
     }
     card.dashboardTabId = this.currentTabId;
@@ -1305,7 +1311,7 @@ export class Core {
   // Card item
   // ---------------------------------
   async createCardItem() {
-    if (this.activeTab<0 || this.activeCard == undefined) {
+    if (this.activeTab < 0 || this.activeCard == undefined) {
       return;
     }
 
@@ -1320,7 +1326,7 @@ export class Core {
   }
 
   async removeCardItem(index: number) {
-    if (this.activeTab<0 || this.activeCard == undefined) {
+    if (this.activeTab < 0 || this.activeCard == undefined) {
       return;
     }
 
