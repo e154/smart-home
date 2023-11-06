@@ -68,6 +68,12 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 		Start: time.Now(),
 	}
 
+	p.storyModel.Id, err = p.Service.Adaptors().RunHistory.Add(context.Background(), p.storyModel)
+	if err != nil {
+		log.Error(err.Error())
+		return
+	}
+
 	var entity *m.Entity
 	if entity, err = p.Service.Adaptors().Entity.GetById(context.Background(), common.EntityId(fmt.Sprintf("%s.%s", EntitySensor, Name))); err != nil {
 		entity = &m.Entity{
@@ -116,15 +122,6 @@ func (p *plugin) Unload(ctx context.Context) (err error) {
 // ActorConstructor ...
 func (p *plugin) ActorConstructor(entity *m.Entity) (actor supervisor.PluginActor, err error) {
 	actor = NewActor(entity, p.Service)
-
-	if err = p.AddActor(actor, entity); err != nil {
-		return
-	}
-
-	p.storyModel.Id, err = p.Service.Adaptors().RunHistory.Add(context.Background(), p.storyModel)
-	if err != nil {
-		log.Error(err.Error())
-	}
 	return
 }
 
@@ -146,4 +143,14 @@ func (p *plugin) Depends() []string {
 // Version ...
 func (p *plugin) Version() string {
 	return "0.0.1"
+}
+
+// Options ...
+func (p *plugin) Options() m.PluginOptions {
+	return m.PluginOptions{
+		Actors:             false,
+		ActorCustomAttrs:   false,
+		ActorAttrs:         NewAttr(),
+		ActorCustomActions: false,
+	}
 }
