@@ -137,6 +137,9 @@ func (a Attribute) Map() Attributes {
 
 // ArrayString ...
 func (a Attribute) ArrayString() (result []string) {
+	if a.Value == nil {
+		return
+	}
 	for _, val := range a.Value.([]interface{}) {
 			result = append(result, fmt.Sprintf("%v", val))
 	}
