@@ -135,6 +135,14 @@ func (a Attribute) Map() Attributes {
 	return nil
 }
 
+// ArrayString ...
+func (a Attribute) ArrayString() (result []string) {
+	for _, val := range a.Value.([]interface{}) {
+			result = append(result, fmt.Sprintf("%v", val))
+	}
+	return
+}
+
 // Point ...
 func (a Attribute) Point() (point Point) {
 	if a.Value == nil {
@@ -179,6 +187,7 @@ func (a Attributes) Serialize() (to AttributeValue) {
 						switch value := valueRaw.(type) {
 						case float64, float32:
 						case int64, int32:
+						case string:
 						case Attributes:
 							attr := AttributeValue{}
 							serialize(value, attr)

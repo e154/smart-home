@@ -58,10 +58,7 @@ func (n TelegramChats) Add(ctx context.Context, ch TelegramChat) (err error) {
 
 // Delete ...
 func (n TelegramChats) Delete(ctx context.Context, entityId common.EntityId, chatId int64) (err error) {
-	err = n.Db.WithContext(ctx).Delete(&TelegramChat{
-		EntityId: entityId,
-		ChatId:   chatId,
-	}).Error
+	err = n.Db.WithContext(ctx).Delete(&TelegramChat{}, "entity_id = ? and chat_id = ?", entityId, chatId).Error
 	if err != nil {
 		err = errors.Wrap(apperr.ErrChatDelete, err.Error())
 	}
@@ -71,13 +68,13 @@ func (n TelegramChats) Delete(ctx context.Context, entityId common.EntityId, cha
 // List ...
 func (n *TelegramChats) List(ctx context.Context, limit, offset int, orderBy, sort string, entityId common.EntityId) (list []TelegramChat, total int64, err error) {
 
-	if err = n.Db.WithContext(ctx).Model(TelegramChat{EntityId: entityId}).Count(&total).Error; err != nil {
+	q := n.Db.WithContext(ctx).Model(&TelegramChat{}).
+		Where("entity_id = ?", entityId)
+
+	if err = q.Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrChatList, err.Error())
 		return
 	}
-
-	list = make([]TelegramChat, 0)
-	q := n.Db.WithContext(ctx).Model(&TelegramChat{EntityId: entityId})
 
 	q = q.
 		Limit(limit).
@@ -88,6 +85,7 @@ func (n *TelegramChats) List(ctx context.Context, limit, offset int, orderBy, so
 			Order(fmt.Sprintf("%s %s", sort, orderBy))
 	}
 
+	list = make([]TelegramChat, 0)
 	if err = q.Find(&list).Error; err != nil {
 		err = errors.Wrap(apperr.ErrChatList, err.Error())
 	}

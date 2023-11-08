@@ -157,10 +157,10 @@ func NewBaseActor(entity *m.Entity,
 					if _, err = engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id)); err != nil {
 						log.Error(err.Error())
 					}
+					if _, err = engine.Do(); err != nil {
+						log.Error(err.Error())
+					}
 				})
-				if _, err = scriptEngine.Engine().Do(); err != nil {
-					log.Error(err.Error())
-				}
 			}
 			go func(se *scripts.EngineWatcher) {
 				if _, err = se.Engine().AssertFunction("init"); err != nil {

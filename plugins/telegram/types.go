@@ -27,18 +27,14 @@ import (
 const (
 	// Name ...
 	Name = "telegram"
-	// AttrToken ...
+
 	AttrToken = "token"
-	// AttrPin ...
 	AttrPin = "pin"
-	// AttrChatID ...
 	AttrChatID = "chat_id"
-	// AttrBody ...
 	AttrBody = "body"
-	// AttrUri ...
 	AttrUri = "uri"
-	// FilePath ...
 	AttrFilePath = "file_path"
+	AttrKeys = "keys"
 
 	Version = "0.0.1"
 )
@@ -79,6 +75,10 @@ func NewMessageParams() m.Attributes {
 		AttrFilePath: {
 			Name: AttrFilePath,
 			Type: common.AttributeString,
+		},
+		AttrKeys: {
+			Name: AttrKeys,
+			Type: common.AttributeArray,
 		},
 	}
 }
