@@ -4,6 +4,8 @@ import {Card, CardItem, CompareProp, comparisonType, Core, Tab} from "@/views/Da
 import {ElDivider, ElOption, ElCollapse, ElFormItem, ElSwitch, ElCol, ElRow, ElButton, ElSelect,
   ElPopconfirm, ElForm, ElCard, ElCollapseItem, ElInput, ElTag} from 'element-plus'
 import {useI18n} from "@/hooks/web/useI18n";
+import {ApiEntity} from "@/api/stub";
+import EntitySearch from "@/views/Entities/components/EntitySearch.vue";
 
 const {t} = useI18n()
 
@@ -11,6 +13,10 @@ const {t} = useI18n()
 // common
 // ---------------------------------
 const props = defineProps({
+  core: {
+    type: Object as PropType<Nullable<Core>>,
+    default: () => null
+  },
   modelValue: {
     type: Array as PropType<CompareProp[]>,
     default: () => []
@@ -46,6 +52,17 @@ const addShowOnProp = () => {
   });
 }
 
+const currentCore = computed(() => props.core as Core)
+
+const onEntityChanged = async (entity: ApiEntity, index: number) => {
+  if (entity?.id) {
+    currentValue.value[index].entity = await currentCore.value.fetchEntity(entity.id);
+    currentValue.value[index].entityId = entity.id;
+  } else {
+    currentValue.value[index].entity = undefined;
+    currentValue.value[index].entityId = '';
+  }
+}
 
 const removeShowOnProp = (index: number) => {
   currentValue.value.splice(index, 1);
@@ -89,8 +106,8 @@ const removeShowOnProp = (index: number) => {
 
               <ElRow :gutter="24">
                 <ElCol
-                    :span="12"
-                    :xs="12"
+                    :span="8"
+                    :xs="8"
                 >
                   <ElFormItem :label="$t('dashboard.editor.text')" prop="text">
                     <ElInput placeholder="Please input" v-model="prop.key"/>
@@ -99,8 +116,8 @@ const removeShowOnProp = (index: number) => {
                 </ElCol>
 
                 <ElCol
-                    :span="12"
-                    :xs="12"
+                    :span="8"
+                    :xs="8"
                 >
                   <ElFormItem :label="$t('dashboard.editor.comparison')" prop="comparison">
                     <ElSelect
@@ -120,14 +137,22 @@ const removeShowOnProp = (index: number) => {
                 </ElCol>
 
                 <ElCol
-                    :span="12"
-                    :xs="12"
+                    :span="8"
+                    :xs="8"
                 >
 
                   <ElFormItem :label="$t('dashboard.editor.value')" prop="value">
                     <ElInput placeholder="Please input" v-model="prop.value"/>
                   </ElFormItem>
 
+                </ElCol>
+              </ElRow>
+
+              <ElRow>
+                <ElCol :span="12" :xs="12">
+                  <ElFormItem :label="$t('dashboard.editor.entity')" prop="entity">
+                    <EntitySearch v-model="prop.entity" @change="onEntityChanged($event, index)"/>
+                  </ElFormItem>
                 </ElCol>
               </ElRow>
 

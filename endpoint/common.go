@@ -19,6 +19,9 @@
 package endpoint
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
@@ -62,7 +65,7 @@ func NewCommonEndpoint(adaptors *adaptors.Adaptors,
 	appConfig *m.AppConfig,
 	automation automation.Automation,
 ) *CommonEndpoint {
-	cache, _ := cache.NewCache("memory", `{"interval":60}`)
+	cache, _ := cache.NewCache("memory", fmt.Sprintf(`{"interval":%d}`, time.Second*60))
 	return &CommonEndpoint{
 		adaptors:      adaptors,
 		accessList:    accessList,

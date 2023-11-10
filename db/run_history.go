@@ -68,7 +68,7 @@ func (n RunHistory) Update(ctx context.Context, m *RunStory) (err error) {
 }
 
 // List ...
-func (n *RunHistory) List(ctx context.Context, limit, offset int, orderBy, sort string) (list []*RunStory, total int64, err error) {
+func (n *RunHistory) List(ctx context.Context, limit, offset int, orderBy, sort string, from *time.Time) (list []*RunStory, total int64, err error) {
 
 	if err = n.Db.WithContext(ctx).Model(RunStory{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrRunStoryList, err.Error())
@@ -83,6 +83,10 @@ func (n *RunHistory) List(ctx context.Context, limit, offset int, orderBy, sort 
 	if sort != "" && orderBy != "" {
 		q = q.
 			Order(fmt.Sprintf("%s %s", sort, orderBy))
+	}
+
+	if from != nil {
+		q = q.Where("start > ?", from.UTC().Format(time.RFC3339))
 	}
 
 	if err = q.Find(&list).Error; err != nil {

@@ -58,7 +58,7 @@ export function GetTokens(text?: string, cache?: Cache): string[] {
     return cache.get(text) as string[]
   }
 
-  const regex = /(\[{1}[a-zA-Zа-яА-Я0-9_ {}|:@\-\.]{2,64}\]{1})/gm
+  const regex = /(\[{1}[a-zA-Zа-яА-Я0-9_ {}|:@\-\.]{2,74}\]{1})/gm
   let tokens: string[] = text.match(regex) || []
   for (const index in tokens) {
     tokens[index] = tokens[index].replace('[', '').replace(']', '')

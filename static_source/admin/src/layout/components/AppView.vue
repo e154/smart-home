@@ -24,9 +24,9 @@ const onKeydown = ( event ) => {
   if (event.key === "Escape") {
     appStore.setTerminal(false)
   }
-  if (event.key === "`") {
-    appStore.setTerminal(!appStore.getTerminal)
-  }
+  // if (event.key === "`") {
+  //   appStore.setTerminal(!appStore.getTerminal)
+  // }
 }
 
 onMounted(() => {

@@ -44,9 +44,9 @@ const currentItem = computed(() => props.item as CardItem)
 
     <ElRow :gutter="24">
       <ElCol :span="8" :xs="8">
-<!--        <ElFormItem :label="$t('dashboard.editor.icon')" prop="icon">-->
-<!--          <ElInput size="small" v-model="currentItem.payload.button.icon"/>-->
-<!--        </ElFormItem>-->
+        <ElFormItem :label="$t('dashboard.editor.icon')" prop="icon">
+          <ElInput size="small" v-model="currentItem.payload.button.icon"/>
+        </ElFormItem>
 
         <ElFormItem :label="$t('dashboard.editor.text')" prop="text">
           <ElInput size="small" v-model="currentItem.payload.button.text"/>

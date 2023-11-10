@@ -88,7 +88,7 @@ fetchDashboard()
 </script>
 
 <template>
-  <ElTabs v-model="activeTabIdx"  v-if="core.tabs.length > 1 && !loading" :style="getBackgroundColor()" class="pl-20px pt-20px !min-h-[calc(100%-var(--top-tool-height))]">
+  <ElTabs v-model="activeTabIdx"  v-if="core.tabs.length > 1 && !loading" :style="getBackgroundColor()" class="pl-20px !min-h-[calc(100%-var(--top-tool-height))]">
     <ElTabPane
         v-for="(tab, index) in core.tabs"
         :label="tab.name"
@@ -126,7 +126,7 @@ fetchDashboard()
 .top-container {
   width: 100%;
   height: 100%;
-  padding: 0 20px;
+  //padding: 0 20px;
   overflow-y: scroll;
 }
 

@@ -29,6 +29,8 @@
   "colored_logging": false,
   "api_http_port": 3001,
   "api_swagger": true,
+  "api_debug": true,
   "domain": "localhost",
+  "pprof": true,
   "https": false
 }

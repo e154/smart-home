@@ -7,7 +7,9 @@ export interface ImageProp extends CompareProp {
 
 export interface ItemPayloadState {
   items: ImageProp[]
+  //depredcated
   default_image?: ApiImage
+  defaultImage?: ApiImage
 }
 
 export interface Marker {
