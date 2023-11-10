@@ -90,14 +90,14 @@ func (b *bus) subscribe(topic string, fn interface{}, options ...interface{}) er
 
 	go func() {
 		for args := range h.queue {
-			go func() {
+			go func(args []reflect.Value) {
 				startTime := time.Now()
 				h.callback.Call(args)
 				t := time.Now().Sub(startTime).Microseconds()
 				if t > 5000 {
 					fmt.Printf("long call! topic %s, fn: %s, Microseconds: %d\n\r", topic, reflect.ValueOf(fn).String(), t)
 				}
-			}()
+			}(args)
 		}
 	}()
 

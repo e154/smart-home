@@ -16,27 +16,19 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package uptime
+package speedtest
 
 import (
 	"context"
-	"fmt"
-	"time"
 
-	"github.com/e154/smart-home/system/supervisor"
-
+	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
-
-	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-)
-
-const (
-	name = "uptime"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 var (
-	log = logger.MustGetLogger("plugins.uptime")
+	log = logger.MustGetLogger("plugins.speedtest")
 )
 
 var _ supervisor.Pluggable = (*plugin)(nil)
@@ -47,8 +39,6 @@ func init() {
 
 type plugin struct {
 	*supervisor.Plugin
-	ticker     *time.Ticker
-	storyModel *m.RunStory
 }
 
 // New ...
@@ -64,59 +54,20 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 		return
 	}
 
-	p.storyModel = &m.RunStory{
-		Start: time.Now(),
-	}
+	_ = p.Service.EventBus().Subscribe("system/entities/+", p.eventHandler)
 
-	p.storyModel.Id, err = p.Service.Adaptors().RunHistory.Add(context.Background(), p.storyModel)
-	if err != nil {
-		log.Error(err.Error())
-		return
-	}
-
-	var entity *m.Entity
-	if entity, err = p.Service.Adaptors().Entity.GetById(context.Background(), common.EntityId(fmt.Sprintf("%s.%s", EntitySensor, Name))); err != nil {
-		entity = &m.Entity{
-			Id:         common.EntityId(fmt.Sprintf("%s.%s", EntitySensor, Name)),
-			PluginName: Name,
-			Attributes: NewAttr(),
-		}
-		err = p.Service.Adaptors().Entity.Add(context.Background(), entity)
-	}
-
-	go func() {
-		const pause = 60
-		p.ticker = time.NewTicker(time.Second * pause)
-
-		for range p.ticker.C {
-			p.Actors.Range(func(key, value any) bool {
-				actor, _ := value.(*Actor)
-				actor.update()
-				return true
-			})
-		}
-	}()
 	return nil
 }
 
 // Unload ...
 func (p *plugin) Unload(ctx context.Context) (err error) {
-	if p.ticker != nil {
-		p.ticker.Stop()
-		p.ticker = nil
-	}
 	if err = p.Plugin.Unload(ctx); err != nil {
 		return
 	}
 
-	if p.storyModel == nil {
-		return
-	}
-	p.storyModel.End = common.Time(time.Now())
-	if err = p.Service.Adaptors().RunHistory.Update(context.Background(), p.storyModel); err != nil {
-		log.Error(err.Error())
-	}
-	return
+	_ = p.Service.EventBus().Unsubscribe("system/entities/+", p.eventHandler)
+
+	return nil
 }
 
 // ActorConstructor ...
@@ -126,8 +77,22 @@ func (p *plugin) ActorConstructor(entity *m.Entity) (actor supervisor.PluginActo
 }
 
 // Name ...
-func (p plugin) Name() string {
-	return name
+func (p *plugin) Name() string {
+	return Name
+}
+
+func (p *plugin) eventHandler(topic string, msg interface{}) {
+
+	switch v := msg.(type) {
+	case events.EventStateChanged:
+	case events.EventCallEntityAction:
+		value, ok := p.Actors.Load(v.EntityId)
+		if !ok {
+			return
+		}
+		actor := value.(*Actor)
+		actor.addAction(v)
+	}
 }
 
 // Type ...
@@ -142,15 +107,16 @@ func (p *plugin) Depends() []string {
 
 // Version ...
 func (p *plugin) Version() string {
-	return "0.0.1"
+	return Version
 }
 
 // Options ...
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
-		Actors:             false,
-		ActorCustomAttrs:   false,
-		ActorAttrs:         NewAttr(),
-		ActorCustomActions: false,
+		Actors:       true,
+		ActorAttrs:   NewAttr(),
+		ActorSetts:   NewSettings(),
+		ActorStates:  supervisor.ToEntityStateShort(NewStates()),
+		ActorActions: supervisor.ToEntityActionShort(NewActions()),
 	}
 }

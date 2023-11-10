@@ -113,6 +113,7 @@ func TestConfig(t *testing.T) {
 						_ = os.Setenv("API_HTTP_HOST_PORT", ":3001")
 						_ = os.Setenv("API_WS_HOST_PORT", ":3003")
 						_ = os.Setenv("API_SWAGGER", "true")
+						_ = os.Setenv("API_DEBUG", "true")
 						_ = os.Setenv("DOMAIN", "localhost")
 						_ = os.Setenv("HTTPS", "false")
 
@@ -194,6 +195,8 @@ func TestConfig(t *testing.T) {
 						_ = os.Setenv("APP_API_HTTP_HOST_PORT", ":3001")
 						_ = os.Setenv("APP_API_WS_HOST_PORT", ":3003")
 						_ = os.Setenv("APP_API_SWAGGER", "true")
+						_ = os.Setenv("APP_API_DEBUG", "true")
+						_ = os.Setenv("APP_PPROF", "true")
 						_ = os.Setenv("DOMAIN", "localhost")
 						_ = os.Setenv("HTTPS", "false")
 

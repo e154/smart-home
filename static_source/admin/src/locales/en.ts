@@ -576,7 +576,8 @@ export default {
                 addChartItem: 'Add Chart Item',
                 itemValue: 'Item Value',
                 itemDescription: 'Item Description',
-                barOptions: 'Bar Options'
+                barOptions: 'Bar Options',
+                dataZoom: 'Data Zoom'
             },
             joystick: {
                 options: 'Joystick Options',
@@ -589,7 +590,10 @@ export default {
             entityStorage: {
                 entities: 'Entities',
                 showFilter: 'Show Filter'
-            }
+            },
+            defaultIcon: 'Default Icon',
+            iconSize: 'Icon Size',
+            iconColor: 'Icon Color'
         }
     },
     settings: {

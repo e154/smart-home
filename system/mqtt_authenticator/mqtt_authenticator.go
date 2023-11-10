@@ -75,15 +75,16 @@ func (a *Authenticator) Authenticate(login string, pass interface{}) (err error)
 		err = apperr.ErrBadLoginOrPassword
 	}
 
-	if a.cache.IsExist(login) {
-		if password == a.cache.Get(login) {
+	var value interface{}
+	if value, err = a.cache.Get(context.Background(), login); value != nil {
+		if password == pass.(string) {
 			return
 		}
 	}
 
 	defer func() {
 		if err == nil {
-			_ = a.cache.Put(login, pass, 60*time.Second)
+			_ = a.cache.Put(context.Background(), login, pass, 60*time.Second)
 		}
 	}()
 

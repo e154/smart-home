@@ -3,7 +3,7 @@ MAINTAINER Filippov Alex <support@e154.ru>
 
 FROM debian:12-slim
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends libpq5 ca-certificates
+    && apt-get install -y --no-install-recommends libpq5 ca-certificates iputils-ping
 RUN update-ca-certificates
 COPY --from=postgres /usr/lib/postgresql/15/bin/pg_dump /usr/local/bin
 COPY --from=postgres /usr/lib/postgresql/15/bin/pg_restore /usr/local/bin

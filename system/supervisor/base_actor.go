@@ -21,19 +21,17 @@ package supervisor
 import (
 	"context"
 	"fmt"
-	"runtime/debug"
 	"sync"
 	"time"
 
-	"github.com/e154/smart-home/common/events"
-
-	"github.com/e154/smart-home/common/apperr"
+	"go.uber.org/atomic"
 
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/scripts"
-	"go.uber.org/atomic"
 )
 
 // BaseActor ...
@@ -157,16 +155,16 @@ func NewBaseActor(entity *m.Entity,
 					if _, err = engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id)); err != nil {
 						log.Error(err.Error())
 					}
+					if _, err = engine.Do(); err != nil {
+						log.Error(err.Error())
+					}
 				})
-				if _, err = scriptEngine.Engine().Do(); err != nil {
-					log.Error(err.Error())
-				}
 			}
-			go func() {
-				if _, err = scriptEngine.Engine().AssertFunction("init"); err != nil {
+			go func(se *scripts.EngineWatcher) {
+				if _, err = se.Engine().AssertFunction("init"); err != nil {
 					log.Error(err.Error())
 				}
-			}()
+			}(scriptEngine)
 			actor.ScriptEngines = append(actor.ScriptEngines, scriptEngine)
 		}
 	}
@@ -330,7 +328,9 @@ func (e *BaseActor) GetEventState() (eventState bus.EventEntityState) {
 
 func (e *BaseActor) SaveState(msg events.EventStateChanged) {
 
-	go e.updateMetric(msg.NewState)
+	if !msg.DoNotSaveMetric {
+		go e.updateMetric(msg.NewState)
+	}
 
 	if msg.NewState.Compare(msg.OldState) {
 		return
@@ -414,6 +414,8 @@ func (e *BaseActor) AddMetric(name string, value map[string]interface{}) {
 		return
 	}
 
+	var updated bool
+
 	var err error
 	for _, metric := range e.Metric {
 		if metric.Name != name {
@@ -433,7 +435,16 @@ func (e *BaseActor) AddMetric(name string, value map[string]interface{}) {
 
 		if err != nil {
 			log.Errorf(err.Error(), value, metric.Id)
-			debug.PrintStack()
 		}
+
+		updated = true
 	}
+
+	if !updated {
+		return
+	}
+
+	e.Service.EventBus().Publish("system/entities/%s"+e.Id.String(), events.EventUpdatedMetric{
+		EntityId: e.Id,
+	})
 }

@@ -51,7 +51,9 @@ const props = defineProps({
   },
   toolbar1: {
     type: [String, Array],
-    default: 'forecolor backcolor removeformat | table | fontfamily fontsize blocks | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent | axupimgs | bold italic underline strikethrough ',
+    default: 'forecolor backcolor removeformat | table | fontfamily fontsize blocks | ' +
+        'alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent | axupimgs |' +
+        ' bold italic underline strikethrough ',
   },
 });
 
@@ -73,6 +75,14 @@ const init = reactive({
   toolbar_mode: 'sliding',
   quickbars_insert_toolbar: true,
   branding: false,
+  font_family_formats: "Open sans=sans-serif;Andale Mono=andale mono,times; Arial=arial,helvetica,sans-serif; " +
+      "Arial Black=arial black,avant garde; Book Antiqua=book antiqua,palatino; " +
+      "Comic Sans MS=comic sans ms,sans-serif; Courier New=courier new,courier; Georgia=georgia,palatino; " +
+      "Helvetica=helvetica; Impact=impact,chicago; Symbol=symbol; Tahoma=tahoma,arial,helvetica,sans-serif; " +
+      "Terminal=terminal,monaco; Times New Roman=times new roman,times; Trebuchet MS=trebuchet ms,geneva; " +
+      "Verdana=verdana,geneva; Webdings=webdings; Wingdings=wingdings,zapf dingbats",
+  font_size_formats: "8pt 10pt 12pt 14pt 18pt 24pt 36pt 48pt 72pt 96pt",
+  block_formats: "Div=div;Paragraph=p;Preformatted=pre",
 });
 
 const { modelValue } = toRefs(props);

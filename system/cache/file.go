@@ -20,21 +20,25 @@ package cache
 
 import (
 	"bytes"
+	"context"
 	"crypto/md5"
 	"encoding/gob"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
-	"reflect"
 	"strconv"
+	"strings"
 	"time"
+
+	"github.com/pkg/errors"
 )
 
-// FileCacheItem is basic unit of file cache adapter.
-// it contains data and expire time.
+// FileCacheItem is basic unit of file cache adapter which
+// contains data and expire time.
 type FileCacheItem struct {
 	Data       interface{}
 	Lastaccess time.Time
@@ -43,14 +47,10 @@ type FileCacheItem struct {
 
 // FileCache Config
 var (
-	// FileCachePath ...
-	FileCachePath = "cache"
-	// FileCacheFileSuffix ...
-	FileCacheFileSuffix = ".bin"
-	// FileCacheDirectoryLevel ...
-	FileCacheDirectoryLevel = 2
-	// FileCacheEmbedExpiry ...
-	FileCacheEmbedExpiry time.Duration
+	FileCachePath           = "cache"     // cache directory
+	FileCacheFileSuffix     = ".bin"      // cache file suffix
+	FileCacheDirectoryLevel = 2           // cache file deep level if auto generated cache files.
+	FileCacheEmbedExpiry    time.Duration // cache expire time, default is no expire forever.
 )
 
 // FileCache is cache adapter for file storage.
@@ -61,15 +61,15 @@ type FileCache struct {
 	EmbedExpiry    int
 }
 
-// NewFileCache Create new file cache with no config.
-// the level and expiry need set in method StartAndGC as config string.
+// NewFileCache creates a new file cache with no config.
+// The level and expiry need to be set in the method StartAndGC as config string.
 func NewFileCache() Cache {
 	//    return &FileCache{CachePath:FileCachePath, FileSuffix:FileCacheFileSuffix}
 	return &FileCache{}
 }
 
-// StartAndGC will start and begin gc for file cache.
-// the config need to be like {CachePath:"/cache","FileSuffix":".bin","DirectoryLevel":"2","EmbedExpiry":"0"}
+// StartAndGC starts gc for file cache.
+// config must be in the format {CachePath:"/cache","FileSuffix":".bin","DirectoryLevel":"2","EmbedExpiry":"0"}
 func (fc *FileCache) StartAndGC(config string) error {
 
 	cfg := make(map[string]string)
@@ -98,17 +98,17 @@ func (fc *FileCache) StartAndGC(config string) error {
 	return nil
 }
 
-// Init will make new dir for file cache if not exist.
+// Init makes new a dir for file cache if it does not already exist
 func (fc *FileCache) Init() {
 	if ok, _ := exists(fc.CachePath); !ok { // todo : error handle
 		_ = os.MkdirAll(fc.CachePath, os.ModePerm) // todo : error handle
 	}
 }
 
-// get cached file name. it's md5 encoded.
+// getCachedFilename returns an md5 encoded file name.
 func (fc *FileCache) getCacheFileName(key string) string {
 	m := md5.New()
-	_, _ = io.WriteString(m, key)
+	io.WriteString(m, key)
 	keyMd5 := hex.EncodeToString(m.Sum(nil))
 	cachePath := fc.CachePath
 	switch fc.DirectoryLevel {
@@ -126,34 +126,50 @@ func (fc *FileCache) getCacheFileName(key string) string {
 }
 
 // Get value from file cache.
-// if non-exist or expired, return empty string.
-func (fc *FileCache) Get(key string) interface{} {
+// if nonexistent or expired return an empty string.
+func (fc *FileCache) Get(ctx context.Context, key string) (interface{}, error) {
 	fileData, err := FileGetContents(fc.getCacheFileName(key))
 	if err != nil {
-		return ""
+		return nil, err
 	}
+
 	var to FileCacheItem
-	_ = GobDecode(fileData, &to)
-	if to.Expired.Before(time.Now()) {
-		return ""
+	err = GobDecode(fileData, &to)
+	if err != nil {
+		return nil, err
 	}
-	return to.Data
+
+	if to.Expired.Before(time.Now()) {
+		return nil, errors.New("The key is expired")
+	}
+	return to.Data, nil
 }
 
 // GetMulti gets values from file cache.
-// if non-exist or expired, return empty string.
-func (fc *FileCache) GetMulti(keys []string) []interface{} {
-	var rc []interface{}
-	for _, key := range keys {
-		rc = append(rc, fc.Get(key))
+// if nonexistent or expired return an empty string.
+func (fc *FileCache) GetMulti(ctx context.Context, keys []string) ([]interface{}, error) {
+	rc := make([]interface{}, len(keys))
+	keysErr := make([]string, 0)
+
+	for i, ki := range keys {
+		val, err := fc.Get(context.Background(), ki)
+		if err != nil {
+			keysErr = append(keysErr, fmt.Sprintf("key [%s] error: %s", ki, err.Error()))
+			continue
+		}
+		rc[i] = val
 	}
-	return rc
+
+	if len(keysErr) == 0 {
+		return rc, nil
+	}
+	return rc, errors.New(strings.Join(keysErr, "; "))
 }
 
 // Put value into file cache.
-// timeout means how long to keep this file, unit of ms.
+// timeout: how long this file should be kept in ms
 // if timeout equals fc.EmbedExpiry(default is 0), cache this item forever.
-func (fc *FileCache) Put(key string, val interface{}, timeout time.Duration) error {
+func (fc *FileCache) Put(ctx context.Context, key string, val interface{}, timeout time.Duration) error {
 	gob.Register(val)
 
 	item := FileCacheItem{Data: val}
@@ -171,7 +187,7 @@ func (fc *FileCache) Put(key string, val interface{}, timeout time.Duration) err
 }
 
 // Delete file cache value.
-func (fc *FileCache) Delete(key string) error {
+func (fc *FileCache) Delete(ctx context.Context, key string) error {
 	filename := fc.getCacheFileName(key)
 	if ok, _ := exists(filename); ok {
 		return os.Remove(filename)
@@ -179,46 +195,87 @@ func (fc *FileCache) Delete(key string) error {
 	return nil
 }
 
-// Incr will increase cached int value.
-// fc value is saving forever unless Delete.
-func (fc *FileCache) Incr(key string) error {
-	data := fc.Get(key)
-	var incr int
-	if reflect.TypeOf(data).Name() != "int" {
-		incr = 0
-	} else {
-		incr = data.(int) + 1
+// Incr increases cached int value.
+// fc value is saved forever unless deleted.
+func (fc *FileCache) Incr(ctx context.Context, key string) error {
+	data, err := fc.Get(context.Background(), key)
+	if err != nil {
+		return err
 	}
-	_ = fc.Put(key, incr, time.Duration(fc.EmbedExpiry))
-	return nil
+
+	var res interface{}
+	switch val := data.(type) {
+	case int:
+		res = val + 1
+	case int32:
+		res = val + 1
+	case int64:
+		res = val + 1
+	case uint:
+		res = val + 1
+	case uint32:
+		res = val + 1
+	case uint64:
+		res = val + 1
+	default:
+		return errors.Errorf("data is not (u)int (u)int32 (u)int64")
+	}
+
+	return fc.Put(context.Background(), key, res, time.Duration(fc.EmbedExpiry))
 }
 
-// Decr will decrease cached int value.
-func (fc *FileCache) Decr(key string) error {
-	data := fc.Get(key)
-	var decr int
-	if reflect.TypeOf(data).Name() != "int" || data.(int)-1 <= 0 {
-		decr = 0
-	} else {
-		decr = data.(int) - 1
+// Decr decreases cached int value.
+func (fc *FileCache) Decr(ctx context.Context, key string) error {
+	data, err := fc.Get(context.Background(), key)
+	if err != nil {
+		return err
 	}
-	_ = fc.Put(key, decr, time.Duration(fc.EmbedExpiry))
-	return nil
+
+	var res interface{}
+	switch val := data.(type) {
+	case int:
+		res = val - 1
+	case int32:
+		res = val - 1
+	case int64:
+		res = val - 1
+	case uint:
+		if val > 0 {
+			res = val - 1
+		} else {
+			return errors.New("data val is less than 0")
+		}
+	case uint32:
+		if val > 0 {
+			res = val - 1
+		} else {
+			return errors.New("data val is less than 0")
+		}
+	case uint64:
+		if val > 0 {
+			res = val - 1
+		} else {
+			return errors.New("data val is less than 0")
+		}
+	default:
+		return errors.Errorf("data is not (u)int (u)int32 (u)int64")
+	}
+
+	return fc.Put(context.Background(), key, res, time.Duration(fc.EmbedExpiry))
 }
 
-// IsExist check value is exist.
-func (fc *FileCache) IsExist(key string) bool {
+// IsExist checks if value exists.
+func (fc *FileCache) IsExist(ctx context.Context, key string) (bool, error) {
 	ret, _ := exists(fc.getCacheFileName(key))
-	return ret
+	return ret, nil
 }
 
-// ClearAll will clean cached files.
-// not implemented.
-func (fc *FileCache) ClearAll() error {
+// ClearAll cleans cached files (not implemented)
+func (fc *FileCache) ClearAll(context.Context) error {
 	return nil
 }
 
-// check file exist.
+// Check if a file exists
 func exists(path string) (bool, error) {
 	_, err := os.Stat(path)
 	if err == nil {
@@ -230,19 +287,19 @@ func exists(path string) (bool, error) {
 	return false, err
 }
 
-// FileGetContents Get bytes to file.
-// if non-exist, create this file.
+// FileGetContents Reads bytes from a file.
+// if non-existent, create this file.
 func FileGetContents(filename string) (data []byte, e error) {
-	return os.ReadFile(filename)
+	return ioutil.ReadFile(filename)
 }
 
-// FilePutContents Put bytes to file.
-// if non-exist, create this file.
+// FilePutContents puts bytes into a file.
+// if non-existent, create this file.
 func FilePutContents(filename string, content []byte) error {
-	return os.WriteFile(filename, content, os.ModePerm)
+	return ioutil.WriteFile(filename, content, os.ModePerm)
 }
 
-// GobEncode Gob encodes file cache item.
+// GobEncode Gob encodes a file cache item.
 func GobEncode(data interface{}) ([]byte, error) {
 	buf := bytes.NewBuffer(nil)
 	enc := gob.NewEncoder(buf)
@@ -253,7 +310,7 @@ func GobEncode(data interface{}) ([]byte, error) {
 	return buf.Bytes(), err
 }
 
-// GobDecode Gob decodes file cache item.
+// GobDecode Gob decodes a file cache item.
 func GobDecode(data []byte, to *FileCacheItem) error {
 	buf := bytes.NewBuffer(data)
 	dec := gob.NewDecoder(buf)

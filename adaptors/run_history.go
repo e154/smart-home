@@ -20,17 +20,19 @@ package adaptors
 
 import (
 	"context"
+	"time"
+
+	"gorm.io/gorm"
 
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"gorm.io/gorm"
 )
 
 // IRunHistory ...
 type IRunHistory interface {
 	Add(sctx context.Context, tory *m.RunStory) (id int64, err error)
 	Update(ctx context.Context, story *m.RunStory) (err error)
-	List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.RunStory, total int64, err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string, from *time.Time) (list []*m.RunStory, total int64, err error)
 	DeleteOldest(ctx context.Context, days int) (err error)
 	fromDb(dbVer *db.RunStory) (story *m.RunStory)
 	toDb(story *m.RunStory) (dbVer *db.RunStory, err error)
@@ -73,9 +75,9 @@ func (n *RunHistory) Update(ctx context.Context, story *m.RunStory) (err error) 
 }
 
 // List ...
-func (n *RunHistory) List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.RunStory, total int64, err error) {
+func (n *RunHistory) List(ctx context.Context, limit, offset int64, orderBy, sort string, from *time.Time) (list []*m.RunStory, total int64, err error) {
 	var dbList []*db.RunStory
-	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort); err != nil {
+	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort, from); err != nil {
 		return
 	}
 
