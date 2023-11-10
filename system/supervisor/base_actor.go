@@ -21,19 +21,17 @@ package supervisor
 import (
 	"context"
 	"fmt"
-	"runtime/debug"
 	"sync"
 	"time"
 
-	"github.com/e154/smart-home/common/events"
-
-	"github.com/e154/smart-home/common/apperr"
+	"go.uber.org/atomic"
 
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/scripts"
-	"go.uber.org/atomic"
 )
 
 // BaseActor ...
@@ -437,7 +435,6 @@ func (e *BaseActor) AddMetric(name string, value map[string]interface{}) {
 
 		if err != nil {
 			log.Errorf(err.Error(), value, metric.Id)
-			debug.PrintStack()
 		}
 
 		updated = true

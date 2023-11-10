@@ -48,10 +48,10 @@ func (i *EntityStorageEndpoint) GetList(ctx context.Context, entityIds []common.
 
 	keyTotal := fmt.Sprintf("%s_total", keyResult)
 
-	if i.cache.IsExist(keyResult) {
-		v := i.cache.Get(keyResult)
-		vTotal := i.cache.Get(keyTotal)
+	if ok, _ := i.cache.IsExist(ctx, keyResult); ok {
+		v, _ := i.cache.Get(ctx, keyResult)
 		result = v.(*m.EntityStorageList)
+		vTotal, _ := i.cache.Get(ctx, keyTotal)
 		total = vTotal.(int64)
 		return
 	}
@@ -110,8 +110,8 @@ func (i *EntityStorageEndpoint) GetList(ctx context.Context, entityIds []common.
 		Attributes: attributes,
 	}
 
-	i.cache.Put(keyResult, result, 10*time.Second)
-	i.cache.Put(keyTotal, total, 10*time.Second)
+	i.cache.Put(ctx, keyResult, result, 10*time.Second)
+	i.cache.Put(ctx, keyTotal, total, 10*time.Second)
 
 	return
 }

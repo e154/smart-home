@@ -21,14 +21,14 @@ package adaptors
 import (
 	"context"
 	"encoding/json"
-	"github.com/e154/smart-home/common"
 	"time"
 
+	"gorm.io/gorm"
+
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/cache"
 	"github.com/e154/smart-home/system/orm"
-	"gorm.io/gorm"
 )
 
 // IMetric ...
@@ -49,17 +49,14 @@ type Metric struct {
 	IMetric
 	table *db.Metrics
 	db    *gorm.DB
-	c     cache.Cache
 	orm   *orm.Orm
 }
 
 // GetMetricAdaptor ...
 func GetMetricAdaptor(d *gorm.DB, orm *orm.Orm) IMetric {
-	c, _ := cache.NewCache("memory", `{"interval":3600}`)
 	return &Metric{
 		table: &db.Metrics{Db: d},
 		db:    d,
-		c:     c,
 		orm:   orm,
 	}
 }

@@ -14,7 +14,6 @@
   "pg_conn_max_life_time": 30,
   "auto_migrate": true,
   "snapshot_dir": "snapshots",
-  "mode": "release",
   "mqtt_port": 1883,
   "mqtt_retry_interval": 20,
   "mqtt_retry_check_interval": 20,
@@ -29,6 +28,8 @@
   "colored_logging": false,
   "api_http_port": 3011,
   "api_swagger": true,
+  "api_debug": false,
+  "pprof": false,
   "domain": "localhost",
   "https": false
 }

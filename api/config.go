@@ -26,6 +26,7 @@ type Config struct {
 	HttpPort int
 	Swagger  bool
 	Debug    bool
+	Pprof    bool
 }
 
 // String ...

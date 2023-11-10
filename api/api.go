@@ -24,6 +24,11 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	echopprof "github.com/hiko1129/echo-pprof"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+
 	"github.com/e154/smart-home/api/controllers"
 	"github.com/e154/smart-home/api/stub"
 	publicAssets "github.com/e154/smart-home/build"
@@ -31,10 +36,6 @@ import (
 	"github.com/e154/smart-home/common/logger"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/rbac"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	echopprof "github.com/hiko1129/echo-pprof"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
 //go:embed swagger-ui/*
@@ -90,15 +91,17 @@ func (a *Api) Start() (err error) {
 		}
 		a.echo.Use(middleware.LoggerWithConfig(DefaultLoggerConfig))
 		a.echo.Debug = true
+	}
 
+	if a.cfg.Pprof {
 		// automatically add routers for net/http/pprof
 		// e.g. /debug/pprof, /debug/pprof/heap, etc.
-		if a.cfg.Debug {
-			log.Info("pprof enabled")
-			echopprof.Wrap(a.echo)
-		}
-	} else {
-		log.Info("debug disabled")
+		log.Info("pprof enabled")
+		echopprof.Wrap(a.echo)
+
+		prefix := "/debug/pprof"
+		group := a.echo.Group(prefix)
+		echopprof.WrapGroup(prefix, group)
 	}
 
 	a.echo.HideBanner = true

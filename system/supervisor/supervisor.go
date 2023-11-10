@@ -20,6 +20,7 @@ package supervisor
 
 import (
 	"context"
+	"fmt"
 	"runtime/debug"
 	"sync"
 	"time"
@@ -71,7 +72,7 @@ func NewSupervisor(lc fx.Lifecycle,
 		entitiesWg:      &sync.WaitGroup{},
 		eventScriptSubs: make(map[int64]map[common.EntityId]struct{}),
 	}
-	s.cache, _ = cache.NewCache("memory", `{"interval":60}`)
+	s.cache, _ = cache.NewCache("memory", fmt.Sprintf(`{"interval":%d}`, time.Second*60))
 	s.pluginManager = &pluginManager{
 		adaptors:       adaptors,
 		isStarted:      atomic.NewBool(false),
@@ -208,7 +209,7 @@ func (e *supervisor) SetState(id common.EntityId, params EntityStateParams) (err
 		log.Error(err.Error())
 	}
 
-	e.cache.Delete(id.String())
+	e.cache.Delete(context.Background(), id.String())
 
 	return
 }
@@ -292,8 +293,8 @@ func (e *supervisor) eventHandler(_ string, message interface{}) {
 
 func (e *supervisor) eventLastState(msg events.EventGetLastState) {
 
-	if e.cache.IsExist(msg.EntityId.String()) {
-		v := e.cache.Get(msg.EntityId.String())
+	if ok, _ := e.cache.IsExist(context.Background(), msg.EntityId.String()); ok {
+		v, _ := e.cache.Get(context.Background(), msg.EntityId.String())
 		state, ok := v.(events.EventLastStateChanged)
 		if !ok {
 			return
@@ -301,7 +302,7 @@ func (e *supervisor) eventLastState(msg events.EventGetLastState) {
 		e.eventBus.Publish("system/entities/"+msg.EntityId.String(), state)
 		return
 	}
-	e.cache.Put(msg.EntityId.String(), nil, 60*time.Second)
+	e.cache.Put(context.Background(), msg.EntityId.String(), nil, 10*time.Second)
 
 	pla, err := e.GetActorById(msg.EntityId)
 	if err != nil {
@@ -320,7 +321,6 @@ func (e *supervisor) eventLastState(msg events.EventGetLastState) {
 		entity, err := e.adaptors.Entity.GetById(context.Background(), msg.EntityId)
 		if err != nil {
 			log.Error(err.Error())
-			debug.PrintStack()
 			return
 		}
 		currentState.Attributes = entity.Attributes
@@ -332,8 +332,7 @@ func (e *supervisor) eventLastState(msg events.EventGetLastState) {
 		OldState:   *currentState,
 		NewState:   *currentState,
 	}
-	e.cache.Delete(msg.EntityId.String())
-	e.cache.Put(msg.EntityId.String(), state, 60*time.Second)
+	e.cache.Put(context.Background(), msg.EntityId.String(), state, 30*time.Second)
 	e.eventBus.Publish("system/entities/"+msg.EntityId.String(), state)
 }
 
@@ -499,7 +498,7 @@ func (e *supervisor) UnloadEntity(id common.EntityId) {
 	plugin := value.(Pluggable)
 	plugin.RemoveActor(id)
 
-	e.cache.Delete(id.String())
+	e.cache.Delete(context.Background(), id.String())
 }
 
 func (e *supervisor) GetService() Service {
