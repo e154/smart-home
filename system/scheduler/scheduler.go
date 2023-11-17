@@ -20,6 +20,7 @@ package scheduler
 
 import (
 	"context"
+	"github.com/e154/smart-home/common"
 	"strconv"
 
 	"github.com/e154/smart-home/common/events"
@@ -39,9 +40,10 @@ var (
 )
 
 type Scheduler struct {
-	adaptors *adaptors.Adaptors
-	cron     *cron.Cron
-	eventBus bus.Bus
+	adaptors    *adaptors.Adaptors
+	cron        *cron.Cron
+	eventBus    bus.Bus
+	backupEntry cron.EntryID
 }
 
 func NewScheduler(lc fx.Lifecycle,
@@ -76,40 +78,47 @@ func (c *Scheduler) Start(ctx context.Context) error {
 	c.cron.AddFunc("0 0 * * * *", func() {
 		go func() {
 			//log.Info("deleting obsolete metric entries ...")
-			if err := c.adaptors.MetricBucket.DeleteOldest(context.Background(), c.getDays("clearMetricsDays", 60)); err != nil {
+			if err := c.adaptors.MetricBucket.DeleteOldest(context.Background(), c.getNumber("clearMetricsDays", 60)); err != nil {
 				log.Error(err.Error())
 			}
 		}()
 		go func() {
 			//log.Info("deleting obsolete log entries ...")
-			if err := c.adaptors.Log.DeleteOldest(context.Background(), c.getDays("clearLogsDays", 60)); err != nil {
+			if err := c.adaptors.Log.DeleteOldest(context.Background(), c.getNumber("clearLogsDays", 60)); err != nil {
 				log.Error(err.Error())
 			}
 		}()
 		go func() {
-
 			//log.Info("deleting obsolete entity storage entries ...")
-			if err := c.adaptors.EntityStorage.DeleteOldest(context.Background(), c.getDays("clearEntityStorageDays", 60)); err != nil {
+			if err := c.adaptors.EntityStorage.DeleteOldest(context.Background(), c.getNumber("clearEntityStorageDays", 60)); err != nil {
 				log.Error(err.Error())
 			}
 		}()
 		go func() {
 			//log.Info("deleting obsolete run history entries ...")
-			if err := c.adaptors.RunHistory.DeleteOldest(context.Background(), c.getDays("clearRunHistoryDays", 60)); err != nil {
+			if err := c.adaptors.RunHistory.DeleteOldest(context.Background(), c.getNumber("clearRunHistoryDays", 60)); err != nil {
 				log.Error(err.Error())
 			}
 		}()
 	})
+
+	c.updateBackupScheduler()
 
 	c.cron.Start()
 	c.cron.Run()
 	c.eventBus.Publish("system/services/scheduler", events.EventServiceStarted{Service: "Scheduler"})
 	log.Info("started ...")
 
+	_ = c.eventBus.Subscribe("system/models/variables/+", c.eventHandler)
+	_ = c.eventBus.Subscribe("system/services/backup", c.eventHandler)
+
 	return nil
 }
 
 func (c *Scheduler) Shutdown(_ context.Context) error {
+	_ = c.eventBus.Unsubscribe("system/models/variables/+", c.eventHandler)
+	_ = c.eventBus.Unsubscribe("system/services/backup", c.eventHandler)
+
 	c.cron.Stop()
 	c.eventBus.Publish("system/services/scheduler", events.EventServiceStopped{Service: "Scheduler"})
 	log.Info("shutdown ...")
@@ -129,12 +138,68 @@ func (c *Scheduler) Remove(id EntryID) {
 	c.cron.Remove(cron.EntryID(id))
 }
 
-func (c *Scheduler) getDays(varName string, def int) int {
+func (c *Scheduler) getNumber(varName string, def int) int {
 	if variable, err := c.adaptors.Variable.GetByName(context.Background(), varName); err == nil {
-		var days int
-		if days, err = strconv.Atoi(variable.Value); err == nil {
-			return days
+		var num int
+		if num, err = strconv.Atoi(variable.Value); err == nil {
+			return num
 		}
 	}
 	return def
+}
+
+func (c *Scheduler) getString(varName, def string) string {
+	if variable, err := c.adaptors.Variable.GetByName(context.Background(), varName); err == nil {
+		return variable.Value
+	}
+	return def
+}
+
+func (c *Scheduler) updateBackupScheduler() {
+
+	if c.backupEntry != 0 {
+		c.cron.Remove(c.backupEntry)
+		c.backupEntry = 0
+	}
+
+	var err error
+	c.backupEntry, err = c.cron.AddFunc(c.getString("createBackupAt", "0 0 0 * * *"), func() {
+		c.eventBus.Publish("system/services/backup", events.CommandCreateBackup{
+			Scheduler: true,
+		})
+	})
+	if err != nil {
+		log.Error(err.Error())
+	}
+}
+
+func (c *Scheduler) eventHandler(_ string, message interface{}) {
+	switch v := message.(type) {
+	case events.EventUpdatedVariableModel:
+		if v.Name == "createBackupAt" && v.Value != "" {
+			c.updateBackupScheduler()
+		}
+	case events.EventCreatedBackup:
+		c.eventBus.Publish("system/services/backup", events.CommandClearStorage{
+			Num: int64(c.getNumber("maximumNumberOfBackups", 60)),
+		})
+
+		if !v.Scheduler {
+			return
+		}
+		tgVariable, err := c.adaptors.Variable.GetByName(context.Background(), "sendbackuptoTelegramBot")
+		if err != nil {
+			return
+		}
+		if tgVariable.Value == "" {
+			return
+		}
+		chunkSize := c.getNumber("sendTheBackupInPartsMb", 0)
+		c.eventBus.Publish("system/services/backup", events.CommandSendFileToTelegram{
+			Filename:  v.Name,
+			EntityId:  common.EntityId(tgVariable.Value),
+			Chunks:    chunkSize > 0,
+			ChunkSize: chunkSize,
+		})
+	}
 }

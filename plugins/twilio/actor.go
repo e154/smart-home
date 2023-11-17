@@ -28,18 +28,16 @@ import (
 	"strings"
 	"time"
 
-	"github.com/e154/smart-home/plugins/notify"
-
-	"github.com/e154/smart-home/common/events"
-
-	"github.com/e154/smart-home/common/apperr"
-
 	"github.com/pkg/errors"
+	"github.com/sfreiberg/gotwilio"
 
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/plugins/notify"
+	notifyCommon "github.com/e154/smart-home/plugins/notify/common"
 	"github.com/e154/smart-home/system/supervisor"
-	"github.com/sfreiberg/gotwilio"
 )
 
 // Actor ...
@@ -251,7 +249,7 @@ func (e *Actor) client() (client *gotwilio.Twilio, err error) {
 }
 
 // Save ...
-func (e *Actor) Save(msg notify.Message) (addresses []string, message *m.Message) {
+func (e *Actor) Save(msg notifyCommon.Message) (addresses []string, message *m.Message) {
 	message = &m.Message{
 		Type:       Name,
 		Attributes: msg.Attributes,
@@ -276,7 +274,7 @@ func (e *Actor) MessageParams() m.Attributes {
 func (e *Actor) eventHandler(_ string, event interface{}) {
 
 	switch v := event.(type) {
-	case notify.Message:
+	case notifyCommon.Message:
 		if v.EntityId != nil && *v.EntityId == e.Id {
 			e.notify.SaveAndSend(v, e)
 		}

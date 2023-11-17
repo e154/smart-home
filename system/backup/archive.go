@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2023, Filippov Alex
+// Copyright (C) 2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -16,31 +16,18 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package notify
+package backup
 
 import (
-	"github.com/e154/smart-home/plugins/notify/common"
-	"github.com/e154/smart-home/system/bus"
+	tele "gopkg.in/telebot.v3"
 )
 
-// NotifyBind ...
-type NotifyBind struct {
-	eventBus bus.Bus
+type Archive struct {
+	tele.File
 }
 
-// NewNotifyBind ...
-func NewNotifyBind(eventBus bus.Bus) *NotifyBind {
-	return &NotifyBind{
-		eventBus: eventBus,
-	}
+func (a Archive) Send(b *tele.Bot, to tele.Recipient, opt *tele.SendOptions) (*tele.Message, error) {
+
+	return nil, nil
 }
 
-// NewMessage ...
-func (b *NotifyBind) NewMessage() *common.Message {
-	return NewMessage()
-}
-
-// Send ...
-func (b *NotifyBind) Send(msg common.Message) {
-	b.eventBus.Publish(TopicNotify, msg)
-}

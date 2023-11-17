@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2023, Filippov Alex
+// Copyright (C) 2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -16,31 +16,16 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package notify
+package common
 
 import (
-	"github.com/e154/smart-home/plugins/notify/common"
-	"github.com/e154/smart-home/system/bus"
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 )
 
-// NotifyBind ...
-type NotifyBind struct {
-	eventBus bus.Bus
-}
-
-// NewNotifyBind ...
-func NewNotifyBind(eventBus bus.Bus) *NotifyBind {
-	return &NotifyBind{
-		eventBus: eventBus,
-	}
-}
-
-// NewMessage ...
-func (b *NotifyBind) NewMessage() *common.Message {
-	return NewMessage()
-}
-
-// Send ...
-func (b *NotifyBind) Send(msg common.Message) {
-	b.eventBus.Publish(TopicNotify, msg)
+// Message ...
+type Message struct {
+	Type       string           `json:"type"`
+	EntityId   *common.EntityId `json:"entity_id"`
+	Attributes m.AttributeValue `json:"attributes"`
 }

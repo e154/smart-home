@@ -22,6 +22,7 @@ import (
 	"github.com/alitto/pond"
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/plugins/notify/common"
 )
 
 const (
@@ -56,7 +57,7 @@ func (n *Notify) Send(msg *m.MessageDelivery, provider Provider) {
 	})
 }
 
-func (n *Notify) SaveAndSend(msg Message, provider Provider) {
+func (n *Notify) SaveAndSend(msg common.Message, provider Provider) {
 	n.pool.Submit(func() {
 		NewWorker(n.adaptors).SaveAndSend(msg, provider)
 	})

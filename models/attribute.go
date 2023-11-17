@@ -140,8 +140,13 @@ func (a Attribute) ArrayString() (result []string) {
 	if a.Value == nil {
 		return
 	}
-	for _, val := range a.Value.([]interface{}) {
+	switch v := a.Value.(type) {
+	case []interface{}:
+		for _, val := range a.Value.([]interface{}) {
 			result = append(result, fmt.Sprintf("%v", val))
+		}
+	case []string:
+		result = v
 	}
 	return
 }
@@ -275,6 +280,7 @@ func (a Attributes) Deserialize(data AttributeValue) (changed bool, err error) {
 			case time.Time:
 			case float64, float32:
 			case int64, int32, int:
+			case []string:
 			case []interface{}:
 
 				var arr []interface{}

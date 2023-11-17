@@ -21,11 +21,11 @@ package endpoint
 import (
 	"bufio"
 	"context"
+	"mime/multipart"
+
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
 	m "github.com/e154/smart-home/models"
-	"mime/multipart"
-
 	"github.com/e154/smart-home/system/backup"
 )
 
@@ -45,7 +45,7 @@ func NewBackupEndpoint(common *CommonEndpoint, backup *backup.Backup) *BackupEnd
 
 // New ...
 func (b *BackupEndpoint) New(ctx context.Context) (err error) {
-	go b.backup.New()
+	go b.backup.New(false)
 	return
 }
 

@@ -610,7 +610,13 @@ export default {
         clearEntityStorageDays: 'Clear Entity Storage Days',
         clearRunHistoryDays: 'Clear Run History Days',
         time: 'Time',
-        timezone: 'Timezone, default Asia/Colombo'
+        timezone: 'Timezone, default Asia/Colombo',
+        backup: 'Backup',
+        createBackupAt: 'Create Backup At (Cron)',
+        maximumNumberOfBackups: 'Maximum Number Of Backups',
+        info1: 'https://en.wikipedia.org/wiki/Cron',
+        sendTheBackupInPartsMb: 'Send The Backup In Parts Mb',
+        sendbackuptoTelegramBot: 'Send Backup To Telegram Bot'
     },
     tools: {
         eventBus: {

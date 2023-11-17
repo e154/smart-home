@@ -100,7 +100,7 @@ func zipit(sources []string, target string) error {
 			}
 
 			if info.IsDir() {
-				header.Name += "/"
+				header.Name += string(filepath.Separator)
 			} else {
 				header.Method = zip.Deflate
 			}
@@ -126,4 +126,15 @@ func zipit(sources []string, target string) error {
 	}
 
 	return err
+}
+
+func checkZip(archive string) (ok bool, err error) {
+	var reader *zip.ReadCloser
+	reader, err = zip.OpenReader(archive)
+	if err != nil {
+		return
+	}
+	defer reader.Close()
+	ok = len(reader.File) > 0
+	return
 }

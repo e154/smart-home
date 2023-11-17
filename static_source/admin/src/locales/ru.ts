@@ -609,7 +609,13 @@ export default {
     clearEntityStorageDays: 'История состояния Entity',
     clearRunHistoryDays: 'История запусков системы',
     time: 'Время',
-    timezone: 'Часовой пояс'
+    timezone: 'Часовой пояс',
+    backup: 'Резервное копирование',
+    createBackupAt: 'Когда создавать кипию (cron)',
+    maximumNumberOfBackups: 'Максимальное количество резервных копий',
+    info1: 'https://en.wikipedia.org/wiki/Cron',
+    sendTheBackupInPartsMb: 'Отправлять резервную копию по частям Mb',
+    sendbackuptoTelegramBot: 'Отправить резервную копию боту Telegram'
   },
   tools: {
     eventBus: {

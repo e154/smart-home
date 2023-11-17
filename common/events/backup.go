@@ -18,8 +18,11 @@
 
 package events
 
+import "github.com/e154/smart-home/common"
+
 type EventCreatedBackup struct {
-	Name string `json:"name"`
+	Name      string `json:"name"`
+	Scheduler bool   `json:"scheduler"`
 }
 
 type EventRemovedBackup struct {
@@ -32,4 +35,19 @@ type EventUploadedBackup struct {
 
 type EventStartedRestore struct {
 	Name string `json:"name"`
+}
+
+type CommandCreateBackup struct {
+	Scheduler bool `json:"scheduler"`
+}
+
+type CommandClearStorage struct {
+	Num int64 `json:"num"`
+}
+
+type CommandSendFileToTelegram struct {
+	Filename  string          `json:"filename"`
+	EntityId  common.EntityId `json:"entity_id"`
+	Chunks    bool            `json:"chunks"`
+	ChunkSize int             `json:"chunk_size"`
 }

@@ -106,10 +106,11 @@ func (a *Api) Start() (err error) {
 
 	a.echo.HideBanner = true
 	a.echo.HidePort = true
-	a.echo.Use(middleware.GzipWithConfig(middleware.GzipConfig{
-		Level: -1,
-	}))
-	a.echo.Use(middleware.Decompress())
+
+	if a.cfg.Gzip {
+		a.echo.Use(middleware.GzipWithConfig(middleware.DefaultGzipConfig))
+		a.echo.Use(middleware.Decompress())
+	}
 
 	a.registerHandlers()
 
