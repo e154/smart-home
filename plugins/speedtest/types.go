@@ -27,8 +27,8 @@ import (
 const (
 	Name = "speedtest"
 
-	AttrPoint  = "location"
-	AttrCity = "city"
+	AttrPoint = "location"
+	AttrCity  = "city"
 
 	Version = "0.0.1"
 

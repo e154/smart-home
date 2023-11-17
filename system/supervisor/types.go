@@ -161,12 +161,6 @@ const (
 	StateInProcess = "in process"
 )
 
-type actorInfo struct {
-	Actor        PluginActor
-	quit         chan struct{}
-	CurrentState *bus.EventEntityState //todo: check race condition
-}
-
 // ActorInfo ...
 type ActorInfo struct {
 	Id                common.EntityId        `json:"id"`

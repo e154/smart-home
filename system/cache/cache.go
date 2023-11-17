@@ -16,23 +16,6 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-// Package cache provide a Cache interface and some implement engine
-// Usage:
-//
-// import(
-//   "github.com/astaxie/beego/cache"
-// )
-//
-// bm, err := cache.NewCache("memory", `{"interval":60}`)
-//
-// Use it like this:
-//
-//	bm.Put("astaxie", 1, 10 * time.Second)
-//	bm.Get("astaxie")
-//	bm.IsExist("astaxie")
-//	bm.Delete("astaxie")
-//
-//  more docs http://beego.me/docs/module/cache.md
 package cache
 
 import (

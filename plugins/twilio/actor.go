@@ -68,12 +68,12 @@ func NewActor(entity *m.Entity,
 }
 
 func (e *Actor) Destroy() {
-	e.Service.EventBus().Unsubscribe(notify.TopicNotify, e.eventHandler)
+	_ = e.Service.EventBus().Unsubscribe(notify.TopicNotify, e.eventHandler)
 	e.notify.Shutdown()
 }
 
 func (e *Actor) Spawn() {
-	e.Service.EventBus().Subscribe(notify.TopicNotify, e.eventHandler, false)
+	_ = e.Service.EventBus().Subscribe(notify.TopicNotify, e.eventHandler, false)
 	e.notify.Start()
 }
 

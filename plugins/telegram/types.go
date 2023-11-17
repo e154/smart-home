@@ -126,18 +126,3 @@ type Command struct {
 	UserName, Text string
 	ChatId         int64
 }
-
-const banner = `
-Smart home system
-
-Version:
-%s
-
-command:
-%s
-`
-
-const help = `/start - subscriber again
-/help - this help
-/quit - unsubscribe from bot 
-`

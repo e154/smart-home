@@ -75,7 +75,7 @@ func NewAction(scriptService scripts.ScriptService,
 		})
 	}
 
-	eventBus.Subscribe(fmt.Sprintf("system/automation/actions/%d", model.Id), action.actionHandler, false)
+	_ = eventBus.Subscribe(fmt.Sprintf("system/automation/actions/%d", model.Id), action.actionHandler, false)
 
 	return
 }
@@ -84,7 +84,7 @@ func (a *Action) Remove() {
 	if a.scriptEngine != nil {
 		a.scriptEngine.Stop()
 	}
-	a.eventBus.Unsubscribe(fmt.Sprintf("system/automation/actions/%d", a.model.Id), a.actionHandler)
+	_ = a.eventBus.Unsubscribe(fmt.Sprintf("system/automation/actions/%d", a.model.Id), a.actionHandler)
 }
 
 // Run ...

@@ -78,7 +78,6 @@ func (e *Actor) Destroy() {
 
 func (e *Actor) Spawn() {
 	go e.selfUpdate()
-	return
 }
 
 func (e *Actor) selfUpdate() {

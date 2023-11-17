@@ -178,8 +178,7 @@ func (s *Client) GetStreamList() ([]string, error) {
 	if s.capabilities.Media.StreamingCapabilities.RTP_RTSP_TCP {
 		protocol = schema.TransportProtocolRTSP
 	}
-	var stream schema.StreamType
-	stream = schema.StreamTypeRTPUnicast
+	var stream = schema.StreamTypeRTPUnicast
 	if media, err := s.cli.Media(); err == nil {
 		for _, profile := range s.mediaProfiles {
 			resp, _ := media.GetStreamUri(&media1Wsdl.GetStreamUri{

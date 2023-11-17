@@ -20,17 +20,16 @@ package scheduler
 
 import (
 	"context"
-	"github.com/e154/smart-home/common"
 	"strconv"
-
-	"github.com/e154/smart-home/common/events"
-	"github.com/e154/smart-home/system/bus"
 
 	"github.com/robfig/cron/v3"
 	"go.uber.org/fx"
 
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
+	"github.com/e154/smart-home/system/bus"
 )
 
 type EntryID int
@@ -75,7 +74,7 @@ func (c *Scheduler) Start(ctx context.Context) error {
 		)))
 
 	// every hour
-	c.cron.AddFunc("0 0 * * * *", func() {
+	_, _ = c.cron.AddFunc("0 0 * * * *", func() {
 		go func() {
 			//log.Info("deleting obsolete metric entries ...")
 			if err := c.adaptors.MetricBucket.DeleteOldest(context.Background(), c.getNumber("clearMetricsDays", 60)); err != nil {

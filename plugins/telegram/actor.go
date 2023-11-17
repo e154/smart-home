@@ -86,7 +86,7 @@ func (e *Actor) Destroy() {
 	if !e.isStarted.Load() {
 		return
 	}
-	e.Service.EventBus().Unsubscribe(notify.TopicNotify, e.eventHandler)
+	_ = e.Service.EventBus().Unsubscribe(notify.TopicNotify, e.eventHandler)
 	e.notify.Shutdown()
 
 	if e.bot != nil {
@@ -127,10 +127,8 @@ func (e *Actor) Spawn() {
 		go e.bot.Start()
 	}
 
-	e.Service.EventBus().Subscribe(notify.TopicNotify, e.eventHandler, false)
+	_ = e.Service.EventBus().Subscribe(notify.TopicNotify, e.eventHandler, false)
 	e.notify.Start()
-
-	return
 }
 
 func (e *Actor) sendMsg(message *m.Message, chatId int64) (messageID int, err error) {
@@ -394,7 +392,7 @@ func (e *Actor) updateState(connected bool) {
 	if info.State != nil && info.State.Name == newStat {
 		return
 	}
-	e.SetState(supervisor.EntityStateParams{
+	_ = e.SetState(supervisor.EntityStateParams{
 		NewState:    common.String(newStat),
 		StorageSave: true,
 	})

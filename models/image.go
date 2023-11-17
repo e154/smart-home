@@ -23,7 +23,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/e154/smart-home/common"
 	"io"
 	"net/http"
 	"os"
@@ -31,6 +30,8 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/e154/smart-home/common"
 )
 
 // Image ...
@@ -65,8 +66,7 @@ func UploadImage(ctx context.Context, reader *bufio.Reader, fileName string) (ne
 		}
 		buffer.Write(part[:count])
 	}
-	if err != io.EOF {
-	} else {
+	if err == io.EOF {
 		err = nil
 	}
 

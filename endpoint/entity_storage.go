@@ -110,8 +110,8 @@ func (i *EntityStorageEndpoint) GetList(ctx context.Context, entityIds []common.
 		Attributes: attributes,
 	}
 
-	i.cache.Put(ctx, keyResult, result, 10*time.Second)
-	i.cache.Put(ctx, keyTotal, total, 10*time.Second)
+	_ = i.cache.Put(ctx, keyResult, result, 10*time.Second)
+	_ = i.cache.Put(ctx, keyTotal, total, 10*time.Second)
 
 	return
 }

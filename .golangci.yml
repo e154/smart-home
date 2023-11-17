@@ -6,16 +6,16 @@ run:
     - tmp/stream
 linters:
   enable:
-    - deadcode
     - gofmt
     - goimports
-    - varcheck
-    - errcheck
     - gosimple
     - ineffassign
-  #   - staticcheck
-  #   - structcheck
-  #   - unused
-  #   - govet
+  #  - deadcode
+  #  - varcheck
+  #  - errcheck
+  #  - staticcheck
+  #  - structcheck
+  #  - unused
+  #  - govet
   disable-all: true
-go: '1.18'
+go: '1.20'

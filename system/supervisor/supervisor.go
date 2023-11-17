@@ -209,7 +209,7 @@ func (e *supervisor) SetState(id common.EntityId, params EntityStateParams) (err
 		log.Error(err.Error())
 	}
 
-	e.cache.Delete(context.Background(), id.String())
+	_ = e.cache.Delete(context.Background(), id.String())
 
 	return
 }
@@ -302,7 +302,7 @@ func (e *supervisor) eventLastState(msg events.EventGetLastState) {
 		e.eventBus.Publish("system/entities/"+msg.EntityId.String(), state)
 		return
 	}
-	e.cache.Put(context.Background(), msg.EntityId.String(), nil, 10*time.Second)
+	_ = e.cache.Put(context.Background(), msg.EntityId.String(), nil, 10*time.Second)
 
 	pla, err := e.GetActorById(msg.EntityId)
 	if err != nil {
@@ -332,7 +332,7 @@ func (e *supervisor) eventLastState(msg events.EventGetLastState) {
 		OldState:   *currentState,
 		NewState:   *currentState,
 	}
-	e.cache.Put(context.Background(), msg.EntityId.String(), state, 30*time.Second)
+	_ = e.cache.Put(context.Background(), msg.EntityId.String(), state, 30*time.Second)
 	e.eventBus.Publish("system/entities/"+msg.EntityId.String(), state)
 }
 
@@ -496,9 +496,9 @@ func (e *supervisor) UnloadEntity(id common.EntityId) {
 	}
 
 	plugin := value.(Pluggable)
-	plugin.RemoveActor(id)
+	_ = plugin.RemoveActor(id)
 
-	e.cache.Delete(context.Background(), id.String())
+	_ = e.cache.Delete(context.Background(), id.String())
 }
 
 func (e *supervisor) GetService() Service {

@@ -21,11 +21,12 @@ package adaptors
 import (
 	"context"
 	"fmt"
-	"github.com/e154/smart-home/system/orm"
+
+	"gorm.io/gorm"
 
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"gorm.io/gorm"
+	"github.com/e154/smart-home/system/orm"
 )
 
 // ITask ...

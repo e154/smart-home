@@ -84,7 +84,7 @@ func (n *EntityStorages) List(ctx context.Context, limit, offset int, orderBy, s
 
 	q := n.Db.WithContext(ctx).Model(&EntityStorage{})
 
-	if entityIds != nil && len(entityIds) > 0 {
+	if len(entityIds) > 0 {
 		var ids = make([]string, 0, len(entityIds))
 		for _, id := range entityIds {
 			ids = append(ids, id.String())

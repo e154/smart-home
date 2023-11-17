@@ -20,13 +20,14 @@ package backup
 
 import (
 	"fmt"
-	"github.com/pkg/errors"
 	"io"
 	"os"
 	"path"
 	"path/filepath"
 	"sort"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 func splitFile(inputPath string, chunkSize int64) ([]string, error) {

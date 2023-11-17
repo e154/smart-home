@@ -337,10 +337,10 @@ func (n Entities) DeleteScripts(ctx context.Context, id common.EntityId) (err er
 }
 
 // PreloadStorage ...
-//todo: fix
-// temporary solution because Preload("Storage", func(db *gorm.DB) *gorm.DB { - does not work ...
 func (n Entities) PreloadStorage(ctx context.Context, list []*Entity) (err error) {
 
+	//todo: fix
+	// temporary solution because Preload("Storage", func(db *gorm.DB) *gorm.DB { - does not work ...
 	for _, item := range list {
 		err = n.Db.WithContext(ctx).Model(&EntityStorage{}).
 			Order("created_at desc").

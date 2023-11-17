@@ -24,9 +24,6 @@ import (
 	"github.com/imdario/mergo"
 )
 
-// Command line flag global variables
-var configFile string
-
 // NewStreamCore do load config file
 func NewStreamCore() *StorageST {
 	//configFile = path.Join("conf", "media_config.json")

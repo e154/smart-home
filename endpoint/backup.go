@@ -93,7 +93,9 @@ func (b *BackupEndpoint) Upload(ctx context.Context, files map[string][]*multipa
 func (b *BackupEndpoint) Delete(ctx context.Context, name string) (err error) {
 
 	var list []*m.Backup
-	list, _, err = b.backup.List(ctx, 999, 0, "", "")
+	if list, _, err = b.backup.List(ctx, 999, 0, "", ""); err != nil {
+		return
+	}
 	for _, file := range list {
 		if name == file.Name {
 			err = b.backup.Delete(file.Name)

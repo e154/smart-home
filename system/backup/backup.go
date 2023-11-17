@@ -23,7 +23,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"go.uber.org/atomic"
 	"io"
 	"net/http"
 	"os"
@@ -34,6 +33,7 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
+	"go.uber.org/atomic"
 	"go.uber.org/fx"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -437,8 +437,7 @@ func (b *Backup) UploadBackup(ctx context.Context, reader *bufio.Reader, fileNam
 		}
 		buffer.Write(part[:count])
 	}
-	if err != io.EOF {
-	} else {
+	if err == io.EOF {
 		err = nil
 	}
 

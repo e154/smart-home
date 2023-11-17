@@ -182,7 +182,7 @@ func (a *triggerManager) addTrigger(model *m.Trigger) (err error) {
 }
 
 // removeTrigger ...
-func (a *triggerManager) removeTrigger(id int64) (err error) {
+func (a *triggerManager) removeTrigger(id int64) {
 	a.Lock()
 	defer a.Unlock()
 	//log.Infof("remove trigger id:%d", id)
@@ -195,7 +195,6 @@ func (a *triggerManager) removeTrigger(id int64) (err error) {
 	delete(a.triggers, id)
 
 	a.triggerCounter.Dec()
-	return
 }
 
 // updateTrigger ...
