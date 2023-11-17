@@ -437,8 +437,8 @@ func (b *Backup) UploadBackup(ctx context.Context, reader *bufio.Reader, fileNam
 		}
 		buffer.Write(part[:count])
 	}
-	if err == io.EOF {
-		err = nil
+	if err != io.EOF {
+		return
 	}
 
 	contentType := http.DetectContentType(buffer.Bytes())

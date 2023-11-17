@@ -40,13 +40,13 @@ const save = async () => {
           loading.value = false
         })
     if (res) {
-      push(`/zigbee2mqtt/edit/${res.data.id}`)
+      push(`/etc/zigbee2mqtt/edit/${res.data.id}`)
     }
   }
 }
 
 const cancel = () => {
-  push('/zigbee2mqtt')
+  push('/etc/zigbee2mqtt')
 }
 
 </script>

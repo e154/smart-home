@@ -20,12 +20,12 @@ package cgminer
 
 import (
 	"context"
-	"github.com/e154/smart-home/common/debug"
 	"testing"
 	"time"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/debug"
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/cgminer"

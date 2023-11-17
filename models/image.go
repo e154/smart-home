@@ -66,8 +66,8 @@ func UploadImage(ctx context.Context, reader *bufio.Reader, fileName string) (ne
 		}
 		buffer.Write(part[:count])
 	}
-	if err == io.EOF {
-		err = nil
+	if err != io.EOF {
+		return
 	}
 
 	contentType := http.DetectContentType(buffer.Bytes())

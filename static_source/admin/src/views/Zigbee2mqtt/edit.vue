@@ -71,7 +71,7 @@ const save = async () => {
 }
 
 const cancel = () => {
-  push('/zigbee2mqtt')
+  push('/etc/zigbee2mqtt')
 }
 
 const remove = async () => {

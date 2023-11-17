@@ -70,7 +70,7 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 // Unload ...
 func (p *plugin) Unload(ctx context.Context) (err error) {
 	p.ticker.Stop()
-	err = p.Plugin.Unload(ctx)
+	_ = p.Plugin.Unload(ctx)
 	return nil
 }
 

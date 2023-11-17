@@ -362,57 +362,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
     ]
   },
   {
-    path: '/zigbee2mqtt',
-    component: Develop,
-    redirect: '/zigbee2mqtt/index',
-    meta: {
-      title: t('router.Zigbee2mqtt'),
-      icon: 'simple-icons:zigbee'
-    },
-    children: [
-      {
-        path: 'index',
-        name: 'Zigbee2mqtt',
-        component: () => import('@/views/Zigbee2mqtt/index.vue'),
-        meta: {
-          title: t('router.List'),
-          noTagsView: true,
-          noCache: true,
-          hidden: true,
-          canTo: true,
-          activeMenu: '/zigbee2mqtt'
-        }
-      },
-      {
-        path: 'new',
-        name: 'newZigbee2mqtt',
-        component: () => import('@/views/Zigbee2mqtt/new.vue'),
-        meta: {
-          title: t('router.New'),
-          noTagsView: true,
-          noCache: true,
-          hidden: true,
-          canTo: true,
-          activeMenu: '/zigbee2mqtt'
-        }
-      },
-      {
-        path: 'edit/:id',
-        name: 'editZigbee2mqtt',
-        component: () => import('@/views/Zigbee2mqtt/edit.vue'),
-        props: true,
-        meta: {
-          title: t('router.Edit'),
-          noTagsView: true,
-          noCache: true,
-          hidden: true,
-          canTo: true,
-          activeMenu: '/zigbee2mqtt'
-        }
-      }
-    ]
-  },
-  {
     path: '/dashboards',
     component: Develop,
     redirect: '/dashboards/index',
@@ -661,6 +610,56 @@ export const developRouterMap: AppRouteRecordRaw[] = [
               hidden: true,
               canTo: true,
               activeMenu: '/etc/mqtt'
+            }
+          }
+        ]
+      },
+      {
+        path: 'zigbee2mqtt',
+        name: 'Zigbee2mqtt',
+        component: () => import('@/views/zigbee2mqtt/index.vue'),
+        meta: {
+          title: t('router.Zigbee2mqtt'),
+        },
+        children: [
+          {
+            path: 'index',
+            name: 'Zigbee2mqtt',
+            component: () => import('@/views/Zigbee2mqtt/index.vue'),
+            meta: {
+              title: t('router.List'),
+              noTagsView: true,
+              noCache: true,
+              hidden: true,
+              canTo: true,
+              activeMenu: '/etc/zigbee2mqtt'
+            }
+          },
+          {
+            path: 'new',
+            name: 'newZigbee2mqtt',
+            component: () => import('@/views/Zigbee2mqtt/new.vue'),
+            meta: {
+              title: t('router.New'),
+              noTagsView: true,
+              noCache: true,
+              hidden: true,
+              canTo: true,
+              activeMenu: '/etc/zigbee2mqtt'
+            }
+          },
+          {
+            path: 'edit/:id',
+            name: 'editZigbee2mqtt',
+            component: () => import('@/views/Zigbee2mqtt/edit.vue'),
+            props: true,
+            meta: {
+              title: t('router.Edit'),
+              noTagsView: true,
+              noCache: true,
+              hidden: true,
+              canTo: true,
+              activeMenu: '/etc/zigbee2mqtt'
             }
           }
         ]
