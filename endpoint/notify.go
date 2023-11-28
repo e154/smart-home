@@ -28,6 +28,7 @@ import (
 	"github.com/e154/smart-home/plugins/html5_notify"
 	"github.com/e154/smart-home/plugins/messagebird"
 	"github.com/e154/smart-home/plugins/notify"
+	notifyCommon "github.com/e154/smart-home/plugins/notify/common"
 	"github.com/e154/smart-home/plugins/slack"
 	"github.com/e154/smart-home/plugins/telegram"
 	"github.com/e154/smart-home/plugins/webpush"
@@ -54,7 +55,7 @@ func (n *NotifyEndpoint) Repeat(ctx context.Context, id int64) (err error) {
 		return
 	}
 
-	n.eventBus.Publish(notify.TopicNotify, notify.Message{
+	n.eventBus.Publish(notify.TopicNotify, notifyCommon.Message{
 		Type:       msg.Message.Type,
 		Attributes: msg.Message.Attributes,
 	})
@@ -78,7 +79,7 @@ func (n *NotifyEndpoint) Send(ctx context.Context, params *m.NewNotifrMessage) (
 		if render != nil {
 			body = render.Body
 		}
-		n.eventBus.Publish(notify.TopicNotify, notify.Message{
+		n.eventBus.Publish(notify.TopicNotify, notifyCommon.Message{
 			Type: email.Name,
 			Attributes: map[string]interface{}{
 				email.AttrAddresses: params.Address,
@@ -96,7 +97,7 @@ func (n *NotifyEndpoint) Send(ctx context.Context, params *m.NewNotifrMessage) (
 			if phone == "" {
 				continue
 			}
-			n.eventBus.Publish(notify.TopicNotify, notify.Message{
+			n.eventBus.Publish(notify.TopicNotify, notifyCommon.Message{
 				Type: messagebird.Name,
 				Attributes: map[string]interface{}{
 					messagebird.AttrPhone: phone,
@@ -110,7 +111,7 @@ func (n *NotifyEndpoint) Send(ctx context.Context, params *m.NewNotifrMessage) (
 		if render != nil {
 			body = render.Body
 		}
-		n.eventBus.Publish(notify.TopicNotify, notify.Message{
+		n.eventBus.Publish(notify.TopicNotify, notifyCommon.Message{
 			Type: slack.Name,
 			Attributes: map[string]interface{}{
 				slack.AttrChannel: params.Address,
@@ -122,7 +123,7 @@ func (n *NotifyEndpoint) Send(ctx context.Context, params *m.NewNotifrMessage) (
 		if render != nil {
 			body = render.Body
 		}
-		n.eventBus.Publish(notify.TopicNotify, notify.Message{
+		n.eventBus.Publish(notify.TopicNotify, notifyCommon.Message{
 			Type: telegram.Name,
 			Attributes: map[string]interface{}{
 				telegram.AttrChatID: params.ChatID,
@@ -130,7 +131,7 @@ func (n *NotifyEndpoint) Send(ctx context.Context, params *m.NewNotifrMessage) (
 			},
 		})
 	case "html5_notify":
-		n.eventBus.Publish(notify.TopicNotify, notify.Message{
+		n.eventBus.Publish(notify.TopicNotify, notifyCommon.Message{
 			Type: html5_notify.Name,
 			Attributes: map[string]interface{}{
 				html5_notify.AttrUserIDS: "14",
@@ -139,7 +140,7 @@ func (n *NotifyEndpoint) Send(ctx context.Context, params *m.NewNotifrMessage) (
 			},
 		})
 	case "webpush":
-		n.eventBus.Publish(notify.TopicNotify, notify.Message{
+		n.eventBus.Publish(notify.TopicNotify, notifyCommon.Message{
 			Type: webpush.Name,
 			Attributes: map[string]interface{}{
 				webpush.AttrUserIDS: "14",

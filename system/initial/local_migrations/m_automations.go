@@ -21,9 +21,8 @@ package local_migrations
 import (
 	"context"
 
-	"github.com/e154/smart-home/endpoint"
-
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/endpoint"
 )
 
 type MigrationAutomations struct {
@@ -57,8 +56,3 @@ func (n *MigrationAutomations) Up(ctx context.Context, adaptors *adaptors.Adapto
 
 	return
 }
-
-const (
-	internetCheckAutomationRaw = `{"id":"1","name":"internet_check","description":"every 5 sec","enabled":true,"condition":"and","triggers":[{"name":"every 1 minutes","plugin_name":"time","attributes":{"cron":{"name":"cron","type":1,"string":"*/5 * * * * *","array":[],"map":{}}},"entity":null,"script":null}],"conditions":[],"actions":[{"name":"ping","entity":null,"entity_id":"sensor.intermet_checker","entity_action_name":"PING","script":null},{"name":"web request","entity":null,"entity_id":"sensor.intermet_checker","entity_action_name":"CHECK","script":null}]}`
-	hddCheckAutomationRaw      = `{"id":"5","name":"hdd_check","description":"every 10 sec","enabled":true,"condition":"and","triggers":[{"name":"time","plugin_name":"time","attributes":{"cron":{"name":"cron","type":1,"string":"*/10 * * * * *","array":[],"map":{}}},"entity":null,"script":null}],"conditions":[],"actions":[{"name":"action","entity":null,"entity_id":"hdd.hdd1","entity_action_name":"CHECK","script":null}]}`
-)

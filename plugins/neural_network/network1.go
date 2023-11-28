@@ -22,11 +22,13 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/e154/smart-home/plugins/notify"
-	"github.com/e154/smart-home/plugins/webpush"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/patrikeh/go-deep"
 	"github.com/patrikeh/go-deep/training"
+
+	"github.com/e154/smart-home/plugins/notify"
+	"github.com/e154/smart-home/plugins/notify/common"
+	"github.com/e154/smart-home/plugins/webpush"
+	"github.com/e154/smart-home/system/bus"
 )
 
 type Network1 struct {
@@ -132,7 +134,7 @@ LOOP:
 		}
 	}
 
-	e.eventBus.Publish(notify.TopicNotify, notify.Message{
+	e.eventBus.Publish(notify.TopicNotify, common.Message{
 		Type: webpush.Name,
 		Attributes: map[string]interface{}{
 			webpush.AttrUserIDS: "14",

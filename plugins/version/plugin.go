@@ -24,10 +24,8 @@ import (
 	"time"
 
 	"github.com/e154/smart-home/common"
-
-	"github.com/e154/smart-home/system/supervisor"
-
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 var _ supervisor.Pluggable = (*plugin)(nil)
@@ -57,14 +55,13 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 		return
 	}
 
-	var entity *m.Entity
-	if entity, err = p.Service.Adaptors().Entity.GetById(context.Background(), common.EntityId(fmt.Sprintf("%s.%s", EntityVersion, Name))); err != nil {
-		entity = &m.Entity{
+	if _, err = p.Service.Adaptors().Entity.GetById(context.Background(), common.EntityId(fmt.Sprintf("%s.%s", EntityVersion, Name))); err != nil {
+		entity := &m.Entity{
 			Id:         common.EntityId(fmt.Sprintf("%s.%s", EntityVersion, Name)),
 			PluginName: Name,
 			Attributes: NewAttr(),
 		}
-		err = p.Service.Adaptors().Entity.Add(context.Background(), entity)
+		_ = p.Service.Adaptors().Entity.Add(context.Background(), entity)
 	}
 
 	go func() {

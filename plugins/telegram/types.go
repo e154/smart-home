@@ -28,21 +28,20 @@ const (
 	// Name ...
 	Name = "telegram"
 
-	AttrToken = "token"
-	AttrPin = "pin"
-	AttrChatID = "chat_id"
-	AttrBody = "body"
-	AttrUri = "uri"
-	AttrFilePath = "file_path"
-	AttrKeys = "keys"
+	AttrToken     = "token"
+	AttrPin       = "pin"
+	AttrChatID    = "chat_id"
+	AttrBody      = "body"
+	AttrPhotoUri  = "photo_uri"
+	AttrPhotoPath = "photo_path"
+	AttrFilePath  = "file_path"
+	AttrFileUri   = "file_uri"
+	AttrKeys      = "keys"
 
 	Version = "0.0.1"
 )
 
 const (
-	// StatusDelivered ...
-	StatusDelivered = "delivered"
-
 	AttrConnected = "connected"
 	AttrOffline   = "offline"
 )
@@ -68,13 +67,21 @@ func NewMessageParams() m.Attributes {
 			Name: AttrBody,
 			Type: common.AttributeString,
 		},
-		AttrUri: {
-			Name: AttrUri,
-			Type: common.AttributeString,
+		AttrPhotoUri: {
+			Name: AttrPhotoUri,
+			Type: common.AttributeArray,
+		},
+		AttrPhotoPath: {
+			Name: AttrPhotoPath,
+			Type: common.AttributeArray,
+		},
+		AttrFileUri: {
+			Name: AttrFileUri,
+			Type: common.AttributeArray,
 		},
 		AttrFilePath: {
 			Name: AttrFilePath,
-			Type: common.AttributeString,
+			Type: common.AttributeArray,
 		},
 		AttrKeys: {
 			Name: AttrKeys,
@@ -119,18 +126,3 @@ type Command struct {
 	UserName, Text string
 	ChatId         int64
 }
-
-const banner = `
-Smart home system
-
-Version:
-%s
-
-command:
-%s
-`
-
-const help = `/start - subscriber again
-/help - this help
-/quit - unsubscribe from bot 
-`

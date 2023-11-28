@@ -19,6 +19,7 @@
 package bus
 
 import (
+	"context"
 	"fmt"
 	"reflect"
 	"sync"
@@ -59,7 +60,7 @@ func TestBus(t *testing.T) {
 	// ------------------------------------------------------------
 
 	// Test Stat
-	stats, total, err := b.Stat()
+	stats, total, err := b.Stat(context.Background(), 999, 0, "", "")
 	if err != nil {
 		t.Errorf("Stat returned an error: %v", err)
 	}
@@ -91,7 +92,7 @@ func TestBus(t *testing.T) {
 	// ------------------------------------------------------------
 
 	// Test Stat
-	stats, total, err = b.Stat()
+	stats, total, err = b.Stat(context.Background(), 999, 0, "", "")
 	if err != nil {
 		t.Errorf("Stat returned an error: %v", err)
 	}
@@ -121,7 +122,7 @@ func TestBus(t *testing.T) {
 	require.Equal(t, counter, 1)
 
 	// Test Stat
-	stats, total, err = b.Stat()
+	stats, total, err = b.Stat(context.Background(), 999, 0, "", "")
 	if err != nil {
 		t.Errorf("Stat returned an error: %v", err)
 	}
@@ -151,7 +152,7 @@ func TestBus(t *testing.T) {
 	require.Equal(t, counter, 1)
 
 	// Test Stat
-	stats, total, err = b.Stat()
+	stats, total, err = b.Stat(context.Background(), 999, 0, "", "")
 	if err != nil {
 		t.Errorf("Stat returned an error: %v", err)
 	}
@@ -229,7 +230,7 @@ func TestBus2(t *testing.T) {
 	}
 
 	// Test Stat
-	stats, total, err := b.Stat()
+	stats, total, err := b.Stat(context.Background(), 999, 0, "", "")
 	if err != nil {
 		t.Errorf("Stat returned an error: %v", err)
 	}
@@ -265,12 +266,12 @@ func TestBus3(t *testing.T) {
 	}
 
 	for i := 0; i < n; i++ {
-		bus.Subscribe(fmt.Sprintf("foo/bar/%d", i), fn)
+		_ = bus.Subscribe(fmt.Sprintf("foo/bar/%d", i), fn)
 	}
 
 	time.Sleep(time.Second)
 
-	stat, total, err := bus.Stat()
+	stat, total, err := bus.Stat(context.Background(), 999, 0, "", "")
 	require.NoError(t, err)
 	require.Equal(t, len(stat), n)
 	require.Equal(t, total, int64(n))
@@ -283,11 +284,11 @@ func TestBus3(t *testing.T) {
 	time.Sleep(time.Second)
 
 	for i := 0; i < n; i++ {
-		bus.Unsubscribe(fmt.Sprintf("foo/bar/%d", i), fn)
+		_ = bus.Unsubscribe(fmt.Sprintf("foo/bar/%d", i), fn)
 	}
 	time.Sleep(time.Second)
 
-	stat, total, err = bus.Stat()
+	stat, total, err = bus.Stat(context.Background(), 999, 0, "", "")
 	require.NoError(t, err)
 	require.Equal(t, len(stat), 0)
 	require.Equal(t, total, int64(0))
@@ -327,13 +328,13 @@ func TestBus4(t *testing.T) {
 	}
 
 	for i := 0; i < n; i++ {
-		bus.Subscribe(fmt.Sprintf("foo/bar/%d", i), fn1)
-		bus.Subscribe(fmt.Sprintf("foo/bar/%d", i), fn2)
+		_ = bus.Subscribe(fmt.Sprintf("foo/bar/%d", i), fn1)
+		_ = bus.Subscribe(fmt.Sprintf("foo/bar/%d", i), fn2)
 	}
 
 	time.Sleep(time.Second)
 
-	stat, total, err := bus.Stat()
+	stat, total, err := bus.Stat(context.Background(), 999, 0, "", "")
 	require.NoError(t, err)
 	require.Equal(t, len(stat), n)
 	require.Equal(t, total, int64(n))
@@ -351,11 +352,11 @@ func TestBus4(t *testing.T) {
 	require.Equal(t, counter2, int32(n))
 
 	for i := 0; i < n; i++ {
-		bus.Unsubscribe(fmt.Sprintf("foo/bar/%d", i), fn1)
+		_ = bus.Unsubscribe(fmt.Sprintf("foo/bar/%d", i), fn1)
 	}
 	time.Sleep(time.Second)
 
-	stat, total, err = bus.Stat()
+	stat, total, err = bus.Stat(context.Background(), 999, 0, "", "")
 	require.NoError(t, err)
 	require.Equal(t, len(stat), n)
 	require.Equal(t, total, int64(n))
@@ -370,7 +371,7 @@ func TestBus4(t *testing.T) {
 	require.Equal(t, counter1, int32(n))
 	require.Equal(t, counter2, int32(n*2))
 
-	stat, total, err = bus.Stat()
+	stat, total, err = bus.Stat(context.Background(), 999, 0, "", "")
 	require.NoError(t, err)
 	require.Equal(t, len(stat), n)
 	require.Equal(t, total, int64(n))

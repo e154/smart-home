@@ -60,6 +60,7 @@ type AppConfig struct {
 	ColoredLogging                 bool           `json:"colored_logging" env:"COLORED_LOGGING"`
 	ApiSwagger                     bool           `json:"api_swagger" env:"API_SWAGGER"`
 	ApiDebug                       bool           `json:"api_debug" env:"API_DEBUG"`
+	ApiGzip                        bool           `json:"api_gzip" env:"API_GZIP"`
 	GodMode                        bool           `json:"god_mode" env:"GOD_MODE"`
 	Pprof                          bool           `json:"pprof" env:"PPROF"`
 	Https                          bool           `json:"https" env:"HTTPS"`

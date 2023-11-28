@@ -104,8 +104,6 @@ func (e *Actor) Spawn() {
 	if e.Setts != nil && e.Setts[AttrSubscribeTopic] != nil {
 		_ = e.mqttClient.Subscribe(e.Setts[AttrSubscribeTopic].String(), e.mqttOnPublish)
 	}
-
-	return
 }
 
 // SetState ...

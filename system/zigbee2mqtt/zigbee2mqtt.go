@@ -45,7 +45,7 @@ var (
 type zigbee2mqtt struct {
 	mqtt        mqtt.MqttServ
 	adaptors    *adaptors.Adaptors
-	isStarted   atomic.Bool
+	isStarted   *atomic.Bool
 	bridgesLock *sync.Mutex
 	bridges     map[int64]*Bridge
 	eventBus    bus.Bus
@@ -62,6 +62,7 @@ func NewZigbee2mqtt(lc fx.Lifecycle,
 		bridgesLock: &sync.Mutex{},
 		bridges:     make(map[int64]*Bridge),
 		eventBus:    eventBus,
+		isStarted:   atomic.NewBool(false),
 	}
 
 	lc.Append(fx.Hook{

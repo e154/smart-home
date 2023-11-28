@@ -41,7 +41,11 @@ msg.entity_id = 'telegram.name';
 msg.attributes = {
   'body': 'some text msg',
   'chat_id': 123456,
-  'keys': ['foo', 'bar']
+  'keys': ['foo', 'bar'],
+  'photo_uri': ['foo', 'bar'],
+  'photo_path': ['foo', 'bar'],
+  'file_path': ['foo', 'bar'],
+  'file_uri': ['foo', 'bar']
 };
 
 ```
@@ -57,6 +61,10 @@ attributes:
 | body |  Type: string,  message body   |
 | chat_id | Type: int64,  user's id  |
 | keys |  Type: []string, keyboard   |
+| photo_uri |  Type: []string, image   |
+| photo_path |  Type: []string, image   |
+| file_path |  Type: []string, file   |
+| file_uri |  Type: []string, file   |
 
 ----------------
 

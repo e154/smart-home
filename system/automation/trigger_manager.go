@@ -42,7 +42,7 @@ type triggerManager struct {
 	adaptors       *adaptors.Adaptors
 	isStarted      *atomic.Bool
 	rawPlugin      triggers.IGetTrigger
-	triggerCounter atomic.Uint64
+	triggerCounter *atomic.Uint64
 	sync.Mutex
 	triggers map[int64]*Trigger
 }
@@ -52,12 +52,13 @@ func NewTriggerManager(eventBus bus.Bus,
 	sup supervisor.Supervisor,
 	adaptors *adaptors.Adaptors) (manager *triggerManager) {
 	manager = &triggerManager{
-		eventBus:      eventBus,
-		scriptService: scriptService,
-		supervisor:    sup,
-		adaptors:      adaptors,
-		isStarted:     atomic.NewBool(false),
-		triggers:      make(map[int64]*Trigger),
+		eventBus:       eventBus,
+		scriptService:  scriptService,
+		supervisor:     sup,
+		adaptors:       adaptors,
+		isStarted:      atomic.NewBool(false),
+		triggers:       make(map[int64]*Trigger),
+		triggerCounter: atomic.NewUint64(0),
 	}
 	return
 }
@@ -157,7 +158,7 @@ func (a *triggerManager) addTrigger(model *m.Trigger) (err error) {
 
 	defer func() {
 		if err == nil {
-			a.triggerCounter.Inc()
+				a.triggerCounter.Inc()
 		}
 	}()
 
@@ -182,7 +183,7 @@ func (a *triggerManager) addTrigger(model *m.Trigger) (err error) {
 }
 
 // removeTrigger ...
-func (a *triggerManager) removeTrigger(id int64) (err error) {
+func (a *triggerManager) removeTrigger(id int64) {
 	a.Lock()
 	defer a.Unlock()
 	//log.Infof("remove trigger id:%d", id)
@@ -195,7 +196,6 @@ func (a *triggerManager) removeTrigger(id int64) (err error) {
 	delete(a.triggers, id)
 
 	a.triggerCounter.Dec()
-	return
 }
 
 // updateTrigger ...

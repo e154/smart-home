@@ -118,7 +118,7 @@ func (e *Actor) check() {
 	}
 
 	var uptime = attributes[AttrUptime].Int64()
-	var downtime = attributes[AttrDowntime].Int64()
+	var downtime int64
 
 	var firstStart *time.Time
 	if f, ok := attributes[AttrFirstStart]; ok {

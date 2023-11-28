@@ -75,7 +75,7 @@ test:
 	go test -race $(go list ./... | grep -v /tests/)
 
 install_linter:
-	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin v1.45.0
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin v1.55.2
 
 lint-todo:
 	@echo MARK: make lint todo

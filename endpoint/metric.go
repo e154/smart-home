@@ -21,9 +21,9 @@ package endpoint
 import (
 	"context"
 	"fmt"
-	"github.com/e154/smart-home/common"
 	"time"
 
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 )
 
@@ -57,7 +57,7 @@ func (l *MetricEndpoint) GetByIdWithData(ctx context.Context, from, to *time.Tim
 		return
 	}
 
-	l.cache.Put(ctx, key, metric, 5*time.Second)
+	_ = l.cache.Put(ctx, key, metric, 5*time.Second)
 
 	return
 }

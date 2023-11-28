@@ -22,12 +22,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/e154/smart-home/system/scheduler"
-	"github.com/e154/smart-home/system/supervisor"
-
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/logging"
+	"github.com/e154/smart-home/system/scheduler"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 var _ supervisor.Pluggable = (*plugin)(nil)
@@ -56,7 +55,7 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 		return
 	}
 	// every day at 00:00 am
-	p.entryId, err = p.Service.Scheduler().AddFunc("0 0 0 * * *", func() {
+	p.entryId, _ = p.Service.Scheduler().AddFunc("0 0 0 * * *", func() {
 		p.actor.UpdateDay()
 	})
 	var entity *m.Entity
@@ -72,7 +71,7 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 	}
 
 	p.actor = NewActor(entity, service)
-	p.AddActor(p.actor, entity)
+	_ = p.AddActor(p.actor, entity)
 
 	logging.LogsHook = p.actor.LogsHook
 

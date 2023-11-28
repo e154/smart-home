@@ -23,11 +23,11 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/pkg/errors"
 	"gorm.io/gorm"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
-	"github.com/pkg/errors"
 )
 
 // Variables ...
@@ -60,7 +60,11 @@ func (n Variables) Add(ctx context.Context, variable Variable) (err error) {
 
 // CreateOrUpdate ...
 func (n *Variables) CreateOrUpdate(ctx context.Context, v Variable) (err error) {
-	if n.Db.WithContext(ctx).Model(&v).Where("name = ?", v.Name).Updates(&v).RowsAffected == 0 {
+	params := map[string]interface{}{
+		"name":  v.Name,
+		"value": v.Value,
+	}
+	if n.Db.WithContext(ctx).Model(&v).Where("name = ?", v.Name).Updates(params).RowsAffected == 0 {
 		err = n.Db.WithContext(ctx).Create(&v).Error
 	}
 	return

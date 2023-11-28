@@ -33,5 +33,6 @@ func NewApiConfig(cfg *models.AppConfig) api.Config {
 		Swagger:  cfg.ApiSwagger,
 		Pprof:    cfg.Pprof,
 		Debug:    cfg.ApiDebug,
+		Gzip:     cfg.ApiGzip,
 	}
 }

@@ -27,6 +27,7 @@ type Config struct {
 	Swagger  bool
 	Debug    bool
 	Pprof    bool
+	Gzip     bool
 }
 
 // String ...

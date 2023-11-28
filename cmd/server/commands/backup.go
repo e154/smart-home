@@ -39,7 +39,7 @@ var (
 				logger *logging.Logging,
 				backup *backup.Backup) {
 
-				if err := backup.New(); err != nil {
+				if err := backup.New(false); err != nil {
 					log.Error(err.Error())
 				}
 			}))

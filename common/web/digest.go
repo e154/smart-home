@@ -147,7 +147,7 @@ func (d *DigestHeaders) Auth(username string, password string, uri string) (*Dig
 		d.Username = username
 		d.Password = password
 
-		req, err = http.NewRequest("GET", uri, nil)
+		req, _ = http.NewRequest("GET", uri, nil)
 		d.ApplyAuth(req)
 		resp, err = client.Do(req)
 		if err != nil {

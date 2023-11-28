@@ -68,7 +68,9 @@ func (b *bus) publish(topic string, args ...interface{}) {
 
 // Subscribe ...
 func (b *bus) Subscribe(topic string, fn interface{}, options ...interface{}) error {
-	go b.subscribe(topic, fn, options...)
+	go func() {
+		_ = b.subscribe(topic, fn, options...)
+	}()
 	return nil
 }
 
@@ -93,7 +95,7 @@ func (b *bus) subscribe(topic string, fn interface{}, options ...interface{}) er
 			go func(args []reflect.Value) {
 				startTime := time.Now()
 				h.callback.Call(args)
-				t := time.Now().Sub(startTime).Microseconds()
+				t := time.Since(startTime).Microseconds()
 				if t > 5000 {
 					fmt.Printf("long call! topic %s, fn: %s, Microseconds: %d\n\r", topic, reflect.ValueOf(fn).String(), t)
 				}
@@ -125,7 +127,9 @@ func (b *bus) subscribe(topic string, fn interface{}, options ...interface{}) er
 
 // Unsubscribe ...
 func (b *bus) Unsubscribe(topic string, fn interface{}) error {
-	go b.unsubscribe(topic, fn)
+	go func() {
+		_ = b.unsubscribe(topic, fn)
+	}()
 	return nil
 }
 

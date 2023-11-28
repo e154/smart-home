@@ -146,7 +146,7 @@ const sortChange = (data) => {
 getList()
 
 const addNew = () => {
-  push('/zigbee2mqtt/new')
+  push('/etc/zigbee2mqtt/new')
 }
 
 const selectRow = (row) => {
@@ -154,7 +154,7 @@ const selectRow = (row) => {
     return
   }
   const {id} = row
-  push(`/zigbee2mqtt/edit/${id}`)
+  push(`/etc/zigbee2mqtt/edit/${id}`)
 }
 
 </script>

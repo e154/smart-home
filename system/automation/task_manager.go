@@ -79,7 +79,7 @@ func (a *taskManager) Shutdown() {
 	a.unload()
 	_ = a.eventBus.Unsubscribe("system/models/tasks/+", a.eventHandler)
 	_ = a.eventBus.Unsubscribe("system/automation/tasks/+", a.eventHandler)
-	log.Info("Shutdown")
+	log.Info("shutdown")
 }
 
 func (a *taskManager) load() {

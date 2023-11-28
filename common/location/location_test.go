@@ -19,11 +19,12 @@
 package location
 
 import (
-	m "github.com/e154/smart-home/models"
 	"math"
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
+	m "github.com/e154/smart-home/models"
 )
 
 func TestGetDistanceBetweenPoints(t *testing.T) {

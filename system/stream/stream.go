@@ -113,9 +113,7 @@ func (s *Stream) Shutdown(_ context.Context) error {
 func (s *Stream) Broadcast(query string, message []byte) {
 	s.sessions.Range(func(key, value interface{}) bool {
 		cli := value.(*Client)
-		go func() {
-			_ = cli.Send(uuid.NewString(), query, message)
-		}()
+		_ = cli.Send(uuid.NewString(), query, message)
 		return true
 	})
 }
@@ -127,9 +125,7 @@ func (s *Stream) DirectMessage(userID int64, query string, message []byte) {
 		if userID != 0 && cli.user.Id != userID {
 			return true
 		}
-		go func() {
-			_ = cli.Send(uuid.NewString(), query, message)
-		}()
+		_ = cli.Send(uuid.NewString(), query, message)
 		return true
 	})
 }

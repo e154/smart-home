@@ -75,7 +75,7 @@ func (e *Network2) Start() {
 			staticneurogenetic.MultiMutation, //MutType
 			staticneurogenetic.DivPointCross, //CrossType
 		)
-		e.agents.SetPopulationSize(PopulationSize, PopSizeChRandom)
+		_ = e.agents.SetPopulationSize(PopulationSize, PopSizeChRandom)
 	}
 
 	//e.agents.ResetFitness()

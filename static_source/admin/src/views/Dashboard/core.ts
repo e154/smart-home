@@ -86,10 +86,18 @@ export interface ItemPayloadImage {
   image?: ApiImage;
 }
 
+export interface ItemPayloadIcon {
+  attrField?: string;
+  value?: string;
+  iconColor?: string;
+  iconSize?: number;
+}
+
 //todo: shouldn't be here, so will be optimize!!!
 export interface ItemPayload {
   text?: ItemPayloadText;
   image?: ItemPayloadImage;
+  icon?: ItemPayloadIcon;
   button?: ItemPayloadButton;
   state?: ItemPayloadState;
   logs?: ItemPayloadLogs;
@@ -195,6 +203,13 @@ export class CardItem {
           image: undefined,
           attrField: ''
         } as ItemPayloadImage;
+      }
+      if (!this.payload.icon) {
+        this.payload.icon = {
+          value: '',
+          iconColor: '#000000',
+          iconSize: 12
+        } as ItemPayloadIcon;
       }
       if (this.payload.image.attrField == undefined) {
         this.payload.image.attrField = '';

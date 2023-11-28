@@ -111,9 +111,7 @@ func (r Role) GetStubRole(from *m.Role) (to stub.ApiRole) {
 		for levelName, levels := range from.AccessList {
 			if len(levels) > 0 {
 				var items []string
-				for _, item := range levels {
-					items = append(items, item)
-				}
+				items = append(items, levels...)
 				if _, ok := to.AccessList.Levels[levelName]; !ok {
 					to.AccessList.Levels[levelName] = stub.AccessListListOfString{
 						Items: items,

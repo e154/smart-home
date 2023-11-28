@@ -33,7 +33,6 @@ const (
 	TriggerName = "alexa"
 	// TriggerFunctionName ...
 	TriggerFunctionName = "automationTriggerAlexa"
-	queueSize           = 10 //todo update
 )
 
 // Trigger ...
