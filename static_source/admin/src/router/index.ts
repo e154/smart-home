@@ -617,7 +617,7 @@ export const developRouterMap: AppRouteRecordRaw[] = [
       {
         path: 'zigbee2mqtt',
         name: 'Zigbee2mqtt',
-        component: () => import('@/views/zigbee2mqtt/index.vue'),
+        component: () => import('@/views/Zigbee2mqtt/index.vue'),
         meta: {
           title: t('router.Zigbee2mqtt'),
         },
