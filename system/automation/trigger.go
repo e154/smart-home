@@ -39,11 +39,10 @@ import (
 type Trigger struct {
 	scriptEngine  *scripts.EngineWatcher
 	scriptService scripts.ScriptService
-	lastStatus    atomic.Bool
+	lastStatus    *atomic.Bool
 	model         *m.Trigger
 	name          string
 	triggerPlugin triggers.ITrigger
-	isStarted     atomic.Bool
 	taskName      string
 	subscriber    triggers.Subscriber
 	eventBus      bus.Bus
@@ -74,6 +73,7 @@ func NewTrigger(
 		scriptService: scriptService,
 		triggerPlugin: triggerPlugin,
 		eventBus:      eventBus,
+		lastStatus:    atomic.NewBool(false),
 	}
 
 	tr.subscriber = triggers.Subscriber{

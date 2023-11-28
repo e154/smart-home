@@ -21,9 +21,10 @@ package automation
 import (
 	"context"
 
+	"go.uber.org/atomic"
+
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/scripts"
-	"go.uber.org/atomic"
 )
 
 // NewCondition ...
@@ -44,8 +45,7 @@ func NewCondition(scriptService scripts.ScriptService,
 
 	condition = &Condition{
 		model:        model,
-		inProcess:    atomic.Bool{},
-		lastStatus:   atomic.Bool{},
+		lastStatus:   atomic.NewBool(false),
 		scriptEngine: scriptEngine,
 	}
 
@@ -55,8 +55,7 @@ func NewCondition(scriptService scripts.ScriptService,
 // Condition ...
 type Condition struct {
 	model        *m.Condition
-	inProcess    atomic.Bool
-	lastStatus   atomic.Bool
+	lastStatus   *atomic.Bool
 	scriptEngine *scripts.EngineWatcher
 }
 

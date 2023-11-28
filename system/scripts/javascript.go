@@ -315,8 +315,8 @@ func (j *Javascript) unsafeRun(program *goja.Program) (result string, err error)
 	wg.Add(1)
 
 	j.loop.Run(func(vm *goja.Runtime) {
+		defer wg.Done()
 		value, err = vm.RunProgram(program)
-		wg.Done()
 	})
 
 	wg.Wait()

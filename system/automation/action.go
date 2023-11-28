@@ -22,13 +22,11 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/e154/smart-home/common/events"
-	"github.com/e154/smart-home/system/bus"
-
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/scripts"
-	"go.uber.org/atomic"
 )
 
 // ActionFunc ...
@@ -40,7 +38,6 @@ type Action struct {
 	scriptService scripts.ScriptService
 	eventBus      bus.Bus
 	scriptEngine  *scripts.EngineWatcher
-	inProcess     atomic.Bool
 	sync.Mutex
 }
 

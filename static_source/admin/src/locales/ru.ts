@@ -539,6 +539,7 @@ export default {
       COLOR_PICKER: 'Цветовая паллитра',
       STREAM_PLAYER: 'Video player',
       JOYSTICK: 'Joystick',
+      ICON: 'Икона',
       tooltip: 'Подсказка',
       slider: {
         options: 'Параметры слайдера',
@@ -590,10 +591,11 @@ export default {
         entities: 'Устройства',
         showFilter: 'Показывать фильтры'
       },
-      defaultIcon: 'Default Icon',
-      iconSize: 'Icon Size',
-      iconColor: 'Icon Color'
-    },
+      iconOptions: 'Параметры Иконки',
+      defaultIcon: 'Иконка по умолчанию',
+      iconSize: 'Размер Иконки',
+      iconColor: 'Цвет Иконки'
+    }
   },
   settings: {
     dashboardOptions: 'Настройки панели',

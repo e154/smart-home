@@ -32,7 +32,7 @@ import (
 func NewConditionGroup(t common.ConditionType) *ConditionGroup {
 	return &ConditionGroup{
 		t:          t,
-		lastStatus: atomic.Bool{},
+		lastStatus: atomic.NewBool(false),
 		Mutex:      sync.Mutex{},
 	}
 }
@@ -41,7 +41,7 @@ func NewConditionGroup(t common.ConditionType) *ConditionGroup {
 type ConditionGroup struct {
 	rules      []*Condition
 	t          common.ConditionType
-	lastStatus atomic.Bool
+	lastStatus *atomic.Bool
 	sync.Mutex
 }
 
@@ -70,14 +70,12 @@ func (c *ConditionGroup) Check(entityId *common.EntityId) (state bool, err error
 		return
 	}
 
-	wg := sync.WaitGroup{}
+	wg := &sync.WaitGroup{}
 	wg.Add(total)
 
 	for _, r := range c.rules {
 		go func(condition *Condition) {
-			defer func() {
-				wg.Done()
-			}()
+			defer wg.Done()
 			bg, _ := context.WithTimeout(context.Background(), time.Second)
 			ctx := context.WithValue(bg, "entityId", entityId)
 			if _, err = condition.Check(ctx); err != nil {

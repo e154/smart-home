@@ -57,8 +57,8 @@ type Backup struct {
 	cfg           *Config
 	eventBus      bus.Bus
 	restoreImage  string
-	inProcess     atomic.Bool
-	sendInProcess atomic.Bool
+	inProcess     *atomic.Bool
+	sendInProcess *atomic.Bool
 }
 
 // NewBackup ...
@@ -69,8 +69,10 @@ func NewBackup(lc fx.Lifecycle, eventBus bus.Bus, cfg *Config) *Backup {
 	}
 
 	backup := &Backup{
-		cfg:      cfg,
-		eventBus: eventBus,
+		cfg:           cfg,
+		eventBus:      eventBus,
+		inProcess:     atomic.NewBool(false),
+		sendInProcess: atomic.NewBool(false),
 	}
 
 	lc.Append(fx.Hook{

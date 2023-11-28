@@ -38,7 +38,7 @@ type Task struct {
 	eventBus       bus.Bus
 	conditionGroup *ConditionGroup
 	script         *scripts.Engine
-	enabled        atomic.Bool
+	enabled        *atomic.Bool
 	scriptService  scripts.ScriptService
 	actionsMx      sync.Mutex
 	actions        map[int64]*Action
@@ -53,7 +53,7 @@ func NewTask(eventBus bus.Bus,
 	return &Task{
 		model:         model,
 		eventBus:      eventBus,
-		enabled:       atomic.Bool{},
+		enabled:       atomic.NewBool(false),
 		scriptService: scriptService,
 		actions:       make(map[int64]*Action),
 	}

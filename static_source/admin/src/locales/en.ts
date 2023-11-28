@@ -540,6 +540,7 @@ export default {
             COLOR_PICKER: 'Color Picker',
             STREAM_PLAYER: 'Video player',
             JOYSTICK: 'Joystick',
+            ICON: 'Icon',
             tooltip: 'Tooltip',
             slider: {
                 options: 'Slider Options',
@@ -591,6 +592,7 @@ export default {
                 entities: 'Entities',
                 showFilter: 'Show Filter'
             },
+            iconOptions: 'Icon Options',
             defaultIcon: 'Default Icon',
             iconSize: 'Icon Size',
             iconColor: 'Icon Color'

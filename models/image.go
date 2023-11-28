@@ -71,7 +71,7 @@ func UploadImage(ctx context.Context, reader *bufio.Reader, fileName string) (ne
 	}
 
 	contentType := http.DetectContentType(buffer.Bytes())
-	log.Infof("Content-type from buffer, %s", contentType)
+	//log.Infof("Content-type from buffer, %s", contentType)
 
 	//------
 	// rename & save

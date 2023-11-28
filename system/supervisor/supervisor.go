@@ -20,7 +20,6 @@ package supervisor
 
 import (
 	"context"
-	"fmt"
 	"runtime/debug"
 	"sync"
 	"time"
@@ -50,7 +49,6 @@ var (
 type supervisor struct {
 	*pluginManager
 	scriptService     scripts.ScriptService
-	entitiesWg        *sync.WaitGroup
 	eventScriptSubsMx sync.RWMutex
 	eventScriptSubs   map[int64]map[common.EntityId]struct{}
 	cache             cache.Cache
@@ -69,10 +67,9 @@ func NewSupervisor(lc fx.Lifecycle,
 	crawler web.Crawler) Supervisor {
 	s := &supervisor{
 		scriptService:   scriptService,
-		entitiesWg:      &sync.WaitGroup{},
 		eventScriptSubs: make(map[int64]map[common.EntityId]struct{}),
 	}
-	s.cache, _ = cache.NewCache("memory", fmt.Sprintf(`{"interval":%d}`, time.Second*60))
+	s.cache, _ = cache.NewCache("memory", `{"interval":60}`)
 	s.pluginManager = &pluginManager{
 		adaptors:       adaptors,
 		isStarted:      atomic.NewBool(false),
@@ -125,7 +122,6 @@ func (e *supervisor) Start(ctx context.Context) (err error) {
 func (e *supervisor) Shutdown(ctx context.Context) (err error) {
 
 	e.pluginManager.Shutdown(ctx)
-	e.entitiesWg.Wait()
 
 	e.scriptService.PopFunction("GetEntity")
 	e.scriptService.PopFunction("SetState")
