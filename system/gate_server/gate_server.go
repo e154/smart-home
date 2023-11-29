@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2023, Filippov Alex
+// Copyright (C) 2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -16,12 +16,10 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package gate_client
+package gate_server
 
 import (
 	"context"
-
-	"github.com/google/uuid"
 	"go.uber.org/fx"
 
 	"github.com/e154/smart-home/common/events"
@@ -33,17 +31,17 @@ var (
 	log = logger.MustGetLogger("gate")
 )
 
-// GateClient ...
-type GateClient struct {
+// GateServer ...
+type GateServer struct {
 	eventBus bus.Bus
-	proxy    *Client
+	server *Server
 }
 
-// NewGateClient ...
-func NewGateClient(lc fx.Lifecycle,
-	eventBus bus.Bus) (gate *GateClient) {
+// NewGateServer ...
+func NewGateServer(lc fx.Lifecycle,
+	eventBus bus.Bus) (gate *GateServer) {
 
-	gate = &GateClient{
+	gate = &GateServer{
 		eventBus: eventBus,
 	}
 
@@ -61,25 +59,32 @@ func NewGateClient(lc fx.Lifecycle,
 }
 
 // Start ...
-func (g *GateClient) Start() (err error) {
+func (g *GateServer) Start() (err error) {
 
 	config := &Config{
-		ID:           uuid.NewString(),
-		Targets:      []string{"ws://127.0.0.1:8080/register"},
-		PoolIdleSize: 1,
-		PoolMaxSize:  100,
-		SecretKey:    "",
+		Host:        "127.0.0.1",
+		Port:        8080,
+		Timeout:     1000,
+		IdleTimeout: 60000,
+		SecretKey:   "",
 	}
-	g.proxy = NewClient(config)
-	g.proxy.Start(context.Background())
+	g.server = NewServer(config)
+	g.server.Start()
 
-	g.eventBus.Publish("system/services/gate_client", events.EventServiceStarted{Service: "GateClient"})
+	log.Info("Started ...")
+
+	g.eventBus.Publish("system/services/gate_server", events.EventServiceStarted{Service: "GateServer"})
+
 	return
 }
 
 // Shutdown ...
-func (g *GateClient) Shutdown() (err error) {
-	g.proxy.Shutdown()
-	g.eventBus.Publish("system/services/gate_client", events.EventServiceStopped{Service: "GateClient"})
+func (g *GateServer) Shutdown() (err error) {
+
+	log.Info("Shutdown ...")
+
+	g.server.Shutdown()
+
+	g.eventBus.Publish("system/services/gate_server", events.EventServiceStopped{Service: "GateServer"})
 	return
 }

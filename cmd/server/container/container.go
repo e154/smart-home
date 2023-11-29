@@ -1,4 +1,4 @@
-// This file is part of the Smart Home
+ // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
 // Copyright (C) 2016-2023, Filippov Alex
 //
@@ -72,6 +72,7 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 			web.New,
 			adaptors.NewAdaptors,
 			scheduler.NewScheduler,
+			NewLoggerConfig,
 			logging.NewLogger,
 			logging_db.NewLogDbSaver,
 			logging_ws.NewLogWsSaver,

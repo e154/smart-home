@@ -39,7 +39,7 @@ type Logging struct {
 }
 
 // NewLogger ...
-func NewLogger(appConfig *m.AppConfig) (logging *Logging) {
+func NewLogger(cfg *Config) (logging *Logging) {
 
 	// First, define our level-handling logic.
 	highPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
@@ -56,7 +56,7 @@ func NewLogger(appConfig *m.AppConfig) (logging *Logging) {
 
 	config := zap.NewDevelopmentEncoderConfig()
 	config.EncodeTime = nil
-	if appConfig.ColoredLogging {
+	if cfg.ColoredLogging {
 		config.EncodeLevel = CustomLevelEncoder
 	}
 	config.EncodeName = CustomNameEncoder

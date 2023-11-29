@@ -17,3 +17,4 @@ server-*
 build/public/*
 build/admin/*
 smart-home-common.tar.gz
+/cmd/gate/gate
