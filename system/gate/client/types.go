@@ -16,28 +16,4 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package gate_server
-
-import (
-	"strconv"
-	"time"
-)
-
-// Config configures an Server
-type Config struct {
-	Host        string
-	Port        int
-	Timeout     int
-	IdleTimeout int
-	SecretKey   string
-}
-
-// GetAddr returns the address to specify a HTTP server address
-func (c Config) GetAddr() string {
-	return c.Host + ":" + strconv.Itoa(c.Port)
-}
-
-// GetTimeout returns the time.Duration converted to millisecond
-func (c Config) GetTimeout() time.Duration {
-	return time.Duration(c.Timeout) * time.Millisecond
-}
+package client

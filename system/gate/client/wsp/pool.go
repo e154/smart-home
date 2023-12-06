@@ -16,11 +16,13 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package gate_client
+package wsp
 
 import (
 	"context"
 	"fmt"
+	"github.com/e154/smart-home/api"
+	"github.com/e154/smart-home/system/stream"
 	"sync"
 	"time"
 )
@@ -35,16 +37,22 @@ type Pool struct {
 	lock        sync.RWMutex
 
 	done chan struct{}
+
+	api *api.Api
+	stream *stream.Stream
 }
 
 // NewPool creates a new Pool
-func NewPool(client *Client, target string, secretKey string) (pool *Pool) {
-	pool = new(Pool)
-	pool.client = client
-	pool.target = target
-	pool.connections = make([]*Connection, 0)
-	pool.secretKey = secretKey
-	pool.done = make(chan struct{})
+func NewPool(client *Client, target string, secretKey string, api *api.Api, stream *stream.Stream) (pool *Pool) {
+	pool = &Pool{
+		client:      client,
+		target:      target,
+		connections: make([]*Connection, 0),
+		secretKey:   secretKey,
+		done:        make(chan struct{}),
+		api:         api,
+		stream: stream,
+	}
 	return
 }
 
@@ -75,7 +83,7 @@ func (p *Pool) connector(ctx context.Context) {
 	poolSize := p.Size()
 
 	// Create enough connection to fill the pool
-	toCreate := p.client.Config.PoolIdleSize - poolSize.idle
+	toCreate := p.client.cfg.PoolIdleSize - poolSize.idle
 
 	// Create only one connection if the pool is empty
 	if poolSize.total == 0 {
@@ -83,13 +91,13 @@ func (p *Pool) connector(ctx context.Context) {
 	}
 
 	// Ensure to open at most PoolMaxSize connections
-	if poolSize.total+toCreate > p.client.Config.PoolMaxSize {
-		toCreate = p.client.Config.PoolMaxSize - poolSize.total
+	if poolSize.total+toCreate > p.client.cfg.PoolMaxSize {
+		toCreate = p.client.cfg.PoolMaxSize - poolSize.total
 	}
 
 	// Try to reach ideal p size
 	for i := 0; i < toCreate; i++ {
-		conn := NewConnection(p)
+		conn := NewConnection(p, p.api, p.stream)
 		p.connections = append(p.connections, conn)
 
 		go func() {

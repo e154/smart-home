@@ -16,39 +16,51 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package gate_client
+package wsp
 
 import (
 	"context"
+	"github.com/e154/smart-home/system/stream"
 	"net/http"
 
+	"github.com/e154/smart-home/api"
+	"github.com/e154/smart-home/common/logger"
 	"github.com/gorilla/websocket"
+)
+
+var (
+	log = logger.MustGetLogger("wsp")
 )
 
 // Client connects to one or more Server using HTTP websockets.
 // The Server can then send HTTP requests to execute.
 type Client struct {
-	Config *Config
+	cfg *Config
 
 	client *http.Client
 	dialer *websocket.Dialer
 	pools  map[string]*Pool
+	api    *api.Api
+	stream *stream.Stream
 }
 
 // NewClient creates a new Client.
-func NewClient(config *Config) (c *Client) {
-	c = new(Client)
-	c.Config = config
-	c.client = &http.Client{}
-	c.dialer = &websocket.Dialer{}
-	c.pools = make(map[string]*Pool)
+func NewClient(config *Config, api *api.Api, stream *stream.Stream) (c *Client) {
+	c = &Client{
+		cfg:    config,
+		client: &http.Client{},
+		dialer: &websocket.Dialer{},
+		pools:  make(map[string]*Pool),
+		api:    api,
+		stream: stream,
+	}
 	return
 }
 
 // Start the Proxy
 func (c *Client) Start(ctx context.Context) {
-	for _, target := range c.Config.Targets {
-		pool := NewPool(c, target, c.Config.SecretKey)
+	for _, target := range c.cfg.Targets {
+		pool := NewPool(c, target, c.cfg.SecretKey, c.api, c.stream)
 		c.pools[target] = pool
 		go pool.Start(ctx)
 	}

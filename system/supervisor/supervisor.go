@@ -36,7 +36,6 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/cache"
-	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scheduler"
 	"github.com/e154/smart-home/system/scripts"
@@ -61,7 +60,6 @@ func NewSupervisor(lc fx.Lifecycle,
 	mqttServ mqtt.MqttServ,
 	scriptService scripts.ScriptService,
 	appConfig *m.AppConfig,
-	gateClient *gate_client.GateClient,
 	eventBus bus.Bus,
 	scheduler *scheduler.Scheduler,
 	crawler web.Crawler) Supervisor {
@@ -83,7 +81,6 @@ func NewSupervisor(lc fx.Lifecycle,
 			adaptors:      adaptors,
 			scriptService: scriptService,
 			appConfig:     appConfig,
-			gateClient:    gateClient,
 			scheduler:     scheduler,
 			crawler:       crawler,
 		},

@@ -19,34 +19,40 @@
 package controllers
 
 import (
-	"github.com/e154/smart-home/common/apperr"
-	"github.com/labstack/echo/v4"
+	"embed"
+	"fmt"
+	"html/template"
+	"net/http"
+
+	"github.com/e154/smart-home/version"
 )
 
-// ControllerStream ...
-type ControllerStream struct {
+// ControllerIndex ...
+type ControllerIndex struct {
 	*ControllerCommon
 }
 
-// NewControllerStream ...
-func NewControllerStream(common *ControllerCommon) *ControllerStream {
-	return &ControllerStream{
+// NewControllerIndex ...
+func NewControllerIndex(common *ControllerCommon) *ControllerIndex {
+	return &ControllerIndex{
 		ControllerCommon: common,
 	}
 }
 
-// StreamServiceSubscribe ...
-func (c ControllerStream) StreamServiceSubscribe(ctx echo.Context) error {
+// Index ...
+func (c ControllerIndex) Index(publicAssets embed.FS) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		b := map[string]interface{}{
+			"server_url":     c.ControllerCommon.ApiFullAddress,
+			"run_mode":       c.ControllerCommon.Mode,
+			"server_version": version.VersionString,
+		}
+		templates := template.Must(template.New("index").ParseFS(publicAssets, "public/index.html"))
 
-	currentUser, err := c.currentUser(ctx)
-	if err != nil {
-		return c.ERROR(ctx, apperr.ErrUnauthorized)
-	}
-
-	if err = c.endpoint.Stream.Subscribe(ctx, currentUser); err != nil {
-		log.Error(err.Error())
-		return c.ERROR(ctx, err)
-	}
-
-	return nil
+		err := templates.ExecuteTemplate(w, "index.html", &b)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("index: couldn't parse template: %v", err), http.StatusInternalServerError)
+			return
+		}
+	})
 }

@@ -16,7 +16,7 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package gate_server
+package server
 
 import (
 	"context"
@@ -34,7 +34,8 @@ var (
 // GateServer ...
 type GateServer struct {
 	eventBus bus.Bus
-	server *Server
+	cfg      Config
+	server   *Server
 }
 
 // NewGateServer ...
@@ -47,11 +48,11 @@ func NewGateServer(lc fx.Lifecycle,
 
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-			return gate.Start()
+			return gate.Start(ctx)
 
 		},
 		OnStop: func(ctx context.Context) error {
-			return gate.Shutdown()
+			return gate.Shutdown(ctx)
 		},
 	})
 
@@ -59,16 +60,15 @@ func NewGateServer(lc fx.Lifecycle,
 }
 
 // Start ...
-func (g *GateServer) Start() (err error) {
+func (g *GateServer) Start(ctx context.Context) (err error) {
 
-	config := &Config{
-		Host:        "127.0.0.1",
-		Port:        8080,
-		Timeout:     1000,
-		IdleTimeout: 60000,
-		SecretKey:   "",
+	cfg := &Config{
+		HttpPort: 8080,
+		Debug:    false,
+		Pprof:    false,
+		Gzip:     true,
 	}
-	g.server = NewServer(config)
+	g.server = NewServer(cfg)
 	g.server.Start()
 
 	log.Info("Started ...")
@@ -79,11 +79,11 @@ func (g *GateServer) Start() (err error) {
 }
 
 // Shutdown ...
-func (g *GateServer) Shutdown() (err error) {
+func (g *GateServer) Shutdown(ctx context.Context) (err error) {
 
 	log.Info("Shutdown ...")
 
-	g.server.Shutdown()
+	g.server.Shutdown(ctx)
 
 	g.eventBus.Publish("system/services/gate_server", events.EventServiceStopped{Service: "GateServer"})
 	return

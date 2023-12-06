@@ -16,7 +16,7 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package gate_client
+package wsp
 
 type Config struct {
 	ID           string

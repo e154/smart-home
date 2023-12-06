@@ -30,7 +30,7 @@ import (
 	"github.com/e154/smart-home/system/backup"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/config"
-	"github.com/e154/smart-home/system/gate_client"
+	"github.com/e154/smart-home/system/gate/client"
 	"github.com/e154/smart-home/system/initial"
 	localMigrations "github.com/e154/smart-home/system/initial/local_migrations"
 	"github.com/e154/smart-home/system/jwt_manager"
@@ -100,7 +100,7 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 			stream.NewStreamService,
 			handlers.NewEventHandler,
 			NewBackupConfig,
-			gate_client.NewGateClient,
+			client.NewGateClient,
 			jwt_manager.NewJwtManager,
 		),
 		fx.Logger(NewPrinter()),

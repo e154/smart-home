@@ -31,15 +31,17 @@ type HTTPRequest struct {
 	URL           string
 	Header        map[string][]string
 	ContentLength int64
+	WS            bool
 }
 
 // SerializeHTTPRequest create a new HTTPRequest from a http.Request
 func SerializeHTTPRequest(req *http.Request) (r *HTTPRequest) {
-	r = new(HTTPRequest)
-	r.URL = req.URL.String()
-	r.Method = req.Method
-	r.Header = req.Header
-	r.ContentLength = req.ContentLength
+	r = &HTTPRequest{
+		URL:           req.URL.String(),
+		Method:        req.Method,
+		Header:        req.Header,
+		ContentLength: req.ContentLength,
+	}
 	return
 }
 

@@ -16,29 +16,18 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package container
+package server
 
-import (
-	"github.com/e154/smart-home/system/gate/server"
-	"go.uber.org/fx"
+import "fmt"
 
-	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/logging"
-)
+type Config struct {
+	HttpPort int
+	Debug    bool
+	Pprof    bool
+	Gzip     bool
+}
 
-// BuildContainer ...
-func BuildContainer(opt fx.Option) (app *fx.App) {
-
-	app = fx.New(
-		fx.Provide(
-			bus.NewBus,
-			NewLoggerConfig,
-			logging.NewLogger,
-			server.NewGateServer,
-		),
-		fx.Logger(NewPrinter()),
-		opt,
-	)
-
-	return
+// String ...
+func (c Config) String() string {
+	return fmt.Sprintf(":%d", c.HttpPort)
 }

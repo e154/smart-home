@@ -16,17 +16,20 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package gate_client
+package wsp
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/e154/smart-home/system/gate_client/common"
+	"github.com/e154/smart-home/api"
+	"github.com/e154/smart-home/system/stream"
 	"io"
 	"net/http"
+	"net/http/httptest"
 	"time"
 
+	"github.com/e154/smart-home/system/gate/common"
 	"github.com/gorilla/websocket"
 )
 
@@ -42,19 +45,27 @@ type Connection struct {
 	pool   *Pool
 	ws     *websocket.Conn
 	status int
+	api    *api.Api
+	stream *stream.Stream
+	cli *stream.Client
 }
 
 // NewConnection create a Connection object
-func NewConnection(pool *Pool) *Connection {
-	c := new(Connection)
-	c.pool = pool
-	c.status = CONNECTING
+func NewConnection(pool *Pool,
+	api *api.Api,
+	stream *stream.Stream) *Connection {
+	c := &Connection{
+		pool:   pool,
+		status: CONNECTING,
+		api:    api,
+		stream: stream,
+	}
 	return c
 }
 
 // Connect to the IsolatorServer using a HTTP websocket
 func (c *Connection) Connect(ctx context.Context) (err error) {
-	log.Errorf("Connecting to %s", c.pool.target)
+	log.Infof("Connecting to %s", c.pool.target)
 
 	// Create a new TCP(/TLS) connection ( no use of net.http )
 	c.ws, _, err = c.pool.client.dialer.DialContext(
@@ -72,8 +83,8 @@ func (c *Connection) Connect(ctx context.Context) (err error) {
 	// Send the greeting message with proxy id and wanted pool size.
 	greeting := fmt.Sprintf(
 		"%s_%d",
-		c.pool.client.Config.ID,
-		c.pool.client.Config.PoolIdleSize,
+		c.pool.client.cfg.ID,
+		c.pool.client.cfg.PoolIdleSize,
 	)
 	if err := c.ws.WriteMessage(websocket.TextMessage, []byte(greeting)); err != nil {
 		log.Error("greeting error :", err.Error())
@@ -107,10 +118,19 @@ func (c *Connection) serve(ctx context.Context) {
 		}
 	}()
 
+	var jsonRequest []byte
+	var err error
+	var messageType int
+
 	for {
 		// Read request
 		c.status = IDLE
-		_, jsonRequest, err := c.ws.ReadMessage()
+		messageType, jsonRequest, err = c.ws.ReadMessage()
+
+		if messageType == -1 {
+			break
+		}
+
 		if err != nil {
 			log.Errorf("Unable to read request", err)
 			break
@@ -120,6 +140,11 @@ func (c *Connection) serve(ctx context.Context) {
 
 		// Trigger a pool refresh to open new connections if needed
 		go c.pool.connector(ctx)
+
+		if string(jsonRequest) == "WS" {
+			c.stream.NewConnection(c.ws, nil)
+			return
+		}
 
 		// Deserialize request
 		httpRequest := new(common.HTTPRequest)
@@ -146,17 +171,22 @@ func (c *Connection) serve(ctx context.Context) {
 		req.Body = io.NopCloser(bodyReader)
 
 		// Execute request
-		resp, err := c.pool.client.client.Do(req)
-		if err != nil {
-			err = c.error(fmt.Sprintf("Unable to execute request : %v\n", err))
-			if err != nil {
-				break
-			}
-			continue
-		}
+		//resp, err := c.pool.client.client.Do(req)
+		//if err != nil {
+		//	err = c.error(fmt.Sprintf("Unable to execute request : %v\n", err))
+		//	if err != nil {
+		//		break
+		//	}
+		//	continue
+		//}
+
+		//todo fix
+		req.RequestURI = req.URL.String()
+		resp := httptest.NewRecorder()
+		c.api.Echo().ServeHTTP(resp, req)
 
 		// Serialize response
-		jsonResponse, err := json.Marshal(common.SerializeHTTPResponse(resp))
+		jsonResponse, err := json.Marshal(common.SerializeHTTPResponse(resp.Result()))
 		if err != nil {
 			err = c.error(fmt.Sprintf("Unable to serialize response : %v\n", err))
 			if err != nil {
@@ -191,7 +221,7 @@ func (c *Connection) error(msg string) (err error) {
 	resp := common.NewHTTPResponse()
 	resp.StatusCode = 527
 
-	log.Infof(msg)
+	log.Error(msg)
 
 	resp.ContentLength = int64(len(msg))
 

@@ -16,9 +16,10 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package gate_server
+package wsp
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -28,11 +29,15 @@ import (
 
 	"github.com/gorilla/websocket"
 
-	"github.com/e154/smart-home/system/gate_client/common"
+	"github.com/e154/smart-home/system/gate/common"
 )
 
 // ConnectionStatus is an enumeration type which represents the status of WebSocket connection.
 type ConnectionStatus int
+
+var (
+	upgrader = websocket.Upgrader{}
+)
 
 const (
 	// Idle state means it is opened but not working now.
@@ -62,77 +67,146 @@ type Connection struct {
 	// After the thread "reader" detects that the HTTP response from the peer of the WebSocket connection has been written,
 	// it sends the value to the channel (chan io.Reader),
 	// and the "server" thread can proceed to process the rest procedures.
-	nextResponse chan chan io.Reader
+	//nextResponse chan chan io.Reader
 }
 
 // NewConnection returns a new Connection.
 func NewConnection(pool *Pool, ws *websocket.Conn) *Connection {
 	// Initialize a new Connection
-	c := new(Connection)
-	c.pool = pool
-	c.ws = ws
-	c.nextResponse = make(chan chan io.Reader)
-	c.status = Idle
+	c := &Connection{
+		pool:         pool,
+		ws:           ws,
+		//nextResponse: make(chan chan io.Reader),
+		status:       Idle,
+	}
 
 	// Mark that this connection is ready to use for relay
 	c.Release()
 
 	// Start to listen to incoming messages over the WebSocket connection
-	go c.read()
+	//go c.read()
 
 	return c
 }
 
 // read the incoming message of the connection
-func (c *Connection) read() {
-	defer func() {
-		if r := recover(); r != nil {
-			log.Infof("Websocket crash recovered : %s", r)
-		}
-		c.Close()
-	}()
+//func (c *Connection) read() {
+//	defer func() {
+//		if r := recover(); r != nil {
+//			log.Infof("Websocket crash recovered : %s", r)
+//		}
+//		c.Close()
+//	}()
+//
+//	for {
+//		if c.status == Closed {
+//			break
+//		}
+//
+//		// https://godoc.org/github.com/gorilla/websocket#hdr-Control_Messages
+//		//
+//		// We need to ensure :
+//		//  - no concurrent calls to ws.NextReader() / ws.ReadMessage()
+//		//  - only one reader exists at a time
+//		//  - wait for reader to be consumed before requesting the next one
+//		//  - always be reading on the socket to be able to process control messages ( ping / pong / close )
+//
+//		// We will block here until a message is received or the ws is closed
+//		_, reader, err := c.ws.NextReader()
+//		if err != nil {
+//			break
+//		}
+//
+//		if c.status != Busy {
+//			// We received a wild unexpected message
+//			break
+//		}
+//
+//		// When it gets here, it is expected to be either a HttpResponse or a HttpResponseBody has been returned.
+//		//
+//		// Next, it waits to receive the value from the Connection.proxyRequest function that is invoked in the "server" thread.
+//		// https://github.com/hgsgtk/wsp/blob/29cc73bbd67de18f1df295809166a7a5ef52e9fa/server/connection.go#L157
+//		ch := <-c.nextResponse
+//		if ch == nil {
+//			// We have been unlocked by Close()
+//			break
+//		}
+//
+//		// Send the reader back to Connection.proxyRequest
+//		ch <- reader
+//
+//		// Wait for proxyRequest to close the channel
+//		// this notify that it is done with the reader
+//		<-ch
+//	}
+//}
 
-	for {
-		if c.status == Closed {
-			break
-		}
+func (c *Connection) proxyWs(w http.ResponseWriter, r *http.Request) (err error) {
 
-		// https://godoc.org/github.com/gorilla/websocket#hdr-Control_Messages
-		//
-		// We need to ensure :
-		//  - no concurrent calls to ws.NextReader() / ws.ReadMessage()
-		//  - only one reader exists at a time
-		//  - wait for reader to be consumed before requesting the next one
-		//  - always be reading on the socket to be able to process control messages ( ping / pong / close )
+	// Only pass those headers to the upgrader.
+	//upgradeHeader := http.Header{}
+	//if hdr := r.Header.Get("Sec-Websocket-Protocol"); hdr != "" {
+	//	upgradeHeader.Set("Sec-Websocket-Protocol", hdr)
+	//}
+	//if hdr := r.Header.Get("Set-Cookie"); hdr != "" {
+	//	upgradeHeader.Set("Set-Cookie", hdr)
+	//}
 
-		// We will block here until a message is received or the ws is closed
-		_, reader, err := c.ws.NextReader()
-		if err != nil {
-			break
-		}
+	_ = c.ws.WriteMessage(websocket.TextMessage, []byte("WS"))
 
-		if c.status != Busy {
-			// We received a wild unexpected message
-			break
-		}
-
-		// When it gets here, it is expected to be either a HttpResponse or a HttpResponseBody has been returned.
-		//
-		// Next, it waits to receive the value from the Connection.proxyRequest function that is invoked in the "server" thread.
-		// https://github.com/hgsgtk/wsp/blob/29cc73bbd67de18f1df295809166a7a5ef52e9fa/server/connection.go#L157
-		ch := <-c.nextResponse
-		if ch == nil {
-			// We have been unlocked by Close()
-			break
-		}
-
-		// Send the reader back to Connection.proxyRequest
-		ch <- reader
-
-		// Wait for proxyRequest to close the channel
-		// this notify that it is done with the reader
-		<-ch
+	upgrader.CheckOrigin = func(r *http.Request) bool {
+		return true
 	}
+
+	// Now upgrade the existing incoming request to a WebSocket connection.
+	// Also pass the header that we gathered from the Dial handshake.
+	connPub, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Errorf("websocketproxy: couldn't upgrade %s", err)
+		return
+	}
+	defer connPub.Close()
+
+	errClient := make(chan error, 1)
+	errBackend := make(chan error, 1)
+	replicateWebsocketConn := func(dst, src *websocket.Conn, errc chan error) {
+		for {
+			msgType, msg, err := src.ReadMessage()
+			if err != nil {
+				m := websocket.FormatCloseMessage(websocket.CloseNormalClosure, fmt.Sprintf("%v", err))
+				if e, ok := err.(*websocket.CloseError); ok {
+					if e.Code != websocket.CloseNoStatusReceived {
+						m = websocket.FormatCloseMessage(e.Code, e.Text)
+					}
+				}
+				errc <- err
+
+				dst.WriteMessage(websocket.CloseMessage, m)
+				break
+			}
+			err = dst.WriteMessage(msgType, msg)
+			if err != nil {
+				errc <- err
+				break
+			}
+		}
+	}
+
+	go replicateWebsocketConn(connPub, c.ws, errClient)
+	go replicateWebsocketConn(c.ws, connPub, errBackend)
+
+	var message string
+	select {
+	case err = <-errClient:
+		message = "websocketproxy: Error when copying from backend to client: %v"
+	case err = <-errBackend:
+		message = "websocketproxy: Error when copying from client to backend: %v"
+	}
+	if e, ok := err.(*websocket.CloseError); !ok || e.Code == websocket.CloseAbnormalClosure {
+		log.Errorf(message, err)
+	}
+
+	return nil
 }
 
 // Proxy a HTTP request through the Proxy over the websocket connection
@@ -158,7 +232,7 @@ func (c *Connection) proxyRequest(w http.ResponseWriter, r *http.Request) (err e
 		return fmt.Errorf("unable to write request : %w", err)
 	}
 
-	// Pipe the HTTP request body to the the peer
+	// Pipe the HTTP request body to the peer
 	bodyWriter, err := c.ws.NextWriter(websocket.BinaryMessage)
 	if err != nil {
 		return fmt.Errorf("unable to get request body writer : %w", err)
@@ -171,28 +245,38 @@ func (c *Connection) proxyRequest(w http.ResponseWriter, r *http.Request) (err e
 	}
 
 	// [3]: Wait the HTTP response is ready
-	responseChannel := make(chan (io.Reader))
-	c.nextResponse <- responseChannel
-	responseReader, ok := <-responseChannel
-	if responseReader == nil {
-		if ok {
-			// The value of ok is false, the channel is closed and empty.
-			// See the Receiver operator in https://go.dev/ref/spec for more information.
-			close(responseChannel)
-		}
-		return fmt.Errorf("unable to get http response reader : %w", err)
+	//responseChannel := make(chan (io.Reader))
+	//c.nextResponse <- responseChannel
+	//responseReader, ok := <-responseChannel
+	//if responseReader == nil {
+	//	if ok {
+	//		// The value of ok is false, the channel is closed and empty.
+	//		// See the Receiver operator in https://go.dev/ref/spec for more information.
+	//		close(responseChannel)
+	//	}
+	//	return fmt.Errorf("unable to get http response reader : %w", err)
+	//}
+	//
+	//// [4]: Read the HTTP response from the peer
+	//// Get the serialized HTTP Response from the peer
+	//jsonResponse, err := io.ReadAll(responseReader)
+	//if err != nil {
+	//	close(responseChannel)
+	//	return fmt.Errorf("unable to read http response : %w", err)
+	//}
+	//
+	//// Notify the read() goroutine that we are done reading the response
+	//close(responseChannel)
+
+	messageType, jsonResponse, err := c.ws.ReadMessage()
+	if messageType == -1 {
+		return
 	}
 
-	// [4]: Read the HTTP response from the peer
-	// Get the serialized HTTP Response from the peer
-	jsonResponse, err := io.ReadAll(responseReader)
 	if err != nil {
-		close(responseChannel)
-		return fmt.Errorf("unable to read http response : %w", err)
+		log.Error(err.Error())
+		return
 	}
-
-	// Notify the read() goroutine that we are done reading the response
-	close(responseChannel)
 
 	// Deserialize the HTTP Response
 	httpResponse := new(common.HTTPResponse)
@@ -212,26 +296,34 @@ func (c *Connection) proxyRequest(w http.ResponseWriter, r *http.Request) (err e
 	// Get the HTTP Response body from the the peer
 	// To do so send a new channel to the read() goroutine
 	// to get the next message reader
-	responseBodyChannel := make(chan (io.Reader))
-	c.nextResponse <- responseBodyChannel
-	responseBodyReader, ok := <-responseBodyChannel
-	if responseBodyReader == nil {
-		if ok {
-			// If more is false the channel is already closed
-			close(responseChannel)
-		}
-		return fmt.Errorf("unable to get http response body reader : %w", err)
+	//responseBodyChannel := make(chan (io.Reader))
+	//c.nextResponse <- responseBodyChannel
+	//responseBodyReader, ok := <-responseBodyChannel
+	//if responseBodyReader == nil {
+	//	if ok {
+	//		// If more is false the channel is already closed
+	//		close(responseChannel)
+	//	}
+	//	return fmt.Errorf("unable to get http response body reader : %w", err)
+	//}
+
+	messageType, responseBody, err := c.ws.ReadMessage()
+	if messageType == -1 {
+		return
 	}
+
+	responseBodyReader := bytes.NewReader(responseBody)
+
 
 	// [6]: Read the HTTP response body from the peer
 	// Pipe the HTTP response body right from the remote Proxy to the client
 	if _, err := io.Copy(w, responseBodyReader); err != nil {
-		close(responseBodyChannel)
+		//close(responseBodyChannel)
 		return fmt.Errorf("unable to pipe response body : %w", err)
 	}
 
 	// Notify read() that we are done reading the response body
-	close(responseBodyChannel)
+	//close(responseBodyChannel)
 
 	c.Release()
 
@@ -290,7 +382,7 @@ func (c *Connection) close() {
 	defer func() { c.status = Closed }()
 
 	// Unlock a possible read() wild message
-	close(c.nextResponse)
+	//close(c.nextResponse)
 
 	// Close the underlying TCP connection
 	c.ws.Close()

@@ -16,29 +16,17 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package container
+package controllers
 
-import (
-	"github.com/e154/smart-home/system/gate/server"
-	"go.uber.org/fx"
+// Controllers ...
+type Controllers struct {
+	*ControllerIndex
+}
 
-	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/logging"
-)
-
-// BuildContainer ...
-func BuildContainer(opt fx.Option) (app *fx.App) {
-
-	app = fx.New(
-		fx.Provide(
-			bus.NewBus,
-			NewLoggerConfig,
-			logging.NewLogger,
-			server.NewGateServer,
-		),
-		fx.Logger(NewPrinter()),
-		opt,
-	)
-
-	return
+// NewControllers ...
+func NewControllers(apiFullAddress, mode string) *Controllers {
+	common := NewControllerCommon(apiFullAddress, mode)
+	return &Controllers{
+		ControllerIndex: NewControllerIndex(common),
+	}
 }

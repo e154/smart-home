@@ -28,7 +28,7 @@ import (
 	"github.com/e154/smart-home/system/backup"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/config"
-	"github.com/e154/smart-home/system/gate_client"
+	"github.com/e154/smart-home/system/gate/client"
 	"github.com/e154/smart-home/system/initial"
 	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/logging_db"
@@ -66,7 +66,7 @@ func BuildContainer() (container *dig.Container) {
 	_ = container.Provide(mqtt_authenticator.NewAuthenticator)
 	_ = container.Provide(access_list.NewAccessListService)
 	_ = container.Provide(stream.NewStreamService)
-	_ = container.Provide(gate_client.NewGateClient)
+	_ = container.Provide(client.NewGateClient)
 	_ = container.Provide(NewZigbee2mqttConfig)
 	_ = container.Provide(zigbee2mqtt.NewZigbee2mqtt)
 	_ = container.Provide(logging.NewLogger)

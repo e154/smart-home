@@ -16,29 +16,22 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package container
+package wsp
 
 import (
-	"github.com/e154/smart-home/system/gate/server"
-	"go.uber.org/fx"
-
-	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/logging"
+	"time"
 )
 
-// BuildContainer ...
-func BuildContainer(opt fx.Option) (app *fx.App) {
+// Config configures an Server
+type Config struct {
+	Host        string
+	Port        int
+	Timeout     int
+	IdleTimeout int
+	SecretKey   string
+}
 
-	app = fx.New(
-		fx.Provide(
-			bus.NewBus,
-			NewLoggerConfig,
-			logging.NewLogger,
-			server.NewGateServer,
-		),
-		fx.Logger(NewPrinter()),
-		opt,
-	)
-
-	return
+// GetTimeout returns the time.Duration converted to millisecond
+func (c Config) GetTimeout() time.Duration {
+	return time.Duration(c.Timeout) * time.Second
 }

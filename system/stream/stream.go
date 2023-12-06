@@ -20,13 +20,10 @@ package stream
 
 import (
 	"context"
-	"net/http"
 	"sync"
 
-	"github.com/gorilla/websocket"
-	"github.com/labstack/echo/v4"
-
 	"github.com/google/uuid"
+	"github.com/gorilla/websocket"
 	"go.uber.org/fx"
 
 	"github.com/e154/smart-home/common/events"
@@ -153,33 +150,39 @@ func (s *Stream) UnSubscribe(command string) {
 }
 
 // NewConnection ...
-func (s *Stream) NewConnection(ctx echo.Context, user *m.User) error {
-
-	upgrader.CheckOrigin = func(r *http.Request) bool {
-		return true
-	}
-	ws, err := upgrader.Upgrade(ctx.Response(), ctx.Request(), nil)
-	if err != nil {
-		return err
-	}
-	defer ws.Close()
+func (s *Stream) NewConnection(ws *websocket.Conn, user *m.User) {
 
 	id := uuid.NewString()
 	client := NewClient(ws, user)
 	defer func() {
-		log.Infof("websocket session closed, email: '%s'", user.Email)
+		//log.Infof("websocket session closed, email: '%s'", user.Email)
 		s.sessions.Delete(id)
 	}()
 
 	s.sessions.Store(id, client)
-	log.Infof("new websocket session established, email: '%s'", user.Email)
+	//log.Infof("new websocket session established, email: '%s'", user.Email)
 
-	return client.WritePump(s.Recv)
+	client.WritePump(s.Recv)
+}
+
+// NewWsConnection ...
+func (s *Stream) NewWsConnection(ws *websocket.Conn, user *m.User) (cli *Client, err error) {
+
+	id := uuid.NewString()
+	cli = NewClient(ws, user)
+	//defer func() {
+	//	log.Info("websocket session closed")
+	//	s.sessions.Delete(id)
+	//}()
+
+	s.sessions.Store(id, cli)
+
+	return
 }
 
 // Recv ...
 func (s *Stream) Recv(client *Client, id, query string, b []byte) {
-	//log.Debugf("id: %s, query: %s, body: %s", id, query, string(b))
+	log.Debugf("id: %s, query: %s, body: %s", id, query, string(b))
 	s.subMx.Lock()
 	f, ok := s.subscribers[query]
 	s.subMx.Unlock()

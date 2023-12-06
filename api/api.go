@@ -355,3 +355,7 @@ func (a *Api) registerHandlers() {
 	}))
 
 }
+
+func (a *Api) Echo() *echo.Echo {
+	return a.echo
+}

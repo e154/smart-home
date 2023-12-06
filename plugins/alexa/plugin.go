@@ -74,7 +74,6 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 	p.server = NewServer(p.Service.Adaptors(),
 		NewConfig(service.AppConfig()),
 		p.Service.ScriptService(),
-		service.GateClient(),
 		p.Service.EventBus())
 
 	p.server.Start()

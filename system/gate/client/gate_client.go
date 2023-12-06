@@ -16,17 +16,20 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package gate_client
+package client
 
 import (
 	"context"
-
+	"github.com/e154/smart-home/api"
+	"github.com/e154/smart-home/system/stream"
 	"github.com/google/uuid"
+
 	"go.uber.org/fx"
 
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
 	"github.com/e154/smart-home/system/bus"
+	"github.com/e154/smart-home/system/gate/client/wsp"
 )
 
 var (
@@ -36,15 +39,21 @@ var (
 // GateClient ...
 type GateClient struct {
 	eventBus bus.Bus
-	proxy    *Client
+	proxy    *wsp.Client
+	api      *api.Api
+	stream   *stream.Stream
 }
 
 // NewGateClient ...
 func NewGateClient(lc fx.Lifecycle,
-	eventBus bus.Bus) (gate *GateClient) {
+	eventBus bus.Bus,
+	api *api.Api,
+	stream *stream.Stream) (gate *GateClient) {
 
 	gate = &GateClient{
 		eventBus: eventBus,
+		api:      api,
+		stream:   stream,
 	}
 
 	lc.Append(fx.Hook{
@@ -63,14 +72,15 @@ func NewGateClient(lc fx.Lifecycle,
 // Start ...
 func (g *GateClient) Start() (err error) {
 
-	config := &Config{
+	config := &wsp.Config{
 		ID:           uuid.NewString(),
-		Targets:      []string{"ws://127.0.0.1:8080/register"},
+		Targets:      []string{"ws://127.0.0.1:8080/gate/register"},
 		PoolIdleSize: 1,
 		PoolMaxSize:  100,
 		SecretKey:    "",
 	}
-	g.proxy = NewClient(config)
+
+	g.proxy = wsp.NewClient(config, g.api, g.stream)
 	g.proxy.Start(context.Background())
 
 	g.eventBus.Publish("system/services/gate_client", events.EventServiceStarted{Service: "GateClient"})

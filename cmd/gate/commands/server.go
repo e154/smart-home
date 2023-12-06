@@ -20,6 +20,7 @@ package commands
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/system/gate/server"
 	"github.com/e154/smart-home/system/logging"
 
 	"github.com/spf13/cobra"
@@ -27,7 +28,6 @@ import (
 
 	. "github.com/e154/smart-home/cmd/gate/container"
 	"github.com/e154/smart-home/common/app"
-	"github.com/e154/smart-home/system/gate_server"
 	"github.com/e154/smart-home/version"
 )
 
@@ -42,7 +42,7 @@ var (
 
 			app.Do(BuildContainer, fx.Invoke(func(
 				_ *logging.Logging,
-				_ *gate_server.GateServer,
+				_ *server.GateServer,
 			) {
 
 			}))

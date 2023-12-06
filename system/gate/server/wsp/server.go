@@ -16,11 +16,11 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package gate_server
+package wsp
 
 import (
 	"context"
-	"math/rand"
+	"fmt"
 	"net/http"
 	"net/url"
 	"reflect"
@@ -31,7 +31,12 @@ import (
 
 	"github.com/gorilla/websocket"
 
-	"github.com/e154/smart-home/system/gate_client/common"
+	"github.com/e154/smart-home/common/logger"
+	"github.com/e154/smart-home/system/gate/common"
+)
+
+var (
+	log = logger.MustGetLogger("wsp")
 )
 
 // Server is a Reverse HTTP Proxy over WebSocket
@@ -72,21 +77,21 @@ type ConnectionRequest struct {
 
 // NewConnectionRequest creates a new connection request
 func NewConnectionRequest(timeout time.Duration) (cr *ConnectionRequest) {
-	cr = new(ConnectionRequest)
-	cr.connection = make(chan *Connection)
+	cr = &ConnectionRequest{
+		connection: make(chan *Connection),
+	}
 	return
 }
 
 // NewServer return a new Server instance
 func NewServer(config *Config) (server *Server) {
-	rand.Seed(time.Now().Unix())
-
-	server = new(Server)
-	server.Config = config
-	server.upgrader = websocket.Upgrader{}
-
-	server.done = make(chan struct{})
-	server.dispatcher = make(chan *ConnectionRequest)
+	server = &Server{
+		Config:     config,
+		upgrader:   websocket.Upgrader{},
+		lock:       sync.RWMutex{},
+		done:       make(chan struct{}),
+		dispatcher: make(chan *ConnectionRequest),
+	}
 	return
 }
 
@@ -104,22 +109,22 @@ func (s *Server) Start() {
 		}
 	}()
 
-	r := http.NewServeMux()
+	//r := http.NewServeMux()
 	// TODO: I want to detach the handler function from the Server struct,
 	// but it is tightly coupled to the internal state of the Server.
-	r.HandleFunc("/register", s.Register)
-	r.HandleFunc("/request", s.Request)
-	r.HandleFunc("/status", s.status)
+	//r.HandleFunc("/gate/register", s.Register)
+	//r.HandleFunc("/gate/request", s.Request)
+	//r.HandleFunc("/gate/status", s.status)
 
 	// Dispatch connection from available pools to clients requests
 	// in a separate thread from the server thread.
 	go s.dispatchConnections()
 
-	s.server = &http.Server{
-		Addr:    s.Config.GetAddr(),
-		Handler: r,
-	}
-	go s.server.ListenAndServe()
+	//s.server = &http.Server{
+	//	Addr:    s.Config.GetAddr(),
+	//	Handler: r,
+	//}
+	//go s.server.ListenAndServe()
 }
 
 // clean removes empty Pools which has no connection.
@@ -195,7 +200,8 @@ func (s *Server) dispatchConnections() {
 					Chan: reflect.ValueOf(ch.idle)}
 			}
 			cases[len(cases)-1] = reflect.SelectCase{
-				Dir: reflect.SelectDefault}
+				Dir: reflect.SelectDefault,
+			}
 			s.lock.RUnlock()
 
 			_, value, ok := reflect.Select(cases)
@@ -215,20 +221,71 @@ func (s *Server) dispatchConnections() {
 	}
 }
 
+func (s *Server) Ws(w http.ResponseWriter, r *http.Request) {
+	log.Infof("[%s] %s", r.Method, r.URL.String())
+
+	if len(s.pools) == 0 {
+		common.ProxyErrorf(w, "No proxy available")
+		return
+	}
+
+	// [2]: Take an WebSocket connection available from pools for relaying received requests.
+	request := NewConnectionRequest(s.Config.GetTimeout())
+	// "Dispatcher" is running in a separate thread from the server by `go s.dispatchConnections()`.
+	// It waits to receive requests to dispatch connection from available pools to clients requests.
+	// https://github.com/hgsgtk/wsp/blob/ea4902a8e11f820268e52a6245092728efeffd7f/server/server.go#L93
+	//
+	// Notify request from handler to dispatcher through Server.dispatcher channel.
+	s.dispatcher <- request
+	// Dispatcher tries to find an available connection pool,
+	// and it returns the connection through Server.connection channel.
+	// https://github.com/hgsgtk/wsp/blob/ea4902a8e11f820268e52a6245092728efeffd7f/server/server.go#L189
+	//
+	// Here waiting for a result from dispatcher.
+	connection := <-request.connection
+	if connection == nil {
+		// It means that dispatcher has set `nil` which is a system error case that is
+		// not expected in the normal flow.
+		common.ProxyErrorf(w, "Unable to get a proxy connection")
+		return
+	}
+	defer func() {
+		fmt.Println("close WS")
+		connection.Close()
+	}()
+
+	if err:= connection.proxyWs(w, r); err != nil {
+		// An error occurred throw the connection away
+		log.Error(err.Error())
+		connection.Close()
+
+		// Try to return an error to the client
+		// This might fail if response headers have already been sent
+		common.ProxyError(w, err)
+	}
+}
+
 func (s *Server) Request(w http.ResponseWriter, r *http.Request) {
 	// [1]: Receive requests to be proxied
 	// Parse destination URL
-	dstURL := r.Header.Get("X-PROXY-DESTINATION")
-	if dstURL == "" {
-		common.ProxyErrorf(w, "Missing X-PROXY-DESTINATION header")
-		return
+	//dstURL := r.Header.Get("X-PROXY-DESTINATION")
+	//if dstURL == "" {
+	//	common.ProxyErrorf(w, "Missing X-PROXY-DESTINATION header")
+	//	return
+	//}
+	//URL, err := url.Parse(dstURL)
+	//if err != nil {
+	//	common.ProxyErrorf(w, "Unable to parse X-PROXY-DESTINATION header")
+	//	return
+	//}
+	//r.URL = URL
+
+	r.URL = &url.URL{
+		Path:        r.URL.Path,
+		RawQuery:    r.URL.RawQuery,
+		Fragment:    r.URL.Fragment,
+		RawFragment: r.URL.RawFragment,
 	}
-	URL, err := url.Parse(dstURL)
-	if err != nil {
-		common.ProxyErrorf(w, "Unable to parse X-PROXY-DESTINATION header")
-		return
-	}
-	r.URL = URL
 
 	log.Infof("[%s] %s", r.Method, r.URL.String())
 
@@ -327,10 +384,6 @@ func (s *Server) Register(w http.ResponseWriter, r *http.Request) {
 
 	// Add the WebSocket connection to the pool
 	pool.Register(ws)
-}
-
-func (s *Server) status(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("ok"))
 }
 
 // Shutdown stop the Server
