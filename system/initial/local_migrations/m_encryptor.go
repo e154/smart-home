@@ -24,7 +24,7 @@ import (
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common/encryptor"
-	m "github.com/e154/smart-home/models"
+	. "github.com/e154/smart-home/system/initial/assertions"
 )
 
 type MigrationEncryptor struct {
@@ -42,15 +42,8 @@ func (n *MigrationEncryptor) Up(ctx context.Context, adaptors *adaptors.Adaptors
 		n.adaptors = adaptors
 	}
 
-	_, err := n.adaptors.Variable.GetByName(ctx, "encryptor")
-	if err != nil {
-		err = n.adaptors.Variable.Add(ctx, m.Variable{
-			Name:   "encryptor",
-			Value:  hex.EncodeToString(encryptor.GenKey()),
-			System: true,
-		})
-		return err
-	}
+	err := AddVariableIfNotExist(n.adaptors, ctx, "encryptor", hex.EncodeToString(encryptor.GenKey()))
+	So(err, ShouldBeNil)
 
 	return nil
 }

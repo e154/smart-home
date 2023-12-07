@@ -55,91 +55,21 @@ type Connection struct {
 	status    ConnectionStatus
 	idleSince time.Time
 	lock      sync.Mutex
-	// nextResponse is the channel of channel to wait an HTTP response.
-	//
-	// In advance, the `read` function waits to receive the HTTP response as a separate thread "reader".
-	// (See https://github.com/hgsgtk/wsp/blob/29cc73bbd67de18f1df295809166a7a5ef52e9fa/server/connection.go#L56 )
-	//
-	// When a "server" thread proxies, it sends the HTTP request to the peer over the WebSocket,
-	// and sends the channel of the io.Reader interface (chan io.Reader) that can read the HTTP response to the field `nextResponse`,
-	// then waits until the value is written in the channel (chan io.Reader) by another thread "reader".
-	//
-	// After the thread "reader" detects that the HTTP response from the peer of the WebSocket connection has been written,
-	// it sends the value to the channel (chan io.Reader),
-	// and the "server" thread can proceed to process the rest procedures.
-	//nextResponse chan chan io.Reader
 }
 
 // NewConnection returns a new Connection.
 func NewConnection(pool *Pool, ws *websocket.Conn) *Connection {
-	// Initialize a new Connection
 	c := &Connection{
-		pool:         pool,
-		ws:           ws,
-		//nextResponse: make(chan chan io.Reader),
-		status:       Idle,
+		pool:   pool,
+		ws:     ws,
+		status: Idle,
 	}
 
 	// Mark that this connection is ready to use for relay
 	c.Release()
 
-	// Start to listen to incoming messages over the WebSocket connection
-	//go c.read()
-
 	return c
 }
-
-// read the incoming message of the connection
-//func (c *Connection) read() {
-//	defer func() {
-//		if r := recover(); r != nil {
-//			log.Infof("Websocket crash recovered : %s", r)
-//		}
-//		c.Close()
-//	}()
-//
-//	for {
-//		if c.status == Closed {
-//			break
-//		}
-//
-//		// https://godoc.org/github.com/gorilla/websocket#hdr-Control_Messages
-//		//
-//		// We need to ensure :
-//		//  - no concurrent calls to ws.NextReader() / ws.ReadMessage()
-//		//  - only one reader exists at a time
-//		//  - wait for reader to be consumed before requesting the next one
-//		//  - always be reading on the socket to be able to process control messages ( ping / pong / close )
-//
-//		// We will block here until a message is received or the ws is closed
-//		_, reader, err := c.ws.NextReader()
-//		if err != nil {
-//			break
-//		}
-//
-//		if c.status != Busy {
-//			// We received a wild unexpected message
-//			break
-//		}
-//
-//		// When it gets here, it is expected to be either a HttpResponse or a HttpResponseBody has been returned.
-//		//
-//		// Next, it waits to receive the value from the Connection.proxyRequest function that is invoked in the "server" thread.
-//		// https://github.com/hgsgtk/wsp/blob/29cc73bbd67de18f1df295809166a7a5ef52e9fa/server/connection.go#L157
-//		ch := <-c.nextResponse
-//		if ch == nil {
-//			// We have been unlocked by Close()
-//			break
-//		}
-//
-//		// Send the reader back to Connection.proxyRequest
-//		ch <- reader
-//
-//		// Wait for proxyRequest to close the channel
-//		// this notify that it is done with the reader
-//		<-ch
-//	}
-//}
 
 func (c *Connection) proxyWs(w http.ResponseWriter, r *http.Request) (err error) {
 
@@ -313,7 +243,6 @@ func (c *Connection) proxyRequest(w http.ResponseWriter, r *http.Request) (err e
 	}
 
 	responseBodyReader := bytes.NewReader(responseBody)
-
 
 	// [6]: Read the HTTP response body from the peer
 	// Pipe the HTTP response body right from the remote Proxy to the client

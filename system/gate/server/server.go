@@ -20,19 +20,21 @@ package server
 
 import (
 	"context"
-	publicAssets "github.com/e154/smart-home/build"
-	"github.com/e154/smart-home/system/gate/server/controllers"
-	wsp2 "github.com/e154/smart-home/system/gate/server/wsp"
+	"net/http"
+
 	echopprof "github.com/hiko1129/echo-pprof"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"net/http"
+
+	publicAssets "github.com/e154/smart-home/build"
+	"github.com/e154/smart-home/system/gate/server/controllers"
+	"github.com/e154/smart-home/system/gate/server/wsp"
 )
 
 type Server struct {
 	controllers *controllers.Controllers
 	echo        *echo.Echo
-	proxy       *wsp2.Server
+	proxy       *wsp.Server
 	cfg         *Config
 }
 
@@ -79,7 +81,6 @@ func (a *Server) Start() (err error) {
 		echopprof.WrapGroup(prefix, group)
 	}
 
-
 	a.echo.HideBanner = true
 	a.echo.HidePort = true
 
@@ -98,14 +99,14 @@ func (a *Server) Start() (err error) {
 		}
 	}()
 
-	config := &wsp2.Config{
+	config := &wsp.Config{
 		Host:        "127.0.0.1",
 		Port:        8080,
 		Timeout:     1000,
 		IdleTimeout: 60000,
 		SecretKey:   "",
 	}
-	a.proxy = wsp2.NewServer(config)
+	a.proxy = wsp.NewServer(config)
 	a.proxy.Start()
 
 	log.Infof("server started at %s", a.cfg.String())

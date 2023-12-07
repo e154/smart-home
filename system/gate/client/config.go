@@ -16,28 +16,13 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package local_migrations
+package client
 
-import (
-	"context"
-
-	"github.com/e154/smart-home/adaptors"
-)
-
-type MigrationTimezone struct {
-	adaptors *adaptors.Adaptors
-}
-
-func NewMigrationTimezone(adaptors *adaptors.Adaptors) *MigrationTimezone {
-	return &MigrationTimezone{
-		adaptors: adaptors,
-	}
-}
-
-func (n *MigrationTimezone) Up(ctx context.Context, adaptors *adaptors.Adaptors) error {
-	if adaptors != nil {
-		n.adaptors = adaptors
-	}
-
-	return AddVariableIfNotExist(n.adaptors, ctx, "timezone", "Asia/Colombo")
+type Config struct {
+	Id           string
+	SecretKey    string
+	ServerHost   string
+	ServerPort   int
+	PoolIdleSize int
+	PoolMaxSize  int
 }

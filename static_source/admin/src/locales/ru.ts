@@ -617,7 +617,14 @@ export default {
     maximumNumberOfBackups: 'Максимальное количество резервных копий',
     info1: 'https://en.wikipedia.org/wiki/Cron',
     sendTheBackupInPartsMb: 'Отправлять резервную копию по частям Mb',
-    sendbackuptoTelegramBot: 'Отправить резервную копию боту Telegram'
+    sendbackuptoTelegramBot: 'Отправить резервную копию боту Telegram',
+    gate: 'Шлюз',
+    gateClientServerHost: 'Хост сервера',
+    gateClientId: 'Клиент Id',
+    gateClientSecretKey: 'Секретный ключ',
+    gateClientServerPort: 'Порт сервера',
+    gateClientPoolIdleSize: 'Минимум потоков',
+    gateClientPoolMaxSize: 'Максимум потоков',
   },
   tools: {
     eventBus: {

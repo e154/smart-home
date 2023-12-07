@@ -20,7 +20,6 @@ package wsp
 
 import (
 	"context"
-	"fmt"
 	"github.com/e154/smart-home/api"
 	"github.com/e154/smart-home/system/stream"
 	"sync"
@@ -38,22 +37,22 @@ type Pool struct {
 
 	done chan struct{}
 
-	api *api.Api
+	api    *api.Api
 	stream *stream.Stream
+	status Status
 }
 
 // NewPool creates a new Pool
-func NewPool(client *Client, target string, secretKey string, api *api.Api, stream *stream.Stream) (pool *Pool) {
-	pool = &Pool{
+func NewPool(client *Client, target string, secretKey string, api *api.Api, stream *stream.Stream) *Pool {
+	return &Pool{
 		client:      client,
 		target:      target,
 		connections: make([]*Connection, 0),
 		secretKey:   secretKey,
 		done:        make(chan struct{}),
 		api:         api,
-		stream: stream,
+		stream:      stream,
 	}
-	return
 }
 
 // Start connect to the remote Server
@@ -81,6 +80,12 @@ func (p *Pool) connector(ctx context.Context) {
 	defer p.lock.Unlock()
 
 	poolSize := p.Size()
+	p.status = Status{
+		Connecting: poolSize.connecting,
+		Idle:       poolSize.idle,
+		Running:    poolSize.running,
+		Total:      poolSize.total,
+	}
 
 	// Create enough connection to fill the pool
 	toCreate := p.client.cfg.PoolIdleSize - poolSize.idle
@@ -103,7 +108,7 @@ func (p *Pool) connector(ctx context.Context) {
 		go func() {
 			err := conn.Connect(ctx)
 			if err != nil {
-				log.Errorf("Unable to connect to %s : %s", p.target, err)
+				//log.Errorf("Unable to connect to %s : %s", p.target, err)
 
 				p.lock.Lock()
 				defer p.lock.Unlock()
@@ -140,21 +145,9 @@ func (p *Pool) Shutdown() {
 	}
 }
 
-// PoolSize represent the number of open connections per status
-type PoolSize struct {
-	connecting int
-	idle       int
-	running    int
-	total      int
-}
-
-func (poolSize *PoolSize) String() string {
-	return fmt.Sprintf("Connecting %d, idle %d, running %d, total %d", poolSize.connecting, poolSize.idle, poolSize.running, poolSize.total)
-}
-
 // Size return the current state of the pool
 func (p *Pool) Size() (poolSize *PoolSize) {
-	poolSize = new(PoolSize)
+	poolSize = &PoolSize{}
 	poolSize.total = len(p.connections)
 	for _, connection := range p.connections {
 		switch connection.status {

@@ -23,7 +23,7 @@ import (
 	"fmt"
 
 	"github.com/e154/smart-home/adaptors"
-	m "github.com/e154/smart-home/models"
+	. "github.com/e154/smart-home/system/initial/assertions"
 )
 
 type MigrationBackup struct {
@@ -40,37 +40,15 @@ func (n *MigrationBackup) Up(ctx context.Context, adaptors *adaptors.Adaptors) e
 	if adaptors != nil {
 		n.adaptors = adaptors
 	}
-	if _, err := n.adaptors.Variable.GetByName(ctx, "createBackupAt"); err != nil {
-		_ = n.adaptors.Variable.Add(context.Background(), m.Variable{
-			Name:   "createBackupAt",
-			Value:  "0 0 0 * * *",
-			System: true,
-		})
-	}
 
-	if _, err := n.adaptors.Variable.GetByName(ctx, "maximumNumberOfBackups"); err != nil {
-		_ = n.adaptors.Variable.Add(context.Background(), m.Variable{
-			Name:   "maximumNumberOfBackups",
-			Value:  fmt.Sprintf("%d", 60),
-			System: true,
-		})
-	}
-
-	if _, err := n.adaptors.Variable.GetByName(ctx, "sendbackuptoTelegramBot"); err != nil {
-		_ = n.adaptors.Variable.Add(context.Background(), m.Variable{
-			Name:   "sendbackuptoTelegramBot",
-			Value:  "",
-			System: true,
-		})
-	}
-
-	if _, err := n.adaptors.Variable.GetByName(ctx, "sendTheBackupInPartsMb"); err != nil {
-		_ = n.adaptors.Variable.Add(context.Background(), m.Variable{
-			Name:   "sendTheBackupInPartsMb",
-			Value:  fmt.Sprintf("%d", 40),
-			System: true,
-		})
-	}
+	err := AddVariableIfNotExist(n.adaptors, ctx, "createBackupAt", "0 0 0 * * *")
+	So(err, ShouldBeNil)
+	err = AddVariableIfNotExist(n.adaptors, ctx, "maximumNumberOfBackups", fmt.Sprintf("%d", 60))
+	So(err, ShouldBeNil)
+	err = AddVariableIfNotExist(n.adaptors, ctx, "sendbackuptoTelegramBot", "")
+	So(err, ShouldBeNil)
+	err = AddVariableIfNotExist(n.adaptors, ctx, "createBackupAt", fmt.Sprintf("%d", 40))
+	So(err, ShouldBeNil)
 
 	return nil
 }

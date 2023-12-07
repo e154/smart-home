@@ -63,3 +63,9 @@ func (v *Variable) GetBool() bool {
 	b, _ := strconv.ParseBool(v.Value)
 	return b
 }
+
+// GetInt ...
+func (v *Variable) GetInt() int {
+	i, _ := strconv.Atoi(v.Value)
+	return i
+}

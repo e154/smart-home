@@ -165,24 +165,9 @@ func (s *Stream) NewConnection(ws *websocket.Conn, user *m.User) {
 	client.WritePump(s.Recv)
 }
 
-// NewWsConnection ...
-func (s *Stream) NewWsConnection(ws *websocket.Conn, user *m.User) (cli *Client, err error) {
-
-	id := uuid.NewString()
-	cli = NewClient(ws, user)
-	//defer func() {
-	//	log.Info("websocket session closed")
-	//	s.sessions.Delete(id)
-	//}()
-
-	s.sessions.Store(id, cli)
-
-	return
-}
-
 // Recv ...
 func (s *Stream) Recv(client *Client, id, query string, b []byte) {
-	log.Debugf("id: %s, query: %s, body: %s", id, query, string(b))
+	//log.Debugf("id: %s, query: %s, body: %s", id, query, string(b))
 	s.subMx.Lock()
 	f, ok := s.subscribers[query]
 	s.subMx.Unlock()

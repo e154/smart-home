@@ -65,7 +65,7 @@ func NewConnection(pool *Pool,
 
 // Connect to the IsolatorServer using a HTTP websocket
 func (c *Connection) Connect(ctx context.Context) (err error) {
-	log.Infof("Connecting to %s", c.pool.target)
+	//log.Infof("Connecting to %s", c.pool.target)
 
 	// Create a new TCP(/TLS) connection ( no use of net.http )
 	c.ws, _, err = c.pool.client.dialer.DialContext(

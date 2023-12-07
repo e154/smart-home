@@ -48,7 +48,7 @@ type Server struct {
 	upgrader websocket.Upgrader
 
 	// In pools, keep connections with WebSocket peers.
-	pools []*Pool
+	pools map[PoolID]*Pool
 
 	// A RWMutex is a reader/writer mutual exclusion lock,
 	// and it is for exclusive control with pools operation.
@@ -91,6 +91,7 @@ func NewServer(config *Config) (server *Server) {
 		lock:       sync.RWMutex{},
 		done:       make(chan struct{}),
 		dispatcher: make(chan *ConnectionRequest),
+		pools:      make(map[PoolID]*Pool),
 	}
 	return
 }
@@ -140,13 +141,11 @@ func (s *Server) clean() {
 	idle := 0
 	busy := 0
 
-	var pools []*Pool
 	for _, pool := range s.pools {
 		if pool.IsEmpty() {
 			log.Infof("Removing empty connection pool : %s", pool.id)
 			pool.Shutdown()
-		} else {
-			pools = append(pools, pool)
+			delete(s.pools, pool.id)
 		}
 
 		ps := pool.Size()
@@ -154,9 +153,7 @@ func (s *Server) clean() {
 		busy += ps.Busy
 	}
 
-	log.Infof("%d pools, %d idle, %d busy", len(pools), idle, busy)
-
-	s.pools = pools
+	log.Infof("%d pools, %d idle, %d busy", len(s.pools), idle, busy)
 }
 
 // Dispatch connection from available pools to clients requests
@@ -194,10 +191,13 @@ func (s *Server) dispatchConnections() {
 			// [1]: Select a pool which has an idle connection
 			// Build a select statement dynamically to handle an arbitrary number of pools.
 			cases := make([]reflect.SelectCase, len(s.pools)+1)
-			for i, ch := range s.pools {
+			var i int
+			for _, pool := range s.pools {
 				cases[i] = reflect.SelectCase{
 					Dir:  reflect.SelectRecv,
-					Chan: reflect.ValueOf(ch.idle)}
+					Chan: reflect.ValueOf(pool.idle),
+				}
+				i++
 			}
 			cases[len(cases)-1] = reflect.SelectCase{
 				Dir: reflect.SelectDefault,
@@ -254,7 +254,7 @@ func (s *Server) Ws(w http.ResponseWriter, r *http.Request) {
 		connection.Close()
 	}()
 
-	if err:= connection.proxyWs(w, r); err != nil {
+	if err := connection.proxyWs(w, r); err != nil {
 		// An error occurred throw the connection away
 		log.Error(err.Error())
 		connection.Close()
@@ -331,6 +331,7 @@ func (s *Server) Request(w http.ResponseWriter, r *http.Request) {
 func (s *Server) Register(w http.ResponseWriter, r *http.Request) {
 	// 1. Upgrade a received HTTP request to a WebSocket connection
 	secretKey := r.Header.Get("X-SECRET-KEY")
+	fmt.Println(secretKey, s.Config.SecretKey)
 	if secretKey != s.Config.SecretKey {
 		common.ProxyErrorf(w, "Invalid X-SECRET-KEY")
 		return
@@ -367,18 +368,12 @@ func (s *Server) Register(w http.ResponseWriter, r *http.Request) {
 	defer s.lock.Unlock()
 
 	var pool *Pool
-	// There is no need to create a new pool,
-	// if it is already registered in current pools.
-	for _, p := range s.pools {
-		if p.id == id {
-			pool = p
-			break
-		}
-	}
-	if pool == nil {
+	var ok bool
+	if pool, ok = s.pools[id]; !ok {
 		pool = NewPool(s, id)
-		s.pools = append(s.pools, pool)
+		s.pools[id] = pool
 	}
+
 	// update pool size
 	pool.size = size
 

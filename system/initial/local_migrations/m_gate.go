@@ -22,22 +22,36 @@ import (
 	"context"
 
 	"github.com/e154/smart-home/adaptors"
+	. "github.com/e154/smart-home/system/initial/assertions"
 )
 
-type MigrationTimezone struct {
+type MigrationGate struct {
 	adaptors *adaptors.Adaptors
 }
 
-func NewMigrationTimezone(adaptors *adaptors.Adaptors) *MigrationTimezone {
-	return &MigrationTimezone{
+func NewMigrationGate(adaptors *adaptors.Adaptors) *MigrationGate {
+	return &MigrationGate{
 		adaptors: adaptors,
 	}
 }
 
-func (n *MigrationTimezone) Up(ctx context.Context, adaptors *adaptors.Adaptors) error {
+func (n *MigrationGate) Up(ctx context.Context, adaptors *adaptors.Adaptors) error {
 	if adaptors != nil {
 		n.adaptors = adaptors
 	}
 
-	return AddVariableIfNotExist(n.adaptors, ctx, "timezone", "Asia/Colombo")
+	err := AddVariableIfNotExist(n.adaptors, ctx, "gateClientId", "639825c3-47c5-496c-9667-2c7d3f13cd1a")
+	So(err, ShouldBeNil)
+	err = AddVariableIfNotExist(n.adaptors, ctx, "gateClientSecretKey", "")
+	So(err, ShouldBeNil)
+	err = AddVariableIfNotExist(n.adaptors, ctx, "gateClientServerHost", "127.0.0.1")
+	So(err, ShouldBeNil)
+	err = AddVariableIfNotExist(n.adaptors, ctx, "gateClientServerPort", "8080")
+	So(err, ShouldBeNil)
+	err = AddVariableIfNotExist(n.adaptors, ctx, "gateClientPoolIdleSize", "1")
+	So(err, ShouldBeNil)
+	err = AddVariableIfNotExist(n.adaptors, ctx, "gateClientPoolMaxSize", "100")
+	So(err, ShouldBeNil)
+
+	return nil
 }

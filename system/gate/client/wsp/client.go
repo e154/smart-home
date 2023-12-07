@@ -20,7 +20,9 @@ package wsp
 
 import (
 	"context"
+	"fmt"
 	"github.com/e154/smart-home/system/stream"
+	"go.uber.org/atomic"
 	"net/http"
 
 	"github.com/e154/smart-home/api"
@@ -35,30 +37,36 @@ var (
 // Client connects to one or more Server using HTTP websockets.
 // The Server can then send HTTP requests to execute.
 type Client struct {
-	cfg *Config
-
-	client *http.Client
-	dialer *websocket.Dialer
-	pools  map[string]*Pool
-	api    *api.Api
-	stream *stream.Stream
+	cfg       *Config
+	client    *http.Client
+	dialer    *websocket.Dialer
+	pools     map[string]*Pool
+	api       *api.Api
+	stream    *stream.Stream
+	isStarted *atomic.Bool
 }
 
 // NewClient creates a new Client.
-func NewClient(config *Config, api *api.Api, stream *stream.Stream) (c *Client) {
-	c = &Client{
-		cfg:    config,
-		client: &http.Client{},
-		dialer: &websocket.Dialer{},
-		pools:  make(map[string]*Pool),
-		api:    api,
-		stream: stream,
+func NewClient(cfg *Config, api *api.Api, stream *stream.Stream) *Client {
+	return &Client{
+		cfg:       cfg,
+		client:    &http.Client{},
+		dialer:    &websocket.Dialer{},
+		pools:     make(map[string]*Pool),
+		api:       api,
+		stream:    stream,
+		isStarted: atomic.NewBool(false),
 	}
-	return
 }
 
 // Start the Proxy
 func (c *Client) Start(ctx context.Context) {
+	fmt.Println("Start")
+	defer fmt.Println("Started")
+	if !c.isStarted.CompareAndSwap(false, true) {
+		return
+	}
+	defer c.isStarted.Store(true)
 	for _, target := range c.cfg.Targets {
 		pool := NewPool(c, target, c.cfg.SecretKey, c.api, c.stream)
 		c.pools[target] = pool
@@ -68,6 +76,12 @@ func (c *Client) Start(ctx context.Context) {
 
 // Shutdown the Proxy
 func (c *Client) Shutdown() {
+	fmt.Println("Shutdown")
+	defer fmt.Println("Shutdowned")
+	if !c.isStarted.CompareAndSwap(true, false) {
+		return
+	}
+	defer c.isStarted.Store(false)
 	for _, pool := range c.pools {
 		pool.Shutdown()
 	}

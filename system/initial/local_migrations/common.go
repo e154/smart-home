@@ -20,24 +20,21 @@ package local_migrations
 
 import (
 	"context"
-
 	"github.com/e154/smart-home/adaptors"
+	m "github.com/e154/smart-home/models"
 )
 
-type MigrationTimezone struct {
-	adaptors *adaptors.Adaptors
-}
+func AddVariableIfNotExist(adaptors *adaptors.Adaptors, ctx context.Context, name, value string) (err error) {
 
-func NewMigrationTimezone(adaptors *adaptors.Adaptors) *MigrationTimezone {
-	return &MigrationTimezone{
-		adaptors: adaptors,
-	}
-}
-
-func (n *MigrationTimezone) Up(ctx context.Context, adaptors *adaptors.Adaptors) error {
-	if adaptors != nil {
-		n.adaptors = adaptors
+	if _, err = adaptors.Variable.GetByName(ctx, name); err == nil {
+		return
 	}
 
-	return AddVariableIfNotExist(n.adaptors, ctx, "timezone", "Asia/Colombo")
+	err = adaptors.Variable.Add(context.Background(), m.Variable{
+		Name:   name,
+		Value:  value,
+		System: true,
+	})
+
+	return
 }

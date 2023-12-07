@@ -16,28 +16,25 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package local_migrations
+package wsp
 
-import (
-	"context"
+import "fmt"
 
-	"github.com/e154/smart-home/adaptors"
-)
-
-type MigrationTimezone struct {
-	adaptors *adaptors.Adaptors
+// PoolSize represent the number of open connections per status
+type PoolSize struct {
+	connecting int
+	idle       int
+	running    int
+	total      int
 }
 
-func NewMigrationTimezone(adaptors *adaptors.Adaptors) *MigrationTimezone {
-	return &MigrationTimezone{
-		adaptors: adaptors,
-	}
+type Status struct {
+	Connecting int
+	Idle       int
+	Running    int
+	Total      int
 }
 
-func (n *MigrationTimezone) Up(ctx context.Context, adaptors *adaptors.Adaptors) error {
-	if adaptors != nil {
-		n.adaptors = adaptors
-	}
-
-	return AddVariableIfNotExist(n.adaptors, ctx, "timezone", "Asia/Colombo")
+func (poolSize *PoolSize) String() string {
+	return fmt.Sprintf("Connecting %d, idle %d, running %d, total %d", poolSize.connecting, poolSize.idle, poolSize.running, poolSize.total)
 }
