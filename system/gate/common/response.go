@@ -20,7 +20,6 @@ package common
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 )
 
@@ -49,7 +48,7 @@ func NewHTTPResponse() (r *HTTPResponse) {
 
 // ProxyError log error and return a HTTP 526 error with the message
 func ProxyError(w http.ResponseWriter, err error) {
-	log.Println(err)
+	fmt.Println(err.Error())
 	http.Error(w, err.Error(), 526)
 }
 

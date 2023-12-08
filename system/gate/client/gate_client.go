@@ -21,18 +21,20 @@ package client
 import (
 	"context"
 	"fmt"
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/api"
-	"github.com/e154/smart-home/system/stream"
+	"net/url"
+
 	"github.com/google/uuid"
 	"go.uber.org/atomic"
 	"go.uber.org/fx"
-	"net/url"
 
+	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/api"
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/gate/client/wsp"
+	"github.com/e154/smart-home/system/jwt_manager"
+	"github.com/e154/smart-home/system/stream"
 )
 
 var (
@@ -41,12 +43,13 @@ var (
 
 // GateClient ...
 type GateClient struct {
-	eventBus  bus.Bus
-	proxy     *wsp.Client
-	api       *api.Api
-	stream    *stream.Stream
-	adaptors  *adaptors.Adaptors
-	inProcess *atomic.Bool
+	eventBus   bus.Bus
+	proxy      *wsp.Client
+	api        *api.Api
+	stream     *stream.Stream
+	adaptors   *adaptors.Adaptors
+	jwtManager jwt_manager.JwtManager
+	inProcess  *atomic.Bool
 }
 
 // NewGateClient ...
@@ -54,14 +57,16 @@ func NewGateClient(lc fx.Lifecycle,
 	eventBus bus.Bus,
 	api *api.Api,
 	stream *stream.Stream,
-	adaptors *adaptors.Adaptors) (gate *GateClient) {
+	adaptors *adaptors.Adaptors,
+	jwtManager jwt_manager.JwtManager) (gate *GateClient) {
 
 	gate = &GateClient{
-		eventBus:  eventBus,
-		api:       api,
-		stream:    stream,
-		adaptors:  adaptors,
-		inProcess: atomic.NewBool(false),
+		eventBus:   eventBus,
+		api:        api,
+		stream:     stream,
+		adaptors:   adaptors,
+		jwtManager: jwtManager,
+		inProcess:  atomic.NewBool(false),
 	}
 
 	lc.Append(fx.Hook{
@@ -162,7 +167,7 @@ func (g *GateClient) initWspServer() {
 		SecretKey:    cfg.SecretKey,
 	}
 
-	g.proxy = wsp.NewClient(config, g.api, g.stream)
+	g.proxy = wsp.NewClient(config, g.api, g.stream, g.adaptors, g.jwtManager)
 	g.proxy.Start(context.Background())
 }
 

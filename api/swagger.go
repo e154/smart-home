@@ -16,25 +16,10 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package wsp
+package api
 
-import "fmt"
+import "embed"
 
-// PoolSize represent the number of open connections per status
-type PoolSize struct {
-	connecting int
-	idle       int
-	running    int
-	total      int
-}
-
-func (poolSize *PoolSize) String() string {
-	return fmt.Sprintf("Connecting %d, idle %d, running %d, total %d", poolSize.connecting, poolSize.idle, poolSize.running, poolSize.total)
-}
-
-type Status struct {
-	Connecting int
-	Idle       int
-	Running    int
-	Total      int
-}
+//go:embed swagger-ui/*
+//go:embed api.swagger3.yaml
+var SwaggerAssets embed.FS

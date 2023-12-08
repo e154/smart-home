@@ -21,13 +21,16 @@ package wsp
 import (
 	"context"
 	"fmt"
-	"github.com/e154/smart-home/system/stream"
-	"go.uber.org/atomic"
 	"net/http"
 
+	"github.com/gorilla/websocket"
+	"go.uber.org/atomic"
+
+	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api"
 	"github.com/e154/smart-home/common/logger"
-	"github.com/gorilla/websocket"
+	"github.com/e154/smart-home/system/jwt_manager"
+	"github.com/e154/smart-home/system/stream"
 )
 
 var (
@@ -37,25 +40,29 @@ var (
 // Client connects to one or more Server using HTTP websockets.
 // The Server can then send HTTP requests to execute.
 type Client struct {
-	cfg       *Config
-	client    *http.Client
-	dialer    *websocket.Dialer
-	pools     map[string]*Pool
-	api       *api.Api
-	stream    *stream.Stream
-	isStarted *atomic.Bool
+	cfg        *Config
+	client     *http.Client
+	dialer     *websocket.Dialer
+	pools      map[string]*Pool
+	api        *api.Api
+	stream     *stream.Stream
+	isStarted  *atomic.Bool
+	adaptors   *adaptors.Adaptors
+	jwtManager jwt_manager.JwtManager
 }
 
 // NewClient creates a new Client.
-func NewClient(cfg *Config, api *api.Api, stream *stream.Stream) *Client {
+func NewClient(cfg *Config, api *api.Api, stream *stream.Stream, adaptors *adaptors.Adaptors, jwtManager jwt_manager.JwtManager) *Client {
 	return &Client{
-		cfg:       cfg,
-		client:    &http.Client{},
-		dialer:    &websocket.Dialer{},
-		pools:     make(map[string]*Pool),
-		api:       api,
-		stream:    stream,
-		isStarted: atomic.NewBool(false),
+		cfg:        cfg,
+		client:     &http.Client{},
+		dialer:     &websocket.Dialer{},
+		pools:      make(map[string]*Pool),
+		api:        api,
+		stream:     stream,
+		isStarted:  atomic.NewBool(false),
+		adaptors:   adaptors,
+		jwtManager: jwtManager,
 	}
 }
 
@@ -68,7 +75,7 @@ func (c *Client) Start(ctx context.Context) {
 	}
 	defer c.isStarted.Store(true)
 	for _, target := range c.cfg.Targets {
-		pool := NewPool(c, target, c.cfg.SecretKey, c.api, c.stream)
+		pool := NewPool(c, target, c.cfg.SecretKey, c.api, c.stream, c.adaptors, c.jwtManager)
 		c.pools[target] = pool
 		go pool.Start(ctx)
 	}

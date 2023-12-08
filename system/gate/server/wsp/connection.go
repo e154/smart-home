@@ -74,15 +74,17 @@ func NewConnection(pool *Pool, ws *websocket.Conn) *Connection {
 func (c *Connection) proxyWs(w http.ResponseWriter, r *http.Request) (err error) {
 
 	// Only pass those headers to the upgrader.
-	//upgradeHeader := http.Header{}
-	//if hdr := r.Header.Get("Sec-Websocket-Protocol"); hdr != "" {
-	//	upgradeHeader.Set("Sec-Websocket-Protocol", hdr)
-	//}
-	//if hdr := r.Header.Get("Set-Cookie"); hdr != "" {
-	//	upgradeHeader.Set("Set-Cookie", hdr)
-	//}
+	upgradeHeader := http.Header{}
+	if hdr := r.Header.Get("Sec-Websocket-Protocol"); hdr != "" {
+		upgradeHeader.Set("Sec-Websocket-Protocol", hdr)
+	}
+	if hdr := r.Header.Get("Set-Cookie"); hdr != "" {
+		upgradeHeader.Set("Set-Cookie", hdr)
+	}
 
-	_ = c.ws.WriteMessage(websocket.TextMessage, []byte("WS"))
+	query := r.URL.Query()
+	accessToken := query.Get("access_token")
+	_ = c.ws.WriteMessage(websocket.TextMessage, []byte("WS:" + accessToken))
 
 	upgrader.CheckOrigin = func(r *http.Request) bool {
 		return true
@@ -90,7 +92,7 @@ func (c *Connection) proxyWs(w http.ResponseWriter, r *http.Request) (err error)
 
 	// Now upgrade the existing incoming request to a WebSocket connection.
 	// Also pass the header that we gathered from the Dial handshake.
-	connPub, err := upgrader.Upgrade(w, r, nil)
+	connPub, err := upgrader.Upgrade(w, r, upgradeHeader)
 	if err != nil {
 		log.Errorf("websocketproxy: couldn't upgrade %s", err)
 		return

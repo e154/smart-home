@@ -26,6 +26,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
+	"github.com/e154/smart-home/api"
 	publicAssets "github.com/e154/smart-home/build"
 	"github.com/e154/smart-home/system/gate/server/controllers"
 	"github.com/e154/smart-home/system/gate/server/wsp"
@@ -133,16 +134,17 @@ func (a *Server) registerHandlers() {
 	// static files
 	a.echo.GET("/", echo.WrapHandler(a.controllers.Index(publicAssets.F)))
 	a.echo.GET("/public/*", echo.WrapHandler(http.StripPrefix("/", http.FileServer(http.FS(publicAssets.F)))))
+	var contentHandler = echo.WrapHandler(http.FileServer(http.FS(api.SwaggerAssets)))
+	a.echo.GET("/swagger-ui", contentHandler)
+	a.echo.GET("/swagger-ui/*", contentHandler)
+	a.echo.GET("/api.swagger3.yaml", contentHandler)
 
 	// proxy
 	a.echo.Any("/v1/*", a.proxyHandler)
-	a.echo.Any("/swagger-ui", a.proxyHandler)
-	a.echo.Any("/swagger-ui/*", a.proxyHandler)
-	a.echo.Any("/api.swagger3.yaml", a.proxyHandler)
 	a.echo.Any("/upload/*", a.proxyHandler)
 	a.echo.Any("/static/*", a.proxyHandler)
 	a.echo.Any("/snapshots/*", a.proxyHandler)
-	a.echo.GET("v1/ws", func(c echo.Context) error {
+	a.echo.GET("/v1/ws", func(c echo.Context) error {
 		a.proxy.Ws(c.Response(), c.Request())
 		return nil
 	})

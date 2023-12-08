@@ -22,15 +22,19 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/e154/smart-home/api"
-	"github.com/e154/smart-home/system/stream"
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"time"
 
-	"github.com/e154/smart-home/system/gate/common"
 	"github.com/gorilla/websocket"
+
+	"github.com/e154/smart-home/api"
+	"github.com/e154/smart-home/common/apperr"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/gate/common"
+	"github.com/e154/smart-home/system/stream"
 )
 
 // Status of a Connection
@@ -47,7 +51,7 @@ type Connection struct {
 	status int
 	api    *api.Api
 	stream *stream.Stream
-	cli *stream.Client
+	cli    *stream.Client
 }
 
 // NewConnection create a Connection object
@@ -141,8 +145,21 @@ func (c *Connection) serve(ctx context.Context) {
 		// Trigger a pool refresh to open new connections if needed
 		go c.pool.connector(ctx)
 
-		if string(jsonRequest) == "WS" {
-			c.stream.NewConnection(c.ws, nil)
+		if strings.Contains(string(jsonRequest), "WS:") {
+			// get user
+			accessToken := string(jsonRequest)
+			accessToken = strings.ReplaceAll(accessToken, "WS:", "")
+			if accessToken == "" {
+				log.Error(apperr.ErrUnauthorized.Error())
+				return
+			}
+			var user *m.User
+			user, err = c.pool.GetUser(accessToken)
+			if err != nil {
+				log.Error(apperr.ErrAccessDenied.Error())
+				return
+			}
+			c.stream.NewConnection(c.ws, user)
 			return
 		}
 

@@ -20,10 +20,14 @@ package wsp
 
 import (
 	"context"
-	"github.com/e154/smart-home/api"
-	"github.com/e154/smart-home/system/stream"
 	"sync"
 	"time"
+
+	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/api"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/jwt_manager"
+	"github.com/e154/smart-home/system/stream"
 )
 
 // Pool manage a pool of connection to a remote Server
@@ -40,10 +44,18 @@ type Pool struct {
 	api    *api.Api
 	stream *stream.Stream
 	status Status
+
+	adaptors   *adaptors.Adaptors
+	jwtManager jwt_manager.JwtManager
 }
 
 // NewPool creates a new Pool
-func NewPool(client *Client, target string, secretKey string, api *api.Api, stream *stream.Stream) *Pool {
+func NewPool(client *Client, target string,
+	secretKey string,
+	api *api.Api,
+	stream *stream.Stream,
+	adaptors *adaptors.Adaptors,
+	jwtManager jwt_manager.JwtManager) *Pool {
 	return &Pool{
 		client:      client,
 		target:      target,
@@ -52,6 +64,8 @@ func NewPool(client *Client, target string, secretKey string, api *api.Api, stre
 		done:        make(chan struct{}),
 		api:         api,
 		stream:      stream,
+		adaptors:    adaptors,
+		jwtManager:  jwtManager,
 	}
 }
 
@@ -158,6 +172,21 @@ func (p *Pool) Size() (poolSize *PoolSize) {
 		case RUNNING:
 			poolSize.running++
 		}
+	}
+
+	return
+}
+
+func (p *Pool) GetUser(accessToken string) (user *m.User, err error) {
+
+	claims, err := p.jwtManager.Verify(accessToken)
+	if err != nil {
+		return
+	}
+
+	user, err = p.adaptors.User.GetById(context.Background(), claims.UserId)
+	if err != nil {
+		return
 	}
 
 	return

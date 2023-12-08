@@ -20,7 +20,6 @@ package wsp
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"net/url"
 	"reflect"
@@ -250,7 +249,6 @@ func (s *Server) Ws(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer func() {
-		fmt.Println("close WS")
 		connection.Close()
 	}()
 
@@ -331,8 +329,7 @@ func (s *Server) Request(w http.ResponseWriter, r *http.Request) {
 func (s *Server) Register(w http.ResponseWriter, r *http.Request) {
 	// 1. Upgrade a received HTTP request to a WebSocket connection
 	secretKey := r.Header.Get("X-SECRET-KEY")
-	fmt.Println(secretKey, s.Config.SecretKey)
-	if secretKey != s.Config.SecretKey {
+	if s.Config.SecretKey != "" && secretKey != s.Config.SecretKey {
 		common.ProxyErrorf(w, "Invalid X-SECRET-KEY")
 		return
 	}

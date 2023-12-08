@@ -155,12 +155,12 @@ func (s *Stream) NewConnection(ws *websocket.Conn, user *m.User) {
 	id := uuid.NewString()
 	client := NewClient(ws, user)
 	defer func() {
-		//log.Infof("websocket session closed, email: '%s'", user.Email)
+		log.Infof("websocket session closed, email: '%s'", user.Email)
 		s.sessions.Delete(id)
 	}()
 
 	s.sessions.Store(id, client)
-	//log.Infof("new websocket session established, email: '%s'", user.Email)
+	log.Infof("new websocket session established, email: '%s'", user.Email)
 
 	client.WritePump(s.Recv)
 }
