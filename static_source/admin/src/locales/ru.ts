@@ -150,7 +150,8 @@ export default {
     codePlaceholder: "Пожалуйста, введите код подтверждения",
     restorePassword: "Восстановить пароль",
     returnToSignIn: "Вернуться к форме входа",
-    updatePassword: "Обновить пароль"
+    updatePassword: "Обновить пароль",
+    server: 'Сервер ID'
   },
   router: {
     login: "Вход",

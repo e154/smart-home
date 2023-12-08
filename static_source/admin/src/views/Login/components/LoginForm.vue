@@ -26,7 +26,8 @@ const {t} = useI18n()
 
 const rules = {
   username: [required()],
-  password: [required()]
+  password: [required()],
+  server: []
 }
 
 const schema = reactive<FormSchema[]>([
@@ -39,7 +40,7 @@ const schema = reactive<FormSchema[]>([
   {
     field: 'username',
     label: t('login.username'),
-    value: '',
+    value: wsCache.get("username"),
     component: 'Input',
     colProps: {
       span: 24
@@ -51,7 +52,7 @@ const schema = reactive<FormSchema[]>([
   {
     field: 'password',
     label: t('login.password'),
-    value: '',
+    value: wsCache.get("password"),
     component: 'InputPassword',
     colProps: {
       span: 24
@@ -61,6 +62,22 @@ const schema = reactive<FormSchema[]>([
         width: '100%'
       },
       placeholder: t('login.passwordPlaceholder')
+    }
+  },
+  {
+    field: 'server',
+    label: t('login.server'),
+    value: wsCache.get("serverId"),
+    component: 'Input',
+    colProps: {
+      span: 24
+    },
+    hidden: false,
+    componentProps: {
+      style: {
+        width: '100%'
+      },
+      placeholder: t('login.serverPlaceholder')
     }
   },
   {
@@ -77,7 +94,7 @@ const schema = reactive<FormSchema[]>([
   }
 ])
 const iconSize = 30
-const remember = ref(false)
+const remember = ref(wsCache.get("remember"))
 const {register, elFormRef, methods} = useForm()
 const loading = ref(false)
 const iconColor = '#999'
@@ -113,9 +130,11 @@ const signIn = async () => {
 
       const {getFormData} = methods
       const formData = await getFormData<UserType>()
-      let {username} = formData;
-      const {password} = formData;
+      let {username, password, server} = formData;
       username = username.trim();
+      server = server.trim();
+
+      appStore.setServerId(server);
 
       try {
         const resp = await api.v1.authServiceSignin({
@@ -126,6 +145,16 @@ const signIn = async () => {
         if (accessToken) {
           wsCache.set("accessToken", accessToken)
           wsCache.set("currentUser", currentUser)
+
+          if (remember.value) {
+            wsCache.set("username", username)
+            wsCache.set("password", password)
+            wsCache.set("remember", true)
+          } else {
+            wsCache.delete("username")
+            wsCache.delete("password")
+            wsCache.delete("remember")
+          }
 
           appStore.SetToken(accessToken);
           appStore.SetUser(currentUser);

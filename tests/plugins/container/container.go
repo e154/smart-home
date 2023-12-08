@@ -70,6 +70,7 @@ func BuildContainer() (container *dig.Container) {
 	_ = container.Provide(client.NewGateClient)
 	_ = container.Provide(NewZigbee2mqttConfig)
 	_ = container.Provide(zigbee2mqtt.NewZigbee2mqtt)
+	_ = container.Provide(NewLoggerConfig)
 	_ = container.Provide(logging.NewLogger)
 	_ = container.Provide(logging_db.NewLogDbSaver)
 	_ = container.Provide(storage.NewStorage)

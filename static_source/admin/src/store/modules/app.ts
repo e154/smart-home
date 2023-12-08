@@ -40,6 +40,7 @@ interface AppState {
   theme: ThemeTypes
   fixedMenu: boolean
   terminal: boolean
+  serverId: string
 }
 
 export const useAppStore = defineStore('app', {
@@ -75,6 +76,7 @@ export const useAppStore = defineStore('app', {
       dynamicRouter: wsCache.get('dynamicRouter') || false, // 是否动态路由
       fixedMenu: wsCache.get('fixedMenu') || false, // 是否固定菜单
       terminal: wsCache.get('terminal') || false,
+      serverId: wsCache.get('serverId') || '',
 
       layout: wsCache.get('layout') || 'classic', // layout布局
       isDark: wsCache.get('isDark') || false, // 是否是暗黑模式
@@ -195,6 +197,9 @@ export const useAppStore = defineStore('app', {
     },
     getFooter(): boolean {
       return this.footer
+    },
+    getServerId(): string {
+      return this.serverId
     }
   },
   actions: {
@@ -314,6 +319,10 @@ export const useAppStore = defineStore('app', {
     },
     setFooter(footer: boolean) {
       this.footer = footer
+    },
+    setServerId(id: string) {
+      this.serverId = id
+      wsCache.set('serverId', this.serverId)
     }
   }
 })

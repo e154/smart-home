@@ -84,6 +84,9 @@ func (c *Connection) proxyWs(w http.ResponseWriter, r *http.Request) (err error)
 
 	query := r.URL.Query()
 	accessToken := query.Get("access_token")
+	if accessToken == "" {
+		accessToken = "NIL"
+	}
 	_ = c.ws.WriteMessage(websocket.TextMessage, []byte("WS:" + accessToken))
 
 	upgrader.CheckOrigin = func(r *http.Request) bool {

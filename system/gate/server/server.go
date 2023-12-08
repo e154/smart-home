@@ -40,7 +40,7 @@ type Server struct {
 }
 
 func NewServer(cfg *Config) *Server {
-	const apiFullAddress, mode = "http://localhost:8080", "production"
+	const apiFullAddress, mode = "http://localhost:8080", "gate"
 	return &Server{
 		controllers: controllers.NewControllers(apiFullAddress, mode),
 		cfg:         cfg,

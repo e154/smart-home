@@ -24,12 +24,10 @@ import (
 	"github.com/e154/smart-home/api/controllers"
 	"github.com/e154/smart-home/common/web"
 	"github.com/e154/smart-home/endpoint"
-	"github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/backup"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/gate/client"
 	"github.com/e154/smart-home/system/initial"
 	localMigrations "github.com/e154/smart-home/system/initial/local_migrations"
@@ -59,9 +57,7 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 
 	app = fx.New(
 		fx.Provide(
-			func() (*models.AppConfig, error) {
-				return config.ReadConfig("conf", "config.json", "")
-			},
+			ReadConfig,
 			validation.NewValidate,
 			NewOrmConfig,
 			bus.NewBus,

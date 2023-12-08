@@ -27,13 +27,13 @@ import (
 	"reflect"
 	"strconv"
 
-	"github.com/e154/smart-home/models"
+	m "github.com/e154/smart-home/models"
 )
 
 // ReadConfig ...
-func ReadConfig(dir, fileName, pref string) (conf *models.AppConfig, _ error) {
+func ReadConfig(dir, fileName, pref string) (conf *m.AppConfig, _ error) {
 
-	conf = &models.AppConfig{}
+	conf = &m.AppConfig{}
 	file, err := os.ReadFile(path.Join(dir, fileName))
 	if err != nil {
 		log.Println("Error reading config file")
@@ -48,7 +48,7 @@ func ReadConfig(dir, fileName, pref string) (conf *models.AppConfig, _ error) {
 	return
 }
 
-func checkEnv(pref string, v *models.AppConfig) {
+func checkEnv(pref string, v *m.AppConfig) {
 
 	r := reflect.ValueOf(v)
 	t := reflect.TypeOf(*v)

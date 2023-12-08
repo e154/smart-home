@@ -177,7 +177,7 @@ func (c *Connection) serve(ctx context.Context) {
 			break
 		}
 
-		log.Infof("[%s] %s", req.Method, req.URL.String())
+		//log.Infof("[%s] %s", req.Method, req.URL.String())
 
 		// Pipe request body
 		_, bodyReader, err := c.ws.NextReader()

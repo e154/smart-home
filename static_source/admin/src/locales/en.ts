@@ -150,7 +150,9 @@ export default {
         codePlaceholder: 'Please input verification code',
         restorePassword: 'Restore password',
         returnToSignIn: 'Return to login form',
-        updatePassword: 'Update password'
+        updatePassword: 'Update password',
+        server: 'Server ID',
+        serverPlaceholder: 'Please input server id',
     },
     router: {
         login: 'Login',

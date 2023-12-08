@@ -72,12 +72,14 @@ type Server struct {
 // ConnectionRequest is used to request a proxy connection from the dispatcher
 type ConnectionRequest struct {
 	connection chan *Connection
+	serverId   PoolID
 }
 
 // NewConnectionRequest creates a new connection request
-func NewConnectionRequest(timeout time.Duration) (cr *ConnectionRequest) {
+func NewConnectionRequest(timeout time.Duration, serverId PoolID) (cr *ConnectionRequest) {
 	cr = &ConnectionRequest{
 		connection: make(chan *Connection),
+		serverId:   serverId,
 	}
 	return
 }
@@ -187,6 +189,31 @@ func (s *Server) dispatchConnections() {
 				break
 			}
 
+			if request.serverId != "" {
+				pool, ok := s.pools[request.serverId]
+				if !ok {
+					log.Warnf("pool %s not found", request.serverId)
+					s.lock.RUnlock()
+					break
+				}
+				s.lock.RUnlock()
+				connection, ok := <- pool.idle
+				if !ok {
+					continue // a pool has been removed, try again
+				}
+				// [2]: Verify that we can use this connection and take it.
+				if connection.Take() {
+					request.connection <- connection
+					break
+				}
+				continue
+			} else {
+				if len(s.pools) > 1 {
+					s.lock.RUnlock()
+					break
+				}
+			}
+
 			// [1]: Select a pool which has an idle connection
 			// Build a select statement dynamically to handle an arbitrary number of pools.
 			cases := make([]reflect.SelectCase, len(s.pools)+1)
@@ -228,8 +255,11 @@ func (s *Server) Ws(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	query := r.URL.Query()
+	serverId := query.Get("server_id")
+
 	// [2]: Take an WebSocket connection available from pools for relaying received requests.
-	request := NewConnectionRequest(s.Config.GetTimeout())
+	request := NewConnectionRequest(s.Config.GetTimeout(), PoolID(serverId))
 	// "Dispatcher" is running in a separate thread from the server by `go s.dispatchConnections()`.
 	// It waits to receive requests to dispatch connection from available pools to clients requests.
 	// https://github.com/hgsgtk/wsp/blob/ea4902a8e11f820268e52a6245092728efeffd7f/server/server.go#L93
@@ -278,6 +308,8 @@ func (s *Server) Request(w http.ResponseWriter, r *http.Request) {
 	//}
 	//r.URL = URL
 
+	serverId := r.Header.Get("X-SERVER-ID")
+
 	r.URL = &url.URL{
 		Path:        r.URL.Path,
 		RawQuery:    r.URL.RawQuery,
@@ -293,7 +325,7 @@ func (s *Server) Request(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// [2]: Take an WebSocket connection available from pools for relaying received requests.
-	request := NewConnectionRequest(s.Config.GetTimeout())
+	request := NewConnectionRequest(s.Config.GetTimeout(), PoolID(serverId))
 	// "Dispatcher" is running in a separate thread from the server by `go s.dispatchConnections()`.
 	// It waits to receive requests to dispatch connection from available pools to clients requests.
 	// https://github.com/hgsgtk/wsp/blob/ea4902a8e11f820268e52a6245092728efeffd7f/server/server.go#L93
