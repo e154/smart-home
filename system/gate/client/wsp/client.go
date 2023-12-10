@@ -20,7 +20,6 @@ package wsp
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/websocket"
@@ -68,8 +67,6 @@ func NewClient(cfg *Config, api *api.Api, stream *stream.Stream, adaptors *adapt
 
 // Start the Proxy
 func (c *Client) Start(ctx context.Context) {
-	fmt.Println("Start")
-	defer fmt.Println("Started")
 	if !c.isStarted.CompareAndSwap(false, true) {
 		return
 	}
@@ -83,8 +80,6 @@ func (c *Client) Start(ctx context.Context) {
 
 // Shutdown the Proxy
 func (c *Client) Shutdown() {
-	fmt.Println("Shutdown")
-	defer fmt.Println("Shutdowned")
 	if !c.isStarted.CompareAndSwap(true, false) {
 		return
 	}

@@ -272,5 +272,7 @@ func (c *Connection) Close() {
 	defer c.pool.lock.Unlock()
 
 	c.pool.remove(c)
-	c.ws.Close()
+	if c.ws != nil {
+		c.ws.Close()
+	}
 }

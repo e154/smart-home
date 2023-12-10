@@ -106,8 +106,6 @@ func (g *GateClient) initWspServer() {
 	}
 	defer g.inProcess.Store(false)
 
-	fmt.Println("initWspServer")
-
 	if g.proxy != nil {
 		g.proxy.Shutdown()
 		g.proxy = nil
