@@ -20,7 +20,9 @@ package system
 
 import (
 	"github.com/e154/smart-home/common/config"
+	m "github.com/e154/smart-home/models"
 	"os"
+	"path"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -35,8 +37,8 @@ func TestConfig(t *testing.T) {
 
 				t.Run("file", func(t *testing.T) {
 					Convey("", t, func(ctx C) {
-						conf, err := config.ReadConfig("tests/data", "config.json", "")
-						ctx.So(err, ShouldBeNil)
+						conf := &m.AppConfig{}
+						config.ReadConfig(path.Join("tests", "data", "config.json"), "", conf)
 
 						//debug.Println(conf)
 
@@ -115,8 +117,8 @@ func TestConfig(t *testing.T) {
 						_ = os.Setenv("DOMAIN", "localhost")
 						_ = os.Setenv("HTTPS", "false")
 
-						conf, err := config.ReadConfig("tests/data", "config.json", "")
-						ctx.So(err, ShouldBeNil)
+						conf := &m.AppConfig{}
+						config.ReadConfig(path.Join("tests", "data", "config.json"), "", conf)
 
 						//debug.Println(conf)
 
@@ -196,8 +198,8 @@ func TestConfig(t *testing.T) {
 						_ = os.Setenv("DOMAIN", "localhost")
 						_ = os.Setenv("HTTPS", "false")
 
-						conf, err := config.ReadConfig("tests/data", "config.json", "APP")
-						ctx.So(err, ShouldBeNil)
+						conf := &m.AppConfig{}
+						config.ReadConfig(path.Join("tests", "data", "config.json"), "APP", conf)
 
 						//debug.Println(conf)
 
