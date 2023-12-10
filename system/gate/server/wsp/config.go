@@ -24,8 +24,6 @@ import (
 
 // Config configures an Server
 type Config struct {
-	Host        string
-	Port        int
 	Timeout     int
 	IdleTimeout int
 	SecretKey   string

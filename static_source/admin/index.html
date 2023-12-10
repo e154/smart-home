@@ -7,7 +7,7 @@
     <title><%= title %></title>
 
     <script type="text/javascript">
-      const app_settings = Object.create(Object.prototype, {
+      window.app_settings = Object.create(Object.prototype, {
         server_url: {
           get: function(){
               return {{index . "server_url"}};

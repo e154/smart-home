@@ -31,6 +31,7 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 
 	app = fx.New(
 		fx.Provide(
+			ReadConfig,
 			bus.NewBus,
 			NewLoggerConfig,
 			logging.NewLogger,

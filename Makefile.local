@@ -1,12 +1,13 @@
 .PHONY: get_deps fmt
 .DEFAULT_GOAL := build
-build: build_public build_server build_cli
+build: build_public build_server build_cli build_gate
 tests: lint test
 all: build build_structure build_common_structure build_archive docker_image
 deploy: docker_image_upload
 
 EXEC=server
 CLI=cli
+GATE=gate
 ROOT := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 SERVER_DIR = ${ROOT}/tmp/${EXEC}
 COMMON_DIR = ${ROOT}/tmp/common
@@ -115,6 +116,12 @@ build_cli:
 	#cd ${ROOT}/cmd/cli && ${GO_BUILD_ENV} GOOS=darwin GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${CLI}-darwin-10.6-amd64
 	#cd ${ROOT}/cmd/cli && ${GO_BUILD_ENV} GOOS=darwin GOARCH=arm64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${CLI}-darwin-10.6-arm64
 
+build_gate:
+	@echo MARK: build gate
+	#cd ${ROOT}/cmd/gate && ${GO_BUILD_ENV} GOOS=linux GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${GATE}-linux-amd64
+	#cd ${ROOT}/cmd/gate && ${GO_BUILD_ENV} GOOS=darwin GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${GATE}-darwin-10.6-amd64
+	cd ${ROOT}/cmd/gate && ${GO_BUILD_ENV} GOOS=darwin GOARCH=arm64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${GATE}-darwin-10.6-arm64
+
 build_public:
 	@echo MARK: build public
 	echo -e "node version.\n"  && \
@@ -145,7 +152,6 @@ build_structure:
 	cp ${ROOT}/LICENSE ${SERVER_DIR}
 	cp ${ROOT}/README* ${SERVER_DIR}
 	cp ${ROOT}/CONTRIBUTING.md ${SERVER_DIR}
-	cp ${ROOT}/bin/docker/Dockerfile ${SERVER_DIR}
 	cp ${ROOT}/bin/server-installer.sh ${SERVER_DIR}
 	chmod +x ${SERVER_DIR}/data/scripts/ping.sh
 	cp ${ROOT}/${EXEC}-linux-arm-7 ${SERVER_DIR}
@@ -161,7 +167,6 @@ build_common_structure:
 	cp ${ROOT}/LICENSE ${COMMON_DIR}
 	cp ${ROOT}/README* ${COMMON_DIR}
 	cp ${ROOT}/CONTRIBUTING.md ${COMMON_DIR}
-	cp ${ROOT}/bin/docker/Dockerfile ${COMMON_DIR}
 	cp ${ROOT}/bin/server-installer.sh ${COMMON_DIR}
 	chmod +x ${COMMON_DIR}/data/scripts/ping.sh
 	cp ${ROOT}/bin/server ${COMMON_DIR}

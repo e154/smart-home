@@ -39,10 +39,11 @@ type Server struct {
 	cfg         *Config
 }
 
-func NewServer(cfg *Config) *Server {
+func NewServer(cfg *Config, proxy *wsp.Server) *Server {
 	const apiFullAddress, mode = "http://localhost:8080", "gate"
 	return &Server{
 		controllers: controllers.NewControllers(apiFullAddress, mode),
+		proxy:       proxy,
 		cfg:         cfg,
 	}
 }
@@ -100,16 +101,6 @@ func (a *Server) Start() (err error) {
 		}
 	}()
 
-	config := &wsp.Config{
-		Host:        "127.0.0.1",
-		Port:        8080,
-		Timeout:     1000,
-		IdleTimeout: 60000,
-		SecretKey:   "",
-	}
-	a.proxy = wsp.NewServer(config)
-	a.proxy.Start()
-
 	log.Infof("server started at %s", a.cfg.String())
 
 	return
@@ -117,10 +108,6 @@ func (a *Server) Start() (err error) {
 
 // Shutdown ...
 func (a *Server) Shutdown(ctx context.Context) (err error) {
-
-	if a.proxy != nil {
-		a.proxy.Shutdown()
-	}
 
 	if a.echo != nil {
 		err = a.echo.Shutdown(ctx)
@@ -148,6 +135,8 @@ func (a *Server) registerHandlers() {
 		a.proxy.Ws(c.Response(), c.Request())
 		return nil
 	})
+
+	// internal
 	a.echo.GET("/gate/register", func(c echo.Context) error {
 		a.proxy.Register(c.Response(), c.Request())
 		return nil

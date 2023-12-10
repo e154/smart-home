@@ -25,8 +25,8 @@ import (
 	"github.com/e154/smart-home/models"
 )
 
-func ReadConfig() (conf *models.AppConfig) {
-	conf = &models.AppConfig{}
-	config.ReadConfig(path.Join("conf", "config.json"), "", conf)
+func ReadConfig() (conf *models.GateConfig) {
+	conf = &models.GateConfig{}
+	config.ReadConfig(path.Join("conf", "config.gate.json"), "", conf)
 	return
 }

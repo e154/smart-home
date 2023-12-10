@@ -19,10 +19,10 @@
 package system
 
 import (
+	"github.com/e154/smart-home/common/config"
 	"os"
 	"testing"
 
-	"github.com/e154/smart-home/system/config"
 	. "github.com/smartystreets/goconvey/convey"
 )
 

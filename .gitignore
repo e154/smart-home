@@ -18,3 +18,5 @@ build/public/*
 build/admin/*
 smart-home-common.tar.gz
 /cmd/gate/gate
+/cmd/gate/conf
+/gate-darwin-10.6-arm64

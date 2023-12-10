@@ -20,6 +20,8 @@ package server
 
 import (
 	"context"
+	"github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/gate/server/wsp"
 	"go.uber.org/fx"
 
 	"github.com/e154/smart-home/common/events"
@@ -33,17 +35,21 @@ var (
 
 // GateServer ...
 type GateServer struct {
-	eventBus bus.Bus
-	cfg      Config
-	server   *Server
+	eventBus   bus.Bus
+	cfg        Config
+	proxy      *wsp.Server
+	server     *Server
+	gateConfig *models.GateConfig
 }
 
 // NewGateServer ...
 func NewGateServer(lc fx.Lifecycle,
-	eventBus bus.Bus) (gate *GateServer) {
+	eventBus bus.Bus,
+	gateConfig *models.GateConfig) (gate *GateServer) {
 
 	gate = &GateServer{
-		eventBus: eventBus,
+		eventBus:   eventBus,
+		gateConfig: gateConfig,
 	}
 
 	lc.Append(fx.Hook{
@@ -62,13 +68,22 @@ func NewGateServer(lc fx.Lifecycle,
 // Start ...
 func (g *GateServer) Start(ctx context.Context) (err error) {
 
-	cfg := &Config{
-		HttpPort: 8080,
-		Debug:    false,
-		Pprof:    false,
-		Gzip:     true,
+	config := &wsp.Config{
+		Timeout:     g.gateConfig.ProxyTimeout,
+		IdleTimeout: g.gateConfig.ProxyIdleTimeout,
+		SecretKey:   g.gateConfig.ProxySecretKey,
 	}
-	g.server = NewServer(cfg)
+	g.proxy = wsp.NewServer(config)
+	g.proxy.Start()
+
+	cfg := &Config{
+		HttpPort: g.gateConfig.ApiHttpPort,
+		Debug:    g.gateConfig.ApiDebug,
+		Pprof:    g.gateConfig.Pprof,
+		Gzip:     g.gateConfig.ApiGzip,
+		Https:    g.gateConfig.Https,
+	}
+	g.server = NewServer(cfg, g.proxy)
 	g.server.Start()
 
 	log.Info("Started ...")
@@ -84,6 +99,8 @@ func (g *GateServer) Shutdown(ctx context.Context) (err error) {
 	log.Info("Shutdown ...")
 
 	g.server.Shutdown(ctx)
+
+	g.proxy.Shutdown()
 
 	g.eventBus.Publish("system/services/gate_server", events.EventServiceStopped{Service: "GateServer"})
 	return

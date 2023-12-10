@@ -25,6 +25,7 @@ type Config struct {
 	Debug    bool
 	Pprof    bool
 	Gzip     bool
+	Https    bool
 }
 
 // String ...

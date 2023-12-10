@@ -27,6 +27,8 @@ import (
 
 func ReadConfig() (conf *models.AppConfig) {
 	conf = &models.AppConfig{}
-	config.ReadConfig(path.Join("conf", "config.json"), "", conf)
+	config.ReadConfig(path.Join("tests", "data", "config.json"), "", conf)
+	conf.PgName = "smart_home_test"
+	conf.Logging = false
 	return
 }
