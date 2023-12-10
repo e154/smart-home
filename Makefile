@@ -179,12 +179,12 @@ build_structure:
 	cp ${ROOT}/LICENSE ${GATE_DIR}
 	cp ${ROOT}/README* ${GATE_DIR}
 	cp ${ROOT}/CONTRIBUTING.md ${GATE_DIR}
-	cp ${ROOT}/${GATE}-linux-amd64 ${SERVER_DIR}
-	cp ${ROOT}/${GATE}-linux-arm-7 ${SERVER_DIR}
-	cp ${ROOT}/${GATE}-linux-arm-6 ${SERVER_DIR}
-	cp ${ROOT}/${GATE}-linux-arm-5 ${SERVER_DIR}
-	cp ${ROOT}/${GATE}-darwin-10.6-amd64 ${SERVER_DIR}
-	cp ${ROOT}/${GATE}-darwin-10.6-arm64 ${SERVER_DIR}
+	cp ${ROOT}/${GATE}-linux-amd64 ${GATE_DIR}
+	cp ${ROOT}/${GATE}-linux-arm-7 ${GATE_DIR}
+	cp ${ROOT}/${GATE}-linux-arm-6 ${GATE_DIR}
+	cp ${ROOT}/${GATE}-linux-arm-5 ${GATE_DIR}
+	cp ${ROOT}/${GATE}-darwin-10.6-amd64 ${GATE_DIR}
+	cp ${ROOT}/${GATE}-darwin-10.6-arm64 ${GATE_DIR}
 	cp ${ROOT}/bin/gate ${GATE_DIR}
 
 build_common_structure:
