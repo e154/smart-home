@@ -173,8 +173,9 @@ build_structure:
 	cp ${ROOT}/bin/server ${SERVER_DIR}
 	@echo MARK: create gate structure
 	mkdir -p ${GATE_DIR}
+	mkdir -p ${GATE_DIR}/conf
 	cd ${GATE_DIR}
-	cp -r ${ROOT}/conf ${GATE_DIR}
+	cp ${ROOT}/conf/config.gate.json ${GATE_DIR}/conf
 	cp ${ROOT}/LICENSE ${GATE_DIR}
 	cp ${ROOT}/README* ${GATE_DIR}
 	cp ${ROOT}/CONTRIBUTING.md ${GATE_DIR}
