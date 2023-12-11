@@ -151,6 +151,8 @@ server:
 
 build_structure:
 	@echo MARK: create server structure
+	cd ${ROOT}
+	ls -ll
 	mkdir -p ${SERVER_DIR}
 	mkdir -p ${SERVER_DIR}/snapshots
 	cd ${SERVER_DIR}
