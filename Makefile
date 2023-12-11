@@ -247,7 +247,7 @@ server_docker_image:
 	cd ${SERVER_DIR} && ls -ll && docker build -f ${ROOT}/bin/docker/Dockerfile.server -t ${DOCKER_ACCOUNT}/${SERVER_IMAGE} .
 
 server_docker_image_upload:
-	#echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
+	echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
 	docker tag ${DOCKER_ACCOUNT}/${SERVER_IMAGE} ${SERVER_DOCKER_IMAGE_VER}
 	echo -e "docker tag ${DOCKER_ACCOUNT}/${SERVER_IMAGE} ${SERVER_DOCKER_IMAGE_LATEST}"
 	docker tag ${DOCKER_ACCOUNT}/${SERVER_IMAGE} ${SERVER_DOCKER_IMAGE_LATEST}
@@ -258,7 +258,7 @@ gate_docker_image:
 	cd ${GATE_DIR} && ls -ll && docker build -f ${ROOT}/bin/docker/Dockerfile.gate -t ${DOCKER_ACCOUNT}/${GATE_IMAGE} .
 
 gate_docker_image_upload:
-	#echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
+	echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
 	docker tag ${DOCKER_ACCOUNT}/${GATE_IMAGE} ${GATE_DOCKER_IMAGE_VER}
 	echo -e "docker tag ${DOCKER_ACCOUNT}/${GATE_IMAGE} ${GATE_DOCKER_IMAGE_LATEST}"
 	docker tag ${DOCKER_ACCOUNT}/${GATE_IMAGE} ${GATE_DOCKER_IMAGE_LATEST}
