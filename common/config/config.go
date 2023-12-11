@@ -23,24 +23,20 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path"
 	"reflect"
 	"strconv"
-
-	"github.com/e154/smart-home/models"
 )
 
 // ReadConfig ...
-func ReadConfig(dir, fileName, pref string) (conf *models.AppConfig, _ error) {
+func ReadConfig(path, pref string, conf interface{}) {
 
-	conf = &models.AppConfig{}
-	file, err := os.ReadFile(path.Join(dir, fileName))
+	file, err := os.ReadFile(path)
 	if err != nil {
-		log.Println("Error reading config file")
+		fmt.Fprintln(os.Stderr, fmt.Sprintf("Error reading config file %s", path))
 	} else {
 		err = json.Unmarshal(file, conf)
 		if err != nil {
-			log.Println("Error: wrong format of config file")
+			fmt.Fprintln(os.Stderr, "Error: wrong format of config file")
 		}
 	}
 	checkEnv(pref, conf)
@@ -48,15 +44,16 @@ func ReadConfig(dir, fileName, pref string) (conf *models.AppConfig, _ error) {
 	return
 }
 
-func checkEnv(pref string, v *models.AppConfig) {
+func checkEnv(pref string, conf interface{}) {
 
-	r := reflect.ValueOf(v)
-	t := reflect.TypeOf(*v)
+	v := reflect.ValueOf(conf)
+	i := reflect.Indirect(v)
+	t := i.Type()
 
 	for i := 0; i < t.NumField(); i++ {
 		// Get the field, returns https://golang.org/pkg/reflect/#StructField
 		field := t.Field(i)
-		f := reflect.Indirect(r).FieldByName(field.Name)
+		f := reflect.Indirect(v).FieldByName(field.Name)
 		fieldType := t.Field(i).Type
 
 		if !f.CanSet() || field.Tag.Get("env") == "-" {

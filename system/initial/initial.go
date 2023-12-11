@@ -23,7 +23,6 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-
 	"go.uber.org/fx"
 	"gorm.io/gorm"
 
@@ -38,7 +37,7 @@ import (
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/gate_client"
+	"github.com/e154/smart-home/system/gate/client"
 	. "github.com/e154/smart-home/system/initial/assertions"
 	"github.com/e154/smart-home/system/initial/demo"
 	localMigrations "github.com/e154/smart-home/system/initial/local_migrations"
@@ -64,7 +63,7 @@ type Initial struct {
 	supervisor      supervisor.Supervisor
 	automation      automation.Automation
 	api             *api.Api
-	gateClient      *gate_client.GateClient
+	gateClient      *client.GateClient
 	validation      *validation.Validate
 	localMigrations *localMigrations.Migrations
 	demo            *demo.Demos
@@ -81,7 +80,7 @@ func NewInitial(lc fx.Lifecycle,
 	supervisor supervisor.Supervisor,
 	automation automation.Automation,
 	api *api.Api,
-	gateClient *gate_client.GateClient,
+	gateClient *client.GateClient,
 	validation *validation.Validate,
 	_ *logging_ws.LoggingWs,
 	localMigrations *localMigrations.Migrations,
@@ -185,12 +184,12 @@ func (n *Initial) Start(ctx context.Context) (err error) {
 
 	_ = n.eventBus.Subscribe("system/models/variables/+", n.eventHandler)
 
+	_ = n.gateClient.Start()
 	_ = n.supervisor.Start(ctx)
 	_ = n.automation.Start()
 	go func() {
 		_ = n.api.Start()
 	}()
-	n.gateClient.Start()
 	return
 }
 

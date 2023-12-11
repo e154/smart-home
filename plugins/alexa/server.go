@@ -24,15 +24,13 @@ import (
 	"os"
 	"sync"
 
-	"github.com/e154/smart-home/common/apperr"
-
 	"github.com/gin-gonic/gin"
 	"go.uber.org/atomic"
 
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common/apperr"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/scripts"
 )
 
@@ -47,15 +45,15 @@ type Server struct {
 	adaptors      *adaptors.Adaptors
 	config        Config
 	scriptService scripts.ScriptService
-	gate          *gate_client.GateClient
-	eventBus      bus.Bus
+	//gate          *client.GateClient
+	eventBus bus.Bus
 }
 
 // NewServer ...
 func NewServer(adaptors *adaptors.Adaptors,
 	config Config,
 	scriptService scripts.ScriptService,
-	gateClient *gate_client.GateClient,
+	//gateClient *gate_client.GateClient,
 	eventBus bus.Bus) *Server {
 	return &Server{
 		isStarted:     atomic.NewBool(false),
@@ -64,8 +62,8 @@ func NewServer(adaptors *adaptors.Adaptors,
 		skills:        make(map[string]*Skill),
 		config:        config,
 		scriptService: scriptService,
-		gate:          gateClient,
-		eventBus:      eventBus,
+		//gate:          gateClient,
+		eventBus: eventBus,
 	}
 }
 

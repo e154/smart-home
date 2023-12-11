@@ -33,6 +33,12 @@ export interface Settings {
   maximumNumberOfBackups?: number;
   sendbackuptoTelegramBot?: ApiEntity;
   sendTheBackupInPartsMb?: number;
+  gateClientId?: string;
+  gateClientSecretKey?: string;
+  gateClientServerHost?: string;
+  gateClientServerPort?: number;
+  gateClientPoolIdleSize?: number;
+  gateClientPoolMaxSize?: number;
 }
 
 const settings = ref<Settings>({} as Settings)
@@ -103,7 +109,13 @@ const getSettings = async () => {
     getStringVar('createBackupAt'),
     getIntegerVar('maximumNumberOfBackups'),
     getStringEntity('sendbackuptoTelegramBot'),
-    getIntegerVar('sendTheBackupInPartsMb')
+    getIntegerVar('sendTheBackupInPartsMb'),
+    getStringVar('gateClientId'),
+    getStringVar('gateClientSecretKey'),
+    getStringVar('gateClientServerHost'),
+    getIntegerVar('gateClientServerPort'),
+    getIntegerVar('gateClientPoolIdleSize'),
+    getIntegerVar('gateClientPoolMaxSize')
   ])
   loading.value = false
 }
@@ -264,6 +276,33 @@ getSettings()
       <ElCol :span="12" :xs="12">
         <ElFormItem :label="$t('settings.sendTheBackupInPartsMb')" prop="maximumNumberOfBackups">
           <ElInputNumber size="small" v-model="settings.sendTheBackupInPartsMb"  @update:modelValue="changedVariable('sendTheBackupInPartsMb')"/>
+        </ElFormItem>
+      </ElCol>
+    </ElRow>
+
+    <ElDivider content-position="left">{{$t('settings.gate')}}</ElDivider>
+
+    <ElRow :gutter="24">
+      <ElCol :span="12" :xs="12">
+        <ElFormItem :label="$t('settings.gateClientServerHost')" prop="gateClientServerHost">
+          <ElInput size="small" v-model="settings.gateClientServerHost" @update:modelValue="changedVariable('gateClientServerHost')" clearable/>
+        </ElFormItem>
+        <ElFormItem :label="$t('settings.gateClientId')" prop="gateClientId">
+          <ElInput size="small" v-model="settings.gateClientId" @update:modelValue="changedVariable('gateClientId')" clearable/>
+        </ElFormItem>
+        <ElFormItem :label="$t('settings.gateClientSecretKey')" prop="gateClientSecretKey">
+          <ElInput size="small" v-model="settings.gateClientSecretKey" @update:modelValue="changedVariable('gateClientSecretKey')" clearable/>
+        </ElFormItem>
+      </ElCol>
+      <ElCol :span="12" :xs="12">
+        <ElFormItem :label="$t('settings.gateClientServerPort')" prop="gateClientServerPort">
+          <ElInputNumber size="small" v-model="settings.gateClientServerPort" @update:modelValue="changedVariable('gateClientServerPort')"/>
+        </ElFormItem>
+        <ElFormItem :label="$t('settings.gateClientPoolIdleSize')" prop="gateClientPoolIdleSize">
+          <ElInputNumber size="small" v-model="settings.gateClientPoolIdleSize" @update:modelValue="changedVariable('gateClientPoolIdleSize')"/>
+        </ElFormItem>
+        <ElFormItem :label="$t('settings.gateClientPoolMaxSize')" prop="gateClientPoolMaxSize">
+          <ElInputNumber size="small" v-model="settings.gateClientPoolMaxSize" @update:modelValue="changedVariable('gateClientPoolMaxSize')"/>
         </ElFormItem>
       </ElCol>
     </ElRow>
