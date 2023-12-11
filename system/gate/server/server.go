@@ -100,7 +100,8 @@ func (a *Server) Start() (err error) {
 		} else {
 			https = true
 			a.echo.Pre(middleware.HTTPSRedirect())
-			a.echo.AutoTLSManager.Cache = autocert.DirCache(".")
+			// Cache certificates to avoid issues with rate limits (https://letsencrypt.org/docs/rate-limits)
+			a.echo.AutoTLSManager.Cache = autocert.DirCache("./conf")
 			a.echo.AutoTLSManager.HostPolicy = autocert.HostWhitelist(a.cfg.Domain)
 		}
 	}
