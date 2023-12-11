@@ -81,4 +81,4 @@ jobs:
 
       - name: trying to build
         id: build-all
-        run: make build_server build_cli build_structure build_common_structure build_archive docker_image
+        run: make build_server build_cli build_gate build_structure build_common_structure build_archive docker_image
