@@ -82,6 +82,7 @@ func (g *GateServer) Start(ctx context.Context) (err error) {
 		Pprof:    g.gateConfig.Pprof,
 		Gzip:     g.gateConfig.ApiGzip,
 		Https:    g.gateConfig.Https,
+		Domain: g.gateConfig.Domain,
 	}
 	g.server = NewServer(cfg, g.proxy)
 	g.server.Start()

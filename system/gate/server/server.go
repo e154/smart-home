@@ -25,6 +25,7 @@ import (
 	echopprof "github.com/hiko1129/echo-pprof"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"golang.org/x/crypto/acme/autocert"
 
 	"github.com/e154/smart-home/api"
 	publicAssets "github.com/e154/smart-home/build"
@@ -40,9 +41,8 @@ type Server struct {
 }
 
 func NewServer(cfg *Config, proxy *wsp.Server) *Server {
-	const apiFullAddress, mode = "http://localhost:8080", "gate"
 	return &Server{
-		controllers: controllers.NewControllers(apiFullAddress, mode),
+		controllers: controllers.NewControllers(cfg.FullAddress(), "gate"),
 		proxy:       proxy,
 		cfg:         cfg,
 	}
@@ -93,11 +93,27 @@ func (a *Server) Start() (err error) {
 
 	a.registerHandlers()
 
+	var https bool
+	if a.cfg.Https {
+		if a.cfg.Domain == "" {
+			log.Warnf("domain settings is empty")
+		} else {
+			https = true
+			a.echo.Pre(middleware.HTTPSRedirect())
+			a.echo.AutoTLSManager.Cache = autocert.DirCache(".")
+			a.echo.AutoTLSManager.HostPolicy = autocert.HostWhitelist(a.cfg.Domain)
+		}
+	}
+
 	go func() {
-		if err := a.echo.Start(a.cfg.String()); err != nil {
-			if err.Error() != "http: Server closed" {
-				log.Error(err.Error())
-			}
+		var err error
+		if https {
+			err = a.echo.StartAutoTLS(a.cfg.String())
+		} else {
+			err = a.echo.Start(a.cfg.String())
+		}
+		if err.Error() != "http: Server closed" {
+			log.Error(err.Error())
 		}
 	}()
 

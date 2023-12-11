@@ -132,7 +132,9 @@ const signIn = async () => {
       const formData = await getFormData<UserType>()
       let {username, password, server} = formData;
       username = username.trim();
-      server = server.trim();
+      if (server) {
+        server = server.trim();
+      }
 
       appStore.setServerId(server);
 
