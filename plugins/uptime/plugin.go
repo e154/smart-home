@@ -74,9 +74,8 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 		return
 	}
 
-	var entity *m.Entity
-	if entity, err = p.Service.Adaptors().Entity.GetById(context.Background(), common.EntityId(fmt.Sprintf("%s.%s", EntitySensor, Name))); err != nil {
-		entity = &m.Entity{
+	if _, err = p.Service.Adaptors().Entity.GetById(context.Background(), common.EntityId(fmt.Sprintf("%s.%s", EntitySensor, Name))); err != nil {
+		entity := &m.Entity{
 			Id:         common.EntityId(fmt.Sprintf("%s.%s", EntitySensor, Name)),
 			PluginName: Name,
 			Attributes: NewAttr(),
@@ -89,6 +88,14 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 		p.ticker = time.NewTicker(time.Second * pause)
 
 		for range p.ticker.C {
+
+			if p.storyModel != nil {
+				p.storyModel.End = common.Time(time.Now())
+				if err = p.Service.Adaptors().RunHistory.Update(context.Background(), p.storyModel); err != nil {
+					log.Error(err.Error())
+				}
+			}
+
 			p.Actors.Range(func(key, value any) bool {
 				actor, _ := value.(*Actor)
 				actor.update()

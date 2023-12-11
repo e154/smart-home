@@ -22,11 +22,11 @@ import "fmt"
 
 // Config ...
 type Config struct {
-	GrpcPort int
 	HttpPort int
 	Swagger  bool
 	Debug    bool
 	Pprof    bool
+	Gzip     bool
 }
 
 // String ...

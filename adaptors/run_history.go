@@ -57,11 +57,10 @@ func GetRunHistoryAdaptor(d *gorm.DB) IRunHistory {
 func (n *RunHistory) Add(ctx context.Context, story *m.RunStory) (id int64, err error) {
 
 	var dbVer *db.RunStory
-	dbVer, err = n.toDb(story)
-	if id, err = n.table.Add(ctx, dbVer); err != nil {
+	if dbVer, err = n.toDb(story); err != nil {
 		return
 	}
-
+	id, err = n.table.Add(ctx, dbVer)
 	return
 }
 
@@ -69,7 +68,9 @@ func (n *RunHistory) Add(ctx context.Context, story *m.RunStory) (id int64, err 
 func (n *RunHistory) Update(ctx context.Context, story *m.RunStory) (err error) {
 
 	var dbVer *db.RunStory
-	dbVer, err = n.toDb(story)
+	if dbVer, err = n.toDb(story); err != nil {
+		return
+	}
 	err = n.table.Update(ctx, dbVer)
 	return
 }

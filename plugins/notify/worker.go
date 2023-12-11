@@ -24,6 +24,7 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	notifyCommon "github.com/e154/smart-home/plugins/notify/common"
 )
 
 // Worker ...
@@ -38,7 +39,7 @@ func NewWorker(adaptor *adaptors.Adaptors) *Worker {
 	}
 }
 
-func (n *Worker) SaveAndSend(msg Message, provider Provider) {
+func (n *Worker) SaveAndSend(msg notifyCommon.Message, provider Provider) {
 	addresses, message := provider.Save(msg)
 
 	var err error

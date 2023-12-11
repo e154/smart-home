@@ -18,7 +18,10 @@
 
 package notify
 
-import "github.com/e154/smart-home/system/bus"
+import (
+	"github.com/e154/smart-home/plugins/notify/common"
+	"github.com/e154/smart-home/system/bus"
+)
 
 // NotifyBind ...
 type NotifyBind struct {
@@ -33,11 +36,11 @@ func NewNotifyBind(eventBus bus.Bus) *NotifyBind {
 }
 
 // NewMessage ...
-func (b *NotifyBind) NewMessage() *Message {
+func (b *NotifyBind) NewMessage() *common.Message {
 	return NewMessage()
 }
 
 // Send ...
-func (b *NotifyBind) Send(msg Message) {
+func (b *NotifyBind) Send(msg common.Message) {
 	b.eventBus.Publish(TopicNotify, msg)
 }

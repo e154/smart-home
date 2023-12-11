@@ -120,7 +120,7 @@ func TestNode(t *testing.T) {
 								ctx.So(v.NewState.Attributes[node.AttrStartedAt].Time(), ShouldEqual, now)
 								ok = true
 								ctx.So(ok, ShouldBeTrue)
-								break
+								return
 							default:
 								fmt.Printf("unknown msg type %s\n\r", reflect.TypeOf(v))
 							}

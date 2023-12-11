@@ -23,12 +23,14 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/pkg/errors"
+
 	"github.com/e154/smart-home/common/apperr"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/email"
 	"github.com/e154/smart-home/plugins/notify"
+	"github.com/e154/smart-home/plugins/notify/common"
 	"github.com/e154/smart-home/system/access_list"
-	"github.com/pkg/errors"
 )
 
 const (
@@ -144,7 +146,7 @@ func (a *AuthEndpoint) PasswordReset(ctx context.Context, userEmail string, toke
 		return
 	}
 
-	a.eventBus.Publish(notify.TopicNotify, notify.Message{
+	a.eventBus.Publish(notify.TopicNotify, common.Message{
 		Type: email.Name,
 		Attributes: map[string]interface{}{
 			email.AttrAddresses: user.Email,

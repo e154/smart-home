@@ -108,7 +108,7 @@ func (fc *FileCache) Init() {
 // getCachedFilename returns an md5 encoded file name.
 func (fc *FileCache) getCacheFileName(key string) string {
 	m := md5.New()
-	io.WriteString(m, key)
+	_, _ = io.WriteString(m, key)
 	keyMd5 := hex.EncodeToString(m.Sum(nil))
 	cachePath := fc.CachePath
 	switch fc.DirectoryLevel {

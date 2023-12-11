@@ -24,20 +24,18 @@ import (
 	"sync"
 	"time"
 
-	"github.com/e154/smart-home/plugins/notify"
-
-	"github.com/e154/smart-home/common/events"
-
-	"github.com/e154/smart-home/common/apperr"
-
-	"github.com/pkg/errors"
-
-	"github.com/e154/smart-home/common"
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/supervisor"
 	messagebird "github.com/messagebird/go-rest-api"
 	"github.com/messagebird/go-rest-api/balance"
 	"github.com/messagebird/go-rest-api/sms"
+	"github.com/pkg/errors"
+
+	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/events"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/plugins/notify"
+	notifyCommon "github.com/e154/smart-home/plugins/notify/common"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 // Actor ...
@@ -235,7 +233,7 @@ func (e *Actor) client() (client *messagebird.Client, err error) {
 }
 
 // Save ...
-func (e *Actor) Save(msg notify.Message) (addresses []string, message *m.Message) {
+func (e *Actor) Save(msg notifyCommon.Message) (addresses []string, message *m.Message) {
 	message = &m.Message{
 		Type:       Name,
 		Attributes: msg.Attributes,
@@ -260,7 +258,7 @@ func (e *Actor) MessageParams() m.Attributes {
 func (e *Actor) eventHandler(_ string, event interface{}) {
 
 	switch v := event.(type) {
-	case notify.Message:
+	case notifyCommon.Message:
 		if v.EntityId != nil && *v.EntityId == e.Id {
 			e.notify.SaveAndSend(v, e)
 		}

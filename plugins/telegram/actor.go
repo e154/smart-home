@@ -21,6 +21,7 @@ package telegram
 import (
 	"context"
 	"fmt"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -34,6 +35,7 @@ import (
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/notify"
+	notifyCommon "github.com/e154/smart-home/plugins/notify/common"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
@@ -84,7 +86,7 @@ func (e *Actor) Destroy() {
 	if !e.isStarted.Load() {
 		return
 	}
-	e.Service.EventBus().Unsubscribe(notify.TopicNotify, e.eventHandler)
+	_ = e.Service.EventBus().Unsubscribe(notify.TopicNotify, e.eventHandler)
 	e.notify.Shutdown()
 
 	if e.bot != nil {
@@ -125,10 +127,8 @@ func (e *Actor) Spawn() {
 		go e.bot.Start()
 	}
 
-	e.Service.EventBus().Subscribe(notify.TopicNotify, e.eventHandler, false)
+	_ = e.Service.EventBus().Subscribe(notify.TopicNotify, e.eventHandler, false)
 	e.notify.Start()
-
-	return
 }
 
 func (e *Actor) sendMsg(message *m.Message, chatId int64) (messageID int, err error) {
@@ -154,22 +154,59 @@ func (e *Actor) sendMsg(message *m.Message, chatId int64) (messageID int, err er
 	}
 
 	params := NewMessageParams()
-	_, _ = params.Deserialize(message.Attributes)
+	if _, err = params.Deserialize(message.Attributes); err != nil {
+		return
+	}
 
 	var body interface{}
-	body = params[AttrBody].String()
-
-	if uri := params[AttrUri].String(); uri != "" {
-		body = &tele.Photo{File: tele.FromURL(uri)}
-	}
-
-	if uri := params[AttrFilePath].String(); uri != "" {
-		body = &tele.Photo{File: tele.FromDisk(uri)}
-	}
 
 	keys := params[AttrKeys].ArrayString()
 
-	msg, err = e.bot.Send(chat, body, e.genPlainKeyboard(keys))
+	// photos
+	urls := params[AttrPhotoUri].ArrayString()
+	if len(urls) > 0 {
+		for _, uri := range urls {
+			log.Infof("send photo %s", uri)
+			if msg, err = e.bot.Send(chat, &tele.Photo{File: tele.FromURL(uri)}); err != nil {
+				return
+			}
+		}
+	}
+	path := params[AttrPhotoPath].ArrayString()
+	if len(path) > 0 {
+		for _, uri := range path {
+			log.Infof("send photo %s", uri)
+			if msg, err = e.bot.Send(chat, &tele.Photo{File: tele.FromDisk(uri)}); err != nil {
+				return
+			}
+		}
+	}
+
+	// files
+	urls = params[AttrFileUri].ArrayString()
+	if len(urls) > 0 {
+		for _, uri := range urls {
+			log.Infof("send file %s", uri)
+			fileName := filepath.Base(uri)
+			if msg, err = e.bot.Send(chat, &tele.Document{File: tele.FromURL(uri), FileName: fileName}); err != nil {
+				return
+			}
+		}
+	}
+	path = params[AttrFilePath].ArrayString()
+	if len(path) > 0 {
+		for _, uri := range path {
+			log.Infof("send file %s", uri)
+			fileName := filepath.Base(uri)
+			if msg, err = e.bot.Send(chat, &tele.Document{File: tele.FromDisk(uri), FileName: fileName}); err != nil {
+				return
+			}
+		}
+	}
+
+	if body = params[AttrBody].String(); body != "" {
+		msg, err = e.bot.Send(chat, body, e.genPlainKeyboard(keys))
+	}
 	return
 }
 
@@ -243,8 +280,8 @@ func (e *Actor) commandStart(c tele.Context) (err error) {
 		ActionName: "/start",
 		EntityId:   e.Id,
 		Args: map[string]interface{}{
-			"chatId":     c.Chat().ID,
-			"username":   c.Chat().Username,
+			"chatId":    c.Chat().ID,
+			"username":  c.Chat().Username,
 			"firstName": c.Chat().FirstName,
 			"lastName":  c.Chat().LastName,
 		},
@@ -355,14 +392,14 @@ func (e *Actor) updateState(connected bool) {
 	if info.State != nil && info.State.Name == newStat {
 		return
 	}
-	e.SetState(supervisor.EntityStateParams{
+	_ = e.SetState(supervisor.EntityStateParams{
 		NewState:    common.String(newStat),
 		StorageSave: true,
 	})
 }
 
 // Save ...
-func (e *Actor) Save(msg notify.Message) (addresses []string, message *m.Message) {
+func (e *Actor) Save(msg notifyCommon.Message) (addresses []string, message *m.Message) {
 	message = &m.Message{
 		Type:       Name,
 		Attributes: msg.Attributes,
@@ -429,7 +466,7 @@ func (e *Actor) MessageParams() m.Attributes {
 func (e *Actor) eventHandler(topic string, msg interface{}) {
 
 	switch v := msg.(type) {
-	case notify.Message:
+	case notifyCommon.Message:
 		if v.EntityId != nil && v.EntityId.PluginName() == Name {
 			e.notify.SaveAndSend(v, e)
 		}

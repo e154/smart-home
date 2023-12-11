@@ -93,7 +93,6 @@ func (a *Actor) Spawn() {
 		a.Setts[AttrAddress].String(),
 		a.Setts[AttrOnvifPort].Int64(),
 		a.Setts[AttrRequireAuthorization].Bool())
-	return
 }
 
 // SetState ...

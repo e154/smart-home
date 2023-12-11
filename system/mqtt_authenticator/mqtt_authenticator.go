@@ -57,7 +57,7 @@ type Authenticator struct {
 
 // NewAuthenticator ...
 func NewAuthenticator(adaptors *adaptors.Adaptors) MqttAuthenticator {
-	bm, _ := cache.NewCache("memory", fmt.Sprintf(`{"interval":%d}`, time.Second*60))
+	bm, _ := cache.NewCache("memory", `{"interval":60}`)
 	return &Authenticator{
 		adaptors:  adaptors,
 		cache:     bm,

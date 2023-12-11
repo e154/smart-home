@@ -40,14 +40,14 @@ func NewClient(ws *websocket.Conn, user *m.User) *Client {
 }
 
 // WritePump ...
-func (c *Client) WritePump(f func(*Client, string, string, []byte)) (err error) {
+func (c *Client) WritePump(f func(*Client, string, string, []byte)) {
 
 	var data []byte
 	var messageType int
+	var err error
 	for !c.closed {
 		messageType, data, err = c.ws.ReadMessage()
 		if messageType == -1 || err != nil {
-			err = nil
 			return
 		}
 
@@ -73,12 +73,11 @@ func (c *Client) Send(id, query string, body []byte) (err error) {
 		return
 	}
 
-	b, _ := json.Marshal(&Message{
+	err = c.ws.WriteJSON(&Message{
 		Id:    id,
 		Query: query,
 		Body:  body,
 	})
-	err = c.ws.WriteMessage(websocket.TextMessage, b)
 	if err != nil {
 		c.closed = true
 	}

@@ -21,13 +21,14 @@ package db
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
+	"github.com/pkg/errors"
 	"gorm.io/gorm"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
-	"github.com/pkg/errors"
 )
 
 // Variables ...
@@ -60,7 +61,11 @@ func (n Variables) Add(ctx context.Context, variable Variable) (err error) {
 
 // CreateOrUpdate ...
 func (n *Variables) CreateOrUpdate(ctx context.Context, v Variable) (err error) {
-	if n.Db.WithContext(ctx).Model(&v).Where("name = ?", v.Name).Updates(&v).RowsAffected == 0 {
+	params := map[string]interface{}{
+		"name":  v.Name,
+		"value": v.Value,
+	}
+	if n.Db.WithContext(ctx).Model(&v).Where("name = ?", v.Name).Updates(params).RowsAffected == 0 {
 		err = n.Db.WithContext(ctx).Create(&v).Error
 	}
 	return
@@ -116,20 +121,31 @@ func (n Variables) Delete(ctx context.Context, name string) (err error) {
 }
 
 // List ...
-func (n *Variables) List(ctx context.Context, limit, offset int, orderBy, sort string, system bool) (list []Variable, total int64, err error) {
+func (n *Variables) List(ctx context.Context, limit, offset int, orderBy, sort string, system bool, name string) (list []Variable, total int64, err error) {
 
-	if err = n.Db.WithContext(ctx).Model(Variable{}).Where("system = ?", system).Count(&total).Error; err != nil {
+	q := n.Db.WithContext(ctx).Model(&Variable{}).
+		Where("system = ?", system)
+
+	if strings.Contains(name, ",") {
+		names := strings.Split(name, ",")
+		if len(names) > 0 {
+			q = q.Where("name IN (?)", names)
+		}
+	}
+
+	if err = q.Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrVariableList, err.Error())
 		return
 	}
 
+	if sort != "" && orderBy != "" {
+		q = q.Order(fmt.Sprintf("%s %s", sort, orderBy))
+	}
+
 	list = make([]Variable, 0)
-	err = n.Db.WithContext(ctx).
-		Model(&Variable{}).
-		Where("system = ?", system).
+	err = q.
 		Limit(limit).
 		Offset(offset).
-		Order(fmt.Sprintf("%s %s", sort, orderBy)).
 		Find(&list).
 		Error
 	if err != nil {

@@ -20,10 +20,9 @@ package local_migrations
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/e154/smart-home/adaptors"
-	m "github.com/e154/smart-home/models"
+	. "github.com/e154/smart-home/system/initial/assertions"
 )
 
 type MigrationScheduler struct {
@@ -40,19 +39,15 @@ func (n *MigrationScheduler) Up(ctx context.Context, adaptors *adaptors.Adaptors
 	if adaptors != nil {
 		n.adaptors = adaptors
 	}
-	n.addVar("clearMetricsDays", 60)
-	n.addVar("clearLogsDays", 60)
-	n.addVar("clearEntityStorageDays", 60)
-	n.addVar("clearRunHistoryDays", 60)
+
+	err := AddVariableIfNotExist(n.adaptors, ctx, "gate_client_id", "60")
+	So(err, ShouldBeNil)
+	err = AddVariableIfNotExist(n.adaptors, ctx, "clearLogsDays", "60")
+	So(err, ShouldBeNil)
+	err = AddVariableIfNotExist(n.adaptors, ctx, "clearEntityStorageDays", "60")
+	So(err, ShouldBeNil)
+	err = AddVariableIfNotExist(n.adaptors, ctx, "clearRunHistoryDays", "60")
+	So(err, ShouldBeNil)
 
 	return nil
-}
-
-func (n *MigrationScheduler) addVar(name string, value int64) (node *m.Plugin) {
-	_ = n.adaptors.Variable.Add(context.Background(), m.Variable{
-		Name:   name,
-		Value:  fmt.Sprintf("%d", value),
-		System: true,
-	})
-	return
 }

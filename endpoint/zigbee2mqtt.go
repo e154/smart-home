@@ -21,12 +21,12 @@ package endpoint
 import (
 	"context"
 	"fmt"
-	"github.com/e154/smart-home/common/events"
 
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 )
 

@@ -114,10 +114,17 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: upload cli linux amd64 artifact
+      - name: upload gate linux arm-7 artifact
         uses: softprops/action-gh-release@v1
         with:
-          files: /home/runner/work/smart-home/smart-home/cli-linux-amd64
+          files: /home/runner/work/smart-home/smart-home/gate-linux-arm-7
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: upload gate linux amd64 artifact
+        uses: softprops/action-gh-release@v1
+        with:
+          files: /home/runner/work/smart-home/smart-home/gate-linux-amd64
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

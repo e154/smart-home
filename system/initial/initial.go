@@ -23,27 +23,26 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"github.com/e154/smart-home/common/events"
-	"github.com/e154/smart-home/system/bus"
-	"gorm.io/gorm"
-
-	"github.com/e154/smart-home/system/media"
 	"go.uber.org/fx"
+	"gorm.io/gorm"
 
 	. "github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api"
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/encryptor"
+	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	_ "github.com/e154/smart-home/plugins"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/automation"
-	"github.com/e154/smart-home/system/gate_client"
+	"github.com/e154/smart-home/system/bus"
+	"github.com/e154/smart-home/system/gate/client"
 	. "github.com/e154/smart-home/system/initial/assertions"
 	"github.com/e154/smart-home/system/initial/demo"
 	localMigrations "github.com/e154/smart-home/system/initial/local_migrations"
 	"github.com/e154/smart-home/system/logging_ws"
+	"github.com/e154/smart-home/system/media"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scheduler"
 	"github.com/e154/smart-home/system/scripts"
@@ -64,7 +63,7 @@ type Initial struct {
 	supervisor      supervisor.Supervisor
 	automation      automation.Automation
 	api             *api.Api
-	gateClient      *gate_client.GateClient
+	gateClient      *client.GateClient
 	validation      *validation.Validate
 	localMigrations *localMigrations.Migrations
 	demo            *demo.Demos
@@ -81,7 +80,7 @@ func NewInitial(lc fx.Lifecycle,
 	supervisor supervisor.Supervisor,
 	automation automation.Automation,
 	api *api.Api,
-	gateClient *gate_client.GateClient,
+	gateClient *client.GateClient,
 	validation *validation.Validate,
 	_ *logging_ws.LoggingWs,
 	localMigrations *localMigrations.Migrations,
@@ -185,12 +184,12 @@ func (n *Initial) Start(ctx context.Context) (err error) {
 
 	_ = n.eventBus.Subscribe("system/models/variables/+", n.eventHandler)
 
+	_ = n.gateClient.Start()
 	_ = n.supervisor.Start(ctx)
 	_ = n.automation.Start()
 	go func() {
 		_ = n.api.Start()
 	}()
-	n.gateClient.Start()
 	return
 }
 

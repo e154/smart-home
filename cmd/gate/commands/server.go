@@ -16,50 +16,37 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package gate_client
+package commands
 
 import (
-	"context"
+	"fmt"
+	"github.com/e154/smart-home/system/gate/server"
+	"github.com/e154/smart-home/system/logging"
 
-	"github.com/e154/smart-home/common/events"
-	"github.com/e154/smart-home/system/bus"
+	"github.com/spf13/cobra"
 	"go.uber.org/fx"
+
+	. "github.com/e154/smart-home/cmd/gate/container"
+	"github.com/e154/smart-home/common/app"
+	"github.com/e154/smart-home/version"
 )
 
-// GateClient ...
-type GateClient struct {
-	eventBus bus.Bus
-}
+var (
+	// Server ...
+	Server = &cobra.Command{
+		Use:   "server",
+		Short: fmt.Sprintf(version.ShortVersionBanner, ""),
+		Run: func(cmd *cobra.Command, args []string) {
 
-// NewGateClient ...
-func NewGateClient(lc fx.Lifecycle,
-	eventBus bus.Bus) (gate *GateClient) {
+			fmt.Printf(version.ShortVersionBanner, "")
 
-	gate = &GateClient{
-		eventBus: eventBus,
+			app.Do(BuildContainer, fx.Invoke(func(
+				_ *logging.Logging,
+				_ *server.GateServer,
+			) {
+
+			}))
+
+		},
 	}
-
-	lc.Append(fx.Hook{
-		OnStart: func(ctx context.Context) error {
-			return gate.Start()
-
-		},
-		OnStop: func(ctx context.Context) error {
-			return gate.Shutdown()
-		},
-	})
-
-	return
-}
-
-// Start ...
-func (g *GateClient) Start() (err error) {
-	g.eventBus.Publish("system/services/gate_client", events.EventServiceStarted{Service: "GateClient"})
-	return
-}
-
-// Shutdown ...
-func (g *GateClient) Shutdown() (err error) {
-	g.eventBus.Publish("system/services/gate_client", events.EventServiceStopped{Service: "GateClient"})
-	return
-}
+)

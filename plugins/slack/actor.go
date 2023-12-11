@@ -22,11 +22,12 @@ import (
 	"context"
 	"strings"
 
-	"github.com/e154/smart-home/common/apperr"
-	"github.com/e154/smart-home/plugins/notify"
 	"github.com/nlopes/slack"
 
+	"github.com/e154/smart-home/common/apperr"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/plugins/notify"
+	"github.com/e154/smart-home/plugins/notify/common"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
@@ -67,7 +68,7 @@ func (e *Actor) Spawn() {
 }
 
 // Save ...
-func (e *Actor) Save(msg notify.Message) (addresses []string, message *m.Message) {
+func (e *Actor) Save(msg common.Message) (addresses []string, message *m.Message) {
 	message = &m.Message{
 		Type:       Name,
 		Attributes: msg.Attributes,
@@ -122,7 +123,7 @@ func (e *Actor) MessageParams() m.Attributes {
 func (e *Actor) eventHandler(_ string, event interface{}) {
 
 	switch v := event.(type) {
-	case notify.Message:
+	case common.Message:
 		if v.EntityId != nil && *v.EntityId == e.Id {
 			e.notify.SaveAndSend(v, e)
 		}

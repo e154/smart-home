@@ -23,7 +23,6 @@ import (
 	"github.com/e154/smart-home/common/web"
 	"github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scheduler"
 	"github.com/e154/smart-home/system/scripts"
@@ -36,7 +35,6 @@ type service struct {
 	scriptService scripts.ScriptService
 	mqttServ      mqtt.MqttServ
 	appConfig     *models.AppConfig
-	gateClient    *gate_client.GateClient
 	scheduler     *scheduler.Scheduler
 	crawler       web.Crawler
 }
@@ -80,11 +78,6 @@ func (s service) MqttServ() mqtt.MqttServ {
 // AppConfig ...
 func (s service) AppConfig() *models.AppConfig {
 	return s.appConfig
-}
-
-// GateClient ...
-func (s service) GateClient() *gate_client.GateClient {
-	return s.gateClient
 }
 
 // Scheduler ...

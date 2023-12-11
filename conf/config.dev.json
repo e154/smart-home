@@ -1,8 +1,6 @@
 {
   "alexa_host": "0.0.0.0",
   "alexa_port": 3002,
-  "mobile_host": "0.0.0.0",
-  "mobile_port": 3001,
   "pg_user": "smart_home",
   "pg_pass": "smart_home",
   "pg_host": "127.0.0.1",
@@ -29,6 +27,7 @@
   "api_http_port": 3011,
   "api_swagger": true,
   "api_debug": false,
+  "api_gzip": false,
   "pprof": false,
   "domain": "localhost",
   "https": false

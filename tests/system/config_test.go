@@ -19,10 +19,12 @@
 package system
 
 import (
+	"github.com/e154/smart-home/common/config"
+	m "github.com/e154/smart-home/models"
 	"os"
+	"path"
 	"testing"
 
-	"github.com/e154/smart-home/system/config"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -35,8 +37,8 @@ func TestConfig(t *testing.T) {
 
 				t.Run("file", func(t *testing.T) {
 					Convey("", t, func(ctx C) {
-						conf, err := config.ReadConfig("tests/data", "config.json", "")
-						ctx.So(err, ShouldBeNil)
+						conf := &m.AppConfig{}
+						config.ReadConfig(path.Join("tests", "data", "config.json"), "", conf)
 
 						//debug.Println(conf)
 
@@ -66,8 +68,6 @@ func TestConfig(t *testing.T) {
 						ctx.So(conf.ColoredLogging, ShouldEqual, false)
 						ctx.So(conf.AlexaHost, ShouldEqual, "0.0.0.0")
 						ctx.So(conf.AlexaPort, ShouldEqual, 3002)
-						ctx.So(conf.MobileHost, ShouldEqual, "0.0.0.0")
-						ctx.So(conf.MobilePort, ShouldEqual, 3001)
 						ctx.So(conf.ApiHttpPort, ShouldEqual, 3001)
 						ctx.So(conf.ApiSwagger, ShouldEqual, true)
 						ctx.So(conf.Domain, ShouldEqual, "localhost")
@@ -117,8 +117,8 @@ func TestConfig(t *testing.T) {
 						_ = os.Setenv("DOMAIN", "localhost")
 						_ = os.Setenv("HTTPS", "false")
 
-						conf, err := config.ReadConfig("tests/data", "config.json", "")
-						ctx.So(err, ShouldBeNil)
+						conf := &m.AppConfig{}
+						config.ReadConfig(path.Join("tests", "data", "config.json"), "", conf)
 
 						//debug.Println(conf)
 
@@ -148,8 +148,6 @@ func TestConfig(t *testing.T) {
 						ctx.So(conf.ColoredLogging, ShouldEqual, false)
 						ctx.So(conf.AlexaHost, ShouldEqual, "0.0.0.0")
 						ctx.So(conf.AlexaPort, ShouldEqual, 3002)
-						ctx.So(conf.MobileHost, ShouldEqual, "0.0.0.0")
-						ctx.So(conf.MobilePort, ShouldEqual, 3001)
 						ctx.So(conf.ApiHttpPort, ShouldEqual, 3001)
 						ctx.So(conf.ApiSwagger, ShouldEqual, true)
 						ctx.So(conf.Domain, ShouldEqual, "localhost")
@@ -200,8 +198,8 @@ func TestConfig(t *testing.T) {
 						_ = os.Setenv("DOMAIN", "localhost")
 						_ = os.Setenv("HTTPS", "false")
 
-						conf, err := config.ReadConfig("tests/data", "config.json", "APP")
-						ctx.So(err, ShouldBeNil)
+						conf := &m.AppConfig{}
+						config.ReadConfig(path.Join("tests", "data", "config.json"), "APP", conf)
 
 						//debug.Println(conf)
 
@@ -231,8 +229,6 @@ func TestConfig(t *testing.T) {
 						ctx.So(conf.ColoredLogging, ShouldEqual, false)
 						ctx.So(conf.AlexaHost, ShouldEqual, "0.0.0.0")
 						ctx.So(conf.AlexaPort, ShouldEqual, 3002)
-						ctx.So(conf.MobileHost, ShouldEqual, "0.0.0.0")
-						ctx.So(conf.MobilePort, ShouldEqual, 3001)
 						ctx.So(conf.ApiHttpPort, ShouldEqual, 3001)
 						ctx.So(conf.ApiSwagger, ShouldEqual, true)
 						ctx.So(conf.Domain, ShouldEqual, "localhost")

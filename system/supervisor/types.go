@@ -24,7 +24,6 @@ import (
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common/web"
-	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scheduler"
 	"github.com/pkg/errors"
@@ -161,12 +160,6 @@ const (
 	StateInProcess = "in process"
 )
 
-type actorInfo struct {
-	Actor        PluginActor
-	quit         chan struct{}
-	CurrentState *bus.EventEntityState //todo: check race condition
-}
-
 // ActorInfo ...
 type ActorInfo struct {
 	Id                common.EntityId        `json:"id"`
@@ -217,7 +210,6 @@ type Service interface {
 	ScriptService() scripts.ScriptService
 	MqttServ() mqtt.MqttServ
 	AppConfig() *m.AppConfig
-	GateClient() *gate_client.GateClient
 	Scheduler() *scheduler.Scheduler
 	Crawler() web.Crawler
 }

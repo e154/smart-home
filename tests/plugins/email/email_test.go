@@ -23,16 +23,18 @@ import (
 	"testing"
 	"time"
 
+	. "github.com/smartystreets/goconvey/convey"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/email"
 	"github.com/e154/smart-home/plugins/notify"
+	notifyCommon "github.com/e154/smart-home/plugins/notify/common"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/e154/smart-home/tests/plugins"
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestEmail(t *testing.T) {
@@ -69,7 +71,7 @@ func TestEmail(t *testing.T) {
 			t.Run("succeed", func(t *testing.T) {
 				Convey("", t, func(ctx C) {
 
-					eventBus.Publish(notify.TopicNotify, notify.Message{
+					eventBus.Publish(notify.TopicNotify, notifyCommon.Message{
 						EntityId: common.NewEntityId("email.email"),
 						Attributes: map[string]interface{}{
 							"addresses": "test@e154.ru,test2@e154.ru",

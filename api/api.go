@@ -20,7 +20,6 @@ package api
 
 import (
 	"context"
-	"embed"
 	"net/http"
 	"strings"
 
@@ -37,10 +36,6 @@ import (
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/rbac"
 )
-
-//go:embed swagger-ui/*
-//go:embed api.swagger3.yaml
-var assets embed.FS
 
 var (
 	log = logger.MustGetLogger("api")
@@ -106,10 +101,11 @@ func (a *Api) Start() (err error) {
 
 	a.echo.HideBanner = true
 	a.echo.HidePort = true
-	a.echo.Use(middleware.GzipWithConfig(middleware.GzipConfig{
-		Level: -1,
-	}))
-	a.echo.Use(middleware.Decompress())
+
+	if a.cfg.Gzip {
+		a.echo.Use(middleware.GzipWithConfig(middleware.DefaultGzipConfig))
+		a.echo.Use(middleware.Decompress())
+	}
 
 	a.registerHandlers()
 
@@ -152,7 +148,7 @@ func (a *Api) registerHandlers() {
 
 	// Swagger
 	if a.cfg.Swagger {
-		var contentHandler = echo.WrapHandler(http.FileServer(http.FS(assets)))
+		var contentHandler = echo.WrapHandler(http.FileServer(http.FS(SwaggerAssets)))
 		a.echo.GET("/swagger-ui", contentHandler)
 		a.echo.GET("/swagger-ui/*", contentHandler)
 		a.echo.GET("/api.swagger3.yaml", contentHandler)
@@ -353,4 +349,8 @@ func (a *Api) registerHandlers() {
 		AllowMethods:     []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete, http.MethodHead},
 	}))
 
+}
+
+func (a *Api) Echo() *echo.Echo {
+	return a.echo
 }

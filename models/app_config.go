@@ -35,7 +35,6 @@ type AppConfig struct {
 	SnapshotDir                    string         `json:"snapshot_dir" env:"SNAPSHOT_DIR"`
 	Mode                           common.RunMode `json:"mode" env:"MODE"`
 	AlexaHost                      string         `json:"alexa_host" env:"ALEXA_HOST"`
-	MobileHost                     string         `json:"mobile_host" env:"MOBILE_HOST"`
 	Lang                           string         `json:"lang" env:"LANG"`
 	Domain                         string         `json:"domain" env:"DOMAIN"`
 	PgMaxIdleConns                 int            `json:"pg_max_idle_conns" env:"PG_MAX_IDLE_CONNS"`
@@ -51,7 +50,6 @@ type AppConfig struct {
 	MqttMaxMsgQueue                int            `json:"mqtt_max_msg_queue" env:"MQTT_MAX_MSG_QUEUE"`
 	MqttDeliverMode                int            `json:"mqtt_deliver_mode" env:"MQTT_DELIVER_MODE"`
 	AlexaPort                      int            `json:"alexa_port" env:"ALEXA_PORT"`
-	MobilePort                     int            `json:"mobile_port" env:"MOBILE_PORT"`
 	ApiHttpPort                    int            `json:"api_http_port" env:"API_HTTP_PORT"`
 	PgDebug                        bool           `json:"pg_debug" env:"PG_DEBUG"`
 	AutoMigrate                    bool           `json:"auto_migrate" env:"AUTO_MIGRATE"`
@@ -60,9 +58,16 @@ type AppConfig struct {
 	ColoredLogging                 bool           `json:"colored_logging" env:"COLORED_LOGGING"`
 	ApiSwagger                     bool           `json:"api_swagger" env:"API_SWAGGER"`
 	ApiDebug                       bool           `json:"api_debug" env:"API_DEBUG"`
+	ApiGzip                        bool           `json:"api_gzip" env:"API_GZIP"`
 	GodMode                        bool           `json:"god_mode" env:"GOD_MODE"`
 	Pprof                          bool           `json:"pprof" env:"PPROF"`
 	Https                          bool           `json:"https" env:"HTTPS"`
+	GateClientId                   string         `json:"gate_client_id" env:"GATE_CLIENT_ID"`
+	GateClientSecretKey            string         `json:"gate_client_secret_key" env:"GATE_CLIENT_SECRET_KEY"`
+	GateClientServerHost           string         `json:"gate_client_server_host" env:"GATE_CLIENT_SERVER_HOST"`
+	GateClientServerPort           int            `json:"gate_client_server_port" env:"GATE_CLIENT_SERVER_PORT"`
+	GateClientPoolIdleSize         int            `json:"gate_client_pool_idle_size" env:"GATE_CLIENT_POOL_IDLE_SIZE"`
+	GateClientPoolMaxSize          int            `json:"gate_client_pool_max_size" env:"GATE_CLIENT_POOL_MAX_SIZE"`
 }
 
 func (c *AppConfig) ApiScheme() (scheme string) {

@@ -22,13 +22,11 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common/web"
 	"github.com/e154/smart-home/endpoint"
-	"github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/backup"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/config"
-	"github.com/e154/smart-home/system/gate_client"
+	"github.com/e154/smart-home/system/gate/client"
 	"github.com/e154/smart-home/system/initial"
 	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/logging_db"
@@ -50,6 +48,7 @@ import (
 func BuildContainer() (container *dig.Container) {
 
 	container = dig.New()
+	_ = container.Provide(ReadConfig)
 	_ = container.Provide(NewOrmConfig)
 	_ = container.Provide(web.New)
 	_ = container.Provide(orm.NewOrm)
@@ -66,9 +65,10 @@ func BuildContainer() (container *dig.Container) {
 	_ = container.Provide(mqtt_authenticator.NewAuthenticator)
 	_ = container.Provide(access_list.NewAccessListService)
 	_ = container.Provide(stream.NewStreamService)
-	_ = container.Provide(gate_client.NewGateClient)
+	_ = container.Provide(client.NewGateClient)
 	_ = container.Provide(NewZigbee2mqttConfig)
 	_ = container.Provide(zigbee2mqtt.NewZigbee2mqtt)
+	_ = container.Provide(NewLoggerConfig)
 	_ = container.Provide(logging.NewLogger)
 	_ = container.Provide(logging_db.NewLogDbSaver)
 	_ = container.Provide(storage.NewStorage)
@@ -77,14 +77,6 @@ func BuildContainer() (container *dig.Container) {
 	_ = container.Provide(bus.NewBus)
 	_ = container.Provide(endpoint.NewCommonEndpoint)
 	_ = container.Provide(endpoint.NewEndpoint)
-
-	_ = container.Provide(func() (conf *models.AppConfig, err error) {
-		conf, err = config.ReadConfig("conf", "config.json", "")
-		conf.PgName = "smart_home_test"
-		conf.Logging = false
-		return
-	})
-
 	_ = container.Provide(func() (lc fx.Lifecycle) {
 		return &FxNull{}
 	})

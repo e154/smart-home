@@ -150,7 +150,8 @@ export default {
     codePlaceholder: "Пожалуйста, введите код подтверждения",
     restorePassword: "Восстановить пароль",
     returnToSignIn: "Вернуться к форме входа",
-    updatePassword: "Обновить пароль"
+    updatePassword: "Обновить пароль",
+    server: 'Сервер ID'
   },
   router: {
     login: "Вход",
@@ -539,6 +540,7 @@ export default {
       COLOR_PICKER: 'Цветовая паллитра',
       STREAM_PLAYER: 'Video player',
       JOYSTICK: 'Joystick',
+      ICON: 'Икона',
       tooltip: 'Подсказка',
       slider: {
         options: 'Параметры слайдера',
@@ -590,10 +592,11 @@ export default {
         entities: 'Устройства',
         showFilter: 'Показывать фильтры'
       },
-      defaultIcon: 'Default Icon',
-      iconSize: 'Icon Size',
-      iconColor: 'Icon Color'
-    },
+      iconOptions: 'Параметры Иконки',
+      defaultIcon: 'Иконка по умолчанию',
+      iconSize: 'Размер Иконки',
+      iconColor: 'Цвет Иконки'
+    }
   },
   settings: {
     dashboardOptions: 'Настройки панели',
@@ -609,7 +612,20 @@ export default {
     clearEntityStorageDays: 'История состояния Entity',
     clearRunHistoryDays: 'История запусков системы',
     time: 'Время',
-    timezone: 'Часовой пояс'
+    timezone: 'Часовой пояс',
+    backup: 'Резервное копирование',
+    createBackupAt: 'Когда создавать кипию (cron)',
+    maximumNumberOfBackups: 'Максимальное количество резервных копий',
+    info1: 'https://en.wikipedia.org/wiki/Cron',
+    sendTheBackupInPartsMb: 'Отправлять резервную копию по частям Mb',
+    sendbackuptoTelegramBot: 'Отправить резервную копию боту Telegram',
+    gate: 'Шлюз',
+    gateClientServerHost: 'Хост сервера',
+    gateClientId: 'Клиент Id',
+    gateClientSecretKey: 'Секретный ключ',
+    gateClientServerPort: 'Порт сервера',
+    gateClientPoolIdleSize: 'Минимум потоков',
+    gateClientPoolMaxSize: 'Максимум потоков',
   },
   tools: {
     eventBus: {

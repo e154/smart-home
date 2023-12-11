@@ -39,11 +39,10 @@ import (
 type Trigger struct {
 	scriptEngine  *scripts.EngineWatcher
 	scriptService scripts.ScriptService
-	lastStatus    atomic.Bool
+	lastStatus    *atomic.Bool
 	model         *m.Trigger
 	name          string
 	triggerPlugin triggers.ITrigger
-	isStarted     atomic.Bool
 	taskName      string
 	subscriber    triggers.Subscriber
 	eventBus      bus.Bus
@@ -74,6 +73,7 @@ func NewTrigger(
 		scriptService: scriptService,
 		triggerPlugin: triggerPlugin,
 		eventBus:      eventBus,
+		lastStatus:    atomic.NewBool(false),
 	}
 
 	tr.subscriber = triggers.Subscriber{
@@ -101,7 +101,6 @@ func NewTrigger(
 				EntityId: tr.EntityId(),
 				Ctx:      triggerCtx,
 			})
-			return
 		},
 	}
 
@@ -169,12 +168,11 @@ func (tr *Trigger) EntityId() *common.EntityId {
 // Start ...
 func (tr *Trigger) Start() {
 	log.Infof("start trigger '%s'", tr.name)
-	tr.triggerPlugin.Subscribe(tr.subscriber)
-	tr.eventBus.Subscribe(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), tr.eventHandler, false)
+	_ = tr.triggerPlugin.Subscribe(tr.subscriber)
+	_ = tr.eventBus.Subscribe(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), tr.eventHandler, false)
 	tr.eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), events.EventTriggerLoaded{
 		Id: tr.model.Id,
 	})
-	return
 }
 
 // Stop ...
@@ -183,8 +181,8 @@ func (tr *Trigger) Stop() {
 	if tr.scriptEngine != nil {
 		tr.scriptEngine.Stop()
 	}
-	tr.eventBus.Unsubscribe(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), tr.eventHandler)
-	tr.triggerPlugin.Unsubscribe(tr.subscriber)
+	_ = tr.eventBus.Unsubscribe(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), tr.eventHandler)
+	_ = tr.triggerPlugin.Unsubscribe(tr.subscriber)
 	tr.eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), events.EventTriggerUnloaded{
 		Id: tr.model.Id,
 	})

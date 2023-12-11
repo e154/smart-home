@@ -1,5 +1,8 @@
 import {ConstantBackoff, Websocket, WebsocketBuilder} from 'websocket-ts';
 import {EventHTML5Notify} from '@/api/stream_types';
+import {useCache} from "@/hooks/web/useCache";
+
+const {wsCache} = useCache()
 
 class Stream {
   private ws: Websocket | null = null;
@@ -16,6 +19,11 @@ class Stream {
     url = url.replace("https", "wss")
     url = url.replace("http", "ws")
     url = url + '/v1/ws?access_token=' + accessToken;
+
+    if (wsCache.get('serverId')) {
+      url = url + '&server_id=' + wsCache.get('serverId');
+    }
+
     this.ws = new WebsocketBuilder(url)
       .onOpen((ws: Websocket, ev: Event) => this.onOpen(ws, ev, accessToken))
       .onClose((ws: Websocket, ev: CloseEvent) => this.onClose(ws, ev))

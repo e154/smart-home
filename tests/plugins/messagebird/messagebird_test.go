@@ -23,6 +23,9 @@ import (
 	"testing"
 	"time"
 
+	notifyCommon "github.com/e154/smart-home/plugins/notify/common"
+	. "github.com/smartystreets/goconvey/convey"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -33,7 +36,6 @@ import (
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/e154/smart-home/tests/plugins"
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestMessagebird(t *testing.T) {
@@ -73,7 +75,7 @@ func TestMessagebird(t *testing.T) {
 						body  = "some text"
 					)
 
-					eventBus.Publish(notify.TopicNotify, notify.Message{
+					eventBus.Publish(notify.TopicNotify, notifyCommon.Message{
 						EntityId: common.NewEntityId("messagebird.messagebird"),
 						Attributes: map[string]interface{}{
 							messagebird.AttrPhone: phone,

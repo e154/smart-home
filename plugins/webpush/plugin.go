@@ -25,10 +25,10 @@ import (
 	"strings"
 
 	"github.com/e154/smart-home/common/encryptor"
-
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/notify"
+	"github.com/e154/smart-home/plugins/notify/common"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
@@ -141,7 +141,7 @@ func (p *plugin) Options() m.PluginOptions {
 }
 
 // Save ...
-func (p *plugin) Save(msg notify.Message) (addresses []string, message *m.Message) {
+func (p *plugin) Save(msg common.Message) (addresses []string, message *m.Message) {
 	message = &m.Message{
 		Type:       Name,
 		Attributes: msg.Attributes,
@@ -232,7 +232,7 @@ func (p *plugin) eventHandler(_ string, event interface{}) {
 		p.updateSubscribe(v)
 	case EventGetWebPushPublicKey:
 		p.sendPublicKey(v)
-	case notify.Message:
+	case common.Message:
 		if v.Type == Name {
 			p.notify.SaveAndSend(v, p)
 		}

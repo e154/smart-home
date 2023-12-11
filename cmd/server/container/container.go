@@ -24,13 +24,11 @@ import (
 	"github.com/e154/smart-home/api/controllers"
 	"github.com/e154/smart-home/common/web"
 	"github.com/e154/smart-home/endpoint"
-	"github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/backup"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/config"
-	"github.com/e154/smart-home/system/gate_client"
+	"github.com/e154/smart-home/system/gate/client"
 	"github.com/e154/smart-home/system/initial"
 	localMigrations "github.com/e154/smart-home/system/initial/local_migrations"
 	"github.com/e154/smart-home/system/jwt_manager"
@@ -59,9 +57,7 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 
 	app = fx.New(
 		fx.Provide(
-			func() (*models.AppConfig, error) {
-				return config.ReadConfig("conf", "config.json", "")
-			},
+			ReadConfig,
 			validation.NewValidate,
 			NewOrmConfig,
 			bus.NewBus,
@@ -72,6 +68,7 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 			web.New,
 			adaptors.NewAdaptors,
 			scheduler.NewScheduler,
+			NewLoggerConfig,
 			logging.NewLogger,
 			logging_db.NewLogDbSaver,
 			logging_ws.NewLogWsSaver,
@@ -99,7 +96,7 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 			stream.NewStreamService,
 			handlers.NewEventHandler,
 			NewBackupConfig,
-			gate_client.NewGateClient,
+			client.NewGateClient,
 			jwt_manager.NewJwtManager,
 		),
 		fx.Logger(NewPrinter()),
