@@ -15,6 +15,7 @@ import {FormSchema} from '@/types/form'
 import api from "@/api/api";
 import stream from "@/api/stream";
 import {ApiSigninResponse} from "@/api/stub";
+import {prepareUrl} from "@/utils/serverId";
 
 const {required} = useValidator()
 const emit = defineEmits(['to-restore'])
@@ -162,7 +163,7 @@ const signIn = async () => {
           appStore.SetUser(currentUser);
 
           if (currentUser?.image) {
-            appStore.SetAvatar(import.meta.env.VITE_API_BASEPATH as string + currentUser.image.url);
+            appStore.SetAvatar(prepareUrl(import.meta.env.VITE_API_BASEPATH as string + currentUser.image.url));
           } else {
             appStore.SetAvatar('');
           }

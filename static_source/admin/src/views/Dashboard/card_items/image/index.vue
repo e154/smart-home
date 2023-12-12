@@ -5,6 +5,9 @@ import {Cache, Compare, GetTokens, RenderText, Resolve} from "@/views/Dashboard/
 import {ElImage, ElIcon} from "element-plus";
 import { Picture as IconPicture } from '@element-plus/icons-vue'
 import {Attribute, GetAttrValue} from "@/api/stream_types";
+import {useCache} from "@/hooks/web/useCache";
+import {prepareUrl} from "@/utils/serverId";
+const {wsCache} = useCache()
 
 // ---------------------------------
 // common
@@ -36,9 +39,9 @@ const getUrl = (): string => {
   }
   if (props.item?.payload.image.attrField) {
     const imageUrl = RenderText([props.item?.payload.image.attrField], '[' + props.item?.payload.image.attrField + ']', props.item?.lastEvent);
-    return import.meta.env.VITE_API_BASEPATH as string + imageUrl;
+    return prepareUrl(import.meta.env.VITE_API_BASEPATH as string + imageUrl);
   }
-  return import.meta.env.VITE_API_BASEPATH as string + props.item?.payload.image?.image?.url || '';
+  return prepareUrl(import.meta.env.VITE_API_BASEPATH as string + props.item?.payload.image?.image?.url || '');
 }
 
 </script>

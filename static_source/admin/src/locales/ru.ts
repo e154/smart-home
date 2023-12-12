@@ -626,6 +626,7 @@ export default {
     gateClientServerPort: 'Порт сервера',
     gateClientPoolIdleSize: 'Минимум потоков',
     gateClientPoolMaxSize: 'Максимум потоков',
+    gateClientTLS: 'TLS'
   },
   tools: {
     eventBus: {

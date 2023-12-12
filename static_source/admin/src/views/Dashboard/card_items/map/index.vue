@@ -9,6 +9,9 @@ import {debounce} from "lodash-es";
 import {View} from "ol";
 import {propTypes} from "@/utils/propTypes";
 import {useAppStore} from "@/store/modules/app";
+import {useCache} from "@/hooks/web/useCache";
+import {prepareUrl} from "@/utils/serverId";
+const {wsCache} = useCache()
 
 // ---------------------------------
 // common
@@ -195,7 +198,7 @@ watch(
 )
 
 const getUrl = (image?: ApiImage): string | undefined => {
-  return import.meta.env.VITE_API_BASEPATH as string + image?.url || undefined;
+  return prepareUrl(import.meta.env.VITE_API_BASEPATH as string + image?.url || undefined);
 }
 
 </script>

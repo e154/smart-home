@@ -53,6 +53,9 @@ const getUrl = (): string => {
   uri = uri + '/stream/'+ props.item.entityId +'/channel/0/mse?access_token=' + accessToken;
   uri = uri.replace("https", "wss")
   uri = uri.replace("http", "ws")
+  if (wsCache.get('serverId')) {
+    uri = uri + '&server_id=' + wsCache.get('serverId');
+  }
   return uri;
 }
 

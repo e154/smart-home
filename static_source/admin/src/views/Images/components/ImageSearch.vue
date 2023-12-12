@@ -8,6 +8,7 @@ import {useEmitt} from "@/hooks/web/useEmitt";
 import {useI18n} from "@/hooks/web/useI18n";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
+import {prepareUrl} from "@/utils/serverId";
 
 const emit = defineEmits(['change', 'update:modelValue'])
 const {t} = useI18n()
@@ -53,9 +54,9 @@ const remove = () => {
 
 const getUrl = (image?: ApiImage): string => {
   if (image?.url?.includes(import.meta.env.VITE_API_BASEPATH)) {
-    return image?.url || ''
+    return prepareUrl(image?.url || '')
   }
-  return import.meta.env.VITE_API_BASEPATH as string + image?.url
+  return prepareUrl(import.meta.env.VITE_API_BASEPATH as string + image?.url)
 }
 
 useEmitt({

@@ -20,6 +20,7 @@ package wsp
 
 import (
 	"context"
+	"github.com/pkg/errors"
 	"net/http"
 	"net/url"
 	"reflect"
@@ -255,8 +256,11 @@ func (s *Server) Ws(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := r.URL.Query()
-	serverId := query.Get("server_id")
+	serverId, err := s.GetServerID(r)
+	if err != nil {
+		common.ProxyErrorf(w, err.Error())
+		return
+	}
 
 	// [2]: Take an WebSocket connection available from pools for relaying received requests.
 	request := NewConnectionRequest(s.Config.GetTimeout(), PoolID(serverId))
@@ -308,7 +312,16 @@ func (s *Server) Request(w http.ResponseWriter, r *http.Request) {
 	//}
 	//r.URL = URL
 
-	serverId := r.Header.Get("X-SERVER-ID")
+	if len(s.pools) == 0 {
+		common.ProxyErrorf(w, "No proxy available")
+		return
+	}
+
+	serverId, err := s.GetServerID(r)
+	if err != nil {
+		common.ProxyErrorf(w, err.Error())
+		return
+	}
 
 	r.URL = &url.URL{
 		Path:        r.URL.Path,
@@ -318,11 +331,6 @@ func (s *Server) Request(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Infof("[%s] %s", r.Method, r.URL.String())
-
-	if len(s.pools) == 0 {
-		common.ProxyErrorf(w, "No proxy available")
-		return
-	}
 
 	// [2]: Take an WebSocket connection available from pools for relaying received requests.
 	request := NewConnectionRequest(s.Config.GetTimeout(), PoolID(serverId))
@@ -418,4 +426,28 @@ func (s *Server) Shutdown() {
 		pool.Shutdown()
 	}
 	s.clean()
+}
+
+func (s *Server) GetServerID(r *http.Request) (serverID string, err error) {
+	serverID = r.Header.Get("X-SERVER-ID")
+	if serverID != "" {
+		return
+	}
+
+	query := r.URL.Query()
+	serverID = query.Get("serverId")
+	if serverID != "" {
+		return
+	}
+
+	serverID = query.Get("server_id")
+	if serverID != "" {
+		return
+	}
+
+	if serverID == "" {
+		err = errors.New("Unable to parse DESTINATION params")
+	}
+
+	return
 }

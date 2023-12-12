@@ -25,4 +25,5 @@ type Config struct {
 	ServerPort   int
 	PoolIdleSize int
 	PoolMaxSize  int
+	TLS          bool
 }

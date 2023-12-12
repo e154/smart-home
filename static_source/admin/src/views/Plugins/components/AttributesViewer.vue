@@ -10,13 +10,15 @@ import {useForm} from "@/hooks/web/useForm";
 import {useRouter} from "vue-router";
 import {Plugin} from "@/views/Plugins/components/Types";
 import {parseTime} from "@/utils";
+import {useCache} from "@/hooks/web/useCache";
+import {prepareUrl} from "@/utils/serverId";
 
 const {push, currentRoute} = useRouter()
 const remember = ref(false)
 const {register, elFormRef, methods} = useForm()
 const appStore = useAppStore()
 const {t} = useI18n()
-
+const {wsCache} = useCache()
 
 interface TableObject {
   tableList: ApiAttribute[]
@@ -72,7 +74,7 @@ const getUrl = (imageUrl: string | undefined): string => {
   if (!imageUrl) {
     return '';
   }
-  return  import.meta.env.VITE_API_BASEPATH as string + imageUrl;
+  return  prepareUrl(import.meta.env.VITE_API_BASEPATH as string + imageUrl);
 }
 
 const getValue = (attr: ApiAttribute): any => {

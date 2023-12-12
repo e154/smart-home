@@ -31,14 +31,6 @@ type Config struct {
 
 // String ...
 func (c Config) String() string {
-	return fmt.Sprintf("%s:%d", c.Domain, c.HttpPort)
+	return fmt.Sprintf(":%d", c.HttpPort)
 }
 
-// FullAddress ...
-func (c Config) FullAddress() string {
-	var scheme = "http"
-	if c.Https && c.Domain != "" {
-		scheme = "https"
-	}
-	return fmt.Sprintf("%s://%s:%d", scheme, c.Domain, c.HttpPort)
-}

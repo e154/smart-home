@@ -478,6 +478,14 @@ export const developRouterMap: AppRouteRecordRaw[] = [
         ]
       },
       {
+        path: 'settings',
+        name: 'Settings',
+        component: () => import('@/views/Settings/index.vue'),
+        meta: {
+          title: t('router.Settings'),
+        },
+      },
+      {
         path: 'plugins',
         name: 'Plugins',
         component: () => import('@/views/Plugins/index.vue'),
@@ -715,14 +723,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
         component: () => import('@/views/MessageDelivery/index.vue'),
         meta: {
           title: t('router.MessageDelivery'),
-        },
-      },
-      {
-        path: 'settings',
-        name: 'Settings',
-        component: () => import('@/views/Settings/index.vue'),
-        meta: {
-          title: t('router.Settings'),
         },
       }
     ]

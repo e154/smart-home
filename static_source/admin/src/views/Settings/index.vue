@@ -39,6 +39,7 @@ export interface Settings {
   gateClientServerPort?: number;
   gateClientPoolIdleSize?: number;
   gateClientPoolMaxSize?: number;
+  gateClientTLS?: boolean;
 }
 
 const settings = ref<Settings>({} as Settings)
@@ -115,7 +116,8 @@ const getSettings = async () => {
     getStringVar('gateClientServerHost'),
     getIntegerVar('gateClientServerPort'),
     getIntegerVar('gateClientPoolIdleSize'),
-    getIntegerVar('gateClientPoolMaxSize')
+    getIntegerVar('gateClientPoolMaxSize'),
+    getBooleanVar('gateClientTLS')
   ])
   loading.value = false
 }
@@ -305,6 +307,15 @@ getSettings()
           <ElInputNumber size="small" v-model="settings.gateClientPoolMaxSize" @update:modelValue="changedVariable('gateClientPoolMaxSize')"/>
         </ElFormItem>
       </ElCol>
+    </ElRow>
+
+    <ElRow :gutter="24">
+      <ElCol :span="12" :xs="12">
+        <ElFormItem :label="$t('settings.gateClientTLS')" prop="gateClientTLS">
+          <ElSwitch v-model="settings.gateClientTLS" @update:modelValue="changedVariable('gateClientTLS')"/>
+        </ElFormItem>
+      </ElCol>
+      <ElCol :span="12" :xs="12"/>
     </ElRow>
 
     </ElForm>
