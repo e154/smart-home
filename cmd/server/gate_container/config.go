@@ -27,6 +27,6 @@ import (
 
 func ReadConfig() (conf *models.GateConfig) {
 	conf = &models.GateConfig{}
-	config.ReadConfig(path.Join("conf", "config.gate.json"), "", conf)
+	config.ReadConfig(path.Join("conf", "config.gate.json"), "GATE", conf)
 	return
 }
