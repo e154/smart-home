@@ -17,11 +17,3 @@ server-*
 build/public/*
 build/admin/*
 smart-home-common.tar.gz
-/cmd/gate/gate
-/cmd/gate/conf
-/gate-darwin-10.6-arm64
-/gate-linux-amd64
-/gate-linux-arm-5
-/gate-linux-arm-6
-/gate-linux-arm-7
-/gate-darwin-10.6-amd64

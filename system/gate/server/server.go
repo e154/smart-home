@@ -111,11 +111,11 @@ func (a *Server) Start() (err error) {
 	go func() {
 		var err error
 		if https {
-			log.Info("server started at :443")
-			err = a.echo.StartAutoTLS(":443")
+			log.Infof("server started at %s", a.cfg.HTTPSString())
+			err = a.echo.StartAutoTLS(a.cfg.HTTPSString())
 		} else {
-			log.Infof("server started at %s", a.cfg.String())
-			err = a.echo.Start(a.cfg.String())
+			log.Infof("server started at %s", a.cfg.HTTPString())
+			err = a.echo.Start(a.cfg.HTTPString())
 		}
 		if err.Error() != "http: Server closed" {
 			log.Error(err.Error())

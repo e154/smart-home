@@ -40,6 +40,7 @@ export interface Settings {
   gateClientPoolIdleSize?: number;
   gateClientPoolMaxSize?: number;
   gateClientTLS?: boolean;
+  hmacKey?: string;
 }
 
 const settings = ref<Settings>({} as Settings)
@@ -117,7 +118,8 @@ const getSettings = async () => {
     getIntegerVar('gateClientServerPort'),
     getIntegerVar('gateClientPoolIdleSize'),
     getIntegerVar('gateClientPoolMaxSize'),
-    getBooleanVar('gateClientTLS')
+    getBooleanVar('gateClientTLS'),
+    getStringVar('hmacKey')
   ])
   loading.value = false
 }
@@ -318,7 +320,18 @@ getSettings()
       <ElCol :span="12" :xs="12"/>
     </ElRow>
 
-    </ElForm>
+    <ElDivider content-position="left">{{$t('settings.hmacKey')}}</ElDivider>
+
+    <ElRow :gutter="24">
+      <ElCol :span="12" :xs="12">
+        <ElFormItem :label="$t('settings.hmacKey')" prop="hmacKey">
+          <ElInput size="small" v-model="settings.hmacKey" @update:modelValue="changedVariable('hmacKey')"/>
+        </ElFormItem>
+      </ElCol>
+      <ElCol :span="12" :xs="12"/>
+    </ElRow>
+
+  </ElForm>
 
   </ContentWrap>
 </template>

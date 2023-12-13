@@ -77,12 +77,13 @@ func (g *GateServer) Start(ctx context.Context) (err error) {
 	g.proxy.Start()
 
 	cfg := &Config{
-		HttpPort: g.gateConfig.ApiHttpPort,
-		Debug:    g.gateConfig.ApiDebug,
-		Pprof:    g.gateConfig.Pprof,
-		Gzip:     g.gateConfig.ApiGzip,
-		Https:    g.gateConfig.Https,
-		Domain:   g.gateConfig.Domain,
+		HttpPort:  g.gateConfig.ApiHttpPort,
+		HttpsPort: g.gateConfig.ApiHttpsPort,
+		Debug:     g.gateConfig.ApiDebug,
+		Pprof:     g.gateConfig.Pprof,
+		Gzip:      g.gateConfig.ApiGzip,
+		Https:     g.gateConfig.Https,
+		Domain:    g.gateConfig.Domain,
 	}
 	g.server = NewServer(cfg, g.proxy)
 	g.server.Start()

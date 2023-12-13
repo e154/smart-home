@@ -628,7 +628,8 @@ export default {
         gateClientServerPort: 'Server Port',
         gateClientPoolIdleSize: 'Pool Idle Size',
         gateClientPoolMaxSize: 'Pool Max Size',
-        gateClientTLS: 'TLS'
+        gateClientTLS: 'TLS',
+        hmacKey: 'HMAC Key'
     },
     tools: {
         eventBus: {

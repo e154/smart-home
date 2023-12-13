@@ -113,11 +113,16 @@ func (c *Connection) serve(ctx context.Context) {
 
 	// Keep connection alive
 	go func() {
+		timer := time.NewTicker(time.Second * 30)
+		defer timer.Stop()
 		for {
-			time.Sleep(30 * time.Second)
-			err := c.ws.WriteControl(websocket.PingMessage, []byte{}, time.Now().Add(time.Second))
-			if err != nil {
-				c.Close()
+			select {
+			case t := <- timer.C:
+				err := c.ws.WriteControl(websocket.PingMessage, []byte{}, t.Add(time.Second))
+				if err != nil {
+					c.Close()
+					break
+				}
 			}
 		}
 	}()

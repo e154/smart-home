@@ -1,16 +1,14 @@
 .PHONY: get_deps fmt
 .DEFAULT_GOAL := build
-build: build_public build_server build_cli build_gate
+build: build_public build_server build_cli
 tests: lint test
-all: build build_structure build_common_structure build_archive server_docker_image gate_docker_image
-deploy: server_docker_image_upload gate_docker_image_upload
+all: build build_structure build_common_structure build_archive docker_image
+deploy: docker_image_upload
 
 EXEC=server
 CLI=cli
-GATE=gate
 ROOT := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 SERVER_DIR = ${ROOT}/tmp/${EXEC}
-GATE_DIR = ${ROOT}/tmp/${GATE}
 COMMON_DIR = ${ROOT}/tmp/common
 ARCHIVE=smart-home-common.tar.gz
 
@@ -24,13 +22,10 @@ GENERATED_VALUE=$(shell date -u +'%Y-%m-%dT%H:%M:%S%z')
 DEVELOPERS_VALUE=delta54<support@e154.ru>
 BUILD_NUMBER_VALUE=$(shell echo ${TRAVIS_BUILD_NUMBER})
 
-SERVER_IMAGE=smart-home-${EXEC}
-GATE_IMAGE=smart-home-${GATE}
+IMAGE=smart-home-${EXEC}
 DOCKER_ACCOUNT=e154
-SERVER_DOCKER_IMAGE_VER=${DOCKER_ACCOUNT}/${SERVER_IMAGE}:${RELEASE_VERSION}
-SERVER_DOCKER_IMAGE_LATEST=${DOCKER_ACCOUNT}/${SERVER_IMAGE}:latest
-GATE_DOCKER_IMAGE_VER=${DOCKER_ACCOUNT}/${GATE_IMAGE}:${RELEASE_VERSION}
-GATE_DOCKER_IMAGE_LATEST=${DOCKER_ACCOUNT}/${GATE_IMAGE}:latest
+DOCKER_IMAGE_VER=${DOCKER_ACCOUNT}/${IMAGE}:${RELEASE_VERSION}
+DOCKER_IMAGE_LATEST=${DOCKER_ACCOUNT}/${IMAGE}:latest
 
 VERSION_VAR=${PROJECT}/version.VersionString
 REV_VAR=${PROJECT}/version.RevisionString
@@ -39,7 +34,7 @@ GENERATED_VAR=${PROJECT}/version.GeneratedString
 DEVELOPERS_VAR=${PROJECT}/version.DevelopersString
 BUILD_NUMBER_VAR=${PROJECT}/version.BuildNumString
 DOCKER_IMAGE_VAR=${PROJECT}/version.DockerImageString
-GO_BUILD_LDFLAGS= -s -w -X ${VERSION_VAR}=${RELEASE_VERSION} -X ${REV_VAR}=${REV_VALUE} -X ${REV_URL_VAR}=${REV_URL_VALUE} -X ${GENERATED_VAR}=${GENERATED_VALUE} -X ${DEVELOPERS_VAR}=${DEVELOPERS_VALUE} -X ${BUILD_NUMBER_VAR}=${BUILD_NUMBER_VALUE} -X ${DOCKER_IMAGE_VAR}=${SERVER_DOCKER_IMAGE_VER}
+GO_BUILD_LDFLAGS= -s -w -X ${VERSION_VAR}=${RELEASE_VERSION} -X ${REV_VAR}=${REV_VALUE} -X ${REV_URL_VAR}=${REV_URL_VALUE} -X ${GENERATED_VAR}=${GENERATED_VALUE} -X ${DEVELOPERS_VAR}=${DEVELOPERS_VALUE} -X ${BUILD_NUMBER_VAR}=${BUILD_NUMBER_VALUE} -X ${DOCKER_IMAGE_VAR}=${DOCKER_IMAGE_VER}
 GO_BUILD_FLAGS= -a -installsuffix cgo -v --ldflags '${GO_BUILD_LDFLAGS}'
 GO_BUILD_ENV= CGO_ENABLED=0
 GO_BUILD_TAGS= -tags 'production'
@@ -118,15 +113,6 @@ build_cli:
 	cd ${ROOT}/cmd/cli && ${GO_BUILD_ENV} GOOS=darwin GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${CLI}-darwin-10.6-amd64
 	cd ${ROOT}/cmd/cli && ${GO_BUILD_ENV} GOOS=darwin GOARCH=arm64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${CLI}-darwin-10.6-arm64
 
-build_gate:
-	@echo MARK: build gate
-	cd ${ROOT}/cmd/gate && ${GO_BUILD_ENV} GOOS=linux GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${GATE}-linux-amd64
-	cd ${ROOT}/cmd/gate && ${GO_BUILD_ENV} GOOS=linux GOARCH=arm GOARM=7 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${GATE}-linux-arm-7
-	cd ${ROOT}/cmd/gate && ${GO_BUILD_ENV} GOOS=linux GOARCH=arm GOARM=6 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${GATE}-linux-arm-6
-	cd ${ROOT}/cmd/gate && ${GO_BUILD_ENV} GOOS=linux GOARCH=arm GOARM=5 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${GATE}-linux-arm-5
-	cd ${ROOT}/cmd/gate && ${GO_BUILD_ENV} GOOS=darwin GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${GATE}-darwin-10.6-amd64
-	cd ${ROOT}/cmd/gate && ${GO_BUILD_ENV} GOOS=darwin GOARCH=arm64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${GATE}-darwin-10.6-arm64
-
 build_public:
 	@echo MARK: build public
 	echo -e "node version.\n"  && \
@@ -151,8 +137,6 @@ server:
 
 build_structure:
 	@echo MARK: create server structure
-	cd ${ROOT}
-	ls -ll
 	mkdir -p ${SERVER_DIR}
 	mkdir -p ${SERVER_DIR}/snapshots
 	cd ${SERVER_DIR}
@@ -173,21 +157,6 @@ build_structure:
 	cp ${ROOT}/${CLI}-darwin-10.6-arm64 ${SERVER_DIR}
 	cp ${ROOT}/${CLI}-linux-amd64 ${SERVER_DIR}
 	cp ${ROOT}/bin/server ${SERVER_DIR}
-	@echo MARK: create gate structure
-	mkdir -p ${GATE_DIR}
-	mkdir -p ${GATE_DIR}/conf
-	cd ${GATE_DIR}
-	cp ${ROOT}/conf/config.gate.json ${GATE_DIR}/conf
-	cp ${ROOT}/LICENSE ${GATE_DIR}
-	cp ${ROOT}/README* ${GATE_DIR}
-	cp ${ROOT}/CONTRIBUTING.md ${GATE_DIR}
-	cp ${ROOT}/${GATE}-linux-amd64 ${GATE_DIR}
-	cp ${ROOT}/${GATE}-linux-arm-7 ${GATE_DIR}
-	cp ${ROOT}/${GATE}-linux-arm-6 ${GATE_DIR}
-	cp ${ROOT}/${GATE}-linux-arm-5 ${GATE_DIR}
-	cp ${ROOT}/${GATE}-darwin-10.6-amd64 ${GATE_DIR}
-	cp ${ROOT}/${GATE}-darwin-10.6-arm64 ${GATE_DIR}
-	cp ${ROOT}/bin/gate ${GATE_DIR}
 
 build_common_structure:
 	@echo MARK: create common structure
@@ -243,44 +212,26 @@ docs_deploy:
 	git push -q upstream HEAD:gh-pages
 	echo -e "Done documentation deploy.\n"
 
-server_docker_image:
-	cd ${SERVER_DIR} && ls -ll && docker build -f ${ROOT}/bin/docker/Dockerfile.server -t ${DOCKER_ACCOUNT}/${SERVER_IMAGE} .
+docker_image:
+	cd ${SERVER_DIR} && ls -ll && docker build -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
 
-server_docker_image_upload:
+docker_image_upload:
 	echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
-	docker tag ${DOCKER_ACCOUNT}/${SERVER_IMAGE} ${SERVER_DOCKER_IMAGE_VER}
-	echo -e "docker tag ${DOCKER_ACCOUNT}/${SERVER_IMAGE} ${SERVER_DOCKER_IMAGE_LATEST}"
-	docker tag ${DOCKER_ACCOUNT}/${SERVER_IMAGE} ${SERVER_DOCKER_IMAGE_LATEST}
-	docker push ${SERVER_DOCKER_IMAGE_VER}
-	docker push ${SERVER_DOCKER_IMAGE_LATEST}
-
-gate_docker_image:
-	cd ${GATE_DIR} && ls -ll && docker build -f ${ROOT}/bin/docker/Dockerfile.gate -t ${DOCKER_ACCOUNT}/${GATE_IMAGE} .
-
-gate_docker_image_upload:
-	echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
-	docker tag ${DOCKER_ACCOUNT}/${GATE_IMAGE} ${GATE_DOCKER_IMAGE_VER}
-	echo -e "docker tag ${DOCKER_ACCOUNT}/${GATE_IMAGE} ${GATE_DOCKER_IMAGE_LATEST}"
-	docker tag ${DOCKER_ACCOUNT}/${GATE_IMAGE} ${GATE_DOCKER_IMAGE_LATEST}
-	docker push ${GATE_DOCKER_IMAGE_VER}
-	docker push ${GATE_DOCKER_IMAGE_LATEST}
+	docker tag ${DOCKER_ACCOUNT}/${IMAGE} ${DOCKER_IMAGE_VER}
+	echo -e "docker tag ${DOCKER_ACCOUNT}/${IMAGE} ${DOCKER_IMAGE_LATEST}"
+	docker tag ${DOCKER_ACCOUNT}/${IMAGE} ${DOCKER_IMAGE_LATEST}
+	docker push ${DOCKER_IMAGE_VER}
+	docker push ${DOCKER_IMAGE_LATEST}
 
 clean:
 	@echo MARK: clean
 	rm -rf ${SERVER_DIR}
-	rm -rf ${GATE_DIR}
 	rm -f ${ROOT}/${EXEC}-linux-amd64
 	rm -f ${ROOT}/${EXEC}-linux-arm-7
 	rm -f ${ROOT}/${EXEC}-linux-arm-6
 	rm -f ${ROOT}/${EXEC}-linux-arm-5
 	rm -f ${ROOT}/${EXEC}-darwin-10.6-amd64
 	rm -f ${ROOT}/${EXEC}-darwin-10.6-arm64
-	rm -f ${ROOT}/${GATE}-linux-amd64
-	rm -f ${ROOT}/${GATE}-linux-arm-7
-	rm -f ${ROOT}/${GATE}-linux-arm-6
-	rm -f ${ROOT}/${GATE}-linux-arm-5
-	rm -f ${ROOT}/${GATE}-darwin-10.6-amd64
-	rm -f ${ROOT}/${GATE}-darwin-10.6-arm64
 	rm -f ${ROOT}/${CLI}-linux-amd64
 	rm -f ${ROOT}/${CLI}-darwin-10.6-amd64
 	rm -f ${ROOT}/${CLI}-darwin-10.6-arm64

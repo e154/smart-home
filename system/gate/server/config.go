@@ -21,16 +21,21 @@ package server
 import "fmt"
 
 type Config struct {
-	HttpPort int
-	Debug    bool
-	Pprof    bool
-	Gzip     bool
-	Domain   string
-	Https    bool
+	HttpPort  int
+	HttpsPort int
+	Debug     bool
+	Pprof     bool
+	Gzip      bool
+	Domain    string
+	Https     bool
 }
 
-// String ...
-func (c Config) String() string {
+// HTTPString ...
+func (c Config) HTTPString() string {
 	return fmt.Sprintf(":%d", c.HttpPort)
 }
 
+// HTTPSString ...
+func (c Config) HTTPSString() string {
+	return fmt.Sprintf(":%d", c.HttpsPort)
+}
