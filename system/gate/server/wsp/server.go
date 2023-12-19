@@ -101,33 +101,17 @@ func NewServer(config *Config) (server *Server) {
 // Start Server HTTP server
 func (s *Server) Start() {
 	go func() {
-	L:
 		for {
 			select {
 			case <-s.done:
-				break L
+				return
 			case <-time.After(5 * time.Second):
 				s.clean()
 			}
 		}
 	}()
 
-	//r := http.NewServeMux()
-	// TODO: I want to detach the handler function from the Server struct,
-	// but it is tightly coupled to the internal state of the Server.
-	//r.HandleFunc("/gate/register", s.Register)
-	//r.HandleFunc("/gate/request", s.Request)
-	//r.HandleFunc("/gate/status", s.status)
-
-	// Dispatch connection from available pools to clients requests
-	// in a separate thread from the server thread.
 	go s.dispatchConnections()
-
-	//s.server = &http.Server{
-	//	Addr:    s.Config.GetAddr(),
-	//	Handler: r,
-	//}
-	//go s.server.ListenAndServe()
 }
 
 // clean removes empty Pools which has no connection.
@@ -155,7 +139,7 @@ func (s *Server) clean() {
 		busy += ps.Busy
 	}
 
-	log.Infof("%d pools, %d idle, %d busy", len(s.pools), idle, busy)
+	//log.Infof("%d pools, %d idle, %d busy", len(s.pools), idle, busy)
 }
 
 // Dispatch connection from available pools to clients requests
@@ -198,7 +182,7 @@ func (s *Server) dispatchConnections() {
 					break
 				}
 				s.lock.RUnlock()
-				connection, ok := <- pool.idle
+				connection, ok := <-pool.idle
 				if !ok {
 					continue // a pool has been removed, try again
 				}
