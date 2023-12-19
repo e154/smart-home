@@ -16,35 +16,14 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package commands
+package container
 
-import (
-	"github.com/spf13/cobra"
-	"go.uber.org/fx"
+import "github.com/e154/smart-home/system/migrations"
 
-	. "github.com/e154/smart-home/cmd/server/container"
-	. "github.com/e154/smart-home/common/app"
-	"github.com/e154/smart-home/system/logging"
-	"github.com/e154/smart-home/system/migrations"
-)
-
-var (
-	resetCmd = &cobra.Command{
-		Use:   "reset",
-		Short: "Full database cleanup and deletion of user data",
-		Run: func(cmd *cobra.Command, args []string) {
-
-			app := BuildContainer(fx.Invoke(func(
-				_ *logging.Logging,
-				migrations *migrations.Migrations,
-			) {
-				log.Info("full reset")
-
-				_ = migrations.Purge()
-
-				log.Info("complete")
-			}))
-			Start(app)
-		},
+// NewMigrationsConfig ...
+func NewMigrationsConfig() *migrations.Config {
+	return &migrations.Config{
+		Source: "embed",
+		Dir:    "migrations",
 	}
-)
+}

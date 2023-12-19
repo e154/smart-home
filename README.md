@@ -38,10 +38,7 @@ the component base.
 - [Supported system](#supported-system)
 - [Quick installation](#quick-installation)
     - [Postgresql](#database-postgresql)
-- [Installation for development](#installation-for-development)
-    - [Server](#main-server-install)
 - [Docker](#docker)
-- [Testing](#testing)
 - [Support](#support)
 - [Contributors](#contributors)
 - [See also](#see-also)
@@ -49,38 +46,45 @@ the component base.
 
 ### Features
 
-1. The ultimate smart thing solution - server, configurator, nodes, gateway, mobile application
+1. The ultimate smart thing solution - server, configurator, gateway
 2. Free and open source
 3. Cross-platform Linux, MacOS, Windows ...
 4. Convenient WEB-configurator for fine-tuning
-5. Mobile application for equipment management
+5. Powerful visual interface editor
+5. Organization of remote access without white IP FREE
 6. Role system for separation of access rights
+7. Plugin system
 7. Programs in javaScript, coffeeScript, typeScript
-8. Notification system SMS, Email, Slack, Telegram
-9. modbus, mqtt, [zigbee2mqtt](https://www.zigbee2mqtt.io/), rpc calling
+8. Notification system SMS, Email, Slack, Telegram, Web push, html5
+9. Embedded MQTT server/client/bridge
+9. MODBUS, [ZIGBEE2MQTT](https://www.zigbee2mqtt.io/), rpc calling, etc
 10. Autonomous system.
-11. Quick backup of all data, and recovery
+11. Telegram bots
+11. Automation scenarios
+11. Quick backup/recovery
 12. Have Docker images to enhance system security
 13. Minimum consumption of resources.
 14. Optimized for embedded devices like Raspberry Pi
 15. 100% local home automation
 16. Create and restore full backups of your whole configuration with ease
 17. Management web interface integrated into Smart home
-18. Alexa skills
 
 ### Demo access
 
-outdated version, not supported:<br />
-[dashboard](https://board.e154.ru) (https://board.e154.ru) <br />
+dashboard:<br />
+[dashboard](https://gate.e154.ru:8443) (https://gate.e154.ru:8443) <br />
 
-outdated version, not supported:<br />
-[swagger](https://sh.e154.ru/api/v1/swagger) (https://sh.e154.ru/api/v1/swagger)
+server id:<br />
+**cf4463fc-2f39-4271-a034-5c0c8087c56c**
 
 user: admin@e154.ru <br />
 pass: admin
 
 user: user@e154.ru <br />
 pass: user
+
+openapi v3 spec:<br />
+[swagger](https://gate.e154.ru:8443/#/etc/swagger) (https://gate.e154.ru:8443/#/etc/swagger)
 
 ### Supported system
 
@@ -101,69 +105,28 @@ Schematic smart home map
 
 <img src="doc/static/img/smart-home-network.svg" alt="smart-home map" width="630">
 
-### Quick installation
+### Database postgresql
 
-#### Database postgresql
+[Installing PostgreSQL 15](https://e154.github.io/smart-home/docs/install/postgresql/)
 
-System **Smart Home** works with **Postgresql database**. Create a database and database user with full rights to this
-database. Connection parameters to the database must be specified in the configuration file. Updating the server version
-may require updating the database. , migrations will start automatically, manual intervention is not required.
-
-```bash
-sudo -u postgres psql
-postgres=# create database mydb;
-postgres=# create user myuser with encrypted password 'mypass';
-postgres=# grant all privileges on database mydb to myuser;
-```
-
-### Installation for development
-
-install brew
-
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-```
-
-Run these two commands in your terminal to add Homebrew to your PATH:
-
-```bash
-(echo; echo 'eval "$(/opt/homebrew/bin/brew shellenv)"') >> /Users/delta54/.zprofile
-eval "$(/opt/homebrew/bin/brew shellenv)"
-```
-
-install github.com/deepmap/oapi-codegen version v1.13.0
-
-generate api stub
-```bash
-make server
-```
-
-#### main server install
-
-```bash
-git clone https://github.com/e154/smart-home $GOPATH/src/github.com/e154/smart-home
-
-cd $GOPATH/src/github.com/e154/smart-home
-
-go mod vendor
-
-go build
-
-./smart-home -reset
-./smart-home
-```
-
-editing configuration files
+### Editing configuration files
 
 ```bash
 cp conf/config.dev.json conf/config.json
-cp conf/dbconfig.dev.yml conf/dbconfig.yml
 ```
 
-run server
+### Main server install
 
+Download the latest server version from [releases](https://github.com/e154/smart-home/releases)
+
+show help options
 ```bash
-./smart-home
+./server-linux-amd64 help
+```
+
+run the server
+```bash
+./server-linux-amd64
 ```
 
 ### Docker
@@ -174,17 +137,7 @@ cd smart-home
 docker-compose up
 ```
 
-connect to the database, create two smart-home databases, smart-home-gate
-
 It's all
-
-### Testing
-
-The system supports self-testing of internal components, and is started by the command
-
-```bash
-go test -v ./tests/...
-```
 
 ### Support
 

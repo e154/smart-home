@@ -43,7 +43,6 @@ import (
 	localMigrations "github.com/e154/smart-home/system/initial/local_migrations"
 	"github.com/e154/smart-home/system/logging_ws"
 	"github.com/e154/smart-home/system/media"
-	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scheduler"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/supervisor"
@@ -56,7 +55,6 @@ var (
 
 // Initial ...
 type Initial struct {
-	migrations      *migrations.Migrations
 	adaptors        *Adaptors
 	scriptService   scripts.ScriptService
 	accessList      access_list.AccessListService
@@ -73,7 +71,6 @@ type Initial struct {
 
 // NewInitial ...
 func NewInitial(lc fx.Lifecycle,
-	migrations *migrations.Migrations,
 	adaptors *Adaptors,
 	scriptService scripts.ScriptService,
 	accessList access_list.AccessListService,
@@ -90,7 +87,6 @@ func NewInitial(lc fx.Lifecycle,
 	db *gorm.DB,
 	eventBus bus.Bus) *Initial {
 	initial := &Initial{
-		migrations:      migrations,
 		adaptors:        adaptors,
 		scriptService:   scriptService,
 		accessList:      accessList,
@@ -113,16 +109,6 @@ func NewInitial(lc fx.Lifecycle,
 		},
 	})
 	return initial
-}
-
-// Reset ...
-func (n *Initial) Reset() {
-
-	log.Info("full reset")
-
-	_ = n.migrations.Purge()
-
-	log.Info("complete")
 }
 
 // InstallDemoData ...
