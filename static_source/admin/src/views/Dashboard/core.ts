@@ -32,6 +32,7 @@ import {ItemPayloadColorPicker} from "@/views/Dashboard/card_items/color_picker/
 import {ItemPayloadJoystick} from "@/views/Dashboard/card_items/joystick/types";
 import {ItemPayloadVideo} from "@/views/Dashboard/card_items/video/types";
 import {ItemPayloadEntityStorage} from "@/views/Dashboard/card_items/entity_storage/types";
+import {prepareUrl} from "@/utils/serverId";
 
 const {bus} = useBus()
 
@@ -397,7 +398,7 @@ export class CardItem {
     if (!image || !image.url) {
       return '';
     }
-    return import.meta.env.VITE_API_BASEPATH as string + image.url;
+    return prepareUrl(import.meta.env.VITE_API_BASEPATH as string + image.url);
   }
 
   private clearActions() {

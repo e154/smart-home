@@ -69,7 +69,7 @@ func NewConnection(pool *Pool,
 
 // Connect to the IsolatorServer using a HTTP websocket
 func (c *Connection) Connect(ctx context.Context) (err error) {
-	//log.Infof("Connecting to %s", c.pool.target)
+	log.Infof("Connecting to %s", c.pool.target)
 
 	// Create a new TCP(/TLS) connection ( no use of net.http )
 	c.ws, _, err = c.pool.client.dialer.DialContext(
@@ -96,7 +96,7 @@ func (c *Connection) Connect(ctx context.Context) (err error) {
 		return err
 	}
 
-	go c.serve(ctx)
+	c.serve(ctx)
 
 	return
 }
@@ -109,15 +109,19 @@ func (c *Connection) Connect(ctx context.Context) (err error) {
 // As in the server code there is no buffering of HTTP request/response body
 // As is the server if any error occurs the connection is closed/throwed
 func (c *Connection) serve(ctx context.Context) {
-	defer c.Close()
 
 	// Keep connection alive
 	go func() {
+		timer := time.NewTicker(time.Second * 30)
+		defer timer.Stop()
 		for {
-			time.Sleep(30 * time.Second)
-			err := c.ws.WriteControl(websocket.PingMessage, []byte{}, time.Now().Add(time.Second))
-			if err != nil {
-				c.Close()
+			select {
+			case t := <-timer.C:
+				err := c.ws.WriteControl(websocket.PingMessage, []byte{}, t.Add(time.Second))
+				if err != nil {
+					c.Close()
+					break
+				}
 			}
 		}
 	}()
@@ -268,10 +272,7 @@ func (c *Connection) error(msg string) (err error) {
 
 // Close close the ws/tcp connection and remove it from the pool
 func (c *Connection) Close() {
-	c.pool.lock.Lock()
-	defer c.pool.lock.Unlock()
 
-	c.pool.remove(c)
 	if c.ws != nil {
 		c.ws.Close()
 	}

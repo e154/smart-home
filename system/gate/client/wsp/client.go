@@ -67,10 +67,10 @@ func NewClient(cfg *Config, api *api.Api, stream *stream.Stream, adaptors *adapt
 
 // Start the Proxy
 func (c *Client) Start(ctx context.Context) {
+	log.Info("Start")
 	if !c.isStarted.CompareAndSwap(false, true) {
 		return
 	}
-	defer c.isStarted.Store(true)
 	for _, target := range c.cfg.Targets {
 		pool := NewPool(c, target, c.cfg.SecretKey, c.api, c.stream, c.adaptors, c.jwtManager)
 		c.pools[target] = pool
@@ -80,10 +80,10 @@ func (c *Client) Start(ctx context.Context) {
 
 // Shutdown the Proxy
 func (c *Client) Shutdown() {
+	log.Info("Shutdown")
 	if !c.isStarted.CompareAndSwap(true, false) {
 		return
 	}
-	defer c.isStarted.Store(false)
 	for _, pool := range c.pools {
 		pool.Shutdown()
 	}

@@ -2,12 +2,13 @@
 import {ElButton, ElRow, ElCol, ElBadge, ElImage, ElUpload, UploadProps, ElDialog, ElMessage} from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 import {PropType, reactive, ref, unref} from "vue";
-import {ApiCondition, ApiImage, GetImageFilterListResultfilter} from "@/api/stub";
+import {ApiAttribute, ApiCondition, ApiImage, GetImageFilterListResultfilter} from "@/api/stub";
 import api from "@/api/api";
 import {useEmitt} from "@/hooks/web/useEmitt";
 import {createImageViewer} from "@/components/ImageViewer";
 import {propTypes} from "@/utils/propTypes";
 import {useCache} from "@/hooks/web/useCache";
+import {prepareUrl} from "@/utils/serverId";
 const {wsCache} = useCache()
 
 const { t } = useI18n()
@@ -73,7 +74,7 @@ const getFilterList =  async() => {
 }
 
 const getUrl = (url: string): string => {
-  return import.meta.env.VITE_API_BASEPATH as string + url
+  return prepareUrl(import.meta.env.VITE_API_BASEPATH as string + url)
 }
 
 const getActiveFilter = (item: GetImageFilterListResultfilter): boolean => {
@@ -95,6 +96,8 @@ const select = (image: ApiImage) => {
   }
   const output = Object.assign({}, unref(viewerObject)?.selected) as ApiImage
   output.url = output.url.replace(import.meta.env.VITE_API_BASEPATH,'');
+  const serverId = wsCache.get('serverId')
+  output.url = output.url.replace('?serverId=' + serverId,'');
   emitter.emit('imageSelected', {id: props.id, image: output})
   //todo: fix
   ElMessage({
@@ -123,7 +126,7 @@ const onSuccess: UploadProps['onSuccess'] = (image: ApiImage, uploadFile) => {
 const getUploadURL = () => {
   const uri = import.meta.env.VITE_API_BASEPATH as string || window.location.origin;
   const accessToken = wsCache.get("accessToken")
-  return uri + '/v1/image/upload?access_token=' + accessToken;
+  return prepareUrl(uri + '/v1/image/upload?access_token=' + accessToken);
 }
 
 const handleRemove: UploadProps['onRemove'] = ( image: ApiImage, uploadFiles) => {
@@ -133,7 +136,7 @@ const handleRemove: UploadProps['onRemove'] = ( image: ApiImage, uploadFiles) =>
 const handlePictureCardPreview: UploadProps['onPreview'] = (image) => {
   createImageViewer({
     urlList: [
-      image.url!
+      prepareUrl(image.url)!
     ]
   })
 

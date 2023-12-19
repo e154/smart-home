@@ -25,6 +25,7 @@ import (
 // GateConfig ...
 type GateConfig struct {
 	ApiHttpPort      int    `json:"api_http_port" env:"API_HTTP_PORT"`
+	ApiHttpsPort     int    `json:"api_https_port" env:"API_HTTPS_PORT"`
 	ApiDebug         bool   `json:"api_debug" env:"API_DEBUG"`
 	ApiGzip          bool   `json:"api_gzip" env:"API_GZIP"`
 	Domain           string `json:"domain" env:"DOMAIN"`

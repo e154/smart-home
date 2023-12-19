@@ -21,6 +21,7 @@ package server
 import (
 	"context"
 	"net/http"
+	"strings"
 
 	echopprof "github.com/hiko1129/echo-pprof"
 	"github.com/labstack/echo/v4"
@@ -42,7 +43,7 @@ type Server struct {
 
 func NewServer(cfg *Config, proxy *wsp.Server) *Server {
 	return &Server{
-		controllers: controllers.NewControllers(cfg.FullAddress(), "gate"),
+		controllers: controllers.NewControllers("", "gate"),
 		proxy:       proxy,
 		cfg:         cfg,
 	}
@@ -99,26 +100,28 @@ func (a *Server) Start() (err error) {
 			log.Warnf("domain settings is empty")
 		} else {
 			https = true
-			a.echo.Pre(middleware.HTTPSRedirect())
+			//a.echo.Pre(middleware.HTTPSRedirect())
 			// Cache certificates to avoid issues with rate limits (https://letsencrypt.org/docs/rate-limits)
 			a.echo.AutoTLSManager.Cache = autocert.DirCache("./conf")
-			a.echo.AutoTLSManager.HostPolicy = autocert.HostWhitelist(a.cfg.Domain)
+			domains := strings.Split(a.cfg.Domain, " ")
+			a.echo.AutoTLSManager.HostPolicy = autocert.HostWhitelist(domains...)
 		}
 	}
 
 	go func() {
 		var err error
 		if https {
-			err = a.echo.StartAutoTLS(a.cfg.String())
+			log.Infof("server started at %s", a.cfg.HTTPSString())
+			err = a.echo.StartAutoTLS(a.cfg.HTTPSString())
 		} else {
-			err = a.echo.Start(a.cfg.String())
+			log.Infof("server started at %s", a.cfg.HTTPString())
+			err = a.echo.Start(a.cfg.HTTPString())
 		}
 		if err.Error() != "http: Server closed" {
 			log.Error(err.Error())
 		}
 	}()
 
-	log.Infof("server started at %s", a.cfg.String())
 
 	return
 }
@@ -149,6 +152,10 @@ func (a *Server) registerHandlers() {
 	a.echo.Any("/static/*", a.proxyHandler)
 	a.echo.Any("/snapshots/*", a.proxyHandler)
 	a.echo.GET("/v1/ws", func(c echo.Context) error {
+		a.proxy.Ws(c.Response(), c.Request())
+		return nil
+	})
+	a.echo.GET("/stream/*", func(c echo.Context) error {
 		a.proxy.Ws(c.Response(), c.Request())
 		return nil
 	})

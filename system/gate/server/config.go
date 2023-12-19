@@ -21,24 +21,21 @@ package server
 import "fmt"
 
 type Config struct {
-	HttpPort int
-	Debug    bool
-	Pprof    bool
-	Gzip     bool
-	Domain   string
-	Https    bool
+	HttpPort  int
+	HttpsPort int
+	Debug     bool
+	Pprof     bool
+	Gzip      bool
+	Domain    string
+	Https     bool
 }
 
-// String ...
-func (c Config) String() string {
-	return fmt.Sprintf("%s:%d", c.Domain, c.HttpPort)
+// HTTPString ...
+func (c Config) HTTPString() string {
+	return fmt.Sprintf(":%d", c.HttpPort)
 }
 
-// FullAddress ...
-func (c Config) FullAddress() string {
-	var scheme = "http"
-	if c.Https && c.Domain != "" {
-		scheme = "https"
-	}
-	return fmt.Sprintf("%s://%s:%d", scheme, c.Domain, c.HttpPort)
+// HTTPSString ...
+func (c Config) HTTPSString() string {
+	return fmt.Sprintf(":%d", c.HttpsPort)
 }

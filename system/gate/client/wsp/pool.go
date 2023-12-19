@@ -23,6 +23,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api"
 	m "github.com/e154/smart-home/models"
@@ -36,7 +38,7 @@ type Pool struct {
 	target    string
 	secretKey string
 
-	connections []*Connection
+	connections sync.Map
 	lock        sync.RWMutex
 
 	done chan struct{}
@@ -59,7 +61,7 @@ func NewPool(client *Client, target string,
 	return &Pool{
 		client:      client,
 		target:      target,
-		connections: make([]*Connection, 0),
+		connections: sync.Map{},
 		secretKey:   secretKey,
 		done:        make(chan struct{}),
 		api:         api,
@@ -71,21 +73,33 @@ func NewPool(client *Client, target string,
 
 // Start connect to the remote Server
 func (p *Pool) Start(ctx context.Context) {
+	log.Info("Start")
 	p.connector(ctx)
 	go func() {
 		ticker := time.NewTicker(time.Second)
 		defer ticker.Stop()
 
-	L:
 		for {
 			select {
 			case <-p.done:
-				break L
+				return
 			case <-ticker.C:
 				p.connector(ctx)
 			}
 		}
 	}()
+}
+
+// Shutdown close all connection in the pool
+func (p *Pool) Shutdown() {
+	log.Info("Shutdown")
+	close(p.done)
+	p.connections.Range(func(key, value interface{}) bool {
+		connection := value.(*Connection)
+		connection.Close()
+		p.connections.Delete(key)
+		return true
+	})
 }
 
 // The garbage collector
@@ -104,66 +118,50 @@ func (p *Pool) connector(ctx context.Context) {
 	// Create enough connection to fill the pool
 	toCreate := p.client.cfg.PoolIdleSize - poolSize.idle
 
+	if toCreate < 0 {
+		toCreate = 0
+	}
+
 	// Create only one connection if the pool is empty
 	if poolSize.total == 0 {
 		toCreate = 1
 	}
 
 	// Ensure to open at most PoolMaxSize connections
-	if poolSize.total+toCreate > p.client.cfg.PoolMaxSize {
-		toCreate = p.client.cfg.PoolMaxSize - poolSize.total
+	if poolSize.total+toCreate >= p.client.cfg.PoolMaxSize {
+		toCreate = 0
+	}
+
+	if toCreate < 0 {
+		toCreate = 0
+	}
+
+	if toCreate == 0 {
+		return
 	}
 
 	// Try to reach ideal p size
 	for i := 0; i < toCreate; i++ {
-		conn := NewConnection(p, p.api, p.stream)
-		p.connections = append(p.connections, conn)
+		connection := NewConnection(p, p.api, p.stream)
+		id := uuid.NewString()
+		p.connections.Store(id, connection)
 
 		go func() {
-			err := conn.Connect(ctx)
+			err := connection.Connect(ctx)
 			if err != nil {
-				//log.Errorf("Unable to connect to %s : %s", p.target, err)
-
-				p.lock.Lock()
-				defer p.lock.Unlock()
-				p.remove(conn)
+				log.Errorf("Unable to connect to %s : %s", p.target, err)
 			}
+			p.connections.Delete(id)
 		}()
-	}
-}
-
-// Add a connection to the pool
-func (p *Pool) add(conn *Connection) {
-	p.connections = append(p.connections, conn)
-}
-
-// Remove a connection from the pool
-func (p *Pool) remove(conn *Connection) {
-	// This trick uses the fact that a slice shares the same backing array and capacity as the original,
-	// so the storage is reused for the filtered slice. Of course, the original contents are modified.
-
-	var filtered []*Connection // == nil
-	for _, c := range p.connections {
-		if conn != c {
-			filtered = append(filtered, c)
-		}
-	}
-	p.connections = filtered
-}
-
-// Shutdown close all connection in the pool
-func (p *Pool) Shutdown() {
-	close(p.done)
-	for _, conn := range p.connections {
-		conn.Close()
 	}
 }
 
 // Size return the current state of the pool
 func (p *Pool) Size() (poolSize *PoolSize) {
 	poolSize = &PoolSize{}
-	poolSize.total = len(p.connections)
-	for _, connection := range p.connections {
+	p.connections.Range(func(key, value interface{}) bool {
+		poolSize.total++
+		connection := value.(*Connection)
 		switch connection.status {
 		case CONNECTING:
 			poolSize.connecting++
@@ -172,8 +170,8 @@ func (p *Pool) Size() (poolSize *PoolSize) {
 		case RUNNING:
 			poolSize.running++
 		}
-	}
-
+		return true
+	})
 	return
 }
 

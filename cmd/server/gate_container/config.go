@@ -16,18 +16,17 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package main
+package container
 
 import (
-	"fmt"
-	"os"
+	"path"
 
-	"github.com/e154/smart-home/cmd/gate/commands"
+	"github.com/e154/smart-home/common/config"
+	"github.com/e154/smart-home/models"
 )
 
-func main() {
-	if err := commands.Server.Execute(); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
+func ReadConfig() (conf *models.GateConfig) {
+	conf = &models.GateConfig{}
+	config.ReadConfig(path.Join("conf", "config.gate.json"), "GATE", conf)
+	return
 }

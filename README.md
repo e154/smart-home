@@ -1,7 +1,6 @@
 # The program complex **Smart House**
 
 [Project site](https://e154.github.io/smart-home/) |
-[Mobile Gate](https://github.com/e154/smart-home-gate/) |
 [Node](https://github.com/e154/smart-home-node/)
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/e154/smart-home)](https://goreportcard.com/report/github.com/e154/smart-home)

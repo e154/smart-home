@@ -20,6 +20,7 @@ package wsp
 
 import (
 	"context"
+	"github.com/pkg/errors"
 	"net/http"
 	"net/url"
 	"reflect"
@@ -100,33 +101,17 @@ func NewServer(config *Config) (server *Server) {
 // Start Server HTTP server
 func (s *Server) Start() {
 	go func() {
-	L:
 		for {
 			select {
 			case <-s.done:
-				break L
+				return
 			case <-time.After(5 * time.Second):
 				s.clean()
 			}
 		}
 	}()
 
-	//r := http.NewServeMux()
-	// TODO: I want to detach the handler function from the Server struct,
-	// but it is tightly coupled to the internal state of the Server.
-	//r.HandleFunc("/gate/register", s.Register)
-	//r.HandleFunc("/gate/request", s.Request)
-	//r.HandleFunc("/gate/status", s.status)
-
-	// Dispatch connection from available pools to clients requests
-	// in a separate thread from the server thread.
 	go s.dispatchConnections()
-
-	//s.server = &http.Server{
-	//	Addr:    s.Config.GetAddr(),
-	//	Handler: r,
-	//}
-	//go s.server.ListenAndServe()
 }
 
 // clean removes empty Pools which has no connection.
@@ -154,7 +139,7 @@ func (s *Server) clean() {
 		busy += ps.Busy
 	}
 
-	log.Infof("%d pools, %d idle, %d busy", len(s.pools), idle, busy)
+	//log.Infof("%d pools, %d idle, %d busy", len(s.pools), idle, busy)
 }
 
 // Dispatch connection from available pools to clients requests
@@ -197,7 +182,7 @@ func (s *Server) dispatchConnections() {
 					break
 				}
 				s.lock.RUnlock()
-				connection, ok := <- pool.idle
+				connection, ok := <-pool.idle
 				if !ok {
 					continue // a pool has been removed, try again
 				}
@@ -255,8 +240,11 @@ func (s *Server) Ws(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := r.URL.Query()
-	serverId := query.Get("server_id")
+	serverId, err := s.GetServerID(r)
+	if err != nil {
+		common.ProxyErrorf(w, err.Error())
+		return
+	}
 
 	// [2]: Take an WebSocket connection available from pools for relaying received requests.
 	request := NewConnectionRequest(s.Config.GetTimeout(), PoolID(serverId))
@@ -308,7 +296,16 @@ func (s *Server) Request(w http.ResponseWriter, r *http.Request) {
 	//}
 	//r.URL = URL
 
-	serverId := r.Header.Get("X-SERVER-ID")
+	if len(s.pools) == 0 {
+		common.ProxyErrorf(w, "No proxy available")
+		return
+	}
+
+	serverId, err := s.GetServerID(r)
+	if err != nil {
+		common.ProxyErrorf(w, err.Error())
+		return
+	}
 
 	r.URL = &url.URL{
 		Path:        r.URL.Path,
@@ -318,11 +315,6 @@ func (s *Server) Request(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Infof("[%s] %s", r.Method, r.URL.String())
-
-	if len(s.pools) == 0 {
-		common.ProxyErrorf(w, "No proxy available")
-		return
-	}
 
 	// [2]: Take an WebSocket connection available from pools for relaying received requests.
 	request := NewConnectionRequest(s.Config.GetTimeout(), PoolID(serverId))
@@ -418,4 +410,28 @@ func (s *Server) Shutdown() {
 		pool.Shutdown()
 	}
 	s.clean()
+}
+
+func (s *Server) GetServerID(r *http.Request) (serverID string, err error) {
+	serverID = r.Header.Get("X-SERVER-ID")
+	if serverID != "" {
+		return
+	}
+
+	query := r.URL.Query()
+	serverID = query.Get("serverId")
+	if serverID != "" {
+		return
+	}
+
+	serverID = query.Get("server_id")
+	if serverID != "" {
+		return
+	}
+
+	if serverID == "" {
+		err = errors.New("Unable to parse DESTINATION params")
+	}
+
+	return
 }

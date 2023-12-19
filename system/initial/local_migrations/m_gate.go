@@ -20,6 +20,7 @@ package local_migrations
 
 import (
 	"context"
+	"github.com/google/uuid"
 
 	"github.com/e154/smart-home/adaptors"
 	. "github.com/e154/smart-home/system/initial/assertions"
@@ -40,17 +41,19 @@ func (n *MigrationGate) Up(ctx context.Context, adaptors *adaptors.Adaptors) err
 		n.adaptors = adaptors
 	}
 
-	err := AddVariableIfNotExist(n.adaptors, ctx, "gateClientId", "639825c3-47c5-496c-9667-2c7d3f13cd1a")
+	err := AddVariableIfNotExist(n.adaptors, ctx, "gateClientId", uuid.NewString())
 	So(err, ShouldBeNil)
 	err = AddVariableIfNotExist(n.adaptors, ctx, "gateClientSecretKey", "")
 	So(err, ShouldBeNil)
-	err = AddVariableIfNotExist(n.adaptors, ctx, "gateClientServerHost", "127.0.0.1")
+	err = AddVariableIfNotExist(n.adaptors, ctx, "gateClientServerHost", "gate.e154.ru")
 	So(err, ShouldBeNil)
-	err = AddVariableIfNotExist(n.adaptors, ctx, "gateClientServerPort", "8080")
+	err = AddVariableIfNotExist(n.adaptors, ctx, "gateClientServerPort", "8443")
 	So(err, ShouldBeNil)
 	err = AddVariableIfNotExist(n.adaptors, ctx, "gateClientPoolIdleSize", "1")
 	So(err, ShouldBeNil)
 	err = AddVariableIfNotExist(n.adaptors, ctx, "gateClientPoolMaxSize", "100")
+	So(err, ShouldBeNil)
+	err = AddVariableIfNotExist(n.adaptors, ctx, "gateClientTLS", "true")
 	So(err, ShouldBeNil)
 
 	return nil

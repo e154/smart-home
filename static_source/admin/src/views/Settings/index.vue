@@ -39,6 +39,8 @@ export interface Settings {
   gateClientServerPort?: number;
   gateClientPoolIdleSize?: number;
   gateClientPoolMaxSize?: number;
+  gateClientTLS?: boolean;
+  hmacKey?: string;
 }
 
 const settings = ref<Settings>({} as Settings)
@@ -115,7 +117,9 @@ const getSettings = async () => {
     getStringVar('gateClientServerHost'),
     getIntegerVar('gateClientServerPort'),
     getIntegerVar('gateClientPoolIdleSize'),
-    getIntegerVar('gateClientPoolMaxSize')
+    getIntegerVar('gateClientPoolMaxSize'),
+    getBooleanVar('gateClientTLS'),
+    getStringVar('hmacKey')
   ])
   loading.value = false
 }
@@ -307,7 +311,27 @@ getSettings()
       </ElCol>
     </ElRow>
 
-    </ElForm>
+    <ElRow :gutter="24">
+      <ElCol :span="12" :xs="12">
+        <ElFormItem :label="$t('settings.gateClientTLS')" prop="gateClientTLS">
+          <ElSwitch v-model="settings.gateClientTLS" @update:modelValue="changedVariable('gateClientTLS')"/>
+        </ElFormItem>
+      </ElCol>
+      <ElCol :span="12" :xs="12"/>
+    </ElRow>
+
+    <ElDivider content-position="left">{{$t('settings.hmacKey')}}</ElDivider>
+
+    <ElRow :gutter="24">
+      <ElCol :span="12" :xs="12">
+        <ElFormItem :label="$t('settings.hmacKey')" prop="hmacKey">
+          <ElInput size="small" v-model="settings.hmacKey" @update:modelValue="changedVariable('hmacKey')"/>
+        </ElFormItem>
+      </ElCol>
+      <ElCol :span="12" :xs="12"/>
+    </ElRow>
+
+  </ElForm>
 
   </ContentWrap>
 </template>

@@ -121,7 +121,7 @@ export const useAppStore = defineStore('app', {
       return this.token;
     },
     getAvatar() {
-      return this.avatar;
+      return wsCache.get("avatar") || this.avatar;
     },
     getBreadcrumb(): boolean {
       return this.breadcrumb
@@ -208,6 +208,7 @@ export const useAppStore = defineStore('app', {
       this.user = user;
     },
     SetAvatar(avatar: string) {
+      wsCache.set("avatar", avatar)
       this.avatar = avatar;
     },
     SetToken(token: string) {
@@ -222,6 +223,7 @@ export const useAppStore = defineStore('app', {
     RemoveToken() {
       wsCache.delete('accessToken')
       wsCache.delete('currentUser')
+      wsCache.delete('avatar')
       this.user = null;
       this.token = null;
     },

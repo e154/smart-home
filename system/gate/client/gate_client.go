@@ -104,14 +104,13 @@ func (g *GateClient) initWspServer() {
 	if !g.inProcess.CompareAndSwap(false, true) {
 		return
 	}
-	defer g.inProcess.Store(false)
 
 	if g.proxy != nil {
 		g.proxy.Shutdown()
 		g.proxy = nil
 	}
 
-	list, _, err := g.adaptors.Variable.List(context.Background(), 6, 0, "", "", true, "gateClientId,gateClientSecretKey,gateClientServerHost,gateClientServerPort,gateClientPoolIdleSize,gateClientPoolMaxSize")
+	list, _, err := g.adaptors.Variable.List(context.Background(), 7, 0, "", "", true, "gateClientId,gateClientSecretKey,gateClientServerHost,gateClientServerPort,gateClientPoolIdleSize,gateClientPoolMaxSize,gateClientTLS")
 	if err != nil {
 		log.Error(err.Error())
 		return
@@ -132,6 +131,8 @@ func (g *GateClient) initWspServer() {
 			cfg.PoolIdleSize = variable.GetInt()
 		case "gateClientPoolMaxSize":
 			cfg.PoolMaxSize = variable.GetInt()
+		case "gateClientTLS":
+			cfg.TLS = variable.GetBool()
 		}
 	}
 
@@ -151,8 +152,14 @@ func (g *GateClient) initWspServer() {
 		cfg.PoolMaxSize = 100
 	}
 
+	var scheme = "ws"
+
+	if cfg.TLS {
+		scheme = "wss"
+	}
+
 	uri := url.URL{
-		Scheme: "ws",
+		Scheme: scheme,
 		Host:   fmt.Sprintf("%s:%d", cfg.ServerHost, cfg.ServerPort),
 		Path:   "gate/register",
 	}
@@ -175,7 +182,7 @@ func (g *GateClient) eventHandler(_ string, message interface{}) {
 	case events.EventUpdatedVariableModel:
 		switch v.Name {
 		case "gateClientId", "gateClientSecretKey", "gateClientServerHost", "gateClientServerPort",
-			"gateClientPoolIdleSize", "gateClientPoolMaxSize":
+			"gateClientPoolIdleSize", "gateClientPoolMaxSize", "gateClientTLS":
 			log.Infof("updated settings name %s", v.Name)
 			g.initWspServer()
 		}
