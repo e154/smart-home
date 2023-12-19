@@ -52,5 +52,6 @@ func MigrationList(adaptors *adaptors.Adaptors,
 		local_migrations.NewMigrationSpeedtest(adaptors),
 		local_migrations.NewMigrationBackup(adaptors),
 		local_migrations.NewMigrationGate(adaptors),
+		local_migrations.NewMigrationAddVar1(adaptors),
 	}
 }

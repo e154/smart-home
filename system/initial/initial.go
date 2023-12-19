@@ -153,8 +153,9 @@ func (n *Initial) checkForUpgrade() {
 
 		if errors.Is(err, apperr.ErrNotFound) {
 			v = m.Variable{
-				Name:  name,
-				Value: fmt.Sprintf("%d", 1),
+				Name:   name,
+				Value:  fmt.Sprintf("%d", 1),
+				System: true,
 			}
 			err = n.adaptors.Variable.Add(context.Background(), v)
 			So(err, ShouldBeNil)

@@ -286,6 +286,16 @@ getSettings()
 
     <ElDivider content-position="left">{{$t('settings.gate')}}</ElDivider>
 
+      <Infotip
+          :show-index="false"
+          title="INFO"
+          :schema="[
+      {
+        label: t('settings.info2'),
+      },
+    ]"
+      />
+
     <ElRow :gutter="24">
       <ElCol :span="12" :xs="12">
         <ElFormItem :label="$t('settings.gateClientServerHost')" prop="gateClientServerHost">
@@ -321,6 +331,17 @@ getSettings()
     </ElRow>
 
     <ElDivider content-position="left">{{$t('settings.hmacKey')}}</ElDivider>
+
+      <Infotip
+          type="warning"
+          :show-index="false"
+          title="WARNING"
+          :schema="[
+      {
+        label: t('settings.info3'),
+      },
+    ]"
+      />
 
     <ElRow :gutter="24">
       <ElCol :span="12" :xs="12">

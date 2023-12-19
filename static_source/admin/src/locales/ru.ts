@@ -617,6 +617,8 @@ export default {
     createBackupAt: 'Когда создавать кипию (cron)',
     maximumNumberOfBackups: 'Максимальное количество резервных копий',
     info1: 'https://en.wikipedia.org/wiki/Cron',
+    info2: 'тестовый шлюз https://gate.e154.ru:8443',
+    info3: 'не меняй, если не знаешь для чего это',
     sendTheBackupInPartsMb: 'Отправлять резервную копию по частям Mb',
     sendbackuptoTelegramBot: 'Отправить резервную копию боту Telegram',
     gate: 'Шлюз',
