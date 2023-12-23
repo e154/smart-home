@@ -104,6 +104,7 @@ func (g *GateClient) initWspServer() {
 	if !g.inProcess.CompareAndSwap(false, true) {
 		return
 	}
+	defer g.inProcess.Store(false)
 
 	if g.proxy != nil {
 		g.proxy.Shutdown()

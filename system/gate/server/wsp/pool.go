@@ -22,6 +22,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
 
@@ -31,12 +32,11 @@ type Pool struct {
 	id     PoolID
 
 	size int
+	idle chan *Connection
 
-	connections []*Connection
-	idle        chan *Connection
-
-	done bool
-	lock sync.RWMutex
+	done        bool
+	lock        sync.RWMutex
+	connections map[string]*Connection
 }
 
 // PoolID represents the identifier of the connected WebSocket client.
@@ -44,10 +44,12 @@ type PoolID string
 
 // NewPool creates a new Pool
 func NewPool(server *Server, id PoolID) *Pool {
-	p := new(Pool)
-	p.server = server
-	p.id = id
-	p.idle = make(chan *Connection)
+	p := &Pool{
+		server:      server,
+		id:          id,
+		idle:        make(chan *Connection),
+		connections: make(map[string]*Connection),
+	}
 	return p
 }
 
@@ -63,7 +65,14 @@ func (p *Pool) Register(ws *websocket.Conn) {
 
 	log.Infof("Registering new connection from %s", p.id)
 	connection := NewConnection(p, ws)
-	p.connections = append(p.connections, connection)
+	id := uuid.NewString()
+
+	go func() {
+		p.connections[id] = connection
+		connection.WritePump()
+		delete(p.connections, id)
+	}()
+
 }
 
 // Offer offers an idle connection to the server.
@@ -79,28 +88,26 @@ func (p *Pool) Offer(connection *Connection) {
 // This MUST be surrounded by pool.lock.Lock()
 func (p *Pool) Clean() {
 	idle := 0
-	var connections []*Connection
-
-	for _, connection := range p.connections {
+	now := time.Now()
+	for id, connection := range p.connections {
 		// We need to be sur we'll never close a BUSY or soon to be BUSY connection
 		connection.lock.Lock()
 		if connection.status == Idle {
 			idle++
-			if idle > p.size {
+			if idle > p.size+1 {
 				// We have enough idle connections in the pool.
 				// Terminate the connection if it is idle since more that IdleTimeout
-				if int(time.Now().Sub(connection.idleSince).Seconds())*1000 > p.server.Config.IdleTimeout {
+				if now.Sub(connection.idleSince).Seconds() > p.server.Config.IdleTimeout.Seconds() {
 					connection.close()
+					delete(p.connections, id)
 				}
 			}
 		}
 		connection.lock.Unlock()
 		if connection.status == Closed {
-			continue
+			connection.Close()
 		}
-		connections = append(connections, connection)
 	}
-	p.connections = connections
 }
 
 // IsEmpty clean the pool and return true if the pool is empty
@@ -119,17 +126,10 @@ func (p *Pool) Shutdown() {
 
 	p.done = true
 
-	for _, connection := range p.connections {
+	for id, connection := range p.connections {
 		connection.Close()
+		delete(p.connections, id)
 	}
-	p.Clean()
-}
-
-// PoolSize is the number of connection in each state in the pool
-type PoolSize struct {
-	Idle   int
-	Busy   int
-	Closed int
 }
 
 // Size return the number of connection in each state in the pool
@@ -137,7 +137,7 @@ func (p *Pool) Size() (ps *PoolSize) {
 	p.lock.Lock()
 	defer p.lock.Unlock()
 
-	ps = new(PoolSize)
+	ps = &PoolSize{}
 	for _, connection := range p.connections {
 		if connection.status == Idle {
 			ps.Idle++

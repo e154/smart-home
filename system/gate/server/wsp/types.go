@@ -18,12 +18,14 @@
 
 package wsp
 
-import (
-	"time"
-)
+type Message struct {
+	Type  int
+	Value []byte
+}
 
-type Config struct {
-	Timeout     time.Duration
-	IdleTimeout time.Duration
-	SecretKey   string
+// PoolSize is the number of connection in each state in the pool
+type PoolSize struct {
+	Idle   int
+	Busy   int
+	Closed int
 }

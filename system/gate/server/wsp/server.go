@@ -20,7 +20,6 @@ package wsp
 
 import (
 	"context"
-	"github.com/pkg/errors"
 	"net/http"
 	"net/url"
 	"reflect"
@@ -30,6 +29,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common/logger"
 	"github.com/e154/smart-home/system/gate/common"
@@ -126,6 +126,7 @@ func (s *Server) clean() {
 
 	idle := 0
 	busy := 0
+	closed := 0
 
 	for _, pool := range s.pools {
 		if pool.IsEmpty() {
@@ -137,9 +138,10 @@ func (s *Server) clean() {
 		ps := pool.Size()
 		idle += ps.Idle
 		busy += ps.Busy
+		closed = ps.Closed
 	}
 
-	//log.Infof("%d pools, %d idle, %d busy", len(s.pools), idle, busy)
+	log.Infof("%d pools, %d idle, %d busy, %d closed", len(s.pools), idle, busy, closed)
 }
 
 // Dispatch connection from available pools to clients requests
@@ -156,7 +158,7 @@ func (s *Server) dispatchConnections() {
 
 		// A timeout is set for each dispatch request.
 		ctx := context.Background()
-		ctx, cancel := context.WithTimeout(ctx, s.Config.GetTimeout())
+		ctx, cancel := context.WithTimeout(ctx, s.Config.Timeout)
 		defer cancel()
 
 	L:
@@ -247,7 +249,7 @@ func (s *Server) Ws(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// [2]: Take an WebSocket connection available from pools for relaying received requests.
-	request := NewConnectionRequest(s.Config.GetTimeout(), PoolID(serverId))
+	request := NewConnectionRequest(s.Config.Timeout, PoolID(serverId))
 	// "Dispatcher" is running in a separate thread from the server by `go s.dispatchConnections()`.
 	// It waits to receive requests to dispatch connection from available pools to clients requests.
 	// https://github.com/hgsgtk/wsp/blob/ea4902a8e11f820268e52a6245092728efeffd7f/server/server.go#L93
@@ -282,19 +284,6 @@ func (s *Server) Ws(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) Request(w http.ResponseWriter, r *http.Request) {
-	// [1]: Receive requests to be proxied
-	// Parse destination URL
-	//dstURL := r.Header.Get("X-PROXY-DESTINATION")
-	//if dstURL == "" {
-	//	common.ProxyErrorf(w, "Missing X-PROXY-DESTINATION header")
-	//	return
-	//}
-	//URL, err := url.Parse(dstURL)
-	//if err != nil {
-	//	common.ProxyErrorf(w, "Unable to parse X-PROXY-DESTINATION header")
-	//	return
-	//}
-	//r.URL = URL
 
 	if len(s.pools) == 0 {
 		common.ProxyErrorf(w, "No proxy available")
@@ -317,7 +306,7 @@ func (s *Server) Request(w http.ResponseWriter, r *http.Request) {
 	log.Infof("[%s] %s", r.Method, r.URL.String())
 
 	// [2]: Take an WebSocket connection available from pools for relaying received requests.
-	request := NewConnectionRequest(s.Config.GetTimeout(), PoolID(serverId))
+	request := NewConnectionRequest(s.Config.Timeout, PoolID(serverId))
 	// "Dispatcher" is running in a separate thread from the server by `go s.dispatchConnections()`.
 	// It waits to receive requests to dispatch connection from available pools to clients requests.
 	// https://github.com/hgsgtk/wsp/blob/ea4902a8e11f820268e52a6245092728efeffd7f/server/server.go#L93
@@ -388,18 +377,15 @@ func (s *Server) Register(w http.ResponseWriter, r *http.Request) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
-	var pool *Pool
-	var ok bool
-	if pool, ok = s.pools[id]; !ok {
-		pool = NewPool(s, id)
-		s.pools[id] = pool
+	if _, ok := s.pools[id]; !ok {
+		s.pools[id] = NewPool(s, id)
 	}
 
 	// update pool size
-	pool.size = size
+	s.pools[id].size = size
 
 	// Add the WebSocket connection to the pool
-	pool.Register(ws)
+	s.pools[id].Register(ws)
 }
 
 // Shutdown stop the Server
