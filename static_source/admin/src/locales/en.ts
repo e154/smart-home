@@ -619,6 +619,8 @@ export default {
         createBackupAt: 'Create Backup At (Cron)',
         maximumNumberOfBackups: 'Maximum Number Of Backups',
         info1: 'https://en.wikipedia.org/wiki/Cron',
+        info2: 'Organization of remote access without white IP. Free gate https://gate.e154.ru:8443',
+        info3: 'don\'t change it if you don\'t know what it\'s for',
         sendTheBackupInPartsMb: 'Send The Backup In Parts Mb',
         sendbackuptoTelegramBot: 'Send Backup To Telegram Bot',
         gate: 'Gate',

@@ -69,7 +69,7 @@ func NewConnection(pool *Pool,
 
 // Connect to the IsolatorServer using a HTTP websocket
 func (c *Connection) Connect(ctx context.Context) (err error) {
-	log.Infof("Connecting to %s", c.pool.target)
+	//log.Infof("Connecting to %s", c.pool.target)
 
 	// Create a new TCP(/TLS) connection ( no use of net.http )
 	c.ws, _, err = c.pool.client.dialer.DialContext(
@@ -83,6 +83,7 @@ func (c *Connection) Connect(ctx context.Context) (err error) {
 	}
 
 	log.Infof("Connected to %s", c.pool.target)
+	defer log.Info("Connection closed ...")
 
 	// Send the greeting message with proxy id and wanted pool size.
 	greeting := fmt.Sprintf(
@@ -112,7 +113,7 @@ func (c *Connection) serve(ctx context.Context) {
 
 	// Keep connection alive
 	go func() {
-		timer := time.NewTicker(time.Second * 30)
+		timer := time.NewTicker(time.Second * 10)
 		defer timer.Stop()
 		for {
 			select {
@@ -274,6 +275,7 @@ func (c *Connection) error(msg string) (err error) {
 func (c *Connection) Close() {
 
 	if c.ws != nil {
+		_ = c.ws.WriteMessage(websocket.CloseMessage, []byte{})
 		c.ws.Close()
 	}
 }

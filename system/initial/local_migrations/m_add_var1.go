@@ -22,32 +22,24 @@ import (
 	"context"
 
 	"github.com/e154/smart-home/adaptors"
-	. "github.com/e154/smart-home/system/initial/assertions"
 )
 
-type MigrationScheduler struct {
+type MigrationAddVar1 struct {
 	adaptors *adaptors.Adaptors
 }
 
-func NewMigrationScheduler(adaptors *adaptors.Adaptors) *MigrationScheduler {
-	return &MigrationScheduler{
+func NewMigrationAddVar1(adaptors *adaptors.Adaptors) *MigrationAddVar1 {
+	return &MigrationAddVar1{
 		adaptors: adaptors,
 	}
 }
 
-func (n *MigrationScheduler) Up(ctx context.Context, adaptors *adaptors.Adaptors) error {
+func (n *MigrationAddVar1) Up(ctx context.Context, adaptors *adaptors.Adaptors) error {
 	if adaptors != nil {
 		n.adaptors = adaptors
 	}
 
-	err := AddVariableIfNotExist(n.adaptors, ctx, "clearMetricsDays", "60")
-	So(err, ShouldBeNil)
-	err = AddVariableIfNotExist(n.adaptors, ctx, "clearLogsDays", "60")
-	So(err, ShouldBeNil)
-	err = AddVariableIfNotExist(n.adaptors, ctx, "clearEntityStorageDays", "60")
-	So(err, ShouldBeNil)
-	err = AddVariableIfNotExist(n.adaptors, ctx, "clearRunHistoryDays", "60")
-	So(err, ShouldBeNil)
-
+	AddVariableIfNotExist(n.adaptors, ctx, "restartComponentIfScriptChanged", "false")
+	AddVariableIfNotExist(n.adaptors, ctx, "sendTheBackupInPartsMb", "0")
 	return nil
 }

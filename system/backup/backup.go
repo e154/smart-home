@@ -92,7 +92,7 @@ func (b *Backup) Shutdown(ctx context.Context) (err error) {
 	_ = b.eventBus.Unsubscribe("system/services/backup", b.eventHandler)
 
 	if b.restoreImage != "" {
-		if err = b.restore(b.restoreImage); err != nil {
+		if err = b.RestoreFile(b.restoreImage); err != nil {
 			log.Errorf("%+v", err)
 			return
 		}
@@ -277,8 +277,8 @@ func (b *Backup) ApplyChanges() (err error) {
 	return
 }
 
-// restore ...
-func (b *Backup) restore(name string) (err error) {
+// RestoreFile ...
+func (b *Backup) RestoreFile(name string) (err error) {
 	log.Infof("restore backup file %s", name)
 
 	var list []*m.Backup

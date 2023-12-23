@@ -22,14 +22,8 @@ import (
 	"time"
 )
 
-// Config configures an Server
 type Config struct {
-	Timeout     int
-	IdleTimeout int
+	Timeout     time.Duration
+	IdleTimeout time.Duration
 	SecretKey   string
-}
-
-// GetTimeout returns the time.Duration converted to millisecond
-func (c Config) GetTimeout() time.Duration {
-	return time.Duration(c.Timeout) * time.Second
 }

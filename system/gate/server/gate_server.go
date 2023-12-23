@@ -20,13 +20,15 @@ package server
 
 import (
 	"context"
-	"github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/gate/server/wsp"
+	"time"
+
 	"go.uber.org/fx"
 
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
+	"github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
+	"github.com/e154/smart-home/system/gate/server/wsp"
 )
 
 var (
@@ -69,8 +71,8 @@ func NewGateServer(lc fx.Lifecycle,
 func (g *GateServer) Start(ctx context.Context) (err error) {
 
 	config := &wsp.Config{
-		Timeout:     g.gateConfig.ProxyTimeout,
-		IdleTimeout: g.gateConfig.ProxyIdleTimeout,
+		Timeout:     time.Duration(g.gateConfig.ProxyTimeout) * time.Second,
+		IdleTimeout: time.Duration(g.gateConfig.ProxyIdleTimeout) * time.Second,
 		SecretKey:   g.gateConfig.ProxySecretKey,
 	}
 	g.proxy = wsp.NewServer(config)

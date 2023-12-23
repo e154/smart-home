@@ -73,7 +73,7 @@ func NewPool(client *Client, target string,
 
 // Start connect to the remote Server
 func (p *Pool) Start(ctx context.Context) {
-	log.Info("Start")
+	//log.Info("Start")
 	p.connector(ctx)
 	go func() {
 		ticker := time.NewTicker(time.Second)
@@ -92,7 +92,7 @@ func (p *Pool) Start(ctx context.Context) {
 
 // Shutdown close all connection in the pool
 func (p *Pool) Shutdown() {
-	log.Info("Shutdown")
+	//log.Info("Shutdown")
 	close(p.done)
 	p.connections.Range(func(key, value interface{}) bool {
 		connection := value.(*Connection)

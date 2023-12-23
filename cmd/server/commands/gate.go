@@ -34,7 +34,7 @@ import (
 var (
 	gateCmd = &cobra.Command{
 		Use:   "gate",
-		Short: "Proxy server",
+		Short: "Organization of remote access without white IP",
 		Run: func(cmd *cobra.Command, args []string) {
 
 			fmt.Printf(version.ShortVersionBanner, "")

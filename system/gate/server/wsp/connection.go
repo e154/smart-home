@@ -55,6 +55,7 @@ type Connection struct {
 	status    ConnectionStatus
 	idleSince time.Time
 	lock      sync.Mutex
+	queue     chan Message
 }
 
 // NewConnection returns a new Connection.
@@ -63,6 +64,7 @@ func NewConnection(pool *Pool, ws *websocket.Conn) *Connection {
 		pool:   pool,
 		ws:     ws,
 		status: Idle,
+		queue:  make(chan Message),
 	}
 
 	// Mark that this connection is ready to use for relay
@@ -71,7 +73,27 @@ func NewConnection(pool *Pool, ws *websocket.Conn) *Connection {
 	return c
 }
 
+func (c *Connection) WritePump() {
+	var data []byte
+	var messageType int
+	var err error
+	for c.status != Closed {
+		messageType, data, err = c.ws.ReadMessage()
+		if messageType == -1 || err != nil {
+			c.status = Closed
+			close(c.queue)
+			return
+		}
+		msg := Message{
+			Type:  messageType,
+			Value: data,
+		}
+		c.queue <- msg
+	}
+}
+
 func (c *Connection) proxyWs(w http.ResponseWriter, r *http.Request) (err error) {
+	defer c.Release()
 
 	// Only pass those headers to the upgrader.
 	upgradeHeader := http.Header{}
@@ -87,7 +109,9 @@ func (c *Connection) proxyWs(w http.ResponseWriter, r *http.Request) (err error)
 	if accessToken == "" {
 		accessToken = "NIL"
 	}
-	_ = c.ws.WriteMessage(websocket.TextMessage, []byte("WS:" + accessToken))
+	if err = c.ws.WriteMessage(websocket.TextMessage, []byte("WS:"+accessToken)); err != nil {
+		return
+	}
 
 	upgrader.CheckOrigin = func(r *http.Request) bool {
 		return true
@@ -102,7 +126,7 @@ func (c *Connection) proxyWs(w http.ResponseWriter, r *http.Request) (err error)
 	}
 	defer connPub.Close()
 
-	errClient := make(chan error, 1)
+	//errClient := make(chan error, 1)
 	errBackend := make(chan error, 1)
 	replicateWebsocketConn := func(dst, src *websocket.Conn, errc chan error) {
 		for {
@@ -127,13 +151,26 @@ func (c *Connection) proxyWs(w http.ResponseWriter, r *http.Request) (err error)
 		}
 	}
 
-	go replicateWebsocketConn(connPub, c.ws, errClient)
+	go func() {
+		for c.status != Closed {
+			msg, ok := <-c.queue
+			if !ok {
+				return
+			}
+			err = connPub.WriteMessage(msg.Type, msg.Value)
+			if err != nil {
+				break
+			}
+		}
+	}()
+
+	//go replicateWebsocketConn(connPub, c.ws, errClient)
 	go replicateWebsocketConn(c.ws, connPub, errBackend)
 
 	var message string
 	select {
-	case err = <-errClient:
-		message = "websocketproxy: Error when copying from backend to client: %v"
+	//case err = <-errClient:
+	//	message = "websocketproxy: Error when copying from backend to client: %v"
 	case err = <-errBackend:
 		message = "websocketproxy: Error when copying from client to backend: %v"
 	}
@@ -147,6 +184,7 @@ func (c *Connection) proxyWs(w http.ResponseWriter, r *http.Request) (err error)
 // Proxy a HTTP request through the Proxy over the websocket connection
 func (c *Connection) proxyRequest(w http.ResponseWriter, r *http.Request) (err error) {
 	log.Infof("proxy request to %s", c.pool.id)
+	defer c.Release()
 
 	// [1]: Serialize HTTP request
 	jsonReq, err := json.Marshal(common.SerializeHTTPRequest(r))
@@ -179,39 +217,12 @@ func (c *Connection) proxyRequest(w http.ResponseWriter, r *http.Request) (err e
 		return fmt.Errorf("unable to pipe request body (close) : %w", err)
 	}
 
-	// [3]: Wait the HTTP response is ready
-	//responseChannel := make(chan (io.Reader))
-	//c.nextResponse <- responseChannel
-	//responseReader, ok := <-responseChannel
-	//if responseReader == nil {
-	//	if ok {
-	//		// The value of ok is false, the channel is closed and empty.
-	//		// See the Receiver operator in https://go.dev/ref/spec for more information.
-	//		close(responseChannel)
-	//	}
-	//	return fmt.Errorf("unable to get http response reader : %w", err)
-	//}
-	//
-	//// [4]: Read the HTTP response from the peer
-	//// Get the serialized HTTP Response from the peer
-	//jsonResponse, err := io.ReadAll(responseReader)
-	//if err != nil {
-	//	close(responseChannel)
-	//	return fmt.Errorf("unable to read http response : %w", err)
-	//}
-	//
-	//// Notify the read() goroutine that we are done reading the response
-	//close(responseChannel)
-
-	messageType, jsonResponse, err := c.ws.ReadMessage()
-	if messageType == -1 {
+	msg, ok := <-c.queue
+	if !ok {
 		return
 	}
 
-	if err != nil {
-		log.Error(err.Error())
-		return
-	}
+	jsonResponse := msg.Value
 
 	// Deserialize the HTTP Response
 	httpResponse := new(common.HTTPResponse)
@@ -227,39 +238,18 @@ func (c *Connection) proxyRequest(w http.ResponseWriter, r *http.Request) (err e
 	}
 	w.WriteHeader(httpResponse.StatusCode)
 
-	// [5]: Wait the HTTP response body is ready
-	// Get the HTTP Response body from the the peer
-	// To do so send a new channel to the read() goroutine
-	// to get the next message reader
-	//responseBodyChannel := make(chan (io.Reader))
-	//c.nextResponse <- responseBodyChannel
-	//responseBodyReader, ok := <-responseBodyChannel
-	//if responseBodyReader == nil {
-	//	if ok {
-	//		// If more is false the channel is already closed
-	//		close(responseChannel)
-	//	}
-	//	return fmt.Errorf("unable to get http response body reader : %w", err)
-	//}
-
-	messageType, responseBody, err := c.ws.ReadMessage()
-	if messageType == -1 {
+	msg, ok = <-c.queue
+	if !ok {
 		return
 	}
 
+	responseBody := msg.Value
+
 	responseBodyReader := bytes.NewReader(responseBody)
 
-	// [6]: Read the HTTP response body from the peer
-	// Pipe the HTTP response body right from the remote Proxy to the client
 	if _, err := io.Copy(w, responseBodyReader); err != nil {
-		//close(responseBodyChannel)
 		return fmt.Errorf("unable to pipe response body : %w", err)
 	}
-
-	// Notify read() that we are done reading the response body
-	//close(responseBodyChannel)
-
-	c.Release()
 
 	return
 }
@@ -269,11 +259,7 @@ func (c *Connection) Take() bool {
 	c.lock.Lock()
 	defer c.lock.Unlock()
 
-	if c.status == Closed {
-		return false
-	}
-
-	if c.status == Busy {
+	if c.status == Closed || c.status == Busy {
 		return false
 	}
 
@@ -309,14 +295,9 @@ func (c *Connection) close() {
 	if c.status == Closed {
 		return
 	}
+	c.status = Closed
 
 	log.Infof("Closing connection from %s", c.pool.id)
-
-	// This one will be executed *before* lock.Unlock()
-	defer func() { c.status = Closed }()
-
-	// Unlock a possible read() wild message
-	//close(c.nextResponse)
 
 	// Close the underlying TCP connection
 	c.ws.Close()

@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2023, Filippov Alex
+// Copyright (C) 2023, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -16,45 +16,31 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package commands
+package container
 
 import (
-	"github.com/spf13/cobra"
+	"github.com/e154/smart-home/system/migrations"
 	"go.uber.org/fx"
 
-	. "github.com/e154/smart-home/cmd/server/container"
-	. "github.com/e154/smart-home/common/app"
-	. "github.com/e154/smart-home/common/logger"
-	"github.com/e154/smart-home/system/backup"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/logging"
 )
 
-var (
-	log = MustGetLogger("main")
-)
+// BuildContainer ...
+func BuildContainer(opt fx.Option) (app *fx.App) {
 
-var (
-	filename string
+	app = fx.New(
+		fx.Provide(
+			ReadConfig,
+			bus.NewBus,
+			NewLoggerConfig,
+			logging.NewLogger,
+			NewMigrationsConfig,
+			migrations.NewMigrations,
+		),
+		fx.Logger(NewPrinter()),
+		opt,
+	)
 
-	restoreCmd = &cobra.Command{
-		Use:   "restore",
-		Short: "Restore settings from backup archive",
-		Run: func(cmd *cobra.Command, args []string) {
-
-			app := BuildContainer(fx.Invoke(func(
-				logger *logging.Logging,
-				backup *backup.Backup) {
-
-				if err := backup.RestoreFile(filename); err != nil {
-					log.Error(err.Error())
-				}
-
-			}))
-			Start(app)
-		},
-	}
-)
-
-func init() {
-	restoreCmd.Flags().StringVarP(&filename, "filename", "f", "backup.zip", "backup file name")
+	return
 }

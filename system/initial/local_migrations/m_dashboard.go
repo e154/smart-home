@@ -20,8 +20,11 @@ package local_migrations
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/e154/smart-home/adaptors"
+	m "github.com/e154/smart-home/models"
+	. "github.com/e154/smart-home/system/initial/assertions"
 )
 
 type MigrationDashboard struct {
@@ -34,25 +37,29 @@ func NewMigrationDashboard(adaptors *adaptors.Adaptors) *MigrationDashboard {
 	}
 }
 
-func (n *MigrationDashboard) addDashboard(ctx context.Context, name, src string) error {
+func (n *MigrationDashboard) addDashboard(ctx context.Context, name, _n, _d string) error {
 
-	//req := &api.Dashboard{}
-	//_ = json.Unmarshal([]byte(src), req)
-	//
-	//board := dto.ImportDashboard(req)
-	//
-	//var err error
-	//if board.Id, err = n.adaptors.Dashboard.Import(ctx, board); err != nil {
-	//	return err
-	//}
-	//
-	//err = n.adaptors.Variable.CreateOrUpdate(ctx, m.Variable{
-	//	Name:   name,
-	//	Value:  fmt.Sprintf("%d", board.Id),
-	//	System: true,
-	//})
+	if _, err := n.adaptors.Variable.GetByName(ctx, name); err == nil {
+		return nil
+	}
 
-	return nil
+	board := &m.Dashboard{
+		Name:        _n,
+		Description: _d,
+	}
+
+	var err error
+	if board.Id, err = n.adaptors.Dashboard.Add(ctx, board); err != nil {
+		return err
+	}
+
+	err = n.adaptors.Variable.Update(ctx, m.Variable{
+		Name:   name,
+		Value:  fmt.Sprintf("%d", board.Id),
+		System: true,
+	})
+
+	return err
 }
 
 func (n *MigrationDashboard) Up(ctx context.Context, adaptors *adaptors.Adaptors) error {
@@ -60,11 +67,17 @@ func (n *MigrationDashboard) Up(ctx context.Context, adaptors *adaptors.Adaptors
 		n.adaptors = adaptors
 	}
 
-	//err := n.addDashboard(ctx, "devDashboard", devDashboardRaw)
-	//So(err, ShouldBeNil)
-	//
-	//err = n.addDashboard(ctx, "mainDashboard", mainDashboardRaw)
-	//So(err, ShouldBeNil)
+	err := n.addDashboard(ctx, "devDashboardLight", "develop (light theme)", "DEVELOP")
+	So(err, ShouldBeNil)
+
+	err = n.addDashboard(ctx, "devDashboardDark", "develop (dark theme)", "DEVELOP")
+	So(err, ShouldBeNil)
+
+	err = n.addDashboard(ctx, "mainDashboardLight", "main (light theme)", "MAIN")
+	So(err, ShouldBeNil)
+
+	err = n.addDashboard(ctx, "mainDashboardDark", "main (dark theme)", "MAIN")
+	So(err, ShouldBeNil)
 
 	return nil
 }
