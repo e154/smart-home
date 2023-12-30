@@ -1,11 +1,8 @@
 <script setup lang="ts">
-import {computed, onMounted, onUnmounted, reactive, ref, shallowReactive} from 'vue'
+import {computed, onMounted, onUnmounted, reactive, ref, shallowReactive, watch} from 'vue'
 import {useI18n} from '@/hooks/web/useI18n'
 import {ElMessage, ElTabs, ElTabPane, ElSkeleton} from 'element-plus'
-import {useForm} from '@/hooks/web/useForm'
-import {useCache} from '@/hooks/web/useCache'
 import {useRoute, useRouter} from 'vue-router'
-import {useValidator} from '@/hooks/web/useValidator'
 import api from "@/api/api";
 import {EventStateChange} from "@/api/stream_types";
 import {UUID} from "uuid-generator-ts";
@@ -21,11 +18,7 @@ import ViewTab from "@/views/Dashboard/editor/ViewTab.vue";
 import TabCardItem from "@/views/Dashboard/editor/TabCardItem.vue";
 
 const {bus} = useBus()
-const {register, elFormRef, methods} = useForm()
-const {required} = useValidator()
 const route = useRoute();
-const {currentRoute, addRoute, push} = useRouter()
-const {wsCache} = useCache()
 const {t} = useI18n()
 
 // ---------------------------------
@@ -33,7 +26,7 @@ const {t} = useI18n()
 // ---------------------------------
 
 const loading = ref(false)
-const dashboardId = computed(() => route.params.id as number);
+const dashboardId = computed(() => parseInt(route.params.id as string) as number);
 const core = reactive<Core>(new Core());
 const currentID = ref('')
 
@@ -123,6 +116,14 @@ const activeCard = computed<Card>(() => core.tabs[core.activeTab].cards[core.act
 const getBackgroundColor = () => {
   return {backgroundColor: core.tabs[core.activeTab]?.background}
 }
+
+const paneSize = ref(50);
+watch(
+    () => paneSize,
+    (val) => {
+     console.log(val)
+    }
+)
 
 </script>
 

@@ -187,7 +187,7 @@ const updateCardItem = async () => {
             </ElCol>
             <ElCol :span="12" :xs="12">
               <ElFormItem :label="$t('dashboard.editor.title')" prop="title">
-                <ElInput size="small" v-model="cardItem.title"/>
+                <ElInput v-model="cardItem.title"/>
               </ElFormItem>
             </ElCol>
 

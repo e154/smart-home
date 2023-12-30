@@ -151,7 +151,8 @@ export default {
     restorePassword: "Восстановить пароль",
     returnToSignIn: "Вернуться к форме входа",
     updatePassword: "Обновить пароль",
-    server: 'Сервер ID'
+    server: 'Сервер ID',
+    serverPlaceholder: 'Пожалуйста, введите сервер ID'
   },
   router: {
     login: "Вход",

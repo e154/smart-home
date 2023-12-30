@@ -1,29 +1,17 @@
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, PropType, reactive, ref, shallowReactive} from 'vue'
-import {useI18n} from '@/hooks/web/useI18n'
-import {ElMessage, ElTabs, ElTabPane, ElSkeleton} from 'element-plus'
-import {useForm} from '@/hooks/web/useForm'
-import {useCache} from '@/hooks/web/useCache'
-import {useRoute, useRouter} from 'vue-router'
-import {useValidator} from '@/hooks/web/useValidator'
+import {ElTabs, ElTabPane} from 'element-plus'
 import api from "@/api/api";
 import {EventStateChange} from "@/api/stream_types";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
-import {Card, Core, Tab} from "@/views/Dashboard/core";
+import {Core} from "@/views/Dashboard/core";
 import 'splitpanes/dist/splitpanes.css'
 import {useBus} from "@/views/Dashboard/bus";
 import ViewTab from "@/views/Dashboard/view/ViewTab.vue";
 import {propTypes} from "@/utils/propTypes";
-import {ApiVariable} from "@/api/stub";
 
 const {bus} = useBus()
-const {register, elFormRef, methods} = useForm()
-const {required} = useValidator()
-const route = useRoute();
-const {currentRoute, addRoute, push} = useRouter()
-const {wsCache} = useCache()
-const {t} = useI18n()
 
 // ---------------------------------
 // common

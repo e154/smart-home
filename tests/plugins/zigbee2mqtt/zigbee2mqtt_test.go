@@ -231,22 +231,22 @@ automationAction = (entityId)->
 
 			// automation
 			// ------------------------------------------------
-			trigger1 := &m.Trigger{
+			trigger1 := &m.NewTrigger{
 				Name:       "state_change",
-				EntityId:   &buttonEnt.Id,
-				Script:     task1Script,
+				EntityIds:  []string{buttonEnt.Id.String()},
+				ScriptId:   common.Int64(task1Script.Id),
 				PluginName: "state_change",
 			}
-			err = AddTrigger(trigger1, adaptors, eventBus)
+			trigger1Id, err := AddTrigger(trigger1, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
-			trigger2 := &m.Trigger{
+			trigger2 := &m.NewTrigger{
 				Name:       "",
-				EntityId:   &buttonEnt.Id,
-				Script:     task2Script,
+				EntityIds:  []string{buttonEnt.Id.String()},
+				ScriptId:   common.Int64(task2Script.Id),
 				PluginName: "state_change",
 			}
-			err = AddTrigger(trigger2, adaptors, eventBus)
+			trigger2Id, err := AddTrigger(trigger2, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
 			// conditions
@@ -287,7 +287,7 @@ automationAction = (entityId)->
 				Name:         "Toggle plug ON",
 				Enabled:      true,
 				Condition:    common.ConditionAnd,
-				TriggerIds:   []int64{trigger1.Id},
+				TriggerIds:   []int64{trigger1Id},
 				ConditionIds: []int64{condition1.Id},
 				ActionIds:    []int64{action1.Id},
 			}
@@ -300,7 +300,7 @@ automationAction = (entityId)->
 				Name:         "Toggle plug OFF",
 				Enabled:      true,
 				Condition:    common.ConditionAnd,
-				TriggerIds:   []int64{trigger2.Id},
+				TriggerIds:   []int64{trigger2Id},
 				ConditionIds: []int64{condition2.Id},
 				ActionIds:    []int64{action2.Id},
 			}

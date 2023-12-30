@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {nextTick, onMounted, onUnmounted, PropType, ref, unref, watch} from 'vue'
+import {computed, nextTick, onMounted, onUnmounted, PropType, ref, unref, watch} from 'vue'
 import Codemirror, {CmComponentRef, CodeMirror} from "codemirror-editor-vue3";
 import type {Editor, EditorConfiguration} from "codemirror";
 import {ApiScript} from "@/api/stub";
@@ -24,9 +24,7 @@ import 'codemirror/addon/hint/javascript-hint';
 import 'codemirror/addon/hint/show-hint.css';
 import {HintDictionaryCoffee} from "@/views/Scripts/components/types";
 import {useAppStore} from "@/store/modules/app";
-import {bool} from "vue-types";
 import {useEmitt} from "@/hooks/web/useEmitt";
-import {ElMessage} from "element-plus";
 
 const emit = defineEmits(['change', 'update:modelValue'])
 const appStore = useAppStore()
@@ -42,6 +40,23 @@ const { emitter } = useEmitt()
 const sourceScript = ref('')
 const cmComponentRef = ref<CmComponentRef>();
 const cminstance = ref<Editor>();
+
+const currentSize = computed(() => appStore.getCurrentSize as string)
+const fontSize = computed(() => {
+  let size = 16;
+  switch (unref(currentSize)) {
+    case "default":
+      size = 14;
+      break
+    case "large":
+      size = 16;
+      break
+    case "small":
+      size = 12;
+      break
+  }
+  return size + 'px'
+})
 
 const cmOptions: EditorConfiguration = {
   mode: "application/vnd.coffeescript", // Language mode
@@ -192,7 +207,7 @@ useEmitt({
   name: 'updateEditor',
   callback: (val: string) => {
     setTimeout(() => {
-      console.log('update editor')
+      // console.log('update editor')
       cminstance.value?.refresh()
       cminstance.value?.focus();
     }, 100)
@@ -215,5 +230,8 @@ useEmitt({
 </template>
 
 <style lang="less" scoped>
-
+:deep(.CodeMirror) {
+  font-size: v-bind(fontSize);
+  line-height: 1.5;
+}
 </style>

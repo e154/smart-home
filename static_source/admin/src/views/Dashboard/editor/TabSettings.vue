@@ -8,7 +8,7 @@ import {useValidator} from '@/hooks/web/useValidator'
 import {FormSchema} from '@/types/form'
 import {ApiArea, ApiDashboard} from "@/api/stub";
 import {copyToClipboard} from "@/utils/clipboard";
-import Viewer from "@/components/JsonViewer/JsonViewer.vue";
+import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
 import {Core} from "@/views/Dashboard/core";
 import {useRouter} from "vue-router";
 import {useBus} from "@/views/Dashboard/bus";
@@ -239,7 +239,7 @@ const removeBoard = async () => {
 
   <!-- export dialog -->
   <Dialog v-model="dialogVisible" :title="t('dashboard.dialogExportTitle')" :maxHeight="400" width="80%">
-    <Viewer v-model="dialogSource"/>
+    <JsonViewer v-model="dialogSource"/>
     <template #footer>
       <ElButton @click="copy()">{{ t('setting.copy') }}</ElButton>
       <ElButton @click="dialogVisible = false">{{ t('main.closeDialog') }}</ElButton>

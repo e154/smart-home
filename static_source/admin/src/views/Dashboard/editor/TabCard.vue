@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, nextTick, PropType, reactive, ref, unref, watch} from 'vue'
+import {computed, PropType, reactive, ref, unref, watch} from 'vue'
 import {Form} from '@/components/Form'
 import {ElButton, ElCard, ElCol, ElMessage, ElPopconfirm,
   ElRow, ElSkeleton, ElMenu, ElMenuItem, ElButtonGroup} from 'element-plus'
@@ -7,22 +7,18 @@ import {useI18n} from '@/hooks/web/useI18n'
 import {useForm} from '@/hooks/web/useForm'
 import {useValidator} from '@/hooks/web/useValidator'
 import {FormSchema} from '@/types/form'
-import {ApiArea, ApiDashboard, ApiDashboardCard, ApiDashboardCardItem, ApiEntity} from "@/api/stub";
+import {ApiDashboardCard, ApiDashboardCardItem, ApiEntity} from "@/api/stub";
 import {copyToClipboard} from "@/utils/clipboard";
-import Viewer from "@/components/JsonViewer/JsonViewer.vue";
+import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
 import {Card, Core, Tab} from "@/views/Dashboard/core";
-import {useRouter} from "vue-router";
 import {useBus} from "@/views/Dashboard/bus";
 import { Dialog } from '@/components/Dialog'
-import {useEmitt} from "@/hooks/web/useEmitt";
-import api from "@/api/api";
 
 const {register, elFormRef, methods} = useForm()
 const {required} = useValidator()
 const {t} = useI18n()
 
-const {setValues, setSchema} = methods
-const {currentRoute, addRoute, push} = useRouter()
+const {setValues} = methods
 const {bus} = useBus()
 
 interface DashboardTab {
@@ -200,15 +196,12 @@ const showExportDialog = () => {
   exportDialogVisible.value = true
 }
 
-useEmitt({
-  name: 'updateSource',
-  callback: (val: string) => {
-    if (importedCard.value == val) {
-      return
-    }
-    importedCard.value = val
+const importHandler = (val: string) => {
+  if (importedCard.value == val) {
+    return
   }
-})
+  importedCard.value = val
+}
 
 const copy = async () => {
   prepareForExport()
@@ -270,6 +263,7 @@ const updateCard = async () => {
       activeCard.value.background = formData.background
 
       const res = await currentCore.value.updateCard();
+      currentCore.value.updateCurrentTab();
       if (res) {
         ElMessage({
           title: t('Success'),
@@ -442,7 +436,7 @@ const sortCardDown = (card: Card, index: number) => {
 
   <!-- export dialog -->
   <Dialog v-model="exportDialogVisible" :title="t('entities.dialogExportTitle')" :maxHeight="400" width="80%">
-    <Viewer v-model="dialogSource"/>
+    <JsonViewer v-model="dialogSource"/>
     <template #footer>
       <ElButton @click="copy()">{{ t('setting.copy') }}</ElButton>
       <ElButton @click="exportDialogVisible = false">{{ t('main.closeDialog') }}</ElButton>
@@ -452,7 +446,7 @@ const sortCardDown = (card: Card, index: number) => {
 
   <!-- import dialog -->
   <Dialog v-model="importDialogVisible" :title="t('entities.dialogImportTitle')" :maxHeight="400" width="80%" custom-class>
-    <Viewer/>
+    <JsonViewer @change="importHandler"/>
     <template #footer>
       <ElButton type="primary" @click="importCard()" plain>{{ t('main.import') }}</ElButton>
       <ElButton @click="importDialogVisible = false">{{ t('main.closeDialog') }}</ElButton>

@@ -85,12 +85,12 @@ automationTriggerSystem = (msg)->
 
 			// automation
 			// ------------------------------------------------
-			trigger := &m.Trigger{
+			trigger := &m.NewTrigger{
 				Name:       "tr1",
-				Script:     task3Script,
+				ScriptId:   common.Int64(task3Script.Id),
 				PluginName: "system",
 			}
-			err = AddTrigger(trigger, adaptors, eventBus)
+			triggerId, err := AddTrigger(trigger, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
 			//TASK3
@@ -98,7 +98,7 @@ automationTriggerSystem = (msg)->
 				Name:       "Toggle plug OFF",
 				Enabled:    true,
 				Condition:  common.ConditionAnd,
-				TriggerIds: []int64{trigger.Id},
+				TriggerIds: []int64{triggerId},
 			}
 			err = AddTask(newTask, adaptors, eventBus)
 			So(err, ShouldBeNil)

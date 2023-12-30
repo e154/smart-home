@@ -1,28 +1,19 @@
 <script setup lang="ts">
-import {computed, nextTick, PropType, reactive, ref, unref, watch} from 'vue'
+import {computed, PropType, reactive, ref, unref, watch} from 'vue'
 import {Form} from '@/components/Form'
 import {ElButton, ElCard, ElCol, ElMessage, ElPopconfirm, ElRow,
-  ElSkeleton, ElMenu, ElMenuItem, ElButtonGroup} from 'element-plus'
+  ElSkeleton, ElMenu, ElMenuItem} from 'element-plus'
 import {useI18n} from '@/hooks/web/useI18n'
 import {useForm} from '@/hooks/web/useForm'
 import {useValidator} from '@/hooks/web/useValidator'
 import {FormSchema} from '@/types/form'
-import {ApiArea, ApiDashboard, ApiDashboardCard, ApiEntity} from "@/api/stub";
-import {copyToClipboard} from "@/utils/clipboard";
-import Viewer from "@/components/JsonViewer/JsonViewer.vue";
+import {ApiDashboardCard, ApiEntity} from "@/api/stub";
 import {Core, Tab} from "@/views/Dashboard/core";
-import {useRouter} from "vue-router";
-import {useBus} from "@/views/Dashboard/bus";
-import { Dialog } from '@/components/Dialog'
 
 const {register, elFormRef, methods} = useForm()
 const {required} = useValidator()
 const {t} = useI18n()
-const dialogSource = ref({})
-const dialogVisible = ref(false)
-const {setValues, setSchema} = methods
-const {currentRoute, addRoute, push} = useRouter()
-const {bus} = useBus()
+const {setValues} = methods
 
 interface DashboardTab {
   id: number;

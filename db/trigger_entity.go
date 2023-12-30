@@ -16,14 +16,17 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package automation
+package db
 
-import (
-	"github.com/e154/smart-home/plugins/triggers"
-	"github.com/e154/smart-home/system/scripts"
-)
+// TriggerEntity ...
+type TriggerEntity struct {
+	Trigger   *Trigger
+	TriggerId int64 `gorm:"primary_key;auto_increment:false"`
+	Entity    *Entity
+	EntityId  string `gorm:"primary_key;auto_increment:false"`
+}
 
-type TriggerSubscriber struct {
-	Engine     *scripts.EngineWatcher
-	Subscriber triggers.Subscriber
+// TableName ...
+func (TriggerEntity) TableName() string {
+	return "trigger_entity"
 }

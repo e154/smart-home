@@ -159,13 +159,13 @@ automationTriggerStateChanged = (msg)->
 
 			// automation
 			// ------------------------------------------------
-			trigger := &m.Trigger{
+			trigger := &m.NewTrigger{
 				Name:       "state_change",
-				EntityId:   &buttonEnt.Id,
-				Script:     task1Script,
+				EntityIds:  []string{buttonEnt.Id.String()},
+				ScriptId:   common.Int64(task1Script.Id),
 				PluginName: "state_change",
 			}
-			err = AddTrigger(trigger, adaptors, eventBus)
+			triggerId, err := AddTrigger(trigger, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
 			time.Sleep(time.Millisecond * 500)
@@ -174,7 +174,7 @@ automationTriggerStateChanged = (msg)->
 			newTask := &m.NewTask{
 				Name:       "Toggle plug ON",
 				Enabled:    true,
-				TriggerIds: []int64{trigger.Id},
+				TriggerIds: []int64{triggerId},
 				Condition:  common.ConditionAnd,
 			}
 			err = AddTask(newTask, adaptors, eventBus)

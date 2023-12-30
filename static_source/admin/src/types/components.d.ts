@@ -27,6 +27,7 @@ export type ComponentName =
   | 'Role'
   | 'Script'
   | 'Entity'
+  | 'Entities'
   | 'Plugin'
   | 'Scripts'
   | 'ScriptHelper'

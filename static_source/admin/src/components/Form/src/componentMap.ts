@@ -28,6 +28,7 @@ import ScriptSearch from '@/views/Scripts/components/ScriptSearch.vue'
 import ScriptFormHelper from '@/views/Scripts/components/ScriptFormHelper.vue'
 import ScriptsSearch from '@/views/Scripts/components/ScriptsSearch.vue'
 import EntitySearch from '@/views/Entities/components/EntitySearch.vue'
+import EntitiesSearch from '@/views/Entities/components/EntitiesSearch.vue'
 import PluginSearch from '@/views/Plugins/components/PluginSearch.vue'
 import TriggerSearch from '@/views/Automation/components/TriggerSearch.vue'
 import TriggersSearch from '@/views/Automation/components/TriggersSearch.vue'
@@ -65,6 +66,7 @@ const componentMap: Recordable<Component, ComponentName> = {
   Scripts: ScriptsSearch,
   ScriptHelper: ScriptFormHelper,
   Entity: EntitySearch,
+  Entities: EntitiesSearch,
   Plugin: PluginSearch,
   Trigger: TriggerSearch,
   Triggers: TriggersSearch,

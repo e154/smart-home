@@ -61,7 +61,7 @@ export const useAppStore = defineStore('app', {
 
       breadcrumb: true, // 面包屑
       breadcrumbIcon: false, // 面包屑图标
-      collapse: false, // 折叠菜单
+      collapse: wsCache.get('collapse') || false, // 折叠菜单
       uniqueOpened: false, // 是否只保持一个子菜单的展开
       hamburger: true, // 折叠图标
       screenfull: true, // 全屏图标
@@ -80,7 +80,7 @@ export const useAppStore = defineStore('app', {
 
       layout: wsCache.get('layout') || 'classic', // layout布局
       isDark: wsCache.get('isDark') || false, // 是否是暗黑模式
-      currentSize: wsCache.get('small') || 'small', // 组件尺寸
+      currentSize: wsCache.get('currentSize') || 'default', // 组件尺寸
       theme: wsCache.get('theme') || {
         // 主题色
         elColorPrimary: '#409eff',
@@ -234,6 +234,7 @@ export const useAppStore = defineStore('app', {
       this.breadcrumbIcon = breadcrumbIcon
     },
     setCollapse(collapse: boolean) {
+      wsCache.set('collapse', collapse)
       this.collapse = collapse
     },
     setUniqueOpened(uniqueOpened: boolean) {

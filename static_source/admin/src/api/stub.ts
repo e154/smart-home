@@ -888,8 +888,7 @@ export interface ApiNewTaskRequest {
 export interface ApiNewTriggerRequest {
   name: string;
   description: string;
-  entity?: ApiEntity;
-  entityId?: string;
+  entityIds: string[];
   script?: ApiScript;
   /** @format int64 */
   scriptId?: number;
@@ -1177,8 +1176,8 @@ export interface ApiTrigger {
   id: number;
   name: string;
   description: string;
-  entity?: ApiEntity;
-  entityId?: string;
+  entities: ApiEntityShort[];
+  entityIds: string[];
   script?: ApiScript;
   /** @format int64 */
   scriptId?: number;
@@ -5604,8 +5603,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       data: {
         name: string;
         description: string;
-        entity?: ApiEntity;
-        entityId?: string;
+        entityIds: string[];
         script?: ApiScript;
         /** @format int64 */
         scriptId?: number;

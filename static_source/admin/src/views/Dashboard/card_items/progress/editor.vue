@@ -3,13 +3,9 @@ import {computed, PropType, ref, unref, watch} from "vue";
 import {Card, CardItem, Core, requestCurrentState, Tab} from "@/views/Dashboard/core";
 import {ElDivider, ElCollapse, ElCollapseItem, ElCard, ElForm, ElFormItem, ElInputNumber, ElSwitch,
   ElRow, ElCol, ElSelect, ElOption, ElInput, ElTag, ElButton } from 'element-plus'
-import {Vuuri} from "@/views/Dashboard/Vuuri"
-import {useBus} from "@/views/Dashboard/bus";
-import Viewer from "@/components/JsonViewer/JsonViewer.vue";
+import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
 import CommonEditor from "@/views/Dashboard/card_items/common/editor.vue";
 import {useI18n} from "@/hooks/web/useI18n";
-
-const {t} = useI18n()
 
 // ---------------------------------
 // common
@@ -62,15 +58,15 @@ const updateCurrentState = () => {
     </ElFormItem>
 
     <ElFormItem :label="$t('dashboard.editor.strokeWidth')" prop="strokeWidth">
-      <ElInputNumber size="small" v-model="currentItem.payload.progress.strokeWidth"/>
+      <ElInputNumber v-model="currentItem.payload.progress.strokeWidth"/>
     </ElFormItem>
 
     <ElFormItem :label="$t('dashboard.editor.width')" prop="width">
-      <ElInputNumber size="small" v-model="currentItem.payload.progress.width"/>
+      <ElInputNumber v-model="currentItem.payload.progress.width"/>
     </ElFormItem>
 
     <ElFormItem :label="$t('dashboard.editor.value')" prop="value">
-      <ElInput size="small" v-model="currentItem.payload.progress.value"/>
+      <ElInput v-model="currentItem.payload.progress.value"/>
     </ElFormItem>
 
     <ElRow style="padding-bottom: 20px" v-if="currentItem.entity">
@@ -82,7 +78,7 @@ const updateCurrentState = () => {
               {{ $t('dashboard.editor.getEvent') }}
             </ElButton>
 
-            <Viewer v-model="currentItem.lastEvent"/>
+            <JsonViewer v-model="currentItem.lastEvent"/>
 
           </ElCollapseItem>
         </ElCollapse>

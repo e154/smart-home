@@ -76,7 +76,7 @@ func (t *TriggerManager) addTimerTask(name string,
 		Name:       fmt.Sprintf("trigger_%s", name),
 		Script:     script,
 		PluginName: "time",
-		EntityId:   &entity.Id,
+		//EntityId:   &entity.Id,
 		Payload: m.Attributes{
 			triggers.CronOptionTrigger: {
 				Name:  triggers.CronOptionTrigger,
@@ -104,7 +104,7 @@ func (t *TriggerManager) addTimerTask2(name string,
 		Name:       fmt.Sprintf("trigger_%s", name),
 		Script:     script,
 		PluginName: "time",
-		EntityId:   &entity.Id,
+		//EntityId:   &entity.Id,
 		Payload: m.Attributes{
 			triggers.CronOptionTrigger: {
 				Name:  triggers.CronOptionTrigger,
@@ -132,7 +132,7 @@ func (t *TriggerManager) addCheckTask(name string,
 		Name:       fmt.Sprintf("trigger_%s", name),
 		Script:     script,
 		PluginName: "state_change",
-		EntityId:   &entity.Id,
+		//EntityId:   &entity.Id,
 	})
 	task.AddCondition(&m.Condition{
 		Name:   fmt.Sprintf("condition_%s", name),

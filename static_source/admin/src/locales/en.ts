@@ -536,6 +536,7 @@ export default {
             LOGS: 'Logs Table',
             PROGRESS: 'Progress',
             CHART: 'Chart',
+            CHART_CUSTOM: 'Chart Custom',
             ENTITY_STORAGE: 'Entity Storage Table',
             MAP: 'Map',
             SLIDER: 'Slider',
@@ -580,7 +581,14 @@ export default {
                 itemValue: 'Item Value',
                 itemDescription: 'Item Description',
                 barOptions: 'Bar Options',
-                dataZoom: 'Data Zoom'
+                dataZoom: 'Data Zoom',
+                info1: 'https://echarts.apache.org/examples/en/',
+                chartDocumentation: 'Chart Documentation',
+                seriesOptions: 'Series Options',
+                addSeriesItem: 'Add Series Item',
+                series: 'Series',
+                itemType: 'Item Type',
+                addCustomAttribute: 'Add Custom Attribute'
             },
             joystick: {
                 options: 'Joystick Options',
