@@ -42,7 +42,7 @@ onUnmounted(() => {
 <template>
   <section
     :class="[
-      'p-[var(--app-content-padding)] w-[100%] bg-[var(--app-content-bg-color)] dark:bg-[var(--el-bg-color)]', '!min-h-[calc(100%-var(--top-tool-height))]', 'h-[100%]',
+      'p-[var(--app-content-padding)] w-[100%] bg-[var(--app-content-bg-color)] dark:bg-[var(--el-bg-color)]', '!max-h-[calc(100%-var(--top-tool-height))]', 'h-[100%]',
       {
         '!min-h-[calc(100%-var(--app-footer-height))]':
           ((fixedHeader && (layout === 'classic' || layout === 'topLeft')) || layout === 'top') &&

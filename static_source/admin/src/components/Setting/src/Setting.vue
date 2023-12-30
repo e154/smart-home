@@ -219,8 +219,8 @@ const clear = () => {
       <ThemeSwitch />
 
       <!-- 布局 -->
-      <ElDivider>{{ t('setting.layout') }}</ElDivider>
-      <LayoutRadioPicker />
+<!--      <ElDivider>{{ t('setting.layout') }}</ElDivider>-->
+<!--      <LayoutRadioPicker />-->
 
       <!-- 系统主题 -->
       <ElDivider>{{ t('setting.systemTheme') }}</ElDivider>
