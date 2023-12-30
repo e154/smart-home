@@ -1083,7 +1083,7 @@ export class Core {
 
   tabs: Tab[] = [];
 
-  mainTab = 'cardItems';
+  mainTab = 'cards';
   secondTab = '1';
   editorDisabled = false;
 

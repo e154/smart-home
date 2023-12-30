@@ -76,7 +76,7 @@ fetchDashboard()
 </script>
 
 <template>
-  <ElTabs v-model="activeTabIdx"  v-if="core.tabs.length > 1 && !loading" :style="getBackgroundColor()" class="pl-20px !min-h-[calc(100%-var(--top-tool-height))]">
+  <ElTabs v-model="activeTabIdx"  v-if="core.tabs.length > 1 && !loading" :style="getBackgroundColor()" class="pl-20px !min-h-[100%]">
     <ElTabPane
         v-for="(tab, index) in core.tabs"
         :label="tab.name"
@@ -87,7 +87,7 @@ fetchDashboard()
     </ElTabPane>
   </ElTabs>
 
-  <div v-if="core.tabs.length && core.tabs.length === 1 && !loading" :class="[{'gap': core.tabs[0].gap}]" :style="getBackgroundColor()" class="pl-20px pt-20px !min-h-[calc(100%-var(--top-tool-height))] ">
+  <div v-if="core.tabs.length && core.tabs.length === 1 && !loading" :class="[{'gap': core.tabs[0].gap}]" :style="getBackgroundColor()" class="pl-20px pt-20px !min-h-[100%] ">
     <ViewTab :tab="core.tabs[0]" :core="core"/>
   </div>
 </template>

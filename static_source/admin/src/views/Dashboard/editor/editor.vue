@@ -16,10 +16,12 @@ import TabEditor from "@/views/Dashboard/editor/TabEditor.vue";
 import TabCard from "@/views/Dashboard/editor/TabCard.vue";
 import ViewTab from "@/views/Dashboard/editor/ViewTab.vue";
 import TabCardItem from "@/views/Dashboard/editor/TabCardItem.vue";
+import {useCache} from "@/hooks/web/useCache";
 
 const {bus} = useBus()
 const route = useRoute();
 const {t} = useI18n()
+const { wsCache } = useCache()
 
 // ---------------------------------
 // common
@@ -117,21 +119,36 @@ const getBackgroundColor = () => {
   return {backgroundColor: core.tabs[core.activeTab]?.background}
 }
 
-const paneSize = ref(50);
-watch(
-    () => paneSize,
-    (val) => {
-     console.log(val)
-    }
-)
+// split panels
+const splitPaneBottomRef = ref(null)
+
+const splitPaneBottom = ref(50)
+splitPaneBottom.value = wsCache.get('splitPaneBottomSize') as number || 50;
+
+const splitPaneTopSize = ref(50)
+splitPaneTopSize.value = wsCache.get('splitPaneTopSize') as number || 50;
+
+const resizeHandler = function ($event) {
+  wsCache.set('splitPaneTopSize', $event[0].size);
+  splitPaneTopSize.value = $event[0].size;
+
+  if (splitPaneBottomRef.value) {
+    const height = splitPaneBottomRef.value.$el.clientHeight;
+    wsCache.set('splitPaneBottomSize', height);
+
+    splitPaneBottom.value = height;
+    // bus.emit('splitPaneBottomResized', height);
+    // console.log(height)
+  }
+};
 
 </script>
 
 <template>
   <div class="components-container dashboard-container" style="margin: 0" v-if="!loading" :style="getBackgroundColor()">
 
-  <splitpanes class="default-theme" horizontal>
-    <pane min-size="10" max-size="90" :size="50" class="top-container">
+  <splitpanes class="default-theme" @resize="resizeHandler" horizontal>
+    <pane min-size="10" max-size="90" class="top-container" :size="splitPaneTopSize">
         <ElTabs
             v-model="activeTabIdx"
             @edit="handleTabsEdit"
@@ -146,7 +163,7 @@ watch(
           </ElTabPane>
         </ElTabs>
     </pane>
-    <pane class="bottom-container">
+    <pane class="bottom-container" ref="splitPaneBottomRef">
       <ElTabs v-model="core.mainTab" >
         <!-- main -->
         <ElTabPane :label="$t('dashboard.mainTab')" name="main">
