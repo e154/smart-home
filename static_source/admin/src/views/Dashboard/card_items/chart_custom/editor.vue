@@ -229,9 +229,9 @@ const onSelectImage = (image: ApiImage) => {
     </ElCol>
   </ElRow>
 
-  <ElFormItem :label="$t('dashboard.editor.image')" prop="image">
-    <ImageSearch v-model="currentItem.payload.chartCustom.image" @change="onSelectImage"/>
-  </ElFormItem>
+<!--  <ElFormItem :label="$t('dashboard.editor.image')" prop="image">-->
+<!--    <ImageSearch v-model="currentItem.payload.chartCustom.image" @change="onSelectImage"/>-->
+<!--  </ElFormItem>-->
 
   <!-- chart items -->
   <ElDivider content-position="left" >{{$t('dashboard.editor.chart.seriesOptions') }}</ElDivider>

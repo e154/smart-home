@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import {computed, onMounted, onUnmounted, PropType, ref, unref, watch} from "vue";
-import {CardItem, parsedObject, requestCurrentState, serializedObject} from "@/views/Dashboard/core";
+import {computed, onMounted, onUnmounted, PropType, ref, watch} from "vue";
+import {CardItem, parsedObject, serializedObject} from "@/views/Dashboard/core";
 import {
   ChartDataInterface,
   ChartDataSet,
-  chartItemType, SeriesItem
+  chartItemType,
+  SeriesItem
 } from "@/views/Dashboard/card_items/chart_custom/types";
 import {parseTime} from "@/utils";
 import api from "@/api/api";
-import { EChartsOption } from 'echarts'
-import { Echart } from '@/components/Echart'
+import {EChartsOption} from 'echarts'
+import {Echart} from '@/components/Echart'
 import {debounce} from "lodash-es";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
-import {useAppStore} from "@/store/modules/app";
 import {Cache, GetTokens, RenderText} from "@/views/Dashboard/render";
 import {ApiMetric} from "@/api/stub";
 
@@ -26,7 +26,7 @@ const props = defineProps({
   },
 })
 
-const currentItem = computed(()=> props.item as CardItem)
+const currentItem = computed(() => props.item as CardItem)
 
 const onEventhandler = (event) => {
   const {entity_id} = event;
@@ -84,7 +84,7 @@ const applyFilter = (value: any, filter: string): any => {
 const prepareMetric = (metric: ApiMetric, series: SeriesItem): ChartDataInterface => {
   // console.log(metric)
   let _chartData: ChartDataInterface = {
-    labels:  series.chartData?.labels || [],
+    labels: series.chartData?.labels || [],
     datasets: series.chartData?.datasets || [],
   };
 
@@ -95,7 +95,7 @@ const prepareMetric = (metric: ApiMetric, series: SeriesItem): ChartDataInterfac
 
   // add time last item
   if (metric.data.length > 0) {
-    _chartData.lastTime = metric.data[metric.data.length -1].time
+    _chartData.lastTime = metric.data[metric.data.length - 1].time
   }
 
   let totalLabels: Array<string> = [series.metricProps];
@@ -178,7 +178,7 @@ const loaded = ref(false)
 const _cache = new Cache()
 var _chartOptions: EChartsOption = null;
 
-const prepareData = debounce( async ()  => {
+const prepareData = debounce(async () => {
   // loaded.value = false
 
   const chart = props.item.payload.chartCustom;
@@ -189,7 +189,9 @@ const prepareData = debounce( async ()  => {
     return;
   }
 
+  let firstTime = false;
   if (!_chartOptions) {
+    firstTime = true;
     // let _chartOptions = Object.assign({}, chart?.chartOptions) as EChartsOption;
     // for testing !!!
     _chartOptions = parsedObject(serializedObject(chart?.chartOptions)) as EChartsOption;
@@ -303,7 +305,16 @@ const prepareData = debounce( async ()  => {
           case 'pie':
           case 'gauge':
             // attrs (custom|auto)
-            _chartOptions.series[i].data = rowData;
+            if (firstTime) {
+              _chartOptions.series[i].data = rowData;
+            } else {
+              chartOptions.value = {
+                series: [{
+                  data: rowData
+                }]
+              }
+              return
+            }
             break;
         }
       }
@@ -317,10 +328,7 @@ const prepareData = debounce( async ()  => {
   loaded.value = true
 }, 500)
 
-const reloadKey = ref(0)
-const reload = debounce(() => {
-  reloadKey.value += 1
-  console.log('reload')
+const clear = () => {
   _chartOptions = null;
   const chart = props.item.payload.chartCustom;
   if (chart?.seriesItems) {
@@ -328,14 +336,20 @@ const reload = debounce(() => {
       chart.seriesItems[i].chartData = {}
     }
   }
+}
 
-  requestCurrentState(props.item?.entityId);
+const reloadKey = ref(0)
+const reload = debounce(() => {
+  reloadKey.value += 1
+  // console.log('reload')
+  // requestCurrentState(props.item?.entityId);
 }, 100)
 
 watch(
     () => props.item.lastEvent,
     (val?: CardItem) => {
-      // prepareData();
+      prepareData();
+      // reload();
     },
     {
       deep: true,
@@ -346,6 +360,7 @@ watch(
 watch(
     () => [props.item.width, props.item.height, props.item.payload?.chartCustom?.chartOptions],
     (width, height, chartOptions) => {
+      clear();
       prepareData();
       reload();
     },
@@ -375,6 +390,6 @@ prepareData();
   </div>
 </template>
 
-<style lang="less" >
+<style lang="less">
 
 </style>

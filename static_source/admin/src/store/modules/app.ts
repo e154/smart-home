@@ -59,20 +59,20 @@ export const useAppStore = defineStore('app', {
       title: import.meta.env.VITE_APP_TITLE, // 标题
       pageLoading: false, // 路由跳转loading
 
-      breadcrumb: true, // 面包屑
-      breadcrumbIcon: false, // 面包屑图标
+      breadcrumb: wsCache.get('breadcrumb') || true, // 面包屑
+      breadcrumbIcon: wsCache.get('breadcrumbIcon') || false, // 面包屑图标
       collapse: wsCache.get('collapse') || false, // 折叠菜单
       uniqueOpened: false, // 是否只保持一个子菜单的展开
       hamburger: true, // 折叠图标
       screenfull: true, // 全屏图标
       size: true, // 尺寸图标
       locale: true, // 多语言图标
-      tagsView: false, // 标签页
-      tagsViewIcon: false, // 是否显示标签图标
+      tagsView: wsCache.get('tagsView') || false, // 标签页
+      tagsViewIcon: wsCache.get('tagsViewIcon') || false, // 是否显示标签图标
       logo: false, // logo
       fixedHeader: false, // 固定toolheader
       footer: false, // 显示页脚
-      greyMode: false, // 是否开始灰色模式，用于特殊悼念日
+      greyMode: wsCache.get('greyMode') || false, // 是否开始灰色模式，用于特殊悼念日
       dynamicRouter: wsCache.get('dynamicRouter') || false, // 是否动态路由
       fixedMenu: wsCache.get('fixedMenu') || false, // 是否固定菜单
       terminal: wsCache.get('terminal') || false,
@@ -228,9 +228,11 @@ export const useAppStore = defineStore('app', {
       this.token = null;
     },
     setBreadcrumb(breadcrumb: boolean) {
+      wsCache.set('breadcrumb', breadcrumb)
       this.breadcrumb = breadcrumb
     },
     setBreadcrumbIcon(breadcrumbIcon: boolean) {
+      wsCache.set('breadcrumbIcon', breadcrumbIcon)
       this.breadcrumbIcon = breadcrumbIcon
     },
     setCollapse(collapse: boolean) {
@@ -253,9 +255,11 @@ export const useAppStore = defineStore('app', {
       this.locale = locale
     },
     setTagsView(tagsView: boolean) {
+      wsCache.set('tagsView', tagsView)
       this.tagsView = tagsView
     },
     setTagsViewIcon(tagsViewIcon: boolean) {
+      wsCache.set('tagsViewIcon', tagsViewIcon)
       this.tagsViewIcon = tagsViewIcon
     },
     setLogo(logo: boolean) {
@@ -265,6 +269,7 @@ export const useAppStore = defineStore('app', {
       this.fixedHeader = fixedHeader
     },
     setGreyMode(greyMode: boolean) {
+      wsCache.set('greyMode', greyMode)
       this.greyMode = greyMode
     },
     setDynamicRouter(dynamicRouter: boolean) {
