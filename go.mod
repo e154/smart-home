@@ -2,8 +2,6 @@ module github.com/e154/smart-home
 
 go 1.21
 
-toolchain go1.21.1
-
 require (
 	github.com/DrmagicE/gmqtt v0.5.0
 	github.com/Masterminds/semver v1.5.0
