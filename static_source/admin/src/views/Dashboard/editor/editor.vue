@@ -142,7 +142,10 @@ const resizeHandler = function ($event) {
   }
 };
 
-const elContainerHeight = computed(()=> (splitPaneBottom.value - 60) + 'px')
+const tagsView = computed(() => tagsView.value? 37 : 0)
+const elContainerHeight = computed(()=> {
+  return (splitPaneBottom.value - 60 - tagsView.value)  + 'px';
+})
 
 </script>
 
@@ -215,13 +218,10 @@ const elContainerHeight = computed(()=> (splitPaneBottom.value - 60) + 'px')
   position: relative;
 }
 
-.item-card-editor {
-  /*background-color: #f1f1f1;*/
-}
-
 .components-container {
-  height: calc(100vh - 50px);
-  /*min-height: calc(100vh - 50px);*/
+  //height: calc(100vh - 50px);
+  height: inherit;
+  height: -webkit-fill-available;
   margin: 0;
   padding: 0;
 }

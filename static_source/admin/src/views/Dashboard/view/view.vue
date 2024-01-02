@@ -100,35 +100,6 @@ fetchDashboard()
   background: #f1f1f1;
 }
 
-.item-card-editor {
-  /*background-color: #f1f1f1;*/
-}
-
-.components-container {
-  height: calc(100vh - 50px);
-  /*min-height: calc(100vh - 50px);*/
-  margin: 0;
-  padding: 0;
-}
-
-.top-container {
-  width: 100%;
-  height: 100%;
-  //padding: 0 20px;
-  overflow-y: scroll;
-}
-
-.bottom-container {
-  width: 100%;
-  height: 100%;
-  padding: 0 20px;
-  overflow-y: scroll;
-}
-
-.filter-list {
-
-}
-
 p {
   display: block;
   margin-block-start: 1em;
