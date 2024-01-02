@@ -149,7 +149,7 @@ func (p *Pool) connector(ctx context.Context) {
 		go func() {
 			err := connection.Connect(ctx)
 			if err != nil {
-				log.Errorf("Unable to connect to %s : %s", p.target, err)
+				//log.Errorf("Unable to connect to %s : %s", p.target, err)
 			}
 			p.connections.Delete(id)
 		}()

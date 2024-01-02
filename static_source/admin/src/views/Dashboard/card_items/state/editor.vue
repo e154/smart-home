@@ -8,7 +8,7 @@ import {useI18n} from "@/hooks/web/useI18n";
 import {Cache} from "@/views/Dashboard/render";
 import {ApiImage} from "@/api/stub";
 import {ItemPayloadState} from "@/views/Dashboard/card_items/state/types";
-import Viewer from "@/components/JsonViewer/JsonViewer.vue";
+import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
 import ImageSearch from "@/views/Images/components/ImageSearch.vue";
 
 const {t} = useI18n()
@@ -237,7 +237,7 @@ const updateCurrentState = () => {
             </ElCol>
             <ElCol :span="8" :xs="8">
               <ElFormItem :label="$t('dashboard.editor.iconSize')" prop="iconSize">
-                <ElInputNumber size="small" v-model="prop.iconSize" :min="1" :value-on-clear="12"/>
+                <ElInputNumber v-model="prop.iconSize" :min="1" :value-on-clear="12"/>
               </ElFormItem>
             </ElCol>
           </ElRow>
@@ -303,7 +303,7 @@ const updateCurrentState = () => {
       </ElCol>
       <ElCol :span="8" :xs="8">
         <ElFormItem :label="$t('dashboard.editor.iconSize')" prop="iconSize">
-          <ElInputNumber size="small" v-model="currentItem.payload.state.defaultIconSize" :min="1" :value-on-clear="12"/>
+          <ElInputNumber v-model="currentItem.payload.state.defaultIconSize" :min="1" :value-on-clear="12"/>
         </ElFormItem>
       </ElCol>
     </ElRow>
@@ -319,7 +319,7 @@ const updateCurrentState = () => {
             {{ $t('dashboard.editor.getEvent') }}
           </ElButton>
 
-          <Viewer v-model="currentItem.lastEvent"/>
+          <JsonViewer v-model="currentItem.lastEvent"/>
 
         </ElCollapseItem>
       </ElCollapse>

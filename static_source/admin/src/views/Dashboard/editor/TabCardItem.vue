@@ -1,19 +1,17 @@
 <script setup lang="ts">
 import {computed, nextTick, PropType, reactive, ref, unref, watch} from 'vue'
-import {ElButton, ElCard, ElCol, ElMessage, ElPopconfirm,
-  ElRow, ElSkeleton, ElMenu, ElMenuItem, ElButtonGroup, ElForm, ElFormItem, ElRadioGroup, ElCheckboxGroup,
-  ElRadio, ElCheckbox, ElSwitch, ElTimePicker, ElDatePicker, ElSelect, ElOption, ElInput, ElTag} from 'element-plus'
+import {
+  ElButton, ElCard, ElCol, ElMessage, ElPopconfirm,
+  ElRow, ElSkeleton, ElMenu, ElMenuItem, ElButtonGroup, ElForm, ElFormItem,
+  ElSelect, ElOption, ElInput, ElTag, ElMain, ElContainer, ElScrollbar, ElAside
+} from 'element-plus'
 import {useI18n} from '@/hooks/web/useI18n'
-import {useValidator} from '@/hooks/web/useValidator'
 import {Card, CardItem, Core, Tab} from "@/views/Dashboard/core";
-import {useRouter} from "vue-router";
 import {useBus} from "@/views/Dashboard/bus";
 import {CardEditorName, CardItemList} from "@/views/Dashboard/card_items";
 
-const {required} = useValidator()
 const {t} = useI18n()
 
-const {currentRoute, addRoute, push} = useRouter()
 const {bus} = useBus()
 
 const cardItem = ref<CardItem>(null)
@@ -150,9 +148,10 @@ const updateCardItem = async () => {
 
 <template>
 
-  <ElRow :gutter="20">
-    <ElCol :span="15" :xs="15">
-      <ElCard class="box-card">
+  <ElContainer>
+    <ElMain>
+      <ElScrollbar>
+        <ElCard class="box-card">
         <template #header>
           <div class="card-header">
             <span>{{ $t('dashboard.editor.itemDetail') }}</span>
@@ -187,7 +186,7 @@ const updateCardItem = async () => {
             </ElCol>
             <ElCol :span="12" :xs="12">
               <ElFormItem :label="$t('dashboard.editor.title')" prop="title">
-                <ElInput size="small" v-model="cardItem.title"/>
+                <ElInput v-model="cardItem.title"/>
               </ElFormItem>
             </ElCol>
 
@@ -235,15 +234,17 @@ const updateCardItem = async () => {
         </div>
 
       </ElCard>
-    </ElCol>
+      </ElScrollbar>
+    </ElMain>
 
-    <ElCol :span="8" :xs="12">
-      <ElCard class="box-card">
+    <ElAside width="400px">
+      <ElScrollbar>
+        <ElCard class="box-card">
         <template #header>
           <div class="item-header">
             <span>{{ $t('dashboard.editor.itemList') }}</span>
             <ElButtonGroup>
-              <ElButton @click="addCardItem()" text>
+              <ElButton @click="addCardItem()" text size="small">
                 {{ t('dashboard.editor.addNewCardItem') }}
               </ElButton>
             </ElButtonGroup>
@@ -262,7 +263,7 @@ const updateCardItem = async () => {
               @click="menuCardItemClick(index)">
             <div class="w-[100%] item-header">
               <span>
-                <strong>{{ item.title }}</strong>
+                {{ item.title }}
               <ElTag type="info" class="mb-18px ml-10px">
                 {{ item.type }}
               </ElTag>
@@ -280,8 +281,9 @@ const updateCardItem = async () => {
         </ElMenu>
 
       </ElCard>
-    </ElCol>
-  </ElRow>
+      </ElScrollbar>
+    </ElAside>
+  </ElContainer>
 
 
 </template>

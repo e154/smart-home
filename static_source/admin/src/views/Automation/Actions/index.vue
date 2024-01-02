@@ -2,34 +2,23 @@
 import {useI18n} from '@/hooks/web/useI18n'
 import {Table} from '@/components/Table'
 import {computed, h, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
-import {useAppStore} from "@/store/modules/app";
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
 import {ElButton, ElMessage, ElTag} from 'element-plus'
 import {ApiAction, ApiCondition, ApiTrigger} from "@/api/stub";
-import {useForm} from "@/hooks/web/useForm";
 import {useRouter} from "vue-router";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
 import {parseTime} from "@/utils";
-import { Dialog } from '@/components/Dialog'
-import Viewer from "@/components/JsonViewer/JsonViewer.vue";
-import {useEmitt} from "@/hooks/web/useEmitt";
-import {EventActionCompleted, EventStateChange, EventTriggerActivated} from "@/api/stream_types";
+import {EventActionCompleted, EventStateChange} from "@/api/stream_types";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 import {useCache} from "@/hooks/web/useCache";
 
-const {push, currentRoute} = useRouter()
-const remember = ref(false)
-const {register, elFormRef, methods} = useForm()
-const appStore = useAppStore()
+const {push} = useRouter()
 const {t} = useI18n()
 const { wsCache } = useCache()
-const isMobile = computed(() => appStore.getMobile)
 
-const dialogSource = ref("")
 const dialogVisible = ref(false)
-const importedTask = ref("")
 
 interface TableObject {
   tableList: ApiAction[]
@@ -95,7 +84,7 @@ const columns: TableColumn[] = [
     field: 'name',
     label: t('automation.actions.name'),
     sortable: true,
-    width: "150px"
+    width: "170px"
   },
   {
     field: 'areaId',
@@ -130,7 +119,7 @@ const columns: TableColumn[] = [
     label: t('main.createdAt'),
     type: 'time',
     sortable: true,
-    width: "150px",
+    width: "170px",
     formatter: (row: ApiAction) => {
       return h(
           'span',
@@ -143,7 +132,7 @@ const columns: TableColumn[] = [
     label: t('main.updatedAt'),
     type: 'time',
     sortable: true,
-    width: "150px",
+    width: "170px",
     formatter: (row: ApiAction) => {
       return h(
           'span',
@@ -227,16 +216,6 @@ const selectRow = (row) => {
 const showImportDialog = () => {
   dialogVisible.value = true
 }
-
-useEmitt({
-  name: 'updateSource',
-  callback: (val: string) => {
-    if (importedTask.value == val) {
-      return
-    }
-    importedTask.value = val
-  }
-})
 
 const tableRowClassName = (data) => {
   const { row, rowIndex } = data

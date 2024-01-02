@@ -508,12 +508,12 @@ func AddScript(name, src string, adaptors *adaptors.Adaptors, scriptService scri
 	return
 }
 
-func AddTrigger(trigger *m.Trigger, adaptors *adaptors.Adaptors, eventBus bus.Bus) (err error) {
-	if trigger.Id, err = adaptors.Trigger.Add(context.Background(), trigger); err != nil {
+func AddTrigger(trigger *m.NewTrigger, adaptors *adaptors.Adaptors, eventBus bus.Bus) (id int64, err error) {
+	if id, err = adaptors.Trigger.Add(context.Background(), trigger); err != nil {
 		return
 	}
-	eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", trigger.Id), events.EventCreatedTriggerModel{
-		Id: trigger.Id,
+	eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", id), events.EventCreatedTriggerModel{
+		Id: id,
 	})
 	return
 }

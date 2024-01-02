@@ -240,7 +240,7 @@ const toRestore = () => {
 
     <template #tool>
       <div class="flex justify-between items-center w-[100%]">
-        <ElCheckbox v-model="remember" :label="t('login.remember')" size="small"/>
+        <ElCheckbox v-model="remember" :label="t('login.remember')"/>
         <ElLink  type="primary" :underline="false" @click="toRestore()">{{ t('login.forgetPassword') }}</ElLink>
       </div>
     </template>

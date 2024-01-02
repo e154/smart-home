@@ -66,14 +66,14 @@ const columns: TableColumn[] = [
   {
     field: 'operations',
     label: t('backup.operations'),
-    width: "150px",
+    width: "170px",
   },
   {
     field: 'modTime',
     label: t('main.createdAt'),
     type: 'time',
     sortable: true,
-    width: "150px",
+    width: "170px",
     formatter: (row: ApiBackup) => {
       return h(
           'span',

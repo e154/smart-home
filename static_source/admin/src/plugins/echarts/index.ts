@@ -7,7 +7,8 @@ import {
   MapChart,
   PictorialBarChart,
   RadarChart,
-  CustomChart
+  CustomChart,
+  GaugeChart
 } from 'echarts/charts'
 
 import {
@@ -19,6 +20,7 @@ import {
   ParallelComponent,
   LegendComponent,
   DataZoomComponent,
+  ToolboxComponent,
 } from 'echarts/components'
 
 import { CanvasRenderer } from 'echarts/renderers'
@@ -39,7 +41,9 @@ echarts.use([
   PictorialBarChart,
   RadarChart,
   DataZoomComponent,
-  CustomChart
+  CustomChart,
+  GaugeChart,
+  ToolboxComponent
 ])
 
 export default echarts

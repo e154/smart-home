@@ -1,28 +1,19 @@
 <script setup lang="ts">
-import {computed, nextTick, PropType, reactive, ref, unref, watch} from 'vue'
+import {computed, PropType, reactive, ref, unref, watch} from 'vue'
 import {Form} from '@/components/Form'
-import {ElButton, ElCard, ElCol, ElMessage, ElPopconfirm, ElRow,
-  ElSkeleton, ElMenu, ElMenuItem, ElButtonGroup} from 'element-plus'
+import {ElButton, ElCard, ElMessage, ElPopconfirm,
+  ElSkeleton, ElMenu, ElMenuItem, ElContainer, ElMain, ElAside} from 'element-plus'
 import {useI18n} from '@/hooks/web/useI18n'
 import {useForm} from '@/hooks/web/useForm'
 import {useValidator} from '@/hooks/web/useValidator'
 import {FormSchema} from '@/types/form'
-import {ApiArea, ApiDashboard, ApiDashboardCard, ApiEntity} from "@/api/stub";
-import {copyToClipboard} from "@/utils/clipboard";
-import Viewer from "@/components/JsonViewer/JsonViewer.vue";
+import {ApiDashboardCard, ApiEntity} from "@/api/stub";
 import {Core, Tab} from "@/views/Dashboard/core";
-import {useRouter} from "vue-router";
-import {useBus} from "@/views/Dashboard/bus";
-import { Dialog } from '@/components/Dialog'
 
 const {register, elFormRef, methods} = useForm()
 const {required} = useValidator()
 const {t} = useI18n()
-const dialogSource = ref({})
-const dialogVisible = ref(false)
-const {setValues, setSchema} = methods
-const {currentRoute, addRoute, push} = useRouter()
-const {bus} = useBus()
+const {setValues} = methods
 
 interface DashboardTab {
   id: number;
@@ -248,8 +239,8 @@ const sortCardDown = (tab: Tab, index: number) => {}
 
 <template>
 
-  <ElRow :gutter="20">
-    <ElCol :span="15" :xs="15">
+  <ElContainer>
+    <ElMain>
       <ElCard class="box-card">
         <template #header>
           <div class="card-header">
@@ -287,13 +278,13 @@ const sortCardDown = (tab: Tab, index: number) => {}
         </div>
 
       </ElCard>
-    </ElCol>
-    <ElCol :span="8" :xs="12">
+    </ElMain>
+    <ElAside width="400px">
       <ElCard class="box-card">
         <template #header>
           <div class="card-header">
             <span>{{ $t('dashboard.tabList') }}</span>
-            <ElButton @click="createTab()" text>
+            <ElButton @click="createTab()" text size="small">
               {{ t('dashboard.addNewTab') }}
             </ElButton>
           </div>
@@ -315,8 +306,8 @@ const sortCardDown = (tab: Tab, index: number) => {}
         </ElMenu>
 
       </ElCard>
-    </ElCol>
-  </ElRow>
+    </ElAside>
+  </ElContainer>
 
 </template>
 

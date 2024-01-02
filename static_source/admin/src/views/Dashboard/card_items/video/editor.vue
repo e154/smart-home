@@ -3,15 +3,9 @@ import {computed, PropType, ref, unref, watch} from "vue";
 import {Card, CardItem, Core, requestCurrentState, Tab} from "@/views/Dashboard/core";
 import {ElDivider, ElCollapse, ElCollapseItem, ElCard, ElForm, ElFormItem, ElInputNumber, ElSwitch,
   ElRow, ElCol, ElSelect, ElOption, ElInput, ElTag, ElButton, ElColorPicker } from 'element-plus'
-import Viewer from "@/components/JsonViewer/JsonViewer.vue";
-import {Vuuri} from "@/views/Dashboard/Vuuri"
-import {useBus} from "@/views/Dashboard/bus";
-import ViewCard from "@/views/Dashboard/editor/ViewCard.vue";
+import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
 import CommonEditor from "@/views/Dashboard/card_items/common/editor.vue";
-import {useI18n} from "@/hooks/web/useI18n";
 import {playerType} from "@/views/Dashboard/card_items/video/types";
-
-const {t} = useI18n()
 
 // ---------------------------------
 // common
@@ -68,7 +62,7 @@ const updateCurrentState = () => {
     <ElRow :gutter="24" v-if="currentItem.payload.video.playerType === playerType.youtube">
       <ElCol :span="12" :xs="12">
         <ElFormItem :label="$t('dashboard.editor.value')" prop="value">
-          <ElInput size="small" v-model="currentItem.payload.video.attribute"/>
+          <ElInput v-model="currentItem.payload.video.attribute"/>
         </ElFormItem>
       </ElCol>
       <ElCol :span="12" :xs="12"/>
@@ -83,7 +77,7 @@ const updateCurrentState = () => {
               {{ $t('dashboard.editor.getEvent') }}
             </ElButton>
 
-            <Viewer v-model="currentItem.lastEvent"/>
+            <JsonViewer v-model="currentItem.lastEvent"/>
 
           </ElCollapseItem>
         </ElCollapse>

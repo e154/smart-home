@@ -168,7 +168,7 @@ const columns: TableColumn[] = [
     label: t('main.createdAt'),
     type: 'time',
     sortable: true,
-    width: "150px",
+    width: "170px",
     formatter: (row: ApiLog) => {
       return h(
           'span',
@@ -190,7 +190,7 @@ const columns: TableColumn[] = [
     field: 'owner',
     label: t('logs.owner'),
     sortable: true,
-    width: "150px"
+    width: "170px"
   },
 ]
 const paginationObj = ref<Pagination>({

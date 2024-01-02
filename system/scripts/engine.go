@@ -20,6 +20,7 @@ package scripts
 
 import (
 	"fmt"
+	"go.uber.org/atomic"
 	"os"
 	"strconv"
 
@@ -51,7 +52,7 @@ type Engine struct {
 	model      *m.Script
 	script     IScript
 	buf        []string
-	IsRun      bool //todo fix
+	IsRun      atomic.Bool
 	functions  *Pull
 	structures *Pull
 }
@@ -148,11 +149,11 @@ func (s *Engine) Close() {
 
 // DoFull ...
 func (s *Engine) DoFull() (res string, err error) {
-	if s.IsRun {
+	if !s.IsRun.CompareAndSwap(false, true) {
 		return
 	}
+	defer s.IsRun.Store(false)
 
-	s.IsRun = true
 	var result string
 	result, err = s.script.Do()
 	if err != nil {
@@ -167,7 +168,6 @@ func (s *Engine) DoFull() (res string, err error) {
 
 	// reset buffer
 	s.buf = []string{}
-	s.IsRun = false
 
 	return
 }
@@ -179,12 +179,11 @@ func (s *Engine) Do() (string, error) {
 
 // AssertFunction ...
 func (s *Engine) AssertFunction(f string, arg ...interface{}) (result string, err error) {
-
-	if s.IsRun {
+	if !s.IsRun.CompareAndSwap(false, true) {
 		return
 	}
+	defer s.IsRun.Store(false)
 
-	s.IsRun = true
 	result, err = s.script.AssertFunction(f, arg...)
 	if err != nil {
 		err = errors.Wrapf(err, "script id:%d ", s.ScriptId())
@@ -193,7 +192,6 @@ func (s *Engine) AssertFunction(f string, arg ...interface{}) (result string, er
 
 	// reset buffer
 	s.buf = []string{}
-	s.IsRun = false
 
 	return
 }

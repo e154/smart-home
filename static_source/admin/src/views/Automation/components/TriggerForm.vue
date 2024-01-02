@@ -30,7 +30,7 @@ const pluginChanged = async (value?: string) => {
     value = 'state_change'
   }
   const schema = [
-    {field: 'entity', path: 'hidden', value: value !== 'state_change'},
+    {field: 'entityIds', path: 'hidden', value: value !== 'state_change'},
     {field: 'timePluginOptions', path: 'hidden', value: value !== 'time'},
     {field: 'systemPluginOptions', path: 'hidden', value: value !== 'system'},
     {field: 'alexaPluginOptions', path: 'hidden', value: value !== 'alexa'}
@@ -137,9 +137,9 @@ const schema = reactive<FormSchema[]>([
     }
   },
   {
-    field: 'entity',
+    field: 'entityIds',
     label: t('automation.triggers.entity'),
-    component: 'Entity',
+    component: 'Entities',
     colProps: {
       span: 24
     },

@@ -54,7 +54,7 @@ const columns: TableColumn[] = [
   {
     field: 'name',
     label: t('scripts.name'),
-    width: "150px",
+    width: "170px",
     sortable: true
   },
   {
@@ -72,8 +72,7 @@ const columns: TableColumn[] = [
     field: 'createdAt',
     label: t('main.createdAt'),
     type: 'time',
-    sortable: true,
-    width: "150px",
+    width: "170px",
     formatter: (row: ApiScript) => {
       return h(
           'span',
@@ -86,7 +85,7 @@ const columns: TableColumn[] = [
     label: t('main.updatedAt'),
     type: 'time',
     sortable: true,
-    width: "150px",
+    width: "170px",
     formatter: (row: ApiScript) => {
       return h(
           'span',

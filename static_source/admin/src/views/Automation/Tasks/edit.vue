@@ -2,31 +2,20 @@
 import {computed, reactive, ref, unref} from 'vue'
 import {useI18n} from '@/hooks/web/useI18n'
 import {ElButton, ElPopconfirm, ElTimeline, ElTimelineItem, ElCard, ElTabs, ElTabPane, ElMessage} from 'element-plus'
-import {useForm} from '@/hooks/web/useForm'
-import {useCache} from '@/hooks/web/useCache'
-import {useAppStore} from '@/store/modules/app'
 import {useRoute, useRouter} from 'vue-router'
-import {useValidator} from '@/hooks/web/useValidator'
 import api from "@/api/api";
-import {ApiAction, ApiCondition, ApiTask, ApiTrigger} from "@/api/stub";
+import {ApiCondition, ApiTask, ApiTrigger} from "@/api/stub";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
 import {useEmitt} from "@/hooks/web/useEmitt";
-import Viewer from "@/components/JsonViewer/JsonViewer.vue";
-import {copyToClipboard} from "@/utils/clipboard";
 import {Form} from "@/components/Form";
 import TaskForm from "@/views/Automation/components/TaskForm.vue";
 import TriggersSearch from "@/views/Automation/components/TriggersSearch.vue";
 import ConditionsSearch from "@/views/Automation/components/ConditionsSearch.vue";
 import ActionsSearch from "@/views/Automation/components/ActionsSearch.vue";
-import { Dialog } from '@/components/Dialog'
 import TaskTelemetry from "@/views/Automation/components/TaskTelemetry.vue";
 
-const {register, elFormRef, methods} = useForm()
-const {required} = useValidator()
-const appStore = useAppStore()
-const {currentRoute, addRoute, push} = useRouter()
+const {push} = useRouter()
 const route = useRoute();
-const {wsCache} = useCache()
 const {t} = useI18n()
 
 const writeRef = ref<ComponentRef<typeof Form>>()
@@ -34,8 +23,6 @@ const loading = ref(false)
 const taskId = computed(() => route.params.id as number);
 const currentTask = ref<Nullable<ApiTask>>(null)
 const activeTab = ref('pipeline')
-const dialogSource = ref({})
-const dialogVisible = ref(false)
 const triggerIds = ref([])
 const conditionIds = ref([])
 const actionIds = ref([])
@@ -114,39 +101,6 @@ const cancel = () => {
   push('/automation/tasks')
 }
 
-const copy = async () => {
-  const body = prepareForSave()
-  copyToClipboard(JSON.stringify(body, null, 2))
-}
-
-const exportTask = async () => {
-  const body = prepareForSave()
-  dialogSource.value = body
-  dialogVisible.value = true
-}
-
-const callAction = async (name: string) => {
-  // todo: fix
-  await api.v1.developerToolsServiceCallAction({ id: taskId.value || 0, name: name })
-      .catch(() => {
-      })
-      .finally(() => {
-        ElMessage({
-          title: t('Success'),
-          message: t('message.callSuccessful'),
-          type: 'success',
-          duration: 2000
-        })
-      })
-}
-
-useEmitt({
-  name: 'callAction',
-  callback: (name: string) => {
-    callTrigger(name)
-  }
-})
-
 useEmitt({
   name: 'updateTriggers',
   callback: (val: ApiTrigger[]) => {
@@ -156,28 +110,6 @@ useEmitt({
 useEmitt({
   name: 'updateConditions',
   callback: (val: ApiCondition[]) => {
-  }
-})
-
-const callTrigger = async (name: string) => {
-  //todo: fix
-  await api.v1.developerToolsServiceCallTrigger({ id: taskId.value || 0, name: name })
-      .catch(() => {
-      })
-      .finally(() => {
-        ElMessage({
-          title: t('Success'),
-          message: t('message.callSuccessful'),
-          type: 'success',
-          duration: 2000
-        })
-      })
-}
-
-useEmitt({
-  name: 'callTrigger',
-  callback: (name: string) => {
-    callTrigger(name)
   }
 })
 
@@ -264,16 +196,6 @@ fetch()
     </div>
 
   </ContentWrap>
-
-  <!-- export dialog -->
-  <Dialog v-model="dialogVisible" :title="t('automation.tasks.exportDialogTitle')" :maxHeight="400">
-    <Viewer v-model="dialogSource"/>
-    <template #footer>
-      <ElButton @click="copy()">{{ t('setting.copy') }}</ElButton>
-      <ElButton @click="dialogVisible = false">{{ t('main.closeDialog') }}</ElButton>
-    </template>
-  </Dialog>
-  <!-- /export dialog -->
 
 </template>
 

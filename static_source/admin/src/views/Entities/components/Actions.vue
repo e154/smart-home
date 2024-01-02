@@ -78,7 +78,7 @@ const columns: TableColumn[] = [
   {
     field: 'script',
     label: t('entities.script'),
-    width: "150px",
+    width: "170px",
   },
   {
     field: 'operations',

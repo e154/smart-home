@@ -148,7 +148,7 @@ const removeAction = (index: number) => {
   <!-- /hide on-->
 
   <!-- button options -->
-  <div v-if="!['button', 'chart', 'map', 'slider', 'streamPlayer'].includes(item.type)">
+  <div v-if="!['button', 'chart', 'chart_custom', 'map', 'slider', 'streamPlayer'].includes(item.type)">
     <ElDivider content-position="left">{{$t('dashboard.editor.buttonOptions') }}</ElDivider>
     <ElRow :gutter="24">
       <ElCol :span="12" :xs="12">
@@ -228,7 +228,7 @@ const removeAction = (index: number) => {
                   </ElCol>
                   <ElCol :span="8" :xs="8">
                     <ElFormItem :label="$t('dashboard.editor.iconSize')" prop="iconSize">
-                      <ElInputNumber size="small" v-model="prop.iconSize" :min="1" :value-on-clear="12"/>
+                      <ElInputNumber v-model="prop.iconSize" :min="1" :value-on-clear="12"/>
                     </ElFormItem>
                   </ElCol>
                 </ElRow>

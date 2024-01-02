@@ -99,10 +99,10 @@ const removeProp = (index: number) => {
 
   <ElForm v-if="current.item" label-position="top" label-width="100px" ref="current.item" :model="current.item" :rules="rules2" style="width: 100%">
     <ElFormItem :label="$t('metrics.name')" prop="name">
-      <ElInput size="small" v-model="current.item.name"/>
+      <ElInput v-model="current.item.name"/>
     </ElFormItem>
     <ElFormItem :label="$t('metrics.description')" prop="description">
-      <ElInput size="small" v-model="current.item.description"/>
+      <ElInput v-model="current.item.description"/>
     </ElFormItem>
 
   </ElForm>
@@ -128,11 +128,11 @@ const removeProp = (index: number) => {
           <ElRow :gutter="20">
             <ElCol>
               <ElFormItem :label="$t('metrics.name')" prop="name">
-                <ElInput size="small" v-model="prop.name"/>
+                <ElInput v-model="prop.name"/>
               </ElFormItem>
 
               <ElFormItem :label="$t('metrics.description')" prop="description">
-                <ElInput size="small" v-model="prop.description"/>
+                <ElInput v-model="prop.description"/>
               </ElFormItem>
 
 <!--              <ElFormItem :label="$t('metrics.color')" prop="background">-->
@@ -140,11 +140,11 @@ const removeProp = (index: number) => {
 <!--              </ElFormItem>-->
 
               <ElFormItem :label="$t('metrics.translate')" prop="translate">
-                <ElInput size="small" v-model="prop.translate"/>
+                <ElInput v-model="prop.translate"/>
               </ElFormItem>
 
               <ElFormItem :label="$t('metrics.label')" prop="label">
-                <ElInput size="small" v-model="prop.label"/>
+                <ElInput v-model="prop.label"/>
               </ElFormItem>
 
             </ElCol>

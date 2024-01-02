@@ -144,8 +144,6 @@ func (n *Task) Update(ctx context.Context, ver *m.UpdateTask) (err error) {
 		Enabled:     ver.Enabled,
 		Condition:   ver.Condition,
 		AreaId:      ver.AreaId,
-		CreatedAt:   ver.CreatedAt,
-		UpdatedAt:   ver.UpdatedAt,
 	}
 
 	//triggers

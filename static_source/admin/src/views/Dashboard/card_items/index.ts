@@ -14,6 +14,8 @@ import progress from './progress/index.vue';
 import progressEditor from './progress/editor.vue';
 import chart from './chart/index.vue';
 import chartEditor from './chart/editor.vue';
+import chart_custom from './chart_custom/index.vue';
+import chartCustomEditor from './chart_custom/editor.vue';
 import entityStorage from './entity_storage/index.vue';
 import entityStorageEditor from './entity_storage/editor.vue';
 import map from './map/index.vue';
@@ -45,6 +47,8 @@ export const CardItemName = (name: string): any => {
       return progress;
     case 'chart':
       return chart;
+    case 'chart_custom':
+      return chart_custom;
     case 'entityStorage':
       return entityStorage;
     case 'map':
@@ -81,6 +85,8 @@ export const CardEditorName = (name: string): any => {
       return progressEditor;
     case 'chart':
       return chartEditor;
+    case 'chart_custom':
+      return chartCustomEditor;
     case 'entityStorage':
       return entityStorageEditor;
     case 'map':
@@ -114,6 +120,7 @@ export const CardItemList: ItemsType[] = [
   {label: 'LOGS', value: 'logs'},
   {label: 'PROGRESS', value: 'progress'},
   {label: 'CHART', value: 'chart'},
+  {label: 'CHART_CUSTOM', value: 'chart_custom'},
   {label: 'ENTITY_STORAGE', value: 'entityStorage'},
   {label: 'MAP', value: 'map'},
   {label: 'SLIDER', value: 'slider'},

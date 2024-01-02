@@ -3,13 +3,11 @@ import {computed, onBeforeUnmount, onMounted, PropType, ref, unref, watch} from 
 import {Card, CardItem, comparisonType, Core, requestCurrentState, Tab} from "@/views/Dashboard/core";
 import {ElDivider, ElCollapse, ElCollapseItem, ElCard, ElForm, ElFormItem, ElPopconfirm, ElSwitch,
   ElRow, ElCol, ElSelect, ElOption, ElInput, ElTag, ElButton } from 'element-plus'
-// import { Editor, EditorExpose } from '@/components/Editor'
-// import { IDomEditor } from '@wangeditor/editor'
 import CommonEditor from "@/views/Dashboard/card_items/common/editor.vue";
 import {useI18n} from "@/hooks/web/useI18n";
 import {Cache, GetTokens} from "@/views/Dashboard/render";
 import {TextProp} from "@/views/Dashboard/card_items/text/types";
-import Viewer from "@/components/JsonViewer/JsonViewer.vue";
+import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
 import { TinycmeEditor } from "@/components/Tinymce";
 
 const {t} = useI18n()
@@ -306,7 +304,7 @@ const updateCurrentState = () => {
             {{ $t('dashboard.editor.getEvent') }}
           </ElButton>
 
-          <Viewer v-model="currentItem.lastEvent"/>
+          <JsonViewer v-model="currentItem.lastEvent"/>
 
         </ElCollapseItem>
       </ElCollapse>

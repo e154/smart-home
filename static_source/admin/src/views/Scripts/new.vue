@@ -2,25 +2,13 @@
 import {ref, unref} from 'vue'
 import {useI18n} from '@/hooks/web/useI18n'
 import {ElButton} from 'element-plus'
-import {useForm} from '@/hooks/web/useForm'
-import {useCache} from '@/hooks/web/useCache'
-import {useAppStore} from '@/store/modules/app'
-import {usePermissionStore} from '@/store/modules/permission'
-import {useRoute, useRouter} from 'vue-router'
-import {useValidator} from '@/hooks/web/useValidator'
+import {useRouter} from 'vue-router'
 import api from "@/api/api";
 import Form from './components/Form.vue'
 import {ApiNewScriptRequest} from "@/api/stub";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
-import {useEmitt} from "@/hooks/web/useEmitt";
 
-const {register, elFormRef, methods} = useForm()
-const {required} = useValidator()
-const appStore = useAppStore()
-const permissionStore = usePermissionStore()
-const {currentRoute, addRoute, push} = useRouter()
-const route = useRoute();
-const {wsCache} = useCache()
+const {push} = useRouter()
 const {t} = useI18n()
 
 const writeRef = ref<ComponentRef<typeof Form>>()
@@ -57,16 +45,6 @@ const save = async () => {
 const cancel = () => {
   push('/scripts')
 }
-
-useEmitt({
-  name: 'updateSource',
-  callback: (val: string) => {
-    if (sourceScript.value == val) {
-      return
-    }
-    sourceScript.value = val
-  }
-})
 
 </script>
 

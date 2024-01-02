@@ -134,7 +134,7 @@ const columns: TableColumn[] = [
     label: t('main.createdAt'),
     type: 'time',
     sortable: true,
-    width: "150px",
+    width: "170px",
     formatter: (row: ApiEntityStorage) => {
       return h(
           'span',

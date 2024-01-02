@@ -2,25 +2,13 @@
 import {computed, defineEmits, onMounted, PropType, reactive, ref, watch} from 'vue'
 import {Form} from '@/components/Form'
 import {useI18n} from '@/hooks/web/useI18n'
-import {ElButton, ElPopconfirm} from 'element-plus'
 import {useForm} from '@/hooks/web/useForm'
-import {useCache} from '@/hooks/web/useCache'
-import {useAppStore} from '@/store/modules/app'
-import {usePermissionStore} from '@/store/modules/permission'
-import {useRoute, useRouter} from 'vue-router'
 import {useValidator} from '@/hooks/web/useValidator'
 import {FormSchema} from '@/types/form'
 import {User} from "@/views/Users/components/types";
-import api from "@/api/api";
-import {ApiImage, ApiPluginOptionsResultEntityState, ApiRole} from "@/api/stub";
 
 const {register, elFormRef, methods} = useForm()
 const {required} = useValidator()
-const appStore = useAppStore()
-const permissionStore = usePermissionStore()
-const {currentRoute, addRoute, push} = useRouter()
-const route = useRoute();
-const {wsCache} = useCache()
 const {t} = useI18n()
 
 const props = defineProps({
@@ -89,7 +77,7 @@ watch(
     () => props.currentRow,
     (currentRow) => {
       if (!currentRow) return
-      const { setValues, setSchema } = methods
+      const { setValues } = methods
       setValues(currentRow)
     },
     {

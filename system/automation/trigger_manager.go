@@ -158,12 +158,16 @@ func (a *triggerManager) addTrigger(model *m.Trigger) (err error) {
 
 	defer func() {
 		if err == nil {
-				a.triggerCounter.Inc()
+			a.triggerCounter.Inc()
 		}
 	}()
 
 	if _, ok := a.triggers[model.Id]; ok {
 		err = errors.Wrap(apperr.ErrInternal, fmt.Sprintf("trigger %s exist", model.Name))
+		return
+	}
+
+	if !model.Enabled {
 		return
 	}
 
@@ -203,12 +207,12 @@ func (a *triggerManager) updateTrigger(id int64) {
 	//log.Infof("reload trigger id:%d", id)
 	a.removeTrigger(id)
 
-	task, err := a.adaptors.Trigger.GetById(context.Background(), id)
+	trigger, err := a.adaptors.Trigger.GetById(context.Background(), id)
 	if err != nil {
 		return
 	}
 
-	a.addTrigger(task)
+	a.addTrigger(trigger)
 }
 
 func (a *triggerManager) IsLoaded(id int64) (loaded bool) {

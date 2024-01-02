@@ -213,12 +213,12 @@ getSettings()
     <ElRow :gutter="24">
       <ElCol :span="12" :xs="12">
         <ElFormItem :label="$t('settings.clearMetricsDays')" prop="clearMetricsDays">
-          <ElInputNumber size="small" v-model="settings.clearMetricsDays" @update:modelValue="changedVariable('clearMetricsDays')" :min="1"/>
+          <ElInputNumber v-model="settings.clearMetricsDays" @update:modelValue="changedVariable('clearMetricsDays')" :min="1"/>
         </ElFormItem>
       </ElCol>
       <ElCol :span="12" :xs="12">
         <ElFormItem :label="$t('settings.clearLogsDays')" prop="clearLogsDays">
-          <ElInputNumber size="small" v-model="settings.clearLogsDays" @update:modelValue="changedVariable('clearLogsDays')" :min="1"/>
+          <ElInputNumber v-model="settings.clearLogsDays" @update:modelValue="changedVariable('clearLogsDays')" :min="1"/>
         </ElFormItem>
       </ElCol>
     </ElRow>
@@ -226,12 +226,12 @@ getSettings()
     <ElRow :gutter="24">
       <ElCol :span="12" :xs="12">
         <ElFormItem :label="$t('settings.clearEntityStorageDays')" prop="clearEntityStorageDays">
-          <ElInputNumber size="small" v-model="settings.clearEntityStorageDays" @update:modelValue="changedVariable('clearEntityStorageDays')" :min="1"/>
+          <ElInputNumber v-model="settings.clearEntityStorageDays" @update:modelValue="changedVariable('clearEntityStorageDays')" :min="1"/>
         </ElFormItem>
       </ElCol>
       <ElCol :span="12" :xs="12">
         <ElFormItem :label="$t('settings.clearRunHistoryDays')" prop="clearRunHistoryDays">
-          <ElInputNumber size="small" v-model="settings.clearRunHistoryDays"  @update:modelValue="changedVariable('clearRunHistoryDays')" :min="1"/>
+          <ElInputNumber v-model="settings.clearRunHistoryDays"  @update:modelValue="changedVariable('clearRunHistoryDays')" :min="1"/>
         </ElFormItem>
       </ElCol>
     </ElRow>
@@ -241,7 +241,7 @@ getSettings()
     <ElRow :gutter="24">
       <ElCol :span="12" :xs="12">
         <ElFormItem :label="$t('settings.timezone')" prop="timezone">
-          <ElInput size="small" v-model="settings.timezone" @update:modelValue="changedVariable('timezone')"/>
+          <ElInput v-model="settings.timezone" @update:modelValue="changedVariable('timezone')"/>
         </ElFormItem>
       </ElCol>
     </ElRow>
@@ -261,12 +261,12 @@ getSettings()
     <ElRow :gutter="24">
       <ElCol :span="12" :xs="12">
         <ElFormItem :label="$t('settings.createBackupAt')" prop="createBackupAt">
-          <ElInput size="small" v-model="settings.createBackupAt" @update:modelValue="changedVariable('createBackupAt')"/>
+          <ElInput v-model="settings.createBackupAt" @update:modelValue="changedVariable('createBackupAt')"/>
         </ElFormItem>
       </ElCol>
       <ElCol :span="12" :xs="12">
         <ElFormItem :label="$t('settings.maximumNumberOfBackups')" prop="maximumNumberOfBackups">
-          <ElInputNumber size="small" v-model="settings.maximumNumberOfBackups"  @update:modelValue="changedVariable('maximumNumberOfBackups')" :min="1"/>
+          <ElInputNumber v-model="settings.maximumNumberOfBackups"  @update:modelValue="changedVariable('maximumNumberOfBackups')" :min="1"/>
         </ElFormItem>
       </ElCol>
     </ElRow>
@@ -279,7 +279,7 @@ getSettings()
       </ElCol>
       <ElCol :span="12" :xs="12">
         <ElFormItem :label="$t('settings.sendTheBackupInPartsMb')" prop="maximumNumberOfBackups">
-          <ElInputNumber size="small" v-model="settings.sendTheBackupInPartsMb"  @update:modelValue="changedVariable('sendTheBackupInPartsMb')" :min="0"/>
+          <ElInputNumber v-model="settings.sendTheBackupInPartsMb"  @update:modelValue="changedVariable('sendTheBackupInPartsMb')" :min="0"/>
         </ElFormItem>
       </ElCol>
     </ElRow>
@@ -299,24 +299,24 @@ getSettings()
     <ElRow :gutter="24">
       <ElCol :span="12" :xs="12">
         <ElFormItem :label="$t('settings.gateClientServerHost')" prop="gateClientServerHost">
-          <ElInput size="small" v-model="settings.gateClientServerHost" @update:modelValue="changedVariable('gateClientServerHost')" clearable/>
+          <ElInput v-model="settings.gateClientServerHost" @update:modelValue="changedVariable('gateClientServerHost')" clearable/>
         </ElFormItem>
         <ElFormItem :label="$t('settings.gateClientId')" prop="gateClientId">
-          <ElInput size="small" v-model="settings.gateClientId" @update:modelValue="changedVariable('gateClientId')" clearable/>
+          <ElInput type="password" v-model="settings.gateClientId" @update:modelValue="changedVariable('gateClientId')" clearable show-password/>
         </ElFormItem>
         <ElFormItem :label="$t('settings.gateClientSecretKey')" prop="gateClientSecretKey">
-          <ElInput size="small" v-model="settings.gateClientSecretKey" @update:modelValue="changedVariable('gateClientSecretKey')" clearable/>
+          <ElInput type="password" v-model="settings.gateClientSecretKey" @update:modelValue="changedVariable('gateClientSecretKey')" clearable show-password/>
         </ElFormItem>
       </ElCol>
       <ElCol :span="12" :xs="12">
         <ElFormItem :label="$t('settings.gateClientServerPort')" prop="gateClientServerPort">
-          <ElInputNumber size="small" v-model="settings.gateClientServerPort" @update:modelValue="changedVariable('gateClientServerPort')" :min="1"/>
+          <ElInputNumber v-model="settings.gateClientServerPort" @update:modelValue="changedVariable('gateClientServerPort')" :min="1"/>
         </ElFormItem>
         <ElFormItem :label="$t('settings.gateClientPoolIdleSize')" prop="gateClientPoolIdleSize">
-          <ElInputNumber size="small" v-model="settings.gateClientPoolIdleSize" @update:modelValue="changedVariable('gateClientPoolIdleSize')" :min="1" :max="100"/>
+          <ElInputNumber v-model="settings.gateClientPoolIdleSize" @update:modelValue="changedVariable('gateClientPoolIdleSize')" :min="1" :max="100"/>
         </ElFormItem>
         <ElFormItem :label="$t('settings.gateClientPoolMaxSize')" prop="gateClientPoolMaxSize">
-          <ElInputNumber size="small" v-model="settings.gateClientPoolMaxSize" @update:modelValue="changedVariable('gateClientPoolMaxSize')" :min="1" :max="100"/>
+          <ElInputNumber v-model="settings.gateClientPoolMaxSize" @update:modelValue="changedVariable('gateClientPoolMaxSize')" :min="1" :max="100"/>
         </ElFormItem>
       </ElCol>
     </ElRow>
@@ -346,7 +346,7 @@ getSettings()
     <ElRow :gutter="24">
       <ElCol :span="12" :xs="12">
         <ElFormItem :label="$t('settings.hmacKey')" prop="hmacKey">
-          <ElInput size="small" v-model="settings.hmacKey" @update:modelValue="changedVariable('hmacKey')"/>
+          <ElInput type="password" v-model="settings.hmacKey" @update:modelValue="changedVariable('hmacKey')" show-password/>
         </ElFormItem>
       </ElCol>
       <ElCol :span="12" :xs="12"/>

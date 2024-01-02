@@ -46,7 +46,7 @@ const columns: TableColumn[] = [
   {
     field: 'name',
     label: t('plugins.name'),
-    width: "150px"
+    width: "170px"
   },
   {
     field: 'type',
