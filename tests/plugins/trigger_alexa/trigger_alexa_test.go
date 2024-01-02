@@ -79,6 +79,7 @@ automationTriggerAlexa = (msg)->
 			// automation
 			// ------------------------------------------------
 			trigger := &m.NewTrigger{
+				Enabled:    true,
 				Name:       "alexa",
 				ScriptId:   common.Int64(task3Script.Id),
 				PluginName: "alexa",

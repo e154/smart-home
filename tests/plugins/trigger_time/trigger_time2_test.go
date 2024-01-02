@@ -96,6 +96,7 @@ entityAction = (entityId, actionName)->
 			// automation
 			// ------------------------------------------------
 			trigger := &m.NewTrigger{
+				Enabled:    true,
 				Name:       "trigger1",
 				PluginName: "time",
 				Payload: m.Attributes{

@@ -232,6 +232,7 @@ automationAction = (entityId)->
 			// automation
 			// ------------------------------------------------
 			trigger1 := &m.NewTrigger{
+				Enabled:    true,
 				Name:       "state_change",
 				EntityIds:  []string{buttonEnt.Id.String()},
 				ScriptId:   common.Int64(task1Script.Id),
@@ -241,6 +242,7 @@ automationAction = (entityId)->
 			So(err, ShouldBeNil)
 
 			trigger2 := &m.NewTrigger{
+				Enabled:    true,
 				Name:       "",
 				EntityIds:  []string{buttonEnt.Id.String()},
 				ScriptId:   common.Int64(task2Script.Id),

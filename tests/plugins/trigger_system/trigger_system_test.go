@@ -86,6 +86,7 @@ automationTriggerSystem = (msg)->
 			// automation
 			// ------------------------------------------------
 			trigger := &m.NewTrigger{
+				Enabled:    true,
 				Name:       "tr1",
 				ScriptId:   common.Int64(task3Script.Id),
 				PluginName: "system",

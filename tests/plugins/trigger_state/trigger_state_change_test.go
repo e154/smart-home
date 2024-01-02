@@ -160,6 +160,7 @@ automationTriggerStateChanged = (msg)->
 			// automation
 			// ------------------------------------------------
 			trigger := &m.NewTrigger{
+				Enabled:    true,
 				Name:       "state_change",
 				EntityIds:  []string{buttonEnt.Id.String()},
 				ScriptId:   common.Int64(task1Script.Id),
