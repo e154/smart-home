@@ -222,6 +222,8 @@ const elContainerHeight = computed(()=> {
   //height: calc(100vh - 50px);
   height: inherit;
   height: -webkit-fill-available;
+  height: -moz-available;
+  height: fill-available;
   margin: 0;
   padding: 0;
 }
