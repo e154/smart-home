@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, reactive, ref, shallowReactive, watch} from 'vue'
 import {useI18n} from '@/hooks/web/useI18n'
-import {ElMessage, ElTabs, ElTabPane, ElSkeleton} from 'element-plus'
+import {ElMessage, ElTabs, ElTabPane} from 'element-plus'
 import {useRoute, useRouter} from 'vue-router'
 import api from "@/api/api";
 import {EventStateChange} from "@/api/stream_types";
@@ -142,6 +142,8 @@ const resizeHandler = function ($event) {
   }
 };
 
+const elContainerHeight = computed(()=> (splitPaneBottom.value - 60) + 'px')
+
 </script>
 
 <template>
@@ -232,13 +234,7 @@ const resizeHandler = function ($event) {
 
 .bottom-container {
   width: 100%;
-  //height: 100%;
   padding: 0 20px;
-  overflow-y: scroll;
-}
-
-.filter-list {
-
 }
 
 p {
@@ -276,4 +272,23 @@ html {
 .splitpanes.default-theme .splitpanes__splitter {
   background-color: #bfbfbf6e;
 }
+
+.el-tabs {
+  height: inherit;
+  height: -webkit-fill-available;
+}
+
+.el-container,
+#pane-main,
+#pane-tabs,
+#pane-cards,
+#pane-cardItems,
+.bottom-container .el-tabs__content {
+  height: v-bind(elContainerHeight);
+}
+
+.el-main {
+  padding: 0 20px 0 0;
+}
+
 </style>

@@ -1,21 +1,15 @@
 <script setup lang="ts">
 import {
   computed,
-  defineAsyncComponent,
-  defineComponent,
-  onBeforeUpdate,
   onMounted, onUnmounted,
   onUpdated,
   PropType,
   ref,
-  watch
 } from "vue";
 import {Card, CardItem, Core, Tab} from "@/views/Dashboard/core";
-import {Vuuri} from "@/views/Dashboard/Vuuri"
 import {useBus} from "@/views/Dashboard/bus";
 import debounce from 'lodash.debounce'
 import Moveable, { OnRender } from 'vue3-moveable'
-import { VueSelecto } from "vue3-selecto";
 import {CardItemName} from "@/views/Dashboard/card_items";
 import {UUID} from "uuid-generator-ts";
 
