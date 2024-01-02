@@ -20,8 +20,6 @@ package models
 
 import (
 	"time"
-
-	"github.com/e154/smart-home/common"
 )
 
 // TriggerPayload ...
@@ -31,19 +29,45 @@ type TriggerPayload struct {
 
 // Trigger ...
 type Trigger struct {
-	CreatedAt   time.Time        `json:"created_at"`
-	UpdatedAt   time.Time        `json:"updated_at"`
-	Name        string           `json:"name" validate:"required,lte=255"`
-	PluginName  string           `json:"plugin_name" validate:"required,lte=255"`
-	Description string           `json:"description"`
-	Id          int64            `json:"id"`
-	Entity      *Entity          `json:"entity"`
-	EntityId    *common.EntityId `json:"entity_id"`
-	Script      *Script          `json:"script"`
-	ScriptId    *int64           `json:"script_id"`
-	Payload     Attributes       `json:"payload"`
-	AreaId      *int64           `json:"area_id"`
-	Area        *Area            `json:"area"`
-	Enabled     bool             `json:"enabled"`
-	IsLoaded    bool             `json:"is_loaded"`
+	CreatedAt   time.Time  `json:"created_at"`
+	UpdatedAt   time.Time  `json:"updated_at"`
+	Name        string     `json:"name" validate:"required,lte=255"`
+	PluginName  string     `json:"plugin_name" validate:"required,lte=255"`
+	Description string     `json:"description"`
+	Id          int64      `json:"id"`
+	Entities    []*Entity  `json:"entities" validate:"dive"`
+	Script      *Script    `json:"script"`
+	ScriptId    *int64     `json:"script_id"`
+	Payload     Attributes `json:"payload"`
+	AreaId      *int64     `json:"area_id"`
+	Area        *Area      `json:"area"`
+	Enabled     bool       `json:"enabled"`
+	IsLoaded    bool       `json:"is_loaded"`
+}
+
+// NewTrigger ...
+type NewTrigger struct {
+	Name        string     `json:"name" validate:"required,lte=255"`
+	PluginName  string     `json:"plugin_name" validate:"required,lte=255"`
+	Description string     `json:"description"`
+	EntityIds   []string   `json:"entity_ids"`
+	ScriptId    *int64     `json:"script_id"`
+	Payload     Attributes `json:"payload"`
+	AreaId      *int64     `json:"area_id"`
+	Enabled     bool       `json:"enabled"`
+	IsLoaded    bool       `json:"is_loaded"`
+}
+
+// UpdateTrigger ...
+type UpdateTrigger struct {
+	Name        string     `json:"name" validate:"required,lte=255"`
+	PluginName  string     `json:"plugin_name" validate:"required,lte=255"`
+	Description string     `json:"description"`
+	Id          int64      `json:"id"`
+	EntityIds   []string   `json:"entity_ids" validate:"dive"`
+	ScriptId    *int64     `json:"script_id"`
+	Payload     Attributes `json:"payload"`
+	AreaId      *int64     `json:"area_id"`
+	Enabled     bool       `json:"enabled"`
+	IsLoaded    bool       `json:"is_loaded"`
 }

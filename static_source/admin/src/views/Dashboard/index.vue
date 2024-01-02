@@ -1,26 +1,20 @@
 <script setup lang="ts">
 import {useI18n} from '@/hooks/web/useI18n'
 import {Table} from '@/components/Table'
-import {h, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
-import {useAppStore} from "@/store/modules/app";
+import {h, reactive, ref, watch} from 'vue'
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
-import {ElButton, ElMessage, ElText} from 'element-plus'
+import {ElButton, ElMessage} from 'element-plus'
 import {ApiDashboard} from "@/api/stub";
-import {useForm} from "@/hooks/web/useForm";
 import {useRouter} from "vue-router";
 import {parseTime} from "@/utils";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
 import { Dialog } from '@/components/Dialog'
-import Viewer from "@/components/JsonViewer/JsonViewer.vue";
+import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
 import {Core} from "@/views/Dashboard/core";
-import {useEmitt} from "@/hooks/web/useEmitt";
 import {useCache} from "@/hooks/web/useCache";
 
-const {push, currentRoute} = useRouter()
-const remember = ref(false)
-const {register, elFormRef, methods} = useForm()
-const appStore = useAppStore()
+const {push} = useRouter()
 const counter = ref(0);
 const {t} = useI18n()
 const { wsCache } = useCache()
@@ -75,7 +69,7 @@ const columns: TableColumn[] = [
     label: t('main.createdAt'),
     type: 'time',
     sortable: true,
-    width: "150px",
+    width: "170px",
     formatter: (row: ApiDashboard) => {
       return h(
           'span',
@@ -88,7 +82,7 @@ const columns: TableColumn[] = [
     label: t('main.updatedAt'),
     type: 'time',
     sortable: true,
-    width: "150px",
+    width: "170px",
     formatter: (row: ApiDashboard) => {
       return h(
           'span',
@@ -172,7 +166,7 @@ const addNew = () => {
       })
 }
 
-const edit = (row: ApiDashboard) => {
+const editDashboard = (row: ApiDashboard) => {
   push(`/dashboards/edit/${row.id}`)
 }
 
@@ -180,19 +174,15 @@ const showDashboard = (row: ApiDashboard) => {
   push(`/dashboards/view/${row.id}`)
 }
 
-const dialogSource = ref({})
 const dialogVisible = ref(false)
 const importValue = ref("")
 
-useEmitt({
-  name: 'updateSource',
-  callback: (val: string) => {
-    if (importValue.value == val) {
-      return
-    }
-    importValue.value = val
+const importHandler = (val: string) => {
+  if (importValue.value == val) {
+    return
   }
-})
+  importValue.value = val
+}
 
 const importDashboard = async () => {
   let dashboard: ApiDashboard
@@ -255,7 +245,7 @@ const importDashboard = async () => {
 
       <template #operations="{ row }">
 
-        <ElButton :link="true" @click.prevent.stop="edit(row)">
+        <ElButton :link="true" @click.prevent.stop="editDashboard(row)">
           {{ $t('main.edit') }}
         </ElButton>
       </template>
@@ -264,7 +254,7 @@ const importDashboard = async () => {
 
   <!-- import dialog -->
   <Dialog v-model="dialogVisible" :title="t('dashboard.dialogImportTitle')" :maxHeight="400" width="80%" custom-class>
-    <Viewer/>
+    <JsonViewer @change="importHandler"/>
     <template #footer>
       <ElButton type="primary" @click="importDashboard()" plain>{{ t('main.import') }}</ElButton>
       <ElButton @click="dialogVisible = false">{{ t('main.closeDialog') }}</ElButton>

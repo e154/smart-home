@@ -80,7 +80,7 @@ const columns: TableColumn[] = [
     label: t('main.createdAt'),
     type: 'time',
     sortable: true,
-    width: "150px",
+    width: "170px",
     formatter: (row: ApiUserShot) => {
       return h(
           'span',
@@ -93,7 +93,7 @@ const columns: TableColumn[] = [
     label: t('main.updatedAt'),
     type: 'time',
     sortable: true,
-    width: "150px",
+    width: "170px",
     formatter: (row: ApiUserShot) => {
       return h(
           'span',

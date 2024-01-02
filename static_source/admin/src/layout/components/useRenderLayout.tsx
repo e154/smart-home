@@ -94,7 +94,7 @@ export const useRenderLayout = (isDevelop: boolean) => {
             >
               <ToolHeader class="border-bottom-1 border-solid border-[var(--top-tool-border-color)] bg-[var(--top-header-bg-color)] dark:border-[var(--el-border-color)]"></ToolHeader>
 
-              {tagsView.value ? (
+              {tagsView.value && isDevelop ? (
                 <TagsView class="border-bottom-1 border-top-1 border-solid border-[var(--tags-view-border-color)] dark:border-[var(--el-border-color)]"></TagsView>
               ) : undefined}
             </div>

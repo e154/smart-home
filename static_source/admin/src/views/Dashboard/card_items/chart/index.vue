@@ -8,16 +8,12 @@ import api from "@/api/api";
 import {useBus} from "@/views/Dashboard/bus";
 import { EChartsOption } from 'echarts'
 import { Echart } from '@/components/Echart'
-import {useI18n} from "@/hooks/web/useI18n";
-import {string} from "vue-types";
 import {debounce} from "lodash-es";
 import {Cache, GetTokens, RenderText} from "@/views/Dashboard/render";
-import {ApplyFilter} from "@/views/Dashboard/filters";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 
 const {bus} = useBus()
-const { t } = useI18n()
 
 // ---------------------------------
 // common

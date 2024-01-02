@@ -93,12 +93,12 @@ const onSelectImage = (index: number, image: ApiImage) => {
 
 <!--      <ElCol :span="12" :xs="12">-->
 <!--        <ElFormItem :label="$t('dashboard.editor.startTimeout')" prop="startTimeout">-->
-<!--          <ElInputNumber size="small" v-model="currentItem.payload.joystick.startTimeout" :min="500"/>-->
+<!--          <ElInputNumber v-model="currentItem.payload.joystick.startTimeout" :min="500"/>-->
 <!--        </ElFormItem>-->
 <!--      </ElCol>-->
 <!--      <ElCol :span="12" :xs="12">-->
 <!--        <ElFormItem :label="$t('dashboard.editor.endTimeout')" prop="endTimeout">-->
-<!--          <ElInputNumber size="small" v-model="currentItem.payload.joystick.endTimeout" :min="0"/>-->
+<!--          <ElInputNumber v-model="currentItem.payload.joystick.endTimeout" :min="0"/>-->
 <!--        </ElFormItem>-->
 <!--      </ElCol>-->
 

@@ -95,7 +95,8 @@ entityAction = (entityId, actionName)->
 
 			// automation
 			// ------------------------------------------------
-			trigger := &m.Trigger{
+			trigger := &m.NewTrigger{
+				Enabled:    true,
 				Name:       "trigger1",
 				PluginName: "time",
 				Payload: m.Attributes{
@@ -106,7 +107,7 @@ entityAction = (entityId, actionName)->
 					},
 				},
 			}
-			err = AddTrigger(trigger, adaptors, eventBus)
+			triggerId, err := AddTrigger(trigger, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
 			action := &m.Action{
@@ -122,7 +123,7 @@ entityAction = (entityId, actionName)->
 				Name:       "Toggle plug OFF",
 				Enabled:    true,
 				Condition:  common.ConditionAnd,
-				TriggerIds: []int64{trigger.Id},
+				TriggerIds: []int64{triggerId},
 				ActionIds:  []int64{action.Id},
 			}
 			err = AddTask(newTask, adaptors, eventBus)

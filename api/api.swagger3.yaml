@@ -3328,16 +3328,16 @@ paths:
           application/json:
             schema:
               type: object
-              required: [ name, description, pluginName, attributes, enabled ]
+              required: [ name, description, pluginName, attributes, enabled, entityIds ]
               properties:
                 name:
                   type: string
                 description:
                   type: string
-                entity:
-                  $ref: '#/components/schemas/apiEntity'
-                entityId:
-                  type: string
+                entityIds:
+                  type: array
+                  items:
+                    type: string
                 script:
                   $ref: '#/components/schemas/apiScript'
                 scriptId:
@@ -5830,16 +5830,16 @@ components:
           format: int64
     apiNewTriggerRequest:
       type: object
-      required: [ name, description, pluginName, attributes, enabled ]
+      required: [ name, description, pluginName, attributes, enabled, entityIds ]
       properties:
         name:
           type: string
         description:
           type: string
-        entity:
-          $ref: '#/components/schemas/apiEntity'
-        entityId:
-          type: string
+        entityIds:
+          type: array
+          items:
+            type: string
         script:
           $ref: '#/components/schemas/apiScript'
         scriptId:
@@ -6364,7 +6364,7 @@ components:
           format: int32
     apiTrigger:
       type: object
-      required: [ id, name, description, pluginName, enabled, createdAt, updatedAt, attributes ]
+      required: [ id, name, description, pluginName, enabled, createdAt, updatedAt, attributes, entities, entityIds ]
       properties:
         id:
           type: integer
@@ -6373,10 +6373,14 @@ components:
           type: string
         description:
           type: string
-        entity:
-          $ref: '#/components/schemas/apiEntity'
-        entityId:
-          type: string
+        entities:
+          type: array
+          items:
+            $ref: '#/components/schemas/apiEntityShort'
+        entityIds:
+          type: array
+          items:
+            type: string
         script:
           $ref: '#/components/schemas/apiScript'
         scriptId:

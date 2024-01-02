@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {nextTick, onMounted, PropType, ref, unref, watch} from 'vue'
+import {nextTick, onMounted, PropType, computed, ref, unref, watch} from 'vue'
 import Codemirror, {CmComponentRef} from "codemirror-editor-vue3";
 import type {Editor, EditorConfiguration} from "codemirror";
 
@@ -20,8 +20,6 @@ import 'codemirror/addon/hint/show-hint';
 import 'codemirror/addon/hint/javascript-hint';
 import 'codemirror/addon/hint/show-hint.css';
 import {useAppStore} from "@/store/modules/app";
-import {bool} from "vue-types";
-import {useEmitt} from "@/hooks/web/useEmitt";
 
 const emit = defineEmits(['change', 'update:modelValue'])
 const appStore = useAppStore()
@@ -33,10 +31,26 @@ const props = defineProps({
   }
 })
 
-const {emitter} = useEmitt()
 const sourceScript = ref('')
 const cmComponentRef = ref<CmComponentRef>(null);
 const cminstance = ref<Editor>();
+
+const currentSize = computed(() => appStore.getCurrentSize as string)
+const fontSize = computed(() => {
+  let size = 16;
+  switch (unref(currentSize)) {
+    case "default":
+      size = 14;
+      break
+    case "large":
+      size = 16;
+      break
+    case "small":
+      size = 12;
+      break
+  }
+  return size + 'px'
+})
 
 const cmOptions: EditorConfiguration = {
   mode: "application/json", // Language mode
@@ -63,7 +77,12 @@ watch(
       await nextTick()
       if (val === unref(sourceScript)) return
       if (val) {
-        sourceScript.value = JSON.stringify(val, null, 2);
+        sourceScript.value = JSON.stringify(val, function(key, value) {
+          if (typeof value === 'function') {
+            return value.toString(); // Convert function to string
+          }
+          return value;
+        }, 2);
       } else {
         sourceScript.value = ""
       }
@@ -76,14 +95,14 @@ watch(
 
 watch(
     () => appStore.getIsDark,
-    (val: bool) => {
+    () => {
       cminstance.value?.setOption("theme", appStore.getIsDark ? "darcula" : "mdn-like")
       cminstance.value?.refresh()
     }
 )
 
 const onChange = (val: string, cm: any) => {
-  emitter.emit('updateSource', val)
+  emit('change', val)
 }
 
 </script>
@@ -100,5 +119,8 @@ const onChange = (val: string, cm: any) => {
 </template>
 
 <style lang="less" scoped>
-
+:deep(.CodeMirror) {
+  font-size: v-bind(fontSize);
+  line-height: 1.5;
+}
 </style>

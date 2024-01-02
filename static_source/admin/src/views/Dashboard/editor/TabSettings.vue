@@ -1,14 +1,25 @@
 <script setup lang="ts">
 import {computed, nextTick, PropType, reactive, ref, unref, watch} from 'vue'
 import {Form} from '@/components/Form'
-import {ElButton, ElCard, ElCol, ElMessage, ElPopconfirm, ElRow} from 'element-plus'
+import {
+  ElAside,
+  ElButton,
+  ElCard,
+  ElCol,
+  ElContainer,
+  ElMain,
+  ElMessage,
+  ElPopconfirm,
+  ElRow,
+  ElScrollbar
+} from 'element-plus'
 import {useI18n} from '@/hooks/web/useI18n'
 import {useForm} from '@/hooks/web/useForm'
 import {useValidator} from '@/hooks/web/useValidator'
 import {FormSchema} from '@/types/form'
 import {ApiArea, ApiDashboard} from "@/api/stub";
 import {copyToClipboard} from "@/utils/clipboard";
-import Viewer from "@/components/JsonViewer/JsonViewer.vue";
+import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
 import {Core} from "@/views/Dashboard/core";
 import {useRouter} from "vue-router";
 import {useBus} from "@/views/Dashboard/bus";
@@ -175,9 +186,10 @@ const removeBoard = async () => {
 
 <template>
 
-  <ElRow :gutter="20">
-    <ElCol :span="15" :xs="15">
-      <ElCard class="box-card">
+  <ElContainer>
+    <ElMain>
+      <ElScrollbar>
+        <ElCard class="box-card">
         <template #header>
           <div class="card-header">
             <span>{{ $t('dashboard.mainSettings') }}</span>
@@ -234,12 +246,14 @@ const removeBoard = async () => {
         </div>
 
       </ElCard>
-    </ElCol>
-  </ElRow>
+      </ElScrollbar>
+    </ElMain>
+    <ElAside width="400px"/>
+  </ElContainer>
 
   <!-- export dialog -->
   <Dialog v-model="dialogVisible" :title="t('dashboard.dialogExportTitle')" :maxHeight="400" width="80%">
-    <Viewer v-model="dialogSource"/>
+    <JsonViewer v-model="dialogSource"/>
     <template #footer>
       <ElButton @click="copy()">{{ t('setting.copy') }}</ElButton>
       <ElButton @click="dialogVisible = false">{{ t('main.closeDialog') }}</ElButton>

@@ -1,17 +1,13 @@
 <script setup lang="ts">
 import {computed, onMounted, PropType, ref, unref, watch} from "vue";
 import {Card, CardItem, comparisonType, Core, requestCurrentState, Tab} from "@/views/Dashboard/core";
-import ViewCard from "@/views/Dashboard/editor/ViewCard.vue";
 import {ElDivider, ElCollapse, ElCollapseItem, ElCard, ElForm, ElFormItem, ElPopconfirm, ElSwitch,
   ElRow, ElCol, ElSelect, ElOption, ElInput, ElTag, ElButton } from 'element-plus'
 import CommonEditor from "@/views/Dashboard/card_items/common/editor.vue";
-import {useI18n} from "@/hooks/web/useI18n";
 import {Cache, GetTokens} from "@/views/Dashboard/render";
-import Viewer from "@/components/JsonViewer/JsonViewer.vue";
+import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
 import {ApiImage} from "@/api/stub";
 import ImageSearch from "@/views/Images/components/ImageSearch.vue";
-
-const {t} = useI18n()
 
 // ---------------------------------
 // common
@@ -66,7 +62,7 @@ const updateCurrentState = () => {
   </ElFormItem>
 
   <ElFormItem :label="$t('dashboard.editor.attrField')" prop="text">
-    <ElInput size="small" v-model="currentItem.payload.image.attrField"/>
+    <ElInput v-model="currentItem.payload.image.attrField"/>
   </ElFormItem>
 
   <ElRow style="padding-bottom: 20px" v-if="currentItem.entity">
@@ -78,7 +74,7 @@ const updateCurrentState = () => {
             {{ $t('dashboard.editor.getEvent') }}
           </ElButton>
 
-          <Viewer v-model="currentItem.lastEvent"/>
+          <JsonViewer v-model="currentItem.lastEvent"/>
 
         </ElCollapseItem>
       </ElCollapse>

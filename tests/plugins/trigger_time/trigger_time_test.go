@@ -72,9 +72,10 @@ automationTriggerTime = (msg)->
 
 			// automation
 			// ------------------------------------------------
-			trigger := &m.Trigger{
+			trigger := &m.NewTrigger{
+				Enabled:    true,
 				Name:       "trigger1",
-				Script:     task3Script,
+				ScriptId:   common.Int64(task3Script.Id),
 				PluginName: "time",
 				Payload: m.Attributes{
 					triggers.CronOptionTrigger: {
@@ -84,7 +85,7 @@ automationTriggerTime = (msg)->
 					},
 				},
 			}
-			err = AddTrigger(trigger, adaptors, eventBus)
+			triggerId, err := AddTrigger(trigger, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
 			//TASK3
@@ -92,7 +93,7 @@ automationTriggerTime = (msg)->
 				Name:       "Toggle plug OFF",
 				Enabled:    true,
 				Condition:  common.ConditionAnd,
-				TriggerIds: []int64{trigger.Id},
+				TriggerIds: []int64{triggerId},
 			}
 			err = AddTask(newTask, adaptors, eventBus)
 			So(err, ShouldBeNil)

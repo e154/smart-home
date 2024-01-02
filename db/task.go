@@ -76,7 +76,7 @@ func (n Tasks) GetById(ctx context.Context, taskId int64) (task *Task, err error
 		Where("id = ?", taskId).
 		Preload("Triggers").
 		Preload("Triggers.Script").
-		Preload("Triggers.Entity").
+		Preload("Triggers.Entities").
 		Preload("Conditions").
 		Preload("Conditions.Script").
 		Preload("Actions").
@@ -151,7 +151,7 @@ func (n Tasks) List(ctx context.Context, limit, offset int, orderBy, sort string
 
 	q = q.Preload("Triggers").
 		Preload("Triggers.Script").
-		Preload("Triggers.Entity").
+		Preload("Triggers.Entities").
 		Preload("Conditions").
 		Preload("Conditions.Script").
 		Preload("Actions").

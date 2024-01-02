@@ -40,7 +40,7 @@ func StreamServerRunStreamDo(streamID string, channelID string) {
 	}()
 	for {
 
-		log.Info("Run stream")
+		//log.Info("Run stream")
 		opt, err := Storage.StreamChannelControl(streamID, channelID)
 		if err != nil {
 			//log.Info("Exit", err)
@@ -56,7 +56,7 @@ func StreamServerRunStreamDo(streamID string, channelID string) {
 			return
 		}
 		if err != nil {
-			log.Error(err.Error())
+			//log.Error(err.Error())
 		}
 		time.Sleep(2 * time.Second)
 
@@ -95,7 +95,7 @@ func StreamServerRunStream(streamID string, channelID string, opt *ChannelST) (i
 			Storage.StreamChannelCodecsUpdate(streamID, channelID, RTSPClient.CodecData, RTSPClient.SDPRaw)
 		}
 	}
-	log.Info("Success connection RTSP")
+	//log.Info("Success connection RTSP")
 	var ProbeCount int
 	var ProbeFrame int
 	var ProbePTS time.Duration

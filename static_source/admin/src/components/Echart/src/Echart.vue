@@ -56,8 +56,12 @@ const styles = computed(() => {
 
 const initChart = () => {
   if (unref(elRef) && props.options) {
-    echartRef = echarts.init(unref(elRef) as HTMLElement)
-    echartRef?.setOption(unref(options))
+    try {
+      echartRef = echarts.init(unref(elRef) as HTMLElement)
+      echartRef?.setOption(unref(options))
+    } catch (e) {
+      console.error(e)
+    }
   }
 }
 

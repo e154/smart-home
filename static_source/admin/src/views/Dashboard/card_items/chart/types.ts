@@ -1,4 +1,4 @@
-import {ItemsType} from '@/views/dashboard/card_items';
+import {ItemsType} from '@/views/Dashboard/card_items';
 
 export interface ItemPayloadChartItem {
   value: string

@@ -1,13 +1,8 @@
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, reactive, ref, unref} from 'vue'
 import {useI18n} from '@/hooks/web/useI18n'
-import {ElButton, ElMessage, ElPopconfirm, ElTabs, ElTabPane, ElSkeleton} from 'element-plus'
-import {useForm} from '@/hooks/web/useForm'
-import {useCache} from '@/hooks/web/useCache'
-import {useAppStore} from '@/store/modules/app'
-import {usePermissionStore} from '@/store/modules/permission'
+import {ElButton, ElMessage, ElPopconfirm, ElTabs, ElTabPane} from 'element-plus'
 import {useRoute, useRouter} from 'vue-router'
-import {useValidator} from '@/hooks/web/useValidator'
 import api from "@/api/api";
 import Form from './components/Form.vue'
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
@@ -15,17 +10,16 @@ import {Attribute, Entity, EntityAction, EntityState, Plugin} from "@/views/Enti
 import Actions from "@/views/Entities/components/Actions.vue";
 import {useEmitt} from "@/hooks/web/useEmitt";
 import {
-  ApiAttribute,
   ApiEntityAction,
   ApiEntityState,
-  ApiPlugin, ApiPluginOptionsResultEntityAction, ApiPluginOptionsResultEntityState,
+  ApiPlugin,
   ApiUpdateEntityRequestAction,
   ApiUpdateEntityRequestState
 } from "@/api/stub";
 import States from "@/views/Entities/components/States.vue";
 import AttributesEditor from "@/views/Entities/components/AttributesEditor.vue";
 import { Dialog } from '@/components/Dialog'
-import Viewer from "@/components/JsonViewer/JsonViewer.vue";
+import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
 import {copyToClipboard} from "@/utils/clipboard";
 import {EventStateChange} from "@/api/stream_types";
 import {UUID} from "uuid-generator-ts";
@@ -33,13 +27,8 @@ import stream from "@/api/stream";
 import Storage from "@/views/Entities/components/Storage.vue";
 import Metrics from "@/views/Entities/components/Metrics.vue";
 
-const {register, elFormRef, methods} = useForm()
-const {required} = useValidator()
-const appStore = useAppStore()
-const permissionStore = usePermissionStore()
-const {currentRoute, addRoute, push} = useRouter()
+const {push} = useRouter()
 const route = useRoute();
-const {wsCache} = useCache()
 const {t} = useI18n()
 
 const writeRef = ref<ComponentRef<typeof Form>>()
@@ -506,7 +495,7 @@ fetch()
           <Icon icon="ep:refresh" class="mr-5px"/> {{ $t('main.currentState') }}
         </ElButton>
 
-        <Viewer v-model="lastEvent"/>
+        <JsonViewer v-model="lastEvent"/>
       </el-tab-pane>
       <!-- /current state -->
 
@@ -558,7 +547,7 @@ fetch()
 
   <!-- export dialog -->
   <Dialog v-model="dialogVisible" :title="t('entities.dialogExportTitle')" :maxHeight="400" width="80%">
-    <Viewer v-model="dialogSource"/>
+    <JsonViewer v-model="dialogSource"/>
     <template #footer>
       <ElButton @click="copy()">{{ t('setting.copy') }}</ElButton>
       <ElButton @click="dialogVisible = false">{{ t('main.closeDialog') }}</ElButton>

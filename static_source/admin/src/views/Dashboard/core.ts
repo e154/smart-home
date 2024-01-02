@@ -19,13 +19,13 @@ import stream from '@/api/stream';
 import {useBus} from "@/views/Dashboard/bus";
 import {debounce} from "lodash-es";
 import {ref} from "vue";
-import {bool} from "vue-types";
 import {ItemPayloadButton} from '@/views/Dashboard/card_items/button/types';
 import {ItemPayloadText} from '@/views/Dashboard/card_items/text/types';
 import {ItemPayloadState} from '@/views/Dashboard/card_items/state/types';
 import {ItemPayloadLogs} from '@/views/Dashboard/card_items/logs/types';
 import {ItemPayloadProgress} from '@/views/Dashboard/card_items/progress/types';
 import {ItemPayloadChart} from '@/views/Dashboard/card_items/chart/types';
+import {ItemPayloadChartCustom} from "@/views/Dashboard/card_items/chart_custom/types";
 import {ItemPayloadMap, Marker} from '@/views/Dashboard/card_items/map/types';
 import {ItemPayloadSlider} from "@/views/Dashboard/card_items/slider/types";
 import {ItemPayloadColorPicker} from "@/views/Dashboard/card_items/color_picker/types";
@@ -104,6 +104,7 @@ export interface ItemPayload {
   logs?: ItemPayloadLogs;
   progress?: ItemPayloadProgress;
   chart?: ItemPayloadChart;
+  chartCustom?: ItemPayloadChartCustom;
   map?: ItemPayloadMap;
   slider?: ItemPayloadSlider;
   colorPicker?: ItemPayloadColorPicker;
@@ -155,7 +156,7 @@ export class CardItem {
 
   private dashboardCardId: number;
   private styleObj: object = {};
-  private styleString: string = JSON.stringify({}, null, 2);
+  private styleString: string = serializedObject({});
   private _entityId: string;
   private _entity?: ApiEntity = {} as ApiEntity;
   private _type: string;
@@ -178,7 +179,7 @@ export class CardItem {
     }
 
     if (item.payload) {
-      const result: any = JSON.parse(decodeURIComponent(escape(atob(item.payload))));
+      const result: any = parsedObject(decodeURIComponent(escape(atob(item.payload))));
       const payload = result as ItemParams;
       this.width = payload.width;
       this.height = payload.height;
@@ -192,7 +193,7 @@ export class CardItem {
           this.buttonActions[i].entity = {id: this.buttonActions[i].entityId}
         }
       }
-      this.styleString = JSON.stringify(payload.style || {}, null, 2);
+      this.styleString = serializedObject(payload.style || {});
       if (payload.showOn) {
         this.showOn = payload.showOn;
       }
@@ -263,6 +264,9 @@ export class CardItem {
           range: '24h'
         } as ItemPayloadChart;
       }
+      if (!this.payload.chartCustom) {
+        this.payload.chartCustom = {} as ItemPayloadChartCustom;
+      }
       if (!this.payload?.map) {
         this.payload.map = {
           markers: []
@@ -298,7 +302,7 @@ export class CardItem {
   }
 
   serialize(): ApiDashboardCardItem {
-    const style = JSON.parse(this.styleString || '{}');
+    const style = parsedObject(this.styleString || '{}');
     this.styleObj = style;
     const buttonActions: ButtonAction[] = [];
     for (const action of this.buttonActions) {
@@ -316,7 +320,7 @@ export class CardItem {
         iconSize: action.iconSize,
       });
     }
-    const payload = btoa(unescape(encodeURIComponent(JSON.stringify({
+    const payload = btoa(unescape(encodeURIComponent(serializedObject({
       width: this.width,
       height: this.height,
       transform: this.transform,
@@ -350,7 +354,7 @@ export class CardItem {
       enabled: true,
       dashboardCardId: dashboardCardId,
       weight: weight,
-      payload: btoa(JSON.stringify({
+      payload: btoa(serializedObject({
         style: {},
         width: 90,
         height: 50,
@@ -661,7 +665,7 @@ export class Card {
       this._entity = {id: this._entityId} as ApiEntity;
     }
     if (card.payload) {
-      const result: any = JSON.parse(decodeURIComponent(escape(atob(card.payload))));
+      const result: any = parsedObject(decodeURIComponent(escape(atob(card.payload))));
       const payload = result as ItemParams;
       if (payload.showOn) {
         this.showOn = payload.showOn;
@@ -1079,7 +1083,7 @@ export class Core {
 
   tabs: Tab[] = [];
 
-  mainTab = 'cardItems';
+  mainTab = 'cards';
   secondTab = '1';
   editorDisabled = false;
 
@@ -1290,7 +1294,8 @@ export class Core {
       return;
     }
 
-    bus.emit('update_tab', this.currentTabId);
+    // move to direct call
+    // bus.emit('update_tab', this.currentTabId);
 
     return this.tabs[this.activeTab].cards[this.activeCard].update();
   }
@@ -1423,3 +1428,22 @@ export function requestCurrentState(entityId?: string) {
     body: btoa(JSON.stringify({entity_id: entityId}))
   });
 }
+
+export function serializedObject(obj: any): string {
+  return JSON.stringify(obj, function(key, value) {
+    if (typeof value === 'function') {
+      return value.toString(); // Convert function to string
+    }
+    return value;
+  });
+}
+
+export function parsedObject(str): any {
+  return JSON.parse(str, function(key, value) {
+    if (typeof value === 'string' && value.indexOf('function') === 0) {
+      return new Function('return ' + value)(); // Create a function using Function constructor
+    }
+    return value;
+  });
+}
+

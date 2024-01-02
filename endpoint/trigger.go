@@ -42,24 +42,25 @@ func NewTriggerEndpoint(common *CommonEndpoint) *TriggerEndpoint {
 }
 
 // Add ...
-func (n *TriggerEndpoint) Add(ctx context.Context, trigger *m.Trigger) (result *m.Trigger, err error) {
+func (n *TriggerEndpoint) Add(ctx context.Context, params *m.NewTrigger) (result *m.Trigger, err error) {
 
-	if ok, errs := n.validation.Valid(trigger); !ok {
+	if ok, errs := n.validation.Valid(params); !ok {
 		err = apperr.ErrInvalidRequest
 		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
-	if trigger.Id, err = n.adaptors.Trigger.Add(ctx, trigger); err != nil {
+	var id int64
+	if id, err = n.adaptors.Trigger.Add(ctx, params); err != nil {
 		return
 	}
 
-	if result, err = n.adaptors.Trigger.GetById(ctx, trigger.Id); err != nil {
+	if result, err = n.adaptors.Trigger.GetById(ctx, id); err != nil {
 		return
 	}
 
-	n.eventBus.Publish(fmt.Sprintf("system/models/triggers/%d", trigger.Id), events.EventCreatedTriggerModel{
-		Id: trigger.Id,
+	n.eventBus.Publish(fmt.Sprintf("system/models/triggers/%d", id), events.EventCreatedTriggerModel{
+		Id: id,
 	})
 
 	return
@@ -74,29 +75,29 @@ func (n *TriggerEndpoint) GetById(ctx context.Context, id int64) (trigger *m.Tri
 }
 
 // Update ...
-func (n *TriggerEndpoint) Update(ctx context.Context, trigger *m.Trigger) (result *m.Trigger, err error) {
+func (n *TriggerEndpoint) Update(ctx context.Context, params *m.UpdateTrigger) (result *m.Trigger, err error) {
 
-	_, err = n.adaptors.Trigger.GetById(ctx, trigger.Id)
+	_, err = n.adaptors.Trigger.GetById(ctx, params.Id)
 	if err != nil {
 		return
 	}
 
-	if ok, errs := n.validation.Valid(trigger); !ok {
+	if ok, errs := n.validation.Valid(params); !ok {
 		err = apperr.ErrInvalidRequest
 		apperr.SetValidationErrors(err, errs)
 		return
 	}
 
-	if err = n.adaptors.Trigger.Update(ctx, trigger); err != nil {
+	if err = n.adaptors.Trigger.Update(ctx, params); err != nil {
 		return
 	}
 
-	if result, err = n.adaptors.Trigger.GetById(ctx, trigger.Id); err != nil {
+	if result, err = n.adaptors.Trigger.GetById(ctx, params.Id); err != nil {
 		return
 	}
 
-	n.eventBus.Publish(fmt.Sprintf("system/models/triggers/%d", trigger.Id), events.EventUpdatedTriggerModel{
-		Id: trigger.Id,
+	n.eventBus.Publish(fmt.Sprintf("system/models/triggers/%d", result.Id), events.EventUpdatedTriggerModel{
+		Id: result.Id,
 	})
 
 	return
