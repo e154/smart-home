@@ -95,7 +95,7 @@ entityAction = (entityId, actionName)->
 		task1SourceScript = `
 automationTriggerStateChanged = (msg)->
     #print '---trigger---'
-    p = unmarshal msg.payload
+    p = msg.payload
     return p.new_state.state.name == 'DOUBLE_CLICK'
 
 automationCondition = (entityId)->
@@ -115,7 +115,7 @@ automationAction = (entityId)->
 		task2SourceScript = `
 automationTriggerStateChanged = (msg)->
     #print '---trigger---'
-    p = unmarshal msg.payload
+    p = msg.payload
     return p.new_state.state.name == 'DOUBLE_CLICK'
 
 automationCondition = (entityId)->

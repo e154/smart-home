@@ -20,7 +20,6 @@ package automation
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"go.uber.org/atomic"
 
@@ -153,9 +152,8 @@ func (tr *Trigger) genSubscriber(entityId *common.EntityId, check func(msg inter
 		Handler: func(_ string, msg interface{}) {
 			triggerCtx, span := telemetry.Start(context.Background(), "trigger")
 			span.SetAttributes("id", tr.model.Id)
-			b, _ := json.Marshal(msg)
 			args := map[string]interface{}{
-				"payload":      string(b),
+				"payload":      msg,
 				"trigger_name": tr.model.Name,
 				"entity_id":    entityId,
 			}

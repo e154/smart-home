@@ -19,6 +19,8 @@
 package triggers
 
 import (
+	"github.com/e154/smart-home/common/events"
+	"go.uber.org/atomic"
 	"sync"
 
 	"github.com/e154/smart-home/system/bus"
@@ -26,17 +28,11 @@ import (
 
 const (
 	// TopicSystem ...
-	TopicSystem = "system"
-	// EventStart ...
-	EventStart = "START"
-	// EventStop ...
-	EventStop = "STOP"
+	TopicSystem = "system/#"
 	// SystemName ...
 	SystemName = "system"
 	// SystemFunctionName ...
 	SystemFunctionName = "automationTriggerSystem"
-	// SystemQueueSize ...
-	SystemQueueSize = 10
 )
 
 var _ ITrigger = (*SystemTrigger)(nil)
@@ -44,42 +40,58 @@ var _ ITrigger = (*SystemTrigger)(nil)
 // SystemTrigger ...
 type SystemTrigger struct {
 	baseTrigger
+	counter *atomic.Int32
 }
 
 // NewSystemTrigger ...
 func NewSystemTrigger(eventBus bus.Bus) ITrigger {
 	return &SystemTrigger{
-		baseTrigger{
+		baseTrigger: baseTrigger{
 			eventBus:     eventBus,
 			msgQueue:     bus.NewBus(),
 			functionName: SystemFunctionName,
 			name:         SystemName,
 		},
+		counter: atomic.NewInt32(0),
 	}
 }
 
 // AsyncAttach ...
 func (t *SystemTrigger) AsyncAttach(wg *sync.WaitGroup) {
 
-	_ = t.eventBus.Subscribe(TopicSystemStart, func(_ string, msg interface{}) {
-		t.msgQueue.Publish(TopicSystem, map[string]interface{}{"event": EventStart})
-	})
-
-	_ = t.eventBus.Subscribe(TopicSystemStop, func(_ string, msg interface{}) {
-		t.msgQueue.Publish(TopicSystem, map[string]interface{}{"event": EventStop})
-	})
+	if err := t.eventBus.Subscribe(TopicSystem, t.eventHandler); err != nil {
+		log.Error(err.Error())
+	}
 
 	wg.Done()
 }
 
+func (t *SystemTrigger) eventHandler(topic string, event interface{}) {
+	if t.counter.Load() <= 0 {
+		return
+	}
+	switch event.(type) {
+	case events.EventStateChanged:
+		return
+	}
+
+	t.msgQueue.Publish(topic, &SystemTriggerMessage{
+		Topic:     topic,
+		EventName: events.EventName(event),
+		Event:     event,
+	})
+}
+
 // Subscribe ...
 func (t *SystemTrigger) Subscribe(options Subscriber) error {
-	log.Infof("subscribe topic %s", TopicSystem)
+	//log.Infof("subscribe topic %s", TopicSystem)
+	t.counter.Inc()
 	return t.msgQueue.Subscribe(TopicSystem, options.Handler)
 }
 
 // Unsubscribe ...
 func (t *SystemTrigger) Unsubscribe(options Subscriber) error {
-	log.Infof("unsubscribe topic %s", TopicSystem)
+	//log.Infof("unsubscribe topic %s", TopicSystem)
+	t.counter.Dec()
 	return t.msgQueue.Unsubscribe(TopicSystem, options.Handler)
 }

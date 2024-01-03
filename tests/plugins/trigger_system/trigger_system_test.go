@@ -46,8 +46,8 @@ func TestTriggerSystem(t *testing.T) {
 		task3SourceScript = `
 automationTriggerSystem = (msg)->
     #print '---trigger---'
-    p = unmarshal msg.payload
-    Done p.event
+    p = msg.payload
+    Done p.message
     return false
 `
 	)
@@ -108,7 +108,7 @@ automationTriggerSystem = (msg)->
 
 			time.Sleep(time.Second)
 
-			eventBus.Publish(triggers.TopicSystemStart, "started")
+			eventBus.Publish(triggers.TopicSystemStart, "START")
 
 			time.Sleep(time.Second)
 
