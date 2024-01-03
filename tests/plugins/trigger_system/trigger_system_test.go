@@ -47,7 +47,7 @@ func TestTriggerSystem(t *testing.T) {
 automationTriggerSystem = (msg)->
     #print '---trigger---'
     p = msg.payload
-    Done p.message
+    Done p.event
     return false
 `
 	)
