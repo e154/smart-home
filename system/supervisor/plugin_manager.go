@@ -289,3 +289,13 @@ func (p *pluginManager) PluginIsLoaded(name string) (loaded bool) {
 	}
 	return
 }
+
+func (p *pluginManager) GetPluginReadme(ctx context.Context, name string, lang *string) (result []byte, err error) {
+	var plugin Pluggable
+	plugin, err = p.getPlugin(name)
+	if err != nil {
+		return
+	}
+	result, err = plugin.Readme(lang)
+	return
+}

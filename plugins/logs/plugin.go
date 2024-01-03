@@ -20,6 +20,7 @@ package logs
 
 import (
 	"context"
+	"embed"
 	"fmt"
 
 	"github.com/e154/smart-home/common"
@@ -35,6 +36,10 @@ func init() {
 	supervisor.RegisterPlugin(Name, New)
 }
 
+//go:embed Readme.md
+//go:embed Readme.ru.md
+var F embed.FS
+
 type plugin struct {
 	*supervisor.Plugin
 	actor   *Actor
@@ -46,6 +51,7 @@ func New() supervisor.Pluggable {
 	p := &plugin{
 		Plugin: supervisor.NewPlugin(),
 	}
+	p.F = F
 	return p
 }
 

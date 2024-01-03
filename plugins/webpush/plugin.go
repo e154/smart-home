@@ -20,6 +20,7 @@ package webpush
 
 import (
 	"context"
+	"embed"
 	"encoding/json"
 	"strconv"
 	"strings"
@@ -38,6 +39,10 @@ var (
 
 var _ supervisor.Pluggable = (*plugin)(nil)
 
+//go:embed Readme.md
+//go:embed Readme.ru.md
+var F embed.FS
+
 func init() {
 	supervisor.RegisterPlugin(Name, New)
 }
@@ -50,9 +55,11 @@ type plugin struct {
 
 // New ...
 func New() supervisor.Pluggable {
-	return &plugin{
+	p := &plugin{
 		Plugin: supervisor.NewPlugin(),
 	}
+	p.F = F
+	return p
 }
 
 // Load ...

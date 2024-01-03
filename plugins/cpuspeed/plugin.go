@@ -20,16 +20,20 @@ package cpuspeed
 
 import (
 	"context"
+	"embed"
 	"fmt"
 	"time"
 
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/supervisor"
-
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 var _ supervisor.Pluggable = (*plugin)(nil)
+
+//go:embed Readme.md
+//go:embed Readme.ru.md
+var F embed.FS
 
 func init() {
 	supervisor.RegisterPlugin(Name, New)
@@ -45,6 +49,7 @@ func New() supervisor.Pluggable {
 	p := &plugin{
 		Plugin: supervisor.NewPlugin(),
 	}
+	p.F = F
 	return p
 }
 

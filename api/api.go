@@ -248,6 +248,7 @@ func (a *Api) registerHandlers() {
 	v1.PUT("/plugin/:name/settings", a.echoFilter.Auth(wrapper.PluginServiceUpdatePluginSettings))
 	v1.GET("/plugins", a.echoFilter.Auth(wrapper.PluginServiceGetPluginList))
 	v1.GET("/plugins/search", a.echoFilter.Auth(wrapper.PluginServiceSearchPlugin))
+	v1.GET("/plugin/:name/readme", a.echoFilter.Auth(wrapper.PluginServiceGetPluginReadme))
 	v1.POST("/role", a.echoFilter.Auth(wrapper.RoleServiceAddRole))
 	v1.DELETE("/role/:name", a.echoFilter.Auth(wrapper.RoleServiceDeleteRoleByName))
 	v1.GET("/role/:name", a.echoFilter.Auth(wrapper.RoleServiceGetRoleByName))

@@ -4549,6 +4549,40 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags PluginService
+     * @name PluginServiceGetPluginReadme
+     * @summary get plugin readme
+     * @request GET:/v1/plugin/{name}/readme
+     * @secure
+     */
+    pluginServiceGetPluginReadme: (
+      name: string,
+      query?: {
+        lang?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        string,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
+        path: `/v1/plugin/${name}/readme`,
+        method: "GET",
+        query: query,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags PluginService
      * @name PluginServiceGetPluginList
      * @summary get plugin list
      * @request GET:/v1/plugins

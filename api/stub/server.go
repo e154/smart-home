@@ -262,6 +262,9 @@ type ServerInterface interface {
 	// enable plugin
 	// (POST /v1/plugin/{name}/enable)
 	PluginServiceEnablePlugin(ctx echo.Context, name string) error
+	// get plugin readme
+	// (GET /v1/plugin/{name}/readme)
+	PluginServiceGetPluginReadme(ctx echo.Context, name string, params PluginServiceGetPluginReadmeParams) error
 	// update plugin settings
 	// (PUT /v1/plugin/{name}/settings)
 	PluginServiceUpdatePluginSettings(ctx echo.Context, name string, params PluginServiceUpdatePluginSettingsParams) error
@@ -2891,6 +2894,50 @@ func (w *ServerInterfaceWrapper) PluginServiceEnablePlugin(ctx echo.Context) err
 	return err
 }
 
+// PluginServiceGetPluginReadme converts echo context to params.
+func (w *ServerInterfaceWrapper) PluginServiceGetPluginReadme(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "name" -------------
+	var name string
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "name", runtime.ParamLocationPath, ctx.Param("name"), &name)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter name: %s", err))
+	}
+
+	ctx.Set(ApiKeyAuthScopes, []string{})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PluginServiceGetPluginReadmeParams
+	// ------------- Optional query parameter "lang" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "lang", ctx.QueryParams(), &params.Lang)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter lang: %s", err))
+	}
+
+	headers := ctx.Request().Header
+	// ------------- Optional header parameter "Accept" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
+		var Accept AcceptJSON
+		n := len(valueList)
+		if n != 1 {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for Accept, got %d", n))
+		}
+
+		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter Accept: %s", err))
+		}
+
+		params.Accept = &Accept
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.PluginServiceGetPluginReadme(ctx, name, params)
+	return err
+}
+
 // PluginServiceUpdatePluginSettings converts echo context to params.
 func (w *ServerInterfaceWrapper) PluginServiceUpdatePluginSettings(ctx echo.Context) error {
 	var err error
@@ -4682,6 +4729,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/v1/plugin/:name", wrapper.PluginServiceGetPlugin)
 	router.POST(baseURL+"/v1/plugin/:name/disable", wrapper.PluginServiceDisablePlugin)
 	router.POST(baseURL+"/v1/plugin/:name/enable", wrapper.PluginServiceEnablePlugin)
+	router.GET(baseURL+"/v1/plugin/:name/readme", wrapper.PluginServiceGetPluginReadme)
 	router.PUT(baseURL+"/v1/plugin/:name/settings", wrapper.PluginServiceUpdatePluginSettings)
 	router.GET(baseURL+"/v1/plugins", wrapper.PluginServiceGetPluginList)
 	router.GET(baseURL+"/v1/plugins/search", wrapper.PluginServiceSearchPlugin)

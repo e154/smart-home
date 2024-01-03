@@ -20,6 +20,7 @@ package version
 
 import (
 	"context"
+	"embed"
 	"fmt"
 	"time"
 
@@ -29,6 +30,10 @@ import (
 )
 
 var _ supervisor.Pluggable = (*plugin)(nil)
+
+//go:embed Readme.md
+//go:embed Readme.ru.md
+var F embed.FS
 
 func init() {
 	supervisor.RegisterPlugin(Name, New)
@@ -46,6 +51,7 @@ func New() supervisor.Pluggable {
 		Plugin: supervisor.NewPlugin(),
 		pause:  10,
 	}
+	p.F = F
 	return p
 }
 

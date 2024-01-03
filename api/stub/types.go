@@ -1913,6 +1913,12 @@ type AuthServicePasswordResetParams struct {
 	Accept *AcceptJSON `json:"Accept,omitempty"`
 }
 
+// PluginServiceGetPluginReadmeParams defines parameters for PluginServiceGetPluginReadme.
+type PluginServiceGetPluginReadmeParams struct {
+	Lang   *string     `form:"lang,omitempty" json:"lang,omitempty"`
+	Accept *AcceptJSON `json:"Accept,omitempty"`
+}
+
 // PluginServiceUpdatePluginSettingsJSONBody defines parameters for PluginServiceUpdatePluginSettings.
 type PluginServiceUpdatePluginSettingsJSONBody struct {
 	Settings map[string]ApiAttribute `json:"settings"`

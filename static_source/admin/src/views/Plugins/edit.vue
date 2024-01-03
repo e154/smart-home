@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ElButton, ElTabs, ElTabPane, ElRow, ElCol} from 'element-plus'
+import {ElButton, ElTabs, ElTabPane, ElRow, ElCol, ElEmpty} from 'element-plus'
 import api from "@/api/api";
 import {useRoute, useRouter} from "vue-router";
 import {computed, ref, unref} from "vue";
@@ -18,6 +18,7 @@ import StatesViewer from "@/views/Plugins/components/StatesViewer.vue";
 import SettingsEditor from "@/views/Plugins/components/SettingsEditor.vue";
 import {useEmitt} from "@/hooks/web/useEmitt";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {useCache} from "@/hooks/web/useCache";
 
 const {t} = useI18n()
 const writeRef = ref<ComponentRef<typeof Form>>()
@@ -160,6 +161,27 @@ const saveSetting = async (val: ApiAttribute[]) => {
   fetch()
 }
 
+const readme = ref('');
+const { wsCache } = useCache()
+const getReadme = async () => {
+  const lang = wsCache.get('lang') || 'en';
+  const res = await api.v1.pluginServiceGetPluginReadme(pluginName.value, {lang: lang})
+      .catch(() => {
+      })
+      .finally(() => {
+        loading.value = false
+      })
+  if (res && res.data) {
+    readme.value = res.data;
+  }
+}
+
+const tabHandler = (tab: any, ev: any) => {
+  const {props} = tab;
+  if (props.name != 'readme') return;
+  getReadme()
+}
+
 useEmitt({
   name: 'settingsUpdated',
   callback: (settings: ApiAttribute[]) => {
@@ -173,7 +195,7 @@ fetch()
 
 <template>
   <ContentWrap>
-    <el-tabs class="demo-tabs" v-model="activeTab">
+    <el-tabs class="demo-tabs" v-model="activeTab" @tab-click="tabHandler">
       <el-tab-pane :label="$t('plugins.main')" name="main">
         <Form ref="writeRef" :current-row="currentPlugin"/>
         <div style="text-align: right">
@@ -255,6 +277,11 @@ fetch()
         </div>
       </el-tab-pane>
       <!--  /Settings  -->
+
+      <el-tab-pane :label="$t('plugins.readme')" lazy name="readme">
+        <div v-html="readme"></div>
+        <ElEmpty v-if="readme == ''" description="no info"/>
+      </el-tab-pane>
     </el-tabs>
   </ContentWrap>
 </template>

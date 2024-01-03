@@ -1,0 +1,2 @@
+# MQTT BRIDGE Plugin
+

@@ -111,3 +111,14 @@ func (c ControllerPlugin) PluginServiceUpdatePluginSettings(ctx echo.Context, na
 
 	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
+
+// PluginServiceGetPluginReadme ...
+func (c ControllerPlugin) PluginServiceGetPluginReadme(ctx echo.Context, name string, params stub.PluginServiceGetPluginReadmeParams) error {
+
+	html, err := c.endpoint.Plugin.Readme(ctx.Request().Context(), name, params.Lang)
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return ctx.HTMLBlob(200, html)
+}

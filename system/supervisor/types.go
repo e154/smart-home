@@ -47,7 +47,7 @@ type Supervisor interface {
 	Start(context.Context) error
 	Shutdown(context.Context) error
 	Restart(context.Context) error
-	GetPlugin(name string) (plugin interface{}, err error)
+	GetPlugin(name string) (interface{}, error)
 	EnablePlugin(context.Context, string) error
 	DisablePlugin(context.Context, string) error
 	PluginList() (list []PluginInfo, total int64, err error)
@@ -60,9 +60,10 @@ type Supervisor interface {
 	GetEntityById(common.EntityId) (m.EntityShort, error)
 	UpdateEntity(*m.Entity) error
 	UnloadEntity(common.EntityId)
-	EntityIsLoaded(id common.EntityId) (loaded bool)
-	PluginIsLoaded(name string) (loaded bool)
+	EntityIsLoaded(id common.EntityId) bool
+	PluginIsLoaded(string) bool
 	GetService() Service
+	GetPluginReadme(context.Context, string, *string) ([]byte, error)
 }
 
 // PluginActor ...
@@ -227,6 +228,7 @@ type Pluggable interface {
 	GetActor(id common.EntityId) (pla PluginActor, err error)
 	AddOrUpdateActor(*m.Entity) error
 	RemoveActor(common.EntityId) error
+	Readme(lang *string) ([]byte, error)
 }
 
 // Installable ...

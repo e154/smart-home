@@ -239,7 +239,8 @@ export default {
     actionIcon: "Иконка",
     actionDescription: "Описание",
     actorStates: "Состояния актора",
-    actorSettings: "Настройки актора"
+    actorSettings: "Настройки актора",
+    readme: 'Инфо'
   },
   areas: {
     id: "ID",

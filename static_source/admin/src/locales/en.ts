@@ -239,7 +239,8 @@ export default {
         actionIcon: 'Icon',
         actionDescription: 'Description',
         actorStates: 'Actor States',
-        actorSettings: 'Actor Settings'
+        actorSettings: 'Actor Settings',
+        readme: 'Readme'
     },
     areas: {
         id: 'ID',

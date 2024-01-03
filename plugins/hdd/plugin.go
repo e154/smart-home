@@ -20,6 +20,7 @@ package hdd
 
 import (
 	"context"
+	"embed"
 	"fmt"
 
 	"github.com/e154/smart-home/common"
@@ -29,6 +30,10 @@ import (
 )
 
 var _ supervisor.Pluggable = (*plugin)(nil)
+
+//go:embed Readme.md
+//go:embed Readme.ru.md
+var F embed.FS
 
 func init() {
 	supervisor.RegisterPlugin(Name, New)
@@ -43,6 +48,7 @@ func New() supervisor.Pluggable {
 	p := &plugin{
 		Plugin: supervisor.NewPlugin(),
 	}
+	p.F = F
 	return p
 }
 
