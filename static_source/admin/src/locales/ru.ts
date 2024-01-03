@@ -168,6 +168,7 @@ export default {
     EditArea: 'Ред. Area',
     EditZigbee2mqtt: 'Ред. Zigbee2mqtt',
     EditUser: 'Ред. Пользователя',
+    EditPlugin: 'Ред. Плагин',
     ListEntities: 'Список Entities',
     ListScripts: 'Список Скриптов',
     ListDashboards: 'Список Dashboards',
