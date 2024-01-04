@@ -1,3 +1,3 @@
-# Плагин MEMORY
+### Плагин MEMORY
 
 [Документация](https://e154.github.io/smart-home/ru/docs/plugins/memory/)

@@ -38,7 +38,7 @@ export const HintDictionaryCoffee = {
 
         // geo
         {text: 'GeoDistanceToArea(areaId, point)', displayText: 'GeoDistanceToArea'},
-        {text: 'GeoPointInsideAria(areaId, point)', displayText: 'GeoPointInsideAria'},
+        {text: 'GeoPointInsideArea(areaId, point)', displayText: 'GeoPointInsideArea'},
         {text: 'GeoDistanceBetweenPoints(point1, point2)', displayText: 'GeoDistanceBetweenPoints'},
 
         // http

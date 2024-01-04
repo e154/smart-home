@@ -1,3 +1,3 @@
-# Плагин TELEGRAM
+### Плагин TELEGRAM
 
 [Документация](https://e154.github.io/smart-home/ru/docs/plugins/notify/telegram/)

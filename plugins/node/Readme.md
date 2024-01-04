@@ -1,3 +1,3 @@
-# NODE Plugin
+### NODE Plugin
 
 [Documentation](https://e154.github.io/smart-home/docs/plugins/node/)

@@ -1,3 +1,3 @@
-# LOGS Plugin
+### LOGS Plugin
 
 

@@ -7,7 +7,7 @@ description: >
   
 ---
 
-{{< figure src="/smart-home/trigger_window1.png" >}}
+{{< figure src="/smart-home/triggers_window1.png" >}}
 
 &nbsp;
 
@@ -20,7 +20,7 @@ Here are examples of different types of triggers and their respective handlers:
 1. `TriggerAlexa`:
 ```coffeescript
 automationTriggerAlexa = (msg) ->
-  p = unmarshal msg.payload
+  p = msg.payload
   Done p
   return false
 ```
@@ -30,7 +30,7 @@ The `automationTriggerAlexa` handler is invoked in response to a trigger from Am
 ```coffeescript
 automationTriggerStateChanged = (msg) ->
   print '---trigger---'
-  p = unmarshal msg.payload
+  p = msg.payload
   Done p.new_state.state.name
   return false
 ```
@@ -39,7 +39,7 @@ The `automationTriggerStateChanged` handler is called when the state of a device
 3. `TriggerSystem`:
 ```coffeescript
 automationTriggerSystem = (msg) ->
-  p = unmarshal msg.payload
+  p = msg.payload
   Done p.event
   return false
 ```
@@ -48,7 +48,7 @@ The `automationTriggerSystem` handler is invoked in response to system events. I
 4. `TriggerTime`:
 ```coffeescript
 automationTriggerTime = (msg) ->
-  p = unmarshal msg.payload
+  p = msg.payload
   Done p
   return false
 ```
@@ -61,7 +61,7 @@ Example implementation:
 ```coffeescript
 automationTriggerStateChanged = (msg) ->
     #print '---trigger---'
-    p = unmarshal msg.payload
+    p = msg.payload
     if !p.new_state || !p.new_state.state
         return false
     return msg.new_state.state.name == 'DOUBLE_CLICK'

@@ -7,7 +7,7 @@ description: >
   
 ---
 
-{{< figure src="/smart-home/trigger_window1.png" >}}
+{{< figure src="/smart-home/triggers_window1.png" >}}
 
 &nbsp;
 
@@ -20,7 +20,7 @@ description: >
 1. `TriggerAlexa`:
 ```coffeescript
 automationTriggerAlexa = (msg) ->
-  p = unmarshal msg.payload
+  p = msg.payload
   Done p
   return false
 ```
@@ -31,7 +31,7 @@ automationTriggerAlexa = (msg) ->
 ```coffeescript
 automationTriggerStateChanged = (msg) ->
   print '---trigger---'
-  p = unmarshal msg.payload
+  p = msg.payload
   Done p.new_state.state.name
   return false
 ```
@@ -41,7 +41,7 @@ automationTriggerStateChanged = (msg) ->
 3. `TriggerSystem`:
 ```coffeescript
 automationTriggerSystem = (msg) ->
-  p = unmarshal msg.payload
+  p = msg.payload
   Done p.event
   return false
 ```
@@ -51,7 +51,7 @@ automationTriggerSystem = (msg) ->
 4. `TriggerTime`:
 ```coffeescript
 automationTriggerTime = (msg) ->
-  p = unmarshal msg.payload
+  p = msg.payload
   Done p
   return false
 ```
@@ -66,7 +66,7 @@ automationTriggerTime = (msg) ->
 ```coffeescript
 automationTriggerStateChanged = (msg)->
     #print '---trigger---'
-    p = unmarshal msg.payload
+    p = msg.payload
     if !p.new_state || !p.new_state.state
         return false
     return msg.new_state.state.name == 'DOUBLE_CLICK'

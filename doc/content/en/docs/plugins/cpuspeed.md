@@ -7,7 +7,7 @@ description: >
   
 ---
 
-{{< figure src="/smart-home/cpuspeed1.png" >}}
+{{< figure src="/smart-home/cpuspeed1.png" width="300" >}}
 
 &nbsp;
 
