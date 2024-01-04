@@ -208,6 +208,7 @@ const schema = reactive<FormSchema[]>([
       {{ t('scripts.addNew') }}
     </ElButton>
     <Form
+        id="search-form-scripts"
         :schema="schema"
         label-position="top"
         label-width="auto"
@@ -236,9 +237,15 @@ const schema = reactive<FormSchema[]>([
   </ContentWrap>
 </template>
 
-<style lang="less">
+<style lang="less" scoped>
 
 .el-table__row {
   cursor: pointer;
 }
+
+:deep(#search-form-scripts .el-col) {
+  padding-left: 0!important;
+  padding-right: 0!important;
+}
+
 </style>
