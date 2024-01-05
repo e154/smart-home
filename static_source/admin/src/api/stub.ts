@@ -304,6 +304,7 @@ export interface ApiDashboardShort {
   enabled: boolean;
   /** @format int64 */
   areaId?: number;
+  area?: ApiArea;
   /** @format date-time */
   createdAt: string;
   /** @format date-time */

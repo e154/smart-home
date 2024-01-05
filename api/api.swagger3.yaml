@@ -4809,6 +4809,8 @@ components:
         areaId:
           type: integer
           format: int64
+        area:
+          $ref: '#/components/schemas/apiArea'
         createdAt:
           type: string
           format: date-time

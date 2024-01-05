@@ -148,9 +148,6 @@ func (n *Dashboards) List(ctx context.Context, limit, offset int, orderBy, sort 
 	list = make([]*Dashboard, 0)
 	q := n.Db.WithContext(ctx).
 		Preload("Area").
-		Preload("Tabs").
-		Preload("Tabs.Cards").
-		Preload("Tabs.Cards.Items").
 		Limit(limit).
 		Offset(offset)
 

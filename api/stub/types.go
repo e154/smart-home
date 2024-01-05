@@ -290,6 +290,7 @@ type ApiDashboardCardItem struct {
 
 // ApiDashboardShort defines model for apiDashboardShort.
 type ApiDashboardShort struct {
+	Area        *ApiArea  `json:"area,omitempty"`
 	AreaId      *int64    `json:"areaId,omitempty"`
 	CreatedAt   time.Time `json:"createdAt"`
 	Description string    `json:"description"`
