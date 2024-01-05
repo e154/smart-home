@@ -198,13 +198,8 @@ func (n Entities) Delete(ctx context.Context, id common.EntityId) (err error) {
 func (n *Entities) List(ctx context.Context, limit, offset int, orderBy, sort string, autoLoad bool,
 	query, plugin *string, areaId *int64) (list []*Entity, total int64, err error) {
 
-	if err = n.Db.WithContext(ctx).Model(Entity{}).Count(&total).Error; err != nil {
-		err = errors.Wrap(apperr.ErrEntityList, err.Error())
-		return
-	}
-
 	list = make([]*Entity, 0)
-	q := n.Db
+	q := n.Db.WithContext(ctx).Model(Entity{})
 	if autoLoad {
 		q = q.Where("auto_load = ?", true)
 	}
@@ -216,6 +211,10 @@ func (n *Entities) List(ctx context.Context, limit, offset int, orderBy, sort st
 	}
 	if areaId != nil {
 		q = q.Where("area_id = ?", *areaId)
+	}
+	if err = q.Count(&total).Error; err != nil {
+		err = errors.Wrap(apperr.ErrEntityList, err.Error())
+		return
 	}
 	q = q.
 		Preload("Image").
@@ -249,6 +248,49 @@ func (n *Entities) List(ctx context.Context, limit, offset int, orderBy, sort st
 
 	if err = n.PreloadStorage(ctx, list); err != nil {
 		err = errors.Wrap(apperr.ErrEntityGet, err.Error())
+		return
+	}
+
+	return
+}
+
+// ListPlain ...
+func (n *Entities) ListPlain(ctx context.Context, limit, offset int, orderBy, sort string, autoLoad bool,
+	query, plugin *string, areaId *int64) (list []*Entity, total int64, err error) {
+
+	list = make([]*Entity, 0)
+	q := n.Db.WithContext(ctx).Model(Entity{})
+	if autoLoad {
+		q = q.Where("auto_load = ?", true)
+	}
+	if query != nil {
+		q = q.Where("id LIKE ?", "%"+*query+"%")
+	}
+	if plugin != nil {
+		q = q.Where("plugin_name = ?", *plugin)
+	}
+	if areaId != nil {
+		q = q.Where("area_id = ?", *areaId)
+	}
+	if err = q.Count(&total).Error; err != nil {
+		err = errors.Wrap(apperr.ErrEntityList, err.Error())
+		return
+	}
+	q = q.
+		Limit(limit).
+		Offset(offset)
+
+	if sort != "" && orderBy != "" {
+		q = q.Order(fmt.Sprintf("%s %s", sort, orderBy))
+	}
+
+	err = q.
+		WithContext(ctx).
+		Find(&list).
+		Error
+
+	if err != nil {
+		err = errors.Wrap(apperr.ErrEntityList, err.Error())
 		return
 	}
 
