@@ -64,6 +64,7 @@ type Supervisor interface {
 	PluginIsLoaded(string) bool
 	GetService() Service
 	GetPluginReadme(context.Context, string, *string) ([]byte, error)
+	PushSystemEvent(strCommand string, params map[string]interface{})
 }
 
 // PluginActor ...

@@ -91,6 +91,12 @@ func CallSceneBind(manager Supervisor) func(entityId string, value map[string]in
 	}
 }
 
+func PushSystemEvent(manager Supervisor) func(command string, params map[string]interface{}) {
+	return func(command string, params map[string]interface{}) {
+		manager.PushSystemEvent(command, params)
+	}
+}
+
 func GetSettingsBind(manager Supervisor) func(entityId string) m.AttributeValue {
 	return func(entityId string) m.AttributeValue {
 		if entityId == "" {
