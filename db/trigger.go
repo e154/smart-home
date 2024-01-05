@@ -122,8 +122,40 @@ func (t Triggers) List(ctx context.Context, limit, offset int, orderBy, sort str
 		q = q.Where("enabled = ?", true)
 	}
 
-	q = q.Preload("Entities").
+	q = q.
+		Preload("Entities").
 		Preload("Script").
+		Preload("Area").
+		Limit(limit).
+		Offset(offset)
+
+	if sort != "" && orderBy != "" {
+		q = q.
+			Order(fmt.Sprintf("%s %s", sort, orderBy))
+	}
+
+	if err = q.Find(&list).Error; err != nil {
+		err = errors.Wrap(apperr.ErrTriggerList, err.Error())
+	}
+	return
+}
+
+// ListPlain ...
+func (t Triggers) ListPlain(ctx context.Context, limit, offset int, orderBy, sort string, onlyEnabled bool) (list []*Trigger, total int64, err error) {
+
+	if err = t.Db.WithContext(ctx).Model(Trigger{}).Count(&total).Error; err != nil {
+		err = errors.Wrap(apperr.ErrTriggerList, err.Error())
+		return
+	}
+
+	list = make([]*Trigger, 0)
+	q := t.Db.WithContext(ctx).Model(&Trigger{})
+
+	if onlyEnabled {
+		q = q.Where("enabled = ?", true)
+	}
+
+	q = q.
 		Preload("Area").
 		Limit(limit).
 		Offset(offset)

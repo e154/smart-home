@@ -82,8 +82,21 @@ func (r Trigger) ToListResult(list []*m.Trigger) []*stub.ApiTrigger {
 
 	items := make([]*stub.ApiTrigger, 0, len(list))
 
-	for _, i := range list {
-		items = append(items, r.ToTrigger(i))
+	for _, trigger := range list {
+		items = append(items, &stub.ApiTrigger{
+			Id:          trigger.Id,
+			Name:        trigger.Name,
+			Description: trigger.Description,
+			EntityIds:   make([]string, 0, len(trigger.Entities)),
+			ScriptId:    trigger.ScriptId,
+			AreaId:      trigger.AreaId,
+			Area:        GetStubArea(trigger.Area),
+			PluginName:  trigger.PluginName,
+			Enabled:     trigger.Enabled,
+			IsLoaded:    common.Bool(trigger.IsLoaded),
+			CreatedAt:   trigger.CreatedAt,
+			UpdatedAt:   trigger.UpdatedAt,
+		})
 	}
 
 	return items

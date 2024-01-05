@@ -38,6 +38,7 @@ type ITrigger interface {
 	Update(ctx context.Context, ver *m.UpdateTrigger) error
 	Delete(ctx context.Context, deviceId int64) (err error)
 	List(ctx context.Context, limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Trigger, total int64, err error)
+	ListPlain(ctx context.Context, limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Trigger, total int64, err error)
 	Search(ctx context.Context, query string, limit, offset int) (list []*m.Trigger, total int64, err error)
 	Enable(ctx context.Context, id int64) (err error)
 	Disable(ctx context.Context, id int64) (err error)
@@ -171,6 +172,21 @@ func (n *Trigger) Delete(ctx context.Context, deviceId int64) (err error) {
 func (n *Trigger) List(ctx context.Context, limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Trigger, total int64, err error) {
 	var dbList []*db.Trigger
 	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort, onlyEnabled); err != nil {
+		return
+	}
+
+	list = make([]*m.Trigger, len(dbList))
+	for i, dbVer := range dbList {
+		list[i] = n.fromDb(dbVer)
+	}
+
+	return
+}
+
+// ListPlain ...
+func (n *Trigger) ListPlain(ctx context.Context, limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Trigger, total int64, err error) {
+	var dbList []*db.Trigger
+	if dbList, total, err = n.table.ListPlain(ctx, int(limit), int(offset), orderBy, sort, onlyEnabled); err != nil {
 		return
 	}
 

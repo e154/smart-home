@@ -125,6 +125,7 @@ func (t *Actions) List(ctx context.Context, limit, offset int, orderBy, sort str
 
 	if sort != "" && orderBy != "" {
 		q = q.
+			Preload("Area").
 			Order(fmt.Sprintf("%s %s", sort, orderBy))
 	}
 

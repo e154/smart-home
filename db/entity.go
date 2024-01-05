@@ -277,6 +277,7 @@ func (n *Entities) ListPlain(ctx context.Context, limit, offset int, orderBy, so
 		return
 	}
 	q = q.
+		Preload("Area").
 		Limit(limit).
 		Offset(offset)
 

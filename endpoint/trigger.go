@@ -106,7 +106,7 @@ func (n *TriggerEndpoint) Update(ctx context.Context, params *m.UpdateTrigger) (
 // GetList ...
 func (n *TriggerEndpoint) GetList(ctx context.Context, pagination common.PageParams) (result []*m.Trigger, total int64, err error) {
 
-	if result, total, err = n.adaptors.Trigger.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, false); err != nil {
+	if result, total, err = n.adaptors.Trigger.ListPlain(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, false); err != nil {
 		return
 	}
 

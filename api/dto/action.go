@@ -78,8 +78,19 @@ func (r Action) ToListResult(list []*m.Action) []stub.ApiAction {
 
 	items := make([]stub.ApiAction, 0, len(list))
 
-	for _, i := range list {
-		items = append(items, r.ToAction(i))
+	for _, action := range list {
+		items = append(items, stub.ApiAction{
+			Id:               action.Id,
+			Name:             action.Name,
+			Description:      action.Description,
+			ScriptId:         action.ScriptId,
+			AreaId:           action.AreaId,
+			Area:             GetStubArea(action.Area),
+			EntityId:         action.EntityId.StringPtr(),
+			EntityActionName: action.EntityActionName,
+			CreatedAt:        action.CreatedAt,
+			UpdatedAt:        action.UpdatedAt,
+		})
 	}
 
 	return items
