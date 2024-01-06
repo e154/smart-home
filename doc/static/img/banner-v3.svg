@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<svg viewBox="0 0 800 402" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <rect x="0" y="0" width="800" height="402" style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255); paint-order: fill;"/>
-  <g viewBox="0 0 640 400" matcher="0.8437193265832343" transform="matrix(1, 0, 0, 1, 78.475548, 0.751503)">
+<svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <rect x="0" y="0" width="800" height="400" style="stroke: rgb(255, 255, 255); fill: rgb(255, 255, 255); paint-order: fill;"/>
+  <g viewBox="0 0 640 400" matcher="0.8437193265832343" transform="matrix(1, 0, 0, 1, 78, 0)">
     <g matcher="0.8437193265832343">
       <g matcher="0.8437193265832343">
         <g matcher="0.8437193265832343">
           <svg viewBox="0 0 640 400" data-background-color="#ffffff" preserveAspectRatio="xMidYMid meet" height="400" width="640" xmlns="http://www.w3.org/2000/svg">
-            <rect width="640" height="400" x="0" y="0" opacity="1" fill="#ffffff" data-fill-palette-color="background" id="background"/>
+            <rect width="640" height="400" y="0" opacity="1" fill="#ffffff" data-fill-palette-color="background" id="background" x="0"/>
             <g id="tight-bounds" transform="matrix(1,0,0,1,122.24000000000004,131.0614263077747)">
               <svg viewBox="0 0 395.5199999999999 137.87714738445064" height="137.87714738445064" width="395.5199999999999">
                 <g>
