@@ -19,46 +19,46 @@
 package scripts
 
 import (
-	"encoding/hex"
 	"fmt"
-	"github.com/e154/smart-home/system/logging"
-	"os"
-	"path/filepath"
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 	"testing"
 	"time"
 
-	"go.uber.org/dig"
-
-	"github.com/e154/smart-home/common/encryptor"
-	. "github.com/e154/smart-home/tests/scripts/container"
+	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/system/scripts"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
-func init() {
-	apppath := filepath.Join(os.Getenv("PWD"), "../..")
-	_ = os.Chdir(apppath)
-}
+func Test16(t *testing.T) {
 
-var (
-	container *dig.Container
-)
+	Convey("scripts run syn command", t, func(ctx C) {
+		err := container.Invoke(func(adaptors *adaptors.Adaptors,
+			scriptService scripts.ScriptService) {
 
-func TestMain(m *testing.M) {
+			script1 := &m.Script{
+				Lang:   common.ScriptLangJavascript,
+				Source: javascript29,
+			}
+			engine, err := scriptService.NewEngine(script1)
+			So(err, ShouldBeNil)
 
-	container = BuildContainer()
-	err := container.Invoke(func(
-		_ *logging.Logging,
-	) {
+			So(err, ShouldBeNil)
+			err = engine.Compile()
+			So(err, ShouldBeNil)
 
-		// encryptor
-		b, _ := hex.DecodeString("7abf835e883087d3dc87be2c24ea2faee948f03cf28ebe6d7c119c2ccedc9ab2")
-		encryptor.SetKey(b)
+			result, err := engine.Do()
+			So(err, ShouldBeNil)
+			fmt.Println(result)
 
-		time.Sleep(time.Millisecond * 500)
+			result, err = engine.AssertFunction("foo")
+			So(err, ShouldBeNil)
 
-		os.Exit(m.Run())
+			time.Sleep(time.Second * 3)
+
+		})
+		if err != nil {
+			fmt.Println(err.Error())
+		}
 	})
-
-	if err != nil {
-		fmt.Println("error:", dig.RootCause(err))
-	}
 }
