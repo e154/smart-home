@@ -1,6 +1,6 @@
-<img width="100%" height="auto" src="doc/static/img/banner-v2.svg" alt="smart-home logo">
+<img width="100%" height="auto" src="doc/static/img/banner-v3.svg" alt="smart home logo">
 
-# The **Smart House**
+# The **Smart Home**
 
 [Project site](https://e154.github.io/smart-home/) |
 [Node](https://github.com/e154/smart-home-node/)
