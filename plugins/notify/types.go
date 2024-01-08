@@ -19,8 +19,8 @@
 package notify
 
 import (
-	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/plugins/notify/common"
 )
 
 const (
@@ -37,23 +37,16 @@ type Stat struct {
 	Workers int `json:"workers"`
 }
 
-// Message ...
-type Message struct {
-	Type       string           `json:"type"`
-	EntityId   *common.EntityId `json:"entity_id"`
-	Attributes m.AttributeValue `json:"attributes"`
-}
-
 // NewMessage ...
-func NewMessage() *Message {
-	return &Message{
+func NewMessage() *common.Message {
+	return &common.Message{
 		Attributes: make(m.AttributeValue),
 	}
 }
 
 // Provider ...
 type Provider interface {
-	Save(Message) (addresses []string, message *m.Message)
+	Save(common.Message) (addresses []string, message *m.Message)
 	Send(addresses string, message *m.Message) error
 	MessageParams() m.Attributes
 }

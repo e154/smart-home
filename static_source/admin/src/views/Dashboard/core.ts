@@ -19,19 +19,20 @@ import stream from '@/api/stream';
 import {useBus} from "@/views/Dashboard/bus";
 import {debounce} from "lodash-es";
 import {ref} from "vue";
-import {bool} from "vue-types";
 import {ItemPayloadButton} from '@/views/Dashboard/card_items/button/types';
 import {ItemPayloadText} from '@/views/Dashboard/card_items/text/types';
 import {ItemPayloadState} from '@/views/Dashboard/card_items/state/types';
 import {ItemPayloadLogs} from '@/views/Dashboard/card_items/logs/types';
 import {ItemPayloadProgress} from '@/views/Dashboard/card_items/progress/types';
 import {ItemPayloadChart} from '@/views/Dashboard/card_items/chart/types';
+import {ItemPayloadChartCustom} from "@/views/Dashboard/card_items/chart_custom/types";
 import {ItemPayloadMap, Marker} from '@/views/Dashboard/card_items/map/types';
 import {ItemPayloadSlider} from "@/views/Dashboard/card_items/slider/types";
 import {ItemPayloadColorPicker} from "@/views/Dashboard/card_items/color_picker/types";
 import {ItemPayloadJoystick} from "@/views/Dashboard/card_items/joystick/types";
 import {ItemPayloadVideo} from "@/views/Dashboard/card_items/video/types";
 import {ItemPayloadEntityStorage} from "@/views/Dashboard/card_items/entity_storage/types";
+import {prepareUrl} from "@/utils/serverId";
 
 const {bus} = useBus()
 
@@ -40,6 +41,9 @@ export interface ButtonAction {
   entity?: { id?: string };
   action: string;
   image?: ApiImage | null;
+  icon?: string;
+  iconColor?: string;
+  iconSize?: number;
 }
 
 export interface Position {
@@ -74,6 +78,8 @@ export interface CompareProp {
   key: string;
   comparison: comparisonType;
   value: string;
+  entity?: { id?: string };
+  entityId?: string;
 }
 
 export interface ItemPayloadImage {
@@ -81,15 +87,24 @@ export interface ItemPayloadImage {
   image?: ApiImage;
 }
 
+export interface ItemPayloadIcon {
+  attrField?: string;
+  value?: string;
+  iconColor?: string;
+  iconSize?: number;
+}
+
 //todo: shouldn't be here, so will be optimize!!!
 export interface ItemPayload {
   text?: ItemPayloadText;
   image?: ItemPayloadImage;
+  icon?: ItemPayloadIcon;
   button?: ItemPayloadButton;
   state?: ItemPayloadState;
   logs?: ItemPayloadLogs;
   progress?: ItemPayloadProgress;
   chart?: ItemPayloadChart;
+  chartCustom?: ItemPayloadChartCustom;
   map?: ItemPayloadMap;
   slider?: ItemPayloadSlider;
   colorPicker?: ItemPayloadColorPicker;
@@ -141,13 +156,13 @@ export class CardItem {
 
   private dashboardCardId: number;
   private styleObj: object = {};
-  private styleString: string = JSON.stringify({}, null, 2);
+  private styleString: string = serializedObject({});
   private _entityId: string;
   private _entity?: ApiEntity = {} as ApiEntity;
   private _type: string;
   private _entityActions: Action[] = [];
   private _entityStates: State[] = [];
-  private _lastEvents?: Map<string, EventStateChange> = {} as Map<string, EventStateChange> ;
+  private _lastEvents?: Map<string, EventStateChange> = {} as Map<string, EventStateChange>;
 
   constructor(item: ApiDashboardCardItem) {
     this.id = item.id;
@@ -164,7 +179,7 @@ export class CardItem {
     }
 
     if (item.payload) {
-      const result: any = JSON.parse(decodeURIComponent(escape(atob(item.payload))));
+      const result: any = parsedObject(decodeURIComponent(escape(atob(item.payload))));
       const payload = result as ItemParams;
       this.width = payload.width;
       this.height = payload.height;
@@ -178,7 +193,7 @@ export class CardItem {
           this.buttonActions[i].entity = {id: this.buttonActions[i].entityId}
         }
       }
-      this.styleString = JSON.stringify(payload.style || {}, null, 2);
+      this.styleString = serializedObject(payload.style || {});
       if (payload.showOn) {
         this.showOn = payload.showOn;
       }
@@ -190,6 +205,13 @@ export class CardItem {
           image: undefined,
           attrField: ''
         } as ItemPayloadImage;
+      }
+      if (!this.payload.icon) {
+        this.payload.icon = {
+          value: '',
+          iconColor: '#000000',
+          iconSize: 12
+        } as ItemPayloadIcon;
       }
       if (this.payload.image.attrField == undefined) {
         this.payload.image.attrField = '';
@@ -203,7 +225,11 @@ export class CardItem {
       if (!this.payload.state) {
         this.payload.state = {
           items: [],
-          default_image: undefined
+          default_image: undefined,
+          defaultImage: undefined,
+          defaultIcon: undefined,
+          defaultIconColor: undefined,
+          defaultIconSize: undefined,
         } as ItemPayloadState;
       }
       if (!this.payload.text) {
@@ -238,9 +264,12 @@ export class CardItem {
           range: '24h'
         } as ItemPayloadChart;
       }
+      if (!this.payload.chartCustom) {
+        this.payload.chartCustom = {} as ItemPayloadChartCustom;
+      }
       if (!this.payload?.map) {
         this.payload.map = {
-         markers: []
+          markers: []
         } as ItemPayloadMap;
       } else {
         if (!this.payload.map?.markers) {
@@ -255,30 +284,25 @@ export class CardItem {
         }
       }
       if (!this.payload.slider) {
-        this.payload.slider = {
-        } as ItemPayloadSlider;
+        this.payload.slider = {} as ItemPayloadSlider;
       }
       if (!this.payload.colorPicker) {
-        this.payload.colorPicker = {
-        } as ItemPayloadColorPicker;
+        this.payload.colorPicker = {} as ItemPayloadColorPicker;
       }
       if (!this.payload.joystick) {
-        this.payload.joystick = {
-        } as ItemPayloadJoystick;
+        this.payload.joystick = {} as ItemPayloadJoystick;
       }
       if (!this.payload.video) {
-        this.payload.video = {
-        } as ItemPayloadVideo;
+        this.payload.video = {} as ItemPayloadVideo;
       }
       if (!this.payload.entityStorage) {
-        this.payload.entityStorage = {
-        } as ItemPayloadEntityStorage;
+        this.payload.entityStorage = {} as ItemPayloadEntityStorage;
       }
     }
   }
 
   serialize(): ApiDashboardCardItem {
-    const style = JSON.parse(this.styleString || '{}');
+    const style = parsedObject(this.styleString || '{}');
     this.styleObj = style;
     const buttonActions: ButtonAction[] = [];
     for (const action of this.buttonActions) {
@@ -291,9 +315,12 @@ export class CardItem {
         entity: entity,
         action: action.action,
         image: action.image,
+        icon: action.icon,
+        iconColor: action.iconColor,
+        iconSize: action.iconSize,
       });
     }
-    const payload = btoa(unescape(encodeURIComponent(JSON.stringify({
+    const payload = btoa(unescape(encodeURIComponent(serializedObject({
       width: this.width,
       height: this.height,
       transform: this.transform,
@@ -327,7 +354,7 @@ export class CardItem {
       enabled: true,
       dashboardCardId: dashboardCardId,
       weight: weight,
-      payload: btoa(JSON.stringify({
+      payload: btoa(serializedObject({
         style: {},
         width: 90,
         height: 50,
@@ -375,7 +402,7 @@ export class CardItem {
     if (!image || !image.url) {
       return '';
     }
-    return import.meta.env.VITE_API_BASEPATH as string + image.url;
+    return prepareUrl(import.meta.env.VITE_API_BASEPATH as string + image.url);
   }
 
   private clearActions() {
@@ -512,8 +539,17 @@ export class CardItem {
       updated = true
     }
 
+    // ...
+    let exist: boolean
+    for (const prop of this.hideOn) {
+      if (prop.entityId == event.entity_id) {
+        exist = true
+        break;
+      }
+    }
+
     // for base entity
-    if (!this.entityId || event.entity_id != this.entityId) {
+    if (!exist && (!this.entityId || event.entity_id != this.entityId)) {
       if (updated) {
         this.update();
       }
@@ -629,7 +665,7 @@ export class Card {
       this._entity = {id: this._entityId} as ApiEntity;
     }
     if (card.payload) {
-      const result: any = JSON.parse(decodeURIComponent(escape(atob(card.payload))));
+      const result: any = parsedObject(decodeURIComponent(escape(atob(card.payload))));
       const payload = result as ItemParams;
       if (payload.showOn) {
         this.showOn = payload.showOn;
@@ -684,13 +720,13 @@ export class Card {
       snapThreshold: 5,
       maxSnapElementGuidelineDistance: null,
       elementGuidelines: this.itemList,
-      snapDirections: {"top":true,"left":true,"bottom":true,"right":true,"center":true,"middle":true},
-      elementSnapDirections: {"top":true,"left":true,"bottom":true,"right":true,"center":true,"middle":true},
+      snapDirections: {"top": true, "left": true, "bottom": true, "right": true, "center": true, "middle": true},
+      elementSnapDirections: {"top": true, "left": true, "bottom": true, "right": true, "center": true, "middle": true},
       isDisplaySnapDigit: true,
       isDisplayInnerSnapDigit: false,
       snapGap: true,
 
-      renderDirections: ["nw","n","ne","w","e","sw","s","se"],
+      renderDirections: ["nw", "n", "ne", "w", "e", "sw", "s", "se"],
       snapDigit: 5,
       snapGridWidth: 5,
       snapGridHeight: 5,
@@ -838,9 +874,9 @@ export class Card {
   }
 
   itemList = ref([])
-  updateItemList = debounce( () => {
+  updateItemList = debounce(() => {
     if (!this._document) return;
-    const container = this._document.querySelector('.class-'+this.currentID)
+    const container = this._document.querySelector('.class-' + this.currentID)
     if (!container) return;
     const cubeElements = container.querySelectorAll(".movable");
     this.itemList.value = Array.from(cubeElements)
@@ -1047,11 +1083,12 @@ export class Core {
 
   tabs: Tab[] = [];
 
-  mainTab = 'cardItems';
+  mainTab = 'cards';
   secondTab = '1';
   editorDisabled = false;
 
-  constructor() {}
+  constructor() {
+  }
 
   currentBoard(current: ApiDashboard) {
     this.current = current;
@@ -1174,7 +1211,7 @@ export class Core {
   }
 
   async updateTab() {
-    if (this.activeTab<0) {
+    if (this.activeTab < 0) {
       return;
     }
 
@@ -1214,7 +1251,7 @@ export class Core {
   // cards
   // ---------------------------------
   onSelectedCard(id: number) {
-    if (this.activeTab<0) {
+    if (this.activeTab < 0) {
       return;
     }
     // console.log(`select card id:${id}`);
@@ -1232,7 +1269,7 @@ export class Core {
   }
 
   async createCard() {
-    if (this.activeTab<0 || !this.currentTabId) {
+    if (this.activeTab < 0 || !this.currentTabId) {
       return;
     }
 
@@ -1257,13 +1294,14 @@ export class Core {
       return;
     }
 
-    bus.emit('update_tab', this.currentTabId);
+    // move to direct call
+    // bus.emit('update_tab', this.currentTabId);
 
     return this.tabs[this.activeTab].cards[this.activeCard].update();
   }
 
   async removeCard() {
-    if (this.activeTab<0 || !this.currentCardId) {
+    if (this.activeTab < 0 || !this.currentCardId) {
       return;
     }
 
@@ -1287,7 +1325,7 @@ export class Core {
   }
 
   async importCard(card: ApiDashboardCard) {
-    if (this.activeTab<0 || !this.currentTabId) {
+    if (this.activeTab < 0 || !this.currentTabId) {
       return;
     }
     card.dashboardTabId = this.currentTabId;
@@ -1305,7 +1343,7 @@ export class Core {
   // Card item
   // ---------------------------------
   async createCardItem() {
-    if (this.activeTab<0 || this.activeCard == undefined) {
+    if (this.activeTab < 0 || this.activeCard == undefined) {
       return;
     }
 
@@ -1320,7 +1358,7 @@ export class Core {
   }
 
   async removeCardItem(index: number) {
-    if (this.activeTab<0 || this.activeCard == undefined) {
+    if (this.activeTab < 0 || this.activeCard == undefined) {
       return;
     }
 
@@ -1390,3 +1428,22 @@ export function requestCurrentState(entityId?: string) {
     body: btoa(JSON.stringify({entity_id: entityId}))
   });
 }
+
+export function serializedObject(obj: any): string {
+  return JSON.stringify(obj, function(key, value) {
+    if (typeof value === 'function') {
+      return value.toString(); // Convert function to string
+    }
+    return value;
+  });
+}
+
+export function parsedObject(str): any {
+  return JSON.parse(str, function(key, value) {
+    if (typeof value === 'string' && value.indexOf('function') === 0) {
+      return new Function('return ' + value)(); // Create a function using Function constructor
+    }
+    return value;
+  });
+}
+

@@ -57,7 +57,8 @@ func TestTriggerEmpty(t *testing.T) {
 
 			// automation
 			// ------------------------------------------------
-			trigger := &m.Trigger{
+			trigger := &m.NewTrigger{
+				Enabled:    true,
 				Name:       "trigger1",
 				PluginName: "time",
 				Payload: m.Attributes{
@@ -68,7 +69,7 @@ func TestTriggerEmpty(t *testing.T) {
 					},
 				},
 			}
-			err := AddTrigger(trigger, adaptors, eventBus)
+			triggerId, err := AddTrigger(trigger, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
 			//TASK3
@@ -76,7 +77,7 @@ func TestTriggerEmpty(t *testing.T) {
 				Name:       "Toggle plug OFF",
 				Enabled:    true,
 				Condition:  common.ConditionAnd,
-				TriggerIds: []int64{trigger.Id},
+				TriggerIds: []int64{triggerId},
 			}
 			err = AddTask(newTask, adaptors, eventBus)
 			So(err, ShouldBeNil)

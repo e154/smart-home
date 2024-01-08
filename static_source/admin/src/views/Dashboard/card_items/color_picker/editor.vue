@@ -5,7 +5,7 @@ import {ElDivider, ElCollapse, ElCollapseItem, ElCard, ElForm, ElFormItem, ElInp
   ElRow, ElCol, ElSelect, ElOption, ElInput, ElTag, ElButton, ElColorPicker } from 'element-plus'
 import {Vuuri} from "@/views/Dashboard/Vuuri"
 import {useBus} from "@/views/Dashboard/bus";
-import Viewer from "@/components/JsonViewer/JsonViewer.vue";
+import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
 import CommonEditor from "@/views/Dashboard/card_items/common/editor.vue";
 import {useI18n} from "@/hooks/web/useI18n";
 
@@ -56,7 +56,7 @@ const updateCurrentState = () => {
     <ElRow :gutter="24" >
       <ElCol :span="12" :xs="12">
         <ElFormItem :label="$t('dashboard.editor.value')" prop="value">
-          <ElInput size="small" v-model="currentItem.payload.colorPicker.attribute"/>
+          <ElInput v-model="currentItem.payload.colorPicker.attribute"/>
         </ElFormItem>
       </ElCol>
       <ElCol :span="12" :xs="12">
@@ -87,7 +87,7 @@ const updateCurrentState = () => {
               {{ $t('dashboard.editor.getEvent') }}
             </ElButton>
 
-            <Viewer v-model="currentItem.lastEvent"/>
+            <JsonViewer v-model="currentItem.lastEvent"/>
 
           </ElCollapseItem>
         </ElCollapse>

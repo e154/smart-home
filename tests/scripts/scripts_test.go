@@ -21,6 +21,7 @@ package scripts
 import (
 	"encoding/hex"
 	"fmt"
+	"github.com/e154/smart-home/system/logging"
 	"os"
 	"path/filepath"
 	"testing"
@@ -44,7 +45,9 @@ var (
 func TestMain(m *testing.M) {
 
 	container = BuildContainer()
-	err := container.Invoke(func() {
+	err := container.Invoke(func(
+		_ *logging.Logging,
+	) {
 
 		// encryptor
 		b, _ := hex.DecodeString("7abf835e883087d3dc87be2c24ea2faee948f03cf28ebe6d7c119c2ccedc9ab2")

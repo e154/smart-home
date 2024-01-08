@@ -13,6 +13,7 @@ import Form from './components/Form.vue'
 import {ApiUserFull, ApiUserMeta} from "@/api/stub";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
 import {User} from "@/views/Users/components/Types";
+import {prepareUrl} from "@/utils/serverId";
 
 const {register, elFormRef, methods} = useForm()
 const {required} = useValidator()
@@ -77,7 +78,7 @@ const save = async () => {
     }
 
     if (data?.image && data.image.url) {
-      appStore.SetAvatar(import.meta.env.VITE_API_BASEPATH as string + data.image.url);
+      appStore.SetAvatar(prepareUrl(import.meta.env.VITE_API_BASEPATH as string + data.image.url));
     } else {
       appStore.SetAvatar('')
     }

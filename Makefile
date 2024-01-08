@@ -75,7 +75,7 @@ test:
 	go test -race $(go list ./... | grep -v /tests/)
 
 install_linter:
-	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin v1.45.0
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin v1.55.2
 
 lint-todo:
 	@echo MARK: make lint todo
@@ -136,7 +136,7 @@ server:
 	oapi-codegen -generate types -package stub ${ROOT}/api/api.swagger3.yaml > ${ROOT}/api/stub/types.go
 
 build_structure:
-	@echo MARK: create app structure
+	@echo MARK: create server structure
 	mkdir -p ${SERVER_DIR}
 	mkdir -p ${SERVER_DIR}/snapshots
 	cd ${SERVER_DIR}
@@ -145,7 +145,6 @@ build_structure:
 	cp ${ROOT}/LICENSE ${SERVER_DIR}
 	cp ${ROOT}/README* ${SERVER_DIR}
 	cp ${ROOT}/CONTRIBUTING.md ${SERVER_DIR}
-	cp ${ROOT}/bin/docker/Dockerfile ${SERVER_DIR}
 	cp ${ROOT}/bin/server-installer.sh ${SERVER_DIR}
 	chmod +x ${SERVER_DIR}/data/scripts/ping.sh
 	cp ${ROOT}/${EXEC}-linux-amd64 ${SERVER_DIR}
@@ -169,7 +168,6 @@ build_common_structure:
 	cp ${ROOT}/LICENSE ${COMMON_DIR}
 	cp ${ROOT}/README* ${COMMON_DIR}
 	cp ${ROOT}/CONTRIBUTING.md ${COMMON_DIR}
-	cp ${ROOT}/bin/docker/Dockerfile ${COMMON_DIR}
 	cp ${ROOT}/bin/server-installer.sh ${COMMON_DIR}
 	chmod +x ${COMMON_DIR}/data/scripts/ping.sh
 	cp ${ROOT}/bin/server ${COMMON_DIR}

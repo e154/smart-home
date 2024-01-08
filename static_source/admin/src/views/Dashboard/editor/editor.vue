@@ -1,11 +1,8 @@
 <script setup lang="ts">
-import {computed, onMounted, onUnmounted, reactive, ref, shallowReactive} from 'vue'
+import {computed, onMounted, onUnmounted, reactive, ref, shallowReactive, watch} from 'vue'
 import {useI18n} from '@/hooks/web/useI18n'
-import {ElMessage, ElTabs, ElTabPane, ElSkeleton} from 'element-plus'
-import {useForm} from '@/hooks/web/useForm'
-import {useCache} from '@/hooks/web/useCache'
+import {ElMessage, ElTabs, ElTabPane} from 'element-plus'
 import {useRoute, useRouter} from 'vue-router'
-import {useValidator} from '@/hooks/web/useValidator'
 import api from "@/api/api";
 import {EventStateChange} from "@/api/stream_types";
 import {UUID} from "uuid-generator-ts";
@@ -19,21 +16,19 @@ import TabEditor from "@/views/Dashboard/editor/TabEditor.vue";
 import TabCard from "@/views/Dashboard/editor/TabCard.vue";
 import ViewTab from "@/views/Dashboard/editor/ViewTab.vue";
 import TabCardItem from "@/views/Dashboard/editor/TabCardItem.vue";
+import {useCache} from "@/hooks/web/useCache";
 
 const {bus} = useBus()
-const {register, elFormRef, methods} = useForm()
-const {required} = useValidator()
 const route = useRoute();
-const {currentRoute, addRoute, push} = useRouter()
-const {wsCache} = useCache()
 const {t} = useI18n()
+const { wsCache } = useCache()
 
 // ---------------------------------
 // common
 // ---------------------------------
 
 const loading = ref(false)
-const dashboardId = computed(() => route.params.id as number);
+const dashboardId = computed(() => parseInt(route.params.id as string) as number);
 const core = reactive<Core>(new Core());
 const currentID = ref('')
 
@@ -124,13 +119,41 @@ const getBackgroundColor = () => {
   return {backgroundColor: core.tabs[core.activeTab]?.background}
 }
 
+// split panels
+const splitPaneBottomRef = ref(null)
+
+const splitPaneBottom = ref(50)
+splitPaneBottom.value = wsCache.get('splitPaneBottomSize') as number || 50;
+
+const splitPaneTopSize = ref(50)
+splitPaneTopSize.value = wsCache.get('splitPaneTopSize') as number || 50;
+
+const resizeHandler = function ($event) {
+  wsCache.set('splitPaneTopSize', $event[0].size);
+  splitPaneTopSize.value = $event[0].size;
+
+  if (splitPaneBottomRef.value) {
+    const height = splitPaneBottomRef.value.$el.clientHeight;
+    wsCache.set('splitPaneBottomSize', height);
+
+    splitPaneBottom.value = height;
+    // bus.emit('splitPaneBottomResized', height);
+    // console.log(height)
+  }
+};
+
+const tagsView = computed(() => tagsView.value? 37 : 0)
+const elContainerHeight = computed(()=> {
+  return (splitPaneBottom.value - 60 - tagsView.value)  + 'px';
+})
+
 </script>
 
 <template>
   <div class="components-container dashboard-container" style="margin: 0" v-if="!loading" :style="getBackgroundColor()">
 
-  <splitpanes class="default-theme" horizontal>
-    <pane min-size="10" max-size="90" :size="50" class="top-container">
+  <splitpanes class="default-theme" @resize="resizeHandler" horizontal>
+    <pane min-size="10" max-size="90" class="top-container" :size="splitPaneTopSize">
         <ElTabs
             v-model="activeTabIdx"
             @edit="handleTabsEdit"
@@ -145,7 +168,7 @@ const getBackgroundColor = () => {
           </ElTabPane>
         </ElTabs>
     </pane>
-    <pane class="bottom-container">
+    <pane class="bottom-container" ref="splitPaneBottomRef">
       <ElTabs v-model="core.mainTab" >
         <!-- main -->
         <ElTabPane :label="$t('dashboard.mainTab')" name="main">
@@ -195,13 +218,12 @@ const getBackgroundColor = () => {
   position: relative;
 }
 
-.item-card-editor {
-  /*background-color: #f1f1f1;*/
-}
-
 .components-container {
-  height: calc(100vh - 50px);
-  /*min-height: calc(100vh - 50px);*/
+  height: calc(100vh - 87px);
+  //height: inherit;
+  //height: -webkit-fill-available;
+  //height: -moz-available;
+  //height: fill-available;
   margin: 0;
   padding: 0;
 }
@@ -214,13 +236,7 @@ const getBackgroundColor = () => {
 
 .bottom-container {
   width: 100%;
-  //height: 100%;
   padding: 0 20px;
-  overflow-y: scroll;
-}
-
-.filter-list {
-
 }
 
 p {
@@ -258,4 +274,23 @@ html {
 .splitpanes.default-theme .splitpanes__splitter {
   background-color: #bfbfbf6e;
 }
+
+.el-tabs {
+  height: inherit;
+  height: -webkit-fill-available;
+}
+
+.el-container,
+#pane-main,
+#pane-tabs,
+#pane-cards,
+#pane-cardItems,
+.bottom-container .el-tabs__content {
+  height: v-bind(elContainerHeight);
+}
+
+.el-main {
+  padding: 0 20px 0 0;
+}
+
 </style>

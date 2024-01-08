@@ -10,6 +10,7 @@ import {useForm} from "@/hooks/web/useForm";
 import {useRouter} from "vue-router";
 import {Attribute} from "@/views/Entities/components/types";
 import {parseTime} from "@/utils";
+import {prepareUrl} from "@/utils/serverId";
 
 const {push, currentRoute} = useRouter()
 const remember = ref(false)
@@ -78,7 +79,7 @@ const getUrl = (imageUrl: string | undefined): string => {
   if (!imageUrl) {
     return '';
   }
-  return  import.meta.env.VITE_API_BASEPATH as string + imageUrl;
+  return prepareUrl(import.meta.env.VITE_API_BASEPATH as string + imageUrl);
 }
 
 const getValue = (attr: Attribute): any => {

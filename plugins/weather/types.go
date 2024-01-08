@@ -21,6 +21,7 @@ package weather
 import (
 	"fmt"
 	"path"
+	"path/filepath"
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -544,7 +545,7 @@ LOOP:
 			goto LOOP
 		}
 	}
-	p = path.Join("/", p)
+	p = path.Join(string(filepath.Separator), p)
 	imagePath = common.String(p)
 	return
 }

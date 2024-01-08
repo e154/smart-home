@@ -5,7 +5,7 @@ import {Vuuri} from "@/views/Dashboard/Vuuri"
 import {useBus} from "@/views/Dashboard/bus";
 import ViewCard from "@/views/Dashboard/editor/ViewCard.vue";
 import {ElDivider, ElOption, ElCollapse, ElFormItem, ElSwitch, ElCol, ElRow, ElButton, ElSelect,
-  ElPopconfirm, ElForm, ElCard, ElCollapseItem} from 'element-plus'
+  ElPopconfirm, ElForm, ElCard, ElCollapseItem, ElInput, ElColorPicker, ElInputNumber} from 'element-plus'
 import {ApiEntity, ApiImage} from "@/api/stub";
 import EntitySearch from "@/views/Entities/components/EntitySearch.vue";
 import ShowOn from "@/views/Dashboard/card_items/common/show-on.vue";
@@ -139,16 +139,16 @@ const removeAction = (index: number) => {
 
   <!-- show on -->
   <ElDivider content-position="left">{{ $t('dashboard.editor.showOn') }}</ElDivider>
-  <ShowOn v-model="currentItem.showOn"/>
+  <ShowOn v-model="currentItem.showOn" :core="core"/>
   <!-- /show on -->
 
   <!-- hide on-->
   <ElDivider content-position="left">{{ $t('dashboard.editor.hideOn') }}</ElDivider>
-  <ShowOn v-model="currentItem.hideOn"/>
+  <ShowOn v-model="currentItem.hideOn" :core="core"/>
   <!-- /hide on-->
 
   <!-- button options -->
-  <div v-if="!['button', 'chart', 'map', 'slider', 'streamPlayer'].includes(item.type)">
+  <div v-if="!['button', 'chart', 'chart_custom', 'map', 'slider', 'streamPlayer'].includes(item.type)">
     <ElDivider content-position="left">{{$t('dashboard.editor.buttonOptions') }}</ElDivider>
     <ElRow :gutter="24">
       <ElCol :span="12" :xs="12">
@@ -214,6 +214,24 @@ const removeAction = (index: number) => {
                 <ElFormItem :label="$t('dashboard.editor.image')" prop="image">
                     <ImageSearch v-model="prop.image" @change="onSelectImageForAction(index, ...arguments)"/>
                 </ElFormItem>
+
+                <ElRow :gutter="24">
+                  <ElCol :span="8" :xs="8">
+                    <ElFormItem :label="$t('dashboard.editor.icon')" prop="icon">
+                      <ElInput v-model="prop.icon" />
+                    </ElFormItem>
+                  </ElCol>
+                  <ElCol :span="8" :xs="8">
+                    <ElFormItem :label="$t('dashboard.editor.iconColor')" prop="iconColor">
+                      <ElColorPicker show-alpha v-model="prop.iconColor"/>
+                    </ElFormItem>
+                  </ElCol>
+                  <ElCol :span="8" :xs="8">
+                    <ElFormItem :label="$t('dashboard.editor.iconSize')" prop="iconSize">
+                      <ElInputNumber v-model="prop.iconSize" :min="1" :value-on-clear="12"/>
+                    </ElFormItem>
+                  </ElCol>
+                </ElRow>
 
                 <ElRow>
                   <ElCol>

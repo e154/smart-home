@@ -117,7 +117,7 @@ func (m *MqttBridge) onConnect(client MQTT.Client) {
 
 func (m *MqttBridge) onConnectionLostHandler(client MQTT.Client, e error) {
 
-	m.actor.SetState(supervisor.EntityStateParams{
+	_ = m.actor.SetState(supervisor.EntityStateParams{
 		NewState:    common.String(AttrOffline),
 		StorageSave: true,
 	})

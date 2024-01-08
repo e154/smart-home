@@ -68,3 +68,9 @@ const (
 	// CronOptionTrigger ...
 	CronOptionTrigger = "cron"
 )
+
+type SystemTriggerMessage struct {
+	Topic     string      `json:"topic"`
+	EventName string      `json:"event_name"`
+	Event     interface{} `json:"event"`
+}

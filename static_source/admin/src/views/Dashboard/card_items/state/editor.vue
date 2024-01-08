@@ -2,13 +2,13 @@
 import {computed, PropType, ref, unref, watch} from "vue";
 import {Card, CardItem, comparisonType, Core, requestCurrentState, Tab} from "@/views/Dashboard/core";
 import {ElDivider, ElCollapse, ElCollapseItem, ElCard, ElForm, ElFormItem, ElPopconfirm, ElSwitch,
-  ElRow, ElCol, ElSelect, ElOption, ElInput, ElTag, ElButton } from 'element-plus'
+  ElRow, ElCol, ElSelect, ElOption, ElInput, ElTag, ElButton, ElColorPicker, ElInputNumber } from 'element-plus'
 import CommonEditor from "@/views/Dashboard/card_items/common/editor.vue";
 import {useI18n} from "@/hooks/web/useI18n";
 import {Cache} from "@/views/Dashboard/render";
 import {ApiImage} from "@/api/stub";
 import {ItemPayloadState} from "@/views/Dashboard/card_items/state/types";
-import Viewer from "@/components/JsonViewer/JsonViewer.vue";
+import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
 import ImageSearch from "@/views/Images/components/ImageSearch.vue";
 
 const {t} = useI18n()
@@ -69,10 +69,7 @@ const addProp = () => {
 
 const removeProp = (index: number) => {
   if (!props.item.payload.state) {
-    currentItem.value.payload.state = {
-      items: [],
-      default_image: undefined
-    } as ItemPayloadState;
+    initDefaultValue();
   }
 
   props.item.payload.state.items!.splice(index, 1);
@@ -83,13 +80,21 @@ const onSelectImageForState = (index: number, image: ApiImage) => {
   console.log('select image', index, image);
 
   if (!props.item.payload.state) {
-    currentItem.value.payload.state = {
-      items: [],
-      default_image: undefined
-    } as ItemPayloadState;
+    initDefaultValue();
   }
 
   currentItem.value.payload.state.items[index].image = image as ApiImage || undefined;
+  props.item.update();
+}
+
+const onSelectIconForState = (index: number, icon: string) => {
+  console.log('select icon', index, icon);
+
+  if (!props.item.payload.state) {
+    initDefaultValue();
+  }
+
+  currentItem.value.payload.state.items[index].icon = icon || undefined;
   props.item.update();
 }
 
@@ -99,15 +104,34 @@ const onSelectDefaultImage = (image: ApiImage) => {
   console.log('select image', image);
 
   if (!props.item.payload.state) {
-    currentItem.value.payload.state = {
-      items: [],
-      default_image: undefined
-    } as ItemPayloadState;
+    initDefaultValue();
   }
 
-  currentItem.value.payload.state.default_image = image as ApiImage || undefined;
+  current_item.value.payload.state.defaultImage = image as ApiImage || undefined;
   // this.reloadKeyDefaultImage += 1
   props.item.update();
+}
+
+const onSelectDefaultIcon = (icon?: string) => {
+  console.log('select icon', icon);
+
+  if (!props.item.payload.state) {
+    initDefaultValue();
+  }
+
+  currentItem.value.payload.state.defaultIcon = icon || undefined;
+  // this.reloadKeyDefaultImage += 1
+  props.item.update();
+}
+
+const initDefaultValue = () => {
+  currentItem.value.payload.state = {
+    items: [],
+    defaultImage: undefined,
+    defaultIcon: undefined,
+    defaultIconColor: "#000000",
+    defaultIconSize: 12,
+  } as ItemPayloadState;
 }
 // ---------------------------------
 // component methods
@@ -200,6 +224,24 @@ const updateCurrentState = () => {
             </ElCol>
           </ElRow>
 
+          <ElRow :gutter="24">
+            <ElCol :span="8" :xs="8">
+              <ElFormItem :label="$t('dashboard.editor.icon')" prop="icon">
+                <ElInput v-model="prop.icon" />
+              </ElFormItem>
+            </ElCol>
+            <ElCol :span="8" :xs="8">
+              <ElFormItem :label="$t('dashboard.editor.iconColor')" prop="iconColor">
+                <ElColorPicker show-alpha v-model="prop.iconColor"/>
+              </ElFormItem>
+            </ElCol>
+            <ElCol :span="8" :xs="8">
+              <ElFormItem :label="$t('dashboard.editor.iconSize')" prop="iconSize">
+                <ElInputNumber v-model="prop.iconSize" :min="1" :value-on-clear="12"/>
+              </ElFormItem>
+            </ElCol>
+          </ElRow>
+
           <ElRow>
             <ElCol>
               <div style="padding-bottom: 20px">
@@ -229,18 +271,42 @@ const updateCurrentState = () => {
       </ElCard>
 
     </ElCollapseItem>
-    <ElCollapseItem>
-      <template #title>
-        {{ $t('dashboard.editor.defaultImage') }}
-      </template>
-      <ElRow>
-        <ElCol>
-          <ElCard shadow="never" class="item-card-editor">
-            <ImageSearch :key="reloadKeyDefaultImage" v-model="currentItem.payload.state.default_image" @change="onSelectDefaultImage"/>
-          </ElCard>
-        </ElCol>
-      </ElRow>
-    </ElCollapseItem>
+
+
+    <ElRow>
+      <ElCol>
+        <ElDivider content-position="left">{{ $t('dashboard.editor.defaultImage') }}</ElDivider>
+      </ElCol>
+    </ElRow>
+    <ElRow>
+      <ElCol>
+        <ElFormItem :label="$t('dashboard.editor.image')" prop="image">
+          <ImageSearch :key="reloadKeyDefaultImage" v-model="currentItem.payload.state.defaultImage" @change="onSelectDefaultImage"/>
+        </ElFormItem>
+      </ElCol>
+    </ElRow>
+    <ElRow>
+      <ElCol>
+        <ElDivider content-position="left">{{ $t('dashboard.editor.defaultIcon') }}</ElDivider>
+      </ElCol>
+    </ElRow>
+    <ElRow :gutter="24">
+      <ElCol :span="8" :xs="8">
+        <ElFormItem :label="$t('dashboard.editor.icon')" prop="icon">
+          <ElInput v-model="currentItem.payload.state.defaultIcon" @change="onSelectDefaultIcon"/>
+        </ElFormItem>
+      </ElCol>
+      <ElCol :span="8" :xs="8">
+        <ElFormItem :label="$t('dashboard.editor.iconColor')" prop="iconColor">
+          <ElColorPicker show-alpha v-model="currentItem.payload.state.defaultIconColor"/>
+        </ElFormItem>
+      </ElCol>
+      <ElCol :span="8" :xs="8">
+        <ElFormItem :label="$t('dashboard.editor.iconSize')" prop="iconSize">
+          <ElInputNumber v-model="currentItem.payload.state.defaultIconSize" :min="1" :value-on-clear="12"/>
+        </ElFormItem>
+      </ElCol>
+    </ElRow>
   </ElCollapse>
   <!-- /props -->
 
@@ -253,7 +319,7 @@ const updateCurrentState = () => {
             {{ $t('dashboard.editor.getEvent') }}
           </ElButton>
 
-          <Viewer v-model="currentItem.lastEvent"/>
+          <JsonViewer v-model="currentItem.lastEvent"/>
 
         </ElCollapseItem>
       </ElCollapse>

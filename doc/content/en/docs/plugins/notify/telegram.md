@@ -20,11 +20,10 @@ To work with the Telegram API and handle interactive commands from clients or us
 
 ### Actions:
 
-The system reserves three commands:
+There are two reserved commands in the system:
 
 * **/start** - Subscribe to notifications
 * **/quit** - Unsubscribe from notifications
-* **/help** - Display available commands
 
 **Action** - It should be named in lowercase, without the "/" sign. A custom command will automatically be added to the list of available commands in the **/help** section. The custom command should be called in uppercase **/ACTION** -> **/action**.
 
@@ -32,7 +31,7 @@ The system reserves three commands:
 
 ----------------
 
-New Message:
+### New Message:
 
 Creates a message object.
 
@@ -40,28 +39,46 @@ Creates a message object.
 msg = notifr.newMessage();
 msg.entity_id = 'telegram.name';
 msg.attributes = {
-  'name': 'clavicus',
-  'body': 'some text msg'
+  'body': 'some text msg',
+  'chat_id': 123456,
+  'keys': ['foo', 'bar'],
+  'photo_uri': ['foo', 'bar'],
+  'photo_path': ['foo', 'bar'],
+  'file_path': ['foo', 'bar'],
+  'file_uri': ['foo', 'bar']
 };
-```
 
-| Value | Description |
-|-------|-------------|
-| newMessage() | Method |
-| msg | Type: Object (Message) |
+```
+|  значение  | описание  |
+|-------------|---------|
+| newMessage() |    метод   |
+| msg |   type: Object (Message)  |
+
+attributes:
+
+|  значение  | описание  |
+|-------------|---------|
+| body |  Type: string,  message body   |
+| chat_id | Type: int64,  user's id  |
+| keys |  Type: []string, keyboard   |
+| photo_uri |  Type: []string, image   |
+| photo_path |  Type: []string, image   |
+| file_path |  Type: []string, file   |
+| file_uri |  Type: []string, file   |
 
 ----------------
 
-telegramAction Function:
+### telegramAction Function:
 
 ```coffeescript
-telegramAction = (entityId, actionName)->
+telegramAction = (entityId, actionName, args)->
 ```
 
 | Value | Description |
 |-------|-------------|
 | entityId | Type: string, ID of the entity sending the message |
 | actionName | Type: string, name of the action in uppercase, without the '/' character |
+| args  | attributes |
 
 ----------------
 
@@ -83,9 +100,8 @@ switch actionName
 
 sendMsg =(body)->
   msg = notifr.newMessage();
-  msg.entity_id = 'telegram.name';
+  msg.entity_id = 'telegram.testbot';
   msg.attributes = {
-    'name': 'clavicus',
     'body': body
   };
   notifr.send(msg);

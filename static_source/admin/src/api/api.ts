@@ -24,6 +24,10 @@ api.instance.interceptors.request.use(
     if (wsCache.get('accessToken')) {
       config.headers.Authorization = wsCache.get('accessToken');
     }
+    // Add X-SERVER-ID
+    if (wsCache.get('serverId')) {
+      config.headers['X-SERVER-ID'] = wsCache.get('serverId');
+    }
     return config;
   },
   (error) => {
@@ -42,13 +46,22 @@ api.instance.interceptors.response.use(
     const response = error.response
     const res = response.data;
 
+    if (response.status == 526 ) {
+      ElMessage({
+        message: 'No proxy available',
+        type: 'error',
+        duration: 5 * 1000
+      });
+      return
+    }
+
     ElMessage({
       message: res.error.message || t('Error'),
       type: 'error',
       duration: 5 * 1000
     });
 
-    if (response.status === 401 /*|| response.status === 400*/) {
+    if (response.status === 401 ) {
 
       if (location.toString().includes('/login') || location.toString().includes('/password_reset')) {
         return

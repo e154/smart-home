@@ -43,10 +43,6 @@ var (
 	log = logger.MustGetLogger("automation")
 )
 
-const (
-	queueSize = 100
-)
-
 // Automation ...
 type Automation interface {
 	Start() (err error)

@@ -13,6 +13,8 @@ const fixedHeader = computed(() => appStore.getFixedHeader)
 
 const footer = computed(() => appStore.getFooter)
 
+const tagsView = computed(() => appStore.getTagsView)
+
 const tagsViewStore = useTagsViewStore()
 
 const getCaches = computed((): string[] => {
@@ -24,9 +26,9 @@ const onKeydown = ( event ) => {
   if (event.key === "Escape") {
     appStore.setTerminal(false)
   }
-  if (event.key === "`") {
-    appStore.setTerminal(!appStore.getTerminal)
-  }
+  // if (event.key === "`") {
+  //   appStore.setTerminal(!appStore.getTerminal)
+  // }
 }
 
 onMounted(() => {
@@ -42,7 +44,14 @@ onUnmounted(() => {
 <template>
   <section
     :class="[
-      'p-[var(--app-content-padding)] w-[100%] bg-[var(--app-content-bg-color)] dark:bg-[var(--el-bg-color)]', '!min-h-[calc(100%-var(--top-tool-height))]', 'h-[100%]',
+      'p-[var(--app-content-padding)] w-[100%] bg-[var(--app-content-bg-color)] dark:bg-[var(--el-bg-color)]',
+      {
+        '!min-h-[calc(100%-var(--top-tool-height))]': !tagsView,
+        'h-[calc(100%-var(--top-tool-height))]': !tagsView,
+
+        '!min-h-[calc(100%-var(--top-tool-height)-var(--tags-view-full-height))]': tagsView,
+        'h-[calc(100%-var(--top-tool-height)-var(--tags-view-full-height))]': tagsView,
+      },
       {
         '!min-h-[calc(100%-var(--app-footer-height))]':
           ((fixedHeader && (layout === 'classic' || layout === 'topLeft')) || layout === 'top') &&

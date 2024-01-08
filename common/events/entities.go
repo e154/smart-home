@@ -26,11 +26,12 @@ import (
 
 // EventStateChanged ...
 type EventStateChanged struct {
-	StorageSave bool                 `json:"storage_save"`
-	PluginName  string               `json:"plugin_name"`
-	EntityId    common.EntityId      `json:"entity_id"`
-	OldState    bus.EventEntityState `json:"old_state"`
-	NewState    bus.EventEntityState `json:"new_state"`
+	StorageSave     bool                 `json:"storage_save"`
+	DoNotSaveMetric bool                 `json:"do_not_save_metric"`
+	PluginName      string               `json:"plugin_name"`
+	EntityId        common.EntityId      `json:"entity_id"`
+	OldState        bus.EventEntityState `json:"old_state"`
+	NewState        bus.EventEntityState `json:"new_state"`
 }
 
 // EventLastStateChanged ...
@@ -76,6 +77,11 @@ type EventCreatedEntityModel struct {
 
 // EventUpdatedEntityModel ...
 type EventUpdatedEntityModel struct {
+	EntityId common.EntityId `json:"entity_id"`
+}
+
+// EventUpdatedMetric ...
+type EventUpdatedMetric struct {
 	EntityId common.EntityId `json:"entity_id"`
 }
 

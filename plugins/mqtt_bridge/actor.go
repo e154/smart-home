@@ -43,8 +43,7 @@ func NewActor(entity *m.Entity,
 		actionPool: make(chan events.EventCallEntityAction, 1000),
 	}
 
-	var topics []string
-	topics = strings.Split(entity.Settings[AttrTopics].String(), ",")
+	var topics = strings.Split(entity.Settings[AttrTopics].String(), ",")
 
 	config := &Config{
 		KeepAlive:      int(entity.Settings[AttrKeepAlive].Int64()),

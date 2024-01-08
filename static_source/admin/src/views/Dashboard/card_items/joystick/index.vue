@@ -9,6 +9,7 @@ import {debounce} from "lodash-es";
 import api from "@/api/api";
 import {ApiEntityCallActionRequest, ApiTypes} from "@/api/stub";
 import {UUID} from "uuid-generator-ts";
+import {prepareUrl} from "@/utils/serverId";
 
 // ---------------------------------
 // common
@@ -100,7 +101,7 @@ watch(
 )
 
 const getUrl = (): string => {
-  return import.meta.env.VITE_API_BASEPATH as string + props.item?.payload.joystick?.stickImage?.url || '';
+  return prepareUrl(import.meta.env.VITE_API_BASEPATH as string + props.item?.payload.joystick?.stickImage?.url || '');
 }
 
 const loop = () => {

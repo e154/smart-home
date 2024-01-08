@@ -20,13 +20,12 @@ package updater
 
 import (
 	"context"
+	"embed"
 	"fmt"
 	"time"
 
 	"github.com/e154/smart-home/common"
-
 	"github.com/e154/smart-home/common/events"
-
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/supervisor"
@@ -43,6 +42,10 @@ var (
 
 var _ supervisor.Pluggable = (*plugin)(nil)
 
+//go:embed Readme.md
+//go:embed Readme.ru.md
+var F embed.FS
+
 func init() {
 	supervisor.RegisterPlugin(Name, New)
 }
@@ -54,9 +57,11 @@ type plugin struct {
 
 // New ...
 func New() supervisor.Pluggable {
-	return &plugin{
+	p := &plugin{
 		Plugin: supervisor.NewPlugin(),
 	}
+	p.F = F
+	return p
 }
 
 // Load ...
@@ -65,9 +70,8 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 		return
 	}
 
-	var entity *m.Entity
-	if entity, err = p.Service.Adaptors().Entity.GetById(context.Background(), common.EntityId(fmt.Sprintf("%s.%s", EntityUpdater, Name))); err != nil {
-		entity = &m.Entity{
+	if _, err = p.Service.Adaptors().Entity.GetById(context.Background(), common.EntityId(fmt.Sprintf("%s.%s", EntityUpdater, Name))); err != nil {
+		entity := &m.Entity{
 			Id:         common.EntityId(fmt.Sprintf("%s.%s", EntityUpdater, Name)),
 			PluginName: Name,
 			Attributes: NewAttr(),

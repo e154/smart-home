@@ -27,12 +27,11 @@ import (
 
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5/pgconn"
-
-	"github.com/e154/smart-home/common/apperr"
-
-	"github.com/e154/smart-home/common"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
+
+	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
 )
 
 // Entities ...
@@ -118,7 +117,7 @@ func (n Entities) GetById(ctx context.Context, id common.EntityId) (v *Entity, e
 		Preload("Metrics").
 		Preload("Scripts").
 		Preload("Storage", func(db *gorm.DB) *gorm.DB {
-			return db.Limit(1).Order("created_at DESC")
+			return db.Limit(1).Order("entity_storage.created_at DESC")
 		}).
 		First(&v).Error
 
@@ -149,12 +148,17 @@ func (n Entities) GetByIds(ctx context.Context, ids []common.EntityId) (list []*
 		Preload("Area").
 		Preload("Metrics").
 		Preload("Scripts").
-		Preload("Storage", func(db *gorm.DB) *gorm.DB {
-			return db.Limit(1).Order("created_at DESC")
-		}).
+		//Preload("Storage", func(db *gorm.DB) *gorm.DB {
+		//	return db.Limit(1).Order("entity_storage.created_at DESC")
+		//}).
 		Find(&list).Error
 
 	if err != nil {
+		err = errors.Wrap(apperr.ErrEntityGet, err.Error())
+		return
+	}
+
+	if err = n.PreloadStorage(ctx, list); err != nil {
 		err = errors.Wrap(apperr.ErrEntityGet, err.Error())
 		return
 	}
@@ -194,13 +198,8 @@ func (n Entities) Delete(ctx context.Context, id common.EntityId) (err error) {
 func (n *Entities) List(ctx context.Context, limit, offset int, orderBy, sort string, autoLoad bool,
 	query, plugin *string, areaId *int64) (list []*Entity, total int64, err error) {
 
-	if err = n.Db.WithContext(ctx).Model(Entity{}).Count(&total).Error; err != nil {
-		err = errors.Wrap(apperr.ErrEntityList, err.Error())
-		return
-	}
-
 	list = make([]*Entity, 0)
-	q := n.Db
+	q := n.Db.WithContext(ctx).Model(Entity{})
 	if autoLoad {
 		q = q.Where("auto_load = ?", true)
 	}
@@ -213,6 +212,10 @@ func (n *Entities) List(ctx context.Context, limit, offset int, orderBy, sort st
 	if areaId != nil {
 		q = q.Where("area_id = ?", *areaId)
 	}
+	if err = q.Count(&total).Error; err != nil {
+		err = errors.Wrap(apperr.ErrEntityList, err.Error())
+		return
+	}
 	q = q.
 		Preload("Image").
 		Preload("States").
@@ -223,9 +226,58 @@ func (n *Entities) List(ctx context.Context, limit, offset int, orderBy, sort st
 		Preload("Area").
 		Preload("Metrics").
 		Preload("Scripts").
-		Preload("Storage", func(db *gorm.DB) *gorm.DB {
-			return db.Limit(1).Order("created_at DESC")
-		}).
+		//Preload("Storage", func(db *gorm.DB) *gorm.DB {
+		//	return db.Limit(1).Order("entity_storage.created_at DESC")
+		//}).
+		Limit(limit).
+		Offset(offset)
+
+	if sort != "" && orderBy != "" {
+		q = q.Order(fmt.Sprintf("%s %s", sort, orderBy))
+	}
+
+	err = q.
+		WithContext(ctx).
+		Find(&list).
+		Error
+
+	if err != nil {
+		err = errors.Wrap(apperr.ErrEntityList, err.Error())
+		return
+	}
+
+	if err = n.PreloadStorage(ctx, list); err != nil {
+		err = errors.Wrap(apperr.ErrEntityGet, err.Error())
+		return
+	}
+
+	return
+}
+
+// ListPlain ...
+func (n *Entities) ListPlain(ctx context.Context, limit, offset int, orderBy, sort string, autoLoad bool,
+	query, plugin *string, areaId *int64) (list []*Entity, total int64, err error) {
+
+	list = make([]*Entity, 0)
+	q := n.Db.WithContext(ctx).Model(Entity{})
+	if autoLoad {
+		q = q.Where("auto_load = ?", true)
+	}
+	if query != nil {
+		q = q.Where("id LIKE ?", "%"+*query+"%")
+	}
+	if plugin != nil {
+		q = q.Where("plugin_name = ?", *plugin)
+	}
+	if areaId != nil {
+		q = q.Where("area_id = ?", *areaId)
+	}
+	if err = q.Count(&total).Error; err != nil {
+		err = errors.Wrap(apperr.ErrEntityList, err.Error())
+		return
+	}
+	q = q.
+		Preload("Area").
 		Limit(limit).
 		Offset(offset)
 
@@ -262,19 +314,20 @@ func (n *Entities) GetByType(ctx context.Context, t string, limit, offset int) (
 		Preload("Area").
 		Preload("Metrics").
 		Preload("Scripts").
-		Preload("Storage", func(db *gorm.DB) *gorm.DB {
-			return db.Limit(1).Order("created_at DESC")
-		}).
+		//Preload("Storage", func(db *gorm.DB) *gorm.DB {
+		//	return db.Order("entity_storage.created_at DESC").Limit(1)
+		//}).
 		Limit(limit).
 		Offset(offset).
 		Find(&list).
 		Error
 
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			err = errors.Wrap(apperr.ErrEntityGet, fmt.Sprintf("type \"%s\"", t))
-			return
-		}
+		err = errors.Wrap(apperr.ErrEntityGet, err.Error())
+		return
+	}
+
+	if err = n.PreloadStorage(ctx, list); err != nil {
 		err = errors.Wrap(apperr.ErrEntityGet, err.Error())
 		return
 	}
@@ -323,5 +376,25 @@ func (n Entities) DeleteScripts(ctx context.Context, id common.EntityId) (err er
 	if err = n.Db.WithContext(ctx).Model(&Entity{Id: id}).Association("Scripts").Clear(); err != nil {
 		err = errors.Wrap(apperr.ErrEntityDeleteScript, err.Error())
 	}
+	return
+}
+
+// PreloadStorage ...
+func (n Entities) PreloadStorage(ctx context.Context, list []*Entity) (err error) {
+
+	//todo: fix
+	// temporary solution because Preload("Storage", func(db *gorm.DB) *gorm.DB { - does not work ...
+	for _, item := range list {
+		err = n.Db.WithContext(ctx).Model(&EntityStorage{}).
+			Order("created_at desc").
+			Limit(1).
+			Find(&item.Storage, "entity_id = ?", item.Id).
+			Error
+		if err != nil {
+			err = errors.Wrap(apperr.ErrEntityStorageGet, err.Error())
+			return
+		}
+	}
+
 	return
 }

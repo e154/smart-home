@@ -20,6 +20,7 @@ package moon
 
 import (
 	"context"
+	"embed"
 	"time"
 
 	"github.com/e154/smart-home/common/logger"
@@ -33,6 +34,10 @@ var (
 
 var _ supervisor.Pluggable = (*plugin)(nil)
 
+//go:embed Readme.md
+//go:embed Readme.ru.md
+var F embed.FS
+
 func init() {
 	supervisor.RegisterPlugin(Name, New)
 }
@@ -44,9 +49,11 @@ type plugin struct {
 
 // New ...
 func New() supervisor.Pluggable {
-	return &plugin{
+	p := &plugin{
 		Plugin: supervisor.NewPlugin(),
 	}
+	p.F = F
+	return p
 }
 
 // Load ...
@@ -70,7 +77,7 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 // Unload ...
 func (p *plugin) Unload(ctx context.Context) (err error) {
 	p.ticker.Stop()
-	err = p.Plugin.Unload(ctx)
+	_ = p.Plugin.Unload(ctx)
 	return nil
 }
 

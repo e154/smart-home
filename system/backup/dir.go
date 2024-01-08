@@ -25,7 +25,7 @@ import (
 )
 
 // File copies a single file from src to dst
-func File(src, dst string) error {
+func CopyFile(src, dst string) error {
 	var err error
 	var srcfd *os.File
 	var dstfd *os.File
@@ -76,7 +76,7 @@ func Copy(src string, dst string) error {
 				return err
 			}
 		} else {
-			if err = File(srcfp, dstfp); err != nil {
+			if err = CopyFile(srcfp, dstfp); err != nil {
 				return err
 			}
 		}

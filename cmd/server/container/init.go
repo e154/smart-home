@@ -49,5 +49,9 @@ func MigrationList(adaptors *adaptors.Adaptors,
 		local_migrations.NewMigrationScheduler(adaptors),
 		local_migrations.NewMigrationJavascriptV2(adaptors),
 		local_migrations.NewMigrationTimezone(adaptors),
+		local_migrations.NewMigrationSpeedtest(adaptors),
+		local_migrations.NewMigrationBackup(adaptors),
+		local_migrations.NewMigrationGate(adaptors),
+		local_migrations.NewMigrationAddVar1(adaptors),
 	}
 }

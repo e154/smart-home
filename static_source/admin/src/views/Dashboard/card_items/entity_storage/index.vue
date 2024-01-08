@@ -127,7 +127,7 @@ const columns: TableColumn[] = [
     label: t('main.createdAt'),
     type: 'time',
     sortable: true,
-    width: "150px",
+    width: "170px",
     formatter: (row: ApiEntityStorage) => {
       return h(
           'span',
@@ -309,7 +309,7 @@ getList()
     />
 
     <div class="mb-20px" v-if="item.payload.entityStorage?.entityIds?.length && item.payload.entityStorage?.filter">
-        <ElCheckboxGroup v-model="selectedEntities" size="small">
+        <ElCheckboxGroup v-model="selectedEntities">
           <ElCheckboxButton
               v-for="entity in item.payload.entityStorage.entityIds"
               :key="entity"

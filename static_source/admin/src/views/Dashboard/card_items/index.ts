@@ -14,6 +14,8 @@ import progress from './progress/index.vue';
 import progressEditor from './progress/editor.vue';
 import chart from './chart/index.vue';
 import chartEditor from './chart/editor.vue';
+import chart_custom from './chart_custom/index.vue';
+import chartCustomEditor from './chart_custom/editor.vue';
 import entityStorage from './entity_storage/index.vue';
 import entityStorageEditor from './entity_storage/editor.vue';
 import map from './map/index.vue';
@@ -26,6 +28,8 @@ import streamPlayer from './video/index.vue';
 import streamPlayerEditor from './video/editor.vue';
 import joystick from './joystick/index.vue';
 import joystickEditor from './joystick/editor.vue';
+import icon from './icon/index.vue';
+import iconEditor from './icon/editor.vue';
 
 export const CardItemName = (name: string): any => {
   switch (name) {
@@ -43,6 +47,8 @@ export const CardItemName = (name: string): any => {
       return progress;
     case 'chart':
       return chart;
+    case 'chart_custom':
+      return chart_custom;
     case 'entityStorage':
       return entityStorage;
     case 'map':
@@ -55,6 +61,8 @@ export const CardItemName = (name: string): any => {
       return streamPlayer;
     case 'joystick':
       return joystick;
+    case 'icon':
+      return icon;
     default:
       // console.error(`unknown card name "${name}"`);
       return dummy;
@@ -77,6 +85,8 @@ export const CardEditorName = (name: string): any => {
       return progressEditor;
     case 'chart':
       return chartEditor;
+    case 'chart_custom':
+      return chartCustomEditor;
     case 'entityStorage':
       return entityStorageEditor;
     case 'map':
@@ -89,6 +99,8 @@ export const CardEditorName = (name: string): any => {
       return streamPlayerEditor;
     case 'joystick':
       return joystickEditor;
+    case 'icon':
+      return iconEditor;
     default:
       // console.error(`unknown card name "${name}"`);
       return dummyEditor;
@@ -108,10 +120,12 @@ export const CardItemList: ItemsType[] = [
   {label: 'LOGS', value: 'logs'},
   {label: 'PROGRESS', value: 'progress'},
   {label: 'CHART', value: 'chart'},
+  {label: 'CHART_CUSTOM', value: 'chart_custom'},
   {label: 'ENTITY_STORAGE', value: 'entityStorage'},
   {label: 'MAP', value: 'map'},
   {label: 'SLIDER', value: 'slider'},
   {label: 'COLOR_PICKER', value: 'colorPicker'},
   {label: 'STREAM_PLAYER', value: 'streamPlayer'},
-  {label: 'JOYSTICK', value: 'joystick'}
+  {label: 'JOYSTICK', value: 'joystick'},
+  {label: 'ICON', value: 'icon'}
 ];

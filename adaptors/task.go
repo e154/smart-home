@@ -21,11 +21,12 @@ package adaptors
 import (
 	"context"
 	"fmt"
-	"github.com/e154/smart-home/system/orm"
+
+	"gorm.io/gorm"
 
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"gorm.io/gorm"
+	"github.com/e154/smart-home/system/orm"
 )
 
 // ITask ...
@@ -143,8 +144,6 @@ func (n *Task) Update(ctx context.Context, ver *m.UpdateTask) (err error) {
 		Enabled:     ver.Enabled,
 		Condition:   ver.Condition,
 		AreaId:      ver.AreaId,
-		CreatedAt:   ver.CreatedAt,
-		UpdatedAt:   ver.UpdatedAt,
 	}
 
 	//triggers

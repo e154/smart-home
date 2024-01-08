@@ -29,25 +29,25 @@ import (
 // Client ...
 type Client struct {
 	closed bool
-	ws     *websocket.Conn
 	user   *m.User
-	Mu     sync.Mutex
+	*sync.Mutex
+	ws *websocket.Conn
 }
 
 // NewClient ...
 func NewClient(ws *websocket.Conn, user *m.User) *Client {
-	return &Client{ws: ws, user: user}
+	return &Client{ws: ws, user: user, Mutex: &sync.Mutex{}}
 }
 
 // WritePump ...
-func (c *Client) WritePump(f func(*Client, string, string, []byte)) (err error) {
+func (c *Client) WritePump(f func(*Client, string, string, []byte)) {
 
 	var data []byte
 	var messageType int
+	var err error
 	for !c.closed {
 		messageType, data, err = c.ws.ReadMessage()
 		if messageType == -1 || err != nil {
-			err = nil
 			return
 		}
 
@@ -66,19 +66,18 @@ func (c *Client) Close() {
 
 // Send ...
 func (c *Client) Send(id, query string, body []byte) (err error) {
-	c.Mu.Lock()
-	defer c.Mu.Unlock()
+	c.Lock()
+	defer c.Unlock()
 
 	if c.closed {
 		return
 	}
 
-	b, _ := json.Marshal(&Message{
+	err = c.ws.WriteJSON(&Message{
 		Id:    id,
 		Query: query,
 		Body:  body,
 	})
-	err = c.ws.WriteMessage(websocket.TextMessage, b)
 	if err != nil {
 		c.closed = true
 	}

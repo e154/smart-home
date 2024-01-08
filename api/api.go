@@ -20,9 +20,13 @@ package api
 
 import (
 	"context"
-	"embed"
 	"net/http"
 	"strings"
+
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	echopprof "github.com/hiko1129/echo-pprof"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 
 	"github.com/e154/smart-home/api/controllers"
 	"github.com/e154/smart-home/api/stub"
@@ -31,15 +35,7 @@ import (
 	"github.com/e154/smart-home/common/logger"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/rbac"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	echopprof "github.com/hiko1129/echo-pprof"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
-
-//go:embed swagger-ui/*
-//go:embed api.swagger3.yaml
-var assets embed.FS
 
 var (
 	log = logger.MustGetLogger("api")
@@ -90,23 +86,26 @@ func (a *Api) Start() (err error) {
 		}
 		a.echo.Use(middleware.LoggerWithConfig(DefaultLoggerConfig))
 		a.echo.Debug = true
+	}
 
+	if a.cfg.Pprof {
 		// automatically add routers for net/http/pprof
 		// e.g. /debug/pprof, /debug/pprof/heap, etc.
-		if a.cfg.Debug {
-			log.Info("pprof enabled")
-			echopprof.Wrap(a.echo)
-		}
-	} else {
-		log.Info("debug disabled")
+		log.Info("pprof enabled")
+		echopprof.Wrap(a.echo)
+
+		prefix := "/debug/pprof"
+		group := a.echo.Group(prefix)
+		echopprof.WrapGroup(prefix, group)
 	}
 
 	a.echo.HideBanner = true
 	a.echo.HidePort = true
-	a.echo.Use(middleware.GzipWithConfig(middleware.GzipConfig{
-		Level: -1,
-	}))
-	a.echo.Use(middleware.Decompress())
+
+	if a.cfg.Gzip {
+		a.echo.Use(middleware.GzipWithConfig(middleware.DefaultGzipConfig))
+		a.echo.Use(middleware.Decompress())
+	}
 
 	a.registerHandlers()
 
@@ -149,7 +148,7 @@ func (a *Api) registerHandlers() {
 
 	// Swagger
 	if a.cfg.Swagger {
-		var contentHandler = echo.WrapHandler(http.FileServer(http.FS(assets)))
+		var contentHandler = echo.WrapHandler(http.FileServer(http.FS(SwaggerAssets)))
 		a.echo.GET("/swagger-ui", contentHandler)
 		a.echo.GET("/swagger-ui/*", contentHandler)
 		a.echo.GET("/api.swagger3.yaml", contentHandler)
@@ -249,6 +248,7 @@ func (a *Api) registerHandlers() {
 	v1.PUT("/plugin/:name/settings", a.echoFilter.Auth(wrapper.PluginServiceUpdatePluginSettings))
 	v1.GET("/plugins", a.echoFilter.Auth(wrapper.PluginServiceGetPluginList))
 	v1.GET("/plugins/search", a.echoFilter.Auth(wrapper.PluginServiceSearchPlugin))
+	v1.GET("/plugin/:name/readme", a.echoFilter.Auth(wrapper.PluginServiceGetPluginReadme))
 	v1.POST("/role", a.echoFilter.Auth(wrapper.RoleServiceAddRole))
 	v1.DELETE("/role/:name", a.echoFilter.Auth(wrapper.RoleServiceDeleteRoleByName))
 	v1.GET("/role/:name", a.echoFilter.Auth(wrapper.RoleServiceGetRoleByName))
@@ -350,4 +350,8 @@ func (a *Api) registerHandlers() {
 		AllowMethods:     []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete, http.MethodHead},
 	}))
 
+}
+
+func (a *Api) Echo() *echo.Echo {
+	return a.echo
 }

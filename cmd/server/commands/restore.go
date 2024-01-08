@@ -45,7 +45,7 @@ var (
 				logger *logging.Logging,
 				backup *backup.Backup) {
 
-				if err := backup.Restore(filename); err != nil {
+				if err := backup.RestoreFile(filename); err != nil {
 					log.Error(err.Error())
 				}
 
@@ -56,5 +56,5 @@ var (
 )
 
 func init() {
-	backupCmd.Flags().StringVarP(&filename, "filename", "f", "backup.zip", "backup file name")
+	restoreCmd.Flags().StringVarP(&filename, "filename", "f", "backup.zip", "backup file name")
 }

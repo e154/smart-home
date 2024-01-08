@@ -21,23 +21,24 @@ package adaptors
 import (
 	"context"
 	"encoding/json"
-	"github.com/e154/smart-home/system/orm"
 	"time"
 
-	"github.com/e154/smart-home/common"
+	"gorm.io/gorm"
 
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"gorm.io/gorm"
+	"github.com/e154/smart-home/system/orm"
 )
 
 // ITrigger ...
 type ITrigger interface {
-	Add(ctx context.Context, ver *m.Trigger) (id int64, err error)
+	Add(ctx context.Context, ver *m.NewTrigger) (id int64, err error)
 	GetById(ctx context.Context, id int64) (metric *m.Trigger, err error)
-	Update(ctx context.Context, ver *m.Trigger) error
+	Update(ctx context.Context, ver *m.UpdateTrigger) error
 	Delete(ctx context.Context, deviceId int64) (err error)
 	List(ctx context.Context, limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Trigger, total int64, err error)
+	ListPlain(ctx context.Context, limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Trigger, total int64, err error)
 	Search(ctx context.Context, query string, limit, offset int) (list []*m.Trigger, total int64, err error)
 	Enable(ctx context.Context, id int64) (err error)
 	Disable(ctx context.Context, id int64) (err error)
@@ -63,8 +64,81 @@ func GetTriggerAdaptor(d *gorm.DB, orm *orm.Orm) ITrigger {
 }
 
 // Add ...
-func (n *Trigger) Add(ctx context.Context, ver *m.Trigger) (id int64, err error) {
-	id, err = n.table.Add(ctx, n.toDb(ver))
+func (n *Trigger) Add(ctx context.Context, ver *m.NewTrigger) (id int64, err error) {
+	dbVer := &db.Trigger{
+		Name:        ver.Name,
+		Description: ver.Description,
+		ScriptId:    ver.ScriptId,
+		AreaId:      ver.AreaId,
+		PluginName:  ver.PluginName,
+		Enabled:     ver.Enabled,
+	}
+
+	// entities
+	for _, entityId := range ver.EntityIds {
+		dbVer.Entities = append(dbVer.Entities, &db.Entity{
+			Id: common.EntityId(entityId),
+		})
+	}
+
+	// serialize payload
+	b, _ := json.Marshal(m.TriggerPayload{
+		Obj: ver.Payload,
+	})
+	dbVer.Payload = string(b)
+	id, err = n.table.Add(ctx, dbVer)
+	return
+}
+
+// Update ...
+func (n *Trigger) Update(ctx context.Context, ver *m.UpdateTrigger) (err error) {
+
+	transaction := true
+	tx := n.db.Begin()
+	if err = tx.Error; err != nil {
+		tx = n.db
+		transaction = false
+	}
+	defer func() {
+		if err != nil && transaction {
+			tx.Rollback()
+			return
+		}
+		if transaction {
+			err = tx.Commit().Error
+		}
+	}()
+
+	dbVer := &db.Trigger{
+		Id:          ver.Id,
+		Name:        ver.Name,
+		Description: ver.Description,
+		ScriptId:    ver.ScriptId,
+		AreaId:      ver.AreaId,
+		PluginName:  ver.PluginName,
+		Enabled:     ver.Enabled,
+	}
+
+	// entities
+	for _, entityId := range ver.EntityIds {
+		dbVer.Entities = append(dbVer.Entities, &db.Entity{
+			Id: common.EntityId(entityId),
+		})
+	}
+
+	// serialize payload
+	b, _ := json.Marshal(m.TriggerPayload{
+		Obj: ver.Payload,
+	})
+	dbVer.Payload = string(b)
+
+	table := db.Triggers{Db: tx}
+	if err = table.DeleteEntity(ctx, dbVer.Id); err != nil {
+		return
+	}
+
+	err = table.Update(ctx, dbVer)
+
 	return
 }
 
@@ -88,11 +162,6 @@ func (n *Trigger) GetByIdWithData(ctx context.Context, id int64, from, to *time.
 	return
 }
 
-// Update ...
-func (n *Trigger) Update(ctx context.Context, ver *m.Trigger) error {
-	return n.table.Update(ctx, n.toDb(ver))
-}
-
 // Delete ...
 func (n *Trigger) Delete(ctx context.Context, deviceId int64) (err error) {
 	err = n.table.Delete(ctx, deviceId)
@@ -103,6 +172,21 @@ func (n *Trigger) Delete(ctx context.Context, deviceId int64) (err error) {
 func (n *Trigger) List(ctx context.Context, limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Trigger, total int64, err error) {
 	var dbList []*db.Trigger
 	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort, onlyEnabled); err != nil {
+		return
+	}
+
+	list = make([]*m.Trigger, len(dbList))
+	for i, dbVer := range dbList {
+		list[i] = n.fromDb(dbVer)
+	}
+
+	return
+}
+
+// ListPlain ...
+func (n *Trigger) ListPlain(ctx context.Context, limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Trigger, total int64, err error) {
+	var dbList []*db.Trigger
+	if dbList, total, err = n.table.ListPlain(ctx, int(limit), int(offset), orderBy, sort, onlyEnabled); err != nil {
 		return
 	}
 
@@ -146,7 +230,7 @@ func (n *Trigger) fromDb(dbVer *db.Trigger) (ver *m.Trigger) {
 		Id:          dbVer.Id,
 		Name:        dbVer.Name,
 		Description: dbVer.Description,
-		EntityId:    dbVer.EntityId,
+		Entities:    make([]*m.Entity, 0, len(dbVer.Entities)),
 		ScriptId:    dbVer.ScriptId,
 		AreaId:      dbVer.AreaId,
 		PluginName:  dbVer.PluginName,
@@ -159,10 +243,12 @@ func (n *Trigger) fromDb(dbVer *db.Trigger) (ver *m.Trigger) {
 		scriptAdaptor := GetScriptAdaptor(n.db)
 		ver.Script, _ = scriptAdaptor.fromDb(dbVer.Script)
 	}
-	// entity
-	if dbVer.Entity != nil {
+	// entities
+	if dbVer.Entities != nil {
 		entityAdaptor := GetEntityAdaptor(n.db, n.orm)
-		ver.Entity = entityAdaptor.fromDb(dbVer.Entity)
+		for _, entity := range dbVer.Entities {
+			ver.Entities = append(ver.Entities, entityAdaptor.fromDb(entity))
+		}
 	}
 	// aea
 	if dbVer.Area != nil {
@@ -183,7 +269,6 @@ func (n *Trigger) toDb(ver *m.Trigger) (dbVer *db.Trigger) {
 		Id:          ver.Id,
 		Name:        ver.Name,
 		Description: ver.Description,
-		EntityId:    ver.EntityId,
 		ScriptId:    ver.ScriptId,
 		AreaId:      ver.AreaId,
 		PluginName:  ver.PluginName,
@@ -196,12 +281,15 @@ func (n *Trigger) toDb(ver *m.Trigger) (dbVer *db.Trigger) {
 		dbVer.ScriptId = common.Int64(ver.Script.Id)
 	}
 
-	if ver.Entity != nil {
-		dbVer.EntityId = common.NewEntityId(ver.Entity.Id.String())
-	}
-
 	if ver.Area != nil {
 		dbVer.AreaId = common.Int64(ver.Area.Id)
+	}
+
+	// entities
+	for _, entity := range dbVer.Entities {
+		dbVer.Entities = append(dbVer.Entities, &db.Entity{
+			Id: entity.Id,
+		})
 	}
 
 	// serialize payload

@@ -22,16 +22,16 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/e154/smart-home/system/orm"
 	"strings"
 
-	"github.com/e154/smart-home/common/apperr"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/orm"
 )
 
 // IEntity ...
@@ -42,6 +42,7 @@ type IEntity interface {
 	GetByIdsSimple(ctx context.Context, ids []common.EntityId) (list []*m.Entity, err error)
 	Delete(ctx context.Context, id common.EntityId) (err error)
 	List(ctx context.Context, limit, offset int64, orderBy, sort string, autoLoad bool, query, plugin *string, areaId *int64) (list []*m.Entity, total int64, err error)
+	ListPlain(ctx context.Context, limit, offset int64, orderBy, sort string, autoLoad bool, query, plugin *string, areaId *int64) (list []*m.Entity, total int64, err error)
 	GetByType(ctx context.Context, t string, limit, offset int64) (list []*m.Entity, err error)
 	Update(ctx context.Context, ver *m.Entity) (err error)
 	Search(ctx context.Context, query string, limit, offset int64) (list []*m.Entity, total int64, err error)
@@ -259,6 +260,22 @@ func (n *Entity) List(ctx context.Context, limit, offset int64, orderBy, sort st
 
 	var dbList []*db.Entity
 	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort, autoLoad, query, plugin, areaId); err != nil {
+		return
+	}
+
+	list = make([]*m.Entity, len(dbList))
+	for i, dbVer := range dbList {
+		list[i] = n.fromDb(dbVer)
+	}
+
+	return
+}
+
+// ListPlain ...
+func (n *Entity) ListPlain(ctx context.Context, limit, offset int64, orderBy, sort string, autoLoad bool, query, plugin *string, areaId *int64) (list []*m.Entity, total int64, err error) {
+
+	var dbList []*db.Entity
+	if dbList, total, err = n.table.ListPlain(ctx, int(limit), int(offset), orderBy, sort, autoLoad, query, plugin, areaId); err != nil {
 		return
 	}
 

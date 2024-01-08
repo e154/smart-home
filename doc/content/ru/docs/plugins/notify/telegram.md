@@ -21,11 +21,10 @@ description: >
 
 ### Действия
 
-В системе зарезервированно три команды:
+В системе зарезервированно две команды:
 
 * **/start** - подписаться на уведомления
 * **/quit** - отписаться от уведомлений
-* **/help** - вывод доступных команд
 
 **Action** (действие) - должно наименоваться в нижнем регистре, без знаков "/". 
 Кастомная команда в системе автоматически добавится в список доступных команд раздела **/help**.
@@ -45,7 +44,13 @@ description: >
 msg = notifr.newMessage();
 msg.entity_id = 'telegram.name';
 msg.attributes = {
-  'body': 'some text msg'
+  'body': 'some text msg',
+  'chat_id': 123456,
+  'keys': ['foo', 'bar'],
+  'photo_uri': ['foo', 'bar'],
+  'photo_path': ['foo', 'bar'],
+  'file_path': ['foo', 'bar'],
+  'file_uri': ['foo', 'bar']
 };
 
 ```
@@ -54,18 +59,32 @@ msg.attributes = {
 | newMessage() |    метод   |
 | msg |   type: Object (Message)  |
 
+attributes:
+
+|  значение  | описание  |
+|-------------|---------|
+| body |  Type: string,  тело сообщения   |
+| chat_id | Type: int64,  id пользователя  |
+| keys |  Type: []string, клавиатура   |
+| photo_uri |  Type: []string, изображение   |
+| photo_path |  Type: []string, изображение   |
+| file_path |  Type: []string, файл   |
+| file_uri |  Type: []string, файл   |
+
 ----------------
 
 ### функция telegramAction
 
 ```coffeescript
-telegramAction = (entityId, actionName)->
+telegramAction = (entityId, actionName, args)->
 ```
 | значение   | описание               |
 |-------------|-------------------|
 | entityId    | type: string, id сущности отправляющего сообщение |
 | actionName  | type: string, название действия, без символа '/' в верхнем регистре |
+| args  | attributes |
 
+----------------
 
 ### пример кода
 
@@ -85,7 +104,7 @@ switch actionName
 
 sendMsg =(body)->
   msg = notifr.newMessage();
-  msg.entity_id = 'telegram.name';
+  msg.entity_id = 'telegram.testbot';
   msg.attributes = {
     'body': body
   };

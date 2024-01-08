@@ -24,8 +24,8 @@ import (
 
 	. "github.com/e154/smart-home/cmd/server/container"
 	. "github.com/e154/smart-home/common/app"
-	"github.com/e154/smart-home/system/initial"
 	"github.com/e154/smart-home/system/logging"
+	"github.com/e154/smart-home/system/migrations"
 )
 
 var (
@@ -35,10 +35,14 @@ var (
 		Run: func(cmd *cobra.Command, args []string) {
 
 			app := BuildContainer(fx.Invoke(func(
-				logger *logging.Logging,
-				initialService *initial.Initial) {
+				_ *logging.Logging,
+				migrations *migrations.Migrations,
+			) {
+				log.Info("full reset")
 
-				initialService.Reset()
+				_ = migrations.Purge()
+
+				log.Info("complete")
 			}))
 			Start(app)
 		},

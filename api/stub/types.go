@@ -62,23 +62,23 @@ type GenericErrorResponse struct {
 
 // GetImageFilterListResultfilter defines model for GetImageFilterListResultfilter.
 type GetImageFilterListResultfilter struct {
-	Date  string `json:"date"`
 	Count int32  `json:"count"`
+	Date  string `json:"date"`
 }
 
 // UpdateDashboardCardRequestItem defines model for UpdateDashboardCardRequestItem.
 type UpdateDashboardCardRequestItem struct {
-	Payload  []byte    `json:"payload"`
-	Title    string    `json:"title"`
-	Type     string    `json:"type"`
-	EntityId *string   `json:"entityId,omitempty"`
-	HideOn   *[]string `json:"hideOn,omitempty"`
-	Id       int64     `json:"id"`
-	ShowOn   *[]string `json:"showOn,omitempty"`
-	Weight   int32     `json:"weight"`
 	Enabled  bool      `json:"enabled"`
+	EntityId *string   `json:"entityId,omitempty"`
 	Frozen   bool      `json:"frozen"`
 	Hidden   bool      `json:"hidden"`
+	HideOn   *[]string `json:"hideOn,omitempty"`
+	Id       int64     `json:"id"`
+	Payload  []byte    `json:"payload"`
+	ShowOn   *[]string `json:"showOn,omitempty"`
+	Title    string    `json:"title"`
+	Type     string    `json:"type"`
+	Weight   int32     `json:"weight"`
 }
 
 // UpdateRoleAccessListRequestAccessListDiff defines model for UpdateRoleAccessListRequestAccessListDiff.
@@ -128,14 +128,14 @@ type ApiAction struct {
 
 // ApiArea defines model for apiArea.
 type ApiArea struct {
-	CreatedAt   time.Time         `json:"createdAt"`
-	Polygon     []ApiAreaLocation `json:"polygon"`
-	UpdatedAt   time.Time         `json:"updatedAt"`
-	Description string            `json:"description"`
-	Name        string            `json:"name"`
 	Center      *ApiAreaLocation  `json:"center,omitempty"`
+	CreatedAt   time.Time         `json:"createdAt"`
+	Description string            `json:"description"`
 	Id          int64             `json:"id"`
+	Name        string            `json:"name"`
+	Polygon     []ApiAreaLocation `json:"polygon"`
 	Resolution  float32           `json:"resolution"`
+	UpdatedAt   time.Time         `json:"updatedAt"`
 	Zoom        float32           `json:"zoom"`
 }
 
@@ -169,41 +169,41 @@ type ApiAutomationRequest struct {
 
 // ApiBackup defines model for apiBackup.
 type ApiBackup struct {
+	FileMode uint32    `json:"fileMode"`
 	ModTime  time.Time `json:"modTime"`
 	Name     string    `json:"name"`
 	Size     int64     `json:"size"`
-	FileMode uint32    `json:"fileMode"`
 }
 
 // ApiBusStateItem defines model for apiBusStateItem.
 type ApiBusStateItem struct {
-	Topic       string `json:"topic"`
 	Subscribers int32  `json:"subscribers"`
+	Topic       string `json:"topic"`
 }
 
 // ApiClient defines model for apiClient.
 type ApiClient struct {
-	ConnectedAt          time.Time  `json:"connectedAt"`
 	ClientId             string     `json:"clientId"`
-	LocalAddr            string     `json:"localAddr"`
-	RemoteAddr           string     `json:"remoteAddr"`
-	Username             string     `json:"username"`
-	WillPayload          string     `json:"willPayload"`
-	WillTopic            string     `json:"willTopic"`
+	ConnectedAt          time.Time  `json:"connectedAt"`
 	DisconnectedAt       *time.Time `json:"disconnectedAt,omitempty"`
+	InflightLen          uint32     `json:"inflightLen"`
+	KeepAlive            uint16     `json:"keepAlive"`
+	LocalAddr            string     `json:"localAddr"`
 	MessageDropped       uint64     `json:"messageDropped"`
 	PacketsReceivedBytes uint64     `json:"packetsReceivedBytes"`
 	PacketsReceivedNums  uint64     `json:"packetsReceivedNums"`
 	PacketsSendBytes     uint64     `json:"packetsSendBytes"`
 	PacketsSendNums      uint64     `json:"packetsSendNums"`
-	InflightLen          uint32     `json:"inflightLen"`
 	QueueLen             uint32     `json:"queueLen"`
+	RemoteAddr           string     `json:"remoteAddr"`
 	SubscriptionsCurrent uint32     `json:"subscriptionsCurrent"`
 	SubscriptionsTotal   uint32     `json:"subscriptionsTotal"`
+	Username             string     `json:"username"`
 	Version              int32      `json:"version"`
-	KeepAlive            uint16     `json:"keepAlive"`
+	WillPayload          string     `json:"willPayload"`
 	WillQos              uint8      `json:"willQos"`
 	WillRetain           bool       `json:"willRetain"`
+	WillTopic            string     `json:"willTopic"`
 }
 
 // ApiCondition defines model for apiCondition.
@@ -241,79 +241,80 @@ type ApiCurrentUser struct {
 
 // ApiDashboard defines model for apiDashboard.
 type ApiDashboard struct {
-	CreatedAt   time.Time            `json:"createdAt"`
-	Tabs        []ApiDashboardTab    `json:"tabs"`
-	UpdatedAt   time.Time            `json:"updatedAt"`
-	Description string               `json:"description"`
-	Name        string               `json:"name"`
 	Area        *ApiArea             `json:"area,omitempty"`
 	AreaId      *int64               `json:"areaId,omitempty"`
+	CreatedAt   time.Time            `json:"createdAt"`
+	Description string               `json:"description"`
+	Enabled     bool                 `json:"enabled"`
 	Entities    map[string]ApiEntity `json:"entities"`
 	Id          int64                `json:"id"`
-	Enabled     bool                 `json:"enabled"`
+	Name        string               `json:"name"`
+	Tabs        []ApiDashboardTab    `json:"tabs"`
+	UpdatedAt   time.Time            `json:"updatedAt"`
 }
 
 // ApiDashboardCard defines model for apiDashboardCard.
 type ApiDashboardCard struct {
-	CreatedAt      time.Time              `json:"createdAt"`
-	Items          []ApiDashboardCardItem `json:"items"`
-	Payload        []byte                 `json:"payload"`
-	UpdatedAt      time.Time              `json:"updatedAt"`
-	Title          string                 `json:"title"`
 	Background     *string                `json:"background,omitempty"`
+	CreatedAt      time.Time              `json:"createdAt"`
 	DashboardTabId int64                  `json:"dashboardTabId"`
+	Enabled        bool                   `json:"enabled"`
 	Entities       map[string]ApiEntity   `json:"entities"`
 	EntityId       *string                `json:"entityId,omitempty"`
-	Id             int64                  `json:"id"`
 	Height         int32                  `json:"height"`
+	Hidden         bool                   `json:"hidden"`
+	Id             int64                  `json:"id"`
+	Items          []ApiDashboardCardItem `json:"items"`
+	Payload        []byte                 `json:"payload"`
+	Title          string                 `json:"title"`
+	UpdatedAt      time.Time              `json:"updatedAt"`
 	Weight         int32                  `json:"weight"`
 	Width          int32                  `json:"width"`
-	Enabled        bool                   `json:"enabled"`
-	Hidden         bool                   `json:"hidden"`
 }
 
 // ApiDashboardCardItem defines model for apiDashboardCardItem.
 type ApiDashboardCardItem struct {
 	CreatedAt       time.Time `json:"createdAt"`
-	Payload         []byte    `json:"payload"`
-	UpdatedAt       time.Time `json:"updatedAt"`
-	Title           string    `json:"title"`
-	Type            string    `json:"type"`
 	DashboardCardId int64     `json:"dashboardCardId"`
-	EntityId        *string   `json:"entityId,omitempty"`
-	Id              int64     `json:"id"`
-	Weight          int32     `json:"weight"`
 	Enabled         bool      `json:"enabled"`
+	EntityId        *string   `json:"entityId,omitempty"`
 	Frozen          bool      `json:"frozen"`
 	Hidden          bool      `json:"hidden"`
+	Id              int64     `json:"id"`
+	Payload         []byte    `json:"payload"`
+	Title           string    `json:"title"`
+	Type            string    `json:"type"`
+	UpdatedAt       time.Time `json:"updatedAt"`
+	Weight          int32     `json:"weight"`
 }
 
 // ApiDashboardShort defines model for apiDashboardShort.
 type ApiDashboardShort struct {
-	CreatedAt   time.Time `json:"createdAt"`
-	UpdatedAt   time.Time `json:"updatedAt"`
-	Description string    `json:"description"`
-	Name        string    `json:"name"`
+	Area        *ApiArea  `json:"area,omitempty"`
 	AreaId      *int64    `json:"areaId,omitempty"`
-	Id          int64     `json:"id"`
+	CreatedAt   time.Time `json:"createdAt"`
+	Description string    `json:"description"`
 	Enabled     bool      `json:"enabled"`
+	Id          int64     `json:"id"`
+	Name        string    `json:"name"`
+	UpdatedAt   time.Time `json:"updatedAt"`
 }
 
 // ApiDashboardTab defines model for apiDashboardTab.
 type ApiDashboardTab struct {
-	Cards       []ApiDashboardCard   `json:"cards"`
-	CreatedAt   time.Time            `json:"createdAt"`
-	UpdatedAt   time.Time            `json:"updatedAt"`
-	Icon        string               `json:"icon"`
-	Name        string               `json:"name"`
 	Background  *string              `json:"background,omitempty"`
-	DashboardId int64                `json:"dashboardId"`
-	Entities    map[string]ApiEntity `json:"entities"`
-	Id          int64                `json:"id"`
+	Cards       []ApiDashboardCard   `json:"cards"`
 	ColumnWidth int32                `json:"columnWidth"`
-	Weight      int32                `json:"weight"`
+	CreatedAt   time.Time            `json:"createdAt"`
+	DashboardId int64                `json:"dashboardId"`
 	Enabled     bool                 `json:"enabled"`
+	Entities    map[string]ApiEntity `json:"entities"`
 	Gap         bool                 `json:"gap"`
+	Icon        string               `json:"icon"`
+	Id          int64                `json:"id"`
+	Name        string               `json:"name"`
+	UpdatedAt   time.Time            `json:"updatedAt"`
+	Weight      int32                `json:"weight"`
 }
 
 // ApiDashboardTabShort defines model for apiDashboardTabShort.
@@ -364,23 +365,23 @@ type ApiEnablePluginResult = map[string]interface{}
 // ApiEntity defines model for apiEntity.
 type ApiEntity struct {
 	Actions     []ApiEntityAction       `json:"actions"`
-	CreatedAt   time.Time               `json:"createdAt"`
-	Metrics     []ApiMetric             `json:"metrics"`
-	ScriptIds   []int64                 `json:"scriptIds"`
-	Scripts     []ApiScript             `json:"scripts"`
-	States      []ApiEntityState        `json:"states"`
-	UpdatedAt   time.Time               `json:"updatedAt"`
-	Description string                  `json:"description"`
-	Id          string                  `json:"id"`
-	PluginName  string                  `json:"pluginName"`
 	Area        *ApiArea                `json:"area,omitempty"`
 	Attributes  map[string]ApiAttribute `json:"attributes"`
+	AutoLoad    bool                    `json:"autoLoad"`
+	CreatedAt   time.Time               `json:"createdAt"`
+	Description string                  `json:"description"`
 	Icon        *string                 `json:"icon,omitempty"`
+	Id          string                  `json:"id"`
 	Image       *ApiImage               `json:"image,omitempty"`
 	IsLoaded    *bool                   `json:"isLoaded,omitempty"`
+	Metrics     []ApiMetric             `json:"metrics"`
 	Parent      *ApiEntityParent        `json:"parent,omitempty"`
+	PluginName  string                  `json:"pluginName"`
+	ScriptIds   []int64                 `json:"scriptIds"`
+	Scripts     []ApiScript             `json:"scripts"`
 	Settings    map[string]ApiAttribute `json:"settings"`
-	AutoLoad    bool                    `json:"autoLoad"`
+	States      []ApiEntityState        `json:"states"`
+	UpdatedAt   time.Time               `json:"updatedAt"`
 }
 
 // ApiEntityAction defines model for apiEntityAction.
@@ -413,16 +414,16 @@ type ApiEntityRequest struct {
 
 // ApiEntityShort defines model for apiEntityShort.
 type ApiEntityShort struct {
-	CreatedAt   time.Time `json:"createdAt"`
-	UpdatedAt   time.Time `json:"updatedAt"`
-	Description string    `json:"description"`
-	Id          string    `json:"id"`
-	PluginName  string    `json:"pluginName"`
 	Area        *ApiArea  `json:"area,omitempty"`
+	AutoLoad    bool      `json:"autoLoad"`
+	CreatedAt   time.Time `json:"createdAt"`
+	Description string    `json:"description"`
 	Icon        *string   `json:"icon,omitempty"`
+	Id          string    `json:"id"`
 	Image       *ApiImage `json:"image,omitempty"`
 	ParentId    *string   `json:"parentId,omitempty"`
-	AutoLoad    bool      `json:"autoLoad"`
+	PluginName  string    `json:"pluginName"`
+	UpdatedAt   time.Time `json:"updatedAt"`
 }
 
 // ApiEntityState defines model for apiEntityState.
@@ -738,67 +739,67 @@ type ApiNewConditionRequest struct {
 
 // ApiNewDashboardCardItemRequest defines model for apiNewDashboardCardItemRequest.
 type ApiNewDashboardCardItemRequest struct {
+	DashboardCardId int64   `json:"dashboardCardId"`
+	Enabled         bool    `json:"enabled"`
+	EntityId        *string `json:"entityId,omitempty"`
+	Frozen          bool    `json:"frozen"`
+	Hidden          bool    `json:"hidden"`
 	Payload         []byte  `json:"payload"`
 	Title           string  `json:"title"`
 	Type            string  `json:"type"`
-	DashboardCardId int64   `json:"dashboardCardId"`
-	EntityId        *string `json:"entityId,omitempty"`
 	Weight          int32   `json:"weight"`
-	Enabled         bool    `json:"enabled"`
-	Frozen          bool    `json:"frozen"`
-	Hidden          bool    `json:"hidden"`
 }
 
 // ApiNewDashboardCardRequest defines model for apiNewDashboardCardRequest.
 type ApiNewDashboardCardRequest struct {
-	Payload        []byte  `json:"payload"`
-	Title          string  `json:"title"`
 	Background     *string `json:"background,omitempty"`
 	DashboardTabId int64   `json:"dashboardTabId"`
+	Enabled        bool    `json:"enabled"`
 	EntityId       *string `json:"entityId,omitempty"`
 	Height         int32   `json:"height"`
+	Hidden         bool    `json:"hidden"`
+	Payload        []byte  `json:"payload"`
+	Title          string  `json:"title"`
 	Weight         int32   `json:"weight"`
 	Width          int32   `json:"width"`
-	Enabled        bool    `json:"enabled"`
-	Hidden         bool    `json:"hidden"`
 }
 
 // ApiNewDashboardRequest defines model for apiNewDashboardRequest.
 type ApiNewDashboardRequest struct {
-	Description string `json:"description"`
-	Name        string `json:"name"`
 	AreaId      *int64 `json:"areaId,omitempty"`
+	Description string `json:"description"`
 	Enabled     bool   `json:"enabled"`
+	Name        string `json:"name"`
 }
 
 // ApiNewDashboardTabRequest defines model for apiNewDashboardTabRequest.
 type ApiNewDashboardTabRequest struct {
-	Icon        string  `json:"icon"`
-	Name        string  `json:"name"`
 	Background  *string `json:"background,omitempty"`
-	DashboardId int64   `json:"dashboardId"`
 	ColumnWidth int32   `json:"columnWidth"`
-	Weight      int32   `json:"weight"`
+	DashboardId int64   `json:"dashboardId"`
 	Enabled     bool    `json:"enabled"`
 	Gap         bool    `json:"gap"`
+	Icon        string  `json:"icon"`
+	Name        string  `json:"name"`
+	Weight      int32   `json:"weight"`
 }
 
 // ApiNewEntityRequest defines model for apiNewEntityRequest.
 type ApiNewEntityRequest struct {
 	Actions     []ApiNewEntityRequestAction `json:"actions"`
-	Metrics     []ApiMetric                 `json:"metrics"`
-	ScriptIds   []int64                     `json:"scriptIds"`
-	States      []ApiNewEntityRequestState  `json:"states"`
-	Description string                      `json:"description"`
-	Name        string                      `json:"name"`
-	PluginName  string                      `json:"pluginName"`
 	AreaId      *int64                      `json:"areaId,omitempty"`
 	Attributes  map[string]ApiAttribute     `json:"attributes"`
+	AutoLoad    bool                        `json:"autoLoad"`
+	Description string                      `json:"description"`
 	Icon        *string                     `json:"icon,omitempty"`
 	ImageId     *int64                      `json:"imageId,omitempty"`
+	Metrics     []ApiMetric                 `json:"metrics"`
+	Name        string                      `json:"name"`
 	ParentId    *string                     `json:"parentId,omitempty"`
+	PluginName  string                      `json:"pluginName"`
+	ScriptIds   []int64                     `json:"scriptIds"`
 	Settings    map[string]ApiAttribute     `json:"settings"`
-	AutoLoad    bool                        `json:"autoLoad"`
+	States      []ApiNewEntityRequestState  `json:"states"`
 }
 
 // ApiNewEntityRequestAction defines model for apiNewEntityRequestAction.
@@ -848,27 +849,26 @@ type ApiNewScriptRequest struct {
 // ApiNewTaskRequest defines model for apiNewTaskRequest.
 type ApiNewTaskRequest struct {
 	ActionIds    []int64 `json:"actionIds"`
-	ConditionIds []int64 `json:"conditionIds"`
-	TriggerIds   []int64 `json:"triggerIds"`
-	Condition    string  `json:"condition"`
-	Description  string  `json:"description"`
-	Name         string  `json:"name"`
 	AreaId       *int64  `json:"areaId,omitempty"`
+	Condition    string  `json:"condition"`
+	ConditionIds []int64 `json:"conditionIds"`
+	Description  string  `json:"description"`
 	Enabled      bool    `json:"enabled"`
+	Name         string  `json:"name"`
+	TriggerIds   []int64 `json:"triggerIds"`
 }
 
 // ApiNewTriggerRequest defines model for apiNewTriggerRequest.
 type ApiNewTriggerRequest struct {
-	Description string                  `json:"description"`
-	Name        string                  `json:"name"`
-	PluginName  string                  `json:"pluginName"`
 	AreaId      *int64                  `json:"areaId,omitempty"`
 	Attributes  map[string]ApiAttribute `json:"attributes"`
-	Entity      *ApiEntity              `json:"entity,omitempty"`
-	EntityId    *string                 `json:"entityId,omitempty"`
+	Description string                  `json:"description"`
+	Enabled     bool                    `json:"enabled"`
+	EntityIds   []string                `json:"entityIds"`
+	Name        string                  `json:"name"`
+	PluginName  string                  `json:"pluginName"`
 	Script      *ApiScript              `json:"script,omitempty"`
 	ScriptId    *int64                  `json:"scriptId,omitempty"`
-	Enabled     bool                    `json:"enabled"`
 }
 
 // ApiNewVariableRequest defines model for apiNewVariableRequest.
@@ -917,28 +917,28 @@ type ApiPasswordResetRequest struct {
 
 // ApiPlugin defines model for apiPlugin.
 type ApiPlugin struct {
-	Name     string                  `json:"name"`
-	Version  string                  `json:"version"`
-	IsLoaded *bool                   `json:"isLoaded,omitempty"`
-	Options  *ApiPluginOptionsResult `json:"options,omitempty"`
-	Settings map[string]ApiAttribute `json:"settings"`
 	Actor    bool                    `json:"actor"`
 	Enabled  bool                    `json:"enabled"`
+	IsLoaded *bool                   `json:"isLoaded,omitempty"`
+	Name     string                  `json:"name"`
+	Options  *ApiPluginOptionsResult `json:"options,omitempty"`
+	Settings map[string]ApiAttribute `json:"settings"`
 	System   bool                    `json:"system"`
+	Version  string                  `json:"version"`
 }
 
 // ApiPluginOptionsResult defines model for apiPluginOptionsResult.
 type ApiPluginOptionsResult struct {
 	ActorActions       map[string]ApiPluginOptionsResultEntityAction `json:"actorActions"`
 	ActorAttrs         map[string]ApiAttribute                       `json:"actorAttrs"`
-	ActorSetts         map[string]ApiAttribute                       `json:"actorSetts"`
-	ActorStates        map[string]ApiPluginOptionsResultEntityState  `json:"actorStates"`
-	Setts              map[string]ApiAttribute                       `json:"setts"`
 	ActorCustomActions bool                                          `json:"actorCustomActions"`
 	ActorCustomAttrs   bool                                          `json:"actorCustomAttrs"`
 	ActorCustomSetts   bool                                          `json:"actorCustomSetts"`
 	ActorCustomStates  bool                                          `json:"actorCustomStates"`
+	ActorSetts         map[string]ApiAttribute                       `json:"actorSetts"`
+	ActorStates        map[string]ApiPluginOptionsResultEntityState  `json:"actorStates"`
 	Actors             bool                                          `json:"actors"`
+	Setts              map[string]ApiAttribute                       `json:"setts"`
 	Triggers           bool                                          `json:"triggers"`
 }
 
@@ -960,12 +960,12 @@ type ApiPluginOptionsResultEntityState struct {
 
 // ApiPluginShort defines model for apiPluginShort.
 type ApiPluginShort struct {
-	Name     string `json:"name"`
-	Version  string `json:"version"`
 	Actor    *bool  `json:"actor,omitempty"`
-	IsLoaded *bool  `json:"isLoaded,omitempty"`
 	Enabled  bool   `json:"enabled"`
+	IsLoaded *bool  `json:"isLoaded,omitempty"`
+	Name     string `json:"name"`
 	System   bool   `json:"system"`
+	Version  string `json:"version"`
 }
 
 // ApiReloadRequest defines model for apiReloadRequest.
@@ -1091,8 +1091,8 @@ type ApiSigninResponse struct {
 // ApiStatistic defines model for apiStatistic.
 type ApiStatistic struct {
 	Description string `json:"description"`
-	Name        string `json:"name"`
 	Diff        int32  `json:"diff"`
+	Name        string `json:"name"`
 	Value       int32  `json:"value"`
 }
 
@@ -1104,67 +1104,67 @@ type ApiStatistics struct {
 // ApiSubscription defines model for apiSubscription.
 type ApiSubscription struct {
 	ClientId          string `json:"clientId"`
-	Name              string `json:"name"`
-	TopicName         string `json:"topicName"`
 	Id                uint32 `json:"id"`
-	Qos               uint32 `json:"qos"`
-	RetainHandling    uint32 `json:"retainHandling"`
+	Name              string `json:"name"`
 	NoLocal           bool   `json:"noLocal"`
+	Qos               uint32 `json:"qos"`
 	RetainAsPublished bool   `json:"retainAsPublished"`
+	RetainHandling    uint32 `json:"retainHandling"`
+	TopicName         string `json:"topicName"`
 }
 
 // ApiTask defines model for apiTask.
 type ApiTask struct {
 	ActionIds    []int64            `json:"actionIds"`
 	Actions      []ApiAction        `json:"actions"`
+	Area         *ApiArea           `json:"area,omitempty"`
+	AreaId       *int64             `json:"areaId,omitempty"`
+	Completed    *bool              `json:"completed,omitempty"`
+	Condition    string             `json:"condition"`
 	ConditionIds []int64            `json:"conditionIds"`
 	Conditions   []ApiCondition     `json:"conditions"`
 	CreatedAt    time.Time          `json:"createdAt"`
+	Description  string             `json:"description"`
+	Enabled      bool               `json:"enabled"`
+	Id           int64              `json:"id"`
+	IsLoaded     *bool              `json:"isLoaded,omitempty"`
+	Name         string             `json:"name"`
 	Telemetry    []ApiTelemetryItem `json:"telemetry"`
 	TriggerIds   []int64            `json:"triggerIds"`
 	Triggers     []ApiTrigger       `json:"triggers"`
 	UpdatedAt    time.Time          `json:"updatedAt"`
-	Condition    string             `json:"condition"`
-	Description  string             `json:"description"`
-	Name         string             `json:"name"`
-	Area         *ApiArea           `json:"area,omitempty"`
-	AreaId       *int64             `json:"areaId,omitempty"`
-	Completed    *bool              `json:"completed,omitempty"`
-	Id           int64              `json:"id"`
-	IsLoaded     *bool              `json:"isLoaded,omitempty"`
-	Enabled      bool               `json:"enabled"`
 }
 
 // ApiTelemetryItem defines model for apiTelemetryItem.
 type ApiTelemetryItem struct {
-	Name         string            `json:"name"`
-	Status       string            `json:"status"`
 	Attributes   map[string]string `json:"attributes"`
 	End          *int64            `json:"end,omitempty"`
-	Start        int64             `json:"start"`
-	TimeEstimate int64             `json:"timeEstimate"`
 	Level        int32             `json:"level"`
+	Name         string            `json:"name"`
 	Num          int32             `json:"num"`
+	Start        int64             `json:"start"`
+	Status       string            `json:"status"`
+	TimeEstimate int64             `json:"timeEstimate"`
 }
 
 // ApiTrigger defines model for apiTrigger.
 type ApiTrigger struct {
-	CreatedAt   time.Time               `json:"createdAt"`
-	UpdatedAt   time.Time               `json:"updatedAt"`
-	Description string                  `json:"description"`
-	Name        string                  `json:"name"`
-	PluginName  string                  `json:"pluginName"`
 	Area        *ApiArea                `json:"area,omitempty"`
 	AreaId      *int64                  `json:"areaId,omitempty"`
 	Attributes  map[string]ApiAttribute `json:"attributes"`
 	Completed   *bool                   `json:"completed,omitempty"`
-	Entity      *ApiEntity              `json:"entity,omitempty"`
-	EntityId    *string                 `json:"entityId,omitempty"`
+	CreatedAt   time.Time               `json:"createdAt"`
+	Description string                  `json:"description"`
+	Enabled     bool                    `json:"enabled"`
+	Entities    []ApiEntityShort        `json:"entities"`
+	EntityIds   []string                `json:"entityIds"`
 	Id          int64                   `json:"id"`
 	IsLoaded    *bool                   `json:"isLoaded,omitempty"`
+	Name        string                  `json:"name"`
+	PluginName  string                  `json:"pluginName"`
 	Script      *ApiScript              `json:"script,omitempty"`
 	ScriptId    *int64                  `json:"scriptId,omitempty"`
-	Enabled     bool                    `json:"enabled"`
+	UpdatedAt   time.Time               `json:"updatedAt"`
 }
 
 // ApiTypes defines model for apiTypes.
@@ -1260,25 +1260,25 @@ type ApiUserShotParent struct {
 // ApiVariable defines model for apiVariable.
 type ApiVariable struct {
 	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
 	Name      string    `json:"name"`
-	Value     string    `json:"value"`
 	System    bool      `json:"system"`
+	UpdatedAt time.Time `json:"updatedAt"`
+	Value     string    `json:"value"`
 }
 
 // ApiZigbee2mqtt defines model for apiZigbee2mqtt.
 type ApiZigbee2mqtt struct {
-	CreatedAt     time.Time  `json:"createdAt"`
-	UpdatedAt     time.Time  `json:"updatedAt"`
 	BaseTopic     string     `json:"baseTopic"`
+	CreatedAt     time.Time  `json:"createdAt"`
+	Id            int64      `json:"id"`
+	LastScan      *time.Time `json:"lastScan,omitempty"`
 	Login         string     `json:"login"`
 	Name          string     `json:"name"`
 	Networkmap    string     `json:"networkmap"`
-	Status        string     `json:"status"`
-	Id            int64      `json:"id"`
-	LastScan      *time.Time `json:"lastScan,omitempty"`
 	PermitJoin    bool       `json:"permitJoin"`
 	ScanInProcess bool       `json:"scanInProcess"`
+	Status        string     `json:"status"`
+	UpdatedAt     time.Time  `json:"updatedAt"`
 }
 
 // ApiZigbee2mqttDevice defines model for apiZigbee2mqttDevice.
@@ -1299,13 +1299,13 @@ type ApiZigbee2mqttDevice struct {
 
 // ApiZigbee2mqttShort defines model for apiZigbee2mqttShort.
 type ApiZigbee2mqttShort struct {
-	CreatedAt  time.Time `json:"createdAt"`
-	UpdatedAt  time.Time `json:"updatedAt"`
 	BaseTopic  string    `json:"baseTopic"`
+	CreatedAt  time.Time `json:"createdAt"`
+	Id         int64     `json:"id"`
 	Login      string    `json:"login"`
 	Name       string    `json:"name"`
-	Id         int64     `json:"id"`
 	PermitJoin bool      `json:"permitJoin"`
+	UpdatedAt  time.Time `json:"updatedAt"`
 }
 
 // AcceptJSON defines model for Accept-JSON.
@@ -1542,10 +1542,10 @@ type DashboardServiceAddDashboardParams struct {
 
 // DashboardServiceUpdateDashboardJSONBody defines parameters for DashboardServiceUpdateDashboard.
 type DashboardServiceUpdateDashboardJSONBody struct {
-	Description string `json:"description"`
-	Name        string `json:"name"`
 	AreaId      *int64 `json:"areaId,omitempty"`
+	Description string `json:"description"`
 	Enabled     bool   `json:"enabled"`
+	Name        string `json:"name"`
 }
 
 // DashboardServiceUpdateDashboardParams defines parameters for DashboardServiceUpdateDashboard.
@@ -1565,17 +1565,17 @@ type DashboardCardServiceImportDashboardCardParams struct {
 
 // DashboardCardServiceUpdateDashboardCardJSONBody defines parameters for DashboardCardServiceUpdateDashboardCard.
 type DashboardCardServiceUpdateDashboardCardJSONBody struct {
+	Background     *string                          `json:"background,omitempty"`
+	DashboardTabId int64                            `json:"dashboardTabId"`
+	Enabled        bool                             `json:"enabled"`
+	EntityId       *string                          `json:"entityId,omitempty"`
+	Height         int32                            `json:"height"`
+	Hidden         bool                             `json:"hidden"`
 	Items          []UpdateDashboardCardRequestItem `json:"items"`
 	Payload        []byte                           `json:"payload"`
 	Title          string                           `json:"title"`
-	Background     *string                          `json:"background,omitempty"`
-	DashboardTabId int64                            `json:"dashboardTabId"`
-	EntityId       *string                          `json:"entityId,omitempty"`
-	Height         int32                            `json:"height"`
 	Weight         int32                            `json:"weight"`
 	Width          int32                            `json:"width"`
-	Enabled        bool                             `json:"enabled"`
-	Hidden         bool                             `json:"hidden"`
 }
 
 // DashboardCardServiceUpdateDashboardCardParams defines parameters for DashboardCardServiceUpdateDashboardCard.
@@ -1590,15 +1590,15 @@ type DashboardCardItemServiceAddDashboardCardItemParams struct {
 
 // DashboardCardItemServiceUpdateDashboardCardItemJSONBody defines parameters for DashboardCardItemServiceUpdateDashboardCardItem.
 type DashboardCardItemServiceUpdateDashboardCardItemJSONBody struct {
+	DashboardCardId int64   `json:"dashboardCardId"`
+	Enabled         bool    `json:"enabled"`
+	EntityId        *string `json:"entityId,omitempty"`
+	Frozen          bool    `json:"frozen"`
+	Hidden          bool    `json:"hidden"`
 	Payload         []byte  `json:"payload"`
 	Title           string  `json:"title"`
 	Type            string  `json:"type"`
-	DashboardCardId int64   `json:"dashboardCardId"`
-	EntityId        *string `json:"entityId,omitempty"`
 	Weight          int32   `json:"weight"`
-	Enabled         bool    `json:"enabled"`
-	Frozen          bool    `json:"frozen"`
-	Hidden          bool    `json:"hidden"`
 }
 
 // DashboardCardItemServiceUpdateDashboardCardItemParams defines parameters for DashboardCardItemServiceUpdateDashboardCardItem.
@@ -1637,14 +1637,14 @@ type DashboardTabServiceAddDashboardTabParams struct {
 
 // DashboardTabServiceUpdateDashboardTabJSONBody defines parameters for DashboardTabServiceUpdateDashboardTab.
 type DashboardTabServiceUpdateDashboardTabJSONBody struct {
-	Icon        string  `json:"icon"`
-	Name        string  `json:"name"`
 	Background  *string `json:"background,omitempty"`
-	DashboardId int64   `json:"dashboardId"`
 	ColumnWidth int32   `json:"columnWidth"`
-	Weight      int32   `json:"weight"`
+	DashboardId int64   `json:"dashboardId"`
 	Enabled     bool    `json:"enabled"`
 	Gap         bool    `json:"gap"`
+	Icon        string  `json:"icon"`
+	Name        string  `json:"name"`
+	Weight      int32   `json:"weight"`
 }
 
 // DashboardTabServiceUpdateDashboardTabParams defines parameters for DashboardTabServiceUpdateDashboardTab.
@@ -1755,20 +1755,20 @@ type EntityServiceSearchEntityParams struct {
 // EntityServiceUpdateEntityJSONBody defines parameters for EntityServiceUpdateEntity.
 type EntityServiceUpdateEntityJSONBody struct {
 	Actions     []ApiUpdateEntityRequestAction `json:"actions"`
-	Metrics     []ApiMetric                    `json:"metrics"`
-	ScriptIds   []int64                        `json:"scriptIds"`
-	States      []ApiUpdateEntityRequestState  `json:"states"`
-	Description string                         `json:"description"`
-	Id          string                         `json:"id"`
-	PluginName  string                         `json:"pluginName"`
 	AreaId      *int64                         `json:"areaId,omitempty"`
 	Attributes  map[string]ApiAttribute        `json:"attributes"`
+	AutoLoad    bool                           `json:"autoLoad"`
+	Description string                         `json:"description"`
 	Icon        *string                        `json:"icon,omitempty"`
+	Id          string                         `json:"id"`
 	ImageId     *int64                         `json:"imageId,omitempty"`
+	Metrics     []ApiMetric                    `json:"metrics"`
 	Name        *string                        `json:"name,omitempty"`
 	ParentId    *string                        `json:"parentId,omitempty"`
+	PluginName  string                         `json:"pluginName"`
+	ScriptIds   []int64                        `json:"scriptIds"`
 	Settings    map[string]ApiAttribute        `json:"settings"`
-	AutoLoad    bool                           `json:"autoLoad"`
+	States      []ApiUpdateEntityRequestState  `json:"states"`
 }
 
 // EntityServiceUpdateEntityParams defines parameters for EntityServiceUpdateEntity.
@@ -1914,6 +1914,12 @@ type AuthServicePasswordResetParams struct {
 	Accept *AcceptJSON `json:"Accept,omitempty"`
 }
 
+// PluginServiceGetPluginReadmeParams defines parameters for PluginServiceGetPluginReadme.
+type PluginServiceGetPluginReadmeParams struct {
+	Lang   *string     `form:"lang,omitempty" json:"lang,omitempty"`
+	Accept *AcceptJSON `json:"Accept,omitempty"`
+}
+
 // PluginServiceUpdatePluginSettingsJSONBody defines parameters for PluginServiceUpdatePluginSettings.
 type PluginServiceUpdatePluginSettingsJSONBody struct {
 	Settings map[string]ApiAttribute `json:"settings"`
@@ -2039,13 +2045,13 @@ type AutomationServiceAddTaskParams struct {
 // AutomationServiceUpdateTaskJSONBody defines parameters for AutomationServiceUpdateTask.
 type AutomationServiceUpdateTaskJSONBody struct {
 	ActionIds    []int64 `json:"actionIds"`
-	ConditionIds []int64 `json:"conditionIds"`
-	TriggerIds   []int64 `json:"triggerIds"`
-	Condition    string  `json:"condition"`
-	Description  string  `json:"description"`
-	Name         string  `json:"name"`
 	AreaId       *int64  `json:"areaId,omitempty"`
+	Condition    string  `json:"condition"`
+	ConditionIds []int64 `json:"conditionIds"`
+	Description  string  `json:"description"`
 	Enabled      bool    `json:"enabled"`
+	Name         string  `json:"name"`
+	TriggerIds   []int64 `json:"triggerIds"`
 }
 
 // AutomationServiceUpdateTaskParams defines parameters for AutomationServiceUpdateTask.
@@ -2077,16 +2083,15 @@ type TriggerServiceAddTriggerParams struct {
 
 // TriggerServiceUpdateTriggerJSONBody defines parameters for TriggerServiceUpdateTrigger.
 type TriggerServiceUpdateTriggerJSONBody struct {
-	Description string                  `json:"description"`
-	Name        string                  `json:"name"`
-	PluginName  string                  `json:"pluginName"`
 	AreaId      *int64                  `json:"areaId,omitempty"`
 	Attributes  map[string]ApiAttribute `json:"attributes"`
-	Entity      *ApiEntity              `json:"entity,omitempty"`
-	EntityId    *string                 `json:"entityId,omitempty"`
+	Description string                  `json:"description"`
+	Enabled     bool                    `json:"enabled"`
+	EntityIds   []string                `json:"entityIds"`
+	Name        string                  `json:"name"`
+	PluginName  string                  `json:"pluginName"`
 	Script      *ApiScript              `json:"script,omitempty"`
 	ScriptId    *int64                  `json:"scriptId,omitempty"`
-	Enabled     bool                    `json:"enabled"`
 }
 
 // TriggerServiceUpdateTriggerParams defines parameters for TriggerServiceUpdateTrigger.

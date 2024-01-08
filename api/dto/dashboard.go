@@ -127,6 +127,7 @@ func ToDashboardShort(ver *m.Dashboard) (obj *stub.ApiDashboardShort) {
 		Description: ver.Description,
 		Enabled:     ver.Enabled,
 		AreaId:      ver.AreaId,
+		Area:        GetStubArea(ver.Area),
 		CreatedAt:   ver.CreatedAt,
 		UpdatedAt:   ver.UpdatedAt,
 	}

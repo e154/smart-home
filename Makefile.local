@@ -24,7 +24,8 @@ BUILD_NUMBER_VALUE=$(shell echo ${TRAVIS_BUILD_NUMBER})
 RELEASE_VERSION ?= v0.1.0
 
 IMAGE=smart-home-${EXEC}
-DOCKER_ACCOUNT ?= 192.168.43.127:5000
+SERVER ?= 192.168.43.127
+DOCKER_ACCOUNT ?= ${SERVER}:5000
 DOCKER_IMAGE_VER=${DOCKER_ACCOUNT}/${IMAGE}:${RELEASE_VERSION}
 DOCKER_IMAGE_LATEST=${DOCKER_ACCOUNT}/${IMAGE}:latest
 
@@ -76,7 +77,7 @@ test:
 	go test -race $(go list ./... | grep -v /tests/)
 
 install_linter:
-	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin v1.45.0
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin v1.55.2
 
 lint-todo:
 	@echo MARK: make lint todo
@@ -144,7 +145,6 @@ build_structure:
 	cp ${ROOT}/LICENSE ${SERVER_DIR}
 	cp ${ROOT}/README* ${SERVER_DIR}
 	cp ${ROOT}/CONTRIBUTING.md ${SERVER_DIR}
-	cp ${ROOT}/bin/docker/Dockerfile ${SERVER_DIR}
 	cp ${ROOT}/bin/server-installer.sh ${SERVER_DIR}
 	chmod +x ${SERVER_DIR}/data/scripts/ping.sh
 	cp ${ROOT}/${EXEC}-linux-arm-7 ${SERVER_DIR}
@@ -160,7 +160,6 @@ build_common_structure:
 	cp ${ROOT}/LICENSE ${COMMON_DIR}
 	cp ${ROOT}/README* ${COMMON_DIR}
 	cp ${ROOT}/CONTRIBUTING.md ${COMMON_DIR}
-	cp ${ROOT}/bin/docker/Dockerfile ${COMMON_DIR}
 	cp ${ROOT}/bin/server-installer.sh ${COMMON_DIR}
 	chmod +x ${COMMON_DIR}/data/scripts/ping.sh
 	cp ${ROOT}/bin/server ${COMMON_DIR}
@@ -224,3 +223,7 @@ clean:
 front_client:
 	@echo MARK: generate front client lib
 	npx swagger-typescript-api@12.0.4 --axios -p ./api/api.swagger3.yaml -o ./static_source/admin/src/api -n stub_new.ts
+
+pprof:
+	@echo MARK: pprof
+	go tool pprof -raw -output=cpu.txt 'http://${SERVER}:3001/debug/pprof/profile?seconds=30'

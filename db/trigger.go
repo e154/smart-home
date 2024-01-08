@@ -23,7 +23,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
@@ -38,8 +37,7 @@ type Triggers struct {
 type Trigger struct {
 	Id          int64 `gorm:"primary_key"`
 	Name        string
-	Entity      *Entity
-	EntityId    *common.EntityId
+	Entities    []*Entity `gorm:"many2many:trigger_entities;"`
 	Script      *Script
 	ScriptId    *int64
 	PluginName  string
@@ -59,7 +57,9 @@ func (*Trigger) TableName() string {
 
 // Add ...
 func (t Triggers) Add(ctx context.Context, trigger *Trigger) (id int64, err error) {
-	if err = t.Db.WithContext(ctx).Create(&trigger).Error; err != nil {
+	if err = t.Db.WithContext(ctx).
+		Omit("Entities.*").
+		Create(&trigger).Error; err != nil {
 		err = errors.Wrap(apperr.ErrTriggerAdd, err.Error())
 		return
 	}
@@ -72,7 +72,7 @@ func (t Triggers) GetById(ctx context.Context, id int64) (trigger *Trigger, err 
 	trigger = &Trigger{}
 	err = t.Db.WithContext(ctx).Model(trigger).
 		Where("id = ?", id).
-		Preload("Entity").
+		Preload("Entities").
 		Preload("Script").
 		Preload("Area").
 		First(&trigger).
@@ -89,18 +89,11 @@ func (t Triggers) GetById(ctx context.Context, id int64) (trigger *Trigger, err 
 }
 
 // Update ...
-func (t Triggers) Update(ctx context.Context, m *Trigger) (err error) {
-	q := map[string]interface{}{
-		"name":        m.Name,
-		"description": m.Description,
-		"plugin_name": m.PluginName,
-		"payload":     m.Payload,
-		"enabled":     m.Enabled,
-		"script_id":   m.ScriptId,
-		"entity_id":   m.EntityId,
-		"area_id":     m.AreaId,
-	}
-	if err = t.Db.WithContext(ctx).Model(&Trigger{}).Where("id = ?", m.Id).Updates(q).Error; err != nil {
+func (t Triggers) Update(ctx context.Context, trigger *Trigger) (err error) {
+	err = t.Db.WithContext(ctx).
+		Omit("Entities.*").
+		Save(trigger).Error
+	if err != nil {
 		err = errors.Wrap(apperr.ErrTriggerUpdate, err.Error())
 	}
 	return
@@ -129,8 +122,40 @@ func (t Triggers) List(ctx context.Context, limit, offset int, orderBy, sort str
 		q = q.Where("enabled = ?", true)
 	}
 
-	q = q.Preload("Entity").
+	q = q.
+		Preload("Entities").
 		Preload("Script").
+		Preload("Area").
+		Limit(limit).
+		Offset(offset)
+
+	if sort != "" && orderBy != "" {
+		q = q.
+			Order(fmt.Sprintf("%s %s", sort, orderBy))
+	}
+
+	if err = q.Find(&list).Error; err != nil {
+		err = errors.Wrap(apperr.ErrTriggerList, err.Error())
+	}
+	return
+}
+
+// ListPlain ...
+func (t Triggers) ListPlain(ctx context.Context, limit, offset int, orderBy, sort string, onlyEnabled bool) (list []*Trigger, total int64, err error) {
+
+	if err = t.Db.WithContext(ctx).Model(Trigger{}).Count(&total).Error; err != nil {
+		err = errors.Wrap(apperr.ErrTriggerList, err.Error())
+		return
+	}
+
+	list = make([]*Trigger, 0)
+	q := t.Db.WithContext(ctx).Model(&Trigger{})
+
+	if onlyEnabled {
+		q = q.Where("enabled = ?", true)
+	}
+
+	q = q.
 		Preload("Area").
 		Limit(limit).
 		Offset(offset)
@@ -184,6 +209,14 @@ func (t Triggers) Disable(ctx context.Context, id int64) (err error) {
 	if err = t.Db.Model(&Trigger{Id: id}).Updates(map[string]interface{}{"enabled": false}).Error; err != nil {
 		err = errors.Wrap(apperr.ErrTriggerUpdate, err.Error())
 		return
+	}
+	return
+}
+
+// DeleteEntity ...
+func (t Triggers) DeleteEntity(ctx context.Context, id int64) (err error) {
+	if err = t.Db.WithContext(ctx).Model(&Trigger{Id: id}).Association("Entities").Clear(); err != nil {
+		err = errors.Wrap(apperr.ErrTriggerDeleteEntity, err.Error())
 	}
 	return
 }

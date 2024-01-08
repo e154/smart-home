@@ -64,6 +64,9 @@ __check_os() {
         (armv7l)
             OS_ARCH="arm-7"
         ;;
+        (aarch64)
+            OS_ARCH="arm-7"
+        ;;
         (armv64l)
             OS_ARCH="arm-64"
         ;;

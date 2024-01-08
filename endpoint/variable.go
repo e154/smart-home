@@ -21,11 +21,10 @@ package endpoint
 import (
 	"context"
 	"fmt"
-	"github.com/e154/smart-home/common/events"
-
-	"github.com/e154/smart-home/common/apperr"
 
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 )
 
@@ -94,7 +93,8 @@ func (v *VariableEndpoint) Update(ctx context.Context, variable m.Variable) (err
 // GetList ...
 func (v *VariableEndpoint) GetList(ctx context.Context, pagination common.PageParams) (list []m.Variable, total int64, err error) {
 
-	list, total, err = v.adaptors.Variable.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, false)
+	list, total, err = v.adaptors.Variable.List(ctx, pagination.Limit, pagination.Offset, pagination.Order,
+		pagination.SortBy, false, "")
 	return
 }
 

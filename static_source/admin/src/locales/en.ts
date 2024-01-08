@@ -150,13 +150,29 @@ export default {
         codePlaceholder: 'Please input verification code',
         restorePassword: 'Restore password',
         returnToSignIn: 'Return to login form',
-        updatePassword: 'Update password'
+        updatePassword: 'Update password',
+        server: 'Server ID',
+        serverPlaceholder: 'Please input server id',
     },
     router: {
         login: 'Login',
         New: 'New',
-        Edit: 'Edit',
-        List: 'List',
+        EditEntity: 'Edit Entity',
+        EditScript: 'Edit Script',
+        EditTask: 'Edit Task',
+        EditTrigger: 'Edit Trigger',
+        EditCondition: 'Edit Condition',
+        EditAction: 'Edit Action',
+        EditDashboard: 'Edit Dashboard',
+        EditVariable: 'Edit Variable',
+        EditArea: 'Edit Area',
+        EditZigbee2mqtt: 'Edit Zigbee2mqtt',
+        EditUser: 'Edit User',
+        EditPlugin: 'Edit Plugin',
+        ListEntities: 'List Entities',
+        ListScripts: 'List Scripts',
+        ListDashboards: 'List Dashboards',
+        ListZigbee2mqtt: 'List Zigbee2mqtt',
         View: 'View',
         Development: 'Development',
         Entities: 'Entities',
@@ -169,7 +185,7 @@ export default {
         Zigbee2mqtt: 'Zigbee2mqtt',
         Dashboard: 'Dashboard',
         Dashboards: 'Dashboards',
-        DashboardsView: 'View',
+        DashboardsView: 'View Dashboard',
         Variables: 'Variables',
         Plugins: 'Plugins',
         Logs: 'Logs',
@@ -223,7 +239,8 @@ export default {
         actionIcon: 'Icon',
         actionDescription: 'Description',
         actorStates: 'Actor States',
-        actorSettings: 'Actor Settings'
+        actorSettings: 'Actor Settings',
+        readme: 'Readme'
     },
     areas: {
         id: 'ID',
@@ -534,12 +551,14 @@ export default {
             LOGS: 'Logs Table',
             PROGRESS: 'Progress',
             CHART: 'Chart',
+            CHART_CUSTOM: 'Chart Custom',
             ENTITY_STORAGE: 'Entity Storage Table',
             MAP: 'Map',
             SLIDER: 'Slider',
             COLOR_PICKER: 'Color Picker',
             STREAM_PLAYER: 'Video player',
             JOYSTICK: 'Joystick',
+            ICON: 'Icon',
             tooltip: 'Tooltip',
             slider: {
                 options: 'Slider Options',
@@ -576,7 +595,15 @@ export default {
                 addChartItem: 'Add Chart Item',
                 itemValue: 'Item Value',
                 itemDescription: 'Item Description',
-                barOptions: 'Bar Options'
+                barOptions: 'Bar Options',
+                dataZoom: 'Data Zoom',
+                info1: 'https://echarts.apache.org/examples/en/',
+                chartDocumentation: 'Chart Documentation',
+                seriesOptions: 'Series Options',
+                addSeriesItem: 'Add Series Item',
+                series: 'Series',
+                itemType: 'Item Type',
+                addCustomAttribute: 'Add Custom Attribute'
             },
             joystick: {
                 options: 'Joystick Options',
@@ -589,7 +616,11 @@ export default {
             entityStorage: {
                 entities: 'Entities',
                 showFilter: 'Show Filter'
-            }
+            },
+            iconOptions: 'Icon Options',
+            defaultIcon: 'Default Icon',
+            iconSize: 'Icon Size',
+            iconColor: 'Icon Color'
         }
     },
     settings: {
@@ -606,7 +637,24 @@ export default {
         clearEntityStorageDays: 'Clear Entity Storage Days',
         clearRunHistoryDays: 'Clear Run History Days',
         time: 'Time',
-        timezone: 'Timezone, default Asia/Colombo'
+        timezone: 'Timezone, default Asia/Colombo',
+        backup: 'Backup',
+        createBackupAt: 'Create Backup At (Cron)',
+        maximumNumberOfBackups: 'Maximum Number Of Backups',
+        info1: 'https://en.wikipedia.org/wiki/Cron',
+        info2: 'Organization of remote access without white IP. Free gate https://gate.e154.ru:8443',
+        info3: 'don\'t change it if you don\'t know what it\'s for',
+        sendTheBackupInPartsMb: 'Send The Backup In Parts Mb',
+        sendbackuptoTelegramBot: 'Send Backup To Telegram Bot',
+        gate: 'Gate',
+        gateClientServerHost: 'Server Host',
+        gateClientId: 'Client Id',
+        gateClientSecretKey: 'Secret Key',
+        gateClientServerPort: 'Server Port',
+        gateClientPoolIdleSize: 'Pool Idle Size',
+        gateClientPoolMaxSize: 'Pool Max Size',
+        gateClientTLS: 'TLS',
+        hmacKey: 'HMAC Key'
     },
     tools: {
         eventBus: {

@@ -59,7 +59,8 @@ requestCurrentState(props.item?.entityId);
         :round="item.payload.button.round"
         @click.prevent.stop="onClick"
         :disabled="props.disabled"
-    >{{ item.payload.button.text }}
+    ><Icon v-if="item.payload.button.icon" :icon="item.payload.button.icon"/>
+      {{ item.payload.button.text }}
     </ElButton>
   </div>
 </template>

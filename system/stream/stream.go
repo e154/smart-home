@@ -20,13 +20,10 @@ package stream
 
 import (
 	"context"
-	"net/http"
 	"sync"
 
-	"github.com/gorilla/websocket"
-	"github.com/labstack/echo/v4"
-
 	"github.com/google/uuid"
+	"github.com/gorilla/websocket"
 	"go.uber.org/fx"
 
 	"github.com/e154/smart-home/common/events"
@@ -113,9 +110,7 @@ func (s *Stream) Shutdown(_ context.Context) error {
 func (s *Stream) Broadcast(query string, message []byte) {
 	s.sessions.Range(func(key, value interface{}) bool {
 		cli := value.(*Client)
-		go func() {
-			_ = cli.Send(uuid.NewString(), query, message)
-		}()
+		_ = cli.Send(uuid.NewString(), query, message)
 		return true
 	})
 }
@@ -127,9 +122,7 @@ func (s *Stream) DirectMessage(userID int64, query string, message []byte) {
 		if userID != 0 && cli.user.Id != userID {
 			return true
 		}
-		go func() {
-			_ = cli.Send(uuid.NewString(), query, message)
-		}()
+		_ = cli.Send(uuid.NewString(), query, message)
 		return true
 	})
 }
@@ -157,16 +150,7 @@ func (s *Stream) UnSubscribe(command string) {
 }
 
 // NewConnection ...
-func (s *Stream) NewConnection(ctx echo.Context, user *m.User) error {
-
-	upgrader.CheckOrigin = func(r *http.Request) bool {
-		return true
-	}
-	ws, err := upgrader.Upgrade(ctx.Response(), ctx.Request(), nil)
-	if err != nil {
-		return err
-	}
-	defer ws.Close()
+func (s *Stream) NewConnection(ws *websocket.Conn, user *m.User) {
 
 	id := uuid.NewString()
 	client := NewClient(ws, user)
@@ -178,7 +162,7 @@ func (s *Stream) NewConnection(ctx echo.Context, user *m.User) error {
 	s.sessions.Store(id, client)
 	log.Infof("new websocket session established, email: '%s'", user.Email)
 
-	return client.WritePump(s.Recv)
+	client.WritePump(s.Recv)
 }
 
 // Recv ...

@@ -2,19 +2,12 @@
 import {useI18n} from '@/hooks/web/useI18n'
 import {Table} from '@/components/Table'
 import {computed, h, PropType, reactive, ref, watch} from 'vue'
-import {useAppStore} from "@/store/modules/app";
-import {Pagination, TableColumn} from '@/types/table'
-import {ElButton, ElTableColumn, ElSwitch, ElImageViewer, ElTag, ElImage} from 'element-plus'
+import {TableColumn} from '@/types/table'
+import {ElImage} from 'element-plus'
 import {ApiPluginOptionsResultEntityState} from "@/api/stub";
-import {useForm} from "@/hooks/web/useForm";
-import {useRouter} from "vue-router";
+import {getUrl} from "@/views/Plugins/components/Types";
 
-const {push, currentRoute} = useRouter()
-const remember = ref(false)
-const {register, elFormRef, methods} = useForm()
-const appStore = useAppStore()
 const {t} = useI18n()
-
 
 interface TableObject {
   tableList: ApiPluginOptionsResultEntityState[]
@@ -75,13 +68,6 @@ watch(
       immediate: true
     }
 )
-
-const getUrl = (imageUrl: string | undefined): string => {
-  if (!imageUrl) {
-    return '';
-  }
-  return  import.meta.env.VITE_API_BASEPATH as string + imageUrl;
-}
 
 </script>
 

@@ -308,6 +308,12 @@ func (j *Javascript) RunProgram(name string) (result string, err error) {
 }
 
 func (j *Javascript) unsafeRun(program *goja.Program) (result string, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Warn("Recovered")
+			debug.PrintStack()
+		}
+	}()
 
 	var value goja.Value
 
@@ -315,8 +321,8 @@ func (j *Javascript) unsafeRun(program *goja.Program) (result string, err error)
 	wg.Add(1)
 
 	j.loop.Run(func(vm *goja.Runtime) {
+		defer wg.Done()
 		value, err = vm.RunProgram(program)
-		wg.Done()
 	})
 
 	wg.Wait()

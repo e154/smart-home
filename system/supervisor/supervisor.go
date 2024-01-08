@@ -20,6 +20,7 @@ package supervisor
 
 import (
 	"context"
+	"fmt"
 	"runtime/debug"
 	"sync"
 	"time"
@@ -36,7 +37,6 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/cache"
-	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scheduler"
 	"github.com/e154/smart-home/system/scripts"
@@ -49,7 +49,6 @@ var (
 type supervisor struct {
 	*pluginManager
 	scriptService     scripts.ScriptService
-	entitiesWg        *sync.WaitGroup
 	eventScriptSubsMx sync.RWMutex
 	eventScriptSubs   map[int64]map[common.EntityId]struct{}
 	cache             cache.Cache
@@ -62,13 +61,11 @@ func NewSupervisor(lc fx.Lifecycle,
 	mqttServ mqtt.MqttServ,
 	scriptService scripts.ScriptService,
 	appConfig *m.AppConfig,
-	gateClient *gate_client.GateClient,
 	eventBus bus.Bus,
 	scheduler *scheduler.Scheduler,
 	crawler web.Crawler) Supervisor {
 	s := &supervisor{
 		scriptService:   scriptService,
-		entitiesWg:      &sync.WaitGroup{},
 		eventScriptSubs: make(map[int64]map[common.EntityId]struct{}),
 	}
 	s.cache, _ = cache.NewCache("memory", `{"interval":60}`)
@@ -85,7 +82,6 @@ func NewSupervisor(lc fx.Lifecycle,
 			adaptors:      adaptors,
 			scriptService: scriptService,
 			appConfig:     appConfig,
-			gateClient:    gateClient,
 			scheduler:     scheduler,
 			crawler:       crawler,
 		},
@@ -124,7 +120,6 @@ func (e *supervisor) Start(ctx context.Context) (err error) {
 func (e *supervisor) Shutdown(ctx context.Context) (err error) {
 
 	e.pluginManager.Shutdown(ctx)
-	e.entitiesWg.Wait()
 
 	e.scriptService.PopFunction("GetEntity")
 	e.scriptService.PopFunction("SetState")
@@ -181,7 +176,8 @@ func (e *supervisor) bindScripts() {
 	e.scriptService.PushFunctions("EntityCallScene", CallSceneBind(e))
 	e.scriptService.PushFunctions("GeoDistanceToArea", GetDistanceToAreaBind(e.adaptors))
 	e.scriptService.PushFunctions("GeoDistanceBetweenPoints", GetDistanceBetweenPointsBind(e.adaptors))
-	e.scriptService.PushFunctions("GeoPointInsideAria", PointInsideAriaBind(e.adaptors))
+	e.scriptService.PushFunctions("GeoPointInsideArea", PointInsideAreaBind(e.adaptors))
+	e.scriptService.PushFunctions("PushSystemEvent", PushSystemEvent(e))
 }
 
 // SetMetric ...
@@ -207,6 +203,8 @@ func (e *supervisor) SetState(id common.EntityId, params EntityStateParams) (err
 		debug.PrintStack()
 		log.Error(err.Error())
 	}
+
+	_ = e.cache.Delete(context.Background(), id.String())
 
 	return
 }
@@ -290,8 +288,8 @@ func (e *supervisor) eventHandler(_ string, message interface{}) {
 
 func (e *supervisor) eventLastState(msg events.EventGetLastState) {
 
-	if e.cache.IsExist(msg.EntityId.String()) {
-		v := e.cache.Get(msg.EntityId.String())
+	if ok, _ := e.cache.IsExist(context.Background(), msg.EntityId.String()); ok {
+		v, _ := e.cache.Get(context.Background(), msg.EntityId.String())
 		state, ok := v.(events.EventLastStateChanged)
 		if !ok {
 			return
@@ -299,7 +297,7 @@ func (e *supervisor) eventLastState(msg events.EventGetLastState) {
 		e.eventBus.Publish("system/entities/"+msg.EntityId.String(), state)
 		return
 	}
-	e.cache.Put(msg.EntityId.String(), nil, 60*time.Second)
+	_ = e.cache.Put(context.Background(), msg.EntityId.String(), nil, 10*time.Second)
 
 	pla, err := e.GetActorById(msg.EntityId)
 	if err != nil {
@@ -318,7 +316,6 @@ func (e *supervisor) eventLastState(msg events.EventGetLastState) {
 		entity, err := e.adaptors.Entity.GetById(context.Background(), msg.EntityId)
 		if err != nil {
 			log.Error(err.Error())
-			debug.PrintStack()
 			return
 		}
 		currentState.Attributes = entity.Attributes
@@ -330,8 +327,7 @@ func (e *supervisor) eventLastState(msg events.EventGetLastState) {
 		OldState:   *currentState,
 		NewState:   *currentState,
 	}
-	e.cache.Delete(msg.EntityId.String())
-	e.cache.Put(msg.EntityId.String(), state, 60*time.Second)
+	_ = e.cache.Put(context.Background(), msg.EntityId.String(), state, 30*time.Second)
 	e.eventBus.Publish("system/entities/"+msg.EntityId.String(), state)
 }
 
@@ -495,7 +491,9 @@ func (e *supervisor) UnloadEntity(id common.EntityId) {
 	}
 
 	plugin := value.(Pluggable)
-	plugin.RemoveActor(id)
+	_ = plugin.RemoveActor(id)
+
+	_ = e.cache.Delete(context.Background(), id.String())
 }
 
 func (e *supervisor) GetService() Service {
@@ -518,7 +516,9 @@ func (e *supervisor) eventUpdatedScript(msg events.EventUpdatedScriptModel) {
 	defer e.eventScriptSubsMx.RUnlock()
 
 	for entityId := range e.eventScriptSubs[msg.ScriptId] {
-		go e.updatedEntityById(entityId)
+		go func(entityId common.EntityId) {
+			e.updatedEntityById(entityId)
+		}(entityId)
 	}
 }
 
@@ -537,7 +537,9 @@ func (e *supervisor) eventScriptDeleted(msg events.EventRemovedScriptModel) {
 	defer e.eventScriptSubsMx.RUnlock()
 
 	for entityId := range e.eventScriptSubs[msg.ScriptId] {
-		go e.UnloadEntity(entityId)
+		go func(entityId common.EntityId) {
+			e.UnloadEntity(entityId)
+		}(entityId)
 	}
 }
 
@@ -589,3 +591,79 @@ func (e *supervisor) eventEntityUnloaded(msg events.EventEntityUnloaded) {
 //
 // \watch to see if the scripts change
 //
+
+func (e *supervisor) PushSystemEvent(strCommand string, params map[string]interface{}) {
+
+	var err error
+	var topic string
+	var command interface{}
+
+	defer func() {
+		if r := recover(); r != nil {
+			log.Warn("Recovered")
+			debug.PrintStack()
+		}
+	}()
+
+	switch strCommand {
+
+	// tasks
+	case "command_enable_task":
+		cmd := events.CommandEnableTask{}
+		err = common.SetFields(&cmd, params)
+		topic = fmt.Sprintf("system/automation/tasks/%d", cmd.Id)
+		command = cmd
+	case "command_disable_task":
+		cmd := events.CommandDisableTask{}
+		err = common.SetFields(&cmd, params)
+		topic = fmt.Sprintf("system/automation/tasks/%d", cmd.Id)
+		command = cmd
+
+	// triggers
+	case "command_enable_trigger":
+		cmd := events.CommandEnableTrigger{}
+		err = common.SetFields(&cmd, params)
+		topic = fmt.Sprintf("system/automation/triggers/%d", cmd.Id)
+		command = cmd
+	case "command_disable_trigger":
+		cmd := events.CommandDisableTrigger{}
+		err = common.SetFields(&cmd, params)
+		topic = fmt.Sprintf("system/automation/triggers/%d", cmd.Id)
+		command = cmd
+	case "event_call_trigger":
+		cmd := events.EventCallTrigger{}
+		err = common.SetFields(&cmd, params)
+		topic = fmt.Sprintf("system/automation/triggers/%d", cmd.Id)
+		command = cmd
+
+	//actions
+	case "event_call_action":
+		cmd := events.EventCallAction{}
+		err = common.SetFields(&cmd, params)
+		topic = fmt.Sprintf("system/automation/actions/%d", cmd.Id)
+		command = cmd
+
+	// entity
+	case "command_load_entity":
+		cmd := events.CommandLoadEntity{}
+		err = common.SetFields(&cmd, params)
+		topic = fmt.Sprintf("system/models/entities/%s", cmd.EntityId)
+		command = cmd
+	case "command_unload_entity":
+		cmd := events.CommandUnloadEntity{}
+		err = common.SetFields(&cmd, params)
+		topic = fmt.Sprintf("system/models/entities/%s", cmd.EntityId)
+		command = cmd
+
+	default:
+		log.Warnf("unknown command %s", strCommand)
+		return
+	}
+
+	if err != nil {
+		log.Error(err.Error())
+		return
+	}
+
+	e.eventBus.Publish(topic, command)
+}

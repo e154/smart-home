@@ -142,7 +142,7 @@ const updateCenter = (index: number) => {
 
                   <ElCol :span="12" :xs="12">
                     <ElFormItem :label="$t('dashboard.editor.value')" prop="value">
-                      <ElInput size="small" v-model="prop.attribute"/>
+                      <ElInput v-model="prop.attribute"/>
                     </ElFormItem>
                   </ElCol>
                 </ElRow>

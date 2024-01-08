@@ -3,7 +3,7 @@ export default {
     create: 'Создать',
     cancel: 'Отмена',
     return: 'Вернуться',
-    edit: 'Редактировать',
+    edit: 'Изменить',
     copy: 'Копировать',
     reload: 'Перезагрузить',
     remove: 'Удалить',
@@ -150,13 +150,29 @@ export default {
     codePlaceholder: "Пожалуйста, введите код подтверждения",
     restorePassword: "Восстановить пароль",
     returnToSignIn: "Вернуться к форме входа",
-    updatePassword: "Обновить пароль"
+    updatePassword: "Обновить пароль",
+    server: 'Сервер ID',
+    serverPlaceholder: 'Пожалуйста, введите сервер ID'
   },
   router: {
     login: "Вход",
     New: 'Создание',
-    Edit: 'Редактирование',
-    List: 'Список',
+    EditEntity: 'Ред. Entity',
+    EditScript: 'Ред. Скрипта',
+    EditTask: 'Ред. Задачи',
+    EditTrigger: 'Ред. Триггера',
+    EditCondition: 'Ред. Условия',
+    EditAction: 'Ред. Действия',
+    EditDashboard: 'Ред. Dashboard',
+    EditVariable: 'Ред. Переменной',
+    EditArea: 'Ред. Area',
+    EditZigbee2mqtt: 'Ред. Zigbee2mqtt',
+    EditUser: 'Ред. Пользователя',
+    EditPlugin: 'Ред. Плагин',
+    ListEntities: 'Список Entities',
+    ListScripts: 'Список Скриптов',
+    ListDashboards: 'Список Dashboards',
+    ListZigbee2mqtt: 'Список Zigbee2mqtt',
     View: 'Просмотр',
     Development: "Разработка",
     Entities: "Сущности",
@@ -223,7 +239,8 @@ export default {
     actionIcon: "Иконка",
     actionDescription: "Описание",
     actorStates: "Состояния актора",
-    actorSettings: "Настройки актора"
+    actorSettings: "Настройки актора",
+    readme: 'Инфо'
   },
   areas: {
     id: "ID",
@@ -300,7 +317,7 @@ export default {
       id: "ID",
       name: "Название",
       script: "Скрипт",
-      entity: "Сущность",
+      entity: "Entity",
       plugin: "Плагин",
       operations: "Операции",
       addNew: "Добавить новый триггер",
@@ -322,7 +339,7 @@ export default {
       id: "ID",
       name: "Название",
       script: "Скрипт",
-      entity: "Сущность",
+      entity: "Entity",
       action: "Действие",
       operations: "Операции",
       addNew: "Добавить новое действие",
@@ -360,7 +377,7 @@ export default {
     stat_cs_descr: "",
     stat_ts_name: "Всего скриптов на TypeScript",
     stat_ts_descr: "",
-    showModalDialog: 'Редактировать выбранный скрипт',
+    showModalDialog: 'Изменить выбранный скрипт',
     modalWindow: 'Выбранный скрипт',
     restoreVersion: 'Восстановить',
     scriptVersions: 'Версии',
@@ -486,7 +503,7 @@ export default {
       pleaseSelectType: "Пожалуйста, выберите тип",
       title: "Заголовок",
       addProp: "Добавить свойство",
-      entity: "Сущность",
+      entity: "Entity",
       frozen: "Заморожено",
       hidden: "Скрыто",
       enabled: "Включено",
@@ -539,6 +556,7 @@ export default {
       COLOR_PICKER: 'Цветовая паллитра',
       STREAM_PLAYER: 'Video player',
       JOYSTICK: 'Joystick',
+      ICON: 'Икона',
       tooltip: 'Подсказка',
       slider: {
         options: 'Параметры слайдера',
@@ -575,7 +593,8 @@ export default {
         addChartItem: "Добавить элемент диаграммы",
         itemValue: "Значение элемента",
         itemDescription: "Описание элемента",
-        barOptions: "Параметры столбца"
+        barOptions: "Параметры столбца",
+        dataZoom: 'Масштабирование'
       },
       joystick: {
         options: 'Параметры управления',
@@ -588,7 +607,11 @@ export default {
       entityStorage: {
         entities: 'Устройства',
         showFilter: 'Показывать фильтры'
-      }
+      },
+      iconOptions: 'Параметры Иконки',
+      defaultIcon: 'Иконка по умолчанию',
+      iconSize: 'Размер Иконки',
+      iconColor: 'Цвет Иконки'
     }
   },
   settings: {
@@ -605,7 +628,24 @@ export default {
     clearEntityStorageDays: 'История состояния Entity',
     clearRunHistoryDays: 'История запусков системы',
     time: 'Время',
-    timezone: 'Часовой пояс'
+    timezone: 'Часовой пояс',
+    backup: 'Резервное копирование',
+    createBackupAt: 'Когда создавать кипию (cron)',
+    maximumNumberOfBackups: 'Максимальное количество резервных копий',
+    info1: 'https://en.wikipedia.org/wiki/Cron',
+    info2: 'Организация удаленного доступа без белого IP. Тестовый шлюз https://gate.e154.ru:8443',
+    info3: 'не меняй, если не знаешь для чего это',
+    sendTheBackupInPartsMb: 'Отправлять резервную копию по частям Mb',
+    sendbackuptoTelegramBot: 'Отправить резервную копию боту Telegram',
+    gate: 'Шлюз',
+    gateClientServerHost: 'Хост сервера',
+    gateClientId: 'Клиент Id',
+    gateClientSecretKey: 'Секретный ключ',
+    gateClientServerPort: 'Порт сервера',
+    gateClientPoolIdleSize: 'Минимум потоков',
+    gateClientPoolMaxSize: 'Максимум потоков',
+    gateClientTLS: 'TLS',
+    hmacKey: 'HMAC Ключ'
   },
   tools: {
     eventBus: {

@@ -33,7 +33,7 @@ const save = async () => {
     let data = {
       name: tr.name,
       description: tr.description,
-      entityId: tr.entity?.id || null,
+      entityIds: tr.entityIds || [],
       scriptId: tr.script?.id || null,
       areaId: tr.area?.id || null,
       pluginName: tr.pluginName,

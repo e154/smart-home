@@ -21,9 +21,9 @@ package endpoint
 import (
 	"context"
 	"fmt"
-	"github.com/e154/smart-home/common"
 	"time"
 
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 )
 
@@ -43,8 +43,8 @@ func NewMetricEndpoint(common *CommonEndpoint) *MetricEndpoint {
 func (l *MetricEndpoint) GetByIdWithData(ctx context.Context, from, to *time.Time, metricId int64, _metricRange *string) (metric *m.Metric, err error) {
 
 	key := fmt.Sprintf("metric_%d_%v_%v_%v", metricId, from, to, _metricRange)
-	if l.cache.IsExist(key) {
-		v := l.cache.Get(key)
+	if ok, _ := l.cache.IsExist(ctx, key); ok {
+		v, _ := l.cache.Get(ctx, key)
 		metric = v.(*m.Metric)
 		return
 	}
@@ -57,7 +57,7 @@ func (l *MetricEndpoint) GetByIdWithData(ctx context.Context, from, to *time.Tim
 		return
 	}
 
-	l.cache.Put(key, metric, 10*time.Second)
+	_ = l.cache.Put(ctx, key, metric, 5*time.Second)
 
 	return
 }

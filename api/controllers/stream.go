@@ -35,7 +35,7 @@ func NewControllerStream(common *ControllerCommon) *ControllerStream {
 	}
 }
 
-// Subscribe ...
+// StreamServiceSubscribe ...
 func (c ControllerStream) StreamServiceSubscribe(ctx echo.Context) error {
 
 	currentUser, err := c.currentUser(ctx)

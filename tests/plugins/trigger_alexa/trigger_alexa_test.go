@@ -41,7 +41,7 @@ func TestTriggerAlexa(t *testing.T) {
 		task3SourceScript = `
 automationTriggerAlexa = (msg)->
     #print '---trigger---'
-    p = unmarshal msg.payload
+    p = msg.payload
     Done p
     #msg.trigger_name
     #msg.task_name
@@ -78,9 +78,10 @@ automationTriggerAlexa = (msg)->
 
 			// automation
 			// ------------------------------------------------
-			trigger := &m.Trigger{
+			trigger := &m.NewTrigger{
+				Enabled:    true,
 				Name:       "alexa",
-				Script:     task3Script,
+				ScriptId:   common.Int64(task3Script.Id),
 				PluginName: "alexa",
 				Payload: m.Attributes{
 					alexa.TriggerOptionSkillId: {
@@ -90,14 +91,14 @@ automationTriggerAlexa = (msg)->
 					},
 				},
 			}
-			err = AddTrigger(trigger, adaptors, eventBus)
+			triggerId, err := AddTrigger(trigger, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
 			//TASK3
 			newTask := &m.NewTask{
 				Name:       "Toggle plug ON",
 				Enabled:    true,
-				TriggerIds: []int64{trigger.Id},
+				TriggerIds: []int64{triggerId},
 				Condition:  common.ConditionAnd,
 			}
 			err = AddTask(newTask, adaptors, eventBus)

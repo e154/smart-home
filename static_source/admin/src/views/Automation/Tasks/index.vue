@@ -2,34 +2,21 @@
 import {useI18n} from '@/hooks/web/useI18n'
 import {Table} from '@/components/Table'
 import {computed, h, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
-import {useAppStore} from "@/store/modules/app";
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
-import {ElButton, ElMessage, ElSwitch} from 'element-plus'
-import {ApiEntity, ApiTask} from "@/api/stub";
-import {useForm} from "@/hooks/web/useForm";
+import {ElButton, ElMessage} from 'element-plus'
+import {ApiTask} from "@/api/stub";
 import {useRouter} from "vue-router";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
 import {parseTime} from "@/utils";
-import { Dialog } from '@/components/Dialog'
-import Viewer from "@/components/JsonViewer/JsonViewer.vue";
-import {useEmitt} from "@/hooks/web/useEmitt";
-import {EventStateChange, EventTaskCompleted, EventTriggerCompleted} from "@/api/stream_types";
+import {EventStateChange, EventTaskCompleted} from "@/api/stream_types";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 import {useCache} from "@/hooks/web/useCache";
 
-const {push, currentRoute} = useRouter()
-const remember = ref(false)
-const {register, elFormRef, methods} = useForm()
-const appStore = useAppStore()
+const {push} = useRouter()
 const {t} = useI18n()
-const isMobile = computed(() => appStore.getMobile)
 const { wsCache } = useCache()
-
-const dialogSource = ref("")
-const dialogVisible = ref(false)
-const importedTask = ref("")
 
 interface TableObject {
   tableList: ApiTask[]
@@ -99,7 +86,7 @@ const columns: TableColumn[] = [
     field: 'name',
     label: t('automation.name'),
     sortable: true,
-    width: "150px"
+    width: "170px"
   },
   {
     field: 'areaId',
@@ -156,7 +143,7 @@ const columns: TableColumn[] = [
     label: t('main.createdAt'),
     type: 'time',
     sortable: true,
-    width: "150px",
+    width: "170px",
     formatter: (row: ApiTask) => {
       return h(
           'span',
@@ -169,7 +156,7 @@ const columns: TableColumn[] = [
     label: t('main.updatedAt'),
     type: 'time',
     sortable: true,
-    width: "150px",
+    width: "170px",
     formatter: (row: ApiTask) => {
       return h(
           'span',
@@ -272,46 +259,6 @@ const disable = async (task: ApiTask) => {
   });
 }
 
-// import dialog
-const importTask = async () => {
-
-  const val: ApiTask = JSON.parse(importedTask.value)
-  const task = {
-    name: val.name,
-    description: val.description,
-    enabled: val.enabled,
-    condition: val.condition,
-    triggers: val.triggers,
-    conditions: val.conditions,
-    actions: val.actions,
-    areaId: val.areaId
-  }
-  const res = await api.v1.automationServiceAddTask(task)
-  if (res) {
-    ElMessage({
-      title: t('Success'),
-      message: t('message.importedSuccessful'),
-      type: 'success',
-      duration: 2000
-    })
-    getList()
-  }
-}
-
-const showImportDialog = () => {
-  dialogVisible.value = true
-}
-
-useEmitt({
-  name: 'updateSource',
-  callback: (val: string) => {
-    if (importedTask.value == val) {
-      return
-    }
-    importedTask.value = val
-  }
-})
-
 const tableRowClassName = (data) => {
   const { row, rowIndex } = data
   let style = ''
@@ -329,10 +276,6 @@ const tableRowClassName = (data) => {
       <Icon icon="ep:plus" class="mr-5px"/>
       {{ t('automation.addNew') }}
     </ElButton>
-
-<!--    <ElButton class="flex mb-20px items-left" type="primary" @click="showImportDialog()" plain>-->
-<!--      {{ t('automation.import') }}-->
-<!--    </ElButton>-->
 
     <Table
         :selection="false"
@@ -366,16 +309,6 @@ const tableRowClassName = (data) => {
     </Table>
 
   </ContentWrap>
-
-  <!-- import dialog -->
-  <Dialog v-model="dialogVisible" :title="t('automation.dialogTitle')" :maxHeight="400" custom-class>
-    <Viewer v-model="dialogSource"/>
-    <template #footer>
-      <ElButton type="primary" @click="importTask()" plain>{{ t('main.import') }}</ElButton>
-      <ElButton @click="dialogVisible = false">{{ t('main.closeDialog') }}</ElButton>
-    </template>
-  </Dialog>
-  <!-- /import dialog -->
 
 </template>
 

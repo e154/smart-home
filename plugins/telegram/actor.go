@@ -21,6 +21,7 @@ package telegram
 import (
 	"context"
 	"fmt"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -34,8 +35,8 @@ import (
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/notify"
+	notifyCommon "github.com/e154/smart-home/plugins/notify/common"
 	"github.com/e154/smart-home/system/supervisor"
-	"github.com/e154/smart-home/version"
 )
 
 // Actor ...
@@ -71,14 +72,6 @@ func NewActor(entity *m.Entity,
 		actor.Setts = NewSettings()
 	}
 
-	// Actions
-	for _, a := range actor.Actions {
-		if a.ScriptEngine.Engine() != nil {
-			// bind
-			_, _ = a.ScriptEngine.Engine().Do()
-		}
-	}
-
 	// action worker
 	go func() {
 		for msg := range actor.actionPool {
@@ -93,7 +86,7 @@ func (e *Actor) Destroy() {
 	if !e.isStarted.Load() {
 		return
 	}
-	e.Service.EventBus().Unsubscribe(notify.TopicNotify, e.eventHandler)
+	_ = e.Service.EventBus().Unsubscribe(notify.TopicNotify, e.eventHandler)
 	e.notify.Shutdown()
 
 	if e.bot != nil {
@@ -127,7 +120,6 @@ func (e *Actor) Spawn() {
 			return
 		}
 
-		e.bot.Handle("/help", e.commandHelp)
 		e.bot.Handle("/start", e.commandStart)
 		e.bot.Handle("/quit", e.commandQuit)
 		e.bot.Handle(tele.OnText, e.commandAction)
@@ -135,10 +127,8 @@ func (e *Actor) Spawn() {
 		go e.bot.Start()
 	}
 
-	e.Service.EventBus().Subscribe(notify.TopicNotify, e.eventHandler, false)
+	_ = e.Service.EventBus().Subscribe(notify.TopicNotify, e.eventHandler, false)
 	e.notify.Start()
-
-	return
 }
 
 func (e *Actor) sendMsg(message *m.Message, chatId int64) (messageID int, err error) {
@@ -150,7 +140,7 @@ func (e *Actor) sendMsg(message *m.Message, chatId int64) (messageID int, err er
 				messageID = msg.ID
 			}
 			//go func() { _ = e.UpdateStatus() }()
-			log.Infof("Sent message '%s' to chatId '%d'", message.Attributes, chatId)
+			log.Infof("Sent message '%v' to chatId '%d'", message.Attributes, chatId)
 		}
 	}()
 	if common.TestMode() {
@@ -164,20 +154,59 @@ func (e *Actor) sendMsg(message *m.Message, chatId int64) (messageID int, err er
 	}
 
 	params := NewMessageParams()
-	_, _ = params.Deserialize(message.Attributes)
+	if _, err = params.Deserialize(message.Attributes); err != nil {
+		return
+	}
 
 	var body interface{}
-	body = params[AttrBody].String()
 
-	if uri := params[AttrUri].String(); uri != "" {
-		body = &tele.Photo{File: tele.FromURL(uri)}
+	keys := params[AttrKeys].ArrayString()
+
+	// photos
+	urls := params[AttrPhotoUri].ArrayString()
+	if len(urls) > 0 {
+		for _, uri := range urls {
+			log.Infof("send photo %s", uri)
+			if msg, err = e.bot.Send(chat, &tele.Photo{File: tele.FromURL(uri)}); err != nil {
+				return
+			}
+		}
+	}
+	path := params[AttrPhotoPath].ArrayString()
+	if len(path) > 0 {
+		for _, uri := range path {
+			log.Infof("send photo %s", uri)
+			if msg, err = e.bot.Send(chat, &tele.Photo{File: tele.FromDisk(uri)}); err != nil {
+				return
+			}
+		}
 	}
 
-	if uri := params[AttrFilePath].String(); uri != "" {
-		body = &tele.Photo{File: tele.FromDisk(uri)}
+	// files
+	urls = params[AttrFileUri].ArrayString()
+	if len(urls) > 0 {
+		for _, uri := range urls {
+			log.Infof("send file %s", uri)
+			fileName := filepath.Base(uri)
+			if msg, err = e.bot.Send(chat, &tele.Document{File: tele.FromURL(uri), FileName: fileName}); err != nil {
+				return
+			}
+		}
+	}
+	path = params[AttrFilePath].ArrayString()
+	if len(path) > 0 {
+		for _, uri := range path {
+			log.Infof("send file %s", uri)
+			fileName := filepath.Base(uri)
+			if msg, err = e.bot.Send(chat, &tele.Document{File: tele.FromDisk(uri), FileName: fileName}); err != nil {
+				return
+			}
+		}
 	}
 
-	msg, err = e.bot.Send(chat, body)
+	if body = params[AttrBody].String(); body != "" {
+		msg, err = e.bot.Send(chat, body, e.genPlainKeyboard(keys))
+	}
 	return
 }
 
@@ -233,34 +262,32 @@ func (e *Actor) commandStart(c tele.Context) (err error) {
 	)
 
 	if pin := e.Setts[AttrPin].Decrypt(); pin != "" {
-		if enterdPin := strings.Replace(text, "/start ", "", -1); pin != enterdPin {
-			log.Warn("pin not equal")
+		enterdPin := strings.Replace(text, "/start ", "", -1)
+		if pin != enterdPin {
+			log.Warnf("received start command with bad pin code: \"%s\", username \"%s\"", enterdPin, chat.Username)
 			return
 		}
 	}
 
-	text = fmt.Sprintf(banner, version.GetHumanVersion(), text)
 	_ = e.Service.Adaptors().TelegramChat.Add(context.Background(), m.TelegramChat{
 		EntityId: e.Id,
 		ChatId:   chat.ID,
 		Username: user.Username,
 	})
 	log.Infof("user '%s' added to chat", user.Username)
-	err = c.Send(text, e.genKeyboard())
+
+	e.runAction(events.EventCallEntityAction{
+		ActionName: "/start",
+		EntityId:   e.Id,
+		Args: map[string]interface{}{
+			"chatId":    c.Chat().ID,
+			"username":  c.Chat().Username,
+			"firstName": c.Chat().FirstName,
+			"lastName":  c.Chat().LastName,
+		},
+	})
+
 	return
-}
-
-func (e *Actor) commandHelp(c tele.Context) (err error) {
-
-	builder := &strings.Builder{}
-	if len(e.Actions) > 0 {
-		for _, action := range e.Actions {
-			builder.WriteString(fmt.Sprintf("/%s - %s\n", action.Name, action.Description))
-		}
-	}
-	builder.WriteString(help)
-	err = c.Send(builder.String(), e.genKeyboard())
-	return err
 }
 
 func (e *Actor) commandQuit(c tele.Context) (err error) {
@@ -270,7 +297,12 @@ func (e *Actor) commandQuit(c tele.Context) (err error) {
 	)
 
 	_ = e.Service.Adaptors().TelegramChat.Delete(context.Background(), e.Id, chat.ID)
-	err = c.Send("/quit -unsubscribe from bot\n/start - subscriber again")
+	menu := &tele.ReplyMarkup{RemoveKeyboard: true}
+	var message = "/start - subscriber again"
+	if pin := e.Setts[AttrPin].Decrypt(); pin != "" {
+		message = "/start [pin] - subscriber again"
+	}
+	err = c.Send(message, menu)
 	return
 }
 
@@ -296,12 +328,11 @@ func (e *Actor) addAction(event events.EventCallEntityAction) {
 }
 
 func (e *Actor) runAction(msg events.EventCallEntityAction) {
-	actionName := strings.Replace(msg.ActionName, "/", "", 1)
-	if action, ok := e.Actions[actionName]; ok {
+	if action, ok := e.Actions[msg.ActionName]; ok {
 		if action.ScriptEngine.Engine() == nil {
 			return
 		}
-		if _, err := action.ScriptEngine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
+		if _, err := action.ScriptEngine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, msg.ActionName, msg.Args); err != nil {
 			log.Error(err.Error())
 			return
 		}
@@ -322,14 +353,30 @@ func (e *Actor) runAction(msg events.EventCallEntityAction) {
 // [button][button][button]
 // [button][button][button]
 // [button][button][button]
-func (e *Actor) genKeyboard() (menu *tele.ReplyMarkup) {
-	menu = &tele.ReplyMarkup{ResizeKeyboard: true}
+func (e *Actor) genActionKeyboard() (menu *tele.ReplyMarkup) {
+	menu = &tele.ReplyMarkup{
+		ResizeKeyboard: true,
+		RemoveKeyboard: len(e.Actions) == 0,
+	}
 	var row []tele.Btn
 	if len(e.Actions) == 0 {
 		return
 	}
-	for k := range e.Actions {
-		row = append(row, menu.Text(fmt.Sprintf("/%s", k)))
+	for _, action := range e.Actions {
+		row = append(row, menu.Text(action.Name))
+	}
+	menu.Reply(menu.Split(3, row)...)
+	return
+}
+
+func (e *Actor) genPlainKeyboard(keys []string) (menu *tele.ReplyMarkup) {
+	menu = &tele.ReplyMarkup{
+		ResizeKeyboard: true,
+		RemoveKeyboard: len(keys) == 0,
+	}
+	var row []tele.Btn
+	for _, key := range keys {
+		row = append(row, menu.Text(key))
 	}
 	menu.Reply(menu.Split(3, row)...)
 	return
@@ -345,14 +392,14 @@ func (e *Actor) updateState(connected bool) {
 	if info.State != nil && info.State.Name == newStat {
 		return
 	}
-	e.SetState(supervisor.EntityStateParams{
+	_ = e.SetState(supervisor.EntityStateParams{
 		NewState:    common.String(newStat),
 		StorageSave: true,
 	})
 }
 
 // Save ...
-func (e *Actor) Save(msg notify.Message) (addresses []string, message *m.Message) {
+func (e *Actor) Save(msg notifyCommon.Message) (addresses []string, message *m.Message) {
 	message = &m.Message{
 		Type:       Name,
 		Attributes: msg.Attributes,
@@ -419,7 +466,7 @@ func (e *Actor) MessageParams() m.Attributes {
 func (e *Actor) eventHandler(topic string, msg interface{}) {
 
 	switch v := msg.(type) {
-	case notify.Message:
+	case notifyCommon.Message:
 		if v.EntityId != nil && v.EntityId.PluginName() == Name {
 			e.notify.SaveAndSend(v, e)
 		}

@@ -49,7 +49,7 @@ const columns: TableColumn[] = [
   {
     field: 'name',
     label: t('zigbee2mqtt.name'),
-    width: "150px",
+    width: "170px",
     sortable: true
   },
   {
@@ -61,14 +61,14 @@ const columns: TableColumn[] = [
     field: 'permitJoin',
     label: t('zigbee2mqtt.permitJoin'),
     sortable: true,
-    width: "150px"
+    width: "170px"
   },
   {
     field: 'createdAt',
     label: t('main.createdAt'),
     type: 'time',
     sortable: true,
-    width: "150px",
+    width: "170px",
     formatter: (row: ApiTask) => {
       return h(
           'span',
@@ -81,7 +81,7 @@ const columns: TableColumn[] = [
     label: t('main.updatedAt'),
     type: 'time',
     sortable: true,
-    width: "150px",
+    width: "170px",
     formatter: (row: ApiTask) => {
       return h(
           'span',
@@ -146,7 +146,7 @@ const sortChange = (data) => {
 getList()
 
 const addNew = () => {
-  push('/zigbee2mqtt/new')
+  push('/etc/zigbee2mqtt/new')
 }
 
 const selectRow = (row) => {
@@ -154,7 +154,7 @@ const selectRow = (row) => {
     return
   }
   const {id} = row
-  push(`/zigbee2mqtt/edit/${id}`)
+  push(`/etc/zigbee2mqtt/edit/${id}`)
 }
 
 </script>

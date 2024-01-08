@@ -21,11 +21,11 @@ package endpoint
 import (
 	"bufio"
 	"context"
+	"mime/multipart"
+
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
 	m "github.com/e154/smart-home/models"
-	"mime/multipart"
-
 	"github.com/e154/smart-home/system/backup"
 )
 
@@ -45,7 +45,7 @@ func NewBackupEndpoint(common *CommonEndpoint, backup *backup.Backup) *BackupEnd
 
 // New ...
 func (b *BackupEndpoint) New(ctx context.Context) (err error) {
-	go b.backup.New()
+	go b.backup.New(false)
 	return
 }
 
@@ -93,7 +93,9 @@ func (b *BackupEndpoint) Upload(ctx context.Context, files map[string][]*multipa
 func (b *BackupEndpoint) Delete(ctx context.Context, name string) (err error) {
 
 	var list []*m.Backup
-	list, _, err = b.backup.List(ctx, 999, 0, "", "")
+	if list, _, err = b.backup.List(ctx, 999, 0, "", ""); err != nil {
+		return
+	}
 	for _, file := range list {
 		if name == file.Name {
 			err = b.backup.Delete(file.Name)

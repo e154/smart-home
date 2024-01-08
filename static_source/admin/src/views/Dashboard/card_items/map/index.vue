@@ -9,6 +9,9 @@ import {debounce} from "lodash-es";
 import {View} from "ol";
 import {propTypes} from "@/utils/propTypes";
 import {useAppStore} from "@/store/modules/app";
+import {useCache} from "@/hooks/web/useCache";
+import {prepareUrl} from "@/utils/serverId";
+const {wsCache} = useCache()
 
 // ---------------------------------
 // common
@@ -66,7 +69,7 @@ onMounted(() => {
   // store dom element moveable
   props.item.setTarget(el.value)
 
-  layerList.value.push(jawgLayer.value.tileLayer);
+  // layerList.value.push(jawgLayer.value.tileLayer);
   layerList.value.push(osmLayer.value.tileLayer);
 })
 
@@ -195,7 +198,7 @@ watch(
 )
 
 const getUrl = (image?: ApiImage): string | undefined => {
-  return import.meta.env.VITE_API_BASEPATH as string + image?.url || undefined;
+  return prepareUrl(import.meta.env.VITE_API_BASEPATH as string + image?.url || undefined);
 }
 
 </script>
@@ -240,12 +243,12 @@ const getUrl = (image?: ApiImage): string | undefined => {
           :layerList="layerList"
       />
 
-      <ol-tile-layer ref="jawgLayer" title="JAWG">
-        <ol-source-xyz
-            crossOrigin="anonymous"
-            url="https://c.tile.jawg.io/jawg-dark/{z}/{x}/{y}.png?access-token=87PWIbRaZAGNmYDjlYsLkeTVJpQeCfl2Y61mcHopxXqSdxXExoTLEv7dwqBwSWuJ"
-        />
-      </ol-tile-layer>
+<!--      <ol-tile-layer ref="jawgLayer" title="JAWG">-->
+<!--        <ol-source-xyz-->
+<!--            crossOrigin="anonymous"-->
+<!--            url="https://c.tile.jawg.io/jawg-dark/{z}/{x}/{y}.png?access-token=87PWIbRaZAGNmYDjlYsLkeTVJpQeCfl2Y61mcHopxXqSdxXExoTLEv7dwqBwSWuJ"-->
+<!--        />-->
+<!--      </ol-tile-layer>-->
 
       <ol-tile-layer ref="osmLayer">
         <ol-source-osm />

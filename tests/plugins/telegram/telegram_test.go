@@ -23,17 +23,19 @@ import (
 	"testing"
 	"time"
 
+	. "github.com/smartystreets/goconvey/convey"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/notify"
+	notifyCommon "github.com/e154/smart-home/plugins/notify/common"
 	"github.com/e154/smart-home/plugins/telegram"
 	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/e154/smart-home/tests/plugins"
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestTelegram(t *testing.T) {
@@ -103,7 +105,7 @@ telegramAction = (entityId, actionName)->
 
 					time.Sleep(time.Millisecond * 500)
 
-					eventBus.Publish(notify.TopicNotify, notify.Message{
+					eventBus.Publish(notify.TopicNotify, notifyCommon.Message{
 						EntityId: common.NewEntityId("telegram.clavicus"),
 						Attributes: map[string]interface{}{
 							"chat_id": 123,

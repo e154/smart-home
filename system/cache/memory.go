@@ -19,18 +19,21 @@
 package cache
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"strings"
 	"sync"
 	"time"
 )
 
 var (
-	// DefaultEvery means the clock time of recycling the expired cache items in memory.
-	DefaultEvery = 60
+	// Timer for how often to recycle the expired cache items in memory (in seconds)
+	DefaultEvery = 60 // 1 minute
 )
 
-// MemoryItem store memory cache item.
+// MemoryItem stores memory cache item.
 type MemoryItem struct {
 	val         interface{}
 	createdTime time.Time
@@ -45,8 +48,8 @@ func (mi *MemoryItem) isExpire() bool {
 	return time.Since(mi.createdTime) > mi.lifespan
 }
 
-// MemoryCache is Memory cache adapter.
-// it contains a RW locker for safe map storage.
+// MemoryCache is a memory cache adapter.
+// Contains a RW locker for safe map storage.
 type MemoryCache struct {
 	sync.RWMutex
 	dur   time.Duration
@@ -60,60 +63,71 @@ func NewMemoryCache() Cache {
 	return &cache
 }
 
-// Get cache from memory.
-// if non-existed or expired, return nil.
-func (bc *MemoryCache) Get(name string) interface{} {
+// Get returns cache from memory.
+// If non-existent or expired, return nil.
+func (bc *MemoryCache) Get(ctx context.Context, key string) (interface{}, error) {
 	bc.RLock()
 	defer bc.RUnlock()
-	if itm, ok := bc.items[name]; ok {
+	if itm, ok := bc.items[key]; ok {
 		if itm.isExpire() {
-			return nil
+			return nil, errors.New("the key is expired")
 		}
-		return itm.val
+		return itm.val, nil
 	}
-	return nil
+	return nil, errors.New("the key isn't exist")
 }
 
 // GetMulti gets caches from memory.
-// if non-existed or expired, return nil.
-func (bc *MemoryCache) GetMulti(names []string) []interface{} {
-	var rc []interface{}
-	for _, name := range names {
-		rc = append(rc, bc.Get(name))
+// If non-existent or expired, return nil.
+func (bc *MemoryCache) GetMulti(ctx context.Context, keys []string) ([]interface{}, error) {
+	rc := make([]interface{}, len(keys))
+	keysErr := make([]string, 0)
+
+	for i, ki := range keys {
+		val, err := bc.Get(context.Background(), ki)
+		if err != nil {
+			keysErr = append(keysErr, fmt.Sprintf("key [%s] error: %s", ki, err.Error()))
+			continue
+		}
+		rc[i] = val
 	}
-	return rc
+
+	if len(keysErr) == 0 {
+		return rc, nil
+	}
+	return rc, errors.New(strings.Join(keysErr, "; "))
 }
 
-// Put cache to memory.
-// if lifespan is 0, it will be forever till restart.
-func (bc *MemoryCache) Put(name string, value interface{}, lifespan time.Duration) error {
+// Put puts cache into memory.
+// If lifespan is 0, it will never overwrite this value unless restarted
+func (bc *MemoryCache) Put(ctx context.Context, key string, val interface{}, timeout time.Duration) error {
 	bc.Lock()
 	defer bc.Unlock()
-	bc.items[name] = &MemoryItem{
-		val:         value,
+	bc.items[key] = &MemoryItem{
+		val:         val,
 		createdTime: time.Now(),
-		lifespan:    lifespan,
+		lifespan:    timeout,
 	}
 	return nil
 }
 
 // Delete cache in memory.
-func (bc *MemoryCache) Delete(name string) error {
+func (bc *MemoryCache) Delete(ctx context.Context, key string) error {
 	bc.Lock()
 	defer bc.Unlock()
-	if _, ok := bc.items[name]; !ok {
+	if _, ok := bc.items[key]; !ok {
 		return errors.New("key not exist")
 	}
-	delete(bc.items, name)
-	if _, ok := bc.items[name]; ok {
+	delete(bc.items, key)
+	if _, ok := bc.items[key]; ok {
 		return errors.New("delete key error")
 	}
 	return nil
 }
 
-// Incr increase cache counter in memory.
-// it supports int,int32,int64,uint,uint32,uint64.
-func (bc *MemoryCache) Incr(key string) error {
+// Incr increases cache counter in memory.
+// Supports int,int32,int64,uint,uint32,uint64.
+func (bc *MemoryCache) Incr(ctx context.Context, key string) error {
 	bc.Lock()
 	defer bc.Unlock()
 	itm, ok := bc.items[key]
@@ -139,8 +153,8 @@ func (bc *MemoryCache) Incr(key string) error {
 	return nil
 }
 
-// Decr decrease counter in memory.
-func (bc *MemoryCache) Decr(key string) error {
+// Decr decreases counter in memory.
+func (bc *MemoryCache) Decr(ctx context.Context, key string) error {
 	bc.Lock()
 	defer bc.Unlock()
 	itm, ok := bc.items[key]
@@ -178,28 +192,28 @@ func (bc *MemoryCache) Decr(key string) error {
 	return nil
 }
 
-// IsExist check cache exist in memory.
-func (bc *MemoryCache) IsExist(name string) bool {
+// IsExist checks if cache exists in memory.
+func (bc *MemoryCache) IsExist(ctx context.Context, key string) (bool, error) {
 	bc.RLock()
 	defer bc.RUnlock()
-	if v, ok := bc.items[name]; ok {
-		return !v.isExpire()
+	if v, ok := bc.items[key]; ok {
+		return !v.isExpire(), nil
 	}
-	return false
+	return false, nil
 }
 
-// ClearAll will delete all cache in memory.
-func (bc *MemoryCache) ClearAll() error {
+// ClearAll deletes all cache in memory.
+func (bc *MemoryCache) ClearAll(context.Context) error {
 	bc.Lock()
 	defer bc.Unlock()
 	bc.items = make(map[string]*MemoryItem)
 	return nil
 }
 
-// StartAndGC start memory cache. it will check expiration in every clock time.
+// StartAndGC starts memory cache. Checks expiration in every clock time.
 func (bc *MemoryCache) StartAndGC(config string) error {
 	var cf map[string]int
-	_ = json.Unmarshal([]byte(config), &cf)
+	json.Unmarshal([]byte(config), &cf)
 	if _, ok := cf["interval"]; !ok {
 		cf = make(map[string]int)
 		cf["interval"] = DefaultEvery
@@ -234,7 +248,7 @@ func (bc *MemoryCache) vacuum() {
 	}
 }
 
-// expiredKeys returns key list which are expired.
+// expiredKeys returns keys list which are expired.
 func (bc *MemoryCache) expiredKeys() (keys []string) {
 	bc.RLock()
 	defer bc.RUnlock()
@@ -246,7 +260,7 @@ func (bc *MemoryCache) expiredKeys() (keys []string) {
 	return
 }
 
-// clearItems removes all the items which key in keys.
+// ClearItems removes all items who's key is in keys
 func (bc *MemoryCache) clearItems(keys []string) {
 	bc.Lock()
 	defer bc.Unlock()

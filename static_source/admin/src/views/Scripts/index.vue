@@ -54,7 +54,7 @@ const columns: TableColumn[] = [
   {
     field: 'name',
     label: t('scripts.name'),
-    width: "150px",
+    width: "170px",
     sortable: true
   },
   {
@@ -72,8 +72,7 @@ const columns: TableColumn[] = [
     field: 'createdAt',
     label: t('main.createdAt'),
     type: 'time',
-    sortable: true,
-    width: "150px",
+    width: "170px",
     formatter: (row: ApiScript) => {
       return h(
           'span',
@@ -86,7 +85,7 @@ const columns: TableColumn[] = [
     label: t('main.updatedAt'),
     type: 'time',
     sortable: true,
-    width: "150px",
+    width: "170px",
     formatter: (row: ApiScript) => {
       return h(
           'span',
@@ -209,6 +208,7 @@ const schema = reactive<FormSchema[]>([
       {{ t('scripts.addNew') }}
     </ElButton>
     <Form
+        id="search-form-scripts"
         :schema="schema"
         label-position="top"
         label-width="auto"
@@ -237,9 +237,15 @@ const schema = reactive<FormSchema[]>([
   </ContentWrap>
 </template>
 
-<style lang="less">
+<style lang="less" scoped>
 
 .el-table__row {
   cursor: pointer;
 }
+
+:deep(#search-form-scripts .el-col) {
+  padding-left: 0!important;
+  padding-right: 0!important;
+}
+
 </style>

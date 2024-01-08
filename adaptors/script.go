@@ -20,10 +20,12 @@ package adaptors
 
 import (
 	"context"
+	"sort"
+
+	"gorm.io/gorm"
+
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"gorm.io/gorm"
-	"sort"
 )
 
 // IScript ...

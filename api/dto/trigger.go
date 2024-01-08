@@ -33,11 +33,11 @@ func NewTriggerDto() Trigger {
 }
 
 // AddTrigger ...
-func (r Trigger) AddTrigger(from *stub.ApiNewTriggerRequest) (action *m.Trigger) {
-	action = &m.Trigger{
+func (r Trigger) AddTrigger(from *stub.ApiNewTriggerRequest) (action *m.NewTrigger) {
+	action = &m.NewTrigger{
 		Name:        from.Name,
 		Description: from.Description,
-		EntityId:    common.NewEntityIdFromPtr(from.EntityId),
+		EntityIds:   from.EntityIds,
 		ScriptId:    from.ScriptId,
 		AreaId:      from.AreaId,
 		PluginName:  from.PluginName,
@@ -48,12 +48,12 @@ func (r Trigger) AddTrigger(from *stub.ApiNewTriggerRequest) (action *m.Trigger)
 }
 
 // UpdateTrigger ...
-func (r Trigger) UpdateTrigger(from *stub.TriggerServiceUpdateTriggerJSONBody, id int64) (action *m.Trigger) {
-	action = &m.Trigger{
+func (r Trigger) UpdateTrigger(from *stub.TriggerServiceUpdateTriggerJSONBody, id int64) (action *m.UpdateTrigger) {
+	action = &m.UpdateTrigger{
 		Id:          id,
 		Name:        from.Name,
 		Description: from.Description,
-		EntityId:    common.NewEntityIdFromPtr(from.EntityId),
+		EntityIds:   from.EntityIds,
 		ScriptId:    from.ScriptId,
 		AreaId:      from.AreaId,
 		PluginName:  from.PluginName,
@@ -82,8 +82,21 @@ func (r Trigger) ToListResult(list []*m.Trigger) []*stub.ApiTrigger {
 
 	items := make([]*stub.ApiTrigger, 0, len(list))
 
-	for _, i := range list {
-		items = append(items, r.ToTrigger(i))
+	for _, trigger := range list {
+		items = append(items, &stub.ApiTrigger{
+			Id:          trigger.Id,
+			Name:        trigger.Name,
+			Description: trigger.Description,
+			EntityIds:   make([]string, 0, len(trigger.Entities)),
+			ScriptId:    trigger.ScriptId,
+			AreaId:      trigger.AreaId,
+			Area:        GetStubArea(trigger.Area),
+			PluginName:  trigger.PluginName,
+			Enabled:     trigger.Enabled,
+			IsLoaded:    common.Bool(trigger.IsLoaded),
+			CreatedAt:   trigger.CreatedAt,
+			UpdatedAt:   trigger.UpdatedAt,
+		})
 	}
 
 	return items
@@ -104,8 +117,8 @@ func ToTrigger(trigger *m.Trigger) (obj *stub.ApiTrigger) {
 		Id:          trigger.Id,
 		Name:        trigger.Name,
 		Description: trigger.Description,
-		Entity:      ToEntity(trigger.Entity),
-		EntityId:    trigger.EntityId.StringPtr(),
+		Entities:    make([]stub.ApiEntityShort, 0, len(trigger.Entities)),
+		EntityIds:   make([]string, 0, len(trigger.Entities)),
 		Script:      GetStubScript(trigger.Script),
 		ScriptId:    trigger.ScriptId,
 		AreaId:      trigger.AreaId,
@@ -116,6 +129,12 @@ func ToTrigger(trigger *m.Trigger) (obj *stub.ApiTrigger) {
 		Attributes:  AttributeToApi(trigger.Payload),
 		CreatedAt:   trigger.CreatedAt,
 		UpdatedAt:   trigger.UpdatedAt,
+	}
+	for _, entity := range trigger.Entities {
+		obj.Entities = append(obj.Entities, stub.ApiEntityShort{
+			Id: entity.Id.String(),
+		})
+		obj.EntityIds = append(obj.EntityIds, entity.Id.String())
 	}
 	return
 }

@@ -28,20 +28,23 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"runtime/debug"
 	"sort"
 	"time"
 
 	"github.com/pkg/errors"
+	"go.uber.org/atomic"
 	"go.uber.org/fx"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
 	"github.com/e154/smart-home/common"
-	app "github.com/e154/smart-home/common/app"
+	"github.com/e154/smart-home/common/app"
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
+	notifyCommon "github.com/e154/smart-home/plugins/notify/common"
 	"github.com/e154/smart-home/system/bus"
 )
 
@@ -51,9 +54,11 @@ var (
 
 // Backup ...
 type Backup struct {
-	cfg          *Config
-	eventBus     bus.Bus
-	restoreImage string
+	cfg           *Config
+	eventBus      bus.Bus
+	restoreImage  string
+	inProcess     *atomic.Bool
+	sendInProcess *atomic.Bool
 }
 
 // NewBackup ...
@@ -64,8 +69,10 @@ func NewBackup(lc fx.Lifecycle, eventBus bus.Bus, cfg *Config) *Backup {
 	}
 
 	backup := &Backup{
-		cfg:      cfg,
-		eventBus: eventBus,
+		cfg:           cfg,
+		eventBus:      eventBus,
+		inProcess:     atomic.NewBool(false),
+		sendInProcess: atomic.NewBool(false),
 	}
 
 	lc.Append(fx.Hook{
@@ -74,14 +81,18 @@ func NewBackup(lc fx.Lifecycle, eventBus bus.Bus, cfg *Config) *Backup {
 		},
 	})
 
+	_ = backup.eventBus.Subscribe("system/services/backup", backup.eventHandler)
+
 	return backup
 }
 
 // Shutdown ...
 func (b *Backup) Shutdown(ctx context.Context) (err error) {
 
+	_ = b.eventBus.Unsubscribe("system/services/backup", b.eventHandler)
+
 	if b.restoreImage != "" {
-		if err = b.restore(b.restoreImage); err != nil {
+		if err = b.RestoreFile(b.restoreImage); err != nil {
 			log.Errorf("%+v", err)
 			return
 		}
@@ -90,7 +101,14 @@ func (b *Backup) Shutdown(ctx context.Context) (err error) {
 }
 
 // New ...
-func (b *Backup) New() (err error) {
+func (b *Backup) New(scheduler bool) (err error) {
+
+	if b.inProcess.Load() {
+		return
+	}
+	b.inProcess.Store(true)
+	defer b.inProcess.Store(false)
+
 	log.Info("create new backup")
 
 	var db *gorm.DB
@@ -132,7 +150,16 @@ func (b *Backup) New() (err error) {
 	log.Info("complete")
 
 	b.eventBus.Publish("system/services/backup", events.EventCreatedBackup{
-		Name: backupName,
+		Name:      backupName,
+		Scheduler: scheduler,
+	})
+
+	b.eventBus.Publish("system/plugins/notify", notifyCommon.Message{
+		Type: "html5_notify",
+		Attributes: map[string]interface{}{
+			"title": "Snapshot created",
+			"body":  fmt.Sprintf("Snapshot %s successfully created", backupName),
+		},
 	})
 
 	return
@@ -156,6 +183,7 @@ func (b *Backup) List(ctx context.Context, limit, offset int64, orderBy, s strin
 		})
 		return nil
 	})
+	total = int64(len(list))
 	//todo: add pagination
 	sort.Sort(list)
 	return
@@ -249,8 +277,8 @@ func (b *Backup) ApplyChanges() (err error) {
 	return
 }
 
-// restore ...
-func (b *Backup) restore(name string) (err error) {
+// RestoreFile ...
+func (b *Backup) RestoreFile(name string) (err error) {
 	log.Infof("restore backup file %s", name)
 
 	var list []*m.Backup
@@ -365,7 +393,7 @@ func (b *Backup) restore(name string) (err error) {
 
 // Delete ...
 func (b *Backup) Delete(name string) (err error) {
-	log.Infof("remove backup file %s", name)
+	log.Infof("remove file %s", name)
 
 	file := path.Join(b.cfg.Path, name)
 
@@ -412,8 +440,7 @@ func (b *Backup) UploadBackup(ctx context.Context, reader *bufio.Reader, fileNam
 		buffer.Write(part[:count])
 	}
 	if err != io.EOF {
-	} else {
-		err = nil
+		return
 	}
 
 	contentType := http.DetectContentType(buffer.Bytes())
@@ -444,5 +471,147 @@ func (b *Backup) UploadBackup(ctx context.Context, reader *bufio.Reader, fileNam
 		Name: fileName,
 	})
 
+	go b.RestoreFromChunks()
 	return
+}
+
+func (b *Backup) ClearStorage(num int64) (err error) {
+	log.Infof("clear storage, maximum number of backups %d ...", num)
+
+	var list []*m.Backup
+	var total int64
+	if list, total, err = b.List(context.Background(), 0, 0, "", ""); err != nil {
+		return
+	}
+
+	if total <= num {
+		return
+	}
+
+	var diff = list[num:]
+	for _, file := range diff {
+		b.Delete(file.Name)
+	}
+
+	return
+}
+
+func (b *Backup) RestoreFromChunks() {
+
+	inputPattern := "*_part*.dat"
+
+	tmpDir := path.Join(os.TempDir(), "smart_home")
+	if err := os.MkdirAll(tmpDir, 0755); err != nil {
+		log.Error(err.Error())
+		return
+	}
+
+	fileName, err := joinFiles(filepath.Join(b.cfg.Path, inputPattern), tmpDir)
+	if err != nil {
+		return
+	}
+
+	if fileName == "" {
+		return
+	}
+
+	defer func() {
+		if err = os.RemoveAll(tmpDir); err != nil {
+			return
+		}
+	}()
+
+	ok, err := checkZip(fileName)
+	if err != nil {
+		log.Error(err.Error())
+		return
+	}
+	if !ok {
+		return
+	}
+
+	baseName := filepath.Base(fileName)
+
+	to := filepath.Join(b.cfg.Path, baseName)
+	log.Infof("copy file %s -> %s", fileName, to)
+
+	if err = CopyFile(fileName, to); err != nil {
+		log.Error(err.Error())
+		return
+	}
+
+	log.Infof("snapshot %s restored from chunks", baseName)
+
+	matches, err := filepath.Glob(filepath.Join(b.cfg.Path, inputPattern))
+	if err != nil {
+		log.Error(err.Error())
+	}
+
+	for _, f := range matches {
+		if err = os.RemoveAll(f); err != nil {
+			return
+		}
+	}
+
+	b.eventBus.Publish("system/services/backup", events.EventUploadedBackup{
+		Name: baseName,
+	})
+}
+
+func (b *Backup) SendFileToTelegram(params events.CommandSendFileToTelegram) {
+	if b.sendInProcess.Load() {
+		return
+	}
+	b.sendInProcess.Store(true)
+	defer b.sendInProcess.Store(false)
+
+	var err error
+
+	var fileList = []string{params.Filename}
+	if params.Chunks {
+		fileList, err = splitFile(path.Join(b.cfg.Path, params.Filename), int64(params.ChunkSize))
+		if err != nil {
+			debug.PrintStack()
+			log.Error(err.Error())
+			return
+		}
+	}
+
+	b.eventBus.Publish("system/plugins/notify", notifyCommon.Message{
+		EntityId: common.NewEntityId(params.EntityId.String()),
+		Attributes: map[string]interface{}{
+			"file_path": fileList,
+		},
+	})
+
+	//todo fix
+	go func() {
+		time.Sleep(time.Minute * 5)
+		for _, f := range fileList {
+			if err = os.RemoveAll(f); err != nil {
+				return
+			}
+		}
+	}()
+
+	log.Infof("send snapshot to telegram bot \"%s\"", params.EntityId)
+}
+
+func (b *Backup) eventHandler(_ string, message interface{}) {
+	switch v := message.(type) {
+	case events.CommandCreateBackup:
+		go func() {
+			if err := b.New(v.Scheduler); err != nil {
+				log.Error(err.Error())
+			}
+		}()
+	case events.CommandClearStorage:
+		go func() {
+			if err := b.ClearStorage(v.Num); err != nil {
+				log.Error(err.Error())
+			}
+		}()
+	case events.CommandSendFileToTelegram:
+		go b.SendFileToTelegram(v)
+	}
 }

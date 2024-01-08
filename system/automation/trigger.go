@@ -20,15 +20,12 @@ package automation
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"sync"
-
-	"github.com/e154/smart-home/common/telemetry"
 	"go.uber.org/atomic"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/common/telemetry"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/triggers"
 	"github.com/e154/smart-home/system/bus"
@@ -37,17 +34,14 @@ import (
 
 // Trigger ...
 type Trigger struct {
-	scriptEngine  *scripts.EngineWatcher
-	scriptService scripts.ScriptService
-	lastStatus    atomic.Bool
-	model         *m.Trigger
-	name          string
-	triggerPlugin triggers.ITrigger
-	isStarted     atomic.Bool
-	taskName      string
-	subscriber    triggers.Subscriber
-	eventBus      bus.Bus
-	sync.Mutex
+	scriptService      scripts.ScriptService
+	lastStatus         *atomic.Bool
+	model              *m.Trigger
+	name               string
+	triggerPlugin      triggers.ITrigger
+	taskName           string
+	triggerSubscribers []*TriggerSubscriber
+	eventBus           bus.Bus
 }
 
 // NewTrigger ...
@@ -69,53 +63,129 @@ func NewTrigger(
 	}
 
 	tr = &Trigger{
-		model:         model,
-		name:          model.Name,
-		scriptService: scriptService,
-		triggerPlugin: triggerPlugin,
-		eventBus:      eventBus,
+		model:              model,
+		name:               model.Name,
+		scriptService:      scriptService,
+		triggerPlugin:      triggerPlugin,
+		eventBus:           eventBus,
+		lastStatus:         atomic.NewBool(false),
+		triggerSubscribers: make([]*TriggerSubscriber, 0),
 	}
 
-	tr.subscriber = triggers.Subscriber{
-		EntityId: model.EntityId,
-		Payload:  model.Payload,
+	return
+}
+
+// Start ...
+func (tr *Trigger) Start() {
+	log.Infof("start trigger '%s'", tr.name)
+
+	if len(tr.model.Entities) > 0 {
+		for _, entity := range tr.model.Entities {
+			engine := tr.genScriptEngine(&entity.Id)
+			tr.triggerSubscribers = append(tr.triggerSubscribers, &TriggerSubscriber{
+				Engine:     engine,
+				Subscriber: tr.genSubscriber(&entity.Id, tr.genCheckFunc(engine)),
+			})
+		}
+
+	} else {
+		engine := tr.genScriptEngine(nil)
+		tr.triggerSubscribers = append(tr.triggerSubscribers, &TriggerSubscriber{
+			Engine:     engine,
+			Subscriber: tr.genSubscriber(nil, tr.genCheckFunc(engine)),
+		})
+	}
+
+	for _, sub := range tr.triggerSubscribers {
+		_ = tr.triggerPlugin.Subscribe(sub.Subscriber)
+	}
+	_ = tr.eventBus.Subscribe(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), tr.eventHandler, false)
+	tr.eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), events.EventTriggerLoaded{
+		Id: tr.model.Id,
+	})
+}
+
+// Stop ...
+func (tr *Trigger) Stop() {
+	log.Infof("stop trigger '%s'", tr.name)
+	for _, sub := range tr.triggerSubscribers {
+		if sub.Engine != nil {
+			sub.Engine.Stop()
+		}
+	}
+	_ = tr.eventBus.Unsubscribe(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), tr.eventHandler)
+	for _, sub := range tr.triggerSubscribers {
+		_ = tr.triggerPlugin.Unsubscribe(sub.Subscriber)
+	}
+	tr.eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), events.EventTriggerUnloaded{
+		Id: tr.model.Id,
+	})
+}
+
+func (tr *Trigger) genCheckFunc(scriptEngine *scripts.EngineWatcher) func(msg interface{}) (state bool, err error) {
+	return func(msg interface{}) (state bool, err error) {
+
+		if scriptEngine != nil {
+			var result string
+			if result, err = scriptEngine.Engine().AssertFunction(tr.triggerPlugin.FunctionName(), msg); err != nil {
+				log.Error(err.Error())
+			}
+
+			state = result == "true"
+			tr.lastStatus.Store(state)
+			return
+		}
+
+		state = true
+
+		tr.lastStatus.Store(state)
+
+		return
+	}
+}
+
+func (tr *Trigger) genSubscriber(entityId *common.EntityId, check func(msg interface{}) (state bool, err error)) triggers.Subscriber {
+
+	return triggers.Subscriber{
+		EntityId: entityId,
+		Payload:  tr.model.Payload,
 		Handler: func(_ string, msg interface{}) {
 			triggerCtx, span := telemetry.Start(context.Background(), "trigger")
 			span.SetAttributes("id", tr.model.Id)
-			b, _ := json.Marshal(msg)
 			args := map[string]interface{}{
-				"payload":      string(b),
+				"payload":      msg,
 				"trigger_name": tr.model.Name,
-				"entity_id":    tr.EntityId(),
+				"entity_id":    entityId,
 			}
-			result, err := tr.Check(args)
+			result, err := check(args)
+			span.End()
 			if err != nil || !result {
-				span.End()
 				return
 			}
-			span.End()
 			//fmt.Println("call trigger", tr.model.Name, tr.triggerPlugin.Name())
-			eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), events.EventTriggerCompleted{
-				Id:       model.Id,
+			tr.eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), events.EventTriggerCompleted{
+				Id:       tr.model.Id,
 				Args:     args,
-				EntityId: tr.EntityId(),
+				EntityId: entityId,
 				Ctx:      triggerCtx,
 			})
-			return
 		},
 	}
+}
 
-	if model.Script != nil {
+func (tr *Trigger) genScriptEngine(entityId *common.EntityId) (scriptEngine *scripts.EngineWatcher) {
+	if tr.model.Script != nil {
 
-		if tr.scriptEngine, err = scriptService.NewEngineWatcher(model.Script); err != nil {
+		var err error
+		if scriptEngine, err = tr.scriptService.NewEngineWatcher(tr.model.Script); err != nil {
 			return
 		}
-		tr.scriptEngine.Spawn(func(engine *scripts.Engine) {
+		scriptEngine.Spawn(func(engine *scripts.Engine) {
 
 			engine.PushStruct("Trigger", NewTriggerBind(tr))
 
-			if model.EntityId != nil {
-				if _, err = engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", model.EntityId.String())); err != nil {
+			if entityId != nil {
+				if _, err = engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entityId.String())); err != nil {
 					log.Error(err.Error())
 				}
 			}
@@ -126,71 +196,16 @@ func NewTrigger(
 		})
 
 	}
-
 	return
-}
-
-// Check ...
-func (tr *Trigger) Check(msg interface{}) (state bool, err error) {
-	tr.Lock()
-	defer tr.Unlock()
-
-	if tr.scriptEngine != nil {
-		var result string
-		if result, err = tr.scriptEngine.Engine().AssertFunction(tr.triggerPlugin.FunctionName(), msg); err != nil {
-			log.Error(err.Error())
-		}
-
-		state = result == "true"
-		tr.lastStatus.Store(state)
-		return
-	}
-
-	state = true
-
-	tr.lastStatus.Store(state)
-
-	return
-}
-
-// Id ...
-func (tr *Trigger) Id() int64 {
-	return tr.model.Id
-}
-
-// EntityId ...
-func (tr *Trigger) EntityId() *common.EntityId {
-	if tr.model == nil {
-		return nil
-	}
-	return tr.model.EntityId
-}
-
-// Start ...
-func (tr *Trigger) Start() {
-	log.Infof("start trigger '%s'", tr.name)
-	tr.triggerPlugin.Subscribe(tr.subscriber)
-	tr.eventBus.Subscribe(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), tr.eventHandler, false)
-	tr.eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), events.EventTriggerLoaded{
-		Id: tr.model.Id,
-	})
-	return
-}
-
-// Stop ...
-func (tr *Trigger) Stop() {
-	log.Infof("stop trigger '%s'", tr.name)
-	if tr.scriptEngine != nil {
-		tr.scriptEngine.Stop()
-	}
-	tr.eventBus.Unsubscribe(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), tr.eventHandler)
-	tr.triggerPlugin.Unsubscribe(tr.subscriber)
-	tr.eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), events.EventTriggerUnloaded{
-		Id: tr.model.Id,
-	})
 }
 
 func (tr *Trigger) eventHandler(_ string, msg interface{}) {
+
+	var entityId *common.EntityId
+
+	if len(tr.model.Entities) == 1 {
+		entityId = &tr.model.Entities[0].Id
+	}
 
 	switch v := msg.(type) {
 	case events.EventCallTrigger:
@@ -200,7 +215,7 @@ func (tr *Trigger) eventHandler(_ string, msg interface{}) {
 		tr.eventBus.Publish(fmt.Sprintf("system/automation/triggers/%d", tr.model.Id), events.EventTriggerCompleted{
 			Id:       tr.model.Id,
 			Args:     nil,
-			EntityId: tr.EntityId(),
+			EntityId: entityId,
 			Ctx:      triggerCtx,
 		})
 	}

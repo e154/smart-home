@@ -5,7 +5,7 @@ import {ElDivider, ElCollapse, ElCollapseItem, ElCard, ElForm, ElFormItem, ElInp
   ElRow, ElCol, ElSelect, ElOption, ElInput, ElTag, ElButton, ElPopconfirm, ElColorPicker } from 'element-plus'
 import CommonEditor from "@/views/Dashboard/card_items/common/editor.vue";
 import {FilterList, RangeList} from "@/views/Dashboard/card_items/chart/types";
-import Viewer from "@/components/JsonViewer/JsonViewer.vue";
+import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
 import {useI18n} from "@/hooks/web/useI18n";
 
 const {t} = useI18n()
@@ -183,7 +183,7 @@ const removeChartItem = (index: number) => {
   <ElRow :gutter="24" v-if="currentItem.payload.chart.type === 'line'">
     <ElCol :span="12" :xs="12">
       <ElFormItem :label="$t('dashboard.editor.chart.borderWidth')" prop="borderWidth">
-        <ElInputNumber size="small" v-model="currentItem.payload.chart.borderWidth" :min="1" :max="10"/>
+        <ElInputNumber v-model="currentItem.payload.chart.borderWidth" :min="1" :max="10"/>
       </ElFormItem>
     </ElCol>
 
@@ -286,7 +286,7 @@ const removeChartItem = (index: number) => {
             {{ $t('dashboard.editor.getEvent') }}
           </ElButton>
 
-          <Viewer v-model="currentItem.lastEvent"/>
+          <JsonViewer v-model="currentItem.lastEvent"/>
 
         </ElCollapseItem>
       </ElCollapse>

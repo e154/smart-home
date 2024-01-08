@@ -20,15 +20,14 @@ package uptime
 
 import (
 	"context"
+	"embed"
 	"fmt"
 	"time"
 
-	"github.com/e154/smart-home/system/supervisor"
-
-	"github.com/e154/smart-home/common/logger"
-
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 const (
@@ -40,6 +39,10 @@ var (
 )
 
 var _ supervisor.Pluggable = (*plugin)(nil)
+
+//go:embed Readme.md
+//go:embed Readme.ru.md
+var F embed.FS
 
 func init() {
 	supervisor.RegisterPlugin(Name, New)
@@ -53,9 +56,11 @@ type plugin struct {
 
 // New ...
 func New() supervisor.Pluggable {
-	return &plugin{
+	p := &plugin{
 		Plugin: supervisor.NewPlugin(),
 	}
+	p.F = F
+	return p
 }
 
 // Load ...
@@ -68,9 +73,14 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 		Start: time.Now(),
 	}
 
-	var entity *m.Entity
-	if entity, err = p.Service.Adaptors().Entity.GetById(context.Background(), common.EntityId(fmt.Sprintf("%s.%s", EntitySensor, Name))); err != nil {
-		entity = &m.Entity{
+	p.storyModel.Id, err = p.Service.Adaptors().RunHistory.Add(context.Background(), p.storyModel)
+	if err != nil {
+		log.Error(err.Error())
+		return
+	}
+
+	if _, err = p.Service.Adaptors().Entity.GetById(context.Background(), common.EntityId(fmt.Sprintf("%s.%s", EntitySensor, Name))); err != nil {
+		entity := &m.Entity{
 			Id:         common.EntityId(fmt.Sprintf("%s.%s", EntitySensor, Name)),
 			PluginName: Name,
 			Attributes: NewAttr(),
@@ -83,6 +93,14 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 		p.ticker = time.NewTicker(time.Second * pause)
 
 		for range p.ticker.C {
+
+			if p.storyModel != nil {
+				p.storyModel.End = common.Time(time.Now())
+				if err = p.Service.Adaptors().RunHistory.Update(context.Background(), p.storyModel); err != nil {
+					log.Error(err.Error())
+				}
+			}
+
 			p.Actors.Range(func(key, value any) bool {
 				actor, _ := value.(*Actor)
 				actor.update()
@@ -116,15 +134,6 @@ func (p *plugin) Unload(ctx context.Context) (err error) {
 // ActorConstructor ...
 func (p *plugin) ActorConstructor(entity *m.Entity) (actor supervisor.PluginActor, err error) {
 	actor = NewActor(entity, p.Service)
-
-	if err = p.AddActor(actor, entity); err != nil {
-		return
-	}
-
-	p.storyModel.Id, err = p.Service.Adaptors().RunHistory.Add(context.Background(), p.storyModel)
-	if err != nil {
-		log.Error(err.Error())
-	}
 	return
 }
 
@@ -146,4 +155,14 @@ func (p *plugin) Depends() []string {
 // Version ...
 func (p *plugin) Version() string {
 	return "0.0.1"
+}
+
+// Options ...
+func (p *plugin) Options() m.PluginOptions {
+	return m.PluginOptions{
+		Actors:             false,
+		ActorCustomAttrs:   false,
+		ActorAttrs:         NewAttr(),
+		ActorCustomActions: false,
+	}
 }

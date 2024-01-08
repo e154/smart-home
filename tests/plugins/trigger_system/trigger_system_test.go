@@ -46,7 +46,7 @@ func TestTriggerSystem(t *testing.T) {
 		task3SourceScript = `
 automationTriggerSystem = (msg)->
     #print '---trigger---'
-    p = unmarshal msg.payload
+    p = msg.payload
     Done p.event
     return false
 `
@@ -62,10 +62,10 @@ automationTriggerSystem = (msg)->
 			eventBus bus.Bus) {
 
 			// register plugins
-			AddPlugin(adaptors, "triggers")
+			_ = AddPlugin(adaptors, "triggers")
 
 			go mqttServer.Start()
-			automation.Start()
+			_ = automation.Start()
 			go zigbee2mqtt.Start(context.Background())
 			supervisor.Start(context.Background())
 			WaitSupervisor(eventBus)
@@ -85,12 +85,13 @@ automationTriggerSystem = (msg)->
 
 			// automation
 			// ------------------------------------------------
-			trigger := &m.Trigger{
+			trigger := &m.NewTrigger{
+				Enabled:    true,
 				Name:       "tr1",
-				Script:     task3Script,
+				ScriptId:   common.Int64(task3Script.Id),
 				PluginName: "system",
 			}
-			err = AddTrigger(trigger, adaptors, eventBus)
+			triggerId, err := AddTrigger(trigger, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
 			//TASK3
@@ -98,7 +99,7 @@ automationTriggerSystem = (msg)->
 				Name:       "Toggle plug OFF",
 				Enabled:    true,
 				Condition:  common.ConditionAnd,
-				TriggerIds: []int64{trigger.Id},
+				TriggerIds: []int64{triggerId},
 			}
 			err = AddTask(newTask, adaptors, eventBus)
 			So(err, ShouldBeNil)
@@ -107,7 +108,7 @@ automationTriggerSystem = (msg)->
 
 			time.Sleep(time.Second)
 
-			eventBus.Publish(triggers.TopicSystemStart, "started")
+			eventBus.Publish(triggers.TopicSystemStart, "START")
 
 			time.Sleep(time.Second)
 

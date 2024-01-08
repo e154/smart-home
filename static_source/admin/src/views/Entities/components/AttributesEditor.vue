@@ -39,7 +39,7 @@ const columns: TableColumn[] = [
   {
     field: 'operations',
     label: t('entities.operations'),
-    width: "150px",
+    width: "170px",
     type: 'time',
 
   },

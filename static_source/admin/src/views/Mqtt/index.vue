@@ -82,7 +82,7 @@ const columns: TableColumn[] = [
     label: t('mqtt.client.connectedAt'),
     type: 'time',
     sortable: true,
-    width: "150px",
+    width: "170px",
     formatter: (row: ApiClient) => {
       return h(
           'span',

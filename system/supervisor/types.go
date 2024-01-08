@@ -24,7 +24,6 @@ import (
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common/web"
-	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scheduler"
 	"github.com/pkg/errors"
@@ -48,7 +47,7 @@ type Supervisor interface {
 	Start(context.Context) error
 	Shutdown(context.Context) error
 	Restart(context.Context) error
-	GetPlugin(name string) (plugin interface{}, err error)
+	GetPlugin(name string) (interface{}, error)
 	EnablePlugin(context.Context, string) error
 	DisablePlugin(context.Context, string) error
 	PluginList() (list []PluginInfo, total int64, err error)
@@ -61,9 +60,11 @@ type Supervisor interface {
 	GetEntityById(common.EntityId) (m.EntityShort, error)
 	UpdateEntity(*m.Entity) error
 	UnloadEntity(common.EntityId)
-	EntityIsLoaded(id common.EntityId) (loaded bool)
-	PluginIsLoaded(name string) (loaded bool)
+	EntityIsLoaded(id common.EntityId) bool
+	PluginIsLoaded(string) bool
 	GetService() Service
+	GetPluginReadme(context.Context, string, *string) ([]byte, error)
+	PushSystemEvent(strCommand string, params map[string]interface{})
 }
 
 // PluginActor ...
@@ -161,12 +162,6 @@ const (
 	StateInProcess = "in process"
 )
 
-type actorInfo struct {
-	Actor        PluginActor
-	quit         chan struct{}
-	CurrentState *bus.EventEntityState //todo: check race condition
-}
-
 // ActorInfo ...
 type ActorInfo struct {
 	Id                common.EntityId        `json:"id"`
@@ -217,7 +212,6 @@ type Service interface {
 	ScriptService() scripts.ScriptService
 	MqttServ() mqtt.MqttServ
 	AppConfig() *m.AppConfig
-	GateClient() *gate_client.GateClient
 	Scheduler() *scheduler.Scheduler
 	Crawler() web.Crawler
 }
@@ -235,6 +229,7 @@ type Pluggable interface {
 	GetActor(id common.EntityId) (pla PluginActor, err error)
 	AddOrUpdateActor(*m.Entity) error
 	RemoveActor(common.EntityId) error
+	Readme(lang *string) ([]byte, error)
 }
 
 // Installable ...

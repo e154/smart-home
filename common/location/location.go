@@ -21,6 +21,7 @@ package location
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/golang/geo/s1"
 	"github.com/golang/geo/s2"
 

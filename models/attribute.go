@@ -135,6 +135,22 @@ func (a Attribute) Map() Attributes {
 	return nil
 }
 
+// ArrayString ...
+func (a Attribute) ArrayString() (result []string) {
+	if a.Value == nil {
+		return
+	}
+	switch v := a.Value.(type) {
+	case []interface{}:
+		for _, val := range a.Value.([]interface{}) {
+			result = append(result, fmt.Sprintf("%v", val))
+		}
+	case []string:
+		result = v
+	}
+	return
+}
+
 // Point ...
 func (a Attribute) Point() (point Point) {
 	if a.Value == nil {
@@ -179,6 +195,7 @@ func (a Attributes) Serialize() (to AttributeValue) {
 						switch value := valueRaw.(type) {
 						case float64, float32:
 						case int64, int32:
+						case string:
 						case Attributes:
 							attr := AttributeValue{}
 							serialize(value, attr)
@@ -263,6 +280,7 @@ func (a Attributes) Deserialize(data AttributeValue) (changed bool, err error) {
 			case time.Time:
 			case float64, float32:
 			case int64, int32, int:
+			case []string:
 			case []interface{}:
 
 				var arr []interface{}
@@ -273,6 +291,7 @@ func (a Attributes) Deserialize(data AttributeValue) (changed bool, err error) {
 					case int64, int32:
 					case float64, float32:
 					case bool:
+					case string:
 					case time.Time:
 					case AttributeValue:
 						if items, ok := to[keyFrom].Value.([]Attributes); ok {

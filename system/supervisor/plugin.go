@@ -20,7 +20,11 @@ package supervisor
 
 import (
 	"context"
+	"embed"
 	"fmt"
+	"github.com/gomarkdown/markdown"
+	"github.com/gomarkdown/markdown/html"
+	"github.com/gomarkdown/markdown/parser"
 	"sync"
 
 	"github.com/pkg/errors"
@@ -38,6 +42,7 @@ type Plugin struct {
 	IsStarted        *atomic.Bool
 	Actors           *sync.Map
 	actorConstructor ActorConstructor
+	F                embed.FS
 }
 
 // NewPlugin ...
@@ -225,5 +230,37 @@ func (p *Plugin) GetActor(id common.EntityId) (pla PluginActor, err error) {
 		return
 	}
 	pla = value.(PluginActor)
+	return
+}
+
+func (p *Plugin) Readme(lang *string) (result []byte, err error) {
+
+	// create markdown parser with extensions
+	extensions := parser.CommonExtensions | parser.AutoHeadingIDs | parser.NoEmptyLineBeforeBlock
+	n := parser.NewWithExtensions(extensions)
+
+	var fileName = "Readme.md"
+	if lang != nil {
+		switch *lang {
+		case "ru":
+			fileName = fmt.Sprintf("Readme.%s.md", *lang)
+		default:
+		}
+	}
+
+	var mds []byte
+	if mds, err = p.F.ReadFile(fileName); err != nil {
+		return
+	}
+
+	doc := n.Parse(mds)
+
+	// create HTML renderer with extensions
+	htmlFlags := html.CommonFlags | html.HrefTargetBlank
+	opts := html.RendererOptions{Flags: htmlFlags}
+	renderer := html.NewRenderer(opts)
+
+	result = markdown.Render(doc, renderer)
+
 	return
 }

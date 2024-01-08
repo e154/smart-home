@@ -110,7 +110,7 @@ func (m Migrations) Purge() (err error) {
 		return
 	}
 
-	m.orm.Check()
+	_ = m.orm.Check()
 
 	err = m.Up()
 

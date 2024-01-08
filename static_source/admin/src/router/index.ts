@@ -114,9 +114,9 @@ export const developRouterMap: AppRouteRecordRaw[] = [
         name: 'Entities',
         component: () => import('@/views/Entities/index.vue'),
         meta: {
-          title: t('router.List'),
-          noTagsView: true,
-          noCache: true,
+          title: t('router.ListEntities'),
+          // noTagsView: true,
+          // noCache: true,
           hidden: true,
           canTo: true,
           activeMenu: '/entities'
@@ -141,9 +141,9 @@ export const developRouterMap: AppRouteRecordRaw[] = [
         component: () => import('@/views/Entities/edit.vue'),
         props: true,
         meta: {
-          title: t('router.Edit'),
-          noTagsView: true,
-          noCache: true,
+          title: t('router.EditEntity'),
+          // noTagsView: true,
+          // noCache: true,
           hidden: true,
           canTo: true,
           activeMenu: '/entities'
@@ -165,9 +165,9 @@ export const developRouterMap: AppRouteRecordRaw[] = [
         name: 'Scripts',
         component: () => import('@/views/Scripts/index.vue'),
         meta: {
-          title: t('router.List'),
-          noTagsView: true,
-          noCache: true,
+          title: t('router.ListScripts'),
+          // noTagsView: true,
+          // noCache: true,
           hidden: true,
           canTo: true,
           activeMenu: '/scripts'
@@ -192,9 +192,9 @@ export const developRouterMap: AppRouteRecordRaw[] = [
         component: () => import('@/views/Scripts/edit.vue'),
         props: true,
         meta: {
-          title: t('router.Edit'),
-          noTagsView: true,
-          noCache: true,
+          title: t('router.EditScript'),
+          // noTagsView: true,
+          // noCache: true,
           hidden: true,
           canTo: true,
           activeMenu: '/scripts'
@@ -205,7 +205,7 @@ export const developRouterMap: AppRouteRecordRaw[] = [
   {
     path: '/automation',
     component: Develop,
-    redirect: '/automation/index',
+    redirect: '/automation/tasks',
     meta: {
       title: t('router.Automation'),
       icon: 'fa6-solid:circle-nodes'
@@ -225,8 +225,8 @@ export const developRouterMap: AppRouteRecordRaw[] = [
             component: () => import('@/views/Automation/Tasks/new.vue'),
             meta: {
               title: t('router.New'),
-              noTagsView: true,
-              noCache: true,
+              // noTagsView: true,
+              // noCache: true,
               hidden: true,
               canTo: true,
               activeMenu: '/automation/tasks'
@@ -238,9 +238,9 @@ export const developRouterMap: AppRouteRecordRaw[] = [
             component: () => import('@/views/Automation/Tasks/edit.vue'),
             props: true,
             meta: {
-              title: t('router.Edit'),
-              noTagsView: true,
-              noCache: true,
+              title: t('router.EditTask'),
+              // noTagsView: true,
+              // noCache: true,
               hidden: true,
               canTo: true,
               activeMenu: '/automation/tasks'
@@ -275,9 +275,9 @@ export const developRouterMap: AppRouteRecordRaw[] = [
             component: () => import('@/views/Automation/Triggers/edit.vue'),
             props: true,
             meta: {
-              title: t('router.Edit'),
-              noTagsView: true,
-              noCache: true,
+              title: t('router.EditTrigger'),
+              // noTagsView: true,
+              // noCache: true,
               hidden: true,
               canTo: true,
               activeMenu: '/automation/triggers'
@@ -312,9 +312,9 @@ export const developRouterMap: AppRouteRecordRaw[] = [
             component: () => import('@/views/Automation/Conditions/edit.vue'),
             props: true,
             meta: {
-              title: t('router.Edit'),
-              noTagsView: true,
-              noCache: true,
+              title: t('router.EditCondition'),
+              // noTagsView: true,
+              // noCache: true,
               hidden: true,
               canTo: true,
               activeMenu: '/automation/conditions'
@@ -349,9 +349,9 @@ export const developRouterMap: AppRouteRecordRaw[] = [
             component: () => import('@/views/Automation/Actions/edit.vue'),
             props: true,
             meta: {
-              title: t('router.Edit'),
-              noTagsView: true,
-              noCache: true,
+              title: t('router.EditAction'),
+              // noTagsView: true,
+              // noCache: true,
               hidden: true,
               canTo: true,
               activeMenu: '/automation/actions'
@@ -359,57 +359,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
           }
         ]
       },
-    ]
-  },
-  {
-    path: '/zigbee2mqtt',
-    component: Develop,
-    redirect: '/zigbee2mqtt/index',
-    meta: {
-      title: t('router.Zigbee2mqtt'),
-      icon: 'simple-icons:zigbee'
-    },
-    children: [
-      {
-        path: 'index',
-        name: 'Zigbee2mqtt',
-        component: () => import('@/views/Zigbee2mqtt/index.vue'),
-        meta: {
-          title: t('router.List'),
-          noTagsView: true,
-          noCache: true,
-          hidden: true,
-          canTo: true,
-          activeMenu: '/zigbee2mqtt'
-        }
-      },
-      {
-        path: 'new',
-        name: 'newZigbee2mqtt',
-        component: () => import('@/views/Zigbee2mqtt/new.vue'),
-        meta: {
-          title: t('router.New'),
-          noTagsView: true,
-          noCache: true,
-          hidden: true,
-          canTo: true,
-          activeMenu: '/zigbee2mqtt'
-        }
-      },
-      {
-        path: 'edit/:id',
-        name: 'editZigbee2mqtt',
-        component: () => import('@/views/Zigbee2mqtt/edit.vue'),
-        props: true,
-        meta: {
-          title: t('router.Edit'),
-          noTagsView: true,
-          noCache: true,
-          hidden: true,
-          canTo: true,
-          activeMenu: '/zigbee2mqtt'
-        }
-      }
     ]
   },
   {
@@ -426,9 +375,9 @@ export const developRouterMap: AppRouteRecordRaw[] = [
         name: 'Dashboards',
         component: () => import('@/views/Dashboard/index.vue'),
         meta: {
-          title: t('router.List'),
-          noTagsView: true,
-          noCache: true,
+          title: t('router.ListDashboards'),
+          // noTagsView: true,
+          // noCache: true,
           hidden: true,
           canTo: true,
           activeMenu: '/dashboards'
@@ -436,13 +385,13 @@ export const developRouterMap: AppRouteRecordRaw[] = [
       },
       {
         path: 'view/:id',
-        name: 'newDashboards',
+        name: 'viewDashboards',
         component: () => import('@/views/Dashboard/view.vue'),
         props: true,
         meta: {
           title: t('router.DashboardsView'),
-          noTagsView: true,
-          noCache: true,
+          // noTagsView: true,
+          // noCache: true,
           hidden: true,
           canTo: true,
           activeMenu: '/dashboards'
@@ -454,9 +403,9 @@ export const developRouterMap: AppRouteRecordRaw[] = [
         component: () => import('@/views/Dashboard/editor/editor.vue'),
         props: true,
         meta: {
-          title: t('router.Edit'),
-          noTagsView: true,
-          noCache: true,
+          title: t('router.EditDashboard'),
+          // noTagsView: true,
+          // noCache: true,
           hidden: true,
           canTo: true,
           activeMenu: '/dashboards'
@@ -518,15 +467,23 @@ export const developRouterMap: AppRouteRecordRaw[] = [
             component: () => import('@/views/Variables/edit.vue'),
             props: true,
             meta: {
-              title: t('router.Edit'),
-              noTagsView: true,
-              noCache: true,
+              title: t('router.EditVariable'),
+              // noTagsView: true,
+              // noCache: true,
               hidden: true,
               canTo: true,
               activeMenu: '/etc/variables'
             }
           }
         ]
+      },
+      {
+        path: 'settings',
+        name: 'Settings',
+        component: () => import('@/views/Settings/index.vue'),
+        meta: {
+          title: t('router.Settings'),
+        },
       },
       {
         path: 'plugins',
@@ -537,27 +494,14 @@ export const developRouterMap: AppRouteRecordRaw[] = [
         },
         children: [
           {
-            path: 'dummy',
-            name: 'dummyPlugin',
-            component: () => import('@/views/Plugins/edit.vue'),
-            meta: {
-              title: t('router.New'),
-              noTagsView: true,
-              noCache: true,
-              hidden: true,
-              canTo: true,
-              activeMenu: '/etc/plugins'
-            }
-          },
-          {
             path: 'edit/:name',
             name: 'viewPlugin',
             component: () => import('@/views/Plugins/edit.vue'),
             props: true,
             meta: {
-              title: t('router.View'),
-              noTagsView: true,
-              noCache: true,
+              title: t('router.EditPlugin'),
+              // noTagsView: true,
+              // noCache: true,
               hidden: true,
               canTo: true,
               activeMenu: '/etc/plugins'
@@ -618,9 +562,9 @@ export const developRouterMap: AppRouteRecordRaw[] = [
             component: () => import('@/views/Areas/edit.vue'),
             props: true,
             meta: {
-              title: t('router.Edit'),
-              noTagsView: true,
-              noCache: true,
+              title: t('router.EditArea'),
+              // noTagsView: true,
+              // noCache: true,
               hidden: true,
               canTo: true,
               activeMenu: '/etc/areas'
@@ -637,13 +581,13 @@ export const developRouterMap: AppRouteRecordRaw[] = [
         },
         children: [
           {
-            path: 'dummy',
-            name: 'dummyMqtt',
+            path: 'index',
+            name: 'indexMqtt',
             component: () => import('@/views/Mqtt/index.vue'),
             meta: {
               title: t('router.View'),
-              noTagsView: true,
-              noCache: true,
+              // noTagsView: true,
+              // noCache: true,
               hidden: true,
               canTo: true,
               activeMenu: '/etc/plugins'
@@ -656,11 +600,61 @@ export const developRouterMap: AppRouteRecordRaw[] = [
             props: true,
             meta: {
               title: t('router.View'),
+              // noTagsView: true,
+              // noCache: true,
+              hidden: true,
+              canTo: true,
+              activeMenu: '/etc/mqtt'
+            }
+          }
+        ]
+      },
+      {
+        path: 'zigbee2mqtt',
+        name: 'Zigbee2mqtt',
+        component: () => import('@/views/Zigbee2mqtt/index.vue'),
+        meta: {
+          title: t('router.Zigbee2mqtt'),
+        },
+        children: [
+          {
+            path: 'index',
+            name: 'Zigbee2mqtt',
+            component: () => import('@/views/Zigbee2mqtt/index.vue'),
+            meta: {
+              title: t('router.ListZigbee2mqtt'),
+              // noTagsView: true,
+              // noCache: true,
+              hidden: true,
+              canTo: true,
+              activeMenu: '/etc/zigbee2mqtt'
+            }
+          },
+          {
+            path: 'new',
+            name: 'newZigbee2mqtt',
+            component: () => import('@/views/Zigbee2mqtt/new.vue'),
+            meta: {
+              title: t('router.New'),
               noTagsView: true,
               noCache: true,
               hidden: true,
               canTo: true,
-              activeMenu: '/etc/mqtt'
+              activeMenu: '/etc/zigbee2mqtt'
+            }
+          },
+          {
+            path: 'edit/:id',
+            name: 'editZigbee2mqtt',
+            component: () => import('@/views/Zigbee2mqtt/edit.vue'),
+            props: true,
+            meta: {
+              title: t('router.EditZigbee2mqtt'),
+              // noTagsView: true,
+              // noCache: true,
+              hidden: true,
+              canTo: true,
+              activeMenu: '/etc/zigbee2mqtt'
             }
           }
         ]
@@ -692,9 +686,9 @@ export const developRouterMap: AppRouteRecordRaw[] = [
             component: () => import('@/views/Users/edit.vue'),
             props: true,
             meta: {
-              title: t('router.Edit'),
-              noTagsView: true,
-              noCache: true,
+              title: t('router.EditUser'),
+              // noTagsView: true,
+              // noCache: true,
               hidden: true,
               canTo: true,
               activeMenu: '/etc/users'
@@ -716,14 +710,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
         component: () => import('@/views/MessageDelivery/index.vue'),
         meta: {
           title: t('router.MessageDelivery'),
-        },
-      },
-      {
-        path: 'settings',
-        name: 'Settings',
-        component: () => import('@/views/Settings/index.vue'),
-        meta: {
-          title: t('router.Settings'),
         },
       }
     ]

@@ -20,9 +20,15 @@ package endpoint
 
 import (
 	m "github.com/e154/smart-home/models"
+	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
+	"net/http"
 
 	"github.com/e154/smart-home/system/stream"
+)
+
+var (
+	upgrader = websocket.Upgrader{}
 )
 
 type StreamEndpoint struct {
@@ -39,5 +45,17 @@ func NewStreamEndpoint(common *CommonEndpoint, stream *stream.Stream) *StreamEnd
 }
 
 func (s *StreamEndpoint) Subscribe(ctx echo.Context, currentUser *m.User) error {
-	return s.stream.NewConnection(ctx, currentUser)
+
+	upgrader.CheckOrigin = func(r *http.Request) bool {
+		return true
+	}
+	ws, err := upgrader.Upgrade(ctx.Response(), ctx.Request(), nil)
+	if err != nil {
+		return err
+	}
+	defer ws.Close()
+
+	s.stream.NewConnection(ws, currentUser)
+
+	return nil
 }

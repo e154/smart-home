@@ -24,11 +24,6 @@ import (
 )
 
 const (
-	// AttrUptimeTotal ...
-	AttrUptimeTotal = "total"
-	// AttrUptimeAppStarted ...
-	AttrUptimeAppStarted = "app_started"
-
 	// EntitySensor ...
 	EntitySensor = string("uptime")
 
@@ -36,6 +31,17 @@ const (
 	Name = "uptime"
 
 	Version = "0.0.1"
+
+	AttrUptimeTotal         = "uptime_total"
+	AttrAppStarted          = "app_started"
+	AttrFirstStart          = "first_start"
+	AttrLastShutdown        = "last_shutdown"
+	AttrLastShutdownCorrect = "last_shutdown_correct"
+	AttrLastStart           = "last_start"
+	AttrUptime              = "uptime"
+	AttrDowntime            = "downtime"
+	AttrUptimePercent       = "uptime_percent"
+	AttrDowntimePercent     = "downtime_percent"
 )
 
 // NewAttr ...
@@ -45,9 +51,41 @@ func NewAttr() m.Attributes {
 			Name: AttrUptimeTotal,
 			Type: common.AttributeInt,
 		},
-		AttrUptimeAppStarted: {
-			Name: AttrUptimeAppStarted,
+		AttrAppStarted: {
+			Name: AttrAppStarted,
 			Type: common.AttributeTime,
+		},
+		AttrFirstStart: {
+			Name: AttrFirstStart,
+			Type: common.AttributeTime,
+		},
+		AttrLastShutdown: {
+			Name: AttrLastShutdown,
+			Type: common.AttributeTime,
+		},
+		AttrLastShutdownCorrect: {
+			Name: AttrLastShutdownCorrect,
+			Type: common.AttributeBool,
+		},
+		AttrLastStart: {
+			Name: AttrLastStart,
+			Type: common.AttributeTime,
+		},
+		AttrUptime: {
+			Name: AttrUptime,
+			Type: common.AttributeInt,
+		},
+		AttrDowntime: {
+			Name: AttrDowntime,
+			Type: common.AttributeInt,
+		},
+		AttrUptimePercent: {
+			Name: AttrUptimePercent,
+			Type: common.AttributeFloat,
+		},
+		AttrDowntimePercent: {
+			Name: AttrDowntimePercent,
+			Type: common.AttributeFloat,
 		},
 	}
 }

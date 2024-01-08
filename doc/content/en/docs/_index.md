@@ -29,3 +29,9 @@ The documentation includes the following sections:
 &nbsp;
 
 &nbsp;
+
+{{< figure src="/smart-home/img/smart-home-network.svg" >}}
+
+&nbsp;
+
+&nbsp;

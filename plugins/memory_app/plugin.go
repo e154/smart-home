@@ -20,6 +20,7 @@ package memory_app
 
 import (
 	"context"
+	"embed"
 	"fmt"
 	"time"
 
@@ -31,6 +32,10 @@ import (
 )
 
 var _ supervisor.Pluggable = (*plugin)(nil)
+
+//go:embed Readme.md
+//go:embed Readme.ru.md
+var F embed.FS
 
 func init() {
 	supervisor.RegisterPlugin(Name, New)
@@ -46,6 +51,7 @@ func New() supervisor.Pluggable {
 	p := &plugin{
 		Plugin: supervisor.NewPlugin(),
 	}
+	p.F = F
 	return p
 }
 
@@ -55,9 +61,8 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 		return
 	}
 
-	var entity *m.Entity
-	if entity, err = p.Service.Adaptors().Entity.GetById(context.Background(), common.EntityId(fmt.Sprintf("%s.%s", EntityMemoryApp, Name))); err != nil {
-		entity = &m.Entity{
+	if _, err = p.Service.Adaptors().Entity.GetById(context.Background(), common.EntityId(fmt.Sprintf("%s.%s", EntityMemoryApp, Name))); err != nil {
+		entity := &m.Entity{
 			Id:          common.EntityId(fmt.Sprintf("%s.%s", EntityMemoryApp, Name)),
 			Description: "App metric",
 			PluginName:  Name,
