@@ -24,7 +24,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -54,7 +53,6 @@ type Connection struct {
 	ws        *websocket.Conn
 	status    ConnectionStatus
 	idleSince time.Time
-	lock      sync.Mutex
 	queue     chan Message
 }
 
@@ -117,8 +115,6 @@ func (c *Connection) proxyWs(w http.ResponseWriter, r *http.Request) (err error)
 		return true
 	}
 
-	// Now upgrade the existing incoming request to a WebSocket connection.
-	// Also pass the header that we gathered from the Dial handshake.
 	connPub, err := upgrader.Upgrade(w, r, upgradeHeader)
 	if err != nil {
 		log.Errorf("websocketproxy: couldn't upgrade %s", err)
@@ -126,7 +122,6 @@ func (c *Connection) proxyWs(w http.ResponseWriter, r *http.Request) (err error)
 	}
 	defer connPub.Close()
 
-	//errClient := make(chan error, 1)
 	errBackend := make(chan error, 1)
 	replicateWebsocketConn := func(dst, src *websocket.Conn, errc chan error) {
 		for {
@@ -164,13 +159,10 @@ func (c *Connection) proxyWs(w http.ResponseWriter, r *http.Request) (err error)
 		}
 	}()
 
-	//go replicateWebsocketConn(connPub, c.ws, errClient)
 	go replicateWebsocketConn(c.ws, connPub, errBackend)
 
 	var message string
 	select {
-	//case err = <-errClient:
-	//	message = "websocketproxy: Error when copying from backend to client: %v"
 	case err = <-errBackend:
 		message = "websocketproxy: Error when copying from client to backend: %v"
 	}
@@ -201,7 +193,7 @@ func (c *Connection) proxyRequest(w http.ResponseWriter, r *http.Request) (err e
 
 	// [2]: Send the HTTP request to the peer
 	// Send the serialized HTTP request to the the peer
-	if err := c.ws.WriteMessage(websocket.TextMessage, jsonReq); err != nil {
+	if err = c.ws.WriteMessage(websocket.TextMessage, jsonReq); err != nil {
 		return fmt.Errorf("unable to write request : %w", err)
 	}
 
@@ -210,10 +202,10 @@ func (c *Connection) proxyRequest(w http.ResponseWriter, r *http.Request) (err e
 	if err != nil {
 		return fmt.Errorf("unable to get request body writer : %w", err)
 	}
-	if _, err := io.Copy(bodyWriter, r.Body); err != nil {
+	if _, err = io.Copy(bodyWriter, r.Body); err != nil {
 		return fmt.Errorf("unable to pipe request body : %w", err)
 	}
-	if err := bodyWriter.Close(); err != nil {
+	if err = bodyWriter.Close(); err != nil {
 		return fmt.Errorf("unable to pipe request body (close) : %w", err)
 	}
 
@@ -226,7 +218,7 @@ func (c *Connection) proxyRequest(w http.ResponseWriter, r *http.Request) (err e
 
 	// Deserialize the HTTP Response
 	httpResponse := new(common.HTTPResponse)
-	if err := json.Unmarshal(jsonResponse, httpResponse); err != nil {
+	if err = json.Unmarshal(jsonResponse, httpResponse); err != nil {
 		return fmt.Errorf("unable to unserialize http response : %w", err)
 	}
 
@@ -247,7 +239,7 @@ func (c *Connection) proxyRequest(w http.ResponseWriter, r *http.Request) (err e
 
 	responseBodyReader := bytes.NewReader(responseBody)
 
-	if _, err := io.Copy(w, responseBodyReader); err != nil {
+	if _, err = io.Copy(w, responseBodyReader); err != nil {
 		return fmt.Errorf("unable to pipe response body : %w", err)
 	}
 
@@ -256,8 +248,6 @@ func (c *Connection) proxyRequest(w http.ResponseWriter, r *http.Request) (err e
 
 // Take notifies that this connection is going to be used
 func (c *Connection) Take() bool {
-	c.lock.Lock()
-	defer c.lock.Unlock()
 
 	if c.status == Closed || c.status == Busy {
 		return false
@@ -269,8 +259,6 @@ func (c *Connection) Take() bool {
 
 // Release notifies that this connection is ready to use again
 func (c *Connection) Release() {
-	c.lock.Lock()
-	defer c.lock.Unlock()
 
 	if c.status == Closed {
 		return
@@ -284,14 +272,6 @@ func (c *Connection) Release() {
 
 // Close the connection
 func (c *Connection) Close() {
-	c.lock.Lock()
-	defer c.lock.Unlock()
-
-	c.close()
-}
-
-// Close the connection ( without lock )
-func (c *Connection) close() {
 	if c.status == Closed {
 		return
 	}

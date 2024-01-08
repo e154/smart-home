@@ -61,8 +61,13 @@
               color: #aaa;
           }
 
+          .app-loading .app-loading-logo {
+              width: 100px;
+              margin: 0 auto 15px auto;
+          }
+
           .loader{
-              font-size: 48px;
+              font-size: 30px;
               font-weight: bold;
               letter-spacing: 2px;
               font-family: Arial, Helvetica, sans-serif;
@@ -85,7 +90,8 @@
       </style>
       <div class="app-loading">
           <div class="app-loading-wrap">
-              <div class="app-loading-title"><%= title %></div>
+              <img src="/logo-w.svg" class="app-loading-logo" alt="Logo" />
+<!--              <div class="app-loading-title"><%= title %></div>-->
               <span class="loader"></span>
           </div>
       </div>

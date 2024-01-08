@@ -33,7 +33,7 @@ import (
 )
 
 var (
-	log = logger.MustGetLogger("wsp")
+	log = logger.MustGetLogger("wsp client")
 )
 
 // Client connects to one or more Server using HTTP websockets.

@@ -5,7 +5,7 @@
   "pprof": false,
   "domain": "localhost",
   "https": false,
-  "proxy_timeout": 1,
+  "proxy_timeout": 5,
   "proxy_idle_timeout": 10,
   "proxy_secret_key": ""
 }

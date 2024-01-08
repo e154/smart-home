@@ -29,14 +29,14 @@ import (
 // Client ...
 type Client struct {
 	closed bool
-	ws     *websocket.Conn
 	user   *m.User
-	Mu     sync.Mutex
+	*sync.Mutex
+	ws *websocket.Conn
 }
 
 // NewClient ...
 func NewClient(ws *websocket.Conn, user *m.User) *Client {
-	return &Client{ws: ws, user: user}
+	return &Client{ws: ws, user: user, Mutex: &sync.Mutex{}}
 }
 
 // WritePump ...
@@ -66,8 +66,8 @@ func (c *Client) Close() {
 
 // Send ...
 func (c *Client) Send(id, query string, body []byte) (err error) {
-	c.Mu.Lock()
-	defer c.Mu.Unlock()
+	c.Lock()
+	defer c.Unlock()
 
 	if c.closed {
 		return

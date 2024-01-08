@@ -19,6 +19,7 @@
 package wsp
 
 import (
+	"context"
 	"sync"
 	"time"
 
@@ -28,14 +29,15 @@ import (
 
 // Pool handles all connections from the peer.
 type Pool struct {
-	server *Server
-	id     PoolID
+	timeout     time.Duration
+	idleTimeout time.Duration
+	id          PoolID
 
 	size int
 	idle chan *Connection
 
-	done        bool
-	lock        sync.RWMutex
+	done bool
+	sync.RWMutex
 	connections map[string]*Connection
 }
 
@@ -43,9 +45,10 @@ type Pool struct {
 type PoolID string
 
 // NewPool creates a new Pool
-func NewPool(server *Server, id PoolID) *Pool {
+func NewPool(timeout, idleTimeout time.Duration, id PoolID) *Pool {
 	p := &Pool{
-		server:      server,
+		timeout:     timeout,
+		idleTimeout: idleTimeout,
 		id:          id,
 		idle:        make(chan *Connection),
 		connections: make(map[string]*Connection),
@@ -53,10 +56,8 @@ func NewPool(server *Server, id PoolID) *Pool {
 	return p
 }
 
-// Register creates a new Connection and adds it to the pool
-func (p *Pool) Register(ws *websocket.Conn) {
-	p.lock.Lock()
-	defer p.lock.Unlock()
+// RegisterConnection creates a new Connection and adds it to the pool
+func (p *Pool) RegisterConnection(ws *websocket.Conn) {
 
 	// Ensure we never add a connection to a pool we have garbage collected
 	if p.done {
@@ -66,16 +67,19 @@ func (p *Pool) Register(ws *websocket.Conn) {
 	log.Infof("Registering new connection from %s", p.id)
 	connection := NewConnection(p, ws)
 	id := uuid.NewString()
+	p.Lock()
+	p.connections[id] = connection
+	p.Unlock()
 
 	go func() {
-		p.connections[id] = connection
 		connection.WritePump()
+		p.Lock()
 		delete(p.connections, id)
+		p.Unlock()
 	}()
 
 }
 
-// Offer offers an idle connection to the server.
 func (p *Pool) Offer(connection *Connection) {
 	// The original code of root-gg/wsp was invoking goroutine,
 	// but the callder was also invoking goroutine,
@@ -83,27 +87,20 @@ func (p *Pool) Offer(connection *Connection) {
 	p.idle <- connection
 }
 
-// Clean removes dead connection from the pool
-// Look for dead connection in the pool
-// This MUST be surrounded by pool.lock.Lock()
 func (p *Pool) Clean() {
 	idle := 0
 	now := time.Now()
 	for id, connection := range p.connections {
 		// We need to be sur we'll never close a BUSY or soon to be BUSY connection
-		connection.lock.Lock()
 		if connection.status == Idle {
 			idle++
 			if idle > p.size+1 {
-				// We have enough idle connections in the pool.
-				// Terminate the connection if it is idle since more that IdleTimeout
-				if now.Sub(connection.idleSince).Seconds() > p.server.Config.IdleTimeout.Seconds() {
-					connection.close()
+				if now.Sub(connection.idleSince).Seconds() > p.idleTimeout.Seconds() {
+					connection.Close()
 					delete(p.connections, id)
 				}
 			}
 		}
-		connection.lock.Unlock()
 		if connection.status == Closed {
 			connection.Close()
 		}
@@ -112,8 +109,8 @@ func (p *Pool) Clean() {
 
 // IsEmpty clean the pool and return true if the pool is empty
 func (p *Pool) IsEmpty() bool {
-	p.lock.Lock()
-	defer p.lock.Unlock()
+	p.Lock()
+	defer p.Unlock()
 
 	p.Clean()
 	return len(p.connections) == 0
@@ -121,8 +118,8 @@ func (p *Pool) IsEmpty() bool {
 
 // Shutdown closes every connections in the pool and cleans it
 func (p *Pool) Shutdown() {
-	p.lock.Lock()
-	defer p.lock.Unlock()
+	p.Lock()
+	defer p.Unlock()
 
 	p.done = true
 
@@ -134,8 +131,8 @@ func (p *Pool) Shutdown() {
 
 // Size return the number of connection in each state in the pool
 func (p *Pool) Size() (ps *PoolSize) {
-	p.lock.Lock()
-	defer p.lock.Unlock()
+	p.Lock()
+	defer p.Unlock()
 
 	ps = &PoolSize{}
 	for _, connection := range p.connections {
@@ -149,4 +146,30 @@ func (p *Pool) Size() (ps *PoolSize) {
 	}
 
 	return
+}
+
+func (p *Pool) SetSize(size int) {
+	p.size = size
+}
+
+func (p *Pool) GetIdleConnection(ctx context.Context) (conn *Connection) {
+	if p.IsEmpty() {
+		return
+	}
+
+	ctx2, cancel := context.WithTimeout(ctx, p.timeout)
+	defer cancel()
+
+	for {
+		select {
+		case <-ctx2.Done():
+			return
+		case v := <-p.idle:
+			if v.Take() {
+				conn = v
+				return
+			}
+		}
+		continue
+	}
 }
