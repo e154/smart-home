@@ -72,13 +72,14 @@ This the multi-page printable view of this section.
 </div>
 <h1 class=title>Отправка сообщений</h1>
 <ul>
-<li>1: <a href=#pg-db0e74844d4ec70b97b7eed2dcaa6fde>Push уведомления</a></li>
-<li>2: <a href=#pg-b9e7dc050746e93f66a3fcdc54072720>HTML5 Уведомления</a></li>
-<li>3: <a href=#pg-ffcf992bf86dcf75fc98ea391689be36>Messagebird</a></li>
-<li>4: <a href=#pg-ae8769291a804111fe0f11577b37bb14>Slack</a></li>
-<li>5: <a href=#pg-3474b889257fbfc72d90e2b2883e468a>Telegram</a></li>
-<li>6: <a href=#pg-8d473157f65e8e52157febb9c1671a23>Twilio</a></li>
-<li>7: <a href=#pg-56027f5b7f86e356eca9778287b4e9b7>Шаблон сообщения</a></li>
+<li>1: <a href=#pg-c757c4a3128c020469fa7e844a0b07d1>EMAIL</a></li>
+<li>2: <a href=#pg-db0e74844d4ec70b97b7eed2dcaa6fde>Push уведомления</a></li>
+<li>3: <a href=#pg-b9e7dc050746e93f66a3fcdc54072720>HTML5 Уведомления</a></li>
+<li>4: <a href=#pg-ffcf992bf86dcf75fc98ea391689be36>Messagebird</a></li>
+<li>5: <a href=#pg-ae8769291a804111fe0f11577b37bb14>Slack</a></li>
+<li>6: <a href=#pg-3474b889257fbfc72d90e2b2883e468a>Telegram</a></li>
+<li>7: <a href=#pg-8d473157f65e8e52157febb9c1671a23>Twilio</a></li>
+<li>8: <a href=#pg-56027f5b7f86e356eca9778287b4e9b7>Шаблон сообщения</a></li>
 </ul>
 <div class=content>
 <p>В системе есть плагин под названием «notifr», который предоставляет возможности уведомлений. Он поддерживает методы отправки уведомлений по различным каналам, включая SMS, push-уведомления, электронную почту, Telegram и уведомления HTML5.</p>
@@ -169,7 +170,53 @@ Telegram: Предоставляет возможность отправлять
 </div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-db0e74844d4ec70b97b7eed2dcaa6fde>1 - Push уведомления</h1>
+<h1 id=pg-c757c4a3128c020469fa7e844a0b07d1>1 - EMAIL</h1>
+<p>Плагин Email предоставляет возможность интегрировать функциональность отправки электронных сообщений в систему Smart Home. Этот плагин позволяет пользователям настраивать параметры электронной почты и отправлять уведомления или сообщения с устройств в рамках умного дома.</p>
+<h4 id=настройки-устройства>Настройки устройства</h4>
+<ul>
+<li>
+<p><strong><code>email</code> (тип: String)</strong>: Электронная почта, через которую осуществляется отправка сообщений.</p>
+</li>
+<li>
+<p><strong><code>auth</code> (тип: String)</strong>: Метод аутентификации для доступа к почтовому серверу (например, &ldquo;PLAIN&rdquo; или &ldquo;LOGIN&rdquo;).</p>
+</li>
+<li>
+<p><strong><code>pass</code> (тип: Encrypted)</strong>: Зашифрованный пароль для аутентификации при доступе к почтовому серверу.</p>
+</li>
+<li>
+<p><strong><code>smtp</code> (тип: String)</strong>: Адрес сервера исходящей почты (SMTP).</p>
+</li>
+<li>
+<p><strong><code>port</code> (тип: Int)</strong>: Порт сервера исходящей почты (например, 587 для TLS или 465 для SSL).</p>
+</li>
+<li>
+<p><strong><code>sender</code> (тип: String)</strong>: Адрес отправителя электронного сообщения.</p>
+</li>
+</ul>
+<h4 id=атрибуты-сообщения>Атрибуты сообщения</h4>
+<ul>
+<li>
+<p><strong><code>addresses</code> (тип: String)</strong>: Список адресов электронной почты получателей, разделенных запятыми.</p>
+</li>
+<li>
+<p><strong><code>subject</code> (тип: String)</strong>: Тема электронного сообщения.</p>
+</li>
+<li>
+<p><strong><code>body</code> (тип: String)</strong>: Текст тела электронного сообщения.</p>
+</li>
+</ul>
+<h4 id=пример-на-coffeescript>Пример на Coffeescript</h4>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>msg = </span><span style=color:#000>notifr</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>newMessage</span><span style=color:#000;font-weight:700>();</span>
+<span style=color:#000>msg.entity_id = </span><span style=color:#4e9a06>&#39;email.google&#39;</span><span style=color:#000;font-weight:700>;</span>
+<span style=color:#000>msg.attributes = </span><span style=color:#000;font-weight:700>{</span>
+  <span style=color:#4e9a06>&#39;body&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;some text msg&#39;</span><span style=color:#000;font-weight:700>,</span>
+  <span style=color:#4e9a06>&#39;addresses&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;john.smith@example.com,john.smith@example.com&#39;</span><span style=color:#000;font-weight:700>,</span>
+  <span style=color:#4e9a06>&#39;subject&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;john.smith@example.com&#39;</span><span style=color:#000;font-weight:700>,</span>
+<span style=color:#000;font-weight:700>};</span>
+</code></pre></div>
+</div>
+<div class=td-content style=page-break-before:always>
+<h1 id=pg-db0e74844d4ec70b97b7eed2dcaa6fde>2 - Push уведомления</h1>
 <p>Web push — это короткие сообщения, которые smart home отправляет в браузер, чтобы сообщить о какой-либо важной информации. Они показываются даже тем, кто ушел с сайта, и не требуют указания почты или телефона.</p>
 <h3 id=настройка>Настройка</h3>
 <ul>
@@ -230,7 +277,7 @@ Telegram: Предоставляет возможность отправлять
 </code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-b9e7dc050746e93f66a3fcdc54072720>2 - HTML5 Уведомления</h1>
+<h1 id=pg-b9e7dc050746e93f66a3fcdc54072720>3 - HTML5 Уведомления</h1>
 <p>HTML5 уведомление - это способ показать пользователю информацию на веб-странице без перезагрузки или перехода на другую страницу. Уведомления могут содержать текст, изображения, звук или видео и появляются в правом нижнем углу экрана. Уведомления на HTML5 используют API, который позволяет веб-приложениям отправлять уведомления браузеру с помощью JavaScript</p>
 <h3 id=атрибуты>Атрибуты</h3>
 <ul>
@@ -287,7 +334,7 @@ Telegram: Предоставляет возможность отправлять
 </code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-ffcf992bf86dcf75fc98ea391689be36>3 - Messagebird</h1>
+<h1 id=pg-ffcf992bf86dcf75fc98ea391689be36>4 - Messagebird</h1>
 <p>Отправка sms уведомлений через провайдера услуг оповещения <a href=https://messagebird.com>messagebird</a>. Для возможности
 отправки сообщений потребуется регистрация в <a href=https://messagebird.com>messagebird</a>, и положительный баланс.</p>
 <h3 id=настройка>Настройка</h3>
@@ -346,7 +393,7 @@ Telegram: Предоставляет возможность отправлять
 </code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-ae8769291a804111fe0f11577b37bb14>4 - Slack</h1>
+<h1 id=pg-ae8769291a804111fe0f11577b37bb14>5 - Slack</h1>
 <p>Отправка уведомлений в чат slack</p>
 <h3 id=настройка>Настройка</h3>
 <ul>
@@ -398,7 +445,7 @@ Telegram: Предоставляет возможность отправлять
 </code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-3474b889257fbfc72d90e2b2883e468a>5 - Telegram</h1>
+<h1 id=pg-3474b889257fbfc72d90e2b2883e468a>6 - Telegram</h1>
 <p>Позволяет работать с telegram api, обеспечивая интерактивную обработку комманд от клиентов либо использовать
 событийное оповещение. Система не имеет ограничение на количество ботов, один entity - один бот.</p>
 <h3 id=настройка>Настройка</h3>
@@ -414,11 +461,10 @@ Telegram: Предоставляет возможность отправлять
 <li>произвольный набор</li>
 </ul>
 <h3 id=действия>Действия</h3>
-<p>В системе зарезервированно три команды:</p>
+<p>В системе зарезервированно две команды:</p>
 <ul>
 <li><strong>/start</strong> - подписаться на уведомления</li>
 <li><strong>/quit</strong> - отписаться от уведомлений</li>
-<li><strong>/help</strong> - вывод доступных команд</li>
 </ul>
 <p><strong>Action</strong> (действие) - должно наименоваться в нижнем регистре, без знаков &ldquo;/&rdquo;.
 Кастомная команда в системе автоматически добавится в список доступных команд раздела <strong>/help</strong>.
@@ -430,7 +476,13 @@ Telegram: Предоставляет возможность отправлять
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>msg = </span><span style=color:#000>notifr</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>newMessage</span><span style=color:#000;font-weight:700>();</span>
 <span style=color:#000>msg.entity_id = </span><span style=color:#4e9a06>&#39;telegram.name&#39;</span><span style=color:#000;font-weight:700>;</span>
 <span style=color:#000>msg.attributes = </span><span style=color:#000;font-weight:700>{</span>
-  <span style=color:#4e9a06>&#39;body&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;some text msg&#39;</span>
+  <span style=color:#4e9a06>&#39;body&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;some text msg&#39;</span><span style=color:#000;font-weight:700>,</span>
+  <span style=color:#4e9a06>&#39;chat_id&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#0000cf;font-weight:700>123456</span><span style=color:#000;font-weight:700>,</span>
+  <span style=color:#4e9a06>&#39;keys&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000;font-weight:700>[</span><span style=color:#4e9a06>&#39;foo&#39;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#4e9a06>&#39;bar&#39;</span><span style=color:#000;font-weight:700>],</span>
+  <span style=color:#4e9a06>&#39;photo_uri&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000;font-weight:700>[</span><span style=color:#4e9a06>&#39;foo&#39;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#4e9a06>&#39;bar&#39;</span><span style=color:#000;font-weight:700>],</span>
+  <span style=color:#4e9a06>&#39;photo_path&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000;font-weight:700>[</span><span style=color:#4e9a06>&#39;foo&#39;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#4e9a06>&#39;bar&#39;</span><span style=color:#000;font-weight:700>],</span>
+  <span style=color:#4e9a06>&#39;file_path&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000;font-weight:700>[</span><span style=color:#4e9a06>&#39;foo&#39;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#4e9a06>&#39;bar&#39;</span><span style=color:#000;font-weight:700>],</span>
+  <span style=color:#4e9a06>&#39;file_uri&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000;font-weight:700>[</span><span style=color:#4e9a06>&#39;foo&#39;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#4e9a06>&#39;bar&#39;</span><span style=color:#000;font-weight:700>]</span>
 <span style=color:#000;font-weight:700>};</span>
 
 </code></pre></div><table>
@@ -451,9 +503,48 @@ Telegram: Предоставляет возможность отправлять
 </tr>
 </tbody>
 </table>
+<p>attributes:</p>
+<table>
+<thead>
+<tr>
+<th>значение</th>
+<th>описание</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>body</td>
+<td>Type: string, тело сообщения</td>
+</tr>
+<tr>
+<td>chat_id</td>
+<td>Type: int64, id пользователя</td>
+</tr>
+<tr>
+<td>keys</td>
+<td>Type: []string, клавиатура</td>
+</tr>
+<tr>
+<td>photo_uri</td>
+<td>Type: []string, изображение</td>
+</tr>
+<tr>
+<td>photo_path</td>
+<td>Type: []string, изображение</td>
+</tr>
+<tr>
+<td>file_path</td>
+<td>Type: []string, файл</td>
+</tr>
+<tr>
+<td>file_uri</td>
+<td>Type: []string, файл</td>
+</tr>
+</tbody>
+</table>
 <hr>
 <h3 id=функция-telegramaction>функция telegramAction</h3>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>telegramAction = </span><span style=color:#000>(entityId, actionName)-&gt;</span>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>telegramAction = </span><span style=color:#000>(entityId, actionName, args)-&gt;</span>
 </code></pre></div><table>
 <thead>
 <tr>
@@ -470,8 +561,13 @@ Telegram: Предоставляет возможность отправлять
 <td>actionName</td>
 <td>type: string, название действия, без символа &lsquo;/&rsquo; в верхнем регистре</td>
 </tr>
+<tr>
+<td>args</td>
+<td>attributes</td>
+</tr>
 </tbody>
 </table>
+<hr>
 <h3 id=пример-кода>пример кода</h3>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#8f5902;font-style:italic># telegram
 </span><span style=color:#8f5902;font-style:italic># ##################################
@@ -488,7 +584,7 @@ Telegram: Предоставляет возможность отправлять
 
 <span style=color:#000>sendMsg</span> <span style=color:#ce5c00;font-weight:700>=</span><span style=color:#000>(body)-&gt;</span>
   <span style=color:#000>msg = </span><span style=color:#000>notifr</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>newMessage</span><span style=color:#000;font-weight:700>();</span>
-  <span style=color:#000>msg.entity_id = </span><span style=color:#4e9a06>&#39;telegram.name&#39;</span><span style=color:#000;font-weight:700>;</span>
+  <span style=color:#000>msg.entity_id = </span><span style=color:#4e9a06>&#39;telegram.testbot&#39;</span><span style=color:#000;font-weight:700>;</span>
   <span style=color:#000>msg.attributes = </span><span style=color:#000;font-weight:700>{</span>
     <span style=color:#4e9a06>&#39;body&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000>body</span>
   <span style=color:#000;font-weight:700>};</span>
@@ -496,7 +592,7 @@ Telegram: Предоставляет возможность отправлять
 </code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-8d473157f65e8e52157febb9c1671a23>6 - Twilio</h1>
+<h1 id=pg-8d473157f65e8e52157febb9c1671a23>7 - Twilio</h1>
 <p>Отправка sms уведомлений через провайдера услуг оповещения <a href=https://www.twilio.com/messaging>twilio</a>. Для возможности
 отправки сообщений потребуется регистрация в <a href=https://www.twilio.com/messaging>twilio</a>, и положительный баланс.</p>
 <h3 id=настройка>Настройка</h3>
@@ -556,7 +652,7 @@ Telegram: Предоставляет возможность отправлять
 </code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-56027f5b7f86e356eca9778287b4e9b7>7 - Шаблон сообщения</h1>
+<h1 id=pg-56027f5b7f86e356eca9778287b4e9b7>8 - Шаблон сообщения</h1>
 <p><strong>Template</strong> (Шаблон) - инструмент для заполнения и рассылки готовых сообщений.</p>
 <p>преимущества:</p>
 <ul>
@@ -627,7 +723,7 @@ Telegram: Предоставляет возможность отправлять
 </ul>
 </div>
 <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-<small class=text-white>&copy; 2023 Разработано при поддержке <a href=http://e154.ru>e154.ru</a></small>
+<small class=text-white>&copy; 2024 Разработано при поддержке <a href=http://e154.ru>e154.ru</a></small>
 <div><small class="ml-1 text-white">Код лицензии <a href=https://github.com/e154/smart-home/blob/master/LICENSE>MIT</a> документы <a href=http://creativecommons.org/licenses/by/3.0/>CC BY 3.0</a></small></div>
 </div>
 </div>

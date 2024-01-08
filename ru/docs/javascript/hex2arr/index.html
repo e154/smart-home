@@ -24,12 +24,12 @@ function hex2arr(hexString) { // Удаляем все пробелы из ст�
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://e154.github.io/smart-home/ru/docs/javascript/hex2arr/"><meta property="article:section" content="docs">
 <meta property="article:published_time" content="2021-11-20T00:00:00+00:00">
-<meta property="article:modified_time" content="2023-11-02T20:22:01+06:00"><meta property="og:site_name" content="Умный дом">
+<meta property="article:modified_time" content="2024-01-08T19:33:13+06:00"><meta property="og:site_name" content="Умный дом">
 <meta itemprop=name content="hex2arr">
 <meta itemprop=description content="В JavaScript окружении доступна функция hex2arr(hexString), которая преобразует строку шестнадцатеричных значений в массив байт ([]byte).
 hex2arr = function (hexString) { var result = []; while (hexString.length >= 2) { result.push(parseInt(hexString.substring(0, 2), 16)); hexString = hexString.substring(2, hexString.length); } return result; }; Пример реализации функции hex2arr:
 function hex2arr(hexString) { // Удаляем все пробелы из строки  hexString = hexString.replace(/\s/g, ''); // Разбиваем строку на пары символов (каждая пара представляет байт)  var hexPairs = hexString."><meta itemprop=datePublished content="2021-11-20T00:00:00+00:00">
-<meta itemprop=dateModified content="2023-11-02T20:22:01+06:00">
+<meta itemprop=dateModified content="2024-01-08T19:33:13+06:00">
 <meta itemprop=wordCount content="151">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content="hex2arr">
@@ -97,12 +97,16 @@ function hex2arr(hexString) { // Удаляем все пробелы из ст�
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homerudocsdashboard-li>
 <a href=/smart-home/ru/docs/dashboard/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homerudocsdashboard><span>Dashboard</span></a>
 <ul class="ul-2 foldable">
-<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocsdashboardentity-li>
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocsdashboardgate-li>
+<a href=/smart-home/ru/docs/dashboard/gate/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homerudocsdashboardgate><span>Gate</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocsdashboardentity-li>
 <a href=/smart-home/ru/docs/dashboard/entity/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homerudocsdashboardentity><span>Entity</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homerudocsdashboardautomation-li>
 <a href=/smart-home/ru/docs/dashboard/automation/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homerudocsdashboardautomation><span>Automation</span></a>
 <ul class="ul-3 foldable">
-<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocsdashboardautomationactions-li>
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocsdashboardautomationtasks-li>
+<a href=/smart-home/ru/docs/dashboard/automation/tasks/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homerudocsdashboardautomationtasks><span>Tasks</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocsdashboardautomationactions-li>
 <a href=/smart-home/ru/docs/dashboard/automation/actions/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homerudocsdashboardautomationactions><span>Actions</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocsdashboardautomationconditions-li>
 <a href=/smart-home/ru/docs/dashboard/automation/conditions/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homerudocsdashboardautomationconditions><span>Conditions</span></a>
@@ -146,7 +150,13 @@ function hex2arr(hexString) { // Удаляем все пробелы из ст�
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homerudocsplugins-li>
 <a href=/smart-home/ru/docs/plugins/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homerudocsplugins><span>Plugins</span></a>
 <ul class="ul-2 foldable">
-<li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homerudocspluginsmodbus-li>
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocspluginsmqtt_bridge-li>
+<a href=/smart-home/ru/docs/plugins/mqtt_bridge/ title="MQTT bridge" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homerudocspluginsmqtt_bridge><span>mqtt bridge</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocspluginsonvif-li>
+<a href=/smart-home/ru/docs/plugins/onvif/ title="Plugin ONVIF" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homerudocspluginsonvif><span>onvif</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocspluginsspeedtest-li>
+<a href=/smart-home/ru/docs/plugins/speedtest/ title=Speedtest class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homerudocspluginsspeedtest><span>speedtest</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homerudocspluginsmodbus-li>
 <a href=/smart-home/ru/docs/plugins/modbus/ title=Modbus class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homerudocspluginsmodbus><span>modbus</span></a>
 <ul class="ul-3 foldable">
 <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocspluginsmodbusmodbus_rtu-li>
@@ -181,7 +191,9 @@ function hex2arr(hexString) { // Удаляем все пробелы из ст�
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homerudocspluginsnotify-li>
 <a href=/smart-home/ru/docs/plugins/notify/ title="Отправка сообщений" class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homerudocspluginsnotify><span>notify</span></a>
 <ul class="ul-3 foldable">
-<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocspluginsnotifywebpush-li>
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocspluginsnotifyemail-li>
+<a href=/smart-home/ru/docs/plugins/notify/email/ title=EMAIL class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homerudocspluginsnotifyemail><span>email</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocspluginsnotifywebpush-li>
 <a href=/smart-home/ru/docs/plugins/notify/webpush/ title="Push уведомления" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homerudocspluginsnotifywebpush><span>webpush</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocspluginsnotifyhtml5_notify-li>
 <a href=/smart-home/ru/docs/plugins/notify/html5_notify/ title="HTML5 Уведомления" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homerudocspluginsnotifyhtml5_notify><span>html5_notify</span></a>
@@ -215,9 +227,9 @@ function hex2arr(hexString) { // Удаляем все пробелы из ст�
 <a href=/smart-home/ru/docs/plugins/weather/ title=Weather class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homerudocspluginsweather><span>weather</span></a>
 <ul class="ul-3 foldable">
 <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocspluginsweathermet-li>
-<a href=/smart-home/ru/docs/plugins/weather/met/ title=Met class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homerudocspluginsweathermet><span>met</span></a>
+<a href=/smart-home/ru/docs/plugins/weather/met/ title=MET class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homerudocspluginsweathermet><span>met</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocspluginsweatherowm-li>
-<a href=/smart-home/ru/docs/plugins/weather/owm/ title=Met class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homerudocspluginsweatherowm><span>met</span></a>
+<a href=/smart-home/ru/docs/plugins/weather/owm/ title=OWM class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homerudocspluginsweatherowm><span>met</span></a>
 </li>
 </ul>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocspluginszibee2mqtt-li>
@@ -291,7 +303,7 @@ function hex2arr(hexString) { // Удаляем все пробелы из ст�
 шестнадцатеричном формате. Результатом выполнения функции будет массив байт, содержащий соответствующие значения ASCII
 символов.</p>
 <div class="text-muted mt-5 pt-3 border-top">
-Изменено 02.11.2023: <a href=https://github.com/e154/smart-home/commit/85b132cca98aebec3c26f42a148652dfed5598bc>Develop (#245) (85b132c)</a>
+Изменено 08.01.2024: <a href=https://github.com/e154/smart-home/commit/5d834c48fbdf35becba56d9f426ed5f3f8250563>Merge pull request #256 from e154/master (5d834c4)</a>
 </div>
 </div>
 </main>
@@ -312,7 +324,7 @@ function hex2arr(hexString) { // Удаляем все пробелы из ст�
 </ul>
 </div>
 <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-<small class=text-white>&copy; 2023 Разработано при поддержке <a href=http://e154.ru>e154.ru</a></small>
+<small class=text-white>&copy; 2024 Разработано при поддержке <a href=http://e154.ru>e154.ru</a></small>
 <div><small class="ml-1 text-white">Код лицензии <a href=https://github.com/e154/smart-home/blob/master/LICENSE>MIT</a> документы <a href=http://creativecommons.org/licenses/by/3.0/>CC BY 3.0</a></small></div>
 </div>
 </div>

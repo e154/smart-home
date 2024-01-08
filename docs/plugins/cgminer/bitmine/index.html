@@ -35,12 +35,12 @@ Supported devices:
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://e154.github.io/smart-home/docs/plugins/cgminer/bitmine/"><meta property="article:section" content="docs">
 <meta property="article:published_time" content="2021-10-20T00:00:00+00:00">
-<meta property="article:modified_time" content="2023-11-02T20:22:01+06:00"><meta property="og:site_name" content="Smart home">
+<meta property="article:modified_time" content="2024-01-08T19:33:13+06:00"><meta property="og:site_name" content="Smart home">
 <meta itemprop=name content="Bitmine">
 <meta itemprop=description content="Working with Bitmine Antminer ASIC devices.
 Supported devices:
  S9 S7 L3 L3 D3 T9  JavaScript Properties  Miner Base Entity // Constant with the unique device ID const ENTITY_ID; const result = Miner .stats() .devs() .summary() .pools() .addPool(url) .version() .enable(poolId) .disable(poolId) .delete(poolId) .switchPool(poolId) .restart();    Property Description     result Type: Object (Result)       Property Description     stats Type: Method, statistics   devs Type: Method, statistics   summary Type: Method, statistics   pools Type: Method, server list   addPool Type: Method, add server   version Type: Method, firmware version   enable Type: Method, enable server   disable Type: Method, disable server   delete Type: Method, delete server   switchPool Type: Method, switch server   restart Type: Method, soft device restart     Result Object const result = { error: false, errMessage: &#34;&#34;, result: &#34;&#34; };    Property Description     error Type: boolean, error indicator   errMessage Type: string, human-readable error message   result Type: string, JSON object in string format, if the request is completed without errors     entityAction Function entityAction = (entityId, actionName, args) => { }    Property Description     entityId Type: string, ID of the entity sending the message   actionName Type: string, name of the action, in uppercase without the &lsquo;/&rsquo; symbol   args Type: map[string]any     EntityStateParams Object const entityStateParams = { &#34;new_state&#34;: &#34;&#34;, &#34;attribute_values&#34;: {}, &#34;settings_value&#34;: {}, &#34;storage_save&#34;: true };    Property Description     new_state Type: *string, name of the new state   attribute_values Type: Object, new state of the entity&rsquo;s attributes   settings_value Type: Object, new state of the entity&rsquo;s settings   storage_save Type: boolean, indicator to save the new state to the database     Code Example # cgminer # ##################################  ifError =(res)-> return !"><meta itemprop=datePublished content="2021-10-20T00:00:00+00:00">
-<meta itemprop=dateModified content="2023-11-02T20:22:01+06:00">
+<meta itemprop=dateModified content="2024-01-08T19:33:13+06:00">
 <meta itemprop=wordCount content="301">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Bitmine">
@@ -108,12 +108,16 @@ English
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homedocsdashboard-li>
 <a href=/smart-home/docs/dashboard/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocsdashboard><span>Dashboard</span></a>
 <ul class="ul-2 foldable">
-<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsdashboardentity-li>
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsdashboardgate-li>
+<a href=/smart-home/docs/dashboard/gate/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocsdashboardgate><span>Gate</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsdashboardentity-li>
 <a href=/smart-home/docs/dashboard/entity/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsdashboardentity><span>Entity</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homedocsdashboardautomation-li>
 <a href=/smart-home/docs/dashboard/automation/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocsdashboardautomation><span>Automation</span></a>
 <ul class="ul-3 foldable">
-<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsdashboardautomationactions-li>
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsdashboardautomationtasks-li>
+<a href=/smart-home/docs/dashboard/automation/tasks/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsdashboardautomationtasks><span>Tasks</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsdashboardautomationactions-li>
 <a href=/smart-home/docs/dashboard/automation/actions/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsdashboardautomationactions><span>Actions</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsdashboardautomationconditions-li>
 <a href=/smart-home/docs/dashboard/automation/conditions/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsdashboardautomationconditions><span>Conditions</span></a>
@@ -157,7 +161,13 @@ English
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id=m-smart-homedocsplugins-li>
 <a href=/smart-home/docs/plugins/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocsplugins><span>Plugins</span></a>
 <ul class="ul-2 foldable">
-<li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homedocspluginsmodbus-li>
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsmqtt_bridge-li>
+<a href=/smart-home/docs/plugins/mqtt_bridge/ title="MQTT bridge" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsmqtt_bridge><span>mqtt_bridge</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsonvif-li>
+<a href=/smart-home/docs/plugins/onvif/ title=Onvif class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsonvif><span>onvif</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsspeedtest-li>
+<a href=/smart-home/docs/plugins/speedtest/ title=Speedtest class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsspeedtest><span>speedtest</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homedocspluginsmodbus-li>
 <a href=/smart-home/docs/plugins/modbus/ title=Modbus class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocspluginsmodbus><span>modbus</span></a>
 <ul class="ul-3 foldable">
 <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsmodbusmodbus_rtu-li>
@@ -192,7 +202,9 @@ English
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homedocspluginsnotify-li>
 <a href=/smart-home/docs/plugins/notify/ title="Отправка сообщений" class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocspluginsnotify><span>notify</span></a>
 <ul class="ul-3 foldable">
-<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsnotifywebpush-li>
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsnotifyemail-li>
+<a href=/smart-home/docs/plugins/notify/email/ title=EMAIL class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsnotifyemail><span>email</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsnotifywebpush-li>
 <a href=/smart-home/docs/plugins/notify/webpush/ title="Push уведомления" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsnotifywebpush><span>webpush</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsnotifyhtml5_notify-li>
 <a href=/smart-home/docs/plugins/notify/html5_notify/ title="HTML5 Уведомления" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsnotifyhtml5_notify><span>html5_notify</span></a>
@@ -226,9 +238,9 @@ English
 <a href=/smart-home/docs/plugins/weather/ title=Weather class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocspluginsweather><span>weather</span></a>
 <ul class="ul-3 foldable">
 <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsweathermet-li>
-<a href=/smart-home/docs/plugins/weather/met/ title=Met class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsweathermet><span>met</span></a>
+<a href=/smart-home/docs/plugins/weather/met/ title=MET class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsweathermet><span>met</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsweatherowm-li>
-<a href=/smart-home/docs/plugins/weather/owm/ title=Met class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsweatherowm><span>met</span></a>
+<a href=/smart-home/docs/plugins/weather/owm/ title=OWM class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsweatherowm><span>met</span></a>
 </li>
 </ul>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginszibee2mqtt-li>
@@ -502,7 +514,7 @@ English
     <span style=color:#204a87;font-weight:700>when</span> <span style=color:#4e9a06>&#39;SUM&#39;</span> <span style=color:#204a87;font-weight:700>then</span> <span style=color:#000>checkSum</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>args</span><span style=color:#000;font-weight:700>)</span>
 </code></pre></div>
 <div class="text-muted mt-5 pt-3 border-top">
-Last modified November 2, 2023: <a href=https://github.com/e154/smart-home/commit/85b132cca98aebec3c26f42a148652dfed5598bc>Develop (#245) (85b132c)</a>
+Last modified January 8, 2024: <a href=https://github.com/e154/smart-home/commit/5d834c48fbdf35becba56d9f426ed5f3f8250563>Merge pull request #256 from e154/master (5d834c4)</a>
 </div>
 </div>
 </main>
@@ -523,7 +535,7 @@ Last modified November 2, 2023: <a href=https://github.com/e154/smart-home/commi
 </ul>
 </div>
 <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-<small class=text-white>&copy; 2023 Powered by <a href=http://e154.ru>e154.ru</a></small>
+<small class=text-white>&copy; 2024 Powered by <a href=http://e154.ru>e154.ru</a></small>
 <div><small class="ml-1 text-white"><a href=https://github.com/e154/smart-home/blob/master/LICENSE>MIT</a> License Code Documents <a href=http://creativecommons.org/licenses/by/3.0/>CC BY 3.0</a></small></div>
 </div>
 </div>

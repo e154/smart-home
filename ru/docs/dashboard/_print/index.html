@@ -80,14 +80,18 @@ This the multi-page printable view of this section.
 </div>
 <h1 class=title>Dashboard</h1>
 <ul>
-<li>1: <a href=#pg-6bea25be625ccc9f997ef24efc5fe445>Entity</a></li>
-<li>2: <a href=#pg-92a1ce490d5b2270e82a38d7ec4e5f5e>Automation</a></li>
+<li>1: <a href=#pg-79dd35eaf760c41d2392591d635dd60b>Gate</a></li>
 <ul>
-<li>2.1: <a href=#pg-663b794f38e2652ec4da941b3cce1ac3>Actions</a></li>
-<li>2.2: <a href=#pg-f398915e040cbcdbf88478a38ed8f7c1>Conditions</a></li>
-<li>2.3: <a href=#pg-649333aa8bab35b619f6967595405b2d>Triggers</a></li>
 </ul>
-<li>3: <a href=#pg-4177dcddfec763697e168bfb1da48ab1>MQTT</a></li>
+<li>2: <a href=#pg-6bea25be625ccc9f997ef24efc5fe445>Entity</a></li>
+<li>3: <a href=#pg-92a1ce490d5b2270e82a38d7ec4e5f5e>Automation</a></li>
+<ul>
+<li>3.1: <a href=#pg-aaf9a804d05304e1c407d1bed1fc2aff>Tasks</a></li>
+<li>3.2: <a href=#pg-663b794f38e2652ec4da941b3cce1ac3>Actions</a></li>
+<li>3.3: <a href=#pg-f398915e040cbcdbf88478a38ed8f7c1>Conditions</a></li>
+<li>3.4: <a href=#pg-649333aa8bab35b619f6967595405b2d>Triggers</a></li>
+</ul>
+<li>4: <a href=#pg-4177dcddfec763697e168bfb1da48ab1>MQTT</a></li>
 <ul>
 </ul>
 </ul>
@@ -117,7 +121,62 @@ This the multi-page printable view of this section.
 </div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-6bea25be625ccc9f997ef24efc5fe445>1 - Entity</h1>
+<h1 id=pg-79dd35eaf760c41d2392591d635dd60b>1 - Gate</h1>
+<p>Gate-сервер в системе Smart Home представляет собой ключевой компонент, обеспечивающий безопасный и удобный удаленный доступ к умному дому даже при отсутствии статического IP-адреса. Этот сервер позволяет пользователям управлять и мониторить свой дом из любой точки мира через интернет, обеспечивая защиту данных и комфортное взаимодействие.</p>
+<h4 id=преимущества-gate-сервера-в-системе-smart-home>Преимущества Gate-сервера в системе Smart Home</h4>
+<ol>
+<li>
+<p><strong>Безопасность:</strong></p>
+<ul>
+<li><strong>Шифрование данных:</strong> Все данные, передаваемые между устройствами и Gate-сервером, шифруются для предотвращения несанкционированного доступа.</li>
+<li><strong>Аутентификация:</strong> Встроенные механизмы аутентификации гарантируют, что только авторизованные пользователи имеют доступ к системе.</li>
+</ul>
+</li>
+<li>
+<p><strong>Удобство Удаленного Доступа:</strong></p>
+<ul>
+<li><strong>Без белого IP:</strong> Пользователи могут подключаться к системе даже при отсутствии статического IP-адреса, что делает удаленный доступ более удобным и доступным.</li>
+</ul>
+</li>
+<li>
+<p><strong>Гибкость настройки:</strong></p>
+<ul>
+<li><strong>Подключение к тестовому шлюзу:</strong> Smart Home предоставляет встроенный Gate-клиент, который может подключаться к тестовому шлюзу по адресу <a href=https://gate.e154.ru:8443>https://gate.e154.ru:8443</a> для тестирования и настройки удаленного доступа.</li>
+</ul>
+</li>
+<li>
+<p><strong>Масштабируемость:</strong></p>
+<ul>
+<li><strong>Поддержка множества устройств:</strong> Gate-сервер спроектирован для обработки одновременных запросов от множества устройств, обеспечивая масштабируемость системы.</li>
+</ul>
+</li>
+</ol>
+<h4 id=работа-с-gate-клиентом-в-системе-smart-home>Работа с Gate-клиентом в системе Smart Home</h4>
+<ol>
+<li>
+<p><strong>Настройка Gate-клиента:</strong></p>
+<ul>
+<li>Включите режим Gate-сервера в системе Smart Home, указав адрес тестового шлюза или установив свой Gate-сервер.</li>
+<li>Настройте параметры безопасности, такие как шифрование и аутентификация.</li>
+</ul>
+</li>
+<li>
+<p><strong>Подключение к Gate-серверу:</strong></p>
+<ul>
+<li>Gate-клиент автоматически устанавливает безопасное соединение с Gate-сервером, не требуя белого IP-адреса.</li>
+<li>Пользователи могут использовать мобильные приложения или веб-интерфейс для удаленного доступа.</li>
+</ul>
+</li>
+<li>
+<p><strong>Безопасное Удаленное Управление:</strong></p>
+<ul>
+<li>Пользователи могут управлять устройствами, мониторить статус дома и получать уведомления даже находясь вдали от дома.</li>
+</ul>
+</li>
+</ol>
+</div>
+<div class=td-content style=page-break-before:always>
+<h1 id=pg-6bea25be625ccc9f997ef24efc5fe445>2 - Entity</h1>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>+---------------------+
 <span style=color:#000;font-weight:700>|</span>       Entity        <span style=color:#000;font-weight:700>|</span>
 +---------------------+
@@ -231,7 +290,7 @@ sensor. Если объект &ldquo;Entity&rdquo; предназначен дл
 а компонент автоматизации может использовать их для создания разнообразных сценариев и автоматизации действий.</p>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-92a1ce490d5b2270e82a38d7ec4e5f5e>2 - Automation</h1>
+<h1 id=pg-92a1ce490d5b2270e82a38d7ec4e5f5e>3 - Automation</h1>
 <p>В системе присутствует компонент &ldquo;Automation&rdquo;, который предназначен для реализации сценариев и автоматизированных ответов
 на определенные действия или события. Он позволяет создавать и настраивать автоматические действия, которые выполняются при
 выполнении определенных условий или триггеров.</p>
@@ -278,7 +337,97 @@ sensor. Если объект &ldquo;Entity&rdquo; предназначен дл
 <p>Вся система автоматизации строится вокруг этих компонентов, позволяя создавать сложные сценарии, которые реагируют на события и выполняют определенные задачи в умном доме.</p>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-663b794f38e2652ec4da941b3cce1ac3>2.1 - Actions</h1>
+<h1 id=pg-aaf9a804d05304e1c407d1bed1fc2aff>3.1 - Tasks</h1>
+<figure>
+<img src=/smart-home/tasks_window1.png>
+</figure>
+<h3 id=автоматизация-через-задачи-в-системе-smart-home>Автоматизация через Задачи в системе Smart Home</h3>
+<p>Система Smart Home предоставляет мощный механизм автоматизации через использование Задач (Tasks). Задачи представляют собой программные сценарии, которые запускаются в ответ на определенные события (триггеры), выполняются при выполнении условий и могут воздействовать на устройства в доме через набор действий. Это обеспечивает гибкость и интеллектуальность в управлении умным домом.</p>
+<h4 id=компоненты-задачи>Компоненты Задачи</h4>
+<ol>
+<li>
+<p><strong>Триггеры (Triggers):</strong></p>
+<ul>
+<li><strong>Определение Событий:</strong> Задача начинает выполнение в ответ на определенные события, такие как изменение состояния устройства, временные события, датчиков и других внешних факторов.</li>
+<li><strong>Пример:</strong> Запуск задачи при открытии двери, при движении в комнате, по расписанию и т.д.</li>
+</ul>
+</li>
+<li>
+<p><strong>Условия (Conditions):</strong></p>
+<ul>
+<li><strong>Логика выполнения:</strong> Задача может содержать условия, которые определяют, должны ли выполниться действия в зависимости от текущего состояния системы.</li>
+<li><strong>Пример:</strong> Выполнить действия только если температура в комнате выше определенного порога.</li>
+</ul>
+</li>
+<li>
+<p><strong>Действия (Actions):</strong></p>
+<ul>
+<li><strong>Управление Устройствами:</strong> Задача может воздействовать на устройства в системе, изменяя их состояния, запуская команды и выполняя другие действия.</li>
+<li><strong>Пример:</strong> Включить свет при движении в коридоре, отправить уведомление при открытой двери.</li>
+</ul>
+</li>
+</ol>
+<h4 id=преимущества-автоматизации-через-задачи>Преимущества Автоматизации через Задачи</h4>
+<ol>
+<li>
+<p><strong>Гибкость настройки:</strong></p>
+<ul>
+<li>Пользователи могут создавать сложные сценарии автоматизации, комбинируя различные триггеры, условия и действия под свои потребности.</li>
+</ul>
+</li>
+<li>
+<p><strong>Интеллектуальные Сценарии:</strong></p>
+<ul>
+<li>Автоматическое реагирование на события и изменения в системе делает умный дом более интеллектуальным, предоставляя персонализированный опыт.</li>
+</ul>
+</li>
+<li>
+<p><strong>Эффективное Энергопотребление:</strong></p>
+<ul>
+<li>Автоматизация может быть настроена для оптимизации энергопотребления, например, выключение света и отопления при отсутствии людей в доме.</li>
+</ul>
+</li>
+<li>
+<p><strong>Управление Множеством Устройств:</strong></p>
+<ul>
+<li>Задачи позволяют одновременно управлять несколькими устройствами, создавая комплексные сценарии.</li>
+</ul>
+</li>
+<li>
+<p><strong>Легкость Использования:</strong></p>
+<ul>
+<li>Интуитивный интерфейс системы Smart Home делает создание и управление задачами доступным даже для неопытных пользователей.</li>
+</ul>
+</li>
+</ol>
+<h4 id=пример-сценария-через-задачи>Пример Сценария через Задачи</h4>
+<ol>
+<li><strong>Сценарий &ldquo;Добро Пожаловать&rdquo;:</strong>
+<ul>
+<li><strong>Триггеры:</strong>
+<ul>
+<li>При открытии двери.</li>
+</ul>
+</li>
+<li><strong>Условия:</strong>
+<ul>
+<li>Если время дня — утро или день.</li>
+</ul>
+</li>
+<li><strong>Действия:</strong>
+<ul>
+<li>Включить свет в прихожей.</li>
+<li>Включить музыку на аудиосистеме.</li>
+<li>Отправить уведомление о том, что кто-то пришел.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<p>Этот сценарий демонстрирует, как задача может быть использована для автоматизации приветственных действий при от</p>
+</div>
+<div class=td-content style=page-break-before:always>
+<h1 id=pg-663b794f38e2652ec4da941b3cce1ac3>3.2 - Actions</h1>
 <figure>
 <img src=/smart-home/actions_window1.png>
 </figure>
@@ -292,7 +441,7 @@ sensor. Если объект &ldquo;Entity&rdquo; предназначен дл
 </code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-f398915e040cbcdbf88478a38ed8f7c1>2.2 - Conditions</h1>
+<h1 id=pg-f398915e040cbcdbf88478a38ed8f7c1>3.3 - Conditions</h1>
 <figure>
 <img src=/smart-home/condition_window1.png>
 </figure>
@@ -312,19 +461,114 @@ sensor. Если объект &ldquo;Entity&rdquo; предназначен дл
 </code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-649333aa8bab35b619f6967595405b2d>2.3 - Triggers</h1>
+<h1 id=pg-649333aa8bab35b619f6967595405b2d>3.4 - Triggers</h1>
 <figure>
-<img src=/smart-home/trigger_window1.png>
+<img src=/smart-home/triggers_window1.png>
 </figure>
-<p> </p>
-<p> </p>
-<p>Каждый тип триггера имеет свой собственный обработчик (handler) для выполнения соответствующих действий.</p>
-<p>Вот примеры различных типов триггеров и соответствующих им обработчиков:</p>
+<p>Триггеры в системе Smart Home представляют собой ключевые элементы, которые запускают выполнение Задач в ответ на определенные события или условия. В настоящее время система поддерживает три основных типа триггеров, каждый из которых обладает своими преимуществами и обеспечивает гибкость в настройке автоматизации.</p>
+<h4 id=1-триггер-state-change-изменение-состояния>1. <strong>Триггер &ldquo;State Change&rdquo; (Изменение Состояния):</strong></h4>
+<ul>
+<li>
+<p><strong>Описание:</strong></p>
+<ul>
+<li>Активируется при изменении состояния определенного устройства или группы устройств в системе Smart Home.</li>
+</ul>
+</li>
+<li>
+<p><strong>Преимущества:</strong></p>
+<ul>
+<li><strong>Реакция на Изменения:</strong> Идеально подходит для сценариев, где требуется реагировать на конкретные изменения, например, включение/выключение света, открытие двери и т.д.</li>
+<li><strong>Гибкость Настройки:</strong> Позволяет выбирать конкретные устройства и параметры состояний для триггерирования.</li>
+</ul>
+</li>
+</ul>
+<h4 id=2-триггер-system-системные-события>2. <strong>Триггер &ldquo;System&rdquo; (Системные События):</strong></h4>
+<ul>
+<li>
+<p><strong>Описание:</strong></p>
+<ul>
+<li>Активируется при возникновении системных событий, таких как запуск/остановка системы, подключение/отключение устройств и другие события системной шины.</li>
+</ul>
+</li>
+<li>
+<p><strong>Преимущества:</strong></p>
+<ul>
+<li><strong>Мониторинг Системы:</strong> Используется для мониторинга общего состояния системы и детектирования событий, связанных с функционированием умного дома.</li>
+<li><strong>Интеграция с Внешними Системами:</strong> Позволяет взаимодействовать с системами, работающими в рамках системной шины.</li>
+</ul>
+</li>
+</ul>
+<h4 id=3-триггер-time-cron-временной-триггер>3. <strong>Триггер &ldquo;Time (Cron)&rdquo; (Временной Триггер):</strong></h4>
+<ul>
+<li>
+<p><strong>Описание:</strong></p>
+<ul>
+<li>Активируется с заданным временным интервалом в соответствии с расписанием, заданным в формате cron.</li>
+</ul>
+</li>
+<li>
+<p><strong>Преимущества:</strong></p>
+<ul>
+<li><strong>Регулярное Выполнение:</strong> Идеально подходит для задач, которые должны выполняться регулярно по расписанию.</li>
+<li><strong>Энергосбережение:</strong> Может использоваться для оптимизации энергопотребления, например, выключения света или отопления в ночное время.</li>
+</ul>
+</li>
+</ul>
+<h4 id=примеры-использования-триггеров>Примеры Использования Триггеров</h4>
+<ol>
+<li>
+<p><strong>Триггер &ldquo;State Change&rdquo;:</strong></p>
+<ul>
+<li><strong>Сценарий:</strong>
+<ul>
+<li>Включить кондиционер при открытии окна в спальне.</li>
+</ul>
+</li>
+<li><strong>Настройка Триггера:</strong>
+<ul>
+<li>Устройство: Окно в спальне.</li>
+<li>Состояние: Открыто.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Триггер &ldquo;System&rdquo;:</strong></p>
+<ul>
+<li><strong>Сценарий:</strong>
+<ul>
+<li>Отправить уведомление при подключении нового устройства к системе.</li>
+</ul>
+</li>
+<li><strong>Настройка Триггера:</strong>
+<ul>
+<li>Системное событие: Подключение нового устройства.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Триггер &ldquo;Time (Cron)":</strong></p>
+<ul>
+<li><strong>Сценарий:</strong>
+<ul>
+<li>Выключить свет во всех комнатах после полуночи.</li>
+</ul>
+</li>
+<li><strong>Настройка Триггера:</strong>
+<ul>
+<li>Временной интервал: &ldquo;0 0 * * *&rdquo;, что соответствует каждой полуночи.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h4 id=примеры-на-coffescript>Примеры на Coffescript</h4>
 <ol>
 <li><code>TriggerAlexa</code>:</li>
 </ol>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>automationTriggerAlexa = </span><span style=color:#000>(msg) -&gt;</span>
-  <span style=color:#000>p = </span><span style=color:#000>unmarshal</span> <span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
+  <span style=color:#000>p = </span><span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
   <span style=color:#000>Done</span> <span style=color:#000>p</span>
   <span style=color:#204a87;font-weight:700>return</span> <span style=color:#204a87;font-weight:700>false</span>
 </code></pre></div><p>Обработчик <code>automationTriggerAlexa</code> вызывается в ответ на триггер от Amazon Alexa. Он принимает объект сообщения <code>msg</code>
@@ -334,7 +578,7 @@ sensor. Если объект &ldquo;Entity&rdquo; предназначен дл
 </ol>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>automationTriggerStateChanged = </span><span style=color:#000>(msg) -&gt;</span>
   <span style=color:#000>print</span> <span style=color:#4e9a06>&#39;---trigger---&#39;</span>
-  <span style=color:#000>p = </span><span style=color:#000>unmarshal</span> <span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
+  <span style=color:#000>p = </span><span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
   <span style=color:#000>Done</span> <span style=color:#000>p</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>new_state</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>state</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>name</span>
   <span style=color:#204a87;font-weight:700>return</span> <span style=color:#204a87;font-weight:700>false</span>
 </code></pre></div><p>Обработчик <code>automationTriggerStateChanged</code> вызывается при изменении состояния устройства. Он принимает объект сообщения
@@ -343,7 +587,7 @@ sensor. Если объект &ldquo;Entity&rdquo; предназначен дл
 <li><code>TriggerSystem</code>:</li>
 </ol>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>automationTriggerSystem = </span><span style=color:#000>(msg) -&gt;</span>
-  <span style=color:#000>p = </span><span style=color:#000>unmarshal</span> <span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
+  <span style=color:#000>p = </span><span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
   <span style=color:#000>Done</span> <span style=color:#000>p</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>event</span>
   <span style=color:#204a87;font-weight:700>return</span> <span style=color:#204a87;font-weight:700>false</span>
 </code></pre></div><p>Обработчик <code>automationTriggerSystem</code> вызывается в ответ на события системы. Он принимает объект сообщения <code>msg</code> и может
@@ -352,7 +596,7 @@ sensor. Если объект &ldquo;Entity&rdquo; предназначен дл
 <li><code>TriggerTime</code>:</li>
 </ol>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>automationTriggerTime = </span><span style=color:#000>(msg) -&gt;</span>
-  <span style=color:#000>p = </span><span style=color:#000>unmarshal</span> <span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
+  <span style=color:#000>p = </span><span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
   <span style=color:#000>Done</span> <span style=color:#000>p</span>
   <span style=color:#204a87;font-weight:700>return</span> <span style=color:#204a87;font-weight:700>false</span>
 </code></pre></div><p>Обработчик <code>automationTriggerTime</code> вызывается по истечении определенного времени. Он принимает объект сообщения <code>msg</code> и
@@ -362,14 +606,15 @@ sensor. Если объект &ldquo;Entity&rdquo; предназначен дл
 <p>Пример реализации:</p>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>automationTriggerStateChanged = </span><span style=color:#000>(msg)-&gt;</span>
     <span style=color:#8f5902;font-style:italic>#print &#39;---trigger---&#39;
-</span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#000>p = </span><span style=color:#000>unmarshal</span> <span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
+</span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#000>p = </span><span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
     <span style=color:#204a87;font-weight:700>if</span> <span style=color:#ce5c00;font-weight:700>!</span><span style=color:#000>p</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>new_state</span> <span style=color:#ce5c00;font-weight:700>||</span> <span style=color:#ce5c00;font-weight:700>!</span><span style=color:#000>p</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>new_state</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>state</span>
         <span style=color:#204a87;font-weight:700>return</span> <span style=color:#204a87;font-weight:700>false</span>
     <span style=color:#204a87;font-weight:700>return</span> <span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>new_state</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>state</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>name</span> <span style=color:#ce5c00;font-weight:700>==</span> <span style=color:#4e9a06>&#39;DOUBLE_CLICK&#39;</span>
-</code></pre></div>
+</code></pre></div><h4 id=заключение>Заключение</h4>
+<p>Использование различных типов триггеров в системе Smart Home позволяет пользователям создавать сложные и интеллектуальные сценарии автоматизации, гармонично реагирующие на изменения в системе и внешние события. Это предоставляет пользоват</p>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-4177dcddfec763697e168bfb1da48ab1>3 - MQTT</h1>
+<h1 id=pg-4177dcddfec763697e168bfb1da48ab1>4 - MQTT</h1>
 <p>Система проекта <strong>Smart Home</strong> включает встроенный MQTT брокер, что позволяет обмениваться сообщениями и управлять
 устройствами в умном доме с помощью протокола MQTT (Message Queuing Telemetry Transport).</p>
 <p>MQTT - это легковесный протокол обмена сообщениями, разработанный для обмена данными между устройствами в сетях с
@@ -418,7 +663,7 @@ sensor. Если объект &ldquo;Entity&rdquo; предназначен дл
 </ul>
 </div>
 <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-<small class=text-white>&copy; 2023 Разработано при поддержке <a href=http://e154.ru>e154.ru</a></small>
+<small class=text-white>&copy; 2024 Разработано при поддержке <a href=http://e154.ru>e154.ru</a></small>
 <div><small class="ml-1 text-white">Код лицензии <a href=https://github.com/e154/smart-home/blob/master/LICENSE>MIT</a> документы <a href=http://creativecommons.org/licenses/by/3.0/>CC BY 3.0</a></small></div>
 </div>
 </div>

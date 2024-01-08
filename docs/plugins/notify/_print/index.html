@@ -72,13 +72,14 @@ This the multi-page printable view of this section.
 </div>
 <h1 class=title>Отправка сообщений</h1>
 <ul>
-<li>1: <a href=#pg-db0e74844d4ec70b97b7eed2dcaa6fde>Push уведомления</a></li>
-<li>2: <a href=#pg-b9e7dc050746e93f66a3fcdc54072720>HTML5 Уведомления</a></li>
-<li>3: <a href=#pg-ffcf992bf86dcf75fc98ea391689be36>Messagebird</a></li>
-<li>4: <a href=#pg-ae8769291a804111fe0f11577b37bb14>Slack</a></li>
-<li>5: <a href=#pg-3474b889257fbfc72d90e2b2883e468a>Telegram</a></li>
-<li>6: <a href=#pg-56027f5b7f86e356eca9778287b4e9b7>Templates</a></li>
-<li>7: <a href=#pg-8d473157f65e8e52157febb9c1671a23>Twilio</a></li>
+<li>1: <a href=#pg-c757c4a3128c020469fa7e844a0b07d1>EMAIL</a></li>
+<li>2: <a href=#pg-db0e74844d4ec70b97b7eed2dcaa6fde>Push уведомления</a></li>
+<li>3: <a href=#pg-b9e7dc050746e93f66a3fcdc54072720>HTML5 Уведомления</a></li>
+<li>4: <a href=#pg-ffcf992bf86dcf75fc98ea391689be36>Messagebird</a></li>
+<li>5: <a href=#pg-ae8769291a804111fe0f11577b37bb14>Slack</a></li>
+<li>6: <a href=#pg-3474b889257fbfc72d90e2b2883e468a>Telegram</a></li>
+<li>7: <a href=#pg-56027f5b7f86e356eca9778287b4e9b7>Templates</a></li>
+<li>8: <a href=#pg-8d473157f65e8e52157febb9c1671a23>Twilio</a></li>
 </ul>
 <div class=content>
 <p>The system has a plugin called &ldquo;notifr&rdquo; that provides notification capabilities. It supports methods for sending notifications through various channels, including SMS, push notifications, email, Telegram, and HTML5 notifications.</p>
@@ -169,7 +170,53 @@ This the multi-page printable view of this section.
 </div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-db0e74844d4ec70b97b7eed2dcaa6fde>1 - Push уведомления</h1>
+<h1 id=pg-c757c4a3128c020469fa7e844a0b07d1>1 - EMAIL</h1>
+<p>The Email plugin provides the ability to integrate email sending functionality into the Smart Home system. This plugin allows users to configure email parameters and send notifications or messages from devices within the smart home.</p>
+<h4 id=device-settings>Device Settings</h4>
+<ul>
+<li>
+<p><strong><code>email</code> (type: String)</strong>: The email through which messages are sent.</p>
+</li>
+<li>
+<p><strong><code>auth</code> (type: String)</strong>: Authentication method for accessing the mail server (e.g., &ldquo;PLAIN&rdquo; or &ldquo;LOGIN&rdquo;).</p>
+</li>
+<li>
+<p><strong><code>pass</code> (type: Encrypted)</strong>: Encrypted password for authentication when accessing the mail server.</p>
+</li>
+<li>
+<p><strong><code>smtp</code> (type: String)</strong>: Outgoing mail server (SMTP) address.</p>
+</li>
+<li>
+<p><strong><code>port</code> (type: Int)</strong>: Outgoing mail server port (e.g., 587 for TLS or 465 for SSL).</p>
+</li>
+<li>
+<p><strong><code>sender</code> (type: String)</strong>: Sender&rsquo;s email address.</p>
+</li>
+</ul>
+<h4 id=message-attributes>Message Attributes</h4>
+<ul>
+<li>
+<p><strong><code>addresses</code> (type: String)</strong>: A list of recipient email addresses, separated by commas.</p>
+</li>
+<li>
+<p><strong><code>subject</code> (type: String)</strong>: The subject of the email message.</p>
+</li>
+<li>
+<p><strong><code>body</code> (type: String)</strong>: The body text of the email message.</p>
+</li>
+</ul>
+<h4 id=example-in-coffeescript>Example in Coffeescript</h4>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>msg = </span><span style=color:#000>notifr</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>newMessage</span><span style=color:#000;font-weight:700>();</span>
+<span style=color:#000>msg.entity_id = </span><span style=color:#4e9a06>&#39;email.google&#39;</span><span style=color:#000;font-weight:700>;</span>
+<span style=color:#000>msg.attributes = </span><span style=color:#000;font-weight:700>{</span>
+  <span style=color:#4e9a06>&#39;body&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;some text msg&#39;</span><span style=color:#000;font-weight:700>,</span>
+  <span style=color:#4e9a06>&#39;addresses&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;john.smith@example.com,jane.doe@example.com&#39;</span><span style=color:#000;font-weight:700>,</span>
+  <span style=color:#4e9a06>&#39;subject&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;Important Notification&#39;</span><span style=color:#000;font-weight:700>,</span>
+<span style=color:#000;font-weight:700>};</span>
+</code></pre></div>
+</div>
+<div class=td-content style=page-break-before:always>
+<h1 id=pg-db0e74844d4ec70b97b7eed2dcaa6fde>2 - Push уведомления</h1>
 <p>Web push notifications are short messages that Smart Home sends to the browser to convey important information. They are displayed even to users who have left the website and do not require email or phone number input.</p>
 <h3 id=configuration>Configuration:</h3>
 <ul>
@@ -230,7 +277,7 @@ This the multi-page printable view of this section.
 </code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-b9e7dc050746e93f66a3fcdc54072720>2 - HTML5 Уведомления</h1>
+<h1 id=pg-b9e7dc050746e93f66a3fcdc54072720>3 - HTML5 Уведомления</h1>
 <p>HTML5 notifications are a way to display information to users on a web page without reloading or navigating to another page. Notifications can contain text, images, sound, or video and appear in the bottom-right corner of the screen. HTML5 notifications utilize an API that allows web applications to send notifications to the browser using JavaScript.</p>
 <p>Attributes:</p>
 <ul>
@@ -286,7 +333,7 @@ This the multi-page printable view of this section.
 </code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-ffcf992bf86dcf75fc98ea391689be36>3 - Messagebird</h1>
+<h1 id=pg-ffcf992bf86dcf75fc98ea391689be36>4 - Messagebird</h1>
 <p>To send SMS notifications through the MessageBird notification service provider, you&rsquo;ll need to register with MessageBird and have a positive balance.</p>
 <h3 id=configuration>Configuration:</h3>
 <ul>
@@ -343,7 +390,7 @@ This the multi-page printable view of this section.
 </code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-ae8769291a804111fe0f11577b37bb14>4 - Slack</h1>
+<h1 id=pg-ae8769291a804111fe0f11577b37bb14>5 - Slack</h1>
 <p>To send notifications to Slack chat, you&rsquo;ll need to configure the following settings:</p>
 <h3 id=configuration>Configuration:</h3>
 <ul>
@@ -394,7 +441,7 @@ This the multi-page printable view of this section.
 </code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-3474b889257fbfc72d90e2b2883e468a>5 - Telegram</h1>
+<h1 id=pg-3474b889257fbfc72d90e2b2883e468a>6 - Telegram</h1>
 <p>To work with the Telegram API and handle interactive commands from clients or use event-based notifications, the system provides the following configuration:</p>
 <h3 id=configuration>Configuration:</h3>
 <ul>
@@ -409,44 +456,88 @@ This the multi-page printable view of this section.
 <li>Custom set of attributes</li>
 </ul>
 <h3 id=actions>Actions:</h3>
-<p>The system reserves three commands:</p>
+<p>There are two reserved commands in the system:</p>
 <ul>
 <li><strong>/start</strong> - Subscribe to notifications</li>
 <li><strong>/quit</strong> - Unsubscribe from notifications</li>
-<li><strong>/help</strong> - Display available commands</li>
 </ul>
 <p><strong>Action</strong> - It should be named in lowercase, without the &ldquo;/&rdquo; sign. A custom command will automatically be added to the list of available commands in the <strong>/help</strong> section. The custom command should be called in uppercase <strong>/ACTION</strong> -> <strong>/action</strong>.</p>
 <h3 id=javascript-properties>JavaScript Properties:</h3>
 <hr>
-<p>New Message:</p>
+<h3 id=new-message>New Message:</h3>
 <p>Creates a message object.</p>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>msg = </span><span style=color:#000>notifr</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>newMessage</span><span style=color:#000;font-weight:700>();</span>
 <span style=color:#000>msg.entity_id = </span><span style=color:#4e9a06>&#39;telegram.name&#39;</span><span style=color:#000;font-weight:700>;</span>
 <span style=color:#000>msg.attributes = </span><span style=color:#000;font-weight:700>{</span>
-  <span style=color:#4e9a06>&#39;name&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;clavicus&#39;</span><span style=color:#000;font-weight:700>,</span>
-  <span style=color:#4e9a06>&#39;body&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;some text msg&#39;</span>
+  <span style=color:#4e9a06>&#39;body&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;some text msg&#39;</span><span style=color:#000;font-weight:700>,</span>
+  <span style=color:#4e9a06>&#39;chat_id&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#0000cf;font-weight:700>123456</span><span style=color:#000;font-weight:700>,</span>
+  <span style=color:#4e9a06>&#39;keys&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000;font-weight:700>[</span><span style=color:#4e9a06>&#39;foo&#39;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#4e9a06>&#39;bar&#39;</span><span style=color:#000;font-weight:700>],</span>
+  <span style=color:#4e9a06>&#39;photo_uri&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000;font-weight:700>[</span><span style=color:#4e9a06>&#39;foo&#39;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#4e9a06>&#39;bar&#39;</span><span style=color:#000;font-weight:700>],</span>
+  <span style=color:#4e9a06>&#39;photo_path&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000;font-weight:700>[</span><span style=color:#4e9a06>&#39;foo&#39;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#4e9a06>&#39;bar&#39;</span><span style=color:#000;font-weight:700>],</span>
+  <span style=color:#4e9a06>&#39;file_path&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000;font-weight:700>[</span><span style=color:#4e9a06>&#39;foo&#39;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#4e9a06>&#39;bar&#39;</span><span style=color:#000;font-weight:700>],</span>
+  <span style=color:#4e9a06>&#39;file_uri&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000;font-weight:700>[</span><span style=color:#4e9a06>&#39;foo&#39;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#4e9a06>&#39;bar&#39;</span><span style=color:#000;font-weight:700>]</span>
 <span style=color:#000;font-weight:700>};</span>
+
 </code></pre></div><table>
 <thead>
 <tr>
-<th>Value</th>
-<th>Description</th>
+<th>значение</th>
+<th>описание</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>newMessage()</td>
-<td>Method</td>
+<td>метод</td>
 </tr>
 <tr>
 <td>msg</td>
-<td>Type: Object (Message)</td>
+<td>type: Object (Message)</td>
+</tr>
+</tbody>
+</table>
+<p>attributes:</p>
+<table>
+<thead>
+<tr>
+<th>значение</th>
+<th>описание</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>body</td>
+<td>Type: string, message body</td>
+</tr>
+<tr>
+<td>chat_id</td>
+<td>Type: int64, user&rsquo;s id</td>
+</tr>
+<tr>
+<td>keys</td>
+<td>Type: []string, keyboard</td>
+</tr>
+<tr>
+<td>photo_uri</td>
+<td>Type: []string, image</td>
+</tr>
+<tr>
+<td>photo_path</td>
+<td>Type: []string, image</td>
+</tr>
+<tr>
+<td>file_path</td>
+<td>Type: []string, file</td>
+</tr>
+<tr>
+<td>file_uri</td>
+<td>Type: []string, file</td>
 </tr>
 </tbody>
 </table>
 <hr>
-<p>telegramAction Function:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>telegramAction = </span><span style=color:#000>(entityId, actionName)-&gt;</span>
+<h3 id=telegramaction-function>telegramAction Function:</h3>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>telegramAction = </span><span style=color:#000>(entityId, actionName, args)-&gt;</span>
 </code></pre></div><table>
 <thead>
 <tr>
@@ -462,6 +553,10 @@ This the multi-page printable view of this section.
 <tr>
 <td>actionName</td>
 <td>Type: string, name of the action in uppercase, without the &lsquo;/&rsquo; character</td>
+</tr>
+<tr>
+<td>args</td>
+<td>attributes</td>
 </tr>
 </tbody>
 </table>
@@ -482,16 +577,15 @@ This the multi-page printable view of this section.
 
 <span style=color:#000>sendMsg</span> <span style=color:#ce5c00;font-weight:700>=</span><span style=color:#000>(body)-&gt;</span>
   <span style=color:#000>msg = </span><span style=color:#000>notifr</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>newMessage</span><span style=color:#000;font-weight:700>();</span>
-  <span style=color:#000>msg.entity_id = </span><span style=color:#4e9a06>&#39;telegram.name&#39;</span><span style=color:#000;font-weight:700>;</span>
+  <span style=color:#000>msg.entity_id = </span><span style=color:#4e9a06>&#39;telegram.testbot&#39;</span><span style=color:#000;font-weight:700>;</span>
   <span style=color:#000>msg.attributes = </span><span style=color:#000;font-weight:700>{</span>
-    <span style=color:#4e9a06>&#39;name&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;clavicus&#39;</span><span style=color:#000;font-weight:700>,</span>
     <span style=color:#4e9a06>&#39;body&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000>body</span>
   <span style=color:#000;font-weight:700>};</span>
   <span style=color:#000>notifr</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>send</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>msg</span><span style=color:#000;font-weight:700>);</span>
 </code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-56027f5b7f86e356eca9778287b4e9b7>6 - Templates</h1>
+<h1 id=pg-56027f5b7f86e356eca9778287b4e9b7>7 - Templates</h1>
 <p>The <strong>Template</strong> feature allows you to generate and distribute pre-defined messages. It offers the following advantages:</p>
 <ul>
 <li>Clean code</li>
@@ -544,7 +638,7 @@ This the multi-page printable view of this section.
 </code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-8d473157f65e8e52157febb9c1671a23>7 - Twilio</h1>
+<h1 id=pg-8d473157f65e8e52157febb9c1671a23>8 - Twilio</h1>
 <p>Sending SMS notifications through the notification service provider <a href=https://www.twilio.com/messaging>Twilio</a>. To be able to send messages, registration with <a href=https://www.twilio.com/messaging>Twilio</a> and a positive balance are required.</p>
 <h3 id=configuration>Configuration:</h3>
 <ul>
@@ -620,7 +714,7 @@ This the multi-page printable view of this section.
 </ul>
 </div>
 <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-<small class=text-white>&copy; 2023 Powered by <a href=http://e154.ru>e154.ru</a></small>
+<small class=text-white>&copy; 2024 Powered by <a href=http://e154.ru>e154.ru</a></small>
 <div><small class="ml-1 text-white"><a href=https://github.com/e154/smart-home/blob/master/LICENSE>MIT</a> License Code Documents <a href=http://creativecommons.org/licenses/by/3.0/>CC BY 3.0</a></small></div>
 </div>
 </div>

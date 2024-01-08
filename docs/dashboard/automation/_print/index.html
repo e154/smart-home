@@ -72,9 +72,10 @@ This the multi-page printable view of this section.
 </div>
 <h1 class=title>Automation</h1>
 <ul>
-<li>1: <a href=#pg-663b794f38e2652ec4da941b3cce1ac3>Actions</a></li>
-<li>2: <a href=#pg-f398915e040cbcdbf88478a38ed8f7c1>Conditions</a></li>
-<li>3: <a href=#pg-649333aa8bab35b619f6967595405b2d>Triggers</a></li>
+<li>1: <a href=#pg-aaf9a804d05304e1c407d1bed1fc2aff>Tasks</a></li>
+<li>2: <a href=#pg-663b794f38e2652ec4da941b3cce1ac3>Actions</a></li>
+<li>3: <a href=#pg-f398915e040cbcdbf88478a38ed8f7c1>Conditions</a></li>
+<li>4: <a href=#pg-649333aa8bab35b619f6967595405b2d>Triggers</a></li>
 </ul>
 <div class=content>
 <p>The system includes an &ldquo;Automation&rdquo; component designed to implement scenarios and automated responses to specific actions or events. It allows you to create and configure automatic actions that are triggered when certain conditions or triggers are met.</p>
@@ -117,7 +118,97 @@ This the multi-page printable view of this section.
 </div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-663b794f38e2652ec4da941b3cce1ac3>1 - Actions</h1>
+<h1 id=pg-aaf9a804d05304e1c407d1bed1fc2aff>1 - Tasks</h1>
+<figure>
+<img src=/smart-home/tasks_window1.png>
+</figure>
+<h3 id=automation-through-tasks-in-the-smart-home-system>Automation through Tasks in the Smart Home System</h3>
+<p>The Smart Home system provides a powerful automation mechanism through the use of Tasks. Tasks are programmatic scenarios that are triggered in response to specific events, executed when conditions are met, and can impact devices in the home through a set of actions. This ensures flexibility and intelligence in managing a smart home.</p>
+<h4 id=components-of-a-task>Components of a Task</h4>
+<ol>
+<li>
+<p><strong>Triggers:</strong></p>
+<ul>
+<li><strong>Event Definition:</strong> A task begins execution in response to specific events, such as changes in the state of a device, temporal events, sensors, and other external factors.</li>
+<li><strong>Example:</strong> Initiating a task when a door is opened, when there&rsquo;s motion in a room, on a schedule, etc.</li>
+</ul>
+</li>
+<li>
+<p><strong>Conditions:</strong></p>
+<ul>
+<li><strong>Execution Logic:</strong> A task can contain conditions that determine whether actions should be executed based on the current state of the system.</li>
+<li><strong>Example:</strong> Execute actions only if the room temperature is above a certain threshold.</li>
+</ul>
+</li>
+<li>
+<p><strong>Actions:</strong></p>
+<ul>
+<li><strong>Device Management:</strong> A task can influence devices in the system by changing their states, issuing commands, and performing other actions.</li>
+<li><strong>Example:</strong> Turn on the lights when there is motion in the corridor, send a notification when a door is open.</li>
+</ul>
+</li>
+</ol>
+<h4 id=advantages-of-automation-through-tasks>Advantages of Automation through Tasks</h4>
+<ol>
+<li>
+<p><strong>Flexibility in Configuration:</strong></p>
+<ul>
+<li>Users can create complex automation scenarios by combining various triggers, conditions, and actions to suit their needs.</li>
+</ul>
+</li>
+<li>
+<p><strong>Intelligent Scenarios:</strong></p>
+<ul>
+<li>Automatic response to events and changes in the system makes the smart home more intelligent, providing a personalized experience.</li>
+</ul>
+</li>
+<li>
+<p><strong>Efficient Energy Consumption:</strong></p>
+<ul>
+<li>Automation can be configured to optimize energy consumption, such as turning off lights and heating when there are no people in the house.</li>
+</ul>
+</li>
+<li>
+<p><strong>Management of Multiple Devices:</strong></p>
+<ul>
+<li>Tasks allow simultaneous control of multiple devices, creating complex scenarios.</li>
+</ul>
+</li>
+<li>
+<p><strong>Ease of Use:</strong></p>
+<ul>
+<li>The intuitive interface of the Smart Home system makes it easy for both novice and experienced users to create and manage tasks.</li>
+</ul>
+</li>
+</ol>
+<h4 id=example-of-a-scenario-through-tasks>Example of a Scenario through Tasks</h4>
+<ol>
+<li><strong>Scenario &ldquo;Welcome&rdquo;:</strong>
+<ul>
+<li><strong>Triggers:</strong>
+<ul>
+<li>Upon opening the door.</li>
+</ul>
+</li>
+<li><strong>Conditions:</strong>
+<ul>
+<li>If it is morning or daytime.</li>
+</ul>
+</li>
+<li><strong>Actions:</strong>
+<ul>
+<li>Turn on the lights in the hallway.</li>
+<li>Start playing music on the audio system.</li>
+<li>Send a notification that someone has arrived.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<p>This scenario demonstrates how a task can be used to automate welcoming actions upon opening the door during specific times of the day.</p>
+</div>
+<div class=td-content style=page-break-before:always>
+<h1 id=pg-663b794f38e2652ec4da941b3cce1ac3>2 - Actions</h1>
 <figure>
 <img src=/smart-home/actions_window1.png>
 </figure>
@@ -130,7 +221,7 @@ This the multi-page printable view of this section.
 </code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-f398915e040cbcdbf88478a38ed8f7c1>2 - Conditions</h1>
+<h1 id=pg-f398915e040cbcdbf88478a38ed8f7c1>3 - Conditions</h1>
 <figure>
 <img src=/smart-home/condition_window1.png>
 </figure>
@@ -148,56 +239,153 @@ This the multi-page printable view of this section.
 </code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-649333aa8bab35b619f6967595405b2d>3 - Triggers</h1>
+<h1 id=pg-649333aa8bab35b619f6967595405b2d>4 - Triggers</h1>
 <figure>
-<img src=/smart-home/trigger_window1.png>
+<img src=/smart-home/triggers_window1.png>
 </figure>
-<p> </p>
-<p> </p>
-<p>Each type of trigger has its own handler for performing the corresponding actions.</p>
-<p>Here are examples of different types of triggers and their respective handlers:</p>
+<p>Triggers in the Smart Home system are key elements that initiate the execution of tasks in response to specific events or conditions. Currently, the system supports three main types of triggers, each with its advantages, providing flexibility in automation configuration.</p>
+<h4 id=1-trigger-state-change>1. <strong>Trigger &ldquo;State Change&rdquo;:</strong></h4>
+<ul>
+<li>
+<p><strong>Description:</strong></p>
+<ul>
+<li>Activates upon the change of the state of a specific device or group of devices in the Smart Home system.</li>
+</ul>
+</li>
+<li>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li><strong>Reacting to Changes:</strong> Ideal for scenarios where specific reactions are needed, such as turning lights on/off, opening doors, etc.</li>
+<li><strong>Customization Flexibility:</strong> Allows selecting specific devices and state parameters for triggering.</li>
+</ul>
+</li>
+</ul>
+<h4 id=2-trigger-system>2. <strong>Trigger &ldquo;System&rdquo;:</strong></h4>
+<ul>
+<li>
+<p><strong>Description:</strong></p>
+<ul>
+<li>Activates upon the occurrence of system events, such as system start/stop, device connection/disconnection, and other events on the system bus.</li>
+</ul>
+</li>
+<li>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li><strong>System Monitoring:</strong> Used for monitoring the overall system state and detecting events related to the functioning of the smart home.</li>
+<li><strong>Integration with External Systems:</strong> Enables interaction with systems operating within the system bus.</li>
+</ul>
+</li>
+</ul>
+<h4 id=3-trigger-time-cron>3. <strong>Trigger &ldquo;Time (Cron)":</strong></h4>
+<ul>
+<li>
+<p><strong>Description:</strong></p>
+<ul>
+<li>Activates at specified time intervals according to a schedule defined in cron format.</li>
+</ul>
+</li>
+<li>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li><strong>Regular Execution:</strong> Ideal for tasks that need to be executed regularly on a schedule.</li>
+<li><strong>Energy Savings:</strong> Can be used to optimize energy consumption, such as turning off lights or heating during nighttime.</li>
+</ul>
+</li>
+</ul>
+<h4 id=examples-of-trigger-usage>Examples of Trigger Usage</h4>
+<ol>
+<li>
+<p><strong>Trigger &ldquo;State Change&rdquo;:</strong></p>
+<ul>
+<li><strong>Scenario:</strong>
+<ul>
+<li>Turn on the air conditioner when the window in the bedroom is opened.</li>
+</ul>
+</li>
+<li><strong>Trigger Configuration:</strong>
+<ul>
+<li>Device: Window in the bedroom.</li>
+<li>State: Open.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Trigger &ldquo;System&rdquo;:</strong></p>
+<ul>
+<li><strong>Scenario:</strong>
+<ul>
+<li>Send a notification upon connecting a new device to the system.</li>
+</ul>
+</li>
+<li><strong>Trigger Configuration:</strong>
+<ul>
+<li>System Event: Connection of a new device.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Trigger &ldquo;Time (Cron)":</strong></p>
+<ul>
+<li><strong>Scenario:</strong>
+<ul>
+<li>Turn off the lights in all rooms after midnight.</li>
+</ul>
+</li>
+<li><strong>Trigger Configuration:</strong>
+<ul>
+<li>Time Interval: &ldquo;0 0 * * *&rdquo; corresponding to every midnight.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h4 id=examples-in-coffeescript>Examples in Coffeescript</h4>
 <ol>
 <li><code>TriggerAlexa</code>:</li>
 </ol>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>automationTriggerAlexa = </span><span style=color:#000>(msg) -&gt;</span>
-  <span style=color:#000>p = </span><span style=color:#000>unmarshal</span> <span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
+  <span style=color:#000>p = </span><span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
   <span style=color:#000>Done</span> <span style=color:#000>p</span>
   <span style=color:#204a87;font-weight:700>return</span> <span style=color:#204a87;font-weight:700>false</span>
-</code></pre></div><p>The <code>automationTriggerAlexa</code> handler is invoked in response to a trigger from Amazon Alexa. It takes the <code>msg</code> message object and can perform specific actions related to this trigger.</p>
+</code></pre></div><p>The <code>automationTriggerAlexa</code> handler is called in response to a trigger from Amazon Alexa. It takes the message object <code>msg</code> and can perform specific actions related to this trigger.</p>
 <ol start=2>
 <li><code>TriggerStateChanged</code>:</li>
 </ol>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>automationTriggerStateChanged = </span><span style=color:#000>(msg) -&gt;</span>
   <span style=color:#000>print</span> <span style=color:#4e9a06>&#39;---trigger---&#39;</span>
-  <span style=color:#000>p = </span><span style=color:#000>unmarshal</span> <span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
+  <span style=color:#000>p = </span><span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
   <span style=color:#000>Done</span> <span style=color:#000>p</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>new_state</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>state</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>name</span>
   <span style=color:#204a87;font-weight:700>return</span> <span style=color:#204a87;font-weight:700>false</span>
-</code></pre></div><p>The <code>automationTriggerStateChanged</code> handler is called when the state of a device changes. It takes the <code>msg</code> message object and can perform specific actions based on the new state of the device.</p>
+</code></pre></div><p>The <code>automationTriggerStateChanged</code> handler is called when the state of a device changes. It takes the message object
+<code>msg</code> and can perform specific actions based on the new state of the device.</p>
 <ol start=3>
 <li><code>TriggerSystem</code>:</li>
 </ol>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>automationTriggerSystem = </span><span style=color:#000>(msg) -&gt;</span>
-  <span style=color:#000>p = </span><span style=color:#000>unmarshal</span> <span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
+  <span style=color:#000>p = </span><span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
   <span style=color:#000>Done</span> <span style=color:#000>p</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>event</span>
   <span style=color:#204a87;font-weight:700>return</span> <span style=color:#204a87;font-weight:700>false</span>
-</code></pre></div><p>The <code>automationTriggerSystem</code> handler is invoked in response to system events. It takes the <code>msg</code> message object and can perform specific actions related to this event.</p>
+</code></pre></div><p>The <code>automationTriggerSystem</code> handler is called in response to system events. It takes the message object <code>msg</code> and can perform specific actions related to this event.</p>
 <ol start=4>
 <li><code>TriggerTime</code>:</li>
 </ol>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>automationTriggerTime = </span><span style=color:#000>(msg) -&gt;</span>
-  <span style=color:#000>p = </span><span style=color:#000>unmarshal</span> <span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
+  <span style=color:#000>p = </span><span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
   <span style=color:#000>Done</span> <span style=color:#000>p</span>
   <span style=color:#204a87;font-weight:700>return</span> <span style=color:#204a87;font-weight:700>false</span>
-</code></pre></div><p>The <code>automationTriggerTime</code> handler is called after a certain amount of time has passed. It takes the <code>msg</code> message object and can perform specific actions related to this time.</p>
-<p>Each trigger handler can execute the necessary logic in response to the corresponding trigger and then return <code>false</code> to indicate that further processing is not required.</p>
+</code></pre></div><p>The <code>automationTriggerTime</code> handler is called after a specified period of time has elapsed. It takes the message object <code>msg</code> and can perform specific actions related to this time.</p>
+<p>Each trigger handler can execute the necessary logic in response to the corresponding trigger and then return the value <code>false</code> to indicate that further processing is not required.</p>
 <p>Example implementation:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>automationTriggerStateChanged = </span><span style=color:#000>(msg) -&gt;</span>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>automationTriggerStateChanged = </span><span style=color:#000>(msg)-&gt;</span>
     <span style=color:#8f5902;font-style:italic>#print &#39;---trigger---&#39;
-</span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#000>p = </span><span style=color:#000>unmarshal</span> <span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
+</span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#000>p = </span><span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
     <span style=color:#204a87;font-weight:700>if</span> <span style=color:#ce5c00;font-weight:700>!</span><span style=color:#000>p</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>new_state</span> <span style=color:#ce5c00;font-weight:700>||</span> <span style=color:#ce5c00;font-weight:700>!</span><span style=color:#000>p</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>new_state</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>state</span>
         <span style=color:#204a87;font-weight:700>return</span> <span style=color:#204a87;font-weight:700>false</span>
     <span style=color:#204a87;font-weight:700>return</span> <span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>new_state</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>state</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>name</span> <span style=color:#ce5c00;font-weight:700>==</span> <span style=color:#4e9a06>&#39;DOUBLE_CLICK&#39;</span>
-</code></pre></div>
+</code></pre></div><h4 id=conclusion>Conclusion</h4>
+<p>The use of different types of triggers in the Smart Home system allows users to create complex and intelligent automation scenarios that seamlessly respond to changes in the system and external events. This provides users with a personalized and efficient smart home experience.</p>
 </div>
 </main>
 </div>
@@ -217,7 +405,7 @@ This the multi-page printable view of this section.
 </ul>
 </div>
 <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-<small class=text-white>&copy; 2023 Powered by <a href=http://e154.ru>e154.ru</a></small>
+<small class=text-white>&copy; 2024 Powered by <a href=http://e154.ru>e154.ru</a></small>
 <div><small class="ml-1 text-white"><a href=https://github.com/e154/smart-home/blob/master/LICENSE>MIT</a> License Code Documents <a href=http://creativecommons.org/licenses/by/3.0/>CC BY 3.0</a></small></div>
 </div>
 </div>

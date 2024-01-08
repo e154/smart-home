@@ -19,32 +19,26 @@
      
 
 
- 
- 
-Каждый тип триггера имеет свой собственный обработчик (handler) для выполнения соответствующих действий.
-Вот примеры различных типов …">
+Триггеры в системе Smart Home представляют собой ключевые элементы, которые запускают выполнение Задач в ответ на определенные события или …">
 <meta property="og:title" content="Triggers">
-<meta property="og:description" content="Каждый тип триггера имеет свой собственный обработчик (handler) для выполнения соответствующих действий.
-Вот примеры различных типов триггеров и соответствующих им обработчиков:
- TriggerAlexa:  automationTriggerAlexa = (msg) -> p = unmarshal msg.payload Done p return false Обработчик automationTriggerAlexa вызывается в ответ на триггер от Amazon Alexa. Он принимает объект сообщения msg и может выполнять определенные действия, связанные с этим триггером.
-TriggerStateChanged:  automationTriggerStateChanged = (msg) -> print '---trigger---' p = unmarshal msg.">
+<meta property="og:description" content="Триггеры в системе Smart Home представляют собой ключевые элементы, которые запускают выполнение Задач в ответ на определенные события или условия. В настоящее время система поддерживает три основных типа триггеров, каждый из которых обладает своими преимуществами и обеспечивает гибкость в настройке автоматизации.
+1. Триггер &ldquo;State Change&rdquo; (Изменение Состояния):   Описание:
+ Активируется при изменении состояния определенного устройства или группы устройств в системе Smart Home.    Преимущества:">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://e154.github.io/smart-home/ru/docs/dashboard/automation/triggers/"><meta property="article:section" content="docs">
 <meta property="article:published_time" content="2021-10-20T00:00:00+00:00">
-<meta property="article:modified_time" content="2023-11-02T20:22:01+06:00"><meta property="og:site_name" content="Умный дом">
+<meta property="article:modified_time" content="2024-01-08T19:33:13+06:00"><meta property="og:site_name" content="Умный дом">
 <meta itemprop=name content="Triggers">
-<meta itemprop=description content="Каждый тип триггера имеет свой собственный обработчик (handler) для выполнения соответствующих действий.
-Вот примеры различных типов триггеров и соответствующих им обработчиков:
- TriggerAlexa:  automationTriggerAlexa = (msg) -> p = unmarshal msg.payload Done p return false Обработчик automationTriggerAlexa вызывается в ответ на триггер от Amazon Alexa. Он принимает объект сообщения msg и может выполнять определенные действия, связанные с этим триггером.
-TriggerStateChanged:  automationTriggerStateChanged = (msg) -> print '---trigger---' p = unmarshal msg."><meta itemprop=datePublished content="2021-10-20T00:00:00+00:00">
-<meta itemprop=dateModified content="2023-11-02T20:22:01+06:00">
-<meta itemprop=wordCount content="209">
+<meta itemprop=description content="Триггеры в системе Smart Home представляют собой ключевые элементы, которые запускают выполнение Задач в ответ на определенные события или условия. В настоящее время система поддерживает три основных типа триггеров, каждый из которых обладает своими преимуществами и обеспечивает гибкость в настройке автоматизации.
+1. Триггер &ldquo;State Change&rdquo; (Изменение Состояния):   Описание:
+ Активируется при изменении состояния определенного устройства или группы устройств в системе Smart Home.    Преимущества:"><meta itemprop=datePublished content="2021-10-20T00:00:00+00:00">
+<meta itemprop=dateModified content="2024-01-08T19:33:13+06:00">
+<meta itemprop=wordCount content="471">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Triggers">
-<meta name=twitter:description content="Каждый тип триггера имеет свой собственный обработчик (handler) для выполнения соответствующих действий.
-Вот примеры различных типов триггеров и соответствующих им обработчиков:
- TriggerAlexa:  automationTriggerAlexa = (msg) -> p = unmarshal msg.payload Done p return false Обработчик automationTriggerAlexa вызывается в ответ на триггер от Amazon Alexa. Он принимает объект сообщения msg и может выполнять определенные действия, связанные с этим триггером.
-TriggerStateChanged:  automationTriggerStateChanged = (msg) -> print '---trigger---' p = unmarshal msg.">
+<meta name=twitter:description content="Триггеры в системе Smart Home представляют собой ключевые элементы, которые запускают выполнение Задач в ответ на определенные события или условия. В настоящее время система поддерживает три основных типа триггеров, каждый из которых обладает своими преимуществами и обеспечивает гибкость в настройке автоматизации.
+1. Триггер &ldquo;State Change&rdquo; (Изменение Состояния):   Описание:
+ Активируется при изменении состояния определенного устройства или группы устройств в системе Smart Home.    Преимущества:">
 <link rel=preload href=/smart-home/scss/main.min.bd5285b713d3061549a6bfd34e5f4ec6775ede36672a3088260f0d420050647f.css as=style>
 <link href=/smart-home/scss/main.min.bd5285b713d3061549a6bfd34e5f4ec6775ede36672a3088260f0d420050647f.css rel=stylesheet integrity>
 <script src=https://code.jquery.com/jquery-3.5.1.min.js integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin=anonymous></script>
@@ -106,12 +100,16 @@ TriggerStateChanged:  automationTriggerStateChanged = (msg) -> print '---trigger
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id=m-smart-homerudocsdashboard-li>
 <a href=/smart-home/ru/docs/dashboard/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homerudocsdashboard><span>Dashboard</span></a>
 <ul class="ul-2 foldable">
-<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocsdashboardentity-li>
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocsdashboardgate-li>
+<a href=/smart-home/ru/docs/dashboard/gate/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homerudocsdashboardgate><span>Gate</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocsdashboardentity-li>
 <a href=/smart-home/ru/docs/dashboard/entity/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homerudocsdashboardentity><span>Entity</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id=m-smart-homerudocsdashboardautomation-li>
 <a href=/smart-home/ru/docs/dashboard/automation/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homerudocsdashboardautomation><span>Automation</span></a>
 <ul class="ul-3 foldable">
-<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocsdashboardautomationactions-li>
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocsdashboardautomationtasks-li>
+<a href=/smart-home/ru/docs/dashboard/automation/tasks/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homerudocsdashboardautomationtasks><span>Tasks</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocsdashboardautomationactions-li>
 <a href=/smart-home/ru/docs/dashboard/automation/actions/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homerudocsdashboardautomationactions><span>Actions</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocsdashboardautomationconditions-li>
 <a href=/smart-home/ru/docs/dashboard/automation/conditions/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homerudocsdashboardautomationconditions><span>Conditions</span></a>
@@ -155,7 +153,13 @@ TriggerStateChanged:  automationTriggerStateChanged = (msg) -> print '---trigger
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homerudocsplugins-li>
 <a href=/smart-home/ru/docs/plugins/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homerudocsplugins><span>Plugins</span></a>
 <ul class="ul-2 foldable">
-<li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homerudocspluginsmodbus-li>
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocspluginsmqtt_bridge-li>
+<a href=/smart-home/ru/docs/plugins/mqtt_bridge/ title="MQTT bridge" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homerudocspluginsmqtt_bridge><span>mqtt bridge</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocspluginsonvif-li>
+<a href=/smart-home/ru/docs/plugins/onvif/ title="Plugin ONVIF" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homerudocspluginsonvif><span>onvif</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocspluginsspeedtest-li>
+<a href=/smart-home/ru/docs/plugins/speedtest/ title=Speedtest class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homerudocspluginsspeedtest><span>speedtest</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homerudocspluginsmodbus-li>
 <a href=/smart-home/ru/docs/plugins/modbus/ title=Modbus class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homerudocspluginsmodbus><span>modbus</span></a>
 <ul class="ul-3 foldable">
 <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocspluginsmodbusmodbus_rtu-li>
@@ -190,7 +194,9 @@ TriggerStateChanged:  automationTriggerStateChanged = (msg) -> print '---trigger
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homerudocspluginsnotify-li>
 <a href=/smart-home/ru/docs/plugins/notify/ title="Отправка сообщений" class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homerudocspluginsnotify><span>notify</span></a>
 <ul class="ul-3 foldable">
-<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocspluginsnotifywebpush-li>
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocspluginsnotifyemail-li>
+<a href=/smart-home/ru/docs/plugins/notify/email/ title=EMAIL class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homerudocspluginsnotifyemail><span>email</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocspluginsnotifywebpush-li>
 <a href=/smart-home/ru/docs/plugins/notify/webpush/ title="Push уведомления" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homerudocspluginsnotifywebpush><span>webpush</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocspluginsnotifyhtml5_notify-li>
 <a href=/smart-home/ru/docs/plugins/notify/html5_notify/ title="HTML5 Уведомления" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homerudocspluginsnotifyhtml5_notify><span>html5_notify</span></a>
@@ -224,9 +230,9 @@ TriggerStateChanged:  automationTriggerStateChanged = (msg) -> print '---trigger
 <a href=/smart-home/ru/docs/plugins/weather/ title=Weather class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homerudocspluginsweather><span>weather</span></a>
 <ul class="ul-3 foldable">
 <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocspluginsweathermet-li>
-<a href=/smart-home/ru/docs/plugins/weather/met/ title=Met class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homerudocspluginsweathermet><span>met</span></a>
+<a href=/smart-home/ru/docs/plugins/weather/met/ title=MET class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homerudocspluginsweathermet><span>met</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocspluginsweatherowm-li>
-<a href=/smart-home/ru/docs/plugins/weather/owm/ title=Met class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homerudocspluginsweatherowm><span>met</span></a>
+<a href=/smart-home/ru/docs/plugins/weather/owm/ title=OWM class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homerudocspluginsweatherowm><span>met</span></a>
 </li>
 </ul>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homerudocspluginszibee2mqtt-li>
@@ -271,17 +277,112 @@ TriggerStateChanged:  automationTriggerStateChanged = (msg) -> print '---trigger
 <header class=article-meta>
 </header>
 <figure>
-<img src=/smart-home/trigger_window1.png>
+<img src=/smart-home/triggers_window1.png>
 </figure>
-<p> </p>
-<p> </p>
-<p>Каждый тип триггера имеет свой собственный обработчик (handler) для выполнения соответствующих действий.</p>
-<p>Вот примеры различных типов триггеров и соответствующих им обработчиков:</p>
+<p>Триггеры в системе Smart Home представляют собой ключевые элементы, которые запускают выполнение Задач в ответ на определенные события или условия. В настоящее время система поддерживает три основных типа триггеров, каждый из которых обладает своими преимуществами и обеспечивает гибкость в настройке автоматизации.</p>
+<h4 id=1-триггер-state-change-изменение-состояния>1. <strong>Триггер &ldquo;State Change&rdquo; (Изменение Состояния):</strong></h4>
+<ul>
+<li>
+<p><strong>Описание:</strong></p>
+<ul>
+<li>Активируется при изменении состояния определенного устройства или группы устройств в системе Smart Home.</li>
+</ul>
+</li>
+<li>
+<p><strong>Преимущества:</strong></p>
+<ul>
+<li><strong>Реакция на Изменения:</strong> Идеально подходит для сценариев, где требуется реагировать на конкретные изменения, например, включение/выключение света, открытие двери и т.д.</li>
+<li><strong>Гибкость Настройки:</strong> Позволяет выбирать конкретные устройства и параметры состояний для триггерирования.</li>
+</ul>
+</li>
+</ul>
+<h4 id=2-триггер-system-системные-события>2. <strong>Триггер &ldquo;System&rdquo; (Системные События):</strong></h4>
+<ul>
+<li>
+<p><strong>Описание:</strong></p>
+<ul>
+<li>Активируется при возникновении системных событий, таких как запуск/остановка системы, подключение/отключение устройств и другие события системной шины.</li>
+</ul>
+</li>
+<li>
+<p><strong>Преимущества:</strong></p>
+<ul>
+<li><strong>Мониторинг Системы:</strong> Используется для мониторинга общего состояния системы и детектирования событий, связанных с функционированием умного дома.</li>
+<li><strong>Интеграция с Внешними Системами:</strong> Позволяет взаимодействовать с системами, работающими в рамках системной шины.</li>
+</ul>
+</li>
+</ul>
+<h4 id=3-триггер-time-cron-временной-триггер>3. <strong>Триггер &ldquo;Time (Cron)&rdquo; (Временной Триггер):</strong></h4>
+<ul>
+<li>
+<p><strong>Описание:</strong></p>
+<ul>
+<li>Активируется с заданным временным интервалом в соответствии с расписанием, заданным в формате cron.</li>
+</ul>
+</li>
+<li>
+<p><strong>Преимущества:</strong></p>
+<ul>
+<li><strong>Регулярное Выполнение:</strong> Идеально подходит для задач, которые должны выполняться регулярно по расписанию.</li>
+<li><strong>Энергосбережение:</strong> Может использоваться для оптимизации энергопотребления, например, выключения света или отопления в ночное время.</li>
+</ul>
+</li>
+</ul>
+<h4 id=примеры-использования-триггеров>Примеры Использования Триггеров</h4>
+<ol>
+<li>
+<p><strong>Триггер &ldquo;State Change&rdquo;:</strong></p>
+<ul>
+<li><strong>Сценарий:</strong>
+<ul>
+<li>Включить кондиционер при открытии окна в спальне.</li>
+</ul>
+</li>
+<li><strong>Настройка Триггера:</strong>
+<ul>
+<li>Устройство: Окно в спальне.</li>
+<li>Состояние: Открыто.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Триггер &ldquo;System&rdquo;:</strong></p>
+<ul>
+<li><strong>Сценарий:</strong>
+<ul>
+<li>Отправить уведомление при подключении нового устройства к системе.</li>
+</ul>
+</li>
+<li><strong>Настройка Триггера:</strong>
+<ul>
+<li>Системное событие: Подключение нового устройства.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Триггер &ldquo;Time (Cron)":</strong></p>
+<ul>
+<li><strong>Сценарий:</strong>
+<ul>
+<li>Выключить свет во всех комнатах после полуночи.</li>
+</ul>
+</li>
+<li><strong>Настройка Триггера:</strong>
+<ul>
+<li>Временной интервал: &ldquo;0 0 * * *&rdquo;, что соответствует каждой полуночи.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h4 id=примеры-на-coffescript>Примеры на Coffescript</h4>
 <ol>
 <li><code>TriggerAlexa</code>:</li>
 </ol>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>automationTriggerAlexa = </span><span style=color:#000>(msg) -&gt;</span>
-  <span style=color:#000>p = </span><span style=color:#000>unmarshal</span> <span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
+  <span style=color:#000>p = </span><span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
   <span style=color:#000>Done</span> <span style=color:#000>p</span>
   <span style=color:#204a87;font-weight:700>return</span> <span style=color:#204a87;font-weight:700>false</span>
 </code></pre></div><p>Обработчик <code>automationTriggerAlexa</code> вызывается в ответ на триггер от Amazon Alexa. Он принимает объект сообщения <code>msg</code>
@@ -291,7 +392,7 @@ TriggerStateChanged:  automationTriggerStateChanged = (msg) -> print '---trigger
 </ol>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>automationTriggerStateChanged = </span><span style=color:#000>(msg) -&gt;</span>
   <span style=color:#000>print</span> <span style=color:#4e9a06>&#39;---trigger---&#39;</span>
-  <span style=color:#000>p = </span><span style=color:#000>unmarshal</span> <span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
+  <span style=color:#000>p = </span><span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
   <span style=color:#000>Done</span> <span style=color:#000>p</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>new_state</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>state</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>name</span>
   <span style=color:#204a87;font-weight:700>return</span> <span style=color:#204a87;font-weight:700>false</span>
 </code></pre></div><p>Обработчик <code>automationTriggerStateChanged</code> вызывается при изменении состояния устройства. Он принимает объект сообщения
@@ -300,7 +401,7 @@ TriggerStateChanged:  automationTriggerStateChanged = (msg) -> print '---trigger
 <li><code>TriggerSystem</code>:</li>
 </ol>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>automationTriggerSystem = </span><span style=color:#000>(msg) -&gt;</span>
-  <span style=color:#000>p = </span><span style=color:#000>unmarshal</span> <span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
+  <span style=color:#000>p = </span><span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
   <span style=color:#000>Done</span> <span style=color:#000>p</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>event</span>
   <span style=color:#204a87;font-weight:700>return</span> <span style=color:#204a87;font-weight:700>false</span>
 </code></pre></div><p>Обработчик <code>automationTriggerSystem</code> вызывается в ответ на события системы. Он принимает объект сообщения <code>msg</code> и может
@@ -309,7 +410,7 @@ TriggerStateChanged:  automationTriggerStateChanged = (msg) -> print '---trigger
 <li><code>TriggerTime</code>:</li>
 </ol>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>automationTriggerTime = </span><span style=color:#000>(msg) -&gt;</span>
-  <span style=color:#000>p = </span><span style=color:#000>unmarshal</span> <span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
+  <span style=color:#000>p = </span><span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
   <span style=color:#000>Done</span> <span style=color:#000>p</span>
   <span style=color:#204a87;font-weight:700>return</span> <span style=color:#204a87;font-weight:700>false</span>
 </code></pre></div><p>Обработчик <code>automationTriggerTime</code> вызывается по истечении определенного времени. Он принимает объект сообщения <code>msg</code> и
@@ -319,13 +420,14 @@ TriggerStateChanged:  automationTriggerStateChanged = (msg) -> print '---trigger
 <p>Пример реализации:</p>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>automationTriggerStateChanged = </span><span style=color:#000>(msg)-&gt;</span>
     <span style=color:#8f5902;font-style:italic>#print &#39;---trigger---&#39;
-</span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#000>p = </span><span style=color:#000>unmarshal</span> <span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
+</span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#000>p = </span><span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
     <span style=color:#204a87;font-weight:700>if</span> <span style=color:#ce5c00;font-weight:700>!</span><span style=color:#000>p</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>new_state</span> <span style=color:#ce5c00;font-weight:700>||</span> <span style=color:#ce5c00;font-weight:700>!</span><span style=color:#000>p</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>new_state</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>state</span>
         <span style=color:#204a87;font-weight:700>return</span> <span style=color:#204a87;font-weight:700>false</span>
     <span style=color:#204a87;font-weight:700>return</span> <span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>new_state</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>state</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>name</span> <span style=color:#ce5c00;font-weight:700>==</span> <span style=color:#4e9a06>&#39;DOUBLE_CLICK&#39;</span>
-</code></pre></div>
+</code></pre></div><h4 id=заключение>Заключение</h4>
+<p>Использование различных типов триггеров в системе Smart Home позволяет пользователям создавать сложные и интеллектуальные сценарии автоматизации, гармонично реагирующие на изменения в системе и внешние события. Это предоставляет пользоват</p>
 <div class="text-muted mt-5 pt-3 border-top">
-Изменено 02.11.2023: <a href=https://github.com/e154/smart-home/commit/85b132cca98aebec3c26f42a148652dfed5598bc>Develop (#245) (85b132c)</a>
+Изменено 08.01.2024: <a href=https://github.com/e154/smart-home/commit/5d834c48fbdf35becba56d9f426ed5f3f8250563>Merge pull request #256 from e154/master (5d834c4)</a>
 </div>
 </div>
 </main>
@@ -346,7 +448,7 @@ TriggerStateChanged:  automationTriggerStateChanged = (msg) -> print '---trigger
 </ul>
 </div>
 <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-<small class=text-white>&copy; 2023 Разработано при поддержке <a href=http://e154.ru>e154.ru</a></small>
+<small class=text-white>&copy; 2024 Разработано при поддержке <a href=http://e154.ru>e154.ru</a></small>
 <div><small class="ml-1 text-white">Код лицензии <a href=https://github.com/e154/smart-home/blob/master/LICENSE>MIT</a> документы <a href=http://creativecommons.org/licenses/by/3.0/>CC BY 3.0</a></small></div>
 </div>
 </div>
