@@ -290,6 +290,7 @@ type ApiDashboardCardItem struct {
 
 // ApiDashboardShort defines model for apiDashboardShort.
 type ApiDashboardShort struct {
+	Area        *ApiArea  `json:"area,omitempty"`
 	AreaId      *int64    `json:"areaId,omitempty"`
 	CreatedAt   time.Time `json:"createdAt"`
 	Description string    `json:"description"`
@@ -1910,6 +1911,12 @@ type MqttServiceGetSubscriptionListParams struct {
 
 // AuthServicePasswordResetParams defines parameters for AuthServicePasswordReset.
 type AuthServicePasswordResetParams struct {
+	Accept *AcceptJSON `json:"Accept,omitempty"`
+}
+
+// PluginServiceGetPluginReadmeParams defines parameters for PluginServiceGetPluginReadme.
+type PluginServiceGetPluginReadmeParams struct {
+	Lang   *string     `form:"lang,omitempty" json:"lang,omitempty"`
 	Accept *AcceptJSON `json:"Accept,omitempty"`
 }
 

@@ -26,6 +26,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -47,11 +48,12 @@ const (
 // Connection handle a single websocket (HTTP/TCP) connection to an Server
 type Connection struct {
 	pool   *Pool
-	ws     *websocket.Conn
 	status int
 	api    *api.Api
 	stream *stream.Stream
 	cli    *stream.Client
+	*sync.Mutex
+	ws *websocket.Conn
 }
 
 // NewConnection create a Connection object
@@ -63,6 +65,7 @@ func NewConnection(pool *Pool,
 		status: CONNECTING,
 		api:    api,
 		stream: stream,
+		Mutex:  &sync.Mutex{},
 	}
 	return c
 }
@@ -91,7 +94,7 @@ func (c *Connection) Connect(ctx context.Context) (err error) {
 		c.pool.client.cfg.ID,
 		c.pool.client.cfg.PoolIdleSize,
 	)
-	if err := c.ws.WriteMessage(websocket.TextMessage, []byte(greeting)); err != nil {
+	if err = c.WriteMessage(websocket.TextMessage, []byte(greeting)); err != nil {
 		log.Error("greeting error :", err.Error())
 		c.Close()
 		return err
@@ -121,7 +124,7 @@ func (c *Connection) serve(ctx context.Context) {
 				err := c.ws.WriteControl(websocket.PingMessage, []byte{}, t.Add(time.Second))
 				if err != nil {
 					c.Close()
-					break
+					return
 				}
 			}
 		}
@@ -218,7 +221,7 @@ func (c *Connection) serve(ctx context.Context) {
 		}
 
 		// Write response
-		err = c.ws.WriteMessage(websocket.TextMessage, jsonResponse)
+		err = c.WriteMessage(websocket.TextMessage, jsonResponse)
 		if err != nil {
 			log.Errorf("Unable to write response : %v", err)
 			break
@@ -255,14 +258,14 @@ func (c *Connection) error(msg string) (err error) {
 	}
 
 	// Write response
-	err = c.ws.WriteMessage(websocket.TextMessage, jsonResponse)
+	err = c.WriteMessage(websocket.TextMessage, jsonResponse)
 	if err != nil {
 		log.Errorf("Unable to write response : %v", err)
 		return
 	}
 
 	// Write response body
-	err = c.ws.WriteMessage(websocket.BinaryMessage, []byte(msg))
+	err = c.WriteMessage(websocket.BinaryMessage, []byte(msg))
 	if err != nil {
 		log.Errorf("Unable to write response body : %v", err)
 		return
@@ -275,7 +278,17 @@ func (c *Connection) error(msg string) (err error) {
 func (c *Connection) Close() {
 
 	if c.ws != nil {
-		_ = c.ws.WriteMessage(websocket.CloseMessage, []byte{})
+		if err := c.WriteMessage(websocket.CloseMessage, []byte{}); err != nil {
+			//debug.PrintStack()
+			//log.Error(err.Error())
+		}
 		c.ws.Close()
 	}
+}
+
+func (c *Connection) WriteMessage(messageType int, data []byte) (err error) {
+	c.Lock()
+	defer c.Unlock()
+	err = c.ws.WriteMessage(messageType, data)
+	return
 }

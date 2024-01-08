@@ -168,6 +168,7 @@ export default {
     EditArea: 'Ред. Area',
     EditZigbee2mqtt: 'Ред. Zigbee2mqtt',
     EditUser: 'Ред. Пользователя',
+    EditPlugin: 'Ред. Плагин',
     ListEntities: 'Список Entities',
     ListScripts: 'Список Скриптов',
     ListDashboards: 'Список Dashboards',
@@ -238,7 +239,8 @@ export default {
     actionIcon: "Иконка",
     actionDescription: "Описание",
     actorStates: "Состояния актора",
-    actorSettings: "Настройки актора"
+    actorSettings: "Настройки актора",
+    readme: 'Инфо'
   },
   areas: {
     id: "ID",

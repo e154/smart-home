@@ -23,8 +23,9 @@ package triggers
 import (
 	"sync"
 
-	"github.com/e154/smart-home/common/events"
+	"go.uber.org/atomic"
 
+	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/system/bus"
 )
 
@@ -40,17 +41,19 @@ var _ ITrigger = (*StateChangeTrigger)(nil)
 // StateChangeTrigger ...
 type StateChangeTrigger struct {
 	baseTrigger
+	counter *atomic.Int32
 }
 
 // NewStateChangedTrigger ...
 func NewStateChangedTrigger(eventBus bus.Bus) ITrigger {
 	return &StateChangeTrigger{
-		baseTrigger{
+		baseTrigger: baseTrigger{
 			eventBus:     eventBus,
 			msgQueue:     bus.NewBus(),
 			functionName: StateChangeFunctionName,
 			name:         StateChangeName,
 		},
+		counter: atomic.NewInt32(0),
 	}
 }
 
@@ -65,7 +68,9 @@ func (t *StateChangeTrigger) AsyncAttach(wg *sync.WaitGroup) {
 }
 
 func (t *StateChangeTrigger) eventHandler(_ string, msg interface{}) {
-
+	if t.counter.Load() <= 0 {
+		return
+	}
 	switch v := msg.(type) {
 	case events.EventStateChanged:
 		t.msgQueue.Publish(string(v.EntityId), msg)
@@ -75,11 +80,13 @@ func (t *StateChangeTrigger) eventHandler(_ string, msg interface{}) {
 // Subscribe ...
 func (t *StateChangeTrigger) Subscribe(options Subscriber) error {
 	//log.Infof("subscribe topic %s", options.EntityId)
+	t.counter.Inc()
 	return t.msgQueue.Subscribe(options.EntityId.String(), options.Handler)
 }
 
 // Unsubscribe ...
 func (t *StateChangeTrigger) Unsubscribe(options Subscriber) error {
 	//log.Infof("unsubscribe topic %s", options.EntityId)
+	t.counter.Dec()
 	return t.msgQueue.Unsubscribe(options.EntityId.String(), options.Handler)
 }

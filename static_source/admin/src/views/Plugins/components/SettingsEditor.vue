@@ -2,23 +2,12 @@
 import {useI18n} from '@/hooks/web/useI18n'
 import {Table} from '@/components/Table'
 import {computed, PropType, reactive, ref, unref, watch} from 'vue'
-import {useAppStore} from "@/store/modules/app";
-import {Pagination, TableColumn} from '@/types/table'
-import api from "@/api/api";
-import {ElButton, ElTableColumn, ElSwitch, ElImageViewer, ElTag, ElInput, ElInputNumber, ElSelect, ElOption} from 'element-plus'
+import {TableColumn} from '@/types/table'
+import {ElButton, ElInput, ElInputNumber, ElSelect, ElOption} from 'element-plus'
 import {ApiAttribute} from "@/api/stub";
-import {useForm} from "@/hooks/web/useForm";
-import {useRouter} from "vue-router";
-import {Plugin} from "@/views/Plugins/components/Types";
-import {parseTime} from "@/utils";
-import {PATH_URL} from "@/config/axios/service";
 import {useEmitt} from "@/hooks/web/useEmitt";
 
 const { emitter } = useEmitt()
-const {push, currentRoute} = useRouter()
-const remember = ref(false)
-const {register, elFormRef, methods} = useForm()
-const appStore = useAppStore()
 const {t} = useI18n()
 
 
@@ -71,13 +60,6 @@ watch(
       immediate: true
     }
 )
-
-const getUrl = (imageUrl: string | undefined): string => {
-  if (!imageUrl) {
-    return '';
-  }
-  return  PATH_URL + imageUrl;
-}
 
 const boolOptions = [
   {

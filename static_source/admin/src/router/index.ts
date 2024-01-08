@@ -494,25 +494,12 @@ export const developRouterMap: AppRouteRecordRaw[] = [
         },
         children: [
           {
-            path: 'index',
-            name: 'indexPlugin',
-            component: () => import('@/views/Plugins/edit.vue'),
-            meta: {
-              title: t('router.New'),
-              // noTagsView: true,
-              // noCache: true,
-              hidden: true,
-              canTo: true,
-              activeMenu: '/etc/plugins'
-            }
-          },
-          {
             path: 'edit/:name',
             name: 'viewPlugin',
             component: () => import('@/views/Plugins/edit.vue'),
             props: true,
             meta: {
-              title: t('router.View'),
+              title: t('router.EditPlugin'),
               // noTagsView: true,
               // noCache: true,
               hidden: true,

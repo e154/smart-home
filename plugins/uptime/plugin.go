@@ -20,15 +20,14 @@ package uptime
 
 import (
 	"context"
+	"embed"
 	"fmt"
 	"time"
 
-	"github.com/e154/smart-home/system/supervisor"
-
-	"github.com/e154/smart-home/common/logger"
-
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 const (
@@ -40,6 +39,10 @@ var (
 )
 
 var _ supervisor.Pluggable = (*plugin)(nil)
+
+//go:embed Readme.md
+//go:embed Readme.ru.md
+var F embed.FS
 
 func init() {
 	supervisor.RegisterPlugin(Name, New)
@@ -53,9 +56,11 @@ type plugin struct {
 
 // New ...
 func New() supervisor.Pluggable {
-	return &plugin{
+	p := &plugin{
 		Plugin: supervisor.NewPlugin(),
 	}
+	p.F = F
+	return p
 }
 
 // Load ...

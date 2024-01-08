@@ -304,6 +304,7 @@ export interface ApiDashboardShort {
   enabled: boolean;
   /** @format int64 */
   areaId?: number;
+  area?: ApiArea;
   /** @format date-time */
   createdAt: string;
   /** @format date-time */
@@ -4542,6 +4543,40 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         secure: true,
         type: ContentType.Json,
         format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags PluginService
+     * @name PluginServiceGetPluginReadme
+     * @summary get plugin readme
+     * @request GET:/v1/plugin/{name}/readme
+     * @secure
+     */
+    pluginServiceGetPluginReadme: (
+      name: string,
+      query?: {
+        lang?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        string,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
+        path: `/v1/plugin/${name}/readme`,
+        method: "GET",
+        query: query,
+        secure: true,
         ...params,
       }),
 

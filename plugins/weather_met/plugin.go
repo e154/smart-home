@@ -20,13 +20,13 @@ package weather_met
 
 import (
 	"context"
-
-	"github.com/e154/smart-home/plugins/weather"
-	"github.com/e154/smart-home/system/supervisor"
+	"embed"
 
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/plugins/weather"
 	"github.com/e154/smart-home/system/scheduler"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 const (
@@ -42,6 +42,10 @@ var (
 
 var _ supervisor.Pluggable = (*plugin)(nil)
 
+//go:embed Readme.md
+//go:embed Readme.ru.md
+var F embed.FS
+
 func init() {
 	supervisor.RegisterPlugin(Name, New)
 }
@@ -54,9 +58,11 @@ type plugin struct {
 
 // New ...
 func New() supervisor.Pluggable {
-	return &plugin{
+	p := &plugin{
 		Plugin: supervisor.NewPlugin(),
 	}
+	p.F = F
+	return p
 }
 
 // Load ...

@@ -20,7 +20,6 @@ package endpoint
 
 import (
 	"context"
-
 	"github.com/jinzhu/copier"
 	"github.com/pkg/errors"
 
@@ -120,10 +119,6 @@ func (d *DashboardEndpoint) GetList(ctx context.Context, pagination common.PageP
 	list, total, err = d.adaptors.Dashboard.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
 	if err != nil {
 		return
-	}
-
-	for _, board := range list {
-		err = d.preloadEntities(ctx, board)
 	}
 
 	return

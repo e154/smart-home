@@ -22,7 +22,7 @@ import 'codemirror/addon/lint/coffeescript-lint'
 import 'codemirror/addon/hint/show-hint';
 import 'codemirror/addon/hint/javascript-hint';
 import 'codemirror/addon/hint/show-hint.css';
-import {HintDictionaryCoffee} from "@/views/Scripts/components/types";
+import {HintDictionary, HintDictionaryCoffee} from "@/views/Scripts/components/types";
 import {useAppStore} from "@/store/modules/app";
 import {useEmitt} from "@/hooks/web/useEmitt";
 
@@ -58,6 +58,15 @@ const fontSize = computed(() => {
   return size + 'px'
 })
 
+const getHint = () => {
+  switch (cmOptions.mode) {
+    case 'application/vnd.coffeescript':
+      return HintDictionaryCoffee
+    default:
+      return HintDictionary
+  }
+}
+
 const cmOptions: EditorConfiguration = {
   mode: "application/vnd.coffeescript", // Language mode
   gutters: ['CodeMirror-lint-markers'],
@@ -84,7 +93,7 @@ const cmOptions: EditorConfiguration = {
       var curWord = start !== end && curLine.slice(start, end);
       var regex = new RegExp('^' + curWord, 'i');
       return {
-        list: (!curWord ? [] : HintDictionaryCoffee.words.filter(function (item) {
+        list: (!curWord ? [] : getHint().words.filter(function (item) {
           return item.text.match(regex);
         })).sort(),
         from: CodeMirror.Pos(cur.line, start),

@@ -7,7 +7,7 @@ description: >
   
 ---
 
-{{< figure src="/smart-home/memory_app.png" >}}
+{{< figure src="/smart-home/memory_app.png" width="300" >}}
 
 &nbsp;
 

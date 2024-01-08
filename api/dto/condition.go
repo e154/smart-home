@@ -74,8 +74,17 @@ func (r Condition) ToListResult(list []*m.Condition) []*stub.ApiCondition {
 
 	items := make([]*stub.ApiCondition, 0, len(list))
 
-	for _, i := range list {
-		items = append(items, ToCondition(i))
+	for _, cond := range list {
+		items = append(items, &stub.ApiCondition{
+			Id:          cond.Id,
+			Name:        cond.Name,
+			Description: cond.Description,
+			ScriptId:    cond.ScriptId,
+			AreaId:      cond.AreaId,
+			Area:        GetStubArea(cond.Area),
+			CreatedAt:   cond.CreatedAt,
+			UpdatedAt:   cond.UpdatedAt,
+		})
 	}
 
 	return items

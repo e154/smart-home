@@ -91,6 +91,12 @@ func CallSceneBind(manager Supervisor) func(entityId string, value map[string]in
 	}
 }
 
+func PushSystemEvent(manager Supervisor) func(command string, params map[string]interface{}) {
+	return func(command string, params map[string]interface{}) {
+		manager.PushSystemEvent(command, params)
+	}
+}
+
 func GetSettingsBind(manager Supervisor) func(entityId string) m.AttributeValue {
 	return func(entityId string) m.AttributeValue {
 		if entityId == "" {
@@ -123,7 +129,7 @@ func GetDistanceBetweenPointsBind(adaptors *adaptors.Adaptors) func(point1, poin
 	}
 }
 
-func PointInsideAriaBind(adaptors *adaptors.Adaptors) func(areaId int64, point m.Point) bool {
+func PointInsideAreaBind(adaptors *adaptors.Adaptors) func(areaId int64, point m.Point) bool {
 	return func(areaId int64, point m.Point) bool {
 		area, err := adaptors.Area.GetById(context.Background(), areaId)
 		if err != nil {

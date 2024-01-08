@@ -2433,6 +2433,39 @@ paths:
           $ref: '#/components/responses/HTTP-409'
       security:
         - ApiKeyAuth: [ ]
+  /v1/plugin/{name}/readme:
+    get:
+      tags:
+        - PluginService
+      summary: get plugin readme
+      operationId: PluginService_GetPluginReadme
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: lang
+          in: query
+          required: false
+          schema:
+            type: string
+        - $ref: '#/components/parameters/Accept-JSON'
+      responses:
+        200:
+          description: A successful response.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/HTTP-400'
+        '401':
+          $ref: '#/components/responses/HTTP-401'
+        '404':
+          $ref: '#/components/responses/HTTP-404'
+      security:
+        - ApiKeyAuth: [ ]
   /v1/plugins:
     get:
       tags:
@@ -4776,6 +4809,8 @@ components:
         areaId:
           type: integer
           format: int64
+        area:
+          $ref: '#/components/schemas/apiArea'
         createdAt:
           type: string
           format: date-time

@@ -5,6 +5,7 @@ import { LocaleDropdown } from '@/components/LocaleDropdown'
 import { SizeDropdown } from '@/components/SizeDropdown'
 import { UserInfo } from '@/components/UserInfo'
 import { Screenfull } from '@/components/Screenfull'
+import { GateToggle } from '@/components/Gate'
 import { TerminalToggle } from '@/components/Terminal'
 import { Breadcrumb } from '@/components/Breadcrumb'
 import { useAppStore } from '@/store/modules/app'
@@ -24,6 +25,8 @@ const hamburger = computed(() => appStore.getHamburger)
 
 // 全屏图标
 const screenfull = computed(() => appStore.getScreenfull)
+
+const serverId = computed(() => appStore.getServerId)
 
 // 尺寸图标
 const size = computed(() => appStore.getSize)
@@ -56,6 +59,9 @@ export default defineComponent({
         ) : undefined}
         <div class="h-full flex items-center">
             <TerminalToggle class="hover-trigger" color="var(--top-header-text-color)"></TerminalToggle>
+          {serverId.value ? (
+            <GateToggle class="hover-trigger" color="var(--top-header-text-color)"></GateToggle>
+          ) : undefined}
           {screenfull.value ? (
             <Screenfull class="hover-trigger" color="var(--top-header-text-color)"></Screenfull>
           ) : undefined}

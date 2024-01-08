@@ -29,3 +29,10 @@ menu:
 &nbsp;
 
 &nbsp;
+
+
+{{< figure src="/smart-home/img/smart-home-network.svg" >}}
+
+&nbsp;
+
+&nbsp;

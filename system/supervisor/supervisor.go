@@ -20,6 +20,7 @@ package supervisor
 
 import (
 	"context"
+	"fmt"
 	"runtime/debug"
 	"sync"
 	"time"
@@ -175,7 +176,8 @@ func (e *supervisor) bindScripts() {
 	e.scriptService.PushFunctions("EntityCallScene", CallSceneBind(e))
 	e.scriptService.PushFunctions("GeoDistanceToArea", GetDistanceToAreaBind(e.adaptors))
 	e.scriptService.PushFunctions("GeoDistanceBetweenPoints", GetDistanceBetweenPointsBind(e.adaptors))
-	e.scriptService.PushFunctions("GeoPointInsideAria", PointInsideAriaBind(e.adaptors))
+	e.scriptService.PushFunctions("GeoPointInsideArea", PointInsideAreaBind(e.adaptors))
+	e.scriptService.PushFunctions("PushSystemEvent", PushSystemEvent(e))
 }
 
 // SetMetric ...
@@ -589,3 +591,79 @@ func (e *supervisor) eventEntityUnloaded(msg events.EventEntityUnloaded) {
 //
 // \watch to see if the scripts change
 //
+
+func (e *supervisor) PushSystemEvent(strCommand string, params map[string]interface{}) {
+
+	var err error
+	var topic string
+	var command interface{}
+
+	defer func() {
+		if r := recover(); r != nil {
+			log.Warn("Recovered")
+			debug.PrintStack()
+		}
+	}()
+
+	switch strCommand {
+
+	// tasks
+	case "command_enable_task":
+		cmd := events.CommandEnableTask{}
+		err = common.SetFields(&cmd, params)
+		topic = fmt.Sprintf("system/automation/tasks/%d", cmd.Id)
+		command = cmd
+	case "command_disable_task":
+		cmd := events.CommandDisableTask{}
+		err = common.SetFields(&cmd, params)
+		topic = fmt.Sprintf("system/automation/tasks/%d", cmd.Id)
+		command = cmd
+
+	// triggers
+	case "command_enable_trigger":
+		cmd := events.CommandEnableTrigger{}
+		err = common.SetFields(&cmd, params)
+		topic = fmt.Sprintf("system/automation/triggers/%d", cmd.Id)
+		command = cmd
+	case "command_disable_trigger":
+		cmd := events.CommandDisableTrigger{}
+		err = common.SetFields(&cmd, params)
+		topic = fmt.Sprintf("system/automation/triggers/%d", cmd.Id)
+		command = cmd
+	case "event_call_trigger":
+		cmd := events.EventCallTrigger{}
+		err = common.SetFields(&cmd, params)
+		topic = fmt.Sprintf("system/automation/triggers/%d", cmd.Id)
+		command = cmd
+
+	//actions
+	case "event_call_action":
+		cmd := events.EventCallAction{}
+		err = common.SetFields(&cmd, params)
+		topic = fmt.Sprintf("system/automation/actions/%d", cmd.Id)
+		command = cmd
+
+	// entity
+	case "command_load_entity":
+		cmd := events.CommandLoadEntity{}
+		err = common.SetFields(&cmd, params)
+		topic = fmt.Sprintf("system/models/entities/%s", cmd.EntityId)
+		command = cmd
+	case "command_unload_entity":
+		cmd := events.CommandUnloadEntity{}
+		err = common.SetFields(&cmd, params)
+		topic = fmt.Sprintf("system/models/entities/%s", cmd.EntityId)
+		command = cmd
+
+	default:
+		log.Warnf("unknown command %s", strCommand)
+		return
+	}
+
+	if err != nil {
+		log.Error(err.Error())
+		return
+	}
+
+	e.eventBus.Publish(topic, command)
+}

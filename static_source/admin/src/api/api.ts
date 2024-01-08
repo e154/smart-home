@@ -46,22 +46,20 @@ api.instance.interceptors.response.use(
     const response = error.response
     const res = response.data;
 
+    if (response.status == 526 ) {
+      ElMessage({
+        message: 'No proxy available',
+        type: 'error',
+        duration: 5 * 1000
+      });
+      return
+    }
+
     ElMessage({
       message: res.error.message || t('Error'),
       type: 'error',
       duration: 5 * 1000
     });
-
-    if (response.status === 526 ) {
-      ElNotification({
-        message: 'No proxy available',
-        title: t('Warning'),
-        type: 'warning',
-        showClose: true,
-        duration: 5 * 1000,
-      });
-      return
-    }
 
     if (response.status === 401 ) {
 

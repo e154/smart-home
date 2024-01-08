@@ -137,16 +137,16 @@ func (n Tasks) Disable(ctx context.Context, id int64) (err error) {
 // List ...
 func (n Tasks) List(ctx context.Context, limit, offset int, orderBy, sort string, onlyEnabled bool) (list []*Task, total int64, err error) {
 
-	if err = n.Db.WithContext(ctx).Model(Task{}).Count(&total).Error; err != nil {
-		err = errors.Wrap(apperr.ErrTaskList, err.Error())
-		return
-	}
-
 	list = make([]*Task, 0)
 	q := n.Db.WithContext(ctx).Model(&Task{})
 
 	if onlyEnabled {
 		q = q.Where("enabled = ?", true)
+	}
+
+	if err = q.Count(&total).Error; err != nil {
+		err = errors.Wrap(apperr.ErrTaskList, err.Error())
+		return
 	}
 
 	q = q.Preload("Triggers").

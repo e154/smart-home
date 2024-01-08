@@ -20,13 +20,13 @@ package onvif
 
 import (
 	"context"
+	"embed"
 	"sync"
-
-	"github.com/e154/smart-home/common/web"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
+	"github.com/e154/smart-home/common/web"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/supervisor"
@@ -37,6 +37,10 @@ var (
 )
 
 var _ supervisor.Pluggable = (*plugin)(nil)
+
+//go:embed Readme.md
+//go:embed Readme.ru.md
+var F embed.FS
 
 func init() {
 	supervisor.RegisterPlugin(Name, New)
@@ -51,10 +55,12 @@ type plugin struct {
 
 // New ...
 func New() supervisor.Pluggable {
-	return &plugin{
+	p := &plugin{
 		Plugin:     supervisor.NewPlugin(),
 		actorsLock: &sync.Mutex{},
 	}
+	p.F = F
+	return p
 }
 
 // Load ...

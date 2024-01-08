@@ -20,7 +20,6 @@ package endpoint
 
 import (
 	"context"
-
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
@@ -92,9 +91,9 @@ func (p *PluginEndpoint) GetByName(ctx context.Context, pluginName string) (plug
 }
 
 // Search ...
-func (n *PluginEndpoint) Search(ctx context.Context, query string, limit, offset int64) (result []*m.Plugin, total int64, err error) {
+func (p *PluginEndpoint) Search(ctx context.Context, query string, limit, offset int64) (result []*m.Plugin, total int64, err error) {
 
-	result, total, err = n.adaptors.Plugin.Search(ctx, query, limit, offset)
+	result, total, err = p.adaptors.Plugin.Search(ctx, query, limit, offset)
 	if err != nil {
 		err = errors.Wrap(apperr.ErrInternal, err.Error())
 	}
@@ -102,24 +101,31 @@ func (n *PluginEndpoint) Search(ctx context.Context, query string, limit, offset
 }
 
 // UpdateSettings ...
-func (n *PluginEndpoint) UpdateSettings(ctx context.Context, name string, settings m.Attributes) (err error) {
+func (p *PluginEndpoint) UpdateSettings(ctx context.Context, name string, settings m.Attributes) (err error) {
 
 	var plugin *m.Plugin
-	if plugin, err = n.adaptors.Plugin.GetByName(ctx, name); err != nil {
+	if plugin, err = p.adaptors.Plugin.GetByName(ctx, name); err != nil {
 		return
 	}
 
 	plugin.Settings = settings.Serialize()
 
-	if err = n.adaptors.Plugin.Update(ctx, plugin); err != nil {
+	if err = p.adaptors.Plugin.Update(ctx, plugin); err != nil {
 		return
 	}
 
-	if err = n.supervisor.DisablePlugin(ctx, name); err != nil {
+	if err = p.supervisor.DisablePlugin(ctx, name); err != nil {
 		return
 	}
 
-	err = n.supervisor.EnablePlugin(ctx, name)
+	err = p.supervisor.EnablePlugin(ctx, name)
+
+	return
+}
+
+func (p *PluginEndpoint) Readme(ctx context.Context, name string, lang *string) (result []byte, err error) {
+
+	result, err = p.supervisor.GetPluginReadme(ctx, name, lang)
 
 	return
 }

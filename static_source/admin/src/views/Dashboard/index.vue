@@ -45,14 +45,26 @@ const columns: TableColumn[] = [
   {
     field: 'id',
     label: t('dashboard.id'),
-    width: "70px",
-    sortable: true
+    sortable: true,
+    width: "60px"
   },
   {
     field: 'name',
     label: t('dashboard.name'),
-    width: "140px",
-    sortable: true
+    sortable: true,
+    width: "170px"
+  },
+  {
+    field: 'areaId',
+    label: t('dashboard.area'),
+    width: "100px",
+    sortable: true,
+    formatter: (row: ApiDashboard) => {
+      return h(
+          'span',
+          row.area?.name
+      )
+    }
   },
   {
     field: 'description',

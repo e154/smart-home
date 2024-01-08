@@ -73,7 +73,7 @@ zigbee2mqttEvent =(message)->
 		task1SourceScript = `
 automationTriggerStateChanged = (msg)->
   #print '---trigger---'
-  p = unmarshal msg.payload
+  p = msg.payload
   Done p.new_state.state.name
   return false
 `

@@ -114,6 +114,7 @@ func (t *Conditions) List(ctx context.Context, limit, offset int, orderBy, sort 
 
 	list = make([]*Condition, 0)
 	q := t.Db.WithContext(ctx).Model(&Condition{}).
+		Preload("Area").
 		Limit(limit).
 		Offset(offset)
 

@@ -101,25 +101,27 @@ func (n Plugins) Delete(ctx context.Context, name string) (err error) {
 // List ...
 func (n Plugins) List(ctx context.Context, limit, offset int, orderBy, sort string, onlyEnabled bool) (list []*Plugin, total int64, err error) {
 
-	if err = n.Db.WithContext(ctx).Model(&Plugin{}).Count(&total).Error; err != nil {
-		err = errors.Wrap(apperr.ErrPluginList, err.Error())
-		return
-	}
-
 	list = make([]*Plugin, 0)
-	q := n.Db.WithContext(ctx).Model(&Plugin{}).
-		Limit(limit).
-		Offset(offset)
+	q := n.Db.WithContext(ctx).Model(&Plugin{})
 
 	if onlyEnabled {
 		q = q.
 			Where("enabled is true")
 	}
 
+	if err = q.Count(&total).Error; err != nil {
+		err = errors.Wrap(apperr.ErrPluginList, err.Error())
+		return
+	}
+
 	if sort != "" && orderBy != "" {
 		q = q.
 			Order(fmt.Sprintf("%s %s", sort, orderBy))
 	}
+
+	q = q.
+		Limit(limit).
+		Offset(offset)
 
 	if err = q.Find(&list).Error; err != nil {
 		err = errors.Wrap(apperr.ErrPluginList, err.Error())

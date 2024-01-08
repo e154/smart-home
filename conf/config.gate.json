@@ -1,11 +1,11 @@
 {
   "api_http_port": 8080,
   "api_debug": false,
-  "api_gzip": false,
+  "api_gzip": true,
   "pprof": false,
   "domain": "localhost",
   "https": false,
-  "proxy_timeout": 1,
+  "proxy_timeout": 5,
   "proxy_idle_timeout": 10,
   "proxy_secret_key": ""
 }

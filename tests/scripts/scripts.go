@@ -46,6 +46,8 @@ var coffeeScripts = map[string]string{
 	"coffeeScript25": coffeeScript25,
 	"coffeeScript26": coffeeScript26,
 	"coffeeScript27": coffeeScript27,
+	"coffeeScript28": coffeeScript28,
+	"javascript29":   javascript29,
 }
 
 // test1
@@ -404,5 +406,30 @@ encryptedStr = Encrypt('foo')
 Decrypt(encryptedStr)
 `
 
-// test...
+// test16
 // ------------------------------------------------
+const javascript29 = `
+"use strict";
+
+print('test setTimeout');
+
+var myGreeting,foo,myStopFunction;
+var myTimeout;
+
+myGreeting = function() {
+  print('myGreeting');
+  myStopFunction();
+};
+
+foo = function() {
+  print('start');
+  myTimeout = setTimeout(myGreeting, 1500);;
+  print('wait');
+};
+
+myStopFunction = function() {
+  clearTimeout(myTimeout);
+};
+
+
+`
