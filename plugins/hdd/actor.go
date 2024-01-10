@@ -21,13 +21,12 @@ package hdd
 import (
 	"sync"
 
-	"github.com/e154/smart-home/common/events"
-
+	"github.com/rcrowley/go-metrics"
 	"github.com/shirou/gopsutil/v3/disk"
 
+	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/supervisor"
-	"github.com/rcrowley/go-metrics"
 )
 
 // Actor ...

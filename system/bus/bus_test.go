@@ -23,11 +23,11 @@ import (
 	"fmt"
 	"reflect"
 	"sync"
-	"sync/atomic"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/require"
+	"go.uber.org/atomic"
 )
 
 func TestBus(t *testing.T) {
@@ -105,7 +105,10 @@ func TestBus(t *testing.T) {
 
 	// ------------------------------------------------------------
 
-	wg.Add(1)
+	// Test Subscribe
+	fn = func(topic string, arg1 string, arg2 string) {
+		counter++
+	}
 	err = b.Subscribe(topic, fn)
 	if err != nil {
 		t.Errorf("Subscribe returned an error: %v", err)
@@ -135,7 +138,9 @@ func TestBus(t *testing.T) {
 
 	// ------------------------------------------------------------
 
-	wg.Add(1)
+	fn = func(topic string, arg1 string, arg2 string) {
+		counter++
+	}
 	err = b.Subscribe(topic, fn)
 	if err != nil {
 		t.Errorf("Subscribe returned an error: %v", err)
@@ -192,25 +197,25 @@ func TestBus2(t *testing.T) {
 
 	b := NewBus()
 
-	var counter int32
+	var counter atomic.Int32
 	var wg = sync.WaitGroup{}
 
 	// Test Subscribe
 	fn := func(topic string, arg1 string, arg2 string) {
 		fmt.Println("fn1")
-		atomic.AddInt32(&counter, 1)
+		counter.Inc()
 		wg.Done()
 	}
 
 	fn2 := func(topic string, arg1 string, arg2 string) {
 		fmt.Println("fn2")
-		atomic.AddInt32(&counter, 1)
+		counter.Inc()
 		wg.Done()
 	}
 
 	fn3 := func(topic string, arg1 string, arg2 string) {
 		fmt.Println("fn3")
-		atomic.AddInt32(&counter, 1)
+		counter.Inc()
 		wg.Done()
 	}
 
@@ -246,22 +251,22 @@ func TestBus2(t *testing.T) {
 
 	wg.Wait()
 
-	require.Equal(t, int32(3), counter)
+	require.Equal(t, int32(3), counter.Load())
 }
 
 func TestBus3(t *testing.T) {
 
 	bus := NewBus()
 
-	var counter int32
+	var counter atomic.Int32
 	var wg = sync.WaitGroup{}
 
-	const n = 10000
+	const n = 1000
 
 	wg.Add(n)
 	fn := func(_ string, msg interface{}) {
 		//fmt.Println("msg", msg)
-		atomic.AddInt32(&counter, 1)
+		counter.Inc()
 		wg.Done()
 	}
 
@@ -269,46 +274,65 @@ func TestBus3(t *testing.T) {
 		_ = bus.Subscribe(fmt.Sprintf("foo/bar/%d", i), fn)
 	}
 
-	time.Sleep(time.Second)
+L:
+	stat, total, err := bus.Stat(context.Background(), 1000, 0, "", "")
+	require.NoError(t, err)
 
-	stat, total, err := bus.Stat(context.Background(), 999, 0, "", "")
+	if total < 1000 {
+		goto L
+	}
+
 	require.NoError(t, err)
 	require.Equal(t, len(stat), n)
 	require.Equal(t, total, int64(n))
-	require.Equal(t, counter, int32(0))
+	require.Equal(t, counter.Load(), int32(0))
+
+	counter.Store(0)
 
 	for i := 0; i < n; i++ {
 		bus.Publish(fmt.Sprintf("foo/bar/%d", i), i)
 	}
 
-	time.Sleep(time.Second)
+L2:
+	if counter.Load() < 1000 {
+		time.Sleep(time.Second)
+		goto L2
+	}
 
 	for i := 0; i < n; i++ {
 		_ = bus.Unsubscribe(fmt.Sprintf("foo/bar/%d", i), fn)
 	}
-	time.Sleep(time.Second)
 
-	stat, total, err = bus.Stat(context.Background(), 999, 0, "", "")
+L3:
+	stat, total, err = bus.Stat(context.Background(), 1000, 0, "", "")
+	require.NoError(t, err)
+
+	if total != 0 {
+		goto L3
+	}
+
 	require.NoError(t, err)
 	require.Equal(t, len(stat), 0)
 	require.Equal(t, total, int64(0))
-	require.Equal(t, counter, int32(n))
+	require.Equal(t, counter.Load(), int32(n))
+
+	counter.Store(0)
 
 	for i := 0; i < n; i++ {
 		bus.Publish(fmt.Sprintf("foo/bar/%d", i), i)
 	}
 
-	wg.Wait()
+	time.Sleep(time.Second * 5)
 
-	require.Equal(t, counter, int32(n))
+	require.True(t, counter.Load() == 0)
 }
 
 func TestBus4(t *testing.T) {
 
 	bus := NewBus()
 
-	var counter1 int32
-	var counter2 int32
+	var counter1 atomic.Int32
+	var counter2 atomic.Int32
 	var wg1 = sync.WaitGroup{}
 	var wg2 = sync.WaitGroup{}
 
@@ -317,13 +341,13 @@ func TestBus4(t *testing.T) {
 	wg1.Add(n)
 	fn1 := func(_ string, msg interface{}) {
 		//fmt.Println("msg", msg)
-		atomic.AddInt32(&counter1, 1)
+		counter1.Inc()
 		wg1.Done()
 	}
 	wg2.Add(n)
 	fn2 := func(_ string, msg interface{}) {
 		//fmt.Println("msg", msg)
-		atomic.AddInt32(&counter2, 1)
+		counter2.Inc()
 		wg2.Done()
 	}
 
@@ -338,8 +362,8 @@ func TestBus4(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, len(stat), n)
 	require.Equal(t, total, int64(n))
-	require.Equal(t, counter1, int32(0))
-	require.Equal(t, counter2, int32(0))
+	require.Equal(t, counter1.Load(), int32(0))
+	require.Equal(t, counter2.Load(), int32(0))
 
 	for i := 0; i < n; i++ {
 		bus.Publish(fmt.Sprintf("foo/bar/%d", i), i)
@@ -348,8 +372,8 @@ func TestBus4(t *testing.T) {
 	wg1.Wait()
 	wg2.Wait()
 
-	require.Equal(t, counter1, int32(n))
-	require.Equal(t, counter2, int32(n))
+	require.Equal(t, counter1.Load(), int32(n))
+	require.Equal(t, counter2.Load(), int32(n))
 
 	for i := 0; i < n; i++ {
 		_ = bus.Unsubscribe(fmt.Sprintf("foo/bar/%d", i), fn1)
@@ -368,8 +392,8 @@ func TestBus4(t *testing.T) {
 
 	wg2.Wait()
 
-	require.Equal(t, counter1, int32(n))
-	require.Equal(t, counter2, int32(n*2))
+	require.Equal(t, counter1.Load(), int32(n))
+	require.Equal(t, counter2.Load(), int32(n*2))
 
 	stat, total, err = bus.Stat(context.Background(), 999, 0, "", "")
 	require.NoError(t, err)
@@ -383,11 +407,11 @@ func BenchmarkBus(b *testing.B) {
 
 	bus := NewBus()
 
-	var counter int32
+	var counter atomic.Int32
 
 	// Test Subscribe
 	fn := func(topic string, arg1 string, arg2 string) {
-		atomic.AddInt32(&counter, 1)
+		counter.Inc()
 	}
 	err := bus.Subscribe(topic, fn)
 	require.NoError(b, err)

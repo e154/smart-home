@@ -9,11 +9,9 @@ vendor/*
 snapshots/*
 !snapshots/.gitignore
 bee.json
-/api/server/golang-swaggerui-example/
-/cmd/pingmq/pingmq
 ._*
 cli-*
 server-*
 build/public/*
-build/admin/*
 smart-home-common.tar.gz
+/coverage.out
