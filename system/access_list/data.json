@@ -139,24 +139,49 @@
     },
     "create": {
       "actions": [
-        "/v1/backups",
-        "/v1/backups/upload",
-        "/v1/backups/rollback",
-        "/v1/backups/apply"
+        "/v1/backups"
       ],
       "method": "post",
       "description": ""
     },
-    "update": {
+    "upload": {
       "actions": [
-        "/v1/backups/[\\w]+"
+        "/v1/backup/upload"
+      ],
+      "method": "post",
+      "description": ""
+    },
+    "download": {
+      "actions": [
+        "/snapshots/[\\w]+"
+      ],
+      "method": "get",
+      "description": ""
+    },
+    "rollback": {
+      "actions": [
+        "/v1/backup/rollback"
+      ],
+      "method": "post",
+      "description": "rollback backup"
+    },
+    "apply": {
+      "actions": [
+        "/v1/backup/apply"
+      ],
+      "method": "post",
+      "description": ""
+    },
+    "restore": {
+      "actions": [
+        "/v1/backup/[\\w]+"
       ],
       "method": "put",
       "description": "restore backup"
     },
     "delete": {
       "actions": [
-        "/v1/backups/[\\w]+"
+        "/v1/backup/[\\w]+"
       ],
       "method": "delete",
       "description": "delete backup"
@@ -308,10 +333,10 @@
     },
     "update": {
       "actions": [
-        " /v1/dashboard_tab/[0-9]+"
+        "/v1/dashboard_tab/[0-9]+"
       ],
       "description": "",
-      "method": "update"
+      "method": "put"
     },
     "delete": {
       "actions": [
@@ -678,14 +703,14 @@
     },
     "update": {
       "actions": [
-        "/v1/variable/[0-9]+"
+        "/v1/variable/[\\w]+"
       ],
       "description": "",
       "method": "put"
     },
     "delete": {
       "actions": [
-        "/v1/variable/[0-9]+"
+        "/v1/variable/[\\w]+"
       ],
       "description": "",
       "method": "delete"
