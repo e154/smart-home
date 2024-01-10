@@ -20,7 +20,6 @@ package local_migrations
 
 import (
 	"context"
-	"strings"
 
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
@@ -86,19 +85,6 @@ func (r *MigrationRoles) addAdmin(ctx context.Context) (adminRole *m.Role, err e
 	err = adminUser.SetPass("admin")
 	So(err, ShouldBeNil)
 
-	for pack, item := range *r.accessList.List(ctx) {
-		for right := range item {
-			permission := &m.Permission{
-				RoleName:    adminUser.Nickname,
-				PackageName: pack,
-				LevelName:   right,
-			}
-
-			_, err = r.adaptors.Permission.Add(ctx, permission)
-			So(err, ShouldBeNil)
-		}
-	}
-
 	ok, _ := r.validation.Valid(adminUser)
 	So(ok, ShouldEqual, true)
 
@@ -119,17 +105,12 @@ func (r *MigrationRoles) addUser(ctx context.Context, demoRole *m.Role) (userRol
 		So(err, ShouldBeNil)
 
 		for pack, item := range *r.accessList.List(ctx) {
-			for right := range item {
-				if strings.Contains(right, "create") ||
-					strings.Contains(right, "update") ||
-					strings.Contains(right, "search") ||
-					strings.Contains(right, "signout") ||
-					strings.Contains(right, "read_access_list") ||
-					strings.Contains(right, "delete") {
+			for levelName, right := range item {
+				if right.Method == "put" || right.Method == "post" || right.Method == "delete" {
 					permission := &m.Permission{
 						RoleName:    userRole.Name,
 						PackageName: pack,
-						LevelName:   right,
+						LevelName:   levelName,
 					}
 
 					_, err = r.adaptors.Permission.Add(ctx, permission)
@@ -174,19 +155,17 @@ func (r *MigrationRoles) addDemo(ctx context.Context) (demoRole *m.Role, err err
 		So(err, ShouldBeNil)
 
 		for pack, item := range *r.accessList.List(ctx) {
-			for right := range item {
-				if strings.Contains(right, "read") ||
-					strings.Contains(right, "signout") ||
-					strings.Contains(right, "read_access_list") ||
-					strings.Contains(right, "search") {
+			for levelName, right := range item {
+				if right.Method == "get" {
 					permission := &m.Permission{
 						RoleName:    demoRole.Name,
 						PackageName: pack,
-						LevelName:   right,
+						LevelName:   levelName,
 					}
 
 					_, err = r.adaptors.Permission.Add(ctx, permission)
 					So(err, ShouldBeNil)
+
 				}
 			}
 		}

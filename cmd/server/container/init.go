@@ -23,6 +23,7 @@ import (
 	"github.com/e154/smart-home/endpoint"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/initial/local_migrations"
+	"github.com/e154/smart-home/system/orm"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/validation"
 )
@@ -31,6 +32,7 @@ func MigrationList(adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
 	validation *validation.Validate,
 	scriptService scripts.ScriptService,
+	orm *orm.Orm,
 	endpoint *endpoint.Endpoint) []local_migrations.Migration {
 	return []local_migrations.Migration{
 		local_migrations.NewMigrationImages(adaptors, "./"),
@@ -53,5 +55,6 @@ func MigrationList(adaptors *adaptors.Adaptors,
 		local_migrations.NewMigrationBackup(adaptors),
 		local_migrations.NewMigrationGate(adaptors),
 		local_migrations.NewMigrationAddVar1(adaptors),
+		local_migrations.NewMigrationUpdatePermissions(adaptors, accessList, orm),
 	}
 }

@@ -79,6 +79,11 @@ jobs:
         id: system-code
         run: make test_system
 
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
       - name: trying to build
         id: build-all
         run: make build_server build_cli build_structure build_common_structure build_archive docker_image

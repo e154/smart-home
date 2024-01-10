@@ -148,16 +148,26 @@ const remove = async (backup: ApiBackup) => {
 }
 
 const getUploadURL = () => {
-  const uri = import.meta.env.VITE_API_BASEPATH as string || window.location.origin;
+  let uri = import.meta.env.VITE_API_BASEPATH as string || window.location.origin;
   const accessToken = wsCache.get("accessToken")
-  return uri + '/v1/backup/upload?access_token=' + accessToken;
+  uri += '/v1/backup/upload?access_token=' + accessToken;
+  const serverId = wsCache.get('serverId')
+  if (serverId) {
+    uri += '&server_id=' + serverId;
+  }
+  return uri;
 }
 
 
 const getDownloadURL = (file: ApiBackup) => {
-  const uri = import.meta.env.VITE_API_BASEPATH as string || window.location.origin;
+  let uri = import.meta.env.VITE_API_BASEPATH as string || window.location.origin;
   const accessToken = wsCache.get("accessToken")
-  return uri + '/snapshots/' + file.name + '?access_token=' + accessToken;
+  uri += '/snapshots/' + file.name + '?access_token=' + accessToken;
+  const serverId = wsCache.get('serverId')
+  if (serverId) {
+    uri += '&server_id=' + serverId;
+  }
+  return uri;
 }
 
 const onSuccess: UploadProps['onSuccess'] = (file: ApiBackup, uploadFile) => {

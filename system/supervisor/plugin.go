@@ -22,11 +22,11 @@ import (
 	"context"
 	"embed"
 	"fmt"
+	"sync"
+
 	"github.com/gomarkdown/markdown"
 	"github.com/gomarkdown/markdown/html"
 	"github.com/gomarkdown/markdown/parser"
-	"sync"
-
 	"github.com/pkg/errors"
 	"go.uber.org/atomic"
 
@@ -59,7 +59,7 @@ func (p *Plugin) Load(ctx context.Context, service Service, actorConstructor Act
 	p.actorConstructor = actorConstructor
 
 	if p.IsStarted.Load() {
-		return ErrPluginIsLoaded
+		return apperr.ErrPluginIsLoaded
 	}
 	p.IsStarted.Store(true)
 
@@ -70,7 +70,7 @@ func (p *Plugin) Load(ctx context.Context, service Service, actorConstructor Act
 func (p *Plugin) Unload(ctx context.Context) error {
 
 	if !p.IsStarted.Load() {
-		return ErrPluginIsUnloaded
+		return apperr.ErrPluginIsUnloaded
 	}
 
 	p.Actors.Range(func(key, value any) bool {

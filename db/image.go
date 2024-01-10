@@ -64,7 +64,7 @@ func (n Images) Add(ctx context.Context, v *Image) (id int64, err error) {
 			switch pgErr.Code {
 			case pgerrcode.UniqueViolation:
 				if strings.Contains(pgErr.Message, "images_pkey") {
-					err = errors.Wrap(apperr.ErrImageAdd, fmt.Sprintf("image name \"%s\" not unique", v.Id))
+					err = errors.Wrap(apperr.ErrImageAdd, fmt.Sprintf("image name \"%d\" not unique", v.Id))
 					return
 				}
 			default:

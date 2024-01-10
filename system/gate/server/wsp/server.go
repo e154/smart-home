@@ -137,8 +137,6 @@ func (s *Server) Request(w http.ResponseWriter, r *http.Request) {
 
 	connection := pool.GetIdleConnection(r.Context())
 	if connection == nil {
-		// It means that dispatcher has set `nil` which is a system error case that is
-		// not expected in the normal flow.
 		common.ProxyErrorf(w, "Unable to get a proxy connection")
 		return
 	}
@@ -178,7 +176,6 @@ func (s *Server) Register(w http.ResponseWriter, r *http.Request) {
 // Shutdown stop the Server
 func (s *Server) Shutdown() {
 	close(s.done)
-	//close(s.dispatcher)
 	s.pools.Shutdown()
 }
 

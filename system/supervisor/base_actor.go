@@ -349,7 +349,7 @@ func (e *BaseActor) SaveState(msg events.EventStateChanged) {
 		state = msg.NewState.State.Name
 	}
 
-	go e.Service.EventBus().Publish("system/entities/"+msg.EntityId.String(), msg)
+	e.Service.EventBus().Publish("system/entities/"+msg.EntityId.String(), msg)
 
 	if !msg.StorageSave {
 		return
