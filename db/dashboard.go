@@ -90,7 +90,7 @@ func (n Dashboards) GetById(ctx context.Context, id int64) (board *Dashboard, er
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			err = errors.Wrap(apperr.ErrDashboardNotFound, fmt.Sprintf("id \"%s\"", id))
+			err = errors.Wrap(apperr.ErrDashboardNotFound, fmt.Sprintf("id \"%d\"", id))
 			return
 		}
 		err = errors.Wrap(apperr.ErrDashboardGet, err.Error())

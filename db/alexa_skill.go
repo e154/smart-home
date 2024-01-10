@@ -74,7 +74,7 @@ func (n AlexaSkills) GetById(ctx context.Context, id int64) (v *AlexaSkill, err 
 		Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			err = errors.Wrap(apperr.ErrAlexaSkillNotFound, fmt.Sprintf("id \"%s\"", id))
+			err = errors.Wrap(apperr.ErrAlexaSkillNotFound, fmt.Sprintf("id \"%d\"", id))
 			return
 		}
 		err = errors.Wrap(apperr.ErrAlexaSkillGet, err.Error())

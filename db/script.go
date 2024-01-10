@@ -140,7 +140,7 @@ func (n Scripts) GetByName(ctx context.Context, name string) (script *Script, er
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			err = errors.Wrap(apperr.ErrScriptNotFound, fmt.Sprintf("name \"%d\"", name))
+			err = errors.Wrap(apperr.ErrScriptNotFound, fmt.Sprintf("name \"%s\"", name))
 			return
 		}
 		err = errors.Wrap(apperr.ErrScriptGet, err.Error())
