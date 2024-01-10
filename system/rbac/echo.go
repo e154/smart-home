@@ -25,6 +25,8 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/labstack/echo/v4"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api/controllers"
 	"github.com/e154/smart-home/common"
@@ -33,7 +35,6 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/jwt_manager"
-	"github.com/labstack/echo/v4"
 )
 
 var (
@@ -123,9 +124,17 @@ func (f *EchoAccessFilter) getUser(userId int64, c echo.Context) error {
 
 func (f *EchoAccessFilter) accessDecision(params, method string, accessList access_list.AccessList) bool {
 
-	for _, action := range []string{"/stream/[\\wW\\.0-9]+/channel/[0-9]+/mse", "/v1/image/upload"} {
-		if ok, _ := regexp.MatchString(action, params); ok {
-			return true
+	for _, levels := range accessList {
+		for _, item := range levels {
+			for _, action := range item.Actions {
+				if item.Method != method {
+					continue
+				}
+
+				if ok, _ := regexp.MatchString(action, params); ok {
+					return true
+				}
+			}
 		}
 	}
 

@@ -23,13 +23,14 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/pkg/errors"
+	"go.uber.org/atomic"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
-	"github.com/pkg/errors"
-	"go.uber.org/atomic"
 )
 
 type pluginManager struct {
@@ -127,7 +128,7 @@ LOOP:
 func (p *pluginManager) loadPlugin(ctx context.Context, name string) (err error) {
 
 	if p.PluginIsLoaded(name) {
-		err = errors.Wrap(ErrPluginIsLoaded, name)
+		err = errors.Wrap(apperr.ErrPluginIsLoaded, name)
 		return
 	}
 	if item, ok := pluginList.Load(name); ok {
@@ -156,7 +157,7 @@ func (p *pluginManager) loadPlugin(ctx context.Context, name string) (err error)
 func (p *pluginManager) unloadPlugin(ctx context.Context, name string) (err error) {
 
 	if !p.PluginIsLoaded(name) {
-		err = errors.Wrap(ErrPluginNotLoaded, name)
+		err = errors.Wrap(apperr.ErrPluginNotLoaded, name)
 		return
 	}
 

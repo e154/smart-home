@@ -23,14 +23,12 @@ import (
 	"time"
 
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common/web"
-	"github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/scheduler"
-	"github.com/pkg/errors"
-
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/web"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
+	"github.com/e154/smart-home/system/mqtt"
+	"github.com/e154/smart-home/system/scheduler"
 	"github.com/e154/smart-home/system/scripts"
 )
 
@@ -192,15 +190,6 @@ const (
 	PluginBuiltIn = PluginType("System")
 	// PluginInstallable ...
 	PluginInstallable = PluginType("Installable")
-)
-
-var (
-	// ErrPluginIsLoaded ...
-	ErrPluginIsLoaded = errors.New("plugin is loaded")
-	// ErrPluginIsUnloaded ...
-	ErrPluginIsUnloaded = errors.New("plugin is unloaded")
-	// ErrPluginNotLoaded ...
-	ErrPluginNotLoaded = errors.New("plugin not loaded")
 )
 
 // Service ...
