@@ -101,7 +101,7 @@ func (p *plugin) Depends() []string {
 }
 
 func (p *plugin) Version() string {
-	return "0.0.1"
+	return Version
 }
 
 func (p *plugin) Options() m.PluginOptions {
