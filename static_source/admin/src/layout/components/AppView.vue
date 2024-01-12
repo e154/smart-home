@@ -32,7 +32,7 @@ const onKeydown = ( event ) => {
 }
 
 onMounted(() => {
-  document.addEventListener("keydown", onKeydown)
+  document.addEventListener("keydown", onKeydown, {passive: true})
 })
 
 onUnmounted(() => {

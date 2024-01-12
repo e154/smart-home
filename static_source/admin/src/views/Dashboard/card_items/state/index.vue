@@ -34,7 +34,7 @@ onMounted(() => {
   // store dom element moveable
   props.item.setTarget(el.value)
 
-  currentImage.value = props.item?.payload.state.default_image || props.item?.payload.state.defaultImage || null;
+  currentImage.value = props.item?.payload.state.defaultImage || props.item?.payload.state.default_image || null;
   if (props.item?.payload?.state?.defaultIcon) {
     currentImage.value = null
     currentIcon.value = props.item?.payload?.state?.defaultIcon;
@@ -88,7 +88,7 @@ const update = debounce(() => {
   }
 
   if (counter == 0) {
-    currentImage.value = props.item?.payload.state.default_image || props.item?.payload.state.defaultImage || null;
+    currentImage.value = props.item?.payload.state.defaultImage || props.item?.payload.state.default_image || null;
     if (props.item?.payload?.state?.defaultIcon) {
       currentImage.value = null
       currentIcon.value = props.item?.payload?.state?.defaultIcon;

@@ -320,11 +320,13 @@ export class CardItem {
         iconSize: action.iconSize,
       });
     }
-    const payload = btoa(unescape(encodeURIComponent(serializedObject({
+    const payload = {};
+    payload[this._type] = this.payload[this._type];
+    const cardItemPayload = btoa(unescape(encodeURIComponent(serializedObject({
       width: this.width,
       height: this.height,
       transform: this.transform,
-      payload: this.payload,
+      payload: payload,
       style: style,
       showOn: this.showOn,
       hideOn: this.hideOn,
@@ -338,7 +340,7 @@ export class CardItem {
       weight: this.weight,
       enabled: this.enabled,
       entityId: this._entityId || null,
-      payload: payload,
+      payload: cardItemPayload,
       hidden: this.hidden,
       frozen: this.frozen
 

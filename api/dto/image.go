@@ -48,6 +48,16 @@ func (i Image) ToImage(image *m.Image) (result *stub.ApiImage) {
 	return
 }
 
+// ToImageShort ...
+func (i Image) ToImageShort(image *m.Image) (result *stub.ApiImage) {
+	result = &stub.ApiImage{
+		Id:   image.Id,
+		Name: image.Name,
+		Url:  image.Url,
+	}
+	return
+}
+
 // FromNewImageRequest ...
 func (i Image) FromNewImageRequest(req *stub.ApiNewImageRequest) (image *m.Image) {
 	image = &m.Image{

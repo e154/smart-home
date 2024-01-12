@@ -21,8 +21,7 @@ package dto
 import (
 	"fmt"
 
-	stub "github.com/e154/smart-home/api/stub"
-
+	"github.com/e154/smart-home/api/stub"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 )
@@ -241,7 +240,7 @@ func ToEntity(entity *m.Entity) (obj *stub.ApiEntity) {
 	}
 	// image
 	if entity.Image != nil {
-		obj.Image = imageDto.ToImage(entity.Image)
+		obj.Image = imageDto.ToImageShort(entity.Image)
 	}
 	// parent
 	if entity.ParentId != nil {
@@ -263,7 +262,7 @@ func ToEntity(entity *m.Entity) (obj *stub.ApiEntity) {
 		}
 		// script
 		if a.Script != nil {
-			action.Script = scriptDto.GetStubScript(a.Script)
+			action.Script = scriptDto.GetStubScriptShort(a.Script)
 		}
 		obj.Actions = append(obj.Actions, action)
 	}
@@ -284,7 +283,7 @@ func ToEntity(entity *m.Entity) (obj *stub.ApiEntity) {
 	}
 	// scripts
 	for _, s := range entity.Scripts {
-		script := scriptDto.GetStubScript(s)
+		script := scriptDto.GetStubScriptShort(s)
 		obj.Scripts = append(obj.Scripts, *script)
 		obj.ScriptIds = append(obj.ScriptIds, s.Id)
 	}
