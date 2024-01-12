@@ -5041,14 +5041,14 @@ components:
           type: string
         area:
           $ref: '#/components/schemas/apiArea'
-        image:
-          $ref: '#/components/schemas/apiImage'
         icon:
           type: string
         autoLoad:
           type: boolean
         parentId:
           type: string
+        isLoaded:
+          type: boolean
         createdAt:
           type: string
           format: date-time
@@ -5234,7 +5234,7 @@ components:
         items:
           type: array
           items:
-            $ref: '#/components/schemas/apiEntity'
+            $ref: '#/components/schemas/apiEntityShort'
         meta:
           $ref: '#/components/schemas/apiMeta'
     apiGetEntityStorageResult:

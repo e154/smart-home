@@ -167,12 +167,12 @@ func (r Entity) ToSearchResult(list []*m.Entity) *stub.ApiSearchEntityResult {
 }
 
 // ToListResult ...
-func (r Entity) ToListResult(list []*m.Entity) []*stub.ApiEntity {
+func (r Entity) ToListResult(list []*m.Entity) []*stub.ApiEntityShort {
 
-	items := make([]*stub.ApiEntity, 0, len(list))
+	items := make([]*stub.ApiEntityShort, 0, len(list))
 
 	for _, i := range list {
-		items = append(items, ToEntity(i))
+		items = append(items, r.ToEntityShort(i))
 	}
 
 	return items
@@ -180,7 +180,6 @@ func (r Entity) ToListResult(list []*m.Entity) []*stub.ApiEntity {
 
 // ToEntityShort ...
 func (r Entity) ToEntityShort(entity *m.Entity) (obj *stub.ApiEntityShort) {
-	imageDto := NewImageDto()
 	obj = &stub.ApiEntityShort{
 		Id:          entity.Id.String(),
 		PluginName:  entity.PluginName,
@@ -190,6 +189,7 @@ func (r Entity) ToEntityShort(entity *m.Entity) (obj *stub.ApiEntityShort) {
 		CreatedAt:   entity.CreatedAt,
 		UpdatedAt:   entity.UpdatedAt,
 		ParentId:    entity.ParentId.StringPtr(),
+		IsLoaded:    common.Bool(entity.IsLoaded),
 	}
 	// area
 	if entity.Area != nil {
@@ -198,10 +198,6 @@ func (r Entity) ToEntityShort(entity *m.Entity) (obj *stub.ApiEntityShort) {
 			Name:        entity.Area.Name,
 			Description: entity.Area.Description,
 		}
-	}
-	// image
-	if entity.Image != nil {
-		obj.Image = imageDto.ToImage(entity.Image)
 	}
 
 	return

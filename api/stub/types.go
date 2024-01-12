@@ -420,7 +420,7 @@ type ApiEntityShort struct {
 	Description string    `json:"description"`
 	Icon        *string   `json:"icon,omitempty"`
 	Id          string    `json:"id"`
-	Image       *ApiImage `json:"image,omitempty"`
+	IsLoaded    *bool     `json:"isLoaded,omitempty"`
 	ParentId    *string   `json:"parentId,omitempty"`
 	PluginName  string    `json:"pluginName"`
 	UpdatedAt   time.Time `json:"updatedAt"`
@@ -533,8 +533,8 @@ type ApiGetDashboardTabListResult struct {
 
 // ApiGetEntityListResult defines model for apiGetEntityListResult.
 type ApiGetEntityListResult struct {
-	Items []ApiEntity `json:"items"`
-	Meta  *ApiMeta    `json:"meta,omitempty"`
+	Items []ApiEntityShort `json:"items"`
+	Meta  *ApiMeta         `json:"meta,omitempty"`
 }
 
 // ApiGetEntityStorageResult defines model for apiGetEntityStorageResult.
