@@ -431,10 +431,10 @@ export interface ApiEntityShort {
   pluginName: string;
   description: string;
   area?: ApiArea;
-  image?: ApiImage;
   icon?: string;
   autoLoad: boolean;
   parentId?: string;
+  isLoaded?: boolean;
   /** @format date-time */
   createdAt: string;
   /** @format date-time */
@@ -533,7 +533,7 @@ export interface ApiGetDashboardTabListResult {
 }
 
 export interface ApiGetEntityListResult {
-  items: ApiEntity[];
+  items: ApiEntityShort[];
   meta?: ApiMeta;
 }
 

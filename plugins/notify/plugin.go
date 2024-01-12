@@ -95,5 +95,5 @@ func (p *plugin) Depends() []string {
 
 // Version ...
 func (p *plugin) Version() string {
-	return "0.0.1"
+	return Version
 }

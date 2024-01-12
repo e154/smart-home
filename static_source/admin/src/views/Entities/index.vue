@@ -5,7 +5,7 @@ import {h, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
 import {ElButton, ElMessage, ElTag, ElCollapse, ElCollapseItem} from 'element-plus'
-import {ApiArea, ApiEntity, ApiPlugin} from "@/api/stub";
+import {ApiArea, ApiEntityShort, ApiPlugin} from "@/api/stub";
 import {useForm} from "@/hooks/web/useForm";
 import {useRouter} from "vue-router";
 import {parseTime} from "@/utils";
@@ -25,7 +25,7 @@ const {t} = useI18n()
 const { wsCache } = useCache()
 
 interface TableObject {
-  tableList: ApiEntity[]
+  tableList: ApiEntityShort[]
   params?: any
   loading: boolean
   sort?: string
@@ -70,7 +70,7 @@ const columns: TableColumn[] = [
     label: t('entities.area'),
     width: "100px",
     sortable: true,
-    formatter: (row: ApiEntity) => {
+    formatter: (row: ApiEntityShort) => {
       return h(
           'span',
           row.area?.name
@@ -93,7 +93,7 @@ const columns: TableColumn[] = [
     type: 'time',
     sortable: true,
     width: "170px",
-    formatter: (row: ApiEntity) => {
+    formatter: (row: ApiEntityShort) => {
       return h(
           'span',
           parseTime(row.createdAt)
@@ -106,7 +106,7 @@ const columns: TableColumn[] = [
     type: 'time',
     sortable: true,
     width: "170px",
-    formatter: (row: ApiEntity) => {
+    formatter: (row: ApiEntityShort) => {
       return h(
           'span',
           parseTime(row.updatedAt)
@@ -209,7 +209,7 @@ const selectRow = (row) => {
   push(`/entities/edit/${id}`)
 }
 
-const restart = async (entity: ApiEntity) => {
+const restart = async (entity: ApiEntityShort) => {
   await api.v1.developerToolsServiceReloadEntity({id: entity.id});
   ElMessage({
     title: t('Success'),
@@ -219,7 +219,7 @@ const restart = async (entity: ApiEntity) => {
   });
 }
 
-const enable = async (entity: ApiEntity) => {
+const enable = async (entity: ApiEntityShort) => {
   if (!entity?.id) return;
   await api.v1.entityServiceEnabledEntity(entity.id);
   ElMessage({
@@ -230,7 +230,7 @@ const enable = async (entity: ApiEntity) => {
   });
 }
 
-const disable = async (entity: ApiEntity) => {
+const disable = async (entity: ApiEntityShort) => {
   if (!entity?.id) return;
   await api.v1.entityServiceDisabledEntity(entity.id);
   ElMessage({
@@ -255,8 +255,8 @@ const importHandler = (val: string) => {
 }
 
 const importEntity = async () => {
-  const val: ApiEntity = JSON.parse(importedEntity.value)
-  const entity: ApiEntity = {
+  const val: ApiEntityShort = JSON.parse(importedEntity.value)
+  const entity: ApiEntityShort = {
     id: val.id,
     pluginName: val.pluginName,
     description: val.description,

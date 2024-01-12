@@ -92,11 +92,11 @@ const contentResizeHandler = async (e: TransitionEvent) => {
 onMounted(() => {
   initChart()
 
-  window.addEventListener('resize', resizeHandler)
+  window.addEventListener('resize', resizeHandler, {passive: true})
 
   contentEl.value = document.getElementsByClassName(`${variables.namespace}-layout-content`)[0]
   unref(contentEl) &&
-    (unref(contentEl) as Element).addEventListener('transitionend', contentResizeHandler)
+    (unref(contentEl) as Element).addEventListener('transitionend', contentResizeHandler, {passive: true})
 
   echartRef.on('datazoom', function (evt) {
     // const option = echartRef.getOption();

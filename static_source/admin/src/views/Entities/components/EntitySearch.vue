@@ -1,24 +1,24 @@
 <script setup lang="ts">
 
 import {PropType, ref, unref, watch} from "vue";
-import {ApiEntity} from "@/api/stub";
+import {ApiEntityShort} from "@/api/stub";
 import {ElAutocomplete} from 'element-plus'
 import api from "@/api/api";
 
-const currentEntity = ref<Nullable<ApiEntity>>(null)
+const currentEntity = ref<Nullable<ApiEntityShort>>(null)
 const entityId = ref<Nullable<string>>(null)
 const emit = defineEmits(['change', 'update:modelValue'])
 
 const props = defineProps({
   modelValue: {
-    type: Object as PropType<Nullable<ApiEntity>>,
+    type: Object as PropType<Nullable<ApiEntityShort>>,
     default: () => undefined
   }
 })
 
 watch(
     () => props.modelValue,
-    (val?: ApiEntity) => {
+    (val?: ApiEntityShort) => {
       if (val === unref(currentEntity)) return
       entityId.value = val?.id || null;
       currentEntity.value = val || null;
@@ -31,7 +31,7 @@ watch(
 // 监听
 watch(
     () => currentEntity.value,
-    (val?: ApiEntity) => {
+    (val?: ApiEntityShort) => {
       if (props.modelValue == unref(val)) return;
       emit('update:modelValue', val)
       if (!val) {
@@ -56,7 +56,7 @@ const handleChange = (val) => {
     currentEntity.value = null
   }
 }
-const handleSelect = (val: ApiEntity) => {
+const handleSelect = (val: ApiEntityShort) => {
   currentEntity.value = val
   emit('change', val)
 }

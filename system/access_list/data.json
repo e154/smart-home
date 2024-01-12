@@ -754,5 +754,14 @@
       "description": "",
       "method": "delete"
     }
+  },
+  "stream": {
+    "watch": {
+      "actions": [
+        "/stream/*"
+      ],
+      "description": "",
+      "method": "get"
+    }
   }
 }
