@@ -20,11 +20,10 @@ package scripts
 
 import (
 	"fmt"
+	"github.com/pkg/errors"
 	"runtime/debug"
 	"strings"
 	"sync"
-
-	"github.com/pkg/errors"
 
 	"github.com/dop251/goja"
 	. "github.com/e154/smart-home/common"
@@ -308,9 +307,14 @@ func (j *Javascript) RunProgram(name string) (result string, err error) {
 }
 
 func (j *Javascript) unsafeRun(program *goja.Program) (result string, err error) {
+
+	if program == nil {
+		return
+	}
+
 	defer func() {
 		if r := recover(); r != nil {
-			log.Warn("Recovered")
+			log.Warn("Recovered script: ", j.engine.model.Id)
 			debug.PrintStack()
 		}
 	}()
