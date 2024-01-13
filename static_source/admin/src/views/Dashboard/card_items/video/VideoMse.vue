@@ -102,7 +102,7 @@ const startPlay = () => {
         startPlay();
       }, 1000);
     };
-  }, false)
+  }, {passive: false})
 }
 
 const stopPlay = () => {
