@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ElDrawer, ElDivider, ElMessage } from 'element-plus'
-import { ref, unref, computed, watch } from 'vue'
+import {ref, unref, computed, watch, nextTick} from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ThemeSwitch } from '@/components/ThemeSwitch'
 import { colorIsDark, lighten, hexToRGB } from '@/utils/color'
@@ -12,6 +12,8 @@ import InterfaceDisplay from './components/InterfaceDisplay.vue'
 import { useCache } from '@/hooks/web/useCache'
 import { useClipboard } from '@vueuse/core'
 import { useDesign } from '@/hooks/web/useDesign'
+import { usePreferredColorScheme } from '@vueuse/core'
+import {isNumber} from "@/utils/is";
 
 const { getPrefixCls } = useDesign()
 
@@ -139,6 +141,7 @@ const copyConfig = async () => {
       footer: ${appStore.getFooter},
       // 灰色模式
       greyMode: ${appStore.getGreyMode},
+      systemTheme: ${appStore.getSystemTheme},
       // layout布局
       layout: '${appStore.getLayout}',
       // 暗黑模式
@@ -196,6 +199,13 @@ const clear = () => {
   wsCache.delete('isDark')
   window.location.reload()
 }
+
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+  if (appStore.getSystemTheme) {
+    appStore.setIsDark(event.matches)
+  }
+});
+
 </script>
 
 <template>
