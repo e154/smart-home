@@ -80,7 +80,7 @@ const menuCardItemClick = (index: number) => {
     return;
   }
 
-    activeCard.value.selectedItem = index;
+  activeCard.value.selectedItem = index;
 
   bus.emit('selected_card_item', index)
 }

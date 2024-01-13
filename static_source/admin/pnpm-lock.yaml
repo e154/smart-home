@@ -5,12 +5,18 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@daybrush/utils':
+    specifier: ^1.13.0
+    version: 1.13.0
   '@element-plus/icons-vue':
     specifier: ^2.1.0
     version: 2.1.0(vue@3.2.47)
   '@iconify/iconify':
     specifier: ^3.1.0
     version: 3.1.0
+  '@moveable/helper':
+    specifier: ^0.1.3
+    version: 0.1.3
   '@tinymce/tinymce-vue':
     specifier: ^5.1.0
     version: 5.1.0(vue@3.2.47)
@@ -113,6 +119,9 @@ dependencies:
   vue-i18n:
     specifier: 9.2.2
     version: 9.2.2(vue@3.2.47)
+  vue-keycon:
+    specifier: ^0.2.0
+    version: 0.2.0
   vue-lite-youtube-embed:
     specifier: ^1.2.0
     version: 1.2.0(vue@3.2.47)
@@ -1575,6 +1584,12 @@ packages:
       '@egjs/component': 3.0.4
     dev: false
 
+  /@cfcs/vue3@0.0.6:
+    resolution: {integrity: sha512-ouNVZXP4yk4BS1VVMd+xWTJNI2eS1IrLfebbtpjjitOzQDSwX6bNI0wo0QLiZ0Isu2f8qjxq++PmCwCEUSJ3CQ==}
+    dependencies:
+      '@cfcs/core': 0.0.6
+    dev: false
+
   /@commitlint/cli@17.5.1:
     resolution: {integrity: sha512-pRRgGSzdHQHehxZbGA3qF6wVPyl+EEQgTe/t321rtMLFbuJ7nRj2waS17s/v5oEbyZtiY5S8PGB6XtEIm0I+Sg==}
     engines: {node: '>=v14'}
@@ -2274,6 +2289,12 @@ packages:
       '@jridgewell/resolve-uri': 3.1.1
       '@jridgewell/sourcemap-codec': 1.4.15
     dev: true
+
+  /@moveable/helper@0.1.3:
+    resolution: {integrity: sha512-hSSyPkU7/cZuJys79rG0/xMs2Py09a8RUvBtpi/AftLYeSS8JAmMNwiw9lL19nddsVNB9cb2UON+U6uyFNS8Zw==}
+    dependencies:
+      '@daybrush/utils': 1.13.0
+    dev: false
 
   /@nodelib/fs.scandir@2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -9203,6 +9224,13 @@ packages:
     dependencies:
       clipboard: 2.0.11
       vue: 3.2.47
+    dev: false
+
+  /vue-keycon@0.2.0:
+    resolution: {integrity: sha512-3K9btFbnqUDr70Wmo/F8M2QnpQ5BFuR2QOknzpW3F8fSNYAKdT50oknqR8HS68DZ77xwso+rFripdDQFRBBRoA==}
+    dependencies:
+      '@cfcs/vue3': 0.0.6
+      keycon: 1.4.0
     dev: false
 
   /vue-lite-youtube-embed@1.2.0(vue@3.2.47):
