@@ -33,6 +33,7 @@ import {ItemPayloadJoystick} from "@/views/Dashboard/card_items/joystick/types";
 import {ItemPayloadVideo} from "@/views/Dashboard/card_items/video/types";
 import {ItemPayloadEntityStorage} from "@/views/Dashboard/card_items/entity_storage/types";
 import {prepareUrl} from "@/utils/serverId";
+import {ItemPayloadTiles} from "@/views/Dashboard/card_items/tiles/types";
 
 const {bus} = useBus()
 
@@ -111,6 +112,7 @@ export interface ItemPayload {
   joystick?: ItemPayloadJoystick;
   video?: ItemPayloadVideo;
   entityStorage?: ItemPayloadEntityStorage;
+  tiles?: ItemPayloadTiles;
 }
 
 export interface ItemParams {
@@ -297,6 +299,17 @@ export class CardItem {
       }
       if (!this.payload.entityStorage) {
         this.payload.entityStorage = {} as ItemPayloadEntityStorage;
+      }
+      if (!this.payload.tiles) {
+        this.payload.tiles = {
+          items: [],
+          defaultImage: undefined,
+          columns: 5,
+          rows: 5,
+          tileHeight: 25,
+          tileWidth: 25,
+          attribute: '',
+        } as ItemPayloadTiles;
       }
     }
   }
@@ -961,7 +974,6 @@ export class Tab {
   cards: Card[] = [];
   columnWidth: number;
   dashboardId: number;
-  dragEnabled: boolean;
   enabled: boolean;
   entities: Map<string, ApiEntity>;
   gap: boolean;
@@ -975,7 +987,6 @@ export class Tab {
     this.cards = [];
     this.columnWidth = tab.columnWidth;
     this.dashboardId = tab.dashboardId;
-    this.dragEnabled = tab.dragEnabled;
     this.enabled = tab.enabled;
     this.entities = tab.entities;
     this.gap = tab.gap;
@@ -1036,7 +1047,6 @@ export class Tab {
       background: this.background,
       icon: this.icon,
       enabled: this.enabled,
-      dragEnabled: this.dragEnabled,
       weight: this.weight,
       dashboardId: this.dashboardId,
       cards: cards,

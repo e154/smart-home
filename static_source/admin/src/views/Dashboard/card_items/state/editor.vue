@@ -101,13 +101,13 @@ const onSelectIconForState = (index: number, icon: string) => {
 const reloadKeyDefaultImage = 0;
 
 const onSelectDefaultImage = (image: ApiImage) => {
-  console.log('select image', image);
+  // console.log('select image', image);
 
   if (!props.item.payload.state) {
     initDefaultValue();
   }
 
-  current_item.value.payload.state.defaultImage = image as ApiImage || undefined;
+  currentItem.value.payload.state.defaultImage = image as ApiImage || undefined;
   // this.reloadKeyDefaultImage += 1
   props.item.update();
 }

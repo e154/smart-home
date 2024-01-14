@@ -30,6 +30,9 @@ export const prepareUrl = function (url: string | undefined): string {
     return url
   }
   const serverId = wsCache.get('serverId')
+  if (!serverId) {
+    return url;
+  }
   if (url?.includes('?')) {
     return url + '&serverId=' + serverId;
   } else {

@@ -617,6 +617,18 @@ export default {
                 entities: 'Entities',
                 showFilter: 'Show Filter'
             },
+            tiles: {
+                items: 'Items',
+                height: 'Height',
+                width: 'Width',
+                position: 'Position',
+                top: 'Top',
+                left: 'Left',
+                preview: 'Preview',
+                columns: 'Columns',
+                rows: 'Rows',
+            },
+            tilesOptions: 'Tales Options',
             iconOptions: 'Icon Options',
             defaultIcon: 'Default Icon',
             iconSize: 'Icon Size',

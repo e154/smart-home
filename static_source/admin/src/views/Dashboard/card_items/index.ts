@@ -30,6 +30,8 @@ import joystick from './joystick/index.vue';
 import joystickEditor from './joystick/editor.vue';
 import icon from './icon/index.vue';
 import iconEditor from './icon/editor.vue';
+import tiles from './tiles/index.vue';
+import tilesEditor from './tiles/editor.vue';
 
 export const CardItemName = (name: string): any => {
   switch (name) {
@@ -63,6 +65,8 @@ export const CardItemName = (name: string): any => {
       return joystick;
     case 'icon':
       return icon;
+    case 'tiles':
+      return tiles;
     default:
       // console.error(`unknown card name "${name}"`);
       return dummy;
@@ -101,6 +105,8 @@ export const CardEditorName = (name: string): any => {
       return joystickEditor;
     case 'icon':
       return iconEditor;
+    case 'tiles':
+      return tilesEditor;
     default:
       // console.error(`unknown card name "${name}"`);
       return dummyEditor;
@@ -127,5 +133,6 @@ export const CardItemList: ItemsType[] = [
   {label: 'COLOR_PICKER', value: 'colorPicker'},
   {label: 'STREAM_PLAYER', value: 'streamPlayer'},
   {label: 'JOYSTICK', value: 'joystick'},
-  {label: 'ICON', value: 'icon'}
+  {label: 'ICON', value: 'icon'},
+  {label: 'TILES', value: 'tiles'}
 ];
