@@ -559,6 +559,7 @@ export default {
       STREAM_PLAYER: 'Video player',
       JOYSTICK: 'Joystick',
       ICON: 'Икона',
+      TILES: 'Тайлы',
       tooltip: 'Подсказка',
       slider: {
         options: 'Параметры слайдера',

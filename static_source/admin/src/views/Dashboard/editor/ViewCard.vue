@@ -39,7 +39,7 @@ onUpdated(() => {
 // ---------------------------------
 
 const zoom = ref(1);
-const canvas = ref(null)
+const cardRef = ref(null)
 
 const props = defineProps({
   core: {
@@ -264,15 +264,11 @@ const onDragStart = (e) => {
 
   <div
       class="item-card elements selecto-area prevent-select"
-      ref="canvas"
+      ref="cardRef"
       v-bind:class="'class-'+currentCard.currentID"
       :key="reloadKey"
       :style="{
         'transform': `scale(${zoom})`,
-        'position': 'relative',
-        'overflow': 'hidden',
-        'width': '100%',
-        'height': `100%`,
         'background-color': currentCard.background || 'inherit'}"
       @click="selectCard()"
       @mousedown.self="selectCardItem(-1)"
@@ -305,7 +301,7 @@ const onDragStart = (e) => {
 
     <VueSelecto
         ref="selectoRef"
-        :rootContainer="canvas"
+        :rootContainer="cardRef"
         :selectableTargets="['.class-'+currentCard.currentID+' .movable']"
         :hitRate="0"
         :selectByClick="true"
@@ -324,5 +320,10 @@ const onDragStart = (e) => {
 .movable {
   position: absolute;
 }
-
+.item-card {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
 </style>

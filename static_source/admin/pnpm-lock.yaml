@@ -119,9 +119,6 @@ dependencies:
   vue-i18n:
     specifier: 9.2.2
     version: 9.2.2(vue@3.2.47)
-  vue-keycon:
-    specifier: ^0.2.0
-    version: 0.2.0
   vue-lite-youtube-embed:
     specifier: ^1.2.0
     version: 1.2.0(vue@3.2.47)
@@ -1582,12 +1579,6 @@ packages:
     resolution: {integrity: sha512-FxfJMwoLB8MEMConeXUCqtMGqxdtePQxRBOiGip9ULcYYam3WfCgoY6xdnMaSkYvRvmosp5iuG+TiPofm65+Pw==}
     dependencies:
       '@egjs/component': 3.0.4
-    dev: false
-
-  /@cfcs/vue3@0.0.6:
-    resolution: {integrity: sha512-ouNVZXP4yk4BS1VVMd+xWTJNI2eS1IrLfebbtpjjitOzQDSwX6bNI0wo0QLiZ0Isu2f8qjxq++PmCwCEUSJ3CQ==}
-    dependencies:
-      '@cfcs/core': 0.0.6
     dev: false
 
   /@commitlint/cli@17.5.1:
@@ -9224,13 +9215,6 @@ packages:
     dependencies:
       clipboard: 2.0.11
       vue: 3.2.47
-    dev: false
-
-  /vue-keycon@0.2.0:
-    resolution: {integrity: sha512-3K9btFbnqUDr70Wmo/F8M2QnpQ5BFuR2QOknzpW3F8fSNYAKdT50oknqR8HS68DZ77xwso+rFripdDQFRBBRoA==}
-    dependencies:
-      '@cfcs/vue3': 0.0.6
-      keycon: 1.4.0
     dev: false
 
   /vue-lite-youtube-embed@1.2.0(vue@3.2.47):
