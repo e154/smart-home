@@ -4,6 +4,7 @@ import {useAppStore} from '@/store/modules/app'
 import {Footer} from '@/components/Footer'
 import {computed, onMounted, onUnmounted} from 'vue'
 import {Terminal} from "@/components/Terminal";
+import {useEmitt} from "@/hooks/web/useEmitt";
 
 const appStore = useAppStore()
 
@@ -21,8 +22,10 @@ const getCaches = computed((): string[] => {
   return tagsViewStore.getCachedViews
 })
 
+const {emitter} = useEmitt()
 const onKeydown = ( event ) => {
-  // console.log(event.key);
+  // console.log(event.code, event.keyCode);
+  emitter.emit('keydown', event)
   if (event.key === "Escape") {
     appStore.setTerminal(false)
   }
