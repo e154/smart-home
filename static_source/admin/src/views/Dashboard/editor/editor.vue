@@ -77,30 +77,11 @@ useBus({
 // tabs
 // ---------------------------------
 
-const handleTabsEdit = (targetName: string, action: string) => {
-  switch (action) {
-    case 'add':
-      createTab();
-      break;
-    case 'remove':
-  }
-}
-
 const updateCurrentTab = (tab: any, ev: any) => {
   const {index} = tab;
   if (core.activeTab === index) return;
   core.activeTab = index;
   core.updateCurrentTab();
-}
-
-const createTab = async () => {
-  await core.createTab();
-  ElMessage({
-    title: t('Success'),
-    message: t('message.createdSuccessfully'),
-    type: 'success',
-    duration: 2000
-  });
 }
 
 const activeTabIdx = computed({
@@ -156,7 +137,6 @@ const elContainerHeight = computed(()=> {
     <pane min-size="10" max-size="90" class="top-container" :size="splitPaneTopSize">
         <ElTabs
             v-model="activeTabIdx"
-            @edit="handleTabsEdit"
             @tab-click="updateCurrentTab"
             class="ml-20px">
           <ElTabPane
