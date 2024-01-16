@@ -86,40 +86,12 @@ const menuCardItemClick = (index: number) => {
 }
 
 const sortCardItemUp = (item: CardItem, index: number) => {
-  // console.log('up', item, index)
-
-  if (!activeCard.value.items[index - 1]) {
-    return;
-  }
-
-  let rows = [activeCard.value.items[index - 1], activeCard.value.items[index]];
-  activeCard.value.items.splice(index - 1, 2, rows[1], rows[0]);
-
-  let counter = 0
-  for (const index in activeCard.value.items) {
-    activeCard.value.items[index].weight = counter;
-    counter++;
-  }
-
+  activeCard.value.sortCardItemUp(item, index)
   currentCore.value.updateCard();
 }
 
 const sortCardItemDown = (item: CardItem, index: number) => {
-  // console.log('down', item, index)
-
-  if (!activeCard.value.items[index + 1]) {
-    return;
-  }
-
-  let rows = [activeCard.value.items[index], activeCard.value.items[index + 1]];
-  activeCard.value.items.splice(index, 2, rows[1], rows[0]);
-
-  let counter = 0
-  for (const index in activeCard.value.items) {
-    activeCard.value.items[index].weight = counter;
-    counter++;
-  }
-
+  activeCard.value.sortCardItemDown(item, index)
   currentCore.value.updateCard();
 }
 

@@ -901,6 +901,36 @@ export class Card {
     this.items.sort(sortCardItems);
   }
 
+  sortCardItemUp(item: CardItem, index: number) {
+    if (!this.items[index - 1]) {
+      return;
+    }
+
+    const rows = [this.items[index - 1], this.items[index]];
+    this.items.splice(index - 1, 2, rows[1], rows[0]);
+
+    let counter = 0
+    for (const index in this.items) {
+      this.items[index].weight = counter;
+      counter++;
+    }
+  }
+
+  sortCardItemDown(item: CardItem, index: number) {
+    if (!this.items[index + 1]) {
+      return;
+    }
+
+    const rows = [this.items[index], this.items[index + 1]];
+    this.items.splice(index, 2, rows[1], rows[0]);
+
+    let counter = 0
+    for (const index in this.items) {
+      this.items[index].weight = counter;
+      counter++;
+    }
+  }
+
   // ---------------------------------
   // events
   // ---------------------------------
