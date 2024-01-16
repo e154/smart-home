@@ -93,11 +93,11 @@ const activeTabIdx = computed({
   }
 })
 
-const activeTab = computed<Tab>(() => core.tabs[core.activeTabIdx] as Tab)
-const activeCard = computed<Card>(() => core.tabs[core.activeTabIdx].cards[core.activeCard] as Card)
+const activeTab = computed<Tab>(() => core.getActiveTab as Tab)
+const activeCard = computed<Card>(() => core.getActiveTab.cards[core.activeCard] as Card)
 
 const getBackgroundColor = () => {
-  return {backgroundColor: core.tabs[core.activeTabIdx]?.background}
+  return {backgroundColor: core.getActiveTab?.background}
 }
 
 // split panels

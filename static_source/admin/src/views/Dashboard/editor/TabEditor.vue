@@ -154,7 +154,7 @@ watch(
 
 const activeTab = computed({
   get(): Tab {
-    return currentCore.value.tabs[currentCore.value.activeTabIdx] as Tab
+    return currentCore.value.getActiveTab as Tab
   },
   set(val: Tab) {}
 })
@@ -198,9 +198,7 @@ const removeTab = async () => {
 }
 
 const menuTabClick = (index: number, tab: Tab) => {
-  if (currentCore.value.activeTabIdx === index) return;
-  currentCore.value.activeTabIdx = index;
-  currentCore.value.updateCurrentTab();
+  currentCore.value.selectTabInMenu(index)
 }
 
 const createTab = async () => {

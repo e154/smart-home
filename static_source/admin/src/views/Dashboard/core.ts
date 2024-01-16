@@ -1282,6 +1282,12 @@ export class Core {
     return this.tabs[this.activeTabIdx] || undefined;
   }
 
+  selectTabInMenu(idx: number) {
+      if (this.activeTabIdx === idx) return;
+      this.activeTabIdx = idx;
+      this.updateCurrentTab();
+  }
+
   async createTab() {
     const tab = await Tab.createNew(this.current.id, 'NEW_TAB' + (this.tabs.length + 1), 300, this.tabs.length);
     this.tabs.push(tab);

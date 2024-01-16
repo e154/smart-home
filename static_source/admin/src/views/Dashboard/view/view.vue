@@ -68,7 +68,7 @@ const activeTabIdx = computed({
 })
 
 const getBackgroundColor = () => {
-  return {backgroundColor: core.tabs[core.activeTabIdx]?.background}
+  return {backgroundColor: core.getActiveTab?.background}
 }
 
 fetchDashboard()

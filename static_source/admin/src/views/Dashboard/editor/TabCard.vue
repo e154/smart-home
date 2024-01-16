@@ -138,7 +138,7 @@ const schema = reactive<FormSchema[]>([
 ])
 
 const currentCore = computed(() => props.core as Core)
-const activeCard = computed(() => props.core?.tabs[props.core?.activeTabIdx]?.cards[props.core?.activeTabIdx] as Card)
+const activeCard = computed(() => props.core?.getActiveTab?.cards[props.core?.activeCard] as Card)
 
 //todo: optimize
 watch(
@@ -166,7 +166,7 @@ watch(
 
 const activeTab = computed({
   get(): Tab {
-    return currentCore.value.tabs[currentCore.value.activeTabIdx] as Tab
+    return currentCore.value.getActiveTab as Tab
   },
   set(val: Tab) {}
 })
@@ -181,7 +181,7 @@ const exportDialogVisible = ref(false)
 const importedCard = ref("")
 
 const prepareForExport = () => {
-  if (currentCore.value.activeTabIdx == undefined || currentCore.value.activeCard == undefined) {
+  if (currentCore.value.activeCard == undefined) {
     return;
   }
   dialogSource.value = activeTab.value.cards[currentCore.value.activeCard].serialize()
@@ -305,17 +305,11 @@ const cancel = () => {
 }
 
 const sortCardUp = (card: Card, index: number) => {
-  if (!currentCore.value.tabs.length || !(currentCore.value.activeTabIdx >= 0)) {
-    return;
-  }
   activeTab.value.sortCardUp(card, index)
   currentCore.value.updateCurrentTab();
 }
 
 const sortCardDown = (card: Card, index: number) => {
-  if (!currentCore.value.tabs.length || !(currentCore.value.activeTabIdx >= 0)) {
-    return;
-  }
   activeTab.value.sortCardDown(card, index)
   currentCore.value.updateCurrentTab();
 }
