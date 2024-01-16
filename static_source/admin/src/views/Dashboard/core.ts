@@ -1102,18 +1102,22 @@ export class Core {
   constructor() {
   }
 
+  get getActiveTab(): Tab {
+    return this.tabs[this.activeTab];
+  }
+
   currentBoard(current: ApiDashboard) {
     this.current = current;
     this.tabs = [];
     this.activeTab = 0;
-    this.currentTabId = undefined;
+    // this.currentTabId = undefined;
     if (current.tabs && current.tabs.length > 0) {
       for (const index in current.tabs) {
         this.tabs.push(new Tab(current.tabs[index]));
       }
-      this.currentTabId = this.tabs[this.activeTab].id;
+      // this.currentTabId = this.getActiveTab.id;
 
-      if (this.tabs[this.activeTab].cards.length > 0) {
+      if (this.getActiveTab.cards.length > 0) {
         this.activeCard = 0;
       }
     }
@@ -1228,8 +1232,8 @@ export class Core {
     }
 
     bus.emit('update_tab', this.currentTabId)
-    if (this.tabs[this.activeTab]) {
-      return this.tabs[this.activeTab].update();
+    if (this.getActiveTab) {
+      return this.getActiveTab.update();
     }
   }
 
@@ -1251,7 +1255,7 @@ export class Core {
       return;
     }
 
-    this.currentTabId = this.tabs[this.activeTab].id;
+    this.currentTabId = this.getActiveTab.id;
     console.log(`select tab id:${this.currentTabId}`);
     // this.activeCard = -1
     // this.currentCardId = undefined
@@ -1267,15 +1271,15 @@ export class Core {
       return;
     }
     // console.log(`select card id:${id}`);
-    for (const index in this.tabs[this.activeTab].cards) {
-      const cardId = this.tabs[this.activeTab].cards[index].id;
+    for (const index in this.getActiveTab.cards) {
+      const cardId = this.getActiveTab.cards[index].id;
       if (cardId === id) {
         this.activeCard = index as unknown as number;
         this.currentCardId = id;
-        this.tabs[this.activeTab].cards[index].active = true
+        this.getActiveTab.cards[index].active = true
       } else {
         // console.log(`disable id:${cardId}`)
-        this.tabs[this.activeTab].cards[index].active = false
+        this.getActiveTab.cards[index].active = false
       }
     }
   }
@@ -1286,16 +1290,16 @@ export class Core {
     }
 
     const card = await Card.createNew(
-      'new card' + this.tabs[this.activeTab].cards.length,
+      'new card' + this.getActiveTab.cards.length,
       randColor(),
-      this.tabs[this.activeTab].columnWidth,
+      this.getActiveTab.columnWidth,
       getSize(),
-      this.tabs[this.activeTab].id,
-      10 * this.tabs[this.activeTab].cards.length || 0
+      this.getActiveTab.id,
+      10 * this.getActiveTab.cards.length || 0
     );
 
-    this.tabs[this.activeTab].cards.push(card);
-    this.activeCard = this.tabs[this.activeTab].cards.length - 1;
+    this.getActiveTab.cards.push(card);
+    this.activeCard = this.getActiveTab.cards.length - 1;
     this.currentCardId = card.id;
 
     bus.emit('update_tab', this.currentTabId);
@@ -1309,7 +1313,7 @@ export class Core {
     // move to direct call
     // bus.emit('update_tab', this.currentTabId);
 
-    return this.tabs[this.activeTab].cards[this.activeCard].update();
+    return this.getActiveTab.cards[this.activeCard].update();
   }
 
   async removeCard() {
@@ -1321,9 +1325,9 @@ export class Core {
 
     const {data} = await api.v1.dashboardCardServiceDeleteDashboardCard(this.currentCardId);
     if (data) {
-      for (const index: number in this.tabs[this.activeTab].cards) {
-        if (this.tabs[this.activeTab].cards[index].id == this.currentCardId) {
-          this.tabs[this.activeTab].cards.splice(index, 1);
+      for (const index: number in this.getActiveTab.cards) {
+        if (this.getActiveTab.cards[index].id == this.currentCardId) {
+          this.getActiveTab.cards.splice(index, 1);
         }
       }
 
@@ -1343,7 +1347,7 @@ export class Core {
     card.dashboardTabId = this.currentTabId;
     const {data} = await api.v1.dashboardCardServiceImportDashboardCard(card);
     if (data) {
-      this.tabs[this.activeTab].cards.push(new Card(data));
+      this.getActiveTab.cards.push(new Card(data));
     }
 
     bus.emit('update_tab', this.currentTabId);
@@ -1359,12 +1363,12 @@ export class Core {
       return;
     }
 
-    const card = await this.tabs[this.activeTab].cards[this.activeCard];
+    const card = await this.getActiveTab.cards[this.activeCard];
     if (!card) {
       return;
     }
 
-    await this.tabs[this.activeTab].cards[this.activeCard].createCardItem();
+    await this.getActiveTab.cards[this.activeCard].createCardItem();
 
     // bus.emit('update_tab', this.currentTabId);
   }
@@ -1374,7 +1378,7 @@ export class Core {
       return;
     }
 
-    await this.tabs[this.activeTab].cards[this.activeCard].removeItem(index);
+    await this.getActiveTab.cards[this.activeCard].removeItem(index);
 
     // bus.emit('update_tab', this.currentTabId);
   }
