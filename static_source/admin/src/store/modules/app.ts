@@ -79,7 +79,6 @@ export const useAppStore = defineStore('app', {
       fixedMenu: wsCache.get('fixedMenu') || false, // 是否固定菜单
       terminal: wsCache.get('terminal') || false,
       serverId: wsCache.get('serverId') || '',
-
       layout: wsCache.get('layout') || 'classic', // layout布局
       isDark: wsCache.get('isDark') || false, // 是否是暗黑模式
       currentSize: wsCache.get('currentSize') || 'default', // 组件尺寸

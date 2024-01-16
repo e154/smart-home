@@ -12,8 +12,7 @@ import InterfaceDisplay from './components/InterfaceDisplay.vue'
 import { useCache } from '@/hooks/web/useCache'
 import { useClipboard } from '@vueuse/core'
 import { useDesign } from '@/hooks/web/useDesign'
-import { usePreferredColorScheme } from '@vueuse/core'
-import {isNumber} from "@/utils/is";
+import {isDark} from "@/utils/is";
 
 const { getPrefixCls } = useDesign()
 
@@ -22,6 +21,8 @@ const prefixCls = getPrefixCls('setting')
 const appStore = useAppStore()
 
 const { t } = useI18n()
+
+const { wsCache } = useCache()
 
 const layout = computed(() => appStore.getLayout)
 
@@ -193,7 +194,6 @@ const copyConfig = async () => {
 
 // 清空缓存
 const clear = () => {
-  const { wsCache } = useCache()
   wsCache.delete('layout')
   wsCache.delete('theme')
   wsCache.delete('isDark')
@@ -205,6 +205,13 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', eve
     appStore.setIsDark(event.matches)
   }
 });
+
+const checkTheme = () => {
+  const _isDark = wsCache.get('systemTheme') ? isDark() : wsCache.get('isDark') || false;
+  appStore.setIsDark(_isDark)
+}
+
+checkTheme()
 
 </script>
 
