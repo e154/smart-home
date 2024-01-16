@@ -1150,7 +1150,7 @@ export class Tab {
 export class Core {
   current: ApiDashboard = {} as ApiDashboard;
 
-  activeTabIdx = 0; // index
+  private _activeTabIdx = 0; // index
 
   activeCard: number | undefined = undefined; // index
   currentCardId: number | undefined;
@@ -1167,7 +1167,7 @@ export class Core {
   currentBoard(current: ApiDashboard) {
     this.current = current;
     this.tabs = [];
-    this.activeTabIdx = 0;
+    this._activeTabIdx = 0;
     if (current.tabs && current.tabs.length > 0) {
       for (const index in current.tabs) {
         this.tabs.push(new Tab(current.tabs[index]));
@@ -1275,23 +1275,32 @@ export class Core {
   // tabs
   // ---------------------------------
 
-  get getActiveTab(): Tab | undefined {
-    if (this.activeTabIdx === undefined || this.activeTabIdx < 0) {
-      this.activeTabIdx = 0
+  set activeTabIdx(idx: number) {
+    if (this._activeTabIdx == idx) {
+      return
     }
-    return this.tabs[this.activeTabIdx] || undefined;
+    this._activeTabIdx = idx;
+  }
+  get activeTabIdx(): number {
+    return this._activeTabIdx;
+  }
+  get getActiveTab(): Tab | undefined {
+    if (this._activeTabIdx === undefined || this._activeTabIdx < 0) {
+      this._activeTabIdx = 0
+    }
+    return this.tabs[this._activeTabIdx] || undefined;
   }
 
   selectTabInMenu(idx: number) {
-      if (this.activeTabIdx === idx) return;
-      this.activeTabIdx = idx;
+      if (this._activeTabIdx === idx) return;
+      this._activeTabIdx = idx;
       this.updateCurrentTab();
   }
 
   async createTab() {
     const tab = await Tab.createNew(this.current.id, 'NEW_TAB' + (this.tabs.length + 1), 300, this.tabs.length);
     this.tabs.push(tab);
-    this.activeTabIdx = (this.tabs.length - 1);
+    this._activeTabIdx = (this.tabs.length - 1);
     this.currentCardId = undefined;
   }
 
@@ -1313,8 +1322,8 @@ export class Core {
       return;
     }
 
-    this.tabs.splice(this.activeTabIdx, 1);
-    this.activeTabIdx = this.tabs.length - 1;
+    this.tabs.splice(this._activeTabIdx, 1);
+    this._activeTabIdx = this.tabs.length - 1;
 
     this.currentCardId = undefined;
     this.activeCard = undefined;
