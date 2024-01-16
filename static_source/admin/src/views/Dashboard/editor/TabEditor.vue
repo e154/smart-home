@@ -87,15 +87,15 @@ const schema = reactive<FormSchema[]>([
       span: 24
     },
   },
-  {
-    field: 'dragEnabled',
-    label: t('dashboard.dragEnabled'),
-    component: 'Switch',
-    value: false,
-    colProps: {
-      span: 24
-    },
-  },
+  // {
+  //   field: 'dragEnabled',
+  //   label: t('dashboard.dragEnabled'),
+  //   component: 'Switch',
+  //   value: false,
+  //   colProps: {
+  //     span: 24
+  //   },
+  // },
   {
     field: 'columnWidth',
     label: t('dashboard.columnWidth'),
