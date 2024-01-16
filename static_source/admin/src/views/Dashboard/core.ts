@@ -1062,6 +1062,39 @@ export class Tab {
     this.cards.sort(sortCards);
   }
 
+  sortCardUp(card: Card, index: number) {
+    if (!this.cards[index - 1]) {
+      return;
+    }
+
+    const rows = [this.cards[index - 1], this.cards[index]];
+    this.cards.splice(index - 1, 2, rows[1], rows[0]);
+
+    let counter = 0
+    for (const index in this.cards) {
+      this.cards[index].weight = counter;
+      this.cards[index].update();
+      counter++;
+    }
+
+  }
+
+  sortCardDown(card: Card, index: number) {
+    if (!this.cards[index + 1]) {
+      return;
+    }
+
+    const rows = [this.cards[index], this.cards[index + 1]];
+    this.cards.splice(index, 2, rows[1], rows[0]);
+
+    let counter = 0
+    for (const index in this.cards) {
+      this.cards[index].weight = counter;
+      this.cards[index].update();
+      counter++;
+    }
+  }
+
   get cards2(): Card[] {
     //todo fix items sort
     const cards: Card[] = [];
@@ -1110,12 +1143,12 @@ export class Core {
     this.current = current;
     this.tabs = [];
     this.activeTab = 0;
-    // this.currentTabId = undefined;
+    this.currentTabId = undefined;
     if (current.tabs && current.tabs.length > 0) {
       for (const index in current.tabs) {
         this.tabs.push(new Tab(current.tabs[index]));
       }
-      // this.currentTabId = this.getActiveTab.id;
+      this.currentTabId = this.getActiveTab.id;
 
       if (this.getActiveTab.cards.length > 0) {
         this.activeCard = 0;

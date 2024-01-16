@@ -308,21 +308,7 @@ const sortCardUp = (card: Card, index: number) => {
   if (!currentCore.value.tabs.length || !(currentCore.value.activeTab >= 0)) {
     return;
   }
-
-  if (!activeTab.value.cards[index - 1]) {
-    return;
-  }
-
-  let rows = [activeTab.value.cards[index - 1], activeTab.value.cards[index]];
-  activeTab.value.cards.splice(index - 1, 2, rows[1], rows[0]);
-
-  let counter = 0
-  for (const index in activeTab.value.cards) {
-    activeTab.value.cards[index].weight = counter;
-    activeTab.value.cards[index].update();
-    counter++;
-  }
-
+  activeTab.value.sortCardUp(card, index)
   currentCore.value.updateCurrentTab();
 }
 
@@ -330,21 +316,7 @@ const sortCardDown = (card: Card, index: number) => {
   if (!currentCore.value.tabs.length || !(currentCore.value.activeTab >= 0)) {
     return;
   }
-
-  if (!activeTab.value.cards[index + 1]) {
-    return;
-  }
-
-  let rows = [activeTab.value.cards[index], activeTab.value.cards[index + 1]];
-  activeTab.value.cards.splice(index, 2, rows[1], rows[0]);
-
-  let counter = 0
-  for (const index in activeTab.value.cards) {
-    activeTab.value.cards[index].weight = counter;
-    activeTab.value.cards[index].update();
-    counter++;
-  }
-
+  activeTab.value.sortCardDown(card, index)
   currentCore.value.updateCurrentTab();
 }
 
