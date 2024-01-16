@@ -1305,11 +1305,18 @@ export class Core {
       return;
     }
 
+    const tabId = this.currentTabId;
+
+    this.tabs.splice(this.activeTab, 1);
+    this.activeTab = this.tabs.length - 1;
+
     this.currentCardId = undefined;
     this.activeCard = undefined;
 
-    bus.emit('remove_tab', this.currentTabId)
-    return api.v1.dashboardTabServiceDeleteDashboardTab(this.currentTabId);
+    this.updateCurrentTab();
+
+    bus.emit('remove_tab', tabId)
+    return api.v1.dashboardTabServiceDeleteDashboardTab(tabId);
   }
 
   updateCurrentTab() {

@@ -195,10 +195,6 @@ const updateTab = async () => {
 const removeTab = async () => {
   if (!activeTab.value) return;
   await currentCore.value.removeTab();
-
-  currentCore.value.tabs.splice(currentCore.value.activeTab, 1);
-  currentCore.value.activeTab = currentCore.value.tabs.length - 1;
-  currentCore.value.updateCurrentTab();
 }
 
 const menuTabClick = (index: number, tab: Tab) => {
