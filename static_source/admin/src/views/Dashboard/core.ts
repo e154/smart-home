@@ -1315,7 +1315,6 @@ export class Core {
 
     this.updateCurrentTab();
 
-    bus.emit('remove_tab', tabId)
     return api.v1.dashboardTabServiceDeleteDashboardTab(tabId);
   }
 
