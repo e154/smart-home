@@ -154,7 +154,7 @@ watch(
 
 const activeTab = computed({
   get(): Tab {
-    return currentCore.value.tabs[currentCore.value.activeTab] as Tab
+    return currentCore.value.tabs[currentCore.value.activeTabIdx] as Tab
   },
   set(val: Tab) {}
 })
@@ -198,8 +198,8 @@ const removeTab = async () => {
 }
 
 const menuTabClick = (index: number, tab: Tab) => {
-  if (currentCore.value.activeTab === index) return;
-  currentCore.value.activeTab = index;
+  if (currentCore.value.activeTabIdx === index) return;
+  currentCore.value.activeTabIdx = index;
   currentCore.value.updateCurrentTab();
 }
 
@@ -285,7 +285,7 @@ const sortCardDown = (tab: Tab, index: number) => {}
             </ElButton>
           </div>
         </template>
-        <ElMenu v-if="currentCore.tabs.length" :default-active="currentCore.activeTab + ''" v-model="currentCore.activeTab" class="el-menu-vertical-demo">
+        <ElMenu v-if="currentCore.tabs.length" :default-active="currentCore.activeTabIdx + ''" v-model="currentCore.activeTabIdx" class="el-menu-vertical-demo">
           <ElMenuItem :index="index + ''" :key="tab" v-for="(tab, index) in currentCore.tabs" @click="menuTabClick(index, tab)">
            <div class="w-[100%] card-header">
              <span>{{ tab.name }}</span>

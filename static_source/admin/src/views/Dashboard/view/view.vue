@@ -60,15 +60,15 @@ const fetchDashboard = async () => {
 
 const activeTabIdx = computed({
   get(): string {
-    return core.activeTab + ''
+    return core.activeTabIdx + ''
   },
   set(value: string) {
-    core.activeTab = parseInt(value)
+    core.activeTabIdx = parseInt(value)
   }
 })
 
 const getBackgroundColor = () => {
-  return {backgroundColor: core.tabs[core.activeTab]?.background}
+  return {backgroundColor: core.tabs[core.activeTabIdx]?.background}
 }
 
 fetchDashboard()

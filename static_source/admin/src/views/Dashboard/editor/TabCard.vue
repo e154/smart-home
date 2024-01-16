@@ -138,7 +138,7 @@ const schema = reactive<FormSchema[]>([
 ])
 
 const currentCore = computed(() => props.core as Core)
-const activeCard = computed(() => props.core?.tabs[props.core?.activeTab]?.cards[props.core?.activeCard] as Card)
+const activeCard = computed(() => props.core?.tabs[props.core?.activeTabIdx]?.cards[props.core?.activeTabIdx] as Card)
 
 //todo: optimize
 watch(
@@ -166,7 +166,7 @@ watch(
 
 const activeTab = computed({
   get(): Tab {
-    return currentCore.value.tabs[currentCore.value.activeTab] as Tab
+    return currentCore.value.tabs[currentCore.value.activeTabIdx] as Tab
   },
   set(val: Tab) {}
 })
@@ -181,7 +181,7 @@ const exportDialogVisible = ref(false)
 const importedCard = ref("")
 
 const prepareForExport = () => {
-  if (currentCore.value.activeTab == undefined || currentCore.value.activeCard == undefined) {
+  if (currentCore.value.activeTabIdx == undefined || currentCore.value.activeCard == undefined) {
     return;
   }
   dialogSource.value = activeTab.value.cards[currentCore.value.activeCard].serialize()
@@ -305,7 +305,7 @@ const cancel = () => {
 }
 
 const sortCardUp = (card: Card, index: number) => {
-  if (!currentCore.value.tabs.length || !(currentCore.value.activeTab >= 0)) {
+  if (!currentCore.value.tabs.length || !(currentCore.value.activeTabIdx >= 0)) {
     return;
   }
   activeTab.value.sortCardUp(card, index)
@@ -313,7 +313,7 @@ const sortCardUp = (card: Card, index: number) => {
 }
 
 const sortCardDown = (card: Card, index: number) => {
-  if (!currentCore.value.tabs.length || !(currentCore.value.activeTab >= 0)) {
+  if (!currentCore.value.tabs.length || !(currentCore.value.activeTabIdx >= 0)) {
     return;
   }
   activeTab.value.sortCardDown(card, index)
@@ -390,7 +390,7 @@ const sortCardDown = (card: Card, index: number) => {
               </ElButtonGroup>
             </div>
           </template>
-          <ElMenu v-if="currentCore.activeTab > -1 && activeTab.cards.length" :default-active="currentCore.activeCard + ''" v-model="currentCore.activeCard" class="el-menu-vertical-demo">
+          <ElMenu v-if="currentCore.activeTabIdx > -1 && activeTab.cards.length" :default-active="currentCore.activeCard + ''" v-model="currentCore.activeCard" class="el-menu-vertical-demo">
             <ElMenuItem :index="index + ''" :key="index" v-for="(card, index) in activeTab.cards" @click="menuCardsClick(card)">
               <div class="w-[100%] card-header">
                 <span>{{ card.title }}</span>

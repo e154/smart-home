@@ -76,7 +76,7 @@ const copyCardItem = () => {
 }
 
 const menuCardItemClick = (index: number) => {
-  if (currentCore.value.activeTab < 0 || currentCore.value.activeCard == undefined) {
+  if (currentCore.value.activeTabIdx < 0 || currentCore.value.activeCard == undefined) {
     return;
   }
 

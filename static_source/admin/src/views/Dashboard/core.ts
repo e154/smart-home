@@ -1150,7 +1150,7 @@ export class Tab {
 export class Core {
   current: ApiDashboard = {} as ApiDashboard;
 
-  activeTab = 0; // index
+  activeTabIdx = 0; // index
 
   activeCard: number | undefined = undefined; // index
   currentCardId: number | undefined;
@@ -1167,7 +1167,7 @@ export class Core {
   currentBoard(current: ApiDashboard) {
     this.current = current;
     this.tabs = [];
-    this.activeTab = 0;
+    this.activeTabIdx = 0;
     if (current.tabs && current.tabs.length > 0) {
       for (const index in current.tabs) {
         this.tabs.push(new Tab(current.tabs[index]));
@@ -1276,16 +1276,16 @@ export class Core {
   // ---------------------------------
 
   get getActiveTab(): Tab | undefined {
-    if (this.activeTab === undefined || this.activeTab < 0) {
-      this.activeTab = 0
+    if (this.activeTabIdx === undefined || this.activeTabIdx < 0) {
+      this.activeTabIdx = 0
     }
-    return this.tabs[this.activeTab] || undefined;
+    return this.tabs[this.activeTabIdx] || undefined;
   }
 
   async createTab() {
     const tab = await Tab.createNew(this.current.id, 'NEW_TAB' + (this.tabs.length + 1), 300, this.tabs.length);
     this.tabs.push(tab);
-    this.activeTab = (this.tabs.length - 1);
+    this.activeTabIdx = (this.tabs.length - 1);
     this.currentCardId = undefined;
   }
 
@@ -1307,8 +1307,8 @@ export class Core {
       return;
     }
 
-    this.tabs.splice(this.activeTab, 1);
-    this.activeTab = this.tabs.length - 1;
+    this.tabs.splice(this.activeTabIdx, 1);
+    this.activeTabIdx = this.tabs.length - 1;
 
     this.currentCardId = undefined;
     this.activeCard = undefined;

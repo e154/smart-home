@@ -79,25 +79,25 @@ useBus({
 
 const updateCurrentTab = (tab: any, ev: any) => {
   const {index} = tab;
-  if (core.activeTab === index) return;
-  core.activeTab = index;
+  if (core.activeTabIdx === index) return;
+  core.activeTabIdx = index;
   core.updateCurrentTab();
 }
 
 const activeTabIdx = computed({
   get(): string {
-    return core.activeTab + ''
+    return core.activeTabIdx + ''
   },
   set(value: string) {
-    core.activeTab = parseInt(value)
+    core.activeTabIdx = parseInt(value)
   }
 })
 
-const activeTab = computed<Tab>(() => core.tabs[core.activeTab] as Tab)
-const activeCard = computed<Card>(() => core.tabs[core.activeTab].cards[core.activeCard] as Card)
+const activeTab = computed<Tab>(() => core.tabs[core.activeTabIdx] as Tab)
+const activeCard = computed<Card>(() => core.tabs[core.activeTabIdx].cards[core.activeCard] as Card)
 
 const getBackgroundColor = () => {
-  return {backgroundColor: core.tabs[core.activeTab]?.background}
+  return {backgroundColor: core.tabs[core.activeTabIdx]?.background}
 }
 
 // split panels
