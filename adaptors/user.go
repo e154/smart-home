@@ -21,16 +21,18 @@ package adaptors
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"strings"
 	"time"
 	"unicode/utf8"
 
-	"github.com/e154/smart-home/common/apperr"
+	"gorm.io/gorm"
 
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/debug"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"gorm.io/gorm"
 )
 
 // IUser ...
@@ -229,10 +231,10 @@ func (n *User) SignIn(ctx context.Context, u *m.User, ipv4 string) (err error) {
 
 	// update time
 	lastT := u.CurrentSignInAt
-	currentT := time.Now()
+	now := time.Now()
 
 	u.LastSignInAt = lastT
-	u.CurrentSignInAt = &currentT
+	u.CurrentSignInAt = &now
 
 	// update ipv4
 	lastIp := u.CurrentSignInIp
@@ -240,7 +242,11 @@ func (n *User) SignIn(ctx context.Context, u *m.User, ipv4 string) (err error) {
 	u.LastSignInIp = lastIp
 	u.CurrentSignInIp = currentIp
 
-	u.UpdateHistory(currentT, currentIp)
+	u.UpdateHistory(now, currentIp)
+
+	fmt.Println("------")
+	debug.Println(u.History)
+	fmt.Println("------")
 
 	dbUser := n.toDb(u)
 	err = n.table.Update(ctx, dbUser)
@@ -320,7 +326,7 @@ func (n *User) fromDb(dbUser *db.User) (user *m.User) {
 		}
 	}
 
-	// history
+	// deserialize history
 	user.History = make([]*m.UserHistory, 0)
 	data, _ := dbUser.History.MarshalJSON()
 	_ = json.Unmarshal(data, &user.History)
@@ -372,6 +378,10 @@ func (n *User) toDb(user *m.User) (dbUser *db.User) {
 	if user.UserId.Valid {
 		_ = dbUser.UserId.Scan(user.UserId.Int64)
 	}
+
+	// serialize history
+	b, _ := json.Marshal(user.History)
+	_ = dbUser.History.UnmarshalJSON(b)
 
 	return
 }
