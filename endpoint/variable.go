@@ -81,7 +81,7 @@ func (v *VariableEndpoint) Update(ctx context.Context, _variable m.Variable) (er
 	var variable m.Variable
 	if variable, err = v.adaptors.Variable.GetByName(ctx, _variable.Name); err == nil {
 		if variable.System && v.appConfig.Mode == common.DemoMode {
-			err = apperr.ErrVariableUpdateSystem
+			err = apperr.ErrVariableUpdateForbidden
 			return
 		}
 		variable.Value = _variable.Value
@@ -116,7 +116,7 @@ func (v *VariableEndpoint) Delete(ctx context.Context, name string) (err error) 
 	var variable m.Variable
 	if variable, err = v.adaptors.Variable.GetByName(ctx, name); err == nil {
 		if variable.System && v.appConfig.Mode == common.DemoMode {
-			err = apperr.ErrVariableUpdateSystem
+			err = apperr.ErrVariableUpdateForbidden
 			return
 		}
 

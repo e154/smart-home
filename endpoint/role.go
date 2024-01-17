@@ -76,6 +76,11 @@ func (n *RoleEndpoint) Update(ctx context.Context, params *m.Role) (result *m.Ro
 		return
 	}
 
+	if role.Name == "admin" && n.appConfig.Mode == common.DemoMode {
+		err = apperr.ErrRoleUpdateForbidden
+		return
+	}
+
 	if params.Parent.Name == "" {
 		role.Parent = nil
 	} else {
@@ -115,7 +120,7 @@ func (n *RoleEndpoint) GetList(ctx context.Context, pagination common.PageParams
 func (n *RoleEndpoint) Delete(ctx context.Context, name string) (err error) {
 
 	if name == "admin" {
-		err = apperr.ErrBadRequestParams
+		err = apperr.ErrRoleDeleteForbidden
 		return
 	}
 

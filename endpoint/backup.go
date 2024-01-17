@@ -45,12 +45,24 @@ func NewBackupEndpoint(common *CommonEndpoint, backup *backup.Backup) *BackupEnd
 
 // New ...
 func (b *BackupEndpoint) New(ctx context.Context) (err error) {
+
+	if b.appConfig.Mode == common.DemoMode {
+		err = apperr.ErrBackupCreateNewForbidden
+		return
+	}
+
 	go b.backup.New(false)
 	return
 }
 
 // Restore ...
 func (b *BackupEndpoint) Restore(ctx context.Context, name string) (err error) {
+
+	if b.appConfig.Mode == common.DemoMode {
+		err = apperr.ErrBackupRestoreForbidden
+		return
+	}
+
 	err = b.backup.Restore(name)
 	return
 }
@@ -109,11 +121,23 @@ func (b *BackupEndpoint) Delete(ctx context.Context, name string) (err error) {
 }
 
 func (b *BackupEndpoint) ApplyChanges(ctx context.Context) (err error) {
+
+	if b.appConfig.Mode == common.DemoMode {
+		err = apperr.ErrBackupApplyForbidden
+		return
+	}
+
 	err = b.backup.ApplyChanges()
 	return
 }
 
 func (b *BackupEndpoint) RollbackChanges(ctx context.Context) (err error) {
+
+	if b.appConfig.Mode == common.DemoMode {
+		err = apperr.ErrBackupRollbackForbidden
+		return
+	}
+
 	err = b.backup.RollbackChanges()
 	return
 }
