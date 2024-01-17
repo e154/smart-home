@@ -84,6 +84,20 @@ func (c ControllerCommon) HTTP401(ctx echo.Context, err error) error {
 	}))
 }
 
+// HTTP403 ...
+func (c ControllerCommon) HTTP403(ctx echo.Context, err error) error {
+	e := apperr.GetError(err)
+	if e != nil {
+		return ctx.JSON(http.StatusForbidden, ResponseWithError(ctx, &ErrorBase{
+			Code:    common.String(e.Code()),
+			Message: common.String(e.Message()),
+		}))
+	}
+	return ctx.JSON(http.StatusForbidden, ResponseWithError(ctx, &ErrorBase{
+		Code: common.String("ACCESS_FORBIDDEN"),
+	}))
+}
+
 // HTTP404 ...
 func (c ControllerCommon) HTTP404(ctx echo.Context, err error) error {
 	code := common.String("NOT_FOUND")
@@ -244,20 +258,22 @@ func (c ControllerCommon) Search(query *string, limit, offset *int64) (search co
 // ERROR ...
 func (c ControllerCommon) ERROR(ctx echo.Context, err error) error {
 	switch {
-	case errors.Is(err, apperr.ErrAlreadyExists):
-		return c.HTTP409(ctx, err)
-	case errors.Is(err, apperr.ErrInternal):
-		return c.HTTP500(ctx, err)
-	case errors.Is(err, apperr.ErrInvalidRequest):
-		return c.HTTP422(ctx, err)
-	case errors.Is(err, apperr.ErrNotFound):
-		return c.HTTP404(ctx, err)
-	case errors.Is(err, apperr.ErrAccessDenied):
-		return c.HTTP401(ctx, err)
 	case errors.Is(err, apperr.ErrUnknownField):
 		return c.HTTP400(ctx, err)
 	case errors.Is(err, apperr.ErrBadJSONRequest):
 		return c.HTTP400(ctx, err)
+	case errors.Is(err, apperr.ErrAccessDenied):
+		return c.HTTP401(ctx, err)
+	case errors.Is(err, apperr.ErrAccessForbidden):
+		return c.HTTP403(ctx, err)
+	case errors.Is(err, apperr.ErrNotFound):
+		return c.HTTP404(ctx, err)
+	case errors.Is(err, apperr.ErrAlreadyExists):
+		return c.HTTP409(ctx, err)
+	case errors.Is(err, apperr.ErrInvalidRequest):
+		return c.HTTP422(ctx, err)
+	case errors.Is(err, apperr.ErrInternal):
+		return c.HTTP500(ctx, err)
 	default:
 		var bodyStr string
 		body, _ := io.ReadAll(ctx.Request().Body)

@@ -33,6 +33,7 @@ var (
 	ErrUnknownField    = errors.New("unknown field")
 	ErrBadJSONRequest  = errors.New("bad JSON request")
 	ErrAccessDenied    = errors.New("access denied")
+	ErrAccessForbidden = errors.New("access forbidden")
 )
 
 var (
@@ -266,12 +267,13 @@ var (
 	ErrUserNotFound = ErrorWithCode("USER_NOT_FOUND_ERROR", "user is not found", ErrNotFound)
 	ErrUserDelete   = ErrorWithCode("USER_DELETE_ERROR", "failed to delete user", ErrInternal)
 
-	ErrVariableAdd      = ErrorWithCode("VARIABLE_ADD_ERROR", "failed to add variable", ErrInternal)
-	ErrVariableGet      = ErrorWithCode("VARIABLE_GET_ERROR", "failed to get variable", ErrInternal)
-	ErrVariableUpdate   = ErrorWithCode("VARIABLE_UPDATE_ERROR", "failed to update variable", ErrInternal)
-	ErrVariableList     = ErrorWithCode("VARIABLE_LIST_ERROR", "failed to list variable", ErrInternal)
-	ErrVariableNotFound = ErrorWithCode("VARIABLE_NOT_FOUND_ERROR", "variable is not found", ErrNotFound)
-	ErrVariableDelete   = ErrorWithCode("VARIABLE_DELETE_ERROR", "failed to delete variable", ErrInternal)
+	ErrVariableAdd          = ErrorWithCode("VARIABLE_ADD_ERROR", "failed to add variable", ErrInternal)
+	ErrVariableGet          = ErrorWithCode("VARIABLE_GET_ERROR", "failed to get variable", ErrInternal)
+	ErrVariableUpdate       = ErrorWithCode("VARIABLE_UPDATE_ERROR", "failed to update variable", ErrInternal)
+	ErrVariableList         = ErrorWithCode("VARIABLE_LIST_ERROR", "failed to list variable", ErrInternal)
+	ErrVariableNotFound     = ErrorWithCode("VARIABLE_NOT_FOUND_ERROR", "variable is not found", ErrNotFound)
+	ErrVariableDelete       = ErrorWithCode("VARIABLE_DELETE_ERROR", "failed to delete variable", ErrInternal)
+	ErrVariableUpdateSystem = ErrorWithCode("VARIABLE_UPDATE_ERROR", "unable to update system variable", ErrAccessForbidden)
 
 	ErrZigbee2mqttAdd      = ErrorWithCode("ZIGBEE2MQTT_ADD_ERROR", "failed to add zigbee2mqtt", ErrInternal)
 	ErrZigbee2mqttGet      = ErrorWithCode("ZIGBEE2MQTT_GET_ERROR", "failed to get zigbee2mqtt", ErrInternal)
