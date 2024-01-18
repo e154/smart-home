@@ -100,51 +100,53 @@ const getList = async () => {
 }
 
 const addNew = async () => {
-  api.v1.backupServiceNewBackup({})
+  const res = await api.v1.backupServiceNewBackup({})
       .catch(() => {
       })
       .finally(() => {
       })
-  ElMessage({
-    title: t('Success'),
-    message: t('message.createdSuccessfully'),
-    type: 'success',
-    duration: 2000
-  });
+  if (res.status == 200) {
+    ElMessage({
+      title: t('Success'),
+      message: t('message.createdSuccessfully'),
+      type: 'success',
+      duration: 2000
+    });
+  }
 }
 
 const restore = async (backup: ApiBackup) => {
-  api.v1.backupServiceRestoreBackup(backup.name)
+  const res = await api.v1.backupServiceRestoreBackup(backup.name)
       .catch(() => {
       })
       .finally(() => {
       })
 
-  setTimeout(async () => {
+  if (res.status == 200) {
     ElMessage({
       title: t('Success'),
       message: t('message.callSuccessful'),
       type: 'success',
       duration: 2000
     });
-  }, 2000)
+  }
 }
 
 const remove = async (backup: ApiBackup) => {
-  api.v1.backupServiceDeleteBackup(backup.name)
+  const res = await api.v1.backupServiceDeleteBackup(backup.name)
       .catch(() => {
       })
       .finally(() => {
       })
 
-  setTimeout(async () => {
+  if (res.status == 200) {
     ElMessage({
       title: t('Success'),
       message: t('message.callSuccessful'),
       type: 'success',
       duration: 2000
     });
-  }, 2000)
+  }
 }
 
 const getUploadURL = () => {
@@ -175,6 +177,16 @@ const onSuccess: UploadProps['onSuccess'] = (file: ApiBackup, uploadFile) => {
     message: t('message.uploadSuccessfully'),
     type: 'success',
     duration: 2000
+  })
+}
+
+const onError: UploadProps['onError'] = (error, uploadFile, uploadFiles) => {
+  const body = JSON.parse(error.message)
+  const {message, code} = body.error;
+  ElMessage({
+    message: message,
+    type: 'error',
+    duration: 0
   })
 }
 
@@ -244,6 +256,7 @@ getList()
             :action="getUploadURL()"
             :multiple="true"
             :on-success="onSuccess"
+            :on-error="onError"
             :auto-upload="true"
         >
           <ElButton type="primary" plain>

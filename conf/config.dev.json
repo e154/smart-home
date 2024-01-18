@@ -30,5 +30,6 @@
   "api_gzip": false,
   "pprof": false,
   "domain": "localhost",
-  "https": false
+  "https": false,
+  "root_secret": ""
 }

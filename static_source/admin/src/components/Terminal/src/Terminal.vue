@@ -23,10 +23,10 @@ import Terminal from 'vue-web-terminal'
 import {computed, onMounted, onUnmounted, ref} from "vue";
 import {useAppStore} from "@/store/modules/app";
 import {ApiLog} from "@/api/stub";
-import {parseTime} from "@/utils";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 import api from "@/api/api";
+import {useCache} from "@/hooks/web/useCache";
 
 const appStore = useAppStore()
 
@@ -38,15 +38,15 @@ const onExecCmd = (key, command, success, failed) => {
   if (key === 'fail') {
     failed('Something wrong!!!')
   } else {
-    let allClass = ['success', 'error', 'system', 'info', 'warning'];
-
-    let clazz = allClass[Math.floor(Math.random() * allClass.length)];
+    // let allClass = ['success', 'error', 'system', 'info', 'warning'];
+    // let clazz = allClass[Math.floor(Math.random() * allClass.length)];
     success({
       type: 'normal',
-      class: clazz,
-      tag: '成功',
+      class: 'info',
       content: command
     })
+
+    sendCommand(command)
   }
 }
 
@@ -57,6 +57,28 @@ const addLog = (log: ApiLog) => {
     content: `${log.owner} -> ${log.body}`
   }
   Terminal.$api.pushMessage("terminal", [message])
+}
+
+const {wsCache} = useCache()
+const updateAccessToken = (payload: any) => {
+  const {access_token} = payload;
+  wsCache.set("accessToken", access_token)
+  appStore.SetToken(access_token);
+  location.reload()
+}
+
+const serverResponse = (payload: any) => {
+  const {body, type} = payload
+  const str = body.split("\n")
+  const message = []
+  str.forEach((v) => {
+    message.push({
+      type: 'normal',
+      class: type || 'info',
+      content: v,
+    } )
+  })
+  Terminal.$api.pushMessage("terminal", message)
 }
 
 const getList = async () => {
@@ -91,12 +113,27 @@ onMounted(() => {
 
   setTimeout(() => {
     stream.subscribe('log', currentID.value, addLog)
+    stream.subscribe('command_response', currentID.value, serverResponse)
+    stream.subscribe('update_access_token', currentID.value, updateAccessToken)
   }, 1000)
 })
 
 onUnmounted(() => {
   stream.unsubscribe('log', currentID.value)
+  stream.unsubscribe('command_response', currentID.value)
+  stream.unsubscribe('update_access_token', currentID.value)
 })
+
+const sendCommand = (text?: string) => {
+  if (!text) {
+    return
+  }
+  stream.send({
+    id: UUID.createUUID(),
+    query: 'command_terminal',
+    body: btoa(text)
+  });
+}
 
 </script>
 
@@ -108,6 +145,7 @@ onUnmounted(() => {
       @exec-cmd="onExecCmd"
       :context="context"
       :auto-help="false"
+      :enable-example-hint="false"
       :init-log="initLog"
       :drag-conf="{zIndex: 9999, width: 700, height: 500, init:{ x: 50, y: 50 }}">
     <template #header>

@@ -73,6 +73,7 @@ func (a *Api) Start() (err error) {
 		Skipper: middleware.DefaultSkipper,
 		Limit:   "128M",
 	}))
+	a.echo.Use(controllers.NewMiddlewareContextValue)
 	a.echo.Use(middleware.Recover())
 
 	if a.cfg.Debug {

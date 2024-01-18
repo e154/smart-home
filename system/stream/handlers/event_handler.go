@@ -21,7 +21,6 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-
 	"go.uber.org/fx"
 
 	"github.com/e154/smart-home/common"
@@ -62,6 +61,7 @@ func (s *EventHandler) Start(_ context.Context) error {
 	s.stream.Subscribe("event_get_last_state", s.EventGetLastState)
 	s.stream.Subscribe("event_add_webpush_subscription", s.EventAddWebPushSubscription)
 	s.stream.Subscribe("event_get_webpush_public_key", s.EventGetWebPushPublicKey)
+	s.stream.Subscribe("command_terminal", s.CommandTerminal)
 	return nil
 }
 
@@ -70,6 +70,7 @@ func (s *EventHandler) Shutdown(_ context.Context) error {
 	s.stream.UnSubscribe("event_get_last_state")
 	s.stream.UnSubscribe("event_add_webpush_subscription")
 	s.stream.UnSubscribe("event_get_webpush_public_key")
+	s.stream.UnSubscribe("command_terminal")
 	return nil
 }
 
@@ -80,7 +81,8 @@ func (s *EventHandler) EventGetWebPushPublicKey(client stream.IStreamClient, que
 	}
 
 	s.eventBus.Publish(webpush.TopicPluginWebpush, webpush.EventGetWebPushPublicKey{
-		UserID: userID,
+		UserID:    userID,
+		SessionID: client.SessionID(),
 	})
 }
 
@@ -94,6 +96,7 @@ func (s *EventHandler) EventAddWebPushSubscription(client stream.IStreamClient, 
 	_ = json.Unmarshal(body, subscription)
 	s.eventBus.Publish(webpush.TopicPluginWebpush, webpush.EventAddWebPushSubscription{
 		UserID:       userID,
+		SessionID:    client.SessionID(),
 		Subscription: subscription,
 	})
 }
@@ -104,5 +107,13 @@ func (s *EventHandler) EventGetLastState(client stream.IStreamClient, query stri
 	id := req["entity_id"]
 	s.eventBus.Publish("system/entities/"+id.String(), events.EventGetLastState{
 		EntityId: id,
+	})
+}
+
+func (s *EventHandler) CommandTerminal(client stream.IStreamClient, query string, body []byte) {
+	s.eventBus.Publish("system/terminal", events.CommandTerminal{
+		User:      client.GetUser(),
+		SessionID: client.SessionID(),
+		Text:      string(body),
 	})
 }

@@ -7,6 +7,7 @@ import { useRouter } from 'vue-router'
 import { useDesign } from '@/hooks/web/useDesign'
 import { useTagsViewStore } from '@/store/modules/tagsView'
 import {useAppStore} from "@/store/modules/app";
+import {computed} from "vue";
 
 const tagsViewStore = useTagsViewStore()
 const appStore = useAppStore()
@@ -48,6 +49,16 @@ const getUserName = (): string => {
   return appStore.getUser.nickname || 'unknown'
 }
 
+const parseJwt = (token) => {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch (e) {
+    return null;
+  }
+};
+
+const root = computed(() => parseJwt(appStore.getToken).root)
+
 </script>
 
 <template>
@@ -59,6 +70,7 @@ const getUserName = (): string => {
         class="w-[calc(var(--logo-height)-10px)] rounded-[20%]"
         style="aspect-ratio: 1 / 1;"
       />
+      <div v-if="root" class="ribbon ribbon-top-right"><span>root</span></div>
       <span class="<lg:hidden text-14px pl-[5px] text-[var(--top-header-text-color)]">{{getUserName()}}</span>
     </div>
     <template #dropdown>
@@ -73,3 +85,22 @@ const getUserName = (): string => {
     </template>
   </ElDropdown>
 </template>
+
+<style>
+.items-center {
+  position: relative;
+}
+
+/* common */
+.ribbon {
+  overflow: hidden;
+  position: absolute;
+  background-color: red;
+  color: white;
+  font-size: 9px;
+  left: 0;
+  padding: 0 2px;
+  top: 0;
+}
+
+</style>

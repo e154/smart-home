@@ -21,7 +21,6 @@ package adaptors
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -30,7 +29,6 @@ import (
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
-	"github.com/e154/smart-home/common/debug"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 )
@@ -243,10 +241,6 @@ func (n *User) SignIn(ctx context.Context, u *m.User, ipv4 string) (err error) {
 	u.CurrentSignInIp = currentIp
 
 	u.UpdateHistory(now, currentIp)
-
-	fmt.Println("------")
-	debug.Println(u.History)
-	fmt.Println("------")
 
 	dbUser := n.toDb(u)
 	err = n.table.Update(ctx, dbUser)

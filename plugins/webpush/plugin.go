@@ -247,8 +247,9 @@ func (p *plugin) eventHandler(_ string, event interface{}) {
 }
 
 func (p *plugin) sendPublicKey(event EventGetWebPushPublicKey) {
-	p.Service.EventBus().Publish(TopicPluginWebpush, EventNewWebPushPublicKey{
+	p.Service.EventBus().Publish("system/dashboard", EventNewWebPushPublicKey{
 		UserID:    event.UserID,
+		SessionID: event.SessionID,
 		PublicKey: p.VAPIDPublicKey,
 	})
 }

@@ -143,7 +143,7 @@ func (n *UserEndpoint) Update(ctx context.Context, params *m.User) (result *m.Us
 		return
 	}
 
-	if user.Id == 1 && user.RoleName == "admin" && n.appConfig.Mode == common.DemoMode {
+	if user.Id == 1 && user.RoleName == "admin" && n.checkSuperUser(ctx) {
 		err = apperr.ErrUserUpdateForbidden
 		return
 	}

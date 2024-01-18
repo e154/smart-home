@@ -37,8 +37,7 @@ var (
 
 // JwtManager ...
 type JwtManager interface {
-	Start() (err error)
-	Generate(*m.User, ...*time.Time) (accessToken string, err error)
+	Generate(*m.User, bool, ...*time.Time) (accessToken string, err error)
 	Verify(string) (claims *UserClaims, err error)
 	SetHmacKey(hmacKey []byte)
 }
@@ -48,4 +47,5 @@ type UserClaims struct {
 	UserId   int64  `json:"i,omitempty"`
 	Username string `json:"n,omitempty"`
 	RoleName string `json:"r,omitempty"`
+	Root     bool   `json:"root,omitempty"`
 }

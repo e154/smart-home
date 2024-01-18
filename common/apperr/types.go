@@ -304,6 +304,7 @@ var (
 	ErrBackupApplyForbidden     = ErrorWithCode("BACKUP_APPLY_ERROR", "failed to apply backup", ErrAccessForbidden)
 	ErrBackupRollbackForbidden  = ErrorWithCode("BACKUP_ROLLBACK_ERROR", "failed to rollback backup", ErrAccessForbidden)
 	ErrBackupCreateNewForbidden = ErrorWithCode("BACKUP_CREATE_ERROR", "failed to create new backup", ErrAccessForbidden)
+	ErrBackupUploadForbidden    = ErrorWithCode("BACKUP_UPLOAD_ERROR", "failed to upload backup", ErrAccessForbidden)
 
 	ErrScriptVersionAdd    = ErrorWithCode("SCRIPT_VERSION_ADD_ERROR", "failed to add script version", ErrInternal)
 	ErrScriptVersionList   = ErrorWithCode("SCRIPT_VERSION_LIST_ERROR", "failed to list script version", ErrInternal)

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"context"
 	"encoding/base64"
 	"encoding/json"
 	"io"
@@ -314,4 +315,29 @@ func (c ControllerCommon) parseBasicAuth(auth string) (username, password string
 	}
 
 	return cs[:s], cs[s+1:], true
+}
+
+type contextValue struct {
+	echo.Context
+}
+
+func NewMiddlewareContextValue(fn echo.HandlerFunc) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		return fn(contextValue{ctx})
+	}
+}
+
+// Get retrieves data from the context.
+func (ctx contextValue) Get(key string) interface{} {
+	// get old context value
+	val := ctx.Context.Get(key)
+	if val != nil {
+		return val
+	}
+	return ctx.Request().Context().Value(key)
+}
+
+// Set saves data in the context.
+func (ctx contextValue) Set(key string, val interface{}) {
+	ctx.SetRequest(ctx.Request().WithContext(context.WithValue(ctx.Request().Context(), key, val)))
 }

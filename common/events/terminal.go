@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2023, Filippov Alex
+// Copyright (C) 2024, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -18,17 +18,11 @@
 
 package events
 
-// EventUpdateUserLocation ...
-type EventUpdateUserLocation struct {
-	UserID   int64   `json:"user_id"`
-	Lat      float32 `json:"lat"`
-	Lon      float32 `json:"lon"`
-	Accuracy float32 `json:"accuracy"`
-}
+import m "github.com/e154/smart-home/models"
 
-type EventDirectMessage struct {
-	UserID    int64       `json:"user_id"`
-	SessionID string      `json:"session_id"`
-	Query     string      `json:"query"`
-	Message   interface{} `json:"message"`
+// CommandTerminal ...
+type CommandTerminal struct {
+	SessionID string  `json:"session_id"`
+	User      *m.User `json:"user"`
+	Text      string  `json:"text"`
 }

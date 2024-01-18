@@ -29,12 +29,13 @@ type BroadcastClient interface {
 
 // IDirectMessage ...
 type IDirectMessage interface {
-	DirectMessage(userId int64, query string, message []byte)
+	DirectMessage(userId int64, sessionId string, query string, message []byte)
 }
 
 // IStreamClient ...
 type IStreamClient interface {
 	GetUser() *m.User
+	SessionID() string
 	Send(id string, query string, body []byte) error
 }
 

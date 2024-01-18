@@ -46,7 +46,7 @@ func NewBackupEndpoint(common *CommonEndpoint, backup *backup.Backup) *BackupEnd
 // New ...
 func (b *BackupEndpoint) New(ctx context.Context) (err error) {
 
-	if b.appConfig.Mode == common.DemoMode {
+	if b.checkSuperUser(ctx) {
 		err = apperr.ErrBackupCreateNewForbidden
 		return
 	}
@@ -58,7 +58,7 @@ func (b *BackupEndpoint) New(ctx context.Context) (err error) {
 // Restore ...
 func (b *BackupEndpoint) Restore(ctx context.Context, name string) (err error) {
 
-	if b.appConfig.Mode == common.DemoMode {
+	if b.checkSuperUser(ctx) {
 		err = apperr.ErrBackupRestoreForbidden
 		return
 	}
@@ -74,24 +74,29 @@ func (b *BackupEndpoint) GetList(ctx context.Context, pagination common.PagePara
 }
 
 // Upload ...
-func (b *BackupEndpoint) Upload(ctx context.Context, files map[string][]*multipart.FileHeader) (fileList []*m.Backup, errs []error) {
+func (b *BackupEndpoint) Upload(ctx context.Context, files map[string][]*multipart.FileHeader) (fileList []*m.Backup, errs []error, err error) {
+
+	if b.checkSuperUser(ctx) {
+		err = apperr.ErrBackupUploadForbidden
+		return
+	}
 
 	fileList = make([]*m.Backup, 0)
 	errs = make([]error, 0)
 
 	for _, fileHeader := range files {
 
-		file, err := fileHeader[0].Open()
-		if err != nil {
-			errs = append(errs, err)
+		file, _err := fileHeader[0].Open()
+		if _err != nil {
+			errs = append(errs, _err)
 			continue
 		}
 
 		reader := bufio.NewReader(file)
 		var newbackup *m.Backup
-		newbackup, err = b.backup.UploadBackup(ctx, reader, fileHeader[0].Filename)
-		if err != nil {
-			errs = append(errs, err)
+		newbackup, _err = b.backup.UploadBackup(ctx, reader, fileHeader[0].Filename)
+		if _err != nil {
+			errs = append(errs, _err)
 			continue
 		}
 		fileList = append(fileList, newbackup)
@@ -103,6 +108,11 @@ func (b *BackupEndpoint) Upload(ctx context.Context, files map[string][]*multipa
 }
 
 func (b *BackupEndpoint) Delete(ctx context.Context, name string) (err error) {
+
+	if b.checkSuperUser(ctx) {
+		err = apperr.ErrBackupCreateNewForbidden
+		return
+	}
 
 	var list []*m.Backup
 	if list, _, err = b.backup.List(ctx, 999, 0, "", ""); err != nil {
@@ -122,7 +132,7 @@ func (b *BackupEndpoint) Delete(ctx context.Context, name string) (err error) {
 
 func (b *BackupEndpoint) ApplyChanges(ctx context.Context) (err error) {
 
-	if b.appConfig.Mode == common.DemoMode {
+	if b.checkSuperUser(ctx) {
 		err = apperr.ErrBackupApplyForbidden
 		return
 	}
@@ -133,7 +143,7 @@ func (b *BackupEndpoint) ApplyChanges(ctx context.Context) (err error) {
 
 func (b *BackupEndpoint) RollbackChanges(ctx context.Context) (err error) {
 
-	if b.appConfig.Mode == common.DemoMode {
+	if b.checkSuperUser(ctx) {
 		err = apperr.ErrBackupRollbackForbidden
 		return
 	}

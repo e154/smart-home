@@ -76,7 +76,7 @@ func (n *RoleEndpoint) Update(ctx context.Context, params *m.Role) (result *m.Ro
 		return
 	}
 
-	if role.Name == "admin" && n.appConfig.Mode == common.DemoMode {
+	if role.Name == "admin" && n.checkSuperUser(ctx) {
 		err = apperr.ErrRoleUpdateForbidden
 		return
 	}

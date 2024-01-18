@@ -46,6 +46,7 @@ import (
 	"github.com/e154/smart-home/system/scheduler"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/supervisor"
+	"github.com/e154/smart-home/system/terminal"
 	"github.com/e154/smart-home/system/validation"
 )
 
@@ -85,7 +86,8 @@ func NewInitial(lc fx.Lifecycle,
 	_ *scheduler.Scheduler,
 	_ *media.Media,
 	db *gorm.DB,
-	eventBus bus.Bus) *Initial {
+	eventBus bus.Bus,
+	_ *terminal.Terminal) *Initial {
 	initial := &Initial{
 		adaptors:        adaptors,
 		scriptService:   scriptService,

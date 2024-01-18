@@ -287,6 +287,7 @@ func (c *Connection) Close() {
 }
 
 func (c *Connection) WriteMessage(messageType int, data []byte) (err error) {
+	//todo: fix, it not work
 	c.Lock()
 	defer c.Unlock()
 	err = c.ws.WriteMessage(messageType, data)
