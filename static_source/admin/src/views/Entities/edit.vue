@@ -10,9 +10,10 @@ import {Attribute, Entity, EntityAction, EntityState, Plugin} from "@/views/Enti
 import Actions from "@/views/Entities/components/Actions.vue";
 import {useEmitt} from "@/hooks/web/useEmitt";
 import {
+  ApiArea,
   ApiEntityAction,
   ApiEntityState,
-  ApiPlugin,
+  ApiPlugin, ApiScript,
   ApiUpdateEntityRequestAction,
   ApiUpdateEntityRequestState
 } from "@/api/stub";
@@ -209,6 +210,15 @@ const prepareForSave = async () => {
   return null
 }
 
+let _scriptsPromises = []
+let _scripts: Map<string, ApiScript> = []
+const fetchScript = async (id: number) => {
+  const res = await api.v1.scriptServiceGetScriptById(id)
+  if (res) {
+    _scripts[id] = res.data
+  }
+}
+
 const prepareForExport = async () => {
   const write = unref(writeRef)
   const validate = await write?.elFormRef?.validate()?.catch(() => {
@@ -217,13 +227,41 @@ const prepareForExport = async () => {
     const data = (await write?.getFormData()) as Entity
     let actions: ApiEntityAction[] = []
     let states: ApiEntityState[] = []
+
+    data.actions.forEach(action => {
+      if (action.scriptId) {
+        _scripts[action.scriptId] = null
+      }
+    })
+    data.scripts.forEach(script => {
+      if (script.id) {
+        _scripts[script.id] = null
+      }
+    })
+
+    _scripts.forEach((value: ApiScript, key: string) => {
+      _scriptsPromises.push(fetchScript(key))
+    })
+
+    await Promise.all(_scriptsPromises)
+
     for (const a of data?.actions) {
+      let script:ApiScript = null;
+      if (a.script) {
+        script = {
+          id: a.script.id,
+          lang: _scripts[a.script.id]?.lang,
+          name: a.script.name,
+          source: _scripts[a.script.id]?.source || '',
+          description: a.script.description,
+        } as ApiScript
+      }
       actions.push({
         name: a.name,
         description: a.description,
         icon: a.icon,
         image: a.image,
-        script: a.script,
+        script: script,
         type: a.type,
       } as ApiEntityAction)
     }
@@ -243,11 +281,32 @@ const prepareForExport = async () => {
     for (const index in internal.settings) {
       settings[internal.settings[index].name] = internal.settings[index];
     }
+    let area: ApiArea = null
+    if (data.area) {
+      area = {
+        id: data.area.id,
+        name: data.area.name,
+        description: data.area.description,
+        polygon: data.area.polygon,
+      } as ApiArea
+    }
+    let scripts: ApiScript[] = [];
+    if (data.scripts) {
+      data.scripts.forEach((value: ApiScript) => {
+        scripts.push({
+          id: value.id,
+          lang: _scripts[value.id]?.lang,
+          name: value.name,
+          source: _scripts[value.id]?.source || '',
+          description: value.description,
+        } as ApiScript)
+      })
+    }
     const body = {
       id: data.id,
       pluginName: data.plugin?.name || data.pluginName,
       description: data.description,
-      area: data.area,
+      area: area,
       icon: data.icon,
       image: data.image,
       autoLoad: data.autoLoad,
@@ -256,7 +315,7 @@ const prepareForExport = async () => {
       states: states,
       attributes: attributes,
       settings: data.settings,
-      scripts: data.scripts,
+      scripts: scripts,
       metrics: data.metrics,
     }
    return body
