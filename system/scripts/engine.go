@@ -81,11 +81,16 @@ func NewEngine(s *m.Script, functions, structures *Pull) (engine *Engine, err er
 		structures: structures,
 	}
 
+	if s.Lang == "" {
+		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("language not specified"))
+		return
+	}
+
 	switch s.Lang {
 	case ScriptLangTs, ScriptLangCoffee, ScriptLangJavascript:
 		engine.script = NewJavascript(engine)
 	default:
-		err = errors.Wrap(apperr.ErrNotFound, string(s.Lang))
+		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("i don't know this language: \"%s\"", s.Lang))
 		return
 	}
 

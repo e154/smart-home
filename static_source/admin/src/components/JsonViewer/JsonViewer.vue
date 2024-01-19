@@ -1,24 +1,6 @@
 <script setup lang="ts">
-import {nextTick, onMounted, PropType, computed, ref, unref, watch} from 'vue'
-import Codemirror, {CmComponentRef} from "codemirror-editor-vue3";
-import type {Editor, EditorConfiguration} from "codemirror";
+import {onMounted, PropType, computed, unref, watch, reactive, ref} from 'vue'
 
-// codemirror
-// placeholder
-import "codemirror/addon/display/placeholder.js";
-// language
-import "codemirror/mode/javascript/javascript.js";
-import "codemirror/mode/jsx/jsx.js";
-import "codemirror/mode/coffeescript/coffeescript";
-// theme
-import "codemirror/theme/darcula.css";
-import 'codemirror/theme/mdn-like.css'
-import 'codemirror/addon/lint/lint.css'
-import 'codemirror/addon/lint/lint'
-import 'codemirror/addon/lint/coffeescript-lint'
-import 'codemirror/addon/hint/show-hint';
-import 'codemirror/addon/hint/javascript-hint';
-import 'codemirror/addon/hint/show-hint.css';
 import {useAppStore} from "@/store/modules/app";
 
 const emit = defineEmits(['change', 'update:modelValue'])
@@ -30,10 +12,6 @@ const props = defineProps({
     default: () => null
   }
 })
-
-const sourceScript = ref('')
-const cmComponentRef = ref<CmComponentRef>(null);
-const cminstance = ref<Editor>();
 
 const currentSize = computed(() => appStore.getCurrentSize as string)
 const fontSize = computed(() => {
@@ -52,75 +30,72 @@ const fontSize = computed(() => {
   return size + 'px'
 })
 
-const cmOptions: EditorConfiguration = {
-  mode: "application/json", // Language mode
-  gutters: ['CodeMirror-lint-markers'],
-  theme: appStore.getIsDark ? "darcula" : "mdn-like", // Theme
-  indentWithTabs: true,
-  smartIndent: true,
-  lineWrapping: true,
-  autofocus: true,
-  hintOptions: {
-    closeOnPick: true,
-    completeSingle: false,
-  },
-}
-
-onMounted(() => {
-  cminstance.value = cmComponentRef.value?.cminstance;
-  cminstance.value?.focus();
-})
-
-watch(
-    () => props.modelValue,
-    async (val?: any) => {
-      await nextTick()
-      if (val === unref(sourceScript)) return
-      if (val) {
-        sourceScript.value = JSON.stringify(val, function(key, value) {
-          if (typeof value === 'function') {
-            return value.toString(); // Convert function to string
-          }
-          return value;
-        }, 2);
-      } else {
-        sourceScript.value = ""
-      }
-      cminstance.value?.refresh()
-    },
-    {
-      immediate: true
-    }
-)
-
-watch(
-    () => appStore.getIsDark,
-    () => {
-      cminstance.value?.setOption("theme", appStore.getIsDark ? "darcula" : "mdn-like")
-      cminstance.value?.refresh()
-    }
-)
-
-const onChange = (val: string, cm: any) => {
-  emit('change', val)
-}
+const theme = computed(() => appStore.getIsDark ? "jv-darkula" : "jv-light")
+const depth = ref(3)
 
 </script>
 
 <template>
-
-  <Codemirror
-      ref="cmComponentRef"
-      v-model:value="sourceScript"
-      :options="cmOptions"
-      @change="onChange"
-  />
+  <json-viewer
+      sort
+      copyable
+      expanded
+      :theme="theme"
+      :expand-depth="depth"
+      :value="modelValue"/>
 
 </template>
 
-<style lang="less" scoped>
-:deep(.CodeMirror) {
+<style lang="less">
+// values are default one from jv-light template
+.jv-darkula {
+  //background: #282A36;
+  white-space: nowrap;
+  color: #F8F8F2;
   font-size: v-bind(fontSize);
-  line-height: 1.5;
+  font-family: Consolas, Menlo, Courier, monospace;
+
+  .jv-ellipsis {
+    color: #F8F8F2;
+    background-color: #44475A;
+    display: inline-block;
+    line-height: 0.9;
+    font-size: 0.9em;
+    padding: 0px 4px 2px 4px;
+    border-radius: 3px;
+    vertical-align: 2px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .jv-button { color: #49b3ff }
+  .jv-key { color: #F8F8F2 }
+  .jv-item {
+    &.jv-array { color: #F8F8F2 }
+    &.jv-boolean { color: #fc1e70 }
+    &.jv-function { color: #067bca }
+    &.jv-number { color: #fc1e70 }
+    &.jv-number-float { color: #fc1e70 }
+    &.jv-number-integer { color: #fc1e70 }
+    &.jv-object { color: #F8F8F2 }
+    &.jv-undefined { color: #e08331 }
+    &.jv-string {
+      color: #42b983;
+      word-break: break-word;
+      white-space: normal;
+    }
+  }
+  .jv-code {
+    .jv-toggle {
+      &:before {
+        padding: 0px 2px;
+        border-radius: 2px;
+      }
+      &:hover {
+        &:before {
+          background: #eee;
+        }
+      }
+    }
+  }
 }
 </style>

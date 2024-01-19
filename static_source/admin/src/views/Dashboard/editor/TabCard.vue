@@ -7,12 +7,13 @@ import {useI18n} from '@/hooks/web/useI18n'
 import {useForm} from '@/hooks/web/useForm'
 import {useValidator} from '@/hooks/web/useValidator'
 import {FormSchema} from '@/types/form'
-import {ApiDashboardCard, ApiDashboardCardItem, ApiEntity} from "@/api/stub";
+import {ApiDashboard, ApiDashboardCard, ApiDashboardCardItem, ApiEntity} from "@/api/stub";
 import {copyToClipboard} from "@/utils/clipboard";
 import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
 import {Card, Core, Tab} from "@/views/Dashboard/core";
 import {useBus} from "@/views/Dashboard/bus";
 import { Dialog } from '@/components/Dialog'
+import JsonEditor from "@/components/JsonEditor/JsonEditor.vue";
 
 const {register, elFormRef, methods} = useForm()
 const {required} = useValidator()
@@ -178,7 +179,7 @@ const activeTab = computed({
 const dialogSource = ref({})
 const importDialogVisible = ref(false)
 const exportDialogVisible = ref(false)
-const importedCard = ref("")
+const importedCard = ref(null)
 
 const prepareForExport = () => {
   if (currentCore.value.activeCard == undefined) {
@@ -196,7 +197,7 @@ const showExportDialog = () => {
   exportDialogVisible.value = true
 }
 
-const importHandler = (val: string) => {
+const importHandler = (val: any) => {
   if (importedCard.value == val) {
     return
   }
@@ -211,10 +212,14 @@ const copy = async () => {
 const importCard = async () => {
   let card: ApiDashboardCard
   try {
-    card = JSON.parse(importedCard.value)
+    if (importedCard.value?.json) {
+      card = importedCard.value.json as ApiDashboardCard;
+    } else if(importedCard.value.text) {
+      card = JSON.parse(importedCard.value.text) as ApiDashboardCard;
+    }
   } catch {
     ElMessage({
-      title: t('Success'),
+      title: t('Error'),
       message: t('message.corruptedJsonFormat'),
       type: 'error',
       duration: 2000
@@ -239,6 +244,7 @@ const importCard = async () => {
 
 const onSelectedCard = (id: number) => {
   currentCore.value.onSelectedCard(id);
+  console.log('---1', id)
   bus.emit('unselected_card_item')
 }
 
@@ -287,7 +293,8 @@ useBus({
 })
 
 const menuCardsClick = (card: DashboardCard) => {
-  bus.emit('selected_card', card.id);
+  // bus.emit('selected_card', card.id);
+  onSelectedCard(card.id)
 }
 
 const cancel = () => {
@@ -417,7 +424,7 @@ const sortCardDown = (card: Card, index: number) => {
 
   <!-- import dialog -->
   <Dialog v-model="importDialogVisible" :title="t('entities.dialogImportTitle')" :maxHeight="400" width="80%" custom-class>
-    <JsonViewer @change="importHandler"/>
+    <JsonEditor @change="importHandler"/>
     <template #footer>
       <ElButton type="primary" @click="importCard()" plain>{{ t('main.import') }}</ElButton>
       <ElButton @click="importDialogVisible = false">{{ t('main.closeDialog') }}</ElButton>

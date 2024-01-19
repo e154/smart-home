@@ -26,7 +26,7 @@ import {HintDictionary, HintDictionaryCoffee} from "@/views/Scripts/components/t
 import {useAppStore} from "@/store/modules/app";
 import {useEmitt} from "@/hooks/web/useEmitt";
 
-const emit = defineEmits(['change', 'update:modelValue'])
+const emit = defineEmits(['change', 'update:source'])
 const appStore = useAppStore()
 
 const props = defineProps({
@@ -153,7 +153,10 @@ const showEditorHint = (e: KeyboardEvent, handle: Function) => {
 }
 
 const onChange = (val: string, cm: any) => {
+  // console.log(val)
+  // console.log(cm.getValue())
   emitter.emit('updateSource', val)
+  emit('update:source', val)
 }
 
 const autoFormatSelection = () => {

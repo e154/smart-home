@@ -1,17 +1,33 @@
 <script setup lang="ts">
 import {computed, ref, unref} from 'vue'
 import {useI18n} from '@/hooks/web/useI18n'
-import {ElButton, ElPopconfirm, ElDescriptions, ElDescriptionsItem, ElTabs, ElTabPane, ElMessage,
-  ElTimeline, ElTimelineItem, ElCard, ElRow, ElCol, ElScrollbar} from 'element-plus'
+import {
+  ElButton,
+  ElCol,
+  ElDescriptions,
+  ElDescriptionsItem,
+  ElFormItem,
+  ElMessage,
+  ElOption,
+  ElPopconfirm,
+  ElRow,
+  ElScrollbar,
+  ElSelect,
+  ElTabPane,
+  ElTabs
+} from 'element-plus'
 import {useRoute, useRouter} from 'vue-router'
 import api from "@/api/api";
 import Form from './components/Form.vue'
-import {ApiScript, ApiScriptVersion} from "@/api/stub";
+import {ApiScript} from "@/api/stub";
 import ScriptEditor from "@/views/Scripts/components/ScriptEditor.vue";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
 import {useEmitt} from "@/hooks/web/useEmitt";
-import { Infotip } from '@/components/Infotip'
+import {Infotip} from '@/components/Infotip'
+import {parseTime} from "@/utils";
+import MergeEditor from "@/views/Scripts/components/MergeEditor.vue";
 
+const {emitter} = useEmitt()
 const {push} = useRouter()
 const route = useRoute();
 const {t} = useI18n()
@@ -22,9 +38,6 @@ const scriptId = computed(() => route.params.id as number);
 const currentScript = ref<Nullable<ApiScript>>(null)
 const currentScriptVersion = ref<Nullable<ApiScript>>(null)
 const activeTab = ref('source')
-const sourceScript = ref('')
-import {parseTime} from "@/utils";
-const { emitter } = useEmitt()
 
 const fetch = async () => {
   loading.value = true
@@ -36,6 +49,7 @@ const fetch = async () => {
       })
   if (res) {
     currentScript.value = res.data
+    currentScriptVersion.value = res.data.versions[0] || null
   } else {
     currentScript.value = null
   }
@@ -44,7 +58,7 @@ const fetch = async () => {
 const exec = async () => {
   await api.v1.scriptServiceExecSrcScriptById({
     name: currentScript.value?.name,
-    source: sourceScript.value,
+    source: currentScript.value?.source,
     lang: currentScript.value?.lang
   })
   ElMessage({
@@ -60,7 +74,6 @@ const copy = async () => {
       .catch(() => {
       })
       .finally(() => {
-
       })
   if (res) {
     const {id} = res.data;
@@ -79,13 +92,14 @@ const save = async () => {
       id: data.id,
       lang: data.lang,
       name: data.name,
-      source: sourceScript.value,
+      source: currentScript.value?.source || '',
       description: data.description,
     }
     const res = await api.v1.scriptServiceUpdateScriptById(scriptId.value, body)
         .catch(() => {
         })
         .finally(() => {
+          fetch()
           loading.value = false
         })
     if (res) {
@@ -116,37 +130,6 @@ const remove = async () => {
   }
 }
 
-const view = async (version: ApiScriptVersion) => {
-  currentScriptVersion.value = {
-    lang: version.lang,
-    source: version.source,
-    createdAt: version.createdAt,
-  } as ApiScript
-}
-
-const rollback = async () => {
-  let script = unref(currentScript.value) as ApiScript;
-  currentScript.value = {
-    id: script.id,
-    name: script.name,
-    description: script.description,
-    scriptInfo: script.scriptInfo,
-    versions: script.versions,
-    lang: currentScriptVersion.value?.lang || script.lang,
-    source: currentScriptVersion.value?.source || script.source,
-  }  as ApiScript;
-}
-
-useEmitt({
-  name: 'updateSource',
-  callback: (val: string) => {
-    if (sourceScript.value == val) {
-      return
-    }
-    sourceScript.value = val
-  }
-})
-
 const updateCurrentTab = (tab: any, ev: any) => {
   const {index, paneName} = tab;
   if (paneName == 'source' || paneName == 'versions') {
@@ -157,6 +140,20 @@ const updateCurrentTab = (tab: any, ev: any) => {
 // elscroll 实例
 const scrollbarRef = ref<ComponentRef<typeof ElScrollbar>>()
 
+const onMergeEditorChange = (val: string) => {
+  currentScript.value.source = val
+  reload()
+}
+
+const onScriptEditorChange = (val: string) => {
+  if (currentScript.value?.source == val) {
+    return
+  }
+  currentScript.value.source = val
+}
+
+const reloadKey = ref(0)
+const reload = () => reloadKey.value += 1
 
 fetch()
 
@@ -194,9 +191,43 @@ fetch()
       },
     ]"
         />
-        <ScriptEditor v-model="currentScript" class="mb-20px"/>
+        <ScriptEditor :key="reloadKey"
+                      v-model="currentScript"
+                      class="mb-20px"
+                      @update:source="onScriptEditorChange"/>
       </ElTabPane>
       <!-- /source -->
+
+      <!-- versions -->
+      <ElTabPane :label="$t('scripts.scriptVersions')" name="versions">
+
+        <ElRow v-if="activeTab == 'versions' && !loading && currentScript?.versions"  class="mb-20px">
+          <ElCol>
+            <ElFormItem :label="$t('scripts.scriptVersions')" prop="action">
+              <ElSelect
+                  v-model="currentScriptVersion"
+                  clearable
+                  :placeholder="$t('dashboard.editor.selectAction')"
+                  style="width: 100%"
+              >
+                <ElOption
+                    v-for="p in currentScript.versions"
+                    :key="p"
+                    :label="parseTime(p.createdAt)"
+                    :value="p"/>
+              </ElSelect>
+
+            </ElFormItem>
+          </ElCol>
+          <ElCol>
+            <MergeEditor :source="currentScript"
+                         :destination="currentScriptVersion"
+                         @update:source="onMergeEditorChange"/>
+          </ElCol>
+        </ElRow>
+
+      </ElTabPane>
+      <!-- /versions -->
 
       <!-- info -->
       <ElTabPane :label="$t('scripts.scriptInfo')" name="info">
@@ -207,55 +238,25 @@ fetch()
                         :column="2"
                         border
         >
-          <ElDescriptionsItem :label="$t('scripts.alexaIntents')">{{currentScript.scriptInfo.alexaIntents}}</ElDescriptionsItem>
-          <ElDescriptionsItem :label="$t('scripts.entityActions')">{{currentScript.scriptInfo.entityActions}}</ElDescriptionsItem>
-          <ElDescriptionsItem :label="$t('scripts.entityScripts')">{{currentScript.scriptInfo.entityScripts}}</ElDescriptionsItem>
-          <ElDescriptionsItem :label="$t('scripts.automationTriggers')">{{currentScript.scriptInfo.automationTriggers}}</ElDescriptionsItem>
-          <ElDescriptionsItem :label="$t('scripts.automationConditions')">{{currentScript.scriptInfo.automationConditions}}</ElDescriptionsItem>
-          <ElDescriptionsItem :label="$t('scripts.automationActions')">{{currentScript.scriptInfo.automationActions}}</ElDescriptionsItem>
+          <ElDescriptionsItem :label="$t('scripts.alexaIntents')">{{ currentScript.scriptInfo.alexaIntents }}
+          </ElDescriptionsItem>
+          <ElDescriptionsItem :label="$t('scripts.entityActions')">{{ currentScript.scriptInfo.entityActions }}
+          </ElDescriptionsItem>
+          <ElDescriptionsItem :label="$t('scripts.entityScripts')">{{ currentScript.scriptInfo.entityScripts }}
+          </ElDescriptionsItem>
+          <ElDescriptionsItem :label="$t('scripts.automationTriggers')">
+            {{ currentScript.scriptInfo.automationTriggers }}
+          </ElDescriptionsItem>
+          <ElDescriptionsItem :label="$t('scripts.automationConditions')">
+            {{ currentScript.scriptInfo.automationConditions }}
+          </ElDescriptionsItem>
+          <ElDescriptionsItem :label="$t('scripts.automationActions')">
+            {{ currentScript.scriptInfo.automationActions }}
+          </ElDescriptionsItem>
         </ElDescriptions>
       </ElTabPane>
       <!-- /info -->
 
-      <!-- versions -->
-      <ElTabPane :label="$t('scripts.scriptVersions')" name="versions">
-
-        <ElRow :gutter="24" class="mb-20px">
-          <ElCol :span="6" :xs="6">
-            <ElCard shadow="never" class="item-card-editor">
-              <ElScrollbar ref="scrollbarRef" class="h-full" height="500px">
-                <ElTimeline v-if="currentScript && currentScript?.versions">
-                  <ElTimelineItem
-                      v-for="(version, index) in currentScript?.versions"
-                      :key="index"
-                      :timestamp="parseTime(version.createdAt)"
-                      type="primary"
-                      placement="top"
-                      class="cursor-pointer"
-                      @click="view(version)"
-                  />
-                </ElTimeline>
-              </ElScrollbar>
-            </ElCard>
-          </ElCol>
-          <ElCol :span="18" style="padding-bottom: 30px">
-
-            <div v-if="currentScriptVersion">
-                <ScriptEditor v-model="currentScriptVersion"/>
-            </div>
-
-            <div v-if="currentScriptVersion">
-                <ElButton class="mr-10px left" type="default" @click="rollback(version)">
-                  <Icon icon="ic:baseline-restore" class="mr-5px"/>
-                  {{ $t('scripts.restoreVersion') }}
-                </ElButton>
-            </div>
-
-          </ElCol>
-        </ElRow>
-
-      </ElTabPane>
-      <!-- /versions -->
     </ElTabs>
 
     <div style="text-align: right">

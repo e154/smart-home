@@ -219,6 +219,10 @@ const elContainerHeight = computed(()=> {
   padding: 0 20px;
 }
 
+.splitpanes.default-theme .splitpanes__pane.bottom-container {
+  background-color: var(--el-bg-color);
+}
+
 p {
   display: block;
   margin-block-start: 1em;
