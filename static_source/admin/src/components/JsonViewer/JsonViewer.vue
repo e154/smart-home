@@ -13,6 +13,7 @@ const props = defineProps({
   }
 })
 
+const value = computed(() => props.modelValue || 'NO DATA')
 const currentSize = computed(() => appStore.getCurrentSize as string)
 const fontSize = computed(() => {
   let size = 16;
@@ -42,7 +43,7 @@ const depth = ref(3)
       expanded
       :theme="theme"
       :expand-depth="depth"
-      :value="modelValue"/>
+      :value="value"/>
 
 </template>
 
