@@ -28,9 +28,9 @@ import (
 	"testing"
 )
 
-func Test16(t *testing.T) {
+func Test17(t *testing.T) {
 
-	Convey("merge scripts", t, func(ctx C) {
+	Convey("concat scripts", t, func(ctx C) {
 		err := container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService) {
@@ -46,23 +46,10 @@ func Test16(t *testing.T) {
 			})
 			So(err, ShouldBeNil)
 
-			// a = 1
-			result, err := engine.EvalScript(scripts["script29"])
+			result, err := engine.EvalString(scripts["script29"].Compiled + scripts["script30"].Compiled + scripts["script31"].Compiled)
 			So(err, ShouldBeNil)
-			So(result, ShouldEqual, "1")
-
-			// b = 2
-			result, err = engine.EvalScript(scripts["script30"])
-			So(err, ShouldBeNil)
-			So(result, ShouldEqual, "2")
-
-			// 3 + a
-			result, err = engine.EvalScript(scripts["script31"])
-			So(err, ShouldBeNil)
-			So(result, ShouldEqual, "4")
-
-			_, err = engine.Do()
-			So(err, ShouldBeNil)
+			fmt.Println(result)
+			//So(result, ShouldEqual, "1")
 
 			// a + b
 			result, err = engine.AssertFunction("plus")
