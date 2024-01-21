@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, reactive, ref, shallowReactive, watch} from 'vue'
 import {useI18n} from '@/hooks/web/useI18n'
-import {ElMessage, ElTabs, ElTabPane} from 'element-plus'
+import {ElMessage, ElTabs, ElTabPane, ElEmpty, ElButton} from 'element-plus'
 import {useRoute, useRouter} from 'vue-router'
 import api from "@/api/api";
 import {EventStateChange} from "@/api/stream_types";
@@ -27,7 +27,7 @@ const { wsCache } = useCache()
 // common
 // ---------------------------------
 
-const loading = ref(false)
+const loading = ref(true)
 const dashboardId = computed(() => parseInt(route.params.id as string) as number);
 const core = reactive<Core>(new Core());
 const currentID = ref('')
@@ -41,9 +41,9 @@ onMounted(() => {
   const uuid = new UUID()
   currentID.value = uuid.getDashFreeUUID()
 
-  // setTimeout(() => {
-    stream.subscribe('state_changed', currentID.value, onStateChanged);
-  // }, 1000)
+  stream.subscribe('state_changed', currentID.value, onStateChanged);
+
+  fetchDashboard()
 })
 
 onUnmounted(() => {
@@ -64,8 +64,6 @@ const fetchDashboard = async () => {
       })
   core.currentBoard(res.data);
 }
-
-fetchDashboard()
 
 useBus({
   name: 'fetchDashboard',
@@ -128,6 +126,21 @@ const elContainerHeight = computed(()=> {
   return (splitPaneBottom.value - 60 - tagsView.value)  + 'px';
 })
 
+const createTab = async () => {
+  await core.createTab();
+
+  ElMessage({
+    title: t('Success'),
+    message: t('message.createdSuccessfully'),
+    type: 'success',
+    duration: 2000
+  });
+}
+
+const addCard = () => {
+  core.createCard();
+}
+
 </script>
 
 <template>
@@ -138,11 +151,13 @@ const elContainerHeight = computed(()=> {
         <ElTabs
             v-model="activeTabIdx"
             @tab-click="updateCurrentTab"
-            class="ml-20px">
+            class="ml-20px"
+            :lazy="true">
           <ElTabPane
               v-for="(tab, index) in core.tabs"
               :label="tab.name"
               :key="index"
+              :disabled="!tab.enabled"
               :class="[{'gap': tab.gap}]">
             <ViewTab :tab="tab" :key="index" :core="core"/>
           </ElTabPane>
@@ -158,19 +173,39 @@ const elContainerHeight = computed(()=> {
 
         <!-- tabs -->
         <ElTabPane :label="$t('dashboard.tabsTab')" name="tabs">
-          <TabEditor v-if="core.current" :tab="activeTab" :core="core"/>
+          <TabEditor v-if="core.current && activeTab" :tab="activeTab" :core="core"/>
+          <ElEmpty v-if="!core.tabs.length" :rows="5">
+            <ElButton type="primary" @click="createTab()">
+              {{ t('dashboard.addNewTab') }}
+            </ElButton>
+          </ElEmpty>
         </ElTabPane>
         <!-- /tabs -->
 
         <!-- cards -->
         <ElTabPane :label="$t('dashboard.cardsTab')" name="cards">
           <TabCard v-if="core.current && activeTab" :tab="activeTab" :core="core"/>
+          <ElEmpty v-if="!core.tabs.length" :rows="5">
+            <ElButton type="primary" @click="createTab()">
+              {{ t('dashboard.addNewTab') }}
+            </ElButton>
+          </ElEmpty>
         </ElTabPane>
         <!-- /cards -->
 
         <!-- cardItems -->
         <ElTabPane :label="$t('dashboard.cardItemsTab')" name="cardItems">
           <TabCardItem v-if="core.current && activeTab && activeCard" :card="activeCard" :core="core"/>
+          <ElEmpty v-if="!core.tabs.length" :rows="5">
+            <ElButton type="primary" @click="createTab()">
+              {{ t('dashboard.addNewTab') }}
+            </ElButton>
+          </ElEmpty>
+          <ElEmpty v-if="core.tabs.length && !(core.activeCard >= 0)" :rows="5">
+            <ElButton type="primary" @click="addCard()">
+              {{ t('dashboard.addNewCard') }}
+            </ElButton>
+          </ElEmpty>
         </ElTabPane>
         <!-- /cardItems -->
 

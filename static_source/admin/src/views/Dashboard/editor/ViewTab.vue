@@ -27,18 +27,6 @@ const reload = debounce(() => {
   reloadKey.value += 1
 }, 100)
 
-watch(
-    () => props.tab,
-    (val?: Tab) => {
-      if (!val) return;
-      reload()
-    },
-    {
-      deep: false,
-      immediate: true
-    }
-)
-
 useBus({
   name: 'update_tab',
   callback: (tabId: number) => {
@@ -89,11 +77,12 @@ const cards = computed<Card[]>(() => props.tab?.cards2)
 
 <style lang="less" >
 .gap {
-.muuri-item {
-  padding: 5px;
-.muuri-item-content {
-  //border: 1px solid #e9edf3;
-}
-}
+  .muuri-item {
+    padding: 5px;
+
+    .muuri-item-content {
+    //border: 1px solid #e9edf3;
+    }
+  }
 }
 </style>

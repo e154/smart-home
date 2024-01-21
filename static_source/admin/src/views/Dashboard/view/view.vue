@@ -82,6 +82,7 @@ fetchDashboard()
         :label="tab.name"
         :key="index"
         :class="[{'gap': tab.gap}]"
+        :disabled="!tab.enabled"
         :lazy="true">
       <ViewTab :tab="tab" :key="index" :core="core"/>
     </ElTabPane>

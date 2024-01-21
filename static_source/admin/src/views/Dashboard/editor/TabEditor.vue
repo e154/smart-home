@@ -2,7 +2,7 @@
 import {computed, PropType, reactive, ref, unref, watch} from 'vue'
 import {Form} from '@/components/Form'
 import {ElButton, ElCard, ElMessage, ElPopconfirm,
-  ElSkeleton, ElMenu, ElMenuItem, ElContainer, ElMain, ElAside} from 'element-plus'
+  ElSkeleton, ElEmpty, ElMenu, ElMenuItem, ElContainer, ElMain, ElAside} from 'element-plus'
 import {useI18n} from '@/hooks/web/useI18n'
 import {useForm} from '@/hooks/web/useForm'
 import {useValidator} from '@/hooks/web/useValidator'
@@ -238,7 +238,7 @@ const sortCardDown = (tab: Tab, index: number) => {}
       <ElCard class="box-card">
         <template #header>
           <div class="card-header">
-            <span>{{ $t('dashboard.mainSettings') }}</span>
+            <span>{{ $t('dashboard.tabDetail') }}</span>
           </div>
         </template>
 
@@ -249,7 +249,11 @@ const sortCardDown = (tab: Tab, index: number) => {}
             @register="register"
         />
 
-        <ElSkeleton v-if="!currentCore.tabs.length" :rows="5" />
+        <ElEmpty v-if="!currentCore.tabs.length" :rows="5">
+          <ElButton type="primary" @click="createTab()">
+            {{ t('dashboard.addNewTab') }}
+          </ElButton>
+        </ElEmpty>
 
         <div class="text-right" v-if="currentCore.tabs.length">
           <ElButton type="primary" @click.prevent.stop="updateTab">{{ $t('main.update') }}</ElButton>
@@ -279,7 +283,7 @@ const sortCardDown = (tab: Tab, index: number) => {}
           <div class="card-header">
             <span>{{ $t('dashboard.tabList') }}</span>
             <ElButton @click="createTab()" text size="small">
-              {{ t('dashboard.addNewTab') }}
+              {{ t('dashboard.addNew') }}
             </ElButton>
           </div>
         </template>

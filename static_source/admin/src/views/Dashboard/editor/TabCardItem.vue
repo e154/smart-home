@@ -3,7 +3,7 @@ import {computed, nextTick, PropType, reactive, ref, unref, watch} from 'vue'
 import {
   ElButton, ElCard, ElCol, ElMessage, ElPopconfirm,
   ElRow, ElSkeleton, ElMenu, ElMenuItem, ElButtonGroup, ElForm, ElFormItem,
-  ElSelect, ElOption, ElInput, ElTag, ElMain, ElContainer, ElScrollbar, ElAside
+  ElSelect, ElOption, ElInput, ElTag, ElMain, ElContainer, ElScrollbar, ElAside, ElEmpty
 } from 'element-plus'
 import {useI18n} from '@/hooks/web/useI18n'
 import {Card, CardItem, Core, Tab} from "@/views/Dashboard/core";
@@ -171,7 +171,11 @@ const updateCardItem = async () => {
           />
       </ElForm>
 
-        <ElSkeleton v-if="!activeCard.items.length || activeCard.selectedItem === -1" :rows="5" class="mt-20px mb-20px" />
+          <ElEmpty v-if="!activeCard.items.length || activeCard.selectedItem === -1" :rows="5" class="mt-20px mb-20px">
+            <ElButton type="primary" @click="addCardItem()">
+              {{ t('dashboard.editor.addNewCardItem') }}
+            </ElButton>
+          </ElEmpty>
 
         <div class="text-right" v-if="activeCard.selectedItem > -1">
           <ElButton type="primary" @click.prevent.stop="updateCardItem">{{ $t('main.update') }}</ElButton>
@@ -217,7 +221,7 @@ const updateCardItem = async () => {
             <span>{{ $t('dashboard.editor.itemList') }}</span>
             <ElButtonGroup>
               <ElButton @click="addCardItem()" text size="small">
-                {{ t('dashboard.editor.addNewCardItem') }}
+                {{ t('dashboard.addNew') }}
               </ElButton>
             </ElButtonGroup>
           </div>

@@ -1172,10 +1172,6 @@ export class Core {
       for (const index in current.tabs) {
         this.tabs.push(new Tab(current.tabs[index]));
       }
-
-      if (this.getActiveTab.cards.length > 0) {
-        this.activeCard = 0;
-      }
     }
 
     // get entity for card item
@@ -1192,7 +1188,15 @@ export class Core {
       }
     }
 
+    if (!this.getActiveTab) {
+      return
+    }
+
     this.sortTabs();
+
+    if (this.getActiveTab.cards.length > 0) {
+      this.onSelectedCard(this.getActiveTab.cards[0].id)
+    }
 
     this.updateCurrentTab();
   }
@@ -1355,7 +1359,7 @@ export class Core {
     // console.log(`select card id:${id}`);
     for (const index in tab.cards) {
       const cardId = tab.cards[index].id;
-      if (cardId === id) {
+      if (cardId == id) {
         this.activeCard = index as unknown as number;
         this.currentCardId = id;
         tab.cards[index].active = true

@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import {computed, PropType, reactive, ref, unref, watch} from 'vue'
 import {Form} from '@/components/Form'
-import {ElButton, ElCard, ElMessage, ElPopconfirm,
-  ElSkeleton, ElMenu, ElMenuItem, ElButtonGroup, ElContainer, ElAside, ElMain, ElScrollbar} from 'element-plus'
+import {
+  ElButton, ElCard, ElMessage, ElPopconfirm,
+  ElSkeleton, ElMenu, ElMenuItem, ElButtonGroup, ElContainer, ElAside, ElMain, ElScrollbar, ElEmpty
+} from 'element-plus'
 import {useI18n} from '@/hooks/web/useI18n'
 import {useForm} from '@/hooks/web/useForm'
 import {useValidator} from '@/hooks/web/useValidator'
@@ -244,7 +246,6 @@ const importCard = async () => {
 
 const onSelectedCard = (id: number) => {
   currentCore.value.onSelectedCard(id);
-  console.log('---1', id)
   bus.emit('unselected_card_item')
 }
 
@@ -333,7 +334,7 @@ const sortCardDown = (card: Card, index: number) => {
         <ElCard class="box-card">
           <template #header>
             <div class="card-header">
-              <span>{{ $t('dashboard.mainSettings') }}</span>
+              <span>{{ $t('dashboard.cardDetail') }}</span>
             </div>
           </template>
 
@@ -346,7 +347,11 @@ const sortCardDown = (card: Card, index: number) => {
               @register="register"
           />
 
-          <ElSkeleton v-if="!(core.activeCard >= 0)" :rows="5" />
+          <ElEmpty v-if="!(core.activeCard >= 0)" :rows="5">
+            <ElButton type="primary" @click="addCard()">
+              {{ t('dashboard.addNewCard') }}
+            </ElButton>
+          </ElEmpty>
 
           <div class="text-right" v-if="core.activeCard >= 0">
             <ElButton type="primary" @click.prevent.stop='showExportDialog()'>
@@ -383,7 +388,7 @@ const sortCardDown = (card: Card, index: number) => {
               <span>{{ $t('dashboard.cardList') }}</span>
               <ElButtonGroup>
                 <ElButton @click="addCard()" text size="small">
-                  {{ t('dashboard.addNewCard') }}
+                  {{ t('dashboard.addNew') }}
                 </ElButton>
                 <ElButton @click="showImportDialog()" text size="small">
                   {{ t('dashboard.importCard') }}

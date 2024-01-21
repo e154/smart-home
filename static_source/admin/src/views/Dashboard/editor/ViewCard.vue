@@ -79,13 +79,12 @@ useBus({
       return
     }
     if (itemIndex === -1 || !currentCard.value.items.length || !currentCard.value.items[itemIndex]) {
-      targets.value = [];
+      setSelectedTargets([])
       return
     }
     const target = currentCard.value.items[itemIndex].target;
     // target.classList.add("selected");
     setSelectedTargets([target]);
-    targets.value = [target];
   }
 })
 
@@ -95,16 +94,9 @@ useBus({
     if (currentCard.value.active) {
       return
     }
-
-    targets.value = [];
+    setSelectedTargets([]);
   }
 })
-
-const selectCard = (event?: any) => {
-  if (currentCard.value.active) return;
-  props.core?.onSelectedCard(currentCard.value.id)
-  bus.emit('selected_card', currentCard.value.id)
-}
 
 const selectCardItem = (itemIndex: number) => {
   if (!currentCard.value.active) {
@@ -113,35 +105,28 @@ const selectCardItem = (itemIndex: number) => {
   }
 
   currentCard.value.selectedItem = itemIndex;
-  if (itemIndex === -1 || !currentCard.value.items.length || !currentCard.value.items[itemIndex]) {
-    targets.value = [];
-  } else {
-    targets.value = [currentCard.value.items[itemIndex].target];
-  }
-  bus.emit('unselected_card_item')
+  // if (itemIndex === -1 || !currentCard.value.items.length || !currentCard.value.items[itemIndex]) {
+  //   targets.value = [];
+  // } else {
+  //   targets.value = [currentCard.value.items[itemIndex].target];
+  // }
+  // bus.emit('unselected_card_item')
 }
 
 const onDrag = ({target, transform, beforeTranslate, left, top}: any) => {
-  // console.log('onDrag',target)
-  // if (currentCard.value.selectedItem > -1) {
-  //   currentCard.value.items[currentCard.value.selectedItem].transform = transform; //todo uncomment
-  // }
-
   const classes = target.className.split(' ');
   target.style.transform = transform;
   for (const cl of classes) {
-    // console.log('class', cl)
     if (cl.includes('item-index-')) {
       const index = parseInt(cl.replace("item-index-", ""))
-      // console.log('index', index)
       currentCard.value.items[index].transform = transform;
     }
   }
 }
 
-const setSelectedTargets = (nextTargetes) => {
-  selectoRef.value.setSelectedTargets(deepFlat(nextTargetes));
-  targets.value = nextTargetes;
+const setSelectedTargets = (target) => {
+  selectoRef.value.setSelectedTargets(deepFlat(target));
+  targets.value = target;
 };
 
 const onResize = ({target, width, height, clientX, clientY}: any) => {
@@ -179,10 +164,8 @@ const onDragGroup = ({events}) => {
     const classes = ev.target.className.split(' ');
     ev.target.style.transform = ev.transform;
     for (const cl of classes) {
-      // console.log('class', cl)
       if (cl.includes('item-index-')) {
         const index = parseInt(cl.replace("item-index-", ""))
-        // console.log('index', index)
         currentCard.value.items[index].transform = ev.transform;
       }
     }
@@ -196,7 +179,6 @@ const onRenderGroup = e => {
 };
 
 const onClickGroup = e => {
-  // console.log('onClickGroup', e)
   if (!e.moveableTarget) {
     setSelectedTargets([]);
     selectCardItem(-1);
@@ -218,7 +200,6 @@ const onClickGroup = e => {
 const selectoRef = ref(null);
 
 const onSelect = (e) => {
-  // console.log('onSelect',e)
   e.added.forEach(el => {
     el.classList.add("selected");
   });
@@ -228,16 +209,24 @@ const onSelect = (e) => {
 }
 
 const onSelectEnd = (e) => {
-  // const moveable = moveableRef.value;
-  // if (e.isDragStart) {
-  //   e.inputEvent.preventDefault();
-  //   moveable.waitToChangeTarget().then(() => {
-  //     moveable.dragStart(e.inputEvent);
-  //   });
-  // }
-  targets.value = e.selected;
-  if (e.selected && e.selected.length == 1) {
-    const classes = e.selected[0].className.split(' ');
+  const {
+    isDragStartEnd,
+    isClick,
+    added,
+    removed,
+    inputEvent,
+    selected,
+  } = e;
+  const moveable = moveableRef.value;
+  if (e.isDragStart) {
+    e.inputEvent.preventDefault();
+    moveable.waitToChangeTarget().then(() => {
+      moveable.dragStart(e.inputEvent);
+    });
+  }
+  targets.value = selected;
+  if (selected && selected.length == 1) {
+    const classes = selected[0].className.split(' ');
     for (const cl of classes) {
       if (cl.includes('item-index-')) {
         const index = parseInt(cl.replace("item-index-", ""))
@@ -245,14 +234,18 @@ const onSelectEnd = (e) => {
       }
     }
   }
+
+  if (selected && selected.length == 0) {
+    selectCardItem(-1)
+  }
 };
 
 const onDragStart = (e) => {
-  // console.log(e)
   const moveable = moveableRef.value;
   const target = e.inputEvent.target;
+  const flatted = targets.value.flat(3);
   if (moveable.isMoveableElement(target)
-      || targets.value.some(t => t === target || t.contains(target))
+      || flatted.some(t => t === target || t.contains(target))
   ) {
     e.stop();
   }
@@ -270,8 +263,6 @@ const onDragStart = (e) => {
       :style="{
         'transform': `scale(${zoom})`,
         'background-color': currentCard.background || 'inherit'}"
-      @click="selectCard()"
-      @mousedown.self="selectCardItem(-1)"
   >
 
     <component
