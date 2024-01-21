@@ -51,7 +51,7 @@ func NewCommandSudo() *CommandSudo {
 		Run: func(cmd *cobra.Command, args []string) {
 			var password = cmd.Flag("password").Value.String()
 
-			log.Debugf("password: %s", password)
+			//log.Debugf("password: %s", password)
 
 			ctx := cmd.Context()
 			command, ok := ctx.Value("Command").(events.CommandTerminal)
