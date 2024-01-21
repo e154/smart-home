@@ -1317,6 +1317,9 @@ type EndDate = time.Time
 // EntityId defines model for entityId.
 type EntityId = string
 
+// Ids defines model for ids.
+type Ids = []uint64
+
 // ListLimit defines model for listLimit.
 type ListLimit = uint64
 
@@ -2027,7 +2030,10 @@ type ScriptServiceGetScriptListParams struct {
 
 	// Limit The number of results returned on a page
 	Limit *ListLimit `form:"limit,omitempty" json:"limit,omitempty"`
-	Query *Query     `form:"query,omitempty" json:"query,omitempty"`
+
+	// Ids The number of results returned on a page
+	Ids   *Ids   `form:"ids,omitempty" json:"ids,omitempty"`
+	Query *Query `form:"query,omitempty" json:"query,omitempty"`
 }
 
 // ScriptServiceSearchScriptParams defines parameters for ScriptServiceSearchScript.

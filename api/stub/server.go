@@ -3474,6 +3474,13 @@ func (w *ServerInterfaceWrapper) ScriptServiceGetScriptList(ctx echo.Context) er
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter limit: %s", err))
 	}
 
+	// ------------- Optional query parameter "ids" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "ids", ctx.QueryParams(), &params.Ids)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter ids: %s", err))
+	}
+
 	// ------------- Optional query parameter "query" -------------
 
 	err = runtime.BindQueryParameter("form", true, false, "query", ctx.QueryParams(), &params.Query)

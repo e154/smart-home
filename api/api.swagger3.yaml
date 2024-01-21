@@ -2948,6 +2948,7 @@ paths:
         - $ref: '#/components/parameters/listSort'
         - $ref: '#/components/parameters/listPage'
         - $ref: '#/components/parameters/listLimit'
+        - $ref: '#/components/parameters/ids'
         - $ref: '#/components/parameters/query'
       responses:
         200:
@@ -4286,6 +4287,16 @@ components:
       schema:
         type: integer
         format: uint64
+      description: The number of results returned on a page
+    ids:
+      name: ids
+      in: query
+      required: false
+      schema:
+        type: array
+        items:
+          type: integer
+          format: uint64
       description: The number of results returned on a page
     startDate:
       name: startDate
