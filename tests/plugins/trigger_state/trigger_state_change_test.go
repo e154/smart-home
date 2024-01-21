@@ -121,10 +121,13 @@ automationTriggerStateChanged = (msg)->
 			mqttServer.Start()
 			zigbee2mqtt.Start(context.Background())
 			supervisor.Start(context.Background())
-			WaitSupervisor(eventBus)
+			WaitSupervisor(eventBus, time.Second)
 
 			var counter atomic.Int32
 			var lastStat atomic.String
+
+			// common
+			// ------------------------------------------------
 			ch := make(chan struct{})
 			scriptService.PushFunctions("Done", func(state string) {
 				lastStat.Store(state)
@@ -193,14 +196,9 @@ automationTriggerStateChanged = (msg)->
 			So(err, ShouldBeNil)
 			time.Sleep(time.Millisecond * 500)
 
-			timer := time.NewTimer(time.Second * 4)
-			defer timer.Stop()
-
-			select {
-			case <-timer.C:
-			case <-ch:
-
-			}
+			// wait message
+			_, ok := WaitT[struct{}](time.Second*2, ch)
+			ctx.So(ok, ShouldBeTrue)
 
 			time.Sleep(time.Second)
 

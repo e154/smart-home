@@ -27,7 +27,7 @@ import (
 )
 
 type Actor struct {
-	supervisor.BaseActor
+	*supervisor.BaseActor
 	actionPool chan events.EventCallEntityAction
 	network1   *Network1
 	network2   *Network2

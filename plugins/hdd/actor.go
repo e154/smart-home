@@ -31,7 +31,7 @@ import (
 
 // Actor ...
 type Actor struct {
-	supervisor.BaseActor
+	*supervisor.BaseActor
 	cores           int64
 	model           string
 	total           metrics.Gauge
@@ -93,9 +93,6 @@ func (e *Actor) selfUpdate() {
 	e.updateLock.Lock()
 	defer e.updateLock.Unlock()
 
-	oldState := e.GetEventState()
-	e.Now(oldState)
-
 	var mountPoint = "/"
 	if e.MountPoint != "" {
 		mountPoint = e.MountPoint
@@ -114,11 +111,5 @@ func (e *Actor) selfUpdate() {
 		e.Attrs[AttrInodesUsedPercent].Value = r.InodesUsedPercent
 		e.AttrMu.Unlock()
 	}
-	go e.SaveState(events.EventStateChanged{
-		StorageSave: false,
-		PluginName:  e.Id.PluginName(),
-		EntityId:    e.Id,
-		OldState:    oldState,
-		NewState:    e.GetEventState(),
-	})
+	e.SaveState(false, false)
 }

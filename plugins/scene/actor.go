@@ -29,7 +29,7 @@ import (
 
 // Actor ...
 type Actor struct {
-	supervisor.BaseActor
+	*supervisor.BaseActor
 	eventPool chan events.EventCallScene
 	stateMu   *sync.Mutex
 }

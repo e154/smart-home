@@ -29,7 +29,7 @@ import (
 
 // Actor ...
 type Actor struct {
-	supervisor.BaseActor
+	*supervisor.BaseActor
 	actionPool chan events.EventCallEntityAction
 	bridge     *MqttBridge
 }
@@ -91,27 +91,9 @@ func (e *Actor) Spawn() {
 // SetState ...
 func (e *Actor) SetState(params supervisor.EntityStateParams) error {
 
-	oldState := e.GetEventState()
-
-	e.Now(oldState)
-
-	if params.NewState != nil {
-		state := e.States[*params.NewState]
-		e.State = &state
-		e.State.ImageUrl = state.ImageUrl
-	}
-
-	e.AttrMu.Lock()
-	_, _ = e.Attrs.Deserialize(params.AttributeValues)
-	e.AttrMu.Unlock()
-
-	go e.SaveState(events.EventStateChanged{
-		StorageSave: params.StorageSave,
-		PluginName:  e.Id.PluginName(),
-		EntityId:    e.Id,
-		OldState:    oldState,
-		NewState:    e.GetEventState(),
-	})
+	e.SetActorState(params.NewState)
+	e.DeserializeAttr(params.AttributeValues)
+	e.SaveState(false, params.StorageSave)
 
 	return nil
 }

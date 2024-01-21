@@ -19,20 +19,16 @@
 package logs
 
 import (
-	"sync"
-
-	"github.com/e154/smart-home/common/events"
-	m "github.com/e154/smart-home/models"
-
 	"github.com/rcrowley/go-metrics"
 
 	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
 // Actor ...
 type Actor struct {
-	supervisor.BaseActor
+	*supervisor.BaseActor
 	cores         int64
 	model         string
 	ErrTotal      metrics.Counter
@@ -41,7 +37,6 @@ type Actor struct {
 	WarnTotal     metrics.Counter
 	WarnToday     metrics.Counter
 	WarnYesterday metrics.Counter
-	updateLock    *sync.Mutex
 }
 
 // NewActor ...
@@ -56,7 +51,6 @@ func NewActor(entity *m.Entity,
 		WarnTotal:     metrics.NewCounter(),
 		WarnToday:     metrics.NewCounter(),
 		WarnYesterday: metrics.NewCounter(),
-		updateLock:    &sync.Mutex{},
 	}
 
 	if entity != nil {
@@ -82,12 +76,6 @@ func (e *Actor) Spawn() {
 
 func (e *Actor) selfUpdate() {
 
-	e.updateLock.Lock()
-	defer e.updateLock.Unlock()
-
-	oldState := e.GetEventState()
-	e.Now(oldState)
-
 	e.AttrMu.Lock()
 	e.Attrs[AttrErrTotal].Value = e.ErrTotal.Count()
 	e.Attrs[AttrErrToday].Value = e.ErrToday.Count()
@@ -97,13 +85,7 @@ func (e *Actor) selfUpdate() {
 	e.Attrs[AttrWarnYesterday].Value = e.WarnYesterday.Count()
 	e.AttrMu.Unlock()
 
-	go e.SaveState(events.EventStateChanged{
-		StorageSave: true,
-		PluginName:  e.Id.PluginName(),
-		EntityId:    e.Id,
-		OldState:    oldState,
-		NewState:    e.GetEventState(),
-	})
+	e.SaveState(false, true)
 }
 
 func (e *Actor) LogsHook(level common.LogLevel) {

@@ -33,7 +33,7 @@ import (
 
 // Actor ...
 type Actor struct {
-	supervisor.BaseActor
+	*supervisor.BaseActor
 	notify   *notify.Notify
 	Token    string
 	UserName string

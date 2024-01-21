@@ -31,7 +31,7 @@ import (
 
 // Actor ...
 type Actor struct {
-	supervisor.BaseActor
+	*supervisor.BaseActor
 	client      *Client
 	snapshotUri *string
 }
@@ -98,27 +98,9 @@ func (a *Actor) Spawn() {
 // SetState ...
 func (a *Actor) SetState(params supervisor.EntityStateParams) error {
 
-	oldState := a.GetEventState()
-
-	a.Now(oldState)
-
-	if params.NewState != nil {
-		state := a.States[*params.NewState]
-		a.State = &state
-		a.State.ImageUrl = state.ImageUrl
-	}
-
-	a.AttrMu.Lock()
-	_, _ = a.Attrs.Deserialize(params.AttributeValues)
-	a.AttrMu.Unlock()
-
-	go a.SaveState(events.EventStateChanged{
-		StorageSave: params.StorageSave,
-		PluginName:  a.Id.PluginName(),
-		EntityId:    a.Id,
-		OldState:    oldState,
-		NewState:    a.GetEventState(),
-	})
+	a.SetActorState(params.NewState)
+	a.DeserializeAttr(params.AttributeValues)
+	a.SaveState(false, params.StorageSave)
 
 	return nil
 }

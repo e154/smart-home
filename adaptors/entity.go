@@ -504,6 +504,10 @@ func (n *Entity) fromDb(dbVer *db.Entity) (ver *m.Entity) {
 		data := map[string]interface{}{}
 		_ = json.Unmarshal(dbVer.Storage[0].Attributes, &data)
 		_, _ = ver.Attributes.Deserialize(data)
+		storageAdaptor := GetEntityStorageAdaptor(n.db)
+		for _, store := range dbVer.Storage {
+			ver.Storage = append(ver.Storage, storageAdaptor.fromDb(store))
+		}
 	}
 
 	return

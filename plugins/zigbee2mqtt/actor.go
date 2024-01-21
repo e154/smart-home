@@ -33,7 +33,7 @@ import (
 
 // Actor ...
 type Actor struct {
-	supervisor.BaseActor
+	*supervisor.BaseActor
 	zigbee2mqttDevice *m.Zigbee2mqttDevice
 	mqttMessageQueue  chan *Message
 	actionPool        chan events.EventCallEntityAction
@@ -101,45 +101,9 @@ func (e *Actor) Spawn() {
 // SetState ...
 func (e *Actor) SetState(params supervisor.EntityStateParams) error {
 
-	e.stateMu.Lock()
-	defer e.stateMu.Unlock()
-
-	oldState := e.GetEventState()
-	now := e.Now(oldState)
-
-	if params.NewState != nil {
-		if state, ok := e.States[*params.NewState]; ok {
-			e.State = &state
-		}
-	}
-
-	var changed bool
-	var err error
-
-	e.AttrMu.Lock()
-	if changed, err = e.Attrs.Deserialize(params.AttributeValues); !changed {
-		if err != nil {
-			log.Warn(err.Error())
-		}
-
-		if oldState.LastUpdated != nil {
-			delta := now.Sub(*oldState.LastUpdated).Milliseconds()
-			//fmt.Println("delta", delta)
-			if delta < 200 {
-				e.AttrMu.Unlock()
-				return nil
-			}
-		}
-	}
-	e.AttrMu.Unlock()
-
-	go e.SaveState(events.EventStateChanged{
-		PluginName:  e.Id.PluginName(),
-		EntityId:    e.Id,
-		OldState:    oldState,
-		NewState:    e.GetEventState(),
-		StorageSave: params.StorageSave,
-	})
+	e.SetActorState(params.NewState)
+	e.DeserializeAttr(params.AttributeValues)
+	e.SaveState(false, params.StorageSave)
 
 	return nil
 }

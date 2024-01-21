@@ -68,7 +68,7 @@ automationTriggerSystem = (msg)->
 			_ = automation.Start()
 			go zigbee2mqtt.Start(context.Background())
 			supervisor.Start(context.Background())
-			WaitSupervisor(eventBus)
+			WaitSupervisor(eventBus, time.Second)
 
 			var counter atomic.Int32
 			var lastEvent atomic.String

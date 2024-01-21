@@ -20,6 +20,7 @@ package weather_owm
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/common"
 	"time"
 
 	"github.com/e154/smart-home/common/astronomics/suncalc"
@@ -31,7 +32,7 @@ import (
 
 // Actor ...
 type Actor struct {
-	supervisor.BaseActor
+	*supervisor.BaseActor
 	Zone
 	actionPool chan events.EventCallEntityAction
 	weather    *WeatherOwm
@@ -119,21 +120,11 @@ func (e *Actor) runAction(msg events.EventCallEntityAction) {
 
 func (e *Actor) update() {
 
-	oldState := e.GetEventState()
-
-	e.Now(oldState)
-
 	if !e.updateForecast() {
 		return
 	}
 
-	go e.SaveState(events.EventStateChanged{
-		PluginName:  e.Id.PluginName(),
-		EntityId:    e.Id,
-		OldState:    oldState,
-		NewState:    e.GetEventState(),
-		StorageSave: true,
-	})
+	e.SaveState(false, true)
 
 }
 
@@ -157,9 +148,8 @@ func (e *Actor) updateForecast() (changed bool) {
 	var night = suncalc.IsNight(sunrisePos)
 
 	if val, ok := e.Attrs[weather.AttrWeatherMain]; ok {
-		state := e.States[val.String()]
-		e.State = &state
-		e.State.ImageUrl = weather.GetImagePath(state.Name, e.theme, night, e.winter)
+		e.SetActorState(common.String(val.String()))
+		e.SetActorStateImage(weather.GetImagePath(val.String(), e.theme, night, e.winter), nil)
 	}
 
 	for i := 1; i < 6; i++ {

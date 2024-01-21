@@ -76,8 +76,9 @@ type PluginActor interface {
 	SetState(EntityStateParams) error
 	Info() ActorInfo
 	GetCurrentState() *bus.EventEntityState
+	GetOldState() *bus.EventEntityState
 	SetCurrentState(bus.EventEntityState)
-	GetEventState() (eventState bus.EventEntityState)
+	GetEventState() bus.EventEntityState
 	AddMetric(name string, value map[string]interface{})
 }
 

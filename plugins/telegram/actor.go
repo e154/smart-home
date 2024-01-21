@@ -41,7 +41,7 @@ import (
 
 // Actor ...
 type Actor struct {
-	supervisor.BaseActor
+	*supervisor.BaseActor
 	isStarted   *atomic.Bool
 	AccessToken string
 	bot         *tele.Bot
@@ -218,9 +218,6 @@ func (e *Actor) getChatList() (list []m.TelegramChat, err error) {
 // UpdateStatus ...
 func (e *Actor) UpdateStatus() (err error) {
 
-	oldState := e.GetEventState()
-	now := e.Now(oldState)
-
 	var attributeValues = make(m.AttributeValue)
 	// ...
 
@@ -230,25 +227,10 @@ func (e *Actor) UpdateStatus() (err error) {
 		if err != nil {
 			log.Warn(err.Error())
 		}
-
-		if oldState.LastUpdated != nil {
-			delta := now.Sub(*oldState.LastUpdated).Milliseconds()
-			//fmt.Println("delta", delta)
-			if delta < 200 {
-				e.AttrMu.Unlock()
-				return
-			}
-		}
 	}
 	e.AttrMu.Unlock()
 
-	go e.SaveState(events.EventStateChanged{
-		StorageSave: true,
-		PluginName:  e.Id.PluginName(),
-		EntityId:    e.Id,
-		OldState:    oldState,
-		NewState:    e.GetEventState(),
-	})
+	e.SaveState(false, true)
 
 	return
 }

@@ -25,14 +25,13 @@ import (
 	"github.com/shirou/gopsutil/v3/mem"
 
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
 // Actor ...
 type Actor struct {
-	supervisor.BaseActor
+	*supervisor.BaseActor
 	total       metrics.Gauge
 	free        metrics.Gauge
 	usedPercent metrics.GaugeFloat64
@@ -72,9 +71,6 @@ func (e *Actor) selfUpdate() {
 	e.updateLock.Lock()
 	defer e.updateLock.Unlock()
 
-	oldState := e.GetEventState()
-	e.Now(oldState)
-
 	v, _ := mem.VirtualMemory()
 	e.total.Update(int64(v.Total))
 	e.free.Update(int64(v.Free))
@@ -92,11 +88,5 @@ func (e *Actor) selfUpdate() {
 	//	"used_percent": usedPercent,
 	//})
 
-	go e.SaveState(events.EventStateChanged{
-		StorageSave: false,
-		PluginName:  e.Id.PluginName(),
-		EntityId:    e.Id,
-		OldState:    oldState,
-		NewState:    e.GetEventState(),
-	})
+	e.SaveState(false, false)
 }

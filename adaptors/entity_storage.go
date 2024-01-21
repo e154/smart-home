@@ -33,10 +33,12 @@ import (
 type IEntityStorage interface {
 	Add(ctx context.Context, ver *m.EntityStorage) (id int64, err error)
 	GetLastByEntityId(ctx context.Context, entityId common.EntityId) (ver *m.EntityStorage, err error)
-	List(ctx context.Context, limit, offset int64, orderBy, sort string, entityIds []common.EntityId, startDate, endDate *time.Time) (list []*m.EntityStorage, total int64, err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string,
+		entityIds []common.EntityId,
+		startDate, endDate *time.Time) (list []*m.EntityStorage, total int64, err error)
 	DeleteOldest(ctx context.Context, days int) (err error)
-	fromDb(dbVer db.EntityStorage) (ver *m.EntityStorage)
-	toDb(ver *m.EntityStorage) (dbVer db.EntityStorage)
+	fromDb(dbVer *db.EntityStorage) (ver *m.EntityStorage)
+	toDb(ver *m.EntityStorage) (dbVer *db.EntityStorage)
 }
 
 // EntityStorage ...
@@ -62,7 +64,7 @@ func (n *EntityStorage) Add(ctx context.Context, ver *m.EntityStorage) (id int64
 
 // GetLastByEntityId ...
 func (n *EntityStorage) GetLastByEntityId(ctx context.Context, entityId common.EntityId) (ver *m.EntityStorage, err error) {
-	var dbVer db.EntityStorage
+	var dbVer *db.EntityStorage
 	if dbVer, err = n.table.GetLastByEntityId(ctx, entityId); err != nil {
 		return
 	}
@@ -72,7 +74,7 @@ func (n *EntityStorage) GetLastByEntityId(ctx context.Context, entityId common.E
 
 // ListByEntityId ...
 func (n *EntityStorage) List(ctx context.Context, limit, offset int64, orderBy, sort string, entityIds []common.EntityId, startDate, endDate *time.Time) (list []*m.EntityStorage, total int64, err error) {
-	var dbList []db.EntityStorage
+	var dbList []*db.EntityStorage
 	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort, entityIds, startDate, endDate); err != nil {
 		return
 	}
@@ -90,7 +92,7 @@ func (n *EntityStorage) DeleteOldest(ctx context.Context, days int) (err error) 
 	return
 }
 
-func (n *EntityStorage) fromDb(dbVer db.EntityStorage) (ver *m.EntityStorage) {
+func (n *EntityStorage) fromDb(dbVer *db.EntityStorage) (ver *m.EntityStorage) {
 	ver = &m.EntityStorage{
 		Id:         dbVer.Id,
 		EntityId:   dbVer.EntityId,
@@ -106,8 +108,8 @@ func (n *EntityStorage) fromDb(dbVer db.EntityStorage) (ver *m.EntityStorage) {
 	return
 }
 
-func (n *EntityStorage) toDb(ver *m.EntityStorage) (dbVer db.EntityStorage) {
-	dbVer = db.EntityStorage{
+func (n *EntityStorage) toDb(ver *m.EntityStorage) (dbVer *db.EntityStorage) {
+	dbVer = &db.EntityStorage{
 		Id:        ver.Id,
 		EntityId:  ver.EntityId,
 		State:     ver.State,

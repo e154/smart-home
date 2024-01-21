@@ -23,14 +23,17 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"sync"
 	"time"
 
-	"github.com/e154/smart-home/common/events"
-	"github.com/e154/smart-home/system/bus"
+	"github.com/phayes/freeport"
+	"github.com/smartystreets/goconvey/convey"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/plugins/alexa"
 	"github.com/e154/smart-home/plugins/cgminer"
 	"github.com/e154/smart-home/plugins/cgminer/bitmine"
 	"github.com/e154/smart-home/plugins/modbus_rtu"
@@ -42,9 +45,8 @@ import (
 	"github.com/e154/smart-home/plugins/telegram"
 	"github.com/e154/smart-home/plugins/weather"
 	"github.com/e154/smart-home/plugins/zigbee2mqtt"
+	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/scripts"
-	"github.com/phayes/freeport"
-	"github.com/smartystreets/goconvey/convey"
 )
 
 // GetNewButton ...
@@ -390,15 +392,24 @@ func RegisterConvey(scriptService scripts.ScriptService, ctx convey.C) {
 }
 
 // Wait ...
-func Wait(t time.Duration, ch chan interface{}) (ok bool) {
-
-	ticker := time.NewTimer(time.Second * t)
-	defer ticker.Stop()
+func Wait(timeOut time.Duration, ch chan interface{}) (ok bool) {
 
 	select {
 	case <-ch:
 		ok = true
-	case <-ticker.C:
+	case <-time.After(timeOut):
+	}
+	return
+}
+
+// WaitT ...
+func WaitT[T events.EventStateChanged | alexa.EventAlexaAction | []byte | struct{}](timeOut time.Duration, ch chan T) (v T, ok bool) {
+
+	select {
+	case v = <-ch:
+		ok = true
+		return
+	case <-time.After(timeOut):
 	}
 	return
 }
@@ -529,39 +540,34 @@ func AddTask(newTask *m.NewTask, adaptors *adaptors.Adaptors, eventBus bus.Bus) 
 	return
 }
 
-func WaitSupervisor(eventBus bus.Bus) {
+func WaitSupervisor(eventBus bus.Bus, timeOut time.Duration) {
 
 	ch := make(chan interface{})
-	defer close(ch)
 	fn := func(_ string, msg interface{}) {
 		switch msg.(type) {
 		case events.EventServiceStarted:
 			ch <- struct{}{}
+			close(ch)
 		}
 	}
-	eventBus.Subscribe("system/services/supervisor", fn)
+	eventBus.Subscribe("system/services/supervisor", fn, false)
 	defer eventBus.Unsubscribe("system/services/supervisor", fn)
 
-	Wait(1, ch)
+	Wait(timeOut, ch)
 
 	time.Sleep(time.Millisecond * 500)
 }
 
-func WaitStateChanged(eventBus bus.Bus) (ok bool) {
-
-	ch := make(chan interface{})
-	defer close(ch)
-	fn := func(_ string, msg interface{}) {
-		switch msg.(type) {
-		case events.EventStateChanged:
-			ch <- struct{}{}
-		}
+func WaitGroupTimeout(wg *sync.WaitGroup, timeOut time.Duration) bool {
+	ch := make(chan struct{})
+	go func() {
+		defer close(ch)
+		wg.Wait()
+	}()
+	select {
+	case <-ch:
+		return true
+	case <-time.After(timeOut):
+		return false
 	}
-	eventBus.Subscribe("system/entities/+", fn)
-	defer eventBus.Unsubscribe("system/entities/+", fn)
-
-	ok = Wait(1, ch)
-
-	time.Sleep(time.Millisecond * 500)
-	return
 }

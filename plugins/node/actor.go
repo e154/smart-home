@@ -21,11 +21,10 @@ package node
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/e154/smart-home/common"
 	"strings"
 	"sync"
 	"time"
-
-	"github.com/e154/smart-home/common/events"
 
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/mqtt"
@@ -34,7 +33,7 @@ import (
 
 // Actor ...
 type Actor struct {
-	supervisor.BaseActor
+	*supervisor.BaseActor
 	mqttClient mqtt.MqttCli
 	stateMu    *sync.Mutex
 	quit       chan struct{}
@@ -55,15 +54,15 @@ func NewActor(entity *m.Entity,
 		lastState:  m.AttributeValue{},
 	}
 
-	if actor.Attrs == nil {
+	if actor.Attrs == nil || len(actor.Attrs) == 0 {
 		actor.Attrs = NewAttr()
 	}
 
-	if actor.States == nil {
+	if actor.States == nil || len(actor.States) == 0 {
 		actor.States = NewStates()
 	}
 
-	if actor.Setts == nil {
+	if actor.Setts == nil || len(actor.Setts) == 0 {
 		actor.Setts = NewSettings()
 	}
 
@@ -82,8 +81,7 @@ func (e *Actor) Destroy() {
 // Spawn ...
 func (e *Actor) Spawn() {
 
-	state := e.States["wait"]
-	e.State = &state
+	e.SetActorState(common.String("wait"))
 
 	go func() {
 		e.quit = make(chan struct{})
@@ -152,27 +150,9 @@ func (e *Actor) updateStatus() {
 		state = "connected"
 	}
 
-	oldState := e.GetEventState()
-	e.Now(oldState)
-
-	e.AttrMu.Lock()
-	changed, _ := e.Attrs.Deserialize(e.lastState)
-	e.AttrMu.Unlock()
-
-	if !changed && e.State.Name == state {
-		return
-	}
-
-	if state, ok := e.States[state]; ok {
-		e.State = &state
-	}
-
-	go e.SaveState(events.EventStateChanged{
-		PluginName: e.Id.PluginName(),
-		EntityId:   e.Id,
-		OldState:   oldState,
-		NewState:   e.GetEventState(),
-	})
+	e.DeserializeAttr(e.lastState)
+	e.SetActorState(&state)
+	e.SaveState(false, true)
 }
 
 func (e *Actor) localTopic(r string) string {

@@ -63,9 +63,10 @@ automationTriggerAlexa = (msg)->
 
 			automation.Start()
 			supervisor.Start(context.Background())
-			WaitSupervisor(eventBus)
+			WaitSupervisor(eventBus, time.Second)
 
 			var ch = make(chan alexa.EventAlexaAction)
+			defer close(ch)
 			scriptService.PushFunctions("Done", func(msg alexa.EventAlexaAction) {
 				ch <- msg
 			})
@@ -116,17 +117,10 @@ automationTriggerAlexa = (msg)->
 
 			time.Sleep(time.Millisecond * 500)
 
-			ticker := time.NewTimer(time.Second * 2)
-			defer ticker.Stop()
+			// wait message
+			msg, ok := WaitT[alexa.EventAlexaAction](time.Second*2, ch)
+			ctx.So(ok, ShouldBeTrue)
 
-			var msg alexa.EventAlexaAction
-			select {
-			case v := <-ch:
-				msg = v
-			case <-ticker.C:
-			}
-
-			time.Sleep(time.Second)
 			ctx.So(msg.Payload, ShouldEqual, "kitchen_on")
 			ctx.So(msg.SkillId, ShouldEqual, 1)
 			ctx.So(msg.IntentName, ShouldEqual, "FlatLights")

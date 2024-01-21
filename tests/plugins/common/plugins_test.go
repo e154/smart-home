@@ -16,44 +16,49 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package scripts
+package sensor
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/scripts"
-	. "github.com/smartystreets/goconvey/convey"
+	"os"
+	"path/filepath"
 	"testing"
+	"time"
+
+	"go.uber.org/dig"
+
+	"github.com/e154/smart-home/system/logging"
+	"github.com/e154/smart-home/system/migrations"
+	. "github.com/e154/smart-home/tests/plugins/container"
 )
 
-func Test16(t *testing.T) {
+func init() {
+	apppath := filepath.Join(os.Getenv("PWD"), "../../..")
+	_ = os.Chdir(apppath)
+}
 
-	Convey("scripts run syn command", t, func(ctx C) {
-		err := container.Invoke(func(adaptors *adaptors.Adaptors,
-			scriptService scripts.ScriptService) {
+var (
+	container *dig.Container
+)
 
-			script1 := &m.Script{
-				Lang:   common.ScriptLangJavascript,
-				Source: javascript29,
-			}
-			engine, err := scriptService.NewEngine(script1)
-			So(err, ShouldBeNil)
+func TestMain(m *testing.M) {
 
-			So(err, ShouldBeNil)
-			err = engine.Compile()
-			So(err, ShouldBeNil)
+	_ = os.Setenv("TEST_MODE", "true")
 
-			result, err := engine.Do()
-			So(err, ShouldBeNil)
-			fmt.Println(result)
+	container = BuildContainer()
+	err := container.Invoke(func(
+		_ *logging.Logging,
+		migrations *migrations.Migrations,
+	) {
 
-			result, err = engine.AssertFunction("foo")
-			So(err, ShouldBeNil)
-		})
-		if err != nil {
-			fmt.Println(err.Error())
-		}
+		migrations.Purge()
+
+		time.Sleep(time.Millisecond * 500)
+
+		os.Exit(m.Run())
 	})
+
+	if err != nil {
+		fmt.Println("error:", dig.RootCause(err))
+	}
 }

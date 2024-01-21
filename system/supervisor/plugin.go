@@ -160,9 +160,6 @@ func (p *Plugin) AddActor(pla PluginActor, entity *m.Entity) (err error) {
 	p.Actors.Store(entity.Id, pla)
 	log.Infof("entity '%v' loaded", entity.Id)
 
-	currentState := pla.GetEventState()
-	pla.SetCurrentState(currentState)
-
 	p.Service.EventBus().Publish("system/entities/"+entity.Id.String(), events.EventEntityLoaded{
 		EntityId:   entity.Id,
 		PluginName: entity.PluginName,

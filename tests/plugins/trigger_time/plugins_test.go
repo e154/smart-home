@@ -79,7 +79,7 @@ func TestMain(m *testing.M) {
 		scheduler.Start(context.TODO())
 		automation.Start()
 		supervisor.Start(context.Background())
-		WaitSupervisor(eventBus)
+		WaitSupervisor(eventBus, time.Second)
 
 		os.Exit(m.Run())
 	})
