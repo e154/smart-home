@@ -16,6 +16,7 @@ import stream from "@/api/stream";
 import { Dialog } from '@/components/Dialog'
 import {EventStateChange} from "@/api/stream_types";
 import AttributesViewer from "@/views/Entities/components/AttributesViewer.vue";
+import debounce from "lodash.debounce";
 
 const remember = ref(false)
 const {register, elFormRef, methods} = useForm()
@@ -212,24 +213,20 @@ const getList = async () => {
   }
 }
 
+const getList2 = debounce(() => {
+  getList()
+}, 1000)
+
 const onStateChanged = (event: EventStateChange) => {
   if (event.entity_id != entityId.value) {
     return;
   }
 
-  getList()
+  getList2()
 }
 
-
 watch(
-    () => paginationObj.value.currentPage,
-    () => {
-      getList()
-    }
-)
-
-watch(
-    () => paginationObj.value.pageSize,
+    () => [paginationObj.value.pageSize, paginationObj.value.currentPage],
     () => {
       getList()
     }
