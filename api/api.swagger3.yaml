@@ -1879,7 +1879,7 @@ paths:
         - $ref: '#/components/parameters/listLimit'
         - $ref: '#/components/parameters/startDate'
         - $ref: '#/components/parameters/endDate'
-        - $ref: '#/components/parameters/entityId'
+        - $ref: '#/components/parameters/entityIds'
       responses:
         200:
           description: A successful response.
@@ -4312,12 +4312,14 @@ components:
       schema:
         type: string
         format: date-time
-    entityId:
+    entityIds:
       name: entityId
       in: query
       required: false
       schema:
-        type: string
+        type: array
+        items:
+          type: string
     query:
       name: query
       in: query

@@ -1314,8 +1314,8 @@ type AcceptJSON = string
 // EndDate defines model for endDate.
 type EndDate = time.Time
 
-// EntityId defines model for entityId.
-type EntityId = string
+// EntityIds defines model for entityIds.
+type EntityIds = []string
 
 // Ids defines model for ids.
 type Ids = []uint64
@@ -1791,7 +1791,7 @@ type EntityStorageServiceGetEntityStorageListParams struct {
 	Limit     *ListLimit `form:"limit,omitempty" json:"limit,omitempty"`
 	StartDate *StartDate `form:"startDate,omitempty" json:"startDate,omitempty"`
 	EndDate   *EndDate   `form:"endDate,omitempty" json:"endDate,omitempty"`
-	EntityId  *EntityId  `form:"entityId,omitempty" json:"entityId,omitempty"`
+	EntityId  *EntityIds `form:"entityId,omitempty" json:"entityId,omitempty"`
 }
 
 // ImageServiceAddImageParams defines parameters for ImageServiceAddImage.

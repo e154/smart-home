@@ -3818,7 +3818,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         startDate?: string;
         /** @format date-time */
         endDate?: string;
-        entityId?: string;
+        entityId?: string[];
       },
       params: RequestParams = {},
     ) =>
