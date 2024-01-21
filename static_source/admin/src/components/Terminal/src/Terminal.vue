@@ -53,6 +53,7 @@ const onExecCmd = (key, command, success, failed) => {
 const addLog = (log: ApiLog) => {
   // const t = parseTime(log.createdAt)
   const message = {
+    type: 'normal',
     class: log.level?.toLowerCase(),
     content: `${log.owner} -> ${log.body}`
   }
