@@ -30,7 +30,6 @@ import (
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/scripts"
 )
 
@@ -64,8 +63,8 @@ type BaseActor struct {
 	Setts             m.Attributes
 	Service           Service
 	stateMu           *sync.RWMutex
-	currentState      *bus.EventEntityState
-	oldState          *bus.EventEntityState
+	currentState      *events.EventEntityState
+	oldState          *events.EventEntityState
 }
 
 // NewBaseActor ...
@@ -261,7 +260,7 @@ func (e *BaseActor) Info() (info ActorInfo) {
 }
 
 // Now ...
-func (e *BaseActor) Now(oldState bus.EventEntityState) time.Time {
+func (e *BaseActor) Now(oldState events.EventEntityState) time.Time {
 	now := time.Now()
 	e.LastUpdated = common.Time(now)
 
@@ -310,7 +309,7 @@ func (e *BaseActor) settingsLock() {
 	}
 }
 
-func (e *BaseActor) GetCurrentState() *bus.EventEntityState {
+func (e *BaseActor) GetCurrentState() *events.EventEntityState {
 	e.stateMu.RLock()
 	defer e.stateMu.RUnlock()
 	if e.currentState != nil {
@@ -321,28 +320,28 @@ func (e *BaseActor) GetCurrentState() *bus.EventEntityState {
 	return e.currentState
 }
 
-func (e *BaseActor) GetOldState() *bus.EventEntityState {
+func (e *BaseActor) GetOldState() *events.EventEntityState {
 	e.stateMu.RLock()
 	defer e.stateMu.RUnlock()
 	return e.oldState
 }
 
-func (e *BaseActor) SetCurrentState(state bus.EventEntityState) {
+func (e *BaseActor) SetCurrentState(state events.EventEntityState) {
 	e.stateMu.Lock()
 	e.currentState = &state
 	e.stateMu.Unlock()
 }
 
-func (e *BaseActor) GetEventState() (eventState bus.EventEntityState) {
+func (e *BaseActor) GetEventState() (eventState events.EventEntityState) {
 
 	attrs := e.Attributes()
 	setts := e.Settings()
 
-	var state *bus.EntityState
+	var state *events.EntityState
 
 	info := e.Info()
 	if info.State != nil {
-		state = &bus.EntityState{
+		state = &events.EntityState{
 			Name:        info.State.Name,
 			Description: info.State.Description,
 			ImageUrl:    info.State.ImageUrl,
@@ -350,7 +349,7 @@ func (e *BaseActor) GetEventState() (eventState bus.EventEntityState) {
 		}
 	}
 
-	eventState = bus.EventEntityState{
+	eventState = events.EventEntityState{
 		EntityId:   info.Id,
 		Value:      info.Value,
 		State:      state,
@@ -369,11 +368,11 @@ func (e *BaseActor) GetEventState() (eventState bus.EventEntityState) {
 	return
 }
 
-func (e *BaseActor) restoreStore(entity *m.Entity, store *m.EntityStorage, state *bus.EventEntityState) {
+func (e *BaseActor) restoreStore(entity *m.Entity, store *m.EntityStorage, state *events.EventEntityState) {
 	if store.State != "" {
 		for _, s := range entity.States {
 			if store.State == s.Name {
-				es := &bus.EntityState{
+				es := &events.EntityState{
 					Name:        s.Name,
 					Description: s.Description,
 					Icon:        s.Icon,
@@ -400,7 +399,7 @@ func (e *BaseActor) RestoreState(entity *m.Entity) {
 	e.stateMu.RLock()
 	defer e.stateMu.RUnlock()
 	if len(entity.Storage) > 0 {
-		e.currentState = &bus.EventEntityState{
+		e.currentState = &events.EventEntityState{
 			EntityId: entity.Id,
 		}
 		var store = entity.Storage[0]
@@ -408,7 +407,7 @@ func (e *BaseActor) RestoreState(entity *m.Entity) {
 		e.restoreStore(entity, store, e.currentState)
 	}
 	if len(entity.Storage) > 1 {
-		e.oldState = &bus.EventEntityState{
+		e.oldState = &events.EventEntityState{
 			EntityId: entity.Id,
 		}
 		var store = entity.Storage[1]
@@ -485,7 +484,7 @@ func (e *BaseActor) SaveState(doNotSaveMetric, storageSave bool) {
 	}()
 }
 
-func (e *BaseActor) updateMetric(state bus.EventEntityState) {
+func (e *BaseActor) updateMetric(state events.EventEntityState) {
 
 	if e.Metric == nil {
 		return

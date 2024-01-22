@@ -20,6 +20,7 @@ package supervisor
 
 import (
 	"context"
+	"github.com/e154/smart-home/common/events"
 	"time"
 
 	"github.com/e154/smart-home/adaptors"
@@ -75,10 +76,10 @@ type PluginActor interface {
 	Metrics() []*m.Metric
 	SetState(EntityStateParams) error
 	Info() ActorInfo
-	GetCurrentState() *bus.EventEntityState
-	GetOldState() *bus.EventEntityState
-	SetCurrentState(bus.EventEntityState)
-	GetEventState() bus.EventEntityState
+	GetCurrentState() *events.EventEntityState
+	GetOldState() *events.EventEntityState
+	SetCurrentState(events.EventEntityState)
+	GetEventState() events.EventEntityState
 	AddMetric(name string, value map[string]interface{})
 }
 
