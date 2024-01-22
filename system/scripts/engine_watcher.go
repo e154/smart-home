@@ -30,6 +30,7 @@ type EngineWatcher struct {
 	eventBus      bus.Bus
 	scriptService *scriptService
 	f             func(engine *Engine)
+	fBefore       func(engine *Engine)
 	mx            *sync.RWMutex
 	engine        *Engine
 }
@@ -56,13 +57,24 @@ func (w *EngineWatcher) Stop() {
 }
 
 func (w *EngineWatcher) Spawn(f func(engine *Engine)) {
+	w.mx.RLock()
+	defer w.mx.RUnlock()
+	if w.fBefore != nil {
+		w.fBefore(w.engine)
+	}
+	if f != nil {
+		w.f = f
+		w.f(w.engine)
+	}
+}
+
+func (w *EngineWatcher) BeforeSpawn(f func(engine *Engine)) {
 	if f == nil {
 		return
 	}
-	w.mx.RLock()
-	defer w.mx.RUnlock()
-	w.f = f
-	w.f(w.engine)
+	w.mx.Lock()
+	defer w.mx.Unlock()
+	w.fBefore = f
 }
 
 func (w *EngineWatcher) Engine() *Engine {
@@ -97,10 +109,12 @@ func (w *EngineWatcher) eventUpdatedScript(msg events.EventUpdatedScriptModel) {
 		log.Error(err.Error())
 		return
 	}
-	if w.f == nil {
-		return
+	if w.fBefore != nil {
+		w.fBefore(w.engine)
 	}
-	w.f(w.engine)
+	if w.f != nil {
+		w.f(w.engine)
+	}
 	log.Infof("script '%s' (%d) updated", msg.Script.Name, msg.ScriptId)
 }
 

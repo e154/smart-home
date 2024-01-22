@@ -134,10 +134,12 @@ func NewBaseActor(entity *m.Entity,
 			if action.ScriptEngine, err = service.ScriptService().NewEngineWatcher(a.Script); err != nil {
 				log.Error(err.Error())
 			}
-			action.ScriptEngine.Spawn(func(engine *scripts.Engine) {
+			action.ScriptEngine.BeforeSpawn(func(engine *scripts.Engine) {
 				if _, err = engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id)); err != nil {
 					log.Error(err.Error())
 				}
+			})
+			action.ScriptEngine.Spawn(func(engine *scripts.Engine) {
 				if _, err = engine.Do(); err != nil {
 					log.Error(err.Error())
 				}
@@ -154,17 +156,22 @@ func NewBaseActor(entity *m.Entity,
 		if actor.ScriptsEngine, err = service.ScriptService().NewEnginesWatcher(entity.Scripts); err != nil {
 			log.Error(err.Error())
 		}
-		actor.ScriptsEngine.Spawn(func(engine *scripts.Engine) {
+		actor.ScriptsEngine.BeforeSpawn(func(engine *scripts.Engine) {
 			if _, err = engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id)); err != nil {
 				log.Error(err.Error())
 			}
-			if _, err = engine.Do(); err != nil {
+		})
+		actor.ScriptsEngine.Spawn(func(engine *scripts.Engine) {
+			//if _, err = engine.Do(); err != nil {
+			//	log.Error(err.Error())
+			//}
+			if _, err := engine.AssertFunction("init"); err != nil {
 				log.Error(err.Error())
 			}
 		})
-		if _, err = actor.ScriptsEngine.Engine().AssertFunction("init"); err != nil {
-			log.Error(err.Error())
-		}
+		//if _, err = actor.ScriptsEngine.Engine().AssertFunction("init"); err != nil {
+		//	log.Error(err.Error())
+		//}
 	}
 
 	// restore state

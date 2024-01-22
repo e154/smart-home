@@ -105,16 +105,18 @@ func (a *Actor) addAction(event events.EventCallEntityAction) {
 }
 
 func (a *Actor) runAction(msg events.EventCallEntityAction) {
-	action, ok := a.Actions[msg.ActionName]
-	if !ok {
-		log.Warnf("action %s not found", msg.ActionName)
-		return
+	if action, ok := a.Actions[msg.ActionName]; ok {
+		if action.ScriptEngine != nil && action.ScriptEngine.Engine() != nil {
+			if _, err := action.ScriptEngine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
+				log.Error(err.Error())
+			}
+			return
+		}
 	}
-	if action.ScriptEngine.Engine() == nil {
-		return
-	}
-	if _, err := action.ScriptEngine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
-		log.Error(err.Error())
+	if a.ScriptsEngine != nil && a.ScriptsEngine.Engine() != nil {
+		if _, err := a.ScriptsEngine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, msg.ActionName, msg.Args); err != nil {
+			log.Error(err.Error())
+		}
 	}
 }
 

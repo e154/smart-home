@@ -31,7 +31,8 @@ type EnginesWatcher struct {
 	eventBus      bus.Bus
 	scriptService *scriptService
 	f             func(engine *Engine)
-	mx            *sync.RWMutex
+	fBefore       func(engine *Engine)
+	mx            *sync.Mutex
 	engine        *Engine
 	scripts       []*m.Script
 }
@@ -40,11 +41,9 @@ func NewEnginesWatcher(scripts []*m.Script, s *scriptService, eventBus bus.Bus) 
 	w := &EnginesWatcher{
 		eventBus:      eventBus,
 		scriptService: s,
-		mx:            &sync.RWMutex{},
+		mx:            &sync.Mutex{},
 		scripts:       scripts,
 	}
-
-	w.prepare()
 
 	for _, script := range scripts {
 		_ = eventBus.Subscribe(fmt.Sprintf("system/models/scripts/%d", script.Id), w.eventHandler)
@@ -54,8 +53,8 @@ func NewEnginesWatcher(scripts []*m.Script, s *scriptService, eventBus bus.Bus) 
 }
 
 func (w *EnginesWatcher) Stop() {
-	w.mx.RLock()
-	defer w.mx.RUnlock()
+	w.mx.Lock()
+	defer w.mx.Unlock()
 	for _, script := range w.scripts {
 		if script.Id != 0 {
 			_ = w.eventBus.Unsubscribe(fmt.Sprintf("system/models/scripts/%d", script.Id), w.eventHandler)
@@ -63,37 +62,40 @@ func (w *EnginesWatcher) Stop() {
 	}
 }
 
-func (w *EnginesWatcher) prepare() {
-	w.mx.RLock()
-	defer w.mx.RUnlock()
+func (w *EnginesWatcher) Spawn(f func(engine *Engine)) {
+	w.mx.Lock()
+	defer w.mx.Unlock()
 
 	w.engine, _ = w.scriptService.NewEngine(nil)
 
+	if w.fBefore != nil {
+		w.fBefore(w.engine)
+	}
+
 	for _, script := range w.scripts {
 		if _, err := w.engine.EvalScript(script); err != nil {
-			log.Error(err.Error())
+			log.Errorf("script id: %d, %s", script.Id, err.Error())
 		}
 	}
 
-	if w.f == nil {
-		return
+	if f != nil {
+		w.f = f
+		w.f(w.engine)
 	}
-	w.f(w.engine)
 }
 
-func (w *EnginesWatcher) Spawn(f func(engine *Engine)) {
-	if w == nil || f == nil {
+func (w *EnginesWatcher) BeforeSpawn(f func(engine *Engine)) {
+	if f == nil {
 		return
 	}
-	w.mx.RLock()
-	defer w.mx.RUnlock()
-	w.f = f
-	w.f(w.engine)
+	w.mx.Lock()
+	defer w.mx.Unlock()
+	w.fBefore = f
 }
 
 func (w *EnginesWatcher) Engine() *Engine {
-	w.mx.RLock()
-	defer w.mx.RUnlock()
+	w.mx.Lock()
+	defer w.mx.Unlock()
 	return w.engine
 }
 
@@ -114,7 +116,7 @@ func (w *EnginesWatcher) eventUpdatedScript(msg events.EventUpdatedScriptModel) 
 		return
 	}
 
-	w.prepare()
+	w.Spawn(w.f)
 
 	log.Infof("script '%s' (%d) updated", msg.Script.Name, msg.ScriptId)
 }
@@ -137,5 +139,5 @@ func (w *EnginesWatcher) eventScriptDeleted(msg events.EventRemovedScriptModel) 
 
 	log.Infof("script '%s' (%d) deleted", scriptName, msg.ScriptId)
 
-	w.prepare()
+	w.Spawn(w.f)
 }

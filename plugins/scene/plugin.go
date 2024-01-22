@@ -93,11 +93,7 @@ func (p *plugin) eventHandler(_ string, msg interface{}) {
 			return
 		}
 		actor := value.(*Actor)
-		actor.addEvent(events.EventCallScene{
-			PluginName: v.PluginName,
-			EntityId:   v.EntityId,
-			Args:       v.Args,
-		})
+		go actor.addAction(v)
 
 	case events.EventCallScene:
 		value, ok := p.Actors.Load(v.EntityId)
@@ -105,7 +101,7 @@ func (p *plugin) eventHandler(_ string, msg interface{}) {
 			return
 		}
 		actor := value.(*Actor)
-		actor.addEvent(v)
+		go actor.addEvent(v)
 
 	default:
 		//fmt.Printf("new event: %v\n", reflect.TypeOf(v).String())
