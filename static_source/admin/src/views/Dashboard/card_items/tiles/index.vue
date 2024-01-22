@@ -36,36 +36,6 @@ onMounted(() => {
 // ---------------------------------
 const board = ref([])
 
-const _cache = new Cache()
-const update = debounce(() => {
-  let v: string = props.item?.payload.tiles?.attribute || ''
-  const tokens = GetTokens(props.item?.payload.tiles?.attribute, _cache)
-  if (tokens.length) {
-    v = RenderText(tokens, v, props.item?.lastEvent)
-  }
-  board.value = getBoard(v) || []
-})
-
-const tileTemplates = Map<string, TileProp>;
-const prepareTileTemplates = () => {
-  for (const item of props.item?.payload.tiles?.items) {
-    tileTemplates[item.key] = item;
-  }
-}
-
-watch(
-    () => props.item,
-    (val?: CardItem) => {
-      if (!val) return;
-      update()
-      prepareTileTemplates()
-    },
-    {
-      deep: true,
-      immediate: true
-    }
-)
-
 const boardHeight = computed(()=> (props.item.payload.tiles.rows * props.item.payload.tiles.tileHeight) + 'px');
 const boardWidth = computed(()=> (props.item.payload.tiles.columns * props.item.payload.tiles.tileWidth) + 'px');
 const tileHeight = computed(()=> props.item.payload.tiles.tileHeight + 'px');
@@ -82,6 +52,40 @@ const getBoard = (str: string) => {
   }
   return b;
 }
+
+const _cache = new Cache()
+const update = debounce(() => {
+  let v: string = props.item?.payload.tiles?.attribute || ''
+  const tokens = GetTokens(props.item?.payload.tiles?.attribute, _cache)
+  if (tokens.length) {
+    v = RenderText(tokens, v, props.item?.lastEvent)
+  }
+  board.value = getBoard(v) || []
+})
+
+const tileTemplates = ref<Map<string, TileProp>>({});
+const prepareTileTemplates = () => {
+  tileTemplates.value = {};
+  if (!props.item?.payload?.tiles?.items) {
+    return
+  }
+  for (const item of props.item?.payload.tiles?.items) {
+    tileTemplates.value[item.key] = item;
+  }
+}
+
+watch(
+    () => props.item,
+    (val?: CardItem) => {
+      if (!val) return;
+      update()
+      prepareTileTemplates()
+    },
+    {
+      deep: true,
+      immediate: true
+    }
+)
 
 const callAction = async (index: number) => {
   if (!currentItem.value.payload.tiles?.entityId ||
@@ -122,7 +126,10 @@ prepareTileTemplates();
           :key="index"
           v-for="(item, index) in board"
           @click.prevent.stop="callAction(index)">
-            <TileView :base-params="props.item.payload.tiles" :tile-item="tileTemplates[item]"/>
+            <TileView
+                :key="index"
+                :base-params="props.item.payload.tiles"
+                :tile-item="tileTemplates[item]"/>
       </li>
     </ul>
   </div>

@@ -221,7 +221,7 @@ const onSelectEnd = (e) => {
   if (e.isDragStart) {
     e.inputEvent.preventDefault();
     moveable.waitToChangeTarget().then(() => {
-      moveable.dragStart(e.inputEvent);
+    //   moveable.dragStart(e.inputEvent);
     });
   }
   targets.value = selected;

@@ -64,8 +64,6 @@ const updateCurrentState = () => {
   }
 }
 
-const reloadKeyDefaultImage = 0;
-
 const onSelectDefaultImage = (image: ApiImage) => {
   if (!props.item.payload.tiles) {
     initDefaultValue();
@@ -333,7 +331,7 @@ const changedForActionButton = async (entity: ApiEntity) => {
   <ElRow>
     <ElCol>
       <ElFormItem :label="$t('dashboard.editor.image')" prop="image">
-        <ImageSearch :key="reloadKeyDefaultImage" v-model="currentItem.payload.tiles.image" @change="onSelectDefaultImage"/>
+        <ImageSearch v-model="currentItem.payload.tiles.image" @change="onSelectDefaultImage"/>
       </ElFormItem>
     </ElCol>
   </ElRow>

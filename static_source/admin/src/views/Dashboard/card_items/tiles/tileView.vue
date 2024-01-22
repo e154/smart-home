@@ -14,8 +14,8 @@ const props = defineProps({
   },
 })
 
-const tileHeight = computed(()=> props.baseParams?.tileHeight + 'px')
-const tileWidth = computed(()=> props.baseParams?.tileWidth + 'px')
+const tileHeight = computed(() => props.baseParams?.tileHeight + 'px')
+const tileWidth = computed(() => props.baseParams?.tileWidth + 'px')
 
 const getUrl = (image: ApiImage): string => {
   if (!image || !image?.url) {
@@ -33,7 +33,7 @@ const getImage = ({position, top, left, image}) => {
   return image;
 }
 
-const getTyleStyle = () => {
+const getTileStyle = () => {
   let style = {}
   if (props.tileItem?.height) {
     style["height"] = props.tileItem.height + 'px';
@@ -69,7 +69,7 @@ const getTyleStyle = () => {
 
 <template>
   <div class="tile-wrapper">
-    <div class="tile-inner" :style="getTyleStyle()"></div>
+    <div :class="[{'positioned': tileItem?.height || tileItem?.width, 'tile-inner': true}]" :style="getTileStyle()"></div>
   </div>
 </template>
 
@@ -80,12 +80,21 @@ const getTyleStyle = () => {
   width: v-bind(tileWidth);
   cursor: pointer;
   overflow: hidden;
+  position: relative;
 }
 
 .tile-wrapper .tile-inner {
   margin: 0 auto;
   height: inherit;
   width: inherit;
+  &.positioned {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+  }
 }
 
 </style>
