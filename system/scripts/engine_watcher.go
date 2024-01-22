@@ -20,6 +20,7 @@ package scripts
 
 import (
 	"fmt"
+	m "github.com/e154/smart-home/models"
 	"sync"
 
 	"github.com/e154/smart-home/common/events"
@@ -32,19 +33,22 @@ type EngineWatcher struct {
 	f             func(engine *Engine)
 	fBefore       func(engine *Engine)
 	mx            *sync.RWMutex
+	script        *m.Script
 	engine        *Engine
 }
 
-func NewEngineWatcher(engine *Engine, s *scriptService, eventBus bus.Bus) *EngineWatcher {
+func NewEngineWatcher(script *m.Script, s *scriptService, eventBus bus.Bus) *EngineWatcher {
 	w := &EngineWatcher{
 		eventBus:      eventBus,
 		scriptService: s,
 		mx:            &sync.RWMutex{},
-		engine:        engine,
+		script:        script,
 	}
 
-	if engine.model != nil && engine.model.Id != 0 {
-		_ = eventBus.Subscribe(fmt.Sprintf("system/models/scripts/%d", engine.model.Id), w.eventHandler)
+	w.engine, _ = w.scriptService.NewEngine(nil)
+
+	if script.Id != 0 {
+		_ = eventBus.Subscribe(fmt.Sprintf("system/models/scripts/%d", script.Id), w.eventHandler)
 	}
 
 	return w
@@ -59,9 +63,17 @@ func (w *EngineWatcher) Stop() {
 func (w *EngineWatcher) Spawn(f func(engine *Engine)) {
 	w.mx.RLock()
 	defer w.mx.RUnlock()
+
+	w.engine, _ = w.scriptService.NewEngine(nil)
+
 	if w.fBefore != nil {
 		w.fBefore(w.engine)
 	}
+
+	if _, err := w.engine.EvalScript(w.script); err != nil {
+		log.Errorf("script id: %d, %s", w.script.Id, err.Error())
+	}
+
 	if f != nil {
 		w.f = f
 		w.f(w.engine)
@@ -100,27 +112,16 @@ func (w *EngineWatcher) eventUpdatedScript(msg events.EventUpdatedScriptModel) {
 		return
 	}
 
-	w.mx.Lock()
-	defer w.mx.Unlock()
+	w.script = msg.Script
 
-	var err error
-	w.engine, err = NewEngine(msg.Script, w.scriptService.functions, w.scriptService.structures)
-	if err != nil {
-		log.Error(err.Error())
-		return
-	}
-	if w.fBefore != nil {
-		w.fBefore(w.engine)
-	}
-	if w.f != nil {
-		w.f(w.engine)
-	}
+	w.Spawn(w.f)
+
 	log.Infof("script '%s' (%d) updated", msg.Script.Name, msg.ScriptId)
 }
 
 func (w *EngineWatcher) eventScriptDeleted(msg events.EventRemovedScriptModel) {
 	if w.engine.model != nil {
-		_ = w.eventBus.Unsubscribe(fmt.Sprintf("system/models/scripts/%d", w.engine.model.Id), w.eventHandler)
+		_ = w.eventBus.Unsubscribe(fmt.Sprintf("system/models/scripts/%d", w.script.Id), w.eventHandler)
 	}
 
 	var err error

@@ -116,6 +116,13 @@ func (w *EnginesWatcher) eventUpdatedScript(msg events.EventUpdatedScriptModel) 
 		return
 	}
 
+	for s, script := range w.scripts {
+		if script.Id == msg.ScriptId {
+			w.scripts[s] = msg.Script
+			break
+		}
+	}
+
 	w.Spawn(w.f)
 
 	log.Infof("script '%s' (%d) updated", msg.Script.Name, msg.ScriptId)

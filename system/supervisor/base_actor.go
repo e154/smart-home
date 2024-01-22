@@ -133,16 +133,17 @@ func NewBaseActor(entity *m.Entity,
 		if a.Script != nil {
 			if action.ScriptEngine, err = service.ScriptService().NewEngineWatcher(a.Script); err != nil {
 				log.Error(err.Error())
+				continue
 			}
 			action.ScriptEngine.BeforeSpawn(func(engine *scripts.Engine) {
 				if _, err = engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id)); err != nil {
-					log.Error(err.Error())
+					log.Errorf("script id: %d, %s", a.Script.Id, err.Error())
 				}
 			})
 			action.ScriptEngine.Spawn(func(engine *scripts.Engine) {
-				if _, err = engine.Do(); err != nil {
-					log.Error(err.Error())
-				}
+				//if _, err = engine.Do(); err != nil {
+				//	log.Errorf("script id: %d, %s", a.Script.Id, err.Error())
+				//}
 			})
 		}
 
@@ -162,16 +163,10 @@ func NewBaseActor(entity *m.Entity,
 			}
 		})
 		actor.ScriptsEngine.Spawn(func(engine *scripts.Engine) {
-			//if _, err = engine.Do(); err != nil {
-			//	log.Error(err.Error())
-			//}
 			if _, err := engine.AssertFunction("init"); err != nil {
 				log.Error(err.Error())
 			}
 		})
-		//if _, err = actor.ScriptsEngine.Engine().AssertFunction("init"); err != nil {
-		//	log.Error(err.Error())
-		//}
 	}
 
 	// restore state

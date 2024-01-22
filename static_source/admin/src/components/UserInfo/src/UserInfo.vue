@@ -86,7 +86,7 @@ const root = computed(() => parseJwt(appStore.getToken).root)
   </ElDropdown>
 </template>
 
-<style>
+<style lang="less" scoped>
 .items-center {
   position: relative;
 }

@@ -94,11 +94,7 @@ func (s *scriptService) NewEngine(scr *m.Script) (*Engine, error) {
 
 // NewEngineWatcher ...
 func (s *scriptService) NewEngineWatcher(script *m.Script) (*EngineWatcher, error) {
-	engine, err := NewEngine(script, s.structures, s.functions)
-	if err != nil {
-		return nil, err
-	}
-	return NewEngineWatcher(engine, s, s.eventBus), nil
+	return NewEngineWatcher(script, s, s.eventBus), nil
 }
 
 // NewEnginesWatcher ...
