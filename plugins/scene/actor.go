@@ -67,10 +67,8 @@ func (e *Actor) addEvent(event events.EventCallScene) {
 }
 
 func (e *Actor) runEvent(msg events.EventCallScene) {
-	for _, engine := range e.ScriptEngines {
-		if _, err := engine.Engine().AssertFunction(FuncSceneEvent, msg.EntityId); err != nil {
-			log.Error(err.Error())
-			return
-		}
+	if _, err := e.ScriptsEngine.Engine().AssertFunction(FuncSceneEvent, msg.EntityId); err != nil {
+		log.Error(err.Error())
+		return
 	}
 }

@@ -138,15 +138,10 @@ func NewActor(entity *m.Entity,
 		}
 	}
 
-	for _, engine := range actor.ScriptEngines {
-		engine.Spawn(func(engine *scripts.Engine) {
-			if _, err = engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id)); err != nil {
-				log.Error(err.Error())
-			}
-			engine.PushFunction("Miner", actor.miner.Bind())
-			engine.Do()
-		})
-	}
+	actor.ScriptsEngine.Spawn(func(engine *scripts.Engine) {
+		engine.PushFunction("Miner", actor.miner.Bind())
+		engine.Do()
+	})
 
 	// action worker
 	go func() {

@@ -72,11 +72,6 @@ func (j *Javascript) Init() (err error) {
 	return
 }
 
-// Close ...
-func (j *Javascript) Close() {
-
-}
-
 // Compile ...
 func (j *Javascript) Compile() (err error) {
 

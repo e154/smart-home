@@ -67,13 +67,10 @@ func NewActor(entity *m.Entity,
 		}
 	}
 
-	for _, engine := range actor.ScriptEngines {
-		engine.Spawn(func(engine *scripts.Engine) {
-			engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
-			engine.PushFunction("ModbusTcp", NewModbusTcp(service.EventBus(), actor))
-			engine.Do()
-		})
-	}
+	actor.ScriptsEngine.Spawn(func(engine *scripts.Engine) {
+		engine.PushFunction("ModbusTcp", NewModbusTcp(service.EventBus(), actor))
+		engine.Do()
+	})
 
 	// action worker
 	go func() {

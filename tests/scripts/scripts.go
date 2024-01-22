@@ -88,10 +88,10 @@ store(foo + '-' + bar + '-' + months[0])
 // ------------------------------------------------
 const coffeeScript3 = `
 on_enter =->
-	store('on_enter')	
+  store('on_enter')	
 
 on_exit =->
-	store('on_exit')
+  store('on_exit')
 `
 
 // test5,6

@@ -20,7 +20,6 @@ package zigbee2mqtt
 
 import (
 	"context"
-	"fmt"
 	"sync"
 
 	"github.com/e154/smart-home/system/scripts"
@@ -66,12 +65,9 @@ func NewActor(entity *m.Entity,
 		}
 	}
 
-	for _, engine := range actor.ScriptEngines {
-		engine.Spawn(func(engine *scripts.Engine) {
-			engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
-			engine.Do()
-		})
-	}
+	actor.ScriptsEngine.Spawn(func(engine *scripts.Engine) {
+		engine.Do()
+	})
 
 	// mqtt worker
 	go func() {
@@ -122,11 +118,9 @@ func (e *Actor) mqttNewMessage(message *Message) {
 	e.newMsgMu.Lock()
 	defer e.newMsgMu.Unlock()
 
-	for _, engine := range e.ScriptEngines {
-		if _, err := engine.Engine().AssertFunction(FuncZigbee2mqttEvent, message); err != nil {
-			log.Error(err.Error())
-			return
-		}
+	if _, err := e.ScriptsEngine.Engine().AssertFunction(FuncZigbee2mqttEvent, message); err != nil {
+		log.Error(err.Error())
+		return
 	}
 }
 

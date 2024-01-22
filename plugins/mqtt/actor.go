@@ -19,7 +19,6 @@
 package mqtt
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/e154/smart-home/system/scripts"
@@ -63,13 +62,10 @@ func NewActor(entity *m.Entity,
 		}
 	}
 
-	for _, engine := range actor.ScriptEngines {
-		engine.Spawn(func(engine *scripts.Engine) {
-			engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
-			engine.PushStruct("message", actor.message)
-			engine.Do()
-		})
-	}
+	actor.ScriptsEngine.Spawn(func(engine *scripts.Engine) {
+		engine.PushStruct("message", actor.message)
+		engine.Do()
+	})
 
 	if actor.Setts == nil {
 		actor.Setts = NewSettings()
@@ -132,11 +128,10 @@ func (e *Actor) mqttNewMessage(message *Message) {
 	defer e.newMsgMu.Unlock()
 
 	e.message.Update(message)
-	for _, engine := range e.ScriptEngines {
-		if _, err := engine.Engine().AssertFunction(FuncMqttEvent, message); err != nil {
-			log.Error(err.Error())
-			return
-		}
+
+	if _, err := e.ScriptsEngine.Engine().AssertFunction(FuncMqttEvent, message); err != nil {
+		log.Error(err.Error())
+		return
 	}
 }
 

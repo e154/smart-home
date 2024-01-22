@@ -42,7 +42,6 @@ type IScript interface {
 	PushStruct(string, interface{})
 	PushFunction(string, interface{})
 	EvalString(string) (string, error)
-	Close()
 	CreateProgram(name, source string) (err error)
 	RunProgram(name string) (result string, err error)
 }
@@ -145,11 +144,6 @@ func (s *Engine) EvalScript(script *m.Script) (result string, err error) {
 		result, err = s.script.RunProgram(programName)
 	}
 	return
-}
-
-// Close ...
-func (s *Engine) Close() {
-	s.script.Close()
 }
 
 // DoFull ...

@@ -20,43 +20,69 @@ package scripts
 
 import (
 	"fmt"
+	m "github.com/e154/smart-home/models"
 	"sync"
 
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/system/bus"
 )
 
-type EngineWatcher struct {
+type EnginesWatcher struct {
 	eventBus      bus.Bus
 	scriptService *scriptService
 	f             func(engine *Engine)
 	mx            *sync.RWMutex
 	engine        *Engine
+	scripts       []*m.Script
 }
 
-func NewEngineWatcher(engine *Engine, s *scriptService, eventBus bus.Bus) *EngineWatcher {
-	w := &EngineWatcher{
+func NewEnginesWatcher(scripts []*m.Script, s *scriptService, eventBus bus.Bus) *EnginesWatcher {
+	w := &EnginesWatcher{
 		eventBus:      eventBus,
 		scriptService: s,
 		mx:            &sync.RWMutex{},
-		engine:        engine,
+		scripts:       scripts,
 	}
 
-	if engine.model != nil && engine.model.Id != 0 {
-		_ = eventBus.Subscribe(fmt.Sprintf("system/models/scripts/%d", engine.model.Id), w.eventHandler)
+	w.prepare()
+
+	for _, script := range scripts {
+		_ = eventBus.Subscribe(fmt.Sprintf("system/models/scripts/%d", script.Id), w.eventHandler)
 	}
 
 	return w
 }
 
-func (w *EngineWatcher) Stop() {
-	if w.engine.model != nil && w.engine.model.Id != 0 {
-		_ = w.eventBus.Unsubscribe(fmt.Sprintf("system/models/scripts/%d", w.engine.model.Id), w.eventHandler)
+func (w *EnginesWatcher) Stop() {
+	w.mx.RLock()
+	defer w.mx.RUnlock()
+	for _, script := range w.scripts {
+		if script.Id != 0 {
+			_ = w.eventBus.Unsubscribe(fmt.Sprintf("system/models/scripts/%d", script.Id), w.eventHandler)
+		}
 	}
 }
 
-func (w *EngineWatcher) Spawn(f func(engine *Engine)) {
-	if f == nil {
+func (w *EnginesWatcher) prepare() {
+	w.mx.RLock()
+	defer w.mx.RUnlock()
+
+	w.engine, _ = w.scriptService.NewEngine(nil)
+
+	for _, script := range w.scripts {
+		if _, err := w.engine.EvalScript(script); err != nil {
+			log.Error(err.Error())
+		}
+	}
+
+	if w.f == nil {
+		return
+	}
+	w.f(w.engine)
+}
+
+func (w *EnginesWatcher) Spawn(f func(engine *Engine)) {
+	if w == nil || f == nil {
 		return
 	}
 	w.mx.RLock()
@@ -65,14 +91,14 @@ func (w *EngineWatcher) Spawn(f func(engine *Engine)) {
 	w.f(w.engine)
 }
 
-func (w *EngineWatcher) Engine() *Engine {
+func (w *EnginesWatcher) Engine() *Engine {
 	w.mx.RLock()
 	defer w.mx.RUnlock()
 	return w.engine
 }
 
 // eventHandler ...
-func (w *EngineWatcher) eventHandler(_ string, message interface{}) {
+func (w *EnginesWatcher) eventHandler(_ string, message interface{}) {
 
 	switch msg := message.(type) {
 	case events.EventUpdatedScriptModel:
@@ -82,36 +108,34 @@ func (w *EngineWatcher) eventHandler(_ string, message interface{}) {
 	}
 }
 
-func (w *EngineWatcher) eventUpdatedScript(msg events.EventUpdatedScriptModel) {
+func (w *EnginesWatcher) eventUpdatedScript(msg events.EventUpdatedScriptModel) {
 
 	if msg.Script == nil {
 		return
 	}
 
-	w.mx.Lock()
-	defer w.mx.Unlock()
+	w.prepare()
 
-	var err error
-	w.engine, err = NewEngine(msg.Script, w.scriptService.functions, w.scriptService.structures)
-	if err != nil {
-		log.Error(err.Error())
-		return
-	}
-	if w.f == nil {
-		return
-	}
-	w.f(w.engine)
 	log.Infof("script '%s' (%d) updated", msg.Script.Name, msg.ScriptId)
 }
 
-func (w *EngineWatcher) eventScriptDeleted(msg events.EventRemovedScriptModel) {
+func (w *EnginesWatcher) eventScriptDeleted(msg events.EventRemovedScriptModel) {
 	if w.engine.model != nil {
-		_ = w.eventBus.Unsubscribe(fmt.Sprintf("system/models/scripts/%d", w.engine.model.Id), w.eventHandler)
+		_ = w.eventBus.Unsubscribe(fmt.Sprintf("system/models/scripts/%d", msg.ScriptId), w.eventHandler)
 	}
 
-	var err error
-	if w.engine, err = w.scriptService.NewEngine(nil); err != nil {
-		log.Error(err.Error())
-		return
+	var scriptName string
+
+	// remove script
+	for s, script := range w.scripts {
+		if script.Id == msg.ScriptId {
+			scriptName = script.Name
+			w.scripts = append(w.scripts[:s], w.scripts[s+1:]...)
+			break
+		}
 	}
+
+	log.Infof("script '%s' (%d) deleted", scriptName, msg.ScriptId)
+
+	w.prepare()
 }

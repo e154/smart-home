@@ -321,12 +321,10 @@ func (e *Actor) runAction(msg events.EventCallEntityAction) {
 		return
 	}
 
-	if e.ScriptEngines != nil {
-		for _, engine := range e.ScriptEngines {
-			if _, err := engine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, msg.ActionName, msg.Args); err != nil {
-				log.Error(err.Error())
-				return
-			}
+	if e.ScriptsEngine != nil {
+		if _, err := e.ScriptsEngine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, msg.ActionName, msg.Args); err != nil {
+			log.Error(err.Error())
+			return
 		}
 	}
 }

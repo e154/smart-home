@@ -19,8 +19,6 @@
 package onvif
 
 import (
-	"fmt"
-
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
@@ -58,13 +56,10 @@ func NewActor(entity *m.Entity,
 		}
 	}
 
-	for _, engine := range actor.ScriptEngines {
-		engine.Spawn(func(engine *scripts.Engine) {
-			engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
-			engine.PushStruct("Camera", clientBind)
-			engine.Do()
-		})
-	}
+	actor.ScriptsEngine.Spawn(func(engine *scripts.Engine) {
+		engine.PushStruct("Camera", clientBind)
+		engine.Do()
+	})
 
 	if actor.Attrs == nil {
 		actor.Attrs = NewAttr()

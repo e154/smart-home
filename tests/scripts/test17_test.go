@@ -37,7 +37,7 @@ func Test17(t *testing.T) {
 
 			// clear database
 			// ------------------------------------------------
-			_ = migrations.Purge()
+			//_ = migrations.Purge()
 
 			scripts := GetScripts(ctx, scriptService, adaptors, []int{29, 30, 31}...)
 
