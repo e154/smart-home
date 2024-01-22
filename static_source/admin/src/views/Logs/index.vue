@@ -338,6 +338,7 @@ getList()
 <template>
   <ContentWrap>
     <Form
+        class="search-form"
         :schema="schema"
         label-position="top"
         label-width="auto"
@@ -364,9 +365,14 @@ getList()
 
 </template>
 
-<style lang="less">
+<style lang="less" scoped>
 
-.logsTable {
+:deep(.search-form .el-col) {
+    padding-left: 0!important;
+    padding-right: 0!important;
+}
+
+:deep(.logsTable) {
 
 .el-table__row {
 
