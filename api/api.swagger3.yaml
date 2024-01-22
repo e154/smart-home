@@ -198,6 +198,7 @@ paths:
         - $ref: '#/components/parameters/listSort'
         - $ref: '#/components/parameters/listPage'
         - $ref: '#/components/parameters/listLimit'
+        - $ref: '#/components/parameters/ids'
       responses:
         200:
           description: A successful response.
@@ -700,6 +701,7 @@ paths:
         - $ref: '#/components/parameters/listSort'
         - $ref: '#/components/parameters/listPage'
         - $ref: '#/components/parameters/listLimit'
+        - $ref: '#/components/parameters/ids'
       responses:
         200:
           description: A successful response.
@@ -3439,6 +3441,7 @@ paths:
         - $ref: '#/components/parameters/listSort'
         - $ref: '#/components/parameters/listPage'
         - $ref: '#/components/parameters/listLimit'
+        - $ref: '#/components/parameters/ids'
       responses:
         200:
           description: A successful response.

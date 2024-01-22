@@ -1812,6 +1812,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
          * @format uint64
          */
         limit?: number;
+        /** The number of results returned on a page */
+        ids?: number[];
       },
       params: RequestParams = {},
     ) =>
@@ -2442,6 +2444,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
          * @format uint64
          */
         limit?: number;
+        /** The number of results returned on a page */
+        ids?: number[];
       },
       params: RequestParams = {},
     ) =>
@@ -5728,6 +5732,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
          * @format uint64
          */
         limit?: number;
+        /** The number of results returned on a page */
+        ids?: number[];
       },
       params: RequestParams = {},
     ) =>

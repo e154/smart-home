@@ -22,6 +22,9 @@ watch(
     (val?: number[]) => {
       if (val === unref(value)) return
       value.value = val || [] ;
+      if (val) {
+        getList(val)
+      }
     },
 )
 
@@ -40,7 +43,7 @@ watch(
     }
 )
 
-const remoteMethod = async (query: string) => {
+const searchMethod = async (query: string) => {
   loading.value = true
   const params = {query: query, limit: 25, offset: 0}
   const {data} = await api.v1.conditionServiceSearchCondition(params)
@@ -53,7 +56,27 @@ const remoteMethod = async (query: string) => {
   options.value = items
 }
 
-remoteMethod("")
+interface Params {
+  page?: number;
+  limit?: number;
+  sort?: string;
+  ids?: [];
+}
+
+const getList = async (ids:  number[]) => {
+  let params: Params = {
+    ids: ids,
+  }
+  const res = await api.v1.conditionServiceGetConditionList(params)
+      .catch(() => {
+      })
+      .finally(() => {
+      })
+  if (res) {
+    const {items, meta} = res.data;
+    options.value = items || [];
+  }
+}
 
 const handleSelect = (val: ApiCondition) => {
   emit('change', val)
@@ -70,7 +93,7 @@ const handleSelect = (val: ApiCondition) => {
       remote
       reserve-keyword
       placeholder="Please enter a keyword"
-      :remote-method="remoteMethod"
+      :remote-method="searchMethod"
       :loading="loading"
       @select="handleSelect"
   >
@@ -79,7 +102,9 @@ const handleSelect = (val: ApiCondition) => {
         :key="item.id"
         :label="item.name"
         :value="item.id"
-    />
+    >
+      <span style="float: left">{{ item.name }} (id: {{ item.id }})</span>
+    </ElOption>
   </ElSelect>
 
 </template>

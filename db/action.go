@@ -111,7 +111,7 @@ func (t Actions) Delete(ctx context.Context, id int64) (err error) {
 }
 
 // List ...
-func (t *Actions) List(ctx context.Context, limit, offset int, orderBy, sort string) (list []*Action, total int64, err error) {
+func (t *Actions) List(ctx context.Context, limit, offset int, orderBy, sort string, ids *[]uint64) (list []*Action, total int64, err error) {
 
 	if err = t.Db.WithContext(ctx).Model(Action{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrActionList, err.Error())
@@ -128,7 +128,9 @@ func (t *Actions) List(ctx context.Context, limit, offset int, orderBy, sort str
 			Preload("Area").
 			Order(fmt.Sprintf("%s %s", sort, orderBy))
 	}
-
+	if ids != nil {
+		q = q.Where("id IN (?)", *ids)
+	}
 	if err = q.Find(&list).Error; err != nil {
 		err = errors.Wrap(apperr.ErrActionList, err.Error())
 	}

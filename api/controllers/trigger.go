@@ -83,7 +83,7 @@ func (c ControllerTrigger) TriggerServiceGetTriggerById(ctx echo.Context, id int
 func (c ControllerTrigger) TriggerServiceGetTriggerList(ctx echo.Context, params stub.TriggerServiceGetTriggerListParams) error {
 
 	pagination := c.Pagination(params.Page, params.Limit, params.Sort)
-	items, total, err := c.endpoint.Trigger.GetList(ctx.Request().Context(), pagination)
+	items, total, err := c.endpoint.Trigger.GetList(ctx.Request().Context(), pagination, params.Ids)
 	if err != nil {
 		return c.ERROR(ctx, err)
 	}

@@ -1408,6 +1408,9 @@ type ActionServiceGetActionListParams struct {
 
 	// Limit The number of results returned on a page
 	Limit *ListLimit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Ids The number of results returned on a page
+	Ids *Ids `form:"ids,omitempty" json:"ids,omitempty"`
 }
 
 // ActionServiceSearchActionParams defines parameters for ActionServiceSearchAction.
@@ -1529,6 +1532,9 @@ type ConditionServiceGetConditionListParams struct {
 
 	// Limit The number of results returned on a page
 	Limit *ListLimit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Ids The number of results returned on a page
+	Ids *Ids `form:"ids,omitempty" json:"ids,omitempty"`
 }
 
 // ConditionServiceSearchConditionParams defines parameters for ConditionServiceSearchCondition.
@@ -2115,6 +2121,9 @@ type TriggerServiceGetTriggerListParams struct {
 
 	// Limit The number of results returned on a page
 	Limit *ListLimit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Ids The number of results returned on a page
+	Ids *Ids `form:"ids,omitempty" json:"ids,omitempty"`
 }
 
 // TriggerServiceSearchTriggerParams defines parameters for TriggerServiceSearchTrigger.
