@@ -401,6 +401,7 @@ if (wsCache.get(cachePref+'Area')) {
     <ElCollapse class="mb-20px">
       <ElCollapseItem :title="$t('main.filter') + filterList()">
         <Form
+            class="filter-form"
             :schema="schema"
             label-position="top"
             label-width="auto"
@@ -455,9 +456,14 @@ if (wsCache.get(cachePref+'Area')) {
 
 </template>
 
-<style lang="less">
+<style lang="less" scoped>
 
-.el-table__row {
+:deep(.filter-form .el-col) {
+  padding-left: 0!important;
+  padding-right: 0!important;
+}
+
+:deep(.el-table__row) {
   cursor: pointer;
 }
 
