@@ -1410,7 +1410,7 @@ type ActionServiceGetActionListParams struct {
 	Limit *ListLimit `form:"limit,omitempty" json:"limit,omitempty"`
 
 	// Ids The number of results returned on a page
-	Ids *Ids `form:"ids,omitempty" json:"ids,omitempty"`
+	Ids *Ids `form:"ids[],omitempty" json:"ids[],omitempty"`
 }
 
 // ActionServiceSearchActionParams defines parameters for ActionServiceSearchAction.
@@ -1534,7 +1534,7 @@ type ConditionServiceGetConditionListParams struct {
 	Limit *ListLimit `form:"limit,omitempty" json:"limit,omitempty"`
 
 	// Ids The number of results returned on a page
-	Ids *Ids `form:"ids,omitempty" json:"ids,omitempty"`
+	Ids *Ids `form:"ids[],omitempty" json:"ids[],omitempty"`
 }
 
 // ConditionServiceSearchConditionParams defines parameters for ConditionServiceSearchCondition.
@@ -1797,7 +1797,7 @@ type EntityStorageServiceGetEntityStorageListParams struct {
 	Limit     *ListLimit `form:"limit,omitempty" json:"limit,omitempty"`
 	StartDate *StartDate `form:"startDate,omitempty" json:"startDate,omitempty"`
 	EndDate   *EndDate   `form:"endDate,omitempty" json:"endDate,omitempty"`
-	EntityId  *EntityIds `form:"entityId,omitempty" json:"entityId,omitempty"`
+	EntityId  *EntityIds `form:"entityId[],omitempty" json:"entityId[],omitempty"`
 }
 
 // ImageServiceAddImageParams defines parameters for ImageServiceAddImage.
@@ -2038,7 +2038,7 @@ type ScriptServiceGetScriptListParams struct {
 	Limit *ListLimit `form:"limit,omitempty" json:"limit,omitempty"`
 
 	// Ids The number of results returned on a page
-	Ids   *Ids   `form:"ids,omitempty" json:"ids,omitempty"`
+	Ids   *Ids   `form:"ids[],omitempty" json:"ids[],omitempty"`
 	Query *Query `form:"query,omitempty" json:"query,omitempty"`
 }
 
@@ -2123,7 +2123,7 @@ type TriggerServiceGetTriggerListParams struct {
 	Limit *ListLimit `form:"limit,omitempty" json:"limit,omitempty"`
 
 	// Ids The number of results returned on a page
-	Ids *Ids `form:"ids,omitempty" json:"ids,omitempty"`
+	Ids *Ids `form:"ids[],omitempty" json:"ids[],omitempty"`
 }
 
 // TriggerServiceSearchTriggerParams defines parameters for TriggerServiceSearchTrigger.

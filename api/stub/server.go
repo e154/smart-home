@@ -606,11 +606,11 @@ func (w *ServerInterfaceWrapper) ActionServiceGetActionList(ctx echo.Context) er
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter limit: %s", err))
 	}
 
-	// ------------- Optional query parameter "ids" -------------
+	// ------------- Optional query parameter "ids[]" -------------
 
-	err = runtime.BindQueryParameter("form", true, false, "ids", ctx.QueryParams(), &params.Ids)
+	err = runtime.BindQueryParameter("form", true, false, "ids[]", ctx.QueryParams(), &params.Ids)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter ids: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter ids[]: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
@@ -1173,11 +1173,11 @@ func (w *ServerInterfaceWrapper) ConditionServiceGetConditionList(ctx echo.Conte
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter limit: %s", err))
 	}
 
-	// ------------- Optional query parameter "ids" -------------
+	// ------------- Optional query parameter "ids[]" -------------
 
-	err = runtime.BindQueryParameter("form", true, false, "ids", ctx.QueryParams(), &params.Ids)
+	err = runtime.BindQueryParameter("form", true, false, "ids[]", ctx.QueryParams(), &params.Ids)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter ids: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter ids[]: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
@@ -2333,11 +2333,11 @@ func (w *ServerInterfaceWrapper) EntityStorageServiceGetEntityStorageList(ctx ec
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter endDate: %s", err))
 	}
 
-	// ------------- Optional query parameter "entityId" -------------
+	// ------------- Optional query parameter "entityId[]" -------------
 
-	err = runtime.BindQueryParameter("form", true, false, "entityId", ctx.QueryParams(), &params.EntityId)
+	err = runtime.BindQueryParameter("form", true, false, "entityId[]", ctx.QueryParams(), &params.EntityId)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter entityId: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter entityId[]: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
@@ -3488,11 +3488,11 @@ func (w *ServerInterfaceWrapper) ScriptServiceGetScriptList(ctx echo.Context) er
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter limit: %s", err))
 	}
 
-	// ------------- Optional query parameter "ids" -------------
+	// ------------- Optional query parameter "ids[]" -------------
 
-	err = runtime.BindQueryParameter("form", true, false, "ids", ctx.QueryParams(), &params.Ids)
+	err = runtime.BindQueryParameter("form", true, false, "ids[]", ctx.QueryParams(), &params.Ids)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter ids: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter ids[]: %s", err))
 	}
 
 	// ------------- Optional query parameter "query" -------------
@@ -3914,11 +3914,11 @@ func (w *ServerInterfaceWrapper) TriggerServiceGetTriggerList(ctx echo.Context) 
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter limit: %s", err))
 	}
 
-	// ------------- Optional query parameter "ids" -------------
+	// ------------- Optional query parameter "ids[]" -------------
 
-	err = runtime.BindQueryParameter("form", true, false, "ids", ctx.QueryParams(), &params.Ids)
+	err = runtime.BindQueryParameter("form", true, false, "ids[]", ctx.QueryParams(), &params.Ids)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter ids: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter ids[]: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshalled arguments

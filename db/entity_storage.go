@@ -85,11 +85,7 @@ func (n *EntityStorages) List(ctx context.Context, limit, offset int, orderBy, s
 	q := n.Db.WithContext(ctx).Model(&EntityStorage{})
 
 	if len(entityIds) > 0 {
-		var ids = make([]string, 0, len(entityIds))
-		for _, id := range entityIds {
-			ids = append(ids, id.String())
-		}
-		q = q.Where("entity_id in (?)", ids)
+		q = q.Where("entity_id in (?)", entityIds)
 	}
 
 	if startDate != nil {

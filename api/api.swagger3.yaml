@@ -4292,7 +4292,7 @@ components:
         format: uint64
       description: The number of results returned on a page
     ids:
-      name: ids
+      name: ids[]
       in: query
       required: false
       schema:
@@ -4316,7 +4316,7 @@ components:
         type: string
         format: date-time
     entityIds:
-      name: entityId
+      name: entityId[]
       in: query
       required: false
       schema:
