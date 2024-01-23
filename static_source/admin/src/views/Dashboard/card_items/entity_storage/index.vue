@@ -189,7 +189,7 @@ const getList = debounce( async () => {
   if (props.item?.payload.entityStorage?.entityIds?.length ) {
 
     if (selectedEntities.value.length == 0) {
-      params.entityId = props.item?.payload.entityStorage
+      params.entityId = props.item?.payload.entityStorage?.entityIds || []
     } else {
       params.entityId = selectedEntities.value
     }
