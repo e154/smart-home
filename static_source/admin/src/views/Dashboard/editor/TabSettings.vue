@@ -78,15 +78,15 @@ const schema = reactive<FormSchema[]>([
       placeholder: t('dashboard.description')
     }
   },
-  {
-    field: 'enabled',
-    label: t('dashboard.enabled'),
-    component: 'Switch',
-    value: false,
-    colProps: {
-      span: 24
-    },
-  },
+  // {
+  //   field: 'enabled',
+  //   label: t('dashboard.enabled'),
+  //   component: 'Switch',
+  //   value: false,
+  //   colProps: {
+  //     span: 24
+  //   },
+  // },
   {
     field: 'area',
     label: t('dashboard.area'),

@@ -498,6 +498,9 @@ export default {
     width: "Ширина",
     weight: "Вес",
     editor: {
+      name: 'Название',
+      size: 'Размеры',
+      color: 'Цвета',
       itemDetail: "Детали элемента",
       itemList: "Список элементов",
       addNewCardItem: "Добавить элемент",

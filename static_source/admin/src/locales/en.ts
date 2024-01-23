@@ -498,6 +498,9 @@ export default {
         width: 'Width',
         weight: 'Weight',
         editor: {
+            name: 'Name',
+            size: 'Size',
+            color: 'Color',
             itemDetail: 'Item Detail',
             itemList: 'Item List',
             addNewCardItem: 'Add Card Item',

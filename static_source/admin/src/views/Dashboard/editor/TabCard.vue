@@ -2,8 +2,22 @@
 import {computed, PropType, reactive, ref, unref, watch} from 'vue'
 import {Form} from '@/components/Form'
 import {
-  ElButton, ElCard, ElMessage, ElPopconfirm,
-  ElSkeleton, ElMenu, ElMenuItem, ElButtonGroup, ElContainer, ElAside, ElMain, ElScrollbar, ElEmpty
+  ElButton,
+  ElCard,
+  ElMessage,
+  ElPopconfirm,
+  ElSkeleton,
+  ElMenu,
+  ElMenuItem,
+  ElButtonGroup,
+  ElContainer,
+  ElAside,
+  ElMain,
+  ElScrollbar,
+  ElEmpty,
+  ElDivider,
+  ElCol,
+  ElRow
 } from 'element-plus'
 import {useI18n} from '@/hooks/web/useI18n'
 import {useForm} from '@/hooks/web/useForm'
@@ -16,6 +30,7 @@ import {Card, Core, Tab} from "@/views/Dashboard/core";
 import {useBus} from "@/views/Dashboard/bus";
 import { Dialog } from '@/components/Dialog'
 import JsonEditor from "@/components/JsonEditor/JsonEditor.vue";
+import KeystrokeCapture from "@/views/Dashboard/components/KeystrokeCapture.vue";
 
 const {register, elFormRef, methods} = useForm()
 const {required} = useValidator()
@@ -73,13 +88,13 @@ const rules = {
 const schema = reactive<FormSchema[]>([
   {
     field: 'title',
-    label: t('dashboard.title'),
+    label: t('dashboard.editor.name'),
     component: 'Input',
     colProps: {
       span: 24
     },
     componentProps: {
-      placeholder: t('dashboard.title')
+      placeholder: t('dashboard.editor.name')
     }
   },
   {
@@ -88,6 +103,7 @@ const schema = reactive<FormSchema[]>([
     component: 'Switch',
     value: false,
     colProps: {
+      md: 12,
       span: 24
     },
   },
@@ -97,24 +113,25 @@ const schema = reactive<FormSchema[]>([
     component: 'Switch',
     value: false,
     colProps: {
+      md: 12,
       span: 24
     },
   },
-  // {
-  //   field: 'dragEnabled',
-  //   label: t('dashboard.dragEnabled'),
-  //   component: 'Switch',
-  //   value: false,
-  //   colProps: {
-  //     span: 24
-  //   },
-  // },
+  {
+    field: 'cardSize',
+    label: t('dashboard.editor.size'),
+    component: 'Divider',
+    colProps: {
+      span: 24
+    },
+  },
   {
     field: 'height',
     label: t('dashboard.height'),
     component: 'InputNumber',
     value: 300,
     colProps: {
+      md: 12,
       span: 24
     },
   },
@@ -123,6 +140,15 @@ const schema = reactive<FormSchema[]>([
     label: t('dashboard.width'),
     component: 'InputNumber',
     value: 300,
+    colProps: {
+      md: 12,
+      span: 24
+    },
+  },
+  {
+    field: 'cardSize',
+    label: t('dashboard.editor.color'),
+    component: 'Divider',
     colProps: {
       span: 24
     },
@@ -346,6 +372,15 @@ const sortCardDown = (card: Card, index: number) => {
               style="width: 100%"
               @register="register"
           />
+
+          <ElRow v-if="core.activeCard >= 0">
+            <ElCol>
+              <ElDivider content-position="left">{{ $t('dashboard.editor.image') }}</ElDivider>
+            </ElCol>
+            <ElCol>
+              <KeystrokeCapture/>
+            </ElCol>
+          </ElRow>
 
           <ElEmpty v-if="!(core.activeCard >= 0)" :rows="5">
             <ElButton type="primary" @click="addCard()">

@@ -75,6 +75,7 @@ const schema = reactive<FormSchema[]>([
     component: 'Switch',
     value: false,
     colProps: {
+      md: 12,
       span: 24
     },
   },
@@ -84,23 +85,31 @@ const schema = reactive<FormSchema[]>([
     component: 'Switch',
     value: false,
     colProps: {
+      md: 12,
       span: 24
     },
   },
-  // {
-  //   field: 'dragEnabled',
-  //   label: t('dashboard.dragEnabled'),
-  //   component: 'Switch',
-  //   value: false,
-  //   colProps: {
-  //     span: 24
-  //   },
-  // },
+  {
+    field: 'cardSize',
+    label: t('dashboard.editor.size'),
+    component: 'Divider',
+    colProps: {
+      span: 24
+    },
+  },
   {
     field: 'columnWidth',
     label: t('dashboard.columnWidth'),
     component: 'InputNumber',
     value: 300,
+    colProps: {
+      span: 24
+    },
+  },
+  {
+    field: 'cardSize',
+    label: t('dashboard.editor.color'),
+    component: 'Divider',
     colProps: {
       span: 24
     },
