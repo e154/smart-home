@@ -1319,6 +1319,7 @@ export class Core {
     this.tabs.push(tab);
     this._activeTabIdx = (this.tabs.length - 1);
     this.currentCardId = undefined;
+    this.activeCard = -1
   }
 
   async updateTab() {
@@ -1453,6 +1454,9 @@ export class Core {
     if (!tab) {
       return;
     }
+
+    card.dashboardTabId = tab.id;
+    card.id = undefined
 
     const {data} = await api.v1.dashboardCardServiceImportDashboardCard(card);
     if (data) {

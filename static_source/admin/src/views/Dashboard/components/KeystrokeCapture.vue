@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {computed, PropType, ref} from "vue";
+import {computed, onMounted, PropType, ref} from "vue";
 import {Card, Core} from "@/views/Dashboard/core";
 import {useEmitt} from "@/hooks/web/useEmitt";
 import {
@@ -10,7 +10,7 @@ import {
   ElCollapse,
   ElCollapseItem,
   ElForm,
-  ElFormItem, ElMessage,
+  ElFormItem,
   ElOption,
   ElPopconfirm,
   ElRow,
@@ -18,9 +18,8 @@ import {
   ElTag
 } from "element-plus";
 import {useI18n} from "@/hooks/web/useI18n";
-import {ApiEntity, ApiEntityCallActionRequest, ApiTypes} from "@/api/stub";
+import {ApiEntity} from "@/api/stub";
 import EntitySearch from "@/views/Entities/components/EntitySearch.vue";
-import api from "@/api/api";
 
 const {t} = useI18n()
 
@@ -54,18 +53,30 @@ const currentCore = computed(() => props.core as Core)
 
 const activeItemIdx = ref(-1)
 
-useEmitt({
-  name: 'keydown',
-  callback: (val) => {
-    if (activeItemIdx.value > -1) {
-      currentCard.value.keysCapture[activeItemIdx.value].keys.set(val.keyCode, val.key)
-      activeItemIdx.value = -1
-      return
-    }
-  }
+onMounted(() => {
+  setTimeout(() => {
+    useEmitt({
+      name: 'keydown',
+      callback: (val) => {
+        if (!currentCard.value?.keysCapture) {
+          return;
+        }
+        if (activeItemIdx.value > -1) {
+          currentCard.value.keysCapture[activeItemIdx.value].keys.set(val.keyCode, val.key)
+          activeItemIdx.value = -1
+          return
+        }
+      }
+    })
+  }, 100)
 })
 
 const addAction = () => {
+
+  if (!currentCard.value?.keysCapture) {
+    currentCard.value.keysCapture = []
+  }
+
   currentCard.value.keysCapture.push({
     entity: undefined,
     entityId: currentCard.value.entityId || undefined,
@@ -131,7 +142,7 @@ const getActionList = (entity?: ApiEntity) => {
         </div>
 
         <!-- props -->
-        <ElCollapse>
+        <ElCollapse v-if="currentCard && currentCard.keysCapture">
           <ElCollapseItem
               v-for="(prop, index) in currentCard.keysCapture"
               :name="index"
@@ -139,7 +150,7 @@ const getActionList = (entity?: ApiEntity) => {
           >
 
             <template #title>
-              <span>ID: {{index}}</span>
+              <span>ID: {{ index }}</span>
 
               <span v-if="prop.entityId">
                 &nbsp;

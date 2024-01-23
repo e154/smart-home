@@ -365,7 +365,7 @@ const sortCardDown = (card: Card, index: number) => {
           </template>
 
           <Form
-              v-if="core.activeCard >= 0"
+              v-if="activeCard != undefined"
               :schema="schema"
               :rules="rules"
               label-position="top"
@@ -373,7 +373,7 @@ const sortCardDown = (card: Card, index: number) => {
               @register="register"
           />
 
-          <ElRow v-if="core.activeCard >= 0" class="mb-20px">
+          <ElRow v-if="activeCard != undefined" class="mb-20px">
             <ElCol>
               <ElDivider content-position="left">{{ $t('dashboard.editor.keystrokeCapture') }}</ElDivider>
             </ElCol>
@@ -382,13 +382,13 @@ const sortCardDown = (card: Card, index: number) => {
             </ElCol>
           </ElRow>
 
-          <ElEmpty v-if="!(core.activeCard >= 0)" :rows="5">
+          <ElEmpty v-if="!(activeCard != undefined)" :rows="5">
             <ElButton type="primary" @click="addCard()">
               {{ t('dashboard.addNewCard') }}
             </ElButton>
           </ElEmpty>
 
-          <div class="text-right" v-if="core.activeCard >= 0">
+          <div class="text-right" v-if="activeCard != undefined">
             <ElButton type="primary" @click.prevent.stop='showExportDialog()'>
               <Icon icon="uil:file-export" class="mr-5px"/>
               {{ $t('main.export') }}

@@ -44,6 +44,9 @@ useEmitt({
 
     currentCard.value.keysCapture.forEach((act, index) => {
       if (act.keys?.has(val.keyCode)) {
+        if (!act.entityId || !act.action) {
+          return
+        }
         callAction(act.entityId, act.action, val.key, val.keyCode)
       }
     })
