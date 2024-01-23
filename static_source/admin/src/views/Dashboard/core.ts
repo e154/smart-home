@@ -83,6 +83,13 @@ export interface CompareProp {
   entityId?: string;
 }
 
+export interface KeysProp {
+  keys?: Map<number, string>;
+  entity?: { id?: string };
+  entityId?: string;
+  action?: string;
+}
+
 export interface ItemPayloadImage {
   attrField?: string;
   image?: ApiImage;
@@ -124,6 +131,7 @@ export interface ItemParams {
   transform: string;
   showOn: CompareProp[];
   hideOn: CompareProp[];
+  keysCapture?: KeysProp[];
   asButton: boolean;
   buttonActions: ButtonAction[];
 }
@@ -651,6 +659,7 @@ export class Card {
   hidden: boolean
   showOn: CompareProp[] = [];
   hideOn: CompareProp[] = [];
+  keysCapture: KeysProp[] = [];
 
   selectedItem = -1;
 
@@ -687,6 +696,9 @@ export class Card {
       }
       if (payload.hideOn) {
         this.hideOn = payload.hideOn;
+      }
+      if (payload.keysCapture) {
+        this.keysCapture = payload.keysCapture;
       }
     }
 
@@ -772,9 +784,10 @@ export class Card {
       items.push(this.items[index].serialize());
     }
 
-    const payload = btoa(unescape(encodeURIComponent(JSON.stringify({
+    const payload = btoa(unescape(encodeURIComponent(serializedObject({
       showOn: this.showOn,
       hideOn: this.hideOn,
+      keysCapture: this.keysCapture,
     }))));
     const card = {
       id: this.id,
@@ -1556,6 +1569,12 @@ export function serializedObject(obj: any): string {
     if (typeof value === 'function') {
       return value.toString(); // Convert function to string
     }
+    if(value instanceof Map) {
+      return {
+        dataType: 'Map',
+        value: Array.from(value.entries()), // or with spread: value: [...value]
+      };
+    }
     return value;
   });
 }
@@ -1564,6 +1583,11 @@ export function parsedObject(str): any {
   return JSON.parse(str, function(key, value) {
     if (typeof value === 'string' && value.indexOf('function') === 0) {
       return new Function('return ' + value)(); // Create a function using Function constructor
+    }
+    if(typeof value === 'object' && value !== null) {
+      if (value.dataType === 'Map') {
+        return new Map(value.value);
+      }
     }
     return value;
   });

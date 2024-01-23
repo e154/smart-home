@@ -4,7 +4,7 @@ import {
   onMounted, onUnmounted,
   onUpdated,
   PropType,
-  ref,
+  ref, watch,
 } from "vue";
 import {Card, CardItem, Core, Tab} from "@/views/Dashboard/core";
 import {useBus} from "@/views/Dashboard/bus";
@@ -14,6 +14,7 @@ import { deepFlat } from "@daybrush/utils";
 import { VueSelecto } from "vue3-selecto";
 import {CardItemName} from "@/views/Dashboard/card_items";
 import {UUID} from "uuid-generator-ts";
+import KeystrokeCaptureViewer from "@/views/Dashboard/components/KeystrokeCaptureViewer.vue";
 
 const {bus} = useBus()
 
@@ -63,6 +64,8 @@ const currentCard = computed({
   },
   set(val: Card) {}
 })
+
+const hover = ref(false)
 
 // ---------------------------------
 // component methods
@@ -263,7 +266,13 @@ const onDragStart = (e) => {
       :style="{
         'transform': `scale(${zoom})`,
         'background-color': currentCard.background || 'inherit'}"
+      @mouseover="hover = true"
+      @touchstart="hover = true"
+      @mouseleave="hover = false"
+      @mouseout="hover = false"
   >
+
+    <KeystrokeCaptureViewer :card="currentCard" :core="core" :hover="hover"/>
 
     <component
         v-for="(item, index) in currentCard.items"

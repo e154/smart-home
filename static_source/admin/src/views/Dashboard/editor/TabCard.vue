@@ -31,6 +31,7 @@ import {useBus} from "@/views/Dashboard/bus";
 import { Dialog } from '@/components/Dialog'
 import JsonEditor from "@/components/JsonEditor/JsonEditor.vue";
 import KeystrokeCapture from "@/views/Dashboard/components/KeystrokeCapture.vue";
+import ViewCard from "@/views/Dashboard/editor/ViewCard.vue";
 
 const {register, elFormRef, methods} = useForm()
 const {required} = useValidator()
@@ -73,7 +74,6 @@ export interface DashboardCard {
 const props = defineProps({
   core: {
     type: Object as PropType<Nullable<Core>>,
-    default: () => null
   },
   tab: {
     type: Object as PropType<Nullable<DashboardTab>>,
@@ -373,12 +373,12 @@ const sortCardDown = (card: Card, index: number) => {
               @register="register"
           />
 
-          <ElRow v-if="core.activeCard >= 0">
+          <ElRow v-if="core.activeCard >= 0" class="mb-20px">
             <ElCol>
               <ElDivider content-position="left">{{ $t('dashboard.editor.image') }}</ElDivider>
             </ElCol>
             <ElCol>
-              <KeystrokeCapture/>
+              <KeystrokeCapture :card="activeCard" :core="core"/>
             </ElCol>
           </ElRow>
 
