@@ -375,7 +375,7 @@ const sortCardDown = (card: Card, index: number) => {
 
           <ElRow v-if="core.activeCard >= 0" class="mb-20px">
             <ElCol>
-              <ElDivider content-position="left">{{ $t('dashboard.editor.image') }}</ElDivider>
+              <ElDivider content-position="left">{{ $t('dashboard.editor.keystrokeCapture') }}</ElDivider>
             </ElCol>
             <ElCol>
               <KeystrokeCapture :card="activeCard" :core="core"/>

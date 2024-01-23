@@ -162,7 +162,8 @@ const getActionList = (entity?: ApiEntity) => {
                 <ElRow class="mb-20px">
                   <ElCol>
                     <el-button class="button-new-tag ml-1" size="small" @click="saveNewButton(index)">
-                      + New Button
+                      <Icon icon="ep:plus" class="mr-5px"/>
+                      {{ t('dashboard.editor.addNewButton') }}
                     </el-button>
                   </ElCol>
                 </ElRow>

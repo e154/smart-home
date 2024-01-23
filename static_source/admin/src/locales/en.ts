@@ -498,6 +498,8 @@ export default {
         width: 'Width',
         weight: 'Weight',
         editor: {
+            keystrokeCapture: 'Keystroke Capture',
+            addNewButton: 'Add New Button',
             name: 'Name',
             size: 'Size',
             color: 'Color',

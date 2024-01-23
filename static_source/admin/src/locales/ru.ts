@@ -498,6 +498,8 @@ export default {
     width: "Ширина",
     weight: "Вес",
     editor: {
+      keystrokeCapture: 'Захват клавиатуры',
+      addNewButton: 'Добавить кнопку',
       name: 'Название',
       size: 'Размеры',
       color: 'Цвета',
