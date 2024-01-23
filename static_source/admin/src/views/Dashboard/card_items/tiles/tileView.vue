@@ -78,7 +78,7 @@ const getTileStyle = () => {
 .tile-wrapper {
   height: v-bind(tileHeight);
   width: v-bind(tileWidth);
-  cursor: pointer;
+  //cursor: pointer;
   overflow: hidden;
   position: relative;
 }

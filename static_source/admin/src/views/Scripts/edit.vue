@@ -98,9 +98,17 @@ const save = async () => {
     const res = await api.v1.scriptServiceUpdateScriptById(scriptId.value, body)
         .catch(() => {
         })
-        .finally(() => {
-          fetch()
-          loading.value = false
+        .finally(async () => {
+          loading.value = true
+          const res = await api.v1.scriptServiceGetScriptById(scriptId.value)
+              .catch(() => {
+              })
+              .finally(() => {
+                loading.value = false
+              })
+          if (res) {
+            currentScriptVersion.value = res.data.versions[0] || null
+          }
         })
     if (res) {
       ElMessage({
