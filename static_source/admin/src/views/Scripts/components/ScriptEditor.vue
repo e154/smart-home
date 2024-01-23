@@ -26,7 +26,7 @@ import {HintDictionary, HintDictionaryCoffee} from "@/views/Scripts/components/t
 import {useAppStore} from "@/store/modules/app";
 import {useEmitt} from "@/hooks/web/useEmitt";
 
-const emit = defineEmits(['change', 'update:source'])
+const emit = defineEmits(['change', 'update:source', 'save'])
 const appStore = useAppStore()
 
 const props = defineProps({
@@ -159,6 +159,11 @@ const onChange = (val: string, cm: any) => {
   emit('update:source', val)
 }
 
+const onSave = (e) => {
+  e.preventDefault()
+  emit('save')
+}
+
 const autoFormatSelection = () => {
   let plugins = [parserBabel]
   let parser = "babel"
@@ -172,7 +177,7 @@ const autoFormatSelection = () => {
     "semi": true, // Добавлять точку с запятой в конце выражений
     "trailingComma": "none", // Не использовать запятую в конце массивов и объектов
     "tabWidth": 2, // Количество пробелов для одного уровня отступа
-    "printWidth": 80, // Максимальная длина строки кода
+    "printWidth": 180, // Максимальная длина строки кода
     parser: parser,
     plugins: plugins
   });
@@ -212,6 +217,11 @@ const onKeydown = ( e ) => {
   // 70 = F
   if (e.metaKey && e.shiftKey && evtobj.keyCode == 70) {
     autoFormatSelection()
+  }
+
+  // 83 = S
+  if ((navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey) && evtobj.keyCode == 83) {
+    onSave(e)
   }
 }
 

@@ -202,7 +202,8 @@ fetch()
         <ScriptEditor :key="reloadKey"
                       v-model="currentScript"
                       class="mb-20px"
-                      @update:source="onScriptEditorChange"/>
+                      @update:source="onScriptEditorChange"
+                      @save="save"/>
       </ElTabPane>
       <!-- /source -->
 
