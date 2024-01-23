@@ -193,7 +193,7 @@ const getList = async () => {
     sort: tableObject.sort,
     startDate: tableObject.startDate,
     endDate: tableObject.endDate,
-    entityId: entityId.value,
+    entityId: [entityId.value],
   }
 
   const res = await api.v1.entityStorageServiceGetEntityStorageList(params)
