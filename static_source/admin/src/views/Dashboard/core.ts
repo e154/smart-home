@@ -237,7 +237,7 @@ export class CardItem {
       if (!this.payload.text) {
         this.payload.text = {
           items: [],
-          default_text: 'default text',
+          default_text: '<div>default text</div>',
           current_text: ''
         } as ItemPayloadText;
       }
@@ -376,7 +376,7 @@ export class CardItem {
         payload: {
           text: {
             items: [],
-            default_text: 'default text',
+            default_text: '<div>default text</div>',
             current_text: ''
           } as ItemPayloadText
         },
