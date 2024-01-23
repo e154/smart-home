@@ -117,6 +117,7 @@ const updateCurrentState = () => {
 
   <CommonEditor :item="currentItem" :core="core"/>
 
+  <!-- text options -->
   <ElDivider content-position="left">{{ $t('dashboard.editor.textOptions') }}</ElDivider>
 
   <ElRow style="padding-bottom: 20px">
@@ -285,6 +286,7 @@ const updateCurrentState = () => {
       </ElFormItem>
     </ElCol>
   </ElRow>
+  <!-- /text options -->
 
   <ElRow>
     <ElCol>
