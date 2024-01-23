@@ -157,7 +157,7 @@ const removeAction = (index: number) => {
         </ElFormItem>
       </ElCol>
     </ElRow>
-    <ElRow>
+    <ElRow v-if="currentItem.asButton">
       <ElCol>
         <div style="padding-bottom: 20px">
           <ElButton type="default" @click.prevent.stop="addAction()">
