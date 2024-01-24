@@ -22,12 +22,12 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/e154/smart-home/system/scripts"
+	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common/events"
-
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/node"
+	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
@@ -108,14 +108,14 @@ func (e *Actor) runAction(msg events.EventCallEntityAction) {
 	if action, ok := e.Actions[msg.ActionName]; ok {
 		if action.ScriptEngine != nil && action.ScriptEngine.Engine() != nil {
 			if _, err := action.ScriptEngine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
-				log.Error(err.Error())
+				log.Error(errors.Wrapf(err, "entity id: %s ", e.Id).Error())
 			}
 			return
 		}
 	}
 	if e.ScriptsEngine != nil && e.ScriptsEngine.Engine() != nil {
-		if _, err := e.ScriptsEngine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, msg.ActionName, msg.Args); err != nil {
-			log.Error(err.Error())
+		if _, err := e.ScriptsEngine.AssertFunction(FuncEntityAction, msg.EntityId, msg.ActionName, msg.Args); err != nil {
+			log.Error(errors.Wrapf(err, "entity id: %s ", e.Id).Error())
 		}
 	}
 }

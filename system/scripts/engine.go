@@ -20,17 +20,16 @@ package scripts
 
 import (
 	"fmt"
-	"go.uber.org/atomic"
 	"os"
 	"strconv"
 
-	"github.com/e154/smart-home/common/apperr"
-
+	"github.com/hashicorp/go-multierror"
 	"github.com/pkg/errors"
+	"go.uber.org/atomic"
 
 	. "github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
 	m "github.com/e154/smart-home/models"
-	"github.com/hashicorp/go-multierror"
 )
 
 // IScript ...
@@ -185,7 +184,10 @@ func (s *Engine) AssertFunction(f string, arg ...interface{}) (result string, er
 
 	result, err = s.script.AssertFunction(f, arg...)
 	if err != nil {
-		err = errors.Wrapf(err, "script id:%d ", s.ScriptId())
+		if s.ScriptId() != 0 {
+			err = errors.Wrapf(err, "script id:%d ", s.ScriptId())
+			return
+		}
 		return
 	}
 

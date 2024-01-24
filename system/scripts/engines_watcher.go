@@ -20,10 +20,12 @@ package scripts
 
 import (
 	"fmt"
-	m "github.com/e154/smart-home/models"
 	"sync"
 
+	"github.com/pkg/errors"
+
 	"github.com/e154/smart-home/common/events"
+	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
 )
 
@@ -74,7 +76,10 @@ func (w *EnginesWatcher) Spawn(f func(engine *Engine)) {
 
 	for _, script := range w.scripts {
 		if _, err := w.engine.EvalScript(script); err != nil {
-			log.Errorf("script id: %d, %s", script.Id, err.Error())
+			if script.Id != 0 {
+				log.Errorf("script id: %d, %s", script.Id, err.Error())
+			}
+			log.Error(err.Error())
 		}
 	}
 
@@ -97,6 +102,23 @@ func (w *EnginesWatcher) Engine() *Engine {
 	w.mx.Lock()
 	defer w.mx.Unlock()
 	return w.engine
+}
+
+func (w *EnginesWatcher) AssertFunction(f string, arg ...interface{}) (result string, err error) {
+	w.mx.Lock()
+	defer w.mx.Unlock()
+	if w.engine == nil {
+		return
+	}
+	result, err = w.engine.AssertFunction(f, arg...)
+	if err != nil {
+		ids := []int64{}
+		for _, script := range w.scripts {
+			ids = append(ids, script.Id)
+		}
+		err = errors.Wrapf(err, "see scripts: %v ", ids)
+	}
+	return
 }
 
 // eventHandler ...

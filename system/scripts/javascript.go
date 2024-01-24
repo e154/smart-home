@@ -20,10 +20,11 @@ package scripts
 
 import (
 	"fmt"
-	"github.com/pkg/errors"
-	"runtime/debug"
 	"strings"
 	"sync"
+
+	"github.com/pkg/errors"
+	"runtime/debug"
 
 	"github.com/dop251/goja"
 	. "github.com/e154/smart-home/common"
@@ -189,7 +190,9 @@ func (j *Javascript) coffeeCompile() (result goja.Value, err error) {
 func (j *Javascript) Do() (result string, err error) {
 	result, err = j.unsafeRun(j.program)
 	if err != nil {
-		err = errors.Wrapf(err, "script id:%d ", j.engine.ScriptId())
+		if j.engine.ScriptId() != 0 {
+			err = errors.Wrapf(err, "script id:%d ", j.engine.ScriptId())
+		}
 	}
 	return
 }

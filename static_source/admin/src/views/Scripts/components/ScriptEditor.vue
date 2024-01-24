@@ -211,11 +211,11 @@ const onKeydown = ( e ) => {
   var evtobj = window.event? event : e
   // console.log(e);
   // 191 = /
-  if (e.metaKey && evtobj.keyCode == 191) {
+  if ((navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey) && evtobj.keyCode == 191) {
     commentSelectedText()
   }
   // 70 = F
-  if (e.metaKey && e.shiftKey && evtobj.keyCode == 70) {
+  if ((navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey) && e.shiftKey && evtobj.keyCode == 70) {
     autoFormatSelection()
   }
 

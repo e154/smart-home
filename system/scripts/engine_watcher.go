@@ -20,10 +20,11 @@ package scripts
 
 import (
 	"fmt"
-	m "github.com/e154/smart-home/models"
 	"sync"
 
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/events"
+	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
 )
 
@@ -64,14 +65,20 @@ func (w *EngineWatcher) Spawn(f func(engine *Engine)) {
 	w.mx.RLock()
 	defer w.mx.RUnlock()
 
-	w.engine, _ = w.scriptService.NewEngine(nil)
+	w.engine, _ = w.scriptService.NewEngine(&m.Script{
+		Id:   w.script.Id,
+		Lang: common.ScriptLangJavascript,
+	})
 
 	if w.fBefore != nil {
 		w.fBefore(w.engine)
 	}
 
 	if _, err := w.engine.EvalScript(w.script); err != nil {
-		log.Errorf("script id: %d, %s", w.script.Id, err.Error())
+		if w.script.Id != 0 {
+			log.Errorf("script id: %d, %s", w.script.Id, err.Error())
+		}
+		log.Error(err.Error())
 	}
 
 	if f != nil {
