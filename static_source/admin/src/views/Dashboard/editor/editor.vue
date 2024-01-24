@@ -146,7 +146,7 @@ const addCard = () => {
 <template>
   <div class="components-container dashboard-container" style="margin: 0" v-if="!loading" :style="getBackgroundColor()">
 
-  <splitpanes class="default-theme" @resize="resizeHandler" horizontal>
+  <splitpanes class="default-theme" @resized="resizeHandler" horizontal>
     <pane min-size="10" max-size="90" class="top-container" :size="splitPaneTopSize">
         <ElTabs
             v-model="activeTabIdx"

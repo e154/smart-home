@@ -58,6 +58,7 @@ onMounted(() => {
     useEmitt({
       name: 'keydown',
       callback: (val) => {
+        console.debug(val)
         if (!currentCard.value?.keysCapture) {
           return;
         }
@@ -68,7 +69,7 @@ onMounted(() => {
         }
       }
     })
-  }, 100)
+  }, 500)
 })
 
 const addAction = () => {
