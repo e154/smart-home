@@ -13,7 +13,7 @@ import {Cache, GetTokens, RenderText} from "@/views/Dashboard/render";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 
-const {bus} = useBus()
+const {emit} = useBus()
 
 // ---------------------------------
 // common
@@ -522,7 +522,7 @@ const prepareData = debounce( async ()  => {
     case 'doughnut':
       loaded.value = true;
       fistTime.value = false
-      bus.emit('updateChart', props.item.payload.chart.type)
+      emit('updateChart', props.item.payload.chart.type)
       return
   }
 
@@ -545,7 +545,7 @@ const prepareData = debounce( async ()  => {
       console.warn(`unknown chart type ${props.item.entity.metrics[props.item.payload.chart?.metric_index || 0].type}`);
   }
 
-  bus.emit('updateChart', props.item.payload.chart.type)
+  emit('updateChart', props.item.payload.chart.type)
 
   loaded.value = true;
   fistTime.value = false

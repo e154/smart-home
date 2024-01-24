@@ -35,7 +35,7 @@ import {ItemPayloadEntityStorage} from "@/views/Dashboard/card_items/entity_stor
 import {prepareUrl} from "@/utils/serverId";
 import {ItemPayloadTiles} from "@/views/Dashboard/card_items/tiles/types";
 
-const {bus} = useBus()
+const {emit} = useBus()
 
 export interface ButtonAction {
   entityId: string;
@@ -884,7 +884,7 @@ export class Card {
 
     this.updateItemList()
 
-    bus.emit('selected_card_item', -1);
+    emit('selected_card_item', -1);
   }
 
   async copyItem(index: number) {
@@ -1328,7 +1328,7 @@ export class Core {
       return;
     }
 
-    bus.emit('update_tab', tab.id)
+    emit('update_tab', tab.id)
     if (this.getActiveTab) {
       return this.getActiveTab.update();
     }
@@ -1358,7 +1358,7 @@ export class Core {
     }
 
     console.log(`select tab id:${tab.id}`);
-    bus.emit('update_tab', tab.id)
+    emit('update_tab', tab.id)
   }
 
   // ---------------------------------
@@ -1403,7 +1403,7 @@ export class Core {
     this.activeCard = tab.cards.length - 1;
     this.currentCardId = card.id;
 
-    bus.emit('update_tab', tab.id);
+    emit('update_tab', tab.id);
   }
 
   async updateCard() {
@@ -1417,7 +1417,7 @@ export class Core {
     }
 
     // move to direct call
-    // bus.emit('update_tab', this.currentTabId);
+    // emit('update_tab', this.currentTabId);
 
     return tab.cards[this.activeCard].update();
   }
@@ -1446,7 +1446,7 @@ export class Core {
       this.activeCard = undefined;
     }
 
-    bus.emit('update_tab', tab.id);
+    emit('update_tab', tab.id);
   }
 
   async importCard(card: ApiDashboardCard) {
@@ -1463,7 +1463,7 @@ export class Core {
       this.getActiveTab.cards.push(new Card(data));
     }
 
-    bus.emit('update_tab', tab.id);
+    emit('update_tab', tab.id);
 
     return data;
   }
@@ -1488,7 +1488,7 @@ export class Core {
 
     await tab.cards[this.activeCard].createCardItem();
 
-    // bus.emit('update_tab', this.currentTabId);
+    // emit('update_tab', this.currentTabId);
   }
 
   async removeCardItem(index: number) {
@@ -1503,7 +1503,7 @@ export class Core {
 
     await tab.cards[this.activeCard].removeItem(index);
 
-    // bus.emit('update_tab', this.currentTabId);
+    // emit('update_tab', this.currentTabId);
   }
 } // \Core
 

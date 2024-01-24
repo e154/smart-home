@@ -36,8 +36,9 @@ const writeRef = ref<ComponentRef<typeof Form>>()
 const loading = ref(false)
 const scriptId = computed(() => route.params.id as number);
 const currentScript = ref<Nullable<ApiScript>>(null)
-const currentScriptVersion = ref<Nullable<ApiScript>>(null)
 const activeTab = ref('source')
+const currentVersionIdx = ref(0)
+const currentVersion = ref<Nullable<ApiScript>>(null)
 
 const fetch = async () => {
   loading.value = true
@@ -49,7 +50,9 @@ const fetch = async () => {
       })
   if (res) {
     currentScript.value = res.data
-    currentScriptVersion.value = res.data.versions[0] || null
+    if (res.data?.versions && res.data.versions.length) {
+      currentVersion.value = res.data.versions[0]
+    }
   } else {
     currentScript.value = null
   }
@@ -81,6 +84,22 @@ const copy = async () => {
   }
 }
 
+const updateVersions = async () => {
+  loading.value = true
+  const res = await api.v1.scriptServiceGetScriptById(scriptId.value)
+      .catch(() => {
+      })
+      .finally(() => {
+        loading.value = false
+      })
+  if (res) {
+    if (res.data?.versions && res.data.versions.length) {
+      currentVersion.value = res.data.versions[0]
+      currentScript.value.versions = res.data.versions
+    }
+  }
+}
+
 const save = async () => {
   const write = unref(writeRef)
   const validate = await write?.elFormRef?.validate()?.catch(() => {
@@ -99,16 +118,7 @@ const save = async () => {
         .catch(() => {
         })
         .finally(async () => {
-          loading.value = true
-          const res = await api.v1.scriptServiceGetScriptById(scriptId.value)
-              .catch(() => {
-              })
-              .finally(() => {
-                loading.value = false
-              })
-          if (res) {
-            currentScriptVersion.value = res.data.versions[0] || null
-          }
+          updateVersions();
         })
     if (res) {
       ElMessage({
@@ -158,6 +168,10 @@ const onScriptEditorChange = (val: string) => {
     return
   }
   currentScript.value.source = val
+}
+
+const selectVersionHandler = () => {
+  currentVersion.value = currentScript.value?.versions[currentVersionIdx.value] || null
 }
 
 const reloadKey = ref(0)
@@ -214,23 +228,24 @@ fetch()
           <ElCol>
             <ElFormItem :label="$t('scripts.scriptVersions')" prop="action">
               <ElSelect
-                  v-model="currentScriptVersion"
+                  v-model="currentVersionIdx"
                   clearable
                   :placeholder="$t('dashboard.editor.selectAction')"
                   style="width: 100%"
+                  @change="selectVersionHandler"
               >
                 <ElOption
-                    v-for="p in currentScript.versions"
-                    :key="p"
+                    v-for="(p, index) in currentScript.versions"
+                    :key="index"
                     :label="parseTime(p.createdAt)"
-                    :value="p"/>
+                    :value="index"/>
               </ElSelect>
 
             </ElFormItem>
           </ElCol>
           <ElCol>
             <MergeEditor :source="currentScript"
-                         :destination="currentScriptVersion"
+                         :destination="currentVersion"
                          @update:source="onMergeEditorChange"/>
           </ElCol>
         </ElRow>

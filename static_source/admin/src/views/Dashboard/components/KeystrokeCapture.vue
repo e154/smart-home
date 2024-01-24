@@ -2,7 +2,6 @@
 
 import {computed, onMounted, PropType, ref} from "vue";
 import {Card, Core} from "@/views/Dashboard/core";
-import {useEmitt} from "@/hooks/web/useEmitt";
 import {
   ElButton,
   ElCard,
@@ -20,6 +19,7 @@ import {
 import {useI18n} from "@/hooks/web/useI18n";
 import {ApiEntity} from "@/api/stub";
 import EntitySearch from "@/views/Entities/components/EntitySearch.vue";
+import {useEventBus} from "@/hooks/event/useEventBus";
 
 const {t} = useI18n()
 
@@ -54,22 +54,20 @@ const currentCore = computed(() => props.core as Core)
 const activeItemIdx = ref(-1)
 
 onMounted(() => {
-  setTimeout(() => {
-    useEmitt({
-      name: 'keydown',
-      callback: (val) => {
-        console.debug(val)
-        if (!currentCard.value?.keysCapture) {
-          return;
-        }
-        if (activeItemIdx.value > -1) {
-          currentCard.value.keysCapture[activeItemIdx.value].keys.set(val.keyCode, val.key)
-          activeItemIdx.value = -1
-          return
-        }
+  useEventBus({
+    name: 'keydown',
+    callback: (val) => {
+     //console.debug(val)
+      if (!currentCard.value?.keysCapture) {
+        return;
       }
-    })
-  }, 500)
+      if (activeItemIdx.value > -1) {
+        currentCard.value.keysCapture[activeItemIdx.value].keys.set(val.keyCode, val.key)
+        activeItemIdx.value = -1
+        return
+      }
+    }
+  })
 })
 
 const addAction = () => {

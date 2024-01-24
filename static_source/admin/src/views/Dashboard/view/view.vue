@@ -11,7 +11,7 @@ import {useBus} from "@/views/Dashboard/bus";
 import ViewTab from "@/views/Dashboard/view/ViewTab.vue";
 import {propTypes} from "@/utils/propTypes";
 
-const {bus} = useBus()
+const {emit} = useBus()
 
 // ---------------------------------
 // common
@@ -26,7 +26,7 @@ const props = defineProps({
 })
 
 const onStateChanged = (event: EventStateChange) => {
-  bus.emit('state_changed', event);
+  emit('state_changed', event);
   core.onStateChanged(event);
 }
 

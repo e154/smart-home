@@ -29,7 +29,7 @@ import {CardEditorName, CardItemList} from "@/views/Dashboard/card_items";
 
 const {t} = useI18n()
 
-const {bus} = useBus()
+const {emit} = useBus()
 
 const cardItem = ref<CardItem>(null)
 // const card = ref<Card>({} as Card)
@@ -101,7 +101,7 @@ const menuCardItemClick = (index: number) => {
 
   activeCard.value.selectedItem = index;
 
-  bus.emit('selected_card_item', index)
+  emit('selected_card_item', index)
 }
 
 const sortCardItemUp = (item: CardItem, index: number) => {

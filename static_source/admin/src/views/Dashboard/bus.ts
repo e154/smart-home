@@ -18,6 +18,9 @@ export const useBus = (option?: Option) => {
   }
 
   return {
-    bus
+    on: bus.on,
+    off: bus.off,
+    emit: bus.emit,
+    all: bus.all
   }
 }

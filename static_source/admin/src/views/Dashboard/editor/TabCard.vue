@@ -38,7 +38,7 @@ const {required} = useValidator()
 const {t} = useI18n()
 
 const {setValues} = methods
-const {bus} = useBus()
+const {emit} = useBus()
 
 interface DashboardTab {
   id: number;
@@ -272,7 +272,7 @@ const importCard = async () => {
 
 const onSelectedCard = (id: number) => {
   currentCore.value.onSelectedCard(id);
-  bus.emit('unselected_card_item')
+  emit('unselected_card_item')
 }
 
 const addCard = () => {
@@ -320,7 +320,7 @@ useBus({
 })
 
 const menuCardsClick = (card: DashboardCard) => {
-  // bus.emit('selected_card', card.id);
+  // emit('selected_card', card.id);
   onSelectedCard(card.id)
 }
 

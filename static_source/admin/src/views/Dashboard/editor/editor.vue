@@ -18,7 +18,7 @@ import ViewTab from "@/views/Dashboard/editor/ViewTab.vue";
 import TabCardItem from "@/views/Dashboard/editor/TabCardItem.vue";
 import {useCache} from "@/hooks/web/useCache";
 
-const {bus} = useBus()
+const {emit} = useBus()
 const route = useRoute();
 const {t} = useI18n()
 const { wsCache } = useCache()
@@ -33,7 +33,7 @@ const core = reactive<Core>(new Core());
 const currentID = ref('')
 
 const onStateChanged = (event: EventStateChange) => {
-  bus.emit('state_changed', event);
+  emit('state_changed', event);
   core.onStateChanged(event);
 }
 
@@ -116,7 +116,7 @@ const resizeHandler = function ($event) {
     wsCache.set('splitPaneBottomSize', height);
 
     splitPaneBottom.value = height;
-    // bus.emit('splitPaneBottomResized', height);
+    // emit('splitPaneBottomResized', height);
     // console.log(height)
   }
 };

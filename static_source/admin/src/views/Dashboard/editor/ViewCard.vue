@@ -16,7 +16,7 @@ import {CardItemName} from "@/views/Dashboard/card_items";
 import {UUID} from "uuid-generator-ts";
 import KeystrokeCaptureViewer from "@/views/Dashboard/components/KeystrokeCaptureViewer.vue";
 
-const {bus} = useBus()
+const {emit} = useBus()
 
 const currentID = ref('')
 onMounted(() => {
@@ -104,7 +104,7 @@ useBus({
 const selectCardItem = (itemIndex: number) => {
   if (!currentCard.value.active) {
     props.core?.onSelectedCard(currentCard.value.id)
-    bus.emit('selected_card', currentCard.value.id)
+    emit('selected_card', currentCard.value.id)
   }
 
   currentCard.value.selectedItem = itemIndex;
@@ -113,7 +113,7 @@ const selectCardItem = (itemIndex: number) => {
   // } else {
   //   targets.value = [currentCard.value.items[itemIndex].target];
   // }
-  // bus.emit('unselected_card_item')
+  // emit('unselected_card_item')
 }
 
 const onDrag = ({target, transform, beforeTranslate, left, top}: any) => {
