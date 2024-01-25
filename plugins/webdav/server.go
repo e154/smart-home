@@ -19,15 +19,14 @@
 package webdav
 
 import (
-	"github.com/e154/smart-home/system/scripts"
 	"net/http"
 
-	"github.com/gorilla/mux"
 	"go.uber.org/atomic"
 	"golang.org/x/net/webdav"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/system/bus"
+	"github.com/e154/smart-home/system/scripts"
 )
 
 const rootDir = "/webdav"
@@ -37,7 +36,6 @@ type Server struct {
 	eventBus  bus.Bus
 	isStarted *atomic.Bool
 	scripts   *Scripts
-	routes    *mux.Router
 	*FS
 	handler *webdav.Handler
 }
@@ -66,15 +64,9 @@ func (s *Server) Start(adaptors *adaptors.Adaptors, scriptService scripts.Script
 
 	_ = s.MkdirAll("/webdav/scripts", 0755)
 
-	s.scripts = NewScripts()
+	s.scripts = NewScripts(s.FS)
 	s.scripts.Start(adaptors, scriptService, eventBus)
 
-	s.routes = mux.NewRouter()
-	s.routes.HandleFunc("/", s.handler.ServeHTTP)
-	s.routes.HandleFunc("/webdav/", s.handler.ServeHTTP)
-	s.routes.HandleFunc("/webdav/scripts", s.scripts.handler.ServeHTTP)
-	s.routes.HandleFunc("/webdav/scripts/", s.scripts.handler.ServeHTTP)
-	s.routes.HandleFunc("/webdav/scripts/{script}", s.scripts.handler.ServeHTTP)
 }
 
 func (s *Server) Shutdown() {
@@ -89,5 +81,5 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if !s.isStarted.Load() {
 		return
 	}
-	s.routes.ServeHTTP(w, r)
+	s.handler.ServeHTTP(w, r)
 }

@@ -42,6 +42,14 @@ func (f *FS) Mkdir(ctx context.Context, name string, perm os.FileMode) error {
 }
 
 func (f *FS) OpenFile(ctx context.Context, name string, flag int, perm os.FileMode) (webdav.File, error) {
+	_, err := f.Fs.Stat(name)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			log.Infof("created new file %s", name)
+		} else {
+			return nil, err
+		}
+	}
 	return f.Fs.OpenFile(name, flag, perm)
 }
 

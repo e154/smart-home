@@ -20,19 +20,16 @@ package webdav
 
 import (
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"net/http"
-	"regexp"
 )
 
 const (
 	// Name ...
 	Name = "webdav"
-	// TopicSystemStart ...
-	TopicSystemStart = "system/event/start" //todo move
-	// TopicSystemStop ...
-	TopicSystemStop = "system/event/stop" //todo move
 
 	AttrUser      = "user"
 	AttrPassword  = "password"
@@ -59,6 +56,29 @@ func NewSettings() m.Attributes {
 	}
 }
 
+func extractScriptName(path string) string {
+	res := strings.Split(path, ".")
+	if len(res) > 0 {
+		return res[0]
+	}
+	return path
+}
+
+func extractScriptLang(path string) common.ScriptLang {
+	res := strings.Split(path, ".")
+	if len(res) > 1 {
+		switch strings.ToLower(res[1]) {
+		case "ts":
+			return "ts"
+		case "js":
+			return "javascript"
+		case "coffee":
+			return "coffeescript"
+		}
+	}
+	return ""
+}
+
 func scriptExt(script *m.Script) (ext string) {
 	switch script.Lang {
 	case common.ScriptLangTs:
@@ -77,12 +97,9 @@ func getFileName(script *m.Script) string {
 	return fmt.Sprintf("%s.%s", script.Name, scriptExt(script))
 }
 
-func newRoute(method, pattern string, handler http.HandlerFunc) route {
-	return route{method, regexp.MustCompile("^" + pattern + "$"), handler}
-}
-
-type route struct {
-	method  string
-	regex   *regexp.Regexp
-	handler http.HandlerFunc
+type FileInfo struct {
+	Size          int64
+	ModTime       time.Time
+	LastCheck     time.Time
+	IsInitialized bool
 }

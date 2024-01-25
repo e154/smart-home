@@ -21,10 +21,11 @@ package webdav
 import (
 	"context"
 	"embed"
+	"net/http"
+
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/supervisor"
-	"net/http"
 )
 
 var (
@@ -124,8 +125,6 @@ func (p *plugin) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if p.settings[AttrAnonymous].Bool() ||
 		username == p.settings[AttrUser].String() && password == p.settings[AttrPassword].Decrypt() {
-		//r.RequestURI = strings.ReplaceAll(r.RequestURI, "/webdav/", "/")
-		//r.URL, _ = r.URL.Parse(r.RequestURI)
 		p.server.ServeHTTP(w, r)
 		return
 	}
