@@ -16,29 +16,42 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package events
+package local_migrations
 
 import (
-	"reflect"
+	"context"
 
-	"github.com/iancoleman/strcase"
+	"github.com/e154/smart-home/adaptors"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/plugins/webdav"
 )
 
-type OwnerType string
-
-const (
-	OwnerUser   = OwnerType("user")
-	OwnerSystem = OwnerType("system")
-)
-
-type Common struct {
-	Owner OwnerType `json:"owner"`
+type MigrationWebdav struct {
+	adaptors *adaptors.Adaptors
 }
 
-func EventName(event interface{}) string {
-	if t := reflect.TypeOf(event); t.Kind() == reflect.Ptr {
-		return strcase.ToSnake(t.Elem().Name())
-	} else {
-		return strcase.ToSnake(t.Name())
+func NewMigrationWebdav(adaptors *adaptors.Adaptors) *MigrationWebdav {
+	return &MigrationWebdav{
+		adaptors: adaptors,
 	}
+}
+
+func (n *MigrationWebdav) Up(ctx context.Context, adaptors *adaptors.Adaptors) error {
+	if adaptors != nil {
+		n.adaptors = adaptors
+	}
+	n.addPlugin("webdav", false, false, false, webdav.Version)
+
+	return nil
+}
+
+func (n *MigrationWebdav) addPlugin(name string, enabled, system, actor bool, version string) (node *m.Plugin) {
+	_ = n.adaptors.Plugin.CreateOrUpdate(context.Background(), &m.Plugin{
+		Name:    name,
+		Version: version,
+		Enabled: enabled,
+		System:  system,
+		Actor:   actor,
+	})
+	return
 }

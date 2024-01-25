@@ -121,7 +121,6 @@ func (a *Api) Start() (err error) {
 
 	a.eventBus.Publish("system/services/api", events.EventServiceStarted{Service: "Api"})
 
-	//return group.Wait()
 	return nil
 }
 
@@ -154,9 +153,6 @@ func (a *Api) registerHandlers() {
 		a.echo.GET("/swagger-ui/*", contentHandler)
 		a.echo.GET("/api.swagger3.yaml", contentHandler)
 	}
-
-	// base api
-	//a.echo.Any("/v1/*", echo.WrapHandler(grpcHandlerFunc(a.grpcServer, mux)))
 
 	wrapper := stub.ServerInterfaceWrapper{
 		Handler: a.controllers,
@@ -313,7 +309,6 @@ func (a *Api) registerHandlers() {
 
 	// static files
 	a.echo.GET("/", echo.WrapHandler(a.controllers.Index(publicAssets.F)))
-	//a.echo.Any("/v1/image/upload", a.echoFilter.Auth(a.controllers.ImageServiceMuxUploadImage)) //Auth
 	a.echo.GET("/public/*", echo.WrapHandler(http.StripPrefix("/", http.FileServer(http.FS(publicAssets.F)))))
 	fileServer := http.FileServer(http.Dir("./data/file_storage"))
 	a.echo.Any("/upload/*", echo.WrapHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -328,13 +323,17 @@ func (a *Api) registerHandlers() {
 		staticServer.ServeHTTP(w, r)
 	})))
 	snapshotServer := http.FileServer(http.Dir("./snapshots"))
-	//a.echo.Any("/v1/backup/upload", a.echo
-	//Filter.Auth(a.controllers.BackupServiceMuxUploadBackup)) //Auth
 	a.echo.GET("/snapshots/*", a.echoFilter.Auth(echo.WrapHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		r.RequestURI = strings.ReplaceAll(r.RequestURI, "/snapshots/", "/")
 		r.URL, _ = r.URL.Parse(r.RequestURI)
 		snapshotServer.ServeHTTP(w, r)
 	}))))
+	// webdav
+	a.echo.Any("/webdav/*", echo.WrapHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		//r.RequestURI = strings.ReplaceAll(r.RequestURI, "/webdav/", "/")
+		//r.URL, _ = r.URL.Parse(r.RequestURI)
+		a.controllers.Webdav(w, r)
+	}))) //todo add auth
 
 	// media
 	a.echo.Any("/stream/:entity_id/channel/:channel/mse", a.echoFilter.Auth(a.controllers.StreamMSE)) //Auth

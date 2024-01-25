@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2023, Filippov Alex
+// Copyright (C) 2024, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -16,29 +16,25 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package events
+package controllers
 
 import (
-	"reflect"
-
-	"github.com/iancoleman/strcase"
+	"net/http"
 )
 
-type OwnerType string
-
-const (
-	OwnerUser   = OwnerType("user")
-	OwnerSystem = OwnerType("system")
-)
-
-type Common struct {
-	Owner OwnerType `json:"owner"`
+// ControllerWebdav ...
+type ControllerWebdav struct {
+	*ControllerCommon
 }
 
-func EventName(event interface{}) string {
-	if t := reflect.TypeOf(event); t.Kind() == reflect.Ptr {
-		return strcase.ToSnake(t.Elem().Name())
-	} else {
-		return strcase.ToSnake(t.Name())
+// NewControllerWebdav ...
+func NewControllerWebdav(common *ControllerCommon) *ControllerWebdav {
+	return &ControllerWebdav{
+		ControllerCommon: common,
 	}
+}
+
+// Webdav ...
+func (c ControllerWebdav) Webdav(w http.ResponseWriter, r *http.Request) error {
+	return c.endpoint.Webdav.Webdav(w, r)
 }

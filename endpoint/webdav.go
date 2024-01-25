@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2023, Filippov Alex
+// Copyright (C) 2024, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -16,29 +16,45 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package events
+package endpoint
 
 import (
-	"reflect"
-
-	"github.com/iancoleman/strcase"
+	"github.com/e154/smart-home/common/apperr"
+	"github.com/pkg/errors"
+	"net/http"
 )
 
-type OwnerType string
-
-const (
-	OwnerUser   = OwnerType("user")
-	OwnerSystem = OwnerType("system")
-)
-
-type Common struct {
-	Owner OwnerType `json:"owner"`
+// WebdavEndpoint ...
+type WebdavEndpoint struct {
+	*CommonEndpoint
 }
 
-func EventName(event interface{}) string {
-	if t := reflect.TypeOf(event); t.Kind() == reflect.Ptr {
-		return strcase.ToSnake(t.Elem().Name())
-	} else {
-		return strcase.ToSnake(t.Name())
+// NewWebdavEndpoint ...
+func NewWebdavEndpoint(common *CommonEndpoint) *WebdavEndpoint {
+	return &WebdavEndpoint{
+		CommonEndpoint: common,
 	}
+}
+
+// Webdav ...
+func (p *WebdavEndpoint) Webdav(w http.ResponseWriter, r *http.Request) (err error) {
+
+	if isLoaded := p.supervisor.PluginIsLoaded("webdav"); !isLoaded {
+		err = errors.Wrap(apperr.ErrInternal, "plugin not loaded")
+		return
+	}
+
+	var pl interface{}
+	if pl, err = p.supervisor.GetPlugin("webdav"); err != nil {
+		return
+	}
+
+	plugin, ok := pl.(http.Handler)
+	if !ok {
+		return
+	}
+
+	plugin.ServeHTTP(w, r)
+
+	return
 }
