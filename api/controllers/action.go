@@ -83,7 +83,7 @@ func (c ControllerAction) ActionServiceGetActionById(ctx echo.Context, id int64)
 func (c ControllerAction) ActionServiceGetActionList(ctx echo.Context, params stub.ActionServiceGetActionListParams) error {
 
 	pagination := c.Pagination(params.Page, params.Limit, params.Sort)
-	items, total, err := c.endpoint.Action.GetList(ctx.Request().Context(), pagination)
+	items, total, err := c.endpoint.Action.GetList(ctx.Request().Context(), pagination, params.Ids)
 	if err != nil {
 		return c.ERROR(ctx, err)
 	}

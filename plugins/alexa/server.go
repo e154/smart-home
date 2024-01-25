@@ -70,10 +70,9 @@ func NewServer(adaptors *adaptors.Adaptors,
 // Start ...
 func (s *Server) Start() {
 
-	if s.isStarted.Load() {
+	if !s.isStarted.CompareAndSwap(false, true) {
 		return
 	}
-	s.isStarted.Store(true)
 
 	s.init()
 
@@ -119,10 +118,9 @@ func (s *Server) init() {
 
 // Stop ...
 func (s *Server) Stop() {
-	if !s.isStarted.Load() {
+	if !s.isStarted.CompareAndSwap(true, false) {
 		return
 	}
-	s.isStarted.Store(false)
 
 	//todo fix
 	//s.gate.SetAlexaApiEngine(nil)

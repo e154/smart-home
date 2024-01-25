@@ -19,6 +19,8 @@
 package sensor
 
 import (
+	"github.com/pkg/errors"
+
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/supervisor"
@@ -26,7 +28,7 @@ import (
 
 // Actor ...
 type Actor struct {
-	supervisor.BaseActor
+	*supervisor.BaseActor
 	actionPool chan events.EventCallEntityAction
 }
 
@@ -61,27 +63,9 @@ func (e *Actor) Spawn() {
 // SetState ...
 func (e *Actor) SetState(params supervisor.EntityStateParams) error {
 
-	oldState := e.GetEventState()
-
-	e.Now(oldState)
-
-	if params.NewState != nil {
-		state := e.States[*params.NewState]
-		e.State = &state
-		e.State.ImageUrl = state.ImageUrl
-	}
-
-	e.AttrMu.Lock()
-	_, _ = e.Attrs.Deserialize(params.AttributeValues)
-	e.AttrMu.Unlock()
-
-	go e.SaveState(events.EventStateChanged{
-		StorageSave: params.StorageSave,
-		PluginName:  e.Id.PluginName(),
-		EntityId:    e.Id,
-		OldState:    oldState,
-		NewState:    e.GetEventState(),
-	})
+	e.SetActorState(params.NewState)
+	e.DeserializeAttr(params.AttributeValues)
+	e.SaveState(false, params.StorageSave)
 
 	return nil
 }
@@ -91,15 +75,17 @@ func (e *Actor) addAction(event events.EventCallEntityAction) {
 }
 
 func (e *Actor) runAction(msg events.EventCallEntityAction) {
-	action, ok := e.Actions[msg.ActionName]
-	if !ok {
-		log.Warnf("action '%s' not found", msg.ActionName)
-		return
+	if action, ok := e.Actions[msg.ActionName]; ok {
+		if action.ScriptEngine != nil && action.ScriptEngine.Engine() != nil {
+			if _, err := action.ScriptEngine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
+				log.Error(errors.Wrapf(err, "entity id: %s ", e.Id).Error())
+			}
+			return
+		}
 	}
-	if action.ScriptEngine.Engine() == nil {
-		return
-	}
-	if _, err := action.ScriptEngine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
-		log.Error(err.Error())
+	if e.ScriptsEngine != nil && e.ScriptsEngine.Engine() != nil {
+		if _, err := e.ScriptsEngine.AssertFunction(FuncEntityAction, msg.EntityId, msg.ActionName, msg.Args); err != nil {
+			log.Error(errors.Wrapf(err, "entity id: %s ", e.Id).Error())
+		}
 	}
 }

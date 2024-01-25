@@ -224,12 +224,15 @@ func (n Scripts) Delete(ctx context.Context, scriptId int64) (err error) {
 }
 
 // List ...
-func (n *Scripts) List(ctx context.Context, limit, offset int, orderBy, sort string, query *string) (list []*Script, total int64, err error) {
+func (n *Scripts) List(ctx context.Context, limit, offset int, orderBy, sort string, query *string, ids *[]uint64) (list []*Script, total int64, err error) {
 
 	list = make([]*Script, 0)
 	q := n.Db.WithContext(ctx).Model(Script{})
 	if query != nil {
 		q = q.Where("name LIKE ? or source LIKE ?", "%"+*query+"%", "%"+*query+"%")
+	}
+	if ids != nil {
+		q = q.Where("id IN (?)", *ids)
 	}
 	if err = q.Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrScriptList, err.Error())

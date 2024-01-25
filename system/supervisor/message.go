@@ -19,15 +19,15 @@
 package supervisor
 
 import (
+	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
 )
 
 // MessageStateChanged -> supervisor
 type MessageStateChanged struct {
 	StorageSave bool
-	OldState    bus.EventEntityState
-	NewState    bus.EventEntityState
+	OldState    events.EventEntityState
+	NewState    events.EventEntityState
 }
 
 // EntityStateParams -> supervisor

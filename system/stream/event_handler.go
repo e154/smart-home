@@ -27,11 +27,11 @@ import (
 
 type eventHandler struct {
 	broadcast     func(query string, message []byte)
-	directMessage func(userID int64, query string, message []byte)
+	directMessage func(userID int64, sessionID string, query string, message []byte)
 }
 
 func NewEventHandler(broadcast func(query string, message []byte),
-	directMessage func(userID int64, query string, message []byte)) *eventHandler {
+	directMessage func(userID int64, sessionID string, query string, message []byte)) *eventHandler {
 	return &eventHandler{
 		broadcast:     broadcast,
 		directMessage: directMessage,
@@ -62,7 +62,7 @@ func (e *eventHandler) eventHandler(_ string, message interface{}) {
 	case webpush.EventNewWebPushPublicKey:
 		go e.eventNewWebPushPublicKey(v)
 	case events.EventDirectMessage:
-		go e.eventDirectMessage(v.UserID, v.Query, v.Message)
+		go e.eventDirectMessage(v.UserID, v.SessionID, v.Query, v.Message)
 
 	// plugins
 	case events.EventPluginLoaded:
@@ -109,13 +109,15 @@ func (e *eventHandler) eventHandler(_ string, message interface{}) {
 		go e.event(message)
 	case events.EventUpdatedVariableModel:
 		go e.event(message)
+	default:
+
 	}
 }
 
 func (e *eventHandler) eventNewWebPushPublicKey(event webpush.EventNewWebPushPublicKey) {
 	b, _ := json.Marshal(event)
 	if event.UserID != 0 {
-		e.directMessage(event.UserID, "event_new_webpush_public_key", b)
+		e.directMessage(event.UserID, event.SessionID, "event_new_webpush_public_key", b)
 		return
 	}
 	e.broadcast("event_new_webpush_public_key", b)
@@ -127,9 +129,9 @@ func (e *eventHandler) eventStateChangedHandler(msg interface{}) {
 	e.broadcast("state_changed", b)
 }
 
-func (e *eventHandler) eventDirectMessage(userID int64, query string, msg interface{}) {
+func (e *eventHandler) eventDirectMessage(userID int64, sessionID string, query string, msg interface{}) {
 	b, _ := json.Marshal(msg)
-	e.directMessage(userID, query, b)
+	e.directMessage(userID, sessionID, query, b)
 }
 
 func (e *eventHandler) event(msg interface{}) {

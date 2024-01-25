@@ -20,15 +20,13 @@ package scripts
 
 import (
 	"fmt"
-	"testing"
-	"time"
-
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/jinzhu/copier"
 	. "github.com/smartystreets/goconvey/convey"
+	"testing"
 )
 
 func Test11(t *testing.T) {
@@ -118,7 +116,6 @@ func Test11(t *testing.T) {
 			_, err = engine.Do()
 			So(err, ShouldBeNil)
 
-			time.Sleep(time.Second * 2)
 		})
 		if err != nil {
 			fmt.Println(err.Error())

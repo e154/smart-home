@@ -33,8 +33,9 @@ import {ItemPayloadJoystick} from "@/views/Dashboard/card_items/joystick/types";
 import {ItemPayloadVideo} from "@/views/Dashboard/card_items/video/types";
 import {ItemPayloadEntityStorage} from "@/views/Dashboard/card_items/entity_storage/types";
 import {prepareUrl} from "@/utils/serverId";
+import {ItemPayloadTiles} from "@/views/Dashboard/card_items/tiles/types";
 
-const {bus} = useBus()
+const {emit} = useBus()
 
 export interface ButtonAction {
   entityId: string;
@@ -82,6 +83,13 @@ export interface CompareProp {
   entityId?: string;
 }
 
+export interface KeysProp {
+  keys?: Map<number, string>;
+  entity?: { id?: string };
+  entityId?: string;
+  action?: string;
+}
+
 export interface ItemPayloadImage {
   attrField?: string;
   image?: ApiImage;
@@ -111,6 +119,7 @@ export interface ItemPayload {
   joystick?: ItemPayloadJoystick;
   video?: ItemPayloadVideo;
   entityStorage?: ItemPayloadEntityStorage;
+  tiles?: ItemPayloadTiles;
 }
 
 export interface ItemParams {
@@ -122,6 +131,7 @@ export interface ItemParams {
   transform: string;
   showOn: CompareProp[];
   hideOn: CompareProp[];
+  keysCapture?: KeysProp[];
   asButton: boolean;
   buttonActions: ButtonAction[];
 }
@@ -235,7 +245,7 @@ export class CardItem {
       if (!this.payload.text) {
         this.payload.text = {
           items: [],
-          default_text: 'default text',
+          default_text: '<div>default text</div>',
           current_text: ''
         } as ItemPayloadText;
       }
@@ -297,6 +307,17 @@ export class CardItem {
       }
       if (!this.payload.entityStorage) {
         this.payload.entityStorage = {} as ItemPayloadEntityStorage;
+      }
+      if (!this.payload.tiles) {
+        this.payload.tiles = {
+          items: [],
+          defaultImage: undefined,
+          columns: 5,
+          rows: 5,
+          tileHeight: 25,
+          tileWidth: 25,
+          attribute: '',
+        } as ItemPayloadTiles;
       }
     }
   }
@@ -363,7 +384,7 @@ export class CardItem {
         payload: {
           text: {
             items: [],
-            default_text: 'default text',
+            default_text: '<div>default text</div>',
             current_text: ''
           } as ItemPayloadText
         },
@@ -638,6 +659,7 @@ export class Card {
   hidden: boolean
   showOn: CompareProp[] = [];
   hideOn: CompareProp[] = [];
+  keysCapture: KeysProp[] = [];
 
   selectedItem = -1;
 
@@ -674,6 +696,9 @@ export class Card {
       }
       if (payload.hideOn) {
         this.hideOn = payload.hideOn;
+      }
+      if (payload.keysCapture) {
+        this.keysCapture = payload.keysCapture;
       }
     }
 
@@ -759,9 +784,10 @@ export class Card {
       items.push(this.items[index].serialize());
     }
 
-    const payload = btoa(unescape(encodeURIComponent(JSON.stringify({
+    const payload = btoa(unescape(encodeURIComponent(serializedObject({
       showOn: this.showOn,
       hideOn: this.hideOn,
+      keysCapture: this.keysCapture,
     }))));
     const card = {
       id: this.id,
@@ -858,7 +884,7 @@ export class Card {
 
     this.updateItemList()
 
-    bus.emit('selected_card_item', -1);
+    emit('selected_card_item', -1);
   }
 
   async copyItem(index: number) {
@@ -886,6 +912,36 @@ export class Card {
 
   sortItems() {
     this.items.sort(sortCardItems);
+  }
+
+  sortCardItemUp(item: CardItem, index: number) {
+    if (!this.items[index - 1]) {
+      return;
+    }
+
+    const rows = [this.items[index - 1], this.items[index]];
+    this.items.splice(index - 1, 2, rows[1], rows[0]);
+
+    let counter = 0
+    for (const index in this.items) {
+      this.items[index].weight = counter;
+      counter++;
+    }
+  }
+
+  sortCardItemDown(item: CardItem, index: number) {
+    if (!this.items[index + 1]) {
+      return;
+    }
+
+    const rows = [this.items[index], this.items[index + 1]];
+    this.items.splice(index, 2, rows[1], rows[0]);
+
+    let counter = 0
+    for (const index in this.items) {
+      this.items[index].weight = counter;
+      counter++;
+    }
   }
 
   // ---------------------------------
@@ -961,7 +1017,6 @@ export class Tab {
   cards: Card[] = [];
   columnWidth: number;
   dashboardId: number;
-  dragEnabled: boolean;
   enabled: boolean;
   entities: Map<string, ApiEntity>;
   gap: boolean;
@@ -975,7 +1030,6 @@ export class Tab {
     this.cards = [];
     this.columnWidth = tab.columnWidth;
     this.dashboardId = tab.dashboardId;
-    this.dragEnabled = tab.dragEnabled;
     this.enabled = tab.enabled;
     this.entities = tab.entities;
     this.gap = tab.gap;
@@ -997,7 +1051,7 @@ export class Tab {
       icon: '',
       columnWidth: columnWidth,
       gap: false,
-      background: 'inherit',
+      background: '',
       enabled: true,
       weight: weight,
       dashboardId: boardId
@@ -1036,7 +1090,6 @@ export class Tab {
       background: this.background,
       icon: this.icon,
       enabled: this.enabled,
-      dragEnabled: this.dragEnabled,
       weight: this.weight,
       dashboardId: this.dashboardId,
       cards: cards,
@@ -1050,6 +1103,39 @@ export class Tab {
 
   sortCards() {
     this.cards.sort(sortCards);
+  }
+
+  sortCardUp(card: Card, index: number) {
+    if (!this.cards[index - 1]) {
+      return;
+    }
+
+    const rows = [this.cards[index - 1], this.cards[index]];
+    this.cards.splice(index - 1, 2, rows[1], rows[0]);
+
+    let counter = 0
+    for (const index in this.cards) {
+      this.cards[index].weight = counter;
+      this.cards[index].update();
+      counter++;
+    }
+
+  }
+
+  sortCardDown(card: Card, index: number) {
+    if (!this.cards[index + 1]) {
+      return;
+    }
+
+    const rows = [this.cards[index], this.cards[index + 1]];
+    this.cards.splice(index, 2, rows[1], rows[0]);
+
+    let counter = 0
+    for (const index in this.cards) {
+      this.cards[index].weight = counter;
+      this.cards[index].update();
+      counter++;
+    }
   }
 
   get cards2(): Card[] {
@@ -1077,8 +1163,7 @@ export class Tab {
 export class Core {
   current: ApiDashboard = {} as ApiDashboard;
 
-  activeTab = 0; // index
-  currentTabId: number | undefined;
+  private _activeTabIdx = 0; // index
 
   activeCard: number | undefined = undefined; // index
   currentCardId: number | undefined;
@@ -1095,16 +1180,10 @@ export class Core {
   currentBoard(current: ApiDashboard) {
     this.current = current;
     this.tabs = [];
-    this.activeTab = 0;
-    this.currentTabId = undefined;
+    this._activeTabIdx = 0;
     if (current.tabs && current.tabs.length > 0) {
       for (const index in current.tabs) {
         this.tabs.push(new Tab(current.tabs[index]));
-      }
-      this.currentTabId = this.tabs[this.activeTab].id;
-
-      if (this.tabs[this.activeTab].cards.length > 0) {
-        this.activeCard = 0;
       }
     }
 
@@ -1122,7 +1201,15 @@ export class Core {
       }
     }
 
+    if (!this.getActiveTab) {
+      return
+    }
+
     this.sortTabs();
+
+    if (this.getActiveTab.cards.length > 0) {
+      this.onSelectedCard(this.getActiveTab.cards[0].id)
+    }
 
     this.updateCurrentTab();
   }
@@ -1204,106 +1291,144 @@ export class Core {
   // ---------------------------------
   // tabs
   // ---------------------------------
+
+  set activeTabIdx(idx: number) {
+    if (this._activeTabIdx == idx) {
+      return
+    }
+    this._activeTabIdx = idx;
+  }
+  get activeTabIdx(): number {
+    return this._activeTabIdx;
+  }
+  get getActiveTab(): Tab | undefined {
+    if (this._activeTabIdx === undefined || this._activeTabIdx < 0) {
+      this._activeTabIdx = 0
+    }
+    return this.tabs[this._activeTabIdx] || undefined;
+  }
+
+  selectTabInMenu(idx: number) {
+      if (this._activeTabIdx === idx) return;
+      this._activeTabIdx = idx;
+      this.updateCurrentTab();
+  }
+
   async createTab() {
     const tab = await Tab.createNew(this.current.id, 'NEW_TAB' + (this.tabs.length + 1), 300, this.tabs.length);
     this.tabs.push(tab);
-    this.activeTab = (this.tabs.length - 1);
-    this.currentTabId = tab.id;
+    this._activeTabIdx = (this.tabs.length - 1);
     this.currentCardId = undefined;
+    this.activeCard = -1
   }
 
   async updateTab() {
-    if (this.activeTab < 0) {
+    const tab = this.getActiveTab
+    if (!tab) {
       return;
     }
 
-    bus.emit('update_tab', this.currentTabId)
-    if (this.tabs[this.activeTab]) {
-      return this.tabs[this.activeTab].update();
+    emit('update_tab', tab.id)
+    if (this.getActiveTab) {
+      return this.getActiveTab.update();
     }
   }
 
   async removeTab() {
-    if (!this.currentTabId) {
+    const tab = this.getActiveTab
+    if (!tab) {
       return;
     }
+
+    this.tabs.splice(this._activeTabIdx, 1);
+    this._activeTabIdx = this.tabs.length - 1;
 
     this.currentCardId = undefined;
     this.activeCard = undefined;
 
-    bus.emit('remove_tab', this.currentTabId)
-    return api.v1.dashboardTabServiceDeleteDashboardTab(this.currentTabId);
+    this.updateCurrentTab();
+
+    return api.v1.dashboardTabServiceDeleteDashboardTab(tab.id);
   }
 
   updateCurrentTab() {
-    if (!this.tabs.length) {
-      this.currentTabId = undefined;
+    const tab = this.getActiveTab
+    if (!tab) {
       return;
     }
 
-    this.currentTabId = this.tabs[this.activeTab].id;
-    console.log(`select tab id:${this.currentTabId}`);
-    // this.activeCard = -1
-    // this.currentCardId = undefined
-
-    bus.emit('update_tab', this.currentTabId)
+    console.log(`select tab id:${tab.id}`);
+    emit('update_tab', tab.id)
   }
 
   // ---------------------------------
   // cards
   // ---------------------------------
   onSelectedCard(id: number) {
-    if (this.activeTab < 0) {
+    const tab = this.getActiveTab
+    if (!tab) {
       return;
     }
+
     // console.log(`select card id:${id}`);
-    for (const index in this.tabs[this.activeTab].cards) {
-      const cardId = this.tabs[this.activeTab].cards[index].id;
-      if (cardId === id) {
+    for (const index in tab.cards) {
+      const cardId = tab.cards[index].id;
+      if (cardId == id) {
         this.activeCard = index as unknown as number;
         this.currentCardId = id;
-        this.tabs[this.activeTab].cards[index].active = true
+        tab.cards[index].active = true
       } else {
         // console.log(`disable id:${cardId}`)
-        this.tabs[this.activeTab].cards[index].active = false
+        tab.cards[index].active = false
       }
     }
   }
 
   async createCard() {
-    if (this.activeTab < 0 || !this.currentTabId) {
+    const tab = this.getActiveTab
+    if (!tab) {
       return;
     }
 
     const card = await Card.createNew(
-      'new card' + this.tabs[this.activeTab].cards.length,
+      'new card' + tab.cards.length,
       randColor(),
-      this.tabs[this.activeTab].columnWidth,
+      tab.columnWidth,
       getSize(),
-      this.tabs[this.activeTab].id,
-      10 * this.tabs[this.activeTab].cards.length || 0
+      tab.id,
+      10 * tab.cards.length || 0
     );
 
-    this.tabs[this.activeTab].cards.push(card);
-    this.activeCard = this.tabs[this.activeTab].cards.length - 1;
+    tab.cards.push(card);
+    this.activeCard = tab.cards.length - 1;
     this.currentCardId = card.id;
 
-    bus.emit('update_tab', this.currentTabId);
+    emit('update_tab', tab.id);
   }
 
   async updateCard() {
-    if (this.activeTab < 0 || this.activeCard == undefined) {
+    const tab = this.getActiveTab
+    if (!tab) {
+      return;
+    }
+
+    if (this.activeCard == undefined) {
       return;
     }
 
     // move to direct call
-    // bus.emit('update_tab', this.currentTabId);
+    // emit('update_tab', this.currentTabId);
 
-    return this.tabs[this.activeTab].cards[this.activeCard].update();
+    return tab.cards[this.activeCard].update();
   }
 
   async removeCard() {
-    if (this.activeTab < 0 || !this.currentCardId) {
+    const tab = this.getActiveTab
+    if (!tab) {
+      return;
+    }
+
+    if (!this.currentCardId) {
       return;
     }
 
@@ -1311,9 +1436,9 @@ export class Core {
 
     const {data} = await api.v1.dashboardCardServiceDeleteDashboardCard(this.currentCardId);
     if (data) {
-      for (const index: number in this.tabs[this.activeTab].cards) {
-        if (this.tabs[this.activeTab].cards[index].id == this.currentCardId) {
-          this.tabs[this.activeTab].cards.splice(index, 1);
+      for (const index: number in tab.cards) {
+        if (tab.cards[index].id == this.currentCardId) {
+          tab.cards.splice(index, 1);
         }
       }
 
@@ -1321,22 +1446,24 @@ export class Core {
       this.activeCard = undefined;
     }
 
-    if (this.currentTabId) {
-      bus.emit('update_tab', this.currentTabId);
-    }
+    emit('update_tab', tab.id);
   }
 
   async importCard(card: ApiDashboardCard) {
-    if (this.activeTab < 0 || !this.currentTabId) {
+    const tab = this.getActiveTab
+    if (!tab) {
       return;
     }
-    card.dashboardTabId = this.currentTabId;
+
+    card.dashboardTabId = tab.id;
+    card.id = undefined
+
     const {data} = await api.v1.dashboardCardServiceImportDashboardCard(card);
     if (data) {
-      this.tabs[this.activeTab].cards.push(new Card(data));
+      this.getActiveTab.cards.push(new Card(data));
     }
 
-    bus.emit('update_tab', this.currentTabId);
+    emit('update_tab', tab.id);
 
     return data;
   }
@@ -1345,28 +1472,38 @@ export class Core {
   // Card item
   // ---------------------------------
   async createCardItem() {
-    if (this.activeTab < 0 || this.activeCard == undefined) {
+    const tab = this.getActiveTab
+    if (!tab) {
       return;
     }
 
-    const card = await this.tabs[this.activeTab].cards[this.activeCard];
+    if (this.activeCard == undefined) {
+      return;
+    }
+
+    const card = await tab.cards[this.activeCard];
     if (!card) {
       return;
     }
 
-    await this.tabs[this.activeTab].cards[this.activeCard].createCardItem();
+    await tab.cards[this.activeCard].createCardItem();
 
-    // bus.emit('update_tab', this.currentTabId);
+    // emit('update_tab', this.currentTabId);
   }
 
   async removeCardItem(index: number) {
-    if (this.activeTab < 0 || this.activeCard == undefined) {
+    const tab = this.getActiveTab
+    if (!tab) {
       return;
     }
 
-    await this.tabs[this.activeTab].cards[this.activeCard].removeItem(index);
+    if (this.activeCard == undefined) {
+      return;
+    }
 
-    // bus.emit('update_tab', this.currentTabId);
+    await tab.cards[this.activeCard].removeItem(index);
+
+    // emit('update_tab', this.currentTabId);
   }
 } // \Core
 
@@ -1436,6 +1573,12 @@ export function serializedObject(obj: any): string {
     if (typeof value === 'function') {
       return value.toString(); // Convert function to string
     }
+    if(value instanceof Map) {
+      return {
+        dataType: 'Map',
+        value: Array.from(value.entries()), // or with spread: value: [...value]
+      };
+    }
     return value;
   });
 }
@@ -1444,6 +1587,11 @@ export function parsedObject(str): any {
   return JSON.parse(str, function(key, value) {
     if (typeof value === 'string' && value.indexOf('function') === 0) {
       return new Function('return ' + value)(); // Create a function using Function constructor
+    }
+    if(typeof value === 'object' && value !== null) {
+      if (value.dataType === 'Map') {
+        return new Map(value.value);
+      }
     }
     return value;
   });

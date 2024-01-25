@@ -257,6 +257,19 @@ skillOnIntent = ->
 				lastVal = args
 			})
 
+			// common
+			// ------------------------------------------------
+			ch := make(chan alexa.EventAlexaAction)
+			defer close(ch)
+			fn := func(_ string, m interface{}) {
+				switch v := m.(type) {
+				case alexa.EventAlexaAction:
+					ch <- v
+				}
+			}
+			eventBus.Subscribe(alexa.TopicPluginAlexa, fn)
+			defer eventBus.Unsubscribe(alexa.TopicPluginAlexa, fn)
+
 			// add scripts
 			// ------------------------------------------------
 
@@ -286,7 +299,7 @@ skillOnIntent = ->
 			// ------------------------------------------------
 
 			supervisor.Start(context.Background())
-			WaitSupervisor(eventBus)
+			WaitSupervisor(eventBus, time.Second)
 
 			// ------------------------------------------------
 			plugin, err := supervisor.GetPlugin("alexa")
@@ -310,16 +323,6 @@ skillOnIntent = ->
 
 			t.Run("on intent", func(t *testing.T) {
 
-				ch := make(chan alexa.EventAlexaAction, 2)
-				fn := func(_ string, m interface{}) {
-					switch v := m.(type) {
-					case alexa.EventAlexaAction:
-						ch <- v
-					}
-				}
-				eventBus.Subscribe(alexa.TopicPluginAlexa, fn)
-				defer eventBus.Unsubscribe(alexa.TopicPluginAlexa, fn)
-
 				req := &alexa.Request{}
 				err = json.Unmarshal([]byte(intentRequest), req)
 				ctx.So(err, ShouldBeNil)
@@ -329,15 +332,9 @@ skillOnIntent = ->
 
 				ctx.So(lastVal, ShouldEqual, "kitchen_on")
 
-				ticker := time.NewTimer(time.Second * 2)
-				defer ticker.Stop()
-
-				var msg alexa.EventAlexaAction
-				select {
-				case v := <-ch:
-					msg = v
-				case <-ticker.C:
-				}
+				// wait message
+				msg, ok := WaitT[alexa.EventAlexaAction](time.Second*2, ch)
+				ctx.So(ok, ShouldBeTrue)
 
 				ctx.So(msg.Payload, ShouldEqual, "kitchen_on")
 				ctx.So(msg.SkillId, ShouldEqual, 1)

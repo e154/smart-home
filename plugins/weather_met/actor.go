@@ -20,10 +20,10 @@ package weather_met
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/common"
 	"time"
 
 	"github.com/e154/smart-home/common/astronomics/suncalc"
-	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/weather"
 	"github.com/e154/smart-home/system/supervisor"
@@ -31,12 +31,11 @@ import (
 
 // Actor ...
 type Actor struct {
-	supervisor.BaseActor
+	*supervisor.BaseActor
 	Zone
-	actionPool chan events.EventCallEntityAction
-	weather    *WeatherMet
-	winter     bool
-	theme      string
+	weather *WeatherMet
+	winter  bool
+	theme   string
 }
 
 // NewActor ...
@@ -44,9 +43,8 @@ func NewActor(entity *m.Entity,
 	service supervisor.Service) *Actor {
 
 	actor := &Actor{
-		BaseActor:  supervisor.NewBaseActor(entity, service),
-		actionPool: make(chan events.EventCallEntityAction, 1000),
-		weather:    NewWeatherMet(service.Adaptors(), service.Crawler()),
+		BaseActor: supervisor.NewBaseActor(entity, service),
+		weather:   NewWeatherMet(service.Adaptors(), service.Crawler()),
 	}
 
 	if actor.Attrs == nil {
@@ -75,13 +73,6 @@ func NewActor(entity *m.Entity,
 		actor.winter = winter.Bool()
 	}
 
-	// action worker
-	go func() {
-		for msg := range actor.actionPool {
-			actor.runAction(msg)
-		}
-	}()
-
 	return actor
 }
 
@@ -99,41 +90,13 @@ func (e *Actor) SetState(params supervisor.EntityStateParams) error {
 	return nil
 }
 
-func (e *Actor) addAction(event events.EventCallEntityAction) {
-	e.actionPool <- event
-}
-
-func (e *Actor) runAction(msg events.EventCallEntityAction) {
-	action, ok := e.Actions[msg.ActionName]
-	if !ok {
-		log.Warnf("action %s not found", msg.ActionName)
-		return
-	}
-	if action.ScriptEngine.Engine() == nil {
-		return
-	}
-	if _, err := action.ScriptEngine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
-		log.Error(err.Error())
-	}
-}
-
 func (e *Actor) update() {
-
-	oldState := e.GetEventState()
-
-	e.Now(oldState)
 
 	if !e.updateForecast() {
 		return
 	}
 
-	go e.SaveState(events.EventStateChanged{
-		PluginName:  e.Id.PluginName(),
-		EntityId:    e.Id,
-		OldState:    oldState,
-		NewState:    e.GetEventState(),
-		StorageSave: true,
-	})
+	e.SaveState(false, true)
 
 }
 
@@ -157,9 +120,9 @@ func (e *Actor) updateForecast() (changed bool) {
 	var night = suncalc.IsNight(sunrisePos)
 
 	if val, ok := e.Attrs[weather.AttrWeatherMain]; ok {
-		state := e.States[val.String()]
-		e.State = &state
-		e.State.ImageUrl = weather.GetImagePath(state.Name, e.theme, night, e.winter)
+		e.SetActorState(common.String(val.String()))
+		e.SetActorStateImage(weather.GetImagePath(val.String(), e.theme, night, e.winter), nil)
+
 	}
 
 	for i := 1; i < 6; i++ {

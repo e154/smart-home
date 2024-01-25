@@ -64,7 +64,7 @@ func (a *AuthEndpoint) SignIn(ctx context.Context, email, password string, ip st
 		return
 	}
 
-	if accessToken, err = a.jwtManager.Generate(user); err != nil {
+	if accessToken, err = a.jwtManager.Generate(user, false); err != nil {
 		err = errors.Wrap(apperr.ErrUnauthorized, err.Error())
 		return
 	}

@@ -30,7 +30,6 @@ import (
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/scripts"
 )
 
@@ -42,7 +41,6 @@ type BaseActor struct {
 	Name              string
 	Description       string
 	EntityType        string
-	State             *ActorState
 	Area              *m.Area
 	Metric            []*m.Metric
 	Hidden            bool
@@ -50,7 +48,7 @@ type BaseActor struct {
 	Attrs             m.Attributes
 	Actions           map[string]ActorAction
 	States            map[string]ActorState
-	ScriptEngines     []*scripts.EngineWatcher
+	ScriptsEngine     *scripts.EnginesWatcher
 	Icon              *string
 	ImageUrl          *string
 	UnitOfMeasurement string
@@ -59,24 +57,26 @@ type BaseActor struct {
 	AutoLoad          bool
 	LastChanged       *time.Time
 	LastUpdated       *time.Time
+	actorStateMu      *sync.RWMutex
+	state             *ActorState
 	SettingsMu        *sync.RWMutex
 	Setts             m.Attributes
 	Service           Service
-	currentStateMu    *sync.RWMutex
-	currentState      *bus.EventEntityState
+	stateMu           *sync.RWMutex
+	currentState      *events.EventEntityState
+	oldState          *events.EventEntityState
 }
 
 // NewBaseActor ...
 func NewBaseActor(entity *m.Entity,
-	service Service) BaseActor {
-	actor := BaseActor{
+	service Service) *BaseActor {
+	actor := &BaseActor{
 		Service:           service,
 		Id:                common.EntityId(fmt.Sprintf("%s.%s", entity.PluginName, entity.Id.Name())),
 		Name:              entity.Id.Name(),
 		Description:       entity.Description,
 		EntityType:        entity.PluginName,
 		ParentId:          entity.ParentId,
-		State:             nil,
 		Area:              entity.Area,
 		Hidden:            entity.Hidden,
 		Actions:           make(map[string]ActorAction),
@@ -89,11 +89,13 @@ func NewBaseActor(entity *m.Entity,
 		LastChanged:       nil,
 		LastUpdated:       nil,
 		AutoLoad:          entity.AutoLoad,
+		actorStateMu:      &sync.RWMutex{},
+		state:             nil,
 		AttrMu:            &sync.RWMutex{},
 		Attrs:             entity.Attributes.Copy(),
 		SettingsMu:        &sync.RWMutex{},
 		Setts:             entity.Settings,
-		currentStateMu:    &sync.RWMutex{},
+		stateMu:           &sync.RWMutex{},
 	}
 
 	// Image
@@ -105,7 +107,7 @@ func NewBaseActor(entity *m.Entity,
 	actor.Metric = make([]*m.Metric, len(entity.Metrics))
 	copy(actor.Metric, entity.Metrics)
 
-	// Items
+	// States
 	for _, s := range entity.States {
 		state := ActorState{
 			Name:        s.Name,
@@ -130,14 +132,17 @@ func NewBaseActor(entity *m.Entity,
 		if a.Script != nil {
 			if action.ScriptEngine, err = service.ScriptService().NewEngineWatcher(a.Script); err != nil {
 				log.Error(err.Error())
+				continue
 			}
-			action.ScriptEngine.Spawn(func(engine *scripts.Engine) {
+			action.ScriptEngine.BeforeSpawn(func(engine *scripts.Engine) {
 				if _, err = engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id)); err != nil {
-					log.Error(err.Error())
+					log.Errorf("script id: %d, %s", a.Script.Id, err.Error())
 				}
-				if _, err = engine.Do(); err != nil {
-					log.Error(err.Error())
-				}
+			})
+			action.ScriptEngine.Spawn(func(engine *scripts.Engine) {
+				//if _, err = engine.Do(); err != nil {
+				//	log.Errorf("script id: %d, %s", a.Script.Id, err.Error())
+				//}
 			})
 		}
 
@@ -148,34 +153,29 @@ func NewBaseActor(entity *m.Entity,
 	}
 
 	if entity.Scripts != nil {
-		for _, script := range entity.Scripts {
-			var scriptEngine *scripts.EngineWatcher
-			if scriptEngine, err = service.ScriptService().NewEngineWatcher(script); err == nil {
-				scriptEngine.Spawn(func(engine *scripts.Engine) {
-					if _, err = engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id)); err != nil {
-						log.Error(err.Error())
-					}
-					if _, err = engine.Do(); err != nil {
-						log.Error(err.Error())
-					}
-				})
-			}
-			go func(se *scripts.EngineWatcher) {
-				if _, err = se.Engine().AssertFunction("init"); err != nil {
-					log.Error(err.Error())
-				}
-			}(scriptEngine)
-			actor.ScriptEngines = append(actor.ScriptEngines, scriptEngine)
+		if actor.ScriptsEngine, err = service.ScriptService().NewEnginesWatcher(entity.Scripts); err != nil {
+			log.Error(err.Error())
 		}
+		actor.ScriptsEngine.BeforeSpawn(func(engine *scripts.Engine) {
+			if _, err = engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id)); err != nil {
+				log.Error(err.Error())
+			}
+		})
+		actor.ScriptsEngine.Spawn(func(engine *scripts.Engine) {
+			if _, err := engine.AssertFunction("init"); err != nil {
+				log.Error(err.Error())
+			}
+		})
 	}
+
+	// restore state
+	actor.RestoreState(entity)
 
 	return actor
 }
 
 func (e *BaseActor) StopWatchers() {
-	for _, engine := range e.ScriptEngines {
-		engine.Stop()
-	}
+	e.ScriptsEngine.Stop()
 	for _, a := range e.Actions {
 		if a.ScriptEngine != nil {
 			a.ScriptEngine.Stop()
@@ -191,6 +191,31 @@ func (e *BaseActor) Metrics() []*m.Metric {
 // SetState ...
 func (e *BaseActor) SetState(EntityStateParams) error {
 	return apperr.ErrUnimplemented
+}
+
+// SetActorState ...
+func (e *BaseActor) SetActorState(name *string) {
+	if name == nil {
+		return
+	}
+	e.actorStateLock()
+	e.actorStateMu.Lock()
+	defer e.actorStateMu.Unlock()
+	if state, ok := e.States[*name]; ok {
+		e.state = &state
+	}
+}
+
+// SetActorStateImage ...
+func (e *BaseActor) SetActorStateImage(imageUrl, icon *string) {
+	e.actorStateLock()
+	e.actorStateMu.Lock()
+	defer e.actorStateMu.Unlock()
+	if e.state == nil {
+		return
+	}
+	e.state.ImageUrl = imageUrl
+	e.state.Icon = icon
 }
 
 // Attributes ...
@@ -218,7 +243,7 @@ func (e *BaseActor) Info() (info ActorInfo) {
 		Description:       e.Description,
 		Hidde:             e.Hidden,
 		DependsOn:         nil,
-		State:             e.State,
+		State:             e.state,
 		ImageUrl:          e.ImageUrl,
 		Icon:              e.Icon,
 		Area:              e.Area,
@@ -235,7 +260,7 @@ func (e *BaseActor) Info() (info ActorInfo) {
 }
 
 // Now ...
-func (e *BaseActor) Now(oldState bus.EventEntityState) time.Time {
+func (e *BaseActor) Now(oldState events.EventEntityState) time.Time {
 	now := time.Now()
 	e.LastUpdated = common.Time(now)
 
@@ -272,34 +297,51 @@ func (e *BaseActor) attrLock() {
 	}
 }
 
+func (e *BaseActor) actorStateLock() {
+	if e.actorStateMu == nil {
+		e.actorStateMu = &sync.RWMutex{}
+	}
+}
+
 func (e *BaseActor) settingsLock() {
 	if e.SettingsMu == nil { //todo: check race condition
 		e.SettingsMu = &sync.RWMutex{}
 	}
 }
 
-func (e *BaseActor) GetCurrentState() *bus.EventEntityState {
-	e.currentStateMu.RLock()
-	defer e.currentStateMu.RUnlock()
+func (e *BaseActor) GetCurrentState() *events.EventEntityState {
+	e.stateMu.RLock()
+	defer e.stateMu.RUnlock()
+	if e.currentState != nil {
+		return e.currentState
+	}
+	currentState := e.GetEventState()
+	e.currentState = &currentState
 	return e.currentState
 }
 
-func (e *BaseActor) SetCurrentState(state bus.EventEntityState) {
-	e.currentStateMu.Lock()
-	e.currentState = &state
-	e.currentStateMu.Unlock()
+func (e *BaseActor) GetOldState() *events.EventEntityState {
+	e.stateMu.RLock()
+	defer e.stateMu.RUnlock()
+	return e.oldState
 }
 
-func (e *BaseActor) GetEventState() (eventState bus.EventEntityState) {
+func (e *BaseActor) SetCurrentState(state events.EventEntityState) {
+	e.stateMu.Lock()
+	e.currentState = &state
+	e.stateMu.Unlock()
+}
+
+func (e *BaseActor) GetEventState() (eventState events.EventEntityState) {
 
 	attrs := e.Attributes()
 	setts := e.Settings()
 
-	var state *bus.EntityState
+	var state *events.EntityState
 
 	info := e.Info()
 	if info.State != nil {
-		state = &bus.EntityState{
+		state = &events.EntityState{
 			Name:        info.State.Name,
 			Description: info.State.Description,
 			ImageUrl:    info.State.ImageUrl,
@@ -307,7 +349,7 @@ func (e *BaseActor) GetEventState() (eventState bus.EventEntityState) {
 		}
 	}
 
-	eventState = bus.EventEntityState{
+	eventState = events.EventEntityState{
 		EntityId:   info.Id,
 		Value:      info.Value,
 		State:      state,
@@ -316,50 +358,125 @@ func (e *BaseActor) GetEventState() (eventState bus.EventEntityState) {
 	}
 
 	if info.LastChanged != nil {
-		eventState.LastChanged = common.Time(*info.LastChanged)
+		eventState.LastChanged = common.Time(*e.LastChanged)
 	}
 
 	if info.LastUpdated != nil {
-		eventState.LastUpdated = common.Time(*info.LastUpdated)
+		eventState.LastUpdated = common.Time(*e.LastUpdated)
 	}
 
 	return
 }
 
-func (e *BaseActor) SaveState(msg events.EventStateChanged) {
+func (e *BaseActor) restoreStore(entity *m.Entity, store *m.EntityStorage, state *events.EventEntityState) {
+	if store.State != "" {
+		for _, s := range entity.States {
+			if store.State == s.Name {
+				es := &events.EntityState{
+					Name:        s.Name,
+					Description: s.Description,
+					Icon:        s.Icon,
+				}
+				if s.Image != nil {
+					es.ImageUrl = common.String(s.Image.Url)
+				}
+				state.State = es
+			}
+		}
+	}
+	// Attributes
+	state.Attributes = entity.Attributes.Copy()
+	_, _ = state.Attributes.Deserialize(store.Attributes)
+	// Settings
+	state.Settings = e.Settings()
+	// LastChanged
+	state.LastChanged = common.Time(store.CreatedAt)
+	// LastUpdated
+	state.LastUpdated = common.Time(store.CreatedAt)
+}
 
-	if !msg.DoNotSaveMetric {
-		go e.updateMetric(msg.NewState)
+func (e *BaseActor) RestoreState(entity *m.Entity) {
+	e.stateMu.RLock()
+	defer e.stateMu.RUnlock()
+	if len(entity.Storage) > 0 {
+		e.currentState = &events.EventEntityState{
+			EntityId: entity.Id,
+		}
+		var store = entity.Storage[0]
+		e.LastUpdated = common.Time(store.CreatedAt)
+		e.restoreStore(entity, store, e.currentState)
+	}
+	if len(entity.Storage) > 1 {
+		e.oldState = &events.EventEntityState{
+			EntityId: entity.Id,
+		}
+		var store = entity.Storage[1]
+		e.LastChanged = common.Time(store.CreatedAt)
+		e.currentState.LastChanged = common.Time(store.CreatedAt)
+		e.restoreStore(entity, store, e.oldState)
+	}
+}
+
+func (e *BaseActor) SaveState(doNotSaveMetric, storageSave bool) {
+
+	e.stateMu.RLock()
+	defer e.stateMu.RUnlock()
+
+	newState := e.GetEventState()
+
+	if !doNotSaveMetric {
+		go e.updateMetric(newState)
 	}
 
-	if msg.NewState.Compare(msg.OldState) {
+	if e.currentState != nil && e.currentState.Compare(newState) {
 		return
 	}
 
-	currentState := e.GetCurrentState()
-	if currentState != nil && currentState.Compare(msg.NewState) {
-		return
+	newState.LastUpdated = common.Time(time.Now())
+	e.LastUpdated = common.Time(*newState.LastUpdated)
+
+	if e.currentState != nil {
+		if e.currentState.LastUpdated != nil {
+			newState.LastChanged = common.Time(*e.currentState.LastUpdated)
+			e.LastChanged = common.Time(*e.currentState.LastUpdated)
+		}
+		if e.oldState != nil {
+			*e.oldState = *e.currentState
+		} else {
+			e.oldState = e.currentState
+		}
 	}
 
-	e.SetCurrentState(msg.NewState)
+	e.currentState = &newState
 
-	// store state to db
-	var state string
-	if msg.NewState.State != nil {
-		state = msg.NewState.State.Name
+	msg := events.EventStateChanged{
+		StorageSave:     storageSave,
+		PluginName:      e.Id.PluginName(),
+		EntityId:        e.Id,
+		NewState:        newState,
+		DoNotSaveMetric: doNotSaveMetric,
 	}
+	if e.oldState != nil {
+		msg.OldState = *e.oldState
+	}
+	e.Service.EventBus().Publish("system/entities/"+e.Id.String(), msg)
 
-	e.Service.EventBus().Publish("system/entities/"+msg.EntityId.String(), msg)
-
-	if !msg.StorageSave {
+	if !storageSave {
 		return
 	}
 
 	go func() {
+
+		var state string
+		if newState.State != nil {
+			state = newState.State.Name
+		}
+
 		_, err := e.Service.Adaptors().EntityStorage.Add(context.Background(), &m.EntityStorage{
 			State:      state,
-			EntityId:   msg.EntityId,
-			Attributes: msg.NewState.Attributes.Serialize(),
+			EntityId:   e.Id,
+			Attributes: newState.Attributes.Serialize(),
+			CreatedAt:  *newState.LastUpdated,
 		})
 		if err != nil {
 			//log.Error(err.Error())
@@ -367,7 +484,7 @@ func (e *BaseActor) SaveState(msg events.EventStateChanged) {
 	}()
 }
 
-func (e *BaseActor) updateMetric(state bus.EventEntityState) {
+func (e *BaseActor) updateMetric(state events.EventEntityState) {
 
 	if e.Metric == nil {
 		return
@@ -423,7 +540,7 @@ func (e *BaseActor) AddMetric(name string, value map[string]interface{}) {
 		}
 
 		if metric.Id == 0 {
-			fmt.Printf("check metric for %s", e.Id.String())
+			log.Debugf("check metric for %s", e.Id.String())
 			return
 		}
 

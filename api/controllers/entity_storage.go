@@ -19,8 +19,6 @@
 package controllers
 
 import (
-	"strings"
-
 	"github.com/e154/smart-home/api/stub"
 	"github.com/labstack/echo/v4"
 
@@ -46,8 +44,7 @@ func (c ControllerEntityStorage) EntityStorageServiceGetEntityStorageList(ctx ec
 
 	var entityIds []common.EntityId
 	if params.EntityId != nil {
-		arr := strings.Split(*params.EntityId, ",")
-		for _, item := range arr {
+		for _, item := range *params.EntityId {
 			entityIds = append(entityIds, common.EntityId(item))
 		}
 	}

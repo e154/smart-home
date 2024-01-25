@@ -20,7 +20,6 @@ package endpoint
 
 import (
 	"context"
-
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
@@ -74,7 +73,7 @@ func (n *EntityEndpoint) Import(ctx context.Context, entity *m.Entity) (err erro
 		if action.Script != nil {
 			var engine *scripts.Engine
 			if engine, err = n.scriptService.NewEngine(action.Script); err != nil {
-				err = errors.Wrap(apperr.ErrInternal, err.Error())
+				err = errors.Wrap(apperr.ErrInvalidRequest, err.Error())
 				return
 			}
 

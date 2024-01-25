@@ -11,8 +11,10 @@ import {parseTime} from "@/utils";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
 import { Dialog } from '@/components/Dialog'
 import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
-import {Core} from "@/views/Dashboard/core";
+import {Core, parsedObject} from "@/views/Dashboard/core";
 import {useCache} from "@/hooks/web/useCache";
+import JsonEditor from "@/components/JsonEditor/JsonEditor.vue";
+import {EChartsOption} from "echarts";
 
 const {push} = useRouter()
 const counter = ref(0);
@@ -187,9 +189,9 @@ const showDashboard = (row: ApiDashboard) => {
 }
 
 const dialogVisible = ref(false)
-const importValue = ref("")
+const importValue = ref(null)
 
-const importHandler = (val: string) => {
+const importHandler = (val: any) => {
   if (importValue.value == val) {
     return
   }
@@ -199,10 +201,14 @@ const importHandler = (val: string) => {
 const importDashboard = async () => {
   let dashboard: ApiDashboard
   try {
-    dashboard = JSON.parse(importValue.value);
+    if (importValue.value?.json) {
+      dashboard = importValue.value.json as ApiDashboard;
+    } else if(importValue.value.text) {
+      dashboard = JSON.parse(importValue.value.text) as ApiDashboard;
+    }
   } catch {
     ElMessage({
-      title: t('Success'),
+      title: t('Error'),
       message: t('message.corruptedJsonFormat'),
       type: 'error',
       duration: 2000
@@ -266,7 +272,7 @@ const importDashboard = async () => {
 
   <!-- import dialog -->
   <Dialog v-model="dialogVisible" :title="t('dashboard.dialogImportTitle')" :maxHeight="400" width="80%" custom-class>
-    <JsonViewer @change="importHandler"/>
+    <JsonEditor @change="importHandler"/>
     <template #footer>
       <ElButton type="primary" @click="importDashboard()" plain>{{ t('main.import') }}</ElButton>
       <ElButton @click="dialogVisible = false">{{ t('main.closeDialog') }}</ElButton>

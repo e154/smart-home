@@ -81,7 +81,7 @@ const removeShowOnProp = (index: number) => {
       </div>
 
       <!-- props -->
-      <ElCollapse>
+      <ElCollapse v-if="currentValue.length">
         <ElCollapseItem
             :name="index"
             :key="index"

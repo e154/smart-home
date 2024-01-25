@@ -114,6 +114,10 @@ func (p *PluginEndpoint) UpdateSettings(ctx context.Context, name string, settin
 		return
 	}
 
+	if !p.supervisor.PluginIsLoaded(name) {
+		return
+	}
+
 	if err = p.supervisor.DisablePlugin(ctx, name); err != nil {
 		return
 	}

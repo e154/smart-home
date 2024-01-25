@@ -66,7 +66,7 @@ func TestEmail(t *testing.T) {
 			ctx.So(err, ShouldBeNil)
 
 			supervisor.Start(context.Background())
-			WaitSupervisor(eventBus)
+			WaitSupervisor(eventBus, time.Second)
 
 			t.Run("succeed", func(t *testing.T) {
 				Convey("", t, func(ctx C) {

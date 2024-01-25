@@ -60,7 +60,7 @@ telegramAction = (entityId, actionName)->
 			AddPlugin(adaptors, "telegram")
 
 			supervisor.Start(context.Background())
-			WaitSupervisor(eventBus)
+			WaitSupervisor(eventBus, time.Second)
 
 			// add scripts
 			// ------------------------------------------------

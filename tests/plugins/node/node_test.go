@@ -22,7 +22,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"reflect"
 	"testing"
 	"time"
 
@@ -54,7 +53,7 @@ func TestNode(t *testing.T) {
 
 			go mqttServer.Start()
 			supervisor.Start(context.Background())
-			WaitSupervisor(eventBus)
+			WaitSupervisor(eventBus, time.Second)
 
 			// add entity
 			// ------------------------------------------------
@@ -69,20 +68,28 @@ func TestNode(t *testing.T) {
 
 			time.Sleep(time.Second)
 
+			// common
 			// ------------------------------------------------
+			ch := make(chan events.EventStateChanged)
+			defer close(ch)
+			fn := func(topic string, msg interface{}) {
+				switch v := msg.(type) {
+				case events.EventStateChanged:
+					ch <- v
+				}
+			}
+			eventBus.Subscribe("system/entities/+", fn, false)
+			defer func() { _ = eventBus.Unsubscribe("system/entities/+", fn) }()
+			// ------------------------------------------------
+
+			// wait message
+			_, ok := WaitT[events.EventStateChanged](time.Second*2, ch)
+			ctx.So(ok, ShouldBeTrue)
 
 			now := time.Now()
 
 			t.Run("ping", func(t *testing.T) {
 				Convey("case", t, func(ctx C) {
-					ch := make(chan interface{})
-					fn := func(topic string, msg interface{}) {
-						ch <- msg
-					}
-					_ = eventBus.Subscribe("system/entities/+", fn)
-					defer func() { _ = eventBus.Unsubscribe("system/entities/+", fn) }()
-
-					time.Sleep(time.Second)
 
 					b, err := json.Marshal(node.MessageStatus{
 						Status:    "enabled",
@@ -96,39 +103,20 @@ func TestNode(t *testing.T) {
 					err = mqttServer.Publish("system/plugins/node/main/ping", b, 0, false)
 					ctx.So(err, ShouldBeNil)
 
-					ticker := time.NewTimer(time.Second * 2)
-					defer ticker.Stop()
+					// wait message
+					msg, ok := WaitT[events.EventStateChanged](time.Second*2, ch)
+					ctx.So(ok, ShouldBeTrue)
 
-					var ok bool
-					for {
-						select {
-						case msg := <-ch:
-							switch v := msg.(type) {
-							case events.EventEntityLoaded:
-							case events.EventStateChanged:
-								if v.PluginName != "node" {
-									continue
-								}
-								ctx.So(v.OldState.State, ShouldNotBeNil)
-								ctx.So(v.OldState.State.Name, ShouldEqual, "wait")
-								ctx.So(v.NewState.State, ShouldNotBeNil)
-								ctx.So(v.NewState.State.Name, ShouldEqual, "connected")
-								ctx.So(v.NewState.Attributes[node.AttrThread].Int64(), ShouldEqual, 1)
-								ctx.So(v.NewState.Attributes[node.AttrRps].Int64(), ShouldEqual, 2)
-								ctx.So(v.NewState.Attributes[node.AttrMin].Int64(), ShouldEqual, 3)
-								ctx.So(v.NewState.Attributes[node.AttrMax].Int64(), ShouldEqual, 4)
-								ctx.So(v.NewState.Attributes[node.AttrStartedAt].Time(), ShouldEqual, now)
-								ok = true
-								ctx.So(ok, ShouldBeTrue)
-								return
-							default:
-								fmt.Printf("unknown msg type %s\n\r", reflect.TypeOf(v))
-							}
-							return
-						case <-ticker.C:
-							return
-						}
-					}
+					ctx.So(msg.OldState.State, ShouldNotBeNil)
+					ctx.So(msg.OldState.State.Name, ShouldEqual, "wait")
+					ctx.So(msg.NewState.State, ShouldNotBeNil)
+					ctx.So(msg.NewState.State.Name, ShouldEqual, "connected")
+					ctx.So(msg.NewState.Attributes[node.AttrThread].Int64(), ShouldEqual, 1)
+					ctx.So(msg.NewState.Attributes[node.AttrRps].Int64(), ShouldEqual, 2)
+					ctx.So(msg.NewState.Attributes[node.AttrMin].Int64(), ShouldEqual, 3)
+					ctx.So(msg.NewState.Attributes[node.AttrMax].Int64(), ShouldEqual, 4)
+					ctx.So(msg.NewState.Attributes[node.AttrStartedAt].Time(), ShouldEqual, now)
+					ctx.So(ok, ShouldBeTrue)
 				})
 			})
 
@@ -137,6 +125,7 @@ func TestNode(t *testing.T) {
 			t.Run("request", func(t *testing.T) {
 				Convey("case", t, func(ctx C) {
 					ch := make(chan struct{})
+					defer close(ch)
 					_ = mqttCli.Subscribe("system/plugins/node/main/req/#", func(client mqtt.MqttCli, message mqtt.Message) {
 						req := node.MessageRequest{}
 						err = json.Unmarshal(message.Payload, &req)
@@ -155,16 +144,8 @@ func TestNode(t *testing.T) {
 					}
 					eventBus.Publish(fmt.Sprintf("system/plugins/node/main/req/%s", nodeEnt.Id), req)
 
-					ticker := time.NewTimer(time.Second * 1)
-					defer ticker.Stop()
-
-					var ok bool
-					select {
-					case <-ch:
-						ok = true
-					case <-ticker.C:
-					}
-
+					// wait message
+					_, ok := WaitT[struct{}](time.Second*2, ch)
 					ctx.So(ok, ShouldBeTrue)
 
 				})
@@ -174,6 +155,7 @@ func TestNode(t *testing.T) {
 				Convey("case", t, func(ctx C) {
 
 					ch := make(chan struct{})
+					defer close(ch)
 					topic := fmt.Sprintf("system/plugins/node/main/resp/%s", "plugin.test")
 					fn := func(topic string, resp node.MessageResponse) {
 						ctx.So(topic, ShouldEqual, "system/plugins/node/main/resp/plugin.test")
@@ -198,16 +180,8 @@ func TestNode(t *testing.T) {
 
 					_ = mqttCli.Publish(fmt.Sprintf("system/plugins/node/main/resp/%s", "plugin.test"), b)
 
-					ticker := time.NewTimer(time.Second * 1)
-					defer ticker.Stop()
-
-					var ok bool
-					select {
-					case <-ch:
-						ok = true
-					case <-ticker.C:
-					}
-
+					// wait message
+					_, ok := WaitT[struct{}](time.Second*2, ch)
 					ctx.So(ok, ShouldBeTrue)
 
 					time.Sleep(time.Millisecond * 500)

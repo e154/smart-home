@@ -47,6 +47,7 @@ import (
 	"github.com/e154/smart-home/system/stream"
 	"github.com/e154/smart-home/system/stream/handlers"
 	"github.com/e154/smart-home/system/supervisor"
+	"github.com/e154/smart-home/system/terminal"
 	"github.com/e154/smart-home/system/validation"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	"go.uber.org/fx"
@@ -72,6 +73,8 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 			logging.NewLogger,
 			logging_db.NewLogDbSaver,
 			logging_ws.NewLogWsSaver,
+			terminal.GetTerminalCommands,
+			terminal.NewTerminal,
 			scripts.NewScriptService,
 			MigrationList,
 			localMigrations.NewMigrations,

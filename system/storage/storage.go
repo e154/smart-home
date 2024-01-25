@@ -63,13 +63,7 @@ func NewStorage(
 			select {
 			case <-ticker.C:
 				storage.serialize()
-
-			case _, ok := <-storage.quit:
-				if !ok {
-					return
-				}
-				close(storage.quit)
-				storage.isStarted.Store(false)
+			case <-storage.quit:
 				return
 			}
 		}
@@ -80,10 +74,10 @@ func NewStorage(
 
 // Shutdown ...
 func (s *Storage) Shutdown() {
-	if !s.isStarted.Load() {
+	if !s.isStarted.CompareAndSwap(true, false) {
 		return
 	}
-	s.quit <- struct{}{}
+	close(s.quit)
 	s.serialize()
 }
 
@@ -151,10 +145,10 @@ func (s *Storage) Serialize() {
 
 func (s *Storage) serialize() {
 
-	if s.inProcess.Load() {
+	if !s.inProcess.CompareAndSwap(false, true) {
 		return
 	}
-	s.inProcess.Store(true)
+	defer s.inProcess.Store(false)
 
 	var data m.Variable
 	var ok bool

@@ -33,8 +33,8 @@ import {useI18n} from "@/hooks/web/useI18n";
 import {Infotip} from "@/components/Infotip";
 import {debounce} from "lodash-es";
 import {EChartsOption} from "echarts";
-import ImageSearch from "@/views/Images/components/ImageSearch.vue";
 import {ApiImage} from "@/api/stub";
+import JsonEditor from "@/components/JsonEditor/JsonEditor.vue";
 
 const {t} = useI18n()
 
@@ -125,14 +125,22 @@ const removeAttrItem = (prop: SeriesItem, index: number) => {
 
 // attributes item
 
-const editorHandler = debounce((val: string) => {
+const editorHandler = debounce((val: any) => {
   if (!val) {
-    val = defaultData;
+    val = {
+      text: defaultData,
+    }
   }
 
   try {
 
-    var options: EChartsOption = parsedObject(val) as EChartsOption;
+    let options: EChartsOption;
+
+    if (val.json) {
+      options = val.json as EChartsOption
+    } else if(val.text) {
+      options = parsedObject(val.text) as EChartsOption
+    }
 
     if (!options.grid) {
       options['grid'] = {
@@ -225,7 +233,7 @@ const onSelectImage = (image: ApiImage) => {
 
   <ElRow :gutter="24" style="min-height: 200px;margin-bottom: 20px">
     <ElCol>
-      <JsonViewer v-model="currentItem.payload.chartCustom.chartOptions" @change="editorHandler"/>
+      <JsonEditor v-model="currentItem.payload.chartCustom.chartOptions" @change="editorHandler"/>
     </ElCol>
   </ElRow>
 

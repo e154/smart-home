@@ -41,7 +41,7 @@ import (
 
 // Actor ...
 type Actor struct {
-	supervisor.BaseActor
+	*supervisor.BaseActor
 	isStarted   *atomic.Bool
 	AccessToken string
 	bot         *tele.Bot
@@ -218,9 +218,6 @@ func (e *Actor) getChatList() (list []m.TelegramChat, err error) {
 // UpdateStatus ...
 func (e *Actor) UpdateStatus() (err error) {
 
-	oldState := e.GetEventState()
-	now := e.Now(oldState)
-
 	var attributeValues = make(m.AttributeValue)
 	// ...
 
@@ -230,25 +227,10 @@ func (e *Actor) UpdateStatus() (err error) {
 		if err != nil {
 			log.Warn(err.Error())
 		}
-
-		if oldState.LastUpdated != nil {
-			delta := now.Sub(*oldState.LastUpdated).Milliseconds()
-			//fmt.Println("delta", delta)
-			if delta < 200 {
-				e.AttrMu.Unlock()
-				return
-			}
-		}
 	}
 	e.AttrMu.Unlock()
 
-	go e.SaveState(events.EventStateChanged{
-		StorageSave: true,
-		PluginName:  e.Id.PluginName(),
-		EntityId:    e.Id,
-		OldState:    oldState,
-		NewState:    e.GetEventState(),
-	})
+	e.SaveState(false, true)
 
 	return
 }
@@ -329,22 +311,16 @@ func (e *Actor) addAction(event events.EventCallEntityAction) {
 
 func (e *Actor) runAction(msg events.EventCallEntityAction) {
 	if action, ok := e.Actions[msg.ActionName]; ok {
-		if action.ScriptEngine.Engine() == nil {
-			return
-		}
-		if _, err := action.ScriptEngine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, msg.ActionName, msg.Args); err != nil {
-			log.Error(err.Error())
-			return
-		}
-		return
-	}
-
-	if e.ScriptEngines != nil {
-		for _, engine := range e.ScriptEngines {
-			if _, err := engine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, msg.ActionName, msg.Args); err != nil {
-				log.Error(err.Error())
-				return
+		if action.ScriptEngine != nil && action.ScriptEngine.Engine() != nil {
+			if _, err := action.ScriptEngine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
+				log.Error(errors.Wrapf(err, "entity id: %s ", e.Id).Error())
 			}
+			return
+		}
+	}
+	if e.ScriptsEngine != nil && e.ScriptsEngine.Engine() != nil {
+		if _, err := e.ScriptsEngine.AssertFunction(FuncEntityAction, msg.EntityId, msg.ActionName, msg.Args); err != nil {
+			log.Error(errors.Wrapf(err, "entity id: %s ", e.Id).Error())
 		}
 	}
 }

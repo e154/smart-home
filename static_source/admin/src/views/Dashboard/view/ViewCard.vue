@@ -4,6 +4,7 @@ import {Card, CardItem, Core} from "@/views/Dashboard/core";
 import {useBus} from "@/views/Dashboard/bus";
 import {CardItemName} from "@/views/Dashboard/card_items";
 import {UUID} from "uuid-generator-ts";
+import KeystrokeCaptureViewer from "@/views/Dashboard/components/KeystrokeCaptureViewer.vue";
 
 const {bus} = useBus()
 
@@ -29,6 +30,8 @@ const props = defineProps({
   },
 })
 
+const hover = ref(false)
+
 // ---------------------------------
 // component methods
 // ---------------------------------
@@ -47,7 +50,12 @@ const getCardItemName = (item: CardItem): string => {
       :style="{
         'transform': `scale(${zoom})`,
         'background-color': card.background || 'inherit'}"
+      @mouseover="hover = true"
+      @touchstart="hover = true"
+      @mouseleave="hover = false"
+      @mouseout="hover = false"
   >
+    <KeystrokeCaptureViewer :card="card" :core="core" :hover="hover"/>
     <component
         v-for="(item, index) in card.items"
         :key="index"

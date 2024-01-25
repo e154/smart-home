@@ -5,6 +5,7 @@ import { useAppStore } from '@/store/modules/app'
 import { computed, ref, watch } from 'vue'
 import { setCssVar } from '@/utils'
 import { useDesign } from '@/hooks/web/useDesign'
+import {isDark} from "@/utils/is";
 
 const { getPrefixCls } = useDesign()
 
@@ -29,18 +30,18 @@ const breadcrumbIconChange = (show: boolean) => {
 }
 
 // 折叠图标
-const hamburger = ref(appStore.getHamburger)
-
-const hamburgerChange = (show: boolean) => {
-  appStore.setHamburger(show)
-}
+// const hamburger = ref(appStore.getHamburger)
+//
+// const hamburgerChange = (show: boolean) => {
+//   appStore.setHamburger(show)
+// }
 
 // 全屏图标
-const screenfull = ref(appStore.getScreenfull)
-
-const screenfullChange = (show: boolean) => {
-  appStore.setScreenfull(show)
-}
+// const screenfull = ref(appStore.getScreenfull)
+//
+// const screenfullChange = (show: boolean) => {
+//   appStore.setScreenfull(show)
+// }
 
 // 尺寸图标
 const size = ref(appStore.getSize)
@@ -66,39 +67,39 @@ const tagsViewChange = (show: boolean) => {
 }
 
 // 标签页图标
-const tagsViewIcon = ref(appStore.getTagsViewIcon)
-
-const tagsViewIconChange = (show: boolean) => {
-  appStore.setTagsViewIcon(show)
-}
+// const tagsViewIcon = ref(appStore.getTagsViewIcon)
+//
+// const tagsViewIconChange = (show: boolean) => {
+//   appStore.setTagsViewIcon(show)
+// }
 
 // logo
-const logo = ref(appStore.getLogo)
-
-const logoChange = (show: boolean) => {
-  appStore.setLogo(show)
-}
+// const logo = ref(appStore.getLogo)
+//
+// const logoChange = (show: boolean) => {
+//   appStore.setLogo(show)
+// }
 
 // 菜单手风琴
-const uniqueOpened = ref(appStore.getUniqueOpened)
-
-const uniqueOpenedChange = (uniqueOpened: boolean) => {
-  appStore.setUniqueOpened(uniqueOpened)
-}
+// const uniqueOpened = ref(appStore.getUniqueOpened)
+//
+// const uniqueOpenedChange = (uniqueOpened: boolean) => {
+//   appStore.setUniqueOpened(uniqueOpened)
+// }
 
 // 固定头部
-const fixedHeader = ref(appStore.getFixedHeader)
-
-const fixedHeaderChange = (show: boolean) => {
-  appStore.setFixedHeader(show)
-}
+// const fixedHeader = ref(appStore.getFixedHeader)
+//
+// const fixedHeaderChange = (show: boolean) => {
+//   appStore.setFixedHeader(show)
+// }
 
 // 页脚
-const footer = ref(appStore.getFooter)
-
-const footerChange = (show: boolean) => {
-  appStore.setFooter(show)
-}
+// const footer = ref(appStore.getFooter)
+//
+// const footerChange = (show: boolean) => {
+//   appStore.setFooter(show)
+// }
 
 // 灰色模式
 const greyMode = ref(appStore.getGreyMode)
@@ -107,20 +108,29 @@ const greyModeChange = (show: boolean) => {
   appStore.setGreyMode(show)
 }
 
-// 动态路由
-const dynamicRouter = ref(appStore.getDynamicRouter)
+const systemTheme = computed(()=> appStore.getSystemTheme)
 
-const dynamicRouterChange = (show: boolean) => {
-  ElMessage.info(t('setting.reExperienced'))
-  appStore.setDynamicRouter(show)
+const systemThemeChange = (systemTheme: boolean) => {
+  appStore.setSystemTheme(systemTheme)
+  if (systemTheme) {
+    appStore.setIsDark(isDark())
+  }
 }
+
+// 动态路由
+// const dynamicRouter = ref(appStore.getDynamicRouter)
+//
+// const dynamicRouterChange = (show: boolean) => {
+//   ElMessage.info(t('setting.reExperienced'))
+//   appStore.setDynamicRouter(show)
+// }
 
 // 固定菜单
-const fixedMenu = ref(appStore.getFixedMenu)
-
-const fixedMenuChange = (show: boolean) => {
-  appStore.setFixedMenu(show)
-}
+// const fixedMenu = ref(appStore.getFixedMenu)
+//
+// const fixedMenuChange = (show: boolean) => {
+//   appStore.setFixedMenu(show)
+// }
 
 const layout = computed(() => appStore.getLayout)
 
@@ -199,6 +209,11 @@ watch(
     <div class="flex justify-between items-center">
       <span class="text-14px">{{ t('setting.greyMode') }}</span>
       <ElSwitch v-model="greyMode" @change="greyModeChange" />
+    </div>
+
+    <div class="flex justify-between items-center">
+      <span class="text-14px">{{ t('setting.systemTheme') }}</span>
+      <ElSwitch v-model="systemTheme" @change="systemThemeChange" />
     </div>
 
 <!--    <div class="flex justify-between items-center">-->

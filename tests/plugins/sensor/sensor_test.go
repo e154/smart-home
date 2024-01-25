@@ -69,7 +69,7 @@ entityAction = (entityId, actionName)->
 			AddPlugin(adaptors, "sensor")
 
 			supervisor.Start(context.Background())
-			WaitSupervisor(eventBus)
+			WaitSupervisor(eventBus, time.Second)
 
 			// bind convey
 			RegisterConvey(scriptService, ctx)

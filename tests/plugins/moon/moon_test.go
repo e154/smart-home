@@ -51,7 +51,10 @@ func TestMoon(t *testing.T) {
 			err := adaptors.Entity.Add(context.Background(), moonEnt)
 			ctx.So(err, ShouldBeNil)
 
-			ch := make(chan events.EventStateChanged, 2)
+			// common
+			// ------------------------------------------------
+			ch := make(chan events.EventStateChanged)
+			defer close(ch)
 			fn := func(topic string, msg interface{}) {
 				switch v := msg.(type) {
 				case events.EventStateChanged:
@@ -59,10 +62,9 @@ func TestMoon(t *testing.T) {
 				}
 			}
 
-			_ = eventBus.Subscribe("system/entities/"+moonEnt.Id.String(), fn)
-			defer func() {
-				_ = eventBus.Unsubscribe("system/entities/"+moonEnt.Id.String(), fn)
-			}()
+			eventBus.Subscribe("system/entities/"+moonEnt.Id.String(), fn)
+			defer eventBus.Unsubscribe("system/entities/"+moonEnt.Id.String(), fn)
+			// ------------------------------------------------
 
 			moon := moonPlugin.NewActor(moonEnt, supervisor.GetService())
 
@@ -83,14 +85,9 @@ func TestMoon(t *testing.T) {
 					ctx.So(err, ShouldBeNil)
 					moon.UpdateMoonPosition(time.Date(2021, 5, 27, 23, 0, 0, 0, loc))
 
-					ticker := time.NewTimer(time.Second * 5)
-					defer ticker.Stop()
-
-					var msg events.EventStateChanged
-					select {
-					case msg = <-ch:
-					case <-ticker.C:
-					}
+					// wait message
+					msg, ok := WaitT[events.EventStateChanged](time.Second*2, ch)
+					ctx.So(ok, ShouldBeTrue)
 
 					ctx.So(msg.NewState.State, ShouldNotBeNil)
 					ctx.So(msg.NewState.State.Name, ShouldEqual, moonPlugin.StateBelowHorizon)

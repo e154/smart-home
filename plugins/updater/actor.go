@@ -20,13 +20,13 @@ package updater
 
 import (
 	"encoding/json"
+	"github.com/e154/smart-home/common"
 	"sync"
 	"time"
 
 	m "github.com/e154/smart-home/models"
 
 	"github.com/Masterminds/semver"
-	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/web"
 	"github.com/e154/smart-home/system/supervisor"
 	"github.com/e154/smart-home/version"
@@ -34,7 +34,7 @@ import (
 
 // Actor ...
 type Actor struct {
-	supervisor.BaseActor
+	*supervisor.BaseActor
 	checkLock         *sync.Mutex
 	latestVersion     string
 	latestDownloadUrl string
@@ -85,13 +85,11 @@ func (e *Actor) setState(v string) {
 
 	switch v {
 	case "exist_update":
-		state := e.States["exist_update"]
-		e.State = &state
+		e.SetActorState(common.String("exist_update"))
 		e.Value.Store(supervisor.StateOk)
 		return
 	case supervisor.StateError:
-		state := e.States["error"]
-		e.State = &state
+		e.SetActorState(common.String("error"))
 	}
 
 	e.Value.Store(v)
@@ -136,8 +134,6 @@ func (e *Actor) check() {
 		}
 	}
 
-	oldState := e.GetEventState()
-
 	e.AttrMu.Lock()
 	e.Attrs[AttrUpdaterLatestVersion].Value = e.latestVersion
 	e.Attrs[AttrUpdaterLatestVersionTime].Value = e.latestVersionTime
@@ -145,11 +141,5 @@ func (e *Actor) check() {
 	e.Attrs[AttrUpdaterLatestCheck].Value = e.lastCheck
 	e.AttrMu.Unlock()
 
-	go e.SaveState(events.EventStateChanged{
-		PluginName:  e.Id.PluginName(),
-		EntityId:    e.Id,
-		OldState:    oldState,
-		NewState:    e.GetEventState(),
-		StorageSave: true,
-	})
+	e.SaveState(false, true)
 }

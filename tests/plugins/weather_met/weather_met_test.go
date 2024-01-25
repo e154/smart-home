@@ -70,7 +70,7 @@ func TestWeatherMet(t *testing.T) {
 			// ------------------------------------------------
 			_ = scheduler.Start(context.TODO())
 			supervisor.Start(context.Background())
-			WaitSupervisor(eventBus)
+			WaitSupervisor(eventBus, time.Second)
 
 			t.Run("add weather", func(t *testing.T) {
 				Convey("weather_met", t, func(ctx C) {

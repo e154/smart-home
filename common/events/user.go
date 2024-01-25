@@ -27,7 +27,8 @@ type EventUpdateUserLocation struct {
 }
 
 type EventDirectMessage struct {
-	UserID  int64       `json:"user_id"`
-	Query   string      `json:"query"`
-	Message interface{} `json:"message"`
+	UserID    int64       `json:"user_id"`
+	SessionID string      `json:"session_id"`
+	Query     string      `json:"query"`
+	Message   interface{} `json:"message"`
 }

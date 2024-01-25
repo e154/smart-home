@@ -200,24 +200,25 @@ func (u *Users) GetByResetPassToken(ctx context.Context, token string) (user *Us
 func (u *Users) Update(ctx context.Context, user *User) (err error) {
 
 	q := map[string]interface{}{
-		"nickname":             user.Nickname,
-		"first_name":           user.FirstName,
-		"last_name":            user.LastName,
-		"email":                user.Email,
-		"status":               user.Status,
-		"reset_password_token": user.ResetPasswordToken,
-		"authentication_token": user.AuthenticationToken,
-		"image_id":             user.ImageId,
-		"sign_in_count":        user.SignInCount,
-		"current_sign_in_ip":   user.CurrentSignInIp,
-		"last_sign_in_ip":      user.LastSignInIp,
-		"lang":                 user.Lang,
-		"user_id":              user.UserId,
-		"role_name":            user.RoleName,
-		//"meta":                   user.Meta, //todo fix
+		"nickname":               user.Nickname,
+		"first_name":             user.FirstName,
+		"last_name":              user.LastName,
+		"email":                  user.Email,
+		"status":                 user.Status,
+		"reset_password_token":   user.ResetPasswordToken,
+		"authentication_token":   user.AuthenticationToken,
+		"image_id":               user.ImageId,
+		"sign_in_count":          user.SignInCount,
+		"current_sign_in_ip":     user.CurrentSignInIp,
+		"last_sign_in_ip":        user.LastSignInIp,
+		"lang":                   user.Lang,
+		"user_id":                user.UserId,
+		"role_name":              user.RoleName,
 		"reset_password_sent_at": user.ResetPasswordSentAt,
 		"current_sign_in_at":     user.CurrentSignInAt,
 		"last_sign_in_at":        user.LastSignInAt,
+		"history":                user.History,
+		//"meta":                   user.Meta, //todo fix
 	}
 	if user.EncryptedPassword != "" {
 		q["encrypted_password"] = user.EncryptedPassword

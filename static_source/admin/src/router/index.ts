@@ -116,7 +116,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
         meta: {
           title: t('router.ListEntities'),
           // noTagsView: true,
-          // noCache: true,
           hidden: true,
           canTo: true,
           activeMenu: '/entities'
@@ -129,7 +128,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
         meta: {
           title: t('router.New'),
           noTagsView: true,
-          noCache: true,
           hidden: true,
           canTo: true,
           activeMenu: '/entities'
@@ -143,7 +141,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
         meta: {
           title: t('router.EditEntity'),
           // noTagsView: true,
-          // noCache: true,
           hidden: true,
           canTo: true,
           activeMenu: '/entities'
@@ -167,7 +164,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
         meta: {
           title: t('router.ListScripts'),
           // noTagsView: true,
-          // noCache: true,
           hidden: true,
           canTo: true,
           activeMenu: '/scripts'
@@ -180,7 +176,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
         meta: {
           title: t('router.New'),
           noTagsView: true,
-          noCache: true,
           hidden: true,
           canTo: true,
           activeMenu: '/scripts'
@@ -194,7 +189,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
         meta: {
           title: t('router.EditScript'),
           // noTagsView: true,
-          // noCache: true,
           hidden: true,
           canTo: true,
           activeMenu: '/scripts'
@@ -226,7 +220,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
             meta: {
               title: t('router.New'),
               // noTagsView: true,
-              // noCache: true,
               hidden: true,
               canTo: true,
               activeMenu: '/automation/tasks'
@@ -240,7 +233,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
             meta: {
               title: t('router.EditTask'),
               // noTagsView: true,
-              // noCache: true,
               hidden: true,
               canTo: true,
               activeMenu: '/automation/tasks'
@@ -263,7 +255,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
             meta: {
               title: t('router.New'),
               noTagsView: true,
-              noCache: true,
               hidden: true,
               canTo: true,
               activeMenu: '/automation/triggers'
@@ -277,7 +268,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
             meta: {
               title: t('router.EditTrigger'),
               // noTagsView: true,
-              // noCache: true,
               hidden: true,
               canTo: true,
               activeMenu: '/automation/triggers'
@@ -300,7 +290,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
             meta: {
               title: t('router.New'),
               noTagsView: true,
-              noCache: true,
               hidden: true,
               canTo: true,
               activeMenu: '/automation/conditions'
@@ -314,7 +303,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
             meta: {
               title: t('router.EditCondition'),
               // noTagsView: true,
-              // noCache: true,
               hidden: true,
               canTo: true,
               activeMenu: '/automation/conditions'
@@ -337,7 +325,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
             meta: {
               title: t('router.New'),
               noTagsView: true,
-              noCache: true,
               hidden: true,
               canTo: true,
               activeMenu: '/automation/actions'
@@ -351,7 +338,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
             meta: {
               title: t('router.EditAction'),
               // noTagsView: true,
-              // noCache: true,
               hidden: true,
               canTo: true,
               activeMenu: '/automation/actions'
@@ -377,7 +363,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
         meta: {
           title: t('router.ListDashboards'),
           // noTagsView: true,
-          // noCache: true,
           hidden: true,
           canTo: true,
           activeMenu: '/dashboards'
@@ -391,7 +376,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
         meta: {
           title: t('router.DashboardsView'),
           // noTagsView: true,
-          // noCache: true,
           hidden: true,
           canTo: true,
           activeMenu: '/dashboards'
@@ -405,7 +389,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
         meta: {
           title: t('router.EditDashboard'),
           // noTagsView: true,
-          // noCache: true,
           hidden: true,
           canTo: true,
           activeMenu: '/dashboards'
@@ -455,7 +438,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
             meta: {
               title: t('router.New'),
               noTagsView: true,
-              noCache: true,
               hidden: true,
               canTo: true,
               activeMenu: '/etc/variables'
@@ -469,7 +451,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
             meta: {
               title: t('router.EditVariable'),
               // noTagsView: true,
-              // noCache: true,
               hidden: true,
               canTo: true,
               activeMenu: '/etc/variables'
@@ -501,7 +482,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
             meta: {
               title: t('router.EditPlugin'),
               // noTagsView: true,
-              // noCache: true,
               hidden: true,
               canTo: true,
               activeMenu: '/etc/plugins'
@@ -550,7 +530,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
             meta: {
               title: t('router.New'),
               noTagsView: true,
-              noCache: true,
               hidden: true,
               canTo: true,
               activeMenu: '/etc/areas'
@@ -564,7 +543,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
             meta: {
               title: t('router.EditArea'),
               // noTagsView: true,
-              // noCache: true,
               hidden: true,
               canTo: true,
               activeMenu: '/etc/areas'
@@ -587,7 +565,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
             meta: {
               title: t('router.View'),
               // noTagsView: true,
-              // noCache: true,
               hidden: true,
               canTo: true,
               activeMenu: '/etc/plugins'
@@ -601,7 +578,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
             meta: {
               title: t('router.View'),
               // noTagsView: true,
-              // noCache: true,
               hidden: true,
               canTo: true,
               activeMenu: '/etc/mqtt'
@@ -624,7 +600,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
             meta: {
               title: t('router.ListZigbee2mqtt'),
               // noTagsView: true,
-              // noCache: true,
               hidden: true,
               canTo: true,
               activeMenu: '/etc/zigbee2mqtt'
@@ -637,7 +612,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
             meta: {
               title: t('router.New'),
               noTagsView: true,
-              noCache: true,
               hidden: true,
               canTo: true,
               activeMenu: '/etc/zigbee2mqtt'
@@ -651,7 +625,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
             meta: {
               title: t('router.EditZigbee2mqtt'),
               // noTagsView: true,
-              // noCache: true,
               hidden: true,
               canTo: true,
               activeMenu: '/etc/zigbee2mqtt'
@@ -674,7 +647,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
             meta: {
               title: t('router.New'),
               noTagsView: true,
-              noCache: true,
               hidden: true,
               canTo: true,
               activeMenu: '/etc/users'
@@ -688,7 +660,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
             meta: {
               title: t('router.EditUser'),
               // noTagsView: true,
-              // noCache: true,
               hidden: true,
               canTo: true,
               activeMenu: '/etc/users'

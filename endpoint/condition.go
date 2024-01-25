@@ -102,9 +102,9 @@ func (n *ConditionEndpoint) Update(ctx context.Context, params *m.Condition) (re
 }
 
 // GetList ...
-func (n *ConditionEndpoint) GetList(ctx context.Context, pagination common.PageParams) (result []*m.Condition, total int64, err error) {
+func (n *ConditionEndpoint) GetList(ctx context.Context, pagination common.PageParams, ids *[]uint64) (result []*m.Condition, total int64, err error) {
 
-	result, total, err = n.adaptors.Condition.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
+	result, total, err = n.adaptors.Condition.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, ids)
 
 	return
 }

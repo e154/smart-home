@@ -97,7 +97,10 @@ func (c ControllerBackup) BackupServiceUploadBackup(ctx echo.Context, _ stub.Bac
 		return c.ERROR(ctx, apperr.ErrInvalidRequest)
 	}
 
-	list, errs := c.endpoint.Backup.Upload(r.Context(), form.File)
+	list, errs, err := c.endpoint.Backup.Upload(r.Context(), form.File)
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
 
 	var resultBackups = make([]interface{}, 0)
 

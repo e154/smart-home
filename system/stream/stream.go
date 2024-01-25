@@ -29,7 +29,6 @@ import (
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/plugins/webpush"
 	"github.com/e154/smart-home/system/bus"
 )
 
@@ -75,28 +74,15 @@ func NewStreamService(lc fx.Lifecycle,
 
 // Start ...
 func (s *Stream) Start(_ context.Context) error {
-	_ = s.eventBus.Subscribe("system/entities/+", s.eventHandler.eventHandler)
-	_ = s.eventBus.Subscribe("system/models/entities/+", s.eventHandler.eventHandler)
-	_ = s.eventBus.Subscribe("system/models/variables/+", s.eventHandler.eventHandler)
-	_ = s.eventBus.Subscribe("system/plugins/+", s.eventHandler.eventHandler)
-	_ = s.eventBus.Subscribe("system/automation/#", s.eventHandler.eventHandler)
-	_ = s.eventBus.Subscribe(webpush.TopicPluginWebpush, s.eventHandler.eventHandler)
-	_ = s.eventBus.Subscribe("system/services/mqtt", s.eventHandler.eventHandler)
-	_ = s.eventBus.Subscribe("system/services/backup", s.eventHandler.eventHandler)
+	_ = s.eventBus.Subscribe("system/#", s.eventHandler.eventHandler)
 	s.eventBus.Publish("system/services/stream", events.EventServiceStarted{Service: "Stream"})
 	return nil
 }
 
 // Shutdown ...
 func (s *Stream) Shutdown(_ context.Context) error {
-	_ = s.eventBus.Unsubscribe("system/entities/+", s.eventHandler.eventHandler)
-	_ = s.eventBus.Unsubscribe("system/models/entities/+", s.eventHandler.eventHandler)
-	_ = s.eventBus.Unsubscribe("system/models/variables/+", s.eventHandler.eventHandler)
-	_ = s.eventBus.Unsubscribe("system/plugins/+", s.eventHandler.eventHandler)
-	_ = s.eventBus.Unsubscribe("system/automation/#", s.eventHandler.eventHandler)
-	_ = s.eventBus.Unsubscribe("system/services/mqtt", s.eventHandler.eventHandler)
-	_ = s.eventBus.Unsubscribe("system/services/backup", s.eventHandler.eventHandler)
-	_ = s.eventBus.Unsubscribe(webpush.TopicPluginWebpush, s.eventHandler.eventHandler)
+	_ = s.eventBus.Unsubscribe("system/#", s.eventHandler.eventHandler)
+	_ = s.eventBus.Unsubscribe("system/dashboard", s.eventHandler.eventHandler)
 	s.sessions.Range(func(key, value interface{}) bool {
 		cli := value.(*Client)
 		cli.Close()
@@ -116,13 +102,19 @@ func (s *Stream) Broadcast(query string, message []byte) {
 }
 
 // DirectMessage ...
-func (s *Stream) DirectMessage(userID int64, query string, message []byte) {
+func (s *Stream) DirectMessage(userID int64, sessionID string, query string, message []byte) {
 	s.sessions.Range(func(key, value interface{}) bool {
-		cli := value.(*Client)
-		if userID != 0 && cli.user.Id != userID {
+		cli, ok := value.(*Client)
+		if !ok {
+			return false
+		}
+		if sessionID != "" && cli.SessionID() == sessionID {
+			_ = cli.Send(uuid.NewString(), query, message)
 			return true
 		}
-		_ = cli.Send(uuid.NewString(), query, message)
+		if sessionID == "" && cli.user.Id == userID {
+			_ = cli.Send(uuid.NewString(), query, message)
+		}
 		return true
 	})
 }
@@ -153,7 +145,7 @@ func (s *Stream) UnSubscribe(command string) {
 func (s *Stream) NewConnection(ws *websocket.Conn, user *m.User) {
 
 	id := uuid.NewString()
-	client := NewClient(ws, user)
+	client := NewClient(ws, user, id)
 	defer func() {
 		log.Infof("websocket session closed, email: '%s'", user.Email)
 		s.sessions.Delete(id)

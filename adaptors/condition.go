@@ -35,7 +35,7 @@ type ICondition interface {
 	GetById(ctx context.Context, id int64) (metric *m.Condition, err error)
 	Update(ctx context.Context, ver *m.Condition) error
 	Delete(ctx context.Context, deviceId int64) (err error)
-	List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.Condition, total int64, err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string, ids *[]uint64) (list []*m.Condition, total int64, err error)
 	Search(ctx context.Context, query string, limit, offset int) (list []*m.Condition, total int64, err error)
 	fromDb(dbVer *db.Condition) (ver *m.Condition)
 	toDb(ver *m.Condition) (dbVer *db.Condition)
@@ -94,9 +94,9 @@ func (n *Condition) Delete(ctx context.Context, deviceId int64) (err error) {
 }
 
 // List ...
-func (n *Condition) List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.Condition, total int64, err error) {
+func (n *Condition) List(ctx context.Context, limit, offset int64, orderBy, sort string, ids *[]uint64) (list []*m.Condition, total int64, err error) {
 	var dbList []*db.Condition
-	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort); err != nil {
+	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort, ids); err != nil {
 		return
 	}
 

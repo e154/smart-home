@@ -53,7 +53,7 @@ func TestTriggerEmpty(t *testing.T) {
 			scheduler.Start(context.Background())
 			automation.Start()
 			supervisor.Start(context.Background())
-			WaitSupervisor(eventBus)
+			WaitSupervisor(eventBus, time.Second)
 
 			// automation
 			// ------------------------------------------------

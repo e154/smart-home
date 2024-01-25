@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, reactive, ref, shallowReactive, watch} from 'vue'
 import {useI18n} from '@/hooks/web/useI18n'
-import {ElMessage, ElTabs, ElTabPane} from 'element-plus'
+import {ElMessage, ElTabs, ElTabPane, ElEmpty, ElButton} from 'element-plus'
 import {useRoute, useRouter} from 'vue-router'
 import api from "@/api/api";
 import {EventStateChange} from "@/api/stream_types";
@@ -18,7 +18,7 @@ import ViewTab from "@/views/Dashboard/editor/ViewTab.vue";
 import TabCardItem from "@/views/Dashboard/editor/TabCardItem.vue";
 import {useCache} from "@/hooks/web/useCache";
 
-const {bus} = useBus()
+const {emit} = useBus()
 const route = useRoute();
 const {t} = useI18n()
 const { wsCache } = useCache()
@@ -27,13 +27,13 @@ const { wsCache } = useCache()
 // common
 // ---------------------------------
 
-const loading = ref(false)
+const loading = ref(true)
 const dashboardId = computed(() => parseInt(route.params.id as string) as number);
 const core = reactive<Core>(new Core());
 const currentID = ref('')
 
 const onStateChanged = (event: EventStateChange) => {
-  bus.emit('state_changed', event);
+  emit('state_changed', event);
   core.onStateChanged(event);
 }
 
@@ -41,9 +41,9 @@ onMounted(() => {
   const uuid = new UUID()
   currentID.value = uuid.getDashFreeUUID()
 
-  // setTimeout(() => {
-    stream.subscribe('state_changed', currentID.value, onStateChanged);
-  // }, 1000)
+  stream.subscribe('state_changed', currentID.value, onStateChanged);
+
+  fetchDashboard()
 })
 
 onUnmounted(() => {
@@ -65,8 +65,6 @@ const fetchDashboard = async () => {
   core.currentBoard(res.data);
 }
 
-fetchDashboard()
-
 useBus({
   name: 'fetchDashboard',
   callback: () => {
@@ -77,46 +75,27 @@ useBus({
 // tabs
 // ---------------------------------
 
-const handleTabsEdit = (targetName: string, action: string) => {
-  switch (action) {
-    case 'add':
-      createTab();
-      break;
-    case 'remove':
-  }
-}
-
 const updateCurrentTab = (tab: any, ev: any) => {
   const {index} = tab;
-  if (core.activeTab === index) return;
-  core.activeTab = index;
+  if (core.activeTabIdx === index) return;
+  core.activeTabIdx = index;
   core.updateCurrentTab();
-}
-
-const createTab = async () => {
-  await core.createTab();
-  ElMessage({
-    title: t('Success'),
-    message: t('message.createdSuccessfully'),
-    type: 'success',
-    duration: 2000
-  });
 }
 
 const activeTabIdx = computed({
   get(): string {
-    return core.activeTab + ''
+    return core.activeTabIdx + ''
   },
   set(value: string) {
-    core.activeTab = parseInt(value)
+    core.activeTabIdx = parseInt(value)
   }
 })
 
-const activeTab = computed<Tab>(() => core.tabs[core.activeTab] as Tab)
-const activeCard = computed<Card>(() => core.tabs[core.activeTab].cards[core.activeCard] as Card)
+const activeTab = computed<Tab>(() => core.getActiveTab as Tab)
+const activeCard = computed<Card>(() => core.getActiveTab.cards[core.activeCard] as Card)
 
 const getBackgroundColor = () => {
-  return {backgroundColor: core.tabs[core.activeTab]?.background}
+  return {backgroundColor: core.getActiveTab?.background}
 }
 
 // split panels
@@ -137,7 +116,7 @@ const resizeHandler = function ($event) {
     wsCache.set('splitPaneBottomSize', height);
 
     splitPaneBottom.value = height;
-    // bus.emit('splitPaneBottomResized', height);
+    // emit('splitPaneBottomResized', height);
     // console.log(height)
   }
 };
@@ -147,22 +126,38 @@ const elContainerHeight = computed(()=> {
   return (splitPaneBottom.value - 60 - tagsView.value)  + 'px';
 })
 
+const createTab = async () => {
+  await core.createTab();
+
+  ElMessage({
+    title: t('Success'),
+    message: t('message.createdSuccessfully'),
+    type: 'success',
+    duration: 2000
+  });
+}
+
+const addCard = () => {
+  core.createCard();
+}
+
 </script>
 
 <template>
   <div class="components-container dashboard-container" style="margin: 0" v-if="!loading" :style="getBackgroundColor()">
 
-  <splitpanes class="default-theme" @resize="resizeHandler" horizontal>
+  <splitpanes class="default-theme" @resized="resizeHandler" horizontal>
     <pane min-size="10" max-size="90" class="top-container" :size="splitPaneTopSize">
         <ElTabs
             v-model="activeTabIdx"
-            @edit="handleTabsEdit"
             @tab-click="updateCurrentTab"
-            class="ml-20px">
+            class="ml-20px"
+            :lazy="true">
           <ElTabPane
               v-for="(tab, index) in core.tabs"
               :label="tab.name"
               :key="index"
+              :disabled="!tab.enabled"
               :class="[{'gap': tab.gap}]">
             <ViewTab :tab="tab" :key="index" :core="core"/>
           </ElTabPane>
@@ -178,19 +173,39 @@ const elContainerHeight = computed(()=> {
 
         <!-- tabs -->
         <ElTabPane :label="$t('dashboard.tabsTab')" name="tabs">
-          <TabEditor v-if="core.current" :tab="activeTab" :core="core"/>
+          <TabEditor v-if="core.current && activeTab" :tab="activeTab" :core="core"/>
+          <ElEmpty v-if="!core.tabs.length" :rows="5">
+            <ElButton type="primary" @click="createTab()">
+              {{ t('dashboard.addNewTab') }}
+            </ElButton>
+          </ElEmpty>
         </ElTabPane>
         <!-- /tabs -->
 
         <!-- cards -->
         <ElTabPane :label="$t('dashboard.cardsTab')" name="cards">
           <TabCard v-if="core.current && activeTab" :tab="activeTab" :core="core"/>
+          <ElEmpty v-if="!core.tabs.length" :rows="5">
+            <ElButton type="primary" @click="createTab()">
+              {{ t('dashboard.addNewTab') }}
+            </ElButton>
+          </ElEmpty>
         </ElTabPane>
         <!-- /cards -->
 
         <!-- cardItems -->
         <ElTabPane :label="$t('dashboard.cardItemsTab')" name="cardItems">
           <TabCardItem v-if="core.current && activeTab && activeCard" :card="activeCard" :core="core"/>
+          <ElEmpty v-if="!core.tabs.length" :rows="5">
+            <ElButton type="primary" @click="createTab()">
+              {{ t('dashboard.addNewTab') }}
+            </ElButton>
+          </ElEmpty>
+          <ElEmpty v-if="core.tabs.length && !(core.activeCard >= 0)" :rows="5">
+            <ElButton type="primary" @click="addCard()">
+              {{ t('dashboard.addNewCard') }}
+            </ElButton>
+          </ElEmpty>
         </ElTabPane>
         <!-- /cardItems -->
 
@@ -237,6 +252,10 @@ const elContainerHeight = computed(()=> {
 .bottom-container {
   width: 100%;
   padding: 0 20px;
+}
+
+.splitpanes.default-theme .splitpanes__pane.bottom-container {
+  background-color: var(--el-bg-color);
 }
 
 p {
@@ -293,4 +312,9 @@ html {
   padding: 0 20px 0 0;
 }
 
+.prevent-select {
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+}
 </style>

@@ -83,8 +83,12 @@ func (s Script) ToSearchResult(list []*m.Script) *stub.ApiSearchScriptListResult
 
 	items := make([]stub.ApiScript, 0, len(list))
 
-	for _, i := range list {
-		items = append(items, *s.GetStubScript(i))
+	for _, script := range list {
+		items = append(items, stub.ApiScript{
+			Id:   script.Id,
+			Lang: string(script.Lang),
+			Name: script.Name,
+		})
 	}
 
 	return &stub.ApiSearchScriptListResult{

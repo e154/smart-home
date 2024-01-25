@@ -23,8 +23,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/e154/smart-home/common/events"
-
 	"github.com/e154/smart-home/common/astronomics/moonphase"
 	"github.com/e154/smart-home/common/astronomics/suncalc"
 	m "github.com/e154/smart-home/models"
@@ -33,7 +31,7 @@ import (
 
 // Actor ...
 type Actor struct {
-	supervisor.BaseActor
+	*supervisor.BaseActor
 	positionLock  *sync.Mutex
 	lat, lon      float64
 	moonAzimuth   float64
@@ -94,10 +92,6 @@ func (e *Actor) UpdateMoonPosition(now time.Time) {
 	e.positionLock.Lock()
 	defer e.positionLock.Unlock()
 
-	oldState := e.GetEventState()
-
-	e.Now(oldState)
-
 	moon := moonphase.New(now)
 	//fmt.Println(moon.PhaseName())
 
@@ -146,19 +140,11 @@ func (e *Actor) UpdateMoonPosition(now time.Time) {
 
 	attributeValues[AttrHorizonState] = e.horizonState
 
-	if state, ok := e.States[e.horizonState]; ok {
-		e.State = &state
-	}
+	e.SetActorState(&e.horizonState)
 
 	//log.Debugf("Moon horizonState %v", e.horizonState)
 
 	e.DeserializeAttr(attributeValues)
 
-	go e.SaveState(events.EventStateChanged{
-		StorageSave: true,
-		PluginName:  e.Id.PluginName(),
-		EntityId:    e.Id,
-		OldState:    oldState,
-		NewState:    e.GetEventState(),
-	})
+	e.SaveState(false, true)
 }

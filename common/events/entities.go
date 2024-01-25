@@ -21,25 +21,24 @@ package events
 import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
 )
 
 // EventStateChanged ...
 type EventStateChanged struct {
-	StorageSave     bool                 `json:"storage_save"`
-	DoNotSaveMetric bool                 `json:"do_not_save_metric"`
-	PluginName      string               `json:"plugin_name"`
-	EntityId        common.EntityId      `json:"entity_id"`
-	OldState        bus.EventEntityState `json:"old_state"`
-	NewState        bus.EventEntityState `json:"new_state"`
+	StorageSave     bool             `json:"storage_save"`
+	DoNotSaveMetric bool             `json:"do_not_save_metric"`
+	PluginName      string           `json:"plugin_name"`
+	EntityId        common.EntityId  `json:"entity_id"`
+	OldState        EventEntityState `json:"old_state"`
+	NewState        EventEntityState `json:"new_state"`
 }
 
 // EventLastStateChanged ...
 type EventLastStateChanged struct {
-	PluginName string               `json:"plugin_name"`
-	EntityId   common.EntityId      `json:"entity_id"`
-	OldState   bus.EventEntityState `json:"old_state"`
-	NewState   bus.EventEntityState `json:"new_state"`
+	PluginName string           `json:"plugin_name"`
+	EntityId   common.EntityId  `json:"entity_id"`
+	OldState   EventEntityState `json:"old_state"`
+	NewState   EventEntityState `json:"new_state"`
 }
 
 // EventGetLastState ...

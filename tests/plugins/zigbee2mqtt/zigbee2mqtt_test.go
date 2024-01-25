@@ -315,7 +315,7 @@ automationAction = (entityId)->
 			go zigbee2mqtt.Start(context.Background())
 
 			supervisor.Start(context.Background())
-			WaitSupervisor(eventBus)
+			WaitSupervisor(eventBus, time.Second)
 
 			//
 			// ------------------------------------------------

@@ -327,6 +327,7 @@ func (n *Entities) GetByType(ctx context.Context, t string, limit, offset int) (
 		return
 	}
 
+	// todo: remove
 	if err = n.PreloadStorage(ctx, list); err != nil {
 		err = errors.Wrap(apperr.ErrEntityGet, err.Error())
 		return
@@ -387,7 +388,7 @@ func (n Entities) PreloadStorage(ctx context.Context, list []*Entity) (err error
 	for _, item := range list {
 		err = n.Db.WithContext(ctx).Model(&EntityStorage{}).
 			Order("created_at desc").
-			Limit(1).
+			Limit(2).
 			Find(&item.Storage, "entity_id = ?", item.Id).
 			Error
 		if err != nil {

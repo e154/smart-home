@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ElDrawer, ElDivider, ElMessage } from 'element-plus'
-import { ref, unref, computed, watch } from 'vue'
+import {ref, unref, computed, watch, nextTick} from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ThemeSwitch } from '@/components/ThemeSwitch'
 import { colorIsDark, lighten, hexToRGB } from '@/utils/color'
@@ -12,6 +12,7 @@ import InterfaceDisplay from './components/InterfaceDisplay.vue'
 import { useCache } from '@/hooks/web/useCache'
 import { useClipboard } from '@vueuse/core'
 import { useDesign } from '@/hooks/web/useDesign'
+import {isDark} from "@/utils/is";
 
 const { getPrefixCls } = useDesign()
 
@@ -20,6 +21,8 @@ const prefixCls = getPrefixCls('setting')
 const appStore = useAppStore()
 
 const { t } = useI18n()
+
+const { wsCache } = useCache()
 
 const layout = computed(() => appStore.getLayout)
 
@@ -139,6 +142,7 @@ const copyConfig = async () => {
       footer: ${appStore.getFooter},
       // 灰色模式
       greyMode: ${appStore.getGreyMode},
+      systemTheme: ${appStore.getSystemTheme},
       // layout布局
       layout: '${appStore.getLayout}',
       // 暗黑模式
@@ -190,12 +194,25 @@ const copyConfig = async () => {
 
 // 清空缓存
 const clear = () => {
-  const { wsCache } = useCache()
   wsCache.delete('layout')
   wsCache.delete('theme')
   wsCache.delete('isDark')
   window.location.reload()
 }
+
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+  if (appStore.getSystemTheme) {
+    appStore.setIsDark(event.matches)
+  }
+});
+
+const checkTheme = () => {
+  const _isDark = wsCache.get('systemTheme') ? isDark() : wsCache.get('isDark') || false;
+  appStore.setIsDark(_isDark)
+}
+
+checkTheme()
+
 </script>
 
 <template>

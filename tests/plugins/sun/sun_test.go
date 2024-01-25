@@ -44,24 +44,25 @@ func TestSun(t *testing.T) {
 
 			AddPlugin(adaptors, "sun")
 
-			// add entity
+			// common
 			// ------------------------------------------------
 			sunEnt := GetNewSun("main")
 			err := adaptors.Entity.Add(context.Background(), sunEnt)
 			ctx.So(err, ShouldBeNil)
 
 			ch := make(chan events.EventStateChanged, 2)
+			defer close(ch)
 			fn := func(topic string, msg interface{}) {
 				switch v := msg.(type) {
 				case events.EventStateChanged:
 					ch <- v
 				}
 			}
-			_ = eventBus.Subscribe("system/entities/"+sunEnt.Id.String(), fn)
-			defer func() {
-				_ = eventBus.Unsubscribe("system/entities/"+sunEnt.Id.String(), fn)
-			}()
+			eventBus.Subscribe("system/entities/"+sunEnt.Id.String(), fn)
+			defer eventBus.Unsubscribe("system/entities/"+sunEnt.Id.String(), fn)
 
+			// add entity
+			// ------------------------------------------------
 			sun := sunPlugin.NewActor(sunEnt, supervisor.GetService())
 
 			t.Run("entity", func(t *testing.T) {
@@ -81,16 +82,9 @@ func TestSun(t *testing.T) {
 					ctx.So(err, ShouldBeNil)
 					sun.UpdateSunPosition(time.Date(2021, 5, 27, 23, 0, 0, 0, loc))
 
-					ticker := time.NewTimer(time.Second * 5)
-					defer ticker.Stop()
-
-					var msg events.EventStateChanged
-					select {
-					case msg = <-ch:
-					case <-ticker.C:
-					}
-
-					//debug.Println(msg.NewState.Attributes)
+					// wait message
+					msg, ok := WaitT[events.EventStateChanged](time.Second*2, ch)
+					ctx.So(ok, ShouldBeTrue)
 
 					ctx.So(msg.NewState.State, ShouldNotBeNil)
 					ctx.So(msg.NewState.State.Name, ShouldEqual, sunPlugin.AttrDusk)

@@ -19,7 +19,7 @@
 package alexa
 
 import (
-	"fmt"
+	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
@@ -75,7 +75,7 @@ func (h *Skill) OnLaunch(_ *gin.Context, req *Request, resp *Response) {
 	}
 	h.jsBind.update(req, resp)
 	if _, err := h.engine.Engine().AssertFunction("skillOnLaunch"); err != nil {
-		log.Error(err.Error())
+		log.Error(errors.Wrapf(err, "skill id: %d", h.model.Id).Error())
 	}
 }
 
@@ -90,11 +90,11 @@ func (h *Skill) OnIntent(_ *gin.Context, req *Request, resp *Response) {
 
 		h.jsBind.update(req, resp)
 		if _, err := h.engine.Engine().EvalScript(intent.Script); err != nil {
-			log.Error(fmt.Sprintf("%+v", err))
+			log.Error(errors.Wrapf(err, "skill id: %d", h.model.Id).Error())
 			return
 		}
 		if _, err := h.engine.Engine().AssertFunction("skillOnIntent"); err != nil {
-			log.Error(fmt.Sprintf("%+v", err))
+			log.Error(errors.Wrapf(err, "skill id: %d", h.model.Id).Error())
 			return
 		}
 	}
@@ -113,7 +113,7 @@ func (h *Skill) OnSessionEnded(_ *gin.Context, req *Request, resp *Response) {
 
 	h.jsBind.update(req, resp)
 	if _, err := h.engine.Engine().AssertFunction("skillOnSessionEnd"); err != nil {
-		log.Error(err.Error())
+		log.Error(errors.Wrapf(err, "skill id: %d", h.model.Id).Error())
 	}
 }
 

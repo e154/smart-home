@@ -51,7 +51,7 @@ func (d *EntityStorage) TableName() string {
 }
 
 // Add ...
-func (n *EntityStorages) Add(ctx context.Context, v EntityStorage) (id int64, err error) {
+func (n *EntityStorages) Add(ctx context.Context, v *EntityStorage) (id int64, err error) {
 	if err = n.Db.WithContext(ctx).Create(&v).Error; err != nil {
 		err = errors.Wrap(apperr.ErrEntityStorageAdd, err.Error())
 		return
@@ -61,8 +61,8 @@ func (n *EntityStorages) Add(ctx context.Context, v EntityStorage) (id int64, er
 }
 
 // GetLastByEntityId ...
-func (n *EntityStorages) GetLastByEntityId(ctx context.Context, entityId common.EntityId) (v EntityStorage, err error) {
-	v = EntityStorage{}
+func (n *EntityStorages) GetLastByEntityId(ctx context.Context, entityId common.EntityId) (v *EntityStorage, err error) {
+	v = &EntityStorage{}
 	err = n.Db.WithContext(ctx).Model(&EntityStorage{}).
 		Order("created_at desc").
 		First(&v, "entity_id = ?", entityId).
@@ -80,16 +80,12 @@ func (n *EntityStorages) GetLastByEntityId(ctx context.Context, entityId common.
 }
 
 // List ...
-func (n *EntityStorages) List(ctx context.Context, limit, offset int, orderBy, sort string, entityIds []common.EntityId, startDate, endDate *time.Time) (list []EntityStorage, total int64, err error) {
+func (n *EntityStorages) List(ctx context.Context, limit, offset int, orderBy, sort string, entityIds []common.EntityId, startDate, endDate *time.Time) (list []*EntityStorage, total int64, err error) {
 
 	q := n.Db.WithContext(ctx).Model(&EntityStorage{})
 
 	if len(entityIds) > 0 {
-		var ids = make([]string, 0, len(entityIds))
-		for _, id := range entityIds {
-			ids = append(ids, id.String())
-		}
-		q = q.Where("entity_id in (?)", ids)
+		q = q.Where("entity_id in (?)", entityIds)
 	}
 
 	if startDate != nil {
@@ -104,7 +100,7 @@ func (n *EntityStorages) List(ctx context.Context, limit, offset int, orderBy, s
 		return
 	}
 
-	list = make([]EntityStorage, 0)
+	list = make([]*EntityStorage, 0)
 	q = q.
 		Limit(limit).
 		Offset(offset)

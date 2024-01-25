@@ -76,6 +76,9 @@ func (n *ScriptEndpoint) Add(ctx context.Context, params *m.Script) (script *m.S
 	}
 
 	n.eventBus.Publish(fmt.Sprintf("system/models/scripts/%d", script.Id), events.EventCreatedScriptModel{
+		Common: events.Common{
+			Owner: events.OwnerUser,
+		},
 		ScriptId: script.Id,
 		Script:   script,
 	})
@@ -119,6 +122,9 @@ func (n *ScriptEndpoint) Copy(ctx context.Context, scriptId int64) (script *m.Sc
 	}
 
 	n.eventBus.Publish(fmt.Sprintf("system/models/scripts/%d", script.Id), events.EventCreatedScriptModel{
+		Common: events.Common{
+			Owner: events.OwnerUser,
+		},
 		ScriptId: script.Id,
 		Script:   script,
 	})
@@ -166,6 +172,9 @@ func (n *ScriptEndpoint) Update(ctx context.Context, params *m.Script) (result *
 	}
 
 	n.eventBus.Publish(fmt.Sprintf("system/models/scripts/%d", script.Id), events.EventUpdatedScriptModel{
+		Common: events.Common{
+			Owner: events.OwnerUser,
+		},
 		ScriptId: script.Id,
 		Script:   script,
 	})
@@ -174,9 +183,9 @@ func (n *ScriptEndpoint) Update(ctx context.Context, params *m.Script) (result *
 }
 
 // GetList ...
-func (n *ScriptEndpoint) GetList(ctx context.Context, pagination common.PageParams, query *string) (result []*m.Script, total int64, err error) {
+func (n *ScriptEndpoint) GetList(ctx context.Context, pagination common.PageParams, query *string, ids *[]uint64) (result []*m.Script, total int64, err error) {
 
-	result, total, err = n.adaptors.Script.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, query)
+	result, total, err = n.adaptors.Script.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, query, ids)
 
 	return
 }
@@ -200,7 +209,11 @@ func (n *ScriptEndpoint) DeleteScriptById(ctx context.Context, scriptId int64) (
 	}
 
 	n.eventBus.Publish(fmt.Sprintf("system/models/scripts/%d", script.Id), events.EventRemovedScriptModel{
+		Common: events.Common{
+			Owner: events.OwnerUser,
+		},
 		ScriptId: script.Id,
+		Script:   script,
 	})
 
 	return

@@ -84,10 +84,12 @@ func GetScripts(ctx C, scriptService scripts.ScriptService, adaptors *adaptors.A
 		ctx.So(err, ShouldBeNil)
 		err = engine.Compile()
 		ctx.So(err, ShouldBeNil)
-		scriptId, err := adaptors.Script.Add(context.Background(), script)
-		ctx.So(err, ShouldBeNil)
-		script, err = adaptors.Script.GetById(context.Background(), scriptId)
-		ctx.So(err, ShouldBeNil)
+		if scriptId, err := adaptors.Script.Add(context.Background(), script); err == nil {
+			script, err = adaptors.Script.GetById(context.Background(), scriptId)
+			ctx.So(err, ShouldBeNil)
+		} else {
+			script, _ = adaptors.Script.GetByName(context.Background(), script.Name)
+		}
 		scripts[fmt.Sprintf("script%d", arg)] = script
 	}
 

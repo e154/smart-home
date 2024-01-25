@@ -4,8 +4,6 @@ import '@/plugins/windi.css'
 // 导入全局的svg图标
 import '@/plugins/svgIcon'
 
-import { InstallCodemirro } from "codemirror-editor-vue3";
-
 // 初始化多语言
 import { setupI18n } from '@/plugins/vueI18n'
 
@@ -57,8 +55,6 @@ const setupAll = async () => {
   setupRouter(app)
 
   setupPermission(app)
-
-  app.use(InstallCodemirro);
 
   app.use(OpenLayersMap);
 

@@ -31,7 +31,6 @@ import (
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
-	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/notify"
 	notifyCommon "github.com/e154/smart-home/plugins/notify/common"
@@ -40,7 +39,7 @@ import (
 
 // Actor ...
 type Actor struct {
-	supervisor.BaseActor
+	*supervisor.BaseActor
 	AccessToken string
 	Name        string
 	notify      *notify.Notify
@@ -169,9 +168,6 @@ func (e *Actor) UpdateBalance() (bal Balance, err error) {
 	e.balanceLock.Lock()
 	defer e.balanceLock.Unlock()
 
-	oldState := e.GetEventState()
-	now := e.Now(oldState)
-
 	var b *balance.Balance
 	if common.TestMode() {
 		b = &balance.Balance{
@@ -200,25 +196,10 @@ func (e *Actor) UpdateBalance() (bal Balance, err error) {
 		if err != nil {
 			log.Warn(err.Error())
 		}
-
-		if oldState.LastUpdated != nil {
-			delta := now.Sub(*oldState.LastUpdated).Milliseconds()
-			//fmt.Println("delta", delta)
-			if delta < 200 {
-				e.AttrMu.Unlock()
-				return
-			}
-		}
 	}
 	e.AttrMu.Unlock()
 
-	go e.SaveState(events.EventStateChanged{
-		StorageSave: true,
-		PluginName:  e.Id.PluginName(),
-		EntityId:    e.Id,
-		OldState:    oldState,
-		NewState:    e.GetEventState(),
-	})
+	e.SaveState(false, true)
 
 	return
 }

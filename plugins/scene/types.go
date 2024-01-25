@@ -23,6 +23,8 @@ const (
 	Name = "scene"
 	// EntityScene ...
 	EntityScene = string("scene")
+	// FuncEntityAction ...
+	FuncEntityAction = "entityAction"
 
 	Version = "0.0.1"
 )

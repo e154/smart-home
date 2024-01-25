@@ -69,7 +69,8 @@ func (f *EchoAccessFilter) Auth(next echo.HandlerFunc) echo.HandlerFunc {
 		requestURI := c.Request().URL
 		method := strings.ToLower(c.Request().Method)
 
-		if f.config.GodMode {
+		if f.config.RootMode {
+			c.Set("root", true)
 			return next(c)
 		}
 
@@ -86,7 +87,7 @@ func (f *EchoAccessFilter) Auth(next echo.HandlerFunc) echo.HandlerFunc {
 
 		// if id == 1 is admin
 		if claims.UserId == 1 || claims.RoleName == "admin" {
-			if err = f.getUser(claims.UserId, c); err != nil {
+			if err = f.getUser(claims, c); err != nil {
 				return f.HTTP401(c, apperr.ErrUnauthorized)
 			}
 			return next(c)
@@ -99,7 +100,7 @@ func (f *EchoAccessFilter) Auth(next echo.HandlerFunc) echo.HandlerFunc {
 
 		// check access filter
 		if ret := f.accessDecision(requestURI.Path, method, accessList); ret {
-			if err = f.getUser(claims.UserId, c); err != nil {
+			if err = f.getUser(claims, c); err != nil {
 				return f.HTTP401(c, apperr.ErrUnauthorized)
 			}
 			return next(c)
@@ -113,12 +114,13 @@ func (f *EchoAccessFilter) Auth(next echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
-func (f *EchoAccessFilter) getUser(userId int64, c echo.Context) error {
-	user, err := f.adaptors.User.GetById(context.Background(), userId)
+func (f *EchoAccessFilter) getUser(claims *jwt_manager.UserClaims, c echo.Context) error {
+	user, err := f.adaptors.User.GetById(context.Background(), claims.UserId)
 	if err != nil {
 		return err
 	}
 	c.Set("currentUser", user)
+	c.Set("root", claims.Root)
 	return nil
 }
 

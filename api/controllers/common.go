@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"context"
 	"encoding/base64"
 	"encoding/json"
 	"io"
@@ -81,6 +82,20 @@ func (c ControllerCommon) HTTP401(ctx echo.Context, err error) error {
 	}
 	return ctx.JSON(http.StatusUnauthorized, ResponseWithError(ctx, &ErrorBase{
 		Code: common.String("UNAUTHORIZED"),
+	}))
+}
+
+// HTTP403 ...
+func (c ControllerCommon) HTTP403(ctx echo.Context, err error) error {
+	e := apperr.GetError(err)
+	if e != nil {
+		return ctx.JSON(http.StatusForbidden, ResponseWithError(ctx, &ErrorBase{
+			Code:    common.String(e.Code()),
+			Message: common.String(e.Message()),
+		}))
+	}
+	return ctx.JSON(http.StatusForbidden, ResponseWithError(ctx, &ErrorBase{
+		Code: common.String("ACCESS_FORBIDDEN"),
 	}))
 }
 
@@ -244,20 +259,22 @@ func (c ControllerCommon) Search(query *string, limit, offset *int64) (search co
 // ERROR ...
 func (c ControllerCommon) ERROR(ctx echo.Context, err error) error {
 	switch {
-	case errors.Is(err, apperr.ErrAlreadyExists):
-		return c.HTTP409(ctx, err)
-	case errors.Is(err, apperr.ErrInternal):
-		return c.HTTP500(ctx, err)
-	case errors.Is(err, apperr.ErrInvalidRequest):
-		return c.HTTP422(ctx, err)
-	case errors.Is(err, apperr.ErrNotFound):
-		return c.HTTP404(ctx, err)
-	case errors.Is(err, apperr.ErrAccessDenied):
-		return c.HTTP401(ctx, err)
 	case errors.Is(err, apperr.ErrUnknownField):
 		return c.HTTP400(ctx, err)
 	case errors.Is(err, apperr.ErrBadJSONRequest):
 		return c.HTTP400(ctx, err)
+	case errors.Is(err, apperr.ErrAccessDenied):
+		return c.HTTP401(ctx, err)
+	case errors.Is(err, apperr.ErrAccessForbidden):
+		return c.HTTP403(ctx, err)
+	case errors.Is(err, apperr.ErrNotFound):
+		return c.HTTP404(ctx, err)
+	case errors.Is(err, apperr.ErrAlreadyExists):
+		return c.HTTP409(ctx, err)
+	case errors.Is(err, apperr.ErrInvalidRequest):
+		return c.HTTP422(ctx, err)
+	case errors.Is(err, apperr.ErrInternal):
+		return c.HTTP500(ctx, err)
 	default:
 		var bodyStr string
 		body, _ := io.ReadAll(ctx.Request().Body)
@@ -298,4 +315,29 @@ func (c ControllerCommon) parseBasicAuth(auth string) (username, password string
 	}
 
 	return cs[:s], cs[s+1:], true
+}
+
+type contextValue struct {
+	echo.Context
+}
+
+func NewMiddlewareContextValue(fn echo.HandlerFunc) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		return fn(contextValue{ctx})
+	}
+}
+
+// Get retrieves data from the context.
+func (ctx contextValue) Get(key string) interface{} {
+	// get old context value
+	val := ctx.Context.Get(key)
+	if val != nil {
+		return val
+	}
+	return ctx.Request().Context().Value(key)
+}
+
+// Set saves data in the context.
+func (ctx contextValue) Set(key string, val interface{}) {
+	ctx.SetRequest(ctx.Request().WithContext(context.WithValue(ctx.Request().Context(), key, val)))
 }

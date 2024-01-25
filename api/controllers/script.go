@@ -84,7 +84,7 @@ func (c ControllerScript) ScriptServiceUpdateScriptById(ctx echo.Context, id int
 func (c ControllerScript) ScriptServiceGetScriptList(ctx echo.Context, params stub.ScriptServiceGetScriptListParams) error {
 
 	pagination := c.Pagination(params.Page, params.Limit, params.Sort)
-	items, total, err := c.endpoint.Script.GetList(ctx.Request().Context(), pagination, params.Query)
+	items, total, err := c.endpoint.Script.GetList(ctx.Request().Context(), pagination, params.Query, params.Ids)
 	if err != nil {
 		return c.ERROR(ctx, err)
 	}

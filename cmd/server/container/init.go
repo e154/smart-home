@@ -56,5 +56,6 @@ func MigrationList(adaptors *adaptors.Adaptors,
 		local_migrations.NewMigrationGate(adaptors),
 		local_migrations.NewMigrationAddVar1(adaptors),
 		local_migrations.NewMigrationUpdatePermissions(adaptors, accessList, orm),
+		local_migrations.NewMigrationWebdav(adaptors),
 	}
 }

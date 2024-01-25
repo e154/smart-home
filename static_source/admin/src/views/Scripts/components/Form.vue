@@ -55,9 +55,6 @@ const schema = reactive<FormSchema[]>([
           value: 'ts'
         }
       ],
-      onChange: (value: string) => {
-
-      }
     }
   },
   {

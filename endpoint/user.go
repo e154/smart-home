@@ -117,7 +117,7 @@ func (n *UserEndpoint) Delete(ctx context.Context, userId int64) (err error) {
 	}
 
 	if user.Role.Name == "admin" && user.Id == 1 {
-		err = apperr.ErrBadRequestParams
+		err = apperr.ErrUserDeleteForbidden
 		return
 	}
 
@@ -140,6 +140,11 @@ func (n *UserEndpoint) Update(ctx context.Context, params *m.User) (result *m.Us
 	var user *m.User
 	user, err = n.adaptors.User.GetById(ctx, params.Id)
 	if err != nil {
+		return
+	}
+
+	if user.Id == 1 && user.RoleName == "admin" && n.checkSuperUser(ctx) {
+		err = apperr.ErrUserUpdateForbidden
 		return
 	}
 

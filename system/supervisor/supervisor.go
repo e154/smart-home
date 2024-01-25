@@ -305,29 +305,21 @@ func (e *supervisor) eventLastState(msg events.EventGetLastState) {
 		return
 	}
 
-	if pla.GetCurrentState() == nil {
-		currentState := pla.GetEventState()
-		pla.SetCurrentState(currentState)
-	}
-
 	info := pla.Info()
-
-	currentState := pla.GetCurrentState()
-	if currentState.LastChanged == nil && currentState.LastUpdated == nil {
-		entity, err := e.adaptors.Entity.GetById(context.Background(), msg.EntityId)
-		if err != nil {
-			log.Error(err.Error())
-			return
-		}
-		currentState.Attributes = entity.Attributes
-	}
 
 	state := events.EventLastStateChanged{
 		PluginName: info.PluginName,
 		EntityId:   info.Id,
-		OldState:   *currentState,
-		NewState:   *currentState,
 	}
+
+	if oldState := pla.GetOldState(); oldState != nil {
+		state.OldState = *oldState
+	}
+
+	if newState := pla.GetCurrentState(); newState != nil {
+		state.NewState = *newState
+	}
+
 	_ = e.cache.Put(context.Background(), msg.EntityId.String(), state, 30*time.Second)
 	e.eventBus.Publish("system/entities/"+msg.EntityId.String(), state)
 }

@@ -42,7 +42,7 @@ func (n *MigrationJavascript) Up(ctx context.Context, adaptors *adaptors.Adaptor
 		n.adaptors = adaptors
 	}
 
-	list, _, err := n.adaptors.Script.List(ctx, 999, 0, "desc", "id", nil)
+	list, _, err := n.adaptors.Script.List(ctx, 999, 0, "desc", "id", nil, nil)
 	So(err, ShouldBeNil)
 
 	var engine *scripts.Engine

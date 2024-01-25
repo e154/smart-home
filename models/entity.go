@@ -53,6 +53,7 @@ type Entity struct {
 	Attributes  Attributes       `json:"attributes"`
 	Settings    Attributes       `json:"settings"`
 	ParentId    *common.EntityId `json:"parent_id"`
+	Storage     []*EntityStorage `json:"storage"`
 	Hidden      bool             `json:"hidden"`
 	AutoLoad    bool             `json:"auto_load"`
 	IsLoaded    bool             `json:"is_loaded"`

@@ -108,7 +108,7 @@ entityAction = (entityId, actionName)->
 			automation.Start()
 			go mqttServer.Start()
 			supervisor.Start(context.Background())
-			WaitSupervisor(eventBus)
+			WaitSupervisor(eventBus, time.Second)
 
 			RegisterConvey(scriptService, ctx)
 
@@ -199,17 +199,8 @@ entityAction = (entityId, actionName)->
 				Convey("", t, func(ctx C) {
 					supervisor.CallAction(plugEnt.Id, "ON", nil)
 
-					var req []byte
-					ticker := time.NewTimer(time.Second * 2)
-					defer ticker.Stop()
-
-					var ok bool
-					select {
-					case req = <-ch:
-						ok = true
-					case <-ticker.C:
-					}
-
+					// wait message
+					req, ok := WaitT[[]byte](time.Second*2, ch)
 					ctx.So(ok, ShouldBeTrue)
 
 					// what see node
@@ -266,17 +257,8 @@ entityAction = (entityId, actionName)->
 				Convey("stats", t, func(ctx C) {
 					supervisor.CallAction(plugEnt.Id, "OFF", nil)
 
-					ticker := time.NewTimer(time.Second * 2)
-					defer ticker.Stop()
-
-					var req []byte
-					var ok bool
-					select {
-					case req = <-ch:
-						ok = true
-					case <-ticker.C:
-					}
-
+					// wait message
+					req, ok := WaitT[[]byte](time.Second*2, ch)
 					ctx.So(ok, ShouldBeTrue)
 
 					// what see node
@@ -332,17 +314,8 @@ entityAction = (entityId, actionName)->
 				Convey("stats", t, func(ctx C) {
 					supervisor.CallAction(plugEnt.Id, "CHECK", nil)
 
-					ticker := time.NewTimer(time.Second * 2)
-					defer ticker.Stop()
-
-					var req []byte
-					var ok bool
-					select {
-					case req = <-ch:
-						ok = true
-					case <-ticker.C:
-					}
-
+					// wait message
+					req, ok := WaitT[[]byte](time.Second*2, ch)
 					ctx.So(ok, ShouldBeTrue)
 
 					// what see node
@@ -398,16 +371,8 @@ entityAction = (entityId, actionName)->
 				Convey("stats", t, func(ctx C) {
 					supervisor.CallAction(plugEnt.Id, "NULL", nil)
 
-					ticker := time.NewTimer(time.Second * 1)
-					defer ticker.Stop()
-
-					var ok bool
-					select {
-					case <-ch:
-						ok = true
-					case <-ticker.C:
-					}
-
+					// wait message
+					_, ok := WaitT[[]byte](time.Second*2, ch)
 					ctx.So(ok, ShouldBeFalse)
 				})
 			})
@@ -416,16 +381,8 @@ entityAction = (entityId, actionName)->
 				Convey("stats", t, func(ctx C) {
 					supervisor.CallAction(plugEnt.Id, "ON_WITH_ERR", nil)
 
-					ticker := time.NewTimer(time.Second * 2)
-					defer ticker.Stop()
-
-					var ok bool
-					select {
-					case <-ch:
-						ok = true
-					case <-ticker.C:
-					}
-
+					// wait message
+					_, ok := WaitT[[]byte](time.Second*2, ch)
 					ctx.So(ok, ShouldBeTrue)
 
 					r := modbus_rtu.ModBusResponse{

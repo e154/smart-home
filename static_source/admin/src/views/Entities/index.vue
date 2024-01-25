@@ -5,7 +5,7 @@ import {h, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
 import {ElButton, ElMessage, ElTag, ElCollapse, ElCollapseItem} from 'element-plus'
-import {ApiArea, ApiEntityShort, ApiPlugin} from "@/api/stub";
+import {ApiArea, ApiDashboardCard, ApiEntityShort, ApiPlugin} from "@/api/stub";
 import {useForm} from "@/hooks/web/useForm";
 import {useRouter} from "vue-router";
 import {parseTime} from "@/utils";
@@ -18,6 +18,7 @@ import {EventStateChange} from "@/api/stream_types";
 import {FormSchema} from "@/types/form";
 import {Form} from '@/components/Form'
 import {useCache} from "@/hooks/web/useCache";
+import JsonEditor from "@/components/JsonEditor/JsonEditor.vue";
 
 const {push} = useRouter()
 const {register, methods} = useForm()
@@ -242,12 +243,12 @@ const disable = async (entity: ApiEntityShort) => {
 }
 
 const dialogVisible = ref(false)
-const importedEntity = ref("")
+const importedEntity = ref(null)
 const showImportDialog = () => {
   dialogVisible.value = true
 }
 
-const importHandler = (val: string) => {
+const importHandler = (val: any) => {
   if (importedEntity.value == val) {
     return
   }
@@ -255,7 +256,22 @@ const importHandler = (val: string) => {
 }
 
 const importEntity = async () => {
-  const val: ApiEntityShort = JSON.parse(importedEntity.value)
+  let val: ApiEntityShort;
+  try {
+    if (importedEntity.value?.json) {
+      val = importedEntity.value.json as ApiEntityShort;
+    } else if(importedEntity.value.text) {
+      val = JSON.parse(importedEntity.value.text) as ApiEntityShort;
+    }
+  } catch {
+    ElMessage({
+      title: t('Error'),
+      message: t('message.corruptedJsonFormat'),
+      type: 'error',
+      duration: 2000
+    });
+    return
+  }
   const entity: ApiEntityShort = {
     id: val.id,
     pluginName: val.pluginName,
@@ -385,6 +401,7 @@ if (wsCache.get(cachePref+'Area')) {
     <ElCollapse class="mb-20px">
       <ElCollapseItem :title="$t('main.filter') + filterList()">
         <Form
+            class="filter-form"
             :schema="schema"
             label-position="top"
             label-width="auto"
@@ -429,7 +446,7 @@ if (wsCache.get(cachePref+'Area')) {
 
   <!-- import dialog -->
   <Dialog v-model="dialogVisible" :title="t('entities.dialogImportTitle')" :maxHeight="400" width="80%" custom-class>
-    <JsonViewer @change="importHandler"/>
+    <JsonEditor @change="importHandler"/>
     <template #footer>
       <ElButton type="primary" @click="importEntity()" plain>{{ t('main.import') }}</ElButton>
       <ElButton @click="dialogVisible = false">{{ t('main.closeDialog') }}</ElButton>
@@ -439,9 +456,14 @@ if (wsCache.get(cachePref+'Area')) {
 
 </template>
 
-<style lang="less">
+<style lang="less" scoped>
 
-.el-table__row {
+:deep(.filter-form .el-col) {
+  padding-left: 0!important;
+  padding-right: 0!important;
+}
+
+:deep(.el-table__row) {
   cursor: pointer;
 }
 

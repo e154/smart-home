@@ -117,12 +117,12 @@ export class JoystickController {
       this.active = false;
     }
 
-    _stick._value.addEventListener('mousedown', handleDown);
-    _stick._value.addEventListener('touchstart', handleDown);
+    _stick._value.addEventListener('mousedown', handleDown, {passive: false});
+    _stick._value.addEventListener('touchstart', handleDown, {passive: false});
     document.addEventListener('mousemove', handleMove, {passive: false});
     document.addEventListener('touchmove', handleMove, {passive: false});
-    document.addEventListener('mouseup', handleUp);
-    document.addEventListener('touchend', handleUp);
+    document.addEventListener('mouseup', handleUp, {passive: false});
+    document.addEventListener('touchend', handleUp, {passive: false});
   }
 
 }

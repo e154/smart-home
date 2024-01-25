@@ -32,7 +32,7 @@ const dialogSource = ref({})
 const dialogVisible = ref(false)
 const {setValues, setSchema} = methods
 const {currentRoute, addRoute, push} = useRouter()
-const {bus} = useBus()
+const {emit} = useBus()
 
 interface DashboardForm {
   name?: string;
@@ -78,15 +78,15 @@ const schema = reactive<FormSchema[]>([
       placeholder: t('dashboard.description')
     }
   },
-  {
-    field: 'enabled',
-    label: t('dashboard.enabled'),
-    component: 'Switch',
-    value: false,
-    colProps: {
-      span: 24
-    },
-  },
+  // {
+  //   field: 'enabled',
+  //   label: t('dashboard.enabled'),
+  //   component: 'Switch',
+  //   value: false,
+  //   colProps: {
+  //     span: 24
+  //   },
+  // },
   {
     field: 'area',
     label: t('dashboard.area'),
@@ -165,7 +165,7 @@ const updateBoard = async () => {
 }
 
 const fetchDashboard = () => {
-  bus.emit('fetchDashboard')
+  emit('fetchDashboard')
 }
 
 const cancel = () => {
