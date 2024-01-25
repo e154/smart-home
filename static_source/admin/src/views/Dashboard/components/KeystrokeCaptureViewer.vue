@@ -2,7 +2,7 @@
 
 import {computed, PropType} from "vue";
 import {Card, Core} from "@/views/Dashboard/core";
-import {useEmitt} from "@/hooks/web/useEmitt";
+import {useEventBus} from "@/hooks/event/useEventBus";
 import {ApiEntityCallActionRequest, ApiTypes} from "@/api/stub";
 import api from "@/api/api";
 import {propTypes} from "@/utils/propTypes";
@@ -34,7 +34,7 @@ const currentCard = computed({
 // component methods
 // ---------------------------------
 
-useEmitt({
+useEventBus({
   name: 'keydown',
   callback: (val) => {
 
