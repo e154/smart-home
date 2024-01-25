@@ -24,13 +24,13 @@ function hex2arr(hexString) { // Remove all spaces from the string  hexString = 
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://e154.github.io/smart-home/docs/javascript/hex2arr/"><meta property="article:section" content="docs">
 <meta property="article:published_time" content="2021-11-20T00:00:00+00:00">
-<meta property="article:modified_time" content="2024-01-08T19:33:13+06:00"><meta property="og:site_name" content="Smart home">
+<meta property="article:modified_time" content="2024-01-26T01:07:50+06:00"><meta property="og:site_name" content="Smart home">
 <meta itemprop=name content="hex2arr">
 <meta itemprop=description content="The hex2arr(hexString) function is available in a JavaScript environment, and it converts a hexadecimal string to a byte array ([]byte).
 Here&rsquo;s an example implementation of the hex2arr function:
 hex2arr = function (hexString) { var result = []; while (hexString.length >= 2) { result.push(parseInt(hexString.substring(0, 2), 16)); hexString = hexString.substring(2, hexString.length); } return result; }; more examples:
 function hex2arr(hexString) { // Remove all spaces from the string  hexString = hexString.replace(/\s/g, ''); // Split the string into pairs of characters (each pair represents a byte)  var hexPairs = hexString."><meta itemprop=datePublished content="2021-11-20T00:00:00+00:00">
-<meta itemprop=dateModified content="2024-01-08T19:33:13+06:00">
+<meta itemprop=dateModified content="2024-01-26T01:07:50+06:00">
 <meta itemprop=wordCount content="181">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content="hex2arr">
@@ -123,7 +123,9 @@ English
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id=m-smart-homedocsjavascript-li>
 <a href=/smart-home/docs/javascript/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocsjavascript><span>Javascript</span></a>
 <ul class="ul-2 foldable">
-<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascriptencryption-li>
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascriptevents-li>
+<a href=/smart-home/docs/javascript/events/ title=Events class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascriptevents><span>events</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascriptencryption-li>
 <a href=/smart-home/docs/javascript/encryption/ title=Encryption class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascriptencryption><span>encryption</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocsjavascriptgeo-li>
 <a href=/smart-home/docs/javascript/geo/ title=Geography class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocsjavascriptgeo><span>geography</span></a>
@@ -152,7 +154,9 @@ English
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-smart-homedocsplugins-li>
 <a href=/smart-home/docs/plugins/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-smart-homedocsplugins><span>Plugins</span></a>
 <ul class="ul-2 foldable">
-<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsmqtt_bridge-li>
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginswebdav-li>
+<a href=/smart-home/docs/plugins/webdav/ title=Webdav class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginswebdav><span>webdav</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsmqtt_bridge-li>
 <a href=/smart-home/docs/plugins/mqtt_bridge/ title="MQTT bridge" class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsmqtt_bridge><span>mqtt_bridge</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-smart-homedocspluginsonvif-li>
 <a href=/smart-home/docs/plugins/onvif/ title=Onvif class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-smart-homedocspluginsonvif><span>onvif</span></a>
@@ -303,7 +307,7 @@ English
 <span style=color:#000>console</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>log</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>byteArr</span><span style=color:#000;font-weight:700>);</span> <span style=color:#8f5902;font-style:italic>// [ 72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100 ]
 </span></code></pre></div><p>In this example, the <code>hex2arr</code> function takes the hexadecimal string <code>"48656C6C6F20576F726C64"</code>, which represents &ldquo;Hello World&rdquo; in hexadecimal format. The result of the function is a byte array containing the corresponding ASCII values of the characters.</p>
 <div class="text-muted mt-5 pt-3 border-top">
-Last modified January 8, 2024: <a href=https://github.com/e154/smart-home/commit/5d834c48fbdf35becba56d9f426ed5f3f8250563>Merge pull request #256 from e154/master (5d834c4)</a>
+Last modified January 26, 2024: <a href=https://github.com/e154/smart-home/commit/e73b011a6a004cbc8f81a1efc311c8e96049a383>Merge pull request #260 from e154/master (e73b011)</a>
 </div>
 </div>
 </main>

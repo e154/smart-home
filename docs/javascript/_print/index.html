@@ -72,18 +72,19 @@ This the multi-page printable view of this section.
 </div>
 <h1 class=title>Javascript</h1>
 <ul>
-<li>1: <a href=#pg-de73cc7836ba00fe973860516af907bc>Encryption</a></li>
-<li>2: <a href=#pg-9331d39137c0758e21631ef531577c36>Geography</a></li>
-<li>3: <a href=#pg-06d7c61a07052c87c879ee9a9edbc449>Entity</a></li>
-<li>4: <a href=#pg-9da4eb53c4b9af52d6292b0dc7500e49>hex2arr</a></li>
-<li>5: <a href=#pg-0680a74cdf0541bf29b386fcca15603d>marshal</a></li>
-<li>6: <a href=#pg-a9a66c35c8f75d979eae68e087939baf>Mqtt</a></li>
-<li>7: <a href=#pg-ec6a1606c6e250e3fe20a21896c0fc43>print</a></li>
-<li>8: <a href=#pg-9c346cca743f679c9d069ea0fb09421c>unmarshal</a></li>
-<li>9: <a href=#pg-32950fcaf7eadb1a6af01e12b8d6fccc>Execute</a></li>
-<li>10: <a href=#pg-25ccac5b56080fcd6d09c27147bbc75c>Log</a></li>
-<li>11: <a href=#pg-def052376f274f2e8abb4278c4e332e3>Storage</a></li>
-<li>12: <a href=#pg-35746c1f299b0a71f998b8b6a7ff748a>http</a></li>
+<li>1: <a href=#pg-931ce744eccc38903fe8d5ccc304238f>Events</a></li>
+<li>2: <a href=#pg-de73cc7836ba00fe973860516af907bc>Encryption</a></li>
+<li>3: <a href=#pg-9331d39137c0758e21631ef531577c36>Geography</a></li>
+<li>4: <a href=#pg-06d7c61a07052c87c879ee9a9edbc449>Entity</a></li>
+<li>5: <a href=#pg-9da4eb53c4b9af52d6292b0dc7500e49>hex2arr</a></li>
+<li>6: <a href=#pg-0680a74cdf0541bf29b386fcca15603d>marshal</a></li>
+<li>7: <a href=#pg-a9a66c35c8f75d979eae68e087939baf>Mqtt</a></li>
+<li>8: <a href=#pg-ec6a1606c6e250e3fe20a21896c0fc43>print</a></li>
+<li>9: <a href=#pg-9c346cca743f679c9d069ea0fb09421c>unmarshal</a></li>
+<li>10: <a href=#pg-32950fcaf7eadb1a6af01e12b8d6fccc>Execute</a></li>
+<li>11: <a href=#pg-25ccac5b56080fcd6d09c27147bbc75c>Log</a></li>
+<li>12: <a href=#pg-def052376f274f2e8abb4278c4e332e3>Storage</a></li>
+<li>13: <a href=#pg-35746c1f299b0a71f998b8b6a7ff748a>http</a></li>
 </ul>
 <div class=content>
 <p>The software logic and applications in the <strong>Smart Home</strong> project are developed using JavaScript, CoffeeScript, and TypeScript. JavaScript is a widely-used programming language that provides flexibility and power in creating interactive components.</p>
@@ -94,7 +95,63 @@ This the multi-page printable view of this section.
 </div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-de73cc7836ba00fe973860516af907bc>1 - Encryption</h1>
+<h1 id=pg-931ce744eccc38903fe8d5ccc304238f>1 - Events</h1>
+<p>In the Smart Home system, there is a JavaScript function called <strong>PushSystemEvent</strong> that plays a crucial role in dynamic system management. This function accepts various commands for interacting with tasks, triggers, and other components of the system.</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>command_enable_task</code></td>
+<td>Enables the execution of a task.</td>
+</tr>
+<tr>
+<td><code>command_disable_task</code></td>
+<td>Disables the execution of a task.</td>
+</tr>
+<tr>
+<td><code>command_enable_trigger</code></td>
+<td>Enables a trigger, activating the triggering capability.</td>
+</tr>
+<tr>
+<td><code>command_disable_trigger</code></td>
+<td>Disables a trigger, suspending the triggering capability.</td>
+</tr>
+<tr>
+<td><code>event_call_trigger</code></td>
+<td>Initiates a trigger call event.</td>
+</tr>
+<tr>
+<td><code>event_call_action</code></td>
+<td>Initiates an action call event.</td>
+</tr>
+<tr>
+<td><code>command_load_entity</code></td>
+<td>Loads an entity into the system.</td>
+</tr>
+<tr>
+<td><code>command_unload_entity</code></td>
+<td>Unloads an entity from the system.</td>
+</tr>
+</tbody>
+</table>
+<h4 id=example-of-usage>Example of Usage:</h4>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#8f5902;font-style:italic>// Example of enabling a task
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000>PushSystemEvent</span><span style=color:#000;font-weight:700>(</span><span style=color:#4e9a06>&#39;command_enable_task&#39;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000;font-weight:700>{</span> <span style=color:#000>id</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#0000cf;font-weight:700>1</span> <span style=color:#000;font-weight:700>});</span>
+
+<span style=color:#8f5902;font-style:italic>// Example of calling a trigger
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000>PushSystemEvent</span><span style=color:#000;font-weight:700>(</span><span style=color:#4e9a06>&#39;event_call_trigger&#39;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000;font-weight:700>{</span> <span style=color:#000>id</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#0000cf;font-weight:700>1</span> <span style=color:#000;font-weight:700>});</span>
+
+<span style=color:#8f5902;font-style:italic>// Example of loading an entity
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000>PushSystemEvent</span><span style=color:#000;font-weight:700>(</span><span style=color:#4e9a06>&#39;command_load_entity&#39;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000;font-weight:700>{</span> <span style=color:#000>id</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;sensor.entity1&#39;</span> <span style=color:#000;font-weight:700>});</span>
+</code></pre></div><p>These commands provide control over tasks, triggers, trigger call events, actions, as well as loading and unloading entities in the Smart Home system. Their use enables dynamic management of system functionality and interaction with its components.</p>
+</div>
+<div class=td-content style=page-break-before:always>
+<h1 id=pg-de73cc7836ba00fe973860516af907bc>2 - Encryption</h1>
 <p>These methods are often used to ensure security and protect data in the &ldquo;Smart Home&rdquo; system.</p>
 <ol>
 <li>
@@ -119,7 +176,7 @@ This the multi-page printable view of this section.
 </code></pre></div><p>In this example, we first encrypt the string &ldquo;Secret Information&rdquo; using the <code>Encrypt</code> method. Then we decrypt the encrypted data using the <code>Decrypt</code> method. After decryption, we get the original data back.</p>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-9331d39137c0758e21631ef531577c36>2 - Geography</h1>
+<h1 id=pg-9331d39137c0758e21631ef531577c36>3 - Geography</h1>
 <p>These methods can be valuable when developing automated scenarios or applications in the &ldquo;Smart Home&rdquo; system where geographical aspects need to be considered, such as device locations, safety zones, or other geographic-related information.</p>
 <ol>
 <li>
@@ -165,7 +222,7 @@ This the multi-page printable view of this section.
 </code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-06d7c61a07052c87c879ee9a9edbc449>3 - Entity</h1>
+<h1 id=pg-06d7c61a07052c87c879ee9a9edbc449>4 - Entity</h1>
 <p>In the <strong>Smart Home</strong> project, the &ldquo;Entity&rdquo; object is the main unit and the primary object that stores the device&rsquo;s state and settings.</p>
 <p>An &ldquo;Entity&rdquo; represents an abstraction of a specific device in a smart home. It contains information about the device type, its identifier, current state, and other settings.</p>
 <p>The key attributes of an &ldquo;Entity&rdquo; include:</p>
@@ -316,7 +373,7 @@ This the multi-page printable view of this section.
 <p>The methods of the &ldquo;Entity&rdquo; object provide convenient capabilities for managing the device&rsquo;s state, attributes, metrics, and executing actions on the device. You can use these methods to create device control logic in your <strong>Smart Home</strong> project.</p>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-9da4eb53c4b9af52d6292b0dc7500e49>4 - hex2arr</h1>
+<h1 id=pg-9da4eb53c4b9af52d6292b0dc7500e49>5 - hex2arr</h1>
 <p>The <code>hex2arr(hexString)</code> function is available in a JavaScript environment, and it converts a hexadecimal string to a byte array (<code>[]byte</code>).</p>
 <p>Here&rsquo;s an example implementation of the <code>hex2arr</code> function:</p>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#000>hex2arr</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#204a87;font-weight:700>function</span> <span style=color:#000;font-weight:700>(</span><span style=color:#000>hexString</span><span style=color:#000;font-weight:700>)</span> <span style=color:#000;font-weight:700>{</span>
@@ -349,7 +406,7 @@ This the multi-page printable view of this section.
 </span></code></pre></div><p>In this example, the <code>hex2arr</code> function takes the hexadecimal string <code>"48656C6C6F20576F726C64"</code>, which represents &ldquo;Hello World&rdquo; in hexadecimal format. The result of the function is a byte array containing the corresponding ASCII values of the characters.</p>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-0680a74cdf0541bf29b386fcca15603d>5 - marshal</h1>
+<h1 id=pg-0680a74cdf0541bf29b386fcca15603d>6 - marshal</h1>
 <p>In the JavaScript environment, there is a function called <code>marshal</code> that converts an object into its JSON representation using the <code>JSON.stringify</code> function.</p>
 <p>Here&rsquo;s an implementation example of the <code>marshal</code> function:</p>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#204a87;font-weight:700>function</span> <span style=color:#000>marshal</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>obj</span><span style=color:#000;font-weight:700>)</span> <span style=color:#000;font-weight:700>{</span>
@@ -362,7 +419,7 @@ This the multi-page printable view of this section.
 </span></code></pre></div><p>In this example, the <code>marshal</code> function takes an object <code>obj</code> and uses the <code>JSON.stringify</code> function to convert the object into its JSON representation. The result of the function will be a JSON string containing the serialized data of the object.</p>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-a9a66c35c8f75d979eae68e087939baf>6 - Mqtt</h1>
+<h1 id=pg-a9a66c35c8f75d979eae68e087939baf>7 - Mqtt</h1>
 <p>The &ldquo;Mqtt&rdquo; object in the <strong>Smart Home</strong> project provides the ability to publish messages to an MQTT broker.</p>
 <h4 id=quality-of-service-in-mqtt-qos>Quality of Service in MQTT (QoS)</h4>
 <p>QoS 0: At most once. At this level, the publisher sends the message to the broker once and does not wait for confirmation. It means &ldquo;fire and forget.&rdquo;</p>
@@ -431,14 +488,14 @@ This function is available in any system script.
 </code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-ec6a1606c6e250e3fe20a21896c0fc43>7 - print</h1>
+<h1 id=pg-ec6a1606c6e250e3fe20a21896c0fc43>8 - print</h1>
 <p>In the JavaScript environment, there is a function called <code>print(string)</code> that outputs the specified string to the console.</p>
 <p>Example of using the <code>print</code> function:</p>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#000>print</span><span style=color:#000;font-weight:700>(</span><span style=color:#4e9a06>&#34;Hello, world!&#34;</span><span style=color:#000;font-weight:700>);</span>
 </code></pre></div><p>In this example, the <code>print</code> function takes the string &ldquo;Hello, world!&rdquo; as an argument and outputs it to the console.</p>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-9c346cca743f679c9d069ea0fb09421c>8 - unmarshal</h1>
+<h1 id=pg-9c346cca743f679c9d069ea0fb09421c>9 - unmarshal</h1>
 <p>In the JavaScript environment, there is a <code>unmarshal</code> function available that converts a JSON string into an object using the <code>JSON.parse</code> function.</p>
 <p>Example implementation of the <code>unmarshal</code> function:</p>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#204a87;font-weight:700>function</span> <span style=color:#000>unmarshal</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>j</span><span style=color:#000;font-weight:700>)</span> <span style=color:#000;font-weight:700>{</span>
@@ -451,7 +508,7 @@ This function is available in any system script.
 </span></code></pre></div><p>In this example, the <code>unmarshal</code> function takes the JSON string <code>jsonStr</code> and uses the <code>JSON.parse</code> function to convert the string into an object. The result of the function will be an object containing the data from the JSON string.</p>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-32950fcaf7eadb1a6af01e12b8d6fccc>9 - Execute</h1>
+<h1 id=pg-32950fcaf7eadb1a6af01e12b8d6fccc>10 - Execute</h1>
 <p>The <strong>Smart Home</strong> project&rsquo;s system provides the ability to execute arbitrary files and scripts synchronously and asynchronously.</p>
 <div class="alert alert-success" role=alert>
 This function is available in any system script.
@@ -490,7 +547,7 @@ ping -c1 <span style=color:#000>$1</span> &gt; /dev/null 2&gt; /dev/null<span st
 </code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-25ccac5b56080fcd6d09c27147bbc75c>10 - Log</h1>
+<h1 id=pg-25ccac5b56080fcd6d09c27147bbc75c>11 - Log</h1>
 <p>In the <strong>Smart Home</strong> project, there is a capability to log events using the &ldquo;Log&rdquo; object.</p>
 <div class="alert alert-success" role=alert>
 This function is available in any system script.
@@ -525,7 +582,7 @@ This function is available in any system script.
 </code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-def052376f274f2e8abb4278c4e332e3>11 - Storage</h1>
+<h1 id=pg-def052376f274f2e8abb4278c4e332e3>12 - Storage</h1>
 <p>In the <strong>Smart Home</strong> project, there is an <code>in-memory</code> storage provided, which allows you to store and cache arbitrary values in memory. The values are also periodically archived to disk every minute.</p>
 <div class="alert alert-success" role=alert>
 This function is available in any system script.
@@ -607,7 +664,7 @@ This function is available in any system script.
 </code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-35746c1f299b0a71f998b8b6a7ff748a>12 - http</h1>
+<h1 id=pg-35746c1f299b0a71f998b8b6a7ff748a>13 - http</h1>
 <p>In the <strong>Smart Home</strong> project, there is a capability to perform arbitrary synchronous HTTP requests to external resources.</p>
 <p>The <code>http</code> object allows you to make synchronous HTTP requests to external resources, such as API services, and receive responses. You can use this method to integrate with other systems and retrieve or send data through the HTTP protocol in your <strong>Smart Home</strong> project.</p>
 <p>Supported methods include:</p>
