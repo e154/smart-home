@@ -75,7 +75,7 @@ func (h *Skill) OnLaunch(_ *gin.Context, req *Request, resp *Response) {
 	}
 	h.jsBind.update(req, resp)
 	if _, err := h.engine.Engine().AssertFunction("skillOnLaunch"); err != nil {
-		log.Error(errors.Wrapf(err, "skill id: %s ", h.model.Id).Error())
+		log.Error(errors.Wrapf(err, "skill id: %d", h.model.Id).Error())
 	}
 }
 
@@ -90,11 +90,11 @@ func (h *Skill) OnIntent(_ *gin.Context, req *Request, resp *Response) {
 
 		h.jsBind.update(req, resp)
 		if _, err := h.engine.Engine().EvalScript(intent.Script); err != nil {
-			log.Error(errors.Wrapf(err, "skill id: %s ", h.model.Id).Error())
+			log.Error(errors.Wrapf(err, "skill id: %d", h.model.Id).Error())
 			return
 		}
 		if _, err := h.engine.Engine().AssertFunction("skillOnIntent"); err != nil {
-			log.Error(errors.Wrapf(err, "skill id: %s ", h.model.Id).Error())
+			log.Error(errors.Wrapf(err, "skill id: %d", h.model.Id).Error())
 			return
 		}
 	}
@@ -113,7 +113,7 @@ func (h *Skill) OnSessionEnded(_ *gin.Context, req *Request, resp *Response) {
 
 	h.jsBind.update(req, resp)
 	if _, err := h.engine.Engine().AssertFunction("skillOnSessionEnd"); err != nil {
-		log.Error(errors.Wrapf(err, "skill id: %s ", h.model.Id).Error())
+		log.Error(errors.Wrapf(err, "skill id: %d", h.model.Id).Error())
 	}
 }
 
