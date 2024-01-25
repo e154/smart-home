@@ -20,17 +20,16 @@ package scripts
 
 import (
 	"fmt"
-	"go.uber.org/atomic"
 	"os"
 	"strconv"
 
-	"github.com/e154/smart-home/common/apperr"
-
+	"github.com/hashicorp/go-multierror"
 	"github.com/pkg/errors"
+	"go.uber.org/atomic"
 
 	. "github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
 	m "github.com/e154/smart-home/models"
-	"github.com/hashicorp/go-multierror"
 )
 
 // IScript ...
@@ -42,7 +41,6 @@ type IScript interface {
 	PushStruct(string, interface{})
 	PushFunction(string, interface{})
 	EvalString(string) (string, error)
-	Close()
 	CreateProgram(name, source string) (err error)
 	RunProgram(name string) (result string, err error)
 }
@@ -81,11 +79,16 @@ func NewEngine(s *m.Script, functions, structures *Pull) (engine *Engine, err er
 		structures: structures,
 	}
 
+	if s.Lang == "" {
+		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("language not specified"))
+		return
+	}
+
 	switch s.Lang {
 	case ScriptLangTs, ScriptLangCoffee, ScriptLangJavascript:
 		engine.script = NewJavascript(engine)
 	default:
-		err = errors.Wrap(apperr.ErrNotFound, string(s.Lang))
+		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("i don't know this language: \"%s\"", s.Lang))
 		return
 	}
 
@@ -142,11 +145,6 @@ func (s *Engine) EvalScript(script *m.Script) (result string, err error) {
 	return
 }
 
-// Close ...
-func (s *Engine) Close() {
-	s.script.Close()
-}
-
 // DoFull ...
 func (s *Engine) DoFull() (res string, err error) {
 	if !s.IsRun.CompareAndSwap(false, true) {
@@ -186,7 +184,10 @@ func (s *Engine) AssertFunction(f string, arg ...interface{}) (result string, er
 
 	result, err = s.script.AssertFunction(f, arg...)
 	if err != nil {
-		err = errors.Wrapf(err, "script id:%d ", s.ScriptId())
+		if s.ScriptId() != 0 {
+			err = errors.Wrapf(err, "script id:%d ", s.ScriptId())
+			return
+		}
 		return
 	}
 

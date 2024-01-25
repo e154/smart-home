@@ -431,10 +431,10 @@ export interface ApiEntityShort {
   pluginName: string;
   description: string;
   area?: ApiArea;
-  image?: ApiImage;
   icon?: string;
   autoLoad: boolean;
   parentId?: string;
+  isLoaded?: boolean;
   /** @format date-time */
   createdAt: string;
   /** @format date-time */
@@ -533,7 +533,7 @@ export interface ApiGetDashboardTabListResult {
 }
 
 export interface ApiGetEntityListResult {
-  items: ApiEntity[];
+  items: ApiEntityShort[];
   meta?: ApiMeta;
 }
 
@@ -1812,6 +1812,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
          * @format uint64
          */
         limit?: number;
+        /** The number of results returned on a page */
+        "ids[]"?: number[];
       },
       params: RequestParams = {},
     ) =>
@@ -2442,6 +2444,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
          * @format uint64
          */
         limit?: number;
+        /** The number of results returned on a page */
+        "ids[]"?: number[];
       },
       params: RequestParams = {},
     ) =>
@@ -3818,7 +3822,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         startDate?: string;
         /** @format date-time */
         endDate?: string;
-        entityId?: string;
+        "entityId[]"?: string[];
       },
       params: RequestParams = {},
     ) =>
@@ -5167,6 +5171,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
          * @format uint64
          */
         limit?: number;
+        /** The number of results returned on a page */
+        "ids[]"?: number[];
         query?: string;
       },
       params: RequestParams = {},
@@ -5726,6 +5732,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
          * @format uint64
          */
         limit?: number;
+        /** The number of results returned on a page */
+        "ids[]"?: number[];
       },
       params: RequestParams = {},
     ) =>

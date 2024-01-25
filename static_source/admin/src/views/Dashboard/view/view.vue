@@ -11,7 +11,7 @@ import {useBus} from "@/views/Dashboard/bus";
 import ViewTab from "@/views/Dashboard/view/ViewTab.vue";
 import {propTypes} from "@/utils/propTypes";
 
-const {bus} = useBus()
+const {emit} = useBus()
 
 // ---------------------------------
 // common
@@ -26,7 +26,7 @@ const props = defineProps({
 })
 
 const onStateChanged = (event: EventStateChange) => {
-  bus.emit('state_changed', event);
+  emit('state_changed', event);
   core.onStateChanged(event);
 }
 
@@ -60,15 +60,15 @@ const fetchDashboard = async () => {
 
 const activeTabIdx = computed({
   get(): string {
-    return core.activeTab + ''
+    return core.activeTabIdx + ''
   },
   set(value: string) {
-    core.activeTab = parseInt(value)
+    core.activeTabIdx = parseInt(value)
   }
 })
 
 const getBackgroundColor = () => {
-  return {backgroundColor: core.tabs[core.activeTab]?.background}
+  return {backgroundColor: core.getActiveTab?.background}
 }
 
 fetchDashboard()
@@ -82,6 +82,7 @@ fetchDashboard()
         :label="tab.name"
         :key="index"
         :class="[{'gap': tab.gap}]"
+        :disabled="!tab.enabled"
         :lazy="true">
       <ViewTab :tab="tab" :key="index" :core="core"/>
     </ElTabPane>

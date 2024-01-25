@@ -39,7 +39,8 @@ var (
 // ScriptService ...
 type ScriptService interface {
 	NewEngine(s *m.Script) (*Engine, error)
-	NewEngineWatcher(scr *m.Script) (*EngineWatcher, error)
+	NewEngineWatcher(*m.Script) (*EngineWatcher, error)
+	NewEnginesWatcher([]*m.Script) (*EnginesWatcher, error)
 	PushStruct(name string, s interface{})
 	PopStruct(name string)
 	PushFunctions(name string, s interface{})
@@ -92,12 +93,13 @@ func (s *scriptService) NewEngine(scr *m.Script) (*Engine, error) {
 }
 
 // NewEngineWatcher ...
-func (s *scriptService) NewEngineWatcher(scr *m.Script) (*EngineWatcher, error) {
-	engine, err := NewEngine(scr, s.structures, s.functions)
-	if err != nil {
-		return nil, err
-	}
-	return NewEngineWatched(engine, s, s.eventBus), nil
+func (s *scriptService) NewEngineWatcher(script *m.Script) (*EngineWatcher, error) {
+	return NewEngineWatcher(script, s, s.eventBus), nil
+}
+
+// NewEnginesWatcher ...
+func (s *scriptService) NewEnginesWatcher(scripts []*m.Script) (*EnginesWatcher, error) {
+	return NewEnginesWatcher(scripts, s, s.eventBus), nil
 }
 
 // PushStruct ...

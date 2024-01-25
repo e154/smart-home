@@ -22,11 +22,11 @@ import (
 	"context"
 	"embed"
 	"fmt"
+	"sync"
+
 	"github.com/gomarkdown/markdown"
 	"github.com/gomarkdown/markdown/html"
 	"github.com/gomarkdown/markdown/parser"
-	"sync"
-
 	"github.com/pkg/errors"
 	"go.uber.org/atomic"
 
@@ -55,13 +55,12 @@ func NewPlugin() *Plugin {
 
 // Load ...
 func (p *Plugin) Load(ctx context.Context, service Service, actorConstructor ActorConstructor) error {
+	if !p.IsStarted.CompareAndSwap(false, true) {
+		return apperr.ErrPluginIsLoaded
+	}
+
 	p.Service = service
 	p.actorConstructor = actorConstructor
-
-	if p.IsStarted.Load() {
-		return ErrPluginIsLoaded
-	}
-	p.IsStarted.Store(true)
 
 	return nil
 }
@@ -69,8 +68,8 @@ func (p *Plugin) Load(ctx context.Context, service Service, actorConstructor Act
 // Unload ...
 func (p *Plugin) Unload(ctx context.Context) error {
 
-	if !p.IsStarted.Load() {
-		return ErrPluginIsUnloaded
+	if !p.IsStarted.CompareAndSwap(true, false) {
+		return apperr.ErrPluginIsUnloaded
 	}
 
 	p.Actors.Range(func(key, value any) bool {
@@ -79,8 +78,6 @@ func (p *Plugin) Unload(ctx context.Context) error {
 		}
 		return true
 	})
-
-	p.IsStarted.Store(false)
 
 	return nil
 }
@@ -159,9 +156,6 @@ func (p *Plugin) AddActor(pla PluginActor, entity *m.Entity) (err error) {
 	pla.Spawn()
 	p.Actors.Store(entity.Id, pla)
 	log.Infof("entity '%v' loaded", entity.Id)
-
-	currentState := pla.GetEventState()
-	pla.SetCurrentState(currentState)
 
 	p.Service.EventBus().Publish("system/entities/"+entity.Id.String(), events.EventEntityLoaded{
 		EntityId:   entity.Id,

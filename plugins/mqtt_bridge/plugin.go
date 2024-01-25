@@ -22,7 +22,6 @@ import (
 	"context"
 	"embed"
 
-	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/mqtt"
@@ -63,9 +62,6 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 	if err = p.Plugin.Load(ctx, service, p.ActorConstructor); err != nil {
 		return
 	}
-
-	_ = p.Service.EventBus().Subscribe("system/entities/+", p.eventHandler)
-
 	return nil
 }
 
@@ -74,9 +70,6 @@ func (p *plugin) Unload(ctx context.Context) (err error) {
 	if err = p.Plugin.Unload(ctx); err != nil {
 		return
 	}
-
-	_ = p.Service.EventBus().Unsubscribe("system/entities/+", p.eventHandler)
-
 	return nil
 }
 
@@ -91,20 +84,6 @@ func (p *plugin) Name() string {
 	return Name
 }
 
-func (p *plugin) eventHandler(topic string, msg interface{}) {
-
-	switch v := msg.(type) {
-	case events.EventStateChanged:
-	case events.EventCallEntityAction:
-		value, ok := p.Actors.Load(v.EntityId)
-		if !ok {
-			return
-		}
-		actor := value.(*Actor)
-		actor.addAction(v)
-	}
-}
-
 // Type ...
 func (p *plugin) Type() supervisor.PluginType {
 	return supervisor.PluginInstallable
@@ -117,16 +96,14 @@ func (p *plugin) Depends() []string {
 
 // Version ...
 func (p *plugin) Version() string {
-	return "0.0.1"
+	return Version
 }
 
 // Options ...
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
-		Actors:             true,
-		ActorCustomAttrs:   true,
-		ActorCustomActions: true,
-		ActorStates:        supervisor.ToEntityStateShort(NewStates()),
-		ActorSetts:         NewSettings(),
+		Actors:      true,
+		ActorStates: supervisor.ToEntityStateShort(NewStates()),
+		ActorSetts:  NewSettings(),
 	}
 }

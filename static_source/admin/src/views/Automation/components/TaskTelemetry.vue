@@ -1,34 +1,15 @@
 <script setup lang="ts">
-import {computed, defineEmits, onMounted, onUnmounted, PropType, watch, ref, nextTick} from 'vue'
-import {Form} from '@/components/Form'
-import {useI18n} from '@/hooks/web/useI18n'
-import {ElSkeleton} from 'element-plus'
-import {useForm} from '@/hooks/web/useForm'
-import {useCache} from '@/hooks/web/useCache'
-import {useAppStore} from '@/store/modules/app'
-import {usePermissionStore} from '@/store/modules/permission'
-import {useRoute, useRouter} from 'vue-router'
-import {useValidator} from '@/hooks/web/useValidator'
-import {FormSchema} from '@/types/form'
-import {ApiPlugin, ApiTask, ApiTelemetryItem} from "@/api/stub";
+import {nextTick, onMounted, onUnmounted, PropType, ref, watch} from 'vue'
+import {ElEmpty} from 'element-plus'
+import {ApiTask, ApiTelemetryItem} from "@/api/stub";
 import api from "@/api/api";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
-import {EventTaskCompleted, EventTriggerCompleted} from "@/api/stream_types";
+import {EventTaskCompleted} from "@/api/stream_types";
 import {debounce} from "lodash-es";
 import {EChartsOption} from "echarts";
-import { Echart } from '@/components/Echart'
+import {Echart} from '@/components/Echart'
 import * as echarts from 'echarts/core'
-import {formatTime, parseTime} from "@/utils";
-
-const {register, elFormRef, methods} = useForm()
-const {required} = useValidator()
-const appStore = useAppStore()
-const permissionStore = usePermissionStore()
-const {currentRoute, addRoute, push} = useRouter()
-const route = useRoute();
-const {wsCache} = useCache()
-const {t} = useI18n()
 
 const telemetry = ref<ApiTelemetryItem[]>([])
 const props = defineProps({
@@ -60,10 +41,12 @@ onUnmounted(() => {
   stream.unsubscribe('event_task_completed', currentID.value);
 })
 
-const fetch = debounce( async () => {
+const fetch = debounce(async () => {
   const res = await api.v1.automationServiceGetTask(props.task?.id)
-      .catch(() => {})
-      .finally(() => {})
+      .catch(() => {
+      })
+      .finally(() => {
+      })
   if (res) {
     const task = res.data as ApiTask;
     telemetry.value = task?.telemetry;
@@ -114,7 +97,7 @@ const renderItem = (params, api) => {
   );
 }
 
-var colors = ['#7b9ce1','#bd6d6c','#75d874','#e0bc78','#dc77dc','#72b362','#7b9ce1','#bd6d6c','#75d874','#e0bc78','#dc77dc','#72b362'];
+var colors = ['#7b9ce1', '#bd6d6c', '#75d874', '#e0bc78', '#dc77dc', '#72b362', '#7b9ce1', '#bd6d6c', '#75d874', '#e0bc78', '#dc77dc', '#72b362'];
 
 const getID = (attrs: Record<string, string>) => {
   if (!attrs) {
@@ -141,8 +124,8 @@ const getOptions = () => {
     if (categories.indexOf(label) === -1) {
       categories.push(label)
     }
-    const start =  item?.start;
-    const end =  item?.end;
+    const start = item?.start;
+    const end = item?.end;
     if (startTime === 0) {
       startTime = start || 0;
     }
@@ -206,8 +189,8 @@ getOptions()
 </script>
 
 <template>
-  <div class="h-[100%] w-[100%]" style="height: 400px" v-if="telemetry">
+  <div class="h-[100%] w-[100%]" style="height: 400px" v-if="telemetry && telemetry.length">
     <Echart :options="chartOptions" :key="reloadKey"/>
   </div>
-  <ElSkeleton v-else :rows="5" />
+  <ElEmpty v-if="!telemetry || !telemetry.length" :rows="5"/>
 </template>

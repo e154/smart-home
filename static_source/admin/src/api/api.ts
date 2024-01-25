@@ -55,6 +55,15 @@ api.instance.interceptors.response.use(
       return
     }
 
+    if (response.status == 403 ) {
+      ElMessage({
+        message: 'access forbidden: ' + res.error.message,
+        type: 'error',
+        duration: 5 * 1000
+      });
+      return
+    }
+
     ElMessage({
       message: res.error.message || t('Error'),
       type: 'error',

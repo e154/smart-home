@@ -47,7 +47,9 @@ var coffeeScripts = map[string]string{
 	"coffeeScript26": coffeeScript26,
 	"coffeeScript27": coffeeScript27,
 	"coffeeScript28": coffeeScript28,
-	"javascript29":   javascript29,
+	"coffeeScript29": coffeeScript29,
+	"coffeeScript30": coffeeScript30,
+	"coffeeScript31": coffeeScript31,
 }
 
 // test1
@@ -86,10 +88,10 @@ store(foo + '-' + bar + '-' + months[0])
 // ------------------------------------------------
 const coffeeScript3 = `
 on_enter =->
-	store('on_enter')	
+  store('on_enter')	
 
 on_exit =->
-	store('on_exit')
+  store('on_exit')
 `
 
 // test5,6
@@ -408,28 +410,23 @@ Decrypt(encryptedStr)
 
 // test16
 // ------------------------------------------------
-const javascript29 = `
-"use strict";
+const coffeeScript29 = `
+a = 1
+`
+const coffeeScript30 = `
+b = 2
+`
+const coffeeScript31 = `
+plus =->
+  a += b
+  return a
 
-print('test setTimeout');
+getA =->
+  return a
 
-var myGreeting,foo,myStopFunction;
-var myTimeout;
+m = 3
+main =->
+  m += a
 
-myGreeting = function() {
-  print('myGreeting');
-  myStopFunction();
-};
-
-foo = function() {
-  print('start');
-  myTimeout = setTimeout(myGreeting, 1500);;
-  print('wait');
-};
-
-myStopFunction = function() {
-  clearTimeout(myTimeout);
-};
-
-
+main()
 `

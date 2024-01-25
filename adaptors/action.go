@@ -36,7 +36,7 @@ type IAction interface {
 	GetById(ctx context.Context, id int64) (metric *m.Action, err error)
 	Update(ctx context.Context, ver *m.Action) error
 	Delete(ctx context.Context, deviceId int64) (err error)
-	List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.Action, total int64, err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string, ids *[]uint64) (list []*m.Action, total int64, err error)
 	Search(ctx context.Context, query string, limit, offset int) (list []*m.Action, total int64, err error)
 	fromDb(dbVer *db.Action) (ver *m.Action)
 	toDb(ver *m.Action) (dbVer *db.Action)
@@ -97,9 +97,9 @@ func (n *Action) Delete(ctx context.Context, deviceId int64) (err error) {
 }
 
 // List ...
-func (n *Action) List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.Action, total int64, err error) {
+func (n *Action) List(ctx context.Context, limit, offset int64, orderBy, sort string, ids *[]uint64) (list []*m.Action, total int64, err error) {
 	var dbList []*db.Action
-	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort); err != nil {
+	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort, ids); err != nil {
 		return
 	}
 

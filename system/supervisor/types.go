@@ -20,17 +20,16 @@ package supervisor
 
 import (
 	"context"
+	"github.com/e154/smart-home/common/events"
 	"time"
 
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common/web"
-	"github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/scheduler"
-	"github.com/pkg/errors"
-
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/web"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
+	"github.com/e154/smart-home/system/mqtt"
+	"github.com/e154/smart-home/system/scheduler"
 	"github.com/e154/smart-home/system/scripts"
 )
 
@@ -77,9 +76,10 @@ type PluginActor interface {
 	Metrics() []*m.Metric
 	SetState(EntityStateParams) error
 	Info() ActorInfo
-	GetCurrentState() *bus.EventEntityState
-	SetCurrentState(bus.EventEntityState)
-	GetEventState() (eventState bus.EventEntityState)
+	GetCurrentState() *events.EventEntityState
+	GetOldState() *events.EventEntityState
+	SetCurrentState(events.EventEntityState)
+	GetEventState() events.EventEntityState
 	AddMetric(name string, value map[string]interface{})
 }
 
@@ -192,15 +192,6 @@ const (
 	PluginBuiltIn = PluginType("System")
 	// PluginInstallable ...
 	PluginInstallable = PluginType("Installable")
-)
-
-var (
-	// ErrPluginIsLoaded ...
-	ErrPluginIsLoaded = errors.New("plugin is loaded")
-	// ErrPluginIsUnloaded ...
-	ErrPluginIsUnloaded = errors.New("plugin is unloaded")
-	// ErrPluginNotLoaded ...
-	ErrPluginNotLoaded = errors.New("plugin not loaded")
 )
 
 // Service ...

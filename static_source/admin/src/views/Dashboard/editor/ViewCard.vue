@@ -4,16 +4,19 @@ import {
   onMounted, onUnmounted,
   onUpdated,
   PropType,
-  ref,
+  ref, watch,
 } from "vue";
 import {Card, CardItem, Core, Tab} from "@/views/Dashboard/core";
 import {useBus} from "@/views/Dashboard/bus";
 import debounce from 'lodash.debounce'
-import Moveable, { OnRender } from 'vue3-moveable'
+import Moveable, { MoveableTargetGroupsType } from 'vue3-moveable'
+import { deepFlat } from "@daybrush/utils";
+import { VueSelecto } from "vue3-selecto";
 import {CardItemName} from "@/views/Dashboard/card_items";
 import {UUID} from "uuid-generator-ts";
+import KeystrokeCaptureViewer from "@/views/Dashboard/components/KeystrokeCaptureViewer.vue";
 
-const {bus} = useBus()
+const {emit} = useBus()
 
 const currentID = ref('')
 onMounted(() => {
@@ -37,7 +40,7 @@ onUpdated(() => {
 // ---------------------------------
 
 const zoom = ref(1);
-const canvas = ref(null)
+const cardRef = ref(null)
 
 const props = defineProps({
   core: {
@@ -62,6 +65,8 @@ const currentCard = computed({
   set(val: Card) {}
 })
 
+const hover = ref(false)
+
 // ---------------------------------
 // component methods
 // ---------------------------------
@@ -77,13 +82,14 @@ useBus({
       return
     }
     if (itemIndex === -1 || !currentCard.value.items.length || !currentCard.value.items[itemIndex]) {
-      targets.value = [];
+      setSelectedTargets([])
       return
     }
-    targets.value = [currentCard.value.items[itemIndex].target];
+    const target = currentCard.value.items[itemIndex].target;
+    // target.classList.add("selected");
+    setSelectedTargets([target]);
   }
 })
-
 
 useBus({
   name: 'unselected_card_item',
@@ -91,50 +97,48 @@ useBus({
     if (currentCard.value.active) {
       return
     }
-
-    targets.value = [];
+    setSelectedTargets([]);
   }
 })
-
-const selectCard = (event?: any) => {
-  if (currentCard.value.active) return;
-  props.core?.onSelectedCard(currentCard.value.id)
-  bus.emit('selected_card', currentCard.value.id)
-}
 
 const selectCardItem = (itemIndex: number) => {
   if (!currentCard.value.active) {
     props.core?.onSelectedCard(currentCard.value.id)
-    bus.emit('selected_card', currentCard.value.id)
+    emit('selected_card', currentCard.value.id)
   }
 
   currentCard.value.selectedItem = itemIndex;
-  if (itemIndex === -1 || !currentCard.value.items.length || !currentCard.value.items[itemIndex]) {
-    targets.value = [];
-  } else {
-    targets.value = [currentCard.value.items[itemIndex].target];
-  }
-  bus.emit('unselected_card_item')
-}
-
-const onRender = ({target, cssText}) => {
-  target.style.cssText += cssText;
+  // if (itemIndex === -1 || !currentCard.value.items.length || !currentCard.value.items[itemIndex]) {
+  //   targets.value = [];
+  // } else {
+  //   targets.value = [currentCard.value.items[itemIndex].target];
+  // }
+  // emit('unselected_card_item')
 }
 
 const onDrag = ({target, transform, beforeTranslate, left, top}: any) => {
-  if (currentCard.value.selectedItem > -1) {
-    currentCard.value.items[currentCard.value.selectedItem].transform = transform; //todo uncomment
-  }
+  const classes = target.className.split(' ');
   target.style.transform = transform;
+  for (const cl of classes) {
+    if (cl.includes('item-index-')) {
+      const index = parseInt(cl.replace("item-index-", ""))
+      currentCard.value.items[index].transform = transform;
+    }
+  }
 }
+
+const setSelectedTargets = (target) => {
+  selectoRef.value.setSelectedTargets(deepFlat(target));
+  targets.value = target;
+};
 
 const onResize = ({target, width, height, clientX, clientY}: any) => {
   width = Math.round(width);
   height = Math.round(height);
 
   if (currentCard.value.selectedItem > -1) {
-    currentCard.value.items[currentCard.value.selectedItem].width = width; //todo uncomment
-    currentCard.value.items[currentCard.value.selectedItem].height = height; //todo uncomment
+    currentCard.value.items[currentCard.value.selectedItem].width = width;
+    currentCard.value.items[currentCard.value.selectedItem].height = height;
   }
   target.style.width = `${width}px`;
   target.style.height = `${height}px`;
@@ -142,108 +146,171 @@ const onResize = ({target, width, height, clientX, clientY}: any) => {
 
 const onRotate = ({target, transform, beforeRotate, clientX, clientY}: any) => {
   if (currentCard.value.selectedItem > -1) {
-    currentCard.value.items[currentCard.value.selectedItem].transform = transform; //todo uncomment
-  }
-  target.style.transform = transform;
-}
-
-const handleWarp = ({target, transform}: any) => {
-  // console.log('onWarp', transform);
-  if (currentCard.value.selectedItem > -1) {
     currentCard.value.items[currentCard.value.selectedItem].transform = transform;
   }
   target.style.transform = transform;
 }
 
-
 const targets = ref([]);
 const moveableRef = ref(null);
-const selectoRef = ref(null);
-const cubes = [];
-for (let i = 0; i < 30; ++i) {
-    cubes.push(i);
-}
-
-const onDragStart = (e) => {
-  const moveable = moveableRef.value;
-  const target = e.inputEvent.target;
-  if (moveable.isMoveableElement(target)
-        || targets.value.some(t => t === target || t.contains(target))
-    ) {
-        e.stop();
-    }
-};
-
-const onSelectEnd = (e) => {
-  const moveable = moveableRef.value;
-  if (e.isDragStart) {
-      e.inputEvent.preventDefault();
-      moveable.waitToChangeTarget().then(() => {
-          moveable.dragStart(e.inputEvent);
-      });
-  }
-  targets.value = e.selected;
-};
 
 const onSnap = e => {
   // console.log(e.guidelines, e.elements);
 };
 
+// ---------------------------------
+// selecto methods
+// ---------------------------------
+
+const onDragGroup = ({events}) => {
+  events.forEach(ev => {
+    const classes = ev.target.className.split(' ');
+    ev.target.style.transform = ev.transform;
+    for (const cl of classes) {
+      if (cl.includes('item-index-')) {
+        const index = parseInt(cl.replace("item-index-", ""))
+        currentCard.value.items[index].transform = ev.transform;
+      }
+    }
+  });
+};
+
+const onRenderGroup = e => {
+  e.events.forEach(ev => {
+    ev.target.style.transform = ev.transform;
+  });
+};
+
+const onClickGroup = e => {
+  if (!e.moveableTarget) {
+    setSelectedTargets([]);
+    selectCardItem(-1);
+    return;
+  }
+  if (e.isTrusted) {
+    selectoRef.value.clickTarget(e.inputEvent, e.moveableTarget);
+  }
+};
+
+// ---------------------------------
+// group methods
+// ---------------------------------
+
+//todo add group
+// https://daybrush.com/moveable/storybook/index.html?path=/story/combination-with-other-components--components-selecto-with-multiple-group
+// https://daybrush.com/moveable/storybook/index.html?path=/story/combination-with-other-components--components-selecto
+
+const selectoRef = ref(null);
+
+const onSelect = (e) => {
+  e.added.forEach(el => {
+    el.classList.add("selected");
+  });
+  e.removed.forEach(el => {
+    el.classList.remove("selected");
+  });
+}
+
+const onSelectEnd = (e) => {
+  const {
+    isDragStartEnd,
+    isClick,
+    added,
+    removed,
+    inputEvent,
+    selected,
+  } = e;
+  const moveable = moveableRef.value;
+  if (e.isDragStart) {
+    e.inputEvent.preventDefault();
+    moveable.waitToChangeTarget().then(() => {
+    //   moveable.dragStart(e.inputEvent);
+    });
+  }
+  targets.value = selected;
+  if (selected && selected.length == 1) {
+    const classes = selected[0].className.split(' ');
+    for (const cl of classes) {
+      if (cl.includes('item-index-')) {
+        const index = parseInt(cl.replace("item-index-", ""))
+        selectCardItem(index)
+      }
+    }
+  }
+
+  if (selected && selected.length == 0) {
+    selectCardItem(-1)
+  }
+};
+
+const onDragStart = (e) => {
+  const moveable = moveableRef.value;
+  const target = e.inputEvent.target;
+  const flatted = targets.value.flat(3);
+  if (moveable.isMoveableElement(target)
+      || flatted.some(t => t === target || t.contains(target))
+  ) {
+    e.stop();
+  }
+};
 
 </script>
 
 <template>
 
-<!--  <VueSelecto-->
-<!--      ref="selectoRef"-->
-<!--      :rootContainer="canvas"-->
-<!--      :selectableTargets="['.class-'+currentCard.currentID+' .movable']"-->
-<!--      :hitRate="0"-->
-<!--      :selectByClick="true"-->
-<!--      :selectFromInside="false"-->
-<!--      :toggleContinueSelect="['shift']"-->
-<!--      :ratio="0"-->
-<!--      @dragStart="onDragStart"-->
-<!--      @selectEnd="onSelectEnd"-->
-<!--  />-->
-
   <div
-      class="item-card elements selecto-area"
-      ref="canvas"
+      class="item-card elements selecto-area prevent-select"
+      ref="cardRef"
       v-bind:class="'class-'+currentCard.currentID"
       :key="reloadKey"
       :style="{
         'transform': `scale(${zoom})`,
-        'position': 'relative',
-        'overflow': 'hidden',
-        'width': '100%',
-        'height': `100%`,
         'background-color': currentCard.background || 'inherit'}"
-      @click="selectCard()"
-      @mousedown.self="selectCardItem(-1)"
+      @mouseover="hover = true"
+      @touchstart="hover = true"
+      @mouseleave="hover = false"
+      @mouseout="hover = false"
   >
+
+    <KeystrokeCaptureViewer :card="currentCard" :core="core" :hover="hover"/>
 
     <component
         v-for="(item, index) in currentCard.items"
         :key="index"
         class="movable"
         :style="item.position"
+        v-bind:class="['item-index-'+index, 'item-id-'+item.id]"
         :is="getCardItemName(item)"
         :item="item"
         :core="core"
         :editor="true"
-        @mousedown.capture="selectCardItem(index)"
     />
 
     <Moveable
         ref="moveableRef"
-        :draggable="true"
         :target="targets"
         @drag="onDrag"
+        @dragGroup="onDragGroup"
+        @renderGroup="onRenderGroup"
+        @clickGroup="onClickGroup"
         @resize="onResize"
         @rotate="onRotate"
         @onSnap="onSnap"
         v-bind="currentCard.settings()"
+    />
+
+    <VueSelecto
+        ref="selectoRef"
+        :rootContainer="cardRef"
+        :selectableTargets="['.class-'+currentCard.currentID+' .movable']"
+        :hitRate="0"
+        :selectByClick="true"
+        :selectFromInside="false"
+        :toggleContinueSelect="['shift']"
+        :ratio="0"
+        @dragStart="onDragStart"
+        @selectEnd="onSelectEnd"
+        @select="onSelect"
     />
   </div>
 
@@ -253,5 +320,10 @@ const onSnap = e => {
 .movable {
   position: absolute;
 }
-
+.item-card {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
 </style>

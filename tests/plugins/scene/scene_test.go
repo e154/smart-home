@@ -59,7 +59,7 @@ sceneEvent = (args)->
 
 			automation.Start()
 			supervisor.Start(context.Background())
-			WaitSupervisor(eventBus)
+			WaitSupervisor(eventBus, time.Second)
 
 			var counter atomic.Int32
 			scriptService.PushFunctions("Done", func(args string) {

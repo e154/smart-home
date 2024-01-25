@@ -4,9 +4,8 @@ import {useI18n} from '@/hooks/web/useI18n'
 import {ElButton, ElPopconfirm, ElTimeline, ElTimelineItem, ElCard, ElTabs, ElTabPane, ElMessage} from 'element-plus'
 import {useRoute, useRouter} from 'vue-router'
 import api from "@/api/api";
-import {ApiCondition, ApiTask, ApiTrigger} from "@/api/stub";
+import {ApiTask} from "@/api/stub";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
-import {useEmitt} from "@/hooks/web/useEmitt";
 import {Form} from "@/components/Form";
 import TaskForm from "@/views/Automation/components/TaskForm.vue";
 import TriggersSearch from "@/views/Automation/components/TriggersSearch.vue";
@@ -100,18 +99,6 @@ const remove = async () => {
 const cancel = () => {
   push('/automation/tasks')
 }
-
-useEmitt({
-  name: 'updateTriggers',
-  callback: (val: ApiTrigger[]) => {
-  }
-})
-
-useEmitt({
-  name: 'updateConditions',
-  callback: (val: ApiCondition[]) => {
-  }
-})
 
 fetch()
 

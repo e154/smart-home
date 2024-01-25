@@ -21,17 +21,19 @@ package scene
 import (
 	"sync"
 
-	"github.com/e154/smart-home/common/events"
+	"github.com/pkg/errors"
 
+	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
 // Actor ...
 type Actor struct {
-	supervisor.BaseActor
-	eventPool chan events.EventCallScene
-	stateMu   *sync.Mutex
+	*supervisor.BaseActor
+	eventPool  chan events.EventCallScene
+	actionPool chan events.EventCallEntityAction
+	stateMu    *sync.Mutex
 }
 
 // NewActor ...
@@ -39,9 +41,10 @@ func NewActor(entity *m.Entity,
 	service supervisor.Service) (actor *Actor, err error) {
 
 	actor = &Actor{
-		BaseActor: supervisor.NewBaseActor(entity, service),
-		eventPool: make(chan events.EventCallScene, 99),
-		stateMu:   &sync.Mutex{},
+		BaseActor:  supervisor.NewBaseActor(entity, service),
+		eventPool:  make(chan events.EventCallScene, 99),
+		actionPool: make(chan events.EventCallEntityAction, 1000),
+		stateMu:    &sync.Mutex{},
 	}
 
 	// action worker
@@ -67,10 +70,30 @@ func (e *Actor) addEvent(event events.EventCallScene) {
 }
 
 func (e *Actor) runEvent(msg events.EventCallScene) {
-	for _, engine := range e.ScriptEngines {
-		if _, err := engine.Engine().AssertFunction(FuncSceneEvent, msg.EntityId); err != nil {
+	if e.ScriptsEngine != nil && e.ScriptsEngine.Engine() != nil {
+		if _, err := e.ScriptsEngine.AssertFunction(FuncSceneEvent, msg.EntityId); err != nil {
 			log.Error(err.Error())
 			return
+		}
+	}
+}
+
+func (e *Actor) addAction(event events.EventCallEntityAction) {
+	e.actionPool <- event
+}
+
+func (e *Actor) runAction(msg events.EventCallEntityAction) {
+	if action, ok := e.Actions[msg.ActionName]; ok {
+		if action.ScriptEngine != nil && action.ScriptEngine.Engine() != nil {
+			if _, err := action.ScriptEngine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
+				log.Error(errors.Wrapf(err, "entity id: %s ", e.Id).Error())
+			}
+			return
+		}
+	}
+	if e.ScriptsEngine != nil && e.ScriptsEngine.Engine() != nil {
+		if _, err := e.ScriptsEngine.AssertFunction(FuncEntityAction, msg.EntityId, msg.ActionName, msg.Args); err != nil {
+			log.Error(errors.Wrapf(err, "entity id: %s ", e.Id).Error())
 		}
 	}
 }

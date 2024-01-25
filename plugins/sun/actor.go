@@ -19,12 +19,11 @@
 package sun
 
 import (
+	"github.com/e154/smart-home/common"
 	"math"
 	"sort"
 	"sync"
 	"time"
-
-	"github.com/e154/smart-home/common/events"
 
 	"github.com/e154/smart-home/common/astronomics/suncalc"
 	m "github.com/e154/smart-home/models"
@@ -33,7 +32,7 @@ import (
 
 // Actor ...
 type Actor struct {
-	supervisor.BaseActor
+	*supervisor.BaseActor
 	positionLock        *sync.Mutex
 	lat, lon, elevation float64
 	solarAzimuth        float64
@@ -95,10 +94,6 @@ func (e *Actor) UpdateSunPosition(now time.Time) {
 	e.positionLock.Lock()
 	defer e.positionLock.Unlock()
 
-	oldState := e.GetEventState()
-
-	e.Now(oldState)
-
 	sunrisePos := suncalc.GetSunPosition(now, e.lat, e.lon)
 	e.solarAzimuth = sunrisePos.Azimuth*180/math.Pi + 180
 	e.solarElevation = sunrisePos.Altitude * 180 / math.Pi
@@ -145,9 +140,7 @@ func (e *Actor) UpdateSunPosition(now time.Time) {
 	for _, t := range dayTimes {
 		if now.Sub(t.Time).Minutes() > 0 {
 			e.phase = t.MorningName
-			if state, ok := e.States[t.MorningName]; ok {
-				e.State = &state
-			}
+			e.SetActorState(common.String(t.MorningName))
 		}
 	}
 	//log.Debugf("Sun phase %v", e.phase)
@@ -166,11 +159,5 @@ func (e *Actor) UpdateSunPosition(now time.Time) {
 
 	e.DeserializeAttr(attributeValues)
 
-	go e.SaveState(events.EventStateChanged{
-		StorageSave: true,
-		PluginName:  e.Id.PluginName(),
-		EntityId:    e.Id,
-		OldState:    oldState,
-		NewState:    e.GetEventState(),
-	})
+	e.SaveState(false, true)
 }

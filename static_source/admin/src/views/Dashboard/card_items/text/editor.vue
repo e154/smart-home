@@ -117,6 +117,7 @@ const updateCurrentState = () => {
 
   <CommonEditor :item="currentItem" :core="core"/>
 
+  <!-- text options -->
   <ElDivider content-position="left">{{ $t('dashboard.editor.textOptions') }}</ElDivider>
 
   <ElRow style="padding-bottom: 20px">
@@ -214,10 +215,10 @@ const updateCurrentState = () => {
                         :autosize="{minRows: 10}"
                         placeholder="Please input"
                         v-model="prop.text"
-                        @change="propTextUpdated(prop)"
+                        @update:modelValue="propTextUpdated(prop)"
                     />
 <!--                    <Editor v-else v-model="prop.text" @change="propTextUpdated(prop)" />-->
-                    <TinycmeEditor v-else v-model="prop.text" @text-change="propTextUpdated(prop)"/>
+                    <TinycmeEditor v-else v-model="prop.text" @update:modelValue="propTextUpdated(prop)"/>
                   </ElFormItem>
                 </ElCol>
               </ElRow>
@@ -278,13 +279,14 @@ const updateCurrentState = () => {
             :autosize="{minRows: 10}"
             placeholder="Please input"
             v-model="currentItem.payload.text.default_text"
-            @change="defaultTextUpdated"
+            @update:modelValue="defaultTextUpdated"
         />
 <!--        <Editor v-else mode="simple" v-model="currentItem.payload.text.default_text" @change="defaultTextUpdated" />-->
-        <TinycmeEditor v-else v-model="currentItem.payload.text.default_text" @text-change="defaultTextUpdated"/>
+        <TinycmeEditor v-else v-model="currentItem.payload.text.default_text" @update:modelValue="defaultTextUpdated"/>
       </ElFormItem>
     </ElCol>
   </ElRow>
+  <!-- /text options -->
 
   <ElRow>
     <ElCol>
@@ -313,6 +315,8 @@ const updateCurrentState = () => {
 
 </template>
 
-<style lang="less" >
-
+<style lang="less" scoped>
+:deep(.el-tag--small) {
+  margin: 0 7px 7px 0;
+}
 </style>

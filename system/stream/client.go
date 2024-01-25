@@ -28,15 +28,21 @@ import (
 
 // Client ...
 type Client struct {
-	closed bool
-	user   *m.User
+	closed    bool
+	user      *m.User
+	sessionId string
 	*sync.Mutex
 	ws *websocket.Conn
 }
 
 // NewClient ...
-func NewClient(ws *websocket.Conn, user *m.User) *Client {
-	return &Client{ws: ws, user: user, Mutex: &sync.Mutex{}}
+func NewClient(ws *websocket.Conn, user *m.User, sessionId string) *Client {
+	return &Client{
+		ws:        ws,
+		user:      user,
+		Mutex:     &sync.Mutex{},
+		sessionId: sessionId,
+	}
 }
 
 // WritePump ...
@@ -45,7 +51,7 @@ func (c *Client) WritePump(f func(*Client, string, string, []byte)) {
 	var data []byte
 	var messageType int
 	var err error
-	for !c.closed {
+	for {
 		messageType, data, err = c.ws.ReadMessage()
 		if messageType == -1 || err != nil {
 			return
@@ -55,13 +61,15 @@ func (c *Client) WritePump(f func(*Client, string, string, []byte)) {
 		_ = json.Unmarshal(data, msg)
 		f(c, msg.Id, msg.Query, msg.Body)
 	}
-
-	return
 }
 
 // Close ...
 func (c *Client) Close() {
 	c.closed = true
+	if c.ws != nil {
+		_ = c.ws.WriteMessage(websocket.CloseMessage, []byte{})
+		_ = c.ws.Close()
+	}
 }
 
 // Send ...
@@ -86,4 +94,8 @@ func (c *Client) Send(id, query string, body []byte) (err error) {
 
 func (c *Client) GetUser() *m.User {
 	return c.user
+}
+
+func (c *Client) SessionID() string {
+	return c.sessionId
 }

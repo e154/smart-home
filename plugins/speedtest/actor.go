@@ -19,6 +19,7 @@
 package speedtest
 
 import (
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/supervisor"
@@ -28,7 +29,7 @@ import (
 
 // Actor ...
 type Actor struct {
-	supervisor.BaseActor
+	*supervisor.BaseActor
 	isStarted *atomic.Bool
 }
 
@@ -112,12 +113,6 @@ func (e *Actor) runTest() {
 
 func (e *Actor) updateState(state *speedtest.Server) {
 
-	oldState := e.GetEventState()
-
-	e.Now(oldState)
-
-	//debug.Println(state)
-
 	var attributeValues = make(m.AttributeValue)
 	if state != nil {
 		attributeValues[AttrDLSpeed] = state.DLSpeed
@@ -131,22 +126,15 @@ func (e *Actor) updateState(state *speedtest.Server) {
 		attributeValues[AttrPoint] = []interface{}{state.Lon, state.Lat}
 
 		s := e.States[StateCompleted]
-		e.State = &s
+		e.SetActorState(common.String(s.Name))
 	} else {
 		s := e.States[StateInProcess]
-		e.State = &s
+		e.SetActorState(common.String(s.Name))
 	}
 
 	e.DeserializeAttr(attributeValues)
 
-	go e.SaveState(events.EventStateChanged{
-		StorageSave:     state != nil,
-		PluginName:      e.Id.PluginName(),
-		EntityId:        e.Id,
-		OldState:        oldState,
-		NewState:        e.GetEventState(),
-		DoNotSaveMetric: state == nil,
-	})
+	e.SaveState(state == nil, state != nil)
 }
 
 func (e *Actor) addAction(event events.EventCallEntityAction) {

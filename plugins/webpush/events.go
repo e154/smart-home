@@ -23,16 +23,19 @@ import m "github.com/e154/smart-home/models"
 // EventAddWebPushSubscription ...
 type EventAddWebPushSubscription struct {
 	UserID       int64           `json:"user_id"`
+	SessionID    string          `json:"session_id"`
 	Subscription *m.Subscription `json:"subscription"`
 }
 
 // EventGetWebPushPublicKey ...
 type EventGetWebPushPublicKey struct {
-	UserID int64 `json:"user_id,omitempty"`
+	UserID    int64  `json:"user_id,omitempty"`
+	SessionID string `json:"session_id"`
 }
 
 // EventNewWebPushPublicKey ...
 type EventNewWebPushPublicKey struct {
 	UserID    int64  `json:"user_id,omitempty"`
+	SessionID string `json:"session_id"`
 	PublicKey string `json:"public_key"`
 }

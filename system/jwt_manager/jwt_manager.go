@@ -24,15 +24,15 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/e154/smart-home/common/logger"
-
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/pkg/errors"
+	"go.uber.org/fx"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
-	"github.com/golang-jwt/jwt/v4"
-	"go.uber.org/fx"
+	"github.com/e154/smart-home/system/bus"
 )
 
 var (
@@ -43,13 +43,16 @@ type jwtManager struct {
 	adaptors      *adaptors.Adaptors
 	tokenDuration time.Duration
 	hmacKey       []byte
+	eventBus      bus.Bus
 }
 
 // NewJwtManager ...
 func NewJwtManager(lc fx.Lifecycle,
-	adaptors *adaptors.Adaptors) (mananger JwtManager) {
+	adaptors *adaptors.Adaptors) JwtManager {
 
-	mananger = &jwtManager{adaptors: adaptors}
+	mananger := &jwtManager{
+		adaptors: adaptors,
+	}
 
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
@@ -57,7 +60,7 @@ func NewJwtManager(lc fx.Lifecycle,
 		},
 	})
 
-	return
+	return mananger
 }
 
 // Start ...
@@ -67,7 +70,7 @@ func (j *jwtManager) Start() (err error) {
 }
 
 // Generate ...
-func (j *jwtManager) Generate(user *m.User, opts ...*time.Time) (accessToken string, err error) {
+func (j *jwtManager) Generate(user *m.User, root bool, opts ...*time.Time) (accessToken string, err error) {
 
 	var exp *int64
 	if len(opts) > 0 {
@@ -80,13 +83,14 @@ func (j *jwtManager) Generate(user *m.User, opts ...*time.Time) (accessToken str
 	}
 
 	data := jwt.MapClaims{
-		"exp": exp,
-		"iat": now.Unix(),
-		"iss": "server",
-		"nbf": now.Unix(),
-		"i":   user.Id,
-		"n":   user.Nickname,
-		"r":   user.RoleName,
+		"exp":  exp,
+		"iat":  now.Unix(),
+		"iss":  "server",
+		"nbf":  now.Unix(),
+		"i":    user.Id,
+		"n":    user.Nickname,
+		"r":    user.RoleName,
+		"root": root,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, data)

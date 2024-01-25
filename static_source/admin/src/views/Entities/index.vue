@@ -5,7 +5,7 @@ import {h, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
 import {ElButton, ElMessage, ElTag, ElCollapse, ElCollapseItem} from 'element-plus'
-import {ApiArea, ApiEntity, ApiPlugin} from "@/api/stub";
+import {ApiArea, ApiDashboardCard, ApiEntityShort, ApiPlugin} from "@/api/stub";
 import {useForm} from "@/hooks/web/useForm";
 import {useRouter} from "vue-router";
 import {parseTime} from "@/utils";
@@ -18,6 +18,7 @@ import {EventStateChange} from "@/api/stream_types";
 import {FormSchema} from "@/types/form";
 import {Form} from '@/components/Form'
 import {useCache} from "@/hooks/web/useCache";
+import JsonEditor from "@/components/JsonEditor/JsonEditor.vue";
 
 const {push} = useRouter()
 const {register, methods} = useForm()
@@ -25,7 +26,7 @@ const {t} = useI18n()
 const { wsCache } = useCache()
 
 interface TableObject {
-  tableList: ApiEntity[]
+  tableList: ApiEntityShort[]
   params?: any
   loading: boolean
   sort?: string
@@ -70,7 +71,7 @@ const columns: TableColumn[] = [
     label: t('entities.area'),
     width: "100px",
     sortable: true,
-    formatter: (row: ApiEntity) => {
+    formatter: (row: ApiEntityShort) => {
       return h(
           'span',
           row.area?.name
@@ -93,7 +94,7 @@ const columns: TableColumn[] = [
     type: 'time',
     sortable: true,
     width: "170px",
-    formatter: (row: ApiEntity) => {
+    formatter: (row: ApiEntityShort) => {
       return h(
           'span',
           parseTime(row.createdAt)
@@ -106,7 +107,7 @@ const columns: TableColumn[] = [
     type: 'time',
     sortable: true,
     width: "170px",
-    formatter: (row: ApiEntity) => {
+    formatter: (row: ApiEntityShort) => {
       return h(
           'span',
           parseTime(row.updatedAt)
@@ -209,7 +210,7 @@ const selectRow = (row) => {
   push(`/entities/edit/${id}`)
 }
 
-const restart = async (entity: ApiEntity) => {
+const restart = async (entity: ApiEntityShort) => {
   await api.v1.developerToolsServiceReloadEntity({id: entity.id});
   ElMessage({
     title: t('Success'),
@@ -219,7 +220,7 @@ const restart = async (entity: ApiEntity) => {
   });
 }
 
-const enable = async (entity: ApiEntity) => {
+const enable = async (entity: ApiEntityShort) => {
   if (!entity?.id) return;
   await api.v1.entityServiceEnabledEntity(entity.id);
   ElMessage({
@@ -230,7 +231,7 @@ const enable = async (entity: ApiEntity) => {
   });
 }
 
-const disable = async (entity: ApiEntity) => {
+const disable = async (entity: ApiEntityShort) => {
   if (!entity?.id) return;
   await api.v1.entityServiceDisabledEntity(entity.id);
   ElMessage({
@@ -242,12 +243,12 @@ const disable = async (entity: ApiEntity) => {
 }
 
 const dialogVisible = ref(false)
-const importedEntity = ref("")
+const importedEntity = ref(null)
 const showImportDialog = () => {
   dialogVisible.value = true
 }
 
-const importHandler = (val: string) => {
+const importHandler = (val: any) => {
   if (importedEntity.value == val) {
     return
   }
@@ -255,8 +256,23 @@ const importHandler = (val: string) => {
 }
 
 const importEntity = async () => {
-  const val: ApiEntity = JSON.parse(importedEntity.value)
-  const entity: ApiEntity = {
+  let val: ApiEntityShort;
+  try {
+    if (importedEntity.value?.json) {
+      val = importedEntity.value.json as ApiEntityShort;
+    } else if(importedEntity.value.text) {
+      val = JSON.parse(importedEntity.value.text) as ApiEntityShort;
+    }
+  } catch {
+    ElMessage({
+      title: t('Error'),
+      message: t('message.corruptedJsonFormat'),
+      type: 'error',
+      duration: 2000
+    });
+    return
+  }
+  const entity: ApiEntityShort = {
     id: val.id,
     pluginName: val.pluginName,
     description: val.description,
@@ -385,6 +401,7 @@ if (wsCache.get(cachePref+'Area')) {
     <ElCollapse class="mb-20px">
       <ElCollapseItem :title="$t('main.filter') + filterList()">
         <Form
+            class="filter-form"
             :schema="schema"
             label-position="top"
             label-width="auto"
@@ -429,7 +446,7 @@ if (wsCache.get(cachePref+'Area')) {
 
   <!-- import dialog -->
   <Dialog v-model="dialogVisible" :title="t('entities.dialogImportTitle')" :maxHeight="400" width="80%" custom-class>
-    <JsonViewer @change="importHandler"/>
+    <JsonEditor @change="importHandler"/>
     <template #footer>
       <ElButton type="primary" @click="importEntity()" plain>{{ t('main.import') }}</ElButton>
       <ElButton @click="dialogVisible = false">{{ t('main.closeDialog') }}</ElButton>
@@ -439,9 +456,14 @@ if (wsCache.get(cachePref+'Area')) {
 
 </template>
 
-<style lang="less">
+<style lang="less" scoped>
 
-.el-table__row {
+:deep(.filter-form .el-col) {
+  padding-left: 0!important;
+  padding-right: 0!important;
+}
+
+:deep(.el-table__row) {
   cursor: pointer;
 }
 

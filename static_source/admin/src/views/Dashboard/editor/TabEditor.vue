@@ -2,7 +2,7 @@
 import {computed, PropType, reactive, ref, unref, watch} from 'vue'
 import {Form} from '@/components/Form'
 import {ElButton, ElCard, ElMessage, ElPopconfirm,
-  ElSkeleton, ElMenu, ElMenuItem, ElContainer, ElMain, ElAside} from 'element-plus'
+  ElSkeleton, ElEmpty, ElMenu, ElMenuItem, ElContainer, ElMain, ElAside} from 'element-plus'
 import {useI18n} from '@/hooks/web/useI18n'
 import {useForm} from '@/hooks/web/useForm'
 import {useValidator} from '@/hooks/web/useValidator'
@@ -75,6 +75,7 @@ const schema = reactive<FormSchema[]>([
     component: 'Switch',
     value: false,
     colProps: {
+      md: 12,
       span: 24
     },
   },
@@ -84,14 +85,14 @@ const schema = reactive<FormSchema[]>([
     component: 'Switch',
     value: false,
     colProps: {
+      md: 12,
       span: 24
     },
   },
   {
-    field: 'dragEnabled',
-    label: t('dashboard.dragEnabled'),
-    component: 'Switch',
-    value: false,
+    field: 'cardSize',
+    label: t('dashboard.editor.size'),
+    component: 'Divider',
     colProps: {
       span: 24
     },
@@ -101,6 +102,14 @@ const schema = reactive<FormSchema[]>([
     label: t('dashboard.columnWidth'),
     component: 'InputNumber',
     value: 300,
+    colProps: {
+      span: 24
+    },
+  },
+  {
+    field: 'cardSize',
+    label: t('dashboard.editor.color'),
+    component: 'Divider',
     colProps: {
       span: 24
     },
@@ -154,7 +163,7 @@ watch(
 
 const activeTab = computed({
   get(): Tab {
-    return currentCore.value.tabs[currentCore.value.activeTab] as Tab
+    return currentCore.value.getActiveTab as Tab
   },
   set(val: Tab) {}
 })
@@ -195,16 +204,10 @@ const updateTab = async () => {
 const removeTab = async () => {
   if (!activeTab.value) return;
   await currentCore.value.removeTab();
-
-  currentCore.value.tabs.splice(currentCore.value.activeTab, 1);
-  currentCore.value.activeTab = currentCore.value.tabs.length - 1;
-  currentCore.value.updateCurrentTab();
 }
 
 const menuTabClick = (index: number, tab: Tab) => {
-  if (currentCore.value.activeTab === index) return;
-  currentCore.value.activeTab = index;
-  currentCore.value.updateCurrentTab();
+  currentCore.value.selectTabInMenu(index)
 }
 
 const createTab = async () => {
@@ -244,7 +247,7 @@ const sortCardDown = (tab: Tab, index: number) => {}
       <ElCard class="box-card">
         <template #header>
           <div class="card-header">
-            <span>{{ $t('dashboard.mainSettings') }}</span>
+            <span>{{ $t('dashboard.tabDetail') }}</span>
           </div>
         </template>
 
@@ -255,7 +258,11 @@ const sortCardDown = (tab: Tab, index: number) => {}
             @register="register"
         />
 
-        <ElSkeleton v-if="!currentCore.tabs.length" :rows="5" />
+        <ElEmpty v-if="!currentCore.tabs.length" :rows="5">
+          <ElButton type="primary" @click="createTab()">
+            {{ t('dashboard.addNewTab') }}
+          </ElButton>
+        </ElEmpty>
 
         <div class="text-right" v-if="currentCore.tabs.length">
           <ElButton type="primary" @click.prevent.stop="updateTab">{{ $t('main.update') }}</ElButton>
@@ -285,11 +292,11 @@ const sortCardDown = (tab: Tab, index: number) => {}
           <div class="card-header">
             <span>{{ $t('dashboard.tabList') }}</span>
             <ElButton @click="createTab()" text size="small">
-              {{ t('dashboard.addNewTab') }}
+              {{ t('dashboard.addNew') }}
             </ElButton>
           </div>
         </template>
-        <ElMenu v-if="currentCore.tabs.length" :default-active="currentCore.activeTab + ''" v-model="currentCore.activeTab" class="el-menu-vertical-demo">
+        <ElMenu v-if="currentCore.tabs.length" :default-active="currentCore.activeTabIdx + ''" v-model="currentCore.activeTabIdx" class="el-menu-vertical-demo">
           <ElMenuItem :index="index + ''" :key="tab" v-for="(tab, index) in currentCore.tabs" @click="menuTabClick(index, tab)">
            <div class="w-[100%] card-header">
              <span>{{ tab.name }}</span>

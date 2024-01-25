@@ -31,6 +31,7 @@ import (
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
 	"github.com/e154/smart-home/common/web"
@@ -242,7 +243,7 @@ func (e *supervisor) GetEntityById(id common.EntityId) (entity m.EntityShort, er
 func (e *supervisor) GetActorById(id common.EntityId) (pla PluginActor, err error) {
 
 	if !e.PluginIsLoaded(id.PluginName()) {
-		err = errors.Wrap(ErrPluginNotLoaded, id.PluginName())
+		err = errors.Wrap(apperr.ErrPluginNotLoaded, id.PluginName())
 		return
 	}
 
@@ -304,29 +305,21 @@ func (e *supervisor) eventLastState(msg events.EventGetLastState) {
 		return
 	}
 
-	if pla.GetCurrentState() == nil {
-		currentState := pla.GetEventState()
-		pla.SetCurrentState(currentState)
-	}
-
 	info := pla.Info()
-
-	currentState := pla.GetCurrentState()
-	if currentState.LastChanged == nil && currentState.LastUpdated == nil {
-		entity, err := e.adaptors.Entity.GetById(context.Background(), msg.EntityId)
-		if err != nil {
-			log.Error(err.Error())
-			return
-		}
-		currentState.Attributes = entity.Attributes
-	}
 
 	state := events.EventLastStateChanged{
 		PluginName: info.PluginName,
 		EntityId:   info.Id,
-		OldState:   *currentState,
-		NewState:   *currentState,
 	}
+
+	if oldState := pla.GetOldState(); oldState != nil {
+		state.OldState = *oldState
+	}
+
+	if newState := pla.GetCurrentState(); newState != nil {
+		state.NewState = *newState
+	}
+
 	_ = e.cache.Put(context.Background(), msg.EntityId.String(), state, 30*time.Second)
 	e.eventBus.Publish("system/entities/"+msg.EntityId.String(), state)
 }
@@ -445,7 +438,7 @@ func (e *supervisor) CallScene(id common.EntityId, arg map[string]interface{}) {
 func (e *supervisor) AddEntity(entity *m.Entity) (err error) {
 
 	if !e.PluginIsLoaded(entity.PluginName) {
-		err = errors.Wrap(ErrPluginNotLoaded, entity.PluginName)
+		err = errors.Wrap(apperr.ErrPluginNotLoaded, entity.PluginName)
 		return
 	}
 
@@ -462,7 +455,7 @@ func (e *supervisor) AddEntity(entity *m.Entity) (err error) {
 func (e *supervisor) UpdateEntity(entity *m.Entity) (err error) {
 
 	if !e.PluginIsLoaded(entity.PluginName) {
-		err = errors.Wrap(ErrPluginNotLoaded, entity.PluginName)
+		err = errors.Wrap(apperr.ErrPluginNotLoaded, entity.PluginName)
 		return
 	}
 

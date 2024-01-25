@@ -22,8 +22,9 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/e154/smart-home/common/events"
+	"github.com/pkg/errors"
 
+	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/node"
 	"github.com/e154/smart-home/system/scripts"
@@ -32,7 +33,7 @@ import (
 
 // Actor ...
 type Actor struct {
-	supervisor.BaseActor
+	*supervisor.BaseActor
 	scriptService scripts.ScriptService
 	actionPool    chan events.EventCallEntityAction
 	stateMu       *sync.Mutex
@@ -67,13 +68,10 @@ func NewActor(entity *m.Entity,
 		}
 	}
 
-	for _, engine := range actor.ScriptEngines {
-		engine.Spawn(func(engine *scripts.Engine) {
-			engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
-			engine.PushFunction("ModbusRtu", NewModbusRtu(service.EventBus(), actor))
-			engine.Do()
-		})
-	}
+	actor.ScriptsEngine.Spawn(func(engine *scripts.Engine) {
+		engine.PushFunction("ModbusRtu", NewModbusRtu(service.EventBus(), actor))
+		engine.Do()
+	})
 
 	// action worker
 	go func() {
@@ -96,27 +94,9 @@ func (e *Actor) Spawn() {
 // SetState ...
 func (e *Actor) SetState(params supervisor.EntityStateParams) error {
 
-	oldState := e.GetEventState()
-
-	e.Now(oldState)
-
-	if params.NewState != nil {
-		state := e.States[*params.NewState]
-		e.State = &state
-		e.State.ImageUrl = state.ImageUrl
-	}
-
-	e.AttrMu.Lock()
-	_, _ = e.Attrs.Deserialize(params.AttributeValues)
-	e.AttrMu.Unlock()
-
-	go e.SaveState(events.EventStateChanged{
-		PluginName:  e.Id.PluginName(),
-		EntityId:    e.Id,
-		OldState:    oldState,
-		NewState:    e.GetEventState(),
-		StorageSave: params.StorageSave,
-	})
+	e.SetActorState(params.NewState)
+	e.DeserializeAttr(params.AttributeValues)
+	e.SaveState(false, params.StorageSave)
 
 	return nil
 }
@@ -126,13 +106,18 @@ func (e *Actor) addAction(event events.EventCallEntityAction) {
 }
 
 func (e *Actor) runAction(msg events.EventCallEntityAction) {
-	action, ok := e.Actions[msg.ActionName]
-	if !ok {
-		log.Warnf("action %s not found", msg.ActionName)
-		return
+	if action, ok := e.Actions[msg.ActionName]; ok {
+		if action.ScriptEngine != nil && action.ScriptEngine.Engine() != nil {
+			if _, err := action.ScriptEngine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
+				log.Error(errors.Wrapf(err, "entity id: %s ", e.Id).Error())
+			}
+			return
+		}
 	}
-	if _, err := action.ScriptEngine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
-		log.Error(err.Error())
+	if e.ScriptsEngine != nil && e.ScriptsEngine.Engine() != nil {
+		if _, err := e.ScriptsEngine.AssertFunction(FuncEntityAction, msg.EntityId, msg.ActionName, msg.Args); err != nil {
+			log.Error(errors.Wrapf(err, "entity id: %s ", e.Id).Error())
+		}
 	}
 }
 

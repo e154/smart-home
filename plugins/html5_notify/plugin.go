@@ -96,7 +96,7 @@ func (p *plugin) Depends() []string {
 
 // Version ...
 func (p *plugin) Version() string {
-	return "0.0.1"
+	return Version
 }
 
 // Options ...
@@ -132,7 +132,7 @@ func (p *plugin) Send(address string, message *m.Message) (err error) {
 	attr := NewMessageParams()
 	_, _ = attr.Deserialize(message.Attributes)
 
-	p.Service.EventBus().Publish("system/plugins/html5_notify", events.EventDirectMessage{
+	p.Service.EventBus().Publish("system/dashboard", events.EventDirectMessage{
 		UserID: userID,
 		Query:  "html5_notify",
 		Message: Notification{

@@ -20,42 +20,59 @@ package scripts
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/common"
-	m "github.com/e154/smart-home/models"
-	"testing"
-	"time"
-
 	"github.com/e154/smart-home/adaptors"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
 	. "github.com/smartystreets/goconvey/convey"
+	"testing"
 )
 
 func Test16(t *testing.T) {
 
-	Convey("scripts run syn command", t, func(ctx C) {
+	Convey("merge scripts", t, func(ctx C) {
 		err := container.Invoke(func(adaptors *adaptors.Adaptors,
+			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService) {
 
-			script1 := &m.Script{
-				Lang:   common.ScriptLangJavascript,
-				Source: javascript29,
-			}
-			engine, err := scriptService.NewEngine(script1)
+			// clear database
+			// ------------------------------------------------
+			//_ = migrations.Purge()
+
+			scripts := GetScripts(ctx, scriptService, adaptors, []int{29, 30, 31}...)
+
+			engine, err := scriptService.NewEngine(&m.Script{
+				Lang: "javascript",
+			})
 			So(err, ShouldBeNil)
 
+			// a = 1
+			result, err := engine.EvalScript(scripts["script29"])
 			So(err, ShouldBeNil)
-			err = engine.Compile()
+			So(result, ShouldEqual, "1")
+
+			// b = 2
+			result, err = engine.EvalScript(scripts["script30"])
+			So(err, ShouldBeNil)
+			So(result, ShouldEqual, "2")
+
+			// 3 + a
+			result, err = engine.EvalScript(scripts["script31"])
+			So(err, ShouldBeNil)
+			So(result, ShouldEqual, "4")
+
+			_, err = engine.Do()
 			So(err, ShouldBeNil)
 
-			result, err := engine.Do()
+			// a + b
+			result, err = engine.AssertFunction("plus")
 			So(err, ShouldBeNil)
-			fmt.Println(result)
+			So(result, ShouldEqual, "3")
 
-			result, err = engine.AssertFunction("foo")
+			// 3 + a
+			result, err = engine.EvalString("m")
 			So(err, ShouldBeNil)
-
-			time.Sleep(time.Second * 3)
-
+			So(result, ShouldEqual, "4")
 		})
 		if err != nil {
 			fmt.Println(err.Error())

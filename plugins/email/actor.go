@@ -27,7 +27,6 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
-	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/notify"
 	notifyCommon "github.com/e154/smart-home/plugins/notify/common"
@@ -36,7 +35,7 @@ import (
 
 // Actor ...
 type Actor struct {
-	supervisor.BaseActor
+	*supervisor.BaseActor
 	adaptors *adaptors.Adaptors
 	notify   *notify.Notify
 	Auth     string
@@ -115,9 +114,6 @@ func (e *Actor) Send(address string, message *m.Message) error {
 // UpdateStatus ...
 func (e *Actor) UpdateStatus() (err error) {
 
-	oldState := e.GetEventState()
-	now := e.Now(oldState)
-
 	var attributeValues = make(m.AttributeValue)
 	// ...
 
@@ -127,25 +123,10 @@ func (e *Actor) UpdateStatus() (err error) {
 		if err != nil {
 			log.Warn(err.Error())
 		}
-
-		if oldState.LastUpdated != nil {
-			delta := now.Sub(*oldState.LastUpdated).Milliseconds()
-			//fmt.Println("delta", delta)
-			if delta < 200 {
-				e.AttrMu.Unlock()
-				return
-			}
-		}
 	}
 	e.AttrMu.Unlock()
 
-	go e.SaveState(events.EventStateChanged{
-		StorageSave: true,
-		PluginName:  e.Id.PluginName(),
-		EntityId:    e.Id,
-		OldState:    oldState,
-		NewState:    e.GetEventState(),
-	})
+	e.SaveState(false, true)
 
 	return
 }

@@ -42,7 +42,7 @@ interface Params {
   page?: number;
   limit?: number;
   sort?: string;
-  entityId?: string;
+  entityId?: string[];
   startDate?: string;
   endDate?: string;
 }
@@ -189,9 +189,9 @@ const getList = debounce( async () => {
   if (props.item?.payload.entityStorage?.entityIds?.length ) {
 
     if (selectedEntities.value.length == 0) {
-      params.entityId = props.item?.payload.entityStorage?.entityIds.join(",")
+      params.entityId = props.item?.payload.entityStorage?.entityIds || []
     } else {
-      params.entityId = selectedEntities.value.join(",")
+      params.entityId = selectedEntities.value
     }
   }
 
@@ -211,7 +211,7 @@ const getList = debounce( async () => {
   } else {
     tableObject.tableList = [];
   }
-}, 100)
+}, 1000)
 
 const onStateChanged = (event: EventStateChange) => {
 

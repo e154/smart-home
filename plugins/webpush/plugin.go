@@ -137,7 +137,7 @@ func (p *plugin) Depends() []string {
 
 // Version ...
 func (p *plugin) Version() string {
-	return "0.0.1"
+	return Version
 }
 
 // Options ...
@@ -247,8 +247,9 @@ func (p *plugin) eventHandler(_ string, event interface{}) {
 }
 
 func (p *plugin) sendPublicKey(event EventGetWebPushPublicKey) {
-	p.Service.EventBus().Publish(TopicPluginWebpush, EventNewWebPushPublicKey{
+	p.Service.EventBus().Publish("system/dashboard", EventNewWebPushPublicKey{
 		UserID:    event.UserID,
+		SessionID: event.SessionID,
 		PublicKey: p.VAPIDPublicKey,
 	})
 }

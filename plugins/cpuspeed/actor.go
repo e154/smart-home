@@ -21,20 +21,17 @@ package cpuspeed
 import (
 	"sync"
 
-	m "github.com/e154/smart-home/models"
-
-	"github.com/e154/smart-home/common/events"
-
 	"github.com/rcrowley/go-metrics"
 	"github.com/shirou/gopsutil/v3/cpu"
 
 	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
 // Actor ...
 type Actor struct {
-	supervisor.BaseActor
+	*supervisor.BaseActor
 	cores           int64
 	model           string
 	mhz             float64
@@ -86,9 +83,6 @@ func (e *Actor) selfUpdate() {
 	e.updateLock.Lock()
 	defer e.updateLock.Unlock()
 
-	oldState := e.GetEventState()
-	e.Now(oldState)
-
 	// export CGO_ENABLED=1
 	timeStats, err := cpu.Times(false)
 	if err != nil {
@@ -125,11 +119,5 @@ func (e *Actor) selfUpdate() {
 	//	"all": common.Rounding32(e.all.Value(), 2),
 	//})
 
-	go e.SaveState(events.EventStateChanged{
-		StorageSave: false,
-		PluginName:  e.Id.PluginName(),
-		EntityId:    e.Id,
-		OldState:    oldState,
-		NewState:    e.GetEventState(),
-	})
+	e.SaveState(false, false)
 }

@@ -70,12 +70,24 @@ func (v *VariableEndpoint) GetById(ctx context.Context, name string) (variable m
 }
 
 // Update ...
-func (v *VariableEndpoint) Update(ctx context.Context, variable m.Variable) (err error) {
+func (v *VariableEndpoint) Update(ctx context.Context, _variable m.Variable) (err error) {
 
-	if ok, errs := v.validation.Valid(variable); !ok {
+	if ok, errs := v.validation.Valid(_variable); !ok {
 		err = apperr.ErrInvalidRequest
 		apperr.SetValidationErrors(err, errs)
 		return
+	}
+
+	var variable m.Variable
+	if variable, err = v.adaptors.Variable.GetByName(ctx, _variable.Name); err == nil {
+		if variable.System && v.checkSuperUser(ctx) {
+			err = apperr.ErrVariableUpdateForbidden
+			return
+		}
+		variable.Value = _variable.Value
+	} else {
+		variable.Name = _variable.Name
+		variable.Value = _variable.Value
 	}
 
 	if err = v.adaptors.Variable.CreateOrUpdate(ctx, variable); err != nil {
@@ -100,6 +112,15 @@ func (v *VariableEndpoint) GetList(ctx context.Context, pagination common.PagePa
 
 // Delete ...
 func (v *VariableEndpoint) Delete(ctx context.Context, name string) (err error) {
+
+	var variable m.Variable
+	if variable, err = v.adaptors.Variable.GetByName(ctx, name); err == nil {
+		if variable.System && v.checkSuperUser(ctx) {
+			err = apperr.ErrVariableUpdateForbidden
+			return
+		}
+
+	}
 
 	if err = v.adaptors.Variable.Delete(ctx, name); err != nil {
 		return

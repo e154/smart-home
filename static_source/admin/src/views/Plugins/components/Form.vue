@@ -1,18 +1,13 @@
 <script setup lang="ts">
-import {computed, defineEmits, PropType, reactive, ref, unref, watch} from 'vue'
+import {PropType, reactive, ref, watch} from 'vue'
 import {Form} from '@/components/Form'
 import {useI18n} from '@/hooks/web/useI18n'
 import {useForm} from '@/hooks/web/useForm'
-import {useCache} from '@/hooks/web/useCache'
-import {useAppStore} from '@/store/modules/app'
-import {useRoute, useRouter} from 'vue-router'
 import {useValidator} from '@/hooks/web/useValidator'
 import {FormSchema} from '@/types/form'
-import {ElButton, ElTabs, ElTabPane, ElForm, ElFormItem, ElInput} from 'element-plus'
 import {Plugin} from './Types.ts'
 
 const {register, elFormRef, methods} = useForm()
-const {required} = useValidator()
 const {t} = useI18n()
 
 const form = ref<Nullable<Plugin>>(null)
@@ -68,7 +63,7 @@ const schema = reactive<FormSchema[]>([
     },
   },
   {
-    field: 'options.triggers',
+    field: 'triggers',
     label: t('plugins.trigger'),
     component: 'Switch',
     componentProps: {
@@ -80,7 +75,7 @@ const schema = reactive<FormSchema[]>([
   },
   {
     field: 'actors',
-    label: t('plugins.actors'),
+    label: t('actors'),
     component: 'Switch',
     componentProps: {
       disabled: true,
@@ -123,7 +118,7 @@ const schema = reactive<FormSchema[]>([
     },
   },
   {
-    field: 'actorCustomSettings',
+    field: 'actorCustomSetts',
     label: t('plugins.actorCustomSettings'),
     component: 'Switch',
     componentProps: {

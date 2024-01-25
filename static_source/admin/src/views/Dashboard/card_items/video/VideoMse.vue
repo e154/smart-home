@@ -30,7 +30,7 @@ onMounted(async () => {
       videoEl.value.currentTime = videoEl.value.buffered.end(videoEl.value.buffered.length - 1) - 0.1
       videoEl.value.play()
     }
-  })
+  }, {passive: true})
 
   startPlay()
 })
@@ -102,7 +102,7 @@ const startPlay = () => {
         startPlay();
       }, 1000);
     };
-  }, false)
+  }, {passive: false})
 }
 
 const stopPlay = () => {

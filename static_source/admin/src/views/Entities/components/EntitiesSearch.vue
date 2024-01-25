@@ -1,11 +1,11 @@
 <script setup lang="ts">
 
 import {PropType, ref, unref, watch} from "vue";
-import {ApiEntity} from "@/api/stub";
+import {ApiEntityShort} from "@/api/stub";
 import {ElSelect, ElOption} from 'element-plus'
 import api from "@/api/api";
 
-const options = ref<ApiEntity[]>([])
+const options = ref<ApiEntityShort[]>([])
 const value = ref<string[]>([])
 const loading = ref(false)
 const emit = defineEmits(['change', 'update:modelValue'])
@@ -58,7 +58,7 @@ const remoteMethod = async (query: string) => {
 
 remoteMethod("")
 
-const handleSelect = (val: ApiEntity) => {
+const handleSelect = (val: ApiEntityShort) => {
   console.log(val)
   emit('change', val)
 }

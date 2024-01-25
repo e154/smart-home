@@ -21,9 +21,10 @@ package adaptors
 import (
 	"context"
 
+	"gorm.io/gorm"
+
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"gorm.io/gorm"
 )
 
 // IPermission ...

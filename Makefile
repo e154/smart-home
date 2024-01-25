@@ -51,8 +51,8 @@ test_system:
 	go test -v ./tests/plugins/cgminer
 	go test -v ./tests/plugins/email
 	go test -v ./tests/plugins/messagebird
-	#go test -v ./tests/plugins/modbus_rtu
-	#go test -v ./tests/plugins/modbus_tcp
+	go test -v ./tests/plugins/modbus_rtu
+	go test -v ./tests/plugins/modbus_tcp
 	go test -v ./tests/plugins/moon
 	go test -v ./tests/plugins/node
 	go test -v ./tests/plugins/scene
@@ -71,8 +71,7 @@ test_system:
 
 test:
 	@echo MARK: unit tests
-	go test $(go list ./... | grep -v /tests/)
-	go test -race $(go list ./... | grep -v /tests/)
+	go test -v $(shell go list ./... | grep -v /tmp | grep -v /tests) -timeout 60s -race -covermode=atomic -coverprofile=coverage.out
 
 install_linter:
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin v1.55.2

@@ -38,7 +38,7 @@ type ITrigger interface {
 	Update(ctx context.Context, ver *m.UpdateTrigger) error
 	Delete(ctx context.Context, deviceId int64) (err error)
 	List(ctx context.Context, limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Trigger, total int64, err error)
-	ListPlain(ctx context.Context, limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Trigger, total int64, err error)
+	ListPlain(ctx context.Context, limit, offset int64, orderBy, sort string, onlyEnabled bool, ids *[]uint64) (list []*m.Trigger, total int64, err error)
 	Search(ctx context.Context, query string, limit, offset int) (list []*m.Trigger, total int64, err error)
 	Enable(ctx context.Context, id int64) (err error)
 	Disable(ctx context.Context, id int64) (err error)
@@ -184,9 +184,9 @@ func (n *Trigger) List(ctx context.Context, limit, offset int64, orderBy, sort s
 }
 
 // ListPlain ...
-func (n *Trigger) ListPlain(ctx context.Context, limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Trigger, total int64, err error) {
+func (n *Trigger) ListPlain(ctx context.Context, limit, offset int64, orderBy, sort string, onlyEnabled bool, ids *[]uint64) (list []*m.Trigger, total int64, err error) {
 	var dbList []*db.Trigger
-	if dbList, total, err = n.table.ListPlain(ctx, int(limit), int(offset), orderBy, sort, onlyEnabled); err != nil {
+	if dbList, total, err = n.table.ListPlain(ctx, int(limit), int(offset), orderBy, sort, onlyEnabled, ids); err != nil {
 		return
 	}
 

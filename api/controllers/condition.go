@@ -83,7 +83,7 @@ func (c ControllerCondition) ConditionServiceGetConditionById(ctx echo.Context, 
 func (c ControllerCondition) ConditionServiceGetConditionList(ctx echo.Context, params stub.ConditionServiceGetConditionListParams) error {
 
 	pagination := c.Pagination(params.Page, params.Limit, params.Sort)
-	items, total, err := c.endpoint.Condition.GetList(ctx.Request().Context(), pagination)
+	items, total, err := c.endpoint.Condition.GetList(ctx.Request().Context(), pagination, params.Ids)
 	if err != nil {
 		return c.ERROR(ctx, err)
 	}

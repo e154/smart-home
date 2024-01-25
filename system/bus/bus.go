@@ -21,6 +21,7 @@ package bus
 import (
 	"context"
 	"fmt"
+	"os"
 	"reflect"
 	"sort"
 	"sync"
@@ -67,11 +68,11 @@ func (b *bus) publish(topic string, args ...interface{}) {
 }
 
 // Subscribe ...
-func (b *bus) Subscribe(topic string, fn interface{}, options ...interface{}) error {
-	go func() {
-		_ = b.subscribe(topic, fn, options...)
-	}()
-	return nil
+func (b *bus) Subscribe(topic string, fn interface{}, options ...interface{}) (err error) {
+	if err = b.subscribe(topic, fn, options...); err != nil {
+		fmt.Fprintln(os.Stderr, err.Error())
+	}
+	return err
 }
 
 // subscribe ...
@@ -95,9 +96,9 @@ func (b *bus) subscribe(topic string, fn interface{}, options ...interface{}) er
 			go func(args []reflect.Value) {
 				startTime := time.Now()
 				h.callback.Call(args)
-				t := time.Since(startTime).Microseconds()
-				if t > 5000 {
-					fmt.Printf("long call! topic %s, fn: %s, Microseconds: %d\n\r", topic, reflect.ValueOf(fn).String(), t)
+				t := time.Since(startTime).Milliseconds()
+				if t > 5 {
+					fmt.Printf("long call! topic %s, fn: %s, Milliseconds: %d\n\r", topic, reflect.ValueOf(fn).String(), t)
 				}
 			}(args)
 		}
@@ -126,11 +127,11 @@ func (b *bus) subscribe(topic string, fn interface{}, options ...interface{}) er
 }
 
 // Unsubscribe ...
-func (b *bus) Unsubscribe(topic string, fn interface{}) error {
-	go func() {
-		_ = b.unsubscribe(topic, fn)
-	}()
-	return nil
+func (b *bus) Unsubscribe(topic string, fn interface{}) (err error) {
+	if err = b.unsubscribe(topic, fn); err != nil {
+		fmt.Fprintln(os.Stderr, err.Error())
+	}
+	return
 }
 
 // unsubscribe ...

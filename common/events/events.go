@@ -24,6 +24,17 @@ import (
 	"github.com/iancoleman/strcase"
 )
 
+type OwnerType string
+
+const (
+	OwnerUser   = OwnerType("user")
+	OwnerSystem = OwnerType("system")
+)
+
+type Common struct {
+	Owner OwnerType `json:"owner"`
+}
+
 func EventName(event interface{}) string {
 	if t := reflect.TypeOf(event); t.Kind() == reflect.Ptr {
 		return strcase.ToSnake(t.Elem().Name())

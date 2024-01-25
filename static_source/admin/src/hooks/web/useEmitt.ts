@@ -8,6 +8,7 @@ interface Option {
 
 const emitter = mitt()
 
+//DEPRECATED
 export const useEmitt = (option?: Option) => {
   if (option) {
     emitter.on(option.name, option.callback)

@@ -420,7 +420,7 @@ type ApiEntityShort struct {
 	Description string    `json:"description"`
 	Icon        *string   `json:"icon,omitempty"`
 	Id          string    `json:"id"`
-	Image       *ApiImage `json:"image,omitempty"`
+	IsLoaded    *bool     `json:"isLoaded,omitempty"`
 	ParentId    *string   `json:"parentId,omitempty"`
 	PluginName  string    `json:"pluginName"`
 	UpdatedAt   time.Time `json:"updatedAt"`
@@ -533,8 +533,8 @@ type ApiGetDashboardTabListResult struct {
 
 // ApiGetEntityListResult defines model for apiGetEntityListResult.
 type ApiGetEntityListResult struct {
-	Items []ApiEntity `json:"items"`
-	Meta  *ApiMeta    `json:"meta,omitempty"`
+	Items []ApiEntityShort `json:"items"`
+	Meta  *ApiMeta         `json:"meta,omitempty"`
 }
 
 // ApiGetEntityStorageResult defines model for apiGetEntityStorageResult.
@@ -1314,8 +1314,11 @@ type AcceptJSON = string
 // EndDate defines model for endDate.
 type EndDate = time.Time
 
-// EntityId defines model for entityId.
-type EntityId = string
+// EntityIds defines model for entityIds.
+type EntityIds = []string
+
+// Ids defines model for ids.
+type Ids = []uint64
 
 // ListLimit defines model for listLimit.
 type ListLimit = uint64
@@ -1405,6 +1408,9 @@ type ActionServiceGetActionListParams struct {
 
 	// Limit The number of results returned on a page
 	Limit *ListLimit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Ids The number of results returned on a page
+	Ids *Ids `form:"ids[],omitempty" json:"ids[],omitempty"`
 }
 
 // ActionServiceSearchActionParams defines parameters for ActionServiceSearchAction.
@@ -1526,6 +1532,9 @@ type ConditionServiceGetConditionListParams struct {
 
 	// Limit The number of results returned on a page
 	Limit *ListLimit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Ids The number of results returned on a page
+	Ids *Ids `form:"ids[],omitempty" json:"ids[],omitempty"`
 }
 
 // ConditionServiceSearchConditionParams defines parameters for ConditionServiceSearchCondition.
@@ -1788,7 +1797,7 @@ type EntityStorageServiceGetEntityStorageListParams struct {
 	Limit     *ListLimit `form:"limit,omitempty" json:"limit,omitempty"`
 	StartDate *StartDate `form:"startDate,omitempty" json:"startDate,omitempty"`
 	EndDate   *EndDate   `form:"endDate,omitempty" json:"endDate,omitempty"`
-	EntityId  *EntityId  `form:"entityId,omitempty" json:"entityId,omitempty"`
+	EntityId  *EntityIds `form:"entityId[],omitempty" json:"entityId[],omitempty"`
 }
 
 // ImageServiceAddImageParams defines parameters for ImageServiceAddImage.
@@ -2027,7 +2036,10 @@ type ScriptServiceGetScriptListParams struct {
 
 	// Limit The number of results returned on a page
 	Limit *ListLimit `form:"limit,omitempty" json:"limit,omitempty"`
-	Query *Query     `form:"query,omitempty" json:"query,omitempty"`
+
+	// Ids The number of results returned on a page
+	Ids   *Ids   `form:"ids[],omitempty" json:"ids[],omitempty"`
+	Query *Query `form:"query,omitempty" json:"query,omitempty"`
 }
 
 // ScriptServiceSearchScriptParams defines parameters for ScriptServiceSearchScript.
@@ -2109,6 +2121,9 @@ type TriggerServiceGetTriggerListParams struct {
 
 	// Limit The number of results returned on a page
 	Limit *ListLimit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Ids The number of results returned on a page
+	Ids *Ids `form:"ids[],omitempty" json:"ids[],omitempty"`
 }
 
 // TriggerServiceSearchTriggerParams defines parameters for TriggerServiceSearchTrigger.

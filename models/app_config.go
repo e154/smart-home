@@ -59,7 +59,8 @@ type AppConfig struct {
 	ApiSwagger                     bool           `json:"api_swagger" env:"API_SWAGGER"`
 	ApiDebug                       bool           `json:"api_debug" env:"API_DEBUG"`
 	ApiGzip                        bool           `json:"api_gzip" env:"API_GZIP"`
-	GodMode                        bool           `json:"god_mode" env:"GOD_MODE"`
+	RootMode                       bool           `json:"root_mode" env:"ROOT_MODE"`
+	RootSecret                     string         `json:"root_secret" env:"ROOT_SECRET"`
 	Pprof                          bool           `json:"pprof" env:"PPROF"`
 	Https                          bool           `json:"https" env:"HTTPS"`
 	GateClientId                   string         `json:"gate_client_id" env:"GATE_CLIENT_ID"`

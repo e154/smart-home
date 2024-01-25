@@ -19,7 +19,7 @@
 package onvif
 
 import (
-	"fmt"
+	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/events"
@@ -31,7 +31,7 @@ import (
 
 // Actor ...
 type Actor struct {
-	supervisor.BaseActor
+	*supervisor.BaseActor
 	client      *Client
 	snapshotUri *string
 }
@@ -58,13 +58,10 @@ func NewActor(entity *m.Entity,
 		}
 	}
 
-	for _, engine := range actor.ScriptEngines {
-		engine.Spawn(func(engine *scripts.Engine) {
-			engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
-			engine.PushStruct("Camera", clientBind)
-			engine.Do()
-		})
-	}
+	actor.ScriptsEngine.Spawn(func(engine *scripts.Engine) {
+		engine.PushStruct("Camera", clientBind)
+		engine.Do()
+	})
 
 	if actor.Attrs == nil {
 		actor.Attrs = NewAttr()
@@ -98,27 +95,9 @@ func (a *Actor) Spawn() {
 // SetState ...
 func (a *Actor) SetState(params supervisor.EntityStateParams) error {
 
-	oldState := a.GetEventState()
-
-	a.Now(oldState)
-
-	if params.NewState != nil {
-		state := a.States[*params.NewState]
-		a.State = &state
-		a.State.ImageUrl = state.ImageUrl
-	}
-
-	a.AttrMu.Lock()
-	_, _ = a.Attrs.Deserialize(params.AttributeValues)
-	a.AttrMu.Unlock()
-
-	go a.SaveState(events.EventStateChanged{
-		StorageSave: params.StorageSave,
-		PluginName:  a.Id.PluginName(),
-		EntityId:    a.Id,
-		OldState:    oldState,
-		NewState:    a.GetEventState(),
-	})
+	a.SetActorState(params.NewState)
+	a.DeserializeAttr(params.AttributeValues)
+	a.SaveState(false, params.StorageSave)
 
 	return nil
 }
@@ -128,16 +107,18 @@ func (a *Actor) addAction(event events.EventCallEntityAction) {
 }
 
 func (a *Actor) runAction(msg events.EventCallEntityAction) {
-	action, ok := a.Actions[msg.ActionName]
-	if !ok {
-		log.Warnf("action %s not found", msg.ActionName)
-		return
+	if action, ok := a.Actions[msg.ActionName]; ok {
+		if action.ScriptEngine != nil && action.ScriptEngine.Engine() != nil {
+			if _, err := action.ScriptEngine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
+				log.Error(errors.Wrapf(err, "entity id: %s ", a.Id).Error())
+			}
+			return
+		}
 	}
-	if action.ScriptEngine.Engine() == nil {
-		return
-	}
-	if _, err := action.ScriptEngine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
-		log.Error(err.Error())
+	if a.ScriptsEngine != nil && a.ScriptsEngine.Engine() != nil {
+		if _, err := a.ScriptsEngine.AssertFunction(FuncEntityAction, msg.EntityId, msg.ActionName, msg.Args); err != nil {
+			log.Error(errors.Wrapf(err, "entity id: %s ", a.Id).Error())
+		}
 	}
 }
 

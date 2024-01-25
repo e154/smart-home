@@ -103,9 +103,9 @@ func (n *ActionEndpoint) Update(ctx context.Context, params *m.Action) (action *
 }
 
 // GetList ...
-func (n *ActionEndpoint) GetList(ctx context.Context, pagination common.PageParams) (result []*m.Action, total int64, err error) {
+func (n *ActionEndpoint) GetList(ctx context.Context, pagination common.PageParams, ids *[]uint64) (result []*m.Action, total int64, err error) {
 
-	result, total, err = n.adaptors.Action.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
+	result, total, err = n.adaptors.Action.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, ids)
 
 	return
 }

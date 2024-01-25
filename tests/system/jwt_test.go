@@ -39,7 +39,6 @@ func TestJwt(t *testing.T) {
 
 			err := container.Invoke(func(adaptors *adaptors.Adaptors,
 				jwtManager jwt_manager.JwtManager) {
-				_ = jwtManager.Start()
 				b, _ := hex.DecodeString(hmac)
 				jwtManager.SetHmacKey(b)
 
@@ -51,7 +50,7 @@ func TestJwt(t *testing.T) {
 							Nickname: "John Doe",
 							RoleName: "user",
 						}
-						accessToken, err := jwtManager.Generate(user)
+						accessToken, err := jwtManager.Generate(user, false)
 						fmt.Println(accessToken)
 						ctx.So(err, ShouldBeNil)
 						ctx.So(accessToken, ShouldNotBeBlank)
@@ -81,7 +80,7 @@ func TestJwt(t *testing.T) {
 							Nickname: "John Doe",
 							RoleName: "user",
 						}
-						accessToken, err := jwtManager.Generate(user)
+						accessToken, err := jwtManager.Generate(user, false)
 						ctx.So(err, ShouldBeNil)
 						ctx.So(accessToken, ShouldNotBeBlank)
 

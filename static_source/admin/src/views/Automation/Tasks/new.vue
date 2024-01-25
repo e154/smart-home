@@ -35,7 +35,6 @@ const save = async () => {
   if (validate) {
     loading.value = true
     const data = (await write?.getFormData())
-    console.log(data)
     const body = {
       name: data.name,
       description: data.description,

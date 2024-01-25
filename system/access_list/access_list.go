@@ -20,6 +20,7 @@ package access_list
 
 import (
 	"context"
+	"embed"
 	"encoding/json"
 
 	"github.com/e154/smart-home/common/logger"
@@ -31,6 +32,9 @@ import (
 var (
 	log = logger.MustGetLogger("access_list")
 )
+
+//go:embed data.json
+var DATA embed.FS
 
 // AccessListService ...
 type AccessListService interface {
@@ -66,7 +70,8 @@ func (a *accessListService) ReadConfig(ctx context.Context) (err error) {
 	//}
 
 	a.list = &AccessList{}
-	err = json.Unmarshal([]byte(DATA), a.list)
+	data, _ := DATA.ReadFile("data.json")
+	err = json.Unmarshal(data, a.list)
 	if err != nil {
 		log.Fatal(err.Error())
 		return

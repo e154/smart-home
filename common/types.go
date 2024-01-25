@@ -220,6 +220,8 @@ const (
 	DebugMode = RunMode("debug")
 	// ReleaseMode ...
 	ReleaseMode = RunMode("release")
+	// DemoMode
+	DemoMode = RunMode("demo")
 )
 
 // PageParams ...

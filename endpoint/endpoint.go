@@ -62,6 +62,7 @@ type Endpoint struct {
 	Metric            *MetricEndpoint
 	Backup            *BackupEndpoint
 	Stream            *StreamEndpoint
+	Webdav            *WebdavEndpoint
 }
 
 // NewEndpoint ...
@@ -99,5 +100,6 @@ func NewEndpoint(backup *backup.Backup, stream *stream.Stream, common *CommonEnd
 		Metric:            NewMetricEndpoint(common),
 		Backup:            NewBackupEndpoint(common, backup),
 		Stream:            NewStreamEndpoint(common, stream),
+		Webdav:            NewWebdavEndpoint(common),
 	}
 }

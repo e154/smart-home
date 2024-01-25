@@ -20,20 +20,20 @@ package zigbee2mqtt
 
 import (
 	"context"
-	"fmt"
 	"sync"
 
-	"github.com/e154/smart-home/system/scripts"
+	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/mqtt"
+	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
 // Actor ...
 type Actor struct {
-	supervisor.BaseActor
+	*supervisor.BaseActor
 	zigbee2mqttDevice *m.Zigbee2mqttDevice
 	mqttMessageQueue  chan *Message
 	actionPool        chan events.EventCallEntityAction
@@ -66,12 +66,9 @@ func NewActor(entity *m.Entity,
 		}
 	}
 
-	for _, engine := range actor.ScriptEngines {
-		engine.Spawn(func(engine *scripts.Engine) {
-			engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
-			engine.Do()
-		})
-	}
+	actor.ScriptsEngine.Spawn(func(engine *scripts.Engine) {
+		engine.Do()
+	})
 
 	// mqtt worker
 	go func() {
@@ -101,45 +98,9 @@ func (e *Actor) Spawn() {
 // SetState ...
 func (e *Actor) SetState(params supervisor.EntityStateParams) error {
 
-	e.stateMu.Lock()
-	defer e.stateMu.Unlock()
-
-	oldState := e.GetEventState()
-	now := e.Now(oldState)
-
-	if params.NewState != nil {
-		if state, ok := e.States[*params.NewState]; ok {
-			e.State = &state
-		}
-	}
-
-	var changed bool
-	var err error
-
-	e.AttrMu.Lock()
-	if changed, err = e.Attrs.Deserialize(params.AttributeValues); !changed {
-		if err != nil {
-			log.Warn(err.Error())
-		}
-
-		if oldState.LastUpdated != nil {
-			delta := now.Sub(*oldState.LastUpdated).Milliseconds()
-			//fmt.Println("delta", delta)
-			if delta < 200 {
-				e.AttrMu.Unlock()
-				return nil
-			}
-		}
-	}
-	e.AttrMu.Unlock()
-
-	go e.SaveState(events.EventStateChanged{
-		PluginName:  e.Id.PluginName(),
-		EntityId:    e.Id,
-		OldState:    oldState,
-		NewState:    e.GetEventState(),
-		StorageSave: params.StorageSave,
-	})
+	e.SetActorState(params.NewState)
+	e.DeserializeAttr(params.AttributeValues)
+	e.SaveState(false, params.StorageSave)
 
 	return nil
 }
@@ -158,11 +119,9 @@ func (e *Actor) mqttNewMessage(message *Message) {
 	e.newMsgMu.Lock()
 	defer e.newMsgMu.Unlock()
 
-	for _, engine := range e.ScriptEngines {
-		if _, err := engine.Engine().AssertFunction(FuncZigbee2mqttEvent, message); err != nil {
-			log.Error(err.Error())
-			return
-		}
+	if _, err := e.ScriptsEngine.AssertFunction(FuncZigbee2mqttEvent, message); err != nil {
+		log.Error(err.Error())
+		return
 	}
 }
 
@@ -171,15 +130,17 @@ func (e *Actor) addAction(event events.EventCallEntityAction) {
 }
 
 func (e *Actor) runAction(msg events.EventCallEntityAction) {
-	action, ok := e.Actions[msg.ActionName]
-	if !ok {
-		log.Warnf("action %s not found", msg.ActionName)
-		return
+	if action, ok := e.Actions[msg.ActionName]; ok {
+		if action.ScriptEngine != nil && action.ScriptEngine.Engine() != nil {
+			if _, err := action.ScriptEngine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
+				log.Error(errors.Wrapf(err, "entity id: %s ", e.Id).Error())
+			}
+			return
+		}
 	}
-	if action.ScriptEngine.Engine() == nil {
-		return
-	}
-	if _, err := action.ScriptEngine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
-		log.Error(err.Error())
+	if e.ScriptsEngine != nil && e.ScriptsEngine.Engine() != nil {
+		if _, err := e.ScriptsEngine.AssertFunction(FuncEntityAction, msg.EntityId, msg.ActionName, msg.Args); err != nil {
+			log.Error(errors.Wrapf(err, "entity id: %s ", e.Id).Error())
+		}
 	}
 }

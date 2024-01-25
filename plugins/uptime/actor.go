@@ -26,14 +26,13 @@ import (
 	"go.uber.org/atomic"
 
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
 // Actor ...
 type Actor struct {
-	supervisor.BaseActor
+	*supervisor.BaseActor
 	appStarted time.Time
 	total      *atomic.Uint64
 }
@@ -70,10 +69,6 @@ func (e *Actor) Spawn() {
 
 func (e *Actor) update() {
 
-	oldState := e.GetEventState()
-
-	e.Now(oldState)
-
 	total, err := GetUptime()
 	if err != nil {
 		return
@@ -85,12 +80,7 @@ func (e *Actor) update() {
 	e.Attrs[AttrUptimeTotal].Value = e.total.Load()
 	e.AttrMu.Unlock()
 
-	go e.SaveState(events.EventStateChanged{
-		PluginName: e.Id.PluginName(),
-		EntityId:   e.Id,
-		OldState:   oldState,
-		NewState:   e.GetEventState(),
-	})
+	e.SaveState(false, false)
 }
 
 func (e *Actor) check() {
@@ -168,9 +158,6 @@ LOOP:
 		downtimePercent = 0
 	}
 
-	oldState := e.GetEventState()
-	e.Now(oldState)
-
 	var attributeValues = make(m.AttributeValue)
 	attributeValues[AttrAppStarted] = e.appStarted
 	attributeValues[AttrFirstStart] = common.TimeValue(firstStart)
@@ -186,13 +173,7 @@ LOOP:
 
 	e.DeserializeAttr(attributeValues)
 
-	go e.SaveState(events.EventStateChanged{
-		StorageSave: true,
-		PluginName:  e.Id.PluginName(),
-		EntityId:    e.Id,
-		OldState:    oldState,
-		NewState:    e.GetEventState(),
-	})
+	e.SaveState(false, true)
 
 	//fmt.Println("first start", firstStart)
 	//fmt.Println("last shutdown", lastShutdown)

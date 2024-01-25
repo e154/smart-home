@@ -72,13 +72,23 @@ func (s Script) GetStubScript(script *m.Script) (result *stub.ApiScript) {
 	return
 }
 
+// GetStubScriptShort ...
+func (s Script) GetStubScriptShort(script *m.Script) (result *stub.ApiScript) {
+	result = GetStubScriptShort(script)
+	return
+}
+
 // ToSearchResult ...
 func (s Script) ToSearchResult(list []*m.Script) *stub.ApiSearchScriptListResult {
 
 	items := make([]stub.ApiScript, 0, len(list))
 
-	for _, i := range list {
-		items = append(items, *s.GetStubScript(i))
+	for _, script := range list {
+		items = append(items, stub.ApiScript{
+			Id:   script.Id,
+			Lang: string(script.Lang),
+			Name: script.Name,
+		})
 	}
 
 	return &stub.ApiSearchScriptListResult{
@@ -135,6 +145,18 @@ func GetStubScript(script *m.Script) (result *stub.ApiScript) {
 			Lang:      string(version.Lang),
 			Source:    version.Source,
 		})
+	}
+	return
+}
+
+// GetStubScriptShort ...
+func GetStubScriptShort(script *m.Script) (result *stub.ApiScript) {
+	if script == nil {
+		return
+	}
+	result = &stub.ApiScript{
+		Id:   script.Id,
+		Name: script.Name,
 	}
 	return
 }

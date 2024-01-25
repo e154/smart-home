@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2023, Filippov Alex
+// Copyright (C) 2024, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -16,19 +16,13 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package bus
+package events
 
-import "strings"
+import m "github.com/e154/smart-home/models"
 
-// Stat ...
-type Stat struct {
-	Topic       string
-	Subscribers int
+// CommandTerminal ...
+type CommandTerminal struct {
+	SessionID string  `json:"session_id"`
+	User      *m.User `json:"user"`
+	Text      string  `json:"text"`
 }
-
-// Stats ...
-type Stats []Stat
-
-func (s Stats) Len() int           { return len(s) }
-func (s Stats) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
-func (s Stats) Less(i, j int) bool { return strings.Compare(s[i].Topic, s[j].Topic) == -1 }

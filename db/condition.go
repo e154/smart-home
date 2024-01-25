@@ -105,7 +105,7 @@ func (t Conditions) Delete(ctx context.Context, id int64) (err error) {
 }
 
 // List ...
-func (t *Conditions) List(ctx context.Context, limit, offset int, orderBy, sort string) (list []*Condition, total int64, err error) {
+func (t *Conditions) List(ctx context.Context, limit, offset int, orderBy, sort string, ids *[]uint64) (list []*Condition, total int64, err error) {
 
 	if err = t.Db.WithContext(ctx).Model(Condition{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrConditionList, err.Error())
@@ -122,7 +122,9 @@ func (t *Conditions) List(ctx context.Context, limit, offset int, orderBy, sort 
 		q = q.
 			Order(fmt.Sprintf("%s %s", sort, orderBy))
 	}
-
+	if ids != nil {
+		q = q.Where("id IN (?)", *ids)
+	}
 	if err = q.Find(&list).Error; err != nil {
 		err = errors.Wrap(apperr.ErrConditionList, err.Error())
 	}

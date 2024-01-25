@@ -22,17 +22,21 @@ import m "github.com/e154/smart-home/models"
 
 // EventCreatedScriptModel ...
 type EventCreatedScriptModel struct {
+	Common
 	ScriptId int64     `json:"script_id"`
 	Script   *m.Script `json:"script"`
 }
 
 // EventUpdatedScriptModel ...
 type EventUpdatedScriptModel struct {
+	Common
 	ScriptId int64     `json:"script_id"`
 	Script   *m.Script `json:"script"`
 }
 
 // EventRemovedScriptModel ...
 type EventRemovedScriptModel struct {
-	ScriptId int64 `json:"script_id"`
+	Common
+	ScriptId int64     `json:"script_id"`
+	Script   *m.Script `json:"script"`
 }

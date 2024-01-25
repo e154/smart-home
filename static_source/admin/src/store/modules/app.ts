@@ -28,6 +28,7 @@ interface AppState {
   logo: boolean
   fixedHeader: boolean
   greyMode: boolean
+  systemTheme: boolean
   dynamicRouter: boolean
   pageLoading: boolean
   layout: LayoutType
@@ -59,7 +60,7 @@ export const useAppStore = defineStore('app', {
       title: import.meta.env.VITE_APP_TITLE, // 标题
       pageLoading: false, // 路由跳转loading
 
-      breadcrumb: wsCache.get('breadcrumb') || true, // 面包屑
+      breadcrumb: wsCache.get('breadcrumb') || false, // 面包屑
       breadcrumbIcon: wsCache.get('breadcrumbIcon') || false, // 面包屑图标
       collapse: wsCache.get('collapse') || false, // 折叠菜单
       uniqueOpened: false, // 是否只保持一个子菜单的展开
@@ -73,11 +74,11 @@ export const useAppStore = defineStore('app', {
       fixedHeader: false, // 固定toolheader
       footer: false, // 显示页脚
       greyMode: wsCache.get('greyMode') || false, // 是否开始灰色模式，用于特殊悼念日
+      systemTheme: wsCache.get('systemTheme') || false,
       dynamicRouter: wsCache.get('dynamicRouter') || false, // 是否动态路由
       fixedMenu: wsCache.get('fixedMenu') || false, // 是否固定菜单
       terminal: wsCache.get('terminal') || false,
       serverId: wsCache.get('serverId') || '',
-
       layout: wsCache.get('layout') || 'classic', // layout布局
       isDark: wsCache.get('isDark') || false, // 是否是暗黑模式
       currentSize: wsCache.get('currentSize') || 'default', // 组件尺寸
@@ -161,6 +162,9 @@ export const useAppStore = defineStore('app', {
     },
     getGreyMode(): boolean {
       return this.greyMode
+    },
+    getSystemTheme(): boolean {
+      return this.systemTheme
     },
     getDynamicRouter(): boolean {
       return this.dynamicRouter
@@ -271,6 +275,10 @@ export const useAppStore = defineStore('app', {
     setGreyMode(greyMode: boolean) {
       wsCache.set('greyMode', greyMode)
       this.greyMode = greyMode
+    },
+    setSystemTheme(systemTheme: boolean) {
+      wsCache.set('systemTheme', systemTheme)
+      this.systemTheme = systemTheme
     },
     setDynamicRouter(dynamicRouter: boolean) {
       wsCache.set('dynamicRouter', dynamicRouter)

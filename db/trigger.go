@@ -141,7 +141,7 @@ func (t Triggers) List(ctx context.Context, limit, offset int, orderBy, sort str
 }
 
 // ListPlain ...
-func (t Triggers) ListPlain(ctx context.Context, limit, offset int, orderBy, sort string, onlyEnabled bool) (list []*Trigger, total int64, err error) {
+func (t Triggers) ListPlain(ctx context.Context, limit, offset int, orderBy, sort string, onlyEnabled bool, ids *[]uint64) (list []*Trigger, total int64, err error) {
 
 	if err = t.Db.WithContext(ctx).Model(Trigger{}).Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrTriggerList, err.Error())
@@ -164,7 +164,9 @@ func (t Triggers) ListPlain(ctx context.Context, limit, offset int, orderBy, sor
 		q = q.
 			Order(fmt.Sprintf("%s %s", sort, orderBy))
 	}
-
+	if ids != nil {
+		q = q.Where("id IN (?)", *ids)
+	}
 	if err = q.Find(&list).Error; err != nil {
 		err = errors.Wrap(apperr.ErrTriggerList, err.Error())
 	}

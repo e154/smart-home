@@ -35,7 +35,7 @@ type IScript interface {
 	GetByName(ctx context.Context, name string) (script *m.Script, err error)
 	Update(ctx context.Context, script *m.Script) (err error)
 	Delete(ctx context.Context, scriptId int64) (err error)
-	List(ctx context.Context, limit, offset int64, orderBy, sort string, query *string) (list []*m.Script, total int64, err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string, query *string, ids *[]uint64) (list []*m.Script, total int64, err error)
 	Search(ctx context.Context, query string, limit, offset int64) (list []*m.Script, total int64, err error)
 	Statistic(ctx context.Context) (statistic *m.ScriptsStatistic, err error)
 	fromDb(dbScript *db.Script) (script *m.Script, err error)
@@ -104,7 +104,7 @@ func (n *Script) Delete(ctx context.Context, scriptId int64) (err error) {
 }
 
 // List ...
-func (n *Script) List(ctx context.Context, limit, offset int64, orderBy, sort string, query *string) (list []*m.Script, total int64, err error) {
+func (n *Script) List(ctx context.Context, limit, offset int64, orderBy, sort string, query *string, ids *[]uint64) (list []*m.Script, total int64, err error) {
 
 	if sort == "" {
 		sort = "id"
@@ -114,7 +114,7 @@ func (n *Script) List(ctx context.Context, limit, offset int64, orderBy, sort st
 	}
 
 	var dbList []*db.Script
-	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort, query); err != nil {
+	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort, query, ids); err != nil {
 		return
 	}
 
