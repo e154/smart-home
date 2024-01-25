@@ -19,10 +19,10 @@
 package webdav
 
 import (
-	"fmt"
+	"github.com/e154/smart-home/system/scripts"
 	"net/http"
-	"os"
 
+	"github.com/gorilla/mux"
 	"go.uber.org/atomic"
 	"golang.org/x/net/webdav"
 
@@ -33,28 +33,24 @@ import (
 const rootDir = "/webdav"
 
 type Server struct {
-	adaptors *adaptors.Adaptors
-	eventBus bus.Bus
-	*FS
-	handler   *webdav.Handler
+	adaptors  *adaptors.Adaptors
+	eventBus  bus.Bus
 	isStarted *atomic.Bool
 	scripts   *Scripts
+	routes    *mux.Router
+	*FS
+	handler *webdav.Handler
 }
 
 func NewServer() *Server {
 	server := &Server{
 		isStarted: atomic.NewBool(false),
 	}
-	server.FS = NewFS(server.onFileCreated,
-		server.onFileUpdated,
-		server.onFileRemoved,
-		server.onFileRenamed,
-		server.onOpenFile,
-	)
+
 	return server
 }
 
-func (s *Server) Start(adaptors *adaptors.Adaptors, eventBus bus.Bus) {
+func (s *Server) Start(adaptors *adaptors.Adaptors, scriptService scripts.ScriptService, eventBus bus.Bus) {
 	if !s.isStarted.CompareAndSwap(false, true) {
 		return
 	}
@@ -62,13 +58,23 @@ func (s *Server) Start(adaptors *adaptors.Adaptors, eventBus bus.Bus) {
 	s.adaptors = adaptors
 	s.eventBus = eventBus
 
-	s.scripts = NewScripts(s.FS)
-	s.scripts.Start(adaptors, eventBus)
-
+	s.FS = NewFS()
 	s.handler = &webdav.Handler{
-		FileSystem: s.FS,
+		FileSystem: s,
 		LockSystem: webdav.NewMemLS(),
 	}
+
+	_ = s.MkdirAll("/webdav/scripts", 0755)
+
+	s.scripts = NewScripts()
+	s.scripts.Start(adaptors, scriptService, eventBus)
+
+	s.routes = mux.NewRouter()
+	s.routes.HandleFunc("/", s.handler.ServeHTTP)
+	s.routes.HandleFunc("/webdav/", s.handler.ServeHTTP)
+	s.routes.HandleFunc("/webdav/scripts", s.scripts.handler.ServeHTTP)
+	s.routes.HandleFunc("/webdav/scripts/", s.scripts.handler.ServeHTTP)
+	s.routes.HandleFunc("/webdav/scripts/{script}", s.scripts.handler.ServeHTTP)
 }
 
 func (s *Server) Shutdown() {
@@ -76,7 +82,6 @@ func (s *Server) Shutdown() {
 		return
 	}
 
-	s.handler = nil
 	s.scripts.Shutdown()
 }
 
@@ -84,25 +89,5 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if !s.isStarted.Load() {
 		return
 	}
-	s.handler.ServeHTTP(w, r)
-}
-
-func (s *Server) onFileCreated(fileInfo os.FileInfo) {
-	fmt.Println("Файл был недавно создан.", fileInfo.Name())
-}
-
-func (s *Server) onFileUpdated(fileInfo os.FileInfo) {
-	fmt.Println("Файл был изменен.", fileInfo.Name())
-}
-
-func (s *Server) onFileRenamed(oldName, newName string) {
-	fmt.Println("Файл был переименован.", oldName, newName)
-}
-
-func (s *Server) onFileRemoved(name string) {
-	fmt.Println("Файл был удален.", name)
-}
-
-func (s *Server) onOpenFile(name string, flag int, perm os.FileMode) {
-	fmt.Println("Файл был открыт.", name, flag, perm)
+	s.routes.ServeHTTP(w, r)
 }

@@ -22,10 +22,9 @@ import (
 	"context"
 	"embed"
 	"github.com/e154/smart-home/common/logger"
+	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/supervisor"
 	"net/http"
-
-	m "github.com/e154/smart-home/models"
 )
 
 var (
@@ -75,7 +74,7 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 	}
 
 	p.server = NewServer()
-	p.server.Start(service.Adaptors(), service.EventBus())
+	p.server.Start(service.Adaptors(), service.ScriptService(), service.EventBus())
 
 	return
 }
@@ -125,6 +124,8 @@ func (p *plugin) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if p.settings[AttrAnonymous].Bool() ||
 		username == p.settings[AttrUser].String() && password == p.settings[AttrPassword].Decrypt() {
+		//r.RequestURI = strings.ReplaceAll(r.RequestURI, "/webdav/", "/")
+		//r.URL, _ = r.URL.Parse(r.RequestURI)
 		p.server.ServeHTTP(w, r)
 		return
 	}

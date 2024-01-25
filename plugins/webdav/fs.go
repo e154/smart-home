@@ -29,24 +29,11 @@ import (
 
 type FS struct {
 	afero.Fs
-	onOpenFile    func(name string, flag int, perm os.FileMode)
-	onFileCreated func(os.FileInfo)
-	onFileUpdated func(os.FileInfo)
-	onFileRemoved func(string)
-	onFileRenamed func(string, string)
 }
 
-func NewFS(fc, fu func(os.FileInfo),
-	fr func(string),
-	fren func(string, string),
-	onOpenFile func(name string, flag int, perm os.FileMode)) *FS {
+func NewFS() *FS {
 	return &FS{
-		onFileCreated: fc,
-		onFileUpdated: fu,
-		onFileRemoved: fr,
-		onFileRenamed: fren,
-		onOpenFile:    onOpenFile,
-		Fs:            afero.NewMemMapFs(),
+		Fs: afero.NewMemMapFs(),
 	}
 }
 
@@ -55,26 +42,21 @@ func (f *FS) Mkdir(ctx context.Context, name string, perm os.FileMode) error {
 }
 
 func (f *FS) OpenFile(ctx context.Context, name string, flag int, perm os.FileMode) (webdav.File, error) {
-	f.onOpenFile(name, flag, perm)
 	return f.Fs.OpenFile(name, flag, perm)
 }
 
 func (f *FS) RemoveAll(ctx context.Context, name string) error {
-	f.onFileRemoved(name)
 	return f.Fs.RemoveAll(name)
 }
 
 func (f *FS) Rename(ctx context.Context, oldName, newName string) error {
-	f.onFileRenamed(oldName, newName)
 	return f.Fs.Rename(oldName, newName)
 }
 
 func (f *FS) Stat(ctx context.Context, name string) (os.FileInfo, error) {
-	// Получаем информацию о файле
 	fileInfo, err := f.Fs.Stat(name)
 	if err != nil {
 		return nil, err
 	}
-	go f.onFileUpdated(fileInfo)
 	return fileInfo, err
 }

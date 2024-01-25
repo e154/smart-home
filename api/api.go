@@ -329,11 +329,13 @@ func (a *Api) registerHandlers() {
 		snapshotServer.ServeHTTP(w, r)
 	}))))
 	// webdav
-	a.echo.Any("/webdav/*", echo.WrapHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	webdav := echo.WrapHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		//r.RequestURI = strings.ReplaceAll(r.RequestURI, "/webdav/", "/")
 		//r.URL, _ = r.URL.Parse(r.RequestURI)
 		a.controllers.Webdav(w, r)
-	}))) //todo add auth
+	}))
+	a.echo.Any("/webdav", webdav)
+	a.echo.Any("/webdav/*", webdav)
 
 	// media
 	a.echo.Any("/stream/:entity_id/channel/:channel/mse", a.echoFilter.Auth(a.controllers.StreamMSE)) //Auth

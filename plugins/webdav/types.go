@@ -22,6 +22,8 @@ import (
 	"fmt"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"net/http"
+	"regexp"
 )
 
 const (
@@ -73,4 +75,14 @@ func scriptExt(script *m.Script) (ext string) {
 
 func getFileName(script *m.Script) string {
 	return fmt.Sprintf("%s.%s", script.Name, scriptExt(script))
+}
+
+func newRoute(method, pattern string, handler http.HandlerFunc) route {
+	return route{method, regexp.MustCompile("^" + pattern + "$"), handler}
+}
+
+type route struct {
+	method  string
+	regex   *regexp.Regexp
+	handler http.HandlerFunc
 }

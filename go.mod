@@ -73,6 +73,7 @@ require (
 	github.com/golang/geo v0.0.0-20230421003525-6adc56603217
 	github.com/gomarkdown/markdown v0.0.0-20230716120725-531d2d74bc12
 	github.com/google/uuid v1.4.0
+	github.com/gorilla/mux v1.8.0
 	github.com/hiko1129/echo-pprof v1.0.1
 	github.com/iancoleman/strcase v0.3.0
 	github.com/imdario/mergo v0.3.13
