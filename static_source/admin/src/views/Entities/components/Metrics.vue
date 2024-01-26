@@ -2,7 +2,7 @@
 
 import {useI18n} from '@/hooks/web/useI18n'
 import {PropType, reactive, ref, unref, watch} from 'vue'
-import {ElButton, ElRow, ElCol, ElCard, ElPopconfirm, ElSkeleton} from 'element-plus'
+import {ElButton, ElRow, ElCol, ElCard, ElPopconfirm, ElSkeleton, ElEmpty} from 'element-plus'
 import {ApiMetric} from "@/api/stub";
 import MetricForm from "@/views/Entities/components/MetricForm.vue";
 
@@ -102,7 +102,11 @@ const remove = () => {
       <ElCol>
         <MetricForm v-model="current.item"/>
 
-        <ElSkeleton v-if="!current.item" :rows="5" />
+        <ElEmpty v-if="!current.item" :rows="5" class="mt-20px mb-20px">
+          <ElButton type="primary" @click="addNew()">
+            {{ t('entities.addNewMetric') }}
+          </ElButton>
+        </ElEmpty>
 
         <ElRow v-if="current.item">
           <ElCol>
