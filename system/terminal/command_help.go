@@ -19,42 +19,45 @@
 package terminal
 
 import (
+	"bytes"
 	"context"
-	"github.com/e154/smart-home/adaptors"
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
-	"github.com/e154/smart-home/system/jwt_manager"
-	"github.com/spf13/cobra"
+	"strings"
 )
 
-type TerminalResponseMessage struct {
-	Type string `json:"type"`
-	Body string `json:"body"`
+type CommandHelp struct {
+	Out      *bytes.Buffer
+	password *string
 }
 
-type UpdateAccessTokenMessage struct {
-	AccessToken string `json:"access_token"`
+func NewCommandHelp() *CommandHelp {
+	buf := new(bytes.Buffer)
+
+	command := &CommandHelp{
+		Out:      buf,
+		password: new(string),
+	}
+
+	return command
 }
 
-var commands = map[string]ICommands{
-	"sudo": NewCommandSudo(),
-	"help": NewCommandHelp(),
+func (c *CommandHelp) Execute(ctx context.Context, args ...string) (out string, err error) {
+
+	var builder strings.Builder
+	builder.WriteString("available commands:\n\r")
+	builder.WriteString("clear\n\r")
+	for cmd, _ := range commands {
+		if cmd == "help" {
+			continue
+		}
+		builder.WriteString(cmd)
+		builder.WriteString("\n\r")
+	}
+
+	out = builder.String()
+
+	return
 }
 
-func GetTerminalCommands() map[string]ICommands {
-	return commands
-}
-
-type ICommands interface {
-	Execute(ctx context.Context, args ...string) (out string, err error)
-	Help(ctx context.Context) (out string, err error)
-}
-
-func emptyRun(*cobra.Command, []string) {}
-
-type CommandOptions struct {
-	eventBus   bus.Bus
-	adaptors   *adaptors.Adaptors
-	jwtManager jwt_manager.JwtManager
-	config     *m.AppConfig
+func (c *CommandHelp) Help(ctx context.Context) (out string, err error) {
+	return
 }

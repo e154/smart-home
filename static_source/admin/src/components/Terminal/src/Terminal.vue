@@ -19,7 +19,8 @@
   -->
 
 <script setup lang="ts">
-import Terminal from 'vue-web-terminal'
+import Terminal, {TerminalApi} from 'vue-web-terminal'
+import 'vue-web-terminal/lib/theme/dark.css'
 import {computed, onMounted, onUnmounted, ref} from "vue";
 import {useAppStore} from "@/store/modules/app";
 import {ApiLog} from "@/api/stub";
@@ -40,13 +41,18 @@ const onExecCmd = (key, command, success, failed) => {
   } else {
     // let allClass = ['success', 'error', 'system', 'info', 'warning'];
     // let clazz = allClass[Math.floor(Math.random() * allClass.length)];
-    success({
-      type: 'normal',
-      class: 'info',
-      content: command
-    })
-
+    // success({
+    //   type: 'normal',
+    //   class: 'info',
+    //   content: command
+    // })
+    if (command == 'clear') {
+      TerminalApi.clearLog()
+      success()
+      return
+    }
     sendCommand(command)
+    success()
   }
 }
 
@@ -146,6 +152,7 @@ const sendCommand = (text?: string) => {
       @exec-cmd="onExecCmd"
       :context="context"
       :auto-help="false"
+      :enable-default-command="false"
       :enable-example-hint="false"
       :init-log="initLog"
       :drag-conf="{zIndex: 9999, width: 700, height: 500, init:{ x: 50, y: 50 }}">
