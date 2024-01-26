@@ -65,25 +65,20 @@ func (e *eventHandler) eventHandler(_ string, message interface{}) {
 		go e.eventDirectMessage(v.UserID, v.SessionID, v.Query, v.Message)
 
 	// plugins
-	case events.EventPluginLoaded:
-		go e.event(message)
-	case events.EventPluginUnloaded:
+	case events.EventPluginLoaded,
+		events.EventPluginUnloaded:
 		go e.event(message)
 
 	// tasks
-	case events.EventTaskLoaded:
-		go e.event(message)
-	case events.EventTaskUnloaded:
-		go e.event(message)
-	case events.EventTaskCompleted:
+	case events.EventTaskLoaded,
+		events.EventTaskUnloaded,
+		events.EventTaskCompleted:
 		go e.event(message)
 
 	// triggers
-	case events.EventTriggerLoaded:
-		go e.event(message)
-	case events.EventTriggerUnloaded:
-		go e.event(message)
-	case events.EventTriggerCompleted:
+	case events.EventTriggerLoaded,
+		events.EventTriggerUnloaded,
+		events.EventTriggerCompleted:
 		go e.event(message)
 
 	// actions
@@ -95,19 +90,21 @@ func (e *eventHandler) eventHandler(_ string, message interface{}) {
 		go e.event(message)
 
 	// backup
-	case events.EventCreatedBackup:
-		go e.event(message)
-	case events.EventRemovedBackup:
-		go e.event(message)
-	case events.EventUploadedBackup:
-		go e.event(message)
-	case events.EventStartedRestore:
+	case events.EventCreatedBackup,
+		events.EventRemovedBackup,
+		events.EventUploadedBackup,
+		events.EventStartedRestore:
 		go e.event(message)
 
 	// variables
-	case events.EventRemovedVariableModel:
+	case events.EventRemovedVariableModel,
+		events.EventUpdatedVariableModel:
 		go e.event(message)
-	case events.EventUpdatedVariableModel:
+
+	// scripts
+	case events.EventUpdatedScriptModel,
+		events.EventRemovedScriptModel,
+		events.EventCreatedScriptModel:
 		go e.event(message)
 	default:
 

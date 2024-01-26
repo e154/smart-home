@@ -31,6 +31,7 @@ import (
 	"go.uber.org/atomic"
 
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
@@ -127,10 +128,9 @@ func (s *Scripts) eventAddScript(msg events.EventCreatedScriptModel) {
 	}
 	s.Lock()
 	s.fileInfos[filePath] = &FileInfo{
-		Size:          info.Size(),
-		ModTime:       info.ModTime(),
-		LastCheck:     time.Now(),
-		IsInitialized: true,
+		Size:      info.Size(),
+		ModTime:   info.ModTime(),
+		LastCheck: time.Now(),
 	}
 	s.Unlock()
 }
@@ -160,10 +160,14 @@ func (s *Scripts) eventUpdateScript(msg events.EventUpdatedScriptModel) {
 	}
 	s.Lock()
 	s.fileInfos[filePath] = &FileInfo{
-		Size:          info.Size(),
-		ModTime:       info.ModTime(),
-		LastCheck:     time.Now(),
-		IsInitialized: true,
+		Size:      info.Size(),
+		ModTime:   msg.Script.UpdatedAt,
+		LastCheck: time.Now(),
+	}
+	if msg.OldScript != nil && msg.OldScript.Name != msg.Script.Name {
+		filePath = s.getFilePath(msg.OldScript)
+		_ = s.Fs.RemoveAll(filePath)
+		delete(s.fileInfos, filePath)
 	}
 	s.Unlock()
 
@@ -214,10 +218,9 @@ LOOP:
 		}
 
 		s.fileInfos[path] = &FileInfo{
-			Size:          info.Size(),
-			ModTime:       info.ModTime(),
-			LastCheck:     time.Now(),
-			IsInitialized: true,
+			Size:      info.Size(),
+			ModTime:   info.ModTime(),
+			LastCheck: time.Now(),
 		}
 
 		return nil
@@ -228,11 +231,12 @@ func (s *Scripts) getFilePath(script *m.Script) string {
 	return filepath.Join(rootDir, s.rootDir, getFileName(script))
 }
 
-func (s *Scripts) RemoveScript(ctx context.Context, path string) (err error) {
+func (s *Scripts) removeScript(ctx context.Context, path string) (err error) {
 	scriptName := extractScriptName(filepath.Base(path))
 	var script *m.Script
 	script, err = s.adaptors.Script.GetByName(ctx, scriptName)
 	if err == nil {
+		log.Infof("remove script: %s, (id: %d)", script.Name, script.Id)
 		if err = s.adaptors.Script.Delete(ctx, script.Id); err != nil {
 			return
 		}
@@ -247,7 +251,7 @@ func (s *Scripts) RemoveScript(ctx context.Context, path string) (err error) {
 	return
 }
 
-func (s *Scripts) CreateScript(ctx context.Context, name string, fileInfo os.FileInfo) (err error) {
+func (s *Scripts) createScript(ctx context.Context, name string, fileInfo os.FileInfo) (err error) {
 	scriptName := extractScriptName(fileInfo.Name())
 	lang := extractScriptLang(fileInfo.Name())
 
@@ -261,6 +265,12 @@ func (s *Scripts) CreateScript(ctx context.Context, name string, fileInfo os.Fil
 	if err != nil {
 		return
 	}
+
+	if _, err = s.adaptors.Script.GetByName(ctx, scriptName); err == nil {
+		return
+	}
+
+	log.Infof("create script: %s", scriptName)
 
 	script := &m.Script{
 		Name:   scriptName,
@@ -290,7 +300,7 @@ func (s *Scripts) CreateScript(ctx context.Context, name string, fileInfo os.Fil
 	return
 }
 
-func (s *Scripts) UpdateScript(ctx context.Context, name string, fileInfo os.FileInfo) (err error) {
+func (s *Scripts) updateScript(ctx context.Context, name string, fileInfo os.FileInfo) (err error) {
 	scriptName := extractScriptName(fileInfo.Name())
 	lang := extractScriptLang(fileInfo.Name())
 
@@ -304,6 +314,8 @@ func (s *Scripts) UpdateScript(ctx context.Context, name string, fileInfo os.Fil
 	if err != nil {
 		return
 	}
+
+	log.Infof("update script: %s", scriptName)
 
 	var script *m.Script
 	script, err = s.adaptors.Script.GetByName(ctx, scriptName)
@@ -358,15 +370,16 @@ func (s *Scripts) syncFiles() {
 				fileInfo.ModTime = info.ModTime()
 				fileInfo.LastCheck = time.Now()
 
-				if _err := s.UpdateScript(context.Background(), path, info); _err != nil {
+				if _err := s.updateScript(context.Background(), path, info); _err != nil {
+					if errors.Is(_err, apperr.ErrScriptNotFound) {
+						fileInfo.IsInitialized = false
+					}
 					log.Error(_err.Error())
-					return _err
 				}
 			}
 		} else {
-			if _err := s.CreateScript(context.Background(), path, info); _err != nil {
+			if _err := s.createScript(context.Background(), path, info); _err != nil {
 				log.Error(_err.Error())
-				return _err
 			}
 			s.fileInfos[path] = &FileInfo{
 				Size:          info.Size(),
@@ -387,7 +400,7 @@ func (s *Scripts) syncFiles() {
 			return
 		}
 		if !fileInfo.IsInitialized {
-			if err := s.RemoveScript(context.Background(), path); err != nil {
+			if err := s.removeScript(context.Background(), path); err != nil {
 				log.Error(err.Error())
 			}
 			delete(s.fileInfos, path)

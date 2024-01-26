@@ -18,7 +18,9 @@
 
 package events
 
-import m "github.com/e154/smart-home/models"
+import (
+	m "github.com/e154/smart-home/models"
+)
 
 // EventCreatedScriptModel ...
 type EventCreatedScriptModel struct {
@@ -30,8 +32,9 @@ type EventCreatedScriptModel struct {
 // EventUpdatedScriptModel ...
 type EventUpdatedScriptModel struct {
 	Common
-	ScriptId int64     `json:"script_id"`
-	Script   *m.Script `json:"script"`
+	ScriptId  int64     `json:"script_id"`
+	Script    *m.Script `json:"script"`
+	OldScript *m.Script `json:"old_script"`
 }
 
 // EventRemovedScriptModel ...
