@@ -14,6 +14,7 @@ const modules = import.meta.glob('../views/**/*.{vue,tsx}')
 /* Dashboard */
 export const Dashboard = () => import('@/layout/Dashboard.vue')
 export const Develop = () => import('@/layout/Develop.vue')
+export const Landing = () => import('@/layout/Landing.vue')
 
 export const getParentLayout = () => {
   return () =>
