@@ -20,7 +20,7 @@
 
 <script setup lang="ts">
 import Terminal, {TerminalApi} from 'vue-web-terminal'
-import 'vue-web-terminal/lib/theme/dark.css'
+// import 'vue-web-terminal/lib/theme/dark.css'
 import {computed, onMounted, onUnmounted, ref} from "vue";
 import {useAppStore} from "@/store/modules/app";
 import {ApiLog} from "@/api/stub";
