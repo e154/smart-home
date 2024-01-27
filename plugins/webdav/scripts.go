@@ -46,15 +46,17 @@ type Scripts struct {
 	rootDir       string
 	done          chan struct{}
 	isStarted     *atomic.Bool
+	isSyncFiles   *atomic.Bool
 	sync.Mutex
 	fileInfos map[string]*FileInfo
 }
 
 func NewScripts(fs *FS) *Scripts {
 	return &Scripts{
-		FS:        fs,
-		rootDir:   "scripts",
-		isStarted: atomic.NewBool(false),
+		FS:          fs,
+		rootDir:     "scripts",
+		isStarted:   atomic.NewBool(false),
+		isSyncFiles: atomic.NewBool(false),
 	}
 }
 
@@ -133,6 +135,17 @@ func (s *Scripts) eventAddScript(msg events.EventCreatedScriptModel) {
 		LastCheck: time.Now(),
 	}
 	s.Unlock()
+}
+
+func (s *Scripts) onRemoveHandler(ctx context.Context, filePath string) (err error) {
+	s.Lock()
+	defer s.Unlock()
+	if err = s.removeScript(ctx, filePath); err != nil {
+		return
+	}
+	_ = s.Fs.RemoveAll(filePath)
+	delete(s.fileInfos, filePath)
+	return
 }
 
 func (s *Scripts) eventRemoveScript(msg events.EventRemovedScriptModel) {
@@ -232,7 +245,7 @@ func (s *Scripts) getFilePath(script *m.Script) string {
 }
 
 func (s *Scripts) removeScript(ctx context.Context, path string) (err error) {
-	scriptName := extractScriptName(filepath.Base(path))
+	scriptName := extractScriptName(path)
 	var script *m.Script
 	script, err = s.adaptors.Script.GetByName(ctx, scriptName)
 	if err == nil {
@@ -253,10 +266,10 @@ func (s *Scripts) removeScript(ctx context.Context, path string) (err error) {
 
 func (s *Scripts) createScript(ctx context.Context, name string, fileInfo os.FileInfo) (err error) {
 	scriptName := extractScriptName(fileInfo.Name())
-	lang := extractScriptLang(fileInfo.Name())
+	lang := getScriptLang(fileInfo.Name())
 
 	if lang == "" {
-		err = errors.New("bad extension")
+		err = errors.Errorf("bad file name %s", scriptName)
 		return
 	}
 
@@ -302,7 +315,7 @@ func (s *Scripts) createScript(ctx context.Context, name string, fileInfo os.Fil
 
 func (s *Scripts) updateScript(ctx context.Context, name string, fileInfo os.FileInfo) (err error) {
 	scriptName := extractScriptName(fileInfo.Name())
-	lang := extractScriptLang(fileInfo.Name())
+	lang := getScriptLang(fileInfo.Name())
 
 	if lang == "" {
 		err = errors.New("bad extension")
@@ -347,6 +360,11 @@ func (s *Scripts) updateScript(ctx context.Context, name string, fileInfo os.Fil
 }
 
 func (s *Scripts) syncFiles() {
+	if !s.isSyncFiles.CompareAndSwap(false, true) {
+		return
+	}
+	defer s.isSyncFiles.Store(false)
+
 	s.Lock()
 	defer s.Unlock()
 
@@ -401,7 +419,7 @@ func (s *Scripts) syncFiles() {
 		}
 		if !fileInfo.IsInitialized {
 			if err := s.removeScript(context.Background(), path); err != nil {
-				log.Error(err.Error())
+				//log.Error(err.Error())
 			}
 			delete(s.fileInfos, path)
 		}

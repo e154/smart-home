@@ -29,11 +29,13 @@ import (
 
 type FS struct {
 	afero.Fs
+	onRemoveHandler func(context.Context, string) error
 }
 
-func NewFS() *FS {
+func NewFS(onRemoveHandler func(context.Context, string) error) *FS {
 	return &FS{
-		Fs: afero.NewMemMapFs(),
+		onRemoveHandler: onRemoveHandler,
+		Fs:              afero.NewMemMapFs(),
 	}
 }
 
@@ -54,6 +56,9 @@ func (f *FS) OpenFile(ctx context.Context, name string, flag int, perm os.FileMo
 }
 
 func (f *FS) RemoveAll(ctx context.Context, name string) error {
+	if err := f.onRemoveHandler(ctx, name); err != nil {
+		return err
+	}
 	return f.Fs.RemoveAll(name)
 }
 
