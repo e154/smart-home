@@ -1,6 +1,6 @@
 import {ApiEntity, ApiImage} from '@/api/stub'
 
-export interface TileProp {
+export interface GridProp {
   image?: ApiImage
   key: string
   position?: boolean
@@ -10,11 +10,14 @@ export interface TileProp {
   width?: number
 }
 
-export interface ItemPayloadTiles {
-  items: TileProp[]
+export interface ItemPayloadGrid {
+  items: GridProp[]
   image?: ApiImage
-  tileHeight: number
-  tileWidth: number
+  cellHeight: number
+  cellWidth: number
+  showCellValue?: boolean
+  gap: boolean
+  gapSize: number
   attribute: string
   entity?: ApiEntity
   entityId?: string
@@ -22,4 +25,5 @@ export interface ItemPayloadTiles {
   position?: boolean
   top?: number
   left?: number
+  fontSize?: number
 }

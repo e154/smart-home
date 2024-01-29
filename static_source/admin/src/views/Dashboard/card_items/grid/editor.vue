@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import {computed, PropType} from "vue";
-import {CardItem, Core, requestCurrentState} from "@/views/Dashboard/core";
+import {computed, onBeforeUnmount, onMounted, PropType, ref} from "vue";
+import {CardItem, Core, requestCurrentState, Tab} from "@/views/Dashboard/core";
 import {
   ElButton, ElCard,
   ElCol,
@@ -16,10 +16,12 @@ import {useI18n} from "@/hooks/web/useI18n";
 import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
 import ImageSearch from "@/views/Images/components/ImageSearch.vue";
 import {ApiEntity, ApiImage} from "@/api/stub";
-import {ItemPayloadTiles, TileProp} from "@/views/Dashboard/card_items/tiles/types";
+import {GridProp, ItemPayloadGrid} from "@/views/Dashboard/card_items/grid/types";
 import {prepareUrl} from "@/utils/serverId";
 import EntitySearch from "@/views/Entities/components/EntitySearch.vue";
-import TilePreview from "@/views/Dashboard/card_items/tiles/tilePreview.vue";
+import CellPreview from "@/views/Dashboard/card_items/grid/cellPreview.vue";
+import {TinycmeEditor} from "@/components/Tinymce";
+import {Cache, GetTokens} from "@/views/Dashboard/render";
 
 const {t} = useI18n()
 
@@ -47,13 +49,16 @@ const currentItem = computed(() => props.item as CardItem)
 // ---------------------------------
 
 const initDefaultValue = () => {
-  currentItem.value.payload.tiles = {
+  currentItem.value.payload.grid = {
     items: [],
     defaultImage: undefined,
-    tileHeight: 25,
-    tileWidth: 25,
+    cellHeight: 25,
+    cellWidth: 25,
     attribute: '',
-  } as ItemPayloadTiles;
+    gap: false,
+    gapSize: 5,
+    fontSize: 18,
+  } as ItemPayloadGrid;
 }
 
 const updateCurrentState = () => {
@@ -63,51 +68,51 @@ const updateCurrentState = () => {
 }
 
 const onSelectDefaultImage = (image: ApiImage) => {
-  if (!props.item.payload.tiles) {
+  if (!props.item.payload.grid) {
     initDefaultValue();
   }
 
-  currentItem.value.payload.tiles.image = image as ApiImage || undefined;
+  currentItem.value.payload.grid.image = image as ApiImage || undefined;
   props.item.update();
 }
 
 const addProp = () => {
-  if (!props.item.payload.tiles) {
+  if (!props.item.payload.grid) {
     initDefaultValue();
   }
 
   let counter = 0;
-  if (props.item.payload.tiles.items.length) {
-    counter = props.item.payload.tiles.items.length;
+  if (props.item.payload.grid.items.length) {
+    counter = props.item.payload.grid.items.length;
   }
 
-  currentItem.value.payload.tiles.items.push({
+  currentItem.value.payload.grid.items.push({
     key: 'new proper' + counter,
     image: undefined,
     position: false,
     top: 0,
     left: 0,
-    height: props.item.payload.tiles.tileHeight || 0,
-    width: props.item.payload.tiles.tileWidth || 0,
-  } as TileProp);
+    height: props.item.payload.grid.cellHeight || 0,
+    width: props.item.payload.grid.cellWidth || 0,
+  } as GridProp);
   props.item.update();
 }
 
 const removeProp = (index: number) => {
-  if (!props.item.payload.tiles) {
+  if (!props.item.payload.grid) {
     initDefaultValue();
   }
 
-  props.item.payload.tiles.items!.splice(index, 1);
+  props.item.payload.grid.items!.splice(index, 1);
   props.item.update();
 }
 
 const onSelectImageForState = (index: number, image: ApiImage) => {
-  if (!props.item.payload.tiles) {
+  if (!props.item.payload.grid) {
     initDefaultValue();
   }
 
-  currentItem.value.payload.tiles.items[index].image = image as ApiImage || undefined;
+  currentItem.value.payload.grid.items[index].image = image as ApiImage || undefined;
   props.item.update();
 }
 
@@ -116,18 +121,6 @@ const getUrl = (image: ApiImage): string => {
     return '';
   }
   return prepareUrl(import.meta.env.VITE_API_BASEPATH as string + image?.url);
-}
-
-const tilePreview = ({top, left, position, image}) => {
-  let style = {
-    width: `${currentItem.value.payload.tiles?.tileWidth}px`,
-    height: `${currentItem.value.payload.tiles?.tileHeight}px`,
-    background: `url(${getUrl(image)})`,
-  }
-  if (position) {
-    style.background = `url(${getUrl(image)}) ${left}px ${top}px no-repeat`
-  }
-  return style
 }
 
 const getActionList = (entity?: ApiEntity) => {
@@ -139,12 +132,12 @@ const getActionList = (entity?: ApiEntity) => {
 
 const changedForActionButton = async (entity: ApiEntity) => {
   if (entity?.id) {
-    currentItem.value.payload.tiles.entity = await currentCore.value.fetchEntity(entity.id);
-    currentItem.value.payload.tiles.entityId = entity.id;
+    currentItem.value.payload.grid.entity = await currentCore.value.fetchEntity(entity.id);
+    currentItem.value.payload.grid.entityId = entity.id;
   } else {
-    currentItem.value.payload.tiles.entity = undefined;
-    currentItem.value.payload.tiles.entityId = '';
-    currentItem.value.payload.tiles.actionName = '';
+    currentItem.value.payload.grid.entity = undefined;
+    currentItem.value.payload.grid.entityId = '';
+    currentItem.value.payload.grid.actionName = '';
   }
 }
 
@@ -154,17 +147,43 @@ const changedForActionButton = async (entity: ApiEntity) => {
 
   <CommonEditor :item="item" :core="core"/>
 
-  <ElDivider content-position="left">{{ $t('dashboard.editor.tilesOptions') }}</ElDivider>
+  <ElDivider content-position="left">{{ $t('dashboard.editor.gridOptions') }}</ElDivider>
 
   <ElRow :gutter="24">
     <ElCol :span="12" :xs="12">
-      <ElFormItem :label="$t('dashboard.editor.tiles.height')" prop="tileHeight">
-        <ElInputNumber v-model="currentItem.payload.tiles.tileHeight" :min="1" :value-on-clear="25"/>
+      <ElFormItem :label="$t('dashboard.editor.grid.height')" prop="cellHeight">
+        <ElInputNumber v-model="currentItem.payload.grid.cellHeight" :min="1" :value-on-clear="25"/>
       </ElFormItem>
     </ElCol>
     <ElCol :span="12" :xs="12">
-      <ElFormItem :label="$t('dashboard.editor.tiles.width')" prop="tileWidth">
-        <ElInputNumber v-model="currentItem.payload.tiles.tileWidth" :min="1" :value-on-clear="25"/>
+      <ElFormItem :label="$t('dashboard.editor.grid.width')" prop="cellWidth">
+        <ElInputNumber v-model="currentItem.payload.grid.cellWidth" :min="1" :value-on-clear="25"/>
+      </ElFormItem>
+    </ElCol>
+  </ElRow>
+
+  <ElRow :gutter="24">
+    <ElCol :span="12" :xs="12">
+      <ElFormItem :label="$t('dashboard.editor.grid.showCellValue')" prop="showCellValue">
+        <ElSwitch v-model="currentItem.payload.grid.showCellValue"/>
+      </ElFormItem>
+    </ElCol>
+    <ElCol :span="12" :xs="12" v-if="currentItem.payload.grid.showCellValue">
+      <ElFormItem :label="$t('dashboard.editor.grid.fontSize')" prop="fontSize">
+        <ElInputNumber v-model="currentItem.payload.grid.fontSize" :min="1" :value-on-clear="12"/>
+      </ElFormItem>
+    </ElCol>
+  </ElRow>
+
+  <ElRow :gutter="24">
+    <ElCol :span="12" :xs="12">
+      <ElFormItem :label="$t('dashboard.editor.grid.gap')" prop="gap">
+        <ElSwitch v-model="currentItem.payload.grid.gap"/>
+      </ElFormItem>
+    </ElCol>
+    <ElCol :span="12" :xs="12" v-if="currentItem.payload.grid.gap">
+      <ElFormItem :label="$t('dashboard.editor.grid.gapSize')" prop="gapSize">
+        <ElInputNumber v-model="currentItem.payload.grid.gapSize" :min="1" :value-on-clear="1"/>
       </ElFormItem>
     </ElCol>
   </ElRow>
@@ -172,12 +191,12 @@ const changedForActionButton = async (entity: ApiEntity) => {
   <ElRow>
     <ElCol>
       <ElFormItem :label="$t('dashboard.editor.attrField')" prop="attribute">
-        <ElInput placeholder="Please input" v-model="currentItem.payload.tiles.attribute"/>
+        <ElInput placeholder="Please input" v-model="currentItem.payload.grid.attribute"/>
       </ElFormItem>
     </ElCol>
   </ElRow>
 
-  <ElDivider content-position="left">{{ $t('dashboard.editor.tiles.items') }}</ElDivider>
+  <ElDivider content-position="left">{{ $t('dashboard.editor.grid.items') }}</ElDivider>
 
   <ElRow>
     <ElCol>
@@ -191,17 +210,17 @@ const changedForActionButton = async (entity: ApiEntity) => {
   </ElRow>
 
   <!-- props -->
-  <ElCollapse v-if="item.payload.tiles?.items?.length">
+  <ElCollapse v-if="item.payload.grid?.items?.length">
     <ElCollapseItem
         :name="index"
         :key="index"
-        v-for="(prop, index) in item.payload.tiles.items"
+        v-for="(prop, index) in item.payload.grid.items"
     >
 
       <template #title>
         <div style="width: 100%;height: inherit;clear: both;">
           <ElTag size="small">{{ prop.key }}</ElTag>
-          <TilePreview :base-params="currentItem.payload.tiles" :tile-item="prop"/>
+          <CellPreview :base-params="currentItem.payload.grid" :tile-item="prop"/>
         </div>
       </template>
 
@@ -231,12 +250,12 @@ const changedForActionButton = async (entity: ApiEntity) => {
 
           <ElRow :gutter="24">
             <ElCol :span="12" :xs="12">
-              <ElFormItem :label="$t('dashboard.editor.tiles.height')" prop="tileHeight">
+              <ElFormItem :label="$t('dashboard.editor.grid.height')" prop="cellHeight">
                 <ElInputNumber v-model="prop.height" :min="0"/>
               </ElFormItem>
             </ElCol>
             <ElCol :span="12" :xs="12">
-              <ElFormItem :label="$t('dashboard.editor.tiles.width')" prop="tileWidth">
+              <ElFormItem :label="$t('dashboard.editor.grid.width')" prop="cellWidth">
                 <ElInputNumber v-model="prop.width" :min="0"/>
               </ElFormItem>
             </ElCol>
@@ -244,7 +263,7 @@ const changedForActionButton = async (entity: ApiEntity) => {
 
           <ElRow :gutter="24">
             <ElCol :span="8" :xs="8">
-              <ElFormItem :label="$t('dashboard.editor.tiles.position')" prop="position">
+              <ElFormItem :label="$t('dashboard.editor.grid.position')" prop="position">
                 <ElSwitch v-model="prop.position"/>
               </ElFormItem>
             </ElCol>
@@ -253,12 +272,12 @@ const changedForActionButton = async (entity: ApiEntity) => {
 
           <ElRow :gutter="24" v-if="prop.position">
             <ElCol :span="12" :xs="12">
-              <ElFormItem :label="$t('dashboard.editor.tiles.top')" prop="top">
+              <ElFormItem :label="$t('dashboard.editor.grid.top')" prop="top">
                 <ElInputNumber v-model="prop.top" :step="1"/>
               </ElFormItem>
             </ElCol>
             <ElCol :span="12" :xs="12">
-              <ElFormItem :label="$t('dashboard.editor.tiles.left')" prop="left">
+              <ElFormItem :label="$t('dashboard.editor.grid.left')" prop="left">
                 <ElInputNumber v-model="prop.left" :step="1"/>
               </ElFormItem>
             </ElCol>
@@ -266,11 +285,11 @@ const changedForActionButton = async (entity: ApiEntity) => {
 
 
 
-          <ElDivider v-if="prop.position" content-position="left">{{ $t('dashboard.editor.tiles.preview') }}</ElDivider>
+          <ElDivider v-if="prop.position" content-position="left">{{ $t('dashboard.editor.grid.preview') }}</ElDivider>
 
           <ElRow v-if="prop.position">
             <ElCol>
-              <TilePreview :base-params="currentItem.payload.tiles" :tile-item="prop"/>
+              <CellPreview :base-params="currentItem.payload.grid" :tile-item="prop"/>
             </ElCol>
 
           </ElRow>
@@ -316,37 +335,37 @@ const changedForActionButton = async (entity: ApiEntity) => {
   <ElRow>
     <ElCol>
       <ElFormItem :label="$t('dashboard.editor.image')" prop="image">
-        <ImageSearch v-model="currentItem.payload.tiles.image" @change="onSelectDefaultImage"/>
+        <ImageSearch v-model="currentItem.payload.grid.image" @change="onSelectDefaultImage"/>
       </ElFormItem>
     </ElCol>
   </ElRow>
 
   <ElRow :gutter="24">
     <ElCol :span="8" :xs="8">
-      <ElFormItem :label="$t('dashboard.editor.tiles.position')" prop="position">
-        <ElSwitch v-model="currentItem.payload.tiles.position"/>
+      <ElFormItem :label="$t('dashboard.editor.grid.position')" prop="position">
+        <ElSwitch v-model="currentItem.payload.grid.position"/>
       </ElFormItem>
     </ElCol>
   </ElRow>
 
-  <ElRow :gutter="24" v-if="currentItem.payload.tiles.position">
+  <ElRow :gutter="24" v-if="currentItem.payload.grid.position">
     <ElCol :span="12" :xs="12">
-      <ElFormItem :label="$t('dashboard.editor.tiles.top')" prop="top">
-        <ElInputNumber v-model="currentItem.payload.tiles.top" :step="1"/>
+      <ElFormItem :label="$t('dashboard.editor.grid.top')" prop="top">
+        <ElInputNumber v-model="currentItem.payload.grid.top" :step="1"/>
       </ElFormItem>
     </ElCol>
     <ElCol :span="12" :xs="12">
-      <ElFormItem :label="$t('dashboard.editor.tiles.left')" prop="left">
-        <ElInputNumber v-model="currentItem.payload.tiles.left" :step="1"/>
+      <ElFormItem :label="$t('dashboard.editor.grid.left')" prop="left">
+        <ElInputNumber v-model="currentItem.payload.grid.left" :step="1"/>
       </ElFormItem>
     </ElCol>
   </ElRow>
 
-  <ElDivider v-if="currentItem.payload.tiles.position" content-position="left">{{ $t('dashboard.editor.tiles.preview') }}</ElDivider>
+  <ElDivider v-if="currentItem.payload.grid.position" content-position="left">{{ $t('dashboard.editor.grid.preview') }}</ElDivider>
 
-  <ElRow v-if="currentItem.payload.tiles.position">
+  <ElRow v-if="currentItem.payload.grid.position">
     <ElCol>
-      <TilePreview :base-params="currentItem.payload.tiles"/>
+      <CellPreview :base-params="currentItem.payload.grid"/>
     </ElCol>
 
   </ElRow>
@@ -356,20 +375,20 @@ const changedForActionButton = async (entity: ApiEntity) => {
   <ElRow :gutter="24">
     <ElCol :span="12" :xs="12">
       <ElFormItem :label="$t('dashboard.editor.entity')" prop="entity">
-        <EntitySearch v-model="currentItem.payload.tiles.entity" @change="changedForActionButton($event)"/>
+        <EntitySearch v-model="currentItem.payload.grid.entity" @change="changedForActionButton($event)"/>
       </ElFormItem>
     </ElCol>
 
     <ElCol :span="12" :xs="12">
-      <ElFormItem :label="$t('dashboard.editor.action')"  prop="action" :aria-disabled="!currentItem.payload.tiles.entity">
+      <ElFormItem :label="$t('dashboard.editor.action')"  prop="action" :aria-disabled="!currentItem.payload.grid.entity">
         <ElSelect
-            v-model="currentItem.payload.tiles.actionName"
+            v-model="currentItem.payload.grid.actionName"
             clearable
             :placeholder="$t('dashboard.editor.selectAction')"
             style="width: 100%"
         >
           <ElOption
-              v-for="item in getActionList(currentItem.payload.tiles.entity)"
+              v-for="item in getActionList(currentItem.payload.grid.entity)"
               :key="item.name"
               :label="item.name"
               :value="item.name"/>

@@ -32,8 +32,9 @@ import {ItemPayloadColorPicker} from "@/views/Dashboard/card_items/color_picker/
 import {ItemPayloadJoystick} from "@/views/Dashboard/card_items/joystick/types";
 import {ItemPayloadVideo} from "@/views/Dashboard/card_items/video/types";
 import {ItemPayloadEntityStorage} from "@/views/Dashboard/card_items/entity_storage/types";
-import {prepareUrl} from "@/utils/serverId";
 import {ItemPayloadTiles} from "@/views/Dashboard/card_items/tiles/types";
+import {ItemPayloadGrid} from "@/views/Dashboard/card_items/grid/types";
+import {prepareUrl} from "@/utils/serverId";
 
 const {emit} = useBus()
 
@@ -120,6 +121,7 @@ export interface ItemPayload {
   video?: ItemPayloadVideo;
   entityStorage?: ItemPayloadEntityStorage;
   tiles?: ItemPayloadTiles;
+  grid?: ItemPayloadGrid;
 }
 
 export interface ItemParams {
@@ -312,12 +314,21 @@ export class CardItem {
         this.payload.tiles = {
           items: [],
           defaultImage: undefined,
-          columns: 5,
-          rows: 5,
           tileHeight: 25,
           tileWidth: 25,
           attribute: '',
         } as ItemPayloadTiles;
+      }
+      if (!this.payload.grid) {
+        this.payload.grid = {
+          items: [],
+          gap: false,
+          gapSize: 5,
+          defaultImage: undefined,
+          cellHeight: 25,
+          cellWidth: 25,
+          attribute: '',
+        } as ItemPayloadGrid;
       }
     }
   }

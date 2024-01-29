@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import {computed, onMounted, PropType, ref, unref, watch} from "vue";
+import {computed, onMounted, PropType, ref, watch} from "vue";
 import {CardItem, requestCurrentState} from "@/views/Dashboard/core";
-import {TileProp} from "@/views/Dashboard/card_items/tiles/types";
+import {GridProp} from "@/views/Dashboard/card_items/grid/types";
 import {Cache, GetTokens, RenderText} from "@/views/Dashboard/render";
-import {debounce, map} from "lodash-es";
-import TileView from "@/views/Dashboard/card_items/tiles/tileView.vue";
+import {debounce} from "lodash-es";
 import api from "@/api/api";
 import {ElMessage} from "element-plus";
 import {useI18n} from "@/hooks/web/useI18n";
 import {ApiTypes} from "@/api/stub";
+import CellView from "@/views/Dashboard/card_items/grid/cellView.vue";
 
 const {t} = useI18n()
 
@@ -36,10 +36,11 @@ onMounted(() => {
 // ---------------------------------
 const board = ref([])
 
-const tileHeight = computed(()=> props.item.payload.tiles.tileHeight + 'px');
-const tileWidth = computed(()=> props.item.payload.tiles.tileWidth + 'px');
+const cellHeight = computed(() => props.item.payload.grid.cellHeight + 'px');
+const cellWidth = computed(() => props.item.payload.grid.cellWidth + 'px');
+const gapSize = computed(() => (props.item.payload.grid.gap? props.item.payload.grid.gapSize : 0) + 'px'  );
 
-const getBoard = (str: string) => {
+const getBoard = (str: string): any[] => {
   try {
     return JSON.parse(str);
   } catch (e) {
@@ -49,21 +50,21 @@ const getBoard = (str: string) => {
 
 const _cache = new Cache()
 const update = debounce(() => {
-  let v: string = props.item?.payload.tiles?.attribute || ''
-  const tokens = GetTokens(props.item?.payload.tiles?.attribute, _cache)
+  let v: string = props.item?.payload.grid?.attribute || ''
+  const tokens = GetTokens(props.item?.payload.grid?.attribute, _cache)
   if (tokens.length) {
     v = RenderText(tokens, v, props.item?.lastEvent)
   }
   board.value = getBoard(v) || []
 })
 
-const tileTemplates = ref<Map<string, TileProp>>({});
+const tileTemplates = ref<Map<string, GridProp>>({});
 const prepareTileTemplates = () => {
   tileTemplates.value = {};
-  if (!props.item?.payload?.tiles?.items) {
+  if (!props.item?.payload?.grid?.items) {
     return
   }
-  for (const item of props.item?.payload.tiles?.items) {
+  for (const item of props.item?.payload.grid?.items) {
     tileTemplates.value[item.key] = item;
   }
 }
@@ -82,13 +83,13 @@ watch(
 )
 
 const callAction = async (index: number) => {
-  if (!currentItem.value.payload.tiles?.entityId ||
-      !currentItem.value.payload.tiles?.actionName) {
+  if (!currentItem.value.payload.grid?.entityId ||
+      !currentItem.value.payload.grid?.actionName) {
     return;
   }
   await api.v1.interactServiceEntityCallAction({
-    id: currentItem.value.payload.tiles.entityId,
-    name: currentItem.value.payload.tiles?.actionName,
+    id: currentItem.value.payload.grid.entityId,
+    name: currentItem.value.payload.grid?.actionName,
     attributes: {
       "tile": {
         "name": "tile",
@@ -124,10 +125,12 @@ prepareTileTemplates();
             :key="index"
             v-for="(cell, index) in row"
             @click.prevent.stop="callAction(index)">
-          <TileView
+          <CellView
               :key="index"
-              :base-params="props.item.payload.tiles"
-              :tile-item="tileTemplates[cell]"/>
+              :base-params="props.item.payload.grid"
+              :tile-item="tileTemplates[cell]"
+              :templates="tileTemplates"
+              :cell="cell"/>
         </div>
       </div>
     </div>
@@ -145,7 +148,9 @@ prepareTileTemplates();
 
 .grid-cell {
   float: left;
-  height: v-bind(tileHeight) !important;
-  width: v-bind(tileWidth) !important;
+  height: v-bind(cellHeight) !important;
+  width: v-bind(cellWidth) !important;
+  margin: v-bind(gapSize) !important;
 }
+
 </style>

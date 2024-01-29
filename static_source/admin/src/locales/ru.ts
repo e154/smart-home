@@ -567,8 +567,9 @@ export default {
       STREAM_PLAYER: 'Video player',
       JOYSTICK: 'Joystick',
       ICON: 'Икона',
-      TILES: 'Тайлы',
+      TILES: 'Тайлы (DEPRECATED)',
       tooltip: 'Подсказка',
+      GRID: 'Сетка',
       slider: {
         options: 'Параметры слайдера',
         color: 'Цвет',
@@ -637,7 +638,23 @@ export default {
         columns: 'Колонки',
         rows: 'Ряды',
       },
-      tilesOptions: 'Tales Options',
+      grid: {
+        items: 'Элементы',
+        height: 'Высота',
+        width: 'Ширина',
+        position: 'Смешение позиции',
+        top: 'Сверху',
+        left: 'Слева',
+        preview: 'Просмотр',
+        columns: 'Колонки',
+        rows: 'Ряды',
+        showCellValue: 'Показывать значение',
+        fontSize: 'Шрифт',
+        gap: 'Промежуток',
+        gapSize: 'Размер',
+      },
+      tilesOptions: 'Параметры плитки',
+      gridOptions: 'Параметры сетки',
       iconOptions: 'Параметры Иконки',
       defaultIcon: 'Иконка по умолчанию',
       iconSize: 'Размер Иконки',
@@ -680,7 +697,11 @@ export default {
   tools: {
     eventBus: {
       topic: 'Канал',
-      subscribers: 'Подписчики'
+      subscribers: 'Подписчики',
+      min: 'Min',
+      max: 'Max',
+      avg: 'Avg',
+      rps: 'Rps',
     }
   },
   mqtt: {

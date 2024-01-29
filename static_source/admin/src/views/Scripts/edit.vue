@@ -69,8 +69,10 @@ const fetch = async () => {
   if (res) {
     currentScript.value = res.data
     if (res.data?.versions && res.data.versions.length) {
-      currentVersion.value = res.data.versions[0]
       versions.value = res.data.versions;
+      if (res.data.versions.length > 1) {
+        currentVersion.value = res.data.versions[1]
+      }
     }
   } else {
     currentScript.value = null
