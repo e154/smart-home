@@ -44,23 +44,3 @@ type handler struct {
 	callback reflect.Value
 	queue    chan []reflect.Value
 }
-
-type subscribers struct {
-	handlers []*handler
-	lastMsg  []reflect.Value
-	*Statistic
-}
-
-func newSubscibers(h *handler) *subscribers {
-	return &subscribers{
-		handlers:  []*handler{h},
-		Statistic: NewStatistic(),
-	}
-}
-
-func (s *subscribers) stop() {
-	for _, h := range s.handlers {
-		close(h.queue)
-	}
-	s.rps.Stop()
-}

@@ -67,7 +67,7 @@ type StatItem struct {
 }
 
 // Stats ...
-type Stats []StatItem
+type Stats []*StatItem
 
 func (s Stats) Len() int           { return len(s) }
 func (s Stats) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
