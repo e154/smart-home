@@ -33,7 +33,7 @@ var Restore bool
 
 // Start ...
 func Start(app *fx.App) {
-	startCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	startCtx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
 	defer cancel()
 	if err := app.Start(startCtx); err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -52,7 +52,7 @@ func Work() {
 
 // Stop ...
 func Stop(app *fx.App) {
-	t := 15 * time.Second
+	t := 60 * time.Second
 	if Restore {
 		t = 15 * time.Minute
 	}
