@@ -216,6 +216,35 @@ func TestTopic2(t *testing.T) {
 	require.Equal(t, int32(3), counter.Load())
 }
 
+func TestTopic3(t *testing.T) {
+
+	const topic = "test/topic"
+
+	b := NewTopic(topic)
+
+	// Test Subscribe
+	fn := func(topic string, arg1 string, arg2 string) {}
+
+	empty, err := b.Unsubscribe(fn)
+	require.Equal(t, nil, err)
+	require.Equal(t, true, empty)
+
+	err = b.Subscribe(fn)
+	require.Equal(t, nil, err)
+
+	// Test Stat
+	stat := b.Stat()
+	require.Equal(t, 1, stat.Subscribers)
+
+	empty, err = b.Unsubscribe(fn)
+	require.Equal(t, nil, err)
+	require.Equal(t, true, empty)
+
+	empty, err = b.Unsubscribe(fn)
+	require.Equal(t, nil, err)
+	require.Equal(t, true, empty)
+}
+
 func BenchmarkTopic(b *testing.B) {
 
 	const topic = "test/topic"

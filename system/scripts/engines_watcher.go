@@ -157,13 +157,20 @@ func (w *EnginesWatcher) eventScriptDeleted(msg events.EventRemovedScriptModel) 
 
 	var scriptName string
 
-	// remove script
-	for s, script := range w.scripts {
+	var indexesToDelete []int
+
+	for i, script := range w.scripts {
 		if script.Id == msg.ScriptId {
 			scriptName = script.Name
-			w.scripts = append(w.scripts[:s], w.scripts[s+1:]...)
+			indexesToDelete = append(indexesToDelete, i)
 			break
 		}
+	}
+
+	// remove script
+	for i := len(indexesToDelete) - 1; i >= 0; i-- {
+		index := indexesToDelete[i]
+		w.scripts = append(w.scripts[:index], w.scripts[index+1:]...)
 	}
 
 	log.Infof("script '%s' (%d) deleted", scriptName, msg.ScriptId)

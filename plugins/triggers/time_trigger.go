@@ -120,11 +120,18 @@ func (t *TimeTrigger) Unsubscribe(options Subscriber) error {
 	t.Lock()
 	defer t.Unlock()
 
+	var indexesToDelete []int
+
 	for i, sub := range t.subscribers[schedule] {
 		if sub.callback == rv || sub.callback.Pointer() == rv.Pointer() {
-			t.scheduler.Remove(sub.entryID)
-			t.subscribers[schedule] = append(t.subscribers[schedule][:i], t.subscribers[schedule][i+1:]...)
+			indexesToDelete = append(indexesToDelete, i)
 		}
+	}
+
+	for i := len(indexesToDelete) - 1; i >= 0; i-- {
+		index := indexesToDelete[i]
+		t.scheduler.Remove(t.subscribers[schedule][index].entryID)
+		t.subscribers[schedule] = append(t.subscribers[schedule][:index], t.subscribers[schedule][index+1:]...)
 	}
 
 	return nil
