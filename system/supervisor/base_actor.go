@@ -175,7 +175,9 @@ func NewBaseActor(entity *m.Entity,
 }
 
 func (e *BaseActor) StopWatchers() {
-	e.ScriptsEngine.Stop()
+	if e.ScriptsEngine != nil {
+		e.ScriptsEngine.Stop()
+	}
 	for _, a := range e.Actions {
 		if a.ScriptEngine != nil {
 			a.ScriptEngine.Stop()
