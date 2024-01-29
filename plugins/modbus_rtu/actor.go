@@ -61,7 +61,7 @@ func NewActor(entity *m.Entity,
 
 	// Actions
 	for _, a := range actor.Actions {
-		if a.ScriptEngine.Engine() != nil {
+		if a.ScriptEngine != nil && a.ScriptEngine.Engine() != nil {
 			// bind
 			a.ScriptEngine.Engine().PushFunction("ModbusRtu", NewModbusRtu(service.EventBus(), actor))
 			_, _ = a.ScriptEngine.Engine().Do()

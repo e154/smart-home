@@ -567,8 +567,9 @@ export default {
             STREAM_PLAYER: 'Video player',
             JOYSTICK: 'Joystick',
             ICON: 'Icon',
-            TILES: 'Tiles',
+            TILES: 'Tiles (DEPRECATED)',
             tooltip: 'Tooltip',
+            GRID: 'Grid',
             slider: {
                 options: 'Slider Options',
                 color: 'Color',
@@ -637,7 +638,23 @@ export default {
                 columns: 'Columns',
                 rows: 'Rows',
             },
+            grid: {
+                items: 'Items',
+                height: 'Height',
+                width: 'Width',
+                position: 'Position',
+                top: 'Top',
+                left: 'Left',
+                preview: 'Preview',
+                columns: 'Columns',
+                rows: 'Rows',
+                showCellValue: 'Show value',
+                fontSize: 'Font Size',
+                gap: 'Gap',
+                gapSize: 'Gap Size',
+            },
             tilesOptions: 'Tales Options',
+            gridOptions: 'Grid Options',
             iconOptions: 'Icon Options',
             defaultIcon: 'Default Icon',
             iconSize: 'Icon Size',
@@ -680,7 +697,11 @@ export default {
     tools: {
         eventBus: {
             topic: 'Topic',
-            subscribers: 'Subscribers'
+            subscribers: 'Subscribers',
+            min: 'Min',
+            max: 'Max',
+            avg: 'Avg',
+            rps: 'Rps',
         }
     },
     mqtt: {

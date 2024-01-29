@@ -36,21 +36,15 @@ onMounted(() => {
 // ---------------------------------
 const board = ref([])
 
-const boardHeight = computed(()=> (props.item.payload.tiles.rows * props.item.payload.tiles.tileHeight) + 'px');
-const boardWidth = computed(()=> (props.item.payload.tiles.columns * props.item.payload.tiles.tileWidth) + 'px');
 const tileHeight = computed(()=> props.item.payload.tiles.tileHeight + 'px');
 const tileWidth = computed(()=> props.item.payload.tiles.tileWidth + 'px');
 
 const getBoard = (str: string) => {
-  const max = props.item.payload.tiles.columns * props.item.payload.tiles.rows
-  let b = str.split(",");
-  if (b.length < max) {
-    const diff = max - b.length;
-    for (let i = 0; i < diff; i++) {
-      b.push("");
-    }
+  try {
+    return JSON.parse(str);
+  } catch (e) {
+    return [];
   }
-  return b;
 }
 
 const _cache = new Cache()
@@ -120,31 +114,38 @@ prepareTileTemplates();
 
 <template>
   <div ref="el">
-    <ul class="board">
-      <li
-          class="tile"
+    <div class="grid-container">
+      <div
+          class="grid-row"
           :key="index"
-          v-for="(item, index) in board"
-          @click.prevent.stop="callAction(index)">
-            <TileView
-                :key="index"
-                :base-params="props.item.payload.tiles"
-                :tile-item="tileTemplates[item]"/>
-      </li>
-    </ul>
+          v-for="(row, index) in board">
+        <div
+            class="grid-cell"
+            :key="index"
+            v-for="(cell, index) in row"
+            @click.prevent.stop="callAction(index)">
+          <TileView
+              :key="index"
+              :base-params="props.item.payload.tiles"
+              :tile-item="tileTemplates[cell]"/>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
 <style lang="less" scoped>
-.board {
-  height: v-bind(boardHeight)!important;
-  width: v-bind(boardWidth)!important;
+.grid-container {
+}
+
+.grid-row {
   clear: both;
 }
 
-.tile {
+.grid-cell {
   float: left;
-  height: v-bind(tileHeight)!important;
-  width: v-bind(tileWidth)!important;
+  height: v-bind(tileHeight) !important;
+  width: v-bind(tileWidth) !important;
 }
 </style>

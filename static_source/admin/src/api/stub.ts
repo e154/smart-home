@@ -144,6 +144,14 @@ export interface ApiBusStateItem {
   topic: string;
   /** @format int32 */
   subscribers: number;
+  /** @format int64 */
+  min: number;
+  /** @format int64 */
+  max: number;
+  /** @format int64 */
+  avg: number;
+  /** @format double */
+  rps: number;
 }
 
 export interface ApiClient {

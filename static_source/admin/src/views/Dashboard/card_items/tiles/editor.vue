@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {computed, PropType} from "vue";
-import {CardItem, CompareProp, Core, requestCurrentState, Tab} from "@/views/Dashboard/core";
+import {CardItem, Core, requestCurrentState} from "@/views/Dashboard/core";
 import {
   ElButton, ElCard,
   ElCol,
@@ -16,7 +16,7 @@ import {useI18n} from "@/hooks/web/useI18n";
 import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
 import ImageSearch from "@/views/Images/components/ImageSearch.vue";
 import {ApiEntity, ApiImage} from "@/api/stub";
-import {ItemPayloadTiles} from "@/views/Dashboard/card_items/tiles/types";
+import {ItemPayloadTiles, TileProp} from "@/views/Dashboard/card_items/tiles/types";
 import {prepareUrl} from "@/utils/serverId";
 import EntitySearch from "@/views/Entities/components/EntitySearch.vue";
 import TilePreview from "@/views/Dashboard/card_items/tiles/tilePreview.vue";
@@ -50,8 +50,6 @@ const initDefaultValue = () => {
   currentItem.value.payload.tiles = {
     items: [],
     defaultImage: undefined,
-    columns: 5,
-    rows: 5,
     tileHeight: 25,
     tileWidth: 25,
     attribute: '',
@@ -91,7 +89,7 @@ const addProp = () => {
     left: 0,
     height: props.item.payload.tiles.tileHeight || 0,
     width: props.item.payload.tiles.tileWidth || 0,
-  } as CompareProp);
+  } as TileProp);
   props.item.update();
 }
 
@@ -157,19 +155,6 @@ const changedForActionButton = async (entity: ApiEntity) => {
   <CommonEditor :item="item" :core="core"/>
 
   <ElDivider content-position="left">{{ $t('dashboard.editor.tilesOptions') }}</ElDivider>
-
-  <ElRow :gutter="24">
-    <ElCol :span="12" :xs="12">
-      <ElFormItem :label="$t('dashboard.editor.tiles.columns')" prop="columns">
-        <ElInputNumber v-model="currentItem.payload.tiles.columns" :min="1" :value-on-clear="5"/>
-      </ElFormItem>
-    </ElCol>
-    <ElCol :span="12" :xs="12">
-      <ElFormItem :label="$t('dashboard.editor.tiles.rows')" prop="rows">
-        <ElInputNumber v-model="currentItem.payload.tiles.rows" :min="1" :value-on-clear="5"/>
-      </ElFormItem>
-    </ElCol>
-  </ElRow>
 
   <ElRow :gutter="24">
     <ElCol :span="12" :xs="12">

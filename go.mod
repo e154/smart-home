@@ -7,8 +7,8 @@ toolchain go1.21.1
 require (
 	github.com/DrmagicE/gmqtt v0.5.0
 	github.com/Masterminds/semver v1.5.0
-	github.com/dlclark/regexp2 v1.7.0 // indirect
-	github.com/dop251/goja v0.0.0-20220801092856-7adb49968576
+	github.com/dlclark/regexp2 v1.10.0 // indirect
+	github.com/dop251/goja v0.0.0-20231027120936-b396bb4c349d
 	github.com/dop251/goja_nodejs v0.0.0-20220712185256-8cad205bf387
 	github.com/eclipse/paho.mqtt.golang v1.2.0
 	github.com/francoispqt/gojay v1.2.13
@@ -59,7 +59,7 @@ require (
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/gomail.v2 v2.0.0-20150902115704-41f357289737
-	gorm.io/gorm v1.25.5
+	gorm.io/gorm v1.25.6
 )
 
 require (
@@ -71,9 +71,8 @@ require (
 	github.com/go-playground/universal-translator v0.18.1
 	github.com/gobwas/ws v1.3.0
 	github.com/golang/geo v0.0.0-20230421003525-6adc56603217
-	github.com/gomarkdown/markdown v0.0.0-20230716120725-531d2d74bc12
+	github.com/gomarkdown/markdown v0.0.0-20231222211730-1d6d20845b47
 	github.com/google/uuid v1.4.0
-	github.com/gorilla/mux v1.8.0
 	github.com/hiko1129/echo-pprof v1.0.1
 	github.com/iancoleman/strcase v0.3.0
 	github.com/imdario/mergo v0.3.13
@@ -121,6 +120,7 @@ require (
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/gomodule/redigo v1.8.2 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
+	github.com/google/pprof v0.0.0-20240125082051-42cd04596328 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.0.1-0.20190118093823-f849b5445de4 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect

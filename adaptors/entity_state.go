@@ -20,13 +20,15 @@ package adaptors
 
 import (
 	"context"
+	"strings"
+
+	"github.com/pkg/errors"
+	"gorm.io/gorm"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/pkg/errors"
-	"gorm.io/gorm"
 )
 
 // IEntityState ...
@@ -124,7 +126,7 @@ func (n *EntityState) fromDb(dbVer *db.EntityState) (ver *m.EntityState) {
 func (n *EntityState) toDb(ver *m.EntityState) (dbVer *db.EntityState) {
 	dbVer = &db.EntityState{
 		Id:          ver.Id,
-		Name:        ver.Name,
+		Name:        strings.TrimSpace(ver.Name),
 		Description: ver.Description,
 		Icon:        ver.Icon,
 		//DeviceStateId: ver.DeviceStateId,
