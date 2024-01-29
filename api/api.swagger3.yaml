@@ -4554,13 +4554,25 @@ components:
           type: string
     apiBusStateItem:
       type: object
-      required: [ topic, subscribers ]
+      required: [ topic, subscribers, min, max, avg, rps ]
       properties:
         topic:
           type: string
         subscribers:
           type: integer
           format: int32
+        min:
+          type: integer
+          format: int64
+        max:
+          type: integer
+          format: int64
+        avg:
+          type: integer
+          format: int64
+        rps:
+          type: number
+          format: double
     apiClient:
       type: object
       required: [ clientId, username, keepAlive, version, willRetain, willQos, willTopic, willPayload,

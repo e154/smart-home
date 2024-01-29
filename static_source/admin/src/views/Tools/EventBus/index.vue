@@ -82,13 +82,13 @@ const columns: TableColumn[] = [
     width: "80px"
   },
   {
-    field: 'max',
-    label: t('tools.eventBus.max'),
+    field: 'avg',
+    label: t('tools.eventBus.avg'),
     width: "80px"
   },
   {
-    field: 'avg',
-    label: t('tools.eventBus.avg'),
+    field: 'max',
+    label: t('tools.eventBus.max'),
     width: "80px"
   },
   {

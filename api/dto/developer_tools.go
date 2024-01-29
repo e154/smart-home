@@ -19,7 +19,7 @@
 package dto
 
 import (
-	stub "github.com/e154/smart-home/api/stub"
+	"github.com/e154/smart-home/api/stub"
 	"github.com/e154/smart-home/system/bus"
 )
 
@@ -34,8 +34,12 @@ func (DeveloperTools) ToListResult(state bus.Stats) []*stub.ApiBusStateItem {
 	items := make([]*stub.ApiBusStateItem, 0, len(state))
 	for _, item := range state {
 		items = append(items, &stub.ApiBusStateItem{
-			Topic:       item.Topic,
+			Avg:         item.Avg.Microseconds(),
+			Max:         item.Max.Microseconds(),
+			Min:         item.Min.Microseconds(),
 			Subscribers: int32(item.Subscribers),
+			Topic:       item.Topic,
+			Rps:         item.Rps,
 		})
 	}
 	return items

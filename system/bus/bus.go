@@ -62,6 +62,7 @@ func (b *bus) publish(topic string, args ...interface{}) {
 		}
 		sub.lastMsg = rArgs
 		for _, h := range sub.handlers {
+			sub.rps.Inc()
 			h.queue <- rArgs
 		}
 	}
@@ -89,28 +90,23 @@ func (b *bus) subscribe(topic string, fn interface{}, options ...interface{}) er
 	}
 
 	b.Lock()
-	defer b.Unlock()
-
-	go func() {
-		for args := range h.queue {
-			go func(args []reflect.Value) {
-				startTime := time.Now()
-				h.callback.Call(args)
-				t := time.Since(startTime).Milliseconds()
-				if t > 5 {
-					fmt.Printf("long call! topic %s, fn: %s, Milliseconds: %d\n\r", topic, reflect.ValueOf(fn).String(), t)
-				}
-			}(args)
-		}
-	}()
-
 	if _, ok := b.sub[topic]; ok {
 		b.sub[topic].handlers = append(b.sub[topic].handlers, h)
 	} else {
-		b.sub[topic] = &subscribers{
-			handlers: []*handler{h},
-		}
+		b.sub[topic] = newSubscibers(h)
 	}
+	b.Unlock()
+
+	go func(subs *subscribers) {
+		var startTime time.Time
+		for args := range h.queue {
+			go func(args []reflect.Value) {
+				startTime = time.Now()
+				h.callback.Call(args)
+				subs.setTime(time.Since(startTime))
+			}(args)
+		}
+	}(b.sub[topic])
 
 	if len(options) > 0 {
 		if retain, ok := options[0].(bool); ok && !retain {
@@ -118,10 +114,12 @@ func (b *bus) subscribe(topic string, fn interface{}, options ...interface{}) er
 		}
 	}
 
+	b.RLock()
 	// sand last message value
 	if b.sub[topic].lastMsg != nil {
 		go h.callback.Call(b.sub[topic].lastMsg)
 	}
+	b.RUnlock()
 
 	return nil
 }
@@ -147,6 +145,7 @@ func (b *bus) unsubscribe(topic string, fn interface{}) error {
 				close(h.queue)
 				b.sub[topic].handlers = append(b.sub[topic].handlers[:i], b.sub[topic].handlers[i+1:]...)
 				if len(b.sub[topic].handlers) == 0 {
+					b.sub[topic].rps.Stop()
 					delete(b.sub, topic)
 				}
 				return nil
@@ -164,10 +163,8 @@ func (b *bus) CloseTopic(topic string) {
 	b.Lock()
 	defer b.Unlock()
 
-	if _, ok := b.sub[topic]; ok {
-		for _, h := range b.sub[topic].handlers {
-			close(h.queue)
-		}
+	if s, ok := b.sub[topic]; ok {
+		s.stop()
 		delete(b.sub, topic)
 		return
 	}
@@ -179,24 +176,27 @@ func (b *bus) Purge() {
 	defer b.Unlock()
 
 	for topic, s := range b.sub {
-		for _, h := range s.handlers {
-			close(h.queue)
-		}
+		s.stop()
 		delete(b.sub, topic)
 	}
 }
 
 func (b *bus) Stat(ctx context.Context, limit, offset int64, _, _ string) (result Stats, total int64, err error) {
-	b.RLock()
-	defer b.RUnlock()
 
 	var stats Stats
+
+	b.RLock()
 	for topic, subs := range b.sub {
-		stats = append(stats, Stat{
+		stats = append(stats, StatItem{
 			Topic:       topic,
 			Subscribers: len(subs.handlers),
+			Min:         subs.min.Load(),
+			Max:         subs.max.Load(),
+			Avg:         subs.avg.Load(),
+			Rps:         subs.rps.Value(),
 		})
 	}
+	b.RUnlock()
 
 	sort.Sort(stats)
 

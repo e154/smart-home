@@ -21,7 +21,6 @@ package bus
 import (
 	"context"
 	"reflect"
-	"strings"
 )
 
 // Bus implements publish/subscribe messaging paradigm
@@ -49,17 +48,19 @@ type handler struct {
 type subscribers struct {
 	handlers []*handler
 	lastMsg  []reflect.Value
+	*Statistic
 }
 
-// Stat ...
-type Stat struct {
-	Topic       string
-	Subscribers int
+func newSubscibers(h *handler) *subscribers {
+	return &subscribers{
+		handlers:  []*handler{h},
+		Statistic: NewStatistic(),
+	}
 }
 
-// Stats ...
-type Stats []Stat
-
-func (s Stats) Len() int           { return len(s) }
-func (s Stats) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
-func (s Stats) Less(i, j int) bool { return strings.Compare(s[i].Topic, s[j].Topic) == -1 }
+func (s *subscribers) stop() {
+	for _, h := range s.handlers {
+		close(h.queue)
+	}
+	s.rps.Stop()
+}

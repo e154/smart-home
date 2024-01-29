@@ -177,8 +177,12 @@ type ApiBackup struct {
 
 // ApiBusStateItem defines model for apiBusStateItem.
 type ApiBusStateItem struct {
-	Subscribers int32  `json:"subscribers"`
-	Topic       string `json:"topic"`
+	Avg         int64   `json:"avg"`
+	Max         int64   `json:"max"`
+	Min         int64   `json:"min"`
+	Rps         float64 `json:"rps"`
+	Subscribers int32   `json:"subscribers"`
+	Topic       string  `json:"topic"`
 }
 
 // ApiClient defines model for apiClient.
