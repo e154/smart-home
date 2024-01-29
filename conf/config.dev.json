@@ -31,5 +31,6 @@
   "pprof": false,
   "domain": "localhost",
   "https": false,
+  "root_mode": false,
   "root_secret": ""
 }
