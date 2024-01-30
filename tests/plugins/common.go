@@ -52,11 +52,12 @@ import (
 // GetNewButton ...
 func GetNewButton(id string, scripts []*m.Script) *m.Entity {
 	return &m.Entity{
-		Id:          common.EntityId(id),
-		Description: "MiJia wireless switch",
-		PluginName:  zigbee2mqtt.EntityZigbee2mqtt,
-		Scripts:     scripts,
-		AutoLoad:    true,
+		Id:           common.EntityId(id),
+		Description:  "MiJia wireless switch",
+		PluginName:   zigbee2mqtt.EntityZigbee2mqtt,
+		Scripts:      scripts,
+		AutoLoad:     true,
+		RestoreState: true,
 		Attributes: m.Attributes{
 			"click": &m.Attribute{
 				Name: "click",
@@ -147,11 +148,12 @@ func GetNewButton(id string, scripts []*m.Script) *m.Entity {
 // GetNewPlug ...
 func GetNewPlug(id string, scrits []*m.Script) *m.Entity {
 	return &m.Entity{
-		Id:          common.EntityId(id),
-		Description: "MiJia power plug ZigBee",
-		PluginName:  zigbee2mqtt.EntityZigbee2mqtt,
-		Scripts:     scrits,
-		AutoLoad:    true,
+		Id:           common.EntityId(id),
+		Description:  "MiJia power plug ZigBee",
+		PluginName:   zigbee2mqtt.EntityZigbee2mqtt,
+		Scripts:      scrits,
+		AutoLoad:     true,
+		RestoreState: true,
 		Attributes: m.Attributes{
 			"power": &m.Attribute{
 				Name: "power",
@@ -194,11 +196,12 @@ func GetNewPlug(id string, scrits []*m.Script) *m.Entity {
 // GetNewScene ...
 func GetNewScene(id string, scripts []*m.Script) *m.Entity {
 	return &m.Entity{
-		Id:          common.EntityId(id),
-		Description: "scene",
-		PluginName:  scene.EntityScene,
-		Scripts:     scripts,
-		AutoLoad:    true,
+		Id:           common.EntityId(id),
+		Description:  "scene",
+		PluginName:   scene.EntityScene,
+		Scripts:      scripts,
+		AutoLoad:     true,
+		RestoreState: true,
 	}
 }
 
@@ -208,12 +211,13 @@ func GetNewNode(name string) *m.Entity {
 	settings[node.AttrNodeLogin].Value = "node1"
 	settings[node.AttrNodePass].Value = "node1"
 	return &m.Entity{
-		Id:          common.EntityId(fmt.Sprintf("node.%s", name)),
-		Description: "main node",
-		PluginName:  "node",
-		AutoLoad:    true,
-		Attributes:  node.NewAttr(),
-		Settings:    settings,
+		Id:           common.EntityId(fmt.Sprintf("node.%s", name)),
+		Description:  "main node",
+		PluginName:   "node",
+		AutoLoad:     true,
+		RestoreState: true,
+		Attributes:   node.NewAttr(),
+		Settings:     settings,
 	}
 }
 
@@ -223,12 +227,13 @@ func GetNewMoon(name string) *m.Entity {
 	settings[moon.AttrLat].Value = 54.9022
 	settings[moon.AttrLon].Value = 83.0335
 	return &m.Entity{
-		Id:          common.EntityId(fmt.Sprintf("moon.%s", name)),
-		Description: "home",
-		PluginName:  "moon",
-		AutoLoad:    true,
-		Attributes:  moon.NewAttr(),
-		Settings:    settings,
+		Id:           common.EntityId(fmt.Sprintf("moon.%s", name)),
+		Description:  "home",
+		PluginName:   "moon",
+		AutoLoad:     true,
+		RestoreState: true,
+		Attributes:   moon.NewAttr(),
+		Settings:     settings,
 		States: []*m.EntityState{
 			{
 				Name:        moon.StateAboveHorizon,
@@ -248,12 +253,13 @@ func GetNewWeatherMet(name string) *m.Entity {
 	settings[weather.AttrLat].Value = 54.9022
 	settings[weather.AttrLon].Value = 83.0335
 	return &m.Entity{
-		Id:          common.EntityId(fmt.Sprintf("weather_met.%s", name)),
-		Description: name,
-		PluginName:  "weather_met",
-		AutoLoad:    true,
-		Attributes:  weather.BaseForecast(),
-		Settings:    settings,
+		Id:           common.EntityId(fmt.Sprintf("weather_met.%s", name)),
+		Description:  name,
+		PluginName:   "weather_met",
+		AutoLoad:     true,
+		RestoreState: true,
+		Attributes:   weather.BaseForecast(),
+		Settings:     settings,
 	}
 }
 
@@ -278,12 +284,13 @@ func GetNewSun(name string) *m.Entity {
 	settings[sun.AttrLat].Value = 54.9022
 	settings[sun.AttrLon].Value = 83.0335
 	return &m.Entity{
-		Id:          common.EntityId(fmt.Sprintf("sun.%s", name)),
-		Description: "home",
-		PluginName:  "sun",
-		AutoLoad:    true,
-		Attributes:  sun.NewAttr(),
-		Settings:    settings,
+		Id:           common.EntityId(fmt.Sprintf("sun.%s", name)),
+		Description:  "home",
+		PluginName:   "sun",
+		AutoLoad:     true,
+		RestoreState: true,
+		Attributes:   sun.NewAttr(),
+		Settings:     settings,
 		States: []*m.EntityState{
 			{
 				Name:        sun.AttrDusk,
@@ -304,12 +311,13 @@ func GetNewBitmineL3(name string) *m.Entity {
 	settings[cgminer.SettingManufacturer].Value = bitmine.ManufactureBitmine
 	settings[cgminer.SettingModel].Value = bitmine.DeviceL3Plus
 	return &m.Entity{
-		Id:          common.EntityId(fmt.Sprintf("cgminer.%s", name)),
-		Description: "antminer L3",
-		PluginName:  "cgminer",
-		AutoLoad:    true,
-		Attributes:  cgminer.NewAttr(),
-		Settings:    settings,
+		Id:           common.EntityId(fmt.Sprintf("cgminer.%s", name)),
+		Description:  "antminer L3",
+		PluginName:   "cgminer",
+		AutoLoad:     true,
+		RestoreState: true,
+		Attributes:   cgminer.NewAttr(),
+		Settings:     settings,
 	}
 }
 
@@ -317,34 +325,37 @@ func GetNewBitmineL3(name string) *m.Entity {
 func GetNewSensor(name string) *m.Entity {
 
 	return &m.Entity{
-		Id:          common.EntityId(fmt.Sprintf("sensor.%s", name)),
-		Description: "api",
-		PluginName:  "sensor",
-		AutoLoad:    true,
+		Id:           common.EntityId(fmt.Sprintf("sensor.%s", name)),
+		Description:  "api",
+		PluginName:   "sensor",
+		AutoLoad:     true,
+		RestoreState: true,
 	}
 }
 
 // GetNewModbusRtu ...
 func GetNewModbusRtu(name string) *m.Entity {
 	return &m.Entity{
-		Id:          common.EntityId(fmt.Sprintf("modbus_rtu.%s", name)),
-		Description: fmt.Sprintf("%s entity", name),
-		PluginName:  "modbus_rtu",
-		AutoLoad:    true,
-		Attributes:  modbus_rtu.NewAttr(),
-		Settings:    modbus_rtu.NewSettings(),
+		Id:           common.EntityId(fmt.Sprintf("modbus_rtu.%s", name)),
+		Description:  fmt.Sprintf("%s entity", name),
+		PluginName:   "modbus_rtu",
+		AutoLoad:     true,
+		RestoreState: true,
+		Attributes:   modbus_rtu.NewAttr(),
+		Settings:     modbus_rtu.NewSettings(),
 	}
 }
 
 // GetNewModbusTcp ...
 func GetNewModbusTcp(name string) *m.Entity {
 	return &m.Entity{
-		Id:          common.EntityId(fmt.Sprintf("modbus_tcp.%s", name)),
-		Description: fmt.Sprintf("%s entity", name),
-		PluginName:  "modbus_tcp",
-		AutoLoad:    true,
-		Attributes:  modbus_tcp.NewAttr(),
-		Settings:    modbus_tcp.NewSettings(),
+		Id:           common.EntityId(fmt.Sprintf("modbus_tcp.%s", name)),
+		Description:  fmt.Sprintf("%s entity", name),
+		PluginName:   "modbus_tcp",
+		AutoLoad:     true,
+		RestoreState: true,
+		Attributes:   modbus_tcp.NewAttr(),
+		Settings:     modbus_tcp.NewSettings(),
 	}
 }
 
@@ -353,12 +364,13 @@ func GetNewTelegram(name string) *m.Entity {
 	settings := telegram.NewSettings()
 	settings[telegram.AttrToken].Value = "XXXX"
 	return &m.Entity{
-		Id:          common.EntityId(fmt.Sprintf("%s.%s", telegram.Name, name)),
-		Description: "",
-		PluginName:  telegram.Name,
-		AutoLoad:    true,
-		Attributes:  telegram.NewAttr(),
-		Settings:    settings,
+		Id:           common.EntityId(fmt.Sprintf("%s.%s", telegram.Name, name)),
+		Description:  "",
+		PluginName:   telegram.Name,
+		AutoLoad:     true,
+		RestoreState: true,
+		Attributes:   telegram.NewAttr(),
+		Settings:     settings,
 	}
 }
 

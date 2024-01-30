@@ -129,6 +129,8 @@ func (e *Actor) Spawn() {
 
 	_ = e.Service.EventBus().Subscribe(notify.TopicNotify, e.eventHandler, false)
 	e.notify.Start()
+
+	e.BaseActor.Spawn()
 }
 
 func (e *Actor) sendMsg(message *m.Message, chatId int64) (messageID int, err error) {

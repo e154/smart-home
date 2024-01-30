@@ -30,7 +30,7 @@ const schema = reactive<FormSchema[]>([
     label: t('entities.name'),
     component: 'Input',
     colProps: {
-      span: 24
+      span: 12
     },
     componentProps: {
       placeholder: t('entities.name')
@@ -41,7 +41,7 @@ const schema = reactive<FormSchema[]>([
     label: t('entities.id'),
     component: 'Input',
     colProps: {
-      span: 24
+      span: 12
     },
     hidden: true,
     componentProps: {
@@ -55,7 +55,7 @@ const schema = reactive<FormSchema[]>([
     component: 'Plugin',
     value: null,
     colProps: {
-      span: 24
+      span: 12
     },
     hidden: false,
     componentProps: {
@@ -80,7 +80,7 @@ const schema = reactive<FormSchema[]>([
     label: t('entities.description'),
     component: 'Input',
     colProps: {
-      span: 24
+      span: 12
     },
     componentProps: {
       placeholder: t('entities.description')
@@ -91,7 +91,7 @@ const schema = reactive<FormSchema[]>([
     label: t('entities.icon'),
     component: 'Input',
     colProps: {
-      span: 24
+      span: 12
     },
     componentProps: {
       placeholder: t('entities.icon')
@@ -115,7 +115,16 @@ const schema = reactive<FormSchema[]>([
     component: 'Switch',
     value: false,
     colProps: {
-      span: 24
+      span: 12
+    },
+  },
+  {
+    field: 'restoreState',
+    label: t('entities.restoreState'),
+    component: 'Switch',
+    value: true,
+    colProps: {
+      span: 12
     },
   },
   {
@@ -124,7 +133,7 @@ const schema = reactive<FormSchema[]>([
     value: null,
     component: 'Entity',
     colProps: {
-      span: 24
+      span: 12
     },
     componentProps: {
       placeholder: t('entities.parent'),
@@ -136,7 +145,7 @@ const schema = reactive<FormSchema[]>([
     value: null,
     component: 'Area',
     colProps: {
-      span: 24
+      span: 12
     },
     componentProps: {
       placeholder: t('entities.area'),

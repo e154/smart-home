@@ -26,7 +26,6 @@ import (
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
@@ -58,15 +57,14 @@ func NewActor(entity *m.Entity,
 
 	// Actions
 	for _, a := range actor.Actions {
-		if a.ScriptEngine.Engine() != nil {
-			_, _ = a.ScriptEngine.Engine().Do()
+		if a.ScriptEngine != nil {
+			a.ScriptEngine.PushStruct("message", actor.message)
 		}
 	}
 
-	actor.ScriptsEngine.Spawn(func(engine *scripts.Engine) {
-		engine.PushStruct("message", actor.message)
-		engine.Do()
-	})
+	if actor.ScriptsEngine != nil {
+		actor.ScriptsEngine.PushStruct("message", actor.message)
+	}
 
 	if actor.Setts == nil {
 		actor.Setts = NewSettings()
@@ -101,6 +99,7 @@ func (e *Actor) Spawn() {
 	if e.Setts != nil && e.Setts[AttrSubscribeTopic] != nil {
 		_ = e.mqttClient.Subscribe(e.Setts[AttrSubscribeTopic].String(), e.mqttOnPublish)
 	}
+	e.BaseActor.Spawn()
 }
 
 // SetState ...

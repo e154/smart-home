@@ -59,9 +59,6 @@ func (e *Actor) Destroy() {
 	}
 }
 
-func (e *Actor) Spawn() {
-}
-
 func (e *Actor) addAction(event events.EventCallEntityAction) {
 	e.actionPool <- event
 }

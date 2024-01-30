@@ -21,7 +21,6 @@ package cgminer
 import (
 	"fmt"
 
-	"github.com/e154/smart-home/system/scripts"
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common/apperr"
@@ -131,17 +130,14 @@ func NewActor(entity *m.Entity,
 
 	// Actions
 	for _, a := range actor.Actions {
-		if a.ScriptEngine.Engine() != nil {
-			// bind
-			a.ScriptEngine.Engine().PushFunction("Miner", actor.miner.Bind())
-			_, _ = a.ScriptEngine.Engine().Do()
+		if a.ScriptEngine != nil {
+			a.ScriptEngine.PushFunction("Miner", actor.miner.Bind())
 		}
 	}
 
-	actor.ScriptsEngine.Spawn(func(engine *scripts.Engine) {
-		engine.PushFunction("Miner", actor.miner.Bind())
-		engine.Do()
-	})
+	if actor.ScriptsEngine != nil && actor.ScriptsEngine.Engine() != nil {
+		actor.ScriptsEngine.PushFunction("Miner", actor.miner.Bind())
+	}
 
 	// action worker
 	go func() {
@@ -154,11 +150,6 @@ func NewActor(entity *m.Entity,
 }
 
 func (a *Actor) Destroy() {
-
-}
-
-// Spawn ...
-func (e *Actor) Spawn() {
 
 }
 

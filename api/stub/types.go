@@ -368,24 +368,25 @@ type ApiEnablePluginResult = map[string]interface{}
 
 // ApiEntity defines model for apiEntity.
 type ApiEntity struct {
-	Actions     []ApiEntityAction       `json:"actions"`
-	Area        *ApiArea                `json:"area,omitempty"`
-	Attributes  map[string]ApiAttribute `json:"attributes"`
-	AutoLoad    bool                    `json:"autoLoad"`
-	CreatedAt   time.Time               `json:"createdAt"`
-	Description string                  `json:"description"`
-	Icon        *string                 `json:"icon,omitempty"`
-	Id          string                  `json:"id"`
-	Image       *ApiImage               `json:"image,omitempty"`
-	IsLoaded    *bool                   `json:"isLoaded,omitempty"`
-	Metrics     []ApiMetric             `json:"metrics"`
-	Parent      *ApiEntityParent        `json:"parent,omitempty"`
-	PluginName  string                  `json:"pluginName"`
-	ScriptIds   []int64                 `json:"scriptIds"`
-	Scripts     []ApiScript             `json:"scripts"`
-	Settings    map[string]ApiAttribute `json:"settings"`
-	States      []ApiEntityState        `json:"states"`
-	UpdatedAt   time.Time               `json:"updatedAt"`
+	Actions      []ApiEntityAction       `json:"actions"`
+	Area         *ApiArea                `json:"area,omitempty"`
+	Attributes   map[string]ApiAttribute `json:"attributes"`
+	AutoLoad     bool                    `json:"autoLoad"`
+	CreatedAt    time.Time               `json:"createdAt"`
+	Description  string                  `json:"description"`
+	Icon         *string                 `json:"icon,omitempty"`
+	Id           string                  `json:"id"`
+	Image        *ApiImage               `json:"image,omitempty"`
+	IsLoaded     *bool                   `json:"isLoaded,omitempty"`
+	Metrics      []ApiMetric             `json:"metrics"`
+	Parent       *ApiEntityParent        `json:"parent,omitempty"`
+	PluginName   string                  `json:"pluginName"`
+	RestoreState bool                    `json:"restoreState"`
+	ScriptIds    []int64                 `json:"scriptIds"`
+	Scripts      []ApiScript             `json:"scripts"`
+	Settings     map[string]ApiAttribute `json:"settings"`
+	States       []ApiEntityState        `json:"states"`
+	UpdatedAt    time.Time               `json:"updatedAt"`
 }
 
 // ApiEntityAction defines model for apiEntityAction.
@@ -418,16 +419,17 @@ type ApiEntityRequest struct {
 
 // ApiEntityShort defines model for apiEntityShort.
 type ApiEntityShort struct {
-	Area        *ApiArea  `json:"area,omitempty"`
-	AutoLoad    bool      `json:"autoLoad"`
-	CreatedAt   time.Time `json:"createdAt"`
-	Description string    `json:"description"`
-	Icon        *string   `json:"icon,omitempty"`
-	Id          string    `json:"id"`
-	IsLoaded    *bool     `json:"isLoaded,omitempty"`
-	ParentId    *string   `json:"parentId,omitempty"`
-	PluginName  string    `json:"pluginName"`
-	UpdatedAt   time.Time `json:"updatedAt"`
+	Area         *ApiArea  `json:"area,omitempty"`
+	AutoLoad     bool      `json:"autoLoad"`
+	CreatedAt    time.Time `json:"createdAt"`
+	Description  string    `json:"description"`
+	Icon         *string   `json:"icon,omitempty"`
+	Id           string    `json:"id"`
+	IsLoaded     *bool     `json:"isLoaded,omitempty"`
+	ParentId     *string   `json:"parentId,omitempty"`
+	PluginName   string    `json:"pluginName"`
+	RestoreState bool      `json:"restoreState"`
+	UpdatedAt    time.Time `json:"updatedAt"`
 }
 
 // ApiEntityState defines model for apiEntityState.
@@ -790,20 +792,21 @@ type ApiNewDashboardTabRequest struct {
 
 // ApiNewEntityRequest defines model for apiNewEntityRequest.
 type ApiNewEntityRequest struct {
-	Actions     []ApiNewEntityRequestAction `json:"actions"`
-	AreaId      *int64                      `json:"areaId,omitempty"`
-	Attributes  map[string]ApiAttribute     `json:"attributes"`
-	AutoLoad    bool                        `json:"autoLoad"`
-	Description string                      `json:"description"`
-	Icon        *string                     `json:"icon,omitempty"`
-	ImageId     *int64                      `json:"imageId,omitempty"`
-	Metrics     []ApiMetric                 `json:"metrics"`
-	Name        string                      `json:"name"`
-	ParentId    *string                     `json:"parentId,omitempty"`
-	PluginName  string                      `json:"pluginName"`
-	ScriptIds   []int64                     `json:"scriptIds"`
-	Settings    map[string]ApiAttribute     `json:"settings"`
-	States      []ApiNewEntityRequestState  `json:"states"`
+	Actions      []ApiNewEntityRequestAction `json:"actions"`
+	AreaId       *int64                      `json:"areaId,omitempty"`
+	Attributes   map[string]ApiAttribute     `json:"attributes"`
+	AutoLoad     bool                        `json:"autoLoad"`
+	Description  string                      `json:"description"`
+	Icon         *string                     `json:"icon,omitempty"`
+	ImageId      *int64                      `json:"imageId,omitempty"`
+	Metrics      []ApiMetric                 `json:"metrics"`
+	Name         string                      `json:"name"`
+	ParentId     *string                     `json:"parentId,omitempty"`
+	PluginName   string                      `json:"pluginName"`
+	RestoreState bool                        `json:"restoreState"`
+	ScriptIds    []int64                     `json:"scriptIds"`
+	Settings     map[string]ApiAttribute     `json:"settings"`
+	States       []ApiNewEntityRequestState  `json:"states"`
 }
 
 // ApiNewEntityRequestAction defines model for apiNewEntityRequestAction.
@@ -1767,21 +1770,22 @@ type EntityServiceSearchEntityParams struct {
 
 // EntityServiceUpdateEntityJSONBody defines parameters for EntityServiceUpdateEntity.
 type EntityServiceUpdateEntityJSONBody struct {
-	Actions     []ApiUpdateEntityRequestAction `json:"actions"`
-	AreaId      *int64                         `json:"areaId,omitempty"`
-	Attributes  map[string]ApiAttribute        `json:"attributes"`
-	AutoLoad    bool                           `json:"autoLoad"`
-	Description string                         `json:"description"`
-	Icon        *string                        `json:"icon,omitempty"`
-	Id          string                         `json:"id"`
-	ImageId     *int64                         `json:"imageId,omitempty"`
-	Metrics     []ApiMetric                    `json:"metrics"`
-	Name        *string                        `json:"name,omitempty"`
-	ParentId    *string                        `json:"parentId,omitempty"`
-	PluginName  string                         `json:"pluginName"`
-	ScriptIds   []int64                        `json:"scriptIds"`
-	Settings    map[string]ApiAttribute        `json:"settings"`
-	States      []ApiUpdateEntityRequestState  `json:"states"`
+	Actions      []ApiUpdateEntityRequestAction `json:"actions"`
+	AreaId       *int64                         `json:"areaId,omitempty"`
+	Attributes   map[string]ApiAttribute        `json:"attributes"`
+	AutoLoad     bool                           `json:"autoLoad"`
+	Description  string                         `json:"description"`
+	Icon         *string                        `json:"icon,omitempty"`
+	Id           string                         `json:"id"`
+	ImageId      *int64                         `json:"imageId,omitempty"`
+	Metrics      []ApiMetric                    `json:"metrics"`
+	Name         *string                        `json:"name,omitempty"`
+	ParentId     *string                        `json:"parentId,omitempty"`
+	PluginName   string                         `json:"pluginName"`
+	RestoreState bool                           `json:"restoreState"`
+	ScriptIds    []int64                        `json:"scriptIds"`
+	Settings     map[string]ApiAttribute        `json:"settings"`
+	States       []ApiUpdateEntityRequestState  `json:"states"`
 }
 
 // EntityServiceUpdateEntityParams defines parameters for EntityServiceUpdateEntity.

@@ -414,6 +414,7 @@ export default {
         icon: 'Icon',
         image: 'Image',
         autoLoad: 'Auto Load',
+        restoreState: 'Restore state after system restart',
         main: 'Main',
         actions: 'Actions',
         states: 'States',

@@ -25,7 +25,6 @@ import (
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/media"
-	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
@@ -50,18 +49,14 @@ func NewActor(entity *m.Entity,
 
 	// Actions
 	for _, a := range actor.Actions {
-		if a.ScriptEngine.Engine() != nil {
-			a.ScriptEngine.Spawn(func(engine *scripts.Engine) {
-				engine.PushStruct("Camera", clientBind)
-				_, _ = engine.Do()
-			})
+		if a.ScriptEngine != nil {
+			a.ScriptEngine.PushStruct("Camera", clientBind)
 		}
 	}
 
-	actor.ScriptsEngine.Spawn(func(engine *scripts.Engine) {
-		engine.PushStruct("Camera", clientBind)
-		engine.Do()
-	})
+	if actor.ScriptsEngine != nil {
+		actor.ScriptsEngine.PushStruct("Camera", clientBind)
+	}
 
 	if actor.Attrs == nil {
 		actor.Attrs = NewAttr()
@@ -90,6 +85,7 @@ func (a *Actor) Spawn() {
 		a.Setts[AttrAddress].String(),
 		a.Setts[AttrOnvifPort].Int64(),
 		a.Setts[AttrRequireAuthorization].Bool())
+	a.BaseActor.Spawn()
 }
 
 // SetState ...
