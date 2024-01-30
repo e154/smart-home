@@ -36,7 +36,7 @@ var (
 	// Server ...
 	Server = &cobra.Command{
 		Use:   "server",
-		Short: fmt.Sprintf(version.ShortVersionBanner, ""),
+		Short: "Run smart home server",
 		Run: func(cmd *cobra.Command, args []string) {
 
 			fmt.Printf(version.ShortVersionBanner, "")
