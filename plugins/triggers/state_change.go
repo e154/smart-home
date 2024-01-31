@@ -67,13 +67,37 @@ func (t *StateChangeTrigger) AsyncAttach(wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-func (t *StateChangeTrigger) eventHandler(_ string, msg interface{}) {
+func (t *StateChangeTrigger) eventHandler(_ string, event interface{}) {
 	if t.counter.Load() <= 0 {
 		return
 	}
-	switch v := msg.(type) {
+	switch v := event.(type) {
 	case events.EventStateChanged:
-		t.msgQueue.Publish(string(v.EntityId), msg)
+		message := TriggerStateChangedMessage{
+			StorageSave:     v.StorageSave,
+			DoNotSaveMetric: v.DoNotSaveMetric,
+			PluginName:      v.PluginName,
+			EntityId:        v.EntityId,
+			OldState: EventEntityState{
+				EntityId:    v.OldState.EntityId,
+				Value:       v.OldState.Value,
+				State:       v.OldState.State,
+				Attributes:  v.OldState.Attributes.Serialize(),
+				Settings:    v.OldState.Settings.Serialize(),
+				LastChanged: v.OldState.LastChanged,
+				LastUpdated: v.OldState.LastUpdated,
+			},
+			NewState: EventEntityState{
+				EntityId:    v.NewState.EntityId,
+				Value:       v.NewState.Value,
+				State:       v.NewState.State,
+				Attributes:  v.NewState.Attributes.Serialize(),
+				Settings:    v.NewState.Settings.Serialize(),
+				LastChanged: v.NewState.LastChanged,
+				LastUpdated: v.NewState.LastUpdated,
+			},
+		}
+		t.msgQueue.Publish(v.EntityId.String(), message)
 	}
 }
 

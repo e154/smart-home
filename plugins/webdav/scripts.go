@@ -295,6 +295,7 @@ func (s *Scripts) createScript(ctx context.Context, name string, fileInfo os.Fil
 		return
 	}
 	if err = engine.Compile(); err != nil {
+		err = errors.Wrap(apperr.ErrScriptCompile, err.Error())
 		return
 	}
 
@@ -342,6 +343,7 @@ func (s *Scripts) updateScript(ctx context.Context, name string, fileInfo os.Fil
 			return
 		}
 		if err = engine.Compile(); err != nil {
+			err = errors.Wrap(apperr.ErrScriptCompile, err.Error())
 			return
 		}
 		if err = s.adaptors.Script.Update(ctx, script); err != nil {

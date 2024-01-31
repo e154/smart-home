@@ -126,7 +126,7 @@ entityAction = (entityId, actionName)->
 				TriggerIds: []int64{triggerId},
 				ActionIds:  []int64{action.Id},
 			}
-			err = AddTask(newTask, adaptors, eventBus)
+			_, err = AddTask(newTask, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
 			time.Sleep(time.Second * 2)

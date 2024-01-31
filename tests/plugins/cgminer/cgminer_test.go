@@ -166,8 +166,12 @@ entityAction = (entityId, actionName)->
 			// register plugins
 			AddPlugin(adaptors, "cgminer")
 
+			serviceCh := WaitService(eventBus, time.Second*5, "Supervisor")
+			pluginsCh := WaitPlugins(eventBus, time.Second*5, "cgminer")
 			supervisor.Start(context.Background())
-			WaitSupervisor(eventBus, time.Second)
+			defer supervisor.Shutdown(context.Background())
+			So(<-serviceCh, ShouldBeTrue)
+			So(<-pluginsCh, ShouldBeTrue)
 
 			// bind convey
 			RegisterConvey(scriptService, ctx)

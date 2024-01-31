@@ -57,9 +57,14 @@ sceneEvent = (args)->
 			err := AddPlugin(adaptors, "scene")
 			ctx.So(err, ShouldBeNil)
 
+			serviceCh := WaitService(eventBus, time.Second*5, "Supervisor", "Automation")
+			pluginsCh := WaitPlugins(eventBus, time.Second*5, "scene")
 			automation.Start()
 			supervisor.Start(context.Background())
-			WaitSupervisor(eventBus, time.Second)
+			defer automation.Start()
+			defer supervisor.Shutdown(context.Background())
+			So(<-serviceCh, ShouldBeTrue)
+			So(<-pluginsCh, ShouldBeTrue)
 
 			var counter atomic.Int32
 			scriptService.PushFunctions("Done", func(args string) {

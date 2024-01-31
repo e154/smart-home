@@ -109,7 +109,7 @@ automationCondition = (entityId)->
 
 automationAction = (entityId)->
     #print '---action---'
-    CallAction('zigbee2mqtt.` + zigbeePlugId + `', 'ON', {})
+    EntityCallAction('zigbee2mqtt.` + zigbeePlugId + `', 'ON', {})
 `
 
 		task2SourceScript = `
@@ -119,8 +119,8 @@ automationTriggerStateChanged = (msg)->
     return p.new_state.state.name == 'DOUBLE_CLICK'
 
 automationCondition = (entityId)->
-    print '---condition---'
-    entity = Condition.getEntity('zigbee2mqtt.` + zigbeePlugId + `')
+    #print '---condition---'
+    entity = GetEntity('zigbee2mqtt.` + zigbeePlugId + `')
     if !entity || !entity.state 
         return false
     if entity.state.name == 'ON'
@@ -129,7 +129,7 @@ automationCondition = (entityId)->
 
 automationAction = (entityId)->
     #print '---action---'
-    CallAction('zigbee2mqtt.` + zigbeePlugId + `', 'OFF', {})
+    EntityCallAction('zigbee2mqtt.` + zigbeePlugId + `', 'OFF', {})
 `
 	)
 
@@ -294,7 +294,7 @@ automationAction = (entityId)->
 				ActionIds:    []int64{action1.Id},
 			}
 
-			err = AddTask(newTask1, adaptors, eventBus)
+			_, err = AddTask(newTask1, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
 			//TASK2
@@ -306,16 +306,24 @@ automationAction = (entityId)->
 				ConditionIds: []int64{condition2.Id},
 				ActionIds:    []int64{action2.Id},
 			}
-			err = AddTask(newTask2, adaptors, eventBus)
+			_, err = AddTask(newTask2, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
 			// ------------------------------------------------
 
-			automation.Start()
-			go zigbee2mqtt.Start(context.Background())
+			serviceCh := WaitService(eventBus, time.Second*5, "Automation", "Zigbee2mqtt", "Supervisor")
+			pluginsCh := WaitPlugins(eventBus, time.Second*5, "zigbee2mqtt", "triggers")
 
+			zigbee2mqtt.Start(context.Background())
 			supervisor.Start(context.Background())
-			WaitSupervisor(eventBus, time.Second)
+			automation.Start()
+
+			defer zigbee2mqtt.Shutdown(context.Background())
+			defer supervisor.Shutdown(context.Background())
+			defer automation.Shutdown()
+
+			So(<-serviceCh, ShouldBeTrue)
+			So(<-pluginsCh, ShouldBeTrue)
 
 			//
 			// ------------------------------------------------

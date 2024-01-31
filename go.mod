@@ -45,8 +45,8 @@ require (
 	github.com/spf13/cobra v1.6.1
 	github.com/surge/glog v0.0.0-20141108051140-2578deb2b95c // indirect
 	go.uber.org/atomic v1.11.0
-	go.uber.org/dig v1.17.0
-	go.uber.org/fx v1.20.0
+	go.uber.org/dig v1.17.1
+	go.uber.org/fx v1.20.1
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.26.0
 	golang.org/x/crypto v0.17.0

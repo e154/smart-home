@@ -64,8 +64,12 @@ func TestMessagebird(t *testing.T) {
 			err := adaptors.Entity.Add(context.Background(), sensorEnt)
 			ctx.So(err, ShouldBeNil)
 
+			serviceCh := WaitService(eventBus, time.Second*5, "Supervisor")
+			pluginsCh := WaitPlugins(eventBus, time.Second*5, "notify", "messagebird")
 			supervisor.Start(context.Background())
-			WaitSupervisor(eventBus, time.Second)
+			defer supervisor.Shutdown(context.Background())
+			So(<-serviceCh, ShouldBeTrue)
+			So(<-pluginsCh, ShouldBeTrue)
 
 			t.Run("succeed", func(t *testing.T) {
 				Convey("", t, func(ctx C) {

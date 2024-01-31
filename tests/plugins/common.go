@@ -415,7 +415,7 @@ func Wait(timeOut time.Duration, ch chan interface{}) (ok bool) {
 }
 
 // WaitT ...
-func WaitT[T events.EventStateChanged | alexa.EventAlexaAction | []byte | struct{}](timeOut time.Duration, ch chan T) (v T, ok bool) {
+func WaitT[T events.EventTriggerLoaded | events.EventTriggerCompleted | events.EventStateChanged | alexa.EventAlexaAction | []byte | struct{}](timeOut time.Duration, ch chan T) (v T, ok bool) {
 
 	select {
 	case v = <-ch:
@@ -541,8 +541,7 @@ func AddTrigger(trigger *m.NewTrigger, adaptors *adaptors.Adaptors, eventBus bus
 	return
 }
 
-func AddTask(newTask *m.NewTask, adaptors *adaptors.Adaptors, eventBus bus.Bus) (err error) {
-	var task1Id int64
+func AddTask(newTask *m.NewTask, adaptors *adaptors.Adaptors, eventBus bus.Bus) (task1Id int64, err error) {
 	if task1Id, err = adaptors.Task.Add(context.Background(), newTask); err != nil {
 		return
 	}
@@ -552,6 +551,177 @@ func AddTask(newTask *m.NewTask, adaptors *adaptors.Adaptors, eventBus bus.Bus) 
 	return
 }
 
+func WaitTask(eventBus bus.Bus, timeOut time.Duration, tasks ...int64) (result chan bool) {
+
+	list := map[int64]bool{}
+	for _, task := range tasks {
+		list[task] = false
+	}
+
+	result = make(chan bool, 1)
+	go func() {
+		mx := sync.Mutex{}
+
+		ch := make(chan interface{})
+		fn := func(_ string, msg interface{}) {
+			switch v := msg.(type) {
+			case events.EventTaskLoaded:
+				mx.Lock()
+				defer mx.Unlock()
+				fmt.Printf("Task %d loaded ...\r\n", v.Id)
+				if _, ok := list[v.Id]; ok {
+					list[v.Id] = true
+				}
+				for _, loaded := range list {
+					if !loaded {
+						return
+					}
+				}
+				ch <- struct{}{}
+				close(ch)
+			}
+
+		}
+		eventBus.Subscribe("system/automation/tasks/+", fn, true)
+		defer eventBus.Unsubscribe("system/automation/tasks/+", fn)
+
+		result <- Wait(timeOut, ch)
+		close(result)
+
+	}()
+
+	return
+}
+
+func WaitEntity(eventBus bus.Bus, timeOut time.Duration, entities ...string) (result chan bool) {
+
+	list := map[string]bool{}
+	for _, entity := range entities {
+		list[entity] = false
+	}
+
+	result = make(chan bool, 1)
+	go func() {
+		mx := sync.Mutex{}
+
+		ch := make(chan interface{})
+		fn := func(_ string, msg interface{}) {
+			switch v := msg.(type) {
+			case events.EventEntityLoaded:
+				mx.Lock()
+				defer mx.Unlock()
+				fmt.Printf("Plugin %s loaded ...\r\n", v.EntityId.String())
+				if _, ok := list[v.EntityId.String()]; ok {
+					list[v.EntityId.String()] = true
+				}
+				for _, loaded := range list {
+					if !loaded {
+						return
+					}
+				}
+				ch <- struct{}{}
+				close(ch)
+			}
+
+		}
+		eventBus.Subscribe("system/entities/+", fn, true)
+		defer eventBus.Unsubscribe("system/entities/+", fn)
+
+		result <- Wait(timeOut, ch)
+		close(result)
+
+	}()
+
+	return
+}
+
+func WaitPlugins(eventBus bus.Bus, timeOut time.Duration, plugins ...string) (result chan bool) {
+
+	list := map[string]bool{}
+	for _, plugin := range plugins {
+		list[plugin] = false
+	}
+
+	result = make(chan bool, 1)
+	go func() {
+		mx := sync.Mutex{}
+
+		ch := make(chan interface{})
+		fn := func(_ string, msg interface{}) {
+			switch v := msg.(type) {
+			case events.EventPluginLoaded:
+				mx.Lock()
+				defer mx.Unlock()
+				fmt.Printf("Plugin %s loaded ...\r\n", v.PluginName)
+				if _, ok := list[v.PluginName]; ok {
+					list[v.PluginName] = true
+				}
+				for _, loaded := range list {
+					if !loaded {
+						return
+					}
+				}
+				ch <- struct{}{}
+				close(ch)
+			}
+
+		}
+		eventBus.Subscribe("system/plugins/+", fn, true)
+		defer eventBus.Unsubscribe("system/plugins/+", fn)
+
+		result <- Wait(timeOut, ch)
+		close(result)
+
+	}()
+
+	return
+}
+
+func WaitService(eventBus bus.Bus, timeOut time.Duration, services ...string) (result chan bool) {
+
+	list := map[string]bool{}
+	for _, service := range services {
+		list[service] = false
+	}
+
+	result = make(chan bool, 1)
+	go func() {
+		mx := sync.Mutex{}
+
+		ch := make(chan interface{})
+		fn := func(_ string, msg interface{}) {
+			switch v := msg.(type) {
+			case events.EventServiceStarted:
+				mx.Lock()
+				defer mx.Unlock()
+				fmt.Printf("Service %s started ...\r\n", v.Service)
+				if _, ok := list[v.Service]; ok {
+					list[v.Service] = true
+				}
+				for _, started := range list {
+					if !started {
+						return
+					}
+				}
+				ch <- struct{}{}
+				close(ch)
+			}
+
+		}
+		eventBus.Subscribe("system/services/+", fn, true)
+		defer eventBus.Unsubscribe("system/services/+", fn)
+
+		time.Sleep(time.Millisecond * 500)
+
+		result <- Wait(timeOut, ch)
+		close(result)
+
+	}()
+
+	return
+}
+
+// DEPRECATED
 func WaitSupervisor(eventBus bus.Bus, timeOut time.Duration) {
 
 	ch := make(chan interface{})
@@ -568,6 +738,34 @@ func WaitSupervisor(eventBus bus.Bus, timeOut time.Duration) {
 	Wait(timeOut, ch)
 
 	time.Sleep(time.Millisecond * 500)
+}
+
+func WaitMessage[T events.EventStateChanged | events.EventTriggerCompleted | events.EventTriggerLoaded](
+	eventBus bus.Bus, timeOut time.Duration, topic string, options ...interface{},
+) (msg T, ok bool) {
+
+	ch := make(chan T)
+	fn := func(_ string, msg interface{}) {
+		switch v := msg.(type) {
+		case T:
+			ch <- v
+			close(ch)
+		}
+	}
+
+	var retain bool
+	if len(options) > 0 {
+		retain, _ = options[0].(bool)
+	}
+
+	eventBus.Subscribe(topic, fn, retain)
+	defer eventBus.Unsubscribe(topic, fn)
+
+	msg, ok = WaitT[T](timeOut, ch)
+
+	time.Sleep(time.Millisecond * 500)
+
+	return
 }
 
 func WaitGroupTimeout(wg *sync.WaitGroup, timeOut time.Duration) bool {

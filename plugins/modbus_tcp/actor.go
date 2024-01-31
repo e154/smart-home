@@ -79,6 +79,10 @@ func NewActor(entity *m.Entity,
 	return actor
 }
 
+func (e *Actor) Destroy() {
+
+}
+
 // SetState ...
 func (e *Actor) SetState(params supervisor.EntityStateParams) error {
 

@@ -98,8 +98,11 @@ func NewEngine(s *m.Script, functions, structures *Pull) (engine *Engine, err er
 }
 
 // Compile ...
-func (s *Engine) Compile() error {
-	return s.script.Compile()
+func (s *Engine) Compile() (err error) {
+	if err = s.script.Compile(); err != nil {
+		err = errors.Wrapf(err, "script id: %d", s.model.Id)
+	}
+	return
 }
 
 // PushStruct ...

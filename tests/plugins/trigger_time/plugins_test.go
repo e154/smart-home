@@ -75,11 +75,18 @@ func TestMain(m *testing.M) {
 		AddPlugin(adaptors, "triggers")
 		AddPlugin(adaptors, "sensor")
 
+		serviceCh := WaitService(eventBus, time.Second*5, "Scheduler", "Automation", "Supervisor")
+		pluginsCh := WaitPlugins(eventBus, time.Second*5, "sensor", "triggers")
 		scriptService.Restart()
-		scheduler.Start(context.TODO())
-		automation.Start()
+		scheduler.Start(context.Background())
 		supervisor.Start(context.Background())
-		WaitSupervisor(eventBus, time.Second)
+		automation.Start()
+
+		defer supervisor.Shutdown(context.Background())
+		defer automation.Shutdown()
+
+		<-serviceCh
+		<-pluginsCh
 
 		os.Exit(m.Run())
 	})

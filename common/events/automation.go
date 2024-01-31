@@ -71,11 +71,17 @@ type EventTaskUnloaded struct {
 // Triggers
 // ------------------------------------------------
 
+type TriggerMessage struct {
+	Payload     interface{}      `json:"payload"`
+	TriggerName string           `json:"triggerName"`
+	EntityId    *common.EntityId `json:"entityId"`
+}
+
 type EventTriggerCompleted struct {
-	Id       int64                  `json:"id"`
-	Args     map[string]interface{} `json:"args"`
-	EntityId *common.EntityId       `json:"entity_id,omitempty"`
-	Ctx      context.Context        `json:"ctx"`
+	Id       int64            `json:"id"`
+	Args     *TriggerMessage  `json:"args"`
+	EntityId *common.EntityId `json:"entity_id,omitempty"`
+	Ctx      context.Context  `json:"ctx"`
 }
 
 // CommandEnableTrigger ...

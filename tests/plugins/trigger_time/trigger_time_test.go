@@ -95,7 +95,7 @@ automationTriggerTime = (msg)->
 				Condition:  common.ConditionAnd,
 				TriggerIds: []int64{triggerId},
 			}
-			err = AddTask(newTask, adaptors, eventBus)
+			_, err = AddTask(newTask, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
 			time.Sleep(time.Second * 2)

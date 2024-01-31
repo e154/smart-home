@@ -50,10 +50,16 @@ func TestTriggerEmpty(t *testing.T) {
 			// register plugins
 			AddPlugin(adaptors, "triggers")
 
+			serviceCh := WaitService(eventBus, time.Second*5, "Supervisor", "Automation", "Scheduler")
+			pluginsCh := WaitPlugins(eventBus, time.Second*5, "triggers")
 			scheduler.Start(context.Background())
 			automation.Start()
 			supervisor.Start(context.Background())
-			WaitSupervisor(eventBus, time.Second)
+			defer scheduler.Shutdown(context.Background())
+			defer automation.Shutdown()
+			defer supervisor.Shutdown(context.Background())
+			So(<-serviceCh, ShouldBeTrue)
+			So(<-pluginsCh, ShouldBeTrue)
 
 			// automation
 			// ------------------------------------------------
@@ -79,7 +85,7 @@ func TestTriggerEmpty(t *testing.T) {
 				Condition:  common.ConditionAnd,
 				TriggerIds: []int64{triggerId},
 			}
-			err = AddTask(newTask, adaptors, eventBus)
+			_, err = AddTask(newTask, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
 			time.Sleep(time.Millisecond * 500)

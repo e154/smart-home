@@ -97,8 +97,9 @@ func (w *EngineWatcher) Spawn(f func(engine *Engine)) {
 	if _, err := w.engine.EvalScript(w.script); err != nil {
 		if w.script.Id != 0 {
 			log.Errorf("script id: %d, %s", w.script.Id, err.Error())
+		} else {
+			log.Error(err.Error())
 		}
-		log.Error(err.Error())
 	}
 
 	if f != nil {

@@ -61,9 +61,14 @@ automationTriggerAlexa = (msg)->
 			AddPlugin(adaptors, "triggers")
 			AddPlugin(adaptors, "alexa")
 
+			serviceCh := WaitService(eventBus, time.Second*5, "Supervisor", "Automation")
+			pluginsCh := WaitPlugins(eventBus, time.Second*5, "triggers", "alexa")
 			automation.Start()
 			supervisor.Start(context.Background())
-			WaitSupervisor(eventBus, time.Second)
+			defer automation.Shutdown()
+			defer supervisor.Shutdown(context.Background())
+			So(<-serviceCh, ShouldBeTrue)
+			So(<-pluginsCh, ShouldBeTrue)
 
 			var ch = make(chan alexa.EventAlexaAction)
 			defer close(ch)
@@ -102,7 +107,7 @@ automationTriggerAlexa = (msg)->
 				TriggerIds: []int64{triggerId},
 				Condition:  common.ConditionAnd,
 			}
-			err = AddTask(newTask, adaptors, eventBus)
+			_, err = AddTask(newTask, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
 			time.Sleep(time.Millisecond * 500)
