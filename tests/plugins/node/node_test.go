@@ -51,9 +51,14 @@ func TestNode(t *testing.T) {
 			err := AddPlugin(adaptors, "node")
 			ctx.So(err, ShouldBeNil)
 
+			serviceCh := WaitService(eventBus, time.Second*5, "Supervisor", "Mqtt")
+			pluginsCh := WaitPlugins(eventBus, time.Second*5, "node")
 			go mqttServer.Start()
 			supervisor.Start(context.Background())
-			WaitSupervisor(eventBus, time.Second)
+			defer mqttServer.Shutdown()
+			defer supervisor.Shutdown(context.Background())
+			So(<-serviceCh, ShouldBeTrue)
+			So(<-pluginsCh, ShouldBeTrue)
 
 			// add entity
 			// ------------------------------------------------

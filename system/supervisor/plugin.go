@@ -153,8 +153,8 @@ func (p *Plugin) AddActor(pla PluginActor, entity *m.Entity) (err error) {
 		return
 	}
 
-	pla.Spawn()
 	p.Actors.Store(entity.Id, pla)
+	pla.Spawn()
 	log.Infof("entity '%v' loaded", entity.Id)
 
 	p.Service.EventBus().Publish("system/entities/"+entity.Id.String(), events.EventEntityLoaded{
@@ -167,16 +167,17 @@ func (p *Plugin) AddActor(pla PluginActor, entity *m.Entity) (err error) {
 	}
 
 	err = p.Service.Adaptors().Entity.Add(context.Background(), &m.Entity{
-		Id:          entity.Id,
-		Description: entity.Description,
-		PluginName:  entity.PluginName,
-		Icon:        entity.Icon,
-		Area:        entity.Area,
-		Hidden:      entity.Hidden,
-		AutoLoad:    entity.AutoLoad,
-		ParentId:    entity.ParentId,
-		Attributes:  entity.Attributes.Signature(),
-		Settings:    entity.Settings,
+		Id:           entity.Id,
+		Description:  entity.Description,
+		PluginName:   entity.PluginName,
+		Icon:         entity.Icon,
+		Area:         entity.Area,
+		Hidden:       entity.Hidden,
+		AutoLoad:     entity.AutoLoad,
+		RestoreState: entity.RestoreState,
+		ParentId:     entity.ParentId,
+		Attributes:   entity.Attributes.Signature(),
+		Settings:     entity.Settings,
 	})
 
 	return
@@ -200,8 +201,8 @@ func (p *Plugin) removePluginActor(pla PluginActor) {
 	info := pla.Info()
 	entityId := info.Id
 
-	pla.Destroy()
 	pla.StopWatchers()
+	pla.Destroy()
 	p.Actors.Delete(entityId)
 
 	p.Service.EventBus().Publish("system/entities/"+entityId.String(), events.EventEntityUnloaded{

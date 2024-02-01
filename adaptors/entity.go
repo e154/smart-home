@@ -429,16 +429,17 @@ func (n *Entity) preloadMetric(ctx context.Context, ver *m.Entity) {
 
 func (n *Entity) fromDb(dbVer *db.Entity) (ver *m.Entity) {
 	ver = &m.Entity{
-		Id:          dbVer.Id,
-		Description: dbVer.Description,
-		PluginName:  dbVer.PluginName,
-		Actions:     make([]*m.EntityAction, 0),
-		States:      make([]*m.EntityState, 0),
-		Icon:        dbVer.Icon,
-		AutoLoad:    dbVer.AutoLoad,
-		ParentId:    dbVer.ParentId,
-		CreatedAt:   dbVer.CreatedAt,
-		UpdatedAt:   dbVer.UpdatedAt,
+		Id:           dbVer.Id,
+		Description:  dbVer.Description,
+		PluginName:   dbVer.PluginName,
+		Actions:      make([]*m.EntityAction, 0),
+		States:       make([]*m.EntityState, 0),
+		Icon:         dbVer.Icon,
+		AutoLoad:     dbVer.AutoLoad,
+		RestoreState: dbVer.RestoreState,
+		ParentId:     dbVer.ParentId,
+		CreatedAt:    dbVer.CreatedAt,
+		UpdatedAt:    dbVer.UpdatedAt,
 	}
 
 	// actions
@@ -516,16 +517,17 @@ func (n *Entity) fromDb(dbVer *db.Entity) (ver *m.Entity) {
 func (n *Entity) toDb(ver *m.Entity) (dbVer *db.Entity) {
 
 	dbVer = &db.Entity{
-		Id:          ver.Id,
-		Description: ver.Description,
-		PluginName:  ver.PluginName,
-		Icon:        ver.Icon,
-		AutoLoad:    ver.AutoLoad,
-		ParentId:    ver.ParentId,
-		AreaId:      ver.AreaId,
-		ImageId:     ver.ImageId,
-		CreatedAt:   ver.CreatedAt,
-		UpdatedAt:   ver.UpdatedAt,
+		Id:           ver.Id,
+		Description:  ver.Description,
+		PluginName:   ver.PluginName,
+		Icon:         ver.Icon,
+		AutoLoad:     ver.AutoLoad,
+		RestoreState: ver.RestoreState,
+		ParentId:     ver.ParentId,
+		AreaId:       ver.AreaId,
+		ImageId:      ver.ImageId,
+		CreatedAt:    ver.CreatedAt,
+		UpdatedAt:    ver.UpdatedAt,
 	}
 
 	// serialize payload

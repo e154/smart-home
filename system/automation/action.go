@@ -57,18 +57,18 @@ func NewAction(scriptService scripts.ScriptService,
 			return
 		}
 
-		action.scriptEngine.Spawn(func(engine *scripts.Engine) {
-			if _, err = engine.Do(); err != nil {
-				return
-			}
-
-			engine.PushStruct("Action", NewActionBind(action))
-
+		action.scriptEngine.PushStruct("Action", NewActionBind(action))
+		action.scriptEngine.BeforeSpawn(func(engine *scripts.Engine) {
 			if model.EntityId != nil {
 				if _, err = engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", model.EntityId.String())); err != nil {
 					log.Error(err.Error())
 				}
 			}
+		})
+		action.scriptEngine.Spawn(func(engine *scripts.Engine) {
+			//if _, err = engine.Do(); err != nil {
+			//	return
+			//}
 		})
 	}
 

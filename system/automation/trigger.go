@@ -125,7 +125,7 @@ func (tr *Trigger) Stop() {
 func (tr *Trigger) genCheckFunc(scriptEngine *scripts.EngineWatcher) func(msg interface{}) (state bool, err error) {
 	return func(msg interface{}) (state bool, err error) {
 
-		if scriptEngine != nil {
+		if scriptEngine != nil && scriptEngine.Engine() != nil {
 			var result string
 			if result, err = scriptEngine.Engine().AssertFunction(tr.triggerPlugin.FunctionName(), msg); err != nil {
 				log.Error(err.Error())
@@ -152,10 +152,10 @@ func (tr *Trigger) genSubscriber(entityId *common.EntityId, check func(msg inter
 		Handler: func(_ string, msg interface{}) {
 			triggerCtx, span := telemetry.Start(context.Background(), "trigger")
 			span.SetAttributes("id", tr.model.Id)
-			args := map[string]interface{}{
-				"payload":      msg,
-				"trigger_name": tr.model.Name,
-				"entity_id":    entityId,
+			args := &events.TriggerMessage{
+				Payload:     msg,
+				TriggerName: tr.model.Name,
+				EntityId:    entityId,
 			}
 			result, err := check(args)
 			span.End()
@@ -180,21 +180,20 @@ func (tr *Trigger) genScriptEngine(entityId *common.EntityId) (scriptEngine *scr
 		if scriptEngine, err = tr.scriptService.NewEngineWatcher(tr.model.Script); err != nil {
 			return
 		}
-		scriptEngine.Spawn(func(engine *scripts.Engine) {
-
-			engine.PushStruct("Trigger", NewTriggerBind(tr))
-
+		scriptEngine.PushStruct("Trigger", NewTriggerBind(tr))
+		scriptEngine.BeforeSpawn(func(engine *scripts.Engine) {
 			if entityId != nil {
 				if _, err = engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entityId.String())); err != nil {
 					log.Error(err.Error())
 				}
 			}
-
-			if _, err = engine.Do(); err != nil {
-				return
-			}
 		})
-
+		scriptEngine.Spawn(func(engine *scripts.Engine) {
+			//if _, err = engine.Do(); err != nil {
+			//	log.Error(err.Error())
+			//	return
+			//}
+		})
 	}
 	return
 }

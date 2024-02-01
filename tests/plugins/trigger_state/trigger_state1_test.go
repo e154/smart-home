@@ -21,15 +21,16 @@ package trigger_state
 import (
 	"context"
 	"fmt"
+	"github.com/e154/smart-home/system/migrations"
+	"go.uber.org/atomic"
 	"testing"
 	"time"
 
-	"github.com/e154/smart-home/common/events"
-
-	"go.uber.org/atomic"
+	. "github.com/smartystreets/goconvey/convey"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/bus"
@@ -38,10 +39,10 @@ import (
 	"github.com/e154/smart-home/system/supervisor"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	. "github.com/e154/smart-home/tests/plugins"
-	. "github.com/smartystreets/goconvey/convey"
+	. "github.com/e154/smart-home/tests/plugins/container"
 )
 
-func TestTriggerStateChange(t *testing.T) {
+func TestTriggerState1(t *testing.T) {
 
 	const (
 		zigbeeButtonId = "0x00158d00031c8ef3"
@@ -80,13 +81,16 @@ automationTriggerStateChanged = (msg)->
 	)
 
 	Convey("trigger state change", t, func(ctx C) {
-		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
+		_ = BuildContainer().Invoke(func(adaptors *adaptors.Adaptors,
 			scriptService scripts.ScriptService,
 			supervisor supervisor.Supervisor,
 			zigbee2mqtt zigbee2mqtt.Zigbee2mqtt,
 			mqttServer mqtt.MqttServ,
 			automation automation.Automation,
-			eventBus bus.Bus) {
+			eventBus bus.Bus,
+			migrations *migrations.Migrations) {
+
+			migrations.Purge()
 
 			// register plugins
 			AddPlugin(adaptors, "triggers")
@@ -117,11 +121,21 @@ automationTriggerStateChanged = (msg)->
 			err = adaptors.Zigbee2mqttDevice.Add(context.Background(), buttonDevice)
 			So(err, ShouldBeNil)
 
-			automation.Start()
+			serviceCh := WaitService(eventBus, time.Second*5, "Mqtt", "Automation", "Zigbee2mqtt", "Supervisor")
+			pluginsCh := WaitPlugins(eventBus, time.Second*5, "zigbee2mqtt", "triggers")
+
 			mqttServer.Start()
 			zigbee2mqtt.Start(context.Background())
 			supervisor.Start(context.Background())
-			WaitSupervisor(eventBus, time.Second)
+			automation.Start()
+
+			defer mqttServer.Shutdown()
+			defer zigbee2mqtt.Shutdown(context.Background())
+			defer supervisor.Shutdown(context.Background())
+			defer automation.Shutdown()
+
+			So(<-serviceCh, ShouldBeTrue)
+			So(<-pluginsCh, ShouldBeTrue)
 
 			var counter atomic.Int32
 			var lastStat atomic.String
@@ -158,7 +172,9 @@ automationTriggerStateChanged = (msg)->
 				EntityId: buttonEnt.Id,
 			})
 
-			time.Sleep(time.Second)
+			entityCh := WaitEntity(eventBus, time.Second*5, buttonEnt.Id.String())
+			// wait entity
+			So(<-entityCh, ShouldBeTrue)
 
 			// automation
 			// ------------------------------------------------
@@ -181,10 +197,12 @@ automationTriggerStateChanged = (msg)->
 				TriggerIds: []int64{triggerId},
 				Condition:  common.ConditionAnd,
 			}
-			err = AddTask(newTask, adaptors, eventBus)
+			id, err := AddTask(newTask, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
-			time.Sleep(time.Millisecond * 500)
+			taskCh := WaitTask(eventBus, time.Second*5, id)
+			// wait task
+			So(<-taskCh, ShouldBeTrue)
 
 			// ------------------------------------------------
 

@@ -36,25 +36,26 @@ type EntitySettings struct {
 
 // Entity ...
 type Entity struct {
-	Actions     []*EntityAction  `json:"actions"`
-	States      []*EntityState   `json:"states"`
-	Metrics     []*Metric        `json:"metrics"`
-	Scripts     []*Script        `json:"scripts"`
-	CreatedAt   time.Time        `json:"created_at"`
-	UpdatedAt   time.Time        `json:"updated_at"`
-	Id          common.EntityId  `json:"id"`
-	Description string           `json:"description"`
-	PluginName  string           `json:"plugin_name" validate:"required"`
-	Icon        *string          `json:"icon"`
-	Image       *Image           `json:"image"`
-	ImageId     *int64           `json:"image_id"`
-	Area        *Area            `json:"area"`
-	AreaId      *int64           `json:"area_id"`
-	Attributes  Attributes       `json:"attributes"`
-	Settings    Attributes       `json:"settings"`
-	ParentId    *common.EntityId `json:"parent_id"`
-	Storage     []*EntityStorage `json:"storage"`
-	Hidden      bool             `json:"hidden"`
-	AutoLoad    bool             `json:"auto_load"`
-	IsLoaded    bool             `json:"is_loaded"`
+	Actions      []*EntityAction  `json:"actions"`
+	States       []*EntityState   `json:"states"`
+	Metrics      []*Metric        `json:"metrics"`
+	Scripts      []*Script        `json:"scripts"`
+	CreatedAt    time.Time        `json:"created_at"`
+	UpdatedAt    time.Time        `json:"updated_at"`
+	Id           common.EntityId  `json:"id"`
+	Description  string           `json:"description"`
+	PluginName   string           `json:"plugin_name" validate:"required"`
+	Icon         *string          `json:"icon"`
+	Image        *Image           `json:"image"`
+	ImageId      *int64           `json:"image_id"`
+	Area         *Area            `json:"area"`
+	AreaId       *int64           `json:"area_id"`
+	Attributes   Attributes       `json:"attributes"`
+	Settings     Attributes       `json:"settings"`
+	ParentId     *common.EntityId `json:"parent_id"`
+	Storage      []*EntityStorage `json:"storage"`
+	Hidden       bool             `json:"hidden"`
+	AutoLoad     bool             `json:"auto_load"`
+	IsLoaded     bool             `json:"is_loaded"`
+	RestoreState bool             `json:"restore_state"`
 }

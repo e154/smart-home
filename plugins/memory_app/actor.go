@@ -53,10 +53,6 @@ func (e *Actor) Destroy() {
 
 }
 
-func (e *Actor) Spawn() {
-
-}
-
 func (e *Actor) selfUpdate() {
 
 	e.updateLock.Lock()

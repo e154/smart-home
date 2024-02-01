@@ -77,6 +77,7 @@ export interface Entity {
     image?: ApiImage;
     imageId?: number;
     autoLoad?: boolean;
+    restoreState?: boolean;
     isLoaded?: boolean;
     parent?: Parent;
     parentId?: string;

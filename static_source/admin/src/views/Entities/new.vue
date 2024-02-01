@@ -42,6 +42,7 @@ const save = async () => {
       icon: data.icon,
       imageId: data.image?.id,
       autoLoad: data.autoLoad,
+      restoreState: data.restoreState,
       scriptIds: data.scriptIds,
       parentId: data.parent?.id,
     } as ApiNewEntityRequest

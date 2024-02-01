@@ -298,8 +298,10 @@ skillOnIntent = ->
 
 			// ------------------------------------------------
 
+			serviceCh := WaitService(eventBus, time.Second*5, "Supervisor")
 			supervisor.Start(context.Background())
-			WaitSupervisor(eventBus, time.Second)
+			defer supervisor.Shutdown(context.Background())
+			So(<-serviceCh, ShouldBeTrue)
 
 			// ------------------------------------------------
 			plugin, err := supervisor.GetPlugin("alexa")

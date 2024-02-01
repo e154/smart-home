@@ -55,6 +55,7 @@ type BaseActor struct {
 	Scripts           []*m.Script
 	Value             *atomic.String
 	AutoLoad          bool
+	restoreState      bool
 	LastChanged       *time.Time
 	LastUpdated       *time.Time
 	actorStateMu      *sync.RWMutex
@@ -89,6 +90,7 @@ func NewBaseActor(entity *m.Entity,
 		LastChanged:       nil,
 		LastUpdated:       nil,
 		AutoLoad:          entity.AutoLoad,
+		restoreState:      entity.RestoreState,
 		actorStateMu:      &sync.RWMutex{},
 		state:             nil,
 		AttrMu:            &sync.RWMutex{},
@@ -134,16 +136,6 @@ func NewBaseActor(entity *m.Entity,
 				log.Error(err.Error())
 				continue
 			}
-			action.ScriptEngine.BeforeSpawn(func(engine *scripts.Engine) {
-				if _, err = engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id)); err != nil {
-					log.Errorf("script id: %d, %s", a.Script.Id, err.Error())
-				}
-			})
-			action.ScriptEngine.Spawn(func(engine *scripts.Engine) {
-				//if _, err = engine.Do(); err != nil {
-				//	log.Errorf("script id: %d, %s", a.Script.Id, err.Error())
-				//}
-			})
 		}
 
 		if a.Image != nil {
@@ -156,22 +148,48 @@ func NewBaseActor(entity *m.Entity,
 		if actor.ScriptsEngine, err = service.ScriptService().NewEnginesWatcher(entity.Scripts); err != nil {
 			log.Error(err.Error())
 		}
-		actor.ScriptsEngine.BeforeSpawn(func(engine *scripts.Engine) {
-			if _, err = engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id)); err != nil {
+	}
+
+	// restore state
+	if entity.RestoreState {
+		actor.RestoreState(entity)
+	}
+
+	return actor
+}
+
+func (e *BaseActor) Spawn() {
+
+	// actions
+	var err error
+	for _, action := range e.Actions {
+		if action.ScriptEngine != nil {
+			action.ScriptEngine.BeforeSpawn(func(engine *scripts.Engine) {
+				if _, err = engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", e.Id)); err != nil {
+					log.Errorf("script id: %d, %s", engine.ScriptId(), err.Error())
+				}
+			})
+			action.ScriptEngine.Spawn(func(engine *scripts.Engine) {
+				//if _, err = engine.Do(); err != nil {
+				//	log.Errorf("script id: %d, %s", a.Script.Id, err.Error())
+				//}
+			})
+		}
+	}
+
+	// scripts
+	if e.ScriptsEngine != nil {
+		e.ScriptsEngine.BeforeSpawn(func(engine *scripts.Engine) {
+			if _, err = engine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", e.Id)); err != nil {
 				log.Error(err.Error())
 			}
 		})
-		actor.ScriptsEngine.Spawn(func(engine *scripts.Engine) {
+		e.ScriptsEngine.Spawn(func(engine *scripts.Engine) {
 			if _, err := engine.AssertFunction("init"); err != nil {
 				log.Error(err.Error())
 			}
 		})
 	}
-
-	// restore state
-	actor.RestoreState(entity)
-
-	return actor
 }
 
 func (e *BaseActor) StopWatchers() {
@@ -255,6 +273,7 @@ func (e *BaseActor) Info() (info ActorInfo) {
 		Actions:           e.Actions,
 		States:            e.States,
 		AutoLoad:          e.AutoLoad,
+		RestoreState:      e.restoreState,
 		ParentId:          e.ParentId,
 		//Value:             e.value,
 	}
@@ -407,6 +426,12 @@ func (e *BaseActor) RestoreState(entity *m.Entity) {
 		var store = entity.Storage[0]
 		e.LastUpdated = common.Time(store.CreatedAt)
 		e.restoreStore(entity, store, e.currentState)
+
+		if e.currentState.State != nil {
+			if state, ok := e.States[e.currentState.State.Name]; ok {
+				e.state = &state
+			}
+		}
 	}
 	if len(entity.Storage) > 1 {
 		e.oldState = &events.EventEntityState{

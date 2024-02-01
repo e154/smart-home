@@ -395,6 +395,7 @@ export interface ApiEntity {
   image?: ApiImage;
   icon?: string;
   autoLoad: boolean;
+  restoreState: boolean;
   parent?: ApiEntityParent;
   actions: ApiEntityAction[];
   states: ApiEntityState[];
@@ -441,6 +442,7 @@ export interface ApiEntityShort {
   area?: ApiArea;
   icon?: string;
   autoLoad: boolean;
+  restoreState: boolean;
   parentId?: string;
   isLoaded?: boolean;
   /** @format date-time */
@@ -830,6 +832,7 @@ export interface ApiNewEntityRequest {
   /** @format int64 */
   imageId?: number;
   autoLoad: boolean;
+  restoreState: boolean;
   parentId?: string;
   actions: ApiNewEntityRequestAction[];
   states: ApiNewEntityRequestState[];
@@ -3685,6 +3688,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         /** @format int64 */
         imageId?: number;
         autoLoad: boolean;
+        restoreState: boolean;
         parentId?: string;
         actions: ApiUpdateEntityRequestAction[];
         states: ApiUpdateEntityRequestState[];

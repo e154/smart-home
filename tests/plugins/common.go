@@ -52,11 +52,12 @@ import (
 // GetNewButton ...
 func GetNewButton(id string, scripts []*m.Script) *m.Entity {
 	return &m.Entity{
-		Id:          common.EntityId(id),
-		Description: "MiJia wireless switch",
-		PluginName:  zigbee2mqtt.EntityZigbee2mqtt,
-		Scripts:     scripts,
-		AutoLoad:    true,
+		Id:           common.EntityId(id),
+		Description:  "MiJia wireless switch",
+		PluginName:   zigbee2mqtt.EntityZigbee2mqtt,
+		Scripts:      scripts,
+		AutoLoad:     true,
+		RestoreState: true,
 		Attributes: m.Attributes{
 			"click": &m.Attribute{
 				Name: "click",
@@ -147,11 +148,12 @@ func GetNewButton(id string, scripts []*m.Script) *m.Entity {
 // GetNewPlug ...
 func GetNewPlug(id string, scrits []*m.Script) *m.Entity {
 	return &m.Entity{
-		Id:          common.EntityId(id),
-		Description: "MiJia power plug ZigBee",
-		PluginName:  zigbee2mqtt.EntityZigbee2mqtt,
-		Scripts:     scrits,
-		AutoLoad:    true,
+		Id:           common.EntityId(id),
+		Description:  "MiJia power plug ZigBee",
+		PluginName:   zigbee2mqtt.EntityZigbee2mqtt,
+		Scripts:      scrits,
+		AutoLoad:     true,
+		RestoreState: true,
 		Attributes: m.Attributes{
 			"power": &m.Attribute{
 				Name: "power",
@@ -194,11 +196,12 @@ func GetNewPlug(id string, scrits []*m.Script) *m.Entity {
 // GetNewScene ...
 func GetNewScene(id string, scripts []*m.Script) *m.Entity {
 	return &m.Entity{
-		Id:          common.EntityId(id),
-		Description: "scene",
-		PluginName:  scene.EntityScene,
-		Scripts:     scripts,
-		AutoLoad:    true,
+		Id:           common.EntityId(id),
+		Description:  "scene",
+		PluginName:   scene.EntityScene,
+		Scripts:      scripts,
+		AutoLoad:     true,
+		RestoreState: true,
 	}
 }
 
@@ -208,12 +211,13 @@ func GetNewNode(name string) *m.Entity {
 	settings[node.AttrNodeLogin].Value = "node1"
 	settings[node.AttrNodePass].Value = "node1"
 	return &m.Entity{
-		Id:          common.EntityId(fmt.Sprintf("node.%s", name)),
-		Description: "main node",
-		PluginName:  "node",
-		AutoLoad:    true,
-		Attributes:  node.NewAttr(),
-		Settings:    settings,
+		Id:           common.EntityId(fmt.Sprintf("node.%s", name)),
+		Description:  "main node",
+		PluginName:   "node",
+		AutoLoad:     true,
+		RestoreState: true,
+		Attributes:   node.NewAttr(),
+		Settings:     settings,
 	}
 }
 
@@ -223,12 +227,13 @@ func GetNewMoon(name string) *m.Entity {
 	settings[moon.AttrLat].Value = 54.9022
 	settings[moon.AttrLon].Value = 83.0335
 	return &m.Entity{
-		Id:          common.EntityId(fmt.Sprintf("moon.%s", name)),
-		Description: "home",
-		PluginName:  "moon",
-		AutoLoad:    true,
-		Attributes:  moon.NewAttr(),
-		Settings:    settings,
+		Id:           common.EntityId(fmt.Sprintf("moon.%s", name)),
+		Description:  "home",
+		PluginName:   "moon",
+		AutoLoad:     true,
+		RestoreState: true,
+		Attributes:   moon.NewAttr(),
+		Settings:     settings,
 		States: []*m.EntityState{
 			{
 				Name:        moon.StateAboveHorizon,
@@ -248,12 +253,13 @@ func GetNewWeatherMet(name string) *m.Entity {
 	settings[weather.AttrLat].Value = 54.9022
 	settings[weather.AttrLon].Value = 83.0335
 	return &m.Entity{
-		Id:          common.EntityId(fmt.Sprintf("weather_met.%s", name)),
-		Description: name,
-		PluginName:  "weather_met",
-		AutoLoad:    true,
-		Attributes:  weather.BaseForecast(),
-		Settings:    settings,
+		Id:           common.EntityId(fmt.Sprintf("weather_met.%s", name)),
+		Description:  name,
+		PluginName:   "weather_met",
+		AutoLoad:     true,
+		RestoreState: true,
+		Attributes:   weather.BaseForecast(),
+		Settings:     settings,
 	}
 }
 
@@ -278,12 +284,13 @@ func GetNewSun(name string) *m.Entity {
 	settings[sun.AttrLat].Value = 54.9022
 	settings[sun.AttrLon].Value = 83.0335
 	return &m.Entity{
-		Id:          common.EntityId(fmt.Sprintf("sun.%s", name)),
-		Description: "home",
-		PluginName:  "sun",
-		AutoLoad:    true,
-		Attributes:  sun.NewAttr(),
-		Settings:    settings,
+		Id:           common.EntityId(fmt.Sprintf("sun.%s", name)),
+		Description:  "home",
+		PluginName:   "sun",
+		AutoLoad:     true,
+		RestoreState: true,
+		Attributes:   sun.NewAttr(),
+		Settings:     settings,
 		States: []*m.EntityState{
 			{
 				Name:        sun.AttrDusk,
@@ -304,12 +311,13 @@ func GetNewBitmineL3(name string) *m.Entity {
 	settings[cgminer.SettingManufacturer].Value = bitmine.ManufactureBitmine
 	settings[cgminer.SettingModel].Value = bitmine.DeviceL3Plus
 	return &m.Entity{
-		Id:          common.EntityId(fmt.Sprintf("cgminer.%s", name)),
-		Description: "antminer L3",
-		PluginName:  "cgminer",
-		AutoLoad:    true,
-		Attributes:  cgminer.NewAttr(),
-		Settings:    settings,
+		Id:           common.EntityId(fmt.Sprintf("cgminer.%s", name)),
+		Description:  "antminer L3",
+		PluginName:   "cgminer",
+		AutoLoad:     true,
+		RestoreState: true,
+		Attributes:   cgminer.NewAttr(),
+		Settings:     settings,
 	}
 }
 
@@ -317,34 +325,37 @@ func GetNewBitmineL3(name string) *m.Entity {
 func GetNewSensor(name string) *m.Entity {
 
 	return &m.Entity{
-		Id:          common.EntityId(fmt.Sprintf("sensor.%s", name)),
-		Description: "api",
-		PluginName:  "sensor",
-		AutoLoad:    true,
+		Id:           common.EntityId(fmt.Sprintf("sensor.%s", name)),
+		Description:  "api",
+		PluginName:   "sensor",
+		AutoLoad:     true,
+		RestoreState: true,
 	}
 }
 
 // GetNewModbusRtu ...
 func GetNewModbusRtu(name string) *m.Entity {
 	return &m.Entity{
-		Id:          common.EntityId(fmt.Sprintf("modbus_rtu.%s", name)),
-		Description: fmt.Sprintf("%s entity", name),
-		PluginName:  "modbus_rtu",
-		AutoLoad:    true,
-		Attributes:  modbus_rtu.NewAttr(),
-		Settings:    modbus_rtu.NewSettings(),
+		Id:           common.EntityId(fmt.Sprintf("modbus_rtu.%s", name)),
+		Description:  fmt.Sprintf("%s entity", name),
+		PluginName:   "modbus_rtu",
+		AutoLoad:     true,
+		RestoreState: true,
+		Attributes:   modbus_rtu.NewAttr(),
+		Settings:     modbus_rtu.NewSettings(),
 	}
 }
 
 // GetNewModbusTcp ...
 func GetNewModbusTcp(name string) *m.Entity {
 	return &m.Entity{
-		Id:          common.EntityId(fmt.Sprintf("modbus_tcp.%s", name)),
-		Description: fmt.Sprintf("%s entity", name),
-		PluginName:  "modbus_tcp",
-		AutoLoad:    true,
-		Attributes:  modbus_tcp.NewAttr(),
-		Settings:    modbus_tcp.NewSettings(),
+		Id:           common.EntityId(fmt.Sprintf("modbus_tcp.%s", name)),
+		Description:  fmt.Sprintf("%s entity", name),
+		PluginName:   "modbus_tcp",
+		AutoLoad:     true,
+		RestoreState: true,
+		Attributes:   modbus_tcp.NewAttr(),
+		Settings:     modbus_tcp.NewSettings(),
 	}
 }
 
@@ -353,12 +364,13 @@ func GetNewTelegram(name string) *m.Entity {
 	settings := telegram.NewSettings()
 	settings[telegram.AttrToken].Value = "XXXX"
 	return &m.Entity{
-		Id:          common.EntityId(fmt.Sprintf("%s.%s", telegram.Name, name)),
-		Description: "",
-		PluginName:  telegram.Name,
-		AutoLoad:    true,
-		Attributes:  telegram.NewAttr(),
-		Settings:    settings,
+		Id:           common.EntityId(fmt.Sprintf("%s.%s", telegram.Name, name)),
+		Description:  "",
+		PluginName:   telegram.Name,
+		AutoLoad:     true,
+		RestoreState: true,
+		Attributes:   telegram.NewAttr(),
+		Settings:     settings,
 	}
 }
 
@@ -403,7 +415,7 @@ func Wait(timeOut time.Duration, ch chan interface{}) (ok bool) {
 }
 
 // WaitT ...
-func WaitT[T events.EventStateChanged | alexa.EventAlexaAction | []byte | struct{}](timeOut time.Duration, ch chan T) (v T, ok bool) {
+func WaitT[T events.EventTriggerLoaded | events.EventTriggerCompleted | events.EventStateChanged | alexa.EventAlexaAction | []byte | struct{}](timeOut time.Duration, ch chan T) (v T, ok bool) {
 
 	select {
 	case v = <-ch:
@@ -529,8 +541,7 @@ func AddTrigger(trigger *m.NewTrigger, adaptors *adaptors.Adaptors, eventBus bus
 	return
 }
 
-func AddTask(newTask *m.NewTask, adaptors *adaptors.Adaptors, eventBus bus.Bus) (err error) {
-	var task1Id int64
+func AddTask(newTask *m.NewTask, adaptors *adaptors.Adaptors, eventBus bus.Bus) (task1Id int64, err error) {
 	if task1Id, err = adaptors.Task.Add(context.Background(), newTask); err != nil {
 		return
 	}
@@ -540,6 +551,185 @@ func AddTask(newTask *m.NewTask, adaptors *adaptors.Adaptors, eventBus bus.Bus) 
 	return
 }
 
+func WaitTask(eventBus bus.Bus, timeOut time.Duration, tasks ...int64) (result chan bool) {
+
+	list := map[int64]bool{}
+	for _, task := range tasks {
+		list[task] = false
+	}
+
+	result = make(chan bool, 1)
+	go func() {
+		mx := sync.Mutex{}
+
+		ch := make(chan interface{})
+		defer close(ch)
+		fn := func(_ string, msg interface{}) {
+			switch v := msg.(type) {
+			case events.EventTaskLoaded:
+				mx.Lock()
+				defer mx.Unlock()
+				fmt.Printf("Task %d loaded ...\r\n", v.Id)
+				if _, ok := list[v.Id]; ok {
+					list[v.Id] = true
+				} else {
+					return
+				}
+				for _, loaded := range list {
+					if !loaded {
+						return
+					}
+				}
+				ch <- struct{}{}
+			}
+
+		}
+		eventBus.Subscribe("system/automation/tasks/+", fn, true)
+		defer eventBus.Unsubscribe("system/automation/tasks/+", fn)
+
+		result <- Wait(timeOut, ch)
+		close(result)
+
+	}()
+
+	return
+}
+
+func WaitEntity(eventBus bus.Bus, timeOut time.Duration, entities ...string) (result chan bool) {
+
+	list := map[string]bool{}
+	for _, entity := range entities {
+		list[entity] = false
+	}
+
+	result = make(chan bool, 1)
+	go func() {
+		mx := sync.Mutex{}
+
+		ch := make(chan interface{})
+		defer close(ch)
+		fn := func(_ string, msg interface{}) {
+			switch v := msg.(type) {
+			case events.EventEntityLoaded:
+				mx.Lock()
+				defer mx.Unlock()
+				fmt.Printf("Plugin %s loaded ...\r\n", v.EntityId.String())
+				if _, ok := list[v.EntityId.String()]; ok {
+					list[v.EntityId.String()] = true
+				} else {
+					return
+				}
+				for _, loaded := range list {
+					if !loaded {
+						return
+					}
+				}
+				ch <- struct{}{}
+			}
+
+		}
+		eventBus.Subscribe("system/entities/+", fn, true)
+		defer eventBus.Unsubscribe("system/entities/+", fn)
+
+		result <- Wait(timeOut, ch)
+		close(result)
+
+	}()
+
+	return
+}
+
+func WaitPlugins(eventBus bus.Bus, timeOut time.Duration, plugins ...string) (result chan bool) {
+
+	list := map[string]bool{}
+	for _, plugin := range plugins {
+		list[plugin] = false
+	}
+
+	result = make(chan bool, 1)
+	go func() {
+		mx := sync.Mutex{}
+
+		ch := make(chan interface{})
+		defer close(ch)
+		fn := func(_ string, msg interface{}) {
+			switch v := msg.(type) {
+			case events.EventPluginLoaded:
+				mx.Lock()
+				defer mx.Unlock()
+				fmt.Printf("Plugin %s loaded ...\r\n", v.PluginName)
+				if _, ok := list[v.PluginName]; ok {
+					list[v.PluginName] = true
+				} else {
+					return
+				}
+				for _, loaded := range list {
+					if !loaded {
+						return
+					}
+				}
+				ch <- struct{}{}
+			}
+
+		}
+		eventBus.Subscribe("system/plugins/+", fn, true)
+		defer eventBus.Unsubscribe("system/plugins/+", fn)
+
+		result <- Wait(timeOut, ch)
+		close(result)
+
+	}()
+
+	return
+}
+
+func WaitService(eventBus bus.Bus, timeOut time.Duration, services ...string) (result chan bool) {
+
+	list := map[string]bool{}
+	for _, service := range services {
+		list[service] = false
+	}
+
+	result = make(chan bool, 1)
+	go func() {
+		mx := sync.Mutex{}
+
+		ch := make(chan interface{})
+		defer close(ch)
+		fn := func(_ string, msg interface{}) {
+			switch v := msg.(type) {
+			case events.EventServiceStarted:
+				mx.Lock()
+				defer mx.Unlock()
+				fmt.Printf("Service %s started ...\r\n", v.Service)
+				if _, ok := list[v.Service]; ok {
+					list[v.Service] = true
+				} else {
+					return
+				}
+				for _, started := range list {
+					if !started {
+						return
+					}
+				}
+				ch <- struct{}{}
+			}
+
+		}
+		eventBus.Subscribe("system/services/+", fn, true)
+		defer eventBus.Unsubscribe("system/services/+", fn)
+
+		time.Sleep(time.Millisecond * 500)
+
+		result <- Wait(timeOut, ch)
+		close(result)
+
+	}()
+
+	return
+}
+
+// DEPRECATED
 func WaitSupervisor(eventBus bus.Bus, timeOut time.Duration) {
 
 	ch := make(chan interface{})
@@ -556,6 +746,34 @@ func WaitSupervisor(eventBus bus.Bus, timeOut time.Duration) {
 	Wait(timeOut, ch)
 
 	time.Sleep(time.Millisecond * 500)
+}
+
+func WaitMessage[T events.EventStateChanged | events.EventTriggerCompleted | events.EventTriggerLoaded](
+	eventBus bus.Bus, timeOut time.Duration, topic string, options ...interface{},
+) (msg T, ok bool) {
+
+	ch := make(chan T)
+	defer close(ch)
+	fn := func(_ string, msg interface{}) {
+		switch v := msg.(type) {
+		case T:
+			ch <- v
+		}
+	}
+
+	var retain bool
+	if len(options) > 0 {
+		retain, _ = options[0].(bool)
+	}
+
+	eventBus.Subscribe(topic, fn, retain)
+	defer eventBus.Unsubscribe(topic, fn)
+
+	msg, ok = WaitT[T](timeOut, ch)
+
+	time.Sleep(time.Millisecond * 500)
+
+	return
 }
 
 func WaitGroupTimeout(wg *sync.WaitGroup, timeOut time.Duration) bool {

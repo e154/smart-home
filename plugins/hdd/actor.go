@@ -79,11 +79,6 @@ func (e *Actor) Destroy() {
 
 }
 
-// Spawn ...
-func (e *Actor) Spawn() {
-
-}
-
 func (e *Actor) runAction(_ events.EventCallEntityAction) {
 	go e.selfUpdate()
 }

@@ -7,8 +7,6 @@
     ]
   },
   "include": [
-    "webdav/**/*.js",
-    "webdav/**/*.ts",
-    "webdav/**/*.d.ts"
+    "global.d.ts"
   ]
 }

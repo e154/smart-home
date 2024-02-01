@@ -111,11 +111,18 @@ func (t *Topic) Unsubscribe(fn interface{}) (empty bool, err error) {
 
 	rv := reflect.ValueOf(fn)
 
+	var indexesToDelete []int
+
 	for i, h := range t.handlers {
 		if h.callback == rv || h.callback.Pointer() == rv.Pointer() {
-			close(h.queue)
-			t.handlers = append(t.handlers[:i], t.handlers[i+1:]...)
+			indexesToDelete = append(indexesToDelete, i)
 		}
+	}
+
+	for i := len(indexesToDelete) - 1; i >= 0; i-- {
+		index := indexesToDelete[i]
+		close(t.handlers[index].queue)
+		t.handlers = append(t.handlers[:index], t.handlers[index+1:]...)
 	}
 
 	empty = len(t.handlers) == 0

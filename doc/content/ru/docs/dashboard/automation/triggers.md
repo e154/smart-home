@@ -74,7 +74,6 @@ automationTriggerAlexa = (msg) ->
 2. `TriggerStateChanged`:
 ```coffeescript
 automationTriggerStateChanged = (msg) ->
-  print '---trigger---'
   p = msg.payload
   Done p.new_state.state.name
   return false
@@ -109,7 +108,6 @@ automationTriggerTime = (msg) ->
 
 ```coffeescript
 automationTriggerStateChanged = (msg)->
-    #print '---trigger---'
     p = msg.payload
     if !p.new_state || !p.new_state.state
         return false

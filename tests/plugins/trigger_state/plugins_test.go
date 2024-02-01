@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2023, Filippov Alex
+// Copyright (C) 2016-2024, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,46 +19,11 @@
 package trigger_state
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
-	"testing"
-	"time"
-
-	"go.uber.org/dig"
-
-	"github.com/e154/smart-home/system/logging"
-	"github.com/e154/smart-home/system/migrations"
-	. "github.com/e154/smart-home/tests/plugins/container"
 )
 
 func init() {
 	apppath := filepath.Join(os.Getenv("PWD"), "../../..")
 	_ = os.Chdir(apppath)
-}
-
-var (
-	container *dig.Container
-)
-
-func TestMain(m *testing.M) {
-
-	_ = os.Setenv("TEST_MODE", "true")
-
-	container = BuildContainer()
-	err := container.Invoke(func(
-		_ *logging.Logging,
-		migrations *migrations.Migrations,
-	) {
-
-		migrations.Purge()
-
-		time.Sleep(time.Millisecond * 500)
-
-		os.Exit(m.Run())
-	})
-
-	if err != nil {
-		fmt.Println("error:", dig.RootCause(err))
-	}
 }

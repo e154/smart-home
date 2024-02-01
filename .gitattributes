@@ -1,0 +1,11 @@
+# Ignore everything except Go files in the root directory and its subdirectories
+/**/*.go linguist-vendored=false
+
+# Indicate that doc/contains Go documentation
+/doc/** linguist-language=Markdown
+
+# We indicate that static_source/contains TypeScript code
+/static_source/** linguist-language=TypeScript
+
+# Specify the main language of the repository as Go
+* linguist-language=Go

@@ -61,10 +61,6 @@ func (e *Actor) Destroy() {
 	close(e.eventPool)
 }
 
-func (e *Actor) Spawn() {
-
-}
-
 func (e *Actor) addEvent(event events.EventCallScene) {
 	e.eventPool <- event
 }

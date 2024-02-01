@@ -105,10 +105,16 @@ entityAction = (entityId, actionName)->
 			AddPlugin(adaptors, "triggers")
 			AddPlugin(adaptors, "modbus_rtu")
 
+			serviceCh := WaitService(eventBus, time.Second*5, "Supervisor", "Automation", "Mqtt")
+			pluginsCh := WaitPlugins(eventBus, time.Second*5, "triggers", "modbus_rtu", "node")
 			automation.Start()
 			go mqttServer.Start()
 			supervisor.Start(context.Background())
-			WaitSupervisor(eventBus, time.Second)
+			defer automation.Shutdown()
+			defer mqttServer.Shutdown()
+			defer supervisor.Shutdown(context.Background())
+			So(<-serviceCh, ShouldBeTrue)
+			So(<-pluginsCh, ShouldBeTrue)
 
 			RegisterConvey(scriptService, ctx)
 
