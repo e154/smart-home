@@ -36,3 +36,93 @@ Gate Server in the Smart Home system is a key component that provides secure and
 
 3. **Secure Remote Management:**
     - Users can control devices, monitor the home's status, and receive notifications even when away from home.
+
+### Server Configuration
+
+```bash
+cat config.gate.json
+
+{
+  "api_http_port": 8080,
+  "api_https_port": 8443,
+  "api_debug": false,
+  "api_gzip": true,
+  "pprof": false,
+  "domain": "localhost",
+  "https": false,
+  "proxy_timeout": 5,
+  "proxy_idle_timeout": 10,
+  "proxy_secret_key": ""
+}
+```
+
+Properties for the `config.gate.json` configuration file:
+
+1. **`api_http_port` (int):**
+   - **Description:** Port for the HTTP API server.
+   - **Example Value:** `8080`.
+
+2. **`api_https_port` (int):**
+   - **Description:** Port for the HTTPS API server.
+   - **Example Value:** `8443`.
+
+3. **`api_debug` (bool):**
+   - **Description:** Enable debug mode for the API server.
+   - **Example Value:** `true` (enabled).
+
+4. **`api_gzip` (bool):**
+   - **Description:** Enable Gzip compression for API requests.
+   - **Example Value:** `true` (enabled).
+
+5. **`domain` (string):**
+   - **Description:** Domain name for the Gate server.
+   - **Example Value:** `example.com`.
+
+6. **`pprof` (bool):**
+   - **Description:** Enable server profiling mode.
+   - **Example Value:** `true` (enabled).
+
+7. **`https` (bool):**
+   - **Description:** Enable the use of Let's Encrypt for automatic SSL certificate acquisition for the specified domain.
+   - **Example Value:** `true` (enabled).
+
+8. **`proxy_timeout` (int):**
+   - **Description:** Timeout for proxy connections in seconds.
+   - **Example Value:** `5`.
+
+9. **`proxy_idle_timeout` (int):**
+   - **Description:** Timeout for proxy connections in seconds when there is no activity.
+   - **Example Value:** `10`.
+
+10. **`proxy_secret_key` (string):**
+   - **Description:** Secret key to ensure the security of proxy connections.
+   - **Example Value:** `mySecretKey`.
+
+These parameters provide flexible control over the settings of the Gate server, including security, operating modes, and the use of SSL certificates via Let's Encrypt.
+
+### Server Launch
+
+The Gate server is integrated into the smart-home system as a separate mode by specifying the `gate` argument during startup.
+
+```bash
+./smart-home help gate
+Organization of remote access without white IP
+
+Usage:
+  server gate [flags]
+
+Flags:
+  -h, --help   help for gate
+
+
+./smart-home gate
+
+  ___      _
+ / __|__ _| |_ ___
+| (_ / _' |  _/ -_)
+ \___\__,_|\__\___|
+
+
+INFO	gate            	server/gate_server.go:93 >	Started ...
+INFO	gate            	server/server.go:117 >	server started at :8080
+```

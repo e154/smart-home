@@ -1,5 +1,6 @@
 {
   "api_http_port": 8080,
+  "api_https_port": 8443,
   "api_debug": false,
   "api_gzip": true,
   "pprof": false,
