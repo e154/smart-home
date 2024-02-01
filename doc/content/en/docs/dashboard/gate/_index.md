@@ -7,6 +7,8 @@ description: >
   
 ---
 
+{{< figure src="/smart-home/img/gate-network.svg" >}}
+
 Gate Server in the Smart Home system is a key component that provides secure and convenient remote access to the smart home, even in the absence of a static IP address. This server enables users to control and monitor their home from anywhere in the world via the internet, ensuring data security and comfortable interaction.
 
 #### Advantages of the Gate Server in the Smart Home System
