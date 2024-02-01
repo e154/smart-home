@@ -6,19 +6,7 @@ description: >
 
 ---
 
-
-```bash
-+---------------------+
-|       Entity        |
-+---------------------+
-|      Actions        |
-|      State          |
-|    Attributes       |
-|     Settings        |
-|      Metrics        |
-|      Storage        |
-+---------------------+
-```
+{{< figure src="/smart-home/img/entity.svg" >}}
 
 This is a simple scheme that represents an "Entity" object. Each component has its role and functionality in managing and monitoring the "Entity" object in a smart home.
 
