@@ -34,54 +34,7 @@ When a new "Entity" object is created, it is associated with a specific plugin t
 
 Each plugin provides its own handlers and methods that allow "Entity" objects to perform specific actions, retrieve data, send messages, etc.
 
-```bash
-              +-----------------------+
-              |                       |
-              |     Smart Home        |
-              |                       |
-              +-----------------------+
-                         |
-                         |
-                         v
-              +-----------------------+
-              |                       |
-              |       Entities        |
-              |                       |
-              +-----------------------+
-                         |
-                         |
-                         v
-   +----------------------------------------+
-   |                                        |
-   |              Plugins                   |
-   |                                        |
-   +----------------------------------------+
-   |             |           |              |
-   |             |           |              |
-   v             v           v              v
-+----------+ +----------+ +----------+ +----------+
-|          | |          | |          | |          |
-|  Plugin  | |  Plugin  | |  Plugin  | |  Plugin  |
-|          | |          | |          | |          |
-+----------+ +----------+ +----------+ +----------+
-   |             |           |              |
-   |             |           |              |
-   v             v           v              v
-+----------+ +----------+ +----------+ +----------+
-|          | |          | |          | |          |
-| Entity 1 | | Entity 2 | | Entity 3 | | Entity 4 |
-|          | |          | |          | |          |
-+----------+ +----------+ +----------+ +----------+
-
-                     ^
-                     |
-                     |
-              +------------------+
-              |                  |
-              |  Automation      |
-              |                  |
-              +------------------+
-```
+{{< figure src="/smart-home/img/entity_plugins.svg" >}}
 
 On the diagram, the general structure of the relationship between "Entity" objects, plugins, and the automation component in the Smart Home system is presented.
 
