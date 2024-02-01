@@ -32,6 +32,8 @@ import icon from './icon/index.vue';
 import iconEditor from './icon/editor.vue';
 import tiles from './tiles/index.vue';
 import tilesEditor from './tiles/editor.vue';
+import grid from './grid/index.vue';
+import gridEditor from './grid/editor.vue';
 
 export const CardItemName = (name: string): any => {
   switch (name) {
@@ -50,6 +52,7 @@ export const CardItemName = (name: string): any => {
     case 'chart':
       return chart;
     case 'chart_custom':
+    case 'chartCustom':
       return chart_custom;
     case 'entityStorage':
       return entityStorage;
@@ -67,6 +70,8 @@ export const CardItemName = (name: string): any => {
       return icon;
     case 'tiles':
       return tiles;
+    case 'grid':
+      return grid;
     default:
       // console.error(`unknown card name "${name}"`);
       return dummy;
@@ -90,6 +95,7 @@ export const CardEditorName = (name: string): any => {
     case 'chart':
       return chartEditor;
     case 'chart_custom':
+    case 'chartCustom':
       return chartCustomEditor;
     case 'entityStorage':
       return entityStorageEditor;
@@ -107,6 +113,8 @@ export const CardEditorName = (name: string): any => {
       return iconEditor;
     case 'tiles':
       return tilesEditor;
+    case 'grid':
+      return gridEditor;
     default:
       // console.error(`unknown card name "${name}"`);
       return dummyEditor;
@@ -126,7 +134,7 @@ export const CardItemList: ItemsType[] = [
   {label: 'LOGS', value: 'logs'},
   {label: 'PROGRESS', value: 'progress'},
   {label: 'CHART', value: 'chart'},
-  {label: 'CHART_CUSTOM', value: 'chart_custom'},
+  {label: 'CHART_CUSTOM', value: 'chartCustom'},
   {label: 'ENTITY_STORAGE', value: 'entityStorage'},
   {label: 'MAP', value: 'map'},
   {label: 'SLIDER', value: 'slider'},
@@ -134,5 +142,6 @@ export const CardItemList: ItemsType[] = [
   {label: 'STREAM_PLAYER', value: 'streamPlayer'},
   {label: 'JOYSTICK', value: 'joystick'},
   {label: 'ICON', value: 'icon'},
-  {label: 'TILES', value: 'tiles'}
+  {label: 'TILES', value: 'tiles'},
+  {label: 'GRID', value: 'grid'}
 ];

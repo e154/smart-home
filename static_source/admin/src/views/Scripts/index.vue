@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {useI18n} from '@/hooks/web/useI18n'
 import {Table} from '@/components/Table'
-import {h, reactive, ref, watch} from 'vue'
+import {h, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
 import {useAppStore} from "@/store/modules/app";
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
@@ -14,6 +14,8 @@ import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
 import Statistics from "@/components/Statistics/Statistics.vue";
 import {FormSchema} from "@/types/form";
 import {Form} from '@/components/Form'
+import {UUID} from "uuid-generator-ts";
+import stream from "@/api/stream";
 
 const {push, currentRoute} = useRouter()
 const remember = ref(false)
@@ -141,6 +143,21 @@ const getList = async () => {
     tableObject.tableList = [];
   }
 }
+
+onMounted(() => {
+  const uuid = new UUID()
+  currentID.value = uuid.getDashFreeUUID()
+
+  setTimeout(() => {
+    stream.subscribe('event_removed_script_model', currentID.value, getList)
+    stream.subscribe('event_created_script_model', currentID.value, getList)
+  }, 1000)
+})
+
+onUnmounted(() => {
+  stream.unsubscribe('event_removed_script_model', currentID.value)
+  stream.unsubscribe('event_created_script_model', currentID.value)
+})
 
 watch(
     () => paginationObj.value.currentPage,

@@ -179,6 +179,7 @@ type ActorInfo struct {
 	Icon              *string                `json:"icon"`
 	Area              *m.Area                `json:"area"`
 	AutoLoad          bool                   `json:"auto_load"`
+	RestoreState      bool                   `json:"restoreState"`
 	Value             interface{}            `json:"value"`
 	States            map[string]ActorState  `json:"states"`
 	Actions           map[string]ActorAction `json:"actions"`

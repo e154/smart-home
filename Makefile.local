@@ -78,6 +78,9 @@ test:
 install_linter:
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin v1.55.2
 
+install_typedoc:
+	npm install -g jsdoc
+
 lint-todo:
 	@echo MARK: make lint todo
 
@@ -226,3 +229,7 @@ front_client:
 pprof:
 	@echo MARK: pprof
 	go tool pprof -raw -output=cpu.txt 'http://${SERVER}:3001/debug/pprof/profile?seconds=30'
+
+typedoc:
+	@echo MARK: typedoc
+	npx typedoc --tsconfig ./data/scripts/tsconfig.json --out ./api/typedoc ./data/scripts/global.d.ts

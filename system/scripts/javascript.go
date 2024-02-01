@@ -19,6 +19,7 @@
 package scripts
 
 import (
+	"embed"
 	"fmt"
 	"strings"
 	"sync"
@@ -31,6 +32,10 @@ import (
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/system/scripts/eventloop"
 )
+
+//go:embed typescript.js
+//go:embed coffeescript.js
+var scriptsAsset embed.FS
 
 // Javascript ...
 type Javascript struct {
@@ -114,21 +119,18 @@ func (j *Javascript) GetCompiler() error {
 
 	switch j.engine.model.Lang {
 	case ScriptLangTs:
-		data, err := Asset("scripts/typescriptServices.js")
+		data, err := scriptsAsset.ReadFile("typescript.js")
 		if err != nil {
 			log.Error(err.Error())
-			return err
 		}
-
 		j.compiler = string(data)
 
 	case ScriptLangCoffee:
-		data, err := Asset("scripts/coffee-script.js")
+		data, err := scriptsAsset.ReadFile("coffeescript.js")
 		if err != nil {
 			log.Error(err.Error())
 			return err
 		}
-
 		j.compiler = string(data)
 
 	default:
@@ -144,17 +146,32 @@ func (j *Javascript) tsCompile() (result goja.Value, err error) {
 		return
 	}
 
-	const options = `{ target: ts.ScriptTarget.ES5, newLine: 1 }`
-
 	// prepare script to inline
 	doc := strings.Join(strings.Split(j.engine.model.Source, "\n"), `\n`)
 	doc = strings.Replace(doc, `"`, `\"`, -1)
 
-	var SRC = fmt.Sprintf(`ts.transpile("%s", %s);`, doc, options)
+	var SRC = fmt.Sprintf(`
+function compileTypeScriptString(tsCode) {
+  const compilerOptions = {
+    target: 'es6',
+    newLine: 1,
+    module: ts.ModuleKind.CommonJS,
+  };
+
+  const result = ts.transpileModule(tsCode, { compilerOptions });
+  return result.outputText;
+}
+
+try {
+  compileTypeScriptString("%s");
+} catch (error) {
+  console.error(error.message);
+}
+`, doc)
 
 	// compile from typescript to native script
 	var program *goja.Program
-	if program, err = goja.Compile("", SRC, false); err != nil {
+	if program, err = goja.Compile("", SRC, true); err != nil {
 		return
 	}
 
@@ -177,7 +194,7 @@ func (j *Javascript) coffeeCompile() (result goja.Value, err error) {
 
 	// compile from coffee to native script
 	var program *goja.Program
-	if program, err = goja.Compile("", SRC, false); err != nil {
+	if program, err = goja.Compile("", SRC, true); err != nil {
 		return
 	}
 
@@ -201,7 +218,8 @@ func (j *Javascript) Do() (result string, err error) {
 func (j *Javascript) AssertFunction(f string, args ...interface{}) (result string, err error) {
 	defer func() {
 		if r := recover(); r != nil {
-			log.Warn("Recovered")
+			log.Warnf("Recovered script id: %d, %s", j.engine.model.Id, f)
+			log.Debug(j.vm.Get(f).String())
 			debug.PrintStack()
 		}
 	}()

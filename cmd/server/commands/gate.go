@@ -28,8 +28,15 @@ import (
 	"github.com/e154/smart-home/common/app"
 	"github.com/e154/smart-home/system/gate/server"
 	"github.com/e154/smart-home/system/logging"
-	"github.com/e154/smart-home/version"
 )
+
+const banner = `
+  ___      _
+ / __|__ _| |_ ___ 
+| (_ / _' |  _/ -_)
+ \___\__,_|\__\___|
+
+`
 
 var (
 	gateCmd = &cobra.Command{
@@ -37,7 +44,7 @@ var (
 		Short: "Organization of remote access without white IP",
 		Run: func(cmd *cobra.Command, args []string) {
 
-			fmt.Printf(version.ShortVersionBanner, "")
+			fmt.Println(banner, "")
 
 			app.Do(BuildContainer, fx.Invoke(func(
 				_ *logging.Logging,

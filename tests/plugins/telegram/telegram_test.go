@@ -59,8 +59,12 @@ telegramAction = (entityId, actionName)->
 			AddPlugin(adaptors, "notify")
 			AddPlugin(adaptors, "telegram")
 
+			serviceCh := WaitService(eventBus, time.Second*5, "Supervisor")
+			pluginsCh := WaitPlugins(eventBus, time.Second*5, "notify", "telegram")
 			supervisor.Start(context.Background())
-			WaitSupervisor(eventBus, time.Second)
+			defer supervisor.Shutdown(context.Background())
+			So(<-serviceCh, ShouldBeTrue)
+			So(<-pluginsCh, ShouldBeTrue)
 
 			// add scripts
 			// ------------------------------------------------

@@ -32,16 +32,19 @@ func NewCondition(scriptService scripts.ScriptService,
 	model *m.Condition) (condition *Condition, err error) {
 
 	var scriptEngine *scripts.EngineWatcher
-	if scriptEngine, err = scriptService.NewEngineWatcher(model.Script); err != nil {
-		return
-	}
 
-	scriptEngine.Spawn(func(engine *scripts.Engine) {
-		engine.PushStruct("Condition", NewConditionBind(condition))
-		if _, err = engine.Do(); err != nil {
+	if model.Script != nil {
+		if scriptEngine, err = scriptService.NewEngineWatcher(model.Script); err != nil {
 			return
 		}
-	})
+
+		scriptEngine.PushStruct("Condition", NewConditionBind(condition))
+		scriptEngine.Spawn(func(engine *scripts.Engine) {
+			//if _, err = engine.Do(); err != nil {
+			//	return
+			//}
+		})
+	}
 
 	condition = &Condition{
 		model:        model,
@@ -68,8 +71,10 @@ func (r *Condition) Stop() {
 // Check ...
 func (r *Condition) Check(ctx context.Context) (result string, err error) {
 
-	if result, err = r.scriptEngine.Engine().AssertFunction(ConditionFunc, ctx.Value("entityId")); err != nil {
-		log.Error(err.Error())
+	if r.scriptEngine != nil && r.scriptEngine.Engine() != nil {
+		if result, err = r.scriptEngine.Engine().AssertFunction(ConditionFunc, ctx.Value("entityId")); err != nil {
+			log.Error(err.Error())
+		}
 	}
 
 	state := result == "true"

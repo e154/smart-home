@@ -33,6 +33,8 @@ type EngineWatcher struct {
 	scriptService *scriptService
 	f             func(engine *Engine)
 	fBefore       func(engine *Engine)
+	structures    *Pull
+	functions     *Pull
 	mx            *sync.RWMutex
 	script        *m.Script
 	engine        *Engine
@@ -44,9 +46,19 @@ func NewEngineWatcher(script *m.Script, s *scriptService, eventBus bus.Bus) *Eng
 		scriptService: s,
 		mx:            &sync.RWMutex{},
 		script:        script,
+		structures:    NewPull(),
+		functions:     NewPull(),
 	}
 
 	w.engine, _ = w.scriptService.NewEngine(nil)
+	w.structures.Range(func(key, value interface{}) bool {
+		w.engine.PushStruct(key.(string), value)
+		return true
+	})
+	w.functions.Range(func(key, value interface{}) bool {
+		w.engine.PushFunction(key.(string), value)
+		return true
+	})
 
 	if script.Id != 0 {
 		_ = eventBus.Subscribe(fmt.Sprintf("system/models/scripts/%d", script.Id), w.eventHandler)
@@ -69,6 +81,14 @@ func (w *EngineWatcher) Spawn(f func(engine *Engine)) {
 		Id:   w.script.Id,
 		Lang: common.ScriptLangJavascript,
 	})
+	w.structures.Range(func(key, value interface{}) bool {
+		w.engine.PushStruct(key.(string), value)
+		return true
+	})
+	w.functions.Range(func(key, value interface{}) bool {
+		w.engine.PushFunction(key.(string), value)
+		return true
+	})
 
 	if w.fBefore != nil {
 		w.fBefore(w.engine)
@@ -77,8 +97,9 @@ func (w *EngineWatcher) Spawn(f func(engine *Engine)) {
 	if _, err := w.engine.EvalScript(w.script); err != nil {
 		if w.script.Id != 0 {
 			log.Errorf("script id: %d, %s", w.script.Id, err.Error())
+		} else {
+			log.Error(err.Error())
 		}
-		log.Error(err.Error())
 	}
 
 	if f != nil {
@@ -136,4 +157,26 @@ func (w *EngineWatcher) eventScriptDeleted(msg events.EventRemovedScriptModel) {
 		log.Error(err.Error())
 		return
 	}
+}
+
+func (w *EngineWatcher) PushStruct(name string, str interface{}) {
+	w.structures.Push(name, str)
+	if w.engine != nil {
+		w.engine.PushStruct(name, str)
+	}
+}
+
+func (w *EngineWatcher) PopStruct(name string) {
+	w.structures.Pop(name)
+}
+
+func (w *EngineWatcher) PushFunction(name string, f interface{}) {
+	w.functions.Push(name, f)
+	if w.engine != nil {
+		w.engine.PushFunction(name, f)
+	}
+}
+
+func (w *EngineWatcher) PopFunction(name string) {
+	w.functions.Pop(name)
 }

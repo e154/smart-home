@@ -68,9 +68,13 @@ func TestWeatherMet(t *testing.T) {
 			ctx.So(err, ShouldBeNil)
 
 			// ------------------------------------------------
+			serviceCh := WaitService(eventBus, time.Second*5, "Supervisor", "Scheduler")
+			pluginsCh := WaitPlugins(eventBus, time.Second*5, "weather_met")
 			_ = scheduler.Start(context.TODO())
 			supervisor.Start(context.Background())
-			WaitSupervisor(eventBus, time.Second)
+			defer supervisor.Shutdown(context.Background())
+			So(<-serviceCh, ShouldBeTrue)
+			So(<-pluginsCh, ShouldBeTrue)
 
 			t.Run("add weather", func(t *testing.T) {
 				Convey("weather_met", t, func(ctx C) {

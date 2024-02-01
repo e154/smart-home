@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, ref, unref} from 'vue'
+import {computed, onMounted, onUnmounted, ref, unref} from 'vue'
 import {useI18n} from '@/hooks/web/useI18n'
 import {
   ElButton,
@@ -26,6 +26,8 @@ import {useEmitt} from "@/hooks/web/useEmitt";
 import {Infotip} from '@/components/Infotip'
 import {parseTime} from "@/utils";
 import MergeEditor from "@/views/Scripts/components/MergeEditor.vue";
+import {UUID} from "uuid-generator-ts";
+import stream from "@/api/stream";
 
 const {emitter} = useEmitt()
 const {push} = useRouter()
@@ -39,6 +41,22 @@ const currentScript = ref<Nullable<ApiScript>>(null)
 const activeTab = ref('source')
 const currentVersionIdx = ref(0)
 const currentVersion = ref<Nullable<ApiScript>>(null)
+const versions = ref<Nullable<ApiScript[]>>([])
+
+const currentID = ref('')
+
+onMounted(() => {
+  const uuid = new UUID()
+  currentID.value = uuid.getDashFreeUUID()
+
+  setTimeout(() => {
+    stream.subscribe('event_updated_script_model', currentID.value, fetch)
+  }, 1000)
+})
+
+onUnmounted(() => {
+  stream.unsubscribe('event_updated_script_model', currentID.value)
+})
 
 const fetch = async () => {
   loading.value = true
@@ -51,7 +69,10 @@ const fetch = async () => {
   if (res) {
     currentScript.value = res.data
     if (res.data?.versions && res.data.versions.length) {
-      currentVersion.value = res.data.versions[0]
+      versions.value = res.data.versions;
+      if (res.data.versions.length > 1) {
+        currentVersion.value = res.data.versions[1]
+      }
     }
   } else {
     currentScript.value = null
@@ -95,7 +116,7 @@ const updateVersions = async () => {
   if (res) {
     if (res.data?.versions && res.data.versions.length) {
       currentVersion.value = res.data.versions[0]
-      currentScript.value.versions = res.data.versions
+      versions.value = res.data.versions
     }
   }
 }
@@ -154,9 +175,6 @@ const updateCurrentTab = (tab: any, ev: any) => {
     emitter.emit('updateEditor')
   }
 }
-
-// elscroll 实例
-const scrollbarRef = ref<ComponentRef<typeof ElScrollbar>>()
 
 const onMergeEditorChange = (val: string) => {
   currentScript.value.source = val
@@ -224,7 +242,7 @@ fetch()
       <!-- versions -->
       <ElTabPane :label="$t('scripts.scriptVersions')" name="versions">
 
-        <ElRow v-if="activeTab == 'versions' && !loading && currentScript?.versions"  class="mb-20px">
+        <ElRow v-if="activeTab == 'versions' && !loading && versions"  class="mb-20px">
           <ElCol>
             <ElFormItem :label="$t('scripts.scriptVersions')" prop="action">
               <ElSelect
@@ -235,7 +253,7 @@ fetch()
                   @change="selectVersionHandler"
               >
                 <ElOption
-                    v-for="(p, index) in currentScript.versions"
+                    v-for="(p, index) in versions"
                     :key="index"
                     :label="parseTime(p.createdAt)"
                     :value="index"/>

@@ -73,7 +73,6 @@ The `automationTriggerAlexa` handler is called in response to a trigger from Ama
 2. `TriggerStateChanged`:
 ```coffeescript
 automationTriggerStateChanged = (msg) ->
-  print '---trigger---'
   p = msg.payload
   Done p.new_state.state.name
   return false
@@ -105,7 +104,6 @@ Example implementation:
 
 ```coffeescript
 automationTriggerStateChanged = (msg)->
-    #print '---trigger---'
     p = msg.payload
     if !p.new_state || !p.new_state.state
         return false

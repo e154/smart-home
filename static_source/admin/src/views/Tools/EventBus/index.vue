@@ -77,9 +77,29 @@ const columns: TableColumn[] = [
     label: t('tools.eventBus.topic'),
   },
   {
+    field: 'min',
+    label: t('tools.eventBus.min'),
+    width: "80px"
+  },
+  {
+    field: 'avg',
+    label: t('tools.eventBus.avg'),
+    width: "80px"
+  },
+  {
+    field: 'max',
+    label: t('tools.eventBus.max'),
+    width: "80px"
+  },
+  {
+    field: 'rps',
+    label: t('tools.eventBus.rps'),
+    width: "80px"
+  },
+  {
     field: 'subscribers',
     label: t('tools.eventBus.subscribers'),
-    width: "100px"
+    width: "120px"
   },
 ]
 const paginationObj = ref<Pagination>({
@@ -135,8 +155,16 @@ const sortChange = (data) => {
   getList()
 }
 
-getList()
+const myInterval = ref()
+onMounted(()=> {
+  myInterval.value = setInterval(() => {
+    getList()
+  }, 2000)
+})
 
+onUnmounted(()=> {
+  clearInterval(myInterval.value);
+})
 
 const tableRowClassName = (data) => {
   const { row, rowIndex } = data

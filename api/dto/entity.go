@@ -38,16 +38,17 @@ func NewEntityDto() Entity {
 func (r Entity) AddEntity(obj *stub.ApiNewEntityRequest) (entity *m.Entity) {
 
 	entity = &m.Entity{
-		Id:          common.EntityId(fmt.Sprintf("%s.%s", obj.PluginName, obj.Name)),
-		Description: obj.Description,
-		PluginName:  obj.PluginName,
-		AutoLoad:    obj.AutoLoad,
-		Icon:        obj.Icon,
-		Attributes:  AttributeFromApi(obj.Attributes),
-		Settings:    AttributeFromApi(obj.Settings),
-		Metrics:     AddMetric(obj.Metrics),
-		ImageId:     obj.ImageId,
-		AreaId:      obj.AreaId,
+		Id:           common.EntityId(fmt.Sprintf("%s.%s", obj.PluginName, obj.Name)),
+		Description:  obj.Description,
+		PluginName:   obj.PluginName,
+		AutoLoad:     obj.AutoLoad,
+		RestoreState: obj.RestoreState,
+		Icon:         obj.Icon,
+		Attributes:   AttributeFromApi(obj.Attributes),
+		Settings:     AttributeFromApi(obj.Settings),
+		Metrics:      AddMetric(obj.Metrics),
+		ImageId:      obj.ImageId,
+		AreaId:       obj.AreaId,
 	}
 
 	// actions
@@ -95,20 +96,21 @@ func (r Entity) AddEntity(obj *stub.ApiNewEntityRequest) (entity *m.Entity) {
 // UpdateEntity ...
 func (r Entity) UpdateEntity(obj *stub.EntityServiceUpdateEntityJSONBody) (entity *m.Entity) {
 	entity = &m.Entity{
-		Id:          common.EntityId(obj.Id),
-		Description: obj.Description,
-		PluginName:  obj.PluginName,
-		Actions:     make([]*m.EntityAction, 0),
-		States:      make([]*m.EntityState, 0),
-		Scripts:     make([]*m.Script, 0),
-		AutoLoad:    obj.AutoLoad,
-		Icon:        obj.Icon,
-		Attributes:  AttributeFromApi(obj.Attributes),
-		Settings:    AttributeFromApi(obj.Settings),
-		ParentId:    nil,
-		Metrics:     AddMetric(obj.Metrics),
-		ImageId:     obj.ImageId,
-		AreaId:      obj.AreaId,
+		Id:           common.EntityId(obj.Id),
+		Description:  obj.Description,
+		PluginName:   obj.PluginName,
+		Actions:      make([]*m.EntityAction, 0),
+		States:       make([]*m.EntityState, 0),
+		Scripts:      make([]*m.Script, 0),
+		AutoLoad:     obj.AutoLoad,
+		RestoreState: obj.RestoreState,
+		Icon:         obj.Icon,
+		Attributes:   AttributeFromApi(obj.Attributes),
+		Settings:     AttributeFromApi(obj.Settings),
+		ParentId:     nil,
+		Metrics:      AddMetric(obj.Metrics),
+		ImageId:      obj.ImageId,
+		AreaId:       obj.AreaId,
 	}
 
 	// actions
@@ -181,15 +183,16 @@ func (r Entity) ToListResult(list []*m.Entity) []*stub.ApiEntityShort {
 // ToEntityShort ...
 func (r Entity) ToEntityShort(entity *m.Entity) (obj *stub.ApiEntityShort) {
 	obj = &stub.ApiEntityShort{
-		Id:          entity.Id.String(),
-		PluginName:  entity.PluginName,
-		Description: entity.Description,
-		Icon:        entity.Icon,
-		AutoLoad:    entity.AutoLoad,
-		CreatedAt:   entity.CreatedAt,
-		UpdatedAt:   entity.UpdatedAt,
-		ParentId:    entity.ParentId.StringPtr(),
-		IsLoaded:    common.Bool(entity.IsLoaded),
+		Id:           entity.Id.String(),
+		PluginName:   entity.PluginName,
+		Description:  entity.Description,
+		Icon:         entity.Icon,
+		AutoLoad:     entity.AutoLoad,
+		RestoreState: entity.RestoreState,
+		CreatedAt:    entity.CreatedAt,
+		UpdatedAt:    entity.UpdatedAt,
+		ParentId:     entity.ParentId.StringPtr(),
+		IsLoaded:     common.Bool(entity.IsLoaded),
 	}
 	// area
 	if entity.Area != nil {
@@ -211,20 +214,21 @@ func ToEntity(entity *m.Entity) (obj *stub.ApiEntity) {
 	imageDto := NewImageDto()
 	scriptDto := NewScriptDto()
 	obj = &stub.ApiEntity{
-		Id:          entity.Id.String(),
-		PluginName:  entity.PluginName,
-		Description: entity.Description,
-		Icon:        entity.Icon,
-		AutoLoad:    entity.AutoLoad,
-		IsLoaded:    common.Bool(entity.IsLoaded),
-		Actions:     make([]stub.ApiEntityAction, 0, len(entity.Actions)),
-		States:      make([]stub.ApiEntityState, 0, len(entity.States)),
-		Scripts:     make([]stub.ApiScript, 0, len(entity.Scripts)),
-		CreatedAt:   entity.CreatedAt,
-		UpdatedAt:   entity.UpdatedAt,
-		Attributes:  AttributeToApi(entity.Attributes),
-		Settings:    AttributeToApi(entity.Settings),
-		Metrics:     Metrics(entity.Metrics),
+		Id:           entity.Id.String(),
+		PluginName:   entity.PluginName,
+		Description:  entity.Description,
+		Icon:         entity.Icon,
+		AutoLoad:     entity.AutoLoad,
+		RestoreState: entity.RestoreState,
+		IsLoaded:     common.Bool(entity.IsLoaded),
+		Actions:      make([]stub.ApiEntityAction, 0, len(entity.Actions)),
+		States:       make([]stub.ApiEntityState, 0, len(entity.States)),
+		Scripts:      make([]stub.ApiScript, 0, len(entity.Scripts)),
+		CreatedAt:    entity.CreatedAt,
+		UpdatedAt:    entity.UpdatedAt,
+		Attributes:   AttributeToApi(entity.Attributes),
+		Settings:     AttributeToApi(entity.Settings),
+		Metrics:      Metrics(entity.Metrics),
 	}
 	// area
 	if entity.Area != nil {
@@ -296,21 +300,22 @@ func (r Entity) ImportEntity(from *stub.ApiEntity) (to *m.Entity) {
 
 	_, image := ImportImage(from.Image)
 	to = &m.Entity{
-		Id:          common.EntityId(from.Id),
-		Description: from.Description,
-		PluginName:  from.PluginName,
-		Icon:        from.Icon,
-		Image:       image,
-		Actions:     make([]*m.EntityAction, 0, len(from.Actions)),
-		States:      make([]*m.EntityState, 0, len(from.States)),
-		Area:        area,
-		AreaId:      areaId,
-		Metrics:     AddMetric(from.Metrics),
-		Scripts:     make([]*m.Script, 0, len(from.Scripts)),
-		Attributes:  AttributeFromApi(from.Attributes),
-		Settings:    AttributeFromApi(from.Settings),
-		AutoLoad:    from.AutoLoad,
-		ParentId:    parentId,
+		Id:           common.EntityId(from.Id),
+		Description:  from.Description,
+		PluginName:   from.PluginName,
+		Icon:         from.Icon,
+		Image:        image,
+		Actions:      make([]*m.EntityAction, 0, len(from.Actions)),
+		States:       make([]*m.EntityState, 0, len(from.States)),
+		Area:         area,
+		AreaId:       areaId,
+		Metrics:      AddMetric(from.Metrics),
+		Scripts:      make([]*m.Script, 0, len(from.Scripts)),
+		Attributes:   AttributeFromApi(from.Attributes),
+		Settings:     AttributeFromApi(from.Settings),
+		AutoLoad:     from.AutoLoad,
+		RestoreState: from.RestoreState,
+		ParentId:     parentId,
 	}
 
 	// ACTIONS

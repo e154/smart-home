@@ -64,11 +64,18 @@ automationTriggerSystem = (msg)->
 			// register plugins
 			_ = AddPlugin(adaptors, "triggers")
 
+			serviceCh := WaitService(eventBus, time.Second*5, "Supervisor", "Automation", "Zigbee2mqtt", "Mqtt")
+			pluginsCh := WaitPlugins(eventBus, time.Second*5, "triggers")
 			go mqttServer.Start()
-			_ = automation.Start()
 			go zigbee2mqtt.Start(context.Background())
+			automation.Start()
 			supervisor.Start(context.Background())
-			WaitSupervisor(eventBus, time.Second)
+			defer mqttServer.Shutdown()
+			defer zigbee2mqtt.Shutdown(context.Background())
+			defer automation.Shutdown()
+			defer supervisor.Shutdown(context.Background())
+			So(<-serviceCh, ShouldBeTrue)
+			So(<-pluginsCh, ShouldBeTrue)
 
 			var counter atomic.Int32
 			var lastEvent atomic.String
@@ -101,7 +108,7 @@ automationTriggerSystem = (msg)->
 				Condition:  common.ConditionAnd,
 				TriggerIds: []int64{triggerId},
 			}
-			err = AddTask(newTask, adaptors, eventBus)
+			_, err = AddTask(newTask, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
 			// ------------------------------------------------

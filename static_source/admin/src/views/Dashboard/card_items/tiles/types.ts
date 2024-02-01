@@ -13,8 +13,6 @@ export interface TileProp {
 export interface ItemPayloadTiles {
   items: TileProp[]
   image?: ApiImage
-  columns: number
-  rows: number
   tileHeight: number
   tileWidth: number
   attribute: string

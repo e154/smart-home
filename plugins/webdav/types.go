@@ -20,6 +20,7 @@ package webdav
 
 import (
 	"fmt"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -57,44 +58,41 @@ func NewSettings() m.Attributes {
 }
 
 func extractScriptName(path string) string {
-	res := strings.Split(path, ".")
-	if len(res) > 0 {
-		return res[0]
-	}
-	return path
+	base := filepath.Base(path)
+	ext := filepath.Ext(base)
+	return strings.ReplaceAll(base, ext, "")
 }
 
-func extractScriptLang(path string) common.ScriptLang {
-	res := strings.Split(path, ".")
-	if len(res) > 1 {
-		switch strings.ToLower(res[1]) {
-		case "ts":
-			return "ts"
-		case "js":
-			return "javascript"
-		case "coffee":
-			return "coffeescript"
-		}
+func getScriptLang(path string) common.ScriptLang {
+	base := filepath.Base(path)
+	ext := filepath.Ext(base)
+	switch ext {
+	case ".ts":
+		return "ts"
+	case ".js":
+		return "javascript"
+	case ".coffee":
+		return "coffeescript"
 	}
 	return ""
 }
 
-func scriptExt(script *m.Script) (ext string) {
+func getExtension(script *m.Script) (ext string) {
 	switch script.Lang {
 	case common.ScriptLangTs:
-		ext = "ts"
+		ext = ".ts"
 	case common.ScriptLangCoffee:
-		ext = "coffee"
+		ext = ".coffee"
 	case common.ScriptLangJavascript:
-		ext = "js"
+		ext = ".js"
 	default:
-		ext = "txt"
+		ext = ".txt"
 	}
 	return
 }
 
 func getFileName(script *m.Script) string {
-	return fmt.Sprintf("%s.%s", script.Name, scriptExt(script))
+	return fmt.Sprintf("%s%s", script.Name, getExtension(script))
 }
 
 type FileInfo struct {

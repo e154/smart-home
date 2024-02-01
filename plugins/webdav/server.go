@@ -19,7 +19,9 @@
 package webdav
 
 import (
+	"context"
 	"net/http"
+	"strings"
 
 	"go.uber.org/atomic"
 	"golang.org/x/net/webdav"
@@ -56,7 +58,7 @@ func (s *Server) Start(adaptors *adaptors.Adaptors, scriptService scripts.Script
 	s.adaptors = adaptors
 	s.eventBus = eventBus
 
-	s.FS = NewFS()
+	s.FS = NewFS(s.onRemoveHandler)
 	s.handler = &webdav.Handler{
 		FileSystem: s,
 		LockSystem: webdav.NewMemLS(),
@@ -82,4 +84,12 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.handler.ServeHTTP(w, r)
+}
+
+func (s *Server) onRemoveHandler(ctx context.Context, filePath string) (err error) {
+	path := strings.Split(filePath, "/")
+	if path[2] == "scripts" {
+		err = s.scripts.onRemoveHandler(ctx, filePath)
+	}
+	return
 }

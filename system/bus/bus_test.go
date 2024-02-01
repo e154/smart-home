@@ -122,7 +122,7 @@ func TestBus(t *testing.T) {
 
 	time.Sleep(time.Second)
 
-	require.Equal(t, counter, 1)
+	require.Equal(t, 1, counter)
 
 	// Test Stat
 	stats, total, err = b.Stat(context.Background(), 999, 0, "", "")
@@ -423,5 +423,5 @@ func BenchmarkBus(b *testing.B) {
 
 	time.Sleep(time.Second)
 
-	require.Equal(b, int32(b.N), counter)
+	require.Equal(b, int32(b.N), counter.Load())
 }

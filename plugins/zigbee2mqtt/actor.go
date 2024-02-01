@@ -27,7 +27,6 @@ import (
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
@@ -59,17 +58,6 @@ func NewActor(entity *m.Entity,
 		zigbee2mqttDevice: zigbee2mqttDevice,
 	}
 
-	// Actions
-	for _, a := range actor.Actions {
-		if a.ScriptEngine.Engine() != nil {
-			_, _ = a.ScriptEngine.Engine().Do()
-		}
-	}
-
-	actor.ScriptsEngine.Spawn(func(engine *scripts.Engine) {
-		engine.Do()
-	})
-
 	// mqtt worker
 	go func() {
 		for message := range actor.mqttMessageQueue {
@@ -88,10 +76,6 @@ func NewActor(entity *m.Entity,
 }
 
 func (e *Actor) Destroy() {
-
-}
-
-func (e *Actor) Spawn() {
 
 }
 

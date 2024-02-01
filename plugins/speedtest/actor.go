@@ -61,11 +61,6 @@ func (e *Actor) Destroy() {
 
 }
 
-// Spawn ...
-func (e *Actor) Spawn() {
-
-}
-
 func (e *Actor) runTest() {
 	if e.isStarted.Load() {
 		return

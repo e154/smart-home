@@ -147,10 +147,17 @@ func (a *Authenticator) Unregister(fn func(login, password string) (err error)) 
 
 	rv := reflect.ValueOf(fn)
 
+	var indexesToDelete []int
+
 	for i, v := range a.handlers {
 		if v == rv || v.Pointer() == rv.Pointer() {
-			a.handlers = append(a.handlers[:i], a.handlers[i+1:]...)
+			indexesToDelete = append(indexesToDelete, i)
 		}
+	}
+
+	for i := len(indexesToDelete) - 1; i >= 0; i-- {
+		index := indexesToDelete[i]
+		a.handlers = append(a.handlers[:index], a.handlers[index+1:]...)
 	}
 
 	log.Infof("unregister ...")

@@ -41,25 +41,26 @@ type Entities struct {
 
 // Entity ...
 type Entity struct {
-	Id          common.EntityId `gorm:"primary_key"`
-	Description string
-	PluginName  string
-	Image       *Image
-	ImageId     *int64
-	States      []*EntityState
-	Actions     []*EntityAction
-	AreaId      *int64
-	Area        *Area
-	Metrics     []*Metric `gorm:"many2many:entity_metrics;"`
-	Scripts     []*Script `gorm:"many2many:entity_scripts;"`
-	Icon        *string
-	Payload     json.RawMessage `gorm:"type:jsonb;not null"`
-	Settings    json.RawMessage `gorm:"type:jsonb;not null"`
-	Storage     []*EntityStorage
-	AutoLoad    bool
-	ParentId    *common.EntityId `gorm:"column:parent_id"`
-	CreatedAt   time.Time        `gorm:"<-:create"`
-	UpdatedAt   time.Time
+	Id           common.EntityId `gorm:"primary_key"`
+	Description  string
+	PluginName   string
+	Image        *Image
+	ImageId      *int64
+	States       []*EntityState
+	Actions      []*EntityAction
+	AreaId       *int64
+	Area         *Area
+	Metrics      []*Metric `gorm:"many2many:entity_metrics;"`
+	Scripts      []*Script `gorm:"many2many:entity_scripts;"`
+	Icon         *string
+	Payload      json.RawMessage `gorm:"type:jsonb;not null"`
+	Settings     json.RawMessage `gorm:"type:jsonb;not null"`
+	Storage      []*EntityStorage
+	AutoLoad     bool
+	RestoreState bool
+	ParentId     *common.EntityId `gorm:"column:parent_id"`
+	CreatedAt    time.Time        `gorm:"<-:create"`
+	UpdatedAt    time.Time
 }
 
 // TableName ...

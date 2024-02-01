@@ -1728,7 +1728,7 @@ paths:
           application/json:
             schema:
               type: object
-              required: [ id, description, pluginName, autoLoad, attributes, settings,
+              required: [ id, description, pluginName, autoLoad, restoreState, attributes, settings,
                           metrics, actions, states, scriptIds ]
               properties:
                 id:
@@ -1748,6 +1748,8 @@ paths:
                   type: integer
                   format: int64
                 autoLoad:
+                  type: boolean
+                restoreState:
                   type: boolean
                 parentId:
                   type: string
@@ -4554,13 +4556,25 @@ components:
           type: string
     apiBusStateItem:
       type: object
-      required: [ topic, subscribers ]
+      required: [ topic, subscribers, min, max, avg, rps ]
       properties:
         topic:
           type: string
         subscribers:
           type: integer
           format: int32
+        min:
+          type: integer
+          format: int64
+        max:
+          type: integer
+          format: int64
+        avg:
+          type: integer
+          format: int64
+        rps:
+          type: number
+          format: double
     apiClient:
       type: object
       required: [ clientId, username, keepAlive, version, willRetain, willQos, willTopic, willPayload,
@@ -4946,7 +4960,7 @@ components:
       type: object
     apiEntity:
       type: object
-      required: [ id, pluginName, description, autoLoad, actions, states,
+      required: [ id, pluginName, description, autoLoad, restoreState, actions, states,
                   scripts, scriptIds, attributes, settings, metrics, createdAt,
                   updatedAt ]
       properties:
@@ -4963,6 +4977,8 @@ components:
         icon:
           type: string
         autoLoad:
+          type: boolean
+        restoreState:
           type: boolean
         parent:
           $ref: '#/components/schemas/apiEntityParent'
@@ -5047,7 +5063,7 @@ components:
           type: string
     apiEntityShort:
       type: object
-      required: [ id, pluginName, description, autoLoad, createdAt, updatedAt ]
+      required: [ id, pluginName, description, autoLoad, restoreState, createdAt, updatedAt ]
       properties:
         id:
           type: string
@@ -5060,6 +5076,8 @@ components:
         icon:
           type: string
         autoLoad:
+          type: boolean
+        restoreState:
           type: boolean
         parentId:
           type: string
@@ -5731,7 +5749,7 @@ components:
           format: int64
     apiNewEntityRequest:
       type: object
-      required: [ name, pluginName, description, autoLoad, attributes, settings, metrics,
+      required: [ name, pluginName, description, autoLoad, restoreState, attributes, settings, metrics,
                   actions, states, scriptIds ]
       properties:
         name:
@@ -5749,6 +5767,8 @@ components:
           type: integer
           format: int64
         autoLoad:
+          type: boolean
+        restoreState:
           type: boolean
         parentId:
           type: string

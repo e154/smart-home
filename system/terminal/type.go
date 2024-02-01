@@ -38,6 +38,7 @@ type UpdateAccessTokenMessage struct {
 
 var commands = map[string]ICommands{
 	"sudo": NewCommandSudo(),
+	"help": NewCommandHelp(),
 }
 
 func GetTerminalCommands() map[string]ICommands {

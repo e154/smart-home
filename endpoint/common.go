@@ -22,7 +22,6 @@ import (
 	"context"
 
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/automation"
@@ -86,9 +85,5 @@ func (c *CommonEndpoint) checkSuperUser(ctx context.Context) (decline bool) {
 	root, _ := ctx.Value("root").(bool)
 	//log.Debugf("root: %t, %t", root, ok)
 
-	if root {
-		return
-	}
-
-	return c.appConfig.Mode == common.DemoMode
+	return !root
 }

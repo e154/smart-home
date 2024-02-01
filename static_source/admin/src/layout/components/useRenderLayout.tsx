@@ -106,6 +106,46 @@ export const useRenderLayout = (isDevelop: boolean) => {
     )
   }
 
+  const renderLanding = () => {
+    return (
+      <>
+
+        <div
+          class={[
+            `${prefixCls}-content`,
+            'absolute top-0 h-[100%]',
+            {
+
+              'fixed !w-full !left-0': true
+            }
+          ]}
+          style="transition: all var(--transition-time-02);"
+        >
+          <ElScrollbar
+            v-loading={pageLoading.value}
+            class={[
+              `${prefixCls}-content-scrollbar`,
+
+            ]}
+          >
+            <div
+              class={[
+                {
+                  '!w-full !left-0': true
+                }
+              ]}
+              style="transition: all var(--transition-time-02);"
+            >
+
+            </div>
+
+            <AppView></AppView>
+          </ElScrollbar>
+        </div>
+      </>
+    )
+  }
+
   const renderTopLeft = () => {
     return (
       <>
@@ -271,6 +311,7 @@ export const useRenderLayout = (isDevelop: boolean) => {
 
   return {
     renderClassic,
+    renderLanding,
     renderTopLeft,
     renderTop,
     renderCutMenu

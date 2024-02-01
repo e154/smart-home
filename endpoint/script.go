@@ -133,20 +133,15 @@ func (n *ScriptEndpoint) Copy(ctx context.Context, scriptId int64) (script *m.Sc
 }
 
 // Update ...
-func (n *ScriptEndpoint) Update(ctx context.Context, params *m.Script) (result *m.Script, err error) {
+func (n *ScriptEndpoint) Update(ctx context.Context, script *m.Script) (result *m.Script, err error) {
 
-	var script *m.Script
-	script, err = n.adaptors.Script.GetById(ctx, params.Id)
+	var oldScript *m.Script
+	oldScript, err = n.adaptors.Script.GetById(ctx, script.Id)
 	if err != nil {
 		return
 	}
 
-	if err = common.Copy(&script, &params); err != nil {
-		err = errors.Wrap(apperr.ErrInternal, err.Error())
-		return
-	}
-
-	if ok, errs := n.validation.Valid(params); !ok {
+	if ok, errs := n.validation.Valid(script); !ok {
 		err = apperr.ErrInvalidRequest
 		apperr.SetValidationErrors(err, errs)
 		return
@@ -175,8 +170,9 @@ func (n *ScriptEndpoint) Update(ctx context.Context, params *m.Script) (result *
 		Common: events.Common{
 			Owner: events.OwnerUser,
 		},
-		ScriptId: script.Id,
-		Script:   script,
+		ScriptId:  script.Id,
+		Script:    script,
+		OldScript: oldScript,
 	})
 
 	return

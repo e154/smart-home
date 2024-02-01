@@ -6,7 +6,7 @@ const src: string = (import.meta.env.VITE_API_BASEPATH as string) + '/swagger-ui
 <template>
   <iframe
       :src="src"
-      style="position: absolute; border: none; width: 100%; height: 100%"
+      style="position: absolute; border: none; width: 100%; height: inherit"
       width="100%"
       height="100%"
       frameborder="0"

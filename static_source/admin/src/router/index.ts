@@ -1,7 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import type { App } from 'vue'
-import { Dashboard, Develop, getParentLayout } from '@/utils/routerHelper'
+import { Dashboard, Develop, Landing, getParentLayout } from '@/utils/routerHelper'
 import { useI18n } from '@/hooks/web/useI18n'
 
 const { t } = useI18n()
@@ -19,6 +19,27 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
       {
         path: '/board',
         name: 'Dashboard',
+        component: () => import('@/views/Dashboard/main.vue'),
+        meta: {
+          hidden: true,
+          title: t('router.Dashboard'),
+          noTagsView: true
+        }
+      }
+    ]
+  },
+  {
+    path: '/landing',
+    component: Landing,
+    meta: {
+      title: t('router.Landing'),
+      hidden: true,
+      noTagsView: true
+    },
+    children: [
+      {
+        path: '/landing',
+        name: 'Landing',
         component: () => import('@/views/Dashboard/main.vue'),
         meta: {
           hidden: true,
@@ -505,6 +526,14 @@ export const developRouterMap: AppRouteRecordRaw[] = [
         component: () => import('@/views/Swagger/index.vue'),
         meta: {
           title: t('router.Swagger'),
+        },
+      },
+      {
+        path: 'typedoc',
+        name: 'Typedoc',
+        component: () => import('@/views/Typedoc/index.vue'),
+        meta: {
+          title: t('router.Typedoc'),
         },
       },
       {

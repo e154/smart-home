@@ -21,11 +21,9 @@ package bus
 import (
 	"context"
 	"fmt"
-	"os"
 	"reflect"
 	"sort"
 	"sync"
-	"time"
 
 	"github.com/pkg/errors"
 
@@ -34,125 +32,57 @@ import (
 
 type bus struct {
 	sync.RWMutex
-	sub map[string]*subscribers
+	topics map[string]*Topic
 }
 
 // NewBus ...
 func NewBus() Bus {
 	return &bus{
-		sub: make(map[string]*subscribers),
+		topics: make(map[string]*Topic),
 	}
 }
 
 // Publish ...
 func (b *bus) Publish(topic string, args ...interface{}) {
-	go b.publish(topic, args...)
-}
-
-// publish ...
-func (b *bus) publish(topic string, args ...interface{}) {
-	rArgs := buildHandlerArgs(append([]interface{}{topic}, args...))
-
 	b.RLock()
 	defer b.RUnlock()
 
-	for t, sub := range b.sub {
+	for t, sub := range b.topics {
 		if !TopicMatch([]byte(topic), []byte(t)) {
 			continue
 		}
-		sub.lastMsg = rArgs
-		for _, h := range sub.handlers {
-			h.queue <- rArgs
-		}
+		go sub.Publish(args...)
 	}
 }
 
 // Subscribe ...
 func (b *bus) Subscribe(topic string, fn interface{}, options ...interface{}) (err error) {
-	if err = b.subscribe(topic, fn, options...); err != nil {
-		fmt.Fprintln(os.Stderr, err.Error())
-	}
-	return err
-}
-
-// subscribe ...
-func (b *bus) subscribe(topic string, fn interface{}, options ...interface{}) error {
-	if reflect.TypeOf(fn).Kind() != reflect.Func {
-		return errors.Wrap(apperr.ErrInternal, fmt.Sprintf("%s is not a reflect.Func", reflect.TypeOf(fn)))
-	}
-
-	const queueSize = 1024
-
-	h := &handler{
-		callback: reflect.ValueOf(fn),
-		queue:    make(chan []reflect.Value, queueSize),
-	}
-
 	b.Lock()
 	defer b.Unlock()
 
-	go func() {
-		for args := range h.queue {
-			go func(args []reflect.Value) {
-				startTime := time.Now()
-				h.callback.Call(args)
-				t := time.Since(startTime).Milliseconds()
-				if t > 5 {
-					fmt.Printf("long call! topic %s, fn: %s, Milliseconds: %d\n\r", topic, reflect.ValueOf(fn).String(), t)
-				}
-			}(args)
-		}
-	}()
-
-	if _, ok := b.sub[topic]; ok {
-		b.sub[topic].handlers = append(b.sub[topic].handlers, h)
+	if sub, ok := b.topics[topic]; ok {
+		return sub.Subscribe(fn, options...)
 	} else {
-		b.sub[topic] = &subscribers{
-			handlers: []*handler{h},
-		}
+		subs := NewTopic(topic)
+		b.topics[topic] = subs
+		return subs.Subscribe(fn, options...)
 	}
-
-	if len(options) > 0 {
-		if retain, ok := options[0].(bool); ok && !retain {
-			return nil
-		}
-	}
-
-	// sand last message value
-	if b.sub[topic].lastMsg != nil {
-		go h.callback.Call(b.sub[topic].lastMsg)
-	}
-
-	return nil
 }
 
 // Unsubscribe ...
 func (b *bus) Unsubscribe(topic string, fn interface{}) (err error) {
-	if err = b.unsubscribe(topic, fn); err != nil {
-		fmt.Fprintln(os.Stderr, err.Error())
-	}
-	return
-}
-
-// unsubscribe ...
-func (b *bus) unsubscribe(topic string, fn interface{}) error {
 	b.Lock()
 	defer b.Unlock()
 
-	rv := reflect.ValueOf(fn)
-
-	if _, ok := b.sub[topic]; ok {
-		for i, h := range b.sub[topic].handlers {
-			if h.callback == rv || h.callback.Pointer() == rv.Pointer() {
-				close(h.queue)
-				b.sub[topic].handlers = append(b.sub[topic].handlers[:i], b.sub[topic].handlers[i+1:]...)
-				if len(b.sub[topic].handlers) == 0 {
-					delete(b.sub, topic)
-				}
-				return nil
-			}
+	var empty bool
+	if sub, ok := b.topics[topic]; ok {
+		empty, err = sub.Unsubscribe(fn)
+		if err != nil {
+			return err
 		}
-
+		if empty {
+			delete(b.topics, topic)
+		}
 		return nil
 	}
 
@@ -164,12 +94,9 @@ func (b *bus) CloseTopic(topic string) {
 	b.Lock()
 	defer b.Unlock()
 
-	if _, ok := b.sub[topic]; ok {
-		for _, h := range b.sub[topic].handlers {
-			close(h.queue)
-		}
-		delete(b.sub, topic)
-		return
+	if sub, ok := b.topics[topic]; ok {
+		sub.Close()
+		delete(b.topics, topic)
 	}
 }
 
@@ -178,29 +105,24 @@ func (b *bus) Purge() {
 	b.Lock()
 	defer b.Unlock()
 
-	for topic, s := range b.sub {
-		for _, h := range s.handlers {
-			close(h.queue)
-		}
-		delete(b.sub, topic)
+	for topic, sub := range b.topics {
+		sub.Close()
+		delete(b.topics, topic)
 	}
 }
 
 func (b *bus) Stat(ctx context.Context, limit, offset int64, _, _ string) (result Stats, total int64, err error) {
-	b.RLock()
-	defer b.RUnlock()
 
-	var stats Stats
-	for topic, subs := range b.sub {
-		stats = append(stats, Stat{
-			Topic:       topic,
-			Subscribers: len(subs.handlers),
-		})
+	b.RLock()
+	var stats = make(Stats, 0, len(b.topics))
+	for _, subs := range b.topics {
+		stats = append(stats, subs.Stat())
 	}
+	b.RUnlock()
 
 	sort.Sort(stats)
 
-	total = int64(len(stats))
+	total = int64(len(b.topics))
 
 	if offset > total {
 		offset = total

@@ -20,8 +20,10 @@ package triggers
 
 import (
 	"sync"
+	"time"
 
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 )
 
@@ -73,4 +75,23 @@ type SystemTriggerMessage struct {
 	Topic     string      `json:"topic"`
 	EventName string      `json:"event_name"`
 	Event     interface{} `json:"event"`
+}
+
+type EventEntityState struct {
+	EntityId    common.EntityId     `json:"entity_id"`
+	Value       interface{}         `json:"value"`
+	State       *events.EntityState `json:"state"`
+	Attributes  m.AttributeValue    `json:"attributes"`
+	Settings    m.AttributeValue    `json:"settings"`
+	LastChanged *time.Time          `json:"last_changed"`
+	LastUpdated *time.Time          `json:"last_updated"`
+}
+
+type TriggerStateChangedMessage struct {
+	StorageSave     bool             `json:"storage_save"`
+	DoNotSaveMetric bool             `json:"do_not_save_metric"`
+	PluginName      string           `json:"plugin_name"`
+	EntityId        common.EntityId  `json:"entity_id"`
+	OldState        EventEntityState `json:"old_state"`
+	NewState        EventEntityState `json:"new_state"`
 }

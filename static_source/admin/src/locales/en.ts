@@ -191,6 +191,7 @@ export default {
         Logs: 'Logs',
         etc: "ETC",
         Swagger: 'Swagger',
+        Typedoc: 'Typedoc',
         Imagebrowser: 'Image Browser',
         Areas: 'Areas',
         Users: 'Users',
@@ -414,6 +415,7 @@ export default {
         icon: 'Icon',
         image: 'Image',
         autoLoad: 'Auto Load',
+        restoreState: 'Restore state after system restart',
         main: 'Main',
         actions: 'Actions',
         states: 'States',
@@ -567,8 +569,9 @@ export default {
             STREAM_PLAYER: 'Video player',
             JOYSTICK: 'Joystick',
             ICON: 'Icon',
-            TILES: 'Tiles',
+            TILES: 'Tiles (DEPRECATED)',
             tooltip: 'Tooltip',
+            GRID: 'Grid',
             slider: {
                 options: 'Slider Options',
                 color: 'Color',
@@ -637,7 +640,23 @@ export default {
                 columns: 'Columns',
                 rows: 'Rows',
             },
+            grid: {
+                items: 'Items',
+                height: 'Height',
+                width: 'Width',
+                position: 'Position',
+                top: 'Top',
+                left: 'Left',
+                preview: 'Preview',
+                columns: 'Columns',
+                rows: 'Rows',
+                showCellValue: 'Show value',
+                fontSize: 'Font Size',
+                gap: 'Gap',
+                gapSize: 'Gap Size',
+            },
             tilesOptions: 'Tales Options',
+            gridOptions: 'Grid Options',
             iconOptions: 'Icon Options',
             defaultIcon: 'Default Icon',
             iconSize: 'Icon Size',
@@ -680,7 +699,11 @@ export default {
     tools: {
         eventBus: {
             topic: 'Topic',
-            subscribers: 'Subscribers'
+            subscribers: 'Subscribers',
+            min: 'Min',
+            max: 'Max',
+            avg: 'Avg',
+            rps: 'Rps',
         }
     },
     mqtt: {

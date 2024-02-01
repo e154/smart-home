@@ -61,17 +61,15 @@ func NewActor(entity *m.Entity,
 
 	// Actions
 	for _, a := range actor.Actions {
-		if a.ScriptEngine.Engine() != nil {
+		if a.ScriptEngine != nil && a.ScriptEngine.Engine() != nil {
 			// bind
-			a.ScriptEngine.Engine().PushFunction("ModbusRtu", NewModbusRtu(service.EventBus(), actor))
-			_, _ = a.ScriptEngine.Engine().Do()
+			a.ScriptEngine.PushFunction("ModbusRtu", NewModbusRtu(service.EventBus(), actor))
 		}
 	}
 
-	actor.ScriptsEngine.Spawn(func(engine *scripts.Engine) {
-		engine.PushFunction("ModbusRtu", NewModbusRtu(service.EventBus(), actor))
-		engine.Do()
-	})
+	if actor.ScriptsEngine != nil {
+		actor.ScriptsEngine.PushFunction("ModbusRtu", NewModbusRtu(service.EventBus(), actor))
+	}
 
 	// action worker
 	go func() {
@@ -84,10 +82,6 @@ func NewActor(entity *m.Entity,
 }
 
 func (e *Actor) Destroy() {
-
-}
-
-func (e *Actor) Spawn() {
 
 }
 

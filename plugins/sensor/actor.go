@@ -55,11 +55,6 @@ func (e *Actor) Destroy() {
 
 }
 
-// Spawn ...
-func (e *Actor) Spawn() {
-
-}
-
 // SetState ...
 func (e *Actor) SetState(params supervisor.EntityStateParams) error {
 

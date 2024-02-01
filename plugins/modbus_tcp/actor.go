@@ -27,7 +27,6 @@ import (
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/node"
-	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
@@ -62,15 +61,13 @@ func NewActor(entity *m.Entity,
 	for _, a := range actor.Actions {
 		if a.ScriptEngine.Engine() != nil {
 			// bind
-			a.ScriptEngine.Engine().PushFunction("ModbusTcp", NewModbusTcp(service.EventBus(), actor))
-			_, _ = a.ScriptEngine.Engine().Do()
+			a.ScriptEngine.PushFunction("ModbusTcp", NewModbusTcp(service.EventBus(), actor))
 		}
 	}
 
-	actor.ScriptsEngine.Spawn(func(engine *scripts.Engine) {
-		engine.PushFunction("ModbusTcp", NewModbusTcp(service.EventBus(), actor))
-		engine.Do()
-	})
+	if actor.ScriptsEngine != nil {
+		actor.ScriptsEngine.PushFunction("ModbusTcp", NewModbusTcp(service.EventBus(), actor))
+	}
 
 	// action worker
 	go func() {
@@ -83,10 +80,6 @@ func NewActor(entity *m.Entity,
 }
 
 func (e *Actor) Destroy() {
-
-}
-
-func (e *Actor) Spawn() {
 
 }
 

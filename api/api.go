@@ -154,6 +154,10 @@ func (a *Api) registerHandlers() {
 		a.echo.GET("/api.swagger3.yaml", contentHandler)
 	}
 
+	var typedocHandler = echo.WrapHandler(http.FileServer(http.FS(TypedocAssets)))
+	a.echo.GET("/typedoc", typedocHandler)
+	a.echo.GET("/typedoc/*", typedocHandler)
+
 	wrapper := stub.ServerInterfaceWrapper{
 		Handler: a.controllers,
 	}

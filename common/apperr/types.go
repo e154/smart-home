@@ -225,6 +225,7 @@ var (
 	ErrScriptDelete   = ErrorWithCode("SCRIPT_DELETE_ERROR", "failed to delete script", ErrInternal)
 	ErrScriptSearch   = ErrorWithCode("SCRIPT_SEARCH_ERROR", "failed to search script", ErrInternal)
 	ErrScriptStat     = ErrorWithCode("SCRIPT_STAT_ERROR", "failed to get script statistic", ErrInternal)
+	ErrScriptCompile  = ErrorWithCode("SCRIPT_COMPILE_ERROR", "failed to compile script", ErrInternal)
 
 	ErrTaskAdd             = ErrorWithCode("TASK_ADD_ERROR", "failed to add Task", ErrInternal)
 	ErrTaskGet             = ErrorWithCode("TASK_GET_ERROR", "failed to get Task", ErrInternal)
