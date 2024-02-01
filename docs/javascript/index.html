@@ -243,6 +243,16 @@ English
 <a href=https://github.com/e154/smart-home/issues/new target=_blank><i class="fas fa-tasks fa-fw"></i> Create project issue</a>
 <a id=print href=https://e154.github.io/smart-home/docs/javascript/_print/><i class="fa fa-print fa-fw"></i> Print entire section</a>
 </div>
+<div class=td-toc><nav id=TableOfContents>
+<ul>
+<li>
+<ul>
+<li><a href=#scope-and-visibility>Scope and Visibility</a></li>
+<li><a href=#examples>Examples</a></li>
+</ul>
+</li>
+</ul>
+</nav></div>
 </aside>
 <main class="col-12 col-md-9 col-xl-8 pl-md-5" role=main>
 <nav aria-label=breadcrumb class="d-none d-md-block d-print-none">
@@ -264,6 +274,135 @@ English
 <p>In the <strong>Smart Home</strong> project, you can use JavaScript to create automation rules, schedule configurations, process data from sensors, control lighting, heating, security systems, and many other aspects of your smart home. JavaScript enables easy interaction with devices and systems and allows you to create user interfaces to control all the functions of your home.</p>
 <p>Thanks to the flexibility and popularity of JavaScript, you can easily customize and extend the <strong>Smart Home</strong> project according to your needs and preferences. You have the opportunity to use a wide range of JavaScript tools and libraries to adapt the project to your unique requirements and enhance its functionality.</p>
 <p>Regardless of your programming skills, JavaScript provides a powerful toolkit for developing software logic and applications in the <strong>Smart Home</strong> project.</p>
+<h3 id=scope-and-visibility>Scope and Visibility</h3>
+<figure>
+<img src=/smart-home/img/scrips-scope.svg>
+</figure>
+<p>The script system for Smart Home provides a flexible and powerful environment for automation. However, it&rsquo;s essential to consider different scopes when designing the software architecture. There are five scopes in which scripts can execute:</p>
+<p>First, let&rsquo;s take a look at the big picture. We have five scopes where scripts can execute:</p>
+<ul>
+<li><strong>Entity</strong>
+<ul>
+<li><strong>General Scope</strong>
+<ul>
+<li>Executes once when the entity starts:
+<ul>
+<li><code>function init(): void;</code></li>
+</ul>
+</li>
+<li>Executes the <code>entityAction</code> method when an action is performed, if not specified in the <strong>Action Scope</strong>:
+<ul>
+<li><code>function entityAction(entityId: string, actionName: string, params: { [key: string]: any }): void;</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Action Scope</strong>
+<ul>
+<li>Executes the <code>entityAction</code> method when an action is performed:
+<ul>
+<li><code>function entityAction(entityId: string, actionName: string, params: { [key: string]: any }): void;</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Task</strong>
+<ul>
+<li><strong>Trigger Scope</strong>
+<ul>
+<li>Executes one of the following methods based on the trigger type and event:
+<ul>
+<li><code>function automationTriggerStateChanged(msg: TriggerStateChangedMessage): boolean;</code></li>
+<li><code>function automationTriggerAlexa(msg: TriggerAlexaTimeMessage): boolean;</code></li>
+<li><code>function automationTriggerTime(msg: TriggerTimeMessage): boolean;</code></li>
+<li><code>function automationTriggerSystem(msg: TriggerSystemMessage): boolean;</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Condition Scope</strong>
+<ul>
+<li>Executes the <code>automationCondition</code> method when the trigger is triggered:
+<ul>
+<li><code>function automationCondition(entityId: string): boolean;</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Action Scope</strong>
+<ul>
+<li>Executes the <code>automationAction</code> method when <code>automationCondition</code> returns true:
+<ul>
+<li><code>function automationAction(entityId: string): void;</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id=examples>Examples</h3>
+<p>We wrote a script describing logic, event handling, and automation.</p>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#8f5902;font-style:italic>// Incorrect script implementation with three scopes
+</span><span style=color:#8f5902;font-style:italic></span>
+<span style=color:#8f5902;font-style:italic>// General scope
+</span><span style=color:#8f5902;font-style:italic>// ##################################
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#204a87;font-weight:700>var</span> <span style=color:#000>init</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>entityAction</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>automationTriggerStateChanged</span><span style=color:#000;font-weight:700>;</span>
+
+<span style=color:#204a87;font-weight:700>let</span> <span style=color:#000>entityState</span><span style=color:#000;font-weight:700>;</span>
+
+<span style=color:#8f5902;font-style:italic>// Entity - General Scope
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000>init</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#204a87;font-weight:700>function</span> <span style=color:#000;font-weight:700>()</span> <span style=color:#000;font-weight:700>{</span>
+  <span style=color:#8f5902;font-style:italic>// Entity initialization
+</span><span style=color:#8f5902;font-style:italic></span>  <span style=color:#000>entityState</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#4e9a06>&#39;off&#39;</span><span style=color:#000;font-weight:700>;</span>
+<span style=color:#000;font-weight:700>}</span>
+
+<span style=color:#8f5902;font-style:italic>// Action scope
+</span><span style=color:#8f5902;font-style:italic>// ##################################
+</span><span style=color:#8f5902;font-style:italic></span>
+<span style=color:#000>entityAction</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#204a87;font-weight:700>function</span> <span style=color:#000;font-weight:700>(</span><span style=color:#000>entityId</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>actionName</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>args</span><span style=color:#000;font-weight:700>)</span> <span style=color:#000;font-weight:700>{</span>
+  <span style=color:#000>console</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>log</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>entityState</span><span style=color:#000;font-weight:700>);</span> <span style=color:#8f5902;font-style:italic>// Incorrect
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000;font-weight:700>};</span>
+
+<span style=color:#8f5902;font-style:italic>//  automation
+</span><span style=color:#8f5902;font-style:italic>//  ##################################
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000>automationTriggerStateChanged</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#204a87;font-weight:700>function</span> <span style=color:#000;font-weight:700>(</span><span style=color:#000>msg</span><span style=color:#000;font-weight:700>)</span> <span style=color:#000;font-weight:700>{</span>
+  <span style=color:#000>console</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>log</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>entityState</span><span style=color:#000;font-weight:700>);</span> <span style=color:#8f5902;font-style:italic>// Incorrect
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000;font-weight:700>};</span>
+</code></pre></div><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#8f5902;font-style:italic>// Correct script implementation with three scopes
+</span><span style=color:#8f5902;font-style:italic></span>
+<span style=color:#8f5902;font-style:italic>// General scope
+</span><span style=color:#8f5902;font-style:italic>// ##################################
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#204a87;font-weight:700>var</span> <span style=color:#000>init</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>entityAction</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>automationTriggerStateChanged</span><span style=color:#000;font-weight:700>;</span>
+
+<span style=color:#204a87;font-weight:700>let</span> <span style=color:#000>entityState</span><span style=color:#000;font-weight:700>;</span>
+<span style=color:#204a87;font-weight:700>let</span> <span style=color:#000>storageKey</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>entityState</span> <span style=color:#ce5c00;font-weight:700>+</span> <span style=color:#000>ENTITY_ID</span><span style=color:#000;font-weight:700>;</span>
+
+<span style=color:#8f5902;font-style:italic>// Entity - General Scope
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000>init</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#204a87;font-weight:700>function</span> <span style=color:#000;font-weight:700>()</span> <span style=color:#000;font-weight:700>{</span>
+  <span style=color:#8f5902;font-style:italic>// Entity initialization
+</span><span style=color:#8f5902;font-style:italic></span>  <span style=color:#000>entityState</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#4e9a06>&#39;off&#39;</span><span style=color:#000;font-weight:700>;</span>
+
+  <span style=color:#000>Storage</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>push</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>storageKey</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>entityState</span><span style=color:#000;font-weight:700>);</span>
+<span style=color:#000;font-weight:700>}</span>
+
+<span style=color:#8f5902;font-style:italic>// Action scope
+</span><span style=color:#8f5902;font-style:italic>// ##################################
+</span><span style=color:#8f5902;font-style:italic></span>
+<span style=color:#000>entityAction</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#204a87;font-weight:700>function</span> <span style=color:#000;font-weight:700>(</span><span style=color:#000>entityId</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>actionName</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>args</span><span style=color:#000;font-weight:700>)</span> <span style=color:#000;font-weight:700>{</span>
+  <span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>entityState</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>Storage</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>getByName</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>storageKey</span><span style=color:#000;font-weight:700>);</span>
+  <span style=color:#000>console</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>log</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>entityState</span><span style=color:#000;font-weight:700>);</span>
+<span style=color:#000;font-weight:700>};</span>
+
+<span style=color:#8f5902;font-style:italic>//  automation
+</span><span style=color:#8f5902;font-style:italic>//  ##################################
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000>automationTriggerStateChanged</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#204a87;font-weight:700>function</span> <span style=color:#000;font-weight:700>(</span><span style=color:#000>msg</span><span style=color:#000;font-weight:700>)</span> <span style=color:#000;font-weight:700>{</span>
+  <span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>entityState</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>Storage</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>getByName</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>storageKey</span><span style=color:#000;font-weight:700>);</span>
+  <span style=color:#000>console</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>log</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>entityState</span><span style=color:#000;font-weight:700>);</span>
+<span style=color:#000;font-weight:700>};</span>
+</code></pre></div>
 <div class=section-index>
 <hr class=panel-line>
 <div class=entry>
@@ -346,7 +485,7 @@ English
 </div>
 </div>
 <div class="text-muted mt-5 pt-3 border-top">
-Last modified January 26, 2024: <a href=https://github.com/e154/smart-home/commit/e73b011a6a004cbc8f81a1efc311c8e96049a383>Merge pull request #260 from e154/master (e73b011)</a>
+Last modified February 1, 2024: <a href=https://github.com/e154/smart-home/commit/8f713ff6f113c8dad0ef84e0af7a226fe0cff4b8>Merge pull request #268 from e154/master (8f713ff)</a>
 </div>
 </div>
 </main>

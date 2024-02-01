@@ -259,6 +259,9 @@ sudo apt upgrade
 </div>
 <div class=td-content style=page-break-before:always>
 <h1 id=pg-79dd35eaf760c41d2392591d635dd60b>2.1 - Gate</h1>
+<figure>
+<img src=/smart-home/img/gate-network.svg>
+</figure>
 <p>Gate-сервер в системе Smart Home представляет собой ключевой компонент, обеспечивающий безопасный и удобный удаленный доступ к умному дому даже при отсутствии статического IP-адреса. Этот сервер позволяет пользователям управлять и мониторить свой дом из любой точки мира через интернет, обеспечивая защиту данных и комфортное взаимодействие.</p>
 <h4 id=преимущества-gate-сервера-в-системе-smart-home>Преимущества Gate-сервера в системе Smart Home</h4>
 <ol>
@@ -311,20 +314,126 @@ sudo apt upgrade
 </ul>
 </li>
 </ol>
+<h3 id=конфигурация-сервера>Конфигурация сервера</h3>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>cat config.gate.json
+
+<span style=color:#ce5c00;font-weight:700>{</span>
+  <span style=color:#4e9a06>&#34;api_http_port&#34;</span>: 8080,
+  <span style=color:#4e9a06>&#34;api_https_port&#34;</span>: 8443,
+  <span style=color:#4e9a06>&#34;api_debug&#34;</span>: false,
+  <span style=color:#4e9a06>&#34;api_gzip&#34;</span>: true,
+  <span style=color:#4e9a06>&#34;pprof&#34;</span>: false,
+  <span style=color:#4e9a06>&#34;domain&#34;</span>: <span style=color:#4e9a06>&#34;localhost&#34;</span>,
+  <span style=color:#4e9a06>&#34;https&#34;</span>: false,
+  <span style=color:#4e9a06>&#34;proxy_timeout&#34;</span>: 5,
+  <span style=color:#4e9a06>&#34;proxy_idle_timeout&#34;</span>: 10,
+  <span style=color:#4e9a06>&#34;proxy_secret_key&#34;</span>: <span style=color:#4e9a06>&#34;&#34;</span>
+<span style=color:#ce5c00;font-weight:700>}</span>
+
+</code></pre></div><p>Свойства полей для файла настроек <code>config.gate.json</code>:</p>
+<ol>
+<li>
+<p><strong><code>http_port</code> (int):</strong></p>
+<ul>
+<li><strong>Описание:</strong> Порт для HTTP API сервера.</li>
+<li><strong>Пример значения:</strong> <code>8080</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>https_port</code> (int):</strong></p>
+<ul>
+<li><strong>Описание:</strong> Порт для HTTPS API сервера.</li>
+<li><strong>Пример значения:</strong> <code>8443</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>debug</code> (bool):</strong></p>
+<ul>
+<li><strong>Описание:</strong> Включение режима отладки API сервера.</li>
+<li><strong>Пример значения:</strong> <code>true</code> (включено).</li>
+</ul>
+</li>
+<li>
+<p><strong><code>gzip</code> (bool):</strong></p>
+<ul>
+<li><strong>Описание:</strong> Включение сжатия Gzip для API запросов.</li>
+<li><strong>Пример значения:</strong> <code>true</code> (включено).</li>
+</ul>
+</li>
+<li>
+<p><strong><code>domain</code> (string):</strong></p>
+<ul>
+<li><strong>Описание:</strong> Доменное имя для Gate-сервера.</li>
+<li><strong>Пример значения:</strong> <code>example.com</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>pprof</code> (bool):</strong></p>
+<ul>
+<li><strong>Описание:</strong> Включение режима профилирования сервера.</li>
+<li><strong>Пример значения:</strong> <code>true</code> (включено).</li>
+</ul>
+</li>
+<li>
+<p><strong><code>https</code> (bool):</strong></p>
+<ul>
+<li><strong>Описание:</strong> Включение использования Let&rsquo;s Encrypt для автоматического получения SSL-сертификата для указанного домена.</li>
+<li><strong>Пример значения:</strong> <code>true</code> (включено).</li>
+</ul>
+</li>
+<li>
+<p><strong><code>proxy_timeout</code> (int):</strong></p>
+<ul>
+<li><strong>Описание:</strong> Таймаут для прокси-соединений в секундах.</li>
+<li><strong>Пример значения:</strong> <code>5</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>proxy_idle_timeout</code> (int):</strong></p>
+<ul>
+<li><strong>Описание:</strong> Таймаут прокси-соединений при отсутствии активности в секундах.</li>
+<li><strong>Пример значения:</strong> <code>10</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>proxy_secret_key</code> (string):</strong></p>
+</li>
+</ol>
+<ul>
+<li><strong>Описание:</strong> Секретный ключ для обеспечения безопасности прокси-соединений.</li>
+<li><strong>Пример значения:</strong> <code>mySecretKey</code>.</li>
+</ul>
+<p>Эти параметры предоставляют гибкий контроль над настройками Gate-сервера, включая безопасность, режимы работы и использование SSL-сертификатов через Let&rsquo;s Encrypt.</p>
+<h3 id=запуск-сервера>Запуск сервера</h3>
+<p>Gate сервер встроен в систему smart-home как отдельный режим, включаемый аргументом `gate``.</p>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>./smart-home <span style=color:#204a87>help</span> gate
+Organization of remote access without white IP
+
+Usage:
+  server gate <span style=color:#ce5c00;font-weight:700>[</span>flags<span style=color:#ce5c00;font-weight:700>]</span>
+
+Flags:
+  -h, --help   <span style=color:#204a87>help</span> <span style=color:#204a87;font-weight:700>for</span> gate
+
+
+./smart-home gate
+
+  ___      _
+ / __<span style=color:#000;font-weight:700>|</span>__ _<span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span>_ ___
+<span style=color:#000;font-weight:700>|</span> <span style=color:#ce5c00;font-weight:700>(</span>_ / _<span style=color:#a40000>&#39;</span> <span style=color:#000;font-weight:700>|</span>  _/ -_<span style=color:#ce5c00;font-weight:700>)</span>
+ <span style=color:#4e9a06>\_</span>__<span style=color:#4e9a06>\_</span>_,_<span style=color:#000;font-weight:700>|</span><span style=color:#4e9a06>\_</span>_<span style=color:#4e9a06>\_</span>__<span style=color:#000;font-weight:700>|</span>
+
+
+INFO	gate            	server/gate_server.go:93 &gt;	Started ...
+INFO	gate            	server/server.go:117 &gt;	server started at :8080
+</code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
 <h1 id=pg-6bea25be625ccc9f997ef24efc5fe445>2.2 - Entity</h1>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>+---------------------+
-<span style=color:#000;font-weight:700>|</span>       Entity        <span style=color:#000;font-weight:700>|</span>
-+---------------------+
-<span style=color:#000;font-weight:700>|</span>      Actions        <span style=color:#000;font-weight:700>|</span>
-<span style=color:#000;font-weight:700>|</span>      State          <span style=color:#000;font-weight:700>|</span>
-<span style=color:#000;font-weight:700>|</span>    Attributes       <span style=color:#000;font-weight:700>|</span>
-<span style=color:#000;font-weight:700>|</span>     Settings        <span style=color:#000;font-weight:700>|</span>
-<span style=color:#000;font-weight:700>|</span>      Metrics        <span style=color:#000;font-weight:700>|</span>
-<span style=color:#000;font-weight:700>|</span>      Storage        <span style=color:#000;font-weight:700>|</span>
-+---------------------+
-</code></pre></div><p>Это простая схема, которая представляет объект &ldquo;Entity&rdquo;.
+<figure>
+<img src=/smart-home/img/entity.svg>
+</figure>
+<p>Это простая схема, которая представляет объект &ldquo;Entity&rdquo;.
 Каждый компонент имеет свою роль и функциональность в управлении и мониторинге объекта &ldquo;Entity&rdquo; в умном доме.</p>
 <p>Объект &ldquo;Entity&rdquo; является центральным элементом системы Smart Home и объединяет различные аспекты объекта, его состояния,
 атрибутов, действий, настроек и метрик. Это позволяет системе эффективно управлять и контролировать объекты в умном доме.</p>
@@ -370,53 +479,10 @@ sudo apt upgrade
 sensor. Если объект &ldquo;Entity&rdquo; предназначен для взаимодействия с брокером MQTT, то для него может быть использован плагин mqtt.</p>
 <p>Каждый плагин предоставляет свои собственные хэндлеры (обработчики) и методы, которые позволяют объектам &ldquo;Entity&rdquo; выполнять
 определенные действия, получать данные, отправлять сообщения и т.д.</p>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>              +-----------------------+
-              <span style=color:#000;font-weight:700>|</span>                       <span style=color:#000;font-weight:700>|</span>
-              <span style=color:#000;font-weight:700>|</span>     Smart Home        <span style=color:#000;font-weight:700>|</span>
-              <span style=color:#000;font-weight:700>|</span>                       <span style=color:#000;font-weight:700>|</span>
-              +-----------------------+
-                         <span style=color:#000;font-weight:700>|</span>
-                         <span style=color:#000;font-weight:700>|</span>
-                         v
-              +-----------------------+
-              <span style=color:#000;font-weight:700>|</span>                       <span style=color:#000;font-weight:700>|</span>
-              <span style=color:#000;font-weight:700>|</span>       Entities        <span style=color:#000;font-weight:700>|</span>
-              <span style=color:#000;font-weight:700>|</span>                       <span style=color:#000;font-weight:700>|</span>
-              +-----------------------+
-                         <span style=color:#000;font-weight:700>|</span>
-                         <span style=color:#000;font-weight:700>|</span>
-                         v
-   +----------------------------------------+
-   <span style=color:#000;font-weight:700>|</span>                                        <span style=color:#000;font-weight:700>|</span>
-   <span style=color:#000;font-weight:700>|</span>              Plugins                   <span style=color:#000;font-weight:700>|</span>
-   <span style=color:#000;font-weight:700>|</span>                                        <span style=color:#000;font-weight:700>|</span>
-   +----------------------------------------+
-   <span style=color:#000;font-weight:700>|</span>             <span style=color:#000;font-weight:700>|</span>           <span style=color:#000;font-weight:700>|</span>              <span style=color:#000;font-weight:700>|</span>
-   <span style=color:#000;font-weight:700>|</span>             <span style=color:#000;font-weight:700>|</span>           <span style=color:#000;font-weight:700>|</span>              <span style=color:#000;font-weight:700>|</span>
-   v             v           v              v
-+----------+ +----------+ +----------+ +----------+
-<span style=color:#000;font-weight:700>|</span>          <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span>          <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span>          <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span>          <span style=color:#000;font-weight:700>|</span>
-<span style=color:#000;font-weight:700>|</span>  Plugin  <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span>  Plugin  <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span>  Plugin  <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span>  Plugin  <span style=color:#000;font-weight:700>|</span>
-<span style=color:#000;font-weight:700>|</span>          <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span>          <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span>          <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span>          <span style=color:#000;font-weight:700>|</span>
-+----------+ +----------+ +----------+ +----------+
-   <span style=color:#000;font-weight:700>|</span>             <span style=color:#000;font-weight:700>|</span>           <span style=color:#000;font-weight:700>|</span>              <span style=color:#000;font-weight:700>|</span>
-   <span style=color:#000;font-weight:700>|</span>             <span style=color:#000;font-weight:700>|</span>           <span style=color:#000;font-weight:700>|</span>              <span style=color:#000;font-weight:700>|</span>
-   v             v           v              v
-+----------+ +----------+ +----------+ +----------+
-<span style=color:#000;font-weight:700>|</span>          <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span>          <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span>          <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span>          <span style=color:#000;font-weight:700>|</span>
-<span style=color:#000;font-weight:700>|</span> Entity <span style=color:#0000cf;font-weight:700>1</span> <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span> Entity <span style=color:#0000cf;font-weight:700>2</span> <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span> Entity <span style=color:#0000cf;font-weight:700>3</span> <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span> Entity <span style=color:#0000cf;font-weight:700>4</span> <span style=color:#000;font-weight:700>|</span>
-<span style=color:#000;font-weight:700>|</span>          <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span>          <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span>          <span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span>          <span style=color:#000;font-weight:700>|</span>
-+----------+ +----------+ +----------+ +----------+
-
-                     ^
-                     <span style=color:#000;font-weight:700>|</span>
-                     <span style=color:#000;font-weight:700>|</span>
-              +------------------+
-              <span style=color:#000;font-weight:700>|</span>                  <span style=color:#000;font-weight:700>|</span>
-              <span style=color:#000;font-weight:700>|</span>  Automation      <span style=color:#000;font-weight:700>|</span>
-              <span style=color:#000;font-weight:700>|</span>                  <span style=color:#000;font-weight:700>|</span>
-              +------------------+
-</code></pre></div><p>На схеме представлена общая структура связи между объектами &ldquo;Entity&rdquo;, плагинами и компонентом автоматизации в системе Smart Home.</p>
+<figure>
+<img src=/smart-home/img/entity_plugins.svg>
+</figure>
+<p>На схеме представлена общая структура связи между объектами &ldquo;Entity&rdquo;, плагинами и компонентом автоматизации в системе Smart Home.</p>
 <ol>
 <li>Smart Home является центральной частью системы и координирует взаимодействие между всеми компонентами.</li>
 <li>Объекты &ldquo;Entity&rdquo; представляют конкретные устройства, датчики или другие компоненты в системе. Каждый объект &ldquo;Entity&rdquo; может использовать определенный плагин для своей реализации.</li>
@@ -714,7 +780,6 @@ sensor. Если объект &ldquo;Entity&rdquo; предназначен дл
 <li><code>TriggerStateChanged</code>:</li>
 </ol>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>automationTriggerStateChanged = </span><span style=color:#000>(msg) -&gt;</span>
-  <span style=color:#000>print</span> <span style=color:#4e9a06>&#39;---trigger---&#39;</span>
   <span style=color:#000>p = </span><span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
   <span style=color:#000>Done</span> <span style=color:#000>p</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>new_state</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>state</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>name</span>
   <span style=color:#204a87;font-weight:700>return</span> <span style=color:#204a87;font-weight:700>false</span>
@@ -742,8 +807,7 @@ sensor. Если объект &ldquo;Entity&rdquo; предназначен дл
 значение <code>false</code>, чтобы указать, что дальнейшая обработка не требуется.</p>
 <p>Пример реализации:</p>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>automationTriggerStateChanged = </span><span style=color:#000>(msg)-&gt;</span>
-    <span style=color:#8f5902;font-style:italic>#print &#39;---trigger---&#39;
-</span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#000>p = </span><span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
+    <span style=color:#000>p = </span><span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
     <span style=color:#204a87;font-weight:700>if</span> <span style=color:#ce5c00;font-weight:700>!</span><span style=color:#000>p</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>new_state</span> <span style=color:#ce5c00;font-weight:700>||</span> <span style=color:#ce5c00;font-weight:700>!</span><span style=color:#000>p</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>new_state</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>state</span>
         <span style=color:#204a87;font-weight:700>return</span> <span style=color:#204a87;font-weight:700>false</span>
     <span style=color:#204a87;font-weight:700>return</span> <span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>new_state</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>state</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>name</span> <span style=color:#ce5c00;font-weight:700>==</span> <span style=color:#4e9a06>&#39;DOUBLE_CLICK&#39;</span>
@@ -799,6 +863,137 @@ JavaScript - это широко используемый язык програ�
 библиотек JavaScript, чтобы адаптировать проект под ваши уникальные требования и расширить его функциональность.</p>
 <p>Независимо от ваших навыков в программировании, JavaScript предоставляет мощный инструментарий для разработки программной
 логики и приложений в проекте <strong>Smart Home</strong>.</p>
+<h3 id=область-видимости-и-scope>Область видимости и scope</h3>
+<figure>
+<img src=/smart-home/img/scrips-scope.svg>
+</figure>
+<p>Система скриптов для Smart Home предоставляет гибкую и мощную среду для автоматизации, однако важно учесть различные
+области видимости при проектировании программной архитектуры. Существует пять скоупов, в которых могут выполняться
+скрипты:</p>
+<p>Для начала давайте посмотрим картину в целом. У нас есть пять скоупов где исполняются скрипты:</p>
+<ul>
+<li><strong>Entity</strong>
+<ul>
+<li><strong>General Scope</strong>
+<ul>
+<li>при старте entity выполняется единожды:
+<ul>
+<li><code>function init(): void;</code></li>
+</ul>
+</li>
+<li>выполняется метод entityAction, когда, выполняется действие, если не указан в <strong>Action Scope</strong>:
+<ul>
+<li><code>function entityAction(entityId: string, actionName: string, params: { [key: string]: any }): void;</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Action Scope</strong>
+<ul>
+<li>выполняется метод entityAction, когда, выполняется действие:
+<ul>
+<li><code>function entityAction(entityId: string, actionName: string, params: { [key: string]: any }): void;</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Task</strong>
+<ul>
+<li><strong>Trigger Scope</strong>
+<ul>
+<li>выполняется один из следующих методов в зависимости от типа триггера и события:
+<ul>
+<li><code>function automationTriggerStateChanged(msg: TriggerStateChangedMessage): boolean;</code></li>
+<li><code>function automationTriggerAlexa(msg: TriggerAlexaTimeMessage): boolean;</code></li>
+<li><code>function automationTriggerTime(msg: TriggerTimeMessage): boolean;</code></li>
+<li><code>function automationTriggerSystem(msg: TriggerSystemMessage): boolean;</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Condition Scope</strong>
+<ul>
+<li>выполняется метод automationCondition, когда отработает триггер:
+<ul>
+<li><code>function automationCondition(entityId: string): boolean;</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Action Scope</strong>
+<ul>
+<li>выполняется метод automationAction, когда automationCondition вернет true:
+<ul>
+<li><code>function automationAction(entityId: string): void;</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id=примеры>Примеры</h3>
+<p>Мы написали скрипт описывающий логику, обработчик событий и автоматизацию.</p>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#8f5902;font-style:italic>// Неправильная реализация скрипта с тремя скопами
+</span><span style=color:#8f5902;font-style:italic></span>
+<span style=color:#8f5902;font-style:italic>// General scope
+</span><span style=color:#8f5902;font-style:italic>// ##################################
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#204a87;font-weight:700>var</span> <span style=color:#000>init</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>entityAction</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>automationTriggerStateChanged</span><span style=color:#000;font-weight:700>;</span>
+
+<span style=color:#204a87;font-weight:700>let</span> <span style=color:#000>entityState</span><span style=color:#000;font-weight:700>;</span>
+
+<span style=color:#8f5902;font-style:italic>// Entity - General Scope
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000>init</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#204a87;font-weight:700>function</span> <span style=color:#000;font-weight:700>()</span> <span style=color:#000;font-weight:700>{</span>
+  <span style=color:#8f5902;font-style:italic>// Инициализация сущности
+</span><span style=color:#8f5902;font-style:italic></span>  <span style=color:#000>entityState</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#4e9a06>&#39;off&#39;</span><span style=color:#000;font-weight:700>;</span>
+<span style=color:#000;font-weight:700>}</span>
+
+<span style=color:#8f5902;font-style:italic>// Action scope
+</span><span style=color:#8f5902;font-style:italic>// ##################################
+</span><span style=color:#8f5902;font-style:italic></span>
+<span style=color:#000>entityAction</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#204a87;font-weight:700>function</span> <span style=color:#000;font-weight:700>(</span><span style=color:#000>entityId</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>actionName</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>args</span><span style=color:#000;font-weight:700>)</span> <span style=color:#000;font-weight:700>{</span>
+  <span style=color:#000>console</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>log</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>entityState</span><span style=color:#000;font-weight:700>);</span> <span style=color:#8f5902;font-style:italic>// Неправильно
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000;font-weight:700>};</span>
+
+<span style=color:#8f5902;font-style:italic>//  automation
+</span><span style=color:#8f5902;font-style:italic>//  ##################################
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000>automationTriggerStateChanged</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#204a87;font-weight:700>function</span> <span style=color:#000;font-weight:700>(</span><span style=color:#000>msg</span><span style=color:#000;font-weight:700>)</span> <span style=color:#000;font-weight:700>{</span>
+  <span style=color:#000>console</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>log</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>entityState</span><span style=color:#000;font-weight:700>);</span> <span style=color:#8f5902;font-style:italic>// Неправильно
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000;font-weight:700>};</span>
+</code></pre></div><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#8f5902;font-style:italic>// Правильная реализация скрипта с тремя скопами
+</span><span style=color:#8f5902;font-style:italic></span>
+<span style=color:#8f5902;font-style:italic>// General scope
+</span><span style=color:#8f5902;font-style:italic>// ##################################
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#204a87;font-weight:700>var</span> <span style=color:#000>init</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>entityAction</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>automationTriggerStateChanged</span><span style=color:#000;font-weight:700>;</span>
+
+<span style=color:#204a87;font-weight:700>let</span> <span style=color:#000>entityState</span><span style=color:#000;font-weight:700>;</span>
+<span style=color:#204a87;font-weight:700>let</span> <span style=color:#000>storageKey</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>entityState</span> <span style=color:#ce5c00;font-weight:700>+</span> <span style=color:#000>ENTITY_ID</span><span style=color:#000;font-weight:700>;</span>
+
+<span style=color:#8f5902;font-style:italic>// Entity - General Scope
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000>init</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#204a87;font-weight:700>function</span> <span style=color:#000;font-weight:700>()</span> <span style=color:#000;font-weight:700>{</span>
+  <span style=color:#8f5902;font-style:italic>// Инициализация сущности
+</span><span style=color:#8f5902;font-style:italic></span>  <span style=color:#000>entityState</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#4e9a06>&#39;off&#39;</span><span style=color:#000;font-weight:700>;</span>
+
+  <span style=color:#000>Storage</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>push</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>storageKey</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>entityState</span><span style=color:#000;font-weight:700>);</span>
+<span style=color:#000;font-weight:700>}</span>
+
+<span style=color:#8f5902;font-style:italic>// Action scope
+</span><span style=color:#8f5902;font-style:italic>// ##################################
+</span><span style=color:#8f5902;font-style:italic></span>
+<span style=color:#000>entityAction</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#204a87;font-weight:700>function</span> <span style=color:#000;font-weight:700>(</span><span style=color:#000>entityId</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>actionName</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>args</span><span style=color:#000;font-weight:700>)</span> <span style=color:#000;font-weight:700>{</span>
+  <span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>entityState</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>Storage</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>getByName</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>storageKey</span><span style=color:#000;font-weight:700>);</span>
+  <span style=color:#000>console</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>log</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>entityState</span><span style=color:#000;font-weight:700>);</span>
+<span style=color:#000;font-weight:700>};</span>
+
+<span style=color:#8f5902;font-style:italic>//  automation
+</span><span style=color:#8f5902;font-style:italic>//  ##################################
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000>automationTriggerStateChanged</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#204a87;font-weight:700>function</span> <span style=color:#000;font-weight:700>(</span><span style=color:#000>msg</span><span style=color:#000;font-weight:700>)</span> <span style=color:#000;font-weight:700>{</span>
+  <span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>entityState</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>Storage</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>getByName</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>storageKey</span><span style=color:#000;font-weight:700>);</span>
+  <span style=color:#000>console</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>log</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>entityState</span><span style=color:#000;font-weight:700>);</span>
+<span style=color:#000;font-weight:700>};</span>
+</code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
 <h1 id=pg-931ce744eccc38903fe8d5ccc304238f>3.1 - Events</h1>

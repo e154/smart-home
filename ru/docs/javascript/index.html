@@ -244,6 +244,16 @@ JavaScript - это …">
 <a href=https://github.com/e154/smart-home/issues/new target=_blank><i class="fas fa-tasks fa-fw"></i> Предложить доработки по проекту</a>
 <a id=print href=https://e154.github.io/smart-home/ru/docs/javascript/_print/><i class="fa fa-print fa-fw"></i> Print entire section</a>
 </div>
+<div class=td-toc><nav id=TableOfContents>
+<ul>
+<li>
+<ul>
+<li><a href=#область-видимости-и-scope>Область видимости и scope</a></li>
+<li><a href=#примеры>Примеры</a></li>
+</ul>
+</li>
+</ul>
+</nav></div>
 </aside>
 <main class="col-12 col-md-9 col-xl-8 pl-md-5" role=main>
 <nav aria-label=breadcrumb class="d-none d-md-block d-print-none">
@@ -275,6 +285,137 @@ JavaScript - это широко используемый язык програ�
 библиотек JavaScript, чтобы адаптировать проект под ваши уникальные требования и расширить его функциональность.</p>
 <p>Независимо от ваших навыков в программировании, JavaScript предоставляет мощный инструментарий для разработки программной
 логики и приложений в проекте <strong>Smart Home</strong>.</p>
+<h3 id=область-видимости-и-scope>Область видимости и scope</h3>
+<figure>
+<img src=/smart-home/img/scrips-scope.svg>
+</figure>
+<p>Система скриптов для Smart Home предоставляет гибкую и мощную среду для автоматизации, однако важно учесть различные
+области видимости при проектировании программной архитектуры. Существует пять скоупов, в которых могут выполняться
+скрипты:</p>
+<p>Для начала давайте посмотрим картину в целом. У нас есть пять скоупов где исполняются скрипты:</p>
+<ul>
+<li><strong>Entity</strong>
+<ul>
+<li><strong>General Scope</strong>
+<ul>
+<li>при старте entity выполняется единожды:
+<ul>
+<li><code>function init(): void;</code></li>
+</ul>
+</li>
+<li>выполняется метод entityAction, когда, выполняется действие, если не указан в <strong>Action Scope</strong>:
+<ul>
+<li><code>function entityAction(entityId: string, actionName: string, params: { [key: string]: any }): void;</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Action Scope</strong>
+<ul>
+<li>выполняется метод entityAction, когда, выполняется действие:
+<ul>
+<li><code>function entityAction(entityId: string, actionName: string, params: { [key: string]: any }): void;</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Task</strong>
+<ul>
+<li><strong>Trigger Scope</strong>
+<ul>
+<li>выполняется один из следующих методов в зависимости от типа триггера и события:
+<ul>
+<li><code>function automationTriggerStateChanged(msg: TriggerStateChangedMessage): boolean;</code></li>
+<li><code>function automationTriggerAlexa(msg: TriggerAlexaTimeMessage): boolean;</code></li>
+<li><code>function automationTriggerTime(msg: TriggerTimeMessage): boolean;</code></li>
+<li><code>function automationTriggerSystem(msg: TriggerSystemMessage): boolean;</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Condition Scope</strong>
+<ul>
+<li>выполняется метод automationCondition, когда отработает триггер:
+<ul>
+<li><code>function automationCondition(entityId: string): boolean;</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Action Scope</strong>
+<ul>
+<li>выполняется метод automationAction, когда automationCondition вернет true:
+<ul>
+<li><code>function automationAction(entityId: string): void;</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id=примеры>Примеры</h3>
+<p>Мы написали скрипт описывающий логику, обработчик событий и автоматизацию.</p>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#8f5902;font-style:italic>// Неправильная реализация скрипта с тремя скопами
+</span><span style=color:#8f5902;font-style:italic></span>
+<span style=color:#8f5902;font-style:italic>// General scope
+</span><span style=color:#8f5902;font-style:italic>// ##################################
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#204a87;font-weight:700>var</span> <span style=color:#000>init</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>entityAction</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>automationTriggerStateChanged</span><span style=color:#000;font-weight:700>;</span>
+
+<span style=color:#204a87;font-weight:700>let</span> <span style=color:#000>entityState</span><span style=color:#000;font-weight:700>;</span>
+
+<span style=color:#8f5902;font-style:italic>// Entity - General Scope
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000>init</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#204a87;font-weight:700>function</span> <span style=color:#000;font-weight:700>()</span> <span style=color:#000;font-weight:700>{</span>
+  <span style=color:#8f5902;font-style:italic>// Инициализация сущности
+</span><span style=color:#8f5902;font-style:italic></span>  <span style=color:#000>entityState</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#4e9a06>&#39;off&#39;</span><span style=color:#000;font-weight:700>;</span>
+<span style=color:#000;font-weight:700>}</span>
+
+<span style=color:#8f5902;font-style:italic>// Action scope
+</span><span style=color:#8f5902;font-style:italic>// ##################################
+</span><span style=color:#8f5902;font-style:italic></span>
+<span style=color:#000>entityAction</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#204a87;font-weight:700>function</span> <span style=color:#000;font-weight:700>(</span><span style=color:#000>entityId</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>actionName</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>args</span><span style=color:#000;font-weight:700>)</span> <span style=color:#000;font-weight:700>{</span>
+  <span style=color:#000>console</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>log</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>entityState</span><span style=color:#000;font-weight:700>);</span> <span style=color:#8f5902;font-style:italic>// Неправильно
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000;font-weight:700>};</span>
+
+<span style=color:#8f5902;font-style:italic>//  automation
+</span><span style=color:#8f5902;font-style:italic>//  ##################################
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000>automationTriggerStateChanged</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#204a87;font-weight:700>function</span> <span style=color:#000;font-weight:700>(</span><span style=color:#000>msg</span><span style=color:#000;font-weight:700>)</span> <span style=color:#000;font-weight:700>{</span>
+  <span style=color:#000>console</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>log</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>entityState</span><span style=color:#000;font-weight:700>);</span> <span style=color:#8f5902;font-style:italic>// Неправильно
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000;font-weight:700>};</span>
+</code></pre></div><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#8f5902;font-style:italic>// Правильная реализация скрипта с тремя скопами
+</span><span style=color:#8f5902;font-style:italic></span>
+<span style=color:#8f5902;font-style:italic>// General scope
+</span><span style=color:#8f5902;font-style:italic>// ##################################
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#204a87;font-weight:700>var</span> <span style=color:#000>init</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>entityAction</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>automationTriggerStateChanged</span><span style=color:#000;font-weight:700>;</span>
+
+<span style=color:#204a87;font-weight:700>let</span> <span style=color:#000>entityState</span><span style=color:#000;font-weight:700>;</span>
+<span style=color:#204a87;font-weight:700>let</span> <span style=color:#000>storageKey</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>entityState</span> <span style=color:#ce5c00;font-weight:700>+</span> <span style=color:#000>ENTITY_ID</span><span style=color:#000;font-weight:700>;</span>
+
+<span style=color:#8f5902;font-style:italic>// Entity - General Scope
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000>init</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#204a87;font-weight:700>function</span> <span style=color:#000;font-weight:700>()</span> <span style=color:#000;font-weight:700>{</span>
+  <span style=color:#8f5902;font-style:italic>// Инициализация сущности
+</span><span style=color:#8f5902;font-style:italic></span>  <span style=color:#000>entityState</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#4e9a06>&#39;off&#39;</span><span style=color:#000;font-weight:700>;</span>
+
+  <span style=color:#000>Storage</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>push</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>storageKey</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>entityState</span><span style=color:#000;font-weight:700>);</span>
+<span style=color:#000;font-weight:700>}</span>
+
+<span style=color:#8f5902;font-style:italic>// Action scope
+</span><span style=color:#8f5902;font-style:italic>// ##################################
+</span><span style=color:#8f5902;font-style:italic></span>
+<span style=color:#000>entityAction</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#204a87;font-weight:700>function</span> <span style=color:#000;font-weight:700>(</span><span style=color:#000>entityId</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>actionName</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>args</span><span style=color:#000;font-weight:700>)</span> <span style=color:#000;font-weight:700>{</span>
+  <span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>entityState</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>Storage</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>getByName</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>storageKey</span><span style=color:#000;font-weight:700>);</span>
+  <span style=color:#000>console</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>log</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>entityState</span><span style=color:#000;font-weight:700>);</span>
+<span style=color:#000;font-weight:700>};</span>
+
+<span style=color:#8f5902;font-style:italic>//  automation
+</span><span style=color:#8f5902;font-style:italic>//  ##################################
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000>automationTriggerStateChanged</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#204a87;font-weight:700>function</span> <span style=color:#000;font-weight:700>(</span><span style=color:#000>msg</span><span style=color:#000;font-weight:700>)</span> <span style=color:#000;font-weight:700>{</span>
+  <span style=color:#204a87;font-weight:700>const</span> <span style=color:#000>entityState</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>Storage</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>getByName</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>storageKey</span><span style=color:#000;font-weight:700>);</span>
+  <span style=color:#000>console</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>log</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>entityState</span><span style=color:#000;font-weight:700>);</span>
+<span style=color:#000;font-weight:700>};</span>
+</code></pre></div>
 <div class=section-index>
 <hr class=panel-line>
 <div class=entry>
@@ -357,7 +498,7 @@ JavaScript - это широко используемый язык програ�
 </div>
 </div>
 <div class="text-muted mt-5 pt-3 border-top">
-Изменено 26.01.2024: <a href=https://github.com/e154/smart-home/commit/e73b011a6a004cbc8f81a1efc311c8e96049a383>Merge pull request #260 from e154/master (e73b011)</a>
+Изменено 01.02.2024: <a href=https://github.com/e154/smart-home/commit/8f713ff6f113c8dad0ef84e0af7a226fe0cff4b8>Merge pull request #268 from e154/master (8f713ff)</a>
 </div>
 </div>
 </main>

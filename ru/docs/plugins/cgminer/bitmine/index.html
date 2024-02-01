@@ -34,12 +34,12 @@ Miner Базовая сущность …">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://e154.github.io/smart-home/ru/docs/plugins/cgminer/bitmine/"><meta property="article:section" content="docs">
 <meta property="article:published_time" content="2021-10-20T00:00:00+00:00">
-<meta property="article:modified_time" content="2024-01-26T01:07:50+06:00"><meta property="og:site_name" content="Умный дом">
+<meta property="article:modified_time" content="2024-02-01T22:54:15+06:00"><meta property="og:site_name" content="Умный дом">
 <meta itemprop=name content="Bitmine">
 <meta itemprop=description content="Работа с устройствами ASIC производителя Bitmine Antminer.
 поддерживаемые усторойства:
  S9 S7 L3 L3 D3 T9  javascript свойства  Miner Базовая сущность # константа с уникальным id устройства const ENTITY_ID result = Miner .stats() .devs() .summary() .pools() .addPool(url string) .version() .enable(poolId int64) .disable(poolId int64) .delete(poolId int64) .switchPool(poolId int64) .restart()    значение описание     result type: Object (Result)       значение описание     stats type: метод, статистика   devs type: метод, статистика   summary type: метод, статистика   pools type: метод, список серверов   addPool type: метод, добавление сервера   version type: метод, версия прошивки   enable type: метод, включение в работу сервера   disable type: метод, включение сервера   delete type: метод, удаление сервера   switchPool type: метод, переключние сервера   restart type: метод, мягкий перезапуск устройства     объект Result result = { error: false, errMessage: &#34;&#34;, result: &#34;&#34; }    значение описание     error type: boolean, признак ошибки   errMessage type: string, человекопонятное описание ошибки   result type: string, json объект в текстовом формате, если запрос завершился без ошибок     функция entityAction entityAction = (entityId, actionName, args)->    значение описание     entityId type: string, id сущности отправляющего сообщение   actionName type: string, название действия, без символа &lsquo;/&rsquo; в верхнем регистре   args Type: map[string]any     объект EntityStateParams entityStateParams = { &#34;new_state&#34;: &#34;&#34; &#34;attribute_values&#34;: {} &#34;settings_value&#34;: {} &#34;storage_save&#34;: true }    значение описание     new_state type: *string, наименование статуса   attribute_values type: Object, новое состяние аттрибутов сущности   settings_value type: Object, новое состояние настроек сущности   storage_save type: boolean, признак записи нового состояния в бд     пример кода # cgminer # ##################################  ifError =(res)-> return !"><meta itemprop=datePublished content="2021-10-20T00:00:00+00:00">
-<meta itemprop=dateModified content="2024-01-26T01:07:50+06:00">
+<meta itemprop=dateModified content="2024-02-01T22:54:15+06:00">
 <meta itemprop=wordCount content="285">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Bitmine">
@@ -516,7 +516,7 @@ Miner Базовая сущность …">
     <span style=color:#204a87;font-weight:700>when</span> <span style=color:#4e9a06>&#39;SUM&#39;</span> <span style=color:#204a87;font-weight:700>then</span> <span style=color:#000>checkSum</span><span style=color:#000;font-weight:700>()</span>
 </code></pre></div>
 <div class="text-muted mt-5 pt-3 border-top">
-Изменено 26.01.2024: <a href=https://github.com/e154/smart-home/commit/e73b011a6a004cbc8f81a1efc311c8e96049a383>Merge pull request #260 from e154/master (e73b011)</a>
+Изменено 01.02.2024: <a href=https://github.com/e154/smart-home/commit/8f713ff6f113c8dad0ef84e0af7a226fe0cff4b8>Merge pull request #268 from e154/master (8f713ff)</a>
 </div>
 </div>
 </main>

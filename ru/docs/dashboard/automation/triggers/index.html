@@ -27,13 +27,13 @@
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://e154.github.io/smart-home/ru/docs/dashboard/automation/triggers/"><meta property="article:section" content="docs">
 <meta property="article:published_time" content="2021-10-20T00:00:00+00:00">
-<meta property="article:modified_time" content="2024-01-26T01:07:50+06:00"><meta property="og:site_name" content="Умный дом">
+<meta property="article:modified_time" content="2024-02-01T22:54:15+06:00"><meta property="og:site_name" content="Умный дом">
 <meta itemprop=name content="Triggers">
 <meta itemprop=description content="Триггеры в системе Smart Home представляют собой ключевые элементы, которые запускают выполнение Задач в ответ на определенные события или условия. В настоящее время система поддерживает три основных типа триггеров, каждый из которых обладает своими преимуществами и обеспечивает гибкость в настройке автоматизации.
 1. Триггер &ldquo;State Change&rdquo; (Изменение Состояния):   Описание:
  Активируется при изменении состояния определенного устройства или группы устройств в системе Smart Home.    Преимущества:"><meta itemprop=datePublished content="2021-10-20T00:00:00+00:00">
-<meta itemprop=dateModified content="2024-01-26T01:07:50+06:00">
-<meta itemprop=wordCount content="471">
+<meta itemprop=dateModified content="2024-02-01T22:54:15+06:00">
+<meta itemprop=wordCount content="467">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Triggers">
 <meta name=twitter:description content="Триггеры в системе Smart Home представляют собой ключевые элементы, которые запускают выполнение Задач в ответ на определенные события или условия. В настоящее время система поддерживает три основных типа триггеров, каждый из которых обладает своими преимуществами и обеспечивает гибкость в настройке автоматизации.
@@ -395,7 +395,6 @@
 <li><code>TriggerStateChanged</code>:</li>
 </ol>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>automationTriggerStateChanged = </span><span style=color:#000>(msg) -&gt;</span>
-  <span style=color:#000>print</span> <span style=color:#4e9a06>&#39;---trigger---&#39;</span>
   <span style=color:#000>p = </span><span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
   <span style=color:#000>Done</span> <span style=color:#000>p</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>new_state</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>state</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>name</span>
   <span style=color:#204a87;font-weight:700>return</span> <span style=color:#204a87;font-weight:700>false</span>
@@ -423,15 +422,14 @@
 значение <code>false</code>, чтобы указать, что дальнейшая обработка не требуется.</p>
 <p>Пример реализации:</p>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>automationTriggerStateChanged = </span><span style=color:#000>(msg)-&gt;</span>
-    <span style=color:#8f5902;font-style:italic>#print &#39;---trigger---&#39;
-</span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#000>p = </span><span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
+    <span style=color:#000>p = </span><span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>payload</span>
     <span style=color:#204a87;font-weight:700>if</span> <span style=color:#ce5c00;font-weight:700>!</span><span style=color:#000>p</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>new_state</span> <span style=color:#ce5c00;font-weight:700>||</span> <span style=color:#ce5c00;font-weight:700>!</span><span style=color:#000>p</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>new_state</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>state</span>
         <span style=color:#204a87;font-weight:700>return</span> <span style=color:#204a87;font-weight:700>false</span>
     <span style=color:#204a87;font-weight:700>return</span> <span style=color:#000>msg</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>new_state</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>state</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>name</span> <span style=color:#ce5c00;font-weight:700>==</span> <span style=color:#4e9a06>&#39;DOUBLE_CLICK&#39;</span>
 </code></pre></div><h4 id=заключение>Заключение</h4>
 <p>Использование различных типов триггеров в системе Smart Home позволяет пользователям создавать сложные и интеллектуальные сценарии автоматизации, гармонично реагирующие на изменения в системе и внешние события. Это предоставляет пользоват</p>
 <div class="text-muted mt-5 pt-3 border-top">
-Изменено 26.01.2024: <a href=https://github.com/e154/smart-home/commit/e73b011a6a004cbc8f81a1efc311c8e96049a383>Merge pull request #260 from e154/master (e73b011)</a>
+Изменено 01.02.2024: <a href=https://github.com/e154/smart-home/commit/8f713ff6f113c8dad0ef84e0af7a226fe0cff4b8>Merge pull request #268 from e154/master (8f713ff)</a>
 </div>
 </div>
 </main>

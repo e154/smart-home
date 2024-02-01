@@ -15,7 +15,12 @@
 <link rel=icon type=image/png href=/smart-home/favicons/android-144x144.png sizes=144x144>
 <link rel=icon type=image/png href=/smart-home/favicons/android-192x192.png sizes=192x192>
 <title>Gate | Smart home</title>
-<meta name=description content="Gate Server in the Smart Home system is a key component that provides secure and convenient remote access to the smart home, even in the absence of a …">
+<meta name=description content="
+
+     
+
+
+Gate Server in the Smart Home system is a key component that provides secure and convenient remote access to the smart home, even in the …">
 <meta property="og:title" content="Gate">
 <meta property="og:description" content="The program complex">
 <meta property="og:type" content="website">
@@ -243,6 +248,17 @@ English
 <a href=https://github.com/e154/smart-home/issues/new target=_blank><i class="fas fa-tasks fa-fw"></i> Create project issue</a>
 <a id=print href=https://e154.github.io/smart-home/docs/dashboard/gate/_print/><i class="fa fa-print fa-fw"></i> Print entire section</a>
 </div>
+<div class=td-toc><nav id=TableOfContents>
+<ul>
+<li>
+<ul>
+<li></li>
+<li><a href=#server-configuration>Server Configuration</a></li>
+<li><a href=#server-launch>Server Launch</a></li>
+</ul>
+</li>
+</ul>
+</nav></div>
 </aside>
 <main class="col-12 col-md-9 col-xl-8 pl-md-5" role=main>
 <nav aria-label=breadcrumb class="d-none d-md-block d-print-none">
@@ -262,6 +278,9 @@ English
 <h1>Gate</h1>
 <header class=article-meta>
 </header>
+<figure>
+<img src=/smart-home/img/gate-network.svg>
+</figure>
 <p>Gate Server in the Smart Home system is a key component that provides secure and convenient remote access to the smart home, even in the absence of a static IP address. This server enables users to control and monitor their home from anywhere in the world via the internet, ensuring data security and comfortable interaction.</p>
 <h4 id=advantages-of-the-gate-server-in-the-smart-home-system>Advantages of the Gate Server in the Smart Home System</h4>
 <ol>
@@ -314,10 +333,122 @@ English
 </ul>
 </li>
 </ol>
+<h3 id=server-configuration>Server Configuration</h3>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>cat config.gate.json
+
+<span style=color:#ce5c00;font-weight:700>{</span>
+  <span style=color:#4e9a06>&#34;api_http_port&#34;</span>: 8080,
+  <span style=color:#4e9a06>&#34;api_https_port&#34;</span>: 8443,
+  <span style=color:#4e9a06>&#34;api_debug&#34;</span>: false,
+  <span style=color:#4e9a06>&#34;api_gzip&#34;</span>: true,
+  <span style=color:#4e9a06>&#34;pprof&#34;</span>: false,
+  <span style=color:#4e9a06>&#34;domain&#34;</span>: <span style=color:#4e9a06>&#34;localhost&#34;</span>,
+  <span style=color:#4e9a06>&#34;https&#34;</span>: false,
+  <span style=color:#4e9a06>&#34;proxy_timeout&#34;</span>: 5,
+  <span style=color:#4e9a06>&#34;proxy_idle_timeout&#34;</span>: 10,
+  <span style=color:#4e9a06>&#34;proxy_secret_key&#34;</span>: <span style=color:#4e9a06>&#34;&#34;</span>
+<span style=color:#ce5c00;font-weight:700>}</span>
+</code></pre></div><p>Properties for the <code>config.gate.json</code> configuration file:</p>
+<ol>
+<li>
+<p><strong><code>api_http_port</code> (int):</strong></p>
+<ul>
+<li><strong>Description:</strong> Port for the HTTP API server.</li>
+<li><strong>Example Value:</strong> <code>8080</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>api_https_port</code> (int):</strong></p>
+<ul>
+<li><strong>Description:</strong> Port for the HTTPS API server.</li>
+<li><strong>Example Value:</strong> <code>8443</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>api_debug</code> (bool):</strong></p>
+<ul>
+<li><strong>Description:</strong> Enable debug mode for the API server.</li>
+<li><strong>Example Value:</strong> <code>true</code> (enabled).</li>
+</ul>
+</li>
+<li>
+<p><strong><code>api_gzip</code> (bool):</strong></p>
+<ul>
+<li><strong>Description:</strong> Enable Gzip compression for API requests.</li>
+<li><strong>Example Value:</strong> <code>true</code> (enabled).</li>
+</ul>
+</li>
+<li>
+<p><strong><code>domain</code> (string):</strong></p>
+<ul>
+<li><strong>Description:</strong> Domain name for the Gate server.</li>
+<li><strong>Example Value:</strong> <code>example.com</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>pprof</code> (bool):</strong></p>
+<ul>
+<li><strong>Description:</strong> Enable server profiling mode.</li>
+<li><strong>Example Value:</strong> <code>true</code> (enabled).</li>
+</ul>
+</li>
+<li>
+<p><strong><code>https</code> (bool):</strong></p>
+<ul>
+<li><strong>Description:</strong> Enable the use of Let&rsquo;s Encrypt for automatic SSL certificate acquisition for the specified domain.</li>
+<li><strong>Example Value:</strong> <code>true</code> (enabled).</li>
+</ul>
+</li>
+<li>
+<p><strong><code>proxy_timeout</code> (int):</strong></p>
+<ul>
+<li><strong>Description:</strong> Timeout for proxy connections in seconds.</li>
+<li><strong>Example Value:</strong> <code>5</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>proxy_idle_timeout</code> (int):</strong></p>
+<ul>
+<li><strong>Description:</strong> Timeout for proxy connections in seconds when there is no activity.</li>
+<li><strong>Example Value:</strong> <code>10</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>proxy_secret_key</code> (string):</strong></p>
+</li>
+</ol>
+<ul>
+<li><strong>Description:</strong> Secret key to ensure the security of proxy connections.</li>
+<li><strong>Example Value:</strong> <code>mySecretKey</code>.</li>
+</ul>
+<p>These parameters provide flexible control over the settings of the Gate server, including security, operating modes, and the use of SSL certificates via Let&rsquo;s Encrypt.</p>
+<h3 id=server-launch>Server Launch</h3>
+<p>The Gate server is integrated into the smart-home system as a separate mode by specifying the <code>gate</code> argument during startup.</p>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>./smart-home <span style=color:#204a87>help</span> gate
+Organization of remote access without white IP
+
+Usage:
+  server gate <span style=color:#ce5c00;font-weight:700>[</span>flags<span style=color:#ce5c00;font-weight:700>]</span>
+
+Flags:
+  -h, --help   <span style=color:#204a87>help</span> <span style=color:#204a87;font-weight:700>for</span> gate
+
+
+./smart-home gate
+
+  ___      _
+ / __<span style=color:#000;font-weight:700>|</span>__ _<span style=color:#000;font-weight:700>|</span> <span style=color:#000;font-weight:700>|</span>_ ___
+<span style=color:#000;font-weight:700>|</span> <span style=color:#ce5c00;font-weight:700>(</span>_ / _<span style=color:#a40000>&#39;</span> <span style=color:#000;font-weight:700>|</span>  _/ -_<span style=color:#ce5c00;font-weight:700>)</span>
+ <span style=color:#4e9a06>\_</span>__<span style=color:#4e9a06>\_</span>_,_<span style=color:#000;font-weight:700>|</span><span style=color:#4e9a06>\_</span>_<span style=color:#4e9a06>\_</span>__<span style=color:#000;font-weight:700>|</span>
+
+
+INFO	gate            	server/gate_server.go:93 &gt;	Started ...
+INFO	gate            	server/server.go:117 &gt;	server started at :8080
+</code></pre></div>
 <div class=section-index>
 </div>
 <div class="text-muted mt-5 pt-3 border-top">
-Last modified January 26, 2024: <a href=https://github.com/e154/smart-home/commit/e73b011a6a004cbc8f81a1efc311c8e96049a383>Merge pull request #260 from e154/master (e73b011)</a>
+Last modified February 1, 2024: <a href=https://github.com/e154/smart-home/commit/8f713ff6f113c8dad0ef84e0af7a226fe0cff4b8>Merge pull request #268 from e154/master (8f713ff)</a>
 </div>
 </div>
 </main>
