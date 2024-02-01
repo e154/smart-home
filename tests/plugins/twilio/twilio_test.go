@@ -64,7 +64,7 @@ func TestTwilio(t *testing.T) {
 			ctx.So(err, ShouldBeNil)
 
 			serviceCh := WaitService(eventBus, time.Second*5, "Supervisor")
-			pluginsCh := WaitPlugins(eventBus, time.Second*5, "twilio")
+			pluginsCh := WaitPlugins(eventBus, time.Second*5, "twilio", "notify")
 			supervisor.Start(context.Background())
 			defer supervisor.Shutdown(context.Background())
 			So(<-serviceCh, ShouldBeTrue)

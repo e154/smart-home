@@ -563,6 +563,7 @@ func WaitTask(eventBus bus.Bus, timeOut time.Duration, tasks ...int64) (result c
 		mx := sync.Mutex{}
 
 		ch := make(chan interface{})
+		defer close(ch)
 		fn := func(_ string, msg interface{}) {
 			switch v := msg.(type) {
 			case events.EventTaskLoaded:
@@ -571,6 +572,8 @@ func WaitTask(eventBus bus.Bus, timeOut time.Duration, tasks ...int64) (result c
 				fmt.Printf("Task %d loaded ...\r\n", v.Id)
 				if _, ok := list[v.Id]; ok {
 					list[v.Id] = true
+				} else {
+					return
 				}
 				for _, loaded := range list {
 					if !loaded {
@@ -578,7 +581,6 @@ func WaitTask(eventBus bus.Bus, timeOut time.Duration, tasks ...int64) (result c
 					}
 				}
 				ch <- struct{}{}
-				close(ch)
 			}
 
 		}
@@ -605,6 +607,7 @@ func WaitEntity(eventBus bus.Bus, timeOut time.Duration, entities ...string) (re
 		mx := sync.Mutex{}
 
 		ch := make(chan interface{})
+		defer close(ch)
 		fn := func(_ string, msg interface{}) {
 			switch v := msg.(type) {
 			case events.EventEntityLoaded:
@@ -613,6 +616,8 @@ func WaitEntity(eventBus bus.Bus, timeOut time.Duration, entities ...string) (re
 				fmt.Printf("Plugin %s loaded ...\r\n", v.EntityId.String())
 				if _, ok := list[v.EntityId.String()]; ok {
 					list[v.EntityId.String()] = true
+				} else {
+					return
 				}
 				for _, loaded := range list {
 					if !loaded {
@@ -620,7 +625,6 @@ func WaitEntity(eventBus bus.Bus, timeOut time.Duration, entities ...string) (re
 					}
 				}
 				ch <- struct{}{}
-				close(ch)
 			}
 
 		}
@@ -647,6 +651,7 @@ func WaitPlugins(eventBus bus.Bus, timeOut time.Duration, plugins ...string) (re
 		mx := sync.Mutex{}
 
 		ch := make(chan interface{})
+		defer close(ch)
 		fn := func(_ string, msg interface{}) {
 			switch v := msg.(type) {
 			case events.EventPluginLoaded:
@@ -655,6 +660,8 @@ func WaitPlugins(eventBus bus.Bus, timeOut time.Duration, plugins ...string) (re
 				fmt.Printf("Plugin %s loaded ...\r\n", v.PluginName)
 				if _, ok := list[v.PluginName]; ok {
 					list[v.PluginName] = true
+				} else {
+					return
 				}
 				for _, loaded := range list {
 					if !loaded {
@@ -662,7 +669,6 @@ func WaitPlugins(eventBus bus.Bus, timeOut time.Duration, plugins ...string) (re
 					}
 				}
 				ch <- struct{}{}
-				close(ch)
 			}
 
 		}
@@ -689,6 +695,7 @@ func WaitService(eventBus bus.Bus, timeOut time.Duration, services ...string) (r
 		mx := sync.Mutex{}
 
 		ch := make(chan interface{})
+		defer close(ch)
 		fn := func(_ string, msg interface{}) {
 			switch v := msg.(type) {
 			case events.EventServiceStarted:
@@ -697,6 +704,8 @@ func WaitService(eventBus bus.Bus, timeOut time.Duration, services ...string) (r
 				fmt.Printf("Service %s started ...\r\n", v.Service)
 				if _, ok := list[v.Service]; ok {
 					list[v.Service] = true
+				} else {
+					return
 				}
 				for _, started := range list {
 					if !started {
@@ -704,7 +713,6 @@ func WaitService(eventBus bus.Bus, timeOut time.Duration, services ...string) (r
 					}
 				}
 				ch <- struct{}{}
-				close(ch)
 			}
 
 		}
@@ -745,11 +753,11 @@ func WaitMessage[T events.EventStateChanged | events.EventTriggerCompleted | eve
 ) (msg T, ok bool) {
 
 	ch := make(chan T)
+	defer close(ch)
 	fn := func(_ string, msg interface{}) {
 		switch v := msg.(type) {
 		case T:
 			ch <- v
-			close(ch)
 		}
 	}
 
