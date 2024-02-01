@@ -191,6 +191,7 @@ export default {
         Logs: 'Logs',
         etc: "ETC",
         Swagger: 'Swagger',
+        Typedoc: 'Typedoc',
         Imagebrowser: 'Image Browser',
         Areas: 'Areas',
         Users: 'Users',

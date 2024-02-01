@@ -191,6 +191,7 @@ export default {
     Logs: "Логи",
     etc: "Дополнительно",
     Swagger: "Swagger",
+    Typedoc: "Typedoc",
     Imagebrowser: "Изображений",
     Areas: "Области",
     Users: "Пользователи",

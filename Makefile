@@ -76,6 +76,9 @@ test:
 install_linter:
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin v1.55.2
 
+install_typedoc:
+	npm install -g jsdoc
+
 lint-todo:
 	@echo MARK: make lint todo
 
@@ -239,3 +242,7 @@ clean:
 front_client:
 	@echo MARK: generate front client lib
 	npx swagger-typescript-api@12.0.4 --axios -p ./api/api.swagger3.yaml -o ./static_source/admin/src/api -n stub_new.ts
+
+typedoc:
+	@echo MARK: typedoc
+	npx typedoc --tsconfig ./data/scripts/tsconfig.json --out ./api/typedoc ./data/scripts/global.d.ts

@@ -529,6 +529,14 @@ export const developRouterMap: AppRouteRecordRaw[] = [
         },
       },
       {
+        path: 'typedoc',
+        name: 'Typedoc',
+        component: () => import('@/views/Typedoc/index.vue'),
+        meta: {
+          title: t('router.Typedoc'),
+        },
+      },
+      {
         path: 'images',
         name: 'Image browser',
         component: () => import('@/views/Images/index.vue'),

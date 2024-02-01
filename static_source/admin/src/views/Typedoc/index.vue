@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-const src: string = (import.meta.env.VITE_API_BASEPATH as string) + '/swagger-ui'
+const src: string = (import.meta.env.VITE_API_BASEPATH as string) + '/typedoc'
 </script>
 
 <template>
