@@ -654,6 +654,7 @@ export default {
         fontSize: 'Шрифт',
         gap: 'Промежуток',
         gapSize: 'Размер',
+        tooltip: 'Подсказка'
       },
       tilesOptions: 'Параметры плитки',
       gridOptions: 'Параметры сетки',

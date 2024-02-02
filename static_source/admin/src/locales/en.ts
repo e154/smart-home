@@ -654,6 +654,7 @@ export default {
                 fontSize: 'Font Size',
                 gap: 'Gap',
                 gapSize: 'Gap Size',
+                tooltip: 'Tooltip'
             },
             tilesOptions: 'Tales Options',
             gridOptions: 'Grid Options',

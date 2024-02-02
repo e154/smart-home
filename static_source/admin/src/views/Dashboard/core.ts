@@ -322,6 +322,7 @@ export class CardItem {
       if (!this.payload.grid) {
         this.payload.grid = {
           items: [],
+          tooltip: false,
           gap: false,
           gapSize: 5,
           defaultImage: undefined,

@@ -57,6 +57,7 @@ const initDefaultValue = () => {
     attribute: '',
     gap: false,
     gapSize: 5,
+    tooltip: false,
     fontSize: 18,
   } as ItemPayloadGrid;
 }
@@ -90,6 +91,7 @@ const addProp = () => {
     key: 'new proper' + counter,
     image: undefined,
     position: false,
+    tooltip: false,
     top: 0,
     left: 0,
     height: props.item.payload.grid.cellHeight || 0,
@@ -184,6 +186,14 @@ const changedForActionButton = async (entity: ApiEntity) => {
     <ElCol :span="12" :xs="12" v-if="currentItem.payload.grid.gap">
       <ElFormItem :label="$t('dashboard.editor.grid.gapSize')" prop="gapSize">
         <ElInputNumber v-model="currentItem.payload.grid.gapSize" :min="1" :value-on-clear="1"/>
+      </ElFormItem>
+    </ElCol>
+  </ElRow>
+
+  <ElRow :gutter="24">
+    <ElCol :span="12" :xs="12">
+      <ElFormItem :label="$t('dashboard.editor.grid.tooltip')" prop="tooltip">
+        <ElSwitch v-model="currentItem.payload.grid.tooltip"/>
       </ElFormItem>
     </ElCol>
   </ElRow>

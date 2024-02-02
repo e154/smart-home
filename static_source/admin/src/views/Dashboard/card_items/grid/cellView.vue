@@ -3,7 +3,7 @@ import {computed, onMounted, PropType} from 'vue'
 import {ItemPayloadGrid, GridProp} from "@/views/Dashboard/card_items/grid/types";
 import {ApiImage} from "@/api/stub";
 import {prepareUrl} from "@/utils/serverId";
-import {Attribute, GetAttrValue} from "@/api/stream_types";
+import { ElTooltip } from 'element-plus'
 
 const props = defineProps({
   tileItem: {
@@ -49,6 +49,15 @@ const getValue = computed(() => {
     }
   }
   return props.cell;
+})
+
+const getTooltip = computed(() => {
+  if (typeof props.cell === 'object') {
+    if (props.cell.hasOwnProperty('t')) {
+      return props.cell.t
+    }
+  }
+  return getValue.value;
 })
 
 const cellTemplate = computed(() => props.templates? props.templates[getValue.value] : props.tileItem || null)
@@ -102,9 +111,11 @@ const getTileStyle = () => {
 
 <template>
   <div class="tile-wrapper">
-    <div :class="[{'positioned': cellTemplate?.height || cellTemplate?.width, 'tile-inner': true}]" :style="getTileStyle()">
-      <span v-if="baseParams?.showCellValue" v-html="getValue"></span>
-    </div>
+    <ElTooltip :disabled="!baseParams.tooltip" :content="getTooltip" placement="auto">
+      <div :class="[{'positioned': cellTemplate?.height || cellTemplate?.width, 'tile-inner': true}]" :style="getTileStyle()">
+        <span v-if="baseParams?.showCellValue" v-html="getValue"></span>
+      </div>
+    </ElTooltip>
   </div>
 </template>
 
