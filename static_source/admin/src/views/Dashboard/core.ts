@@ -1469,6 +1469,7 @@ export class Core {
 
     card.dashboardTabId = tab.id;
     card.id = undefined
+    card.weight = tab.cards[tab.cards.length-1].weight + 1
 
     const {data} = await api.v1.dashboardCardServiceImportDashboardCard(card);
     if (data) {
