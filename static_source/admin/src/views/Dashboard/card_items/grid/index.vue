@@ -2,7 +2,7 @@
 import {computed, onMounted, PropType, ref, watch} from "vue";
 import {CardItem, requestCurrentState} from "@/views/Dashboard/core";
 import {GridProp} from "@/views/Dashboard/card_items/grid/types";
-import {Cache, GetTokens, RenderText} from "@/views/Dashboard/render";
+import {Cache, GetTokens, RenderText, RenderVar} from "@/views/Dashboard/render";
 import {debounce} from "lodash-es";
 import api from "@/api/api";
 import {ElMessage} from "element-plus";
@@ -50,12 +50,9 @@ const getBoard = (str: string): any[] => {
 
 const _cache = new Cache()
 const update = debounce(() => {
-  let v: string = props.item?.payload.grid?.attribute || ''
-  const tokens = GetTokens(props.item?.payload.grid?.attribute, _cache)
-  if (tokens.length) {
-    v = RenderText(tokens, v, props.item?.lastEvent)
-  }
-  board.value = getBoard(v) || []
+  let token: string = props.item?.payload.grid?.attribute || ''
+  const result = RenderVar(token, props.item?.lastEvent)
+  board.value = getBoard(result) || []
 })
 
 const tileTemplates = ref<Map<string, GridProp>>({});

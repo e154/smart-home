@@ -22,6 +22,7 @@ import EntitySearch from "@/views/Entities/components/EntitySearch.vue";
 import CellPreview from "@/views/Dashboard/card_items/grid/cellPreview.vue";
 import {TinycmeEditor} from "@/components/Tinymce";
 import {Cache, GetTokens} from "@/views/Dashboard/render";
+import KeysSearch from "@/views/Dashboard/components/KeysSearch.vue";
 
 const {t} = useI18n()
 
@@ -143,6 +144,10 @@ const changedForActionButton = async (entity: ApiEntity) => {
   }
 }
 
+const onChangeValue = (val) => {
+  currentItem.value.payload.grid.attribute = val;
+}
+
 </script>
 
 <template>
@@ -201,7 +206,7 @@ const changedForActionButton = async (entity: ApiEntity) => {
   <ElRow>
     <ElCol>
       <ElFormItem :label="$t('dashboard.editor.attrField')" prop="attribute">
-        <ElInput placeholder="Please input" v-model="currentItem.payload.grid.attribute"/>
+        <KeysSearch v-model="currentItem.payload.grid.attribute" :obj="currentItem.lastEvent" @change="onChangeValue"/>
       </ElFormItem>
     </ElCol>
   </ElRow>
