@@ -11,7 +11,6 @@ import {
   ApiNewDashboardTabRequest
 } from '@/api/stub';
 import api from '@/api/api';
-import {randColor} from '@/utils/rans';
 import {Attribute, EventStateChange, GetAttrValue} from '@/api/stream_types';
 import {UUID} from 'uuid-generator-ts';
 import {Compare, RenderVar, Resolve} from '@/views/Dashboard/render';
@@ -34,6 +33,7 @@ import {ItemPayloadVideo} from "@/views/Dashboard/card_items/video/types";
 import {ItemPayloadEntityStorage} from "@/views/Dashboard/card_items/entity_storage/types";
 import {ItemPayloadTiles} from "@/views/Dashboard/card_items/tiles/types";
 import {ItemPayloadGrid} from "@/views/Dashboard/card_items/grid/types";
+import {ItemPayloadImage} from "@/views/Dashboard/card_items/image/types";
 import {prepareUrl} from "@/utils/serverId";
 import {useAppStore} from "@/store/modules/app";
 
@@ -91,11 +91,6 @@ export interface KeysProp {
   entity?: { id?: string };
   entityId?: string;
   action?: string;
-}
-
-export interface ItemPayloadImage {
-  attrField?: string;
-  image?: ApiImage;
 }
 
 export interface ItemPayloadIcon {

@@ -573,6 +573,7 @@ export default {
             tooltip: 'Tooltip',
             GRID: 'Grid',
             showText: 'show text',
+            background: 'Background',
             slider: {
                 options: 'Slider Options',
                 color: 'Color',

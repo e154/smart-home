@@ -63,6 +63,14 @@ const onChangePropValue = (val: string) => {
 
   <ElDivider content-position="left">{{ $t('dashboard.editor.imageOptions') }}</ElDivider>
 
+  <ElRow :gutter="24">
+    <ElCol :span="12" :xs="12">
+      <ElFormItem :label="$t('dashboard.editor.background')" prop="background">
+        <ElSwitch v-model="currentItem.payload.image.background"/>
+      </ElFormItem>
+    </ElCol>
+  </ElRow>
+
   <ElFormItem :label="$t('dashboard.editor.image')" prop="image">
     <ImageSearch v-model="currentItem.payload.image.image" @change="onSelectImage"/>
   </ElFormItem>

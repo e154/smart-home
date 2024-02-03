@@ -573,6 +573,7 @@ export default {
       tooltip: 'Подсказка',
       GRID: 'Сетка',
       showText: 'Показывать текст',
+      background: 'Фон',
       slider: {
         options: 'Параметры слайдера',
         color: 'Цвет',
