@@ -274,17 +274,27 @@ const onChangePropValue = (val, index) => {
       <ElFormItem :label="$t('dashboard.editor.html')" prop="enabled">
         <ElSwitch v-model="defaultTextHtml"/>
       </ElFormItem>
+    </ElCol>
+  </ElRow>
 
+  <ElRow  v-if="!defaultTextHtml">
+    <ElCol>
       <ElFormItem :label="$t('dashboard.editor.textBody')" prop="text">
         <ElInput
-            v-if="!defaultTextHtml"
             type="textarea"
             :autosize="{minRows: 10}"
             placeholder="Please input"
             v-model="currentItem.payload.text.default_text"
             @update:modelValue="defaultTextUpdated"
         />
-        <TinycmeEditor v-else v-model="currentItem.payload.text.default_text" @update:modelValue="defaultTextUpdated"/>
+      </ElFormItem>
+    </ElCol>
+  </ElRow>
+
+  <ElRow  v-else >
+    <ElCol>
+      <ElFormItem :label="$t('dashboard.editor.textBody')" prop="text">
+        <TinycmeEditor v-model="currentItem.payload.text.default_text" @update:modelValue="defaultTextUpdated"/>
       </ElFormItem>
     </ElCol>
   </ElRow>
