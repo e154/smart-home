@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, PropType, ref, unref, watch} from "vue";
 import {ButtonAction, Card, CardItem, Core, requestCurrentState, Tab} from "@/views/Dashboard/core";
-import {Cache, Compare, GetTokens, RenderText, Resolve} from "@/views/Dashboard/render";
+import {Cache, Compare, GetTokens, RenderText, RenderVar, Resolve} from "@/views/Dashboard/render";
 import {ElImage, ElIcon} from "element-plus";
 import { Picture as IconPicture } from '@element-plus/icons-vue'
 import {Attribute, GetAttrValue} from "@/api/stream_types";
@@ -48,7 +48,8 @@ const update = debounce(() => {
   iconSize.value = props.item?.payload?.icon?.iconSize || 14;
 
   if (props.item?.payload.icon.attrField) {
-    icon.value = RenderText([props.item?.payload.icon.attrField], '[' + props.item?.payload.icon.attrField + ']', props.item?.lastEvent);
+    let token: string = props.item?.payload.icon?.attrField || ''
+    icon.value = RenderVar(token, props.item?.lastEvent)
     return
   }
   icon.value = props.item?.payload.icon?.value || '';

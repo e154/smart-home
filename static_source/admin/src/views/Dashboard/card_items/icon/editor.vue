@@ -8,6 +8,7 @@ import CommonEditor from "@/views/Dashboard/card_items/common/editor.vue";
 import {useI18n} from "@/hooks/web/useI18n";
 import {Cache, GetTokens} from "@/views/Dashboard/render";
 import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
+import KeysSearch from "@/views/Dashboard/components/KeysSearch.vue";
 
 const {t} = useI18n()
 
@@ -43,6 +44,11 @@ const updateCurrentState = () => {
     requestCurrentState(currentItem.value?.entityId)
   }
 }
+
+const onChangeValue = (val) => {
+  currentItem.value.payload.icon.attrField = val;
+}
+
 </script>
 
 <template>
@@ -70,7 +76,7 @@ const updateCurrentState = () => {
   </ElRow>
 
   <ElFormItem :label="$t('dashboard.editor.attrField')" prop="text">
-    <ElInput v-model="currentItem.payload.icon.attrField"/>
+    <KeysSearch v-model="currentItem.payload.icon.attrField" :obj="currentItem.lastEvent" @change="onChangeValue"/>
   </ElFormItem>
 
   <ElRow style="padding-bottom: 20px" v-if="currentItem.entity">
