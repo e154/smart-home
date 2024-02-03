@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import {computed, onMounted, PropType, ref, unref, watch} from "vue";
-import {Card, CardItem, Core, requestCurrentState, Tab} from "@/views/Dashboard/core";
+import {CardItem, requestCurrentState} from "@/views/Dashboard/core";
 import {debounce} from "lodash-es";
-import {Cache, GetTokens, RenderText} from "@/views/Dashboard/render";
+import {Cache, RenderVar} from "@/views/Dashboard/render";
 import api from "@/api/api";
-import {ElColorPicker } from 'element-plus'
+import {ElColorPicker} from 'element-plus'
 import {useI18n} from "@/hooks/web/useI18n";
 import {ApiEntityCallActionRequest, ApiTypes} from "@/api/stub";
 import {ItemPayloadColorPicker} from "@/views/Dashboard/card_items/color_picker/types";
+
 const {t} = useI18n()
 
 // ---------------------------------
@@ -42,13 +43,12 @@ const getValue = debounce(() => {
     value.value = currentColorPicker.value.color
   }
 
-  let v: string = props.item?.payload.colorPicker?.attribute || ''
-  const tokens = GetTokens(props.item?.payload.colorPicker?.attribute, _cache)
-  if (tokens.length) {
-    v = RenderText(tokens, v, props.item?.lastEvent)
-    if (v !== '[NO VALUE]') {
-      if (unref(value) !== v) {
-        value.value = v
+  let token: string = props.item?.payload.colorPicker?.attribute || ''
+  if (token) {
+    const result = RenderVar(token, props.item?.lastEvent)
+    if (result !== '[NO VALUE]') {
+      if (unref(value) !== result) {
+        value.value = result
       }
     }
   }
@@ -66,7 +66,7 @@ watch(
     }
 )
 
-const callAction = debounce( async (val: string) => {
+const callAction = debounce(async (val: string) => {
   if (!currentColorPicker.value.action) {
     console.warn('no action')
     return;
@@ -95,9 +95,9 @@ requestCurrentState(props.item?.entityId);
 <template>
   <div ref="el" class="h-[100%] w-[100%]">
     <ElColorPicker v-model="value" v-on:change="updateColor"/>
- </div>
+  </div>
 </template>
 
-<style lang="less" >
+<style lang="less">
 
 </style>

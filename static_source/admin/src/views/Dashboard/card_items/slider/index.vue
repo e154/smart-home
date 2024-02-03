@@ -2,7 +2,7 @@
 import {computed, onMounted, PropType, ref, unref, watch} from "vue";
 import {CardItem, requestCurrentState} from "@/views/Dashboard/core";
 import {debounce} from "lodash-es";
-import {Cache, GetTokens, RenderText, RenderVar} from "@/views/Dashboard/render";
+import {Cache, RenderVar} from "@/views/Dashboard/render";
 import {ItemPayloadSlider, OrientationType} from "@/views/Dashboard/card_items/slider/types";
 import slider from "vue3-slider"
 import api from "@/api/api";

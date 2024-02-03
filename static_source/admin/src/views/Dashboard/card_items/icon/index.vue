@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import {computed, onMounted, onUnmounted, PropType, ref, unref, watch} from "vue";
-import {ButtonAction, Card, CardItem, Core, requestCurrentState, Tab} from "@/views/Dashboard/core";
-import {Cache, Compare, GetTokens, RenderText, RenderVar, Resolve} from "@/views/Dashboard/render";
-import {ElImage, ElIcon} from "element-plus";
-import { Picture as IconPicture } from '@element-plus/icons-vue'
-import {Attribute, GetAttrValue} from "@/api/stream_types";
+import {onMounted, onUnmounted, PropType, ref, watch} from "vue";
+import {CardItem} from "@/views/Dashboard/core";
+import {RenderVar} from "@/views/Dashboard/render";
 import {debounce} from "lodash-es";
 
 // ---------------------------------
@@ -80,12 +77,12 @@ update();
         :key="reloadKey"
         :icon="icon"
         :color="iconColor"
-        :size="iconSize" />
+        :size="iconSize"/>
   </div>
 
 </template>
 
-<style lang="less" >
+<style lang="less">
 .el-image__error, .el-image__placeholder, .el-image__inner {
   height: auto;
 }

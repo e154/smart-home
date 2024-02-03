@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import {computed, onMounted, PropType, ref, unref, watch} from "vue";
-import {Card, CardItem, comparisonType, Core, requestCurrentState, Tab} from "@/views/Dashboard/core";
-import {ElDivider, ElCollapse, ElCollapseItem, ElCard, ElForm, ElFormItem, ElPopconfirm, ElSwitch,
-  ElRow, ElCol, ElSelect, ElOption, ElInput, ElTag, ElButton } from 'element-plus'
+import {computed, PropType} from "vue";
+import {CardItem, Core, requestCurrentState} from "@/views/Dashboard/core";
+import {ElButton, ElCol, ElCollapse, ElCollapseItem, ElDivider, ElFormItem, ElRow, ElSwitch} from 'element-plus'
 import CommonEditor from "@/views/Dashboard/card_items/common/editor.vue";
-import {Cache, GetTokens} from "@/views/Dashboard/render";
+import {Cache} from "@/views/Dashboard/render";
 import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
 import {ApiImage} from "@/api/stub";
 import ImageSearch from "@/views/Images/components/ImageSearch.vue";
@@ -30,7 +29,8 @@ const currentItem = computed({
   get(): CardItem {
     return props.item as CardItem
   },
-  set(val: CardItem) {}
+  set(val: CardItem) {
+  }
 })
 
 // ---------------------------------
@@ -52,7 +52,7 @@ const updateCurrentState = () => {
 }
 
 const onChangePropValue = (val: string) => {
-  currentItem.value.payload.image.attrField= val;
+  currentItem.value.payload.image.attrField = val;
 }
 
 </script>
@@ -97,6 +97,6 @@ const onChangePropValue = (val: string) => {
 
 </template>
 
-<style lang="less" >
+<style lang="less">
 
 </style>

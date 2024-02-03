@@ -2,7 +2,7 @@
 import {computed, onMounted, PropType, ref, watch} from "vue";
 import {CardItem, requestCurrentState} from "@/views/Dashboard/core";
 import {GridProp} from "@/views/Dashboard/card_items/grid/types";
-import {Cache, GetTokens, RenderText, RenderVar} from "@/views/Dashboard/render";
+import {Cache, RenderVar} from "@/views/Dashboard/render";
 import {debounce} from "lodash-es";
 import api from "@/api/api";
 import {ElMessage} from "element-plus";
@@ -38,7 +38,7 @@ const board = ref([])
 
 const cellHeight = computed(() => props.item.payload.grid.cellHeight + 'px');
 const cellWidth = computed(() => props.item.payload.grid.cellWidth + 'px');
-const gapSize = computed(() => (props.item.payload.grid.gap? props.item.payload.grid.gapSize : 0) + 'px'  );
+const gapSize = computed(() => (props.item.payload.grid.gap ? props.item.payload.grid.gapSize : 0) + 'px');
 
 const getBoard = (str: string): any[] => {
   try {
