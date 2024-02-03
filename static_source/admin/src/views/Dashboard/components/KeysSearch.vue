@@ -1,12 +1,12 @@
 <script setup lang="ts">
 
-import {onMounted, PropType, ref, unref, watch} from "vue";
+import {PropType, ref, watch} from "vue";
 import {ElAutocomplete} from 'element-plus'
 import {getAllKeys} from "@/views/Dashboard/render";
 import {propTypes} from "@/utils/propTypes";
 
 const currentValue = ref<Nullable<string>>(null)
-const allKeys = ref<{value: string }[]>([])
+const allKeys = ref<{ value: string }[]>([])
 
 const emit = defineEmits(['change', 'update:modelValue'])
 
@@ -42,7 +42,7 @@ watch(
         currentValue.value = ''
         return
       }
-     currentValue.value = val
+      currentValue.value = val
     },
     {
       immediate: true
