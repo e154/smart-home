@@ -8,6 +8,7 @@ import {useBus} from "@/views/Dashboard/bus";
 import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
 import CommonEditor from "@/views/Dashboard/card_items/common/editor.vue";
 import {useI18n} from "@/hooks/web/useI18n";
+import KeysSearch from "@/views/Dashboard/components/KeysSearch.vue";
 
 const {t} = useI18n()
 
@@ -36,6 +37,10 @@ const updateCurrentState = () => {
   if (currentItem.value.entityId) {
     requestCurrentState(currentItem.value?.entityId)
   }
+}
+
+const onChangeValue = (val) => {
+  currentItem.value.payload.slider.attribute = val;
 }
 </script>
 
@@ -105,7 +110,7 @@ const updateCurrentState = () => {
     <ElRow :gutter="24" >
       <ElCol :span="12" :xs="12">
         <ElFormItem :label="$t('dashboard.editor.value')" prop="value">
-          <ElInput v-model="currentItem.payload.slider.attribute"/>
+          <KeysSearch v-model="currentItem.payload.slider.attribute" :obj="currentItem.lastEvent" @change="onChangeValue"/>
         </ElFormItem>
       </ElCol>
       <ElCol :span="12" :xs="12">
