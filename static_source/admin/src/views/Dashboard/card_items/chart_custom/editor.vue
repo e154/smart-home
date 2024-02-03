@@ -35,6 +35,7 @@ import {debounce} from "lodash-es";
 import {EChartsOption} from "echarts";
 import {ApiImage} from "@/api/stub";
 import JsonEditor from "@/components/JsonEditor/JsonEditor.vue";
+import KeysSearch from "@/views/Dashboard/components/KeysSearch.vue";
 
 const {t} = useI18n()
 
@@ -231,6 +232,10 @@ const onSelectImage = (image: ApiImage) => {
   currentItem.value.payload.chartCustom.image = image || undefined;
 }
 
+const onChangePropValue = (val: string, prop: any, index: number): void => {
+  prop.customAttributes[index].value = val
+}
+
 </script>
 
 <template>
@@ -254,10 +259,6 @@ const onSelectImage = (image: ApiImage) => {
       <JsonEditor v-model="currentItem.payload.chartCustom.chartOptions" height="auto" @change="editorHandler"/>
     </ElCol>
   </ElRow>
-
-  <!--  <ElFormItem :label="$t('dashboard.editor.image')" prop="image">-->
-  <!--    <ImageSearch v-model="currentItem.payload.chartCustom.image" @change="onSelectImage"/>-->
-  <!--  </ElFormItem>-->
 
   <!-- chart items -->
   <ElDivider content-position="left">{{ $t('dashboard.editor.chart.seriesOptions') }}</ElDivider>
@@ -342,7 +343,9 @@ const onSelectImage = (image: ApiImage) => {
                           <ElRow :gutter="24">
                             <ElCol :span="12" :xs="12">
                               <ElFormItem :label="$t('dashboard.editor.chart.itemValue')" prop="text">
-                                <ElInput class="w-[100%]" placeholder="Please input" v-model="attr.value"/>
+                                <!--                                <ElInput class="w-[100%]" placeholder="Please input" v-model="attr.value"/>-->
+                                <KeysSearch v-model="attr.value" :obj="currentItem.lastEvent"
+                                            @change="onChangePropValue($event, prop, index)"/>
                               </ElFormItem>
                             </ElCol>
                             <ElCol :span="12" :xs="12">
