@@ -108,6 +108,9 @@ export function RenderText(tokens: string[], text: string, lastEvent?: EventStat
 
 export function RenderVar(token: string, lastEvent?: EventStateChange): any {
 
+  // for inverse dependence
+  token = token.replace('[', '').replace(']', '')
+
   let val: any
 
   const tokenFiltered = token.split('|')

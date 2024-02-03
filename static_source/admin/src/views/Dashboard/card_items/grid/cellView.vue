@@ -57,7 +57,7 @@ const getTooltip = computed(() => {
       return props.cell.t
     }
   }
-  return getValue.value;
+  return getValue.value +'';
 })
 
 const cellTemplate = computed(() => props.templates? props.templates[getValue.value] : props.tileItem || null)

@@ -8,6 +8,7 @@ import {Cache, GetTokens} from "@/views/Dashboard/render";
 import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
 import {ApiImage} from "@/api/stub";
 import ImageSearch from "@/views/Images/components/ImageSearch.vue";
+import KeysSearch from "@/views/Dashboard/components/KeysSearch.vue";
 
 // ---------------------------------
 // common
@@ -49,6 +50,11 @@ const updateCurrentState = () => {
     requestCurrentState(currentItem.value?.entityId)
   }
 }
+
+const onChangePropValue = (val: string) => {
+  currentItem.value.payload.image.attrField= val;
+}
+
 </script>
 
 <template>
@@ -58,11 +64,11 @@ const updateCurrentState = () => {
   <ElDivider content-position="left">{{ $t('dashboard.editor.imageOptions') }}</ElDivider>
 
   <ElFormItem :label="$t('dashboard.editor.image')" prop="image">
-    <ImageSearch v-model="currentItem.payload.image.image" @change="onSelectImage(index, ...arguments)"/>
+    <ImageSearch v-model="currentItem.payload.image.image" @change="onSelectImage"/>
   </ElFormItem>
 
   <ElFormItem :label="$t('dashboard.editor.attrField')" prop="text">
-    <ElInput v-model="currentItem.payload.image.attrField"/>
+    <KeysSearch v-model="currentItem.payload.image.attrField" :obj="currentItem.lastEvent" @change="onChangePropValue"/>
   </ElFormItem>
 
   <ElRow style="padding-bottom: 20px" v-if="currentItem.entity">

@@ -67,11 +67,10 @@ const removeProp = (index: number) => {
 }
 
 const onChangePropValue = (val, index) => {
-  console.log(val)
   currentItem.value.payload.progress.items[index].key = val;
 }
 
-const onChangeProgressValue = (val) => {
+const onChangeValue = (val) => {
   currentItem.value.payload.progress.value = val;
 }
 
@@ -123,9 +122,6 @@ const onChangeProgressValue = (val) => {
                       :xs="8"
                   >
                     <ElFormItem :label="$t('dashboard.editor.text')" prop="text">
-<!--                      <ElInput-->
-<!--                          placeholder="Please input"-->
-<!--                          v-model="prop.key"/>-->
                       <KeysSearch v-model="prop.key" :obj="currentItem.lastEvent" @change="onChangePropValue($event, index)"/>
                     </ElFormItem>
 
@@ -258,7 +254,7 @@ const onChangeProgressValue = (val) => {
     <ElRow>
       <ElCol>
         <ElFormItem :label="$t('dashboard.editor.value')" prop="value">
-          <KeysSearch v-model="currentItem.payload.progress.value" :obj="currentItem.lastEvent" @change="onChangeProgressValue"/>
+          <KeysSearch v-model="currentItem.payload.progress.value" :obj="currentItem.lastEvent" @change="onChangeValue"/>
         </ElFormItem>
       </ElCol>
     </ElRow>

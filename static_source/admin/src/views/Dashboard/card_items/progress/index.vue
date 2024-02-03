@@ -38,8 +38,7 @@ const update = debounce(() => {
   if (props.item?.payload.progress?.items) {
     for (const prop of props.item?.payload.progress?.items) {
 
-      let token: string = props.item?.payload.progress?.value || ''
-      const val = RenderVar(token, props.item?.lastEvent)
+      const val = RenderVar(prop.key || '', props.item?.lastEvent)
 
       if(!val) {
         continue
@@ -78,7 +77,7 @@ update()
 </script>
 
 <template>
-  <div ref="el" v-if="item.entity" class="h-[100%] w-[100%]">
+  <div ref="el" v-if="item.entity" :class="[{'hidden': item.hidden}]" class="h-[100%] w-[100%]">
     <ElProgress
         v-if="item.payload.progress.type"
         :type="item.payload.progress.type"

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {onMounted, PropType, computed, unref, watch, reactive, ref} from 'vue'
+import JsonViewer from 'vue-json-viewer'
 
 import {useAppStore} from "@/store/modules/app";
 
@@ -8,12 +9,12 @@ const appStore = useAppStore()
 
 const props = defineProps({
   modelValue: {
-    type: Object as PropType<Object>,
+    type: Object as PropType<Nullable<Object>>,
     default: () => null
   }
 })
 
-const value = computed(() => props.modelValue || 'NO DATA')
+const value = computed(() => props.modelValue || "")
 const currentSize = computed(() => appStore.getCurrentSize as string)
 const fontSize = computed(() => {
   let size = 16;
@@ -37,7 +38,8 @@ const depth = ref(3)
 </script>
 
 <template>
-  <json-viewer
+  <JsonViewer
+      v-if="modelValue"
       sort
       copyable
       expanded

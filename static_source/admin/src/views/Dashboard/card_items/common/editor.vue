@@ -139,12 +139,12 @@ const removeAction = (index: number) => {
 
   <!-- show on -->
   <ElDivider content-position="left">{{ $t('dashboard.editor.showOn') }}</ElDivider>
-  <ShowOn v-model="currentItem.showOn" :core="core"/>
+  <ShowOn v-model="currentItem.showOn" :item="currentItem" :core="core"/>
   <!-- /show on -->
 
   <!-- hide on-->
   <ElDivider content-position="left">{{ $t('dashboard.editor.hideOn') }}</ElDivider>
-  <ShowOn v-model="currentItem.hideOn" :core="core"/>
+  <ShowOn v-model="currentItem.hideOn" :item="currentItem" :core="core"/>
   <!-- /hide on-->
 
   <!-- button options -->

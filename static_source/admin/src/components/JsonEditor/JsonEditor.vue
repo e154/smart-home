@@ -79,6 +79,7 @@ const onChange = (val: any, cm: any) => {
 
 <style lang="less">
 #json-editor-vue {
+  height: 400px;
   min-height: 400px;
 }
 

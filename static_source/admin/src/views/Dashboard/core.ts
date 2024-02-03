@@ -14,7 +14,7 @@ import api from '@/api/api';
 import {randColor} from '@/utils/rans';
 import {Attribute, EventStateChange, GetAttrValue} from '@/api/stream_types';
 import {UUID} from 'uuid-generator-ts';
-import {Compare, Resolve} from '@/views/Dashboard/render';
+import {Compare, RenderVar, Resolve} from '@/views/Dashboard/render';
 import stream from '@/api/stream';
 import {useBus} from "@/views/Dashboard/bus";
 import {debounce} from "lodash-es";
@@ -35,8 +35,10 @@ import {ItemPayloadEntityStorage} from "@/views/Dashboard/card_items/entity_stor
 import {ItemPayloadTiles} from "@/views/Dashboard/card_items/tiles/types";
 import {ItemPayloadGrid} from "@/views/Dashboard/card_items/grid/types";
 import {prepareUrl} from "@/utils/serverId";
+import {useAppStore} from "@/store/modules/app";
 
 const {emit} = useBus()
+const appStore = useAppStore()
 
 export interface ButtonAction {
   entityId: string;
@@ -600,60 +602,50 @@ export class CardItem {
 
     // hide
     for (const prop of this.hideOn) {
-      let val = Resolve(prop.key, event);
-      if (!val) {
-        continue;
+      const val: any = RenderVar(prop.key || '', event)
+      if ('[NO VALUE]' == val) {
+        continue
       }
-      if (typeof val === 'object') {
-        if (val && val.hasOwnProperty('type') && val.hasOwnProperty('name')) {
-          val = GetAttrValue(val as Attribute);
-        }
-      }
-
-      if (val == undefined) {
-        val = '[NO VALUE]';
-      }
-
       const tr = Compare(val, prop.value, prop.comparison);
       if (tr) {
         this.hidden = true;
         this.update();
-        return;
+        continue
       }
     }
 
     // show
     for (const prop of this.showOn) {
-      let val = Resolve(prop.key, event);
-      if (!val) {
-        continue;
+      const val: any = RenderVar(prop.key || '', event)
+      if ('[NO VALUE]' == val) {
+        continue
       }
-      if (typeof val === 'object') {
-        if (val && val.hasOwnProperty('type') && val.hasOwnProperty('name')) {
-          val = GetAttrValue(val as Attribute);
-        }
-      }
-
-      if (val == undefined) {
-        val = '[NO VALUE]';
-      }
-
       const tr = Compare(val, prop.value, prop.comparison);
       if (tr) {
         this.hidden = false;
         this.update();
-        return;
+        continue;
       }
     }
   }
 
   // lastEvent
   get lastEvent(): EventStateChange | undefined {
+    if (!this._lastEvents[this.entityId]) {
+      this._lastEvents[this.entityId] = {} as EventStateChange
+      requestCurrentState(this.entityId)
+      return undefined
+    }
     return this._lastEvents[this.entityId];
   }
 
   // lastEvents
   lastEvents(entityId: string): EventStateChange | undefined {
+    if (!this._lastEvents[entityId]) {
+      this._lastEvents[entityId] = {} as EventStateChange
+      requestCurrentState(entityId)
+      return undefined
+    }
     return this._lastEvents[entityId];
   }
 } // \CardItem
@@ -1404,7 +1396,7 @@ export class Core {
       return;
     }
 
-    let background = randColor()
+    let background = appStore.isDark? '#232324' : '#F5F7FA'
     if (tab.cards && tab.cards.length) {
       background  = tab.cards[tab.cards.length -1 ].background
     }

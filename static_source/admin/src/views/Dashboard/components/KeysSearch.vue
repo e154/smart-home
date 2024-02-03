@@ -19,10 +19,6 @@ const props = defineProps({
 
 })
 
-onMounted(() => {
-
-})
-
 watch(
     () => props.obj,
     (val: any) => {
@@ -62,9 +58,9 @@ const querySearch = (queryString: string, cb: any) => {
   cb(results)
 }
 const createFilter = (queryString: string) => {
-  return (restaurant: { value: string }) => {
+  return (item: { value: string }) => {
     return (
-        restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+        item.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
     )
   }
 }
@@ -72,6 +68,7 @@ const createFilter = (queryString: string) => {
 const handleChange = (val) => {
   if (val == '') {
     currentValue.value = null
+    emit('change', '')
   }
 }
 const handleSelect = (val: { value: string }) => {
