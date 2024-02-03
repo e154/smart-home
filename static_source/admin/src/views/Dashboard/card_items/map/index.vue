@@ -2,7 +2,7 @@
 import {computed, inject, onMounted, PropType, ref, unref, watch} from "vue";
 import {CardItem} from "@/views/Dashboard/core";
 import type {ObjectEvent} from "ol/Object";
-import {Cache, GetTokens, RenderText} from "@/views/Dashboard/render";
+import {Cache, RenderVar} from "@/views/Dashboard/render";
 import markerIcon from "@/assets/imgs/marker.png";
 import {ApiImage} from "@/api/stub";
 import {debounce} from "lodash-es";
@@ -11,6 +11,7 @@ import {propTypes} from "@/utils/propTypes";
 import {useAppStore} from "@/store/modules/app";
 import {useCache} from "@/hooks/web/useCache";
 import {prepareUrl} from "@/utils/serverId";
+
 const {wsCache} = useCache()
 
 // ---------------------------------
@@ -86,8 +87,9 @@ const compareArrays = (a, b) => {
 const updateZoom = debounce((z) => {
   currentCardItem.value.payload.map.zoom = z
 }, 100)
+
 function zoomChanged(z) {
-  if (currentCardItem.value.payload.map.zoom === z ) {
+  if (currentCardItem.value.payload.map.zoom === z) {
     return
   }
   // manualMode.value = !props.editor
@@ -129,60 +131,56 @@ const markers = ref<Marker[]>([])
 
 const _cache = new Cache()
 const update = debounce(() => {
-  // console.log('update')
+      // console.log('update')
 
-  loaded.value = false
-  markers.value = []
+      loaded.value = false
+      markers.value = []
 
-  if (
-      !manualMode.value && currentCardItem.value.payload.map?.staticCenter &&
-      !compareArrays(unref(center.value), unref(currentCardItem.value.payload.map.center))
-  ) {
-    center.value = currentCardItem.value?.payload.map?.center || [0, 0]
-  }
+      if (
+          !manualMode.value && currentCardItem.value.payload.map?.staticCenter &&
+          !compareArrays(unref(center.value), unref(currentCardItem.value.payload.map.center))
+      ) {
+        center.value = currentCardItem.value?.payload.map?.center || [0, 0]
+      }
 
-  if ( !manualMode.value && unref(zoom.value) != unref(currentCardItem.value?.payload.map.zoom)) {
-    zoom.value = currentCardItem.value?.payload.map.zoom
-  }
+      if (!manualMode.value && unref(zoom.value) != unref(currentCardItem.value?.payload.map.zoom)) {
+        zoom.value = currentCardItem.value?.payload.map.zoom
+      }
 
-  for (let index in currentCardItem.value?.payload.map?.markers) {
-    const entityId = currentCardItem.value?.payload.map?.markers[index]?.entityId;
-    if (!entityId || !currentCardItem.value.payload.map?.markers[index]) {
-      loaded.value = true
-      return
-    }
-    let v: string = currentCardItem.value?.payload.map?.markers[index].attribute || ''
-    const tokens = GetTokens(v, _cache)
-    if (tokens.length) {
-      const lastState = currentCardItem.value?.lastEvents(entityId);
-      v = RenderText(tokens, v, lastState)
-      if (v !== '[NO VALUE]') {
-        const strArr = v.split(',');
-        if (strArr.length === 2) {
-          const marker = {
-            image: currentCardItem.value?.payload.map?.markers[index].image,
-            opacity: currentCardItem.value?.payload.map?.markers[index].opacity,
-            scale: currentCardItem.value?.payload.map?.markers[index].scale,
-            position: [
-              parseFloat(strArr[0]),
-              parseFloat(strArr[1]),
-            ]
-          } as Marker
-          markers.value.push(marker)
-          if (
-              !manualMode.value && !currentCardItem.value.payload.map?.staticCenter &&
-              currentCardItem.value.payload.map?.indexMarkerCenter == index
-          ) {
-            if (!compareArrays(unref(center.value), unref(marker.position))) {
-              center.value = marker.position
+      for (let index in currentCardItem.value?.payload.map?.markers) {
+        const entityId = currentCardItem.value?.payload.map?.markers[index]?.entityId;
+        if (!entityId || !currentCardItem.value.payload.map?.markers[index]) {
+          loaded.value = true
+          return
+        }
+        let token: string = currentCardItem.value?.payload.map?.markers[index].attribute || ''
+        if (token) {
+          const lastState = currentCardItem.value?.lastEvents(entityId);
+          const position = RenderVar(token, lastState)
+          if (position === '[NO VALUE]') {
+            continue
+          }
+          if (position.length === 2) {
+            const marker = {
+              image: currentCardItem.value?.payload.map?.markers[index].image,
+              opacity: currentCardItem.value?.payload.map?.markers[index].opacity,
+              scale: currentCardItem.value?.payload.map?.markers[index].scale,
+              position: position
+            } as Marker
+            markers.value.push(marker)
+            if (
+                !manualMode.value && !currentCardItem.value.payload.map?.staticCenter &&
+                currentCardItem.value.payload.map?.indexMarkerCenter == index
+            ) {
+              if (!compareArrays(unref(center.value), unref(marker.position))) {
+                center.value = marker.position
+              }
+
             }
-
           }
         }
       }
-    }
-  }
-  loaded.value = true
+      loaded.value = true
     }, 100
 )
 
@@ -231,7 +229,7 @@ const getUrl = (image?: ApiImage): string | undefined => {
 
       <ol-overviewmap-control v-if="overviewmapcontrol">
         <ol-tile-layer>
-          <ol-source-osm />
+          <ol-source-osm/>
         </ol-tile-layer>
       </ol-overviewmap-control>
 
@@ -243,15 +241,15 @@ const getUrl = (image?: ApiImage): string | undefined => {
           :layerList="layerList"
       />
 
-<!--      <ol-tile-layer ref="jawgLayer" title="JAWG">-->
-<!--        <ol-source-xyz-->
-<!--            crossOrigin="anonymous"-->
-<!--            url="https://c.tile.jawg.io/jawg-dark/{z}/{x}/{y}.png?access-token=87PWIbRaZAGNmYDjlYsLkeTVJpQeCfl2Y61mcHopxXqSdxXExoTLEv7dwqBwSWuJ"-->
-<!--        />-->
-<!--      </ol-tile-layer>-->
+      <!--      <ol-tile-layer ref="jawgLayer" title="JAWG">-->
+      <!--        <ol-source-xyz-->
+      <!--            crossOrigin="anonymous"-->
+      <!--            url="https://c.tile.jawg.io/jawg-dark/{z}/{x}/{y}.png?access-token=87PWIbRaZAGNmYDjlYsLkeTVJpQeCfl2Y61mcHopxXqSdxXExoTLEv7dwqBwSWuJ"-->
+      <!--        />-->
+      <!--      </ol-tile-layer>-->
 
       <ol-tile-layer ref="osmLayer">
-        <ol-source-osm />
+        <ol-source-osm/>
       </ol-tile-layer>
 
       <ol-vector-layer
@@ -297,6 +295,7 @@ ul.checkbox-list {
   columns: 2;
   padding: 0;
 }
+
 ul.checkbox-list > li {
   list-style: none;
 }

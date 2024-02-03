@@ -2,9 +2,8 @@
 import {computed, onMounted, PropType, ref, watch} from "vue";
 import {CardItem, requestCurrentState} from "@/views/Dashboard/core";
 import {debounce} from "lodash-es";
-import {Cache, Compare, GetTokens, RenderText, RenderVar, Resolve} from "@/views/Dashboard/render";
+import {Cache, Compare, RenderVar} from "@/views/Dashboard/render";
 import {ElProgress} from "element-plus";
-import {Attribute, GetAttrValue} from "@/api/stream_types";
 
 // ---------------------------------
 // common
@@ -40,12 +39,12 @@ const update = debounce(() => {
 
       const val = RenderVar(prop.key || '', props.item?.lastEvent)
 
-      if(!val) {
+      if (!val) {
         continue
       }
 
       const tr = Compare(val, prop.value, prop.comparison)
-      if(!tr) {
+      if (!tr) {
         continue
       }
 
