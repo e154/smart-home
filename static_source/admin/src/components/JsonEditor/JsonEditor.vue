@@ -2,11 +2,13 @@
 import {nextTick, onMounted, PropType, computed, ref, unref, watch} from 'vue'
 import {useAppStore} from "@/store/modules/app";
 import JsonEditorVue from "json-editor-vue";
+import {propTypes} from "@/utils/propTypes";
 
 const emit = defineEmits(['change', 'update:modelValue'])
 const appStore = useAppStore()
 
 const props = defineProps({
+  height: propTypes.string.def(''),
   modelValue: {
     type: Object as PropType<Object>,
     default: () => null
@@ -61,6 +63,8 @@ const onChange = (val: any, cm: any) => {
   emit('change', val)
 }
 
+const editorHeight = computed(() => props.height? props.height: '400px')
+
 </script>
 
 <template>
@@ -79,7 +83,7 @@ const onChange = (val: any, cm: any) => {
 
 <style lang="less">
 #json-editor-vue {
-  height: 400px;
+  height: v-bind(editorHeight);
   min-height: 400px;
 }
 
