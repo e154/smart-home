@@ -258,8 +258,10 @@ export class CardItem {
       }
       if (!this.payload.progress) {
         this.payload.progress = {
+          items: [],
           type: '',
-          textInside: true,
+          showText: false,
+          textInside: false,
           strokeWidth: 26,
           width: 100
         } as ItemPayloadProgress;
@@ -1402,9 +1404,14 @@ export class Core {
       return;
     }
 
+    let background = randColor()
+    if (tab.cards && tab.cards.length) {
+      background  = tab.cards[tab.cards.length -1 ].background
+    }
+
     const card = await Card.createNew(
       'new card' + tab.cards.length,
-      randColor(),
+      background,
       tab.columnWidth,
       getSize(),
       tab.id,

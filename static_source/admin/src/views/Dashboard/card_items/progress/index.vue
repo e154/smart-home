@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import {computed, onMounted, PropType, ref, unref, watch} from "vue";
-import {Card, CardItem, Core, requestCurrentState, Tab} from "@/views/Dashboard/core";
+import {computed, onMounted, PropType, ref, watch} from "vue";
+import {CardItem, requestCurrentState} from "@/views/Dashboard/core";
 import {debounce} from "lodash-es";
-import {Cache, GetTokens, RenderText} from "@/views/Dashboard/render";
+import {Cache, Compare, GetTokens, RenderText, RenderVar, Resolve} from "@/views/Dashboard/render";
 import {ElProgress} from "element-plus";
+import {Attribute, GetAttrValue} from "@/api/stream_types";
 
 // ---------------------------------
 // common
@@ -28,14 +29,34 @@ onMounted(() => {
 // component methods
 // ---------------------------------
 
+const optionalColor = ref('')
+const color = computed(() => optionalColor.value || props.item.payload.progress.color || '')
+
 const _cache = new Cache()
 const update = debounce(() => {
-  let v: string = props.item?.payload.progress?.value || ''
-  const tokens = GetTokens(props.item?.payload.progress?.value, _cache)
-  if (tokens.length) {
-    v = RenderText(tokens, v, props.item?.lastEvent)
+
+  if (props.item?.payload.progress?.items) {
+    for (const prop of props.item?.payload.progress?.items) {
+
+      let token: string = props.item?.payload.progress?.value || ''
+      const val = RenderVar(token, props.item?.lastEvent)
+
+      if(!val) {
+        continue
+      }
+
+      const tr = Compare(val, prop.value, prop.comparison)
+      if(!tr) {
+        continue
+      }
+
+      optionalColor.value = prop?.color || ''
+    }
   }
-  value.value = parseInt(v) || 0
+
+  let token: string = props.item?.payload.progress?.value || ''
+  const result = RenderVar(token, props.item?.lastEvent)
+  value.value = parseInt(result) || 0
 })
 
 watch(
@@ -58,22 +79,26 @@ update()
 
 <template>
   <div ref="el" v-if="item.entity" class="h-[100%] w-[100%]">
-   <ElProgress
-       v-if="item.payload.progress.type"
-       :type="item.payload.progress.type"
-       :percentage="value"
-       :width="item.payload.progress.width"
-       :stroke-width="item.payload.progress.strokeWidth"
-       :text-inside="!item.payload.progress.textInside"/>
-   <ElProgress
-       v-else
-       :percentage="value"
-       :width="item.payload.progress.width"
-       :stroke-width="item.payload.progress.strokeWidth"
-       :text-inside="!item.payload.progress.textInside"/>
- </div>
+    <ElProgress
+        v-if="item.payload.progress.type"
+        :type="item.payload.progress.type"
+        :percentage="value"
+        :width="item.payload.progress.width"
+        :stroke-width="item.payload.progress.strokeWidth"
+        :text-inside="!item.payload.progress.textInside"
+        :show-text="item.payload.progress.showText"
+        :color="color"/>
+    <ElProgress
+        v-else
+        :percentage="value"
+        :width="item.payload.progress.width"
+        :stroke-width="item.payload.progress.strokeWidth"
+        :text-inside="!item.payload.progress.textInside"
+        :show-text="item.payload.progress.showText"
+        :color="color"/>
+  </div>
 </template>
 
-<style lang="less" >
+<style lang="less">
 
 </style>

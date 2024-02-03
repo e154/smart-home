@@ -572,6 +572,7 @@ export default {
             TILES: 'Tiles (DEPRECATED)',
             tooltip: 'Tooltip',
             GRID: 'Grid',
+            showText: 'show text',
             slider: {
                 options: 'Slider Options',
                 color: 'Color',
@@ -683,7 +684,7 @@ export default {
         createBackupAt: 'Create Backup At (Cron)',
         maximumNumberOfBackups: 'Maximum Number Of Backups',
         info1: 'https://en.wikipedia.org/wiki/Cron',
-        info2: 'Organization of remote access without white IP. Free gate https://gate.e154.ru:8443',
+        info2: 'Organization of remote access without external IP. Free gate https://gate.e154.ru:8443',
         info3: 'don\'t change it if you don\'t know what it\'s for',
         sendTheBackupInPartsMb: 'Send The Backup In Parts Mb',
         sendbackuptoTelegramBot: 'Send Backup To Telegram Bot',

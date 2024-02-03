@@ -20,7 +20,7 @@ const props = defineProps({
 })
 
 onMounted(() => {
-  console.log(cellTemplate.value)
+
 })
 
 const cellHeight = computed(() => props.baseParams?.cellHeight + 'px')

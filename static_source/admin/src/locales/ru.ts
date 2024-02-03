@@ -572,6 +572,7 @@ export default {
       TILES: 'Тайлы (DEPRECATED)',
       tooltip: 'Подсказка',
       GRID: 'Сетка',
+      showText: 'Показывать текст',
       slider: {
         options: 'Параметры слайдера',
         color: 'Цвет',
@@ -683,7 +684,7 @@ export default {
     createBackupAt: 'Когда создавать кипию (cron)',
     maximumNumberOfBackups: 'Максимальное количество резервных копий',
     info1: 'https://en.wikipedia.org/wiki/Cron',
-    info2: 'Организация удаленного доступа без белого IP. Тестовый шлюз https://gate.e154.ru:8443',
+    info2: 'Организация удаленного доступа без внешнего IP. Тестовый шлюз https://gate.e154.ru:8443',
     info3: 'не меняй, если не знаешь для чего это',
     sendTheBackupInPartsMb: 'Отправлять резервную копию по частям Mb',
     sendbackuptoTelegramBot: 'Отправить резервную копию боту Telegram',

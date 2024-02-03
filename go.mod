@@ -87,7 +87,7 @@ require (
 	github.com/showwin/speedtest-go v1.6.7
 	github.com/spf13/afero v1.11.0
 	github.com/stretchr/testify v1.8.4
-	gopkg.in/telebot.v3 v3.1.3
+	gopkg.in/telebot.v3 v3.2.1
 	gorm.io/driver/postgres v1.5.2
 )
 
