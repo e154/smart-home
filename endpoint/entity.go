@@ -139,6 +139,8 @@ func (n *EntityEndpoint) Update(ctx context.Context, params *m.Entity) (result *
 	entity.Attributes = params.Attributes
 	entity.Settings = params.Settings
 	entity.ParentId = params.ParentId
+	entity.RestoreState = params.RestoreState
+	entity.AutoLoad = params.AutoLoad
 
 	if ok, errs := n.validation.Valid(entity); !ok {
 		err = apperr.ErrInvalidRequest

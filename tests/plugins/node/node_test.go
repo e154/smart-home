@@ -25,6 +25,8 @@ import (
 	"testing"
 	"time"
 
+	"go.uber.org/atomic"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/plugins/node"
@@ -75,11 +77,16 @@ func TestNode(t *testing.T) {
 
 			// common
 			// ------------------------------------------------
+			var closed = atomic.NewBool(false)
 			ch := make(chan events.EventStateChanged)
 			defer close(ch)
+			defer closed.Store(true)
 			fn := func(topic string, msg interface{}) {
 				switch v := msg.(type) {
 				case events.EventStateChanged:
+					if closed.Load() {
+						return
+					}
 					ch <- v
 				}
 			}
