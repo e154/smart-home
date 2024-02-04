@@ -259,8 +259,10 @@ const importDashboard = async () => {
         title="WARNING"
         :schema="[
       {
-        label: 'The functionality is experimental and may change in the future. Added a landing page link that provides direct access ' +
-         'to the dashboard. The direct link allows you to embed the dashboard into your solution.',
+        label: 'The functionality is experimental and may change in the future.',
+      },
+      {
+        label: 'Added a landing page link that provides direct access to the dashboard. The direct link allows you to embed the dashboard into your solution.',
       },
       {
         label: ' &nbsp;',
