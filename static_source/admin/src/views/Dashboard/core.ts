@@ -848,6 +848,11 @@ export class Card {
       -1
     );
 
+    item.weight = 1
+    if (this.items && this.items.length > 1) {
+      item.weight = this.items[this.items.length -1].weight + 1
+    }
+
     this.items.push(item);
     this.selectedItem = this.items.length - 1;
 
