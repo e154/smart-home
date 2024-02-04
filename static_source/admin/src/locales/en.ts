@@ -627,7 +627,8 @@ export default {
                 endAction: 'End Action',
             },
             video: {
-                options: 'Video Options'
+                options: 'Video Options',
+                pleaseSelectPlayerType: 'Please select player'
             },
             entityStorage: {
                 entities: 'Entities',

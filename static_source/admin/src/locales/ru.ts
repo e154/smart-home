@@ -628,6 +628,7 @@ export default {
       },
       video: {
         options: 'Параметры видео',
+        pleaseSelectPlayerType: 'Выберите проигрыватель'
       },
       entityStorage: {
         entities: 'Устройства',
