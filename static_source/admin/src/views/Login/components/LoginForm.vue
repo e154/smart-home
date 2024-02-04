@@ -73,7 +73,7 @@ const schema = reactive<FormSchema[]>([
     colProps: {
       span: 24
     },
-    hidden: window?.app_settings?.run_mode != 'gate',
+    hidden: !appStore.getIsGate,
     componentProps: {
       style: {
         width: '100%'

@@ -31,7 +31,8 @@ export default {
     Success: 'Успешно',
     Warning: 'Внимание',
     Error: 'Ошибка',
-    filter: 'Фильтр'
+    filter: 'Фильтр',
+    open: 'Открыть'
   },
   message: {
     unknownError: "Неизвестная ошибка",
@@ -499,6 +500,7 @@ export default {
     height: "Высота",
     width: "Ширина",
     weight: "Вес",
+    landing: 'Landing',
     editor: {
       keystrokeCapture: 'Захват клавиатуры',
       addNewButton: 'Добавить кнопку',

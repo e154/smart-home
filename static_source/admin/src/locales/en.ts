@@ -31,7 +31,8 @@ export default {
         Success: 'Success',
         Warning: 'Warning',
         Error: 'Error',
-        filter: 'Filter'
+        filter: 'Filter',
+        open: 'Open'
     },
     message: {
         unknownError: 'unknown error',
@@ -499,6 +500,7 @@ export default {
         height: 'Height',
         width: 'Width',
         weight: 'Weight',
+        landing: 'Landing',
         editor: {
             keystrokeCapture: 'Keystroke Capture',
             addNewButton: 'Add New Button',

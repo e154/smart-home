@@ -243,6 +243,17 @@ const onChangePropValue = (val: string, prop: any, index: number): void => {
   <CommonEditor :item="item" :core="core"/>
 
   <Infotip
+      type="warning"
+      :show-index="false"
+      title="WARNING"
+      :schema="[
+      {
+        label: 'Experimental component, may change in the future',
+      },
+    ]"
+  />
+
+  <Infotip
       :show-index="false"
       :title="$t('dashboard.editor.chart.chartDocumentation')"
       :schema="[
