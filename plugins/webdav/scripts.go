@@ -19,7 +19,6 @@
 package webdav
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"os"
@@ -214,12 +213,6 @@ LOOP:
 		if err = s.Fs.Chtimes(filePath, script.CreatedAt, script.UpdatedAt); err != nil {
 			log.Error(err.Error())
 		}
-
-		var readedFile []byte
-		if readedFile, err = afero.ReadFile(s.Fs, filePath); err != nil {
-			log.Error(err.Error())
-		}
-		log.Debugf("check %s, good %t", filePath, bytes.Compare(readedFile, []byte(script.Source)) == 0)
 	}
 
 	if len(scripts) != 0 {
