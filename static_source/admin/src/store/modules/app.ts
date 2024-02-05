@@ -204,6 +204,9 @@ export const useAppStore = defineStore('app', {
     },
     getServerId(): string {
       return this.serverId
+    },
+    getIsGate(): boolean {
+      return window?.app_settings?.run_mode == 'gate'
     }
   },
   actions: {

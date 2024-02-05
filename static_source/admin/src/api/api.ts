@@ -72,7 +72,8 @@ api.instance.interceptors.response.use(
 
     if (response.status === 401 ) {
 
-      if (location.toString().includes('/login') || location.toString().includes('/password_reset')) {
+      if (location.toString().includes('/login') || location.toString().includes('/password_reset') ||
+          location.toString().includes('/landing')) {
         return
       }
 

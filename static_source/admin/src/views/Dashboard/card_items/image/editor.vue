@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import {computed, onMounted, PropType, ref, unref, watch} from "vue";
-import {Card, CardItem, comparisonType, Core, requestCurrentState, Tab} from "@/views/Dashboard/core";
-import {ElDivider, ElCollapse, ElCollapseItem, ElCard, ElForm, ElFormItem, ElPopconfirm, ElSwitch,
-  ElRow, ElCol, ElSelect, ElOption, ElInput, ElTag, ElButton } from 'element-plus'
+import {computed, PropType} from "vue";
+import {CardItem, Core, requestCurrentState} from "@/views/Dashboard/core";
+import {ElButton, ElCol, ElCollapse, ElCollapseItem, ElDivider, ElFormItem, ElRow, ElSwitch} from 'element-plus'
 import CommonEditor from "@/views/Dashboard/card_items/common/editor.vue";
-import {Cache, GetTokens} from "@/views/Dashboard/render";
+import {Cache} from "@/views/Dashboard/render";
 import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
 import {ApiImage} from "@/api/stub";
 import ImageSearch from "@/views/Images/components/ImageSearch.vue";
+import KeysSearch from "@/views/Dashboard/components/KeysSearch.vue";
 
 // ---------------------------------
 // common
@@ -29,7 +29,8 @@ const currentItem = computed({
   get(): CardItem {
     return props.item as CardItem
   },
-  set(val: CardItem) {}
+  set(val: CardItem) {
+  }
 })
 
 // ---------------------------------
@@ -49,6 +50,11 @@ const updateCurrentState = () => {
     requestCurrentState(currentItem.value?.entityId)
   }
 }
+
+const onChangePropValue = (val: string) => {
+  currentItem.value.payload.image.attrField = val;
+}
+
 </script>
 
 <template>
@@ -57,12 +63,20 @@ const updateCurrentState = () => {
 
   <ElDivider content-position="left">{{ $t('dashboard.editor.imageOptions') }}</ElDivider>
 
+  <ElRow :gutter="24">
+    <ElCol :span="12" :xs="12">
+      <ElFormItem :label="$t('dashboard.editor.background')" prop="background">
+        <ElSwitch v-model="currentItem.payload.image.background"/>
+      </ElFormItem>
+    </ElCol>
+  </ElRow>
+
   <ElFormItem :label="$t('dashboard.editor.image')" prop="image">
-    <ImageSearch v-model="currentItem.payload.image.image" @change="onSelectImage(index, ...arguments)"/>
+    <ImageSearch v-model="currentItem.payload.image.image" @change="onSelectImage"/>
   </ElFormItem>
 
   <ElFormItem :label="$t('dashboard.editor.attrField')" prop="text">
-    <ElInput v-model="currentItem.payload.image.attrField"/>
+    <KeysSearch v-model="currentItem.payload.image.attrField" :obj="currentItem.lastEvent" @change="onChangePropValue"/>
   </ElFormItem>
 
   <ElRow style="padding-bottom: 20px" v-if="currentItem.entity">
@@ -83,6 +97,6 @@ const updateCurrentState = () => {
 
 </template>
 
-<style lang="less" >
+<style lang="less">
 
 </style>

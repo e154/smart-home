@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import {PropType, ref, unref, watch} from "vue";
-import {ApiScript} from "@/api/stub";
+import {ApiScript, ApiTrigger} from "@/api/stub";
 import {ElAutocomplete} from 'element-plus'
 import api from "@/api/api";
 
@@ -68,7 +68,12 @@ const handleSelect = (val: ApiScript) => {
       value-key="name"
       @select="handleSelect"
       @change="handleChange"
-  />
+      clearable
+  >
+    <template #default="{ item }">
+      <div class="value">{{ item.name }} id:({{ item.id }})</div>
+    </template>
+  </ElAutocomplete>
 </template>
 
 <style lang="less">

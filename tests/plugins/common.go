@@ -21,6 +21,7 @@ package plugins
 import (
 	"context"
 	"fmt"
+	"go.uber.org/atomic"
 	"net"
 	"net/http"
 	"sync"
@@ -558,6 +559,7 @@ func WaitTask(eventBus bus.Bus, timeOut time.Duration, tasks ...int64) (result c
 		list[task] = false
 	}
 
+	var closed = atomic.NewBool(false)
 	result = make(chan bool, 1)
 	go func() {
 		mx := sync.Mutex{}
@@ -580,6 +582,9 @@ func WaitTask(eventBus bus.Bus, timeOut time.Duration, tasks ...int64) (result c
 						return
 					}
 				}
+				if closed.Load() {
+					return
+				}
 				ch <- struct{}{}
 			}
 
@@ -588,6 +593,7 @@ func WaitTask(eventBus bus.Bus, timeOut time.Duration, tasks ...int64) (result c
 		defer eventBus.Unsubscribe("system/automation/tasks/+", fn)
 
 		result <- Wait(timeOut, ch)
+		closed.Store(true)
 		close(result)
 
 	}()
@@ -602,6 +608,7 @@ func WaitEntity(eventBus bus.Bus, timeOut time.Duration, entities ...string) (re
 		list[entity] = false
 	}
 
+	var closed = atomic.NewBool(false)
 	result = make(chan bool, 1)
 	go func() {
 		mx := sync.Mutex{}
@@ -624,6 +631,9 @@ func WaitEntity(eventBus bus.Bus, timeOut time.Duration, entities ...string) (re
 						return
 					}
 				}
+				if closed.Load() {
+					return
+				}
 				ch <- struct{}{}
 			}
 
@@ -632,6 +642,7 @@ func WaitEntity(eventBus bus.Bus, timeOut time.Duration, entities ...string) (re
 		defer eventBus.Unsubscribe("system/entities/+", fn)
 
 		result <- Wait(timeOut, ch)
+		closed.Store(true)
 		close(result)
 
 	}()
@@ -646,6 +657,7 @@ func WaitPlugins(eventBus bus.Bus, timeOut time.Duration, plugins ...string) (re
 		list[plugin] = false
 	}
 
+	var closed = atomic.NewBool(false)
 	result = make(chan bool, 1)
 	go func() {
 		mx := sync.Mutex{}
@@ -668,6 +680,9 @@ func WaitPlugins(eventBus bus.Bus, timeOut time.Duration, plugins ...string) (re
 						return
 					}
 				}
+				if closed.Load() {
+					return
+				}
 				ch <- struct{}{}
 			}
 
@@ -676,6 +691,7 @@ func WaitPlugins(eventBus bus.Bus, timeOut time.Duration, plugins ...string) (re
 		defer eventBus.Unsubscribe("system/plugins/+", fn)
 
 		result <- Wait(timeOut, ch)
+		closed.Store(true)
 		close(result)
 
 	}()
@@ -690,6 +706,7 @@ func WaitService(eventBus bus.Bus, timeOut time.Duration, services ...string) (r
 		list[service] = false
 	}
 
+	var closed = atomic.NewBool(false)
 	result = make(chan bool, 1)
 	go func() {
 		mx := sync.Mutex{}
@@ -712,6 +729,9 @@ func WaitService(eventBus bus.Bus, timeOut time.Duration, services ...string) (r
 						return
 					}
 				}
+				if closed.Load() {
+					return
+				}
 				ch <- struct{}{}
 			}
 
@@ -722,6 +742,7 @@ func WaitService(eventBus bus.Bus, timeOut time.Duration, services ...string) (r
 		time.Sleep(time.Millisecond * 500)
 
 		result <- Wait(timeOut, ch)
+		closed.Store(true)
 		close(result)
 
 	}()
@@ -729,34 +750,19 @@ func WaitService(eventBus bus.Bus, timeOut time.Duration, services ...string) (r
 	return
 }
 
-// DEPRECATED
-func WaitSupervisor(eventBus bus.Bus, timeOut time.Duration) {
-
-	ch := make(chan interface{})
-	fn := func(_ string, msg interface{}) {
-		switch msg.(type) {
-		case events.EventServiceStarted:
-			ch <- struct{}{}
-			close(ch)
-		}
-	}
-	eventBus.Subscribe("system/services/supervisor", fn, false)
-	defer eventBus.Unsubscribe("system/services/supervisor", fn)
-
-	Wait(timeOut, ch)
-
-	time.Sleep(time.Millisecond * 500)
-}
-
 func WaitMessage[T events.EventStateChanged | events.EventTriggerCompleted | events.EventTriggerLoaded](
 	eventBus bus.Bus, timeOut time.Duration, topic string, options ...interface{},
 ) (msg T, ok bool) {
 
+	var closed = atomic.NewBool(false)
 	ch := make(chan T)
 	defer close(ch)
 	fn := func(_ string, msg interface{}) {
 		switch v := msg.(type) {
 		case T:
+			if closed.Load() {
+				return
+			}
 			ch <- v
 		}
 	}
@@ -768,6 +774,7 @@ func WaitMessage[T events.EventStateChanged | events.EventTriggerCompleted | eve
 
 	eventBus.Subscribe(topic, fn, retain)
 	defer eventBus.Unsubscribe(topic, fn)
+	defer closed.Store(true)
 
 	msg, ok = WaitT[T](timeOut, ch)
 

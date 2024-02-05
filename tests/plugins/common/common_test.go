@@ -47,8 +47,12 @@ func TestCommon(t *testing.T) {
 			// register plugins
 			AddPlugin(adaptors, "sensor")
 
+			serviceCh := WaitService(eventBus, time.Second*5, "Supervisor")
+			pluginsCh := WaitPlugins(eventBus, time.Second*5, "sensor")
 			supervisor.Start(context.Background())
-			WaitSupervisor(eventBus, time.Second)
+			defer supervisor.Shutdown(context.Background())
+			So(<-serviceCh, ShouldBeTrue)
+			So(<-pluginsCh, ShouldBeTrue)
 
 			// bind convey
 			RegisterConvey(scriptService, ctx)

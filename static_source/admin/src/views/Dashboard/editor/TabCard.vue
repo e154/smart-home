@@ -455,10 +455,10 @@ const sortCardDown = (card: Card, index: number) => {
   <!-- export dialog -->
   <Dialog v-model="exportDialogVisible" :title="t('entities.dialogExportTitle')" :maxHeight="400" width="80%">
     <JsonViewer v-model="dialogSource"/>
-    <template #footer>
-      <ElButton @click="copy()">{{ t('setting.copy') }}</ElButton>
-      <ElButton @click="exportDialogVisible = false">{{ t('main.closeDialog') }}</ElButton>
-    </template>
+<!--    <template #footer>-->
+<!--      <ElButton @click="copy()">{{ t('setting.copy') }}</ElButton>-->
+<!--      <ElButton @click="exportDialogVisible = false">{{ t('main.closeDialog') }}</ElButton>-->
+<!--    </template>-->
   </Dialog>
   <!-- /export dialog -->
 

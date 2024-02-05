@@ -73,8 +73,8 @@ type EventTaskUnloaded struct {
 
 type TriggerMessage struct {
 	Payload     interface{}      `json:"payload"`
-	TriggerName string           `json:"triggerName"`
-	EntityId    *common.EntityId `json:"entityId"`
+	TriggerName string           `json:"trigger_name"`
+	EntityId    *common.EntityId `json:"entity_id"`
 }
 
 type EventTriggerCompleted struct {

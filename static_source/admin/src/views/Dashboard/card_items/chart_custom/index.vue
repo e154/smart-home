@@ -14,7 +14,7 @@ import {Echart} from '@/components/Echart'
 import {debounce} from "lodash-es";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
-import {Cache, GetTokens, RenderText} from "@/views/Dashboard/render";
+import {Cache, RenderVar} from "@/views/Dashboard/render";
 import {ApiMetric} from "@/api/stub";
 
 // ---------------------------------
@@ -227,9 +227,9 @@ const prepareData = debounce(async () => {
           for (const i in series.customAttributes) {
             let v: string = series.customAttributes[i].value || ''
 
-            const tokens = GetTokens(series.customAttributes[i].value, _cache)
-            if (tokens.length) {
-              v = RenderText(tokens, v, props.item?.lastEvent)
+            let token: string = series.customAttributes[i].value || ''
+            if (token) {
+              v = RenderVar(token, props.item?.lastEvent)
             }
             rowData.push({value: parseInt(v) || 0, name: series.customAttributes[i].description})
           }

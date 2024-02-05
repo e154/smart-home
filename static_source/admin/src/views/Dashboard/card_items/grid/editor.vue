@@ -1,15 +1,23 @@
 <script setup lang="ts">
-import {computed, onBeforeUnmount, onMounted, PropType, ref} from "vue";
-import {CardItem, Core, requestCurrentState, Tab} from "@/views/Dashboard/core";
+import {computed, PropType} from "vue";
+import {CardItem, Core, requestCurrentState} from "@/views/Dashboard/core";
 import {
-  ElButton, ElCard,
+  ElButton,
+  ElCard,
   ElCol,
   ElCollapse,
   ElCollapseItem,
-  ElDivider, ElForm, ElFormItem,
+  ElDivider,
+  ElForm,
+  ElFormItem,
   ElInput,
-  ElInputNumber, ElOption, ElPopconfirm,
-  ElRow, ElSelect, ElSwitch, ElTag
+  ElInputNumber,
+  ElOption,
+  ElPopconfirm,
+  ElRow,
+  ElSelect,
+  ElSwitch,
+  ElTag
 } from 'element-plus'
 import CommonEditor from "@/views/Dashboard/card_items/common/editor.vue";
 import {useI18n} from "@/hooks/web/useI18n";
@@ -20,8 +28,7 @@ import {GridProp, ItemPayloadGrid} from "@/views/Dashboard/card_items/grid/types
 import {prepareUrl} from "@/utils/serverId";
 import EntitySearch from "@/views/Entities/components/EntitySearch.vue";
 import CellPreview from "@/views/Dashboard/card_items/grid/cellPreview.vue";
-import {TinycmeEditor} from "@/components/Tinymce";
-import {Cache, GetTokens} from "@/views/Dashboard/render";
+import KeysSearch from "@/views/Dashboard/components/KeysSearch.vue";
 
 const {t} = useI18n()
 
@@ -57,6 +64,7 @@ const initDefaultValue = () => {
     attribute: '',
     gap: false,
     gapSize: 5,
+    tooltip: false,
     fontSize: 18,
   } as ItemPayloadGrid;
 }
@@ -90,6 +98,7 @@ const addProp = () => {
     key: 'new proper' + counter,
     image: undefined,
     position: false,
+    tooltip: false,
     top: 0,
     left: 0,
     height: props.item.payload.grid.cellHeight || 0,
@@ -141,6 +150,10 @@ const changedForActionButton = async (entity: ApiEntity) => {
   }
 }
 
+const onChangeValue = (val) => {
+  currentItem.value.payload.grid.attribute = val;
+}
+
 </script>
 
 <template>
@@ -188,10 +201,18 @@ const changedForActionButton = async (entity: ApiEntity) => {
     </ElCol>
   </ElRow>
 
+  <ElRow :gutter="24">
+    <ElCol :span="12" :xs="12">
+      <ElFormItem :label="$t('dashboard.editor.grid.tooltip')" prop="tooltip">
+        <ElSwitch v-model="currentItem.payload.grid.tooltip"/>
+      </ElFormItem>
+    </ElCol>
+  </ElRow>
+
   <ElRow>
     <ElCol>
       <ElFormItem :label="$t('dashboard.editor.attrField')" prop="attribute">
-        <ElInput placeholder="Please input" v-model="currentItem.payload.grid.attribute"/>
+        <KeysSearch v-model="currentItem.payload.grid.attribute" :obj="currentItem.lastEvent" @change="onChangeValue"/>
       </ElFormItem>
     </ElCol>
   </ElRow>
@@ -284,7 +305,6 @@ const changedForActionButton = async (entity: ApiEntity) => {
           </ElRow>
 
 
-
           <ElDivider v-if="prop.position" content-position="left">{{ $t('dashboard.editor.grid.preview') }}</ElDivider>
 
           <ElRow v-if="prop.position">
@@ -361,7 +381,10 @@ const changedForActionButton = async (entity: ApiEntity) => {
     </ElCol>
   </ElRow>
 
-  <ElDivider v-if="currentItem.payload.grid.position" content-position="left">{{ $t('dashboard.editor.grid.preview') }}</ElDivider>
+  <ElDivider v-if="currentItem.payload.grid.position" content-position="left">{{
+      $t('dashboard.editor.grid.preview')
+    }}
+  </ElDivider>
 
   <ElRow v-if="currentItem.payload.grid.position">
     <ElCol>
@@ -380,7 +403,8 @@ const changedForActionButton = async (entity: ApiEntity) => {
     </ElCol>
 
     <ElCol :span="12" :xs="12">
-      <ElFormItem :label="$t('dashboard.editor.action')"  prop="action" :aria-disabled="!currentItem.payload.grid.entity">
+      <ElFormItem :label="$t('dashboard.editor.action')" prop="action"
+                  :aria-disabled="!currentItem.payload.grid.entity">
         <ElSelect
             v-model="currentItem.payload.grid.actionName"
             clearable
@@ -415,10 +439,11 @@ const changedForActionButton = async (entity: ApiEntity) => {
 
 </template>
 
-<style lang="less" >
+<style lang="less">
 .el-collapse-item__header {
   clear: both;
   overflow: hidden;
+
   .tile-preview-wrapper {
     float: right;
     margin-right: 15px;

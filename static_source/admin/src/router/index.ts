@@ -31,6 +31,7 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
   {
     path: '/landing',
     component: Landing,
+    redirect: 'index',
     meta: {
       title: t('router.Landing'),
       hidden: true,
@@ -38,9 +39,9 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
     },
     children: [
       {
-        path: '/landing',
+        path: '/landing/:id',
         name: 'Landing',
-        component: () => import('@/views/Dashboard/main.vue'),
+        component: () => import('@/views/Dashboard/landing.vue'),
         meta: {
           hidden: true,
           title: t('router.Dashboard'),

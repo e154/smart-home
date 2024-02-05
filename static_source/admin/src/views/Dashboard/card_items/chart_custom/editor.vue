@@ -35,6 +35,7 @@ import {debounce} from "lodash-es";
 import {EChartsOption} from "echarts";
 import {ApiImage} from "@/api/stub";
 import JsonEditor from "@/components/JsonEditor/JsonEditor.vue";
+import KeysSearch from "@/views/Dashboard/components/KeysSearch.vue";
 
 const {t} = useI18n()
 
@@ -138,7 +139,7 @@ const editorHandler = debounce((val: any) => {
 
     if (val.json) {
       options = val.json as EChartsOption
-    } else if(val.text) {
+    } else if (val.text) {
       options = parsedObject(val.text) as EChartsOption
     }
 
@@ -185,16 +186,34 @@ const editorHandler = debounce((val: any) => {
             type: 'value',
           };
         }
-        if (options.yAxis?.scale == undefined) {options.yAxis['scale'] = false}
-        if (options.yAxis?.show == undefined) {options.yAxis['show'] = false}
-        if (options.xAxis?.show == undefined) {options.xAxis['show'] = false}
+        if (options.yAxis?.scale == undefined) {
+          options.yAxis['scale'] = false
+        }
+        if (options.yAxis?.show == undefined) {
+          options.yAxis['show'] = false
+        }
+        if (options.xAxis?.show == undefined) {
+          options.xAxis['show'] = false
+        }
       }
-      if (series.animation == undefined) {series['animation'] = false;}
-      if (series.smooth == undefined) {series['smooth'] = false;}
-      if (series.lineStyle == undefined) {series['lineStyle'] = 1;}
-      if (series.showSymbol == undefined) {series['showSymbol'] = false;}
-      if (series.animationDuration == undefined) {series['animationDuration'] = 2800;}
-      if (series.animationEasing == undefined) {series['animationEasing'] = 'cubicInOut';}
+      if (series.animation == undefined) {
+        series['animation'] = false;
+      }
+      if (series.smooth == undefined) {
+        series['smooth'] = false;
+      }
+      if (series.lineStyle == undefined) {
+        series['lineStyle'] = 1;
+      }
+      if (series.showSymbol == undefined) {
+        series['showSymbol'] = false;
+      }
+      if (series.animationDuration == undefined) {
+        series['animationDuration'] = 2800;
+      }
+      if (series.animationEasing == undefined) {
+        series['animationEasing'] = 'cubicInOut';
+      }
     }
 
     currentItem.value.payload.chartCustom.chartOptions = options;
@@ -213,11 +232,26 @@ const onSelectImage = (image: ApiImage) => {
   currentItem.value.payload.chartCustom.image = image || undefined;
 }
 
+const onChangePropValue = (val: string, prop: any, index: number): void => {
+  prop.customAttributes[index].value = val
+}
+
 </script>
 
 <template>
 
   <CommonEditor :item="item" :core="core"/>
+
+  <Infotip
+      type="warning"
+      :show-index="false"
+      title="WARNING"
+      :schema="[
+      {
+        label: 'Experimental component, may change in the future',
+      },
+    ]"
+  />
 
   <Infotip
       :show-index="false"
@@ -229,20 +263,16 @@ const onSelectImage = (image: ApiImage) => {
     ]"
   />
 
-  <ElDivider content-position="left" >{{$t('dashboard.editor.chart.chartOptions') }}</ElDivider>
+  <ElDivider content-position="left">{{ $t('dashboard.editor.chart.chartOptions') }}</ElDivider>
 
   <ElRow :gutter="24" style="min-height: 200px;margin-bottom: 20px">
     <ElCol>
-      <JsonEditor v-model="currentItem.payload.chartCustom.chartOptions" @change="editorHandler"/>
+      <JsonEditor v-model="currentItem.payload.chartCustom.chartOptions" height="auto" @change="editorHandler"/>
     </ElCol>
   </ElRow>
 
-<!--  <ElFormItem :label="$t('dashboard.editor.image')" prop="image">-->
-<!--    <ImageSearch v-model="currentItem.payload.chartCustom.image" @change="onSelectImage"/>-->
-<!--  </ElFormItem>-->
-
   <!-- chart items -->
-  <ElDivider content-position="left" >{{$t('dashboard.editor.chart.seriesOptions') }}</ElDivider>
+  <ElDivider content-position="left">{{ $t('dashboard.editor.chart.seriesOptions') }}</ElDivider>
 
   <ElRow>
     <ElCol>
@@ -262,7 +292,7 @@ const onSelectImage = (image: ApiImage) => {
         >
 
           <template #title>
-            {{$t('dashboard.editor.chart.series')}} {{ index }}
+            {{ $t('dashboard.editor.chart.series') }} {{ index }}
           </template>
 
           <ElCard shadow="never" class="item-card-editor">
@@ -276,9 +306,9 @@ const onSelectImage = (image: ApiImage) => {
               <ElCol :span="12" :xs="12">
                 <ElFormItem :label="$t('dashboard.editor.chart.itemType')" prop="text">
                   <ElRadioGroup v-model="prop.chartType">
-                    <ElRadioButton label="custom" />
-                    <ElRadioButton label="attr" />
-                    <ElRadioButton label="metric" />
+                    <ElRadioButton label="custom"/>
+                    <ElRadioButton label="attr"/>
+                    <ElRadioButton label="metric"/>
                   </ElRadioGroup>
                 </ElFormItem>
               </ElCol>
@@ -324,7 +354,9 @@ const onSelectImage = (image: ApiImage) => {
                           <ElRow :gutter="24">
                             <ElCol :span="12" :xs="12">
                               <ElFormItem :label="$t('dashboard.editor.chart.itemValue')" prop="text">
-                                <ElInput class="w-[100%]" placeholder="Please input" v-model="attr.value"/>
+                                <!--                                <ElInput class="w-[100%]" placeholder="Please input" v-model="attr.value"/>-->
+                                <KeysSearch v-model="attr.value" :obj="currentItem.lastEvent"
+                                            @change="onChangePropValue($event, prop, index)"/>
                               </ElFormItem>
                             </ElCol>
                             <ElCol :span="12" :xs="12">
@@ -466,6 +498,6 @@ const onSelectImage = (image: ApiImage) => {
 
 </template>
 
-<style lang="less" >
+<style lang="less">
 
 </style>

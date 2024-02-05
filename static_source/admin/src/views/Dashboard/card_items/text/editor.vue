@@ -9,6 +9,7 @@ import {Cache, GetTokens} from "@/views/Dashboard/render";
 import {TextProp} from "@/views/Dashboard/card_items/text/types";
 import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
 import { TinycmeEditor } from "@/components/Tinymce";
+import KeysSearch from "@/views/Dashboard/components/KeysSearch.vue";
 
 const {t} = useI18n()
 
@@ -111,6 +112,11 @@ const updateCurrentState = () => {
     requestCurrentState(currentItem.value?.entityId)
   }
 }
+
+const onChangePropValue = (val, index) => {
+  currentItem.value.payload.text.items[index].key = val;
+}
+
 </script>
 
 <template>
@@ -160,11 +166,8 @@ const updateCurrentState = () => {
                     :xs="8"
                 >
                   <ElFormItem :label="$t('dashboard.editor.text')" prop="text">
-                    <ElInput
-                        placeholder="Please input"
-                        v-model="prop.key"/>
+                    <KeysSearch v-model="prop.key" :obj="currentItem.lastEvent" @change="onChangePropValue($event, index)"/>
                   </ElFormItem>
-
                 </ElCol>
 
                 <ElCol
@@ -207,18 +210,27 @@ const updateCurrentState = () => {
                   <ElFormItem :label="$t('dashboard.editor.html')" prop="enabled">
                     <ElSwitch v-model="defaultTextHtml"/>
                   </ElFormItem>
+                </ElCol>
+              </ElRow>
 
+              <ElRow  v-if="!defaultTextHtml">
+                <ElCol>
                   <ElFormItem :label="$t('dashboard.editor.text')" prop="text">
                     <ElInput
-                        v-if="!defaultTextHtml"
                         type="textarea"
                         :autosize="{minRows: 10}"
                         placeholder="Please input"
                         v-model="prop.text"
                         @update:modelValue="propTextUpdated(prop)"
                     />
-<!--                    <Editor v-else v-model="prop.text" @change="propTextUpdated(prop)" />-->
-                    <TinycmeEditor v-else v-model="prop.text" @update:modelValue="propTextUpdated(prop)"/>
+                  </ElFormItem>
+                </ElCol>
+              </ElRow>
+
+              <ElRow v-else>
+                <ElCol>
+                  <ElFormItem :label="$t('dashboard.editor.text')" prop="text">
+                    <TinycmeEditor v-model="prop.text" @update:modelValue="propTextUpdated(prop)"/>
                   </ElFormItem>
                 </ElCol>
               </ElRow>
@@ -271,25 +283,34 @@ const updateCurrentState = () => {
       <ElFormItem :label="$t('dashboard.editor.html')" prop="enabled">
         <ElSwitch v-model="defaultTextHtml"/>
       </ElFormItem>
+    </ElCol>
+  </ElRow>
 
+  <ElRow  v-if="!defaultTextHtml">
+    <ElCol>
       <ElFormItem :label="$t('dashboard.editor.textBody')" prop="text">
         <ElInput
-            v-if="!defaultTextHtml"
             type="textarea"
             :autosize="{minRows: 10}"
             placeholder="Please input"
             v-model="currentItem.payload.text.default_text"
             @update:modelValue="defaultTextUpdated"
         />
-<!--        <Editor v-else mode="simple" v-model="currentItem.payload.text.default_text" @change="defaultTextUpdated" />-->
-        <TinycmeEditor v-else v-model="currentItem.payload.text.default_text" @update:modelValue="defaultTextUpdated"/>
+      </ElFormItem>
+    </ElCol>
+  </ElRow>
+
+  <ElRow  v-else >
+    <ElCol>
+      <ElFormItem :label="$t('dashboard.editor.textBody')" prop="text">
+        <TinycmeEditor v-model="currentItem.payload.text.default_text" @update:modelValue="defaultTextUpdated"/>
       </ElFormItem>
     </ElCol>
   </ElRow>
   <!-- /text options -->
 
   <ElRow>
-    <ElCol>
+    <ElCol class="tag-list">
       <ElFormItem :label="$t('dashboard.editor.tokens')">
         <ElTag size="small" v-for="(token, index) in tokens" :key="index" class="mr-10px">{{ token }}</ElTag>
         <div v-if="!tokens.length">{{$t('main.no')}}</div>
@@ -316,7 +337,7 @@ const updateCurrentState = () => {
 </template>
 
 <style lang="less" scoped>
-:deep(.el-tag--small) {
+:deep(.tag-list .el-tag--small) {
   margin: 0 7px 7px 0;
 }
 </style>

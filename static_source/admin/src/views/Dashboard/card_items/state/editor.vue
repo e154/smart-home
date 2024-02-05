@@ -10,6 +10,7 @@ import {ApiImage} from "@/api/stub";
 import {ItemPayloadState} from "@/views/Dashboard/card_items/state/types";
 import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
 import ImageSearch from "@/views/Images/components/ImageSearch.vue";
+import KeysSearch from "@/views/Dashboard/components/KeysSearch.vue";
 
 const {t} = useI18n()
 
@@ -142,6 +143,11 @@ const updateCurrentState = () => {
     requestCurrentState(currentItem.value?.entityId)
   }
 }
+
+const onChangePropKey = (val, index) => {
+  currentItem.value.payload.state.items[index].key = val.key;
+}
+
 </script>
 
 <template>
@@ -188,7 +194,7 @@ const updateCurrentState = () => {
           <ElRow :gutter="24">
             <ElCol :span="8" :xs="8">
               <ElFormItem :label="$t('dashboard.editor.text')" prop="text">
-                <ElInput placeholder="Please input" v-model="prop.key"/>
+                <KeysSearch v-model="prop.key" :obj="currentItem.lastEvent" @change="onChangePropKey(prop, index)"/>
               </ElFormItem>
             </ElCol>
 
