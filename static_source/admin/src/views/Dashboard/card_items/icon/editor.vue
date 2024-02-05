@@ -1,13 +1,23 @@
 <script setup lang="ts">
-import {computed, onMounted, PropType, ref, unref, watch} from "vue";
-import {Card, CardItem, comparisonType, Core, requestCurrentState, Tab} from "@/views/Dashboard/core";
-import ViewCard from "@/views/Dashboard/editor/ViewCard.vue";
-import {ElDivider, ElCollapse, ElCollapseItem, ElCard, ElForm, ElFormItem, ElPopconfirm, ElSwitch,
-  ElRow, ElCol, ElSelect, ElOption, ElInput, ElTag, ElButton, ElColorPicker, ElInputNumber } from 'element-plus'
+import {computed, PropType} from "vue";
+import {CardItem, Core, requestCurrentState} from "@/views/Dashboard/core";
+import {
+  ElButton,
+  ElCol,
+  ElCollapse,
+  ElCollapseItem,
+  ElColorPicker,
+  ElDivider,
+  ElFormItem,
+  ElInput,
+  ElInputNumber,
+  ElRow
+} from 'element-plus'
 import CommonEditor from "@/views/Dashboard/card_items/common/editor.vue";
 import {useI18n} from "@/hooks/web/useI18n";
-import {Cache, GetTokens} from "@/views/Dashboard/render";
+import {Cache} from "@/views/Dashboard/render";
 import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
+import KeysSearch from "@/views/Dashboard/components/KeysSearch.vue";
 
 const {t} = useI18n()
 
@@ -31,7 +41,8 @@ const currentItem = computed({
   get(): CardItem {
     return props.item as CardItem
   },
-  set(val: CardItem) {}
+  set(val: CardItem) {
+  }
 })
 
 // ---------------------------------
@@ -43,6 +54,11 @@ const updateCurrentState = () => {
     requestCurrentState(currentItem.value?.entityId)
   }
 }
+
+const onChangeValue = (val) => {
+  currentItem.value.payload.icon.attrField = val;
+}
+
 </script>
 
 <template>
@@ -54,7 +70,7 @@ const updateCurrentState = () => {
   <ElRow :gutter="24">
     <ElCol :span="8" :xs="8">
       <ElFormItem :label="$t('dashboard.editor.icon')" prop="icon">
-        <ElInput v-model="currentItem.payload.icon.value" />
+        <ElInput v-model="currentItem.payload.icon.value"/>
       </ElFormItem>
     </ElCol>
     <ElCol :span="8" :xs="8">
@@ -70,7 +86,7 @@ const updateCurrentState = () => {
   </ElRow>
 
   <ElFormItem :label="$t('dashboard.editor.attrField')" prop="text">
-    <ElInput v-model="currentItem.payload.icon.attrField"/>
+    <KeysSearch v-model="currentItem.payload.icon.attrField" :obj="currentItem.lastEvent" @change="onChangeValue"/>
   </ElFormItem>
 
   <ElRow style="padding-bottom: 20px" v-if="currentItem.entity">
@@ -91,6 +107,6 @@ const updateCurrentState = () => {
 
 </template>
 
-<style lang="less" >
+<style lang="less">
 
 </style>

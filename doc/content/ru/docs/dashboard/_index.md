@@ -7,7 +7,7 @@ description: >
   
 ---
 
-{{< figure src="/smart-home/dashboard1.png" >}}
+{{< figure src="/smart-home/dashboard2.png" >}}
 
 &nbsp;
 

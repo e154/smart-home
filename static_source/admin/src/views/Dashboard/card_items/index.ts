@@ -30,8 +30,6 @@ import joystick from './joystick/index.vue';
 import joystickEditor from './joystick/editor.vue';
 import icon from './icon/index.vue';
 import iconEditor from './icon/editor.vue';
-import tiles from './tiles/index.vue';
-import tilesEditor from './tiles/editor.vue';
 import grid from './grid/index.vue';
 import gridEditor from './grid/editor.vue';
 
@@ -68,8 +66,6 @@ export const CardItemName = (name: string): any => {
       return joystick;
     case 'icon':
       return icon;
-    case 'tiles':
-      return tiles;
     case 'grid':
       return grid;
     default:
@@ -111,8 +107,6 @@ export const CardEditorName = (name: string): any => {
       return joystickEditor;
     case 'icon':
       return iconEditor;
-    case 'tiles':
-      return tilesEditor;
     case 'grid':
       return gridEditor;
     default:
@@ -142,6 +136,5 @@ export const CardItemList: ItemsType[] = [
   {label: 'STREAM_PLAYER', value: 'streamPlayer'},
   {label: 'JOYSTICK', value: 'joystick'},
   {label: 'ICON', value: 'icon'},
-  {label: 'TILES', value: 'tiles'},
   {label: 'GRID', value: 'grid'}
 ];

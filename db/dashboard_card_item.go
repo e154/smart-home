@@ -26,7 +26,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgerrcode"
-	"github.com/lib/pq"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 
@@ -64,7 +64,7 @@ func (d *DashboardCardItem) TableName() string {
 // Add ...
 func (n DashboardCardItems) Add(ctx context.Context, item *DashboardCardItem) (id int64, err error) {
 	if err = n.Db.WithContext(ctx).Create(&item).Error; err != nil {
-		var pgErr *pq.Error
+		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
 			switch pgErr.Code {
 			case pgerrcode.ForeignKeyViolation:

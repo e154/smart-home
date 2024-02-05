@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import {computed, onMounted, PropType, ref, unref, watch} from "vue";
-import {Card, CardItem, Core, requestCurrentState, Tab} from "@/views/Dashboard/core";
+import {CardItem, requestCurrentState} from "@/views/Dashboard/core";
 import {debounce} from "lodash-es";
-import {Cache, GetTokens, RenderText} from "@/views/Dashboard/render";
+import {Cache, RenderVar} from "@/views/Dashboard/render";
 import {ItemPayloadSlider, OrientationType} from "@/views/Dashboard/card_items/slider/types";
 import slider from "vue3-slider"
 import api from "@/api/api";
-import {ElMessage} from "element-plus";
 import {useI18n} from "@/hooks/web/useI18n";
 import {ApiEntityCallActionRequest, ApiTypes} from "@/api/stub";
+
 const {t} = useI18n()
 
 // ---------------------------------
@@ -40,7 +40,7 @@ const trackColor = ref("#FEFEFE")
 const min = ref(0)
 const max = ref(100)
 const step = ref(1)
-const tooltip	 = ref(false)
+const tooltip = ref(false)
 const orientation = ref<OrientationType>(OrientationType.horizontal)
 
 const currentSlider = computed<ItemPayloadSlider>(() => props.item?.payload.slider || {} as ItemPayloadSlider)
@@ -73,12 +73,11 @@ const getValue = debounce(() => {
     tooltip.value = currentSlider.value.tooltip
   }
 
-  let v: string = props.item?.payload.slider?.attribute || ''
-  const tokens = GetTokens(props.item?.payload.slider?.attribute, _cache)
-  if (tokens.length) {
-    v = RenderText(tokens, v, props.item?.lastEvent)
-    if (v !== '[NO VALUE]') {
-      const val = parseInt(v) || 0
+  let token: string = props.item?.payload.slider?.attribute || ''
+  if (token) {
+    const result = RenderVar(token, props.item?.lastEvent)
+    if (result !== '[NO VALUE]') {
+      const val = parseInt(result) || 0
       if (unref(value) !== val) {
         value.value = val
       }
@@ -98,7 +97,7 @@ watch(
     }
 )
 
-const callAction = debounce( async (val: number) => {
+const callAction = debounce(async (val: number) => {
   if (!currentSlider.value.action) {
     console.warn('no action')
     return;
@@ -139,9 +138,9 @@ requestCurrentState(props.item?.entityId);
         :tooltip="tooltip"
         v-on:drag-end="dragEnd"
     />
- </div>
+  </div>
 </template>
 
-<style lang="less" >
+<style lang="less">
 
 </style>

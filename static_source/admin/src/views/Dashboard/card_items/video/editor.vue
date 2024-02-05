@@ -6,6 +6,7 @@ import {ElDivider, ElCollapse, ElCollapseItem, ElCard, ElForm, ElFormItem, ElInp
 import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
 import CommonEditor from "@/views/Dashboard/card_items/common/editor.vue";
 import {playerType} from "@/views/Dashboard/card_items/video/types";
+import KeysSearch from "@/views/Dashboard/components/KeysSearch.vue";
 
 // ---------------------------------
 // common
@@ -32,6 +33,10 @@ const updateCurrentState = () => {
   if (currentItem.value.entityId) {
     requestCurrentState(currentItem.value.entityId)
   }
+}
+
+const onChangeValue = (val) => {
+  currentItem.value.payload.video.attribute = val;
 }
 
 </script>
@@ -62,7 +67,7 @@ const updateCurrentState = () => {
     <ElRow :gutter="24" v-if="currentItem.payload.video.playerType === playerType.youtube">
       <ElCol :span="12" :xs="12">
         <ElFormItem :label="$t('dashboard.editor.value')" prop="value">
-          <ElInput v-model="currentItem.payload.video.attribute"/>
+          <KeysSearch v-model="currentItem.payload.video.attribute" :obj="currentItem.lastEvent" @change="onChangeValue"/>
         </ElFormItem>
       </ElCol>
       <ElCol :span="12" :xs="12"/>

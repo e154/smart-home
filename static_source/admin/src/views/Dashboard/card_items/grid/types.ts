@@ -18,6 +18,7 @@ export interface ItemPayloadGrid {
   showCellValue?: boolean
   gap: boolean
   gapSize: number
+  tooltip: boolean
   attribute: string
   entity?: ApiEntity
   entityId?: string

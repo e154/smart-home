@@ -75,16 +75,22 @@ func TestNode(t *testing.T) {
 
 			// common
 			// ------------------------------------------------
+			var closed = false
 			ch := make(chan events.EventStateChanged)
 			defer close(ch)
 			fn := func(topic string, msg interface{}) {
 				switch v := msg.(type) {
 				case events.EventStateChanged:
-					ch <- v
+					if !closed {
+						ch <- v
+					}
 				}
 			}
 			eventBus.Subscribe("system/entities/+", fn, false)
-			defer func() { _ = eventBus.Unsubscribe("system/entities/+", fn) }()
+			defer eventBus.Unsubscribe("system/entities/+", fn)
+			defer func() {
+				closed = true
+			}()
 			// ------------------------------------------------
 
 			// wait message

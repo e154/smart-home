@@ -11,10 +11,9 @@ import {
   ApiNewDashboardTabRequest
 } from '@/api/stub';
 import api from '@/api/api';
-import {randColor} from '@/utils/rans';
 import {Attribute, EventStateChange, GetAttrValue} from '@/api/stream_types';
 import {UUID} from 'uuid-generator-ts';
-import {Compare, Resolve} from '@/views/Dashboard/render';
+import {Compare, RenderVar, Resolve} from '@/views/Dashboard/render';
 import stream from '@/api/stream';
 import {useBus} from "@/views/Dashboard/bus";
 import {debounce} from "lodash-es";
@@ -32,11 +31,13 @@ import {ItemPayloadColorPicker} from "@/views/Dashboard/card_items/color_picker/
 import {ItemPayloadJoystick} from "@/views/Dashboard/card_items/joystick/types";
 import {ItemPayloadVideo} from "@/views/Dashboard/card_items/video/types";
 import {ItemPayloadEntityStorage} from "@/views/Dashboard/card_items/entity_storage/types";
-import {ItemPayloadTiles} from "@/views/Dashboard/card_items/tiles/types";
 import {ItemPayloadGrid} from "@/views/Dashboard/card_items/grid/types";
+import {ItemPayloadImage} from "@/views/Dashboard/card_items/image/types";
 import {prepareUrl} from "@/utils/serverId";
+import {useAppStore} from "@/store/modules/app";
 
 const {emit} = useBus()
+const appStore = useAppStore()
 
 export interface ButtonAction {
   entityId: string;
@@ -91,11 +92,6 @@ export interface KeysProp {
   action?: string;
 }
 
-export interface ItemPayloadImage {
-  attrField?: string;
-  image?: ApiImage;
-}
-
 export interface ItemPayloadIcon {
   attrField?: string;
   value?: string;
@@ -120,7 +116,6 @@ export interface ItemPayload {
   joystick?: ItemPayloadJoystick;
   video?: ItemPayloadVideo;
   entityStorage?: ItemPayloadEntityStorage;
-  tiles?: ItemPayloadTiles;
   grid?: ItemPayloadGrid;
 }
 
@@ -258,8 +253,10 @@ export class CardItem {
       }
       if (!this.payload.progress) {
         this.payload.progress = {
+          items: [],
           type: '',
-          textInside: true,
+          showText: false,
+          textInside: false,
           strokeWidth: 26,
           width: 100
         } as ItemPayloadProgress;
@@ -310,18 +307,10 @@ export class CardItem {
       if (!this.payload.entityStorage) {
         this.payload.entityStorage = {} as ItemPayloadEntityStorage;
       }
-      if (!this.payload.tiles) {
-        this.payload.tiles = {
-          items: [],
-          defaultImage: undefined,
-          tileHeight: 25,
-          tileWidth: 25,
-          attribute: '',
-        } as ItemPayloadTiles;
-      }
       if (!this.payload.grid) {
         this.payload.grid = {
           items: [],
+          tooltip: false,
           gap: false,
           gapSize: 5,
           defaultImage: undefined,
@@ -597,60 +586,50 @@ export class CardItem {
 
     // hide
     for (const prop of this.hideOn) {
-      let val = Resolve(prop.key, event);
-      if (!val) {
-        continue;
+      const val: any = RenderVar(prop.key || '', event)
+      if ('[NO VALUE]' == val) {
+        continue
       }
-      if (typeof val === 'object') {
-        if (val && val.hasOwnProperty('type') && val.hasOwnProperty('name')) {
-          val = GetAttrValue(val as Attribute);
-        }
-      }
-
-      if (val == undefined) {
-        val = '[NO VALUE]';
-      }
-
       const tr = Compare(val, prop.value, prop.comparison);
       if (tr) {
         this.hidden = true;
         this.update();
-        return;
+        continue
       }
     }
 
     // show
     for (const prop of this.showOn) {
-      let val = Resolve(prop.key, event);
-      if (!val) {
-        continue;
+      const val: any = RenderVar(prop.key || '', event)
+      if ('[NO VALUE]' == val) {
+        continue
       }
-      if (typeof val === 'object') {
-        if (val && val.hasOwnProperty('type') && val.hasOwnProperty('name')) {
-          val = GetAttrValue(val as Attribute);
-        }
-      }
-
-      if (val == undefined) {
-        val = '[NO VALUE]';
-      }
-
       const tr = Compare(val, prop.value, prop.comparison);
       if (tr) {
         this.hidden = false;
         this.update();
-        return;
+        continue;
       }
     }
   }
 
   // lastEvent
   get lastEvent(): EventStateChange | undefined {
+    if (!this._lastEvents[this.entityId]) {
+      this._lastEvents[this.entityId] = {} as EventStateChange
+      requestCurrentState(this.entityId)
+      return undefined
+    }
     return this._lastEvents[this.entityId];
   }
 
   // lastEvents
   lastEvents(entityId: string): EventStateChange | undefined {
+    if (!this._lastEvents[entityId]) {
+      this._lastEvents[entityId] = {} as EventStateChange
+      requestCurrentState(entityId)
+      return undefined
+    }
     return this._lastEvents[entityId];
   }
 } // \CardItem
@@ -868,6 +847,11 @@ export class Card {
       this.id,
       -1
     );
+
+    item.weight = 1
+    if (this.items && this.items.length > 1) {
+      item.weight = this.items[this.items.length -1].weight + 1
+    }
 
     this.items.push(item);
     this.selectedItem = this.items.length - 1;
@@ -1401,9 +1385,14 @@ export class Core {
       return;
     }
 
+    let background = appStore.isDark? '#232324' : '#F5F7FA'
+    if (tab.cards && tab.cards.length) {
+      background  = tab.cards[tab.cards.length -1 ].background
+    }
+
     const card = await Card.createNew(
       'new card' + tab.cards.length,
-      randColor(),
+      background,
       tab.columnWidth,
       getSize(),
       tab.id,
@@ -1468,6 +1457,9 @@ export class Core {
 
     card.dashboardTabId = tab.id;
     card.id = undefined
+    if (tab.cards && tab.cards.length) {
+      card.weight = tab.cards[tab.cards.length-1].weight + 1
+    }
 
     const {data} = await api.v1.dashboardCardServiceImportDashboardCard(card);
     if (data) {

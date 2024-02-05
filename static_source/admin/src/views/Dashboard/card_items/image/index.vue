@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import {computed, onMounted, onUnmounted, PropType, ref, unref, watch} from "vue";
-import {ButtonAction, Card, CardItem, Core, requestCurrentState, Tab} from "@/views/Dashboard/core";
-import {Cache, Compare, GetTokens, RenderText, Resolve} from "@/views/Dashboard/render";
-import {ElImage, ElIcon} from "element-plus";
-import { Picture as IconPicture } from '@element-plus/icons-vue'
-import {Attribute, GetAttrValue} from "@/api/stream_types";
+import {onMounted, onUnmounted, PropType, ref} from "vue";
+import {CardItem} from "@/views/Dashboard/core";
+import {RenderVar} from "@/views/Dashboard/render";
+import {ElIcon, ElImage} from "element-plus";
+import {Picture as IconPicture} from '@element-plus/icons-vue'
 import {useCache} from "@/hooks/web/useCache";
 import {prepareUrl} from "@/utils/serverId";
+
 const {wsCache} = useCache()
 
 // ---------------------------------
@@ -38,28 +38,37 @@ const getUrl = (): string => {
     return '';
   }
   if (props.item?.payload.image.attrField) {
-    const imageUrl = RenderText([props.item?.payload.image.attrField], '[' + props.item?.payload.image.attrField + ']', props.item?.lastEvent);
+    const imageUrl = RenderVar(props.item?.payload.image.attrField, props.item?.lastEvent);
     return prepareUrl(import.meta.env.VITE_API_BASEPATH as string + imageUrl);
   }
   return prepareUrl(import.meta.env.VITE_API_BASEPATH as string + props.item?.payload.image?.image?.url || '');
 }
 
+const getTileStyle = () => {
+  const uri = getUrl();
+  return {
+    "background": `url(${uri})`,
+  }
+}
 </script>
 
 <template>
   <div ref="el" class="w-[100%] h-[100%] overflow-hidden">
-    <ElImage v-show="!item.hidden" :src="getUrl()">
+    <ElImage v-if="!item.payload.image.background" v-show="!item.hidden" :src="getUrl()">
       <template #error>
         <div class="image-slot">
-          <ElIcon><icon-picture /></ElIcon>
+          <ElIcon>
+            <icon-picture/>
+          </ElIcon>
         </div>
       </template>
     </ElImage>
+    <div v-else :style="getTileStyle()" class="w-[100%] h-[100%]"></div>
   </div>
 
 </template>
 
-<style lang="less" >
+<style lang="less">
 .el-image__error, .el-image__placeholder, .el-image__inner {
   height: auto;
 }

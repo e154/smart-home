@@ -31,7 +31,8 @@ export default {
         Success: 'Success',
         Warning: 'Warning',
         Error: 'Error',
-        filter: 'Filter'
+        filter: 'Filter',
+        open: 'Open'
     },
     message: {
         unknownError: 'unknown error',
@@ -216,7 +217,8 @@ export default {
     variables: {
         name: 'Name',
         value: 'Value',
-        addNew: 'Add new variable'
+        addNew: 'Add new variable',
+        editor: 'Editor'
     },
     plugins: {
         name: 'Name',
@@ -499,6 +501,7 @@ export default {
         height: 'Height',
         width: 'Width',
         weight: 'Weight',
+        landing: 'Landing',
         editor: {
             keystrokeCapture: 'Keystroke Capture',
             addNewButton: 'Add New Button',
@@ -572,6 +575,8 @@ export default {
             TILES: 'Tiles (DEPRECATED)',
             tooltip: 'Tooltip',
             GRID: 'Grid',
+            showText: 'show text',
+            background: 'Background',
             slider: {
                 options: 'Slider Options',
                 color: 'Color',
@@ -623,7 +628,8 @@ export default {
                 endAction: 'End Action',
             },
             video: {
-                options: 'Video Options'
+                options: 'Video Options',
+                pleaseSelectPlayerType: 'Please select player'
             },
             entityStorage: {
                 entities: 'Entities',
@@ -654,6 +660,7 @@ export default {
                 fontSize: 'Font Size',
                 gap: 'Gap',
                 gapSize: 'Gap Size',
+                tooltip: 'Tooltip'
             },
             tilesOptions: 'Tales Options',
             gridOptions: 'Grid Options',
@@ -682,7 +689,7 @@ export default {
         createBackupAt: 'Create Backup At (Cron)',
         maximumNumberOfBackups: 'Maximum Number Of Backups',
         info1: 'https://en.wikipedia.org/wiki/Cron',
-        info2: 'Organization of remote access without white IP. Free gate https://gate.e154.ru:8443',
+        info2: 'Organization of remote access without external IP. Free gate https://gate.e154.ru:8443',
         info3: 'don\'t change it if you don\'t know what it\'s for',
         sendTheBackupInPartsMb: 'Send The Backup In Parts Mb',
         sendbackuptoTelegramBot: 'Send Backup To Telegram Bot',

@@ -8,6 +8,8 @@ import CommonEditor from "@/views/Dashboard/card_items/common/editor.vue";
 import EntitySearch from "@/views/Entities/components/EntitySearch.vue";
 import ImageSearch from "@/views/Images/components/ImageSearch.vue";
 import {useI18n} from "@/hooks/web/useI18n";
+import KeysSearch from "@/views/Dashboard/components/KeysSearch.vue";
+import {EventStateChange} from "@/api/stream_types";
 
 const {t} = useI18n()
 
@@ -44,6 +46,7 @@ const onSelectImageForAction = (index: number, image: ApiImage) => {
 }
 
 const changedForActionButton = async (entity: ApiEntity, index: number) => {
+  currentItem.value.payload.map.markers[index].attribute = ''
   if (!currentItem.value.payload.map?.markers[index]) {
     return
   }
@@ -83,6 +86,20 @@ const removeMarker = (index: number) => {
 
 const updateCenter = (index: number) => {
   currentItem.value.payload.map.indexMarkerCenter = index
+}
+
+const onChangePropValue = (val, index) => {
+  if (currentItem.value.payload.map.markers[index]) {
+    currentItem.value.payload.map.markers[index].attribute = val;
+  }
+}
+
+const lastEvent = (index: number): EventStateChange | undefined => {
+  if (currentItem.value.payload.map.markers[index].entityId) {
+    return currentItem.value.lastEvents(currentItem.value.payload.map.markers[index].entityId)
+  } else {
+    return currentItem.value.lastEvent
+  }
 }
 
 </script>
@@ -142,7 +159,7 @@ const updateCenter = (index: number) => {
 
                   <ElCol :span="12" :xs="12">
                     <ElFormItem :label="$t('dashboard.editor.value')" prop="value">
-                      <ElInput v-model="prop.attribute"/>
+                      <KeysSearch v-model="prop.attribute" :obj="lastEvent(index)" @change="onChangePropValue($event, index)"/>
                     </ElFormItem>
                   </ElCol>
                 </ElRow>

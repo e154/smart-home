@@ -1,13 +1,9 @@
 <script setup lang="ts">
-import {computed, nextTick, onMounted, PropType, ref, unref, watch} from "vue";
-import {ApiEntity, ApiImage, ApiVariable, ApiZigbee2Mqtt} from "@/api/stub";
-import {useI18n} from "@/hooks/web/useI18n";
+import {nextTick, ref, watch} from "vue";
+import {ApiVariable} from "@/api/stub";
 import View from "@/views/Dashboard/view/view.vue";
 import api from "@/api/api";
-import {isDark} from "@/utils/is";
 import {useAppStore} from "@/store/modules/app";
-
-const {t} = useI18n()
 
 const loading = ref(true)
 const id = ref<Nullable<number>>(null)
@@ -24,9 +20,9 @@ const reload = () => {
 const appStore = useAppStore()
 
 
-const fetchDashboard =  async () => {
+const fetchDashboard = async () => {
   loading.value = true;
-  const res = await api.v1.variableServiceGetVariableByName('mainDashboard' + (appStore.isDark? 'Dark' : 'Light'))
+  const res = await api.v1.variableServiceGetVariableByName('mainDashboard' + (appStore.isDark ? 'Dark' : 'Light'))
       .catch(() => {
       })
       .finally(() => {

@@ -218,8 +218,12 @@ func (j *Javascript) Do() (result string, err error) {
 func (j *Javascript) AssertFunction(f string, args ...interface{}) (result string, err error) {
 	defer func() {
 		if r := recover(); r != nil {
-			log.Warnf("Recovered script id: %d, %s", j.engine.model.Id, f)
-			log.Debug(j.vm.Get(f).String())
+			if j.engine.model != nil {
+				log.Warnf("Recovered script id: %d, %s", j.engine.model.Id, f)
+			} else {
+				log.Warnf("Recovered script %s", f)
+			}
+			//log.Debug(j.vm.Get(f).String())
 			debug.PrintStack()
 		}
 	}()

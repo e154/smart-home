@@ -25,7 +25,7 @@ const whiteList = ['/login', '/password_reset'] // 不重定向白名单
 router.beforeEach(async (to, from, next) => {
   start()
   loadStart()
-  if (appStore.getUser) {
+  if (appStore.getUser && appStore.getToken) {
     if (to.path === '/login') {
       next({ path: '/' })
     } else {
@@ -65,7 +65,7 @@ router.beforeEach(async (to, from, next) => {
       next(nextData)
     }
   } else {
-    if (whiteList.indexOf(to.path) !== -1) {
+    if (whiteList.indexOf(to.path) !== -1 || to.path.includes('/landing')) {
       next()
     } else {
       next(`/login?redirect=${to.path}`) // 否则全部重定向到登录页

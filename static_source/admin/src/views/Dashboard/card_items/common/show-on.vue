@@ -1,11 +1,26 @@
 <script setup lang="ts">
-import {computed, onMounted, PropType, ref, unref, watch} from "vue";
-import {Card, CardItem, CompareProp, comparisonType, Core, Tab} from "@/views/Dashboard/core";
-import {ElDivider, ElOption, ElCollapse, ElFormItem, ElSwitch, ElCol, ElRow, ElButton, ElSelect,
-  ElPopconfirm, ElForm, ElCard, ElCollapseItem, ElInput, ElTag} from 'element-plus'
+import {computed, PropType} from "vue";
+import {CardItem, CompareProp, comparisonType, Core} from "@/views/Dashboard/core";
+import {
+  ElButton,
+  ElCard,
+  ElCol,
+  ElCollapse,
+  ElCollapseItem,
+  ElForm,
+  ElFormItem,
+  ElInput,
+  ElOption,
+  ElPopconfirm,
+  ElRow,
+  ElSelect,
+  ElTag
+} from 'element-plus'
 import {useI18n} from "@/hooks/web/useI18n";
 import {ApiEntity} from "@/api/stub";
 import EntitySearch from "@/views/Entities/components/EntitySearch.vue";
+import KeysSearch from "@/views/Dashboard/components/KeysSearch.vue";
+import {EventStateChange} from "@/api/stream_types";
 
 const {t} = useI18n()
 
@@ -21,13 +36,20 @@ const props = defineProps({
     type: Array as PropType<CompareProp[]>,
     default: () => []
   },
+  item: {
+    type: Object as PropType<Nullable<CardItem>>,
+    default: () => null
+  },
 })
+
+const currentItem = computed(() => props.item as CardItem)
 
 const currentValue = computed({
   get(): CompareProp[] {
     return props.modelValue as CompareProp[]
   },
-  set(val: CompareProp[]) {}
+  set(val: CompareProp[]) {
+  }
 })
 
 // ---------------------------------
@@ -55,9 +77,11 @@ const addShowOnProp = () => {
 const currentCore = computed(() => props.core as Core)
 
 const onEntityChanged = async (entity: ApiEntity, index: number) => {
+  currentValue.value[index].key = '';
   if (entity?.id) {
     currentValue.value[index].entity = await currentCore.value.fetchEntity(entity.id);
     currentValue.value[index].entityId = entity.id;
+    currentItem.value.lastEvents(entity.id)
   } else {
     currentValue.value[index].entity = undefined;
     currentValue.value[index].entityId = '';
@@ -67,6 +91,19 @@ const onEntityChanged = async (entity: ApiEntity, index: number) => {
 const removeShowOnProp = (index: number) => {
   currentValue.value.splice(index, 1);
 }
+
+const onChangePropValue = (val, index) => {
+  currentValue.value[index].key = val;
+}
+
+const lastEvent = (index: number): EventStateChange | undefined => {
+  if (currentValue.value[index].entityId) {
+    return currentItem.value.lastEvents(currentValue.value[index].entityId)
+  } else {
+    return currentItem.value.lastEvent
+  }
+}
+
 </script>
 
 <template>
@@ -100,9 +137,9 @@ const removeShowOnProp = (index: number) => {
 
             <ElForm
                 label-position="top"
-                 :model="prop"
-                 style="width: 100%"
-                 ref="cardItemForm">
+                :model="prop"
+                style="width: 100%"
+                ref="cardItemForm">
 
               <ElRow :gutter="24">
                 <ElCol
@@ -110,7 +147,7 @@ const removeShowOnProp = (index: number) => {
                     :xs="8"
                 >
                   <ElFormItem :label="$t('dashboard.editor.text')" prop="text">
-                    <ElInput placeholder="Please input" v-model="prop.key"/>
+                    <KeysSearch v-model="prop.key" :obj="lastEvent(index)" @change="onChangePropValue($event, index)"/>
                   </ElFormItem>
 
                 </ElCol>
@@ -193,6 +230,6 @@ const removeShowOnProp = (index: number) => {
 
 </template>
 
-<style lang="less" >
+<style lang="less">
 
 </style>

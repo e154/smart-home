@@ -9,17 +9,17 @@ import {ApiDashboard} from "@/api/stub";
 import {useRouter} from "vue-router";
 import {parseTime} from "@/utils";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
-import { Dialog } from '@/components/Dialog'
-import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
-import {Core, parsedObject} from "@/views/Dashboard/core";
+import {Dialog} from '@/components/Dialog'
+import {Core} from "@/views/Dashboard/core";
 import {useCache} from "@/hooks/web/useCache";
 import JsonEditor from "@/components/JsonEditor/JsonEditor.vue";
-import {EChartsOption} from "echarts";
+import {prepareUrl} from "@/utils/serverId";
+import {Infotip} from "@/components/Infotip";
 
 const {push} = useRouter()
 const counter = ref(0);
 const {t} = useI18n()
-const { wsCache } = useCache()
+const {wsCache} = useCache()
 
 interface TableObject {
   tableList: ApiDashboard[]
@@ -39,7 +39,7 @@ const tableObject = reactive<TableObject>(
     {
       tableList: [],
       loading: false,
-      sort: wsCache.get(cachePref+'Sort') || '-createdAt'
+      sort: wsCache.get(cachePref + 'Sort') || '-createdAt'
     },
 );
 
@@ -74,9 +74,14 @@ const columns: TableColumn[] = [
     label: t('dashboard.description')
   },
   {
+    field: 'link',
+    label: t('dashboard.landing'),
+    width: "120px",
+  },
+  {
     field: 'operations',
     label: t('dashboard.operations'),
-    width: "90px",
+    width: "120px",
   },
   {
     field: 'createdAt',
@@ -106,17 +111,17 @@ const columns: TableColumn[] = [
   }
 ]
 const paginationObj = ref<Pagination>({
-  currentPage: wsCache.get(cachePref+'CurrentPage') || 1,
-  pageSize: wsCache.get(cachePref+'PageSize') || 50,
+  currentPage: wsCache.get(cachePref + 'CurrentPage') || 1,
+  pageSize: wsCache.get(cachePref + 'PageSize') || 50,
   total: 0,
 })
 
 const getList = async () => {
   tableObject.loading = true
 
-  wsCache.set(cachePref+'CurrentPage', paginationObj.value.currentPage)
-  wsCache.set(cachePref+'PageSize', paginationObj.value.pageSize)
-  wsCache.set(cachePref+'Sort', tableObject.sort)
+  wsCache.set(cachePref + 'CurrentPage', paginationObj.value.currentPage)
+  wsCache.set(cachePref + 'PageSize', paginationObj.value.pageSize)
+  wsCache.set(cachePref + 'Sort', tableObject.sort)
 
   let params: Params = {
     page: paginationObj.value.currentPage,
@@ -166,7 +171,7 @@ getList()
 
 const addNew = () => {
   Core.createNew('new' + counter.value)
-      .then((dashboard: ApiDashboard)=>{
+      .then((dashboard: ApiDashboard) => {
         ElMessage({
           title: t('Success'),
           message: t('message.createdSuccessfully'),
@@ -175,7 +180,7 @@ const addNew = () => {
         });
         push({path: `/dashboards/edit/${dashboard.id}`});
       })
-      .catch((e)=>{
+      .catch((e) => {
         counter.value++
       })
 }
@@ -186,6 +191,15 @@ const editDashboard = (row: ApiDashboard) => {
 
 const showDashboard = (row: ApiDashboard) => {
   push(`/dashboards/view/${row.id}`)
+}
+
+//todo: experimental function
+const openLanding = (item: ApiDashboard): string => {
+  const uri = window.location.origin || import.meta.env.VITE_API_BASEPATH as string;
+  const accessToken = wsCache.get("accessToken")
+  const url = prepareUrl(uri + '/#/landing/' + item.id + '?access_token=' + accessToken);
+  console.log('url', url)
+  window.open(url, '_blank', 'noreferrer');
 }
 
 const dialogVisible = ref(false)
@@ -203,7 +217,7 @@ const importDashboard = async () => {
   try {
     if (importValue.value?.json) {
       dashboard = importValue.value.json as ApiDashboard;
-    } else if(importValue.value.text) {
+    } else if (importValue.value.text) {
       dashboard = JSON.parse(importValue.value.text) as ApiDashboard;
     }
   } catch {
@@ -238,6 +252,27 @@ const importDashboard = async () => {
     <ElButton class="flex mb-20px items-left" type="primary" @click="dialogVisible = true" plain>
       {{ t('main.import') }}
     </ElButton>
+
+    <Infotip
+        type="warning"
+        :show-index="false"
+        title="WARNING"
+        :schema="[
+      {
+        label: 'The functionality is experimental and may change in the future.',
+      },
+      {
+        label: 'Added a landing page link that provides direct access to the dashboard. The direct link allows you to embed the dashboard into your solution.',
+      },
+      {
+        label: ' &nbsp;',
+      },
+      {
+        label: 'Be careful, the link contains your access token. Generate a link on behalf of a non-privileged user.',
+      },
+    ]"
+    />
+
     <Table
         :selection="false"
         v-model:pageSize="paginationObj.pageSize"
@@ -261,11 +296,20 @@ const importDashboard = async () => {
 
       </template>
 
-      <template #operations="{ row }">
+      <template #link="{ row }">
+        <div class="w-[100%] text-center landing-link">
+          <ElButton link @click.prevent.stop="openLanding(row)">
+            {{ $t('main.open') }}&nbsp;<Icon icon="gg:external" />
+          </ElButton>
+        </div>
+      </template>
 
-        <ElButton :link="true" @click.prevent.stop="editDashboard(row)">
-          {{ $t('main.edit') }}
-        </ElButton>
+      <template #operations="{ row }">
+        <div class="w-[100%] text-center edit-link">
+          <ElButton link @click.prevent.stop="editDashboard(row)">
+            {{ $t('main.edit') }}
+          </ElButton>
+        </div>
       </template>
     </Table>
   </ContentWrap>
@@ -284,8 +328,25 @@ const importDashboard = async () => {
 
 <style lang="less">
 
+.landing-link, .edit-link {
+  .el-button {
+    font-size: calc(100% - 1px);
+  }
+  .el-icon {
+    font-size: calc(100% - 6px) !important;
+  }
+}
+.landing-link {
+  display: none;
+}
 .el-table__row {
   cursor: pointer;
+  &:hover {
+    .landing-link {
+      display: inherit;
+
+    }
+  }
 }
 
 </style>

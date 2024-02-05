@@ -31,7 +31,8 @@ export default {
     Success: 'Успешно',
     Warning: 'Внимание',
     Error: 'Ошибка',
-    filter: 'Фильтр'
+    filter: 'Фильтр',
+    open: 'Открыть'
   },
   message: {
     unknownError: "Неизвестная ошибка",
@@ -216,7 +217,8 @@ export default {
   variables: {
     name: "Имя",
     value: "Значение",
-    addNew: "Добавить новую переменную"
+    addNew: "Добавить новую переменную",
+    editor: 'Редактор'
   },
   plugins: {
     name: "Имя",
@@ -499,6 +501,7 @@ export default {
     height: "Высота",
     width: "Ширина",
     weight: "Вес",
+    landing: 'Landing',
     editor: {
       keystrokeCapture: 'Захват клавиатуры',
       addNewButton: 'Добавить кнопку',
@@ -572,6 +575,8 @@ export default {
       TILES: 'Тайлы (DEPRECATED)',
       tooltip: 'Подсказка',
       GRID: 'Сетка',
+      showText: 'Показывать текст',
+      background: 'Фон',
       slider: {
         options: 'Параметры слайдера',
         color: 'Цвет',
@@ -624,6 +629,7 @@ export default {
       },
       video: {
         options: 'Параметры видео',
+        pleaseSelectPlayerType: 'Выберите проигрыватель'
       },
       entityStorage: {
         entities: 'Устройства',
@@ -654,6 +660,7 @@ export default {
         fontSize: 'Шрифт',
         gap: 'Промежуток',
         gapSize: 'Размер',
+        tooltip: 'Подсказка'
       },
       tilesOptions: 'Параметры плитки',
       gridOptions: 'Параметры сетки',
@@ -682,7 +689,7 @@ export default {
     createBackupAt: 'Когда создавать кипию (cron)',
     maximumNumberOfBackups: 'Максимальное количество резервных копий',
     info1: 'https://en.wikipedia.org/wiki/Cron',
-    info2: 'Организация удаленного доступа без белого IP. Тестовый шлюз https://gate.e154.ru:8443',
+    info2: 'Организация удаленного доступа без внешнего IP. Тестовый шлюз https://gate.e154.ru:8443',
     info3: 'не меняй, если не знаешь для чего это',
     sendTheBackupInPartsMb: 'Отправлять резервную копию по частям Mb',
     sendbackuptoTelegramBot: 'Отправить резервную копию боту Telegram',

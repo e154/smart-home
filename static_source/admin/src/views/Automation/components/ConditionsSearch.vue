@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import {PropType, ref, unref, watch} from "vue";
-import {ApiCondition} from "@/api/stub";
+import {ApiCondition, ApiTrigger} from "@/api/stub";
 import {ElSelect, ElOption} from 'element-plus'
 import api from "@/api/api";
 
@@ -82,6 +82,8 @@ const handleSelect = (val: ApiCondition) => {
   emit('change', val)
 }
 
+const label = (item: ApiCondition): string => `${item.name} (id: ${item.id})`
+
 </script>
 
 <template>
@@ -100,7 +102,7 @@ const handleSelect = (val: ApiCondition) => {
     <ElOption
         v-for="item in options"
         :key="item.id"
-        :label="item.name"
+        :label="label(item)"
         :value="item.id"
     >
       <span style="float: left">{{ item.name }} (id: {{ item.id }})</span>
