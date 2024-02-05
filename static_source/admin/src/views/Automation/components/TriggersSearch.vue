@@ -82,6 +82,8 @@ const handleSelect = (val: ApiTrigger) => {
   emit('change', val)
 }
 
+const label = (item: ApiTrigger): string => `${item.name} (id: ${item.id})`
+
 </script>
 
 <template>
@@ -100,7 +102,7 @@ const handleSelect = (val: ApiTrigger) => {
     <ElOption
         v-for="item in options"
         :key="item.id"
-        :label="item.name"
+        :label="label(item)"
         :value="item.id"
     >
       <span style="float: left">{{ item.name }} (id: {{ item.id }})</span>

@@ -297,16 +297,16 @@ const importDashboard = async () => {
       </template>
 
       <template #link="{ row }">
-        <div class="w-[100%] text-center">
-          <ElButton :link="true" @click.prevent.stop="openLanding(row)">
-            {{ $t('main.open') }} &nbsp; <Icon icon="pajamas:external-link" />
+        <div class="w-[100%] text-center landing-link">
+          <ElButton link @click.prevent.stop="openLanding(row)">
+            {{ $t('main.open') }}&nbsp;<Icon icon="gg:external" />
           </ElButton>
         </div>
       </template>
 
       <template #operations="{ row }">
-        <div class="w-[100%] text-center">
-          <ElButton :link="true" @click.prevent.stop="editDashboard(row)">
+        <div class="w-[100%] text-center edit-link">
+          <ElButton link @click.prevent.stop="editDashboard(row)">
             {{ $t('main.edit') }}
           </ElButton>
         </div>
@@ -328,8 +328,25 @@ const importDashboard = async () => {
 
 <style lang="less">
 
+.landing-link, .edit-link {
+  .el-button {
+    font-size: calc(100% - 1px);
+  }
+  .el-icon {
+    font-size: calc(100% - 6px) !important;
+  }
+}
+.landing-link {
+  display: none;
+}
 .el-table__row {
   cursor: pointer;
+  &:hover {
+    .landing-link {
+      display: inherit;
+
+    }
+  }
 }
 
 </style>

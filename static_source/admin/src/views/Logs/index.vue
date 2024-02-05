@@ -2,13 +2,12 @@
 import {useI18n} from '@/hooks/web/useI18n'
 import {Table} from '@/components/Table'
 import {Form} from '@/components/Form'
-import {computed, h, onDeactivated, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
+import {computed, h, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
 import {FormSchema} from "@/types/form";
 import {useAppStore} from "@/store/modules/app";
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
 import {UUID} from 'uuid-generator-ts'
-import { ElTable, ElTableColumn, ElPagination, ElDatePicker  } from 'element-plus'
 import {ApiLog} from "@/api/stub";
 import {useForm} from "@/hooks/web/useForm";
 import {parseTime} from "@/utils";
@@ -16,12 +15,9 @@ import stream from "@/api/stream";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
 import {useCache} from "@/hooks/web/useCache";
 
-const remember = ref(false)
 const {register, elFormRef, methods} = useForm()
-const appStore = useAppStore()
 const {t} = useI18n()
-const isMobile = computed(() => appStore.getMobile)
-const { wsCache } = useCache()
+const {wsCache} = useCache()
 
 interface TableObject {
   tableList: ApiLog[]
@@ -47,10 +43,10 @@ const tableObject = reactive<TableObject>(
     {
       tableList: [],
       loading: false,
-      sort: wsCache.get(cachePref+'Sort') || '-createdAt',
-      query: wsCache.get(cachePref+'Query'),
-      startDate: wsCache.get(cachePref+'StartDate'),
-      endDate: wsCache.get(cachePref+'EndDate'),
+      sort: wsCache.get(cachePref + 'Sort') || '-createdAt',
+      query: wsCache.get(cachePref + 'Query'),
+      startDate: wsCache.get(cachePref + 'StartDate'),
+      endDate: wsCache.get(cachePref + 'EndDate'),
     }
 );
 
@@ -108,9 +104,9 @@ const schema = reactive<FormSchema[]>([
           tableObject.startDate = undefined
           tableObject.endDate = undefined
         }
-        wsCache.set(cachePref+'DateTime', val)
-        wsCache.set(cachePref+'StartDate', tableObject.startDate)
-        wsCache.set(cachePref+'EndDate', tableObject.endDate)
+        wsCache.set(cachePref + 'DateTime', val)
+        wsCache.set(cachePref + 'StartDate', tableObject.startDate)
+        wsCache.set(cachePref + 'EndDate', tableObject.endDate)
         getList()
       }
     },
@@ -194,8 +190,8 @@ const columns: TableColumn[] = [
   },
 ]
 const paginationObj = ref<Pagination>({
-  currentPage: wsCache.get(cachePref+'CurrentPage') || 1,
-  pageSize: wsCache.get(cachePref+'PageSize') || 100,
+  currentPage: wsCache.get(cachePref + 'CurrentPage') || 1,
+  pageSize: wsCache.get(cachePref + 'PageSize') || 100,
   total: 0,
   pageSizes: [50, 100, 150, 250],
 })
@@ -217,10 +213,10 @@ onUnmounted(() => {
 const getList = async () => {
   tableObject.loading = true
 
-  wsCache.set(cachePref+'CurrentPage', paginationObj.value.currentPage)
-  wsCache.set(cachePref+'PageSize', paginationObj.value.pageSize)
-  wsCache.set(cachePref+'Sort', tableObject.sort)
-  wsCache.set(cachePref+'Query', tableObject.query)
+  wsCache.set(cachePref + 'CurrentPage', paginationObj.value.currentPage)
+  wsCache.set(cachePref + 'PageSize', paginationObj.value.pageSize)
+  wsCache.set(cachePref + 'Sort', tableObject.sort)
+  wsCache.set(cachePref + 'Query', tableObject.query)
 
   let params: Params = {
     page: paginationObj.value.currentPage,
@@ -282,13 +278,13 @@ const onFormChange = async () => {
   } else {
     tableObject.query = undefined
   }
-  wsCache.set(cachePref+'Query', tableObject.query)
-  wsCache.set(cachePref+'LevelList', levelList)
+  wsCache.set(cachePref + 'Query', tableObject.query)
+  wsCache.set(cachePref + 'LevelList', levelList)
   getList()
 }
 
 const tableRowClassName = (data) => {
-  const { row, rowIndex } = data
+  const {row, rowIndex} = data
   let style = ''
   switch (row.level) {
     case 'Emergency':
@@ -320,14 +316,14 @@ const tableRowClassName = (data) => {
 }
 
 const {setValues, setSchema} = methods
-if (wsCache.get(cachePref+'DateTime')) {
+if (wsCache.get(cachePref + 'DateTime')) {
   setValues({
-    dateTime: wsCache.get(cachePref+'DateTime')
+    dateTime: wsCache.get(cachePref + 'DateTime')
   })
 }
-if (wsCache.get(cachePref+'LevelList')) {
+if (wsCache.get(cachePref + 'LevelList')) {
   setValues({
-    levelList: wsCache.get(cachePref+'LevelList')
+    levelList: wsCache.get(cachePref + 'LevelList')
   })
 }
 
@@ -368,52 +364,51 @@ getList()
 <style lang="less" scoped>
 
 :deep(.search-form .el-col) {
-    padding-left: 0!important;
-    padding-right: 0!important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 
 :deep(.logsTable) {
 
-.el-table__row {
+  .el-table__row {
 
-td.el-table__cell {
-  padding: 0;
-  border-bottom: none !important;
-}
+    td.el-table__cell {
+      padding: 0;
+      border-bottom: none !important;
+    }
 
-&.log-emergency {
-  --el-table-tr-bg-color: var(--el-color-error-light-5);
-}
+    &.log-emergency {
+      --el-table-tr-bg-color: var(--el-color-error-light-5);
+    }
 
-&.log-alert {
-  --el-table-tr-bg-color: var(--el-color-error-light-5);
-}
+    &.log-alert {
+      --el-table-tr-bg-color: var(--el-color-error-light-5);
+    }
 
-&.log-critical {
-  --el-table-tr-bg-color: var(--el-color-error-light-5);
-}
+    &.log-critical {
+      --el-table-tr-bg-color: var(--el-color-error-light-5);
+    }
 
-&.log-error {
-  --el-table-tr-bg-color: var(--el-color-error-light-5);
-}
+    &.log-error {
+      --el-table-tr-bg-color: var(--el-color-error-light-5);
+    }
 
-&.log-warning {
-  --el-table-tr-bg-color: var(--el-color-warning-light-5);
-}
+    &.log-warning {
+      --el-table-tr-bg-color: var(--el-color-warning-light-5);
+    }
 
-&.log-notice {
-  --el-table-tr-bg-color: var(--el-color-success-light-5);
-}
+    &.log-notice {
+      --el-table-tr-bg-color: var(--el-color-success-light-5);
+    }
 
-&.log-info {
-  background-color: inherit;
-}
+    &.log-info {
+      background-color: inherit;
+    }
 
-&.log-debug {
-  //background-color: #82aeff;
-  --el-table-tr-bg-color: var(--el-color-info-light-5);
-}
+    &.log-debug {
+    //background-color: #82aeff; --el-table-tr-bg-color: var(--el-color-info-light-5);
+    }
 
-}
+  }
 }
 </style>
