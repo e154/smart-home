@@ -217,7 +217,8 @@ export default {
     variables: {
         name: 'Name',
         value: 'Value',
-        addNew: 'Add new variable'
+        addNew: 'Add new variable',
+        editor: 'Editor'
     },
     plugins: {
         name: 'Name',

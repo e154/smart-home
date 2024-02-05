@@ -83,6 +83,7 @@ const editorHeight = computed(() => props.height? props.height: '400px')
 
 <style lang="less">
 #json-editor-vue {
+  width: 100%;
   height: v-bind(editorHeight);
   min-height: 400px;
 }

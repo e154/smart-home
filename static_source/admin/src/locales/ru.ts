@@ -217,7 +217,8 @@ export default {
   variables: {
     name: "Имя",
     value: "Значение",
-    addNew: "Добавить новую переменную"
+    addNew: "Добавить новую переменную",
+    editor: 'Редактор'
   },
   plugins: {
     name: "Имя",
