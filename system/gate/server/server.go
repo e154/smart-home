@@ -122,7 +122,6 @@ func (a *Server) Start() (err error) {
 		}
 	}()
 
-
 	return
 }
 
@@ -141,10 +140,13 @@ func (a *Server) registerHandlers() {
 	// static files
 	a.echo.GET("/", echo.WrapHandler(a.controllers.Index(publicAssets.F)))
 	a.echo.GET("/public/*", echo.WrapHandler(http.StripPrefix("/", http.FileServer(http.FS(publicAssets.F)))))
-	var contentHandler = echo.WrapHandler(http.FileServer(http.FS(api.SwaggerAssets)))
-	a.echo.GET("/swagger-ui", contentHandler)
-	a.echo.GET("/swagger-ui/*", contentHandler)
-	a.echo.GET("/api.swagger3.yaml", contentHandler)
+	var swaggerHandler = echo.WrapHandler(http.FileServer(http.FS(api.SwaggerAssets)))
+	a.echo.GET("/swagger-ui", swaggerHandler)
+	a.echo.GET("/swagger-ui/*", swaggerHandler)
+	a.echo.GET("/api.swagger3.yaml", swaggerHandler)
+	var typedocHandler = echo.WrapHandler(http.FileServer(http.FS(api.TypedocAssets)))
+	a.echo.GET("/typedoc", typedocHandler)
+	a.echo.GET("/typedoc/*", typedocHandler)
 
 	// proxy
 	a.echo.Any("/v1/*", a.proxyHandler)
