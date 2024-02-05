@@ -80,7 +80,6 @@ func TestNode(t *testing.T) {
 			var closed = atomic.NewBool(false)
 			ch := make(chan events.EventStateChanged)
 			defer close(ch)
-			defer closed.Store(true)
 			fn := func(topic string, msg interface{}) {
 				switch v := msg.(type) {
 				case events.EventStateChanged:
@@ -91,7 +90,8 @@ func TestNode(t *testing.T) {
 				}
 			}
 			eventBus.Subscribe("system/entities/+", fn, false)
-			defer func() { _ = eventBus.Unsubscribe("system/entities/+", fn) }()
+			defer eventBus.Unsubscribe("system/entities/+", fn)
+			defer closed.Store(true)
 			// ------------------------------------------------
 
 			// wait message

@@ -757,7 +757,6 @@ func WaitMessage[T events.EventStateChanged | events.EventTriggerCompleted | eve
 	var closed = atomic.NewBool(false)
 	ch := make(chan T)
 	defer close(ch)
-	defer closed.Store(true)
 	fn := func(_ string, msg interface{}) {
 		switch v := msg.(type) {
 		case T:
@@ -775,6 +774,7 @@ func WaitMessage[T events.EventStateChanged | events.EventTriggerCompleted | eve
 
 	eventBus.Subscribe(topic, fn, retain)
 	defer eventBus.Unsubscribe(topic, fn)
+	defer closed.Store(true)
 
 	msg, ok = WaitT[T](timeOut, ch)
 
