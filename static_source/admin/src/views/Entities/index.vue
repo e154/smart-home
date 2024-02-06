@@ -63,7 +63,7 @@ const columns: TableColumn[] = [
   {
     field: 'pluginName',
     label: t('entities.pluginName'),
-    width: "110px",
+    width: "130px",
     sortable: true
   },
   {
