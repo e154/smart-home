@@ -32,7 +32,8 @@ export default {
     Warning: 'Внимание',
     Error: 'Ошибка',
     filter: 'Фильтр',
-    open: 'Открыть'
+    open: 'Открыть',
+    tags: 'Теги'
   },
   message: {
     unknownError: "Неизвестная ошибка",

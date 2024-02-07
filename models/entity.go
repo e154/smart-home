@@ -58,4 +58,5 @@ type Entity struct {
 	AutoLoad     bool             `json:"auto_load"`
 	IsLoaded     bool             `json:"is_loaded"`
 	RestoreState bool             `json:"restore_state"`
+	Tags         []*Tag           `json:"tags"`
 }

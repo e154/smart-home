@@ -35,6 +35,7 @@ tags:
   - name: PluginService
   - name: RoleService
   - name: ScriptService
+  - name: TagService
   - name: StreamService
   - name: TriggerService
   - name: UserService
@@ -1587,6 +1588,7 @@ paths:
         - $ref: '#/components/parameters/listPage'
         - $ref: '#/components/parameters/listLimit'
         - $ref: '#/components/parameters/query'
+        - $ref: '#/components/parameters/tags'
         - name: plugin
           in: query
           schema:
@@ -1729,7 +1731,7 @@ paths:
             schema:
               type: object
               required: [ id, description, pluginName, autoLoad, restoreState, attributes, settings,
-                          metrics, actions, states, scriptIds ]
+                          metrics, actions, states, scriptIds, tags ]
               properties:
                 id:
                   type: string
@@ -1778,6 +1780,10 @@ paths:
                   type: array
                   items:
                     $ref: '#/components/schemas/apiMetric'
+                tags:
+                  type: array
+                  items:
+                    type: string
         required: true
       responses:
         200:
@@ -2969,7 +2975,7 @@ paths:
     get:
       tags:
         - ScriptService
-      summary: delete script by id
+      summary: search script by name
       operationId: ScriptService_SearchScript
       parameters:
         - $ref: '#/components/parameters/searchQuery'
@@ -2999,6 +3005,50 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/apiStatistics'
+        '401':
+          $ref: '#/components/responses/HTTP-401'
+      security:
+        - ApiKeyAuth: [ ]
+  /v1/tags/search:
+    get:
+      tags:
+        - TagService
+      summary: search tag by name
+      operationId: TagService_SearchTag
+      parameters:
+        - $ref: '#/components/parameters/searchQuery'
+        - $ref: '#/components/parameters/searchOffset'
+        - $ref: '#/components/parameters/searchLimit'
+      responses:
+        200:
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiSearchTagListResult'
+        '401':
+          $ref: '#/components/responses/HTTP-401'
+      security:
+        - ApiKeyAuth: [ ]
+  /v1/tags:
+    get:
+      tags:
+        - TagService
+      summary: get script list
+      operationId: TagService_GetTagList
+      parameters:
+        - $ref: '#/components/parameters/listSort'
+        - $ref: '#/components/parameters/listPage'
+        - $ref: '#/components/parameters/listLimit'
+        - $ref: '#/components/parameters/query'
+        - $ref: '#/components/parameters/tags'
+      responses:
+        200:
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiGetTagListResult'
         '401':
           $ref: '#/components/responses/HTTP-401'
       security:
@@ -4331,6 +4381,14 @@ components:
       required: false
       schema:
         type: string
+    tags:
+      name: tags[]
+      in: query
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
   schemas:
     GenericErrorResponse:
       title: Generic Error Response
@@ -4962,7 +5020,7 @@ components:
       type: object
       required: [ id, pluginName, description, autoLoad, restoreState, actions, states,
                   scripts, scriptIds, attributes, settings, metrics, createdAt,
-                  updatedAt ]
+                  updatedAt, tags ]
       properties:
         id:
           type: string
@@ -5019,6 +5077,10 @@ components:
         updatedAt:
           type: string
           format: date-time
+        tags:
+          type: array
+          items:
+            type: string
     apiEntityAction:
       type: object
       required: [ name, description, type ]
@@ -5033,6 +5095,9 @@ components:
           $ref: '#/components/schemas/apiImage'
         script:
           $ref: '#/components/schemas/apiScript'
+        scriptId:
+          type: integer
+          format: int64
         type:
           type: string
     apiEntityCallActionRequest:
@@ -5063,7 +5128,7 @@ components:
           type: string
     apiEntityShort:
       type: object
-      required: [ id, pluginName, description, autoLoad, restoreState, createdAt, updatedAt ]
+      required: [ id, pluginName, description, autoLoad, restoreState, createdAt, updatedAt, tags ]
       properties:
         id:
           type: string
@@ -5089,6 +5154,10 @@ components:
         updatedAt:
           type: string
           format: date-time
+        tags:
+          type: array
+          items:
+            type: string
     apiEntityState:
       type: object
       required: [ name, description, style ]
@@ -5409,6 +5478,16 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/apiVariable'
+        meta:
+          $ref: '#/components/schemas/apiMeta'
+    apiGetTagListResult:
+      type: object
+      required: [ items ]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/apiTag'
         meta:
           $ref: '#/components/schemas/apiMeta'
     apiBackup:
@@ -5750,7 +5829,7 @@ components:
     apiNewEntityRequest:
       type: object
       required: [ name, pluginName, description, autoLoad, restoreState, attributes, settings, metrics,
-                  actions, states, scriptIds ]
+                  actions, states, scriptIds, tags ]
       properties:
         name:
           type: string
@@ -5797,6 +5876,10 @@ components:
           items:
             type: integer
             format: int64
+        tags:
+          type: array
+          items:
+            type: string
     apiNewEntityRequestAction:
       type: object
       required: [ name, description, type ]
@@ -6162,6 +6245,15 @@ components:
         createdAt:
           type: string
           format: date-time
+    apiTag:
+      type: object
+      required: [ id, name ]
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
     apiScript:
       type: object
       required: [ id, name, lang, source, description, versions, createdAt, updatedAt ]
@@ -6283,6 +6375,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/apiScript'
+    apiSearchTagListResult:
+      type: object
+      required: [ items ]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/apiTag'
     apiSearchTriggerResult:
       type: object
       required: [ items ]

@@ -46,7 +46,7 @@ const columns: TableColumn[] = [
   {
     field: 'id',
     label: t('areas.id'),
-    width: "90px",
+    width: "60px",
     sortable: true
   },
   {

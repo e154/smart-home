@@ -322,7 +322,7 @@ type ServerInterface interface {
 	// get script list
 	// (GET /v1/scripts)
 	ScriptServiceGetScriptList(ctx echo.Context, params ScriptServiceGetScriptListParams) error
-	// delete script by id
+	// search script by name
 	// (GET /v1/scripts/search)
 	ScriptServiceSearchScript(ctx echo.Context, params ScriptServiceSearchScriptParams) error
 	// get statistic
@@ -334,6 +334,12 @@ type ServerInterface interface {
 	// sign out user
 	// (POST /v1/signout)
 	AuthServiceSignout(ctx echo.Context) error
+	// get script list
+	// (GET /v1/tags)
+	TagServiceGetTagList(ctx echo.Context, params TagServiceGetTagListParams) error
+	// search tag by name
+	// (GET /v1/tags/search)
+	TagServiceSearchTag(ctx echo.Context, params TagServiceSearchTagParams) error
 	// add new task
 	// (POST /v1/task)
 	AutomationServiceAddTask(ctx echo.Context, params AutomationServiceAddTaskParams) error
@@ -2065,6 +2071,13 @@ func (w *ServerInterfaceWrapper) EntityServiceGetEntityList(ctx echo.Context) er
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter query: %s", err))
 	}
 
+	// ------------- Optional query parameter "tags[]" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "tags[]", ctx.QueryParams(), &params.Tags)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter tags[]: %s", err))
+	}
+
 	// ------------- Optional query parameter "plugin" -------------
 
 	err = runtime.BindQueryParameter("form", true, false, "plugin", ctx.QueryParams(), &params.Plugin)
@@ -3574,6 +3587,88 @@ func (w *ServerInterfaceWrapper) AuthServiceSignout(ctx echo.Context) error {
 	return err
 }
 
+// TagServiceGetTagList converts echo context to params.
+func (w *ServerInterfaceWrapper) TagServiceGetTagList(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(ApiKeyAuthScopes, []string{})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params TagServiceGetTagListParams
+	// ------------- Optional query parameter "sort" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "sort", ctx.QueryParams(), &params.Sort)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter sort: %s", err))
+	}
+
+	// ------------- Optional query parameter "page" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "page", ctx.QueryParams(), &params.Page)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter page: %s", err))
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", ctx.QueryParams(), &params.Limit)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter limit: %s", err))
+	}
+
+	// ------------- Optional query parameter "query" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "query", ctx.QueryParams(), &params.Query)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter query: %s", err))
+	}
+
+	// ------------- Optional query parameter "tags[]" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "tags[]", ctx.QueryParams(), &params.Tags)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter tags[]: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.TagServiceGetTagList(ctx, params)
+	return err
+}
+
+// TagServiceSearchTag converts echo context to params.
+func (w *ServerInterfaceWrapper) TagServiceSearchTag(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(ApiKeyAuthScopes, []string{})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params TagServiceSearchTagParams
+	// ------------- Optional query parameter "query" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "query", ctx.QueryParams(), &params.Query)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter query: %s", err))
+	}
+
+	// ------------- Optional query parameter "offset" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", ctx.QueryParams(), &params.Offset)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter offset: %s", err))
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", ctx.QueryParams(), &params.Limit)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter limit: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.TagServiceSearchTag(ctx, params)
+	return err
+}
+
 // AutomationServiceAddTask converts echo context to params.
 func (w *ServerInterfaceWrapper) AutomationServiceAddTask(ctx echo.Context) error {
 	var err error
@@ -4781,6 +4876,8 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/v1/scripts/statistic", wrapper.ScriptServiceGetStatistic)
 	router.POST(baseURL+"/v1/signin", wrapper.AuthServiceSignin)
 	router.POST(baseURL+"/v1/signout", wrapper.AuthServiceSignout)
+	router.GET(baseURL+"/v1/tags", wrapper.TagServiceGetTagList)
+	router.GET(baseURL+"/v1/tags/search", wrapper.TagServiceSearchTag)
 	router.POST(baseURL+"/v1/task", wrapper.AutomationServiceAddTask)
 	router.DELETE(baseURL+"/v1/task/:id", wrapper.AutomationServiceDeleteTask)
 	router.GET(baseURL+"/v1/task/:id", wrapper.AutomationServiceGetTask)

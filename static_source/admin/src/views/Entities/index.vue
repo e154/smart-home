@@ -1,17 +1,16 @@
-<script setup lang="ts">
+<script setup lang="tsx">
 import {useI18n} from '@/hooks/web/useI18n'
 import {Table} from '@/components/Table'
 import {h, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
-import {ElButton, ElMessage, ElTag, ElCollapse, ElCollapseItem} from 'element-plus'
-import {ApiArea, ApiDashboardCard, ApiEntityShort, ApiPlugin} from "@/api/stub";
+import {ElButton, ElCollapse, ElCollapseItem, ElMessage, ElTag} from 'element-plus'
+import {ApiArea, ApiEntityShort, ApiPlugin, ApiTag} from "@/api/stub";
 import {useForm} from "@/hooks/web/useForm";
 import {useRouter} from "vue-router";
 import {parseTime} from "@/utils";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
-import { Dialog } from '@/components/Dialog'
-import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
+import {Dialog} from '@/components/Dialog'
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 import {EventStateChange} from "@/api/stream_types";
@@ -23,7 +22,7 @@ import JsonEditor from "@/components/JsonEditor/JsonEditor.vue";
 const {push} = useRouter()
 const {register, methods} = useForm()
 const {t} = useI18n()
-const { wsCache } = useCache()
+const {wsCache} = useCache()
 
 interface TableObject {
   tableList: ApiEntityShort[]
@@ -33,6 +32,7 @@ interface TableObject {
   query?: string
   plugin?: string
   area?: ApiArea
+  tags?: string[]
 }
 
 interface Params {
@@ -46,26 +46,34 @@ const tableObject = reactive<TableObject>(
     {
       tableList: [],
       loading: false,
-      sort: wsCache.get(cachePref+'Sort') || '-createdAt',
-      query: wsCache.get(cachePref+'Query'),
-      plugin: wsCache.get(cachePref+'Plugin')?.name,
-      area: wsCache.get(cachePref+'Area')
+      sort: wsCache.get(cachePref + 'Sort') || '-createdAt',
+      query: wsCache.get(cachePref + 'Query'),
+      plugin: wsCache.get(cachePref + 'Plugin')?.name,
+      area: wsCache.get(cachePref + 'Area'),
+      tags: wsCache.get(cachePref + 'Tags')
     },
 );
 
 const columns: TableColumn[] = [
   {
     field: 'id',
-    label: t('entities.id'),
+    label: t('entities.name'),
     width: "190px",
     sortable: true
   },
   {
     field: 'pluginName',
     label: t('entities.pluginName'),
-    width: "130px",
+    width: "140px",
     sortable: true
   },
+  // {
+  //   field: 'tags',
+  //   label: t('main.tags'),
+  //   width: "150px",
+  //   sortable: false,
+  //   type: 'expand'
+  // },
   {
     field: 'areaId',
     label: t('entities.area'),
@@ -115,19 +123,21 @@ const columns: TableColumn[] = [
     }
   }
 ]
+
 const paginationObj = ref<Pagination>({
-  currentPage: wsCache.get(cachePref+'CurrentPage') || 1,
-  pageSize: wsCache.get(cachePref+'PageSize') || 50,
+  currentPage: wsCache.get(cachePref + 'CurrentPage') || 1,
+  pageSize: wsCache.get(cachePref + 'PageSize') || 50,
   total: 0,
 })
 
 const getList = async () => {
   tableObject.loading = true
 
-  wsCache.set(cachePref+'CurrentPage', paginationObj.value.currentPage)
-  wsCache.set(cachePref+'PageSize', paginationObj.value.pageSize)
-  wsCache.set(cachePref+'Sort', tableObject.sort)
-  wsCache.set(cachePref+'Query', tableObject.query)
+  wsCache.set(cachePref + 'CurrentPage', paginationObj.value.currentPage)
+  wsCache.set(cachePref + 'PageSize', paginationObj.value.pageSize)
+  wsCache.set(cachePref + 'Sort', tableObject.sort)
+  wsCache.set(cachePref + 'Query', tableObject.query)
+  wsCache.set(cachePref + 'Tags', tableObject.tags)
 
   let params: Params = {
     page: paginationObj.value.currentPage,
@@ -136,6 +146,7 @@ const getList = async () => {
     query: tableObject.query || undefined,
     plugin: tableObject.plugin || undefined,
     area: tableObject?.area?.id || undefined,
+    tags: tableObject?.tags || undefined,
   }
 
   const res = await api.v1.entityServiceGetEntityList(params)
@@ -260,7 +271,7 @@ const importEntity = async () => {
   try {
     if (importedEntity.value?.json) {
       val = importedEntity.value.json as ApiEntityShort;
-    } else if(importedEntity.value.text) {
+    } else if (importedEntity.value.text) {
       val = JSON.parse(importedEntity.value.text) as ApiEntityShort;
     }
   } catch {
@@ -285,7 +296,8 @@ const importEntity = async () => {
     states: val.states,
     attributes: val.attributes,
     settings: val.settings,
-    scripts: val.scripts
+    scripts: val.scripts,
+    tags: val.tags
   }
   const res = await api.v1.entityServiceImportEntity(entity)
   if (res) {
@@ -306,7 +318,7 @@ const schema = reactive<FormSchema[]>([
     label: t('entities.name'),
     component: 'Input',
     colProps: {
-      span: 24
+      span: 12
     },
     componentProps: {
       placeholder: t('entities.name'),
@@ -322,14 +334,14 @@ const schema = reactive<FormSchema[]>([
     component: 'Plugin',
     value: null,
     colProps: {
-      span: 24
+      span: 12
     },
     hidden: false,
     componentProps: {
       placeholder: t('entities.pluginName'),
       onChange: (val: ApiPlugin) => {
         tableObject.plugin = val?.name || undefined
-        wsCache.set(cachePref+'Plugin', val)
+        wsCache.set(cachePref + 'Plugin', val)
         getList()
       }
     },
@@ -340,16 +352,34 @@ const schema = reactive<FormSchema[]>([
     value: null,
     component: 'Area',
     colProps: {
-      span: 24
+      span: 12
     },
     componentProps: {
       placeholder: t('entities.area'),
       onChange: (val: ApiArea) => {
-        wsCache.set(cachePref+'Area', val)
+        wsCache.set(cachePref + 'Area', val)
         tableObject.area = val || undefined
         getList()
       }
     },
+  },
+  {
+    field: 'tags',
+    label: t('main.tags'),
+    component: 'Tags',
+    colProps: {
+      span: 12
+    },
+    value: [],
+    hidden: false,
+    componentProps: {
+      placeholder: t('main.tags'),
+      onChange: (val: ApiTag) => {
+        wsCache.set(cachePref + 'Tags', val)
+        tableObject.tags = val || undefined
+        getList()
+      }
+    }
   },
 ])
 
@@ -364,6 +394,9 @@ const filterList = () => {
   if (tableObject?.area) {
     list += 'area(' + tableObject.area.name + ') '
   }
+  if (tableObject?.tags && tableObject?.tags.length) {
+    list += 'tags(' + tableObject.tags + ') '
+  }
   if (list != '') {
     list = ': ' + list
   }
@@ -371,19 +404,24 @@ const filterList = () => {
 }
 
 const {setValues, setSchema} = methods
-if (wsCache.get(cachePref+'Query')) {
+if (wsCache.get(cachePref + 'Query')) {
   setValues({
-    name: wsCache.get(cachePref+'Query')
+    name: wsCache.get(cachePref + 'Query')
   })
 }
-if (wsCache.get(cachePref+'Plugin')) {
+if (wsCache.get(cachePref + 'Plugin')) {
   setValues({
-    plugin: wsCache.get(cachePref+'Plugin')
+    plugin: wsCache.get(cachePref + 'Plugin')
   })
 }
-if (wsCache.get(cachePref+'Area')) {
+if (wsCache.get(cachePref + 'Area')) {
   setValues({
-    area: wsCache.get(cachePref+'Area')
+    area: wsCache.get(cachePref + 'Area')
+  })
+}
+if (wsCache.get(cachePref + 'Tags')) {
+  setValues({
+    tags: wsCache.get(cachePref + 'Tags')
   })
 }
 
@@ -411,6 +449,8 @@ if (wsCache.get(cachePref+'Area')) {
       </ElCollapseItem>
     </ElCollapse>
     <Table
+        class="entity-table"
+        :expand="true"
         :selection="false"
         v-model:pageSize="paginationObj.pageSize"
         v-model:currentPage="paginationObj.currentPage"
@@ -435,10 +475,22 @@ if (wsCache.get(cachePref+'Area')) {
         </div>
       </template>
 
+      <template #id="{row}">
+          {{ row.id.split('.')[1] }}
+      </template>
+
       <template #pluginName="{row}">
         <ElTag>
           {{ row.pluginName }}
         </ElTag>
+      </template>
+
+      <template #expand="{row}">
+        <div class="tag-list" v-if="row.tags">
+          <ElTag  v-for="tag in row.tags" type="info" :key="tag" round effect="light" size="small">
+            {{ tag }}
+          </ElTag>
+        </div>
       </template>
 
     </Table>
@@ -456,15 +508,54 @@ if (wsCache.get(cachePref+'Area')) {
 
 </template>
 
-<style lang="less" scoped>
+<style lang="less">
 
-:deep(.filter-form .el-col) {
-  padding-left: 0!important;
-  padding-right: 0!important;
+//:deep(.filter-form .el-col) {
+//  padding-left: 0!important;
+//  padding-right: 0!important;
+//}
+
+.entity-table {
+  .tag-list {
+    .el-tag {
+      margin: 0 5px;
+    }
+  }
+
+  :deep(.el-table__row) {
+    cursor: pointer;
+  }
+
+  tr.el-table__row [class*="el-table__cell"]  {
+  //background-color: green;
+    border-top: var(--el-table-border);
+    border-bottom: none!important;
+  }
+
+  .el-table__expanded-cell  {
+    &.el-table__cell [class*="tag-list"] {
+    //background-color: red!important;
+      border-bottom: none!important;
+    }
+
+    &.el-table__cell:not(:has(.tag-list)) {
+      display: none!important;
+    //background-color: blue!important;
+    }
+  }
+
+  .el-table td.el-table__cell,
+  .el-table th.el-table__cell.is-leaf {
+    border-bottom: none!important;
+  }
+
+  .el-table--enable-row-hover .el-table__body tr.el-table__row:hover,
+  .el-table--enable-row-hover .el-table__body tr.el-table__row:hover + tr {
+    & > td.el-table__cell{
+      background-color: var(--el-table-row-hover-bg-color);
+    }
+  }
 }
 
-:deep(.el-table__row) {
-  cursor: pointer;
-}
 
 </style>

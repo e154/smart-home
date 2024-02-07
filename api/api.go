@@ -268,6 +268,8 @@ func (a *Api) registerHandlers() {
 	v1.GET("/scripts", a.echoFilter.Auth(wrapper.ScriptServiceGetScriptList))
 	v1.GET("/scripts/search", a.echoFilter.Auth(wrapper.ScriptServiceSearchScript))
 	v1.GET("/scripts/statistic", a.echoFilter.Auth(wrapper.ScriptServiceGetStatistic))
+	v1.GET("/tags/search", a.echoFilter.Auth(wrapper.TagServiceSearchTag))
+	v1.GET("/tags", a.echoFilter.Auth(wrapper.TagServiceGetTagList))
 	v1.POST("/signin", wrapper.AuthServiceSignin)
 	v1.POST("/signout", a.echoFilter.Auth(wrapper.AuthServiceSignout))
 	v1.POST("/task", a.echoFilter.Auth(wrapper.AutomationServiceAddTask))

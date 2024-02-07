@@ -409,6 +409,7 @@ export interface ApiEntity {
   createdAt: string;
   /** @format date-time */
   updatedAt: string;
+  tags: string[];
 }
 
 export interface ApiEntityAction {
@@ -417,6 +418,8 @@ export interface ApiEntityAction {
   icon?: string;
   image?: ApiImage;
   script?: ApiScript;
+  /** @format int64 */
+  scriptId?: number;
   type: string;
 }
 
@@ -449,6 +452,7 @@ export interface ApiEntityShort {
   createdAt: string;
   /** @format date-time */
   updatedAt: string;
+  tags: string[];
 }
 
 export interface ApiEntityState {
@@ -613,6 +617,11 @@ export interface ApiGetUserListResult {
 
 export interface ApiGetVariableListResult {
   items: ApiVariable[];
+  meta?: ApiMeta;
+}
+
+export interface ApiGetTagListResult {
+  items: ApiTag[];
   meta?: ApiMeta;
 }
 
@@ -840,6 +849,7 @@ export interface ApiNewEntityRequest {
   settings: Record<string, ApiAttribute>;
   metrics: ApiMetric[];
   scriptIds: number[];
+  tags: string[];
 }
 
 export interface ApiNewEntityRequestAction {
@@ -1040,6 +1050,12 @@ export interface ApiScriptVersion {
   createdAt: string;
 }
 
+export interface ApiTag {
+  /** @format int64 */
+  id: number;
+  name: string;
+}
+
 export interface ApiScript {
   /** @format int64 */
   id: number;
@@ -1104,6 +1120,10 @@ export interface ApiSearchRoleListResult {
 
 export interface ApiSearchScriptListResult {
   items: ApiScript[];
+}
+
+export interface ApiSearchTagListResult {
+  items: ApiTag[];
 }
 
 export interface ApiSearchTriggerResult {
@@ -3521,6 +3541,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
          */
         limit?: number;
         query?: string;
+        "tags[]"?: string[];
         plugin?: string;
         /** @format int64 */
         area?: number;
@@ -3696,6 +3717,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         settings: Record<string, ApiAttribute>;
         scriptIds: number[];
         metrics: ApiMetric[];
+        tags: string[];
       },
       params: RequestParams = {},
     ) =>
@@ -5210,7 +5232,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags ScriptService
      * @name ScriptServiceSearchScript
-     * @summary delete script by id
+     * @summary search script by name
      * @request GET:/v1/scripts/search
      * @secure
      */
@@ -5260,6 +5282,90 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       >({
         path: `/v1/scripts/statistic`,
         method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags TagService
+     * @name TagServiceSearchTag
+     * @summary search tag by name
+     * @request GET:/v1/tags/search
+     * @secure
+     */
+    tagServiceSearchTag: (
+      query?: {
+        query?: string;
+        /** @format int64 */
+        offset?: number;
+        /** @format int64 */
+        limit?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        ApiSearchTagListResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
+        path: `/v1/tags/search`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags TagService
+     * @name TagServiceGetTagList
+     * @summary get script list
+     * @request GET:/v1/tags
+     * @secure
+     */
+    tagServiceGetTagList: (
+      query?: {
+        /**
+         * Field on which to sort and its direction
+         * @example "-created_at"
+         */
+        sort?: string;
+        /**
+         * Page number of the requested result set
+         * @format uint64
+         * @default 1
+         * @example 1
+         */
+        page?: number;
+        /**
+         * The number of results returned on a page
+         * @format uint64
+         */
+        limit?: number;
+        query?: string;
+        "tags[]"?: string[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        ApiGetTagListResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
+        path: `/v1/tags`,
+        method: "GET",
+        query: query,
         secure: true,
         format: "json",
         ...params,

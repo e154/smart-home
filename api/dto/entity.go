@@ -20,7 +20,6 @@ package dto
 
 import (
 	"fmt"
-
 	"github.com/e154/smart-home/api/stub"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -84,6 +83,14 @@ func (r Entity) AddEntity(obj *stub.ApiNewEntityRequest) (entity *m.Entity) {
 		}
 		entity.Scripts = append(entity.Scripts, script)
 	}
+
+	// tags
+	for _, name := range obj.Tags {
+		entity.Tags = append(entity.Tags, &m.Tag{
+			Name: name,
+		})
+	}
+
 	// parent
 	if obj.ParentId != nil {
 		parentId := common.EntityId(*obj.ParentId)
@@ -146,6 +153,14 @@ func (r Entity) UpdateEntity(obj *stub.EntityServiceUpdateEntityJSONBody) (entit
 		}
 		entity.Scripts = append(entity.Scripts, script)
 	}
+
+	// tags
+	for _, name := range obj.Tags {
+		entity.Tags = append(entity.Tags, &m.Tag{
+			Name: name,
+		})
+	}
+
 	// parent
 	if obj.ParentId != nil {
 		parentId := common.EntityId(*obj.ParentId)
@@ -202,7 +217,10 @@ func (r Entity) ToEntityShort(entity *m.Entity) (obj *stub.ApiEntityShort) {
 			Description: entity.Area.Description,
 		}
 	}
-
+	// tags
+	for _, tag := range entity.Tags {
+		obj.Tags = append(obj.Tags, tag.Name)
+	}
 	return
 }
 
@@ -263,6 +281,7 @@ func ToEntity(entity *m.Entity) (obj *stub.ApiEntity) {
 		// script
 		if a.Script != nil {
 			action.Script = scriptDto.GetStubScriptShort(a.Script)
+			action.ScriptId = common.Int64(a.Script.Id)
 		}
 		obj.Actions = append(obj.Actions, action)
 	}
@@ -286,6 +305,10 @@ func ToEntity(entity *m.Entity) (obj *stub.ApiEntity) {
 		script := scriptDto.GetStubScriptShort(s)
 		obj.Scripts = append(obj.Scripts, *script)
 		obj.ScriptIds = append(obj.ScriptIds, s.Id)
+	}
+	//tags
+	for _, tag := range entity.Tags {
+		obj.Tags = append(obj.Tags, tag.Name)
 	}
 	return
 }
@@ -353,5 +376,11 @@ func (r Entity) ImportEntity(from *stub.ApiEntity) (to *m.Entity) {
 		to.Scripts = append(to.Scripts, _script)
 	}
 
+	// TAGS
+	for _, name := range from.Tags {
+		to.Tags = append(to.Tags, &m.Tag{
+			Name: name,
+		})
+	}
 	return
 }

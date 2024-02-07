@@ -30,6 +30,7 @@ export type ComponentName =
   | 'Entities'
   | 'Plugin'
   | 'Scripts'
+  | 'Tags'
   | 'ScriptHelper'
   | 'Trigger'
   | 'Action'

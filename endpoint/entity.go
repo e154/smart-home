@@ -135,6 +135,7 @@ func (n *EntityEndpoint) Update(ctx context.Context, params *m.Entity) (result *
 	entity.AreaId = params.AreaId
 	entity.Metrics = params.Metrics
 	entity.Scripts = params.Scripts
+	entity.Tags = params.Tags
 	entity.Hidden = params.Hidden
 	entity.Attributes = params.Attributes
 	entity.Settings = params.Settings
@@ -165,9 +166,9 @@ func (n *EntityEndpoint) Update(ctx context.Context, params *m.Entity) (result *
 }
 
 // List ...
-func (n *EntityEndpoint) List(ctx context.Context, pagination common.PageParams, query, plugin *string, areaId *int64) (entities []*m.Entity, total int64, err error) {
+func (n *EntityEndpoint) List(ctx context.Context, pagination common.PageParams, query, plugin *string, areaId *int64, tags *[]string) (entities []*m.Entity, total int64, err error) {
 	entities, total, err = n.adaptors.Entity.ListPlain(ctx, pagination.Limit, pagination.Offset, pagination.Order,
-		pagination.SortBy, false, query, plugin, areaId)
+		pagination.SortBy, false, query, plugin, areaId, tags)
 	if err != nil {
 		return
 	}

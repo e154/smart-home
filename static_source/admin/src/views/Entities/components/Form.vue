@@ -67,12 +67,25 @@ const schema = reactive<FormSchema[]>([
     label: t('entities.scripts'),
     component: 'Scripts',
     colProps: {
-      span: 24
+      span: 12
     },
     value: [],
     hidden: false,
     componentProps: {
       placeholder: t('entities.scripts')
+    }
+  },
+  {
+    field: 'tags',
+    label: t('main.tags'),
+    component: 'Tags',
+    colProps: {
+      span: 12
+    },
+    value: [],
+    hidden: false,
+    componentProps: {
+      placeholder: t('main.tags')
     }
   },
   {

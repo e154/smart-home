@@ -50,7 +50,7 @@ const columns: TableColumn[] = [
   {
     field: 'id',
     label: t('scripts.id'),
-    width: "90px",
+    width: "60px",
     sortable: true
   },
   {

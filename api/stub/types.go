@@ -386,6 +386,7 @@ type ApiEntity struct {
 	Scripts      []ApiScript             `json:"scripts"`
 	Settings     map[string]ApiAttribute `json:"settings"`
 	States       []ApiEntityState        `json:"states"`
+	Tags         []string                `json:"tags"`
 	UpdatedAt    time.Time               `json:"updatedAt"`
 }
 
@@ -396,6 +397,7 @@ type ApiEntityAction struct {
 	Image       *ApiImage  `json:"image,omitempty"`
 	Name        string     `json:"name"`
 	Script      *ApiScript `json:"script,omitempty"`
+	ScriptId    *int64     `json:"scriptId,omitempty"`
 	Type        string     `json:"type"`
 }
 
@@ -429,6 +431,7 @@ type ApiEntityShort struct {
 	ParentId     *string   `json:"parentId,omitempty"`
 	PluginName   string    `json:"pluginName"`
 	RestoreState bool      `json:"restoreState"`
+	Tags         []string  `json:"tags"`
 	UpdatedAt    time.Time `json:"updatedAt"`
 }
 
@@ -600,6 +603,12 @@ type ApiGetScriptListResult struct {
 type ApiGetSubscriptionListResult struct {
 	Items []ApiSubscription `json:"items"`
 	Meta  *ApiMeta          `json:"meta,omitempty"`
+}
+
+// ApiGetTagListResult defines model for apiGetTagListResult.
+type ApiGetTagListResult struct {
+	Items []ApiTag `json:"items"`
+	Meta  *ApiMeta `json:"meta,omitempty"`
 }
 
 // ApiGetTaskListResult defines model for apiGetTaskListResult.
@@ -807,6 +816,7 @@ type ApiNewEntityRequest struct {
 	ScriptIds    []int64                     `json:"scriptIds"`
 	Settings     map[string]ApiAttribute     `json:"settings"`
 	States       []ApiNewEntityRequestState  `json:"states"`
+	Tags         []string                    `json:"tags"`
 }
 
 // ApiNewEntityRequestAction defines model for apiNewEntityRequestAction.
@@ -1084,6 +1094,11 @@ type ApiSearchScriptListResult struct {
 	Items []ApiScript `json:"items"`
 }
 
+// ApiSearchTagListResult defines model for apiSearchTagListResult.
+type ApiSearchTagListResult struct {
+	Items []ApiTag `json:"items"`
+}
+
 // ApiSearchTriggerResult defines model for apiSearchTriggerResult.
 type ApiSearchTriggerResult struct {
 	Items []ApiTrigger `json:"items"`
@@ -1118,6 +1133,12 @@ type ApiSubscription struct {
 	RetainAsPublished bool   `json:"retainAsPublished"`
 	RetainHandling    uint32 `json:"retainHandling"`
 	TopicName         string `json:"topicName"`
+}
+
+// ApiTag defines model for apiTag.
+type ApiTag struct {
+	Id   int64  `json:"id"`
+	Name string `json:"name"`
 }
 
 // ApiTask defines model for apiTask.
@@ -1356,6 +1377,9 @@ type SearchQuery = string
 
 // StartDate defines model for startDate.
 type StartDate = time.Time
+
+// Tags defines model for tags.
+type Tags = []string
 
 // HTTP400 defines model for HTTP-400.
 type HTTP400 struct {
@@ -1747,6 +1771,7 @@ type EntityServiceGetEntityListParams struct {
 	// Limit The number of results returned on a page
 	Limit  *ListLimit `form:"limit,omitempty" json:"limit,omitempty"`
 	Query  *Query     `form:"query,omitempty" json:"query,omitempty"`
+	Tags   *Tags      `form:"tags[],omitempty" json:"tags[],omitempty"`
 	Plugin *string    `form:"plugin,omitempty" json:"plugin,omitempty"`
 	Area   *int64     `form:"area,omitempty" json:"area,omitempty"`
 }
@@ -1786,6 +1811,7 @@ type EntityServiceUpdateEntityJSONBody struct {
 	ScriptIds    []int64                        `json:"scriptIds"`
 	Settings     map[string]ApiAttribute        `json:"settings"`
 	States       []ApiUpdateEntityRequestState  `json:"states"`
+	Tags         []string                       `json:"tags"`
 }
 
 // EntityServiceUpdateEntityParams defines parameters for EntityServiceUpdateEntity.
@@ -2052,6 +2078,27 @@ type ScriptServiceGetScriptListParams struct {
 
 // ScriptServiceSearchScriptParams defines parameters for ScriptServiceSearchScript.
 type ScriptServiceSearchScriptParams struct {
+	Query  *SearchQuery  `form:"query,omitempty" json:"query,omitempty"`
+	Offset *SearchOffset `form:"offset,omitempty" json:"offset,omitempty"`
+	Limit  *SearchLimit  `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+// TagServiceGetTagListParams defines parameters for TagServiceGetTagList.
+type TagServiceGetTagListParams struct {
+	// Sort Field on which to sort and its direction
+	Sort *ListSort `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// Page Page number of the requested result set
+	Page *ListPage `form:"page,omitempty" json:"page,omitempty"`
+
+	// Limit The number of results returned on a page
+	Limit *ListLimit `form:"limit,omitempty" json:"limit,omitempty"`
+	Query *Query     `form:"query,omitempty" json:"query,omitempty"`
+	Tags  *Tags      `form:"tags[],omitempty" json:"tags[],omitempty"`
+}
+
+// TagServiceSearchTagParams defines parameters for TagServiceSearchTag.
+type TagServiceSearchTagParams struct {
 	Query  *SearchQuery  `form:"query,omitempty" json:"query,omitempty"`
 	Offset *SearchOffset `form:"offset,omitempty" json:"offset,omitempty"`
 	Limit  *SearchLimit  `form:"limit,omitempty" json:"limit,omitempty"`

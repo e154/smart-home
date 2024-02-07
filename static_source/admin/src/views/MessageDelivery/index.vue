@@ -149,7 +149,7 @@ const columns: TableColumn[] = [
     field: 'id',
     label: t('messageDelivery.id'),
     sortable: true,
-    width: "90px"
+    width: "60px"
   },
   {
     field: 'messageType',

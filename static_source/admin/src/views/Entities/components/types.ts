@@ -86,6 +86,7 @@ export interface Entity {
     attributes?: Record<string, Attribute>;
     settings?: Record<string, Attribute>;
     scriptIds?: number[];
+    tags?: string[];
     scripts?: ApiScript[];
     metrics?: ApiMetric[];
 }

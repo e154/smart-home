@@ -41,8 +41,10 @@ type IEntity interface {
 	GetByIds(ctx context.Context, ids []common.EntityId, preloadMetric ...bool) (ver []*m.Entity, err error)
 	GetByIdsSimple(ctx context.Context, ids []common.EntityId) (list []*m.Entity, err error)
 	Delete(ctx context.Context, id common.EntityId) (err error)
-	List(ctx context.Context, limit, offset int64, orderBy, sort string, autoLoad bool, query, plugin *string, areaId *int64) (list []*m.Entity, total int64, err error)
-	ListPlain(ctx context.Context, limit, offset int64, orderBy, sort string, autoLoad bool, query, plugin *string, areaId *int64) (list []*m.Entity, total int64, err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string, autoLoad bool, query, plugin *string,
+		areaId *int64) (list []*m.Entity, total int64, err error)
+	ListPlain(ctx context.Context, limit, offset int64, orderBy, sort string, autoLoad bool, query, plugin *string,
+		areaId *int64, tags *[]string) (list []*m.Entity, total int64, err error)
 	GetByType(ctx context.Context, t string, limit, offset int64) (list []*m.Entity, err error)
 	Update(ctx context.Context, ver *m.Entity) (err error)
 	Search(ctx context.Context, query string, limit, offset int64) (list []*m.Entity, total int64, err error)
@@ -138,6 +140,20 @@ func (n *Entity) Import(ctx context.Context, ver *m.Entity) (err error) {
 		} else {
 			script.Id = 0
 			if script.Id, err = scriptAdaptor.Add(ctx, script); err != nil {
+				return
+			}
+		}
+	}
+
+	// tags
+	tagAdaptor := GetTagAdaptor(tx)
+	for _, tag := range ver.Tags {
+		var foundedTag *m.Tag
+		if foundedTag, err = tagAdaptor.GetByName(ctx, tag.Name); err == nil {
+			tag.Id = foundedTag.Id
+		} else {
+			tag.Id = 0
+			if tag.Id, err = tagAdaptor.Add(ctx, tag); err != nil {
 				return
 			}
 		}
@@ -272,10 +288,12 @@ func (n *Entity) List(ctx context.Context, limit, offset int64, orderBy, sort st
 }
 
 // ListPlain ...
-func (n *Entity) ListPlain(ctx context.Context, limit, offset int64, orderBy, sort string, autoLoad bool, query, plugin *string, areaId *int64) (list []*m.Entity, total int64, err error) {
+func (n *Entity) ListPlain(ctx context.Context, limit, offset int64, orderBy, sort string, autoLoad bool, query,
+	plugin *string, areaId *int64, tags *[]string) (list []*m.Entity, total int64, err error) {
 
 	var dbList []*db.Entity
-	if dbList, total, err = n.table.ListPlain(ctx, int(limit), int(offset), orderBy, sort, autoLoad, query, plugin, areaId); err != nil {
+	if dbList, total, err = n.table.ListPlain(ctx, int(limit), int(offset), orderBy, sort, autoLoad, query, plugin,
+		areaId, tags); err != nil {
 		return
 	}
 
@@ -342,6 +360,24 @@ func (n *Entity) Update(ctx context.Context, ver *m.Entity) (err error) {
 
 	if err = table.DeleteScripts(ctx, oldVer.Id); err != nil {
 		return
+	}
+
+	if err = table.DeleteTags(ctx, oldVer.Id); err != nil {
+		return
+	}
+
+	// tags
+	tagAdaptor := GetTagAdaptor(tx)
+	for _, tag := range ver.Tags {
+		var foundedTag *m.Tag
+		if foundedTag, err = tagAdaptor.GetByName(ctx, tag.Name); err == nil {
+			tag.Id = foundedTag.Id
+		} else {
+			tag.Id = 0
+			if tag.Id, err = tagAdaptor.Add(ctx, tag); err != nil {
+				return
+			}
+		}
 	}
 
 	if err = table.Update(ctx, n.toDb(ver)); err != nil {
@@ -511,6 +547,14 @@ func (n *Entity) fromDb(dbVer *db.Entity) (ver *m.Entity) {
 		}
 	}
 
+	// tags
+	for _, tag := range dbVer.Tags {
+		ver.Tags = append(ver.Tags, &m.Tag{
+			Id:   tag.Id,
+			Name: tag.Name,
+		})
+	}
+
 	return
 }
 
@@ -591,6 +635,19 @@ func (n *Entity) toDb(ver *m.Entity) (dbVer *db.Entity) {
 		}
 	} else {
 		dbVer.Scripts = make([]*db.Script, 0)
+	}
+
+	// tags
+	if len(ver.Tags) > 0 {
+		dbVer.Tags = make([]*db.Tag, 0, len(ver.Tags))
+		for _, tag := range ver.Tags {
+			dbVer.Tags = append(dbVer.Tags, &db.Tag{
+				Id:   tag.Id,
+				Name: tag.Name,
+			})
+		}
+	} else {
+		dbVer.Tags = make([]*db.Tag, 0)
 	}
 
 	return

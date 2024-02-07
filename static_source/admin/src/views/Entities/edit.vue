@@ -205,6 +205,7 @@ const prepareForSave = async () => {
       settings: settings,
       scriptIds: data.scriptIds,
       metrics: data.metrics,
+      tags: data.tags,
     }
    return body
   }
@@ -232,6 +233,9 @@ const prepareForExport = async () => {
     data.actions.forEach(action => {
       if (action.scriptId) {
         _scripts[action.scriptId] = null
+      }
+      if (action.script?.id) {
+        _scripts[action.script.id] = null
       }
     })
     data.scripts.forEach(script => {
@@ -263,6 +267,7 @@ const prepareForExport = async () => {
         icon: a.icon,
         image: a.image,
         script: script,
+        scriptId: script?.id || 0,
         type: a.type,
       } as ApiEntityAction)
     }
@@ -319,6 +324,7 @@ const prepareForExport = async () => {
       settings: data.settings,
       scripts: scripts,
       metrics: data.metrics,
+      tags: data.tags,
     }
    return body
   }
@@ -609,10 +615,10 @@ fetch()
   <!-- export dialog -->
   <Dialog v-model="dialogVisible" :title="t('entities.dialogExportTitle')" :maxHeight="400" width="80%">
     <JsonViewer v-model="dialogSource"/>
-    <template #footer>
-      <ElButton @click="copy()">{{ t('setting.copy') }}</ElButton>
-      <ElButton @click="dialogVisible = false">{{ t('main.closeDialog') }}</ElButton>
-    </template>
+<!--    <template #footer>-->
+<!--      <ElButton @click="copy()">{{ t('setting.copy') }}</ElButton>-->
+<!--      <ElButton @click="dialogVisible = false">{{ t('main.closeDialog') }}</ElButton>-->
+<!--    </template>-->
   </Dialog>
   <!-- /export dialog -->
 

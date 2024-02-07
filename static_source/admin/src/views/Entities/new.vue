@@ -45,6 +45,7 @@ const save = async () => {
       restoreState: data.restoreState,
       scriptIds: data.scriptIds,
       parentId: data.parent?.id,
+      tags: data.tags,
     } as ApiNewEntityRequest
     const res = await api.v1.entityServiceAddEntity(body)
         .catch(() => {

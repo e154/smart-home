@@ -36,6 +36,7 @@ type Endpoint struct {
 	Log               *LogEndpoint
 	Role              *RoleEndpoint
 	Script            *ScriptEndpoint
+	Tag               *TagEndpoint
 	User              *UserEndpoint
 	Template          *TemplateEndpoint
 	Notify            *NotifyEndpoint
@@ -74,6 +75,7 @@ func NewEndpoint(backup *backup.Backup, stream *stream.Stream, common *CommonEnd
 		Log:               NewLogEndpoint(common),
 		Role:              NewRoleEndpoint(common),
 		Script:            NewScriptEndpoint(common),
+		Tag:               NewTagEndpoint(common),
 		User:              NewUserEndpoint(common),
 		Template:          NewTemplateEndpoint(common),
 		Notify:            NewNotifyEndpoint(common),

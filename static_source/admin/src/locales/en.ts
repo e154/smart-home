@@ -32,7 +32,8 @@ export default {
         Warning: 'Warning',
         Error: 'Error',
         filter: 'Filter',
-        open: 'Open'
+        open: 'Open',
+        tags: 'Tags'
     },
     message: {
         unknownError: 'unknown error',
