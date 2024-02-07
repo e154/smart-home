@@ -266,6 +266,23 @@ declare global {
   function EntityCallAction(entityId: string, action: string, params: { [key: string]: any }): void;
 
   /**
+   * Interface representing parameters for calling an action on an entity
+   */
+  interface CallAction {
+    entity_id?: string;
+    action_name: string;
+    tags?: string[];
+    area_id?: number;
+  }
+
+  /**
+   * Function to call an action on an entity (version 2).
+   * @param {CallAction} params1 - Parameters for calling the action.
+   * @param {Object} params2 - Additional parameters.
+   */
+  function EntitiesCallAction(params1: CallAction, params2?: { [key: string]: any }): void;
+
+  /**
    * Calls the entity script.
    * @param {string} entityId - Entity identifier.
    * @param {{ [key: string]: any }} params - Parameters for the script.

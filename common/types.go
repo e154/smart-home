@@ -176,6 +176,11 @@ func (e *EntityId) StringPtr() *string {
 	return &r
 }
 
+// Ptr ...
+func (e EntityId) Ptr() *EntityId {
+	return &e
+}
+
 // AttributeType ...
 type AttributeType string
 

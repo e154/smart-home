@@ -88,12 +88,14 @@ func (p *plugin) eventHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
 	case events.EventCallEntityAction:
-		value, ok := p.Actors.Load(v.EntityId)
+		values, ok := p.Check(v)
 		if !ok {
 			return
 		}
-		actor := value.(*Actor)
-		go actor.addAction(v)
+		for _, value := range values {
+			actor := value.(*Actor)
+			go actor.addAction(v)
+		}
 
 	case events.EventCallScene:
 		value, ok := p.Actors.Load(v.EntityId)

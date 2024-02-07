@@ -264,8 +264,6 @@ func (n *Entities) List(ctx context.Context, limit, offset int, orderBy, sort st
 func (n *Entities) ListPlain(ctx context.Context, limit, offset int, orderBy, sort string, autoLoad bool,
 	query, plugin *string, areaId *int64, tags *[]string) (list []*Entity, total int64, err error) {
 
-	fmt.Println("ListPlain")
-
 	list = make([]*Entity, 0)
 	q := n.Db.WithContext(ctx).Model(Entity{})
 	if autoLoad {
@@ -281,7 +279,6 @@ func (n *Entities) ListPlain(ctx context.Context, limit, offset int, orderBy, so
 		q = q.Where("area_id = ?", *areaId)
 	}
 	if tags != nil {
-		fmt.Println(*tags)
 		q = q.Joins(`left join entity_tags on entity_tags.entity_id = entities.id`)
 		q = q.Joins(`left join tags on entity_tags.tag_id = tags.id`)
 		q = q.Where("tags.name in (?)", *tags)

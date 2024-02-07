@@ -41,7 +41,7 @@ type BaseActor struct {
 	Name              string
 	Description       string
 	EntityType        string
-	Area              *m.Area
+	area              *m.Area
 	Metric            []*m.Metric
 	Hidden            bool
 	AttrMu            *sync.RWMutex
@@ -66,6 +66,7 @@ type BaseActor struct {
 	stateMu           *sync.RWMutex
 	currentState      *events.EventEntityState
 	oldState          *events.EventEntityState
+	tags              []string
 }
 
 // NewBaseActor ...
@@ -78,7 +79,7 @@ func NewBaseActor(entity *m.Entity,
 		Description:       entity.Description,
 		EntityType:        entity.PluginName,
 		ParentId:          entity.ParentId,
-		Area:              entity.Area,
+		area:              entity.Area,
 		Hidden:            entity.Hidden,
 		Actions:           make(map[string]ActorAction),
 		States:            make(map[string]ActorState),
@@ -108,6 +109,13 @@ func NewBaseActor(entity *m.Entity,
 	// Metric
 	actor.Metric = make([]*m.Metric, len(entity.Metrics))
 	copy(actor.Metric, entity.Metrics)
+
+	// Tags
+	if entity.Tags != nil {
+		for _, tag := range entity.Tags {
+			actor.tags = append(actor.tags, tag.Name)
+		}
+	}
 
 	// States
 	for _, s := range entity.States {
@@ -266,7 +274,7 @@ func (e *BaseActor) Info() (info ActorInfo) {
 		State:             e.state,
 		ImageUrl:          e.ImageUrl,
 		Icon:              e.Icon,
-		Area:              e.Area,
+		Area:              e.area,
 		UnitOfMeasurement: e.UnitOfMeasurement,
 		LastChanged:       e.LastChanged,
 		LastUpdated:       e.LastUpdated,
@@ -591,4 +599,25 @@ func (e *BaseActor) AddMetric(name string, value map[string]interface{}) {
 	e.Service.EventBus().Publish("system/entities/%s"+e.Id.String(), events.EventUpdatedMetric{
 		EntityId: e.Id,
 	})
+}
+
+func (e *BaseActor) MatchTags(tags []string) bool {
+	for _, tag := range tags {
+		found := false
+		for _, tagActor := range e.tags {
+			if tag == tagActor {
+				found = true
+				break
+			}
+		}
+		if !found {
+			return false
+		}
+	}
+
+	return true
+}
+
+func (e *BaseActor) Area() *m.Area {
+	return e.area
 }

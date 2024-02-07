@@ -85,6 +85,12 @@ func CallActionBind(manager Supervisor) func(entityId, action string, value map[
 	}
 }
 
+func CallActionV2Bind(manager Supervisor) func(params CallActionV2, value map[string]interface{}) {
+	return func(params CallActionV2, value map[string]interface{}) {
+		manager.CallActionV2(params, value)
+	}
+}
+
 func CallSceneBind(manager Supervisor) func(entityId string, value map[string]interface{}) {
 	return func(entityId string, value map[string]interface{}) {
 		manager.CallScene(common.EntityId(entityId), value)

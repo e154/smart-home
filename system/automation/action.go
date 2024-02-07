@@ -101,8 +101,8 @@ func (a *Action) Run(entityId *common.EntityId) (result string, err error) {
 		id := *a.model.EntityId
 		action := *a.model.EntityActionName
 		a.eventBus.Publish("system/entities/"+id.String(), events.EventCallEntityAction{
-			PluginName: id.PluginName(),
-			EntityId:   id,
+			PluginName: common.String(id.PluginName()),
+			EntityId:   id.Ptr(),
 			ActionName: action,
 		})
 	}

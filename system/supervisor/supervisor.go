@@ -174,6 +174,7 @@ func (e *supervisor) bindScripts() {
 	e.scriptService.PushFunctions("EntityGetSettings", GetSettingsBind(e))
 	e.scriptService.PushFunctions("EntitySetMetric", SetMetricBind(e))
 	e.scriptService.PushFunctions("EntityCallAction", CallActionBind(e))
+	e.scriptService.PushFunctions("EntityCallActionV2", CallActionV2Bind(e))
 	e.scriptService.PushFunctions("EntityCallScene", CallSceneBind(e))
 	e.scriptService.PushFunctions("GeoDistanceToArea", GetDistanceToAreaBind(e.adaptors))
 	e.scriptService.PushFunctions("GeoDistanceBetweenPoints", GetDistanceBetweenPointsBind(e.adaptors))
@@ -418,10 +419,30 @@ func (e *supervisor) eventEntitySetState(msg events.EventEntitySetState) {
 // CallAction ...
 func (e *supervisor) CallAction(id common.EntityId, action string, arg map[string]interface{}) {
 	e.eventBus.Publish("system/entities/"+id.String(), events.EventCallEntityAction{
-		PluginName: id.PluginName(),
-		EntityId:   id,
+		PluginName: common.String(id.PluginName()),
+		EntityId:   id.Ptr(),
 		ActionName: action,
 		Args:       arg,
+	})
+}
+
+// CallActionV2 ...
+func (e *supervisor) CallActionV2(params CallActionV2, arg map[string]interface{}) {
+	var pluginName *string
+	var entityId *common.EntityId
+
+	if params.EntityId != nil {
+		entityId = params.EntityId.Ptr()
+		pluginName = common.String(entityId.PluginName())
+	}
+
+	e.eventBus.Publish("system/entities/", events.EventCallEntityAction{
+		PluginName: pluginName,
+		EntityId:   entityId,
+		ActionName: params.ActionName,
+		Args:       arg,
+		AreaId:     params.AreaId,
+		Tags:       params.Tags,
 	})
 }
 

@@ -151,12 +151,7 @@ func (e *Network2) eventHandler(_ string, msg interface{}) {
 }
 
 func (e *Network2) sendMoveCommand(row, col int) {
-	e.eventBus.Publish("system/entities/"+e.entityId.String(), events.EventCallEntityAction{
-		PluginName: e.entityId.PluginName(),
-		EntityId:   e.entityId,
-		ActionName: fmt.Sprintf("B_R%dC%d", row, col),
-		Args:       nil,
-	})
+
 }
 
 func (e *Network2) MakeMove() {

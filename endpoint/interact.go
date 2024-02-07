@@ -46,8 +46,8 @@ func (d InteractEndpoint) EntityCallAction(ctx context.Context, entityId string,
 	}
 
 	d.eventBus.Publish("system/entities/"+id.String(), events.EventCallEntityAction{
-		PluginName: id.PluginName(),
-		EntityId:   id,
+		PluginName: common.String(id.PluginName()),
+		EntityId:   id.Ptr(),
 		ActionName: action,
 		Args:       args,
 	})

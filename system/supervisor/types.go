@@ -54,6 +54,7 @@ type Supervisor interface {
 	SetState(common.EntityId, EntityStateParams) error
 	GetActorById(common.EntityId) (PluginActor, error)
 	CallAction(common.EntityId, string, map[string]interface{})
+	CallActionV2(CallActionV2, map[string]interface{})
 	CallScene(common.EntityId, map[string]interface{})
 	AddEntity(*m.Entity) error
 	GetEntityById(common.EntityId) (m.EntityShort, error)
@@ -81,6 +82,8 @@ type PluginActor interface {
 	SetCurrentState(events.EventEntityState)
 	GetEventState() events.EventEntityState
 	AddMetric(name string, value map[string]interface{})
+	MatchTags(tags []string) bool
+	Area() *m.Area
 }
 
 // ActorConstructor ...
@@ -228,4 +231,11 @@ type Pluggable interface {
 type Installable interface {
 	Install() error
 	Uninstall() error
+}
+
+type CallActionV2 struct {
+	EntityId   *common.EntityId `json:"entity_id"`
+	ActionName string           `json:"action_name"`
+	Tags       []string         `json:"tags"`
+	AreaId     *int64           `json:"area_id"`
 }

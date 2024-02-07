@@ -74,6 +74,20 @@ func GetEntityAdaptor(d *gorm.DB, orm *orm.Orm) IEntity {
 // Add ...
 func (n *Entity) Add(ctx context.Context, ver *m.Entity) (err error) {
 
+	// tags
+	tagAdaptor := GetTagAdaptor(n.db)
+	for _, tag := range ver.Tags {
+		var foundedTag *m.Tag
+		if foundedTag, err = tagAdaptor.GetByName(ctx, tag.Name); err == nil {
+			tag.Id = foundedTag.Id
+		} else {
+			tag.Id = 0
+			if tag.Id, err = tagAdaptor.Add(ctx, tag); err != nil {
+				return
+			}
+		}
+	}
+
 	if strings.Contains(ver.Id.String(), " ") {
 		err = errors.Wrap(apperr.ErrEntityAdd, fmt.Sprintf("entity name \"%s\" contains spaces", ver.Id))
 		return
