@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import {computed, onMounted, PropType, ref, unref, watch} from "vue";
-import {CardItem, requestCurrentState} from "@/views/Dashboard/core";
+import {CardItem, requestCurrentState} from "@/views/Dashboard/core/core";
 import {debounce} from "lodash-es";
-import {Cache, RenderVar} from "@/views/Dashboard/render";
+import {Cache, RenderVar} from "@/views/Dashboard/core/render";
 import api from "@/api/api";
 import {ElColorPicker} from 'element-plus'
 import {useI18n} from "@/hooks/web/useI18n";

@@ -1,5 +1,5 @@
 import {ApiDashboardTab, ApiEntity} from "@/api/stub";
-import {comparisonType} from "@/views/Dashboard/core";
+import {comparisonType} from "@/views/Dashboard/core/core";
 
 
 export interface Area {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {computed, PropType} from "vue";
-import {CardItem, Core} from "@/views/Dashboard/core";
+import {CardItem, Core} from "@/views/Dashboard/core/core";
 import {ElCol, ElDivider, ElFormItem, ElInput, ElOption, ElRow, ElSelect, ElSwitch} from 'element-plus'
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {useI18n} from "@/hooks/web/useI18n";

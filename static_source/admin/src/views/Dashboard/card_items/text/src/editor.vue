@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {computed, onBeforeUnmount, onMounted, PropType, ref} from "vue";
-import {CardItem, comparisonType, Core, requestCurrentState} from "@/views/Dashboard/core";
+import {CardItem, comparisonType, Core, requestCurrentState} from "@/views/Dashboard/core/core";
 import {
   ElButton,
   ElCard,
@@ -20,7 +20,7 @@ import {
 } from 'element-plus'
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {useI18n} from "@/hooks/web/useI18n";
-import {Cache, GetTokens} from "@/views/Dashboard/render";
+import {Cache, GetTokens} from "@/views/Dashboard/core/render";
 import {TextProp} from "./types";
 import {JsonViewer} from "@/components/JsonViewer";
 import {TinycmeEditor} from "@/components/Tinymce";

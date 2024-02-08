@@ -23,8 +23,8 @@ import {
   ElTag
 } from 'element-plus'
 import {useI18n} from '@/hooks/web/useI18n'
-import {Card, CardItem, Core} from "@/views/Dashboard/core";
-import {useBus} from "@/views/Dashboard/bus";
+import {Card, CardItem, Core} from "@/views/Dashboard/core/core";
+import {useBus} from "@/views/Dashboard/core/bus";
 import {CardEditorName, CardItemList} from "@/views/Dashboard/card_items";
 
 const {t} = useI18n()

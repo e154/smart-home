@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {onMounted, PropType, ref,} from "vue";
-import {Card, CardItem, Core} from "@/views/Dashboard/core";
-import {useBus} from "@/views/Dashboard/bus";
+import {Card, CardItem, Core} from "@/views/Dashboard/core/core";
+import {useBus} from "@/views/Dashboard/core/bus";
 import {CardItemName} from "@/views/Dashboard/card_items";
 import {UUID} from "uuid-generator-ts";
 import {KeystrokeCaptureViewer} from "@/views/Dashboard/components";

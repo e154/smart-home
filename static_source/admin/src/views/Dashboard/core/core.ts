@@ -13,9 +13,9 @@ import {
 import api from '@/api/api';
 import {Attribute, EventStateChange, GetAttrValue} from '@/api/stream_types';
 import {UUID} from 'uuid-generator-ts';
-import {Compare, RenderVar, Resolve} from '@/views/Dashboard/render';
+import {Compare, RenderVar, Resolve} from '@/views/Dashboard/core/render';
 import stream from '@/api/stream';
-import {useBus} from "@/views/Dashboard/bus";
+import {useBus} from "@/views/Dashboard/core/bus";
 import {debounce} from "lodash-es";
 import {ref} from "vue";
 import {ItemPayload} from "@/views/Dashboard/card_items";

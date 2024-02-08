@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {onBeforeUnmount, onMounted, PropType, ref, watch} from "vue";
-import {CardItem, requestCurrentState} from "@/views/Dashboard/core";
+import {CardItem, requestCurrentState} from "@/views/Dashboard/core/core";
 import VideoMse from "./VideoMse.vue";
 import {debounce} from "lodash-es";
 import {playerType} from "./types";

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {computed, PropType} from "vue";
-import {CardItem, Core, requestCurrentState} from "@/views/Dashboard/core";
+import {CardItem, Core, requestCurrentState} from "@/views/Dashboard/core/core";
 import {
   ElButton,
   ElCol,
@@ -15,7 +15,7 @@ import {
 } from 'element-plus'
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {useI18n} from "@/hooks/web/useI18n";
-import {Cache} from "@/views/Dashboard/render";
+import {Cache} from "@/views/Dashboard/core/render";
 import {JsonViewer} from "@/components/JsonViewer";
 import {KeysSearch} from "@/views/Dashboard/components";
 

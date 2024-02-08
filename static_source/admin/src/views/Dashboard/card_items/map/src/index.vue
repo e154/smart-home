@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import {computed, inject, onMounted, PropType, ref, unref, watch} from "vue";
-import {CardItem} from "@/views/Dashboard/core";
+import {CardItem} from "@/views/Dashboard/core/core";
 import type {ObjectEvent} from "ol/Object";
-import {Cache, RenderVar} from "@/views/Dashboard/render";
+import {Cache, RenderVar} from "@/views/Dashboard/core/render";
 import markerIcon from "@/assets/imgs/marker.png";
 import {ApiImage} from "@/api/stub";
 import {debounce} from "lodash-es";

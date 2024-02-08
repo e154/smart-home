@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import {computed, onMounted, PropType, ref, watch} from "vue";
-import {CardItem, requestCurrentState} from "@/views/Dashboard/core";
+import {CardItem, requestCurrentState} from "@/views/Dashboard/core/core";
 import {debounce} from "lodash-es";
-import {Cache, Compare, RenderVar} from "@/views/Dashboard/render";
+import {Cache, Compare, RenderVar} from "@/views/Dashboard/core/render";
 import {ElProgress} from "element-plus";
 
 // ---------------------------------

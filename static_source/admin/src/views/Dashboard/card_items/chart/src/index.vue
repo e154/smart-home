@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, PropType, ref, watch} from "vue";
-import {CardItem, requestCurrentState} from "@/views/Dashboard/core";
+import {CardItem, requestCurrentState} from "@/views/Dashboard/core/core";
 import {ApiMetric} from "@/api/stub";
 import {ChartDataInterface, ChartDataSet} from "./types";
 import {parseTime} from "@/utils";
 import api from "@/api/api";
-import {useBus} from "@/views/Dashboard/bus";
+import {useBus} from "@/views/Dashboard/core/bus";
 import {EChartsOption} from 'echarts'
 import {Echart} from '@/components/Echart'
 import {debounce} from "lodash-es";
-import {Cache, GetTokens, RenderText} from "@/views/Dashboard/render";
+import {Cache, GetTokens, RenderText} from "@/views/Dashboard/core/render";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 

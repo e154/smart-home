@@ -2,7 +2,7 @@
 
 import {PropType, ref, watch} from "vue";
 import {ElAutocomplete} from 'element-plus'
-import {getAllKeys} from "@/views/Dashboard/render";
+import {getAllKeys} from "@/views/Dashboard/core/render";
 import {propTypes} from "@/utils/propTypes";
 
 const currentValue = ref<Nullable<string>>(null)

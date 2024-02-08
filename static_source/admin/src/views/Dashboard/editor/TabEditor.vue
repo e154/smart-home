@@ -8,7 +8,7 @@ import {useForm} from '@/hooks/web/useForm'
 import {useValidator} from '@/hooks/web/useValidator'
 import {FormSchema} from '@/types/form'
 import {ApiDashboardCard, ApiEntity} from "@/api/stub";
-import {Core, Tab} from "@/views/Dashboard/core";
+import {Core, Tab} from "@/views/Dashboard/core/core";
 
 const {register, elFormRef, methods} = useForm()
 const {required} = useValidator()

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {onMounted, PropType, ref, watch} from "vue";
 import {ElIcon, ElImage} from "element-plus";
-import {CardItem} from "@/views/Dashboard/core";
+import {CardItem} from "@/views/Dashboard/core/core";
 import {JoystickController, point} from "./types";
 import {useEmitt} from "@/hooks/web/useEmitt";
 import {Picture as IconPicture} from '@element-plus/icons-vue'

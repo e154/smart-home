@@ -1,6 +1,6 @@
 import { Attribute, EventStateChange, GetAttrValue } from '@/api/stream_types'
-import { comparisonType } from '@/views/Dashboard/core'
-import { ApplyFilter } from '@/views/Dashboard/filters'
+import { comparisonType } from '@/views/Dashboard/core/core'
+import { ApplyFilter } from '@/views/Dashboard/core/filters'
 
 export function Compare(x: any, y: any, rule: comparisonType): boolean {
   switch (rule) {

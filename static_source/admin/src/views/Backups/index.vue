@@ -11,7 +11,7 @@ import {useRouter} from "vue-router";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
 import {ApiBackup} from "@/api/stub";
 import {parseTime} from "@/utils";
-import {formatBytes} from "@/views/Dashboard/filters";
+import {formatBytes} from "@/views/Dashboard/core/filters";
 import {useCache} from "@/hooks/web/useCache";
 import {useIcon} from "@/hooks/web/useIcon";
 import {UUID} from "uuid-generator-ts";

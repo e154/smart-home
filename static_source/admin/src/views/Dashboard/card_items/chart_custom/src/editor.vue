@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {computed, PropType} from "vue";
-import {CardItem, Core, parsedObject, requestCurrentState} from "@/views/Dashboard/core";
+import {CardItem, Core, parsedObject, requestCurrentState} from "@/views/Dashboard/core/core";
 import {
   ElButton,
   ElCard,

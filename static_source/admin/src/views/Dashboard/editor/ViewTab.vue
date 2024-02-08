@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import {computed, PropType, ref, unref, watch} from "vue";
-import {Card, Core, Tab} from "@/views/Dashboard/core";
+import {Card, Core, Tab} from "@/views/Dashboard/core/core";
 import {Vuuri} from "@/views/Dashboard/Vuuri"
-import {useBus} from "@/views/Dashboard/bus";
+import {useBus} from "@/views/Dashboard/core/bus";
 import debounce from 'lodash.debounce'
 import ViewCard from "@/views/Dashboard/editor/ViewCard.vue";
 

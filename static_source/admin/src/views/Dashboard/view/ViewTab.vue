@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {computed, PropType} from "vue";
-import {Card, Core, Tab} from "@/views/Dashboard/core";
+import {Card, Core, Tab} from "@/views/Dashboard/core/core";
 import {Vuuri} from "@/views/Dashboard/Vuuri"
 import ViewCard from "@/views/Dashboard/view/ViewCard.vue";
 

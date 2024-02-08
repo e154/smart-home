@@ -1,5 +1,5 @@
 import {ApiEntity, ApiImage} from '@/api/stub'
-import {CompareProp} from "@/views/Dashboard/types";
+import {CompareProp} from "@/views/Dashboard/core/types";
 
 export interface ImageProp extends CompareProp {
   image?: ApiImage

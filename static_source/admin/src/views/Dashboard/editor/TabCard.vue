@@ -25,8 +25,8 @@ import {FormSchema} from '@/types/form'
 import {ApiDashboardCard, ApiDashboardCardItem, ApiEntity} from "@/api/stub";
 import {copyToClipboard} from "@/utils/clipboard";
 import {JsonViewer} from "@/components/JsonViewer";
-import {Card, Core, Tab} from "@/views/Dashboard/core";
-import {useBus} from "@/views/Dashboard/bus";
+import {Card, Core, Tab} from "@/views/Dashboard/core/core";
+import {useBus} from "@/views/Dashboard/core/bus";
 import {Dialog} from '@/components/Dialog'
 import {JsonEditor} from "@/components/JsonEditor";
 import {KeystrokeCapture} from "@/views/Dashboard/components";

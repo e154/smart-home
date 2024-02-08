@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {onMounted, onUnmounted, PropType, ref} from "vue";
-import {CardItem} from "@/views/Dashboard/core";
-import {RenderVar} from "@/views/Dashboard/render";
+import {CardItem} from "@/views/Dashboard/core/core";
+import {RenderVar} from "@/views/Dashboard/core/render";
 import {ElIcon, ElImage} from "element-plus";
 import {Picture as IconPicture} from '@element-plus/icons-vue'
 import {useCache} from "@/hooks/web/useCache";

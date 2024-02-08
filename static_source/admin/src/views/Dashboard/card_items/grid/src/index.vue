@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import {computed, onMounted, PropType, ref, watch} from "vue";
-import {CardItem, requestCurrentState} from "@/views/Dashboard/core";
+import {CardItem, requestCurrentState} from "@/views/Dashboard/core/core";
 import {GridProp} from "./types";
-import {Cache, RenderVar} from "@/views/Dashboard/render";
+import {Cache, RenderVar} from "@/views/Dashboard/core/render";
 import {debounce} from "lodash-es";
 import api from "@/api/api";
 import {ElMessage} from "element-plus";

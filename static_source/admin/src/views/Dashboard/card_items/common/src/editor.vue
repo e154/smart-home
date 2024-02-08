@@ -1,26 +1,6 @@
-<!--
-  - This file is part of the Smart Home
-  - Program complex distribution https://github.com/e154/smart-home
-  - Copyright (C) 2024, Filippov Alex
-  -
-  - This library is free software: you can redistribute it and/or
-  - modify it under the terms of the GNU Lesser General Public
-  - License as published by the Free Software Foundation; either
-  - version 3 of the License, or (at your option) any later version.
-  -
-  - This library is distributed in the hope that it will be useful,
-  - but WITHOUT ANY WARRANTY; without even the implied warranty of
-  - MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  - Library General Public License for more details.
-  -
-  - You should have received a copy of the GNU Lesser General Public
-  - License along with this library.  If not, see
-  - <https://www.gnu.org/licenses/>.
-  -->
-
 <script setup lang="ts">
 import {computed, onMounted, PropType} from "vue";
-import {CardItem, Core} from "@/views/Dashboard/core";
+import {CardItem, Core} from "@/views/Dashboard/core/core";
 import {
   ElButton,
   ElCard,
@@ -182,7 +162,8 @@ const removeAction = (index: number) => {
 
   <!-- button options -->
   <div
-      v-if="!['button', 'chart', 'chart_custom', 'chartCustom', 'map', 'slider', 'streamPlayer', 'tiles', 'grid', 'progress'].includes(item.type)">
+      v-if="!['button', 'chart', 'chart_custom', 'chartCustom', 'map', 'slider',
+      'streamPlayer', 'tiles', 'grid', 'progress', 'colorPicker'].includes(item.type)">
     <ElDivider content-position="left">{{ $t('dashboard.editor.buttonOptions') }}</ElDivider>
     <ElRow :gutter="24">
       <ElCol :span="12" :xs="12">

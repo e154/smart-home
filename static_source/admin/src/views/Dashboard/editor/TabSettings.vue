@@ -9,9 +9,9 @@ import {FormSchema} from '@/types/form'
 import {ApiArea, ApiDashboard} from "@/api/stub";
 import {copyToClipboard} from "@/utils/clipboard";
 import {JsonViewer} from "@/components/JsonViewer";
-import {Core} from "@/views/Dashboard/core";
+import {Core} from "@/views/Dashboard/core/core";
 import {useRouter} from "vue-router";
-import {useBus} from "@/views/Dashboard/bus";
+import {useBus} from "@/views/Dashboard/core/bus";
 import {Dialog} from '@/components/Dialog'
 
 const {register, elFormRef, methods} = useForm()

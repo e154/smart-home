@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import {computed, onMounted, onUnmounted, reactive, ref, shallowReactive, watch} from 'vue'
+import {computed, onMounted, onUnmounted, reactive, ref} from 'vue'
 import {useI18n} from '@/hooks/web/useI18n'
-import {ElMessage, ElTabs, ElTabPane, ElEmpty, ElButton} from 'element-plus'
-import {useRoute, useRouter} from 'vue-router'
+import {ElButton, ElEmpty, ElMessage, ElTabPane, ElTabs} from 'element-plus'
+import {useRoute} from 'vue-router'
 import api from "@/api/api";
 import {EventStateChange} from "@/api/stream_types";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
-import {Card, Core, Tab} from "@/views/Dashboard/core";
-import { Splitpanes, Pane } from 'splitpanes'
+import {Card, Core, Tab} from "@/views/Dashboard/core/core";
+import {Pane, Splitpanes} from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
 import TabSettings from "@/views/Dashboard/editor/TabSettings.vue";
-import {useBus} from "@/views/Dashboard/bus";
+import {useBus} from "@/views/Dashboard/core/bus";
 import TabEditor from "@/views/Dashboard/editor/TabEditor.vue";
 import TabCard from "@/views/Dashboard/editor/TabCard.vue";
 import ViewTab from "@/views/Dashboard/editor/ViewTab.vue";
@@ -21,7 +21,7 @@ import {useCache} from "@/hooks/web/useCache";
 const {emit} = useBus()
 const route = useRoute();
 const {t} = useI18n()
-const { wsCache } = useCache()
+const {wsCache} = useCache()
 
 // ---------------------------------
 // common
@@ -121,9 +121,9 @@ const resizeHandler = function ($event) {
   }
 };
 
-const tagsView = computed(() => tagsView.value? 37 : 0)
-const elContainerHeight = computed(()=> {
-  return (splitPaneBottom.value - 60 - tagsView.value)  + 'px';
+const tagsView = computed(() => tagsView.value ? 37 : 0)
+const elContainerHeight = computed(() => {
+  return (splitPaneBottom.value - 60 - tagsView.value) + 'px';
 })
 
 const createTab = async () => {
@@ -146,8 +146,8 @@ const addCard = () => {
 <template>
   <div class="components-container dashboard-container" style="margin: 0" v-if="!loading" :style="getBackgroundColor()">
 
-  <splitpanes class="default-theme" @resized="resizeHandler" horizontal>
-    <pane min-size="10" max-size="90" class="top-container" :size="splitPaneTopSize">
+    <splitpanes class="default-theme" @resized="resizeHandler" horizontal>
+      <pane min-size="10" max-size="90" class="top-container" :size="splitPaneTopSize">
         <ElTabs
             v-model="activeTabIdx"
             @tab-click="updateCurrentTab"
@@ -162,56 +162,56 @@ const addCard = () => {
             <ViewTab :tab="tab" :key="index" :core="core"/>
           </ElTabPane>
         </ElTabs>
-    </pane>
-    <pane class="bottom-container" ref="splitPaneBottomRef">
-      <ElTabs v-model="core.mainTab" >
-        <!-- main -->
-        <ElTabPane :label="$t('dashboard.mainTab')" name="main">
-          <TabSettings v-if="core.current" :core="core"/>
-        </ElTabPane>
-        <!-- /main -->
+      </pane>
+      <pane class="bottom-container" ref="splitPaneBottomRef">
+        <ElTabs v-model="core.mainTab">
+          <!-- main -->
+          <ElTabPane :label="$t('dashboard.mainTab')" name="main">
+            <TabSettings v-if="core.current" :core="core"/>
+          </ElTabPane>
+          <!-- /main -->
 
-        <!-- tabs -->
-        <ElTabPane :label="$t('dashboard.tabsTab')" name="tabs">
-          <TabEditor v-if="core.current && activeTab" :tab="activeTab" :core="core"/>
-          <ElEmpty v-if="!core.tabs.length" :rows="5">
-            <ElButton type="primary" @click="createTab()">
-              {{ t('dashboard.addNewTab') }}
-            </ElButton>
-          </ElEmpty>
-        </ElTabPane>
-        <!-- /tabs -->
+          <!-- tabs -->
+          <ElTabPane :label="$t('dashboard.tabsTab')" name="tabs">
+            <TabEditor v-if="core.current && activeTab" :tab="activeTab" :core="core"/>
+            <ElEmpty v-if="!core.tabs.length" :rows="5">
+              <ElButton type="primary" @click="createTab()">
+                {{ t('dashboard.addNewTab') }}
+              </ElButton>
+            </ElEmpty>
+          </ElTabPane>
+          <!-- /tabs -->
 
-        <!-- cards -->
-        <ElTabPane :label="$t('dashboard.cardsTab')" name="cards">
-          <TabCard v-if="core.current && activeTab" :tab="activeTab" :core="core"/>
-          <ElEmpty v-if="!core.tabs.length" :rows="5">
-            <ElButton type="primary" @click="createTab()">
-              {{ t('dashboard.addNewTab') }}
-            </ElButton>
-          </ElEmpty>
-        </ElTabPane>
-        <!-- /cards -->
+          <!-- cards -->
+          <ElTabPane :label="$t('dashboard.cardsTab')" name="cards">
+            <TabCard v-if="core.current && activeTab" :tab="activeTab" :core="core"/>
+            <ElEmpty v-if="!core.tabs.length" :rows="5">
+              <ElButton type="primary" @click="createTab()">
+                {{ t('dashboard.addNewTab') }}
+              </ElButton>
+            </ElEmpty>
+          </ElTabPane>
+          <!-- /cards -->
 
-        <!-- cardItems -->
-        <ElTabPane :label="$t('dashboard.cardItemsTab')" name="cardItems">
-          <TabCardItem v-if="core.current && activeTab && activeCard" :card="activeCard" :core="core"/>
-          <ElEmpty v-if="!core.tabs.length" :rows="5">
-            <ElButton type="primary" @click="createTab()">
-              {{ t('dashboard.addNewTab') }}
-            </ElButton>
-          </ElEmpty>
-          <ElEmpty v-if="core.tabs.length && !(core.activeCard >= 0)" :rows="5">
-            <ElButton type="primary" @click="addCard()">
-              {{ t('dashboard.addNewCard') }}
-            </ElButton>
-          </ElEmpty>
-        </ElTabPane>
-        <!-- /cardItems -->
+          <!-- cardItems -->
+          <ElTabPane :label="$t('dashboard.cardItemsTab')" name="cardItems">
+            <TabCardItem v-if="core.current && activeTab && activeCard" :card="activeCard" :core="core"/>
+            <ElEmpty v-if="!core.tabs.length" :rows="5">
+              <ElButton type="primary" @click="createTab()">
+                {{ t('dashboard.addNewTab') }}
+              </ElButton>
+            </ElEmpty>
+            <ElEmpty v-if="core.tabs.length && !(core.activeCard >= 0)" :rows="5">
+              <ElButton type="primary" @click="addCard()">
+                {{ t('dashboard.addNewCard') }}
+              </ElButton>
+            </ElEmpty>
+          </ElTabPane>
+          <!-- /cardItems -->
 
-      </ElTabs>
-    </pane>
-  </splitpanes>
+        </ElTabs>
+      </pane>
+    </splitpanes>
 
   </div>
 
@@ -235,11 +235,7 @@ const addCard = () => {
 
 .components-container {
   height: calc(100vh - 87px);
-  //height: inherit;
-  //height: -webkit-fill-available;
-  //height: -moz-available;
-  //height: fill-available;
-  margin: 0;
+//height: inherit; //height: -webkit-fill-available; //height: -moz-available; //height: fill-available; margin: 0;
   padding: 0;
 }
 

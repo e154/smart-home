@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, PropType, ref, watch} from "vue";
-import {CardItem, parsedObject, serializedObject} from "@/views/Dashboard/core";
+import {CardItem, parsedObject, serializedObject} from "@/views/Dashboard/core/core";
 import {ChartDataInterface, ChartDataSet, chartItemType, SeriesItem} from "./types";
 import {parseTime} from "@/utils";
 import api from "@/api/api";
@@ -9,7 +9,7 @@ import {Echart} from '@/components/Echart'
 import {debounce} from "lodash-es";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
-import {Cache, RenderVar} from "@/views/Dashboard/render";
+import {Cache, RenderVar} from "@/views/Dashboard/core/render";
 import {ApiMetric} from "@/api/stub";
 
 // ---------------------------------

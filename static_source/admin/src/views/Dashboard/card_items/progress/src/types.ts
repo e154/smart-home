@@ -1,4 +1,4 @@
-import {CompareProp} from "@/views/Dashboard/types";
+import {CompareProp} from "@/views/Dashboard/core/types";
 
 export interface PropgressProp extends CompareProp {
     color?: string

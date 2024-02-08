@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import {computed, PropType} from "vue";
-import {CardItem, Core, requestCurrentState} from "@/views/Dashboard/core";
+import {CardItem, Core, requestCurrentState} from "@/views/Dashboard/core/core";
 import {ElButton, ElCol, ElCollapse, ElCollapseItem, ElDivider, ElFormItem, ElRow, ElSwitch} from 'element-plus'
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
-import {Cache} from "@/views/Dashboard/render";
+import {Cache} from "@/views/Dashboard/core/render";
 import {JsonViewer} from "@/components/JsonViewer";
 import {ApiImage} from "@/api/stub";
 import {ImageSearch} from "@/components/ImageSearch";

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {computed, PropType} from "vue";
-import {CardItem, comparisonType, Core} from "@/views/Dashboard/core";
+import {CardItem, comparisonType, Core} from "@/views/Dashboard/core/core";
 import {
   ElButton,
   ElCard,
@@ -21,7 +21,7 @@ import {ApiEntity} from "@/api/stub";
 import {EntitySearch} from "@/components/EntitySearch";
 import {KeysSearch} from "@/views/Dashboard/components";
 import {EventStateChange} from "@/api/stream_types";
-import {CompareProp} from "@/views/Dashboard/types";
+import {CompareProp} from "@/views/Dashboard/core/types";
 
 const {t} = useI18n()
 

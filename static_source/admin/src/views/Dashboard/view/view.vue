@@ -5,9 +5,9 @@ import api from "@/api/api";
 import {EventStateChange} from "@/api/stream_types";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
-import {Core} from "@/views/Dashboard/core";
+import {Core} from "@/views/Dashboard/core/core";
 import 'splitpanes/dist/splitpanes.css'
-import {useBus} from "@/views/Dashboard/bus";
+import {useBus} from "@/views/Dashboard/core/bus";
 import ViewTab from "@/views/Dashboard/view/ViewTab.vue";
 import {propTypes} from "@/utils/propTypes";
 

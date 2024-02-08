@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {onMounted, onUnmounted, PropType, ref, watch} from "vue";
-import {CardItem} from "@/views/Dashboard/core";
-import {RenderVar} from "@/views/Dashboard/render";
+import {CardItem} from "@/views/Dashboard/core/core";
+import {RenderVar} from "@/views/Dashboard/core/render";
 import {debounce} from "lodash-es";
 
 // ---------------------------------

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {onMounted, PropType, ref} from "vue";
-import {CardItem} from "@/views/Dashboard/core";
+import {CardItem} from "@/views/Dashboard/core/core";
 
 // ---------------------------------
 // common
