@@ -22,11 +22,11 @@ import {
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {useI18n} from "@/hooks/web/useI18n";
 import {JsonViewer} from "@/components/JsonViewer";
-import ImageSearch from "@/views/Images/components/ImageSearch.vue";
+import {ImageSearch} from "@/components/ImageSearch";
 import {ApiEntity, ApiImage} from "@/api/stub";
 import {GridProp, ItemPayloadGrid} from "./types";
 import {prepareUrl} from "@/utils/serverId";
-import EntitySearch from "@/views/Entities/components/EntitySearch.vue";
+import {EntitySearch} from "@/components/EntitySearch";
 import CellPreview from "./cellPreview.vue";
 import {KeysSearch} from "@/views/Dashboard/components";
 

@@ -18,7 +18,7 @@ import {
 } from 'element-plus'
 import {useI18n} from "@/hooks/web/useI18n";
 import {ApiEntity} from "@/api/stub";
-import EntitySearch from "@/views/Entities/components/EntitySearch.vue";
+import {EntitySearch} from "@/components/EntitySearch";
 import {KeysSearch} from "@/views/Dashboard/components";
 import {EventStateChange} from "@/api/stream_types";
 import {CompareProp} from "@/views/Dashboard/types";

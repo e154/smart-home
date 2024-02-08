@@ -5,13 +5,13 @@ import {useAppStore} from "@/store/modules/app";
 import api from "@/api/api";
 import {ElCol, ElDivider, ElForm, ElFormItem, ElRow, ElSwitch, ElInputNumber, ElInput} from 'element-plus'
 import {ApiDashboard, ApiEntity} from '@/api/stub';
-import DashboardSearch from "@/views/Dashboard/components/DashboardSearch.vue";
+import {DashboardSearch} from "@/components/DashboardSearch";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 import {EventStateChange} from "@/api/stream_types";
 import {debounce} from "lodash-es";
-import EntitySearch from "@/views/Entities/components/EntitySearch.vue";
+import {EntitySearch} from "@/components/EntitySearch";
 import { Infotip } from '@/components/Infotip'
 
 const appStore = useAppStore()

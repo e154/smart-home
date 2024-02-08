@@ -18,7 +18,7 @@ import {
 } from "element-plus";
 import {useI18n} from "@/hooks/web/useI18n";
 import {ApiEntity} from "@/api/stub";
-import EntitySearch from "@/views/Entities/components/EntitySearch.vue";
+import {EntitySearch} from "@/components/EntitySearch";
 import {useEventBus} from "@/hooks/event/useEventBus";
 
 const {t} = useI18n()

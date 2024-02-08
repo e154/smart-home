@@ -2,25 +2,15 @@
 import {computed, ref, unref} from 'vue'
 import {useI18n} from '@/hooks/web/useI18n'
 import {ElButton, ElPopconfirm} from 'element-plus'
-import {useForm} from '@/hooks/web/useForm'
-import {useCache} from '@/hooks/web/useCache'
-import {useAppStore} from '@/store/modules/app'
-import {usePermissionStore} from '@/store/modules/permission'
 import {useRoute, useRouter} from 'vue-router'
-import {useValidator} from '@/hooks/web/useValidator'
 import api from "@/api/api";
-import Form from './components/Form.vue'
+import Form from './Form.vue'
 import {ApiArea} from "@/api/stub";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
-import MapEditor from "@/views/Areas/components/MapEditor.vue";
+import {MapEditor} from "@/components/MapEditor";
 
-const {register, elFormRef, methods} = useForm()
-const {required} = useValidator()
-const appStore = useAppStore()
-const permissionStore = usePermissionStore()
-const {currentRoute, addRoute, push} = useRouter()
+const {push} = useRouter()
 const route = useRoute();
-const {wsCache} = useCache()
 const {t} = useI18n()
 
 const writeRef = ref<ComponentRef<typeof Form>>()

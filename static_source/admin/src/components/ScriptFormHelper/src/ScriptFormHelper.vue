@@ -1,17 +1,17 @@
 <script setup lang="ts">
 
-import {computed, PropType, ref, unref, watch} from "vue";
+import {computed, PropType, ref} from "vue";
 import {ApiScript} from "@/api/stub";
 import {ElButton, ElMessage} from 'element-plus'
 import api from "@/api/api";
-import { Dialog } from '@/components/Dialog'
-import ScriptEditor from "@/views/Scripts/components/ScriptEditor.vue";
+import {Dialog} from '@/components/Dialog'
+import {ScriptEditor} from "@/components/ScriptEditor";
 import {useI18n} from "@/hooks/web/useI18n";
 import {useEmitt} from "@/hooks/web/useEmitt";
+
 const {t} = useI18n()
 
 const currentScript = ref<Nullable<ApiScript>>(null)
-const scriptName = ref<Nullable<string>>(null)
 const emit = defineEmits(['change', 'update:modelValue'])
 
 const props = defineProps({
@@ -41,25 +41,25 @@ const fetch = async () => {
 }
 
 const save = async () => {
-    const body = {
-      lang: currentScript.value?.lang,
-      name: currentScript.value?.name,
-      source: sourceScript.value,
-      description: currentScript.value?.description,
-    }
-    const res = await api.v1.scriptServiceUpdateScriptById(scriptId.value, body)
-        .catch(() => {
-        })
-    if (res) {
-      currentScript.value = res.data as ApiScript
-      dialogSource.value = currentScript.value.source
-      ElMessage({
-        title: t('Success'),
-        message: t('message.updatedSuccessfully'),
-        type: 'success',
-        duration: 2000
+  const body = {
+    lang: currentScript.value?.lang,
+    name: currentScript.value?.name,
+    source: sourceScript.value,
+    description: currentScript.value?.description,
+  }
+  const res = await api.v1.scriptServiceUpdateScriptById(scriptId.value, body)
+      .catch(() => {
       })
-    }
+  if (res) {
+    currentScript.value = res.data as ApiScript
+    dialogSource.value = currentScript.value.source
+    ElMessage({
+      title: t('Success'),
+      message: t('message.updatedSuccessfully'),
+      type: 'success',
+      duration: 2000
+    })
+  }
 }
 
 const dialogSource = ref({})
@@ -102,7 +102,7 @@ const exec = async () => {
 <template>
   <div class="tip custom-block w-[100%]" v-if="modelValue">
     <ElButton @click="showModalDialog()" :link="true">
-      <Icon icon="uil:file-export" class="mr-5px" />
+      <Icon icon="uil:file-export" class="mr-5px"/>
       {{ t('scripts.showModalDialog') }}
     </ElButton>
   </div>
@@ -130,6 +130,7 @@ const exec = async () => {
     border-left: 5px solid var(--el-color-primary);
   }
 }
+
 .dark {
   .custom-block.tip {
     padding: 8px 16px;

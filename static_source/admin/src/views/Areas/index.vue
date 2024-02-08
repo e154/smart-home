@@ -2,23 +2,18 @@
 import {useI18n} from '@/hooks/web/useI18n'
 import {Table} from '@/components/Table'
 import {h, reactive, ref, watch} from 'vue'
-import {useAppStore} from "@/store/modules/app";
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
 import {ElButton} from 'element-plus'
-import {ApiArea, ApiLog, ApiTask} from "@/api/stub";
-import {useForm} from "@/hooks/web/useForm";
+import {ApiArea, ApiTask} from "@/api/stub";
 import {useRouter} from "vue-router";
 import {parseTime} from "@/utils";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
 import {useCache} from "@/hooks/web/useCache";
 
-const {push, currentRoute} = useRouter()
-const remember = ref(false)
-const {register, elFormRef, methods} = useForm()
-const appStore = useAppStore()
+const {push} = useRouter()
 const {t} = useI18n()
-const { wsCache } = useCache()
+const {wsCache} = useCache()
 
 interface TableObject {
   tableList: ApiArea[]
@@ -38,7 +33,7 @@ const tableObject = reactive<TableObject>(
     {
       tableList: [],
       loading: false,
-      sort: wsCache.get(cachePref+'Sort') || '-id'
+      sort: wsCache.get(cachePref + 'Sort') || '-id'
     },
 );
 
@@ -87,8 +82,8 @@ const columns: TableColumn[] = [
   },
 ]
 const paginationObj = ref<Pagination>({
-  currentPage: wsCache.get(cachePref+'CurrentPage') || 1,
-  pageSize: wsCache.get(cachePref+'PageSize') || 50,
+  currentPage: wsCache.get(cachePref + 'CurrentPage') || 1,
+  pageSize: wsCache.get(cachePref + 'PageSize') || 50,
   total: 0,
 })
 const currentID = ref('')
@@ -96,9 +91,9 @@ const currentID = ref('')
 const getList = async () => {
   tableObject.loading = true
 
-  wsCache.set(cachePref+'CurrentPage', paginationObj.value.currentPage)
-  wsCache.set(cachePref+'PageSize', paginationObj.value.pageSize)
-  wsCache.set(cachePref+'Sort', tableObject.sort)
+  wsCache.set(cachePref + 'CurrentPage', paginationObj.value.currentPage)
+  wsCache.set(cachePref + 'PageSize', paginationObj.value.pageSize)
+  wsCache.set(cachePref + 'Sort', tableObject.sort)
 
   let params: Params = {
     page: paginationObj.value.currentPage,

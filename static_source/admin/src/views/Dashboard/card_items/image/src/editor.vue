@@ -6,7 +6,7 @@ import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {Cache} from "@/views/Dashboard/render";
 import {JsonViewer} from "@/components/JsonViewer";
 import {ApiImage} from "@/api/stub";
-import ImageSearch from "@/views/Images/components/ImageSearch.vue";
+import {ImageSearch} from "@/components/ImageSearch";
 import {KeysSearch} from "@/views/Dashboard/components";
 
 // ---------------------------------

@@ -7,7 +7,6 @@ import Browser from "@/views/Images/components/Browser.vue";
 import {useEmitt} from "@/hooks/web/useEmitt";
 import {useI18n} from "@/hooks/web/useI18n";
 import {UUID} from "uuid-generator-ts";
-import stream from "@/api/stream";
 import {prepareUrl} from "@/utils/serverId";
 
 const emit = defineEmits(['change', 'update:modelValue'])

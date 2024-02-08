@@ -1,8 +1,8 @@
 <script setup lang="ts">
 
 import {PropType, ref, unref, watch} from "vue";
-import {ApiAction, ApiCondition} from "@/api/stub";
-import {ElSelect, ElOption} from 'element-plus'
+import {ApiAction} from "@/api/stub";
+import {ElOption, ElSelect} from 'element-plus'
 import api from "@/api/api";
 
 const options = ref<ApiAction[]>([])
@@ -21,7 +21,7 @@ watch(
     () => props.modelValue,
     (val?: number[]) => {
       if (val === unref(value)) return
-      value.value = val || [] ;
+      value.value = val || [];
       if (val) {
         getList(val)
       }
@@ -63,7 +63,7 @@ interface Params {
   ids?: [];
 }
 
-const getList = async (ids:  number[]) => {
+const getList = async (ids: number[]) => {
   let params: Params = {
     ids: ids,
   }

@@ -40,10 +40,10 @@ import {
   ElSwitch
 } from 'element-plus'
 import {ApiEntity, ApiImage} from "@/api/stub";
-import EntitySearch from "@/views/Entities/components/EntitySearch.vue";
+import {EntitySearch} from "@/components/EntitySearch";
 import ShowOn from "./show-on.vue";
 import {useI18n} from "@/hooks/web/useI18n";
-import ImageSearch from "@/views/Images/components/ImageSearch.vue";
+import {ImageSearch} from "@/components/ImageSearch";
 
 const {t} = useI18n()
 

@@ -18,8 +18,8 @@ import {
 } from 'element-plus'
 import {ApiEntity, ApiImage} from "@/api/stub";
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
-import EntitySearch from "@/views/Entities/components/EntitySearch.vue";
-import ImageSearch from "@/views/Images/components/ImageSearch.vue";
+import {EntitySearch} from "@/components/EntitySearch";
+import {ImageSearch} from "@/components/ImageSearch";
 import {useI18n} from "@/hooks/web/useI18n";
 import {KeysSearch} from "@/views/Dashboard/components";
 import {EventStateChange} from "@/api/stream_types";

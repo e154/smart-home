@@ -25,7 +25,7 @@ import {Cache} from "@/views/Dashboard/render";
 import {ApiImage} from "@/api/stub";
 import {ItemPayloadState} from "./types";
 import {JsonViewer} from "@/components/JsonViewer";
-import ImageSearch from "@/views/Images/components/ImageSearch.vue";
+import {ImageSearch} from "@/components/ImageSearch";
 import {KeysSearch} from "@/views/Dashboard/components";
 
 const {t} = useI18n()

@@ -4,7 +4,7 @@ import {CardItem, Core} from "@/views/Dashboard/core";
 import {ElCol, ElDivider, ElFormItem, ElOption, ElRow, ElSelect} from 'element-plus'
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {ApiImage} from "@/api/stub";
-import ImageSearch from "@/views/Images/components/ImageSearch.vue";
+import {ImageSearch} from "@/components/ImageSearch";
 import {useI18n} from "@/hooks/web/useI18n";
 
 const {t} = useI18n()

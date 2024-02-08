@@ -4,7 +4,7 @@ import {GeoJSON} from "ol/format"
 import {Collection} from "ol";
 import {Fill, Stroke, Style} from "ol/style";
 import {ApiArea} from "@/api/stub";
-import type { ObjectEvent } from "ol/Object";
+import type {ObjectEvent} from "ol/Object";
 import hereIcon from "@/assets/imgs/marker.png";
 
 // ---------------------------------
@@ -262,10 +262,10 @@ defineExpose({
     </ol-geolocation>
   </ol-map>
 
-<!--  <div>-->
-<!--    center : {{ currentView.Center }} zoom : {{ currentView.Zoom }} resolution :-->
-<!--    {{ currentView.Resolution }} rotation : {{ currentView.Rotation }}-->
-<!--  </div>-->
+  <!--  <div>-->
+  <!--    center : {{ currentView.Center }} zoom : {{ currentView.Zoom }} resolution :-->
+  <!--    {{ currentView.Resolution }} rotation : {{ currentView.Rotation }}-->
+  <!--  </div>-->
 </template>
 
 <style lang="less">

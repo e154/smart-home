@@ -11,7 +11,6 @@ import {
   ElOption,
   ElPopconfirm,
   ElRow,
-  ElScrollbar,
   ElSelect,
   ElTabPane,
   ElTabs
@@ -20,14 +19,14 @@ import {useRoute, useRouter} from 'vue-router'
 import api from "@/api/api";
 import Form from './components/Form.vue'
 import {ApiScript} from "@/api/stub";
-import ScriptEditor from "@/views/Scripts/components/ScriptEditor.vue";
+import {ScriptEditor} from "@/components/ScriptEditor";
 import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
 import {useEmitt} from "@/hooks/web/useEmitt";
 import {Infotip} from '@/components/Infotip'
 import {parseTime} from "@/utils";
-import MergeEditor from "@/views/Scripts/components/MergeEditor.vue";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
+import {MergeEditor} from "@/components/MergeEditor";
 
 const {emitter} = useEmitt()
 const {push} = useRouter()
@@ -242,7 +241,7 @@ fetch()
       <!-- versions -->
       <ElTabPane :label="$t('scripts.scriptVersions')" name="versions">
 
-        <ElRow v-if="activeTab == 'versions' && !loading && versions"  class="mb-20px">
+        <ElRow v-if="activeTab == 'versions' && !loading && versions" class="mb-20px">
           <ElCol>
             <ElFormItem :label="$t('scripts.scriptVersions')" prop="action">
               <ElSelect

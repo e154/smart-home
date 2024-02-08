@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import {PropType, ref, unref, watch} from "vue";
-import {ApiScript, ApiTrigger} from "@/api/stub";
+import {ApiScript} from "@/api/stub";
 import {ElAutocomplete} from 'element-plus'
 import api from "@/api/api";
 

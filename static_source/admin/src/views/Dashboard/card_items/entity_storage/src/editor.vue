@@ -4,7 +4,7 @@ import {CardItem, Core} from "@/views/Dashboard/core";
 import {ElCol, ElDivider, ElFormItem, ElRow, ElSwitch} from 'element-plus'
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {useI18n} from "@/hooks/web/useI18n";
-import EntitiesSearch from "@/views/Entities/components/EntitiesSearch.vue";
+import {EntitiesSearch} from "@/components/EntitiesSearch";
 
 const {t} = useI18n()
 
