@@ -12,7 +12,7 @@ import {
 import Form from './components/Form.vue'
 import {useI18n} from "@/hooks/web/useI18n";
 import {Plugin} from './components/Types.ts'
-import AttributesViewer from "@/views/Entities/components/AttributesViewer.vue";
+import {AttributesViewer} from "@/components/AttributesViewer";
 import ActionsViewer from "@/views/Plugins/components/ActionsViewer.vue";
 import StatesViewer from "@/views/Plugins/components/StatesViewer.vue";
 import SettingsEditor from "@/views/Plugins/components/SettingsEditor.vue";

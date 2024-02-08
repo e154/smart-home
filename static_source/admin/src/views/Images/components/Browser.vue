@@ -1,21 +1,22 @@
 <script setup lang="ts">
-import {ElButton, ElRow, ElCol, ElBadge, ElImage, ElUpload, UploadProps, ElDialog, ElMessage} from 'element-plus'
-import { useI18n } from '@/hooks/web/useI18n'
-import {PropType, reactive, ref, unref} from "vue";
-import {ApiAttribute, ApiCondition, ApiImage, GetImageFilterListResultfilter} from "@/api/stub";
+import {ElBadge, ElButton, ElCol, ElMessage, ElRow, ElUpload, UploadProps} from 'element-plus'
+import {useI18n} from '@/hooks/web/useI18n'
+import {reactive, unref} from "vue";
+import {ApiImage, GetImageFilterListResultfilter} from "@/api/stub";
 import api from "@/api/api";
 import {useEmitt} from "@/hooks/web/useEmitt";
 import {createImageViewer} from "@/components/ImageViewer";
 import {propTypes} from "@/utils/propTypes";
 import {useCache} from "@/hooks/web/useCache";
 import {prepareUrl} from "@/utils/serverId";
+
 const {wsCache} = useCache()
 
-const { t } = useI18n()
+const {t} = useI18n()
 
 interface ViewerObject {
   loading: boolean
-  filterList?:  GetImageFilterListResultfilter[]
+  filterList?: GetImageFilterListResultfilter[]
   currentFilter?: GetImageFilterListResultfilter
   imageList?: ApiImage[]
   selected?: ApiImage
@@ -31,20 +32,20 @@ const viewerObject = reactive<ViewerObject>(
     }
 )
 
-const fetch =  async() => {
+const fetch = async () => {
   await getFilterList()
   if (viewerObject.filterList && viewerObject.filterList.length > 0) {
     getList(viewerObject.filterList[viewerObject.filterList.length - 1])
   }
 }
 
-const getList =  async(filter?: GetImageFilterListResultfilter) => {
+const getList = async (filter?: GetImageFilterListResultfilter) => {
   if (!filter) {
     return
   }
   viewerObject.currentFilter = filter;
   viewerObject.loading = true
-  const res = await api.v1.imageServiceGetImageListByDate({ filter: filter.date })
+  const res = await api.v1.imageServiceGetImageListByDate({filter: filter.date})
       .catch(() => {
       })
       .finally(() => {
@@ -58,7 +59,7 @@ const getList =  async(filter?: GetImageFilterListResultfilter) => {
   viewerObject.imageList = items
 }
 
-const getFilterList =  async() => {
+const getFilterList = async () => {
   viewerObject.loading = true
 
   const res = await api.v1.imageServiceGetImageFilterList()
@@ -84,7 +85,7 @@ const getActiveFilter = (item: GetImageFilterListResultfilter): boolean => {
   return false
 }
 
-const { emitter } = useEmitt()
+const {emitter} = useEmitt()
 const select = (image: ApiImage) => {
   if (image) {
     if (viewerObject.selected && viewerObject.selected.id === image.id) {
@@ -95,9 +96,9 @@ const select = (image: ApiImage) => {
     viewerObject.selected = undefined
   }
   const output = Object.assign({}, unref(viewerObject)?.selected) as ApiImage
-  output.url = output.url.replace(import.meta.env.VITE_API_BASEPATH,'');
+  output.url = output.url.replace(import.meta.env.VITE_API_BASEPATH, '');
   const serverId = wsCache.get('serverId')
-  output.url = output.url.replace('?serverId=' + serverId,'');
+  output.url = output.url.replace('?serverId=' + serverId, '');
   emitter.emit('imageSelected', {id: props.id, image: output})
   //todo: fix
   ElMessage({
@@ -129,7 +130,7 @@ const getUploadURL = () => {
   return prepareUrl(uri + '/v1/image/upload?access_token=' + accessToken);
 }
 
-const handleRemove: UploadProps['onRemove'] = ( image: ApiImage, uploadFiles) => {
+const handleRemove: UploadProps['onRemove'] = (image: ApiImage, uploadFiles) => {
   removeFromServer(image)
 }
 
@@ -173,7 +174,7 @@ fetch()
           :on-preview="handlePictureCardPreview"
           :on-remove="handleRemove"
           :auto-upload="true">
-        <Icon icon="ic:baseline-plus" />
+        <Icon icon="ic:baseline-plus"/>
       </ElUpload>
 
     </ElCol>
@@ -191,106 +192,107 @@ fetch()
   padding: 20px;
   position: relative;
 
-.el-image {
-  display: block;
-}
+  .el-image {
+    display: block;
+  }
 
-.drop-box {
-  background: #F8F8F8;
-  border: 1px dashed #DDD;
-  text-align: center;
-  padding-top: 25px;
-  cursor: pointer;
+  .drop-box {
+    background: #F8F8F8;
+    border: 1px dashed #DDD;
+    text-align: center;
+    padding-top: 25px;
+    cursor: pointer;
 
-.title {
-  font-size: 10px;
-}
+    .title {
+      font-size: 10px;
+    }
 
-}
-ul.filters {
+  }
 
-li {
-  position: relative;
+  ul.filters {
 
-&.selected {
-   font-weight: 600;
- }
+    li {
+      position: relative;
 
-}
-}
+      &.selected {
+        font-weight: 600;
+      }
 
-ul.file-manager-items {
-  margin: 0;
-  padding: 0;
-  list-style: none;
+    }
+  }
 
-.fa-cloud-upload {
-  font-size: 3rem;
-}
+  ul.file-manager-items {
+    margin: 0;
+    padding: 0;
+    list-style: none;
 
-li.file-manager-item {
-  width: 150px;
-  height: 100px;
-  float: left;
-  margin: 5px;
-  overflow: hidden;
-  position: relative;
+    .fa-cloud-upload {
+      font-size: 3rem;
+    }
 
-img {
-  background-repeat: no-repeat;
-  background-size: 100% auto;
-  width: 100%;
-}
+    li.file-manager-item {
+      width: 150px;
+      height: 100px;
+      float: left;
+      margin: 5px;
+      overflow: hidden;
+      position: relative;
 
-.file-manager-item-title {
-  position: absolute;
-  bottom: 0;
-  background: black;
-  opacity: 0.5;
-  color: #ffffff;
-  font-size: 10px;
-  left: 0;
-  right: 0;
-  padding: 2px 8px;
-}
+      img {
+        background-repeat: no-repeat;
+        background-size: 100% auto;
+        width: 100%;
+      }
 
-.cross.close-button {
-  opacity: 0;
-  background-color: #FFFFFF;
-  position: absolute;
-  top: 0;
-  right: 0;
-  cursor: pointer;
+      .file-manager-item-title {
+        position: absolute;
+        bottom: 0;
+        background: black;
+        opacity: 0.5;
+        color: #ffffff;
+        font-size: 10px;
+        left: 0;
+        right: 0;
+        padding: 2px 8px;
+      }
 
-}
+      .cross.close-button {
+        opacity: 0;
+        background-color: #FFFFFF;
+        position: absolute;
+        top: 0;
+        right: 0;
+        cursor: pointer;
 
-.is_selected {
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  background: rgba(0, 0, 0, 0.5);
-  text-align: center;
-  font-size: 35px;
-  color: #FFF;
-  padding-top: 31px;
-}
+      }
 
-&:hover {
+      .is_selected {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.5);
+        text-align: center;
+        font-size: 35px;
+        color: #FFF;
+        padding-top: 31px;
+      }
 
-.cross.close-button {
-  opacity: 0.7;
-  -webkit-transition: opacity 0.6s ease-in-out;
-  -moz-transition: opacity 0.6s ease-in-out;
-  -ms-transition: opacity 0.6s ease-in-out;
-  -o-transition: opacity 0.6s ease-in-out;
-  transition: opacity 0.6s ease-in-out;
-}
+      &:hover {
 
-}
-}
-}
+        .cross.close-button {
+          opacity: 0.7;
+          -webkit-transition: opacity 0.6s ease-in-out;
+          -moz-transition: opacity 0.6s ease-in-out;
+          -ms-transition: opacity 0.6s ease-in-out;
+          -o-transition: opacity 0.6s ease-in-out;
+          transition: opacity 0.6s ease-in-out;
+        }
+
+      }
+    }
+  }
 }
 
 </style>

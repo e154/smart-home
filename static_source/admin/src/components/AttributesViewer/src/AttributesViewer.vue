@@ -1,21 +1,14 @@
 <script setup lang="ts">
 import {useI18n} from '@/hooks/web/useI18n'
 import {Table} from '@/components/Table'
-import {PropType, reactive, ref, watch} from 'vue'
-import {useAppStore} from "@/store/modules/app";
-import {ElButton, ElTag, ElImage, ElImageViewer, ElInput} from 'element-plus'
+import {PropType, reactive, watch} from 'vue'
+import {ElImage} from 'element-plus'
 import {TableColumn} from '@/types/table'
 import {ApiAttribute} from "@/api/stub";
-import {useForm} from "@/hooks/web/useForm";
-import {useRouter} from "vue-router";
 import {Attribute} from "@/views/Entities/components/types";
 import {parseTime} from "@/utils";
 import {prepareUrl} from "@/utils/serverId";
 
-const {push, currentRoute} = useRouter()
-const remember = ref(false)
-const {register, elFormRef, methods} = useForm()
-const appStore = useAppStore()
 const {t} = useI18n()
 
 interface TableObject {
@@ -67,7 +60,7 @@ const attributes = (): Attribute[] => {
 watch(
     () => props.modelValue,
     (message: Record<string, ApiAttribute>) => {
-     tableObject.tableList = attributes()
+      tableObject.tableList = attributes()
     },
     {
       deep: true,

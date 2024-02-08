@@ -15,7 +15,7 @@ import {parseTime} from "@/utils";
 import stream from "@/api/stream";
 import { Dialog } from '@/components/Dialog'
 import {EventStateChange} from "@/api/stream_types";
-import AttributesViewer from "@/views/Entities/components/AttributesViewer.vue";
+import {AttributesViewer} from "@/components/AttributesViewer";
 import debounce from "lodash.debounce";
 
 const remember = ref(false)
