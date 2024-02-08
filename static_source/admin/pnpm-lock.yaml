@@ -259,6 +259,9 @@ devDependencies:
   rollup:
     specifier: ^3.20.2
     version: 3.20.2
+  rollup-plugin-analyzer:
+    specifier: ^4.0.0
+    version: 4.0.0
   stylelint:
     specifier: ^15.4.0
     version: 15.4.0
@@ -8144,6 +8147,11 @@ packages:
     hasBin: true
     dependencies:
       glob: 10.3.1
+    dev: true
+
+  /rollup-plugin-analyzer@4.0.0:
+    resolution: {integrity: sha512-LL9GEt3bkXp6Wa19SNR5MWcvHNMvuTFYg+eYBZN2OIFhSWN+pEJUQXEKu5BsOeABob3x9PDaLKW7w5iOJnsESQ==}
+    engines: {node: '>=8.0.0'}
     dev: true
 
   /rollup-plugin-purge-icons@0.9.1:

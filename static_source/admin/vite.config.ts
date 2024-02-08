@@ -14,6 +14,7 @@ import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import DefineOptions from "unplugin-vue-define-options/vite"
 import { createStyleImportPlugin, ElementPlusResolve } from 'vite-plugin-style-import'
 import Unfonts from 'unplugin-fonts/vite'
+import analyze from "rollup-plugin-analyzer";
 
 // https://vitejs.dev/config/
 const root = process.cwd()
@@ -111,7 +112,10 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
           drop_debugger: env.VITE_DROP_DEBUGGER === 'true',
           drop_console: env.VITE_DROP_CONSOLE === 'true'
         }
-      }
+      },
+      rollupOptions: {
+        plugins: [analyze()]
+      },
     },
     server: {
       port: 9527,
