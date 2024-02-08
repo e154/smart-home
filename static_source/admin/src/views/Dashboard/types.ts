@@ -1,4 +1,5 @@
 import {ApiDashboardTab, ApiEntity} from "@/api/stub";
+import {comparisonType} from "@/views/Dashboard/core";
 
 
 export interface Area {
@@ -18,4 +19,12 @@ export interface Dashboard {
     entities?: Map<string, ApiEntity>;
     createdAt?: string;
     updatedAt?: string;
+}
+
+export interface CompareProp {
+    key: string;
+    comparison: comparisonType;
+    value: string;
+    entity?: { id?: string };
+    entityId?: string;
 }

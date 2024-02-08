@@ -8,8 +8,6 @@ import {UUID} from "uuid-generator-ts";
 import {ItemDragHandle, ItemKey, ItemSize} from './constants';
 import debounce from 'lodash.debounce'
 
-2
-
 const uuid = new UUID()
 const muuri = ref<Muuri>({} as Muuri)
 

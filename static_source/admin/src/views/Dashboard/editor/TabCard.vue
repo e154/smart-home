@@ -2,36 +2,34 @@
 import {computed, PropType, reactive, ref, unref, watch} from 'vue'
 import {Form} from '@/components/Form'
 import {
+  ElAside,
   ElButton,
+  ElButtonGroup,
   ElCard,
-  ElMessage,
-  ElPopconfirm,
-  ElSkeleton,
+  ElCol,
+  ElContainer,
+  ElDivider,
+  ElEmpty,
+  ElMain,
   ElMenu,
   ElMenuItem,
-  ElButtonGroup,
-  ElContainer,
-  ElAside,
-  ElMain,
-  ElScrollbar,
-  ElEmpty,
-  ElDivider,
-  ElCol,
-  ElRow
+  ElMessage,
+  ElPopconfirm,
+  ElRow,
+  ElScrollbar
 } from 'element-plus'
 import {useI18n} from '@/hooks/web/useI18n'
 import {useForm} from '@/hooks/web/useForm'
 import {useValidator} from '@/hooks/web/useValidator'
 import {FormSchema} from '@/types/form'
-import {ApiDashboard, ApiDashboardCard, ApiDashboardCardItem, ApiEntity} from "@/api/stub";
+import {ApiDashboardCard, ApiDashboardCardItem, ApiEntity} from "@/api/stub";
 import {copyToClipboard} from "@/utils/clipboard";
-import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
+import {JsonViewer} from "@/components/JsonViewer";
 import {Card, Core, Tab} from "@/views/Dashboard/core";
 import {useBus} from "@/views/Dashboard/bus";
-import { Dialog } from '@/components/Dialog'
-import JsonEditor from "@/components/JsonEditor/JsonEditor.vue";
-import KeystrokeCapture from "@/views/Dashboard/components/KeystrokeCapture.vue";
-import ViewCard from "@/views/Dashboard/editor/ViewCard.vue";
+import {Dialog} from '@/components/Dialog'
+import {JsonEditor} from "@/components/JsonEditor";
+import {KeystrokeCapture} from "@/views/Dashboard/components";
 
 const {register, elFormRef, methods} = useForm()
 const {required} = useValidator()
@@ -197,7 +195,8 @@ const activeTab = computed({
   get(): Tab {
     return currentCore.value.getActiveTab as Tab
   },
-  set(val: Tab) {}
+  set(val: Tab) {
+  }
 })
 
 // ---------------------------------
@@ -242,7 +241,7 @@ const importCard = async () => {
   try {
     if (importedCard.value?.json) {
       card = importedCard.value.json as ApiDashboardCard;
-    } else if(importedCard.value.text) {
+    } else if (importedCard.value.text) {
       card = JSON.parse(importedCard.value.text) as ApiDashboardCard;
     }
   } catch {
@@ -353,7 +352,7 @@ const sortCardDown = (card: Card, index: number) => {
 
 <template>
 
-<!--  <ElContainer style="height: 500px">-->
+  <!--  <ElContainer style="height: 500px">-->
   <ElContainer>
     <ElMain>
       <ElScrollbar>
@@ -431,16 +430,19 @@ const sortCardDown = (card: Card, index: number) => {
               </ElButtonGroup>
             </div>
           </template>
-          <ElMenu v-if="currentCore.activeTabIdx > -1 && activeTab.cards.length" :default-active="currentCore.activeCard + ''" v-model="currentCore.activeCard" class="el-menu-vertical-demo">
-            <ElMenuItem :index="index + ''" :key="index" v-for="(card, index) in activeTab.cards" @click="menuCardsClick(card)">
+          <ElMenu v-if="currentCore.activeTabIdx > -1 && activeTab.cards.length"
+                  :default-active="currentCore.activeCard + ''" v-model="currentCore.activeCard"
+                  class="el-menu-vertical-demo">
+            <ElMenuItem :index="index + ''" :key="index" v-for="(card, index) in activeTab.cards"
+                        @click="menuCardsClick(card)">
               <div class="w-[100%] card-header">
                 <span>{{ card.title }}</span>
                 <ElButtonGroup class="hide">
                   <ElButton type="default" @click.prevent.stop="sortCardUp(card, index)">
-                    <Icon icon="teenyicons:up-solid" />
+                    <Icon icon="teenyicons:up-solid"/>
                   </ElButton>
                   <ElButton type="default" @click.prevent.stop="sortCardDown(card, index)">
-                    <Icon icon="teenyicons:down-solid" />
+                    <Icon icon="teenyicons:down-solid"/>
                   </ElButton>
                 </ElButtonGroup>
               </div>
@@ -455,15 +457,16 @@ const sortCardDown = (card: Card, index: number) => {
   <!-- export dialog -->
   <Dialog v-model="exportDialogVisible" :title="t('entities.dialogExportTitle')" :maxHeight="400" width="80%">
     <JsonViewer v-model="dialogSource"/>
-<!--    <template #footer>-->
-<!--      <ElButton @click="copy()">{{ t('setting.copy') }}</ElButton>-->
-<!--      <ElButton @click="exportDialogVisible = false">{{ t('main.closeDialog') }}</ElButton>-->
-<!--    </template>-->
+    <!--    <template #footer>-->
+    <!--      <ElButton @click="copy()">{{ t('setting.copy') }}</ElButton>-->
+    <!--      <ElButton @click="exportDialogVisible = false">{{ t('main.closeDialog') }}</ElButton>-->
+    <!--    </template>-->
   </Dialog>
   <!-- /export dialog -->
 
   <!-- import dialog -->
-  <Dialog v-model="importDialogVisible" :title="t('entities.dialogImportTitle')" :maxHeight="400" width="80%" custom-class>
+  <Dialog v-model="importDialogVisible" :title="t('entities.dialogImportTitle')" :maxHeight="400" width="80%"
+          custom-class>
     <JsonEditor @change="importHandler"/>
     <template #footer>
       <ElButton type="primary" @click="importCard()" plain>{{ t('main.import') }}</ElButton>

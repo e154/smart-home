@@ -4,7 +4,7 @@ import {Card, CardItem, Core} from "@/views/Dashboard/core";
 import {useBus} from "@/views/Dashboard/bus";
 import {CardItemName} from "@/views/Dashboard/card_items";
 import {UUID} from "uuid-generator-ts";
-import KeystrokeCaptureViewer from "@/views/Dashboard/components/KeystrokeCaptureViewer.vue";
+import {KeystrokeCaptureViewer} from "@/views/Dashboard/components";
 
 const {bus} = useBus()
 

@@ -3,7 +3,7 @@ import {computed, PropType, ref} from 'vue'
 import {useI18n} from '@/hooks/web/useI18n'
 import {ElCol, ElForm, ElFormItem, ElInput, ElMessage, ElRadioButton, ElRadioGroup, ElRow} from 'element-plus'
 import {ApiVariable} from "@/api/stub";
-import JsonEditor from "@/components/JsonEditor/JsonEditor.vue";
+import {JsonEditor} from "@/components/JsonEditor";
 import {TinycmeEditor} from "@/components/Tinymce";
 import {propTypes} from "@/utils/propTypes";
 

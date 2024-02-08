@@ -1,20 +1,14 @@
 <script setup lang="ts">
-import {
-  computed,
-  onMounted, onUnmounted,
-  onUpdated,
-  PropType,
-  ref, watch,
-} from "vue";
-import {Card, CardItem, Core, Tab} from "@/views/Dashboard/core";
+import {computed, onMounted, onUnmounted, onUpdated, PropType, ref,} from "vue";
+import {Card, CardItem, Core} from "@/views/Dashboard/core";
 import {useBus} from "@/views/Dashboard/bus";
 import debounce from 'lodash.debounce'
-import Moveable, { MoveableTargetGroupsType } from 'vue3-moveable'
-import { deepFlat } from "@daybrush/utils";
-import { VueSelecto } from "vue3-selecto";
+import Moveable from 'vue3-moveable'
+import {deepFlat} from "@daybrush/utils";
+import {VueSelecto} from "vue3-selecto";
 import {CardItemName} from "@/views/Dashboard/card_items";
 import {UUID} from "uuid-generator-ts";
-import KeystrokeCaptureViewer from "@/views/Dashboard/components/KeystrokeCaptureViewer.vue";
+import {KeystrokeCaptureViewer} from "@/views/Dashboard/components";
 
 const {emit} = useBus()
 
@@ -62,7 +56,8 @@ const currentCard = computed({
   get(): Card {
     return props.card as Card
   },
-  set(val: Card) {}
+  set(val: Card) {
+  }
 })
 
 const hover = ref(false)
@@ -224,7 +219,7 @@ const onSelectEnd = (e) => {
   if (e.isDragStart) {
     e.inputEvent.preventDefault();
     moveable.waitToChangeTarget().then(() => {
-    //   moveable.dragStart(e.inputEvent);
+      //   moveable.dragStart(e.inputEvent);
     });
   }
   targets.value = selected;
@@ -320,6 +315,7 @@ const onDragStart = (e) => {
 .movable {
   position: absolute;
 }
+
 .item-card {
   position: relative;
   overflow: hidden;

@@ -18,23 +18,10 @@ import stream from '@/api/stream';
 import {useBus} from "@/views/Dashboard/bus";
 import {debounce} from "lodash-es";
 import {ref} from "vue";
-import {ItemPayloadButton} from '@/views/Dashboard/card_items/button/types';
-import {ItemPayloadText} from '@/views/Dashboard/card_items/text/types';
-import {ItemPayloadState} from '@/views/Dashboard/card_items/state/types';
-import {ItemPayloadLogs} from '@/views/Dashboard/card_items/logs/types';
-import {ItemPayloadProgress} from '@/views/Dashboard/card_items/progress/types';
-import {ItemPayloadChart} from '@/views/Dashboard/card_items/chart/types';
-import {ItemPayloadChartCustom} from "@/views/Dashboard/card_items/chart_custom/types";
-import {ItemPayloadMap, Marker} from '@/views/Dashboard/card_items/map/types';
-import {ItemPayloadSlider} from "@/views/Dashboard/card_items/slider/types";
-import {ItemPayloadColorPicker} from "@/views/Dashboard/card_items/color_picker/types";
-import {ItemPayloadJoystick} from "@/views/Dashboard/card_items/joystick/types";
-import {ItemPayloadVideo} from "@/views/Dashboard/card_items/video/types";
-import {ItemPayloadEntityStorage} from "@/views/Dashboard/card_items/entity_storage/types";
-import {ItemPayloadGrid} from "@/views/Dashboard/card_items/grid/types";
-import {ItemPayloadImage} from "@/views/Dashboard/card_items/image/types";
+import {ItemPayload} from "@/views/Dashboard/card_items";
 import {prepareUrl} from "@/utils/serverId";
 import {useAppStore} from "@/store/modules/app";
+import {CompareProp} from "./types"
 
 const {emit} = useBus()
 const appStore = useAppStore()
@@ -77,46 +64,11 @@ export enum comparisonType {
   GT = 'gt',
 }
 
-export interface CompareProp {
-  key: string;
-  comparison: comparisonType;
-  value: string;
-  entity?: { id?: string };
-  entityId?: string;
-}
-
 export interface KeysProp {
   keys?: Map<number, string>;
   entity?: { id?: string };
   entityId?: string;
   action?: string;
-}
-
-export interface ItemPayloadIcon {
-  attrField?: string;
-  value?: string;
-  iconColor?: string;
-  iconSize?: number;
-}
-
-//todo: shouldn't be here, so will be optimize!!!
-export interface ItemPayload {
-  text?: ItemPayloadText;
-  image?: ItemPayloadImage;
-  icon?: ItemPayloadIcon;
-  button?: ItemPayloadButton;
-  state?: ItemPayloadState;
-  logs?: ItemPayloadLogs;
-  progress?: ItemPayloadProgress;
-  chart?: ItemPayloadChart;
-  chartCustom?: ItemPayloadChartCustom;
-  map?: ItemPayloadMap;
-  slider?: ItemPayloadSlider;
-  colorPicker?: ItemPayloadColorPicker;
-  joystick?: ItemPayloadJoystick;
-  video?: ItemPayloadVideo;
-  entityStorage?: ItemPayloadEntityStorage;
-  grid?: ItemPayloadGrid;
 }
 
 export interface ItemParams {
@@ -211,14 +163,14 @@ export class CardItem {
         this.payload.image = {
           image: undefined,
           attrField: ''
-        } as ItemPayloadImage;
+        };
       }
       if (!this.payload.icon) {
         this.payload.icon = {
           value: '',
           iconColor: '#000000',
           iconSize: 12
-        } as ItemPayloadIcon;
+        };
       }
       if (this.payload.image.attrField == undefined) {
         this.payload.image.attrField = '';
@@ -227,7 +179,7 @@ export class CardItem {
         this.payload.image.image = undefined;
       }
       if (!this.payload.button) {
-        this.payload.button = {} as ItemPayloadButton;
+        this.payload.button = {};
       }
       if (!this.payload.state) {
         this.payload.state = {
@@ -244,12 +196,12 @@ export class CardItem {
           items: [],
           default_text: '<div>default text</div>',
           current_text: ''
-        } as ItemPayloadText;
+        };
       }
       if (!this.payload.logs) {
         this.payload.logs = {
           limit: 20
-        } as ItemPayloadLogs;
+        };
       }
       if (!this.payload.progress) {
         this.payload.progress = {
@@ -259,7 +211,7 @@ export class CardItem {
           textInside: false,
           strokeWidth: 26,
           width: 100
-        } as ItemPayloadProgress;
+        };
       }
       if (!this.payload.chart) {
         this.payload.chart = {
@@ -271,18 +223,18 @@ export class CardItem {
           yAxis: false,
           legend: false,
           range: '24h'
-        } as ItemPayloadChart;
+        };
       }
       if (!this.payload.chartCustom) {
-        this.payload.chartCustom = {} as ItemPayloadChartCustom;
+        this.payload.chartCustom = {};
       }
       if (!this.payload?.map) {
         this.payload.map = {
           markers: []
-        } as ItemPayloadMap;
+        };
       } else {
         if (!this.payload.map?.markers) {
-          this.payload.map.markers = [] as Marker[];
+          this.payload.map.markers = [];
         }
         for (const index in this.payload.map?.markers) {
           const entityId = this.payload.map.markers[index].entityId;
@@ -293,19 +245,19 @@ export class CardItem {
         }
       }
       if (!this.payload.slider) {
-        this.payload.slider = {} as ItemPayloadSlider;
+        this.payload.slider = {};
       }
       if (!this.payload.colorPicker) {
-        this.payload.colorPicker = {} as ItemPayloadColorPicker;
+        this.payload.colorPicker = {};
       }
       if (!this.payload.joystick) {
-        this.payload.joystick = {} as ItemPayloadJoystick;
+        this.payload.joystick = {};
       }
       if (!this.payload.video) {
-        this.payload.video = {} as ItemPayloadVideo;
+        this.payload.video = {};
       }
       if (!this.payload.entityStorage) {
-        this.payload.entityStorage = {} as ItemPayloadEntityStorage;
+        this.payload.entityStorage = {};
       }
       if (!this.payload.grid) {
         this.payload.grid = {
@@ -317,7 +269,7 @@ export class CardItem {
           cellHeight: 25,
           cellWidth: 25,
           attribute: '',
-        } as ItemPayloadGrid;
+        };
       }
     }
   }
@@ -386,7 +338,7 @@ export class CardItem {
             items: [],
             default_text: '<div>default text</div>',
             current_text: ''
-          } as ItemPayloadText
+          }
         },
         transform: 'matrix(1, 0, 0, 1, 0, 0) translate(10px, 10px)'
       }))
@@ -850,7 +802,7 @@ export class Card {
 
     item.weight = 1
     if (this.items && this.items.length > 1) {
-      item.weight = this.items[this.items.length -1].weight + 1
+      item.weight = this.items[this.items.length - 1].weight + 1
     }
 
     this.items.push(item);
@@ -1293,9 +1245,11 @@ export class Core {
     }
     this._activeTabIdx = idx;
   }
+
   get activeTabIdx(): number {
     return this._activeTabIdx;
   }
+
   get getActiveTab(): Tab | undefined {
     if (this._activeTabIdx === undefined || this._activeTabIdx < 0) {
       this._activeTabIdx = 0
@@ -1304,9 +1258,9 @@ export class Core {
   }
 
   selectTabInMenu(idx: number) {
-      if (this._activeTabIdx === idx) return;
-      this._activeTabIdx = idx;
-      this.updateCurrentTab();
+    if (this._activeTabIdx === idx) return;
+    this._activeTabIdx = idx;
+    this.updateCurrentTab();
   }
 
   async createTab() {
@@ -1385,9 +1339,9 @@ export class Core {
       return;
     }
 
-    let background = appStore.isDark? '#232324' : '#F5F7FA'
+    let background = appStore.isDark ? '#232324' : '#F5F7FA'
     if (tab.cards && tab.cards.length) {
-      background  = tab.cards[tab.cards.length -1 ].background
+      background = tab.cards[tab.cards.length - 1].background
     }
 
     const card = await Card.createNew(
@@ -1458,7 +1412,7 @@ export class Core {
     card.dashboardTabId = tab.id;
     card.id = undefined
     if (tab.cards && tab.cards.length) {
-      card.weight = tab.cards[tab.cards.length-1].weight + 1
+      card.weight = tab.cards[tab.cards.length - 1].weight + 1
     }
 
     const {data} = await api.v1.dashboardCardServiceImportDashboardCard(card);
@@ -1572,11 +1526,11 @@ export function requestCurrentState(entityId?: string) {
 }
 
 export function serializedObject(obj: any): string {
-  return JSON.stringify(obj, function(key, value) {
+  return JSON.stringify(obj, function (key, value) {
     if (typeof value === 'function') {
       return value.toString(); // Convert function to string
     }
-    if(value instanceof Map) {
+    if (value instanceof Map) {
       return {
         dataType: 'Map',
         value: Array.from(value.entries()), // or with spread: value: [...value]
@@ -1587,11 +1541,11 @@ export function serializedObject(obj: any): string {
 }
 
 export function parsedObject(str): any {
-  return JSON.parse(str, function(key, value) {
+  return JSON.parse(str, function (key, value) {
     if (typeof value === 'string' && value.indexOf('function') === 0) {
       return new Function('return ' + value)(); // Create a function using Function constructor
     }
-    if(typeof value === 'object' && value !== null) {
+    if (typeof value === 'object' && value !== null) {
       if (value.dataType === 'Map') {
         return new Map(value.value);
       }

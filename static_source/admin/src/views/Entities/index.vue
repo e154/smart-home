@@ -17,7 +17,7 @@ import {EventStateChange} from "@/api/stream_types";
 import {FormSchema} from "@/types/form";
 import {Form} from '@/components/Form'
 import {useCache} from "@/hooks/web/useCache";
-import JsonEditor from "@/components/JsonEditor/JsonEditor.vue";
+import {JsonEditor} from "@/components/JsonEditor";
 
 const {push} = useRouter()
 const {register, methods} = useForm()
@@ -476,7 +476,7 @@ if (wsCache.get(cachePref + 'Tags')) {
       </template>
 
       <template #id="{row}">
-          {{ row.id.split('.')[1] }}
+        {{ row.id.split('.')[1] }}
       </template>
 
       <template #pluginName="{row}">
@@ -487,7 +487,7 @@ if (wsCache.get(cachePref + 'Tags')) {
 
       <template #expand="{row}">
         <div class="tag-list" v-if="row.tags">
-          <ElTag  v-for="tag in row.tags" type="info" :key="tag" round effect="light" size="small">
+          <ElTag v-for="tag in row.tags" type="info" :key="tag" round effect="light" size="small">
             {{ tag }}
           </ElTag>
         </div>
@@ -526,32 +526,30 @@ if (wsCache.get(cachePref + 'Tags')) {
     cursor: pointer;
   }
 
-  tr.el-table__row [class*="el-table__cell"]  {
-  //background-color: green;
-    border-top: var(--el-table-border);
-    border-bottom: none!important;
+  tr.el-table__row [class*="el-table__cell"] {
+  //background-color: green; border-top: var(--el-table-border);
+    border-bottom: none !important;
   }
 
-  .el-table__expanded-cell  {
+  .el-table__expanded-cell {
     &.el-table__cell [class*="tag-list"] {
-    //background-color: red!important;
-      border-bottom: none!important;
+    //background-color: red!important; border-bottom: none !important;
     }
 
     &.el-table__cell:not(:has(.tag-list)) {
-      display: none!important;
+      display: none !important;
     //background-color: blue!important;
     }
   }
 
   .el-table td.el-table__cell,
   .el-table th.el-table__cell.is-leaf {
-    border-bottom: none!important;
+    border-bottom: none !important;
   }
 
   .el-table--enable-row-hover .el-table__body tr.el-table__row:hover,
   .el-table--enable-row-hover .el-table__body tr.el-table__row:hover + tr {
-    & > td.el-table__cell{
+    & > td.el-table__cell {
       background-color: var(--el-table-row-hover-bg-color);
     }
   }

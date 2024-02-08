@@ -1,29 +1,18 @@
 <script setup lang="ts">
 import {computed, nextTick, PropType, reactive, ref, unref, watch} from 'vue'
 import {Form} from '@/components/Form'
-import {
-  ElAside,
-  ElButton,
-  ElCard,
-  ElCol,
-  ElContainer,
-  ElMain,
-  ElMessage,
-  ElPopconfirm,
-  ElRow,
-  ElScrollbar
-} from 'element-plus'
+import {ElAside, ElButton, ElCard, ElContainer, ElMain, ElMessage, ElPopconfirm, ElScrollbar} from 'element-plus'
 import {useI18n} from '@/hooks/web/useI18n'
 import {useForm} from '@/hooks/web/useForm'
 import {useValidator} from '@/hooks/web/useValidator'
 import {FormSchema} from '@/types/form'
 import {ApiArea, ApiDashboard} from "@/api/stub";
 import {copyToClipboard} from "@/utils/clipboard";
-import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
+import {JsonViewer} from "@/components/JsonViewer";
 import {Core} from "@/views/Dashboard/core";
 import {useRouter} from "vue-router";
 import {useBus} from "@/views/Dashboard/bus";
-import { Dialog } from '@/components/Dialog'
+import {Dialog} from '@/components/Dialog'
 
 const {register, elFormRef, methods} = useForm()
 const {required} = useValidator()
@@ -190,62 +179,62 @@ const removeBoard = async () => {
     <ElMain>
       <ElScrollbar>
         <ElCard class="box-card">
-        <template #header>
-          <div class="card-header">
-            <span>{{ $t('dashboard.mainSettings') }}</span>
+          <template #header>
+            <div class="card-header">
+              <span>{{ $t('dashboard.mainSettings') }}</span>
+            </div>
+          </template>
+
+          <Form
+              :schema="schema"
+              :rules="rules"
+              label-position="top"
+              @register="register"
+          />
+
+          <div class="text-right">
+
+            <ElButton type="primary" @click.prevent.stop='exportDashbord'>
+              <Icon icon="uil:file-export" class="mr-5px"/>
+              {{ $t('main.export') }}
+            </ElButton>
+            <ElButton type="primary" @click.prevent.stop="updateBoard">{{ $t('main.update') }}</ElButton>
+            <ElButton @click.prevent.stop="fetchDashboard">{{ $t('main.loadFromServer') }}</ElButton>
+
+            <ElPopconfirm
+                :confirm-button-text="$t('main.ok')"
+                :cancel-button-text="$t('main.no')"
+                width="250"
+                style="margin-left: 10px;"
+                :title="$t('main.are_you_sure_to_do_want_this?')"
+                @confirm="cancel"
+            >
+              <template #reference>
+                <ElButton class="mr-10px" type="default" plain>
+                  {{ t('main.cancel') }}
+                </ElButton>
+              </template>
+            </ElPopconfirm>
+
+            <ElPopconfirm
+                :confirm-button-text="$t('main.ok')"
+                :cancel-button-text="$t('main.no')"
+                width="250"
+                style="margin-left: 10px;"
+                :title="$t('main.are_you_sure_to_do_want_this?')"
+                @confirm="removeBoard"
+            >
+              <template #reference>
+                <ElButton class="mr-10px" type="danger" plain>
+                  <Icon icon="ep:delete" class="mr-5px"/>
+                  {{ t('main.remove') }}
+                </ElButton>
+              </template>
+            </ElPopconfirm>
+
           </div>
-        </template>
 
-        <Form
-            :schema="schema"
-            :rules="rules"
-            label-position="top"
-            @register="register"
-        />
-
-        <div class="text-right">
-
-          <ElButton type="primary" @click.prevent.stop='exportDashbord'>
-            <Icon icon="uil:file-export" class="mr-5px"/>
-            {{ $t('main.export') }}
-          </ElButton>
-          <ElButton type="primary" @click.prevent.stop="updateBoard">{{ $t('main.update') }}</ElButton>
-          <ElButton @click.prevent.stop="fetchDashboard">{{ $t('main.loadFromServer') }}</ElButton>
-
-          <ElPopconfirm
-              :confirm-button-text="$t('main.ok')"
-              :cancel-button-text="$t('main.no')"
-              width="250"
-              style="margin-left: 10px;"
-              :title="$t('main.are_you_sure_to_do_want_this?')"
-              @confirm="cancel"
-          >
-            <template #reference>
-              <ElButton class="mr-10px" type="default" plain>
-                {{ t('main.cancel') }}
-              </ElButton>
-            </template>
-          </ElPopconfirm>
-
-          <ElPopconfirm
-              :confirm-button-text="$t('main.ok')"
-              :cancel-button-text="$t('main.no')"
-              width="250"
-              style="margin-left: 10px;"
-              :title="$t('main.are_you_sure_to_do_want_this?')"
-              @confirm="removeBoard"
-          >
-            <template #reference>
-              <ElButton class="mr-10px" type="danger" plain>
-                <Icon icon="ep:delete" class="mr-5px"/>
-                {{ t('main.remove') }}
-              </ElButton>
-            </template>
-          </ElPopconfirm>
-
-        </div>
-
-      </ElCard>
+        </ElCard>
       </ElScrollbar>
     </ElMain>
     <ElAside width="400px"/>

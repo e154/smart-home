@@ -1,117 +1,100 @@
-import dummy from './dummy/index.vue';
-import dummyEditor from './dummy/editor.vue';
-import button from './button/index.vue';
-import buttonEditor from './button/editor.vue';
-import text from './text/index.vue'
-import textEditor from './text/editor.vue'
-import state from './state/index.vue';
-import stateEditor from './state/editor.vue';
-import image from './image/index.vue';
-import imageEditor from './image/editor.vue';
-import logs from './logs/index.vue';
-import logsEditor from './logs/editor.vue';
-import progress from './progress/index.vue';
-import progressEditor from './progress/editor.vue';
-import chart from './chart/index.vue';
-import chartEditor from './chart/editor.vue';
-import chart_custom from './chart_custom/index.vue';
-import chartCustomEditor from './chart_custom/editor.vue';
-import entityStorage from './entity_storage/index.vue';
-import entityStorageEditor from './entity_storage/editor.vue';
-import map from './map/index.vue';
-import mapEditor from './map/editor.vue';
-import slider from './slider/index.vue';
-import sliderEditor from './slider/editor.vue';
-import colorPicker from './color_picker/index.vue';
-import colorPickerEditor from './color_picker/editor.vue';
-import streamPlayer from './video/index.vue';
-import streamPlayerEditor from './video/editor.vue';
-import joystick from './joystick/index.vue';
-import joystickEditor from './joystick/editor.vue';
-import icon from './icon/index.vue';
-import iconEditor from './icon/editor.vue';
-import grid from './grid/index.vue';
-import gridEditor from './grid/editor.vue';
+import {Dummy, DummyEditor} from './dummy';
+import {Button, ButtonEditor, ItemPayloadButton} from './button';
+import {ItemPayloadText, Text, TextEditor} from './text';
+import {State, StateEditor, ItemPayloadState} from './state';
+import {Image, ImageEditor, ItemPayloadImage} from './image';
+import {Logs, LogsEditor, ItemPayloadLogs} from './logs';
+import {Progress, ProgressEditor, ItemPayloadProgress} from './progress';
+import {Chart, ChartEditor, ItemPayloadChart} from './chart';
+import {ChartCustom, ChartCustomEditor, ItemPayloadChartCustom} from './chart_custom';
+import {EntityStorage, EntityStorageEditor, ItemPayloadEntityStorage} from './entity_storage';
+import {Map, MapEditor, ItemPayloadMap} from './map';
+import {Slider, SliderEditor, ItemPayloadSlider} from './slider';
+import {ColorPicker, ColorPickerEditor, ItemPayloadColorPicker} from './color_picker';
+import {StreamPlayer, StreamPlayerEditor, ItemPayloadVideo} from './video';
+import {Joystick, JoystickEditor, ItemPayloadJoystick} from './joystick';
+import {Icon, IconEditor, ItemPayloadIcon} from './icon';
+import {Grid, GridEditor, ItemPayloadGrid} from './grid';
 
 export const CardItemName = (name: string): any => {
   switch (name) {
     case 'button':
-      return button;
+      return Button;
     case 'text':
-      return text;
+      return Text;
     case 'state':
-      return state;
+      return State;
     case 'image':
-      return image;
+      return Image;
     case 'logs':
-      return logs;
+      return Logs;
     case 'progress':
-      return progress;
+      return Progress;
     case 'chart':
-      return chart;
+      return Chart;
     case 'chart_custom':
     case 'chartCustom':
-      return chart_custom;
+      return ChartCustom;
     case 'entityStorage':
-      return entityStorage;
+      return EntityStorage;
     case 'map':
-      return map;
+      return Map;
     case 'slider':
-      return slider;
+      return Slider;
     case 'colorPicker':
-      return colorPicker;
+      return ColorPicker;
     case 'streamPlayer':
-      return streamPlayer;
+      return StreamPlayer;
     case 'joystick':
-      return joystick;
+      return Joystick;
     case 'icon':
-      return icon;
+      return Icon;
     case 'grid':
-      return grid;
+      return Grid;
     default:
       // console.error(`unknown card name "${name}"`);
-      return dummy;
+      return Dummy;
   }
 };
 
 export const CardEditorName = (name: string): any => {
   switch (name) {
     case 'button':
-      return buttonEditor;
+      return ButtonEditor;
     case 'text':
-      return textEditor;
+      return TextEditor;
     case 'state':
-      return stateEditor;
+      return StateEditor;
     case 'image':
-      return imageEditor;
+      return ImageEditor;
     case 'logs':
-      return logsEditor;
+      return LogsEditor;
     case 'progress':
-      return progressEditor;
+      return ProgressEditor;
     case 'chart':
-      return chartEditor;
+      return ChartEditor;
     case 'chart_custom':
     case 'chartCustom':
-      return chartCustomEditor;
+      return ChartCustomEditor;
     case 'entityStorage':
-      return entityStorageEditor;
+      return EntityStorageEditor;
     case 'map':
-      return mapEditor;
+      return MapEditor;
     case 'slider':
-      return sliderEditor;
+      return SliderEditor;
     case 'colorPicker':
-      return colorPickerEditor;
+      return ColorPickerEditor;
     case 'streamPlayer':
-      return streamPlayerEditor;
+      return StreamPlayerEditor;
     case 'joystick':
-      return joystickEditor;
+      return JoystickEditor;
     case 'icon':
-      return iconEditor;
+      return IconEditor;
     case 'grid':
-      return gridEditor;
+      return GridEditor;
     default:
       // console.error(`unknown card name "${name}"`);
-      return dummyEditor;
+      return DummyEditor;
   }
 };
 
@@ -138,3 +121,22 @@ export const CardItemList: ItemsType[] = [
   {label: 'ICON', value: 'icon'},
   {label: 'GRID', value: 'grid'}
 ];
+
+export interface ItemPayload {
+  text?: ItemPayloadText;
+  image?: ItemPayloadImage;
+  icon?: ItemPayloadIcon;
+  button?: ItemPayloadButton;
+  state?: ItemPayloadState;
+  logs?: ItemPayloadLogs;
+  progress?: ItemPayloadProgress;
+  chart?: ItemPayloadChart;
+  chartCustom?: ItemPayloadChartCustom;
+  map?: ItemPayloadMap;
+  slider?: ItemPayloadSlider;
+  colorPicker?: ItemPayloadColorPicker;
+  joystick?: ItemPayloadJoystick;
+  video?: ItemPayloadVideo;
+  entityStorage?: ItemPayloadEntityStorage;
+  grid?: ItemPayloadGrid;
+}

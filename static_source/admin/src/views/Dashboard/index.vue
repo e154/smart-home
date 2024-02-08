@@ -12,7 +12,7 @@ import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
 import {Dialog} from '@/components/Dialog'
 import {Core} from "@/views/Dashboard/core";
 import {useCache} from "@/hooks/web/useCache";
-import JsonEditor from "@/components/JsonEditor/JsonEditor.vue";
+import {JsonEditor} from "@/components/JsonEditor";
 import {prepareUrl} from "@/utils/serverId";
 import {Infotip} from "@/components/Infotip";
 
@@ -299,7 +299,7 @@ const importDashboard = async () => {
       <template #link="{ row }">
         <div class="w-[100%] text-center landing-link">
           <ElButton link @click.prevent.stop="openLanding(row)">
-            {{ $t('main.open') }}&nbsp;<Icon icon="gg:external" />
+            {{ $t('main.open') }}&nbsp;<Icon icon="gg:external"/>
           </ElButton>
         </div>
       </template>
@@ -332,15 +332,19 @@ const importDashboard = async () => {
   .el-button {
     font-size: calc(100% - 1px);
   }
+
   .el-icon {
     font-size: calc(100% - 6px) !important;
   }
 }
+
 .landing-link {
   display: none;
 }
+
 .el-table__row {
   cursor: pointer;
+
   &:hover {
     .landing-link {
       display: inherit;

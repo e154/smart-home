@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, reactive, ref, unref} from 'vue'
 import {useI18n} from '@/hooks/web/useI18n'
-import {ElButton, ElMessage, ElPopconfirm, ElTabs, ElTabPane} from 'element-plus'
+import {ElButton, ElMessage, ElPopconfirm, ElTabPane, ElTabs} from 'element-plus'
 import {useRoute, useRouter} from 'vue-router'
 import api from "@/api/api";
 import Form from './components/Form.vue'
@@ -13,14 +13,15 @@ import {
   ApiArea,
   ApiEntityAction,
   ApiEntityState,
-  ApiPlugin, ApiScript,
+  ApiPlugin,
+  ApiScript,
   ApiUpdateEntityRequestAction,
   ApiUpdateEntityRequestState
 } from "@/api/stub";
 import States from "@/views/Entities/components/States.vue";
 import AttributesEditor from "@/views/Entities/components/AttributesEditor.vue";
-import { Dialog } from '@/components/Dialog'
-import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
+import {Dialog} from '@/components/Dialog'
+import {JsonViewer} from "@/components/JsonViewer";
 import {copyToClipboard} from "@/utils/clipboard";
 import {EventStateChange} from "@/api/stream_types";
 import {UUID} from "uuid-generator-ts";
@@ -45,6 +46,7 @@ interface Internal {
   attributes: Attribute[];
   settings: Attribute[];
 }
+
 const internal = reactive<Internal>(
     {
       attributes: [],
@@ -207,7 +209,7 @@ const prepareForSave = async () => {
       metrics: data.metrics,
       tags: data.tags,
     }
-   return body
+    return body
   }
   return null
 }
@@ -251,7 +253,7 @@ const prepareForExport = async () => {
     await Promise.all(_scriptsPromises)
 
     for (const a of data?.actions) {
-      let script:ApiScript = null;
+      let script: ApiScript = null;
       if (a.script) {
         script = {
           id: a.script.id,
@@ -326,7 +328,7 @@ const prepareForExport = async () => {
       metrics: data.metrics,
       tags: data.tags,
     }
-   return body
+    return body
   }
   return null
 }
@@ -345,10 +347,10 @@ const save = async () => {
   if (res) {
     fetch()
     ElMessage({
-     title: t('Success'),
-     message: t('message.uploadSuccessfully'),
-     type: 'success',
-     duration: 2000
+      title: t('Success'),
+      message: t('message.uploadSuccessfully'),
+      type: 'success',
+      duration: 2000
     })
   }
 }
@@ -559,7 +561,8 @@ fetch()
       <!-- current state -->
       <el-tab-pane :label="$t('entities.currentState')" name="currentState">
         <ElButton type="default" @click.prevent.stop="requestCurrentState()" class="mb-20px">
-          <Icon icon="ep:refresh" class="mr-5px"/> {{ $t('main.currentState') }}
+          <Icon icon="ep:refresh" class="mr-5px"/>
+          {{ $t('main.currentState') }}
         </ElButton>
 
         <JsonViewer v-model="lastEvent"/>
@@ -615,10 +618,10 @@ fetch()
   <!-- export dialog -->
   <Dialog v-model="dialogVisible" :title="t('entities.dialogExportTitle')" :maxHeight="400" width="80%">
     <JsonViewer v-model="dialogSource"/>
-<!--    <template #footer>-->
-<!--      <ElButton @click="copy()">{{ t('setting.copy') }}</ElButton>-->
-<!--      <ElButton @click="dialogVisible = false">{{ t('main.closeDialog') }}</ElButton>-->
-<!--    </template>-->
+    <!--    <template #footer>-->
+    <!--      <ElButton @click="copy()">{{ t('setting.copy') }}</ElButton>-->
+    <!--      <ElButton @click="dialogVisible = false">{{ t('main.closeDialog') }}</ElButton>-->
+    <!--    </template>-->
   </Dialog>
   <!-- /export dialog -->
 
