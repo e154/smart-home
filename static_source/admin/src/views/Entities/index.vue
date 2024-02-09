@@ -529,6 +529,7 @@ if (wsCache.get(cachePref + 'Tags')) {
   tr.el-table__row [class*="el-table__cell"] {
   //background-color: green; border-top: var(--el-table-border);
     border-bottom: none !important;
+    border-top: var(--el-table-border);
   }
 
   .el-table__expanded-cell {
@@ -538,7 +539,7 @@ if (wsCache.get(cachePref + 'Tags')) {
 
     &.el-table__cell:not(:has(.tag-list)) {
       display: none !important;
-    //background-color: blue!important;
+      //background-color: blue!important;
     }
   }
 
