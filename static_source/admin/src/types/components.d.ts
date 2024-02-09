@@ -21,7 +21,6 @@ export type ComponentName =
   | 'TimeSelect'
   | 'SelectV2'
   | 'InputPassword'
-  | 'Editor'
   | 'Image'
   | 'Area'
   | 'Role'

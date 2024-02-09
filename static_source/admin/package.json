@@ -31,8 +31,6 @@
     "@moveable/helper": "^0.1.3",
     "@tinymce/tinymce-vue": "^5.1.0",
     "@vueuse/core": "^9.13.0",
-    "@wangeditor/editor": "^5.1.23",
-    "@wangeditor/editor-for-vue": "^5.1.12",
     "@zxcvbn-ts/core": "^2.2.1",
     "animate.css": "^4.1.1",
     "axios": "^1.3.5",

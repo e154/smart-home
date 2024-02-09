@@ -18,7 +18,6 @@ import {
     ElTransfer
 } from 'element-plus'
 import {InputPassword} from '@/components/InputPassword'
-import {Editor} from '@/components/Editor'
 import {ComponentName} from '@/types/components'
 import {EntitySearch} from '@/components/EntitySearch'
 import {EntitiesSearch} from '@/components/EntitiesSearch'
@@ -59,7 +58,6 @@ const componentMap: Recordable<Component, ComponentName> = {
     SelectV2: ElSelectV2,
     RadioButton: ElRadioGroup,
     InputPassword: InputPassword,
-    Editor: Editor,
     Image: ImageSearch,
     Area: AreaSearch,
     Role: RoleSearch,
