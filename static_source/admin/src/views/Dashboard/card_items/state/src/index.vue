@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {onMounted, PropType, ref, watch} from "vue";
-import {ButtonAction, CardItem, requestCurrentState} from "@/views/Dashboard/core/core";
+import {CardItem, requestCurrentState} from "@/views/Dashboard/core/core";
 import {Cache, Compare, Resolve} from "@/views/Dashboard/core/render";
 import {ApiImage} from "@/api/stub";
 import api from "@/api/api";
@@ -8,6 +8,7 @@ import {ElMessage} from "element-plus";
 import {Attribute, GetAttrValue} from "@/api/stream_types";
 import {debounce} from "lodash-es";
 import {useI18n} from "@/hooks/web/useI18n";
+import {ButtonAction} from "@/views/Dashboard/core/types";
 
 const {t} = useI18n()
 
@@ -129,6 +130,13 @@ const mouseOver = () => {
   clearTimeout(timer);
 }
 
+const callBaseAction = async () => {
+  if (props.item.buttonActions.length === 0 || props.item.buttonActions.length > 1) {
+    return
+  }
+  callAction(props.item.buttonActions[0])
+}
+
 const callAction = async (action: ButtonAction) => {
   if (!action) {
     return;
@@ -137,6 +145,8 @@ const callAction = async (action: ButtonAction) => {
     id: action.entityId,
     name: action.action || '',
     attributes: {},
+    tags: action.tags || [],
+    areaId: action.areaId,
   });
   ElMessage({
     title: t('Success'),
@@ -171,12 +181,12 @@ requestCurrentState(props.item?.entityId);
           style="width: 100%"
           :key="reloadKey"
           :src="item.getUrl(currentImage)"
-          @click.prevent.stop="callAction(item.buttonActions[0])"/>
+          @click.prevent.stop="callBaseAction()"/>
 
       <Icon
           v-else-if="currentIcon"
           style="width: 100%; height: 100%; cursor: pointer"
-          @click="callAction(item.buttonActions[0])"
+          @click="callBaseAction()"
           class="device"
           :key="reloadKey"
           :icon="currentIcon"

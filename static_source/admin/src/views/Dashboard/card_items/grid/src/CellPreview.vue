@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {computed, PropType} from 'vue'
 import {GridProp, ItemPayloadGrid} from "./types";
-import CellView from "./cellView.vue";
+import CellView from "./CellView.vue";
 
 const props = defineProps({
   tileItem: {

@@ -1,4 +1,4 @@
-import {ApiDashboardTab, ApiEntity} from "@/api/stub";
+import {ApiDashboardTab, ApiEntity, ApiImage} from "@/api/stub";
 import {comparisonType} from "@/views/Dashboard/core/core";
 
 
@@ -27,4 +27,16 @@ export interface CompareProp {
     value: string;
     entity?: { id?: string };
     entityId?: string;
+}
+
+export interface ButtonAction {
+    entityId?: string;
+    tags?: string[];
+    areaId?: number;
+    entity?: { id?: string };
+    action: string;
+    image?: ApiImage | null;
+    icon?: string;
+    iconColor?: string;
+    iconSize?: number;
 }

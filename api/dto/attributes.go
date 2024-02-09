@@ -31,6 +31,9 @@ import (
 
 // AttributeFromApi ...
 func AttributeFromApi(apiAttr map[string]stub.ApiAttribute) (attributes m.Attributes) {
+	if apiAttr == nil {
+		return
+	}
 	return attributeFromApi(apiAttr)
 }
 

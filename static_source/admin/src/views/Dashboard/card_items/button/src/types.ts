@@ -5,5 +5,9 @@ export interface ItemPayloadButton {
   size?: string
   type?: string
   round?: boolean
+  asText?: boolean
   action?: string
+  entityId?: string,
+  tags?: string[],
+  areaId?: number,
 }

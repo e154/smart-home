@@ -105,7 +105,7 @@ const fetch = async () => {
       actorAttrs: Object.assign({}, res.data.options?.actorAttrs),
       actorSetts: Object.assign({}, res.data.options?.actorSetts),
     } as Plugin
-    console.log(currentPlugin.value)
+    // console.log(currentPlugin.value)
     const {enabled} = res.data;
     lastState.value = enabled
   } else {

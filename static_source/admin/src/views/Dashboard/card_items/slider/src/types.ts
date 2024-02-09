@@ -13,6 +13,9 @@ export interface ItemPayloadSlider {
     step?: number;
     orientation?: OrientationType;
     attribute?: string;
+    entityId?: string;
     action?: string;
+    tags?: string[];
+    areaId?: number;
     tooltip?: boolean;
 }

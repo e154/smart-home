@@ -4,6 +4,7 @@ import {CardItem, Core} from "@/views/Dashboard/core/core";
 import {ElCol, ElDivider, ElFormItem, ElInput, ElOption, ElRow, ElSelect, ElSwitch} from 'element-plus'
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {useI18n} from "@/hooks/web/useI18n";
+import {EntitiesAction, EntitiesActionOptions} from "@/components/EntitiesAction";
 
 const {t} = useI18n()
 
@@ -28,6 +29,12 @@ const currentItem = computed(() => props.item as CardItem)
 // component methods
 // ---------------------------------
 
+const changedForActionButton = async (options: EntitiesActionOptions) => {
+    currentItem.value.payload.button.entityId = options.entityId
+    currentItem.value.payload.button.action = options.action
+    currentItem.value.payload.button.tags = options.tags
+    currentItem.value.payload.button.areaId = options.areaId
+}
 
 </script>
 
@@ -48,23 +55,6 @@ const currentItem = computed(() => props.item as CardItem)
           <ElInput v-model="currentItem.payload.button.text"/>
         </ElFormItem>
 
-        <ElFormItem :label="$t('dashboard.editor.action')" prop="action" :aria-disabled="!currentItem.entity">
-
-          <ElSelect
-              v-model="currentItem.payload.button.action"
-              clearable
-              :placeholder="$t('dashboard.editor.selectAction')"
-              style="width: 100%"
-          >
-            <ElOption
-                v-for="p in currentItem.entityActions"
-                :key="p.value"
-                :label="p.label + ' (' +p.value +')'"
-                :value="p.value"/>
-          </ElSelect>
-
-        </ElFormItem>
-
       </ElCol>
       <ElCol :span="8" :xs="8">
 
@@ -80,7 +70,6 @@ const currentItem = computed(() => props.item as CardItem)
             <ElOption label="Info" value="info"/>
             <ElOption label="Warning" value="warning"/>
             <ElOption label="Danger" value="danger"/>
-            <ElOption label="Text" value="text"/>
           </ElSelect>
         </ElFormItem>
 
@@ -102,8 +91,18 @@ const currentItem = computed(() => props.item as CardItem)
         <ElFormItem :label="$t('dashboard.editor.round')" prop="round">
           <ElSwitch v-model="currentItem.payload.button.round"/>
         </ElFormItem>
+
+        <ElFormItem :label="$t('dashboard.editor.text')" prop="text">
+          <ElSwitch v-model="currentItem.payload.button.asText"/>
+        </ElFormItem>
+
       </ElCol>
+
     </ElRow>
+
+    <ElDivider content-position="left">{{ $t('dashboard.editor.actionOptions') }}</ElDivider>
+
+    <EntitiesAction :options="currentItem.payload.button" :entity="currentItem.entity" @change="changedForActionButton($event)"/>
 
   </div>
 </template>

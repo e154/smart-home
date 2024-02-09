@@ -94,7 +94,7 @@ const removeProp = (index: number) => {
 }
 
 const onSelectImageForState = (index: number, image: ApiImage) => {
-  console.log('select image', index, image);
+  // console.log('select image', index, image);
 
   if (!props.item.payload.state) {
     initDefaultValue();
@@ -105,7 +105,7 @@ const onSelectImageForState = (index: number, image: ApiImage) => {
 }
 
 const onSelectIconForState = (index: number, icon: string) => {
-  console.log('select icon', index, icon);
+  // console.log('select icon', index, icon);
 
   if (!props.item.payload.state) {
     initDefaultValue();
@@ -130,7 +130,7 @@ const onSelectDefaultImage = (image: ApiImage) => {
 }
 
 const onSelectDefaultIcon = (icon?: string) => {
-  console.log('select icon', icon);
+  // console.log('select icon', icon);
 
   if (!props.item.payload.state) {
     initDefaultValue();
@@ -245,6 +245,8 @@ const onChangePropKey = (val, index) => {
               </ElFormItem>
             </ElCol>
           </ElRow>
+
+          <ElDivider content-position="left">{{ $t('dashboard.editor.iconOptions') }}</ElDivider>
 
           <ElRow :gutter="24">
             <ElCol :span="8" :xs="8">

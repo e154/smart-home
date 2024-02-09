@@ -403,9 +403,11 @@ type ApiEntityAction struct {
 
 // ApiEntityCallActionRequest defines model for apiEntityCallActionRequest.
 type ApiEntityCallActionRequest struct {
+	AreaId     *int64                  `json:"areaId,omitempty"`
 	Attributes map[string]ApiAttribute `json:"attributes"`
-	Id         string                  `json:"id"`
+	Id         *string                 `json:"id,omitempty"`
 	Name       string                  `json:"name"`
+	Tags       []string                `json:"tags"`
 }
 
 // ApiEntityParent defines model for apiEntityParent.

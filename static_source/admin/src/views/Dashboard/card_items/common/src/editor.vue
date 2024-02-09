@@ -13,10 +13,8 @@ import {
   ElFormItem,
   ElInput,
   ElInputNumber,
-  ElOption,
   ElPopconfirm,
   ElRow,
-  ElSelect,
   ElSwitch
 } from 'element-plus'
 import {ApiEntity, ApiImage} from "@/api/stub";
@@ -24,6 +22,7 @@ import {EntitySearch} from "@/components/EntitySearch";
 import ShowOn from "./show-on.vue";
 import {useI18n} from "@/hooks/web/useI18n";
 import {ImageSearch} from "@/components/ImageSearch";
+import {EntitiesAction, EntitiesActionOptions} from "@/components/EntitiesAction";
 
 const {t} = useI18n()
 
@@ -70,30 +69,14 @@ const changedEntity = (entity: ApiEntity, event?: any) => {
   fetchEntity(entity.id);
 }
 
-const changedForActionButton = async (entity: ApiEntity, index: number) => {
-  if (entity?.id) {
-    currentItem.value.buttonActions[index].entity = await currentCore.value.fetchEntity(entity.id);
-    currentItem.value.buttonActions[index].entityId = entity.id;
-  } else {
-    currentItem.value.buttonActions[index].entity = undefined;
-    currentItem.value.buttonActions[index].entityId = '';
-    currentItem.value.buttonActions[index].action = '';
+const changedForActionButton = async (options: EntitiesActionOptions, index: number) => {
+  currentItem.value.buttonActions[index] = {
+    entityId: options.entityId,
+    action: options.action,
+    tags: options.tags,
+    areaId: options.areaId,
+    image: currentItem.value.buttonActions[index].image || undefined,
   }
-}
-
-const updateButtonActions = () => {
-  for (const index in currentItem.value.buttonActions) {
-    changedForActionButton(currentItem.value.buttonActions[index].entity, index)
-  }
-}
-
-updateButtonActions()
-
-const getActionList = (entity?: ApiEntity) => {
-  if (!entity) {
-    return [];
-  }
-  return entity.actions;
 }
 
 const onSelectImageForAction = (index: number, image: ApiImage) => {
@@ -111,6 +94,8 @@ const addAction = () => {
     entityId: currentItem.value.entityId,
     action: '',
     image: null,
+    tags: [],
+    areaId: undefined,
   });
 }
 
@@ -163,7 +148,7 @@ const removeAction = (index: number) => {
   <!-- button options -->
   <div
       v-if="!['button', 'chart', 'chart_custom', 'chartCustom', 'map', 'slider',
-      'streamPlayer', 'tiles', 'grid', 'progress', 'colorPicker'].includes(item.type)">
+      'streamPlayer', 'tiles', 'grid', 'progress', 'colorPicker', 'joystick'].includes(item.type)">
     <ElDivider content-position="left">{{ $t('dashboard.editor.buttonOptions') }}</ElDivider>
     <ElRow :gutter="24">
       <ElCol :span="12" :xs="12">
@@ -190,7 +175,7 @@ const removeAction = (index: number) => {
           >
 
             <template #title>
-              {{ prop.entityId }} - {{ prop.action }}
+              {{ prop.action }}
             </template>
 
             <ElCard shadow="never" class="item-card-editor">
@@ -201,34 +186,17 @@ const removeAction = (index: number) => {
                   style="width: 100%"
                   ref="cardItemForm">
 
-                <ElRow :gutter="24">
-                  <ElCol :span="12" :xs="12">
-                    <ElFormItem :label="$t('dashboard.editor.entity')" prop="entity">
-                      <EntitySearch v-model="prop.entity" @change="changedForActionButton($event, index)"/>
-                    </ElFormItem>
-                  </ElCol>
+                <ElDivider content-position="left">{{ $t('dashboard.editor.actionOptions') }}</ElDivider>
 
-                  <ElCol :span="12" :xs="12">
-                    <ElFormItem :label="$t('dashboard.editor.action')" prop="action" :aria-disabled="!item.entity">
-                      <ElSelect
-                          v-model="prop.action"
-                          clearable
-                          :placeholder="$t('dashboard.editor.selectAction')"
-                          style="width: 100%"
-                      >
-                        <ElOption
-                            v-for="item in getActionList(prop.entity)"
-                            :key="item.name"
-                            :label="item.name"
-                            :value="item.name"/>
-                      </ElSelect>
-                    </ElFormItem>
-                  </ElCol>
-                </ElRow>
+                <EntitiesAction :options="prop" :entity="currentItem.entity" @change="changedForActionButton($event, index)"/>
+
+                <ElDivider content-position="left">{{ $t('dashboard.editor.appearanceOptions') }}</ElDivider>
 
                 <ElFormItem :label="$t('dashboard.editor.image')" prop="image">
                   <ImageSearch v-model="prop.image" @change="onSelectImageForAction(index, ...arguments)"/>
                 </ElFormItem>
+
+                <ElDivider content-position="left">{{ $t('main.or') }}</ElDivider>
 
                 <ElRow :gutter="24">
                   <ElCol :span="8" :xs="8">

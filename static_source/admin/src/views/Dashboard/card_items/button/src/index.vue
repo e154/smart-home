@@ -32,7 +32,10 @@ onMounted(() => {
 const callAction = async () => {
   await api.v1.interactServiceEntityCallAction({
     id: props.item?.entityId,
-    name: props.item?.payload.button?.action || ''
+    name: props.item?.payload.button?.action || '',
+    tags: props.item?.payload.button?.tags || [],
+    areaId: props.item?.payload.button?.areaId,
+    attributes: {},
   })
   ElMessage({
     title: t('Success'),
@@ -56,12 +59,13 @@ requestCurrentState(props.item?.entityId);
         v-if="item.enabled" v-show="!item.hidden"
         :size="item.payload.button.size"
         :type="item.payload.button.type"
+        :text="item.payload.button.asText"
         :round="item.payload.button.round"
         @click.prevent.stop="onClick"
         :disabled="props.disabled"
     >
       <Icon v-if="item.payload.button.icon" :icon="item.payload.button.icon"/>
-      {{ item.payload.button.text }}
+      <span v-html="item.payload.button.text"></span>
     </ElButton>
   </div>
 </template>

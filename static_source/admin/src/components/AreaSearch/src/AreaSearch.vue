@@ -66,6 +66,7 @@ const handleSelect = (val: ApiArea) => {
       :fetch-suggestions="querySearchAsync"
       placeholder="Please input"
       value-key="name"
+      clearable
       @select="handleSelect"
       @change="handleChange"
   />

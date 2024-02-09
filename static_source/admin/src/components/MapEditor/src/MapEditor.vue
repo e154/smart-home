@@ -29,7 +29,6 @@ const drawEnabled = ref(false);
 watch(
     () => props.area,
     (val?: ApiArea) => {
-      console.log(val)
       if (!val) {
         drawEnabled.value = true;
         return

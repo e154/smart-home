@@ -12,10 +12,8 @@ import {
   ElFormItem,
   ElInput,
   ElInputNumber,
-  ElOption,
   ElPopconfirm,
   ElRow,
-  ElSelect,
   ElSwitch,
   ElTag
 } from 'element-plus'
@@ -23,12 +21,12 @@ import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {useI18n} from "@/hooks/web/useI18n";
 import {JsonViewer} from "@/components/JsonViewer";
 import {ImageSearch} from "@/components/ImageSearch";
-import {ApiEntity, ApiImage} from "@/api/stub";
+import {ApiImage} from "@/api/stub";
 import {GridProp, ItemPayloadGrid} from "./types";
 import {prepareUrl} from "@/utils/serverId";
-import {EntitySearch} from "@/components/EntitySearch";
-import CellPreview from "./cellPreview.vue";
+import CellPreview from "./CellPreview.vue";
 import {KeysSearch} from "@/views/Dashboard/components";
+import {EntitiesAction, EntitiesActionOptions} from "@/components/EntitiesAction";
 
 const {t} = useI18n()
 
@@ -132,22 +130,11 @@ const getUrl = (image: ApiImage): string => {
   return prepareUrl(import.meta.env.VITE_API_BASEPATH as string + image?.url);
 }
 
-const getActionList = (entity?: ApiEntity) => {
-  if (!entity) {
-    return [];
-  }
-  return entity.actions;
-}
-
-const changedForActionButton = async (entity: ApiEntity) => {
-  if (entity?.id) {
-    currentItem.value.payload.grid.entity = await currentCore.value.fetchEntity(entity.id);
-    currentItem.value.payload.grid.entityId = entity.id;
-  } else {
-    currentItem.value.payload.grid.entity = undefined;
-    currentItem.value.payload.grid.entityId = '';
-    currentItem.value.payload.grid.actionName = '';
-  }
+const changedForActionButton = async (options: EntitiesActionOptions) => {
+  currentItem.value.payload.grid.entityId = options.entityId
+  currentItem.value.payload.grid.actionName = options.action
+  currentItem.value.payload.grid.tags = options.tags
+  currentItem.value.payload.grid.areaId = options.areaId
 }
 
 const onChangeValue = (val) => {
@@ -386,40 +373,23 @@ const onChangeValue = (val) => {
     }}
   </ElDivider>
 
-  <ElRow v-if="currentItem.payload.grid.position">
+  <ElRow v-if="currentItem.payload.grid.position" class="mb-20px">
     <ElCol>
       <CellPreview :base-params="currentItem.payload.grid"/>
     </ElCol>
-
   </ElRow>
-
-  <ElDivider content-position="left">{{ $t('dashboard.editor.action') }}</ElDivider>
 
   <ElRow :gutter="24">
-    <ElCol :span="12" :xs="12">
-      <ElFormItem :label="$t('dashboard.editor.entity')" prop="entity">
-        <EntitySearch v-model="currentItem.payload.grid.entity" @change="changedForActionButton($event)"/>
-      </ElFormItem>
-    </ElCol>
-
-    <ElCol :span="12" :xs="12">
-      <ElFormItem :label="$t('dashboard.editor.action')" prop="action"
-                  :aria-disabled="!currentItem.payload.grid.entity">
-        <ElSelect
-            v-model="currentItem.payload.grid.actionName"
-            clearable
-            :placeholder="$t('dashboard.editor.selectAction')"
-            style="width: 100%"
-        >
-          <ElOption
-              v-for="item in getActionList(currentItem.payload.grid.entity)"
-              :key="item.name"
-              :label="item.name"
-              :value="item.name"/>
-        </ElSelect>
+    <ElCol :span="8" :xs="8">
+      <ElFormItem :label="$t('dashboard.editor.grid.tileClick')" prop="tileClick">
+        <ElSwitch v-model="currentItem.payload.grid.tileClick"/>
       </ElFormItem>
     </ElCol>
   </ElRow>
+
+  <ElDivider v-if="currentItem.payload.grid?.tileClick" content-position="left">{{ $t('dashboard.editor.actionOptions') }}</ElDivider>
+
+  <EntitiesAction v-if="currentItem.payload.grid?.tileClick" :options="currentItem.payload.grid" :entity="currentItem.entity" @change="changedForActionButton($event)"/>
 
   <ElRow style="padding-bottom: 20px" v-if="currentItem.entity">
     <ElCol>

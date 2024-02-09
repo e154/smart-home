@@ -29,10 +29,21 @@ const schema = reactive<FormSchema[]>([
     label: t('scripts.name'),
     component: 'Input',
     colProps: {
-      span: 24
+      span: 12
     },
     componentProps: {
       placeholder: t('scripts.name')
+    }
+  },
+  {
+    field: 'description',
+    label: t('scripts.description'),
+    component: 'Input',
+    colProps: {
+      span: 12
+    },
+    componentProps: {
+      placeholder: t('scripts.description')
     }
   },
   {
@@ -55,19 +66,12 @@ const schema = reactive<FormSchema[]>([
           value: 'ts'
         }
       ],
-    }
-  },
-  {
-    field: 'description',
-    label: t('scripts.description'),
-    component: 'Input',
-    colProps: {
-      span: 24
     },
-    componentProps: {
-      placeholder: t('scripts.description')
-    }
+    colProps: {
+      span: 12,
+    },
   },
+
 ])
 
 watch(

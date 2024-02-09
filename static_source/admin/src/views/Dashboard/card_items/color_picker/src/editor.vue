@@ -17,6 +17,7 @@ import {JsonViewer} from "@/components/JsonViewer";
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {useI18n} from "@/hooks/web/useI18n";
 import {KeysSearch} from "@/views/Dashboard/components";
+import {EntitiesAction, EntitiesActionOptions} from "@/components/EntitiesAction";
 
 const {t} = useI18n()
 
@@ -51,6 +52,14 @@ const onChangeValue = (val) => {
   currentItem.value.payload.colorPicker.attribute = val;
 }
 
+const changedForActionButton = async (options: EntitiesActionOptions) => {
+  currentItem.value.payload.colorPicker.entityId = options.entityId
+  currentItem.value.payload.colorPicker.action = options.action
+  currentItem.value.payload.colorPicker.tags = options.tags
+  currentItem.value.payload.colorPicker.areaId = options.areaId
+}
+
+
 </script>
 
 <template>
@@ -74,24 +83,11 @@ const onChangeValue = (val) => {
                       @change="onChangeValue"/>
         </ElFormItem>
       </ElCol>
-      <ElCol :span="12" :xs="12">
-        <ElFormItem :label="$t('dashboard.editor.action')" prop="action" :aria-disabled="!currentItem.entity">
-
-          <ElSelect
-              v-model="currentItem.payload.colorPicker.action"
-              clearable
-              :placeholder="$t('dashboard.editor.selectAction')"
-              style="width: 100%"
-          >
-            <ElOption
-                v-for="p in currentItem.entityActions"
-                :key="p.value"
-                :label="p.label + ' (' +p.value +')'"
-                :value="p.value"/>
-          </ElSelect>
-        </ElFormItem>
-      </ElCol>
     </ElRow>
+
+    <ElDivider content-position="left">{{ $t('dashboard.editor.actionOptions') }}</ElDivider>
+
+    <EntitiesAction :options="currentItem.payload.colorPicker" :entity="currentItem.entity" @change="changedForActionButton($event)"/>
 
     <ElRow style="padding-bottom: 20px" v-if="currentItem.entity">
       <ElCol>

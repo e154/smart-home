@@ -33,7 +33,8 @@ export default {
         Error: 'Error',
         filter: 'Filter',
         open: 'Open',
-        tags: 'Tags'
+        tags: 'Tags',
+        or: 'Or'
     },
     message: {
         unknownError: 'unknown error',
@@ -97,6 +98,13 @@ export default {
         pageError: 'Sorry, the page you visited does not exist.',
         networkError: 'Sorry, the server reported an error.',
         returnToHome: 'Return to home'
+    },
+    entityAction: {
+        action: 'Action',
+        selectAction: 'Select Action',
+        tags: 'Tags',
+        area: 'Area',
+        entity: 'Entity',
     },
     setting: {
         projectSetting: 'Project setting',
@@ -578,6 +586,8 @@ export default {
             GRID: 'Grid',
             showText: 'show text',
             background: 'Background',
+            actionOptions: 'Action Options',
+            appearanceOptions: 'Appearance Options',
             slider: {
                 options: 'Slider Options',
                 color: 'Color',
@@ -661,7 +671,8 @@ export default {
                 fontSize: 'Font Size',
                 gap: 'Gap',
                 gapSize: 'Gap Size',
-                tooltip: 'Tooltip'
+                tooltip: 'Tooltip',
+                tileClick: 'Tile Click'
             },
             tilesOptions: 'Tales Options',
             gridOptions: 'Grid Options',

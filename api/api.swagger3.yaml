@@ -5102,7 +5102,7 @@ components:
           type: string
     apiEntityCallActionRequest:
       type: object
-      required: [ id, name, attributes ]
+      required: [ name, attributes, tags]
       properties:
         id:
           type: string
@@ -5112,6 +5112,13 @@ components:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/apiAttribute'
+        tags:
+          type: array
+          items:
+            type: string
+        areaId:
+          type: integer
+          format: int64
     apiEntityParent:
       type: object
       required: [ id ]

@@ -424,9 +424,12 @@ export interface ApiEntityAction {
 }
 
 export interface ApiEntityCallActionRequest {
-  id: string;
+  id?: string;
   name: string;
   attributes: Record<string, ApiAttribute>;
+  tags: string[];
+  /** @format int64 */
+  areaId?: number;
 }
 
 export interface ApiEntityParent {

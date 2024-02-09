@@ -44,19 +44,22 @@ useEventBus({
 
     currentCard.value.keysCapture.forEach((act, index) => {
       if (act.keys?.has(val.keyCode)) {
-        if (!act.entityId || !act.action) {
+        if (!act.action) {
           return
         }
-        callAction(act.entityId, act.action, val.key, val.keyCode)
+        callAction(act, val.key, val.keyCode)
       }
     })
   }
 })
 
-const callAction = async (id: string, name: string, key: string, keyCode: number) => {
+const callAction = async (params, key, keyCode,) => {
+  const {entityId, action, areaId, tags} = params;
   api.v1.interactServiceEntityCallAction({
-    id: id,
-    name: name,
+    id: entityId,
+    name: action,
+    areaId: areaId,
+    tags: tags,
     attributes: {
       "key": {
         "name": "key",

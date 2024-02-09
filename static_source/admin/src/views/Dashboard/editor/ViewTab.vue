@@ -31,7 +31,7 @@ useBus({
   name: 'update_tab',
   callback: (tabId: number) => {
     if (props.tab?.id === tabId) {
-      console.log('update tab', tabId)
+      // console.log('update tab', tabId)
       reload()
     }
   }

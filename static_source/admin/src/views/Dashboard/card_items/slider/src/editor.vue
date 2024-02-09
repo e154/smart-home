@@ -19,6 +19,7 @@ import {JsonViewer} from "@/components/JsonViewer";
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {useI18n} from "@/hooks/web/useI18n";
 import {KeysSearch} from "@/views/Dashboard/components";
+import {EntitiesAction, EntitiesActionOptions} from "@/components/EntitiesAction";
 
 const {t} = useI18n()
 
@@ -52,6 +53,14 @@ const updateCurrentState = () => {
 const onChangeValue = (val) => {
   currentItem.value.payload.slider.attribute = val;
 }
+
+const changedForActionButton = async (options: EntitiesActionOptions) => {
+  currentItem.value.payload.slider.entityId = options.entityId
+  currentItem.value.payload.slider.action = options.action
+  currentItem.value.payload.slider.tags = options.tags
+  currentItem.value.payload.slider.areaId = options.areaId
+}
+
 </script>
 
 <template>
@@ -119,37 +128,24 @@ const onChangeValue = (val) => {
 
     <ElRow :gutter="24">
       <ElCol :span="12" :xs="12">
-        <ElFormItem :label="$t('dashboard.editor.value')" prop="value">
-          <KeysSearch v-model="currentItem.payload.slider.attribute" :obj="currentItem.lastEvent"
-                      @change="onChangeValue"/>
-        </ElFormItem>
-      </ElCol>
-      <ElCol :span="12" :xs="12">
-        <ElFormItem :label="$t('dashboard.editor.action')" prop="action" :aria-disabled="!currentItem.entity">
-
-          <ElSelect
-              v-model="currentItem.payload.slider.action"
-              clearable
-              :placeholder="$t('dashboard.editor.selectAction')"
-              style="width: 100%"
-          >
-            <ElOption
-                v-for="p in currentItem.entityActions"
-                :key="p.value"
-                :label="p.label + ' (' +p.value +')'"
-                :value="p.value"/>
-          </ElSelect>
+        <ElFormItem :label="$t('dashboard.editor.tooltip')" prop="round">
+          <ElSwitch v-model="currentItem.payload.slider.tooltip"/>
         </ElFormItem>
       </ElCol>
     </ElRow>
 
     <ElRow :gutter="24">
       <ElCol :span="12" :xs="12">
-        <ElFormItem :label="$t('dashboard.editor.tooltip')" prop="round">
-          <ElSwitch v-model="currentItem.payload.slider.tooltip"/>
+        <ElFormItem :label="$t('dashboard.editor.value')" prop="value">
+          <KeysSearch v-model="currentItem.payload.slider.attribute" :obj="currentItem.lastEvent"
+                      @change="onChangeValue"/>
         </ElFormItem>
       </ElCol>
     </ElRow>
+
+    <ElDivider content-position="left">{{ $t('dashboard.editor.actionOptions') }}</ElDivider>
+
+    <EntitiesAction :options="currentItem.payload.slider" :entity="currentItem.entity" @change="changedForActionButton($event)"/>
 
     <ElRow style="padding-bottom: 20px" v-if="currentItem.entity">
       <ElCol>

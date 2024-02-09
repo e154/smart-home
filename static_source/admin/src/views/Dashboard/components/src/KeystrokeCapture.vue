@@ -8,18 +8,15 @@ import {
   ElCol,
   ElCollapse,
   ElCollapseItem,
+  ElDivider,
   ElForm,
-  ElFormItem,
-  ElOption,
   ElPopconfirm,
   ElRow,
-  ElSelect,
   ElTag
 } from "element-plus";
 import {useI18n} from "@/hooks/web/useI18n";
-import {ApiEntity} from "@/api/stub";
-import {EntitySearch} from "@/components/EntitySearch";
 import {useEventBus} from "@/hooks/event/useEventBus";
+import {EntitiesAction, EntitiesActionOptions} from "@/components/EntitiesAction";
 
 const {t} = useI18n()
 
@@ -57,7 +54,7 @@ onMounted(() => {
   useEventBus({
     name: 'keydown',
     callback: (val) => {
-     //console.debug(val)
+      //console.debug(val)
       if (!currentCard.value?.keysCapture) {
         return;
       }
@@ -103,26 +100,13 @@ const saveNewButton = (index: number) => {
   activeItemIdx.value = index
 }
 
-const changedForActionButton = async (entity: ApiEntity, index: number) => {
-  if (entity?.id) {
-    const _entity = await currentCore.value.fetchEntity(entity.id)
-    entity.actions = _entity.actions;
-    currentCard.value.keysCapture[index].entity = entity;
-    currentCard.value.keysCapture[index].entityId = entity.id;
-  } else {
-    currentCard.value.keysCapture[index].entity = undefined;
-    currentCard.value.keysCapture[index].entityId = '';
-    currentCard.value.keysCapture[index].action = '';
-  }
+const changedForActionButton = async (options: EntitiesActionOptions, index: number) => {
+  currentCard.value.keysCapture[index].entityId = options.entityId
+  currentCard.value.keysCapture[index].entity = options.entity
+  currentCard.value.keysCapture[index].action = options.action
+  currentCard.value.keysCapture[index].tags = options.tags
+  currentCard.value.keysCapture[index].areaId = options.areaId
 }
-
-const getActionList = (entity?: ApiEntity) => {
-  if (!entity) {
-    return [];
-  }
-  return entity.actions;
-}
-
 
 </script>
 
@@ -194,31 +178,9 @@ const getActionList = (entity?: ApiEntity) => {
                   </ElCol>
                 </ElRow>
 
+                <ElDivider content-position="left">{{ $t('dashboard.editor.actionOptions') }}</ElDivider>
 
-                <ElRow :gutter="24">
-                  <ElCol :span="12" :xs="12">
-                    <ElFormItem :label="$t('dashboard.editor.entity')" prop="entity">
-                      <EntitySearch v-model="prop.entity" @change="changedForActionButton($event, index)"/>
-                    </ElFormItem>
-                  </ElCol>
-
-                  <ElCol :span="12" :xs="12">
-                    <ElFormItem :label="$t('dashboard.editor.action')" prop="action" :aria-disabled="!prop.entity">
-                      <ElSelect
-                          v-model="prop.action"
-                          clearable
-                          :placeholder="$t('dashboard.editor.selectAction')"
-                          style="width: 100%"
-                      >
-                        <ElOption
-                            v-for="item in getActionList(prop.entity)"
-                            :key="item.name"
-                            :label="item.name"
-                            :value="item.name"/>
-                      </ElSelect>
-                    </ElFormItem>
-                  </ElCol>
-                </ElRow>
+                <EntitiesAction :options="prop" @change="changedForActionButton($event, index)"/>
 
                 <ElRow>
                   <ElCol>

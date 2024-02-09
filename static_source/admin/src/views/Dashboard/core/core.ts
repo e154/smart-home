@@ -21,20 +21,11 @@ import {ref} from "vue";
 import {ItemPayload} from "@/views/Dashboard/card_items";
 import {prepareUrl} from "@/utils/serverId";
 import {useAppStore} from "@/store/modules/app";
-import {CompareProp} from "./types"
+import {CompareProp, ButtonAction} from "./types"
+import {KeysProp} from "@/views/Dashboard/components";
 
 const {emit} = useBus()
 const appStore = useAppStore()
-
-export interface ButtonAction {
-  entityId: string;
-  entity?: { id?: string };
-  action: string;
-  image?: ApiImage | null;
-  icon?: string;
-  iconColor?: string;
-  iconSize?: number;
-}
 
 export interface Position {
   width: string;
@@ -62,13 +53,6 @@ export enum comparisonType {
   NE = 'ne',
   GE = 'ge',
   GT = 'gt',
-}
-
-export interface KeysProp {
-  keys?: Map<number, string>;
-  entity?: { id?: string };
-  entityId?: string;
-  action?: string;
 }
 
 export interface ItemParams {
@@ -291,6 +275,8 @@ export class CardItem {
         icon: action.icon,
         iconColor: action.iconColor,
         iconSize: action.iconSize,
+        tags: action.tags,
+        areaId: action.areaId,
       });
     }
     const payload = {};
@@ -808,7 +794,7 @@ export class Card {
     this.items.push(item);
     this.selectedItem = this.items.length - 1;
 
-    console.log('card item created, id:', item.id);
+    // console.log('card item created, id:', item.id);
 
     this.updateItemList()
 
@@ -821,7 +807,7 @@ export class Card {
   }
 
   async removeItem(index: number) {
-    console.log('remove card item id:', this.items[index].id);
+    // console.log('remove card item id:', this.items[index].id);
 
     const {data} = await api.v1.dashboardCardItemServiceDeleteDashboardCardItem(this.items[index].id);
     if (data) {
@@ -839,7 +825,7 @@ export class Card {
       return;
     }
 
-    console.log('copy card item id:', this.items[index].id);
+    // console.log('copy card item id:', this.items[index].id);
 
     const item = await this.items[index].copy();
     this.items.push(item);
@@ -1306,7 +1292,7 @@ export class Core {
       return;
     }
 
-    console.log(`select tab id:${tab.id}`);
+    // console.log(`select tab id:${tab.id}`);
     emit('update_tab', tab.id)
   }
 
@@ -1386,7 +1372,7 @@ export class Core {
       return;
     }
 
-    console.log('remove card id:', this.currentCardId);
+    // console.log('remove card id:', this.currentCardId);
 
     const {data} = await api.v1.dashboardCardServiceDeleteDashboardCard(this.currentCardId);
     if (data) {

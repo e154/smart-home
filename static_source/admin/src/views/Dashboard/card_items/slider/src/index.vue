@@ -105,6 +105,8 @@ const callAction = debounce(async (val: number) => {
   await api.v1.interactServiceEntityCallAction({
     id: props.item?.entityId,
     name: currentSlider.value.action,
+    tags: currentSlider.value.tags,
+    areaId: currentSlider.value.areaId,
     attributes: {
       "value": {
         "name": "value",

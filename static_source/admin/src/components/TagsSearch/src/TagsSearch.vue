@@ -1,9 +1,9 @@
 <script setup lang="ts">
 
 import {PropType, ref, unref, watch} from "vue";
-import {ApiTag} from "@/api/stub";
-import {ElSelect, ElOption} from 'element-plus'
+import {ElOption, ElSelect} from 'element-plus'
 import api from "@/api/api";
+import {ApiTag} from "@/api/stub";
 
 const options = ref<ApiTag[]>([])
 const value = ref<ApiTag[]>([])
@@ -12,26 +12,44 @@ const emit = defineEmits(['change', 'update:modelValue'])
 
 const props = defineProps({
   modelValue: {
-    type: Array as PropType<ApiTag[]>,
+    type: Array as PropType<string[]>,
     default: () => []
   }
 })
 
+const getList = async (tags: string[]) => {
+  let params: Params = {
+    tags: tags,
+  }
+  const res = await api.v1.tagServiceGetTagList(params)
+      .catch(() => {
+      })
+      .finally(() => {
+      })
+  if (res) {
+    const {items, meta} = res.data;
+    options.value = items || [];
+  }
+}
+
 watch(
     () => props.modelValue,
-    (val?: ApiTag[]) => {
+    (val?: string[]) => {
       if (val === unref(value)) return
       value.value = val || [] ;
-      if (val) {
-        getList(val.map(v => v.name))
+      if (val && val.length) {
+        getList(val)
       }
     },
+    {
+      immediate: true
+    }
 )
 
 // 监听
 watch(
     () => value.value,
-    (val?: number[]) => {
+    (val?: string[]) => {
       if (props.modelValue == unref(val)) return;
       emit('update:modelValue', val)
       if (!val) {
@@ -63,21 +81,6 @@ interface Params {
   ids?: [];
 }
 
-const getList = async (tags:  string[]) => {
-  let params: Params = {
-    tags: tags,
-  }
-  const res = await api.v1.tagServiceGetTagList(params)
-      .catch(() => {
-      })
-      .finally(() => {
-      })
-  if (res) {
-    const {items, meta} = res.data;
-    options.value = items || [];
-  }
-}
-
 const handleSelect = (val: any) => {
   emit('change', val)
 }
@@ -92,6 +95,7 @@ const handleSelect = (val: any) => {
       filterable
       allow-create
       remote
+      clearable
       default-first-option
       :reserve-keyword="false"
       placeholder="Please enter a keyword"

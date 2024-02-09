@@ -45,7 +45,7 @@ func (c ControllerInteract) InteractServiceEntityCallAction(ctx echo.Context, _ 
 	}
 
 	attributes := dto.AttributeFromApi(obj.Attributes)
-	err := c.endpoint.Interact.EntityCallAction(ctx.Request().Context(), obj.Id, obj.Name, attributes.Serialize())
+	err := c.endpoint.Interact.EntityCallAction(ctx.Request().Context(), obj.Id, obj.Name, obj.AreaId, obj.Tags, attributes.Serialize())
 	if err != nil {
 		return c.ERROR(ctx, err)
 	}

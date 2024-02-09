@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import {onMounted, onUnmounted, PropType, ref, watch} from "vue";
-import {ButtonAction, CardItem, requestCurrentState} from "@/views/Dashboard/core/core";
+import {CardItem, requestCurrentState} from "@/views/Dashboard/core/core";
 import {Cache, Compare, GetTokens, RenderText, Resolve} from "@/views/Dashboard/core/render";
 import api from "@/api/api";
 import {ElMessage} from "element-plus";
 import {Attribute, GetAttrValue} from "@/api/stream_types";
 import debounce from 'lodash.debounce'
 import {useI18n} from "@/hooks/web/useI18n";
+import {ButtonAction} from "@/views/Dashboard/core/types";
 
 const {t} = useI18n()
 
@@ -146,7 +147,10 @@ const callAction = async (action: ButtonAction) => {
   }
   await api.v1.interactServiceEntityCallAction({
     id: action.entityId,
-    name: action.action || ''
+    name: action.action || '',
+    tags: action.tags || [],
+    areaId: action.areaId,
+    attributes: {},
   });
   ElMessage({
     title: t('Success'),
@@ -154,6 +158,13 @@ const callAction = async (action: ButtonAction) => {
     type: 'success',
     duration: 2000
   });
+}
+
+const callBaseAction = async () => {
+  if (props.item.buttonActions.length === 0 || props.item.buttonActions.length > 1) {
+    return
+  }
+  callAction(props.item.buttonActions[0])
 }
 
 const getStyle = () => {
@@ -182,7 +193,7 @@ update()
           :style="item.style"
           v-html="currentValue"
           :key="reloadKey"
-          @click.prevent.stop="callAction(item.buttonActions[0])"></div>
+          @click.prevent.stop="callBaseAction()"></div>
 
       <div
           :class="[{'show': showMenu}]"

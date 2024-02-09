@@ -79,19 +79,25 @@ watch(
     }
 )
 
-const callAction = async (index: number) => {
-  if (!currentItem.value.payload.grid?.entityId ||
-      !currentItem.value.payload.grid?.actionName) {
+const callAction = async (row: number, cell: number) => {
+  if (!currentItem.value.payload.grid?.tileClick || !currentItem.value.payload.grid?.actionName) {
     return;
   }
   await api.v1.interactServiceEntityCallAction({
     id: currentItem.value.payload.grid.entityId,
     name: currentItem.value.payload.grid?.actionName,
+    tags: currentItem.value.payload.grid?.tags || [],
+    areaId: currentItem.value.payload.grid?.areaId,
     attributes: {
-      "tile": {
-        "name": "tile",
+      "row": {
+        "name": "row",
         "type": ApiTypes.INT,
-        "int": index,
+        "int": row,
+      },
+      "cell": {
+        "name": "cell",
+        "type": ApiTypes.INT,
+        "int": cell,
       },
     },
   });
@@ -115,15 +121,15 @@ prepareTileTemplates();
     <div class="grid-container">
       <div
           class="grid-row"
-          :key="index"
-          v-for="(row, index) in board">
+          :key="rowIndex"
+          v-for="(row, rowIndex) in board">
         <div
             class="grid-cell"
-            :key="index"
-            v-for="(cell, index) in row"
-            @click.prevent.stop="callAction(index)">
+            :key="cellIndex"
+            v-for="(cell, cellIndex) in row"
+            @click.prevent.stop="callAction(rowIndex, cellIndex)">
           <CellView
-              :key="index"
+              :key="cellIndex"
               :base-params="props.item.payload.grid"
               :tile-item="tileTemplates[cell]"
               :templates="tileTemplates"
