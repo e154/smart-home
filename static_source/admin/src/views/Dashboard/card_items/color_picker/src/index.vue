@@ -74,6 +74,8 @@ const callAction = debounce(async (val: string) => {
   await api.v1.interactServiceEntityCallAction({
     id: props.item?.entityId,
     name: currentColorPicker.value.action,
+    tags: currentColorPicker.value.tags,
+    areaId: currentColorPicker.value.areaId,
     attributes: {
       "color": {
         "name": "color",

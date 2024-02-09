@@ -3,7 +3,6 @@ import {
     ElAutocomplete,
     ElCascader,
     ElCheckboxGroup,
-    ElColorPicker,
     ElDatePicker,
     ElDivider,
     ElInput,
@@ -37,6 +36,7 @@ import {ScriptSearch} from '@/components/ScriptSearch'
 import {RoleSearch} from '@/components/RoleSearch'
 import {AreaSearch} from "@/components/AreaSearch";
 import {ImageSearch} from "@/components/ImageSearch";
+import {ColorPicker} from "@/components/ColorPicker";
 
 const componentMap: Recordable<Component, ComponentName> = {
     Radio: ElRadioGroup,
@@ -52,7 +52,7 @@ const componentMap: Recordable<Component, ComponentName> = {
     TimePicker: ElTimePicker,
     DatePicker: ElDatePicker,
     Rate: ElRate,
-    ColorPicker: ElColorPicker,
+    ColorPicker: ColorPicker,
     Transfer: ElTransfer,
     Divider: ElDivider,
     TimeSelect: ElTimeSelect,

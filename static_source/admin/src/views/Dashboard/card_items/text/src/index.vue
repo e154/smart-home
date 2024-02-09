@@ -205,7 +205,14 @@ update()
             v-for="(action, index) in item.buttonActions"
             @click.prevent.stop="callAction(action)"
             :key="index">
-          <img :src="item.getUrl(action.image)"/>
+          <img v-if="action.image" :src="item.getUrl(action.image)"/>
+          <Icon
+              v-else-if="action.icon"
+              style="width: 100%; height: 100%"
+              :key="reloadKey"
+              :icon="action.icon"
+              :color="action.iconColor"
+              :size="action.iconSize"/>
         </a>
       </div>
     </div>

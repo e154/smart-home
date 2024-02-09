@@ -92,10 +92,12 @@ const addAction = () => {
   currentItem.value.buttonActions.push({
     entity: undefined,
     entityId: currentItem.value.entityId,
-    action: '',
+    action: 'ACTION NAME ' + currentItem.value.buttonActions.length || '',
     image: null,
     tags: [],
     areaId: undefined,
+    iconSize: 30,
+    icon: 'icomoon-free:switch'
   });
 }
 
