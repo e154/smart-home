@@ -8,7 +8,7 @@ import api from "@/api/api";
 import {ElMessage} from "element-plus";
 import {useI18n} from "@/hooks/web/useI18n";
 import {ApiTypes} from "@/api/stub";
-import CellView from "./cellView.vue";
+import CellView from "./CellView.vue";
 
 const {t} = useI18n()
 
