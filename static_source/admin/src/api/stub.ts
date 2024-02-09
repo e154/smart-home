@@ -5330,7 +5330,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags TagService
      * @name TagServiceGetTagList
-     * @summary get script list
+     * @summary get tag list
      * @request GET:/v1/tags
      * @secure
      */
@@ -5369,6 +5369,98 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/v1/tags`,
         method: "GET",
         query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags TagService
+     * @name TagServiceGetTagById
+     * @summary get tag by id
+     * @request GET:/v1/tag/{id}
+     * @secure
+     */
+    tagServiceGetTagById: (id: number, params: RequestParams = {}) =>
+      this.request<
+        ApiTag,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
+        path: `/v1/tag/${id}`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags TagService
+     * @name TagServiceUpdateTagById
+     * @summary update tag
+     * @request PUT:/v1/tag/{id}
+     * @secure
+     */
+    tagServiceUpdateTagById: (
+      id: number,
+      data: {
+        name: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        ApiTag,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
+        path: `/v1/tag/${id}`,
+        method: "PUT",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags TagService
+     * @name TagServiceDeleteTagById
+     * @summary delete tag by id
+     * @request DELETE:/v1/tag/{id}
+     * @secure
+     */
+    tagServiceDeleteTagById: (id: number, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
+        path: `/v1/tag/${id}`,
+        method: "DELETE",
         secure: true,
         format: "json",
         ...params,

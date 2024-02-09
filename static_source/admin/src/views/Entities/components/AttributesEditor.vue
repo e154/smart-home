@@ -87,9 +87,9 @@ const loadFromPlugin = async () => {
         <ElOption label="Int" value="INT"/>
         <ElOption label="Float" value="FLOAT"/>
         <ElOption label="Bool" value="BOOL"/>
-        <ElOption label="Array" value="ARRAY"/>
+<!--        <ElOption label="Array" value="ARRAY"/>-->
         <ElOption label="Time" value="TIME"/>
-        <ElOption label="Map" value="MAP"/>
+<!--        <ElOption label="Map" value="MAP"/>-->
         <ElOption label="Image" value="IMAGE"/>
         <ElOption label="Point" value="POINT"/>
         <ElOption label="Encrypted" value="ENCRYPTED"/>

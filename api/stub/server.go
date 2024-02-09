@@ -334,7 +334,16 @@ type ServerInterface interface {
 	// sign out user
 	// (POST /v1/signout)
 	AuthServiceSignout(ctx echo.Context) error
-	// get script list
+	// delete tag by id
+	// (DELETE /v1/tag/{id})
+	TagServiceDeleteTagById(ctx echo.Context, id int64) error
+	// get tag by id
+	// (GET /v1/tag/{id})
+	TagServiceGetTagById(ctx echo.Context, id int64) error
+	// update tag
+	// (PUT /v1/tag/{id})
+	TagServiceUpdateTagById(ctx echo.Context, id int64, params TagServiceUpdateTagByIdParams) error
+	// get tag list
 	// (GET /v1/tags)
 	TagServiceGetTagList(ctx echo.Context, params TagServiceGetTagListParams) error
 	// search tag by name
@@ -3587,6 +3596,80 @@ func (w *ServerInterfaceWrapper) AuthServiceSignout(ctx echo.Context) error {
 	return err
 }
 
+// TagServiceDeleteTagById converts echo context to params.
+func (w *ServerInterfaceWrapper) TagServiceDeleteTagById(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "id" -------------
+	var id int64
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "id", runtime.ParamLocationPath, ctx.Param("id"), &id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	}
+
+	ctx.Set(ApiKeyAuthScopes, []string{})
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.TagServiceDeleteTagById(ctx, id)
+	return err
+}
+
+// TagServiceGetTagById converts echo context to params.
+func (w *ServerInterfaceWrapper) TagServiceGetTagById(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "id" -------------
+	var id int64
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "id", runtime.ParamLocationPath, ctx.Param("id"), &id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	}
+
+	ctx.Set(ApiKeyAuthScopes, []string{})
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.TagServiceGetTagById(ctx, id)
+	return err
+}
+
+// TagServiceUpdateTagById converts echo context to params.
+func (w *ServerInterfaceWrapper) TagServiceUpdateTagById(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "id" -------------
+	var id int64
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "id", runtime.ParamLocationPath, ctx.Param("id"), &id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	}
+
+	ctx.Set(ApiKeyAuthScopes, []string{})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params TagServiceUpdateTagByIdParams
+
+	headers := ctx.Request().Header
+	// ------------- Optional header parameter "Accept" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
+		var Accept AcceptJSON
+		n := len(valueList)
+		if n != 1 {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for Accept, got %d", n))
+		}
+
+		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter Accept: %s", err))
+		}
+
+		params.Accept = &Accept
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.TagServiceUpdateTagById(ctx, id, params)
+	return err
+}
+
 // TagServiceGetTagList converts echo context to params.
 func (w *ServerInterfaceWrapper) TagServiceGetTagList(ctx echo.Context) error {
 	var err error
@@ -4876,6 +4959,9 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/v1/scripts/statistic", wrapper.ScriptServiceGetStatistic)
 	router.POST(baseURL+"/v1/signin", wrapper.AuthServiceSignin)
 	router.POST(baseURL+"/v1/signout", wrapper.AuthServiceSignout)
+	router.DELETE(baseURL+"/v1/tag/:id", wrapper.TagServiceDeleteTagById)
+	router.GET(baseURL+"/v1/tag/:id", wrapper.TagServiceGetTagById)
+	router.PUT(baseURL+"/v1/tag/:id", wrapper.TagServiceUpdateTagById)
 	router.GET(baseURL+"/v1/tags", wrapper.TagServiceGetTagList)
 	router.GET(baseURL+"/v1/tags/search", wrapper.TagServiceSearchTag)
 	router.POST(baseURL+"/v1/task", wrapper.AutomationServiceAddTask)

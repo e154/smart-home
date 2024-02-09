@@ -3034,7 +3034,7 @@ paths:
     get:
       tags:
         - TagService
-      summary: get script list
+      summary: get tag list
       operationId: TagService_GetTagList
       parameters:
         - $ref: '#/components/parameters/listSort'
@@ -3049,6 +3049,95 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/apiGetTagListResult'
+        '401':
+          $ref: '#/components/responses/HTTP-401'
+      security:
+        - ApiKeyAuth: [ ]
+  /v1/tag/{id}:
+    get:
+      tags:
+        - TagService
+      summary: get tag by id
+      operationId: TagService_GetTagById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiTag'
+        '404':
+          $ref: '#/components/responses/HTTP-404'
+        '401':
+          $ref: '#/components/responses/HTTP-401'
+      security:
+        - ApiKeyAuth: [ ]
+    put:
+      tags:
+        - TagService
+      summary: update tag
+      operationId: TagService_UpdateTagById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - $ref: '#/components/parameters/Accept-JSON'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ name]
+              properties:
+                name:
+                  type: string
+        required: true
+      responses:
+        200:
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiTag'
+        '400':
+          $ref: '#/components/responses/HTTP-400'
+        '401':
+          $ref: '#/components/responses/HTTP-401'
+        '409':
+          $ref: '#/components/responses/HTTP-409'
+      security:
+        - ApiKeyAuth: [ ]
+    delete:
+      tags:
+        - TagService
+      summary: delete tag by id
+      operationId: TagService_DeleteTagById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          $ref: '#/components/responses/HTTP-404'
         '401':
           $ref: '#/components/responses/HTTP-401'
       security:

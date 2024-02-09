@@ -229,6 +229,7 @@ var (
 	ErrTagList     = ErrorWithCode("TAG_LIST_ERROR", "failed to list tag", ErrInternal)
 	ErrTagNotFound = ErrorWithCode("TAG_NOT_FOUND_ERROR", "tag is not found", ErrInternal)
 	ErrTagGet      = ErrorWithCode("TAG_GET_ERROR", "failed to get tag", ErrInternal)
+	ErrTagUpdate   = ErrorWithCode("TAG_UPDATE_ERROR", "failed to update tag", ErrInternal)
 
 	ErrTaskAdd             = ErrorWithCode("TASK_ADD_ERROR", "failed to add Task", ErrInternal)
 	ErrTaskGet             = ErrorWithCode("TASK_GET_ERROR", "failed to get Task", ErrInternal)

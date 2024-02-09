@@ -29,7 +29,9 @@ import (
 // ITag ...
 type ITag interface {
 	Add(ctx context.Context, tag *m.Tag) (id int64, err error)
+	GetById(ctx context.Context, id int64) (tag *m.Tag, err error)
 	GetByName(ctx context.Context, name string) (tag *m.Tag, err error)
+	Update(ctx context.Context, tag *m.Tag) (err error)
 	List(ctx context.Context, limit, offset int64, orderBy, sort string, query *string, names *[]string) (list []*m.Tag, total int64, err error)
 	Delete(ctx context.Context, name string) (err error)
 	Search(ctx context.Context, query string, limit, offset int64) (list []*m.Tag, total int64, err error)
@@ -69,6 +71,25 @@ func (n *Tag) GetByName(ctx context.Context, name string) (tag *m.Tag, err error
 
 	tag, _ = n.fromDb(dbTag)
 
+	return
+}
+
+// GetById ...
+func (n *Tag) GetById(ctx context.Context, id int64) (tag *m.Tag, err error) {
+
+	var dbTag *db.Tag
+	if dbTag, err = n.table.GetById(ctx, id); err != nil {
+		return
+	}
+
+	tag, _ = n.fromDb(dbTag)
+
+	return
+}
+
+// Update ...
+func (n *Tag) Update(ctx context.Context, tag *m.Tag) (err error) {
+	err = n.table.Update(ctx, n.toDb(tag))
 	return
 }
 

@@ -33,7 +33,8 @@ export default {
     Error: 'Ошибка',
     filter: 'Фильтр',
     open: 'Открыть',
-    tags: 'Теги'
+    tags: 'Теги',
+    or: 'Или'
   },
   message: {
     unknownError: "Неизвестная ошибка",
@@ -97,6 +98,13 @@ export default {
     pageError: 'Извините, страница, которую вы посетили, не существует.',
     networkError: 'Извините, сервер сообщил об ошибке.',
     returnToHome: 'Вернуться на главную'
+  },
+  entityAction: {
+    action: 'Действие',
+    selectAction: 'Выберите действие',
+    tags: 'Тэги',
+    area: 'Зона',
+    entity: 'Entity',
   },
   setting: {
     projectSetting: "Настройки проекта",
@@ -578,6 +586,8 @@ export default {
       GRID: 'Сетка',
       showText: 'Показывать текст',
       background: 'Фон',
+      actionOptions: 'Опции действий',
+      appearanceOptions: 'Варианты внешнего вида',
       slider: {
         options: 'Параметры слайдера',
         color: 'Цвет',

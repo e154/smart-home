@@ -21,8 +21,11 @@ package db
 import (
 	"context"
 	"fmt"
+	"github.com/jackc/pgerrcode"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
+	"strings"
 
 	"github.com/e154/smart-home/common/apperr"
 )
@@ -81,7 +84,7 @@ func (n *Tags) List(ctx context.Context, limit, offset int, orderBy, sort string
 }
 
 // GetByName ...
-func (n Tags) GetByName(ctx context.Context, name string) (tag *Tag, err error) {
+func (n *Tags) GetByName(ctx context.Context, name string) (tag *Tag, err error) {
 	tag = &Tag{}
 	err = n.Db.WithContext(ctx).Model(tag).
 		Where("name = ?", name).
@@ -98,11 +101,54 @@ func (n Tags) GetByName(ctx context.Context, name string) (tag *Tag, err error) 
 	return
 }
 
+// GetById ...
+func (n *Tags) GetById(ctx context.Context, id int64) (tag *Tag, err error) {
+	tag = &Tag{}
+	err = n.Db.WithContext(ctx).Model(tag).
+		Where("id = ?", id).
+		First(&tag).Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = errors.Wrap(apperr.ErrTagNotFound, fmt.Sprintf("id \"%d\"", id))
+			return
+		}
+		err = errors.Wrap(apperr.ErrTagGet, err.Error())
+	}
+
+	return
+}
+
 // Delete ...
-func (n Tags) Delete(ctx context.Context, name string) (err error) {
+func (n *Tags) Delete(ctx context.Context, name string) (err error) {
 	if err = n.Db.WithContext(ctx).Delete(&Tag{Name: name}).Error; err != nil {
 		err = errors.Wrap(apperr.ErrTagDelete, err.Error())
 	}
+	return
+}
+
+// Update ...
+func (n *Tags) Update(ctx context.Context, tag *Tag) (err error) {
+	err = n.Db.WithContext(ctx).Model(&Tag{Id: tag.Id}).Updates(map[string]interface{}{
+		"name": tag.Name,
+	}).Error
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case pgerrcode.UniqueViolation:
+				if strings.Contains(pgErr.Message, "tag_name_unq") {
+					err = errors.Wrap(apperr.ErrTagUpdate, fmt.Sprintf("tag name \"%s\" not unique", tag.Name))
+					return
+				}
+			default:
+				fmt.Printf("unknown code \"%s\"\n", pgErr.Code)
+			}
+		}
+		err = errors.Wrap(apperr.ErrTagUpdate, err.Error())
+		return
+	}
+
 	return
 }
 

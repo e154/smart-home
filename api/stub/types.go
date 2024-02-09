@@ -2085,6 +2085,16 @@ type ScriptServiceSearchScriptParams struct {
 	Limit  *SearchLimit  `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
+// TagServiceUpdateTagByIdJSONBody defines parameters for TagServiceUpdateTagById.
+type TagServiceUpdateTagByIdJSONBody struct {
+	Name string `json:"name"`
+}
+
+// TagServiceUpdateTagByIdParams defines parameters for TagServiceUpdateTagById.
+type TagServiceUpdateTagByIdParams struct {
+	Accept *AcceptJSON `json:"Accept,omitempty"`
+}
+
 // TagServiceGetTagListParams defines parameters for TagServiceGetTagList.
 type TagServiceGetTagListParams struct {
 	// Sort Field on which to sort and its direction
@@ -2426,6 +2436,9 @@ type ScriptServiceExecSrcScriptByIdJSONRequestBody = ApiExecSrcScriptRequest
 
 // ScriptServiceUpdateScriptByIdJSONRequestBody defines body for ScriptServiceUpdateScriptById for application/json ContentType.
 type ScriptServiceUpdateScriptByIdJSONRequestBody ScriptServiceUpdateScriptByIdJSONBody
+
+// TagServiceUpdateTagByIdJSONRequestBody defines body for TagServiceUpdateTagById for application/json ContentType.
+type TagServiceUpdateTagByIdJSONRequestBody TagServiceUpdateTagByIdJSONBody
 
 // AutomationServiceAddTaskJSONRequestBody defines body for AutomationServiceAddTask for application/json ContentType.
 type AutomationServiceAddTaskJSONRequestBody = ApiNewTaskRequest
