@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {ref, unref, watch} from "vue";
+import {computed, ref, unref, watch} from "vue";
 import {ElColorPicker} from 'element-plus'
 import {propTypes} from "@/utils/propTypes";
 
@@ -10,7 +10,8 @@ const props = defineProps({
   modelValue: propTypes.string.def(''),
 })
 
-const currentColor = ref(null)
+const currentColor = ref<string>(null)
+const lastColors = ref<string[]>([])
 
 watch(
     () => props.modelValue,
@@ -23,14 +24,22 @@ watch(
     }
 )
 
-const predefineColors = ref([
-  '#000',
+const defaultColors = [
+  '#000000',
   '#232324',
   '#F5F7FA',
-  '#fff',
-])
+  '#ffffff',
+]
+
+const predefineColors = computed(() => currentColor.value? [...defaultColors, ...lastColors.value] : [...defaultColors])
 
 const updateColor = (val: string) => {
+  if (!defaultColors.includes(val) && !lastColors.value.includes(val)) {
+    lastColors.value.push(val)
+    if (lastColors.value.length > 5) {
+      lastColors.value.shift()
+    }
+  }
   emit('change', val)
   emit('update:modelValue', val)
 }

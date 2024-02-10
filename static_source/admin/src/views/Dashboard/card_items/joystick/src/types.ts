@@ -8,10 +8,17 @@ export interface point {
     y: number;
 }
 
+export interface JoystickAction {
+    entityId?: string
+    action?: string
+    tags?: string[]
+    areaID?: number
+}
+
 export interface ItemPayloadJoystick {
     stickImage?: ApiImage;
-    startAction?: string;
-    endAction?: string;
+    startAction?: JoystickAction;
+    endAction?: JoystickAction;
     startTimeout?: number;
     endTimeout?: number;
 }

@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import {computed, PropType} from "vue";
 import {CardItem, Core} from "@/views/Dashboard/core/core";
-import {ElCol, ElDivider, ElFormItem, ElOption, ElRow, ElSelect} from 'element-plus'
+import {ElDivider, ElFormItem} from 'element-plus'
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {ApiImage} from "@/api/stub";
 import {ImageSearch} from "@/components/ImageSearch";
 import {useI18n} from "@/hooks/web/useI18n";
+import {EntitiesAction, EntitiesActionOptions} from "@/components/EntitiesAction";
 
 const {t} = useI18n()
 
@@ -38,75 +39,53 @@ const onSelectImage = (index: number, image: ApiImage) => {
   currentItem.value.payload.joystick.stickImage = image || undefined;
 }
 
+const changedForStartAction = async (options: EntitiesActionOptions) => {
+  currentItem.value.payload.joystick.startAction = options
+}
+
+
+const changedForEndAction = async (options: EntitiesActionOptions) => {
+  currentItem.value.payload.joystick.endAction = options
+}
+
 
 </script>
 
 <template>
-  <div>
 
-    <CommonEditor :item="item" :core="core"/>
+  <CommonEditor :item="item" :core="core"/>
 
-    <ElDivider content-position="left">{{ $t('dashboard.editor.joystick.options') }}</ElDivider>
+  <ElDivider content-position="left">{{ $t('dashboard.editor.joystick.options') }}</ElDivider>
 
-    <ElFormItem :label="$t('dashboard.editor.image')" prop="image">
-      <ImageSearch v-model="currentItem.payload.joystick.stickImage" @change="onSelectImage(index, ...arguments)"/>
-    </ElFormItem>
+  <ElFormItem :label="$t('dashboard.editor.image')" prop="image">
+    <ImageSearch v-model="currentItem.payload.joystick.stickImage" @change="onSelectImage(index, ...arguments)"/>
+  </ElFormItem>
 
-    <ElRow :gutter="24" v-if="currentItem.entity">
+  <ElDivider content-position="left">{{ $t('dashboard.editor.joystick.startAction') }}</ElDivider>
 
-      <ElCol :span="12" :xs="12">
-        <ElFormItem :label="$t('dashboard.editor.joystick.startAction')" prop="startAction"
-                    :aria-disabled="!currentItem.entity">
-          <ElSelect
-              v-model="currentItem.payload.joystick.startAction"
-              clearable
-              :placeholder="$t('dashboard.editor.selectAction')"
-              style="width: 100%"
-          >
-            <ElOption
-                v-for="p in currentItem.entityActions"
-                :key="p.value"
-                :label="p.label + ' (' +p.value +')'"
-                :value="p.value"/>
-          </ElSelect>
-        </ElFormItem>
-      </ElCol>
-      <ElCol :span="12" :xs="12">
-        <ElFormItem :label="$t('dashboard.editor.joystick.endAction')" prop="endAction"
-                    :aria-disabled="!currentItem.entity">
-          <ElSelect
-              v-model="currentItem.payload.joystick.endAction"
-              clearable
-              :placeholder="$t('dashboard.editor.selectAction')"
-              style="width: 100%"
-          >
-            <ElOption
-                v-for="p in currentItem.entityActions"
-                :key="p.value"
-                :label="p.label + ' (' +p.value +')'"
-                :value="p.value"/>
-          </ElSelect>
-        </ElFormItem>
-      </ElCol>
+  <EntitiesAction :options="currentItem.payload.joystick.startAction" :entity="currentItem.entity"
+                  @change="changedForStartAction($event)"/>
 
-    </ElRow>
+  <ElDivider content-position="left">{{ $t('dashboard.editor.joystick.endAction') }}</ElDivider>
 
-    <!--    <ElRow :gutter="24">-->
+  <EntitiesAction :options="currentItem.payload.joystick.endAction" :entity="currentItem.entity"
+                  @change="changedForEndAction($event)"/>
 
-    <!--      <ElCol :span="12" :xs="12">-->
-    <!--        <ElFormItem :label="$t('dashboard.editor.startTimeout')" prop="startTimeout">-->
-    <!--          <ElInputNumber v-model="currentItem.payload.joystick.startTimeout" :min="500"/>-->
-    <!--        </ElFormItem>-->
-    <!--      </ElCol>-->
-    <!--      <ElCol :span="12" :xs="12">-->
-    <!--        <ElFormItem :label="$t('dashboard.editor.endTimeout')" prop="endTimeout">-->
-    <!--          <ElInputNumber v-model="currentItem.payload.joystick.endTimeout" :min="0"/>-->
-    <!--        </ElFormItem>-->
-    <!--      </ElCol>-->
+  <!--    <ElRow :gutter="24">-->
 
-    <!--    </ElRow>-->
+  <!--      <ElCol :span="12" :xs="12">-->
+  <!--        <ElFormItem :label="$t('dashboard.editor.startTimeout')" prop="startTimeout">-->
+  <!--          <ElInputNumber v-model="currentItem.payload.joystick.startTimeout" :min="500"/>-->
+  <!--        </ElFormItem>-->
+  <!--      </ElCol>-->
+  <!--      <ElCol :span="12" :xs="12">-->
+  <!--        <ElFormItem :label="$t('dashboard.editor.endTimeout')" prop="endTimeout">-->
+  <!--          <ElInputNumber v-model="currentItem.payload.joystick.endTimeout" :min="0"/>-->
+  <!--        </ElFormItem>-->
+  <!--      </ElCol>-->
 
-  </div>
+  <!--    </ElRow>-->
+
 </template>
 
 <style lang="less">

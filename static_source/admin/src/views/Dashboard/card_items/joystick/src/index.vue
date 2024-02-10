@@ -2,7 +2,7 @@
 import {onMounted, PropType, ref, watch} from "vue";
 import {ElIcon, ElImage} from "element-plus";
 import {CardItem} from "@/views/Dashboard/core/core";
-import {JoystickController, point} from "./types";
+import {JoystickAction, JoystickController, point} from "./types";
 import {useEmitt} from "@/hooks/web/useEmitt";
 import {Picture as IconPicture} from '@element-plus/icons-vue'
 import {debounce} from "lodash-es";
@@ -41,10 +41,12 @@ onMounted(() => {
 // component methods
 // ---------------------------------
 
-const callAction = async (action: string, val: point) => {
+const callAction = async (action: JoystickAction, val: point) => {
   await api.v1.interactServiceEntityCallAction({
     id: props.item?.entityId,
-    name: action,
+    name: action.action,
+    tags: action.tags,
+    areaId: action.areaID,
     attributes: {
       "X": {
         "name": "X",
