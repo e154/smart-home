@@ -12,7 +12,9 @@ const props = defineProps({
   initialTop: propTypes.number.def(0),
   initialLeft: propTypes.number.def(0),
   initialWidth: propTypes.number.def(200),
-  initialHeight: propTypes.number.def(150)
+  initialHeight: propTypes.number.def(150),
+  maxWidth: propTypes.number.def(Infinity),
+  maxHeight: propTypes.number.def(800)
 })
 
 const top = ref(props.initialTop);
@@ -167,8 +169,9 @@ const toggleVisibility = () => {
   position: relative;
   background-color: var(--el-bg-color);
   color: #eeeeee;
-  padding: 0 20px 20px 20px;
+  padding: 0 10px 10px 10px;
   flex-grow: 1; /* Занимаем все оставшееся пространство */
+  overflow: auto;
 }
 
 .draggable-container-header {

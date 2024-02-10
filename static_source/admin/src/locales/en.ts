@@ -34,6 +34,7 @@ export default {
         filter: 'Filter',
         open: 'Open',
         tags: 'Tags',
+        actions: 'Actions',
         or: 'Or'
     },
     message: {
@@ -487,6 +488,8 @@ export default {
         addNewDashboard: 'Add Dashboard',
         mainTab: 'Main Options',
         tabsTab: 'Tab List',
+        tabOptions: 'Tab Options',
+        cardOptions: 'Card Options',
         cardsTab: 'Card List',
         cardItemsTab: 'Card Items',
         mainSettings: 'Main Settings',

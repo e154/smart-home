@@ -1,23 +1,22 @@
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, reactive, ref} from 'vue'
 import {useI18n} from '@/hooks/web/useI18n'
-import {ElButton, ElEmpty, ElMessage, ElTabPane, ElTabs} from 'element-plus'
+import {ElButton, ElCollapse, ElCollapseItem, ElEmpty, ElMessage, ElTabPane, ElTabs} from 'element-plus'
 import {useRoute} from 'vue-router'
 import api from "@/api/api";
 import {EventStateChange} from "@/api/stream_types";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 import {Card, Core, Tab} from "@/views/Dashboard/core/core";
-// import {Pane, Splitpanes} from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
 import {useBus} from "@/views/Dashboard/core/bus";
-import ViewTab from "@/views/Dashboard/editor/ViewTab.vue";
+import ViewTab from "@/views/Dashboard/editor2/ViewTab.vue";
 import {useCache} from "@/hooks/web/useCache";
 import {DraggableContainer} from "@/components/DraggableContainer";
-import TabSettings from "@/views/Dashboard/editor/TabSettings.vue";
-import TabEditor from "@/views/Dashboard/editor/TabEditor.vue";
-import TabCardItem from "@/views/Dashboard/editor/TabCardItem.vue";
-import TabCard from "@/views/Dashboard/editor/TabCard.vue";
+import TabSettings from "@/views/Dashboard/editor2/TabSettings.vue";
+import TabEditor from "@/views/Dashboard/editor2/TabEditor.vue";
+import TabCardItem from "@/views/Dashboard/editor2/TabCardItem.vue";
+import TabCard from "@/views/Dashboard/editor2/TabCard.vue";
 
 const {emit} = useBus()
 const route = useRoute();
@@ -172,12 +171,18 @@ const addCard = () => {
         <ElTabs v-model="core.mainTab">
           <!-- main -->
           <ElTabPane :label="$t('dashboard.mainTab')" name="main">
+            <template #label>
+              <Icon icon="wpf:maintenance" class="mr-5px"/>
+            </template>
             <TabSettings v-if="core.current" :core="core"/>
           </ElTabPane>
           <!-- /main -->
 
           <!-- tabs -->
           <ElTabPane :label="$t('dashboard.tabsTab')" name="tabs">
+            <template #label>
+              <Icon icon="vaadin:tabs" class="mr-5px"/>
+            </template>
             <TabEditor v-if="core.current && activeTab" :tab="activeTab" :core="core"/>
             <ElEmpty v-if="!core.tabs.length" :rows="5">
               <ElButton type="primary" @click="createTab()">
@@ -189,6 +194,9 @@ const addCard = () => {
 
           <!-- cards -->
           <ElTabPane :label="$t('dashboard.cardsTab')" name="cards">
+            <template #label>
+              <Icon icon="material-symbols:cards-outline" class="mr-5px"/>
+            </template>
             <TabCard v-if="core.current && activeTab" :tab="activeTab" :core="core"/>
             <ElEmpty v-if="!core.tabs.length" :rows="5">
               <ElButton type="primary" @click="createTab()">
@@ -200,6 +208,9 @@ const addCard = () => {
 
           <!-- cardItems -->
           <ElTabPane :label="$t('dashboard.cardItemsTab')" name="cardItems">
+            <template #label>
+              <Icon icon="icon-park-solid:add-item" class="mr-5px"/>
+            </template>
             <TabCardItem v-if="core.current && activeTab && activeCard" :card="activeCard" :core="core"/>
             <ElEmpty v-if="!core.tabs.length" :rows="5">
               <ElButton type="primary" @click="createTab()">
@@ -351,6 +362,10 @@ html {
 
   .el-menu--vertical:not(.el-menu--collapse):not(.el-menu--popup-container) .el-menu-item, .el-menu--vertical:not(.el-menu--collapse):not(.el-menu--popup-container) .el-menu-item-group__title, .el-menu--vertical:not(.el-menu--collapse):not(.el-menu--popup-container) .el-sub-menu__title {
     padding-left: 2px;
+  }
+
+  .el-col.el-col-24.is-guttered {
+    padding: 0!important;
   }
 }
 </style>

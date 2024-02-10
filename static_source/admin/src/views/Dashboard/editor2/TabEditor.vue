@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import {computed, PropType, reactive, ref, unref, watch} from 'vue'
 import {Form} from '@/components/Form'
-import {ElButton, ElCard, ElMessage, ElPopconfirm,
-  ElSkeleton, ElEmpty, ElMenu, ElMenuItem, ElContainer, ElMain, ElAside} from 'element-plus'
+import {
+  ElButton, ElCard, ElMessage, ElPopconfirm,
+  ElSkeleton, ElEmpty, ElMenu, ElMenuItem, ElContainer, ElMain, ElAside, ElDivider, ElCol, ElRow
+} from 'element-plus'
 import {useI18n} from '@/hooks/web/useI18n'
 import {useForm} from '@/hooks/web/useForm'
 import {useValidator} from '@/hooks/web/useValidator'
@@ -70,30 +72,30 @@ const schema = reactive<FormSchema[]>([
     }
   },
   {
-    field: 'gap',
-    label: t('dashboard.gap'),
-    component: 'Switch',
-    value: false,
-    colProps: {
-      md: 12,
-      span: 24
-    },
-  },
-  {
     field: 'enabled',
     label: t('dashboard.enabled'),
     component: 'Switch',
     value: false,
     colProps: {
-      md: 12,
+      md: 24,
       span: 24
     },
   },
   {
-    field: 'cardSize',
-    label: t('dashboard.editor.size'),
+    field: 'appearance',
+    label: t('dashboard.editor.appearance'),
     component: 'Divider',
     colProps: {
+      span: 24
+    },
+  },
+  {
+    field: 'gap',
+    label: t('dashboard.gap'),
+    component: 'Switch',
+    value: false,
+    colProps: {
+      md: 24,
       span: 24
     },
   },
@@ -102,14 +104,6 @@ const schema = reactive<FormSchema[]>([
     label: t('dashboard.columnWidth'),
     component: 'InputNumber',
     value: 300,
-    colProps: {
-      span: 24
-    },
-  },
-  {
-    field: 'cardSize',
-    label: t('dashboard.editor.color'),
-    component: 'Divider',
     colProps: {
       span: 24
     },
@@ -242,14 +236,21 @@ const sortCardDown = (tab: Tab, index: number) => {}
 
 <template>
 
-  <ElContainer>
-    <ElMain>
-      <ElCard class="box-card">
-        <template #header>
-          <div class="card-header">
-            <span>{{ $t('dashboard.tabDetail') }}</span>
-          </div>
-        </template>
+  <ElRow class="mb-10px">
+    <ElCol>
+      <ElDivider content-position="left">{{ $t('dashboard.tabOptions') }}</ElDivider>
+    </ElCol>
+  </ElRow>
+
+
+  <!--  <ElContainer>-->
+<!--    <ElMain>-->
+<!--      <ElCard class="box-card">-->
+<!--        <template #header>-->
+<!--          <div class="card-header">-->
+<!--            <span>{{ $t('dashboard.tabDetail') }}</span>-->
+<!--          </div>-->
+<!--        </template>-->
 
         <Form v-if="currentCore.tabs.length"
             :schema="schema"
@@ -264,8 +265,19 @@ const sortCardDown = (tab: Tab, index: number) => {}
           </ElButton>
         </ElEmpty>
 
-        <div class="text-right" v-if="currentCore.tabs.length">
-          <ElButton type="primary" @click.prevent.stop="updateTab">{{ $t('main.update') }}</ElButton>
+  <ElRow class="mb-10px">
+    <ElCol>
+      <ElDivider content-position="left">{{ $t('main.actions') }}</ElDivider>
+    </ElCol>
+  </ElRow>
+
+<!--        <div class="text-right" v-if="currentCore.tabs.length">-->
+  <ElRow class="mb-10px">
+    <ElCol>
+          <ElButton class="w-[100%]" type="primary" @click.prevent.stop="updateTab">{{ $t('main.update') }}</ElButton>
+    </ElCol>
+  </ElRow>
+
           <ElButton type="default" @click.prevent.stop="cancel" plain>{{ t('main.cancel') }}</ElButton>
           <ElPopconfirm
               :confirm-button-text="$t('main.ok')"
@@ -282,39 +294,31 @@ const sortCardDown = (tab: Tab, index: number) => {}
               </ElButton>
             </template>
           </ElPopconfirm>
-        </div>
+<!--        </div>-->
 
-      </ElCard>
-    </ElMain>
-    <ElAside width="400px">
-      <ElCard class="box-card">
-        <template #header>
-          <div class="card-header">
-            <span>{{ $t('dashboard.tabList') }}</span>
-            <ElButton @click="createTab()" text size="small">
-              {{ t('dashboard.addNew') }}
-            </ElButton>
-          </div>
-        </template>
-        <ElMenu v-if="currentCore.tabs.length" :default-active="currentCore.activeTabIdx + ''" v-model="currentCore.activeTabIdx" class="el-menu-vertical-demo">
-          <ElMenuItem :index="index + ''" :key="tab" v-for="(tab, index) in currentCore.tabs" @click="menuTabClick(index, tab)">
-           <div class="w-[100%] card-header">
-             <span>{{ tab.name }}</span>
-<!--             <ElButtonGroup class="hide ">-->
-<!--               <ElButton type="default" @click.prevent.stop="sortCardUp(card, index)">-->
-<!--                 <Icon icon="teenyicons:up-solid" />-->
-<!--               </ElButton>-->
-<!--               <ElButton type="default" @click.prevent.stop="sortCardDown(card, index)">-->
-<!--                 <Icon icon="teenyicons:down-solid" />-->
-<!--               </ElButton>-->
-<!--             </ElButtonGroup>-->
-           </div>
-          </ElMenuItem>
-        </ElMenu>
+<!--      </ElCard>-->
+<!--    </ElMain>-->
+<!--    <ElAside width="400px">-->
+<!--      <ElCard class="box-card">-->
+<!--        <template #header>-->
+<!--          <div class="card-header">-->
+<!--            <span>{{ $t('dashboard.tabList') }}</span>-->
+<!--            <ElButton @click="createTab()" text size="small">-->
+<!--              {{ t('dashboard.addNew') }}-->
+<!--            </ElButton>-->
+<!--          </div>-->
+<!--        </template>-->
+<!--        <ElMenu v-if="currentCore.tabs.length" :default-active="currentCore.activeTabIdx + ''" v-model="currentCore.activeTabIdx" class="el-menu-vertical-demo">-->
+<!--          <ElMenuItem :index="index + ''" :key="tab" v-for="(tab, index) in currentCore.tabs" @click="menuTabClick(index, tab)">-->
+<!--           <div class="w-[100%] card-header">-->
+<!--             <span>{{ tab.name }}</span>-->
+<!--           </div>-->
+<!--          </ElMenuItem>-->
+<!--        </ElMenu>-->
 
-      </ElCard>
-    </ElAside>
-  </ElContainer>
+<!--      </ElCard>-->
+<!--    </ElAside>-->
+<!--  </ElContainer>-->
 
 </template>
 
