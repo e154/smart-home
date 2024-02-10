@@ -15,6 +15,7 @@ import {StreamPlayer, StreamPlayerEditor, ItemPayloadVideo} from './video';
 import {Joystick, JoystickEditor, ItemPayloadJoystick} from './joystick';
 import {Icon, IconEditor, ItemPayloadIcon} from './icon';
 import {Grid, GridEditor, ItemPayloadGrid} from './grid';
+import {Three, ThreeEditor, ItemPayloadThree} from './three';
 
 export const CardItemName = (name: string): any => {
   switch (name) {
@@ -51,6 +52,8 @@ export const CardItemName = (name: string): any => {
       return Icon;
     case 'grid':
       return Grid;
+    case 'three':
+      return Three;
     default:
       // console.error(`unknown card name "${name}"`);
       return Dummy;
@@ -92,6 +95,8 @@ export const CardEditorName = (name: string): any => {
       return IconEditor;
     case 'grid':
       return GridEditor;
+    case 'three':
+      return ThreeEditor;
     default:
       // console.error(`unknown card name "${name}"`);
       return DummyEditor;
@@ -119,7 +124,8 @@ export const CardItemList: ItemsType[] = [
   {label: 'STREAM_PLAYER', value: 'streamPlayer'},
   {label: 'JOYSTICK', value: 'joystick'},
   {label: 'ICON', value: 'icon'},
-  {label: 'GRID', value: 'grid'}
+  {label: 'GRID', value: 'grid'},
+  // {label: 'THREE', value: 'three'}
 ];
 
 export interface ItemPayload {
@@ -139,4 +145,5 @@ export interface ItemPayload {
   video?: ItemPayloadVideo;
   entityStorage?: ItemPayloadEntityStorage;
   grid?: ItemPayloadGrid;
+  three?: ItemPayloadThree;
 }

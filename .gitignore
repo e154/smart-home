@@ -1,6 +1,7 @@
 .idea
 tmp/
 data/file_storage/*
+data/static/assets/*
 vendor/*
 /smart-home
 /conf/config.json
