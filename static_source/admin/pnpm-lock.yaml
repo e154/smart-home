@@ -98,6 +98,9 @@ dependencies:
   splitpanes:
     specifier: ^3.1.5
     version: 3.1.5
+  stats.js:
+    specifier: ^0.17.0
+    version: 0.17.0
   three:
     specifier: '0.134'
     version: 0.134.0
@@ -110,6 +113,9 @@ dependencies:
   troisjs:
     specifier: ^0.3.4
     version: 0.3.4
+  tweakpane:
+    specifier: ^4.0.3
+    version: 4.0.3
   url:
     specifier: ^0.11.0
     version: 0.11.0
@@ -8153,6 +8159,10 @@ packages:
       object-copy: 0.1.0
     dev: true
 
+  /stats.js@0.17.0:
+    resolution: {integrity: sha512-hNKz8phvYLPEcRkeG1rsGmV5ChMjKDAWU7/OJJdDErPBNChQXxCo3WZurGpnWc6gZhAzEPFad1aVgyOANH1sMw==}
+    dev: false
+
   /statuses@1.5.0:
     resolution: {integrity: sha512-OpZ3zP+jT1PI7I8nemJX4AKmAX070ZkYPVWV/AaKTJl+tXCTGyVdC1a4SL8RUQYEwk/f34ZX8UTykN68FwrqAA==}
     engines: {node: '>= 0.6'}
@@ -8642,6 +8652,10 @@ packages:
       tslib: 1.14.1
       typescript: 5.0.4
     dev: true
+
+  /tweakpane@4.0.3:
+    resolution: {integrity: sha512-BlcWOAe8oe4c+k9pmLBARGdWB6MVZMszayekkixQXTgkxTaYoTUpHpwVEp+3HkoamZkomodpbBf0CkguIHTgLg==}
+    dev: false
 
   /type-check@0.3.2:
     resolution: {integrity: sha512-ZCmOJdvOWDBYJlzAoFkC+Q0+bUyEOS1ltgp1MGU03fqHG+dbi9tBFU2Rd9QKiDZFAYrhPh2JUf7rZRIuHRKtOg==}
