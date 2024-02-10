@@ -1,0 +1,36 @@
+{
+  "name": "Smart Home Application",
+  "short_name": "Smart Home",
+  "description": "Software package for automation",
+  "icons": [
+    {
+      "src": "/logo-w.png",
+      "type": "image/png",
+      "sizes": "48x48"
+    },
+    {
+      "src": "/logo-w.png",
+      "type": "image/png",
+      "sizes": "72x72"
+    },
+    {
+      "src": "/logo-w.png",
+      "type": "image/png",
+      "sizes": "96x96"
+    },
+    {
+      "src": "/logo-w.png",
+      "type": "image/png",
+      "sizes": "144x144"
+    },
+    {
+      "src": "/logo-w.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#232324",
+  "theme_color": "#232324"
+}
