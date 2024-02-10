@@ -20,6 +20,9 @@ dependencies:
   '@tinymce/tinymce-vue':
     specifier: ^5.1.0
     version: 5.1.0(vue@3.2.47)
+  '@tweakpane/plugin-essentials':
+    specifier: ^0.2.1
+    version: 0.2.1(tweakpane@4.0.3)
   '@vueuse/core':
     specifier: ^9.13.0
     version: 9.13.0(vue@3.2.47)
@@ -122,6 +125,9 @@ dependencies:
   uuid-generator-ts:
     specifier: ^1.1.0
     version: 1.1.0
+  v-tweakpane:
+    specifier: ^0.2.0
+    version: 0.2.0(@tweakpane/plugin-essentials@0.2.1)(tweakpane@4.0.3)(vue@3.2.47)
   vue:
     specifier: 3.2.47
     version: 3.2.47
@@ -2583,6 +2589,14 @@ packages:
   /@tsconfig/node16@1.0.4:
     resolution: {integrity: sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==}
     dev: true
+
+  /@tweakpane/plugin-essentials@0.2.1(tweakpane@4.0.3):
+    resolution: {integrity: sha512-VbFU1/uD+CJNFQdfLXUOLjeG5HyUZH97Ox9CxmyVetg1hqjVun3C83HAGFULyhKzl8tSgii8jr304r8QpdHwzQ==}
+    peerDependencies:
+      tweakpane: ^4.0.0
+    dependencies:
+      tweakpane: 4.0.3
+    dev: false
 
   /@types/codemirror@5.60.15:
     resolution: {integrity: sha512-dTOvwEQ+ouKJ/rE9LT1Ue2hmP6H1mZv5+CCnNWu2qtiOe2LQa9lCprEY20HxiDmV/Bxh+dXjywmy5aKvoGjULA==}
@@ -8864,6 +8878,19 @@ packages:
 
   /uuid-generator-ts@1.1.0:
     resolution: {integrity: sha512-Kv4pgpuAoVjb0bpSE6tzXDrjTiJMqNx12NabOXHM5YpU8NWH8SJQ+o1ljLgsgRVX2K7vzxsXUu/9Ck4h/279XQ==}
+    dev: false
+
+  /v-tweakpane@0.2.0(@tweakpane/plugin-essentials@0.2.1)(tweakpane@4.0.3)(vue@3.2.47):
+    resolution: {integrity: sha512-/mXwVgGS4442OesjM/HIWShl7M94nGjFOZQDE0fnRFIhygHWR4qKhxWH2ajCQJbOKKeRmVQOUSiY5Bod/3Knbw==}
+    engines: {node: '>=16.0.0', npm: '>=8.19.2'}
+    peerDependencies:
+      '@tweakpane/plugin-essentials': ^0.1.5
+      tweakpane: ^3.1.0
+      vue: ^3.2.41
+    dependencies:
+      '@tweakpane/plugin-essentials': 0.2.1(tweakpane@4.0.3)
+      tweakpane: 4.0.3
+      vue: 3.2.47
     dev: false
 
   /v8-compile-cache-lib@3.0.1:

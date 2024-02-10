@@ -174,6 +174,7 @@ export default {
     EditCondition: 'Ред. Условия',
     EditAction: 'Ред. Действия',
     EditDashboard: 'Ред. Dashboard',
+    EditDashboard2: 'Ред. Dashboard V2',
     EditVariable: 'Ред. Переменной',
     EditArea: 'Ред. Area',
     EditZigbee2mqtt: 'Ред. Zigbee2mqtt',

@@ -174,6 +174,7 @@ export default {
         EditCondition: 'Edit Condition',
         EditAction: 'Edit Action',
         EditDashboard: 'Edit Dashboard',
+        EditDashboard2: 'Edit Dashboard V2',
         EditVariable: 'Edit Variable',
         EditArea: 'Edit Area',
         EditZigbee2mqtt: 'Edit Zigbee2mqtt',
