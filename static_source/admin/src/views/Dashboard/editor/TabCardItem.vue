@@ -294,7 +294,7 @@ const updateCurrentState = () => {
           <div class="w-[100%] item-header">
                 <span>
                   {{ item.title }}
-                <ElTag type="info">
+                <ElTag type="info" size="small">
                   {{ item.type }}
                 </ElTag>
                 </span>
