@@ -205,7 +205,7 @@ const bringToFront = () => {
 .draggable-container-header {
   color: var(--left-menu-text-active-color) !important;
   background-color: var(--left-menu-bg-color);
-  font-size: 10px;
+  //font-size: 10px;
   padding: 5px;
   cursor: move; /* Устанавливаем курсор перемещения */
   user-select: none;

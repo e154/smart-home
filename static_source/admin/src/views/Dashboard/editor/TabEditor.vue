@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import {computed, PropType, reactive, ref, unref, watch} from 'vue'
 import {Form} from '@/components/Form'
-import {
-  ElButton, ElCard, ElMessage, ElPopconfirm,
-  ElSkeleton, ElEmpty, ElMenu, ElMenuItem, ElContainer, ElMain, ElAside, ElDivider, ElCol, ElRow
-} from 'element-plus'
+import {ElButton, ElCol, ElDivider, ElEmpty, ElMenu, ElMenuItem, ElMessage, ElPopconfirm, ElRow} from 'element-plus'
 import {useI18n} from '@/hooks/web/useI18n'
 import {useForm} from '@/hooks/web/useForm'
 import {useValidator} from '@/hooks/web/useValidator'
@@ -160,7 +157,8 @@ const activeTab = computed({
   get(): Tab {
     return currentCore.value.getActiveTab as Tab
   },
-  set(val: Tab) {}
+  set(val: Tab) {
+  }
 })
 
 // ---------------------------------
@@ -230,8 +228,10 @@ const cancel = () => {
   })
 }
 
-const sortCardUp = (tab: Tab, index: number) => {}
-const sortCardDown = (tab: Tab, index: number) => {}
+const sortCardUp = (tab: Tab, index: number) => {
+}
+const sortCardDown = (tab: Tab, index: number) => {
+}
 
 </script>
 
@@ -245,26 +245,26 @@ const sortCardDown = (tab: Tab, index: number) => {}
 
 
   <!--  <ElContainer>-->
-<!--    <ElMain>-->
-<!--      <ElCard class="box-card">-->
-<!--        <template #header>-->
-<!--          <div class="card-header">-->
-<!--            <span>{{ $t('dashboard.tabDetail') }}</span>-->
-<!--          </div>-->
-<!--        </template>-->
+  <!--    <ElMain>-->
+  <!--      <ElCard class="box-card">-->
+  <!--        <template #header>-->
+  <!--          <div class="card-header">-->
+  <!--            <span>{{ $t('dashboard.tabDetail') }}</span>-->
+  <!--          </div>-->
+  <!--        </template>-->
 
-        <Form v-if="currentCore.tabs.length"
-            :schema="schema"
-            :rules="rules"
-            label-position="top"
-            @register="register"
-        />
+  <Form v-if="currentCore.tabs.length"
+        :schema="schema"
+        :rules="rules"
+        label-position="top"
+        @register="register"
+  />
 
-        <ElEmpty v-if="!currentCore.tabs.length" :rows="5">
-          <ElButton type="primary" @click="createTab()">
-            {{ t('dashboard.addNewTab') }}
-          </ElButton>
-        </ElEmpty>
+  <ElEmpty v-if="!currentCore.tabs.length" :rows="5">
+    <ElButton type="primary" @click="createTab()">
+      {{ t('dashboard.addNewTab') }}
+    </ElButton>
+  </ElEmpty>
 
   <ElRow class="mb-10px">
     <ElCol>
@@ -272,52 +272,58 @@ const sortCardDown = (tab: Tab, index: number) => {}
     </ElCol>
   </ElRow>
 
-        <div class="text-right" v-if="currentCore.tabs.length">
+  <div class="text-right" v-if="currentCore.tabs.length">
 
-          <ElButton type="primary" @click.prevent.stop="updateTab">{{ $t('main.update') }}</ElButton>
+    <ElButton type="primary" @click.prevent.stop="updateTab">{{ $t('main.update') }}</ElButton>
 
 
-          <ElButton @click.prevent.stop="cancel" plain>{{ t('main.cancel') }}</ElButton>
-          <ElPopconfirm
-              :confirm-button-text="$t('main.ok')"
-              :cancel-button-text="$t('main.no')"
-              width="250"
-              style="margin-left: 10px;"
-              :title="$t('main.are_you_sure_to_do_want_this?')"
-              @confirm="removeTab"
-          >
-            <template #reference>
-              <ElButton class="mr-10px" type="danger" plain>
-                <Icon icon="ep:delete" class="mr-5px"/>
-                {{ t('main.remove') }}
-              </ElButton>
-            </template>
-          </ElPopconfirm>
-        </div>
+    <ElButton @click.prevent.stop="cancel" plain>{{ t('main.cancel') }}</ElButton>
+    <ElPopconfirm
+        :confirm-button-text="$t('main.ok')"
+        :cancel-button-text="$t('main.no')"
+        width="250"
+        style="margin-left: 10px;"
+        :title="$t('main.are_you_sure_to_do_want_this?')"
+        @confirm="removeTab"
+    >
+      <template #reference>
+        <ElButton class="mr-10px" type="danger" plain>
+          <Icon icon="ep:delete" class="mr-5px"/>
+          {{ t('main.remove') }}
+        </ElButton>
+      </template>
+    </ElPopconfirm>
+  </div>
 
-  <DraggableContainer :name="'editor-tabs'" :initial-width="100">
+  <DraggableContainer :name="'editor-tabs'" :initial-width="280" :min-width="280">
     <template #header>
       <span>Tabs</span>
     </template>
     <template #default>
-      <ElCard class="box-card">
-        <template #header>
-          <div class="card-header">
-            <span>{{ $t('dashboard.tabList') }}</span>
-            <ElButton @click="createTab()" text size="small">
-              {{ t('dashboard.addNew') }}
-            </ElButton>
-          </div>
-        </template>
-        <ElMenu v-if="currentCore.tabs.length" :default-active="currentCore.activeTabIdx + ''" v-model="currentCore.activeTabIdx" class="el-menu-vertical-demo">
-          <ElMenuItem :index="index + ''" :key="tab" v-for="(tab, index) in currentCore.tabs" @click="menuTabClick(index, tab)">
-            <div class="w-[100%] card-header">
-              <span>{{ tab.name }}</span>
-            </div>
-          </ElMenuItem>
-        </ElMenu>
 
-      </ElCard>
+<!--      <ElRow class="mb-10px mt-10px">-->
+<!--        <ElCol>-->
+<!--          <ElDivider content-position="left">{{ $t('dashboard.tabList') }}</ElDivider>-->
+<!--        </ElCol>-->
+<!--      </ElRow>-->
+
+      <ElRow class="mb-10px mt-10px">
+        <ElCol>
+          <ElButton class="w-[100%]" @click="createTab()" size="small">
+            {{ t('dashboard.addNewTab') }}
+          </ElButton>
+        </ElCol>
+      </ElRow>
+
+      <ElMenu v-if="currentCore.tabs.length" :default-active="currentCore.activeTabIdx + ''"
+              v-model="currentCore.activeTabIdx" class="el-menu-vertical-demo">
+        <ElMenuItem :index="index + ''" :key="tab" v-for="(tab, index) in currentCore.tabs"
+                    @click="menuTabClick(index, tab)">
+          <div class="w-[100%] card-header">
+            <span>{{ tab.name }}</span>
+          </div>
+        </ElMenuItem>
+      </ElMenu>
     </template>
   </DraggableContainer>
 

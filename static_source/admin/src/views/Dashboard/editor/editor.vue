@@ -336,4 +336,33 @@ html.dark {
     padding-bottom: 10px !important;
   }
 }
+
+.draggable-container {
+  &.container-editor-cards,
+  &.container-editor-tabs,
+  &.container-editor-card-items,
+  &.container-editor-main {
+    .draggable-container-header {
+      font-size: 12px;
+    }
+  }
+}
+
+.draggable-container {
+  &.container-editor-cards,
+  &.container-editor-tabs,
+  &.container-editor-card-items {
+    .el-menu-item {
+      padding-left: 5px !important;
+      padding-right: 5px !important;
+      line-height: 30px;
+      height: 30px;
+      font-size: 12px;
+    }
+    .el-menu-item * {
+        vertical-align: baseline;
+      }
+  }
+}
+
 </style>

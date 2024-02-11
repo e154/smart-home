@@ -2,21 +2,16 @@
 import {computed, PropType, reactive, ref, unref, watch} from 'vue'
 import {Form} from '@/components/Form'
 import {
-  ElAside,
   ElButton,
   ElButtonGroup,
-  ElCard,
   ElCol,
-  ElContainer,
   ElDivider,
   ElEmpty,
-  ElMain,
   ElMenu,
   ElMenuItem,
   ElMessage,
   ElPopconfirm,
-  ElRow,
-  ElScrollbar
+  ElRow
 } from 'element-plus'
 import {useI18n} from '@/hooks/web/useI18n'
 import {useForm} from '@/hooks/web/useForm'
@@ -30,6 +25,7 @@ import {useBus} from "@/views/Dashboard/core/bus";
 import {Dialog} from '@/components/Dialog'
 import {JsonEditor} from "@/components/JsonEditor";
 import {KeystrokeCapture} from "@/views/Dashboard/components";
+import {DraggableContainer} from "@/components/DraggableContainer";
 
 const {register, elFormRef, methods} = useForm()
 const {required} = useValidator()
@@ -350,37 +346,26 @@ const sortCardDown = (card: Card, index: number) => {
     </ElCol>
   </ElRow>
 
-  <!--  <ElContainer style="height: 500px">-->
-<!--  <ElContainer>-->
-<!--    <ElMain>-->
-<!--      <ElScrollbar>-->
-<!--        <ElCard class="box-card">-->
-<!--          <template #header>-->
-<!--            <div class="card-header">-->
-<!--              <span>{{ $t('dashboard.cardDetail') }}</span>-->
-<!--            </div>-->
-<!--          </template>-->
+  <Form
+      v-if="activeCard !== undefined"
+      :schema="schema"
+      :rules="rules"
+      label-position="top"
+      style="width: 100%"
+      @register="register"
+  />
 
-          <Form
-              v-if="activeCard !== undefined"
-              :schema="schema"
-              :rules="rules"
-              label-position="top"
-              style="width: 100%"
-              @register="register"
-          />
+  <ElRow v-if="activeCard !== undefined" class="mb-10px">
+    <ElCol>
+      <ElDivider content-position="left">{{ $t('dashboard.editor.keystrokeCapture') }}</ElDivider>
+    </ElCol>
+  </ElRow>
 
-          <ElRow v-if="activeCard !== undefined" class="mb-10px">
-            <ElCol>
-              <ElDivider content-position="left">{{ $t('dashboard.editor.keystrokeCapture') }}</ElDivider>
-            </ElCol>
-          </ElRow>
-
-            <ElRow v-if="activeCard !== undefined" class="mb-10px">
-              <ElCol>
-              <KeystrokeCapture :card="activeCard" :core="core"/>
-            </ElCol>
-          </ElRow>
+  <ElRow v-if="activeCard !== undefined" class="mb-10px">
+    <ElCol>
+      <KeystrokeCapture :card="activeCard" :core="core"/>
+    </ElCol>
+  </ElRow>
 
   <ElRow v-if="activeCard !== undefined" class="mb-10px">
     <ElCol>
@@ -388,78 +373,35 @@ const sortCardDown = (card: Card, index: number) => {
     </ElCol>
   </ElRow>
 
-          <ElEmpty v-if="!(activeCard !== undefined)" :rows="5">
-            <ElButton type="primary" @click="addCard()">
-              {{ t('dashboard.addNewCard') }}
-            </ElButton>
-          </ElEmpty>
+  <ElEmpty v-if="!(activeCard !== undefined)" :rows="5">
+    <ElButton type="primary" @click="addCard()">
+      {{ t('dashboard.addNewCard') }}
+    </ElButton>
+  </ElEmpty>
 
-          <div class="text-right" v-if="activeCard != undefined">
-            <ElButton type="primary" @click.prevent.stop='showExportDialog()'>
-              <Icon icon="uil:file-export" class="mr-5px"/>
-              {{ $t('main.export') }}
-            </ElButton>
-            <ElButton type="primary" @click.prevent.stop="updateCard">{{ $t('main.update') }}</ElButton>
-            <ElButton @click.prevent.stop="cancel" plain>{{ t('main.cancel') }}</ElButton>
-            <ElPopconfirm
-                :confirm-button-text="$t('main.ok')"
-                :cancel-button-text="$t('main.no')"
-                width="250"
-                style="margin-left: 10px;"
-                :title="$t('main.are_you_sure_to_do_want_this?')"
-                @confirm="removeCard"
-            >
-              <template #reference>
-                <ElButton class="mr-10px" type="danger" plain>
-                  <Icon icon="ep:delete" class="mr-5px"/>
-                  {{ t('main.remove') }}
-                </ElButton>
-              </template>
-            </ElPopconfirm>
-          </div>
-
-<!--        </ElCard>-->
-<!--      </ElScrollbar>-->
-<!--    </ElMain>-->
-<!--    <ElAside width="400px">-->
-<!--      <ElScrollbar>-->
-<!--        <ElCard class="box-card">-->
-<!--          <template #header>-->
-<!--            <div class="card-header">-->
-<!--              <span>{{ $t('dashboard.cardList') }}</span>-->
-<!--              <ElButtonGroup>-->
-<!--                <ElButton @click="addCard()" text size="small">-->
-<!--                  {{ t('dashboard.addNew') }}-->
-<!--                </ElButton>-->
-<!--                <ElButton @click="showImportDialog()" text size="small">-->
-<!--                  {{ t('dashboard.importCard') }}-->
-<!--                </ElButton>-->
-<!--              </ElButtonGroup>-->
-<!--            </div>-->
-<!--          </template>-->
-<!--          <ElMenu v-if="currentCore.activeTabIdx > -1 && activeTab.cards.length"-->
-<!--                  :default-active="currentCore.activeCard + ''" v-model="currentCore.activeCard"-->
-<!--                  class="el-menu-vertical-demo">-->
-<!--            <ElMenuItem :index="index + ''" :key="index" v-for="(card, index) in activeTab.cards"-->
-<!--                        @click="menuCardsClick(card)">-->
-<!--              <div class="w-[100%] card-header">-->
-<!--                <span>{{ card.title }}</span>-->
-<!--                <ElButtonGroup class="hide">-->
-<!--                  <ElButton @click.prevent.stop="sortCardUp(card, index)">-->
-<!--                    <Icon icon="teenyicons:up-solid"/>-->
-<!--                  </ElButton>-->
-<!--                  <ElButton @click.prevent.stop="sortCardDown(card, index)">-->
-<!--                    <Icon icon="teenyicons:down-solid"/>-->
-<!--                  </ElButton>-->
-<!--                </ElButtonGroup>-->
-<!--              </div>-->
-<!--            </ElMenuItem>-->
-<!--          </ElMenu>-->
-
-<!--        </ElCard>-->
-<!--      </ElScrollbar>-->
-<!--    </ElAside>-->
-<!--  </ElContainer>-->
+  <div class="text-right" v-if="activeCard != undefined">
+    <ElButton type="primary" @click.prevent.stop='showExportDialog()'>
+      <Icon icon="uil:file-export" class="mr-5px"/>
+      {{ $t('main.export') }}
+    </ElButton>
+    <ElButton type="primary" @click.prevent.stop="updateCard">{{ $t('main.update') }}</ElButton>
+    <ElButton @click.prevent.stop="cancel" plain>{{ t('main.cancel') }}</ElButton>
+    <ElPopconfirm
+        :confirm-button-text="$t('main.ok')"
+        :cancel-button-text="$t('main.no')"
+        width="250"
+        style="margin-left: 10px;"
+        :title="$t('main.are_you_sure_to_do_want_this?')"
+        @confirm="removeCard"
+    >
+      <template #reference>
+        <ElButton class="mr-10px" type="danger" plain>
+          <Icon icon="ep:delete" class="mr-5px"/>
+          {{ t('main.remove') }}
+        </ElButton>
+      </template>
+    </ElPopconfirm>
+  </div>
 
   <!-- export dialog -->
   <Dialog v-model="exportDialogVisible" :title="t('entities.dialogExportTitle')" :maxHeight="400" width="80%">
@@ -481,6 +423,58 @@ const sortCardDown = (card: Card, index: number) => {
     </template>
   </Dialog>
   <!-- /import dialog -->
+
+  <DraggableContainer :name="'editor-cards'" :initial-width="280" :min-width="280">
+    <template #header>
+      <span>Cards</span>
+    </template>
+    <template #default>
+
+      <!--      <ElRow class="mb-10px mt-10px">-->
+      <!--        <ElCol>-->
+      <!--          <ElDivider content-position="left">{{ $t('dashboard.editor.itemList') }}</ElDivider>-->
+      <!--        </ElCol>-->
+      <!--      </ElRow>-->
+
+      <ElRow class="mb-10px mt-10px">
+        <ElCol>
+          <ElButton class="w-[100%]" @click="addCard()" size="small">
+            {{ t('dashboard.addNewCard') }}
+          </ElButton>
+        </ElCol>
+      </ElRow>
+
+      <ElRow class="mb-10px mt-10px">
+        <ElCol>
+          <ElButton class="w-[100%]" @click="showImportDialog()" size="small">
+            {{ t('dashboard.importCard') }}
+          </ElButton>
+        </ElCol>
+      </ElRow>
+
+      <ElMenu v-if="currentCore.activeTabIdx > -1 && activeTab.cards.length"
+              :default-active="currentCore.activeCard + ''" v-model="currentCore.activeCard"
+              class="el-menu-vertical-demo">
+        <ElMenuItem :index="index + ''" :key="index" v-for="(card, index) in activeTab.cards"
+                    @click="menuCardsClick(card)">
+          <div class="w-[100%] card-header">
+            <span>{{ card.title }}</span>
+            <ElButtonGroup class="hide">
+              <ElButton @click.prevent.stop="sortCardUp(card, index)" text size="small">
+                <Icon icon="teenyicons:up-solid"/>
+              </ElButton>
+              <ElButton @click.prevent.stop="sortCardDown(card, index)" text size="small">
+                <Icon icon="teenyicons:down-solid"/>
+              </ElButton>
+            </ElButtonGroup>
+          </div>
+        </ElMenuItem>
+      </ElMenu>
+
+    </template>
+  </DraggableContainer>
+
+
 </template>
 
 <style lang="less" scoped>
