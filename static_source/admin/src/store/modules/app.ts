@@ -41,6 +41,7 @@ interface AppState {
   theme: ThemeTypes
   fixedMenu: boolean
   terminal: boolean
+  maxZIndex: number
   serverId: string
 }
 
@@ -78,10 +79,11 @@ export const useAppStore = defineStore('app', {
       dynamicRouter: wsCache.get('dynamicRouter') || false, // 是否动态路由
       fixedMenu: wsCache.get('fixedMenu') || false, // 是否固定菜单
       terminal: wsCache.get('terminal') || false,
+      maxZIndex: 10,
       serverId: wsCache.get('serverId') || '',
       layout: wsCache.get('layout') || 'classic', // layout布局
       isDark: wsCache.get('isDark') || false, // 是否是暗黑模式
-      currentSize: wsCache.get('currentSize') || 'default', // 组件尺寸
+      currentSize: wsCache.get('currentSize') || 'small', // 组件尺寸
       theme: wsCache.get('theme') || {
         // 主题色
         elColorPrimary: '#409eff',
@@ -342,7 +344,10 @@ export const useAppStore = defineStore('app', {
     setServerId(id: string) {
       this.serverId = id
       wsCache.set('serverId', this.serverId)
-    }
+    },
+    getMaxZIndex(): number {
+      return ++this.maxZIndex
+    },
   }
 })
 

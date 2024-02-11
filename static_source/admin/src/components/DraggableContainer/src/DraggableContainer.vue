@@ -4,8 +4,11 @@ import {onBeforeUnmount, onMounted, ref, watch} from "vue";
 import {propTypes} from "@/utils/propTypes";
 import {useCache} from "@/hooks/web/useCache";
 import {debounce} from "lodash-es";
-import {maxZIndex} from "./types";
+import {useAppStore} from "@/store/modules/app";
 
+const emit = defineEmits(['resize'])
+
+const appStore = useAppStore()
 const {wsCache} = useCache()
 
 const props = defineProps({
@@ -31,7 +34,7 @@ let offsetX = ref(0);
 let offsetY = ref(0);
 let startWidth = ref(props.initialWidth);
 let startHeight = ref(props.initialHeight);
-const zIndex = ref(1);
+const zIndex = ref(10);
 
 let moveDirection: string;
 
@@ -98,6 +101,7 @@ const resizeRight = (event: MouseEvent) => {
     const deltaX = event.clientX - offsetX.value;
     width.value = startWidth.value + deltaX;
     if (width.value < props.minWidth) width.value = props.minWidth
+    onResize();
   }
 }
 
@@ -105,7 +109,7 @@ const resizeBottom = (event: MouseEvent) => {
   if (isDragging.value) {
     const deltaY = event.clientY - offsetY.value;
     height.value = startHeight.value + deltaY;
-
+    onResize();
   }
 }
 
@@ -116,8 +120,13 @@ const resizeCorner = (event: MouseEvent) => {
     width.value = startWidth.value + deltaX;
     if (width.value < props.minWidth) width.value = props.minWidth
     height.value = startHeight.value + deltaY;
+    onResize();
   }
 }
+
+const onResize = debounce(() => {
+  emit('resize')
+}, 100)
 
 const stopDragging = () => {
   isDragging.value = false;
@@ -138,7 +147,10 @@ const restoreState = () => {
     height.value = size.height;
   }
 
-   visible.value = wsCache.get(`${props.name}-visibility`);
+  const _visible = wsCache.get(`${props.name}-visibility`);
+  if (_visible != undefined) {
+    visible.value = _visible
+  }
 }
 
 const saveState = debounce(() => {
@@ -152,7 +164,7 @@ const toggleVisibility = () => {
 }
 
 const bringToFront = () => {
-  zIndex.value = ++maxZIndex.value; // Устанавливаем z-index на 1 больше максимального
+  zIndex.value = appStore.getMaxZIndex(); // Устанавливаем z-index на 1 больше максимального
 }
 
 </script>
@@ -188,7 +200,7 @@ const bringToFront = () => {
   position: absolute;
   width: 229px;
   z-index: 1000;
-  background-color: hsl(230, 7%, 17%);
+  background-color: var(--el-bg-color);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
@@ -196,7 +208,7 @@ const bringToFront = () => {
 
 .draggable-container-content {
   position: relative;
-  background-color: var(--el-bg-color);
+//background-color: var(--el-bg-color); padding: 0 10px 10px 10px;
   padding: 0 10px 10px 10px;
   flex-grow: 1; /* Занимаем все оставшееся пространство */
   overflow: auto;
@@ -205,7 +217,7 @@ const bringToFront = () => {
 .draggable-container-header {
   color: var(--left-menu-text-active-color) !important;
   background-color: var(--left-menu-bg-color);
-  //font-size: 10px;
+  font-size: 12px;
   padding: 5px;
   cursor: move; /* Устанавливаем курсор перемещения */
   user-select: none;

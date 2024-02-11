@@ -460,10 +460,10 @@ const sortCardDown = (card: Card, index: number) => {
           <div class="w-[100%] card-header">
             <span>{{ card.title }}</span>
             <ElButtonGroup class="hide">
-              <ElButton @click.prevent.stop="sortCardUp(card, index)" size="small">
+              <ElButton @click.prevent.stop="sortCardUp(card, index)" text size="small">
                 <Icon icon="teenyicons:up-solid"/>
               </ElButton>
-              <ElButton @click.prevent.stop="sortCardDown(card, index)" size="small">
+              <ElButton @click.prevent.stop="sortCardDown(card, index)" text size="small">
                 <Icon icon="teenyicons:down-solid"/>
               </ElButton>
             </ElButtonGroup>

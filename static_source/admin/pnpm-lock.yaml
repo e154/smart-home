@@ -146,9 +146,6 @@ dependencies:
   vue-types:
     specifier: ^5.0.2
     version: 5.0.2(vue@3.2.47)
-  vue-web-terminal:
-    specifier: ^3.1.8
-    version: 3.1.8(vue@3.2.47)
   vue3-moveable:
     specifier: ^0.26.1
     version: 0.26.1
@@ -167,6 +164,12 @@ dependencies:
   websocket-ts:
     specifier: ^1.1.1
     version: 1.1.1
+  xterm:
+    specifier: ^5.3.0
+    version: 5.3.0
+  xterm-addon-fit:
+    specifier: ^0.8.0
+    version: 0.8.0(xterm@5.3.0)
 
 devDependencies:
   '@commitlint/cli':
@@ -9244,14 +9247,6 @@ packages:
       vue: 3.2.47
     dev: false
 
-  /vue-web-terminal@3.1.8(vue@3.2.47):
-    resolution: {integrity: sha512-fz+vHXGZV438HWqD92i2YBEtyeHYDQWpyfmtCvv7ABK7hM+L13wQxmjg5XSJLacwnWUPMbsJE9piRwiB5Xx5Cg==}
-    dependencies:
-      vue-json-viewer: 3.0.4(vue@3.2.47)
-    transitivePeerDependencies:
-      - vue
-    dev: false
-
   /vue3-moveable@0.26.1:
     resolution: {integrity: sha512-j9b9ScJ7nNP6pFUZhqvrqfUjTV7jbZnbsUa1HazDJ4KRZmVNa/LFnFl9re4b1A99D6Oc1fWQC7sNeENs6hUWiA==}
     dependencies:
@@ -9440,6 +9435,18 @@ packages:
 
   /xml-utils@1.7.0:
     resolution: {integrity: sha512-bWB489+RQQclC7A9OW8e5BzbT8Tu//jtAOvkYwewFr+Q9T9KDGvfzC1lp0pYPEQPEoPQLDkmxkepSC/2gIAZGw==}
+    dev: false
+
+  /xterm-addon-fit@0.8.0(xterm@5.3.0):
+    resolution: {integrity: sha512-yj3Np7XlvxxhYF/EJ7p3KHaMt6OdwQ+HDu573Vx1lRXsVxOcnVJs51RgjZOouIZOczTsskaS+CpXspK81/DLqw==}
+    peerDependencies:
+      xterm: ^5.0.0
+    dependencies:
+      xterm: 5.3.0
+    dev: false
+
+  /xterm@5.3.0:
+    resolution: {integrity: sha512-8QqjlekLUFTrU6x7xck1MsPzPA571K5zNqWm0M0oroYEWVOptZ0+ubQSkQ3uxIEhcIHRujJy6emDWX4A7qyFzg==}
     dev: false
 
   /y18n@4.0.3:

@@ -36,8 +36,6 @@ import './permission'
 
 import OpenLayersMap from "vue3-openlayers";
 
-import Terminal from 'vue-web-terminal'
-
 import 'unfonts.css'
 
 // 创建实例
@@ -57,8 +55,6 @@ const setupAll = async () => {
   setupPermission(app)
 
   app.use(OpenLayersMap);
-
-  app.use(Terminal)
 
   app.mount('#app')
 }

@@ -272,19 +272,28 @@ html {
 }
 
 html.dark {
-  .draggable-container.container-editor-main {
+  .draggable-container {
+    &.container-editor-main {
 
-    .draggable-container-content,
-    .el-divider__text {
-      background-color: hsl(230, 7%, 17%);
+
+      .el-card {
+        .el-divider__text {
+          background-color: var(--el-bg-color-overlay);
+        }
+      }
     }
 
-    .el-card {
+    &.container-editor-cards,
+    &.container-editor-tabs,
+    &.container-editor-card-items,
+    &.container-editor-main {
+      .draggable-container-content,
       .el-divider__text {
-        background-color: var(--el-bg-color-overlay);
+        background-color: hsl(230, 7%, 17%);
       }
     }
   }
+
 }
 
 // custom style
