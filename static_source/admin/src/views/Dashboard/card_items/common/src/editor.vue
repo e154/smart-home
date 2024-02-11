@@ -113,7 +113,11 @@ const removeAction = (index: number) => {
 <template>
 
   <!-- main options -->
-  <ElDivider content-position="left">{{ $t('dashboard.editor.mainOptions') }}</ElDivider>
+  <ElRow class="mb-10px mt-10px">
+    <ElCol>
+      <ElDivider content-position="left">{{ $t('dashboard.editor.mainOptions') }}</ElDivider>
+    </ElCol>
+  </ElRow>
 
   <ElRow>
     <ElCol>
@@ -140,7 +144,7 @@ const removeAction = (index: number) => {
   <!-- /main options -->
 
   <!-- show on -->
-  <ElRow class="mb-10px">
+  <ElRow class="mb-10px mt-10px">
     <ElCol>
       <ElDivider content-position="left">{{ $t('dashboard.editor.showOn') }}</ElDivider>
     </ElCol>
@@ -150,18 +154,19 @@ const removeAction = (index: number) => {
   <!-- /show on -->
 
   <!-- hide on-->
-  <ElRow class="mb-10px">
+  <ElRow class="mb-10px mt-10px">
     <ElCol>
       <ElDivider content-position="left">{{ $t('dashboard.editor.hideOn') }}</ElDivider>
     </ElCol>
   </ElRow>
+
   <ShowOn v-model="currentItem.hideOn" :item="currentItem" :core="core"/>
   <!-- /hide on-->
 
   <!-- button options -->
   <div
-      v-if="!['button', 'chart', 'chart_custom', 'chartCustom', 'map', 'slider',
-      'streamPlayer', 'tiles', 'grid', 'progress', 'colorPicker', 'joystick'].includes(item.type)">
+      v-if="!['button', 'chart', 'chart_custom', 'chartCustom', 'map', 'slider', 'entityStorage',
+      'streamPlayer', 'tiles', 'grid', 'progress', 'colorPicker', 'joystick', 'logs'].includes(item.type)">
     <ElDivider content-position="left">{{ $t('dashboard.editor.buttonOptions') }}</ElDivider>
     <ElRow :gutter="24">
       <ElCol :span="12" :xs="12">
@@ -169,14 +174,19 @@ const removeAction = (index: number) => {
           <ElSwitch v-model="currentItem.asButton"/>
         </ElFormItem>
       </ElCol>
-    </ElRow>
-    <ElRow v-if="currentItem.asButton">
-      <ElCol>
-        <ElButton class="w-[100%]" type="default" @click.prevent.stop="addAction()">
+      <ElCol :span="12" :xs="12" v-if="currentItem.asButton">
+        <ElFormItem label="&nbsp;" prop="addAction">
+        <ElButton class="w-[100%]" @click.prevent.stop="addAction()">
           <Icon icon="ep:plus" class="mr-5px"/>
           {{ $t('dashboard.editor.addAction') }}
         </ElButton>
+        </ElFormItem>
 
+      </ElCol>
+    </ElRow>
+
+    <ElRow v-if="currentItem.asButton">
+      <ElCol>
         <!-- props -->
         <ElCollapse>
           <ElCollapseItem
@@ -197,7 +207,7 @@ const removeAction = (index: number) => {
                   style="width: 100%"
                   ref="cardItemForm">
 
-                <ElDivider content-position="left">{{ $t('dashboard.editor.actionOptions') }}</ElDivider>
+<!--                <ElDivider content-position="left">{{ $t('dashboard.editor.actionOptions') }}</ElDivider>-->
 
                 <EntitiesAction :options="prop" :entity="currentItem.entity"
                                 @change="changedForActionButton($event, index)"/>
@@ -246,7 +256,7 @@ const removeAction = (index: number) => {
                           @confirm="removeAction(index)"
                       >
                         <template #reference>
-                          <ElButton class="mr-10px" type="danger" plain>
+                          <ElButton type="danger" plain>
                             <Icon icon="ep:delete" class="mr-5px"/>
                             {{ t('main.remove') }}
                           </ElButton>

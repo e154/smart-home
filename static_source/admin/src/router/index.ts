@@ -416,19 +416,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
           activeMenu: '/dashboards'
         }
       },
-      {
-        path: 'edit2/:id',
-        name: 'edit2Dashboards',
-        component: () => import('@/views/Dashboard/editor2/editor.vue'),
-        props: true,
-        meta: {
-          title: t('router.EditDashboard2'),
-          // noTagsView: true,
-          hidden: true,
-          canTo: true,
-          activeMenu: '/dashboards'
-        }
-      }
     ]
   },
   {

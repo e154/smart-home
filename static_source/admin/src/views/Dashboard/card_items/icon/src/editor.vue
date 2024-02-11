@@ -1,22 +1,10 @@
 <script setup lang="ts">
 import {computed, PropType} from "vue";
-import {CardItem, Core, requestCurrentState} from "@/views/Dashboard/core/core";
-import {
-  ElButton,
-  ElCol,
-  ElCollapse,
-  ElCollapseItem,
-  ElColorPicker,
-  ElDivider,
-  ElFormItem,
-  ElInput,
-  ElInputNumber,
-  ElRow
-} from 'element-plus'
+import {CardItem, Core} from "@/views/Dashboard/core/core";
+import {ElCol, ElColorPicker, ElDivider, ElFormItem, ElInput, ElInputNumber, ElRow} from 'element-plus'
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {useI18n} from "@/hooks/web/useI18n";
 import {Cache} from "@/views/Dashboard/core/render";
-import {JsonViewer} from "@/components/JsonViewer";
 import {KeysSearch} from "@/views/Dashboard/components";
 
 const {t} = useI18n()
@@ -49,12 +37,6 @@ const currentItem = computed({
 // component methods
 // ---------------------------------
 
-const updateCurrentState = () => {
-  if (currentItem.value.entityId) {
-    requestCurrentState(currentItem.value?.entityId)
-  }
-}
-
 const onChangeValue = (val) => {
   currentItem.value.payload.icon.attrField = val;
 }
@@ -65,7 +47,11 @@ const onChangeValue = (val) => {
 
   <CommonEditor :item="currentItem" :core="core"/>
 
-  <ElDivider content-position="left">{{ $t('dashboard.editor.iconOptions') }}</ElDivider>
+  <ElRow class="mb-10px mt-10px">
+    <ElCol>
+      <ElDivider content-position="left">{{ $t('dashboard.editor.iconOptions') }}</ElDivider>
+    </ElCol>
+  </ElRow>
 
   <ElRow :gutter="24">
     <ElCol :span="8" :xs="8">
@@ -88,22 +74,6 @@ const onChangeValue = (val) => {
   <ElFormItem :label="$t('dashboard.editor.attrField')" prop="text">
     <KeysSearch v-model="currentItem.payload.icon.attrField" :obj="currentItem.lastEvent" @change="onChangeValue"/>
   </ElFormItem>
-
-  <ElRow class="mb-10px" v-if="currentItem.entity">
-    <ElCol>
-      <ElCollapse>
-        <ElCollapseItem :title="$t('dashboard.editor.eventstateJSONobject')">
-          <ElButton class="mb-10px w-[100%]" type="default" @click.prevent.stop="updateCurrentState()">
-            <Icon icon="ep:refresh" class="mr-5px"/>
-            {{ $t('dashboard.editor.getEvent') }}
-          </ElButton>
-
-          <JsonViewer v-model="currentItem.lastEvent"/>
-
-        </ElCollapseItem>
-      </ElCollapse>
-    </ElCol>
-  </ElRow>
 
 </template>
 

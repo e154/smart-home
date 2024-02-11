@@ -106,7 +106,7 @@ const changedForActionButton = async (options: EntitiesActionOptions, index: num
   >
     <ElRow>
       <ElCol>
-        <ElButton class="w-[100%]" type="default" @click.prevent.stop="addAction()">
+        <ElButton class="w-[100%]" @click.prevent.stop="addAction()">
           <Icon icon="ep:plus" class="mr-5px"/>
           {{ $t('dashboard.editor.addAction') }}
         </ElButton>

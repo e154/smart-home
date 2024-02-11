@@ -30,10 +30,10 @@ const currentItem = computed(() => props.item as CardItem)
 // ---------------------------------
 
 const changedForActionButton = async (options: EntitiesActionOptions) => {
-    currentItem.value.payload.button.entityId = options.entityId
-    currentItem.value.payload.button.action = options.action
-    currentItem.value.payload.button.tags = options.tags
-    currentItem.value.payload.button.areaId = options.areaId
+  currentItem.value.payload.button.entityId = options.entityId
+  currentItem.value.payload.button.action = options.action
+  currentItem.value.payload.button.tags = options.tags
+  currentItem.value.payload.button.areaId = options.areaId
 }
 
 </script>
@@ -43,21 +43,31 @@ const changedForActionButton = async (options: EntitiesActionOptions) => {
 
     <CommonEditor :item="currentItem" :core="core"/>
 
-    <ElDivider content-position="left">{{ $t('dashboard.editor.buttonOptions') }}</ElDivider>
+    <ElRow class="mb-10px mt-10px">
+      <ElCol>
+        <ElDivider content-position="left">{{ $t('dashboard.editor.buttonOptions') }}</ElDivider>
+      </ElCol>
+    </ElRow>
 
-    <ElRow :gutter="24">
-      <ElCol :span="8" :xs="8">
+    <ElRow>
+      <ElCol>
         <ElFormItem :label="$t('dashboard.editor.icon')" prop="icon">
           <ElInput v-model="currentItem.payload.button.icon"/>
         </ElFormItem>
+      </ElCol>
+    </ElRow>
 
+    <ElRow>
+      <ElCol>
         <ElFormItem :label="$t('dashboard.editor.text')" prop="text">
           <ElInput v-model="currentItem.payload.button.text"/>
         </ElFormItem>
-
       </ElCol>
-      <ElCol :span="8" :xs="8">
+    </ElRow>
 
+
+    <ElRow>
+      <ElCol>
         <ElFormItem :label="$t('dashboard.editor.type')" prop="type">
           <ElSelect
               v-model="currentItem.payload.button.type"
@@ -72,7 +82,11 @@ const changedForActionButton = async (options: EntitiesActionOptions) => {
             <ElOption label="Danger" value="danger"/>
           </ElSelect>
         </ElFormItem>
+      </ElCol>
+    </ElRow>
 
+    <ElRow>
+      <ElCol>
         <ElFormItem :label="$t('dashboard.editor.size')" prop="size">
           <ElSelect
               v-model="currentItem.payload.button.size"
@@ -86,7 +100,10 @@ const changedForActionButton = async (options: EntitiesActionOptions) => {
         </ElFormItem>
 
       </ElCol>
-      <ElCol :span="8" :xs="8">
+    </ElRow>
+
+    <ElRow>
+      <ElCol>
 
         <ElFormItem :label="$t('dashboard.editor.round')" prop="round">
           <ElSwitch v-model="currentItem.payload.button.round"/>
@@ -97,12 +114,12 @@ const changedForActionButton = async (options: EntitiesActionOptions) => {
         </ElFormItem>
 
       </ElCol>
-
     </ElRow>
 
     <ElDivider content-position="left">{{ $t('dashboard.editor.actionOptions') }}</ElDivider>
 
-    <EntitiesAction :options="currentItem.payload.button" :entity="currentItem.entity" @change="changedForActionButton($event)"/>
+    <EntitiesAction :options="currentItem.payload.button" :entity="currentItem.entity"
+                    @change="changedForActionButton($event)"/>
 
   </div>
 </template>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {PropType} from "vue";
 import {CardItem, Core} from "@/views/Dashboard/core/core";
-import {ElDivider} from 'element-plus'
+import {ElCol, ElDivider, ElRow} from 'element-plus'
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {useI18n} from "@/hooks/web/useI18n";
 
@@ -35,7 +35,11 @@ const props = defineProps({
 
     <CommonEditor :item="item" :core="core"/>
 
-    <ElDivider content-position="left">Dummy options</ElDivider>
+    <ElRow class="mb-10px mt-10px">
+      <ElCol>
+        <ElDivider content-position="left">Dummy options</ElDivider>
+      </ElCol>
+    </ElRow>
 
     [Unknown item type "{{ item.type }}"]
 

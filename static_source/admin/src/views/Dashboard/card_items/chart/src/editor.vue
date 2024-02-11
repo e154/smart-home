@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {computed, PropType} from "vue";
-import {CardItem, Core, requestCurrentState} from "@/views/Dashboard/core/core";
+import {CardItem, Core} from "@/views/Dashboard/core/core";
 import {
   ElButton,
   ElCard,
@@ -21,7 +21,6 @@ import {
 } from 'element-plus'
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {FilterList, RangeList} from "./types";
-import {JsonViewer} from "@/components/JsonViewer";
 import {useI18n} from "@/hooks/web/useI18n";
 
 const {t} = useI18n()
@@ -48,12 +47,6 @@ const currentItem = computed(() => props.item as CardItem)
 // ---------------------------------
 // component methods
 // ---------------------------------
-
-const updateCurrentState = () => {
-  if (currentItem.value.entityId) {
-    requestCurrentState(currentItem.value?.entityId)
-  }
-}
 
 const getMetricList = computed(() => {
   if (props.item.entity && props.item.entity?.metrics && props.item.payload.chart.metric_index !== undefined && props.item.entity.metrics[props.item.payload.chart.metric_index]) {
@@ -94,7 +87,11 @@ const removeChartItem = (index: number) => {
 
   <CommonEditor :item="item" :core="core"/>
 
-  <ElDivider content-position="left">{{ $t('dashboard.editor.chart.chartOptions') }}</ElDivider>
+  <ElRow class="mb-10px mt-10px">
+    <ElCol>
+      <ElDivider content-position="left">{{ $t('dashboard.editor.chart.chartOptions') }}</ElDivider>
+    </ElCol>
+  </ElRow>
 
   <ElFormItem :label="$t('dashboard.editor.chart.type')" prop="type">
     <ElSelect
@@ -147,12 +144,16 @@ const removeChartItem = (index: number) => {
     </ElCol>
   </ElRow>
 
-  <ElDivider content-position="left" v-if="currentItem.payload.chart.type === 'line'">
-    {{ $t('dashboard.editor.chart.lineOptions') }}
-  </ElDivider>
+  <ElRow class="mb-10px mt-10px">
+    <ElCol>
+      <ElDivider content-position="left" v-if="currentItem.payload.chart.type === 'line'">
+        {{ $t('dashboard.editor.chart.lineOptions') }}
+      </ElDivider>
+    </ElCol>
+  </ElRow>
 
-  <ElRow :gutter="24" v-if="currentItem.payload.chart.type === 'line'">
-    <ElCol :span="12" :xs="12">
+  <ElRow v-if="currentItem.payload.chart.type === 'line'">
+    <ElCol>
 
       <ElFormItem :label="$t('dashboard.editor.chart.entity_metric')" prop="index">
         <ElSelect v-model="currentItem.payload.chart.metric_index" placeholder="Select" class="w-[100%]">
@@ -163,7 +164,11 @@ const removeChartItem = (index: number) => {
               :value="index"/>
         </ElSelect>
       </ElFormItem>
+    </ElCol>
+  </ElRow>
 
+  <ElRow v-if="currentItem.payload.chart.type === 'line'">
+    <ElCol>
       <ElFormItem :label="$t('dashboard.editor.chart.metric_props')" prop="index">
         <ElSelect v-model="currentItem.payload.chart.props" multiple placeholder="Select" clearable class="w-[100%]">
           <ElOption
@@ -173,9 +178,11 @@ const removeChartItem = (index: number) => {
               :value="p.name"/>
         </ElSelect>
       </ElFormItem>
-
     </ElCol>
-    <ElCol :span="12" :xs="12">
+  </ElRow>
+
+  <ElRow v-if="currentItem.payload.chart.type === 'line'">
+    <ElCol>
       <ElFormItem :label="$t('dashboard.editor.chart.range')" prop="index">
         <ElSelect v-model="currentItem.payload.chart.range" placeholder="Select" clearable class="w-[100%]">
           <ElOption
@@ -185,7 +192,11 @@ const removeChartItem = (index: number) => {
               :value="p.value"/>
         </ElSelect>
       </ElFormItem>
+    </ElCol>
+  </ElRow>
 
+  <ElRow v-if="currentItem.payload.chart.type === 'line'">
+    <ElCol>
       <ElFormItem :label="$t('dashboard.editor.chart.filter')" prop="index">
         <ElSelect v-model="currentItem.payload.chart.filter" placeholder="Select" clearable class="w-[100%]">
           <ElOption
@@ -198,13 +209,12 @@ const removeChartItem = (index: number) => {
     </ElCol>
   </ElRow>
 
-  <ElRow :gutter="24" v-if="currentItem.payload.chart.type === 'line'">
-    <ElCol :span="12" :xs="12">
+  <ElRow v-if="currentItem.payload.chart.type === 'line'">
+    <ElCol>
       <ElFormItem :label="$t('dashboard.editor.chart.borderWidth')" prop="borderWidth">
         <ElInputNumber v-model="currentItem.payload.chart.borderWidth" :min="1" :max="10"/>
       </ElFormItem>
     </ElCol>
-
   </ElRow>
 
   <!-- chart items -->
@@ -225,7 +235,7 @@ const removeChartItem = (index: number) => {
   <ElRow v-if="['bar', 'pie', 'doughnut'].includes(currentItem.payload.chart.type)">
     <ElCol>
       <div class="mb-10px">
-        <ElButton type="default" @click.prevent.stop="addChartItem()">
+        <ElButton @click.prevent.stop="addChartItem()">
           <Icon icon="ep:plus" class="mr-5px"/>
           {{ $t('dashboard.editor.chart.addChartItem') }}
         </ElButton>
@@ -276,7 +286,7 @@ const removeChartItem = (index: number) => {
                       @confirm="removeChartItem(index)"
                   >
                     <template #reference>
-                      <ElButton class="mr-10px" type="danger" plain>
+                      <ElButton type="danger" plain>
                         <Icon icon="ep:delete" class="mr-5px"/>
                         {{ t('main.remove') }}
                       </ElButton>
@@ -296,22 +306,6 @@ const removeChartItem = (index: number) => {
     </ElCol>
   </ElRow>
   <!-- /chart items -->
-
-  <ElRow class="mt-20px mb-20px" v-if="currentItem.entity">
-    <ElCol>
-      <ElCollapse>
-        <ElCollapseItem :title="$t('dashboard.editor.eventstateJSONobject')">
-          <ElButton class="mb-10px w-[100%]" type="default" @click.prevent.stop="updateCurrentState()">
-            <Icon icon="ep:refresh" class="mr-5px"/>
-            {{ $t('dashboard.editor.getEvent') }}
-          </ElButton>
-
-          <JsonViewer v-model="currentItem.lastEvent"/>
-
-        </ElCollapseItem>
-      </ElCollapse>
-    </ElCol>
-  </ElRow>
 
 </template>
 

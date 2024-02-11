@@ -154,11 +154,7 @@ const initDefaultValue = () => {
 // component methods
 // ---------------------------------
 
-const updateCurrentState = () => {
-  if (currentItem.value.entityId) {
-    requestCurrentState(currentItem.value?.entityId)
-  }
-}
+
 
 const onChangePropKey = (val, index) => {
   currentItem.value.payload.state.items[index].key = val.key;
@@ -179,7 +175,7 @@ const onChangePropKey = (val, index) => {
   <ElRow>
     <ElCol>
       <div class="mb-10px">
-        <ElButton class="w-[100%]" type="default" @click.prevent.stop="addProp()">
+        <ElButton class="w-[100%]" @click.prevent.stop="addProp()">
           <Icon icon="ep:plus" class="mr-5px"/>
           {{ $t('dashboard.editor.addNewProp') }}
         </ElButton>
@@ -293,7 +289,7 @@ const onChangePropKey = (val, index) => {
                       @confirm="removeProp(index)"
                   >
                     <template #reference>
-                      <ElButton class="mr-10px" type="danger" plain>
+                      <ElButton type="danger" plain>
                         <Icon icon="ep:delete" class="mr-5px"/>
                         {{ t('main.remove') }}
                       </ElButton>
@@ -309,6 +305,8 @@ const onChangePropKey = (val, index) => {
       </ElCard>
 
     </ElCollapseItem>
+  </ElCollapse>
+  <!-- /props -->
 
 
     <ElRow>
@@ -345,31 +343,13 @@ const onChangePropKey = (val, index) => {
       </ElCol>
     </ElRow>
 
-    <ElRow>
+    <ElRow class="mb-10px">
       <ElCol>
         <ElFormItem :label="$t('dashboard.editor.iconSize')" prop="iconSize">
           <ElInputNumber v-model="currentItem.payload.state.defaultIconSize" :min="1" :value-on-clear="12"/>
         </ElFormItem>
       </ElCol>
     </ElRow>
-  </ElCollapse>
-  <!-- /props -->
-
-  <ElRow class="mb-10px" v-if="currentItem.entity">
-    <ElCol>
-      <ElCollapse>
-        <ElCollapseItem :title="$t('dashboard.editor.eventstateJSONobject')">
-          <ElButton class="mb-10px w-[100%]" type="default" @click.prevent.stop="updateCurrentState()">
-            <Icon icon="ep:refresh" class="mr-5px"/>
-            {{ $t('dashboard.editor.getEvent') }}
-          </ElButton>
-
-          <JsonViewer v-model="currentItem.lastEvent"/>
-
-        </ElCollapseItem>
-      </ElCollapse>
-    </ElCol>
-  </ElRow>
 
 </template>
 

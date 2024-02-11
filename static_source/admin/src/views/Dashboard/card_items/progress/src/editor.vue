@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {computed, PropType} from "vue";
-import {CardItem, comparisonType, Core, requestCurrentState} from "@/views/Dashboard/core/core";
+import {CardItem, comparisonType, Core} from "@/views/Dashboard/core/core";
 import {
   ElButton,
   ElCard,
@@ -20,7 +20,6 @@ import {
   ElSwitch,
   ElTag
 } from 'element-plus'
-import {JsonViewer} from "@/components/JsonViewer";
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {useI18n} from "@/hooks/web/useI18n";
 import {KeysSearch} from "@/views/Dashboard/components";
@@ -47,12 +46,6 @@ const currentItem = computed(() => props.item as CardItem)
 // ---------------------------------
 // component methods
 // ---------------------------------
-
-const updateCurrentState = () => {
-  if (currentItem.value.entityId) {
-    requestCurrentState(currentItem.value?.entityId)
-  }
-}
 
 const addProp = () => {
   // console.log('addProp')
@@ -95,131 +88,124 @@ const onChangeValue = (val) => {
   <div>
     <CommonEditor :item="currentItem" :core="core"/>
 
-    <ElDivider content-position="left">{{ $t('dashboard.editor.progressOptions') }}</ElDivider>
+    <ElRow class="mb-10px mt-10px">
+      <ElCol>
+        <ElDivider content-position="left">{{ $t('dashboard.editor.progressOptions') }}</ElDivider>
+      </ElCol>
+    </ElRow>
 
     <ElRow class="mb-10px">
       <ElCol>
-        <div class="mb-10px">
-          <ElButton type="default" @click.prevent.stop="addProp()">
-            <Icon icon="ep:plus" class="mr-5px"/>
-            {{ $t('dashboard.editor.addProp') }}
-          </ElButton>
-        </div>
-
-        <!-- props -->
-        <ElCollapse>
-          <ElCollapseItem
-              :name="index"
-              :key="index"
-              v-for="(prop, index) in currentItem.payload.progress.items"
-          >
-
-            <template #title>
-              <ElTag size="small">{{ prop.key }}</ElTag>
-              +
-              <ElTag size="small">{{ prop.comparison }}</ElTag>
-              +
-              <ElTag size="small">{{ prop.value }}</ElTag>
-            </template>
-
-            <ElCard shadow="never" class="item-card-editor">
-
-              <ElForm
-                  label-position="top"
-                  :model="prop"
-                  style="width: 100%"
-                  ref="cardItemForm"
-              >
-
-                <ElRow :gutter="24">
-                  <ElCol
-                      :span="8"
-                      :xs="8"
-                  >
-                    <ElFormItem :label="$t('dashboard.editor.text')" prop="text">
-                      <KeysSearch v-model="prop.key" :obj="currentItem.lastEvent"
-                                  @change="onChangePropValue($event, index)"/>
-                    </ElFormItem>
-
-                  </ElCol>
-
-                  <ElCol
-                      :span="8"
-                      :xs="8"
-                  >
-                    <ElFormItem :label="$t('dashboard.editor.comparison')" prop="comparison">
-                      <ElSelect
-                          v-model="prop.comparison"
-                          placeholder="please select type"
-                          style="width: 100%"
-                      >
-                        <ElOption label="==" value="eq"/>
-                        <ElOption label="<" value="lt"/>
-                        <ElOption label="<=" value="le"/>
-                        <ElOption label="!=" value="ne"/>
-                        <ElOption label=">=" value="ge"/>
-                        <ElOption label=">" value="gt"/>
-                      </ElSelect>
-                    </ElFormItem>
-
-                  </ElCol>
-
-                  <ElCol
-                      :span="8"
-                      :xs="8"
-                  >
-
-                    <ElFormItem :label="$t('dashboard.editor.value')" prop="value">
-                      <ElInput
-                          placeholder="Please input"
-                          v-model="prop.value"/>
-                    </ElFormItem>
-
-                  </ElCol>
-                </ElRow>
-
-                <ElRow :gutter="24">
-                  <ElCol :span="12" :xs="12">
-                    <ElFormItem :label="$t('dashboard.editor.color')" prop="background">
-                      <ElColorPicker show-alpha v-model="prop.color"/>
-                    </ElFormItem>
-                  </ElCol>
-                </ElRow>
-
-                <ElRow>
-                  <ElCol>
-                    <div class="mb-10px">
-                      <div style="text-align: right;">
-                        <ElPopconfirm
-                            :confirm-button-text="$t('main.ok')"
-                            :cancel-button-text="$t('main.no')"
-                            width="250"
-                            style="margin-left: 10px;"
-                            :title="$t('main.are_you_sure_to_do_want_this?')"
-                            @confirm="removeProp"
-                        >
-                          <template #reference>
-                            <ElButton class="mr-10px" type="danger" plain>
-                              <Icon icon="ep:delete" class="mr-5px"/>
-                              {{ t('main.remove') }}
-                            </ElButton>
-                          </template>
-                        </ElPopconfirm>
-                      </div>
-                    </div>
-                  </ElCol>
-                </ElRow>
-
-              </ElForm>
-
-            </ElCard>
-
-          </ElCollapseItem>
-        </ElCollapse>
-        <!-- /props -->
-
+        <ElButton class="w-[100%]" @click.prevent.stop="addProp()">
+          <Icon icon="ep:plus" class="mr-5px"/>
+          {{ $t('dashboard.editor.addProp') }}
+        </ElButton>
       </ElCol>
     </ElRow>
+
+    <!-- props -->
+    <ElCollapse>
+      <ElCollapseItem
+          :name="index"
+          :key="index"
+          v-for="(prop, index) in currentItem.payload.progress.items"
+      >
+
+        <template #title>
+          <ElTag size="small">{{ prop.key }}</ElTag>
+          +
+          <ElTag size="small">{{ prop.comparison }}</ElTag>
+          +
+          <ElTag size="small">{{ prop.value }}</ElTag>
+        </template>
+
+        <ElCard shadow="never" class="item-card-editor">
+
+          <ElForm
+              label-position="top"
+              :model="prop"
+              style="width: 100%"
+              ref="cardItemForm"
+          >
+
+            <ElRow>
+              <ElCol>
+                <ElFormItem :label="$t('dashboard.editor.text')" prop="text">
+                  <KeysSearch v-model="prop.key" :obj="currentItem.lastEvent"
+                              @change="onChangePropValue($event, index)"/>
+                </ElFormItem>
+
+              </ElCol>
+            </ElRow>
+
+            <ElRow>
+              <ElCol>
+                <ElFormItem :label="$t('dashboard.editor.comparison')" prop="comparison">
+                  <ElSelect
+                      v-model="prop.comparison"
+                      placeholder="please select type"
+                      style="width: 100%"
+                  >
+                    <ElOption label="==" value="eq"/>
+                    <ElOption label="<" value="lt"/>
+                    <ElOption label="<=" value="le"/>
+                    <ElOption label="!=" value="ne"/>
+                    <ElOption label=">=" value="ge"/>
+                    <ElOption label=">" value="gt"/>
+                  </ElSelect>
+                </ElFormItem>
+
+              </ElCol>
+            </ElRow>
+
+            <ElRow>
+              <ElCol>
+                <ElFormItem :label="$t('dashboard.editor.value')" prop="value">
+                  <ElInput
+                      placeholder="Please input"
+                      v-model="prop.value"/>
+                </ElFormItem>
+              </ElCol>
+            </ElRow>
+
+            <ElRow>
+              <ElCol>
+                <ElFormItem :label="$t('dashboard.editor.color')" prop="background">
+                  <ElColorPicker show-alpha v-model="prop.color"/>
+                </ElFormItem>
+              </ElCol>
+            </ElRow>
+
+            <ElRow>
+              <ElCol>
+                <div style="text-align: right;">
+                  <ElPopconfirm
+                      :confirm-button-text="$t('main.ok')"
+                      :cancel-button-text="$t('main.no')"
+                      width="250"
+                      style="margin-left: 10px;"
+                      :title="$t('main.are_you_sure_to_do_want_this?')"
+                      @confirm="removeProp"
+                  >
+                    <template #reference>
+                      <ElButton type="danger" plain>
+                        <Icon icon="ep:delete" class="mr-5px"/>
+                        {{ t('main.remove') }}
+                      </ElButton>
+                    </template>
+                  </ElPopconfirm>
+                </div>
+              </ElCol>
+            </ElRow>
+
+          </ElForm>
+
+        </ElCard>
+
+      </ElCollapseItem>
+    </ElCollapse>
+    <!-- /props -->
+
 
     <ElFormItem :label="$t('dashboard.editor.type')" prop="type">
       <ElSelect
@@ -259,8 +245,8 @@ const onChangeValue = (val) => {
       </ElCol>
     </ElRow>
 
-    <ElRow :gutter="24">
-      <ElCol :span="12" :xs="12">
+    <ElRow>
+      <ElCol>
         <ElFormItem :label="$t('dashboard.editor.color')" prop="background">
           <ElColorPicker show-alpha v-model="currentItem.payload.progress.color"/>
         </ElFormItem>
@@ -276,21 +262,6 @@ const onChangeValue = (val) => {
       </ElCol>
     </ElRow>
 
-    <ElRow class="mb-10px" v-if="currentItem.entity">
-      <ElCol>
-        <ElCollapse>
-          <ElCollapseItem :title="$t('dashboard.editor.eventstateJSONobject')">
-            <ElButton class="mb-10px w-[100%]" type="default" @click.prevent.stop="updateCurrentState()">
-              <Icon icon="ep:refresh" class="mr-5px"/>
-              {{ $t('dashboard.editor.getEvent') }}
-            </ElButton>
-
-            <JsonViewer v-model="currentItem.lastEvent"/>
-
-          </ElCollapseItem>
-        </ElCollapse>
-      </ElCol>
-    </ElRow>
 
   </div>
 </template>

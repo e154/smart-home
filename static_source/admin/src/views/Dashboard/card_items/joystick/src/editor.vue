@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {computed, PropType} from "vue";
 import {CardItem, Core} from "@/views/Dashboard/core/core";
-import {ElDivider, ElFormItem} from 'element-plus'
+import {ElCol, ElDivider, ElFormItem, ElRow} from 'element-plus'
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {ApiImage} from "@/api/stub";
 import {ImageSearch} from "@/components/ImageSearch";
@@ -55,7 +55,11 @@ const changedForEndAction = async (options: EntitiesActionOptions) => {
 
   <CommonEditor :item="item" :core="core"/>
 
-  <ElDivider content-position="left">{{ $t('dashboard.editor.joystick.options') }}</ElDivider>
+  <ElRow class="mb-10px mt-10px">
+    <ElCol>
+      <ElDivider content-position="left">{{ $t('dashboard.editor.joystick.options') }}</ElDivider>
+    </ElCol>
+  </ElRow>
 
   <ElFormItem :label="$t('dashboard.editor.image')" prop="image">
     <ImageSearch v-model="currentItem.payload.joystick.stickImage" @change="onSelectImage(index, ...arguments)"/>

@@ -122,24 +122,34 @@ const lastEvent = (index: number): EventStateChange | undefined => {
 
     <CommonEditor :item="item" :core="core"/>
 
-    <ElDivider content-position="left">{{ $t('dashboard.editor.mapOptions') }}</ElDivider>
+    <ElRow class="mb-10px mt-10px">
+      <ElCol>
+        <ElDivider content-position="left">{{ $t('dashboard.editor.mapOptions') }}</ElDivider>
+      </ElCol>
+    </ElRow>
 
     <ElFormItem :label="$t('dashboard.editor.staticPosition')" prop="round">
       <ElSwitch v-model="currentItem.payload.map.staticCenter"/>
     </ElFormItem>
 
     <!-- marker options -->
-    <ElDivider content-position="left">{{ $t('dashboard.editor.markers') }}</ElDivider>
-
-    <ElRow>
+    <ElRow class="mb-10px mt-10px">
       <ElCol>
-        <div class="mb-10px">
-          <ElButton type="default" @click.prevent.stop="addMarker()">
-            <Icon icon="ep:plus" class="mr-5px"/>
-            {{ $t('dashboard.editor.addMarker') }}
-          </ElButton>
-        </div>
+        <ElDivider content-position="left">{{ $t('dashboard.editor.markers') }}</ElDivider>
+      </ElCol>
+    </ElRow>
 
+    <ElRow class="mb-10px">
+      <ElCol>
+        <ElButton class="w-[100%]" @click.prevent.stop="addMarker()">
+          <Icon icon="ep:plus" class="mr-5px"/>
+          {{ $t('dashboard.editor.addMarker') }}
+        </ElButton>
+      </ElCol>
+    </ElRow>
+
+    <ElRow class="mb-10px mt-10px">
+      <ElCol>
         <!-- props -->
         <ElCollapse>
           <ElCollapseItem
@@ -163,14 +173,16 @@ const lastEvent = (index: number): EventStateChange | undefined => {
                   style="width: 100%"
                   ref="cardItemForm">
 
-                <ElRow :gutter="24">
-                  <ElCol :span="12" :xs="12">
+                <ElRow>
+                  <ElCol>
                     <ElFormItem :label="$t('dashboard.editor.entity')" prop="entity">
                       <EntitySearch v-model="prop.entity" @change="changedForActionButton($event, index)"/>
                     </ElFormItem>
                   </ElCol>
+                </ElRow>
 
-                  <ElCol :span="12" :xs="12">
+                <ElRow>
+                  <ElCol>
                     <ElFormItem :label="$t('dashboard.editor.value')" prop="value">
                       <KeysSearch v-model="prop.attribute" :obj="lastEvent(index)"
                                   @change="onChangePropValue($event, index)"/>
@@ -178,15 +190,17 @@ const lastEvent = (index: number): EventStateChange | undefined => {
                   </ElCol>
                 </ElRow>
 
-                <ElRow :gutter="24">
-                  <ElCol :span="12" :xs="12">
+                <ElRow>
+                  <ElCol>
                     <ElFormItem :label="$t('dashboard.editor.opacity')" prop="entity">
                       <ElInputNumber v-model="prop.opacity" :show-tooltip="false" :min="0" :max="1" :step="0.01"
                                      style="width: 100%"/>
                     </ElFormItem>
                   </ElCol>
+                </ElRow>
 
-                  <ElCol :span="12" :xs="12">
+                <ElRow>
+                  <ElCol>
                     <ElFormItem :label="$t('dashboard.editor.scale')" prop="value">
                       <ElInputNumber v-model="prop.scale" :show-tooltip="false" :min="0" :max="1" :step="0.01"
                                      style="width: 100%"/>
@@ -194,40 +208,39 @@ const lastEvent = (index: number): EventStateChange | undefined => {
                   </ElCol>
                 </ElRow>
 
-                <ElFormItem :label="$t('dashboard.editor.image')" prop="image">
-                  <ImageSearch v-model="prop.image" @change="onSelectImageForAction(index, ...arguments)"/>
-                </ElFormItem>
-
-                <ElRow>
+                <ElRow class="mb-10px">
                   <ElCol>
-                    <div class="mb-10px">
-                      <div style="text-align: right;">
-                        <ElButton
-                            class="mr-10px" plain
-                            @click="updateCenter(index)"
-                            :disabled="currentItem.payload.map.indexMarkerCenter === index"
-                        >
-                          {{ $t('dashboard.editor.followTheMarker') }}
-                        </ElButton>
-                        <ElPopconfirm
-                            :confirm-button-text="$t('main.ok')"
-                            :cancel-button-text="$t('main.no')"
-                            width="250"
-                            style="margin-left: 10px;"
-                            :title="$t('main.are_you_sure_to_do_want_this?')"
-                            @confirm="removeMarker(index)"
-                        >
-                          <template #reference>
-                            <ElButton class="mr-10px" type="danger" plain>
-                              <Icon icon="ep:delete" class="mr-5px"/>
-                              {{ t('main.remove') }}
-                            </ElButton>
-                          </template>
-                        </ElPopconfirm>
-                      </div>
-                    </div>
+                    <ElFormItem :label="$t('dashboard.editor.image')" prop="image">
+                      <ImageSearch v-model="prop.image" @change="onSelectImageForAction(index, ...arguments)"/>
+                    </ElFormItem>
                   </ElCol>
                 </ElRow>
+
+                <div style="text-align: right;">
+                  <ElButton
+                      class="mr-10px" plain
+                      @click="updateCenter(index)"
+                      :disabled="currentItem.payload.map.indexMarkerCenter === index"
+                  >
+                    {{ $t('dashboard.editor.followTheMarker') }}
+                  </ElButton>
+                  <ElPopconfirm
+                      :confirm-button-text="$t('main.ok')"
+                      :cancel-button-text="$t('main.no')"
+                      width="250"
+                      style="margin-left: 10px;"
+                      :title="$t('main.are_you_sure_to_do_want_this?')"
+                      @confirm="removeMarker(index)"
+                  >
+                    <template #reference>
+                      <ElButton type="danger" plain>
+                        <Icon icon="ep:delete" class="mr-5px"/>
+                        {{ t('main.remove') }}
+                      </ElButton>
+                    </template>
+                  </ElPopconfirm>
+                </div>
+
 
               </ElForm>
 

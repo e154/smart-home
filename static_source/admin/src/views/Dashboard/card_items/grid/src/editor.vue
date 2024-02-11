@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {computed, PropType} from "vue";
-import {CardItem, Core, requestCurrentState} from "@/views/Dashboard/core/core";
+import {CardItem, Core} from "@/views/Dashboard/core/core";
 import {
   ElButton,
   ElCard,
@@ -19,7 +19,6 @@ import {
 } from 'element-plus'
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {useI18n} from "@/hooks/web/useI18n";
-import {JsonViewer} from "@/components/JsonViewer";
 import {ImageSearch} from "@/components/ImageSearch";
 import {ApiImage} from "@/api/stub";
 import {GridProp, ItemPayloadGrid} from "./types";
@@ -65,12 +64,6 @@ const initDefaultValue = () => {
     tooltip: false,
     fontSize: 18,
   } as ItemPayloadGrid;
-}
-
-const updateCurrentState = () => {
-  if (currentItem.value.entityId) {
-    requestCurrentState(currentItem.value?.entityId)
-  }
 }
 
 const onSelectDefaultImage = (image: ApiImage) => {
@@ -147,7 +140,11 @@ const onChangeValue = (val) => {
 
   <CommonEditor :item="item" :core="core"/>
 
-  <ElDivider content-position="left">{{ $t('dashboard.editor.gridOptions') }}</ElDivider>
+  <ElRow class="mb-10px mt-10px">
+    <ElCol>
+      <ElDivider content-position="left">{{ $t('dashboard.editor.gridOptions') }}</ElDivider>
+    </ElCol>
+  </ElRow>
 
   <ElRow :gutter="24">
     <ElCol :span="12" :xs="12">
@@ -204,16 +201,18 @@ const onChangeValue = (val) => {
     </ElCol>
   </ElRow>
 
-  <ElDivider content-position="left">{{ $t('dashboard.editor.grid.items') }}</ElDivider>
-
-  <ElRow>
+  <ElRow class="mb-10px">
     <ElCol>
-      <div class="mb-10px">
-        <ElButton type="default" @click.prevent.stop="addProp()">
-          <Icon icon="ep:plus" class="mr-5px"/>
-          {{ $t('dashboard.editor.addNewProp') }}
-        </ElButton>
-      </div>
+      <ElDivider content-position="left">{{ $t('dashboard.editor.grid.items') }}</ElDivider>
+    </ElCol>
+  </ElRow>
+
+  <ElRow class="mb-10px">
+    <ElCol>
+      <ElButton class="w-[100%]" @click.prevent.stop="addProp()">
+        <Icon icon="ep:plus" class="mr-5px"/>
+        {{ $t('dashboard.editor.addNewProp') }}
+      </ElButton>
     </ElCol>
   </ElRow>
 
@@ -269,8 +268,8 @@ const onChangeValue = (val) => {
             </ElCol>
           </ElRow>
 
-          <ElRow :gutter="24">
-            <ElCol :span="8" :xs="8">
+          <ElRow>
+            <ElCol>
               <ElFormItem :label="$t('dashboard.editor.grid.position')" prop="position">
                 <ElSwitch v-model="prop.position"/>
               </ElFormItem>
@@ -291,39 +290,32 @@ const onChangeValue = (val) => {
             </ElCol>
           </ElRow>
 
-
           <ElDivider v-if="prop.position" content-position="left">{{ $t('dashboard.editor.grid.preview') }}</ElDivider>
 
           <ElRow v-if="prop.position">
             <ElCol>
               <CellPreview :base-params="currentItem.payload.grid" :tile-item="prop"/>
             </ElCol>
-
           </ElRow>
 
-          <ElRow>
-            <ElCol>
-              <div class="mb-10px">
-                <div style="text-align: right;">
-                  <ElPopconfirm
-                      :confirm-button-text="$t('main.ok')"
-                      :cancel-button-text="$t('main.no')"
-                      width="250"
-                      style="margin-left: 10px;"
-                      :title="$t('main.are_you_sure_to_do_want_this?')"
-                      @confirm="removeProp(index)"
-                  >
-                    <template #reference>
-                      <ElButton class="mr-10px" type="danger" plain>
-                        <Icon icon="ep:delete" class="mr-5px"/>
-                        {{ t('main.remove') }}
-                      </ElButton>
-                    </template>
-                  </ElPopconfirm>
-                </div>
-              </div>
-            </ElCol>
-          </ElRow>
+          <div style="text-align: right;">
+            <ElPopconfirm
+                :confirm-button-text="$t('main.ok')"
+                :cancel-button-text="$t('main.no')"
+                width="250"
+                style="margin-left: 10px;"
+                :title="$t('main.are_you_sure_to_do_want_this?')"
+                @confirm="removeProp(index)"
+            >
+              <template #reference>
+                <ElButton type="danger" plain>
+                  <Icon icon="ep:delete" class="mr-5px"/>
+                  {{ t('main.remove') }}
+                </ElButton>
+              </template>
+            </ElPopconfirm>
+          </div>
+
 
         </ElForm>
 
@@ -347,21 +339,24 @@ const onChangeValue = (val) => {
     </ElCol>
   </ElRow>
 
-  <ElRow :gutter="24">
-    <ElCol :span="8" :xs="8">
+  <ElRow>
+    <ElCol>
       <ElFormItem :label="$t('dashboard.editor.grid.position')" prop="position">
         <ElSwitch v-model="currentItem.payload.grid.position"/>
       </ElFormItem>
     </ElCol>
   </ElRow>
 
-  <ElRow :gutter="24" v-if="currentItem.payload.grid.position">
-    <ElCol :span="12" :xs="12">
+  <ElRow v-if="currentItem.payload.grid.position">
+    <ElCol>
       <ElFormItem :label="$t('dashboard.editor.grid.top')" prop="top">
         <ElInputNumber v-model="currentItem.payload.grid.top" :step="1"/>
       </ElFormItem>
     </ElCol>
-    <ElCol :span="12" :xs="12">
+  </ElRow>
+
+  <ElRow v-if="currentItem.payload.grid.position">
+    <ElCol>
       <ElFormItem :label="$t('dashboard.editor.grid.left')" prop="left">
         <ElInputNumber v-model="currentItem.payload.grid.left" :step="1"/>
       </ElFormItem>
@@ -379,33 +374,21 @@ const onChangeValue = (val) => {
     </ElCol>
   </ElRow>
 
-  <ElRow :gutter="24">
-    <ElCol :span="8" :xs="8">
+  <ElRow>
+    <ElCol>
       <ElFormItem :label="$t('dashboard.editor.grid.tileClick')" prop="tileClick">
         <ElSwitch v-model="currentItem.payload.grid.tileClick"/>
       </ElFormItem>
     </ElCol>
   </ElRow>
 
-  <ElDivider v-if="currentItem.payload.grid?.tileClick" content-position="left">{{ $t('dashboard.editor.actionOptions') }}</ElDivider>
+  <ElDivider v-if="currentItem.payload.grid?.tileClick" content-position="left">{{
+      $t('dashboard.editor.actionOptions')
+    }}
+  </ElDivider>
 
-  <EntitiesAction v-if="currentItem.payload.grid?.tileClick" :options="currentItem.payload.grid" :entity="currentItem.entity" @change="changedForActionButton($event)"/>
-
-  <ElRow class="mb-10px" v-if="currentItem.entity">
-    <ElCol>
-      <ElCollapse>
-        <ElCollapseItem :title="$t('dashboard.editor.eventstateJSONobject')">
-          <ElButton class="mb-10px w-[100%]" type="default" @click.prevent.stop="updateCurrentState()">
-            <Icon icon="ep:refresh" class="mr-5px"/>
-            {{ $t('dashboard.editor.getEvent') }}
-          </ElButton>
-
-          <JsonViewer v-model="currentItem.lastEvent"/>
-
-        </ElCollapseItem>
-      </ElCollapse>
-    </ElCol>
-  </ElRow>
+  <EntitiesAction v-if="currentItem.payload.grid?.tileClick" :options="currentItem.payload.grid"
+                  :entity="currentItem.entity" @change="changedForActionButton($event)"/>
 
 </template>
 

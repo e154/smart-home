@@ -1,18 +1,7 @@
 <script setup lang="ts">
 import {computed, PropType} from "vue";
-import {CardItem, Core, requestCurrentState} from "@/views/Dashboard/core/core";
-import {
-  ElButton,
-  ElCol,
-  ElCollapse,
-  ElCollapseItem,
-  ElDivider,
-  ElFormItem,
-  ElOption,
-  ElRow,
-  ElSelect
-} from 'element-plus'
-import {JsonViewer} from "@/components/JsonViewer";
+import {CardItem, Core} from "@/views/Dashboard/core/core";
+import {ElCol, ElDivider, ElFormItem, ElOption, ElRow, ElSelect} from 'element-plus'
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {playerType} from "./types";
 import {KeysSearch} from "@/views/Dashboard/components";
@@ -38,12 +27,6 @@ const currentItem = computed(() => props.item as CardItem)
 // component methods
 // ---------------------------------
 
-const updateCurrentState = () => {
-  if (currentItem.value.entityId) {
-    requestCurrentState(currentItem.value.entityId)
-  }
-}
-
 const onChangeValue = (val) => {
   currentItem.value.payload.video.attribute = val;
 }
@@ -55,7 +38,11 @@ const onChangeValue = (val) => {
 
     <CommonEditor :item="item" :core="core"/>
 
-    <ElDivider content-position="left">{{ $t('dashboard.editor.video.options') }}</ElDivider>
+    <ElRow class="mb-10px mt-10px">
+      <ElCol>
+        <ElDivider content-position="left">{{ $t('dashboard.editor.video.options') }}</ElDivider>
+      </ElCol>
+    </ElRow>
 
     <ElRow :gutter="24">
       <ElCol :span="12" :xs="12">
@@ -81,22 +68,6 @@ const onChangeValue = (val) => {
         </ElFormItem>
       </ElCol>
       <ElCol :span="12" :xs="12"/>
-    </ElRow>
-
-    <ElRow class="mb-10px" v-if="currentItem.entity">
-      <ElCol>
-        <ElCollapse>
-          <ElCollapseItem :title="$t('dashboard.editor.eventstateJSONobject')">
-            <ElButton class="mb-10px w-[100%]" type="default" @click.prevent.stop="updateCurrentState()">
-              <Icon icon="ep:refresh" class="mr-5px"/>
-              {{ $t('dashboard.editor.getEvent') }}
-            </ElButton>
-
-            <JsonViewer v-model="currentItem.lastEvent"/>
-
-          </ElCollapseItem>
-        </ElCollapse>
-      </ElCol>
     </ElRow>
 
   </div>

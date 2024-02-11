@@ -35,7 +35,7 @@ const props = defineProps({
 
     <CommonEditor :item="item" :core="core"/>
 
-    <ElDivider content-position="left">Logs options</ElDivider>
+<!--    <ElDivider content-position="left">Logs options</ElDivider>-->
 
     <!--    todo: add pagination limits-->
   </div>

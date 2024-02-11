@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import {computed, onMounted, onUnmounted, PropType, reactive, ref, shallowReactive} from 'vue'
-import {ElTabs, ElTabPane} from 'element-plus'
+import {computed, onMounted, onUnmounted, reactive, ref} from 'vue'
+import {ElTabPane, ElTabs} from 'element-plus'
 import api from "@/api/api";
 import {EventStateChange} from "@/api/stream_types";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 import {Core} from "@/views/Dashboard/core/core";
-import 'splitpanes/dist/splitpanes.css'
 import {useBus} from "@/views/Dashboard/core/bus";
 import ViewTab from "@/views/Dashboard/view/ViewTab.vue";
 import {propTypes} from "@/utils/propTypes";
@@ -76,7 +75,8 @@ fetchDashboard()
 </script>
 
 <template>
-  <ElTabs v-model="activeTabIdx"  v-if="core.tabs.length > 1 && !loading" :style="getBackgroundColor()" class="pl-20px !min-h-[100%]">
+  <ElTabs v-model="activeTabIdx" v-if="core.tabs.length > 1 && !loading" :style="getBackgroundColor()"
+          class="pl-20px !min-h-[100%]">
     <ElTabPane
         v-for="(tab, index) in core.tabs"
         :label="tab.name"
@@ -88,7 +88,8 @@ fetchDashboard()
     </ElTabPane>
   </ElTabs>
 
-  <div v-if="core.tabs.length && core.tabs.length === 1 && !loading" :class="[{'gap': core.tabs[0].gap}]" :style="getBackgroundColor()" class="pl-20px pt-20px !min-h-[100%] ">
+  <div v-if="core.tabs.length && core.tabs.length === 1 && !loading" :class="[{'gap': core.tabs[0].gap}]"
+       :style="getBackgroundColor()" class="pl-20px pt-20px !min-h-[100%] ">
     <ViewTab :tab="core.tabs[0]" :core="core"/>
   </div>
 </template>
@@ -133,7 +134,4 @@ html {
   line-height: 1.15;
 }
 
-.splitpanes.default-theme .splitpanes__splitter {
-  background-color: #bfbfbf6e;
-}
 </style>

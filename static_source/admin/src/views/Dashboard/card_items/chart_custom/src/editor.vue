@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {computed, PropType} from "vue";
-import {CardItem, Core, parsedObject, requestCurrentState} from "@/views/Dashboard/core/core";
+import {CardItem, Core, parsedObject} from "@/views/Dashboard/core/core";
 import {
   ElButton,
   ElCard,
@@ -21,7 +21,6 @@ import {
 } from 'element-plus'
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {chartItemType, CustomAttribute, defaultData, FilterList, RangeList, SeriesItem} from "./types";
-import {JsonViewer} from "@/components/JsonViewer";
 import {useI18n} from "@/hooks/web/useI18n";
 import {Infotip} from "@/components/Infotip";
 import {debounce} from "lodash-es";
@@ -54,12 +53,6 @@ const currentItem = computed(() => props.item as CardItem)
 // ---------------------------------
 // component methods
 // ---------------------------------
-
-const updateCurrentState = () => {
-  if (currentItem.value.entityId) {
-    requestCurrentState(currentItem.value?.entityId)
-  }
-}
 
 const getMetricList = computed(() => {
   if (props.item.entity && props.item.entity?.metrics) {
@@ -256,25 +249,31 @@ const onChangePropValue = (val: string, prop: any, index: number): void => {
     ]"
   />
 
-  <ElDivider content-position="left">{{ $t('dashboard.editor.chart.chartOptions') }}</ElDivider>
+  <ElRow class="mb-10px mt-10px">
+    <ElCol>
+      <ElDivider content-position="left">{{ $t('dashboard.editor.chart.chartOptions') }}</ElDivider>
+    </ElCol>
+  </ElRow>
 
-  <ElRow :gutter="24" style="min-height: 200px;margin-bottom: 20px">
+  <ElRow class="mb-10px" style="min-height: 200px">
     <ElCol>
       <JsonEditor v-model="currentItem.payload.chartCustom.chartOptions" height="auto" @change="editorHandler"/>
     </ElCol>
   </ElRow>
 
   <!-- chart items -->
-  <ElDivider content-position="left">{{ $t('dashboard.editor.chart.seriesOptions') }}</ElDivider>
-
-  <ElRow>
+  <ElRow class="mb-10px">
     <ElCol>
-      <div class="mb-10px">
-        <ElButton type="default" @click.prevent.stop="addSeriesItem()">
-          <Icon icon="ep:plus" class="mr-5px"/>
-          {{ $t('dashboard.editor.chart.addSeriesItem') }}
-        </ElButton>
-      </div>
+      <ElDivider content-position="left">{{ $t('dashboard.editor.chart.seriesOptions') }}</ElDivider>
+    </ElCol>
+  </ElRow>
+
+  <ElRow class="mb-10px">
+    <ElCol>
+      <ElButton class="w-[100%]" @click.prevent.stop="addSeriesItem()">
+        <Icon icon="ep:plus" class="mr-5px"/>
+        {{ $t('dashboard.editor.chart.addSeriesItem') }}
+      </ElButton>
 
       <!-- props -->
       <ElCollapse>
@@ -296,29 +295,31 @@ const onChangePropValue = (val: string, prop: any, index: number): void => {
                 style="width: 100%"
                 ref="cardItemForm">
 
-              <ElCol :span="12" :xs="12">
-                <ElFormItem :label="$t('dashboard.editor.chart.itemType')" prop="text">
-                  <ElRadioGroup v-model="prop.chartType">
-                    <ElRadioButton label="custom"/>
-                    <ElRadioButton label="attr"/>
-                    <ElRadioButton label="metric"/>
-                  </ElRadioGroup>
-                </ElFormItem>
-              </ElCol>
+              <ElRow class="mb-10px">
+                <ElCol>
+                  <ElFormItem :label="$t('dashboard.editor.chart.itemType')" prop="text">
+                    <ElRadioGroup v-model="prop.chartType">
+                      <ElRadioButton label="custom"/>
+                      <ElRadioButton label="attr"/>
+                      <ElRadioButton label="metric"/>
+                    </ElRadioGroup>
+                  </ElFormItem>
+                </ElCol>
+              </ElRow>
 
               <!-- attr -->
-              <ElRow :gutter="24" v-if="prop.chartType == 'attr'">
-                <ElCol :span="12" :xs="12">
+              <ElRow v-if="prop.chartType == 'attr'">
+                <ElCol>
                   <ElFormItem :label="$t('dashboard.editor.chart.automatic')" prop="borderWidth">
                     <ElSwitch v-model="prop.attrAutomatic"/>
                   </ElFormItem>
                 </ElCol>
               </ElRow>
 
-              <ElRow v-if="prop.chartType == 'attr' && !prop.attrAutomatic" style="margin-bottom: 20px">
+              <ElRow v-if="prop.chartType == 'attr' && !prop.attrAutomatic">
                 <ElCol>
                   <div class="mb-10px">
-                    <ElButton type="default" @click.prevent.stop="addAttrItem(prop)">
+                    <ElButton class="w-[100%]" @click.prevent.stop="addAttrItem(prop)">
                       <Icon icon="ep:plus" class="mr-5px"/>
                       {{ $t('dashboard.editor.chart.addCustomAttribute') }}
                     </ElButton>
@@ -344,40 +345,40 @@ const onChangePropValue = (val: string, prop: any, index: number): void => {
                             style="width: 100%"
                             ref="cardItemForm">
 
-                          <ElRow :gutter="24">
-                            <ElCol :span="12" :xs="12">
+                          <ElRow>
+                            <ElCol>
                               <ElFormItem :label="$t('dashboard.editor.chart.itemValue')" prop="text">
                                 <!--                                <ElInput class="w-[100%]" placeholder="Please input" v-model="attr.value"/>-->
                                 <KeysSearch v-model="attr.value" :obj="currentItem.lastEvent"
                                             @change="onChangePropValue($event, prop, index)"/>
                               </ElFormItem>
                             </ElCol>
-                            <ElCol :span="12" :xs="12">
+                          </ElRow>
+
+                          <ElRow class="mb-10px">
+                            <ElCol>
                               <ElFormItem :label="$t('dashboard.editor.chart.itemDescription')" prop="text">
                                 <ElInput class="w-[100%]" placeholder="Please input" v-model="attr.description"/>
                               </ElFormItem>
                             </ElCol>
                           </ElRow>
 
-
-                          <div class="mb-20px">
-                            <div style="text-align: right;">
-                              <ElPopconfirm
-                                  :confirm-button-text="$t('main.ok')"
-                                  :cancel-button-text="$t('main.no')"
-                                  width="250"
-                                  style="margin-left: 10px;"
-                                  :title="$t('main.are_you_sure_to_do_want_this?')"
-                                  @confirm="removeAttrItem(prop, index)"
-                              >
-                                <template #reference>
-                                  <ElButton class="mr-10px" type="danger" plain>
-                                    <Icon icon="ep:delete" class="mr-5px"/>
-                                    {{ t('main.remove') }}
-                                  </ElButton>
-                                </template>
-                              </ElPopconfirm>
-                            </div>
+                          <div style="text-align: right;">
+                            <ElPopconfirm
+                                :confirm-button-text="$t('main.ok')"
+                                :cancel-button-text="$t('main.no')"
+                                width="250"
+                                style="margin-left: 10px;"
+                                :title="$t('main.are_you_sure_to_do_want_this?')"
+                                @confirm="removeAttrItem(prop, index)"
+                            >
+                              <template #reference>
+                                <ElButton type="danger" plain>
+                                  <Icon icon="ep:delete" class="mr-5px"/>
+                                  {{ t('main.remove') }}
+                                </ElButton>
+                              </template>
+                            </ElPopconfirm>
                           </div>
 
                         </ElForm>
@@ -393,8 +394,8 @@ const onChangePropValue = (val: string, prop: any, index: number): void => {
               <!-- /attr -->
 
               <!-- metric -->
-              <ElRow :gutter="24" v-if="prop.chartType == 'metric'">
-                <ElCol :span="12" :xs="12">
+              <ElRow v-if="prop.chartType == 'metric'">
+                <ElCol>
 
                   <ElFormItem :label="$t('dashboard.editor.chart.entity_metric')" prop="index">
                     <ElSelect v-model="prop.metricIndex" placeholder="Select" clearable class="w-[100%]">
@@ -405,7 +406,11 @@ const onChangePropValue = (val: string, prop: any, index: number): void => {
                           :value="index"/>
                     </ElSelect>
                   </ElFormItem>
+                </ElCol>
+              </ElRow>
 
+              <ElRow v-if="prop.chartType == 'metric'">
+                <ElCol>
                   <ElFormItem :label="$t('dashboard.editor.chart.metric_props')" prop="index">
                     <ElSelect v-model="prop.metricProps" placeholder="Select" clearable class="w-[100%]">
                       <ElOption
@@ -415,9 +420,11 @@ const onChangePropValue = (val: string, prop: any, index: number): void => {
                           :value="p.name"/>
                     </ElSelect>
                   </ElFormItem>
-
                 </ElCol>
-                <ElCol :span="12" :xs="12">
+              </ElRow>
+
+              <ElRow v-if="prop.chartType == 'metric'">
+                <ElCol>
                   <ElFormItem :label="$t('dashboard.editor.chart.range')" prop="index">
                     <ElSelect v-model="prop.metricRange" placeholder="Select" clearable class="w-[100%]">
                       <ElOption
@@ -427,7 +434,11 @@ const onChangePropValue = (val: string, prop: any, index: number): void => {
                           :value="p.value"/>
                     </ElSelect>
                   </ElFormItem>
+                </ElCol>
+              </ElRow>
 
+              <ElRow v-if="prop.chartType == 'metric'">
+                <ElCol>
                   <ElFormItem :label="$t('dashboard.editor.chart.filter')" prop="index">
                     <ElSelect v-model="prop.metricFilter" placeholder="Select" clearable class="w-[100%]">
                       <ElOption
@@ -441,24 +452,22 @@ const onChangePropValue = (val: string, prop: any, index: number): void => {
               </ElRow>
               <!-- /metric -->
 
-              <div class="mb-20px">
-                <div style="text-align: right;">
-                  <ElPopconfirm
-                      :confirm-button-text="$t('main.ok')"
-                      :cancel-button-text="$t('main.no')"
-                      width="250"
-                      style="margin-left: 10px;"
-                      :title="$t('main.are_you_sure_to_do_want_this?')"
-                      @confirm="removeSeriesItem(index)"
-                  >
-                    <template #reference>
-                      <ElButton class="mr-10px" type="danger" plain>
-                        <Icon icon="ep:delete" class="mr-5px"/>
-                        {{ t('main.remove') }}
-                      </ElButton>
-                    </template>
-                  </ElPopconfirm>
-                </div>
+              <div class="mt-10px" style="text-align: right;">
+                <ElPopconfirm
+                    :confirm-button-text="$t('main.ok')"
+                    :cancel-button-text="$t('main.no')"
+                    width="250"
+                    style="margin-left: 10px;"
+                    :title="$t('main.are_you_sure_to_do_want_this?')"
+                    @confirm="removeSeriesItem(index)"
+                >
+                  <template #reference>
+                    <ElButton type="danger" plain>
+                      <Icon icon="ep:delete" class="mr-5px"/>
+                      {{ t('main.remove') }}
+                    </ElButton>
+                  </template>
+                </ElPopconfirm>
               </div>
 
             </ElForm>
@@ -472,22 +481,6 @@ const onChangePropValue = (val: string, prop: any, index: number): void => {
     </ElCol>
   </ElRow>
   <!-- /chart items -->
-
-  <ElRow class="mt-20px mb-20px" v-if="currentItem.entity">
-    <ElCol>
-      <ElCollapse>
-        <ElCollapseItem :title="$t('dashboard.editor.eventstateJSONobject')">
-          <ElButton class="mb-10px w-[100%]" type="default" @click.prevent.stop="updateCurrentState()">
-            <Icon icon="ep:refresh" class="mr-5px"/>
-            {{ $t('dashboard.editor.getEvent') }}
-          </ElButton>
-
-          <JsonViewer v-model="currentItem.lastEvent"/>
-
-        </ElCollapseItem>
-      </ElCollapse>
-    </ElCol>
-  </ElRow>
 
 </template>
 

@@ -1,19 +1,7 @@
 <script setup lang="ts">
 import {computed, PropType} from "vue";
-import {CardItem, Core, requestCurrentState} from "@/views/Dashboard/core/core";
-import {
-  ElButton,
-  ElCol,
-  ElCollapse,
-  ElCollapseItem,
-  ElColorPicker,
-  ElDivider,
-  ElFormItem,
-  ElOption,
-  ElRow,
-  ElSelect
-} from 'element-plus'
-import {JsonViewer} from "@/components/JsonViewer";
+import {CardItem, Core} from "@/views/Dashboard/core/core";
+import {ElCol, ElColorPicker, ElDivider, ElFormItem, ElRow} from 'element-plus'
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {useI18n} from "@/hooks/web/useI18n";
 import {KeysSearch} from "@/views/Dashboard/components";
@@ -42,12 +30,6 @@ const currentItem = computed(() => props.item as CardItem)
 // component methods
 // ---------------------------------
 
-const updateCurrentState = () => {
-  if (currentItem.value.entityId) {
-    requestCurrentState(currentItem.value?.entityId)
-  }
-}
-
 const onChangeValue = (val) => {
   currentItem.value.payload.colorPicker.attribute = val;
 }
@@ -66,18 +48,22 @@ const changedForActionButton = async (options: EntitiesActionOptions) => {
   <div>
     <CommonEditor :item="currentItem" :core="core"/>
 
-    <ElDivider content-position="left">{{ $t('dashboard.editor.colorPicker.options') }}</ElDivider>
+    <ElRow class="mb-10px mt-10px">
+      <ElCol>
+        <ElDivider content-position="left">{{ $t('dashboard.editor.colorPicker.options') }}</ElDivider>
+      </ElCol>
+    </ElRow>
 
-    <ElRow :gutter="24">
-      <ElCol :span="12" :xs="12">
+    <ElRow>
+      <ElCol>
         <ElFormItem :label="$t('dashboard.editor.colorPicker.defaultColor')" prop="color">
           <ElColorPicker show-alpha v-model="currentItem.payload.colorPicker.color"/>
         </ElFormItem>
       </ElCol>
     </ElRow>
 
-    <ElRow :gutter="24">
-      <ElCol :span="12" :xs="12">
+    <ElRow>
+      <ElCol>
         <ElFormItem :label="$t('dashboard.editor.value')" prop="value">
           <KeysSearch v-model="currentItem.payload.colorPicker.attribute" :obj="currentItem.lastEvent"
                       @change="onChangeValue"/>
@@ -87,23 +73,8 @@ const changedForActionButton = async (options: EntitiesActionOptions) => {
 
     <ElDivider content-position="left">{{ $t('dashboard.editor.actionOptions') }}</ElDivider>
 
-    <EntitiesAction :options="currentItem.payload.colorPicker" :entity="currentItem.entity" @change="changedForActionButton($event)"/>
-
-    <ElRow class="mb-10px" v-if="currentItem.entity">
-      <ElCol>
-        <ElCollapse>
-          <ElCollapseItem :title="$t('dashboard.editor.eventstateJSONobject')">
-            <ElButton class="mb-10px w-[100%]" type="default" @click.prevent.stop="updateCurrentState()">
-              <Icon icon="ep:refresh" class="mr-5px"/>
-              {{ $t('dashboard.editor.getEvent') }}
-            </ElButton>
-
-            <JsonViewer v-model="currentItem.lastEvent"/>
-
-          </ElCollapseItem>
-        </ElCollapse>
-      </ElCol>
-    </ElRow>
+    <EntitiesAction :options="currentItem.payload.colorPicker" :entity="currentItem.entity"
+                    @change="changedForActionButton($event)"/>
 
   </div>
 </template>

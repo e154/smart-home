@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import {computed, PropType} from "vue";
-import {CardItem, Core, requestCurrentState} from "@/views/Dashboard/core/core";
-import {ElButton, ElCol, ElCollapse, ElCollapseItem, ElDivider, ElFormItem, ElRow, ElSwitch} from 'element-plus'
+import {CardItem, Core} from "@/views/Dashboard/core/core";
+import {ElCol, ElDivider, ElFormItem, ElRow, ElSwitch} from 'element-plus'
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {Cache} from "@/views/Dashboard/core/render";
-import {JsonViewer} from "@/components/JsonViewer";
 import {ApiImage} from "@/api/stub";
 import {ImageSearch} from "@/components/ImageSearch";
 import {KeysSearch} from "@/views/Dashboard/components";
@@ -45,12 +44,6 @@ const onSelectImage = (index: number, image: ApiImage) => {
   currentItem.value.payload.image.image = image || undefined;
 }
 
-const updateCurrentState = () => {
-  if (currentItem.value.entityId) {
-    requestCurrentState(currentItem.value?.entityId)
-  }
-}
-
 const onChangePropValue = (val: string) => {
   currentItem.value.payload.image.attrField = val;
 }
@@ -61,10 +54,14 @@ const onChangePropValue = (val: string) => {
 
   <CommonEditor :item="currentItem" :core="core"/>
 
-  <ElDivider content-position="left">{{ $t('dashboard.editor.imageOptions') }}</ElDivider>
+  <ElRow class="mb-10px mt-10px">
+    <ElCol>
+      <ElDivider content-position="left">{{ $t('dashboard.editor.imageOptions') }}</ElDivider>
+    </ElCol>
+  </ElRow>
 
-  <ElRow :gutter="24">
-    <ElCol :span="12" :xs="12">
+  <ElRow>
+    <ElCol>
       <ElFormItem :label="$t('dashboard.editor.background')" prop="background">
         <ElSwitch v-model="currentItem.payload.image.background"/>
       </ElFormItem>
@@ -75,25 +72,15 @@ const onChangePropValue = (val: string) => {
     <ImageSearch v-model="currentItem.payload.image.image" @change="onSelectImage"/>
   </ElFormItem>
 
+  <ElRow class="mb-10px mt-10px">
+    <ElCol>
+      <ElDivider content-position="left">{{ $t('main.or') }}</ElDivider>
+    </ElCol>
+  </ElRow>
+
   <ElFormItem :label="$t('dashboard.editor.attrField')" prop="text">
     <KeysSearch v-model="currentItem.payload.image.attrField" :obj="currentItem.lastEvent" @change="onChangePropValue"/>
   </ElFormItem>
-
-  <ElRow class="mb-10px" v-if="currentItem.entity">
-    <ElCol>
-      <ElCollapse>
-        <ElCollapseItem :title="$t('dashboard.editor.eventstateJSONobject')">
-          <ElButton class="mb-10px w-[100%]" type="default" @click.prevent.stop="updateCurrentState()">
-            <Icon icon="ep:refresh" class="mr-5px"/>
-            {{ $t('dashboard.editor.getEvent') }}
-          </ElButton>
-
-          <JsonViewer v-model="currentItem.lastEvent"/>
-
-        </ElCollapseItem>
-      </ElCollapse>
-    </ElCol>
-  </ElRow>
 
 </template>
 

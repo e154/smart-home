@@ -1,22 +1,22 @@
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, reactive, ref} from 'vue'
 import {useI18n} from '@/hooks/web/useI18n'
-import {ElButton, ElCollapse, ElCollapseItem, ElEmpty, ElMessage, ElTabPane, ElTabs} from 'element-plus'
+import {ElButton, ElEmpty, ElMessage, ElTabPane, ElTabs} from 'element-plus'
 import {useRoute} from 'vue-router'
 import api from "@/api/api";
 import {EventStateChange} from "@/api/stream_types";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 import {Card, Core, Tab} from "@/views/Dashboard/core/core";
+import {Pane, Splitpanes} from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
+import TabSettings from "@/views/Dashboard/editor/TabSettings.vue";
 import {useBus} from "@/views/Dashboard/core/bus";
-import ViewTab from "@/views/Dashboard/editor2/ViewTab.vue";
+import TabEditor from "@/views/Dashboard/editor/TabEditor.vue";
+import TabCard from "@/views/Dashboard/editor/TabCard.vue";
+import ViewTab from "@/views/Dashboard/editor/ViewTab.vue";
+import TabCardItem from "@/views/Dashboard/editor/TabCardItem.vue";
 import {useCache} from "@/hooks/web/useCache";
-import {DraggableContainer} from "@/components/DraggableContainer";
-import TabSettings from "@/views/Dashboard/editor2/TabSettings.vue";
-import TabEditor from "@/views/Dashboard/editor2/TabEditor.vue";
-import TabCardItem from "@/views/Dashboard/editor2/TabCardItem.vue";
-import TabCard from "@/views/Dashboard/editor2/TabCard.vue";
 
 const {emit} = useBus()
 const route = useRoute();
@@ -122,9 +122,9 @@ const resizeHandler = function ($event) {
 };
 
 const tagsView = computed(() => tagsView.value ? 37 : 0)
-// const elContainerHeight = computed(() => {
-//   return (splitPaneBottom.value - 60 - tagsView.value) + 'px';
-// })
+const elContainerHeight = computed(() => {
+  return (splitPaneBottom.value - 60 - tagsView.value) + 'px';
+})
 
 const createTab = async () => {
   await core.createTab();
@@ -141,48 +141,38 @@ const addCard = () => {
   core.createCard();
 }
 
-
 </script>
 
 <template>
-
   <div class="components-container dashboard-container" style="margin: 0" v-if="!loading" :style="getBackgroundColor()">
 
-    <ElTabs
-        v-model="activeTabIdx"
-        @tab-click="updateCurrentTab"
-        class="ml-20px"
-        :lazy="true">
-      <ElTabPane
-          v-for="(tab, index) in core.tabs"
-          :label="tab.name"
-          :key="index"
-          :disabled="!tab.enabled"
-          :class="[{'gap': tab.gap}]">
-        <ViewTab :tab="tab" :key="index" :core="core"/>
-      </ElTabPane>
-    </ElTabs>
-
-    <DraggableContainer :name="'editor-main'">
-      <template #header>
-        <span>Main Options</span>
-      </template>
-      <template #default>
+    <splitpanes class="default-theme" @resized="resizeHandler" horizontal>
+      <pane min-size="10" max-size="90" class="top-container" :size="splitPaneTopSize">
+        <ElTabs
+            v-model="activeTabIdx"
+            @tab-click="updateCurrentTab"
+            class="ml-20px"
+            :lazy="true">
+          <ElTabPane
+              v-for="(tab, index) in core.tabs"
+              :label="tab.name"
+              :key="index"
+              :disabled="!tab.enabled"
+              :class="[{'gap': tab.gap}]">
+            <ViewTab :tab="tab" :key="index" :core="core"/>
+          </ElTabPane>
+        </ElTabs>
+      </pane>
+      <pane class="bottom-container" ref="splitPaneBottomRef">
         <ElTabs v-model="core.mainTab">
           <!-- main -->
           <ElTabPane :label="$t('dashboard.mainTab')" name="main">
-            <template #label>
-              <Icon icon="wpf:maintenance"/>
-            </template>
             <TabSettings v-if="core.current" :core="core"/>
           </ElTabPane>
           <!-- /main -->
 
           <!-- tabs -->
           <ElTabPane :label="$t('dashboard.tabsTab')" name="tabs">
-            <template #label>
-              <Icon icon="vaadin:tabs" />
-            </template>
             <TabEditor v-if="core.current && activeTab" :tab="activeTab" :core="core"/>
             <ElEmpty v-if="!core.tabs.length" :rows="5">
               <ElButton type="primary" @click="createTab()">
@@ -194,9 +184,6 @@ const addCard = () => {
 
           <!-- cards -->
           <ElTabPane :label="$t('dashboard.cardsTab')" name="cards">
-            <template #label>
-              <Icon icon="material-symbols:cards-outline" />
-            </template>
             <TabCard v-if="core.current && activeTab" :tab="activeTab" :core="core"/>
             <ElEmpty v-if="!core.tabs.length" :rows="5">
               <ElButton type="primary" @click="createTab()">
@@ -208,9 +195,6 @@ const addCard = () => {
 
           <!-- cardItems -->
           <ElTabPane :label="$t('dashboard.cardItemsTab')" name="cardItems">
-            <template #label>
-              <Icon icon="icon-park-solid:add-item" />
-            </template>
             <TabCardItem v-if="core.current && activeTab && activeCard" :card="activeCard" :core="core"/>
             <ElEmpty v-if="!core.tabs.length" :rows="5">
               <ElButton type="primary" @click="createTab()">
@@ -226,8 +210,8 @@ const addCard = () => {
           <!-- /cardItems -->
 
         </ElTabs>
-      </template>
-    </DraggableContainer>
+      </pane>
+    </splitpanes>
 
   </div>
 
@@ -251,7 +235,8 @@ const addCard = () => {
 
 .components-container {
   height: calc(100vh - 87px);
-//height: inherit; //height: -webkit-fill-available; //height: -moz-available; //height: fill-available; margin: 0; padding: 0;
+//height: inherit; //height: -webkit-fill-available; //height: -moz-available; //height: fill-available; margin: 0;
+  padding: 0;
 }
 
 .top-container {
@@ -315,65 +300,17 @@ html {
 #pane-tabs,
 #pane-cards,
 #pane-cardItems,
-//.bottom-container .el-tabs__content {
-//  height: v-bind(elContainerHeight);
-//}
+.bottom-container .el-tabs__content {
+  height: v-bind(elContainerHeight);
+}
 
-//.el-main {
-//  padding: 0 20px 0 0;
-//}
+.el-main {
+  padding: 0 20px 0 0;
+}
 
 .prevent-select {
   -webkit-user-select: none; /* Safari */
   -ms-user-select: none; /* IE 10 and IE 11 */
   user-select: none; /* Standard syntax */
-}
-
-
-// custom style
-.draggable-container.container-editor-main {
-  .el-main {
-    padding: 2px!important;
-  }
-  .el-card__header {
-    padding: 18px 20px!important;
-  }
-
-  .el-card {
-    --el-card-padding: 2px 5px;
-  }
-  .el-form-item--small {
-    margin-bottom: 5px;
-  }
-  .el-divider--horizontal {
-    margin: 11px 0;
-  }
-
-  .el-col.el-col-12 {
-    padding-right: 6px;
-    padding-left: 6px;
-  }
-
-    .el-menu-item {
-      padding: 0 2px;
-      line-height: 14px!important;
-      height: 14px!important;
-    }
-
-  .el-menu--vertical:not(.el-menu--collapse):not(.el-menu--popup-container) .el-menu-item, .el-menu--vertical:not(.el-menu--collapse):not(.el-menu--popup-container) .el-menu-item-group__title, .el-menu--vertical:not(.el-menu--collapse):not(.el-menu--popup-container) .el-sub-menu__title {
-    padding-left: 2px;
-  }
-
-  .el-col.el-col-24.is-guttered {
-    padding: 0!important!important;
-  }
-
-  .el-button {
-    margin-bottom: 10px!important;
-  }
-
-  .el-collapse-item__content {
-    padding-bottom: 10px!important;
-  }
 }
 </style>

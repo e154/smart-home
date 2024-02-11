@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {onMounted, onUnmounted, ref, watch} from "vue";
+import {onBeforeUnmount, onMounted, ref, watch} from "vue";
 import {propTypes} from "@/utils/propTypes";
 import {useCache} from "@/hooks/web/useCache";
 import {debounce} from "lodash-es";
@@ -43,9 +43,13 @@ onMounted(() => {
   restoreState();
 });
 
-onUnmounted(() => {
-
-})
+onBeforeUnmount(() => {
+  if (props.parentElement) {
+    props.parentElement.removeChild(menu.value);
+  } else {
+    document.body.removeChild(menu.value);
+  }
+});
 
 watch([top, left, width, height], () => {
   saveState();
@@ -189,7 +193,6 @@ const toggleVisibility = () => {
 .draggable-container-content {
   position: relative;
   background-color: var(--el-bg-color);
-  color: #eeeeee;
   padding: 0 10px 10px 10px;
   flex-grow: 1; /* Занимаем все оставшееся пространство */
   overflow: auto;

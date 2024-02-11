@@ -39,23 +39,26 @@ const currentItem = computed(() => props.item as CardItem)
 
     <CommonEditor :item="item" :core="core"/>
 
-    <ElDivider content-position="left">Entity storage options</ElDivider>
+    <ElRow class="mb-10px mt-10px">
+      <ElCol>
+        <ElDivider content-position="left">Entity storage options</ElDivider>
+      </ElCol>
+    </ElRow>
 
-    <ElRow :gutter="24">
-      <ElCol :span="24">
-        <ElFormItem :label="$t('dashboard.editor.entity_storage.entities')" prop="entityIds">
+    <ElRow>
+      <ElCol>
+        <ElFormItem :label="$t('dashboard.editor.entityStorage.entities')" prop="entityIds">
           <EntitiesSearch v-model="currentItem.payload.entityStorage.entityIds"/>
         </ElFormItem>
       </ElCol>
     </ElRow>
 
-    <ElRow :gutter="24">
-      <ElCol :span="12" :xs="12">
-        <ElFormItem :label="$t('dashboard.editor.entity_storage.showFilter')" prop="filter">
+    <ElRow class="mb-10px">
+      <ElCol>
+        <ElFormItem :label="$t('dashboard.editor.entityStorage.showFilter')" prop="filter">
           <ElSwitch v-model="currentItem.payload.entityStorage.filter"/>
         </ElFormItem>
       </ElCol>
-      <ElCol :span="12" :xs="12"/>
     </ElRow>
 
   </div>

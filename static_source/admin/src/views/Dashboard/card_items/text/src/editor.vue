@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {computed, onBeforeUnmount, onMounted, PropType, ref} from "vue";
-import {CardItem, comparisonType, Core, requestCurrentState} from "@/views/Dashboard/core/core";
+import {CardItem, comparisonType, Core} from "@/views/Dashboard/core/core";
 import {
   ElButton,
   ElCard,
@@ -22,7 +22,6 @@ import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {useI18n} from "@/hooks/web/useI18n";
 import {Cache, GetTokens} from "@/views/Dashboard/core/render";
 import {TextProp} from "./types";
-import {JsonViewer} from "@/components/JsonViewer";
 import {TinycmeEditor} from "@/components/Tinymce";
 import {KeysSearch} from "@/views/Dashboard/components";
 
@@ -122,12 +121,6 @@ const removeProp = (index: number) => {
   currentItem.value?.payload.text?.items.splice(index, 1)
 }
 
-const updateCurrentState = () => {
-  if (currentItem.value.entityId) {
-    requestCurrentState(currentItem.value?.entityId)
-  }
-}
-
 const onChangePropValue = (val, index) => {
   currentItem.value.payload.text.items[index].key = val;
 }
@@ -139,23 +132,23 @@ const onChangePropValue = (val, index) => {
   <CommonEditor :item="currentItem" :core="core"/>
 
   <!-- text options -->
-  <ElRow class="mb-10px">
+  <ElRow class="mb-10px mt-10px">
     <ElCol>
-  <ElDivider content-position="left">{{ $t('dashboard.editor.textOptions') }}</ElDivider>
+      <ElDivider content-position="left">{{ $t('dashboard.editor.textOptions') }}</ElDivider>
     </ElCol>
   </ElRow>
 
   <ElRow>
     <ElCol>
-      <ElButton class="w-[100%]" type="default" @click.prevent.stop="addProp()">
+      <ElButton class="w-[100%]" @click.prevent.stop="addProp()">
         <Icon icon="ep:plus" class="mr-5px"/>
         {{ $t('dashboard.editor.addProp') }}
       </ElButton>
     </ElCol>
   </ElRow>
 
-      <ElRow>
-        <ElCol>
+  <ElRow>
+    <ElCol>
       <!-- props -->
       <ElCollapse>
         <ElCollapseItem
@@ -260,29 +253,25 @@ const onChangePropValue = (val, index) => {
                 </ElCol>
               </ElRow>
 
-              <ElRow>
-                <ElCol>
-                  <div class="mb-10px">
-                    <div style="text-align: right;">
-                      <ElPopconfirm
-                          :confirm-button-text="$t('main.ok')"
-                          :cancel-button-text="$t('main.no')"
-                          width="250"
-                          style="margin-left: 10px;"
-                          :title="$t('main.are_you_sure_to_do_want_this?')"
-                          @confirm="removeProp"
-                      >
-                        <template #reference>
-                          <ElButton class="mr-10px" type="danger" plain>
-                            <Icon icon="ep:delete" class="mr-5px"/>
-                            {{ t('main.remove') }}
-                          </ElButton>
-                        </template>
-                      </ElPopconfirm>
-                    </div>
-                  </div>
-                </ElCol>
-              </ElRow>
+
+              <div style="text-align: right;">
+                <ElPopconfirm
+                    :confirm-button-text="$t('main.ok')"
+                    :cancel-button-text="$t('main.no')"
+                    width="250"
+                    style="margin-left: 10px;"
+                    :title="$t('main.are_you_sure_to_do_want_this?')"
+                    @confirm="removeProp"
+                >
+                  <template #reference>
+                    <ElButton type="danger" plain>
+                      <Icon icon="ep:delete" class="mr-5px"/>
+                      {{ t('main.remove') }}
+                    </ElButton>
+                  </template>
+                </ElPopconfirm>
+              </div>
+
 
             </ElForm>
 
@@ -332,22 +321,6 @@ const onChangePropValue = (val, index) => {
         <ElTag size="small" v-for="(token, index) in tokens" :key="index" class="mr-10px">{{ token }}</ElTag>
         <div v-if="!tokens.length">{{ $t('main.no') }}</div>
       </ElFormItem>
-    </ElCol>
-  </ElRow>
-
-  <ElRow class="mb-10px" v-if="currentItem.entity">
-    <ElCol>
-      <ElCollapse>
-        <ElCollapseItem :title="$t('dashboard.editor.eventstateJSONobject')">
-          <ElButton class="mb-10px w-[100%]" type="default" @click.prevent.stop="updateCurrentState()">
-            <Icon icon="ep:refresh" class="mr-5px"/>
-            {{ $t('dashboard.editor.getEvent') }}
-          </ElButton>
-
-          <JsonViewer v-model="currentItem.lastEvent"/>
-
-        </ElCollapseItem>
-      </ElCollapse>
     </ElCol>
   </ElRow>
 
