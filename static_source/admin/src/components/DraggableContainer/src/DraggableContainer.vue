@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {onMounted, ref, watch} from "vue";
+import {onMounted, onUnmounted, ref, watch} from "vue";
 import {propTypes} from "@/utils/propTypes";
 import {useCache} from "@/hooks/web/useCache";
 import {debounce} from "lodash-es";
@@ -8,15 +8,18 @@ import {debounce} from "lodash-es";
 const {wsCache} = useCache()
 
 const props = defineProps({
-  name: propTypes.string.def('draggable-container'),
+  name: propTypes.string.def('main'),
   initialTop: propTypes.number.def(0),
   initialLeft: propTypes.number.def(0),
-  initialWidth: propTypes.number.def(200),
-  initialHeight: propTypes.number.def(150),
+  initialWidth: propTypes.number.def(350),
+  initialHeight: propTypes.number.def(350),
   maxWidth: propTypes.number.def(Infinity),
-  maxHeight: propTypes.number.def(800)
+  maxHeight: propTypes.number.def(800),
+  minWidth: propTypes.number.def(350),
+  parentElement: {type: HTMLElement, default: null}
 })
 
+const menu = ref(null);
 const top = ref(props.initialTop);
 const left = ref(props.initialLeft);
 const width = ref(props.initialWidth);
@@ -31,26 +34,21 @@ let startHeight = ref(props.initialHeight);
 let moveDirection: string;
 
 onMounted(() => {
-  const position = wsCache.get(`${props.name}-position`);
-  if (position) {
-    top.value = position.top;
-    left.value = position.left;
+  if (props.parentElement) {
+    props.parentElement.appendChild(menu.value);
+  } else {
+    document.body.appendChild(menu.value);
   }
 
-  const size = wsCache.get(`${props.name}-size`);
-  if (size) {
-    width.value = size.width;
-    height.value = size.height;
-  }
-
-  const savedVisibility = wsCache.get(`${props.name}-visibility`);
-  if (savedVisibility) {
-    visible.value = JSON.parse(savedVisibility);
-  }
+  restoreState();
 });
 
+onUnmounted(() => {
+
+})
+
 watch([top, left, width, height], () => {
-  savePosition();
+  saveState();
 });
 
 const startDragging = (dir: string, event: MouseEvent) => {
@@ -84,6 +82,8 @@ const dragMenu = (event: MouseEvent) => {
     top.value += deltaY;
     offsetX.value = event.clientX;
     offsetY.value = event.clientY;
+    if (top.value < 0) top.value = 0
+    if (left.value < 0) left.value = 0
   }
 }
 
@@ -91,6 +91,7 @@ const resizeRight = (event: MouseEvent) => {
   if (isDragging.value) {
     const deltaX = event.clientX - offsetX.value;
     width.value = startWidth.value + deltaX;
+    if (width.value < props.minWidth) width.value = props.minWidth
   }
 }
 
@@ -107,6 +108,7 @@ const resizeCorner = (event: MouseEvent) => {
     const deltaX = event.clientX - offsetX.value;
     const deltaY = event.clientY - offsetY.value;
     width.value = startWidth.value + deltaX;
+    if (width.value < props.minWidth) width.value = props.minWidth
     height.value = startHeight.value + deltaY;
   }
 }
@@ -117,12 +119,30 @@ const stopDragging = () => {
   window.removeEventListener('mouseup', stopDragging);
 }
 
-const savePosition = debounce(() => {
-  console.log('save')
+const restoreState = () => {
+  const position = wsCache.get(`${props.name}-position`);
+  if (position) {
+    top.value = position.top;
+    left.value = position.left;
+  }
+
+  const size = wsCache.get(`${props.name}-size`);
+  if (size) {
+    width.value = size.width;
+    height.value = size.height;
+  }
+
+  const savedVisibility = wsCache.get(`${props.name}-visibility`);
+  if (savedVisibility) {
+    visible.value = savedVisibility;
+  }
+}
+
+const saveState = debounce(() => {
   wsCache.set(`${props.name}-position`, {top: top.value, left: left.value});
   wsCache.set(`${props.name}-size`, {width: width.value, height: height.value});
   wsCache.set(`${props.name}-visibility`, visible.value);
-},  100)
+}, 100)
 
 const toggleVisibility = () => {
   visible.value = !visible.value;
@@ -133,8 +153,9 @@ const toggleVisibility = () => {
 <template>
   <div
       class="draggable-container"
+      :class="'container-' + name"
       :style="{ top: `${top}px`, left: `${left}px`, width: `${width}px`, height: `${visible?height:22}px` }"
-      ref="draggable-container"
+      ref="menu"
   >
     <div class="draggable-container-header"
          @mousedown="startDragging('move', $event)"
@@ -185,10 +206,6 @@ const toggleVisibility = () => {
 
 .draggable-container-footer {
   margin-top: auto; /* Footer всегда будет прижат к низу */
-  color: var(--left-menu-text-active-color) !important;
-  background-color: var(--left-menu-bg-color);
-  font-size: 10px;
-  padding-bottom: 10px;
 }
 
 .resizer {

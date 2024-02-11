@@ -129,14 +129,16 @@ const handleSelect = () => {
           style="width: 100%"
           ref="cardItemForm">
 
-    <ElRow :gutter="24">
-      <ElCol :span="12">
+    <ElRow>
+      <ElCol>
         <ElFormItem :label="$t('entityAction.entity')" prop="entity">
           <EntitySearch v-model="currentEntity" @change="changedEntity($event)"/>
         </ElFormItem>
       </ElCol>
+    </ElRow>
 
-      <ElCol :span="12" v-if="currentEntity">
+    <ElRow>
+      <ElCol v-if="currentEntity">
         <ElFormItem :label="$t('entityAction.action')" prop="action">
           <ElSelect
               v-model="action.action"
@@ -153,8 +155,10 @@ const handleSelect = () => {
           </ElSelect>
         </ElFormItem>
       </ElCol>
+    </ElRow>
 
-      <ElCol :span="12" v-if="!currentEntity">
+    <ElRow>
+      <ElCol v-if="!currentEntity">
         <ElFormItem :label="$t('entityAction.action')" prop="action">
           <ElInput v-model="action.action" clearable @change="changedAction($event)"
                    :placeholder=" $t('common.inputText')"/>
@@ -162,13 +166,13 @@ const handleSelect = () => {
       </ElCol>
     </ElRow>
 
-    <ElRow :gutter="24">
-      <ElCol :span="12">
+    <ElRow>
+      <ElCol>
         <ElFormItem :label="$t('entityAction.tags')" prop="tags">
           <TagsSearch v-model="action.tags" @change="changedTags($event)"/>
         </ElFormItem>
       </ElCol>
-      <ElCol :span="12">
+      <ElCol>
         <ElFormItem :label="$t('entityAction.area')" prop="area">
           <AreaSearch v-model="currentArea" @change="changedArea($event)"/>
         </ElFormItem>

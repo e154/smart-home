@@ -490,6 +490,7 @@ export default {
         tabsTab: 'Tab List',
         tabOptions: 'Tab Options',
         cardOptions: 'Card Options',
+        cardItemOptions: 'Card Item Options',
         cardsTab: 'Card List',
         cardItemsTab: 'Card Items',
         mainSettings: 'Main Settings',

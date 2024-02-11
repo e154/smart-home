@@ -224,7 +224,7 @@ const removeChartItem = (index: number) => {
 
   <ElRow v-if="['bar', 'pie', 'doughnut'].includes(currentItem.payload.chart.type)">
     <ElCol>
-      <div style="padding-bottom: 20px">
+      <div class="mb-10px">
         <ElButton type="default" @click.prevent.stop="addChartItem()">
           <Icon icon="ep:plus" class="mr-5px"/>
           {{ $t('dashboard.editor.chart.addChartItem') }}
@@ -301,7 +301,7 @@ const removeChartItem = (index: number) => {
     <ElCol>
       <ElCollapse>
         <ElCollapseItem :title="$t('dashboard.editor.eventstateJSONobject')">
-          <ElButton type="default" @click.prevent.stop="updateCurrentState()" style="margin-bottom: 20px">
+          <ElButton class="mb-10px w-[100%]" type="default" @click.prevent.stop="updateCurrentState()">
             <Icon icon="ep:refresh" class="mr-5px"/>
             {{ $t('dashboard.editor.getEvent') }}
           </ElButton>

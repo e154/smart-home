@@ -269,7 +269,7 @@ const onChangePropValue = (val: string, prop: any, index: number): void => {
 
   <ElRow>
     <ElCol>
-      <div style="padding-bottom: 20px">
+      <div class="mb-10px">
         <ElButton type="default" @click.prevent.stop="addSeriesItem()">
           <Icon icon="ep:plus" class="mr-5px"/>
           {{ $t('dashboard.editor.chart.addSeriesItem') }}
@@ -317,7 +317,7 @@ const onChangePropValue = (val: string, prop: any, index: number): void => {
 
               <ElRow v-if="prop.chartType == 'attr' && !prop.attrAutomatic" style="margin-bottom: 20px">
                 <ElCol>
-                  <div style="padding-bottom: 20px">
+                  <div class="mb-10px">
                     <ElButton type="default" @click.prevent.stop="addAttrItem(prop)">
                       <Icon icon="ep:plus" class="mr-5px"/>
                       {{ $t('dashboard.editor.chart.addCustomAttribute') }}
@@ -477,7 +477,7 @@ const onChangePropValue = (val: string, prop: any, index: number): void => {
     <ElCol>
       <ElCollapse>
         <ElCollapseItem :title="$t('dashboard.editor.eventstateJSONobject')">
-          <ElButton type="default" @click.prevent.stop="updateCurrentState()" style="margin-bottom: 20px">
+          <ElButton class="mb-10px w-[100%]" type="default" @click.prevent.stop="updateCurrentState()">
             <Icon icon="ep:refresh" class="mr-5px"/>
             {{ $t('dashboard.editor.getEvent') }}
           </ElButton>

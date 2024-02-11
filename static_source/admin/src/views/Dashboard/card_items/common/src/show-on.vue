@@ -111,12 +111,10 @@ const lastEvent = (index: number): EventStateChange | undefined => {
 
   <ElRow>
     <ElCol>
-      <div style="padding-bottom: 20px">
-        <ElButton type="default" @click.prevent.stop="addShowOnProp()">
-          <Icon icon="ep:plus" class="mr-5px"/>
-          {{ $t('dashboard.editor.addNewProp') }}
-        </ElButton>
-      </div>
+      <ElButton class="w-[100%]" type="default" @click.prevent.stop="addShowOnProp()">
+        <Icon icon="ep:plus" class="mr-5px"/>
+        {{ $t('dashboard.editor.addNewProp') }}
+      </ElButton>
 
       <!-- props -->
       <ElCollapse v-if="currentValue.length">
@@ -142,21 +140,17 @@ const lastEvent = (index: number): EventStateChange | undefined => {
                 style="width: 100%"
                 ref="cardItemForm">
 
-              <ElRow :gutter="24">
-                <ElCol
-                    :span="8"
-                    :xs="8"
-                >
+              <ElRow>
+                <ElCol>
                   <ElFormItem :label="$t('dashboard.editor.text')" prop="text">
                     <KeysSearch v-model="prop.key" :obj="lastEvent(index)" @change="onChangePropValue($event, index)"/>
                   </ElFormItem>
 
                 </ElCol>
+              </ElRow>
 
-                <ElCol
-                    :span="8"
-                    :xs="8"
-                >
+              <ElRow>
+                <ElCol>
                   <ElFormItem :label="$t('dashboard.editor.comparison')" prop="comparison">
                     <ElSelect
                         v-model="prop.comparison"
@@ -173,11 +167,10 @@ const lastEvent = (index: number): EventStateChange | undefined => {
                   </ElFormItem>
 
                 </ElCol>
+              </ElRow>
 
-                <ElCol
-                    :span="8"
-                    :xs="8"
-                >
+              <ElRow>
+                <ElCol>
 
                   <ElFormItem :label="$t('dashboard.editor.value')" prop="value">
                     <ElInput placeholder="Please input" v-model="prop.value"/>
@@ -187,33 +180,31 @@ const lastEvent = (index: number): EventStateChange | undefined => {
               </ElRow>
 
               <ElRow>
-                <ElCol :span="12" :xs="12">
+                <ElCol>
                   <ElFormItem :label="$t('dashboard.editor.entity')" prop="entity">
                     <EntitySearch v-model="prop.entity" @change="onEntityChanged($event, index)"/>
                   </ElFormItem>
                 </ElCol>
               </ElRow>
 
-              <ElRow>
+              <ElRow class="mt-10px">
                 <ElCol>
-                  <div style="padding-bottom: 20px">
-                    <div style="text-align: right;">
-                      <ElPopconfirm
-                          :confirm-button-text="$t('main.ok')"
-                          :cancel-button-text="$t('main.no')"
-                          width="250"
-                          style="margin-left: 10px;"
-                          :title="$t('main.are_you_sure_to_do_want_this?')"
-                          @confirm="removeShowOnProp(index)"
-                      >
-                        <template #reference>
-                          <ElButton class="mr-10px" type="danger" plain>
-                            <Icon icon="ep:delete" class="mr-5px"/>
-                            {{ t('main.remove') }}
-                          </ElButton>
-                        </template>
-                      </ElPopconfirm>
-                    </div>
+                  <div style="text-align: right;">
+                    <ElPopconfirm
+                        :confirm-button-text="$t('main.ok')"
+                        :cancel-button-text="$t('main.no')"
+                        width="250"
+                        style="margin-left: 10px;"
+                        :title="$t('main.are_you_sure_to_do_want_this?')"
+                        @confirm="removeShowOnProp(index)"
+                    >
+                      <template #reference>
+                        <ElButton class="mr-10px" type="danger" plain>
+                          <Icon icon="ep:delete" class="mr-5px"/>
+                          {{ t('main.remove') }}
+                        </ElButton>
+                      </template>
+                    </ElPopconfirm>
                   </div>
                 </ElCol>
               </ElRow>

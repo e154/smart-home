@@ -2,8 +2,7 @@
 import {computed, PropType, ref, watch} from 'vue'
 import {
   ElButton,
-  ElCol,
-  ElDivider,
+  ElCol, ElDivider,
   ElEmpty,
   ElForm,
   ElFormItem,
@@ -141,6 +140,13 @@ const updateCardItem = async () => {
   <!--            </div>-->
   <!--          </template>-->
 
+  <ElRow class="mb-10px">
+    <ElCol>
+      <ElDivider content-position="left">{{ $t('dashboard.cardItemOptions') }}</ElDivider>
+    </ElCol>
+  </ElRow>
+
+
   <ElForm
       v-if="cardItem"
       :model="cardItem"
@@ -150,7 +156,7 @@ const updateCardItem = async () => {
   >
 
     <ElRow :gutter="24">
-      <ElCol :span="12" :xs="12">
+      <ElCol :span="24" :xs="24">
         <ElFormItem :label="$t('dashboard.editor.type')" prop="type">
           <ElSelect
               v-model="cardItem.type"
@@ -167,7 +173,10 @@ const updateCardItem = async () => {
           </ElSelect>
         </ElFormItem>
       </ElCol>
-      <ElCol :span="12" :xs="12">
+    </ElRow>
+
+    <ElRow :gutter="24">
+      <ElCol :span="24" :xs="24">
         <ElFormItem :label="$t('dashboard.editor.title')" prop="title">
           <ElInput v-model="cardItem.title"/>
         </ElFormItem>
@@ -189,58 +198,42 @@ const updateCardItem = async () => {
   </ElEmpty>
 
 
-  <div v-if="activeCard.selectedItem > -1">
+  <div v-if="activeCard.selectedItem > -1" class="text-right">
 
-    <ElRow class="mb-10px">
-      <ElCol>
-        <ElButton class="w-[100%]" type="primary" @click.prevent.stop="updateCardItem">{{
-            $t('main.update')
-          }}
+    <ElButton type="primary" @click.prevent.stop="updateCardItem">{{
+        $t('main.update')
+      }}
+    </ElButton>
+
+    <ElButton type="default" @click.prevent.stop="copyCardItem">{{ $t('main.copy') }}</ElButton>
+
+    <ElPopconfirm
+        :confirm-button-text="$t('main.ok')"
+        :cancel-button-text="$t('main.no')"
+        width="250"
+        :title="$t('main.are_you_sure_to_do_want_this?')"
+        @confirm="cancel"
+    >
+      <template #reference>
+        <ElButton type="default" plain>{{ t('main.cancel') }}</ElButton>
+      </template>
+    </ElPopconfirm>
+
+    <ElPopconfirm
+        :confirm-button-text="$t('main.ok')"
+        :cancel-button-text="$t('main.no')"
+        width="250"
+        style="margin-left: 10px;"
+        :title="$t('main.are_you_sure_to_do_want_this?')"
+        @confirm="removeCardItem(activeCard.selectedItem)"
+    >
+      <template #reference>
+        <ElButton class="mr-10px" type="danger" plain>
+          <Icon icon="ep:delete" class="mr-5px"/>
+          {{ t('main.remove') }}
         </ElButton>
-      </ElCol>
-    </ElRow>
-
-    <ElRow class="mb-10px">
-      <ElCol>
-        <ElButton class="w-[100%] " type="default" @click.prevent.stop="copyCardItem">{{ $t('main.copy') }}</ElButton>
-      </ElCol>
-    </ElRow>
-
-    <ElRow class="mb-10px">
-      <ElCol>
-        <ElPopconfirm
-            :confirm-button-text="$t('main.ok')"
-            :cancel-button-text="$t('main.no')"
-            width="250"
-            :title="$t('main.are_you_sure_to_do_want_this?')"
-            @confirm="cancel"
-        >
-          <template #reference>
-            <ElButton class="w-[100%]" type="default" plain>{{ t('main.cancel') }}</ElButton>
-          </template>
-        </ElPopconfirm>
-      </ElCol>
-    </ElRow>
-
-    <ElRow class="mb-10px">
-      <ElCol>
-        <ElPopconfirm
-            :confirm-button-text="$t('main.ok')"
-            :cancel-button-text="$t('main.no')"
-            width="250"
-            style="margin-left: 10px;"
-            :title="$t('main.are_you_sure_to_do_want_this?')"
-            @confirm="removeCardItem(activeCard.selectedItem)"
-        >
-          <template #reference>
-            <ElButton class="mr-10px w-[100%]" type="danger" plain>
-              <Icon icon="ep:delete" class="mr-5px"/>
-              {{ t('main.remove') }}
-            </ElButton>
-          </template>
-        </ElPopconfirm>
-      </ElCol>
-    </ElRow>
+      </template>
+    </ElPopconfirm>
   </div>
 
   <!--        </ElCard>-->

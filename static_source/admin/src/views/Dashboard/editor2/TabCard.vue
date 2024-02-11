@@ -101,7 +101,7 @@ const schema = reactive<FormSchema[]>([
     component: 'Switch',
     value: false,
     colProps: {
-      md: 12,
+      md: 24,
       span: 24
     },
   },
@@ -111,13 +111,13 @@ const schema = reactive<FormSchema[]>([
     component: 'Switch',
     value: false,
     colProps: {
-      md: 12,
+      md: 24,
       span: 24
     },
   },
   {
-    field: 'cardSize',
-    label: t('dashboard.editor.size'),
+    field: 'appearance',
+    label: t('dashboard.editor.appearanceOptions'),
     component: 'Divider',
     colProps: {
       span: 24
@@ -129,7 +129,7 @@ const schema = reactive<FormSchema[]>([
     component: 'InputNumber',
     value: 300,
     colProps: {
-      md: 12,
+      md: 24,
       span: 24
     },
   },
@@ -139,15 +139,7 @@ const schema = reactive<FormSchema[]>([
     component: 'InputNumber',
     value: 300,
     colProps: {
-      md: 12,
-      span: 24
-    },
-  },
-  {
-    field: 'cardSize',
-    label: t('dashboard.editor.color'),
-    component: 'Divider',
-    colProps: {
+      md: 24,
       span: 24
     },
   },
@@ -352,6 +344,12 @@ const sortCardDown = (card: Card, index: number) => {
 
 <template>
 
+  <ElRow v-if="activeCard !== undefined" class="mb-10px">
+    <ElCol>
+      <ElDivider content-position="left">{{ $t('dashboard.cardOptions') }}</ElDivider>
+    </ElCol>
+  </ElRow>
+
   <!--  <ElContainer style="height: 500px">-->
 <!--  <ElContainer>-->
 <!--    <ElMain>-->
@@ -372,26 +370,23 @@ const sortCardDown = (card: Card, index: number) => {
               @register="register"
           />
 
-          <ElRow class="mb-10px">
-            <ElCol>
-              <ElDivider content-position="left">{{ $t('main.actions') }}</ElDivider>
-            </ElCol>
-          </ElRow>
-
-          <ElRow v-if="activeCard !== undefined" class="mb-20px">
+          <ElRow v-if="activeCard !== undefined" class="mb-10px">
             <ElCol>
               <ElDivider content-position="left">{{ $t('dashboard.editor.keystrokeCapture') }}</ElDivider>
             </ElCol>
-            <ElCol>
+          </ElRow>
+
+            <ElRow v-if="activeCard !== undefined" class="mb-10px">
+              <ElCol>
               <KeystrokeCapture :card="activeCard" :core="core"/>
             </ElCol>
           </ElRow>
 
-          <ElRow class="mb-10px">
-            <ElCol>
-              <ElDivider content-position="left">{{ $t('main .actions') }}</ElDivider>
-            </ElCol>
-          </ElRow>
+  <ElRow v-if="activeCard !== undefined" class="mb-10px">
+    <ElCol>
+      <ElDivider content-position="left">{{ $t('main.actions') }}</ElDivider>
+    </ElCol>
+  </ElRow>
 
           <ElEmpty v-if="!(activeCard !== undefined)" :rows="5">
             <ElButton type="primary" @click="addCard()">

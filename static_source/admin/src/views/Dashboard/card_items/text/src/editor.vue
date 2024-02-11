@@ -46,7 +46,7 @@ const props = defineProps({
 
 const currentItem = computed(() => props.item as CardItem)
 
-const defaultTextHtml = ref(true);
+const defaultTextHtml = ref(false);
 
 // ---------------------------------
 // component methods
@@ -139,17 +139,23 @@ const onChangePropValue = (val, index) => {
   <CommonEditor :item="currentItem" :core="core"/>
 
   <!-- text options -->
-  <ElDivider content-position="left">{{ $t('dashboard.editor.textOptions') }}</ElDivider>
-
-  <ElRow style="padding-bottom: 20px">
+  <ElRow class="mb-10px">
     <ElCol>
-      <div style="padding-bottom: 20px">
-        <ElButton type="default" @click.prevent.stop="addProp()">
-          <Icon icon="ep:plus" class="mr-5px"/>
-          {{ $t('dashboard.editor.addProp') }}
-        </ElButton>
-      </div>
+  <ElDivider content-position="left">{{ $t('dashboard.editor.textOptions') }}</ElDivider>
+    </ElCol>
+  </ElRow>
 
+  <ElRow>
+    <ElCol>
+      <ElButton class="w-[100%]" type="default" @click.prevent.stop="addProp()">
+        <Icon icon="ep:plus" class="mr-5px"/>
+        {{ $t('dashboard.editor.addProp') }}
+      </ElButton>
+    </ElCol>
+  </ElRow>
+
+      <ElRow>
+        <ElCol>
       <!-- props -->
       <ElCollapse>
         <ElCollapseItem
@@ -175,21 +181,17 @@ const onChangePropValue = (val, index) => {
                 ref="cardItemForm"
             >
 
-              <ElRow :gutter="24">
-                <ElCol
-                    :span="8"
-                    :xs="8"
-                >
+              <ElRow>
+                <ElCol>
                   <ElFormItem :label="$t('dashboard.editor.text')" prop="text">
                     <KeysSearch v-model="prop.key" :obj="currentItem.lastEvent"
                                 @change="onChangePropValue($event, index)"/>
                   </ElFormItem>
                 </ElCol>
+              </ElRow>
 
-                <ElCol
-                    :span="8"
-                    :xs="8"
-                >
+              <ElRow>
+                <ElCol>
                   <ElFormItem :label="$t('dashboard.editor.comparison')" prop="comparison">
                     <ElSelect
                         v-model="prop.comparison"
@@ -206,11 +208,10 @@ const onChangePropValue = (val, index) => {
                   </ElFormItem>
 
                 </ElCol>
+              </ElRow>
 
-                <ElCol
-                    :span="8"
-                    :xs="8"
-                >
+              <ElRow>
+                <ElCol>
 
                   <ElFormItem :label="$t('dashboard.editor.value')" prop="value">
                     <ElInput
@@ -261,7 +262,7 @@ const onChangePropValue = (val, index) => {
 
               <ElRow>
                 <ElCol>
-                  <div style="padding-bottom: 20px">
+                  <div class="mb-10px">
                     <div style="text-align: right;">
                       <ElPopconfirm
                           :confirm-button-text="$t('main.ok')"
@@ -334,11 +335,11 @@ const onChangePropValue = (val, index) => {
     </ElCol>
   </ElRow>
 
-  <ElRow style="padding-bottom: 20px" v-if="currentItem.entity">
+  <ElRow class="mb-10px" v-if="currentItem.entity">
     <ElCol>
       <ElCollapse>
         <ElCollapseItem :title="$t('dashboard.editor.eventstateJSONobject')">
-          <ElButton type="default" @click.prevent.stop="updateCurrentState()" style="margin-bottom: 20px">
+          <ElButton class="mb-10px w-[100%]" type="default" @click.prevent.stop="updateCurrentState()">
             <Icon icon="ep:refresh" class="mr-5px"/>
             {{ $t('dashboard.editor.getEvent') }}
           </ElButton>

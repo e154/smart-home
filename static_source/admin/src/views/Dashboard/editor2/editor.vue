@@ -163,7 +163,7 @@ const addCard = () => {
       </ElTabPane>
     </ElTabs>
 
-    <DraggableContainer>
+    <DraggableContainer :name="'editor-main'">
       <template #header>
         <span>Main Options</span>
       </template>
@@ -172,7 +172,7 @@ const addCard = () => {
           <!-- main -->
           <ElTabPane :label="$t('dashboard.mainTab')" name="main">
             <template #label>
-              <Icon icon="wpf:maintenance" class="mr-5px"/>
+              <Icon icon="wpf:maintenance"/>
             </template>
             <TabSettings v-if="core.current" :core="core"/>
           </ElTabPane>
@@ -181,7 +181,7 @@ const addCard = () => {
           <!-- tabs -->
           <ElTabPane :label="$t('dashboard.tabsTab')" name="tabs">
             <template #label>
-              <Icon icon="vaadin:tabs" class="mr-5px"/>
+              <Icon icon="vaadin:tabs" />
             </template>
             <TabEditor v-if="core.current && activeTab" :tab="activeTab" :core="core"/>
             <ElEmpty v-if="!core.tabs.length" :rows="5">
@@ -195,7 +195,7 @@ const addCard = () => {
           <!-- cards -->
           <ElTabPane :label="$t('dashboard.cardsTab')" name="cards">
             <template #label>
-              <Icon icon="material-symbols:cards-outline" class="mr-5px"/>
+              <Icon icon="material-symbols:cards-outline" />
             </template>
             <TabCard v-if="core.current && activeTab" :tab="activeTab" :core="core"/>
             <ElEmpty v-if="!core.tabs.length" :rows="5">
@@ -209,7 +209,7 @@ const addCard = () => {
           <!-- cardItems -->
           <ElTabPane :label="$t('dashboard.cardItemsTab')" name="cardItems">
             <template #label>
-              <Icon icon="icon-park-solid:add-item" class="mr-5px"/>
+              <Icon icon="icon-park-solid:add-item" />
             </template>
             <TabCardItem v-if="core.current && activeTab && activeCard" :card="activeCard" :core="core"/>
             <ElEmpty v-if="!core.tabs.length" :rows="5">
@@ -331,7 +331,7 @@ html {
 
 
 // custom style
-.dashboard-container {
+.draggable-container.container-editor-main {
   .el-main {
     padding: 2px!important;
   }
@@ -340,7 +340,7 @@ html {
   }
 
   .el-card {
-    --el-card-padding: 1px;
+    --el-card-padding: 2px 5px;
   }
   .el-form-item--small {
     margin-bottom: 5px;
@@ -365,7 +365,15 @@ html {
   }
 
   .el-col.el-col-24.is-guttered {
-    padding: 0!important;
+    padding: 0!important!important;
+  }
+
+  .el-button {
+    margin-bottom: 10px!important;
+  }
+
+  .el-collapse-item__content {
+    padding-bottom: 10px!important;
   }
 }
 </style>

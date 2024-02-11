@@ -133,7 +133,7 @@ const lastEvent = (index: number): EventStateChange | undefined => {
 
     <ElRow>
       <ElCol>
-        <div style="padding-bottom: 20px">
+        <div class="mb-10px">
           <ElButton type="default" @click.prevent.stop="addMarker()">
             <Icon icon="ep:plus" class="mr-5px"/>
             {{ $t('dashboard.editor.addMarker') }}
@@ -200,7 +200,7 @@ const lastEvent = (index: number): EventStateChange | undefined => {
 
                 <ElRow>
                   <ElCol>
-                    <div style="padding-bottom: 20px">
+                    <div class="mb-10px">
                       <div style="text-align: right;">
                         <ElButton
                             class="mr-10px" plain

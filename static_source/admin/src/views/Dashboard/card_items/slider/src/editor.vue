@@ -147,11 +147,11 @@ const changedForActionButton = async (options: EntitiesActionOptions) => {
 
     <EntitiesAction :options="currentItem.payload.slider" :entity="currentItem.entity" @change="changedForActionButton($event)"/>
 
-    <ElRow style="padding-bottom: 20px" v-if="currentItem.entity">
+    <ElRow class="mb-10px" v-if="currentItem.entity">
       <ElCol>
         <ElCollapse>
           <ElCollapseItem :title="$t('dashboard.editor.eventstateJSONobject')">
-            <ElButton type="default" @click.prevent.stop="updateCurrentState()" style="margin-bottom: 20px">
+            <ElButton class="mb-10px w-[100%]" type="default" @click.prevent.stop="updateCurrentState()">
               <Icon icon="ep:refresh" class="mr-5px"/>
               {{ $t('dashboard.editor.getEvent') }}
             </ElButton>

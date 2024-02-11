@@ -196,35 +196,25 @@ const removeBoard = async () => {
     </ElCol>
   </ElRow>
 
-  <ElRow class="mb-10px">
-    <ElCol>
-      <ElButton type="primary" class="w-[100%]" @click.prevent.stop='exportDashbord' plain size="small">
+
+  <div class="text-right">
+
+      <ElButton type="primary" @click.prevent.stop='exportDashbord' plain size="small">
         <Icon icon="uil:file-export" class="mr-5px"/>
         {{ $t('main.export') }}
       </ElButton>
-    </ElCol>
-  </ElRow>
 
-  <ElRow class="mb-10px">
-    <ElCol>
-      <ElButton class="w-[100%]" type="primary" @click.prevent.stop="updateBoard" plain size="small">
+
+      <ElButton type="primary" @click.prevent.stop="updateBoard" plain size="small">
         {{ $t('main.update') }}
       </ElButton>
-    </ElCol>
-  </ElRow>
 
-  <ElRow class="mb-10px">
-    <ElCol>
-      <ElButton class="w-[100%]" @click.prevent.stop="fetchDashboard" plain size="small">{{
+
+      <ElButton @click.prevent.stop="fetchDashboard" plain size="small">{{
           $t('main.loadFromServer')
         }}
       </ElButton>
-    </ElCol>
-  </ElRow>
 
-
-  <ElRow class="mb-10px">
-    <ElCol>
       <ElPopconfirm
           :confirm-button-text="$t('main.ok')"
           :cancel-button-text="$t('main.no')"
@@ -234,16 +224,12 @@ const removeBoard = async () => {
           @confirm="cancel"
       >
         <template #reference>
-          <ElButton class="w-[100%]" type="default" plain size="small">
+          <ElButton type="default" plain size="small">
             {{ t('main.cancel') }}
           </ElButton>
         </template>
       </ElPopconfirm>
-    </ElCol>
-  </ElRow>
 
-  <ElRow class="mb-10px">
-    <ElCol>
       <ElPopconfirm
           :confirm-button-text="$t('main.ok')"
           :cancel-button-text="$t('main.no')"
@@ -253,15 +239,14 @@ const removeBoard = async () => {
           @confirm="removeBoard"
       >
         <template #reference>
-          <ElButton class="w-[100%]" type="danger" plain size="small">
+          <ElButton type="danger" plain size="small">
             <Icon icon="ep:delete" class="mr-5px"/>
             {{ t('main.remove') }}
           </ElButton>
         </template>
       </ElPopconfirm>
-    </ElCol>
-  </ElRow>
 
+  </div>
 
   <!-- export dialog -->
   <Dialog v-model="dialogVisible" :title="t('dashboard.dialogExportTitle')" :maxHeight="400" width="80%">

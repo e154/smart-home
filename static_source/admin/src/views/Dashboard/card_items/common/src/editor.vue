@@ -115,8 +115,8 @@ const removeAction = (index: number) => {
   <!-- main options -->
   <ElDivider content-position="left">{{ $t('dashboard.editor.mainOptions') }}</ElDivider>
 
-  <ElRow :gutter="24">
-    <ElCol :span="12" :xs="12">
+  <ElRow>
+    <ElCol>
       <ElFormItem :label="$t('dashboard.editor.entity')" prop="entity">
         <EntitySearch v-model="currentItem.entity" @change="changedEntity"/>
       </ElFormItem>
@@ -125,8 +125,10 @@ const removeAction = (index: number) => {
         <ElSwitch v-model="currentItem.frozen"/>
       </ElFormItem>
     </ElCol>
+  </ElRow>
 
-    <ElCol :span="12" :xs="12">
+  <ElRow>
+    <ElCol>
       <ElFormItem :label="$t('dashboard.editor.enabled')" prop="enabled">
         <ElSwitch v-model="currentItem.enabled"/>
       </ElFormItem>
@@ -138,12 +140,21 @@ const removeAction = (index: number) => {
   <!-- /main options -->
 
   <!-- show on -->
-  <ElDivider content-position="left">{{ $t('dashboard.editor.showOn') }}</ElDivider>
+  <ElRow class="mb-10px">
+    <ElCol>
+      <ElDivider content-position="left">{{ $t('dashboard.editor.showOn') }}</ElDivider>
+    </ElCol>
+  </ElRow>
+
   <ShowOn v-model="currentItem.showOn" :item="currentItem" :core="core"/>
   <!-- /show on -->
 
   <!-- hide on-->
-  <ElDivider content-position="left">{{ $t('dashboard.editor.hideOn') }}</ElDivider>
+  <ElRow class="mb-10px">
+    <ElCol>
+      <ElDivider content-position="left">{{ $t('dashboard.editor.hideOn') }}</ElDivider>
+    </ElCol>
+  </ElRow>
   <ShowOn v-model="currentItem.hideOn" :item="currentItem" :core="core"/>
   <!-- /hide on-->
 
@@ -161,12 +172,10 @@ const removeAction = (index: number) => {
     </ElRow>
     <ElRow v-if="currentItem.asButton">
       <ElCol>
-        <div style="padding-bottom: 20px">
-          <ElButton type="default" @click.prevent.stop="addAction()">
-            <Icon icon="ep:plus" class="mr-5px"/>
-            {{ $t('dashboard.editor.addAction') }}
-          </ElButton>
-        </div>
+        <ElButton class="w-[100%]" type="default" @click.prevent.stop="addAction()">
+          <Icon icon="ep:plus" class="mr-5px"/>
+          {{ $t('dashboard.editor.addAction') }}
+        </ElButton>
 
         <!-- props -->
         <ElCollapse>
@@ -190,7 +199,8 @@ const removeAction = (index: number) => {
 
                 <ElDivider content-position="left">{{ $t('dashboard.editor.actionOptions') }}</ElDivider>
 
-                <EntitiesAction :options="prop" :entity="currentItem.entity" @change="changedForActionButton($event, index)"/>
+                <EntitiesAction :options="prop" :entity="currentItem.entity"
+                                @change="changedForActionButton($event, index)"/>
 
                 <ElDivider content-position="left">{{ $t('dashboard.editor.appearanceOptions') }}</ElDivider>
 
@@ -200,18 +210,24 @@ const removeAction = (index: number) => {
 
                 <ElDivider content-position="left">{{ $t('main.or') }}</ElDivider>
 
-                <ElRow :gutter="24">
-                  <ElCol :span="8" :xs="8">
+                <ElRow>
+                  <ElCol>
                     <ElFormItem :label="$t('dashboard.editor.icon')" prop="icon">
                       <ElInput v-model="prop.icon"/>
                     </ElFormItem>
                   </ElCol>
-                  <ElCol :span="8" :xs="8">
+                </ElRow>
+
+                <ElRow>
+                  <ElCol>
                     <ElFormItem :label="$t('dashboard.editor.iconColor')" prop="iconColor">
                       <ElColorPicker show-alpha v-model="prop.iconColor"/>
                     </ElFormItem>
                   </ElCol>
-                  <ElCol :span="8" :xs="8">
+                </ElRow>
+
+                <ElRow>
+                  <ElCol>
                     <ElFormItem :label="$t('dashboard.editor.iconSize')" prop="iconSize">
                       <ElInputNumber v-model="prop.iconSize" :min="1" :value-on-clear="12"/>
                     </ElFormItem>
@@ -220,24 +236,22 @@ const removeAction = (index: number) => {
 
                 <ElRow>
                   <ElCol>
-                    <div style="padding-bottom: 20px">
-                      <div style="text-align: right;">
-                        <ElPopconfirm
-                            :confirm-button-text="$t('main.ok')"
-                            :cancel-button-text="$t('main.no')"
-                            width="250"
-                            style="margin-left: 10px;"
-                            :title="$t('main.are_you_sure_to_do_want_this?')"
-                            @confirm="removeAction(index)"
-                        >
-                          <template #reference>
-                            <ElButton class="mr-10px" type="danger" plain>
-                              <Icon icon="ep:delete" class="mr-5px"/>
-                              {{ t('main.remove') }}
-                            </ElButton>
-                          </template>
-                        </ElPopconfirm>
-                      </div>
+                    <div style="text-align: right;">
+                      <ElPopconfirm
+                          :confirm-button-text="$t('main.ok')"
+                          :cancel-button-text="$t('main.no')"
+                          width="250"
+                          style="margin-left: 10px;"
+                          :title="$t('main.are_you_sure_to_do_want_this?')"
+                          @confirm="removeAction(index)"
+                      >
+                        <template #reference>
+                          <ElButton class="mr-10px" type="danger" plain>
+                            <Icon icon="ep:delete" class="mr-5px"/>
+                            {{ t('main.remove') }}
+                          </ElButton>
+                        </template>
+                      </ElPopconfirm>
                     </div>
                   </ElCol>
                 </ElRow>

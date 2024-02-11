@@ -83,7 +83,7 @@ const schema = reactive<FormSchema[]>([
   },
   {
     field: 'appearance',
-    label: t('dashboard.editor.appearance'),
+    label: t('dashboard.editor.appearanceOptions'),
     component: 'Divider',
     colProps: {
       span: 24
@@ -271,12 +271,10 @@ const sortCardDown = (tab: Tab, index: number) => {}
     </ElCol>
   </ElRow>
 
-<!--        <div class="text-right" v-if="currentCore.tabs.length">-->
-  <ElRow class="mb-10px">
-    <ElCol>
-          <ElButton class="w-[100%]" type="primary" @click.prevent.stop="updateTab">{{ $t('main.update') }}</ElButton>
-    </ElCol>
-  </ElRow>
+        <div class="text-right" v-if="currentCore.tabs.length">
+
+          <ElButton type="primary" @click.prevent.stop="updateTab">{{ $t('main.update') }}</ElButton>
+
 
           <ElButton type="default" @click.prevent.stop="cancel" plain>{{ t('main.cancel') }}</ElButton>
           <ElPopconfirm
@@ -294,7 +292,7 @@ const sortCardDown = (tab: Tab, index: number) => {}
               </ElButton>
             </template>
           </ElPopconfirm>
-<!--        </div>-->
+        </div>
 
 <!--      </ElCard>-->
 <!--    </ElMain>-->
