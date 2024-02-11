@@ -4,6 +4,7 @@ import {onBeforeUnmount, onMounted, ref, watch} from "vue";
 import {propTypes} from "@/utils/propTypes";
 import {useCache} from "@/hooks/web/useCache";
 import {debounce} from "lodash-es";
+import {maxZIndex} from "./types";
 
 const {wsCache} = useCache()
 
@@ -30,17 +31,18 @@ let offsetX = ref(0);
 let offsetY = ref(0);
 let startWidth = ref(props.initialWidth);
 let startHeight = ref(props.initialHeight);
+const zIndex = ref(1);
 
 let moveDirection: string;
 
 onMounted(() => {
+  restoreState();
+
   if (props.parentElement) {
     props.parentElement.appendChild(menu.value);
   } else {
     document.body.appendChild(menu.value);
   }
-
-  restoreState();
 });
 
 onBeforeUnmount(() => {
@@ -136,20 +138,21 @@ const restoreState = () => {
     height.value = size.height;
   }
 
-  const savedVisibility = wsCache.get(`${props.name}-visibility`);
-  if (savedVisibility) {
-    visible.value = savedVisibility;
-  }
+   visible.value = wsCache.get(`${props.name}-visibility`);
 }
 
 const saveState = debounce(() => {
   wsCache.set(`${props.name}-position`, {top: top.value, left: left.value});
   wsCache.set(`${props.name}-size`, {width: width.value, height: height.value});
-  wsCache.set(`${props.name}-visibility`, visible.value);
 }, 100)
 
 const toggleVisibility = () => {
   visible.value = !visible.value;
+  wsCache.set(`${props.name}-visibility`, visible.value);
+}
+
+const bringToFront = () => {
+  zIndex.value = ++maxZIndex.value; // Устанавливаем z-index на 1 больше максимального
 }
 
 </script>
@@ -158,8 +161,9 @@ const toggleVisibility = () => {
   <div
       class="draggable-container"
       :class="'container-' + name"
-      :style="{ top: `${top}px`, left: `${left}px`, width: `${width}px`, height: `${visible?height:22}px` }"
+      :style="{ top: `${top}px`, left: `${left}px`, width: `${width}px`, height: `${visible?height:22}px`, zIndex: zIndex }"
       ref="menu"
+      @mousedown="bringToFront"
   >
     <div class="draggable-container-header"
          @mousedown="startDragging('move', $event)"

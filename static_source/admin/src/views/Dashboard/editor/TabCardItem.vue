@@ -2,6 +2,8 @@
 import {computed, PropType, ref, watch} from 'vue'
 import {
   ElButton,
+  ElButtonGroup,
+  ElCard,
   ElCol,
   ElCollapse,
   ElCollapseItem,
@@ -10,17 +12,21 @@ import {
   ElForm,
   ElFormItem,
   ElInput,
+  ElMenu,
+  ElMenuItem,
   ElMessage,
   ElOption,
   ElPopconfirm,
   ElRow,
-  ElSelect
+  ElSelect,
+  ElTag
 } from 'element-plus'
 import {useI18n} from '@/hooks/web/useI18n'
 import {Card, CardItem, Core, requestCurrentState} from "@/views/Dashboard/core/core";
 import {useBus} from "@/views/Dashboard/core/bus";
 import {CardEditorName, CardItemList} from "@/views/Dashboard/card_items";
 import {JsonViewer} from "@/components/JsonViewer";
+import {DraggableContainer} from "@/components/DraggableContainer";
 
 const {t} = useI18n()
 
@@ -140,16 +146,6 @@ const updateCurrentState = () => {
 
 <template>
 
-  <!--  <ElContainer>-->
-  <!--    <ElMain>-->
-  <!--      <ElScrollbar>-->
-  <!--        <ElCard class="box-card">-->
-  <!--          <template #header>-->
-  <!--            <div class="card-header">-->
-  <!--              <span>{{ $t('dashboard.editor.itemDetail') }}</span>-->
-  <!--            </div>-->
-  <!--          </template>-->
-
   <ElRow class="mb-10px" v-if="activeCard.selectedItem !== -1">
     <ElCol>
       <ElDivider content-position="left">{{ $t('dashboard.cardItemOptions') }}</ElDivider>
@@ -265,6 +261,55 @@ const updateCurrentState = () => {
     </ElPopconfirm>
   </div>
 
+  <DraggableContainer :name="'editor-cards'" :initial-width="100">
+    <template #header>
+      <span>Cards</span>
+    </template>
+    <template #default>
+      <ElCard class="box-card">
+        <template #header>
+          <div class="item-header">
+            <span>{{ $t('dashboard.editor.itemList') }}</span>
+            <ElButtonGroup>
+              <ElButton @click="addCardItem()" text size="small">
+                {{ t('dashboard.addNew') }}
+              </ElButton>
+            </ElButtonGroup>
+          </div>
+        </template>
+        <ElMenu
+            v-if="activeCard && activeCard.id"
+            ref="tabMenu"
+            :default-active="activeCard.selectedItem + ''"
+            v-model="activeCard.selectedItem"
+            class="el-menu-vertical-demo">
+          <ElMenuItem
+              :index="index + ''"
+              :key="index"
+              v-for="(item, index) in activeCard.items"
+              @click="menuCardItemClick(index)">
+            <div class="w-[100%] item-header">
+                <span>
+                  {{ item.title }}
+                <ElTag type="info" class="mb-18px ml-10px">
+                  {{ item.type }}
+                </ElTag>
+                </span>
+              <ElButtonGroup class="hide">
+                <ElButton @click.prevent.stop="sortCardItemUp(item, index)">
+                  <Icon icon="teenyicons:up-solid"/>
+                </ElButton>
+                <ElButton @click.prevent.stop="sortCardItemDown(item, index)">
+                  <Icon icon="teenyicons:down-solid"/>
+                </ElButton>
+              </ElButtonGroup>
+            </div>
+          </ElMenuItem>
+        </ElMenu>
+
+      </ElCard>
+    </template>
+  </DraggableContainer>
 
   <!--        </ElCard>-->
   <!--      </ElScrollbar>-->
@@ -272,48 +317,48 @@ const updateCurrentState = () => {
 
   <!--    <ElAside width="400px">-->
   <!--      <ElScrollbar>-->
-  <!--        <ElCard class="box-card">-->
-  <!--          <template #header>-->
-  <!--            <div class="item-header">-->
-  <!--              <span>{{ $t('dashboard.editor.itemList') }}</span>-->
-  <!--              <ElButtonGroup>-->
-  <!--                <ElButton @click="addCardItem()" text size="small">-->
-  <!--                  {{ t('dashboard.addNew') }}-->
-  <!--                </ElButton>-->
-  <!--              </ElButtonGroup>-->
-  <!--            </div>-->
-  <!--          </template>-->
-  <!--          <ElMenu-->
-  <!--              v-if="activeCard && activeCard.id"-->
-  <!--              ref="tabMenu"-->
-  <!--              :default-active="activeCard.selectedItem + ''"-->
-  <!--              v-model="activeCard.selectedItem"-->
-  <!--              class="el-menu-vertical-demo">-->
-  <!--            <ElMenuItem-->
-  <!--                :index="index + ''"-->
-  <!--                :key="index"-->
-  <!--                v-for="(item, index) in activeCard.items"-->
-  <!--                @click="menuCardItemClick(index)">-->
-  <!--              <div class="w-[100%] item-header">-->
-  <!--              <span>-->
-  <!--                {{ item.title }}-->
-  <!--              <ElTag type="info" class="mb-18px ml-10px">-->
-  <!--                {{ item.type }}-->
-  <!--              </ElTag>-->
-  <!--              </span>-->
-  <!--                <ElButtonGroup class="hide">-->
-  <!--                  <ElButton @click.prevent.stop="sortCardItemUp(item, index)">-->
-  <!--                    <Icon icon="teenyicons:up-solid"/>-->
-  <!--                  </ElButton>-->
-  <!--                  <ElButton @click.prevent.stop="sortCardItemDown(item, index)">-->
-  <!--                    <Icon icon="teenyicons:down-solid"/>-->
+  <!--          <ElCard class="box-card">-->
+  <!--            <template #header>-->
+  <!--              <div class="item-header">-->
+  <!--                <span>{{ $t('dashboard.editor.itemList') }}</span>-->
+  <!--                <ElButtonGroup>-->
+  <!--                  <ElButton @click="addCardItem()" text size="small">-->
+  <!--                    {{ t('dashboard.addNew') }}-->
   <!--                  </ElButton>-->
   <!--                </ElButtonGroup>-->
   <!--              </div>-->
-  <!--            </ElMenuItem>-->
-  <!--          </ElMenu>-->
+  <!--            </template>-->
+  <!--            <ElMenu-->
+  <!--                v-if="activeCard && activeCard.id"-->
+  <!--                ref="tabMenu"-->
+  <!--                :default-active="activeCard.selectedItem + ''"-->
+  <!--                v-model="activeCard.selectedItem"-->
+  <!--                class="el-menu-vertical-demo">-->
+  <!--              <ElMenuItem-->
+  <!--                  :index="index + ''"-->
+  <!--                  :key="index"-->
+  <!--                  v-for="(item, index) in activeCard.items"-->
+  <!--                  @click="menuCardItemClick(index)">-->
+  <!--                <div class="w-[100%] item-header">-->
+  <!--                <span>-->
+  <!--                  {{ item.title }}-->
+  <!--                <ElTag type="info" class="mb-18px ml-10px">-->
+  <!--                  {{ item.type }}-->
+  <!--                </ElTag>-->
+  <!--                </span>-->
+  <!--                  <ElButtonGroup class="hide">-->
+  <!--                    <ElButton @click.prevent.stop="sortCardItemUp(item, index)">-->
+  <!--                      <Icon icon="teenyicons:up-solid"/>-->
+  <!--                    </ElButton>-->
+  <!--                    <ElButton @click.prevent.stop="sortCardItemDown(item, index)">-->
+  <!--                      <Icon icon="teenyicons:down-solid"/>-->
+  <!--                    </ElButton>-->
+  <!--                  </ElButtonGroup>-->
+  <!--                </div>-->
+  <!--              </ElMenuItem>-->
+  <!--            </ElMenu>-->
 
-  <!--        </ElCard>-->
+  <!--          </ElCard>-->
   <!--      </ElScrollbar>-->
   <!--    </ElAside>-->
   <!--  </ElContainer>-->

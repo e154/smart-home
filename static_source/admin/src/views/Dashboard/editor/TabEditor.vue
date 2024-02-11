@@ -11,6 +11,7 @@ import {useValidator} from '@/hooks/web/useValidator'
 import {FormSchema} from '@/types/form'
 import {ApiDashboardCard, ApiEntity} from "@/api/stub";
 import {Core, Tab} from "@/views/Dashboard/core/core";
+import {DraggableContainer} from "@/components/DraggableContainer";
 
 const {register, elFormRef, methods} = useForm()
 const {required} = useValidator()
@@ -294,29 +295,31 @@ const sortCardDown = (tab: Tab, index: number) => {}
           </ElPopconfirm>
         </div>
 
-<!--      </ElCard>-->
-<!--    </ElMain>-->
-<!--    <ElAside width="400px">-->
-<!--      <ElCard class="box-card">-->
-<!--        <template #header>-->
-<!--          <div class="card-header">-->
-<!--            <span>{{ $t('dashboard.tabList') }}</span>-->
-<!--            <ElButton @click="createTab()" text size="small">-->
-<!--              {{ t('dashboard.addNew') }}-->
-<!--            </ElButton>-->
-<!--          </div>-->
-<!--        </template>-->
-<!--        <ElMenu v-if="currentCore.tabs.length" :default-active="currentCore.activeTabIdx + ''" v-model="currentCore.activeTabIdx" class="el-menu-vertical-demo">-->
-<!--          <ElMenuItem :index="index + ''" :key="tab" v-for="(tab, index) in currentCore.tabs" @click="menuTabClick(index, tab)">-->
-<!--           <div class="w-[100%] card-header">-->
-<!--             <span>{{ tab.name }}</span>-->
-<!--           </div>-->
-<!--          </ElMenuItem>-->
-<!--        </ElMenu>-->
+  <DraggableContainer :name="'editor-tabs'" :initial-width="100">
+    <template #header>
+      <span>Tabs</span>
+    </template>
+    <template #default>
+      <ElCard class="box-card">
+        <template #header>
+          <div class="card-header">
+            <span>{{ $t('dashboard.tabList') }}</span>
+            <ElButton @click="createTab()" text size="small">
+              {{ t('dashboard.addNew') }}
+            </ElButton>
+          </div>
+        </template>
+        <ElMenu v-if="currentCore.tabs.length" :default-active="currentCore.activeTabIdx + ''" v-model="currentCore.activeTabIdx" class="el-menu-vertical-demo">
+          <ElMenuItem :index="index + ''" :key="tab" v-for="(tab, index) in currentCore.tabs" @click="menuTabClick(index, tab)">
+            <div class="w-[100%] card-header">
+              <span>{{ tab.name }}</span>
+            </div>
+          </ElMenuItem>
+        </ElMenu>
 
-<!--      </ElCard>-->
-<!--    </ElAside>-->
-<!--  </ElContainer>-->
+      </ElCard>
+    </template>
+  </DraggableContainer>
 
 </template>
 
