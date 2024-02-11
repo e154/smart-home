@@ -421,10 +421,10 @@ const sortCardDown = (card: Card, index: number) => {
             <div class="card-header">
               <span>{{ $t('dashboard.cardList') }}</span>
               <ElButtonGroup>
-                <ElButton @click="addCard()" text size="small">
+                <ElButton @click="addCard()" text>
                   {{ t('dashboard.addNew') }}
                 </ElButton>
-                <ElButton @click="showImportDialog()" text size="small">
+                <ElButton @click="showImportDialog()" text>
                   {{ t('dashboard.importCard') }}
                 </ElButton>
               </ElButtonGroup>

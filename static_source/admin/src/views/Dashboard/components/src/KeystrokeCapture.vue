@@ -123,12 +123,12 @@ const changedForActionButton = async (options: EntitiesActionOptions, index: num
 
               <span v-if="prop.entityId">
                 &nbsp;
-              <ElTag class="mx-1" type="info">{{ prop.entityId }}</ElTag>
+              <ElTag class="mx-1" type="info" size="small">{{ prop.entityId }}</ElTag>
                 </span>
 
               <span v-if="prop.action">
                 &nbsp;
-              <ElTag class="mx-1" type="danger">{{ prop.action }}</ElTag>
+              <ElTag class="mx-1" type="danger" size="small">{{ prop.action }}</ElTag>
                 </span>
             </template>
 
@@ -140,7 +140,7 @@ const changedForActionButton = async (options: EntitiesActionOptions, index: num
 
               <ElRow class="mt-10px mb-10px">
                 <ElCol>
-                  <el-button class="w-[100%]" size="small" @click="saveNewButton(index)">
+                  <el-button class="w-[100%]" @click="saveNewButton(index)">
                     <Icon icon="ep:plus" class="mr-5px"/>
                     {{ t('dashboard.editor.addNewButton') }}
                   </el-button>
@@ -156,6 +156,7 @@ const changedForActionButton = async (options: EntitiesActionOptions, index: num
                       class="mx-1"
                       closable
                       type=""
+                      size="small"
                       @close="removeButtonHandler(index, key)"
                   >
                     {{ value }}

@@ -291,7 +291,7 @@ const sortCardDown = (tab: Tab, index: number) => {}
         <template #header>
           <div class="card-header">
             <span>{{ $t('dashboard.tabList') }}</span>
-            <ElButton @click="createTab()" text size="small">
+            <ElButton @click="createTab()" text>
               {{ t('dashboard.addNew') }}
             </ElButton>
           </div>

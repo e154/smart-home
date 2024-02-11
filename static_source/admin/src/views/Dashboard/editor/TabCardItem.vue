@@ -206,7 +206,7 @@ const updateCurrentState = () => {
     <ElCol>
       <ElCollapse>
         <ElCollapseItem :title="$t('dashboard.editor.eventstateJSONobject')">
-          <ElButton class="mb-10px w-[100%]" @click.prevent.stop="updateCurrentState()">
+          <ElButton class="mb-10px w-[100%]" @click.prevent.stop="updateCurrentState()" >
             <Icon icon="ep:refresh" class="mr-5px"/>
             {{ $t('dashboard.editor.getEvent') }}
           </ElButton>
@@ -252,7 +252,7 @@ const updateCurrentState = () => {
         @confirm="removeCardItem(activeCard.selectedItem)"
     >
       <template #reference>
-        <ElButton class="mr-10px" type="danger" plain>
+        <ElButton type="danger" plain>
           <Icon icon="ep:delete" class="mr-5px"/>
           {{ t('main.remove') }}
         </ElButton>
@@ -274,7 +274,7 @@ const updateCurrentState = () => {
 
       <ElRow class="mb-10px mt-10px">
         <ElCol>
-          <ElButton class="w-[100%]" @click="addCardItem()" size="small">
+          <ElButton class="w-[100%]" @click="addCardItem()">
             {{ t('dashboard.editor.addNewCardItem') }}
           </ElButton>
         </ElCol>

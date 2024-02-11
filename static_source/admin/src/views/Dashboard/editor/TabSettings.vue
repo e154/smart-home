@@ -199,18 +199,18 @@ const removeBoard = async () => {
 
   <div class="text-right">
 
-      <ElButton type="primary" @click.prevent.stop='exportDashbord' plain size="small">
+      <ElButton type="primary" @click.prevent.stop='exportDashbord' plain>
         <Icon icon="uil:file-export" class="mr-5px"/>
         {{ $t('main.export') }}
       </ElButton>
 
 
-      <ElButton type="primary" @click.prevent.stop="updateBoard" plain size="small">
+      <ElButton type="primary" @click.prevent.stop="updateBoard" plain>
         {{ $t('main.update') }}
       </ElButton>
 
 
-      <ElButton @click.prevent.stop="fetchDashboard" plain size="small">{{
+      <ElButton @click.prevent.stop="fetchDashboard" plain>{{
           $t('main.loadFromServer')
         }}
       </ElButton>
@@ -224,7 +224,7 @@ const removeBoard = async () => {
           @confirm="cancel"
       >
         <template #reference>
-          <ElButton plain size="small">
+          <ElButton plain>
             {{ t('main.cancel') }}
           </ElButton>
         </template>
@@ -239,7 +239,7 @@ const removeBoard = async () => {
           @confirm="removeBoard"
       >
         <template #reference>
-          <ElButton type="danger" plain size="small">
+          <ElButton type="danger" plain>
             <Icon icon="ep:delete" class="mr-5px"/>
             {{ t('main.remove') }}
           </ElButton>

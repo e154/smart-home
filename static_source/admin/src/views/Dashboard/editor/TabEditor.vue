@@ -243,16 +243,6 @@ const sortCardDown = (tab: Tab, index: number) => {
     </ElCol>
   </ElRow>
 
-
-  <!--  <ElContainer>-->
-  <!--    <ElMain>-->
-  <!--      <ElCard class="box-card">-->
-  <!--        <template #header>-->
-  <!--          <div class="card-header">-->
-  <!--            <span>{{ $t('dashboard.tabDetail') }}</span>-->
-  <!--          </div>-->
-  <!--        </template>-->
-
   <Form v-if="currentCore.tabs.length"
         :schema="schema"
         :rules="rules"
@@ -275,7 +265,6 @@ const sortCardDown = (tab: Tab, index: number) => {
   <div class="text-right" v-if="currentCore.tabs.length">
 
     <ElButton type="primary" @click.prevent.stop="updateTab">{{ $t('main.update') }}</ElButton>
-
 
     <ElButton @click.prevent.stop="cancel" plain>{{ t('main.cancel') }}</ElButton>
     <ElPopconfirm
@@ -301,15 +290,15 @@ const sortCardDown = (tab: Tab, index: number) => {
     </template>
     <template #default>
 
-<!--      <ElRow class="mb-10px mt-10px">-->
-<!--        <ElCol>-->
-<!--          <ElDivider content-position="left">{{ $t('dashboard.tabList') }}</ElDivider>-->
-<!--        </ElCol>-->
-<!--      </ElRow>-->
+      <!--      <ElRow class="mb-10px mt-10px">-->
+      <!--        <ElCol>-->
+      <!--          <ElDivider content-position="left">{{ $t('dashboard.tabList') }}</ElDivider>-->
+      <!--        </ElCol>-->
+      <!--      </ElRow>-->
 
       <ElRow class="mb-10px mt-10px">
         <ElCol>
-          <ElButton class="w-[100%]" @click="createTab()" size="small">
+          <ElButton class="w-[100%]" @click="createTab()">
             {{ t('dashboard.addNewTab') }}
           </ElButton>
         </ElCol>

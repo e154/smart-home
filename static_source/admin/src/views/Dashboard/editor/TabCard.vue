@@ -395,7 +395,7 @@ const sortCardDown = (card: Card, index: number) => {
         @confirm="removeCard"
     >
       <template #reference>
-        <ElButton class="mr-10px" type="danger" plain>
+        <ElButton type="danger" plain>
           <Icon icon="ep:delete" class="mr-5px"/>
           {{ t('main.remove') }}
         </ElButton>
@@ -438,7 +438,7 @@ const sortCardDown = (card: Card, index: number) => {
 
       <ElRow class="mb-10px mt-10px">
         <ElCol>
-          <ElButton class="w-[100%]" @click="addCard()" size="small">
+          <ElButton class="w-[100%]" @click="addCard()">
             {{ t('dashboard.addNewCard') }}
           </ElButton>
         </ElCol>
@@ -446,7 +446,7 @@ const sortCardDown = (card: Card, index: number) => {
 
       <ElRow class="mb-10px mt-10px">
         <ElCol>
-          <ElButton class="w-[100%]" @click="showImportDialog()" size="small">
+          <ElButton class="w-[100%]" @click="showImportDialog()">
             {{ t('dashboard.importCard') }}
           </ElButton>
         </ElCol>
@@ -460,10 +460,10 @@ const sortCardDown = (card: Card, index: number) => {
           <div class="w-[100%] card-header">
             <span>{{ card.title }}</span>
             <ElButtonGroup class="hide">
-              <ElButton @click.prevent.stop="sortCardUp(card, index)" text size="small">
+              <ElButton @click.prevent.stop="sortCardUp(card, index)" size="small">
                 <Icon icon="teenyicons:up-solid"/>
               </ElButton>
-              <ElButton @click.prevent.stop="sortCardDown(card, index)" text size="small">
+              <ElButton @click.prevent.stop="sortCardDown(card, index)" size="small">
                 <Icon icon="teenyicons:down-solid"/>
               </ElButton>
             </ElButtonGroup>

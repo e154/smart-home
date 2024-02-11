@@ -239,7 +239,7 @@ const updateCardItem = async () => {
             <div class="item-header">
               <span>{{ $t('dashboard.editor.itemList') }}</span>
               <ElButtonGroup>
-                <ElButton @click="addCardItem()" text size="small">
+                <ElButton @click="addCardItem()" text>
                   {{ t('dashboard.addNew') }}
                 </ElButton>
               </ElButtonGroup>
