@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import {onMounted, onUnmounted, PropType, ref, watch} from "vue";
+import {nextTick, onMounted, onUnmounted, PropType, ref, unref, watch} from "vue";
 import {CardItem} from "@/views/Dashboard/core/core";
-import {RenderVar} from "@/views/Dashboard/core/render";
+import {RenderVar, Resolve} from "@/views/Dashboard/core/render";
 import {debounce} from "lodash-es";
+import Iconify from "@purge-icons/generated";
+import {AttributeValue, GetAttributeValue} from "@/components/Attributes";
+import {Compare} from "@/views/Dashboard/core/types";
 
 // ---------------------------------
 // common
@@ -14,10 +17,10 @@ const props = defineProps({
   },
 })
 
-const el = ref(null)
+const elRef = ref<ElRef>(null)
 onMounted(() => {
   // store dom element moveable
-  props.item.setTarget(el.value)
+  props.item.setTarget(elRef.value)
 })
 
 onUnmounted(() => {
@@ -27,29 +30,61 @@ onUnmounted(() => {
 // ---------------------------------
 // component methods
 // ---------------------------------
-const reloadKey = ref(0)
 const icon = ref<Nullable<string>>(null)
-const iconSize = ref<Nullable<number>>(null)
 const iconColor = ref<Nullable<string>>(null)
 
-const reload = () => {
-  reloadKey.value += 1
-}
-
-const update = debounce(() => {
-  if (!props.item?.payload?.icon) {
-    return;
-  }
-
-  iconColor.value = props.item?.payload?.icon?.iconColor || '#000000';
-  iconSize.value = props.item?.payload?.icon?.iconSize || 14;
-
+const update = debounce( async () => {
+  let _icon = props.item?.payload.icon?.value || '';
   if (props.item?.payload.icon.attrField) {
     let token: string = props.item?.payload.icon?.attrField || ''
-    icon.value = RenderVar(token, props.item?.lastEvent)
-    return
+    _icon = RenderVar(token, props.item?.lastEvent)
   }
-  icon.value = props.item?.payload.icon?.value || '';
+
+  iconColor.value = props.item?.payload?.icon?.iconColor || '#eee';
+
+  if (props.item?.payload.icon?.items) {
+    for (const prop of props.item?.payload.icon?.items) {
+      let val = Resolve(prop.key, props.item?.lastEvent);
+      if (!val) {
+        continue;
+      }
+
+      if (typeof val === 'object') {
+        if (val && val.hasOwnProperty('type') && val.hasOwnProperty('name')) {
+          val = GetAttributeValue(val as AttributeValue);
+        }
+      }
+
+      if (val == undefined) {
+        val = '[NO VALUE]';
+      }
+
+      const tr = Compare(val, prop.value, prop.comparison);
+
+      if (tr) {
+        if (prop.iconColor) iconColor.value = prop.iconColor;
+        if (prop.icon) _icon = prop.icon;
+        break
+      }
+    }
+  }
+
+  const el = unref(elRef)
+  if (!el) return
+
+  await nextTick()
+
+  const svg = Iconify.renderSVG(_icon, {})
+  if (svg) {
+    el.textContent = ''
+    el.appendChild(svg)
+  } else {
+    const span = document.createElement('span')
+    span.className = 'iconify'
+    span.dataset.icon = _icon
+    el.textContent = ''
+    el.appendChild(span)
+  }
   return;
 }, 100)
 
@@ -65,22 +100,12 @@ watch(
     }
 )
 
-
 update();
 
 </script>
 
 <template>
-<!--  <div ref="el" :class="[{'hidden': item.hidden}]" class="icon-item" v-html="icon"></div>-->
-  <div ref="el" :class="[{'hidden': item.hidden}]" style="width: 100%; height: 100%">
-    <Icon
-        style="width: 100%; height: 100%"
-        :key="reloadKey"
-        :icon="icon"
-        :color="iconColor"
-        :size="iconSize"/>
-  </div>
-
+  <div ref="elRef" :class="[{'hidden': item.hidden}]" class="icon-item"></div>
 </template>
 
 <style lang="less" scoped>

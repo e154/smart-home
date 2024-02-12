@@ -3,7 +3,9 @@
 import {computed, ref, unref, watch} from "vue";
 import {ElColorPicker} from 'element-plus'
 import {propTypes} from "@/utils/propTypes";
+import {useAppStore} from "@/store/modules/app";
 
+const appStore = useAppStore()
 const emit = defineEmits(['change', 'update:modelValue'])
 
 const props = defineProps({
@@ -11,7 +13,6 @@ const props = defineProps({
 })
 
 const currentColor = ref<string>(null)
-const lastColors = ref<string[]>([])
 
 watch(
     () => props.modelValue,
@@ -31,14 +32,16 @@ const defaultColors = [
   '#ffffff',
 ]
 
-const predefineColors = computed(() => currentColor.value? [...defaultColors, ...lastColors.value] : [...defaultColors])
+const predefineColors = computed(() => currentColor.value? [...defaultColors, ...appStore.getLastColors] : [...defaultColors])
 
 const updateColor = (val: string) => {
-  if (!defaultColors.includes(val) && !lastColors.value.includes(val)) {
-    lastColors.value.push(val)
-    if (lastColors.value.length > 5) {
-      lastColors.value.shift()
+  let lastColors = appStore.getLastColors
+  if (!defaultColors.includes(val) && !lastColors.includes(val)) {
+    lastColors.push(val)
+    if (lastColors.length > 5) {
+      lastColors.shift()
     }
+    appStore.setLastColors(lastColors)
   }
   emit('change', val)
   emit('update:modelValue', val)

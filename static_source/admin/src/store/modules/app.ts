@@ -43,6 +43,7 @@ interface AppState {
   terminal: boolean
   maxZIndex: number
   serverId: string
+  lastColors: string[]
 }
 
 export const useAppStore = defineStore('app', {
@@ -84,6 +85,7 @@ export const useAppStore = defineStore('app', {
       layout: wsCache.get('layout') || 'classic', // layout布局
       isDark: wsCache.get('isDark') || false, // 是否是暗黑模式
       currentSize: wsCache.get('currentSize') || 'small', // 组件尺寸
+      lastColors: wsCache.get('lastColors') || [],
       theme: wsCache.get('theme') || {
         // 主题色
         elColorPrimary: '#409eff',
@@ -209,6 +211,9 @@ export const useAppStore = defineStore('app', {
     },
     getIsGate(): boolean {
       return window?.app_settings?.run_mode == 'gate'
+    },
+    getLastColors(): string[] {
+      return this.lastColors
     }
   },
   actions: {
@@ -347,6 +352,10 @@ export const useAppStore = defineStore('app', {
     },
     getMaxZIndex(): number {
       return ++this.maxZIndex
+    },
+    setLastColors(list: string[]) {
+      this.lastColors = list
+      wsCache.set('lastColors', this.lastColors)
     },
   }
 })

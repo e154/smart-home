@@ -867,12 +867,20 @@ export class Card {
   // ---------------------------------
   // events
   // ---------------------------------
+  checkPropEntity(entityId: string): boolean {
+    for (const prop of [...this.hideOn, ...this.showOn]) {
+      if (prop.entityId == entityId || prop.entity?.id == entityId) {
+        return true
+      }
+    }
+    return false
+  }
   onStateChanged(event: EventStateChange) {
     for (const index in this.items) {
       this.items[index].onStateChanged(event);
     }
 
-    if (!this.entityId || event.entity_id != this.entityId) {
+    if (!this.entityId || event.entity_id != this.entityId && !this.checkPropEntity(event.entity_id)) {
       return;
     }
 

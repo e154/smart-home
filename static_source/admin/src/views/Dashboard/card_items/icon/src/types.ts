@@ -1,7 +1,14 @@
+import {CompareProp} from "@/views/Dashboard/core/types";
+
+export interface IconProp extends CompareProp {
+  icon?: string
+  attrField?: string;
+  iconColor?: string
+}
 
 export interface ItemPayloadIcon {
+  items: IconProp[];
   attrField?: string;
   value?: string;
   iconColor?: string;
-  iconSize?: number;
 }

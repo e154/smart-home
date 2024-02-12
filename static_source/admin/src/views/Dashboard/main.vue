@@ -17,7 +17,7 @@ const reload = () => {
   reloadKey.value += 1
 }
 
-const appStore = useAppStore()
+c
 
 
 const fetchDashboard = async () => {

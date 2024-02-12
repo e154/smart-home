@@ -144,7 +144,15 @@ const lastEvent = (index: number): EventStateChange | undefined => {
 
           <ElRow>
             <ElCol>
-              <ElFormItem :label="$t('dashboard.editor.text')" prop="text">
+              <ElFormItem :label="$t('dashboard.editor.entity')" prop="entity">
+                <EntitySearch v-model="prop.entity" @change="onEntityChanged($event, index)"/>
+              </ElFormItem>
+            </ElCol>
+          </ElRow>
+
+          <ElRow>
+            <ElCol>
+              <ElFormItem :label="$t('dashboard.editor.attrField')" prop="text">
                 <KeysSearch v-model="prop.key" :obj="lastEvent(index)" @change="onChangePropValue($event, index)"/>
               </ElFormItem>
 
@@ -178,14 +186,6 @@ const lastEvent = (index: number): EventStateChange | undefined => {
                 <ElInput placeholder="Please input" v-model="prop.value"/>
               </ElFormItem>
 
-            </ElCol>
-          </ElRow>
-
-          <ElRow>
-            <ElCol>
-              <ElFormItem :label="$t('dashboard.editor.entity')" prop="entity">
-                <EntitySearch v-model="prop.entity" @change="onEntityChanged($event, index)"/>
-              </ElFormItem>
             </ElCol>
           </ElRow>
 
