@@ -10,7 +10,7 @@ import {ApiUserShot, ApiLog} from "@/api/stub";
 import {useForm} from "@/hooks/web/useForm";
 import {useRouter} from "vue-router";
 import {parseTime} from "@/utils";
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {ContentWrap} from "@/components/ContentWrap";
 import {useCache} from "@/hooks/web/useCache";
 
 const {push, currentRoute} = useRouter()

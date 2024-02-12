@@ -380,11 +380,11 @@ const sortCardDown = (card: Card, index: number) => {
   </ElEmpty>
 
   <div class="text-right" v-if="activeCard != undefined">
-    <ElButton type="primary" @click.prevent.stop='showExportDialog()'>
+    <ElButton type="primary" @click.prevent.stop='showExportDialog()' plain>
       <Icon icon="uil:file-export" class="mr-5px"/>
       {{ $t('main.export') }}
     </ElButton>
-    <ElButton type="primary" @click.prevent.stop="updateCard">{{ $t('main.update') }}</ElButton>
+    <ElButton type="primary" @click.prevent.stop="updateCard" plain>{{ $t('main.update') }}</ElButton>
     <ElButton @click.prevent.stop="cancel" plain>{{ t('main.cancel') }}</ElButton>
     <ElPopconfirm
         :confirm-button-text="$t('main.ok')"

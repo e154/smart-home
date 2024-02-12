@@ -2,11 +2,11 @@
 import {useI18n} from '@/hooks/web/useI18n'
 import {Table} from '@/components/Table'
 import {PropType, reactive, watch} from 'vue'
-import {TableColumn} from '@/types/table'
 import {ElImage} from 'element-plus'
+import {TableColumn} from '@/types/table'
 import {ApiAttribute} from "@/api/stub";
-import {GetApiAttrValue} from "@/components/Attributes";
 import {GetFullUrl} from "@/utils/serverId";
+import {GetApiAttrValue} from "@/components/Attributes";
 
 const {t} = useI18n()
 
@@ -16,68 +16,82 @@ interface TableObject {
 }
 
 const props = defineProps({
-  attrs: {
-    type: Array as PropType<ApiAttribute[]>,
-    default: () => []
+  modelValue: {
+    type: Object as PropType<Record<string, ApiAttribute>>,
+    default: () => null
   }
 })
 
-
 const tableObject = reactive<TableObject>(
-    {
-      tableList: [],
-      loading: false,
-    },
+  {
+    tableList: [],
+    loading: false,
+  },
 );
 
 const columns: TableColumn[] = [
   {
     field: 'name',
-    label: t('plugins.name'),
+    label: t('attributes.name'),
     sortable: true
   },
   {
     field: 'type',
-    label: t('plugins.attrType'),
+    label: t('attributes.type'),
     sortable: true
   },
   {
     field: 'value',
-    label: t('plugins.attrValue')
+    label: t('attributes.value')
   },
 ]
 
+const attributes = (): ApiAttribute[] => {
+  const attr: ApiAttribute[] = [];
+  if (props.modelValue) {
+    for (const key in props.modelValue) {
+      attr.push(props.modelValue[key]);
+    }
+  }
+  return attr;
+}
 
 watch(
-    () => props.attrs,
-    (currentRow) => {
-      if (!currentRow) return
-      tableObject.tableList = currentRow
-    },
-    {
-      deep: true,
-      immediate: true
-    }
+  () => props.modelValue,
+  (message: Record<string, ApiAttribute>) => {
+    tableObject.tableList = attributes()
+  },
+  {
+    deep: true,
+    immediate: true
+  }
 )
 
 </script>
 
 <template>
+
   <Table
-      :selection="false"
-      :columns="columns"
-      :data="tableObject.tableList"
-      :loading="tableObject.loading"
-      style="width: 100%"
+    :selection="false"
+    :columns="columns"
+    :data="tableObject.tableList"
+    :loading="tableObject.loading"
   >
+
     <template #value="{ row }">
       <div v-if="row.type === 'IMAGE'">
         <ElImage style="width: 100px; height: 100px" :src="GetFullUrl(row.imageUrl)"/>
+      </div>
+      <div v-else-if="row.type === 'ICON'">
+        <Icon
+          :icon="row.icon"
+          :size="15"/>
       </div>
       <div v-else>
         <span>{{ GetApiAttrValue(row) }}</span>
       </div>
     </template>
+
   </Table>
 
 </template>

@@ -22,7 +22,7 @@ import {EntitySearch} from "@/components/EntitySearch";
 import {ImageSearch} from "@/components/ImageSearch";
 import {useI18n} from "@/hooks/web/useI18n";
 import {KeysSearch} from "@/views/Dashboard/components";
-import {EventStateChange} from "@/api/stream_types";
+import {EventStateChange} from "@/api/types";
 
 const {t} = useI18n()
 

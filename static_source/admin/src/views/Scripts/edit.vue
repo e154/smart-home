@@ -20,7 +20,7 @@ import api from "@/api/api";
 import Form from './components/Form.vue'
 import {ApiScript} from "@/api/stub";
 import {ScriptEditor} from "@/components/ScriptEditor";
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {ContentWrap} from "@/components/ContentWrap";
 import {useEmitt} from "@/hooks/web/useEmitt";
 import {Infotip} from '@/components/Infotip'
 import {parseTime} from "@/utils";

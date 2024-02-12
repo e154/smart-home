@@ -9,10 +9,7 @@ import {debounce} from "lodash-es";
 import {View} from "ol";
 import {propTypes} from "@/utils/propTypes";
 import {useAppStore} from "@/store/modules/app";
-import {useCache} from "@/hooks/web/useCache";
-import {prepareUrl} from "@/utils/serverId";
-
-const {wsCache} = useCache()
+import {GetFullImageUrl} from "@/utils/serverId";
 
 // ---------------------------------
 // common
@@ -195,10 +192,6 @@ watch(
     }
 )
 
-const getUrl = (image?: ApiImage): string | undefined => {
-  return prepareUrl(import.meta.env.VITE_API_BASEPATH as string + image?.url || undefined);
-}
-
 </script>
 
 <template>
@@ -262,7 +255,7 @@ const getUrl = (image?: ApiImage): string | undefined => {
               <ol-geom-point :coordinates="marker.position"/>
               <ol-style>
                 <ol-style-icon
-                    :src="getUrl(marker.image || markerIcon)"
+                    :src="GetFullImageUrl(marker.image || markerIcon)"
                     :opacity="marker?.opacity || 0.9"
                     :scale="marker?.scale || 0.08"/>
               </ol-style>

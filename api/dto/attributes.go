@@ -68,6 +68,11 @@ func attributeFromApi(apiAttr map[string]stub.ApiAttribute) (attributes m.Attrib
 				attr.Value = *v.ImageUrl
 			}
 			attr.Type = common.AttributeImage
+		case stub.ICON:
+			if v.Icon != nil {
+				attr.Value = *v.Icon
+			}
+			attr.Type = common.AttributeIcon
 		case stub.ARRAY:
 			//	attr.Value = v.Array
 			attr.Type = common.AttributeArray
@@ -139,6 +144,9 @@ func AttributeToApi(attributes m.Attributes) (apiAttr map[string]stub.ApiAttribu
 		case "image":
 			attr.Type = stub.IMAGE
 			attr.ImageUrl = common.String(v.String())
+		case "icon":
+			attr.Type = stub.ICON
+			attr.Icon = common.String(v.String())
 		case "point":
 			attr.Type = stub.POINT
 			attr.Point = common.String(fmt.Sprintf("[%f, %f]", v.Point().Lon, v.Point().Lat))

@@ -8,7 +8,7 @@ import {useEmitt} from "@/hooks/web/useEmitt";
 import {createImageViewer} from "@/components/ImageViewer";
 import {propTypes} from "@/utils/propTypes";
 import {useCache} from "@/hooks/web/useCache";
-import {prepareUrl} from "@/utils/serverId";
+import {GetFullUrl, prepareUrl} from "@/utils/serverId";
 
 const {wsCache} = useCache()
 
@@ -54,7 +54,7 @@ const getList = async (filter?: GetImageFilterListResultfilter) => {
 
   let {items} = unref(res.data);
   for (const key in items) {
-    items[key].url = getUrl(items[key].url)
+    items[key].url = GetFullUrl(items[key].url)
   }
   viewerObject.imageList = items
 }
@@ -72,10 +72,6 @@ const getFilterList = async () => {
     const {items} = res.data;
     viewerObject.filterList = items;
   }
-}
-
-const getUrl = (url: string): string => {
-  return prepareUrl(import.meta.env.VITE_API_BASEPATH as string + url)
 }
 
 const getActiveFilter = (item: GetImageFilterListResultfilter): boolean => {

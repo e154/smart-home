@@ -11,7 +11,7 @@ import {useValidator} from '@/hooks/web/useValidator'
 import api from "@/api/api";
 import Form from './components/Form.vue'
 import {ApiNewtUserRequest} from "@/api/stub";
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {ContentWrap} from "@/components/ContentWrap";
 import {User} from "@/views/Users/components/Types";
 
 const {register, elFormRef, methods} = useForm()

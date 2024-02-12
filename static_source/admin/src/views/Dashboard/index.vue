@@ -8,7 +8,7 @@ import {ElButton, ElMessage} from 'element-plus'
 import {ApiDashboard} from "@/api/stub";
 import {useRouter} from "vue-router";
 import {parseTime} from "@/utils";
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {ContentWrap} from "@/components/ContentWrap";
 import {Dialog} from '@/components/Dialog'
 import {Core} from "@/views/Dashboard/core/core";
 import {useCache} from "@/hooks/web/useCache";

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {computed, PropType} from "vue";
-import {CardItem, comparisonType, Core} from "@/views/Dashboard/core/core";
+import {CardItem, Core} from "@/views/Dashboard/core/core";
 import {
   ElButton,
   ElCard,
@@ -23,6 +23,7 @@ import {
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {useI18n} from "@/hooks/web/useI18n";
 import {KeysSearch} from "@/views/Dashboard/components";
+import {comparisonType} from "@/views/Dashboard/core/types";
 
 const {t} = useI18n()
 

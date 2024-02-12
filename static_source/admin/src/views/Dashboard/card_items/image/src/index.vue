@@ -5,7 +5,7 @@ import {RenderVar} from "@/views/Dashboard/core/render";
 import {ElIcon, ElImage} from "element-plus";
 import {Picture as IconPicture} from '@element-plus/icons-vue'
 import {useCache} from "@/hooks/web/useCache";
-import {prepareUrl} from "@/utils/serverId";
+import {GetFullUrl} from "@/utils/serverId";
 
 const {wsCache} = useCache()
 
@@ -33,19 +33,19 @@ onUnmounted(() => {
 // component methods
 // ---------------------------------
 
-const getUrl = (): string => {
+const getTileUrl = (): string => {
   if (!props.item?.payload?.image) {
     return '';
   }
   if (props.item?.payload.image.attrField) {
     const imageUrl = RenderVar(props.item?.payload.image.attrField, props.item?.lastEvent);
-    return prepareUrl(import.meta.env.VITE_API_BASEPATH as string + imageUrl);
+    return GetFullUrl(imageUrl);
   }
-  return prepareUrl(import.meta.env.VITE_API_BASEPATH as string + props.item?.payload.image?.image?.url || '');
+  return GetFullUrl(props.item?.payload.image?.image?.url);
 }
 
 const getTileStyle = () => {
-  const uri = getUrl();
+  const uri = getTileUrl();
   return {
     "background": `url(${uri})`,
   }
@@ -54,7 +54,7 @@ const getTileStyle = () => {
 
 <template>
   <div ref="el" class="w-[100%] h-[100%] overflow-hidden">
-    <ElImage v-if="!item.payload.image.background" v-show="!item.hidden" :src="getUrl()">
+    <ElImage v-if="!item.payload.image.background" v-show="!item.hidden" :src="getTileUrl()">
       <template #error>
         <div class="image-slot">
           <ElIcon>

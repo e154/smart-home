@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {computed, PropType, watch} from "vue";
-import {CardItem, comparisonType, Core, requestCurrentState} from "@/views/Dashboard/core/core";
+import {CardItem, Core} from "@/views/Dashboard/core/core";
 import {
   ElButton,
   ElCard,
@@ -24,9 +24,9 @@ import {useI18n} from "@/hooks/web/useI18n";
 import {Cache} from "@/views/Dashboard/core/render";
 import {ApiImage} from "@/api/stub";
 import {ItemPayloadState} from "./types";
-import {JsonViewer} from "@/components/JsonViewer";
 import {ImageSearch} from "@/components/ImageSearch";
 import {KeysSearch} from "@/views/Dashboard/components";
+import {comparisonType} from "@/views/Dashboard/core/types";
 
 const {t} = useI18n()
 
@@ -153,7 +153,6 @@ const initDefaultValue = () => {
 // ---------------------------------
 // component methods
 // ---------------------------------
-
 
 
 const onChangePropKey = (val, index) => {
@@ -309,47 +308,47 @@ const onChangePropKey = (val, index) => {
   <!-- /props -->
 
 
-    <ElRow>
-      <ElCol>
-        <ElDivider content-position="left">{{ $t('dashboard.editor.defaultImage') }}</ElDivider>
-      </ElCol>
-    </ElRow>
-    <ElRow>
-      <ElCol>
-        <ElFormItem :label="$t('dashboard.editor.image')" prop="image">
-          <ImageSearch :key="reloadKeyDefaultImage" v-model="currentItem.payload.state.defaultImage"
-                       @change="onSelectDefaultImage"/>
-        </ElFormItem>
-      </ElCol>
-    </ElRow>
-    <ElRow>
-      <ElCol>
-        <ElDivider content-position="left">{{ $t('dashboard.editor.defaultIcon') }}</ElDivider>
-      </ElCol>
-    </ElRow>
-    <ElRow>
-      <ElCol>
-        <ElFormItem :label="$t('dashboard.editor.icon')" prop="icon">
-          <ElInput v-model="currentItem.payload.state.defaultIcon" @change="onSelectDefaultIcon"/>
-        </ElFormItem>
-      </ElCol>
-    </ElRow>
+  <ElRow>
+    <ElCol>
+      <ElDivider content-position="left">{{ $t('dashboard.editor.defaultImage') }}</ElDivider>
+    </ElCol>
+  </ElRow>
+  <ElRow>
+    <ElCol>
+      <ElFormItem :label="$t('dashboard.editor.image')" prop="image">
+        <ImageSearch :key="reloadKeyDefaultImage" v-model="currentItem.payload.state.defaultImage"
+                     @change="onSelectDefaultImage"/>
+      </ElFormItem>
+    </ElCol>
+  </ElRow>
+  <ElRow>
+    <ElCol>
+      <ElDivider content-position="left">{{ $t('dashboard.editor.defaultIcon') }}</ElDivider>
+    </ElCol>
+  </ElRow>
+  <ElRow>
+    <ElCol>
+      <ElFormItem :label="$t('dashboard.editor.icon')" prop="icon">
+        <ElInput v-model="currentItem.payload.state.defaultIcon" @change="onSelectDefaultIcon"/>
+      </ElFormItem>
+    </ElCol>
+  </ElRow>
 
-    <ElRow>
-      <ElCol>
-        <ElFormItem :label="$t('dashboard.editor.iconColor')" prop="iconColor">
-          <ElColorPicker show-alpha v-model="currentItem.payload.state.defaultIconColor"/>
-        </ElFormItem>
-      </ElCol>
-    </ElRow>
+  <ElRow>
+    <ElCol>
+      <ElFormItem :label="$t('dashboard.editor.iconColor')" prop="iconColor">
+        <ElColorPicker show-alpha v-model="currentItem.payload.state.defaultIconColor"/>
+      </ElFormItem>
+    </ElCol>
+  </ElRow>
 
-    <ElRow class="mb-10px">
-      <ElCol>
-        <ElFormItem :label="$t('dashboard.editor.iconSize')" prop="iconSize">
-          <ElInputNumber v-model="currentItem.payload.state.defaultIconSize" :min="1" :value-on-clear="12"/>
-        </ElFormItem>
-      </ElCol>
-    </ElRow>
+  <ElRow class="mb-10px">
+    <ElCol>
+      <ElFormItem :label="$t('dashboard.editor.iconSize')" prop="iconSize">
+        <ElInputNumber v-model="currentItem.payload.state.defaultIconSize" :min="1" :value-on-clear="12"/>
+      </ElFormItem>
+    </ElCol>
+  </ElRow>
 
 </template>
 

@@ -5,7 +5,7 @@ import {ElButton, ElMessage, ElPopconfirm, ElTabPane, ElTabs} from 'element-plus
 import {useRoute, useRouter} from 'vue-router'
 import api from "@/api/api";
 import Form from './components/Form.vue'
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {ContentWrap} from "@/components/ContentWrap";
 import {Attribute, Entity, EntityAction, EntityState, Plugin} from "@/views/Entities/components/types";
 import Actions from "@/views/Entities/components/Actions.vue";
 import {useEmitt} from "@/hooks/web/useEmitt";
@@ -23,7 +23,7 @@ import AttributesEditor from "@/views/Entities/components/AttributesEditor.vue";
 import {Dialog} from '@/components/Dialog'
 import {JsonViewer} from "@/components/JsonViewer";
 import {copyToClipboard} from "@/utils/clipboard";
-import {EventStateChange} from "@/api/stream_types";
+import {EventStateChange} from "@/api/types";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 import Storage from "@/views/Entities/components/Storage.vue";

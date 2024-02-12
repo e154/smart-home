@@ -4688,6 +4688,8 @@ components:
           format: date-time
         imageUrl:
           type: string
+        icon:
+          type: string
         point:
           type: string
         encrypted:
@@ -6688,6 +6690,7 @@ components:
         - MAP
         - TIME
         - IMAGE
+        - ICON
         - POINT
         - ENCRYPTED
     apiUpdateEntityRequestAction:
@@ -6902,7 +6905,7 @@ components:
           format: date-time
     apiZigbee2mqttDevice:
       type: object
-      required: [ id, zigbee2mqttId, name, type, model, description, manufacturer, functions, imageUrl, status, createdAt, updatedAt ]
+      required: [ id, zigbee2mqttId, name, type, model, description, manufacturer, functions, imageUrl, icon, status, createdAt, updatedAt ]
       properties:
         id:
           type: string
@@ -6924,6 +6927,8 @@ components:
           items:
             type: string
         imageUrl:
+          type: string
+        icon:
           type: string
         status:
           type: string

@@ -1,24 +1,15 @@
 <script setup lang="ts">
-import {defineEmits, ref, unref} from 'vue'
+import {ref, unref} from 'vue'
 import {useI18n} from '@/hooks/web/useI18n'
 import {ElButton, ElMessage} from 'element-plus'
-import {useForm} from '@/hooks/web/useForm'
-import {useCache} from '@/hooks/web/useCache'
-import {useAppStore} from '@/store/modules/app'
-import {usePermissionStore} from '@/store/modules/permission'
-import {useRoute, useRouter} from 'vue-router'
-import {useValidator} from '@/hooks/web/useValidator'
+import {useRouter} from 'vue-router'
 import api from "@/api/api";
 import Form from './components/Form.vue'
-import {ApiNewActionRequest, ApiAction} from "@/api/stub";
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {ApiAction, ApiNewActionRequest} from "@/api/stub";
+import {ContentWrap} from "@/components/ContentWrap";
 import ActionForm from "@/views/Automation/components/ActionForm.vue";
 
-const {register, elFormRef, methods} = useForm()
-const {required} = useValidator()
-const {currentRoute, addRoute, push} = useRouter()
-const route = useRoute();
-const {wsCache} = useCache()
+const {push} = useRouter()
 const {t} = useI18n()
 
 const writeRef = ref<ComponentRef<typeof Form>>()
@@ -41,11 +32,11 @@ const save = async () => {
       entityActionName: act.entityActionName,
     } as ApiNewActionRequest
     const res = await api.v1.actionServiceAddAction(data)
-        .catch(() => {
-        })
-        .finally(() => {
-          loading.value = false
-        })
+      .catch(() => {
+      })
+      .finally(() => {
+        loading.value = false
+      })
     if (res) {
       ElMessage({
         title: t('Success'),

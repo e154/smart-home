@@ -2,13 +2,13 @@
 import {computed, onMounted, onUnmounted, reactive, ref} from 'vue'
 import {ElTabPane, ElTabs} from 'element-plus'
 import api from "@/api/api";
-import {EventStateChange} from "@/api/stream_types";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 import {Core} from "@/views/Dashboard/core/core";
 import {useBus} from "@/views/Dashboard/core/bus";
 import ViewTab from "@/views/Dashboard/view/ViewTab.vue";
 import {propTypes} from "@/utils/propTypes";
+import {EventStateChange} from "@/views/Dashboard/core/types";
 
 const {emit} = useBus()
 

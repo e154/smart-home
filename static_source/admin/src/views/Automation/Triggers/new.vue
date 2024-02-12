@@ -1,22 +1,15 @@
 <script setup lang="ts">
-import {defineEmits, ref, unref} from 'vue'
+import {ref, unref} from 'vue'
 import {useI18n} from '@/hooks/web/useI18n'
 import {ElButton, ElMessage} from 'element-plus'
-import {useForm} from '@/hooks/web/useForm'
-import {useCache} from '@/hooks/web/useCache'
-import {useRoute, useRouter} from 'vue-router'
-import {useValidator} from '@/hooks/web/useValidator'
+import {useRouter} from 'vue-router'
 import api from "@/api/api";
 import Form from './components/Form.vue'
 import {ApiNewTriggerRequest, ApiTrigger} from "@/api/stub";
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {ContentWrap} from "@/components/ContentWrap";
 import TriggerForm from "@/views/Automation/components/TriggerForm.vue";
 
-const {register, elFormRef, methods} = useForm()
-const {required} = useValidator()
-const {currentRoute, addRoute, push} = useRouter()
-const route = useRoute();
-const {wsCache} = useCache()
+const {push} = useRouter()
 const {t} = useI18n()
 
 const writeRef = ref<ComponentRef<typeof Form>>()
@@ -53,11 +46,11 @@ const save = async () => {
       }
     }
     const res = await api.v1.triggerServiceAddTrigger(data)
-        .catch(() => {
-        })
-        .finally(() => {
-          loading.value = false
-        })
+      .catch(() => {
+      })
+      .finally(() => {
+        loading.value = false
+      })
     if (res) {
       ElMessage({
         title: t('Success'),

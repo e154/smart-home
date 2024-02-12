@@ -4,7 +4,6 @@ import {useI18n} from '@/hooks/web/useI18n'
 import {ElButton, ElEmpty, ElMessage, ElTabPane, ElTabs} from 'element-plus'
 import {useRoute} from 'vue-router'
 import api from "@/api/api";
-import {EventStateChange} from "@/api/stream_types";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 import {Card, Core, Tab} from "@/views/Dashboard/core/core";
@@ -16,6 +15,7 @@ import TabSettings from "@/views/Dashboard/editor/TabSettings.vue";
 import TabEditor from "@/views/Dashboard/editor/TabEditor.vue";
 import TabCardItem from "@/views/Dashboard/editor/TabCardItem.vue";
 import TabCard from "@/views/Dashboard/editor/TabCard.vue";
+import {EventStateChange} from "@/api/types";
 
 const {emit} = useBus()
 const route = useRoute();

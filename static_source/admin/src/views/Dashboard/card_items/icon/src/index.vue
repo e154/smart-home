@@ -71,6 +71,7 @@ update();
 </script>
 
 <template>
+<!--  <div ref="el" :class="[{'hidden': item.hidden}]" class="icon-item" v-html="icon"></div>-->
   <div ref="el" :class="[{'hidden': item.hidden}]" style="width: 100%; height: 100%">
     <Icon
         style="width: 100%; height: 100%"
@@ -82,12 +83,12 @@ update();
 
 </template>
 
-<style lang="less">
-.el-image__error, .el-image__placeholder, .el-image__inner {
-  height: auto;
-}
-
-.el-image.item-element {
-  overflow: visible;
+<style lang="less" scoped>
+.icon-item {
+  :deep(svg) {
+    height: 100%;
+    width: 100%;
+    color: v-bind(iconColor)!important;
+  }
 }
 </style>

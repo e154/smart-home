@@ -7,11 +7,11 @@ import api from "@/api/api";
 import {ElButton} from 'element-plus'
 import {ApiVariable} from "@/api/stub";
 import {useRouter} from "vue-router";
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {ContentWrap} from "@/components/ContentWrap";
 import {useCache} from "@/hooks/web/useCache";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
-import {EventStateChange} from "@/api/stream_types";
+import {EventStateChange} from "@/api/types";
 
 const {push} = useRouter()
 const {t} = useI18n()

@@ -10,7 +10,7 @@ import {useRoute, useRouter} from 'vue-router'
 import {useValidator} from '@/hooks/web/useValidator'
 import api from "@/api/api";
 import {ApiNewTaskRequest, ApiTask} from "@/api/stub";
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {ContentWrap} from "@/components/ContentWrap";
 import TaskForm from "@/views/Automation/components/TaskForm.vue";
 import {Form} from "@/components/Form";
 

@@ -1,22 +1,22 @@
 <script setup lang="ts">
 import {useI18n} from '@/hooks/web/useI18n'
 import {Table} from '@/components/Table'
-import {computed, h, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
+import {h, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
 import {ElButton, ElMessage, ElTag} from 'element-plus'
 import {ApiTrigger} from "@/api/stub";
 import {useRouter} from "vue-router";
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {ContentWrap} from "@/components/ContentWrap";
 import {parseTime} from "@/utils";
-import {EventStateChange, EventTriggerCompleted} from "@/api/stream_types";
+import {EventStateChange, EventTriggerCompleted} from "@/api/types";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 import {useCache} from "@/hooks/web/useCache";
 
 const {push} = useRouter()
 const {t} = useI18n()
-const { wsCache } = useCache()
+const {wsCache} = useCache()
 
 interface TableObject {
   tableList: ApiTrigger[]
@@ -36,7 +36,7 @@ const tableObject = reactive<TableObject>(
     {
       tableList: [],
       loading: false,
-      sort: wsCache.get(cachePref+'Sort') || '-createdAt'
+      sort: wsCache.get(cachePref + 'Sort') || '-createdAt'
     }
 );
 
@@ -154,8 +154,8 @@ const columns: TableColumn[] = [
   },
 ]
 const paginationObj = ref<Pagination>({
-  currentPage: wsCache.get(cachePref+'CurrentPage') || 1,
-  pageSize: wsCache.get(cachePref+'PageSize') || 50,
+  currentPage: wsCache.get(cachePref + 'CurrentPage') || 1,
+  pageSize: wsCache.get(cachePref + 'PageSize') || 50,
   total: 0,
   pageSizes: [50, 100, 150, 250],
 })
@@ -163,9 +163,9 @@ const paginationObj = ref<Pagination>({
 const getList = async () => {
   tableObject.loading = true
 
-  wsCache.set(cachePref+'CurrentPage', paginationObj.value.currentPage)
-  wsCache.set(cachePref+'PageSize', paginationObj.value.pageSize)
-  wsCache.set(cachePref+'Sort', tableObject.sort)
+  wsCache.set(cachePref + 'CurrentPage', paginationObj.value.currentPage)
+  wsCache.set(cachePref + 'PageSize', paginationObj.value.pageSize)
+  wsCache.set(cachePref + 'Sort', tableObject.sort)
 
   let params: Params = {
     page: paginationObj.value.currentPage,
@@ -248,7 +248,7 @@ const disable = async (trigger: ApiTrigger) => {
 }
 
 const tableRowClassName = (data) => {
-  const { row, rowIndex } = data
+  const {row, rowIndex} = data
   let style = ''
   if (row.completed) {
     style = 'completed'

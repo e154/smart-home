@@ -130,6 +130,7 @@ export interface ApiAttribute {
   /** @format date-time */
   time?: string;
   imageUrl?: string;
+  icon?: string;
   point?: string;
   encrypted?: string;
 }
@@ -1240,6 +1241,7 @@ export enum ApiTypes {
   MAP = "MAP",
   TIME = "TIME",
   IMAGE = "IMAGE",
+  ICON = "ICON",
   POINT = "POINT",
   ENCRYPTED = "ENCRYPTED",
 }
@@ -1379,6 +1381,7 @@ export interface ApiZigbee2MqttDevice {
   manufacturer: string;
   functions: string[];
   imageUrl: string;
+  icon: string;
   status: string;
   /** @format date-time */
   createdAt: string;

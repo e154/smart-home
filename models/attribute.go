@@ -184,6 +184,7 @@ func (a Attributes) Serialize() (to AttributeValue) {
 			case common.AttributeBool:
 			case common.AttributeFloat:
 			case common.AttributeImage:
+			case common.AttributeIcon:
 			case common.AttributePoint:
 			case common.AttributeEncrypted:
 			case common.AttributeArray:
@@ -360,6 +361,7 @@ func (a Attributes) Signature() (signature Attributes) {
 			case common.AttributeBool:
 			case common.AttributeFloat:
 			case common.AttributeImage:
+			case common.AttributeIcon:
 			case common.AttributePoint:
 			case common.AttributeEncrypted:
 			case common.AttributeArray:
@@ -449,6 +451,7 @@ func (a Attribute) Compare(b *Attribute) (ident bool) {
 	case common.AttributeBool:
 	case common.AttributeFloat:
 	case common.AttributeImage:
+	case common.AttributeIcon:
 	case common.AttributePoint:
 	case common.AttributeEncrypted:
 	case common.AttributeArray:

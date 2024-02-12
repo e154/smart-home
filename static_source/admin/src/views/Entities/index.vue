@@ -9,11 +9,11 @@ import {ApiArea, ApiEntityShort, ApiPlugin, ApiTag} from "@/api/stub";
 import {useForm} from "@/hooks/web/useForm";
 import {useRouter} from "vue-router";
 import {parseTime} from "@/utils";
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {ContentWrap} from "@/components/ContentWrap";
 import {Dialog} from '@/components/Dialog'
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
-import {EventStateChange} from "@/api/stream_types";
+import {EventStateChange} from "@/api/types";
 import {FormSchema} from "@/types/form";
 import {Form} from '@/components/Form'
 import {useCache} from "@/hooks/web/useCache";
@@ -527,8 +527,7 @@ if (wsCache.get(cachePref + 'Tags')) {
   }
 
   tr.el-table__row [class*="el-table__cell"] {
-  //background-color: green; border-top: var(--el-table-border);
-    border-bottom: none !important;
+  //background-color: green; border-top: var(--el-table-border); border-bottom: none !important;
     border-top: var(--el-table-border);
   }
 
@@ -539,7 +538,7 @@ if (wsCache.get(cachePref + 'Tags')) {
 
     &.el-table__cell:not(:has(.tag-list)) {
       display: none !important;
-      //background-color: blue!important;
+    //background-color: blue!important;
     }
   }
 

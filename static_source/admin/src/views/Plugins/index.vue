@@ -2,22 +2,17 @@
 import {useI18n} from '@/hooks/web/useI18n'
 import {Table} from '@/components/Table'
 import {onMounted, onUnmounted, reactive, ref, watch} from 'vue'
-import {useAppStore} from "@/store/modules/app";
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
-import {ElMessage, ElSwitch, ElButton} from 'element-plus'
+import {ElButton, ElMessage} from 'element-plus'
 import {ApiPlugin} from "@/api/stub";
-import {useForm} from "@/hooks/web/useForm";
 import {useRouter} from "vue-router";
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
-import {EventStateChange} from "@/api/stream_types";
+import {ContentWrap} from "@/components/ContentWrap";
+import {EventStateChange} from "@/api/types";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 
 const {push, currentRoute} = useRouter()
-const remember = ref(false)
-const {register, elFormRef, methods} = useForm()
-const appStore = useAppStore()
 const {t} = useI18n()
 
 interface TableObject {

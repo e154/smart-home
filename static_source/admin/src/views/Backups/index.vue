@@ -2,27 +2,19 @@
 import {useI18n} from '@/hooks/web/useI18n'
 import {Table} from '@/components/Table'
 import {h, onMounted, onUnmounted, reactive, ref} from 'vue'
-import {useAppStore} from "@/store/modules/app";
 import {TableColumn} from '@/types/table'
 import api from "@/api/api";
 import {ElButton, ElCol, ElMessage, ElPopconfirm, ElRow, ElUpload, UploadProps} from 'element-plus'
 import {useForm} from "@/hooks/web/useForm";
-import {useRouter} from "vue-router";
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {ContentWrap} from "@/components/ContentWrap";
 import {ApiBackup} from "@/api/stub";
 import {parseTime} from "@/utils";
 import {formatBytes} from "@/views/Dashboard/core/filters";
 import {useCache} from "@/hooks/web/useCache";
-import {useIcon} from "@/hooks/web/useIcon";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 
-const Sun = useIcon({icon: 'emojione-monotone:sun', color: '#fde047'})
-
-const {push, currentRoute} = useRouter()
-const remember = ref(false)
-const {register, elFormRef, methods} = useForm()
-const appStore = useAppStore()
+const {methods} = useForm()
 const {wsCache} = useCache()
 const {t} = useI18n()
 
@@ -38,10 +30,10 @@ interface Params {
 }
 
 const tableObject = reactive<TableObject>(
-    {
-      tableList: [],
-      loading: false,
-    }
+  {
+    tableList: [],
+    loading: false,
+  }
 );
 
 const currentID = ref('')
@@ -58,8 +50,8 @@ const columns: TableColumn[] = [
     width: "100px",
     formatter: (row: ApiBackup) => {
       return h(
-          'span',
-          formatBytes(row.size.toString(), 2)
+        'span',
+        formatBytes(row.size.toString(), 2)
       )
     }
   },
@@ -76,8 +68,8 @@ const columns: TableColumn[] = [
     width: "170px",
     formatter: (row: ApiBackup) => {
       return h(
-          'span',
-          parseTime(row.modTime)
+        'span',
+        parseTime(row.modTime)
       )
     }
   },
@@ -86,11 +78,11 @@ const columns: TableColumn[] = [
 const getList = async () => {
   tableObject.loading = true
   const res = await api.v1.backupServiceGetBackupList()
-      .catch(() => {
-      })
-      .finally(() => {
-        tableObject.loading = false
-      })
+    .catch(() => {
+    })
+    .finally(() => {
+      tableObject.loading = false
+    })
   if (res) {
     const {items, meta} = res.data;
     tableObject.tableList = items;
@@ -101,10 +93,10 @@ const getList = async () => {
 
 const addNew = async () => {
   const res = await api.v1.backupServiceNewBackup({})
-      .catch(() => {
-      })
-      .finally(() => {
-      })
+    .catch(() => {
+    })
+    .finally(() => {
+    })
   if (res.status == 200) {
     ElMessage({
       title: t('Success'),
@@ -117,10 +109,10 @@ const addNew = async () => {
 
 const restore = async (backup: ApiBackup) => {
   const res = await api.v1.backupServiceRestoreBackup(backup.name)
-      .catch(() => {
-      })
-      .finally(() => {
-      })
+    .catch(() => {
+    })
+    .finally(() => {
+    })
 
   if (res.status == 200) {
     ElMessage({
@@ -134,10 +126,10 @@ const restore = async (backup: ApiBackup) => {
 
 const remove = async (backup: ApiBackup) => {
   const res = await api.v1.backupServiceDeleteBackup(backup.name)
-      .catch(() => {
-      })
-      .finally(() => {
-      })
+    .catch(() => {
+    })
+    .finally(() => {
+    })
 
   if (res.status == 200) {
     ElMessage({
@@ -242,22 +234,22 @@ getList()
           {{ t('backup.addNew') }}
         </ElButton>
 
-<!--        <ElButton class="flex mb-20px items-left" type="primary" @click="addNew()" plain>-->
-<!--          {{ t('backup.apply') }}-->
-<!--        </ElButton>-->
+        <!--        <ElButton class="flex mb-20px items-left" type="primary" @click="addNew()" plain>-->
+        <!--          {{ t('backup.apply') }}-->
+        <!--        </ElButton>-->
 
-<!--        <ElButton class="flex mb-20px items-left" type="primary" @click="addNew()" plain>-->
-<!--          {{ t('backup.rollback') }}-->
-<!--        </ElButton>-->
+        <!--        <ElButton class="flex mb-20px items-left" type="primary" @click="addNew()" plain>-->
+        <!--          {{ t('backup.rollback') }}-->
+        <!--        </ElButton>-->
 
 
         <ElUpload
-            class="upload-demo"
-            :action="getUploadURL()"
-            :multiple="true"
-            :on-success="onSuccess"
-            :on-error="onError"
-            :auto-upload="true"
+          class="upload-demo"
+          :action="getUploadURL()"
+          :multiple="true"
+          :on-success="onSuccess"
+          :on-error="onError"
+          :auto-upload="true"
         >
           <ElButton type="primary" plain>
             <Icon icon="material-symbols:upload" class="mr-5px"/>
@@ -269,20 +261,20 @@ getList()
 
 
     <Table
-        :selection="false"
-        :columns="columns"
-        :data="tableObject.tableList"
-        :loading="tableObject.loading"
-        style="width: 100%"
+      :selection="false"
+      :columns="columns"
+      :data="tableObject.tableList"
+      :loading="tableObject.loading"
+      style="width: 100%"
     >
       <template #operations="{ row }">
         <ElPopconfirm
-            :confirm-button-text="$t('main.ok')"
-            :cancel-button-text="$t('main.no')"
-            width="auto"
-            style="margin-left: 10px;"
-            :title="$t('backup.restoreSnapshot')"
-            @confirm="restore(row)"
+          :confirm-button-text="$t('main.ok')"
+          :cancel-button-text="$t('main.no')"
+          width="auto"
+          style="margin-left: 10px;"
+          :title="$t('backup.restoreSnapshot')"
+          @confirm="restore(row)"
         >
           <template #reference>
             <ElButton class="flex items-right" type="danger" link>
@@ -292,16 +284,16 @@ getList()
         </ElPopconfirm>
 
         <ElButton class="flex items-right" link @click="forceFileDownload(row)">
-          <Icon icon="material-symbols:download" class="mr-5px" />
+          <Icon icon="material-symbols:download" class="mr-5px"/>
         </ElButton>
 
         <ElPopconfirm
-            :confirm-button-text="$t('main.ok')"
-            :cancel-button-text="$t('main.no')"
-            width="auto"
-            style="margin-left: 10px;"
-            :title="$t('backup.removeSnapshot')"
-            @confirm="remove(row)"
+          :confirm-button-text="$t('main.ok')"
+          :cancel-button-text="$t('main.no')"
+          width="auto"
+          style="margin-left: 10px;"
+          :title="$t('backup.removeSnapshot')"
+          @confirm="remove(row)"
         >
           <template #reference>
             <ElButton class="flex items-right" link>

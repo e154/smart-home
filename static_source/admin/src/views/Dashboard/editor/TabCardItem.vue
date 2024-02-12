@@ -224,7 +224,7 @@ const updateCurrentState = () => {
 
   <div v-if="activeCard.selectedItem > -1" class="text-right">
 
-    <ElButton type="primary" @click.prevent.stop="updateCardItem">{{
+    <ElButton type="primary" @click.prevent.stop="updateCardItem" plain>{{
         $t('main.update')
       }}
     </ElButton>

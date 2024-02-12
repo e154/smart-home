@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import {computed, onMounted, PropType} from 'vue'
 import {GridProp, ItemPayloadGrid} from "./types";
-import {ApiImage} from "@/api/stub";
-import {prepareUrl} from "@/utils/serverId";
+import {GetFullImageUrl} from "@/utils/serverId";
 import {ElTooltip} from 'element-plus'
 
 const props = defineProps({
@@ -26,15 +25,8 @@ onMounted(() => {
 const cellHeight = computed(() => props.baseParams?.cellHeight + 'px')
 const cellWidth = computed(() => props.baseParams?.cellWidth + 'px')
 
-const getUrl = (image: ApiImage): string => {
-  if (!image || !image?.url) {
-    return '';
-  }
-  return prepareUrl(import.meta.env.VITE_API_BASEPATH as string + image?.url);
-}
-
 const getImage = ({position, top, left, image}) => {
-  const uri = getUrl(image);
+  const uri = GetFullImageUrl(image);
   image = `url(${uri})`
   if (position) {
     image = `url(${uri}) ${left}px ${top}px no-repeat`
@@ -125,7 +117,6 @@ const getTileStyle = () => {
 .tile-wrapper {
   height: v-bind(cellHeight);
   width: v-bind(cellWidth);
-//cursor: pointer; overflow: hidden;
   position: relative;
 }
 

@@ -2,24 +2,20 @@
 import {useI18n} from '@/hooks/web/useI18n'
 import {Table} from '@/components/Table'
 import {Form} from '@/components/Form'
-import {computed, h, reactive, ref, watch} from 'vue'
+import {h, reactive, ref, watch} from 'vue'
 import {FormSchema} from "@/types/form";
-import {useAppStore} from "@/store/modules/app";
 import {Pagination, TableColumn} from '@/types/table'
 import {ElButton} from 'element-plus'
 import api from "@/api/api";
 import {ApiMessage, ApiMessageDelivery} from "@/api/stub";
 import {useForm} from "@/hooks/web/useForm";
 import {parseTime} from "@/utils";
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {ContentWrap} from "@/components/ContentWrap";
 import AttributesViewer from "@/views/MessageDelivery/components/AttributesViewer.vue";
-import { Dialog } from '@/components/Dialog'
+import {Dialog} from '@/components/Dialog'
 
-const remember = ref(false)
-const {register, elFormRef, methods} = useForm()
-const appStore = useAppStore()
+const {register, methods} = useForm()
 const {t} = useI18n()
-const isMobile = computed(() => appStore.getMobile)
 
 interface TableObject {
   tableList: ApiMessageDelivery[]
@@ -41,10 +37,10 @@ interface Params {
 }
 
 const tableObject = reactive<TableObject>(
-    {
-      tableList: [],
-      loading: false,
-    }
+  {
+    tableList: [],
+    loading: false,
+  }
 );
 
 const schema = reactive<FormSchema[]>([
@@ -158,8 +154,8 @@ const columns: TableColumn[] = [
     width: "130px",
     formatter: (row: ApiMessageDelivery) => {
       return h(
-          'span',
-          row.message?.type
+        'span',
+        row.message?.type
       )
     }
   },
@@ -169,8 +165,8 @@ const columns: TableColumn[] = [
     sortable: true,
     formatter: (row: ApiMessageDelivery) => {
       return h(
-          'span',
-          Object.keys(row.message?.attributes).length || t('messageDelivery.nothing')
+        'span',
+        Object.keys(row.message?.attributes).length || t('messageDelivery.nothing')
       )
     }
   },
@@ -180,8 +176,8 @@ const columns: TableColumn[] = [
     sortable: true,
     formatter: (row: ApiMessageDelivery) => {
       return h(
-          'span',
-          row.address || t('messageDelivery.nothing')
+        'span',
+        row.address || t('messageDelivery.nothing')
       )
     }
   },
@@ -199,8 +195,8 @@ const columns: TableColumn[] = [
     width: "170px",
     formatter: (row: ApiMessageDelivery) => {
       return h(
-          'span',
-          parseTime(row.createdAt)
+        'span',
+        parseTime(row.createdAt)
       )
     }
   },
@@ -212,8 +208,8 @@ const columns: TableColumn[] = [
     width: "170px",
     formatter: (row: ApiMessageDelivery) => {
       return h(
-          'span',
-          parseTime(row.updatedAt)
+        'span',
+        parseTime(row.updatedAt)
       )
     }
   },
@@ -238,11 +234,11 @@ const getList = async () => {
   }
 
   const res = await api.v1.messageDeliveryServiceGetMessageDeliveryList(params)
-      .catch(() => {
-      })
-      .finally(() => {
-        tableObject.loading = false
-      })
+    .catch(() => {
+    })
+    .finally(() => {
+      tableObject.loading = false
+    })
   if (res) {
     const {items, meta} = res.data;
     tableObject.tableList = items;
@@ -259,17 +255,17 @@ const onLogs = (log: ApiMessageDelivery) => {
 }
 
 watch(
-    () => paginationObj.value.currentPage,
-    () => {
-      getList()
-    }
+  () => paginationObj.value.currentPage,
+  () => {
+    getList()
+  }
 )
 
 watch(
-    () => paginationObj.value.pageSize,
-    () => {
-      getList()
-    }
+  () => paginationObj.value.pageSize,
+  () => {
+    getList()
+  }
 )
 
 const sortChange = (data) => {
@@ -321,7 +317,6 @@ const selectRow = (row: ApiMessageDelivery) => {
 }
 
 
-
 getList()
 
 </script>
@@ -329,32 +324,32 @@ getList()
 <template>
   <ContentWrap>
     <Form
-        :schema="schema"
-        label-position="top"
-        label-width="auto"
-        hide-required-asterisk
-        @change="onFormChange"
-        @register="register"
+      :schema="schema"
+      label-position="top"
+      label-width="auto"
+      hide-required-asterisk
+      @change="onFormChange"
+      @register="register"
     />
 
     <Table
-        v-model:pageSize="paginationObj.pageSize"
-        v-model:currentPage="paginationObj.currentPage"
-        :columns="columns"
-        :data="tableObject.tableList"
-        :loading="tableObject.loading"
-        :pagination="paginationObj"
-        @sort-change="sortChange"
-        :row-class-name="tableRowClassName"
-        @current-change="selectRow"
-        style="width: 100%"
-        class="messageDeliveryTable"
-        :selection="false"
-        :showUpPagination="20"
+      v-model:pageSize="paginationObj.pageSize"
+      v-model:currentPage="paginationObj.currentPage"
+      :columns="columns"
+      :data="tableObject.tableList"
+      :loading="tableObject.loading"
+      :pagination="paginationObj"
+      @sort-change="sortChange"
+      :row-class-name="tableRowClassName"
+      @current-change="selectRow"
+      style="width: 100%"
+      class="messageDeliveryTable"
+      :selection="false"
+      :showUpPagination="20"
     />
   </ContentWrap>
 
-  <Dialog v-model="dialogVisible" :title="t('messageDelivery.dialogTitle')" >
+  <Dialog v-model="dialogVisible" :title="t('messageDelivery.dialogTitle')">
     <AttributesViewer :message="dialogSelectedRow"/>
     <template #footer>
       <ElButton @click="dialogVisible = false">{{ t('main.closeDialog') }}</ElButton>

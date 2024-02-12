@@ -1,32 +1,16 @@
 <script setup lang="ts">
 import {useI18n} from '@/hooks/web/useI18n'
 import {Table} from '@/components/Table'
-import {computed, h, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
-import {useAppStore} from "@/store/modules/app";
+import {h, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
-import {ElButton, ElMessage, ElTag} from 'element-plus'
 import {ApiClient} from "@/api/stub";
-import {useForm} from "@/hooks/web/useForm";
-import {useRouter} from "vue-router";
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {ContentWrap} from "@/components/ContentWrap";
 import {parseTime} from "@/utils";
-import { Dialog } from '@/components/Dialog'
-import {useEmitt} from "@/hooks/web/useEmitt";
-import {EventStateChange, EventTriggerCompleted} from "@/api/stream_types";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 
-const {push, currentRoute} = useRouter()
-const remember = ref(false)
-const {register, elFormRef, methods} = useForm()
-const appStore = useAppStore()
 const {t} = useI18n()
-const isMobile = computed(() => appStore.getMobile)
-
-const dialogSource = ref("")
-const dialogVisible = ref(false)
-const importedTask = ref("")
 
 interface TableObject {
   tableList: ApiClient[]

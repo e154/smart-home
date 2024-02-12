@@ -22,7 +22,6 @@ import {useI18n} from "@/hooks/web/useI18n";
 import {ImageSearch} from "@/components/ImageSearch";
 import {ApiImage} from "@/api/stub";
 import {GridProp, ItemPayloadGrid} from "./types";
-import {prepareUrl} from "@/utils/serverId";
 import CellPreview from "./CellPreview.vue";
 import {KeysSearch} from "@/views/Dashboard/components";
 import {EntitiesAction, EntitiesActionOptions} from "@/components/EntitiesAction";
@@ -114,13 +113,6 @@ const onSelectImageForState = (index: number, image: ApiImage) => {
 
   currentItem.value.payload.grid.items[index].image = image as ApiImage || undefined;
   props.item.update();
-}
-
-const getUrl = (image: ApiImage): string => {
-  if (!image || !image?.url) {
-    return '';
-  }
-  return prepareUrl(import.meta.env.VITE_API_BASEPATH as string + image?.url);
 }
 
 const changedForActionButton = async (options: EntitiesActionOptions) => {

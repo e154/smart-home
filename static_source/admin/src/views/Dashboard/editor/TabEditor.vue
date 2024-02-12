@@ -264,7 +264,7 @@ const sortCardDown = (tab: Tab, index: number) => {
 
   <div class="text-right" v-if="currentCore.tabs.length">
 
-    <ElButton type="primary" @click.prevent.stop="updateTab">{{ $t('main.update') }}</ElButton>
+    <ElButton type="primary" @click.prevent.stop="updateTab" plain>{{ $t('main.update') }}</ElButton>
 
     <ElButton @click.prevent.stop="cancel" plain>{{ t('main.cancel') }}</ElButton>
     <ElPopconfirm

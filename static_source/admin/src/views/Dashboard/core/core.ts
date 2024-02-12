@@ -4,14 +4,12 @@ import {
   ApiDashboardCardItem,
   ApiDashboardTab,
   ApiEntity,
-  ApiImage,
   ApiNewDashboardCardItemRequest,
   ApiNewDashboardCardRequest,
   ApiNewDashboardRequest,
   ApiNewDashboardTabRequest
 } from '@/api/stub';
 import api from '@/api/api';
-import {Attribute, EventStateChange, GetAttrValue} from '@/api/stream_types';
 import {UUID} from 'uuid-generator-ts';
 import {Compare, RenderVar, Resolve} from '@/views/Dashboard/core/render';
 import stream from '@/api/stream';
@@ -19,10 +17,11 @@ import {useBus} from "@/views/Dashboard/core/bus";
 import {debounce} from "lodash-es";
 import {ref} from "vue";
 import {ItemPayload} from "@/views/Dashboard/card_items";
-import {prepareUrl} from "@/utils/serverId";
 import {useAppStore} from "@/store/modules/app";
-import {CompareProp, ButtonAction} from "./types"
+import {ButtonAction, CompareProp} from "./types"
+import {Attribute, GetAttrValue} from "@/components/Attributes"
 import {KeysProp} from "@/views/Dashboard/components";
+import {EventStateChange} from "@/api/types";
 
 const {emit} = useBus()
 const appStore = useAppStore()
@@ -38,21 +37,6 @@ export interface PositionInfo {
   top: string;
   width: string;
   height: string;
-}
-
-// eq: равно
-// lt: меньше чем
-// le: меньше или равно
-// ne: не равно
-// ge: больше или равно
-// gt: больше чем
-export enum comparisonType {
-  EQ = 'eq',
-  LT = 'lt',
-  LE = 'le',
-  NE = 'ne',
-  GE = 'ge',
-  GT = 'gt',
 }
 
 export interface ItemParams {
@@ -95,16 +79,9 @@ export class CardItem {
   uuid: UUID = new UUID();
   asButton = false;
   buttonActions: ButtonAction[] = [];
-  _target: any = null;
-
   private dashboardCardId: number;
   private styleObj: object = {};
   private styleString: string = serializedObject({});
-  private _entityId: string;
-  private _entity?: ApiEntity = {} as ApiEntity;
-  private _type: string;
-  private _entityActions: Action[] = [];
-  private _entityStates: State[] = [];
   private _lastEvents?: Map<string, EventStateChange> = {} as Map<string, EventStateChange>;
 
   constructor(item: ApiDashboardCardItem) {
@@ -173,7 +150,7 @@ export class CardItem {
           defaultIcon: undefined,
           defaultIconColor: undefined,
           defaultIconSize: undefined,
-        } as ItemPayloadState;
+        };
       }
       if (!this.payload.text) {
         this.payload.text = {
@@ -258,12 +235,177 @@ export class CardItem {
     }
   }
 
+  _target: any = null;
+
+  get target(): any {
+    return this._target;
+  }
+
+  private _entityId: string;
+
+  // entityId
+  get entityId(): string {
+    return this._entityId;
+  }
+
+  private _entity?: ApiEntity = {} as ApiEntity;
+
+  // entity
+  get entity(): ApiEntity | undefined {
+    // console.log('get entity', this._entity)
+    return this._entity;
+  }
+
+  set entity(entity: ApiEntity | undefined) {
+    // console.log('set entity', entity);
+    // console.trace()
+    this._entityId = entity?.id || '';
+    if (entity?.id) {
+      this._entity = entity;
+    } else {
+      this._entity = undefined;
+      this.clearActions();
+      return;
+    }
+
+    // update actions
+    this._entityActions = [];
+    if (this._entity.actions) {
+      for (const item of this._entity.actions) {
+        this._entityActions.push({label: item.description || item.name, value: item.name || 'no name'});
+      }
+    }
+
+    // update states
+    this._entityStates = [];
+    if (this._entity.states) {
+      for (const item of this._entity.states) {
+        this._entityStates.push({label: item.description || item.name, value: item.name || 'no name'});
+      }
+    }
+  }
+
+  private _type: string;
+
+  get type(): string {
+    return this._type;
+  }
+
+  // type
+  set type(t: string) {
+    this._type = t;
+  }
+
+  private _entityActions: Action[] = [];
+
+  // entityActions
+  get entityActions(): Action[] {
+    return this._entityActions;
+  }
+
+  private _entityStates: State[] = [];
+
+  // entityStates
+  get entityStates(): State[] {
+    return this._entityStates;
+  }
+
+  // style
+  get style(): object {
+    return this.styleObj;
+  }
+
+  // position
+  get position(): Position {
+    return {
+      width: `${this.width}px`,
+      height: `${this.height}px`,
+      transform: this.transform
+    };
+  }
+
+  // positionInfo
+  get positionInfo(): PositionInfo {
+    // todo optimize
+    // let str = this.transform;
+    //
+    // const translate = str.split(') translate(');
+    // const startItems = translate[0].split('matrix(')[1].split(',');
+    // const startLeft = parseInt(startItems[4]);
+    // const startTop = parseInt(startItems[5]);
+    // const stag = translate[1].split('px,');
+    // const left = startLeft + parseInt(stag[0]);
+    // const top = startTop + parseInt(stag[1].split('px')[0]);
+
+    // console.log('str', str)
+    // console.log('left', left)
+    // console.log('top', top)
+
+    return {
+      left: '0',
+      top: '0',
+      width: `${this.width}`,
+      height: `${this.height}`
+    };
+  }
+
+  // lastEvent
+  get lastEvent(): EventStateChange | undefined {
+    if (!this._lastEvents[this.entityId]) {
+      this._lastEvents[this.entityId] = {} as EventStateChange
+      requestCurrentState(this.entityId)
+      return undefined
+    }
+    return this._lastEvents[this.entityId];
+  }
+
+  static async createNew(title: string, type: string,
+                         dashboardCardId: number, weight: number): Promise<CardItem> {
+    const request = {
+      title: title,
+      type: type,
+      enabled: true,
+      dashboardCardId: dashboardCardId,
+      weight: weight,
+      payload: btoa(serializedObject({
+        style: {},
+        width: 90,
+        height: 50,
+        payload: {
+          text: {
+            items: [],
+            default_text: '<div>default text</div>',
+            current_text: ''
+          }
+        },
+        transform: 'matrix(1, 0, 0, 1, 0, 0) translate(10px, 10px)'
+      }))
+    } as ApiNewDashboardCardItemRequest;
+    const {data} = await api.v1.dashboardCardItemServiceAddDashboardCardItem(request);
+
+    return new CardItem(data);
+  }
+
+  static async create(item: ApiDashboardCardItem): Promise<CardItem> {
+    if (item.id) {
+      // @ts-ignore
+      delete item.id;
+    }
+
+    const request = item as ApiNewDashboardCardItemRequest;
+    const {data} = await api.v1.dashboardCardItemServiceAddDashboardCardItem(request);
+
+    return new CardItem(data);
+  }
+
   serialize(): ApiDashboardCardItem {
     const style = parsedObject(this.styleString || '{}');
     this.styleObj = style;
     const buttonActions: ButtonAction[] = [];
     for (const action of this.buttonActions) {
-      let entity!: { id?: string };
+      let entity!: {
+        id?: string
+      };
       if (action.entity) {
         entity = {id: action.entity?.id};
       }
@@ -307,33 +449,6 @@ export class CardItem {
     return item;
   }
 
-  static async createNew(title: string, type: string,
-                         dashboardCardId: number, weight: number): Promise<CardItem> {
-    const request = {
-      title: title,
-      type: type,
-      enabled: true,
-      dashboardCardId: dashboardCardId,
-      weight: weight,
-      payload: btoa(serializedObject({
-        style: {},
-        width: 90,
-        height: 50,
-        payload: {
-          text: {
-            items: [],
-            default_text: '<div>default text</div>',
-            current_text: ''
-          }
-        },
-        transform: 'matrix(1, 0, 0, 1, 0, 0) translate(10px, 10px)'
-      }))
-    } as ApiNewDashboardCardItemRequest;
-    const {data} = await api.v1.dashboardCardItemServiceAddDashboardCardItem(request);
-
-    return new CardItem(data);
-  }
-
   async copy(): Promise<CardItem> {
     const serialized = this.serialize();
     serialized.title = serialized.title + ' [COPY]';
@@ -347,140 +462,9 @@ export class CardItem {
     return new CardItem(data);
   }
 
-  static async create(item: ApiDashboardCardItem): Promise<CardItem> {
-    if (item.id) {
-      // @ts-ignore
-      delete item.id;
-    }
-
-    const request = item as ApiNewDashboardCardItemRequest;
-    const {data} = await api.v1.dashboardCardItemServiceAddDashboardCardItem(request);
-
-    return new CardItem(data);
-  }
-
-  getUrl(image: ApiImage | undefined): string {
-    if (!image || !image.url) {
-      return '';
-    }
-    return prepareUrl(import.meta.env.VITE_API_BASEPATH as string + image.url);
-  }
-
-  private clearActions() {
-    this._entityActions = [];
-    this._entityStates = [];
-    this.showOn = [];
-    this.hideOn = [];
-    if (this.payload.button) {
-      this.payload.button.action = undefined;
-    }
-  }
-
-  // style
-  get style(): object {
-    return this.styleObj;
-  }
-
-  // entity
-  get entity(): ApiEntity | undefined {
-    // console.log('get entity', this._entity)
-    return this._entity;
-  }
-
-  set entity(entity: ApiEntity | undefined) {
-    // console.log('set entity', entity);
-    // console.trace()
-    this._entityId = entity?.id || '';
-    if (entity?.id) {
-      this._entity = entity;
-    } else {
-      this._entity = undefined;
-      this.clearActions();
-      return;
-    }
-
-    // update actions
-    this._entityActions = [];
-    if (this._entity.actions) {
-      for (const item of this._entity.actions) {
-        this._entityActions.push({label: item.description || item.name, value: item.name || 'no name'});
-      }
-    }
-
-    // update states
-    this._entityStates = [];
-    if (this._entity.states) {
-      for (const item of this._entity.states) {
-        this._entityStates.push({label: item.description || item.name, value: item.name || 'no name'});
-      }
-    }
-  }
-
-  // entityId
-  get entityId(): string {
-    return this._entityId;
-  }
-
-  // entityActions
-  get entityActions(): Action[] {
-    return this._entityActions;
-  }
-
-  // entityStates
-  get entityStates(): State[] {
-    return this._entityStates;
-  }
-
-  // type
-  set type(t: string) {
-    this._type = t;
-  }
-
-  get type(): string {
-    return this._type;
-  }
-
   // target
   setTarget(e) {
     this._target = e;
-  }
-
-  get target(): any {
-    return this._target;
-  }
-
-  // position
-  get position(): Position {
-    return {
-      width: `${this.width}px`,
-      height: `${this.height}px`,
-      transform: this.transform
-    };
-  }
-
-  // positionInfo
-  get positionInfo(): PositionInfo {
-    // todo optimize
-    // let str = this.transform;
-    //
-    // const translate = str.split(') translate(');
-    // const startItems = translate[0].split('matrix(')[1].split(',');
-    // const startLeft = parseInt(startItems[4]);
-    // const startTop = parseInt(startItems[5]);
-    // const stag = translate[1].split('px,');
-    // const left = startLeft + parseInt(stag[0]);
-    // const top = startTop + parseInt(stag[1].split('px')[0]);
-
-    // console.log('str', str)
-    // console.log('left', left)
-    // console.log('top', top)
-
-    return {
-      left: '0',
-      top: '0',
-      width: `${this.width}`,
-      height: `${this.height}`
-    };
   }
 
   update() {
@@ -532,7 +516,7 @@ export class CardItem {
       if (tr) {
         this.hidden = true;
         this.update();
-        continue
+
       }
     }
 
@@ -546,19 +530,9 @@ export class CardItem {
       if (tr) {
         this.hidden = false;
         this.update();
-        continue;
+
       }
     }
-  }
-
-  // lastEvent
-  get lastEvent(): EventStateChange | undefined {
-    if (!this._lastEvents[this.entityId]) {
-      this._lastEvents[this.entityId] = {} as EventStateChange
-      requestCurrentState(this.entityId)
-      return undefined
-    }
-    return this._lastEvents[this.entityId];
   }
 
   // lastEvents
@@ -569,6 +543,16 @@ export class CardItem {
       return undefined
     }
     return this._lastEvents[entityId];
+  }
+
+  private clearActions() {
+    this._entityActions = [];
+    this._entityStates = [];
+    this.showOn = [];
+    this.hideOn = [];
+    if (this.payload.button) {
+      this.payload.button.action = undefined;
+    }
   }
 } // \CardItem
 
@@ -592,13 +576,8 @@ export class Card {
   selectedItem = -1;
 
   items: CardItem[] = [];
-
-  _document: any = null;
   currentID: string;
-
-  private _entityId: string;
-  private _entity?: ApiEntity = {} as ApiEntity;
-  private _lastEvent?: EventStateChange = {} as EventStateChange;
+  itemList = ref([])
 
   constructor(card: ApiDashboardCard) {
     this.id = card.id;
@@ -640,6 +619,72 @@ export class Card {
     this.sortItems();
 
     this.updateItemList()
+  }
+
+  _document: any = null;
+
+  set document(d) {
+    this._document = d;
+  }
+
+  updateItemList = debounce(() => {
+    if (!this._document) return;
+    const container = this._document.querySelector('.class-' + this.currentID)
+    if (!container) return;
+    const cubeElements = container.querySelectorAll(".movable");
+    this.itemList.value = Array.from(cubeElements)
+  }, 100)
+
+  private _entityId: string;
+
+  // entityId
+  get entityId(): string {
+    return this._entityId;
+  }
+
+  private _entity?: ApiEntity = {} as ApiEntity;
+
+  // entity
+  get entity(): ApiEntity | undefined {
+    return this._entity;
+  }
+
+  set entity(entity: ApiEntity | undefined) {
+    this._entityId = entity?.id || '';
+    if (entity?.id) {
+      this._entity = entity;
+    } else {
+      this._entity = undefined;
+      return;
+    }
+  }
+
+  private _lastEvent?: EventStateChange = {} as EventStateChange;
+
+  // lastEvent
+  get lastEvent(): EventStateChange | undefined {
+    return this._lastEvent;
+  }
+
+  static async createNew(title: string, background: string, width: number,
+                         height: number, dashboardTabId: number, weight: number): Promise<Card> {
+    const request = {
+      title: title,
+      background: background,
+      width: width,
+      height: height,
+      enabled: true,
+      dashboardTabId: dashboardTabId,
+      weight: weight,
+      payload: btoa(JSON.stringify({}))
+    } as ApiNewDashboardCardRequest;
+    const {data} = await api.v1.dashboardCardServiceAddDashboardCard(request);
+
+    return new Card(data);
+  }
+
+  static async import(card: ApiDashboardCard) {
+    // todo ...
   }
 
   settings() {
@@ -688,23 +733,6 @@ export class Card {
     };
   }
 
-  static async createNew(title: string, background: string, width: number,
-                         height: number, dashboardTabId: number, weight: number): Promise<Card> {
-    const request = {
-      title: title,
-      background: background,
-      width: width,
-      height: height,
-      enabled: true,
-      dashboardTabId: dashboardTabId,
-      weight: weight,
-      payload: btoa(JSON.stringify({}))
-    } as ApiNewDashboardCardRequest;
-    const {data} = await api.v1.dashboardCardServiceAddDashboardCard(request);
-
-    return new Card(data);
-  }
-
   serialize(): ApiDashboardCard {
     const items: ApiDashboardCardItem[] = [];
 
@@ -734,6 +762,9 @@ export class Card {
     return card;
   }
 
+  // ---------------------------------
+  // items
+
   async update() {
     return await api.v1.dashboardCardServiceUpdateDashboardCard(this.id, this.serialize());
   }
@@ -742,41 +773,6 @@ export class Card {
     return new Card(this.serialize());
   }
 
-  static async import(card: ApiDashboardCard) {
-    // todo ...
-  }
-
-  // entity
-  get entity(): ApiEntity | undefined {
-    return this._entity;
-  }
-
-  set entity(entity: ApiEntity | undefined) {
-    this._entityId = entity?.id || '';
-    if (entity?.id) {
-      this._entity = entity;
-    } else {
-      this._entity = undefined;
-      return;
-    }
-  }
-
-  // entityId
-  get entityId(): string {
-    return this._entityId;
-  }
-
-  // lastEvent
-  get lastEvent(): EventStateChange | undefined {
-    return this._lastEvent;
-  }
-
-  set document(d) {
-    this._document = d;
-  }
-
-  // ---------------------------------
-  // items
   // ---------------------------------
   async createCardItem(): Promise<CardItem> {
     const item = await CardItem.createNew(
@@ -833,15 +829,6 @@ export class Card {
 
     this.updateItemList()
   }
-
-  itemList = ref([])
-  updateItemList = debounce(() => {
-    if (!this._document) return;
-    const container = this._document.querySelector('.class-' + this.currentID)
-    if (!container) return;
-    const cubeElements = container.querySelectorAll(".movable");
-    this.itemList.value = Array.from(cubeElements)
-  }, 100)
 
   sortItems() {
     this.items.sort(sortCardItems);
@@ -978,6 +965,18 @@ export class Tab {
     this.sortCards();
   }
 
+  get cards2(): Card[] {
+    //todo fix items sort
+    const cards: Card[] = [];
+    for (const card of this.cards) {
+      if (card.hidden) {
+        continue
+      }
+      cards.push(card)
+    }
+    return cards
+  }
+
   static async createNew(boardId: number, name: string, columnWidth: number, weight: number): Promise<Tab> {
     const request: ApiNewDashboardTabRequest = {
       name: name,
@@ -1071,20 +1070,9 @@ export class Tab {
     }
   }
 
-  get cards2(): Card[] {
-    //todo fix items sort
-    const cards: Card[] = [];
-    for (const card of this.cards) {
-      if (card.hidden) {
-        continue
-      }
-      cards.push(card)
-    }
-    return cards
-  }
-
   // ---------------------------------
   // events
+
   // ---------------------------------
   onStateChanged(event: EventStateChange) {
     for (const index in this.cards) {
@@ -1095,19 +1083,52 @@ export class Tab {
 
 export class Core {
   current: ApiDashboard = {} as ApiDashboard;
-
-  private _activeTabIdx = 0; // index
-
   activeCard: number | undefined = undefined; // index
   currentCardId: number | undefined;
-
   tabs: Tab[] = [];
-
   mainTab = 'cards';
   secondTab = '1';
   editorDisabled = false;
 
   constructor() {
+  }
+
+  private _activeTabIdx = 0; // index
+
+  get activeTabIdx(): number {
+    return this._activeTabIdx;
+  }
+
+  set activeTabIdx(idx: number) {
+    if (this._activeTabIdx == idx) {
+      return
+    }
+    this._activeTabIdx = idx;
+  }
+
+  get getActiveTab(): Tab | undefined {
+    if (this._activeTabIdx === undefined || this._activeTabIdx < 0) {
+      this._activeTabIdx = 0
+    }
+    return this.tabs[this._activeTabIdx] || undefined;
+  }
+
+  // ---------------------------------
+  // dashboard
+
+  // ---------------------------------
+  static async createNew(name: string): Promise<ApiDashboard> {
+    const request: ApiNewDashboardRequest = {
+      name: name
+    };
+    const {data} = await api.v1.dashboardServiceAddDashboard(request);
+    return data;
+  }
+
+  static async _import(dashboard: ApiDashboard): Promise<ApiDashboard> {
+    const {data} = await api.v1.dashboardServiceImportDashboard(dashboard);
+
+    return data;
   }
 
   currentBoard(current: ApiDashboard) {
@@ -1160,15 +1181,7 @@ export class Core {
   }
 
   // ---------------------------------
-  // dashboard
-  // ---------------------------------
-  static async createNew(name: string): Promise<ApiDashboard> {
-    const request: ApiNewDashboardRequest = {
-      name: name
-    };
-    const {data} = await api.v1.dashboardServiceAddDashboard(request);
-    return data;
-  }
+  // events
 
   async update() {
     const request = {
@@ -1179,6 +1192,10 @@ export class Core {
     };
     return await api.v1.dashboardServiceUpdateDashboard(this.current.id, request);
   }
+
+  // ---------------------------------
+  // tabs
+  // ---------------------------------
 
   serialize(): ApiDashboard {
     const tabs: ApiDashboardTab[] = [];
@@ -1198,12 +1215,6 @@ export class Core {
     } as ApiDashboard;
   }
 
-  static async _import(dashboard: ApiDashboard): Promise<ApiDashboard> {
-    const {data} = await api.v1.dashboardServiceImportDashboard(dashboard);
-
-    return data;
-  }
-
   async removeBoard() {
     if (!this.current || !this.current.id) {
       return;
@@ -1212,35 +1223,11 @@ export class Core {
   }
 
   // ---------------------------------
-  // events
-  // ---------------------------------
   onStateChanged(event: EventStateChange) {
     // console.log('onStateChanged', event.entity_id);
     for (const index in this.tabs) {
       this.tabs[index].onStateChanged(event);
     }
-  }
-
-  // ---------------------------------
-  // tabs
-  // ---------------------------------
-
-  set activeTabIdx(idx: number) {
-    if (this._activeTabIdx == idx) {
-      return
-    }
-    this._activeTabIdx = idx;
-  }
-
-  get activeTabIdx(): number {
-    return this._activeTabIdx;
-  }
-
-  get getActiveTab(): Tab | undefined {
-    if (this._activeTabIdx === undefined || this._activeTabIdx < 0) {
-      this._activeTabIdx = 0
-    }
-    return this.tabs[this._activeTabIdx] || undefined;
   }
 
   selectTabInMenu(idx: number) {

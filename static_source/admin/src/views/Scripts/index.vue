@@ -10,7 +10,7 @@ import {ApiArea, ApiPlugin, ApiScript, ApiStatistics} from "@/api/stub";
 import {useForm} from "@/hooks/web/useForm";
 import {useRouter} from "vue-router";
 import {parseTime} from "@/utils";
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {ContentWrap} from "@/components/ContentWrap";
 import Statistics from "@/components/Statistics/Statistics.vue";
 import {FormSchema} from "@/types/form";
 import {Form} from '@/components/Form'

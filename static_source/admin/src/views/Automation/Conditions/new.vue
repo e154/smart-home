@@ -9,7 +9,7 @@ import {useValidator} from '@/hooks/web/useValidator'
 import api from "@/api/api";
 import Form from './components/Form.vue'
 import {ApiCondition, ApiNewConditionRequest} from "@/api/stub";
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {ContentWrap} from "@/components/ContentWrap";
 import ConditionForm from "@/views/Automation/components/ConditionForm.vue";
 
 const {register, elFormRef, methods} = useForm()

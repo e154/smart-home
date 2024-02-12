@@ -4,10 +4,11 @@ import {CardItem, requestCurrentState} from "@/views/Dashboard/core/core";
 import {Cache, Compare, GetTokens, RenderText, Resolve} from "@/views/Dashboard/core/render";
 import api from "@/api/api";
 import {ElMessage} from "element-plus";
-import {Attribute, GetAttrValue} from "@/api/stream_types";
 import debounce from 'lodash.debounce'
 import {useI18n} from "@/hooks/web/useI18n";
 import {ButtonAction} from "@/views/Dashboard/core/types";
+import {Attribute, GetAttrValue} from "@/components/Attributes";
+import {GetFullImageUrl} from "@/utils/serverId";
 
 const {t} = useI18n()
 
@@ -105,15 +106,15 @@ const update = debounce(() => {
 }, 100)
 
 watch(
-    () => props.item,
-    (val?: CardItem) => {
-      if (!val) return;
-      update()
-    },
-    {
-      deep: true,
-      immediate: true
-    }
+  () => props.item,
+  (val?: CardItem) => {
+    if (!val) return;
+    update()
+  },
+  {
+    deep: true,
+    immediate: true
+  }
 )
 
 const resetCache = () => {
@@ -180,49 +181,49 @@ update()
 <template>
   <div ref="el" :class="[{'hidden': item.hidden}]" class="w-[100%] h-[100%]">
     <div
-        v-if="item.asButton"
-        v-show="!item.hidden"
-        @mouseover="mouseOver"
-        @mouseleave="mouseLive()"
-        class="device-menu w-[100%] h-[100%]"
-        :class="[{'as-button': item.asButton && item.buttonActions.length > 0}]"
+      v-if="item.asButton"
+      v-show="!item.hidden"
+      @mouseover="mouseOver"
+      @mouseleave="mouseLive()"
+      class="device-menu w-[100%] h-[100%]"
+      :class="[{'as-button': item.asButton && item.buttonActions.length > 0}]"
     >
 
       <div
-          class="cursor-pointer w-[100%] h-[100%]"
-          :style="item.style"
-          v-html="currentValue"
-          :key="reloadKey"
-          @click.prevent.stop="callBaseAction()"></div>
+        class="cursor-pointer w-[100%] h-[100%]"
+        :style="item.style"
+        v-html="currentValue"
+        :key="reloadKey"
+        @click.prevent.stop="callBaseAction()"></div>
 
       <div
-          :class="[{'show': showMenu}]"
-          class="device-menu-circle"
-          v-if="item.asButton && item.buttonActions.length > 1"
+        :class="[{'show': showMenu}]"
+        class="device-menu-circle"
+        v-if="item.asButton && item.buttonActions.length > 1"
       >
         <a
-            href="#"
-            v-for="(action, index) in item.buttonActions"
-            @click.prevent.stop="callAction(action)"
-            :key="index">
-          <img v-if="action.image" :src="item.getUrl(action.image)"/>
+          href="#"
+          v-for="(action, index) in item.buttonActions"
+          @click.prevent.stop="callAction(action)"
+          :key="index">
+          <img v-if="action.image" :src="GetFullImageUrl(action.image)"/>
           <Icon
-              v-else-if="action.icon"
-              style="width: 100%; height: 100%"
-              :key="reloadKey"
-              :icon="action.icon"
-              :color="action.iconColor"
-              :size="action.iconSize"/>
+            v-else-if="action.icon"
+            style="width: 100%; height: 100%"
+            :key="reloadKey"
+            :icon="action.icon"
+            :color="action.iconColor"
+            :size="action.iconSize"/>
         </a>
       </div>
     </div>
     <div v-else v-show="!item.hidden" class="w-[100%] h-[100%]">
       <div
-          class="w-[100%] h-[100%]"
-          :style="getStyle()"
-          v-show="!item.hidden"
-          v-html="currentValue"
-          :key="reloadKey">
+        class="w-[100%] h-[100%]"
+        :style="getStyle()"
+        v-show="!item.hidden"
+        v-html="currentValue"
+        :key="reloadKey">
 
       </div>
     </div>

@@ -21,6 +21,7 @@ const (
 	BOOL      ApiTypes = "BOOL"
 	ENCRYPTED ApiTypes = "ENCRYPTED"
 	FLOAT     ApiTypes = "FLOAT"
+	ICON      ApiTypes = "ICON"
 	IMAGE     ApiTypes = "IMAGE"
 	INT       ApiTypes = "INT"
 	MAP       ApiTypes = "MAP"
@@ -151,6 +152,7 @@ type ApiAttribute struct {
 	Bool      *bool                    `json:"bool,omitempty"`
 	Encrypted *string                  `json:"encrypted,omitempty"`
 	Float     *float32                 `json:"float,omitempty"`
+	Icon      *string                  `json:"icon,omitempty"`
 	ImageUrl  *string                  `json:"imageUrl,omitempty"`
 	Int       *int64                   `json:"int,omitempty"`
 	Map       *map[string]ApiAttribute `json:"map,omitempty"`
@@ -1316,6 +1318,7 @@ type ApiZigbee2mqttDevice struct {
 	CreatedAt     time.Time `json:"createdAt"`
 	Description   string    `json:"description"`
 	Functions     []string  `json:"functions"`
+	Icon          string    `json:"icon"`
 	Id            string    `json:"id"`
 	ImageUrl      string    `json:"imageUrl"`
 	Manufacturer  string    `json:"manufacturer"`

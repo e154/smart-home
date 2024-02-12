@@ -1,5 +1,5 @@
 import {ConstantBackoff, Websocket, WebsocketBuilder} from 'websocket-ts';
-import {EventHTML5Notify} from '@/api/stream_types';
+import {EventHTML5Notify} from '@/api/types';
 import {useCache} from "@/hooks/web/useCache";
 
 const {wsCache} = useCache()

@@ -5,7 +5,7 @@ import {ElButton, ElCard, ElMessage, ElPopconfirm, ElTabPane, ElTabs, ElTimeline
 import {useRoute, useRouter} from 'vue-router'
 import api from "@/api/api";
 import {ApiTask} from "@/api/stub";
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {ContentWrap} from "@/components/ContentWrap";
 import {Form} from "@/components/Form";
 import TaskForm from "@/views/Automation/components/TaskForm.vue";
 import {TriggersSearch} from "@/components/TriggersSearch";

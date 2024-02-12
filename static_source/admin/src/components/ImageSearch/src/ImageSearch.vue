@@ -7,7 +7,7 @@ import Browser from "@/views/Images/components/Browser.vue";
 import {useEmitt} from "@/hooks/web/useEmitt";
 import {useI18n} from "@/hooks/web/useI18n";
 import {UUID} from "uuid-generator-ts";
-import {prepareUrl} from "@/utils/serverId";
+import {GetFullImageUrl} from "@/utils/serverId";
 
 const emit = defineEmits(['change', 'update:modelValue'])
 const {t} = useI18n()
@@ -51,13 +51,6 @@ const remove = () => {
   currentImage.value = null
 }
 
-const getUrl = (image?: ApiImage): string => {
-  if (image?.url?.includes(import.meta.env.VITE_API_BASEPATH)) {
-    return prepareUrl(image?.url || '')
-  }
-  return prepareUrl(import.meta.env.VITE_API_BASEPATH as string + image?.url)
-}
-
 useEmitt({
   name: 'imageSelected',
   callback: (val) => {
@@ -77,7 +70,8 @@ const showBrowser = () => {
   <ElRow class="w-[100%]">
     <ElCol class="w-[100%]">
       <div v-if="currentImage" class="image-preview">
-        <ElImage class="w-[100%]" :src="getUrl(currentImage)" :preview-src-list="[getUrl(currentImage)]"/>
+        <ElImage class="w-[100%]" :src="GetFullImageUrl(currentImage)"
+                 :preview-src-list="[GetFullImageUrl(currentImage)]"/>
         <a href="#" class="cross delete-btn" @click.prevent.stop="remove()"></a>
       </div>
       <div v-else>

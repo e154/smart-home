@@ -13,8 +13,8 @@ import {useForm} from "@/hooks/web/useForm";
 import {parseTime} from "@/utils";
 import stream from "@/api/stream";
 import {Dialog} from '@/components/Dialog'
-import {EventStateChange} from "@/api/stream_types";
-import {AttributesViewer} from "@/components/AttributesViewer";
+import {EventStateChange} from "@/api/types";
+import {AttributesViewer} from "@/components/Attributes";
 import {CardItem} from "@/views/Dashboard/core/core";
 import {debounce} from "lodash-es";
 

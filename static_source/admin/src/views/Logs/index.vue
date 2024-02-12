@@ -12,7 +12,7 @@ import {ApiLog} from "@/api/stub";
 import {useForm} from "@/hooks/web/useForm";
 import {parseTime} from "@/utils";
 import stream from "@/api/stream";
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {ContentWrap} from "@/components/ContentWrap";
 import {useCache} from "@/hooks/web/useCache";
 
 const {register, elFormRef, methods} = useForm()

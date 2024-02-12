@@ -5,7 +5,7 @@ import {ElButton} from 'element-plus'
 import {useRouter} from 'vue-router'
 import api from "@/api/api";
 import {ApiVariable} from "@/api/stub";
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {ContentWrap} from "@/components/ContentWrap";
 import VariableForm from "@/views/Variables/components/VariableForm.vue";
 
 const {push} = useRouter()

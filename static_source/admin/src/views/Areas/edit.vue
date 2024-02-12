@@ -6,7 +6,7 @@ import {useRoute, useRouter} from 'vue-router'
 import api from "@/api/api";
 import Form from './Form.vue'
 import {ApiArea} from "@/api/stub";
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {ContentWrap} from "@/components/ContentWrap";
 import {MapEditor} from "@/components/MapEditor";
 
 const {push} = useRouter()

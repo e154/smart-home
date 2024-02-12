@@ -1,6 +1,7 @@
-import { Attribute, EventStateChange, GetAttrValue } from '@/api/stream_types'
-import { comparisonType } from '@/views/Dashboard/core/core'
-import { ApplyFilter } from '@/views/Dashboard/core/filters'
+import {comparisonType} from "@/views/Dashboard/core/types";
+import {ApplyFilter} from '@/views/Dashboard/core/filters'
+import {EventStateChange} from "@/api/types";
+import {Attribute, GetAttrValue} from "@/components/Attributes";
 
 export function Compare(x: any, y: any, rule: comparisonType): boolean {
   switch (rule) {
@@ -21,7 +22,7 @@ export function Compare(x: any, y: any, rule: comparisonType): boolean {
 }
 
 export function Resolve(path: string, obj: any): any {
-  return path.split('.').reduce(function(prev, curr) {
+  return path.split('.').reduce(function (prev, curr) {
     return prev ? prev[curr] : null
   }, obj || self)
 }

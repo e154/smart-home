@@ -4,7 +4,6 @@ import {Table} from '@/components/Table'
 import {Form} from '@/components/Form'
 import {h, onMounted, onUnmounted, PropType, reactive, ref, unref, watch} from 'vue'
 import {FormSchema} from "@/types/form";
-import {useAppStore} from "@/store/modules/app";
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
 import {UUID} from 'uuid-generator-ts'
@@ -13,14 +12,12 @@ import {ApiEntity, ApiEntityStorage} from "@/api/stub";
 import {useForm} from "@/hooks/web/useForm";
 import {parseTime} from "@/utils";
 import stream from "@/api/stream";
-import { Dialog } from '@/components/Dialog'
-import {EventStateChange} from "@/api/stream_types";
-import {AttributesViewer} from "@/components/AttributesViewer";
+import {Dialog} from '@/components/Dialog'
+import {EventStateChange} from "@/api/types";
+import {AttributesViewer} from "@/components/Attributes";
 import debounce from "lodash.debounce";
 
-const remember = ref(false)
-const {register, elFormRef, methods} = useForm()
-const appStore = useAppStore()
+const {register} = useForm()
 const {t} = useI18n()
 const dialogVisible = ref(false)
 const dialogSource = ref({})
@@ -54,19 +51,19 @@ const props = defineProps({
 })
 
 watch(
-    () => props.modelValue,
-    (val?: ApiEntity) => {
-      if (val?.id === unref(entityId)) return
-      entityId.value = val?.id || '';
-      getList()
-    },
+  () => props.modelValue,
+  (val?: ApiEntity) => {
+    if (val?.id === unref(entityId)) return
+    entityId.value = val?.id || '';
+    getList()
+  },
 )
 
 const tableObject = reactive<TableObject>(
-    {
-      tableList: [],
-      loading: false,
-    }
+  {
+    tableList: [],
+    loading: false,
+  }
 );
 
 const schema = reactive<FormSchema[]>([
@@ -138,8 +135,8 @@ const columns: TableColumn[] = [
     width: "170px",
     formatter: (row: ApiEntityStorage) => {
       return h(
-          'span',
-          parseTime(row.createdAt)
+        'span',
+        parseTime(row.createdAt)
       )
     }
   },
@@ -197,11 +194,11 @@ const getList = async () => {
   }
 
   const res = await api.v1.entityStorageServiceGetEntityStorageList(params)
-      .catch(() => {
-      })
-      .finally(() => {
-        tableObject.loading = false
-      })
+    .catch(() => {
+    })
+    .finally(() => {
+      tableObject.loading = false
+    })
   if (res) {
     const {items, meta} = res.data;
     tableObject.tableList = items;
@@ -226,10 +223,10 @@ const onStateChanged = (event: EventStateChange) => {
 }
 
 watch(
-    () => [paginationObj.value.pageSize, paginationObj.value.currentPage],
-    () => {
-      getList()
-    }
+  () => [paginationObj.value.pageSize, paginationObj.value.currentPage],
+  () => {
+    getList()
+  }
 )
 
 const sortChange = (data) => {
@@ -256,36 +253,36 @@ getList()
 <template>
 
   <Dialog v-model="dialogVisible" :maxHeight="400" width="80%">
-      <div style="padding: 10px">
-        <AttributesViewer v-model="dialogSource"/>
-      </div>
+    <div style="padding: 10px">
+      <AttributesViewer v-model="dialogSource"/>
+    </div>
     <template #footer>
       <ElButton @click="dialogVisible = false">{{ t('main.closeDialog') }}</ElButton>
     </template>
   </Dialog>
 
   <Form
-      :schema="schema"
-      label-position="top"
-      label-width="auto"
-      hide-required-asterisk
-      @change="onFormChange"
-      @register="register"
+    :schema="schema"
+    label-position="top"
+    label-width="auto"
+    hide-required-asterisk
+    @change="onFormChange"
+    @register="register"
   />
 
   <Table
-      v-model:pageSize="paginationObj.pageSize"
-      v-model:currentPage="paginationObj.currentPage"
-      :columns="columns"
-      :data="tableObject.tableList"
-      :loading="tableObject.loading"
-      :pagination="paginationObj"
-      @sort-change="sortChange"
-      style="width: 100%"
-      class="storageTable"
-      :selection="false"
-      :showUpPagination="20"
-      @current-change="selectRow"
+    v-model:pageSize="paginationObj.pageSize"
+    v-model:currentPage="paginationObj.currentPage"
+    :columns="columns"
+    :data="tableObject.tableList"
+    :loading="tableObject.loading"
+    :pagination="paginationObj"
+    @sort-change="sortChange"
+    style="width: 100%"
+    class="storageTable"
+    :selection="false"
+    :showUpPagination="20"
+    @current-change="selectRow"
   >
     <template #attributes="{row}">
       <span>{{ Object.keys(row.attributes).length || $t('entityStorage.nothing') }}</span>

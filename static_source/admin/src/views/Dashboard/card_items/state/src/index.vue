@@ -5,10 +5,11 @@ import {Cache, Compare, Resolve} from "@/views/Dashboard/core/render";
 import {ApiImage} from "@/api/stub";
 import api from "@/api/api";
 import {ElMessage} from "element-plus";
-import {Attribute, GetAttrValue} from "@/api/stream_types";
+import {Attribute, GetAttrValue} from "@/components/Attributes";
 import {debounce} from "lodash-es";
 import {useI18n} from "@/hooks/web/useI18n";
 import {ButtonAction} from "@/views/Dashboard/core/types";
+import {GetFullImageUrl} from "@/utils/serverId";
 
 const {t} = useI18n()
 
@@ -100,15 +101,15 @@ const update = debounce(() => {
 }, 100)
 
 watch(
-    () => props.item,
-    (val?: CardItem) => {
-      if (!val) return;
-      update()
-    },
-    {
-      deep: true,
-      immediate: true
-    }
+  () => props.item,
+  (val?: CardItem) => {
+    if (!val) return;
+    update()
+  },
+  {
+    deep: true,
+    immediate: true
+  }
 )
 
 let timer: any;
@@ -166,68 +167,68 @@ requestCurrentState(props.item?.entityId);
 <template>
   <div ref="el" :class="[{'hidden': item.hidden}]" style="width: 100%; height: 100%">
     <div
-        style="width: 100%; height: 100%; cursor: pointer"
-        v-if="item.asButton"
-        v-show="!item.hidden"
-        @mouseover="mouseOver"
-        @mouseleave="mouseLive()"
-        class="device-menu"
-        :class="[{'as-button': item.asButton && item.buttonActions.length > 0}]"
+      style="width: 100%; height: 100%; cursor: pointer"
+      v-if="item.asButton"
+      v-show="!item.hidden"
+      @mouseover="mouseOver"
+      @mouseleave="mouseLive()"
+      class="device-menu"
+      :class="[{'as-button': item.asButton && item.buttonActions.length > 0}]"
     >
 
       <img
-          v-if="currentImage"
-          class="device"
-          style="width: 100%"
-          :key="reloadKey"
-          :src="item.getUrl(currentImage)"
-          @click.prevent.stop="callBaseAction()"/>
+        v-if="currentImage"
+        class="device"
+        style="width: 100%"
+        :key="reloadKey"
+        :src="GetFullImageUrl(currentImage)"
+        @click.prevent.stop="callBaseAction()"/>
 
       <Icon
-          v-else-if="currentIcon"
-          style="width: 100%; height: 100%; cursor: pointer"
-          @click="callBaseAction()"
-          class="device"
-          :key="reloadKey"
-          :icon="currentIcon"
-          :color="currentIconColor"
-          :size="currentIconSize"/>
+        v-else-if="currentIcon"
+        style="width: 100%; height: 100%; cursor: pointer"
+        @click="callBaseAction()"
+        class="device"
+        :key="reloadKey"
+        :icon="currentIcon"
+        :color="currentIconColor"
+        :size="currentIconSize"/>
 
       <div
-          :class="[{'show': showMenu}]"
-          class="device-menu-circle"
-          v-if="item.asButton && item.buttonActions.length > 1"
+        :class="[{'show': showMenu}]"
+        class="device-menu-circle"
+        v-if="item.asButton && item.buttonActions.length > 1"
       >
         <a
-            href="#"
-            class="device-menu-circle-item"
-            v-for="(action, index) in item.buttonActions"
-            @click.prevent.stop="callAction(action)"
-            :key="index">
+          href="#"
+          class="device-menu-circle-item"
+          v-for="(action, index) in item.buttonActions"
+          @click.prevent.stop="callAction(action)"
+          :key="index">
           <img
-              v-if="action.image"
-              :src="item.getUrl(action.image)"/>
+            v-if="action.image"
+            :src="GetFullImageUrl(action.image)"/>
           <Icon
-              v-else-if="action.icon"
-              :icon="action.icon"
-              :color="action.iconColor"
-              :size="action.iconSize"/>
+            v-else-if="action.icon"
+            :icon="action.icon"
+            :color="action.iconColor"
+            :size="action.iconSize"/>
         </a>
       </div>
     </div>
     <div v-else v-show="!item.hidden"
          style="width: 100%; height: 100%">
       <img
-          v-if="currentImage"
-          class="device"
-          style="width: 100%"
-          :key="reloadKey"
-          :src="item.getUrl(currentImage)"/>
+        v-if="currentImage"
+        class="device"
+        style="width: 100%"
+        :key="reloadKey"
+        :src="GetFullImageUrl(currentImage)"/>
       <Icon
-          v-else-if="currentIcon"
-          :icon="currentIcon"
-          :color="currentIconColor"
-          :size="currentIconSize"/>
+        v-else-if="currentIcon"
+        :icon="currentIcon"
+        :color="currentIconColor"
+        :size="currentIconSize"/>
     </div>
   </div>
 </template>

@@ -9,7 +9,7 @@ import {debounce} from "lodash-es";
 import api from "@/api/api";
 import {ApiEntityCallActionRequest, ApiTypes} from "@/api/stub";
 import {UUID} from "uuid-generator-ts";
-import {prepareUrl} from "@/utils/serverId";
+import {GetFullUrl} from "@/utils/serverId";
 
 // ---------------------------------
 // common
@@ -102,8 +102,8 @@ watch(
     },
 )
 
-const getUrl = (): string => {
-  return prepareUrl(import.meta.env.VITE_API_BASEPATH as string + props.item?.payload.joystick?.stickImage?.url || '');
+const getStickUrl = (): string => {
+  return GetFullUrl(props.item?.payload.joystick?.stickImage?.url);
 }
 
 const loop = () => {
@@ -117,7 +117,7 @@ loop();
 <template>
   <div ref="el" :class="[{'hidden': item.hidden}]">
     <div style="position: absolute; left:0; top:0; cursor: pointer;" ref="stick">
-      <ElImage :src="getUrl()">
+      <ElImage :src="getStickUrl()">
         <template #error>
           <div class="image-slot">
             <ElIcon>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {computed, onBeforeUnmount, onMounted, PropType, ref} from "vue";
-import {CardItem, comparisonType, Core} from "@/views/Dashboard/core/core";
+import {CardItem, Core} from "@/views/Dashboard/core/core";
 import {
   ElButton,
   ElCard,
@@ -24,6 +24,7 @@ import {Cache, GetTokens} from "@/views/Dashboard/core/render";
 import {TextProp} from "./types";
 import {TinycmeEditor} from "@/components/Tinymce";
 import {KeysSearch} from "@/views/Dashboard/components";
+import {comparisonType} from "@/views/Dashboard/core/types";
 
 const {t} = useI18n()
 
