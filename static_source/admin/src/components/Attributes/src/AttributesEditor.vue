@@ -3,19 +3,20 @@ import {useI18n} from '@/hooks/web/useI18n'
 import {Table} from '@/components/Table'
 import {computed, PropType, unref} from 'vue'
 import {ElButton, ElInput, ElInputNumber, ElOption, ElSelect} from 'element-plus'
-import {Attribute, EntityAttribute} from "@/views/Entities/components/types";
+import {EntityAttribute} from "@/views/Entities/components/types";
 import {TableColumn} from "@/types/table";
 import {propTypes} from "@/utils/propTypes";
+import {ApiAttribute} from "@/api/stub";
 
 const {t} = useI18n()
 
 const props = defineProps({
   modelValue: {
-    type: Array as PropType<Attribute[]>,
+    type: Array as PropType<ApiAttribute[]>,
     default: () => []
   },
   pluginAttrs: {
-    type: Array as PropType<Attribute[]>,
+    type: Array as PropType<ApiAttribute[]>,
     default: () => []
   },
   customAttrs: propTypes.bool.def(false),
@@ -49,7 +50,7 @@ const addNew = () => {
   attributes.value.push(new EntityAttribute('new_value'))
 }
 
-const remove = (attr: Attribute, index: number) => {
+const remove = (attr: ApiAttribute, index: number) => {
   attributes.value.splice(index, 1)
 }
 

@@ -6,18 +6,18 @@ export interface Plugin {
   enabled: boolean;
   system: boolean;
   actor?: boolean;
-  settings: Attribute[];
+  settings: ApiAttribute[];
   triggers?: boolean;
   actors?: boolean;
   actorCustomAttrs?: boolean;
-  actorAttrs?: Attribute[];
+  actorAttrs?: ApiAttribute[];
   actorCustomActions?: boolean;
   actorActions?: EntityAction[];
   actorCustomStates?: boolean;
   actorStates?: EntityState[];
   actorCustomSetts?: boolean;
-  actorSetts?: Attribute[];
-  setts?: Attribute[];
+  actorSetts?: ApiAttribute[];
+  setts?: ApiAttribute[];
 }
 
 export interface Parent {
@@ -44,22 +44,6 @@ export interface EntityState {
   style?: string;
 }
 
-export interface Attribute {
-  name?: string;
-  type?: ApiTypes;
-  int?: number;
-  string?: string;
-  bool?: boolean;
-  float?: number;
-  array?: Attribute[];
-  map?: Record<string, Attribute>;
-  time?: string;
-  icon?: string;
-  imageUrl?: string;
-  point?: string;
-  encrypted?: string;
-}
-
 export interface Entity {
   id?: string;
   pluginName?: string;
@@ -77,8 +61,8 @@ export interface Entity {
   parentId?: string;
   actions?: EntityAction[];
   states?: EntityState[];
-  attributes?: Record<string, Attribute>;
-  settings?: Record<string, Attribute>;
+  attributes?: Record<string, ApiAttribute>;
+  settings?: Record<string, ApiAttribute>;
   scriptIds?: number[];
   tags?: string[];
   scripts?: ApiScript[];
@@ -86,7 +70,7 @@ export interface Entity {
 }
 
 
-export class EntityAttribute implements Attribute {
+export class EntityAttribute implements ApiAttribute {
   constructor(name: string) {
     this.name = name
     this.type = ApiTypes.STRING

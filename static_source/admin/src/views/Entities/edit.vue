@@ -6,11 +6,12 @@ import {useRoute, useRouter} from 'vue-router'
 import api from "@/api/api";
 import Form from './components/Form.vue'
 import {ContentWrap} from "@/components/ContentWrap";
-import {Attribute, Entity, EntityAction, EntityState, Plugin} from "@/views/Entities/components/types";
+import {Entity, EntityAction, EntityState, Plugin} from "@/views/Entities/components/types";
 import Actions from "@/views/Entities/components/Actions.vue";
 import {useEmitt} from "@/hooks/web/useEmitt";
 import {
   ApiArea,
+  ApiAttribute,
   ApiEntityAction,
   ApiEntityState,
   ApiPlugin,
@@ -19,7 +20,7 @@ import {
   ApiUpdateEntityRequestState
 } from "@/api/stub";
 import States from "@/views/Entities/components/States.vue";
-import AttributesEditor from "@/views/Entities/components/AttributesEditor.vue";
+import {AttributesEditor} from "@/components/Attributes";
 import {Dialog} from '@/components/Dialog'
 import {JsonViewer} from "@/components/JsonViewer";
 import {copyToClipboard} from "@/utils/clipboard";
@@ -43,8 +44,8 @@ const dialogVisible = ref(false)
 const lastEvent = ref<Nullable<EventStateChange>>(null)
 
 interface Internal {
-  attributes: Attribute[];
-  settings: Attribute[];
+  attributes: ApiAttribute[];
+  settings: ApiAttribute[];
 }
 
 const internal = reactive<Internal>(
@@ -98,7 +99,7 @@ const fetchPlugin = async () => {
     const plugin = res.data as ApiPlugin;
 
     // attributes
-    let actorAttrs: Attribute[] = [];
+    let actorAttrs: ApiAttribute[] = [];
     if (plugin.options?.actorAttrs) {
       for (const key in plugin.options.actorAttrs) {
         actorAttrs.push(plugin.options.actorAttrs[key]);
@@ -106,7 +107,7 @@ const fetchPlugin = async () => {
     }
 
     // actorSetts
-    let actorSetts: Attribute[] = [];
+    let actorSetts: ApiAttribute[] = [];
     if (plugin.options?.actorSetts) {
       for (const key in plugin.options.actorSetts) {
         actorSetts.push(plugin.options.actorSetts[key]);
@@ -114,7 +115,7 @@ const fetchPlugin = async () => {
     }
 
     // setts
-    let setts: Attribute[] = [];
+    let setts: ApiAttribute[] = [];
     if (plugin.options?.setts) {
       for (const key in plugin.options?.setts) {
         setts.push(plugin.options?.setts[key]);
@@ -183,11 +184,11 @@ const prepareForSave = async () => {
         imageId: a.image?.id || a.imageId,
       })
     }
-    let attributes: { [key: string]: Attribute } = {};
+    let attributes: { [key: string]: ApiAttribute } = {};
     for (const index in internal.attributes) {
       attributes[internal.attributes[index].name] = internal.attributes[index];
     }
-    let settings: { [key: string]: Attribute } = {};
+    let settings: { [key: string]: ApiAttribute } = {};
     for (const index in internal.settings) {
       settings[internal.settings[index].name] = internal.settings[index];
     }
@@ -281,11 +282,11 @@ const prepareForExport = async () => {
         icon: a.icon,
       } as ApiEntityState)
     }
-    let attributes: { [key: string]: Attribute } = {};
+    let attributes: { [key: string]: ApiAttribute } = {};
     for (const index in internal.attributes) {
       attributes[internal.attributes[index].name] = internal.attributes[index];
     }
-    let settings: { [key: string]: Attribute } = {};
+    let settings: { [key: string]: ApiAttribute } = {};
     for (const index in internal.settings) {
       settings[internal.settings[index].name] = internal.settings[index];
     }
@@ -405,12 +406,12 @@ useEmitt({
   }
 })
 
-const onAttrsUpdated = (attrs: Attribute[]) => {
+const onAttrsUpdated = (attrs: ApiAttribute[]) => {
   const second = JSON.parse(JSON.stringify(attrs))
   internal.attributes = JSON.parse(JSON.stringify(second))
 }
 
-const onSettingsUpdated = (attrs: Attribute[]) => {
+const onSettingsUpdated = (attrs: ApiAttribute[]) => {
   const second = JSON.parse(JSON.stringify(attrs))
   internal.settings = JSON.parse(JSON.stringify(second))
 }
