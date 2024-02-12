@@ -6,7 +6,7 @@ import {ElImage} from 'element-plus'
 import {TableColumn} from '@/types/table'
 import {ApiAttribute} from "@/api/stub";
 import {GetFullUrl} from "@/utils/serverId";
-import {GetApiAttrValue} from "@/components/Attributes";
+import {GetApiAttributeValue} from "@/components/Attributes";
 
 const {t} = useI18n()
 
@@ -88,7 +88,7 @@ watch(
           :size="15"/>
       </div>
       <div v-else>
-        <span>{{ GetApiAttrValue(row) }}</span>
+        <span>{{ GetApiAttributeValue(row) }}</span>
       </div>
     </template>
 

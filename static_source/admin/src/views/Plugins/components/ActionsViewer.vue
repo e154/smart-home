@@ -5,7 +5,7 @@ import {h, PropType, reactive, watch} from 'vue'
 import {TableColumn} from '@/types/table'
 import {ElImageViewer, ElTableColumn, ElTag} from 'element-plus'
 import {ApiPluginOptionsResultEntityAction} from "@/api/stub";
-import {GetApiAttrValue} from "@/components/Attributes";
+import {GetApiAttributeValue} from "@/components/Attributes";
 import {GetFullUrl} from "@/utils/serverId";
 
 const {t} = useI18n()
@@ -103,7 +103,7 @@ watch(
         <ElImageViewer style="width: 100px; height: 100px" v-bind="GetFullUrl(row.imageUrl)"/>
       </div>
       <div v-else>
-        <span>{{ GetApiAttrValue(row) }}</span>
+        <span>{{ GetApiAttributeValue(row) }}</span>
       </div>
     </template>
   </Table>

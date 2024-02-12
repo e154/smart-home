@@ -7,7 +7,7 @@ import {ElMessage} from "element-plus";
 import debounce from 'lodash.debounce'
 import {useI18n} from "@/hooks/web/useI18n";
 import {ButtonAction} from "@/views/Dashboard/core/types";
-import {Attribute, GetAttrValue} from "@/components/Attributes";
+import {AttributeValue, GetAttributeValue} from "@/components/Attributes";
 import {GetFullImageUrl} from "@/utils/serverId";
 
 const {t} = useI18n()
@@ -64,7 +64,7 @@ const update = debounce(() => {
 
     if (typeof val === 'object') {
       if (val && val.hasOwnProperty('type') && val.hasOwnProperty('name')) {
-        val = GetAttrValue(val as Attribute)
+        val = GetAttributeValue(val as AttributeValue)
       }
     }
 

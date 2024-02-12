@@ -16,8 +16,7 @@ export enum Types {
   ENCRYPTED = 'encrypted',
 }
 
-//todo: rename to AttributeValue
-export interface Attribute {
+export interface AttributeValue {
   name: string
   type: Types
   value: any
@@ -26,9 +25,9 @@ export interface Attribute {
 //todo: move Attribute from entities
 // export interface Attribute {}
 
-export function GetAttrValue(attr: Attribute): string {
+export function GetAttributeValue(attr: AttributeValue): string {
   let val: string
-  switch (attr.type) {
+  switch (attr.type.toLowerCase()) {
     case Types.INT:
       val = attr.value
       break
@@ -77,8 +76,7 @@ export function GetAttrValue(attr: Attribute): string {
   return val
 }
 
-export function GetApiAttrValue(attr: ApiAttribute): any {
-  console.log(attr.type, attr.type.toLowerCase())
+export function GetApiAttributeValue(attr: ApiAttribute): any {
   switch (attr.type.toLowerCase()) {
     case Types.INT:
       return attr.int

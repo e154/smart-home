@@ -1,4 +1,4 @@
-import {Attribute} from '@/components/Attributes'
+import {AttributeValue} from '@/components/Attributes'
 
 export interface EventHTML5Notify {
   title: string
@@ -20,7 +20,7 @@ export interface EventNewWebPushPublicKey {
 
 export interface EventTriggerCompleted {
   id: number
-  args: Map<string, Attribute>
+  args: Map<string, AttributeValue>
   entity_id: string
   last_time: string
 }
@@ -34,8 +34,8 @@ export interface State {
 
 export interface EventState {
   entity_id: string
-  attributes: Map<string, Attribute>
-  settings: Map<string, Attribute>
+  attributes: Map<string, AttributeValue>
+  settings: Map<string, AttributeValue>
   last_changed?: string
   last_updated?: string
   state: State

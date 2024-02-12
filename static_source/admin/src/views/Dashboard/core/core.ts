@@ -19,7 +19,7 @@ import {ref} from "vue";
 import {ItemPayload} from "@/views/Dashboard/card_items";
 import {useAppStore} from "@/store/modules/app";
 import {ButtonAction, CompareProp} from "./types"
-import {Attribute, GetAttrValue} from "@/components/Attributes"
+import {AttributeValue, GetAttributeValue} from "@/components/Attributes"
 import {KeysProp} from "@/views/Dashboard/components";
 import {EventStateChange} from "@/api/types";
 
@@ -889,7 +889,7 @@ export class Card {
       }
       if (typeof val === 'object') {
         if (val && val.hasOwnProperty('type') && val.hasOwnProperty('name')) {
-          val = GetAttrValue(val as Attribute);
+          val = GetAttributeValue(val as AttributeValue);
         }
       }
 
@@ -913,7 +913,7 @@ export class Card {
       }
       if (typeof val === 'object') {
         if (val && val.hasOwnProperty('type') && val.hasOwnProperty('name')) {
-          val = GetAttrValue(val as Attribute);
+          val = GetAttributeValue(val as AttributeValue);
         }
       }
 

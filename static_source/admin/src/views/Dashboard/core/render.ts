@@ -1,7 +1,7 @@
 import {comparisonType} from "@/views/Dashboard/core/types";
 import {ApplyFilter} from '@/views/Dashboard/core/filters'
 import {EventStateChange} from "@/api/types";
-import {Attribute, GetAttrValue} from "@/components/Attributes";
+import {AttributeValue, GetAttributeValue} from "@/components/Attributes";
 
 export function Compare(x: any, y: any, rule: comparisonType): boolean {
   switch (rule) {
@@ -88,7 +88,7 @@ export function RenderText(tokens: string[], text: string, lastEvent?: EventStat
 
     if (typeof val === 'object') {
       if (val && val.hasOwnProperty('type') && val.hasOwnProperty('name')) {
-        val = GetAttrValue(val as Attribute)
+        val = GetAttributeValue(val as AttributeValue)
       }
     }
 
@@ -123,7 +123,7 @@ export function RenderVar(token: string, lastEvent?: EventStateChange): any {
 
   if (typeof val === 'object') {
     if (val && val.hasOwnProperty('type') && val.hasOwnProperty('name')) {
-      val = GetAttrValue(val as Attribute)
+      val = GetAttributeValue(val as AttributeValue)
     }
   }
 

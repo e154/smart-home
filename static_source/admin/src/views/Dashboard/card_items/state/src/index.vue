@@ -5,7 +5,7 @@ import {Cache, Compare, Resolve} from "@/views/Dashboard/core/render";
 import {ApiImage} from "@/api/stub";
 import api from "@/api/api";
 import {ElMessage} from "element-plus";
-import {Attribute, GetAttrValue} from "@/components/Attributes";
+import {AttributeValue, GetAttributeValue} from "@/components/Attributes";
 import {debounce} from "lodash-es";
 import {useI18n} from "@/hooks/web/useI18n";
 import {ButtonAction} from "@/views/Dashboard/core/types";
@@ -66,7 +66,7 @@ const update = debounce(() => {
 
       if (typeof val === 'object') {
         if (val && val.hasOwnProperty('type') && val.hasOwnProperty('name')) {
-          val = GetAttrValue(val as Attribute);
+          val = GetAttributeValue(val as AttributeValue);
         }
       }
 
