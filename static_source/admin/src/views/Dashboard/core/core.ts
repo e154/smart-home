@@ -11,14 +11,14 @@ import {
 } from '@/api/stub';
 import api from '@/api/api';
 import {UUID} from 'uuid-generator-ts';
-import {Compare, RenderVar, Resolve} from '@/views/Dashboard/core/render';
+import {RenderVar, Resolve} from '@/views/Dashboard/core/render';
 import stream from '@/api/stream';
 import {useBus} from "@/views/Dashboard/core/bus";
 import {debounce} from "lodash-es";
 import {ref} from "vue";
 import {ItemPayload} from "@/views/Dashboard/card_items";
 import {useAppStore} from "@/store/modules/app";
-import {ButtonAction, CompareProp} from "./types"
+import {ButtonAction, Compare, CompareProp} from "./types"
 import {AttributeValue, GetAttributeValue} from "@/components/Attributes"
 import {KeysProp} from "@/views/Dashboard/components";
 import {EventStateChange} from "@/api/types";

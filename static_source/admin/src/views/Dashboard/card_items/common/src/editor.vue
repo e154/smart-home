@@ -236,7 +236,7 @@ const removeAction = (index: number) => {
                   </ElCol>
                 </ElRow>
 
-                <ElRow>
+                <ElRow class="mb-10px">
                   <ElCol>
                     <ElFormItem :label="$t('dashboard.editor.iconSize')" prop="iconSize">
                       <ElInputNumber v-model="prop.iconSize" :min="1" :value-on-clear="12"/>

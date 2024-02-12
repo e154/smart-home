@@ -34,6 +34,24 @@ export enum comparisonType {
   GT = 'gt',
 }
 
+export function Compare(x: any, y: any, rule: comparisonType): boolean {
+  switch (rule) {
+    case comparisonType.EQ:
+      return (x == y)
+    case comparisonType.LT:
+      return (x < y)
+    case comparisonType.LE:
+      return (x <= y)
+    case comparisonType.NE:
+      return (x != y)
+    case comparisonType.GE:
+      return (x >= y)
+    case comparisonType.GT:
+      return (x > y)
+  }
+  return false
+}
+
 export interface CompareProp {
   key: string;
   comparison: comparisonType;

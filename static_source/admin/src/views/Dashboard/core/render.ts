@@ -1,25 +1,6 @@
-import {comparisonType} from "@/views/Dashboard/core/types";
 import {ApplyFilter} from '@/views/Dashboard/core/filters'
 import {EventStateChange} from "@/api/types";
 import {AttributeValue, GetAttributeValue} from "@/components/Attributes";
-
-export function Compare(x: any, y: any, rule: comparisonType): boolean {
-  switch (rule) {
-    case comparisonType.EQ:
-      return (x == y)
-    case comparisonType.LT:
-      return (x < y)
-    case comparisonType.LE:
-      return (x <= y)
-    case comparisonType.NE:
-      return (x != y)
-    case comparisonType.GE:
-      return (x >= y)
-    case comparisonType.GT:
-      return (x > y)
-  }
-  return false
-}
 
 export function Resolve(path: string, obj: any): any {
   return path.split('.').reduce(function (prev, curr) {

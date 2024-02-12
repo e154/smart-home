@@ -2,8 +2,9 @@
 import {computed, onMounted, PropType, ref, watch} from "vue";
 import {CardItem, requestCurrentState} from "@/views/Dashboard/core/core";
 import {debounce} from "lodash-es";
-import {Cache, Compare, RenderVar} from "@/views/Dashboard/core/render";
+import {Cache, RenderVar} from "@/views/Dashboard/core/render";
 import {ElProgress} from "element-plus";
+import {Compare} from "@/views/Dashboard/core/types";
 
 // ---------------------------------
 // common
@@ -58,15 +59,15 @@ const update = debounce(() => {
 })
 
 watch(
-    () => props.item,
-    (val?: CardItem) => {
-      if (!val) return;
-      update()
-    },
-    {
-      deep: true,
-      immediate: true
-    }
+  () => props.item,
+  (val?: CardItem) => {
+    if (!val) return;
+    update()
+  },
+  {
+    deep: true,
+    immediate: true
+  }
 )
 
 requestCurrentState(props.item?.entityId);
@@ -78,22 +79,22 @@ update()
 <template>
   <div ref="el" v-if="item.entity" :class="[{'hidden': item.hidden}]" class="h-[100%] w-[100%]">
     <ElProgress
-        v-if="item.payload.progress.type"
-        :type="item.payload.progress.type"
-        :percentage="value"
-        :width="item.payload.progress.width"
-        :stroke-width="item.payload.progress.strokeWidth"
-        :text-inside="!item.payload.progress.textInside"
-        :show-text="item.payload.progress.showText"
-        :color="color"/>
+      v-if="item.payload.progress.type"
+      :type="item.payload.progress.type"
+      :percentage="value"
+      :width="item.payload.progress.width"
+      :stroke-width="item.payload.progress.strokeWidth"
+      :text-inside="!item.payload.progress.textInside"
+      :show-text="item.payload.progress.showText"
+      :color="color"/>
     <ElProgress
-        v-else
-        :percentage="value"
-        :width="item.payload.progress.width"
-        :stroke-width="item.payload.progress.strokeWidth"
-        :text-inside="!item.payload.progress.textInside"
-        :show-text="item.payload.progress.showText"
-        :color="color"/>
+      v-else
+      :percentage="value"
+      :width="item.payload.progress.width"
+      :stroke-width="item.payload.progress.strokeWidth"
+      :text-inside="!item.payload.progress.textInside"
+      :show-text="item.payload.progress.showText"
+      :color="color"/>
   </div>
 </template>
 

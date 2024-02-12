@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import {onMounted, PropType, ref, watch} from "vue";
 import {CardItem, requestCurrentState} from "@/views/Dashboard/core/core";
-import {Cache, Compare, Resolve} from "@/views/Dashboard/core/render";
+import {Cache, Resolve} from "@/views/Dashboard/core/render";
 import {ApiImage} from "@/api/stub";
 import api from "@/api/api";
 import {ElMessage} from "element-plus";
 import {AttributeValue, GetAttributeValue} from "@/components/Attributes";
 import {debounce} from "lodash-es";
 import {useI18n} from "@/hooks/web/useI18n";
-import {ButtonAction} from "@/views/Dashboard/core/types";
+import {ButtonAction, Compare} from "@/views/Dashboard/core/types";
 import {GetFullImageUrl} from "@/utils/serverId";
 
 const {t} = useI18n()
