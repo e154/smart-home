@@ -1,6 +1,6 @@
 // import Iconify from "@purge-icons/generated";
 import {parseTime} from "@/utils";
-import {ApiAttribute} from "@/api/stub";
+import {ApiAttribute, ApiTypes} from "@/api/stub";
 
 export enum Types {
   INT = 'int',
@@ -16,14 +16,30 @@ export enum Types {
   ENCRYPTED = 'encrypted',
 }
 
+export class EntityAttribute implements ApiAttribute {
+  constructor(name: string) {
+    this.name = name
+    this.type = ApiTypes.STRING
+    this.string = ''
+  }
+
+  name: string;
+  type: ApiTypes;
+  int?: number;
+  string: string;
+  icon: string;
+  imageUrl: string;
+  bool?: boolean;
+  float?: number;
+  array?: ApiAttribute[];
+  encrypted?: string;
+}
+
 export interface AttributeValue {
   name: string
   type: Types
   value: any
 }
-
-//todo: move Attribute from entities
-// export interface Attribute {}
 
 export function GetAttributeValue(attr: AttributeValue): string {
   let val: string
@@ -55,7 +71,7 @@ export function GetAttributeValue(attr: AttributeValue): string {
       // if (svg) {
       //   val = svg
       // } else {
-        val = attr.value
+      val = attr.value
       // }
       break
     case Types.TIME:
@@ -99,8 +115,8 @@ export function GetApiAttributeValue(attr: ApiAttribute): any {
       // if (svg) {
       //   return svg
       // } else {
-        return attr.icon
-      // }
+      return attr.icon
+    // }
     case Types.TIME:
       return parseTime(attr.time) as string
     case Types.MAP:

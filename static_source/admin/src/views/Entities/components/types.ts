@@ -1,4 +1,4 @@
-import {ApiArea, ApiAttribute, ApiImage, ApiMetric, ApiScript, ApiTypes} from "@/api/stub";
+import {ApiArea, ApiAttribute, ApiImage, ApiMetric, ApiScript} from "@/api/stub";
 
 export interface Plugin {
   name: string;
@@ -70,18 +70,3 @@ export interface Entity {
 }
 
 
-export class EntityAttribute implements ApiAttribute {
-  constructor(name: string) {
-    this.name = name
-    this.type = ApiTypes.STRING
-    this.string = ''
-  }
-
-  name: string;
-  type: ApiTypes;
-  int?: number;
-  string: string;
-  bool?: boolean;
-  float?: number;
-  array?: ApiAttribute[];
-}

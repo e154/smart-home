@@ -3,7 +3,7 @@ import {useI18n} from '@/hooks/web/useI18n'
 import {Table} from '@/components/Table'
 import {computed, PropType, unref} from 'vue'
 import {ElButton, ElInput, ElInputNumber, ElOption, ElSelect} from 'element-plus'
-import {EntityAttribute} from "@/views/Entities/components/types";
+import {EntityAttribute} from "@/components/Attributes/types";
 import {TableColumn} from "@/types/table";
 import {propTypes} from "@/utils/propTypes";
 import {ApiAttribute} from "@/api/stub";
