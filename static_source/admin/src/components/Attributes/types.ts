@@ -61,7 +61,7 @@ export function GetAttributeValue(attr: AttributeValue): string {
       }
       break
     case Types.ARRAY:
-      val = '[ARRAY]'
+      val = JSON.stringify(attr.value)
       break
     case Types.IMAGE:
       val = attr.value
@@ -78,7 +78,7 @@ export function GetAttributeValue(attr: AttributeValue): string {
       val = parseTime(attr.value) as string
       break
     case Types.MAP:
-      val = '[MAP]'
+      val = JSON.stringify(attr.value)
       break
     case Types.POINT:
       val = attr.value

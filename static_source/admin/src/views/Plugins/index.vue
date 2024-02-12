@@ -12,7 +12,7 @@ import {EventStateChange} from "@/api/types";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 
-const {push, currentRoute} = useRouter()
+const {push} = useRouter()
 const {t} = useI18n()
 
 interface TableObject {
