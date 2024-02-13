@@ -1,6 +1,7 @@
-// import Iconify from "@purge-icons/generated";
+import Iconify from "@purge-icons/generated";
 import {parseTime} from "@/utils";
 import {ApiAttribute, ApiTypes} from "@/api/stub";
+import {GetFullUrl} from "@/utils/serverId";
 
 export enum Types {
   INT = 'int',
@@ -67,12 +68,7 @@ export function GetAttributeValue(attr: AttributeValue): string {
       val = attr.value
       break
     case Types.ICON:
-      // const svg = Iconify.renderHTML(attr.value, {})
-      // if (svg) {
-      //   val = svg
-      // } else {
       val = attr.value
-      // }
       break
     case Types.TIME:
       val = parseTime(attr.value) as string
@@ -82,6 +78,57 @@ export function GetAttributeValue(attr: AttributeValue): string {
       break
     case Types.POINT:
       val = attr.value
+      break
+    case Types.ENCRYPTED:
+      val = attr.value
+      break
+    default:
+      return `unknown type "${attr.type}"`
+  }
+  return val
+}
+
+export function RenderAttributeValue(attr: AttributeValue): string {
+  let val: string
+  switch (attr.type.toLowerCase()) {
+    case Types.INT:
+      val = attr.value
+      break
+    case Types.STRING:
+      val = attr.value
+      break
+    case Types.FLOAT:
+      val = attr.value
+      break
+    case Types.BOOL:
+      if (attr.value) {
+        val = 'ON'
+      } else {
+        val = 'OFF'
+      }
+      break
+    case Types.ARRAY:
+      val = JSON.stringify(attr.value)
+      break
+    case Types.IMAGE:
+      val = GetFullUrl(attr.value)
+      break
+    case Types.ICON:
+      const svg = Iconify.renderHTML(attr.value, {})
+      if (svg) {
+        val = svg
+      } else {
+        val = attr.value
+      }
+      break
+    case Types.TIME:
+      val = parseTime(attr.value) as string
+      break
+    case Types.MAP:
+      val = JSON.stringify(attr.value)
+      break
+    case Types.POINT:
+      val = JSON.stringify(attr.value)
       break
     case Types.ENCRYPTED:
       val = attr.value

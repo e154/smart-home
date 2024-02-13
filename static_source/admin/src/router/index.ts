@@ -171,6 +171,30 @@ export const developRouterMap: AppRouteRecordRaw[] = [
     ]
   },
   {
+    path: '/waterfall',
+    component: Develop,
+    name: 'waterfall',
+    redirect: '/waterfall/index',
+    meta: {
+      hidden: true,
+      title: t('router.waterfall')
+    },
+    children: [
+      {
+        path: 'index',
+        name: 'waterfall',
+        component: () => import('@/views/Components/Waterfall.vue'),
+        meta: {
+          title: t('router.ListScripts'),
+          // noTagsView: true,
+          hidden: true,
+          canTo: true,
+          activeMenu: '/scripts'
+        }
+      },
+    ]
+  },
+  {
     path: '/scripts',
     component: Develop,
     redirect: '/scripts/index',

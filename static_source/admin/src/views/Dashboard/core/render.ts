@@ -1,6 +1,6 @@
 import {ApplyFilter} from '@/views/Dashboard/core/filters'
 import {EventStateChange} from "@/api/types";
-import {AttributeValue, GetAttributeValue} from "@/components/Attributes";
+import {AttributeValue, GetAttributeValue, RenderAttributeValue} from "@/components/Attributes";
 
 export function Resolve(path: string, obj: any): any {
   return path.split('.').reduce(function (prev, curr) {
@@ -69,7 +69,7 @@ export function RenderText(tokens: string[], text: string, lastEvent?: EventStat
 
     if (typeof val === 'object') {
       if (val && val.hasOwnProperty('type') && val.hasOwnProperty('name')) {
-        val = GetAttributeValue(val as AttributeValue)
+        val = RenderAttributeValue(val as AttributeValue)
       }
     }
 
@@ -80,7 +80,11 @@ export function RenderText(tokens: string[], text: string, lastEvent?: EventStat
     if (val == undefined) {
       val = '[NO VALUE]'
     }
-    // console.log(token, key, val)
+    // console.log(token, val)
+
+    if (typeof val === 'object') {
+      val = JSON.stringify(val)
+    }
 
     result = result.replaceAll(`[${token}]`, val)
   }

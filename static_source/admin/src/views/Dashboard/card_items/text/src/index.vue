@@ -196,26 +196,6 @@ update()
         :key="reloadKey"
         @click.prevent.stop="callBaseAction()"></div>
 
-      <div
-        :class="[{'show': showMenu}]"
-        class="device-menu-circle"
-        v-if="item.asButton && item.buttonActions.length > 1"
-      >
-        <a
-          href="#"
-          v-for="(action, index) in item.buttonActions"
-          @click.prevent.stop="callAction(action)"
-          :key="index">
-          <img v-if="action.image" :src="GetFullImageUrl(action.image)"/>
-          <Icon
-            v-else-if="action.icon"
-            style="width: 100%; height: 100%"
-            :key="reloadKey"
-            :icon="action.icon"
-            :color="action.iconColor"
-            :size="action.iconSize"/>
-        </a>
-      </div>
     </div>
     <div v-else v-show="!item.hidden" class="w-[100%] h-[100%]">
       <div
@@ -244,139 +224,6 @@ update()
   cursor: pointer;
 }
 
-
-.device-menu {
-  position: relative;
-  transition: all 0.7s ease-in-out;
-
-  a {
-    cursor: pointer;
-    height: 40px;
-    width: 40px;
-
-    img {
-      height: 100%;
-      width: 100%;
-    }
-  }
-
-  .device-menu-circle {
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    left: 0;
-    top: 0;
-    opacity: 0;
-    z-index: -10;
-
-    a {
-      -moz-transition: all 0.1s ease-in;
-      -webkit-transition: all 0.1s ease-in;
-      display: inherit;
-      height: inherit !important;
-      position: absolute;
-      transition: all 0.1s ease-in;
-      width: inherit !important;
-
-      &:nth-of-type(1) {
-        bottom: 0;
-      }
-
-      &:nth-of-type(2) {
-        right: 0;
-        top: 0;
-      }
-
-      &:nth-of-type(3) {
-        right: 0;
-      }
-
-      &:nth-of-type(4) {
-        bottom: 0;
-        right: 0;
-      }
-
-      &:nth-of-type(5) {
-        bottom: 0;
-      }
-
-      &:nth-of-type(6) {
-        bottom: 0;
-        left: 0;
-      }
-
-      &:nth-of-type(7) {
-        left: 0;
-      }
-
-      &:nth-of-type(8) {
-        left: 0;
-        top: 0;
-      }
-    }
-  }
-
-  .device-menu-circle.show {
-    opacity: 1;
-
-    a {
-      &:nth-child(+n+8) {
-        display: none;
-      }
-
-      &:nth-of-type(1) {
-        bottom: 180%;
-      }
-
-      &:nth-of-type(2) {
-        right: -130%;
-        top: -130%;
-      }
-
-      &:nth-of-type(3) {
-        right: -180%;
-      }
-
-      &:nth-of-type(4) {
-        bottom: -130%;
-        right: -130%;
-      }
-
-      &:nth-of-type(5) {
-        bottom: -180%;
-      }
-
-      &:nth-of-type(6) {
-        bottom: -130%;
-        left: -130%;
-      }
-
-      &:nth-of-type(7) {
-        left: -180%;
-      }
-
-      &:nth-of-type(8) {
-        left: -130%;
-        top: -130%;
-      }
-
-      &:hover {
-        img {
-          transform: scale(1.1);
-        }
-      }
-    }
-  }
-
-  a.device-menu-button {
-    &:hover {
-      img {
-        transform: scale(1.1);
-      }
-    }
-  }
-}
-
 .device-menu.as-button {
   img.device {
     cursor: pointer;
@@ -385,6 +232,11 @@ update()
       transform: scale(1.1);
     }
   }
+}
+
+:deep(svg) {
+    display: inline!important;
+    vertical-align: middle;
 }
 
 .unselectable {

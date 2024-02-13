@@ -1358,16 +1358,21 @@ export class Core {
       return;
     }
 
+    let width: number = tab.columnWidth;
+    let height: number = getSize()
+
     let background = appStore.isDark ? '#232324' : '#F5F7FA'
     if (tab.cards && tab.cards.length) {
       background = tab.cards[tab.cards.length - 1].background
+      width = tab.cards[tab.cards.length - 1].width
+      height = tab.cards[tab.cards.length - 1].height
     }
 
     const card = await Card.createNew(
       'new card' + tab.cards.length,
       background,
-      tab.columnWidth,
-      getSize(),
+      width,
+      height,
       tab.id,
       10 * tab.cards.length || 0
     );
