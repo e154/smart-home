@@ -93,7 +93,7 @@ watch(
 // ---------------------------------
 // button options
 // ---------------------------------
-const showMenu = ref(true)
+const showMenu = ref(false)
 
 let timer: any;
 const mouseLive = () => {

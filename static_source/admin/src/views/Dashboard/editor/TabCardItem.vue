@@ -94,6 +94,10 @@ const copyCardItem = () => {
   activeCard.value.copyItem(activeCard.value.selectedItem);
 }
 
+const copyToClipboard = async () => {
+  cardItem.value.copyToClipboard()
+}
+
 const menuCardItemClick = (index: number) => {
   if (currentCore.value.activeTabIdx < 0 || currentCore.value.activeCard == undefined) {
     return;
@@ -196,7 +200,7 @@ const updateCurrentState = () => {
     />
   </ElForm>
 
-  <ElEmpty v-if="!activeCard.items.length || activeCard.selectedItem === -1" :rows="5" class="mt-20px mb-20px">
+  <ElEmpty v-if="!activeCard.items.length || activeCard.selectedItem === -1" :rows="5" class="mt-20px mb-20px" description="Select card item or">
     <ElButton type="primary" @click="addCardItem()">
       {{ t('dashboard.editor.addNewCardItem') }}
     </ElButton>
@@ -230,6 +234,8 @@ const updateCurrentState = () => {
     </ElButton>
 
     <ElButton @click.prevent.stop="copyCardItem">{{ $t('main.copy') }}</ElButton>
+
+    <ElButton @click.prevent.stop="copyToClipboard">{{ $t('main.copyToClipboard') }}</ElButton>
 
     <ElPopconfirm
         :confirm-button-text="$t('main.ok')"

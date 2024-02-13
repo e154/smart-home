@@ -224,6 +224,10 @@ const copy = async () => {
   copyToClipboard(JSON.stringify(dialogSource.value, null, 2))
 }
 
+const pasteCardItem = () => {
+  activeCard.value.pasteCardItem();
+}
+
 const importCard = async () => {
   let card: ApiDashboardCard
   try {
@@ -373,7 +377,7 @@ const sortCardDown = (card: Card, index: number) => {
     </ElCol>
   </ElRow>
 
-  <ElEmpty v-if="!(activeCard !== undefined)" :rows="5">
+  <ElEmpty v-if="!(activeCard !== undefined)" :rows="5" description="Select card or">
     <ElButton type="primary" @click="addCard()">
       {{ t('dashboard.addNewCard') }}
     </ElButton>
@@ -385,6 +389,7 @@ const sortCardDown = (card: Card, index: number) => {
       {{ $t('main.export') }}
     </ElButton>
     <ElButton type="primary" @click.prevent.stop="updateCard" plain>{{ $t('main.update') }}</ElButton>
+    <ElButton @click.prevent.stop="pasteCardItem">{{ $t('dashboard.pasteCardItem') }}</ElButton>
     <ElButton @click.prevent.stop="cancel" plain>{{ t('main.cancel') }}</ElButton>
     <ElPopconfirm
         :confirm-button-text="$t('main.ok')"

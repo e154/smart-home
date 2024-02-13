@@ -214,7 +214,7 @@ const onChangePropKey = (val, index, event) => {
           <ElRow class="mb-10px">
             <ElCol>
               <ElFormItem :label="$t('dashboard.editor.iconColor')" prop="iconColor">
-                <ColorPicker v-model="prop.iconColor"/>
+                <ColorPicker show-alpha v-model="prop.iconColor"/>
               </ElFormItem>
             </ElCol>
           </ElRow>

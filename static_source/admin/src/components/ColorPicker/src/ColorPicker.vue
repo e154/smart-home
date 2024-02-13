@@ -10,6 +10,7 @@ const emit = defineEmits(['change', 'update:modelValue'])
 
 const props = defineProps({
   modelValue: propTypes.string.def(''),
+  showAlpha: propTypes.bool.def(false),
 })
 
 const currentColor = ref<string>(null)
@@ -26,18 +27,18 @@ watch(
 )
 
 const defaultColors = [
-  '#000000',
-  '#232324',
-  '#F5F7FA',
-  '#ffffff',
-  '#00adef'
+  'rgba(0, 0, 0, 1)', //#000000
+  'rgba(35, 35, 36, 1)', //#232324
+  'rgba(245, 247, 250, 1)', //#F5F7FA
+  'rgba(255, 255, 255, 1)', //#FFFFFF
+  'rgba(0, 173, 239, 1)' //#00ADEF
 ]
 
-const predefineColors = computed(() => currentColor.value? [...defaultColors, ...appStore.getLastColors] : [...defaultColors])
+const predefineColors = computed(() => [...defaultColors, ...appStore.getLastColors])
 
 const updateColor = (val: string) => {
   let lastColors = appStore.getLastColors
-  if (!defaultColors.includes(val) && !lastColors.includes(val)) {
+  if (!predefineColors.value.includes(val)) {
     lastColors.push(val)
     if (lastColors.length > 5) {
       lastColors.shift()
@@ -55,6 +56,7 @@ const updateColor = (val: string) => {
       v-model="currentColor"
       v-on:change="updateColor"
       :predefine="predefineColors"
+      :show-alpha="showAlpha"
   />
 </template>
 

@@ -22,6 +22,7 @@ import {ButtonAction, Compare, CompareProp} from "./types"
 import {AttributeValue, GetAttributeValue} from "@/components/Attributes"
 import {KeysProp} from "@/views/Dashboard/components";
 import {EventStateChange} from "@/api/types";
+import {copyToClipboard, pasteFromClipboard} from "@/utils/clipboard";
 
 const {emit} = useBus()
 const appStore = useAppStore()
@@ -449,9 +450,24 @@ export class CardItem {
     return item;
   }
 
+  async copyToClipboard() {
+    const serialized = this.serialize();
+    if (!serialized.title.includes('[COPY]')) {
+      serialized.title = serialized.title + ' [COPY]';
+    }
+    // @ts-ignore
+    delete serialized.id;
+    const request = serialized as ApiNewDashboardCardItemRequest;
+    request.dashboardCardId = this.dashboardCardId;
+
+    copyToClipboard(JSON.stringify(request, null, 2))
+  }
+
   async copy(): Promise<CardItem> {
     const serialized = this.serialize();
-    serialized.title = serialized.title + ' [COPY]';
+    if (!serialized.title.includes('[COPY]')) {
+      serialized.title = serialized.title + ' [COPY]';
+    }
     // @ts-ignore
     delete serialized.id;
     const request = serialized as ApiNewDashboardCardItemRequest;
@@ -828,6 +844,30 @@ export class Card {
     this.selectedItem = this.items.length - 1;
 
     this.updateItemList()
+  }
+
+  async pasteCardItem() {
+    const request = JSON.parse(await pasteFromClipboard())
+
+    if (!request) {
+      return
+    }
+
+    request.dashboardCardId = this.id
+    // console.log(request)
+
+    try {
+      const {data} = await api.v1.dashboardCardItemServiceAddDashboardCardItem(request);
+
+      const item = new CardItem(data);
+
+      this.items.push(item);
+      this.selectedItem = this.items.length - 1;
+
+      this.updateItemList()
+    } catch (e) {
+
+    }
   }
 
   sortItems() {

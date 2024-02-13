@@ -15,3 +15,12 @@ export const copyToClipboard = async (sourceScript: string) => {
     }
   }
 }
+
+export const pasteFromClipboard = async () => {
+  try {
+    const text  = await navigator.clipboard.readText()
+    return text
+  } catch (e) {
+    ElMessage.error(t('setting.copyFailed'))
+  }
+}
