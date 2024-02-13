@@ -30,6 +30,7 @@ const defaultColors = [
   '#232324',
   '#F5F7FA',
   '#ffffff',
+  '#00adef'
 ]
 
 const predefineColors = computed(() => currentColor.value? [...defaultColors, ...appStore.getLastColors] : [...defaultColors])

@@ -7,7 +7,6 @@ import {
   ElCol,
   ElCollapse,
   ElCollapseItem,
-  ElColorPicker,
   ElDivider,
   ElForm,
   ElFormItem,
@@ -23,6 +22,7 @@ import ShowOn from "./show-on.vue";
 import {useI18n} from "@/hooks/web/useI18n";
 import {ImageSearch} from "@/components/ImageSearch";
 import {EntitiesAction, EntitiesActionOptions} from "@/components/EntitiesAction";
+import {ColorPicker} from "@/components/ColorPicker";
 
 const {t} = useI18n()
 
@@ -231,7 +231,7 @@ const removeAction = (index: number) => {
                 <ElRow>
                   <ElCol>
                     <ElFormItem :label="$t('dashboard.editor.iconColor')" prop="iconColor">
-                      <ElColorPicker show-alpha v-model="prop.iconColor"/>
+                      <ColorPicker show-alpha v-model="prop.iconColor"/>
                     </ElFormItem>
                   </ElCol>
                 </ElRow>

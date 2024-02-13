@@ -162,7 +162,6 @@ const onChangePropKey = (val, index, event) => {
             </ElCol>
           </ElRow>
 
-          {{prop.key}}
           <ElRow>
             <ElCol>
               <ElFormItem :label="$t('dashboard.editor.comparison')" prop="comparison">
