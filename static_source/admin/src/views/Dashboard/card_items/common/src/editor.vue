@@ -11,7 +11,6 @@ import {
   ElForm,
   ElFormItem,
   ElInput,
-  ElInputNumber,
   ElPopconfirm,
   ElRow,
   ElSwitch
@@ -96,7 +95,6 @@ const addAction = () => {
     image: null,
     tags: [],
     areaId: undefined,
-    iconSize: 30,
     icon: 'icomoon-free:switch'
   });
 }
@@ -165,8 +163,7 @@ const removeAction = (index: number) => {
 
   <!-- button options -->
   <div
-      v-if="!['button', 'chart', 'chart_custom', 'chartCustom', 'map', 'slider', 'entityStorage',
-      'streamPlayer', 'tiles', 'grid', 'progress', 'colorPicker', 'joystick', 'logs'].includes(item.type)">
+    v-if="['icon', 'image'].includes(item.type)">
     <ElDivider content-position="left">{{ $t('dashboard.editor.buttonOptions') }}</ElDivider>
     <ElRow :gutter="24">
       <ElCol :span="12" :xs="12">
@@ -176,10 +173,10 @@ const removeAction = (index: number) => {
       </ElCol>
       <ElCol :span="12" :xs="12" v-if="currentItem.asButton">
         <ElFormItem label="&nbsp;" prop="addAction">
-        <ElButton class="w-[100%]" @click.prevent.stop="addAction()">
-          <Icon icon="ep:plus" class="mr-5px"/>
-          {{ $t('dashboard.editor.addAction') }}
-        </ElButton>
+          <ElButton class="w-[100%]" @click.prevent.stop="addAction()">
+            <Icon icon="ep:plus" class="mr-5px"/>
+            {{ $t('dashboard.editor.addAction') }}
+          </ElButton>
         </ElFormItem>
 
       </ElCol>
@@ -190,9 +187,9 @@ const removeAction = (index: number) => {
         <!-- props -->
         <ElCollapse>
           <ElCollapseItem
-              v-for="(prop, index) in item.buttonActions"
-              :name="index"
-              :key="index"
+            v-for="(prop, index) in item.buttonActions"
+            :name="index"
+            :key="index"
           >
 
             <template #title>
@@ -202,12 +199,16 @@ const removeAction = (index: number) => {
             <ElCard shadow="never" class="item-card-editor">
 
               <ElForm
-                  label-position="top"
-                  :model="prop"
-                  style="width: 100%"
-                  ref="cardItemForm">
+                label-position="top"
+                :model="prop"
+                style="width: 100%"
+                ref="cardItemForm">
 
-<!--                <ElDivider content-position="left">{{ $t('dashboard.editor.actionOptions') }}</ElDivider>-->
+                <ElRow class="mb-10px mt-10px">
+                  <ElCol>
+                    <ElDivider content-position="left">{{ $t('dashboard.editor.actionOptions') }}</ElDivider>
+                  </ElCol>
+                </ElRow>
 
                 <EntitiesAction :options="prop" :entity="currentItem.entity"
                                 @change="changedForActionButton($event, index)"/>
@@ -236,24 +237,16 @@ const removeAction = (index: number) => {
                   </ElCol>
                 </ElRow>
 
-                <ElRow class="mb-10px">
-                  <ElCol>
-                    <ElFormItem :label="$t('dashboard.editor.iconSize')" prop="iconSize">
-                      <ElInputNumber v-model="prop.iconSize" :min="1" :value-on-clear="12"/>
-                    </ElFormItem>
-                  </ElCol>
-                </ElRow>
-
                 <ElRow>
                   <ElCol>
                     <div style="text-align: right;">
                       <ElPopconfirm
-                          :confirm-button-text="$t('main.ok')"
-                          :cancel-button-text="$t('main.no')"
-                          width="250"
-                          style="margin-left: 10px;"
-                          :title="$t('main.are_you_sure_to_do_want_this?')"
-                          @confirm="removeAction(index)"
+                        :confirm-button-text="$t('main.ok')"
+                        :cancel-button-text="$t('main.no')"
+                        width="250"
+                        style="margin-left: 10px;"
+                        :title="$t('main.are_you_sure_to_do_want_this?')"
+                        @confirm="removeAction(index)"
                       >
                         <template #reference>
                           <ElButton type="danger" plain>

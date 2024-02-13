@@ -131,7 +131,6 @@ export class CardItem {
         this.payload.icon = {
           value: '',
           iconColor: '#000000',
-          iconSize: 12
         };
       }
       if (this.payload.image.attrField == undefined) {
@@ -417,7 +416,6 @@ export class CardItem {
         image: action.image,
         icon: action.icon,
         iconColor: action.iconColor,
-        iconSize: action.iconSize,
         tags: action.tags,
         areaId: action.areaId,
       });
