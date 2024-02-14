@@ -20,6 +20,7 @@ package adaptors
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
@@ -32,6 +33,7 @@ type IDashboardTab interface {
 	Update(ctx context.Context, ver *m.DashboardTab) (err error)
 	Delete(ctx context.Context, id int64) (err error)
 	List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.DashboardTab, total int64, err error)
+	Import(ctx context.Context, ver *m.DashboardTab) (tabId int64, err error)
 	fromDb(dbVer *db.DashboardTab) (ver *m.DashboardTab)
 	toDb(ver *m.DashboardTab) (dbVer *db.DashboardTab)
 }
@@ -103,6 +105,63 @@ func (n *DashboardTab) List(ctx context.Context, limit, offset int64, orderBy, s
 	for _, dbVer := range dbList {
 		ver := n.fromDb(dbVer)
 		list = append(list, ver)
+	}
+
+	return
+}
+
+// Import ...
+func (n *DashboardTab) Import(ctx context.Context, tab *m.DashboardTab) (tabId int64, err error) {
+
+	transaction := true
+	tx := n.db.Begin()
+	if err = tx.Error; err != nil {
+		tx = n.db
+		transaction = false
+	}
+	defer func() {
+		if err != nil && transaction {
+			tx.Rollback()
+			return
+		}
+		if transaction {
+			err = tx.Commit().Error
+		}
+	}()
+
+	tabAdaptor := GetDashboardTabAdaptor(tx)
+	cardAdaptor := GetDashboardCardAdaptor(tx)
+	cardItemAdaptor := GetDashboardCardItemAdaptor(tx)
+
+	fmt.Println("-----")
+
+	if tabId, err = tabAdaptor.Add(ctx, tab); err != nil {
+		fmt.Println("-----2", err.Error())
+		return
+	}
+	fmt.Println("-----3")
+
+	// cards
+	if len(tab.Cards) > 0 {
+		for _, card := range tab.Cards {
+			card.Id = 0
+			card.DashboardTabId = tabId
+			var cardId int64
+			if cardId, err = cardAdaptor.Add(ctx, card); err != nil {
+				return
+			}
+
+			// items
+			if len(card.Items) > 0 {
+				for _, item := range card.Items {
+					item.Id = 0
+					item.DashboardCardId = cardId
+					if _, err = cardItemAdaptor.Add(ctx, item); err != nil {
+						return
+					}
+				}
+			}
+		}
 	}
 
 	return

@@ -130,7 +130,7 @@ const changedForActionButton = async (options: EntitiesActionOptions) => {
 
     <ElRow :gutter="24">
       <ElCol :span="12" :xs="12">
-        <ElFormItem :label="$t('dashboard.editor.value')" prop="value">
+        <ElFormItem :label="$t('dashboard.editor.attrField')" prop="value">
           <KeysSearch v-model="currentItem.payload.slider.attribute" :obj="currentItem.lastEvent"
                       @change="onChangeValue"/>
         </ElFormItem>

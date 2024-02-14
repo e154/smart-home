@@ -6,11 +6,14 @@ import {useI18n} from '@/hooks/web/useI18n'
 import {useForm} from '@/hooks/web/useForm'
 import {useValidator} from '@/hooks/web/useValidator'
 import {FormSchema} from '@/types/form'
-import {ApiDashboardCard, ApiEntity} from "@/api/stub";
+import {ApiDashboardCard, ApiDashboardTab, ApiEntity} from "@/api/stub";
 import {Core, Tab} from "@/views/Dashboard/core/core";
 import {DraggableContainer} from "@/components/DraggableContainer";
 import {useBus} from "@/views/Dashboard/core/bus";
 import {CloseBold} from "@element-plus/icons-vue";
+import {JsonViewer} from "@/components/JsonViewer";
+import {JsonEditor} from "@/components/JsonEditor";
+import {Dialog} from "@/components/Dialog";
 
 const {register, elFormRef, methods} = useForm()
 const {required} = useValidator()
@@ -234,13 +237,70 @@ const showMenuWindow = ref(false)
 useBus({
   name: 'toggleMenu',
   callback: (menu: string) => {
-    console.log('tabs', menu)
     if (menu !== 'tabs') {
       return
     }
+    console.log("cards", menu)
     showMenuWindow.value = !showMenuWindow.value
   }
 })
+
+// ---------------------------------
+// import/export
+// ---------------------------------
+
+const dialogSource = ref({})
+const importDialogVisible = ref(false)
+const exportDialogVisible = ref(false)
+const importedTab = ref(null)
+
+const prepareForExport = () => {
+  if (currentCore.value.activeTabIdx == undefined) {
+    return;
+  }
+  dialogSource.value = activeTab.value.serialize()
+}
+
+const showExportDialog = () => {
+  prepareForExport()
+  exportDialogVisible.value = true
+}
+
+const importHandler = (val: any) => {
+  if (importedTab.value == val) {
+    return
+  }
+  importedTab.value = val
+}
+
+const importTab = async () => {
+  let card: ApiDashboardTab
+  try {
+    if (importedTab.value?.json) {
+      card = importedTab.value.json as ApiDashboardTab;
+    } else if (importedTab.value.text) {
+      card = JSON.parse(importedTab.value.text) as ApiDashboardTab;
+    }
+  } catch {
+    ElMessage({
+      title: t('Error'),
+      message: t('message.corruptedJsonFormat'),
+      type: 'error',
+      duration: 2000
+    });
+    return
+  }
+  const res = await currentCore.value.importTab(card);
+  if (res) {
+    ElMessage({
+      title: t('Success'),
+      message: t('message.importedSuccessful'),
+      type: 'success',
+      duration: 2000
+    })
+  }
+  importDialogVisible.value = false
+}
 
 </script>
 
@@ -272,9 +332,11 @@ useBus({
   </ElRow>
 
   <div class="text-right" v-if="currentCore.tabs.length">
-
+    <ElButton type="primary" @click.prevent.stop='showExportDialog()' plain>
+      <Icon icon="uil:file-export" class="mr-5px"/>
+      {{ $t('main.export') }}
+    </ElButton>
     <ElButton type="primary" @click.prevent.stop="updateTab" plain>{{ $t('main.update') }}</ElButton>
-
     <ElButton @click.prevent.stop="cancel" plain>{{ t('main.cancel') }}</ElButton>
     <ElPopconfirm
         :confirm-button-text="$t('main.ok')"
@@ -292,6 +354,27 @@ useBus({
       </template>
     </ElPopconfirm>
   </div>
+
+  <!-- export dialog -->
+  <Dialog v-model="exportDialogVisible" :title="t('entities.dialogExportTitle')" :maxHeight="400" width="80%">
+    <JsonViewer v-model="dialogSource"/>
+    <!--    <template #footer>-->
+    <!--      <ElButton @click="copy()">{{ t('setting.copy') }}</ElButton>-->
+    <!--      <ElButton @click="exportDialogVisible = false">{{ t('main.closeDialog') }}</ElButton>-->
+    <!--    </template>-->
+  </Dialog>
+  <!-- /export dialog -->
+
+  <!-- import dialog -->
+  <Dialog v-model="importDialogVisible" :title="t('entities.dialogImportTitle')" :maxHeight="400" width="80%"
+          custom-class>
+    <JsonEditor @change="importHandler"/>
+    <template #footer>
+      <ElButton type="primary" @click="importTab()" plain>{{ t('main.import') }}</ElButton>
+      <ElButton @click="importDialogVisible = false">{{ t('main.closeDialog') }}</ElButton>
+    </template>
+  </Dialog>
+  <!-- /import dialog -->
 
   <DraggableContainer :name="'editor-tabs'" :initial-width="280" :min-width="280" v-show="showMenuWindow">
     <template #header>
@@ -316,6 +399,14 @@ useBus({
         <ElCol>
           <ElButton class="w-[100%]" @click="createTab()">
             {{ t('dashboard.addNewTab') }}
+          </ElButton>
+        </ElCol>
+      </ElRow>
+
+      <ElRow class="mb-10px mt-10px">
+        <ElCol>
+          <ElButton class="w-[100%]" @click="importDialogVisible = true">
+            {{ t('main.import') }}
           </ElButton>
         </ElCol>
       </ElRow>

@@ -23,6 +23,7 @@ import {AttributeValue, GetAttributeValue} from "@/components/Attributes"
 import {KeysProp} from "@/views/Dashboard/components";
 import {EventStateChange} from "@/api/types";
 import {copyToClipboard, pasteFromClipboard} from "@/utils/clipboard";
+import {generateName} from "@/utils/name";
 
 const {emit} = useBus()
 const appStore = useAppStore()
@@ -450,9 +451,6 @@ export class CardItem {
 
   async copyToClipboard() {
     const serialized = this.serialize();
-    if (!serialized.title.includes('[COPY]')) {
-      serialized.title = serialized.title + ' [COPY]';
-    }
     // @ts-ignore
     delete serialized.id;
     const request = serialized as ApiNewDashboardCardItemRequest;
@@ -463,9 +461,7 @@ export class CardItem {
 
   async copy(): Promise<CardItem> {
     const serialized = this.serialize();
-    if (!serialized.title.includes('[COPY]')) {
-      serialized.title = serialized.title + ' [COPY]';
-    }
+    serialized.title = generateName()
     // @ts-ignore
     delete serialized.id;
     const request = serialized as ApiNewDashboardCardItemRequest;
@@ -846,6 +842,10 @@ export class Card {
 
   async pasteCardItem() {
     const request = JSON.parse(await pasteFromClipboard())
+    this.importCardItem(request)
+  }
+
+  async importCardItem(request) {
 
     if (!request) {
       return
@@ -1268,6 +1268,32 @@ export class Core {
     return await api.v1.dashboardServiceDeleteDashboard(this.current.id);
   }
 
+  async importTab(tab: ApiDashboardTab) {
+    if (!tab) {
+      return;
+    }
+
+    tab.dashboardId = this.current.id;
+    tab.id = undefined
+    if (this.tabs && this.tabs.length) {
+      tab.weight = this.tabs[this.tabs.length - 1].weight + 1
+    }
+    for (const index in this.tabs) {
+      if (this.tabs[index].name == tab.name) {
+        tab.name = generateName()
+      }
+    }
+
+    const {data} = await api.v1.dashboardTabServiceImportDashboardTab(tab);
+    if (data) {
+      const tab = new Tab(data);
+      this.tabs.push(tab);
+      this._activeTabIdx = (this.tabs.length - 1);
+      this.currentCardId = undefined;
+      this.activeCard = -1
+    }
+  }
+
   // ---------------------------------
   onStateChanged(event: EventStateChange) {
     // console.log('onStateChanged', event.entity_id);
@@ -1283,7 +1309,7 @@ export class Core {
   }
 
   async createTab() {
-    const tab = await Tab.createNew(this.current.id, 'NEW_TAB' + (this.tabs.length + 1), 300, this.tabs.length);
+    const tab = await Tab.createNew(this.current.id, generateName(), 300, this.tabs.length);
     this.tabs.push(tab);
     this._activeTabIdx = (this.tabs.length - 1);
     this.currentCardId = undefined;
@@ -1369,7 +1395,7 @@ export class Core {
     }
 
     const card = await Card.createNew(
-      'new card' + tab.cards.length,
+      generateName(),
       background,
       width,
       height,

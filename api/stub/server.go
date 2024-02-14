@@ -151,6 +151,9 @@ type ServerInterface interface {
 	// get dashboard_tab list
 	// (GET /v1/dashboard_tabs)
 	DashboardTabServiceGetDashboardTabList(ctx echo.Context, params DashboardTabServiceGetDashboardTabListParams) error
+	// import dashboard_tab
+	// (POST /v1/dashboard_tabs/import)
+	DashboardTabServiceImportDashboardTab(ctx echo.Context, params DashboardTabServiceImportDashboardTabParams) error
 	// get dashboard list
 	// (GET /v1/dashboards)
 	DashboardServiceGetDashboardList(ctx echo.Context, params DashboardServiceGetDashboardListParams) error
@@ -1784,6 +1787,37 @@ func (w *ServerInterfaceWrapper) DashboardTabServiceGetDashboardTabList(ctx echo
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.DashboardTabServiceGetDashboardTabList(ctx, params)
+	return err
+}
+
+// DashboardTabServiceImportDashboardTab converts echo context to params.
+func (w *ServerInterfaceWrapper) DashboardTabServiceImportDashboardTab(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(ApiKeyAuthScopes, []string{})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params DashboardTabServiceImportDashboardTabParams
+
+	headers := ctx.Request().Header
+	// ------------- Optional header parameter "Accept" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
+		var Accept AcceptJSON
+		n := len(valueList)
+		if n != 1 {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for Accept, got %d", n))
+		}
+
+		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter Accept: %s", err))
+		}
+
+		params.Accept = &Accept
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.DashboardTabServiceImportDashboardTab(ctx, params)
 	return err
 }
 
@@ -4898,6 +4932,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/v1/dashboard_tab/:id", wrapper.DashboardTabServiceGetDashboardTabById)
 	router.PUT(baseURL+"/v1/dashboard_tab/:id", wrapper.DashboardTabServiceUpdateDashboardTab)
 	router.GET(baseURL+"/v1/dashboard_tabs", wrapper.DashboardTabServiceGetDashboardTabList)
+	router.POST(baseURL+"/v1/dashboard_tabs/import", wrapper.DashboardTabServiceImportDashboardTab)
 	router.GET(baseURL+"/v1/dashboards", wrapper.DashboardServiceGetDashboardList)
 	router.POST(baseURL+"/v1/dashboards/import", wrapper.DashboardServiceImportDashboard)
 	router.GET(baseURL+"/v1/dashboards/search", wrapper.DashboardServiceSearchDashboard)

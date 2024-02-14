@@ -145,7 +145,7 @@ const toggleMenu = (menu: string): void => {
           <div style="float: left">Main menu</div>
           <div style="float: right; text-align: right">
             <a href="#"  @click.prevent.stop='toggleMenu("tabs")'>
-              <Icon icon="vaadin:tabs" class="mr-5px"/>
+              <Icon icon="vaadin:tabs" class="mr-5px" @click.prevent.stop='toggleMenu("tabs")'/>
             </a>
             <a href="#" class="mr-5px" @click.prevent.stop='toggleMenu("cards")'>
               <Icon icon="material-symbols:cards-outline"/>

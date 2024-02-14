@@ -183,7 +183,7 @@ const lastEvent = (index: number): EventStateChange | undefined => {
 
                 <ElRow>
                   <ElCol>
-                    <ElFormItem :label="$t('dashboard.editor.value')" prop="value">
+                    <ElFormItem :label="$t('dashboard.editor.attrField')" prop="value">
                       <KeysSearch v-model="prop.attribute" :obj="lastEvent(index)"
                                   @change="onChangePropValue($event, index)"/>
                     </ElFormItem>

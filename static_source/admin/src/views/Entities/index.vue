@@ -434,7 +434,7 @@ if (wsCache.get(cachePref + 'Tags')) {
       {{ t('entities.addNew') }}
     </ElButton>
     <ElButton class="flex mb-20px items-left" type="primary" @click="showImportDialog()" plain>
-      {{ t('entities.import') }}
+      {{ t('main.import') }}
     </ElButton>
     <ElCollapse class="mb-20px">
       <ElCollapseItem :title="$t('main.filter') + filterList()">

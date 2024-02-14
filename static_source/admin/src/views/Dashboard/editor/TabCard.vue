@@ -219,9 +219,9 @@ const importHandler = (val: any) => {
   importedCard.value = val
 }
 
-const pasteCardItem = () => {
-  activeCard.value.pasteCardItem();
-}
+// const pasteCardItem = () => {
+//   activeCard.value.pasteCardItem();
+// }
 
 const importCard = async () => {
   let card: ApiDashboardCard
@@ -338,10 +338,10 @@ const showMenuWindow = ref(false)
 useBus({
   name: 'toggleMenu',
   callback: (menu: string) => {
-    console.log('cards', menu)
     if (menu !== 'cards') {
       return
     }
+    console.log("cards", menu)
     showMenuWindow.value = !showMenuWindow.value
   }
 })
@@ -394,7 +394,7 @@ useBus({
       {{ $t('main.export') }}
     </ElButton>
     <ElButton type="primary" @click.prevent.stop="updateCard" plain>{{ $t('main.update') }}</ElButton>
-    <ElButton @click.prevent.stop="pasteCardItem">{{ $t('dashboard.pasteCardItem') }}</ElButton>
+<!--    <ElButton @click.prevent.stop="pasteCardItem">{{ $t('dashboard.pasteCardItem') }}</ElButton>-->
     <ElButton @click.prevent.stop="cancel" plain>{{ t('main.cancel') }}</ElButton>
     <ElPopconfirm
       :confirm-button-text="$t('main.ok')"
@@ -466,7 +466,7 @@ useBus({
       <ElRow class="mb-10px mt-10px">
         <ElCol>
           <ElButton class="w-[100%]" @click="showImportDialog()">
-            {{ t('dashboard.importCard') }}
+            {{ t('main.import') }}
           </ElButton>
         </ElCol>
       </ElRow>

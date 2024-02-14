@@ -62,7 +62,7 @@ const onChangeValue = (val) => {
 
     <ElRow :gutter="24" v-if="currentItem.payload.video.playerType === playerType.youtube">
       <ElCol :span="12" :xs="12">
-        <ElFormItem :label="$t('dashboard.editor.value')" prop="value">
+        <ElFormItem :label="$t('dashboard.editor.attrField')" prop="value">
           <KeysSearch v-model="currentItem.payload.video.attribute" :obj="currentItem.lastEvent"
                       @change="onChangeValue"/>
         </ElFormItem>

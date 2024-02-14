@@ -1709,6 +1709,11 @@ type DashboardTabServiceGetDashboardTabListParams struct {
 	Limit *ListLimit `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
+// DashboardTabServiceImportDashboardTabParams defines parameters for DashboardTabServiceImportDashboardTab.
+type DashboardTabServiceImportDashboardTabParams struct {
+	Accept *AcceptJSON `json:"Accept,omitempty"`
+}
+
 // DashboardServiceGetDashboardListParams defines parameters for DashboardServiceGetDashboardList.
 type DashboardServiceGetDashboardListParams struct {
 	// Sort Field on which to sort and its direction
@@ -2382,6 +2387,9 @@ type DashboardTabServiceAddDashboardTabJSONRequestBody = ApiNewDashboardTabReque
 
 // DashboardTabServiceUpdateDashboardTabJSONRequestBody defines body for DashboardTabServiceUpdateDashboardTab for application/json ContentType.
 type DashboardTabServiceUpdateDashboardTabJSONRequestBody DashboardTabServiceUpdateDashboardTabJSONBody
+
+// DashboardTabServiceImportDashboardTabJSONRequestBody defines body for DashboardTabServiceImportDashboardTab for application/json ContentType.
+type DashboardTabServiceImportDashboardTabJSONRequestBody = ApiDashboardTab
 
 // DashboardServiceImportDashboardJSONRequestBody defines body for DashboardServiceImportDashboard for application/json ContentType.
 type DashboardServiceImportDashboardJSONRequestBody = ApiDashboard

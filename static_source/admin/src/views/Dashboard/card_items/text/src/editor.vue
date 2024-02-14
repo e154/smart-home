@@ -177,7 +177,7 @@ const onChangePropValue = (val, index) => {
 
               <ElRow>
                 <ElCol>
-                  <ElFormItem :label="$t('dashboard.editor.text')" prop="text">
+                  <ElFormItem :label="$t('dashboard.editor.attrField')" prop="text">
                     <KeysSearch v-model="prop.key" :obj="currentItem.lastEvent"
                                 @change="onChangePropValue($event, index)"/>
                   </ElFormItem>

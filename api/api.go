@@ -208,6 +208,7 @@ func (a *Api) registerHandlers() {
 	v1.DELETE("/dashboard_tab/:id", a.echoFilter.Auth(wrapper.DashboardTabServiceDeleteDashboardTab))
 	v1.GET("/dashboard_tab/:id", a.echoFilter.Auth(wrapper.DashboardTabServiceGetDashboardTabById))
 	v1.PUT("/dashboard_tab/:id", a.echoFilter.Auth(wrapper.DashboardTabServiceUpdateDashboardTab))
+	v1.POST("/dashboard_tabs/import", a.echoFilter.Auth(wrapper.DashboardTabServiceImportDashboardTab))
 	v1.GET("/dashboard_tabs", a.echoFilter.Auth(wrapper.DashboardTabServiceGetDashboardTabList))
 	v1.GET("/dashboards", a.echoFilter.Auth(wrapper.DashboardServiceGetDashboardList))
 	v1.POST("/dashboards/import", a.echoFilter.Auth(wrapper.DashboardServiceImportDashboard))

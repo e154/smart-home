@@ -3245,6 +3245,36 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * No description
      *
+     * @tags DashboardTabService
+     * @name DashboardTabServiceImportDashboardTab
+     * @summary import dashboard_tab
+     * @request POST:/v1/dashboard_tabs/import
+     * @secure
+     */
+    dashboardTabServiceImportDashboardTab: (data: ApiDashboardTab, params: RequestParams = {}) =>
+      this.request<
+        ApiDashboardTab,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
+        path: `/v1/dashboard_tabs/import`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
      * @tags DashboardService
      * @name DashboardServiceGetDashboardList
      * @summary get dashboard list

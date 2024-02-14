@@ -131,7 +131,7 @@ const onChangeValue = (val) => {
 
             <ElRow>
               <ElCol>
-                <ElFormItem :label="$t('dashboard.editor.text')" prop="text">
+                <ElFormItem :label="$t('dashboard.editor.attrField')" prop="text">
                   <KeysSearch v-model="prop.key" :obj="currentItem.lastEvent"
                               @change="onChangePropValue($event, index)"/>
                 </ElFormItem>
@@ -256,7 +256,7 @@ const onChangeValue = (val) => {
 
     <ElRow>
       <ElCol>
-        <ElFormItem :label="$t('dashboard.editor.value')" prop="value">
+        <ElFormItem :label="$t('dashboard.editor.attrField')" prop="value">
           <KeysSearch v-model="currentItem.payload.progress.value" :obj="currentItem.lastEvent"
                       @change="onChangeValue"/>
         </ElFormItem>

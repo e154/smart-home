@@ -347,7 +347,7 @@ const onChangePropValue = (val: string, prop: any, index: number): void => {
 
                           <ElRow>
                             <ElCol>
-                              <ElFormItem :label="$t('dashboard.editor.chart.itemValue')" prop="text">
+                              <ElFormItem :label="$t('dashboard.editor.attrField')" prop="text">
                                 <!--                                <ElInput class="w-[100%]" placeholder="Please input" v-model="attr.value"/>-->
                                 <KeysSearch v-model="attr.value" :obj="currentItem.lastEvent"
                                             @change="onChangePropValue($event, prop, index)"/>

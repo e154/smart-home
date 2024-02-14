@@ -1373,6 +1373,35 @@ paths:
           $ref: '#/components/responses/HTTP-401'
       security:
         - ApiKeyAuth: [ ]
+  /v1/dashboard_tabs/import:
+    post:
+      tags:
+        - DashboardTabService
+      summary: import dashboard_tab
+      operationId: DashboardTabService_ImportDashboardTab
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/apiDashboardTab'
+        required: true
+      responses:
+        200:
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiDashboardTab'
+        '400':
+          $ref: '#/components/responses/HTTP-400'
+        '401':
+          $ref: '#/components/responses/HTTP-401'
+        '409':
+          $ref: '#/components/responses/HTTP-409'
+      security:
+        - ApiKeyAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/Accept-JSON'
   /v1/dashboards:
     get:
       tags:

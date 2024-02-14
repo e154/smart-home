@@ -28,6 +28,9 @@ import {
   ElSelect,
   ElTag
 } from 'element-plus'
+import {JsonEditor} from "@/components/JsonEditor";
+import {Dialog} from "@/components/Dialog";
+import {ApiDashboardCardItem} from "@/api/stub";
 
 const {t} = useI18n()
 
@@ -92,7 +95,7 @@ const removeCardItem = (index: number) => {
   currentCore.value.removeCardItem(index);
 }
 
-const copyCardItem = () => {
+const duplicate = () => {
   activeCard.value.copyItem(activeCard.value.selectedItem);
 }
 
@@ -124,9 +127,9 @@ const getCardEditorName = (name: string) => {
   return CardEditorName(name);
 }
 
-const cancel = () => {
-  console.warn('action not implemented')
-}
+// const cancel = () => {
+//   console.warn('action not implemented')
+// }
 
 const updateCardItem = async () => {
   const {data} = await currentCore.value.updateCard();
@@ -151,13 +154,71 @@ const showMenuWindow = ref(false)
 useBus({
   name: 'toggleMenu',
   callback: (menu: string) => {
-    console.log('cardItems', menu)
     if (menu !== 'cardItems') {
       return
     }
+    console.log("cards", menu)
     showMenuWindow.value = !showMenuWindow.value
   }
 })
+
+// ---------------------------------
+// import/export
+// ---------------------------------
+
+const dialogSource = ref({})
+const importDialogVisible = ref(false)
+const exportDialogVisible = ref(false)
+const importedCardItem = ref(null)
+
+const prepareForExport = () => {
+  if (currentCore.value.activeCard == undefined) {
+    return;
+  }
+  dialogSource.value = cardItem.value.serialize()
+}
+
+const showExportDialog = () => {
+  prepareForExport()
+  exportDialogVisible.value = true
+}
+
+const importHandler = (val: any) => {
+  if (importedCardItem.value == val) {
+    return
+  }
+  importedCardItem.value = val
+}
+
+const importCardItem = async () => {
+  let cardItem: ApiDashboardCardItem
+  try {
+    if (importedCardItem.value?.json) {
+      cardItem = importedCardItem.value.json as ApiDashboardCardItem;
+    } else if (importedCardItem.value.text) {
+      cardItem = JSON.parse(importedCardItem.value.text) as ApiDashboardCardItem;
+    }
+  } catch {
+    ElMessage({
+      title: t('Error'),
+      message: t('message.corruptedJsonFormat'),
+      type: 'error',
+      duration: 2000
+    });
+    return
+  }
+  const res = await activeCard.value.importCardItem(cardItem);
+  if (res) {
+    ElMessage({
+      title: t('Success'),
+      message: t('message.importedSuccessful'),
+      type: 'success',
+      duration: 2000
+    })
+  }
+  importDialogVisible.value = false
+}
+
 
 </script>
 
@@ -243,26 +304,30 @@ useBus({
 
   <div v-if="activeCard.selectedItem > -1" class="text-right">
 
+    <ElButton type="primary" @click.prevent.stop='showExportDialog()' plain>
+      <Icon icon="uil:file-export" class="mr-5px"/>
+      {{ $t('main.export') }}
+    </ElButton>
     <ElButton type="primary" @click.prevent.stop="updateCardItem" plain>{{
         $t('main.update')
       }}
     </ElButton>
 
-    <ElButton @click.prevent.stop="copyCardItem">{{ $t('main.copy') }}</ElButton>
+    <ElButton @click.prevent.stop="duplicate">{{ $t('main.duplicate') }}</ElButton>
 
-    <ElButton @click.prevent.stop="copyToClipboard">{{ $t('main.copyToClipboard') }}</ElButton>
+<!--    <ElButton @click.prevent.stop="copyToClipboard">{{ $t('main.copyToClipboard') }}</ElButton>-->
 
-    <ElPopconfirm
-      :confirm-button-text="$t('main.ok')"
-      :cancel-button-text="$t('main.no')"
-      width="250"
-      :title="$t('main.are_you_sure_to_do_want_this?')"
-      @confirm="cancel"
-    >
-      <template #reference>
-        <ElButton plain>{{ t('main.cancel') }}</ElButton>
-      </template>
-    </ElPopconfirm>
+<!--    <ElPopconfirm-->
+<!--      :confirm-button-text="$t('main.ok')"-->
+<!--      :cancel-button-text="$t('main.no')"-->
+<!--      width="250"-->
+<!--      :title="$t('main.are_you_sure_to_do_want_this?')"-->
+<!--      @confirm="cancel"-->
+<!--    >-->
+<!--      <template #reference>-->
+<!--        <ElButton plain>{{ t('main.cancel') }}</ElButton>-->
+<!--      </template>-->
+<!--    </ElPopconfirm>-->
 
     <ElPopconfirm
       :confirm-button-text="$t('main.ok')"
@@ -280,6 +345,24 @@ useBus({
       </template>
     </ElPopconfirm>
   </div>
+
+  <!-- export dialog -->
+  <Dialog v-model="exportDialogVisible" :title="t('entities.dialogExportTitle')" :maxHeight="400" width="80%">
+    <JsonViewer v-model="dialogSource"/>
+  </Dialog>
+  <!-- /export dialog -->
+
+  <!-- import dialog -->
+  <Dialog v-model="importDialogVisible" :title="t('entities.dialogImportTitle')" :maxHeight="400" width="80%"
+          custom-class>
+    <JsonEditor @change="importHandler"/>
+    <template #footer>
+      <ElButton type="primary" @click="importCardItem()" plain>{{ t('main.import') }}</ElButton>
+      <ElButton @click="importDialogVisible = false">{{ t('main.closeDialog') }}</ElButton>
+    </template>
+  </Dialog>
+  <!-- /import dialog -->
+
 
   <DraggableContainer :name="'editor-card-items'" :initial-width="280" :min-width="280" v-show="showMenuWindow">
     <template #header>
@@ -306,6 +389,14 @@ useBus({
         <ElCol>
           <ElButton class="w-[100%]" @click="addCardItem()">
             {{ t('dashboard.editor.addNewCardItem') }}
+          </ElButton>
+        </ElCol>
+      </ElRow>
+
+      <ElRow class="mb-10px mt-10px">
+        <ElCol>
+          <ElButton class="w-[100%]" @click="importDialogVisible = true">
+            {{ t('main.import') }}
           </ElButton>
         </ElCol>
       </ElRow>
