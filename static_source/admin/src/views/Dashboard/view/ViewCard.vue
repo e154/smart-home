@@ -5,8 +5,9 @@ import {useBus} from "@/views/Dashboard/core/bus";
 import {CardItemName} from "@/views/Dashboard/card_items";
 import {UUID} from "uuid-generator-ts";
 import {KeystrokeCaptureViewer} from "@/views/Dashboard/components";
+import {useAppStore} from "@/store/modules/app";
 
-const {bus} = useBus()
+const appStore = useAppStore()
 
 const currentID = ref('')
 onMounted(() => {
@@ -49,7 +50,7 @@ const getCardItemName = (item: CardItem): string => {
       v-bind:class="'class-'+card.currentID"
       :style="{
         'transform': `scale(${zoom})`,
-        'background-color': card.background || 'inherit'}"
+        'background-color': card.background || (appStore.isDark ? '#232324' : '#F5F7FA')}"
       @mouseover="hover = true"
       @touchstart="hover = true"
       @mouseleave="hover = false"

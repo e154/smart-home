@@ -913,6 +913,7 @@ export class Card {
     }
     return false
   }
+
   onStateChanged(event: EventStateChange) {
     for (const index in this.items) {
       this.items[index].onStateChanged(event);
@@ -1387,7 +1388,8 @@ export class Core {
     let width: number = tab.columnWidth;
     let height: number = getSize()
 
-    let background = appStore.isDark ? '#232324' : '#F5F7FA'
+    // let background = appStore.isDark ? '#232324' : '#F5F7FA'
+    let background = ''
     if (tab.cards && tab.cards.length) {
       background = tab.cards[tab.cards.length - 1].background
       width = tab.cards[tab.cards.length - 1].width

@@ -9,8 +9,10 @@ import {VueSelecto} from "vue3-selecto";
 import {CardItemName} from "@/views/Dashboard/card_items";
 import {UUID} from "uuid-generator-ts";
 import {KeystrokeCaptureViewer} from "@/views/Dashboard/components";
+import {useAppStore} from "@/store/modules/app";
 
 const {emit} = useBus()
+const appStore = useAppStore()
 
 const currentID = ref('')
 onMounted(() => {
@@ -260,7 +262,7 @@ const onDragStart = (e) => {
       :key="reloadKey"
       :style="{
         'transform': `scale(${zoom})`,
-        'background-color': currentCard.background || 'inherit'}"
+        'background-color': currentCard.background || (appStore.isDark ? '#232324' : '#F5F7FA')}"
       @mouseover="hover = true"
       @touchstart="hover = true"
       @mouseleave="hover = false"
