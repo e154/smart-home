@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {computed, PropType, reactive, ref, unref, watch} from 'vue'
 import {Form} from '@/components/Form'
-import {ElButton, ElCol, ElDivider, ElEmpty, ElMenu, ElMenuItem, ElMessage, ElPopconfirm, ElRow} from 'element-plus'
+import {ElButton, ElCol, ElDivider, ElEmpty, ElMenu, ElMenuItem, ElMessage, ElPopconfirm, ElRow, ElIcon} from 'element-plus'
 import {useI18n} from '@/hooks/web/useI18n'
 import {useForm} from '@/hooks/web/useForm'
 import {useValidator} from '@/hooks/web/useValidator'
@@ -9,6 +9,8 @@ import {FormSchema} from '@/types/form'
 import {ApiDashboardCard, ApiEntity} from "@/api/stub";
 import {Core, Tab} from "@/views/Dashboard/core/core";
 import {DraggableContainer} from "@/components/DraggableContainer";
+import {useBus} from "@/views/Dashboard/core/bus";
+import {CloseBold} from "@element-plus/icons-vue";
 
 const {register, elFormRef, methods} = useForm()
 const {required} = useValidator()
@@ -173,7 +175,7 @@ const updateTab = async () => {
 
       activeTab.value.background = formData.background;
       activeTab.value.columnWidth = formData.columnWidth;
-      activeTab.value.dragEnabled = formData.dragEnabled;
+      // activeTab.value.dragEnabled = formData.dragEnabled;
       activeTab.value.enabled = formData.enabled;
       activeTab.value.gap = formData.gap;
       activeTab.value.icon = formData.icon;
@@ -224,14 +226,21 @@ const cancel = () => {
     icon: activeTab.value.icon,
     enabled: activeTab.value.enabled,
     weight: activeTab.value.weight,
-    dragEnabled: activeTab.value.dragEnabled,
+    // dragEnabled: activeTab.value.dragEnabled,
   })
 }
 
-const sortCardUp = (tab: Tab, index: number) => {
-}
-const sortCardDown = (tab: Tab, index: number) => {
-}
+const showMenuWindow = ref(false)
+useBus({
+  name: 'toggleMenu',
+  callback: (menu: string) => {
+    console.log('tabs', menu)
+    if (menu !== 'tabs') {
+      return
+    }
+    showMenuWindow.value = !showMenuWindow.value
+  }
+})
 
 </script>
 
@@ -284,9 +293,16 @@ const sortCardDown = (tab: Tab, index: number) => {
     </ElPopconfirm>
   </div>
 
-  <DraggableContainer :name="'editor-tabs'" :initial-width="280" :min-width="280">
+  <DraggableContainer :name="'editor-tabs'" :initial-width="280" :min-width="280" v-show="showMenuWindow">
     <template #header>
-      <span>Tabs</span>
+      <div class="w-[100%]">
+        <div style="float: left">Tabs</div>
+        <div style="float: right; text-align: right">
+          <a href="#" @click.prevent.stop='showMenuWindow= false'>
+            <ElIcon class="mr-5px"><CloseBold /></ElIcon>
+          </a>
+        </div>
+      </div>
     </template>
     <template #default>
 

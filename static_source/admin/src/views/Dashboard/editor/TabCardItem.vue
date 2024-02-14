@@ -1,5 +1,12 @@
 <script setup lang="ts">
 import {computed, PropType, ref, watch} from 'vue'
+import {CloseBold} from "@element-plus/icons-vue";
+import {useI18n} from '@/hooks/web/useI18n'
+import {Card, CardItem, Core, requestCurrentState} from "@/views/Dashboard/core/core";
+import {useBus} from "@/views/Dashboard/core/bus";
+import {CardEditorName, CardItemList} from "@/views/Dashboard/card_items";
+import {JsonViewer} from "@/components/JsonViewer";
+import {DraggableContainer} from "@/components/DraggableContainer";
 import {
   ElButton,
   ElButtonGroup,
@@ -10,6 +17,7 @@ import {
   ElEmpty,
   ElForm,
   ElFormItem,
+  ElIcon,
   ElInput,
   ElMenu,
   ElMenuItem,
@@ -20,12 +28,6 @@ import {
   ElSelect,
   ElTag
 } from 'element-plus'
-import {useI18n} from '@/hooks/web/useI18n'
-import {Card, CardItem, Core, requestCurrentState} from "@/views/Dashboard/core/core";
-import {useBus} from "@/views/Dashboard/core/bus";
-import {CardEditorName, CardItemList} from "@/views/Dashboard/card_items";
-import {JsonViewer} from "@/components/JsonViewer";
-import {DraggableContainer} from "@/components/DraggableContainer";
 
 const {t} = useI18n()
 
@@ -61,21 +63,21 @@ const currentCore = computed({
 })
 
 watch(
-    () => props.card,
-    (val?: Card) => {
-      if (!val) return
-      activeCard.value = val
-      if (val?.selectedItem > -1) {
-        cardItem.value = val?.items[val?.selectedItem] || null
-      } else {
-        cardItem.value = null
-      }
-
-    },
-    {
-      deep: true,
-      immediate: true
+  () => props.card,
+  (val?: Card) => {
+    if (!val) return
+    activeCard.value = val
+    if (val?.selectedItem > -1) {
+      cardItem.value = val?.items[val?.selectedItem] || null
+    } else {
+      cardItem.value = null
     }
+
+  },
+  {
+    deep: true,
+    immediate: true
+  }
 )
 
 // ---------------------------------
@@ -145,6 +147,18 @@ const updateCurrentState = () => {
   }
 }
 
+const showMenuWindow = ref(false)
+useBus({
+  name: 'toggleMenu',
+  callback: (menu: string) => {
+    console.log('cardItems', menu)
+    if (menu !== 'cardItems') {
+      return
+    }
+    showMenuWindow.value = !showMenuWindow.value
+  }
+})
+
 </script>
 
 <template>
@@ -157,26 +171,26 @@ const updateCurrentState = () => {
 
 
   <ElForm
-      v-if="cardItem"
-      :model="cardItem"
-      label-position="top"
-      style="width: 100%"
-      ref="cardItemForm"
+    v-if="cardItem"
+    :model="cardItem"
+    label-position="top"
+    style="width: 100%"
+    ref="cardItemForm"
   >
 
     <ElRow>
       <ElCol>
         <ElFormItem :label="$t('dashboard.editor.type')" prop="type">
           <ElSelect
-              v-model="cardItem.type"
-              :placeholder="$t('dashboard.editor.pleaseSelectType')"
-              style="width: 100%"
+            v-model="cardItem.type"
+            :placeholder="$t('dashboard.editor.pleaseSelectType')"
+            style="width: 100%"
           >
             <ElOption
-                v-for="item in itemTypes"
-                :key="item.value"
-                :label="$t('dashboard.editor.'+item.label)"
-                :value="item.value"
+              v-for="item in itemTypes"
+              :key="item.value"
+              :label="$t('dashboard.editor.'+item.label)"
+              :value="item.value"
             />
 
           </ElSelect>
@@ -194,13 +208,14 @@ const updateCurrentState = () => {
     </ElRow>
 
     <component
-        :is="getCardEditorName(cardItem.type)"
-        :core="core"
-        :item="cardItem"
+      :is="getCardEditorName(cardItem.type)"
+      :core="core"
+      :item="cardItem"
     />
   </ElForm>
 
-  <ElEmpty v-if="!activeCard.items.length || activeCard.selectedItem === -1" :rows="5" class="mt-20px mb-20px" description="Select card item or">
+  <ElEmpty v-if="!activeCard.items.length || activeCard.selectedItem === -1" :rows="5" class="mt-20px mb-20px"
+           description="Select card item or">
     <ElButton type="primary" @click="addCardItem()">
       {{ t('dashboard.editor.addNewCardItem') }}
     </ElButton>
@@ -210,7 +225,7 @@ const updateCurrentState = () => {
     <ElCol>
       <ElCollapse>
         <ElCollapseItem :title="$t('dashboard.editor.eventstateJSONobject')">
-          <ElButton class="mb-10px w-[100%]" @click.prevent.stop="updateCurrentState()" >
+          <ElButton class="mb-10px w-[100%]" @click.prevent.stop="updateCurrentState()">
             <Icon icon="ep:refresh" class="mr-5px"/>
             {{ $t('dashboard.editor.getEvent') }}
           </ElButton>
@@ -238,11 +253,11 @@ const updateCurrentState = () => {
     <ElButton @click.prevent.stop="copyToClipboard">{{ $t('main.copyToClipboard') }}</ElButton>
 
     <ElPopconfirm
-        :confirm-button-text="$t('main.ok')"
-        :cancel-button-text="$t('main.no')"
-        width="250"
-        :title="$t('main.are_you_sure_to_do_want_this?')"
-        @confirm="cancel"
+      :confirm-button-text="$t('main.ok')"
+      :cancel-button-text="$t('main.no')"
+      width="250"
+      :title="$t('main.are_you_sure_to_do_want_this?')"
+      @confirm="cancel"
     >
       <template #reference>
         <ElButton plain>{{ t('main.cancel') }}</ElButton>
@@ -250,12 +265,12 @@ const updateCurrentState = () => {
     </ElPopconfirm>
 
     <ElPopconfirm
-        :confirm-button-text="$t('main.ok')"
-        :cancel-button-text="$t('main.no')"
-        width="250"
-        style="margin-left: 10px;"
-        :title="$t('main.are_you_sure_to_do_want_this?')"
-        @confirm="removeCardItem(activeCard.selectedItem)"
+      :confirm-button-text="$t('main.ok')"
+      :cancel-button-text="$t('main.no')"
+      width="250"
+      style="margin-left: 10px;"
+      :title="$t('main.are_you_sure_to_do_want_this?')"
+      @confirm="removeCardItem(activeCard.selectedItem)"
     >
       <template #reference>
         <ElButton type="danger" plain>
@@ -266,9 +281,18 @@ const updateCurrentState = () => {
     </ElPopconfirm>
   </div>
 
-  <DraggableContainer :name="'editor-card-items'" :initial-width="280" :min-width="280">
+  <DraggableContainer :name="'editor-card-items'" :initial-width="280" :min-width="280" v-show="showMenuWindow">
     <template #header>
-      <span>Card Items</span>
+      <div class="w-[100%]">
+        <div style="float: left">Card Items</div>
+        <div style="float: right; text-align: right">
+          <a href="#" @click.prevent.stop='showMenuWindow= false'>
+            <ElIcon class="mr-5px">
+              <CloseBold/>
+            </ElIcon>
+          </a>
+        </div>
+      </div>
     </template>
     <template #default>
 
@@ -287,16 +311,16 @@ const updateCurrentState = () => {
       </ElRow>
 
       <ElMenu
-          v-if="activeCard && activeCard.id"
-          ref="tabMenu"
-          :default-active="activeCard.selectedItem + ''"
-          v-model="activeCard.selectedItem"
-          class="el-menu-vertical-demo box-card">
+        v-if="activeCard && activeCard.id"
+        ref="tabMenu"
+        :default-active="activeCard.selectedItem + ''"
+        v-model="activeCard.selectedItem"
+        class="el-menu-vertical-demo box-card">
         <ElMenuItem
-            :index="index + ''"
-            :key="index"
-            v-for="(item, index) in activeCard.items"
-            @click="menuCardItemClick(index)">
+          :index="index + ''"
+          :key="index"
+          v-for="(item, index) in activeCard.items"
+          @click="menuCardItemClick(index)">
           <div class="w-[100%] item-header">
                 <span>
                   {{ item.title }}

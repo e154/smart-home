@@ -11,8 +11,10 @@ import {
   ElMenuItem,
   ElMessage,
   ElPopconfirm,
-  ElRow
+  ElRow,
+  ElIcon,
 } from 'element-plus'
+import {CloseBold} from '@element-plus/icons-vue'
 import {useI18n} from '@/hooks/web/useI18n'
 import {useForm} from '@/hooks/web/useForm'
 import {useValidator} from '@/hooks/web/useValidator'
@@ -339,7 +341,17 @@ const sortCardDown = (card: Card, index: number) => {
   currentCore.value.updateCurrentTab();
 }
 
-
+const showMenuWindow = ref(false)
+useBus({
+  name: 'toggleMenu',
+  callback: (menu: string) => {
+    console.log('cards', menu)
+    if (menu !== 'cards') {
+      return
+    }
+    showMenuWindow.value = !showMenuWindow.value
+  }
+})
 </script>
 
 <template>
@@ -429,9 +441,16 @@ const sortCardDown = (card: Card, index: number) => {
   </Dialog>
   <!-- /import dialog -->
 
-  <DraggableContainer :name="'editor-cards'" :initial-width="280" :min-width="280">
+  <DraggableContainer :name="'editor-cards'" :initial-width="280" :min-width="280" v-show="showMenuWindow">
     <template #header>
-      <span>Cards</span>
+      <div class="w-[100%]">
+        <div style="float: left">Cards</div>
+        <div style="float: right; text-align: right">
+          <a href="#" @click.prevent.stop='showMenuWindow= false'>
+            <ElIcon class="mr-5px"><CloseBold /></ElIcon>
+          </a>
+        </div>
+      </div>
     </template>
     <template #default>
 

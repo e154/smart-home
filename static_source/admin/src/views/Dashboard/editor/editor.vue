@@ -114,6 +114,9 @@ const addCard = () => {
   core.createCard();
 }
 
+const toggleMenu = (menu: string): void => {
+  emit('toggleMenu', menu);
+}
 
 </script>
 
@@ -138,7 +141,20 @@ const addCard = () => {
 
     <DraggableContainer :name="'editor-main'">
       <template #header>
-        <span>Main Options</span>
+        <div class="w-[100%]">
+          <div style="float: left">Main menu</div>
+          <div style="float: right; text-align: right">
+            <a href="#"  @click.prevent.stop='toggleMenu("tabs")'>
+              <Icon icon="vaadin:tabs" class="mr-5px"/>
+            </a>
+            <a href="#" class="mr-5px" @click.prevent.stop='toggleMenu("cards")'>
+              <Icon icon="material-symbols:cards-outline"/>
+            </a>
+            <a href="#" @click.prevent.stop='toggleMenu("cardItems")'>
+              <Icon icon="icon-park-solid:add-item"/>
+            </a>
+          </div>
+        </div>
       </template>
       <template #default>
         <ElTabs v-model="core.mainTab">
