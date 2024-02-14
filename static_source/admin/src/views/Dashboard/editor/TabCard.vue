@@ -7,12 +7,12 @@ import {
   ElCol,
   ElDivider,
   ElEmpty,
+  ElIcon,
   ElMenu,
   ElMenuItem,
   ElMessage,
   ElPopconfirm,
   ElRow,
-  ElIcon,
 } from 'element-plus'
 import {CloseBold} from '@element-plus/icons-vue'
 import {useI18n} from '@/hooks/web/useI18n'
@@ -20,7 +20,6 @@ import {useForm} from '@/hooks/web/useForm'
 import {useValidator} from '@/hooks/web/useValidator'
 import {FormSchema} from '@/types/form'
 import {ApiDashboardCard, ApiDashboardCardItem, ApiEntity} from "@/api/stub";
-import {copyToClipboard} from "@/utils/clipboard";
 import {JsonViewer} from "@/components/JsonViewer";
 import {Card, Core, Tab} from "@/views/Dashboard/core/core";
 import {useBus} from "@/views/Dashboard/core/bus";
@@ -159,27 +158,26 @@ const activeCard = computed(() => props.core?.getActiveTab?.cards[props.core?.ac
 
 //todo: optimize
 watch(
-    () => currentCore.value.activeCard,
-    (val?: number) => {
-      if (!(val >= 0)) return
-      const card = props.tab?.cards[val] as DashboardCard
-      setValues({
-        title: card.title,
-        enabled: card.enabled,
-        hidden: card.hidden,
-        // dragEnabled: card.dragEnabled, // todo: fix
-        height: card.height,
-        weight: card.weight,
-        width: card.width,
-        background: card.background,
-      })
-    },
-    {
-      deep: true,
-      immediate: true
-    }
+  () => currentCore.value.activeCard,
+  (val?: number) => {
+    if (!(val >= 0)) return
+    const card = props.tab?.cards[val] as DashboardCard
+    setValues({
+      title: card.title,
+      enabled: card.enabled,
+      hidden: card.hidden,
+      // dragEnabled: card.dragEnabled, // todo: fix
+      height: card.height,
+      weight: card.weight,
+      width: card.width,
+      background: card.background,
+    })
+  },
+  {
+    deep: true,
+    immediate: true
+  }
 )
-
 
 const activeTab = computed({
   get(): Tab {
@@ -219,11 +217,6 @@ const importHandler = (val: any) => {
     return
   }
   importedCard.value = val
-}
-
-const copy = async () => {
-  prepareForExport()
-  copyToClipboard(JSON.stringify(dialogSource.value, null, 2))
 }
 
 const pasteCardItem = () => {
@@ -363,12 +356,12 @@ useBus({
   </ElRow>
 
   <Form
-      v-if="activeCard !== undefined"
-      :schema="schema"
-      :rules="rules"
-      label-position="top"
-      style="width: 100%"
-      @register="register"
+    v-if="activeCard !== undefined"
+    :schema="schema"
+    :rules="rules"
+    label-position="top"
+    style="width: 100%"
+    @register="register"
   />
 
   <ElRow v-if="activeCard !== undefined" class="mb-10px">
@@ -404,12 +397,12 @@ useBus({
     <ElButton @click.prevent.stop="pasteCardItem">{{ $t('dashboard.pasteCardItem') }}</ElButton>
     <ElButton @click.prevent.stop="cancel" plain>{{ t('main.cancel') }}</ElButton>
     <ElPopconfirm
-        :confirm-button-text="$t('main.ok')"
-        :cancel-button-text="$t('main.no')"
-        width="250"
-        style="margin-left: 10px;"
-        :title="$t('main.are_you_sure_to_do_want_this?')"
-        @confirm="removeCard"
+      :confirm-button-text="$t('main.ok')"
+      :cancel-button-text="$t('main.no')"
+      width="250"
+      style="margin-left: 10px;"
+      :title="$t('main.are_you_sure_to_do_want_this?')"
+      @confirm="removeCard"
     >
       <template #reference>
         <ElButton type="danger" plain>
@@ -447,7 +440,9 @@ useBus({
         <div style="float: left">Cards</div>
         <div style="float: right; text-align: right">
           <a href="#" @click.prevent.stop='showMenuWindow= false'>
-            <ElIcon class="mr-5px"><CloseBold /></ElIcon>
+            <ElIcon class="mr-5px">
+              <CloseBold/>
+            </ElIcon>
           </a>
         </div>
       </div>
