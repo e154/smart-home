@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, PropType, ref, watch} from 'vue'
+import {computed, onMounted, PropType, ref, watch} from 'vue'
 import {CloseBold} from "@element-plus/icons-vue";
 import {useI18n} from '@/hooks/web/useI18n'
 import {Card, CardItem, Core, requestCurrentState} from "@/views/Dashboard/core/core";
@@ -151,15 +151,17 @@ const updateCurrentState = () => {
 }
 
 const showMenuWindow = ref(false)
-useBus({
-  name: 'toggleMenu',
-  callback: (menu: string) => {
-    if (menu !== 'cardItems') {
-      return
+onMounted(() => {
+  useBus({
+    name: 'toggleMenu',
+    callback: (menu: string) => {
+      if (menu !== 'cardItems') {
+        return
+      }
+      console.log("cards", menu)
+      showMenuWindow.value = !showMenuWindow.value
     }
-    console.log("cards", menu)
-    showMenuWindow.value = !showMenuWindow.value
-  }
+  })
 })
 
 // ---------------------------------
@@ -315,19 +317,19 @@ const importCardItem = async () => {
 
     <ElButton @click.prevent.stop="duplicate">{{ $t('main.duplicate') }}</ElButton>
 
-<!--    <ElButton @click.prevent.stop="copyToClipboard">{{ $t('main.copyToClipboard') }}</ElButton>-->
+    <!--    <ElButton @click.prevent.stop="copyToClipboard">{{ $t('main.copyToClipboard') }}</ElButton>-->
 
-<!--    <ElPopconfirm-->
-<!--      :confirm-button-text="$t('main.ok')"-->
-<!--      :cancel-button-text="$t('main.no')"-->
-<!--      width="250"-->
-<!--      :title="$t('main.are_you_sure_to_do_want_this?')"-->
-<!--      @confirm="cancel"-->
-<!--    >-->
-<!--      <template #reference>-->
-<!--        <ElButton plain>{{ t('main.cancel') }}</ElButton>-->
-<!--      </template>-->
-<!--    </ElPopconfirm>-->
+    <!--    <ElPopconfirm-->
+    <!--      :confirm-button-text="$t('main.ok')"-->
+    <!--      :cancel-button-text="$t('main.no')"-->
+    <!--      width="250"-->
+    <!--      :title="$t('main.are_you_sure_to_do_want_this?')"-->
+    <!--      @confirm="cancel"-->
+    <!--    >-->
+    <!--      <template #reference>-->
+    <!--        <ElButton plain>{{ t('main.cancel') }}</ElButton>-->
+    <!--      </template>-->
+    <!--    </ElPopconfirm>-->
 
     <ElPopconfirm
       :confirm-button-text="$t('main.ok')"

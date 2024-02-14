@@ -9,18 +9,18 @@ import stream from "@/api/stream";
 import {Card, Core, Tab} from "@/views/Dashboard/core/core";
 import {useBus} from "@/views/Dashboard/core/bus";
 import ViewTab from "@/views/Dashboard/editor/ViewTab.vue";
-import {useCache} from "@/hooks/web/useCache";
 import {DraggableContainer} from "@/components/DraggableContainer";
 import TabSettings from "@/views/Dashboard/editor/TabSettings.vue";
 import TabEditor from "@/views/Dashboard/editor/TabEditor.vue";
 import TabCardItem from "@/views/Dashboard/editor/TabCardItem.vue";
 import TabCard from "@/views/Dashboard/editor/TabCard.vue";
 import {EventStateChange} from "@/api/types";
+import {useAppStore} from "@/store/modules/app";
 
 const {emit} = useBus()
 const route = useRoute();
 const {t} = useI18n()
-const {wsCache} = useCache()
+const appStore = useAppStore()
 
 // ---------------------------------
 // common
@@ -56,11 +56,11 @@ onUnmounted(() => {
 const fetchDashboard = async () => {
   loading.value = true;
   const res = await api.v1.dashboardServiceGetDashboardById(dashboardId.value)
-      .catch(() => {
-      })
-      .finally(() => {
-        loading.value = false;
-      })
+    .catch(() => {
+    })
+    .finally(() => {
+      loading.value = false;
+    })
   core.currentBoard(res.data);
 }
 
@@ -94,7 +94,7 @@ const activeTab = computed<Tab>(() => core.getActiveTab as Tab)
 const activeCard = computed<Card>(() => core.getActiveTab.cards[core.activeCard] as Card)
 
 const getBackgroundColor = () => {
-  return {backgroundColor: core.getActiveTab?.background}
+  return {backgroundColor: core.getActiveTab?.background || (appStore.isDark ? '#333335' : '#FFF')}
 }
 
 const tagsView = computed(() => tagsView.value ? 37 : 0)
@@ -125,16 +125,16 @@ const toggleMenu = (menu: string): void => {
   <div class="components-container dashboard-container" style="margin: 0" v-if="!loading" :style="getBackgroundColor()">
 
     <ElTabs
-        v-model="activeTabIdx"
-        @tab-click="updateCurrentTab"
-        class="ml-20px"
-        :lazy="true">
+      v-model="activeTabIdx"
+      @tab-click="updateCurrentTab"
+      class="ml-20px"
+      :lazy="true">
       <ElTabPane
-          v-for="(tab, index) in core.tabs"
-          :label="tab.name"
-          :key="index"
-          :disabled="!tab.enabled"
-          :class="[{'gap': tab.gap}]">
+        v-for="(tab, index) in core.tabs"
+        :label="tab.name"
+        :key="index"
+        :disabled="!tab.enabled"
+        :class="[{'gap': tab.gap}]">
         <ViewTab :tab="tab" :key="index" :core="core"/>
       </ElTabPane>
     </ElTabs>
@@ -144,7 +144,7 @@ const toggleMenu = (menu: string): void => {
         <div class="w-[100%]">
           <div style="float: left">Main menu</div>
           <div style="float: right; text-align: right">
-            <a href="#"  @click.prevent.stop='toggleMenu("tabs")'>
+            <a href="#" @click.prevent.stop='toggleMenu("tabs")'>
               <Icon icon="vaadin:tabs" class="mr-5px" @click.prevent.stop='toggleMenu("tabs")'/>
             </a>
             <a href="#" class="mr-5px" @click.prevent.stop='toggleMenu("cards")'>
@@ -384,9 +384,10 @@ html.dark {
       height: 30px;
       font-size: 12px;
     }
+
     .el-menu-item * {
-        vertical-align: baseline;
-      }
+      vertical-align: baseline;
+    }
   }
 }
 

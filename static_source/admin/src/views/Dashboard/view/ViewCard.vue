@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {onMounted, PropType, ref,} from "vue";
 import {Card, CardItem, Core} from "@/views/Dashboard/core/core";
-import {useBus} from "@/views/Dashboard/core/bus";
 import {CardItemName} from "@/views/Dashboard/card_items";
 import {UUID} from "uuid-generator-ts";
 import {KeystrokeCaptureViewer} from "@/views/Dashboard/components";
@@ -46,25 +45,25 @@ const getCardItemName = (item: CardItem): string => {
 <template>
 
   <div
-      class="item-card elements selecto-area"
-      v-bind:class="'class-'+card.currentID"
-      :style="{
+    class="item-card elements selecto-area"
+    v-bind:class="'class-'+card.currentID"
+    :style="{
         'transform': `scale(${zoom})`,
         'background-color': card.background || (appStore.isDark ? '#232324' : '#F5F7FA')}"
-      @mouseover="hover = true"
-      @touchstart="hover = true"
-      @mouseleave="hover = false"
-      @mouseout="hover = false"
+    @mouseover="hover = true"
+    @touchstart="hover = true"
+    @mouseleave="hover = false"
+    @mouseout="hover = false"
   >
     <KeystrokeCaptureViewer :card="card" :core="core" :hover="hover"/>
     <component
-        v-for="(item, index) in card.items"
-        :key="index"
-        class="item-element"
-        :style="item.position"
-        :is="getCardItemName(item)"
-        :item="item"
-        :core="core"
+      v-for="(item, index) in card.items"
+      :key="index"
+      class="item-element"
+      :style="item.position"
+      :is="getCardItemName(item)"
+      :item="item"
+      :core="core"
     />
   </div>
 

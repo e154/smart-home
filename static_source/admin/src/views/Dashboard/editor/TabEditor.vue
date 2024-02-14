@@ -1,7 +1,18 @@
 <script setup lang="ts">
-import {computed, PropType, reactive, ref, unref, watch} from 'vue'
+import {computed, onMounted, PropType, reactive, ref, unref, watch} from 'vue'
 import {Form} from '@/components/Form'
-import {ElButton, ElCol, ElDivider, ElEmpty, ElMenu, ElMenuItem, ElMessage, ElPopconfirm, ElRow, ElIcon} from 'element-plus'
+import {
+  ElButton,
+  ElCol,
+  ElDivider,
+  ElEmpty,
+  ElIcon,
+  ElMenu,
+  ElMenuItem,
+  ElMessage,
+  ElPopconfirm,
+  ElRow
+} from 'element-plus'
 import {useI18n} from '@/hooks/web/useI18n'
 import {useForm} from '@/hooks/web/useForm'
 import {useValidator} from '@/hooks/web/useValidator'
@@ -125,36 +136,36 @@ const schema = reactive<FormSchema[]>([
 ])
 
 watch(
-    () => props.tab,
-    (val?: DashboardTab) => {
-      if (!val) return
-      setValues({
-        name: val.name,
-        columnWidth: val.columnWidth,
-        gap: val.gap,
-        background: val.background,
-        icon: val.icon,
-        enabled: val.enabled,
-        weight: val.weight,
-        dragEnabled: val.dragEnabled,
-      })
-    },
-    {
-      deep: false,
-      immediate: true
-    }
+  () => props.tab,
+  (val?: DashboardTab) => {
+    if (!val) return
+    setValues({
+      name: val.name,
+      columnWidth: val.columnWidth,
+      gap: val.gap,
+      background: val.background,
+      icon: val.icon,
+      enabled: val.enabled,
+      weight: val.weight,
+      dragEnabled: val.dragEnabled,
+    })
+  },
+  {
+    deep: false,
+    immediate: true
+  }
 )
 
 watch(
-    () => props.core,
-    (val?: Core) => {
-      if (!val) return
-      currentCore.value = val
-    },
-    {
-      deep: false,
-      immediate: true
-    }
+  () => props.core,
+  (val?: Core) => {
+    if (!val) return
+    currentCore.value = val
+  },
+  {
+    deep: false,
+    immediate: true
+  }
 )
 
 
@@ -234,15 +245,17 @@ const cancel = () => {
 }
 
 const showMenuWindow = ref(false)
-useBus({
-  name: 'toggleMenu',
-  callback: (menu: string) => {
-    if (menu !== 'tabs') {
-      return
+onMounted(() => {
+  useBus({
+    name: 'toggleMenu',
+    callback: (menu: string) => {
+      if (menu !== 'tabs') {
+        return
+      }
+      console.log("cards", menu)
+      showMenuWindow.value = !showMenuWindow.value
     }
-    console.log("cards", menu)
-    showMenuWindow.value = !showMenuWindow.value
-  }
+  })
 })
 
 // ---------------------------------
@@ -339,12 +352,12 @@ const importTab = async () => {
     <ElButton type="primary" @click.prevent.stop="updateTab" plain>{{ $t('main.update') }}</ElButton>
     <ElButton @click.prevent.stop="cancel" plain>{{ t('main.cancel') }}</ElButton>
     <ElPopconfirm
-        :confirm-button-text="$t('main.ok')"
-        :cancel-button-text="$t('main.no')"
-        width="250"
-        style="margin-left: 10px;"
-        :title="$t('main.are_you_sure_to_do_want_this?')"
-        @confirm="removeTab"
+      :confirm-button-text="$t('main.ok')"
+      :cancel-button-text="$t('main.no')"
+      width="250"
+      style="margin-left: 10px;"
+      :title="$t('main.are_you_sure_to_do_want_this?')"
+      @confirm="removeTab"
     >
       <template #reference>
         <ElButton class="mr-10px" type="danger" plain>
@@ -382,7 +395,9 @@ const importTab = async () => {
         <div style="float: left">Tabs</div>
         <div style="float: right; text-align: right">
           <a href="#" @click.prevent.stop='showMenuWindow= false'>
-            <ElIcon class="mr-5px"><CloseBold /></ElIcon>
+            <ElIcon class="mr-5px">
+              <CloseBold/>
+            </ElIcon>
           </a>
         </div>
       </div>

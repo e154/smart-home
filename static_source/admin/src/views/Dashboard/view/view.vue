@@ -8,9 +8,11 @@ import {Core} from "@/views/Dashboard/core/core";
 import {useBus} from "@/views/Dashboard/core/bus";
 import ViewTab from "@/views/Dashboard/view/ViewTab.vue";
 import {propTypes} from "@/utils/propTypes";
-import {EventStateChange} from "@/views/Dashboard/core/types";
+import {EventStateChange} from "@/api/types";
+import {useAppStore} from "@/store/modules/app";
 
 const {emit} = useBus()
+const appStore = useAppStore()
 
 // ---------------------------------
 // common
@@ -67,7 +69,7 @@ const activeTabIdx = computed({
 })
 
 const getBackgroundColor = () => {
-  return {backgroundColor: core.getActiveTab?.background}
+  return {backgroundColor: core.getActiveTab?.background || (appStore.isDark ? '#333335' : '#FFF')}
 }
 
 fetchDashboard()

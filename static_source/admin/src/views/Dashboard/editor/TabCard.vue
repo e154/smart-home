@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, PropType, reactive, ref, unref, watch} from 'vue'
+import {computed, onMounted, PropType, reactive, ref, unref, watch} from 'vue'
 import {Form} from '@/components/Form'
 import {
   ElButton,
@@ -335,15 +335,17 @@ const sortCardDown = (card: Card, index: number) => {
 }
 
 const showMenuWindow = ref(false)
-useBus({
-  name: 'toggleMenu',
-  callback: (menu: string) => {
-    if (menu !== 'cards') {
-      return
+onMounted(() => {
+  useBus({
+    name: 'toggleMenu',
+    callback: (menu: string) => {
+      if (menu !== 'cards') {
+        return
+      }
+      console.log("cards", menu)
+      showMenuWindow.value = !showMenuWindow.value
     }
-    console.log("cards", menu)
-    showMenuWindow.value = !showMenuWindow.value
-  }
+  })
 })
 </script>
 
