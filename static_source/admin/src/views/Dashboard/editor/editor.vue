@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, onMounted, onUnmounted, reactive, ref} from 'vue'
+import {computed, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
 import {useI18n} from '@/hooks/web/useI18n'
 import {ElButton, ElEmpty, ElMessage, ElTabPane, ElTabs} from 'element-plus'
 import {useRoute} from 'vue-router'
@@ -16,6 +16,7 @@ import TabCardItem from "@/views/Dashboard/editor/TabCardItem.vue";
 import TabCard from "@/views/Dashboard/editor/TabCard.vue";
 import {EventStateChange} from "@/api/types";
 import {useAppStore} from "@/store/modules/app";
+import {setCssVar} from "@/utils";
 
 const {emit} = useBus()
 const route = useRoute();
@@ -236,18 +237,12 @@ const toggleMenu = (menu: string): void => {
 
 .components-container {
   height: calc(100vh - 87px);
-//height: inherit; //height: -webkit-fill-available; //height: -moz-available; //height: fill-available; margin: 0; padding: 0;
-}
-
-.top-container {
-  width: 100%;
-  height: 100%;
-  overflow-y: scroll;
-}
-
-.bottom-container {
-  width: 100%;
-  padding: 0 20px;
+//height: inherit;
+//height: -webkit-fill-available;
+//height: -moz-available;
+//height: fill-available;
+  margin: 0;
+  padding: 0;
 }
 
 p {
