@@ -68,7 +68,6 @@ watch(
 
 const callAction = debounce(async (val: string) => {
   if (!currentColorPicker.value.action) {
-    console.warn('no action')
     return;
   }
   await api.v1.interactServiceEntityCallAction({

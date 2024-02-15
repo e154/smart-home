@@ -219,12 +219,12 @@ const onChangePropValue = (val, index) => {
               <ElRow>
                 <ElCol>
                   <ElFormItem :label="$t('dashboard.editor.html')" prop="enabled">
-                    <ElSwitch v-model="defaultTextHtml"/>
+                    <ElSwitch v-model="prop.defaultTextHtml"/>
                   </ElFormItem>
                 </ElCol>
               </ElRow>
 
-              <ElRow v-if="!defaultTextHtml">
+              <ElRow v-if="!prop.defaultTextHtml">
                 <ElCol>
                   <ElFormItem :label="$t('dashboard.editor.text')" prop="text">
                     <ElInput

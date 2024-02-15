@@ -351,6 +351,19 @@ onMounted(() => {
 
 <template>
 
+  <ElRow v-if="activeCard !== undefined" :gutter="24" class="mb-10px mt-10px">
+    <ElCol :span="12" :xs="12">
+      <ElButton class="w-[100%]" @click="addCard()">
+        {{ t('dashboard.addNewCard') }}
+      </ElButton>
+    </ElCol>
+    <ElCol :span="12" :xs="12">
+      <ElButton class="w-[100%]" @click="showImportDialog()">
+        {{ t('main.import') }}
+      </ElButton>
+    </ElCol>
+  </ElRow>
+
   <ElRow v-if="activeCard !== undefined" class="mb-10px">
     <ElCol>
       <ElDivider content-position="left">{{ $t('dashboard.cardOptions') }}</ElDivider>
@@ -387,6 +400,9 @@ onMounted(() => {
   <ElEmpty v-if="!(activeCard !== undefined)" :rows="5" description="Select card or">
     <ElButton type="primary" @click="addCard()">
       {{ t('dashboard.addNewCard') }}
+    </ElButton>
+    <ElButton type="primary" @click="showImportDialog()">
+      {{ t('main.import') }}
     </ElButton>
   </ElEmpty>
 

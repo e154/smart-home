@@ -319,6 +319,19 @@ const importTab = async () => {
 
 <template>
 
+    <ElRow :gutter="24" class="mb-10px mt-10px">
+      <ElCol :span="12" :xs="12">
+      <ElButton class="w-[100%]" @click="createTab()">
+        {{ t('dashboard.addNewTab') }}
+      </ElButton>
+    </ElCol>
+    <ElCol :span="12" :xs="12">
+      <ElButton class="w-[100%]" @click="importDialogVisible = true">
+        {{ t('main.import') }}
+      </ElButton>
+    </ElCol>
+  </ElRow>
+
   <ElRow class="mb-10px">
     <ElCol>
       <ElDivider content-position="left">{{ $t('dashboard.tabOptions') }}</ElDivider>
@@ -335,6 +348,9 @@ const importTab = async () => {
   <ElEmpty v-if="!currentCore.tabs.length" :rows="5">
     <ElButton type="primary" @click="createTab()">
       {{ t('dashboard.addNewTab') }}
+    </ElButton>
+    <ElButton type="primary" @click="importDialogVisible = true">
+      {{ t('main.import') }}
     </ElButton>
   </ElEmpty>
 

@@ -30,9 +30,12 @@ onMounted(() => {
 // ---------------------------------
 
 const callAction = async () => {
+  if (!props.item?.payload.button?.action) {
+    return
+  }
   await api.v1.interactServiceEntityCallAction({
-    id: props.item?.entityId,
-    name: props.item?.payload.button?.action || '',
+    id: props.item?.payload.button?.entityId || '',
+    name: props.item?.payload.button?.action,
     tags: props.item?.payload.button?.tags || [],
     areaId: props.item?.payload.button?.areaId,
     attributes: {},

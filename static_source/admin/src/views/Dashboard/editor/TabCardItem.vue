@@ -226,12 +226,24 @@ const importCardItem = async () => {
 
 <template>
 
+  <ElRow :gutter="24" class="mb-10px mt-10px"  v-if="activeCard.selectedItem !== -1">
+    <ElCol :span="12" :xs="12">
+      <ElButton class="w-[100%]" @click="addCardItem()">
+        {{ t('dashboard.editor.addNewCardItem') }}
+      </ElButton>
+    </ElCol>
+    <ElCol :span="12" :xs="12">
+      <ElButton class="w-[100%]" @click="importDialogVisible = true">
+        {{ t('main.import') }}
+      </ElButton>
+    </ElCol>
+  </ElRow>
+
   <ElRow class="mb-10px" v-if="activeCard.selectedItem !== -1">
     <ElCol>
       <ElDivider content-position="left">{{ $t('dashboard.cardItemOptions') }}</ElDivider>
     </ElCol>
   </ElRow>
-
 
   <ElForm
     v-if="cardItem"
@@ -281,6 +293,9 @@ const importCardItem = async () => {
            description="Select card item or">
     <ElButton type="primary" @click="addCardItem()">
       {{ t('dashboard.editor.addNewCardItem') }}
+    </ElButton>
+    <ElButton type="primary" @click="importDialogVisible = true">
+      {{ t('main.import') }}
     </ElButton>
   </ElEmpty>
 
