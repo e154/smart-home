@@ -41,6 +41,9 @@ dependencies:
   codemirror-editor-vue3:
     specifier: ^2.3.0
     version: 2.3.0(codemirror@5.65.13)(diff-match-patch@1.0.5)(vue@3.2.47)
+  cropperjs:
+    specifier: ^1.6.1
+    version: 1.6.1
   echarts:
     specifier: ^5.4.2
     version: 5.4.2
@@ -4180,6 +4183,10 @@ packages:
     dependencies:
       '@daybrush/utils': 1.13.0
       '@egjs/list-differ': 1.0.1
+    dev: false
+
+  /cropperjs@1.6.1:
+    resolution: {integrity: sha512-F4wsi+XkDHCOMrHMYjrTEE4QBOrsHHN5/2VsVAaRq8P7E5z7xQpT75S+f/9WikmBEailas3+yo+6zPIomW+NOA==}
     dev: false
 
   /cross-fetch@3.1.6:

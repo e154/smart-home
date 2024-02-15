@@ -177,19 +177,43 @@ export const developRouterMap: AppRouteRecordRaw[] = [
     redirect: '/waterfall/index',
     meta: {
       hidden: true,
-      title: t('router.waterfall')
+      title: 'waterfall'
     },
     children: [
       {
         path: 'index',
         name: 'waterfall',
-        component: () => import('@/views/Components/Waterfall.vue'),
+        component: () => import('@/views/components/Waterfall.vue'),
         meta: {
           title: t('router.ListScripts'),
           // noTagsView: true,
           hidden: true,
           canTo: true,
-          activeMenu: '/scripts'
+          activeMenu: '/waterfall'
+        }
+      },
+    ]
+  },
+  {
+    path: '/image-cropping',
+    component: Develop,
+    name: 'ImageCropping',
+    redirect: '/image-cropping/index',
+    meta: {
+      hidden: true,
+      title: 'ImageCropping'
+    },
+    children: [
+      {
+        path: 'index',
+        name: 'ImageCropping',
+        component: () => import('@/views/components/ImageCropping.vue'),
+        meta: {
+          title: t('router.imageCropping'),
+          // noTagsView: true,
+          hidden: true,
+          canTo: true,
+          activeMenu: '/image-cropping'
         }
       },
     ]
