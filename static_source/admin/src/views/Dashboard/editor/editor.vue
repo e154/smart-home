@@ -233,6 +233,7 @@ const toggleMenu = (menu: string): void => {
 
 .dashboard-container {
   position: relative;
+  min-height: calc(100vh - 87px);
 }
 
 p {
