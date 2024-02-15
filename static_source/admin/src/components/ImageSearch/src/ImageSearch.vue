@@ -44,6 +44,7 @@ watch(
     () => currentImage.value,
     (val?: ApiImage) => {
       emit('update:modelValue', unref(val) || null)
+      emit('change', unref(val) || null)
     }
 )
 

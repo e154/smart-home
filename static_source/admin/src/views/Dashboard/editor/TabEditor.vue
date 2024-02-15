@@ -252,7 +252,6 @@ onMounted(() => {
       if (menu !== 'tabs') {
         return
       }
-      console.log("cards", menu)
       showMenuWindow.value = !showMenuWindow.value
     }
   })

@@ -28,10 +28,18 @@ const el = ref(null)
 onMounted(() => {
   // store dom element moveable
   props.item.setTarget(el.value)
+
+  if (props.item?.payload.image?.image) {
+    image.value = GetFullImageUrl(props.item.payload.image.image)
+  } else {
+    image.value = null
+  }
+  background.value = props.item?.payload.image?.background || false
 })
 
 onUnmounted(() => {
-
+  image.value = null
+  background.value = false
 })
 
 // ---------------------------------
@@ -43,11 +51,14 @@ const background = ref<Nullable<boolean>>(false)
 const update = debounce(async () => {
   if (props.item?.payload.image?.image) {
     image.value = GetFullImageUrl(props.item.payload.image.image)
+  } else {
+    image.value = null
   }
   background.value = props.item?.payload.image?.background || false
   if (props.item?.payload.image.attrField) {
     let token: string = props.item?.payload.image?.attrField || ''
-    image.value = GetFullUrl(RenderVar(token, props.item?.lastEvent))
+    const url = RenderVar(token, props.item?.lastEvent)
+    image.value = GetFullUrl(url)
   }
 
   if (props.item?.payload.image?.items) {

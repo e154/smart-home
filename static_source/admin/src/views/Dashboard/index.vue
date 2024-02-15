@@ -198,7 +198,6 @@ const openLanding = (item: ApiDashboard): string => {
   const uri = window.location.origin || import.meta.env.VITE_API_BASEPATH as string;
   const accessToken = wsCache.get("accessToken")
   const url = prepareUrl(uri + '/#/landing/' + item.id + '?access_token=' + accessToken);
-  console.log('url', url)
   window.open(url, '_blank', 'noreferrer');
 }
 

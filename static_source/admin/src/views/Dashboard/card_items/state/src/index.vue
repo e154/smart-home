@@ -80,7 +80,7 @@ const update = debounce(() => {
         currentImage.value = prop.image;
       }
       if (tr && prop.icon) {
-        counter++;
+          counter++;
         currentImage.value = null
         currentIcon.value = prop.icon;
         currentIconColor.value = prop.iconColor || props.item?.payload?.state?.defaultIconColor || '#000000';

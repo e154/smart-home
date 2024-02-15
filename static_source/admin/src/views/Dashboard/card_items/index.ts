@@ -112,7 +112,7 @@ export const CardItemList: ItemsType[] = [
   {label: 'TEXT', value: 'text'},
   {label: 'IMAGE', value: 'image'},
   {label: 'BUTTON', value: 'button'},
-  {label: 'STATE', value: 'state'},
+  {label: 'STATE (DEPRECATED)', value: 'state'},
   {label: 'LOGS', value: 'logs'},
   {label: 'PROGRESS', value: 'progress'},
   {label: 'CHART', value: 'chart'},

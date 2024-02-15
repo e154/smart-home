@@ -306,25 +306,6 @@ const asButtonHandler = () => {
     <ElRow v-if="currentItem.asButton">
       <ElCol>
         <!-- props -->
-<!--        <ElCollapse>-->
-<!--          <ElCollapseItem-->
-<!--              v-for="(prop, index) in item.buttonActions"-->
-<!--              :name="index"-->
-<!--              :key="index"-->
-<!--          >-->
-
-<!--            <template #title>-->
-<!--              {{ prop.action }}-->
-<!--            </template>-->
-
-<!--            <ElCard shadow="never" class="item-card-editor">-->
-
-<!--              <ElForm-->
-<!--                  label-position="top"-->
-<!--                  :model="prop"-->
-<!--                  style="width: 100%"-->
-<!--                  ref="cardItemForm">-->
-
                 <ElRow class="mb-10px mt-10px">
                   <ElCol>
                     <ElDivider content-position="left">{{ $t('dashboard.editor.actionOptions') }}</ElDivider>
@@ -333,59 +314,6 @@ const asButtonHandler = () => {
 
                 <EntitiesAction :options="item.buttonActions[0]" :entity="currentItem.entity"
                                 @change="changedForActionButton($event, 0)"/>
-
-<!--                <ElDivider content-position="left">{{ $t('dashboard.editor.appearanceOptions') }}</ElDivider>-->
-
-<!--                <ElFormItem :label="$t('dashboard.editor.image')" prop="image">-->
-<!--                  <ImageSearch v-model="prop.image" @change="onSelectImageForAction(index, ...arguments)"/>-->
-<!--                </ElFormItem>-->
-
-<!--                <ElDivider content-position="left">{{ $t('main.or') }}</ElDivider>-->
-
-<!--                <ElRow>-->
-<!--                  <ElCol>-->
-<!--                    <ElFormItem :label="$t('dashboard.editor.icon')" prop="icon">-->
-<!--                      <ElInput v-model="prop.icon"/>-->
-<!--                    </ElFormItem>-->
-<!--                  </ElCol>-->
-<!--                </ElRow>-->
-
-<!--                <ElRow>-->
-<!--                  <ElCol>-->
-<!--                    <ElFormItem :label="$t('dashboard.editor.iconColor')" prop="iconColor">-->
-<!--                      <ColorPicker show-alpha v-model="prop.iconColor"/>-->
-<!--                    </ElFormItem>-->
-<!--                  </ElCol>-->
-<!--                </ElRow>-->
-
-<!--                <ElRow>-->
-<!--                  <ElCol>-->
-<!--                    <div style="text-align: right;">-->
-<!--                      <ElPopconfirm-->
-<!--                          :confirm-button-text="$t('main.ok')"-->
-<!--                          :cancel-button-text="$t('main.no')"-->
-<!--                          width="250"-->
-<!--                          style="margin-left: 10px;"-->
-<!--                          :title="$t('main.are_you_sure_to_do_want_this?')"-->
-<!--                          @confirm="removeAction(index)"-->
-<!--                      >-->
-<!--                        <template #reference>-->
-<!--                          <ElButton type="danger" plain>-->
-<!--                            <Icon icon="ep:delete" class="mr-5px"/>-->
-<!--                            {{ t('main.remove') }}-->
-<!--                          </ElButton>-->
-<!--                        </template>-->
-<!--                      </ElPopconfirm>-->
-<!--                    </div>-->
-<!--                  </ElCol>-->
-<!--                </ElRow>-->
-
-<!--              </ElForm>-->
-
-<!--            </ElCard>-->
-
-<!--          </ElCollapseItem>-->
-<!--        </ElCollapse>-->
         <!-- /props -->
 
       </ElCol>

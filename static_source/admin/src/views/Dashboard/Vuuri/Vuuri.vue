@@ -5,7 +5,7 @@ import {Card} from "@/views/Dashboard/core/core";
 import GridStore from './GridStore';
 import Muuri from "muuri";
 import {UUID} from "uuid-generator-ts";
-import {ItemDragHandle, ItemKey, ItemSize} from './constants';
+import {ItemDragHandle, ItemKey, ItemSize} from './types';
 import debounce from 'lodash.debounce'
 
 const uuid = new UUID()
@@ -113,7 +113,8 @@ const update = () => {
   nextTick(() => {
     muuri.value
         .refreshItems()
-        .layout(true, () => {})
+        .layout(true, () => {
+        })
         .layout(true, () => emit('updated'));
   });
 }
@@ -130,7 +131,15 @@ const _sync = () => {
 }
 
 const _setup = () => {
-  muuri.value = new Muuri(selector.value);
+  muuri.value = new Muuri(selector.value, {
+    layout: {
+      horizontal: false,
+      alignRight: false,
+      fillGaps: true,
+      rounding: false,
+      alignBottom: false
+    }
+  });
   if (props.groupId) {
     GridStore.addGrid(props.groupId, muuri.value);
   }

@@ -57,11 +57,7 @@ const currentItem = computed({
 // component methods
 // ---------------------------------
 
-const onSelectImage = (index: number, image: ApiImage) => {
-  if (!props.item?.payload?.image) {
-    return;
-  }
-  // console.log('select image', index, image);
+const onSelectImage = (image: ApiImage) => {
   currentItem.value.payload.image.image = image || undefined;
 }
 
@@ -115,8 +111,13 @@ const removeProp = (index: number) => {
   props.item.update();
 }
 
-const onChangePropKey = (val, index, event) => {
-  currentItem.value.payload.image.items[index].key = event;
+const onChangePropKey = (index, key) => {
+  currentItem.value.payload.image.items[index].key = key;
+}
+
+
+const onChangePropImage = (index, image) => {
+  currentItem.value.payload.image.items[index].image = image || null;
 }
 
 </script>
@@ -169,7 +170,7 @@ const onChangePropKey = (val, index, event) => {
           <ElRow>
             <ElCol>
               <ElFormItem :label="$t('dashboard.editor.attrField')" prop="text">
-                <KeysSearch v-model="prop.key" :obj="currentItem.lastEvent" @change="onChangePropKey(prop, index, $event)"/>
+                <KeysSearch v-model="prop.key" :obj="currentItem.lastEvent" @change="onChangePropKey(index, $event)"/>
               </ElFormItem>
             </ElCol>
           </ElRow>
@@ -217,7 +218,7 @@ const onChangePropKey = (val, index, event) => {
           </ElRow>
 
           <ElFormItem :label="$t('dashboard.editor.image')" prop="image">
-            <ImageSearch v-model="prop.image" @change="onSelectImage"/>
+            <ImageSearch v-model="prop.image" @change="onChangePropImage(index, $event)"/>
           </ElFormItem>
 
           <ElRow class="mb-10px mt-10px">
