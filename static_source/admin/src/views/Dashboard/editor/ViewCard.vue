@@ -258,7 +258,7 @@ const onDragStart = (e) => {
   <div
       class="item-card elements selecto-area prevent-select"
       ref="cardRef"
-      v-bind:class="'class-'+currentCard.currentID"
+      :class="[{'active': currentCard.active}, `class-${currentCard.currentID}`]"
       :key="reloadKey"
       :style="{
         'transform': `scale(${zoom})`,
@@ -268,6 +268,7 @@ const onDragStart = (e) => {
       @mouseleave="hover = false"
       @mouseout="hover = false"
   >
+    <div class="card-label">active</div>
 
     <KeystrokeCaptureViewer :card="currentCard" :core="core" :hover="hover"/>
 
@@ -318,10 +319,29 @@ const onDragStart = (e) => {
   position: absolute;
 }
 
+.card-label {
+  display: none;
+  position: absolute;
+  top: 18px;
+  right: -17px;
+  width: 55px;
+  height: 20px;
+  background: #4af;
+  padding: 0 6px;
+  transform: rotate(90deg);
+  z-index: 9999;
+  opacity: 0.5;
+}
+
 .item-card {
   position: relative;
   overflow: hidden;
   width: 100%;
   height: 100%;
+  &.active {
+    .card-label {
+      display: inherit;
+    }
+  }
 }
 </style>
