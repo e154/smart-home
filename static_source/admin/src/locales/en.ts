@@ -576,7 +576,7 @@ export default {
             TEXT: 'Text',
             IMAGE: 'Image',
             BUTTON: 'Button',
-            STATE: 'State',
+            STATE: 'State (DEPRECATED)',
             LOGS: 'Logs Table',
             PROGRESS: 'Progress',
             CHART: 'Chart',

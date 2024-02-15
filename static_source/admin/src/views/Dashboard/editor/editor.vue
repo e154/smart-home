@@ -123,7 +123,7 @@ const toggleMenu = (menu: string): void => {
 
 <template>
 
-  <div class="components-container dashboard-container" style="margin: 0" v-if="!loading" :style="getBackgroundColor()">
+  <div class="dashboard-container" style="margin: 0" v-if="!loading" :style="getBackgroundColor()">
 
     <ElTabs
       v-model="activeTabIdx"
@@ -233,16 +233,6 @@ const toggleMenu = (menu: string): void => {
 
 .dashboard-container {
   position: relative;
-}
-
-.components-container {
-  height: calc(100vh - 87px);
-//height: inherit;
-//height: -webkit-fill-available;
-//height: -moz-available;
-//height: fill-available;
-  margin: 0;
-  padding: 0;
 }
 
 p {
