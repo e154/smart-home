@@ -34,7 +34,7 @@ const callAction = async () => {
     return
   }
   await api.v1.interactServiceEntityCallAction({
-    id: props.item?.payload.button?.entityId || '',
+    id: props.item?.entityId || props.item?.payload.button?.entityId || '',
     name: props.item?.payload.button?.action,
     tags: props.item?.payload.button?.tags || [],
     areaId: props.item?.payload.button?.areaId,

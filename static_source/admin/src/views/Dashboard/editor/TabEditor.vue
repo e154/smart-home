@@ -455,19 +455,6 @@ const importTab = async () => {
 
 </template>
 
-<style lang="less" scoped>
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+<style lang="less">
 
-.hide {
-  display: none;
-}
-
-.el-menu-item:hover .hide {
-  display: block;
-  color: red;
-}
 </style>

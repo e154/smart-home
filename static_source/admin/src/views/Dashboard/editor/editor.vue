@@ -386,4 +386,22 @@ html.dark {
   }
 }
 
+// menu
+.menu-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.buttons {
+  display: none;
+  position: absolute;
+  right: 0;
+  background: var(--el-bg-color);
+}
+
+.el-menu-item:hover .buttons {
+  display: block;
+  color: red;
+}
 </style>

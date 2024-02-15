@@ -494,9 +494,9 @@ onMounted(() => {
               class="el-menu-vertical-demo">
         <ElMenuItem :index="index + ''" :key="index" v-for="(card, index) in activeTab.cards"
                     @click="menuCardsClick(card)">
-          <div class="w-[100%] card-header">
+          <div class="w-[100%] menu-item">
             <span>{{ card.title }}</span>
-            <ElButtonGroup class="hide">
+            <ElButtonGroup class="buttons">
               <ElButton @click.prevent.stop="sortCardUp(card, index)" text size="small">
                 <Icon icon="teenyicons:up-solid"/>
               </ElButton>
@@ -514,19 +514,6 @@ onMounted(() => {
 
 </template>
 
-<style lang="less" scoped>
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+<style lang="less">
 
-.hide {
-  display: none;
-}
-
-.el-menu-item:hover .hide {
-  display: block;
-  color: red;
-}
 </style>

@@ -429,14 +429,14 @@ const importCardItem = async () => {
           :key="index"
           v-for="(item, index) in activeCard.items"
           @click="menuCardItemClick(index)">
-          <div class="w-[100%] item-header">
+          <div class="w-[100%] menu-item">
                 <span>
                   {{ item.title }}
                 <ElTag type="info" size="small">
                   {{ item.type }}
                 </ElTag>
                 </span>
-            <ElButtonGroup class="hide">
+            <ElButtonGroup class="buttons">
               <ElButton @click.prevent.stop="sortCardItemUp(item, index)" text size="small">
                 <Icon icon="teenyicons:up-solid"/>
               </ElButton>
@@ -453,19 +453,6 @@ const importCardItem = async () => {
 
 </template>
 
-<style lang="less" scoped>
-.item-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+<style lang="less">
 
-.hide {
-  display: none;
-}
-
-.el-menu-item:hover .hide {
-  display: block;
-  color: red;
-}
 </style>
