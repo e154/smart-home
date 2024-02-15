@@ -4,29 +4,40 @@
   "description": "Software package for automation",
   "icons": [
     {
-      "src": "/logo-w.png",
+      "src": "/public/logo-w.png",
       "type": "image/png",
       "sizes": "48x48"
     },
     {
-      "src": "/logo-w.png",
+      "src": "/public/logo-w.png",
       "type": "image/png",
       "sizes": "72x72"
     },
     {
-      "src": "/logo-w.png",
+      "src": "/public/logo-w.png",
       "type": "image/png",
       "sizes": "96x96"
     },
     {
-      "src": "/logo-w.png",
+      "src": "/public/logo-w.png",
       "type": "image/png",
       "sizes": "144x144"
     },
     {
-      "src": "/logo-w.png",
+      "src": "/public/logo-w.png",
       "type": "image/png",
       "sizes": "192x192"
+    },
+    {
+      "src": "/public/logo-w.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "/public/to/maskable_icon.png",
+      "sizes": "196x196",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
   "start_url": "/",

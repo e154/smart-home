@@ -22,9 +22,11 @@ import (
 	"context"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	echopprof "github.com/hiko1129/echo-pprof"
+	echoCacheMiddleware "github.com/kenshin579/echo-http-cache"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
@@ -106,6 +108,14 @@ func (a *Api) Start() (err error) {
 	if a.cfg.Gzip {
 		a.echo.Use(middleware.GzipWithConfig(middleware.DefaultGzipConfig))
 		a.echo.Use(middleware.Decompress())
+		a.echo.Use(echoCacheMiddleware.CacheWithConfig(echoCacheMiddleware.CacheConfig{
+			Store: echoCacheMiddleware.NewCacheMemoryStoreWithConfig(echoCacheMiddleware.CacheMemoryStoreConfig{
+				Capacity:  5,
+				Algorithm: echoCacheMiddleware.LFU,
+			}),
+			Expiration: 10 * time.Second,
+		}))
+
 	}
 
 	a.registerHandlers()
