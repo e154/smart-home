@@ -31,7 +31,7 @@ const currentItem = computed(() => props.item as CardItem)
 // component methods
 // ---------------------------------
 
-const onSelectImage = (index: number, image: ApiImage) => {
+const onSelectImage = (image: ApiImage) => {
   if (!props.item?.payload?.joystick) {
     return;
   }
@@ -62,15 +62,23 @@ const changedForEndAction = async (options: EntitiesActionOptions) => {
   </ElRow>
 
   <ElFormItem :label="$t('dashboard.editor.image')" prop="image">
-    <ImageSearch v-model="currentItem.payload.joystick.stickImage" @change="onSelectImage(index, ...arguments)"/>
+    <ImageSearch v-model="currentItem.payload.joystick.stickImage" @change="onSelectImage"/>
   </ElFormItem>
 
-  <ElDivider content-position="left">{{ $t('dashboard.editor.joystick.startAction') }}</ElDivider>
+  <ElRow class="mb-10px mt-10px">
+    <ElCol>
+      <ElDivider content-position="left">{{ $t('dashboard.editor.joystick.startAction') }}</ElDivider>
+    </ElCol>
+  </ElRow>
 
   <EntitiesAction :options="currentItem.payload.joystick.startAction" :entity="currentItem.entity"
                   @change="changedForStartAction($event)"/>
 
-  <ElDivider content-position="left">{{ $t('dashboard.editor.joystick.endAction') }}</ElDivider>
+  <ElRow class="mb-10px mt-10px">
+    <ElCol>
+      <ElDivider content-position="left">{{ $t('dashboard.editor.joystick.endAction') }}</ElDivider>
+    </ElCol>
+  </ElRow>
 
   <EntitiesAction :options="currentItem.payload.joystick.endAction" :entity="currentItem.entity"
                   @change="changedForEndAction($event)"/>

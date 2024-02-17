@@ -29,7 +29,21 @@ let currentEntity = ref<ApiEntity>();
 let currentArea = ref<ApiArea>();
 
 onMounted(() => {
-
+  if (props.options) {
+    action.value = {
+      entityId: props.options.entityId || props.options.entity?.id || '',
+      action: props.options.action || props.options.actionName || '',
+      tags: props.options.tags,
+      areaId: props.options.areaId,
+    }
+  } else {
+    action.value = {
+      entityId: undefined,
+      action: '',
+      tags: [],
+      areaId: undefined,
+    }
+  }
 })
 
 watch(
