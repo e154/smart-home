@@ -22,6 +22,7 @@ import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {FilterList, RangeList} from "./types";
 import {useI18n} from "@/hooks/web/useI18n";
 import {ColorPicker} from "@/components/ColorPicker";
+import {KeysSearch} from "@/views/Dashboard/components";
 
 const {t} = useI18n()
 
@@ -81,6 +82,10 @@ const removeChartItem = (index: number) => {
   currentItem.value.payload.chart.items.splice(index, 1);
 }
 
+const onChangePropKey = (val, index, event) => {
+  currentItem.value.payload.chart.items[index].value = event;
+}
+
 </script>
 
 <template>
@@ -95,9 +100,9 @@ const removeChartItem = (index: number) => {
 
   <ElFormItem :label="$t('dashboard.editor.chart.type')" prop="type">
     <ElSelect
-        v-model="currentItem.payload.chart.type"
-        placeholder="please select type"
-        style="width: 100%"
+      v-model="currentItem.payload.chart.type"
+      placeholder="please select type"
+      style="width: 100%"
     >
       <ElOption label="Linear" value="line"/>
       <ElOption label="Bar" value="bar"/>
@@ -158,10 +163,10 @@ const removeChartItem = (index: number) => {
       <ElFormItem :label="$t('dashboard.editor.chart.entity_metric')" prop="index">
         <ElSelect v-model="currentItem.payload.chart.metric_index" placeholder="Select" class="w-[100%]">
           <ElOption
-              v-for="(prop, index) in getMetricList"
-              :key="index"
-              :label="prop.name"
-              :value="index"/>
+            v-for="(prop, index) in getMetricList"
+            :key="index"
+            :label="prop.name"
+            :value="index"/>
         </ElSelect>
       </ElFormItem>
     </ElCol>
@@ -172,10 +177,10 @@ const removeChartItem = (index: number) => {
       <ElFormItem :label="$t('dashboard.editor.chart.metric_props')" prop="index">
         <ElSelect v-model="currentItem.payload.chart.props" multiple placeholder="Select" clearable class="w-[100%]">
           <ElOption
-              v-for="p in getMetricItem"
-              :key="p.name"
-              :label="p.name"
-              :value="p.name"/>
+            v-for="p in getMetricItem"
+            :key="p.name"
+            :label="p.name"
+            :value="p.name"/>
         </ElSelect>
       </ElFormItem>
     </ElCol>
@@ -186,10 +191,10 @@ const removeChartItem = (index: number) => {
       <ElFormItem :label="$t('dashboard.editor.chart.range')" prop="index">
         <ElSelect v-model="currentItem.payload.chart.range" placeholder="Select" clearable class="w-[100%]">
           <ElOption
-              v-for="p in rangeList"
-              :key="p.value"
-              :label="p.label"
-              :value="p.value"/>
+            v-for="p in rangeList"
+            :key="p.value"
+            :label="p.label"
+            :value="p.value"/>
         </ElSelect>
       </ElFormItem>
     </ElCol>
@@ -200,10 +205,10 @@ const removeChartItem = (index: number) => {
       <ElFormItem :label="$t('dashboard.editor.chart.filter')" prop="index">
         <ElSelect v-model="currentItem.payload.chart.filter" placeholder="Select" clearable class="w-[100%]">
           <ElOption
-              v-for="p in filterList"
-              :key="p.value"
-              :label="p.label"
-              :value="p.value"/>
+            v-for="p in filterList"
+            :key="p.value"
+            :label="p.label"
+            :value="p.value"/>
         </ElSelect>
       </ElFormItem>
     </ElCol>
@@ -244,9 +249,9 @@ const removeChartItem = (index: number) => {
       <!-- props -->
       <ElCollapse>
         <ElCollapseItem
-            v-for="(prop, index) in currentItem.payload.chart.items"
-            :name="index"
-            :key="index"
+          v-for="(prop, index) in currentItem.payload.chart.items"
+          :name="index"
+          :key="index"
         >
 
           <template #title>
@@ -256,34 +261,36 @@ const removeChartItem = (index: number) => {
           <ElCard shadow="never" class="item-card-editor">
 
             <ElForm
-                label-position="top"
-                :model="prop"
-                style="width: 100%"
-                ref="cardItemForm">
+              label-position="top"
+              :model="prop"
+              style="width: 100%"
+              ref="cardItemForm">
 
-              <ElRow :gutter="24">
-                <ElCol :span="12" :xs="12">
-                  <ElFormItem :label="$t('dashboard.editor.chart.itemValue')" prop="text">
-                    <ElInput class="w-[100%]" placeholder="Please input" v-model="prop.value"/>
+              <ElRow>
+                <ElCol>
+                  <ElFormItem :label="$t('dashboard.editor.attrField')" prop="text">
+                    <KeysSearch v-model="prop.value" :obj="currentItem.lastEvent"
+                                @change="onChangePropKey(prop, index, $event)"/>
                   </ElFormItem>
                 </ElCol>
-                <ElCol :span="12" :xs="12">
+              </ElRow>
+              <ElRow>
+                <ElCol>
                   <ElFormItem :label="$t('dashboard.editor.chart.itemDescription')" prop="text">
                     <ElInput class="w-[100%]" placeholder="Please input" v-model="prop.description"/>
                   </ElFormItem>
                 </ElCol>
               </ElRow>
 
-
               <div class="mb-20px">
                 <div style="text-align: right;">
                   <ElPopconfirm
-                      :confirm-button-text="$t('main.ok')"
-                      :cancel-button-text="$t('main.no')"
-                      width="250"
-                      style="margin-left: 10px;"
-                      :title="$t('main.are_you_sure_to_do_want_this?')"
-                      @confirm="removeChartItem(index)"
+                    :confirm-button-text="$t('main.ok')"
+                    :cancel-button-text="$t('main.no')"
+                    width="250"
+                    style="margin-left: 10px;"
+                    :title="$t('main.are_you_sure_to_do_want_this?')"
+                    @confirm="removeChartItem(index)"
                   >
                     <template #reference>
                       <ElButton type="danger" plain>

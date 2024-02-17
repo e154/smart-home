@@ -9,7 +9,7 @@ import {useBus} from "@/views/Dashboard/core/bus";
 import {EChartsOption} from 'echarts'
 import {Echart} from '@/components/Echart'
 import {debounce} from "lodash-es";
-import {Cache, GetTokens, RenderText} from "@/views/Dashboard/core/render";
+import {Cache, RenderVar} from "@/views/Dashboard/core/render";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 
@@ -313,10 +313,9 @@ const getBarOptions = () => {
     for (const i in props.item.payload.chart.items) {
       xAxisData.push(props.item.payload.chart.items[i].description || '')
       let v: string = props.item.payload.chart.items[i].value || ''
-
-      const tokens = GetTokens(props.item.payload.chart.items[i].value, _cache)
-      if (tokens.length) {
-        v = RenderText(tokens, v, props.item?.lastEvent)
+      const val = RenderVar(props.item.payload.chart.items[i].value, props.item?.lastEvent);
+      if (val) {
+        v = val
       }
       rowData.push(parseInt(v) || 0)
     }
@@ -398,10 +397,9 @@ const getPieOptions = () => {
 
     for (const i in props.item.payload.chart.items) {
       let v: string = props.item.payload.chart.items[i].value || ''
-
-      const tokens = GetTokens(props.item.payload.chart.items[i].value, _cache)
-      if (tokens.length) {
-        v = RenderText(tokens, v, props.item?.lastEvent)
+      const val = RenderVar(props.item.payload.chart.items[i].value, props.item?.lastEvent);
+      if (val) {
+        v = val
       }
       rowData.push({value: parseInt(v) || 0, name: props.item.payload.chart.items[i].description})
     }
@@ -456,10 +454,9 @@ const getDoughnutOptions = () => {
 
     for (const i in props.item.payload.chart.items) {
       let v: string = props.item.payload.chart.items[i].value || ''
-
-      const tokens = GetTokens(props.item.payload.chart.items[i].value, _cache)
-      if (tokens.length) {
-        v = RenderText(tokens, v, props.item?.lastEvent)
+      const val = RenderVar(props.item.payload.chart.items[i].value, props.item?.lastEvent);
+      if (val) {
+        v = val
       }
       rowData.push({value: parseInt(v) || 0, name: props.item.payload.chart.items[i].description})
     }
