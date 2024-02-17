@@ -63,8 +63,8 @@ const changedForActionButton = async (options: EntitiesActionOptions) => {
       </ElCol>
     </ElRow>
 
-    <ElRow :gutter="24">
-      <ElCol :span="12" :xs="12">
+    <ElRow>
+      <ElCol>
         <ElFormItem :label="$t('dashboard.editor.type')" prop="type">
           <ElSelect
               v-model="currentItem.payload.slider.orientation"
@@ -77,7 +77,6 @@ const changedForActionButton = async (options: EntitiesActionOptions) => {
           </ElSelect>
         </ElFormItem>
       </ElCol>
-      <ElCol :span="12" :xs="12"/>
     </ElRow>
 
     <ElRow :gutter="24">
@@ -128,8 +127,8 @@ const changedForActionButton = async (options: EntitiesActionOptions) => {
       </ElCol>
     </ElRow>
 
-    <ElRow :gutter="24">
-      <ElCol :span="12" :xs="12">
+    <ElRow>
+      <ElCol>
         <ElFormItem :label="$t('dashboard.editor.attrField')" prop="value">
           <KeysSearch v-model="currentItem.payload.slider.attribute" :obj="currentItem.lastEvent"
                       @change="onChangeValue"/>

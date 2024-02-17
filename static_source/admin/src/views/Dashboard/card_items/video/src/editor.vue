@@ -44,8 +44,8 @@ const onChangeValue = (val) => {
       </ElCol>
     </ElRow>
 
-    <ElRow :gutter="24">
-      <ElCol :span="12" :xs="12">
+    <ElRow>
+      <ElCol>
         <ElFormItem :label="$t('dashboard.editor.type')" prop="type">
           <ElSelect
               v-model="currentItem.payload.video.playerType"
@@ -57,17 +57,15 @@ const onChangeValue = (val) => {
           </ElSelect>
         </ElFormItem>
       </ElCol>
-      <ElCol :span="12" :xs="12"/>
     </ElRow>
 
-    <ElRow :gutter="24" v-if="currentItem.payload.video.playerType === playerType.youtube">
-      <ElCol :span="12" :xs="12">
+    <ElRow v-if="currentItem.payload.video.playerType === playerType.youtube">
+      <ElCol>
         <ElFormItem :label="$t('dashboard.editor.attrField')" prop="value">
           <KeysSearch v-model="currentItem.payload.video.attribute" :obj="currentItem.lastEvent"
                       @change="onChangeValue"/>
         </ElFormItem>
       </ElCol>
-      <ElCol :span="12" :xs="12"/>
     </ElRow>
 
   </div>
