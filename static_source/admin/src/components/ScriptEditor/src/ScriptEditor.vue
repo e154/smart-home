@@ -22,7 +22,7 @@ import 'codemirror/addon/lint/coffeescript-lint'
 import 'codemirror/addon/hint/show-hint';
 import 'codemirror/addon/hint/javascript-hint';
 import 'codemirror/addon/hint/show-hint.css';
-import {HintDictionary, HintDictionaryCoffee} from "@/views/Scripts/components/types";
+import {HintDictionary, HintDictionaryCoffee} from "./types";
 import {useAppStore} from "@/store/modules/app";
 import {useEmitt} from "@/hooks/web/useEmitt";
 

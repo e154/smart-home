@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import {computed, PropType} from "vue";
 import {CardItem, Core} from "@/views/Dashboard/core/core";
-import {ElCol, ElColorPicker, ElDivider, ElFormItem, ElRow} from 'element-plus'
+import {ElCol, ElDivider, ElFormItem, ElRow} from 'element-plus'
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {useI18n} from "@/hooks/web/useI18n";
 import {KeysSearch} from "@/views/Dashboard/components";
 import {EntitiesAction, EntitiesActionOptions} from "@/components/EntitiesAction";
+import {ColorPicker} from "@/components/ColorPicker";
 
 const {t} = useI18n()
 
@@ -57,7 +58,7 @@ const changedForActionButton = async (options: EntitiesActionOptions) => {
     <ElRow>
       <ElCol>
         <ElFormItem :label="$t('dashboard.editor.colorPicker.defaultColor')" prop="color">
-          <ElColorPicker show-alpha v-model="currentItem.payload.colorPicker.color"/>
+          <ColorPicker show-alpha v-model="currentItem.payload.colorPicker.color"/>
         </ElFormItem>
       </ElCol>
     </ElRow>

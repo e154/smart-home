@@ -7,7 +7,6 @@ import {
   ElCol,
   ElCollapse,
   ElCollapseItem,
-  ElColorPicker,
   ElDivider,
   ElForm,
   ElFormItem,
@@ -24,6 +23,7 @@ import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {useI18n} from "@/hooks/web/useI18n";
 import {KeysSearch} from "@/views/Dashboard/components";
 import {comparisonType} from "@/views/Dashboard/core/types";
+import {ColorPicker} from "@/components/ColorPicker";
 
 const {t} = useI18n()
 
@@ -172,7 +172,7 @@ const onChangeValue = (val) => {
             <ElRow>
               <ElCol>
                 <ElFormItem :label="$t('dashboard.editor.color')" prop="background">
-                  <ElColorPicker show-alpha v-model="prop.color"/>
+                  <ColorPicker show-alpha v-model="prop.color"/>
                 </ElFormItem>
               </ElCol>
             </ElRow>
@@ -249,7 +249,7 @@ const onChangeValue = (val) => {
     <ElRow>
       <ElCol>
         <ElFormItem :label="$t('dashboard.editor.color')" prop="background">
-          <ElColorPicker show-alpha v-model="currentItem.payload.progress.color"/>
+          <ColorPicker show-alpha v-model="currentItem.payload.progress.color"/>
         </ElFormItem>
       </ElCol>
     </ElRow>

@@ -331,6 +331,7 @@ const onDragStart = (e) => {
   transform: rotate(90deg);
   z-index: 9999;
   opacity: 0.5;
+  color: #eeeeee;
 }
 
 .item-card {

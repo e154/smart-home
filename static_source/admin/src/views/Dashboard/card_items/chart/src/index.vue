@@ -557,40 +557,40 @@ const prepareData = debounce(async () => {
 
 const reloadKey = ref(0)
 const reload = debounce(() => {
-      reloadKey.value += 1
-      requestCurrentState(props.item?.entityId);
-    }, 100
+    reloadKey.value += 1
+    requestCurrentState(props.item?.entityId);
+  }, 100
 )
 
 watch(
-    () => props.item.lastEvent,
-    (val?: CardItem) => {
-      // prepareData();
-    },
-    {
-      deep: true,
-      immediate: true
-    }
+  () => props.item.lastEvent,
+  (val?: CardItem) => {
+    // prepareData();
+  },
+  {
+    deep: true,
+    immediate: true
+  }
 )
 
 watch(
-    () => [props.item.width, props.item.height, props.item.payload.chart],
-    (width, height, chart) => {
+  () => [props.item.width, props.item.height, props.item.payload.chart],
+  (width, height, chart) => {
+    reload();
+  },
+  {
+    deep: true,
+    immediate: true
+  }
+)
+
+watch(
+  () => props.item.hidden,
+  (val?: boolean) => {
+    if (!val) {
       reload();
-    },
-    {
-      deep: true,
-      immediate: true
     }
-)
-
-watch(
-    () => props.item.hidden,
-    (val?: boolean) => {
-      if (!val) {
-        reload();
-      }
-    }
+  }
 )
 
 // requestCurrentState(props.item?.entityId);

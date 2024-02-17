@@ -3,7 +3,6 @@ import {computed, PropType} from "vue";
 import {CardItem, Core} from "@/views/Dashboard/core/core";
 import {
   ElCol,
-  ElColorPicker,
   ElDivider,
   ElFormItem,
   ElInputNumber,
@@ -16,6 +15,7 @@ import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {useI18n} from "@/hooks/web/useI18n";
 import {KeysSearch} from "@/views/Dashboard/components";
 import {EntitiesAction, EntitiesActionOptions} from "@/components/EntitiesAction";
+import {ColorPicker} from "@/components/ColorPicker";
 
 const {t} = useI18n()
 
@@ -83,12 +83,12 @@ const changedForActionButton = async (options: EntitiesActionOptions) => {
     <ElRow :gutter="24">
       <ElCol :span="12" :xs="12">
         <ElFormItem :label="$t('dashboard.editor.slider.color')" prop="color">
-          <ElColorPicker show-alpha v-model="currentItem.payload.slider.color"/>
+          <ColorPicker show-alpha v-model="currentItem.payload.slider.color"/>
         </ElFormItem>
       </ElCol>
       <ElCol :span="12" :xs="12">
         <ElFormItem :label="$t('dashboard.editor.slider.trackColor')" prop="trackColor">
-          <ElColorPicker show-alpha v-model="currentItem.payload.slider.trackColor"/>
+          <ColorPicker show-alpha v-model="currentItem.payload.slider.trackColor"/>
         </ElFormItem>
       </ElCol>
     </ElRow>

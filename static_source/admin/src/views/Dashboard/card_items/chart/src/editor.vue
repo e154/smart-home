@@ -7,7 +7,6 @@ import {
   ElCol,
   ElCollapse,
   ElCollapseItem,
-  ElColorPicker,
   ElDivider,
   ElForm,
   ElFormItem,
@@ -22,6 +21,7 @@ import {
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {FilterList, RangeList} from "./types";
 import {useI18n} from "@/hooks/web/useI18n";
+import {ColorPicker} from "@/components/ColorPicker";
 
 const {t} = useI18n()
 
@@ -134,12 +134,12 @@ const removeChartItem = (index: number) => {
   <ElRow :gutter="24">
     <ElCol :span="12" :xs="12">
       <ElFormItem :label="$t('dashboard.editor.chart.color')" prop="background">
-        <ElColorPicker show-alpha v-model="currentItem.payload.chart.color"/>
+        <ColorPicker show-alpha v-model="currentItem.payload.chart.color"/>
       </ElFormItem>
     </ElCol>
     <ElCol :span="12" :xs="12">
       <ElFormItem :label="$t('dashboard.editor.chart.backgroundColor')" prop="background">
-        <ElColorPicker show-alpha v-model="currentItem.payload.chart.backgroundColor"/>
+        <ColorPicker show-alpha v-model="currentItem.payload.chart.backgroundColor"/>
       </ElFormItem>
     </ElCol>
   </ElRow>

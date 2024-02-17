@@ -4,10 +4,10 @@ import {CardItem, requestCurrentState} from "@/views/Dashboard/core/core";
 import {debounce} from "lodash-es";
 import {Cache, RenderVar} from "@/views/Dashboard/core/render";
 import api from "@/api/api";
-import {ElColorPicker} from 'element-plus'
 import {useI18n} from "@/hooks/web/useI18n";
 import {ApiEntityCallActionRequest, ApiTypes} from "@/api/stub";
 import {ItemPayloadColorPicker} from "./types";
+import {ColorPicker} from "@/components/ColorPicker";
 
 const {t} = useI18n()
 
@@ -95,7 +95,7 @@ requestCurrentState(props.item?.entityId);
 
 <template>
   <div ref="el" class="h-[100%] w-[100%]">
-    <ElColorPicker v-model="value" v-on:change="updateColor"/>
+    <ColorPicker v-model="value" v-on:change="updateColor"/>
   </div>
 </template>
 

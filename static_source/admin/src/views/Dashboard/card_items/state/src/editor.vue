@@ -7,7 +7,6 @@ import {
   ElCol,
   ElCollapse,
   ElCollapseItem,
-  ElColorPicker,
   ElDivider,
   ElForm,
   ElFormItem,
@@ -27,6 +26,7 @@ import {ItemPayloadState} from "./types";
 import {ImageSearch} from "@/components/ImageSearch";
 import {KeysSearch} from "@/views/Dashboard/components";
 import {comparisonType} from "@/views/Dashboard/core/types";
+import {ColorPicker} from "@/components/ColorPicker";
 
 const {t} = useI18n()
 
@@ -262,7 +262,7 @@ const onChangePropKey = (val, index) => {
           <ElRow>
             <ElCol>
               <ElFormItem :label="$t('dashboard.editor.iconColor')" prop="iconColor">
-                <ElColorPicker show-alpha v-model="prop.iconColor"/>
+                <ColorPicker show-alpha v-model="prop.iconColor"/>
               </ElFormItem>
             </ElCol>
           </ElRow>
@@ -337,7 +337,7 @@ const onChangePropKey = (val, index) => {
   <ElRow>
     <ElCol>
       <ElFormItem :label="$t('dashboard.editor.iconColor')" prop="iconColor">
-        <ElColorPicker show-alpha v-model="currentItem.payload.state.defaultIconColor"/>
+        <ColorPicker show-alpha v-model="currentItem.payload.state.defaultIconColor"/>
       </ElFormItem>
     </ElCol>
   </ElRow>
