@@ -597,6 +597,8 @@ export default {
             background: 'Background',
             actionOptions: 'Action Options',
             appearanceOptions: 'Appearance Options',
+            JSON_VIEWER: 'Json Viewer',
+            jsonViewerOptions: 'Json Viewer Options',
             slider: {
                 options: 'Slider Options',
                 color: 'Color',

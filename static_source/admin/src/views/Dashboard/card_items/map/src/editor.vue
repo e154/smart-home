@@ -211,7 +211,7 @@ const lastEvent = (index: number): EventStateChange | undefined => {
                 <ElRow class="mb-10px">
                   <ElCol>
                     <ElFormItem :label="$t('dashboard.editor.image')" prop="image">
-                      <ImageSearch v-model="prop.image" @change="onSelectImageForAction(index, ...arguments)"/>
+                      <ImageSearch v-model="prop.image" @change="onSelectImageForAction(index, $event)"/>
                     </ElFormItem>
                   </ElCol>
                 </ElRow>

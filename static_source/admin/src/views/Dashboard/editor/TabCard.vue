@@ -342,7 +342,7 @@ onMounted(() => {
       if (menu !== 'cards') {
         return
       }
-      console.log("cards", menu)
+      // console.log("cards", menu)
       showMenuWindow.value = !showMenuWindow.value
     }
   })

@@ -135,7 +135,8 @@ const toggleMenu = (menu: string): void => {
         :label="tab.name"
         :key="index"
         :disabled="!tab.enabled"
-        :class="[{'gap': tab.gap}]">
+        :class="[{'gap': tab.gap}]"
+        :lazy="true">
         <ViewTab :tab="tab" :key="index" :core="core"/>
       </ElTabPane>
     </ElTabs>

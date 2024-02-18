@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, onMounted, PropType, ref, watch} from "vue";
+import {computed, onMounted, PropType, ref, unref, watch} from "vue";
 import {CardItem, requestCurrentState} from "@/views/Dashboard/core/core";
 import {GridProp} from "./types";
 import {Cache, RenderVar} from "@/views/Dashboard/core/render";
@@ -53,10 +53,10 @@ const update = debounce(() => {
   let token: string = props.item?.payload.grid?.attribute || ''
   const result = RenderVar(token, props.item?.lastEvent)
   board.value = getBoard(result) || []
-})
+}, 100)
 
 const tileTemplates = ref<Map<string, GridProp>>({});
-const prepareTileTemplates = () => {
+const prepareTileTemplates = debounce(() => {
   tileTemplates.value = {};
   if (!props.item?.payload?.grid?.items) {
     return
@@ -64,19 +64,15 @@ const prepareTileTemplates = () => {
   for (const item of props.item?.payload.grid?.items) {
     tileTemplates.value[item.key] = item;
   }
-}
+}, 100)
 
 watch(
-    () => props.item,
-    (val?: CardItem) => {
+    () => props.item?.uuid,
+    (val?: string) => {
       if (!val) return;
       update()
       prepareTileTemplates()
     },
-    {
-      deep: true,
-      immediate: true
-    }
 )
 
 const callAction = async (row: number, cell: number) => {

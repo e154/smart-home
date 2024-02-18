@@ -158,7 +158,7 @@ onMounted(() => {
       if (menu !== 'cardItems') {
         return
       }
-      console.log("cards", menu)
+      // console.log("cards", menu)
       showMenuWindow.value = !showMenuWindow.value
     }
   })

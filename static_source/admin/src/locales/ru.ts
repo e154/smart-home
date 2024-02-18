@@ -597,6 +597,8 @@ export default {
       background: 'Фон',
       actionOptions: 'Опции действий',
       appearanceOptions: 'Варианты внешнего вида',
+      JSON_VIEWER: 'Json Viewer',
+      jsonViewerOptions: 'Json Viewer Options',
       slider: {
         options: 'Параметры слайдера',
         color: 'Цвет',

@@ -134,10 +134,30 @@ export function getAllKeys(obj: NestedObject, parentKey = ''): string[] {
     const currentKey = parentKey ? `${parentKey}.${key}` : key;
 
     if (typeof obj[key] === 'object' && obj[key] !== null) {
+      keys.push(currentKey);
+      const childKeys = getAllKeys(obj[key] as NestedObject, currentKey);
+      if (childKeys.length > 0) {
+        keys = keys.concat(childKeys);
+      }
+    } else {
+      keys.push(currentKey);
+    }
+  }
+
+  return keys;
+}
+
+export function getFilteredKeys(obj: NestedObject, parentKey = ''): string[] {
+  let keys: string[] = [];
+
+  for (const key in obj) {
+    const currentKey = parentKey ? `${parentKey}.${key}` : key;
+
+    if (typeof obj[key] === 'object' && obj[key] !== null) {
       if ('name' in obj[key] && 'value' in obj[key] && 'type' in obj[key]) {
         keys.push(currentKey);
       } else {
-        const childKeys = getAllKeys(obj[key] as NestedObject, currentKey);
+        const childKeys = getFilteredKeys(obj[key] as NestedObject, currentKey);
         if (childKeys.length > 0) {
           keys = keys.concat(childKeys);
         }

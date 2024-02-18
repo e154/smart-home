@@ -2,7 +2,7 @@
 
 import {PropType, ref, watch} from "vue";
 import {ElAutocomplete} from 'element-plus'
-import {getAllKeys} from "@/views/Dashboard/core/render";
+import {getAllKeys, getFilteredKeys} from "@/views/Dashboard/core/render";
 import {propTypes} from "@/utils/propTypes";
 
 const currentValue = ref<Nullable<string>>(null)
@@ -12,6 +12,7 @@ const emit = defineEmits(['change', 'update:modelValue'])
 
 const props = defineProps({
   modelValue: propTypes.string.def(''),
+  allKeys: propTypes.bool.def(false),
   obj: {
     type: Object as PropType<Nullable<Object>>,
     default: () => undefined
@@ -25,10 +26,17 @@ watch(
       if (!props.obj) {
         return
       }
-      const keys = getAllKeys(val)
-      allKeys.value = keys.map(value => {
-        return {value: value}
-      })
+      if (props.allKeys) {
+        const keys = getAllKeys(val)
+        allKeys.value = keys.map(value => {
+          return {value: value}
+        })
+      } else {
+        const keys = getFilteredKeys(val)
+        allKeys.value = keys.map(value => {
+          return {value: value}
+        })
+      }
     },
     {
       immediate: true

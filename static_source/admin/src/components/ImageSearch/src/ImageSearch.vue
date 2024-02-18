@@ -31,8 +31,9 @@ onMounted(() => {
 watch(
     () => props.modelValue,
     (val?: ApiImage) => {
-      if (val === unref(currentImage)) return
-      currentImage.value = val || null
+      if (val === unref(currentImage)) return;
+      if (!val?.url) return;
+      currentImage.value = unref(val) || null
     },
     {
       immediate: true

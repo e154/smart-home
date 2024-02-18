@@ -242,7 +242,7 @@ const onChangeValue = (val) => {
           <ElRow>
             <ElCol>
               <ElFormItem :label="$t('dashboard.editor.image')" prop="image">
-                <ImageSearch v-model="prop.image" @change="onSelectImageForState(index, ...arguments)"/>
+                <ImageSearch v-model="prop.image" @change="onSelectImageForState(index, $event)"/>
               </ElFormItem>
             </ElCol>
           </ElRow>

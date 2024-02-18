@@ -235,7 +235,7 @@ const asButtonHandler = () => {
                 <ElDivider content-position="left">{{ $t('dashboard.editor.appearanceOptions') }}</ElDivider>
 
                 <ElFormItem :label="$t('dashboard.editor.image')" prop="image">
-                  <ImageSearch v-model="prop.image" @change="onSelectImageForAction(index, ...arguments)"/>
+                  <ImageSearch v-model="prop.image" @change="onSelectImageForAction(index, $event)"/>
                 </ElFormItem>
 
                 <ElDivider content-position="left">{{ $t('main.or') }}</ElDivider>
