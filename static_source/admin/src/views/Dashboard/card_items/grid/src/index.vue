@@ -25,7 +25,7 @@ const props = defineProps({
 
 const currentItem = computed(() => props.item as CardItem);
 
-const el = ref(null)
+const el = ref<ElRef>(null)
 onMounted(() => {
   // store dom element moveable
   props.item.setTarget(el.value)

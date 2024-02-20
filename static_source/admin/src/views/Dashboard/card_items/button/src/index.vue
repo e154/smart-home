@@ -19,7 +19,7 @@ const props = defineProps({
   disabled: propTypes.bool.def(false),
 })
 
-const el = ref(null)
+const el = ref<ElRef>(null)
 onMounted(() => {
   // store dom element moveable
   props.item.setTarget(el.value)

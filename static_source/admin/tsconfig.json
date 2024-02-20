@@ -30,7 +30,8 @@
       "@types/intro.js",
       "@types/qrcode",
       "vite-plugin-svg-icons/client",
-      "unplugin-vue-define-options/macros-global"
+      "unplugin-vue-define-options/macros-global",
+      "vite-plugin-pwa/client"
     ],
     "typeRoots": ["./node_modules/@types/", "./types"]
   },

@@ -15,12 +15,64 @@ import DefineOptions from "unplugin-vue-define-options/vite"
 import { createStyleImportPlugin, ElementPlusResolve } from 'vite-plugin-style-import'
 import Unfonts from 'unplugin-fonts/vite'
 import analyze from "rollup-plugin-analyzer";
+import {VitePWA, VitePWAOptions} from 'vite-plugin-pwa'
 
 // https://vitejs.dev/config/
 const root = process.cwd()
 
 function pathResolve(dir: string) {
   return resolve(root, '.', dir)
+}
+
+const pwaOptions: Partial<VitePWAOptions> = {
+  mode: 'production',
+  base: '/public/',
+  includeAssets: ['favicon.svg'],
+  manifest: {
+    id: '36b70975-9daf-4ea0-a451-340ab66fc175',
+    orientation: 'any',
+    name: "Smart Home Application",
+    short_name: "Smart Home",
+    description: "Software package for automation",
+    start_url: "/",
+    display: "standalone",
+    background_color: "#232324",
+    theme_color: "#232324",
+    icons: [
+      {
+        "src": "/public/android-chrome-64x64.png",
+        "type": "image/png",
+        "sizes": "64x64"
+      },
+      {
+        "src": "/public/android-chrome-192x192.png",
+        "type": "image/png",
+        "sizes": "192x192"
+      },
+      {
+        src: '/public/android-chrome-512x512.png',
+        sizes: '512x512',
+        type: 'image/png',
+      },
+      {
+        src: '/public/maskable-icon.png',
+        sizes: '512x512',
+        type: 'image/png',
+        purpose: 'maskable'
+      }
+    ],
+  },
+  registerType: 'autoUpdate',
+
+  strategies: 'injectManifest',
+  injectManifest: {
+    rollupFormat: 'iife'
+  },
+
+  devOptions: {
+    enabled: true
+    /* other options */
+  }
 }
 
 export default ({ command, mode }: ConfigEnv): UserConfig => {
@@ -78,7 +130,8 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       DefineOptions(),
       ViteEjsPlugin({
         title: env.VITE_APP_TITLE
-      })
+      }),
+      VitePWA(pwaOptions)
     ],
 
     css: {

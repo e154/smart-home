@@ -69,13 +69,9 @@ class Stream {
       return;
     }
 
-    if (m.query == 'html5_notify') {
-      const result = JSON.parse(ev.data);
-      m = result;
-      const body: EventHTML5Notify = JSON.parse(atob(m.body));
-      // console.log(body)
-      this.notify(body);
-      return;
+    switch (m.query) {
+      case 'html5_notify':
+        return this.html5Notify(ev.data)
     }
 
     if (!this.subscribers) {
@@ -128,6 +124,13 @@ class Stream {
         }
       });
     }
+  }
+
+  private html5Notify(data: string) {
+    const {body} = JSON.parse(data);
+    const msg: EventHTML5Notify = JSON.parse(atob(body));
+    // console.log(msg)
+    this.notify(msg);
   }
 }
 

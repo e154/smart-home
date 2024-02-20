@@ -13,6 +13,18 @@ export interface EventActionCompleted {
   id: number
 }
 
+export interface ServerSubscription {
+  endpoint: string
+  keys: object
+  readonly expirationTime: EpochTimeStamp | null;
+}
+
+export interface EventUserDevices {
+  user_id?: number
+  subscription: ServerSubscription[]
+  session_id?: string
+}
+
 export interface EventNewWebPushPublicKey {
   user_id?: number
   public_key: string

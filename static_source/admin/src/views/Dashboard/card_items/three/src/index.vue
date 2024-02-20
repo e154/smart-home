@@ -18,7 +18,7 @@ const props = defineProps({
   },
 })
 
-const el = ref(null)
+const el = ref<ElRef>(null)
 const renderer = ref(null)
 const camera = ref(null)
 const box = ref(null)

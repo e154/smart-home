@@ -16,6 +16,7 @@ import api from "@/api/api";
 import stream from "@/api/stream";
 import {ApiSigninResponse} from "@/api/stub";
 import {prepareUrl} from "@/utils/serverId";
+import pushService from "@/api/pushService";
 
 const {required} = useValidator()
 const emit = defineEmits(['to-restore'])
@@ -170,10 +171,8 @@ const signIn = async () => {
 
           // ws
           stream.connect(import.meta.env.VITE_API_BASEPATH as string || window.location.origin, accessToken);
-          // geo location
-          // customNavigator.watchPosition();
-          // push service
-          // registerServiceWorker.start();
+          // push
+          pushService.start()
 
           await permissionStore.generateRoutes('none').catch(() => {
           })

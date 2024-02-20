@@ -8,6 +8,7 @@ import { LayoutType } from '@/types/layout'
 import { ThemeTypes } from '@/types/theme'
 import {ApiCurrentUser} from "@/api/stub";
 import stream from "@/api/stream";
+import pushService from "@/api/pushService";
 
 const { wsCache } = useCache()
 
@@ -52,6 +53,7 @@ export const useAppStore = defineStore('app', {
     const accessToken = wsCache.get("accessToken") as string || '';
     if (accessToken) {
       stream.connect(import.meta.env.VITE_API_BASEPATH as string || window.location.origin, accessToken);
+      pushService.start()
     }
     return {
       token: accessToken,

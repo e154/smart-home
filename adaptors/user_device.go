@@ -32,6 +32,7 @@ import (
 type IUserDevice interface {
 	Add(ctx context.Context, ver *m.UserDevice) (id int64, err error)
 	GetByUserId(ctx context.Context, userId int64) (list []*m.UserDevice, err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.UserDevice, total int64, err error)
 	Delete(ctx context.Context, id int64) (err error)
 	fromDb(dbVer *db.UserDevice) (ver *m.UserDevice)
 	toDb(ver *m.UserDevice) (dbVer *db.UserDevice)
@@ -74,6 +75,29 @@ func (n *UserDevice) GetByUserId(ctx context.Context, userId int64) (list []*m.U
 	for i, dbVer := range dbList {
 		list[i] = n.fromDb(dbVer)
 	}
+	return
+}
+
+// List ...
+func (n *UserDevice) List(ctx context.Context, limit, offset int64, orderBy, sort string) (list []*m.UserDevice, total int64, err error) {
+
+	if sort == "" {
+		sort = "id"
+	}
+	if orderBy == "" {
+		orderBy = "desc"
+	}
+
+	var dbList []*db.UserDevice
+	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort); err != nil {
+		return
+	}
+
+	list = make([]*m.UserDevice, 0)
+	for _, dbVer := range dbList {
+		list = append(list, n.fromDb(dbVer))
+	}
+
 	return
 }
 

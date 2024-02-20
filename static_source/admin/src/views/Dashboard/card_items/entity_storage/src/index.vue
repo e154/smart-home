@@ -154,7 +154,7 @@ const paginationObj = ref<Pagination>({
   pageSizes: [20, 50, 100, 150, 250],
 })
 
-const el = ref(null)
+const el = ref<ElRef>(null)
 const currentID = ref('')
 onMounted(() => {
   props.item.setTarget(el.value)

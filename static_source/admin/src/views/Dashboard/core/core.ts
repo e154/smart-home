@@ -236,9 +236,9 @@ export class CardItem {
     }
   }
 
-  _target: any = null;
+  _target: ElRef = null;
 
-  get target(): any {
+  get target(): ElRef {
     return this._target;
   }
 
@@ -473,7 +473,7 @@ export class CardItem {
   }
 
   // target
-  setTarget(e) {
+  setTarget(e: ElRef) {
     this._target = e;
   }
 

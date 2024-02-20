@@ -39,3 +39,16 @@ type EventNewWebPushPublicKey struct {
 	SessionID string `json:"session_id"`
 	PublicKey string `json:"public_key"`
 }
+
+// EventGetUserDevices ...
+type EventGetUserDevices struct {
+	UserID    int64  `json:"user_id,omitempty"`
+	SessionID string `json:"session_id"`
+}
+
+// EventUserDevices ...
+type EventUserDevices struct {
+	UserID        int64             `json:"user_id,omitempty"`
+	SessionID     string            `json:"session_id"`
+	Subscriptions []*m.Subscription `json:"subscription"`
+}

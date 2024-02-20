@@ -61,6 +61,7 @@ func (s *EventHandler) Start(_ context.Context) error {
 	s.stream.Subscribe("event_get_last_state", s.EventGetLastState)
 	s.stream.Subscribe("event_add_webpush_subscription", s.EventAddWebPushSubscription)
 	s.stream.Subscribe("event_get_webpush_public_key", s.EventGetWebPushPublicKey)
+	s.stream.Subscribe("event_get_user_devices", s.EventGetUserDevices)
 	s.stream.Subscribe("command_terminal", s.CommandTerminal)
 	return nil
 }
@@ -70,6 +71,7 @@ func (s *EventHandler) Shutdown(_ context.Context) error {
 	s.stream.UnSubscribe("event_get_last_state")
 	s.stream.UnSubscribe("event_add_webpush_subscription")
 	s.stream.UnSubscribe("event_get_webpush_public_key")
+	s.stream.UnSubscribe("event_get_user_devices")
 	s.stream.UnSubscribe("command_terminal")
 	return nil
 }
@@ -81,6 +83,18 @@ func (s *EventHandler) EventGetWebPushPublicKey(client stream.IStreamClient, que
 	}
 
 	s.eventBus.Publish(webpush.TopicPluginWebpush, webpush.EventGetWebPushPublicKey{
+		UserID:    userID,
+		SessionID: client.SessionID(),
+	})
+}
+
+func (s *EventHandler) EventGetUserDevices(client stream.IStreamClient, query string, body []byte) {
+	var userID int64
+	if user := client.GetUser(); user != nil {
+		userID = user.Id
+	}
+
+	s.eventBus.Publish(webpush.TopicPluginWebpush, webpush.EventGetUserDevices{
 		UserID:    userID,
 		SessionID: client.SessionID(),
 	})

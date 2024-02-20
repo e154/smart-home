@@ -47,7 +47,6 @@
     "lodash-es": "^4.17.21",
     "lodash.debounce": "^4.0.8",
     "mitt": "^3.0.0",
-    "mockjs": "^1.1.0",
     "moveable": "^0.51.1",
     "muuri": "^0.9.5",
     "nprogress": "^0.2.0",
@@ -57,7 +56,6 @@
     "pinia": "^2.0.34",
     "qrcode": "^1.5.1",
     "qs": "^6.11.1",
-    "splitpanes": "^3.1.5",
     "stats.js": "^0.17.0",
     "three": "0.134",
     "tinymce": "^6.6.2",
@@ -134,12 +132,19 @@
     "vite-plugin-mock": "^2.9.6",
     "vite-plugin-progress": "^0.0.7",
     "vite-plugin-purge-icons": "^0.9.2",
+    "vite-plugin-pwa": "^0.19.0",
     "vite-plugin-style-import": "2.0.0",
     "vite-plugin-svg-icons": "^2.0.1",
     "vite-plugin-windicss": "^1.8.10",
     "vue-tsc": "^1.2.0",
     "windicss": "^3.5.6",
-    "windicss-analysis": "^0.3.5"
+    "windicss-analysis": "^0.3.5",
+    "workbox-cacheable-response": "^7.0.0",
+    "workbox-expiration": "^7.0.0",
+    "workbox-precaching": "^7.0.0",
+    "workbox-routing": "^7.0.0",
+    "workbox-strategies": "^7.0.0",
+    "workbox-window": "^7.0.0"
   },
   "engines": {
     "node": ">= 14.18.0"

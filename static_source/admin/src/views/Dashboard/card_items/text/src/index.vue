@@ -8,7 +8,6 @@ import debounce from 'lodash.debounce'
 import {useI18n} from "@/hooks/web/useI18n";
 import {ButtonAction, Compare} from "@/views/Dashboard/core/types";
 import {AttributeValue, GetAttributeValue} from "@/components/Attributes";
-import {GetFullImageUrl} from "@/utils/serverId";
 
 const {t} = useI18n()
 
@@ -26,7 +25,7 @@ const props = defineProps({
   },
 })
 
-const el = ref(null)
+const el = ref<ElRef>(null)
 onMounted(() => {
   // store dom element moveable
   props.item.setTarget(el.value)
@@ -235,8 +234,8 @@ update()
 }
 
 :deep(svg) {
-    display: inline!important;
-    vertical-align: middle;
+  display: inline !important;
+  vertical-align: middle;
 }
 
 .unselectable {
