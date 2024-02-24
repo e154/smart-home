@@ -38,7 +38,8 @@ export default {
     open: 'Открыть',
     tags: 'Теги',
     actions: 'Действия',
-    or: 'Или'
+    or: 'Или',
+    newContentMessage: 'Доступен новый контент, нажмите кнопку перезагрузки, чтобы обновить.'
   },
   message: {
     unknownError: "Неизвестная ошибка",
@@ -563,7 +564,6 @@ export default {
       width: "Ширина",
       icon: "Иконка",
       round: "Закругление",
-      size: "Размер",
       stateOptions: "Параметры состояния",
       defaultImage: "Изображение по умолчанию",
       selectAction: 'Выберите действие',

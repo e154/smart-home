@@ -1,21 +1,21 @@
-import { resolve } from 'path'
-import { loadEnv } from 'vite'
-import type { UserConfig, ConfigEnv } from 'vite'
+import {resolve} from 'path'
+import type {ConfigEnv, UserConfig} from 'vite'
+import {loadEnv} from 'vite'
 import Vue from '@vitejs/plugin-vue'
 import VueJsx from '@vitejs/plugin-vue-jsx'
 import WindiCSS from 'vite-plugin-windicss'
 import progress from 'vite-plugin-progress'
 import EslintPlugin from 'vite-plugin-eslint'
-import { ViteEjsPlugin } from "vite-plugin-ejs"
-import { viteMockServe } from 'vite-plugin-mock'
+import {ViteEjsPlugin} from "vite-plugin-ejs"
 import PurgeIcons from 'vite-plugin-purge-icons'
 import VueI18nPlugin from "@intlify/unplugin-vue-i18n/vite"
-import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
+import {createSvgIconsPlugin} from 'vite-plugin-svg-icons'
 import DefineOptions from "unplugin-vue-define-options/vite"
-import { createStyleImportPlugin, ElementPlusResolve } from 'vite-plugin-style-import'
+import {createStyleImportPlugin, ElementPlusResolve} from 'vite-plugin-style-import'
 import Unfonts from 'unplugin-fonts/vite'
 import analyze from "rollup-plugin-analyzer";
 import {VitePWA, VitePWAOptions} from 'vite-plugin-pwa'
+import process from "node:process";
 
 // https://vitejs.dev/config/
 const root = process.cwd()
@@ -26,56 +26,58 @@ function pathResolve(dir: string) {
 
 const pwaOptions: Partial<VitePWAOptions> = {
   mode: 'production',
-  base: '/public/',
-  includeAssets: ['favicon.svg'],
+  base: '/',
+  includeAssets: ['*.svg', '*.png', '*.xml', '*.ico'],
   manifest: {
     id: '36b70975-9daf-4ea0-a451-340ab66fc175',
     orientation: 'any',
-    name: "Smart Home Application",
+    name: "Smart Home",
     short_name: "Smart Home",
     description: "Software package for automation",
     start_url: "/",
     display: "standalone",
-    background_color: "#232324",
-    theme_color: "#232324",
+    background_color: "#333335",
+    theme_color: "#333335",
     icons: [
       {
-        "src": "/public/android-chrome-64x64.png",
+        "src": "/android-chrome-64x64.png",
         "type": "image/png",
         "sizes": "64x64"
       },
       {
-        "src": "/public/android-chrome-192x192.png",
+        "src": "/android-chrome-192x192.png",
         "type": "image/png",
         "sizes": "192x192"
       },
       {
-        src: '/public/android-chrome-512x512.png',
+        src: '/android-chrome-512x512.png',
         sizes: '512x512',
         type: 'image/png',
       },
       {
-        src: '/public/maskable-icon.png',
+        src: '/maskable-icon.png',
         sizes: '512x512',
         type: 'image/png',
         purpose: 'maskable'
       }
     ],
   },
+
   registerType: 'autoUpdate',
 
   strategies: 'injectManifest',
   injectManifest: {
-    rollupFormat: 'iife'
+    rollupFormat: 'iife',
+    maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
   },
 
-  devOptions: {
-    enabled: true
-    /* other options */
-  }
+  // add this to cache all the imports
+  workbox: {
+    maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+  },
 }
 
-export default ({ command, mode }: ConfigEnv): UserConfig => {
+export default ({command, mode}: ConfigEnv): UserConfig => {
   let env = {} as any
   const isBuild = command === 'build'
   if (!isBuild) {
@@ -116,22 +118,12 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
         svgoOptions: true
       }),
       PurgeIcons(),
-      // viteMockServe({
-      //   ignore: /^\_/,
-      //   mockPath: 'mock',
-      //   localEnabled: !isBuild,
-      //   prodEnabled: isBuild,
-      //   injectCode: `
-      //     import { setupProdMockServer } from '../mock/_createProductionServer'
-      //
-      //     setupProdMockServer()
-      //     `
-      // }),
       DefineOptions(),
       ViteEjsPlugin({
         title: env.VITE_APP_TITLE
       }),
-      VitePWA(pwaOptions)
+      // virtualMessagePlugin(),
+      VitePWA(pwaOptions),
     ],
 
     css: {
@@ -200,9 +192,8 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
         'echarts-wordcloud',
         'intro.js',
         'qrcode',
-        '@wangeditor/editor',
-        '@wangeditor/editor-for-vue'
       ]
-    }
+    },
+
   }
 }

@@ -1,6 +1,7 @@
 import {ConstantBackoff, Websocket, WebsocketBuilder} from 'websocket-ts';
 import {EventHTML5Notify} from '@/api/types';
 import {useCache} from "@/hooks/web/useCache";
+import {UUID} from "uuid-generator-ts";
 
 const {wsCache} = useCache()
 
@@ -45,16 +46,23 @@ class Stream {
   }
 
   private error(ws: Websocket, ev: Event): any {
+    // appStore.setOnlineStatus('offline')
     console.log('error');
   }
 
   private onClose(ws: Websocket, ev: CloseEvent): any {
+    // appStore.setOnlineStatus('offline')
     console.log('closed');
   }
 
   private onOpen(ws: Websocket, ev: Event, accessToken: string): any {
+    // appStore.setOnlineStatus('online')
     console.log('opened');
     ws.send(JSON.stringify({body: btoa('init'), access_token: accessToken}));
+    ws.send(JSON.stringify({
+      id: UUID.createUUID(),
+      query: 'event_get_server_version',
+    }));
   }
 
   private onMessage(ws: Websocket, ev: MessageEvent): any {

@@ -61,4 +61,5 @@ func init() {
 	Server.AddCommand(restoreCmd)
 	Server.AddCommand(versionCmd)
 	Server.AddCommand(gateCmd)
+	Server.AddCommand(generateCertCmd)
 }

@@ -19,9 +19,10 @@
 package controllers
 
 import (
-	"embed"
+	"encoding/json"
 	"fmt"
 	"html/template"
+	"io/fs"
 	"net/http"
 
 	"github.com/e154/smart-home/version"
@@ -40,14 +41,15 @@ func NewControllerIndex(common *ControllerCommon) *ControllerIndex {
 }
 
 // Index ...
-func (c ControllerIndex) Index(publicAssets embed.FS) http.Handler {
+func (c ControllerIndex) Index(publicAssets fs.FS) http.Handler {
+	serverVersion, _ := json.Marshal(version.GetVersion())
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		b := map[string]interface{}{
 			"server_url":     c.ControllerCommon.appConfig.ApiFullAddress(),
 			"run_mode":       c.ControllerCommon.appConfig.Mode,
-			"server_version": version.VersionString,
+			"server_version": string(serverVersion),
 		}
-		templates := template.Must(template.New("index").ParseFS(publicAssets, "public/index.html"))
+		templates := template.Must(template.New("index").ParseFS(publicAssets, "index.html"))
 
 		err := templates.ExecuteTemplate(w, "index.html", &b)
 		if err != nil {

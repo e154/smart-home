@@ -5,13 +5,13 @@ NODE_ENV=production
 VITE_API_BASEPATH=
 
 # 打包路径
-VITE_BASE_PATH=/public
+VITE_BASE_PATH=/
 
 # 是否删除debugger
 VITE_DROP_DEBUGGER=true
 
 # 是否删除console.log
-VITE_DROP_CONSOLE=true
+VITE_DROP_CONSOLE=false
 
 # 是否sourcemap
 VITE_SOURCEMAP=false

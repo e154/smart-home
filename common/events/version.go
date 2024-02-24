@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2023, Filippov Alex
+// Copyright (C) 2024, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -16,22 +16,17 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package api
+package events
 
-import "fmt"
+import "github.com/e154/smart-home/version"
 
-// Config ...
-type Config struct {
-	HttpPort  int
-	HttpsPort int
-	Https     bool
-	Swagger   bool
-	Debug     bool
-	Pprof     bool
-	Gzip      bool
+// EventServerVersion ...
+type EventServerVersion struct {
+	Common
+	Version version.Version `json:"version"`
 }
 
-// String ...
-func (c Config) String() string {
-	return fmt.Sprintf(":%d", c.HttpPort)
+// EventGetServerVersion ...
+type EventGetServerVersion struct {
+	Common
 }

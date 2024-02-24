@@ -7,7 +7,7 @@
 // License as published by the Free Software Foundation; either
 // version 3 of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This libraryc is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Library General Public License for more details.
@@ -20,7 +20,9 @@ package api
 
 import (
 	"context"
+	"fmt"
 	"net/http"
+	"path"
 	"strings"
 	"time"
 
@@ -121,11 +123,18 @@ func (a *Api) Start() (err error) {
 	a.registerHandlers()
 
 	go func() {
-		if err := a.echo.Start(a.cfg.String()); err != nil {
-			if err.Error() != "http: Server closed" {
+		if a.cfg.Https {
+			if err := a.echo.StartTLS(fmt.Sprintf(":%d", a.cfg.HttpsPort), path.Join("conf", "cert.pem"), path.Join("conf", "key.pem")); err != http.ErrServerClosed {
 				log.Error(err.Error())
 			}
+		} else {
+			if err := a.echo.Start(a.cfg.String()); err != nil {
+				if err.Error() != "http: Server closed" {
+					log.Error(err.Error())
+				}
+			}
 		}
+
 	}()
 	log.Infof("server started at %s", a.cfg.String())
 
@@ -329,7 +338,8 @@ func (a *Api) registerHandlers() {
 
 	// static files
 	a.echo.GET("/", echo.WrapHandler(a.controllers.Index(publicAssets.F)))
-	a.echo.GET("/public/*", echo.WrapHandler(http.StripPrefix("/", http.FileServer(http.FS(publicAssets.F)))))
+	a.echo.GET("/*", echo.WrapHandler(http.FileServer(http.FS(publicAssets.F))))
+	a.echo.GET("/assets/*", echo.WrapHandler(http.FileServer(http.FS(publicAssets.F))))
 	fileServer := http.FileServer(http.Dir("./data/file_storage"))
 	a.echo.Any("/upload/*", echo.WrapHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		r.RequestURI = strings.ReplaceAll(r.RequestURI, "/upload/", "/")

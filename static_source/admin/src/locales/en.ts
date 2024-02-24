@@ -38,7 +38,8 @@ export default {
         open: 'Open',
         tags: 'Tags',
         actions: 'Actions',
-        or: 'Or'
+        or: 'Or',
+        newContentMessage: 'New content available, click on reload button to update.'
     },
     message: {
         unknownError: 'unknown error',
@@ -563,7 +564,6 @@ export default {
             width: 'Width',
             icon: 'Icon',
             round: 'Round',
-            size: 'Size',
             stateOptions: 'State Options',
             defaultImage: 'Default Image',
             selectAction: 'Select Action',

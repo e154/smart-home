@@ -59,10 +59,10 @@ class PushService {
   private checkIfSubscriptionNeedsRenewal(clientSubscription: PushSubscription): boolean {
 
     if (this.serverSubscriptions) {
-      // Проверяем подписку на сервере
+      console.debug('Проверяем подписку на сервере')
       const matchingServerSubscription = this.serverSubscriptions.find(serverSubscription => serverSubscription.endpoint === clientSubscription.endpoint);
       if (!matchingServerSubscription) {
-        // Подписка не найдена на сервере, нужно обновить подписку
+        console.debug('Подписка не найдена на сервере, нужно обновить подписку')
         return true;
       }
     }
@@ -133,9 +133,9 @@ class PushService {
 
   private get getUrl(): string {
     if (window?.app_settings?.server_version) {
-      return GetFullUrl('/public/sw.js')
+      return GetFullUrl('/sw.js')
     } else {
-      return '/sw.js'
+      return '/sw-dev.js'
     }
   }
 
@@ -151,24 +151,27 @@ class PushService {
 
     // navigator.serviceWorker.onmessage = this.onmessage
 
-    navigator.serviceWorker.getRegistration(this.getUrl).then((reg: ServiceWorkerRegistration) => {
+    const mode = window?.app_settings?.server_version?'classic':'module'
+    // const mode = 'classic'
+    navigator.serviceWorker.getRegistration(this.getUrl, {type: mode}).then((reg: ServiceWorkerRegistration) => {
       if (reg && reg.active) {
+        // reg.update()
         this.worker = reg.active
         this.pushManager = reg.pushManager;
         this.fetchUserDevices()
         this.fetchPublicKey()
         return
       }
-      if (!this.worker) {
-        navigator.serviceWorker.register(this.getUrl).then((reg: ServiceWorkerRegistration) => {
-          if (reg && reg.active) {
-            this.worker = reg.active
-            this.pushManager = reg.pushManager;
-            this.fetchUserDevices()
-            this.fetchPublicKey()
-          }
-        })
-      }
+      // if (!this.worker) {
+      //   navigator.serviceWorker.register(this.getUrl, {type: mode}).then((reg: ServiceWorkerRegistration) => {
+      //     if (reg && reg.active) {
+      //       this.worker = reg.active
+      //       this.pushManager = reg.pushManager;
+      //       this.fetchUserDevices()
+      //       this.fetchPublicKey()
+      //     }
+      //   })
+      // }
     })
   }
 

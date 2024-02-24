@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import {computed} from 'vue'
 import { useAppStore } from '@/store/modules/app'
 import { ConfigGlobal } from '@/components/ConfigGlobal'
 import { isDark } from '@/utils/is'
 import { useDesign } from '@/hooks/web/useDesign'
 import { useCache } from '@/hooks/web/useCache'
+import {ReloadPrompt} from '@/components/ReloadPrompt'
 
 const { getPrefixCls } = useDesign()
 
@@ -43,6 +44,7 @@ consoleBanner()
 </script>
 
 <template>
+  <ReloadPrompt />
   <ConfigGlobal :size="currentSize">
     <RouterView :class="greyMode ? `${prefixCls}-grey-mode` : ''" />
   </ConfigGlobal>

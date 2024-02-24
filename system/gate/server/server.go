@@ -139,7 +139,8 @@ func (a *Server) registerHandlers() {
 
 	// static files
 	a.echo.GET("/", echo.WrapHandler(a.controllers.Index(publicAssets.F)))
-	a.echo.GET("/public/*", echo.WrapHandler(http.StripPrefix("/", http.FileServer(http.FS(publicAssets.F)))))
+	a.echo.GET("/*", echo.WrapHandler(http.FileServer(http.FS(publicAssets.F))))
+	a.echo.GET("/assets/*", echo.WrapHandler(http.FileServer(http.FS(publicAssets.F))))
 	var swaggerHandler = echo.WrapHandler(http.FileServer(http.FS(api.SwaggerAssets)))
 	a.echo.GET("/swagger-ui", swaggerHandler)
 	a.echo.GET("/swagger-ui/*", swaggerHandler)

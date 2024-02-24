@@ -45,6 +45,7 @@ interface AppState {
   maxZIndex: number
   serverId: string
   lastColors: string[]
+  onlineStatus: 'online' | 'offline'
 }
 
 export const useAppStore = defineStore('app', {
@@ -64,23 +65,23 @@ export const useAppStore = defineStore('app', {
       title: import.meta.env.VITE_APP_TITLE, // 标题
       pageLoading: false, // 路由跳转loading
 
-      breadcrumb: wsCache.get('breadcrumb') || false, // 面包屑
-      breadcrumbIcon: wsCache.get('breadcrumbIcon') || false, // 面包屑图标
+      breadcrumb: wsCache.get('breadcrumb') || true, // 面包屑
+      breadcrumbIcon: wsCache.get('breadcrumbIcon') || true, // 面包屑图标
       collapse: wsCache.get('collapse') || false, // 折叠菜单
       uniqueOpened: false, // 是否只保持一个子菜单的展开
       hamburger: true, // 折叠图标
       screenfull: true, // 全屏图标
       size: true, // 尺寸图标
       locale: true, // 多语言图标
-      tagsView: wsCache.get('tagsView') || false, // 标签页
+      tagsView: wsCache.get('tagsView') || true, // 标签页
       tagsViewIcon: wsCache.get('tagsViewIcon') || false, // 是否显示标签图标
       logo: false, // logo
       fixedHeader: false, // 固定toolheader
       footer: false, // 显示页脚
       greyMode: wsCache.get('greyMode') || false, // 是否开始灰色模式，用于特殊悼念日
-      systemTheme: wsCache.get('systemTheme') || false,
+      systemTheme: wsCache.get('systemTheme') || true,
       dynamicRouter: wsCache.get('dynamicRouter') || false, // 是否动态路由
-      fixedMenu: wsCache.get('fixedMenu') || false, // 是否固定菜单
+      fixedMenu: wsCache.get('fixedMenu') || true, // 是否固定菜单
       terminal: wsCache.get('terminal') || false,
       maxZIndex: 10,
       serverId: wsCache.get('serverId') || '',
@@ -88,6 +89,7 @@ export const useAppStore = defineStore('app', {
       isDark: wsCache.get('isDark') || false, // 是否是暗黑模式
       currentSize: wsCache.get('currentSize') || 'small', // 组件尺寸
       lastColors: wsCache.get('lastColors') || [],
+      onlineStatus: 'offline',
       theme: wsCache.get('theme') || {
         // 主题色
         elColorPrimary: '#409eff',
@@ -216,6 +218,9 @@ export const useAppStore = defineStore('app', {
     },
     getLastColors(): string[] {
       return this.lastColors
+    },
+    getOnlineStatus(): 'online' | 'offline' {
+      return this.onlineStatus
     }
   },
   actions: {
@@ -237,6 +242,7 @@ export const useAppStore = defineStore('app', {
       stream.disconnect();
     },
     RemoveToken() {
+      stream.disconnect();
       wsCache.delete('accessToken')
       wsCache.delete('currentUser')
       wsCache.delete('avatar')
@@ -358,6 +364,9 @@ export const useAppStore = defineStore('app', {
     setLastColors(list: string[]) {
       this.lastColors = list
       wsCache.set('lastColors', this.lastColors)
+    },
+    setOnlineStatus(status: string) {
+      this.onlineStatus = status
     },
   }
 })

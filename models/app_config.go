@@ -51,6 +51,7 @@ type AppConfig struct {
 	MqttDeliverMode                int            `json:"mqtt_deliver_mode" env:"MQTT_DELIVER_MODE"`
 	AlexaPort                      int            `json:"alexa_port" env:"ALEXA_PORT"`
 	ApiHttpPort                    int            `json:"api_http_port" env:"API_HTTP_PORT"`
+	ApiHttpsPort                   int            `json:"api_https_port" env:"API_HTTPS_PORT"`
 	PgDebug                        bool           `json:"pg_debug" env:"PG_DEBUG"`
 	AutoMigrate                    bool           `json:"auto_migrate" env:"AUTO_MIGRATE"`
 	MqttQueueQos0Messages          bool           `json:"mqtt_queue_qos_0_messages" env:"MQTT_QUEUE_QOS_0_MESSAGES"`

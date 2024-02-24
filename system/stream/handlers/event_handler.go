@@ -63,6 +63,7 @@ func (s *EventHandler) Start(_ context.Context) error {
 	s.stream.Subscribe("event_get_webpush_public_key", s.EventGetWebPushPublicKey)
 	s.stream.Subscribe("event_get_user_devices", s.EventGetUserDevices)
 	s.stream.Subscribe("command_terminal", s.CommandTerminal)
+	s.stream.Subscribe("event_get_server_version", s.EventGetServerVersion)
 	return nil
 }
 
@@ -73,6 +74,7 @@ func (s *EventHandler) Shutdown(_ context.Context) error {
 	s.stream.UnSubscribe("event_get_webpush_public_key")
 	s.stream.UnSubscribe("event_get_user_devices")
 	s.stream.UnSubscribe("command_terminal")
+	s.stream.UnSubscribe("event_get_server_version")
 	return nil
 }
 
@@ -126,8 +128,19 @@ func (s *EventHandler) EventGetLastState(client stream.IStreamClient, query stri
 
 func (s *EventHandler) CommandTerminal(client stream.IStreamClient, query string, body []byte) {
 	s.eventBus.Publish("system/terminal", events.CommandTerminal{
-		User:      client.GetUser(),
-		SessionID: client.SessionID(),
-		Text:      string(body),
+		Common: events.Common{
+			User:      client.GetUser(),
+			SessionID: client.SessionID(),
+		},
+		Text: string(body),
+	})
+}
+
+func (s *EventHandler) EventGetServerVersion(client stream.IStreamClient, query string, body []byte) {
+	s.eventBus.Publish("system", events.EventGetServerVersion{
+		Common: events.Common{
+			User:      client.GetUser(),
+			SessionID: client.SessionID(),
+		},
 	})
 }

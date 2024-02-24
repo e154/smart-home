@@ -108,6 +108,11 @@ func (e *eventHandler) eventHandler(_ string, message interface{}) {
 		events.EventRemovedScriptModel,
 		events.EventCreatedScriptModel:
 		go e.event(message)
+
+	// version
+	case events.EventServerVersion:
+		go e.eventDirectMessage(v.UserId(), v.SessionID, "event_server_version", v.Version)
+
 	default:
 
 	}
