@@ -17,6 +17,7 @@ import {Form} from '@/components/Form'
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 import {useCache} from "@/hooks/web/useCache";
+import {Infotip} from "@/components/Infotip";
 
 const {push, currentRoute} = useRouter()
 const remember = ref(false)
@@ -208,13 +209,13 @@ const selectRow = (row) => {
 const schema = reactive<FormSchema[]>([
   {
     field: 'name',
-    label: t('entities.name'),
+    label: t('scripts.search'),
     component: 'Input',
     colProps: {
       span: 24
     },
     componentProps: {
-      placeholder: t('entities.name'),
+      placeholder: t('scripts.search'),
       onChange: (val: string) => {
         tableObject.query = val || undefined
         getList()
@@ -242,6 +243,17 @@ if (wsCache.get(cachePref + 'Query')) {
       <Icon icon="ep:plus" class="mr-5px"/>
       {{ t('scripts.addNew') }}
     </ElButton>
+
+    <Infotip
+        :show-index="false"
+        title="INFO"
+        :schema="[
+      {
+        label: t('scripts.info4'),
+      },
+    ]"
+    />
+
     <Form
         id="search-form-scripts"
         :schema="schema"

@@ -383,6 +383,7 @@ export default {
         info1: 'Use the keyboard shortcut "Ctrl + Space" to autocomplete',
         info2: 'Use the keyboard shortcut "Meta + /" to comment code',
         info3: 'Use the keyboard shortcut "Shift + Meta + F" to format code',
+        info4: 'The search will occur both in the file name and in the code',
         stat_total_name: 'Total scripts',
         stat_total_descr: '',
         stat_used_name: 'Scripts used',
@@ -399,7 +400,8 @@ export default {
         modalWindow: 'Current script',
         restoreVersion: 'Restore',
         scriptVersions: 'Versions',
-        viewVersion: 'View'
+        viewVersion: 'View',
+        search: 'Search'
     },
     zigbee2mqtt: {
         id: 'ID',
