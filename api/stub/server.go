@@ -184,6 +184,9 @@ type ServerInterface interface {
 	// import entity
 	// (POST /v1/entities/import)
 	EntityServiceImportEntity(ctx echo.Context, params EntityServiceImportEntityParams) error
+	// get statistic
+	// (GET /v1/entities/statistic)
+	EntityServiceGetStatistic(ctx echo.Context) error
 	// add new entity
 	// (POST /v1/entity)
 	EntityServiceAddEntity(ctx echo.Context, params EntityServiceAddEntityParams) error
@@ -2168,6 +2171,17 @@ func (w *ServerInterfaceWrapper) EntityServiceImportEntity(ctx echo.Context) err
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.EntityServiceImportEntity(ctx, params)
+	return err
+}
+
+// EntityServiceGetStatistic converts echo context to params.
+func (w *ServerInterfaceWrapper) EntityServiceGetStatistic(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(ApiKeyAuthScopes, []string{})
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.EntityServiceGetStatistic(ctx)
 	return err
 }
 
@@ -4943,6 +4957,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.POST(baseURL+"/v1/developer_tools/entity/set_state", wrapper.DeveloperToolsServiceEntitySetState)
 	router.GET(baseURL+"/v1/entities", wrapper.EntityServiceGetEntityList)
 	router.POST(baseURL+"/v1/entities/import", wrapper.EntityServiceImportEntity)
+	router.GET(baseURL+"/v1/entities/statistic", wrapper.EntityServiceGetStatistic)
 	router.POST(baseURL+"/v1/entity", wrapper.EntityServiceAddEntity)
 	router.GET(baseURL+"/v1/entity/search", wrapper.EntityServiceSearchEntity)
 	router.DELETE(baseURL+"/v1/entity/:id", wrapper.EntityServiceDeleteEntity)

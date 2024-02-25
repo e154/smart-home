@@ -151,6 +151,8 @@ var (
 	ErrEntityStorageList   = ErrorWithCode("ENTITY_STORAGE_LIST_ERROR", "failed to list storage", ErrInternal)
 	ErrEntityStorageDelete = ErrorWithCode("ENTITY_STORAGE_DELETE_ERROR", "failed to delete storage", ErrInternal)
 
+	ErrEntityStat = ErrorWithCode("ENTITY_STAT_ERROR", "failed to get entity statistic", ErrInternal)
+
 	ErrImageAdd      = ErrorWithCode("IMAGE_ADD_ERROR", "failed to add image", ErrInternal)
 	ErrImageGet      = ErrorWithCode("IMAGE_GET_ERROR", "failed to get image", ErrInternal)
 	ErrImageUpdate   = ErrorWithCode("IMAGE_UPDATE_ERROR", "failed to update image", ErrInternal)

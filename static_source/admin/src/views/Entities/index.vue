@@ -5,7 +5,7 @@ import {h, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
 import {ElButton, ElCollapse, ElCollapseItem, ElMessage, ElTag} from 'element-plus'
-import {ApiArea, ApiEntityShort, ApiPlugin, ApiTag} from "@/api/stub";
+import {ApiArea, ApiEntityShort, ApiPlugin, ApiStatistics, ApiTag} from "@/api/stub";
 import {useForm} from "@/hooks/web/useForm";
 import {useRouter} from "vue-router";
 import {parseTime} from "@/utils";
@@ -18,6 +18,7 @@ import {FormSchema} from "@/types/form";
 import {Form} from '@/components/Form'
 import {useCache} from "@/hooks/web/useCache";
 import {JsonEditor} from "@/components/JsonEditor";
+import Statistics from "@/components/Statistics/Statistics.vue";
 
 const {push} = useRouter()
 const {register, methods} = useForm()
@@ -130,7 +131,23 @@ const paginationObj = ref<Pagination>({
   total: 0,
 })
 
+const statistic = ref<Nullable<ApiStatistics>>(null)
+const getStatistic = async () => {
+
+  const res = await api.v1.entityServiceGetStatistic()
+    .catch(() => {
+    })
+    .finally(() => {
+
+    })
+  if (res) {
+    statistic.value = res.data
+  }
+}
+
 const getList = async () => {
+  getStatistic()
+
   tableObject.loading = true
 
   wsCache.set(cachePref + 'CurrentPage', paginationObj.value.currentPage)
@@ -428,6 +445,8 @@ if (wsCache.get(cachePref + 'Tags')) {
 </script>
 
 <template>
+  <Statistics v-model="statistic" :cols="6" />
+
   <ContentWrap>
     <ElButton class="flex mb-20px items-left" type="primary" @click="addNew()" plain>
       <Icon icon="ep:plus" class="mr-5px"/>

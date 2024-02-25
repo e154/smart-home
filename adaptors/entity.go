@@ -49,6 +49,7 @@ type IEntity interface {
 	Update(ctx context.Context, ver *m.Entity) (err error)
 	Search(ctx context.Context, query string, limit, offset int64) (list []*m.Entity, total int64, err error)
 	UpdateAutoload(ctx context.Context, entityId common.EntityId, autoLoad bool) (err error)
+	Statistic(ctx context.Context) (statistic *m.EntitiesStatistic, err error)
 	Import(ctx context.Context, entity *m.Entity) (err error)
 	fromDb(dbVer *db.Entity) (ver *m.Entity)
 	toDb(ver *m.Entity) (dbVer *db.Entity)
@@ -475,6 +476,19 @@ func (n *Entity) preloadMetric(ctx context.Context, ver *m.Entity) {
 
 		ver.Metrics[i].RangesByType()
 	}
+}
+
+func (n *Entity) Statistic(ctx context.Context) (statistic *m.EntitiesStatistic, err error) {
+	var dbVer *db.EntitiesStatistic
+	if dbVer, err = n.table.Statistic(ctx); err != nil {
+		return
+	}
+	statistic = &m.EntitiesStatistic{
+		Total:  dbVer.Total,
+		Used:   dbVer.Used,
+		Unused: dbVer.Unused,
+	}
+	return
 }
 
 func (n *Entity) fromDb(dbVer *db.Entity) (ver *m.Entity) {

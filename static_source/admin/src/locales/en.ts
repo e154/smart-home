@@ -449,7 +449,13 @@ export default {
         parent: 'Parent',
         loadFromPlugin: 'Load From Plugin',
         type: 'Type',
-        value: 'Value'
+        value: 'Value',
+        stat_total_name: 'Total entities',
+        stat_total_descr: '',
+        stat_used_name: 'Entities used',
+        stat_used_descr: '',
+        stat_unused_name: 'Entities are not used',
+        stat_unused_descr: '',
     },
     entityStorage: {
         dateTimerange: 'Date Time range',

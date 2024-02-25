@@ -3864,6 +3864,31 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * No description
      *
+     * @tags EntityService
+     * @name EntityServiceGetStatistic
+     * @summary get statistic
+     * @request GET:/v1/entities/statistic
+     * @secure
+     */
+    entityServiceGetStatistic: (params: RequestParams = {}) =>
+      this.request<
+        ApiStatistics,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
+        path: `/v1/entities/statistic`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
      * @tags EntityStorageService
      * @name EntityStorageServiceGetEntityStorageList
      * @request GET:/v1/entity_storage

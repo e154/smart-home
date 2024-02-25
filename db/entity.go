@@ -69,6 +69,12 @@ func (d *Entity) TableName() string {
 	return "entities"
 }
 
+type EntitiesStatistic struct {
+	Total  int32
+	Used   int32
+	Unused int32
+}
+
 // Add ...
 func (n Entities) Add(ctx context.Context, v *Entity) (err error) {
 	err = n.Db.WithContext(ctx).Omit("Metrics.*").Omit("Tags.*").Omit("Scripts.*").Create(&v).Error
@@ -417,6 +423,40 @@ func (n Entities) PreloadStorage(ctx context.Context, list []*Entity) (err error
 			err = errors.Wrap(apperr.ErrEntityStorageGet, err.Error())
 			return
 		}
+	}
+
+	return
+}
+
+// Statistic ...
+func (n *Entities) Statistic(ctx context.Context) (statistic *EntitiesStatistic, err error) {
+
+	statistic = &EntitiesStatistic{}
+	//
+	var usedList []struct {
+		Count    int32
+		AutoLoad bool
+	}
+	err = n.Db.WithContext(ctx).Raw(`
+select count(e.id), e.auto_load
+from entities as e
+group by e.auto_load`).
+		Scan(&usedList).
+		Error
+
+	if err != nil {
+		err = errors.Wrap(apperr.ErrEntityStat, err.Error())
+		return
+	}
+
+	for _, item := range usedList {
+		statistic.Total += item.Count
+		if item.AutoLoad {
+			statistic.Used = item.Count
+
+			continue
+		}
+		statistic.Unused = item.Count
 	}
 
 	return

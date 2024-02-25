@@ -146,3 +146,14 @@ func (c ControllerEntity) EntityServiceDisabledEntity(ctx echo.Context, id strin
 
 	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
+
+// GetStatistic ...
+func (c ControllerEntity) EntityServiceGetStatistic(ctx echo.Context) error {
+
+	statistic, err := c.endpoint.Entity.Statistic(ctx.Request().Context())
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, dto.GetStatistic(statistic)))
+}

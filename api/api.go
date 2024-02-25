@@ -247,6 +247,7 @@ func (a *Api) registerHandlers() {
 	v1.POST("/entity/:id/disable", a.echoFilter.Auth(wrapper.EntityServiceDisabledEntity))
 	v1.POST("/entity/:id/enable", a.echoFilter.Auth(wrapper.EntityServiceEnabledEntity))
 	v1.GET("/entity_storage", a.echoFilter.Auth(wrapper.EntityStorageServiceGetEntityStorageList))
+	v1.GET("/entities/statistic", a.echoFilter.Auth(wrapper.EntityServiceGetStatistic))
 	v1.POST("/image", a.echoFilter.Auth(wrapper.ImageServiceAddImage))
 	v1.POST("/image/upload", a.echoFilter.Auth(wrapper.ImageServiceUploadImage))
 	v1.DELETE("/image/:id", a.echoFilter.Auth(wrapper.ImageServiceDeleteImageById))

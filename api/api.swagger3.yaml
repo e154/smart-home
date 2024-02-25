@@ -1907,6 +1907,23 @@ paths:
           $ref: '#/components/responses/HTTP-409'
       security:
         - ApiKeyAuth: [ ]
+  /v1/entities/statistic:
+    get:
+      tags:
+        - EntityService
+      summary: get statistic
+      operationId: EntityService_GetStatistic
+      responses:
+        200:
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiStatistics'
+        '401':
+          $ref: '#/components/responses/HTTP-401'
+      security:
+        - ApiKeyAuth: [ ]
   /v1/entity_storage:
     get:
       tags:

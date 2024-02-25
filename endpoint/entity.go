@@ -259,3 +259,32 @@ func (n *EntityEndpoint) Disable(ctx context.Context, id common.EntityId) (err e
 
 	return
 }
+
+// Statistic ...
+func (n *EntityEndpoint) Statistic(ctx context.Context) (statistic []*m.Statistic, err error) {
+	var stat *m.EntitiesStatistic
+	if stat, err = n.adaptors.Entity.Statistic(ctx); err != nil {
+		return
+	}
+	statistic = []*m.Statistic{
+		{
+			Name:        "entities.stat_total_name",
+			Description: "entities.stat_total_descr",
+			Value:       stat.Total,
+			Diff:        0,
+		},
+		{
+			Name:        "entities.stat_used_name",
+			Description: "entities.stat_used_descr",
+			Value:       stat.Used,
+			Diff:        0,
+		},
+		{
+			Name:        "entities.stat_unused_name",
+			Description: "entities.stat_unused_descr",
+			Value:       stat.Unused,
+			Diff:        0,
+		},
+	}
+	return
+}

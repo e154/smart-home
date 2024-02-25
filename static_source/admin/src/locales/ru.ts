@@ -449,7 +449,13 @@ export default {
     parent: "Родитель",
     loadFromPlugin: "Загрузить из плагина",
     type: "Тип",
-    value: "Значение"
+    value: "Значение",
+    stat_total_name: 'Всего entities',
+    stat_total_descr: '',
+    stat_used_name: 'Entities используется',
+    stat_used_descr: '',
+    stat_unused_name: 'Entities не используется',
+    stat_unused_descr: '',
   },
   entityStorage: {
     dateTimerange: "Диапазон дат и времени",

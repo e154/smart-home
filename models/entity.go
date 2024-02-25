@@ -60,3 +60,9 @@ type Entity struct {
 	RestoreState bool             `json:"restore_state"`
 	Tags         []*Tag           `json:"tags"`
 }
+
+type EntitiesStatistic struct {
+	Total  int32
+	Used   int32
+	Unused int32
+}
