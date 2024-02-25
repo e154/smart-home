@@ -124,19 +124,20 @@ func (a *Api) Start() (err error) {
 
 	go func() {
 		if a.cfg.Https {
+			log.Infof("server started at :%d", a.cfg.HttpsPort)
 			if err := a.echo.StartTLS(fmt.Sprintf(":%d", a.cfg.HttpsPort), path.Join("conf", "cert.pem"), path.Join("conf", "key.pem")); err != http.ErrServerClosed {
 				log.Error(err.Error())
 			}
-		} else {
-			if err := a.echo.Start(a.cfg.String()); err != nil {
-				if err.Error() != "http: Server closed" {
-					log.Error(err.Error())
-				}
+		}
+	}()
+	go func() {
+		log.Infof("server started at :%d", a.cfg.HttpPort)
+		if err := a.echo.Start(a.cfg.String()); err != nil {
+			if err.Error() != "http: Server closed" {
+				log.Error(err.Error())
 			}
 		}
-
 	}()
-	log.Infof("server started at %s", a.cfg.String())
 
 	a.eventBus.Publish("system/services/api", events.EventServiceStarted{Service: "Api"})
 
