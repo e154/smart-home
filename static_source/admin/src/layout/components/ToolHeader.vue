@@ -6,6 +6,7 @@ import { SizeDropdown } from '@/components/SizeDropdown'
 import { UserInfo } from '@/components/UserInfo'
 import { Screenfull } from '@/components/Screenfull'
 import { GateToggle } from '@/components/Gate'
+import { NetworkStatus } from '@/components/NetworkStatus'
 import { TerminalToggle } from '@/components/Terminal'
 import { Breadcrumb } from '@/components/Breadcrumb'
 import { useAppStore } from '@/store/modules/app'
@@ -65,6 +66,7 @@ export default defineComponent({
           {screenfull.value ? (
             <Screenfull class="hover-trigger" color="var(--top-header-text-color)"></Screenfull>
           ) : undefined}
+          <NetworkStatus class="hover-trigger" color="var(--top-header-text-color)"></NetworkStatus>
           {size.value ? (
             <SizeDropdown class="hover-trigger" color="var(--top-header-text-color)"></SizeDropdown>
           ) : undefined}

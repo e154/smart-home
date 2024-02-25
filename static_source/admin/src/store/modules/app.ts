@@ -50,14 +50,8 @@ interface AppState {
 
 export const useAppStore = defineStore('app', {
   state: (): AppState => {
-    // ws
-    const accessToken = wsCache.get("accessToken") as string || '';
-    if (accessToken) {
-      stream.connect(import.meta.env.VITE_API_BASEPATH as string || window.location.origin, accessToken);
-      pushService.start()
-    }
     return {
-      token: accessToken,
+      token: wsCache.get("accessToken") as string || '',
       user: wsCache.get("currentUser") as ApiCurrentUser,
       avatar: "",
       sizeMap: ['default', 'large', 'small'],
@@ -236,13 +230,19 @@ export const useAppStore = defineStore('app', {
       wsCache.set("accessToken", token)
       this.token = token;
 
-      // push service
-      // registerServiceWorker.stop();
-      // ws
-      stream.disconnect();
+      pushService.shutdown()
+      stream.disconnect()
+
+      if (token) {
+        // ws
+        stream.connect(import.meta.env.VITE_API_BASEPATH as string || window.location.origin, token);
+        // push
+        pushService.start()
+      }
     },
     RemoveToken() {
       stream.disconnect();
+      pushService.shutdown();
       wsCache.delete('accessToken')
       wsCache.delete('currentUser')
       wsCache.delete('avatar')

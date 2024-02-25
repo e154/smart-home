@@ -11,11 +11,15 @@ class PushService {
   private currentID: string = uuid.getDashFreeUUID();
   private serverSubscriptions: ServerSubscription[] | null = null;
   private publicKey: string | null = null;
+  private isStarted = false;
 
   constructor() {
   }
 
   start() {
+    if (this.isStarted) return;
+    this.isStarted = true
+
     setTimeout(() => {
       stream.subscribe('event_user_devices', this.currentID, this.eventUserDevices())
       stream.subscribe('event_new_webpush_public_key', this.currentID, this.eventNewWebpushPublicKey())
@@ -24,6 +28,9 @@ class PushService {
   }
 
   shutdown() {
+    if (!this.isStarted) return;
+    this.isStarted = false
+
     stream.unsubscribe('event_user_device', this.currentID)
     stream.unsubscribe('event_new_webpush_public_key', this.currentID)
   }

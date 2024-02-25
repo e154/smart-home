@@ -37,7 +37,7 @@ const loginOut = () => {
 }
 
 const toDocument = () => {
-  const user = appStore.getUser
+  const user = appStore?.getUser
   push(`/etc/users/edit/${user.id}`)
 }
 
@@ -46,7 +46,7 @@ const getAvatar = (): string => {
 }
 
 const getUserName = (): string => {
-  return appStore.getUser.nickname || 'unknown'
+  return appStore.getUser?.nickname || 'unknown'
 }
 
 const parseJwt = (token) => {
@@ -57,7 +57,7 @@ const parseJwt = (token) => {
   }
 };
 
-const root = computed(() => parseJwt(appStore.getToken).root)
+const root = computed(() => parseJwt(appStore.getToken || '')?.root || false)
 
 </script>
 

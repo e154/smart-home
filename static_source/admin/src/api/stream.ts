@@ -2,8 +2,11 @@ import {ConstantBackoff, Websocket, WebsocketBuilder} from 'websocket-ts';
 import {EventHTML5Notify} from '@/api/types';
 import {useCache} from "@/hooks/web/useCache";
 import {UUID} from "uuid-generator-ts";
+import {ref} from "vue";
 
 const {wsCache} = useCache()
+
+export const streamStatus = ref<'online' | 'offline'>('offline');
 
 class Stream {
   private ws: Websocket | null = null;
@@ -46,17 +49,17 @@ class Stream {
   }
 
   private error(ws: Websocket, ev: Event): any {
-    // appStore.setOnlineStatus('offline')
+    streamStatus.value = 'offline'
     console.log('error');
   }
 
   private onClose(ws: Websocket, ev: CloseEvent): any {
-    // appStore.setOnlineStatus('offline')
+    streamStatus.value = 'offline'
     console.log('closed');
   }
 
   private onOpen(ws: Websocket, ev: Event, accessToken: string): any {
-    // appStore.setOnlineStatus('online')
+    streamStatus.value = 'online'
     console.log('opened');
     ws.send(JSON.stringify({body: btoa('init'), access_token: accessToken}));
     ws.send(JSON.stringify({
