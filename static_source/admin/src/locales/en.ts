@@ -732,7 +732,10 @@ export default {
         gateClientPoolIdleSize: 'Pool Idle Size',
         gateClientPoolMaxSize: 'Pool Max Size',
         gateClientTLS: 'TLS',
-        hmacKey: 'HMAC Key'
+        hmacKey: 'HMAC Key',
+        certificates: 'SSL Certificates',
+        certPublic: 'Select an X.509 certificate file, commonly a crt, cer or pem file.',
+        certKey: 'Select a private key file, commonly a key, or pem file.'
     },
     tools: {
         eventBus: {

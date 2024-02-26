@@ -41,6 +41,8 @@ export interface Settings {
   gateClientPoolMaxSize?: number;
   gateClientTLS?: boolean;
   hmacKey?: string;
+  certPublic?: string;
+  certKey?: string;
 }
 
 const settings = ref<Settings>({} as Settings)
@@ -119,7 +121,9 @@ const getSettings = async () => {
     getIntegerVar('gateClientPoolIdleSize'),
     getIntegerVar('gateClientPoolMaxSize'),
     getBooleanVar('gateClientTLS'),
-    getStringVar('hmacKey')
+    getStringVar('hmacKey'),
+    getStringVar('certKey'),
+    getStringVar('certPublic')
   ])
   loading.value = false
 }
@@ -366,6 +370,32 @@ getSettings()
           <ElFormItem :label="$t('settings.hmacKey')" prop="hmacKey">
             <ElInput type="password" v-model="settings.hmacKey" @update:modelValue="changedVariable('hmacKey')"
                      show-password/>
+          </ElFormItem>
+        </ElCol>
+        <ElCol :span="12" :xs="12"/>
+      </ElRow>
+
+      <ElDivider content-position="left">{{ $t('settings.certificates') }}</ElDivider>
+
+      <ElRow :gutter="24">
+        <ElCol :span="12" :xs="12">
+          <ElFormItem :label="$t('settings.certPublic')" prop="certPublic">
+            <ElInput type="textarea"
+                     :autosize="{minRows: 2, maxRows: 10}"
+                     v-model="settings.certPublic"
+                     @update:modelValue="changedVariable('certPublic')"/>
+          </ElFormItem>
+        </ElCol>
+        <ElCol :span="12" :xs="12"/>
+      </ElRow>
+
+      <ElRow :gutter="24">
+        <ElCol :span="12" :xs="12">
+          <ElFormItem :label="$t('settings.certKey')" prop="certKey">
+            <ElInput type="textarea"
+                     :autosize="{minRows: 2, maxRows: 10}"
+                     v-model="settings.certKey"
+                     @update:modelValue="changedVariable('certKey')"/>
           </ElFormItem>
         </ElCol>
         <ElCol :span="12" :xs="12"/>

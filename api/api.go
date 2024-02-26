@@ -22,7 +22,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"path"
 	"strings"
 	"time"
 
@@ -32,6 +31,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
+	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api/controllers"
 	"github.com/e154/smart-home/api/stub"
 	publicAssets "github.com/e154/smart-home/build"
@@ -51,6 +51,9 @@ type Api struct {
 	echoFilter  *rbac.EchoAccessFilter
 	echo        *echo.Echo
 	cfg         Config
+	certPublic  string
+	certKey     string
+	adaptors    *adaptors.Adaptors
 	eventBus    bus.Bus
 }
 
@@ -58,11 +61,13 @@ type Api struct {
 func NewApi(controllers *controllers.Controllers,
 	echoFilter *rbac.EchoAccessFilter,
 	cfg Config,
-	eventBus bus.Bus) (api *Api) {
+	eventBus bus.Bus,
+	adaptors *adaptors.Adaptors) (api *Api) {
 	api = &Api{
 		controllers: controllers,
 		echoFilter:  echoFilter,
 		cfg:         cfg,
+		adaptors:    adaptors,
 		eventBus:    eventBus,
 	}
 	return
@@ -122,23 +127,10 @@ func (a *Api) Start() (err error) {
 
 	a.registerHandlers()
 
-	go func() {
-		if a.cfg.Https {
-			log.Infof("server started at :%d", a.cfg.HttpsPort)
-			if err := a.echo.StartTLS(fmt.Sprintf(":%d", a.cfg.HttpsPort), path.Join("conf", "cert.pem"), path.Join("conf", "key.pem")); err != http.ErrServerClosed {
-				log.Error(err.Error())
-			}
-		}
-	}()
-	go func() {
-		log.Infof("server started at :%d", a.cfg.HttpPort)
-		if err := a.echo.Start(a.cfg.String()); err != nil {
-			if err.Error() != "http: Server closed" {
-				log.Error(err.Error())
-			}
-		}
-	}()
+	go a.startTlsServer()
+	go a.startServer()
 
+	a.eventBus.Subscribe("system/models/variables/+", a.eventHandler, false)
 	a.eventBus.Publish("system/services/api", events.EventServiceStarted{Service: "Api"})
 
 	return nil
@@ -149,9 +141,37 @@ func (a *Api) Shutdown(ctx context.Context) (err error) {
 	if a.echo != nil {
 		err = a.echo.Shutdown(ctx)
 	}
+	a.eventBus.Unsubscribe("system/models/variables/+", a.eventHandler)
 	a.eventBus.Publish("system/services/api", events.EventServiceStopped{Service: "Api"})
 
 	return
+}
+
+func (a *Api) Restart(ctx context.Context) {
+	a.Shutdown(ctx)
+	a.Start()
+}
+
+func (a *Api) startServer() {
+	log.Infof("HTTP Server started at :%d", a.cfg.HttpPort)
+	if err := a.echo.Start(a.cfg.String()); err != http.ErrServerClosed {
+		log.Error(err.Error())
+	} else {
+		log.Info("HTTP Server shutdown")
+	}
+}
+
+func (a *Api) startTlsServer() {
+	a.getCerts()
+	if a.certPublic == "" || a.certKey == "" {
+		return
+	}
+	log.Infof("TLS Server started at :%d", a.cfg.HttpsPort)
+	if err := a.echo.StartTLS(fmt.Sprintf(":%d", a.cfg.HttpsPort), []byte(a.certPublic), []byte(a.certKey)); err != http.ErrServerClosed {
+		log.Error(err.Error())
+	} else {
+		log.Info("TLS Server shutdown")
+	}
 }
 
 // CustomMatcher ...
@@ -388,4 +408,28 @@ func (a *Api) registerHandlers() {
 
 func (a *Api) Echo() *echo.Echo {
 	return a.echo
+}
+
+func (a *Api) getCerts() {
+	certPublicVar, err := a.adaptors.Variable.GetByName(context.Background(), "certPublic")
+	if err != nil {
+		return
+	}
+	a.certPublic = strings.TrimSpace(certPublicVar.Value)
+	certKeyVar, err := a.adaptors.Variable.GetByName(context.Background(), "certKey")
+	if err != nil {
+		return
+	}
+	a.certKey = strings.TrimSpace(certKeyVar.Value)
+}
+
+func (a *Api) eventHandler(_ string, message interface{}) {
+	switch v := message.(type) {
+	case events.EventUpdatedVariableModel:
+		switch v.Name {
+		case "certPublic", "certKey":
+			log.Infof("updated settings name %s", v.Name)
+			a.Restart(context.Background())
+		}
+	}
 }
