@@ -45,7 +45,6 @@ func (c ControllerIndex) Index(publicAssets fs.FS) http.Handler {
 	serverVersion, _ := json.Marshal(version.GetVersion())
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		b := map[string]interface{}{
-			"server_url":     c.ControllerCommon.ApiFullAddress,
 			"run_mode":       c.ControllerCommon.Mode,
 			"server_version": string(serverVersion),
 		}

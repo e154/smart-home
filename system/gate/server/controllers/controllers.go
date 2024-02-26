@@ -24,8 +24,8 @@ type Controllers struct {
 }
 
 // NewControllers ...
-func NewControllers(apiFullAddress, mode string) *Controllers {
-	common := NewControllerCommon(apiFullAddress, mode)
+func NewControllers(mode string) *Controllers {
+	common := NewControllerCommon(mode)
 	return &Controllers{
 		ControllerIndex: NewControllerIndex(common),
 	}

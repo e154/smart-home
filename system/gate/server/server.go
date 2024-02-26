@@ -43,7 +43,7 @@ type Server struct {
 
 func NewServer(cfg *Config, proxy *wsp.Server) *Server {
 	return &Server{
-		controllers: controllers.NewControllers("", "gate"),
+		controllers: controllers.NewControllers("gate"),
 		proxy:       proxy,
 		cfg:         cfg,
 	}

@@ -19,7 +19,6 @@
 package models
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/e154/smart-home/common"
@@ -63,23 +62,10 @@ type AppConfig struct {
 	RootMode                       bool           `json:"root_mode" env:"ROOT_MODE"`
 	RootSecret                     string         `json:"root_secret" env:"ROOT_SECRET"`
 	Pprof                          bool           `json:"pprof" env:"PPROF"`
-	Https                          bool           `json:"https" env:"HTTPS"`
 	GateClientId                   string         `json:"gate_client_id" env:"GATE_CLIENT_ID"`
 	GateClientSecretKey            string         `json:"gate_client_secret_key" env:"GATE_CLIENT_SECRET_KEY"`
 	GateClientServerHost           string         `json:"gate_client_server_host" env:"GATE_CLIENT_SERVER_HOST"`
 	GateClientServerPort           int            `json:"gate_client_server_port" env:"GATE_CLIENT_SERVER_PORT"`
 	GateClientPoolIdleSize         int            `json:"gate_client_pool_idle_size" env:"GATE_CLIENT_POOL_IDLE_SIZE"`
 	GateClientPoolMaxSize          int            `json:"gate_client_pool_max_size" env:"GATE_CLIENT_POOL_MAX_SIZE"`
-}
-
-func (c *AppConfig) ApiScheme() (scheme string) {
-	scheme = "http"
-	if c.Https {
-		scheme = "https"
-	}
-	return
-}
-
-func (c *AppConfig) ApiFullAddress() (scheme string) {
-	return fmt.Sprintf("%s://%s:%d", c.ApiScheme(), c.Domain, c.ApiHttpPort)
 }

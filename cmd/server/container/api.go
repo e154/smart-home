@@ -31,7 +31,6 @@ func NewApiConfig(cfg *models.AppConfig) api.Config {
 	return api.Config{
 		HttpPort:  cfg.ApiHttpPort,
 		HttpsPort: cfg.ApiHttpsPort,
-		Https:     cfg.Https,
 		Swagger:   cfg.ApiSwagger,
 		Pprof:     cfg.Pprof,
 		Debug:     cfg.ApiDebug,
