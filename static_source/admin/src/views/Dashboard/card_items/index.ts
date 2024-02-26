@@ -17,6 +17,7 @@ import {Icon, IconEditor, ItemPayloadIcon} from './icon';
 import {Grid, GridEditor, ItemPayloadGrid} from './grid';
 import {Three, ThreeEditor, ItemPayloadThree} from './three';
 import {ItemPayloadJsonViewer, JsonViewer, JsonViewerEditor} from './json_viewer';
+import {useI18n} from "@/hooks/web/useI18n";
 
 export const CardItemName = (name: string): any => {
   switch (name) {
@@ -108,30 +109,74 @@ export const CardEditorName = (name: string): any => {
   }
 };
 
+const {t} = useI18n()
+
 export interface ItemsType {
   label: string;
   value: string;
 }
 
 export const CardItemList: ItemsType[] = [
-  {label: 'TEXT', value: 'text'},
-  {label: 'IMAGE', value: 'image'},
-  {label: 'BUTTON', value: 'button'},
-  {label: 'STATE', value: 'state'},
-  {label: 'LOGS', value: 'logs'},
-  {label: 'PROGRESS', value: 'progress'},
-  {label: 'CHART', value: 'chart'},
-  {label: 'CHART_CUSTOM', value: 'chartCustom'},
-  {label: 'ENTITY_STORAGE', value: 'entityStorage'},
-  {label: 'MAP', value: 'map'},
-  {label: 'SLIDER', value: 'slider'},
-  {label: 'COLOR_PICKER', value: 'colorPicker'},
-  {label: 'STREAM_PLAYER', value: 'streamPlayer'},
-  {label: 'JOYSTICK', value: 'joystick'},
-  {label: 'ICON', value: 'icon'},
-  {label: 'GRID', value: 'grid'},
-  {label: 'JSON_VIEWER', value: 'jsonViewer'},
-  // {label: 'THREE', value: 'three'}
+  {
+    value: 'general',
+    label: 'General',
+    children: [
+      {label: t('dashboard.editor.TEXT'), value: 'text'},
+      {label: t('dashboard.editor.IMAGE'), value: 'image'},
+      {label: t('dashboard.editor.PROGRESS'), value: 'progress'},
+      {label: t('dashboard.editor.ICON'), value: 'icon'},
+      {label: t('dashboard.editor.STATE'), value: 'state'},
+      {label: t('dashboard.editor.GRID'), value: 'grid'},
+    ],
+  },
+  {
+    value: 'dashboard',
+    label: 'Dashboard',
+    children: [
+      {label: t('dashboard.editor.LOGS'), value: 'logs'},
+      {label: t('dashboard.editor.ENTITY_STORAGE'), value: 'entityStorage'},
+      {label: t('dashboard.editor.JSON_VIEWER'), value: 'jsonViewer'},
+    ],
+  },
+  {
+    value: 'video',
+    label: 'Video',
+    children: [
+      {label: t('dashboard.editor.STREAM_PLAYER'), value: 'streamPlayer'},
+    ],
+  },
+  {
+    value: 'control',
+    label: 'Control',
+    children: [
+      {label: t('dashboard.editor.BUTTON'), value: 'button'},
+      {label: t('dashboard.editor.JOYSTICK'), value: 'joystick'},
+      {label: t('dashboard.editor.SLIDER'), value: 'slider'},
+      {label: t('dashboard.editor.COLOR_PICKER'), value: 'colorPicker'},
+    ],
+  },
+  {
+    value: 'charts',
+    label: 'Charts',
+    children: [
+      {label: t('dashboard.editor.CHART'), value: 'chart'},
+      {label: t('dashboard.editor.CHART_CUSTOM'), value: 'chartCustom'},
+    ],
+  },
+  {
+    value: 'geo',
+    label: 'Geo',
+    children: [
+      {label: t('dashboard.editor.MAP'), value: 'map'},
+    ],
+  },
+  {
+    value: 'experimental',
+    label: 'Experimental',
+    children: [
+      {label: t('dashboard.editor.THREE'), value: 'three'}
+    ],
+  }
 ];
 
 export interface ItemPayload {

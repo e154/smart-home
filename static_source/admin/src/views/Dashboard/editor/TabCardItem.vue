@@ -10,6 +10,7 @@ import {DraggableContainer} from "@/components/DraggableContainer";
 import {
   ElButton,
   ElButtonGroup,
+  ElCascader,
   ElCol,
   ElCollapse,
   ElCollapseItem,
@@ -22,11 +23,9 @@ import {
   ElMenu,
   ElMenuItem,
   ElMessage,
-  ElOption,
   ElPopconfirm,
   ElRow,
-  ElSelect,
-  ElTag
+  ElTag,
 } from 'element-plus'
 import {JsonEditor} from "@/components/JsonEditor";
 import {Dialog} from "@/components/Dialog";
@@ -39,6 +38,14 @@ const {emit} = useBus()
 const cardItem = ref<CardItem>(null)
 // const card = ref<Card>({} as Card)
 const itemTypes = CardItemList;
+const itemProps = {
+  expandTrigger: 'hover' as const,
+}
+const cardItemType = computed(() => cardItem.value?.type)
+const handleTypeChanged = (value: string[]) => {
+  cardItem.value.type = value[value.length - 1]
+}
+
 const props = defineProps({
   core: {
     type: Object as PropType<Core>,
@@ -226,7 +233,7 @@ const importCardItem = async () => {
 
 <template>
 
-  <ElRow :gutter="24" class="mb-10px mt-10px"  v-if="activeCard.selectedItem !== -1">
+  <ElRow :gutter="24" class="mb-10px mt-10px" v-if="activeCard.selectedItem !== -1">
     <ElCol :span="12" :xs="12">
       <ElButton class="w-[100%]" @click="addCardItem()">
         {{ t('dashboard.editor.addNewCardItem') }}
@@ -255,20 +262,16 @@ const importCardItem = async () => {
 
     <ElRow>
       <ElCol>
+
         <ElFormItem :label="$t('dashboard.editor.type')" prop="type">
-          <ElSelect
-            v-model="cardItem.type"
+          <ElCascader
+            v-model="cardItemType"
+            :options="itemTypes"
+            :props="itemProps"
             :placeholder="$t('dashboard.editor.pleaseSelectType')"
             style="width: 100%"
-          >
-            <ElOption
-              v-for="item in itemTypes"
-              :key="item.value"
-              :label="$t('dashboard.editor.'+item.label)"
-              :value="item.value"
-            />
-
-          </ElSelect>
+            @change="handleTypeChanged"
+          />
         </ElFormItem>
       </ElCol>
     </ElRow>
