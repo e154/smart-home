@@ -215,7 +215,9 @@ export default {
         MessageDelivery: 'Message Delivery',
         Settings: 'Settings',
         Tools: 'Tools',
-        Mqtt: 'Mqtt Server'
+        Mqtt: 'Mqtt Server',
+        Main: 'Main',
+        Develop: 'Develop'
     },
     permission: {
         hasPermission: 'Please set the operation permission value'

@@ -494,6 +494,88 @@ export const developRouterMap: AppRouteRecordRaw[] = [
     },
     children: [
       {
+        path: 'settings',
+        component: Develop,
+        meta: {
+          title: t('router.Settings'),
+        },
+        children: [
+          {
+            path: 'main',
+            name: 'Main',
+            component: () => import('@/views/Settings/index.vue'),
+            meta: {
+              title: t('router.Main'),
+            },
+          },
+          {
+            path: 'plugins',
+            name: 'Plugins',
+            component: () => import('@/views/Plugins/index.vue'),
+            meta: {
+              title: t('router.Plugins'),
+            },
+            children: [
+              {
+                path: 'edit/:name',
+                name: 'viewPlugin',
+                component: () => import('@/views/Plugins/edit.vue'),
+                props: true,
+                meta: {
+                  title: t('router.EditPlugin'),
+                  // noTagsView: true,
+                  hidden: true,
+                  canTo: true,
+                }
+              }
+            ]
+          },
+          {
+            path: 'backups',
+            name: 'Backups',
+            component: () => import('@/views/Backups/index.vue'),
+            meta: {
+              title: t('router.Backups'),
+            },
+          },
+        ],
+      },
+      {
+        path: 'develop',
+        component: Develop,
+        meta: {
+          title: t('router.Develop'),
+        },
+        children: [
+          {
+            path: 'tools',
+            name: 'Tools',
+            component: () => import('@/views/Tools/EventBus/index.vue'),
+            meta: {
+              title: t('router.Tools'),
+            },
+            children: [
+            ]
+          },
+          {
+            path: 'swagger',
+            name: 'Swagger',
+            component: () => import('@/views/Swagger/index.vue'),
+            meta: {
+              title: t('router.Swagger'),
+            },
+          },
+          {
+            path: 'typedoc',
+            name: 'Typedoc',
+            component: () => import('@/views/Typedoc/index.vue'),
+            meta: {
+              title: t('router.Typedoc'),
+            },
+          },
+        ],
+      },
+      {
         path: 'variables',
         name: 'Variables',
         component: () => import('@/views/Variables/index.vue'),
@@ -527,63 +609,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
             }
           }
         ]
-      },
-      {
-        path: 'settings',
-        name: 'Settings',
-        component: () => import('@/views/Settings/index.vue'),
-        meta: {
-          title: t('router.Settings'),
-        },
-      },
-      {
-        path: 'plugins',
-        name: 'Plugins',
-        component: () => import('@/views/Plugins/index.vue'),
-        meta: {
-          title: t('router.Plugins'),
-        },
-        children: [
-          {
-            path: 'edit/:name',
-            name: 'viewPlugin',
-            component: () => import('@/views/Plugins/edit.vue'),
-            props: true,
-            meta: {
-              title: t('router.EditPlugin'),
-              // noTagsView: true,
-              hidden: true,
-              canTo: true,
-              activeMenu: '/etc/plugins'
-            }
-          }
-        ]
-      },
-      {
-        path: 'tools',
-        name: 'Tools',
-        component: () => import('@/views/Tools/EventBus/index.vue'),
-        meta: {
-          title: t('router.Tools'),
-        },
-        children: [
-        ]
-      },
-      {
-        path: 'swagger',
-        name: 'Swagger',
-        component: () => import('@/views/Swagger/index.vue'),
-        meta: {
-          title: t('router.Swagger'),
-        },
-      },
-      {
-        path: 'typedoc',
-        name: 'Typedoc',
-        component: () => import('@/views/Typedoc/index.vue'),
-        meta: {
-          title: t('router.Typedoc'),
-        },
       },
       {
         path: 'images',
@@ -744,14 +769,6 @@ export const developRouterMap: AppRouteRecordRaw[] = [
             }
           }
         ]
-      },
-      {
-        path: 'backups',
-        name: 'Backups',
-        component: () => import('@/views/Backups/index.vue'),
-        meta: {
-          title: t('router.Backups'),
-        },
       },
       {
         path: 'message_delivery',
