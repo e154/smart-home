@@ -20,6 +20,7 @@ package api
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"net/http"
 	"strings"
@@ -55,6 +56,8 @@ type Api struct {
 	certKey     string
 	adaptors    *adaptors.Adaptors
 	eventBus    bus.Bus
+	httpServer  http.Server
+	tlsServer   http.Server
 }
 
 // NewApi ...
@@ -138,6 +141,8 @@ func (a *Api) Start() (err error) {
 
 // Shutdown ...
 func (a *Api) Shutdown(ctx context.Context) (err error) {
+	a.httpServer.Shutdown(ctx)
+	a.tlsServer.Shutdown(ctx)
 	if a.echo != nil {
 		err = a.echo.Shutdown(ctx)
 	}
@@ -147,17 +152,16 @@ func (a *Api) Shutdown(ctx context.Context) (err error) {
 	return
 }
 
-func (a *Api) Restart(ctx context.Context) {
-	a.Shutdown(ctx)
-	a.Start()
-}
-
 func (a *Api) startServer() {
 	log.Infof("HTTP Server started at :%d", a.cfg.HttpPort)
-	if err := a.echo.Start(a.cfg.String()); err != http.ErrServerClosed {
-		log.Error(err.Error())
+	a.httpServer = http.Server{
+		Addr:    fmt.Sprintf(":%d", a.cfg.HttpPort),
+		Handler: a.echo,
+	}
+	if err := a.httpServer.ListenAndServe(); err != http.ErrServerClosed {
+		log.Errorf("error when starting HTTP server: %w", err)
 	} else {
-		log.Info("HTTP Server shutdown")
+		log.Info("HTTP server stopped serving requests")
 	}
 }
 
@@ -166,11 +170,25 @@ func (a *Api) startTlsServer() {
 	if a.certPublic == "" || a.certKey == "" {
 		return
 	}
-	log.Infof("TLS Server started at :%d", a.cfg.HttpsPort)
-	if err := a.echo.StartTLS(fmt.Sprintf(":%d", a.cfg.HttpsPort), []byte(a.certPublic), []byte(a.certKey)); err != http.ErrServerClosed {
-		log.Error(err.Error())
+
+	// Generate a key pair from your pem-encoded cert and key ([]byte).
+	cert, err := tls.X509KeyPair([]byte(a.certPublic), []byte(a.certKey))
+	if err != nil {
+		return
+	}
+	log.Infof("HTTPS Server started at :%d", a.cfg.HttpsPort)
+
+	a.tlsServer = http.Server{
+		Addr:    fmt.Sprintf(":%d", a.cfg.HttpsPort),
+		Handler: a.echo,
+		TLSConfig: &tls.Config{
+			Certificates: []tls.Certificate{cert},
+		},
+	}
+	if err = a.tlsServer.ListenAndServeTLS("", ""); err != http.ErrServerClosed {
+		log.Errorf("error when starting HTTPS server: %w", err)
 	} else {
-		log.Info("TLS Server shutdown")
+		log.Info("HTTPS server stopped serving requests")
 	}
 }
 
@@ -429,7 +447,8 @@ func (a *Api) eventHandler(_ string, message interface{}) {
 		switch v.Name {
 		case "certPublic", "certKey":
 			log.Infof("updated settings name %s", v.Name)
-			a.Restart(context.Background())
+			a.tlsServer.Shutdown(context.Background())
+			a.startTlsServer()
 		}
 	}
 }
