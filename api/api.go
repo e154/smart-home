@@ -31,6 +31,7 @@ import (
 	echoCacheMiddleware "github.com/kenshin579/echo-http-cache"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"go.uber.org/atomic"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api/controllers"
@@ -58,6 +59,7 @@ type Api struct {
 	eventBus    bus.Bus
 	httpServer  http.Server
 	tlsServer   http.Server
+	tlsStarted  *atomic.Bool
 }
 
 // NewApi ...
@@ -72,6 +74,7 @@ func NewApi(controllers *controllers.Controllers,
 		cfg:         cfg,
 		adaptors:    adaptors,
 		eventBus:    eventBus,
+		tlsStarted:  atomic.NewBool(false),
 	}
 	return
 }
@@ -166,6 +169,11 @@ func (a *Api) startServer() {
 }
 
 func (a *Api) startTlsServer() {
+	if !a.tlsStarted.CompareAndSwap(false, true) {
+		return
+	}
+	defer a.tlsStarted.Store(false)
+
 	a.getCerts()
 	if a.certPublic == "" || a.certKey == "" {
 		return
@@ -174,6 +182,7 @@ func (a *Api) startTlsServer() {
 	// Generate a key pair from your pem-encoded cert and key ([]byte).
 	cert, err := tls.X509KeyPair([]byte(a.certPublic), []byte(a.certKey))
 	if err != nil {
+		log.Error(err.Error())
 		return
 	}
 	log.Infof("HTTPS Server started at :%d", a.cfg.HttpsPort)

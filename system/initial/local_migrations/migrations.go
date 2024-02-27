@@ -79,6 +79,7 @@ func (t *Migrations) Up(ctx context.Context, adaptors *adaptors.Adaptors, ver st
 				list = append(list, name)
 				if ver == name {
 					position = i
+					break
 				}
 			}
 		}
