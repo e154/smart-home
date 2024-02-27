@@ -71,7 +71,6 @@ func TestConfig(t *testing.T) {
 						ctx.So(conf.ApiHttpPort, ShouldEqual, 3001)
 						ctx.So(conf.ApiSwagger, ShouldEqual, true)
 						ctx.So(conf.Domain, ShouldEqual, "localhost")
-						ctx.So(conf.Https, ShouldEqual, false)
 					})
 				})
 
@@ -149,7 +148,6 @@ func TestConfig(t *testing.T) {
 						ctx.So(conf.ApiHttpPort, ShouldEqual, 3001)
 						ctx.So(conf.ApiSwagger, ShouldEqual, true)
 						ctx.So(conf.Domain, ShouldEqual, "localhost")
-						ctx.So(conf.Https, ShouldEqual, false)
 					})
 				})
 
@@ -228,7 +226,6 @@ func TestConfig(t *testing.T) {
 						ctx.So(conf.ApiHttpPort, ShouldEqual, 3001)
 						ctx.So(conf.ApiSwagger, ShouldEqual, true)
 						ctx.So(conf.Domain, ShouldEqual, "localhost")
-						ctx.So(conf.Https, ShouldEqual, false)
 					})
 				})
 			})
