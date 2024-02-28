@@ -724,6 +724,7 @@ export default {
         info1: 'https://en.wikipedia.org/wiki/Cron',
         info2: 'Organization of remote access without external IP. Free gate https://gate.e154.ru:8443',
         info3: 'don\'t change it if you don\'t know what it\'s for',
+        info4: 'For Service Worker and Web Push API to work, all web pages and resources of the management system must be accessible via HTTPS, that is, protected by an SSL certificate.\n This is important to ensure the security of data transmission between the server and client.',
         sendTheBackupInPartsMb: 'Send The Backup In Parts Mb',
         sendbackuptoTelegramBot: 'Send Backup To Telegram Bot',
         gate: 'Gate',

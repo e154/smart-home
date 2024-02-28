@@ -73,15 +73,23 @@ func (t *Migrations) Up(ctx context.Context, adaptors *adaptors.Adaptors, ver st
 
 		var list []string
 		var position = 0
+		var exist = false
 		if ver != "" {
 			for i, migration := range t.list {
 				name := reflect.TypeOf(migration).String()
 				list = append(list, name)
 				if ver == name {
+					exist = true
 					position = i
 					break
 				}
 			}
+		}
+
+		if !exist {
+			log.Errorf("Unknown migration %s!", ver)
+			err = fmt.Errorf(fmt.Sprintf("Unknown migration %s!", ver))
+			return
 		}
 
 		if position >= len(t.list)-1 {

@@ -377,6 +377,16 @@ getSettings()
 
       <ElDivider content-position="left">{{ $t('settings.certificates') }}</ElDivider>
 
+      <Infotip
+        :show-index="false"
+        title="INFO"
+        :schema="[
+      {
+        label: t('settings.info4'),
+      },
+    ]"
+      />
+
       <ElRow :gutter="24">
         <ElCol :span="12" :xs="12">
           <ElFormItem :label="$t('settings.certPublic')" prop="certPublic">

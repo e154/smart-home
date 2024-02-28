@@ -1,11 +1,12 @@
 <script lang="tsx">
-import { defineComponent, computed } from 'vue'
+import {defineComponent, computed, ref} from 'vue'
 import { Collapse } from '@/components/Collapse'
 import { LocaleDropdown } from '@/components/LocaleDropdown'
 import { SizeDropdown } from '@/components/SizeDropdown'
 import { UserInfo } from '@/components/UserInfo'
 import { Screenfull } from '@/components/Screenfull'
 import { GateToggle } from '@/components/Gate'
+import { InstallPWA } from '@/components/InstallPWA'
 import { NetworkStatus } from '@/components/NetworkStatus'
 import { TerminalToggle } from '@/components/Terminal'
 import { Breadcrumb } from '@/components/Breadcrumb'
@@ -13,30 +14,28 @@ import { useAppStore } from '@/store/modules/app'
 import { useDesign } from '@/hooks/web/useDesign'
 
 const { getPrefixCls, variables } = useDesign()
-
 const prefixCls = getPrefixCls('tool-header')
-
 const appStore = useAppStore()
 
-// 面包屑
 const breadcrumb = computed(() => appStore.getBreadcrumb)
-
-// 折叠图标
 const hamburger = computed(() => appStore.getHamburger)
-
-// 全屏图标
 const screenfull = computed(() => appStore.getScreenfull)
-
 const serverId = computed(() => appStore.getServerId)
-
-// 尺寸图标
 const size = computed(() => appStore.getSize)
-
-// 布局
 const layout = computed(() => appStore.getLayout)
-
-// 多语言图标
 const locale = computed(() => appStore.getLocale)
+// const standalone = computed(() => appStore.getStandalone)
+
+// const showInstallMenu = ref();
+// window.addEventListener("beforeinstallprompt", (e) => {
+//   e.preventDefault();
+//   showInstallMenu.value = true;
+// });
+//
+// const appInstalled = ref();
+// window.addEventListener("appinstalled", () => {
+//   appInstalled.value = true
+// });
 
 export default defineComponent({
   name: 'ToolHeader',
@@ -83,6 +82,10 @@ export default defineComponent({
   }
 })
 </script>
+
+<!--  {!standalone.value && showInstallMenu.value && !appInstalled.value ? (
+            <InstallPWA class="hover-trigger" color="var(--top-header-text-color)"></InstallPWA>
+          ) : undefined}-->
 
 <style lang="less" scoped>
 @prefix-cls: ~'@{namespace}-tool-header';

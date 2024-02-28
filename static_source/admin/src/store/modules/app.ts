@@ -46,10 +46,13 @@ interface AppState {
   serverId: string
   lastColors: string[]
   onlineStatus: 'online' | 'offline'
+  standalone: boolean
 }
 
 export const useAppStore = defineStore('app', {
   state: (): AppState => {
+    const mqStandAlone = '(display-mode: standalone)'
+    const standalone = navigator.standalone || window.matchMedia(mqStandAlone).matches
     return {
       token: wsCache.get("accessToken") as string || '',
       user: wsCache.get("currentUser") as ApiCurrentUser,
@@ -61,7 +64,7 @@ export const useAppStore = defineStore('app', {
 
       breadcrumb: wsCache.get('breadcrumb') || true, // 面包屑
       breadcrumbIcon: wsCache.get('breadcrumbIcon') || true, // 面包屑图标
-      collapse: wsCache.get('collapse') || false, // 折叠菜单
+      collapse: wsCache.get('collapse') || true, // 折叠菜单
       uniqueOpened: false, // 是否只保持一个子菜单的展开
       hamburger: true, // 折叠图标
       screenfull: true, // 全屏图标
@@ -84,6 +87,7 @@ export const useAppStore = defineStore('app', {
       currentSize: wsCache.get('currentSize') || 'small', // 组件尺寸
       lastColors: wsCache.get('lastColors') || [],
       onlineStatus: 'offline',
+      standalone: standalone,
       theme: wsCache.get('theme') || {
         // 主题色
         elColorPrimary: '#409eff',
@@ -215,7 +219,10 @@ export const useAppStore = defineStore('app', {
     },
     getOnlineStatus(): 'online' | 'offline' {
       return this.onlineStatus
-    }
+    },
+    getStandalone(): boolean {
+      return this.standalone
+    },
   },
   actions: {
     SetUser(user: ApiCurrentUser) {

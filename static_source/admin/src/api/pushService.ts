@@ -108,7 +108,7 @@ class PushService {
   private async createNewSubscription() {
     console.debug('Создаем новую подписку')
     if (!this.publicKey || !this.pushManager) {
-      console.debug('pushManager или publicKey не определен', this.publicKey, this.pushManager)
+      // console.debug('pushManager или publicKey не определен', this.publicKey, this.pushManager)
       return
     }
     // Создаем новую подписку
@@ -117,7 +117,7 @@ class PushService {
       userVisibleOnly: true,
     }
     const subscription = await this.pushManager.subscribe(options)
-    console.debug(JSON.stringify(subscription))
+    // console.debug(JSON.stringify(subscription))
     stream.send({
       id: UUID.createUUID(),
       query: 'event_add_webpush_subscription',
