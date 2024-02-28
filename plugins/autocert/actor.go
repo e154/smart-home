@@ -22,7 +22,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
-	"sync"
+	"time"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/events"
@@ -34,7 +34,6 @@ import (
 type Actor struct {
 	*supervisor.BaseActor
 	actionPool chan events.EventCallEntityAction
-	stateMu    *sync.Mutex
 }
 
 // NewActor ...
@@ -44,7 +43,6 @@ func NewActor(entity *m.Entity,
 	actor = &Actor{
 		BaseActor:  supervisor.NewBaseActor(entity, service),
 		actionPool: make(chan events.EventCallEntityAction, 1000),
-		stateMu:    &sync.Mutex{},
 	}
 
 	// action worker
@@ -122,4 +120,31 @@ func (e *Actor) requestCertificate() {
 
 	e.SetActorState(common.String(StateSuccessfully))
 	e.SaveState(false, true)
+}
+
+func (e *Actor) checkCertificate() {
+
+	log.Infof("check ssl certificate %s", e.Id)
+
+	// get last state
+	state := e.GetCurrentState()
+
+	// if last state is nil
+	if state == nil || state.LastUpdated == nil {
+		e.requestCertificate()
+		return
+	}
+
+	// if last state error
+	if state.State.Name == StateError {
+		e.requestCertificate()
+		return
+	}
+
+	// if more than 85 days have passed
+	now := time.Now()
+	if now.Sub(*state.LastUpdated).Hours()/24 > 85 {
+		e.requestCertificate()
+		return
+	}
 }

@@ -25,6 +25,7 @@ import (
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/scheduler"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
@@ -44,6 +45,7 @@ func init() {
 
 type plugin struct {
 	*supervisor.Plugin
+	task scheduler.EntryID
 }
 
 // New ...
@@ -60,8 +62,17 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 	if err = p.Plugin.Load(ctx, service, p.ActorConstructor); err != nil {
 		return
 	}
+
 	_ = p.Service.EventBus().Subscribe("system/entities/+", p.eventHandler)
-	return nil
+
+	p.task, err = p.Service.Scheduler().AddFunc("0 0 0 * * *", func() {
+		p.Actors.Range(func(key, value any) bool {
+			actor := value.(*Actor)
+			go actor.checkCertificate()
+			return true
+		})
+	})
+	return
 }
 
 // Unload ...
@@ -69,6 +80,7 @@ func (p *plugin) Unload(ctx context.Context) (err error) {
 	if err = p.Plugin.Unload(ctx); err != nil {
 		return
 	}
+	p.Service.Scheduler().Remove(p.task)
 	_ = p.Service.EventBus().Unsubscribe("system/entities/+", p.eventHandler)
 	return
 }
