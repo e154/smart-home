@@ -3,6 +3,7 @@ import {computed, PropType} from "vue";
 import {Card, Core, Tab} from "@/views/Dashboard/core/core";
 import {Vuuri} from "@/views/Dashboard/Vuuri"
 import ViewCard from "@/views/Dashboard/view/ViewCard.vue";
+import {Frame} from "@/views/Dashboard/components";
 
 // ---------------------------------
 // common
@@ -46,7 +47,10 @@ const cards = computed<Card[]>(() => props.tab?.cards2)
       :drag-enabled="false"
   >
     <template #item="{item}">
-      <ViewCard :card="item" :key="item" :core="core"/>
+      <Frame :frame="item.templateFrame" v-if="item.template">
+        <ViewCard :card="item" :key="item" :core="core"/>
+      </Frame>
+      <ViewCard v-else :card="item" :key="item" :core="core"/>
     </template>
   </Vuuri>
 

@@ -49,7 +49,8 @@ const getCardItemName = (item: CardItem): string => {
     v-bind:class="'class-'+card.currentID"
     :style="{
         'transform': `scale(${zoom})`,
-        'background-color': card.background || (appStore.isDark ? '#232324' : '#F5F7FA')}"
+        'background-color': card.template ? 'inherit' : card.background || (appStore.isDark ? '#232324' : '#F5F7FA')
+    }"
     @mouseover="hover = true"
     @touchstart="hover = true"
     @mouseleave="hover = false"
