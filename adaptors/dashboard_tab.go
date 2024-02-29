@@ -20,11 +20,10 @@ package adaptors
 
 import (
 	"context"
-	"fmt"
+	"gorm.io/gorm"
 
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"gorm.io/gorm"
 )
 
 type IDashboardTab interface {
@@ -133,13 +132,9 @@ func (n *DashboardTab) Import(ctx context.Context, tab *m.DashboardTab) (tabId i
 	cardAdaptor := GetDashboardCardAdaptor(tx)
 	cardItemAdaptor := GetDashboardCardItemAdaptor(tx)
 
-	fmt.Println("-----")
-
 	if tabId, err = tabAdaptor.Add(ctx, tab); err != nil {
-		fmt.Println("-----2", err.Error())
 		return
 	}
-	fmt.Println("-----3")
 
 	// cards
 	if len(tab.Cards) > 0 {
@@ -178,6 +173,7 @@ func (n *DashboardTab) fromDb(dbVer *db.DashboardTab) (ver *m.DashboardTab) {
 		Enabled:     dbVer.Enabled,
 		Weight:      dbVer.Weight,
 		DashboardId: dbVer.DashboardId,
+		Payload:     dbVer.Payload,
 		CreatedAt:   dbVer.CreatedAt,
 		UpdatedAt:   dbVer.UpdatedAt,
 	}
@@ -203,6 +199,7 @@ func (n *DashboardTab) toDb(ver *m.DashboardTab) (dbVer *db.DashboardTab) {
 		Enabled:     ver.Enabled,
 		Weight:      ver.Weight,
 		DashboardId: ver.DashboardId,
+		Payload:     ver.Payload,
 	}
 
 	return

@@ -319,6 +319,7 @@ type ApiDashboardTab struct {
 	Icon        string               `json:"icon"`
 	Id          int64                `json:"id"`
 	Name        string               `json:"name"`
+	Payload     []byte               `json:"payload"`
 	UpdatedAt   time.Time            `json:"updatedAt"`
 	Weight      int32                `json:"weight"`
 }
@@ -800,6 +801,7 @@ type ApiNewDashboardTabRequest struct {
 	Gap         bool    `json:"gap"`
 	Icon        string  `json:"icon"`
 	Name        string  `json:"name"`
+	Payload     []byte  `json:"payload"`
 	Weight      int32   `json:"weight"`
 }
 
@@ -1689,6 +1691,7 @@ type DashboardTabServiceUpdateDashboardTabJSONBody struct {
 	Gap         bool    `json:"gap"`
 	Icon        string  `json:"icon"`
 	Name        string  `json:"name"`
+	Payload     []byte  `json:"payload"`
 	Weight      int32   `json:"weight"`
 }
 

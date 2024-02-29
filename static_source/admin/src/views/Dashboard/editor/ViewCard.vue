@@ -251,6 +251,25 @@ const onDragStart = (e) => {
   }
 };
 
+const getCardStyle = () => {
+  const style = {
+    transform: `scale(${zoom.value})`,
+  }
+  if (currentCard.value?.template) {
+    style['background-color'] = 'inherit'
+  } else {
+    if (currentCard.value?.background) {
+      style['background-color'] = currentCard.value.background
+    } else {
+      if (currentCard.value?.backgroundAdaptive) {
+        style['background-color'] = appStore.isDark ? '#232324' : '#F5F7FA'
+      }
+    }
+  }
+
+  return style
+}
+
 </script>
 
 <template>
@@ -260,10 +279,7 @@ const onDragStart = (e) => {
       ref="cardRef"
       :class="[{'active': currentCard.active}, `class-${currentCard.currentID}`]"
       :key="reloadKey"
-      :style="{
-        'transform': `scale(${zoom})`,
-        'background-color': currentCard.template ? 'inherit' : currentCard.background || (appStore.isDark ? '#232324' : '#F5F7FA')
-      }"
+      :style="getCardStyle()"
       @mouseover="hover = true"
       @touchstart="hover = true"
       @mouseleave="hover = false"
@@ -340,6 +356,7 @@ const onDragStart = (e) => {
   overflow: hidden;
   width: 100%;
   height: 100%;
+
   &.active {
     .card-label {
       display: inherit;

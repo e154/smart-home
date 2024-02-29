@@ -19,7 +19,7 @@
 package dto
 
 import (
-	stub "github.com/e154/smart-home/api/stub"
+	"github.com/e154/smart-home/api/stub"
 	m "github.com/e154/smart-home/models"
 )
 
@@ -41,6 +41,7 @@ func (r DashboardTab) AddDashboardTab(obj *stub.ApiNewDashboardTabRequest) (ver 
 		Enabled:     obj.Enabled,
 		Weight:      int(obj.Weight),
 		DashboardId: obj.DashboardId,
+		Payload:     obj.Payload,
 	}
 	return
 }
@@ -56,6 +57,7 @@ func (r DashboardTab) UpdateDashboardTab(obj *stub.DashboardTabServiceUpdateDash
 		Enabled:     obj.Enabled,
 		Weight:      int(obj.Weight),
 		DashboardId: obj.DashboardId,
+		Payload:     obj.Payload,
 	}
 	return
 }
@@ -93,6 +95,7 @@ func ToDashboardTab(ver *m.DashboardTab) (obj *stub.ApiDashboardTab) {
 		Enabled:     ver.Enabled,
 		Weight:      int32(ver.Weight),
 		DashboardId: ver.DashboardId,
+		Payload:     ver.Payload,
 		Cards:       make([]stub.ApiDashboardCard, 0, len(ver.Cards)),
 		Entities:    make(map[string]stub.ApiEntity),
 		CreatedAt:   ver.CreatedAt,
@@ -127,6 +130,7 @@ func ToDashboardTabShort(ver *m.DashboardTab) (obj *stub.ApiDashboardTab) {
 		Enabled:     ver.Enabled,
 		Weight:      int32(ver.Weight),
 		DashboardId: ver.DashboardId,
+		Payload:     ver.Payload,
 		CreatedAt:   ver.CreatedAt,
 		UpdatedAt:   ver.UpdatedAt,
 	}
@@ -144,6 +148,7 @@ func ImportDashboardTab(obj *stub.ApiDashboardTab) (ver *m.DashboardTab) {
 		Enabled:     obj.Enabled,
 		Weight:      int(obj.Weight),
 		DashboardId: obj.DashboardId,
+		Payload:     obj.Payload,
 		Cards:       make([]*m.DashboardCard, 0, len(obj.Cards)),
 	}
 

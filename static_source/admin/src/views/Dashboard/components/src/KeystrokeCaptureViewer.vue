@@ -42,6 +42,10 @@ useEventBus({
       return
     }
 
+    if (!currentCard.value?.keysCapture) {
+      return;
+    }
+
     currentCard.value.keysCapture.forEach((act, index) => {
       if (act.keys?.has(val.keyCode)) {
         if (!act.action) {

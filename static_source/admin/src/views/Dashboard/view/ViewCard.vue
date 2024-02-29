@@ -40,6 +40,25 @@ const getCardItemName = (item: CardItem): string => {
   return CardItemName(item.type);
 }
 
+const getCardStyle = () => {
+  const style = {
+    transform: `scale(${zoom.value})`,
+  }
+  if (props.card?.template) {
+    style['background-color'] = 'inherit'
+  } else {
+    if (props.card?.background) {
+      style['background-color'] = props.card.background
+    } else {
+      if (props.card?.backgroundAdaptive) {
+        style['background-color'] = appStore.isDark ? '#232324' : '#F5F7FA'
+      }
+    }
+  }
+
+  return style
+}
+
 </script>
 
 <template>
@@ -47,10 +66,7 @@ const getCardItemName = (item: CardItem): string => {
   <div
     class="item-card elements selecto-area"
     v-bind:class="'class-'+card.currentID"
-    :style="{
-        'transform': `scale(${zoom})`,
-        'background-color': card.template ? 'inherit' : card.background || (appStore.isDark ? '#232324' : '#F5F7FA')
-    }"
+    :style="getCardStyle()"
     @mouseover="hover = true"
     @touchstart="hover = true"
     @mouseleave="hover = false"

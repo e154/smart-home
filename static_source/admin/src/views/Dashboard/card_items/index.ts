@@ -160,7 +160,6 @@ export const CardItemList: ItemsType[] = [
     label: 'Charts',
     children: [
       {label: t('dashboard.editor.CHART'), value: 'chart'},
-      {label: t('dashboard.editor.CHART_CUSTOM'), value: 'chartCustom'},
     ],
   },
   {
@@ -174,7 +173,8 @@ export const CardItemList: ItemsType[] = [
     value: 'experimental',
     label: 'Experimental',
     children: [
-      {label: t('dashboard.editor.THREE'), value: 'three'}
+      {label: t('dashboard.editor.THREE'), value: 'three'},
+      {label: t('dashboard.editor.CHART_CUSTOM'), value: 'chartCustom'},
     ],
   }
 ];

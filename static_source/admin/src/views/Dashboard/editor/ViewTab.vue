@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, PropType, ref, unref, watch} from "vue";
+import {computed, PropType, ref} from "vue";
 import {Card, Core, Tab} from "@/views/Dashboard/core/core";
 import {Vuuri} from "@/views/Dashboard/Vuuri"
 import {useBus} from "@/views/Dashboard/core/bus";
@@ -69,17 +69,17 @@ const cards = computed<Card[]>(() => props.tab?.cards2)
       ref="grid"
       :key="reloadKey"
   >
-      <template #item="{item}">
-        <Frame :frame="item.templateFrame" v-if="item.template">
-          <ViewCard :card="item" :key="item" :core="core"/>
-        </Frame>
-        <ViewCard v-else :card="item" :key="item" :core="core"/>
-      </template>
+    <template #item="{item}">
+      <Frame :frame="item.templateFrame" v-if="item.template">
+        <ViewCard :card="item" :key="item" :core="core"/>
+      </Frame>
+      <ViewCard v-else :card="item" :key="item" :core="core"/>
+    </template>
   </Vuuri>
 
 </template>
 
-<style lang="less" >
+<style lang="less">
 .gap {
   .muuri-item {
     padding: 5px;

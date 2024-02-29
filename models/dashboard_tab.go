@@ -19,6 +19,7 @@
 package models
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/e154/smart-home/common"
@@ -26,6 +27,7 @@ import (
 
 // DashboardTab ...
 type DashboardTab struct {
+	Payload     json.RawMessage             `json:"payload"`
 	Cards       []*DashboardCard            `json:"cards"`
 	CreatedAt   time.Time                   `json:"created_at"`
 	UpdatedAt   time.Time                   `json:"updated_at"`

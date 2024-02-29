@@ -336,6 +336,11 @@ export interface ApiDashboardTab {
   dashboardId: number;
   cards: ApiDashboardCard[];
   entities: Record<string, ApiEntity>;
+  /**
+   * @format byte
+   * @pattern ^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$
+   */
+  payload: string;
   /** @format date-time */
   createdAt: string;
   /** @format date-time */
@@ -833,6 +838,11 @@ export interface ApiNewDashboardTabRequest {
   weight: number;
   /** @format int64 */
   dashboardId: number;
+  /**
+   * @format byte
+   * @pattern ^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$
+   */
+  payload: string;
 }
 
 export interface ApiNewEntityRequest {
@@ -3144,6 +3154,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         weight: number;
         /** @format int64 */
         dashboardId: number;
+        /**
+         * @format byte
+         * @pattern ^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$
+         */
+        payload: string;
       },
       params: RequestParams = {},
     ) =>

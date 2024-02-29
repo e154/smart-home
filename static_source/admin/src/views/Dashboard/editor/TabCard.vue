@@ -6,13 +6,16 @@ import {
   ElButtonGroup,
   ElCol,
   ElDivider,
-  ElEmpty, ElForm, ElFormItem,
+  ElEmpty,
+  ElForm,
+  ElFormItem,
   ElIcon,
   ElMenu,
   ElMenuItem,
   ElMessage,
   ElPopconfirm,
-  ElRow, ElSwitch,
+  ElRow,
+  ElSwitch,
 } from 'element-plus'
 import {CloseBold} from '@element-plus/icons-vue'
 import {useI18n} from '@/hooks/web/useI18n'
@@ -25,9 +28,8 @@ import {Card, Core, Tab} from "@/views/Dashboard/core/core";
 import {useBus} from "@/views/Dashboard/core/bus";
 import {Dialog} from '@/components/Dialog'
 import {JsonEditor} from "@/components/JsonEditor";
-import {KeystrokeCapture, FrameEditor} from "@/views/Dashboard/components";
+import {FrameEditor, KeystrokeCapture} from "@/views/Dashboard/components";
 import {DraggableContainer} from "@/components/DraggableContainer";
-import {ImageSearch} from "@/components/ImageSearch";
 
 const {register, elFormRef, methods} = useForm()
 const {required} = useValidator()
@@ -35,21 +37,6 @@ const {t} = useI18n()
 
 const {setValues} = methods
 const {emit} = useBus()
-
-interface DashboardTab {
-  id: number;
-  name: string;
-  columnWidth: number;
-  gap: boolean;
-  background: string;
-  icon: string;
-  enabled: boolean;
-  weight: number;
-  dashboardId: number;
-  cards: ApiDashboardCard[];
-  entities: Map<string, ApiEntity>;
-  dragEnabled: boolean;
-}
 
 export interface DashboardCard {
   id: number;
@@ -72,7 +59,7 @@ const props = defineProps({
     type: Object as PropType<Nullable<Core>>,
   },
   tab: {
-    type: Object as PropType<Nullable<DashboardTab>>,
+    type: Object as PropType<Nullable<Tab>>,
     default: () => null
   },
 })
@@ -99,8 +86,8 @@ const schema = reactive<FormSchema[]>([
     component: 'Switch',
     value: false,
     colProps: {
-      md: 24,
-      span: 24
+      md: 12,
+      span: 12
     },
   },
   {
@@ -109,8 +96,8 @@ const schema = reactive<FormSchema[]>([
     component: 'Switch',
     value: false,
     colProps: {
-      md: 24,
-      span: 24
+      md: 12,
+      span: 12
     },
   },
   {
@@ -146,10 +133,23 @@ const schema = reactive<FormSchema[]>([
     label: t('dashboard.background'),
     component: 'ColorPicker',
     colProps: {
-      span: 24
+      span: 12
     },
     componentProps: {
       placeholder: t('dashboard.background'),
+    }
+  },
+  {
+    field: 'backgroundAdaptive',
+    label: t('dashboard.editor.backgroundAdaptive'),
+    component: 'Switch',
+    value: true,
+    colProps: {
+      md: 12,
+      span: 12
+    },
+    componentProps: {
+      placeholder: t('dashboard.backgroundAdaptive'),
     }
   },
 ])
@@ -159,25 +159,26 @@ const activeCard = computed(() => props.core?.getActiveTab?.cards[props.core?.ac
 
 //todo: optimize
 watch(
-  () => currentCore.value.activeCard,
-  (val?: number) => {
-    if (!(val >= 0)) return
-    const card = props.tab?.cards[val] as DashboardCard
-    setValues({
-      title: card.title,
-      enabled: card.enabled,
-      hidden: card.hidden,
-      // dragEnabled: card.dragEnabled, // todo: fix
-      height: card.height,
-      weight: card.weight,
-      width: card.width,
-      background: card.background,
-    })
-  },
-  {
-    deep: true,
-    immediate: true
-  }
+    () => currentCore.value.activeCard,
+    (val?: number) => {
+      if (!(val >= 0)) return
+      const card = props.tab?.cards[val] as DashboardCard
+      setValues({
+        title: card.title,
+        enabled: card.enabled,
+        hidden: card.hidden,
+        // dragEnabled: card.dragEnabled, // todo: fix
+        height: card.height,
+        weight: card.weight,
+        width: card.width,
+        background: card.background,
+        backgroundAdaptive: card.backgroundAdaptive,
+      })
+    },
+    {
+      deep: true,
+      immediate: true
+    }
 )
 
 const activeTab = computed({
@@ -271,7 +272,7 @@ const updateCard = async () => {
   await formRef?.validate(async (isValid) => {
     if (isValid) {
       const {getFormData} = methods
-      const formData = await getFormData<DashboardCard>()
+      const formData = await getFormData()
 
       activeCard.value.title = formData.title
       activeCard.value.enabled = formData.enabled
@@ -281,6 +282,7 @@ const updateCard = async () => {
       activeCard.value.weight = formData.weight
       activeCard.value.width = formData.width
       activeCard.value.background = formData.background
+      activeCard.value.backgroundAdaptive = formData.backgroundAdaptive
 
       const res = await currentCore.value.updateCard();
       currentCore.value.updateCurrentTab();
@@ -322,6 +324,7 @@ const cancel = () => {
     weight: activeCard.value.weight,
     width: activeCard.value.width,
     background: activeCard.value.background,
+    backgroundAdaptive: activeCard.value.backgroundAdaptive,
   })
 }
 
@@ -351,69 +354,6 @@ onMounted(() => {
 </script>
 
 <template>
-
-  <ElRow v-if="activeCard !== undefined" :gutter="24" class="mb-10px mt-10px">
-    <ElCol :span="12" :xs="12">
-      <ElButton class="w-[100%]" @click="addCard()">
-        {{ t('dashboard.addNewCard') }}
-      </ElButton>
-    </ElCol>
-    <ElCol :span="12" :xs="12">
-      <ElButton class="w-[100%]" @click="showImportDialog()">
-        {{ t('main.import') }}
-      </ElButton>
-    </ElCol>
-  </ElRow>
-
-  <ElRow v-if="activeCard !== undefined" class="mb-10px">
-    <ElCol>
-      <ElDivider content-position="left">{{ $t('dashboard.cardOptions') }}</ElDivider>
-    </ElCol>
-  </ElRow>
-
-  <Form
-    v-if="activeCard !== undefined"
-    :schema="schema"
-    :rules="rules"
-    label-position="top"
-    style="width: 100%"
-    @register="register"
-  />
-
-  <ElForm
-      label-position="top"
-      style="width: 100%"
-  >
-    <ElRow>
-      <ElCol>
-        <ElFormItem :label="$t('dashboard.editor.template')" prop="template">
-          <ElSwitch v-model="activeCard.template"/>
-        </ElFormItem>
-      </ElCol>
-    </ElRow>
-
-  </ElForm>
-
-  <FrameEditor v-if="activeCard.template" :card="activeCard" :core="core"/>
-
-  <ElRow v-if="activeCard !== undefined" class="mb-10px">
-    <ElCol>
-      <ElDivider content-position="left">{{ $t('dashboard.editor.keystrokeCapture') }}</ElDivider>
-    </ElCol>
-  </ElRow>
-
-  <ElRow v-if="activeCard !== undefined" class="mb-10px">
-    <ElCol>
-      <KeystrokeCapture :card="activeCard" :core="core"/>
-    </ElCol>
-  </ElRow>
-
-  <ElRow v-if="activeCard !== undefined" class="mb-10px">
-    <ElCol>
-      <ElDivider content-position="left">{{ $t('main.actions') }}</ElDivider>
-    </ElCol>
-  </ElRow>
-
   <ElEmpty v-if="!(activeCard !== undefined)" :rows="5" description="Select card or">
     <ElButton type="primary" @click="addCard()">
       {{ t('dashboard.addNewCard') }}
@@ -423,29 +363,93 @@ onMounted(() => {
     </ElButton>
   </ElEmpty>
 
-  <div class="text-right" v-if="activeCard != undefined">
-    <ElButton type="primary" @click.prevent.stop='showExportDialog()' plain>
-      <Icon icon="uil:file-export" class="mr-5px"/>
-      {{ $t('main.export') }}
-    </ElButton>
-    <ElButton type="primary" @click.prevent.stop="updateCard" plain>{{ $t('main.update') }}</ElButton>
-<!--    <ElButton @click.prevent.stop="pasteCardItem">{{ $t('dashboard.pasteCardItem') }}</ElButton>-->
-    <ElButton @click.prevent.stop="cancel" plain>{{ t('main.cancel') }}</ElButton>
-    <ElPopconfirm
-      :confirm-button-text="$t('main.ok')"
-      :cancel-button-text="$t('main.no')"
-      width="250"
-      style="margin-left: 10px;"
-      :title="$t('main.are_you_sure_to_do_want_this?')"
-      @confirm="removeCard"
-    >
-      <template #reference>
-        <ElButton type="danger" plain>
-          <Icon icon="ep:delete" class="mr-5px"/>
-          {{ t('main.remove') }}
+  <div v-if="activeCard !== undefined">
+    <ElRow :gutter="24" class="mb-10px mt-10px">
+      <ElCol :span="12" :xs="12">
+        <ElButton class="w-[100%]" @click="addCard()">
+          {{ t('dashboard.addNewCard') }}
         </ElButton>
-      </template>
-    </ElPopconfirm>
+      </ElCol>
+      <ElCol :span="12" :xs="12">
+        <ElButton class="w-[100%]" @click="showImportDialog()">
+          {{ t('main.import') }}
+        </ElButton>
+      </ElCol>
+    </ElRow>
+
+    <ElRow class="mb-10px">
+      <ElCol>
+        <ElDivider content-position="left">{{ $t('dashboard.cardOptions') }}</ElDivider>
+      </ElCol>
+    </ElRow>
+
+    <Form
+        :schema="schema"
+        :rules="rules"
+        label-position="top"
+        style="width: 100%"
+        @register="register"
+    />
+
+    <ElForm
+        label-position="top"
+        style="width: 100%"
+    >
+      <ElRow
+      >
+        <ElCol>
+          <ElFormItem :label="$t('dashboard.editor.template')" prop="template">
+            <ElSwitch v-model="activeCard.template"/>
+          </ElFormItem>
+        </ElCol>
+      </ElRow>
+
+    </ElForm>
+
+    <FrameEditor v-if="activeCard.template" :card="activeCard" :core="core"/>
+
+    <ElRow class="mb-10px">
+      <ElCol>
+        <ElDivider content-position="left">{{ $t('dashboard.editor.keystrokeCapture') }}</ElDivider>
+      </ElCol>
+    </ElRow>
+
+    <ElRow class="mb-10px">
+      <ElCol>
+        <KeystrokeCapture :card="activeCard" :core="core"/>
+      </ElCol>
+    </ElRow>
+
+    <ElRow class="mb-10px">
+      <ElCol>
+        <ElDivider content-position="left">{{ $t('main.actions') }}</ElDivider>
+      </ElCol>
+    </ElRow>
+
+    <div class="text-right">
+      <ElButton type="primary" @click.prevent.stop='showExportDialog()' plain>
+        <Icon icon="uil:file-export" class="mr-5px"/>
+        {{ $t('main.export') }}
+      </ElButton>
+      <ElButton type="primary" @click.prevent.stop="updateCard" plain>{{ $t('main.update') }}</ElButton>
+      <!--    <ElButton @click.prevent.stop="pasteCardItem">{{ $t('dashboard.pasteCardItem') }}</ElButton>-->
+      <ElButton @click.prevent.stop="cancel" plain>{{ t('main.cancel') }}</ElButton>
+      <ElPopconfirm
+          :confirm-button-text="$t('main.ok')"
+          :cancel-button-text="$t('main.no')"
+          width="250"
+          style="margin-left: 10px;"
+          :title="$t('main.are_you_sure_to_do_want_this?')"
+          @confirm="removeCard"
+      >
+        <template #reference>
+          <ElButton type="danger" plain>
+            <Icon icon="ep:delete" class="mr-5px"/>
+            {{ t('main.remove') }}
+          </ElButton>
+        </template>
+      </ElPopconfirm>
+    </div>
   </div>
 
   <!-- export dialog -->

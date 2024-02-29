@@ -3,7 +3,7 @@ import {
   ApiDashboardCard,
   ApiDashboardCardItem,
   ApiDashboardTab,
-  ApiEntity,
+  ApiEntity, ApiImage,
   ApiNewDashboardCardItemRequest,
   ApiNewDashboardCardRequest,
   ApiNewDashboardRequest,
@@ -32,14 +32,17 @@ export interface Position {
   transform: string;
 }
 
-export interface PositionInfo {
-  left: string;
-  top: string;
-  width: string;
-  height: string;
+export interface Action {
+  value: string;
+  label: string;
 }
 
-export interface ItemParams {
+export interface State {
+  value: string;
+  label: string;
+}
+
+export interface CardItemPayload {
   style: object;
   payload: ItemPayload;
   type?: string;
@@ -55,14 +58,18 @@ export interface ItemParams {
   templateFrame?: FrameProp;
 }
 
-export interface Action {
-  value: string;
-  label: string;
+export interface CardPayload {
+  showOn?: CompareProp[];
+  hideOn?: CompareProp[];
+  keysCapture?: KeysProp[];
+  template: boolean;
+  templateFrame?: FrameProp;
+  backgroundAdaptive?: boolean;
 }
 
-export interface State {
-  value: string;
-  label: string;
+export interface TabPayload {
+  backgroundImage?: ApiImage;
+  backgroundAdaptive?: boolean;
 }
 
 export class CardItem {
@@ -102,7 +109,7 @@ export class CardItem {
 
     if (item.payload) {
       const result: any = parsedObject(decodeURIComponent(escape(atob(item.payload))));
-      const payload = result as ItemParams;
+      const payload = result as CardItemPayload;
       this.width = payload.width;
       this.height = payload.height;
       this.transform = payload.transform;
@@ -322,31 +329,6 @@ export class CardItem {
       width: `${this.width}px`,
       height: `${this.height}px`,
       transform: this.transform
-    };
-  }
-
-  // positionInfo
-  get positionInfo(): PositionInfo {
-    // todo optimize
-    // let str = this.transform;
-    //
-    // const translate = str.split(') translate(');
-    // const startItems = translate[0].split('matrix(')[1].split(',');
-    // const startLeft = parseInt(startItems[4]);
-    // const startTop = parseInt(startItems[5]);
-    // const stag = translate[1].split('px,');
-    // const left = startLeft + parseInt(stag[0]);
-    // const top = startTop + parseInt(stag[1].split('px')[0]);
-
-    // console.log('str', str)
-    // console.log('left', left)
-    // console.log('top', top)
-
-    return {
-      left: '0',
-      top: '0',
-      width: `${this.width}`,
-      height: `${this.height}`
     };
   }
 
@@ -575,7 +557,7 @@ export class Card {
   weight: number;
   enabled: boolean;
   dashboardTabId: number;
-  payload: ItemPayload = {} as ItemPayload;
+  payload: CardPayload = {} as CardPayload;
   entities: Map<string, ApiEntity>;
   active = false;
   hidden: boolean
@@ -584,6 +566,7 @@ export class Card {
   keysCapture: KeysProp[] = [];
   template = false;
   templateFrame: FrameProp;
+  backgroundAdaptive = true;
 
   selectedItem = -1;
 
@@ -609,12 +592,13 @@ export class Card {
     }
     if (card.payload) {
       const result: any = parsedObject(decodeURIComponent(escape(atob(card.payload))));
-      const payload = result as ItemParams;
+      const payload = result as CardPayload;
       this.showOn = payload?.showOn;
       this.hideOn = payload?.hideOn;
       this.keysCapture = payload?.keysCapture;
       this.template = payload?.template || false;
       this.templateFrame = payload?.templateFrame || {};
+      this.backgroundAdaptive = payload?.backgroundAdaptive || false;
     }
 
     for (const index in card.items) {
@@ -674,7 +658,7 @@ export class Card {
     return this._lastEvent;
   }
 
-  static async createNew(title: string, background: string, width: number,
+  static async createNew(title: string, background: string, backgroundAdaptive: boolean, width: number,
                          height: number, dashboardTabId: number, weight: number): Promise<Card> {
     const request = {
       title: title,
@@ -684,7 +668,9 @@ export class Card {
       enabled: true,
       dashboardTabId: dashboardTabId,
       weight: weight,
-      payload: btoa(JSON.stringify({}))
+      payload: btoa(JSON.stringify({
+        backgroundAdaptive: backgroundAdaptive,
+      }))
     } as ApiNewDashboardCardRequest;
     const {data} = await api.v1.dashboardCardServiceAddDashboardCard(request);
 
@@ -754,6 +740,7 @@ export class Card {
       keysCapture: this.keysCapture,
       template: this.template,
       templateFrame: this.templateFrame,
+      backgroundAdaptive: this.backgroundAdaptive,
     }))));
     const card = {
       id: this.id,
@@ -991,6 +978,8 @@ export class Tab {
   id: number;
   name: string;
   weight: number;
+  backgroundImage: ApiImage = undefined;
+  backgroundAdaptive: true;
 
   constructor(tab: ApiDashboardTab) {
     this.background = tab.background;
@@ -1007,6 +996,14 @@ export class Tab {
 
     for (const index in tab.cards) {
       this.cards.push(new Card(tab.cards[index]));
+    }
+    if (tab.payload) {
+      const payload = parsedObject(decodeURIComponent(escape(atob(tab.payload)))) as TabPayload;
+      this.backgroundImage = payload.backgroundImage || undefined;
+      this.backgroundAdaptive = payload.backgroundAdaptive
+    } else {
+      this.backgroundImage = undefined
+      this.backgroundAdaptive = true
     }
 
     this.sortCards();
@@ -1033,7 +1030,10 @@ export class Tab {
       background: '',
       enabled: true,
       weight: weight,
-      dashboardId: boardId
+      dashboardId: boardId,
+      payload: btoa(JSON.stringify({
+        backgroundAdaptive: true,
+      }))
     };
     const {data} = await api.v1.dashboardTabServiceAddDashboardTab(request);
 
@@ -1041,16 +1041,7 @@ export class Tab {
   }
 
   async update() {
-    const request = {
-      name: this.name || '',
-      icon: this.icon,
-      columnWidth: this.columnWidth,
-      gap: this.gap,
-      background: this.background,
-      enabled: this.enabled,
-      weight: this.weight,
-      dashboardId: this.dashboardId
-    };
+    const request = this.serialize()
     return api.v1.dashboardTabServiceUpdateDashboardTab(this.id, request);
   }
 
@@ -1061,6 +1052,10 @@ export class Tab {
       cards.push(this.cards[index].serialize());
     }
 
+    const payload = btoa(unescape(encodeURIComponent(serializedObject({
+      backgroundAdaptive: this.backgroundAdaptive,
+      backgroundImage: this.backgroundImage,
+    }))));
     return {
       id: this.id,
       name: this.name,
@@ -1072,7 +1067,8 @@ export class Tab {
       weight: this.weight,
       dashboardId: this.dashboardId,
       cards: cards,
-      entities: this.entities
+      entities: this.entities,
+      payload: payload,
     } as ApiDashboardTab;
   }
 
@@ -1390,8 +1386,10 @@ export class Core {
 
     // let background = appStore.isDark ? '#232324' : '#F5F7FA'
     let background = ''
+    let backgroundAdaptive = true
     if (tab.cards && tab.cards.length) {
       background = tab.cards[tab.cards.length - 1].background
+      backgroundAdaptive = tab.cards[tab.cards.length - 1].backgroundAdaptive
       width = tab.cards[tab.cards.length - 1].width
       height = tab.cards[tab.cards.length - 1].height
     }
@@ -1399,6 +1397,7 @@ export class Core {
     const card = await Card.createNew(
       generateName(),
       background,
+      backgroundAdaptive,
       width,
       height,
       tab.id,

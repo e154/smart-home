@@ -532,6 +532,7 @@ export default {
         weight: 'Weight',
         landing: 'Landing',
         editor: {
+            backgroundAdaptive: 'Background Adaptive',
             keystrokeCapture: 'Keystroke Capture',
             addNewButton: 'Add New Button',
             name: 'Name',

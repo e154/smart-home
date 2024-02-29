@@ -10,6 +10,7 @@ import ViewTab from "@/views/Dashboard/view/ViewTab.vue";
 import {propTypes} from "@/utils/propTypes";
 import {EventStateChange} from "@/api/types";
 import {useAppStore} from "@/store/modules/app";
+import {GetFullImageUrl} from "@/utils/serverId";
 
 const {emit} = useBus()
 const appStore = useAppStore()
@@ -68,8 +69,23 @@ const activeTabIdx = computed({
   }
 })
 
-const getBackgroundColor = () => {
-  return {backgroundColor: core.getActiveTab?.background || (appStore.isDark ? '#333335' : '#FFF')}
+const getTabStyle = () => {
+  const style = {}
+  if (core.getActiveTab?.background) {
+    style['background-color'] = core.getActiveTab?.background
+  } else {
+    if (core.getActiveTab?.backgroundAdaptive) {
+      style['background-color'] = appStore.isDark ? '#333335' : '#FFF'
+    }
+  }
+
+  if (core.getActiveTab?.backgroundImage) {
+    style['background-image'] = `url(${GetFullImageUrl(core.getActiveTab.backgroundImage)})`
+    style['background-repeat'] = 'repeat';
+    style['background-position'] = 'center';
+    // style['background-size'] = 'cover';
+  }
+  return style
 }
 
 fetchDashboard()
@@ -77,7 +93,7 @@ fetchDashboard()
 </script>
 
 <template>
-  <ElTabs v-model="activeTabIdx" v-if="core.tabs.length > 1 && !loading" :style="getBackgroundColor()"
+  <ElTabs v-model="activeTabIdx" v-if="core.tabs.length > 1 && !loading" :style="getTabStyle()"
           class="pl-20px !min-h-[100%]">
     <ElTabPane
         v-for="(tab, index) in core.tabs"
@@ -91,7 +107,7 @@ fetchDashboard()
   </ElTabs>
 
   <div v-if="core.tabs.length && core.tabs.length === 1 && !loading" :class="[{'gap': core.tabs[0].gap}]"
-       :style="getBackgroundColor()" class="pl-20px pt-20px !min-h-[100%] ">
+       :style="getTabStyle()" class="pl-20px pt-20px !min-h-[100%] ">
     <ViewTab :tab="core.tabs[0]" :core="core"/>
   </div>
 </template>

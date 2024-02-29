@@ -20,6 +20,7 @@ package db
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -50,7 +51,8 @@ type DashboardTab struct {
 	DashboardId int64
 	Dashboard   *Dashboard
 	Cards       []*DashboardCard
-	CreatedAt   time.Time `gorm:"<-:create"`
+	Payload     json.RawMessage `gorm:"type:jsonb;not null"`
+	CreatedAt   time.Time       `gorm:"<-:create"`
 	UpdatedAt   time.Time
 }
 
@@ -112,6 +114,7 @@ func (n DashboardTabs) Update(ctx context.Context, tab *DashboardTab) (err error
 		"enabled":      tab.Enabled,
 		"weight":       tab.Weight,
 		"dashboard_id": tab.DashboardId,
+		"payload":      tab.Payload,
 	}
 
 	if err = n.Db.WithContext(ctx).Model(&DashboardTab{Id: tab.Id}).Updates(q).Error; err != nil {

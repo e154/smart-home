@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
+import {computed, onMounted, onUnmounted, reactive, ref} from 'vue'
 import {useI18n} from '@/hooks/web/useI18n'
 import {ElButton, ElEmpty, ElMessage, ElTabPane, ElTabs} from 'element-plus'
 import {useRoute} from 'vue-router'
@@ -16,7 +16,7 @@ import TabCardItem from "@/views/Dashboard/editor/TabCardItem.vue";
 import TabCard from "@/views/Dashboard/editor/TabCard.vue";
 import {EventStateChange} from "@/api/types";
 import {useAppStore} from "@/store/modules/app";
-import {setCssVar} from "@/utils";
+import {GetFullImageUrl} from "@/utils/serverId";
 
 const {emit} = useBus()
 const route = useRoute();
@@ -57,11 +57,11 @@ onUnmounted(() => {
 const fetchDashboard = async () => {
   loading.value = true;
   const res = await api.v1.dashboardServiceGetDashboardById(dashboardId.value)
-    .catch(() => {
-    })
-    .finally(() => {
-      loading.value = false;
-    })
+      .catch(() => {
+      })
+      .finally(() => {
+        loading.value = false;
+      })
   core.currentBoard(res.data);
 }
 
@@ -94,8 +94,23 @@ const activeTabIdx = computed({
 const activeTab = computed<Tab>(() => core.getActiveTab as Tab)
 const activeCard = computed<Card>(() => core.getActiveTab.cards[core.activeCard] as Card)
 
-const getBackgroundColor = () => {
-  return {backgroundColor: core.getActiveTab?.background || (appStore.isDark ? '#333335' : '#FFF')}
+const getTabStyle = () => {
+  const style = {}
+  if (core.getActiveTab?.background) {
+    style['background-color'] = core.getActiveTab?.background
+  } else {
+    if (core.getActiveTab?.backgroundAdaptive) {
+      style['background-color'] = appStore.isDark ? '#333335' : '#FFF'
+    }
+  }
+
+  if (activeTab.value?.backgroundImage) {
+    style['background-image'] = `url(${GetFullImageUrl(activeTab.value.backgroundImage)})`
+    style['background-repeat'] = 'repeat';
+    style['background-position'] = 'center';
+    // style['background-size'] = 'cover';
+  }
+  return style
 }
 
 const tagsView = computed(() => tagsView.value ? 37 : 0)
@@ -123,20 +138,20 @@ const toggleMenu = (menu: string): void => {
 
 <template>
 
-  <div class="dashboard-container" style="margin: 0" v-if="!loading" :style="getBackgroundColor()">
+  <div class="dashboard-container" style="margin: 0" v-if="!loading" :style="getTabStyle()">
 
     <ElTabs
-      v-model="activeTabIdx"
-      @tab-click="updateCurrentTab"
-      class="ml-20px"
-      :lazy="true">
-      <ElTabPane
-        v-for="(tab, index) in core.tabs"
-        :label="tab.name"
-        :key="index"
-        :disabled="!tab.enabled"
-        :class="[{'gap': tab.gap}]"
+        v-model="activeTabIdx"
+        @tab-click="updateCurrentTab"
+        class="ml-20px"
         :lazy="true">
+      <ElTabPane
+          v-for="(tab, index) in core.tabs"
+          :label="tab.name"
+          :key="index"
+          :disabled="!tab.enabled"
+          :class="[{'gap': tab.gap}]"
+          :lazy="true">
         <ViewTab :tab="tab" :key="index" :core="core"/>
       </ElTabPane>
     </ElTabs>

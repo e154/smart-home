@@ -17,7 +17,7 @@ import {useI18n} from '@/hooks/web/useI18n'
 import {useForm} from '@/hooks/web/useForm'
 import {useValidator} from '@/hooks/web/useValidator'
 import {FormSchema} from '@/types/form'
-import {ApiDashboardCard, ApiDashboardTab, ApiEntity} from "@/api/stub";
+import {ApiDashboardTab} from "@/api/stub";
 import {Core, Tab} from "@/views/Dashboard/core/core";
 import {DraggableContainer} from "@/components/DraggableContainer";
 import {useBus} from "@/views/Dashboard/core/bus";
@@ -31,21 +31,6 @@ const {required} = useValidator()
 const {t} = useI18n()
 const {setValues} = methods
 
-interface DashboardTab {
-  id: number;
-  name: string;
-  columnWidth: number;
-  gap: boolean;
-  background: string;
-  icon: string;
-  enabled: boolean;
-  weight: number;
-  dashboardId: number;
-  cards: ApiDashboardCard[];
-  entities: Map<string, ApiEntity>;
-  dragEnabled: boolean;
-}
-
 const currentCore = ref<Core>(new Core())
 const props = defineProps({
   core: {
@@ -53,7 +38,7 @@ const props = defineProps({
     default: () => null
   },
   tab: {
-    type: Object as PropType<Nullable<DashboardTab>>,
+    type: Object as PropType<Nullable<Tab>>,
     default: () => null
   },
 })
@@ -127,51 +112,76 @@ const schema = reactive<FormSchema[]>([
     label: t('dashboard.background'),
     component: 'ColorPicker',
     colProps: {
-      span: 24
+      span: 12
     },
     componentProps: {
       placeholder: t('dashboard.background'),
     }
   },
+  {
+    field: 'backgroundAdaptive',
+    label: t('dashboard.editor.backgroundAdaptive'),
+    component: 'Switch',
+    value: true,
+    colProps: {
+      span: 12
+    },
+    componentProps: {
+      placeholder: t('dashboard.backgroundAdaptive'),
+    }
+  },
+  {
+    field: 'backgroundImage',
+    label: t('dashboard.editor.image'),
+    component: 'Image',
+    colProps: {
+      span: 24
+    },
+    value: null,
+    componentProps: {
+      placeholder: t('dashboard.image')
+    }
+  },
 ])
 
 watch(
-  () => props.tab,
-  (val?: DashboardTab) => {
-    if (!val) return
-    setValues({
-      name: val.name,
-      columnWidth: val.columnWidth,
-      gap: val.gap,
-      background: val.background,
-      icon: val.icon,
-      enabled: val.enabled,
-      weight: val.weight,
-      dragEnabled: val.dragEnabled,
-    })
-  },
-  {
-    deep: false,
-    immediate: true
-  }
+    () => props.tab,
+    (val?: Tab) => {
+      if (!val) return
+      setValues({
+        name: val.name,
+        columnWidth: val.columnWidth,
+        gap: val.gap,
+        background: val.background,
+        icon: val.icon,
+        enabled: val.enabled,
+        weight: val.weight,
+        backgroundImage: val.backgroundImage,
+        backgroundAdaptive: val.backgroundAdaptive,
+      })
+    },
+    {
+      deep: false,
+      immediate: true
+    }
 )
 
 watch(
-  () => props.core,
-  (val?: Core) => {
-    if (!val) return
-    currentCore.value = val
-  },
-  {
-    deep: false,
-    immediate: true
-  }
+    () => props.core,
+    (val?: Core) => {
+      if (!val) return
+      currentCore.value = val
+    },
+    {
+      deep: false,
+      immediate: true
+    }
 )
 
 
 const activeTab = computed({
   get(): Tab {
-    return currentCore.value.getActiveTab as Tab
+    return currentCore.value.getActiveTab
   },
   set(val: Tab) {
   }
@@ -185,11 +195,14 @@ const updateTab = async () => {
   await formRef?.validate(async (isValid) => {
     if (isValid) {
       const {getFormData} = methods
-      const formData = await getFormData<DashboardTab>()
+      const formData = await getFormData()
+
+      console.log(formData.backgroundImage)
 
       activeTab.value.background = formData.background;
+      activeTab.value.backgroundImage = formData.backgroundImage || undefined;
+      activeTab.value.backgroundAdaptive = formData.backgroundAdaptive;
       activeTab.value.columnWidth = formData.columnWidth;
-      // activeTab.value.dragEnabled = formData.dragEnabled;
       activeTab.value.enabled = formData.enabled;
       activeTab.value.gap = formData.gap;
       activeTab.value.icon = formData.icon;
@@ -240,7 +253,8 @@ const cancel = () => {
     icon: activeTab.value.icon,
     enabled: activeTab.value.enabled,
     weight: activeTab.value.weight,
-    // dragEnabled: activeTab.value.dragEnabled,
+    backgroundImage: activeTab.value?.backgroundImage || undefined,
+    backgroundAdaptive: activeTab.value?.backgroundAdaptive,
   })
 }
 
@@ -318,8 +332,8 @@ const importTab = async () => {
 
 <template>
 
-    <ElRow :gutter="24" class="mb-10px mt-10px">
-      <ElCol :span="12" :xs="12">
+  <ElRow :gutter="24" class="mb-10px mt-10px">
+    <ElCol :span="12" :xs="12">
       <ElButton class="w-[100%]" @click="createTab()">
         {{ t('dashboard.addNewTab') }}
       </ElButton>
@@ -367,12 +381,12 @@ const importTab = async () => {
     <ElButton type="primary" @click.prevent.stop="updateTab" plain>{{ $t('main.update') }}</ElButton>
     <ElButton @click.prevent.stop="cancel" plain>{{ t('main.cancel') }}</ElButton>
     <ElPopconfirm
-      :confirm-button-text="$t('main.ok')"
-      :cancel-button-text="$t('main.no')"
-      width="250"
-      style="margin-left: 10px;"
-      :title="$t('main.are_you_sure_to_do_want_this?')"
-      @confirm="removeTab"
+        :confirm-button-text="$t('main.ok')"
+        :cancel-button-text="$t('main.no')"
+        width="250"
+        style="margin-left: 10px;"
+        :title="$t('main.are_you_sure_to_do_want_this?')"
+        @confirm="removeTab"
     >
       <template #reference>
         <ElButton class="mr-10px" type="danger" plain>
