@@ -6,13 +6,13 @@ import {
   ElButtonGroup,
   ElCol,
   ElDivider,
-  ElEmpty,
+  ElEmpty, ElForm, ElFormItem,
   ElIcon,
   ElMenu,
   ElMenuItem,
   ElMessage,
   ElPopconfirm,
-  ElRow,
+  ElRow, ElSwitch,
 } from 'element-plus'
 import {CloseBold} from '@element-plus/icons-vue'
 import {useI18n} from '@/hooks/web/useI18n'
@@ -25,8 +25,9 @@ import {Card, Core, Tab} from "@/views/Dashboard/core/core";
 import {useBus} from "@/views/Dashboard/core/bus";
 import {Dialog} from '@/components/Dialog'
 import {JsonEditor} from "@/components/JsonEditor";
-import {KeystrokeCapture} from "@/views/Dashboard/components";
+import {KeystrokeCapture, FrameEditor} from "@/views/Dashboard/components";
 import {DraggableContainer} from "@/components/DraggableContainer";
+import {ImageSearch} from "@/components/ImageSearch";
 
 const {register, elFormRef, methods} = useForm()
 const {required} = useValidator()
@@ -378,6 +379,22 @@ onMounted(() => {
     style="width: 100%"
     @register="register"
   />
+
+  <ElForm
+      label-position="top"
+      style="width: 100%"
+  >
+    <ElRow>
+      <ElCol>
+        <ElFormItem :label="$t('dashboard.editor.template')" prop="template">
+          <ElSwitch v-model="activeCard.template"/>
+        </ElFormItem>
+      </ElCol>
+    </ElRow>
+
+  </ElForm>
+
+  <FrameEditor v-if="activeCard.template" :card="activeCard" :core="core"/>
 
   <ElRow v-if="activeCard !== undefined" class="mb-10px">
     <ElCol>

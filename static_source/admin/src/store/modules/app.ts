@@ -47,6 +47,7 @@ interface AppState {
   lastColors: string[]
   onlineStatus: 'online' | 'offline'
   standalone: boolean
+  activeWindow: string
 }
 
 export const useAppStore = defineStore('app', {
@@ -88,6 +89,7 @@ export const useAppStore = defineStore('app', {
       lastColors: wsCache.get('lastColors') || [],
       onlineStatus: 'offline',
       standalone: standalone,
+      activeWindow: '',
       theme: wsCache.get('theme') || {
         // 主题色
         elColorPrimary: '#409eff',
@@ -222,6 +224,9 @@ export const useAppStore = defineStore('app', {
     },
     getStandalone(): boolean {
       return this.standalone
+    },
+    getActiveWindow(): string {
+      return this.activeWindow
     },
   },
   actions: {
@@ -375,6 +380,9 @@ export const useAppStore = defineStore('app', {
     setOnlineStatus(status: string) {
       this.onlineStatus = status
     },
+    setActiveWindow(name: string) {
+      this.activeWindow = name
+    }
   }
 })
 

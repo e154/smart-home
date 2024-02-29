@@ -5,6 +5,7 @@ import {Vuuri} from "@/views/Dashboard/Vuuri"
 import {useBus} from "@/views/Dashboard/core/bus";
 import debounce from 'lodash.debounce'
 import ViewCard from "@/views/Dashboard/editor/ViewCard.vue";
+import {Frame} from "@/views/Dashboard/components";
 
 // ---------------------------------
 // common
@@ -69,7 +70,10 @@ const cards = computed<Card[]>(() => props.tab?.cards2)
       :key="reloadKey"
   >
       <template #item="{item}">
-        <ViewCard :card="item" :key="item" :core="core"/>
+        <Frame :frame="item.templateFrame" v-if="item.template">
+          <ViewCard :card="item" :key="item" :core="core"/>
+        </Frame>
+        <ViewCard v-else :card="item" :key="item" :core="core"/>
       </template>
   </Vuuri>
 

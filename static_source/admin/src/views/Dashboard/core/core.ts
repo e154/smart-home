@@ -17,16 +17,14 @@ import {useBus} from "@/views/Dashboard/core/bus";
 import {debounce} from "lodash-es";
 import {ref} from "vue";
 import {ItemPayload} from "@/views/Dashboard/card_items";
-import {useAppStore} from "@/store/modules/app";
 import {ButtonAction, Compare, CompareProp} from "./types"
 import {AttributeValue, GetAttributeValue} from "@/components/Attributes"
-import {KeysProp} from "@/views/Dashboard/components";
+import {FrameProp, KeysProp} from "@/views/Dashboard/components";
 import {EventStateChange} from "@/api/types";
 import {copyToClipboard, pasteFromClipboard} from "@/utils/clipboard";
 import {generateName} from "@/utils/name";
 
 const {emit} = useBus()
-const appStore = useAppStore()
 
 export interface Position {
   width: string;
@@ -53,6 +51,8 @@ export interface ItemParams {
   keysCapture?: KeysProp[];
   asButton: boolean;
   buttonActions: ButtonAction[];
+  template?: boolean;
+  templateFrame?: FrameProp;
 }
 
 export interface Action {
@@ -582,6 +582,8 @@ export class Card {
   showOn: CompareProp[] = [];
   hideOn: CompareProp[] = [];
   keysCapture: KeysProp[] = [];
+  template = false;
+  templateFrame: FrameProp;
 
   selectedItem = -1;
 
@@ -608,15 +610,11 @@ export class Card {
     if (card.payload) {
       const result: any = parsedObject(decodeURIComponent(escape(atob(card.payload))));
       const payload = result as ItemParams;
-      if (payload.showOn) {
-        this.showOn = payload.showOn;
-      }
-      if (payload.hideOn) {
-        this.hideOn = payload.hideOn;
-      }
-      if (payload.keysCapture) {
-        this.keysCapture = payload.keysCapture;
-      }
+      this.showOn = payload?.showOn;
+      this.hideOn = payload?.hideOn;
+      this.keysCapture = payload?.keysCapture;
+      this.template = payload?.template || false;
+      this.templateFrame = payload?.templateFrame || {};
     }
 
     for (const index in card.items) {
@@ -754,6 +752,8 @@ export class Card {
       showOn: this.showOn,
       hideOn: this.hideOn,
       keysCapture: this.keysCapture,
+      template: this.template,
+      templateFrame: this.templateFrame,
     }))));
     const card = {
       id: this.id,

@@ -262,7 +262,8 @@ const onDragStart = (e) => {
       :key="reloadKey"
       :style="{
         'transform': `scale(${zoom})`,
-        'background-color': currentCard.background || (appStore.isDark ? '#232324' : '#F5F7FA')}"
+        'background-color': currentCard.template ? 'inherit' : currentCard.background || (appStore.isDark ? '#232324' : '#F5F7FA')
+      }"
       @mouseover="hover = true"
       @touchstart="hover = true"
       @mouseleave="hover = false"

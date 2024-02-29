@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {onBeforeUnmount, onMounted, ref, watch} from "vue";
+import {computed, onBeforeUnmount, onMounted, ref, watch} from "vue";
 import {propTypes} from "@/utils/propTypes";
 import {useCache} from "@/hooks/web/useCache";
 import {debounce} from "lodash-es";
@@ -20,6 +20,7 @@ const props = defineProps({
   maxWidth: propTypes.number.def(Infinity),
   maxHeight: propTypes.number.def(800),
   minWidth: propTypes.number.def(350),
+  canTransparent: propTypes.bool.def(true),
   parentElement: {type: HTMLElement, default: null}
 })
 
@@ -101,6 +102,7 @@ const resizeRight = (event: MouseEvent) => {
     const deltaX = event.clientX - offsetX.value;
     width.value = startWidth.value + deltaX;
     if (width.value < props.minWidth) width.value = props.minWidth
+    if (width.value > props.maxWidth) width.value = props.maxWidth
     onResize();
   }
 }
@@ -109,6 +111,7 @@ const resizeBottom = (event: MouseEvent) => {
   if (isDragging.value) {
     const deltaY = event.clientY - offsetY.value;
     height.value = startHeight.value + deltaY;
+    if (height.value > props.maxHeight) height.value = props.maxHeight
     onResize();
   }
 }
@@ -119,7 +122,9 @@ const resizeCorner = (event: MouseEvent) => {
     const deltaY = event.clientY - offsetY.value;
     width.value = startWidth.value + deltaX;
     if (width.value < props.minWidth) width.value = props.minWidth
+    if (width.value > props.maxWidth) width.value = props.maxWidth
     height.value = startHeight.value + deltaY;
+    if (height.value > props.maxHeight) height.value = props.maxHeight
     onResize();
   }
 }
@@ -165,14 +170,17 @@ const toggleVisibility = () => {
 
 const bringToFront = () => {
   zIndex.value = appStore.getMaxZIndex(); // Устанавливаем z-index на 1 больше максимального
+  appStore.setActiveWindow(props.name)
 }
+
+const active = computed(() => appStore.getActiveWindow == props.name)
 
 </script>
 
 <template>
   <div
       class="draggable-container"
-      :class="'container-' + name"
+      :class="['container-' + name, {active: active, transparent: !active && canTransparent}]"
       :style="{ top: `${top}px`, left: `${left}px`, width: `${width}px`, height: `${visible?height:22}px`, zIndex: zIndex }"
       ref="menu"
       @mousedown="bringToFront"
@@ -204,6 +212,10 @@ const bringToFront = () => {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
+  opacity: 1;
+  &.transparent {
+    opacity: 0.5;
+  }
 }
 
 .draggable-container-content {

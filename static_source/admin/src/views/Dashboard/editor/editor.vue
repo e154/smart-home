@@ -289,7 +289,8 @@ html.dark {
     &.container-editor-cards,
     &.container-editor-tabs,
     &.container-editor-card-items,
-    &.container-editor-main {
+    &.container-editor-main,
+    &.container-frame-editor {
       .draggable-container-content,
       .el-divider__text {
         background-color: hsl(230, 7%, 17%);
@@ -353,7 +354,8 @@ html.dark {
   &.container-editor-cards,
   &.container-editor-tabs,
   &.container-editor-card-items,
-  &.container-editor-main {
+  &.container-editor-main,
+  &.container-frame-editor {
     .draggable-container-header {
       font-size: 12px;
     }
@@ -363,7 +365,8 @@ html.dark {
 .draggable-container {
   &.container-editor-cards,
   &.container-editor-tabs,
-  &.container-editor-card-items {
+  &.container-editor-card-items,
+  &.container-frame-editor {
     .el-menu-item {
       padding-left: 5px !important;
       padding-right: 5px !important;
