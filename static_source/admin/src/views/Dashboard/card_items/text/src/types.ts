@@ -1,4 +1,4 @@
-import {CompareProp} from '@/views/Dashboard/core/types'
+import {CompareProp} from '@/views/Dashboard/core'
 
 export interface TextProp extends CompareProp {
   text?: string

@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import {computed, onMounted, PropType, ref, unref, watch} from "vue";
-import {CardItem, requestCurrentState} from "@/views/Dashboard/core/core";
+import {CardItem, requestCurrentState, RenderVar, Cache} from "@/views/Dashboard/core";
 import {debounce} from "lodash-es";
-import {RenderVar} from "@/views/Dashboard/core/render";
-import {Cache} from "@/views/Dashboard/core/cache";
 import api from "@/api/api";
 import {useI18n} from "@/hooks/web/useI18n";
 import {ApiEntityCallActionRequest, ApiTypes} from "@/api/stub";
@@ -39,14 +37,14 @@ const value = ref("")
 const currentColorPicker = computed<ItemPayloadColorPicker>(() => props.item?.payload.colorPicker || {} as ItemPayloadColorPicker)
 
 const _cache = new Cache()
-const getValue = debounce(() => {
+const getValue = debounce( async () => {
   if (!value.value && currentColorPicker.value.color != undefined) {
     value.value = currentColorPicker.value.color
   }
 
   let token: string = props.item?.payload.colorPicker?.attribute || ''
   if (token) {
-    const result = RenderVar(token, props.item?.lastEvent)
+    const result = await RenderVar(token, props.item?.lastEvent)
     if (result !== '[NO VALUE]') {
       if (unref(value) !== result) {
         value.value = result

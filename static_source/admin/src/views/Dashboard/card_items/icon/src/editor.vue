@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {computed, PropType} from "vue";
-import {CardItem, Core} from "@/views/Dashboard/core/core";
+import {CardItem, Core, Cache, comparisonType} from "@/views/Dashboard/core";
 import {
   ElButton,
   ElCard,
@@ -19,9 +19,7 @@ import {
 } from 'element-plus'
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {useI18n} from "@/hooks/web/useI18n";
-import {Cache} from "@/views/Dashboard/core/cache";
 import {KeysSearch} from "@/views/Dashboard/components";
-import {comparisonType} from "@/views/Dashboard/core/types";
 import {ColorPicker} from "@/components/ColorPicker";
 import {ItemPayloadIcon} from "@/views/Dashboard/card_items/icon";
 

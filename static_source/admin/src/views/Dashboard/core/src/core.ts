@@ -12,9 +12,8 @@ import {
 } from '@/api/stub';
 import api from '@/api/api';
 import {UUID} from 'uuid-generator-ts';
-import {RenderVar, Resolve} from '@/views/Dashboard/core/render';
+import {RenderVar, Resolve, useBus} from '@/views/Dashboard/core';
 import stream from '@/api/stream';
-import {useBus} from "@/views/Dashboard/core/bus";
 import {debounce} from "lodash-es";
 import {ref} from "vue";
 import {ItemPayload} from "@/views/Dashboard/card_items";
@@ -502,7 +501,7 @@ export class CardItem {
 
     // hide
     for (const prop of this.hideOn) {
-      const val: any = RenderVar(prop.key || '', event)
+      const val: any = await RenderVar(prop.key || '', event)
       if ('[NO VALUE]' == val) {
         continue
       }
@@ -516,7 +515,7 @@ export class CardItem {
 
     // show
     for (const prop of this.showOn) {
-      const val: any = RenderVar(prop.key || '', event)
+      const val: any = await RenderVar(prop.key || '', event)
       if ('[NO VALUE]' == val) {
         continue
       }

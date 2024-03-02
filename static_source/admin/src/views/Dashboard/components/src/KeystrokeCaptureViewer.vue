@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import {computed, PropType} from "vue";
-import {Card, Core} from "@/views/Dashboard/core/core";
+import {Card, Core} from "@/views/Dashboard/core";
 import {useEventBus} from "@/hooks/event/useEventBus";
 import {ApiEntityCallActionRequest, ApiTypes} from "@/api/stub";
 import api from "@/api/api";

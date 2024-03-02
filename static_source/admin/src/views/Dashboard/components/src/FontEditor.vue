@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import {computed, PropType} from "vue";
-import {Core, Tab} from "@/views/Dashboard/core/core";
+import {Core, Tab} from "@/views/Dashboard/core";
 import {ElCol, ElDivider, ElRow} from "element-plus";
 import {useI18n} from "@/hooks/web/useI18n";
 import VariablesSearch from "@/components/VariablesSearch/src/VariablesSearch.vue";

@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import {onBeforeUnmount, onMounted, PropType, ref} from "vue";
-import {CardItem} from "@/views/Dashboard/core/core";
-import {RenderVar} from "@/views/Dashboard/core/render";
-import {Cache} from "@/views/Dashboard/core/cache";
+import {Cache, CardItem, RenderVar} from "@/views/Dashboard/core";
 import {debounce} from "lodash-es";
 import LiteYouTubeEmbed from 'vue-lite-youtube-embed'
 import 'vue-lite-youtube-embed/style.css'
@@ -42,11 +40,11 @@ const videId = ref()
 
 
 const _cache = new Cache()
-const getVideoId = debounce(() => {
+const getVideoId = debounce(async () => {
 
   let token: string = props.item?.payload.video?.attribute || ''
   if (token) {
-    const result = RenderVar(token, props.item?.lastEvent)
+    const result = await RenderVar(token, props.item?.lastEvent)
     videId.value = result
   }
 })
@@ -57,10 +55,10 @@ getVideoId()
 
 <template>
   <LiteYouTubeEmbed
-      ref="iframe"
-      :id="videId"
-      :muted="true"
-      title="youtube"/>
+    ref="iframe"
+    :id="videId"
+    :muted="true"
+    title="youtube"/>
 </template>
 
 <style lang="less">

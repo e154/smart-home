@@ -6,8 +6,7 @@ import {useRoute} from 'vue-router'
 import api from "@/api/api";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
-import {Card, Core, Tab} from "@/views/Dashboard/core/core";
-import {useBus} from "@/views/Dashboard/core/bus";
+import {Card, Core, Tab, useBus} from "@/views/Dashboard/core";
 import ViewTab from "@/views/Dashboard/editor/ViewTab.vue";
 import {DraggableContainer} from "@/components/DraggableContainer";
 import TabSettings from "@/views/Dashboard/editor/TabSettings.vue";

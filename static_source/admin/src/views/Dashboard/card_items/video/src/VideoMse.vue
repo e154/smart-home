@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {onMounted, onUnmounted, PropType, ref} from "vue";
-import {CardItem} from "@/views/Dashboard/core/core";
+import {CardItem} from "@/views/Dashboard/core";
 import {Websocket} from "websocket-ts";
 import {useCache} from "@/hooks/web/useCache";
 

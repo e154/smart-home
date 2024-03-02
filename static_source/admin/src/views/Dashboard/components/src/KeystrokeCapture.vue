@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import {computed, onMounted, PropType, ref} from "vue";
-import {Card, Core} from "@/views/Dashboard/core/core";
+import {Card, Core} from "@/views/Dashboard/core";
 import {ElButton, ElCol, ElCollapse, ElCollapseItem, ElDivider, ElForm, ElPopconfirm, ElRow, ElTag, ElCard} from "element-plus";
 import {useI18n} from "@/hooks/web/useI18n";
 import {useEventBus} from "@/hooks/event/useEventBus";

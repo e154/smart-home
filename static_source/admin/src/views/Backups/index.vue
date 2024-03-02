@@ -9,7 +9,7 @@ import {useForm} from "@/hooks/web/useForm";
 import {ContentWrap} from "@/components/ContentWrap";
 import {ApiBackup} from "@/api/stub";
 import {parseTime} from "@/utils";
-import {formatBytes} from "@/views/Dashboard/core/filters";
+import {formatBytes} from "@/views/Dashboard/core/src/filters";
 import {useCache} from "@/hooks/web/useCache";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {computed, onBeforeUnmount, onMounted, PropType, ref} from "vue";
-import {CardItem, Core} from "@/views/Dashboard/core/core";
+import {Cache, CardItem, comparisonType, Core, GetTokens} from "@/views/Dashboard/core";
 import {
   ElButton,
   ElCard,
@@ -20,12 +20,9 @@ import {
 } from 'element-plus'
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {useI18n} from "@/hooks/web/useI18n";
-import {GetTokens} from "@/views/Dashboard/core/render";
-import {Cache} from "@/views/Dashboard/core/cache";
 import {TextProp} from "./types";
 import {TinycmeEditor} from "@/components/Tinymce";
 import {KeysSearch} from "@/views/Dashboard/components";
-import {comparisonType} from "@/views/Dashboard/core/types";
 
 const {t} = useI18n()
 
@@ -154,9 +151,9 @@ const onChangePropValue = (val, index) => {
       <!-- props -->
       <ElCollapse>
         <ElCollapseItem
-            :name="index"
-            :key="index"
-            v-for="(prop, index) in currentItem.payload.text.items"
+          :name="index"
+          :key="index"
+          v-for="(prop, index) in currentItem.payload.text.items"
         >
 
           <template #title>
@@ -170,10 +167,10 @@ const onChangePropValue = (val, index) => {
           <ElCard shadow="never" class="item-card-editor">
 
             <ElForm
-                label-position="top"
-                :model="prop"
-                style="width: 100%"
-                ref="cardItemForm"
+              label-position="top"
+              :model="prop"
+              style="width: 100%"
+              ref="cardItemForm"
             >
 
               <ElRow>
@@ -189,9 +186,9 @@ const onChangePropValue = (val, index) => {
                 <ElCol>
                   <ElFormItem :label="$t('dashboard.editor.comparison')" prop="comparison">
                     <ElSelect
-                        v-model="prop.comparison"
-                        placeholder="please select type"
-                        style="width: 100%"
+                      v-model="prop.comparison"
+                      placeholder="please select type"
+                      style="width: 100%"
                     >
                       <ElOption label="==" value="eq"/>
                       <ElOption label="<" value="lt"/>
@@ -210,8 +207,8 @@ const onChangePropValue = (val, index) => {
 
                   <ElFormItem :label="$t('dashboard.editor.value')" prop="value">
                     <ElInput
-                        placeholder="Please input"
-                        v-model="prop.value"/>
+                      placeholder="Please input"
+                      v-model="prop.value"/>
                   </ElFormItem>
 
                 </ElCol>
@@ -229,11 +226,11 @@ const onChangePropValue = (val, index) => {
                 <ElCol>
                   <ElFormItem :label="$t('dashboard.editor.text')" prop="text">
                     <ElInput
-                        type="textarea"
-                        :autosize="{minRows: 10}"
-                        placeholder="Please input"
-                        v-model="prop.text"
-                        @update:modelValue="propTextUpdated(prop)"
+                      type="textarea"
+                      :autosize="{minRows: 10}"
+                      placeholder="Please input"
+                      v-model="prop.text"
+                      @update:modelValue="propTextUpdated(prop)"
                     />
                   </ElFormItem>
                 </ElCol>
@@ -258,12 +255,12 @@ const onChangePropValue = (val, index) => {
 
               <div style="text-align: right;">
                 <ElPopconfirm
-                    :confirm-button-text="$t('main.ok')"
-                    :cancel-button-text="$t('main.no')"
-                    width="250"
-                    style="margin-left: 10px;"
-                    :title="$t('main.are_you_sure_to_do_want_this?')"
-                    @confirm="removeProp"
+                  :confirm-button-text="$t('main.ok')"
+                  :cancel-button-text="$t('main.no')"
+                  width="250"
+                  style="margin-left: 10px;"
+                  :title="$t('main.are_you_sure_to_do_want_this?')"
+                  @confirm="removeProp"
                 >
                   <template #reference>
                     <ElButton type="danger" plain>
@@ -298,11 +295,11 @@ const onChangePropValue = (val, index) => {
     <ElCol>
       <ElFormItem :label="$t('dashboard.editor.textBody')" prop="text">
         <ElInput
-            type="textarea"
-            :autosize="{minRows: 10}"
-            placeholder="Please input"
-            v-model="currentItem.payload.text.default_text"
-            @update:modelValue="defaultTextUpdated"
+          type="textarea"
+          :autosize="{minRows: 10}"
+          placeholder="Please input"
+          v-model="currentItem.payload.text.default_text"
+          @update:modelValue="defaultTextUpdated"
         />
       </ElFormItem>
     </ElCol>

@@ -2,7 +2,7 @@
 import {onMounted, PropType, ref} from "vue";
 import {AmbientLight, Box, Camera, PhongMaterial, PointLight, Renderer, Scene, Texture,} from 'troisjs';
 import Stats from './components/Stats'
-import {CardItem} from "@/views/Dashboard/core/core";
+import {CardItem} from "@/views/Dashboard/core";
 import {GetFullUrl} from "@/utils/serverId";
 import {Pane} from 'tweakpane';
 

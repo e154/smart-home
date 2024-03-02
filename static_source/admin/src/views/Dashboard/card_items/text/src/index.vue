@@ -1,13 +1,19 @@
 <script setup lang="ts">
 import {onMounted, onUnmounted, PropType, ref, watch} from "vue";
-import {CardItem, requestCurrentState} from "@/views/Dashboard/core/core";
-import {GetTokens, RenderText, Resolve} from "@/views/Dashboard/core/render";
-import {Cache} from "@/views/Dashboard/core/cache";
+import {
+  ButtonAction,
+  Cache,
+  CardItem,
+  Compare,
+  GetTokens,
+  RenderText,
+  requestCurrentState,
+  Resolve
+} from "@/views/Dashboard/core";
 import api from "@/api/api";
 import {ElMessage} from "element-plus";
 import debounce from 'lodash.debounce'
 import {useI18n} from "@/hooks/web/useI18n";
-import {ButtonAction, Compare} from "@/views/Dashboard/core/types";
 import {AttributeValue, GetAttributeValue} from "@/components/Attributes";
 
 const {t} = useI18n()

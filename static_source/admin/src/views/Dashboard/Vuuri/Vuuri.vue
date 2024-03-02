@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import {useBus} from "@/views/Dashboard/core/bus";
 import {computed, nextTick, onMounted, onUnmounted, PropType, ref} from "vue";
-import {Card} from "@/views/Dashboard/core/core";
+import {Card, useBus} from "@/views/Dashboard/core";
 import GridStore from './GridStore';
 import Muuri from "muuri";
 import {UUID} from "uuid-generator-ts";

@@ -2,8 +2,7 @@
 import {computed, onMounted, PropType, ref, watch} from 'vue'
 import {CloseBold} from "@element-plus/icons-vue";
 import {useI18n} from '@/hooks/web/useI18n'
-import {Card, CardItem, Core, requestCurrentState} from "@/views/Dashboard/core/core";
-import {useBus} from "@/views/Dashboard/core/bus";
+import {Card, CardItem, Core, requestCurrentState, useBus} from "@/views/Dashboard/core";
 import {CardEditorName, CardItemList} from "@/views/Dashboard/card_items";
 import {JsonViewer} from "@/components/JsonViewer";
 import {DraggableContainer} from "@/components/DraggableContainer";

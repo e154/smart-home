@@ -1,6 +1,6 @@
 import {parseTime} from '@/utils';
 import api from "@/api/api";
-import {Cache} from "@/views/Dashboard/core/cache";
+import {Cache} from "./cache";
 
 export const ApplyFilter = async (value: any, filter: string): any => {
   if (value == undefined || filter == undefined) {
@@ -44,6 +44,7 @@ export const ApplyFilter = async (value: any, filter: string): any => {
   }
 }
 
+//todo: add clear cache
 const _cache = new Cache()
 export const evalScript = async (value: string, ...args: string[]): string => {
   if (!args || args.length == 0) {

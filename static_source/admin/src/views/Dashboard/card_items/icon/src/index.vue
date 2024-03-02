@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import {onMounted, onUnmounted, PropType, ref, watch} from "vue";
-import {CardItem} from "@/views/Dashboard/core/core";
-import {RenderVar, Resolve} from "@/views/Dashboard/core/render";
+import {ButtonAction, CardItem, Compare, RenderVar, Resolve} from "@/views/Dashboard/core";
 import {debounce} from "lodash-es";
 import {AttributeValue, GetAttributeValue} from "@/components/Attributes";
-import {ButtonAction, Compare} from "@/views/Dashboard/core/types";
 import api from "@/api/api";
 import {ElMessage} from "element-plus";
 import {useI18n} from "@/hooks/web/useI18n";
@@ -43,7 +41,7 @@ const update = debounce(async () => {
   icon.value = props.item?.payload.icon?.value || '';
   if (props.item?.payload.icon.attrField) {
     let token: string = props.item?.payload.icon?.attrField || ''
-    icon.value = RenderVar(token, props.item?.lastEvent)
+    icon.value = await RenderVar(token, props.item?.lastEvent)
   }
 
   iconColor.value = props.item?.payload?.icon?.iconColor || '#eee';
@@ -79,15 +77,15 @@ const update = debounce(async () => {
 }, 100)
 
 watch(
-  () => props.item,
-  (val?: CardItem) => {
-    if (!val) return;
-    update()
-  },
-  {
-    deep: true,
-    immediate: true
-  }
+    () => props.item,
+    (val?: CardItem) => {
+      if (!val) return;
+      update()
+    },
+    {
+      deep: true,
+      immediate: true
+    }
 )
 
 // ---------------------------------
@@ -151,13 +149,13 @@ update();
 <template>
   <div ref="el" :class="[{'hidden': item.hidden}]">
     <div
-      style="width: 100%; height: 100%; cursor: pointer"
-      v-if="item.asButton"
-      v-show="!item.hidden"
-      @mouseover="mouseOver"
-      @mouseleave="mouseLive"
-      class="device-menu"
-      :class="[{'as-button': item.asButton && item.buttonActions.length > 0}]"
+        style="width: 100%; height: 100%; cursor: pointer"
+        v-if="item.asButton"
+        v-show="!item.hidden"
+        @mouseover="mouseOver"
+        @mouseleave="mouseLive"
+        class="device-menu"
+        :class="[{'as-button': item.asButton && item.buttonActions.length > 0}]"
     >
       <Icon class="device"
             :icon="icon"
@@ -166,24 +164,24 @@ update();
       />
 
       <div
-        :class="[{'show': showMenu}]"
-        class="device-menu-circle"
-        v-if="item.asButton && item.buttonActions.length > 1"
+          :class="[{'show': showMenu}]"
+          class="device-menu-circle"
+          v-if="item.asButton && item.buttonActions.length > 1"
       >
         <a
-          href="#"
-          class="device-menu-circle-item"
-          v-for="(action, index) in item.buttonActions"
-          @click.prevent.stop="callAction(action)"
-          :key="index">
+            href="#"
+            class="device-menu-circle-item"
+            v-for="(action, index) in item.buttonActions"
+            @click.prevent.stop="callAction(action)"
+            :key="index">
 
           <img
-            v-if="action.image"
-            :src="GetFullImageUrl(action.image)"/>
+              v-if="action.image"
+              :src="GetFullImageUrl(action.image)"/>
           <Icon
-            v-else-if="action.icon"
-            :icon="action.icon"
-            :icon-color="action.iconColor"
+              v-else-if="action.icon"
+              :icon="action.icon"
+              :icon-color="action.iconColor"
           />
 
         </a>
@@ -335,6 +333,7 @@ update();
         transform: scale(1.1);
       }
     }
+
     .icon-item {
       &:hover {
         transform: scale(1.1);

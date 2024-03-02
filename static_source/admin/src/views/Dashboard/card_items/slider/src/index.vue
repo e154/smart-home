@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import {computed, onMounted, PropType, ref, unref, watch} from "vue";
-import {CardItem, requestCurrentState} from "@/views/Dashboard/core/core";
+import {CardItem, requestCurrentState, RenderVar, Cache} from "@/views/Dashboard/core";
 import {debounce} from "lodash-es";
-import {RenderVar} from "@/views/Dashboard/core/render";
-import {Cache} from "@/views/Dashboard/core/cache";
 import {ItemPayloadSlider, OrientationType} from "./types";
 import slider from "vue3-slider"
 import api from "@/api/api";
@@ -47,7 +45,7 @@ const orientation = ref<OrientationType>(OrientationType.horizontal)
 const currentSlider = computed<ItemPayloadSlider>(() => props.item?.payload.slider || {} as ItemPayloadSlider)
 
 const _cache = new Cache()
-const getValue = debounce(() => {
+const getValue = debounce(async () => {
 
   if (currentSlider.value.height != undefined) {
     height.value = currentSlider.value.height
@@ -76,7 +74,7 @@ const getValue = debounce(() => {
 
   let token: string = props.item?.payload.slider?.attribute || ''
   if (token) {
-    const result = RenderVar(token, props.item?.lastEvent)
+    const result = await RenderVar(token, props.item?.lastEvent)
     if (result !== '[NO VALUE]') {
       const val = parseInt(result) || 0
       if (unref(value) !== val) {

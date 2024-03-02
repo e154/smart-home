@@ -1,11 +1,8 @@
 <script setup lang="ts">
 import {computed, onMounted, PropType, ref, watch} from "vue";
-import {CardItem, requestCurrentState} from "@/views/Dashboard/core/core";
+import {Cache, CardItem, Compare, RenderVar, requestCurrentState} from "@/views/Dashboard/core";
 import {debounce} from "lodash-es";
-import {RenderVar} from "@/views/Dashboard/core/render";
-import {Cache} from "@/views/Dashboard/core/cache";
 import {ElProgress} from "element-plus";
-import {Compare} from "@/views/Dashboard/core/types";
 
 // ---------------------------------
 // common
@@ -34,12 +31,12 @@ const optionalColor = ref('')
 const color = computed(() => optionalColor.value || props.item.payload.progress.color || '')
 
 const _cache = new Cache()
-const update = debounce(() => {
+const update = debounce(async () => {
 
   if (props.item?.payload.progress?.items) {
     for (const prop of props.item?.payload.progress?.items) {
 
-      const val = RenderVar(prop.key || '', props.item?.lastEvent)
+      const val = await RenderVar(prop.key || '', props.item?.lastEvent)
 
       if (!val) {
         continue
@@ -55,7 +52,7 @@ const update = debounce(() => {
   }
 
   let token: string = props.item?.payload.progress?.value || ''
-  const result = RenderVar(token, props.item?.lastEvent)
+  const result = await RenderVar(token, props.item?.lastEvent)
   value.value = parseInt(result) || 0
 })
 

@@ -15,7 +15,7 @@ import stream from "@/api/stream";
 import {Dialog} from '@/components/Dialog'
 import {EventStateChange} from "@/api/types";
 import {AttributesViewer} from "@/components/Attributes";
-import {CardItem} from "@/views/Dashboard/core/core";
+import {CardItem} from "@/views/Dashboard/core";
 import {debounce} from "lodash-es";
 
 const {register} = useForm()

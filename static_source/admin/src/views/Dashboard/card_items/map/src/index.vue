@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import {computed, inject, onMounted, PropType, ref, unref, watch} from "vue";
-import {CardItem} from "@/views/Dashboard/core/core";
+import {CardItem, RenderVar, Cache} from "@/views/Dashboard/core";
 import type {ObjectEvent} from "ol/Object";
-import {RenderVar} from "@/views/Dashboard/core/render";
-import {Cache} from "@/views/Dashboard/core/cache";
 import markerIcon from "@/assets/imgs/marker.png";
 import {ApiImage} from "@/api/stub";
 import {debounce} from "lodash-es";
@@ -128,7 +126,7 @@ export interface Marker {
 const markers = ref<Marker[]>([])
 
 const _cache = new Cache()
-const update = debounce(() => {
+const update = debounce(async () => {
       // console.log('update')
 
       loaded.value = false
@@ -154,7 +152,7 @@ const update = debounce(() => {
         let token: string = currentCardItem.value?.payload.map?.markers[index].attribute || ''
         if (token) {
           const lastState = currentCardItem.value?.lastEvents(entityId);
-          const position = RenderVar(token, lastState)
+          const position = await RenderVar(token, lastState)
           if (position === '[NO VALUE]') {
             continue
           }

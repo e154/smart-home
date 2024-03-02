@@ -9,9 +9,8 @@ import {FormSchema} from '@/types/form'
 import {ApiArea, ApiDashboard} from "@/api/stub";
 import {copyToClipboard} from "@/utils/clipboard";
 import {JsonViewer} from "@/components/JsonViewer";
-import {Core} from "@/views/Dashboard/core/core";
+import {Core, useBus} from "@/views/Dashboard/core";
 import {useRouter} from "vue-router";
-import {useBus} from "@/views/Dashboard/core/bus";
 import {Dialog} from '@/components/Dialog'
 
 const {register, elFormRef, methods} = useForm()
@@ -199,52 +198,52 @@ const removeBoard = async () => {
 
   <div class="text-right">
 
-      <ElButton type="primary" @click.prevent.stop='exportDashbord' plain>
-        <Icon icon="uil:file-export" class="mr-5px"/>
-        {{ $t('main.export') }}
-      </ElButton>
+    <ElButton type="primary" @click.prevent.stop='exportDashbord' plain>
+      <Icon icon="uil:file-export" class="mr-5px"/>
+      {{ $t('main.export') }}
+    </ElButton>
 
 
-      <ElButton type="primary" @click.prevent.stop="updateBoard" plain>
-        {{ $t('main.update') }}
-      </ElButton>
+    <ElButton type="primary" @click.prevent.stop="updateBoard" plain>
+      {{ $t('main.update') }}
+    </ElButton>
 
 
-      <ElButton @click.prevent.stop="fetchDashboard" plain>{{
-          $t('main.loadFromServer')
-        }}
-      </ElButton>
+    <ElButton @click.prevent.stop="fetchDashboard" plain>{{
+        $t('main.loadFromServer')
+      }}
+    </ElButton>
 
-      <ElPopconfirm
-          :confirm-button-text="$t('main.ok')"
-          :cancel-button-text="$t('main.no')"
-          width="250"
-          style="margin-left: 10px;"
-          :title="$t('main.are_you_sure_to_do_want_this?')"
-          @confirm="cancel"
-      >
-        <template #reference>
-          <ElButton plain>
-            {{ t('main.cancel') }}
-          </ElButton>
-        </template>
-      </ElPopconfirm>
+    <ElPopconfirm
+        :confirm-button-text="$t('main.ok')"
+        :cancel-button-text="$t('main.no')"
+        width="250"
+        style="margin-left: 10px;"
+        :title="$t('main.are_you_sure_to_do_want_this?')"
+        @confirm="cancel"
+    >
+      <template #reference>
+        <ElButton plain>
+          {{ t('main.cancel') }}
+        </ElButton>
+      </template>
+    </ElPopconfirm>
 
-      <ElPopconfirm
-          :confirm-button-text="$t('main.ok')"
-          :cancel-button-text="$t('main.no')"
-          width="250"
-          style="margin-left: 10px;"
-          :title="$t('main.are_you_sure_to_do_want_this?')"
-          @confirm="removeBoard"
-      >
-        <template #reference>
-          <ElButton type="danger" plain>
-            <Icon icon="ep:delete" class="mr-5px"/>
-            {{ t('main.remove') }}
-          </ElButton>
-        </template>
-      </ElPopconfirm>
+    <ElPopconfirm
+        :confirm-button-text="$t('main.ok')"
+        :cancel-button-text="$t('main.no')"
+        width="250"
+        style="margin-left: 10px;"
+        :title="$t('main.are_you_sure_to_do_want_this?')"
+        @confirm="removeBoard"
+    >
+      <template #reference>
+        <ElButton type="danger" plain>
+          <Icon icon="ep:delete" class="mr-5px"/>
+          {{ t('main.remove') }}
+        </ElButton>
+      </template>
+    </ElPopconfirm>
 
   </div>
 

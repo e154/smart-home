@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, PropType, ref, watch} from "vue";
-import {CardItem, parsedObject, serializedObject} from "@/views/Dashboard/core/core";
+import {Cache, CardItem, parsedObject, RenderVar, serializedObject} from "@/views/Dashboard/core";
 import {ChartDataInterface, ChartDataSet, chartItemType, SeriesItem} from "./types";
 import {parseTime} from "@/utils";
 import api from "@/api/api";
@@ -9,8 +9,6 @@ import {Echart} from '@/components/Echart'
 import {debounce} from "lodash-es";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
-import {RenderVar} from "@/views/Dashboard/core/render";
-import {Cache} from "@/views/Dashboard/core/cache";
 import {ApiMetric} from "@/api/stub";
 
 // ---------------------------------
@@ -225,7 +223,7 @@ const prepareData = debounce(async () => {
 
             let token: string = series.customAttributes[i].value || ''
             if (token) {
-              v = RenderVar(token, props.item?.lastEvent)
+              v = await RenderVar(token, props.item?.lastEvent)
             }
             rowData.push({value: parseInt(v) || 0, name: series.customAttributes[i].description})
           }

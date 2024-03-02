@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import {computed, PropType, ref, unref} from "vue";
-import {Card, Core} from "@/views/Dashboard/core/core";
+import {Card, Core} from "@/views/Dashboard/core";
 import {propTypes} from "@/utils/propTypes";
 import {ImageSearch} from "@/components/ImageSearch";
 import {ElButton, ElCol, ElDivider, ElForm, ElFormItem, ElIcon, ElRow} from "element-plus";

@@ -24,8 +24,7 @@ import {useValidator} from '@/hooks/web/useValidator'
 import {FormSchema} from '@/types/form'
 import {ApiDashboardCard, ApiDashboardCardItem, ApiEntity} from "@/api/stub";
 import {JsonViewer} from "@/components/JsonViewer";
-import {Card, Core, Tab} from "@/views/Dashboard/core/core";
-import {useBus} from "@/views/Dashboard/core/bus";
+import {Card, Core, Tab, useBus} from "@/views/Dashboard/core";
 import {Dialog} from '@/components/Dialog'
 import {JsonEditor} from "@/components/JsonEditor";
 import {FrameEditor, KeystrokeCapture} from "@/views/Dashboard/components";

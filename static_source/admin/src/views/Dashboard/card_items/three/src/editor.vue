@@ -3,7 +3,7 @@ import {PropType} from "vue";
 import {ElCol, ElDivider, ElRow} from 'element-plus'
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {useI18n} from "@/hooks/web/useI18n";
-import {CardItem, Core} from "@/views/Dashboard/core/core";
+import {CardItem, Core} from "@/views/Dashboard/core";
 
 const {t} = useI18n()
 

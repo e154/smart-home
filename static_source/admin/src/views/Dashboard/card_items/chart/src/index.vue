@@ -1,16 +1,13 @@
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, PropType, ref, watch} from "vue";
-import {CardItem, requestCurrentState} from "@/views/Dashboard/core/core";
+import {Cache, CardItem, RenderVar, requestCurrentState, useBus} from "@/views/Dashboard/core";
 import {ApiMetric} from "@/api/stub";
 import {ChartDataInterface, ChartDataSet} from "./types";
 import {parseTime} from "@/utils";
 import api from "@/api/api";
-import {useBus} from "@/views/Dashboard/core/bus";
 import {EChartsOption} from 'echarts'
 import {Echart} from '@/components/Echart'
 import {debounce} from "lodash-es";
-import {RenderVar} from "@/views/Dashboard/core/render";
-import {Cache} from "@/views/Dashboard/core/cache";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 
@@ -293,7 +290,7 @@ const getLineOptions = () => {
 }
 
 const _cache = new Cache()
-const getBarOptions = () => {
+const getBarOptions = async () => {
 
   let series: any[] = []
   let xAxisData: string[] = []
@@ -314,7 +311,7 @@ const getBarOptions = () => {
     for (const i in props.item.payload.chart.items) {
       xAxisData.push(props.item.payload.chart.items[i].description || '')
       let v: string = props.item.payload.chart.items[i].value || ''
-      const val = RenderVar(props.item.payload.chart.items[i].value, props.item?.lastEvent);
+      const val = await RenderVar(props.item.payload.chart.items[i].value, props.item?.lastEvent);
       if (val) {
         v = val
       }
@@ -380,7 +377,7 @@ const getBarOptions = () => {
 
 }
 
-const getPieOptions = () => {
+const getPieOptions = async () => {
 
   let series: any[] = []
   let rowData: any[] = []
@@ -398,7 +395,7 @@ const getPieOptions = () => {
 
     for (const i in props.item.payload.chart.items) {
       let v: string = props.item.payload.chart.items[i].value || ''
-      const val = RenderVar(props.item.payload.chart.items[i].value, props.item?.lastEvent);
+      const val = await RenderVar(props.item.payload.chart.items[i].value, props.item?.lastEvent);
       if (val) {
         v = val
       }
@@ -437,7 +434,7 @@ const getPieOptions = () => {
 
 }
 
-const getDoughnutOptions = () => {
+const getDoughnutOptions = async () => {
 
   let series: any[] = []
   let rowData: any[] = []
@@ -455,7 +452,7 @@ const getDoughnutOptions = () => {
 
     for (const i in props.item.payload.chart.items) {
       let v: string = props.item.payload.chart.items[i].value || ''
-      const val = RenderVar(props.item.payload.chart.items[i].value, props.item?.lastEvent);
+      const val = await RenderVar(props.item.payload.chart.items[i].value, props.item?.lastEvent);
       if (val) {
         v = val
       }
@@ -555,40 +552,40 @@ const prepareData = debounce(async () => {
 
 const reloadKey = ref(0)
 const reload = debounce(() => {
-    reloadKey.value += 1
-    requestCurrentState(props.item?.entityId);
-  }, 100
+      reloadKey.value += 1
+      requestCurrentState(props.item?.entityId);
+    }, 100
 )
 
 watch(
-  () => props.item.lastEvent,
-  (val?: CardItem) => {
-    // prepareData();
-  },
-  {
-    deep: true,
-    immediate: true
-  }
-)
-
-watch(
-  () => [props.item.width, props.item.height, props.item.payload.chart],
-  (width, height, chart) => {
-    reload();
-  },
-  {
-    deep: true,
-    immediate: true
-  }
-)
-
-watch(
-  () => props.item.hidden,
-  (val?: boolean) => {
-    if (!val) {
-      reload();
+    () => props.item.lastEvent,
+    (val?: CardItem) => {
+      // prepareData();
+    },
+    {
+      deep: true,
+      immediate: true
     }
-  }
+)
+
+watch(
+    () => [props.item.width, props.item.height, props.item.payload.chart],
+    (width, height, chart) => {
+      reload();
+    },
+    {
+      deep: true,
+      immediate: true
+    }
+)
+
+watch(
+    () => props.item.hidden,
+    (val?: boolean) => {
+      if (!val) {
+        reload();
+      }
+    }
 )
 
 // requestCurrentState(props.item?.entityId);

@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import {onMounted, onUnmounted, PropType, ref, watch} from "vue";
-import {CardItem} from "@/views/Dashboard/core/core";
+import {ButtonAction, CardItem, Compare, RenderVar, Resolve} from "@/views/Dashboard/core";
 import {ElMessage} from "element-plus";
 import {GetFullImageUrl, GetFullUrl} from "@/utils/serverId";
 import {debounce} from "lodash-es";
-import {ButtonAction, Compare} from "@/views/Dashboard/core/types";
 import api from "@/api/api";
 import {useI18n} from "@/hooks/web/useI18n";
-import {RenderVar, Resolve} from "@/views/Dashboard/core/render";
 import {AttributeValue, GetAttributeValue} from "@/components/Attributes";
 import Image from './Image.vue'
 import Icon from "@/views/Dashboard/card_items/icon/src/Icon.vue"
@@ -57,7 +55,7 @@ const update = debounce(async () => {
   background.value = props.item?.payload.image?.background || false
   if (props.item?.payload.image.attrField) {
     let token: string = props.item?.payload.image?.attrField || ''
-    const url = RenderVar(token, props.item?.lastEvent)
+    const url = await RenderVar(token, props.item?.lastEvent)
     image.value = GetFullUrl(url)
   }
 
@@ -85,7 +83,7 @@ const update = debounce(async () => {
         }
         if (prop.attrField) {
           let token: string = prop.attrField || ''
-          image.value = GetFullUrl(RenderVar(token, props.item?.lastEvent))
+          image.value = GetFullUrl(await RenderVar(token, props.item?.lastEvent))
         }
         background.value = prop.background
       }

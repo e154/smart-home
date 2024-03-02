@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, onUpdated, PropType, ref,} from "vue";
-import {Card, CardItem, Core} from "@/views/Dashboard/core/core";
-import {useBus} from "@/views/Dashboard/core/bus";
+import {Card, CardItem, Core, useBus} from "@/views/Dashboard/core";
 import debounce from 'lodash.debounce'
 import Moveable from 'vue3-moveable'
 import {deepFlat} from "@daybrush/utils";

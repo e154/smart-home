@@ -18,14 +18,12 @@ import {useForm} from '@/hooks/web/useForm'
 import {useValidator} from '@/hooks/web/useValidator'
 import {FormSchema} from '@/types/form'
 import {ApiDashboardTab} from "@/api/stub";
-import {Core, Tab} from "@/views/Dashboard/core/core";
+import {Core, Tab, useBus} from "@/views/Dashboard/core";
 import {DraggableContainer} from "@/components/DraggableContainer";
-import {useBus} from "@/views/Dashboard/core/bus";
 import {CloseBold} from "@element-plus/icons-vue";
 import {JsonViewer} from "@/components/JsonViewer";
 import {JsonEditor} from "@/components/JsonEditor";
 import {Dialog} from "@/components/Dialog";
-import {KeystrokeCapture} from "@/views/Dashboard/components";
 import FontEditor from "@/views/Dashboard/components/src/FontEditor.vue";
 
 const {register, elFormRef, methods} = useForm()

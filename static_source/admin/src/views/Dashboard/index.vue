@@ -10,7 +10,7 @@ import {useRouter} from "vue-router";
 import {parseTime} from "@/utils";
 import {ContentWrap} from "@/components/ContentWrap";
 import {Dialog} from '@/components/Dialog'
-import {Core} from "@/views/Dashboard/core/core";
+import {Core} from "@/views/Dashboard/core";
 import {useCache} from "@/hooks/web/useCache";
 import {JsonEditor} from "@/components/JsonEditor";
 import {prepareUrl} from "@/utils/serverId";

@@ -1,7 +1,7 @@
-import {ApplyFilter} from '@/views/Dashboard/core/filters'
+import {ApplyFilter} from './filters'
 import {EventStateChange} from "@/api/types";
 import {AttributeValue, GetAttributeValue, RenderAttributeValue} from "@/components/Attributes";
-import {Cache} from "@/views/Dashboard/core/cache";
+import {Cache} from "./cache";
 
 export function Resolve(path: string, obj: any): any {
   return path.split('.').reduce(function (prev, curr) {
@@ -70,7 +70,7 @@ export const RenderText = async (tokens: string[], text: string, lastEvent?: Eve
   return result
 }
 
-export function RenderVar(token: string, lastEvent?: EventStateChange): any {
+export const RenderVar = async (token: string, lastEvent?: EventStateChange): any => {
 
   // for inverse dependence
   token = token.replace('[', '').replace(']', '')
@@ -91,7 +91,7 @@ export function RenderVar(token: string, lastEvent?: EventStateChange): any {
   }
 
   if (tokenFiltered.length > 1) {
-    val = ApplyFilter(val, tokenFiltered[1])
+    val = await ApplyFilter(val, tokenFiltered[1])
   }
 
   if (val == undefined) {

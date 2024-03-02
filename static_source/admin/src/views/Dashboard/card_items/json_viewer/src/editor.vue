@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import {computed, onMounted, PropType} from "vue";
-import {CardItem, Core} from "@/views/Dashboard/core/core";
+import {CardItem, Core, Cache} from "@/views/Dashboard/core";
 import {ElCol, ElDivider, ElFormItem, ElRow,} from 'element-plus'
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
-import {Cache} from "@/views/Dashboard/core/cache";
 import {KeysSearch} from "@/views/Dashboard/components";
 import {ItemPayloadJsonViewer} from "@/views/Dashboard/card_items/json_viewer";
 

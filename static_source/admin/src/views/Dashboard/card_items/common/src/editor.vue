@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {computed, onMounted, PropType} from "vue";
-import {CardItem, Core} from "@/views/Dashboard/core/core";
+import {CardItem, Core} from "@/views/Dashboard/core";
 import {
   ElButton,
   ElCard,

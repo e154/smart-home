@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {h, onMounted, onUnmounted, PropType, reactive, ref, watch} from "vue";
 import {Table} from '@/components/Table'
-import {CardItem} from "@/views/Dashboard/core/core";
+import {CardItem} from "@/views/Dashboard/core";
 import {FormSchema} from "@/types/form";
 import {Pagination, TableColumn} from "@/types/table";
 import {ApiLog} from "@/api/stub";

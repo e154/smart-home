@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import {computed, onMounted, PropType, ref, unref, watch} from "vue";
-import {CardItem, requestCurrentState} from "@/views/Dashboard/core/core";
+import {CardItem, requestCurrentState, RenderVar, Cache} from "@/views/Dashboard/core";
 import {GridProp} from "./types";
-import {RenderVar} from "@/views/Dashboard/core/render";
-import {Cache} from "@/views/Dashboard/core/cache";
 import {debounce} from "lodash-es";
 import api from "@/api/api";
 import {ElMessage} from "element-plus";
@@ -50,9 +48,9 @@ const getBoard = (str: string): any[] => {
 }
 
 const _cache = new Cache()
-const update = debounce(() => {
+const update = debounce( async () => {
   let token: string = props.item?.payload.grid?.attribute || ''
-  const result = RenderVar(token, props.item?.lastEvent)
+  const result = await RenderVar(token, props.item?.lastEvent)
   board.value = getBoard(result) || []
 }, 100)
 

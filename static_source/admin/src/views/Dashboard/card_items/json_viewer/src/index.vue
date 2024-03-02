@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {onMounted, onUnmounted, PropType, ref, watch} from "vue";
-import {CardItem} from "@/views/Dashboard/core/core";
-import {RenderVar} from "@/views/Dashboard/core/render";
+import {CardItem, RenderVar} from "@/views/Dashboard/core";
 import {debounce} from "lodash-es";
 import {JsonViewer} from "@/components/JsonViewer";
 
@@ -33,7 +32,7 @@ const currentValue = ref<Nullable<any>>(null)
 const update = debounce(async () => {
   if (props.item?.payload.jsonViewer.attrField) {
     let token: string = props.item?.payload.jsonViewer?.attrField || ''
-    const value = RenderVar(token, props.item?.lastEvent)
+    const value = await RenderVar(token, props.item?.lastEvent)
     if (typeof value === 'string') {
       try {
         currentValue.value = JSON.parse(value)
