@@ -1,4 +1,5 @@
 import {AttributeValue} from '@/components/Attributes'
+import {ApiScript} from "@/api/stub";
 
 export interface EventHTML5Notify {
   title: string
@@ -60,5 +61,13 @@ export interface EventStateChange {
   entity_id: string
   old_state: EventState
   new_state: EventState
+}
+
+
+export interface EventUpdatedScriptModel {
+  owner?: string;
+  script_id?: number;
+  script?: ApiScript;
+  old_script?: ApiScript;
 }
 

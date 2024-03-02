@@ -27,6 +27,7 @@ import {parseTime} from "@/utils";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 import {MergeEditor} from "@/components/MergeEditor";
+import {EventUpdatedScriptModel} from "@/api/types";
 
 const {emitter} = useEmitt()
 const {push} = useRouter()
@@ -35,7 +36,7 @@ const {t} = useI18n()
 
 const writeRef = ref<ComponentRef<typeof Form>>()
 const loading = ref(false)
-const scriptId = computed(() => route.params.id as number);
+const scriptId = computed(() => parseInt(route.params.id));
 const currentScript = ref<Nullable<ApiScript>>(null)
 const activeTab = ref('source')
 const currentVersionIdx = ref(0)
@@ -49,13 +50,19 @@ onMounted(() => {
   currentID.value = uuid.getDashFreeUUID()
 
   setTimeout(() => {
-    stream.subscribe('event_updated_script_model', currentID.value, fetch)
+    stream.subscribe('event_updated_script_model', currentID.value, eventHandler)
   }, 1000)
 })
 
 onUnmounted(() => {
   stream.unsubscribe('event_updated_script_model', currentID.value)
 })
+
+const eventHandler = (event: EventUpdatedScriptModel) => {
+  if (event.script_id && event.script_id === scriptId.value) {
+    fetch()
+  }
+}
 
 const fetch = async () => {
   loading.value = true
