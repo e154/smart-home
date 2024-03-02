@@ -54,23 +54,27 @@ export const evalScript = async (value: string, ...args: string[]): string => {
   const scriptId = parseInt(args[0]);
 
   if (_cache.get(scriptId)) {
-    return window.eval.call(window,`(${_cache.get(scriptId)})`)(value);
+    return window.eval.call(window, `(${_cache.get(scriptId)})`)(value);
   }
 
-  const res = await api.v1.scriptServiceGetCompiledScriptById(scriptId)
-    .catch(() => {
-    })
-    .finally(() => {
+  try {
+    const res = await api.v1.scriptServiceGetCompiledScriptById(scriptId)
+      .catch(() => {
+      })
+      .finally(() => {
 
-    })
+      })
 
-  if (!res.data) {
-    return '[NO SCRIPTS DATA]'
+    if (!res.data) {
+      return '[SCRIPT]'
+    }
+
+    _cache.push(scriptId, res.data)
+
+    return window.eval.call(window, `(${res.data})`)(value);
+  } catch (e) {
+    return '[SCRIPT]'
   }
-
-  _cache.push(scriptId, res.data)
-
-  return window.eval.call(window,`(${res.data})`)(value);
 }
 
 //DEPRECATED
@@ -113,7 +117,7 @@ function secToCounter(value: string, ...args: string[]): string {
   // const years = delta.getYear() - epoch.getYear();
   const months = delta.getUTCMonth() - epoch.getUTCMonth();
   const days = delta.getUTCDate() - epoch.getUTCDate();
-  const hours = delta.getUTCHours()- epoch.getUTCHours();
+  const hours = delta.getUTCHours() - epoch.getUTCHours();
   const minutes = delta.getUTCMinutes() - epoch.getUTCMinutes();
 
   if (args && args.length) {
@@ -121,7 +125,7 @@ function secToCounter(value: string, ...args: string[]): string {
     for (let i = 0; i < args.length; i++) {
       for (let j = 0; j < args[i].length; j++) {
         // console.log('e ', args[i].charAt(j))
-        switch (args[i].charAt(j)){
+        switch (args[i].charAt(j)) {
           // case 'y':
           //   result += String(years).padStart(2, '0');
           //   break;

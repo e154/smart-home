@@ -32,7 +32,10 @@ watch(
     () => props.modelValue,
     (val?: ApiImage) => {
       if (val === unref(currentImage)) return;
-      if (!val?.url) return;
+      if (!val?.url) {
+        currentImage.value = null
+        return;
+      };
       currentImage.value = unref(val) || null
     },
     {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, onBeforeUnmount, onMounted, PropType, ref} from "vue";
+import {computed, onBeforeUnmount, onMounted, PropType, ref, watch} from "vue";
 import {Cache, CardItem, comparisonType, Core, GetTokens} from "@/views/Dashboard/core";
 import {
   ElButton,
@@ -61,7 +61,7 @@ onBeforeUnmount(() => {
 })
 
 const update = () => {
-  updateTokensDefaultText()
+  // updateTokensDefaultText()
 
   if (currentItem.value?.payload?.text?.default_text) {
     for (const prop of currentItem.value.payload.text.items) {
@@ -83,6 +83,17 @@ const updateTokensDefaultText = () => {
 const defaultTextUpdated = () => {
   updateTokensDefaultText()
 }
+
+watch(
+  () => props.item,
+  () => {
+    updateTokensDefaultText()
+  },
+  {
+    immediate: true
+  }
+)
+
 
 const updateTokensPropText = (prop: TextProp) => {
   prop.tokens = GetTokens(prop.text, _cache) || []

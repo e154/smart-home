@@ -156,7 +156,7 @@ watch(
         icon: val.icon,
         enabled: val.enabled,
         weight: val.weight,
-        backgroundImage: val.backgroundImage,
+        backgroundImage: val.backgroundImage || undefined,
         backgroundAdaptive: val.backgroundAdaptive,
       })
     },

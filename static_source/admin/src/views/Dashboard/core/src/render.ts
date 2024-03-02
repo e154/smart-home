@@ -9,7 +9,7 @@ export function Resolve(path: string, obj: any): any {
   }, obj || self)
 }
 
-// fuction return array of tokens, example ['new_state.attributes.used_percent']
+// function return array of tokens, example ['new_state.attributes.used_percent']
 export function GetTokens(text?: string, cache?: Cache): string[] {
   if (!text || !cache) {
     return []
