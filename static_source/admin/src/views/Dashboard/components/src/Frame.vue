@@ -23,12 +23,12 @@ onMounted(() => {
 
 })
 
-const imageUrl = computed(() => props?.frame?.image ? `url(${GetFullImageUrl(props?.frame?.image)})` : '')
+const imageUrl = computed(() => props.frame?.image ? `url(${GetFullImageUrl(props.frame?.image)})` : '')
 
 // top
 // ---------------------------------
 const topLeftCornerStyle = computed(() => {
-  if (!props?.frame?.items['top-left-corner']) {
+  if (!props.frame?.items || !props.frame?.items['top-left-corner']) {
     return {
       display: 'none'
     }
@@ -42,7 +42,7 @@ const topLeftCornerStyle = computed(() => {
 })
 
 const topStyle = computed(() => {
-  if (!props?.frame?.items['top']) {
+  if (!props.frame?.items || !props.frame?.items['top']) {
     return {
       display: 'none'
     }
@@ -60,7 +60,7 @@ const topStyle = computed(() => {
 })
 
 const topRightCornerStyle = computed(() => {
-  if (!props?.frame?.items['top-right-corner']) {
+  if (!props.frame?.items || !props.frame?.items['top-right-corner']) {
     return {
       display: 'none'
     }
@@ -76,7 +76,7 @@ const topRightCornerStyle = computed(() => {
 // ---------------------------------
 
 const leftStyle = computed(() => {
-  if (!props?.frame?.items['left']) {
+  if (!props.frame?.items || !props.frame?.items['left']) {
     return {
       display: 'none'
     }
@@ -86,7 +86,7 @@ const leftStyle = computed(() => {
     bottom: `${props.frame.items['bottom-left-corner'].height || 0}px`,
     width: `${props.frame.items['left'].width}px`,
   }
-  if (props.frame.items['left'].base64) {
+  if (props.frame?.items['left'].base64) {
     result['background-image'] = `url(${props.frame.items['left'].base64})`
   }
 
@@ -94,13 +94,13 @@ const leftStyle = computed(() => {
 })
 
 const contentStyle = computed(() => {
-  if (!props?.frame?.items['content']) {
+  if (!props.frame?.items || !props.frame?.items['content']) {
     return {
       display: 'none'
     }
   }
 
-  if (props.frame.items['content'].base64) {
+  if (props.frame?.items['content'].base64) {
     return {
       backgroundImage: `url(${props.frame.items['content'].base64})`
     }
@@ -110,7 +110,7 @@ const contentStyle = computed(() => {
 })
 
 const rightStyle = computed(() => {
-  if (!props?.frame?.items['right']) {
+  if (!props.frame?.items || !props.frame?.items['right']) {
     return {
       display: 'none'
     }
@@ -130,7 +130,7 @@ const rightStyle = computed(() => {
 // bottom
 // ---------------------------------
 const bottomLeftCornerStyle = computed(() => {
-  if (!props?.frame?.items['bottom-left-corner']) {
+  if (!props.frame?.items || !props.frame?.items['bottom-left-corner']) {
     return {
       display: 'none'
     }
@@ -143,7 +143,7 @@ const bottomLeftCornerStyle = computed(() => {
 })
 
 const bottomStyle = computed(() => {
-  if (!props?.frame?.items['bottom']) {
+  if (!props.frame?.items || !props.frame?.items['bottom']) {
     return {
       display: 'none'
     }
@@ -161,7 +161,7 @@ const bottomStyle = computed(() => {
 })
 
 const bottomRightStyle = computed(() => {
-  if (!props?.frame?.items['bottom-right-corner']) {
+  if (!props.frame?.items || !props.frame?.items['bottom-right-corner']) {
     return {
       display: 'none'
     }
@@ -182,13 +182,13 @@ const bottomRightStyle = computed(() => {
     <div class="top" :style="topStyle"></div>
     <div class="top-right-corner" :style="topRightCornerStyle"></div>
     <div class="left" :style="leftStyle"></div>
-    <div class="content">
-      <slot></slot>
-    </div>
     <div class="right" :style="rightStyle"></div>
     <div class="bottom-left-corner" :style="bottomLeftCornerStyle"></div>
     <div class="bottom" :style="bottomStyle"></div>
     <div class="bottom-right-corner" :style="bottomRightStyle"></div>
+    <div class="content">
+      <slot></slot>
+    </div>
   </div>
   <div class="window" v-else>
     <slot></slot>

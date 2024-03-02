@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import {computed, PropType, ref} from "vue";
+import {computed, PropType, ref, watch} from "vue";
 import {Card, Core, Tab} from "@/views/Dashboard/core/core";
 import {Vuuri} from "@/views/Dashboard/Vuuri"
 import {useBus} from "@/views/Dashboard/core/bus";
 import debounce from 'lodash.debounce'
 import ViewCard from "@/views/Dashboard/editor/ViewCard.vue";
 import {Frame} from "@/views/Dashboard/components";
+import {loadFonts} from "@/utils/fonts";
 
 // ---------------------------------
 // common
@@ -56,6 +57,17 @@ const getItemHeight = (card: Card) => {
 }
 
 const cards = computed<Card[]>(() => props.tab?.cards2)
+
+watch(
+  () => props.tab.fonts,
+  (val?: string[]) => {
+    if (!val) return
+    val.forEach(variableName => loadFonts(variableName))
+  },
+  {
+    immediate: true
+  }
+)
 
 </script>
 

@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import {onMounted, PropType, ref, watch} from "vue";
 import {CardItem, requestCurrentState} from "@/views/Dashboard/core/core";
-import {Cache, Resolve} from "@/views/Dashboard/core/render";
+import {Resolve} from "@/views/Dashboard/core/render";
+import {Cache} from "@/views/Dashboard/core/cache";
 import {ApiImage} from "@/api/stub";
 import api from "@/api/api";
 import {ElMessage} from "element-plus";

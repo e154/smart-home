@@ -7,7 +7,6 @@ import {
   ElCol,
   ElCollapse,
   ElCollapseItem,
-  ElColorPicker,
   ElDivider,
   ElForm,
   ElFormItem,
@@ -20,11 +19,10 @@ import {
 } from 'element-plus'
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {useI18n} from "@/hooks/web/useI18n";
-import {Cache} from "@/views/Dashboard/core/render";
+import {Cache} from "@/views/Dashboard/core/cache";
 import {KeysSearch} from "@/views/Dashboard/components";
 import {comparisonType} from "@/views/Dashboard/core/types";
 import {ColorPicker} from "@/components/ColorPicker";
-import {ItemPayloadState} from "@/views/Dashboard/card_items/state";
 import {ItemPayloadIcon} from "@/views/Dashboard/card_items/icon";
 
 const {t} = useI18n()
@@ -133,9 +131,9 @@ const onChangePropKey = (val, index, event) => {
   <!-- props -->
   <ElCollapse>
     <ElCollapseItem
-        :name="index"
-        :key="index"
-        v-for="(prop, index) in item.payload.icon.items"
+      :name="index"
+      :key="index"
+      v-for="(prop, index) in item.payload.icon.items"
     >
 
       <template #title>
@@ -149,15 +147,16 @@ const onChangePropKey = (val, index, event) => {
       <ElCard shadow="never" class="item-card-editor">
 
         <ElForm
-            label-position="top"
-            :model="prop"
-            style="width: 100%"
-            ref="cardItemForm">
+          label-position="top"
+          :model="prop"
+          style="width: 100%"
+          ref="cardItemForm">
 
           <ElRow>
             <ElCol>
               <ElFormItem :label="$t('dashboard.editor.attrField')" prop="text">
-                <KeysSearch v-model="prop.key" :obj="currentItem.lastEvent" @change="onChangePropKey(prop, index, $event)"/>
+                <KeysSearch v-model="prop.key" :obj="currentItem.lastEvent"
+                            @change="onChangePropKey(prop, index, $event)"/>
               </ElFormItem>
             </ElCol>
           </ElRow>
@@ -166,9 +165,9 @@ const onChangePropKey = (val, index, event) => {
             <ElCol>
               <ElFormItem :label="$t('dashboard.editor.comparison')" prop="comparison">
                 <ElSelect
-                    v-model="prop.comparison"
-                    placeholder="please select type"
-                    style="width: 100%"
+                  v-model="prop.comparison"
+                  placeholder="please select type"
+                  style="width: 100%"
                 >
                   <ElOption label="==" value="eq"/>
                   <ElOption label="<" value="lt"/>
@@ -189,13 +188,13 @@ const onChangePropKey = (val, index, event) => {
             </ElCol>
           </ElRow>
 
-          <ElRow >
+          <ElRow>
             <ElCol>
               <ElDivider content-position="left">{{ $t('dashboard.editor.appearanceOptions') }}</ElDivider>
             </ElCol>
           </ElRow>
 
-          <ElRow >
+          <ElRow>
             <ElCol>
               <ElFormItem :label="$t('dashboard.editor.icon')" prop="icon">
                 <ElInput v-model="prop.icon"/>
@@ -224,12 +223,12 @@ const onChangePropKey = (val, index, event) => {
               <div class="mb-10px">
                 <div style="text-align: right;">
                   <ElPopconfirm
-                      :confirm-button-text="$t('main.ok')"
-                      :cancel-button-text="$t('main.no')"
-                      width="250"
-                      style="margin-left: 10px;"
-                      :title="$t('main.are_you_sure_to_do_want_this?')"
-                      @confirm="removeProp(index)"
+                    :confirm-button-text="$t('main.ok')"
+                    :cancel-button-text="$t('main.no')"
+                    width="250"
+                    style="margin-left: 10px;"
+                    :title="$t('main.are_you_sure_to_do_want_this?')"
+                    @confirm="removeProp(index)"
                   >
                     <template #reference>
                       <ElButton type="danger" plain>

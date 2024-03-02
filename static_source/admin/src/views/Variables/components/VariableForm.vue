@@ -1,11 +1,23 @@
 <script setup lang="ts">
 import {computed, PropType, ref} from 'vue'
 import {useI18n} from '@/hooks/web/useI18n'
-import {ElCol, ElForm, ElFormItem, ElInput, ElMessage, ElRadioButton, ElRadioGroup, ElRow} from 'element-plus'
+import {
+  ElCol,
+  ElForm,
+  ElFormItem,
+  ElInput,
+  ElMessage,
+  ElRadioButton,
+  ElRadioGroup,
+  ElRow,
+  ElUpload,
+  UploadFile
+} from 'element-plus'
 import {ApiVariable} from "@/api/stub";
 import {JsonEditor} from "@/components/JsonEditor";
 import {TinycmeEditor} from "@/components/Tinymce";
 import {propTypes} from "@/utils/propTypes";
+import {BaseButton} from "@/components/Button";
 
 const {t} = useI18n()
 
@@ -61,24 +73,57 @@ const convertToJsonValue = () => {
   }
 }
 
+const uploadChange = (uploadFile: UploadFile) => {
+  if (!uploadFile.raw) return
+
+  const reader = new FileReader();
+  reader.onloadend = () => {
+    // Use a regex to remove data url part
+    const base64String = reader.result
+      .replace('data:', '')
+      .replace(/^.+,/, '');
+
+    // console.log(base64String);
+    currentVariable.value.value = base64String
+  };
+  reader.readAsDataURL(uploadFile.raw);
+}
+
 </script>
 
 <template>
   <ElForm
-      label-position="top"
-      :model="currentVariable"
-      style="width: 100%"
-      ref="cardItemForm"
+    label-position="top"
+    :model="currentVariable"
+    style="width: 100%"
+    ref="cardItemForm"
   >
 
     <ElRow>
       <ElCol>
         <ElFormItem :label="$t('variables.name')" prop="text">
           <ElInput
-              :disabled="edit"
-              placeholder="Please input"
-              v-model="currentVariable.name"
+            :disabled="edit"
+            placeholder="Please input"
+            v-model="currentVariable.name"
           />
+        </ElFormItem>
+      </ElCol>
+    </ElRow>
+
+    <ElRow>
+      <ElCol :span="12" :xs="12">
+        <ElFormItem :label="$t('main.upload')" prop="text">
+          <ElUpload
+            action="''"
+            :auto-upload="false"
+            :show-file-list="false"
+            :on-change="uploadChange"
+          >
+            <BaseButton size="small" type="primary">
+              <Icon icon="ep:upload-filled"/>
+            </BaseButton>
+          </ElUpload>
         </ElFormItem>
       </ElCol>
     </ElRow>
@@ -99,10 +144,10 @@ const convertToJsonValue = () => {
       <ElCol>
         <ElFormItem :label="$t('variables.value')" prop="text">
           <ElInput
-              type="textarea"
-              :autosize="{minRows: 10}"
-              placeholder="Please input"
-              v-model="currentVariable.value"
+            type="textarea"
+            :autosize="{minRows: 10, maxRows: 10}"
+            placeholder="Please input"
+            v-model="currentVariable.value"
           />
         </ElFormItem>
       </ElCol>

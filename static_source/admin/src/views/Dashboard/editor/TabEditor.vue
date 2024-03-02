@@ -25,6 +25,8 @@ import {CloseBold} from "@element-plus/icons-vue";
 import {JsonViewer} from "@/components/JsonViewer";
 import {JsonEditor} from "@/components/JsonEditor";
 import {Dialog} from "@/components/Dialog";
+import {KeystrokeCapture} from "@/views/Dashboard/components";
+import FontEditor from "@/views/Dashboard/components/src/FontEditor.vue";
 
 const {register, elFormRef, methods} = useForm()
 const {required} = useValidator()
@@ -94,8 +96,8 @@ const schema = reactive<FormSchema[]>([
     component: 'Switch',
     value: false,
     colProps: {
-      md: 24,
-      span: 24
+      md: 12,
+      span: 12
     },
   },
   {
@@ -104,7 +106,7 @@ const schema = reactive<FormSchema[]>([
     component: 'InputNumber',
     value: 300,
     colProps: {
-      span: 24
+      span: 12
     },
   },
   {
@@ -357,6 +359,8 @@ const importTab = async () => {
         label-position="top"
         @register="register"
   />
+
+  <FontEditor v-if="activeTab" :tab="activeTab"/>
 
   <ElEmpty v-if="!currentCore.tabs.length" :rows="5">
     <ElButton type="primary" @click="createTab()">

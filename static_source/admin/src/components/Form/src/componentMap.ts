@@ -36,6 +36,8 @@ import {RoleSearch} from '@/components/RoleSearch'
 import {AreaSearch} from "@/components/AreaSearch";
 import {ImageSearch} from "@/components/ImageSearch";
 import {ColorPicker} from "@/components/ColorPicker";
+import {VariableSearch} from "@/components/VariableSearch";
+import {VariablesSearch} from "@/components/VariablesSearch";
 
 const componentMap: Recordable<Component, ComponentName> = {
     Radio: ElRadioGroup,
@@ -74,6 +76,8 @@ const componentMap: Recordable<Component, ComponentName> = {
     Conditions: ConditionsSearch,
     Action: ActionSearch,
     Actions: ActionsSearch,
+    Variable: VariableSearch,
+    Variables: VariablesSearch,
 }
 
 export {componentMap}

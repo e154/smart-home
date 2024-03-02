@@ -1,34 +1,12 @@
 import {ApplyFilter} from '@/views/Dashboard/core/filters'
 import {EventStateChange} from "@/api/types";
 import {AttributeValue, GetAttributeValue, RenderAttributeValue} from "@/components/Attributes";
+import {Cache} from "@/views/Dashboard/core/cache";
 
 export function Resolve(path: string, obj: any): any {
   return path.split('.').reduce(function (prev, curr) {
     return prev ? prev[curr] : null
   }, obj || self)
-}
-
-export class Cache {
-  private pull: object;
-
-  constructor() {
-    this.pull = {}
-  }
-
-  push(key: string, value: any) {
-    this.pull[key] = value
-  }
-
-  get(key: string): any | null {
-    if (!this.pull.hasOwnProperty(key)) {
-      return null
-    }
-    return this.pull[key]
-  }
-
-  clear() {
-    this.pull = {}
-  }
 }
 
 // fuction return array of tokens, example ['new_state.attributes.used_percent']
@@ -55,7 +33,7 @@ export function GetTokens(text?: string, cache?: Cache): string[] {
   return tokens || []
 }
 
-export function RenderText(tokens: string[], text: string, lastEvent?: EventStateChange): string {
+export const RenderText = async (tokens: string[], text: string, lastEvent?: EventStateChange): string => {
   let val: any
 
   let result = text
@@ -74,7 +52,7 @@ export function RenderText(tokens: string[], text: string, lastEvent?: EventStat
     }
 
     if (tokenFiltered.length > 1) {
-      val = ApplyFilter(val, tokenFiltered[1])
+      val = await ApplyFilter(val, tokenFiltered[1])
     }
 
     if (val == undefined) {

@@ -1110,6 +1110,11 @@ type ApiSearchTriggerResult struct {
 	Items []ApiTrigger `json:"items"`
 }
 
+// ApiSearchVariableResult defines model for apiSearchVariableResult.
+type ApiSearchVariableResult struct {
+	Items []ApiVariable `json:"items"`
+}
+
 // ApiSigninResponse defines model for apiSigninResponse.
 type ApiSigninResponse struct {
 	AccessToken string          `json:"accessToken"`
@@ -2273,6 +2278,13 @@ type VariableServiceGetVariableListParams struct {
 
 	// Limit The number of results returned on a page
 	Limit *ListLimit `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+// VariableServiceSearchVariableParams defines parameters for VariableServiceSearchVariable.
+type VariableServiceSearchVariableParams struct {
+	Query  *SearchQuery  `form:"query,omitempty" json:"query,omitempty"`
+	Offset *SearchOffset `form:"offset,omitempty" json:"offset,omitempty"`
+	Limit  *SearchLimit  `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
 // Zigbee2mqttServiceGetBridgeListParams defines parameters for Zigbee2mqttServiceGetBridgeList.

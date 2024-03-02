@@ -1,19 +1,25 @@
 import {parseTime} from '@/utils';
+import api from "@/api/api";
+import {Cache} from "@/views/Dashboard/core/cache";
 
-export function ApplyFilter(value: any, filter: string): any {
+export const ApplyFilter = async (value: any, filter: string): any => {
   if (value == undefined || filter == undefined) {
     return value;
   }
 
-  const args = filter.split('::');
+  let args = filter.split('::');
   if (args.length > 1) {
     filter = args[0];
-    args.splice(0, 1);
+    args.shift();
+  } else {
+    args = []
   }
 
   switch (filter) {
     case 'secToTime':
       return secToTime(value, ...args);
+    case 'secToCounter':
+      return secToCounter(value, ...args);
     case 'formatdate':
       return formatdate(value, ...args);
     case 'formatBytes':
@@ -30,12 +36,43 @@ export function ApplyFilter(value: any, filter: string): any {
       return camelCaseStringToTitleCase(value, ...args);
     case 'toTitleCase':
       return toTitleCase(value, ...args);
+    case 'script':
+      return await evalScript(value, ...args);
     default:
       console.warn(`unknown filter "${filter}"!`);
       return value;
   }
 }
 
+const _cache = new Cache()
+export const evalScript = async (value: string, ...args: string[]): string => {
+  if (!args || args.length == 0) {
+    return `[${value}::${args}]`
+  }
+
+  const scriptId = parseInt(args[0]);
+
+  if (_cache.get(scriptId)) {
+    return window.eval.call(window,`(${_cache.get(scriptId)})`)(value);
+  }
+
+  const res = await api.v1.scriptServiceGetCompiledScriptById(scriptId)
+    .catch(() => {
+    })
+    .finally(() => {
+
+    })
+
+  if (!res.data) {
+    return '[NO SCRIPTS DATA]'
+  }
+
+  _cache.push(scriptId, res.data)
+
+  return window.eval.call(window,`(${res.data})`)(value);
+}
+
+//DEPRECATED
 function secToTime(value: string, ...args: string[]): string {
   const num = parseInt(value);
   const days = Math.floor(num / (24 * 3600));
@@ -62,6 +99,57 @@ function secToTime(value: string, ...args: string[]): string {
     result = days + `${d}:` + result;
   }
   return result;
+}
+
+function secToCounter(value: string, ...args: string[]): string {
+  const seconds = parseInt(value);
+
+  const mSeconds = seconds * 1000
+
+  const epoch = new Date(0);
+  const delta = new Date(epoch.getTime() + mSeconds);
+
+  // const years = delta.getYear() - epoch.getYear();
+  const months = delta.getUTCMonth() - epoch.getUTCMonth();
+  const days = delta.getUTCDate() - epoch.getUTCDate();
+  const hours = delta.getUTCHours()- epoch.getUTCHours();
+  const minutes = delta.getUTCMinutes() - epoch.getUTCMinutes();
+
+  if (args && args.length) {
+    let result = '';
+    for (let i = 0; i < args.length; i++) {
+      for (let j = 0; j < args[i].length; j++) {
+        // console.log('e ', args[i].charAt(j))
+        switch (args[i].charAt(j)){
+          // case 'y':
+          //   result += String(years).padStart(2, '0');
+          //   break;
+          case 'M':
+            result += String(months).padStart(2, '0');
+            break;
+          case 'd':
+            result += String(days).padStart(2, '0');
+            break;
+          case 'h':
+            result += String(hours).padStart(2, '0');
+            break;
+          case 'm':
+            result += String(minutes).padStart(2, '0');
+            break;
+          default:
+            result += args[i].charAt(j)
+        }
+      }
+    }
+    return result
+  } else {
+    const formattedMonths = String(months).padStart(2, '0');
+    const formattedDays = String(days).padStart(2, '0');
+    const formattedHours = String(hours).padStart(2, '0');
+    const formattedMinutes = String(minutes).padStart(2, '0');
+
+    return `${formattedMonths}:${formattedDays}:${formattedHours}:${formattedMinutes}`;
+  }
 }
 
 function seconds(value: string, ...args: string[]) {
@@ -108,7 +196,7 @@ function camelCaseStringToTitleCase(value: string, ...args: string[]): string {
 function toTitleCase(value: string, ...args: string[]): string {
   return value.replace(
     /\w\S*/g,
-    function(txt) {
+    function (txt) {
       return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     }
   );

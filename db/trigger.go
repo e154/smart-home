@@ -173,7 +173,7 @@ func (t Triggers) ListPlain(ctx context.Context, limit, offset int, orderBy, sor
 	return
 }
 
-// Search ...q
+// Search ...
 func (t Triggers) Search(ctx context.Context, query string, limit, offset int) (list []*Trigger, total int64, err error) {
 
 	q := t.Db.WithContext(ctx).Model(&Trigger{}).

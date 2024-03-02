@@ -19,7 +19,7 @@ import {
   ElTag
 } from 'element-plus'
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
-import {Cache} from "@/views/Dashboard/core/render";
+import {Cache} from "@/views/Dashboard/core/cache";
 import {ApiImage} from "@/api/stub";
 import {ImageSearch} from "@/components/ImageSearch";
 import {KeysSearch} from "@/views/Dashboard/components";

@@ -9,7 +9,8 @@ import {useBus} from "@/views/Dashboard/core/bus";
 import {EChartsOption} from 'echarts'
 import {Echart} from '@/components/Echart'
 import {debounce} from "lodash-es";
-import {Cache, RenderVar} from "@/views/Dashboard/core/render";
+import {RenderVar} from "@/views/Dashboard/core/render";
+import {Cache} from "@/views/Dashboard/core/cache";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 

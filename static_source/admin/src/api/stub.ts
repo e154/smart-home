@@ -1144,6 +1144,10 @@ export interface ApiSearchTriggerResult {
   items: ApiTrigger[];
 }
 
+export interface ApiSearchVariableResult {
+  items: ApiVariable[];
+}
+
 export interface ApiSigninResponse {
   currentUser?: ApiCurrentUser;
   accessToken: string;
@@ -5229,6 +5233,33 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags ScriptService
+     * @name ScriptServiceGetCompiledScriptById
+     * @summary get compiled script by id
+     * @request GET:/v1/script/{id}/compiled
+     * @secure
+     */
+    scriptServiceGetCompiledScriptById: (id: number, params: RequestParams = {}) =>
+      this.request<
+        string,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
+        path: `/v1/script/${id}/compiled`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags ScriptService
      * @name ScriptServiceExecScriptById
      * @summary exec script by id
      * @request POST:/v1/script/{id}/exec
@@ -6472,6 +6503,41 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/v1/variables`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags VariableService
+     * @name VariableServiceSearchVariable
+     * @summary search trigger
+     * @request GET:/v1/variables/search
+     * @secure
+     */
+    variableServiceSearchVariable: (
+      query?: {
+        query?: string;
+        /** @format int64 */
+        offset?: number;
+        /** @format int64 */
+        limit?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        ApiSearchVariableResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
+        path: `/v1/variables/search`,
         method: "GET",
         query: query,
         secure: true,

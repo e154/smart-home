@@ -37,6 +37,8 @@ export type ComponentName =
   | 'Triggers'
   | 'Actions'
   | 'Conditions'
+  | 'Variable'
+  | 'Variables'
 
 export type ColProps = {
   span?: number

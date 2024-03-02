@@ -2,7 +2,8 @@
 import {computed, onMounted, PropType, ref, unref, watch} from "vue";
 import {CardItem, requestCurrentState} from "@/views/Dashboard/core/core";
 import {debounce} from "lodash-es";
-import {Cache, RenderVar} from "@/views/Dashboard/core/render";
+import {RenderVar} from "@/views/Dashboard/core/render";
+import {Cache} from "@/views/Dashboard/core/cache";
 import api from "@/api/api";
 import {useI18n} from "@/hooks/web/useI18n";
 import {ApiEntityCallActionRequest, ApiTypes} from "@/api/stub";

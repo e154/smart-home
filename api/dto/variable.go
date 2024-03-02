@@ -67,6 +67,25 @@ func (r Variable) ToVariable(ver m.Variable) (obj *stub.ApiVariable) {
 	return
 }
 
+// ToSearchResult ...
+func (r Variable) ToSearchResult(list []m.Variable) *stub.ApiSearchVariableResult {
+
+	items := make([]stub.ApiVariable, 0, len(list))
+
+	for _, v := range list {
+		items = append(items, stub.ApiVariable{
+			Name:      v.Name,
+			System:    v.System,
+			CreatedAt: v.CreatedAt,
+			UpdatedAt: v.UpdatedAt,
+		})
+	}
+
+	return &stub.ApiSearchVariableResult{
+		Items: items,
+	}
+}
+
 // ToVariable ...
 func ToVariable(ver m.Variable) (obj *stub.ApiVariable) {
 	if ver.Name == "" {

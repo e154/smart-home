@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import {onBeforeUnmount, onMounted, PropType, ref} from "vue";
 import {CardItem} from "@/views/Dashboard/core/core";
-import {Cache, RenderVar} from "@/views/Dashboard/core/render";
+import {RenderVar} from "@/views/Dashboard/core/render";
+import {Cache} from "@/views/Dashboard/core/cache";
 import {debounce} from "lodash-es";
 import LiteYouTubeEmbed from 'vue-lite-youtube-embed'
 import 'vue-lite-youtube-embed/style.css'

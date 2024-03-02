@@ -39,7 +39,9 @@ export default {
     tags: 'Теги',
     actions: 'Действия',
     or: 'Или',
-    newContentMessage: 'Доступен новый контент, нажмите кнопку перезагрузки, чтобы обновить.'
+    newContentMessage: 'Доступен новый контент, нажмите кнопку перезагрузки, чтобы обновить.',
+    upload: 'Загрузить',
+    download: 'Скачать',
   },
   message: {
     unknownError: "Неизвестная ошибка",
@@ -625,6 +627,7 @@ export default {
       zoomIn: 'Приблизить',
       zoomOut: 'Отдалить',
       clear: 'Очистить',
+      FontsOptions: 'Шрифты',
       slider: {
         options: 'Параметры слайдера',
         color: 'Цвет',

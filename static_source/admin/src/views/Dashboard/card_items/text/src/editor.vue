@@ -20,7 +20,8 @@ import {
 } from 'element-plus'
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {useI18n} from "@/hooks/web/useI18n";
-import {Cache, GetTokens} from "@/views/Dashboard/core/render";
+import {GetTokens} from "@/views/Dashboard/core/render";
+import {Cache} from "@/views/Dashboard/core/cache";
 import {TextProp} from "./types";
 import {TinycmeEditor} from "@/components/Tinymce";
 import {KeysSearch} from "@/views/Dashboard/components";

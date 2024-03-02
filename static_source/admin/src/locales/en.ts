@@ -39,7 +39,9 @@ export default {
         tags: 'Tags',
         actions: 'Actions',
         or: 'Or',
-        newContentMessage: 'New content available, click on reload button to update.'
+        newContentMessage: 'New content available, click on reload button to update.',
+        upload: 'Upload',
+        download: 'Download',
     },
     message: {
         unknownError: 'unknown error',
@@ -625,6 +627,7 @@ export default {
             zoomIn: 'Zoom In',
             zoomOut: 'Zoom Out',
             clear: 'Clear',
+            FontsOptions: 'Fonts Options',
             slider: {
                 options: 'Slider Options',
                 color: 'Color',

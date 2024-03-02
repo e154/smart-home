@@ -2,7 +2,8 @@
 import {computed, onMounted, PropType, ref, watch} from "vue";
 import {CardItem, requestCurrentState} from "@/views/Dashboard/core/core";
 import {debounce} from "lodash-es";
-import {Cache, RenderVar} from "@/views/Dashboard/core/render";
+import {RenderVar} from "@/views/Dashboard/core/render";
+import {Cache} from "@/views/Dashboard/core/cache";
 import {ElProgress} from "element-plus";
 import {Compare} from "@/views/Dashboard/core/types";
 

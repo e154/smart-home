@@ -2970,6 +2970,34 @@ paths:
           $ref: '#/components/responses/HTTP-409'
       security:
         - ApiKeyAuth: [ ]
+  /v1/script/{id}/compiled:
+    get:
+      tags:
+        - ScriptService
+      summary: get compiled script by id
+      operationId: ScriptService_GetCompiledScriptById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: A successful response.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/HTTP-400'
+        '401':
+          $ref: '#/components/responses/HTTP-401'
+        '409':
+          $ref: '#/components/responses/HTTP-409'
+      security:
+        - ApiKeyAuth: [ ]
   /v1/script/{id}/exec:
     post:
       tags:
@@ -4017,6 +4045,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/apiGetVariableListResult'
+        '401':
+          $ref: '#/components/responses/HTTP-401'
+      security:
+        - ApiKeyAuth: [ ]
+  /v1/variables/search:
+    get:
+      tags:
+        - VariableService
+      summary: search trigger
+      operationId: VariableService_SearchVariable
+      parameters:
+        - $ref: '#/components/parameters/searchQuery'
+        - $ref: '#/components/parameters/searchOffset'
+        - $ref: '#/components/parameters/searchLimit'
+      responses:
+        200:
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiSearchVariableResult'
         '401':
           $ref: '#/components/responses/HTTP-401'
       security:
@@ -6547,6 +6596,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/apiTrigger'
+    apiSearchVariableResult:
+      type: object
+      required: [ items ]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/apiVariable'
     apiSigninResponse:
       type: object
       required: [ accessToken ]

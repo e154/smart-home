@@ -28,6 +28,14 @@ const fetch = async () => {
   }
 }
 
+const download = async () => {
+  // window.location.href = 'data:application/octet-stream;base64,' + currentRow.value.value;
+  const a = document.createElement("a"); //Create <a>
+  a.href = 'data:application/octet-stream;base64,' + currentRow.value.value;
+  a.download = currentRow.value.name; //File name Here
+  a.click();
+}
+
 const save = async () => {
   const data = {
     value: currentRow.value.value,
@@ -65,6 +73,10 @@ fetch()
     <VariableForm v-if="currentRow" v-model="currentRow" :edit="true"/>
 
     <div style="text-align: right">
+
+      <ElButton type="primary" @click="download()">
+        {{ t('main.download') }}
+      </ElButton>
 
       <ElButton type="primary" @click="save()">
         {{ t('main.save') }}

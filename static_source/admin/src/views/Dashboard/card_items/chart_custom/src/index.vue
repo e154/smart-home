@@ -9,7 +9,8 @@ import {Echart} from '@/components/Echart'
 import {debounce} from "lodash-es";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
-import {Cache, RenderVar} from "@/views/Dashboard/core/render";
+import {RenderVar} from "@/views/Dashboard/core/render";
+import {Cache} from "@/views/Dashboard/core/cache";
 import {ApiMetric} from "@/api/stub";
 
 // ---------------------------------

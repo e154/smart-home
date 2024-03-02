@@ -132,3 +132,15 @@ func (v *VariableEndpoint) Delete(ctx context.Context, name string) (err error) 
 
 	return
 }
+
+// Search ...
+func (n *VariableEndpoint) Search(ctx context.Context, query string, limit, offset int64) (result []m.Variable, total int64, err error) {
+
+	if limit == 0 {
+		limit = common.DefaultPageSize
+	}
+
+	result, total, err = n.adaptors.Variable.Search(ctx, query, int(limit), int(offset))
+
+	return
+}

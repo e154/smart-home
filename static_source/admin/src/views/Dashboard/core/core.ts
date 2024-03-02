@@ -3,7 +3,8 @@ import {
   ApiDashboardCard,
   ApiDashboardCardItem,
   ApiDashboardTab,
-  ApiEntity, ApiImage,
+  ApiEntity,
+  ApiImage,
   ApiNewDashboardCardItemRequest,
   ApiNewDashboardCardRequest,
   ApiNewDashboardRequest,
@@ -70,6 +71,7 @@ export interface CardPayload {
 export interface TabPayload {
   backgroundImage?: ApiImage;
   backgroundAdaptive?: boolean;
+  fonts?: string[];
 }
 
 export class CardItem {
@@ -658,8 +660,16 @@ export class Card {
     return this._lastEvent;
   }
 
-  static async createNew(title: string, background: string, backgroundAdaptive: boolean, width: number,
-                         height: number, dashboardTabId: number, weight: number): Promise<Card> {
+  static async createNew(
+    title: string,
+    background: string,
+    backgroundAdaptive: boolean,
+    template: boolean,
+    templateFrame: FrameProp,
+    width: number,
+    height: number,
+    dashboardTabId: number,
+    weight: number): Promise<Card> {
     const request = {
       title: title,
       background: background,
@@ -670,6 +680,8 @@ export class Card {
       weight: weight,
       payload: btoa(JSON.stringify({
         backgroundAdaptive: backgroundAdaptive,
+        template: template,
+        templateFrame: templateFrame,
       }))
     } as ApiNewDashboardCardRequest;
     const {data} = await api.v1.dashboardCardServiceAddDashboardCard(request);
@@ -980,6 +992,7 @@ export class Tab {
   weight: number;
   backgroundImage: ApiImage = undefined;
   backgroundAdaptive: true;
+  fonts: string[];
 
   constructor(tab: ApiDashboardTab) {
     this.background = tab.background;
@@ -1001,9 +1014,11 @@ export class Tab {
       const payload = parsedObject(decodeURIComponent(escape(atob(tab.payload)))) as TabPayload;
       this.backgroundImage = payload.backgroundImage || undefined;
       this.backgroundAdaptive = payload.backgroundAdaptive
+      this.fonts = payload.fonts || []
     } else {
       this.backgroundImage = undefined
       this.backgroundAdaptive = true
+      this.fonts = []
     }
 
     this.sortCards();
@@ -1033,6 +1048,7 @@ export class Tab {
       dashboardId: boardId,
       payload: btoa(JSON.stringify({
         backgroundAdaptive: true,
+        fonts: [],
       }))
     };
     const {data} = await api.v1.dashboardTabServiceAddDashboardTab(request);
@@ -1055,6 +1071,7 @@ export class Tab {
     const payload = btoa(unescape(encodeURIComponent(serializedObject({
       backgroundAdaptive: this.backgroundAdaptive,
       backgroundImage: this.backgroundImage,
+      fonts: this.fonts,
     }))));
     return {
       id: this.id,
@@ -1384,20 +1401,26 @@ export class Core {
     let width: number = tab.columnWidth;
     let height: number = getSize()
 
-    // let background = appStore.isDark ? '#232324' : '#F5F7FA'
     let background = ''
     let backgroundAdaptive = true
+    let template = false
+    let templateFrame: FrameProp
     if (tab.cards && tab.cards.length) {
-      background = tab.cards[tab.cards.length - 1].background
-      backgroundAdaptive = tab.cards[tab.cards.length - 1].backgroundAdaptive
-      width = tab.cards[tab.cards.length - 1].width
-      height = tab.cards[tab.cards.length - 1].height
+      const card = tab.cards[tab.cards.length - 1];
+      background = card.background
+      backgroundAdaptive = card.backgroundAdaptive
+      template = card.template
+      templateFrame = parsedObject(serializedObject(card.templateFrame))
+      width = card.width
+      height = card.height
     }
 
     const card = await Card.createNew(
       generateName(),
       background,
       backgroundAdaptive,
+      template,
+      templateFrame,
       width,
       height,
       tab.id,

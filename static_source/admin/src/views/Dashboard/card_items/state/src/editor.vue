@@ -20,7 +20,7 @@ import {
 } from 'element-plus'
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
 import {useI18n} from "@/hooks/web/useI18n";
-import {Cache} from "@/views/Dashboard/core/render";
+import {Cache} from "@/views/Dashboard/core/cache";
 import {ApiImage} from "@/api/stub";
 import {ItemPayloadState} from "./types";
 import {ImageSearch} from "@/components/ImageSearch";

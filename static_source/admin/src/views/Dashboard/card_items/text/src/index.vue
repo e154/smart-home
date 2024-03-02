@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import {onMounted, onUnmounted, PropType, ref, watch} from "vue";
 import {CardItem, requestCurrentState} from "@/views/Dashboard/core/core";
-import {Cache, GetTokens, RenderText, Resolve} from "@/views/Dashboard/core/render";
+import {GetTokens, RenderText, Resolve} from "@/views/Dashboard/core/render";
+import {Cache} from "@/views/Dashboard/core/cache";
 import api from "@/api/api";
 import {ElMessage} from "element-plus";
 import debounce from 'lodash.debounce'
@@ -43,7 +44,7 @@ const reload = () => {
   reloadKey.value += 1
 }
 
-const update = debounce(() => {
+const update = debounce(async () => {
   // console.log('update value', item.value?.payload?.text);
 
   if (!props.item?.payload.text?.items) {
@@ -91,7 +92,7 @@ const update = debounce(() => {
       value2 = prop.text
     }
 
-    value2 = RenderText(prop.tokens, value2, props.item?.lastEvent)
+    value2 = await RenderText(prop.tokens, value2, props.item?.lastEvent)
 
     currentValue.value = value2 || value
     return
@@ -99,7 +100,7 @@ const update = debounce(() => {
 
   const tokens = GetTokens(value, _cache)
   if (tokens) {
-    value = RenderText(tokens, value, props.item?.lastEvent)
+    value = await RenderText(tokens, value, props.item?.lastEvent)
   }
   currentValue.value = value
 }, 100)

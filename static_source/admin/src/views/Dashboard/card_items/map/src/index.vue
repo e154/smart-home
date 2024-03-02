@@ -2,7 +2,8 @@
 import {computed, inject, onMounted, PropType, ref, unref, watch} from "vue";
 import {CardItem} from "@/views/Dashboard/core/core";
 import type {ObjectEvent} from "ol/Object";
-import {Cache, RenderVar} from "@/views/Dashboard/core/render";
+import {RenderVar} from "@/views/Dashboard/core/render";
+import {Cache} from "@/views/Dashboard/core/cache";
 import markerIcon from "@/assets/imgs/marker.png";
 import {ApiImage} from "@/api/stub";
 import {debounce} from "lodash-es";

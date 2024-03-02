@@ -319,6 +319,9 @@ type ServerInterface interface {
 	// update script
 	// (PUT /v1/script/{id})
 	ScriptServiceUpdateScriptById(ctx echo.Context, id int64, params ScriptServiceUpdateScriptByIdParams) error
+	// get compiled script by id
+	// (GET /v1/script/{id}/compiled)
+	ScriptServiceGetCompiledScriptById(ctx echo.Context, id int64) error
 	// copy script by id
 	// (POST /v1/script/{id}/copy)
 	ScriptServiceCopyScriptById(ctx echo.Context, id int64) error
@@ -433,6 +436,9 @@ type ServerInterface interface {
 	// get variable list
 	// (GET /v1/variables)
 	VariableServiceGetVariableList(ctx echo.Context, params VariableServiceGetVariableListParams) error
+	// search trigger
+	// (GET /v1/variables/search)
+	VariableServiceSearchVariable(ctx echo.Context, params VariableServiceSearchVariableParams) error
 
 	// (GET /v1/ws)
 	StreamServiceSubscribe(ctx echo.Context) error
@@ -3493,6 +3499,24 @@ func (w *ServerInterfaceWrapper) ScriptServiceUpdateScriptById(ctx echo.Context)
 	return err
 }
 
+// ScriptServiceGetCompiledScriptById converts echo context to params.
+func (w *ServerInterfaceWrapper) ScriptServiceGetCompiledScriptById(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "id" -------------
+	var id int64
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "id", runtime.ParamLocationPath, ctx.Param("id"), &id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	}
+
+	ctx.Set(ApiKeyAuthScopes, []string{})
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.ScriptServiceGetCompiledScriptById(ctx, id)
+	return err
+}
+
 // ScriptServiceCopyScriptById converts echo context to params.
 func (w *ServerInterfaceWrapper) ScriptServiceCopyScriptById(ctx echo.Context) error {
 	var err error
@@ -4500,6 +4524,40 @@ func (w *ServerInterfaceWrapper) VariableServiceGetVariableList(ctx echo.Context
 	return err
 }
 
+// VariableServiceSearchVariable converts echo context to params.
+func (w *ServerInterfaceWrapper) VariableServiceSearchVariable(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(ApiKeyAuthScopes, []string{})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params VariableServiceSearchVariableParams
+	// ------------- Optional query parameter "query" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "query", ctx.QueryParams(), &params.Query)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter query: %s", err))
+	}
+
+	// ------------- Optional query parameter "offset" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", ctx.QueryParams(), &params.Offset)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter offset: %s", err))
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", ctx.QueryParams(), &params.Limit)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter limit: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.VariableServiceSearchVariable(ctx, params)
+	return err
+}
+
 // StreamServiceSubscribe converts echo context to params.
 func (w *ServerInterfaceWrapper) StreamServiceSubscribe(ctx echo.Context) error {
 	var err error
@@ -5002,6 +5060,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.DELETE(baseURL+"/v1/script/:id", wrapper.ScriptServiceDeleteScriptById)
 	router.GET(baseURL+"/v1/script/:id", wrapper.ScriptServiceGetScriptById)
 	router.PUT(baseURL+"/v1/script/:id", wrapper.ScriptServiceUpdateScriptById)
+	router.GET(baseURL+"/v1/script/:id/compiled", wrapper.ScriptServiceGetCompiledScriptById)
 	router.POST(baseURL+"/v1/script/:id/copy", wrapper.ScriptServiceCopyScriptById)
 	router.POST(baseURL+"/v1/script/:id/exec", wrapper.ScriptServiceExecScriptById)
 	router.GET(baseURL+"/v1/scripts", wrapper.ScriptServiceGetScriptList)
@@ -5040,6 +5099,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/v1/variable/:name", wrapper.VariableServiceGetVariableByName)
 	router.PUT(baseURL+"/v1/variable/:name", wrapper.VariableServiceUpdateVariable)
 	router.GET(baseURL+"/v1/variables", wrapper.VariableServiceGetVariableList)
+	router.GET(baseURL+"/v1/variables/search", wrapper.VariableServiceSearchVariable)
 	router.GET(baseURL+"/v1/ws", wrapper.StreamServiceSubscribe)
 	router.GET(baseURL+"/v1/zigbee2mqtt/bridge", wrapper.Zigbee2mqttServiceGetBridgeList)
 	router.POST(baseURL+"/v1/zigbee2mqtt/bridge", wrapper.Zigbee2mqttServiceAddZigbee2mqttBridge)
