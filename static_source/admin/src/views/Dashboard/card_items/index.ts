@@ -129,7 +129,7 @@ export const CardItemList: ItemsType[] = [
       {label: t('dashboard.editor.ICON'), value: 'icon'},
       {label: t('dashboard.editor.STATE'), value: 'state'},
       {label: t('dashboard.editor.GRID'), value: 'grid'},
-      {label: t('dashboard.editor.MODAL'), value: 'modal'},
+      // {label: t('dashboard.editor.MODAL'), value: 'modal'},
     ],
   },
   {
@@ -176,7 +176,7 @@ export const CardItemList: ItemsType[] = [
     value: 'experimental',
     label: 'Experimental',
     children: [
-      {label: t('dashboard.editor.THREE'), value: 'three'},
+      // {label: t('dashboard.editor.THREE'), value: 'three'},
       {label: t('dashboard.editor.CHART_CUSTOM'), value: 'chartCustom'},
     ],
   }
