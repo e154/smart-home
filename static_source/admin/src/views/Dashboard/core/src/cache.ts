@@ -9,6 +9,10 @@ export class Cache {
     this.pull[key] = value
   }
 
+  exist(key: string): boolean {
+    return this.pull.hasOwnProperty(key)
+  }
+
   get(key: string): any | null {
     if (!this.pull.hasOwnProperty(key)) {
       return null

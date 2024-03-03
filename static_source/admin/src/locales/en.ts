@@ -611,6 +611,8 @@ export default {
             actionOptions: 'Action Options',
             appearanceOptions: 'Appearance Options',
             JSON_VIEWER: 'Json Viewer',
+            MODAL: 'Modal Window',
+            THREE: 'Three 3D',
             jsonViewerOptions: 'Json Viewer Options',
             template: 'Template',
             CardTemplate: 'Card Template',

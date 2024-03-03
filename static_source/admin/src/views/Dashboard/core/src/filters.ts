@@ -1,6 +1,7 @@
 import {parseTime} from '@/utils';
 import api from "@/api/api";
 import {Cache} from "./cache";
+import {scriptService} from "@/views/Dashboard/core";
 
 export const ApplyFilter = async (value: any, filter: string): any => {
   if (value == undefined || filter == undefined) {
@@ -37,43 +38,10 @@ export const ApplyFilter = async (value: any, filter: string): any => {
     case 'toTitleCase':
       return toTitleCase(value, ...args);
     case 'script':
-      return await evalScript(value, ...args);
+      return await scriptService.evalScript(value, ...args);
     default:
       console.warn(`unknown filter "${filter}"!`);
       return value;
-  }
-}
-
-//todo: add clear cache
-const _cache = new Cache()
-export const evalScript = async (value: string, ...args: string[]): string => {
-  if (!args || args.length == 0) {
-    return `[${value}::${args}]`
-  }
-
-  const scriptId = parseInt(args[0]);
-
-  if (_cache.get(scriptId)) {
-    return window.eval.call(window, `(${_cache.get(scriptId)})`)(value);
-  }
-
-  try {
-    const res = await api.v1.scriptServiceGetCompiledScriptById(scriptId)
-      .catch(() => {
-      })
-      .finally(() => {
-
-      })
-
-    if (!res.data) {
-      return '[SCRIPT]'
-    }
-
-    _cache.push(scriptId, res.data)
-
-    return window.eval.call(window, `(${res.data})`)(value);
-  } catch (e) {
-    return '[SCRIPT]'
   }
 }
 

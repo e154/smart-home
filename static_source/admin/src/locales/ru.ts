@@ -611,6 +611,8 @@ export default {
       actionOptions: 'Опции действий',
       appearanceOptions: 'Варианты внешнего вида',
       JSON_VIEWER: 'Json Viewer',
+      MODAL: 'Модальное окно',
+      THREE: 'Three 3D',
       jsonViewerOptions: 'Json Viewer Options',
       template: 'Шаблон',
       CardTemplate: 'Шаблон карты',

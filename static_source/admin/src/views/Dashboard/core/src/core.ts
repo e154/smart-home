@@ -12,7 +12,7 @@ import {
 } from '@/api/stub';
 import api from '@/api/api';
 import {UUID} from 'uuid-generator-ts';
-import {RenderVar, Resolve, useBus} from '@/views/Dashboard/core';
+import {RenderVar, Resolve, scriptService, useBus} from '@/views/Dashboard/core';
 import stream from '@/api/stream';
 import {debounce} from "lodash-es";
 import {ref} from "vue";
@@ -1146,10 +1146,10 @@ export class Core {
   currentCardId: number | undefined;
   tabs: Tab[] = [];
   mainTab = 'cards';
-  secondTab = '1';
-  editorDisabled = false;
 
   constructor() {
+    //todo: move to global scope
+    scriptService.start()
   }
 
   private _activeTabIdx = 0; // index

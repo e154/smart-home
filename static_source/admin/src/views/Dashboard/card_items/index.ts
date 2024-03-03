@@ -16,6 +16,7 @@ import {Joystick, JoystickEditor, ItemPayloadJoystick} from './joystick';
 import {Icon, IconEditor, ItemPayloadIcon} from './icon';
 import {Grid, GridEditor, ItemPayloadGrid} from './grid';
 import {Three, ThreeEditor, ItemPayloadThree} from './three';
+import {Modal, ModalEditor, ItemPayloadModal} from './modal';
 import {ItemPayloadJsonViewer, JsonViewer, JsonViewerEditor} from './json_viewer';
 import {useI18n} from "@/hooks/web/useI18n";
 
@@ -114,6 +115,7 @@ const {t} = useI18n()
 export interface ItemsType {
   label: string;
   value: string;
+  children?: ItemsType[];
 }
 
 export const CardItemList: ItemsType[] = [
@@ -127,6 +129,7 @@ export const CardItemList: ItemsType[] = [
       {label: t('dashboard.editor.ICON'), value: 'icon'},
       {label: t('dashboard.editor.STATE'), value: 'state'},
       {label: t('dashboard.editor.GRID'), value: 'grid'},
+      {label: t('dashboard.editor.MODAL'), value: 'modal'},
     ],
   },
   {
@@ -198,4 +201,5 @@ export interface ItemPayload {
   grid?: ItemPayloadGrid;
   three?: ItemPayloadThree;
   jsonViewer?: ItemPayloadJsonViewer;
+  modal?: ItemPayloadModal;
 }

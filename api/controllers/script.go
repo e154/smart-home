@@ -72,7 +72,7 @@ func (c ControllerScript) ScriptServiceGetCompiledScriptById(ctx echo.Context, i
 		return c.ERROR(ctx, err)
 	}
 
-	return ctx.String(200, script.Compiled)
+	return ctx.Blob(200, echo.MIMEApplicationJavaScript, []byte(script.Compiled))
 }
 
 // UpdateScriptById ...
