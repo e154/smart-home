@@ -1,4 +1,6 @@
-import Dummy from './src/index.vue';
-import DummyEditor from './src/editor.vue';
+import Modal from './src/index.vue';
+import ModalEditor from './src/editor.vue';
 
-export {Dummy, DummyEditor}
+export * from './src/types'
+
+export {Modal, ModalEditor}

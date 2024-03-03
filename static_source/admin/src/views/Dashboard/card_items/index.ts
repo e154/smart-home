@@ -59,6 +59,8 @@ export const CardItemName = (name: string): any => {
       return Three;
     case 'jsonViewer':
       return JsonViewer;
+    case 'modal':
+      return Modal;
     default:
       // console.error(`unknown card name "${name}"`);
       return Dummy;
@@ -104,6 +106,8 @@ export const CardEditorName = (name: string): any => {
       return ThreeEditor;
     case 'jsonViewer':
       return JsonViewerEditor;
+    case 'modal':
+      return ModalEditor;
     default:
       // console.error(`unknown card name "${name}"`);
       return DummyEditor;
