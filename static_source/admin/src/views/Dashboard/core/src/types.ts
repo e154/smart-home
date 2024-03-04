@@ -71,3 +71,11 @@ export interface ButtonAction {
   iconColor?: string;
   iconSize?: number;
 }
+
+export interface EventContextMenu {
+  event: MouseEvent;
+  owner: 'card' | 'tab' | 'editor' | 'cardItem'
+  tabId?: number;
+  cardId?: number;
+  cardItemId?: number;
+}

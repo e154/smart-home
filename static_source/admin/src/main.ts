@@ -38,6 +38,10 @@ import OpenLayersMap from "vue3-openlayers";
 
 import 'unfonts.css'
 
+import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
+import ContextMenu from '@imengyu/vue3-context-menu'
+
+
 // 创建实例
 const setupAll = async () => {
   const app = createApp(App)
@@ -55,6 +59,8 @@ const setupAll = async () => {
   setupPermission(app)
 
   app.use(OpenLayersMap);
+
+  app.use(ContextMenu);
 
   app.mount('#app')
 }

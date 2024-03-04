@@ -28,6 +28,7 @@
     "@daybrush/utils": "^1.13.0",
     "@element-plus/icons-vue": "^2.1.0",
     "@iconify/iconify": "^3.1.0",
+    "@imengyu/vue3-context-menu": "^1.3.8",
     "@moveable/helper": "^0.1.3",
     "@tinymce/tinymce-vue": "^5.1.0",
     "@tweakpane/plugin-essentials": "^0.2.1",

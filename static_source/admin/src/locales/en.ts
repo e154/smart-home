@@ -42,6 +42,8 @@ export default {
         newContentMessage: 'New content available, click on reload button to update.',
         upload: 'Upload',
         download: 'Download',
+        dialogExportTitle: 'Export',
+        dialogImportTitle: 'Import'
     },
     message: {
         unknownError: 'unknown error',
@@ -533,6 +535,13 @@ export default {
         width: 'Width',
         weight: 'Weight',
         landing: 'Landing',
+        tabs: 'Tabs',
+        cards: 'Cards',
+        cardItem: 'Card Item',
+        removeTab: 'Remove Tab',
+        removeCard: 'Remove Card',
+        removeCardItem: 'Remove Card Item',
+        addCardItem: 'Add Card Item',
         editor: {
             backgroundAdaptive: 'Background Adaptive',
             keystrokeCapture: 'Keystroke Capture',

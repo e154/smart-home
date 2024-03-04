@@ -1449,22 +1449,22 @@ export class Core {
     return tab.cards[this.activeCard].update();
   }
 
-  async removeCard() {
+  async removeCard(cardId?: number) {
     const tab = this.getActiveTab
     if (!tab) {
       return;
     }
 
-    if (!this.currentCardId) {
+    if (!cardId && !this.currentCardId) {
       return;
     }
 
     // console.log('remove card id:', this.currentCardId);
 
-    const {data} = await api.v1.dashboardCardServiceDeleteDashboardCard(this.currentCardId);
+    const {data} = await api.v1.dashboardCardServiceDeleteDashboardCard(cardId || this.currentCardId);
     if (data) {
       for (const index: number in tab.cards) {
-        if (tab.cards[index].id == this.currentCardId) {
+        if (tab.cards[index].id == this.currentCardId || tab.cards[index].id == cardId) {
           tab.cards.splice(index, 1);
         }
       }
@@ -1498,27 +1498,114 @@ export class Core {
     return data;
   }
 
+  serializeCard(cardId: number): ApiDashboardCard | undefined {
+    for (const t in this.tabs) {
+      for (const c in this.tabs[t].cards) {
+        if (cardId == this.tabs[t].cards[c].id) {
+          return this.tabs[t].cards[c].serialize()
+        }
+      }
+    }
+    return
+  }
+
+  copyCard(cardId?: number) {
+    if (!cardId) return
+
+    const source = this.serializeCard(cardId)
+    source.title = generateName()
+    source.weight += 10
+    if (!source) return;
+    this.importCard(source)
+  }
+
   // ---------------------------------
   // Card item
   // ---------------------------------
-  async createCardItem() {
+  async createCardItem(cardId?: number) {
     const tab = this.getActiveTab
     if (!tab) {
       return;
     }
 
-    if (this.activeCard == undefined) {
-      return;
-    }
+    if (cardId) {
+      for (const t in this.tabs) {
+        for (const c in this.tabs[t].cards) {
+          if (this.tabs[t].cards[c].id == cardId) {
+            await this.tabs[t].cards[c].createCardItem();
+          }
+        }
+      }
 
-    const card = await tab.cards[this.activeCard];
-    if (!card) {
-      return;
-    }
+    } else {
+      if (this.activeCard == undefined) {
+        return;
+      }
 
-    await tab.cards[this.activeCard].createCardItem();
+      const card = await tab.cards[this.activeCard];
+      if (!card) {
+        return;
+      }
+
+      await tab.cards[this.activeCard].createCardItem();
+    }
 
     // emit('update_tab', this.currentTabId);
+  }
+
+  importCardItem(cardId: number, request) {
+    if (!cardId) return
+
+    for (const t in this.tabs) {
+      for (const c in this.tabs[t].cards) {
+        if (cardId == this.tabs[t].cards[c].id) {
+          return this.tabs[t].cards[c].importCardItem(request)
+        }
+      }
+    }
+  }
+
+  serializeCardItem(cardItemId: number): ApiDashboardCardItem | undefined {
+    if (!cardItemId) return
+
+    for (const t in this.tabs) {
+      for (const c in this.tabs[t].cards) {
+        for (const i in this.tabs[t].cards[c].items) {
+          if (cardItemId == this.tabs[t].cards[c].items[i].id) {
+            return this.tabs[t].cards[c].items[i].serialize()
+          }
+        }
+      }
+    }
+    return
+  }
+
+  copyCardItem(cardItemId?: number) {
+    if (!cardItemId) return
+
+    for (const t in this.tabs) {
+      for (const c in this.tabs[t].cards) {
+        for (const i in this.tabs[t].cards[c].items) {
+          if (this.tabs[t].cards[c].items[i].id == cardItemId) {
+            this.tabs[t].cards[c].copyItem(parseInt(i))
+          }
+        }
+      }
+    }
+  }
+
+  async removeCardItemById(cardItemId?: number) {
+    if (!cardItemId) return
+    for (const t in this.tabs) {
+      for (const c in this.tabs[t].cards) {
+        for (const i in this.tabs[t].cards[c].items) {
+          if (this.tabs[t].cards[c].items[i].id == cardItemId) {
+            await this.tabs[t].cards[c].removeItem(parseInt(i));
+            return
+          }
+        }
+      }
+    }
   }
 
   async removeCardItem(index: number) {

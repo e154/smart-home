@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, onUpdated, PropType, ref,} from "vue";
-import {Card, CardItem, Core, useBus} from "@/views/Dashboard/core";
+import {Card, CardItem, Core, EventContextMenu, useBus} from "@/views/Dashboard/core";
 import debounce from 'lodash.debounce'
 import Moveable from 'vue3-moveable'
 import {deepFlat} from "@daybrush/utils";
@@ -9,9 +9,12 @@ import {CardItemName} from "@/views/Dashboard/card_items";
 import {UUID} from "uuid-generator-ts";
 import {KeystrokeCaptureViewer} from "@/views/Dashboard/components";
 import {useAppStore} from "@/store/modules/app";
+import ContextMenu from "@imengyu/vue3-context-menu";
+import {useI18n} from "@/hooks/web/useI18n";
 
 const {emit} = useBus()
 const appStore = useAppStore()
+const {t} = useI18n()
 
 const currentID = ref('')
 onMounted(() => {
@@ -269,6 +272,17 @@ const getCardStyle = () => {
   return style
 }
 
+const onContextMenu = (e: MouseEvent, owner: 'card' | 'cardItem', cardItemId?: number) => {
+  e.preventDefault();
+  e.stopPropagation();
+  emit('eventContextMenu', {
+    event: e,
+    owner: owner,
+    tabId: currentCard.value.dashboardTabId,
+    cardId: currentCard.value.id,
+    cardItemId: cardItemId,
+  } as EventContextMenu)
+}
 </script>
 
 <template>
@@ -283,6 +297,7 @@ const getCardStyle = () => {
       @touchstart="hover = true"
       @mouseleave="hover = false"
       @mouseout="hover = false"
+      @contextmenu="onContextMenu($event, 'card')"
   >
     <div class="card-label">active</div>
 
@@ -298,6 +313,7 @@ const getCardStyle = () => {
         :item="item"
         :core="core"
         :editor="true"
+        @contextmenu="onContextMenu($event, 'cardItem', item.id)"
     />
 
     <Moveable

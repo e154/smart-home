@@ -221,7 +221,7 @@ const active = computed(() => appStore.getActiveWindow == props.name)
 .draggable-container-content {
   position: relative;
 //background-color: var(--el-bg-color); padding: 0 10px 10px 10px;
-  padding: 0 10px 10px 10px;
+  padding: 10px;
   flex-grow: 1; /* Занимаем все оставшееся пространство */
   overflow: auto;
 }

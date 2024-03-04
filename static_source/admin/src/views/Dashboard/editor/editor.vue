@@ -6,7 +6,7 @@ import {useRoute} from 'vue-router'
 import api from "@/api/api";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
-import {Card, Core, Tab, useBus} from "@/views/Dashboard/core";
+import {Card, Core, EventContextMenu, Tab, useBus} from "@/views/Dashboard/core";
 import ViewTab from "@/views/Dashboard/editor/ViewTab.vue";
 import {DraggableContainer} from "@/components/DraggableContainer";
 import TabSettings from "@/views/Dashboard/editor/TabSettings.vue";
@@ -16,6 +16,7 @@ import TabCard from "@/views/Dashboard/editor/TabCard.vue";
 import {EventStateChange} from "@/api/types";
 import {useAppStore} from "@/store/modules/app";
 import {GetFullImageUrl} from "@/utils/serverId";
+import {SecondMenu} from "@/views/Dashboard/core/src/secondMenu";
 
 const {emit} = useBus()
 const route = useRoute();
@@ -31,6 +32,9 @@ const dashboardId = computed(() => parseInt(route.params.id as string) as number
 const core = reactive<Core>(new Core());
 const currentID = ref('')
 
+// context menu
+const contextMenu = reactive<SecondMenu>(new SecondMenu(core));
+
 const onStateChanged = (event: EventStateChange) => {
   emit('state_changed', event);
   core.onStateChanged(event);
@@ -43,9 +47,11 @@ onMounted(() => {
   stream.subscribe('state_changed', currentID.value, onStateChanged);
 
   fetchDashboard()
+  contextMenu.start()
 })
 
 onUnmounted(() => {
+  contextMenu.shutdown()
   stream.unsubscribe('state_changed', currentID.value);
 })
 
@@ -94,7 +100,9 @@ const activeTab = computed<Tab>(() => core.getActiveTab as Tab)
 const activeCard = computed<Card>(() => core.getActiveTab.cards[core.activeCard] as Card)
 
 const getTabStyle = () => {
-  const style = {}
+  const style = {
+    margin: 0
+  }
   if (core.getActiveTab?.background) {
     style['background-color'] = core.getActiveTab?.background
   } else {
@@ -133,11 +141,24 @@ const toggleMenu = (menu: string): void => {
   emit('toggleMenu', menu);
 }
 
+const onContextMenu = (e: MouseEvent, owner: 'editor' | 'tab', tabId: number) => {
+  e.preventDefault();
+  e.stopPropagation();
+  emit('eventContextMenu', {
+    event: e,
+    owner: owner,
+    tabId: tabId,
+  } as EventContextMenu)
+}
+
 </script>
 
 <template>
 
-  <div class="dashboard-container" style="margin: 0" v-if="!loading" :style="getTabStyle()">
+  <div class="dashboard-container"
+       v-if="!loading"
+       :style="getTabStyle()"
+       @contextmenu="onContextMenu($event, 'editor')">
 
     <ElTabs
         v-model="activeTabIdx"
@@ -150,7 +171,8 @@ const toggleMenu = (menu: string): void => {
           :key="index"
           :disabled="!tab.enabled"
           :class="[{'gap': tab.gap}]"
-          :lazy="true">
+          :lazy="true"
+          @contextmenu="onContextMenu($event, 'tab', tab.id)">
         <ViewTab :tab="tab" :key="index" :core="core"/>
       </ElTabPane>
     </ElTabs>
@@ -361,6 +383,13 @@ html.dark {
 
   .el-collapse-item__content {
     padding-bottom: 10px !important;
+  }
+}
+
+.container-editor-main {
+  .draggable-container-content {
+    padding-top: 0;
+
   }
 }
 

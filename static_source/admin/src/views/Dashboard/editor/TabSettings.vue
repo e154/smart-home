@@ -214,20 +214,20 @@ const removeBoard = async () => {
       }}
     </ElButton>
 
-    <ElPopconfirm
-        :confirm-button-text="$t('main.ok')"
-        :cancel-button-text="$t('main.no')"
-        width="250"
-        style="margin-left: 10px;"
-        :title="$t('main.are_you_sure_to_do_want_this?')"
-        @confirm="cancel"
-    >
-      <template #reference>
-        <ElButton plain>
-          {{ t('main.cancel') }}
-        </ElButton>
-      </template>
-    </ElPopconfirm>
+<!--    <ElPopconfirm-->
+<!--        :confirm-button-text="$t('main.ok')"-->
+<!--        :cancel-button-text="$t('main.no')"-->
+<!--        width="250"-->
+<!--        style="margin-left: 10px;"-->
+<!--        :title="$t('main.are_you_sure_to_do_want_this?')"-->
+<!--        @confirm="cancel"-->
+<!--    >-->
+<!--      <template #reference>-->
+<!--        <ElButton plain>-->
+<!--          {{ t('main.cancel') }}-->
+<!--        </ElButton>-->
+<!--      </template>-->
+<!--    </ElPopconfirm>-->
 
     <ElPopconfirm
         :confirm-button-text="$t('main.ok')"
@@ -248,7 +248,7 @@ const removeBoard = async () => {
   </div>
 
   <!-- export dialog -->
-  <Dialog v-model="dialogVisible" :title="t('dashboard.dialogExportTitle')" :maxHeight="400" width="80%">
+  <Dialog v-model="dialogVisible" :title="t('main.dialogExportTitle')" :maxHeight="400" width="80%">
     <JsonViewer v-model="dialogSource"/>
     <template #footer>
       <ElButton @click="copy()">{{ t('setting.copy') }}</ElButton>
