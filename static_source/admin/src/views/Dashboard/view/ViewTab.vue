@@ -5,6 +5,9 @@ import {Vuuri} from "@/views/Dashboard/Vuuri"
 import ViewCard from "@/views/Dashboard/view/ViewCard.vue";
 import {Frame} from "@/views/Dashboard/components";
 import {loadFonts} from "@/utils/fonts";
+import {useAppStore} from "@/store/modules/app";
+
+const appStore = useAppStore()
 
 // ---------------------------------
 // common
@@ -48,6 +51,18 @@ watch(
   }
 )
 
+const getBackground = (card: Card) => {
+  let background = 'inherit'
+  if (card?.background) {
+    background = card.background
+  } else {
+    if (card?.backgroundAdaptive) {
+      background = appStore.isDark ? '#232324' : '#F5F7FA'
+    }
+  }
+  return background
+}
+
 </script>
 
 <template>
@@ -59,7 +74,7 @@ watch(
       :drag-enabled="false"
   >
     <template #item="{item}">
-      <Frame :frame="item.templateFrame" v-if="item.template">
+      <Frame :frame="item.templateFrame" :background="getBackground(item)" v-if="item.template">
         <ViewCard :card="item" :key="item" :core="core"/>
       </Frame>
       <ViewCard v-else :card="item" :key="item" :core="core"/>

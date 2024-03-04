@@ -214,7 +214,7 @@ const active = computed(() => appStore.getActiveWindow == props.name)
   flex-direction: column;
   opacity: 1;
   &.transparent {
-    opacity: 0.5;
+    opacity: 0.9;
   }
 }
 

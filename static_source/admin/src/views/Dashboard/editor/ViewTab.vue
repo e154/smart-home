@@ -6,6 +6,9 @@ import debounce from 'lodash.debounce'
 import ViewCard from "@/views/Dashboard/editor/ViewCard.vue";
 import {Frame} from "@/views/Dashboard/components";
 import {loadFonts} from "@/utils/fonts";
+import {useAppStore} from "@/store/modules/app";
+
+const appStore = useAppStore()
 
 // ---------------------------------
 // common
@@ -58,30 +61,42 @@ const getItemHeight = (card: Card) => {
 const cards = computed<Card[]>(() => props.tab?.cards2)
 
 watch(
-    () => props.tab.fonts,
-    (val?: string[]) => {
-      if (!val) return
-      val.forEach(variableName => loadFonts(variableName))
-    },
-    {
-      immediate: true
-    }
+  () => props.tab.fonts,
+  (val?: string[]) => {
+    if (!val) return
+    val.forEach(variableName => loadFonts(variableName))
+  },
+  {
+    immediate: true
+  }
 )
+
+const getBackground = (card: Card) => {
+  let background = 'inherit'
+  if (card?.background) {
+    background = card.background
+  } else {
+    if (card?.backgroundAdaptive) {
+      background = appStore.isDark ? '#232324' : '#F5F7FA'
+    }
+  }
+  return background
+}
 
 </script>
 
 <template>
   <Vuuri
-      v-model="cards"
-      item-key="id"
-      :get-item-width="getItemWidth"
-      :get-item-height="getItemHeight"
-      :drag-enabled="false"
-      ref="grid"
-      :key="reloadKey"
+    v-model="cards"
+    item-key="id"
+    :get-item-width="getItemWidth"
+    :get-item-height="getItemHeight"
+    :drag-enabled="false"
+    ref="grid"
+    :key="reloadKey"
   >
     <template #item="{item}">
-      <Frame :frame="item.templateFrame" v-if="item.template">
+      <Frame :frame="item.templateFrame" :background="getBackground(item)" v-if="item.template">
         <ViewCard :card="item" :key="item" :core="core"/>
       </Frame>
       <ViewCard v-else :card="item" :key="item" :core="core"/>

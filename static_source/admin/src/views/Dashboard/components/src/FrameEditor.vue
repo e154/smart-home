@@ -151,7 +151,7 @@ const currentImage = computed(() => GetFullImageUrl(currentCard.value.templateFr
       <ElRow class="mt-20px ml-10px">
         <ElCol>
           <ImageCropping
-            v-if="currentItemName"
+            v-if="currentItemName && showEditorWindow"
             ref="cropperExpose"
             :crop-box-width="300"
             :crop-box-height="300"

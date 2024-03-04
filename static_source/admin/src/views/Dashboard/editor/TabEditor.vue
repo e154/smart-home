@@ -148,6 +148,7 @@ onMounted(() => {
   useBus({
     name: 'showTabImportDialog',
     callback: () => {
+      console.log('-----')
       importDialogVisible.value = true
     }
   })

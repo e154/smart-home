@@ -13,6 +13,11 @@ const props = defineProps({
     type: Object as PropType<Nullable<FrameProp>>,
     default: () => null
   },
+  background: {
+    type: String,
+    default: '',
+    required: true
+  }
 })
 
 // ---------------------------------
@@ -178,6 +183,9 @@ const bottomRightStyle = computed(() => {
 <template>
   <div class="window" v-if="frame?.image">
     <div class="base" :style="contentStyle"></div>
+    <div class="content">
+      <slot></slot>
+    </div>
     <div class="top-left-corner" :style="topLeftCornerStyle"></div>
     <div class="top" :style="topStyle"></div>
     <div class="top-right-corner" :style="topRightCornerStyle"></div>
@@ -186,9 +194,6 @@ const bottomRightStyle = computed(() => {
     <div class="bottom-left-corner" :style="bottomLeftCornerStyle"></div>
     <div class="bottom" :style="bottomStyle"></div>
     <div class="bottom-right-corner" :style="bottomRightStyle"></div>
-    <div class="content">
-      <slot></slot>
-    </div>
   </div>
   <div class="window" v-else>
     <slot></slot>
@@ -200,6 +205,7 @@ const bottomRightStyle = computed(() => {
   width: 100%;
   height: 100%;
   position: relative;
+  background-color: v-bind(background);
 }
 
 .top-left-corner,

@@ -250,6 +250,11 @@ export class CardItem {
     return this._target;
   }
 
+  // target
+  setTarget(e: ElRef) {
+    this._target = e;
+  }
+
   private _entityId: string;
 
   // entityId
@@ -455,10 +460,7 @@ export class CardItem {
     return new CardItem(data);
   }
 
-  // target
-  setTarget(e: ElRef) {
-    this._target = e;
-  }
+
 
   update() {
     // console.log('update item', this.title)
@@ -1426,6 +1428,13 @@ export class Core {
       10 * tab.cards.length || 0
     );
 
+    for (const t in this.tabs) {
+      for (const c in this.tabs[t].cards) {
+        this.tabs[t].cards[c].active = false
+      }
+    }
+
+    card.active = true
     tab.cards.push(card);
     this.activeCard = tab.cards.length - 1;
     this.currentCardId = card.id;
@@ -1455,17 +1464,23 @@ export class Core {
       return;
     }
 
-    if (!cardId && !this.currentCardId) {
+    let _cardId = this.currentCardId
+    if (cardId != undefined) {
+      _cardId = cardId
+    }
+
+    if (!_cardId) {
       return;
     }
 
     // console.log('remove card id:', this.currentCardId);
 
-    const {data} = await api.v1.dashboardCardServiceDeleteDashboardCard(cardId || this.currentCardId);
+    const {data} = await api.v1.dashboardCardServiceDeleteDashboardCard(_cardId);
     if (data) {
-      for (const index: number in tab.cards) {
-        if (tab.cards[index].id == this.currentCardId || tab.cards[index].id == cardId) {
-          tab.cards.splice(index, 1);
+      for (const index in tab.cards) {
+        if (tab.cards[index].id == _cardId) {
+          tab.cards.splice(parseInt(index), 1);
+          break
         }
       }
 
@@ -1528,27 +1543,38 @@ export class Core {
       return;
     }
 
+    let card: Card
     if (cardId) {
       for (const t in this.tabs) {
         for (const c in this.tabs[t].cards) {
           if (this.tabs[t].cards[c].id == cardId) {
-            await this.tabs[t].cards[c].createCardItem(type);
+            this.activeCard = parseInt(c);
+            card = this.tabs[t].cards[c]
+            break
           }
         }
       }
-
     } else {
       if (this.activeCard == undefined) {
         return;
       }
 
-      const card = await tab.cards[this.activeCard];
-      if (!card) {
-        return;
-      }
-
-      await tab.cards[this.activeCard].createCardItem(type);
+      card = tab.cards[this.activeCard];
     }
+
+    if (card == undefined) {
+      return;
+    }
+
+    for (const t in this.tabs) {
+      for (const c in this.tabs[t].cards) {
+        this.tabs[t].cards[c].active = false
+      }
+    }
+
+    card.active = true
+    this.currentCardId = card.id;
+    await card.createCardItem(type);
 
     // emit('update_tab', this.currentTabId);
   }

@@ -85,6 +85,7 @@ useBus({
       return
     }
     const target = currentCard.value.items[itemIndex].target;
+    console.log('target', target)
     // target.classList.add("selected");
     setSelectedTargets([target]);
   }
@@ -247,7 +248,7 @@ const onDragStart = (e) => {
   const target = e.inputEvent.target;
   const flatted = targets.value.flat(3);
   if (moveable.isMoveableElement(target)
-      || flatted.some(t => t === target || t.contains(target))
+      || flatted.some(t => t === target || t && t.contains(target))
   ) {
     e.stop();
   }
