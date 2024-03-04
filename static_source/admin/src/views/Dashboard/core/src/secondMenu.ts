@@ -5,6 +5,7 @@ import {MenuItem} from "@imengyu/vue3-context-menu/lib/ContextMenuDefine";
 import ContextMenu from "@imengyu/vue3-context-menu";
 import {useAppStore} from "@/store/modules/app";
 import {useI18n} from "@/hooks/web/useI18n";
+import {CardItemList, ItemsType} from "@/views/Dashboard/card_items";
 
 const {t} = useI18n()
 const appStore = useAppStore()
@@ -27,9 +28,44 @@ export class SecondMenu {
   shutdown = () => {
   }
 
+  private genItemMenu = (cardId: number) => {
+
+    const getChildren = (list: ItemsType[]): MenuItem[] => {
+      const menuItem: MenuItem[] = []
+      for (const item of list) {
+        const _item: MenuItem = {
+          label: item.label,
+        }
+        if (item.children && item.children.length) {
+          _item.children = getChildren(item.children)
+        } else {
+          _item.onClick = () => {
+            this.core.createCardItem(cardId, item.value)
+          }
+        }
+        menuItem.push(_item)
+      }
+      return menuItem
+    }
+
+    return getChildren(CardItemList)
+  }
+
   private buildMenu = (event: EventContextMenu): MenuItem[] => {
 
     const items: MenuItem[] = []
+
+    if (event?.cardId) {
+      items.push(...[
+        {
+          label: t('dashboard.addCardItem'),
+          children: this.genItemMenu(event?.cardId)
+        } as MenuItem,
+        {
+          divided: 'self',
+        } as MenuItem
+      ])
+    }
 
     // check current tab
     const tabs: MenuItem[] = [
@@ -104,18 +140,12 @@ export class SecondMenu {
     // check current card item
     const cardItems: MenuItem[] = []
     if (event?.cardId) {
-      cardItems.push(...[{
-        label: t('dashboard.addCardItem'),
+      cardItems.push({
+        label: t('main.import'),
         onClick: () => {
-          this.core.createCardItem(event.cardId)
+          emit('showCardItemImportDialog', event?.cardId)
         }
-      },
-        {
-          label: t('main.import'),
-          onClick: () => {
-            emit('showCardItemImportDialog', event?.cardId)
-          }
-        },])
+      })
     }
     if (event?.cardItemId) {
       cardItems.push(...[

@@ -782,10 +782,10 @@ export class Card {
   }
 
   // ---------------------------------
-  async createCardItem(): Promise<CardItem> {
+  async createCardItem(type: string): Promise<CardItem> {
     const item = await CardItem.createNew(
       'item' + this.items.length,
-      'text',
+      type,
       this.id,
       -1
     );
@@ -1522,7 +1522,7 @@ export class Core {
   // ---------------------------------
   // Card item
   // ---------------------------------
-  async createCardItem(cardId?: number) {
+  async createCardItem(cardId?: number, type: string) {
     const tab = this.getActiveTab
     if (!tab) {
       return;
@@ -1532,7 +1532,7 @@ export class Core {
       for (const t in this.tabs) {
         for (const c in this.tabs[t].cards) {
           if (this.tabs[t].cards[c].id == cardId) {
-            await this.tabs[t].cards[c].createCardItem();
+            await this.tabs[t].cards[c].createCardItem(type);
           }
         }
       }
@@ -1547,7 +1547,7 @@ export class Core {
         return;
       }
 
-      await tab.cards[this.activeCard].createCardItem();
+      await tab.cards[this.activeCard].createCardItem(type);
     }
 
     // emit('update_tab', this.currentTabId);

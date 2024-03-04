@@ -94,7 +94,7 @@ watch(
 // ---------------------------------
 
 const addCardItem = () => {
-  currentCore.value.createCardItem();
+  currentCore.value.createCardItem(undefined, 'text');
 }
 
 const removeCardItem = (index: number) => {
@@ -245,18 +245,18 @@ const importCardItem = async () => {
 
 <template>
 
-  <ElRow :gutter="24" class="mb-10px mt-10px" v-if="activeCard.selectedItem !== -1">
-    <ElCol :span="12" :xs="12">
-      <ElButton class="w-[100%]" @click="addCardItem()">
-        {{ t('dashboard.editor.addNewCardItem') }}
-      </ElButton>
-    </ElCol>
-    <ElCol :span="12" :xs="12">
-      <ElButton class="w-[100%]" @click="importDialogVisible = true">
-        {{ t('main.import') }}
-      </ElButton>
-    </ElCol>
-  </ElRow>
+<!--  <ElRow :gutter="24" class="mb-10px mt-10px" v-if="activeCard.selectedItem !== -1">-->
+<!--    <ElCol :span="12" :xs="12">-->
+<!--      <ElButton class="w-[100%]" @click="addCardItem()">-->
+<!--        {{ t('dashboard.editor.addNewCardItem') }}-->
+<!--      </ElButton>-->
+<!--    </ElCol>-->
+<!--    <ElCol :span="12" :xs="12">-->
+<!--      <ElButton class="w-[100%]" @click="importDialogVisible = true">-->
+<!--        {{ t('main.import') }}-->
+<!--      </ElButton>-->
+<!--    </ElCol>-->
+<!--  </ElRow>-->
 
   <ElRow class="mb-10px" v-if="activeCard.selectedItem !== -1">
     <ElCol>
