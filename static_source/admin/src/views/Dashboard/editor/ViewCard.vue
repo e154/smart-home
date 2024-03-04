@@ -85,7 +85,6 @@ useBus({
       return
     }
     const target = currentCard.value.items[itemIndex].target;
-    console.log('target', target)
     // target.classList.add("selected");
     setSelectedTargets([target]);
   }
