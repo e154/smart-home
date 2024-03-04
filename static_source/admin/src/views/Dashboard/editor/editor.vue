@@ -17,6 +17,9 @@ import {EventStateChange} from "@/api/types";
 import {useAppStore} from "@/store/modules/app";
 import {GetFullImageUrl} from "@/utils/serverId";
 import {SecondMenu} from "@/views/Dashboard/core/src/secondMenu";
+import {JsonEditor} from "@/components/JsonEditor";
+import {Dialog} from "@/components/Dialog";
+import {ApiDashboardTab} from "@/api/stub";
 
 const {emit} = useBus()
 const route = useRoute();
@@ -151,6 +154,56 @@ const onContextMenu = (e: MouseEvent, owner: 'editor' | 'tab', tabId: number) =>
   } as EventContextMenu)
 }
 
+// ---------------------------------
+// import/export
+// ---------------------------------
+
+const importedTab = ref(null)
+const importDialogVisible = ref(false)
+
+useBus({
+  name: 'showTabImportDialog',
+  callback: () => {
+    importDialogVisible.value = true
+  }
+})
+
+const importHandler = (val: any) => {
+  if (importedTab.value == val) {
+    return
+  }
+  importedTab.value = val
+}
+
+const importTab = async () => {
+  let card: ApiDashboardTab
+  try {
+    if (importedTab.value?.json) {
+      card = importedTab.value.json as ApiDashboardTab;
+    } else if (importedTab.value.text) {
+      card = JSON.parse(importedTab.value.text) as ApiDashboardTab;
+    }
+  } catch {
+    ElMessage({
+      title: t('Error'),
+      message: t('message.corruptedJsonFormat'),
+      type: 'error',
+      duration: 2000
+    });
+    return
+  }
+  const res = await core.importTab(card);
+  if (res) {
+    ElMessage({
+      title: t('Success'),
+      message: t('message.importedSuccessful'),
+      type: 'success',
+      duration: 2000
+    })
+  }
+  importDialogVisible.value = false
+}
+
 </script>
 
 <template>
@@ -255,6 +308,17 @@ const onContextMenu = (e: MouseEvent, owner: 'editor' | 'tab', tabId: number) =>
         </ElTabs>
       </template>
     </DraggableContainer>
+
+    <!-- import dialog -->
+    <Dialog v-model="importDialogVisible" :title="t('main.dialogImportTitle')" :maxHeight="400" width="80%"
+            custom-class>
+      <JsonEditor @change="importHandler"/>
+      <template #footer>
+        <ElButton type="primary" @click="importTab()" plain>{{ t('main.import') }}</ElButton>
+        <ElButton @click="importDialogVisible = false">{{ t('main.closeDialog') }}</ElButton>
+      </template>
+    </Dialog>
+    <!-- /import dialog -->
 
   </div>
 
