@@ -9,7 +9,7 @@ import {FormSchema} from '@/types/form'
 import {ApiArea, ApiDashboard} from "@/api/stub";
 import {copyToClipboard} from "@/utils/clipboard";
 import {JsonViewer} from "@/components/JsonViewer";
-import {Core, useBus} from "@/views/Dashboard/core";
+import {Core, eventBus} from "@/views/Dashboard/core";
 import {useRouter} from "vue-router";
 import {Dialog} from '@/components/Dialog'
 
@@ -20,7 +20,6 @@ const dialogSource = ref({})
 const dialogVisible = ref(false)
 const {setValues, setSchema} = methods
 const {currentRoute, addRoute, push} = useRouter()
-const {emit} = useBus()
 
 interface DashboardForm {
   name?: string;
@@ -153,7 +152,7 @@ const updateBoard = async () => {
 }
 
 const fetchDashboard = () => {
-  emit('fetchDashboard')
+  eventBus.emit('fetchDashboard')
 }
 
 const cancel = () => {

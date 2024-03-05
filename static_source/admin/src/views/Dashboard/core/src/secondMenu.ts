@@ -1,5 +1,5 @@
 import {Core} from "./core";
-import {useBus} from "./bus"
+import {eventBus} from "./bus"
 import {EventContextMenu} from "@/views/Dashboard/core";
 import {MenuItem} from "@imengyu/vue3-context-menu/lib/ContextMenuDefine";
 import ContextMenu from "@imengyu/vue3-context-menu";
@@ -9,23 +9,23 @@ import {CardItemList, ItemsType} from "@/views/Dashboard/card_items";
 
 const {t} = useI18n()
 const appStore = useAppStore()
-const {emit} = useBus()
 
 export class SecondMenu {
   private core: Core;
 
   constructor(core: Core) {
     this.core = core;
+  }
 
-    useBus({
-      name: 'eventContextMenu',
-      callback: (event) => this.contextMenu(event),
-    })
+  private eventHandler = (event: string, args: any[]) => {
+    this.contextMenu(args)
   }
 
   start = () => {
+    eventBus.subscribe('eventContextMenu', this.eventHandler)
   }
   shutdown = () => {
+    eventBus.unsubscribe('eventContextMenu', this.eventHandler)
   }
 
   private genItemMenu = (cardId: number) => {
@@ -91,7 +91,7 @@ export class SecondMenu {
       {
         label: t('main.import'),
         onClick: () => {
-          emit('showTabImportDialog', true)
+          eventBus.emit('showTabImportDialog', true)
         }
       },
     ]
@@ -99,7 +99,7 @@ export class SecondMenu {
       tabs.push({
         label: t('main.export'),
         onClick: () => {
-          emit('showTabExportDialog', true)
+          eventBus.emit('showTabExportDialog', true)
         }
       })
     }
@@ -117,7 +117,7 @@ export class SecondMenu {
         {
           label: t('main.import'),
           onClick: () => {
-            emit('showCardImportDialog', true)
+            eventBus.emit('showCardImportDialog', true)
           }
         },
       ])
@@ -126,7 +126,7 @@ export class SecondMenu {
       cards.push(...[{
         label: t('main.export'),
         onClick: () => {
-          emit('showCardExportDialog', event.cardId)
+          eventBus.emit('showCardExportDialog', event.cardId)
         }
       },
         {
@@ -150,7 +150,7 @@ export class SecondMenu {
       cardItems.push({
         label: t('main.import'),
         onClick: () => {
-          emit('showCardItemImportDialog', event?.cardId)
+          eventBus.emit('showCardItemImportDialog', event?.cardId)
         }
       })
     }
@@ -159,7 +159,7 @@ export class SecondMenu {
         {
           label: t('main.export'),
           onClick: () => {
-            emit('showCardItemExportDialog', event.cardItemId)
+            eventBus.emit('showCardItemExportDialog', event.cardItemId)
           }
         },
         {

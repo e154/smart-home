@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, onMounted, PropType, reactive, ref, unref, watch} from 'vue'
+import {computed, onMounted, onUnmounted, PropType, reactive, ref, unref, watch} from 'vue'
 import {Form} from '@/components/Form'
 import {
   ElButton,
@@ -19,11 +19,10 @@ import {useValidator} from '@/hooks/web/useValidator'
 import {FormSchema} from '@/types/form'
 import {ApiDashboardCard, ApiDashboardCardItem, ApiEntity} from "@/api/stub";
 import {JsonViewer} from "@/components/JsonViewer";
-import {Card, Core, Tab, useBus} from "@/views/Dashboard/core";
+import {Card, Core, eventBus, Tab} from "@/views/Dashboard/core";
 import {Dialog} from '@/components/Dialog'
 import {JsonEditor} from "@/components/JsonEditor";
 import {FrameEditor, KeystrokeCapture} from "@/views/Dashboard/components";
-import CardListWindow from "@/views/Dashboard/editor/CardListWindow.vue";
 import CardItemListWindow from "@/views/Dashboard/editor/CardItemListWindow.vue";
 
 const {register, elFormRef, methods} = useForm()
@@ -31,7 +30,6 @@ const {required} = useValidator()
 const {t} = useI18n()
 
 const {setValues} = methods
-const {emit} = useBus()
 
 export interface DashboardCard {
   id: number;
@@ -256,7 +254,7 @@ const importCard = async () => {
 
 const onSelectedCard = (id: number) => {
   currentCore.value.onSelectedCard(id);
-  emit('unselected_card_item')
+  eventBus.emit('unselectedCardItem')
 }
 
 const addCard = () => {
@@ -299,10 +297,6 @@ const removeCard = async () => {
   await currentCore.value.removeCard();
 }
 
-useBus({
-  name: 'selected_card',
-  callback: (id: number) => onSelectedCard(id)
-})
 
 const cancel = () => {
   if (!activeCard.value) return;
@@ -319,22 +313,28 @@ const cancel = () => {
   })
 }
 
-onMounted(() => {
-  useBus({
-    name: 'showCardImportDialog',
-    callback: () => {
+const eventHandler = (event: string, args: any[]) => {
+  switch (event) {
+    case 'selectedCard':
+      onSelectedCard(args)
+      break;
+    case 'showCardImportDialog':
       importDialogVisible.value = true
-    }
-  })
+      break;
+    case 'showCardExportDialog':
+      showExportDialog(args)
+      break;
+  }
+}
 
-  useBus({
-    name: 'showCardExportDialog',
-    callback: (cardId?: number) => {
-      showExportDialog(cardId)
-    }
-  })
-
+onMounted(() => {
+  eventBus.subscribe(['selectedCard', 'showCardImportDialog', 'showCardExportDialog'], eventHandler)
 })
+
+onUnmounted(() => {
+  eventBus.unsubscribe(['selectedCard', 'showCardImportDialog', 'showCardExportDialog'], eventHandler)
+})
+
 </script>
 
 <template>

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import {computed, onMounted, PropType, ref} from 'vue'
+import {computed, onMounted, onUnmounted, PropType, ref} from 'vue'
 import {ElIcon, ElMenu, ElMenuItem} from 'element-plus'
 import {useI18n} from '@/hooks/web/useI18n'
-import {Core, Tab, useBus} from "@/views/Dashboard/core";
+import {Core, Tab, eventBus} from "@/views/Dashboard/core";
 import {DraggableContainer} from "@/components/DraggableContainer";
 import {CloseBold} from "@element-plus/icons-vue";
 
@@ -25,14 +25,17 @@ const menuTabClick = (index: number, tab: Tab) => {
   currentCore.value.selectTabInMenu(index)
 }
 
+const eventHandler = (event: string, args: any[]) => {
+  showMenuWindow.value = !showMenuWindow.value
+}
+
 const showMenuWindow = ref(false)
 onMounted(() => {
-  useBus({
-    name: 'toggleTabsMenu',
-    callback: () => {
-      showMenuWindow.value = !showMenuWindow.value
-    }
-  })
+  eventBus.subscribe('toggleTabsMenu', eventHandler)
+})
+
+onUnmounted(() => {
+  eventBus.unsubscribe('toggleTabsMenu', eventHandler)
 })
 
 </script>

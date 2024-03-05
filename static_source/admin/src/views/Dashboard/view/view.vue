@@ -4,14 +4,13 @@ import {ElTabPane, ElTabs} from 'element-plus'
 import api from "@/api/api";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
-import {Core, useBus} from "@/views/Dashboard/core";
+import {Core, eventBus} from "@/views/Dashboard/core";
 import ViewTab from "@/views/Dashboard/view/ViewTab.vue";
 import {propTypes} from "@/utils/propTypes";
 import {EventStateChange} from "@/api/types";
 import {useAppStore} from "@/store/modules/app";
 import {GetFullImageUrl} from "@/utils/serverId";
 
-const {emit} = useBus()
 const appStore = useAppStore()
 
 // ---------------------------------
@@ -27,7 +26,7 @@ const props = defineProps({
 })
 
 const onStateChanged = (event: EventStateChange) => {
-  emit('state_changed', event);
+  eventBus.emit('stateChanged', event);
   core.onStateChanged(event);
 }
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, onUpdated, PropType, ref,} from "vue";
-import {Card, CardItem, Core, EventContextMenu, useBus} from "@/views/Dashboard/core";
+import {Card, CardItem, Core, EventContextMenu, eventBus} from "@/views/Dashboard/core";
 import debounce from 'lodash.debounce'
 import Moveable from 'vue3-moveable'
 import {deepFlat} from "@daybrush/utils";
@@ -10,11 +10,34 @@ import {UUID} from "uuid-generator-ts";
 import {KeystrokeCaptureViewer} from "@/views/Dashboard/components";
 import {useAppStore} from "@/store/modules/app";
 
-const {emit} = useBus()
 const appStore = useAppStore()
 
 const currentID = ref('')
 const cardRef = ref(null)
+
+const eventHandler = (event: string, args: any[]) => {
+  switch (event) {
+    case 'selectedCardItem':
+      if (!currentCard.value.active) {
+        return
+      }
+      const itemIndex = args
+      if (itemIndex === -1 || !currentCard.value.items.length || !currentCard.value.itemList[itemIndex]) {
+        setSelectedTargets([])
+        return
+      }
+      const target = currentCard.value.itemList[itemIndex];
+      // target.classList.add("selected");
+      setSelectedTargets([target]);
+      break;
+    case 'unselectedCardItem':
+      if (currentCard.value.active) {
+        return
+      }
+      setSelectedTargets([]);
+      break;
+  }
+}
 
 onMounted(() => {
   const uuid = new UUID()
@@ -22,10 +45,12 @@ onMounted(() => {
 
   currentCard.value.document = cardRef.value
   currentCard.value.updateItemList()
+
+  eventBus.subscribe(['selectedCardItem', 'unselectedCardItem'], eventHandler)
 })
 
 onUnmounted(() => {
-
+  eventBus.unsubscribe(['selectedCardItem', 'unselectedCardItem'], eventHandler)
 })
 
 onUpdated(() => {
@@ -73,36 +98,10 @@ const getCardItemName = (item: CardItem): string => {
   return CardItemName(item.type);
 }
 
-useBus({
-  name: 'selected_card_item',
-  callback: (itemIndex: number) => {
-    if (!currentCard.value.active) {
-      return
-    }
-    if (itemIndex === -1 || !currentCard.value.items.length || !currentCard.value.itemList[itemIndex]) {
-      setSelectedTargets([])
-      return
-    }
-    const target = currentCard.value.itemList[itemIndex];
-    // target.classList.add("selected");
-    setSelectedTargets([target]);
-  }
-})
-
-useBus({
-  name: 'unselected_card_item',
-  callback: () => {
-    if (currentCard.value.active) {
-      return
-    }
-    setSelectedTargets([]);
-  }
-})
-
 const selectCardItem = (itemIndex: number) => {
   if (!currentCard.value.active) {
     props.core?.onSelectedCard(currentCard.value.id)
-    emit('selected_card', currentCard.value.id)
+    eventBus.emit('selectedCard', currentCard.value.id)
   }
 
   currentCard.value.selectedItem = itemIndex;
@@ -111,7 +110,7 @@ const selectCardItem = (itemIndex: number) => {
   // } else {
   //   targets.value = [currentCard.value.items[itemIndex].target];
   // }
-  // emit('unselected_card_item')
+  // eventBus.emit('unselectedCardItem')
 }
 
 const onDrag = ({target, transform, beforeTranslate, left, top}: any) => {
@@ -274,7 +273,7 @@ const getCardStyle = () => {
 const onContextMenu = (e: MouseEvent, owner: 'card' | 'cardItem', cardItemId?: number) => {
   e.preventDefault();
   e.stopPropagation();
-  emit('eventContextMenu', {
+  eventBus.emit('eventContextMenu', {
     event: e,
     owner: owner,
     tabId: currentCard.value.dashboardTabId,

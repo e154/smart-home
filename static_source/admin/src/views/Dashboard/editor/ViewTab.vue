@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import {computed, PropType, ref, watch} from "vue";
-import {Card, Core, Tab, useBus} from "@/views/Dashboard/core";
+import {computed, onMounted, onUnmounted, PropType, ref, watch} from "vue";
+import {Card, Core, eventBus, Tab} from "@/views/Dashboard/core";
 import {Vuuri} from "@/views/Dashboard/Vuuri"
 import debounce from 'lodash.debounce'
 import ViewCard from "@/views/Dashboard/editor/ViewCard.vue";
@@ -31,14 +31,19 @@ const reload = debounce(() => {
   reloadKey.value += 1
 }, 100)
 
-useBus({
-  name: 'update_tab',
-  callback: (tabId: number) => {
-    if (props.tab?.id === tabId) {
-      // console.log('update tab', tabId)
-      reload()
-    }
+const eventHandler = (event: string, args: any[]) => {
+  if (props.tab?.id === args) {
+    // console.log('update tab', tabId)
+    reload()
   }
+}
+
+onMounted(() => {
+  eventBus.subscribe(['updateTab'], eventHandler)
+})
+
+onUnmounted(() => {
+  eventBus.unsubscribe(['updateTab'], eventHandler)
 })
 
 // ---------------------------------

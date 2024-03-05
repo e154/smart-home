@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, PropType, ref, watch} from "vue";
-import {Cache, CardItem, RenderVar, requestCurrentState, useBus} from "@/views/Dashboard/core";
+import {Cache, CardItem, RenderVar, requestCurrentState, eventBus} from "@/views/Dashboard/core";
 import {ApiMetric} from "@/api/stub";
 import {ChartDataInterface, ChartDataSet} from "./types";
 import {parseTime} from "@/utils";
@@ -10,8 +10,6 @@ import {Echart} from '@/components/Echart'
 import {debounce} from "lodash-es";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
-
-const {emit} = useBus()
 
 // ---------------------------------
 // common
@@ -515,7 +513,7 @@ const prepareData = debounce(async () => {
     case 'doughnut':
       loaded.value = true;
       fistTime.value = false
-      emit('updateChart', props.item.payload.chart.type)
+      eventBus.emit('updateChart', props.item.payload.chart.type)
       return
   }
 
@@ -538,7 +536,7 @@ const prepareData = debounce(async () => {
       console.warn(`unknown chart type ${props.item.entity.metrics[props.item.payload.chart?.metric_index || 0].type}`);
   }
 
-  emit('updateChart', props.item.payload.chart.type)
+  eventBus.emit('updateChart', props.item.payload.chart.type)
 
   loaded.value = true;
   fistTime.value = false

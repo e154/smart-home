@@ -2,10 +2,8 @@
 import {computed, onMounted, onUnmounted, PropType, ref} from 'vue'
 import {ElButton, ElButtonGroup, ElIcon, ElMenu, ElMenuItem,} from 'element-plus'
 import {CloseBold} from '@element-plus/icons-vue'
-import {Card, Core, Tab, useBus} from "@/views/Dashboard/core";
+import {Card, Core, Tab, eventBus} from "@/views/Dashboard/core";
 import {DraggableContainer} from "@/components/DraggableContainer";
-
-const {emit} = useBus()
 
 const props = defineProps({
   core: {
@@ -29,7 +27,7 @@ const activeTab = computed({
 
 const onSelectedCard = (id: number) => {
   currentCore.value.onSelectedCard(id);
-  emit('unselected_card_item')
+  eventBus.emit('unselectedCardItem')
 }
 
 const menuCardsClick = (card) => {
@@ -47,13 +45,15 @@ const sortCardDown = (card: Card, index: number) => {
 }
 
 const showMenuWindow = ref(false)
+const eventHandler = () => {
+  showMenuWindow.value = !showMenuWindow.value
+}
 onMounted(() => {
-  useBus({
-    name: 'toggleCardsMenu',
-    callback: () => {
-      showMenuWindow.value = !showMenuWindow.value
-    }
-  })
+  eventBus.subscribe('toggleCardsMenu', eventHandler)
+})
+
+onUnmounted(() => {
+  eventBus.unsubscribe('toggleCardsMenu', eventHandler)
 })
 
 </script>

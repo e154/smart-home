@@ -12,7 +12,7 @@ import {
 } from '@/api/stub';
 import api from '@/api/api';
 import {UUID} from 'uuid-generator-ts';
-import {RenderVar, Resolve, scriptService, useBus} from '@/views/Dashboard/core';
+import {RenderVar, Resolve, scriptService, eventBus} from '@/views/Dashboard/core';
 import stream from '@/api/stream';
 import {debounce} from "lodash-es";
 import {ref} from "vue";
@@ -23,8 +23,6 @@ import {FrameProp, KeysProp} from "@/views/Dashboard/components";
 import {EventStateChange} from "@/api/types";
 import {copyToClipboard, pasteFromClipboard} from "@/utils/clipboard";
 import {generateName} from "@/utils/name";
-
-const {emit} = useBus()
 
 export interface Position {
   width: string;
@@ -809,7 +807,7 @@ export class Card {
 
     this.updateItemList()
 
-    emit('selected_card_item', -1);
+    eventBus.emit('selectedCardItem', -1);
   }
 
   async copyItem(index: number) {
@@ -1325,7 +1323,7 @@ export class Core {
       return;
     }
 
-    emit('update_tab', tab.id)
+    eventBus.emit('updateTab', tab.id)
     if (this.getActiveTab) {
       return this.getActiveTab.update();
     }
@@ -1355,7 +1353,7 @@ export class Core {
     }
 
     // console.log(`select tab id:${tab.id}`);
-    emit('update_tab', tab.id)
+    eventBus.emit('updateTab', tab.id)
   }
 
   // ---------------------------------
@@ -1427,7 +1425,7 @@ export class Core {
     this.activeCard = tab.cards.length - 1;
     this.currentCardId = card.id;
 
-    emit('update_tab', tab.id);
+    eventBus.emit('updateTab', tab.id);
   }
 
   async updateCard() {
@@ -1441,7 +1439,7 @@ export class Core {
     }
 
     // move to direct call
-    // emit('update_tab', this.currentTabId);
+    // eventBus.emit('updateTab', this.currentTabId);
 
     return tab.cards[this.activeCard].update();
   }
@@ -1476,7 +1474,7 @@ export class Core {
       this.activeCard = undefined;
     }
 
-    emit('update_tab', tab.id);
+    eventBus.emit('updateTab', tab.id);
   }
 
   async importCard(card: ApiDashboardCard) {
@@ -1496,7 +1494,7 @@ export class Core {
       this.getActiveTab.cards.push(new Card(data));
     }
 
-    emit('update_tab', tab.id);
+    eventBus.emit('updateTab', tab.id);
 
     return data;
   }
@@ -1564,7 +1562,7 @@ export class Core {
     this.currentCardId = card.id;
     await card.createCardItem(type);
 
-    // emit('update_tab', this.currentTabId);
+    // eventBus.emit('updateTab', this.currentTabId);
   }
 
   importCardItem(cardId: number, request) {
@@ -1634,7 +1632,7 @@ export class Core {
 
     await tab.cards[this.activeCard].removeItem(index);
 
-    // emit('update_tab', this.currentTabId);
+    // eventBus.emit('updateTab', this.currentTabId);
   }
 } // \Core
 

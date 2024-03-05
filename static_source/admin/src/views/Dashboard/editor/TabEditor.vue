@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import {computed, onMounted, PropType, reactive, ref, unref, watch} from 'vue'
+import {computed, onMounted, onUnmounted, PropType, reactive, ref, unref, watch} from 'vue'
 import {Form} from '@/components/Form'
 import {ElButton, ElCol, ElDivider, ElMessage, ElPopconfirm, ElRow} from 'element-plus'
 import {useI18n} from '@/hooks/web/useI18n'
 import {useForm} from '@/hooks/web/useForm'
 import {useValidator} from '@/hooks/web/useValidator'
 import {FormSchema} from '@/types/form'
-import {Core, Tab, useBus} from "@/views/Dashboard/core";
+import {Core, Tab, eventBus} from "@/views/Dashboard/core";
 import {JsonViewer} from "@/components/JsonViewer";
 import {Dialog} from "@/components/Dialog";
 import FontEditor from "@/views/Dashboard/components/src/FontEditor.vue";
@@ -139,13 +139,16 @@ const schema = reactive<FormSchema[]>([
   },
 ])
 
+const eventHandler = (event: string, args: any[]) => {
+  showExportDialog()
+}
+
 onMounted(() => {
-  useBus({
-    name: 'showTabExportDialog',
-    callback: () => {
-      showExportDialog()
-    }
-  })
+  eventBus.subscribe('showTabExportDialog', eventHandler)
+})
+
+onUnmounted(() => {
+  eventBus.unsubscribe('showTabExportDialog', eventHandler)
 })
 
 watch(

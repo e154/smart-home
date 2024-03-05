@@ -1,14 +1,11 @@
 <script setup lang="ts">
-import {computed, onMounted, PropType, ref, watch} from 'vue'
-import {CloseBold} from "@element-plus/icons-vue";
+import {computed, onMounted, onUnmounted, PropType, ref, watch} from 'vue'
 import {useI18n} from '@/hooks/web/useI18n'
-import {Card, CardItem, Core, requestCurrentState, useBus} from "@/views/Dashboard/core";
+import {Card, CardItem, Core, eventBus, requestCurrentState} from "@/views/Dashboard/core";
 import {CardEditorName, CardItemList} from "@/views/Dashboard/card_items";
 import {JsonViewer} from "@/components/JsonViewer";
-import {DraggableContainer} from "@/components/DraggableContainer";
 import {
   ElButton,
-  ElButtonGroup,
   ElCascader,
   ElCol,
   ElCollapse,
@@ -17,23 +14,16 @@ import {
   ElEmpty,
   ElForm,
   ElFormItem,
-  ElIcon,
   ElInput,
-  ElMenu,
-  ElMenuItem,
   ElMessage,
   ElPopconfirm,
   ElRow,
-  ElTag,
 } from 'element-plus'
 import {JsonEditor} from "@/components/JsonEditor";
 import {Dialog} from "@/components/Dialog";
 import {ApiDashboardCardItem} from "@/api/stub";
-import CardItemListWindow from "@/views/Dashboard/editor/CardItemListWindow.vue";
 
 const {t} = useI18n()
-
-const {emit} = useBus()
 
 const cardItem = ref<CardItem>(null)
 // const card = ref<Card>({} as Card)
@@ -73,21 +63,21 @@ const currentCore = computed({
 })
 
 watch(
-  () => props.card,
-  (val?: Card) => {
-    if (!val) return
-    activeCard.value = val
-    if (val?.selectedItem > -1) {
-      cardItem.value = val?.items[val?.selectedItem] || null
-    } else {
-      cardItem.value = null
-    }
+    () => props.card,
+    (val?: Card) => {
+      if (!val) return
+      activeCard.value = val
+      if (val?.selectedItem > -1) {
+        cardItem.value = val?.items[val?.selectedItem] || null
+      } else {
+        cardItem.value = null
+      }
 
-  },
-  {
-    deep: true,
-    immediate: true
-  }
+    },
+    {
+      deep: true,
+      immediate: true
+    }
 )
 
 // ---------------------------------
@@ -129,22 +119,24 @@ const updateCurrentState = () => {
   }
 }
 
+const eventHandler = (event: string, args: any[]) => {
+  switch (event) {
+    case 'showCardItemImportDialog':
+      cardIdForImport.value = args
+      importDialogVisible.value = true
+      break;
+    case 'showCardItemExportDialog':
+      showExportDialog(args)
+      break;
+  }
+}
 const cardIdForImport = ref<number>()
 onMounted(() => {
-  useBus({
-    name: 'showCardItemImportDialog',
-    callback: (cardId?: number) => {
-      cardIdForImport.value = cardId
-      importDialogVisible.value = true
-    }
-  })
+  eventBus.subscribe(['showCardItemImportDialog', 'showCardItemExportDialog'], eventHandler)
+})
 
-  useBus({
-    name: 'showCardItemExportDialog',
-    callback: (cardItemId?: number) => {
-      showExportDialog(cardItemId)
-    }
-  })
+onUnmounted(() => {
+  eventBus.unsubscribe(['showCardItemImportDialog', 'showCardItemExportDialog'], eventHandler)
 })
 
 // ---------------------------------
@@ -217,11 +209,11 @@ const importCardItem = async () => {
   </ElRow>
 
   <ElForm
-    v-if="cardItem"
-    :model="cardItem"
-    label-position="top"
-    style="width: 100%"
-    ref="cardItemForm"
+      v-if="cardItem"
+      :model="cardItem"
+      label-position="top"
+      style="width: 100%"
+      ref="cardItemForm"
   >
 
     <ElRow>
@@ -229,12 +221,12 @@ const importCardItem = async () => {
 
         <ElFormItem :label="$t('dashboard.editor.type')" prop="type">
           <ElCascader
-            v-model="cardItemType"
-            :options="itemTypes"
-            :props="itemProps"
-            :placeholder="$t('dashboard.editor.pleaseSelectType')"
-            style="width: 100%"
-            @change="handleTypeChanged"
+              v-model="cardItemType"
+              :options="itemTypes"
+              :props="itemProps"
+              :placeholder="$t('dashboard.editor.pleaseSelectType')"
+              style="width: 100%"
+              @change="handleTypeChanged"
           />
         </ElFormItem>
       </ElCol>
@@ -250,9 +242,9 @@ const importCardItem = async () => {
     </ElRow>
 
     <component
-      :is="getCardEditorName(cardItem.type)"
-      :core="core"
-      :item="cardItem"
+        :is="getCardEditorName(cardItem.type)"
+        :core="core"
+        :item="cardItem"
     />
   </ElForm>
 
@@ -296,12 +288,12 @@ const importCardItem = async () => {
     <ElButton @click.prevent.stop="duplicate">{{ $t('main.duplicate') }}</ElButton>
 
     <ElPopconfirm
-      :confirm-button-text="$t('main.ok')"
-      :cancel-button-text="$t('main.no')"
-      width="250"
-      style="margin-left: 10px;"
-      :title="$t('main.are_you_sure_to_do_want_this?')"
-      @confirm="removeCardItem(activeCard.selectedItem)"
+        :confirm-button-text="$t('main.ok')"
+        :cancel-button-text="$t('main.no')"
+        width="250"
+        style="margin-left: 10px;"
+        :title="$t('main.are_you_sure_to_do_want_this?')"
+        @confirm="removeCardItem(activeCard.selectedItem)"
     >
       <template #reference>
         <ElButton type="danger" plain>

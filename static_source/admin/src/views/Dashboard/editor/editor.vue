@@ -6,7 +6,7 @@ import {useRoute} from 'vue-router'
 import api from "@/api/api";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
-import {Card, Core, EventContextMenu, Tab, useBus} from "@/views/Dashboard/core";
+import {Card, Core, eventBus, EventContextMenu, Tab} from "@/views/Dashboard/core";
 import ViewTab from "@/views/Dashboard/editor/ViewTab.vue";
 import {DraggableContainer} from "@/components/DraggableContainer";
 import TabSettings from "@/views/Dashboard/editor/TabSettings.vue";
@@ -22,7 +22,6 @@ import {Dialog} from "@/components/Dialog";
 import {ApiDashboardTab} from "@/api/stub";
 import CardListWindow from "@/views/Dashboard/editor/CardListWindow.vue";
 
-const {emit} = useBus()
 const route = useRoute();
 const {t} = useI18n()
 const appStore = useAppStore()
@@ -40,23 +39,37 @@ const currentID = ref('')
 const contextMenu = reactive<SecondMenu>(new SecondMenu(core));
 
 const onStateChanged = (event: EventStateChange) => {
-  emit('state_changed', event);
+  eventBus.emit('stateChanged', event);
   core.onStateChanged(event);
+}
+
+const eventHandler = (event: string, args: any[]) => {
+  switch (event) {
+    case 'showTabImportDialog':
+      importDialogVisible.value = true
+      break;
+    case 'fetchDashboard':
+      fetchDashboard()
+      break;
+  }
 }
 
 onMounted(() => {
   const uuid = new UUID()
   currentID.value = uuid.getDashFreeUUID()
 
-  stream.subscribe('state_changed', currentID.value, onStateChanged);
-
   fetchDashboard()
   contextMenu.start()
+
+  stream.subscribe('state_changed', currentID.value, onStateChanged);
+  eventBus.subscribe(['showTabImportDialog', 'fetchDashboard'], eventHandler)
 })
 
 onUnmounted(() => {
-  contextMenu.shutdown()
+  eventBus.unsubscribe(['showTabImportDialog', 'fetchDashboard'], eventHandler)
   stream.unsubscribe('state_changed', currentID.value);
+
+  contextMenu.shutdown()
 })
 
 // ---------------------------------
@@ -74,12 +87,6 @@ const fetchDashboard = async () => {
   core.currentBoard(res.data);
 }
 
-useBus({
-  name: 'fetchDashboard',
-  callback: () => {
-    fetchDashboard()
-  }
-})
 // ---------------------------------
 // tabs
 // ---------------------------------
@@ -144,13 +151,13 @@ const addCard = () => {
 const toggleMenu = (menu: string): void => {
   switch (menu) {
     case 'tabs':
-      emit('toggleTabsMenu');
+      eventBus.emit('toggleTabsMenu');
       break
     case 'cards':
-      emit('toggleCardsMenu');
+      eventBus.emit('toggleCardsMenu');
       break
     case 'cardItems':
-      emit('toggleCardItemsMenu');
+      eventBus.emit('toggleCardItemsMenu');
       break
   }
 }
@@ -158,7 +165,7 @@ const toggleMenu = (menu: string): void => {
 const onContextMenu = (e: MouseEvent, owner: 'editor' | 'tab', tabId: number) => {
   e.preventDefault();
   e.stopPropagation();
-  emit('eventContextMenu', {
+  eventBus.emit('eventContextMenu', {
     event: e,
     owner: owner,
     tabId: tabId,
@@ -171,13 +178,6 @@ const onContextMenu = (e: MouseEvent, owner: 'editor' | 'tab', tabId: number) =>
 
 const importedTab = ref(null)
 const importDialogVisible = ref(false)
-
-useBus({
-  name: 'showTabImportDialog',
-  callback: () => {
-    importDialogVisible.value = true
-  }
-})
 
 const importHandler = (val: any) => {
   if (importedTab.value == val) {
