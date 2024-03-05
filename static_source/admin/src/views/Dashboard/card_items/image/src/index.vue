@@ -24,9 +24,6 @@ const props = defineProps({
 
 const el = ref<ElRef>(null)
 onMounted(() => {
-  // store dom element moveable
-  props.item.setTarget(el.value)
-
   if (props.item?.payload.image?.image) {
     image.value = GetFullImageUrl(props.item.payload.image.image)
   } else {

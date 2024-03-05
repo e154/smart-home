@@ -63,9 +63,6 @@ const reload = debounce(() => {
 
 const el = ref<ElRef>(null)
 onMounted(() => {
-  // store dom element moveable
-  props.item.setTarget(el.value)
-
   // layerList.value.push(jawgLayer.value.tileLayer);
   layerList.value.push(osmLayer.value.tileLayer);
 })

@@ -28,9 +28,6 @@ const currentID = ref('')
 
 const el = ref<ElRef>(null)
 onMounted(() => {
-  // store dom element moveable
-  props.item.setTarget(el.value)
-
   const uuid = new UUID()
   currentID.value = uuid.getDashFreeUUID()
 

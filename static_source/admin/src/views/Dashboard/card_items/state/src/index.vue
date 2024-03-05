@@ -31,9 +31,6 @@ const props = defineProps({
 
 const el = ref<ElRef>(null)
 onMounted(() => {
-  // store dom element moveable
-  props.item.setTarget(el.value)
-
   currentImage.value = props.item?.payload.state.defaultImage || props.item?.payload.state.default_image || null;
   if (props.item?.payload?.state?.defaultIcon) {
     currentImage.value = null

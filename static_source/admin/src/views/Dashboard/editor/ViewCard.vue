@@ -9,19 +9,18 @@ import {CardItemName} from "@/views/Dashboard/card_items";
 import {UUID} from "uuid-generator-ts";
 import {KeystrokeCaptureViewer} from "@/views/Dashboard/components";
 import {useAppStore} from "@/store/modules/app";
-import ContextMenu from "@imengyu/vue3-context-menu";
-import {useI18n} from "@/hooks/web/useI18n";
 
 const {emit} = useBus()
 const appStore = useAppStore()
-const {t} = useI18n()
 
 const currentID = ref('')
+const cardRef = ref(null)
+
 onMounted(() => {
   const uuid = new UUID()
   currentID.value = uuid.getDashFreeUUID()
 
-  currentCard.value.document = document
+  currentCard.value.document = cardRef.value
   currentCard.value.updateItemList()
 })
 
@@ -38,7 +37,7 @@ onUpdated(() => {
 // ---------------------------------
 
 const zoom = ref(1);
-const cardRef = ref(null)
+
 
 const props = defineProps({
   core: {
@@ -80,11 +79,11 @@ useBus({
     if (!currentCard.value.active) {
       return
     }
-    if (itemIndex === -1 || !currentCard.value.items.length || !currentCard.value.items[itemIndex]) {
+    if (itemIndex === -1 || !currentCard.value.items.length || !currentCard.value.itemList[itemIndex]) {
       setSelectedTargets([])
       return
     }
-    const target = currentCard.value.items[itemIndex].target;
+    const target = currentCard.value.itemList[itemIndex];
     // target.classList.add("selected");
     setSelectedTargets([target]);
   }

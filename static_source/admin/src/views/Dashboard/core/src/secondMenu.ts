@@ -61,20 +61,33 @@ export class SecondMenu {
           label: t('dashboard.addCardItem'),
           children: this.genItemMenu(event?.cardId)
         } as MenuItem,
-        {
-          divided: 'self',
-        } as MenuItem
       ])
     }
 
+    if (this.core.getActiveTab) {
+      items.push(
+        {
+          label: t('dashboard.addNewCard'),
+          onClick: () => {
+            this.core.createCard();
+          }
+        })
+    }
+
+    items.push({
+      label: t('dashboard.addNewTab'),
+      onClick: () => {
+        this.core.createTab()
+      }
+    })
+
+      items.push(
+          {
+            divided: 'self',
+          } as MenuItem)
+
     // check current tab
     const tabs: MenuItem[] = [
-      {
-        label: t('dashboard.addNewTab'),
-        onClick: () => {
-          this.core.createTab()
-        }
-      },
       {
         label: t('main.import'),
         onClick: () => {
@@ -101,12 +114,6 @@ export class SecondMenu {
     const cards: MenuItem[] = []
     if (this.core.getActiveTab) {
       cards.push(...[
-        {
-          label: t('dashboard.addNewCard'),
-          onClick: () => {
-            this.core.createCard();
-          }
-        },
         {
           label: t('main.import'),
           onClick: () => {

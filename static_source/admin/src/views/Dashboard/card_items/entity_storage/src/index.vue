@@ -157,8 +157,6 @@ const paginationObj = ref<Pagination>({
 const el = ref<ElRef>(null)
 const currentID = ref('')
 onMounted(() => {
-  props.item.setTarget(el.value)
-
   const uuid = new UUID()
   currentID.value = uuid.getDashFreeUUID()
 

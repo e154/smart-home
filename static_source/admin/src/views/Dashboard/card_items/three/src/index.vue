@@ -38,9 +38,6 @@ const planePosition = ref({y: 0, z: 0})
 const cameraPosition = ref({y: 3, z: 2})
 
 onMounted(() => {
-  // store dom element moveable
-  props.item.setTarget(el.value)
-
   // console.log(box.value.mesh.position)
   camera.value.camera.lookAt(box.value.mesh.position)
 

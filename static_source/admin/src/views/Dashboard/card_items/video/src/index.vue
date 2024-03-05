@@ -19,8 +19,7 @@ const props = defineProps({
 
 const el = ref<ElRef>(null)
 onMounted(async () => {
-  // store dom element moveable
-  props.item.setTarget(el.value)
+
 })
 
 onBeforeUnmount(() => {

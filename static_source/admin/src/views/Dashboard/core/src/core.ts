@@ -244,17 +244,6 @@ export class CardItem {
     }
   }
 
-  _target: ElRef = null;
-
-  get target(): ElRef {
-    return this._target;
-  }
-
-  // target
-  setTarget(e: ElRef) {
-    this._target = e;
-  }
-
   private _entityId: string;
 
   // entityId
@@ -461,7 +450,6 @@ export class CardItem {
   }
 
 
-
   update() {
     // console.log('update item', this.title)
     this.uuid = new UUID();
@@ -616,18 +604,16 @@ export class Card {
     this.updateItemList()
   }
 
-  _document: any = null;
+  _document: ElRef = null;
 
-  set document(d) {
-    this._document = d;
+  set document(e: ElRef) {
+    this._document = e;
   }
 
   updateItemList = debounce(() => {
     if (!this._document) return;
-    const container = this._document.querySelector('.class-' + this.currentID)
-    if (!container) return;
-    const cubeElements = container.querySelectorAll(".movable");
-    this.itemList.value = Array.from(cubeElements)
+    const items = this._document.querySelectorAll(".movable");
+    this.itemList.value = Array.from(items)
   }, 100)
 
   private _entityId: string;
@@ -885,6 +871,7 @@ export class Card {
       this.items[index].weight = counter;
       counter++;
     }
+    this.updateItemList()
   }
 
   sortCardItemDown(item: CardItem, index: number) {
@@ -900,6 +887,7 @@ export class Card {
       this.items[index].weight = counter;
       counter++;
     }
+    this.updateItemList()
   }
 
   // ---------------------------------
