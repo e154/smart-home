@@ -398,6 +398,7 @@
       "actions": [
         "/v1/entity/[\\w]+",
         "/v1/entities",
+        "/v1/entities/statistic",
         "/v1/entities/search"
       ],
       "description": "",
@@ -590,6 +591,7 @@
         "/v1/scripts",
         "/v1/scripts/statistic",
         "/v1/scripts/search",
+        "/v1/script/[0-9]+/compiled",
         "/v1/script/[0-9]+"
       ],
       "description": "",
@@ -696,6 +698,7 @@
     "read": {
       "actions": [
         "/v1/variable/[\\w]+",
+        "/v1/variables/search",
         "/v1/variables"
       ],
       "description": "",
