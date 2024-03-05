@@ -156,12 +156,8 @@ const cardIdForImport = ref<number>()
 const showMenuWindow = ref(false)
 onMounted(() => {
   useBus({
-    name: 'toggleMenu',
-    callback: (menu: string) => {
-      if (menu !== 'cardItems') {
-        return
-      }
-      // console.log("cards", menu)
+    name: 'toggleCardItemsMenu',
+    callback: () => {
       showMenuWindow.value = !showMenuWindow.value
     }
   })

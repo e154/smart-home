@@ -20,6 +20,7 @@ import {SecondMenu} from "@/views/Dashboard/core/src/secondMenu";
 import {JsonEditor} from "@/components/JsonEditor";
 import {Dialog} from "@/components/Dialog";
 import {ApiDashboardTab} from "@/api/stub";
+import CardListWindow from "@/views/Dashboard/editor/CardListWindow.vue";
 
 const {emit} = useBus()
 const route = useRoute();
@@ -141,7 +142,17 @@ const addCard = () => {
 }
 
 const toggleMenu = (menu: string): void => {
-  emit('toggleMenu', menu);
+  switch (menu) {
+    case 'tabs':
+      emit('toggleTabsMenu');
+      break
+    case 'cards':
+      emit('toggleCardsMenu');
+      break
+    case 'cardItems':
+      emit('toggleCardItemsMenu');
+      break
+  }
 }
 
 const onContextMenu = (e: MouseEvent, owner: 'editor' | 'tab', tabId: number) => {
@@ -230,6 +241,7 @@ const importTab = async () => {
       </ElTabPane>
     </ElTabs>
 
+    <!-- main menu -->
     <DraggableContainer :name="'editor-main'">
       <template #header>
         <div class="w-[100%]">
@@ -308,6 +320,11 @@ const importTab = async () => {
         </ElTabs>
       </template>
     </DraggableContainer>
+    <!-- /main menu -->
+
+    <!-- card list window -->
+    <CardListWindow v-if="core.current && activeTab" :core="core"/>
+    <!-- /card list window -->
 
     <!-- import dialog -->
     <Dialog v-model="importDialogVisible" :title="t('main.dialogImportTitle')" :maxHeight="400" width="80%"

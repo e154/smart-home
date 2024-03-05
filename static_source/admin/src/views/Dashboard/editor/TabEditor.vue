@@ -270,11 +270,8 @@ const cancel = () => {
 const showMenuWindow = ref(false)
 onMounted(() => {
   useBus({
-    name: 'toggleMenu',
-    callback: (menu: string) => {
-      if (menu !== 'tabs') {
-        return
-      }
+    name: 'toggleTabsMenu',
+    callback: () => {
       showMenuWindow.value = !showMenuWindow.value
     }
   })

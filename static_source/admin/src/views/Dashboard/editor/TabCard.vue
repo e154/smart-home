@@ -3,21 +3,16 @@ import {computed, onMounted, PropType, reactive, ref, unref, watch} from 'vue'
 import {Form} from '@/components/Form'
 import {
   ElButton,
-  ElButtonGroup,
   ElCol,
   ElDivider,
   ElEmpty,
   ElForm,
   ElFormItem,
-  ElIcon,
-  ElMenu,
-  ElMenuItem,
   ElMessage,
   ElPopconfirm,
   ElRow,
   ElSwitch,
 } from 'element-plus'
-import {CloseBold} from '@element-plus/icons-vue'
 import {useI18n} from '@/hooks/web/useI18n'
 import {useForm} from '@/hooks/web/useForm'
 import {useValidator} from '@/hooks/web/useValidator'
@@ -28,7 +23,7 @@ import {Card, Core, Tab, useBus} from "@/views/Dashboard/core";
 import {Dialog} from '@/components/Dialog'
 import {JsonEditor} from "@/components/JsonEditor";
 import {FrameEditor, KeystrokeCapture} from "@/views/Dashboard/components";
-import {DraggableContainer} from "@/components/DraggableContainer";
+import CardListWindow from "@/views/Dashboard/editor/CardListWindow.vue";
 
 const {register, elFormRef, methods} = useForm()
 const {required} = useValidator()
@@ -308,11 +303,6 @@ useBus({
   callback: (id: number) => onSelectedCard(id)
 })
 
-const menuCardsClick = (card: DashboardCard) => {
-  // emit('selected_card', card.id);
-  onSelectedCard(card.id)
-}
-
 const cancel = () => {
   if (!activeCard.value) return;
   setValues({
@@ -328,29 +318,7 @@ const cancel = () => {
   })
 }
 
-const sortCardUp = (card: Card, index: number) => {
-  activeTab.value.sortCardUp(card, index)
-  currentCore.value.updateCurrentTab();
-}
-
-const sortCardDown = (card: Card, index: number) => {
-  activeTab.value.sortCardDown(card, index)
-  currentCore.value.updateCurrentTab();
-}
-
-const showMenuWindow = ref(false)
 onMounted(() => {
-  useBus({
-    name: 'toggleMenu',
-    callback: (menu: string) => {
-      if (menu !== 'cards') {
-        return
-      }
-      // console.log("cards", menu)
-      showMenuWindow.value = !showMenuWindow.value
-    }
-  })
-
   useBus({
     name: 'showCardImportDialog',
     callback: () => {
@@ -430,12 +398,7 @@ onMounted(() => {
     </ElRow>
 
     <div class="text-right">
-      <!--      <ElButton type="primary" @click.prevent.stop='showExportDialog()' plain>-->
-      <!--        <Icon icon="uil:file-export" class="mr-5px"/>-->
-      <!--        {{ $t('main.export') }}-->
-      <!--      </ElButton>-->
       <ElButton type="primary" @click.prevent.stop="updateCard" plain>{{ $t('main.update') }}</ElButton>
-      <!--    <ElButton @click.prevent.stop="pasteCardItem">{{ $t('dashboard.pasteCardItem') }}</ElButton>-->
       <ElButton @click.prevent.stop="cancel" plain>{{ t('main.cancel') }}</ElButton>
       <ElPopconfirm
           :confirm-button-text="$t('main.ok')"
@@ -471,43 +434,6 @@ onMounted(() => {
     </template>
   </Dialog>
   <!-- /import dialog -->
-
-  <DraggableContainer :name="'editor-cards'" :initial-width="280" :min-width="280" v-show="showMenuWindow">
-    <template #header>
-      <div class="w-[100%]">
-        <div style="float: left">Cards</div>
-        <div style="float: right; text-align: right">
-          <a href="#" @click.prevent.stop='showMenuWindow= false'>
-            <ElIcon class="mr-5px">
-              <CloseBold/>
-            </ElIcon>
-          </a>
-        </div>
-      </div>
-    </template>
-    <template #default>
-
-      <ElMenu v-if="currentCore.activeTabIdx > -1 && activeTab.cards.length"
-              :default-active="currentCore.activeCard + ''" v-model="currentCore.activeCard"
-              class="el-menu-vertical-demo">
-        <ElMenuItem :index="index + ''" :key="index" v-for="(card, index) in activeTab.cards"
-                    @click="menuCardsClick(card)">
-          <div class="w-[100%] menu-item">
-            <span>{{ card.title }}</span>
-            <ElButtonGroup class="buttons">
-              <ElButton @click.prevent.stop="sortCardUp(card, index)" text size="small">
-                <Icon icon="teenyicons:up-solid"/>
-              </ElButton>
-              <ElButton @click.prevent.stop="sortCardDown(card, index)" text size="small">
-                <Icon icon="teenyicons:down-solid"/>
-              </ElButton>
-            </ElButtonGroup>
-          </div>
-        </ElMenuItem>
-      </ElMenu>
-
-    </template>
-  </DraggableContainer>
 
 
 </template>
