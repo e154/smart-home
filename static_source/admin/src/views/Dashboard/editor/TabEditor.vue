@@ -305,19 +305,6 @@ const showExportDialog = () => {
 
 <template>
 
-<!--  <ElRow :gutter="24" class="mb-10px mt-10px">-->
-<!--    <ElCol :span="12" :xs="12">-->
-<!--      <ElButton class="w-[100%]" @click="createTab()">-->
-<!--        {{ t('dashboard.addNewTab') }}-->
-<!--      </ElButton>-->
-<!--    </ElCol>-->
-<!--    <ElCol :span="12" :xs="12">-->
-<!--      <ElButton class="w-[100%]" @click="importDialogVisible = true">-->
-<!--        {{ t('main.import') }}-->
-<!--      </ElButton>-->
-<!--    </ElCol>-->
-<!--  </ElRow>-->
-
   <ElRow class="mb-10px">
     <ElCol>
       <ElDivider content-position="left">{{ $t('dashboard.tabOptions') }}</ElDivider>
@@ -333,15 +320,6 @@ const showExportDialog = () => {
 
   <FontEditor v-if="activeTab" :tab="activeTab"/>
 
-<!--  <ElEmpty v-if="!currentCore.tabs.length" :rows="5">-->
-<!--    <ElButton type="primary" @click="createTab()">-->
-<!--      {{ t('dashboard.addNewTab') }}-->
-<!--    </ElButton>-->
-<!--    <ElButton type="primary" @click="importDialogVisible = true">-->
-<!--      {{ t('main.import') }}-->
-<!--    </ElButton>-->
-<!--  </ElEmpty>-->
-
   <ElRow class="mb-10px">
     <ElCol>
       <ElDivider content-position="left">{{ $t('main.actions') }}</ElDivider>
@@ -349,10 +327,6 @@ const showExportDialog = () => {
   </ElRow>
 
   <div class="text-right" v-if="currentCore.tabs.length">
-<!--    <ElButton type="primary" @click.prevent.stop='showExportDialog()' plain>-->
-<!--      <Icon icon="uil:file-export" class="mr-5px"/>-->
-<!--      {{ $t('main.export') }}-->
-<!--    </ElButton>-->
     <ElButton type="primary" @click.prevent.stop="updateTab" plain>{{ $t('main.update') }}</ElButton>
     <ElButton @click.prevent.stop="cancel" plain>{{ t('main.cancel') }}</ElButton>
     <ElPopconfirm
@@ -375,10 +349,6 @@ const showExportDialog = () => {
   <!-- export dialog -->
   <Dialog v-model="exportDialogVisible" :title="t('main.dialogExportTitle')" :maxHeight="400" width="80%">
     <JsonViewer v-model="dialogSource"/>
-    <!--    <template #footer>-->
-    <!--      <ElButton @click="copy()">{{ t('setting.copy') }}</ElButton>-->
-    <!--      <ElButton @click="exportDialogVisible = false">{{ t('main.closeDialog') }}</ElButton>-->
-    <!--    </template>-->
   </Dialog>
   <!-- /export dialog -->
 
@@ -396,28 +366,6 @@ const showExportDialog = () => {
       </div>
     </template>
     <template #default>
-
-      <!--      <ElRow class="mb-10px mt-10px">-->
-      <!--        <ElCol>-->
-      <!--          <ElDivider content-position="left">{{ $t('dashboard.tabList') }}</ElDivider>-->
-      <!--        </ElCol>-->
-      <!--      </ElRow>-->
-
-<!--      <ElRow class="mb-10px mt-10px">-->
-<!--        <ElCol>-->
-<!--          <ElButton class="w-[100%]" @click="createTab()">-->
-<!--            {{ t('dashboard.addNewTab') }}-->
-<!--          </ElButton>-->
-<!--        </ElCol>-->
-<!--      </ElRow>-->
-
-<!--      <ElRow class="mb-10px mt-10px">-->
-<!--        <ElCol>-->
-<!--          <ElButton class="w-[100%]" @click="importDialogVisible = true">-->
-<!--            {{ t('main.import') }}-->
-<!--          </ElButton>-->
-<!--        </ElCol>-->
-<!--      </ElRow>-->
 
       <ElMenu v-if="currentCore.tabs.length" :default-active="currentCore.activeTabIdx + ''"
               v-model="currentCore.activeTabIdx" class="el-menu-vertical-demo">

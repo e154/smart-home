@@ -347,20 +347,6 @@ const importCardItem = async () => {
 
     <ElButton @click.prevent.stop="duplicate">{{ $t('main.duplicate') }}</ElButton>
 
-    <!--    <ElButton @click.prevent.stop="copyToClipboard">{{ $t('main.copyToClipboard') }}</ElButton>-->
-
-    <!--    <ElPopconfirm-->
-    <!--      :confirm-button-text="$t('main.ok')"-->
-    <!--      :cancel-button-text="$t('main.no')"-->
-    <!--      width="250"-->
-    <!--      :title="$t('main.are_you_sure_to_do_want_this?')"-->
-    <!--      @confirm="cancel"-->
-    <!--    >-->
-    <!--      <template #reference>-->
-    <!--        <ElButton plain>{{ t('main.cancel') }}</ElButton>-->
-    <!--      </template>-->
-    <!--    </ElPopconfirm>-->
-
     <ElPopconfirm
       :confirm-button-text="$t('main.ok')"
       :cancel-button-text="$t('main.no')"

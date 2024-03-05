@@ -214,21 +214,6 @@ const removeBoard = async () => {
       }}
     </ElButton>
 
-<!--    <ElPopconfirm-->
-<!--        :confirm-button-text="$t('main.ok')"-->
-<!--        :cancel-button-text="$t('main.no')"-->
-<!--        width="250"-->
-<!--        style="margin-left: 10px;"-->
-<!--        :title="$t('main.are_you_sure_to_do_want_this?')"-->
-<!--        @confirm="cancel"-->
-<!--    >-->
-<!--      <template #reference>-->
-<!--        <ElButton plain>-->
-<!--          {{ t('main.cancel') }}-->
-<!--        </ElButton>-->
-<!--      </template>-->
-<!--    </ElPopconfirm>-->
-
     <ElPopconfirm
         :confirm-button-text="$t('main.ok')"
         :cancel-button-text="$t('main.no')"

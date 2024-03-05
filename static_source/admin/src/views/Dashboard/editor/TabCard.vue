@@ -379,18 +379,6 @@ onMounted(() => {
   </ElEmpty>
 
   <div v-if="activeCard !== undefined">
-<!--    <ElRow :gutter="24" class="mb-10px mt-10px">-->
-<!--      <ElCol :span="12" :xs="12">-->
-<!--        <ElButton class="w-[100%]" @click="addCard()">-->
-<!--          {{ t('dashboard.addNewCard') }}-->
-<!--        </ElButton>-->
-<!--      </ElCol>-->
-<!--      <ElCol :span="12" :xs="12">-->
-<!--        <ElButton class="w-[100%]" @click="showImportDialog()">-->
-<!--          {{ t('main.import') }}-->
-<!--        </ElButton>-->
-<!--      </ElCol>-->
-<!--    </ElRow>-->
 
     <ElRow class="mb-10px">
       <ElCol>
@@ -442,10 +430,10 @@ onMounted(() => {
     </ElRow>
 
     <div class="text-right">
-<!--      <ElButton type="primary" @click.prevent.stop='showExportDialog()' plain>-->
-<!--        <Icon icon="uil:file-export" class="mr-5px"/>-->
-<!--        {{ $t('main.export') }}-->
-<!--      </ElButton>-->
+      <!--      <ElButton type="primary" @click.prevent.stop='showExportDialog()' plain>-->
+      <!--        <Icon icon="uil:file-export" class="mr-5px"/>-->
+      <!--        {{ $t('main.export') }}-->
+      <!--      </ElButton>-->
       <ElButton type="primary" @click.prevent.stop="updateCard" plain>{{ $t('main.update') }}</ElButton>
       <!--    <ElButton @click.prevent.stop="pasteCardItem">{{ $t('dashboard.pasteCardItem') }}</ElButton>-->
       <ElButton @click.prevent.stop="cancel" plain>{{ t('main.cancel') }}</ElButton>
@@ -470,10 +458,6 @@ onMounted(() => {
   <!-- export dialog -->
   <Dialog v-model="exportDialogVisible" :title="t('main.dialogExportTitle')" :maxHeight="400" width="80%">
     <JsonViewer v-model="dialogSource"/>
-    <!--    <template #footer>-->
-    <!--      <ElButton @click="copy()">{{ t('setting.copy') }}</ElButton>-->
-    <!--      <ElButton @click="exportDialogVisible = false">{{ t('main.closeDialog') }}</ElButton>-->
-    <!--    </template>-->
   </Dialog>
   <!-- /export dialog -->
 
@@ -502,28 +486,6 @@ onMounted(() => {
       </div>
     </template>
     <template #default>
-
-      <!--      <ElRow class="mb-10px mt-10px">-->
-      <!--        <ElCol>-->
-      <!--          <ElDivider content-position="left">{{ $t('dashboard.editor.itemList') }}</ElDivider>-->
-      <!--        </ElCol>-->
-      <!--      </ElRow>-->
-
-<!--      <ElRow class="mb-10px mt-10px">-->
-<!--        <ElCol>-->
-<!--          <ElButton class="w-[100%]" @click="addCard()">-->
-<!--            {{ t('dashboard.addNewCard') }}-->
-<!--          </ElButton>-->
-<!--        </ElCol>-->
-<!--      </ElRow>-->
-
-<!--      <ElRow class="mb-10px mt-10px">-->
-<!--        <ElCol>-->
-<!--          <ElButton class="w-[100%]" @click="showImportDialog()">-->
-<!--            {{ t('main.import') }}-->
-<!--          </ElButton>-->
-<!--        </ElCol>-->
-<!--      </ElRow>-->
 
       <ElMenu v-if="currentCore.activeTabIdx > -1 && activeTab.cards.length"
               :default-active="currentCore.activeCard + ''" v-model="currentCore.activeCard"
