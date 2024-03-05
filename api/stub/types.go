@@ -896,8 +896,9 @@ type ApiNewTriggerRequest struct {
 
 // ApiNewVariableRequest defines model for apiNewVariableRequest.
 type ApiNewVariableRequest struct {
-	Name  string `json:"name"`
-	Value string `json:"value"`
+	Name  string   `json:"name"`
+	Tags  []string `json:"tags"`
+	Value string   `json:"value"`
 }
 
 // ApiNewZigbee2mqttRequest defines model for apiNewZigbee2mqttRequest.
@@ -1301,6 +1302,7 @@ type ApiVariable struct {
 	CreatedAt time.Time `json:"createdAt"`
 	Name      string    `json:"name"`
 	System    bool      `json:"system"`
+	Tags      []string  `json:"tags"`
 	UpdatedAt time.Time `json:"updatedAt"`
 	Value     string    `json:"value"`
 }
@@ -2260,7 +2262,8 @@ type VariableServiceAddVariableParams struct {
 
 // VariableServiceUpdateVariableJSONBody defines parameters for VariableServiceUpdateVariable.
 type VariableServiceUpdateVariableJSONBody struct {
-	Value string `json:"value"`
+	Tags  []string `json:"tags"`
+	Value string   `json:"value"`
 }
 
 // VariableServiceUpdateVariableParams defines parameters for VariableServiceUpdateVariable.

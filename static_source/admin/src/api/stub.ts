@@ -938,6 +938,7 @@ export interface ApiNewTriggerRequest {
 export interface ApiNewVariableRequest {
   name: string;
   value: string;
+  tags: string[];
 }
 
 export interface ApiNewZigbee2MqttRequest {
@@ -1360,6 +1361,7 @@ export interface ApiVariable {
   name: string;
   value: string;
   system: boolean;
+  tags: string[];
   /** @format date-time */
   createdAt: string;
   /** @format date-time */
@@ -6412,6 +6414,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       name: string,
       data: {
         value: string;
+        tags: string[];
       },
       params: RequestParams = {},
     ) =>

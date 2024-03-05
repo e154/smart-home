@@ -16,7 +16,8 @@ const currentRow = ref<Nullable<ApiVariable>>(null)
 onMounted(() => {
   currentRow.value = {
     name: '',
-    value: ''
+    value: '',
+    tags: []
   } as ApiVariable
 })
 
@@ -31,7 +32,7 @@ const save = async () => {
       .finally(() => {
       })
   if (res) {
-    cancel()
+    push(`/etc/variables/edit/${currentRow.value.name}`)
   }
 }
 

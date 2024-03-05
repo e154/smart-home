@@ -18,6 +18,7 @@ import {JsonEditor} from "@/components/JsonEditor";
 import {TinycmeEditor} from "@/components/Tinymce";
 import {propTypes} from "@/utils/propTypes";
 import {BaseButton} from "@/components/Button";
+import {TagsSearch} from "@/components/TagsSearch";
 
 const {t} = useI18n()
 
@@ -89,6 +90,11 @@ const uploadChange = (uploadFile: UploadFile) => {
   reader.readAsDataURL(uploadFile.raw);
 }
 
+const changedTags = async (tags: string[]) => {
+  // console.log(tags)
+  currentVariable.value.tags = tags
+}
+
 </script>
 
 <template>
@@ -99,14 +105,19 @@ const uploadChange = (uploadFile: UploadFile) => {
     ref="cardItemForm"
   >
 
-    <ElRow>
-      <ElCol>
+    <ElRow :gutter="24">
+      <ElCol :span="12" :xs="12">
         <ElFormItem :label="$t('variables.name')" prop="text">
           <ElInput
             :disabled="edit"
             placeholder="Please input"
             v-model="currentVariable.name"
           />
+        </ElFormItem>
+      </ElCol>
+      <ElCol :span="12" :xs="12">
+        <ElFormItem :label="$t('entityAction.tags')" prop="tags">
+          <TagsSearch v-model="currentVariable.tags" @change="changedTags($event)"/>
         </ElFormItem>
       </ElCol>
     </ElRow>

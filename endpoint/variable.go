@@ -85,9 +85,11 @@ func (v *VariableEndpoint) Update(ctx context.Context, _variable m.Variable) (er
 			return
 		}
 		variable.Value = _variable.Value
+		variable.Tags = _variable.Tags
 	} else {
 		variable.Name = _variable.Name
 		variable.Value = _variable.Value
+		variable.Tags = _variable.Tags
 	}
 
 	if err = v.adaptors.Variable.CreateOrUpdate(ctx, variable); err != nil {

@@ -39,15 +39,14 @@ const download = async () => {
 const save = async () => {
   const data = {
     value: currentRow.value.value,
+    tags: currentRow.value.tags,
   }
   const res = await api.v1.variableServiceUpdateVariable(variableName.value as string, data)
       .catch(() => {
       })
       .finally(() => {
       })
-  if (res) {
-    cancel()
-  }
+ 
 }
 
 const cancel = () => {

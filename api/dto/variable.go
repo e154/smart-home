@@ -37,6 +37,12 @@ func (r Variable) AddVariable(from *stub.ApiNewVariableRequest) (ver m.Variable)
 		Name:  from.Name,
 		Value: from.Value,
 	}
+	// tags
+	for _, name := range from.Tags {
+		ver.Tags = append(ver.Tags, &m.Tag{
+			Name: name,
+		})
+	}
 	return
 }
 
@@ -45,6 +51,12 @@ func (r Variable) UpdateVariable(obj *stub.VariableServiceUpdateVariableJSONBody
 	ver = m.Variable{
 		Name:  name,
 		Value: obj.Value,
+	}
+	// tags
+	for _, name := range obj.Tags {
+		ver.Tags = append(ver.Tags, &m.Tag{
+			Name: name,
+		})
 	}
 	return
 }
@@ -97,6 +109,10 @@ func ToVariable(ver m.Variable) (obj *stub.ApiVariable) {
 		System:    ver.System,
 		CreatedAt: ver.CreatedAt,
 		UpdatedAt: ver.UpdatedAt,
+	}
+	//tags
+	for _, tag := range ver.Tags {
+		obj.Tags = append(obj.Tags, tag.Name)
 	}
 	return
 }

@@ -3984,10 +3984,14 @@ paths:
           application/json:
             schema:
               type: object
-              required: [ value ]
+              required: [ value, tags ]
               properties:
                 value:
                   type: string
+                tags:
+                  type: array
+                  items:
+                    type: string
         required: true
       responses:
         200:
@@ -6217,12 +6221,16 @@ components:
           format: int64
     apiNewVariableRequest:
       type: object
-      required: [ name, value ]
+      required: [ name, value, tags ]
       properties:
         name:
           type: string
         value:
           type: string
+        tags:
+          type: array
+          items:
+            type: string
     apiNewZigbee2mqttRequest:
       type: object
       required: [ name, login, permitJoin, baseTopic ]
@@ -6974,7 +6982,7 @@ components:
           type: string
     apiVariable:
       type: object
-      required: [ name, value, system, createdAt, updatedAt ]
+      required: [ name, value, system, tags, createdAt, updatedAt ]
       properties:
         name:
           type: string
@@ -6982,6 +6990,10 @@ components:
           type: string
         system:
           type: boolean
+        tags:
+          type: array
+          items:
+            type: string
         createdAt:
           type: string
           format: date-time

@@ -1,17 +1,18 @@
 <script setup lang="ts">
 import {useI18n} from '@/hooks/web/useI18n'
 import {Table} from '@/components/Table'
-import {onMounted, onUnmounted, reactive, ref, watch} from 'vue'
+import {h, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
-import {ElButton} from 'element-plus'
-import {ApiVariable} from "@/api/stub";
+import {ElButton, ElTag} from 'element-plus'
+import {ApiEntityShort, ApiVariable} from "@/api/stub";
 import {useRouter} from "vue-router";
 import {ContentWrap} from "@/components/ContentWrap";
 import {useCache} from "@/hooks/web/useCache";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 import {EventStateChange} from "@/api/types";
+import {parseTime} from "@/utils";
 
 const {push} = useRouter()
 const {t} = useI18n()
@@ -50,6 +51,32 @@ const columns: TableColumn[] = [
     field: 'value',
     label: t('variables.value')
   },
+  {
+    field: 'createdAt',
+    label: t('main.createdAt'),
+    type: 'time',
+    sortable: true,
+    width: "170px",
+    formatter: (row: ApiEntityShort) => {
+      return h(
+          'span',
+          parseTime(row.createdAt)
+      )
+    }
+  },
+  {
+    field: 'updatedAt',
+    label: t('main.updatedAt'),
+    type: 'time',
+    sortable: true,
+    width: "170px",
+    formatter: (row: ApiEntityShort) => {
+      return h(
+          'span',
+          parseTime(row.updatedAt)
+      )
+    }
+  }
 ]
 const paginationObj = ref<Pagination>({
   currentPage: wsCache.get(cachePref + 'CurrentPage') || 1,
@@ -152,6 +179,8 @@ onUnmounted(() => {
       {{ t('variables.addNew') }}
     </ElButton>
     <Table
+        class="variables-table"
+        :expand="true"
         :selection="false"
         v-model:pageSize="paginationObj.pageSize"
         v-model:currentPage="paginationObj.currentPage"
@@ -163,7 +192,15 @@ onUnmounted(() => {
         style="width: 100%"
         @current-change="selectRow"
         :showUpPagination="20"
-    />
+    >
+      <template #expand="{row}">
+        <div class="tag-list" v-if="row.tags">
+          <ElTag v-for="tag in row.tags" type="info" :key="tag" round effect="light" size="small">
+            {{ tag }}
+          </ElTag>
+        </div>
+      </template>
+    </Table>
   </ContentWrap>
 
 </template>
@@ -173,4 +210,45 @@ onUnmounted(() => {
 .el-table__row {
   cursor: pointer;
 }
+
+.variables-table {
+  .tag-list {
+    .el-tag {
+      margin: 0 5px;
+    }
+  }
+
+  :deep(.el-table__row) {
+    cursor: pointer;
+  }
+
+  tr.el-table__row [class*="el-table__cell"] {
+  //background-color: green; border-top: var(--el-table-border); border-bottom: none !important;
+    border-top: var(--el-table-border);
+  }
+
+  .el-table__expanded-cell {
+    &.el-table__cell [class*="tag-list"] {
+    //background-color: red!important; border-bottom: none !important;
+    }
+
+    &.el-table__cell:not(:has(.tag-list)) {
+      display: none !important;
+    //background-color: blue!important;
+    }
+  }
+
+  .el-table td.el-table__cell,
+  .el-table th.el-table__cell.is-leaf {
+    border-bottom: none !important;
+  }
+
+  .el-table--enable-row-hover .el-table__body tr.el-table__row:hover,
+  .el-table--enable-row-hover .el-table__body tr.el-table__row:hover + tr {
+    & > td.el-table__cell {
+      background-color: var(--el-table-row-hover-bg-color);
+    }
+  }
+}
+
 </style>

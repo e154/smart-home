@@ -282,6 +282,7 @@ var (
 	ErrVariableNotFound        = ErrorWithCode("VARIABLE_NOT_FOUND_ERROR", "variable is not found", ErrNotFound)
 	ErrVariableDelete          = ErrorWithCode("VARIABLE_DELETE_ERROR", "failed to delete variable", ErrInternal)
 	ErrVariableUpdateForbidden = ErrorWithCode("VARIABLE_UPDATE_ERROR", "unable to update system variable", ErrAccessForbidden)
+	ErrVariableDeleteTag       = ErrorWithCode("VARIABLE_DELETE_TAG_ERROR", "delete script failed", ErrInternal)
 
 	ErrZigbee2mqttAdd      = ErrorWithCode("ZIGBEE2MQTT_ADD_ERROR", "failed to add zigbee2mqtt", ErrInternal)
 	ErrZigbee2mqttGet      = ErrorWithCode("ZIGBEE2MQTT_GET_ERROR", "failed to get zigbee2mqtt", ErrInternal)
