@@ -1,37 +1,22 @@
 <script setup lang="ts">
 import {computed, onMounted, PropType, reactive, ref, unref, watch} from 'vue'
 import {Form} from '@/components/Form'
-import {
-  ElButton,
-  ElCol,
-  ElDivider,
-  ElEmpty,
-  ElIcon,
-  ElMenu,
-  ElMenuItem,
-  ElMessage,
-  ElPopconfirm,
-  ElRow
-} from 'element-plus'
+import {ElButton, ElCol, ElDivider, ElMessage, ElPopconfirm, ElRow} from 'element-plus'
 import {useI18n} from '@/hooks/web/useI18n'
 import {useForm} from '@/hooks/web/useForm'
 import {useValidator} from '@/hooks/web/useValidator'
 import {FormSchema} from '@/types/form'
-import {ApiDashboardTab} from "@/api/stub";
 import {Core, Tab, useBus} from "@/views/Dashboard/core";
-import {DraggableContainer} from "@/components/DraggableContainer";
-import {CloseBold} from "@element-plus/icons-vue";
 import {JsonViewer} from "@/components/JsonViewer";
-import {JsonEditor} from "@/components/JsonEditor";
 import {Dialog} from "@/components/Dialog";
 import FontEditor from "@/views/Dashboard/components/src/FontEditor.vue";
+import TabListWindow from "@/views/Dashboard/editor/TabListWindow.vue";
 
 const {register, elFormRef, methods} = useForm()
 const {required} = useValidator()
 const {t} = useI18n()
 const {setValues} = methods
 
-const currentCore = ref<Core>(new Core())
 const props = defineProps({
   core: {
     type: Object as PropType<Nullable<Core>>,
@@ -41,6 +26,16 @@ const props = defineProps({
     type: Object as PropType<Nullable<Tab>>,
     default: () => null
   },
+})
+
+const currentCore = computed(() => props.core as Core)
+
+const activeTab = computed({
+  get(): Tab {
+    return currentCore.value.getActiveTab
+  },
+  set(val: Tab) {
+  }
 })
 
 const rules = {
@@ -175,27 +170,6 @@ watch(
     }
 )
 
-watch(
-    () => props.core,
-    (val?: Core) => {
-      if (!val) return
-      currentCore.value = val
-    },
-    {
-      deep: false,
-      immediate: true
-    }
-)
-
-
-const activeTab = computed({
-  get(): Tab {
-    return currentCore.value.getActiveTab
-  },
-  set(val: Tab) {
-  }
-})
-
 // ---------------------------------
 // common
 // ---------------------------------
@@ -237,21 +211,6 @@ const removeTab = async () => {
   await currentCore.value.removeTab();
 }
 
-const menuTabClick = (index: number, tab: Tab) => {
-  currentCore.value.selectTabInMenu(index)
-}
-
-const createTab = async () => {
-  await currentCore.value.createTab();
-
-  ElMessage({
-    title: t('Success'),
-    message: t('message.createdSuccessfully'),
-    type: 'success',
-    duration: 2000
-  });
-}
-
 const cancel = () => {
   if (!activeTab.value) return;
   setValues({
@@ -266,16 +225,6 @@ const cancel = () => {
     backgroundAdaptive: activeTab.value?.backgroundAdaptive,
   })
 }
-
-const showMenuWindow = ref(false)
-onMounted(() => {
-  useBus({
-    name: 'toggleTabsMenu',
-    callback: () => {
-      showMenuWindow.value = !showMenuWindow.value
-    }
-  })
-})
 
 // ---------------------------------
 // import/export
@@ -295,8 +244,6 @@ const showExportDialog = () => {
   prepareForExport()
   exportDialogVisible.value = true
 }
-
-
 
 </script>
 
@@ -343,38 +290,15 @@ const showExportDialog = () => {
     </ElPopconfirm>
   </div>
 
+  <!-- tab list window -->
+  <TabListWindow :core="currentCore"/>
+  <!-- /tab list window -->
+
   <!-- export dialog -->
   <Dialog v-model="exportDialogVisible" :title="t('main.dialogExportTitle')" :maxHeight="400" width="80%">
     <JsonViewer v-model="dialogSource"/>
   </Dialog>
   <!-- /export dialog -->
-
-  <DraggableContainer :name="'editor-tabs'" :initial-width="280" :min-width="280" v-show="showMenuWindow">
-    <template #header>
-      <div class="w-[100%]">
-        <div style="float: left">Tabs</div>
-        <div style="float: right; text-align: right">
-          <a href="#" @click.prevent.stop='showMenuWindow= false'>
-            <ElIcon class="mr-5px">
-              <CloseBold/>
-            </ElIcon>
-          </a>
-        </div>
-      </div>
-    </template>
-    <template #default>
-
-      <ElMenu v-if="currentCore.tabs.length" :default-active="currentCore.activeTabIdx + ''"
-              v-model="currentCore.activeTabIdx" class="el-menu-vertical-demo">
-        <ElMenuItem :index="index + ''" :key="tab" v-for="(tab, index) in currentCore.tabs"
-                    @click="menuTabClick(index, tab)">
-          <div class="w-[100%] card-header">
-            <span>{{ tab.name }}</span>
-          </div>
-        </ElMenuItem>
-      </ElMenu>
-    </template>
-  </DraggableContainer>
 
 </template>
 
