@@ -24,6 +24,7 @@ import {Dialog} from '@/components/Dialog'
 import {JsonEditor} from "@/components/JsonEditor";
 import {FrameEditor, KeystrokeCapture} from "@/views/Dashboard/components";
 import CardListWindow from "@/views/Dashboard/editor/CardListWindow.vue";
+import CardItemListWindow from "@/views/Dashboard/editor/CardItemListWindow.vue";
 
 const {register, elFormRef, methods} = useForm()
 const {required} = useValidator()
@@ -435,6 +436,9 @@ onMounted(() => {
   </Dialog>
   <!-- /import dialog -->
 
+  <!-- card items list window -->
+  <CardItemListWindow :card="activeCard" :core="currentCore"/>
+  <!-- /card items list window -->
 
 </template>
 

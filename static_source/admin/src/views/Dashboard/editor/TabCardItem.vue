@@ -29,6 +29,7 @@ import {
 import {JsonEditor} from "@/components/JsonEditor";
 import {Dialog} from "@/components/Dialog";
 import {ApiDashboardCardItem} from "@/api/stub";
+import CardItemListWindow from "@/views/Dashboard/editor/CardItemListWindow.vue";
 
 const {t} = useI18n()
 
@@ -105,33 +106,9 @@ const duplicate = () => {
   activeCard.value.copyItem(activeCard.value.selectedItem);
 }
 
-const menuCardItemClick = (index: number) => {
-  if (currentCore.value.activeTabIdx < 0 || currentCore.value.activeCard == undefined) {
-    return;
-  }
-
-  activeCard.value.selectedItem = index;
-
-  emit('selected_card_item', index)
-}
-
-const sortCardItemUp = (item: CardItem, index: number) => {
-  activeCard.value.sortCardItemUp(item, index)
-  currentCore.value.updateCard();
-}
-
-const sortCardItemDown = (item: CardItem, index: number) => {
-  activeCard.value.sortCardItemDown(item, index)
-  currentCore.value.updateCard();
-}
-
 const getCardEditorName = (name: string) => {
   return CardEditorName(name);
 }
-
-// const cancel = () => {
-//   console.warn('action not implemented')
-// }
 
 const updateCardItem = async () => {
   const {data} = await currentCore.value.updateCard();
@@ -153,15 +130,7 @@ const updateCurrentState = () => {
 }
 
 const cardIdForImport = ref<number>()
-const showMenuWindow = ref(false)
 onMounted(() => {
-  useBus({
-    name: 'toggleCardItemsMenu',
-    callback: () => {
-      showMenuWindow.value = !showMenuWindow.value
-    }
-  })
-
   useBus({
     name: 'showCardItemImportDialog',
     callback: (cardId?: number) => {
@@ -241,19 +210,6 @@ const importCardItem = async () => {
 
 <template>
 
-<!--  <ElRow :gutter="24" class="mb-10px mt-10px" v-if="activeCard.selectedItem !== -1">-->
-<!--    <ElCol :span="12" :xs="12">-->
-<!--      <ElButton class="w-[100%]" @click="addCardItem()">-->
-<!--        {{ t('dashboard.editor.addNewCardItem') }}-->
-<!--      </ElButton>-->
-<!--    </ElCol>-->
-<!--    <ElCol :span="12" :xs="12">-->
-<!--      <ElButton class="w-[100%]" @click="importDialogVisible = true">-->
-<!--        {{ t('main.import') }}-->
-<!--      </ElButton>-->
-<!--    </ElCol>-->
-<!--  </ElRow>-->
-
   <ElRow class="mb-10px" v-if="activeCard.selectedItem !== -1">
     <ElCol>
       <ElDivider content-position="left">{{ $t('dashboard.cardItemOptions') }}</ElDivider>
@@ -332,10 +288,6 @@ const importCardItem = async () => {
 
   <div v-if="activeCard.selectedItem > -1" class="text-right">
 
-<!--    <ElButton type="primary" @click.prevent.stop='showExportDialog()' plain>-->
-<!--      <Icon icon="uil:file-export" class="mr-5px"/>-->
-<!--      {{ $t('main.export') }}-->
-<!--    </ElButton>-->
     <ElButton type="primary" @click.prevent.stop="updateCardItem" plain>{{
         $t('main.update')
       }}
@@ -376,77 +328,6 @@ const importCardItem = async () => {
     </template>
   </Dialog>
   <!-- /import dialog -->
-
-
-  <DraggableContainer :name="'editor-card-items'" :initial-width="280" :min-width="280" v-show="showMenuWindow">
-    <template #header>
-      <div class="w-[100%]">
-        <div style="float: left">Card Items</div>
-        <div style="float: right; text-align: right">
-          <a href="#" @click.prevent.stop='showMenuWindow= false'>
-            <ElIcon class="mr-5px">
-              <CloseBold/>
-            </ElIcon>
-          </a>
-        </div>
-      </div>
-    </template>
-    <template #default>
-
-      <!--      <ElRow class="mb-10px mt-10px">-->
-      <!--        <ElCol>-->
-      <!--          <ElDivider content-position="left">{{ $t('dashboard.editor.itemList') }}</ElDivider>-->
-      <!--        </ElCol>-->
-      <!--      </ElRow>-->
-
-<!--      <ElRow class="mb-10px mt-10px">-->
-<!--        <ElCol>-->
-<!--          <ElButton class="w-[100%]" @click="addCardItem()">-->
-<!--            {{ t('dashboard.editor.addNewCardItem') }}-->
-<!--          </ElButton>-->
-<!--        </ElCol>-->
-<!--      </ElRow>-->
-
-<!--      <ElRow class="mb-10px mt-10px">-->
-<!--        <ElCol>-->
-<!--          <ElButton class="w-[100%]" @click="importDialogVisible = true">-->
-<!--            {{ t('main.import') }}-->
-<!--          </ElButton>-->
-<!--        </ElCol>-->
-<!--      </ElRow>-->
-
-      <ElMenu
-        v-if="activeCard && activeCard.id"
-        ref="tabMenu"
-        :default-active="activeCard.selectedItem + ''"
-        v-model="activeCard.selectedItem"
-        class="el-menu-vertical-demo box-card">
-        <ElMenuItem
-          :index="index + ''"
-          :key="index"
-          v-for="(item, index) in activeCard.items"
-          @click="menuCardItemClick(index)">
-          <div class="w-[100%] menu-item">
-                <span>
-                  {{ item.title }}
-                <ElTag type="info" size="small">
-                  {{ item.type }}
-                </ElTag>
-                </span>
-            <ElButtonGroup class="buttons">
-              <ElButton @click.prevent.stop="sortCardItemUp(item, index)" text size="small">
-                <Icon icon="teenyicons:up-solid"/>
-              </ElButton>
-              <ElButton @click.prevent.stop="sortCardItemDown(item, index)" text size="small">
-                <Icon icon="teenyicons:down-solid"/>
-              </ElButton>
-            </ElButtonGroup>
-          </div>
-        </ElMenuItem>
-      </ElMenu>
-
-    </template>
-  </DraggableContainer>
 
 </template>
 
