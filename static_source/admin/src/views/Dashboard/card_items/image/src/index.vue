@@ -216,6 +216,10 @@ update();
   z-index: -99999;
 }
 
+.device {
+  width: 100%;
+  height: auto;
+}
 .device-menu {
   position: relative;
   transition: all 0.7s ease-in-out;
