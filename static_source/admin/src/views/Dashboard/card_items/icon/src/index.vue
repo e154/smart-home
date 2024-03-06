@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {onMounted, onUnmounted, PropType, ref, watch} from "vue";
-import {ButtonAction, CardItem, Compare, RenderVar, Resolve} from "@/views/Dashboard/core";
+import {ButtonAction, CardItem, Compare, eventBus, RenderVar, Resolve} from "@/views/Dashboard/core";
 import {debounce} from "lodash-es";
 import {AttributeValue, GetAttributeValue} from "@/components/Attributes";
 import api from "@/api/api";
@@ -114,6 +114,9 @@ const mouseOver = () => {
 const callAction = async (action: ButtonAction) => {
   if (!action) {
     return;
+  }
+  if (action?.eventName) {
+    eventBus.emit(action?.eventName, action?.eventArgs)
   }
   await api.v1.interactServiceEntityCallAction({
     id: action.entityId,

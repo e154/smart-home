@@ -2,7 +2,7 @@
 
 import {onMounted, PropType, ref, watch} from "vue";
 import {EntitiesActionOptions} from "./types";
-import {ElCol, ElForm, ElFormItem, ElInput, ElOption, ElRow, ElSelect} from "element-plus";
+import {ElCol, ElDivider, ElForm, ElFormItem, ElInput, ElOption, ElRow, ElSelect} from "element-plus";
 import {EntitySearch} from "@/components/EntitySearch";
 import {ApiArea, ApiEntity} from "@/api/stub";
 import api from "@/api/api";
@@ -35,6 +35,8 @@ onMounted(() => {
       action: props.options.action || props.options.actionName || '',
       tags: props.options.tags,
       areaId: props.options.areaId,
+      eventName: props.options.eventName,
+      eventArgs: props.options.eventArgs,
     }
   } else {
     action.value = {
@@ -42,6 +44,8 @@ onMounted(() => {
       action: '',
       tags: [],
       areaId: undefined,
+      eventName: undefined,
+      eventArgs: undefined,
     }
   }
 })
@@ -56,6 +60,8 @@ watch(
         action: val.action || val.actionName || '',
         tags: val.tags,
         areaId: val.areaId,
+        eventName: val.eventName,
+        eventArgs: val.eventArgs,
       }
 
       if (action.value.areaId) {
@@ -120,7 +126,10 @@ const changedArea = async (area: ApiArea) => {
 }
 
 const changedAction = (action: any) => {
-  // console.log(action)
+  handleSelect()
+}
+
+const changedEventName = (eventName: any) => {
   handleSelect()
 }
 
@@ -131,6 +140,8 @@ const handleSelect = () => {
     action: action.value.action || '',
     tags: action.value.tags || [],
     areaId: action.value.areaId || undefined,
+    eventName: action.value.eventName || undefined,
+    eventArgs: action.value.eventArgs || undefined,
   })
 }
 
@@ -189,6 +200,27 @@ const handleSelect = () => {
       <ElCol>
         <ElFormItem :label="$t('entityAction.area')" prop="area">
           <AreaSearch v-model="currentArea" @change="changedArea($event)"/>
+        </ElFormItem>
+      </ElCol>
+    </ElRow>
+
+    <ElRow class="mt-10px mb-10px">
+      <ElCol>
+        <ElDivider content-position="left">{{ $t('main.eventSystem') }}</ElDivider>
+      </ElCol>
+    </ElRow>
+
+    <ElRow :gutter="24">
+      <ElCol :span="12" :xs="12">
+        <ElFormItem :label="$t('entityAction.eventName')" prop="eventName">
+          <ElInput v-model="action.eventName" clearable @change="changedEventName($event)"
+                   :placeholder=" $t('common.inputText')"/>
+        </ElFormItem>
+      </ElCol>
+      <ElCol :span="12" :xs="12">
+        <ElFormItem :label="$t('entityAction.eventArgs')" prop="eventArgs">
+          <ElInput v-model="action.eventArgs" clearable @change="changedEventName($event)"
+                   :placeholder=" $t('common.inputText')"/>
         </ElFormItem>
       </ElCol>
     </ElRow>

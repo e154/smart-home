@@ -14,18 +14,11 @@ export class SecondMenu {
   private core: Core;
 
   constructor(core: Core) {
-    this.core = core;
+      this.core = core;
   }
 
-  private eventHandler = (event: string, args: any[]) => {
+  eventHandler = (event: string, args: any[]) => {
     this.contextMenu(args)
-  }
-
-  start = () => {
-    eventBus.subscribe('eventContextMenu', this.eventHandler)
-  }
-  shutdown = () => {
-    eventBus.unsubscribe('eventContextMenu', this.eventHandler)
   }
 
   private genItemMenu = (cardId: number) => {

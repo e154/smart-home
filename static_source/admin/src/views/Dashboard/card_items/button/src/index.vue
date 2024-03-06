@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {onMounted, PropType, ref} from "vue";
 import {ElButton, ElMessage} from 'element-plus'
-import {CardItem, requestCurrentState} from "@/views/Dashboard/core";
+import {CardItem, eventBus, requestCurrentState} from "@/views/Dashboard/core";
 import api from "@/api/api";
 import {propTypes} from "@/utils/propTypes";
 import {useI18n} from "@/hooks/web/useI18n";
@@ -29,6 +29,9 @@ onMounted(() => {
 // ---------------------------------
 
 const callAction = async () => {
+  if (props.item?.payload.button?.eventName) {
+    eventBus.emit(props.item.payload.button.eventName, props.item.payload.button?.eventArgs)
+  }
   if (!props.item?.payload.button?.action) {
     return
   }

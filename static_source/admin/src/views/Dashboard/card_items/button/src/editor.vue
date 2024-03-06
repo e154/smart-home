@@ -34,6 +34,8 @@ const changedForActionButton = async (options: EntitiesActionOptions) => {
   currentItem.value.payload.button.action = options.action
   currentItem.value.payload.button.tags = options.tags
   currentItem.value.payload.button.areaId = options.areaId
+  currentItem.value.payload.button.eventName = options.eventName
+  currentItem.value.payload.button.eventArgs = options.eventArgs
 }
 
 </script>

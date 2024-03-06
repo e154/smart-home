@@ -24,6 +24,7 @@ import {Dialog} from '@/components/Dialog'
 import {JsonEditor} from "@/components/JsonEditor";
 import {FrameEditor, KeystrokeCapture} from "@/views/Dashboard/components";
 import CardItemListWindow from "@/views/Dashboard/editor/CardItemListWindow.vue";
+import ShowOn from "@/views/Dashboard/card_items/common/src/show-on.vue";
 
 const {register, elFormRef, methods} = useForm()
 const {required} = useValidator()
@@ -379,6 +380,26 @@ onUnmounted(() => {
     </ElForm>
 
     <FrameEditor v-if="activeCard.template" :card="activeCard" :core="core"/>
+
+    <!-- show on -->
+<!--    <ElRow class="mb-10px mt-10px">-->
+<!--      <ElCol>-->
+<!--        <ElDivider content-position="left">{{ $t('dashboard.editor.showOn') }}</ElDivider>-->
+<!--      </ElCol>-->
+<!--    </ElRow>-->
+
+<!--    <ShowOn v-model="activeCard.showOn" :item="activeCard" :core="core"/>-->
+<!--    &lt;!&ndash; /show on &ndash;&gt;-->
+
+<!--    &lt;!&ndash; hide on&ndash;&gt;-->
+<!--    <ElRow class="mb-10px mt-10px">-->
+<!--      <ElCol>-->
+<!--        <ElDivider content-position="left">{{ $t('dashboard.editor.hideOn') }}</ElDivider>-->
+<!--      </ElCol>-->
+<!--    </ElRow>-->
+
+<!--    <ShowOn v-model="activeCard.hideOn" :item="activeCard" :core="core"/>-->
+    <!-- /hide on-->
 
     <ElRow class="mb-10px">
       <ElCol>

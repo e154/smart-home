@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {computed, onMounted, PropType, ref, unref, watch} from "vue";
-import {CardItem, requestCurrentState, RenderVar, Cache} from "@/views/Dashboard/core";
+import {CardItem, requestCurrentState, RenderVar, Cache, eventBus} from "@/views/Dashboard/core";
 import {debounce} from "lodash-es";
 import api from "@/api/api";
 import {useI18n} from "@/hooks/web/useI18n";
@@ -67,6 +67,9 @@ watch(
 const callAction = debounce(async (val: string) => {
   if (!currentColorPicker.value.action) {
     return;
+  }
+  if (currentColorPicker.value?.eventName) {
+    eventBus.emit(currentColorPicker.value?.eventName, val)
   }
   await api.v1.interactServiceEntityCallAction({
     id: props.item?.entityId,

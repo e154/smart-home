@@ -18,4 +18,6 @@ export interface ItemPayloadSlider {
     tags?: string[];
     areaId?: number;
     tooltip?: boolean;
+    eventName?: string;
+    eventArgs?: string;
 }

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {onMounted, PropType, ref, watch} from "vue";
 import {ElIcon, ElImage} from "element-plus";
-import {CardItem} from "@/views/Dashboard/core";
+import {CardItem, eventBus} from "@/views/Dashboard/core";
 import {JoystickAction, JoystickController, point} from "./types";
 import {useEmitt} from "@/hooks/web/useEmitt";
 import {Picture as IconPicture} from '@element-plus/icons-vue'
@@ -39,6 +39,9 @@ onMounted(() => {
 // ---------------------------------
 
 const callAction = async (action: JoystickAction, val: point) => {
+  if (action?.eventName) {
+    eventBus.emit(action?.eventName, action?.eventArgs)
+  }
   await api.v1.interactServiceEntityCallAction({
     id: props.item?.entityId,
     name: action.action,

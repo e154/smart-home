@@ -26,11 +26,18 @@ export type EventHandler = (...args: any[]) => void;
 
 export class EventBus {
     private listeners: { [event: string]: EventHandler[] } = {};
+    private _listeners: EventHandler[] = [];
 
     private subscribeToAll(handler: EventHandler) {
-        Object.keys(this.listeners).forEach(event => {
-            this.listeners[event].push(handler);
-        });
+        this._listeners.push(handler);
+    }
+
+    private unsubscribeFromAll(handler: EventHandler) {
+        for (const i in this._listeners) {
+            if (this._listeners[i] == handler) {
+                this._listeners.splice(parseInt(i), 1);
+            }
+        }
     }
 
     subscribe(events: string | string[] | undefined, handler: EventHandler) {
@@ -53,16 +60,20 @@ export class EventBus {
         }
     }
 
-    unsubscribe(events: string | string[], handler: EventHandler) {
-        if (Array.isArray(events)) {
-            events.forEach(event => {
-                if (this.listeners[event]) {
-                    this.listeners[event] = this.listeners[event].filter(h => h !== handler);
-                }
-            });
+    unsubscribe(events: string | string[] | undefined, handler: EventHandler) {
+        if (!events) {
+          this.unsubscribeFromAll(handler)
         } else {
-            if (this.listeners[events]) {
-                this.listeners[events] = this.listeners[events].filter(h => h !== handler);
+            if (Array.isArray(events)) {
+                events.forEach(event => {
+                    if (this.listeners[event]) {
+                        this.listeners[event] = this.listeners[event].filter(h => h !== handler);
+                    }
+                });
+            } else {
+                if (this.listeners[events]) {
+                    this.listeners[events] = this.listeners[events].filter(h => h !== handler);
+                }
             }
         }
     }
@@ -71,6 +82,9 @@ export class EventBus {
         const eventListeners = this.listeners[event];
         if (eventListeners) {
             eventListeners.forEach(handler => handler(event, ...args));
+        }
+        if (this._listeners.length) {
+            this._listeners.forEach(handler => handler(event, ...args));
         }
     }
 }

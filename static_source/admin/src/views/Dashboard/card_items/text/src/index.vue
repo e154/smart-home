@@ -4,7 +4,7 @@ import {
   ButtonAction,
   Cache,
   CardItem,
-  Compare,
+  Compare, eventBus,
   GetTokens,
   RenderText,
   requestCurrentState,
@@ -150,6 +150,9 @@ const mouseOver = () => {
 const callAction = async (action: ButtonAction) => {
   if (!action) {
     return;
+  }
+  if (action?.eventName) {
+    eventBus.emit(action?.eventName, action?.eventArgs)
   }
   await api.v1.interactServiceEntityCallAction({
     id: action.entityId,

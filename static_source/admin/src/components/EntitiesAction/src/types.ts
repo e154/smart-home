@@ -5,4 +5,6 @@ export interface EntitiesActionOptions {
     actionName?: string;
     tags?: string[];
     areaId?: number;
+    eventName?: string;
+    eventArgs?: any;
 }

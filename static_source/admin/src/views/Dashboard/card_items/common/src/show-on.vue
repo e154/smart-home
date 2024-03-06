@@ -6,7 +6,7 @@ import {
   ElCard,
   ElCol,
   ElCollapse,
-  ElCollapseItem,
+  ElCollapseItem, ElDivider,
   ElForm,
   ElFormItem,
   ElInput,
@@ -126,11 +126,19 @@ const lastEvent = (index: number): EventStateChange | undefined => {
     >
 
       <template #title>
-        <ElTag size="small">{{ prop.key }}</ElTag>
-        +
-        <ElTag size="small">{{ prop.comparison }}</ElTag>
-        +
-        <ElTag size="small">{{ prop.value }}</ElTag>
+        <div v-if="prop.key && prop.value">
+          <ElTag size="small">{{ prop.key }}</ElTag>
+          +
+          <ElTag size="small">{{ prop.comparison }}</ElTag>
+          +
+          <ElTag size="small">{{ prop.value }}</ElTag>
+        </div>
+        <div v-else>
+          <ElTag size="small">{{ prop.eventName }}</ElTag>
+          +
+          <ElTag size="small">{{ prop.eventArgs }}</ElTag>
+        </div>
+
       </template>
 
       <ElCard shadow="never" class="item-card-editor">
@@ -182,9 +190,30 @@ const lastEvent = (index: number): EventStateChange | undefined => {
             <ElCol>
 
               <ElFormItem :label="$t('dashboard.editor.value')" prop="value">
-                <ElInput placeholder="Please input" v-model="prop.value"/>
+                <ElInput placeholder="Please input" v-model="prop.value" clearable/>
               </ElFormItem>
 
+            </ElCol>
+          </ElRow>
+
+          <ElRow class="mt-10px mb-10px">
+            <ElCol>
+              <ElDivider content-position="left">{{ $t('main.eventSystem') }}</ElDivider>
+            </ElCol>
+          </ElRow>
+
+          <ElRow :gutter="24">
+            <ElCol :span="12" :xs="12">
+              <ElFormItem :label="$t('entityAction.eventName')" prop="eventName">
+                <ElInput v-model="prop.eventName" clearable
+                         :placeholder=" $t('common.inputText')"/>
+              </ElFormItem>
+            </ElCol>
+            <ElCol :span="12" :xs="12">
+              <ElFormItem :label="$t('entityAction.eventArgs')" prop="eventArgs">
+                <ElInput v-model="prop.eventArgs" clearable
+                         :placeholder=" $t('common.inputText')"/>
+              </ElFormItem>
             </ElCol>
           </ElRow>
 

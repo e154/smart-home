@@ -4,6 +4,7 @@ export interface ItemPayloadColorPicker {
     action?: string;
     entityId?: string;
     entity?: { id: string };
-    tags?: string[],
-    areaId?: number,
+    tags?: string[];
+    areaId?: number;
+    eventName?: string;
 }

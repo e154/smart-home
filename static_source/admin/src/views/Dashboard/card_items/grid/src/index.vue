@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import {computed, onMounted, PropType, ref, unref, watch} from "vue";
-import {CardItem, requestCurrentState, RenderVar, Cache} from "@/views/Dashboard/core";
+import {computed, onMounted, PropType, ref, watch} from "vue";
+import {Cache, CardItem, eventBus, RenderVar, requestCurrentState} from "@/views/Dashboard/core";
 import {GridProp} from "./types";
 import {debounce} from "lodash-es";
 import api from "@/api/api";
@@ -47,7 +47,7 @@ const getBoard = (str: string): any[] => {
 }
 
 const _cache = new Cache()
-const update = debounce( async () => {
+const update = debounce(async () => {
   let token: string = props.item?.payload.grid?.attribute || ''
   const result = await RenderVar(token, props.item?.lastEvent)
   board.value = getBoard(result) || []
@@ -76,6 +76,9 @@ watch(
 const callAction = async (row: number, cell: number) => {
   if (!currentItem.value.payload.grid?.tileClick || !currentItem.value.payload.grid?.actionName) {
     return;
+  }
+  if (props.item?.payload.grid?.eventName) {
+    eventBus.emit(props.item?.payload.grid?.eventName, {row: row, cell: cell})
   }
   await api.v1.interactServiceEntityCallAction({
     id: currentItem.value.payload.grid.entityId,

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {computed, onMounted, PropType, ref, unref, watch} from "vue";
-import {CardItem, requestCurrentState, RenderVar, Cache} from "@/views/Dashboard/core";
+import {CardItem, requestCurrentState, RenderVar, Cache, eventBus} from "@/views/Dashboard/core";
 import {debounce} from "lodash-es";
 import {ItemPayloadSlider, OrientationType} from "./types";
 import slider from "vue3-slider"
@@ -96,6 +96,9 @@ watch(
 )
 
 const callAction = debounce(async (val: number) => {
+  if (currentSlider.value?.eventName) {
+    eventBus.emit(currentSlider.value?.eventName, currentSlider.value?.eventArgs)
+  }
   if (!currentSlider.value.action) {
     console.warn('no action')
     return;

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {onMounted, PropType, ref, watch} from "vue";
-import {ButtonAction, Cache, CardItem, Compare, requestCurrentState, Resolve} from "@/views/Dashboard/core";
+import {ButtonAction, Cache, CardItem, Compare, eventBus, requestCurrentState, Resolve} from "@/views/Dashboard/core";
 import {ApiImage} from "@/api/stub";
 import api from "@/api/api";
 import {ElMessage} from "element-plus";
@@ -136,6 +136,9 @@ const callBaseAction = async () => {
 const callAction = async (action: ButtonAction) => {
   if (!action) {
     return;
+  }
+  if (action?.eventName) {
+    eventBus.emit(action?.eventName, action?.eventArgs)
   }
   await api.v1.interactServiceEntityCallAction({
     id: action.entityId,

@@ -281,6 +281,10 @@ const onContextMenu = (e: MouseEvent, owner: 'card' | 'cardItem', cardItemId?: n
     cardItemId: cardItemId,
   } as EventContextMenu)
 }
+
+defineOptions({
+  inheritAttrs: false
+})
 </script>
 
 <template>

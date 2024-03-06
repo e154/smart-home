@@ -9,10 +9,12 @@ export interface point {
 }
 
 export interface JoystickAction {
-    entityId?: string
-    action?: string
-    tags?: string[]
-    areaID?: number
+    entityId?: string;
+    action?: string;
+    tags?: string[];
+    areaID?: number;
+    eventName?: string;
+    eventArgs?: string;
 }
 
 export interface ItemPayloadJoystick {

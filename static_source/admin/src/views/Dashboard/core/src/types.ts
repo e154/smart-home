@@ -58,6 +58,8 @@ export interface CompareProp {
   value: string;
   entity?: { id?: string };
   entityId?: string;
+  eventName?: string;
+  eventArgs?: any;
 }
 
 export interface ButtonAction {
@@ -70,6 +72,8 @@ export interface ButtonAction {
   icon?: string;
   iconColor?: string;
   iconSize?: number;
+  eventName?: string;
+  eventArgs?: string;
 }
 
 export interface EventContextMenu {

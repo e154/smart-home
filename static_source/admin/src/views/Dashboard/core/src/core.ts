@@ -12,7 +12,7 @@ import {
 } from '@/api/stub';
 import api from '@/api/api';
 import {UUID} from 'uuid-generator-ts';
-import {RenderVar, Resolve, scriptService, eventBus} from '@/views/Dashboard/core';
+import {eventBus, RenderVar, Resolve, scriptService} from '@/views/Dashboard/core';
 import stream from '@/api/stream';
 import {debounce} from "lodash-es";
 import {ref} from "vue";
@@ -535,6 +535,35 @@ export class CardItem {
       this.payload.button.action = undefined;
     }
   }
+
+  eventBusHandler(event: string, args: any[]) {
+
+    // hide
+    if (this.hideOn) {
+      for (const prop of this.hideOn) {
+        if (prop?.eventName == event) {
+          if (prop?.eventArgs == args) {
+            this.hidden = true;
+            console.log('HIDE')
+            this.update();
+          }
+        }
+      }
+    }
+
+    // show
+    if (this.showOn) {
+      for (const prop of this.showOn) {
+        if (prop?.eventName == event) {
+          if (prop?.eventArgs == args) {
+            this.hidden = false;
+            console.log('SHOW')
+            this.update();
+          }
+        }
+      }
+    }
+  }
 } // \CardItem
 
 export class Card {
@@ -933,7 +962,6 @@ export class Card {
       const tr = Compare(val, prop.value, prop.comparison);
       if (tr) {
         this.hidden = true;
-        // this.update();
         return;
       }
     }
@@ -957,8 +985,40 @@ export class Card {
       const tr = Compare(val, prop.value, prop.comparison);
       if (tr) {
         this.hidden = false;
-        this.update();
         return;
+      }
+    }
+
+  }
+
+  eventBusHandler(event: string, args: any[]) {
+    for (const index in this.items) {
+      this.items[index].eventBusHandler(event, args);
+    }
+
+    // hide
+    if (this.hideOn) {
+
+      for (const prop of this.hideOn) {
+        if (prop?.eventName == event) {
+          if (prop?.eventArgs == args) {
+            this.hidden = true;
+            return
+          }
+        }
+      }
+    }
+
+    // show
+    if (this.showOn) {
+      for (const prop of this.showOn) {
+        if (prop?.eventName == event) {
+          if (prop?.eventArgs == args) {
+
+            this.hidden = false;
+            return
+          }
+        }
       }
     }
 
@@ -1126,6 +1186,12 @@ export class Tab {
       this.cards[index].onStateChanged(event);
     }
   }
+
+  eventBusHandler(event: string, args: any[]) {
+    for (const index in this.cards) {
+      this.cards[index].eventBusHandler(event, args);
+    }
+  }
 } // \Tab
 
 export class Core {
@@ -1138,6 +1204,9 @@ export class Core {
   constructor() {
     //todo: move to global scope
     scriptService.start()
+  }
+
+  shutdown() {
   }
 
   private _activeTabIdx = 0; // index
@@ -1300,6 +1369,13 @@ export class Core {
     // console.log('onStateChanged', event.entity_id);
     for (const index in this.tabs) {
       this.tabs[index].onStateChanged(event);
+    }
+  }
+
+  eventBusHandler(event: string, args: any[]) {
+    // console.log('event ', event, args)
+    for (const index in this.tabs) {
+      this.tabs[index].eventBusHandler(event, args);
     }
   }
 

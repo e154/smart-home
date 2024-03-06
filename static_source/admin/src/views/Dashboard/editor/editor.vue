@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, onMounted, onUnmounted, reactive, ref} from 'vue'
+import {computed, onMounted, onUnmounted, reactive, ref, unref} from 'vue'
 import {useI18n} from '@/hooks/web/useI18n'
 import {ElButton, ElEmpty, ElMessage, ElTabPane, ElTabs} from 'element-plus'
 import {useRoute} from 'vue-router'
@@ -36,7 +36,7 @@ const core = reactive<Core>(new Core());
 const currentID = ref('')
 
 // context menu
-const contextMenu = reactive<SecondMenu>(new SecondMenu(core));
+const contextMenu = reactive<SecondMenu>(new SecondMenu(unref(core)));
 
 const onStateChanged = (event: EventStateChange) => {
   eventBus.emit('stateChanged', event);
@@ -54,22 +54,29 @@ const eventHandler = (event: string, args: any[]) => {
   }
 }
 
+const eventBusHandler =  (event: string, args: any[]) => {
+  core.eventBusHandler(event, args)
+}
+
 onMounted(() => {
   const uuid = new UUID()
   currentID.value = uuid.getDashFreeUUID()
 
   fetchDashboard()
-  contextMenu.start()
 
   stream.subscribe('state_changed', currentID.value, onStateChanged);
   eventBus.subscribe(['showTabImportDialog', 'fetchDashboard'], eventHandler)
+  eventBus.subscribe(undefined, eventBusHandler)
+  eventBus.subscribe('eventContextMenu', contextMenu.eventHandler)
 })
 
 onUnmounted(() => {
+  core.shutdown()
+
   eventBus.unsubscribe(['showTabImportDialog', 'fetchDashboard'], eventHandler)
   stream.unsubscribe('state_changed', currentID.value);
-
-  contextMenu.shutdown()
+  eventBus.unsubscribe(undefined, eventBusHandler)
+  eventBus.unsubscribe('eventContextMenu', contextMenu.eventHandler)
 })
 
 // ---------------------------------
@@ -162,7 +169,7 @@ const toggleMenu = (menu: string): void => {
   }
 }
 
-const onContextMenu = (e: MouseEvent, owner: 'editor' | 'tab', tabId: number) => {
+const onContextMenu = (e: MouseEvent, owner: 'editor' | 'tab', tabId?: number) => {
   e.preventDefault();
   e.stopPropagation();
   eventBus.emit('eventContextMenu', {
@@ -215,6 +222,9 @@ const importTab = async () => {
   importDialogVisible.value = false
 }
 
+defineOptions({
+  inheritAttrs: false
+})
 </script>
 
 <template>
@@ -222,7 +232,7 @@ const importTab = async () => {
   <div class="dashboard-container"
        v-if="!loading"
        :style="getTabStyle()"
-       @contextmenu="onContextMenu($event, 'editor')">
+       @contextmenu="onContextMenu($event, 'editor', undefined)">
 
     <ElTabs
         v-model="activeTabIdx"
@@ -236,7 +246,8 @@ const importTab = async () => {
           :disabled="!tab.enabled"
           :class="[{'gap': tab.gap}]"
           :lazy="true"
-          @contextmenu="onContextMenu($event, 'tab', tab.id)">
+          @contextmenu="onContextMenu($event, 'tab', tab.id)"
+      >
         <ViewTab :tab="tab" :key="index" :core="core"/>
       </ElTabPane>
     </ElTabs>
