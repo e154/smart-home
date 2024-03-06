@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {computed, PropType} from "vue";
-import {CardItem, Core} from "@/views/Dashboard/core";
+import {CardItem, Core, stateService} from "@/views/Dashboard/core";
 import {
   ElButton,
   ElCard,
@@ -109,7 +109,7 @@ const onChangePropValue = (val, index) => {
 
 const lastEvent = (index: number): EventStateChange | undefined => {
   if (currentItem.value.payload.map.markers[index].entityId) {
-    return currentItem.value.lastEvents(currentItem.value.payload.map.markers[index].entityId)
+    return stateService.lastEvent(currentItem.value.payload.map.markers[index].entityId)
   } else {
     return currentItem.value.lastEvent
   }

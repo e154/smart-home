@@ -6,7 +6,7 @@ import {useRoute} from 'vue-router'
 import api from "@/api/api";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
-import {Card, Core, eventBus, EventContextMenu, Tab} from "@/views/Dashboard/core";
+import {Card, Core, eventBus, EventContextMenu, stateService, Tab} from "@/views/Dashboard/core";
 import ViewTab from "@/views/Dashboard/editor/ViewTab.vue";
 import {DraggableContainer} from "@/components/DraggableContainer";
 import TabSettings from "@/views/Dashboard/editor/TabSettings.vue";
@@ -38,11 +38,6 @@ const currentID = ref('')
 // context menu
 const contextMenu = reactive<SecondMenu>(new SecondMenu(unref(core)));
 
-const onStateChanged = (event: EventStateChange) => {
-  eventBus.emit('stateChanged', event);
-  core.onStateChanged(event);
-}
-
 const eventHandler = (event: string, args: any[]) => {
   switch (event) {
     case 'showTabImportDialog':
@@ -54,8 +49,12 @@ const eventHandler = (event: string, args: any[]) => {
   }
 }
 
-const eventBusHandler =  (event: string, args: any[]) => {
-  core.eventBusHandler(event, args)
+const eventStateChanged = (eventName: string, event: EventStateChange) => {
+  core.onStateChanged(event)
+}
+
+const eventBusHandler = (eventName: string, event: EventStateChange) => {
+  core.eventBusHandler(eventName, event)
 }
 
 onMounted(() => {
@@ -64,19 +63,22 @@ onMounted(() => {
 
   fetchDashboard()
 
-  stream.subscribe('state_changed', currentID.value, onStateChanged);
+  stream.subscribe('state_changed', currentID.value, stateService.onStateChanged);
+  eventBus.subscribe('stateChanged', eventStateChanged)
+
   eventBus.subscribe(['showTabImportDialog', 'fetchDashboard'], eventHandler)
-  eventBus.subscribe(undefined, eventBusHandler)
   eventBus.subscribe('eventContextMenu', contextMenu.eventHandler)
+  eventBus.subscribe(undefined, eventBusHandler)
 })
 
 onUnmounted(() => {
-  core.shutdown()
+
+  stream.unsubscribe('state_changed', currentID.value);
+  eventBus.unsubscribe('stateChanged', eventStateChanged)
 
   eventBus.unsubscribe(['showTabImportDialog', 'fetchDashboard'], eventHandler)
-  stream.unsubscribe('state_changed', currentID.value);
-  eventBus.unsubscribe(undefined, eventBusHandler)
   eventBus.unsubscribe('eventContextMenu', contextMenu.eventHandler)
+  eventBus.unsubscribe(undefined, eventBusHandler)
 })
 
 // ---------------------------------

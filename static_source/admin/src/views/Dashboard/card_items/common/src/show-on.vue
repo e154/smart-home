@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {computed, PropType} from "vue";
-import {CardItem, Core, CompareProp, comparisonType} from "@/views/Dashboard/core";
+import {CardItem, Core, CompareProp, comparisonType, stateService} from "@/views/Dashboard/core";
 import {
   ElButton,
   ElCard,
@@ -81,7 +81,7 @@ const onEntityChanged = async (entity: ApiEntity, index: number) => {
   if (entity?.id) {
     currentValue.value[index].entity = await currentCore.value.fetchEntity(entity.id);
     currentValue.value[index].entityId = entity.id;
-    currentItem.value.lastEvents(entity.id)
+    stateService.lastEvent(entity.id)
   } else {
     currentValue.value[index].entity = undefined;
     currentValue.value[index].entityId = '';
@@ -98,9 +98,9 @@ const onChangePropValue = (val, index) => {
 
 const lastEvent = (index: number): EventStateChange | undefined => {
   if (currentValue.value[index].entityId) {
-    return currentItem.value.lastEvents(currentValue.value[index].entityId)
+    return stateService.lastEvent(currentValue.value[index].entityId)
   } else {
-    return currentItem.value.lastEvent
+    return currentItem.value?.lastEvent || undefined
   }
 }
 

@@ -4,7 +4,7 @@ import {ElTabPane, ElTabs} from 'element-plus'
 import api from "@/api/api";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
-import {Core, eventBus} from "@/views/Dashboard/core";
+import {Core, eventBus, stateService} from "@/views/Dashboard/core";
 import ViewTab from "@/views/Dashboard/view/ViewTab.vue";
 import {propTypes} from "@/utils/propTypes";
 import {EventStateChange} from "@/api/types";
@@ -25,22 +25,32 @@ const props = defineProps({
   id: propTypes.number.def(0),
 })
 
-const onStateChanged = (event: EventStateChange) => {
-  eventBus.emit('stateChanged', event);
-  core.onStateChanged(event);
+const eventStateChanged = (eventName: string, event: EventStateChange) => {
+  core.onStateChanged(event)
+}
+
+const eventBusHandler = (eventName: string, event: EventStateChange) => {
+  core.eventBusHandler(eventName, event)
 }
 
 onMounted(() => {
   const uuid = new UUID()
   currentID.value = uuid.getDashFreeUUID()
 
-  // setTimeout(() => {
-  stream.subscribe('state_changed', currentID.value, onStateChanged);
-  // }, 1000)
+  fetchDashboard()
+
+  stream.subscribe('state_changed', currentID.value, stateService.onStateChanged);
+  eventBus.subscribe('stateChanged', eventStateChanged)
+
+  eventBus.subscribe(undefined, eventBusHandler)
 })
 
 onUnmounted(() => {
+
   stream.unsubscribe('state_changed', currentID.value);
+  eventBus.unsubscribe('stateChanged', eventStateChanged)
+
+  eventBus.unsubscribe(undefined, eventBusHandler)
 })
 
 // ---------------------------------
@@ -85,8 +95,6 @@ const getTabStyle = () => {
   }
   return style
 }
-
-fetchDashboard()
 
 </script>
 

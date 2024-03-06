@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {computed, inject, onMounted, PropType, ref, unref, watch} from "vue";
-import {CardItem, RenderVar, Cache} from "@/views/Dashboard/core";
+import {CardItem, RenderVar, Cache, stateService} from "@/views/Dashboard/core";
 import type {ObjectEvent} from "ol/Object";
 import markerIcon from "@/assets/imgs/marker.png";
 import {ApiImage} from "@/api/stub";
@@ -148,7 +148,7 @@ const update = debounce(async () => {
         }
         let token: string = currentCardItem.value?.payload.map?.markers[index].attribute || ''
         if (token) {
-          const lastState = currentCardItem.value?.lastEvents(entityId);
+          const lastState = stateService.lastEvent(entityId);
           const position = await RenderVar(token, lastState)
           if (position === '[NO VALUE]') {
             continue

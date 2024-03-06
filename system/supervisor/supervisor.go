@@ -174,7 +174,7 @@ func (e *supervisor) bindScripts() {
 	e.scriptService.PushFunctions("EntityGetSettings", GetSettingsBind(e))
 	e.scriptService.PushFunctions("EntitySetMetric", SetMetricBind(e))
 	e.scriptService.PushFunctions("EntityCallAction", CallActionBind(e))
-	e.scriptService.PushFunctions("EntityCallActionV2", CallActionV2Bind(e))
+	e.scriptService.PushFunctions("EntitiesCallAction", CallActionV2Bind(e))
 	e.scriptService.PushFunctions("EntityCallScene", CallSceneBind(e))
 	e.scriptService.PushFunctions("GeoDistanceToArea", GetDistanceToAreaBind(e.adaptors))
 	e.scriptService.PushFunctions("GeoDistanceBetweenPoints", GetDistanceBetweenPointsBind(e.adaptors))

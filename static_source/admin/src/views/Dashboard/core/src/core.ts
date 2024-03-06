@@ -12,8 +12,7 @@ import {
 } from '@/api/stub';
 import api from '@/api/api';
 import {UUID} from 'uuid-generator-ts';
-import {eventBus, RenderVar, Resolve, scriptService} from '@/views/Dashboard/core';
-import stream from '@/api/stream';
+import {eventBus, RenderVar, Resolve, scriptService, stateService} from '@/views/Dashboard/core';
 import {debounce} from "lodash-es";
 import {ref} from "vue";
 import {ItemPayload} from "@/views/Dashboard/card_items";
@@ -90,7 +89,6 @@ export class CardItem {
   private dashboardCardId: number;
   private styleObj: object = {};
   private styleString: string = serializedObject({});
-  private _lastEvents?: Map<string, EventStateChange> = {} as Map<string, EventStateChange>;
 
   constructor(item: ApiDashboardCardItem) {
     this.id = item.id;
@@ -207,9 +205,8 @@ export class CardItem {
         for (const index in this.payload.map?.markers) {
           const entityId = this.payload.map.markers[index].entityId;
           if (entityId) {
-            this._lastEvents[entityId] = {} as EventStateChange;
+            stateService.requestCurrentState(entityId)
           }
-          requestCurrentState(entityId)
         }
       }
       if (!this.payload.slider) {
@@ -327,12 +324,7 @@ export class CardItem {
 
   // lastEvent
   get lastEvent(): EventStateChange | undefined {
-    if (!this._lastEvents[this.entityId]) {
-      this._lastEvents[this.entityId] = {} as EventStateChange
-      requestCurrentState(this.entityId)
-      return undefined
-    }
-    return this._lastEvents[this.entityId];
+    return stateService.lastEvent(this.entityId);
   }
 
   static async createNew(title: string, type: string,
@@ -456,35 +448,21 @@ export class CardItem {
   // ---------------------------------
   // events
   // ---------------------------------
+  checkPropEntity(entityId: string): boolean {
+    for (const prop of [...this.hideOn, ...this.showOn]) {
+      if (prop.entityId == entityId || prop.entity?.id == entityId) {
+        return true
+      }
+    }
+    return false
+  }
+
   async onStateChanged(event: EventStateChange) {
-    let updated: bool = false;
 
-    // for common items
-    if (this._lastEvents && this._lastEvents[event.entity_id]) {
-      this._lastEvents[event.entity_id] = event;
-      updated = true
-    }
-
-    // ...
-    let exist: boolean
-    for (const prop of this.hideOn) {
-      if (prop.entityId == event.entity_id) {
-        exist = true
-        break;
-      }
-    }
-
-    // for base entity
-    if (!exist && (!this.entityId || event.entity_id != this.entityId)) {
-      if (updated) {
-        this.update();
-      }
+    if (!this.entityId || event.entity_id != this.entityId && !this.checkPropEntity(event.entity_id)) {
       return;
     }
 
-    // console.log(event);
-
-    this._lastEvents[this.entityId] = event;
     this.update();
 
     // hide
@@ -497,7 +475,6 @@ export class CardItem {
       if (tr) {
         this.hidden = true;
         this.update();
-
       }
     }
 
@@ -511,19 +488,8 @@ export class CardItem {
       if (tr) {
         this.hidden = false;
         this.update();
-
       }
     }
-  }
-
-  // lastEvents
-  lastEvents(entityId: string): EventStateChange | undefined {
-    if (!this._lastEvents[entityId]) {
-      this._lastEvents[entityId] = {} as EventStateChange
-      requestCurrentState(entityId)
-      return undefined
-    }
-    return this._lastEvents[entityId];
   }
 
   private clearActions() {
@@ -544,7 +510,6 @@ export class CardItem {
         if (prop?.eventName == event) {
           if (prop?.eventArgs == args) {
             this.hidden = true;
-            console.log('HIDE')
             this.update();
           }
         }
@@ -557,7 +522,6 @@ export class CardItem {
         if (prop?.eventName == event) {
           if (prop?.eventArgs == args) {
             this.hidden = false;
-            console.log('SHOW')
             this.update();
           }
         }
@@ -665,13 +629,6 @@ export class Card {
       this._entity = undefined;
       return;
     }
-  }
-
-  private _lastEvent?: EventStateChange = {} as EventStateChange;
-
-  // lastEvent
-  get lastEvent(): EventStateChange | undefined {
-    return this._lastEvent;
   }
 
   static async createNew(
@@ -938,11 +895,6 @@ export class Card {
       return;
     }
 
-    // console.log(event);
-
-    this._lastEvent = event;
-    // this.update();
-
     // hide
     for (const prop of this.hideOn) {
       let val = Resolve(prop.key, event);
@@ -998,7 +950,6 @@ export class Card {
 
     // hide
     if (this.hideOn) {
-
       for (const prop of this.hideOn) {
         if (prop?.eventName == event) {
           if (prop?.eventArgs == args) {
@@ -1206,9 +1157,6 @@ export class Core {
     scriptService.start()
   }
 
-  shutdown() {
-  }
-
   private _activeTabIdx = 0; // index
 
   get activeTabIdx(): number {
@@ -1372,10 +1320,10 @@ export class Core {
     }
   }
 
-  eventBusHandler(event: string, args: any[]) {
-    // console.log('event ', event, args)
+  eventBusHandler(eventName: string, args: any[]) {
+    if (typeof eventName != 'string') return
     for (const index in this.tabs) {
-      this.tabs[index].eventBusHandler(event, args);
+      this.tabs[index].eventBusHandler(eventName, args);
     }
   }
 
@@ -1759,18 +1707,6 @@ function getSize(): number {
   }
 
   return 200;
-}
-
-export function requestCurrentState(entityId?: string) {
-  if (!entityId) {
-    return;
-  }
-  // console.log('requestCurrentState', entityId);
-  stream.send({
-    id: UUID.createUUID(),
-    query: 'event_get_last_state',
-    body: btoa(JSON.stringify({entity_id: entityId}))
-  });
 }
 
 export function serializedObject(obj: any): string {
