@@ -25,6 +25,8 @@ const update = debounce(async () => {
     image.value = props.image
     style.value = {
       "background": `url(${props.image})`,
+      'width': '100%',
+      'height': '100%'
     }
   } else {
     image.value = null
@@ -55,11 +57,13 @@ watch(
       </div>
     </template>
   </ElImage>
-  <div v-else :style="style" class="w-[100%] h-[100%]"></div>
+  <div v-else :style="style"></div>
 </template>
 
 <style lang="less" scoped>
-.el-image__error, .el-image__placeholder, .el-image__inner {
+.el-image__error,
+.el-image__placeholder,
+.el-image__inner {
   height: auto;
 }
 

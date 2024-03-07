@@ -62,6 +62,7 @@ export interface CardPayload {
   template: boolean;
   templateFrame?: FrameProp;
   backgroundAdaptive?: boolean;
+  modal?: boolean;
 }
 
 export interface TabPayload {
@@ -507,11 +508,9 @@ export class CardItem {
     // hide
     if (this.hideOn) {
       for (const prop of this.hideOn) {
-        if (prop?.eventName == event) {
-          if (prop?.eventArgs == args) {
-            this.hidden = true;
-            this.update();
-          }
+        if (prop?.eventName == event && prop?.eventArgs == args) {
+          this.hidden = true;
+          this.update();
         }
       }
     }
@@ -519,11 +518,9 @@ export class CardItem {
     // show
     if (this.showOn) {
       for (const prop of this.showOn) {
-        if (prop?.eventName == event) {
-          if (prop?.eventArgs == args) {
-            this.hidden = false;
-            this.update();
-          }
+        if (prop?.eventName == event && prop?.eventArgs == args) {
+          this.hidden = false;
+          this.update();
         }
       }
     }
@@ -549,6 +546,7 @@ export class Card {
   template = false;
   templateFrame: FrameProp;
   backgroundAdaptive = true;
+  modal = false;
 
   selectedItem = -1;
 
@@ -575,12 +573,13 @@ export class Card {
     if (card.payload) {
       const result: any = parsedObject(decodeURIComponent(escape(atob(card.payload))));
       const payload = result as CardPayload;
-      this.showOn = payload?.showOn;
-      this.hideOn = payload?.hideOn;
+      this.showOn = payload?.showOn || [];
+      this.hideOn = payload?.hideOn || [];
       this.keysCapture = payload?.keysCapture;
       this.template = payload?.template || false;
       this.templateFrame = payload?.templateFrame || {};
       this.backgroundAdaptive = payload?.backgroundAdaptive || false;
+      this.modal = payload?.modal || false;
     }
 
     for (const index in card.items) {
@@ -724,6 +723,7 @@ export class Card {
       template: this.template,
       templateFrame: this.templateFrame,
       backgroundAdaptive: this.backgroundAdaptive,
+      modal: this.modal,
     }))));
     const card = {
       id: this.id,
@@ -951,11 +951,9 @@ export class Card {
     // hide
     if (this.hideOn) {
       for (const prop of this.hideOn) {
-        if (prop?.eventName == event) {
-          if (prop?.eventArgs == args) {
-            this.hidden = true;
-            return
-          }
+        if (prop?.eventName == event && prop?.eventArgs == args) {
+          this.hidden = true;
+          return
         }
       }
     }
@@ -963,12 +961,9 @@ export class Card {
     // show
     if (this.showOn) {
       for (const prop of this.showOn) {
-        if (prop?.eventName == event) {
-          if (prop?.eventArgs == args) {
-
-            this.hidden = false;
-            return
-          }
+        if (prop?.eventName == event && prop?.eventArgs == args) {
+          this.hidden = false;
+          return
         }
       }
     }
@@ -1023,15 +1018,11 @@ export class Tab {
   }
 
   get cards2(): Card[] {
-    //todo fix items sort
-    const cards: Card[] = [];
-    for (const card of this.cards) {
-      if (card.hidden) {
-        continue
-      }
-      cards.push(card)
-    }
-    return cards
+    return this.cards ? this.cards.filter(c => !c.hidden && !c.modal) : []
+  }
+
+  get modalCards(): Card[] {
+    return this.cards ? this.cards.filter(c => !c.hidden && c.modal) : []
   }
 
   static async createNew(boardId: number, name: string, columnWidth: number, weight: number): Promise<Tab> {

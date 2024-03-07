@@ -42,7 +42,7 @@ const props = defineProps({
   },
 })
 
-const currentItem = computed(() => props.item as CardItem)
+const currentItem = computed(() => props.item ? props.item as CardItem : undefined)
 
 const currentValue = computed({
   get(): CompareProp[] {
@@ -198,7 +198,7 @@ const lastEvent = (index: number): EventStateChange | undefined => {
 
           <ElRow class="mt-10px mb-10px">
             <ElCol>
-              <ElDivider content-position="left">{{ $t('main.eventSystem') }}</ElDivider>
+              <ElDivider content-position="left">{{ $t('entityAction.eventSystem') }}</ElDivider>
             </ElCol>
           </ElRow>
 

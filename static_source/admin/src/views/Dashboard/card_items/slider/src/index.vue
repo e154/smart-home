@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import {computed, onMounted, PropType, ref, unref, watch} from "vue";
-import {CardItem, requestCurrentState, RenderVar, Cache, eventBus} from "@/views/Dashboard/core";
+import {Cache, CardItem, eventBus, RenderVar, requestCurrentState} from "@/views/Dashboard/core";
 import {debounce} from "lodash-es";
 import {ItemPayloadSlider, OrientationType} from "./types";
 import slider from "vue3-slider"
 import api from "@/api/api";
 import {useI18n} from "@/hooks/web/useI18n";
 import {ApiEntityCallActionRequest, ApiTypes} from "@/api/stub";
+import RoundSlider from 'vue-three-round-slider'
 
 const {t} = useI18n()
 
@@ -23,6 +24,8 @@ const props = defineProps({
 })
 
 const el = ref<ElRef>(null)
+const radius = ref(120)
+
 onMounted(() => {
 
 })
@@ -86,6 +89,7 @@ const getValue = debounce(async () => {
 watch(
     () => props.item,
     (val?: CardItem) => {
+      radius.value = el.value?.clientWidth / 2
       if (!val) return;
       getValue()
     },
@@ -122,25 +126,48 @@ const dragEnd = (val: number) => {
   callAction(val)
 }
 
+const roundSliderHandler = (val: {value: number}) => {
+  callAction(val.value)
+}
+
 requestCurrentState(props.item?.entityId);
 
 </script>
 
 <template>
   <div ref="el" class="h-[100%] w-[100%]">
-    <slider
+    <slider v-if="orientation !== 'circular'"
+            v-model="value"
+            width="100%"
+            :color="color"
+            :track-color="trackColor"
+            :height="height"
+            :min="min"
+            :max="max"
+            :step="step"
+            :orientation="orientation"
+            :tooltip="tooltip"
+            v-on:drag-end="dragEnd"
+    />
+
+    <RoundSlider
+        v-if="orientation === 'circular'"
         v-model="value"
-        width="100%"
-        :color="color"
-        :track-color="trackColor"
-        :height="height"
+        start-angle="315"
+        end-angle="+270"
+        line-cap="round"
+        :radius="radius"
         :min="min"
         :max="max"
         :step="step"
-        :orientation="orientation"
-        :tooltip="tooltip"
-        v-on:drag-end="dragEnd"
+        :width="height"
+        :pathColor="trackColor"
+        :rangeColor="color"
+        :disabled="!item?.enabled"
+        :valueChange="roundSliderHandler"
+        :showTooltip="false"
     />
+
   </div>
 </template>
 

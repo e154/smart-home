@@ -114,6 +114,9 @@ export default {
         tags: 'Tags',
         area: 'Area',
         entity: 'Entity',
+        eventSystem: 'Event System',
+        eventName: 'Event Name',
+        eventArgs: 'Event Args',
     },
     setting: {
         projectSetting: 'Project setting',
@@ -542,6 +545,7 @@ export default {
         removeCard: 'Remove Card',
         removeCardItem: 'Remove Card Item',
         addCardItem: 'Add Card Item',
+        modal: 'Modal',
         editor: {
             backgroundAdaptive: 'Background Adaptive',
             keystrokeCapture: 'Keystroke Capture',

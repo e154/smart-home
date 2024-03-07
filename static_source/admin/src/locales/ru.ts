@@ -42,6 +42,8 @@ export default {
     newContentMessage: 'Доступен новый контент, нажмите кнопку перезагрузки, чтобы обновить.',
     upload: 'Загрузить',
     download: 'Скачать',
+    dialogExportTitle: 'Export',
+    dialogImportTitle: 'Import'
   },
   message: {
     unknownError: "Неизвестная ошибка",
@@ -533,6 +535,14 @@ export default {
     width: "Ширина",
     weight: "Вес",
     landing: 'Landing',
+    tabs: 'Tabs',
+    cards: 'Cards',
+    cardItem: 'Card Item',
+    removeTab: 'Remove Tab',
+    removeCard: 'Remove Card',
+    removeCardItem: 'Remove Card Item',
+    addCardItem: 'Add Card Item',
+    modal: 'Modal',
     editor: {
       backgroundAdaptive: 'Адаптивный фон',
       keystrokeCapture: 'Захват клавиатуры',

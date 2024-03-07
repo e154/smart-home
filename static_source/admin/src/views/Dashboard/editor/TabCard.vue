@@ -39,6 +39,7 @@ export interface DashboardCard {
   width: number;
   background: string;
   backgroundAdaptive: boolean;
+  modal: boolean;
   weight: number;
   enabled: boolean;
   dashboardTabId: number;
@@ -88,6 +89,16 @@ const schema = reactive<FormSchema[]>([
   {
     field: 'hidden',
     label: t('dashboard.hidden'),
+    component: 'Switch',
+    value: false,
+    colProps: {
+      md: 12,
+      span: 12
+    },
+  },
+  {
+    field: 'modal',
+    label: t('dashboard.modal'),
     component: 'Switch',
     value: false,
     colProps: {
@@ -168,6 +179,7 @@ watch(
         width: card.width,
         background: card.background,
         backgroundAdaptive: card.backgroundAdaptive,
+        modal: card.modal,
       })
     },
     {
@@ -278,6 +290,7 @@ const updateCard = async () => {
       activeCard.value.width = formData.width
       activeCard.value.background = formData.background
       activeCard.value.backgroundAdaptive = formData.backgroundAdaptive
+      activeCard.value.modal = formData.modal
 
       const res = await currentCore.value.updateCard();
       currentCore.value.updateCurrentTab();
@@ -311,6 +324,7 @@ const cancel = () => {
     width: activeCard.value.width,
     background: activeCard.value.background,
     backgroundAdaptive: activeCard.value.backgroundAdaptive,
+    modal: activeCard.value.modal,
   })
 }
 
@@ -382,23 +396,23 @@ onUnmounted(() => {
     <FrameEditor v-if="activeCard.template" :card="activeCard" :core="core"/>
 
     <!-- show on -->
-<!--    <ElRow class="mb-10px mt-10px">-->
-<!--      <ElCol>-->
-<!--        <ElDivider content-position="left">{{ $t('dashboard.editor.showOn') }}</ElDivider>-->
-<!--      </ElCol>-->
-<!--    </ElRow>-->
+    <ElRow class="mb-10px mt-10px">
+      <ElCol>
+        <ElDivider content-position="left">{{ $t('dashboard.editor.showOn') }}</ElDivider>
+      </ElCol>
+    </ElRow>
 
-<!--    <ShowOn v-model="activeCard.showOn" :item="activeCard" :core="core"/>-->
-<!--    &lt;!&ndash; /show on &ndash;&gt;-->
+    <ShowOn v-model="activeCard.showOn" :core="core"/>
+    <!-- /show on -->
 
-<!--    &lt;!&ndash; hide on&ndash;&gt;-->
-<!--    <ElRow class="mb-10px mt-10px">-->
-<!--      <ElCol>-->
-<!--        <ElDivider content-position="left">{{ $t('dashboard.editor.hideOn') }}</ElDivider>-->
-<!--      </ElCol>-->
-<!--    </ElRow>-->
+    <!-- hide on-->
+    <ElRow class="mb-10px mt-10px">
+      <ElCol>
+        <ElDivider content-position="left">{{ $t('dashboard.editor.hideOn') }}</ElDivider>
+      </ElCol>
+    </ElRow>
 
-<!--    <ShowOn v-model="activeCard.hideOn" :item="activeCard" :core="core"/>-->
+    <ShowOn v-model="activeCard.hideOn" :core="core"/>
     <!-- /hide on-->
 
     <ElRow class="mb-10px">

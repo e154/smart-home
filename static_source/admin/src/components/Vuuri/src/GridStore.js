@@ -2,33 +2,28 @@
  * Simple memory store for Vuuri
  */
 export class GridStore {
-  public _store: any;
-  public _itemStore: any;
-  public _draggingGridItem: any;
-  public _draggingItem: any;
-
   constructor() {
     /**
      * @type {Map<string, Array<Muuri>>}
      */
     this._store = new Map();
-
+  
     /**
      * @type {Map<string, Array<*>>}
      */
     this._itemStore = new Map();
-
+  
     /**
      * @type {Muuri.Item}
      */
     this._draggingGridItem = null;
-
+  
     /**
      * @type {*}
      */
     this._draggingItem = null;
   }
-
+  
   /**
    * @param {number} gridId
    * @param {Array<*>} items
@@ -36,35 +31,35 @@ export class GridStore {
   setItemsForGridId(gridId, items) {
     this._itemStore.set(gridId, items);
   }
-
+  
   /**
    * @param {Muuri.Item} value
    */
   setDraggingGridItem(value) {
     this._draggingGridItem = value;
   }
-
+  
   /**
    * @param {*} value
    */
   setDraggingItem(value) {
     this._draggingItem = value;
   }
-
+  
   /**
    * @return {Muuri.Item}
    */
   getDraggingGridItem() {
     return this._draggingGridItem;
   }
-
+  
   /**
    * @return {*}
    */
   getDraggingItem() {
     return this._draggingItem;
   }
-
+  
   /**
    * @param {string} groupId
    * @param {Muuri} grid
@@ -76,7 +71,7 @@ export class GridStore {
     }
     this._store.get(groupIdString).push(grid);
   }
-
+  
   /**
    * @param {Array<string>} groupIds
    * @param {Muuri} grid
@@ -84,7 +79,7 @@ export class GridStore {
   addGridToGroups(groupIds, grid) {
     groupIds.forEach(groupId => this.addGrid(groupId, grid));
   }
-
+  
   /**
    * @param {Array<string>} group
    * @returns {*}
@@ -93,6 +88,13 @@ export class GridStore {
     let groups = [];
     group.forEach((groupy) => groups = groups.concat(this._store.get((groupy+''))));
     return groups;
+  }
+
+  clear() {
+     this._store = new Map();
+     this._itemStore = new Map();
+     this._draggingGridItem = null;
+     this._draggingItem = null;
   }
 }
 

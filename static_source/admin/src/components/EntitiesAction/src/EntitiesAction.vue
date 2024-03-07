@@ -206,7 +206,7 @@ const handleSelect = () => {
 
     <ElRow class="mt-10px mb-10px">
       <ElCol>
-        <ElDivider content-position="left">{{ $t('main.eventSystem') }}</ElDivider>
+        <ElDivider content-position="left">{{ $t('entityAction.eventSystem') }}</ElDivider>
       </ElCol>
     </ElRow>
 
