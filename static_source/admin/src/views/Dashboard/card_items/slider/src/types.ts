@@ -1,6 +1,8 @@
 export enum OrientationType {
     horizontal = 'horizontal',
     vertical = 'vertical',
+    verticalV2 = 'verticalV2',
+    universal = 'universal',
     circular = 'circular',
 }
 

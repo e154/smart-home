@@ -136,7 +136,7 @@ requestCurrentState(props.item?.entityId);
 
 <template>
   <div ref="el" class="h-[100%] w-[100%]">
-    <slider v-if="orientation !== 'circular'"
+    <slider v-if="['vertical', 'horizontal'].includes(orientation)"
             v-model="value"
             width="100%"
             :color="color"
@@ -168,9 +168,79 @@ requestCurrentState(props.item?.entityId);
         :showTooltip="false"
     />
 
+    <div class="universal" v-if="['verticalV2', 'universal'].includes(orientation)">
+      <div class="wrapper">
+        <input type="range" min="0" max="100" :value="value" :step="step" @input="dragEnd(parseInt($event.target.value))" />
+      </div>
+    </div>
   </div>
 </template>
 
 <style lang="less">
 
+.universal {
+  margin: 0 auto;
+  display: grid;
+  height: 100%;
+  width: 100%;
+
+  .wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  .wrapper::before, .wrapper::after {
+    position: absolute;
+    z-index: 99;
+    color: v-bind(color);
+    line-height: 1;
+    pointer-events: none;
+  }
+  .wrapper::before {
+    content: "+";
+    color: #eee;
+    top: 50%;
+    right: 6%;
+    transform: translate(-50%, -50%);
+  }
+  .wrapper::after {
+    content: "−";
+    color: #eee;
+    top: 50%;
+    left: 10%;
+    transform: translate(-50%, -50%);
+  }
+
+  input[type=range] {
+    -webkit-appearance: none;
+    background-color: v-bind(trackColor);
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 1rem;
+    overflow: hidden;
+    cursor: row-resize;
+  }
+
+  input[type=range][step] {
+    background-color: v-bind(trackColor);
+  }
+  input[type='range']::-webkit-slider-thumb {
+    width: 0;
+    -webkit-appearance: none;
+    cursor: ew-resize;
+    box-shadow: -20rem 0 0 20rem v-bind(color);
+    background: v-bind(color);
+  }
+  input[type=range]::-moz-range-thumb {
+    border: none;
+    width: 0;
+    cursor: ew-resize;
+    box-shadow: -20rem 0 0 20rem v-bind(color);
+    background: v-bind(color);
+  }
+
+}
 </style>

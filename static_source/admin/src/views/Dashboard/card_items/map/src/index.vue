@@ -184,7 +184,8 @@ watch(
       update()
     },
     {
-      deep: true
+      deep: true,
+      immediate: true
     }
 )
 

@@ -73,6 +73,7 @@ const changedForActionButton = async (options: EntitiesActionOptions) => {
           >
             <ElOption label="Horizontal" value="horizontal"/>
             <ElOption label="Vertical" value="vertical"/>
+            <ElOption label="VerticalV2" value="verticalV2"/>
             <ElOption label="Circular" value="circular"/>
           </ElSelect>
         </ElFormItem>

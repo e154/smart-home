@@ -21,7 +21,8 @@ const props = defineProps({
   maxHeight: propTypes.number.def(800),
   minWidth: propTypes.number.def(350),
   canTransparent: propTypes.bool.def(true),
-  parentElement: {type: HTMLElement, default: null}
+  parentElement: {type: HTMLElement, default: null},
+  modal: propTypes.bool.def(false),
 })
 
 const menu = ref(null);
