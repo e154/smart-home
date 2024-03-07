@@ -10,7 +10,9 @@ import {CloseBold} from "@element-plus/icons-vue";
 import {DraggableContainer} from "@/components/DraggableContainer";
 import {GetFullImageUrl} from "@/utils/serverId";
 import {useI18n} from "@/hooks/web/useI18n";
-import {FluentSquareHint16Filled, FluentSquareHint20Regular, ImageCropping} from "@/views/Dashboard/components";
+import FluentSquareHint16Filled from './FluentSquareHint16Filled.vue'
+import FluentSquareHint20Regular from './FluentSquareHint20Regular.vue'
+import ImageCropping from './ImageCropping.vue'
 
 const {t} = useI18n()
 
