@@ -65,6 +65,17 @@ const getBackground = (card: Card) => {
   return background
 }
 
+const getModalWidth = (card: Card): number => {
+  if (card.width > 0) {
+    return card.width
+  }
+  return props.tab?.columnWidth
+}
+
+const getModalHeight = (card: Card) => {
+  return card.height
+}
+
 </script>
 
 <template>
@@ -74,6 +85,7 @@ const getBackground = (card: Card) => {
     :get-item-width="getItemWidth"
     :get-item-height="getItemHeight"
     :drag-enabled="false"
+    ref="grid"
   >
     <template #item="{item}">
       <Frame :frame="item.templateFrame" :background="getBackground(item)" v-if="item.template">
@@ -84,11 +96,15 @@ const getBackground = (card: Card) => {
   </Vuuri>
 
   <DraggableContainer
-      v-for="(item, index) in modalCards"
-      :key="index"
-      :name="'modal-card-items'"
-      :initial-width="item.width" :min-width="item.width"
-      :initial-height="item.height" :min-height="item.height"
+    v-for="(item, index) in modalCards"
+    :key="index + item?.id || 0"
+    :class-name="'dashboard-modal'"
+    :name="'modal-card-items-' + item.id"
+    :initial-width="getModalWidth(item)"
+    :initial-height="getModalHeight(item) + 24"
+    :modal="true"
+    :resizeable="false"
+    v-show="!item.hidden"
   >
     <template #header>
       <span v-html="item.title"></span>
@@ -112,7 +128,7 @@ const getBackground = (card: Card) => {
     }
   }
 }
-.draggable-container.container-modal-card-items {
+.draggable-container.dashboard-modal {
   .draggable-container-content {
     padding: 0;
   }

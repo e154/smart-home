@@ -28,8 +28,7 @@ const props = defineProps({
 
 const reloadKey = ref(0);
 const reload = debounce(() => {
-  console.log('reload tab')
-  // reloadKey.value += 1
+  // console.log('reload tab')
   // grid.value.update();
 }, 100)
 
@@ -40,12 +39,21 @@ const eventHandler = (event: string, args: any[]) => {
   }
 }
 
+const eventUpdateGridHandler = (event: string, args: any[]) => {
+  if (props.tab?.id === args) {
+    // console.log('update tab', tabId)
+    reloadKey.value += 1
+  }
+}
+
 onMounted(() => {
-  eventBus.subscribe(['updateTab'], eventHandler)
+  eventBus.subscribe('updateTab', eventHandler)
+  eventBus.subscribe('updateGrid', eventUpdateGridHandler)
 })
 
 onUnmounted(() => {
-  eventBus.unsubscribe(['updateTab'], eventHandler)
+  eventBus.unsubscribe('updateTab', eventHandler)
+  eventBus.unsubscribe('updateGrid', eventUpdateGridHandler)
 })
 
 // ---------------------------------

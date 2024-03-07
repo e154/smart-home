@@ -1338,7 +1338,7 @@ export class Core {
       return;
     }
 
-    eventBus.emit('updateTab', tab.id)
+    // eventBus.emit('updateTab', tab.id)
     if (this.getActiveTab) {
       return this.getActiveTab.update();
     }
@@ -1439,8 +1439,6 @@ export class Core {
     tab.cards.push(card);
     this.activeCard = tab.cards.length - 1;
     this.currentCardId = card.id;
-
-    eventBus.emit('updateTab', tab.id);
   }
 
   async updateCard() {
@@ -1452,9 +1450,6 @@ export class Core {
     if (this.activeCard == undefined) {
       return;
     }
-
-    // move to direct call
-    // eventBus.emit('updateTab', this.currentTabId);
 
     return tab.cards[this.activeCard].update();
   }
@@ -1488,8 +1483,6 @@ export class Core {
       this.currentCardId = undefined;
       this.activeCard = undefined;
     }
-
-    eventBus.emit('updateTab', tab.id);
   }
 
   async importCard(card: ApiDashboardCard) {
@@ -1508,8 +1501,6 @@ export class Core {
     if (data) {
       this.getActiveTab.cards.push(new Card(data));
     }
-
-    eventBus.emit('updateTab', tab.id);
 
     return data;
   }
@@ -1576,8 +1567,6 @@ export class Core {
     card.active = true
     this.currentCardId = card.id;
     await card.createCardItem(type);
-
-    // eventBus.emit('updateTab', this.currentTabId);
   }
 
   importCardItem(cardId: number, request) {
@@ -1646,8 +1635,6 @@ export class Core {
     }
 
     await tab.cards[this.activeCard].removeItem(index);
-
-    // eventBus.emit('updateTab', this.currentTabId);
   }
 } // \Core
 
