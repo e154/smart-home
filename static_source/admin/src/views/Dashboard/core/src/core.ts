@@ -1022,7 +1022,7 @@ export class Tab {
   }
 
   get modalCards(): Card[] {
-    return this.cards ? this.cards.filter(c => !c.hidden && c.modal) : []
+    return this.cards ? this.cards.filter(c => c.modal) : []
   }
 
   static async createNew(boardId: number, name: string, columnWidth: number, weight: number): Promise<Tab> {

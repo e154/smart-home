@@ -292,8 +292,8 @@ const updateCard = async () => {
       activeCard.value.backgroundAdaptive = formData.backgroundAdaptive
       activeCard.value.modal = formData.modal
 
-      const res = await currentCore.value.updateCard();
-      currentCore.value.updateCurrentTab();
+      const res = await activeCard.value.update();
+      // currentCore.value.updateCurrentTab();
       if (res) {
         ElMessage({
           title: t('Success'),

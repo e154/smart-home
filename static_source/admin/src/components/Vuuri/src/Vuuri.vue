@@ -152,8 +152,6 @@ export default {
      * @private
      */
     _setup() {
-      console.log('setup', this.selector)
-
       // this.muuri = new Muuri(this.selector, this.muuriOptions);
       this.muuri = new Muuri(this.selector, {
         layout: {

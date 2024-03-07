@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {computed, onBeforeUnmount, onMounted, ref, watch} from "vue";
+import {computed, nextTick, onBeforeUnmount, onMounted, PropType, ref, watch} from "vue";
 import {propTypes} from "@/utils/propTypes";
 import {useCache} from "@/hooks/web/useCache";
 import {debounce} from "lodash-es";
@@ -15,14 +15,24 @@ const props = defineProps({
   name: propTypes.string.def('main'),
   initialTop: propTypes.number.def(0),
   initialLeft: propTypes.number.def(0),
-  initialWidth: propTypes.number.def(350),
-  initialHeight: propTypes.number.def(350),
+  // initialWidth: propTypes.number.def(350),
+  initialWidth: {
+    type: Number,
+    default: () => 350
+  },
+  // initialHeight: propTypes.number.def(350),
+  initialHeight: {
+    type: Number,
+    default: () => 350
+  },
   maxWidth: propTypes.number.def(Infinity),
   maxHeight: propTypes.number.def(800),
   minWidth: propTypes.number.def(350),
   canTransparent: propTypes.bool.def(true),
   parentElement: {type: HTMLElement, default: null},
   modal: propTypes.bool.def(false),
+  resizeable: propTypes.bool.def(true),
+  className: propTypes.string.def(''),
 })
 
 const menu = ref(null);
@@ -43,11 +53,19 @@ let moveDirection: string;
 onMounted(() => {
   restoreState();
 
+  let parent: HTMLElement;
   if (props.parentElement) {
-    props.parentElement.appendChild(menu.value);
+    parent = props.parentElement
   } else {
-    document.body.appendChild(menu.value);
+    parent = document.body
   }
+  if (props.modal) {
+    left.value = Math.floor(parent.offsetWidth/2 - width.value/2)
+    top.value = Math.floor(parent.offsetHeight/2 - height.value/2)
+    width.value = props.initialWidth
+    height.value = props.initialHeight
+  }
+  parent.appendChild(menu.value);
 });
 
 onBeforeUnmount(() => {
@@ -58,8 +76,19 @@ onBeforeUnmount(() => {
   }
 });
 
-watch([top, left, width, height], () => {
+watch(() => [top, left, width, height], () => {
   saveState();
+});
+
+watch(() => [props.initialWidth, props.initialHeight], async (value: number[]) => {
+  await   nextTick(()=> {
+    if (width.value !== value[0]) {
+      width.value = value[0]
+    }
+    if (height.value !== value[1]) {
+      height.value = value[1]
+    }
+  })
 });
 
 const startDragging = (dir: string, event: MouseEvent) => {
@@ -99,7 +128,7 @@ const dragMenu = (event: MouseEvent) => {
 }
 
 const resizeRight = (event: MouseEvent) => {
-  if (isDragging.value) {
+  if (isDragging.value && props.resizeable) {
     const deltaX = event.clientX - offsetX.value;
     width.value = startWidth.value + deltaX;
     if (width.value < props.minWidth) width.value = props.minWidth
@@ -109,7 +138,7 @@ const resizeRight = (event: MouseEvent) => {
 }
 
 const resizeBottom = (event: MouseEvent) => {
-  if (isDragging.value) {
+  if (isDragging.value && props.resizeable) {
     const deltaY = event.clientY - offsetY.value;
     height.value = startHeight.value + deltaY;
     if (height.value > props.maxHeight) height.value = props.maxHeight
@@ -118,7 +147,7 @@ const resizeBottom = (event: MouseEvent) => {
 }
 
 const resizeCorner = (event: MouseEvent) => {
-  if (isDragging.value) {
+  if (isDragging.value && props.resizeable) {
     const deltaX = event.clientX - offsetX.value;
     const deltaY = event.clientY - offsetY.value;
     width.value = startWidth.value + deltaX;
@@ -181,7 +210,7 @@ const active = computed(() => appStore.getActiveWindow == props.name)
 <template>
   <div
       class="draggable-container"
-      :class="['container-' + name, {active: active, transparent: !active && canTransparent}]"
+      :class="['container-' + name, className, {active: active, transparent: !active && canTransparent}]"
       :style="{ top: `${top}px`, left: `${left}px`, width: `${width}px`, height: `${visible?height:22}px`, zIndex: zIndex }"
       ref="menu"
       @mousedown="bringToFront"
@@ -192,9 +221,9 @@ const active = computed(() => appStore.getActiveWindow == props.name)
     >
       <slot name="header"></slot>
     </div>
-    <div class="resizer right" @mousedown="startDragging('right', $event)"></div>
-    <div class="resizer bottom" @mousedown="startDragging('bottom', $event)"></div>
-    <div class="resizer corner" @mousedown="startDragging('corner', $event)"></div>
+    <div v-if="resizeable" class="resizer right" @mousedown="startDragging('right', $event)"></div>
+    <div v-if="resizeable" class="resizer bottom" @mousedown="startDragging('bottom', $event)"></div>
+    <div v-if="resizeable" class="resizer corner" @mousedown="startDragging('corner', $event)"></div>
     <div v-show="visible" class="draggable-container-content">
       <slot></slot>
     </div>
