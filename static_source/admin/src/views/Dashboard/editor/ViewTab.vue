@@ -36,9 +36,7 @@ const eventHandler = (event: string, tabId: number) => {
 const eventUpdateGridHandler = (event: string, tabId: number) => {
   if (props.tab?.id === tabId) {
     // console.log('update grid', tabId)
-    nextTick(() => {
-      grid.value.update();
-    })
+    grid.value.update();
   }
 }
 
