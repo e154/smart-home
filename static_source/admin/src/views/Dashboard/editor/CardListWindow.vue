@@ -36,12 +36,12 @@ const menuCardsClick = (card) => {
 
 const sortCardUp = (card: Card, index: number) => {
   activeTab.value.sortCardUp(card, index)
-  eventBus.emit('updateGrid', activeTab.value.id)
+  eventBus.emit('updateTab', activeTab.value.id)
 }
 
 const sortCardDown = (card: Card, index: number) => {
   activeTab.value.sortCardDown(card, index)
-  eventBus.emit('updateGrid', activeTab.value.id)
+  eventBus.emit('updateTab', activeTab.value.id)
 }
 
 const showMenuWindow = ref(false)
