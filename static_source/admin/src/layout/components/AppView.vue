@@ -4,7 +4,7 @@ import {useAppStore} from '@/store/modules/app'
 import {Footer} from '@/components/Footer'
 import {computed, onMounted, onUnmounted} from 'vue'
 import {Terminal} from "@/components/Terminal";
-import {useEventBus} from "@/hooks/event/useEventBus";
+import {eventBus} from "@/components/EventBus";
 
 const appStore = useAppStore()
 
@@ -22,10 +22,9 @@ const getCaches = computed((): string[] => {
   return tagsViewStore.getCachedViews
 })
 
-const {emit} = useEventBus()
-const onKeydown = ( event ) => {
+const onKeydown = (event) => {
   // console.log(event.code, event.keyCode);
-  emit('keydown', event)
+  eventBus.emit('keydown', event)
   if (event.key === "Escape") {
     appStore.setTerminal(false)
   }
@@ -76,11 +75,11 @@ onUnmounted(() => {
     <router-view>
       <template #default="{ Component, route }">
         <keep-alive :include="getCaches">
-          <component :is="Component" :key="route.fullPath" />
+          <component :is="Component" :key="route.fullPath"/>
         </keep-alive>
       </template>
     </router-view>
   </section>
-  <Footer v-if="footer" />
+  <Footer v-if="footer"/>
   <Terminal/>
 </template>

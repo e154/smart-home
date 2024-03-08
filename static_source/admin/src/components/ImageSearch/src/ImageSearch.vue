@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {onMounted, PropType, ref, unref, watch} from "vue";
+import {onBeforeUnmount, onMounted, PropType, ref, unref, watch} from "vue";
 import {ApiImage} from "@/api/stub";
 import {ElButton, ElCol, ElIcon, ElImage, ElRow} from 'element-plus'
 import Browser from "@/views/Images/components/Browser.vue";
@@ -9,7 +9,7 @@ import {UUID} from "uuid-generator-ts";
 import {GetFullImageUrl} from "@/utils/serverId";
 import {DraggableContainer} from "@/components/DraggableContainer";
 import {CloseBold} from "@element-plus/icons-vue";
-import {useEventBus} from "@/hooks/event/useEventBus";
+import {eventBus} from "@/components/EventBus";
 
 const emit = defineEmits(['change', 'update:modelValue'])
 const {t} = useI18n()
@@ -55,19 +55,24 @@ watch(
   }
 )
 
+const keysHandler = (eventName: string, val: any) => {
+  const {key} = val
+  if (key === 'Escape') {
+    dialogVisible.value = false
+  }
+}
+
+onMounted(() => {
+  eventBus.subscribe('keydown', keysHandler)
+})
+
+onBeforeUnmount(() => {
+  eventBus.unsubscribe('keydown', keysHandler)
+})
+
 const remove = () => {
   currentImage.value = null
 }
-
-useEventBus({
-  name: 'keydown',
-  callback: (event) => {
-    const {key} = event
-    if (key === 'Escape') {
-      dialogVisible.value = false
-    }
-  }
-})
 
 const imageSelected = (event: { id: number, image: ApiImage }) => {
   const {id, image} = event

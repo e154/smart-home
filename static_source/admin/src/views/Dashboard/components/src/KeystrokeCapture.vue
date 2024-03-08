@@ -1,11 +1,12 @@
 <script setup lang="ts">
 
-import {computed, onMounted, PropType, ref} from "vue";
+import {computed, onBeforeUnmount, onMounted, PropType, ref} from "vue";
 import {Card, Core} from "@/views/Dashboard/core";
 import {ElButton, ElCol, ElCollapse, ElCollapseItem, ElDivider, ElForm, ElPopconfirm, ElRow, ElTag, ElCard} from "element-plus";
 import {useI18n} from "@/hooks/web/useI18n";
 import {useEventBus} from "@/hooks/event/useEventBus";
 import {EntitiesAction, EntitiesActionOptions} from "@/components/EntitiesAction";
+import {eventBus} from "@/components/EventBus";
 
 const {t} = useI18n()
 
@@ -39,21 +40,24 @@ const currentCore = computed(() => props.core as Core)
 
 const activeItemIdx = ref(-1)
 
+const keysHandler = (eventName: string, val: any) => {
+  //console.debug(val)
+  if (!currentCard.value?.keysCapture) {
+    return;
+  }
+  if (activeItemIdx.value > -1) {
+    currentCard.value.keysCapture[activeItemIdx.value].keys.set(val.keyCode, val.key)
+    activeItemIdx.value = -1
+    return
+  }
+}
+
 onMounted(() => {
-  useEventBus({
-    name: 'keydown',
-    callback: (val) => {
-      //console.debug(val)
-      if (!currentCard.value?.keysCapture) {
-        return;
-      }
-      if (activeItemIdx.value > -1) {
-        currentCard.value.keysCapture[activeItemIdx.value].keys.set(val.keyCode, val.key)
-        activeItemIdx.value = -1
-        return
-      }
-    }
-  })
+  eventBus.subscribe('keydown', keysHandler)
+})
+
+onBeforeUnmount(() => {
+  eventBus.unsubscribe('keydown', keysHandler)
 })
 
 const addAction = () => {

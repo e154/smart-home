@@ -1,11 +1,11 @@
 <script setup lang="ts">
 
-import {computed, PropType} from "vue";
+import {computed, onBeforeUnmount, onMounted, PropType} from "vue";
 import {Card, Core} from "@/views/Dashboard/core";
-import {useEventBus} from "@/hooks/event/useEventBus";
 import {ApiEntityCallActionRequest, ApiTypes} from "@/api/stub";
 import api from "@/api/api";
 import {propTypes} from "@/utils/propTypes";
+import {eventBus} from "@/components/EventBus";
 
 // ---------------------------------
 // common
@@ -33,28 +33,31 @@ const currentCard = computed({
 // ---------------------------------
 // component methods
 // ---------------------------------
-
-useEventBus({
-  name: 'keydown',
-  callback: (val) => {
-
-    if (!props.hover) {
-      return
-    }
-
-    if (!currentCard.value?.keysCapture) {
-      return;
-    }
-
-    currentCard.value.keysCapture.forEach((act, index) => {
-      if (act.keys?.has(val.keyCode)) {
-        if (!act.action) {
-          return
-        }
-        callAction(act, val.key, val.keyCode)
-      }
-    })
+const keysHandler = (eventName: string, val: any) => {
+  if (!props.hover) {
+    return
   }
+
+  if (!currentCard.value?.keysCapture) {
+    return;
+  }
+
+  currentCard.value.keysCapture.forEach((act, index) => {
+    if (act.keys?.has(val.keyCode)) {
+      if (!act.action) {
+        return
+      }
+      callAction(act, val.key, val.keyCode)
+    }
+  })
+}
+
+onMounted(() => {
+  eventBus.subscribe('keydown', keysHandler)
+})
+
+onBeforeUnmount(() => {
+  eventBus.unsubscribe('keydown', keysHandler)
 })
 
 const callAction = async (params, key, keyCode,) => {
