@@ -25,22 +25,8 @@ const handleClickOutside = () => {
 }
 
 const renderLayout = () => {
-  switch (unref(layout)) {
-    case 'classic':
-      const { renderClassic } = useRenderLayout(false)
-      return renderClassic()
-    case 'topLeft':
-      const { renderTopLeft } = useRenderLayout(false)
-      return renderTopLeft()
-    case 'top':
-      const { renderTop } = useRenderLayout(false)
-      return renderTop()
-    case 'cutMenu':
-      const { renderCutMenu } = useRenderLayout(false)
-      return renderCutMenu()
-    default:
-      break
-  }
+  const { renderDashboard } = useRenderLayout(false)
+  return renderDashboard()
 }
 
 export default defineComponent({
