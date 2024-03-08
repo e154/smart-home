@@ -461,7 +461,7 @@ export class CardItem {
 
   async onStateChanged(event: EventStateChange) {
 
-    if (!this.entityId || event.entity_id != this.entityId && !this.checkPropEntity(event.entity_id)) {
+    if (!this.entityId && event.entity_id != this.entityId && !this.checkPropEntity(event.entity_id)) {
       return;
     }
 
