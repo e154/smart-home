@@ -77,12 +77,12 @@ const onChangeValue = (val) => {
 }
 
 const addProp = () => {
-  // console.log('add prop');
+  if (!props.item.payload?.image) {
+    initDefaultValue();
+  }
 
   if (!props.item.payload.image?.items) {
-    currentItem.value.payload.image = {
-      items: []
-    };
+    currentItem.value.payload.image.items = []
   }
 
   let counter = 0;
@@ -101,12 +101,8 @@ const addProp = () => {
 }
 
 const removeProp = (index: number) => {
-  if (!props.item.payload.image) {
-    initDefaultValue();
-  }
-
-  props.item.payload.image.items!.splice(index, 1);
-  props.item.update();
+  currentItem.value.payload.image.items.splice(index, 1);
+  currentItem.value.update();
 }
 
 const onChangePropKey = (index, key) => {
@@ -276,7 +272,7 @@ const onChangePropImage = (index, image) => {
   </ElRow>
 
   <ElFormItem :label="$t('dashboard.editor.image')" prop="image">
-    <ImageSearch v-model="currentItem.payload.image.image" @change="onSelectImage"/>
+    <ImageSearch v-model="currentItem.payload.image.image" @update:modelValue="onSelectImage"/>
   </ElFormItem>
 
   <ElRow class="mb-10px mt-10px">

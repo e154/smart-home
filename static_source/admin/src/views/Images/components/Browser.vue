@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {ElBadge, ElButton, ElCol, ElMessage, ElRow, ElUpload, UploadProps} from 'element-plus'
 import {useI18n} from '@/hooks/web/useI18n'
-import {reactive, unref} from "vue";
+import {reactive, unref, defineEmits} from "vue";
 import {ApiImage, GetImageFilterListResultfilter} from "@/api/stub";
 import api from "@/api/api";
 import {useEmitt} from "@/hooks/web/useEmitt";
@@ -11,8 +11,8 @@ import {useCache} from "@/hooks/web/useCache";
 import {GetFullUrl, prepareUrl} from "@/utils/serverId";
 
 const {wsCache} = useCache()
-
 const {t} = useI18n()
+const emit = defineEmits(['imageSelected'])
 
 interface ViewerObject {
   loading: boolean
@@ -95,7 +95,7 @@ const select = (image: ApiImage) => {
   output.url = output.url.replace(import.meta.env.VITE_API_BASEPATH, '');
   const serverId = wsCache.get('serverId')
   output.url = output.url.replace('?serverId=' + serverId, '');
-  emitter.emit('imageSelected', {id: props.id, image: output})
+  emit('imageSelected', {id: props.id, image: output})
   //todo: fix
   ElMessage({
     message: t('message.selectedImage') + ` ${output.id}`,

@@ -57,6 +57,8 @@ onMounted(() => {
     top.value = Math.floor(parent.offsetHeight / 2 - height.value / 2)
     width.value = props.initialWidth
     height.value = props.initialHeight
+
+    bringToFront()
   }
   parent.appendChild(menu.value);
 
@@ -73,7 +75,7 @@ onBeforeUnmount(() => {
   }
 });
 
-watch([top, left, width, height], () => {
+watch(() => [top.value, left.value, width.value, height.value], () => {
   saveState();
 });
 

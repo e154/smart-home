@@ -69,10 +69,14 @@ const onChangeValue = (val) => {
 const addProp = () => {
   // console.log('add prop');
 
-  if (!props.item.payload.icon?.items) {
+  if (!props.item.payload?.icon) {
     currentItem.value.payload.icon = {
       items: []
     };
+  }
+
+  if (!props.item.payload.icon?.items) {
+    currentItem.value.payload.icon.items = []
   }
 
   let counter = 0;

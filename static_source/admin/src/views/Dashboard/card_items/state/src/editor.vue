@@ -61,10 +61,14 @@ const currentItem = computed(() => props.item as CardItem)
 const addProp = () => {
   // console.log('add prop');
 
-  if (!props.item.payload.state?.items) {
+  if (!props.item.payload?.state) {
     currentItem.value.payload.state = {
       items: []
     };
+  }
+
+  if (!props.item.payload.state?.items) {
+    currentItem.value.payload.state.items = []
   }
 
   let counter = 0;

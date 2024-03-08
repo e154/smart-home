@@ -2,12 +2,14 @@
 
 import {onMounted, PropType, ref, unref, watch} from "vue";
 import {ApiImage} from "@/api/stub";
-import {ElButton, ElCol, ElDialog, ElImage, ElRow} from 'element-plus'
+import {ElButton, ElCol, ElIcon, ElImage, ElRow} from 'element-plus'
 import Browser from "@/views/Images/components/Browser.vue";
-import {useEmitt} from "@/hooks/web/useEmitt";
 import {useI18n} from "@/hooks/web/useI18n";
 import {UUID} from "uuid-generator-ts";
 import {GetFullImageUrl} from "@/utils/serverId";
+import {DraggableContainer} from "@/components/DraggableContainer";
+import {CloseBold} from "@element-plus/icons-vue";
+import {useEventBus} from "@/hooks/event/useEventBus";
 
 const emit = defineEmits(['change', 'update:modelValue'])
 const {t} = useI18n()
@@ -29,41 +31,49 @@ onMounted(() => {
 })
 
 watch(
-    () => props.modelValue,
-    (val?: ApiImage) => {
-      if (val === unref(currentImage)) return;
-      if (!val?.url) {
-        currentImage.value = null
-        return;
-      };
-      currentImage.value = unref(val) || null
-    },
-    {
-      immediate: true
+  () => props.modelValue,
+  (val?: ApiImage) => {
+    if (val === unref(currentImage)) return;
+    if (!val?.url) {
+      currentImage.value = null
+      return;
     }
+    ;
+    currentImage.value = unref(val) || null
+  },
+  {
+    immediate: true
+  }
 )
 
 // 监听
 watch(
-    () => currentImage.value,
-    (val?: ApiImage) => {
-      emit('update:modelValue', unref(val) || null)
-      emit('change', unref(val) || null)
-    }
+  () => currentImage.value,
+  (val?: ApiImage) => {
+    emit('update:modelValue', unref(val) || null)
+    emit('change', unref(val) || null)
+  }
 )
 
 const remove = () => {
   currentImage.value = null
 }
 
-useEmitt({
-  name: 'imageSelected',
-  callback: (val) => {
-    const {id, image} = val;
-    if (id && id != currentID.value) return;
-    currentImage.value = image || null
+useEventBus({
+  name: 'keydown',
+  callback: (event) => {
+    const {key} = event
+    if (key === 'Escape') {
+      dialogVisible.value = false
+    }
   }
 })
+
+const imageSelected = (event: { id: number, image: ApiImage }) => {
+  const {id, image} = event
+  if (id && id != currentID.value) return;
+  currentImage.value = image || null
+}
 
 const showBrowser = () => {
   dialogVisible.value = true
@@ -85,9 +95,30 @@ const showBrowser = () => {
         </ElButton>
       </div>
 
-      <ElDialog v-model="dialogVisible" append-to-body :title="$t('images.imageBrowser')" :maxHeight="400" width="80%">
-        <Browser :id="currentID"/>
-      </ElDialog>
+      <DraggableContainer
+        v-if="dialogVisible"
+        class-name="image-browser-modal"
+        name="modal-image-browser"
+        :initial-width="1024"
+        :initial-height="600"
+        :modal="true"
+      >
+        <template #header>
+          <div class="w-[100%]">
+            <div style="float: left">{{ $t('images.imageBrowser') }}</div>
+            <div style="float: right; text-align: right">
+              <a href="#" @click.prevent.stop='dialogVisible= false'>
+                <ElIcon class="mr-5px">
+                  <CloseBold/>
+                </ElIcon>
+              </a>
+            </div>
+          </div>
+        </template>
+        <template #default>
+          <Browser :id="currentID" @imageSelected="imageSelected"/>
+        </template>
+      </DraggableContainer>
     </ElCol>
   </ElRow>
 
@@ -124,5 +155,10 @@ const showBrowser = () => {
   }
 }
 
+.image-browser-modal {
+  .draggable-container-content {
+    background-color: var(--el-bg-color);
+  }
+}
 
 </style>
