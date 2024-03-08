@@ -546,6 +546,7 @@ export default {
         removeCardItem: 'Remove Card Item',
         addCardItem: 'Add Card Item',
         modal: 'Modal',
+        modalHeader: 'Modal Header',
         editor: {
             backgroundAdaptive: 'Background Adaptive',
             keystrokeCapture: 'Keystroke Capture',

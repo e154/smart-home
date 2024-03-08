@@ -40,6 +40,7 @@ export interface DashboardCard {
   background: string;
   backgroundAdaptive: boolean;
   modal: boolean;
+  modalHeader: boolean;
   weight: number;
   enabled: boolean;
   dashboardTabId: number;
@@ -107,6 +108,16 @@ const schema = reactive<FormSchema[]>([
     },
   },
   {
+    field: 'modalHeader',
+    label: t('dashboard.modalHeader'),
+    component: 'Switch',
+    value: true,
+    colProps: {
+      md: 12,
+      span: 12
+    },
+  },
+  {
     field: 'appearance',
     label: t('dashboard.editor.appearanceOptions'),
     component: 'Divider',
@@ -143,6 +154,7 @@ const schema = reactive<FormSchema[]>([
     },
     componentProps: {
       placeholder: t('dashboard.background'),
+      showAlpha: true,
     }
   },
   {
@@ -180,6 +192,7 @@ watch(
         background: card.background,
         backgroundAdaptive: card.backgroundAdaptive,
         modal: card.modal,
+        modalHeader: card.modalHeader,
       })
     },
     {
@@ -291,6 +304,7 @@ const updateCard = async () => {
       activeCard.value.background = formData.background
       activeCard.value.backgroundAdaptive = formData.backgroundAdaptive
       activeCard.value.modal = formData.modal
+      activeCard.value.modalHeader = formData.modalHeader
 
       const res = await activeCard.value.update();
       // currentCore.value.updateCurrentTab();
@@ -325,6 +339,7 @@ const cancel = () => {
     background: activeCard.value.background,
     backgroundAdaptive: activeCard.value.backgroundAdaptive,
     modal: activeCard.value.modal,
+    modalHeader: activeCard.value.modalHeader,
   })
 }
 

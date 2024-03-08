@@ -475,8 +475,7 @@ html.dark {
 
 .container-editor-main {
   .draggable-container-content {
-    padding-top: 0;
-
+    padding: 0 10px;
   }
 }
 

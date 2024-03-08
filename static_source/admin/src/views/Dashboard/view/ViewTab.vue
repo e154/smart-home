@@ -129,8 +129,9 @@ const getModalHeight = (card: Card) => {
       :class-name="'dashboard-modal'"
       :name="'modal-card-items-' + item.id"
       :initial-width="getModalWidth(item)"
-      :initial-height="getModalHeight(item) + 24"
+      :initial-height="getModalHeight(item) + (item?.modalHeader?24: 0)"
       :modal="true"
+      :header="item?.modalHeader"
       :resizeable="false"
       v-show="!item.hidden"
   >
@@ -158,6 +159,8 @@ const getModalHeight = (card: Card) => {
 }
 
 .draggable-container.dashboard-modal {
+  background: none;
+  backdrop-filter: blur(10px);
   .draggable-container-content {
     padding: 0;
   }

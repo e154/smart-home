@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {computed, nextTick, onBeforeUnmount, onMounted, PropType, ref, watch} from "vue";
+import {computed, nextTick, onBeforeUnmount, onMounted, ref, watch} from "vue";
 import {propTypes} from "@/utils/propTypes";
 import {useCache} from "@/hooks/web/useCache";
 import {debounce} from "lodash-es";
@@ -15,16 +15,8 @@ const props = defineProps({
   name: propTypes.string.def('main'),
   initialTop: propTypes.number.def(0),
   initialLeft: propTypes.number.def(0),
-  // initialWidth: propTypes.number.def(350),
-  initialWidth: {
-    type: Number,
-    default: () => 350
-  },
-  // initialHeight: propTypes.number.def(350),
-  initialHeight: {
-    type: Number,
-    default: () => 350
-  },
+  initialWidth: propTypes.number.def(350),
+  initialHeight: propTypes.number.def(350),
   maxWidth: propTypes.number.def(Infinity),
   maxHeight: propTypes.number.def(800),
   minWidth: propTypes.number.def(350),
@@ -32,6 +24,7 @@ const props = defineProps({
   parentElement: {type: HTMLElement, default: null},
   modal: propTypes.bool.def(false),
   resizeable: propTypes.bool.def(true),
+  header: propTypes.bool.def(true),
   className: propTypes.string.def(''),
 })
 
@@ -60,15 +53,19 @@ onMounted(() => {
     parent = document.body
   }
   if (props.modal) {
-    left.value = Math.floor(parent.offsetWidth/2 - width.value/2)
-    top.value = Math.floor(parent.offsetHeight/2 - height.value/2)
+    left.value = Math.floor(parent.offsetWidth / 2 - width.value / 2)
+    top.value = Math.floor(parent.offsetHeight / 2 - height.value / 2)
     width.value = props.initialWidth
     height.value = props.initialHeight
   }
   parent.appendChild(menu.value);
+
+  window.addEventListener('resize', resizeHandler, {passive: true})
 });
 
 onBeforeUnmount(() => {
+  window.removeEventListener('resize', resizeHandler)
+
   if (props.parentElement) {
     props.parentElement.removeChild(menu.value);
   } else {
@@ -76,12 +73,12 @@ onBeforeUnmount(() => {
   }
 });
 
-watch(() => [top, left, width, height], () => {
+watch([top, left, width, height], () => {
   saveState();
 });
 
 watch(() => [props.initialWidth, props.initialHeight], async (value: number[]) => {
-  await   nextTick(()=> {
+  await nextTick(() => {
     if (width.value !== value[0]) {
       width.value = value[0]
     }
@@ -90,6 +87,21 @@ watch(() => [props.initialWidth, props.initialHeight], async (value: number[]) =
     }
   })
 });
+
+const resizeHandler = debounce(() => {
+  let parent: HTMLElement;
+  if (props.parentElement) {
+    parent = props.parentElement
+  } else {
+    parent = document.body
+  }
+  if (props.modal) {
+    left.value = Math.floor(parent.offsetWidth / 2 - width.value / 2)
+    top.value = Math.floor(parent.offsetHeight / 2 - height.value / 2)
+    width.value = props.initialWidth
+    height.value = props.initialHeight
+  }
+}, 100)
 
 const startDragging = (dir: string, event: MouseEvent) => {
   moveDirection = dir
@@ -215,9 +227,11 @@ const active = computed(() => appStore.getActiveWindow == props.name)
       ref="menu"
       @mousedown="bringToFront"
   >
-    <div class="draggable-container-header"
-         @mousedown="startDragging('move', $event)"
-         @dblclick="toggleVisibility"
+    <div
+        v-if="props.header"
+        class="draggable-container-header"
+        @mousedown="startDragging('move', $event)"
+        @dblclick="toggleVisibility"
     >
       <slot name="header"></slot>
     </div>
@@ -243,6 +257,7 @@ const active = computed(() => appStore.getActiveWindow == props.name)
   display: flex;
   flex-direction: column;
   opacity: 1;
+
   &.transparent {
     opacity: 0.9;
   }
@@ -250,8 +265,7 @@ const active = computed(() => appStore.getActiveWindow == props.name)
 
 .draggable-container-content {
   position: relative;
-//background-color: var(--el-bg-color); padding: 0 10px 10px 10px;
-  padding: 10px;
+//background-color: var(--el-bg-color); padding: 0 10px 10px 10px; padding: 10px;
   flex-grow: 1; /* Занимаем все оставшееся пространство */
   overflow: auto;
 }

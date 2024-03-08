@@ -63,6 +63,7 @@ export interface CardPayload {
   templateFrame?: FrameProp;
   backgroundAdaptive?: boolean;
   modal?: boolean;
+  modalHeader?: boolean;
 }
 
 export interface TabPayload {
@@ -547,6 +548,7 @@ export class Card {
   templateFrame: FrameProp;
   backgroundAdaptive = true;
   modal = false;
+  modalHeader = true;
 
   selectedItem = -1;
 
@@ -580,6 +582,7 @@ export class Card {
       this.templateFrame = payload?.templateFrame || {};
       this.backgroundAdaptive = payload?.backgroundAdaptive || false;
       this.modal = payload?.modal || false;
+      this.modalHeader = payload?.modalHeader == undefined? true : payload.modalHeader;
     }
 
     for (const index in card.items) {
@@ -724,6 +727,7 @@ export class Card {
       templateFrame: this.templateFrame,
       backgroundAdaptive: this.backgroundAdaptive,
       modal: this.modal,
+      modalHeader: this.modalHeader,
     }))));
     const card = {
       id: this.id,

@@ -114,6 +114,9 @@ export default {
     tags: 'Тэги',
     area: 'Зона',
     entity: 'Entity',
+    eventSystem: 'Event System',
+    eventName: 'Event Name',
+    eventArgs: 'Event Args',
   },
   setting: {
     projectSetting: "Настройки проекта",
@@ -543,6 +546,7 @@ export default {
     removeCardItem: 'Remove Card Item',
     addCardItem: 'Add Card Item',
     modal: 'Modal',
+    modalHeader: 'Modal Header',
     editor: {
       backgroundAdaptive: 'Адаптивный фон',
       keystrokeCapture: 'Захват клавиатуры',
