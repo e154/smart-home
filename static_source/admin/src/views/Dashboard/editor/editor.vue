@@ -100,19 +100,13 @@ const fetchDashboard = async () => {
 // tabs
 // ---------------------------------
 
-const updateCurrentTab = (tab: any, ev: any) => {
-  const {index} = tab;
-  if (core.activeTabIdx === index) return;
-  core.activeTabIdx = index;
-  core.updateCurrentTab();
-}
-
 const activeTabIdx = computed({
   get(): string {
     return core.activeTabIdx + ''
   },
   set(value: string) {
     core.activeTabIdx = parseInt(value)
+    eventBus.emit('updateGrid', core.getActiveTab?.id)
   }
 })
 
@@ -238,7 +232,6 @@ defineOptions({
 
     <ElTabs
         v-model="activeTabIdx"
-        @tab-click="updateCurrentTab"
         class="ml-20px"
         :lazy="true">
       <ElTabPane

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import {computed, PropType, watch} from "vue";
-import {Card, Core, Tab} from "@/views/Dashboard/core";
+import {computed, nextTick, onMounted, onUnmounted, PropType, ref, watch} from "vue";
+import {Card, Core, eventBus, Tab} from "@/views/Dashboard/core";
 import Vuuri from "@/components/Vuuri"
 import ViewCard from "@/views/Dashboard/view/ViewCard.vue";
 import {Frame} from "@/views/Dashboard/components";
@@ -13,7 +13,7 @@ const appStore = useAppStore()
 // ---------------------------------
 // common
 // ---------------------------------
-
+const grid = ref(null)
 const props = defineProps({
   core: {
     type: Object as PropType<Core>,
@@ -22,6 +22,33 @@ const props = defineProps({
     type: Object as PropType<Tab>,
     default: () => null
   },
+})
+
+const reloadKey = ref(0);
+const eventHandler = (event: string, tabId: number) => {
+  if (props.tab?.id === tabId) {
+    // console.log('update tab', tabId)
+    reloadKey.value += 1
+  }
+}
+
+const eventUpdateGridHandler = (event: string, tabId: number) => {
+  if (props.tab?.id === tabId) {
+    // console.log('update grid', tabId)
+    nextTick(() => {
+      grid.value.update()
+    })
+  }
+}
+
+onMounted(() => {
+  eventBus.subscribe('updateTab', eventHandler)
+  eventBus.subscribe('updateGrid', eventUpdateGridHandler)
+})
+
+onUnmounted(() => {
+  eventBus.unsubscribe('updateTab', eventHandler)
+  eventBus.unsubscribe('updateGrid', eventUpdateGridHandler)
 })
 
 // ---------------------------------
@@ -43,14 +70,14 @@ const cards = computed<Card[]>(() => props.tab?.cards2)
 const modalCards = computed<Card[]>(() => props.tab?.modalCards)
 
 watch(
-  () => props.tab.fonts,
-  (val?: string[]) => {
-    if (!val) return
-    val.forEach(variableName => loadFonts(variableName))
-  },
-  {
-    immediate: true
-  }
+    () => props.tab.fonts,
+    (val?: string[]) => {
+      if (!val) return
+      val.forEach(variableName => loadFonts(variableName))
+    },
+    {
+      immediate: true
+    }
 )
 
 const getBackground = (card: Card) => {
@@ -80,12 +107,13 @@ const getModalHeight = (card: Card) => {
 
 <template>
   <Vuuri
-    v-model="cards"
-    item-key="id"
-    :get-item-width="getItemWidth"
-    :get-item-height="getItemHeight"
-    :drag-enabled="false"
-    ref="grid"
+      v-model="cards"
+      item-key="id"
+      :get-item-width="getItemWidth"
+      :get-item-height="getItemHeight"
+      :drag-enabled="false"
+      ref="grid"
+      :key="reloadKey"
   >
     <template #item="{item}">
       <Frame :frame="item.templateFrame" :background="getBackground(item)" v-if="item.template">
@@ -96,15 +124,15 @@ const getModalHeight = (card: Card) => {
   </Vuuri>
 
   <DraggableContainer
-    v-for="(item, index) in modalCards"
-    :key="index + item?.id || 0"
-    :class-name="'dashboard-modal'"
-    :name="'modal-card-items-' + item.id"
-    :initial-width="getModalWidth(item)"
-    :initial-height="getModalHeight(item) + 24"
-    :modal="true"
-    :resizeable="false"
-    v-show="!item.hidden"
+      v-for="(item, index) in modalCards"
+      :key="index + item?.id || 0"
+      :class-name="'dashboard-modal'"
+      :name="'modal-card-items-' + item.id"
+      :initial-width="getModalWidth(item)"
+      :initial-height="getModalHeight(item) + 24"
+      :modal="true"
+      :resizeable="false"
+      v-show="!item.hidden"
   >
     <template #header>
       <span v-html="item.title"></span>
@@ -128,6 +156,7 @@ const getModalHeight = (card: Card) => {
     }
   }
 }
+
 .draggable-container.dashboard-modal {
   .draggable-container-content {
     padding: 0;

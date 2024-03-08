@@ -74,6 +74,7 @@ const activeTabIdx = computed({
   },
   set(value: string) {
     core.activeTabIdx = parseInt(value)
+    eventBus.emit('updateGrid', core.getActiveTab?.id)
   }
 })
 
@@ -99,8 +100,12 @@ const getTabStyle = () => {
 </script>
 
 <template>
-  <ElTabs v-model="activeTabIdx" v-if="core.tabs.length > 1 && !loading" :style="getTabStyle()"
-          class="pl-20px !min-h-[100%]">
+  <ElTabs
+      v-model="activeTabIdx"
+      v-if="core.tabs.length > 1 && !loading"
+      :style="getTabStyle()"
+      class="pl-20px"
+      :lazy="true">
     <ElTabPane
         v-for="(tab, index) in core.tabs"
         :label="tab.name"
