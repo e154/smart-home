@@ -104,7 +104,7 @@ const getTabStyle = () => {
       v-model="activeTabIdx"
       v-if="core.tabs.length > 1 && !loading"
       :style="getTabStyle()"
-      class="pl-20px"
+      class="pl-20px !min-h-[100%]"
       :lazy="true">
     <ElTabPane
         v-for="(tab, index) in core.tabs"
