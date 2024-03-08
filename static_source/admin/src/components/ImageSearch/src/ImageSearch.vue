@@ -116,7 +116,7 @@ const showBrowser = () => {
           </div>
         </template>
         <template #default>
-          <Browser :id="currentID" @imageSelected="imageSelected"/>
+          <Browser :id="currentID" @imageSelected="imageSelected" :select-mode="true"/>
         </template>
       </DraggableContainer>
     </ElCol>

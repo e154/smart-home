@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import {ElBadge, ElButton, ElCol, ElMessage, ElRow, ElUpload, UploadProps} from 'element-plus'
 import {useI18n} from '@/hooks/web/useI18n'
-import {reactive, unref, defineEmits} from "vue";
+import {defineEmits, reactive, unref} from "vue";
 import {ApiImage, GetImageFilterListResultfilter} from "@/api/stub";
 import api from "@/api/api";
-import {useEmitt} from "@/hooks/web/useEmitt";
 import {createImageViewer} from "@/components/ImageViewer";
 import {propTypes} from "@/utils/propTypes";
 import {useCache} from "@/hooks/web/useCache";
@@ -24,12 +23,13 @@ interface ViewerObject {
 
 const props = defineProps({
   id: propTypes.string.def(''),
+  selectMode: propTypes.bool.def(false),
 })
 
 const viewerObject = reactive<ViewerObject>(
-    {
-      loading: false,
-    }
+  {
+    loading: false,
+  }
 )
 
 const fetch = async () => {
@@ -46,11 +46,11 @@ const getList = async (filter?: GetImageFilterListResultfilter) => {
   viewerObject.currentFilter = filter;
   viewerObject.loading = true
   const res = await api.v1.imageServiceGetImageListByDate({filter: filter.date})
-      .catch(() => {
-      })
-      .finally(() => {
-        viewerObject.loading = false
-      })
+    .catch(() => {
+    })
+    .finally(() => {
+      viewerObject.loading = false
+    })
 
   let {items} = unref(res.data);
   for (const key in items) {
@@ -63,25 +63,17 @@ const getFilterList = async () => {
   viewerObject.loading = true
 
   const res = await api.v1.imageServiceGetImageFilterList()
-      .catch(() => {
-      })
-      .finally(() => {
-        viewerObject.loading = false
-      })
+    .catch(() => {
+    })
+    .finally(() => {
+      viewerObject.loading = false
+    })
   if (res) {
     const {items} = res.data;
     viewerObject.filterList = items;
   }
 }
 
-const getActiveFilter = (item: GetImageFilterListResultfilter): boolean => {
-  if (viewerObject.currentFilter) {
-    return viewerObject.currentFilter.date === item.date
-  }
-  return false
-}
-
-const {emitter} = useEmitt()
 const select = (image: ApiImage) => {
   if (image) {
     if (viewerObject.selected && viewerObject.selected.id === image.id) {
@@ -131,14 +123,15 @@ const handleRemove: UploadProps['onRemove'] = (image: ApiImage, uploadFiles) => 
 }
 
 const handlePictureCardPreview: UploadProps['onPreview'] = (image) => {
+  if (props.selectMode) {
+    select(image)
+    return
+  }
   createImageViewer({
     urlList: [
       prepareUrl(image.url)!
     ]
   })
-
-  select(image)
-
 }
 
 fetch()
@@ -161,15 +154,15 @@ fetch()
     <ElCol :span="18" :xs="24">
 
       <ElUpload
-          v-model:file-list="viewerObject.imageList"
-          list-type="picture-card"
-          :multiple="true"
-          ref="upload"
-          :action="getUploadURL()"
-          :on-success="onSuccess"
-          :on-preview="handlePictureCardPreview"
-          :on-remove="handleRemove"
-          :auto-upload="true">
+        v-model:file-list="viewerObject.imageList"
+        list-type="picture-card"
+        :multiple="true"
+        ref="upload"
+        :action="getUploadURL()"
+        :on-success="onSuccess"
+        :on-preview="handlePictureCardPreview"
+        :on-remove="handleRemove"
+        :auto-upload="true">
         <Icon icon="ic:baseline-plus"/>
       </ElUpload>
 
