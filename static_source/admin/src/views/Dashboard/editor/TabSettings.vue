@@ -1,29 +1,17 @@
 <script setup lang="ts">
 import {computed, nextTick, PropType, reactive, ref, unref, watch} from 'vue'
 import {Form} from '@/components/Form'
-import {
-  ElAside,
-  ElButton,
-  ElCard,
-  ElCol,
-  ElContainer,
-  ElMain,
-  ElMessage,
-  ElPopconfirm,
-  ElRow,
-  ElScrollbar
-} from 'element-plus'
+import {ElButton, ElCol, ElDivider, ElMessage, ElPopconfirm, ElRow} from 'element-plus'
 import {useI18n} from '@/hooks/web/useI18n'
 import {useForm} from '@/hooks/web/useForm'
 import {useValidator} from '@/hooks/web/useValidator'
 import {FormSchema} from '@/types/form'
 import {ApiArea, ApiDashboard} from "@/api/stub";
 import {copyToClipboard} from "@/utils/clipboard";
-import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
-import {Core} from "@/views/Dashboard/core";
+import {JsonViewer} from "@/components/JsonViewer";
+import {Core, eventBus} from "@/views/Dashboard/core";
 import {useRouter} from "vue-router";
-import {useBus} from "@/views/Dashboard/bus";
-import { Dialog } from '@/components/Dialog'
+import {Dialog} from '@/components/Dialog'
 
 const {register, elFormRef, methods} = useForm()
 const {required} = useValidator()
@@ -32,7 +20,6 @@ const dialogSource = ref({})
 const dialogVisible = ref(false)
 const {setValues, setSchema} = methods
 const {currentRoute, addRoute, push} = useRouter()
-const {emit} = useBus()
 
 interface DashboardForm {
   name?: string;
@@ -165,7 +152,7 @@ const updateBoard = async () => {
 }
 
 const fetchDashboard = () => {
-  emit('fetchDashboard')
+  eventBus.emit('fetchDashboard')
 }
 
 const cancel = () => {
@@ -186,73 +173,66 @@ const removeBoard = async () => {
 
 <template>
 
-  <ElContainer>
-    <ElMain>
-      <ElScrollbar>
-        <ElCard class="box-card">
-        <template #header>
-          <div class="card-header">
-            <span>{{ $t('dashboard.mainSettings') }}</span>
-          </div>
-        </template>
+  <ElRow class="mb-10px">
+    <ElCol>
+      <ElDivider content-position="left">{{ $t('dashboard.mainTab') }}</ElDivider>
+    </ElCol>
+  </ElRow>
 
-        <Form
-            :schema="schema"
-            :rules="rules"
-            label-position="top"
-            @register="register"
-        />
+  <Form
+      :schema="schema"
+      :rules="rules"
+      label-position="top"
+      @register="register"
+      class="mb-10px"
+  />
 
-        <div class="text-right">
 
-          <ElButton type="primary" @click.prevent.stop='exportDashbord'>
-            <Icon icon="uil:file-export" class="mr-5px"/>
-            {{ $t('main.export') }}
-          </ElButton>
-          <ElButton type="primary" @click.prevent.stop="updateBoard">{{ $t('main.update') }}</ElButton>
-          <ElButton @click.prevent.stop="fetchDashboard">{{ $t('main.loadFromServer') }}</ElButton>
+  <ElRow class="mb-10px">
+    <ElCol>
+      <ElDivider class="mb-10px" content-position="left">{{ $t('main.actions') }}</ElDivider>
+    </ElCol>
+  </ElRow>
 
-          <ElPopconfirm
-              :confirm-button-text="$t('main.ok')"
-              :cancel-button-text="$t('main.no')"
-              width="250"
-              style="margin-left: 10px;"
-              :title="$t('main.are_you_sure_to_do_want_this?')"
-              @confirm="cancel"
-          >
-            <template #reference>
-              <ElButton class="mr-10px" type="default" plain>
-                {{ t('main.cancel') }}
-              </ElButton>
-            </template>
-          </ElPopconfirm>
 
-          <ElPopconfirm
-              :confirm-button-text="$t('main.ok')"
-              :cancel-button-text="$t('main.no')"
-              width="250"
-              style="margin-left: 10px;"
-              :title="$t('main.are_you_sure_to_do_want_this?')"
-              @confirm="removeBoard"
-          >
-            <template #reference>
-              <ElButton class="mr-10px" type="danger" plain>
-                <Icon icon="ep:delete" class="mr-5px"/>
-                {{ t('main.remove') }}
-              </ElButton>
-            </template>
-          </ElPopconfirm>
+  <div class="text-right">
 
-        </div>
+    <ElButton type="primary" @click.prevent.stop='exportDashbord' plain>
+      <Icon icon="uil:file-export" class="mr-5px"/>
+      {{ $t('main.export') }}
+    </ElButton>
 
-      </ElCard>
-      </ElScrollbar>
-    </ElMain>
-    <ElAside width="400px"/>
-  </ElContainer>
+
+    <ElButton type="primary" @click.prevent.stop="updateBoard" plain>
+      {{ $t('main.update') }}
+    </ElButton>
+
+
+    <ElButton @click.prevent.stop="fetchDashboard" plain>{{
+        $t('main.loadFromServer')
+      }}
+    </ElButton>
+
+    <ElPopconfirm
+        :confirm-button-text="$t('main.ok')"
+        :cancel-button-text="$t('main.no')"
+        width="250"
+        style="margin-left: 10px;"
+        :title="$t('main.are_you_sure_to_do_want_this?')"
+        @confirm="removeBoard"
+    >
+      <template #reference>
+        <ElButton type="danger" plain>
+          <Icon icon="ep:delete" class="mr-5px"/>
+          {{ t('main.remove') }}
+        </ElButton>
+      </template>
+    </ElPopconfirm>
+
+  </div>
 
   <!-- export dialog -->
-  <Dialog v-model="dialogVisible" :title="t('dashboard.dialogExportTitle')" :maxHeight="400" width="80%">
+  <Dialog v-model="dialogVisible" :title="t('main.dialogExportTitle')" :maxHeight="400" width="80%">
     <JsonViewer v-model="dialogSource"/>
     <template #footer>
       <ElButton @click="copy()">{{ t('setting.copy') }}</ElButton>

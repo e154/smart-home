@@ -95,3 +95,24 @@ func (d *UserDevices) Delete(ctx context.Context, id int64) (err error) {
 	}
 	return
 }
+
+// List ...
+func (d *UserDevices) List(ctx context.Context, limit, offset int, orderBy, sort string) (list []*UserDevice, total int64, err error) {
+
+	list = make([]*UserDevice, 0)
+	q := d.Db.WithContext(ctx).Model(UserDevice{})
+	if err = q.Count(&total).Error; err != nil {
+		err = errors.Wrap(apperr.ErrUserDeviceList, err.Error())
+		return
+	}
+	err = q.
+		Limit(limit).
+		Offset(offset).
+		//Order(fmt.Sprintf("%s %s", sort, orderBy)).
+		Find(&list).
+		Error
+	if err != nil {
+		err = errors.Wrap(apperr.ErrUserDeviceList, err.Error())
+	}
+	return
+}

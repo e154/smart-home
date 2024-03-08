@@ -21,9 +21,10 @@ package adaptors
 import (
 	"context"
 
+	"gorm.io/gorm"
+	
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"gorm.io/gorm"
 )
 
 // IVariable ...
@@ -56,12 +57,45 @@ func GetVariableAdaptor(d *gorm.DB) IVariable {
 
 // Add ...
 func (n *Variable) Add(ctx context.Context, ver m.Variable) (err error) {
+	// tags
+	tagAdaptor := GetTagAdaptor(n.db)
+	for _, tag := range ver.Tags {
+		var foundedTag *m.Tag
+		if foundedTag, err = tagAdaptor.GetByName(ctx, tag.Name); err == nil {
+			tag.Id = foundedTag.Id
+		} else {
+			tag.Id = 0
+			if tag.Id, err = tagAdaptor.Add(ctx, tag); err != nil {
+				return
+			}
+		}
+	}
+
 	err = n.table.Add(ctx, n.toDb(ver))
 	return
 }
 
 // CreateOrUpdate ...
 func (n *Variable) CreateOrUpdate(ctx context.Context, ver m.Variable) (err error) {
+
+	if err = n.table.DeleteTags(ctx, ver.Name); err != nil {
+		return
+	}
+
+	// tags
+	tagAdaptor := GetTagAdaptor(n.db)
+	for _, tag := range ver.Tags {
+		var foundedTag *m.Tag
+		if foundedTag, err = tagAdaptor.GetByName(ctx, tag.Name); err == nil {
+			tag.Id = foundedTag.Id
+		} else {
+			tag.Id = 0
+			if tag.Id, err = tagAdaptor.Add(ctx, tag); err != nil {
+				return
+			}
+		}
+	}
+
 	err = n.table.CreateOrUpdate(ctx, n.toDb(ver))
 	return
 }
@@ -81,12 +115,51 @@ func (n *Variable) GetByName(ctx context.Context, name string) (ver m.Variable, 
 }
 
 // Update ...
-func (n *Variable) Update(ctx context.Context, variable m.Variable) (err error) {
-	if _, err = n.table.GetByName(ctx, variable.Name); err != nil {
-		err = n.Add(ctx, variable)
+func (n *Variable) Update(ctx context.Context, ver m.Variable) (err error) {
+
+	transaction := true
+	tx := n.db.Begin()
+	if err = tx.Error; err != nil {
+		tx = n.db
+		transaction = false
+	}
+	defer func() {
+		if err != nil && transaction {
+			tx.Rollback()
+			return
+		}
+		if transaction {
+			err = tx.Commit().Error
+		}
+	}()
+
+	table := db.Variables{Db: tx}
+
+	var oldVer db.Variable
+	if oldVer, err = table.GetByName(ctx, ver.Name); err != nil {
+		err = n.Add(ctx, ver)
 		return
 	}
-	err = n.table.Update(ctx, n.toDb(variable))
+
+	if err = table.DeleteTags(ctx, oldVer.Name); err != nil {
+		return
+	}
+
+	// tags
+	tagAdaptor := GetTagAdaptor(tx)
+	for _, tag := range ver.Tags {
+		var foundedTag *m.Tag
+		if foundedTag, err = tagAdaptor.GetByName(ctx, tag.Name); err == nil {
+			tag.Id = foundedTag.Id
+		} else {
+			tag.Id = 0
+			if tag.Id, err = tagAdaptor.Add(ctx, tag); err != nil {
+				return
+			}
+		}
+	}
+
+	err = table.Update(ctx, n.toDb(ver))
 	return
 }
 
@@ -136,7 +209,13 @@ func (n *Variable) fromDb(dbVer db.Variable) (ver m.Variable) {
 		UpdatedAt: dbVer.UpdatedAt,
 		EntityId:  dbVer.EntityId,
 	}
-
+	// tags
+	for _, tag := range dbVer.Tags {
+		ver.Tags = append(ver.Tags, &m.Tag{
+			Id:   tag.Id,
+			Name: tag.Name,
+		})
+	}
 	return
 }
 
@@ -147,6 +226,17 @@ func (n *Variable) toDb(ver m.Variable) (dbVer db.Variable) {
 		System:   ver.System,
 		EntityId: ver.EntityId,
 	}
-
+	// tags
+	if len(ver.Tags) > 0 {
+		dbVer.Tags = make([]*db.Tag, 0, len(ver.Tags))
+		for _, tag := range ver.Tags {
+			dbVer.Tags = append(dbVer.Tags, &db.Tag{
+				Id:   tag.Id,
+				Name: tag.Name,
+			})
+		}
+	} else {
+		dbVer.Tags = make([]*db.Tag, 0)
+	}
 	return
 }

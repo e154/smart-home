@@ -1,19 +1,15 @@
 <script setup lang="ts">
-import {computed, defineEmits, ref, unref} from 'vue'
+import {computed, ref, unref} from 'vue'
 import {useI18n} from '@/hooks/web/useI18n'
 import {ElButton, ElMessage, ElPopconfirm} from 'element-plus'
-import {useForm} from '@/hooks/web/useForm'
 import {useRoute, useRouter} from 'vue-router'
-import {useValidator} from '@/hooks/web/useValidator'
 import api from "@/api/api";
 import Form from './components/Form.vue'
-import {ApiAction, ApiEntity, ApiScript} from "@/api/stub";
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {ApiAction} from "@/api/stub";
+import {ContentWrap} from "@/components/ContentWrap";
 import ActionForm from "@/views/Automation/components/ActionForm.vue";
 
-const {register, elFormRef, methods} = useForm()
-const {required} = useValidator()
-const {currentRoute, addRoute, push} = useRouter()
+const {push} = useRouter()
 const route = useRoute();
 const {t} = useI18n()
 
@@ -25,11 +21,11 @@ const currentRow = ref<Nullable<ApiAction>>(null)
 const fetch = async () => {
   loading.value = true
   const res = await api.v1.actionServiceGetActionById(actionId.value)
-      .catch(() => {
-      })
-      .finally(() => {
-        loading.value = false
-      })
+    .catch(() => {
+    })
+    .finally(() => {
+      loading.value = false
+    })
   if (res) {
     currentRow.value = res.data;
   } else {
@@ -53,11 +49,11 @@ const save = async () => {
       entityActionName: act.entityActionName,
     }
     const res = await api.v1.actionServiceUpdateAction(actionId.value, data)
-        .catch(() => {
-        })
-        .finally(() => {
-          loading.value = false
-        })
+      .catch(() => {
+      })
+      .finally(() => {
+        loading.value = false
+      })
     if (res) {
       ElMessage({
         title: t('Success'),
@@ -76,11 +72,11 @@ const cancel = () => {
 const remove = async () => {
   loading.value = true
   const res = await api.v1.actionServiceDeleteAction(actionId.value)
-      .catch(() => {
-      })
-      .finally(() => {
-        loading.value = false
-      })
+    .catch(() => {
+    })
+    .finally(() => {
+      loading.value = false
+    })
   if (res) {
     cancel()
   }
@@ -105,12 +101,12 @@ fetch()
       </ElButton>
 
       <ElPopconfirm
-          :confirm-button-text="$t('main.ok')"
-          :cancel-button-text="$t('main.no')"
-          width="250"
-          style="margin-left: 10px;"
-          :title="$t('main.are_you_sure_to_do_want_this?')"
-          @confirm="remove"
+        :confirm-button-text="$t('main.ok')"
+        :cancel-button-text="$t('main.no')"
+        width="250"
+        style="margin-left: 10px;"
+        :title="$t('main.are_you_sure_to_do_want_this?')"
+        @confirm="remove"
       >
         <template #reference>
           <ElButton class="mr-10px" type="danger" plain>

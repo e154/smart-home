@@ -5,7 +5,7 @@ import {ElButton, ElPopconfirm} from 'element-plus'
 import {useRoute, useRouter} from 'vue-router'
 import api from "@/api/api";
 import {ApiVariable} from "@/api/stub";
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {ContentWrap} from "@/components/ContentWrap";
 import VariableForm from "@/views/Variables/components/VariableForm.vue";
 
 const {push} = useRouter()
@@ -28,18 +28,25 @@ const fetch = async () => {
   }
 }
 
+const download = async () => {
+  // window.location.href = 'data:application/octet-stream;base64,' + currentRow.value.value;
+  const a = document.createElement("a"); //Create <a>
+  a.href = 'data:application/octet-stream;base64,' + currentRow.value.value;
+  a.download = currentRow.value.name; //File name Here
+  a.click();
+}
+
 const save = async () => {
   const data = {
     value: currentRow.value.value,
+    tags: currentRow.value.tags,
   }
   const res = await api.v1.variableServiceUpdateVariable(variableName.value as string, data)
       .catch(() => {
       })
       .finally(() => {
       })
-  if (res) {
-    cancel()
-  }
+ 
 }
 
 const cancel = () => {
@@ -65,6 +72,10 @@ fetch()
     <VariableForm v-if="currentRow" v-model="currentRow" :edit="true"/>
 
     <div style="text-align: right">
+
+      <ElButton type="primary" @click="download()">
+        {{ t('main.download') }}
+      </ElButton>
 
       <ElButton type="primary" @click="save()">
         {{ t('main.save') }}

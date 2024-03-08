@@ -24,6 +24,7 @@ type Dto struct {
 	User              User
 	Image             Image
 	Script            Script
+	Tag               Tag
 	Plugin            Plugin
 	Entity            Entity
 	Zigbee2mqtt       Zigbee2mqtt

@@ -21,6 +21,7 @@ package events
 import (
 	"reflect"
 
+	m "github.com/e154/smart-home/models"
 	"github.com/iancoleman/strcase"
 )
 
@@ -32,7 +33,17 @@ const (
 )
 
 type Common struct {
-	Owner OwnerType `json:"owner"`
+	Owner     OwnerType `json:"owner"`
+	SessionID string    `json:"session_id"`
+	User      *m.User   `json:"user"`
+}
+
+func (c Common) UserId() int64 {
+	if c.User != nil {
+		return c.User.Id
+	} else {
+		return 0
+	}
 }
 
 func EventName(event interface{}) string {

@@ -52,6 +52,7 @@ type Entity struct {
 	Area         *Area
 	Metrics      []*Metric `gorm:"many2many:entity_metrics;"`
 	Scripts      []*Script `gorm:"many2many:entity_scripts;"`
+	Tags         []*Tag    `gorm:"many2many:entity_tags;"`
 	Icon         *string
 	Payload      json.RawMessage `gorm:"type:jsonb;not null"`
 	Settings     json.RawMessage `gorm:"type:jsonb;not null"`
@@ -68,9 +69,15 @@ func (d *Entity) TableName() string {
 	return "entities"
 }
 
+type EntitiesStatistic struct {
+	Total  int32
+	Used   int32
+	Unused int32
+}
+
 // Add ...
 func (n Entities) Add(ctx context.Context, v *Entity) (err error) {
-	err = n.Db.WithContext(ctx).Omit("Metrics.*").Omit("Scripts.*").Create(&v).Error
+	err = n.Db.WithContext(ctx).Omit("Metrics.*").Omit("Tags.*").Omit("Scripts.*").Create(&v).Error
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
@@ -94,6 +101,7 @@ func (n Entities) Update(ctx context.Context, v *Entity) (err error) {
 
 	err = n.Db.WithContext(ctx).
 		Omit("Metrics.*").
+		Omit("Tags.*").
 		Omit("Scripts.*").
 		Save(v).Error
 
@@ -117,6 +125,7 @@ func (n Entities) GetById(ctx context.Context, id common.EntityId) (v *Entity, e
 		Preload("Area").
 		Preload("Metrics").
 		Preload("Scripts").
+		Preload("Tags").
 		Preload("Storage", func(db *gorm.DB) *gorm.DB {
 			return db.Limit(1).Order("entity_storage.created_at DESC")
 		}).
@@ -149,6 +158,7 @@ func (n Entities) GetByIds(ctx context.Context, ids []common.EntityId) (list []*
 		Preload("Area").
 		Preload("Metrics").
 		Preload("Scripts").
+		Preload("Tags").
 		//Preload("Storage", func(db *gorm.DB) *gorm.DB {
 		//	return db.Limit(1).Order("entity_storage.created_at DESC")
 		//}).
@@ -227,6 +237,7 @@ func (n *Entities) List(ctx context.Context, limit, offset int, orderBy, sort st
 		Preload("Area").
 		Preload("Metrics").
 		Preload("Scripts").
+		Preload("Tags").
 		//Preload("Storage", func(db *gorm.DB) *gorm.DB {
 		//	return db.Limit(1).Order("entity_storage.created_at DESC")
 		//}).
@@ -257,7 +268,7 @@ func (n *Entities) List(ctx context.Context, limit, offset int, orderBy, sort st
 
 // ListPlain ...
 func (n *Entities) ListPlain(ctx context.Context, limit, offset int, orderBy, sort string, autoLoad bool,
-	query, plugin *string, areaId *int64) (list []*Entity, total int64, err error) {
+	query, plugin *string, areaId *int64, tags *[]string) (list []*Entity, total int64, err error) {
 
 	list = make([]*Entity, 0)
 	q := n.Db.WithContext(ctx).Model(Entity{})
@@ -273,12 +284,19 @@ func (n *Entities) ListPlain(ctx context.Context, limit, offset int, orderBy, so
 	if areaId != nil {
 		q = q.Where("area_id = ?", *areaId)
 	}
+	if tags != nil {
+		q = q.Joins(`left join entity_tags on entity_tags.entity_id = entities.id`)
+		q = q.Joins(`left join tags on entity_tags.tag_id = tags.id`)
+		q = q.Where("tags.name in (?)", *tags)
+	}
 	if err = q.Count(&total).Error; err != nil {
 		err = errors.Wrap(apperr.ErrEntityList, err.Error())
 		return
 	}
 	q = q.
+		Preload("Tags").
 		Preload("Area").
+		Group("entities.id").
 		Limit(limit).
 		Offset(offset)
 
@@ -315,6 +333,7 @@ func (n *Entities) GetByType(ctx context.Context, t string, limit, offset int) (
 		Preload("Area").
 		Preload("Metrics").
 		Preload("Scripts").
+		Preload("Tags").
 		//Preload("Storage", func(db *gorm.DB) *gorm.DB {
 		//	return db.Order("entity_storage.created_at DESC").Limit(1)
 		//}).
@@ -344,7 +363,7 @@ func (n *Entities) Search(ctx context.Context, query string, limit, offset int) 
 		Where("id LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
-		err = errors.Wrap(apperr.ErrEntitySerch, err.Error())
+		err = errors.Wrap(apperr.ErrEntitySearch, err.Error())
 		return
 	}
 
@@ -355,7 +374,7 @@ func (n *Entities) Search(ctx context.Context, query string, limit, offset int) 
 
 	list = make([]*Entity, 0)
 	if err = q.Find(&list).Error; err != nil {
-		err = errors.Wrap(apperr.ErrEntitySerch, err.Error())
+		err = errors.Wrap(apperr.ErrEntitySearch, err.Error())
 	}
 
 	return
@@ -381,6 +400,14 @@ func (n Entities) DeleteScripts(ctx context.Context, id common.EntityId) (err er
 	return
 }
 
+// DeleteTags ...
+func (n Entities) DeleteTags(ctx context.Context, id common.EntityId) (err error) {
+	if err = n.Db.WithContext(ctx).Model(&Entity{Id: id}).Association("Tags").Clear(); err != nil {
+		err = errors.Wrap(apperr.ErrEntityDeleteTag, err.Error())
+	}
+	return
+}
+
 // PreloadStorage ...
 func (n Entities) PreloadStorage(ctx context.Context, list []*Entity) (err error) {
 
@@ -396,6 +423,40 @@ func (n Entities) PreloadStorage(ctx context.Context, list []*Entity) (err error
 			err = errors.Wrap(apperr.ErrEntityStorageGet, err.Error())
 			return
 		}
+	}
+
+	return
+}
+
+// Statistic ...
+func (n *Entities) Statistic(ctx context.Context) (statistic *EntitiesStatistic, err error) {
+
+	statistic = &EntitiesStatistic{}
+	//
+	var usedList []struct {
+		Count    int32
+		AutoLoad bool
+	}
+	err = n.Db.WithContext(ctx).Raw(`
+select count(e.id), e.auto_load
+from entities as e
+group by e.auto_load`).
+		Scan(&usedList).
+		Error
+
+	if err != nil {
+		err = errors.Wrap(apperr.ErrEntityStat, err.Error())
+		return
+	}
+
+	for _, item := range usedList {
+		statistic.Total += item.Count
+		if item.AutoLoad {
+			statistic.Used = item.Count
+
+			continue
+		}
+		statistic.Unused = item.Count
 	}
 
 	return

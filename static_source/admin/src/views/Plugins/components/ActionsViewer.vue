@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import {useI18n} from '@/hooks/web/useI18n'
 import {Table} from '@/components/Table'
-import {computed, h, PropType, reactive, ref, watch} from 'vue'
+import {h, PropType, reactive, watch} from 'vue'
 import {TableColumn} from '@/types/table'
-import {ElTableColumn, ElImageViewer, ElTag} from 'element-plus'
+import {ElImageViewer} from 'element-plus'
 import {ApiPluginOptionsResultEntityAction} from "@/api/stub";
-import {getUrl, getValue} from "./Types";
+import {GetFullUrl} from "@/utils/serverId";
 
 const {t} = useI18n()
 
@@ -77,7 +77,6 @@ watch(
 )
 
 
-
 </script>
 
 <template>
@@ -88,21 +87,9 @@ watch(
       :loading="tableObject.loading"
       style="width: 100%"
   >
-    <ElTableColumn prop="system"  label="System">
-      <template #default="scope">
-        <ElTag
-            :type="scope.row.tag === 'Home' ? '' : 'success'"
-            disable-transitions
-        >{{ scope.row.tag }}</ElTag>
-      </template>
-    </ElTableColumn>
-
     <template #value="{ row }">
       <div v-if="row.type === 'IMAGE'">
-        <ElImageViewer style="width: 100px; height: 100px" v-bind="getUrl(row.imageUrl)" />
-      </div>
-      <div v-else>
-        <span>{{ getValue(row) }}</span>
+        <ElImageViewer style="width: 100px; height: 100px" v-bind="GetFullUrl(row.imageUrl)"/>
       </div>
     </template>
   </Table>

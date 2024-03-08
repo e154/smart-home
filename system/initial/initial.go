@@ -48,6 +48,7 @@ import (
 	"github.com/e154/smart-home/system/supervisor"
 	"github.com/e154/smart-home/system/terminal"
 	"github.com/e154/smart-home/system/validation"
+	"github.com/e154/smart-home/version"
 )
 
 var (
@@ -172,6 +173,7 @@ func (n *Initial) Start(ctx context.Context) (err error) {
 	encryptor.SetKey(val)
 
 	_ = n.eventBus.Subscribe("system/models/variables/+", n.eventHandler)
+	_ = n.eventBus.Subscribe("system", n.eventHandler)
 
 	_ = n.gateClient.Start()
 	_ = n.supervisor.Start(ctx)
@@ -185,12 +187,22 @@ func (n *Initial) Start(ctx context.Context) (err error) {
 // Shutdown ...
 func (n *Initial) Shutdown(ctx context.Context) (err error) {
 	_ = n.eventBus.Unsubscribe("system/models/variables/+", n.eventHandler)
+	_ = n.eventBus.Unsubscribe("system", n.eventHandler)
 	_ = n.api.Shutdown(ctx)
 	return
 }
 
 func (n *Initial) eventHandler(_ string, message interface{}) {
 	switch v := message.(type) {
+	case events.EventGetServerVersion:
+		n.eventBus.Publish("system", events.EventServerVersion{
+			Common: events.Common{
+				Owner:     events.OwnerSystem,
+				SessionID: v.SessionID,
+				User:      v.User,
+			},
+			Version: version.GetVersion(),
+		})
 	case events.EventUpdatedVariableModel:
 		if v.Name == "timezone" && v.Value != "" {
 			log.Infof("update database timezone to: \"%s\"", v.Value)

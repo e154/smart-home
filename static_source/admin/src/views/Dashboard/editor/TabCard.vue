@@ -1,59 +1,36 @@
 <script setup lang="ts">
-import {computed, PropType, reactive, ref, unref, watch} from 'vue'
+import {computed, onMounted, onUnmounted, PropType, reactive, ref, unref, watch} from 'vue'
 import {Form} from '@/components/Form'
 import {
   ElButton,
-  ElCard,
+  ElCol,
+  ElDivider,
+  ElEmpty,
+  ElForm,
+  ElFormItem,
   ElMessage,
   ElPopconfirm,
-  ElSkeleton,
-  ElMenu,
-  ElMenuItem,
-  ElButtonGroup,
-  ElContainer,
-  ElAside,
-  ElMain,
-  ElScrollbar,
-  ElEmpty,
-  ElDivider,
-  ElCol,
-  ElRow
+  ElRow,
+  ElSwitch,
 } from 'element-plus'
 import {useI18n} from '@/hooks/web/useI18n'
 import {useForm} from '@/hooks/web/useForm'
 import {useValidator} from '@/hooks/web/useValidator'
 import {FormSchema} from '@/types/form'
-import {ApiDashboard, ApiDashboardCard, ApiDashboardCardItem, ApiEntity} from "@/api/stub";
-import {copyToClipboard} from "@/utils/clipboard";
-import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
-import {Card, Core, Tab} from "@/views/Dashboard/core";
-import {useBus} from "@/views/Dashboard/bus";
-import { Dialog } from '@/components/Dialog'
-import JsonEditor from "@/components/JsonEditor/JsonEditor.vue";
-import KeystrokeCapture from "@/views/Dashboard/components/KeystrokeCapture.vue";
-import ViewCard from "@/views/Dashboard/editor/ViewCard.vue";
+import {ApiDashboardCard, ApiDashboardCardItem, ApiEntity} from "@/api/stub";
+import {JsonViewer} from "@/components/JsonViewer";
+import {Card, Core, eventBus, Tab} from "@/views/Dashboard/core";
+import {Dialog} from '@/components/Dialog'
+import {JsonEditor} from "@/components/JsonEditor";
+import {FrameEditor, KeystrokeCapture} from "@/views/Dashboard/components";
+import CardItemListWindow from "@/views/Dashboard/editor/CardItemListWindow.vue";
+import ShowOn from "@/views/Dashboard/card_items/common/src/show-on.vue";
 
 const {register, elFormRef, methods} = useForm()
 const {required} = useValidator()
 const {t} = useI18n()
 
 const {setValues} = methods
-const {emit} = useBus()
-
-interface DashboardTab {
-  id: number;
-  name: string;
-  columnWidth: number;
-  gap: boolean;
-  background: string;
-  icon: string;
-  enabled: boolean;
-  weight: number;
-  dashboardId: number;
-  cards: ApiDashboardCard[];
-  entities: Map<string, ApiEntity>;
-  dragEnabled: boolean;
-}
 
 export interface DashboardCard {
   id: number;
@@ -61,6 +38,9 @@ export interface DashboardCard {
   height: number;
   width: number;
   background: string;
+  backgroundAdaptive: boolean;
+  modal: boolean;
+  modalHeader: boolean;
   weight: number;
   enabled: boolean;
   dashboardTabId: number;
@@ -76,7 +56,7 @@ const props = defineProps({
     type: Object as PropType<Nullable<Core>>,
   },
   tab: {
-    type: Object as PropType<Nullable<DashboardTab>>,
+    type: Object as PropType<Nullable<Tab>>,
     default: () => null
   },
 })
@@ -104,7 +84,7 @@ const schema = reactive<FormSchema[]>([
     value: false,
     colProps: {
       md: 12,
-      span: 24
+      span: 12
     },
   },
   {
@@ -114,12 +94,32 @@ const schema = reactive<FormSchema[]>([
     value: false,
     colProps: {
       md: 12,
-      span: 24
+      span: 12
     },
   },
   {
-    field: 'cardSize',
-    label: t('dashboard.editor.size'),
+    field: 'modal',
+    label: t('dashboard.modal'),
+    component: 'Switch',
+    value: false,
+    colProps: {
+      md: 12,
+      span: 12
+    },
+  },
+  {
+    field: 'modalHeader',
+    label: t('dashboard.modalHeader'),
+    component: 'Switch',
+    value: true,
+    colProps: {
+      md: 12,
+      span: 12
+    },
+  },
+  {
+    field: 'appearance',
+    label: t('dashboard.editor.appearanceOptions'),
     component: 'Divider',
     colProps: {
       span: 24
@@ -132,7 +132,7 @@ const schema = reactive<FormSchema[]>([
     value: 300,
     colProps: {
       md: 12,
-      span: 24
+      span: 12
     },
   },
   {
@@ -142,15 +142,7 @@ const schema = reactive<FormSchema[]>([
     value: 300,
     colProps: {
       md: 12,
-      span: 24
-    },
-  },
-  {
-    field: 'cardSize',
-    label: t('dashboard.editor.color'),
-    component: 'Divider',
-    colProps: {
-      span: 24
+      span: 12
     },
   },
   {
@@ -158,10 +150,24 @@ const schema = reactive<FormSchema[]>([
     label: t('dashboard.background'),
     component: 'ColorPicker',
     colProps: {
-      span: 24
+      span: 12
     },
     componentProps: {
       placeholder: t('dashboard.background'),
+      showAlpha: true,
+    }
+  },
+  {
+    field: 'backgroundAdaptive',
+    label: t('dashboard.editor.backgroundAdaptive'),
+    component: 'Switch',
+    value: true,
+    colProps: {
+      md: 12,
+      span: 12
+    },
+    componentProps: {
+      placeholder: t('dashboard.backgroundAdaptive'),
     }
   },
 ])
@@ -184,6 +190,9 @@ watch(
         weight: card.weight,
         width: card.width,
         background: card.background,
+        backgroundAdaptive: card.backgroundAdaptive,
+        modal: card.modal,
+        modalHeader: card.modalHeader,
       })
     },
     {
@@ -192,12 +201,12 @@ watch(
     }
 )
 
-
 const activeTab = computed({
   get(): Tab {
     return currentCore.value.getActiveTab as Tab
   },
-  set(val: Tab) {}
+  set(val: Tab) {
+  }
 })
 
 // ---------------------------------
@@ -209,19 +218,19 @@ const importDialogVisible = ref(false)
 const exportDialogVisible = ref(false)
 const importedCard = ref(null)
 
-const prepareForExport = () => {
+const prepareForExport = (cardId?: number) => {
   if (currentCore.value.activeCard == undefined) {
     return;
   }
-  dialogSource.value = activeTab.value.cards[currentCore.value.activeCard].serialize()
+  dialogSource.value = currentCore.value.serializeCard(cardId)
 }
 
 const showImportDialog = () => {
   importDialogVisible.value = true
 }
 
-const showExportDialog = () => {
-  prepareForExport()
+const showExportDialog = (cardId?: number) => {
+  prepareForExport(cardId)
   exportDialogVisible.value = true
 }
 
@@ -232,17 +241,16 @@ const importHandler = (val: any) => {
   importedCard.value = val
 }
 
-const copy = async () => {
-  prepareForExport()
-  copyToClipboard(JSON.stringify(dialogSource.value, null, 2))
-}
+// const pasteCardItem = () => {
+//   activeCard.value.pasteCardItem();
+// }
 
 const importCard = async () => {
   let card: ApiDashboardCard
   try {
     if (importedCard.value?.json) {
       card = importedCard.value.json as ApiDashboardCard;
-    } else if(importedCard.value.text) {
+    } else if (importedCard.value.text) {
       card = JSON.parse(importedCard.value.text) as ApiDashboardCard;
     }
   } catch {
@@ -272,7 +280,7 @@ const importCard = async () => {
 
 const onSelectedCard = (id: number) => {
   currentCore.value.onSelectedCard(id);
-  emit('unselected_card_item')
+  eventBus.emit('unselectedCardItem')
 }
 
 const addCard = () => {
@@ -284,7 +292,7 @@ const updateCard = async () => {
   await formRef?.validate(async (isValid) => {
     if (isValid) {
       const {getFormData} = methods
-      const formData = await getFormData<DashboardCard>()
+      const formData = await getFormData()
 
       activeCard.value.title = formData.title
       activeCard.value.enabled = formData.enabled
@@ -294,9 +302,12 @@ const updateCard = async () => {
       activeCard.value.weight = formData.weight
       activeCard.value.width = formData.width
       activeCard.value.background = formData.background
+      activeCard.value.backgroundAdaptive = formData.backgroundAdaptive
+      activeCard.value.modal = formData.modal
+      activeCard.value.modalHeader = formData.modalHeader
 
-      const res = await currentCore.value.updateCard();
-      currentCore.value.updateCurrentTab();
+      const res = await activeCard.value.update();
+      // currentCore.value.updateCurrentTab();
       if (res) {
         ElMessage({
           title: t('Success'),
@@ -314,15 +325,6 @@ const removeCard = async () => {
   await currentCore.value.removeCard();
 }
 
-useBus({
-  name: 'selected_card',
-  callback: (id: number) => onSelectedCard(id)
-})
-
-const menuCardsClick = (card: DashboardCard) => {
-  // emit('selected_card', card.id);
-  onSelectedCard(card.id)
-}
 
 const cancel = () => {
   if (!activeCard.value) return;
@@ -335,135 +337,147 @@ const cancel = () => {
     weight: activeCard.value.weight,
     width: activeCard.value.width,
     background: activeCard.value.background,
+    backgroundAdaptive: activeCard.value.backgroundAdaptive,
+    modal: activeCard.value.modal,
+    modalHeader: activeCard.value.modalHeader,
   })
 }
 
-const sortCardUp = (card: Card, index: number) => {
-  activeTab.value.sortCardUp(card, index)
-  currentCore.value.updateCurrentTab();
+const eventHandler = (event: string, args: any[]) => {
+  switch (event) {
+    case 'selectedCard':
+      onSelectedCard(args)
+      break;
+    case 'showCardImportDialog':
+      importDialogVisible.value = true
+      break;
+    case 'showCardExportDialog':
+      showExportDialog(args)
+      break;
+  }
 }
 
-const sortCardDown = (card: Card, index: number) => {
-  activeTab.value.sortCardDown(card, index)
-  currentCore.value.updateCurrentTab();
-}
+onMounted(() => {
+  eventBus.subscribe(['selectedCard', 'showCardImportDialog', 'showCardExportDialog'], eventHandler)
+})
 
+onUnmounted(() => {
+  eventBus.unsubscribe(['selectedCard', 'showCardImportDialog', 'showCardExportDialog'], eventHandler)
+})
 
 </script>
 
 <template>
+  <ElEmpty v-if="!(activeCard !== undefined)" :rows="5" description="Select card or">
+    <ElButton type="primary" @click="addCard()">
+      {{ t('dashboard.addNewCard') }}
+    </ElButton>
+    <ElButton type="primary" @click="showImportDialog()">
+      {{ t('main.import') }}
+    </ElButton>
+  </ElEmpty>
 
-<!--  <ElContainer style="height: 500px">-->
-  <ElContainer>
-    <ElMain>
-      <ElScrollbar>
-        <ElCard class="box-card">
-          <template #header>
-            <div class="card-header">
-              <span>{{ $t('dashboard.cardDetail') }}</span>
-            </div>
-          </template>
+  <div v-if="activeCard !== undefined">
 
-          <Form
-              v-if="activeCard != undefined"
-              :schema="schema"
-              :rules="rules"
-              label-position="top"
-              style="width: 100%"
-              @register="register"
-          />
+    <ElRow class="mb-10px">
+      <ElCol>
+        <ElDivider content-position="left">{{ $t('dashboard.cardOptions') }}</ElDivider>
+      </ElCol>
+    </ElRow>
 
-          <ElRow v-if="activeCard != undefined" class="mb-20px">
-            <ElCol>
-              <ElDivider content-position="left">{{ $t('dashboard.editor.keystrokeCapture') }}</ElDivider>
-            </ElCol>
-            <ElCol>
-              <KeystrokeCapture :card="activeCard" :core="core"/>
-            </ElCol>
-          </ElRow>
+    <Form
+        :schema="schema"
+        :rules="rules"
+        label-position="top"
+        style="width: 100%"
+        @register="register"
+    />
 
-          <ElEmpty v-if="!(activeCard != undefined)" :rows="5">
-            <ElButton type="primary" @click="addCard()">
-              {{ t('dashboard.addNewCard') }}
-            </ElButton>
-          </ElEmpty>
+    <ElForm
+        label-position="top"
+        style="width: 100%"
+    >
+      <ElRow
+      >
+        <ElCol>
+          <ElFormItem :label="$t('dashboard.editor.template')" prop="template">
+            <ElSwitch v-model="activeCard.template"/>
+          </ElFormItem>
+        </ElCol>
+      </ElRow>
 
-          <div class="text-right" v-if="activeCard != undefined">
-            <ElButton type="primary" @click.prevent.stop='showExportDialog()'>
-              <Icon icon="uil:file-export" class="mr-5px"/>
-              {{ $t('main.export') }}
-            </ElButton>
-            <ElButton type="primary" @click.prevent.stop="updateCard">{{ $t('main.update') }}</ElButton>
-            <ElButton type="default" @click.prevent.stop="cancel" plain>{{ t('main.cancel') }}</ElButton>
-            <ElPopconfirm
-                :confirm-button-text="$t('main.ok')"
-                :cancel-button-text="$t('main.no')"
-                width="250"
-                style="margin-left: 10px;"
-                :title="$t('main.are_you_sure_to_do_want_this?')"
-                @confirm="removeCard"
-            >
-              <template #reference>
-                <ElButton class="mr-10px" type="danger" plain>
-                  <Icon icon="ep:delete" class="mr-5px"/>
-                  {{ t('main.remove') }}
-                </ElButton>
-              </template>
-            </ElPopconfirm>
-          </div>
+    </ElForm>
 
-        </ElCard>
-      </ElScrollbar>
-    </ElMain>
-    <ElAside width="400px">
-      <ElScrollbar>
-        <ElCard class="box-card">
-          <template #header>
-            <div class="card-header">
-              <span>{{ $t('dashboard.cardList') }}</span>
-              <ElButtonGroup>
-                <ElButton @click="addCard()" text size="small">
-                  {{ t('dashboard.addNew') }}
-                </ElButton>
-                <ElButton @click="showImportDialog()" text size="small">
-                  {{ t('dashboard.importCard') }}
-                </ElButton>
-              </ElButtonGroup>
-            </div>
-          </template>
-          <ElMenu v-if="currentCore.activeTabIdx > -1 && activeTab.cards.length" :default-active="currentCore.activeCard + ''" v-model="currentCore.activeCard" class="el-menu-vertical-demo">
-            <ElMenuItem :index="index + ''" :key="index" v-for="(card, index) in activeTab.cards" @click="menuCardsClick(card)">
-              <div class="w-[100%] card-header">
-                <span>{{ card.title }}</span>
-                <ElButtonGroup class="hide">
-                  <ElButton type="default" @click.prevent.stop="sortCardUp(card, index)">
-                    <Icon icon="teenyicons:up-solid" />
-                  </ElButton>
-                  <ElButton type="default" @click.prevent.stop="sortCardDown(card, index)">
-                    <Icon icon="teenyicons:down-solid" />
-                  </ElButton>
-                </ElButtonGroup>
-              </div>
-            </ElMenuItem>
-          </ElMenu>
+    <FrameEditor v-if="activeCard.template" :card="activeCard" :core="core"/>
 
-        </ElCard>
-      </ElScrollbar>
-    </ElAside>
-  </ElContainer>
+    <!-- show on -->
+    <ElRow class="mb-10px mt-10px">
+      <ElCol>
+        <ElDivider content-position="left">{{ $t('dashboard.editor.showOn') }}</ElDivider>
+      </ElCol>
+    </ElRow>
+
+    <ShowOn v-model="activeCard.showOn" :core="core"/>
+    <!-- /show on -->
+
+    <!-- hide on-->
+    <ElRow class="mb-10px mt-10px">
+      <ElCol>
+        <ElDivider content-position="left">{{ $t('dashboard.editor.hideOn') }}</ElDivider>
+      </ElCol>
+    </ElRow>
+
+    <ShowOn v-model="activeCard.hideOn" :core="core"/>
+    <!-- /hide on-->
+
+    <ElRow class="mb-10px">
+      <ElCol>
+        <ElDivider content-position="left">{{ $t('dashboard.editor.keystrokeCapture') }}</ElDivider>
+      </ElCol>
+    </ElRow>
+
+    <ElRow class="mb-10px">
+      <ElCol>
+        <KeystrokeCapture :card="activeCard" :core="core"/>
+      </ElCol>
+    </ElRow>
+
+    <ElRow class="mb-10px">
+      <ElCol>
+        <ElDivider content-position="left">{{ $t('main.actions') }}</ElDivider>
+      </ElCol>
+    </ElRow>
+
+    <div class="text-right">
+      <ElButton type="primary" @click.prevent.stop="updateCard" plain>{{ $t('main.update') }}</ElButton>
+      <ElButton @click.prevent.stop="cancel" plain>{{ t('main.cancel') }}</ElButton>
+      <ElPopconfirm
+          :confirm-button-text="$t('main.ok')"
+          :cancel-button-text="$t('main.no')"
+          width="250"
+          style="margin-left: 10px;"
+          :title="$t('main.are_you_sure_to_do_want_this?')"
+          @confirm="removeCard"
+      >
+        <template #reference>
+          <ElButton type="danger" plain>
+            <Icon icon="ep:delete" class="mr-5px"/>
+            {{ t('main.remove') }}
+          </ElButton>
+        </template>
+      </ElPopconfirm>
+    </div>
+  </div>
 
   <!-- export dialog -->
-  <Dialog v-model="exportDialogVisible" :title="t('entities.dialogExportTitle')" :maxHeight="400" width="80%">
+  <Dialog v-model="exportDialogVisible" :title="t('main.dialogExportTitle')" :maxHeight="400" width="80%">
     <JsonViewer v-model="dialogSource"/>
-<!--    <template #footer>-->
-<!--      <ElButton @click="copy()">{{ t('setting.copy') }}</ElButton>-->
-<!--      <ElButton @click="exportDialogVisible = false">{{ t('main.closeDialog') }}</ElButton>-->
-<!--    </template>-->
   </Dialog>
   <!-- /export dialog -->
 
   <!-- import dialog -->
-  <Dialog v-model="importDialogVisible" :title="t('entities.dialogImportTitle')" :maxHeight="400" width="80%" custom-class>
+  <Dialog v-model="importDialogVisible" :title="t('main.dialogImportTitle')" :maxHeight="400" width="80%"
+          custom-class>
     <JsonEditor @change="importHandler"/>
     <template #footer>
       <ElButton type="primary" @click="importCard()" plain>{{ t('main.import') }}</ElButton>
@@ -471,21 +485,13 @@ const sortCardDown = (card: Card, index: number) => {
     </template>
   </Dialog>
   <!-- /import dialog -->
+
+  <!-- card items list window -->
+  <CardItemListWindow :card="activeCard" :core="currentCore"/>
+  <!-- /card items list window -->
+
 </template>
 
-<style lang="less" scoped>
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+<style lang="less">
 
-.hide {
-  display: none;
-}
-
-.el-menu-item:hover .hide {
-  display: block;
-  color: red;
-}
 </style>

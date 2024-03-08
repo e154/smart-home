@@ -11,7 +11,6 @@ import {
   ElOption,
   ElPopconfirm,
   ElRow,
-  ElScrollbar,
   ElSelect,
   ElTabPane,
   ElTabs
@@ -20,14 +19,15 @@ import {useRoute, useRouter} from 'vue-router'
 import api from "@/api/api";
 import Form from './components/Form.vue'
 import {ApiScript} from "@/api/stub";
-import ScriptEditor from "@/views/Scripts/components/ScriptEditor.vue";
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {ScriptEditor} from "@/components/ScriptEditor";
+import {ContentWrap} from "@/components/ContentWrap";
 import {useEmitt} from "@/hooks/web/useEmitt";
 import {Infotip} from '@/components/Infotip'
 import {parseTime} from "@/utils";
-import MergeEditor from "@/views/Scripts/components/MergeEditor.vue";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
+import {MergeEditor} from "@/components/MergeEditor";
+import {EventUpdatedScriptModel} from "@/api/types";
 
 const {emitter} = useEmitt()
 const {push} = useRouter()
@@ -36,7 +36,7 @@ const {t} = useI18n()
 
 const writeRef = ref<ComponentRef<typeof Form>>()
 const loading = ref(false)
-const scriptId = computed(() => route.params.id as number);
+const scriptId = computed(() => parseInt(route.params.id));
 const currentScript = ref<Nullable<ApiScript>>(null)
 const activeTab = ref('source')
 const currentVersionIdx = ref(0)
@@ -50,13 +50,19 @@ onMounted(() => {
   currentID.value = uuid.getDashFreeUUID()
 
   setTimeout(() => {
-    stream.subscribe('event_updated_script_model', currentID.value, fetch)
+    stream.subscribe('event_updated_script_model', currentID.value, eventHandler)
   }, 1000)
 })
 
 onUnmounted(() => {
   stream.unsubscribe('event_updated_script_model', currentID.value)
 })
+
+const eventHandler = (event: EventUpdatedScriptModel) => {
+  if (event.script_id && event.script_id === scriptId.value) {
+    fetch()
+  }
+}
 
 const fetch = async () => {
   loading.value = true
@@ -242,7 +248,7 @@ fetch()
       <!-- versions -->
       <ElTabPane :label="$t('scripts.scriptVersions')" name="versions">
 
-        <ElRow v-if="activeTab == 'versions' && !loading && versions"  class="mb-20px">
+        <ElRow v-if="activeTab == 'versions' && !loading && versions" class="mb-20px">
           <ElCol>
             <ElFormItem :label="$t('scripts.scriptVersions')" prop="action">
               <ElSelect

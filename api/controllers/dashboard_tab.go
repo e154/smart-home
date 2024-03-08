@@ -19,6 +19,7 @@
 package controllers
 
 import (
+	"github.com/e154/smart-home/api/dto"
 	"github.com/e154/smart-home/api/stub"
 	"github.com/labstack/echo/v4"
 )
@@ -98,4 +99,20 @@ func (c ControllerDashboardTab) DashboardTabServiceDeleteDashboardTab(ctx echo.C
 	}
 
 	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
+}
+
+// DashboardTabServiceImportDashboardTab ...
+func (c ControllerDashboardTab) DashboardTabServiceImportDashboardTab(ctx echo.Context, _ stub.DashboardTabServiceImportDashboardTabParams) error {
+
+	obj := &stub.ApiDashboardTab{}
+	if err := c.Body(ctx, obj); err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	board, err := c.endpoint.DashboardTab.Import(ctx.Request().Context(), dto.ImportDashboardTab(obj))
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, c.dto.DashboardTab.ToDashboardTab(board)))
 }

@@ -53,7 +53,7 @@ const props = defineProps({
     type: [String, Array],
     default: 'forecolor backcolor removeformat | table | fontfamily fontsize blocks | ' +
         'alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent | axupimgs |' +
-        ' bold italic underline strikethrough ',
+        ' bold italic underline strikethrough | image',
   },
 });
 

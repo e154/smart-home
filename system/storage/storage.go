@@ -20,6 +20,7 @@ package storage
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"sync"
 	"time"
@@ -27,8 +28,10 @@ import (
 	"go.uber.org/atomic"
 
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/bus"
 )
 
 var (
@@ -42,17 +45,20 @@ type Storage struct {
 	quit      chan struct{}
 	inProcess *atomic.Bool
 	isStarted *atomic.Bool
+	eventBus  bus.Bus
 }
 
 // NewStorage ...
 func NewStorage(
-	adaptors *adaptors.Adaptors) *Storage {
+	adaptors *adaptors.Adaptors,
+	eventBus bus.Bus) *Storage {
 	storage := &Storage{
 		adaptors:  adaptors,
 		pool:      sync.Map{},
 		quit:      make(chan struct{}),
 		inProcess: atomic.NewBool(false),
 		isStarted: atomic.NewBool(true),
+		eventBus:  eventBus,
 	}
 
 	go func() {
@@ -163,12 +169,18 @@ func (s *Storage) serialize() {
 			return true
 		}
 
+		data.Changed = false
+
 		s.pool.Store(key, data)
 
 		if err := s.adaptors.Variable.CreateOrUpdate(context.Background(), data); err != nil {
 			log.Error(err.Error())
 			return true
 		}
+		s.eventBus.Publish(fmt.Sprintf("system/models/variables/%s", data.Name), events.EventUpdatedVariableModel{
+			Name:  data.Name,
+			Value: data.Value,
+		})
 
 		return true
 	})

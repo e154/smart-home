@@ -67,7 +67,7 @@ func (e *Actor) addEvent(event events.EventCallScene) {
 
 func (e *Actor) runEvent(msg events.EventCallScene) {
 	if e.ScriptsEngine != nil && e.ScriptsEngine.Engine() != nil {
-		if _, err := e.ScriptsEngine.AssertFunction(FuncSceneEvent, msg.EntityId); err != nil {
+		if _, err := e.ScriptsEngine.AssertFunction(FuncSceneEvent, e.Id); err != nil {
 			log.Error(err.Error())
 			return
 		}
@@ -81,14 +81,14 @@ func (e *Actor) addAction(event events.EventCallEntityAction) {
 func (e *Actor) runAction(msg events.EventCallEntityAction) {
 	if action, ok := e.Actions[msg.ActionName]; ok {
 		if action.ScriptEngine != nil && action.ScriptEngine.Engine() != nil {
-			if _, err := action.ScriptEngine.Engine().AssertFunction(FuncEntityAction, msg.EntityId, action.Name, msg.Args); err != nil {
+			if _, err := action.ScriptEngine.Engine().AssertFunction(FuncEntityAction, e.Id, action.Name, msg.Args); err != nil {
 				log.Error(errors.Wrapf(err, "entity id: %s ", e.Id).Error())
 			}
 			return
 		}
 	}
 	if e.ScriptsEngine != nil && e.ScriptsEngine.Engine() != nil {
-		if _, err := e.ScriptsEngine.AssertFunction(FuncEntityAction, msg.EntityId, msg.ActionName, msg.Args); err != nil {
+		if _, err := e.ScriptsEngine.AssertFunction(FuncEntityAction, e.Id, msg.ActionName, msg.Args); err != nil {
 			log.Error(errors.Wrapf(err, "entity id: %s ", e.Id).Error())
 		}
 	}

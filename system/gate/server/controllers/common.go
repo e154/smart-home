@@ -10,14 +10,12 @@ var (
 
 // ControllerCommon ...
 type ControllerCommon struct {
-	ApiFullAddress string
 	Mode string
 }
 
 // NewControllerCommon ...
-func NewControllerCommon(apiFullAddress, mode string) *ControllerCommon {
+func NewControllerCommon(mode string) *ControllerCommon {
 	return &ControllerCommon{
-		ApiFullAddress: apiFullAddress,
 		Mode: mode,
 	}
 }

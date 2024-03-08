@@ -266,6 +266,23 @@ declare global {
   function EntityCallAction(entityId: string, action: string, params: { [key: string]: any }): void;
 
   /**
+   * Interface representing parameters for calling an action on an entity
+   */
+  interface CallAction {
+    entity_id?: string;
+    action_name: string;
+    tags?: string[];
+    area_id?: number;
+  }
+
+  /**
+   * Function to call an action on an entity (version 2).
+   * @param {CallAction} params1 - Parameters for calling the action.
+   * @param {Object} params2 - Additional parameters.
+   */
+  function EntitiesCallAction(params1: CallAction, params2?: { [key: string]: any }): void;
+
+  /**
    * Calls the entity script.
    * @param {string} entityId - Entity identifier.
    * @param {{ [key: string]: any }} params - Parameters for the script.
@@ -323,7 +340,7 @@ declare global {
   /**
    * HTTP client interface with basic request methods.
    */
-  interface _http {
+  interface http {
     /**
      * Performs an HTTP GET request.
      * @param {string} url - URL for the GET request.
@@ -357,25 +374,25 @@ declare global {
     /**
      * Sets headers for an HTTP request.
      * @param {{ [key: string]: any }} params - Request headers.
-     * @returns {_http} - HTTP client with set headers.
+     * @returns {http} - HTTP client with set headers.
      */
-    headers(params: { [key: string]: any }): _http;
+    headers(params: { [key: string]: any }): http;
 
     /**
      * Sets the basic authorization for the HTTP request.
      * @param {string} username - Username.
      * @param {string} password - User password.
-     * @returns {_http} - HTTP client with basic authorization set.
+     * @returns {http} - HTTP client with basic authorization set.
      */
-    basicAuth(username: string, password: string): _http;
+    basicAuth(username: string, password: string): http;
 
     /**
      * Sets Digest protocol authentication for an HTTP request.
      * @param {string} username - Username.
      * @param {string} password - User password.
-     * @returns {_http} - HTTP client with Digest protocol authentication installed.
+     * @returns {http} - HTTP client with Digest protocol authentication installed.
      */
-    digestAuth(username: string, password: string): _http;
+    digestAuth(username: string, password: string): http;
 
     /**
      * Performs an HTTP request to download a file.
@@ -384,11 +401,6 @@ declare global {
      */
     download(post: string): HttpResponse;
   }
-
-  /**
-   * HTTP client object for making requests.
-   */
-  let http: _http;
 
   /////////////////////////////
   /// notifr
@@ -537,7 +549,7 @@ declare global {
   /**
    * Interface for storage management.
    */
-  interface _Storage {
+  interface Storage {
     /**
      * Adds a value to the store using the specified key.
      * @param {string} key - The key to add the value.
@@ -567,12 +579,6 @@ declare global {
      */
     pop(key: string): string;
   }
-
-  /**
-   * Object for working with storage.
-   */
-  let Storage: _Storage;
-
 
   /////////////////////////////
   /// system events

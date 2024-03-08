@@ -88,3 +88,27 @@ func GetHumanVersion() string {
 
 	return version
 }
+
+func GetVersion() Version {
+	return Version{
+		VersionString:     VersionString,
+		RevisionString:    RevisionString,
+		RevisionURLString: RevisionURLString,
+		GeneratedString:   GeneratedString,
+		DevelopersString:  DevelopersString,
+		BuildNumString:    BuildNumString,
+		DockerImageString: DockerImageString,
+		GoVersion:         GoVersion,
+	}
+}
+
+type Version struct {
+	VersionString     string `json:"version_string"`
+	RevisionString    string `json:"revision_string"`
+	RevisionURLString string `json:"revision_url_string"`
+	GeneratedString   string `json:"generated_string"`
+	DevelopersString  string `json:"developers_string"`
+	BuildNumString    string `json:"build_num_string"`
+	DockerImageString string `json:"docker_image_string"`
+	GoVersion         string `json:"go_version"`
+}

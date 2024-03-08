@@ -1,28 +1,30 @@
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, reactive, ref, unref} from 'vue'
 import {useI18n} from '@/hooks/web/useI18n'
-import {ElButton, ElMessage, ElPopconfirm, ElTabs, ElTabPane} from 'element-plus'
+import {ElButton, ElMessage, ElPopconfirm, ElTabPane, ElTabs} from 'element-plus'
 import {useRoute, useRouter} from 'vue-router'
 import api from "@/api/api";
 import Form from './components/Form.vue'
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
-import {Attribute, Entity, EntityAction, EntityState, Plugin} from "@/views/Entities/components/types";
+import {ContentWrap} from "@/components/ContentWrap";
+import {Entity, EntityAction, EntityState, Plugin} from "@/views/Entities/components/types";
 import Actions from "@/views/Entities/components/Actions.vue";
 import {useEmitt} from "@/hooks/web/useEmitt";
 import {
   ApiArea,
+  ApiAttribute,
   ApiEntityAction,
   ApiEntityState,
-  ApiPlugin, ApiScript,
+  ApiPlugin,
+  ApiScript,
   ApiUpdateEntityRequestAction,
   ApiUpdateEntityRequestState
 } from "@/api/stub";
 import States from "@/views/Entities/components/States.vue";
-import AttributesEditor from "@/views/Entities/components/AttributesEditor.vue";
-import { Dialog } from '@/components/Dialog'
-import JsonViewer from "@/components/JsonViewer/JsonViewer.vue";
+import {AttributesEditor} from "@/components/Attributes";
+import {Dialog} from '@/components/Dialog'
+import {JsonViewer} from "@/components/JsonViewer";
 import {copyToClipboard} from "@/utils/clipboard";
-import {EventStateChange} from "@/api/stream_types";
+import {EventStateChange} from "@/api/types";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 import Storage from "@/views/Entities/components/Storage.vue";
@@ -42,9 +44,10 @@ const dialogVisible = ref(false)
 const lastEvent = ref<Nullable<EventStateChange>>(null)
 
 interface Internal {
-  attributes: Attribute[];
-  settings: Attribute[];
+  attributes: ApiAttribute[];
+  settings: ApiAttribute[];
 }
+
 const internal = reactive<Internal>(
     {
       attributes: [],
@@ -96,7 +99,7 @@ const fetchPlugin = async () => {
     const plugin = res.data as ApiPlugin;
 
     // attributes
-    let actorAttrs: Attribute[] = [];
+    let actorAttrs: ApiAttribute[] = [];
     if (plugin.options?.actorAttrs) {
       for (const key in plugin.options.actorAttrs) {
         actorAttrs.push(plugin.options.actorAttrs[key]);
@@ -104,7 +107,7 @@ const fetchPlugin = async () => {
     }
 
     // actorSetts
-    let actorSetts: Attribute[] = [];
+    let actorSetts: ApiAttribute[] = [];
     if (plugin.options?.actorSetts) {
       for (const key in plugin.options.actorSetts) {
         actorSetts.push(plugin.options.actorSetts[key]);
@@ -112,7 +115,7 @@ const fetchPlugin = async () => {
     }
 
     // setts
-    let setts: Attribute[] = [];
+    let setts: ApiAttribute[] = [];
     if (plugin.options?.setts) {
       for (const key in plugin.options?.setts) {
         setts.push(plugin.options?.setts[key]);
@@ -181,11 +184,11 @@ const prepareForSave = async () => {
         imageId: a.image?.id || a.imageId,
       })
     }
-    let attributes: { [key: string]: Attribute } = {};
+    let attributes: { [key: string]: ApiAttribute } = {};
     for (const index in internal.attributes) {
       attributes[internal.attributes[index].name] = internal.attributes[index];
     }
-    let settings: { [key: string]: Attribute } = {};
+    let settings: { [key: string]: ApiAttribute } = {};
     for (const index in internal.settings) {
       settings[internal.settings[index].name] = internal.settings[index];
     }
@@ -205,8 +208,9 @@ const prepareForSave = async () => {
       settings: settings,
       scriptIds: data.scriptIds,
       metrics: data.metrics,
+      tags: data.tags,
     }
-   return body
+    return body
   }
   return null
 }
@@ -233,6 +237,9 @@ const prepareForExport = async () => {
       if (action.scriptId) {
         _scripts[action.scriptId] = null
       }
+      if (action.script?.id) {
+        _scripts[action.script.id] = null
+      }
     })
     data.scripts.forEach(script => {
       if (script.id) {
@@ -247,7 +254,7 @@ const prepareForExport = async () => {
     await Promise.all(_scriptsPromises)
 
     for (const a of data?.actions) {
-      let script:ApiScript = null;
+      let script: ApiScript = null;
       if (a.script) {
         script = {
           id: a.script.id,
@@ -263,6 +270,7 @@ const prepareForExport = async () => {
         icon: a.icon,
         image: a.image,
         script: script,
+        scriptId: script?.id || 0,
         type: a.type,
       } as ApiEntityAction)
     }
@@ -274,11 +282,11 @@ const prepareForExport = async () => {
         icon: a.icon,
       } as ApiEntityState)
     }
-    let attributes: { [key: string]: Attribute } = {};
+    let attributes: { [key: string]: ApiAttribute } = {};
     for (const index in internal.attributes) {
       attributes[internal.attributes[index].name] = internal.attributes[index];
     }
-    let settings: { [key: string]: Attribute } = {};
+    let settings: { [key: string]: ApiAttribute } = {};
     for (const index in internal.settings) {
       settings[internal.settings[index].name] = internal.settings[index];
     }
@@ -319,8 +327,9 @@ const prepareForExport = async () => {
       settings: data.settings,
       scripts: scripts,
       metrics: data.metrics,
+      tags: data.tags,
     }
-   return body
+    return body
   }
   return null
 }
@@ -339,10 +348,10 @@ const save = async () => {
   if (res) {
     fetch()
     ElMessage({
-     title: t('Success'),
-     message: t('message.uploadSuccessfully'),
-     type: 'success',
-     duration: 2000
+      title: t('Success'),
+      message: t('message.uploadSuccessfully'),
+      type: 'success',
+      duration: 2000
     })
   }
 }
@@ -397,12 +406,12 @@ useEmitt({
   }
 })
 
-const onAttrsUpdated = (attrs: Attribute[]) => {
+const onAttrsUpdated = (attrs: ApiAttribute[]) => {
   const second = JSON.parse(JSON.stringify(attrs))
   internal.attributes = JSON.parse(JSON.stringify(second))
 }
 
-const onSettingsUpdated = (attrs: Attribute[]) => {
+const onSettingsUpdated = (attrs: ApiAttribute[]) => {
   const second = JSON.parse(JSON.stringify(attrs))
   internal.settings = JSON.parse(JSON.stringify(second))
 }
@@ -553,7 +562,8 @@ fetch()
       <!-- current state -->
       <el-tab-pane :label="$t('entities.currentState')" name="currentState">
         <ElButton type="default" @click.prevent.stop="requestCurrentState()" class="mb-20px">
-          <Icon icon="ep:refresh" class="mr-5px"/> {{ $t('main.currentState') }}
+          <Icon icon="ep:refresh" class="mr-5px"/>
+          {{ $t('main.currentState') }}
         </ElButton>
 
         <JsonViewer v-model="lastEvent"/>
@@ -609,10 +619,10 @@ fetch()
   <!-- export dialog -->
   <Dialog v-model="dialogVisible" :title="t('entities.dialogExportTitle')" :maxHeight="400" width="80%">
     <JsonViewer v-model="dialogSource"/>
-    <template #footer>
-      <ElButton @click="copy()">{{ t('setting.copy') }}</ElButton>
-      <ElButton @click="dialogVisible = false">{{ t('main.closeDialog') }}</ElButton>
-    </template>
+    <!--    <template #footer>-->
+    <!--      <ElButton @click="copy()">{{ t('setting.copy') }}</ElButton>-->
+    <!--      <ElButton @click="dialogVisible = false">{{ t('main.closeDialog') }}</ElButton>-->
+    <!--    </template>-->
   </Dialog>
   <!-- /export dialog -->
 

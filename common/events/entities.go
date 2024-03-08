@@ -48,10 +48,12 @@ type EventGetLastState struct {
 
 // EventCallEntityAction ...
 type EventCallEntityAction struct {
-	PluginName string                 `json:"plugin_name"`
-	EntityId   common.EntityId        `json:"entity_id"`
+	PluginName *string                `json:"plugin_name"`
+	EntityId   *common.EntityId       `json:"entity_id"`
 	ActionName string                 `json:"action_name"`
 	Args       map[string]interface{} `json:"args"`
+	AreaId     *int64                 `json:"area_id"`
+	Tags       []string               `json:"tags"`
 }
 
 // EventCallScene ...

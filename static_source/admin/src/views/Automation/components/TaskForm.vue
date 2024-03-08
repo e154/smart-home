@@ -40,7 +40,7 @@ const schema = reactive<FormSchema[]>([
     label: t('automation.name'),
     component: 'Input',
     colProps: {
-      span: 24
+      span: 12
     },
     componentProps: {
       placeholder: t('automation.name')
@@ -51,7 +51,7 @@ const schema = reactive<FormSchema[]>([
     label: t('automation.description'),
     component: 'Input',
     colProps: {
-      span: 24
+      span: 12
     },
     componentProps: {
       placeholder: t('automation.description')
@@ -63,7 +63,7 @@ const schema = reactive<FormSchema[]>([
     component: 'Switch',
     value: false,
     colProps: {
-      span: 24
+      span: 12
     },
   },
   {
@@ -71,6 +71,9 @@ const schema = reactive<FormSchema[]>([
     label: t('automation.condition'),
     component: 'Select',
     value: 'and',
+    colProps: {
+      span: 12,
+    },
     componentProps: {
       options: [
         {
@@ -93,7 +96,7 @@ const schema = reactive<FormSchema[]>([
     value: null,
     component: 'Area',
     colProps: {
-      span: 24
+      span: 12
     },
     componentProps: {
       placeholder: t('automation.area'),

@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import {computed, reactive, ref, unref} from 'vue'
+import {computed, ref, unref} from 'vue'
 import {useI18n} from '@/hooks/web/useI18n'
-import {ElButton, ElPopconfirm, ElTimeline, ElTimelineItem, ElCard, ElTabs, ElTabPane, ElMessage} from 'element-plus'
+import {ElButton, ElCard, ElMessage, ElPopconfirm, ElTabPane, ElTabs, ElTimeline, ElTimelineItem} from 'element-plus'
 import {useRoute, useRouter} from 'vue-router'
 import api from "@/api/api";
 import {ApiTask} from "@/api/stub";
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {ContentWrap} from "@/components/ContentWrap";
 import {Form} from "@/components/Form";
 import TaskForm from "@/views/Automation/components/TaskForm.vue";
-import TriggersSearch from "@/views/Automation/components/TriggersSearch.vue";
-import ConditionsSearch from "@/views/Automation/components/ConditionsSearch.vue";
-import ActionsSearch from "@/views/Automation/components/ActionsSearch.vue";
+import {TriggersSearch} from "@/components/TriggersSearch";
+import {ConditionsSearch} from "@/components/ConditionsSearch";
+import {ActionsSearch} from "@/components/ActionsSearch";
 import TaskTelemetry from "@/views/Automation/components/TaskTelemetry.vue";
 
 const {push} = useRouter()
@@ -56,7 +56,7 @@ const prepareForSave = async () => {
       description: con.description,
       enabled: con.enabled,
       condition: con.condition,
-      triggerIds: triggerIds.value ,
+      triggerIds: triggerIds.value,
       conditionIds: conditionIds.value,
       actionIds: actionIds.value,
       areaId: con.area?.id,
@@ -151,10 +151,10 @@ fetch()
         {{ t('main.save') }}
       </ElButton>
 
-<!--      <ElButton type="primary" @click="exportTask()">-->
-<!--        <Icon icon="uil:file-export" class="mr-5px"/>-->
-<!--        {{ t('main.export') }}-->
-<!--      </ElButton>-->
+      <!--      <ElButton type="primary" @click="exportTask()">-->
+      <!--        <Icon icon="uil:file-export" class="mr-5px"/>-->
+      <!--        {{ t('main.export') }}-->
+      <!--      </ElButton>-->
 
       <ElButton type="default" @click="fetch()">
         {{ t('main.loadFromServer') }}

@@ -25,6 +25,7 @@
   "logging": true,
   "colored_logging": false,
   "api_http_port": 3011,
+  "api_https_port": 8443,
   "api_swagger": true,
   "api_debug": false,
   "api_gzip": false,

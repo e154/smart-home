@@ -285,6 +285,7 @@ export default defineComponent({
           ref={elTableRef}
           data={unref(getProps).data}
           onSelection-change={selectionChange}
+          default-expand-all={true}
           {...unref(getBindValue)}
         >
           {{

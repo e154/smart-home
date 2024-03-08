@@ -105,7 +105,6 @@ const save = async () => {
   })
   const data = (await write?.getFormData()) as ApiAction
   if (validate) {
-    console.log(data)
     const action = {
       id: data?.id,
       name: data.name,

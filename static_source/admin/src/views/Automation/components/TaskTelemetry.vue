@@ -5,7 +5,7 @@ import {ApiTask, ApiTelemetryItem} from "@/api/stub";
 import api from "@/api/api";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
-import {EventTaskCompleted} from "@/api/stream_types";
+import {EventTaskCompleted} from "@/api/types";
 import {debounce} from "lodash-es";
 import {EChartsOption} from "echarts";
 import {Echart} from '@/components/Echart'

@@ -20,7 +20,6 @@ package terminal
 
 import (
 	"context"
-	"github.com/e154/smart-home/system/jwt_manager"
 	"time"
 
 	"go.uber.org/fx"
@@ -30,6 +29,7 @@ import (
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/bus"
+	"github.com/e154/smart-home/system/jwt_manager"
 )
 
 var (

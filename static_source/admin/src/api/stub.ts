@@ -130,6 +130,7 @@ export interface ApiAttribute {
   /** @format date-time */
   time?: string;
   imageUrl?: string;
+  icon?: string;
   point?: string;
   encrypted?: string;
 }
@@ -335,6 +336,11 @@ export interface ApiDashboardTab {
   dashboardId: number;
   cards: ApiDashboardCard[];
   entities: Record<string, ApiEntity>;
+  /**
+   * @format byte
+   * @pattern ^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$
+   */
+  payload: string;
   /** @format date-time */
   createdAt: string;
   /** @format date-time */
@@ -409,6 +415,7 @@ export interface ApiEntity {
   createdAt: string;
   /** @format date-time */
   updatedAt: string;
+  tags: string[];
 }
 
 export interface ApiEntityAction {
@@ -417,13 +424,18 @@ export interface ApiEntityAction {
   icon?: string;
   image?: ApiImage;
   script?: ApiScript;
+  /** @format int64 */
+  scriptId?: number;
   type: string;
 }
 
 export interface ApiEntityCallActionRequest {
-  id: string;
+  id?: string;
   name: string;
   attributes: Record<string, ApiAttribute>;
+  tags: string[];
+  /** @format int64 */
+  areaId?: number;
 }
 
 export interface ApiEntityParent {
@@ -449,6 +461,7 @@ export interface ApiEntityShort {
   createdAt: string;
   /** @format date-time */
   updatedAt: string;
+  tags: string[];
 }
 
 export interface ApiEntityState {
@@ -613,6 +626,11 @@ export interface ApiGetUserListResult {
 
 export interface ApiGetVariableListResult {
   items: ApiVariable[];
+  meta?: ApiMeta;
+}
+
+export interface ApiGetTagListResult {
+  items: ApiTag[];
   meta?: ApiMeta;
 }
 
@@ -820,6 +838,11 @@ export interface ApiNewDashboardTabRequest {
   weight: number;
   /** @format int64 */
   dashboardId: number;
+  /**
+   * @format byte
+   * @pattern ^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$
+   */
+  payload: string;
 }
 
 export interface ApiNewEntityRequest {
@@ -840,6 +863,7 @@ export interface ApiNewEntityRequest {
   settings: Record<string, ApiAttribute>;
   metrics: ApiMetric[];
   scriptIds: number[];
+  tags: string[];
 }
 
 export interface ApiNewEntityRequestAction {
@@ -914,6 +938,7 @@ export interface ApiNewTriggerRequest {
 export interface ApiNewVariableRequest {
   name: string;
   value: string;
+  tags: string[];
 }
 
 export interface ApiNewZigbee2MqttRequest {
@@ -1040,6 +1065,12 @@ export interface ApiScriptVersion {
   createdAt: string;
 }
 
+export interface ApiTag {
+  /** @format int64 */
+  id: number;
+  name: string;
+}
+
 export interface ApiScript {
   /** @format int64 */
   id: number;
@@ -1106,8 +1137,16 @@ export interface ApiSearchScriptListResult {
   items: ApiScript[];
 }
 
+export interface ApiSearchTagListResult {
+  items: ApiTag[];
+}
+
 export interface ApiSearchTriggerResult {
   items: ApiTrigger[];
+}
+
+export interface ApiSearchVariableResult {
+  items: ApiVariable[];
 }
 
 export interface ApiSigninResponse {
@@ -1217,6 +1256,7 @@ export enum ApiTypes {
   MAP = "MAP",
   TIME = "TIME",
   IMAGE = "IMAGE",
+  ICON = "ICON",
   POINT = "POINT",
   ENCRYPTED = "ENCRYPTED",
 }
@@ -1321,6 +1361,7 @@ export interface ApiVariable {
   name: string;
   value: string;
   system: boolean;
+  tags: string[];
   /** @format date-time */
   createdAt: string;
   /** @format date-time */
@@ -1356,6 +1397,7 @@ export interface ApiZigbee2MqttDevice {
   manufacturer: string;
   functions: string[];
   imageUrl: string;
+  icon: string;
   status: string;
   /** @format date-time */
   createdAt: string;
@@ -3118,6 +3160,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         weight: number;
         /** @format int64 */
         dashboardId: number;
+        /**
+         * @format byte
+         * @pattern ^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$
+         */
+        payload: string;
       },
       params: RequestParams = {},
     ) =>
@@ -3212,6 +3259,36 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         method: "GET",
         query: query,
         secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags DashboardTabService
+     * @name DashboardTabServiceImportDashboardTab
+     * @summary import dashboard_tab
+     * @request POST:/v1/dashboard_tabs/import
+     * @secure
+     */
+    dashboardTabServiceImportDashboardTab: (data: ApiDashboardTab, params: RequestParams = {}) =>
+      this.request<
+        ApiDashboardTab,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
+        path: `/v1/dashboard_tabs/import`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
         format: "json",
         ...params,
       }),
@@ -3521,6 +3598,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
          */
         limit?: number;
         query?: string;
+        "tags[]"?: string[];
         plugin?: string;
         /** @format int64 */
         area?: number;
@@ -3696,6 +3774,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         settings: Record<string, ApiAttribute>;
         scriptIds: number[];
         metrics: ApiMetric[];
+        tags: string[];
       },
       params: RequestParams = {},
     ) =>
@@ -3798,6 +3877,31 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       >({
         path: `/v1/entity/${id}/enable`,
         method: "POST",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags EntityService
+     * @name EntityServiceGetStatistic
+     * @summary get statistic
+     * @request GET:/v1/entities/statistic
+     * @secure
+     */
+    entityServiceGetStatistic: (params: RequestParams = {}) =>
+      this.request<
+        ApiStatistics,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
+        path: `/v1/entities/statistic`,
+        method: "GET",
         secure: true,
         format: "json",
         ...params,
@@ -5131,6 +5235,33 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags ScriptService
+     * @name ScriptServiceGetCompiledScriptById
+     * @summary get compiled script by id
+     * @request GET:/v1/script/{id}/compiled
+     * @secure
+     */
+    scriptServiceGetCompiledScriptById: (id: number, params: RequestParams = {}) =>
+      this.request<
+        string,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
+        path: `/v1/script/${id}/compiled`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags ScriptService
      * @name ScriptServiceExecScriptById
      * @summary exec script by id
      * @request POST:/v1/script/{id}/exec
@@ -5210,7 +5341,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags ScriptService
      * @name ScriptServiceSearchScript
-     * @summary delete script by id
+     * @summary search script by name
      * @request GET:/v1/scripts/search
      * @secure
      */
@@ -5260,6 +5391,182 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       >({
         path: `/v1/scripts/statistic`,
         method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags TagService
+     * @name TagServiceSearchTag
+     * @summary search tag by name
+     * @request GET:/v1/tags/search
+     * @secure
+     */
+    tagServiceSearchTag: (
+      query?: {
+        query?: string;
+        /** @format int64 */
+        offset?: number;
+        /** @format int64 */
+        limit?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        ApiSearchTagListResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
+        path: `/v1/tags/search`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags TagService
+     * @name TagServiceGetTagList
+     * @summary get tag list
+     * @request GET:/v1/tags
+     * @secure
+     */
+    tagServiceGetTagList: (
+      query?: {
+        /**
+         * Field on which to sort and its direction
+         * @example "-created_at"
+         */
+        sort?: string;
+        /**
+         * Page number of the requested result set
+         * @format uint64
+         * @default 1
+         * @example 1
+         */
+        page?: number;
+        /**
+         * The number of results returned on a page
+         * @format uint64
+         */
+        limit?: number;
+        query?: string;
+        "tags[]"?: string[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        ApiGetTagListResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
+        path: `/v1/tags`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags TagService
+     * @name TagServiceGetTagById
+     * @summary get tag by id
+     * @request GET:/v1/tag/{id}
+     * @secure
+     */
+    tagServiceGetTagById: (id: number, params: RequestParams = {}) =>
+      this.request<
+        ApiTag,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
+        path: `/v1/tag/${id}`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags TagService
+     * @name TagServiceUpdateTagById
+     * @summary update tag
+     * @request PUT:/v1/tag/{id}
+     * @secure
+     */
+    tagServiceUpdateTagById: (
+      id: number,
+      data: {
+        name: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        ApiTag,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
+        path: `/v1/tag/${id}`,
+        method: "PUT",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags TagService
+     * @name TagServiceDeleteTagById
+     * @summary delete tag by id
+     * @request DELETE:/v1/tag/{id}
+     * @secure
+     */
+    tagServiceDeleteTagById: (id: number, params: RequestParams = {}) =>
+      this.request<
+        ApiDisablePluginResult,
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+        | {
+            error?: GenericErrorResponse;
+          }
+      >({
+        path: `/v1/tag/${id}`,
+        method: "DELETE",
         secure: true,
         format: "json",
         ...params,
@@ -6107,6 +6414,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       name: string,
       data: {
         value: string;
+        tags: string[];
       },
       params: RequestParams = {},
     ) =>
@@ -6198,6 +6506,41 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/v1/variables`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags VariableService
+     * @name VariableServiceSearchVariable
+     * @summary search trigger
+     * @request GET:/v1/variables/search
+     * @secure
+     */
+    variableServiceSearchVariable: (
+      query?: {
+        query?: string;
+        /** @format int64 */
+        offset?: number;
+        /** @format int64 */
+        limit?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        ApiSearchVariableResult,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
+        path: `/v1/variables/search`,
         method: "GET",
         query: query,
         secure: true,

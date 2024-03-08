@@ -20,17 +20,19 @@ package dto
 
 import (
 	"fmt"
-	"strconv"
-	"strings"
-
 	stub "github.com/e154/smart-home/api/stub"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/encryptor"
 	m "github.com/e154/smart-home/models"
+	"strconv"
+	"strings"
 )
 
 // AttributeFromApi ...
 func AttributeFromApi(apiAttr map[string]stub.ApiAttribute) (attributes m.Attributes) {
+	if apiAttr == nil {
+		return
+	}
 	return attributeFromApi(apiAttr)
 }
 
@@ -42,35 +44,35 @@ func attributeFromApi(apiAttr map[string]stub.ApiAttribute) (attributes m.Attrib
 		}
 		switch v.Type {
 		case stub.INT:
-			if v.Int == nil {
-				continue
+			if v.Int != nil {
+				attr.Value = *v.Int
 			}
-			attr.Value = *v.Int
 			attr.Type = common.AttributeInt
 		case stub.STRING:
-			if v.String == nil {
-				continue
+			if v.String != nil {
+				attr.Value = *v.String
 			}
-			attr.Value = *v.String
 			attr.Type = common.AttributeString
 		case stub.BOOL:
-			if v.Bool == nil {
-				continue
+			if v.Bool != nil {
+				attr.Value = *v.Bool
 			}
-			attr.Value = *v.Bool
 			attr.Type = common.AttributeBool
 		case stub.FLOAT:
-			if v.Float == nil {
-
+			if v.Float != nil {
+				attr.Value = *v.Float
 			}
-			attr.Value = *v.Float
 			attr.Type = common.AttributeFloat
 		case stub.IMAGE:
-			if v.ImageUrl == nil {
-
+			if v.ImageUrl != nil {
+				attr.Value = *v.ImageUrl
 			}
-			attr.Value = *v.ImageUrl
 			attr.Type = common.AttributeImage
+		case stub.ICON:
+			if v.Icon != nil {
+				attr.Value = *v.Icon
+			}
+			attr.Type = common.AttributeIcon
 		case stub.ARRAY:
 			//	attr.Value = v.Array
 			attr.Type = common.AttributeArray
@@ -78,34 +80,31 @@ func attributeFromApi(apiAttr map[string]stub.ApiAttribute) (attributes m.Attrib
 			attr.Type = common.AttributeMap
 			//attr.Value = AttributeFromApi(v.Map)
 		case stub.TIME:
-			if v.Time == nil {
-				continue
+			if v.Time != nil {
+				attr.Value = *v.Time
 			}
-			attr.Value = *v.Time
 			attr.Type = common.AttributeTime
 		case stub.POINT:
-			if v.Point == nil {
-				continue
+			if v.Point != nil {
+				point := []interface{}{0.0, 0.0}
+				str := *v.Point
+				str = strings.ReplaceAll(str, "[", "")
+				str = strings.ReplaceAll(str, "]", "")
+				str = strings.ReplaceAll(str, " ", "")
+				arr := strings.Split(str, ",")
+				if len(arr) == 2 {
+					point[0], _ = strconv.ParseFloat(arr[0], 64)
+					point[1], _ = strconv.ParseFloat(arr[1], 64)
+				}
+				attr.Value = point
 			}
-			point := []interface{}{0.0, 0.0}
-			str := *v.Point
-			str = strings.ReplaceAll(str, "[", "")
-			str = strings.ReplaceAll(str, "]", "")
-			str = strings.ReplaceAll(str, " ", "")
-			arr := strings.Split(str, ",")
-			if len(arr) == 2 {
-				point[0], _ = strconv.ParseFloat(arr[0], 64)
-				point[1], _ = strconv.ParseFloat(arr[1], 64)
-			}
-			attr.Value = point
 			attr.Type = common.AttributePoint
 		case stub.ENCRYPTED:
-			if v.Encrypted == nil {
-				continue
-			}
-			value, err := encryptor.Encrypt(*v.Encrypted)
-			if err == nil {
-				attr.Value = value
+			if v.Encrypted != nil {
+				value, err := encryptor.Encrypt(*v.Encrypted)
+				if err == nil {
+					attr.Value = value
+				}
 			}
 			attr.Type = common.AttributeEncrypted
 		}
@@ -145,6 +144,9 @@ func AttributeToApi(attributes m.Attributes) (apiAttr map[string]stub.ApiAttribu
 		case "image":
 			attr.Type = stub.IMAGE
 			attr.ImageUrl = common.String(v.String())
+		case "icon":
+			attr.Type = stub.ICON
+			attr.Icon = common.String(v.String())
 		case "point":
 			attr.Type = stub.POINT
 			attr.Point = common.String(fmt.Sprintf("[%f, %f]", v.Point().Lon, v.Point().Lat))

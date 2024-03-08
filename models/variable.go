@@ -34,6 +34,7 @@ type Variable struct {
 	Value     string           `json:"value"`
 	EntityId  *common.EntityId `json:"entity_id"`
 	System    bool             `json:"system"`
+	Tags      []*Tag           `json:"tags"`
 	Changed   bool
 }
 

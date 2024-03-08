@@ -35,6 +35,7 @@ tags:
   - name: PluginService
   - name: RoleService
   - name: ScriptService
+  - name: TagService
   - name: StreamService
   - name: TriggerService
   - name: UserService
@@ -1289,7 +1290,7 @@ paths:
           application/json:
             schema:
               type: object
-              required: [ name, icon, columnWidth, gap, enabled, weight, dashboardId ]
+              required: [ name, icon, columnWidth, gap, enabled, weight, dashboardId, payload ]
               properties:
                 name:
                   type: string
@@ -1310,6 +1311,10 @@ paths:
                 dashboardId:
                   type: integer
                   format: int64
+                payload:
+                  pattern: ^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$
+                  type: string
+                  format: byte
         required: true
       responses:
         200:
@@ -1372,6 +1377,35 @@ paths:
           $ref: '#/components/responses/HTTP-401'
       security:
         - ApiKeyAuth: [ ]
+  /v1/dashboard_tabs/import:
+    post:
+      tags:
+        - DashboardTabService
+      summary: import dashboard_tab
+      operationId: DashboardTabService_ImportDashboardTab
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/apiDashboardTab'
+        required: true
+      responses:
+        200:
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiDashboardTab'
+        '400':
+          $ref: '#/components/responses/HTTP-400'
+        '401':
+          $ref: '#/components/responses/HTTP-401'
+        '409':
+          $ref: '#/components/responses/HTTP-409'
+      security:
+        - ApiKeyAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/Accept-JSON'
   /v1/dashboards:
     get:
       tags:
@@ -1587,6 +1621,7 @@ paths:
         - $ref: '#/components/parameters/listPage'
         - $ref: '#/components/parameters/listLimit'
         - $ref: '#/components/parameters/query'
+        - $ref: '#/components/parameters/tags'
         - name: plugin
           in: query
           schema:
@@ -1729,7 +1764,7 @@ paths:
             schema:
               type: object
               required: [ id, description, pluginName, autoLoad, restoreState, attributes, settings,
-                          metrics, actions, states, scriptIds ]
+                          metrics, actions, states, scriptIds, tags ]
               properties:
                 id:
                   type: string
@@ -1778,6 +1813,10 @@ paths:
                   type: array
                   items:
                     $ref: '#/components/schemas/apiMetric'
+                tags:
+                  type: array
+                  items:
+                    type: string
         required: true
       responses:
         200:
@@ -1870,6 +1909,23 @@ paths:
           $ref: '#/components/responses/HTTP-401'
         '409':
           $ref: '#/components/responses/HTTP-409'
+      security:
+        - ApiKeyAuth: [ ]
+  /v1/entities/statistic:
+    get:
+      tags:
+        - EntityService
+      summary: get statistic
+      operationId: EntityService_GetStatistic
+      responses:
+        200:
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiStatistics'
+        '401':
+          $ref: '#/components/responses/HTTP-401'
       security:
         - ApiKeyAuth: [ ]
   /v1/entity_storage:
@@ -2914,6 +2970,34 @@ paths:
           $ref: '#/components/responses/HTTP-409'
       security:
         - ApiKeyAuth: [ ]
+  /v1/script/{id}/compiled:
+    get:
+      tags:
+        - ScriptService
+      summary: get compiled script by id
+      operationId: ScriptService_GetCompiledScriptById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: A successful response.
+          content:
+            text/javascript; charset=utf-8:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/HTTP-400'
+        '401':
+          $ref: '#/components/responses/HTTP-401'
+        '409':
+          $ref: '#/components/responses/HTTP-409'
+      security:
+        - ApiKeyAuth: [ ]
   /v1/script/{id}/exec:
     post:
       tags:
@@ -2969,7 +3053,7 @@ paths:
     get:
       tags:
         - ScriptService
-      summary: delete script by id
+      summary: search script by name
       operationId: ScriptService_SearchScript
       parameters:
         - $ref: '#/components/parameters/searchQuery'
@@ -2999,6 +3083,139 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/apiStatistics'
+        '401':
+          $ref: '#/components/responses/HTTP-401'
+      security:
+        - ApiKeyAuth: [ ]
+  /v1/tags/search:
+    get:
+      tags:
+        - TagService
+      summary: search tag by name
+      operationId: TagService_SearchTag
+      parameters:
+        - $ref: '#/components/parameters/searchQuery'
+        - $ref: '#/components/parameters/searchOffset'
+        - $ref: '#/components/parameters/searchLimit'
+      responses:
+        200:
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiSearchTagListResult'
+        '401':
+          $ref: '#/components/responses/HTTP-401'
+      security:
+        - ApiKeyAuth: [ ]
+  /v1/tags:
+    get:
+      tags:
+        - TagService
+      summary: get tag list
+      operationId: TagService_GetTagList
+      parameters:
+        - $ref: '#/components/parameters/listSort'
+        - $ref: '#/components/parameters/listPage'
+        - $ref: '#/components/parameters/listLimit'
+        - $ref: '#/components/parameters/query'
+        - $ref: '#/components/parameters/tags'
+      responses:
+        200:
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiGetTagListResult'
+        '401':
+          $ref: '#/components/responses/HTTP-401'
+      security:
+        - ApiKeyAuth: [ ]
+  /v1/tag/{id}:
+    get:
+      tags:
+        - TagService
+      summary: get tag by id
+      operationId: TagService_GetTagById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiTag'
+        '404':
+          $ref: '#/components/responses/HTTP-404'
+        '401':
+          $ref: '#/components/responses/HTTP-401'
+      security:
+        - ApiKeyAuth: [ ]
+    put:
+      tags:
+        - TagService
+      summary: update tag
+      operationId: TagService_UpdateTagById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - $ref: '#/components/parameters/Accept-JSON'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ name]
+              properties:
+                name:
+                  type: string
+        required: true
+      responses:
+        200:
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiTag'
+        '400':
+          $ref: '#/components/responses/HTTP-400'
+        '401':
+          $ref: '#/components/responses/HTTP-401'
+        '409':
+          $ref: '#/components/responses/HTTP-409'
+      security:
+        - ApiKeyAuth: [ ]
+    delete:
+      tags:
+        - TagService
+      summary: delete tag by id
+      operationId: TagService_DeleteTagById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          $ref: '#/components/responses/HTTP-404'
         '401':
           $ref: '#/components/responses/HTTP-401'
       security:
@@ -3767,10 +3984,14 @@ paths:
           application/json:
             schema:
               type: object
-              required: [ value ]
+              required: [ value, tags ]
               properties:
                 value:
                   type: string
+                tags:
+                  type: array
+                  items:
+                    type: string
         required: true
       responses:
         200:
@@ -3828,6 +4049,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/apiGetVariableListResult'
+        '401':
+          $ref: '#/components/responses/HTTP-401'
+      security:
+        - ApiKeyAuth: [ ]
+  /v1/variables/search:
+    get:
+      tags:
+        - VariableService
+      summary: search trigger
+      operationId: VariableService_SearchVariable
+      parameters:
+        - $ref: '#/components/parameters/searchQuery'
+        - $ref: '#/components/parameters/searchOffset'
+        - $ref: '#/components/parameters/searchLimit'
+      responses:
+        200:
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiSearchVariableResult'
         '401':
           $ref: '#/components/responses/HTTP-401'
       security:
@@ -4331,6 +4573,14 @@ components:
       required: false
       schema:
         type: string
+    tags:
+      name: tags[]
+      in: query
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
   schemas:
     GenericErrorResponse:
       title: Generic Error Response
@@ -4540,6 +4790,8 @@ components:
           type: string
           format: date-time
         imageUrl:
+          type: string
+        icon:
           type: string
         point:
           type: string
@@ -4849,7 +5101,7 @@ components:
           format: date-time
     apiDashboardTab:
       type: object
-      required: [ id, name, icon, columnWidth, gap, enabled, weight, dashboardId, cards, entities, createdAt, updatedAt ]
+      required: [ id, name, icon, columnWidth, gap, enabled, weight, dashboardId, cards, entities, payload, createdAt, updatedAt ]
       properties:
         id:
           type: integer
@@ -4881,6 +5133,10 @@ components:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/apiEntity'
+        payload:
+          pattern: ^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$
+          type: string
+          format: byte
         createdAt:
           type: string
           format: date-time
@@ -4962,7 +5218,7 @@ components:
       type: object
       required: [ id, pluginName, description, autoLoad, restoreState, actions, states,
                   scripts, scriptIds, attributes, settings, metrics, createdAt,
-                  updatedAt ]
+                  updatedAt, tags ]
       properties:
         id:
           type: string
@@ -5019,6 +5275,10 @@ components:
         updatedAt:
           type: string
           format: date-time
+        tags:
+          type: array
+          items:
+            type: string
     apiEntityAction:
       type: object
       required: [ name, description, type ]
@@ -5033,11 +5293,14 @@ components:
           $ref: '#/components/schemas/apiImage'
         script:
           $ref: '#/components/schemas/apiScript'
+        scriptId:
+          type: integer
+          format: int64
         type:
           type: string
     apiEntityCallActionRequest:
       type: object
-      required: [ id, name, attributes ]
+      required: [ name, attributes, tags]
       properties:
         id:
           type: string
@@ -5047,6 +5310,13 @@ components:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/apiAttribute'
+        tags:
+          type: array
+          items:
+            type: string
+        areaId:
+          type: integer
+          format: int64
     apiEntityParent:
       type: object
       required: [ id ]
@@ -5063,7 +5333,7 @@ components:
           type: string
     apiEntityShort:
       type: object
-      required: [ id, pluginName, description, autoLoad, restoreState, createdAt, updatedAt ]
+      required: [ id, pluginName, description, autoLoad, restoreState, createdAt, updatedAt, tags ]
       properties:
         id:
           type: string
@@ -5089,6 +5359,10 @@ components:
         updatedAt:
           type: string
           format: date-time
+        tags:
+          type: array
+          items:
+            type: string
     apiEntityState:
       type: object
       required: [ name, description, style ]
@@ -5411,6 +5685,16 @@ components:
             $ref: '#/components/schemas/apiVariable'
         meta:
           $ref: '#/components/schemas/apiMeta'
+    apiGetTagListResult:
+      type: object
+      required: [ items ]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/apiTag'
+        meta:
+          $ref: '#/components/schemas/apiMeta'
     apiBackup:
       type: object
       required: [ name, size, fileMode, modTime ]
@@ -5726,7 +6010,7 @@ components:
           format: int64
     apiNewDashboardTabRequest:
       type: object
-      required: [ name, columnWidth, gap, icon, enabled, weight, dashboardId ]
+      required: [ name, columnWidth, gap, icon, enabled, weight, dashboardId, payload ]
       properties:
         name:
           type: string
@@ -5747,10 +6031,14 @@ components:
         dashboardId:
           type: integer
           format: int64
+        payload:
+          pattern: ^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$
+          type: string
+          format: byte
     apiNewEntityRequest:
       type: object
       required: [ name, pluginName, description, autoLoad, restoreState, attributes, settings, metrics,
-                  actions, states, scriptIds ]
+                  actions, states, scriptIds, tags ]
       properties:
         name:
           type: string
@@ -5797,6 +6085,10 @@ components:
           items:
             type: integer
             format: int64
+        tags:
+          type: array
+          items:
+            type: string
     apiNewEntityRequestAction:
       type: object
       required: [ name, description, type ]
@@ -5929,12 +6221,16 @@ components:
           format: int64
     apiNewVariableRequest:
       type: object
-      required: [ name, value ]
+      required: [ name, value, tags ]
       properties:
         name:
           type: string
         value:
           type: string
+        tags:
+          type: array
+          items:
+            type: string
     apiNewZigbee2mqttRequest:
       type: object
       required: [ name, login, permitJoin, baseTopic ]
@@ -6162,6 +6458,15 @@ components:
         createdAt:
           type: string
           format: date-time
+    apiTag:
+      type: object
+      required: [ id, name ]
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
     apiScript:
       type: object
       required: [ id, name, lang, source, description, versions, createdAt, updatedAt ]
@@ -6283,6 +6588,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/apiScript'
+    apiSearchTagListResult:
+      type: object
+      required: [ items ]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/apiTag'
     apiSearchTriggerResult:
       type: object
       required: [ items ]
@@ -6291,6 +6604,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/apiTrigger'
+    apiSearchVariableResult:
+      type: object
+      required: [ items ]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/apiVariable'
     apiSigninResponse:
       type: object
       required: [ accessToken ]
@@ -6492,6 +6813,7 @@ components:
         - MAP
         - TIME
         - IMAGE
+        - ICON
         - POINT
         - ENCRYPTED
     apiUpdateEntityRequestAction:
@@ -6660,7 +6982,7 @@ components:
           type: string
     apiVariable:
       type: object
-      required: [ name, value, system, createdAt, updatedAt ]
+      required: [ name, value, system, tags, createdAt, updatedAt ]
       properties:
         name:
           type: string
@@ -6668,6 +6990,10 @@ components:
           type: string
         system:
           type: boolean
+        tags:
+          type: array
+          items:
+            type: string
         createdAt:
           type: string
           format: date-time
@@ -6706,7 +7032,7 @@ components:
           format: date-time
     apiZigbee2mqttDevice:
       type: object
-      required: [ id, zigbee2mqttId, name, type, model, description, manufacturer, functions, imageUrl, status, createdAt, updatedAt ]
+      required: [ id, zigbee2mqttId, name, type, model, description, manufacturer, functions, imageUrl, icon, status, createdAt, updatedAt ]
       properties:
         id:
           type: string
@@ -6728,6 +7054,8 @@ components:
           items:
             type: string
         imageUrl:
+          type: string
+        icon:
           type: string
         status:
           type: string

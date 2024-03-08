@@ -5,17 +5,19 @@ import {h, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
 import {useAppStore} from "@/store/modules/app";
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
-import {ElButton, ElCol, ElIcon, ElRow, ElStatistic, ElTag, ElTooltip} from 'element-plus'
-import {ApiArea, ApiPlugin, ApiScript, ApiStatistics} from "@/api/stub";
+import {ElButton, ElTag} from 'element-plus'
+import {ApiScript, ApiStatistics} from "@/api/stub";
 import {useForm} from "@/hooks/web/useForm";
 import {useRouter} from "vue-router";
 import {parseTime} from "@/utils";
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {ContentWrap} from "@/components/ContentWrap";
 import Statistics from "@/components/Statistics/Statistics.vue";
 import {FormSchema} from "@/types/form";
 import {Form} from '@/components/Form'
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
+import {useCache} from "@/hooks/web/useCache";
+import {Infotip} from "@/components/Infotip";
 
 const {push, currentRoute} = useRouter()
 const remember = ref(false)
@@ -23,6 +25,9 @@ const statistic = ref<Nullable<ApiStatistics>>(null)
 const {register, elFormRef, methods} = useForm()
 const appStore = useAppStore()
 const {t} = useI18n()
+const {wsCache} = useCache()
+
+const cachePref = 'scripts'
 
 interface TableObject {
   tableList: ApiScript[]
@@ -42,7 +47,8 @@ const tableObject = reactive<TableObject>(
     {
       tableList: [],
       loading: false,
-      sort: '-id'
+      sort: wsCache.get(cachePref + 'Sort') || '-createdAt',
+      query: wsCache.get(cachePref + 'Query'),
     },
 );
 
@@ -50,7 +56,7 @@ const columns: TableColumn[] = [
   {
     field: 'id',
     label: t('scripts.id'),
-    width: "90px",
+    width: "60px",
     sortable: true
   },
   {
@@ -97,8 +103,8 @@ const columns: TableColumn[] = [
   },
 ]
 const paginationObj = ref<Pagination>({
-  currentPage: 1,
-  pageSize: 50,
+  currentPage: wsCache.get(cachePref + 'CurrentPage') || 1,
+  pageSize: wsCache.get(cachePref + 'PageSize') || 50,
   total: 0,
 })
 const currentID = ref('')
@@ -112,7 +118,7 @@ const getStatistic = async () => {
 
       })
   if (res) {
-   statistic.value = res.data
+    statistic.value = res.data
   }
 }
 
@@ -120,6 +126,11 @@ const getList = async () => {
   getStatistic()
 
   tableObject.loading = true
+
+  wsCache.set(cachePref + 'CurrentPage', paginationObj.value.currentPage)
+  wsCache.set(cachePref + 'PageSize', paginationObj.value.pageSize)
+  wsCache.set(cachePref + 'Sort', tableObject.sort)
+  wsCache.set(cachePref + 'Query', tableObject.query)
 
   let params: Params = {
     page: paginationObj.value.currentPage,
@@ -198,13 +209,13 @@ const selectRow = (row) => {
 const schema = reactive<FormSchema[]>([
   {
     field: 'name',
-    label: t('entities.name'),
+    label: t('scripts.search'),
     component: 'Input',
     colProps: {
       span: 24
     },
     componentProps: {
-      placeholder: t('entities.name'),
+      placeholder: t('scripts.search'),
       onChange: (val: string) => {
         tableObject.query = val || undefined
         getList()
@@ -213,17 +224,36 @@ const schema = reactive<FormSchema[]>([
   },
 ])
 
+
+const {setValues, setSchema} = methods
+if (wsCache.get(cachePref + 'Query')) {
+  setValues({
+    name: wsCache.get(cachePref + 'Query')
+  })
+}
+
 </script>
 
 <template>
 
-  <Statistics v-model="statistic" :cols="6" />
+  <Statistics v-model="statistic" :cols="6"/>
 
   <ContentWrap>
     <ElButton class="flex mb-20px items-left" type="primary" @click="addNew()" plain>
       <Icon icon="ep:plus" class="mr-5px"/>
       {{ t('scripts.addNew') }}
     </ElButton>
+
+    <Infotip
+        :show-index="false"
+        title="INFO"
+        :schema="[
+      {
+        label: t('scripts.info4'),
+      },
+    ]"
+    />
+
     <Form
         id="search-form-scripts"
         :schema="schema"
@@ -261,8 +291,8 @@ const schema = reactive<FormSchema[]>([
 }
 
 :deep(#search-form-scripts .el-col) {
-  padding-left: 0!important;
-  padding-right: 0!important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 
 </style>

@@ -6,7 +6,7 @@ import {useRouter} from 'vue-router'
 import api from "@/api/api";
 import Form from './components/Form.vue'
 import {ApiNewScriptRequest} from "@/api/stub";
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {ContentWrap} from "@/components/ContentWrap";
 
 const {push} = useRouter()
 const {t} = useI18n()

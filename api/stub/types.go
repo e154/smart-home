@@ -21,6 +21,7 @@ const (
 	BOOL      ApiTypes = "BOOL"
 	ENCRYPTED ApiTypes = "ENCRYPTED"
 	FLOAT     ApiTypes = "FLOAT"
+	ICON      ApiTypes = "ICON"
 	IMAGE     ApiTypes = "IMAGE"
 	INT       ApiTypes = "INT"
 	MAP       ApiTypes = "MAP"
@@ -151,6 +152,7 @@ type ApiAttribute struct {
 	Bool      *bool                    `json:"bool,omitempty"`
 	Encrypted *string                  `json:"encrypted,omitempty"`
 	Float     *float32                 `json:"float,omitempty"`
+	Icon      *string                  `json:"icon,omitempty"`
 	ImageUrl  *string                  `json:"imageUrl,omitempty"`
 	Int       *int64                   `json:"int,omitempty"`
 	Map       *map[string]ApiAttribute `json:"map,omitempty"`
@@ -317,6 +319,7 @@ type ApiDashboardTab struct {
 	Icon        string               `json:"icon"`
 	Id          int64                `json:"id"`
 	Name        string               `json:"name"`
+	Payload     []byte               `json:"payload"`
 	UpdatedAt   time.Time            `json:"updatedAt"`
 	Weight      int32                `json:"weight"`
 }
@@ -386,6 +389,7 @@ type ApiEntity struct {
 	Scripts      []ApiScript             `json:"scripts"`
 	Settings     map[string]ApiAttribute `json:"settings"`
 	States       []ApiEntityState        `json:"states"`
+	Tags         []string                `json:"tags"`
 	UpdatedAt    time.Time               `json:"updatedAt"`
 }
 
@@ -396,14 +400,17 @@ type ApiEntityAction struct {
 	Image       *ApiImage  `json:"image,omitempty"`
 	Name        string     `json:"name"`
 	Script      *ApiScript `json:"script,omitempty"`
+	ScriptId    *int64     `json:"scriptId,omitempty"`
 	Type        string     `json:"type"`
 }
 
 // ApiEntityCallActionRequest defines model for apiEntityCallActionRequest.
 type ApiEntityCallActionRequest struct {
+	AreaId     *int64                  `json:"areaId,omitempty"`
 	Attributes map[string]ApiAttribute `json:"attributes"`
-	Id         string                  `json:"id"`
+	Id         *string                 `json:"id,omitempty"`
 	Name       string                  `json:"name"`
+	Tags       []string                `json:"tags"`
 }
 
 // ApiEntityParent defines model for apiEntityParent.
@@ -429,6 +436,7 @@ type ApiEntityShort struct {
 	ParentId     *string   `json:"parentId,omitempty"`
 	PluginName   string    `json:"pluginName"`
 	RestoreState bool      `json:"restoreState"`
+	Tags         []string  `json:"tags"`
 	UpdatedAt    time.Time `json:"updatedAt"`
 }
 
@@ -600,6 +608,12 @@ type ApiGetScriptListResult struct {
 type ApiGetSubscriptionListResult struct {
 	Items []ApiSubscription `json:"items"`
 	Meta  *ApiMeta          `json:"meta,omitempty"`
+}
+
+// ApiGetTagListResult defines model for apiGetTagListResult.
+type ApiGetTagListResult struct {
+	Items []ApiTag `json:"items"`
+	Meta  *ApiMeta `json:"meta,omitempty"`
 }
 
 // ApiGetTaskListResult defines model for apiGetTaskListResult.
@@ -787,6 +801,7 @@ type ApiNewDashboardTabRequest struct {
 	Gap         bool    `json:"gap"`
 	Icon        string  `json:"icon"`
 	Name        string  `json:"name"`
+	Payload     []byte  `json:"payload"`
 	Weight      int32   `json:"weight"`
 }
 
@@ -807,6 +822,7 @@ type ApiNewEntityRequest struct {
 	ScriptIds    []int64                     `json:"scriptIds"`
 	Settings     map[string]ApiAttribute     `json:"settings"`
 	States       []ApiNewEntityRequestState  `json:"states"`
+	Tags         []string                    `json:"tags"`
 }
 
 // ApiNewEntityRequestAction defines model for apiNewEntityRequestAction.
@@ -880,8 +896,9 @@ type ApiNewTriggerRequest struct {
 
 // ApiNewVariableRequest defines model for apiNewVariableRequest.
 type ApiNewVariableRequest struct {
-	Name  string `json:"name"`
-	Value string `json:"value"`
+	Name  string   `json:"name"`
+	Tags  []string `json:"tags"`
+	Value string   `json:"value"`
 }
 
 // ApiNewZigbee2mqttRequest defines model for apiNewZigbee2mqttRequest.
@@ -1084,9 +1101,19 @@ type ApiSearchScriptListResult struct {
 	Items []ApiScript `json:"items"`
 }
 
+// ApiSearchTagListResult defines model for apiSearchTagListResult.
+type ApiSearchTagListResult struct {
+	Items []ApiTag `json:"items"`
+}
+
 // ApiSearchTriggerResult defines model for apiSearchTriggerResult.
 type ApiSearchTriggerResult struct {
 	Items []ApiTrigger `json:"items"`
+}
+
+// ApiSearchVariableResult defines model for apiSearchVariableResult.
+type ApiSearchVariableResult struct {
+	Items []ApiVariable `json:"items"`
 }
 
 // ApiSigninResponse defines model for apiSigninResponse.
@@ -1118,6 +1145,12 @@ type ApiSubscription struct {
 	RetainAsPublished bool   `json:"retainAsPublished"`
 	RetainHandling    uint32 `json:"retainHandling"`
 	TopicName         string `json:"topicName"`
+}
+
+// ApiTag defines model for apiTag.
+type ApiTag struct {
+	Id   int64  `json:"id"`
+	Name string `json:"name"`
 }
 
 // ApiTask defines model for apiTask.
@@ -1269,6 +1302,7 @@ type ApiVariable struct {
 	CreatedAt time.Time `json:"createdAt"`
 	Name      string    `json:"name"`
 	System    bool      `json:"system"`
+	Tags      []string  `json:"tags"`
 	UpdatedAt time.Time `json:"updatedAt"`
 	Value     string    `json:"value"`
 }
@@ -1293,6 +1327,7 @@ type ApiZigbee2mqttDevice struct {
 	CreatedAt     time.Time `json:"createdAt"`
 	Description   string    `json:"description"`
 	Functions     []string  `json:"functions"`
+	Icon          string    `json:"icon"`
 	Id            string    `json:"id"`
 	ImageUrl      string    `json:"imageUrl"`
 	Manufacturer  string    `json:"manufacturer"`
@@ -1356,6 +1391,9 @@ type SearchQuery = string
 
 // StartDate defines model for startDate.
 type StartDate = time.Time
+
+// Tags defines model for tags.
+type Tags = []string
 
 // HTTP400 defines model for HTTP-400.
 type HTTP400 struct {
@@ -1660,6 +1698,7 @@ type DashboardTabServiceUpdateDashboardTabJSONBody struct {
 	Gap         bool    `json:"gap"`
 	Icon        string  `json:"icon"`
 	Name        string  `json:"name"`
+	Payload     []byte  `json:"payload"`
 	Weight      int32   `json:"weight"`
 }
 
@@ -1678,6 +1717,11 @@ type DashboardTabServiceGetDashboardTabListParams struct {
 
 	// Limit The number of results returned on a page
 	Limit *ListLimit `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+// DashboardTabServiceImportDashboardTabParams defines parameters for DashboardTabServiceImportDashboardTab.
+type DashboardTabServiceImportDashboardTabParams struct {
+	Accept *AcceptJSON `json:"Accept,omitempty"`
 }
 
 // DashboardServiceGetDashboardListParams defines parameters for DashboardServiceGetDashboardList.
@@ -1747,6 +1791,7 @@ type EntityServiceGetEntityListParams struct {
 	// Limit The number of results returned on a page
 	Limit  *ListLimit `form:"limit,omitempty" json:"limit,omitempty"`
 	Query  *Query     `form:"query,omitempty" json:"query,omitempty"`
+	Tags   *Tags      `form:"tags[],omitempty" json:"tags[],omitempty"`
 	Plugin *string    `form:"plugin,omitempty" json:"plugin,omitempty"`
 	Area   *int64     `form:"area,omitempty" json:"area,omitempty"`
 }
@@ -1786,6 +1831,7 @@ type EntityServiceUpdateEntityJSONBody struct {
 	ScriptIds    []int64                        `json:"scriptIds"`
 	Settings     map[string]ApiAttribute        `json:"settings"`
 	States       []ApiUpdateEntityRequestState  `json:"states"`
+	Tags         []string                       `json:"tags"`
 }
 
 // EntityServiceUpdateEntityParams defines parameters for EntityServiceUpdateEntity.
@@ -2057,6 +2103,37 @@ type ScriptServiceSearchScriptParams struct {
 	Limit  *SearchLimit  `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
+// TagServiceUpdateTagByIdJSONBody defines parameters for TagServiceUpdateTagById.
+type TagServiceUpdateTagByIdJSONBody struct {
+	Name string `json:"name"`
+}
+
+// TagServiceUpdateTagByIdParams defines parameters for TagServiceUpdateTagById.
+type TagServiceUpdateTagByIdParams struct {
+	Accept *AcceptJSON `json:"Accept,omitempty"`
+}
+
+// TagServiceGetTagListParams defines parameters for TagServiceGetTagList.
+type TagServiceGetTagListParams struct {
+	// Sort Field on which to sort and its direction
+	Sort *ListSort `form:"sort,omitempty" json:"sort,omitempty"`
+
+	// Page Page number of the requested result set
+	Page *ListPage `form:"page,omitempty" json:"page,omitempty"`
+
+	// Limit The number of results returned on a page
+	Limit *ListLimit `form:"limit,omitempty" json:"limit,omitempty"`
+	Query *Query     `form:"query,omitempty" json:"query,omitempty"`
+	Tags  *Tags      `form:"tags[],omitempty" json:"tags[],omitempty"`
+}
+
+// TagServiceSearchTagParams defines parameters for TagServiceSearchTag.
+type TagServiceSearchTagParams struct {
+	Query  *SearchQuery  `form:"query,omitempty" json:"query,omitempty"`
+	Offset *SearchOffset `form:"offset,omitempty" json:"offset,omitempty"`
+	Limit  *SearchLimit  `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
 // AutomationServiceAddTaskParams defines parameters for AutomationServiceAddTask.
 type AutomationServiceAddTaskParams struct {
 	Accept *AcceptJSON `json:"Accept,omitempty"`
@@ -2185,7 +2262,8 @@ type VariableServiceAddVariableParams struct {
 
 // VariableServiceUpdateVariableJSONBody defines parameters for VariableServiceUpdateVariable.
 type VariableServiceUpdateVariableJSONBody struct {
-	Value string `json:"value"`
+	Tags  []string `json:"tags"`
+	Value string   `json:"value"`
 }
 
 // VariableServiceUpdateVariableParams defines parameters for VariableServiceUpdateVariable.
@@ -2203,6 +2281,13 @@ type VariableServiceGetVariableListParams struct {
 
 	// Limit The number of results returned on a page
 	Limit *ListLimit `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+// VariableServiceSearchVariableParams defines parameters for VariableServiceSearchVariable.
+type VariableServiceSearchVariableParams struct {
+	Query  *SearchQuery  `form:"query,omitempty" json:"query,omitempty"`
+	Offset *SearchOffset `form:"offset,omitempty" json:"offset,omitempty"`
+	Limit  *SearchLimit  `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
 // Zigbee2mqttServiceGetBridgeListParams defines parameters for Zigbee2mqttServiceGetBridgeList.
@@ -2321,6 +2406,9 @@ type DashboardTabServiceAddDashboardTabJSONRequestBody = ApiNewDashboardTabReque
 // DashboardTabServiceUpdateDashboardTabJSONRequestBody defines body for DashboardTabServiceUpdateDashboardTab for application/json ContentType.
 type DashboardTabServiceUpdateDashboardTabJSONRequestBody DashboardTabServiceUpdateDashboardTabJSONBody
 
+// DashboardTabServiceImportDashboardTabJSONRequestBody defines body for DashboardTabServiceImportDashboardTab for application/json ContentType.
+type DashboardTabServiceImportDashboardTabJSONRequestBody = ApiDashboardTab
+
 // DashboardServiceImportDashboardJSONRequestBody defines body for DashboardServiceImportDashboard for application/json ContentType.
 type DashboardServiceImportDashboardJSONRequestBody = ApiDashboard
 
@@ -2377,6 +2465,9 @@ type ScriptServiceExecSrcScriptByIdJSONRequestBody = ApiExecSrcScriptRequest
 
 // ScriptServiceUpdateScriptByIdJSONRequestBody defines body for ScriptServiceUpdateScriptById for application/json ContentType.
 type ScriptServiceUpdateScriptByIdJSONRequestBody ScriptServiceUpdateScriptByIdJSONBody
+
+// TagServiceUpdateTagByIdJSONRequestBody defines body for TagServiceUpdateTagById for application/json ContentType.
+type TagServiceUpdateTagByIdJSONRequestBody TagServiceUpdateTagByIdJSONBody
 
 // AutomationServiceAddTaskJSONRequestBody defines body for AutomationServiceAddTask for application/json ContentType.
 type AutomationServiceAddTaskJSONRequestBody = ApiNewTaskRequest

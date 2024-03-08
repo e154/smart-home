@@ -1,39 +1,41 @@
 <script setup lang="ts">
-import {computed, PropType, ref, watch} from 'vue'
+import {computed, onMounted, onUnmounted, PropType, ref, watch} from 'vue'
+import {useI18n} from '@/hooks/web/useI18n'
+import {Card, CardItem, Core, eventBus, requestCurrentState} from "@/views/Dashboard/core";
+import {CardEditorName, CardItemList} from "@/views/Dashboard/card_items";
+import {JsonViewer} from "@/components/JsonViewer";
 import {
-  ElAside,
   ElButton,
-  ElButtonGroup,
-  ElCard,
+  ElCascader,
   ElCol,
-  ElContainer,
+  ElCollapse,
+  ElCollapseItem,
+  ElDivider,
   ElEmpty,
   ElForm,
   ElFormItem,
   ElInput,
-  ElMain,
-  ElMenu,
-  ElMenuItem,
   ElMessage,
-  ElOption,
   ElPopconfirm,
   ElRow,
-  ElScrollbar,
-  ElSelect,
-  ElTag
 } from 'element-plus'
-import {useI18n} from '@/hooks/web/useI18n'
-import {Card, CardItem, Core} from "@/views/Dashboard/core";
-import {useBus} from "@/views/Dashboard/bus";
-import {CardEditorName, CardItemList} from "@/views/Dashboard/card_items";
+import {JsonEditor} from "@/components/JsonEditor";
+import {Dialog} from "@/components/Dialog";
+import {ApiDashboardCardItem} from "@/api/stub";
 
 const {t} = useI18n()
-
-const {emit} = useBus()
 
 const cardItem = ref<CardItem>(null)
 // const card = ref<Card>({} as Card)
 const itemTypes = CardItemList;
+const itemProps = {
+  expandTrigger: 'hover' as const,
+}
+const cardItemType = computed(() => cardItem.value?.type)
+const handleTypeChanged = (value: string[]) => {
+  cardItem.value.type = value[value.length - 1]
+}
+
 const props = defineProps({
   core: {
     type: Object as PropType<Core>,
@@ -83,43 +85,19 @@ watch(
 // ---------------------------------
 
 const addCardItem = () => {
-  currentCore.value.createCardItem();
+  currentCore.value.createCardItem(undefined, 'text');
 }
 
 const removeCardItem = (index: number) => {
   currentCore.value.removeCardItem(index);
 }
 
-const copyCardItem = () => {
+const duplicate = () => {
   activeCard.value.copyItem(activeCard.value.selectedItem);
-}
-
-const menuCardItemClick = (index: number) => {
-  if (currentCore.value.activeTabIdx < 0 || currentCore.value.activeCard == undefined) {
-    return;
-  }
-
-  activeCard.value.selectedItem = index;
-
-  emit('selected_card_item', index)
-}
-
-const sortCardItemUp = (item: CardItem, index: number) => {
-  activeCard.value.sortCardItemUp(item, index)
-  currentCore.value.updateCard();
-}
-
-const sortCardItemDown = (item: CardItem, index: number) => {
-  activeCard.value.sortCardItemDown(item, index)
-  currentCore.value.updateCard();
 }
 
 const getCardEditorName = (name: string) => {
   return CardEditorName(name);
-}
-
-const cancel = () => {
-  console.warn('action not implemented')
 }
 
 const updateCardItem = async () => {
@@ -135,167 +113,216 @@ const updateCardItem = async () => {
   }
 }
 
+const updateCurrentState = () => {
+  if (cardItem.value.entityId) {
+    requestCurrentState(cardItem.value?.entityId)
+  }
+}
+
+const eventHandler = (event: string, args: any[]) => {
+  switch (event) {
+    case 'showCardItemImportDialog':
+      cardIdForImport.value = args
+      importDialogVisible.value = true
+      break;
+    case 'showCardItemExportDialog':
+      showExportDialog(args)
+      break;
+  }
+}
+const cardIdForImport = ref<number>()
+onMounted(() => {
+  eventBus.subscribe(['showCardItemImportDialog', 'showCardItemExportDialog'], eventHandler)
+})
+
+onUnmounted(() => {
+  eventBus.unsubscribe(['showCardItemImportDialog', 'showCardItemExportDialog'], eventHandler)
+})
+
+// ---------------------------------
+// import/export
+// ---------------------------------
+
+const dialogSource = ref({})
+const importDialogVisible = ref(false)
+const exportDialogVisible = ref(false)
+const importedCardItem = ref(null)
+
+const prepareForExport = (cardItemId?: number) => {
+  if (currentCore.value.activeCard == undefined) {
+    return;
+  }
+  dialogSource.value = currentCore.value.serializeCardItem(cardItemId)
+}
+
+const showExportDialog = (cardItemId?: number) => {
+  prepareForExport(cardItemId)
+  exportDialogVisible.value = true
+}
+
+const importHandler = (val: any) => {
+  if (importedCardItem.value == val) {
+    return
+  }
+  importedCardItem.value = val
+}
+
+const importCardItem = async () => {
+  let cardItem: ApiDashboardCardItem
+  try {
+    if (importedCardItem.value?.json) {
+      cardItem = importedCardItem.value.json as ApiDashboardCardItem;
+    } else if (importedCardItem.value.text) {
+      cardItem = JSON.parse(importedCardItem.value.text) as ApiDashboardCardItem;
+    }
+  } catch {
+    ElMessage({
+      title: t('Error'),
+      message: t('message.corruptedJsonFormat'),
+      type: 'error',
+      duration: 2000
+    });
+    return
+  }
+  const res = await currentCore.value.importCardItem(cardIdForImport.value, cardItem);
+  if (res) {
+    cardIdForImport.value = undefined
+    ElMessage({
+      title: t('Success'),
+      message: t('message.importedSuccessful'),
+      type: 'success',
+      duration: 2000
+    })
+  }
+  importDialogVisible.value = false
+}
+
+
 </script>
 
 <template>
 
-  <ElContainer>
-    <ElMain>
-      <ElScrollbar>
-        <ElCard class="box-card">
-          <template #header>
-            <div class="card-header">
-              <span>{{ $t('dashboard.editor.itemDetail') }}</span>
-            </div>
-          </template>
+  <ElRow class="mb-10px" v-if="activeCard.selectedItem !== -1">
+    <ElCol>
+      <ElDivider content-position="left">{{ $t('dashboard.cardItemOptions') }}</ElDivider>
+    </ElCol>
+  </ElRow>
 
-          <ElForm
-              v-if="cardItem"
-              :model="cardItem"
-              label-position="top"
+  <ElForm
+      v-if="cardItem"
+      :model="cardItem"
+      label-position="top"
+      style="width: 100%"
+      ref="cardItemForm"
+  >
+
+    <ElRow>
+      <ElCol>
+
+        <ElFormItem :label="$t('dashboard.editor.type')" prop="type">
+          <ElCascader
+              v-model="cardItemType"
+              :options="itemTypes"
+              :props="itemProps"
+              :placeholder="$t('dashboard.editor.pleaseSelectType')"
               style="width: 100%"
-              ref="cardItemForm"
-          >
+              @change="handleTypeChanged"
+          />
+        </ElFormItem>
+      </ElCol>
+    </ElRow>
 
-            <ElRow :gutter="24">
-              <ElCol :span="12" :xs="12">
-                <ElFormItem :label="$t('dashboard.editor.type')" prop="type">
-                  <ElSelect
-                      v-model="cardItem.type"
-                      :placeholder="$t('dashboard.editor.pleaseSelectType')"
-                      style="width: 100%"
-                  >
-                    <ElOption
-                        v-for="item in itemTypes"
-                        :key="item.value"
-                        :label="$t('dashboard.editor.'+item.label)"
-                        :value="item.value"
-                    />
+    <ElRow>
+      <ElCol>
+        <ElFormItem :label="$t('dashboard.editor.title')" prop="title">
+          <ElInput v-model="cardItem.title"/>
+        </ElFormItem>
+      </ElCol>
 
-                  </ElSelect>
-                </ElFormItem>
-              </ElCol>
-              <ElCol :span="12" :xs="12">
-                <ElFormItem :label="$t('dashboard.editor.title')" prop="title">
-                  <ElInput v-model="cardItem.title"/>
-                </ElFormItem>
-              </ElCol>
+    </ElRow>
 
-            </ElRow>
+    <component
+        :is="getCardEditorName(cardItem.type)"
+        :core="core"
+        :item="cardItem"
+    />
+  </ElForm>
 
-            <component
-                :is="getCardEditorName(cardItem.type)"
-                :core="core"
-                :item="cardItem"
-            />
-          </ElForm>
+  <ElEmpty v-if="!activeCard.items.length || activeCard.selectedItem === -1" :rows="5" class="mt-20px mb-20px"
+           description="Select card item or">
+    <ElButton type="primary" @click="addCardItem()">
+      {{ t('dashboard.editor.addNewCardItem') }}
+    </ElButton>
+    <ElButton type="primary" @click="importDialogVisible = true">
+      {{ t('main.import') }}
+    </ElButton>
+  </ElEmpty>
 
-          <ElEmpty v-if="!activeCard.items.length || activeCard.selectedItem === -1" :rows="5" class="mt-20px mb-20px">
-            <ElButton type="primary" @click="addCardItem()">
-              {{ t('dashboard.editor.addNewCardItem') }}
-            </ElButton>
-          </ElEmpty>
+  <ElRow class="mb-10px mt-10px" v-if="activeCard.selectedItem > -1 && cardItem.entity">
+    <ElCol>
+      <ElCollapse>
+        <ElCollapseItem :title="$t('dashboard.editor.eventstateJSONobject')">
+          <ElButton class="mb-10px w-[100%]" @click.prevent.stop="updateCurrentState()">
+            <Icon icon="ep:refresh" class="mr-5px"/>
+            {{ $t('dashboard.editor.getEvent') }}
+          </ElButton>
+          <JsonViewer v-model="cardItem.lastEvent"/>
+        </ElCollapseItem>
+      </ElCollapse>
+    </ElCol>
+  </ElRow>
 
-          <div class="text-right" v-if="activeCard.selectedItem > -1">
-            <ElButton type="primary" @click.prevent.stop="updateCardItem">{{ $t('main.update') }}</ElButton>
-            <ElButton type="default" @click.prevent.stop="copyCardItem">{{ $t('main.copy') }}</ElButton>
-            <ElPopconfirm
-                :confirm-button-text="$t('main.ok')"
-                :cancel-button-text="$t('main.no')"
-                width="250"
-                style="margin-left: 10px;"
-                :title="$t('main.are_you_sure_to_do_want_this?')"
-                @confirm="cancel"
-            >
-              <template #reference>
-                <ElButton type="default" plain>{{ t('main.cancel') }}</ElButton>
-              </template>
-            </ElPopconfirm>
-            <ElPopconfirm
-                :confirm-button-text="$t('main.ok')"
-                :cancel-button-text="$t('main.no')"
-                width="250"
-                style="margin-left: 10px;"
-                :title="$t('main.are_you_sure_to_do_want_this?')"
-                @confirm="removeCardItem(activeCard.selectedItem)"
-            >
-              <template #reference>
-                <ElButton class="mr-10px" type="danger" plain>
-                  <Icon icon="ep:delete" class="mr-5px"/>
-                  {{ t('main.remove') }}
-                </ElButton>
-              </template>
-            </ElPopconfirm>
-          </div>
+  <ElRow v-if="activeCard.selectedItem > -1" class="mb-10px">
+    <ElCol>
+      <ElDivider class="mb-10px" content-position="left">{{ $t('main.actions') }}</ElDivider>
+    </ElCol>
+  </ElRow>
 
-        </ElCard>
-      </ElScrollbar>
-    </ElMain>
+  <div v-if="activeCard.selectedItem > -1" class="text-right">
 
-    <ElAside width="400px">
-      <ElScrollbar>
-        <ElCard class="box-card">
-          <template #header>
-            <div class="item-header">
-              <span>{{ $t('dashboard.editor.itemList') }}</span>
-              <ElButtonGroup>
-                <ElButton @click="addCardItem()" text size="small">
-                  {{ t('dashboard.addNew') }}
-                </ElButton>
-              </ElButtonGroup>
-            </div>
-          </template>
-          <ElMenu
-              v-if="activeCard && activeCard.id"
-              ref="tabMenu"
-              :default-active="activeCard.selectedItem + ''"
-              v-model="activeCard.selectedItem"
-              class="el-menu-vertical-demo">
-            <ElMenuItem
-                :index="index + ''"
-                :key="index"
-                v-for="(item, index) in activeCard.items"
-                @click="menuCardItemClick(index)">
-              <div class="w-[100%] item-header">
-              <span>
-                {{ item.title }}
-              <ElTag type="info" class="mb-18px ml-10px">
-                {{ item.type }}
-              </ElTag>
-              </span>
-                <ElButtonGroup class="hide">
-                  <ElButton type="default" @click.prevent.stop="sortCardItemUp(item, index)">
-                    <Icon icon="teenyicons:up-solid"/>
-                  </ElButton>
-                  <ElButton type="default" @click.prevent.stop="sortCardItemDown(item, index)">
-                    <Icon icon="teenyicons:down-solid"/>
-                  </ElButton>
-                </ElButtonGroup>
-              </div>
-            </ElMenuItem>
-          </ElMenu>
+    <ElButton type="primary" @click.prevent.stop="updateCardItem" plain>{{
+        $t('main.update')
+      }}
+    </ElButton>
 
-        </ElCard>
-      </ElScrollbar>
-    </ElAside>
-  </ElContainer>
+    <ElButton @click.prevent.stop="duplicate">{{ $t('main.duplicate') }}</ElButton>
 
+    <ElPopconfirm
+        :confirm-button-text="$t('main.ok')"
+        :cancel-button-text="$t('main.no')"
+        width="250"
+        style="margin-left: 10px;"
+        :title="$t('main.are_you_sure_to_do_want_this?')"
+        @confirm="removeCardItem(activeCard.selectedItem)"
+    >
+      <template #reference>
+        <ElButton type="danger" plain>
+          <Icon icon="ep:delete" class="mr-5px"/>
+          {{ t('main.remove') }}
+        </ElButton>
+      </template>
+    </ElPopconfirm>
+  </div>
+
+  <!-- export dialog -->
+  <Dialog v-model="exportDialogVisible" :title="t('main.dialogExportTitle')" :maxHeight="400" width="80%">
+    <JsonViewer v-model="dialogSource"/>
+  </Dialog>
+  <!-- /export dialog -->
+
+  <!-- import dialog -->
+  <Dialog v-model="importDialogVisible" :title="t('main.dialogImportTitle')" :maxHeight="400" width="80%"
+          custom-class>
+    <JsonEditor @change="importHandler"/>
+    <template #footer>
+      <ElButton type="primary" @click="importCardItem()" plain>{{ t('main.import') }}</ElButton>
+      <ElButton @click="importDialogVisible = false">{{ t('main.closeDialog') }}</ElButton>
+    </template>
+  </Dialog>
+  <!-- /import dialog -->
 
 </template>
 
-<style lang="less" scoped>
-.item-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+<style lang="less">
 
-.hide {
-  display: none;
-}
-
-.el-menu-item:hover .hide {
-  display: block;
-  color: red;
-}
 </style>

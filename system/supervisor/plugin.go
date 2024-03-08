@@ -259,3 +259,53 @@ func (p *Plugin) Readme(lang *string) (result []byte, err error) {
 
 	return
 }
+
+func (p *Plugin) Check(msg events.EventCallEntityAction) (result []interface{}, ok bool) {
+	if msg.EntityId != nil {
+		var value interface{}
+		if value, ok = p.Actors.Load(*msg.EntityId); ok {
+			result = []interface{}{value}
+		}
+		return
+	}
+
+	p.Actors.Range(func(key, value any) bool {
+		pl, _ok := value.(PluginActor)
+		if !_ok {
+			log.Errorf("error with static cast")
+			return false
+		}
+
+		var needArea = msg.AreaId != nil
+		var needTags = msg.Tags != nil && len(msg.Tags) > 0
+
+		// area
+		var areaFound bool
+		if needArea {
+			areaFound = pl.Area() != nil && pl.Area().Id == *msg.AreaId
+			if !needTags && areaFound {
+				result = append(result, value)
+				return true
+			}
+		}
+
+		if needArea && !areaFound {
+			return true
+		}
+
+		// tags
+		var tagsFound bool
+		if needTags {
+			tagsFound = pl.MatchTags(msg.Tags)
+			if tagsFound {
+				result = append(result, value)
+			}
+		}
+
+		return true
+	})
+
+	ok = len(result) > 0
+
+	return
+}

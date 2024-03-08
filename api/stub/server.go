@@ -151,6 +151,9 @@ type ServerInterface interface {
 	// get dashboard_tab list
 	// (GET /v1/dashboard_tabs)
 	DashboardTabServiceGetDashboardTabList(ctx echo.Context, params DashboardTabServiceGetDashboardTabListParams) error
+	// import dashboard_tab
+	// (POST /v1/dashboard_tabs/import)
+	DashboardTabServiceImportDashboardTab(ctx echo.Context, params DashboardTabServiceImportDashboardTabParams) error
 	// get dashboard list
 	// (GET /v1/dashboards)
 	DashboardServiceGetDashboardList(ctx echo.Context, params DashboardServiceGetDashboardListParams) error
@@ -181,6 +184,9 @@ type ServerInterface interface {
 	// import entity
 	// (POST /v1/entities/import)
 	EntityServiceImportEntity(ctx echo.Context, params EntityServiceImportEntityParams) error
+	// get statistic
+	// (GET /v1/entities/statistic)
+	EntityServiceGetStatistic(ctx echo.Context) error
 	// add new entity
 	// (POST /v1/entity)
 	EntityServiceAddEntity(ctx echo.Context, params EntityServiceAddEntityParams) error
@@ -313,6 +319,9 @@ type ServerInterface interface {
 	// update script
 	// (PUT /v1/script/{id})
 	ScriptServiceUpdateScriptById(ctx echo.Context, id int64, params ScriptServiceUpdateScriptByIdParams) error
+	// get compiled script by id
+	// (GET /v1/script/{id}/compiled)
+	ScriptServiceGetCompiledScriptById(ctx echo.Context, id int64) error
 	// copy script by id
 	// (POST /v1/script/{id}/copy)
 	ScriptServiceCopyScriptById(ctx echo.Context, id int64) error
@@ -322,7 +331,7 @@ type ServerInterface interface {
 	// get script list
 	// (GET /v1/scripts)
 	ScriptServiceGetScriptList(ctx echo.Context, params ScriptServiceGetScriptListParams) error
-	// delete script by id
+	// search script by name
 	// (GET /v1/scripts/search)
 	ScriptServiceSearchScript(ctx echo.Context, params ScriptServiceSearchScriptParams) error
 	// get statistic
@@ -334,6 +343,21 @@ type ServerInterface interface {
 	// sign out user
 	// (POST /v1/signout)
 	AuthServiceSignout(ctx echo.Context) error
+	// delete tag by id
+	// (DELETE /v1/tag/{id})
+	TagServiceDeleteTagById(ctx echo.Context, id int64) error
+	// get tag by id
+	// (GET /v1/tag/{id})
+	TagServiceGetTagById(ctx echo.Context, id int64) error
+	// update tag
+	// (PUT /v1/tag/{id})
+	TagServiceUpdateTagById(ctx echo.Context, id int64, params TagServiceUpdateTagByIdParams) error
+	// get tag list
+	// (GET /v1/tags)
+	TagServiceGetTagList(ctx echo.Context, params TagServiceGetTagListParams) error
+	// search tag by name
+	// (GET /v1/tags/search)
+	TagServiceSearchTag(ctx echo.Context, params TagServiceSearchTagParams) error
 	// add new task
 	// (POST /v1/task)
 	AutomationServiceAddTask(ctx echo.Context, params AutomationServiceAddTaskParams) error
@@ -412,6 +436,9 @@ type ServerInterface interface {
 	// get variable list
 	// (GET /v1/variables)
 	VariableServiceGetVariableList(ctx echo.Context, params VariableServiceGetVariableListParams) error
+	// search trigger
+	// (GET /v1/variables/search)
+	VariableServiceSearchVariable(ctx echo.Context, params VariableServiceSearchVariableParams) error
 
 	// (GET /v1/ws)
 	StreamServiceSubscribe(ctx echo.Context) error
@@ -1772,6 +1799,37 @@ func (w *ServerInterfaceWrapper) DashboardTabServiceGetDashboardTabList(ctx echo
 	return err
 }
 
+// DashboardTabServiceImportDashboardTab converts echo context to params.
+func (w *ServerInterfaceWrapper) DashboardTabServiceImportDashboardTab(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(ApiKeyAuthScopes, []string{})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params DashboardTabServiceImportDashboardTabParams
+
+	headers := ctx.Request().Header
+	// ------------- Optional header parameter "Accept" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
+		var Accept AcceptJSON
+		n := len(valueList)
+		if n != 1 {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for Accept, got %d", n))
+		}
+
+		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter Accept: %s", err))
+		}
+
+		params.Accept = &Accept
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.DashboardTabServiceImportDashboardTab(ctx, params)
+	return err
+}
+
 // DashboardServiceGetDashboardList converts echo context to params.
 func (w *ServerInterfaceWrapper) DashboardServiceGetDashboardList(ctx echo.Context) error {
 	var err error
@@ -2065,6 +2123,13 @@ func (w *ServerInterfaceWrapper) EntityServiceGetEntityList(ctx echo.Context) er
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter query: %s", err))
 	}
 
+	// ------------- Optional query parameter "tags[]" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "tags[]", ctx.QueryParams(), &params.Tags)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter tags[]: %s", err))
+	}
+
 	// ------------- Optional query parameter "plugin" -------------
 
 	err = runtime.BindQueryParameter("form", true, false, "plugin", ctx.QueryParams(), &params.Plugin)
@@ -2112,6 +2177,17 @@ func (w *ServerInterfaceWrapper) EntityServiceImportEntity(ctx echo.Context) err
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.EntityServiceImportEntity(ctx, params)
+	return err
+}
+
+// EntityServiceGetStatistic converts echo context to params.
+func (w *ServerInterfaceWrapper) EntityServiceGetStatistic(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(ApiKeyAuthScopes, []string{})
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.EntityServiceGetStatistic(ctx)
 	return err
 }
 
@@ -3423,6 +3499,24 @@ func (w *ServerInterfaceWrapper) ScriptServiceUpdateScriptById(ctx echo.Context)
 	return err
 }
 
+// ScriptServiceGetCompiledScriptById converts echo context to params.
+func (w *ServerInterfaceWrapper) ScriptServiceGetCompiledScriptById(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "id" -------------
+	var id int64
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "id", runtime.ParamLocationPath, ctx.Param("id"), &id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	}
+
+	ctx.Set(ApiKeyAuthScopes, []string{})
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.ScriptServiceGetCompiledScriptById(ctx, id)
+	return err
+}
+
 // ScriptServiceCopyScriptById converts echo context to params.
 func (w *ServerInterfaceWrapper) ScriptServiceCopyScriptById(ctx echo.Context) error {
 	var err error
@@ -3571,6 +3665,162 @@ func (w *ServerInterfaceWrapper) AuthServiceSignout(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.AuthServiceSignout(ctx)
+	return err
+}
+
+// TagServiceDeleteTagById converts echo context to params.
+func (w *ServerInterfaceWrapper) TagServiceDeleteTagById(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "id" -------------
+	var id int64
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "id", runtime.ParamLocationPath, ctx.Param("id"), &id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	}
+
+	ctx.Set(ApiKeyAuthScopes, []string{})
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.TagServiceDeleteTagById(ctx, id)
+	return err
+}
+
+// TagServiceGetTagById converts echo context to params.
+func (w *ServerInterfaceWrapper) TagServiceGetTagById(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "id" -------------
+	var id int64
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "id", runtime.ParamLocationPath, ctx.Param("id"), &id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	}
+
+	ctx.Set(ApiKeyAuthScopes, []string{})
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.TagServiceGetTagById(ctx, id)
+	return err
+}
+
+// TagServiceUpdateTagById converts echo context to params.
+func (w *ServerInterfaceWrapper) TagServiceUpdateTagById(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "id" -------------
+	var id int64
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "id", runtime.ParamLocationPath, ctx.Param("id"), &id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	}
+
+	ctx.Set(ApiKeyAuthScopes, []string{})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params TagServiceUpdateTagByIdParams
+
+	headers := ctx.Request().Header
+	// ------------- Optional header parameter "Accept" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
+		var Accept AcceptJSON
+		n := len(valueList)
+		if n != 1 {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for Accept, got %d", n))
+		}
+
+		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter Accept: %s", err))
+		}
+
+		params.Accept = &Accept
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.TagServiceUpdateTagById(ctx, id, params)
+	return err
+}
+
+// TagServiceGetTagList converts echo context to params.
+func (w *ServerInterfaceWrapper) TagServiceGetTagList(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(ApiKeyAuthScopes, []string{})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params TagServiceGetTagListParams
+	// ------------- Optional query parameter "sort" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "sort", ctx.QueryParams(), &params.Sort)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter sort: %s", err))
+	}
+
+	// ------------- Optional query parameter "page" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "page", ctx.QueryParams(), &params.Page)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter page: %s", err))
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", ctx.QueryParams(), &params.Limit)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter limit: %s", err))
+	}
+
+	// ------------- Optional query parameter "query" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "query", ctx.QueryParams(), &params.Query)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter query: %s", err))
+	}
+
+	// ------------- Optional query parameter "tags[]" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "tags[]", ctx.QueryParams(), &params.Tags)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter tags[]: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.TagServiceGetTagList(ctx, params)
+	return err
+}
+
+// TagServiceSearchTag converts echo context to params.
+func (w *ServerInterfaceWrapper) TagServiceSearchTag(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(ApiKeyAuthScopes, []string{})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params TagServiceSearchTagParams
+	// ------------- Optional query parameter "query" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "query", ctx.QueryParams(), &params.Query)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter query: %s", err))
+	}
+
+	// ------------- Optional query parameter "offset" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", ctx.QueryParams(), &params.Offset)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter offset: %s", err))
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", ctx.QueryParams(), &params.Limit)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter limit: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.TagServiceSearchTag(ctx, params)
 	return err
 }
 
@@ -4274,6 +4524,40 @@ func (w *ServerInterfaceWrapper) VariableServiceGetVariableList(ctx echo.Context
 	return err
 }
 
+// VariableServiceSearchVariable converts echo context to params.
+func (w *ServerInterfaceWrapper) VariableServiceSearchVariable(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(ApiKeyAuthScopes, []string{})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params VariableServiceSearchVariableParams
+	// ------------- Optional query parameter "query" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "query", ctx.QueryParams(), &params.Query)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter query: %s", err))
+	}
+
+	// ------------- Optional query parameter "offset" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", ctx.QueryParams(), &params.Offset)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter offset: %s", err))
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", ctx.QueryParams(), &params.Limit)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter limit: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.VariableServiceSearchVariable(ctx, params)
+	return err
+}
+
 // StreamServiceSubscribe converts echo context to params.
 func (w *ServerInterfaceWrapper) StreamServiceSubscribe(ctx echo.Context) error {
 	var err error
@@ -4720,6 +5004,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/v1/dashboard_tab/:id", wrapper.DashboardTabServiceGetDashboardTabById)
 	router.PUT(baseURL+"/v1/dashboard_tab/:id", wrapper.DashboardTabServiceUpdateDashboardTab)
 	router.GET(baseURL+"/v1/dashboard_tabs", wrapper.DashboardTabServiceGetDashboardTabList)
+	router.POST(baseURL+"/v1/dashboard_tabs/import", wrapper.DashboardTabServiceImportDashboardTab)
 	router.GET(baseURL+"/v1/dashboards", wrapper.DashboardServiceGetDashboardList)
 	router.POST(baseURL+"/v1/dashboards/import", wrapper.DashboardServiceImportDashboard)
 	router.GET(baseURL+"/v1/dashboards/search", wrapper.DashboardServiceSearchDashboard)
@@ -4730,6 +5015,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.POST(baseURL+"/v1/developer_tools/entity/set_state", wrapper.DeveloperToolsServiceEntitySetState)
 	router.GET(baseURL+"/v1/entities", wrapper.EntityServiceGetEntityList)
 	router.POST(baseURL+"/v1/entities/import", wrapper.EntityServiceImportEntity)
+	router.GET(baseURL+"/v1/entities/statistic", wrapper.EntityServiceGetStatistic)
 	router.POST(baseURL+"/v1/entity", wrapper.EntityServiceAddEntity)
 	router.GET(baseURL+"/v1/entity/search", wrapper.EntityServiceSearchEntity)
 	router.DELETE(baseURL+"/v1/entity/:id", wrapper.EntityServiceDeleteEntity)
@@ -4774,6 +5060,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.DELETE(baseURL+"/v1/script/:id", wrapper.ScriptServiceDeleteScriptById)
 	router.GET(baseURL+"/v1/script/:id", wrapper.ScriptServiceGetScriptById)
 	router.PUT(baseURL+"/v1/script/:id", wrapper.ScriptServiceUpdateScriptById)
+	router.GET(baseURL+"/v1/script/:id/compiled", wrapper.ScriptServiceGetCompiledScriptById)
 	router.POST(baseURL+"/v1/script/:id/copy", wrapper.ScriptServiceCopyScriptById)
 	router.POST(baseURL+"/v1/script/:id/exec", wrapper.ScriptServiceExecScriptById)
 	router.GET(baseURL+"/v1/scripts", wrapper.ScriptServiceGetScriptList)
@@ -4781,6 +5068,11 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/v1/scripts/statistic", wrapper.ScriptServiceGetStatistic)
 	router.POST(baseURL+"/v1/signin", wrapper.AuthServiceSignin)
 	router.POST(baseURL+"/v1/signout", wrapper.AuthServiceSignout)
+	router.DELETE(baseURL+"/v1/tag/:id", wrapper.TagServiceDeleteTagById)
+	router.GET(baseURL+"/v1/tag/:id", wrapper.TagServiceGetTagById)
+	router.PUT(baseURL+"/v1/tag/:id", wrapper.TagServiceUpdateTagById)
+	router.GET(baseURL+"/v1/tags", wrapper.TagServiceGetTagList)
+	router.GET(baseURL+"/v1/tags/search", wrapper.TagServiceSearchTag)
 	router.POST(baseURL+"/v1/task", wrapper.AutomationServiceAddTask)
 	router.DELETE(baseURL+"/v1/task/:id", wrapper.AutomationServiceDeleteTask)
 	router.GET(baseURL+"/v1/task/:id", wrapper.AutomationServiceGetTask)
@@ -4807,6 +5099,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/v1/variable/:name", wrapper.VariableServiceGetVariableByName)
 	router.PUT(baseURL+"/v1/variable/:name", wrapper.VariableServiceUpdateVariable)
 	router.GET(baseURL+"/v1/variables", wrapper.VariableServiceGetVariableList)
+	router.GET(baseURL+"/v1/variables/search", wrapper.VariableServiceSearchVariable)
 	router.GET(baseURL+"/v1/ws", wrapper.StreamServiceSubscribe)
 	router.GET(baseURL+"/v1/zigbee2mqtt/bridge", wrapper.Zigbee2mqttServiceGetBridgeList)
 	router.POST(baseURL+"/v1/zigbee2mqtt/bridge", wrapper.Zigbee2mqttServiceAddZigbee2mqttBridge)

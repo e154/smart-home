@@ -18,11 +18,8 @@
 
 package events
 
-import m "github.com/e154/smart-home/models"
-
 // CommandTerminal ...
 type CommandTerminal struct {
-	SessionID string  `json:"session_id"`
-	User      *m.User `json:"user"`
-	Text      string  `json:"text"`
+	Common
+	Text string `json:"text"`
 }

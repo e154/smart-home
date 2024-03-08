@@ -61,6 +61,8 @@ func (e *eventHandler) eventHandler(_ string, message interface{}) {
 	// notifications
 	case webpush.EventNewWebPushPublicKey:
 		go e.eventNewWebPushPublicKey(v)
+	case webpush.EventUserDevices:
+		go e.eventUserDevices(v)
 	case events.EventDirectMessage:
 		go e.eventDirectMessage(v.UserID, v.SessionID, v.Query, v.Message)
 
@@ -106,6 +108,11 @@ func (e *eventHandler) eventHandler(_ string, message interface{}) {
 		events.EventRemovedScriptModel,
 		events.EventCreatedScriptModel:
 		go e.event(message)
+
+	// version
+	case events.EventServerVersion:
+		go e.eventDirectMessage(v.UserId(), v.SessionID, "event_server_version", v.Version)
+
 	default:
 
 	}
@@ -118,6 +125,15 @@ func (e *eventHandler) eventNewWebPushPublicKey(event webpush.EventNewWebPushPub
 		return
 	}
 	e.broadcast("event_new_webpush_public_key", b)
+}
+
+func (e *eventHandler) eventUserDevices(event webpush.EventUserDevices) {
+	b, _ := json.Marshal(event)
+	if event.UserID != 0 {
+		e.directMessage(event.UserID, event.SessionID, "event_user_devices", b)
+		return
+	}
+	e.broadcast("event_user_devices", b)
 }
 
 func (e *eventHandler) eventStateChangedHandler(msg interface{}) {

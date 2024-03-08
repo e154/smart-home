@@ -101,7 +101,7 @@ func (c ControllerEntity) EntityServiceGetEntity(ctx echo.Context, id string) er
 func (c ControllerEntity) EntityServiceGetEntityList(ctx echo.Context, params stub.EntityServiceGetEntityListParams) error {
 
 	pagination := c.Pagination(params.Page, params.Limit, params.Sort)
-	items, total, err := c.endpoint.Entity.List(ctx.Request().Context(), pagination, params.Query, params.Plugin, params.Area)
+	items, total, err := c.endpoint.Entity.List(ctx.Request().Context(), pagination, params.Query, params.Plugin, params.Area, params.Tags)
 	if err != nil {
 		return c.ERROR(ctx, err)
 	}
@@ -145,4 +145,15 @@ func (c ControllerEntity) EntityServiceDisabledEntity(ctx echo.Context, id strin
 	}
 
 	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
+}
+
+// GetStatistic ...
+func (c ControllerEntity) EntityServiceGetStatistic(ctx echo.Context) error {
+
+	statistic, err := c.endpoint.Entity.Statistic(ctx.Request().Context())
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, dto.GetStatistic(statistic)))
 }

@@ -217,13 +217,17 @@ func (s *Client) GetSnapshotURI() *string {
 		resp, _ := media.GetSnapshotUri(&media1Wsdl.GetSnapshotUri{
 			ProfileToken: s.mediaProfiles[profileIndex].Token,
 		})
-		uri = resp.MediaUri.Uri
+		if resp != nil && resp.MediaUri != nil {
+			uri = resp.MediaUri.Uri
+		}
 	}
 	if media, err := s.cli.Media2(); err == nil {
 		resp, _ := media.GetSnapshotUri(&media2Wsdl.GetSnapshotUri{
 			ProfileToken: s.mediaProfiles[profileIndex].Token,
 		})
-		uri = resp.Uri
+		if resp != nil {
+			uri = resp.Uri
+		}
 	}
 	if uri == "" {
 		return nil

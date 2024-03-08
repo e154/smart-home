@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {defineEmits, reactive, ref, unref, watch} from 'vue'
+import {reactive, ref, unref, watch} from 'vue'
 import {Form} from '@/components/Form'
 import {useI18n} from '@/hooks/web/useI18n'
 import {ElButton, ElCheckbox, ElLink} from 'element-plus'
@@ -13,12 +13,10 @@ import {UserType} from '@/api/login/types'
 import {useValidator} from '@/hooks/web/useValidator'
 import {FormSchema} from '@/types/form'
 import api from "@/api/api";
-import stream from "@/api/stream";
 import {ApiSigninResponse} from "@/api/stub";
 import {prepareUrl} from "@/utils/serverId";
 
 const {required} = useValidator()
-const emit = defineEmits(['to-restore'])
 const appStore = useAppStore()
 const permissionStore = usePermissionStore()
 const {currentRoute, addRoute, push} = useRouter()
@@ -94,30 +92,28 @@ const schema = reactive<FormSchema[]>([
     }
   }
 ])
-const iconSize = 30
 const remember = ref(wsCache.get("remember"))
 const {register, elFormRef, methods} = useForm()
 const loading = ref(false)
-const iconColor = '#999'
 const redirect = ref<string>('')
 const ipAddress = ref();
 
 watch(
-    () => currentRoute.value,
-    (route: RouteLocationNormalizedLoaded) => {
-      redirect.value = route?.query?.redirect as string
-    },
-    {
-      immediate: true
-    }
+  () => currentRoute.value,
+  (route: RouteLocationNormalizedLoaded) => {
+    redirect.value = route?.query?.redirect as string
+  },
+  {
+    immediate: true
+  }
 )
 
 const getIpAddress = async () => {
   fetch('https://api.ipify.org?format=json')
-      .then(x => x.json())
-      .then(({ ip }) => {
-        ipAddress.value = ip;
-      });
+    .then(x => x.json())
+    .then(({ip}) => {
+      ipAddress.value = ip;
+    });
 }
 
 getIpAddress()
@@ -167,13 +163,6 @@ const signIn = async () => {
           } else {
             appStore.SetAvatar('');
           }
-
-          // ws
-          stream.connect(import.meta.env.VITE_API_BASEPATH as string || window.location.origin, accessToken);
-          // geo location
-          // customNavigator.watchPosition();
-          // push service
-          // registerServiceWorker.start();
 
           await permissionStore.generateRoutes('none').catch(() => {
           })
@@ -226,13 +215,13 @@ const toRestore = () => {
 
 <template>
   <Form
-      :schema="schema"
-      :rules="rules"
-      label-position="top"
-      hide-required-asterisk
-      size="large"
-      class="dark:(border-1 border-[var(--el-border-color)] border-solid)"
-      @register="register"
+    :schema="schema"
+    :rules="rules"
+    label-position="top"
+    hide-required-asterisk
+    size="large"
+    class="dark:(border-1 border-[var(--el-border-color)] border-solid)"
+    @register="register"
   >
     <template #title>
       <h2 class="text-2xl font-bold text-center w-[100%]">{{ t('login.login') }}</h2>
@@ -241,7 +230,7 @@ const toRestore = () => {
     <template #tool>
       <div class="flex justify-between items-center w-[100%]">
         <ElCheckbox v-model="remember" :label="t('login.remember')"/>
-        <ElLink  type="primary" :underline="false" @click="toRestore()">{{ t('login.forgetPassword') }}</ElLink>
+        <ElLink type="primary" :underline="false" @click="toRestore()">{{ t('login.forgetPassword') }}</ElLink>
       </div>
     </template>
 

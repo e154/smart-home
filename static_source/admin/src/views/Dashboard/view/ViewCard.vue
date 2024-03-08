@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import {onMounted, PropType, ref,} from "vue";
 import {Card, CardItem, Core} from "@/views/Dashboard/core";
-import {useBus} from "@/views/Dashboard/bus";
 import {CardItemName} from "@/views/Dashboard/card_items";
 import {UUID} from "uuid-generator-ts";
-import KeystrokeCaptureViewer from "@/views/Dashboard/components/KeystrokeCaptureViewer.vue";
+import {KeystrokeCaptureViewer} from "@/views/Dashboard/components";
+import {useAppStore} from "@/store/modules/app";
 
-const {bus} = useBus()
+const appStore = useAppStore()
 
 const currentID = ref('')
 onMounted(() => {
@@ -40,30 +40,47 @@ const getCardItemName = (item: CardItem): string => {
   return CardItemName(item.type);
 }
 
+const getCardStyle = () => {
+  const style = {
+    transform: `scale(${zoom.value})`,
+  }
+  if (props.card?.template) {
+    style['background-color'] = 'inherit'
+  } else {
+    if (props.card?.background) {
+      style['background-color'] = props.card.background
+    } else {
+      if (props.card?.backgroundAdaptive) {
+        style['background-color'] = appStore.isDark ? '#232324' : '#F5F7FA'
+      }
+    }
+  }
+
+  return style
+}
+
 </script>
 
 <template>
 
   <div
-      class="item-card elements selecto-area"
-      v-bind:class="'class-'+card.currentID"
-      :style="{
-        'transform': `scale(${zoom})`,
-        'background-color': card.background || 'inherit'}"
-      @mouseover="hover = true"
-      @touchstart="hover = true"
-      @mouseleave="hover = false"
-      @mouseout="hover = false"
+    class="item-card elements selecto-area"
+    v-bind:class="'class-'+card.currentID"
+    :style="getCardStyle()"
+    @mouseover="hover = true"
+    @touchstart="hover = true"
+    @mouseleave="hover = false"
+    @mouseout="hover = false"
   >
     <KeystrokeCaptureViewer :card="card" :core="core" :hover="hover"/>
     <component
-        v-for="(item, index) in card.items"
-        :key="index"
-        class="item-element"
-        :style="item.position"
-        :is="getCardItemName(item)"
-        :item="item"
-        :core="core"
+      v-for="(item, index) in card.items"
+      :key="index"
+      class="item-element"
+      :style="item.position"
+      :is="getCardItemName(item)"
+      :item="item"
+      :core="core"
     />
   </div>
 

@@ -20,7 +20,6 @@ package endpoint
 
 import (
 	"context"
-
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/events"
 )
@@ -38,18 +37,28 @@ func NewInteractEndpoint(common *CommonEndpoint) *InteractEndpoint {
 }
 
 // EntityCallAction ...
-func (d InteractEndpoint) EntityCallAction(ctx context.Context, entityId string, action string, args map[string]interface{}) (err error) {
+func (d InteractEndpoint) EntityCallAction(ctx context.Context, entityId *string, actionName string, areaId *int64, tags []string, args map[string]interface{}) (err error) {
 
-	id := common.EntityId(entityId)
-	if _, err = d.adaptors.Entity.GetById(ctx, id); err != nil {
+	if entityId != nil {
+		id := common.EntityId(*entityId)
+		if _, err = d.adaptors.Entity.GetById(ctx, id); err != nil {
+			return
+		}
+
+		d.eventBus.Publish("system/entities/"+id.String(), events.EventCallEntityAction{
+			PluginName: common.String(id.PluginName()),
+			EntityId:   id.Ptr(),
+			ActionName: actionName,
+			Args:       args,
+		})
 		return
 	}
 
-	d.eventBus.Publish("system/entities/"+id.String(), events.EventCallEntityAction{
-		PluginName: id.PluginName(),
-		EntityId:   id,
-		ActionName: action,
+	d.eventBus.Publish("system/entities/", events.EventCallEntityAction{
+		ActionName: actionName,
 		Args:       args,
+		Tags:       tags,
+		AreaId:     areaId,
 	})
 
 	return

@@ -1,34 +1,56 @@
 <script setup lang="ts">
-import {
-  computed,
-  onMounted, onUnmounted,
-  onUpdated,
-  PropType,
-  ref, watch,
-} from "vue";
-import {Card, CardItem, Core, Tab} from "@/views/Dashboard/core";
-import {useBus} from "@/views/Dashboard/bus";
+import {computed, onMounted, onUnmounted, onUpdated, PropType, ref,} from "vue";
+import {Card, CardItem, Core, EventContextMenu, eventBus} from "@/views/Dashboard/core";
 import debounce from 'lodash.debounce'
-import Moveable, { MoveableTargetGroupsType } from 'vue3-moveable'
-import { deepFlat } from "@daybrush/utils";
-import { VueSelecto } from "vue3-selecto";
+import Moveable from 'vue3-moveable'
+import {deepFlat} from "@daybrush/utils";
+import {VueSelecto} from "vue3-selecto";
 import {CardItemName} from "@/views/Dashboard/card_items";
 import {UUID} from "uuid-generator-ts";
-import KeystrokeCaptureViewer from "@/views/Dashboard/components/KeystrokeCaptureViewer.vue";
+import {KeystrokeCaptureViewer} from "@/views/Dashboard/components";
+import {useAppStore} from "@/store/modules/app";
 
-const {emit} = useBus()
+const appStore = useAppStore()
 
 const currentID = ref('')
+const cardRef = ref(null)
+
+const eventHandler = (event: string, args: any[]) => {
+  switch (event) {
+    case 'selectedCardItem':
+      if (!currentCard.value.active) {
+        return
+      }
+      const itemIndex = args
+      if (itemIndex === -1 || !currentCard.value.items.length || !currentCard.value.itemList[itemIndex]) {
+        setSelectedTargets([])
+        return
+      }
+      const target = currentCard.value.itemList[itemIndex];
+      // target.classList.add("selected");
+      setSelectedTargets([target]);
+      break;
+    case 'unselectedCardItem':
+      if (currentCard.value.active) {
+        return
+      }
+      setSelectedTargets([]);
+      break;
+  }
+}
+
 onMounted(() => {
   const uuid = new UUID()
   currentID.value = uuid.getDashFreeUUID()
 
-  currentCard.value.document = document
+  currentCard.value.document = cardRef.value
   currentCard.value.updateItemList()
+
+  eventBus.subscribe(['selectedCardItem', 'unselectedCardItem'], eventHandler)
 })
 
 onUnmounted(() => {
-
+  eventBus.unsubscribe(['selectedCardItem', 'unselectedCardItem'], eventHandler)
 })
 
 onUpdated(() => {
@@ -40,7 +62,7 @@ onUpdated(() => {
 // ---------------------------------
 
 const zoom = ref(1);
-const cardRef = ref(null)
+
 
 const props = defineProps({
   core: {
@@ -62,7 +84,8 @@ const currentCard = computed({
   get(): Card {
     return props.card as Card
   },
-  set(val: Card) {}
+  set(val: Card) {
+  }
 })
 
 const hover = ref(false)
@@ -75,36 +98,10 @@ const getCardItemName = (item: CardItem): string => {
   return CardItemName(item.type);
 }
 
-useBus({
-  name: 'selected_card_item',
-  callback: (itemIndex: number) => {
-    if (!currentCard.value.active) {
-      return
-    }
-    if (itemIndex === -1 || !currentCard.value.items.length || !currentCard.value.items[itemIndex]) {
-      setSelectedTargets([])
-      return
-    }
-    const target = currentCard.value.items[itemIndex].target;
-    // target.classList.add("selected");
-    setSelectedTargets([target]);
-  }
-})
-
-useBus({
-  name: 'unselected_card_item',
-  callback: () => {
-    if (currentCard.value.active) {
-      return
-    }
-    setSelectedTargets([]);
-  }
-})
-
 const selectCardItem = (itemIndex: number) => {
   if (!currentCard.value.active) {
     props.core?.onSelectedCard(currentCard.value.id)
-    emit('selected_card', currentCard.value.id)
+    eventBus.emit('selectedCard', currentCard.value.id)
   }
 
   currentCard.value.selectedItem = itemIndex;
@@ -113,7 +110,7 @@ const selectCardItem = (itemIndex: number) => {
   // } else {
   //   targets.value = [currentCard.value.items[itemIndex].target];
   // }
-  // emit('unselected_card_item')
+  // eventBus.emit('unselectedCardItem')
 }
 
 const onDrag = ({target, transform, beforeTranslate, left, top}: any) => {
@@ -224,7 +221,7 @@ const onSelectEnd = (e) => {
   if (e.isDragStart) {
     e.inputEvent.preventDefault();
     moveable.waitToChangeTarget().then(() => {
-    //   moveable.dragStart(e.inputEvent);
+      //   moveable.dragStart(e.inputEvent);
     });
   }
   targets.value = selected;
@@ -248,12 +245,46 @@ const onDragStart = (e) => {
   const target = e.inputEvent.target;
   const flatted = targets.value.flat(3);
   if (moveable.isMoveableElement(target)
-      || flatted.some(t => t === target || t.contains(target))
+      || flatted.some(t => t === target || t && t.contains(target))
   ) {
     e.stop();
   }
 };
 
+const getCardStyle = () => {
+  const style = {
+    transform: `scale(${zoom.value})`,
+  }
+  if (currentCard.value?.template) {
+    style['background-color'] = 'inherit'
+  } else {
+    if (currentCard.value?.background) {
+      style['background-color'] = currentCard.value.background
+    } else {
+      if (currentCard.value?.backgroundAdaptive) {
+        style['background-color'] = appStore.isDark ? '#232324' : '#F5F7FA'
+      }
+    }
+  }
+
+  return style
+}
+
+const onContextMenu = (e: MouseEvent, owner: 'card' | 'cardItem', cardItemId?: number) => {
+  e.preventDefault();
+  e.stopPropagation();
+  eventBus.emit('eventContextMenu', {
+    event: e,
+    owner: owner,
+    tabId: currentCard.value.dashboardTabId,
+    cardId: currentCard.value.id,
+    cardItemId: cardItemId,
+  } as EventContextMenu)
+}
+
+defineOptions({
+  inheritAttrs: false
+})
 </script>
 
 <template>
@@ -261,16 +292,16 @@ const onDragStart = (e) => {
   <div
       class="item-card elements selecto-area prevent-select"
       ref="cardRef"
-      v-bind:class="'class-'+currentCard.currentID"
+      :class="[{'active': currentCard.active}, `class-${currentCard.currentID}`]"
       :key="reloadKey"
-      :style="{
-        'transform': `scale(${zoom})`,
-        'background-color': currentCard.background || 'inherit'}"
+      :style="getCardStyle()"
       @mouseover="hover = true"
       @touchstart="hover = true"
       @mouseleave="hover = false"
       @mouseout="hover = false"
+      @contextmenu="onContextMenu($event, 'card')"
   >
+    <div class="card-label">active</div>
 
     <KeystrokeCaptureViewer :card="currentCard" :core="core" :hover="hover"/>
 
@@ -284,6 +315,7 @@ const onDragStart = (e) => {
         :item="item"
         :core="core"
         :editor="true"
+        @contextmenu="onContextMenu($event, 'cardItem', item.id)"
     />
 
     <Moveable
@@ -320,10 +352,32 @@ const onDragStart = (e) => {
 .movable {
   position: absolute;
 }
+
+.card-label {
+  display: none;
+  position: absolute;
+  top: 18px;
+  right: -17px;
+  width: 55px;
+  height: 20px;
+  background: #4af;
+  padding: 0 6px;
+  transform: rotate(90deg);
+  z-index: 9999;
+  opacity: 0.5;
+  color: #eeeeee;
+}
+
 .item-card {
   position: relative;
   overflow: hidden;
   width: 100%;
   height: 100%;
+
+  &.active {
+    .card-label {
+      display: inherit;
+    }
+  }
 }
 </style>

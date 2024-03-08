@@ -1,98 +1,97 @@
-<!--
-  - This file is part of the Smart Home
-  - Program complex distribution https://github.com/e154/smart-home
-  - Copyright (C) 2023, Filippov Alex
-  -
-  - This library is free software: you can redistribute it and/or
-  - modify it under the terms of the GNU Lesser General Public
-  - License as published by the Free Software Foundation; either
-  - version 3 of the License, or (at your option) any later version.
-  -
-  - This library is distributed in the hope that it will be useful,
-  - but WITHOUT ANY WARRANTY; without even the implied warranty of
-  - MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  - Library General Public License for more details.
-  -
-  - You should have received a copy of the GNU Lesser General Public
-  - License along with this library.  If not, see
-  - <https://www.gnu.org/licenses/>.
-  -->
-
 <script setup lang="ts">
-import Terminal, {TerminalApi} from 'vue-web-terminal'
-// import 'vue-web-terminal/lib/theme/dark.css'
-import {computed, onMounted, onUnmounted, ref} from "vue";
+import {computed, onMounted, onUnmounted, ref} from 'vue';
+import {Terminal} from 'xterm';
+import {FitAddon} from 'xterm-addon-fit';
+import 'xterm/css/xterm.css';
 import {useAppStore} from "@/store/modules/app";
-import {ApiLog} from "@/api/stub";
+import {DraggableContainer} from "@/components/DraggableContainer";
 import {UUID} from "uuid-generator-ts";
+import {ApiLog} from "@/api/stub";
 import stream from "@/api/stream";
-import api from "@/api/api";
+import {parseTime} from "@/utils";
 import {useCache} from "@/hooks/web/useCache";
+import api from "@/api/api";
 
 const appStore = useAppStore()
 
-const context = ref("")
-const initLog = ref([{type: 'normal',content: "Terminal Initializing ..."}])
 const showTerminal = computed(() => appStore.getTerminal)
+const terminalRef = ref<HTMLElement | null>(null);
 
-const onExecCmd = (key, command, success, failed) => {
-  if (key === 'fail') {
-    failed('Something wrong!!!')
-  } else {
-    // let allClass = ['success', 'error', 'system', 'info', 'warning'];
-    // let clazz = allClass[Math.floor(Math.random() * allClass.length)];
-    // success({
-    //   type: 'normal',
-    //   class: 'info',
-    //   content: command
-    // })
-    if (command == 'clear') {
-      TerminalApi.clearLog()
-      success()
-      return
+let term: Terminal | null = null;
+let fitAddon: FitAddon | null = null;
+
+const shellprompt = "$ ";
+
+const currentID = ref('')
+onMounted(() => {
+
+  const uuid = new UUID()
+  currentID.value = uuid.getDashFreeUUID()
+
+  if (terminalRef.value) {
+    term = new Terminal({
+      screenKeys: true,
+      useStyle: true,
+      cursorBlink: true,
+      fullscreenWin: true,
+      maximizeWin: true,
+      screenReaderMode: true,
+      cols: 128,
+    });
+    term.open(terminalRef.value);
+    term.options.fontSize = 12;
+    term.refresh(0, term.rows - 1);
+
+    term._initialized = true;
+    term.focus(); // Фокусируем терминал при монтировании
+    term.scrollToBottom();
+
+    // Добавляем обработчик событий для ввода текста
+    term.onKey((event: { key: string }) => {
+      handleInput(event);
+    });
+    // Сохраняем экземпляр Terminal в переменной
+
+    fitAddon = new FitAddon();
+    term.loadAddon(fitAddon);
+
+    term.onResize(function (evt) {
+      // console.log('onResize', evt)
+    });
+
+    term.prompt = function () {
+      term.write("\r\n" + shellprompt);
+    };
+    term.prompt();
+    term.write('Smart Home terminal initializing ...')
+    term.prompt();
+  }
+
+  setTimeout(() => {
+    if (fitAddon) {
+      fitAddon.fit();
     }
-    sendCommand(command)
-    success()
-  }
-}
 
-const addLog = (log: ApiLog) => {
-  // const t = parseTime(log.createdAt)
-  const message = {
-    type: 'normal',
-    class: log.level?.toLowerCase(),
-    content: `${log.owner} -> ${log.body}`
-  }
-  Terminal.$api.pushMessage("terminal", [message])
-}
+    getList()
 
-const {wsCache} = useCache()
-const updateAccessToken = (payload: any) => {
-  const {access_token} = payload;
-  wsCache.set("accessToken", access_token)
-  appStore.SetToken(access_token);
-  location.reload()
-}
+    stream.subscribe('log', currentID.value, addLog)
+    stream.subscribe('command_response', currentID.value, serverResponse)
+    stream.subscribe('update_access_token', currentID.value, updateAccessToken)
 
-const serverResponse = (payload: any) => {
-  const {body, type} = payload
-  const str = body.split("\n")
-  const message = []
-  str.forEach((v) => {
-    message.push({
-      type: 'normal',
-      class: type || 'info',
-      content: v,
-    } )
-  })
-  Terminal.$api.pushMessage("terminal", message)
-}
+  }, 1000)
+})
+
+onUnmounted(() => {
+  stream.unsubscribe('log', currentID.value)
+  stream.unsubscribe('command_response', currentID.value)
+  stream.unsubscribe('update_access_token', currentID.value)
+})
 
 const getList = async () => {
 
   let params = {
     page: 0,
-    limit: 100,
+    limit: 200,
   }
 
   const res = await api.v1.logServiceGetLogList(params)
@@ -109,27 +108,67 @@ const getList = async () => {
   }
 }
 
-const currentID = ref('')
-onMounted(() => {
-  getList()
+var currLine = '';
+const handleInput = (e: KeyboardEvent) => {
+  const printable = !e.altKey && !e.ctrlKey && !e.metaKey;
+  if (term) {
+    // console.log(e, currLine)
+    if (e.domEvent.keyCode === 13) {
+      if (currLine == 'clear') {
+        currLine = '';
+        term.clear()
+        term.prompt();
+        return
+      }
+      if (currLine != '') {
+        sendCommand(currLine);
+      }
+      currLine = ''
+      term.prompt();
+    } else if (e.domEvent.keyCode === 8) {
+      // Do not delete the prompt
+      if (term['_core'].buffer.x > 2) {
+        term.write("\b \b");
+      }
+    } else if (printable) {
+      currLine += e.key;
+      term.write(e.key);
+    }
+  }
+};
 
-  const uuid = new UUID()
-  currentID.value = uuid.getDashFreeUUID()
+const {wsCache} = useCache()
+const updateAccessToken = (payload: any) => {
+  const {access_token} = payload;
+  wsCache.set("accessToken", access_token)
+  appStore.SetToken(access_token);
+  location.reload()
+}
 
-  context.value = "/"
+const serverResponse = (payload: any) => {
+  const {body, type} = payload
+  if (body == '') {
+    return
+  }
+  const str = body.split("\n")
+  if (term) {
+    str.forEach((v) => {
+      term.write(v + '\r\n');
+    })
+  }
+}
 
-  setTimeout(() => {
-    stream.subscribe('log', currentID.value, addLog)
-    stream.subscribe('command_response', currentID.value, serverResponse)
-    stream.subscribe('update_access_token', currentID.value, updateAccessToken)
-  }, 1000)
-})
+const addLog = (log: ApiLog) => {
+  if (term) {
+    term.write(`${parseTime(log.createdAt || log.created_at)} [${log.level}] ${log.owner} -> ${log.body}\r\n`);
+  }
+}
 
-onUnmounted(() => {
-  stream.unsubscribe('log', currentID.value)
-  stream.unsubscribe('command_response', currentID.value)
-  stream.unsubscribe('update_access_token', currentID.value)
-})
+const handleResize = () => {
+  if (fitAddon) {
+    fitAddon.fit();
+  }
+}
 
 const sendCommand = (text?: string) => {
   if (!text) {
@@ -145,52 +184,31 @@ const sendCommand = (text?: string) => {
 </script>
 
 <template>
-  <terminal
+  <DraggableContainer
+      @resize="handleResize"
+      :name="'terminal'"
       v-show="showTerminal"
-      show-header
-      name="terminal"
-      @exec-cmd="onExecCmd"
-      :context="context"
-      :auto-help="false"
-      :enable-default-command="false"
-      :enable-example-hint="false"
-      :init-log="initLog"
-      :drag-conf="{zIndex: 9999, width: 700, height: 500, init:{ x: 50, y: 50 }}">
+      :initial-width="600"
+      :initial-height="400"
+  >
     <template #header>
-      <div class="terminal-header">
-        Terminal
-      </div>
+      <span>Terminal</span>
     </template>
-
-    <template #json="data">
-      {{ data.message }}
+    <template #default>
+      <div ref="terminalRef" style="width: 100%; height: 100%;"></div>
     </template>
-
-    <template #textEditor="{data}">
-      <textarea
-          name="editor" class="text-editor" v-model="data.value"
-                @focus="data.onFocus" @blur="data.onBlur"></textarea>
-<!--      <div class="text-editor-floor" align="center">-->
-<!--        <button class="text-editor-floor-btn" @click="_textEditorClose">Save & Close(Ctrl + S)</button>-->
-<!--      </div>-->
-    </template>
-  </terminal>
+  </DraggableContainer>
 </template>
 
 <style lang="less">
 
-.terminal-header {
-  background-color: #959598;
-  text-align: center;
-  padding: 2px;
+.draggable-container.container-terminal {
+  background-color: #000;
+
+  .draggable-container-content {
+    padding: 0;
+    padding: 0 10px;
+  }
 }
-.t-log-box {
-  display: block;
-  margin-block-start: 0;
-  margin-block-end: 0;
-}
-.t-ask-input, .t-window, .t-window div, .t-window p {
-  font-size: 11px;
-  font-family: Monaco,Menlo,Consolas,monospace;
-}
+
 </style>

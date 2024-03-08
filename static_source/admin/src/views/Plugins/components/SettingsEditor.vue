@@ -94,6 +94,9 @@ const save = async () => {
       <div v-if="row.type === 'IMAGE'">
         <el-input type="string" v-model="row.imageUrl"/>
       </div>
+      <div v-if="row.type === 'ICON'">
+        <el-input type="string" v-model="row.icon"/>
+      </div>
       <div v-if="row.type === 'INT'" class="w-[100%]">
         <ElInputNumber  v-model="row.int" class="w-[100%]"/>
       </div>

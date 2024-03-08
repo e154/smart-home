@@ -20,6 +20,7 @@ package adaptors
 
 import (
 	"context"
+	"strings"
 
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
@@ -138,7 +139,10 @@ func (n *DashboardCard) Import(ctx context.Context, card *m.DashboardCard) (card
 	cardItemAdaptor := GetDashboardCardItemAdaptor(tx)
 
 	card.Id = 0
-	card.Title = card.Title + " [IMPORTED]"
+
+	if !strings.Contains(card.Title, "[IMPORTED]") {
+		card.Title = card.Title + " [IMPORTED]"
+	}
 
 	if cardId, err = cardAdaptor.Add(ctx, card); err != nil {
 		return

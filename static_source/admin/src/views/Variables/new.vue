@@ -5,7 +5,7 @@ import {ElButton} from 'element-plus'
 import {useRouter} from 'vue-router'
 import api from "@/api/api";
 import {ApiVariable} from "@/api/stub";
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {ContentWrap} from "@/components/ContentWrap";
 import VariableForm from "@/views/Variables/components/VariableForm.vue";
 
 const {push} = useRouter()
@@ -16,7 +16,8 @@ const currentRow = ref<Nullable<ApiVariable>>(null)
 onMounted(() => {
   currentRow.value = {
     name: '',
-    value: ''
+    value: '',
+    tags: []
   } as ApiVariable
 })
 
@@ -31,7 +32,7 @@ const save = async () => {
       .finally(() => {
       })
   if (res) {
-    cancel()
+    push(`/etc/variables/edit/${currentRow.value.name}`)
   }
 }
 

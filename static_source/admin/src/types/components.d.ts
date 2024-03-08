@@ -21,7 +21,6 @@ export type ComponentName =
   | 'TimeSelect'
   | 'SelectV2'
   | 'InputPassword'
-  | 'Editor'
   | 'Image'
   | 'Area'
   | 'Role'
@@ -30,6 +29,7 @@ export type ComponentName =
   | 'Entities'
   | 'Plugin'
   | 'Scripts'
+  | 'Tags'
   | 'ScriptHelper'
   | 'Trigger'
   | 'Action'
@@ -37,6 +37,8 @@ export type ComponentName =
   | 'Triggers'
   | 'Actions'
   | 'Conditions'
+  | 'Variable'
+  | 'Variables'
 
 export type ColProps = {
   span?: number

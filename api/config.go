@@ -18,18 +18,12 @@
 
 package api
 
-import "fmt"
-
 // Config ...
 type Config struct {
-	HttpPort int
-	Swagger  bool
-	Debug    bool
-	Pprof    bool
-	Gzip     bool
-}
-
-// String ...
-func (c Config) String() string {
-	return fmt.Sprintf(":%d", c.HttpPort)
+	HttpPort  int
+	HttpsPort int
+	Swagger   bool
+	Debug     bool
+	Pprof     bool
+	Gzip      bool
 }

@@ -8,6 +8,7 @@ import { LayoutType } from '@/types/layout'
 import { ThemeTypes } from '@/types/theme'
 import {ApiCurrentUser} from "@/api/stub";
 import stream from "@/api/stream";
+import pushService from "@/api/pushService";
 
 const { wsCache } = useCache()
 
@@ -41,18 +42,20 @@ interface AppState {
   theme: ThemeTypes
   fixedMenu: boolean
   terminal: boolean
+  maxZIndex: number
   serverId: string
+  lastColors: string[]
+  onlineStatus: 'online' | 'offline'
+  standalone: boolean
+  activeWindow: string
 }
 
 export const useAppStore = defineStore('app', {
   state: (): AppState => {
-    // ws
-    const accessToken = wsCache.get("accessToken") as string || '';
-    if (accessToken) {
-      stream.connect(import.meta.env.VITE_API_BASEPATH as string || window.location.origin, accessToken);
-    }
+    const mqStandAlone = '(display-mode: standalone)'
+    const standalone = navigator.standalone || window.matchMedia(mqStandAlone).matches
     return {
-      token: accessToken,
+      token: wsCache.get("accessToken") as string || '',
       user: wsCache.get("currentUser") as ApiCurrentUser,
       avatar: "",
       sizeMap: ['default', 'large', 'small'],
@@ -60,28 +63,33 @@ export const useAppStore = defineStore('app', {
       title: import.meta.env.VITE_APP_TITLE, // 标题
       pageLoading: false, // 路由跳转loading
 
-      breadcrumb: wsCache.get('breadcrumb') || false, // 面包屑
-      breadcrumbIcon: wsCache.get('breadcrumbIcon') || false, // 面包屑图标
-      collapse: wsCache.get('collapse') || false, // 折叠菜单
+      breadcrumb: wsCache.get('breadcrumb') || true, // 面包屑
+      breadcrumbIcon: wsCache.get('breadcrumbIcon') || true, // 面包屑图标
+      collapse: wsCache.get('collapse') || true, // 折叠菜单
       uniqueOpened: false, // 是否只保持一个子菜单的展开
       hamburger: true, // 折叠图标
       screenfull: true, // 全屏图标
       size: true, // 尺寸图标
       locale: true, // 多语言图标
-      tagsView: wsCache.get('tagsView') || false, // 标签页
+      tagsView: wsCache.get('tagsView') || true, // 标签页
       tagsViewIcon: wsCache.get('tagsViewIcon') || false, // 是否显示标签图标
       logo: false, // logo
       fixedHeader: false, // 固定toolheader
       footer: false, // 显示页脚
       greyMode: wsCache.get('greyMode') || false, // 是否开始灰色模式，用于特殊悼念日
-      systemTheme: wsCache.get('systemTheme') || false,
+      systemTheme: wsCache.get('systemTheme') || true,
       dynamicRouter: wsCache.get('dynamicRouter') || false, // 是否动态路由
-      fixedMenu: wsCache.get('fixedMenu') || false, // 是否固定菜单
+      fixedMenu: wsCache.get('fixedMenu') || true, // 是否固定菜单
       terminal: wsCache.get('terminal') || false,
+      maxZIndex: 10,
       serverId: wsCache.get('serverId') || '',
       layout: wsCache.get('layout') || 'classic', // layout布局
       isDark: wsCache.get('isDark') || false, // 是否是暗黑模式
-      currentSize: wsCache.get('currentSize') || 'default', // 组件尺寸
+      currentSize: wsCache.get('currentSize') || 'small', // 组件尺寸
+      lastColors: wsCache.get('lastColors') || [],
+      onlineStatus: 'offline',
+      standalone: standalone,
+      activeWindow: '',
       theme: wsCache.get('theme') || {
         // 主题色
         elColorPrimary: '#409eff',
@@ -207,7 +215,19 @@ export const useAppStore = defineStore('app', {
     },
     getIsGate(): boolean {
       return window?.app_settings?.run_mode == 'gate'
-    }
+    },
+    getLastColors(): string[] {
+      return this.lastColors
+    },
+    getOnlineStatus(): 'online' | 'offline' {
+      return this.onlineStatus
+    },
+    getStandalone(): boolean {
+      return this.standalone
+    },
+    getActiveWindow(): string {
+      return this.activeWindow
+    },
   },
   actions: {
     SetUser(user: ApiCurrentUser) {
@@ -222,12 +242,19 @@ export const useAppStore = defineStore('app', {
       wsCache.set("accessToken", token)
       this.token = token;
 
-      // push service
-      // registerServiceWorker.stop();
-      // ws
-      stream.disconnect();
+      pushService.shutdown()
+      stream.disconnect()
+
+      if (token) {
+        // ws
+        stream.connect(import.meta.env.VITE_API_BASEPATH as string || window.location.origin, token);
+        // push
+        pushService.start()
+      }
     },
     RemoveToken() {
+      stream.disconnect();
+      pushService.shutdown();
       wsCache.delete('accessToken')
       wsCache.delete('currentUser')
       wsCache.delete('avatar')
@@ -342,6 +369,19 @@ export const useAppStore = defineStore('app', {
     setServerId(id: string) {
       this.serverId = id
       wsCache.set('serverId', this.serverId)
+    },
+    getMaxZIndex(): number {
+      return ++this.maxZIndex
+    },
+    setLastColors(list: string[]) {
+      this.lastColors = list
+      wsCache.set('lastColors', this.lastColors)
+    },
+    setOnlineStatus(status: string) {
+      this.onlineStatus = status
+    },
+    setActiveWindow(name: string) {
+      this.activeWindow = name
     }
   }
 })

@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import {computed, onMounted, onUnmounted, PropType, reactive, ref, shallowReactive} from 'vue'
-import {ElTabs, ElTabPane} from 'element-plus'
+import {computed, onMounted, onUnmounted, reactive, ref} from 'vue'
+import {ElTabPane, ElTabs} from 'element-plus'
 import api from "@/api/api";
-import {EventStateChange} from "@/api/stream_types";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
-import {Core} from "@/views/Dashboard/core";
-import 'splitpanes/dist/splitpanes.css'
-import {useBus} from "@/views/Dashboard/bus";
+import {Core, eventBus, stateService} from "@/views/Dashboard/core";
 import ViewTab from "@/views/Dashboard/view/ViewTab.vue";
 import {propTypes} from "@/utils/propTypes";
+import {EventStateChange} from "@/api/types";
+import {useAppStore} from "@/store/modules/app";
+import {GetFullImageUrl} from "@/utils/serverId";
 
-const {emit} = useBus()
+const appStore = useAppStore()
 
 // ---------------------------------
 // common
@@ -25,22 +25,32 @@ const props = defineProps({
   id: propTypes.number.def(0),
 })
 
-const onStateChanged = (event: EventStateChange) => {
-  emit('state_changed', event);
-  core.onStateChanged(event);
+const eventStateChanged = (eventName: string, event: EventStateChange) => {
+  core.onStateChanged(event)
+}
+
+const eventBusHandler = (eventName: string, event: EventStateChange) => {
+  core.eventBusHandler(eventName, event)
 }
 
 onMounted(() => {
   const uuid = new UUID()
   currentID.value = uuid.getDashFreeUUID()
 
-  // setTimeout(() => {
-  stream.subscribe('state_changed', currentID.value, onStateChanged);
-  // }, 1000)
+  fetchDashboard()
+
+  stream.subscribe('state_changed', currentID.value, stateService.onStateChanged);
+  eventBus.subscribe('stateChanged', eventStateChanged)
+
+  eventBus.subscribe(undefined, eventBusHandler)
 })
 
 onUnmounted(() => {
+
   stream.unsubscribe('state_changed', currentID.value);
+  eventBus.unsubscribe('stateChanged', eventStateChanged)
+
+  eventBus.unsubscribe(undefined, eventBusHandler)
 })
 
 // ---------------------------------
@@ -64,19 +74,38 @@ const activeTabIdx = computed({
   },
   set(value: string) {
     core.activeTabIdx = parseInt(value)
+    eventBus.emit('updateGrid', core.getActiveTab?.id)
   }
 })
 
-const getBackgroundColor = () => {
-  return {backgroundColor: core.getActiveTab?.background}
-}
+const getTabStyle = () => {
+  const style = {}
+  if (core.getActiveTab?.background) {
+    style['background-color'] = core.getActiveTab?.background
+  } else {
+    if (core.getActiveTab?.backgroundAdaptive) {
+      style['background-color'] = appStore.isDark ? '#333335' : '#FFF'
+    }
+  }
 
-fetchDashboard()
+  if (core.getActiveTab?.backgroundImage) {
+    style['background-image'] = `url(${GetFullImageUrl(core.getActiveTab.backgroundImage)})`
+    style['background-repeat'] = 'repeat';
+    style['background-position'] = 'center';
+    // style['background-size'] = 'cover';
+  }
+  return style
+}
 
 </script>
 
 <template>
-  <ElTabs v-model="activeTabIdx"  v-if="core.tabs.length > 1 && !loading" :style="getBackgroundColor()" class="pl-20px !min-h-[100%]">
+  <ElTabs
+      v-model="activeTabIdx"
+      v-if="core.tabs.length > 1 && !loading"
+      :style="getTabStyle()"
+      class="pl-20px !min-h-[100%]"
+      :lazy="true">
     <ElTabPane
         v-for="(tab, index) in core.tabs"
         :label="tab.name"
@@ -88,7 +117,8 @@ fetchDashboard()
     </ElTabPane>
   </ElTabs>
 
-  <div v-if="core.tabs.length && core.tabs.length === 1 && !loading" :class="[{'gap': core.tabs[0].gap}]" :style="getBackgroundColor()" class="pl-20px pt-20px !min-h-[100%] ">
+  <div v-if="core.tabs.length && core.tabs.length === 1 && !loading" :class="[{'gap': core.tabs[0].gap}]"
+       :style="getTabStyle()" class="pl-20px pt-20px !min-h-[100%] ">
     <ViewTab :tab="core.tabs[0]" :core="core"/>
   </div>
 </template>
@@ -133,7 +163,4 @@ html {
   line-height: 1.15;
 }
 
-.splitpanes.default-theme .splitpanes__splitter {
-  background-color: #bfbfbf6e;
-}
 </style>

@@ -1,8 +1,12 @@
 import {ConstantBackoff, Websocket, WebsocketBuilder} from 'websocket-ts';
-import {EventHTML5Notify} from '@/api/stream_types';
+import {EventHTML5Notify} from '@/api/types';
 import {useCache} from "@/hooks/web/useCache";
+import {UUID} from "uuid-generator-ts";
+import {ref} from "vue";
 
 const {wsCache} = useCache()
+
+export const streamStatus = ref<'online' | 'offline'>('offline');
 
 class Stream {
   private ws: Websocket | null = null;
@@ -45,16 +49,23 @@ class Stream {
   }
 
   private error(ws: Websocket, ev: Event): any {
+    streamStatus.value = 'offline'
     console.log('error');
   }
 
   private onClose(ws: Websocket, ev: CloseEvent): any {
+    streamStatus.value = 'offline'
     console.log('closed');
   }
 
   private onOpen(ws: Websocket, ev: Event, accessToken: string): any {
+    streamStatus.value = 'online'
     console.log('opened');
     ws.send(JSON.stringify({body: btoa('init'), access_token: accessToken}));
+    ws.send(JSON.stringify({
+      id: UUID.createUUID(),
+      query: 'event_get_server_version',
+    }));
   }
 
   private onMessage(ws: Websocket, ev: MessageEvent): any {
@@ -69,13 +80,9 @@ class Stream {
       return;
     }
 
-    if (m.query == 'html5_notify') {
-      const result = JSON.parse(ev.data);
-      m = result;
-      const body: EventHTML5Notify = JSON.parse(atob(m.body));
-      // console.log(body)
-      this.notify(body);
-      return;
+    switch (m.query) {
+      case 'html5_notify':
+        return this.html5Notify(ev.data)
     }
 
     if (!this.subscribers) {
@@ -128,6 +135,13 @@ class Stream {
         }
       });
     }
+  }
+
+  private html5Notify(data: string) {
+    const {body} = JSON.parse(data);
+    const msg: EventHTML5Notify = JSON.parse(atob(body));
+    // console.log(msg)
+    this.notify(msg);
   }
 }
 

@@ -2,22 +2,17 @@
 import {useI18n} from '@/hooks/web/useI18n'
 import {Table} from '@/components/Table'
 import {onMounted, onUnmounted, reactive, ref, watch} from 'vue'
-import {useAppStore} from "@/store/modules/app";
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
-import {ElMessage, ElSwitch, ElButton} from 'element-plus'
+import {ElButton, ElMessage} from 'element-plus'
 import {ApiPlugin} from "@/api/stub";
-import {useForm} from "@/hooks/web/useForm";
 import {useRouter} from "vue-router";
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
-import {EventStateChange} from "@/api/stream_types";
+import {ContentWrap} from "@/components/ContentWrap";
+import {EventStateChange} from "@/api/types";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 
-const {push, currentRoute} = useRouter()
-const remember = ref(false)
-const {register, elFormRef, methods} = useForm()
-const appStore = useAppStore()
+const {push} = useRouter()
 const {t} = useI18n()
 
 interface TableObject {
@@ -34,11 +29,11 @@ interface Params {
 }
 
 const tableObject = reactive<TableObject>(
-    {
-      tableList: [],
-      loading: false,
-      sort: '+name'
-    },
+  {
+    tableList: [],
+    loading: false,
+    sort: '+name'
+  },
 );
 
 const columns: TableColumn[] = [
@@ -94,11 +89,11 @@ const getList = async () => {
   }
 
   const res = await api.v1.pluginServiceGetPluginList(params)
-      .catch(() => {
-      })
-      .finally(() => {
-        tableObject.loading = false
-      })
+    .catch(() => {
+    })
+    .finally(() => {
+      tableObject.loading = false
+    })
   if (res) {
     const {items, meta} = res.data;
     tableObject.tableList = items;
@@ -110,17 +105,10 @@ const getList = async () => {
 }
 
 watch(
-    () => paginationObj.value.currentPage,
-    () => {
-      getList()
-    }
-)
-
-watch(
-    () => paginationObj.value.pageSize,
-    () => {
-      getList()
-    }
+  () => [paginationObj.value.currentPage, paginationObj.value.pageSize],
+  () => {
+    getList()
+  }
 )
 
 const sortChange = (data) => {
@@ -137,7 +125,7 @@ const selectRow = (row) => {
     return
   }
   const {name} = row
-  push(`/etc/plugins/edit/${name}`)
+  push(`/etc/settings/plugins/edit/${name}`)
 }
 
 const enable = async (plugin: ApiPlugin) => {
@@ -167,17 +155,17 @@ const disable = async (plugin: ApiPlugin) => {
 <template>
   <ContentWrap>
     <Table
-        :selection="false"
-        v-model:pageSize="paginationObj.pageSize"
-        v-model:currentPage="paginationObj.currentPage"
-        :showUpPagination="20"
-        :columns="columns"
-        :data="tableObject.tableList"
-        :loading="tableObject.loading"
-        :pagination="paginationObj"
-        @sort-change="sortChange"
-        style="width: 100%"
-        @current-change="selectRow"
+      :selection="false"
+      v-model:pageSize="paginationObj.pageSize"
+      v-model:currentPage="paginationObj.currentPage"
+      :showUpPagination="20"
+      :columns="columns"
+      :data="tableObject.tableList"
+      :loading="tableObject.loading"
+      :pagination="paginationObj"
+      @sort-change="sortChange"
+      style="width: 100%"
+      @current-change="selectRow"
     >
       <template #status="{ row }">
         <div class="w-[100%] text-center">

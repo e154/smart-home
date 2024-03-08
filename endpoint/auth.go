@@ -134,11 +134,17 @@ func (a *AuthEndpoint) PasswordReset(ctx context.Context, userEmail string, toke
 		return
 	}
 
+	var variable m.Variable
+	if variable, err = a.adaptors.Variable.GetByName(ctx, "serverUrl"); err != nil {
+		err = errors.Wrap(apperr.ErrVariableGet, err.Error())
+		return
+	}
+
 	renderParams := map[string]interface{}{
 		"site:name":               "Smart home",
 		"user:name:first":         user.FirstName,
 		"user:name:last":          user.LastName,
-		"user:one-time-login-url": fmt.Sprintf("%s/#/password_reset?t=%s", a.appConfig.ApiFullAddress(), resetToken),
+		"user:one-time-login-url": fmt.Sprintf("%s/#/password_reset?t=%s", variable.Value, resetToken),
 	}
 
 	var render *m.TemplateRender

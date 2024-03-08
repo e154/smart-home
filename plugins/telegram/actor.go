@@ -262,7 +262,7 @@ func (e *Actor) commandStart(c tele.Context) (err error) {
 
 	e.runAction(events.EventCallEntityAction{
 		ActionName: "/start",
-		EntityId:   e.Id,
+		EntityId:   &e.Id,
 		Args: map[string]interface{}{
 			"chatId":    c.Chat().ID,
 			"username":  c.Chat().Username,
@@ -298,7 +298,7 @@ func (e *Actor) commandAction(c tele.Context) (err error) {
 
 	e.runAction(events.EventCallEntityAction{
 		ActionName: text,
-		EntityId:   e.Id,
+		EntityId:   &e.Id,
 		Args: map[string]interface{}{
 			"chatId":   c.Chat().ID,
 			"username": c.Chat().Username,

@@ -139,8 +139,11 @@ func (p *plugin) eventHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
 	case events.EventCallEntityAction:
-		value, ok := p.Actors.Load(v.EntityId)
-		if ok && value != nil {
+		values, ok := p.Check(v)
+		if !ok {
+			return
+		}
+		for _, value := range values {
 			actor := value.(*Actor)
 			actor.check()
 		}

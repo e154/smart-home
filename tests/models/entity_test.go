@@ -116,6 +116,9 @@ func TestEntity(t *testing.T) {
 						},
 						Attributes: NetAttr(),
 						Settings:   NetSettings(),
+						Tags: []*m.Tag{
+							{Name: "foo"},
+						},
 					}
 					err = adaptors.Entity.Add(context.Background(), entity)
 					So(err, ShouldBeNil)
@@ -135,6 +138,8 @@ func TestEntity(t *testing.T) {
 					So(len(entity.Scripts), ShouldEqual, 1)
 					So(entity.Scripts[0].Name, ShouldEqual, "script1")
 					So(len(entity.Metrics), ShouldEqual, 1)
+					So(len(entity.Tags), ShouldEqual, 1)
+					So(entity.Tags[0].Name, ShouldEqual, "foo")
 					So(entity.Metrics[0].Name, ShouldEqual, "bar")
 					So(entity.Metrics[0].Options.Items[0].Name, ShouldEqual, "foo")
 					So(entity.Settings, ShouldNotBeEmpty)
@@ -183,6 +188,9 @@ func TestEntity(t *testing.T) {
 								},
 							},
 						},
+						Tags: []*m.Tag{
+							{Name: "bar"},
+						},
 					}
 					err = adaptors.Entity.Update(context.Background(), entity)
 					So(err, ShouldBeNil)
@@ -196,12 +204,15 @@ func TestEntity(t *testing.T) {
 					So(entity.States[0].Name, ShouldEqual, "STATE2")
 					So(len(entity.Scripts), ShouldEqual, 1)
 					So(entity.Scripts[0].Name, ShouldEqual, "script2")
+					So(len(entity.Tags), ShouldEqual, 1)
+					So(entity.Tags[0].Name, ShouldEqual, "bar")
 					So(len(entity.Metrics), ShouldEqual, 1)
 					So(entity.Metrics[0].Name, ShouldEqual, "bar2")
 					So(entity.Metrics[0].Options.Items[0].Name, ShouldEqual, "foo2")
 
 					// v2
 					entity.Actions = []*m.EntityAction{}
+					entity.Tags = nil
 
 					err = adaptors.Entity.Update(context.Background(), entity)
 					So(err, ShouldBeNil)
@@ -214,6 +225,7 @@ func TestEntity(t *testing.T) {
 					So(entity.States[0].Name, ShouldEqual, "STATE2")
 					So(len(entity.Scripts), ShouldEqual, 1)
 					So(entity.Scripts[0].Name, ShouldEqual, "script2")
+					So(len(entity.Tags), ShouldEqual, 0)
 					So(len(entity.Metrics), ShouldEqual, 1)
 					So(entity.Metrics[0].Name, ShouldEqual, "bar2")
 					So(entity.Metrics[0].Options.Items[0].Name, ShouldEqual, "foo2")
@@ -372,6 +384,10 @@ func TestEntity(t *testing.T) {
 								},
 							},
 						},
+						Tags: []*m.Tag{
+							{Name: "foo"},
+							{Name: "bar"},
+						},
 					}
 					err = adaptors.Entity.Import(context.Background(), entity)
 					So(err, ShouldBeNil)
@@ -386,6 +402,9 @@ func TestEntity(t *testing.T) {
 					So(len(entity.Scripts), ShouldEqual, 2)
 					So(entity.Scripts[0].Name, ShouldEqual, "script2")
 					So(entity.Scripts[1].Name, ShouldEqual, "script3")
+					So(len(entity.Tags), ShouldEqual, 2)
+					So(entity.Tags[0].Name, ShouldEqual, "foo")
+					So(entity.Tags[1].Name, ShouldEqual, "bar")
 					So(len(entity.Metrics), ShouldEqual, 1)
 					So(entity.Metrics[0].Name, ShouldEqual, "bar3")
 					So(entity.Metrics[0].Options.Items[0].Name, ShouldEqual, "foo3")
@@ -410,6 +429,7 @@ func TestEntity(t *testing.T) {
 					So(len(entity.States), ShouldEqual, 0)
 					So(len(entity.Scripts), ShouldEqual, 0)
 					So(len(entity.Metrics), ShouldEqual, 0)
+					So(len(entity.Tags), ShouldEqual, 0)
 					So(entity.Settings, ShouldNotBeEmpty)
 					So(entity.Settings["s"].String(), ShouldEqual, "s")
 					So(entity.Attributes, ShouldNotBeEmpty)

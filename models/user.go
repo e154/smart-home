@@ -57,6 +57,7 @@ type User struct {
 	UpdatedAt           time.Time      `json:"updated_at,omitempty"`
 	DeletedAt           *time.Time     `json:"deleted_at"`
 	History             []*UserHistory `json:"history,omitempty"`
+	Devices             []*UserDevice  `json:"devices"`
 }
 
 // UpdateHistory ...

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ElButton, ElTabs, ElTabPane, ElRow, ElCol, ElEmpty} from 'element-plus'
+import {ElButton, ElCol, ElEmpty, ElRow, ElTabPane, ElTabs} from 'element-plus'
 import api from "@/api/api";
 import {useRoute, useRouter} from "vue-router";
 import {computed, ref, unref} from "vue";
@@ -11,19 +11,19 @@ import {
 } from "@/api/stub";
 import Form from './components/Form.vue'
 import {useI18n} from "@/hooks/web/useI18n";
-import {Plugin} from './components/Types.ts'
-import AttributesViewer from "@/views/Entities/components/AttributesViewer.vue";
+import {Plugin} from './components/Types'
+import {AttributesViewer} from "@/components/Attributes";
 import ActionsViewer from "@/views/Plugins/components/ActionsViewer.vue";
 import StatesViewer from "@/views/Plugins/components/StatesViewer.vue";
 import SettingsEditor from "@/views/Plugins/components/SettingsEditor.vue";
 import {useEmitt} from "@/hooks/web/useEmitt";
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {ContentWrap} from "@/components/ContentWrap";
 import {useCache} from "@/hooks/web/useCache";
 
 const {t} = useI18n()
 const writeRef = ref<ComponentRef<typeof Form>>()
 const route = useRoute();
-const {currentRoute, addRoute, push} = useRouter()
+const {push} = useRouter()
 const pluginName = computed<string>(() => route.params.name as string);
 
 const currentPlugin = ref<Nullable<Plugin>>(null)
@@ -34,11 +34,11 @@ const lastState = ref<boolean>(false)
 const fetch = async () => {
   loading.value = true
   const res = await api.v1.pluginServiceGetPlugin(pluginName.value as string)
-      .catch(() => {
-      })
-      .finally(() => {
-        loading.value = false
-      })
+    .catch(() => {
+    })
+    .finally(() => {
+      loading.value = false
+    })
   if (res) {
     const plugin: ApiPlugin = res.data;
 
@@ -105,7 +105,7 @@ const fetch = async () => {
       actorAttrs: Object.assign({}, res.data.options?.actorAttrs),
       actorSetts: Object.assign({}, res.data.options?.actorSetts),
     } as Plugin
-    console.log(currentPlugin.value)
+    // console.log(currentPlugin.value)
     const {enabled} = res.data;
     lastState.value = enabled
   } else {
@@ -138,9 +138,9 @@ const cancel = () => {
 
 const showActorTabIf = (): boolean => {
   if (Object.keys(currentPlugin.value?.actorAttrs || {}).length ||
-      Object.keys(currentPlugin.value?.actorActions || {}).length ||
-      Object.keys(currentPlugin.value?.actorStates || {}).length ||
-      Object.keys(currentPlugin.value?.actorSetts || {}).length) {
+    Object.keys(currentPlugin.value?.actorActions || {}).length ||
+    Object.keys(currentPlugin.value?.actorStates || {}).length ||
+    Object.keys(currentPlugin.value?.actorSetts || {}).length) {
     return true
   }
   return false
@@ -154,7 +154,9 @@ const showSettingsTabIf = (): boolean => {
 }
 
 const saveSetting = async (val: ApiAttribute[]) => {
-  let settings: { [key: string]: ApiAttribute } = {};
+  let settings: {
+    [key: string]: ApiAttribute
+  } = {};
   for (const index in val) {
     settings[val[index].name] = val[index];
   }
@@ -163,15 +165,15 @@ const saveSetting = async (val: ApiAttribute[]) => {
 }
 
 const readme = ref('');
-const { wsCache } = useCache()
+const {wsCache} = useCache()
 const getReadme = async () => {
   const lang = wsCache.get('lang') || 'en';
   const res = await api.v1.pluginServiceGetPluginReadme(pluginName.value, {lang: lang})
-      .catch(() => {
-      })
-      .finally(() => {
-        loading.value = false
-      })
+    .catch(() => {
+    })
+    .finally(() => {
+      loading.value = false
+    })
   if (res && res.data) {
     readme.value = res.data;
   }
@@ -207,9 +209,9 @@ fetch()
       </el-tab-pane>
       <!--  /Main  -->
       <el-tab-pane
-          :label="$t('plugins.actor')"
-          :disabled="!showActorTabIf()"
-          name="actor">
+        :label="$t('plugins.actor')"
+        :disabled="!showActorTabIf()"
+        name="actor">
 
         <!-- attributes-->
         <el-row class="mt-10px"
@@ -270,9 +272,9 @@ fetch()
       <!--  /Actor  -->
 
       <el-tab-pane
-          :label="$t('plugins.settings')"
-          name="settings"
-          :disabled="!showSettingsTabIf()">
+        :label="$t('plugins.settings')"
+        name="settings"
+        :disabled="!showSettingsTabIf()">
         <div v-if="currentPlugin?.setts && Object.keys(currentPlugin?.setts || {}).length">
           <SettingsEditor :attrs="currentPlugin.setts"/>
         </div>

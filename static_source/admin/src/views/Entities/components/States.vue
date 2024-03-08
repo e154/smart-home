@@ -3,14 +3,14 @@ import {useI18n} from '@/hooks/web/useI18n'
 import {Table} from '@/components/Table'
 import {PropType, reactive, ref, unref, watch} from 'vue'
 import {TableColumn} from '@/types/table'
-import {ElButton, ElTag, ElPopconfirm} from 'element-plus'
+import {ElButton, ElPopconfirm} from 'element-plus'
 import {useEmitt} from "@/hooks/web/useEmitt";
 import {useRouter} from "vue-router";
 import StateForm from "@/views/Entities/components/StateForm.vue";
-import {Attribute, EntityAction, EntityState} from "@/views/Entities/components/types";
+import {EntityState} from "@/views/Entities/components/types";
 import {propTypes} from "@/utils/propTypes";
 
-const {currentRoute, addRoute, push} = useRouter()
+const {push} = useRouter()
 const props = defineProps({
   states: {
     type: Array as PropType<EntityState[]>,
@@ -151,12 +151,13 @@ const loadFromPlugin = async () => {
 </script>
 
 <template>
-  <ElButton class="flex mb-20px items-left"  @click="addNew()" plain v-if="mode ==='VIEW' && customStates">
+  <ElButton class="flex mb-20px items-left" @click="addNew()" plain v-if="mode ==='VIEW' && customStates">
     <Icon icon="ep:plus" class="mr-5px"/>
     {{ t('entities.addNewState') }}
   </ElButton>
 
-  <ElButton class="flex mb-20px items-left"  @click="loadFromPlugin()" plain v-if="mode ==='VIEW' && pluginStates.length">
+  <ElButton class="flex mb-20px items-left" @click="loadFromPlugin()" plain
+            v-if="mode ==='VIEW' && pluginStates.length">
     {{ t('entities.loadFromPlugin') }}
   </ElButton>
 

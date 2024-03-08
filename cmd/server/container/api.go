@@ -29,10 +29,11 @@ func NewApiConfig(cfg *models.AppConfig) api.Config {
 		cfg.ApiHttpPort = 3001
 	}
 	return api.Config{
-		HttpPort: cfg.ApiHttpPort,
-		Swagger:  cfg.ApiSwagger,
-		Pprof:    cfg.Pprof,
-		Debug:    cfg.ApiDebug,
-		Gzip:     cfg.ApiGzip,
+		HttpPort:  cfg.ApiHttpPort,
+		HttpsPort: cfg.ApiHttpsPort,
+		Swagger:   cfg.ApiSwagger,
+		Pprof:     cfg.Pprof,
+		Debug:     cfg.ApiDebug,
+		Gzip:      cfg.ApiGzip,
 	}
 }

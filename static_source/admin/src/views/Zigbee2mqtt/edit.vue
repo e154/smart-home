@@ -11,7 +11,7 @@ import {useValidator} from '@/hooks/web/useValidator'
 import api from "@/api/api";
 import Form from './components/Form.vue'
 import {ApiZigbee2Mqtt} from "@/api/stub";
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {ContentWrap} from "@/components/ContentWrap";
 import Devices from "@/views/Zigbee2mqtt/components/Devices.vue";
 
 const {register, elFormRef, methods} = useForm()

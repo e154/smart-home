@@ -39,6 +39,7 @@ type Adaptors struct {
 	db                *gorm.DB
 	isTx              bool
 	Script            IScript
+	Tag               ITag
 	Role              IRole
 	Permission        IPermission
 	User              IUser
@@ -85,6 +86,7 @@ func NewAdaptors(lc fx.Lifecycle,
 	adaptors = &Adaptors{
 		db:                db,
 		Script:            GetScriptAdaptor(db),
+		Tag:               GetTagAdaptor(db),
 		Role:              GetRoleAdaptor(db),
 		Permission:        GetPermissionAdaptor(db),
 		User:              GetUserAdaptor(db),

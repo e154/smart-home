@@ -1,31 +1,20 @@
 <script lang="tsx">
-import { computed, defineComponent, unref } from 'vue'
-import { useAppStore } from '@/store/modules/app'
-import { Backtop } from '@/components/Backtop'
-import { Setting } from '@/components/Setting'
-import { useRenderLayout } from './components/useRenderLayout'
-import { useDesign } from '@/hooks/web/useDesign'
+import {computed, defineComponent} from 'vue'
+import {useAppStore} from '@/store/modules/app'
+import {Backtop} from '@/components/Backtop'
+import {useRenderLayout} from './components/useRenderLayout'
+import {useDesign} from '@/hooks/web/useDesign'
 
-const { getPrefixCls } = useDesign()
+const {getPrefixCls} = useDesign()
 
 const prefixCls = getPrefixCls('layout')
 
 const appStore = useAppStore()
 
-// 是否是移动端
-const mobile = computed(() => appStore.getMobile)
-
-// 菜单折叠
-const collapse = computed(() => appStore.getCollapse)
-
 const layout = computed(() => appStore.getLayout)
 
-const handleClickOutside = () => {
-  appStore.setCollapse(true)
-}
-
 const renderLayout = () => {
-  const { renderLanding } = useRenderLayout(false)
+  const {renderLanding} = useRenderLayout(false)
   return renderLanding()
 }
 
@@ -33,15 +22,13 @@ export default defineComponent({
   name: 'Dashboard',
   setup() {
     return () => (
-      <section class={[prefixCls, `${prefixCls}__${layout.value}`, 'w-[100%] h-[100%] relative']}>
+        <section class={[prefixCls, `${prefixCls}__${layout.value}`, 'w-[100%] h-[100%] relative']}>
 
-        {renderLayout()}
+          {renderLayout()}
 
-        <Backtop></Backtop>
+          <Backtop></Backtop>
 
-        <Setting></Setting>
-
-      </section>
+        </section>
     )
   }
 })

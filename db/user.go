@@ -61,6 +61,7 @@ type User struct {
 	Role                *Role
 	RoleName            string
 	Meta                []*UserMeta `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE;"`
+	Devices             []*UserDevice
 	ResetPasswordSentAt *time.Time
 	CurrentSignInAt     *time.Time
 	LastSignInAt        *time.Time
@@ -112,6 +113,7 @@ func (u *Users) GetById(ctx context.Context, userId int64) (user *User, err erro
 		Preload("Meta").
 		Preload("Role").
 		Preload("User").
+		Preload("Devices").
 		Find(user).
 		Error
 	if err != nil {
@@ -134,6 +136,7 @@ func (u *Users) GetByEmail(ctx context.Context, email string) (user *User, err e
 		Preload("Meta").
 		Preload("Role").
 		Preload("User").
+		Preload("Devices").
 		Find(user).
 		Error
 	if err != nil {
@@ -152,6 +155,7 @@ func (u *Users) GetByNickname(ctx context.Context, nickname string) (user *User,
 		Preload("Meta").
 		Preload("Role").
 		Preload("User").
+		Preload("Devices").
 		Find(user).
 		Error
 	if err != nil {
@@ -170,6 +174,7 @@ func (u *Users) GetByAuthenticationToken(ctx context.Context, token string) (use
 		Preload("Meta").
 		Preload("Role").
 		Preload("User").
+		Preload("Devices").
 		Find(user).
 		Error
 	if err != nil {
@@ -188,6 +193,7 @@ func (u *Users) GetByResetPassToken(ctx context.Context, token string) (user *Us
 		Preload("Meta").
 		Preload("Role").
 		Preload("User").
+		Preload("Devices").
 		Find(user).
 		Error
 	if err != nil {

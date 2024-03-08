@@ -96,6 +96,9 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 		model, _ = p.Service.Adaptors().Plugin.GetByName(context.Background(), Name)
 		model.Settings = settings.Serialize()
 		_ = p.Service.Adaptors().Plugin.Update(context.Background(), model)
+	} else {
+		p.VAPIDPrivateKey = settings[AttrPrivateKey].Decrypt()
+		p.VAPIDPublicKey = settings[AttrPublicKey].Decrypt()
 	}
 
 	log.Infof(`Used public key: "%s"`, p.VAPIDPublicKey)
@@ -177,10 +180,24 @@ func (p *plugin) Send(address string, message *m.Message) (err error) {
 
 	userId, _ := strconv.ParseInt(address, 0, 64)
 	var userDevices []*m.UserDevice
-	if userDevices, err = p.Service.Adaptors().UserDevice.GetByUserId(context.Background(), userId); err != nil {
-		return
+	if userId != 0 {
+		if userDevices, err = p.Service.Adaptors().UserDevice.GetByUserId(context.Background(), userId); err != nil {
+			return
+		}
+	} else {
+		const perPage int64 = 500
+		var page int64 = 0
+	LOOP:
+		var list []*m.UserDevice
+		if list, _, err = p.Service.Adaptors().UserDevice.List(context.Background(), perPage, page*perPage, "", ""); err != nil {
+			return
+		}
+		if len(list) > 0 {
+			userDevices = append(userDevices, list...)
+			page++
+			goto LOOP
+		}
 	}
-
 	go func() {
 		for _, device := range userDevices {
 			if err = p.sendPush(device, attr[AttrTitle].String(), attr[AttrBody].String()); err != nil {
@@ -220,10 +237,12 @@ func (p *plugin) sendPush(userDevice *m.UserDevice, msgTitle, msgBody string) (e
 
 	if statusCode != 201 {
 		log.Warn(string(responseBody))
-		go func() {
-			_ = p.Service.Adaptors().UserDevice.Delete(context.Background(), userDevice.Id)
-			log.Infof("remove user device %d", userDevice.Id)
-		}()
+		if statusCode == 410 {
+			go func() {
+				_ = p.Service.Adaptors().UserDevice.Delete(context.Background(), userDevice.Id)
+				log.Infof("statusCode %d, remove user device %d", statusCode, userDevice.Id)
+			}()
+		}
 		return
 	}
 
@@ -239,6 +258,8 @@ func (p *plugin) eventHandler(_ string, event interface{}) {
 		p.updateSubscribe(v)
 	case EventGetWebPushPublicKey:
 		p.sendPublicKey(v)
+	case EventGetUserDevices:
+		p.eventGetUserDevices(v)
 	case common.Message:
 		if v.Type == Name {
 			p.notify.SaveAndSend(v, p)
@@ -264,4 +285,23 @@ func (p *plugin) updateSubscribe(event EventAddWebPushSubscription) {
 	}
 
 	log.Infof("user subscription updated, %d", event.UserID)
+}
+
+func (p *plugin) eventGetUserDevices(event EventGetUserDevices) {
+
+	devices, err := p.Service.Adaptors().UserDevice.GetByUserId(context.Background(), event.UserID)
+	if err != nil {
+		return
+	}
+
+	var subscriptions = make([]*m.Subscription, 0, len(devices))
+	for _, device := range devices {
+		subscriptions = append(subscriptions, device.Subscription)
+	}
+
+	p.Service.EventBus().Publish(TopicPluginWebpush, EventUserDevices{
+		UserID:        event.UserID,
+		SessionID:     event.SessionID,
+		Subscriptions: subscriptions,
+	})
 }

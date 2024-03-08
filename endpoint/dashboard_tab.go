@@ -20,6 +20,7 @@ package endpoint
 
 import (
 	"context"
+	"github.com/pkg/errors"
 
 	"github.com/jinzhu/copier"
 
@@ -122,6 +123,29 @@ func (t *DashboardTabEndpoint) Delete(ctx context.Context, id int64) (err error)
 	}
 
 	err = t.adaptors.DashboardTab.Delete(ctx, id)
+
+	return
+}
+
+// Import ...
+func (t *DashboardTabEndpoint) Import(ctx context.Context, board *m.DashboardTab) (result *m.DashboardTab, err error) {
+
+	//b, _ := json.Marshal(board)
+	//fmt.Println(string(b))
+
+	var id int64
+	if id, err = t.adaptors.DashboardTab.Import(ctx, board); err != nil {
+		return
+	}
+
+	if result, err = t.adaptors.DashboardTab.GetById(ctx, id); err != nil {
+		if errors.Is(err, apperr.ErrNotFound) {
+			return
+		}
+		return
+	}
+
+	err = t.preloadEntities(ctx, board)
 
 	return
 }

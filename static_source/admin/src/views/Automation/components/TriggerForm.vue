@@ -43,7 +43,7 @@ const schema = reactive<FormSchema[]>([
     label: t('automation.triggers.name'),
     component: 'Input',
     colProps: {
-      span: 24
+      span: 12
     },
     componentProps: {
       placeholder: t('automation.triggers.name')
@@ -54,7 +54,7 @@ const schema = reactive<FormSchema[]>([
     label: t('automation.description'),
     component: 'Input',
     colProps: {
-      span: 24
+      span: 12
     },
     componentProps: {
       placeholder: t('automation.description')
@@ -66,7 +66,7 @@ const schema = reactive<FormSchema[]>([
     value: null,
     component: 'Area',
     colProps: {
-      span: 24
+      span: 12
     },
     componentProps: {
       placeholder: t('automation.area'),

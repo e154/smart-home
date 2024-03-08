@@ -102,3 +102,15 @@ func (c ControllerVariable) VariableServiceDeleteVariable(ctx echo.Context, name
 
 	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
 }
+
+// SearchVariable ...
+func (c ControllerVariable) VariableServiceSearchVariable(ctx echo.Context, params stub.VariableServiceSearchVariableParams) error {
+
+	search := c.Search(params.Query, params.Limit, params.Offset)
+	items, _, err := c.endpoint.Variable.Search(ctx.Request().Context(), search.Query, search.Limit, search.Offset)
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, c.dto.Variable.ToSearchResult(items))
+}

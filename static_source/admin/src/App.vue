@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import {computed} from 'vue'
 import { useAppStore } from '@/store/modules/app'
 import { ConfigGlobal } from '@/components/ConfigGlobal'
 import { isDark } from '@/utils/is'
 import { useDesign } from '@/hooks/web/useDesign'
 import { useCache } from '@/hooks/web/useCache'
+import {ReloadPrompt} from '@/components/ReloadPrompt'
+import stream from "@/api/stream";
+import pushService from "@/api/pushService";
 
 const { getPrefixCls } = useDesign()
 
@@ -17,6 +20,14 @@ const currentSize = computed(() => appStore.getCurrentSize)
 const greyMode = computed(() => appStore.getGreyMode)
 
 const { wsCache } = useCache()
+
+const accessToken = wsCache.get("accessToken") as string || '';
+if (accessToken) {
+  // ws
+  stream.connect(import.meta.env.VITE_API_BASEPATH as string || window.location.origin, accessToken);
+  // push
+  pushService.start()
+}
 
 // 根据浏览器当前主题设置系统主题色
 const setDefaultTheme = () => {
@@ -43,6 +54,7 @@ consoleBanner()
 </script>
 
 <template>
+  <ReloadPrompt />
   <ConfigGlobal :size="currentSize">
     <RouterView :class="greyMode ? `${prefixCls}-grey-mode` : ''" />
   </ConfigGlobal>

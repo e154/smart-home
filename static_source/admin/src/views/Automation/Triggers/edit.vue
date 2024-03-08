@@ -8,7 +8,7 @@ import {useValidator} from '@/hooks/web/useValidator'
 import api from "@/api/api";
 import Form from './components/Form.vue'
 import {ApiTrigger} from "@/api/stub";
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {ContentWrap} from "@/components/ContentWrap";
 import TriggerForm from "@/views/Automation/components/TriggerForm.vue";
 
 const {register, elFormRef, methods} = useForm()

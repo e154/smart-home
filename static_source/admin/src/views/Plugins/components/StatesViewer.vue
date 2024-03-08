@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import {useI18n} from '@/hooks/web/useI18n'
 import {Table} from '@/components/Table'
-import {computed, h, PropType, reactive, ref, watch} from 'vue'
+import {h, PropType, reactive, watch} from 'vue'
 import {TableColumn} from '@/types/table'
 import {ElImage} from 'element-plus'
 import {ApiPluginOptionsResultEntityState} from "@/api/stub";
-import {getUrl} from "@/views/Plugins/components/Types";
+import {GetFullUrl} from "@/utils/serverId";
 
 const {t} = useI18n()
 
@@ -81,7 +81,7 @@ watch(
   >
 
     <template #imageUrl="{ row }">
-      <ElImage v-if="row.imageUrl" style="width: 100px; height: 100px" :src="getUrl(row.imageUrl)"/>
+      <ElImage v-if="row.imageUrl" style="width: 100px; height: 100px" :src="GetFullUrl(row.imageUrl)"/>
       <span v-else>-</span>
     </template>
   </Table>

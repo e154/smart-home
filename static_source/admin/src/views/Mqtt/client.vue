@@ -4,7 +4,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import {computed, h, reactive, ref, watch} from 'vue'
 import { Form } from '@/components/Form'
 import { ElFormItem, ElInput, ElButton } from 'element-plus'
-import ContentWrap from "@/components/ContentWrap/src/ContentWrap.vue";
+import {ContentWrap} from "@/components/ContentWrap";
 import { useValidator } from '@/hooks/web/useValidator'
 import { useForm } from '@/hooks/web/useForm'
 import { DescriptionsSchema } from '@/components/Descriptions'

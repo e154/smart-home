@@ -93,3 +93,8 @@ func (l *Logger) Fatal(format string, args ...interface{}) {
 func (l *Logger) Fatalf(format string, args ...interface{}) {
 	zap.L().Named(l.p).Sugar().Fatalf(format, args...)
 }
+
+// Fatalf ...
+func (l *Logger) Loggert() *zap.Logger {
+	return zap.L().Named(l.p)
+}

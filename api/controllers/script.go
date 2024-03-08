@@ -64,6 +64,17 @@ func (c ControllerScript) ScriptServiceGetScriptById(ctx echo.Context, id int64)
 	return c.HTTP200(ctx, ResponseWithObj(ctx, c.dto.Script.GetStubScript(script)))
 }
 
+// ScriptServiceGetCompiledScriptById ...
+func (c ControllerScript) ScriptServiceGetCompiledScriptById(ctx echo.Context, id int64) error {
+
+	script, err := c.endpoint.Script.GetById(ctx.Request().Context(), id)
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return ctx.Blob(200, echo.MIMEApplicationJavaScript, []byte(script.Compiled))
+}
+
 // UpdateScriptById ...
 func (c ControllerScript) ScriptServiceUpdateScriptById(ctx echo.Context, id int64, _ stub.ScriptServiceUpdateScriptByIdParams) error {
 

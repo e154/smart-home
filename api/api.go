@@ -7,7 +7,7 @@
 // License as published by the Free Software Foundation; either
 // version 3 of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This libraryc is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Library General Public License for more details.
@@ -20,14 +20,20 @@ package api
 
 import (
 	"context"
+	"crypto/tls"
+	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	echopprof "github.com/hiko1129/echo-pprof"
+	echoCacheMiddleware "github.com/kenshin579/echo-http-cache"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"go.uber.org/atomic"
 
+	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api/controllers"
 	"github.com/e154/smart-home/api/stub"
 	publicAssets "github.com/e154/smart-home/build"
@@ -47,19 +53,28 @@ type Api struct {
 	echoFilter  *rbac.EchoAccessFilter
 	echo        *echo.Echo
 	cfg         Config
+	certPublic  string
+	certKey     string
+	adaptors    *adaptors.Adaptors
 	eventBus    bus.Bus
+	httpServer  http.Server
+	tlsServer   http.Server
+	tlsStarted  *atomic.Bool
 }
 
 // NewApi ...
 func NewApi(controllers *controllers.Controllers,
 	echoFilter *rbac.EchoAccessFilter,
 	cfg Config,
-	eventBus bus.Bus) (api *Api) {
+	eventBus bus.Bus,
+	adaptors *adaptors.Adaptors) (api *Api) {
 	api = &Api{
 		controllers: controllers,
 		echoFilter:  echoFilter,
 		cfg:         cfg,
+		adaptors:    adaptors,
 		eventBus:    eventBus,
+		tlsStarted:  atomic.NewBool(false),
 	}
 	return
 }
@@ -106,19 +121,22 @@ func (a *Api) Start() (err error) {
 	if a.cfg.Gzip {
 		a.echo.Use(middleware.GzipWithConfig(middleware.DefaultGzipConfig))
 		a.echo.Use(middleware.Decompress())
+		a.echo.Use(echoCacheMiddleware.CacheWithConfig(echoCacheMiddleware.CacheConfig{
+			Store: echoCacheMiddleware.NewCacheMemoryStoreWithConfig(echoCacheMiddleware.CacheMemoryStoreConfig{
+				Capacity:  5,
+				Algorithm: echoCacheMiddleware.LFU,
+			}),
+			Expiration: 10 * time.Second,
+		}))
+
 	}
 
 	a.registerHandlers()
 
-	go func() {
-		if err := a.echo.Start(a.cfg.String()); err != nil {
-			if err.Error() != "http: Server closed" {
-				log.Error(err.Error())
-			}
-		}
-	}()
-	log.Infof("server started at %s", a.cfg.String())
+	go a.startTlsServer()
+	go a.startServer()
 
+	a.eventBus.Subscribe("system/models/variables/+", a.eventHandler, false)
 	a.eventBus.Publish("system/services/api", events.EventServiceStarted{Service: "Api"})
 
 	return nil
@@ -126,12 +144,61 @@ func (a *Api) Start() (err error) {
 
 // Shutdown ...
 func (a *Api) Shutdown(ctx context.Context) (err error) {
+	a.httpServer.Shutdown(ctx)
+	a.tlsServer.Shutdown(ctx)
 	if a.echo != nil {
 		err = a.echo.Shutdown(ctx)
 	}
+	a.eventBus.Unsubscribe("system/models/variables/+", a.eventHandler)
 	a.eventBus.Publish("system/services/api", events.EventServiceStopped{Service: "Api"})
 
 	return
+}
+
+func (a *Api) startServer() {
+	log.Infof("HTTP Server started at :%d", a.cfg.HttpPort)
+	a.httpServer = http.Server{
+		Addr:    fmt.Sprintf(":%d", a.cfg.HttpPort),
+		Handler: a.echo,
+	}
+	if err := a.httpServer.ListenAndServe(); err != http.ErrServerClosed {
+		log.Errorf("error when starting HTTP server: %w", err)
+	} else {
+		log.Info("HTTP server stopped serving requests")
+	}
+}
+
+func (a *Api) startTlsServer() {
+	if !a.tlsStarted.CompareAndSwap(false, true) {
+		return
+	}
+	defer a.tlsStarted.Store(false)
+
+	a.getCerts()
+	if a.certPublic == "" || a.certKey == "" {
+		return
+	}
+
+	// Generate a key pair from your pem-encoded cert and key ([]byte).
+	cert, err := tls.X509KeyPair([]byte(a.certPublic), []byte(a.certKey))
+	if err != nil {
+		log.Error(err.Error())
+		return
+	}
+	log.Infof("HTTPS Server started at :%d", a.cfg.HttpsPort)
+
+	a.tlsServer = http.Server{
+		Addr:    fmt.Sprintf(":%d", a.cfg.HttpsPort),
+		Handler: a.echo,
+		TLSConfig: &tls.Config{
+			Certificates: []tls.Certificate{cert},
+		},
+	}
+	if err = a.tlsServer.ListenAndServeTLS("", ""); err != http.ErrServerClosed {
+		log.Errorf("error when starting HTTPS server: %w", err)
+	} else {
+		log.Info("HTTPS server stopped serving requests")
+	}
 }
 
 // CustomMatcher ...
@@ -208,6 +275,7 @@ func (a *Api) registerHandlers() {
 	v1.DELETE("/dashboard_tab/:id", a.echoFilter.Auth(wrapper.DashboardTabServiceDeleteDashboardTab))
 	v1.GET("/dashboard_tab/:id", a.echoFilter.Auth(wrapper.DashboardTabServiceGetDashboardTabById))
 	v1.PUT("/dashboard_tab/:id", a.echoFilter.Auth(wrapper.DashboardTabServiceUpdateDashboardTab))
+	v1.POST("/dashboard_tabs/import", a.echoFilter.Auth(wrapper.DashboardTabServiceImportDashboardTab))
 	v1.GET("/dashboard_tabs", a.echoFilter.Auth(wrapper.DashboardTabServiceGetDashboardTabList))
 	v1.GET("/dashboards", a.echoFilter.Auth(wrapper.DashboardServiceGetDashboardList))
 	v1.POST("/dashboards/import", a.echoFilter.Auth(wrapper.DashboardServiceImportDashboard))
@@ -227,6 +295,7 @@ func (a *Api) registerHandlers() {
 	v1.POST("/entity/:id/disable", a.echoFilter.Auth(wrapper.EntityServiceDisabledEntity))
 	v1.POST("/entity/:id/enable", a.echoFilter.Auth(wrapper.EntityServiceEnabledEntity))
 	v1.GET("/entity_storage", a.echoFilter.Auth(wrapper.EntityStorageServiceGetEntityStorageList))
+	v1.GET("/entities/statistic", a.echoFilter.Auth(wrapper.EntityServiceGetStatistic))
 	v1.POST("/image", a.echoFilter.Auth(wrapper.ImageServiceAddImage))
 	v1.POST("/image/upload", a.echoFilter.Auth(wrapper.ImageServiceUploadImage))
 	v1.DELETE("/image/:id", a.echoFilter.Auth(wrapper.ImageServiceDeleteImageById))
@@ -262,12 +331,18 @@ func (a *Api) registerHandlers() {
 	v1.POST("/script/exec_src", a.echoFilter.Auth(wrapper.ScriptServiceExecSrcScriptById))
 	v1.DELETE("/script/:id", a.echoFilter.Auth(wrapper.ScriptServiceDeleteScriptById))
 	v1.GET("/script/:id", a.echoFilter.Auth(wrapper.ScriptServiceGetScriptById))
+	v1.GET("/script/:id/compiled", a.echoFilter.Auth(wrapper.ScriptServiceGetCompiledScriptById))
 	v1.PUT("/script/:id", a.echoFilter.Auth(wrapper.ScriptServiceUpdateScriptById))
 	v1.POST("/script/:id/copy", a.echoFilter.Auth(wrapper.ScriptServiceCopyScriptById))
 	v1.POST("/script/:id/exec", a.echoFilter.Auth(wrapper.ScriptServiceExecScriptById))
 	v1.GET("/scripts", a.echoFilter.Auth(wrapper.ScriptServiceGetScriptList))
 	v1.GET("/scripts/search", a.echoFilter.Auth(wrapper.ScriptServiceSearchScript))
 	v1.GET("/scripts/statistic", a.echoFilter.Auth(wrapper.ScriptServiceGetStatistic))
+	v1.GET("/tags/search", a.echoFilter.Auth(wrapper.TagServiceSearchTag))
+	v1.GET("/tags", a.echoFilter.Auth(wrapper.TagServiceGetTagList))
+	v1.DELETE("/tag/:id", a.echoFilter.Auth(wrapper.TagServiceDeleteTagById))
+	v1.GET("/tag/:id", a.echoFilter.Auth(wrapper.TagServiceGetTagById))
+	v1.PUT("/tag/:id", a.echoFilter.Auth(wrapper.TagServiceUpdateTagById))
 	v1.POST("/signin", wrapper.AuthServiceSignin)
 	v1.POST("/signout", a.echoFilter.Auth(wrapper.AuthServiceSignout))
 	v1.POST("/task", a.echoFilter.Auth(wrapper.AutomationServiceAddTask))
@@ -296,6 +371,7 @@ func (a *Api) registerHandlers() {
 	v1.GET("/variable/:name", a.echoFilter.Auth(wrapper.VariableServiceGetVariableByName))
 	v1.PUT("/variable/:name", a.echoFilter.Auth(wrapper.VariableServiceUpdateVariable))
 	v1.GET("/variables", a.echoFilter.Auth(wrapper.VariableServiceGetVariableList))
+	v1.GET("/variables/search", a.echoFilter.Auth(wrapper.VariableServiceSearchVariable))
 	v1.GET("/zigbee2mqtt/bridge", a.echoFilter.Auth(wrapper.Zigbee2mqttServiceGetBridgeList))
 	v1.POST("/zigbee2mqtt/bridge", a.echoFilter.Auth(wrapper.Zigbee2mqttServiceAddZigbee2mqttBridge))
 	v1.DELETE("/zigbee2mqtt/bridge/:id", a.echoFilter.Auth(wrapper.Zigbee2mqttServiceDeleteBridgeById))
@@ -313,7 +389,8 @@ func (a *Api) registerHandlers() {
 
 	// static files
 	a.echo.GET("/", echo.WrapHandler(a.controllers.Index(publicAssets.F)))
-	a.echo.GET("/public/*", echo.WrapHandler(http.StripPrefix("/", http.FileServer(http.FS(publicAssets.F)))))
+	a.echo.GET("/*", echo.WrapHandler(http.FileServer(http.FS(publicAssets.F))))
+	a.echo.GET("/assets/*", echo.WrapHandler(http.FileServer(http.FS(publicAssets.F))))
 	fileServer := http.FileServer(http.Dir("./data/file_storage"))
 	a.echo.Any("/upload/*", echo.WrapHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		r.RequestURI = strings.ReplaceAll(r.RequestURI, "/upload/", "/")
@@ -360,4 +437,29 @@ func (a *Api) registerHandlers() {
 
 func (a *Api) Echo() *echo.Echo {
 	return a.echo
+}
+
+func (a *Api) getCerts() {
+	certPublicVar, err := a.adaptors.Variable.GetByName(context.Background(), "certPublic")
+	if err != nil {
+		return
+	}
+	a.certPublic = strings.TrimSpace(certPublicVar.Value)
+	certKeyVar, err := a.adaptors.Variable.GetByName(context.Background(), "certKey")
+	if err != nil {
+		return
+	}
+	a.certKey = strings.TrimSpace(certKeyVar.Value)
+}
+
+func (a *Api) eventHandler(_ string, message interface{}) {
+	switch v := message.(type) {
+	case events.EventUpdatedVariableModel:
+		switch v.Name {
+		case "certPublic", "certKey":
+			log.Infof("updated settings name %s", v.Name)
+			a.tlsServer.Shutdown(context.Background())
+			a.startTlsServer()
+		}
+	}
 }

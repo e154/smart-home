@@ -33,6 +33,7 @@ type Controllers struct {
 	*ControllerUser
 	*ControllerRole
 	*ControllerScript
+	*ControllerTag
 	*ControllerImage
 	*ControllerPlugin
 	*ControllerZigbee2mqtt
@@ -74,6 +75,7 @@ func NewControllers(
 		ControllerUser:              NewControllerUser(common),
 		ControllerRole:              NewControllerRole(common),
 		ControllerScript:            NewControllerScript(common),
+		ControllerTag:               NewControllerTag(common),
 		ControllerImage:             NewControllerImage(common),
 		ControllerPlugin:            NewControllerPlugin(common),
 		ControllerZigbee2mqtt:       NewControllerZigbee2mqtt(common),
