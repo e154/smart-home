@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import {computed, nextTick, onMounted, onUnmounted, PropType, ref, watch} from "vue";
-import {Card, Core, eventBus, Tab} from "@/views/Dashboard/core";
+import {computed, onMounted, onUnmounted, PropType, ref, watch} from "vue";
+import {Card, Core, eventBus, fontService, Tab} from "@/views/Dashboard/core";
 import Vuuri from "@/components/Vuuri"
 import ViewCard from "@/views/Dashboard/editor/ViewCard.vue";
 import {Frame} from "@/views/Dashboard/components";
-import {loadFonts} from "@/utils/fonts";
 import {useAppStore} from "@/store/modules/app";
 import {DraggableContainer} from "@/components/DraggableContainer";
 
@@ -71,14 +70,14 @@ const cards = computed<Card[]>(() => props.tab?.cards2)
 const modalCards = computed<Card[]>(() => props.tab?.modalCards)
 
 watch(
-    () => props.tab.fonts,
-    (val?: string[]) => {
-      if (!val) return
-      val.forEach(variableName => loadFonts(variableName))
-    },
-    {
-      immediate: true
-    }
+  () => props.tab.fonts,
+  (val?: string[]) => {
+    if (!val) return
+    val.forEach(variableName => fontService.loadFont(variableName))
+  },
+  {
+    immediate: true
+  }
 )
 
 const getBackground = (card: Card) => {
@@ -108,13 +107,13 @@ const getModalHeight = (card: Card) => {
 
 <template>
   <Vuuri
-      v-model="cards"
-      item-key="id"
-      :get-item-width="getItemWidth"
-      :get-item-height="getItemHeight"
-      :drag-enabled="false"
-      ref="grid"
-      :key="reloadKey"
+    v-model="cards"
+    item-key="id"
+    :get-item-width="getItemWidth"
+    :get-item-height="getItemHeight"
+    :drag-enabled="false"
+    ref="grid"
+    :key="reloadKey"
   >
     <template #item="{item}">
       <Frame :frame="item.templateFrame" :background="getBackground(item)" v-if="item.template">
@@ -125,16 +124,16 @@ const getModalHeight = (card: Card) => {
   </Vuuri>
 
   <DraggableContainer
-      v-for="(item, index) in modalCards"
-      :key="index + item?.id || 0"
-      :class-name="'dashboard-modal'"
-      :name="'modal-card-items-' + item.id"
-      :initial-width="getModalWidth(item)"
-      :initial-height="getModalHeight(item) + (item?.modalHeader?24: 0)"
-      :modal="true"
-      :header="item?.modalHeader"
-      :resizeable="false"
-      v-show="!item.hidden"
+    v-for="(item, index) in modalCards"
+    :key="index + item?.id || 0"
+    :class-name="'dashboard-modal'"
+    :name="'modal-card-items-' + item.id"
+    :initial-width="getModalWidth(item)"
+    :initial-height="getModalHeight(item) + (item?.modalHeader?24: 0)"
+    :modal="true"
+    :header="item?.modalHeader"
+    :resizeable="false"
+    v-show="!item.hidden"
   >
     <template #header>
       <span v-html="item.title"></span>
@@ -163,6 +162,7 @@ const getModalHeight = (card: Card) => {
 .draggable-container.dashboard-modal {
   background: none;
   backdrop-filter: blur(10px);
+
   .draggable-container-content {
     padding: 0;
   }
