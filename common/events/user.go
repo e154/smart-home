@@ -18,6 +18,8 @@
 
 package events
 
+import m "github.com/e154/smart-home/models"
+
 // EventUpdateUserLocation ...
 type EventUpdateUserLocation struct {
 	UserID   int64   `json:"user_id"`
@@ -31,4 +33,8 @@ type EventDirectMessage struct {
 	SessionID string      `json:"session_id"`
 	Query     string      `json:"query"`
 	Message   interface{} `json:"message"`
+}
+
+type EventUserSignedIn struct {
+	User *m.User `json:"user"`
 }
