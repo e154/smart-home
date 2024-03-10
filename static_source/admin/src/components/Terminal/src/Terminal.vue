@@ -188,7 +188,7 @@ const sendCommand = (text?: string) => {
       @resize="handleResize"
       :name="'terminal'"
       v-show="showTerminal"
-      :initial-width="600"
+      :initial-width="800"
       :initial-height="400"
   >
     <template #header>
