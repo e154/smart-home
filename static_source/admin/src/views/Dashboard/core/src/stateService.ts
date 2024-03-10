@@ -1,5 +1,6 @@
 import {EventStateChange} from "@/api/types";
 import {eventBus} from "@/views/Dashboard/core";
+import { isEqual } from 'lodash-es'
 import stream from "@/api/stream";
 import {UUID} from "uuid-generator-ts";
 
@@ -20,6 +21,13 @@ class StateService {
 
     requestCurrentState = (entityId?: string) => {
         if (!entityId) {
+            return;
+        }
+        if (this._lastEvents[entityId] && !isEqual(this._lastEvents[entityId],{})) {
+            this.onStateChanged(this._lastEvents[entityId])
+            return;
+        }
+        if (isEqual(this._lastEvents[entityId],{})) {
             return;
         }
         if (!this._lastEvents[entityId]) {

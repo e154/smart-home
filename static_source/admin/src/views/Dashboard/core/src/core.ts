@@ -12,7 +12,7 @@ import {
 } from '@/api/stub';
 import api from '@/api/api';
 import {UUID} from 'uuid-generator-ts';
-import {eventBus, RenderVar, Resolve, scriptService, stateService} from '@/views/Dashboard/core';
+import {eventBus, RenderVar, requestCurrentState, Resolve, scriptService, stateService} from '@/views/Dashboard/core';
 import {debounce} from "lodash-es";
 import {ref} from "vue";
 import {ItemPayload} from "@/views/Dashboard/card_items";
@@ -239,6 +239,16 @@ export class CardItem {
         };
       }
     }
+
+    // get state
+    for (const prop of [...this.hideOn, ...this.showOn]) {
+      if (prop.entityId) {
+        requestCurrentState(prop.entityId)
+      }
+    }
+    if (this._entityId) {
+      requestCurrentState(this._entityId)
+    }
   }
 
   private _entityId: string;
@@ -461,7 +471,7 @@ export class CardItem {
 
   async onStateChanged(event: EventStateChange) {
 
-    if (!this.entityId || event.entity_id != this.entityId && !this.checkPropEntity(event.entity_id)) {
+    if (event.entity_id != this.entityId && !this.checkPropEntity(event.entity_id)) {
       return;
     }
 
@@ -595,6 +605,13 @@ export class Card {
     this.sortItems();
 
     this.updateItemList()
+
+    // get state
+    for (const prop of [...this.hideOn, ...this.showOn]) {
+      if (prop.entityId) {
+        requestCurrentState(prop.entityId)
+      }
+    }
   }
 
   _document: ElRef = null;
@@ -895,7 +912,7 @@ export class Card {
       this.items[index].onStateChanged(event);
     }
 
-    if (!this.entityId || event.entity_id != this.entityId && !this.checkPropEntity(event.entity_id)) {
+    if (event.entity_id != this.entityId && !this.checkPropEntity(event.entity_id)) {
       return;
     }
 

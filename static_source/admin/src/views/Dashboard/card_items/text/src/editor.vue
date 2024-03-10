@@ -135,6 +135,13 @@ const onChangePropValue = (val, index) => {
   currentItem.value.payload.text.items[index].key = val;
 }
 
+const getFonts = () : string[] => {
+  if (!props.core?.getActiveTab) {
+    return []
+  }
+  return props.core.getActiveTab?.fonts || []
+}
+
 </script>
 
 <template>
@@ -250,7 +257,7 @@ const onChangePropValue = (val, index) => {
               <ElRow v-else>
                 <ElCol>
                   <ElFormItem :label="$t('dashboard.editor.text')" prop="text">
-                    <TinycmeEditor v-model="prop.text" @update:modelValue="propTextUpdated(prop)"/>
+                    <TinycmeEditor v-model="prop.text" @update:modelValue="propTextUpdated(prop)" :fonts="getFonts()"/>
                   </ElFormItem>
                 </ElCol>
               </ElRow>
@@ -319,7 +326,7 @@ const onChangePropValue = (val, index) => {
   <ElRow v-else>
     <ElCol>
       <ElFormItem :label="$t('dashboard.editor.textBody')" prop="text">
-        <TinycmeEditor v-model="currentItem.payload.text.default_text" @update:modelValue="defaultTextUpdated"/>
+        <TinycmeEditor v-model="currentItem.payload.text.default_text" @update:modelValue="defaultTextUpdated" :fonts="getFonts()"/>
       </ElFormItem>
     </ElCol>
   </ElRow>

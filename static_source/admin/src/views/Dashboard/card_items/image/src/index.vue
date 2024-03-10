@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import {onMounted, onUnmounted, PropType, ref, watch} from "vue";
-import {ButtonAction, CardItem, Compare, eventBus, RenderVar, Resolve} from "@/views/Dashboard/core";
+import {
+  ButtonAction,
+  CardItem,
+  Compare,
+  eventBus,
+  RenderVar,
+  requestCurrentState,
+  Resolve
+} from "@/views/Dashboard/core";
 import {ElMessage} from "element-plus";
 import {GetFullImageUrl, GetFullUrl} from "@/utils/serverId";
 import {debounce} from "lodash-es";
@@ -157,6 +165,8 @@ const callBaseAction = async () => {
 // ---------------------------------
 // run
 // ---------------------------------
+
+requestCurrentState(props.item.entityId!);
 
 update();
 
