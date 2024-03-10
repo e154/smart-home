@@ -49,39 +49,50 @@
 <script src="./swagger-ui-bundle.js" charset="UTF-8"></script>
 <script src="./swagger-ui-standalone-preset.js" charset="UTF-8"></script>
 <script>
-    window.onload = function () {
-        // Begin Swagger UI call region
-        const ui = SwaggerUIBundle({
-            url: "/api.swagger3.yaml",
-            dom_id: '#swagger-ui',
-            docExpansion: 'none',
-            deepLinking: true,
-            presets: [
-                SwaggerUIBundle.presets.apis,
-                SwaggerUIStandalonePreset
-            ],
-            plugins: [
-                SwaggerUIBundle.plugins.DownloadUrl
-            ],
-            layout: "StandaloneLayout",
-            requestInterceptor: function(req) {
-                if (!req.headers.Authorization) {
-                    try {
-                        let {v} = JSON.parse(localStorage.getItem('accessToken'))
-                        v = v.replaceAll("\"", "")
-                        req.headers.Authorization = v
-                        return req
-                    } catch (e) {
+  window.onload = function () {
+    // Begin Swagger UI call region
+    const ui = SwaggerUIBundle({
+      url: "/api.swagger3.yaml",
+      dom_id: '#swagger-ui',
+      docExpansion: 'none',
+      deepLinking: true,
+      presets: [
+        SwaggerUIBundle.presets.apis,
+        SwaggerUIStandalonePreset
+      ],
+      plugins: [
+        SwaggerUIBundle.plugins.DownloadUrl
+      ],
+      layout: "StandaloneLayout",
+      requestInterceptor: function (req) {
+        // access token
+        if (!req.headers.Authorization) {
+          try {
+            let {v} = JSON.parse(localStorage.getItem('accessToken'))
+            v = v.replaceAll("\"", "")
+            req.headers.Authorization = v
+          } catch (e) {
 
-                    }
-                }
-                return req
-            }
-        });
-        // End Swagger UI call region
+          }
+        }
 
-        window.ui = ui;
-    };
+        // server id
+        try {
+          let {v} = JSON.parse(localStorage.getItem('serverId'))
+          v = v.replaceAll("\"", "")
+          if (v) {
+            req.headers['X-SERVER-ID'] = v;
+          }
+        } catch (e) {
+
+        }
+        return req
+      }
+    });
+    // End Swagger UI call region
+
+    window.ui = ui;
+  };
 </script>
 </body>
 </html>

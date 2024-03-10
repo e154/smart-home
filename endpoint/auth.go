@@ -26,6 +26,7 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/email"
 	"github.com/e154/smart-home/plugins/notify"
@@ -75,6 +76,10 @@ func (a *AuthEndpoint) SignIn(ctx context.Context, email, password string, ip st
 	}
 
 	log.Infof("Successful login, user: %s", user.Email)
+
+	a.eventBus.Publish(fmt.Sprintf("system/users/%d", user.Id), events.EventUserSignedIn{
+		User: user,
+	})
 
 	return
 }
