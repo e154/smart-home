@@ -66,6 +66,7 @@ the component base.
 
 dashboard:<br />
 [dashboard](https://gate.e154.ru:8443) (https://gate.e154.ru:8443) <br />
+[dashboard](http://gate.e154.ru:8080) (http://gate.e154.ru:8080) <br />
 
 server id:<br />
 **cf4463fc-2f39-4271-a034-5c0c8087c56c**
