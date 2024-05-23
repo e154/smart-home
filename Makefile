@@ -121,7 +121,7 @@ build_public:
 	node -v  && \
 	echo -e "npm version.\n"  && \
 	npm -v  && \
-	npm i -g pnpm  && \
+	npm i -g pnpm@8.15.1  && \
 	echo -e "pnpm version.\n"  && \
 	pnpm -v && \
 	cd ${ROOT}/static_source/admin && \
