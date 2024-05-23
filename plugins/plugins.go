@@ -39,6 +39,7 @@ import (
 	_ "github.com/e154/smart-home/plugins/node"
 	_ "github.com/e154/smart-home/plugins/notify"
 	_ "github.com/e154/smart-home/plugins/onvif"
+	_ "github.com/e154/smart-home/plugins/pachka"
 	_ "github.com/e154/smart-home/plugins/scene"
 	_ "github.com/e154/smart-home/plugins/sensor"
 	_ "github.com/e154/smart-home/plugins/slack"
