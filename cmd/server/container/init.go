@@ -60,5 +60,6 @@ func MigrationList(adaptors *adaptors.Adaptors,
 		local_migrations.NewMigrationAddVar2(adaptors),
 		local_migrations.NewMigrationAutocert(adaptors),
 		local_migrations.NewMigrationPachka(adaptors),
+		local_migrations.NewMigrationWebhook(adaptors),
 	}
 }

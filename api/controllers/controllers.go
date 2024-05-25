@@ -59,6 +59,7 @@ type Controllers struct {
 	*ControllerMqtt
 	*ControllerMedia
 	*ControllerWebdav
+	*ControllerWebhook
 }
 
 // NewControllers ...
@@ -101,5 +102,6 @@ func NewControllers(
 		ControllerMqtt:              NewControllerMqtt(common),
 		ControllerMedia:             NewControllerMedia(common),
 		ControllerWebdav:            NewControllerWebdav(common),
+		ControllerWebhook:           NewControllerWebhook(common),
 	}
 }
