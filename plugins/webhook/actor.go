@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"sort"
 	"strings"
 
 	"github.com/e154/smart-home/common/web/urlpath"
@@ -108,6 +109,7 @@ func (e *Actor) updateState(r *http.Request, match urlpath.Match) {
 			value += v
 		}
 		headers = append(headers, value)
+		sort.Strings(headers)
 	}
 	if r != nil {
 		body, _ := io.ReadAll(r.Body)

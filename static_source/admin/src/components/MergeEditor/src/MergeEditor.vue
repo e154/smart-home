@@ -1,28 +1,15 @@
 <script setup lang="ts">
-import {computed, onMounted, onUnmounted, PropType, reactive, ref, unref, watch} from 'vue'
-import Codemirror, {CmComponentRef} from "codemirror-editor-vue3";
-import {Editor} from "codemirror";
+import {onBeforeUnmount, onMounted, type PropType, ref, watch} from 'vue';
 import {ApiScript} from "@/api/stub";
 import {useAppStore} from "@/store/modules/app";
-import {useEmitt} from "@/hooks/web/useEmitt";
-import {MergeView} from "codemirror/addon/merge/merge";
 
-import "codemirror/mode/htmlmixed/htmlmixed.js";
-
-// codemirror
-// placeholder
-import "codemirror/addon/display/placeholder.js";
-// language
-import "codemirror/mode/javascript/javascript.js";
-import "codemirror/mode/jsx/jsx.js";
-import "codemirror/mode/coffeescript/coffeescript";
-// theme
-import "codemirror/theme/darcula.css";
-import 'codemirror/theme/mdn-like.css'
+import {MergeView} from "@codemirror/merge"
+import {basicSetup, Editor, EditorView} from "codemirror"
+import {esLint, javascript, javascriptLanguage} from '@codemirror/lang-javascript';
+import type {Transaction} from "@codemirror/state";
+// import {darculaTheme, lightTheme} from '@/components/ScriptEditor';
 
 const appStore = useAppStore()
-const emit = defineEmits(['change', 'update:source'])
-const {emitter} = useEmitt()
 
 const props = defineProps({
   source: {
@@ -35,159 +22,139 @@ const props = defineProps({
   }
 })
 
-const reloadKey = ref(0)
-const reload = () => {
-  reloadKey.value += 1
+const updateA = (value: string) => {
+  if (!view.value) return
+  view.value.a.dispatch({
+    changes: {from: 0, to: view.value.a.state.doc.length, insert: value || ''},
+    // selection: view.value.a.state.selection,
+    // scrollIntoView: true,
+  });
 }
+
+const updateB = (value: string) => {
+  if (!view.value) return
+  view.value.b.dispatch({
+    changes: {from: 0, to: view.value.b.state.doc.length, insert: value || ''},
+    // selection: view.value.b.state.selection,
+    // scrollIntoView: true,
+  });
+}
+
+const el = ref(null)
+const view = ref(null)
+const setup = () => {
+  view.value = new MergeView({
+    a: {
+      doc: '',
+      extensions: [
+        basicSetup,
+        javascript(),
+      ],
+    },
+    b: {
+      doc: '',
+      extensions: [
+        basicSetup,
+        EditorView.editable.of(false),
+        javascript()
+      ],
+    },
+    orientation: 'a-b',
+    revertControls: 'b-to-a',
+    parent: el.value,
+    // parent: el.value.childNodes[0]
+  })
+  console.log(view.value)
+
+  // view.value.b.dispatch = (tr: Transaction) => {
+  //   console.log('---', tr)
+  // }
+
+  if (props.source) {
+    updateA(props.source.source)
+  }
+  if (props.destination) {
+    updateB(props.destination.source)
+  }
+
+ setTimeout(() => {
+   view.value.a.dispatch = (tr: Transaction) => {
+     console.log(tr)
+     // console.log(view.value.a.state)
+     // console.log(view.value.a.viewState.state)
+     // console.log(view.value.a.state.doc.length)
+
+     // const xxx = {
+     //   changes: {
+     //     from: tr.changes.from,
+     //     to: tr.changes.to,
+     //     insert: tr.changes.insert,
+     //     // insert: "qwe",
+     //     startState: view.value.a.viewState.state,
+     //   },
+     //   userEvent: tr.userEvent,
+     // }
+     // console.log(xxx)
+
+
+     tr.annotation = (v) => {
+
+     }
+
+     tr.startState = view.value.a.viewState.state
+
+     view.value.a.update([tr]);
+     // if (tr.changes.empty || !tr.docChanged) {
+     //   if not change value, no fire emit event
+     // return;
+     // }
+
+     // console.log('---', tr)
+   }
+ }, 200)
+}
+
+const destroy = () => {
+  if (view.value) {
+    view.value.destroy()
+    view.value = null
+  }
+}
+
 
 onMounted(() => {
-  setTimeout(() => {
-    reload()
-  }, 100)
+  setup()
 })
 
-onUnmounted(() => {
-
-})
-
-const code = ref(``)
-// const code = computed(()=> props.source?.source || '')
-const orig2 = ref(``)
-// const orig2 = computed(()=> props.destination?.source || '')
-const mode = ref('application/vnd.coffeescript')
-
-const cmOptions = reactive({
-  value: code,
-  orig: orig2,
-  theme: appStore.getIsDark ? "darcula" : "mdn-like", // Theme
-  origLeft: null,
-  connect: "align",
-  // mode: "application/vnd.coffeescript", // Language mode
-  mode: mode.value,
-  lineNumbers: true,
-  collapseIdentical: true,
-  highlightDifferences: true
+onBeforeUnmount(() => {
+  destroy()
 })
 
 watch(
-    () => [props.source, props.destination],
-    async (value: ApiScript[]) => {
-      if (value[0]) {
-        code.value = value[0].source
-        switch (value[0].lang) {
-          case 'coffeescript':
-            mode.value = "application/vnd.coffeescript"
-            break
-          case 'javascript':
-            mode.value = "application/vnd.javascript"
-            break
-          case 'typescript':
-            mode.value = "text/typescript"
-            break
-        }
-      }
-      if (value[1]) {
-        orig2.value = value[1].source
-      }
-      reload()
-    },
-    {
-      immediate: true,
+  () => [props.source, props.destination],
+  async (value: ApiScript[]) => {
+    if (value[0]) {
+      updateA(value[0].source)
     }
+    if (value[1]) {
+      updateB(value[1].source)
+    }
+  },
+  {
+    immediate: false,
+  }
 )
 
-watch(
-    () => appStore.getIsDark,
-    (val) => {
-      cmOptions.theme = appStore.getIsDark ? "darcula" : "mdn-like";
-      reload()
-    }
-)
-
-const onReady = (cm: any) => {
-
-}
-
+const emit = defineEmits(['change', 'update:source'])
 const onChange = (val: string, cm: Editor) => {
+  console.log('----', val)
   // const cmMerge = cm as MergeView
   // const cminstance: Editor = cmMerge.editor()
   emit("update:source", val);
 }
 
-const currentSize = computed(() => appStore.getCurrentSize as string)
-const fontSize = computed(() => {
-  let size = 16;
-  switch (unref(currentSize)) {
-    case "default":
-      size = 14;
-      break
-    case "large":
-      size = 16;
-      break
-    case "small":
-      size = 12;
-      break
-  }
-  return size + 'px'
-})
-
-
-
 </script>
-
 <template>
-
-  <Codemirror
-      :key="reloadKey"
-      class="codemirror-merge"
-      merge
-      :options="cmOptions"
-      @ready="onReady"
-      @change="onChange"
-  />
-
+  <div ref="el"
+       @update:modelValue="onChange"></div>
 </template>
-
-<style lang="less">
-
-.codemirror-merge {
-  .CodeMirror {
-    font-size: v-bind(fontSize);
-    line-height: 1.5;
-  }
-}
-
-html.dark {
-  .codemirror-merge.codemirror-container.bordered {
-    border-radius: 4px;
-    border: 1px solid var(--el-bg-color-overlay);
-
-    .CodeMirror-merge-gap {
-      border-color: var(--el-bg-color-overlay);
-      background: #313335;
-    }
-
-    .CodeMirror-merge-copy {
-      color: #fff;
-    }
-
-    .CodeMirror-merge-r-chunk-end {
-      border-bottom: 1px solid #ffffff30;
-    }
-
-    .CodeMirror-merge-r-chunk-start {
-      border-top: 1px solid #ffffff30;
-    }
-
-    .CodeMirror-merge-r-chunk {
-      background: #ffffff30;
-    }
-    .CodeMirror-merge-collapsed-widget {
-      color: #eee;
-      background: #565656;
-      border-color: #565656;
-    }
-  }
-}
-
-</style>

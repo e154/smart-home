@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {onMounted, onUnmounted, PropType, ref} from "vue";
+import {onBeforeUnmount, onMounted, onUnmounted, PropType, ref} from "vue";
 import {CardItem} from "@/views/Dashboard/core";
 import {Websocket} from "websocket-ts";
 import {useCache} from "@/hooks/web/useCache";
@@ -19,24 +19,33 @@ const props = defineProps({
 
 const videoEl = ref()
 
-onMounted(async () => {
+const onPause = () => {
+  if (!videoEl.value) {
+    return
+  }
+  if (videoEl.value.currentTime > videoEl.value.buffered.end(videoEl.value.buffered.length - 1)) {
+    videoEl.value.currentTime = videoEl.value.buffered.end(videoEl.value.buffered.length - 1) - 0.1
+    videoEl.value.play()
+  }
+}
 
+onMounted(async () => {
+  console.log('onMounted')
   // fix stalled video in safari
-  videoEl.value.addEventListener('pause', () => {
-    if (!videoEl.value) {
-      return
-    }
-    if (videoEl.value.currentTime > videoEl.value.buffered.end(videoEl.value.buffered.length - 1)) {
-      videoEl.value.currentTime = videoEl.value.buffered.end(videoEl.value.buffered.length - 1) - 0.1
-      videoEl.value.play()
-    }
-  }, {passive: true})
+  videoEl.value.addEventListener('pause', onPause, {passive: true})
 
   startPlay()
 })
 
-onUnmounted(() => {
+onBeforeUnmount( () => {
+  console.log('onBeforeUnmount')
+  videoEl.value.removeEventListener('pause', onPause)
+
   stopPlay()
+})
+
+onUnmounted(() => {
+
 })
 
 // ---------------------------------
@@ -65,6 +74,7 @@ let mseStreamingStarted = false
 let ws: Websocket;
 
 const startPlay = () => {
+  console.log('startPlay')
   if (!props.item?.entityId) {
     return
   }
@@ -97,11 +107,14 @@ const startPlay = () => {
       }
     }
     ws.onclose = function (e) {
-      // console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
-      setTimeout(function () {
-        startPlay();
-      }, 1000);
+      console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
+      // setTimeout(function () {
+        // startPlay();
+      // }, 1000);
     };
+    ws.onRetry = function(i, ev) {
+      console.log('retry');
+    }
   }, {passive: false})
 }
 
@@ -112,6 +125,11 @@ const stopPlay = () => {
   ws.close()
   ws = null
   videoEl.value = null
+}
+
+const restartPlay = () => {
+  stopPlay()
+  startPlay()
 }
 
 const pushPacket = () => {
@@ -137,11 +155,18 @@ const pushPacket = () => {
 }
 
 const readPacket = (packet) => {
+  console.log('1', mseStreamingStarted)
   if (!mseStreamingStarted) {
+    console.log('2', mseStreamingStarted)
+    console.log(videoEl.value.error)
+    if (videoEl.value.error != null) {
+      console.log(videoEl.value)
+    }
     mseSourceBuffer.appendBuffer(packet)
     mseStreamingStarted = true
     return
   }
+  console.log('3', mseStreamingStarted)
   mseQueue.push(packet)
   if (!mseSourceBuffer.updating) {
     pushPacket()

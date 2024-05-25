@@ -38,7 +38,7 @@ const writeRef = ref<ComponentRef<typeof Form>>()
 const loading = ref(false)
 const scriptId = computed(() => parseInt(route.params.id));
 const currentScript = ref<Nullable<ApiScript>>(null)
-const activeTab = ref('source')
+const activeTab = ref('versions')
 const currentVersionIdx = ref(0)
 const currentVersion = ref<Nullable<ApiScript>>(null)
 const versions = ref<Nullable<ApiScript[]>>([])
@@ -210,7 +210,7 @@ fetch()
 
     <ElTabs class="demo-tabs" v-model="activeTab" @tab-click="updateCurrentTab">
       <!-- main -->
-      <ElTabPane :label="$t('scripts.main')" name="main">
+      <ElTabPane :label="$t('scripts.main')" name="main" lazy>
 
         <Form ref="writeRef" :current-row="currentScript"/>
 
@@ -218,7 +218,7 @@ fetch()
       <!-- /main -->
 
       <!-- source -->
-      <ElTabPane :label="$t('scripts.source')" name="source">
+      <ElTabPane :label="$t('scripts.source')" name="source" lazy>
         <Infotip
             :show-index="false"
             title="INFO"
@@ -246,7 +246,7 @@ fetch()
       <!-- /source -->
 
       <!-- versions -->
-      <ElTabPane :label="$t('scripts.scriptVersions')" name="versions">
+      <ElTabPane :label="$t('scripts.scriptVersions')" name="versions" lazy>
 
         <ElRow v-if="activeTab == 'versions' && !loading && versions" class="mb-20px">
           <ElCol>
@@ -278,7 +278,7 @@ fetch()
       <!-- /versions -->
 
       <!-- info -->
-      <ElTabPane :label="$t('scripts.scriptInfo')" name="info">
+      <ElTabPane :label="$t('scripts.scriptInfo')" name="info" lazy>
         <ElDescriptions v-if="currentScript?.scriptInfo"
                         class="ml-10px mr-10px mb-20px"
                         :title="$t('scripts.scriptInfo')"
