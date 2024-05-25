@@ -154,6 +154,8 @@ func (a *Server) registerHandlers() {
 	a.echo.Any("/upload/*", a.proxyHandler)
 	a.echo.Any("/static/*", a.proxyHandler)
 	a.echo.Any("/snapshots/*", a.proxyHandler)
+	a.echo.Any("/webhook", a.proxyHandler)
+	a.echo.Any("/webhook/*", a.proxyHandler)
 	a.echo.GET("/v1/ws", func(c echo.Context) error {
 		a.proxy.Ws(c.Response(), c.Request())
 		return nil

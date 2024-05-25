@@ -26,7 +26,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	echopprof "github.com/hiko1129/echo-pprof"
 	echoCacheMiddleware "github.com/kenshin579/echo-http-cache"
 	"github.com/labstack/echo/v4"
@@ -198,16 +197,6 @@ func (a *Api) startTlsServer() {
 		log.Errorf("error when starting HTTPS server: %w", err)
 	} else {
 		log.Info("HTTPS server stopped serving requests")
-	}
-}
-
-// CustomMatcher ...
-func (a *Api) CustomMatcher(key string) (string, bool) {
-	switch key {
-	case "X-Api-Key":
-		return key, true
-	default:
-		return runtime.DefaultHeaderMatcher(key)
 	}
 }
 
@@ -417,6 +406,12 @@ func (a *Api) registerHandlers() {
 	}))
 	a.echo.Any("/webdav", webdav)
 	a.echo.Any("/webdav/*", webdav)
+	// webhook
+	webhook := echo.WrapHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		a.controllers.Webhook(w, r)
+	}))
+	a.echo.Any("/webhook", webhook)
+	a.echo.Any("/webhook/*", webhook)
 
 	// media
 	a.echo.Any("/stream/:entity_id/channel/:channel/mse", a.echoFilter.Auth(a.controllers.StreamMSE)) //Auth
