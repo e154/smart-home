@@ -39,7 +39,7 @@ import (
 )
 
 const (
-	timeout = time.Second * 10
+	timeout = time.Second * 30
 )
 
 // WeatherOwm ...
@@ -213,7 +213,6 @@ func (p *WeatherOwm) fetchFromServer(lat, lon float64, settings map[string]*m.At
 	params := url.Values{}
 	params.Add("lat", fmt.Sprintf("%f", lat))
 	params.Add("lon", fmt.Sprintf("%f", lon))
-	params.Add("cnt", "48")
 
 	if appid, ok := settings[AttrAppid]; ok {
 		params.Add("appid", appid.Decrypt())
@@ -223,7 +222,7 @@ func (p *WeatherOwm) fetchFromServer(lat, lon float64, settings map[string]*m.At
 		params.Add("units", units.String())
 	}
 
-	if lang, ok := settings[AttrLang]; ok {
+	if lang, ok := settings[AttrLang]; ok && lang.String() != "" {
 		params.Add("lang", lang.String())
 	}
 
