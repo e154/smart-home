@@ -14,6 +14,7 @@ import {parseTime} from "@/utils";
 import stream from "@/api/stream";
 import {ContentWrap} from "@/components/ContentWrap";
 import {useCache} from "@/hooks/web/useCache";
+import {ElCol, ElRow} from "element-plus";
 
 const {register, elFormRef, methods} = useForm()
 const {t} = useI18n()
@@ -333,15 +334,19 @@ getList()
 
 <template>
   <ContentWrap>
-    <Form
-        class="search-form"
-        :schema="schema"
-        label-position="top"
-        label-width="auto"
-        hide-required-asterisk
-        @change="onFormChange"
-        @register="register"
-    />
+    <ElRow :gutter="24">
+      <ElCol :span="12" :xs="12">
+        <Form
+            class="search-form"
+            :schema="schema"
+            label-position="top"
+            label-width="auto"
+            hide-required-asterisk
+            @change="onFormChange"
+            @register="register"
+        />
+      </ElCol>
+    </ElRow>
 
     <Table
         v-model:pageSize="paginationObj.pageSize"

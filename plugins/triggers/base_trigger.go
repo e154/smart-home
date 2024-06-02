@@ -19,7 +19,7 @@
 package triggers
 
 import (
-	"github.com/e154/smart-home/system/bus"
+	"github.com/e154/bus"
 )
 
 type baseTrigger struct {

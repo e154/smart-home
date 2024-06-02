@@ -66,6 +66,7 @@ require (
 	github.com/caddyserver/certmagic v0.21.2
 	github.com/deepch/vdk v0.0.27
 	github.com/deepmap/oapi-codegen v1.16.2
+	github.com/e154/bus v0.1.0
 	github.com/eyetowers/gonvif v0.0.30
 	github.com/go-playground/locales v0.14.1
 	github.com/go-playground/universal-translator v0.18.1

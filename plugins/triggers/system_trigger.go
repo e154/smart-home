@@ -23,7 +23,7 @@ import (
 	"go.uber.org/atomic"
 	"sync"
 
-	"github.com/e154/smart-home/system/bus"
+	"github.com/e154/bus"
 )
 
 const (

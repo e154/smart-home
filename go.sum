@@ -490,6 +490,8 @@ github.com/dop251/goja v0.0.0-20240516125602-ccbae20bcec2/go.mod h1:o31y53rb/qiI
 github.com/dop251/goja_nodejs v0.0.0-20240418154818-2aae10d4cbcf h1:2JoVYP9iko8uuIW33BQafzaylDixXbdXCRw/vCoxL+s=
 github.com/dop251/goja_nodejs v0.0.0-20240418154818-2aae10d4cbcf/go.mod h1:bhGPmCgCCTSRfiMYWjpS46IDo9EUZXlsuUaPXSWGbv0=
 github.com/dustin/go-humanize v1.0.0/go.mod h1:HtrtbFcZ19U5GC7JDqmcUSB87Iq5E25KnS6fMYU6eOk=
+github.com/e154/bus v0.1.0 h1:ZKWBOmBCkWKZaUZPhVpzXvzAlEcgC1mRdfl2UBpHR2s=
+github.com/e154/bus v0.1.0/go.mod h1:zb+1pFCAZZgF3Yw6bGLiENVUQDg/J+iu2yl41ShE7PA=
 github.com/eclipse/paho.mqtt.golang v1.4.3 h1:2kwcUGn8seMUfWndX0hGbvH8r7crgcJguQNCyp70xik=
 github.com/eclipse/paho.mqtt.golang v1.4.3/go.mod h1:CSYvoAlsMkhYOXh/oKyxa8EcBci6dVkLCbo5tTC1RIE=
 github.com/elgs/gostrgen v0.0.0-20220325073726-0c3e00d082f6 h1:x9TA+vnGEyqmWY+eA9HfgxNRkOQqwiEpFE9IPXSGuEA=

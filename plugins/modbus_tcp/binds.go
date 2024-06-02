@@ -24,13 +24,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/e154/smart-home/common/apperr"
-
 	"github.com/pkg/errors"
-
-	"github.com/e154/smart-home/plugins/node"
-	"github.com/e154/smart-home/system/bus"
 	"go.uber.org/atomic"
+
+	"github.com/e154/bus"
+	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/plugins/node"
 )
 
 type modbusTcp func(f string, address, count uint16, command []uint16) (result ModBusResponse)

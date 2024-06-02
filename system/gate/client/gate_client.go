@@ -27,11 +27,11 @@ import (
 	"go.uber.org/atomic"
 	"go.uber.org/fx"
 
+	"github.com/e154/bus"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api"
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/gate/client/wsp"
 	"github.com/e154/smart-home/system/jwt_manager"
 	"github.com/e154/smart-home/system/stream"

@@ -29,6 +29,7 @@ import (
 	"go.uber.org/atomic"
 	"go.uber.org/fx"
 
+	"github.com/e154/bus"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
@@ -36,7 +37,6 @@ import (
 	"github.com/e154/smart-home/common/logger"
 	"github.com/e154/smart-home/common/web"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/cache"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scheduler"
