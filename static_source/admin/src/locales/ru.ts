@@ -611,6 +611,7 @@ export default {
       CHART: 'График',
       CHART_CUSTOM: 'Chart Custom (Experimental)',
       ENTITY_STORAGE: 'Entity история состояний',
+      IFRAME: 'Iframe',
       MAP: 'Карта',
       SLIDER: 'Ползунок',
       COLOR_PICKER: 'Цветовая паллитра',
@@ -735,7 +736,9 @@ export default {
       iconOptions: 'Параметры Иконки',
       defaultIcon: 'Иконка по умолчанию',
       iconSize: 'Размер Иконки',
-      iconColor: 'Цвет Иконки'
+      iconColor: 'Цвет Иконки',
+      iframeOptions: 'Параметры iframe',
+      uri: 'URL'
     }
   },
   settings: {
