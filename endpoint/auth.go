@@ -158,7 +158,8 @@ func (a *AuthEndpoint) PasswordReset(ctx context.Context, userEmail string, toke
 	}
 
 	a.eventBus.Publish(notify.TopicNotify, common.Message{
-		Type: email.Name,
+		Type:     email.Name,
+		EntityId: nil, //todo fix
 		Attributes: map[string]interface{}{
 			email.AttrAddresses: user.Email,
 			email.AttrSubject:   "Reset your Smart home password",
