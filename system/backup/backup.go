@@ -147,7 +147,7 @@ func (b *Backup) New(scheduler bool) (err error) {
 
 	_ = os.RemoveAll(tmpDir)
 
-	log.Info("complete")
+	log.Infof("Snapshot %s successfully created", backupName)
 
 	b.eventBus.Publish("system/services/backup", events.EventCreatedBackup{
 		Name:      backupName,
