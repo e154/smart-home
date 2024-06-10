@@ -21,13 +21,10 @@ package pachka
 import (
 	"context"
 	"embed"
-	"fmt"
-	"strconv"
 
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/notify"
-	"github.com/e154/smart-home/plugins/notify/common"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
@@ -47,7 +44,6 @@ func init() {
 
 type plugin struct {
 	*supervisor.Plugin
-	client *Client
 	notify *notify.Notify
 }
 
@@ -62,34 +58,9 @@ func New() supervisor.Pluggable {
 
 // Load ...
 func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(ctx, service, nil); err != nil {
+	if err = p.Plugin.Load(ctx, service, p.ActorConstructor); err != nil {
 		return
 	}
-
-	p.notify = notify.NewNotify(service.Adaptors())
-	p.notify.Start()
-
-	// load settings
-	var settings m.Attributes
-	settings, err = p.LoadSettings(p)
-	if err != nil {
-		log.Warn(err.Error())
-		settings = NewSettings()
-	}
-
-	if settings == nil {
-		settings = NewSettings()
-	}
-
-	if settings[AttrToken].Decrypt() != "" {
-		p.client = NewClient(settings[AttrToken].Decrypt())
-	} else {
-		log.Warn("empty access token")
-		p.client = NewClient("NoToken")
-	}
-
-	_ = p.Service.EventBus().Subscribe(notify.TopicNotify, p.eventHandler, false)
-
 	return
 }
 
@@ -98,12 +69,13 @@ func (p *plugin) Unload(ctx context.Context) (err error) {
 	if err = p.Plugin.Unload(ctx); err != nil {
 		return
 	}
-
-	p.notify.Shutdown()
-
-	_ = p.Service.EventBus().Unsubscribe(notify.TopicNotify, p.eventHandler)
-
 	return nil
+}
+
+// ActorConstructor ...
+func (p *plugin) ActorConstructor(entity *m.Entity) (actor supervisor.PluginActor, err error) {
+	actor, err = NewActor(entity, p.Service)
+	return
 }
 
 // Name ...
@@ -129,59 +101,11 @@ func (p *plugin) Version() string {
 // Options ...
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
-		Actors:     true,
-		ActorAttrs: NewAttr(),
-		Setts:      NewSettings(),
+		Actors:             true,
+		ActorCustomActions: true,
+		ActorCustomStates:  true,
+		ActorCustomAttrs:   true,
+		ActorAttrs:         NewAttr(),
+		ActorSetts:         NewSettings(),
 	}
-}
-
-func (p *plugin) eventHandler(_ string, event interface{}) {
-
-	switch v := event.(type) {
-	case common.Message:
-		if v.Type == Name {
-			p.notify.SaveAndSend(v, p)
-		}
-	}
-}
-
-// MessageParams ...
-func (p *plugin) MessageParams() m.Attributes {
-	return NewMessageParams()
-}
-
-func (p *plugin) Save(msg common.Message) (addresses []string, message *m.Message) {
-	message = &m.Message{
-		Type:       Name,
-		Attributes: msg.Attributes,
-	}
-	var err error
-	if message.Id, err = p.Service.Adaptors().Message.Add(context.Background(), message); err != nil {
-		log.Error(err.Error())
-	}
-
-	attr := NewMessageParams()
-	_, _ = attr.Deserialize(message.Attributes)
-
-	addresses = []string{fmt.Sprintf("%d", attr[AttrEntityID].Int64())}
-	return
-}
-
-// Send ...
-func (p *plugin) Send(address string, message *m.Message) (err error) {
-
-	attr := NewMessageParams()
-	if _, err = attr.Deserialize(message.Attributes); err != nil {
-		log.Error(err.Error())
-		return
-	}
-
-	chatID, _ := strconv.ParseInt(address, 0, 64)
-
-	go func() {
-		if _, _, err = p.client.SendMsg(attr[AttrBody].String(), chatID); err != nil {
-			log.Error(err.Error())
-		}
-	}()
-	return
 }

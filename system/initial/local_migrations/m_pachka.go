@@ -40,7 +40,7 @@ func (n *MigrationPachka) Up(ctx context.Context, adaptors *adaptors.Adaptors) e
 	if adaptors != nil {
 		n.adaptors = adaptors
 	}
-	n.addPlugin(ctx, "pachka", true, false, false, speedtest.Version)
+	n.addPlugin(ctx, "pachka", true, false, true, speedtest.Version)
 	return nil
 }
 
