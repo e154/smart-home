@@ -19,6 +19,7 @@
 package container
 
 import (
+	"github.com/e154/bus"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api/controllers"
 	"github.com/e154/smart-home/common/web"
@@ -26,7 +27,6 @@ import (
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/backup"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/gate/client"
 	"github.com/e154/smart-home/system/initial"
 	"github.com/e154/smart-home/system/jwt_manager"

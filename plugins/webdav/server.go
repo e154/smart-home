@@ -26,8 +26,8 @@ import (
 	"go.uber.org/atomic"
 	"golang.org/x/net/webdav"
 
+	"github.com/e154/bus"
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/scripts"
 )
 

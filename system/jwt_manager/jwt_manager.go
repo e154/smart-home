@@ -28,11 +28,11 @@ import (
 	"github.com/pkg/errors"
 	"go.uber.org/fx"
 
+	"github.com/e154/bus"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
 )
 
 var (

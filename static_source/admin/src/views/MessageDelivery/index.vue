@@ -112,11 +112,11 @@ const schema = reactive<FormSchema[]>([
     componentProps: {
       options: [
         {
-          label: 'web_push',
-          value: 'web_push'
+          label: 'webpush',
+          value: 'webpush'
         },
         {
-          label: 'html5_notify',
+          label: 'html5 notify',
           value: 'html5_notify'
         },
         {
@@ -134,6 +134,10 @@ const schema = reactive<FormSchema[]>([
         {
           label: 'slack',
           value: 'slack'
+        },
+        {
+          label: 'pachka',
+          value: 'pachka'
         },
 
       ]

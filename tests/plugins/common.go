@@ -30,6 +30,7 @@ import (
 	"github.com/phayes/freeport"
 	"github.com/smartystreets/goconvey/convey"
 
+	"github.com/e154/bus"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/events"
@@ -46,7 +47,6 @@ import (
 	"github.com/e154/smart-home/plugins/telegram"
 	"github.com/e154/smart-home/plugins/weather"
 	"github.com/e154/smart-home/plugins/zigbee2mqtt"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/scripts"
 )
 

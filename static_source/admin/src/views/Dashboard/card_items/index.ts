@@ -17,6 +17,7 @@ import {Icon, IconEditor, ItemPayloadIcon} from './icon';
 import {Grid, GridEditor, ItemPayloadGrid} from './grid';
 import {Three, ThreeEditor, ItemPayloadThree} from './three';
 import {Modal, ModalEditor, ItemPayloadModal} from './modal';
+import {IFrame, IFrameEditor, ItemPayloadIFrame} from './iframe';
 import {ItemPayloadJsonViewer, JsonViewer, JsonViewerEditor} from './json_viewer';
 import {useI18n} from "@/hooks/web/useI18n";
 
@@ -61,6 +62,8 @@ export const CardItemName = (name: string): any => {
       return JsonViewer;
     case 'modal':
       return Modal;
+    case 'iframe':
+      return IFrame;
     default:
       // console.error(`unknown card name "${name}"`);
       return Dummy;
@@ -108,6 +111,8 @@ export const CardEditorName = (name: string): any => {
       return JsonViewerEditor;
     case 'modal':
       return ModalEditor;
+    case 'iframe':
+      return IFrameEditor;
     default:
       // console.error(`unknown card name "${name}"`);
       return DummyEditor;
@@ -143,6 +148,7 @@ export const CardItemList: ItemsType[] = [
       {label: t('dashboard.editor.LOGS'), value: 'logs'},
       {label: t('dashboard.editor.ENTITY_STORAGE'), value: 'entityStorage'},
       {label: t('dashboard.editor.JSON_VIEWER'), value: 'jsonViewer'},
+      {label: t('dashboard.editor.IFRAME'), value: 'iframe'},
     ],
   },
   {
@@ -206,4 +212,5 @@ export interface ItemPayload {
   three?: ItemPayloadThree;
   jsonViewer?: ItemPayloadJsonViewer;
   modal?: ItemPayloadModal;
+  iframe?: ItemPayloadIFrame;
 }

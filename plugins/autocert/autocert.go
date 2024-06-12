@@ -28,8 +28,8 @@ import (
 
 	"github.com/caddyserver/certmagic"
 	"github.com/libdns/cloudflare"
-	"github.com/mholt/acmez"
-	"github.com/mholt/acmez/acme"
+	"github.com/mholt/acmez/v2"
+	"github.com/mholt/acmez/v2/acme"
 	"github.com/pkg/errors"
 	"go.uber.org/atomic"
 )
@@ -70,8 +70,10 @@ func (a *Autocert) RequestCertificate(ctx context.Context) (err error) {
 
 	// Initialize a DNS-01 solver, using Cloudflare APIs
 	solver := &certmagic.DNS01Solver{
-		DNSProvider: &cloudflare.Provider{
-			APIToken: a.cloudflareAPIToken,
+		DNSManager: certmagic.DNSManager{
+			DNSProvider: &cloudflare.Provider{
+				APIToken: a.cloudflareAPIToken,
+			},
 		},
 	}
 	// The CA endpoint to use (prod or staging)
@@ -123,7 +125,7 @@ func (a *Autocert) RequestCertificate(ctx context.Context) (err error) {
 		return
 	}
 
-	a.certs, err = client.ObtainCertificate(ctx, acc, a.privateKey, a.domains)
+	a.certs, err = client.ObtainCertificateForSANs(ctx, acc, a.privateKey, a.domains)
 	if err != nil {
 		err = errors.Wrap(err, "could not obtain certificate")
 		return

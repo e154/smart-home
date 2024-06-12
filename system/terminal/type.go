@@ -20,9 +20,9 @@ package terminal
 
 import (
 	"context"
+	"github.com/e154/bus"
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/jwt_manager"
 	"github.com/spf13/cobra"
 )

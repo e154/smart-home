@@ -1,7 +1,6 @@
 import {parseTime} from '@/utils';
-import api from "@/api/api";
-import {Cache} from "./cache";
-import {scriptService} from "@/views/Dashboard/core";
+import {RenderVar, Resolve, scriptService} from "@/views/Dashboard/core";
+import {EventStateChange} from "@/api/types";
 
 export const ApplyFilter = async (value: any, filter: string): any => {
   if (value == undefined || filter == undefined) {
@@ -37,12 +36,22 @@ export const ApplyFilter = async (value: any, filter: string): any => {
       return camelCaseStringToTitleCase(value, ...args);
     case 'toTitleCase':
       return toTitleCase(value, ...args);
+    case 'render':
+      return render(value, ...args);
     case 'script':
       return await scriptService.evalScript(value, ...args);
     default:
       console.warn(`unknown filter "${filter}"!`);
       return value;
   }
+}
+
+const render = (obj: any, ...args: string[]): string => {
+  let token = '';
+  if (args[0]) {
+    token = args[0];
+  }
+  return Resolve(token, JSON.parse(obj));
 }
 
 //DEPRECATED

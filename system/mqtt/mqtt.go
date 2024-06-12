@@ -36,10 +36,10 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
+	"github.com/e154/bus"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/mqtt/admin"
 	"github.com/e154/smart-home/system/mqtt_authenticator"

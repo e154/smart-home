@@ -25,10 +25,10 @@ import (
 	"github.com/patrikeh/go-deep"
 	"github.com/patrikeh/go-deep/training"
 
+	"github.com/e154/bus"
 	"github.com/e154/smart-home/plugins/notify"
 	"github.com/e154/smart-home/plugins/notify/common"
 	"github.com/e154/smart-home/plugins/webpush"
-	"github.com/e154/smart-home/system/bus"
 )
 
 type Network1 struct {

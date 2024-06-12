@@ -611,6 +611,7 @@ export default {
             CHART: 'Chart',
             CHART_CUSTOM: 'Chart Custom (Experimental)',
             ENTITY_STORAGE: 'Entity Storage Table',
+            IFRAME: 'Iframe',
             MAP: 'Map',
             SLIDER: 'Slider',
             COLOR_PICKER: 'Color Picker',
@@ -735,7 +736,9 @@ export default {
             iconOptions: 'Icon Options',
             defaultIcon: 'Default Icon',
             iconSize: 'Icon Size',
-            iconColor: 'Icon Color'
+            iconColor: 'Icon Color',
+            iframeOptions: 'Iframe Options',
+            uri: 'URL'
         }
     },
     settings: {

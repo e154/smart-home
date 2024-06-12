@@ -32,13 +32,13 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"go.uber.org/atomic"
 
+	"github.com/e154/bus"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api/controllers"
 	"github.com/e154/smart-home/api/stub"
 	publicAssets "github.com/e154/smart-home/build"
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/rbac"
 )
 

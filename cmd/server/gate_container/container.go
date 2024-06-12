@@ -22,7 +22,7 @@ import (
 	"github.com/e154/smart-home/system/gate/server"
 	"go.uber.org/fx"
 
-	"github.com/e154/smart-home/system/bus"
+	"github.com/e154/bus"
 	"github.com/e154/smart-home/system/logging"
 )
 

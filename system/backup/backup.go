@@ -38,6 +38,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
+	"github.com/e154/bus"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/app"
 	"github.com/e154/smart-home/common/apperr"
@@ -45,7 +46,6 @@ import (
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	notifyCommon "github.com/e154/smart-home/plugins/notify/common"
-	"github.com/e154/smart-home/system/bus"
 )
 
 var (
@@ -147,7 +147,7 @@ func (b *Backup) New(scheduler bool) (err error) {
 
 	_ = os.RemoveAll(tmpDir)
 
-	log.Info("complete")
+	log.Infof("Snapshot %s successfully created", backupName)
 
 	b.eventBus.Publish("system/services/backup", events.EventCreatedBackup{
 		Name:      backupName,

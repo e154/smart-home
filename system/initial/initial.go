@@ -26,6 +26,7 @@ import (
 	"go.uber.org/fx"
 	"gorm.io/gorm"
 
+	"github.com/e154/bus"
 	. "github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api"
 	"github.com/e154/smart-home/common/apperr"
@@ -36,7 +37,6 @@ import (
 	_ "github.com/e154/smart-home/plugins"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/automation"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/gate/client"
 	. "github.com/e154/smart-home/system/initial/assertions"
 	"github.com/e154/smart-home/system/initial/demo"

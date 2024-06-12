@@ -27,12 +27,12 @@ import (
 
 	"github.com/e154/smart-home/common/events"
 
+	"github.com/e154/bus"
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/modbus_tcp"
 	"github.com/e154/smart-home/plugins/node"
 	"github.com/e154/smart-home/system/automation"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"

@@ -110,8 +110,8 @@ func (e *Actor) updateState(state *speedtest.Server) {
 
 	var attributeValues = make(m.AttributeValue)
 	if state != nil {
-		attributeValues[AttrDLSpeed] = state.DLSpeed
-		attributeValues[AttrULSpeed] = state.ULSpeed
+		attributeValues[AttrDLSpeed] = state.DLSpeed.Mbps()
+		attributeValues[AttrULSpeed] = state.ULSpeed.Mbps()
 		attributeValues[AttrLatency] = state.Latency.String()
 		attributeValues[AttrName] = state.Name
 		attributeValues[AttrCountry] = state.Country

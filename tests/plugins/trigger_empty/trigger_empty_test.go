@@ -23,12 +23,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/e154/bus"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/triggers"
 	"github.com/e154/smart-home/system/automation"
-	"github.com/e154/smart-home/system/bus"
 	"github.com/e154/smart-home/system/scheduler"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/supervisor"

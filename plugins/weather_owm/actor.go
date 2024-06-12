@@ -20,9 +20,9 @@ package weather_owm
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/common"
 	"time"
 
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/astronomics/suncalc"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/weather"

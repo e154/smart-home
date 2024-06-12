@@ -25,8 +25,8 @@ import (
 
 	"go.uber.org/atomic"
 
+	"github.com/e154/bus"
 	"github.com/e154/smart-home/common/events"
-	"github.com/e154/smart-home/system/bus"
 )
 
 const (

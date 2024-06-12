@@ -112,7 +112,7 @@ func (s *Client) Start(username, password, address string, port int64, requireAu
 			}
 
 			// Connect to the Onvif device.
-			s.cli, err = gonvif.New(fmt.Sprintf("http://%s:%d", address, port), username, password, false)
+			s.cli, err = gonvif.New(context.Background(), fmt.Sprintf("http://%s:%d", address, port), username, password, false)
 			if err != nil {
 				continue
 			}
