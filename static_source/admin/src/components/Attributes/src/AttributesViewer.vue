@@ -31,14 +31,15 @@ const tableObject = reactive<TableObject>(
 
 const columns: TableColumn[] = [
   {
-    field: 'name',
-    label: t('attributes.name'),
-    sortable: true
-  },
-  {
     field: 'type',
     label: t('attributes.type'),
-    sortable: true
+    sortable: true,
+    width: '100px'
+  },
+  {
+    field: 'name',
+    label: t('attributes.name'),
+    sortable: true,
   },
   {
     field: 'value',
