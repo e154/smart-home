@@ -282,7 +282,7 @@ getList()
 
 <template>
 
-  <div ref="el" class="w-[100%] h-[100%]" style="overflow:hidden;overflow-y: scroll">
+  <div ref="el" class="w-[100%] h-[100%]" style="overflow:hidden;overflow-y: scroll" :class="[{'hidden': item.hidden}]">
 
     <Dialog v-model="dialogVisible" :maxHeight="400" width="80%">
       <div style="padding: 10px">
