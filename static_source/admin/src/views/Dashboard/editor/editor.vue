@@ -21,6 +21,7 @@ import {JsonEditor} from "@/components/JsonEditor";
 import {Dialog} from "@/components/Dialog";
 import {ApiDashboardTab} from "@/api/stub";
 import CardListWindow from "@/views/Dashboard/editor/CardListWindow.vue";
+import HelpWindow from "@/views/Dashboard/editor/HelpWindow.vue";
 
 const route = useRoute();
 const {t} = useI18n()
@@ -162,6 +163,9 @@ const toggleMenu = (menu: string): void => {
     case 'cardItems':
       eventBus.emit('toggleCardItemsMenu');
       break
+    case 'help':
+      eventBus.emit('toggleHelpMenu');
+      break
   }
 }
 
@@ -253,8 +257,11 @@ defineOptions({
         <div class="w-[100%]">
           <div style="float: left">Main menu</div>
           <div style="float: right; text-align: right">
+            <a href="#" @click.prevent.stop='toggleMenu("help")'>
+              <Icon icon="gridicons:help-outline" class="mr-5px"/>
+            </a>
             <a href="#" @click.prevent.stop='toggleMenu("tabs")'>
-              <Icon icon="vaadin:tabs" class="mr-5px" @click.prevent.stop='toggleMenu("tabs")'/>
+              <Icon icon="vaadin:tabs" class="mr-5px"/>
             </a>
             <a href="#" class="mr-5px" @click.prevent.stop='toggleMenu("cards")'>
               <Icon icon="material-symbols:cards-outline"/>
@@ -331,6 +338,10 @@ defineOptions({
     <!-- card list window -->
     <CardListWindow v-if="core.current && activeTab" :core="core"/>
     <!-- /card list window -->
+
+    <!-- help window -->
+    <HelpWindow v-if="core.current && activeTab" :core="core"/>
+    <!-- /help window -->
 
     <!-- import dialog -->
     <Dialog v-model="importDialogVisible" :title="t('main.dialogImportTitle')" :maxHeight="400" width="80%"

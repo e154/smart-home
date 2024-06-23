@@ -1,6 +1,5 @@
 import {parseTime} from '@/utils';
-import {RenderVar, Resolve, scriptService} from "@/views/Dashboard/core";
-import {EventStateChange} from "@/api/types";
+import {Resolve, scriptService} from "@/views/Dashboard/core";
 
 export const ApplyFilter = async (value: any, filter: string): any => {
   if (value == undefined || filter == undefined) {
@@ -23,7 +22,7 @@ export const ApplyFilter = async (value: any, filter: string): any => {
     case 'formatdate':
       return formatdate(value, ...args);
     case 'formatBytes':
-      return formatBytes(value, 2);
+      return formatBytes(value, ...args);
     case 'seconds':
       return seconds(value, ...args);
     case 'getDayOfWeek':
@@ -184,8 +183,13 @@ function toTitleCase(value: string, ...args: string[]): string {
   );
 }
 
-export function formatBytes(value: string, decimals = 2): number | string {
+export function formatBytes(value: string, ...args: string[]): number | string {
+  let decimals = 2;
   const bytes = parseInt(value);
+
+  if (args && args.length > 0) {
+    decimals = parseInt(args[0])
+  }
 
   if (bytes === 0) {
     return '0 Bytes';
@@ -200,59 +204,74 @@ export function formatBytes(value: string, decimals = 2): number | string {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
-export interface filterInfo {
+export interface Filter {
   name: string;
   description: string;
+  example: string;
   args?: string[];
 }
 
-export function filterList(): filterInfo[] {
-  const info: filterInfo[] = [
-    {
-      name: 'secToTime',
-      description: 'convert seconds to SS:MM:DD string',
-      args: []
-    },
-    {
-      name: 'formatdate',
-      description: 'format raw string date',
-      args: []
-    },
-    {
-      name: 'formatBytes',
-      description: 'convert bytes to Gb, Mb',
-      args: []
-    },
-    {
-      name: 'seconds',
-      description: 'format nanoseconds to seconds string',
-      args: []
-    },
-    {
-      name: 'getDayOfWeek',
-      description: 'Get the Day of the Week',
-      args: ['long', 'short', 'narrow']
-    },
-    {
-      name: 'toFixed',
-      description: 'Function rounds to the desired decimal point',
-      args: ['1', '2', '3']
-    },
-    {
-      name: 'scToTitleCase',
-      description: 'snake case string to title case',
-      args: []
-    },
-    {
-      name: 'ccToTitleCase',
-      description: 'camel case string to title case',
-      args: []
-    },
-    {
-      name: 'toTitleCase',
-      description: 'string to title case',
-      args: []
-    }
-  ];
-  return info;
-}
+export const Filters: Filter[] = [
+  {
+    name: 'secToTime',
+    description: 'DEPRECATED! The secToTime function takes the number of seconds as an argument and converts this value to a time format in hours, minutes, and seconds.',
+    example: 'uptime_total|secToTime::H::m',
+    args: ["H", "d", "m"],
+  },
+  {
+    name: 'secToCounter',
+    description: 'The secToCounter function takes the number of seconds as an argument and converts this value into a time counter format that can be used for counting down.',
+    example: 'uptime_total|secToCounter::M::d::h',
+    args: ["M", "d", "h", "m"],
+  },
+  {
+    name: 'formatdate',
+    description: 'The formatdate function takes a date in a specific format and converts it to another specified format. Input format YYYY-MM-DD hh:mm:ss',
+    example: 'datetime|formatdate::{d}.{m}.{y}',
+  },
+  {
+    name: 'formatBytes',
+    description: 'The formatBytes function takes the file size in bytes and converts it to a human-readable format such as kilobytes, megabytes, or gigabytes, depending on the file size.',
+    example: 'number|formatBytes::2',
+  },
+  {
+    name: 'seconds',
+    description: 'The seconds function takes nanoseconds and converts them to seconds.',
+    example: 'number|seconds',
+  },
+  {
+    name: 'getDayOfWeek',
+    description: 'The getDayOfWeek function takes a date and converts it to a day of the week. args: \'long\' | \'short\' | \'narrow\' ',
+    example: 'datetime|getDayOfWeek::short',
+  },
+  {
+    name: 'toFixed',
+    description: 'The toFixed function takes a number and number of decimal places as arguments, and returns a number with the specified number of decimal places.',
+    example: 'number|toFixed::2',
+  },
+  {
+    name: 'scToTitleCase',
+    description: 'The snakeCaseStringToTitleCase function takes a string in snake_case format and converts it to a string where each word begins with a capital letter.',
+    example: 'string|scToTitleCase',
+  },
+  {
+    name: 'ccToTitleCase',
+    description: 'The ccToTitleCase function takes a string in camelCase format and converts it to a string where each word begins with a capital letter.',
+    example: 'string|ccToTitleCase',
+  },
+  {
+    name: 'toTitleCase',
+    description: 'The toTitleCase function takes a string and converts the first letter of each word in the string to uppercase and the remaining letters to lowercase.',
+    example: 'string|toTitleCase',
+  },
+  {
+    name: 'render',
+    description: 'The render function takes a string in json format and tries to find the specified argument value in it',
+    example: 'string|render::new_state.attribute',
+  },
+  {
+    name: 'script',
+    description: 'The script function calls the script with the name from the argument and passes the value as the callable parameter.',
+    example: 'value|script::name',
+  }
+]

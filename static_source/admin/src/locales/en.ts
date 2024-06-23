@@ -548,6 +548,13 @@ export default {
         modal: 'Modal',
         modalHeader: 'Modal Header',
         editor: {
+            filter: {
+                title: 'Filter',
+                name: 'Name',
+                example: 'Example',
+                args: 'Args',
+                description: 'Description'
+            },
             backgroundAdaptive: 'Background Adaptive',
             keystrokeCapture: 'Keystroke Capture',
             addNewButton: 'Add New Button',

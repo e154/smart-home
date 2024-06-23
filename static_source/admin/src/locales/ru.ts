@@ -548,6 +548,13 @@ export default {
     modal: 'Modal',
     modalHeader: 'Modal Header',
     editor: {
+      filter: {
+        title: 'Фильтры',
+        name: 'Название',
+        example: 'Пример',
+        args: 'Аргументы',
+        description: 'Описание'
+      },
       backgroundAdaptive: 'Адаптивный фон',
       keystrokeCapture: 'Захват клавиатуры',
       addNewButton: 'Добавить кнопку',
