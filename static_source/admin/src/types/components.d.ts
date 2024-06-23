@@ -31,6 +31,7 @@ export type ComponentName =
   | 'Scripts'
   | 'Tags'
   | 'ScriptHelper'
+  | 'CronHelper'
   | 'Trigger'
   | 'Action'
   | 'Condition'

@@ -100,9 +100,6 @@ const schema = reactive<FormSchema[]>([
       span: 24
     },
     value: null,
-    componentProps: {
-      placeholder: t('automation.triggers.script'),
-    }
   },
   {
     field: 'pluginName',
@@ -146,6 +143,14 @@ const schema = reactive<FormSchema[]>([
     componentProps: {
       placeholder: t('automation.triggers.entity')
     }
+  },
+  {
+    field: 'timePluginOptions',
+    component: 'CronHelper',
+    colProps: {
+      span: 24
+    },
+    value: null,
   },
   {
     hidden: false,

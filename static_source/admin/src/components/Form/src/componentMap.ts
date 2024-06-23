@@ -30,6 +30,7 @@ import {ActionSearch} from '@/components/ActionSearch'
 import {ActionsSearch} from '@/components/ActionsSearch'
 import {ScriptsSearch} from '@/components/ScriptsSearch'
 import {ScriptFormHelper} from '@/components/ScriptFormHelper'
+import {CronFormHelper} from '@/components/CronFormHelper'
 import {TagsSearch} from '@/components/TagsSearch'
 import {ScriptSearch} from '@/components/ScriptSearch'
 import {RoleSearch} from '@/components/RoleSearch'
@@ -67,6 +68,7 @@ const componentMap: Recordable<Component, ComponentName> = {
     Scripts: ScriptsSearch,
     Tags: TagsSearch,
     ScriptHelper: ScriptFormHelper,
+    CronHelper: CronFormHelper,
     Entity: EntitySearch,
     Entities: EntitiesSearch,
     Plugin: PluginSearch,
