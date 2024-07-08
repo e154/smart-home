@@ -652,6 +652,8 @@ export default {
       zoomOut: 'Отдалить',
       clear: 'Очистить',
       FontsOptions: 'Шрифты',
+      attribute: 'Атрибут',
+      columnFilter: 'Фильтр',
       slider: {
         options: 'Параметры слайдера',
         color: 'Цвет',
@@ -708,7 +710,10 @@ export default {
       },
       entityStorage: {
         entities: 'Устройства',
-        showFilter: 'Показывать фильтры'
+        showFilter: 'Показывать фильтры',
+        showPopup: 'Всплывающее окно',
+        tableColumns: 'Колонки Таблицы',
+        addNewColumn: 'Добавить колонку'
       },
       tiles: {
         items: 'Элементы',

@@ -46,6 +46,24 @@ type EventGetLastState struct {
 	EntityId common.EntityId `json:"entity_id"`
 }
 
+// EventGetStateById ...
+type EventGetStateById struct {
+	Common
+	EntityId  common.EntityId `json:"entity_id"`
+	StorageId int64           `json:"storage_id"`
+}
+
+// EventStateById ...
+type EventStateById struct {
+	UserID     int64            `json:"user_id"`
+	SessionID  string           `json:"session_id"`
+	EntityId   common.EntityId  `json:"entity_id"`
+	StorageId  int64            `json:"storage_id"`
+	PluginName string           `json:"plugin_name"`
+	OldState   EventEntityState `json:"old_state"`
+	NewState   EventEntityState `json:"new_state"`
+}
+
 // EventCallEntityAction ...
 type EventCallEntityAction struct {
 	PluginName *string                `json:"plugin_name"`

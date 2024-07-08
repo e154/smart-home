@@ -170,6 +170,10 @@ type AttributeValue map[string]interface{}
 // Attributes ...
 type Attributes map[string]*Attribute
 
+func NewAttributes() map[string]*Attribute {
+	return make(map[string]*Attribute)
+}
+
 // Serialize ...
 func (a Attributes) Serialize() (to AttributeValue) {
 

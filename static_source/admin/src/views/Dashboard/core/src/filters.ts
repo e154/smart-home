@@ -1,7 +1,7 @@
 import {parseTime} from '@/utils';
 import {Resolve, scriptService} from "@/views/Dashboard/core";
 
-export const ApplyFilter = async (value: any, filter: string): any => {
+export const ApplyFilter = (value: any, filter: string): any => {
   if (value == undefined || filter == undefined) {
     return value;
   }
@@ -38,7 +38,7 @@ export const ApplyFilter = async (value: any, filter: string): any => {
     case 'render':
       return render(value, ...args);
     case 'script':
-      return await scriptService.evalScript(value, ...args);
+      return scriptService.evalScript(value, ...args);
     default:
       console.warn(`unknown filter "${filter}"!`);
       return value;
@@ -272,6 +272,6 @@ export const Filters: Filter[] = [
   {
     name: 'script',
     description: 'The script function calls the script with the name from the argument and passes the value as the callable parameter.',
-    example: 'value|script::name',
+    example: 'value|script::123',
   }
 ]

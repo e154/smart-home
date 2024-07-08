@@ -79,6 +79,27 @@ func (n *EntityStorages) GetLastByEntityId(ctx context.Context, entityId common.
 	return
 }
 
+// GetLastThreeById ...
+func (n *EntityStorages) GetLastThreeById(ctx context.Context, entityId common.EntityId, id int64) (list []*EntityStorage, err error) {
+	list = make([]*EntityStorage, 2)
+	err = n.Db.WithContext(ctx).Model(&EntityStorage{}).
+		Order("id desc").
+		Where("entity_id = ? and id <= ?", entityId, id).
+		Limit(3).
+		Find(&list).
+		Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = errors.Wrap(apperr.ErrEntityNotFound, fmt.Sprintf("id \"%s\"", entityId))
+			return
+		}
+		err = errors.Wrap(apperr.ErrEntityStorageGet, err.Error())
+		return
+	}
+	return
+}
+
 // List ...
 func (n *EntityStorages) List(ctx context.Context, limit, offset int, orderBy, sort string, entityIds []common.EntityId, startDate, endDate *time.Time) (list []*EntityStorage, total int64, err error) {
 

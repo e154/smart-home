@@ -25,6 +25,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"runtime/debug"
 	"strings"
 	"sync"
 	"time"
@@ -289,7 +290,14 @@ func (c *Connection) Close() {
 func (c *Connection) WriteMessage(messageType int, data []byte) (err error) {
 	//todo: fix, it not work
 	c.Lock()
-	defer c.Unlock()
+	defer func() {
+		c.Unlock()
+		if r := recover(); r != nil {
+			log.Warn("Recovered")
+			debug.PrintStack()
+		}
+	}()
+
 	err = c.ws.WriteMessage(messageType, data)
 	return
 }

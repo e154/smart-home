@@ -652,6 +652,8 @@ export default {
             zoomOut: 'Zoom Out',
             clear: 'Clear',
             FontsOptions: 'Fonts Options',
+            attribute: 'Attribute',
+            columnFilter: 'Filter',
             slider: {
                 options: 'Slider Options',
                 color: 'Color',
@@ -708,7 +710,10 @@ export default {
             },
             entityStorage: {
                 entities: 'Entities',
-                showFilter: 'Show Filter'
+                showFilter: 'Show Filter',
+                showPopup: 'Show Popup',
+                tableColumns: 'Table Columns',
+                addNewColumn: 'Add Column'
             },
             tiles: {
                 items: 'Items',
