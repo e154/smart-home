@@ -72,6 +72,10 @@ export const RenderText = async (tokens: string[], text: string, obj?: any): str
 
 export const RenderVar = (token: string, obj?: any): any => {
 
+  if (Object.keys(obj).length == 0) {
+    return ''
+  }
+
   // for inverse dependence
   token = token.replace('[', '').replace(']', '')
 
@@ -82,6 +86,10 @@ export const RenderVar = (token: string, obj?: any): any => {
     val = Resolve(tokenFiltered[0], obj)
   } else {
     val = Resolve(token, obj)
+  }
+
+  if (val == undefined) {
+    return obj
   }
 
   if (typeof val === 'object') {

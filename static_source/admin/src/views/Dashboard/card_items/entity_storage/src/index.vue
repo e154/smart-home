@@ -52,10 +52,10 @@ const props = defineProps({
 })
 
 const tableObject = reactive<TableObject>(
-    {
-      tableList: [],
-      loading: false,
-    }
+  {
+    tableList: [],
+    loading: false,
+  }
 );
 
 const schema = reactive<FormSchema[]>([
@@ -142,11 +142,10 @@ onUnmounted(() => {
   stream.unsubscribe('state_changed', currentID.value)
 })
 
-const getList = debounce(async () => {
-
-  console.log('0000')
-
+const rebuildTable = debounce(() => {
   tableObject.loading = true
+
+  console.log('rebuild table')
 
   columns.value = [];
   for (const col of props.item?.payload?.entityStorage.columns) {
@@ -157,6 +156,14 @@ const getList = debounce(async () => {
       width: col.width || 'auto',
     })
   }
+
+  getList()
+
+}, 1000)
+
+const getList = debounce(async () => {
+
+  tableObject.loading = true
 
   let params: Params = {
     page: paginationObj.value.currentPage,
@@ -176,11 +183,11 @@ const getList = debounce(async () => {
   }
 
   const res = await api.v1.entityStorageServiceGetEntityStorageList(params)
-      .catch(() => {
-      })
-      .finally(() => {
-        tableObject.loading = false
-      })
+    .catch(() => {
+    })
+    .finally(() => {
+      tableObject.loading = false
+    })
   if (res) {
     const {items, filter, meta} = res.data;
     tableObject.tableList = items;
@@ -211,26 +218,37 @@ const onStateChanged = (event: EventStateChange) => {
 }
 
 watch(
-    [() => paginationObj.value.currentPage,
-      () => selectedEntities.value,
-      () => paginationObj.value.pageSize,
-      () => props.item?.payload.entityStorage?.columns,
-      () => props.item?.payload.entityStorage?.columns && props.item?.payload.entityStorage.columns.length,
-    ],
-    () => {
-      getList()
-    }
+  [() => paginationObj.value.currentPage,
+    () => selectedEntities.value,
+    () => paginationObj.value.pageSize,
+  ],
+  () => {
+    getList()
+  }
+)
+
+watch(
+  [() => props.item?.payload.entityStorage?.columns,
+    () => props.item?.payload.entityStorage?.columns && props.item?.payload.entityStorage.columns.length,
+  ],
+  () => {
+    rebuildTable()
+  },
+  {
+    immediate: true,
+    deep: true
+  }
 )
 
 
 watch(
-    () => props.item,
-    () => {
-      selectedEntities.value = props.item?.payload.entityStorage?.entityIds || []
-    },
-    {
-      immediate: true
-    }
+  () => props.item,
+  () => {
+    selectedEntities.value = props.item?.payload.entityStorage?.entityIds || []
+  },
+  {
+    immediate: true
+  }
 )
 
 const sortChange = (data) => {
@@ -262,7 +280,8 @@ const selectRow = (row: ApiEntityStorage) => {
 }
 
 const renderCell = (row: any, col: Column): string => {
-  let token = col.attribute
+  let token = col.attribute || ''
+  token = token.replace(/\.+$/, "");
   if (col.filter && token) {
     token += '|' + col.filter
   }
@@ -288,40 +307,40 @@ getList()
     </Dialog>
 
     <Form
-        v-if="item.payload.entityStorage?.filter"
-        :schema="schema"
-        label-position="top"
-        label-width="auto"
-        hide-required-asterisk
-        @change="onFormChange"
-        @register="register"
+      v-if="item.payload.entityStorage?.filter"
+      :schema="schema"
+      label-position="top"
+      label-width="auto"
+      hide-required-asterisk
+      @change="onFormChange"
+      @register="register"
     />
 
     <div class="mb-20px" v-if="item.payload.entityStorage?.entityIds?.length && item.payload.entityStorage?.filter">
       <ElCheckboxGroup v-model="selectedEntities">
         <ElCheckboxButton
-            v-for="entity in item.payload.entityStorage.entityIds"
-            :key="entity"
-            :label="entity">
+          v-for="entity in item.payload.entityStorage.entityIds"
+          :key="entity"
+          :label="entity">
           {{ entity }}
         </ElCheckboxButton>
       </ElCheckboxGroup>
     </div>
 
     <Table
-        v-if="item?.payload?.entityStorage?.columns && item.payload.entityStorage.columns.length"
-        v-model:pageSize="paginationObj.pageSize"
-        v-model:currentPage="paginationObj.currentPage"
-        :columns="columns"
-        :data="tableObject.tableList"
-        :pagination="paginationObj"
-        :loading="tableObject.loading"
-        @sort-change="sortChange"
-        style="width: 100%"
-        class="storageTable"
-        :selection="false"
-        :showUpPagination="20"
-        @current-change="selectRow"
+      v-if="item?.payload?.entityStorage?.columns && item.payload.entityStorage.columns.length"
+      v-model:pageSize="paginationObj.pageSize"
+      v-model:currentPage="paginationObj.currentPage"
+      :columns="columns"
+      :data="tableObject.tableList"
+      :pagination="paginationObj"
+      :loading="tableObject.loading"
+      @sort-change="sortChange"
+      style="width: 100%"
+      class="storageTable"
+      :selection="false"
+      :showUpPagination="20"
+      @current-change="selectRow"
     >
       <template v-for="(column, idx) in item.payload.entityStorage.columns" :key="idx" #[column.name]="{row}">
         <span>{{ renderCell(row, column) }}</span>

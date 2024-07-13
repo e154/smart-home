@@ -172,6 +172,14 @@ const removeColumn = (index: number) => {
               </ElCol>
             </ElRow>
 
+            <ElRow class="mb-10px">
+              <ElCol>
+                <ElFormItem :label="$t('dashboard.editor.sortable')" prop="sortable">
+                  <ElSwitch v-model="column.sortable"/>
+                </ElFormItem>
+              </ElCol>
+            </ElRow>
+
             <ElRow class="mt-10px">
               <ElCol>
                 <div style="text-align: right;">

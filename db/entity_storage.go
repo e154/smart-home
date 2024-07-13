@@ -22,6 +22,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/e154/smart-home/common/apperr"
@@ -122,14 +123,22 @@ func (n *EntityStorages) List(ctx context.Context, limit, offset int, orderBy, s
 	}
 
 	list = make([]*EntityStorage, 0)
+
+	if sort != "" && orderBy != "" {
+		switch sort {
+		case "id", "entity_id", "state", "created_at":
+			q = q.
+				Order(fmt.Sprintf("%s %s", sort, orderBy))
+		default:
+			sort = strings.ReplaceAll(sort, "attributes_", "")
+			q = q.
+				Order(fmt.Sprintf("attributes->>'%s' %s", sort, orderBy))
+		}
+	}
+
 	q = q.
 		Limit(limit).
 		Offset(offset)
-
-	if sort != "" && orderBy != "" {
-		q = q.
-			Order(fmt.Sprintf("%s %s", sort, orderBy))
-	}
 
 	err = q.
 		Find(&list).
