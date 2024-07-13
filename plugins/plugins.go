@@ -21,6 +21,7 @@ package plugins
 import (
 	_ "github.com/e154/smart-home/plugins/alexa"
 	_ "github.com/e154/smart-home/plugins/autocert"
+	_ "github.com/e154/smart-home/plugins/ble"
 	_ "github.com/e154/smart-home/plugins/cgminer"
 	_ "github.com/e154/smart-home/plugins/cpuspeed"
 	_ "github.com/e154/smart-home/plugins/email"

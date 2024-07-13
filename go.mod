@@ -126,6 +126,7 @@ require (
 	github.com/gobwas/httphead v0.1.0 // indirect
 	github.com/gobwas/pool v0.2.1 // indirect
 	github.com/goccy/go-json v0.10.3 // indirect
+	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/gomodule/redigo v1.9.2 // indirect
@@ -172,12 +173,17 @@ require (
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/procfs v0.15.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
+	github.com/saltosystems/winrt-go v0.0.0-20240509164145-4f7860a3bd2b // indirect
 	github.com/schollz/closestmatch v2.1.0+incompatible // indirect
 	github.com/shoenig/go-m1cpu v0.1.6 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
+	github.com/soypat/cyw43439 v0.0.0-20240609122733-da9153086796 // indirect
+	github.com/soypat/seqs v0.0.0-20240527012110-1201bab640ef // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/tdewolff/minify/v2 v2.20.31 // indirect
 	github.com/tdewolff/parse/v2 v2.7.14 // indirect
+	github.com/tinygo-org/cbgo v0.0.4 // indirect
+	github.com/tinygo-org/pio v0.0.0-20231216154340-cd888eb58899 // indirect
 	github.com/tklauser/go-sysconf v0.3.14 // indirect
 	github.com/tklauser/numcpus v0.8.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
@@ -201,4 +207,5 @@ require (
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
+	tinygo.org/x/bluetooth v0.10.0 // indirect
 )
