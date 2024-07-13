@@ -1,7 +1,7 @@
 import {ApplyFilter} from './filters'
-import {EventStateChange} from "@/api/types";
-import {AttributeValue, GetAttributeValue, RenderAttributeValue} from "@/components/Attributes";
+import {AttributeValue, GetApiAttributeValue, GetAttributeValue, RenderAttributeValue} from "@/components/Attributes";
 import {Cache} from "./cache";
+import {ApiAttribute} from "@/api/stub";
 
 export function Resolve(path: string, obj: any): any {
   return path.split('.').reduce(function (prev, curr) {
@@ -33,16 +33,16 @@ export function GetTokens(text?: string, cache?: Cache): string[] {
   return tokens || []
 }
 
-export const RenderText = async (tokens: string[], text: string, lastEvent?: EventStateChange): string => {
+export const RenderText = async (tokens: string[], text: string, obj?: any): string => {
   let val: any
 
   let result = text
   for (const token of tokens) {
     const tokenFiltered = token.split('|')
     if (tokenFiltered.length > 1) {
-      val = Resolve(tokenFiltered[0], lastEvent)
+      val = Resolve(tokenFiltered[0], obj)
     } else {
-      val = Resolve(token, lastEvent)
+      val = Resolve(token, obj)
     }
 
     if (typeof val === 'object') {
@@ -70,7 +70,11 @@ export const RenderText = async (tokens: string[], text: string, lastEvent?: Eve
   return result
 }
 
-export const RenderVar = async (token: string, lastEvent?: EventStateChange): any => {
+export const RenderVar = (token: string, obj?: any): any => {
+
+  if (Object.keys(obj).length == 0) {
+    return ''
+  }
 
   // for inverse dependence
   token = token.replace('[', '').replace(']', '')
@@ -79,19 +83,27 @@ export const RenderVar = async (token: string, lastEvent?: EventStateChange): an
 
   const tokenFiltered = token.split('|')
   if (tokenFiltered.length > 1) {
-    val = Resolve(tokenFiltered[0], lastEvent)
+    val = Resolve(tokenFiltered[0], obj)
   } else {
-    val = Resolve(token, lastEvent)
+    val = Resolve(token, obj)
+  }
+
+  if (val == undefined) {
+    return obj
   }
 
   if (typeof val === 'object') {
     if (val && val.hasOwnProperty('type') && val.hasOwnProperty('name')) {
-      val = GetAttributeValue(val as AttributeValue)
+      const originVal = val
+      val = GetAttributeValue(originVal as AttributeValue)
+      if (val == undefined) {
+        val = GetApiAttributeValue(originVal as ApiAttribute)
+      }
     }
   }
 
   if (tokenFiltered.length > 1) {
-    val = await ApplyFilter(val, tokenFiltered[1])
+    val = ApplyFilter(val, tokenFiltered[1])
   }
 
   if (val == undefined) {

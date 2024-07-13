@@ -277,6 +277,8 @@ func (e *supervisor) eventHandler(_ string, message interface{}) {
 		go e.eventEntitySetState(msg)
 	case events.EventGetLastState:
 		go e.eventLastState(msg)
+	case events.EventGetStateById:
+		go e.eventGetStateById(msg)
 	case events.EventUpdatedScriptModel:
 		go e.eventUpdatedScript(msg)
 	case events.EventRemovedScriptModel:
@@ -322,6 +324,88 @@ func (e *supervisor) eventLastState(msg events.EventGetLastState) {
 	}
 
 	_ = e.cache.Put(context.Background(), msg.EntityId.String(), state, 30*time.Second)
+	e.eventBus.Publish("system/entities/"+msg.EntityId.String(), state)
+}
+
+func (e *supervisor) eventGetStateById(msg events.EventGetStateById) {
+
+	if msg.StorageId == 0 {
+		return
+	}
+
+	list, err := e.adaptors.EntityStorage.GetLastThreeById(context.Background(), msg.EntityId, msg.StorageId)
+	if err != nil {
+		return
+	}
+
+	pla, err := e.GetActorById(msg.EntityId)
+	if err != nil {
+		return
+	}
+
+	info := pla.Info()
+
+	state := events.EventStateById{
+		UserID:     msg.Common.UserId(),
+		SessionID:  msg.Common.SessionID,
+		StorageId:  msg.StorageId,
+		PluginName: info.PluginName,
+		EntityId:   info.Id,
+	}
+
+	if len(list) > 0 {
+		state.NewState = events.EventEntityState{
+			EntityId:    info.Id,
+			Value:       list[0].State,
+			State:       nil,
+			Attributes:  pla.Attributes().Copy(),
+			Settings:    pla.Settings(),
+			LastChanged: nil,
+			LastUpdated: common.Time(list[0].CreatedAt),
+		}
+		if newState, ok := info.States[list[0].State]; ok {
+			state.NewState.State = &events.EntityState{
+				Name:        newState.Name,
+				Description: newState.Description,
+				ImageUrl:    newState.ImageUrl,
+				Icon:        newState.Icon,
+			}
+		}
+
+		if _, err = state.NewState.Attributes.Deserialize(list[0].Attributes); err != nil {
+			log.Error(err.Error())
+		}
+	}
+
+	if len(list) > 1 {
+		state.NewState.LastChanged = common.Time(list[1].CreatedAt)
+		state.OldState = events.EventEntityState{
+			EntityId:    info.Id,
+			Value:       list[1].State,
+			State:       nil,
+			Attributes:  pla.Attributes().Copy(),
+			Settings:    pla.Settings(),
+			LastChanged: nil,
+			LastUpdated: common.Time(list[1].CreatedAt),
+		}
+		if newState, ok := info.States[list[1].State]; ok {
+			state.OldState.State = &events.EntityState{
+				Name:        newState.Name,
+				Description: newState.Description,
+				ImageUrl:    newState.ImageUrl,
+				Icon:        newState.Icon,
+			}
+		}
+
+		if _, err = state.OldState.Attributes.Deserialize(list[1].Attributes); err != nil {
+			log.Error(err.Error())
+		}
+	}
+
+	if len(list) > 2 {
+		state.OldState.LastChanged = common.Time(list[2].CreatedAt)
+	}
+
 	e.eventBus.Publish("system/entities/"+msg.EntityId.String(), state)
 }
 

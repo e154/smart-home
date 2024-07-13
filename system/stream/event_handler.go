@@ -47,16 +47,18 @@ func (e *eventHandler) eventHandler(_ string, message interface{}) {
 		go e.eventStateChangedHandler(message)
 	case events.EventLastStateChanged:
 		go e.eventStateChangedHandler(message)
-	case events.EventCreatedEntityModel:
-	case events.EventUpdatedEntityModel:
+	//case events.EventCreatedEntityModel:
+	//case events.EventUpdatedEntityModel:
 	case events.EventUpdatedMetric:
 		go e.event(message)
-	case events.CommandUnloadEntity:
+	//case events.CommandUnloadEntity:
 	case events.EventEntityLoaded:
 		go e.event(message)
 	case events.EventEntityUnloaded:
 		go e.event(message)
-	case events.EventEntitySetState:
+	//case events.EventEntitySetState:
+	case events.EventStateById:
+		go e.eventStateById(v)
 
 	// notifications
 	case webpush.EventNewWebPushPublicKey:
@@ -111,7 +113,7 @@ func (e *eventHandler) eventHandler(_ string, message interface{}) {
 
 	// version
 	case events.EventServerVersion:
-		go e.eventDirectMessage(v.UserId(), v.SessionID, "event_server_version", v.Version)
+		go e.eventDirectMessage(v.UserId(), v.SessionID, events.EventName(v), v.Version)
 
 	default:
 
@@ -121,19 +123,28 @@ func (e *eventHandler) eventHandler(_ string, message interface{}) {
 func (e *eventHandler) eventNewWebPushPublicKey(event webpush.EventNewWebPushPublicKey) {
 	b, _ := json.Marshal(event)
 	if event.UserID != 0 {
-		e.directMessage(event.UserID, event.SessionID, "event_new_webpush_public_key", b)
+		e.directMessage(event.UserID, event.SessionID, events.EventName(event), b)
 		return
 	}
-	e.broadcast("event_new_webpush_public_key", b)
+	e.broadcast(events.EventName(event), b)
+}
+
+func (e *eventHandler) eventStateById(event events.EventStateById) {
+	b, _ := json.Marshal(event)
+	if event.UserID != 0 {
+		e.directMessage(event.UserID, event.SessionID, events.EventName(event), b)
+		return
+	}
+	e.broadcast(events.EventName(event), b)
 }
 
 func (e *eventHandler) eventUserDevices(event webpush.EventUserDevices) {
 	b, _ := json.Marshal(event)
 	if event.UserID != 0 {
-		e.directMessage(event.UserID, event.SessionID, "event_user_devices", b)
+		e.directMessage(event.UserID, event.SessionID, events.EventName(event), b)
 		return
 	}
-	e.broadcast("event_user_devices", b)
+	e.broadcast(events.EventName(event), b)
 }
 
 func (e *eventHandler) eventStateChangedHandler(msg interface{}) {

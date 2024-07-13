@@ -548,6 +548,13 @@ export default {
     modal: 'Modal',
     modalHeader: 'Modal Header',
     editor: {
+      filter: {
+        title: 'Фильтры',
+        name: 'Название',
+        example: 'Пример',
+        args: 'Аргументы',
+        description: 'Описание'
+      },
       backgroundAdaptive: 'Адаптивный фон',
       keystrokeCapture: 'Захват клавиатуры',
       addNewButton: 'Добавить кнопку',
@@ -645,6 +652,8 @@ export default {
       zoomOut: 'Отдалить',
       clear: 'Очистить',
       FontsOptions: 'Шрифты',
+      attribute: 'Атрибут',
+      columnFilter: 'Фильтр',
       slider: {
         options: 'Параметры слайдера',
         color: 'Цвет',
@@ -701,7 +710,10 @@ export default {
       },
       entityStorage: {
         entities: 'Устройства',
-        showFilter: 'Показывать фильтры'
+        showFilter: 'Показывать фильтры',
+        showPopup: 'Всплывающее окно',
+        tableColumns: 'Колонки Таблицы',
+        addNewColumn: 'Добавить колонку'
       },
       tiles: {
         items: 'Элементы',

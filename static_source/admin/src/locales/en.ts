@@ -548,6 +548,13 @@ export default {
         modal: 'Modal',
         modalHeader: 'Modal Header',
         editor: {
+            filter: {
+                title: 'Filter',
+                name: 'Name',
+                example: 'Example',
+                args: 'Args',
+                description: 'Description'
+            },
             backgroundAdaptive: 'Background Adaptive',
             keystrokeCapture: 'Keystroke Capture',
             addNewButton: 'Add New Button',
@@ -645,6 +652,8 @@ export default {
             zoomOut: 'Zoom Out',
             clear: 'Clear',
             FontsOptions: 'Fonts Options',
+            attribute: 'Attribute',
+            columnFilter: 'Filter',
             slider: {
                 options: 'Slider Options',
                 color: 'Color',
@@ -701,7 +710,10 @@ export default {
             },
             entityStorage: {
                 entities: 'Entities',
-                showFilter: 'Show Filter'
+                showFilter: 'Show Filter',
+                showPopup: 'Show Popup',
+                tableColumns: 'Table Columns',
+                addNewColumn: 'Add Column'
             },
             tiles: {
                 items: 'Items',

@@ -22,6 +22,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/e154/smart-home/common/apperr"
@@ -79,6 +80,27 @@ func (n *EntityStorages) GetLastByEntityId(ctx context.Context, entityId common.
 	return
 }
 
+// GetLastThreeById ...
+func (n *EntityStorages) GetLastThreeById(ctx context.Context, entityId common.EntityId, id int64) (list []*EntityStorage, err error) {
+	list = make([]*EntityStorage, 2)
+	err = n.Db.WithContext(ctx).Model(&EntityStorage{}).
+		Order("id desc").
+		Where("entity_id = ? and id <= ?", entityId, id).
+		Limit(3).
+		Find(&list).
+		Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = errors.Wrap(apperr.ErrEntityNotFound, fmt.Sprintf("id \"%s\"", entityId))
+			return
+		}
+		err = errors.Wrap(apperr.ErrEntityStorageGet, err.Error())
+		return
+	}
+	return
+}
+
 // List ...
 func (n *EntityStorages) List(ctx context.Context, limit, offset int, orderBy, sort string, entityIds []common.EntityId, startDate, endDate *time.Time) (list []*EntityStorage, total int64, err error) {
 
@@ -101,14 +123,22 @@ func (n *EntityStorages) List(ctx context.Context, limit, offset int, orderBy, s
 	}
 
 	list = make([]*EntityStorage, 0)
+
+	if sort != "" && orderBy != "" {
+		switch sort {
+		case "id", "entity_id", "state", "created_at":
+			q = q.
+				Order(fmt.Sprintf("%s %s", sort, orderBy))
+		default:
+			sort = strings.ReplaceAll(sort, "attributes_", "")
+			q = q.
+				Order(fmt.Sprintf("attributes->>'%s' %s", sort, orderBy))
+		}
+	}
+
 	q = q.
 		Limit(limit).
 		Offset(offset)
-
-	if sort != "" && orderBy != "" {
-		q = q.
-			Order(fmt.Sprintf("%s %s", sort, orderBy))
-	}
 
 	err = q.
 		Find(&list).

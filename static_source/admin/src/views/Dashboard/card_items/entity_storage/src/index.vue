@@ -2,7 +2,7 @@
 import {useI18n} from '@/hooks/web/useI18n'
 import {Table} from '@/components/Table'
 import {Form} from '@/components/Form'
-import {h, onMounted, onUnmounted, PropType, reactive, ref, watch} from 'vue'
+import {onMounted, onUnmounted, PropType, reactive, ref, unref, watch} from 'vue'
 import {FormSchema} from "@/types/form";
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
@@ -10,13 +10,13 @@ import {UUID} from 'uuid-generator-ts'
 import {ElButton, ElCheckboxButton, ElCheckboxGroup} from 'element-plus'
 import {ApiEntityStorage} from "@/api/stub";
 import {useForm} from "@/hooks/web/useForm";
-import {parseTime} from "@/utils";
 import stream from "@/api/stream";
 import {Dialog} from '@/components/Dialog'
 import {EventStateChange} from "@/api/types";
 import {AttributesViewer} from "@/components/Attributes";
-import {CardItem} from "@/views/Dashboard/core";
+import {CardItem, RenderVar} from "@/views/Dashboard/core";
 import {debounce} from "lodash-es";
+import {Column} from "@/views/Dashboard/card_items/entity_storage";
 
 const {register} = useForm()
 const {t} = useI18n()
@@ -52,10 +52,10 @@ const props = defineProps({
 })
 
 const tableObject = reactive<TableObject>(
-    {
-      tableList: [],
-      loading: false,
-    }
+  {
+    tableList: [],
+    loading: false,
+  }
 );
 
 const schema = reactive<FormSchema[]>([
@@ -118,35 +118,8 @@ const schema = reactive<FormSchema[]>([
   },
 ])
 
-const columns: TableColumn[] = [
-  {
-    field: 'createdAt',
-    label: t('main.createdAt'),
-    type: 'time',
-    sortable: true,
-    width: "170px",
-    formatter: (row: ApiEntityStorage) => {
-      return h(
-          'span',
-          parseTime(row.createdAt)
-      )
-    }
-  },
-  {
-    field: 'state',
-    label: t('entityStorage.state'),
-    sortable: true,
-  },
-  {
-    field: 'entityId',
-    label: t('entityStorage.entity'),
-    sortable: true,
-  },
-  // {
-  //   field: 'entityId',
-  //   label: t('entityStorage.entityId'),
-  // },
-]
+const columns = ref<TableColumn[]>([])
+
 const paginationObj = ref<Pagination>({
   currentPage: 1,
   pageSize: 20,
@@ -168,6 +141,25 @@ onMounted(() => {
 onUnmounted(() => {
   stream.unsubscribe('state_changed', currentID.value)
 })
+
+const rebuildTable = debounce(() => {
+  tableObject.loading = true
+
+  console.log('rebuild table')
+
+  columns.value = [];
+  for (const col of props.item?.payload?.entityStorage.columns) {
+    columns.value.push({
+      field: col.name,
+      label: col.name,
+      sortable: col.sortable || false,
+      width: col.width || 'auto',
+    })
+  }
+
+  getList()
+
+}, 1000)
 
 const getList = debounce(async () => {
 
@@ -191,11 +183,11 @@ const getList = debounce(async () => {
   }
 
   const res = await api.v1.entityStorageServiceGetEntityStorageList(params)
-      .catch(() => {
-      })
-      .finally(() => {
-        tableObject.loading = false
-      })
+    .catch(() => {
+    })
+    .finally(() => {
+      tableObject.loading = false
+    })
   if (res) {
     const {items, filter, meta} = res.data;
     tableObject.tableList = items;
@@ -225,38 +217,38 @@ const onStateChanged = (event: EventStateChange) => {
   }
 }
 
-
 watch(
-    () => paginationObj.value.currentPage,
-    () => {
-      getList()
-    }
-)
-
-
-watch(
+  [() => paginationObj.value.currentPage,
     () => selectedEntities.value,
-    () => {
-      getList()
-    }
-)
-
-
-watch(
-    () => props.item,
-    () => {
-      selectedEntities.value = props.item?.payload.entityStorage?.entityIds || []
-    },
-    {
-      immediate: true
-    }
-)
-
-watch(
     () => paginationObj.value.pageSize,
-    () => {
-      getList()
-    }
+  ],
+  () => {
+    getList()
+  }
+)
+
+watch(
+  [() => props.item?.payload.entityStorage?.columns,
+    () => props.item?.payload.entityStorage?.columns && props.item?.payload.entityStorage.columns.length,
+  ],
+  () => {
+    rebuildTable()
+  },
+  {
+    immediate: true,
+    deep: true
+  }
+)
+
+
+watch(
+  () => props.item,
+  () => {
+    selectedEntities.value = props.item?.payload.entityStorage?.entityIds || []
+  },
+  {
+    immediate: true
+  }
 )
 
 const sortChange = (data) => {
@@ -272,8 +264,29 @@ const onFormChange = async () => {
 
 const selectRow = (row: ApiEntityStorage) => {
   if (!row) return;
-  dialogSource.value = row?.attributes
-  dialogVisible.value = true
+  if (props.item?.payload.entityStorage?.showPopup) {
+    dialogSource.value = row?.attributes
+    dialogVisible.value = true
+  }
+  // if (props.item?.payload.entityStorage?.eventName) {
+  //todo: edit ....
+  // eventBus.emit(props.item?.payload.entityStorage.eventName, '')
+  // stream.send({
+  //   id: UUID.createUUID(),
+  //   query: 'event_get_state_by_id',
+  //   body: btoa(JSON.stringify({entity_id: row.entityId, storage_id: row.id}))
+  // });
+  // }
+}
+
+const renderCell = (row: any, col: Column): string => {
+  let token = col.attribute || ''
+  token = token.replace(/\.+$/, "");
+  if (col.filter && token) {
+    token += '|' + col.filter
+  }
+  const val = RenderVar(token, unref(row))
+  return val || ''
 }
 
 getList()
@@ -294,47 +307,43 @@ getList()
     </Dialog>
 
     <Form
-        v-if="item.payload.entityStorage?.filter"
-        :schema="schema"
-        label-position="top"
-        label-width="auto"
-        hide-required-asterisk
-        @change="onFormChange"
-        @register="register"
+      v-if="item.payload.entityStorage?.filter"
+      :schema="schema"
+      label-position="top"
+      label-width="auto"
+      hide-required-asterisk
+      @change="onFormChange"
+      @register="register"
     />
 
     <div class="mb-20px" v-if="item.payload.entityStorage?.entityIds?.length && item.payload.entityStorage?.filter">
       <ElCheckboxGroup v-model="selectedEntities">
         <ElCheckboxButton
-            v-for="entity in item.payload.entityStorage.entityIds"
-            :key="entity"
-            :label="entity">
+          v-for="entity in item.payload.entityStorage.entityIds"
+          :key="entity"
+          :label="entity">
           {{ entity }}
         </ElCheckboxButton>
       </ElCheckboxGroup>
     </div>
 
     <Table
-        v-model:pageSize="paginationObj.pageSize"
-        v-model:currentPage="paginationObj.currentPage"
-        :columns="columns"
-        :data="tableObject.tableList"
-        :pagination="paginationObj"
-        @sort-change="sortChange"
-        style="width: 100%"
-        class="storageTable"
-        :selection="false"
-        :showUpPagination="20"
-        @current-change="selectRow"
+      v-if="item?.payload?.entityStorage?.columns && item.payload.entityStorage.columns.length"
+      v-model:pageSize="paginationObj.pageSize"
+      v-model:currentPage="paginationObj.currentPage"
+      :columns="columns"
+      :data="tableObject.tableList"
+      :pagination="paginationObj"
+      :loading="tableObject.loading"
+      @sort-change="sortChange"
+      style="width: 100%"
+      class="storageTable"
+      :selection="false"
+      :showUpPagination="20"
+      @current-change="selectRow"
     >
-      <template #attributes="{row}">
-        <span>{{ Object.keys(row.attributes).length || $t('entityStorage.nothing') }}</span>
-      </template>
-      <template #entityId="{row}">
-        <span>{{ row.entity_description }}</span>
-      </template>
-      <template #state="{row}">
-        <span>{{ row.state_description }}</span>
+      <template v-for="(column, idx) in item.payload.entityStorage.columns" :key="idx" #[column.name]="{row}">
+        <span>{{ renderCell(row, column) }}</span>
       </template>
     </Table>
 
