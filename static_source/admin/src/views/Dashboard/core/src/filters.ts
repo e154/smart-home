@@ -35,6 +35,8 @@ export const ApplyFilter = (value: any, filter: string): any => {
       return camelCaseStringToTitleCase(value, ...args);
     case 'toTitleCase':
       return toTitleCase(value, ...args);
+    case 'upperCase':
+      return upperCase(value, ...args);
     case 'render':
       return render(value, ...args);
     case 'script':
@@ -183,6 +185,10 @@ function toTitleCase(value: string, ...args: string[]): string {
   );
 }
 
+function upperCase(value: string, ...args: string[]): string {
+  return value.toUpperCase()
+}
+
 export function formatBytes(value: string, ...args: string[]): number | string {
   let decimals = 2;
   const bytes = parseInt(value);
@@ -213,16 +219,9 @@ export interface Filter {
 
 export const Filters: Filter[] = [
   {
-    name: 'secToTime',
-    description: 'DEPRECATED! The secToTime function takes the number of seconds as an argument and converts this value to a time format in hours, minutes, and seconds.',
-    example: 'uptime_total|secToTime::H::m',
-    args: ["H", "d", "m"],
-  },
-  {
-    name: 'secToCounter',
-    description: 'The secToCounter function takes the number of seconds as an argument and converts this value into a time counter format that can be used for counting down.',
-    example: 'uptime_total|secToCounter::M::d::h',
-    args: ["M", "d", "h", "m"],
+    name: 'ccToTitleCase',
+    description: 'The ccToTitleCase function takes a string in camelCase format and converts it to a string where each word begins with a capital letter.',
+    example: 'string|ccToTitleCase',
   },
   {
     name: 'formatdate',
@@ -235,34 +234,9 @@ export const Filters: Filter[] = [
     example: 'number|formatBytes::2',
   },
   {
-    name: 'seconds',
-    description: 'The seconds function takes nanoseconds and converts them to seconds.',
-    example: 'number|seconds',
-  },
-  {
     name: 'getDayOfWeek',
     description: 'The getDayOfWeek function takes a date and converts it to a day of the week. args: \'long\' | \'short\' | \'narrow\' ',
     example: 'datetime|getDayOfWeek::short',
-  },
-  {
-    name: 'toFixed',
-    description: 'The toFixed function takes a number and number of decimal places as arguments, and returns a number with the specified number of decimal places.',
-    example: 'number|toFixed::2',
-  },
-  {
-    name: 'scToTitleCase',
-    description: 'The snakeCaseStringToTitleCase function takes a string in snake_case format and converts it to a string where each word begins with a capital letter.',
-    example: 'string|scToTitleCase',
-  },
-  {
-    name: 'ccToTitleCase',
-    description: 'The ccToTitleCase function takes a string in camelCase format and converts it to a string where each word begins with a capital letter.',
-    example: 'string|ccToTitleCase',
-  },
-  {
-    name: 'toTitleCase',
-    description: 'The toTitleCase function takes a string and converts the first letter of each word in the string to uppercase and the remaining letters to lowercase.',
-    example: 'string|toTitleCase',
   },
   {
     name: 'render',
@@ -270,8 +244,45 @@ export const Filters: Filter[] = [
     example: 'string|render::new_state.attribute',
   },
   {
+    name: 'scToTitleCase',
+    description: 'The snakeCaseStringToTitleCase function takes a string in snake_case format and converts it to a string where each word begins with a capital letter.',
+    example: 'string|scToTitleCase',
+  },
+  {
     name: 'script',
     description: 'The script function calls the script with the name from the argument and passes the value as the callable parameter.',
     example: 'value|script::123',
+  },
+  {
+    name: 'secToTime',
+    description: 'DEPRECATED! The secToTime function takes the number of seconds as an argument and converts this value to a time format in hours, minutes, and seconds.',
+    example: 'uptime_total|secToTime::H::m',
+    args: ["H", "d", "m"],
+  },
+  {
+    name: 'secToCounter',
+    description: 'The secToCounter function takes the number of seconds as an argument and converts this value into a time counter format that can be used for counting down.',
+    example: 'uptime_total|secToCounter::M::d::h',
+    args: ["M", "d", "h", "m"],
+  },
+  {
+    name: 'seconds',
+    description: 'The seconds function takes nanoseconds and converts them to seconds.',
+    example: 'number|seconds',
+  },
+  {
+    name: 'toTitleCase',
+    description: 'The toTitleCase function takes a string and converts the first letter of each word in the string to uppercase and the remaining letters to lowercase.',
+    example: 'string|toTitleCase',
+  },
+  {
+    name: 'toFixed',
+    description: 'The toFixed function takes a number and number of decimal places as arguments, and returns a number with the specified number of decimal places.',
+    example: 'number|toFixed::2',
+  },
+  {
+    name: 'upperCase',
+    description: 'The UpperCase function takes a string and converts it into a string with each letter capitalized.',
+    example: 'string|upperCase',
   }
 ]
