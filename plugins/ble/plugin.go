@@ -60,21 +60,15 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 	if err = p.Plugin.Load(ctx, service, p.ActorConstructor); err != nil {
 		return
 	}
-
 	_ = p.Service.EventBus().Subscribe("system/entities/+", p.eventHandler)
-
-	return nil
+	return
 }
 
 // Unload ...
 func (p *plugin) Unload(ctx context.Context) (err error) {
-	if err = p.Plugin.Unload(ctx); err != nil {
-		return
-	}
-
 	_ = p.Service.EventBus().Unsubscribe("system/entities/+", p.eventHandler)
-
-	return nil
+	err = p.Plugin.Unload(ctx)
+	return
 }
 
 // ActorConstructor ...
@@ -127,11 +121,17 @@ func (p *plugin) Options() m.PluginOptions {
 		ActorCustomAttrs:   true,
 		ActorAttrs:         nil,
 		ActorCustomActions: true,
-		ActorActions:       nil,
+		ActorActions:       supervisor.ToEntityActionShort(NewActions()),
 		ActorCustomStates:  true,
 		ActorStates:        nil,
 		ActorCustomSetts:   true,
-		ActorSetts:         nil,
+		ActorSetts:         NewSettings(),
 		Setts:              nil,
+		Javascript: m.PluginOptionsJs{
+			Methods: map[string]string{
+				"WriteGattChar": "",
+			},
+			Variables: nil,
+		},
 	}
 }

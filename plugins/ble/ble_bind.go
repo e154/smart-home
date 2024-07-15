@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2023, Filippov Alex
+// Copyright (C) 2024, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -18,40 +18,27 @@
 
 package ble
 
-import (
-	"github.com/e154/smart-home/common"
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/supervisor"
-)
+import "tinygo.org/x/bluetooth"
 
-const (
-	// Name ...
-	Name = "ble"
-	// FuncEntityAction ...
-	FuncEntityAction = "entityAction"
-
-	Version = "0.0.1"
-
-	AttrAddress = "address"
-	ActionScan  = "SCAN"
-)
-
-// NewSettings ...
-func NewSettings() map[string]*m.Attribute {
-	return map[string]*m.Attribute{
-		AttrAddress: {
-			Name:  AttrAddress,
-			Type:  common.AttributeString,
-			Value: "",
-		},
-	}
+type WriteGattCharResult struct {
+	N     int    `json:"n"`
+	Error string `json:"error"`
 }
 
-func NewActions() map[string]supervisor.ActorAction {
-	return map[string]supervisor.ActorAction{
-		ActionScan: {
-			Name:        ActionScan,
-			Description: "scan",
-		},
+func GetWriteGattCharBind(actor *Actor) func(char string, payload []byte) WriteGattCharResult {
+	return func(c string, payload []byte) WriteGattCharResult {
+		address, err := bluetooth.ParseUUID(actor.Setts[AttrAddress].String())
+		if err != nil {
+			return WriteGattCharResult{Error: err.Error()}
+		}
+		char, err := bluetooth.ParseUUID(c)
+		if err != nil {
+			return WriteGattCharResult{Error: err.Error()}
+		}
+		n, err := actor.ble.Write(address, char, payload)
+		if err != nil {
+			return WriteGattCharResult{Error: err.Error()}
+		}
+		return WriteGattCharResult{N: n}
 	}
 }

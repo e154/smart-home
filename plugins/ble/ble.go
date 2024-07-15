@@ -19,56 +19,72 @@
 package ble
 
 import (
-	"strconv"
+	"time"
+
+	"go.uber.org/atomic"
 	"tinygo.org/x/bluetooth"
 )
 
 type Ble struct {
+	isScan      *atomic.Bool
+	scanAddress *bluetooth.UUID
 }
 
-func (b *Ble) Scan() {
-	adapter := bluetooth.DefaultAdapter
-	// Enable adapter
-	err := adapter.Enable()
-	if err != nil {
-		log.Error(err.Error())
+func NewBle() *Ble {
+	return &Ble{
+		isScan: atomic.NewBool(false),
+	}
+}
+
+func (b *Ble) Scan(address *bluetooth.UUID) {
+	if !b.isScan.CompareAndSwap(false, true) {
 		return
 	}
+	log.Info("Start scan")
+	b.scanAddress = address
 
-	// Start scanning and define callback for scan results
-	err = adapter.Scan(b.onScan)
-	if err != nil {
-		log.Error(err.Error())
+	defer func() {
+		log.Info("Stop scan")
+		b.isScan.Store(false)
+	}()
+
+	adapter := bluetooth.DefaultAdapter
+	_ = adapter.Enable()
+
+	go func() {
+		// Start scanning and define callback for scan results
+		if err := adapter.Scan(b.onScan); err != nil {
+			log.Error(err.Error())
+		}
+	}()
+
+	select {
+	case <-time.After(time.Second * 10):
+		_ = adapter.StopScan()
 	}
 }
-
-// var uid, _ = bluetooth.ParseUUID("bb917511-7cfa-c6a4-de37-935e8b9f22ea") //govee
-// var uid, _ = bluetooth.ParseUUID("618cd365-792d-9ae0-279b-d8e033ef68a4") //sber
-var uid, _ = bluetooth.ParseUUID("7f81005b-a978-ee00-d555-8a0b126eddc6") // Oclean
 
 func (b *Ble) onScan(adapter *bluetooth.Adapter, scanResult bluetooth.ScanResult) {
-	//log.Infof("found device: %s, RSSI: %v, LocalName: %s, payload: %v", scanResult.Address.String(), scanResult.RSSI, scanResult.LocalName(), scanResult.AdvertisementPayload)
 
-	if scanResult.LocalName() == "Govee_H617A_3167" {
+	// Start connecting in a goroutine to not block
+	go func() {
+		device, err := adapter.Connect(scanResult.Address, bluetooth.ConnectionParams{})
+		if err != nil {
+			return
+		}
+
+		if b.scanAddress != nil && device.Address.String() != b.scanAddress.String() {
+			return
+		}
+
 		log.Infof("found device: %s, RSSI: %v, LocalName: %s, payload: %v", scanResult.Address.String(), scanResult.RSSI, scanResult.LocalName(), scanResult.AdvertisementPayload)
 
-		// Start connecting in a goroutine to not block
-		go func() {
-			device, err := adapter.Connect(scanResult.Address, bluetooth.ConnectionParams{})
-			if err != nil {
-				log.Error("error connecting:", err.Error())
-				return
-			}
-			// Call connect callback
-			b.onConnect(scanResult, device)
-			//adapter.StopScan()
-		}()
-	}
-
+		// Call connect callback
+		b.onScanConnect(device)
+	}()
 }
 
-func (b *Ble) onConnect(scanResult bluetooth.ScanResult, device bluetooth.Device) {
-	println("connected:", scanResult.Address.String(), scanResult.LocalName())
+func (b *Ble) onScanConnect(device bluetooth.Device) {
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -83,51 +99,116 @@ func (b *Ble) onConnect(scanResult bluetooth.ScanResult, device bluetooth.Device
 		return
 	}
 
-	// buffer to retrieve characteristic data
-	buf := make([]byte, 255)
-
 	// Iterate services
 	for _, service := range services {
-		log.Infof("service: %v", service.String())
+
+		log.Infof("service: %s", service.UUID().String())
 
 		// Get a list of characteristics below the service
 		characteristics, err := service.DiscoverCharacteristics(nil)
 		if err != nil {
 			log.Error(err.Error())
-			continue
+			return
 		}
 
 		// Iterate characteristics
 		for _, char := range characteristics {
-			data := make([]byte, 10)
-			n, _ := char.Read(data)
-			log.Infof("char: %s, %v, %v", char.UUID().String(), n, data)
-			mtu, err := char.GetMTU()
-			if err != nil {
-				println("    mtu: error:", err.Error())
-			} else {
-				println("    mtu:", mtu)
-			}
-			n, err = char.Read(buf)
-			if err != nil {
-				println("    ", err.Error())
-			} else {
-				println("    data bytes", strconv.Itoa(n))
-				println("    value =", string(buf[:n]))
-			}
-
-			if err = char.EnableNotifications(b.handler); err != nil {
-				log.Error(err.Error())
-			}
-
-			//if _, err = char.Write([]byte("on")); err != nil {
-			//	log.Error(err.Error())
-			//}
+			log.Infof("characteristic: %s", char.UUID().String())
 		}
-
 	}
+
 }
 
-func (b *Ble) handler(buf []byte) {
-	log.Infof("handler: %v, %s", buf, string(buf))
+func (b *Ble) connectBluetooth(address bluetooth.UUID) (*bluetooth.Device, error) {
+
+	adapter := bluetooth.DefaultAdapter
+	_ = adapter.Enable()
+
+	device, err := adapter.Connect(bluetooth.Address{UUID: address}, bluetooth.ConnectionParams{})
+	if err != nil {
+		return nil, err
+	}
+
+	//log.Infof("connected: %s", device.Address.String())
+
+	return &device, nil
+}
+
+func (b *Ble) Write(address, char bluetooth.UUID, payload []byte) (int, error) {
+
+	device, err := b.connectBluetooth(address)
+	if err != nil {
+		return 0, err
+	}
+
+	// Get a list of services
+	services, err := device.DiscoverServices(nil)
+	if err != nil {
+		return 0, err
+	}
+
+	// Iterate services
+	for _, service := range services {
+		// Get a list of characteristics below the service
+		characteristics, err := service.DiscoverCharacteristics(nil)
+		if err != nil {
+			return 0, err
+		}
+
+		// Iterate characteristics
+		for _, characteristic := range characteristics {
+
+			if characteristic.UUID() != char {
+				continue
+			}
+
+			log.Infof("write: %x --> %s", payload, address)
+			n, err := characteristic.Write(payload)
+			if err != nil {
+				return 0, err
+			}
+			return n, nil
+		}
+	}
+
+	return 0, nil
+}
+
+func (b *Ble) Read(address, char bluetooth.UUID) ([]byte, error) {
+
+	device, err := b.connectBluetooth(address)
+	if err != nil {
+		return nil, err
+	}
+
+	// Get a list of services
+	services, err := device.DiscoverServices(nil)
+	if err != nil {
+		return nil, err
+	}
+
+	// Iterate services
+	for _, service := range services {
+		// Get a list of characteristics below the service
+		characteristics, err := service.DiscoverCharacteristics(nil)
+		if err != nil {
+			return nil, err
+		}
+
+		// Iterate characteristics
+		for _, characteristic := range characteristics {
+
+			if characteristic.UUID() != char {
+				continue
+			}
+
+			payload := make([]byte, 255)
+			if _, err = characteristic.Read(payload); err != nil {
+				return nil, err
+			}
+			return payload, nil
+		}
+	}
+
+	return nil, nil
 }

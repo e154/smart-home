@@ -19,7 +19,10 @@
 package ble
 
 import (
+	"strings"
+
 	"github.com/pkg/errors"
+	"tinygo.org/x/bluetooth"
 
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
@@ -40,7 +43,7 @@ func NewActor(entity *m.Entity,
 	actor = &Actor{
 		BaseActor:  supervisor.NewBaseActor(entity, service),
 		actionPool: make(chan events.EventCallEntityAction, 1000),
-		ble:        &Ble{},
+		ble:        NewBle(),
 	}
 
 	// action worker
@@ -49,6 +52,25 @@ func NewActor(entity *m.Entity,
 			actor.runAction(msg)
 		}
 	}()
+
+	// Actions
+	for _, a := range actor.Actions {
+		if a.ScriptEngine != nil {
+			a.ScriptEngine.PushFunction("WriteGattChar", GetWriteGattCharBind(actor))
+		}
+	}
+
+	if actor.ScriptsEngine != nil {
+		actor.ScriptsEngine.PushFunction("WriteGattChar", GetWriteGattCharBind(actor))
+	}
+
+	if actor.Setts == nil {
+		actor.Setts = NewSettings()
+	}
+
+	if actor.Actions == nil {
+		actor.Actions = NewActions()
+	}
 
 	return actor
 }
@@ -59,7 +81,7 @@ func (e *Actor) Destroy() {
 
 func (e *Actor) Spawn() {
 	e.BaseActor.Spawn()
-	e.ble.Scan()
+	e.Service.ScriptService().PushFunctions("WriteGattChar", GetWriteGattCharBind(e))
 }
 
 // SetState ...
@@ -77,6 +99,16 @@ func (e *Actor) addAction(event events.EventCallEntityAction) {
 }
 
 func (e *Actor) runAction(msg events.EventCallEntityAction) {
+
+	if strings.ToUpper(msg.ActionName) == ActionScan {
+		address, err := bluetooth.ParseUUID(e.Setts[AttrAddress].String())
+		if err != nil {
+			e.ble.Scan(nil)
+		} else {
+			e.ble.Scan(&address)
+		}
+	}
+
 	if action, ok := e.Actions[msg.ActionName]; ok {
 		if action.ScriptEngine != nil && action.ScriptEngine.Engine() != nil {
 			if _, err := action.ScriptEngine.Engine().AssertFunction(FuncEntityAction, e.Id, action.Name, msg.Args); err != nil {
