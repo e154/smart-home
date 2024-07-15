@@ -124,7 +124,10 @@ func (b *Ble) connectBluetooth(address bluetooth.UUID) (*bluetooth.Device, error
 	adapter := bluetooth.DefaultAdapter
 	_ = adapter.Enable()
 
-	device, err := adapter.Connect(bluetooth.Address{UUID: address}, bluetooth.ConnectionParams{})
+	device, err := adapter.Connect(bluetooth.Address{UUID: address}, bluetooth.ConnectionParams{
+		ConnectionTimeout: bluetooth.NewDuration(time.Second * 2),
+		Timeout:           bluetooth.NewDuration(time.Second * 2),
+	})
 	if err != nil {
 		return nil, err
 	}
