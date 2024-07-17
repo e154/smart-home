@@ -27,15 +27,11 @@ type WriteGattCharResult struct {
 
 func GetWriteGattCharBind(actor *Actor) func(char string, payload []byte) WriteGattCharResult {
 	return func(c string, payload []byte) WriteGattCharResult {
-		address, err := bluetooth.ParseUUID(actor.Setts[AttrAddress].String())
-		if err != nil {
-			return WriteGattCharResult{Error: err.Error()}
-		}
 		char, err := bluetooth.ParseUUID(c)
 		if err != nil {
 			return WriteGattCharResult{Error: err.Error()}
 		}
-		n, err := actor.ble.Write(address, char, actor.Setts[AttrTimeoutSec].Int64(), payload)
+		n, err := actor.ble.Write(actor.Setts[AttrAddress].String(), char, actor.Setts[AttrTimeoutSec].Int64(), payload)
 		if err != nil {
 			return WriteGattCharResult{Error: err.Error()}
 		}
