@@ -85,23 +85,5 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
       - name: trying to build
-        id: build-all
-        run: make build_structure build_common_structure build_archive docker_image
-
-  build-macos:
-
-    runs-on: macOS-14.0
-
-    steps:
-      - name: trying to build
-        id: build-macos
-        run: make build_darwin build_structure build_common_structure build_archive docker_image
-
-  build-linux:
-
-    runs-on: ubuntu-18.04
-
-    steps:
-      - name: trying to build
         id: build-linux
         run: make build_linux build_structure build_common_structure build_archive docker_image

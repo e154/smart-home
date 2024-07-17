@@ -1,7 +1,7 @@
 .PHONY: get_deps fmt
 .DEFAULT_GOAL := build
 tests: lint test
-all: build_public build_linux build_darwin build_structure build_common_structure build_archive docker_image
+all: build_public build_linux build_structure build_common_structure build_archive docker_image
 deploy: docker_image_upload
 
 EXEC=server
@@ -100,7 +100,7 @@ svgo:
 	cd ${ROOT} && svgo ${DIR} --enable=inlineStyles  --config '{ "plugins": [ { "inlineStyles": { "onlyMatchedOnce": false } }] }' --pretty
 
 build_linux:
-	@echo MARK: build server
+	@echo MARK: build linux server
 	${GO_BUILD_ENV} GOOS=linux GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-amd64
 	${GO_BUILD_ENV} GOOS=linux GOARCH=arm GOARM=7 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-7
 	${GO_BUILD_ENV} GOOS=linux GOARCH=arm GOARM=6 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-6
@@ -110,9 +110,18 @@ build_linux:
 	cd ${ROOT}/cmd/cli && ${GO_BUILD_ENV} GOOS=linux GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${CLI}-linux-amd64
 
 build_darwin:
-	@echo MARK: build server
+	@echo MARK: build darwin server
 	CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-darwin-10.6-amd64
 	CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-darwin-10.6-arm64
+
+	@echo MARK: build cli
+	cd ${ROOT}/cmd/cli && ${GO_BUILD_ENV} GOOS=darwin GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${CLI}-darwin-10.6-amd64
+	cd ${ROOT}/cmd/cli && ${GO_BUILD_ENV} GOOS=darwin GOARCH=arm64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${CLI}-darwin-10.6-arm64
+
+build_windows:
+	@echo MARK: build darwin server
+	CGO_ENABLED=1 GOOS=windows GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-windows-amd64
+	CGO_ENABLED=1 GOOS=windows GOARCH=arm64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-windows-arm64
 
 	@echo MARK: build cli
 	cd ${ROOT}/cmd/cli && ${GO_BUILD_ENV} GOOS=darwin GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${CLI}-darwin-10.6-amd64
