@@ -18,27 +18,30 @@
 
 package ble
 
-import "tinygo.org/x/bluetooth"
+import (
+	"time"
 
-type WriteGattCharResult struct {
-	N     int    `json:"n"`
-	Error string `json:"error"`
-}
+	"tinygo.org/x/bluetooth"
+)
 
-func GetWriteGattCharBind(actor *Actor) func(char string, payload []byte) WriteGattCharResult {
-	return func(c string, payload []byte) WriteGattCharResult {
-		address, err := bluetooth.ParseUUID(actor.Setts[AttrAddress].String())
-		if err != nil {
-			return WriteGattCharResult{Error: err.Error()}
-		}
-		char, err := bluetooth.ParseUUID(c)
-		if err != nil {
-			return WriteGattCharResult{Error: err.Error()}
-		}
-		n, err := actor.ble.Write(address, char, actor.Setts[AttrTimeoutSec].Int64(), payload)
-		if err != nil {
-			return WriteGattCharResult{Error: err.Error()}
-		}
-		return WriteGattCharResult{N: n}
+func connectBluetooth(address bluetooth.UUID, timeout int64) (*bluetooth.Device, error) {
+
+	adapter := bluetooth.DefaultAdapter
+	_ = adapter.Enable()
+
+	if timeout == 0 {
+		timeout = 1
 	}
+
+	device, err := adapter.Connect(bluetooth.Address{MACAddress: address}, bluetooth.ConnectionParams{
+		ConnectionTimeout: bluetooth.NewDuration(time.Second * time.Duration(timeout)),
+		Timeout:           bluetooth.NewDuration(time.Second * time.Duration(timeout)),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	//log.Infof("connected: %s", device.Address.String())
+
+	return &device, nil
 }
