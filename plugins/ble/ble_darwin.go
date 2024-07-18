@@ -73,11 +73,17 @@ func (b *Ble) onScan(adapter *bluetooth.Adapter, scanResult bluetooth.ScanResult
 			return
 		}
 
-		if b.scanAddress != nil && device.Address.String() != b.scanAddress.String() {
+		if b.scanAddress == nil || device.Address.String() == "" {
+			log.Infof("found device: %s, RSSI: %v, LocalName: %s, payload: %v", scanResult.Address.String(), scanResult.RSSI, scanResult.LocalName(), scanResult.AdvertisementPayload)
+		}
+
+		if b.scanAddress == nil || device.Address.String() != b.scanAddress.String() {
 			return
 		}
 
 		log.Infof("found device: %s, RSSI: %v, LocalName: %s, payload: %v", scanResult.Address.String(), scanResult.RSSI, scanResult.LocalName(), scanResult.AdvertisementPayload)
+
+		adapter.StopScan()
 
 		// Call connect callback
 		b.onScanConnect(device)
