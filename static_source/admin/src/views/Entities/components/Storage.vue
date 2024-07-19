@@ -212,7 +212,7 @@ const getList = async () => {
 
 const getList2 = debounce(() => {
   getList()
-}, 1000)
+}, 100)
 
 const onStateChanged = (event: EventStateChange) => {
   if (event.entity_id != entityId.value) {
