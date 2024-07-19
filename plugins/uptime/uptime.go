@@ -21,7 +21,7 @@
 
 package uptime
 
-import "github.com/shirou/gopsutil/v3/host"
+import "github.com/shirou/gopsutil/v4/host"
 
 func GetUptime() (uint64, error) {
 	return host.Uptime()

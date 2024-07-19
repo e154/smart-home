@@ -87,12 +87,13 @@ require (
 	github.com/mholt/acmez/v2 v2.0.1
 	github.com/patrikeh/go-deep v0.0.0-20230427173908-a2775168ab3d
 	github.com/robfig/cron/v3 v3.0.1
-	github.com/shirou/gopsutil/v3 v3.24.4
+	github.com/shirou/gopsutil/v4 v4.24.6
 	github.com/showwin/speedtest-go v1.7.7
 	github.com/spf13/afero v1.11.0
 	github.com/stretchr/testify v1.9.0
 	gopkg.in/telebot.v3 v3.2.1
 	gorm.io/driver/postgres v1.5.7
+	tinygo.org/x/bluetooth v0.10.0
 )
 
 require (
@@ -207,5 +208,4 @@ require (
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	tinygo.org/x/bluetooth v0.10.0 // indirect
 )

@@ -22,7 +22,7 @@ import (
 	"sync"
 
 	"github.com/rcrowley/go-metrics"
-	"github.com/shirou/gopsutil/v3/disk"
+	"github.com/shirou/gopsutil/v4/disk"
 
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
