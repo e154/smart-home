@@ -57,11 +57,17 @@ func NewActor(entity *m.Entity,
 	for _, a := range actor.Actions {
 		if a.ScriptEngine != nil {
 			a.ScriptEngine.PushFunction("WriteGattChar", GetWriteGattCharBind(actor))
+			a.ScriptEngine.PushFunction("ReadGattChar", GetReadGattCharBind(actor))
+			a.ScriptEngine.PushFunction("SubscribeGatt", GetSubscribeGattBind(actor))
+			a.ScriptEngine.PushFunction("DisconnectGatt", GetDisconnectBind(actor))
 		}
 	}
 
 	if actor.ScriptsEngine != nil {
 		actor.ScriptsEngine.PushFunction("WriteGattChar", GetWriteGattCharBind(actor))
+		actor.ScriptsEngine.PushFunction("ReadGattChar", GetReadGattCharBind(actor))
+		actor.ScriptsEngine.PushFunction("SubscribeGatt", GetSubscribeGattBind(actor))
+		actor.ScriptsEngine.PushFunction("DisconnectGatt", GetDisconnectBind(actor))
 	}
 
 	if actor.Setts == nil {
@@ -76,12 +82,13 @@ func NewActor(entity *m.Entity,
 }
 
 func (e *Actor) Destroy() {
-
+	e.ble.Disconnect()
 }
 
 func (e *Actor) Spawn() {
 	e.BaseActor.Spawn()
 	e.Service.ScriptService().PushFunctions("WriteGattChar", GetWriteGattCharBind(e))
+	e.Service.ScriptService().PushFunctions("ReadGattChar", GetReadGattCharBind(e))
 }
 
 // SetState ...

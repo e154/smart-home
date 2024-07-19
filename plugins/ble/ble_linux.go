@@ -28,12 +28,25 @@ import (
 type Ble struct {
 	isScan      *atomic.Bool
 	scanAddress *bluetooth.UUID
+	device      *bluetooth.Device
 }
 
 func NewBle() *Ble {
 	return &Ble{
 		isScan: atomic.NewBool(false),
 	}
+}
+
+func (b *Ble) Disconnect() error {
+	if b.device == nil {
+		return nil
+	}
+
+	if err := b.device.Disconnect(); err != nil {
+		return err
+	}
+	b.device = nil
+	return nil
 }
 
 func (b *Ble) Scan(address *bluetooth.UUID) {
@@ -73,11 +86,17 @@ func (b *Ble) onScan(adapter *bluetooth.Adapter, scanResult bluetooth.ScanResult
 			return
 		}
 
-		if b.scanAddress != nil && device.Address.String() != b.scanAddress.String() {
+		if b.scanAddress == nil || device.Address.String() == "" {
+			log.Infof("found device: %s, RSSI: %v, LocalName: %s, payload: %v", scanResult.Address.String(), scanResult.RSSI, scanResult.LocalName(), scanResult.AdvertisementPayload)
+		}
+
+		if b.scanAddress == nil || device.Address.String() != b.scanAddress.String() {
 			return
 		}
 
 		log.Infof("found device: %s, RSSI: %v, LocalName: %s, payload: %v", scanResult.Address.String(), scanResult.RSSI, scanResult.LocalName(), scanResult.AdvertisementPayload)
+
+		adapter.StopScan()
 
 		// Call connect callback
 		b.onScanConnect(device)
@@ -120,6 +139,11 @@ func (b *Ble) onScanConnect(device bluetooth.Device) {
 }
 
 func (b *Ble) connectBluetooth(address string, timeout int64) (*bluetooth.Device, error) {
+
+	if b.device != nil {
+		return b.device, nil
+	}
+
 	adapter := bluetooth.DefaultAdapter
 	_ = adapter.Enable()
 
@@ -145,20 +169,22 @@ func (b *Ble) connectBluetooth(address string, timeout int64) (*bluetooth.Device
 
 	//log.Infof("connected: %s", device.Address.String())
 
+	b.device = &device
+
 	return &device, nil
 }
 
-func (b *Ble) Write(address string, char bluetooth.UUID, timeout int64, payload []byte) (int, error) {
+func (b *Ble) Write(address string, char bluetooth.UUID, timeout int64, request []byte, withResponse bool) ([]byte, error) {
 
 	device, err := b.connectBluetooth(address, timeout)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 
 	// Get a list of services
 	services, err := device.DiscoverServices(nil)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 
 	// Iterate services
@@ -166,7 +192,7 @@ func (b *Ble) Write(address string, char bluetooth.UUID, timeout int64, payload 
 		// Get a list of characteristics below the service
 		characteristics, err := service.DiscoverCharacteristics(nil)
 		if err != nil {
-			return 0, err
+			return nil, err
 		}
 
 		// Iterate characteristics
@@ -176,12 +202,16 @@ func (b *Ble) Write(address string, char bluetooth.UUID, timeout int64, payload 
 				continue
 			}
 
-			log.Infof("write: %x --> %s", payload, address)
-			return characteristic.WriteWithoutResponse(payload)
+			log.Infof("write: %x --> %s", request, address)
+
+			if _, err = characteristic.WriteWithoutResponse(request); err != nil {
+				return nil, err
+			}
+			return []byte{}, nil
 		}
 	}
 
-	return 0, nil
+	return nil, nil
 }
 
 func (b *Ble) Read(address string, char bluetooth.UUID, timeout int64) ([]byte, error) {
@@ -212,13 +242,49 @@ func (b *Ble) Read(address string, char bluetooth.UUID, timeout int64) ([]byte, 
 				continue
 			}
 
-			payload := make([]byte, 255)
-			if _, err = characteristic.Read(payload); err != nil {
+			payload := make([]byte, 1024)
+			i, err := characteristic.Read(payload)
+			if err != nil {
 				return nil, err
 			}
-			return payload, nil
+			return payload[:uint32(i)], nil
 		}
 	}
 
 	return nil, nil
+}
+
+func (b *Ble) Subscribe(address string, char bluetooth.UUID, timeout int64, handler func([]byte)) error {
+
+	device, err := b.connectBluetooth(address, timeout)
+	if err != nil {
+		return err
+	}
+
+	// Get a list of services
+	services, err := device.DiscoverServices(nil)
+	if err != nil {
+		return err
+	}
+
+	// Iterate services
+	for _, service := range services {
+		// Get a list of characteristics below the service
+		characteristics, err := service.DiscoverCharacteristics(nil)
+		if err != nil {
+			return err
+		}
+
+		// Iterate characteristics
+		for _, characteristic := range characteristics {
+
+			if characteristic.UUID() != char {
+				continue
+			}
+
+			return characteristic.EnableNotifications(handler)
+		}
+	}
+
+	return nil
 }
