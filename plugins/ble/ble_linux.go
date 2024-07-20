@@ -113,38 +113,30 @@ func (b *Ble) onScanConnect(device bluetooth.Device) {
 
 }
 
-func (b *Ble) Connect(address string, timeout int64) (*bluetooth.Device, error) {
+func (b *Ble) Connect(address string) (*bluetooth.Device, error) {
 
 	b.devMX.Lock()
 	defer b.devMX.Unlock()
 
-	if b.connected && b.device != nil {
+	b.address = address
+
+	if b.connected.Load() {
 		return b.device, nil
-	}
-
-	adapter := bluetooth.DefaultAdapter
-	adapter.SetConnectHandler(func(device bluetooth.Device, connected bool) {
-		log.Infof("bluetooth device: %s, connected: %t", device.Address.String(), connected)
-		b.connected = connected
-		b.device = &device
-	})
-
-	_ = adapter.Enable()
-	if timeout == 0 {
-		timeout = 1
 	}
 
 	mac, err := bluetooth.ParseMAC(address)
 	if err != nil {
 		return nil, err
 	}
+
+	b.adapter.Enable()
 	device, err := adapter.Connect(bluetooth.Address{
 		MACAddress: bluetooth.MACAddress{
 			MAC: mac,
 		},
 	}, bluetooth.ConnectionParams{
-		ConnectionTimeout: bluetooth.NewDuration(time.Second * time.Duration(timeout)),
-		Timeout:           bluetooth.NewDuration(time.Second * time.Duration(timeout)),
+		ConnectionTimeout: bluetooth.NewDuration(time.Second * time.Duration(b.timeout)),
+		Timeout:           bluetooth.NewDuration(time.Second * time.Duration(b.connectionTimeout)),
 	})
 	if err != nil {
 		return nil, err
@@ -153,9 +145,9 @@ func (b *Ble) Connect(address string, timeout int64) (*bluetooth.Device, error) 
 	return &device, nil
 }
 
-func (b *Ble) Write(address string, char bluetooth.UUID, timeout int64, request []byte, withResponse bool) ([]byte, error) {
+func (b *Ble) Write(address string, char bluetooth.UUID, request []byte, withResponse bool) ([]byte, error) {
 
-	characteristics, err := b.GetCharacteristics(address, []bluetooth.UUID{char}, timeout)
+	characteristics, err := b.GetCharacteristics(address, []bluetooth.UUID{char})
 	if err != nil {
 		return nil, err
 	}
@@ -178,9 +170,9 @@ func (b *Ble) Write(address string, char bluetooth.UUID, timeout int64, request 
 	return nil, nil
 }
 
-func (b *Ble) Read(address string, char bluetooth.UUID, timeout int64) ([]byte, error) {
+func (b *Ble) Read(address string, char bluetooth.UUID) ([]byte, error) {
 
-	characteristics, err := b.GetCharacteristics(address, []bluetooth.UUID{char}, timeout)
+	characteristics, err := b.GetCharacteristics(address, []bluetooth.UUID{char})
 	if err != nil {
 		return nil, err
 	}
@@ -197,15 +189,16 @@ func (b *Ble) Read(address string, char bluetooth.UUID, timeout int64) ([]byte, 
 		if err != nil {
 			return nil, err
 		}
+		log.Infof("read: %x <-- %s", payload[:uint32(i)], address)
 		return payload[:uint32(i)], nil
 	}
 
 	return nil, nil
 }
 
-func (b *Ble) Subscribe(address string, char bluetooth.UUID, timeout int64, handler func([]byte)) error {
+func (b *Ble) Subscribe(address string, char bluetooth.UUID, handler func([]byte)) error {
 
-	characteristics, err := b.GetCharacteristics(address, []bluetooth.UUID{char}, timeout)
+	characteristics, err := b.GetCharacteristics(address, []bluetooth.UUID{char})
 	if err != nil {
 		return err
 	}

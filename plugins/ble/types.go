@@ -32,9 +32,10 @@ const (
 
 	Version = "0.0.1"
 
-	AttrAddress    = "address"
-	AttrTimeoutSec = "timeout_sec"
-	ActionScan     = "SCAN"
+	AttrAddress              = "address"
+	AttrTimeoutSec           = "timeout_sec"
+	AttrConnectionTimeoutSec = "connection_timeout_sec"
+	ActionScan               = "SCAN"
 )
 
 // NewSettings ...
@@ -48,7 +49,12 @@ func NewSettings() map[string]*m.Attribute {
 		AttrTimeoutSec: {
 			Name:  AttrTimeoutSec,
 			Type:  common.AttributeInt,
-			Value: 2,
+			Value: 5,
+		},
+		AttrConnectionTimeoutSec: {
+			Name:  AttrConnectionTimeoutSec,
+			Type:  common.AttributeInt,
+			Value: 5,
 		},
 	}
 }

@@ -43,7 +43,6 @@ func NewActor(entity *m.Entity,
 	actor = &Actor{
 		BaseActor:  supervisor.NewBaseActor(entity, service),
 		actionPool: make(chan events.EventCallEntityAction, 1000),
-		ble:        NewBle(),
 	}
 
 	// action worker
@@ -86,6 +85,18 @@ func (e *Actor) Destroy() {
 }
 
 func (e *Actor) Spawn() {
+
+	var timeout, connectionTimeout int64 = 5, 5
+	if e.Setts[AttrConnectionTimeoutSec] != nil {
+		connectionTimeout = e.Setts[AttrConnectionTimeoutSec].Int64()
+	}
+
+	if e.Setts[AttrTimeoutSec] != nil {
+		connectionTimeout = e.Setts[AttrTimeoutSec].Int64()
+	}
+
+	e.ble = NewBle(timeout, connectionTimeout)
+
 	e.BaseActor.Spawn()
 	e.Service.ScriptService().PushFunctions("WriteGattChar", GetWriteGattCharBind(e))
 	e.Service.ScriptService().PushFunctions("ReadGattChar", GetReadGattCharBind(e))

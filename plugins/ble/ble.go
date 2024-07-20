@@ -25,34 +25,30 @@ import (
 )
 
 type Ble struct {
-	isScan      *atomic.Bool
-	scanAddress *bluetooth.UUID
-	devMX       sync.Mutex
-	device      *bluetooth.Device
-	connected   *atomic.Bool
-	adapter     *bluetooth.Adapter
-	address     string
-	timeout     int64
+	isScan            *atomic.Bool
+	scanAddress       *bluetooth.UUID
+	devMX             sync.Mutex
+	device            *bluetooth.Device
+	connected         *atomic.Bool
+	adapter           *bluetooth.Adapter
+	address           string
+	timeout           int64
+	connectionTimeout int64
 }
 
-func NewBle() *Ble {
+func NewBle(timeout, connectionTimeout int64) *Ble {
 	ble := &Ble{
-		isScan:    atomic.NewBool(false),
-		connected: atomic.NewBool(false),
-		adapter:   bluetooth.DefaultAdapter,
+		isScan:            atomic.NewBool(false),
+		connected:         atomic.NewBool(false),
+		adapter:           bluetooth.DefaultAdapter,
+		timeout:           timeout,
+		connectionTimeout: connectionTimeout,
 	}
 
 	ble.adapter.SetConnectHandler(func(device bluetooth.Device, connected bool) {
 		log.Infof("bluetooth device: %s, connected: %t", device.Address.String(), connected)
 		ble.connected.Store(connected)
 		ble.device = &device
-
-		//if connected || ble.address == "" {
-		//	return
-		//}
-		//
-		//time.Sleep(time.Second * 10)
-		//ble.Connect(ble.address, ble.timeout)
 	})
 
 	return ble
@@ -72,8 +68,8 @@ func (b *Ble) Disconnect() error {
 	return nil
 }
 
-func (b *Ble) GetServices(address string, timeout int64) ([]bluetooth.DeviceService, error) {
-	device, err := b.Connect(address, timeout)
+func (b *Ble) GetServices(address string) ([]bluetooth.DeviceService, error) {
+	device, err := b.Connect(address)
 	if err != nil {
 		return nil, err
 	}
@@ -82,11 +78,11 @@ func (b *Ble) GetServices(address string, timeout int64) ([]bluetooth.DeviceServ
 	return device.DiscoverServices(nil)
 }
 
-func (b *Ble) GetCharacteristics(address string, chars []bluetooth.UUID, timeout int64) ([]bluetooth.DeviceCharacteristic, error) {
+func (b *Ble) GetCharacteristics(address string, chars []bluetooth.UUID) ([]bluetooth.DeviceCharacteristic, error) {
 
 	var characteristic = []bluetooth.DeviceCharacteristic{}
 
-	services, err := b.GetServices(address, timeout)
+	services, err := b.GetServices(address)
 	if err != nil {
 		return nil, err
 	}
