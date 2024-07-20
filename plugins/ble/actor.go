@@ -103,8 +103,6 @@ func (e *Actor) Spawn() {
 	e.ble = NewBle(address, timeout, connectionTimeout)
 
 	e.BaseActor.Spawn()
-	e.Service.ScriptService().PushFunctions("WriteGattChar", GetWriteGattCharBind(e))
-	e.Service.ScriptService().PushFunctions("ReadGattChar", GetReadGattCharBind(e))
 }
 
 // SetState ...
