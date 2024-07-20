@@ -34,9 +34,10 @@ type Ble struct {
 	address           string
 	timeout           int64
 	connectionTimeout int64
+	debug             bool
 }
 
-func NewBle(address string, timeout, connectionTimeout int64) *Ble {
+func NewBle(address string, timeout, connectionTimeout int64, debug bool) *Ble {
 	ble := &Ble{
 		isScan:            atomic.NewBool(false),
 		connected:         atomic.NewBool(false),
@@ -44,6 +45,7 @@ func NewBle(address string, timeout, connectionTimeout int64) *Ble {
 		timeout:           timeout,
 		connectionTimeout: connectionTimeout,
 		address:           address,
+		debug:             debug,
 	}
 
 	ble.adapter.SetConnectHandler(func(device bluetooth.Device, connected bool) {
@@ -74,13 +76,21 @@ func (b *Ble) GetServices() ([]bluetooth.DeviceService, error) {
 		return nil, err
 	}
 
+	if b.debug {
+		log.Debugf("device %v get services", b.address)
+	}
+
 	// Get a list of services
 	return device.DiscoverServices(nil)
 }
 
 func (b *Ble) GetCharacteristics(chars []bluetooth.UUID) ([]bluetooth.DeviceCharacteristic, error) {
 
-	var characteristic = []bluetooth.DeviceCharacteristic{}
+	if b.debug {
+		log.Debugf("device %v get characteristics %v", b.address, chars)
+	}
+
+	var characteristic []bluetooth.DeviceCharacteristic
 
 	services, err := b.GetServices()
 	if err != nil {
@@ -95,36 +105,13 @@ func (b *Ble) GetCharacteristics(chars []bluetooth.UUID) ([]bluetooth.DeviceChar
 		characteristic = append(characteristic, discoverCharacteristics...)
 	}
 
+	if b.debug {
+		log.Debugf("device %v found %d characteristics", b.address, len(characteristic))
+	}
 	return characteristic, nil
 }
 
 type Cache struct {
 	sync.Mutex
 	pull map[bluetooth.UUID]map[bluetooth.UUID]struct{}
-}
-
-func NewCache() *Cache {
-	return &Cache{
-		pull: make(map[bluetooth.UUID]map[bluetooth.UUID]struct{}),
-	}
-}
-
-func (c *Cache) Get(key bluetooth.UUID) (bluetooth.UUID, bool) {
-	c.Lock()
-	defer c.Unlock()
-	for k, values := range c.pull {
-		if _, ok := values[key]; ok {
-			return k, ok
-		}
-	}
-	return bluetooth.UUID{}, false
-}
-
-func (c *Cache) Put(key, value bluetooth.UUID) {
-	c.Lock()
-	defer c.Unlock()
-	if _, ok := c.pull[key]; !ok {
-		c.pull[key] = make(map[bluetooth.UUID]struct{})
-	}
-	c.pull[key][value] = struct{}{}
 }

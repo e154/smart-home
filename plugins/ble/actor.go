@@ -100,7 +100,12 @@ func (e *Actor) Spawn() {
 		address = e.Setts[AttrAddress].String()
 	}
 
-	e.ble = NewBle(address, timeout, connectionTimeout)
+	var debug bool
+	if e.Setts[AttrDebug] != nil {
+		debug = e.Setts[AttrDebug].Bool()
+	}
+
+	e.ble = NewBle(address, timeout, connectionTimeout, debug)
 
 	e.BaseActor.Spawn()
 }
