@@ -21,33 +21,8 @@ package ble
 import (
 	"time"
 
-	"go.uber.org/atomic"
 	"tinygo.org/x/bluetooth"
 )
-
-type Ble struct {
-	isScan      *atomic.Bool
-	scanAddress *bluetooth.UUID
-	device      *bluetooth.Device
-}
-
-func NewBle() *Ble {
-	return &Ble{
-		isScan: atomic.NewBool(false),
-	}
-}
-
-func (b *Ble) Disconnect() error {
-	if b.device == nil {
-		return nil
-	}
-
-	if err := b.device.Disconnect(); err != nil {
-		return err
-	}
-	b.device = nil
-	return nil
-}
 
 func (b *Ble) Scan(address *bluetooth.UUID) {
 	if !b.isScan.CompareAndSwap(false, true) {
@@ -138,15 +113,17 @@ func (b *Ble) onScanConnect(device bluetooth.Device) {
 
 }
 
-func (b *Ble) connectBluetooth(address string, timeout int64) (*bluetooth.Device, error) {
+func (b *Ble) Connect(address string, timeout int64) (*bluetooth.Device, error) {
 
-	if b.device != nil {
+	b.devMX.Lock()
+	defer b.devMX.Unlock()
+
+	b.address = address
+	b.timeout = timeout
+
+	if b.connected.Load() {
 		return b.device, nil
 	}
-
-	adapter := bluetooth.DefaultAdapter
-	_ = adapter.Enable()
-
 	if timeout == 0 {
 		timeout = 1
 	}
@@ -156,7 +133,8 @@ func (b *Ble) connectBluetooth(address string, timeout int64) (*bluetooth.Device
 		return nil, err
 	}
 
-	device, err := adapter.Connect(bluetooth.Address{UUID: uuid}, bluetooth.ConnectionParams{
+	b.adapter.Enable()
+	device, err := b.adapter.Connect(bluetooth.Address{UUID: uuid}, bluetooth.ConnectionParams{
 		ConnectionTimeout: bluetooth.NewDuration(time.Second * time.Duration(timeout)),
 		Timeout:           bluetooth.NewDuration(time.Second * time.Duration(timeout)),
 	})
@@ -164,58 +142,38 @@ func (b *Ble) connectBluetooth(address string, timeout int64) (*bluetooth.Device
 		return nil, err
 	}
 
-	//log.Infof("connected: %s", device.Address.String())
-
-	b.device = &device
-
 	return &device, nil
 }
 
 func (b *Ble) Write(address string, char bluetooth.UUID, timeout int64, request []byte, withResponse bool) ([]byte, error) {
 
-	device, err := b.connectBluetooth(address, timeout)
+	characteristics, err := b.GetCharacteristics(address, []bluetooth.UUID{char}, timeout)
 	if err != nil {
 		return nil, err
 	}
 
-	// Get a list of services
-	services, err := device.DiscoverServices(nil)
-	if err != nil {
-		return nil, err
-	}
+	// Iterate characteristics
+	for _, characteristic := range characteristics {
 
-	// Iterate services
-	for _, service := range services {
-		// Get a list of characteristics below the service
-		characteristics, err := service.DiscoverCharacteristics(nil)
-		if err != nil {
-			return nil, err
+		if characteristic.UUID() != char {
+			continue
 		}
 
-		// Iterate characteristics
-		for _, characteristic := range characteristics {
+		log.Infof("write: %x --> %s", request, address)
 
-			if characteristic.UUID() != char {
-				continue
+		if withResponse {
+			payload := make([]byte, len(request))
+			copy(payload, request)
+			i, err := characteristic.Write(payload)
+			if err != nil {
+				return nil, err
 			}
-
-			log.Infof("write: %x --> %s", request, address)
-
-			if withResponse {
-				payload := make([]byte, len(request))
-				copy(payload, request)
-				i, err := characteristic.Write(payload)
-				if err != nil {
-					return nil, err
-				}
-				return payload[:uint32(i)], nil
-			} else {
-				if _, err = characteristic.WriteWithoutResponse(request); err != nil {
-					return nil, err
-				}
-				return []byte{}, nil
+			return payload[:uint32(i)], nil
+		} else {
+			if _, err = characteristic.WriteWithoutResponse(request); err != nil {
+				return nil, err
 			}
-
+			return []byte{}, nil
 		}
 	}
 
@@ -224,39 +182,24 @@ func (b *Ble) Write(address string, char bluetooth.UUID, timeout int64, request 
 
 func (b *Ble) Read(address string, char bluetooth.UUID, timeout int64) ([]byte, error) {
 
-	device, err := b.connectBluetooth(address, timeout)
+	characteristics, err := b.GetCharacteristics(address, []bluetooth.UUID{char}, timeout)
 	if err != nil {
 		return nil, err
 	}
 
-	// Get a list of services
-	services, err := device.DiscoverServices(nil)
-	if err != nil {
-		return nil, err
-	}
+	// Iterate characteristics
+	for _, characteristic := range characteristics {
 
-	// Iterate services
-	for _, service := range services {
-		// Get a list of characteristics below the service
-		characteristics, err := service.DiscoverCharacteristics(nil)
+		if characteristic.UUID() != char {
+			continue
+		}
+
+		payload := make([]byte, 1024)
+		i, err := characteristic.Read(payload)
 		if err != nil {
 			return nil, err
 		}
-
-		// Iterate characteristics
-		for _, characteristic := range characteristics {
-
-			if characteristic.UUID() != char {
-				continue
-			}
-
-			payload := make([]byte, 1024)
-			i, err := characteristic.Read(payload)
-			if err != nil {
-				return nil, err
-			}
-			return payload[:uint32(i)], nil
-		}
+		return payload[:uint32(i)], nil
 	}
 
 	return nil, nil
@@ -264,34 +207,19 @@ func (b *Ble) Read(address string, char bluetooth.UUID, timeout int64) ([]byte, 
 
 func (b *Ble) Subscribe(address string, char bluetooth.UUID, timeout int64, handler func([]byte)) error {
 
-	device, err := b.connectBluetooth(address, timeout)
+	characteristics, err := b.GetCharacteristics(address, []bluetooth.UUID{char}, timeout)
 	if err != nil {
 		return err
 	}
 
-	// Get a list of services
-	services, err := device.DiscoverServices(nil)
-	if err != nil {
-		return err
-	}
+	// Iterate characteristics
+	for _, characteristic := range characteristics {
 
-	// Iterate services
-	for _, service := range services {
-		// Get a list of characteristics below the service
-		characteristics, err := service.DiscoverCharacteristics(nil)
-		if err != nil {
-			return err
+		if characteristic.UUID() != char {
+			continue
 		}
 
-		// Iterate characteristics
-		for _, characteristic := range characteristics {
-
-			if characteristic.UUID() != char {
-				continue
-			}
-
-			return characteristic.EnableNotifications(handler)
-		}
+		return characteristic.EnableNotifications(handler)
 	}
 
 	return nil
