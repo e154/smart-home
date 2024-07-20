@@ -95,7 +95,12 @@ func (e *Actor) Spawn() {
 		connectionTimeout = e.Setts[AttrTimeoutSec].Int64()
 	}
 
-	e.ble = NewBle(timeout, connectionTimeout)
+	var address string
+	if e.Setts[AttrAddress] != nil {
+		address = e.Setts[AttrAddress].String()
+	}
+
+	e.ble = NewBle(address, timeout, connectionTimeout)
 
 	e.BaseActor.Spawn()
 	e.Service.ScriptService().PushFunctions("WriteGattChar", GetWriteGattCharBind(e))

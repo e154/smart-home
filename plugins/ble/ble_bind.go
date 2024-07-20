@@ -47,7 +47,7 @@ func GetWriteGattCharBind(actor *Actor) func(char string, payload []byte, withRe
 			return WriteGattCharResult{Error: err.Error()}
 		}
 
-		response, err := actor.ble.Write(actor.Setts[AttrAddress].String(), char, payload, withResponse)
+		response, err := actor.ble.Write(char, payload, withResponse)
 		if err != nil {
 			return WriteGattCharResult{Error: err.Error()}
 		}
@@ -62,7 +62,7 @@ func GetReadGattCharBind(actor *Actor) func(char string) ReadGattCharResult {
 			return ReadGattCharResult{Error: err.Error()}
 		}
 
-		response, err := actor.ble.Read(actor.Setts[AttrAddress].String(), char)
+		response, err := actor.ble.Read(char)
 		if err != nil {
 			return ReadGattCharResult{Error: err.Error()}
 		}
@@ -77,7 +77,7 @@ func GetSubscribeGattBind(actor *Actor) func(char string, handler func([]byte)) 
 			return GattSubscribeResult{Error: err.Error()}
 		}
 
-		err = actor.ble.Subscribe(actor.Setts[AttrAddress].String(), char, handler)
+		err = actor.ble.Subscribe(char, handler)
 		if err != nil {
 			return GattSubscribeResult{Error: err.Error()}
 		}

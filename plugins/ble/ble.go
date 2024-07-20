@@ -36,13 +36,14 @@ type Ble struct {
 	connectionTimeout int64
 }
 
-func NewBle(timeout, connectionTimeout int64) *Ble {
+func NewBle(address string, timeout, connectionTimeout int64) *Ble {
 	ble := &Ble{
 		isScan:            atomic.NewBool(false),
 		connected:         atomic.NewBool(false),
 		adapter:           bluetooth.DefaultAdapter,
 		timeout:           timeout,
 		connectionTimeout: connectionTimeout,
+		address:           address,
 	}
 
 	ble.adapter.SetConnectHandler(func(device bluetooth.Device, connected bool) {
@@ -60,7 +61,6 @@ func (b *Ble) Disconnect() error {
 	}
 
 	b.connected.Store(false)
-	b.address = ""
 	if err := b.device.Disconnect(); err != nil {
 		return err
 	}
@@ -68,8 +68,8 @@ func (b *Ble) Disconnect() error {
 	return nil
 }
 
-func (b *Ble) GetServices(address string) ([]bluetooth.DeviceService, error) {
-	device, err := b.Connect(address)
+func (b *Ble) GetServices() ([]bluetooth.DeviceService, error) {
+	device, err := b.Connect()
 	if err != nil {
 		return nil, err
 	}
@@ -78,11 +78,11 @@ func (b *Ble) GetServices(address string) ([]bluetooth.DeviceService, error) {
 	return device.DiscoverServices(nil)
 }
 
-func (b *Ble) GetCharacteristics(address string, chars []bluetooth.UUID) ([]bluetooth.DeviceCharacteristic, error) {
+func (b *Ble) GetCharacteristics(chars []bluetooth.UUID) ([]bluetooth.DeviceCharacteristic, error) {
 
 	var characteristic = []bluetooth.DeviceCharacteristic{}
 
-	services, err := b.GetServices(address)
+	services, err := b.GetServices()
 	if err != nil {
 		return nil, err
 	}
