@@ -115,10 +115,17 @@ func (b *Ble) onScanConnect(device bluetooth.Device) {
 
 func (b *Ble) Connect() (*bluetooth.Device, error) {
 
+	if b.debug {
+		log.Debugf("try connecting to %v", b.address)
+	}
+
 	b.devMX.Lock()
 	defer b.devMX.Unlock()
 
 	if b.connected.Load() {
+		if b.debug {
+			log.Debugf("there is still a connection %v", b.address)
+		}
 		return b.device, nil
 	}
 
@@ -127,7 +134,18 @@ func (b *Ble) Connect() (*bluetooth.Device, error) {
 		return nil, err
 	}
 
-	b.adapter.Enable()
+	if b.debug {
+		log.Debugf("try to turn on the device")
+		if err := b.adapter.Enable(); err != nil {
+			log.Error(err.Error())
+		}
+	} else {
+		b.adapter.Enable()
+	}
+
+	if b.debug {
+		log.Debugf("Connect starts a connection attempt to %s", b.address)
+	}
 	device, err := adapter.Connect(bluetooth.Address{
 		MACAddress: bluetooth.MACAddress{
 			MAC: mac,
