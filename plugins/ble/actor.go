@@ -55,18 +55,18 @@ func NewActor(entity *m.Entity,
 	// Actions
 	for _, a := range actor.Actions {
 		if a.ScriptEngine != nil {
-			a.ScriptEngine.PushFunction("WriteGattChar", GetWriteGattCharBind(actor))
-			a.ScriptEngine.PushFunction("ReadGattChar", GetReadGattCharBind(actor))
-			a.ScriptEngine.PushFunction("SubscribeGatt", GetSubscribeGattBind(actor))
-			a.ScriptEngine.PushFunction("DisconnectGatt", GetDisconnectBind(actor))
+			a.ScriptEngine.PushFunction("BleWrite", GetWriteBind(actor))
+			a.ScriptEngine.PushFunction("BleRead", GetReadBind(actor))
+			a.ScriptEngine.PushFunction("BleSubscribe", GetSubscribeBind(actor))
+			a.ScriptEngine.PushFunction("BleDisconnect", GetDisconnectBind(actor))
 		}
 	}
 
 	if actor.ScriptsEngine != nil {
-		actor.ScriptsEngine.PushFunction("WriteGattChar", GetWriteGattCharBind(actor))
-		actor.ScriptsEngine.PushFunction("ReadGattChar", GetReadGattCharBind(actor))
-		actor.ScriptsEngine.PushFunction("SubscribeGatt", GetSubscribeGattBind(actor))
-		actor.ScriptsEngine.PushFunction("DisconnectGatt", GetDisconnectBind(actor))
+		actor.ScriptsEngine.PushFunction("BleWrite", GetWriteBind(actor))
+		actor.ScriptsEngine.PushFunction("BleRead", GetReadBind(actor))
+		actor.ScriptsEngine.PushFunction("BleSubscribe", GetSubscribeBind(actor))
+		actor.ScriptsEngine.PushFunction("BleDisconnect", GetDisconnectBind(actor))
 	}
 
 	if actor.Setts == nil {

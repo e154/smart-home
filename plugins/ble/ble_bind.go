@@ -22,74 +22,61 @@ import (
 	"tinygo.org/x/bluetooth"
 )
 
-type WriteGattCharResult struct {
+type Response struct {
 	Response []byte `json:"response"`
 	Error    string `json:"error"`
 }
 
-type ReadGattCharResult struct {
-	Response []byte `json:"response"`
-	Error    string `json:"error"`
-}
-
-type GattSubscribeResult struct {
-	Error string `json:"error"`
-}
-
-type GattDisconnectResult struct {
-	Error string `json:"error"`
-}
-
-func GetWriteGattCharBind(actor *Actor) func(char string, payload []byte, withResponse bool) WriteGattCharResult {
-	return func(c string, payload []byte, withResponse bool) WriteGattCharResult {
+func GetWriteBind(actor *Actor) func(char string, payload []byte, withResponse bool) Response {
+	return func(c string, payload []byte, withResponse bool) Response {
 		char, err := bluetooth.ParseUUID(c)
 		if err != nil {
-			return WriteGattCharResult{Error: err.Error()}
+			return Response{Error: err.Error()}
 		}
 
 		response, err := actor.ble.Write(char, payload, withResponse)
 		if err != nil {
-			return WriteGattCharResult{Error: err.Error()}
+			return Response{Error: err.Error()}
 		}
-		return WriteGattCharResult{Response: response}
+		return Response{Response: response}
 	}
 }
 
-func GetReadGattCharBind(actor *Actor) func(char string) ReadGattCharResult {
-	return func(c string) ReadGattCharResult {
+func GetReadBind(actor *Actor) func(char string) Response {
+	return func(c string) Response {
 		char, err := bluetooth.ParseUUID(c)
 		if err != nil {
-			return ReadGattCharResult{Error: err.Error()}
+			return Response{Error: err.Error()}
 		}
 
 		response, err := actor.ble.Read(char)
 		if err != nil {
-			return ReadGattCharResult{Error: err.Error()}
+			return Response{Error: err.Error()}
 		}
-		return ReadGattCharResult{Response: response}
+		return Response{Response: response}
 	}
 }
 
-func GetSubscribeGattBind(actor *Actor) func(char string, handler func([]byte)) GattSubscribeResult {
-	return func(c string, handler func([]byte)) GattSubscribeResult {
+func GetSubscribeBind(actor *Actor) func(char string, handler func([]byte)) Response {
+	return func(c string, handler func([]byte)) Response {
 		char, err := bluetooth.ParseUUID(c)
 		if err != nil {
-			return GattSubscribeResult{Error: err.Error()}
+			return Response{Error: err.Error()}
 		}
 
 		err = actor.ble.Subscribe(char, handler)
 		if err != nil {
-			return GattSubscribeResult{Error: err.Error()}
+			return Response{Error: err.Error()}
 		}
-		return GattSubscribeResult{}
+		return Response{}
 	}
 }
 
-func GetDisconnectBind(actor *Actor) func() GattDisconnectResult {
-	return func() GattDisconnectResult {
+func GetDisconnectBind(actor *Actor) func() Response {
+	return func() Response {
 		if err := actor.ble.Disconnect(); err != nil {
-			return GattDisconnectResult{Error: err.Error()}
+			return Response{Error: err.Error()}
 		}
-		return GattDisconnectResult{}
+		return Response{}
 	}
 }

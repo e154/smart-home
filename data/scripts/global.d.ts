@@ -31,7 +31,7 @@ declare global {
 
   // Interface of a point on the map
   interface Point {
-    lon:bigint;
+    lon: bigint;
     lat: bigint;
   }
 
@@ -981,4 +981,37 @@ declare global {
    */
   function automationTriggerSystem(msg: TriggerSystemMessage): boolean;
 
+  /**
+   * Interface for responding to bluetooth commands.
+   */
+  interface BleResponse {
+    response?: Uint8Array;
+    error?: string;
+  }
+
+  /**
+   * Write replaces the characteristic value with a new value. The call will return after all data has been written.
+   * @param {string} char - UUID Device characteristic.
+   * @param {Uint8Array} payload - Command.
+   * @param {boolean} withResponse - if a response is expected.
+   */
+  function BleWrite(char: string, payload: Uint8Array, withResponse: boolean): BleResponse;
+
+  /**
+   * Read reads the current characteristic value.
+   * @param {string} char - UUID Device characteristic.
+   */
+  function BleRead(char: string): BleResponse;
+
+  /**
+   * Enables notifications in the Client Characteristic Configuration Descriptor (CCCD). This means that most peripherals will send a notification with a new value every time the value of the characteristic changes.
+   * @param {string} char - UUID Device characteristic.
+   * @param {any} handler - Handler function.
+   */
+  function BleSubscribe(char: string, handler: any ): BleResponse;
+
+  /**
+   * Disconnect from the BLE device. This method is non-blocking and does not wait until the connection is fully gone.
+   */
+  function BleDisconnect(): BleResponse;
 }

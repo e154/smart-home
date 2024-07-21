@@ -69,7 +69,7 @@ func NewActions() map[string]supervisor.ActorAction {
 	return map[string]supervisor.ActorAction{
 		ActionScan: {
 			Name:        ActionScan,
-			Description: "scan",
+			Description: "Scan starts a BLE scan. It is stopped after 10 seconds.",
 		},
 	}
 }
