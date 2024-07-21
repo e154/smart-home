@@ -85,6 +85,21 @@ func (p Plugin) Options(options m.PluginOptions) (result *stub.ApiPluginOptionsR
 		ActorCustomSetts:   options.ActorCustomSetts,
 		ActorSetts:         AttributeToApi(options.ActorSetts),
 		Setts:              AttributeToApi(options.Setts),
+		TriggerParams:      make(stub.ApiTriggerParams),
+	}
+
+	for key, value := range options.TriggerParams {
+		if result.TriggerParams[key] == nil {
+			result.TriggerParams[key] = make([]stub.ApiTriggerParamsField, 0)
+		}
+		for _, val := range value {
+			field := stub.ApiTriggerParamsField{
+				Description: val.Description,
+				Title:       val.Title,
+				Type:        string(val.Type),
+			}
+			result.TriggerParams[key] = append(result.TriggerParams[key], field)
+		}
 	}
 	return
 }

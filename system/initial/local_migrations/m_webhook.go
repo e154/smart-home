@@ -22,17 +22,18 @@ import (
 	"context"
 
 	"github.com/e154/smart-home/adaptors"
-	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/webhook"
 )
 
 type MigrationWebhook struct {
-	adaptors *adaptors.Adaptors
+	Common
 }
 
 func NewMigrationWebhook(adaptors *adaptors.Adaptors) *MigrationWebhook {
 	return &MigrationWebhook{
-		adaptors: adaptors,
+		Common{
+			adaptors: adaptors,
+		},
 	}
 }
 
@@ -40,18 +41,6 @@ func (n *MigrationWebhook) Up(ctx context.Context, adaptors *adaptors.Adaptors) 
 	if adaptors != nil {
 		n.adaptors = adaptors
 	}
-	n.addPlugin("webhook", false, false, true, webhook.Version)
 
-	return nil
-}
-
-func (n *MigrationWebhook) addPlugin(name string, enabled, system, actor bool, version string) (node *m.Plugin) {
-	_ = n.adaptors.Plugin.CreateOrUpdate(context.Background(), &m.Plugin{
-		Name:    name,
-		Version: version,
-		Enabled: enabled,
-		System:  system,
-		Actor:   actor,
-	})
-	return
+	return n.addPlugin(ctx, "webhook", false, false, true, webhook.Version)
 }

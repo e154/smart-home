@@ -22,17 +22,18 @@ import (
 	"context"
 
 	"github.com/e154/smart-home/adaptors"
-	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/ble"
 )
 
 type MigrationBle struct {
-	adaptors *adaptors.Adaptors
+	Common
 }
 
 func NewMigrationBle(adaptors *adaptors.Adaptors) *MigrationBle {
 	return &MigrationBle{
-		adaptors: adaptors,
+		Common{
+			adaptors: adaptors,
+		},
 	}
 }
 
@@ -40,18 +41,5 @@ func (n *MigrationBle) Up(ctx context.Context, adaptors *adaptors.Adaptors) erro
 	if adaptors != nil {
 		n.adaptors = adaptors
 	}
-	n.addPlugin("ble", false, false, true, ble.Version)
-
-	return nil
-}
-
-func (n *MigrationBle) addPlugin(name string, enabled, system, actor bool, version string) (node *m.Plugin) {
-	_ = n.adaptors.Plugin.CreateOrUpdate(context.Background(), &m.Plugin{
-		Name:    name,
-		Version: version,
-		Enabled: enabled,
-		System:  system,
-		Actor:   actor,
-	})
-	return
+	return n.addPlugin(ctx, "ble", false, false, true, ble.Version)
 }

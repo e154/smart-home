@@ -22,17 +22,18 @@ import (
 	"context"
 
 	"github.com/e154/smart-home/adaptors"
-	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/time"
 )
 
 type MigrationTime struct {
-	adaptors *adaptors.Adaptors
+	Common
 }
 
 func NewMigrationTime(adaptors *adaptors.Adaptors) *MigrationTime {
 	return &MigrationTime{
-		adaptors: adaptors,
+		Common{
+			adaptors: adaptors,
+		},
 	}
 }
 
@@ -40,18 +41,6 @@ func (n *MigrationTime) Up(ctx context.Context, adaptors *adaptors.Adaptors) err
 	if adaptors != nil {
 		n.adaptors = adaptors
 	}
-	n.addPlugin("time", true, false, false, time.Version)
 
-	return nil
-}
-
-func (n *MigrationTime) addPlugin(name string, enabled, system, actor bool, version string) (node *m.Plugin) {
-	_ = n.adaptors.Plugin.CreateOrUpdate(context.Background(), &m.Plugin{
-		Name:    name,
-		Version: version,
-		Enabled: enabled,
-		System:  system,
-		Actor:   actor,
-	})
-	return
+	return n.addPlugin(ctx, "time", true, false, false, time.Version)
 }

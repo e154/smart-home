@@ -161,7 +161,8 @@ func (p *plugin) eventHandler(_ string, event interface{}) {
 // Options ...
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
-		Actors:   false,
-		Triggers: true,
+		Actors:        false,
+		Triggers:      true,
+		TriggerParams: NewTriggerParams(),
 	}
 }

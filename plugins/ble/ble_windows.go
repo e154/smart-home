@@ -129,7 +129,7 @@ func (b *Ble) Connect() (*bluetooth.Device, error) {
 		return b.device, nil
 	}
 
-	mac, err := bluetooth.ParseMAC(address)
+	mac, err := bluetooth.ParseMAC(b.address)
 	if err != nil {
 		return nil, err
 	}
@@ -146,7 +146,7 @@ func (b *Ble) Connect() (*bluetooth.Device, error) {
 	if b.debug {
 		log.Debugf("Connect starts a connection attempt to %s", b.address)
 	}
-	device, err := adapter.Connect(bluetooth.Address{
+	device, err := b.adapter.Connect(bluetooth.Address{
 		MACAddress: bluetooth.MACAddress{
 			MAC: mac,
 		},

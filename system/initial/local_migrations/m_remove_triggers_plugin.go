@@ -22,25 +22,32 @@ import (
 	"context"
 
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/plugins/speedtest"
+	"github.com/e154/smart-home/plugins/state_change"
+	"github.com/e154/smart-home/plugins/system"
+	. "github.com/e154/smart-home/system/initial/assertions"
 )
 
-type MigrationSpeedtest struct {
+type MigrationRemoveTriggersPlugin struct {
 	Common
 }
 
-func NewMigrationSpeedtest(adaptors *adaptors.Adaptors) *MigrationSpeedtest {
-	return &MigrationSpeedtest{
+func NewMigrationRemoveTriggersPlugin(adaptors *adaptors.Adaptors) *MigrationRemoveTriggersPlugin {
+	return &MigrationRemoveTriggersPlugin{
 		Common{
 			adaptors: adaptors,
 		},
 	}
 }
 
-func (n *MigrationSpeedtest) Up(ctx context.Context, adaptors *adaptors.Adaptors) error {
+func (n *MigrationRemoveTriggersPlugin) Up(ctx context.Context, adaptors *adaptors.Adaptors) error {
 	if adaptors != nil {
 		n.adaptors = adaptors
 	}
+	err := n.addPlugin(ctx, "state_change", true, true, false, state_change.Version)
+	So(err, ShouldBeNil)
 
-	return n.addPlugin(ctx, "speedtest", true, false, true, speedtest.Version)
+	err = n.addPlugin(ctx, "system", true, true, false, system.Version)
+	So(err, ShouldBeNil)
+
+	return nil
 }

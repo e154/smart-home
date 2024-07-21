@@ -22,17 +22,18 @@ import (
 	"context"
 
 	"github.com/e154/smart-home/adaptors"
-	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/webdav"
 )
 
 type MigrationWebdav struct {
-	adaptors *adaptors.Adaptors
+	Common
 }
 
 func NewMigrationWebdav(adaptors *adaptors.Adaptors) *MigrationWebdav {
 	return &MigrationWebdav{
-		adaptors: adaptors,
+		Common{
+			adaptors: adaptors,
+		},
 	}
 }
 
@@ -40,18 +41,6 @@ func (n *MigrationWebdav) Up(ctx context.Context, adaptors *adaptors.Adaptors) e
 	if adaptors != nil {
 		n.adaptors = adaptors
 	}
-	n.addPlugin("webdav", false, false, false, webdav.Version)
 
-	return nil
-}
-
-func (n *MigrationWebdav) addPlugin(name string, enabled, system, actor bool, version string) (node *m.Plugin) {
-	_ = n.adaptors.Plugin.CreateOrUpdate(context.Background(), &m.Plugin{
-		Name:    name,
-		Version: version,
-		Enabled: enabled,
-		System:  system,
-		Actor:   actor,
-	})
-	return
+	return n.addPlugin(ctx, "webdav", false, false, false, webdav.Version)
 }

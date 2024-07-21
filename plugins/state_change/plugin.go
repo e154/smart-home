@@ -16,21 +16,21 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package ble
+package state_change
 
 import (
 	"context"
 	"embed"
-	"github.com/e154/smart-home/plugins/triggers"
+	"sync"
 
-	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/plugins/triggers"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
 var (
-	log = logger.MustGetLogger("plugins.ble")
+	log = logger.MustGetLogger("plugins.state_change")
 )
 
 var _ supervisor.Pluggable = (*plugin)(nil)
@@ -45,13 +45,15 @@ func init() {
 
 type plugin struct {
 	*supervisor.Plugin
-	registrar triggers.IRegistrar
+	actorsLock *sync.Mutex
+	registrar  triggers.IRegistrar
 }
 
 // New ...
 func New() supervisor.Pluggable {
 	p := &plugin{
-		Plugin: supervisor.NewPlugin(),
+		Plugin:     supervisor.NewPlugin(),
+		actorsLock: &sync.Mutex{},
 	}
 	p.F = F
 	return p
@@ -59,7 +61,7 @@ func New() supervisor.Pluggable {
 
 // Load ...
 func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err error) {
-	if err = p.Plugin.Load(ctx, service, p.ActorConstructor); err != nil {
+	if err = p.Plugin.Load(ctx, service, nil); err != nil {
 		return
 	}
 
@@ -73,48 +75,26 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 		}
 	}
 
-	_ = p.Service.EventBus().Subscribe("system/entities/+", p.eventHandler)
-	return
+	return nil
 }
 
 // Unload ...
 func (p *plugin) Unload(ctx context.Context) (err error) {
-	_ = p.Service.EventBus().Unsubscribe("system/entities/+", p.eventHandler)
-	err = p.Plugin.Unload(ctx)
+	if err = p.Plugin.Unload(ctx); err != nil {
+		return
+	}
 
 	if err = p.registrar.UnregisterTrigger(Name); err != nil {
 		log.Error(err.Error())
 		return err
 	}
 
-	return
-}
-
-// ActorConstructor ...
-func (p *plugin) ActorConstructor(entity *m.Entity) (actor supervisor.PluginActor, err error) {
-	actor = NewActor(entity, p.Service)
-	return
+	return nil
 }
 
 // Name ...
 func (p *plugin) Name() string {
 	return Name
-}
-
-func (p *plugin) eventHandler(topic string, msg interface{}) {
-
-	switch v := msg.(type) {
-	case events.EventStateChanged:
-	case events.EventCallEntityAction:
-		values, ok := p.Check(v)
-		if !ok {
-			return
-		}
-		for _, value := range values {
-			actor := value.(*Actor)
-			actor.addAction(v)
-		}
-	}
 }
 
 // Type ...
@@ -124,7 +104,7 @@ func (p *plugin) Type() supervisor.PluginType {
 
 // Depends ...
 func (p *plugin) Depends() []string {
-	return nil
+	return []string{"triggers"}
 }
 
 // Version ...
@@ -135,24 +115,7 @@ func (p *plugin) Version() string {
 // Options ...
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
-		Triggers:           true,
-		Actors:             true,
-		ActorCustomAttrs:   true,
-		ActorAttrs:         nil,
-		ActorCustomActions: true,
-		ActorActions:       supervisor.ToEntityActionShort(NewActions()),
-		ActorCustomStates:  true,
-		ActorStates:        nil,
-		ActorCustomSetts:   true,
-		ActorSetts:         NewSettings(),
-		Setts:              nil,
-		Javascript: m.PluginOptionsJs{
-			Methods: map[string]string{
-				"BleRead":  "",
-				"BleWrite": "",
-			},
-			Variables: nil,
-		},
+		Triggers:      true,
 		TriggerParams: NewTriggerParams(),
 	}
 }

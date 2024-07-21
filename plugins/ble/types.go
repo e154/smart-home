@@ -37,6 +37,8 @@ const (
 	AttrConnectionTimeoutSec = "connection_timeout_sec"
 	AttrDebug                = "debug"
 	ActionScan               = "SCAN"
+
+	FunctionName = "automationTriggerBleNotify"
 )
 
 // NewSettings ...
@@ -70,6 +72,23 @@ func NewActions() map[string]supervisor.ActorAction {
 		ActionScan: {
 			Name:        ActionScan,
 			Description: "Scan starts a BLE scan. It is stopped after 10 seconds.",
+		},
+	}
+}
+
+func NewTriggerParams() m.TriggerParams {
+	return m.TriggerParams{
+		"ble_notify": []m.TriggerParamsField{
+			{
+				Title:       "trigger_ble_address_title",
+				Description: "trigger_ble_address_desc",
+				Type:        "string",
+			},
+			{
+				Title:       "trigger_ble_characteristic_title",
+				Description: "trigger_ble_characteristic_desc",
+				Type:        "string",
+			},
 		},
 	}
 }

@@ -6309,7 +6309,7 @@ components:
     apiPluginOptionsResult:
       type: object
       required: [ triggers, actors, actorCustomAttrs, actorAttrs, actorCustomActions, actorActions, actorCustomStates,
-                  actorStates, actorCustomSetts, actorSetts, setts ]
+                  actorStates, actorCustomSetts, actorSetts, setts, triggerParams ]
       properties:
         triggers:
           type: boolean
@@ -6343,6 +6343,24 @@ components:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/apiAttribute'
+        triggerParams:
+          $ref: '#/components/schemas/apiTriggerParams'
+    apiTriggerParamsField:
+      type: object
+      required: [title, type, description]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+    apiTriggerParams:
+      type: object
+      additionalProperties:
+        type: array
+        items:
+          $ref: '#/components/schemas/apiTriggerParamsField'
     apiPluginOptionsResultEntityAction:
       type: object
       required: [ name, description, imageUrl, icon ]

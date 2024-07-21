@@ -21,6 +21,8 @@ package automation
 import (
 	"context"
 	"fmt"
+
+	"github.com/pkg/errors"
 	"go.uber.org/atomic"
 
 	"github.com/e154/bus"
@@ -53,7 +55,8 @@ func NewTrigger(
 
 	pluginName := model.PluginName
 	if pluginName == "" {
-		pluginName = triggers.StateChangeName
+		err = errors.New("zero plugin name")
+		return nil, err
 	}
 
 	var triggerPlugin triggers.ITrigger

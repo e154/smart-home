@@ -963,6 +963,7 @@ type ApiPluginOptionsResult struct {
 	ActorStates        map[string]ApiPluginOptionsResultEntityState  `json:"actorStates"`
 	Actors             bool                                          `json:"actors"`
 	Setts              map[string]ApiAttribute                       `json:"setts"`
+	TriggerParams      ApiTriggerParams                              `json:"triggerParams"`
 	Triggers           bool                                          `json:"triggers"`
 }
 
@@ -1205,6 +1206,16 @@ type ApiTrigger struct {
 	Script      *ApiScript              `json:"script,omitempty"`
 	ScriptId    *int64                  `json:"scriptId,omitempty"`
 	UpdatedAt   time.Time               `json:"updatedAt"`
+}
+
+// ApiTriggerParams defines model for apiTriggerParams.
+type ApiTriggerParams map[string][]ApiTriggerParamsField
+
+// ApiTriggerParamsField defines model for apiTriggerParamsField.
+type ApiTriggerParamsField struct {
+	Description string `json:"description"`
+	Title       string `json:"title"`
+	Type        string `json:"type"`
 }
 
 // ApiTypes defines model for apiTypes.
