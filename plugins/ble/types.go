@@ -33,12 +33,15 @@ const (
 	Version = "0.0.1"
 
 	AttrAddress              = "address"
+	AttrCharacteristic       = "characteristic"
+	AttrService              = "service"
 	AttrTimeoutSec           = "timeout_sec"
 	AttrConnectionTimeoutSec = "connection_timeout_sec"
 	AttrDebug                = "debug"
 	ActionScan               = "SCAN"
+	AttrSystemInfo           = "SystemInfo"
 
-	FunctionName = "automationTriggerBleNotify"
+	FunctionName = "automationTriggerBle"
 )
 
 // NewSettings ...
@@ -78,16 +81,24 @@ func NewActions() map[string]supervisor.ActorAction {
 
 func NewTriggerParams() m.TriggerParams {
 	return m.TriggerParams{
-		"ble_notify": []m.TriggerParamsField{
-			{
-				Title:       "trigger_ble_address_title",
-				Description: "trigger_ble_address_desc",
-				Type:        "string",
+		Script:   true,
+		Required: []string{AttrAddress, AttrCharacteristic},
+		Attributes: m.Attributes{
+			AttrSystemInfo: {
+				Name: AttrSystemInfo,
+				Type: common.AttributeNotice,
 			},
-			{
-				Title:       "trigger_ble_characteristic_title",
-				Description: "trigger_ble_characteristic_desc",
-				Type:        "string",
+			AttrAddress: {
+				Name: AttrAddress,
+				Type: common.AttributeString,
+			},
+			AttrService: {
+				Name: AttrService,
+				Type: common.AttributeString,
+			},
+			AttrCharacteristic: {
+				Name: AttrCharacteristic,
+				Type: common.AttributeString,
 			},
 		},
 	}

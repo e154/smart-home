@@ -53,8 +53,8 @@ func (p *PluginEndpoint) Disable(ctx context.Context, pluginName string) (err er
 }
 
 // GetList ...
-func (p *PluginEndpoint) GetList(ctx context.Context, pagination common.PageParams) (plugins []*m.Plugin, total int64, err error) {
-	if plugins, total, err = p.adaptors.Plugin.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, false); err != nil {
+func (p *PluginEndpoint) GetList(ctx context.Context, pagination common.PageParams, enabled, triggers *bool) (plugins []*m.Plugin, total int64, err error) {
+	if plugins, total, err = p.adaptors.Plugin.List(ctx, pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, enabled, triggers); err != nil {
 		return
 	}
 	for _, plugin := range plugins {
@@ -127,9 +127,9 @@ func (p *PluginEndpoint) UpdateSettings(ctx context.Context, name string, settin
 	return
 }
 
-func (p *PluginEndpoint) Readme(ctx context.Context, name string, lang *string) (result []byte, err error) {
+func (p *PluginEndpoint) Readme(ctx context.Context, name string, note *string, lang *string) (result []byte, err error) {
 
-	result, err = p.supervisor.GetPluginReadme(ctx, name, lang)
+	result, err = p.supervisor.GetPluginReadme(ctx, name, note, lang)
 
 	return
 }

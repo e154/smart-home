@@ -41,7 +41,7 @@ func NewControllerPlugin(common *ControllerCommon) *ControllerPlugin {
 func (c ControllerPlugin) PluginServiceGetPluginList(ctx echo.Context, params stub.PluginServiceGetPluginListParams) error {
 
 	pagination := c.Pagination(params.Page, params.Limit, params.Sort)
-	items, total, err := c.endpoint.Plugin.GetList(ctx.Request().Context(), pagination)
+	items, total, err := c.endpoint.Plugin.GetList(ctx.Request().Context(), pagination, params.Enabled, params.Triggers)
 	if err != nil {
 		return c.ERROR(ctx, err)
 	}
@@ -115,7 +115,7 @@ func (c ControllerPlugin) PluginServiceUpdatePluginSettings(ctx echo.Context, na
 // PluginServiceGetPluginReadme ...
 func (c ControllerPlugin) PluginServiceGetPluginReadme(ctx echo.Context, name string, params stub.PluginServiceGetPluginReadmeParams) error {
 
-	html, err := c.endpoint.Plugin.Readme(ctx.Request().Context(), name, params.Lang)
+	html, err := c.endpoint.Plugin.Readme(ctx.Request().Context(), name, params.Note, params.Lang)
 	if err != nil {
 		return c.ERROR(ctx, err)
 	}

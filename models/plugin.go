@@ -18,8 +18,6 @@
 
 package models
 
-import "github.com/e154/smart-home/common"
-
 // PluginSettings ...
 type PluginSettings struct {
 	Settings Attributes `json:"settings"`
@@ -34,6 +32,7 @@ type Plugin struct {
 	System   bool           `json:"system"`
 	Actor    bool           `json:"actor"`
 	IsLoaded bool           `json:"is_loaded"`
+	Triggers bool           `json:"triggers"`
 }
 
 // Plugins ...
@@ -60,13 +59,12 @@ type PluginOptionsJs struct {
 	Variables map[string]string `json:"variables"`
 }
 
-type TriggerParamsField struct {
-	Title       string               `json:"title"`
-	Description string               `json:"description"`
-	Type        common.AttributeType `json:"type"`
+type TriggerParams struct {
+	Entities   bool       `json:"entities"`
+	Script     bool       `json:"script"`
+	Attributes Attributes `json:"attributes"`
+	Required   []string   `json:"required"`
 }
-
-type TriggerParams map[string][]TriggerParamsField
 
 // PluginOptions ...
 type PluginOptions struct {

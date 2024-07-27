@@ -24,19 +24,25 @@ import (
 )
 
 const (
-	Name         = "system"
-	FunctionName = "automationTriggerSystem"
-	TopicSystem  = "system/#"
-	Version      = "0.0.1"
+	Name           = "system"
+	AttrSystem     = "system"
+	AttrSystemInfo = "SystemInfo"
+	FunctionName   = "automationTriggerSystem"
+	TopicSystem    = "system/#"
+	Version        = "0.0.1"
 )
 
 func NewTriggerParams() m.TriggerParams {
 	return m.TriggerParams{
-		"system": []m.TriggerParamsField{
-			{
-				Title:       "trigger_system_title",
-				Description: "trigger_system_desc",
-				Type:        common.AttributeString,
+		Script: true,
+		Attributes: m.Attributes{
+			AttrSystemInfo: {
+				Name: AttrSystemInfo,
+				Type: common.AttributeNotice,
+			},
+			AttrSystem: {
+				Name: AttrSystem,
+				Type: common.AttributeString,
 			},
 		},
 	}

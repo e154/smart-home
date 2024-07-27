@@ -34,13 +34,8 @@ const (
 
 func NewTriggerParams() m.TriggerParams {
 	return m.TriggerParams{
-		"state_change": []m.TriggerParamsField{
-			{
-				Title:       "trigger_state_change_title",
-				Description: "trigger_state_change_desc",
-				Type:        "entities", //todo check
-			},
-		},
+		Script:   true,
+		Entities: true,
 	}
 }
 

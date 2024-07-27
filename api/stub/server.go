@@ -2999,6 +2999,13 @@ func (w *ServerInterfaceWrapper) PluginServiceGetPluginReadme(ctx echo.Context) 
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params PluginServiceGetPluginReadmeParams
+	// ------------- Optional query parameter "note" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "note", ctx.QueryParams(), &params.Note)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter note: %s", err))
+	}
+
 	// ------------- Optional query parameter "lang" -------------
 
 	err = runtime.BindQueryParameter("form", true, false, "lang", ctx.QueryParams(), &params.Lang)
@@ -3093,6 +3100,20 @@ func (w *ServerInterfaceWrapper) PluginServiceGetPluginList(ctx echo.Context) er
 	err = runtime.BindQueryParameter("form", true, false, "limit", ctx.QueryParams(), &params.Limit)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter limit: %s", err))
+	}
+
+	// ------------- Optional query parameter "triggers" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "triggers", ctx.QueryParams(), &params.Triggers)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter triggers: %s", err))
+	}
+
+	// ------------- Optional query parameter "enabled" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "enabled", ctx.QueryParams(), &params.Enabled)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter enabled: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshalled arguments

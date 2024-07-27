@@ -351,8 +351,20 @@ export default {
             pluginName: 'Plugin name',
             addTrigger: 'Add Trigger',
             pluginOptions: 'Plugin Options',
-            timePluginOptions: 'Time Expression',
-            alexaSkillId: 'Alexa Skill ID'
+            ble: {
+                address: 'Address',
+                characteristic: 'Characteristic',
+                service: 'Service',
+            },
+            time: {
+                cron: 'Cron',
+            },
+            system: {
+                system: 'System',
+            },
+            alexa: {
+                skillId: 'Skill Id'
+            },
         },
         conditions: {
             id: 'ID',

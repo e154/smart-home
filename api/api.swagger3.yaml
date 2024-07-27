@@ -2505,6 +2505,11 @@ paths:
           required: true
           schema:
             type: string
+        - name: note
+          in: query
+          required: false
+          schema:
+            type: string
         - name: lang
           in: query
           required: false
@@ -2536,6 +2541,16 @@ paths:
         - $ref: '#/components/parameters/listSort'
         - $ref: '#/components/parameters/listPage'
         - $ref: '#/components/parameters/listLimit'
+        - name: triggers
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - name: enabled
+          in: query
+          required: false
+          schema:
+            type: boolean
       responses:
         200:
           description: A successful response.
@@ -6203,8 +6218,6 @@ components:
           type: array
           items:
             type: string
-        script:
-          $ref: '#/components/schemas/apiScript'
         scriptId:
           type: integer
           format: int64
@@ -6345,22 +6358,22 @@ components:
             $ref: '#/components/schemas/apiAttribute'
         triggerParams:
           $ref: '#/components/schemas/apiTriggerParams'
-    apiTriggerParamsField:
-      type: object
-      required: [title, type, description]
-      properties:
-        title:
-          type: string
-        description:
-          type: string
-        type:
-          type: string
     apiTriggerParams:
       type: object
-      additionalProperties:
-        type: array
-        items:
-          $ref: '#/components/schemas/apiTriggerParamsField'
+      required: [script, entities, attributes, required]
+      properties:
+        required:
+          type: array
+          items:
+            type: string
+        script:
+          type: boolean
+        entities:
+          type: boolean
+        attributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/apiAttribute'
     apiPluginOptionsResultEntityAction:
       type: object
       required: [ name, description, imageUrl, icon ]

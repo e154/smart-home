@@ -21,6 +21,7 @@ package supervisor
 import (
 	"context"
 	"fmt"
+	"github.com/e154/smart-home/common"
 	"sync"
 
 	"github.com/pkg/errors"
@@ -103,7 +104,7 @@ func (p *pluginManager) loadPlugins(ctx context.Context) {
 	var err error
 
 LOOP:
-	loadList, _, err = p.adaptors.Plugin.List(context.Background(), perPage, perPage*page, "", "", true)
+	loadList, _, err = p.adaptors.Plugin.List(context.Background(), perPage, perPage*page, "", "", common.Bool(true), nil)
 	if err != nil {
 		log.Error(err.Error())
 		return
@@ -291,12 +292,12 @@ func (p *pluginManager) PluginIsLoaded(name string) (loaded bool) {
 	return
 }
 
-func (p *pluginManager) GetPluginReadme(ctx context.Context, name string, lang *string) (result []byte, err error) {
+func (p *pluginManager) GetPluginReadme(ctx context.Context, name string, note *string, lang *string) (result []byte, err error) {
 	var plugin Pluggable
 	plugin, err = p.getPlugin(name)
 	if err != nil {
 		return
 	}
-	result, err = plugin.Readme(lang)
+	result, err = plugin.Readme(note, lang)
 	return
 }

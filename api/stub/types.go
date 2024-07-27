@@ -890,7 +890,6 @@ type ApiNewTriggerRequest struct {
 	EntityIds   []string                `json:"entityIds"`
 	Name        string                  `json:"name"`
 	PluginName  string                  `json:"pluginName"`
-	Script      *ApiScript              `json:"script,omitempty"`
 	ScriptId    *int64                  `json:"scriptId,omitempty"`
 }
 
@@ -1209,13 +1208,11 @@ type ApiTrigger struct {
 }
 
 // ApiTriggerParams defines model for apiTriggerParams.
-type ApiTriggerParams map[string][]ApiTriggerParamsField
-
-// ApiTriggerParamsField defines model for apiTriggerParamsField.
-type ApiTriggerParamsField struct {
-	Description string `json:"description"`
-	Title       string `json:"title"`
-	Type        string `json:"type"`
+type ApiTriggerParams struct {
+	Attributes map[string]ApiAttribute `json:"attributes"`
+	Entities   bool                    `json:"entities"`
+	Required   []string                `json:"required"`
+	Script     bool                    `json:"script"`
 }
 
 // ApiTypes defines model for apiTypes.
@@ -1990,6 +1987,7 @@ type AuthServicePasswordResetParams struct {
 
 // PluginServiceGetPluginReadmeParams defines parameters for PluginServiceGetPluginReadme.
 type PluginServiceGetPluginReadmeParams struct {
+	Note   *string     `form:"note,omitempty" json:"note,omitempty"`
 	Lang   *string     `form:"lang,omitempty" json:"lang,omitempty"`
 	Accept *AcceptJSON `json:"Accept,omitempty"`
 }
@@ -2013,7 +2011,9 @@ type PluginServiceGetPluginListParams struct {
 	Page *ListPage `form:"page,omitempty" json:"page,omitempty"`
 
 	// Limit The number of results returned on a page
-	Limit *ListLimit `form:"limit,omitempty" json:"limit,omitempty"`
+	Limit    *ListLimit `form:"limit,omitempty" json:"limit,omitempty"`
+	Triggers *bool      `form:"triggers,omitempty" json:"triggers,omitempty"`
+	Enabled  *bool      `form:"enabled,omitempty" json:"enabled,omitempty"`
 }
 
 // PluginServiceSearchPluginParams defines parameters for PluginServiceSearchPlugin.

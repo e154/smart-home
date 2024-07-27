@@ -24,19 +24,25 @@ import (
 )
 
 const (
-	FunctionName      = "automationTriggerTime"
-	Name              = "time"
-	Version           = "0.0.1"
-	CronOptionTrigger = "cron"
+	FunctionName          = "automationTriggerTime"
+	Name                  = "time"
+	Version               = "0.0.1"
+	AttrCronOptionTrigger = "cron"
+	AttrSystemInfo        = "SystemInfo"
 )
 
 func NewTriggerParams() m.TriggerParams {
 	return m.TriggerParams{
-		CronOptionTrigger: []m.TriggerParamsField{
-			{
-				Title:       "trigger_time_expression_title",
-				Description: "trigger_time_expression_desc",
-				Type:        common.AttributeString,
+		Script:   true,
+		Required: []string{AttrCronOptionTrigger},
+		Attributes: m.Attributes{
+			AttrSystemInfo: {
+				Name: AttrSystemInfo,
+				Type: common.AttributeNotice,
+			},
+			AttrCronOptionTrigger: {
+				Name: AttrCronOptionTrigger,
+				Type: common.AttributeString,
 			},
 		},
 	}

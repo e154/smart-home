@@ -63,7 +63,7 @@ type Supervisor interface {
 	EntityIsLoaded(id common.EntityId) bool
 	PluginIsLoaded(string) bool
 	GetService() Service
-	GetPluginReadme(context.Context, string, *string) ([]byte, error)
+	GetPluginReadme(context.Context, string, *string, *string) ([]byte, error)
 	PushSystemEvent(strCommand string, params map[string]interface{})
 }
 
@@ -224,7 +224,7 @@ type Pluggable interface {
 	GetActor(id common.EntityId) (pla PluginActor, err error)
 	AddOrUpdateActor(*m.Entity) error
 	RemoveActor(common.EntityId) error
-	Readme(lang *string) ([]byte, error)
+	Readme(*string, *string) ([]byte, error)
 }
 
 // Installable ...

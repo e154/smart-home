@@ -200,6 +200,7 @@ var (
 	ErrPluginIsLoaded   = ErrorWithCode("PLUGIN_IS_LOADED", "plugin is loaded", ErrInvalidRequest)
 	ErrPluginIsUnloaded = ErrorWithCode("PLUGIN_IS_UNLOADED", "plugin is unloaded", ErrInvalidRequest)
 	ErrPluginNotLoaded  = ErrorWithCode("PLUGIN_NOT_LOADED", "plugin not loaded", ErrInvalidRequest)
+	ErrPluginReadmeGet  = ErrorWithCode("PLUGIN_README_GET_ERROR", "failed to get plugin readme", ErrInternal)
 
 	ErrRoleAdd             = ErrorWithCode("ROLE_ADD_ERROR", "failed to add role", ErrInternal)
 	ErrRoleGet             = ErrorWithCode("ROLE_GET_ERROR", "failed to get role", ErrInternal)

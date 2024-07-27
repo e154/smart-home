@@ -265,11 +265,12 @@ const (
 
 func NewTriggerParams() m.TriggerParams {
 	return m.TriggerParams{
-		TriggerOptionSkillId: []m.TriggerParamsField{
-			{
-				Title:       "trigger_alexa_title",
-				Description: "trigger_alexa_desc",
-				Type:        common.AttributeInt,
+		Script:   true,
+		Required: []string{TriggerOptionSkillId},
+		Attributes: m.Attributes{
+			TriggerOptionSkillId: {
+				Name: TriggerOptionSkillId,
+				Type: common.AttributeInt,
 			},
 		},
 	}

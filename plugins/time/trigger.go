@@ -76,10 +76,10 @@ func (t *Trigger) Subscribe(options triggers.Subscriber) error {
 	if options.Payload == nil {
 		return fmt.Errorf("payload is nil")
 	}
-	if _, ok := options.Payload[CronOptionTrigger]; !ok {
+	if _, ok := options.Payload[AttrCronOptionTrigger]; !ok {
 		return fmt.Errorf("cron attribute is nil")
 	}
-	schedule := options.Payload[CronOptionTrigger].String()
+	schedule := options.Payload[AttrCronOptionTrigger].String()
 	if schedule == "" {
 		return fmt.Errorf("error static cast to string %v", options.Payload)
 	}
@@ -108,7 +108,7 @@ func (t *Trigger) Unsubscribe(options triggers.Subscriber) error {
 	if options.Payload == nil {
 		return fmt.Errorf("payload is nil")
 	}
-	schedule := options.Payload[CronOptionTrigger].String()
+	schedule := options.Payload[AttrCronOptionTrigger].String()
 	if schedule == "" {
 		return fmt.Errorf("error static cast to string %v", options.Payload)
 	}

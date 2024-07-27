@@ -23,6 +23,9 @@ watch(
       scriptName.value = val?.name || null;
       currentScript.value = val || null;
     },
+    {
+      immediate: true
+    }
 )
 
 // 监听
@@ -64,7 +67,7 @@ const handleSelect = (val: ApiScript) => {
       class="w-[100%]"
       v-model="scriptName"
       :fetch-suggestions="querySearchAsync"
-      placeholder="Please input"
+      placeholder="Please select script"
       value-key="name"
       @select="handleSelect"
       @change="handleChange"
