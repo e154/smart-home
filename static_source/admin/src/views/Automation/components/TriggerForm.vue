@@ -226,7 +226,7 @@ defineExpose({
     </ElRow>
 
     <ElRow :gutter="24">
-      <ElCol :span="12" :xs="12">
+      <ElCol :span="24" :xs="24">
         <ElFormItem :label="$t('automation.triggers.pluginName')" prop="pluginName">
           <ElSelect v-model="currentTrigger.pluginName" placeholder="Please select plugin" clearable class="w-[100%]"
                     @change="changedPlugin($event)">
@@ -241,13 +241,13 @@ defineExpose({
     </ElRow>
 
     <ElRow :gutter="24" v-if="plugin">
-      <ElCol :span="12" :xs="12">
+      <ElCol :span="24" :xs="24">
         <ElDivider content-position="left">{{ $t('automation.triggers.pluginOptions') }}</ElDivider>
       </ElCol>
     </ElRow>
 
     <ElRow :gutter="24" v-if="plugin?.options?.triggerParams?.script">
-      <ElCol :span="12" :xs="12">
+      <ElCol :span="24" :xs="24">
         <ElFormItem :label="$t('automation.triggers.script')" prop="script">
           <ScriptSearch v-model="currentTrigger.script" @change="changedScript($event)"/>
         </ElFormItem>
@@ -255,7 +255,7 @@ defineExpose({
     </ElRow>
 
     <ElRow :gutter="24" v-if="plugin?.options?.triggerParams?.script && currentTrigger?.script">
-      <ElCol :span="12" :xs="12">
+      <ElCol :span="24" :xs="24">
         <ElFormItem label="" prop="help">
           <ScriptFormHelper v-model="currentTrigger.script"/>
         </ElFormItem>
@@ -263,7 +263,7 @@ defineExpose({
     </ElRow>
 
     <ElRow :gutter="24" v-if="plugin?.options?.triggerParams?.entities">
-      <ElCol :span="12" :xs="12">
+      <ElCol :span="24" :xs="24">
         <ElFormItem :label="$t('dashboard.editor.entityStorage.entities')" prop="entityIds">
           <EntitiesSearch v-model="currentTrigger.entityIds"/>
         </ElFormItem>
@@ -274,7 +274,7 @@ defineExpose({
       <ElRow :gutter="24" v-for="(row, index) in currentTrigger.attributes"
              :name="index"
              :key="index">
-        <ElCol :span="12" :xs="12">
+        <ElCol :span="24" :xs="24">
 
           <ElFormItem :label="$t(`automation.triggers.${currentTrigger.pluginName}.${row.name}`)" :prop="row.name"
                       v-if="row.type !== 'notice'">
