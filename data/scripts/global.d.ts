@@ -1014,4 +1014,21 @@ declare global {
    * Disconnect from the BLE device. This method is non-blocking and does not wait until the connection is fully gone.
    */
   function BleDisconnect(): BleResponse;
+
+  /**
+   * Interface for Ble trigger messages.
+   */
+  interface TriggerBleMessage {
+    payload: Uint8Array;
+    trigger_name: string;
+    entity_id: string;
+  }
+
+  /**
+   * Function called when the Ble trigger event occurs.
+   * @param {TriggerBleMessage} msg - Ble trigger message.
+   * @returns {boolean} - The result of the trigger execution.
+   */
+  function automationTriggerBle(msg: TriggerBleMessage): boolean;
+
 }

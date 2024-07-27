@@ -85,6 +85,12 @@ func CallActionBind(manager Supervisor) func(entityId, action string, value map[
 	}
 }
 
+func CallScriptBind(manager Supervisor) func(entityId, fn string, arg ...interface{}) {
+	return func(entityId, fn string, arg ...interface{}) {
+		manager.CallScript(common.EntityId(entityId), fn, arg...)
+	}
+}
+
 func CallActionV2Bind(manager Supervisor) func(params CallActionV2, value map[string]interface{}) {
 	return func(params CallActionV2, value map[string]interface{}) {
 		manager.CallActionV2(params, value)

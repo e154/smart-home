@@ -54,6 +54,7 @@ type Supervisor interface {
 	SetState(common.EntityId, EntityStateParams) error
 	GetActorById(common.EntityId) (PluginActor, error)
 	CallAction(common.EntityId, string, map[string]interface{})
+	CallScript(id common.EntityId, fn string, arg ...interface{})
 	CallActionV2(CallActionV2, map[string]interface{})
 	CallScene(common.EntityId, map[string]interface{})
 	AddEntity(*m.Entity) error
@@ -84,6 +85,7 @@ type PluginActor interface {
 	AddMetric(name string, value map[string]interface{})
 	MatchTags(tags []string) bool
 	Area() *m.Area
+	CallScript(fn string, arg ...interface{})
 }
 
 // ActorConstructor ...

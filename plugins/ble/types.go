@@ -92,10 +92,10 @@ func NewTriggerParams() m.TriggerParams {
 				Name: AttrAddress,
 				Type: common.AttributeString,
 			},
-			AttrService: {
-				Name: AttrService,
-				Type: common.AttributeString,
-			},
+			//AttrService: {
+			//	Name: AttrService,
+			//	Type: common.AttributeString,
+			//},
 			AttrCharacteristic: {
 				Name: AttrCharacteristic,
 				Type: common.AttributeString,

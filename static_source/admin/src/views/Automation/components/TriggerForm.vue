@@ -35,6 +35,7 @@ const className = computed(() => appStore.getIsDark ? 'dark' : 'light')
 const currentTrigger = computed(() => props.trigger as Trigger)
 const plugin = ref<ApiPlugin>(null)
 const pluginList = ref<ApiPlugin[]>([])
+const notions = ref([])
 
 const rules = ref({
   name: [{required: true}],
@@ -77,14 +78,16 @@ const getPlugin = async (name: string) => {
     }
     rules.value = _rules
 
-    // attributes
+    notions.value = []
     let attributes = []
     if (res.data.options?.triggerParams?.attributes) {
       for (const key in res.data.options.triggerParams.attributes) {
         let attr = res.data.options.triggerParams.attributes[key]
 
-        if (attr.type == 'notice') {
+        if (attr.type === 'notice') {
           getReadme(plugin.value.name, attr.name)
+          notions.value.push(attr)
+          continue
         }
 
         // restore value from server
@@ -319,7 +322,7 @@ defineExpose({
         </ElCol>
       </ElRow>
 
-      <div v-for="(row, index) in currentTrigger.attributes"
+      <div v-for="(row, index) in notions"
            :name="index"
            :key="index">
         <div class="mt-10px mb-25px markdown" :class="className" v-if="row.type === 'notice'"

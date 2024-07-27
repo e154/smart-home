@@ -35,8 +35,7 @@ var (
 
 var _ supervisor.Pluggable = (*plugin)(nil)
 
-//go:embed Readme.md
-//go:embed Readme.ru.md
+//go:embed *.md
 var F embed.FS
 
 func init() {

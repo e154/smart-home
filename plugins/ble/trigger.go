@@ -21,12 +21,12 @@
 package ble
 
 import (
-	"sync"
-
+	"fmt"
 	"github.com/e154/bus"
-	"go.uber.org/atomic"
-
 	"github.com/e154/smart-home/plugins/triggers"
+	"reflect"
+	"sync"
+	"tinygo.org/x/bluetooth"
 )
 
 var _ triggers.ITrigger = (*Trigger)(nil)
@@ -34,9 +34,9 @@ var _ triggers.ITrigger = (*Trigger)(nil)
 type Trigger struct {
 	eventBus     bus.Bus
 	msgQueue     bus.Bus
-	counter      *atomic.Int32
 	functionName string
 	name         string
+	ble          map[string]map[string]*Ble
 }
 
 func NewTrigger(eventBus bus.Bus) triggers.ITrigger {
@@ -45,7 +45,7 @@ func NewTrigger(eventBus bus.Bus) triggers.ITrigger {
 		msgQueue:     bus.NewBus(),
 		functionName: FunctionName,
 		name:         Name,
-		counter:      atomic.NewInt32(0),
+		ble:          make(map[string]map[string]*Ble),
 	}
 }
 
@@ -58,22 +58,83 @@ func (t *Trigger) AsyncAttach(wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-func (t *Trigger) eventHandler(_ string, event interface{}) {
-
-}
-
 // Subscribe ...
 func (t *Trigger) Subscribe(options triggers.Subscriber) error {
-	//log.Infof("subscribe topic %s", options.EntityId)
-	t.counter.Inc()
-	return t.msgQueue.Subscribe(options.EntityId.String(), options.Handler)
+
+	if options.Payload == nil {
+		return fmt.Errorf("payload is nil")
+	}
+
+	address, ok := options.Payload[AttrAddress]
+	if !ok {
+		return fmt.Errorf("address attribute is nil")
+	}
+
+	characteristic, ok := options.Payload[AttrCharacteristic]
+	if !ok {
+		return fmt.Errorf("characteristic attribute is nil")
+	}
+
+	if _, ok := t.ble[address.String()][characteristic.String()]; ok {
+		return fmt.Errorf("a trigger with such parameters already exists")
+	}
+
+	var timeout, connectionTimeout int64 = 5, 5
+	ble := NewBle(address.String(), timeout, connectionTimeout, false)
+
+	char, err := bluetooth.ParseUUID(characteristic.String())
+	if err != nil {
+		return err
+	}
+
+	callback := reflect.ValueOf(options.Handler)
+	err = ble.Subscribe(char, func(bytes []byte) {
+		callback.Call([]reflect.Value{reflect.ValueOf(""), reflect.ValueOf(bytes)})
+	})
+
+	if err != nil {
+		return err
+	}
+
+	if _, ok := t.ble[address.String()]; !ok {
+		t.ble[address.String()] = make(map[string]*Ble)
+	}
+	t.ble[address.String()][characteristic.String()] = ble
+
+	log.Infof("trigger '%s' subscribed to '%s'", t.name, characteristic.String())
+
+	return nil
 }
 
 // Unsubscribe ...
 func (t *Trigger) Unsubscribe(options triggers.Subscriber) error {
-	//log.Infof("unsubscribe topic %s", options.EntityId)
-	t.counter.Dec()
-	return t.msgQueue.Unsubscribe(options.EntityId.String(), options.Handler)
+
+	if options.Payload == nil {
+		return fmt.Errorf("payload is nil")
+	}
+
+	address, ok := options.Payload[AttrAddress]
+	if !ok {
+		return fmt.Errorf("address attribute is nil")
+	}
+
+	characteristic, ok := options.Payload[AttrCharacteristic]
+	if !ok {
+		return fmt.Errorf("characteristic attribute is nil")
+	}
+
+	ble, ok := t.ble[address.String()][characteristic.String()]
+	if !ok {
+		return nil
+	}
+
+	_ = ble.Disconnect()
+
+	delete(t.ble, address.String())
+
+	log.Infof("unsubscribe from %s", characteristic.String())
+
+	return nil
 }
 
 // FunctionName ...

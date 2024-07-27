@@ -57,16 +57,16 @@ func NewActor(entity *m.Entity,
 		if a.ScriptEngine != nil {
 			a.ScriptEngine.PushFunction("BleWrite", GetWriteBind(actor))
 			a.ScriptEngine.PushFunction("BleRead", GetReadBind(actor))
-			a.ScriptEngine.PushFunction("BleSubscribe", GetSubscribeBind(actor))
-			a.ScriptEngine.PushFunction("BleDisconnect", GetDisconnectBind(actor))
+			//a.ScriptEngine.PushFunction("BleSubscribe", GetSubscribeBind(actor))
+			//a.ScriptEngine.PushFunction("BleDisconnect", GetDisconnectBind(actor))
 		}
 	}
 
 	if actor.ScriptsEngine != nil {
 		actor.ScriptsEngine.PushFunction("BleWrite", GetWriteBind(actor))
 		actor.ScriptsEngine.PushFunction("BleRead", GetReadBind(actor))
-		actor.ScriptsEngine.PushFunction("BleSubscribe", GetSubscribeBind(actor))
-		actor.ScriptsEngine.PushFunction("BleDisconnect", GetDisconnectBind(actor))
+		//actor.ScriptsEngine.PushFunction("BleSubscribe", GetSubscribeBind(actor))
+		//actor.ScriptsEngine.PushFunction("BleDisconnect", GetDisconnectBind(actor))
 	}
 
 	if actor.Setts == nil {
