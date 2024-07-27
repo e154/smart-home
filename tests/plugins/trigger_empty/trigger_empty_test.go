@@ -20,6 +20,7 @@ package trigger_empty
 
 import (
 	"context"
+	timeTrigger "github.com/e154/smart-home/plugins/time"
 	"testing"
 	"time"
 
@@ -27,7 +28,6 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/plugins/triggers"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/scheduler"
 	"github.com/e154/smart-home/system/scripts"
@@ -68,8 +68,8 @@ func TestTriggerEmpty(t *testing.T) {
 				Name:       "trigger1",
 				PluginName: "time",
 				Payload: m.Attributes{
-					triggers.CronOptionTrigger: {
-						Name:  triggers.CronOptionTrigger,
+					timeTrigger.AttrCronOptionTrigger: {
+						Name:  timeTrigger.AttrCronOptionTrigger,
 						Type:  common.AttributeString,
 						Value: "* * * * * *", //every seconds
 					},

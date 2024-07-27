@@ -19,6 +19,7 @@
 package trigger_time
 
 import (
+	timeTrigger "github.com/e154/smart-home/plugins/time"
 	"testing"
 	"time"
 
@@ -29,7 +30,6 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/plugins/triggers"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/scheduler"
 	"github.com/e154/smart-home/system/scripts"
@@ -78,8 +78,8 @@ automationTriggerTime = (msg)->
 				ScriptId:   common.Int64(task3Script.Id),
 				PluginName: "time",
 				Payload: m.Attributes{
-					triggers.CronOptionTrigger: {
-						Name:  triggers.CronOptionTrigger,
+					timeTrigger.AttrCronOptionTrigger: {
+						Name:  timeTrigger.AttrCronOptionTrigger,
 						Type:  common.AttributeString,
 						Value: "* * * * * *", //every seconds
 					},

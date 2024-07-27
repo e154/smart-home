@@ -31,7 +31,7 @@ import (
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/plugins/triggers"
+	timeTrigger "github.com/e154/smart-home/plugins/time"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scheduler"
@@ -100,8 +100,8 @@ entityAction = (entityId, actionName)->
 				Name:       "trigger1",
 				PluginName: "time",
 				Payload: m.Attributes{
-					triggers.CronOptionTrigger: {
-						Name:  triggers.CronOptionTrigger,
+					timeTrigger.AttrCronOptionTrigger: {
+						Name:  timeTrigger.AttrCronOptionTrigger,
 						Type:  common.AttributeString,
 						Value: "* * * * * *", //every seconds
 					},
