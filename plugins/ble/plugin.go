@@ -45,6 +45,7 @@ func init() {
 type plugin struct {
 	*supervisor.Plugin
 	registrar triggers.IRegistrar
+	trigger   *Trigger
 }
 
 // New ...
@@ -65,7 +66,8 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 	// register trigger
 	if triggersPlugin, ok := service.Plugins()[triggers.Name]; ok {
 		if p.registrar, ok = triggersPlugin.(triggers.IRegistrar); ok {
-			if err = p.registrar.RegisterTrigger(NewTrigger(p.Service.EventBus())); err != nil {
+			p.trigger = NewTrigger(p.Service.EventBus())
+			if err = p.registrar.RegisterTrigger(p.trigger); err != nil {
 				log.Error(err.Error())
 				return
 			}
@@ -81,6 +83,7 @@ func (p *plugin) Unload(ctx context.Context) (err error) {
 	_ = p.Service.EventBus().Unsubscribe("system/entities/+", p.eventHandler)
 	err = p.Plugin.Unload(ctx)
 
+	p.trigger.Shutdown()
 	if err = p.registrar.UnregisterTrigger(Name); err != nil {
 		log.Error(err.Error())
 		return err

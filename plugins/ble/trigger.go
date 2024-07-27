@@ -26,6 +26,7 @@ import (
 	"github.com/e154/smart-home/plugins/triggers"
 	"reflect"
 	"sync"
+	"time"
 	"tinygo.org/x/bluetooth"
 )
 
@@ -36,21 +37,59 @@ type Trigger struct {
 	msgQueue     bus.Bus
 	functionName string
 	name         string
-	ble          map[string]map[string]*Ble
+	ticker       *time.Ticker
+	sync.Mutex
+	devices map[string]map[string]*TriggerParams
 }
 
-func NewTrigger(eventBus bus.Bus) triggers.ITrigger {
-	return &Trigger{
+func NewTrigger(eventBus bus.Bus) *Trigger {
+	trigger := &Trigger{
 		eventBus:     eventBus,
 		msgQueue:     bus.NewBus(),
 		functionName: FunctionName,
 		name:         Name,
-		ble:          make(map[string]map[string]*Ble),
+		devices:      make(map[string]map[string]*TriggerParams),
 	}
+
+	go func() {
+		const pause = 10
+		trigger.ticker = time.NewTicker(time.Second * time.Duration(pause))
+
+		for range trigger.ticker.C {
+			trigger.Lock()
+			for _, device := range trigger.devices {
+				for name, characteristic := range device {
+					log.Debugf("check %s, status: %t", name, characteristic.connected.Load())
+					if !characteristic.connected.Load() {
+						trigger.Connect(characteristic, false)
+					}
+				}
+			}
+			trigger.Unlock()
+		}
+	}()
+
+	return trigger
 }
 
 func (t *Trigger) Name() string {
 	return t.name
+}
+
+func (t *Trigger) Shutdown() {
+	if t.ticker != nil {
+		t.ticker.Stop()
+		t.ticker = nil
+	}
+
+	t.Lock()
+	defer t.Unlock()
+
+	for _, device := range t.devices {
+		for _, characteristic := range device {
+			characteristic.Disconnect()
+		}
+	}
 }
 
 func (t *Trigger) AsyncAttach(wg *sync.WaitGroup) {
@@ -75,39 +114,23 @@ func (t *Trigger) Subscribe(options triggers.Subscriber) error {
 		return fmt.Errorf("characteristic attribute is nil")
 	}
 
-	if _, ok := t.ble[address.String()][characteristic.String()]; ok {
+	if _, ok := t.devices[address.String()][characteristic.String()]; ok {
 		return fmt.Errorf("a trigger with such parameters already exists")
 	}
 
-	var timeout, connectionTimeout int64 = 5, 5
-	ble := NewBle(address.String(), timeout, connectionTimeout, false)
+	t.Lock()
+	defer t.Unlock()
 
-	char, err := bluetooth.ParseUUID(characteristic.String())
-	if err != nil {
-		return err
-	}
+	err := t.Connect(&TriggerParams{options: options}, true)
 
-	callback := reflect.ValueOf(options.Handler)
-	err = ble.Subscribe(char, func(bytes []byte) {
-		callback.Call([]reflect.Value{reflect.ValueOf(""), reflect.ValueOf(bytes)})
-	})
-
-	if err != nil {
-		return err
-	}
-
-	if _, ok := t.ble[address.String()]; !ok {
-		t.ble[address.String()] = make(map[string]*Ble)
-	}
-	t.ble[address.String()][characteristic.String()] = ble
-
-	log.Infof("trigger '%s' subscribed to '%s'", t.name, characteristic.String())
-
-	return nil
+	return err
 }
 
 // Unsubscribe ...
 func (t *Trigger) Unsubscribe(options triggers.Subscriber) error {
+
+	t.Lock()
+	defer t.Unlock()
 
 	if options.Payload == nil {
 		return fmt.Errorf("payload is nil")
@@ -123,14 +146,16 @@ func (t *Trigger) Unsubscribe(options triggers.Subscriber) error {
 		return fmt.Errorf("characteristic attribute is nil")
 	}
 
-	ble, ok := t.ble[address.String()][characteristic.String()]
+	device, ok := t.devices[address.String()][characteristic.String()]
 	if !ok {
 		return nil
 	}
 
-	_ = ble.Disconnect()
+	if device != nil {
+		_ = device.Disconnect()
+	}
 
-	delete(t.ble, address.String())
+	delete(t.devices, address.String())
 
 	log.Infof("unsubscribe from %s", characteristic.String())
 
@@ -140,4 +165,39 @@ func (t *Trigger) Unsubscribe(options triggers.Subscriber) error {
 // FunctionName ...
 func (t *Trigger) FunctionName() string {
 	return t.functionName
+}
+
+func (t *Trigger) Connect(params *TriggerParams, firstTime bool) error {
+
+	options := params.options
+	address := options.Payload[AttrAddress].String()
+	characteristic := options.Payload[AttrCharacteristic].String()
+
+	var timeout, connectionTimeout int64 = 5, 5
+	params.Ble = NewBle(address, timeout, connectionTimeout, false)
+
+	char, err := bluetooth.ParseUUID(characteristic)
+	if err != nil {
+		return err
+	}
+
+	callback := reflect.ValueOf(options.Handler)
+	err = params.Subscribe(char, func(bytes []byte) {
+		callback.Call([]reflect.Value{reflect.ValueOf(""), reflect.ValueOf(bytes)})
+	})
+
+	if err != nil && firstTime {
+		log.Infof("trigger '%s' is not subscribed to '%s' but we are trying", t.name, characteristic)
+	}
+
+	if _, ok := t.devices[address]; !ok {
+		t.devices[address] = make(map[string]*TriggerParams)
+	}
+	t.devices[address][characteristic] = params
+
+	if err == nil && firstTime {
+		log.Infof("trigger '%s' subscribed to '%s'", t.name, characteristic)
+	}
+
+	return nil
 }
