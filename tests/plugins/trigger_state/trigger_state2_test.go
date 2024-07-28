@@ -21,19 +21,20 @@ package trigger_state
 import (
 	"context"
 	"fmt"
-	"github.com/e154/smart-home/system/migrations"
 	"testing"
 	"time"
 
+	"github.com/e154/bus"
 	. "github.com/smartystreets/goconvey/convey"
 
-	"github.com/e154/bus"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/plugins/state_change"
 	"github.com/e154/smart-home/plugins/triggers"
 	auto "github.com/e154/smart-home/system/automation"
+	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/supervisor"
@@ -177,7 +178,7 @@ function automationTriggerStateChanged(msg) {
 
 				So(msg3.Args, ShouldNotBeNil)
 
-				ev, ok := msg3.Args.Payload.(triggers.TriggerStateChangedMessage)
+				ev, ok := msg3.Args.Payload.(state_change.TriggerStateChangedMessage)
 				So(ok, ShouldBeTrue)
 				//debug.Println(ev)
 				So(ev.NewState, ShouldNotBeNil)

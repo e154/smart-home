@@ -21,19 +21,19 @@ package trigger_state
 import (
 	"context"
 	"fmt"
-	"github.com/e154/smart-home/system/migrations"
 	"go.uber.org/atomic"
 	"testing"
 	"time"
 
+	"github.com/e154/bus"
 	. "github.com/smartystreets/goconvey/convey"
 
-	"github.com/e154/bus"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/automation"
+	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/supervisor"
