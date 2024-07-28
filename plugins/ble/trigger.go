@@ -22,12 +22,14 @@ package ble
 
 import (
 	"fmt"
-	"github.com/e154/bus"
-	"github.com/e154/smart-home/plugins/triggers"
 	"reflect"
 	"sync"
 	"time"
+
+	"github.com/e154/bus"
 	"tinygo.org/x/bluetooth"
+
+	"github.com/e154/smart-home/plugins/triggers"
 )
 
 var _ triggers.ITrigger = (*Trigger)(nil)

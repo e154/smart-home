@@ -21,11 +21,11 @@ package ble
 import (
 	"context"
 	"embed"
-	"github.com/e154/smart-home/plugins/triggers"
 
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/plugins/triggers"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
