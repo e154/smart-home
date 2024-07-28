@@ -58,6 +58,7 @@ func TestTriggerState2(t *testing.T) {
 
 				// register plugins
 				AddPlugin(adaptors, "triggers")
+				AddPlugin(adaptors, "state_change")
 
 				waitCh := WaitService(eventBus, time.Second*5, "Supervisor")
 				pluginsCh := WaitPlugins(eventBus, time.Second*5, "triggers")

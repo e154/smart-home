@@ -27,16 +27,14 @@ import (
 	"time"
 
 	"github.com/e154/bus"
-
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/system/scripts"
-
 	"go.uber.org/dig"
 
+	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scheduler"
+	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/e154/smart-home/tests/plugins"
 	. "github.com/e154/smart-home/tests/plugins/container"
@@ -73,10 +71,11 @@ func TestMain(m *testing.M) {
 
 		// register plugins
 		AddPlugin(adaptors, "triggers")
+		AddPlugin(adaptors, "time")
 		AddPlugin(adaptors, "sensor")
 
 		serviceCh := WaitService(eventBus, time.Second*5, "Scheduler", "Automation", "Supervisor")
-		pluginsCh := WaitPlugins(eventBus, time.Second*5, "sensor", "triggers")
+		pluginsCh := WaitPlugins(eventBus, time.Second*5, "triggers", "sensor", "time")
 		scriptService.Restart()
 		scheduler.Start(context.Background())
 		supervisor.Start(context.Background())

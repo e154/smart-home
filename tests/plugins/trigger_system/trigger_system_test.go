@@ -63,9 +63,10 @@ automationTriggerSystem = (msg)->
 
 			// register plugins
 			_ = AddPlugin(adaptors, "triggers")
+			_ = AddPlugin(adaptors, "system")
 
 			serviceCh := WaitService(eventBus, time.Second*5, "Supervisor", "Automation", "Zigbee2mqtt", "Mqtt")
-			pluginsCh := WaitPlugins(eventBus, time.Second*5, "triggers")
+			pluginsCh := WaitPlugins(eventBus, time.Second*5, "triggers", "system")
 			go mqttServer.Start()
 			go zigbee2mqtt.Start(context.Background())
 			automation.Start()

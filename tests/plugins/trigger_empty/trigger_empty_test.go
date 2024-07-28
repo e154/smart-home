@@ -68,8 +68,8 @@ func TestTriggerEmpty(t *testing.T) {
 				Name:       "trigger1",
 				PluginName: "time",
 				Payload: m.Attributes{
-					timeTrigger.AttrCronOptionTrigger: {
-						Name:  timeTrigger.AttrCronOptionTrigger,
+					timeTrigger.AttrCron: {
+						Name:  timeTrigger.AttrCron,
 						Type:  common.AttributeString,
 						Value: "* * * * * *", //every seconds
 					},

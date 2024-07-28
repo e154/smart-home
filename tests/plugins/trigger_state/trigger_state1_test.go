@@ -21,12 +21,12 @@ package trigger_state
 import (
 	"context"
 	"fmt"
-	"go.uber.org/atomic"
 	"testing"
 	"time"
 
 	"github.com/e154/bus"
 	. "github.com/smartystreets/goconvey/convey"
+	"go.uber.org/atomic"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -95,6 +95,7 @@ automationTriggerStateChanged = (msg)->
 			// register plugins
 			AddPlugin(adaptors, "triggers")
 			AddPlugin(adaptors, "zigbee2mqtt")
+			AddPlugin(adaptors, "state_change")
 
 			// add zigbee2mqtt
 			zigbeeServer := &m.Zigbee2mqtt{

@@ -19,17 +19,17 @@
 package trigger_time
 
 import (
-	timeTrigger "github.com/e154/smart-home/plugins/time"
 	"testing"
 	"time"
 
+	"github.com/e154/bus"
 	. "github.com/smartystreets/goconvey/convey"
 	"go.uber.org/atomic"
 
-	"github.com/e154/bus"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	timeTrigger "github.com/e154/smart-home/plugins/time"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/scheduler"
 	"github.com/e154/smart-home/system/scripts"
@@ -78,8 +78,8 @@ automationTriggerTime = (msg)->
 				ScriptId:   common.Int64(task3Script.Id),
 				PluginName: "time",
 				Payload: m.Attributes{
-					timeTrigger.AttrCronOptionTrigger: {
-						Name:  timeTrigger.AttrCronOptionTrigger,
+					timeTrigger.AttrCron: {
+						Name:  timeTrigger.AttrCron,
 						Type:  common.AttributeString,
 						Value: "* * * * * *", //every seconds
 					},
@@ -98,7 +98,9 @@ automationTriggerTime = (msg)->
 			_, err = AddTask(newTask, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
-			time.Sleep(time.Second * 2)
+			// ------------------------------------------------
+
+			time.Sleep(time.Second * 5)
 
 			So(counter.Load(), ShouldBeGreaterThanOrEqualTo, 1)
 		})

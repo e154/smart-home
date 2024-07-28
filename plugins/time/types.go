@@ -24,24 +24,24 @@ import (
 )
 
 const (
-	FunctionName          = "automationTriggerTime"
-	Name                  = "time"
-	Version               = "0.0.1"
-	AttrCronOptionTrigger = "cron"
-	AttrSystemInfo        = "SystemInfo"
+	FunctionName   = "automationTriggerTime"
+	Name           = "time"
+	Version        = "0.0.1"
+	AttrCron       = "cron"
+	AttrSystemInfo = "SystemInfo"
 )
 
 func NewTriggerParams() m.TriggerParams {
 	return m.TriggerParams{
 		Script:   true,
-		Required: []string{AttrCronOptionTrigger},
+		Required: []string{AttrCron},
 		Attributes: m.Attributes{
 			AttrSystemInfo: {
 				Name: AttrSystemInfo,
 				Type: common.AttributeNotice,
 			},
-			AttrCronOptionTrigger: {
-				Name: AttrCronOptionTrigger,
+			AttrCron: {
+				Name: AttrCron,
 				Type: common.AttributeString,
 			},
 		},

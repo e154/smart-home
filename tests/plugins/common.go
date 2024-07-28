@@ -378,10 +378,11 @@ func GetNewTelegram(name string) *m.Entity {
 // AddPlugin ...
 func AddPlugin(adaptors *adaptors.Adaptors, name string, opts ...m.AttributeValue) (err error) {
 	plugin := &m.Plugin{
-		Name:    name,
-		Version: "0.0.1",
-		Enabled: true,
-		System:  true,
+		Name:     name,
+		Version:  "0.0.1",
+		Enabled:  true,
+		System:   true,
+		Triggers: true,
 	}
 	if len(opts) > 0 {
 		plugin.Settings = opts[0]
