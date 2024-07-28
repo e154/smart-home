@@ -58,8 +58,7 @@ func NewTrigger(eventBus bus.Bus) *Trigger {
 		for range trigger.ticker.C {
 			trigger.Lock()
 			for _, device := range trigger.devices {
-				for name, characteristic := range device {
-					log.Debugf("check %s, status: %t", name, characteristic.connected.Load())
+				for _, characteristic := range device {
 					if !characteristic.connected.Load() {
 						trigger.Connect(characteristic, false)
 					}

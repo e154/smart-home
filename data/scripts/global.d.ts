@@ -266,6 +266,14 @@ declare global {
   function EntityCallAction(entityId: string, action: string, params: { [key: string]: any }): void;
 
   /**
+   * Calls a function or method of an entity's script.
+   * @param {string} entityId - Entity identifier.
+   * @param {string} fn - The name of the function.
+   * @param {any} payload - Parameters for the action.
+   */
+  function EntityCallScript(entityId: string, fn: string, payload: any): void;
+
+  /**
    * Interface representing parameters for calling an action on an entity
    */
   interface CallAction {
