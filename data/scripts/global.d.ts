@@ -990,6 +990,22 @@ declare global {
   function automationTriggerSystem(msg: TriggerSystemMessage): boolean;
 
   /**
+   * Interface for Ble trigger messages.
+   */
+  interface TriggerBleMessage {
+    payload: Uint8Array;
+    trigger_name: string;
+    entity_id: string;
+  }
+
+  /**
+   * Function called when the Ble trigger event occurs.
+   * @param {TriggerBleMessage} msg - Ble trigger message.
+   * @returns {boolean} - The result of the trigger execution.
+   */
+  function automationTriggerBle(msg: TriggerBleMessage): boolean;
+
+  /**
    * Interface for responding to bluetooth commands.
    */
   interface BleResponse {
@@ -1010,33 +1026,5 @@ declare global {
    * @param {string} char - UUID Device characteristic.
    */
   function BleRead(char: string): BleResponse;
-
-  /**
-   * Enables notifications in the Client Characteristic Configuration Descriptor (CCCD). This means that most peripherals will send a notification with a new value every time the value of the characteristic changes.
-   * @param {string} char - UUID Device characteristic.
-   * @param {any} handler - Handler function.
-   */
-  function BleSubscribe(char: string, handler: any ): BleResponse;
-
-  /**
-   * Disconnect from the BLE device. This method is non-blocking and does not wait until the connection is fully gone.
-   */
-  function BleDisconnect(): BleResponse;
-
-  /**
-   * Interface for Ble trigger messages.
-   */
-  interface TriggerBleMessage {
-    payload: Uint8Array;
-    trigger_name: string;
-    entity_id: string;
-  }
-
-  /**
-   * Function called when the Ble trigger event occurs.
-   * @param {TriggerBleMessage} msg - Ble trigger message.
-   * @returns {boolean} - The result of the trigger execution.
-   */
-  function automationTriggerBle(msg: TriggerBleMessage): boolean;
 
 }
