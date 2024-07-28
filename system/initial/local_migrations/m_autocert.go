@@ -22,17 +22,18 @@ import (
 	"context"
 
 	"github.com/e154/smart-home/adaptors"
-	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/autocert"
 )
 
 type MigrationAutocert struct {
-	adaptors *adaptors.Adaptors
+	Common
 }
 
 func NewMigrationAutocert(adaptors *adaptors.Adaptors) *MigrationAutocert {
 	return &MigrationAutocert{
-		adaptors: adaptors,
+		Common{
+			adaptors: adaptors,
+		},
 	}
 }
 
@@ -40,18 +41,6 @@ func (n *MigrationAutocert) Up(ctx context.Context, adaptors *adaptors.Adaptors)
 	if adaptors != nil {
 		n.adaptors = adaptors
 	}
-	n.addPlugin("autocert", false, false, true, autocert.Version)
 
-	return nil
-}
-
-func (n *MigrationAutocert) addPlugin(name string, enabled, system, actor bool, version string) (node *m.Plugin) {
-	_ = n.adaptors.Plugin.CreateOrUpdate(context.Background(), &m.Plugin{
-		Name:    name,
-		Version: version,
-		Enabled: enabled,
-		System:  system,
-		Actor:   actor,
-	})
-	return
+	return n.addPlugin(ctx, "autocert", false, false, true, autocert.Version)
 }

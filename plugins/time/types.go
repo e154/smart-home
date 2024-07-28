@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2023, Filippov Alex
+// Copyright (C) 2024, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -16,25 +16,34 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package triggers
+package time
 
 import (
-	"github.com/e154/bus"
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 )
 
-type baseTrigger struct {
-	eventBus     bus.Bus
-	msgQueue     bus.Bus
-	functionName string
-	name         string
-}
+const (
+	FunctionName   = "automationTriggerTime"
+	Name           = "time"
+	Version        = "0.0.1"
+	AttrCron       = "cron"
+	AttrSystemInfo = "SystemInfo"
+)
 
-// Name ...
-func (b *baseTrigger) Name() string {
-	return b.name
-}
-
-// FunctionName ...
-func (b *baseTrigger) FunctionName() string {
-	return b.functionName
+func NewTriggerParams() m.TriggerParams {
+	return m.TriggerParams{
+		Script:   true,
+		Required: []string{AttrCron},
+		Attributes: m.Attributes{
+			AttrSystemInfo: {
+				Name: AttrSystemInfo,
+				Type: common.AttributeNotice,
+			},
+			AttrCron: {
+				Name: AttrCron,
+				Type: common.AttributeString,
+			},
+		},
+	}
 }

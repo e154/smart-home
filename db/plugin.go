@@ -22,7 +22,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -42,6 +41,7 @@ type Plugin struct {
 	Enabled  bool
 	System   bool
 	Actor    bool
+	Triggers bool
 	Settings json.RawMessage `gorm:"type:jsonb;not null"`
 }
 
@@ -69,6 +69,7 @@ func (n Plugins) CreateOrUpdate(ctx context.Context, v *Plugin) (err error) {
 			"system":   v.System,
 			"settings": v.Settings,
 			"actor":    v.Actor,
+			"triggers": v.Triggers,
 		}),
 	}).Create(&v).Error
 	if err != nil {
@@ -83,6 +84,7 @@ func (n Plugins) Update(ctx context.Context, m *Plugin) (err error) {
 		"enabled":  m.Enabled,
 		"system":   m.System,
 		"actor":    m.Actor,
+		"triggers": m.Triggers,
 		"settings": m.Settings,
 	}).Error; err != nil {
 		err = errors.Wrap(apperr.ErrPluginUpdate, err.Error())
@@ -99,14 +101,18 @@ func (n Plugins) Delete(ctx context.Context, name string) (err error) {
 }
 
 // List ...
-func (n Plugins) List(ctx context.Context, limit, offset int, orderBy, sort string, onlyEnabled bool) (list []*Plugin, total int64, err error) {
+func (n Plugins) List(ctx context.Context, limit, offset int, orderBy, sort string, enabled, triggers *bool) (list []*Plugin, total int64, err error) {
 
 	list = make([]*Plugin, 0)
 	q := n.Db.WithContext(ctx).Model(&Plugin{})
 
-	if onlyEnabled {
+	if enabled != nil {
 		q = q.
-			Where("enabled is true")
+			Where("enabled = ?", *enabled)
+	}
+
+	if triggers != nil {
+		q = q.Where("triggers = ?", *triggers)
 	}
 
 	if err = q.Count(&total).Error; err != nil {

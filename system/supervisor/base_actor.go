@@ -21,6 +21,7 @@ package supervisor
 import (
 	"context"
 	"fmt"
+	"github.com/pkg/errors"
 	"sync"
 	"time"
 
@@ -620,4 +621,19 @@ func (e *BaseActor) MatchTags(tags []string) bool {
 
 func (e *BaseActor) Area() *m.Area {
 	return e.area
+}
+
+func (e *BaseActor) CallScript(fn string, arg ...interface{}) {
+	for _, action := range e.Actions {
+		if action.ScriptEngine != nil {
+			if _, err := action.ScriptEngine.Engine().AssertFunction(fn, arg...); err != nil {
+				log.Error(errors.Wrapf(err, "entity id: %s ", e.Id).Error())
+			}
+		}
+	}
+	if e.ScriptsEngine != nil && e.ScriptsEngine.Engine() != nil {
+		if _, err := e.ScriptsEngine.AssertFunction(fn, arg...); err != nil {
+			log.Error(errors.Wrapf(err, "entity id: %s ", e.Id).Error())
+		}
+	}
 }

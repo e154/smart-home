@@ -53,6 +53,7 @@ type Connection struct {
 	api    *api.Api
 	stream *stream.Stream
 	cli    *stream.Client
+	debug  bool
 	*sync.Mutex
 	ws *websocket.Conn
 }
@@ -86,8 +87,10 @@ func (c *Connection) Connect(ctx context.Context) (err error) {
 		return err
 	}
 
-	log.Infof("Connected to %s", c.pool.target)
-	defer log.Info("Connection closed ...")
+	if c.debug {
+		log.Infof("Connected to %s", c.pool.target)
+		defer log.Info("Connection closed ...")
+	}
 
 	// Send the greeting message with proxy id and wanted pool size.
 	greeting := fmt.Sprintf(

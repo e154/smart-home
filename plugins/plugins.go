@@ -18,9 +18,12 @@
 
 package plugins
 
+import _ "github.com/e154/smart-home/plugins/triggers"
+
 import (
 	_ "github.com/e154/smart-home/plugins/alexa"
 	_ "github.com/e154/smart-home/plugins/autocert"
+	_ "github.com/e154/smart-home/plugins/ble"
 	_ "github.com/e154/smart-home/plugins/cgminer"
 	_ "github.com/e154/smart-home/plugins/cpuspeed"
 	_ "github.com/e154/smart-home/plugins/email"
@@ -44,9 +47,11 @@ import (
 	_ "github.com/e154/smart-home/plugins/sensor"
 	_ "github.com/e154/smart-home/plugins/slack"
 	_ "github.com/e154/smart-home/plugins/speedtest"
+	_ "github.com/e154/smart-home/plugins/state_change"
 	_ "github.com/e154/smart-home/plugins/sun"
+	_ "github.com/e154/smart-home/plugins/system"
 	_ "github.com/e154/smart-home/plugins/telegram"
-	_ "github.com/e154/smart-home/plugins/triggers"
+	_ "github.com/e154/smart-home/plugins/time"
 	_ "github.com/e154/smart-home/plugins/twilio"
 	_ "github.com/e154/smart-home/plugins/updater"
 	_ "github.com/e154/smart-home/plugins/uptime"

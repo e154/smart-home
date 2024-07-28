@@ -16,7 +16,7 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package triggers
+package time
 
 import (
 	"fmt"
@@ -25,64 +25,61 @@ import (
 	"time"
 
 	"github.com/e154/bus"
+
+	"github.com/e154/smart-home/plugins/triggers"
 	"github.com/e154/smart-home/system/scheduler"
 )
 
-const (
-	// TimeName ...
-	TimeName = "time"
-	// TimeFunctionName ...
-	TimeFunctionName = "automationTriggerTime"
-	// TimeQueueSize ...
-	TimeQueueSize = 10
-)
-
-var _ ITrigger = (*TimeTrigger)(nil)
+var _ triggers.ITrigger = (*Trigger)(nil)
 
 type subscribe struct {
 	callback reflect.Value
 	entryID  scheduler.EntryID
 }
 
-// TimeTrigger ...
-type TimeTrigger struct {
-	baseTrigger
-	scheduler *scheduler.Scheduler
+// Trigger ...
+type Trigger struct {
+	eventBus     bus.Bus
+	functionName string
+	name         string
+	scheduler    *scheduler.Scheduler
 	sync.Mutex
 	subscribers map[string][]*subscribe
 }
 
-// NewTimeTrigger ...
-func NewTimeTrigger(eventBus bus.Bus,
-	scheduler *scheduler.Scheduler) ITrigger {
+// NewTrigger ...
+func NewTrigger(eventBus bus.Bus,
+	scheduler *scheduler.Scheduler) triggers.ITrigger {
 
-	return &TimeTrigger{
-		scheduler:   scheduler,
-		subscribers: make(map[string][]*subscribe),
-		baseTrigger: baseTrigger{
-			eventBus:     eventBus,
-			msgQueue:     bus.NewBus(),
-			functionName: TimeFunctionName,
-			name:         TimeName,
-		},
+	return &Trigger{
+		eventBus:     eventBus,
+		scheduler:    scheduler,
+		subscribers:  make(map[string][]*subscribe),
+		functionName: FunctionName,
+		name:         Name,
 	}
 }
 
+// Name ...
+func (t *Trigger) Name() string {
+	return t.name
+}
+
 // AsyncAttach ...
-func (t *TimeTrigger) AsyncAttach(wg *sync.WaitGroup) {
+func (t *Trigger) AsyncAttach(wg *sync.WaitGroup) {
 
 	wg.Done()
 }
 
 // Subscribe ...
-func (t *TimeTrigger) Subscribe(options Subscriber) error {
+func (t *Trigger) Subscribe(options triggers.Subscriber) error {
 	if options.Payload == nil {
 		return fmt.Errorf("payload is nil")
 	}
-	if _, ok := options.Payload[CronOptionTrigger]; !ok {
+	if _, ok := options.Payload[AttrCron]; !ok {
 		return fmt.Errorf("cron attribute is nil")
 	}
-	schedule := options.Payload[CronOptionTrigger].String()
+	schedule := options.Payload[AttrCron].String()
 	if schedule == "" {
 		return fmt.Errorf("error static cast to string %v", options.Payload)
 	}
@@ -107,11 +104,11 @@ func (t *TimeTrigger) Subscribe(options Subscriber) error {
 }
 
 // Unsubscribe ...
-func (t *TimeTrigger) Unsubscribe(options Subscriber) error {
+func (t *Trigger) Unsubscribe(options triggers.Subscriber) error {
 	if options.Payload == nil {
 		return fmt.Errorf("payload is nil")
 	}
-	schedule := options.Payload[CronOptionTrigger].String()
+	schedule := options.Payload[AttrCron].String()
 	if schedule == "" {
 		return fmt.Errorf("error static cast to string %v", options.Payload)
 	}
@@ -135,4 +132,9 @@ func (t *TimeTrigger) Unsubscribe(options Subscriber) error {
 	}
 
 	return nil
+}
+
+// FunctionName ...
+func (t *Trigger) FunctionName() string {
+	return t.functionName
 }

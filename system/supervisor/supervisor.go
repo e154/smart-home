@@ -174,6 +174,7 @@ func (e *supervisor) bindScripts() {
 	e.scriptService.PushFunctions("EntityGetSettings", GetSettingsBind(e))
 	e.scriptService.PushFunctions("EntitySetMetric", SetMetricBind(e))
 	e.scriptService.PushFunctions("EntityCallAction", CallActionBind(e))
+	e.scriptService.PushFunctions("EntityCallScript", CallScriptBind(e))
 	e.scriptService.PushFunctions("EntitiesCallAction", CallActionV2Bind(e))
 	e.scriptService.PushFunctions("EntityCallScene", CallSceneBind(e))
 	e.scriptService.PushFunctions("GeoDistanceToArea", GetDistanceToAreaBind(e.adaptors))
@@ -508,6 +509,15 @@ func (e *supervisor) CallAction(id common.EntityId, action string, arg map[strin
 		ActionName: action,
 		Args:       arg,
 	})
+}
+
+// CallScript ...
+func (e *supervisor) CallScript(id common.EntityId, fn string, arg ...interface{}) {
+	pla, err := e.GetActorById(id)
+	if err != nil {
+		return
+	}
+	pla.CallScript(fn, arg...)
 }
 
 // CallActionV2 ...

@@ -206,7 +206,8 @@ const (
 	//DEPRECATED
 	AttributeArray = AttributeType("array")
 	//DEPRECATED
-	AttributeMap = AttributeType("map")
+	AttributeMap    = AttributeType("map")
+	AttributeNotice = AttributeType("notice")
 )
 
 // ConditionType ...

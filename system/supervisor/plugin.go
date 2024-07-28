@@ -22,6 +22,7 @@ import (
 	"context"
 	"embed"
 	"fmt"
+	"strings"
 	"sync"
 
 	"github.com/gomarkdown/markdown"
@@ -228,17 +229,24 @@ func (p *Plugin) GetActor(id common.EntityId) (pla PluginActor, err error) {
 	return
 }
 
-func (p *Plugin) Readme(lang *string) (result []byte, err error) {
+func (p *Plugin) Readme(note, lang *string) (result []byte, err error) {
 
 	// create markdown parser with extensions
 	extensions := parser.CommonExtensions | parser.AutoHeadingIDs | parser.NoEmptyLineBeforeBlock
 	n := parser.NewWithExtensions(extensions)
 
 	var fileName = "Readme.md"
+	if note != nil {
+		fileName = *note
+	}
+	if !strings.Contains(fileName, ".md") {
+		fileName += ".md"
+	}
 	if lang != nil {
 		switch *lang {
 		case "ru":
-			fileName = fmt.Sprintf("Readme.%s.md", *lang)
+			items := strings.Split(fileName, ".md")
+			fileName = strings.Join([]string{items[0], ".", *lang, ".md"}, "")
 		default:
 		}
 	}

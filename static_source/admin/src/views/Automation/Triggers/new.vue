@@ -3,64 +3,68 @@ import {ref, unref} from 'vue'
 import {useI18n} from '@/hooks/web/useI18n'
 import {ElButton, ElMessage} from 'element-plus'
 import {useRouter} from 'vue-router'
-import api from "@/api/api";
-import Form from './components/Form.vue'
-import {ApiNewTriggerRequest, ApiTrigger} from "@/api/stub";
+import {ApiAttribute, ApiNewTriggerRequest} from "@/api/stub";
 import {ContentWrap} from "@/components/ContentWrap";
 import TriggerForm from "@/views/Automation/components/TriggerForm.vue";
+import api from "@/api/api";
 
 const {push} = useRouter()
 const {t} = useI18n()
 
-const writeRef = ref<ComponentRef<typeof Form>>()
+const writeRef = ref<ComponentRef<typeof TriggerForm>>()
 const loading = ref(false)
-const currentRow = ref<Nullable<ApiTrigger>>(null)
+const currentRow = ref({
+  name: '',
+  description: '',
+  script: null,
+  scriptId: null,
+  attributes: [],
+} as ApiNewTriggerRequest)
 
 const save = async () => {
   const write = unref(writeRef)
-  const validate = await write?.elFormRef?.validate()?.catch(() => {
+  const validate = await write?.form?.validate()?.catch(() => {
   })
-  if (validate) {
-    loading.value = true
-    const tr = (await write?.getFormData()) as ApiTrigger;
-    let data = {
-      name: tr.name,
-      description: tr.description,
-      entityIds: tr.entityIds || [],
-      scriptId: tr.script?.id || null,
-      areaId: tr.area?.id || null,
-      pluginName: tr.pluginName,
-      attributes: {},
-      enabled: tr.enabled,
-    } as ApiNewTriggerRequest
-    if (tr.pluginName === 'time') {
-      data.attributes['cron'] = {
-        string: tr?.timePluginOptions || '',
-        type: "STRING",
-      }
+  if (!validate) {
+    return
+  }
+
+  const tr = unref(currentRow)
+  let data = {
+    name: tr.name,
+    description: tr.description,
+    entityIds: tr.entityIds || [],
+    scriptId: tr.script?.id || null,
+    areaId: tr.area?.id || null,
+    pluginName: tr.pluginName,
+    attributes: {},
+    enabled: tr.enabled,
+  } as ApiNewTriggerRequest
+
+  let attributes: { [key: string]: ApiAttribute } = {};
+  for (const index in tr.attributes) {
+    if (key == 'notice') {
+      continue
     }
-    if (tr.pluginName === 'system') {
-      data.attributes['system'] = {
-        string: tr?.systemPluginOptions || '',
-        type: "STRING",
-      }
-    }
-    const res = await api.v1.triggerServiceAddTrigger(data)
+    attributes[tr.attributes[index].name] = tr.attributes[index];
+  }
+  data.attributes = attributes
+
+  const res = await api.v1.triggerServiceAddTrigger(data)
       .catch(() => {
       })
       .finally(() => {
         loading.value = false
       })
-    if (res) {
-      ElMessage({
-        title: t('Success'),
-        message: t('message.createdSuccessfully'),
-        type: 'success',
-        duration: 2000
-      })
+  if (res) {
+    ElMessage({
+      title: t('Success'),
+      message: t('message.createdSuccessfully'),
+      type: 'success',
+      duration: 2000
+    })
 
-      cancel()
-    }
+    cancel()
   }
 }
 

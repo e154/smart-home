@@ -19,6 +19,7 @@
 package alexa
 
 import (
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/gin-gonic/gin"
 )
@@ -261,3 +262,16 @@ const (
 	// TriggerOptionSkillId ...
 	TriggerOptionSkillId = "skillId"
 )
+
+func NewTriggerParams() m.TriggerParams {
+	return m.TriggerParams{
+		Script:   true,
+		Required: []string{TriggerOptionSkillId},
+		Attributes: m.Attributes{
+			TriggerOptionSkillId: {
+				Name: TriggerOptionSkillId,
+				Type: common.AttributeInt,
+			},
+		},
+	}
+}

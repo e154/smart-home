@@ -153,6 +153,8 @@ func AttributeToApi(attributes m.Attributes) (apiAttr map[string]stub.ApiAttribu
 		case "encrypted":
 			attr.Type = stub.ENCRYPTED
 			attr.Encrypted = common.String(v.Decrypt())
+		default:
+			attr.Type = stub.ApiTypes(v.Type)
 		}
 		apiAttr[k] = attr
 	}

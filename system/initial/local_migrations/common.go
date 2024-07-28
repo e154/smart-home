@@ -20,8 +20,12 @@ package local_migrations
 
 import (
 	"context"
+
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	. "github.com/e154/smart-home/system/initial/assertions"
+	"github.com/e154/smart-home/system/scripts"
 )
 
 func AddVariableIfNotExist(adaptors *adaptors.Adaptors, ctx context.Context, name, value string) (err error) {
@@ -36,5 +40,47 @@ func AddVariableIfNotExist(adaptors *adaptors.Adaptors, ctx context.Context, nam
 		System: true,
 	})
 
+	return
+}
+
+type Common struct {
+	adaptors      *adaptors.Adaptors
+	scriptService scripts.ScriptService
+}
+
+func (c *Common) addPlugin(ctx context.Context, name string, enabled, system, actor bool, version string) error {
+	return c.adaptors.Plugin.CreateOrUpdate(ctx, &m.Plugin{
+		Name:    name,
+		Version: version,
+		Enabled: enabled,
+		System:  system,
+		Actor:   actor,
+	})
+}
+
+func (n *Common) removePlugin(ctx context.Context, name string) error {
+	return n.adaptors.Plugin.Delete(ctx, name)
+}
+
+func (s *Common) addScript(ctx context.Context, name, source, desc string) (script *m.Script, err error) {
+
+	if script, err = s.adaptors.Script.GetByName(ctx, name); err == nil {
+		return
+	}
+
+	script = &m.Script{
+		Lang:        common.ScriptLangCoffee,
+		Name:        name,
+		Source:      source,
+		Description: desc,
+	}
+
+	engineScript, err := s.scriptService.NewEngine(script)
+
+	err = engineScript.Compile()
+	So(err, ShouldBeNil)
+
+	script.Id, err = s.adaptors.Script.Add(ctx, script)
+	So(err, ShouldBeNil)
 	return
 }

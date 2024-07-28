@@ -35,6 +35,7 @@ import (
 
 //go:embed typescript.js
 //go:embed coffeescript.js
+//go:embed jspack.js
 var scriptsAsset embed.FS
 
 // Javascript ...
@@ -272,12 +273,18 @@ func (j *Javascript) bind() {
 	// hex2arr()
 	// marshal(obj)
 	// unmarshal(json)
+	// jspack
 	//
 
 	_ = j.vm.Set("print", log.Info)
 
+	data, _ := scriptsAsset.ReadFile("jspack.js")
+
+	_, _ = j.vm.RunString(string(data))
+
 	_, _ = j.vm.RunString(`
 
+	jspack = new JSPack();
     console = {log:print,warn:print,error:print,info:print},
 	hex2arr = function (hexString) {
 	   var result = [];

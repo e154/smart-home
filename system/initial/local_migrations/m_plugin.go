@@ -55,16 +55,17 @@ import (
 	"github.com/e154/smart-home/plugins/zigbee2mqtt"
 
 	"github.com/e154/smart-home/adaptors"
-	m "github.com/e154/smart-home/models"
 )
 
 type MigrationPlugins struct {
-	adaptors *adaptors.Adaptors
+	Common
 }
 
 func NewMigrationPlugins(adaptors *adaptors.Adaptors) *MigrationPlugins {
 	return &MigrationPlugins{
-		adaptors: adaptors,
+		Common{
+			adaptors: adaptors,
+		},
 	}
 }
 
@@ -72,47 +73,36 @@ func (n *MigrationPlugins) Up(ctx context.Context, adaptors *adaptors.Adaptors) 
 	if adaptors != nil {
 		n.adaptors = adaptors
 	}
-	n.addPlugin("alexa", false, false, true, alexa.Version)
-	n.addPlugin("cgminer", false, false, true, cgminer.Version)
-	n.addPlugin("cpuspeed", true, false, false, cpuspeed.Version)
-	n.addPlugin("email", true, false, true, email.Version)
-	n.addPlugin("messagebird", false, false, true, messagebird.Version)
-	n.addPlugin("modbus_rtu", false, false, true, modbus_rtu.Version)
-	n.addPlugin("modbus_tcp", false, false, true, modbus_tcp.Version)
-	n.addPlugin("moon", true, false, true, moon.Version)
-	n.addPlugin("memory", true, false, false, memory.Version)
-	n.addPlugin("memory_app", true, false, false, memory_app.Version)
-	n.addPlugin("hdd", true, false, true, hdd.Version)
-	n.addPlugin("logs", true, false, false, logs.Version)
-	n.addPlugin("version", true, false, false, version.Version)
-	n.addPlugin("node", true, true, true, node.Version)
-	n.addPlugin("notify", true, true, false, notify.Version)
-	n.addPlugin("scene", true, false, true, scene.Version)
-	n.addPlugin("sensor", true, false, true, sensor.Version)
-	n.addPlugin("slack", true, false, true, slack.Version)
-	n.addPlugin("sun", true, false, true, sun.Version)
-	n.addPlugin("telegram", true, false, true, telegram.Version)
-	n.addPlugin("triggers", true, true, false, triggers.Version)
-	n.addPlugin("twilio", false, false, true, twilio.Version)
-	n.addPlugin("updater", true, false, false, updater.Version)
-	n.addPlugin("uptime", true, false, false, uptime.Version)
-	n.addPlugin("weather_met", false, false, true, weather_met.Version)
-	n.addPlugin("weather_owm", false, false, true, weather_owm.Version)
-	n.addPlugin("mqtt", true, false, true, mqtt.Version)
-	n.addPlugin("zigbee2mqtt", false, false, true, zigbee2mqtt.Version)
-	n.addPlugin("html5_notify", true, false, false, html5_notify.Version)
-	n.addPlugin("webpush", true, false, false, webpush.Version)
-	n.addPlugin("onvif", false, false, true, onvif.Version)
+	n.addPlugin(ctx, "alexa", false, false, true, alexa.Version)
+	n.addPlugin(ctx, "cgminer", false, false, true, cgminer.Version)
+	n.addPlugin(ctx, "cpuspeed", true, false, false, cpuspeed.Version)
+	n.addPlugin(ctx, "email", true, false, true, email.Version)
+	n.addPlugin(ctx, "messagebird", false, false, true, messagebird.Version)
+	n.addPlugin(ctx, "modbus_rtu", false, false, true, modbus_rtu.Version)
+	n.addPlugin(ctx, "modbus_tcp", false, false, true, modbus_tcp.Version)
+	n.addPlugin(ctx, "moon", true, false, true, moon.Version)
+	n.addPlugin(ctx, "memory", true, false, false, memory.Version)
+	n.addPlugin(ctx, "memory_app", true, false, false, memory_app.Version)
+	n.addPlugin(ctx, "hdd", true, false, true, hdd.Version)
+	n.addPlugin(ctx, "logs", true, false, false, logs.Version)
+	n.addPlugin(ctx, "version", true, false, false, version.Version)
+	n.addPlugin(ctx, "node", true, true, true, node.Version)
+	n.addPlugin(ctx, "notify", true, true, false, notify.Version)
+	n.addPlugin(ctx, "scene", true, false, true, scene.Version)
+	n.addPlugin(ctx, "sensor", true, false, true, sensor.Version)
+	n.addPlugin(ctx, "slack", true, false, true, slack.Version)
+	n.addPlugin(ctx, "sun", true, false, true, sun.Version)
+	n.addPlugin(ctx, "telegram", true, false, true, telegram.Version)
+	n.addPlugin(ctx, "triggers", true, true, false, triggers.Version)
+	n.addPlugin(ctx, "twilio", false, false, true, twilio.Version)
+	n.addPlugin(ctx, "updater", true, false, false, updater.Version)
+	n.addPlugin(ctx, "uptime", true, false, false, uptime.Version)
+	n.addPlugin(ctx, "weather_met", false, false, true, weather_met.Version)
+	n.addPlugin(ctx, "weather_owm", false, false, true, weather_owm.Version)
+	n.addPlugin(ctx, "mqtt", true, false, true, mqtt.Version)
+	n.addPlugin(ctx, "zigbee2mqtt", false, false, true, zigbee2mqtt.Version)
+	n.addPlugin(ctx, "html5_notify", true, false, false, html5_notify.Version)
+	n.addPlugin(ctx, "webpush", true, false, false, webpush.Version)
+	n.addPlugin(ctx, "onvif", false, false, true, onvif.Version)
 	return nil
-}
-
-func (n *MigrationPlugins) addPlugin(name string, enabled, system, actor bool, version string) (node *m.Plugin) {
-	_ = n.adaptors.Plugin.CreateOrUpdate(context.Background(), &m.Plugin{
-		Name:    name,
-		Version: version,
-		Enabled: enabled,
-		System:  system,
-		Actor:   actor,
-	})
-	return
 }

@@ -925,7 +925,6 @@ export interface ApiNewTriggerRequest {
   name: string;
   description: string;
   entityIds: string[];
-  script?: ApiScript;
   /** @format int64 */
   scriptId?: number;
   pluginName: string;
@@ -993,6 +992,14 @@ export interface ApiPluginOptionsResult {
   actorCustomSetts: boolean;
   actorSetts: Record<string, ApiAttribute>;
   setts: Record<string, ApiAttribute>;
+  triggerParams: ApiTriggerParams;
+}
+
+export interface ApiTriggerParams {
+  required: string[];
+  script: boolean;
+  entities: boolean;
+  attributes: Record<string, ApiAttribute>;
 }
 
 export interface ApiPluginOptionsResultEntityAction {
@@ -4678,6 +4685,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     pluginServiceGetPluginReadme: (
       name: string,
       query?: {
+        note?: string;
         lang?: string;
       },
       params: RequestParams = {},
@@ -4728,6 +4736,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
          * @format uint64
          */
         limit?: number;
+        triggers?: boolean;
+        enabled?: boolean;
       },
       params: RequestParams = {},
     ) =>

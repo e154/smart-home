@@ -2,17 +2,13 @@
 import {computed, ref, unref} from 'vue'
 import {useI18n} from '@/hooks/web/useI18n'
 import {ElButton, ElMessage, ElPopconfirm} from 'element-plus'
-import {useForm} from '@/hooks/web/useForm'
 import {useRoute, useRouter} from 'vue-router'
-import {useValidator} from '@/hooks/web/useValidator'
 import api from "@/api/api";
 import Form from './components/Form.vue'
-import {ApiTrigger} from "@/api/stub";
+import {ApiAttribute, ApiTrigger} from "@/api/stub";
 import {ContentWrap} from "@/components/ContentWrap";
 import TriggerForm from "@/views/Automation/components/TriggerForm.vue";
 
-const {register, elFormRef, methods} = useForm()
-const {required} = useValidator()
 const {currentRoute, addRoute, push} = useRouter()
 const route = useRoute();
 const {t} = useI18n()
@@ -25,13 +21,21 @@ const currentRow = ref<Nullable<ApiTrigger>>(null)
 const fetch = async () => {
   loading.value = true
   const res = await api.v1.triggerServiceGetTriggerById(triggerId.value)
-      .catch(() => {
-      })
-      .finally(() => {
-        loading.value = false
-      })
+    .catch(() => {
+    })
+    .finally(() => {
+      loading.value = false
+    })
   if (res) {
     currentRow.value = res.data;
+    if (currentRow.value.attributes) {
+      for (const key in currentRow.value.attributes) {
+        if (key == 'notice') {
+          continue
+        }
+        currentRow.value.attributes[key].name = key
+      }
+    }
   } else {
     currentRow.value = null
   }
@@ -39,48 +43,44 @@ const fetch = async () => {
 
 const save = async () => {
   const write = unref(writeRef)
-  const validate = await write?.elFormRef?.validate()?.catch(() => {
+  const validate = await write?.form?.validate()?.catch(() => {
   })
-  if (validate) {
-    loading.value = true
-    const tr = (await write?.getFormData()) as ApiTrigger;
-    let data = {
-      name: tr.name,
-      description: tr.description,
-      entityIds: tr.entityIds || [],
-      scriptId: tr.script?.id || null,
-      areaId: tr.area?.id || null,
-      pluginName: tr.pluginName,
-      attributes: {},
-      enabled: tr.enabled,
-    }
-    if (tr.pluginName === 'time') {
-      data.attributes['cron'] = {
-        string: tr?.timePluginOptions || '',
-        type: "STRING",
-      }
-    }
-    if (tr.pluginName === 'system') {
-      data.attributes['system'] = {
-        string: tr?.systemPluginOptions || '',
-        type: "STRING",
-      }
-    }
-    const res = await api.v1.triggerServiceUpdateTrigger(triggerId.value, data)
-        .catch(() => {
-        })
-        .finally(() => {
-          loading.value = false
-        })
-    if (res) {
-      ElMessage({
-        title: t('Success'),
-        message: t('message.updatedSuccessfully'),
-        type: 'success',
-        duration: 2000
-      })
-    }
+  if (!validate) {
+    return
   }
+
+  const tr = unref(currentRow)
+  let data = {
+    name: tr.name,
+    description: tr.description,
+    entityIds: tr.entityIds || [],
+    scriptId: tr.script?.id || null,
+    areaId: tr.area?.id || null,
+    pluginName: tr.pluginName,
+    attributes: {},
+    enabled: tr.enabled,
+  }
+
+  let attributes: { [key: string]: ApiAttribute } = {};
+  for (const index in tr.attributes) {
+    attributes[tr.attributes[index].name] = tr.attributes[index];
+  }
+  data.attributes = attributes
+
+  const res = await api.v1.triggerServiceUpdateTrigger(triggerId.value, data)
+    .catch(() => {
+    })
+    .finally(() => {
+    })
+  if (res) {
+    ElMessage({
+      title: t('Success'),
+      message: t('message.updatedSuccessfully'),
+      type: 'success',
+      duration: 2000
+    })
+  }
+
 }
 
 const cancel = () => {
@@ -90,11 +90,11 @@ const cancel = () => {
 const remove = async () => {
   loading.value = true
   const res = await api.v1.triggerServiceDeleteTrigger(triggerId.value)
-      .catch(() => {
-      })
-      .finally(() => {
-        loading.value = false
-      })
+    .catch(() => {
+    })
+    .finally(() => {
+      loading.value = false
+    })
   if (res) {
     cancel()
   }
@@ -102,16 +102,16 @@ const remove = async () => {
 
 const callTrigger = async () => {
   await api.v1.developerToolsServiceCallTrigger({id: triggerId.value})
-      .catch(() => {
+    .catch(() => {
+    })
+    .finally(() => {
+      ElMessage({
+        title: t('Success'),
+        message: t('message.callSuccessful'),
+        type: 'success',
+        duration: 2000
       })
-      .finally(() => {
-        ElMessage({
-          title: t('Success'),
-          message: t('message.callSuccessful'),
-          type: 'success',
-          duration: 2000
-        })
-      })
+    })
 }
 
 fetch()
@@ -138,12 +138,12 @@ fetch()
       </ElButton>
 
       <ElPopconfirm
-          :confirm-button-text="$t('main.ok')"
-          :cancel-button-text="$t('main.no')"
-          width="250"
-          style="margin-left: 10px;"
-          :title="$t('main.are_you_sure_to_do_want_this?')"
-          @confirm="remove"
+        :confirm-button-text="$t('main.ok')"
+        :cancel-button-text="$t('main.no')"
+        width="250"
+        style="margin-left: 10px;"
+        :title="$t('main.are_you_sure_to_do_want_this?')"
+        @confirm="remove"
       >
         <template #reference>
           <ElButton class="mr-10px" type="danger" plain>

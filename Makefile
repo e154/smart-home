@@ -1,8 +1,7 @@
 .PHONY: get_deps fmt
 .DEFAULT_GOAL := build
-build: build_public build_server build_cli
 tests: lint test
-all: build build_structure build_common_structure build_archive docker_image
+all: build_public build_linux build_structure build_common_structure build_archive docker_image
 deploy: docker_image_upload
 
 EXEC=server
@@ -100,20 +99,33 @@ svgo:
 	DIR=${ROOT}/data/icons/*
 	cd ${ROOT} && svgo ${DIR} --enable=inlineStyles  --config '{ "plugins": [ { "inlineStyles": { "onlyMatchedOnce": false } }] }' --pretty
 
-build_server:
-	@echo MARK: build server
+build_linux:
+	@echo MARK: build linux server
 	${GO_BUILD_ENV} GOOS=linux GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-amd64
 	${GO_BUILD_ENV} GOOS=linux GOARCH=arm GOARM=7 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-7
 	${GO_BUILD_ENV} GOOS=linux GOARCH=arm GOARM=6 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-6
 	${GO_BUILD_ENV} GOOS=linux GOARCH=arm GOARM=5 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-5
-	${GO_BUILD_ENV} GOOS=darwin GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-darwin-10.6-amd64
-	${GO_BUILD_ENV} GOOS=darwin GOARCH=arm64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-darwin-10.6-arm64
 
-build_cli:
 	@echo MARK: build cli
 	cd ${ROOT}/cmd/cli && ${GO_BUILD_ENV} GOOS=linux GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${CLI}-linux-amd64
+
+build_darwin:
+	@echo MARK: build darwin server
+	CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-darwin-10.6-amd64
+	CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-darwin-10.6-arm64
+
+	@echo MARK: build cli
 	cd ${ROOT}/cmd/cli && ${GO_BUILD_ENV} GOOS=darwin GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${CLI}-darwin-10.6-amd64
 	cd ${ROOT}/cmd/cli && ${GO_BUILD_ENV} GOOS=darwin GOARCH=arm64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${CLI}-darwin-10.6-arm64
+
+build_windows:
+	@echo MARK: build windows server
+	CGO_ENABLED=1 GOOS=windows GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-windows-amd64
+	CGO_ENABLED=1 GOOS=windows GOARCH=arm64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-windows-arm64
+
+	@echo MARK: build cli
+	cd ${ROOT}/cmd/cli && ${GO_BUILD_ENV} GOOS=windows GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${CLI}-windows-amd64
+	cd ${ROOT}/cmd/cli && ${GO_BUILD_ENV} GOOS=windows GOARCH=arm64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${CLI}-windows-arm64
 
 build_public:
 	@echo MARK: build public
@@ -149,15 +161,8 @@ build_structure:
 	cp ${ROOT}/CONTRIBUTING.md ${SERVER_DIR}
 	cp ${ROOT}/bin/server-installer.sh ${SERVER_DIR}
 	chmod +x ${SERVER_DIR}/data/scripts/ping.sh
-	cp ${ROOT}/${EXEC}-linux-amd64 ${SERVER_DIR}
-	cp ${ROOT}/${EXEC}-linux-arm-7 ${SERVER_DIR}
-	cp ${ROOT}/${EXEC}-linux-arm-6 ${SERVER_DIR}
-	cp ${ROOT}/${EXEC}-linux-arm-5 ${SERVER_DIR}
-	cp ${ROOT}/${EXEC}-darwin-10.6-amd64 ${SERVER_DIR}
-	cp ${ROOT}/${EXEC}-darwin-10.6-arm64 ${SERVER_DIR}
-	cp ${ROOT}/${CLI}-darwin-10.6-amd64 ${SERVER_DIR}
-	cp ${ROOT}/${CLI}-darwin-10.6-arm64 ${SERVER_DIR}
-	cp ${ROOT}/${CLI}-linux-amd64 ${SERVER_DIR}
+	cp ${ROOT}/${EXEC}-* ${SERVER_DIR}
+	cp ${ROOT}/${CLI}-* ${SERVER_DIR}
 	cp ${ROOT}/bin/server ${SERVER_DIR}
 
 build_common_structure:
@@ -228,15 +233,8 @@ docker_image_upload:
 clean:
 	@echo MARK: clean
 	rm -rf ${SERVER_DIR}
-	rm -f ${ROOT}/${EXEC}-linux-amd64
-	rm -f ${ROOT}/${EXEC}-linux-arm-7
-	rm -f ${ROOT}/${EXEC}-linux-arm-6
-	rm -f ${ROOT}/${EXEC}-linux-arm-5
-	rm -f ${ROOT}/${EXEC}-darwin-10.6-amd64
-	rm -f ${ROOT}/${EXEC}-darwin-10.6-arm64
-	rm -f ${ROOT}/${CLI}-linux-amd64
-	rm -f ${ROOT}/${CLI}-darwin-10.6-amd64
-	rm -f ${ROOT}/${CLI}-darwin-10.6-arm64
+	rm -f ${ROOT}/${EXEC}-*
+	rm -f ${ROOT}/${CLI}-*
 	rm -f ${HOME}/${ARCHIVE}
 
 front_client:

@@ -226,7 +226,7 @@ export const Filters: Filter[] = [
   {
     name: 'formatdate',
     description: 'The formatdate function takes a date in a specific format and converts it to another specified format. Input format YYYY-MM-DD hh:mm:ss',
-    example: 'datetime|formatdate::{d}.{m}.{y}',
+    example: 'datetime|formatdate::{y}-{m}-{d} {h}:{i}:{s}',
   },
   {
     name: 'formatBytes',

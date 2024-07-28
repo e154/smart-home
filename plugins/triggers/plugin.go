@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2023, Filippov Alex
+// Copyright (C) 2016-2024, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -24,15 +24,12 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/e154/smart-home/system/supervisor"
-
-	"github.com/e154/smart-home/common/apperr"
-
-	"github.com/e154/smart-home/common/logger"
-
 	"github.com/pkg/errors"
 
+	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/supervisor"
 )
 
 var (
@@ -94,11 +91,6 @@ func (p *plugin) attachTrigger() {
 
 	p.mu.Lock()
 	defer p.mu.Unlock()
-
-	// init triggers ...
-	p.triggers[StateChangeName] = NewStateChangedTrigger(p.Service.EventBus())
-	p.triggers[SystemName] = NewSystemTrigger(p.Service.EventBus())
-	p.triggers[TimeName] = NewTimeTrigger(p.Service.EventBus(), p.Service.Scheduler())
 
 	wg := &sync.WaitGroup{}
 

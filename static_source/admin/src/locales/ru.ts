@@ -351,8 +351,20 @@ export default {
       pluginName: "Название плагина",
       addTrigger: "Добавить триггер",
       pluginOptions: "Опции плагина",
-      timePluginOptions: "Выражение времени",
-      alexaSkillId: "Идентификатор навыка Alexa"
+      ble: {
+        address: 'Address',
+        characteristic: 'Characteristic',
+        service: 'Service',
+      },
+      time: {
+        cron: 'Cron',
+      },
+      system: {
+        system: 'System',
+      },
+      alexa: {
+        skillId: 'Skill Id'
+      }
     },
     conditions: {
       id: "ID",

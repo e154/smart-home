@@ -19,7 +19,7 @@
 package dto
 
 import (
-	stub "github.com/e154/smart-home/api/stub"
+	"github.com/e154/smart-home/api/stub"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 )
@@ -85,7 +85,14 @@ func (p Plugin) Options(options m.PluginOptions) (result *stub.ApiPluginOptionsR
 		ActorCustomSetts:   options.ActorCustomSetts,
 		ActorSetts:         AttributeToApi(options.ActorSetts),
 		Setts:              AttributeToApi(options.Setts),
+		TriggerParams: stub.ApiTriggerParams{
+			Attributes: AttributeToApi(options.TriggerParams.Attributes),
+			Entities:   options.TriggerParams.Entities,
+			Script:     options.TriggerParams.Script,
+			Required:   options.TriggerParams.Required,
+		},
 	}
+
 	return
 }
 

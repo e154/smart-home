@@ -18,47 +18,43 @@
 
 // EventStateChanged
 
-package triggers
+package state_change
 
 import (
 	"sync"
 
+	"github.com/e154/bus"
 	"go.uber.org/atomic"
 
-	"github.com/e154/bus"
 	"github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/plugins/triggers"
 )
 
-const (
-	// StateChangeName ...
-	StateChangeName = "state_change"
-	// StateChangeFunctionName ...
-	StateChangeFunctionName = "automationTriggerStateChanged"
-)
+var _ triggers.ITrigger = (*Trigger)(nil)
 
-var _ ITrigger = (*StateChangeTrigger)(nil)
-
-// StateChangeTrigger ...
-type StateChangeTrigger struct {
-	baseTrigger
-	counter *atomic.Int32
+type Trigger struct {
+	eventBus     bus.Bus
+	msgQueue     bus.Bus
+	counter      *atomic.Int32
+	functionName string
+	name         string
 }
 
-// NewStateChangedTrigger ...
-func NewStateChangedTrigger(eventBus bus.Bus) ITrigger {
-	return &StateChangeTrigger{
-		baseTrigger: baseTrigger{
-			eventBus:     eventBus,
-			msgQueue:     bus.NewBus(),
-			functionName: StateChangeFunctionName,
-			name:         StateChangeName,
-		},
-		counter: atomic.NewInt32(0),
+func NewTrigger(eventBus bus.Bus) triggers.ITrigger {
+	return &Trigger{
+		eventBus:     eventBus,
+		msgQueue:     bus.NewBus(),
+		functionName: FunctionName,
+		name:         Name,
+		counter:      atomic.NewInt32(0),
 	}
 }
 
-// AsyncAttach ...
-func (t *StateChangeTrigger) AsyncAttach(wg *sync.WaitGroup) {
+func (t *Trigger) Name() string {
+	return t.name
+}
+
+func (t *Trigger) AsyncAttach(wg *sync.WaitGroup) {
 
 	if err := t.eventBus.Subscribe("system/entities/+", t.eventHandler); err != nil {
 		log.Error(err.Error())
@@ -67,7 +63,7 @@ func (t *StateChangeTrigger) AsyncAttach(wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-func (t *StateChangeTrigger) eventHandler(_ string, event interface{}) {
+func (t *Trigger) eventHandler(_ string, event interface{}) {
 	if t.counter.Load() <= 0 {
 		return
 	}
@@ -102,15 +98,20 @@ func (t *StateChangeTrigger) eventHandler(_ string, event interface{}) {
 }
 
 // Subscribe ...
-func (t *StateChangeTrigger) Subscribe(options Subscriber) error {
+func (t *Trigger) Subscribe(options triggers.Subscriber) error {
 	//log.Infof("subscribe topic %s", options.EntityId)
 	t.counter.Inc()
 	return t.msgQueue.Subscribe(options.EntityId.String(), options.Handler)
 }
 
 // Unsubscribe ...
-func (t *StateChangeTrigger) Unsubscribe(options Subscriber) error {
+func (t *Trigger) Unsubscribe(options triggers.Subscriber) error {
 	//log.Infof("unsubscribe topic %s", options.EntityId)
 	t.counter.Dec()
 	return t.msgQueue.Unsubscribe(options.EntityId.String(), options.Handler)
+}
+
+// FunctionName ...
+func (t *Trigger) FunctionName() string {
+	return t.functionName
 }

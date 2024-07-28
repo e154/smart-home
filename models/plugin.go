@@ -32,6 +32,7 @@ type Plugin struct {
 	System   bool           `json:"system"`
 	Actor    bool           `json:"actor"`
 	IsLoaded bool           `json:"is_loaded"`
+	Triggers bool           `json:"triggers"`
 }
 
 // Plugins ...
@@ -58,6 +59,13 @@ type PluginOptionsJs struct {
 	Variables map[string]string `json:"variables"`
 }
 
+type TriggerParams struct {
+	Entities   bool       `json:"entities"`
+	Script     bool       `json:"script"`
+	Attributes Attributes `json:"attributes"`
+	Required   []string   `json:"required"`
+}
+
 // PluginOptions ...
 type PluginOptions struct {
 	Javascript         PluginOptionsJs              `json:"javascript"`
@@ -67,6 +75,7 @@ type PluginOptions struct {
 	ActorSetts         Attributes                   `json:"actor_setts"`
 	Setts              Attributes                   `json:"setts"`
 	Triggers           bool                         `json:"triggers"`
+	TriggerParams      TriggerParams                `json:"trigger_params"`
 	Actors             bool                         `json:"actors"`
 	ActorCustomAttrs   bool                         `json:"actor_custom_attrs"`
 	ActorCustomActions bool                         `json:"actor_custom_actions"`

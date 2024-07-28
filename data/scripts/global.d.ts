@@ -31,7 +31,7 @@ declare global {
 
   // Interface of a point on the map
   interface Point {
-    lon:bigint;
+    lon: bigint;
     lat: bigint;
   }
 
@@ -264,6 +264,14 @@ declare global {
    * @param {{ [key: string]: any }} params - Parameters for the action.
    */
   function EntityCallAction(entityId: string, action: string, params: { [key: string]: any }): void;
+
+  /**
+   * Calls a function or method of an entity's script.
+   * @param {string} entityId - Entity identifier.
+   * @param {string} fn - The name of the function.
+   * @param {any} payload - Parameters for the action.
+   */
+  function EntityCallScript(entityId: string, fn: string, payload: any): void;
 
   /**
    * Interface representing parameters for calling an action on an entity
@@ -980,5 +988,43 @@ declare global {
    * @returns {boolean} - The result of the trigger execution.
    */
   function automationTriggerSystem(msg: TriggerSystemMessage): boolean;
+
+  /**
+   * Interface for Ble trigger messages.
+   */
+  interface TriggerBleMessage {
+    payload: Uint8Array;
+    trigger_name: string;
+    entity_id: string;
+  }
+
+  /**
+   * Function called when the Ble trigger event occurs.
+   * @param {TriggerBleMessage} msg - Ble trigger message.
+   * @returns {boolean} - The result of the trigger execution.
+   */
+  function automationTriggerBle(msg: TriggerBleMessage): boolean;
+
+  /**
+   * Interface for responding to bluetooth commands.
+   */
+  interface BleResponse {
+    response?: Uint8Array;
+    error?: string;
+  }
+
+  /**
+   * Write replaces the characteristic value with a new value. The call will return after all data has been written.
+   * @param {string} char - UUID Device characteristic.
+   * @param {Uint8Array} payload - Command.
+   * @param {boolean} withResponse - if a response is expected.
+   */
+  function BleWrite(char: string, payload: Uint8Array, withResponse: boolean): BleResponse;
+
+  /**
+   * Read reads the current characteristic value.
+   * @param {string} char - UUID Device characteristic.
+   */
+  function BleRead(char: string): BleResponse;
 
 }

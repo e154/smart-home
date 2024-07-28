@@ -49,21 +49,6 @@ const rules = {
     {required: false, trigger: 'blur'},
     {max: 255, trigger: 'blur'}
   ],
-  type: [
-    {required: false, trigger: 'blur'},
-    {max: 255, trigger: 'blur'}
-  ]
-};
-
-const rules2 = {
-  name: [
-    {required: true, trigger: 'blur'},
-    {min: 4, max: 255, trigger: 'blur'}
-  ],
-  description: [
-    {required: false, trigger: 'blur'},
-    {max: 255, trigger: 'blur'}
-  ],
   // color: [
   //   {required: false, trigger: 'blur'},
   //   {max: 255, trigger: 'blur'}
@@ -97,7 +82,7 @@ const removeProp = (index: number) => {
 
 <template>
 
-  <ElForm v-if="current.item" label-position="top" label-width="100px" ref="current.item" :model="current.item" :rules="rules2" style="width: 100%">
+  <ElForm v-if="current.item" label-position="top" label-width="100px" ref="current.item" :model="current.item" :rules="rules" style="width: 100%">
     <ElFormItem :label="$t('metrics.name')" prop="name">
       <ElInput v-model="current.item.name"/>
     </ElFormItem>

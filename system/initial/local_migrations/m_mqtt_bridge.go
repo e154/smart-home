@@ -24,16 +24,17 @@ import (
 	"github.com/e154/smart-home/plugins/mqtt_bridge"
 
 	"github.com/e154/smart-home/adaptors"
-	m "github.com/e154/smart-home/models"
 )
 
 type MigrationMqttBridge struct {
-	adaptors *adaptors.Adaptors
+	Common
 }
 
 func NewMigrationMqttBridge(adaptors *adaptors.Adaptors) *MigrationMqttBridge {
 	return &MigrationMqttBridge{
-		adaptors: adaptors,
+		Common{
+			adaptors: adaptors,
+		},
 	}
 }
 
@@ -41,18 +42,5 @@ func (n *MigrationMqttBridge) Up(ctx context.Context, adaptors *adaptors.Adaptor
 	if adaptors != nil {
 		n.adaptors = adaptors
 	}
-	n.addPlugin("mqtt_bridge", false, false, true, mqtt_bridge.Version)
-
-	return nil
-}
-
-func (n *MigrationMqttBridge) addPlugin(name string, enabled, system, actor bool, version string) (node *m.Plugin) {
-	_ = n.adaptors.Plugin.CreateOrUpdate(context.Background(), &m.Plugin{
-		Name:    name,
-		Version: version,
-		Enabled: enabled,
-		System:  system,
-		Actor:   actor,
-	})
-	return
+	return n.addPlugin(ctx, "mqtt_bridge", false, false, true, mqtt_bridge.Version)
 }

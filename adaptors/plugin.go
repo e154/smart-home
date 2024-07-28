@@ -33,7 +33,7 @@ type IPlugin interface {
 	CreateOrUpdate(ctx context.Context, ver *m.Plugin) error
 	Update(ctx context.Context, plugin *m.Plugin) error
 	Delete(ctx context.Context, pluginId string) error
-	List(ctx context.Context, limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Plugin, total int64, err error)
+	List(ctx context.Context, limit, offset int64, orderBy, sort string, enabled, triggers *bool) (list []*m.Plugin, total int64, err error)
 	Search(ctx context.Context, query string, limit, offset int64) (list []*m.Plugin, total int64, err error)
 	GetByName(ctx context.Context, name string) (ver *m.Plugin, err error)
 	fromDb(dbVer *db.Plugin) (plugin *m.Plugin)
@@ -80,9 +80,9 @@ func (p *Plugin) Delete(ctx context.Context, name string) (err error) {
 }
 
 // List ...
-func (p *Plugin) List(ctx context.Context, limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Plugin, total int64, err error) {
+func (p *Plugin) List(ctx context.Context, limit, offset int64, orderBy, sort string, enabled, triggers *bool) (list []*m.Plugin, total int64, err error) {
 	var dbList []*db.Plugin
-	if dbList, total, err = p.table.List(ctx, int(limit), int(offset), orderBy, sort, onlyEnabled); err != nil {
+	if dbList, total, err = p.table.List(ctx, int(limit), int(offset), orderBy, sort, enabled, triggers); err != nil {
 		return
 	}
 
@@ -123,11 +123,12 @@ func (p *Plugin) GetByName(ctx context.Context, name string) (ver *m.Plugin, err
 
 func (p *Plugin) fromDb(dbVer *db.Plugin) (ver *m.Plugin) {
 	ver = &m.Plugin{
-		Name:    dbVer.Name,
-		Version: dbVer.Version,
-		Enabled: dbVer.Enabled,
-		System:  dbVer.System,
-		Actor:   dbVer.Actor,
+		Name:     dbVer.Name,
+		Version:  dbVer.Version,
+		Enabled:  dbVer.Enabled,
+		System:   dbVer.System,
+		Actor:    dbVer.Actor,
+		Triggers: dbVer.Triggers,
 	}
 
 	// deserialize settings
@@ -141,11 +142,12 @@ func (p *Plugin) fromDb(dbVer *db.Plugin) (ver *m.Plugin) {
 
 func (p *Plugin) toDb(ver *m.Plugin) (dbVer *db.Plugin) {
 	dbVer = &db.Plugin{
-		Name:    ver.Name,
-		Version: ver.Version,
-		Enabled: ver.Enabled,
-		System:  ver.System,
-		Actor:   ver.Actor,
+		Name:     ver.Name,
+		Version:  ver.Version,
+		Enabled:  ver.Enabled,
+		System:   ver.System,
+		Actor:    ver.Actor,
+		Triggers: ver.Triggers,
 	}
 
 	// serialize settings

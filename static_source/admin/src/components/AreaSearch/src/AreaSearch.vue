@@ -23,6 +23,9 @@ watch(
       areaName.value = val?.name || null;
       currentArea.value = val || null;
     },
+  {
+    immediate: true,
+  }
 )
 
 // 监听
@@ -64,7 +67,7 @@ const handleSelect = (val: ApiArea) => {
       class="w-[100%]"
       v-model="areaName"
       :fetch-suggestions="querySearchAsync"
-      placeholder="Please input"
+      placeholder="Please select area"
       value-key="name"
       clearable
       @select="handleSelect"

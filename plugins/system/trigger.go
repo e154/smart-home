@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2023, Filippov Alex
+// Copyright (C) 2016-2024, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -16,48 +16,45 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package triggers
+package system
 
 import (
 	"github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/plugins/triggers"
 	"go.uber.org/atomic"
 	"sync"
 
 	"github.com/e154/bus"
 )
 
-const (
-	// TopicSystem ...
-	TopicSystem = "system/#"
-	// SystemName ...
-	SystemName = "system"
-	// SystemFunctionName ...
-	SystemFunctionName = "automationTriggerSystem"
-)
+var _ triggers.ITrigger = (*Trigger)(nil)
 
-var _ ITrigger = (*SystemTrigger)(nil)
-
-// SystemTrigger ...
-type SystemTrigger struct {
-	baseTrigger
-	counter *atomic.Int32
+// Trigger ...
+type Trigger struct {
+	eventBus     bus.Bus
+	msgQueue     bus.Bus
+	functionName string
+	name         string
+	counter      *atomic.Int32
 }
 
-// NewSystemTrigger ...
-func NewSystemTrigger(eventBus bus.Bus) ITrigger {
-	return &SystemTrigger{
-		baseTrigger: baseTrigger{
-			eventBus:     eventBus,
-			msgQueue:     bus.NewBus(),
-			functionName: SystemFunctionName,
-			name:         SystemName,
-		},
-		counter: atomic.NewInt32(0),
+// NewTrigger ...
+func NewTrigger(eventBus bus.Bus) triggers.ITrigger {
+	return &Trigger{
+		eventBus:     eventBus,
+		msgQueue:     bus.NewBus(),
+		functionName: FunctionName,
+		name:         Name,
+		counter:      atomic.NewInt32(0),
 	}
 }
 
+func (t *Trigger) Name() string {
+	return t.name
+}
+
 // AsyncAttach ...
-func (t *SystemTrigger) AsyncAttach(wg *sync.WaitGroup) {
+func (t *Trigger) AsyncAttach(wg *sync.WaitGroup) {
 
 	if err := t.eventBus.Subscribe(TopicSystem, t.eventHandler); err != nil {
 		log.Error(err.Error())
@@ -66,7 +63,7 @@ func (t *SystemTrigger) AsyncAttach(wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-func (t *SystemTrigger) eventHandler(topic string, event interface{}) {
+func (t *Trigger) eventHandler(topic string, event interface{}) {
 	if t.counter.Load() <= 0 {
 		return
 	}
@@ -75,7 +72,7 @@ func (t *SystemTrigger) eventHandler(topic string, event interface{}) {
 		return
 	}
 
-	t.msgQueue.Publish(topic, &SystemTriggerMessage{
+	t.msgQueue.Publish(topic, &TriggerMessage{
 		Topic:     topic,
 		EventName: events.EventName(event),
 		Event:     event,
@@ -83,15 +80,20 @@ func (t *SystemTrigger) eventHandler(topic string, event interface{}) {
 }
 
 // Subscribe ...
-func (t *SystemTrigger) Subscribe(options Subscriber) error {
+func (t *Trigger) Subscribe(options triggers.Subscriber) error {
 	//log.Infof("subscribe topic %s", TopicSystem)
 	t.counter.Inc()
 	return t.msgQueue.Subscribe(TopicSystem, options.Handler)
 }
 
 // Unsubscribe ...
-func (t *SystemTrigger) Unsubscribe(options Subscriber) error {
+func (t *Trigger) Unsubscribe(options triggers.Subscriber) error {
 	//log.Infof("unsubscribe topic %s", TopicSystem)
 	t.counter.Dec()
 	return t.msgQueue.Unsubscribe(TopicSystem, options.Handler)
+}
+
+// FunctionName ...
+func (t *Trigger) FunctionName() string {
+	return t.functionName
 }

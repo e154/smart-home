@@ -54,6 +54,7 @@ type Supervisor interface {
 	SetState(common.EntityId, EntityStateParams) error
 	GetActorById(common.EntityId) (PluginActor, error)
 	CallAction(common.EntityId, string, map[string]interface{})
+	CallScript(id common.EntityId, fn string, arg ...interface{})
 	CallActionV2(CallActionV2, map[string]interface{})
 	CallScene(common.EntityId, map[string]interface{})
 	AddEntity(*m.Entity) error
@@ -63,7 +64,7 @@ type Supervisor interface {
 	EntityIsLoaded(id common.EntityId) bool
 	PluginIsLoaded(string) bool
 	GetService() Service
-	GetPluginReadme(context.Context, string, *string) ([]byte, error)
+	GetPluginReadme(context.Context, string, *string, *string) ([]byte, error)
 	PushSystemEvent(strCommand string, params map[string]interface{})
 }
 
@@ -84,6 +85,7 @@ type PluginActor interface {
 	AddMetric(name string, value map[string]interface{})
 	MatchTags(tags []string) bool
 	Area() *m.Area
+	CallScript(fn string, arg ...interface{})
 }
 
 // ActorConstructor ...
@@ -224,7 +226,7 @@ type Pluggable interface {
 	GetActor(id common.EntityId) (pla PluginActor, err error)
 	AddOrUpdateActor(*m.Entity) error
 	RemoveActor(common.EntityId) error
-	Readme(lang *string) ([]byte, error)
+	Readme(*string, *string) ([]byte, error)
 }
 
 // Installable ...
