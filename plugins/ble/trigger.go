@@ -27,8 +27,6 @@ import (
 	"time"
 
 	"github.com/e154/bus"
-	"tinygo.org/x/bluetooth"
-
 	"github.com/e154/smart-home/plugins/triggers"
 )
 
@@ -36,7 +34,6 @@ var _ triggers.ITrigger = (*Trigger)(nil)
 
 type Trigger struct {
 	eventBus     bus.Bus
-	msgQueue     bus.Bus
 	functionName string
 	name         string
 	ticker       *time.Ticker
@@ -47,7 +44,6 @@ type Trigger struct {
 func NewTrigger(eventBus bus.Bus) *Trigger {
 	trigger := &Trigger{
 		eventBus:     eventBus,
-		msgQueue:     bus.NewBus(),
 		functionName: FunctionName,
 		name:         Name,
 		devices:      make(map[string]map[string]*TriggerParams),
@@ -61,7 +57,7 @@ func NewTrigger(eventBus bus.Bus) *Trigger {
 			trigger.Lock()
 			for _, device := range trigger.devices {
 				for _, characteristic := range device {
-					if !characteristic.connected.Load() {
+					if !characteristic.IsConnected() {
 						trigger.Connect(characteristic, false)
 					}
 				}
@@ -94,7 +90,6 @@ func (t *Trigger) Shutdown() {
 }
 
 func (t *Trigger) AsyncAttach(wg *sync.WaitGroup) {
-
 	wg.Done()
 }
 
@@ -174,16 +169,10 @@ func (t *Trigger) Connect(params *TriggerParams, firstTime bool) error {
 	address := options.Payload[AttrAddress].String()
 	characteristic := options.Payload[AttrCharacteristic].String()
 
-	var timeout, connectionTimeout int64 = 5, 5
-	params.Ble = NewBle(address, timeout, connectionTimeout, false)
-
-	char, err := bluetooth.ParseUUID(characteristic)
-	if err != nil {
-		return err
-	}
+	params.Bluetooth = NewBle(address, DefaultTimeout, DefaultConnectionTimeout, false)
 
 	callback := reflect.ValueOf(options.Handler)
-	err = params.Subscribe(char, func(bytes []byte) {
+	err := params.Subscribe(characteristic, func(bytes []byte) {
 		callback.Call([]reflect.Value{reflect.ValueOf(""), reflect.ValueOf(bytes)})
 	})
 

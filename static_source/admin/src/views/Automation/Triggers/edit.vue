@@ -62,8 +62,11 @@ const save = async () => {
   }
 
   let attributes: { [key: string]: ApiAttribute } = {};
-  for (const index in tr.attributes) {
-    attributes[tr.attributes[index].name] = tr.attributes[index];
+  for (const attr of tr.attributes) {
+    if (attr.name == 'notice') {
+      continue
+    }
+    attributes[attr.name] = attr;
   }
   data.attributes = attributes
 

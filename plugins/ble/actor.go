@@ -19,21 +19,20 @@
 package ble
 
 import (
+	"github.com/e154/smart-home/common"
 	"strings"
-
-	"github.com/pkg/errors"
-	"tinygo.org/x/bluetooth"
 
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/supervisor"
+	"github.com/pkg/errors"
 )
 
 // Actor ...
 type Actor struct {
 	*supervisor.BaseActor
 	actionPool chan events.EventCallEntityAction
-	ble        *Ble
+	ble        Bluetooth
 }
 
 // NewActor ...
@@ -86,13 +85,13 @@ func (e *Actor) Destroy() {
 
 func (e *Actor) Spawn() {
 
-	var timeout, connectionTimeout int64 = 5, 5
+	var timeout, connectionTimeout = DefaultTimeout, DefaultConnectionTimeout
 	if e.Setts[AttrConnectionTimeoutSec] != nil {
 		connectionTimeout = e.Setts[AttrConnectionTimeoutSec].Int64()
 	}
 
 	if e.Setts[AttrTimeoutSec] != nil {
-		connectionTimeout = e.Setts[AttrTimeoutSec].Int64()
+		timeout = e.Setts[AttrTimeoutSec].Int64()
 	}
 
 	var address string
@@ -127,11 +126,10 @@ func (e *Actor) addAction(event events.EventCallEntityAction) {
 func (e *Actor) runAction(msg events.EventCallEntityAction) {
 
 	if strings.ToUpper(msg.ActionName) == ActionScan {
-		address, err := bluetooth.ParseUUID(e.Setts[AttrAddress].String())
-		if err != nil {
-			e.ble.Scan(nil)
+		if address, ok := e.Setts[AttrAddress]; ok {
+			e.ble.Scan(common.String(address.String()))
 		} else {
-			e.ble.Scan(&address)
+			e.ble.Scan(nil)
 		}
 	}
 
