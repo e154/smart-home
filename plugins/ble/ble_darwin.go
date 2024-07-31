@@ -24,7 +24,7 @@ import (
 	"tinygo.org/x/bluetooth"
 )
 
-func (b *Ble) Scan(address *bluetooth.UUID) {
+func (b *Ble) scan(address *bluetooth.UUID) {
 	if !b.isScan.CompareAndSwap(false, true) {
 		return
 	}
@@ -113,7 +113,7 @@ func (b *Ble) onScanConnect(device bluetooth.Device) {
 
 }
 
-func (b *Ble) Connect() (*bluetooth.Device, error) {
+func (b *Ble) connect() (*bluetooth.Device, error) {
 
 	if b.debug {
 		log.Debugf("try connecting to %v", b.address)
@@ -157,7 +157,7 @@ func (b *Ble) Connect() (*bluetooth.Device, error) {
 	return &device, nil
 }
 
-func (b *Ble) Write(char bluetooth.UUID, request []byte, withResponse bool) ([]byte, error) {
+func (b *Ble) write(char bluetooth.UUID, request []byte, withResponse bool) ([]byte, error) {
 
 	characteristics, err := b.GetCharacteristics([]bluetooth.UUID{char})
 	if err != nil {
@@ -193,7 +193,7 @@ func (b *Ble) Write(char bluetooth.UUID, request []byte, withResponse bool) ([]b
 	return nil, nil
 }
 
-func (b *Ble) Read(char bluetooth.UUID) ([]byte, error) {
+func (b *Ble) read(char bluetooth.UUID) ([]byte, error) {
 
 	characteristics, err := b.GetCharacteristics([]bluetooth.UUID{char})
 	if err != nil {
@@ -219,7 +219,7 @@ func (b *Ble) Read(char bluetooth.UUID) ([]byte, error) {
 	return nil, nil
 }
 
-func (b *Ble) Subscribe(char bluetooth.UUID, handler func([]byte)) error {
+func (b *Ble) subscribe(char bluetooth.UUID, handler func([]byte)) error {
 
 	characteristics, err := b.GetCharacteristics([]bluetooth.UUID{char})
 	if err != nil {

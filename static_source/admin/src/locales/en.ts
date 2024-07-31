@@ -567,6 +567,7 @@ export default {
                 args: 'Args',
                 description: 'Description'
             },
+            sortable: 'Sortable',
             backgroundAdaptive: 'Background Adaptive',
             keystrokeCapture: 'Keystroke Capture',
             addNewButton: 'Add New Button',

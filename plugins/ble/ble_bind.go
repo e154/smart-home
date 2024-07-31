@@ -18,22 +18,13 @@
 
 package ble
 
-import (
-	"tinygo.org/x/bluetooth"
-)
-
 type Response struct {
 	Response []byte `json:"response"`
 	Error    string `json:"error"`
 }
 
 func GetWriteBind(actor *Actor) func(char string, payload []byte, withResponse bool) Response {
-	return func(c string, payload []byte, withResponse bool) Response {
-		char, err := bluetooth.ParseUUID(c)
-		if err != nil {
-			return Response{Error: err.Error()}
-		}
-
+	return func(char string, payload []byte, withResponse bool) Response {
 		response, err := actor.ble.Write(char, payload, withResponse)
 		if err != nil {
 			return Response{Error: err.Error()}
@@ -43,40 +34,11 @@ func GetWriteBind(actor *Actor) func(char string, payload []byte, withResponse b
 }
 
 func GetReadBind(actor *Actor) func(char string) Response {
-	return func(c string) Response {
-		char, err := bluetooth.ParseUUID(c)
-		if err != nil {
-			return Response{Error: err.Error()}
-		}
-
+	return func(char string) Response {
 		response, err := actor.ble.Read(char)
 		if err != nil {
 			return Response{Error: err.Error()}
 		}
 		return Response{Response: response}
-	}
-}
-
-func GetSubscribeBind(actor *Actor) func(char string, handler func([]byte)) Response {
-	return func(c string, handler func([]byte)) Response {
-		char, err := bluetooth.ParseUUID(c)
-		if err != nil {
-			return Response{Error: err.Error()}
-		}
-
-		err = actor.ble.Subscribe(char, handler)
-		if err != nil {
-			return Response{Error: err.Error()}
-		}
-		return Response{}
-	}
-}
-
-func GetDisconnectBind(actor *Actor) func() Response {
-	return func() Response {
-		if err := actor.ble.Disconnect(); err != nil {
-			return Response{Error: err.Error()}
-		}
-		return Response{}
 	}
 }

@@ -567,6 +567,7 @@ export default {
         args: 'Аргументы',
         description: 'Описание'
       },
+      sortable: 'Sortable',
       backgroundAdaptive: 'Адаптивный фон',
       keystrokeCapture: 'Захват клавиатуры',
       addNewButton: 'Добавить кнопку',

@@ -43,6 +43,9 @@ const (
 	AttrSystemInfo           = "SystemInfo"
 
 	FunctionName = "automationTriggerBle"
+
+	DefaultTimeout           int64 = 5
+	DefaultConnectionTimeout int64 = 5
 )
 
 // NewSettings ...
@@ -56,12 +59,12 @@ func NewSettings() map[string]*m.Attribute {
 		AttrTimeoutSec: {
 			Name:  AttrTimeoutSec,
 			Type:  common.AttributeInt,
-			Value: 5,
+			Value: DefaultTimeout,
 		},
 		AttrConnectionTimeoutSec: {
 			Name:  AttrConnectionTimeoutSec,
 			Type:  common.AttributeInt,
-			Value: 5,
+			Value: DefaultConnectionTimeout,
 		},
 		AttrDebug: {
 			Name:  AttrDebug,
@@ -106,6 +109,16 @@ func NewTriggerParams() m.TriggerParams {
 }
 
 type TriggerParams struct {
-	*Ble
+	Bluetooth
 	options triggers.Subscriber
+}
+
+type Bluetooth interface {
+	Connect() error
+	IsConnected() bool
+	Disconnect() error
+	Scan(address *string)
+	Write(char string, request []byte, withResponse bool) ([]byte, error)
+	Read(char string) ([]byte, error)
+	Subscribe(char string, handler func([]byte)) error
 }

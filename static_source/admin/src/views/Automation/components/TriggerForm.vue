@@ -359,6 +359,7 @@ defineExpose({
   }
 
   table {
+    border-collapse: collapse;
     thead th {
       border: 1px solid ;
       padding: 0 10px;

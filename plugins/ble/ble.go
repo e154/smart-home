@@ -57,6 +57,11 @@ func NewBle(address string, timeout, connectionTimeout int64, debug bool) *Ble {
 	return ble
 }
 
+func (b *Ble) Connect() error {
+	_, err := b.connect()
+	return err
+}
+
 func (b *Ble) Disconnect() error {
 	if !b.connected.Load() || b.device == nil {
 		return nil
@@ -70,8 +75,51 @@ func (b *Ble) Disconnect() error {
 	return nil
 }
 
+func (b *Ble) IsConnected() bool {
+	return b.connected.Load()
+}
+
+func (b *Ble) Scan(param *string) {
+
+	if param == nil {
+		b.scan(nil)
+		return
+	}
+
+	address, err := bluetooth.ParseUUID(*param)
+	if err != nil {
+		b.scan(nil)
+	} else {
+		b.scan(&address)
+	}
+}
+
+func (b *Ble) Write(c string, request []byte, withResponse bool) ([]byte, error) {
+	char, err := bluetooth.ParseUUID(c)
+	if err != nil {
+		return nil, err
+	}
+	return b.write(char, request, withResponse)
+}
+
+func (b *Ble) Read(c string) ([]byte, error) {
+	char, err := bluetooth.ParseUUID(c)
+	if err != nil {
+		return nil, err
+	}
+	return b.read(char)
+}
+
+func (b *Ble) Subscribe(c string, handler func([]byte)) error {
+	char, err := bluetooth.ParseUUID(c)
+	if err != nil {
+		return err
+	}
+	return b.subscribe(char, handler)
+}
+
 func (b *Ble) GetServices() ([]bluetooth.DeviceService, error) {
-	device, err := b.Connect()
+	device, err := b.connect()
 	if err != nil {
 		return nil, err
 	}
@@ -109,9 +157,4 @@ func (b *Ble) GetCharacteristics(chars []bluetooth.UUID) ([]bluetooth.DeviceChar
 		log.Debugf("device %v found %d characteristics", b.address, len(characteristic))
 	}
 	return characteristic, nil
-}
-
-type Cache struct {
-	sync.Mutex
-	pull map[bluetooth.UUID]map[bluetooth.UUID]struct{}
 }

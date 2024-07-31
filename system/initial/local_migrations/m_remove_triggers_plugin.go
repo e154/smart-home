@@ -20,6 +20,10 @@ package local_migrations
 
 import (
 	"context"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/plugins/alexa"
+	"github.com/e154/smart-home/plugins/ble"
+	"github.com/e154/smart-home/plugins/time"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/plugins/state_change"
@@ -43,10 +47,54 @@ func (n *MigrationRemoveTriggersPlugin) Up(ctx context.Context, adaptors *adapto
 	if adaptors != nil {
 		n.adaptors = adaptors
 	}
-	err := n.addPlugin(ctx, "state_change", true, true, false, state_change.Version)
+	err := n.adaptors.Plugin.CreateOrUpdate(ctx, &m.Plugin{
+		Name:     "state_change",
+		Version:  state_change.Version,
+		Enabled:  true,
+		System:   true,
+		Actor:    false,
+		Triggers: true,
+	})
 	So(err, ShouldBeNil)
 
-	err = n.addPlugin(ctx, "system", true, true, false, system.Version)
+	err = n.adaptors.Plugin.CreateOrUpdate(ctx, &m.Plugin{
+		Name:     "system",
+		Version:  system.Version,
+		Enabled:  true,
+		System:   true,
+		Actor:    false,
+		Triggers: true,
+	})
+	So(err, ShouldBeNil)
+
+	err = n.adaptors.Plugin.CreateOrUpdate(ctx, &m.Plugin{
+		Name:     "time",
+		Version:  time.Version,
+		Enabled:  true,
+		System:   true,
+		Actor:    false,
+		Triggers: true,
+	})
+	So(err, ShouldBeNil)
+
+	err = n.adaptors.Plugin.CreateOrUpdate(ctx, &m.Plugin{
+		Name:     "ble",
+		Version:  ble.Version,
+		Enabled:  false,
+		System:   false,
+		Actor:    true,
+		Triggers: true,
+	})
+	So(err, ShouldBeNil)
+
+	err = n.adaptors.Plugin.CreateOrUpdate(ctx, &m.Plugin{
+		Name:     "alexa",
+		Version:  alexa.Version,
+		Enabled:  false,
+		System:   false,
+		Actor:    true,
+		Triggers: true,
+	})
 	So(err, ShouldBeNil)
 
 	return nil
