@@ -61,7 +61,6 @@ func NewTrigger(
 
 	var triggerPlugin triggers.ITrigger
 	if triggerPlugin, err = rawPlugin.GetTrigger(pluginName); err != nil {
-		log.Error(err.Error())
 		return
 	}
 

@@ -106,5 +106,5 @@ func (e *Actor) selfUpdate() {
 		e.Attrs[AttrInodesUsedPercent].Value = r.InodesUsedPercent
 		e.AttrMu.Unlock()
 	}
-	e.SaveState(false, false)
+	e.SaveState(false, true)
 }

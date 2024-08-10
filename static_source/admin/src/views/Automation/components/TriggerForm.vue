@@ -113,6 +113,7 @@ const getPluginList = async () => {
     page: 1,
     limit: 99,
     triggers: true,
+    enabled: true,
   }
   const res = await api.v1.pluginServiceGetPluginList(params)
     .catch(() => {
