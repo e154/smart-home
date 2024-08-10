@@ -193,21 +193,21 @@ func (c *Connection) proxyRequest(w http.ResponseWriter, r *http.Request) (err e
 
 	// [2]: Send the HTTP request to the peer
 	// Send the serialized HTTP request to the the peer
-	if err = c.ws.WriteMessage(websocket.TextMessage, jsonReq); err != nil {
+	if err = c.ws.WriteMessage(websocket.BinaryMessage, jsonReq); err != nil {
 		return fmt.Errorf("unable to write request : %w", err)
 	}
 
 	// Pipe the HTTP request body to the peer
-	bodyWriter, err := c.ws.NextWriter(websocket.BinaryMessage)
-	if err != nil {
-		return fmt.Errorf("unable to get request body writer : %w", err)
-	}
-	if _, err = io.Copy(bodyWriter, r.Body); err != nil {
-		return fmt.Errorf("unable to pipe request body : %w", err)
-	}
-	if err = bodyWriter.Close(); err != nil {
-		return fmt.Errorf("unable to pipe request body (close) : %w", err)
-	}
+	//bodyWriter, err := c.ws.NextWriter(websocket.BinaryMessage)
+	//if err != nil {
+	//	return fmt.Errorf("unable to get request body writer : %w", err)
+	//}
+	//if _, err = io.Copy(bodyWriter, r.Body); err != nil {
+	//	return fmt.Errorf("unable to pipe request body : %w", err)
+	//}
+	//if err = bodyWriter.Close(); err != nil {
+	//	return fmt.Errorf("unable to pipe request body (close) : %w", err)
+	//}
 
 	msg, ok := <-c.queue
 	if !ok {
@@ -217,7 +217,7 @@ func (c *Connection) proxyRequest(w http.ResponseWriter, r *http.Request) (err e
 	jsonResponse := msg.Value
 
 	// Deserialize the HTTP Response
-	httpResponse := new(common.HTTPResponse)
+	httpResponse := &common.HTTPResponse{}
 	if err = json.Unmarshal(jsonResponse, httpResponse); err != nil {
 		return fmt.Errorf("unable to unserialize http response : %w", err)
 	}
@@ -230,15 +230,15 @@ func (c *Connection) proxyRequest(w http.ResponseWriter, r *http.Request) (err e
 	}
 	w.WriteHeader(httpResponse.StatusCode)
 
-	msg, ok = <-c.queue
-	if !ok {
-		return
-	}
+	//msg, ok = <-c.queue
+	//if !ok {
+	//	return
+	//}
+	//
+	//responseBody := msg.Value
+	//
 
-	responseBody := msg.Value
-
-	responseBodyReader := bytes.NewReader(responseBody)
-
+	responseBodyReader := bytes.NewReader(httpResponse.Body)
 	if _, err = io.Copy(w, responseBodyReader); err != nil {
 		return fmt.Errorf("unable to pipe response body : %w", err)
 	}

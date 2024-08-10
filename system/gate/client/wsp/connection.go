@@ -22,7 +22,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"net/http/httptest"
 	"runtime/debug"
@@ -31,6 +30,8 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/pkg/errors"
+	"go.uber.org/atomic"
 
 	"github.com/e154/smart-home/api"
 	"github.com/e154/smart-home/common/apperr"
@@ -55,7 +56,8 @@ type Connection struct {
 	cli    *stream.Client
 	debug  bool
 	*sync.Mutex
-	ws *websocket.Conn
+	ws       *websocket.Conn
+	isClosed *atomic.Bool
 }
 
 // NewConnection create a Connection object
@@ -63,11 +65,12 @@ func NewConnection(pool *Pool,
 	api *api.Api,
 	stream *stream.Stream) *Connection {
 	c := &Connection{
-		pool:   pool,
-		status: CONNECTING,
-		api:    api,
-		stream: stream,
-		Mutex:  &sync.Mutex{},
+		pool:     pool,
+		status:   CONNECTING,
+		api:      api,
+		stream:   stream,
+		Mutex:    &sync.Mutex{},
+		isClosed: atomic.NewBool(true),
 	}
 	return c
 }
@@ -86,6 +89,14 @@ func (c *Connection) Connect(ctx context.Context) (err error) {
 	if err != nil {
 		return err
 	}
+
+	c.ws.SetCloseHandler(func(code int, text string) error {
+		c.isClosed.Store(true)
+		message := websocket.FormatCloseMessage(code, "")
+		return c.ws.WriteControl(websocket.CloseMessage, message, time.Now().Add(time.Second))
+	})
+
+	c.isClosed.Store(false)
 
 	if c.debug {
 		log.Infof("Connected to %s", c.pool.target)
@@ -176,14 +187,7 @@ func (c *Connection) serve(ctx context.Context) {
 		}
 
 		// Deserialize request
-		httpRequest := new(common.HTTPRequest)
-		err = json.Unmarshal(jsonRequest, httpRequest)
-		if err != nil {
-			c.error(fmt.Sprintf("Unable to deserialize json http request : %s\n", err))
-			break
-		}
-
-		req, err := common.UnserializeHTTPRequest(httpRequest)
+		req, err := common.DeserializeHTTPRequest(jsonRequest)
 		if err != nil {
 			c.error(fmt.Sprintf("Unable to deserialize http request : %v\n", err))
 			break
@@ -191,31 +195,12 @@ func (c *Connection) serve(ctx context.Context) {
 
 		//log.Infof("[%s] %s", req.Method, req.URL.String())
 
-		// Pipe request body
-		_, bodyReader, err := c.ws.NextReader()
-		if err != nil {
-			log.Errorf("Unable to get response body reader : %v", err)
-			break
-		}
-		req.Body = io.NopCloser(bodyReader)
-
-		// Execute request
-		//resp, err := c.pool.client.client.Do(req)
-		//if err != nil {
-		//	err = c.error(fmt.Sprintf("Unable to execute request : %v\n", err))
-		//	if err != nil {
-		//		break
-		//	}
-		//	continue
-		//}
-
-		//todo fix
 		req.RequestURI = req.URL.String()
 		resp := httptest.NewRecorder()
 		c.api.Echo().ServeHTTP(resp, req)
 
 		// Serialize response
-		jsonResponse, err := json.Marshal(common.SerializeHTTPResponse(resp.Result()))
+		jsonResponse, err := json.Marshal(common.SerializeHTTPResponse(resp))
 		if err != nil {
 			err = c.error(fmt.Sprintf("Unable to serialize response : %v\n", err))
 			if err != nil {
@@ -225,24 +210,12 @@ func (c *Connection) serve(ctx context.Context) {
 		}
 
 		// Write response
-		err = c.WriteMessage(websocket.TextMessage, jsonResponse)
+		err = c.WriteMessage(websocket.BinaryMessage, jsonResponse)
 		if err != nil {
 			log.Errorf("Unable to write response : %v", err)
 			break
 		}
 
-		// Pipe response body
-		bodyWriter, err := c.ws.NextWriter(websocket.BinaryMessage)
-		if err != nil {
-			log.Errorf("Unable to get response body writer : %v", err)
-			break
-		}
-		_, err = io.Copy(bodyWriter, resp.Body)
-		if err != nil {
-			log.Errorf("Unable to get pipe response body : %v", err)
-			break
-		}
-		bodyWriter.Close()
 	}
 }
 
@@ -280,6 +253,11 @@ func (c *Connection) error(msg string) (err error) {
 
 // Close close the ws/tcp connection and remove it from the pool
 func (c *Connection) Close() {
+	if !c.isClosed.CompareAndSwap(false, true) {
+		return
+	}
+
+	c.isClosed.Store(true)
 
 	if c.ws != nil {
 		if err := c.WriteMessage(websocket.CloseMessage, []byte{}); err != nil {
@@ -290,8 +268,11 @@ func (c *Connection) Close() {
 	}
 }
 
-func (c *Connection) WriteMessage(messageType int, data []byte) (err error) {
-	//todo: fix, it not work
+func (c *Connection) WriteMessage(messageType int, data []byte) error {
+	if c.isClosed.Load() {
+		return errors.New("connection is closed")
+	}
+
 	c.Lock()
 	defer func() {
 		c.Unlock()
@@ -301,6 +282,5 @@ func (c *Connection) WriteMessage(messageType int, data []byte) (err error) {
 		}
 	}()
 
-	err = c.ws.WriteMessage(messageType, data)
-	return
+	return c.ws.WriteMessage(messageType, data)
 }

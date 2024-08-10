@@ -19,8 +19,9 @@
 package ble
 
 import (
-	"go.uber.org/atomic"
 	"sync"
+
+	"go.uber.org/atomic"
 	"tinygo.org/x/bluetooth"
 )
 
@@ -49,6 +50,9 @@ func NewBle(address string, timeout, connectionTimeout int64, debug bool) *Ble {
 	}
 
 	ble.adapter.SetConnectHandler(func(device bluetooth.Device, connected bool) {
+		if !ble.connected.CompareAndSwap(!connected, connected) {
+			return
+		}
 		log.Infof("bluetooth device: %s, connected: %t", device.Address.String(), connected)
 		ble.connected.Store(connected)
 		ble.device = &device

@@ -21,6 +21,7 @@ package common
 import (
 	"fmt"
 	"net/http"
+	"net/http/httptest"
 )
 
 // HTTPResponse is a serializable version of http.Response ( with only useful fields )
@@ -28,15 +29,18 @@ type HTTPResponse struct {
 	StatusCode    int
 	Header        http.Header
 	ContentLength int64
+	Body          []byte
 }
 
 // SerializeHTTPResponse create a new HTTPResponse from a http.Response
-func SerializeHTTPResponse(resp *http.Response) *HTTPResponse {
-	r := new(HTTPResponse)
-	r.StatusCode = resp.StatusCode
-	r.Header = resp.Header
-	r.ContentLength = resp.ContentLength
-	return r
+func SerializeHTTPResponse(resp *httptest.ResponseRecorder) *HTTPResponse {
+	result := resp.Result()
+	return &HTTPResponse{
+		StatusCode:    result.StatusCode,
+		Header:        result.Header,
+		ContentLength: result.ContentLength,
+		Body:          resp.Body.Bytes(),
+	}
 }
 
 // NewHTTPResponse creates a new HTTPResponse

@@ -173,7 +173,6 @@ func (a *triggerManager) addTrigger(model *m.Trigger) (err error) {
 
 	var trigger *Trigger
 	if trigger, err = NewTrigger(a.eventBus, a.scriptService, model, a.rawPlugin); err != nil {
-		log.Error(err.Error())
 		return
 	}
 

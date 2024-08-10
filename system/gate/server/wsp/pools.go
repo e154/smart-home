@@ -99,7 +99,7 @@ func (p *Pools) Clean() {
 
 	for _, pool := range p.pools {
 		if pool.IsEmpty() {
-			log.Infof("Removing empty connection pool : %p", pool.id)
+			log.Infof("Removing empty connection pool : %s", pool.id)
 			pool.Shutdown()
 			delete(p.pools, pool.id)
 		}

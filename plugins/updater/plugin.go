@@ -75,6 +75,19 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 			Id:         common.EntityId(fmt.Sprintf("%s.%s", EntityUpdater, Name)),
 			PluginName: Name,
 			Attributes: NewAttr(),
+			Actions: []*m.EntityAction{
+				{
+					Name: "check",
+				},
+			},
+			States: []*m.EntityState{
+				{
+					Name: "error",
+				},
+				{
+					Name: "exist_update",
+				},
+			},
 		}
 		err = p.Service.Adaptors().Entity.Add(context.Background(), entity)
 	}
