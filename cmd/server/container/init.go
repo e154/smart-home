@@ -62,5 +62,6 @@ func MigrationList(adaptors *adaptors.Adaptors,
 		local_migrations.NewMigrationPachka(adaptors),
 		local_migrations.NewMigrationWebhook(adaptors),
 		local_migrations.NewMigrationRemoveTriggersPlugin(adaptors),
+		local_migrations.NewMigrationMdns(adaptors),
 	}
 }
