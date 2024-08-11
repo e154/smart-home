@@ -23,6 +23,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/grandcat/zeroconf"
 	echopprof "github.com/hiko1129/echo-pprof"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -39,6 +40,7 @@ type Server struct {
 	echo        *echo.Echo
 	proxy       *wsp.Server
 	cfg         *Config
+	zeroconf    *zeroconf.Server
 }
 
 func NewServer(cfg *Config, proxy *wsp.Server) *Server {
@@ -121,6 +123,14 @@ func (a *Server) Start() (err error) {
 			log.Error(err.Error())
 		}
 	}()
+
+	if a.zeroconf, _ = zeroconf.Register("smart-home-gate", "_https._tcp", "local.", a.cfg.HttpsPort, nil, nil); err != nil {
+		log.Error(err.Error())
+	}
+
+	if a.zeroconf, _ = zeroconf.Register("smart-home-gate", "_http._tcp", "local.", a.cfg.HttpPort, nil, nil); err != nil {
+		log.Error(err.Error())
+	}
 
 	return
 }

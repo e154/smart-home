@@ -26,13 +26,14 @@ import (
 	"strings"
 	"time"
 
+	"github.com/e154/bus"
+	"github.com/grandcat/zeroconf"
 	echopprof "github.com/hiko1129/echo-pprof"
 	echoCacheMiddleware "github.com/kenshin579/echo-http-cache"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"go.uber.org/atomic"
 
-	"github.com/e154/bus"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api/controllers"
 	"github.com/e154/smart-home/api/stub"
@@ -48,17 +49,19 @@ var (
 
 // Api ...
 type Api struct {
-	controllers *controllers.Controllers
-	echoFilter  *rbac.EchoAccessFilter
-	echo        *echo.Echo
-	cfg         Config
-	certPublic  string
-	certKey     string
-	adaptors    *adaptors.Adaptors
-	eventBus    bus.Bus
-	httpServer  http.Server
-	tlsServer   http.Server
-	tlsStarted  *atomic.Bool
+	controllers   *controllers.Controllers
+	echoFilter    *rbac.EchoAccessFilter
+	echo          *echo.Echo
+	cfg           Config
+	certPublic    string
+	certKey       string
+	adaptors      *adaptors.Adaptors
+	eventBus      bus.Bus
+	httpServer    http.Server
+	tlsServer     http.Server
+	tlsStarted    *atomic.Bool
+	httpZeroconf  *zeroconf.Server
+	httpsZeroconf *zeroconf.Server
 }
 
 // NewApi ...
@@ -134,6 +137,7 @@ func (a *Api) Start() (err error) {
 
 	go a.startTlsServer()
 	go a.startServer()
+	go a.startZeroconf()
 
 	a.eventBus.Subscribe("system/models/variables/+", a.eventHandler, false)
 	a.eventBus.Publish("system/services/api", events.EventServiceStarted{Service: "Api"})
@@ -147,6 +151,12 @@ func (a *Api) Shutdown(ctx context.Context) (err error) {
 	a.tlsServer.Shutdown(ctx)
 	if a.echo != nil {
 		err = a.echo.Shutdown(ctx)
+	}
+	if a.httpZeroconf != nil {
+		a.httpZeroconf.Shutdown()
+	}
+	if a.httpsZeroconf != nil {
+		a.httpsZeroconf.Shutdown()
 	}
 	a.eventBus.Unsubscribe("system/models/variables/+", a.eventHandler)
 	a.eventBus.Publish("system/services/api", events.EventServiceStopped{Service: "Api"})
@@ -197,6 +207,16 @@ func (a *Api) startTlsServer() {
 		log.Errorf("error when starting HTTPS server: %w", err)
 	} else {
 		log.Info("HTTPS server stopped serving requests")
+	}
+}
+
+func (a *Api) startZeroconf() {
+	var err error
+	if a.httpZeroconf, err = zeroconf.Register("smart-home", "_http._tcp", "local.", a.cfg.HttpPort, nil, nil); err != nil {
+		log.Error(err.Error())
+	}
+	if a.httpsZeroconf, err = zeroconf.Register("smart-home", "_https._tcp", "local.", a.cfg.HttpsPort, nil, nil); err != nil {
+		log.Error(err.Error())
 	}
 }
 

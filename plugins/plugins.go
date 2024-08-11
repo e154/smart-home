@@ -30,6 +30,7 @@ import (
 	_ "github.com/e154/smart-home/plugins/hdd"
 	_ "github.com/e154/smart-home/plugins/html5_notify"
 	_ "github.com/e154/smart-home/plugins/logs"
+	_ "github.com/e154/smart-home/plugins/mdns"
 	_ "github.com/e154/smart-home/plugins/memory"
 	_ "github.com/e154/smart-home/plugins/memory_app"
 	_ "github.com/e154/smart-home/plugins/messagebird"

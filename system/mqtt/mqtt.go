@@ -32,6 +32,7 @@ import (
 	"github.com/DrmagicE/gmqtt/pkg/packets"
 	"github.com/DrmagicE/gmqtt/server"
 	_ "github.com/DrmagicE/gmqtt/topicalias/fifo"
+	"github.com/grandcat/zeroconf"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -61,6 +62,7 @@ type Mqtt struct {
 	admin         *admin.Admin
 	scriptService scripts.ScriptService
 	eventBus      bus.Bus
+	zeroconf      *zeroconf.Server
 }
 
 // NewMqtt ...
@@ -115,6 +117,10 @@ func (m *Mqtt) Shutdown() (err error) {
 		err = m.server.Stop(ctx)
 	}
 
+	if m.zeroconf != nil {
+		m.zeroconf.Shutdown()
+	}
+
 	m.eventBus.Publish("system/services/mqtt", events.EventServiceStopped{Service: "Mqtt"})
 	return
 }
@@ -167,6 +173,10 @@ func (m *Mqtt) Start() {
 			log.Error(err.Error())
 		}
 	}()
+
+	if m.zeroconf, err = zeroconf.Register("smart-home", "_mqtt._tcp", "local.", m.cfg.Port, nil, nil); err != nil {
+		log.Error(err.Error())
+	}
 
 	m.eventBus.Publish("system/services/mqtt", events.EventServiceStarted{Service: "Mqtt"})
 }
