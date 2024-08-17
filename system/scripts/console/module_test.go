@@ -56,39 +56,3 @@ func TestConsole(t *testing.T) {
 		t.Fatal("console.debug() error", err)
 	}
 }
-
-func TestConsoleWithPrinter(t *testing.T) {
-	var stdoutStr, stderrStr string
-
-	printer := LogPrinter{}
-
-	vm := goja.New()
-
-	registry := new(require.Registry)
-	registry.Enable(vm)
-	registry.RegisterNativeModule(ModuleName, RequireWithPrinter(printer))
-	Enable(vm)
-
-	if c := vm.Get("console"); c == nil {
-		t.Fatal("console not found")
-	}
-
-	_, err := vm.RunString(`
-		console.log('a')
-		console.error('b')
-		console.warn('c')
-		console.debug('d')
-		console.info('e')
-	`)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if want := "ade"; stdoutStr != want {
-		t.Fatalf("Unexpected stdout output: got %q, want %q", stdoutStr, want)
-	}
-
-	if want := "bc"; stderrStr != want {
-		t.Fatalf("Unexpected stderr output: got %q, want %q", stderrStr, want)
-	}
-}

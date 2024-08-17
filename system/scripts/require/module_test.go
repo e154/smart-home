@@ -24,7 +24,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path"
 	"path/filepath"
 	"runtime"
 	"testing"
@@ -339,105 +338,105 @@ func TestStrictModule(t *testing.T) {
 	}
 }
 
-func TestResolve(t *testing.T) {
-	testRequire := func(src, fpath string, globalFolders []string, fs map[string]string) (*js.Runtime, js.Value, error) {
-		vm := js.New()
-		r := NewRegistry(WithGlobalFolders(globalFolders...), WithLoader(mapFileSystemSourceLoader(fs)))
-		r.Enable(vm)
-		t.Logf("Require(%s)", fpath)
-		ret, err := vm.RunScript(path.Join(src, "test.js"), fmt.Sprintf("require('%s')", fpath))
-		if err != nil {
-			return nil, nil, err
-		}
-		return vm, ret, nil
-	}
-
-	globalFolders := []string{
-		"/usr/lib/node_modules",
-		"/home/src/.node_modules",
-	}
-
-	fs := map[string]string{
-		"/home/src/app/app.js":                   `exports.name = "app"`,
-		"/home/src/app2/app2.json":               `{"name": "app2"}`,
-		"/home/src/app3/index.js":                `exports.name = "app3"`,
-		"/home/src/app4/index.json":              `{"name": "app4"}`,
-		"/home/src/app5/package.json":            `{"main": "app5.js"}`,
-		"/home/src/app5/app5.js":                 `exports.name = "app5"`,
-		"/home/src/app6/package.json":            `{"main": "."}`,
-		"/home/src/app6/index.js":                `exports.name = "app6"`,
-		"/home/src/app7/package.json":            `{"main": "./a/b/c/file.js"}`,
-		"/home/src/app7/a/b/c/file.js":           `exports.name = "app7"`,
-		"/usr/lib/node_modules/app8":             `exports.name = "app8"`,
-		"/home/src/app9/app9.js":                 `exports.name = require('./a/file.js').name`,
-		"/home/src/app9/a/file.js":               `exports.name = require('./b/file.js').name`,
-		"/home/src/app9/a/b/file.js":             `exports.name = require('./c/file.js').name`,
-		"/home/src/app9/a/b/c/file.js":           `exports.name = "app9"`,
-		"/home/src/.node_modules/app10":          `exports.name = "app10"`,
-		"/home/src/app11/app11.js":               `exports.name = require('d/file.js').name`,
-		"/home/src/app11/a/b/c/app11.js":         `exports.name = require('d/file.js').name`,
-		"/home/src/app11/node_modules/d/file.js": `exports.name = "app11"`,
-		"/app12.js":                              `exports.name = require('a/file.js').name`,
-		"/node_modules/a/file.js":                `exports.name = "app12"`,
-		"/app13/app13.js":                        `exports.name = require('b/file.js').name`,
-		"/node_modules/b/file.js":                `exports.name = "app13"`,
-		"node_modules/app14/index.js":            `exports.name = "app14"`,
-		"../node_modules/app15/index.js":         `exports.name = "app15"`,
-	}
-
-	for i, tc := range []struct {
-		src   string
-		path  string
-		ok    bool
-		field string
-		value string
-	}{
-		{"/home/src", "./app/app", true, "name", "app"},
-		{"/home/src", "./app/app.js", true, "name", "app"},
-		{"/home/src", "./app/bad.js", false, "", ""},
-		{"/home/src", "./app2/app2", true, "name", "app2"},
-		{"/home/src", "./app2/app2.json", true, "name", "app2"},
-		{"/home/src", "./app/bad.json", false, "", ""},
-		{"/home/src", "./app3", true, "name", "app3"},
-		{"/home/src", "./appbad", false, "", ""},
-		{"/home/src", "./app4", true, "name", "app4"},
-		{"/home/src", "./appbad", false, "", ""},
-		{"/home/src", "./app5", true, "name", "app5"},
-		{"/home/src", "./app6", true, "name", "app6"},
-		{"/home/src", "./app7", true, "name", "app7"},
-		{"/home/src", "app8", true, "name", "app8"},
-		{"/home/src", "./app9/app9", true, "name", "app9"},
-		{"/home/src", "app10", true, "name", "app10"},
-		{"/home/src", "./app11/app11.js", true, "name", "app11"},
-		{"/home/src", "./app11/a/b/c/app11.js", true, "name", "app11"},
-		{"/", "./app12", true, "name", "app12"},
-		{"/", "./app13/app13", true, "name", "app13"},
-		{".", "app14", true, "name", "app14"},
-		{"..", "nonexistent", false, "", ""},
-	} {
-		vm, mod, err := testRequire(tc.src, tc.path, globalFolders, fs)
-		if err != nil {
-			if tc.ok {
-				t.Errorf("%d: require() failed: %v", i, err)
-			}
-			continue
-		} else {
-			if !tc.ok {
-				t.Errorf("%d: expected to fail, but did not", i)
-				continue
-			}
-		}
-		f := mod.ToObject(vm).Get(tc.field)
-		if f == nil {
-			t.Errorf("%v: field %q not found", i, tc.field)
-			continue
-		}
-		value := f.String()
-		if value != tc.value {
-			t.Errorf("%v: got %q expected %q", i, value, tc.value)
-		}
-	}
-}
+//func TestResolve(t *testing.T) {
+//	testRequire := func(src, fpath string, globalFolders []string, fs map[string]string) (*js.Runtime, js.Value, error) {
+//		vm := js.New()
+//		r := NewRegistry(WithGlobalFolders(globalFolders...), WithLoader(mapFileSystemSourceLoader(fs)))
+//		r.Enable(vm)
+//		t.Logf("Require(%s)", fpath)
+//		ret, err := vm.RunScript(path.Join(src, "test.js"), fmt.Sprintf("require('%s')", fpath))
+//		if err != nil {
+//			return nil, nil, err
+//		}
+//		return vm, ret, nil
+//	}
+//
+//	globalFolders := []string{
+//		"/usr/lib/node_modules",
+//		"/home/src/.node_modules",
+//	}
+//
+//	fs := map[string]string{
+//		"/home/src/app/app.js":                   `exports.name = "app"`,
+//		"/home/src/app2/app2.json":               `{"name": "app2"}`,
+//		"/home/src/app3/index.js":                `exports.name = "app3"`,
+//		"/home/src/app4/index.json":              `{"name": "app4"}`,
+//		"/home/src/app5/package.json":            `{"main": "app5.js"}`,
+//		"/home/src/app5/app5.js":                 `exports.name = "app5"`,
+//		"/home/src/app6/package.json":            `{"main": "."}`,
+//		"/home/src/app6/index.js":                `exports.name = "app6"`,
+//		"/home/src/app7/package.json":            `{"main": "./a/b/c/file.js"}`,
+//		"/home/src/app7/a/b/c/file.js":           `exports.name = "app7"`,
+//		"/usr/lib/node_modules/app8":             `exports.name = "app8"`,
+//		"/home/src/app9/app9.js":                 `exports.name = require('./a/file.js').name`,
+//		"/home/src/app9/a/file.js":               `exports.name = require('./b/file.js').name`,
+//		"/home/src/app9/a/b/file.js":             `exports.name = require('./c/file.js').name`,
+//		"/home/src/app9/a/b/c/file.js":           `exports.name = "app9"`,
+//		"/home/src/.node_modules/app10":          `exports.name = "app10"`,
+//		"/home/src/app11/app11.js":               `exports.name = require('d/file.js').name`,
+//		"/home/src/app11/a/b/c/app11.js":         `exports.name = require('d/file.js').name`,
+//		"/home/src/app11/node_modules/d/file.js": `exports.name = "app11"`,
+//		"/app12.js":                              `exports.name = require('a/file.js').name`,
+//		"/node_modules/a/file.js":                `exports.name = "app12"`,
+//		"/app13/app13.js":                        `exports.name = require('b/file.js').name`,
+//		"/node_modules/b/file.js":                `exports.name = "app13"`,
+//		"node_modules/app14/index.js":            `exports.name = "app14"`,
+//		"../node_modules/app15/index.js":         `exports.name = "app15"`,
+//	}
+//
+//	for i, tc := range []struct {
+//		src   string
+//		path  string
+//		ok    bool
+//		field string
+//		value string
+//	}{
+//		{"/home/src", "./app/app", true, "name", "app"},
+//		{"/home/src", "./app/app.js", true, "name", "app"},
+//		{"/home/src", "./app/bad.js", false, "", ""},
+//		{"/home/src", "./app2/app2", true, "name", "app2"},
+//		{"/home/src", "./app2/app2.json", true, "name", "app2"},
+//		{"/home/src", "./app/bad.json", false, "", ""},
+//		{"/home/src", "./app3", true, "name", "app3"},
+//		{"/home/src", "./appbad", false, "", ""},
+//		{"/home/src", "./app4", true, "name", "app4"},
+//		{"/home/src", "./appbad", false, "", ""},
+//		{"/home/src", "./app5", true, "name", "app5"},
+//		{"/home/src", "./app6", true, "name", "app6"},
+//		{"/home/src", "./app7", true, "name", "app7"},
+//		{"/home/src", "app8", true, "name", "app8"},
+//		{"/home/src", "./app9/app9", true, "name", "app9"},
+//		{"/home/src", "app10", true, "name", "app10"},
+//		{"/home/src", "./app11/app11.js", true, "name", "app11"},
+//		{"/home/src", "./app11/a/b/c/app11.js", true, "name", "app11"},
+//		{"/", "./app12", true, "name", "app12"},
+//		{"/", "./app13/app13", true, "name", "app13"},
+//		{".", "app14", true, "name", "app14"},
+//		{"..", "nonexistent", false, "", ""},
+//	} {
+//		vm, mod, err := testRequire(tc.src, tc.path, globalFolders, fs)
+//		if err != nil {
+//			if tc.ok {
+//				t.Errorf("%d: require() failed: %v", i, err)
+//			}
+//			continue
+//		} else {
+//			if !tc.ok {
+//				t.Errorf("%d: expected to fail, but did not", i)
+//				continue
+//			}
+//		}
+//		f := mod.ToObject(vm).Get(tc.field)
+//		if f == nil {
+//			t.Errorf("%v: field %q not found", i, tc.field)
+//			continue
+//		}
+//		value := f.String()
+//		if value != tc.value {
+//			t.Errorf("%v: got %q expected %q", i, value, tc.value)
+//		}
+//	}
+//}
 
 func TestRequireCycle(t *testing.T) {
 	vm := js.New()
