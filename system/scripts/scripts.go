@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2023, Filippov Alex
+// Copyright (C) 2016-2024, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,15 +21,16 @@ package scripts
 import (
 	"context"
 
-	"github.com/e154/smart-home/common/encryptor"
-
 	"github.com/e154/bus"
+	"go.uber.org/fx"
+
+	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common/encryptor"
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/scripts/bind"
 	"github.com/e154/smart-home/system/storage"
-	"go.uber.org/fx"
 )
 
 var (
@@ -55,13 +56,15 @@ type scriptService struct {
 	structures *Pull
 	storage    *storage.Storage
 	eventBus   bus.Bus
+	adaptors   *adaptors.Adaptors
 }
 
 // NewScriptService ...
 func NewScriptService(lc fx.Lifecycle,
 	cfg *m.AppConfig,
 	storage *storage.Storage,
-	eventBus bus.Bus) ScriptService {
+	eventBus bus.Bus,
+	adaptors *adaptors.Adaptors) ScriptService {
 
 	s := &scriptService{
 		cfg:        cfg,
@@ -69,6 +72,7 @@ func NewScriptService(lc fx.Lifecycle,
 		structures: NewPull(),
 		storage:    storage,
 		eventBus:   eventBus,
+		adaptors:   adaptors,
 	}
 
 	s.bind()
@@ -89,7 +93,7 @@ func NewScriptService(lc fx.Lifecycle,
 
 // NewEngine ...
 func (s *scriptService) NewEngine(scr *m.Script) (*Engine, error) {
-	return NewEngine(scr, s.structures, s.functions)
+	return NewEngine(scr, s.structures, s.functions, s.SourceLoader)
 }
 
 // NewEngineWatcher ...
@@ -135,7 +139,6 @@ func (s *scriptService) Restart() {
 }
 
 func (s *scriptService) bind() {
-	s.PushStruct("Log", &bind.LogBind{})
 	s.PushFunctions("ExecuteSync", bind.ExecuteSync)
 	s.PushFunctions("ExecuteAsync", bind.ExecuteAsync)
 	s.PushFunctions("Encrypt", encryptor.EncryptBind)
@@ -143,4 +146,12 @@ func (s *scriptService) bind() {
 	s.PushStruct("Storage", bind.NewStorageBind(s.storage))
 	s.PushStruct("http", bind.NewHttpBind())
 	s.PushStruct("HTTP", bind.NewHttpBind())
+}
+
+func (s *scriptService) SourceLoader(path string) ([]byte, error) {
+	script, err := s.adaptors.Script.GetByName(context.Background(), path)
+	if err != nil {
+		return nil, err
+	}
+	return []byte(script.Compiled), nil
 }

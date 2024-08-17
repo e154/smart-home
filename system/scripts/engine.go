@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2023, Filippov Alex
+// Copyright (C) 2016-2024, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,6 +20,7 @@ package scripts
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/system/scripts/require"
 	"os"
 	"strconv"
 
@@ -56,7 +57,7 @@ type Engine struct {
 }
 
 // NewEngine ...
-func NewEngine(s *m.Script, functions, structures *Pull) (engine *Engine, err error) {
+func NewEngine(s *m.Script, functions, structures *Pull, loader require.SourceLoader) (engine *Engine, err error) {
 
 	if s == nil {
 		s = &m.Script{
@@ -86,7 +87,7 @@ func NewEngine(s *m.Script, functions, structures *Pull) (engine *Engine, err er
 
 	switch s.Lang {
 	case ScriptLangTs, ScriptLangCoffee, ScriptLangJavascript:
-		engine.script = NewJavascript(engine)
+		engine.script = NewJavascript(engine, loader)
 	default:
 		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("i don't know this language: \"%s\"", s.Lang))
 		return

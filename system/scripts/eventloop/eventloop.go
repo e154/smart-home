@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2023, Filippov Alex
+// Copyright (C) 2016-2024, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -22,8 +22,9 @@ import (
 	"time"
 
 	"github.com/dop251/goja"
-	"github.com/dop251/goja_nodejs/console"
-	"github.com/dop251/goja_nodejs/require"
+
+	"github.com/e154/smart-home/system/scripts/console"
+	"github.com/e154/smart-home/system/scripts/require"
 )
 
 type job struct {
@@ -52,14 +53,15 @@ type EventLoop struct {
 }
 
 // NewEventLoop ...
-func NewEventLoop(vm *goja.Runtime) *EventLoop {
+func NewEventLoop(vm *goja.Runtime, loader require.SourceLoader) *EventLoop {
 
 	loop := &EventLoop{
 		vm:      vm,
 		jobChan: make(chan func()),
 	}
 
-	new(require.Registry).Enable(vm)
+	reg := require.NewRegistryWithLoader(loader)
+	reg.Enable(vm)
 	console.Enable(vm)
 	_ = vm.Set("setTimeout", loop.setTimeout)
 	_ = vm.Set("setInterval", loop.setInterval)
