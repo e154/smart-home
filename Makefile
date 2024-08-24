@@ -87,7 +87,6 @@ lint:
 
 get_deps:
 	go mod tidy
-	./bin/install_vosk.sh
 
 fmt:
 	@gofmt -l -w -s .
