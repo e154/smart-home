@@ -86,4 +86,4 @@ jobs:
 
       - name: trying to build
         id: build-linux
-        run: make build_linux build_structure build_common_structure build_archive docker_image
+        run: make build_linux_amd64 build_linux_aarch64 build_linux_armv7 build_structure build_common_structure build_archive docker_image

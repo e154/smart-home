@@ -20,3 +20,4 @@ webdav
 /data/vosk/models/*
 /data/vosk/libvosk
 /data/vosk/libvosk/*
+libvosk.dylib

@@ -1,17 +1,17 @@
 
 ---
-title: "Vosk is a speech recognition toolkit"
+title: "Библитека для распознавания речи “Воск”"
 linkTitle: "vosk"
 date: 2024-08-24
 description: >
   
 ---
 
-Supports 20+ languages and dialects - English, Indian English, German, French, Spanish, Portuguese, Chinese, Russian, Turkish, Vietnamese, Italian, Dutch, Catalan, Arabic, Greek, Farsi, Filipino, Ukrainian, Kazakh, Swedish, Japanese, Esperanto, Hindi, Czech, Polish, Uzbek, Korean, Breton, Gujarati, Tajik. More to come.
-Works offline, even on lightweight devices - Raspberry Pi, Android, iOS
-Installs with simple pip3 install vosk
-Portable per-language models are only 50Mb each, but there are much bigger server models available.
-Provides streaming API for the best user experience (unlike popular speech-recognition python packages)
-There are bindings for different programming languages, too - java/csharp/javascript etc.
-Allows quick reconfiguration of vocabulary for best accuracy.
-Supports speaker identification beside simple speech recognition.
+* Поддерживает 20+ языков и диалектов - русский, английский, индийский английский, немецкий, французский, португальский, испанский, китайский, турецкий, вьетнамский, итальянский, голландский, валенсийский, арабский, греческий, персидский, филиппинский, украинский, казахский, шведский, японский, эсперанто, хинди, чешский, польский, узбекский, корейский, таджикский, гуджарати. В скором времени будут добавлены и другие
+* Работает без доступа к сети даже на мобильных устройствах - Raspberry Pi, Android, iOS
+* Устанавливается с помощью простой команды pip3 install vosk без дополнительных шагов
+* Модели для каждого языка занимают всего 50Мб, но есть и гораздо более точные большие модели для более точного распознавания
+* Сделана для потоковой обработки звука, что позволяет реализовать мгновенную реакцию на команды
+* Поддерживает несколько популярных языков программирования - Java, C#, Javascript
+* Позволяет быстро настраивать словарь распознавания для улучшения точности распознавания
+* Позволяет идентифицировать говорящего
