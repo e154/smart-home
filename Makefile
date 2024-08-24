@@ -107,7 +107,7 @@ build_linux_amd64:
 
 build_linux_armv7:
 	@echo MARK: build linux armv7
-	./bin/install_vosk.sh linux armv7l
+	./bin/install_vosk.sh linux aarch64
 	${GO_BUILD_ENV} GOOS=linux GOARCH=arm GOARM=7 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-7
 
 #todo remove
