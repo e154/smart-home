@@ -7,9 +7,13 @@ RUN apt-get update \
 RUN update-ca-certificates
 COPY --from=postgres /usr/lib/postgresql/15/bin/pg_dump /usr/local/bin
 COPY --from=postgres /usr/lib/postgresql/15/bin/pg_restore /usr/local/bin
-ENTRYPOINT ["/server"]
+ENTRYPOINT ["/server-linux-amd64"]
 USER nobody
-ADD . /
+ADD conf /
+ADD data /
+ADD snapshots /
+ADD server-linux-amd64 /
+ADD $HOME/.vosk/libvosk/libvosk.dylib /
 
 EXPOSE 3000
 EXPOSE 3001

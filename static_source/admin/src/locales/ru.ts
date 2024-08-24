@@ -385,6 +385,18 @@ export default {
       addAction: "Добавить действие",
       entityActionName: "Название действия Entity"
     },
+    stat_tasks_total_name: 'Задач всего',
+    stat_tasks_total_descr: '',
+    stat_tasks_enabled_name: 'Задач включено',
+    stat_tasks_enabled_descr: '',
+    stat_triggers_total_name: 'Тригеров всего',
+    stat_triggers_total_descr: '',
+    stat_triggers_enabled_name: 'Тригеров включено',
+    stat_triggers_enabled_descr: '',
+    stat_conditions_total_name: 'Условий всего',
+    stat_conditions_total_descr: '',
+    stat_actions_total_name: 'Действий всего',
+    stat_actions_total_descr: '',
   },
   scripts: {
     id: "ID",

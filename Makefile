@@ -37,40 +37,41 @@ GO_BUILD_LDFLAGS= -s -w -X ${VERSION_VAR}=${RELEASE_VERSION} -X ${REV_VAR}=${REV
 GO_BUILD_FLAGS= -a -installsuffix cgo -v --ldflags '${GO_BUILD_LDFLAGS}'
 GO_BUILD_ENV= CGO_ENABLED=0
 GO_BUILD_TAGS= -tags 'production'
+GO_TEST=test -tags test -v
 
 test_system:
 	@echo MARK: system tests
 	cp ${ROOT}/conf/config.dev.json ${ROOT}/conf/config.json
-	go test -v ./tests/api
-	go test -v ./tests/models
-	go test -v ./tests/scripts
-	go test -v ./tests/system
-	go test -v ./tests/plugins/alexa
-	go test -v ./tests/plugins/area
-	go test -v ./tests/plugins/cgminer
-	go test -v ./tests/plugins/email
-	go test -v ./tests/plugins/messagebird
-	go test -v ./tests/plugins/modbus_rtu
-	go test -v ./tests/plugins/modbus_tcp
-	go test -v ./tests/plugins/moon
-	go test -v ./tests/plugins/node
-	go test -v ./tests/plugins/scene
-	go test -v ./tests/plugins/sensor
-	go test -v ./tests/plugins/sun
-	go test -v ./tests/plugins/telegram
-	go test -v ./tests/plugins/trigger_alexa
-	go test -v ./tests/plugins/trigger_empty
-	go test -v ./tests/plugins/trigger_state
-	go test -v ./tests/plugins/trigger_system
-	go test -v ./tests/plugins/trigger_time
-	go test -v ./tests/plugins/twilio
-	go test -v ./tests/plugins/weather_met
-	go test -v ./tests/plugins/weather_owm
-	go test -v ./tests/plugins/zigbee2mqtt
+	go ${GO_TEST} ./tests/api
+	go ${GO_TEST} ./tests/models
+	go ${GO_TEST} ./tests/scripts
+	go ${GO_TEST} ./tests/system
+	go ${GO_TEST} ./tests/plugins/alexa
+	go ${GO_TEST} ./tests/plugins/area
+	go ${GO_TEST} ./tests/plugins/cgminer
+	go ${GO_TEST} ./tests/plugins/email
+	go ${GO_TEST} ./tests/plugins/messagebird
+	go ${GO_TEST} ./tests/plugins/modbus_rtu
+	go ${GO_TEST} ./tests/plugins/modbus_tcp
+	go ${GO_TEST} ./tests/plugins/moon
+	go ${GO_TEST} ./tests/plugins/node
+	go ${GO_TEST} ./tests/plugins/scene
+	go ${GO_TEST} ./tests/plugins/sensor
+	go ${GO_TEST} ./tests/plugins/sun
+	go ${GO_TEST} ./tests/plugins/telegram
+	go ${GO_TEST} ./tests/plugins/trigger_alexa
+	go ${GO_TEST} ./tests/plugins/trigger_empty
+	go ${GO_TEST} ./tests/plugins/trigger_state
+	go ${GO_TEST} ./tests/plugins/trigger_system
+	go ${GO_TEST} ./tests/plugins/trigger_time
+	go ${GO_TEST} ./tests/plugins/twilio
+	go ${GO_TEST} ./tests/plugins/weather_met
+	go ${GO_TEST} ./tests/plugins/weather_owm
+	go ${GO_TEST} ./tests/plugins/zigbee2mqtt
 
 test:
 	@echo MARK: unit tests
-	go test -v $(shell go list ./... | grep -v /tmp | grep -v /tests) -timeout 60s -race -covermode=atomic -coverprofile=coverage.out
+	go ${GO_TEST} $(shell go list ./... | grep -v /tmp | grep -v /tests) -timeout 60s -race -covermode=atomic -coverprofile=coverage.out
 
 install_linter:
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin v1.55.2
@@ -86,6 +87,7 @@ lint:
 
 get_deps:
 	go mod tidy
+	./bin/install_vosk.sh
 
 fmt:
 	@gofmt -l -w -s .

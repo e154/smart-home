@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2023, Filippov Alex
+// Copyright (C) 2024, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -16,27 +16,13 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package bind
+package models
 
-import (
-	"github.com/e154/smart-home/common/logger"
-)
-
-var (
-	log = logger.MustGetLogger("js")
-)
-
-// LogBind ...
-type LogBind struct{}
-
-// Info ...
-func (b *LogBind) Info(v ...interface{}) { log.Infof("%v", v...) }
-
-// Warn ...
-func (b *LogBind) Warn(v ...interface{}) { log.Warnf("%v", v...) }
-
-// Debug ...
-func (b *LogBind) Debug(v ...interface{}) { log.Debugf("%v", v...) }
-
-// Error ...
-func (b *LogBind) Error(v ...interface{}) { log.Errorf("%v", v...) }
+type AutomationStatistic struct {
+	TasksTotal      int32
+	TasksEnabled    int32
+	TriggersTotal   int32
+	TriggersEnabled int32
+	ConditionsTotal int32
+	ActionsTotal    int32
+}

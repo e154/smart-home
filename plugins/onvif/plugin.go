@@ -22,6 +22,7 @@ import (
 	"context"
 	"embed"
 	"sync"
+	"time"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/events"
@@ -166,7 +167,7 @@ func (p *plugin) DownloadSnapshotDigest(entityId common.EntityId) (filePath stri
 		actor.Setts[AttrPassword].Decrypt())
 
 	var err error
-	filePath, err = crawler.Download(web.Request{Method: "GET", Url: actor.GetSnapshotUri()})
+	filePath, err = crawler.Download(web.Request{Method: "GET", Url: actor.GetSnapshotUri(), Timeout: time.Second * 2})
 	if err != nil {
 		log.Error(err.Error())
 	}

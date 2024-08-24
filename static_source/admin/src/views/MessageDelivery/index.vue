@@ -166,7 +166,7 @@ const columns: TableColumn[] = [
   {
     field: 'attributes',
     label: t('messageDelivery.attributes'),
-    sortable: true,
+    sortable: false,
     formatter: (row: ApiMessageDelivery) => {
       return h(
         'span',
@@ -204,19 +204,6 @@ const columns: TableColumn[] = [
       )
     }
   },
-  {
-    field: 'createdAt',
-    label: t('main.updatedAt'),
-    type: 'time',
-    sortable: true,
-    width: "170px",
-    formatter: (row: ApiMessageDelivery) => {
-      return h(
-        'span',
-        parseTime(row.updatedAt)
-      )
-    }
-  },
 ]
 const paginationObj = ref<Pagination>({
   currentPage: 1,
@@ -224,7 +211,6 @@ const paginationObj = ref<Pagination>({
   total: 0,
   pageSizes: [50, 100, 150, 250],
 })
-const currentID = ref('')
 
 const getList = async () => {
   tableObject.loading = true
@@ -254,10 +240,6 @@ const getList = async () => {
   }
 }
 
-const onLogs = (log: ApiMessageDelivery) => {
-  getList()
-}
-
 watch(
   () => paginationObj.value.currentPage,
   () => {
@@ -275,7 +257,13 @@ watch(
 const sortChange = (data) => {
   const {column, prop, order} = data;
   const pref: string = order === 'ascending' ? '+' : '-'
-  tableObject.sort = pref + prop
+  let _prop = prop;
+  console.log(prop)
+  switch (prop) {
+    case 'messageType':
+      _prop = 'type'
+  }
+  tableObject.sort = pref + _prop
   getList()
 }
 

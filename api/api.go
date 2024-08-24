@@ -370,6 +370,7 @@ func (a *Api) registerHandlers() {
 	v1.GET("/triggers/search", a.echoFilter.Auth(wrapper.TriggerServiceSearchTrigger))
 	v1.POST("/triggers/:id/disable", a.echoFilter.Auth(wrapper.TriggerServiceDisableTrigger))
 	v1.POST("/triggers/:id/enable", a.echoFilter.Auth(wrapper.TriggerServiceEnableTrigger))
+	v1.GET("/automation/statistic", a.echoFilter.Auth(wrapper.AutomationServiceGetStatistic))
 	v1.POST("/user", a.echoFilter.Auth(wrapper.UserServiceAddUser))
 	v1.DELETE("/user/:id", a.echoFilter.Auth(wrapper.UserServiceDeleteUserById))
 	v1.GET("/user/:id", a.echoFilter.Auth(wrapper.UserServiceGetUserById))

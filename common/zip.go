@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2023, Filippov Alex
+// Copyright (C) 2016-2024, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -16,7 +16,7 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package backup
+package common
 
 import (
 	"archive/zip"
@@ -26,7 +26,7 @@ import (
 	"strings"
 )
 
-func unzip(archive, target string) error {
+func Unzip(archive, target string) error {
 	reader, err := zip.OpenReader(archive)
 	if err != nil {
 		return err
@@ -64,7 +64,7 @@ func unzip(archive, target string) error {
 	return nil
 }
 
-func zipit(sources []string, target string) error {
+func Zipit(sources []string, target string) error {
 	zipfile, err := os.Create(target)
 	if err != nil {
 		return err
@@ -128,7 +128,7 @@ func zipit(sources []string, target string) error {
 	return err
 }
 
-func checkZip(archive string) (ok bool, err error) {
+func CheckZip(archive string) (ok bool, err error) {
 	var reader *zip.ReadCloser
 	reader, err = zip.OpenReader(archive)
 	if err != nil {

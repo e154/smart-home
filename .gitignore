@@ -9,7 +9,6 @@ vendor/*
 .DS_Store
 snapshots/*
 !snapshots/.gitignore
-bee.json
 ._*
 cli-*
 server-*
@@ -17,3 +16,7 @@ build/public/*
 smart-home-common.tar.gz
 /coverage.out
 webdav
+/data/vosk/models
+/data/vosk/models/*
+/data/vosk/libvosk
+/data/vosk/libvosk/*

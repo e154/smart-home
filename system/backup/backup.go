@@ -135,7 +135,7 @@ func (b *Backup) New(scheduler bool) (err error) {
 	}
 
 	backupName := fmt.Sprintf("%s.zip", time.Now().UTC().Format("2006-01-02T15:04:05.999"))
-	err = zipit([]string{
+	err = common.Zipit([]string{
 		path.Join("data", "file_storage"),
 		path.Join(tmpDir, "data.sql"),
 		path.Join(tmpDir, "scheme.sql"),
@@ -308,7 +308,7 @@ func (b *Backup) RestoreFile(name string) (err error) {
 	}
 
 	tmpDir := path.Join(os.TempDir(), "smart_home")
-	if err = unzip(file, tmpDir); err != nil {
+	if err = common.Unzip(file, tmpDir); err != nil {
 		err = errors.Wrap(fmt.Errorf("failed unzip file %s", file), err.Error())
 		return
 	}
@@ -521,7 +521,7 @@ func (b *Backup) RestoreFromChunks() {
 		}
 	}()
 
-	ok, err := checkZip(fileName)
+	ok, err := common.CheckZip(fileName)
 	if err != nil {
 		log.Error(err.Error())
 		return
