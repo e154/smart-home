@@ -1,7 +1,7 @@
 .PHONY: get_deps fmt
 .DEFAULT_GOAL := build
 tests: lint test
-all: build_public build_linux_amd64 build_linux_armv7 build_structure build_common_structure build_archive docker_image
+all: build_public build_linux_amd64 build_structure build_common_structure build_archive docker_image
 deploy: docker_image_upload
 
 EXEC=server
