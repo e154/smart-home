@@ -1,7 +1,7 @@
 .PHONY: get_deps fmt
 .DEFAULT_GOAL := build
 tests: lint test
-all: build_public build_linux_amd64 build_linux_aarch64 build_linux_armv7 build_structure build_common_structure build_archive docker_image
+all: build_public build_linux_amd64 build_linux_armv7 build_structure build_common_structure build_archive docker_image
 deploy: docker_image_upload
 
 EXEC=server
@@ -104,11 +104,6 @@ build_linux_amd64:
 	@echo MARK: build linux amd64
 	./bin/install_vosk.sh linux x86_64
 	${GO_BUILD_ENV} GOOS=linux GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-amd64
-
-build_linux_aarch64:
-	@echo MARK: build linux aarch64
-	./bin/install_vosk.sh linux x86_64
-	${GO_BUILD_ENV} GOOS=linux GOARCH=aarch64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm64
 
 build_linux_armv7:
 	@echo MARK: build linux armv7
