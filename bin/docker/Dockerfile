@@ -1,5 +1,6 @@
 FROM postgres:15 as postgres
 MAINTAINER Filippov Alex <support@e154.ru>
+ARG libvosk
 
 FROM debian:12-slim
 RUN apt-get update \
@@ -12,8 +13,8 @@ USER nobody
 ADD conf /
 ADD data /
 ADD snapshots /
-ADD server-linux-amd64 /
-ADD $HOME/.vosk/libvosk/libvosk.dylib /
+#ADD server-linux-amd64 /
+ADD ${libvosk} /
 
 EXPOSE 3000
 EXPOSE 3001

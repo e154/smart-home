@@ -133,8 +133,8 @@ build_public:
 server:
 	@echo "Building http server"
 	mkdir -p ${ROOT}/api/stub && \
-	oapi-codegen -generate server -package stub ${ROOT}/api/api.swagger3.yaml > ${ROOT}/api/stub/server.go && \
-	oapi-codegen -generate types -package stub ${ROOT}/api/api.swagger3.yaml > ${ROOT}/api/stub/types.go
+	oapi-codegen -generate server -package stub ${ROOT}/api/api.swagger.yaml > ${ROOT}/api/stub/server.go && \
+	oapi-codegen -generate types -package stub ${ROOT}/api/api.swagger.yaml > ${ROOT}/api/stub/types.go
 
 build_structure:
 	@echo MARK: create app structure
@@ -223,7 +223,7 @@ clean:
 
 front_client:
 	@echo MARK: generate front client lib
-	npx swagger-typescript-api@12.0.4 --axios -p ./api/api.swagger3.yaml -o ./static_source/admin/src/api -n stub_new.ts
+	npx swagger-typescript-api@12.0.4 --axios -p ./api/api.swagger.yaml -o ./static_source/admin/src/api -n stub_new.ts
 
 pprof:
 	@echo MARK: pprof

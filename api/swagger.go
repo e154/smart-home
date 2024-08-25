@@ -21,5 +21,5 @@ package api
 import "embed"
 
 //go:embed swagger-ui/*
-//go:embed api.swagger3.yaml
+//go:embed api.swagger.yaml
 var SwaggerAssets embed.FS

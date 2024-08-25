@@ -227,7 +227,7 @@ func (a *Api) registerHandlers() {
 		var contentHandler = echo.WrapHandler(http.FileServer(http.FS(SwaggerAssets)))
 		a.echo.GET("/swagger-ui", contentHandler)
 		a.echo.GET("/swagger-ui/*", contentHandler)
-		a.echo.GET("/api.swagger3.yaml", contentHandler)
+		a.echo.GET("/api.swagger.yaml", contentHandler)
 	}
 
 	var typedocHandler = echo.WrapHandler(http.FileServer(http.FS(TypedocAssets)))

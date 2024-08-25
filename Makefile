@@ -158,8 +158,8 @@ build_public:
 server:
 	@echo "Building http server"
 	mkdir -p ${ROOT}/api/stub && \
-	oapi-codegen -generate server -package stub ${ROOT}/api/api.swagger3.yaml > ${ROOT}/api/stub/server.go && \
-	oapi-codegen -generate types -package stub ${ROOT}/api/api.swagger3.yaml > ${ROOT}/api/stub/types.go
+	oapi-codegen -generate server -package stub ${ROOT}/api/api.swagger.yaml > ${ROOT}/api/stub/server.go && \
+	oapi-codegen -generate types -package stub ${ROOT}/api/api.swagger.yaml > ${ROOT}/api/stub/types.go
 
 build_structure:
 	@echo MARK: create server structure
@@ -232,7 +232,8 @@ docs_deploy:
 	echo -e "Done documentation deploy.\n"
 
 docker_image:
-	cd ${SERVER_DIR} && ls -ll && docker build -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
+	echo ${HOME}
+	cd ${SERVER_DIR} && ls -ll && docker build --build-arg libvosk=${HOME}/.vosk/libvosk/ -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
 
 docker_image_upload:
 	echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
@@ -251,7 +252,7 @@ clean:
 
 front_client:
 	@echo MARK: generate front client lib
-	npx swagger-typescript-api@12.0.4 --axios -p ./api/api.swagger3.yaml -o ./static_source/admin/src/api -n stub_new.ts
+	npx swagger-typescript-api@12.0.4 --axios -p ./api/api.swagger.yaml -o ./static_source/admin/src/api -n stub_new.ts
 
 typedoc:
 	@echo MARK: typedoc
