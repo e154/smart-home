@@ -174,7 +174,7 @@ build_structure:
 	cp ${ROOT}/bin/server-installer.sh ${SERVER_DIR}
 	chmod +x ${SERVER_DIR}/data/scripts/ping.sh
 	cp ${ROOT}/${EXEC}-* ${SERVER_DIR}
-	cp ${ROOT}/${CLI}-* ${SERVER_DIR}
+	#cp ${ROOT}/${CLI}-* ${SERVER_DIR}
 	cp ${ROOT}/bin/server ${SERVER_DIR}
 
 build_common_structure:
