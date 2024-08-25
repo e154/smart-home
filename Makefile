@@ -1,7 +1,7 @@
 .PHONY: get_deps fmt
 .DEFAULT_GOAL := build
 tests: lint test
-all: build_public build_linux_amd64 build_structure build_common_structure build_archive docker_image
+all: build_public build_linux_amd64 build_structure build_common_structure build_archive docker_image_linux_amd64
 deploy: docker_image_upload
 
 EXEC=server
@@ -168,6 +168,7 @@ build_structure:
 	cd ${SERVER_DIR}
 	cp -r ${ROOT}/conf ${SERVER_DIR}
 	cp -r ${ROOT}/data ${SERVER_DIR}
+	cp ${HOME}/.vosk/libvosk/libvosk* ${SERVER_DIR}
 	cp ${ROOT}/LICENSE ${SERVER_DIR}
 	cp ${ROOT}/README* ${SERVER_DIR}
 	cp ${ROOT}/CONTRIBUTING.md ${SERVER_DIR}
@@ -231,9 +232,9 @@ docs_deploy:
 	git push -q upstream HEAD:gh-pages
 	echo -e "Done documentation deploy.\n"
 
-docker_image:
+docker_image_linux_amd64:
 	echo ${HOME}
-	cd ${SERVER_DIR} && ls -ll && docker build --build-arg libvosk=${HOME}/.vosk/libvosk/ -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
+	cd ${SERVER_DIR} && ls -ll && docker build --build-arg app=${EXEC}-linux-amd64 -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
 
 docker_image_upload:
 	echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
@@ -248,6 +249,7 @@ clean:
 	rm -rf ${SERVER_DIR}
 	rm -f ${ROOT}/${EXEC}-*
 	rm -f ${ROOT}/${CLI}-*
+	rm -f ${ROOT}/libvosk*
 	rm -f ${HOME}/${ARCHIVE}
 
 front_client:
