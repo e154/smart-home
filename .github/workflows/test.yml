@@ -136,7 +136,7 @@ jobs:
 #          go-version: ${{ matrix.go }}
 
       - env:
-        OUTPUT1: ${{needs.job1.outputs.output1}}
+          OUTPUT1: ${{needs.job1.outputs.output1}}
         run: echo "Artifact ID from previous job is $OUTPUT1"
 
       - name: Checkout
