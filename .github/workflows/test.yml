@@ -145,9 +145,9 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: public_build
-          path: /home/delta54/actions-runner/_work/smart-home/smart-home
+          path: /home/delta54/actions-runner/_work/smart-home/smart-home/build
       - name: Display structure of downloaded files
-        run: ls -R /home/delta54/actions-runner/_work/smart-home/smart-home
+        run: ls -R /home/delta54/actions-runner/_work/smart-home/smart-home/build
 
       - name: Go mod tidy
         run: |
