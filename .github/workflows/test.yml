@@ -118,7 +118,7 @@ jobs:
       - name: Build public
         id: build-public
         env:
-          NODE_OPTIONS: "--max_old_space_size=4096"
+          NODE_OPTIONS: "--max_old_space_size=512"
         run: make build_public
 
       - name: Unit tests
