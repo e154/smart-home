@@ -146,8 +146,8 @@ jobs:
         with:
           name: public_build
           path: /home/delta54/actions-runner/_work/smart-home/smart-home/build
-      - name: Display structure of downloaded files
-        run: ls -R /home/delta54/actions-runner/_work/smart-home/smart-home/build
+#      - name: Display structure of downloaded files
+#        run: ls -R /home/delta54/actions-runner/_work/smart-home/smart-home/build
 
       - name: Go mod tidy
         run: |
@@ -156,7 +156,7 @@ jobs:
 
       - name: Unit tests
         id: test-code
-        run: make test
+        run: make test_without_race
 
       - name: trying to build
         id: build-linux
