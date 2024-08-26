@@ -136,22 +136,23 @@ jobs:
 #          go-version: ${{ matrix.go }}
 
       - env:
-          OUTPUT1: ${{needs.job1.outputs.output1}}
+          OUTPUT1: ${{needs.build_public.outputs.output1}}
         run: echo "Artifact ID from previous job is $OUTPUT1"
 
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Prepary go deps
+      - uses: actions/download-artifact@v4
+        with:
+          name: public_build
+          path: /home/delta54/actions-runner/_work/smart-home/smart-home
+      - name: Display structure of downloaded files
+        run: ls -R /home/delta54/actions-runner/_work/smart-home/smart-home
+
+      - name: Go mod tidy
         run: |
           echo -e "machine github.com\n  login ${{ secrets.GITHUBTOKEN }}" > ~/.netrc
           make get_deps
-
-      - name: Build public
-        id: build-public
-        env:
-          NODE_OPTIONS: "--max_old_space_size=512"
-        run: make build_public
 
       - name: Unit tests
         id: test-code
