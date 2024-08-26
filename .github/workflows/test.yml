@@ -8,6 +8,39 @@ on:
       - "*"
 
 jobs:
+  build_public:
+    if: github.event.base_ref != 'refs/heads/master'
+    name: Testing public
+    strategy:
+      matrix:
+        node: [ 16 ]
+    runs-on: [self-hosted, Linux, armv7l]
+    outputs:
+      output1: ${{ steps.artifact-upload-step.outputs.artifact-id }}
+    steps:
+      - name: Install Node ${{ matrix.node }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Build public
+        id: build-public
+        env:
+          NODE_OPTIONS: "--max_old_space_size=4096"
+        run: make build_public
+
+      - uses: actions/upload-artifact@v4
+        id: artifact-upload-step
+        with:
+          name: public_build
+          path: /home/runner/work/smart-home/smart-home/build
+
+      - name: Output artifact ID
+        run: echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
+
 #  test_amd64:
 #    if: github.event.base_ref != 'refs/heads/master'
 #    name: Testing amd64
@@ -94,23 +127,22 @@ jobs:
     strategy:
       matrix:
         go: [ 1.19 ]
-        node: [ 16 ]
     runs-on: [self-hosted, Linux, armv7l]
+    needs: build_public
     steps:
 #      - name: Install Go ${{ matrix.go }}
 #        uses: actions/setup-go@v2
 #        with:
 #          go-version: ${{ matrix.go }}
 
-      - name: Install Node ${{ matrix.node }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node }}
+      - env:
+        OUTPUT1: ${{needs.job1.outputs.output1}}
+        run: echo "Artifact ID from previous job is $OUTPUT1"
 
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Prepary deps
+      - name: Prepary go deps
         run: |
           echo -e "machine github.com\n  login ${{ secrets.GITHUBTOKEN }}" > ~/.netrc
           make get_deps
