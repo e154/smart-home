@@ -94,6 +94,7 @@ jobs:
     strategy:
       matrix:
         go: [ 1.19 ]
+        node: [ 16 ]
     runs-on: [self-hosted, Linux, armv7l]
     steps:
 #      - name: Install Go ${{ matrix.go }}
@@ -101,10 +102,10 @@ jobs:
 #        with:
 #          go-version: ${{ matrix.go }}
 
-      - name: Set up Node
-        uses: actions/setup-node@v2
-        with:
-          node-version: '16'
+#      - name: Set up Node
+#        uses: actions/setup-node@v2
+#        with:
+#          node-version: '16'
 
       - name: Checkout
         uses: actions/checkout@v2
