@@ -10,7 +10,7 @@ on:
 jobs:
 #  test_amd64:
 #    if: github.event.base_ref != 'refs/heads/master'
-#    name: Testing
+#    name: Testing amd64
 #    runs-on: ubuntu-latest
 #
 #    services:
@@ -90,16 +90,14 @@ jobs:
 
   test_armv7l:
     if: github.event.base_ref != 'refs/heads/master'
-    name: Testing
+    name: Testing armv7l
+    strategy:
+      matrix:
+        go: [ 1.22 ]
     runs-on: [self-hosted, Linux, armv7l]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
-      - name: Set up Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.22.0
 
       - name: Set up Node
         uses: actions/setup-node@v2
