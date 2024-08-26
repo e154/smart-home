@@ -93,13 +93,13 @@ jobs:
     name: Testing armv7l
     strategy:
       matrix:
-        go: [ 1.22 ]
+        go: [ 1.19 ]
     runs-on: [self-hosted, Linux, armv7l]
     steps:
-      - name: Install Go ${{ matrix.go }}
-        uses: actions/setup-go@v2
-        with:
-          go-version: ${{ matrix.go }}
+#      - name: Install Go ${{ matrix.go }}
+#        uses: actions/setup-go@v2
+#        with:
+#          go-version: ${{ matrix.go }}
 
       - name: Set up Node
         uses: actions/setup-node@v2
