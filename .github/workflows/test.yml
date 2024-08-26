@@ -102,10 +102,10 @@ jobs:
 #        with:
 #          go-version: ${{ matrix.go }}
 
-#      - name: Set up Node
-#        uses: actions/setup-node@v2
-#        with:
-#          node-version: '16'
+      - name: Install Node ${{ matrix.node }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
 
       - name: Checkout
         uses: actions/checkout@v2
