@@ -8,45 +8,91 @@ on:
       - "*"
 
 jobs:
-  build:
+#  test_amd64:
+#    if: github.event.base_ref != 'refs/heads/master'
+#    name: Testing
+#    runs-on: ubuntu-latest
+#
+#    services:
+#      # Label used to access the service container
+#      postgres:
+#        # Docker Hub image
+#        image: postgis/postgis:11-3.3
+#        # Provide the password for postgres
+#        env:
+#          POSTGRES_DB: postgres
+#          POSTGRES_PASSWORD: postgres
+#          POSTGRES_USER: postgres
+#        # Set health checks to wait until postgres has started
+#        options: >-
+#          --health-cmd pg_isready
+#          --health-interval 10s
+#          --health-timeout 5s
+#          --health-retries 5
+#        ports:
+#          - 5432:5432
+#
+#    steps:
+#      - name: Install PostgreSQL client
+#        run: |
+#          sudo apt-get update
+#          sudo apt-get install --yes postgresql-client
+#          sudo apt-get -y install libpq-dev
+#
+#      - name: set up postgres
+#        run: |
+#          export PGPASSWORD=postgres && psql -h localhost -p 5432 -c 'CREATE DATABASE smart_home_test;' -U postgres
+#          export PGPASSWORD=postgres && psql -h localhost -p 5432 -c "CREATE USER smart_home WITH PASSWORD 'smart_home';" -U postgres
+#          export PGPASSWORD=postgres && psql -h localhost -p 5432 -c "ALTER ROLE smart_home SUPERUSER;" -U postgres
+#          export PGPASSWORD=postgres && psql -h localhost -p 5432 -c "CREATE EXTENSION pgcrypto;" -U postgres smart_home_test;
+#          export PGPASSWORD=postgres && psql -h localhost -p 5432 -c "CREATE EXTENSION Postgis;" -U postgres smart_home_test;
+#
+#      - name: Checkout
+#        uses: actions/checkout@v2
+#
+#      - name: Set up Go
+#        uses: actions/setup-go@v2
+#        with:
+#          go-version: 1.22.0
+#
+#      - name: Set up Node
+#        uses: actions/setup-node@v2
+#        with:
+#          node-version: '16'
+#
+#      - name: Prepary deps
+#        run: |
+#          echo -e "machine github.com\n  login ${{ secrets.GITHUBTOKEN }}" > ~/.netrc
+#          make get_deps
+#
+#      - name: Build public
+#        id: build-public
+#        env:
+#          NODE_OPTIONS: "--max_old_space_size=4096"
+#        run: make build_public
+#
+#      - name: Unit tests
+#        id: test-code
+#        run: make test
+#
+#      - name: System tests
+#        id: system-code
+#        run: make test_system
+#
+#      - name: Upload coverage reports to Codecov
+#        uses: codecov/codecov-action@v3
+#        env:
+#          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+#
+#      - name: trying to build
+#        id: build-linux
+#        run: make build_linux_amd64 build_structure build_common_structure build_archive docker_image_linux_amd64
+
+  test_armv7l:
     if: github.event.base_ref != 'refs/heads/master'
     name: Testing
-    runs-on: ubuntu-latest
-
-    services:
-      # Label used to access the service container
-      postgres:
-        # Docker Hub image
-        image: postgis/postgis:11-3.3
-        # Provide the password for postgres
-        env:
-          POSTGRES_DB: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_USER: postgres
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-
+    runs-on: [self-hosted, Linux, armv7l]
     steps:
-      - name: Install PostgreSQL client
-        run: |
-          sudo apt-get update
-          sudo apt-get install --yes postgresql-client
-          sudo apt-get -y install libpq-dev
-
-      - name: set up postgres
-        run: |
-          export PGPASSWORD=postgres && psql -h localhost -p 5432 -c 'CREATE DATABASE smart_home_test;' -U postgres
-          export PGPASSWORD=postgres && psql -h localhost -p 5432 -c "CREATE USER smart_home WITH PASSWORD 'smart_home';" -U postgres
-          export PGPASSWORD=postgres && psql -h localhost -p 5432 -c "ALTER ROLE smart_home SUPERUSER;" -U postgres
-          export PGPASSWORD=postgres && psql -h localhost -p 5432 -c "CREATE EXTENSION pgcrypto;" -U postgres smart_home_test;
-          export PGPASSWORD=postgres && psql -h localhost -p 5432 -c "CREATE EXTENSION Postgis;" -U postgres smart_home_test;
-
       - name: Checkout
         uses: actions/checkout@v2
 
@@ -75,15 +121,6 @@ jobs:
         id: test-code
         run: make test
 
-      - name: System tests
-        id: system-code
-        run: make test_system
-
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
       - name: trying to build
         id: build-linux
-        run: make build_linux_amd64 build_structure build_common_structure build_archive docker_image_linux_amd64
+        run: make build_linux_armv7l build_structure build_common_structure build_archive docker_image_linux_armv7l

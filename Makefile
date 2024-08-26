@@ -105,9 +105,9 @@ build_linux_amd64:
 	./bin/install_vosk.sh linux x86_64
 	${GO_BUILD_ENV} GOOS=linux GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-amd64
 
-build_linux_armv7:
-	@echo MARK: build linux armv7
-	./bin/install_vosk.sh linux x86_64
+build_linux_armv7l:
+	@echo MARK: build linux armv7l
+	./bin/install_vosk.sh linux armv7l
 	${GO_BUILD_ENV} GOOS=linux GOARCH=arm GOARM=7 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-7
 
 #todo remove
@@ -235,6 +235,10 @@ docs_deploy:
 docker_image_linux_amd64:
 	echo ${HOME}
 	cd ${SERVER_DIR} && ls -ll && docker build --build-arg app=${EXEC}-linux-amd64 -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
+
+docker_image_linux_armv7l:
+	echo ${HOME}
+	cd ${SERVER_DIR} && ls -ll && docker build --build-arg app=${EXEC}-linux-arm-7 -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
 
 docker_image_upload:
 	echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
