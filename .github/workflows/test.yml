@@ -92,7 +92,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: public_build
-          path: /home/delta54/actions-runner/_work/smart-home/smart-home/build
+          path: /home/runner/work/smart-home/smart-home/build
 
       - name: Install PostgreSQL client
         run: |
@@ -150,7 +150,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: public_build
-          path: /home/delta54/actions-runner/_work/smart-home/smart-home/build
+          path: /home/runner/work/smart-home/smart-home/build
 
       - name: Go mod tidy
         run: |
