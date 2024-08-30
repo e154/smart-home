@@ -8,16 +8,6 @@ on:
       - "*"
 
 jobs:
-  checkout:
-    if: github.event.base_ref != 'refs/heads/master'
-    name: Checkout
-    runs-on: ubuntu-latest
-    outputs:
-      output1: ${{ steps.artifact-upload-step.outputs.artifact-id }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
   build_public:
     name: Testing public
     strategy:
@@ -28,6 +18,9 @@ jobs:
       output1: ${{ steps.artifact-upload-step.outputs.artifact-id }}
     needs: [checkout]
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Install Node ${{ matrix.node }}
         uses: actions/setup-node@v2
         with:
@@ -55,6 +48,9 @@ jobs:
       output1: ${{ steps.artifact-upload-step.outputs.artifact-id }}
     needs: [checkout]
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Build common
         id: build-common
         run: make build_structure
@@ -92,6 +88,9 @@ jobs:
           - 5432:5432
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Install PostgreSQL client
         run: |
           sudo apt-get update
