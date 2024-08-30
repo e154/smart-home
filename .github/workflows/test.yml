@@ -136,7 +136,7 @@ jobs:
     strategy:
       matrix:
         go: [ 1.22 ]
-    runs-on: [self-hosted, Linux, amd64]
+    runs-on: [self-hosted, Linux, X64]
     needs: [build_public]
     steps:
 
