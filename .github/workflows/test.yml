@@ -63,7 +63,7 @@ jobs:
         run: echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
 
   run_tests:
-    name: Testing amd64
+    name: Run linux test
     strategy:
       matrix:
         go: [ 1.22 ]
@@ -88,6 +88,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: public_build
+          path: /home/delta54/actions-runner/_work/smart-home/smart-home/build
 
       - name: Install PostgreSQL client
         run: |
