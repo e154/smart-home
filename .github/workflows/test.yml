@@ -16,7 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       output1: ${{ steps.artifact-upload-step.outputs.artifact-id }}
-    needs: [checkout]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -46,7 +45,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       output1: ${{ steps.artifact-upload-step.outputs.artifact-id }}
-    needs: [checkout]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
