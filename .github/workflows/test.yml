@@ -35,7 +35,7 @@ jobs:
         id: artifact-upload-step
         with:
           name: public_build
-          path: /home/runner/work/smart-home/smart-home/build
+          path: ./build
 
       - name: Output artifact ID
         run: echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
@@ -57,7 +57,7 @@ jobs:
         id: artifact-upload-step
         with:
           name: common
-          path: /home/runner/work/smart-home/smart-home/tmp/common
+          path: ./tmp/common
 
       - name: Output artifact ID
         run: echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
@@ -92,7 +92,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: public_build
-          path: /home/runner/work/smart-home/smart-home/build
+          path: ./build
 
       - name: Install PostgreSQL client
         run: |
@@ -150,7 +150,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: public_build
-          path: /home/runner/work/smart-home/smart-home/build
+          path: ./build
 
       - name: Go mod tidy
         run: |
