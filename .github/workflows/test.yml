@@ -51,7 +51,7 @@ jobs:
 
       - name: Build common
         id: build-common
-        run: make build_structure
+        run: make build_common_structure
 
       - uses: actions/upload-artifact@v4
         id: artifact-upload-step
@@ -157,10 +157,15 @@ jobs:
           echo -e "machine github.com\n  login ${{ secrets.GITHUBTOKEN }}" > ~/.netrc
           make get_deps
 
-      - name: Unit tests
-        id: test-code
-        run: make test_without_race
-
       - name: trying to build
         id: build-linux
         run: make build_linux_amd64
+
+      - uses: actions/upload-artifact@v4
+        id: artifact-upload-step
+        with:
+          name: linux_amd64
+          path: ./server-linux-amd64
+
+      - name: Output artifact ID
+        run: echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'

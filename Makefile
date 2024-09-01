@@ -188,9 +188,7 @@ build_common_structure:
 	cp ${ROOT}/LICENSE ${COMMON_DIR}
 	cp ${ROOT}/README* ${COMMON_DIR}
 	cp ${ROOT}/CONTRIBUTING.md ${COMMON_DIR}
-	cp ${ROOT}/bin/server-installer.sh ${COMMON_DIR}
 	chmod +x ${COMMON_DIR}/data/scripts/ping.sh
-	cp ${ROOT}/bin/server ${COMMON_DIR}
 
 build_archive:
 	@echo MARK: build app archive
