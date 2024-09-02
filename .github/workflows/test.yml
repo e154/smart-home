@@ -7,6 +7,13 @@ on:
     tags:
       - "*"
 
+env:
+  GITHUB_OAUTH_TOKEN: ${{ secrets.GITHUBTOKEN }}
+  TRAVIS_BUILD_NUMBER: ${{ github.run_number }}
+  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+  GITHUB_TOKEN: ${{ github.token }}
+
 jobs:
   build_public:
     name: Build public
