@@ -1,21 +1,19 @@
-FROM postgres:15 as postgres
+FROM --platform=$BUILDPLATFORM postgres:15 as postgres
+ARG TARGETOS
+ARG TARGETARCH
 MAINTAINER Filippov Alex <support@e154.ru>
 
-FROM debian:12-slim
-ARG app
+FROM --platform=$BUILDPLATFORM debian:12-slim
+ARG TARGETOS
+ARG TARGETARCH
 RUN apt-get update \
     && apt-get install -y --no-install-recommends libpq5 ca-certificates iputils-ping
 RUN update-ca-certificates
 COPY --from=postgres /usr/lib/postgresql/15/bin/pg_dump /usr/local/bin
 COPY --from=postgres /usr/lib/postgresql/15/bin/pg_restore /usr/local/bin
-ENTRYPOINT ["/server-linux-amd64"]
+ENTRYPOINT ["/server"]
 USER nobody
-RUN echo "app\n$app"
-ADD conf /
-ADD data /
-ADD snapshots /
-ADD $app /
-ADD libvosk* /
+ADD . /
 
 EXPOSE 3000
 EXPOSE 3001

@@ -36,7 +36,7 @@ DOCKER_IMAGE_VAR=${PROJECT}/version.DockerImageString
 
 GO_BUILD_LDFLAGS= -s -w -linkmode external -X ${VERSION_VAR}=${RELEASE_VERSION} -X ${REV_VAR}=${REV_VALUE} -X ${REV_URL_VAR}=${REV_URL_VALUE} -X ${GENERATED_VAR}=${GENERATED_VALUE} -X ${DEVELOPERS_VAR}=${DEVELOPERS_VALUE} -X ${BUILD_NUMBER_VAR}=${BUILD_NUMBER_VALUE} -X ${DOCKER_IMAGE_VAR}=${DOCKER_IMAGE_VER}
 GO_BUILD_FLAGS= -a -installsuffix cgo -v --ldflags '${GO_BUILD_LDFLAGS}'
-GO_BUILD_ENV=CGO_ENABLED=1 CGO_LDFLAGS_ALLOW=-Wl,-rpath,@executable_path/.*
+GO_BUILD_ENV=CGO_ENABLED=1
 GO_BUILD_TAGS= -tags 'production'
 GO_TEST=test -tags test -v
 
@@ -108,41 +108,88 @@ svgo:
 # linux
 build_linux_x86:
 	@echo MARK: build linux x86
-	./bin/install_vosk.sh linux x86
-	${GO_BUILD_ENV} CXX='g++ -m32' CC='gcc -m32' GOOS=linux GOARCH=386 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-x86
+	rm -rf ${ROOT}/${EXEC}-linux-x86
+	mkdir -p ${ROOT}/${EXEC}-linux-x86
+	./bin/install_vosk.sh linux x86 ${ROOT}/${EXEC}-linux-x86
+	export CGO_LDFLAGS_ALLOW="-Wl,-rpath.*" && \
+	export CGO_CFLAGS="-I${ROOT}/${EXEC}-linux-x86" && \
+	export CGO_LDFLAGS="-L${ROOT}/${EXEC}-linux-x86" && \
+	export LD_LIBRARY_PATH="${ROOT}/${EXEC}-linux-x86:$LD_LIBRARY_PATH" && \
+	export DYLD_LIBRARY_PATH="${ROOT}/${EXEC}-linux-x86" && \
+	${GO_BUILD_ENV} CXX='g++ -m32' CC='gcc -m32' GOOS=linux GOARCH=386 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-x86/server
 
 build_linux_amd64:
 	@echo MARK: build linux amd64
+	rm -rf ${ROOT}/${EXEC}-linux-amd64
 	mkdir -p ${ROOT}/${EXEC}-linux-amd64
 	./bin/install_vosk.sh linux x86_64 ${ROOT}/${EXEC}-linux-amd64
-	CGO_CFLAGS=-I${ROOT}/${EXEC}-linux-amd64 CGO_LDFLAGS=-L${ROOT}/${EXEC}-linux-amd64 LD_LIBRARY_PATH=${ROOT}/${EXEC}-linux-amd64:$LD_LIBRARY_PATH DYLD_LIBRARY_PATH=${ROOT}/${EXEC}-linux-amd64 && \
+	export CGO_LDFLAGS_ALLOW="-Wl,-rpath.*" && \
+	export CGO_CFLAGS="-I${ROOT}/${EXEC}-linux-amd64" && \
+	export CGO_LDFLAGS="-L${ROOT}/${EXEC}-linux-amd64" && \
+	export LD_LIBRARY_PATH="${ROOT}/${EXEC}-linux-amd64:$LD_LIBRARY_PATH" && \
+	export DYLD_LIBRARY_PATH="${ROOT}/${EXEC}-linux-amd64" && \
 	${GO_BUILD_ENV} GOOS=linux GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-amd64/server
 
 build_linux_armv6:
 	@echo MARK: build linux armv6
-	./bin/install_vosk.sh linux armv7l
-	${GO_BUILD_ENV} CC=arm-linux-gnueabihf-gcc GOOS=linux GOARCH=arm GOARM=6 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-6
+	rm -rf ${ROOT}/${EXEC}-linux-arm-6
+	mkdir -p ${ROOT}/${EXEC}-linux-arm-6
+	./bin/install_vosk.sh linux armv7l ${ROOT}/${EXEC}-linux-arm-6
+	export CGO_LDFLAGS_ALLOW="-Wl,-rpath.*" && \
+	export CGO_CFLAGS="-I${ROOT}/${EXEC}-linux-arm-6" && \
+	export CGO_LDFLAGS="-L${ROOT}/${EXEC}-linux-arm-6" && \
+	export LD_LIBRARY_PATH="${ROOT}/${EXEC}-linux-arm-6:$LD_LIBRARY_PATH" && \
+	export DYLD_LIBRARY_PATH="${ROOT}/${EXEC}-linux-arm-6" && \
+	${GO_BUILD_ENV} CC=arm-linux-gnueabihf-gcc GOOS=linux GOARCH=arm GOARM=6 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-6/server
 
 build_linux_armv7l:
 	@echo MARK: build linux armv7l
-	./bin/install_vosk.sh linux armv7l
-	${GO_BUILD_ENV} CC=arm-linux-gnueabihf-gcc GOOS=linux GOARCH=arm GOARM=7 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-7
+	rm -rf ${ROOT}/${EXEC}-linux-arm-7
+	mkdir -p ${ROOT}/${EXEC}-linux-arm-7
+	./bin/install_vosk.sh linux armv7l ${ROOT}/${EXEC}-linux-arm-7
+	export CGO_LDFLAGS_ALLOW="-Wl,-rpath.*" && \
+	export CGO_CFLAGS="-I${ROOT}/${EXEC}-linux-arm-7" && \
+	export CGO_LDFLAGS="-L${ROOT}/${EXEC}-linux-arm-7" && \
+	export LD_LIBRARY_PATH="${ROOT}/${EXEC}-linux-arm-7:$LD_LIBRARY_PATH" && \
+	export DYLD_LIBRARY_PATH="${ROOT}/${EXEC}-linux-arm-7" && \
+	${GO_BUILD_ENV} CC=arm-linux-gnueabihf-gcc GOOS=linux GOARCH=arm GOARM=7 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-7/server
 
 build_linux_arm64:
 	@echo MARK: build linux arm64
-	./bin/install_vosk.sh linux aarch64
-	${GO_BUILD_ENV} CC=aarch64-linux-gnu-gcc GOOS=linux GOARCH=arm64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm64
+	rm -rf ${ROOT}/${EXEC}-linux-arm64
+	mkdir -p ${ROOT}/${EXEC}-linux-arm64
+	./bin/install_vosk.sh linux aarch64 ${ROOT}/${EXEC}-linux-arm64
+	export CGO_LDFLAGS_ALLOW="-Wl,-rpath.*" && \
+	export CGO_CFLAGS="-I${ROOT}/${EXEC}-linux-arm64" && \
+	export CGO_LDFLAGS="-L${ROOT}/${EXEC}-linux-arm64" && \
+	export LD_LIBRARY_PATH="${ROOT}/${EXEC}-linux-arm64:$LD_LIBRARY_PATH" && \
+	export DYLD_LIBRARY_PATH="${ROOT}/${EXEC}-linux-arm64" && \
+	${GO_BUILD_ENV} CC=aarch64-linux-gnu-gcc GOOS=linux GOARCH=arm64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm64/server
 
 # windows
 build_windows_amd64:
 	@echo MARK: build windows amd64
-	./bin/install_vosk.sh win win64
-	${GO_BUILD_ENV} CXX=x86_64-w64-mingw32-g++ CC=x86_64-w64-mingw32-gcc GOOS=windows GOARCH=amd64 go build -trimpath -ldflags ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-windows-amd64
+	#rm -rf ${ROOT}/${EXEC}-windows-amd64
+	#mkdir -p ${ROOT}/${EXEC}-windows-amd64
+	#./bin/install_vosk.sh win win64 ${ROOT}/${EXEC}-windows-amd64
+	export CGO_LDFLAGS_ALLOW="-Wl,-rpath.*" && \
+	export CGO_CFLAGS="-I${ROOT}/${EXEC}-windows-amd64" && \
+	export CGO_LDFLAGS="-L${ROOT}/${EXEC}-windows-amd64 -lvosk -L/usr/lib/x86_64-linux-gnu -ldl -lpthread" && \
+	export LD_LIBRARY_PATH="${ROOT}/${EXEC}-windows-amd64:$LD_LIBRARY_PATH" && \
+	export DYLD_LIBRARY_PATH="${ROOT}/${EXEC}-windows-amd64" && \
+	${GO_BUILD_ENV} CXX=x86_64-w64-mingw32-g++ CC=x86_64-w64-mingw32-gcc GOOS=windows GOARCH=amd64 go build -ldflags ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-windows-amd64/server.exe
 
 build_windows_x86:
 	@echo MARK: build windows x86
-	./bin/install_vosk.sh win x86
-	${GO_BUILD_ENV} CC=i686-w64-mingw32-gcc GOOS=windows GOARCH=386 go build -trimpath -ldflags ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-windows-x86
+	rm -rf ${ROOT}/${EXEC}-windows-x86
+	mkdir -p ${ROOT}/${EXEC}-windows-x86
+	./bin/install_vosk.sh win win32 ${ROOT}/${EXEC}-windows-x86
+	export CGO_LDFLAGS_ALLOW="-Wl,-rpath.*" && \
+	export CGO_CFLAGS="-I${ROOT}/${EXEC}-windows-x86" && \
+	export CGO_LDFLAGS="-L/usr/local/lib -L/usr/lib -L${ROOT}/${EXEC}-windows-x86 -lvosk -L/usr/lib/i386-linux-gnu -ldl -lpthread" && \
+	export LD_LIBRARY_PATH="${ROOT}/${EXEC}-windows-x86:$LD_LIBRARY_PATH" && \
+	export DYLD_LIBRARY_PATH="${ROOT}/${EXEC}-windows-x86" && \
+	${GO_BUILD_ENV} CXX=i686-w64-mingw32-g++ CC=i686-w64-mingw32-gcc GOOS=windows GOARCH=386 go build -ldflags ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-windows-x86/server.exe
 
 build_public:
 	@echo MARK: build public
@@ -230,13 +277,21 @@ docs_deploy:
 	git push -q upstream HEAD:gh-pages
 	echo -e "Done documentation deploy.\n"
 
+docker_image_linux_x86:
+	echo ${ROOT}/${EXEC}-linux-x86
+	cd ${ROOT}/${EXEC}-linux-x86 && ls -ll && docker build --platform linux/386 -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
+
 docker_image_linux_amd64:
-	echo ${HOME}
-	cd ${SERVER_DIR} && ls -ll && docker build --build-arg app=${EXEC}-linux-amd64 -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
+	echo ${ROOT}/${EXEC}-linux-amd64
+	cd ${ROOT}/${EXEC}-linux-amd64 && ls -ll && docker build --platform linux/amd64 -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
 
 docker_image_linux_armv7l:
-	echo ${HOME}
-	cd ${SERVER_DIR} && ls -ll && docker build --build-arg app=${EXEC}-linux-arm-7 -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
+	echo ${ROOT}/${EXEC}-linux-arm-7
+	cd ${ROOT}/${EXEC}-linux-arm-7 && ls -ll && docker build --platform linux/arm/v7 -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
+
+docker_image_linux_arm64:
+	echo ${ROOT}/${EXEC}-linux-arm64
+	cd ${ROOT}/${EXEC}-linux-arm64 && ls -ll && docker build --platform linux/arm64 -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
 
 docker_image_upload:
 	echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
