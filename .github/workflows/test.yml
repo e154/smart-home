@@ -224,9 +224,6 @@ jobs:
       - name: trying to build docker image
         run: make docker_image_linux_amd64
 
-      - name: trying to upload docker image
-        run: make docker_image_upload
-
   build_linux_arm6:
     name: Build linux arm6
     strategy:
@@ -352,9 +349,6 @@ jobs:
       - name: trying to build docker image
         run: make docker_image_linux_arm64
 
-      - name: trying to upload docker image
-        run: make docker_image_upload
-
   build_windows_amd64:
     name: Build windows amd64
     strategy:
@@ -432,3 +426,11 @@ jobs:
 
       - name: Output artifact ID
         run: echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
+
+  docker_image_upload:
+    name: Upload docker images
+    runs-on: [self-hosted, Linux, X64]
+    needs: [build_linux_arm64, build_linux_amd64]
+    steps:
+      - name: trying to upload docker image
+        run: make docker_image_upload
