@@ -296,10 +296,14 @@ docker_image_linux_arm64:
 
 docker_image_upload:
 	echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
+	docker push ${DOCKER_ACCOUNT}/${IMAGE}-x86:${RELEASE_VERSION}
 	docker push ${DOCKER_ACCOUNT}/${IMAGE}-amd64:${RELEASE_VERSION}
+	docker push ${DOCKER_ACCOUNT}/${IMAGE}-arm-7:${RELEASE_VERSION}
 	docker push ${DOCKER_ACCOUNT}/${IMAGE}-arm64:${RELEASE_VERSION}
 	docker manifest create --amend ${DOCKER_ACCOUNT}/${IMAGE}:${RELEASE_VERSION} \
+	${DOCKER_ACCOUNT}/${IMAGE}-x86:${RELEASE_VERSION} \
 	${DOCKER_ACCOUNT}/${IMAGE}-amd64:${RELEASE_VERSION} \
+	${DOCKER_ACCOUNT}/${IMAGE}-arm-7:${RELEASE_VERSION} \
 	${DOCKER_ACCOUNT}/${IMAGE}-arm64:${RELEASE_VERSION}
 	docker manifest push ${DOCKER_ACCOUNT}/${IMAGE}:${RELEASE_VERSION}
 

@@ -8,11 +8,8 @@ on:
       - "*"
 
 env:
-  GITHUB_OAUTH_TOKEN: ${{ secrets.GITHUBTOKEN }}
-  TRAVIS_BUILD_NUMBER: ${{ github.run_number }}
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-  GITHUB_TOKEN: ${{ github.token }}
 
 jobs:
   build_public:
@@ -177,6 +174,14 @@ jobs:
       - name: Output artifact ID
         run: echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
 
+      - uses: actions/download-artifact@v4
+        with:
+          name: common_build
+          path: ./server-linux-x86
+
+      - name: trying to build docker image
+        run: make docker_image_linux_x86
+
   build_linux_amd64:
     name: Build linux amd64
     strategy:
@@ -301,6 +306,14 @@ jobs:
 
       - name: Output artifact ID
         run: echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: common_build
+          path: ./server-linux-arm-7
+
+      - name: trying to build docker image
+        run: make docker_image_linux_armv7l
 
   build_linux_arm64:
     name: Build linux arm64
@@ -430,7 +443,7 @@ jobs:
   docker_image_upload:
     name: Upload docker images
     runs-on: [self-hosted, Linux, X64]
-    needs: [build_linux_arm64, build_linux_amd64]
+    needs: [build_linux_arm64, build_linux_amd64, build_linux_arm7, build_linux_x86]
     steps:
       - name: trying to upload docker image
         run: make docker_image_upload

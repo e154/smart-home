@@ -7,123 +7,371 @@ on:
     branches:
       - main
 env:
-  GITHUB_OAUTH_TOKEN: ${{ secrets.GITHUBTOKEN }}
-  TRAVIS_BUILD_NUMBER: ${{ github.run_number }}
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
   GITHUB_TOKEN: ${{ github.token }}
 
 jobs:
-  build:
-    name: Build_Deploy
+  build_public:
+    name: Build public
+    strategy:
+      matrix:
+        node: [ 16 ]
     runs-on: ubuntu-latest
-
+    outputs:
+      output1: ${{ steps.artifact-upload-step.outputs.artifact-id }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
+      - name: Install Node ${{ matrix.node }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Build public
+        id: build-public
+        env:
+          NODE_OPTIONS: "--max_old_space_size=4096"
+        run: make build_public
+
+      - uses: actions/upload-artifact@v4
+        id: artifact-upload-step
+        with:
+          name: public_build
+          path: ./build
+
+      - name: Output artifact ID
+        run: echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
+
+  build_common:
+    name: Build common
+    runs-on: ubuntu-latest
+    outputs:
+      output1: ${{ steps.artifact-upload-step.outputs.artifact-id }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Build common
+        id: build-common
+        run: make build_common_structure
+
+      - uses: actions/upload-artifact@v4
+        id: artifact-upload-step
+        with:
+          name: common_build
+          path: ./tmp/common
+
+      - name: Output artifact ID
+        run: echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
+
+      - name: upload common artifact
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ./tmp/common
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build_linux_x86:
+    name: Build linux x86
+    strategy:
+      matrix:
+        go: [ 1.22 ]
+    runs-on: [self-hosted, Linux, X64]
+    needs: [build_public]
+    steps:
       - name: Set env
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
         env:
           RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
 
-      - name: Set up Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.22.0
+      - env:
+          OUTPUT1: ${{needs.build_public.outputs.output1}}
+        run: echo "Artifact ID from previous job is $OUTPUT1"
 
-      - name: Set up Node
-        uses: actions/setup-node@v2
-        with:
-          node-version: '16'
+      - name: Checkout
+        uses: actions/checkout@v2
 
-      - name: Prepary deps
+      - uses: actions/download-artifact@v4
+        with:
+          name: public_build
+          path: ./build
+
+      - name: Go mod tidy
         run: |
           echo -e "machine github.com\n  login ${{ secrets.GITHUBTOKEN }}" > ~/.netrc
           make get_deps
 
-      - name: Build all
-        id: build-all
-        env:
-          NODE_OPTIONS: "--max_old_space_size=4096"
-        run: make all
+      - name: trying to build
+        id: build-linux-x86
+        run: make build_linux_x86
 
-      - name: Deploy docker image
-        id: deploy-docker
-        run: make deploy
+      - uses: actions/download-artifact@v4
+        with:
+          name: common_build
+          path: ./server-linux-x86
 
-      - name: upload server linux amd64 artifact
+      - name: trying to build docker image
+        run: make docker_image_linux_x86
+
+      - name: upload server linux x86
         uses: softprops/action-gh-release@v1
         with:
-          files: /home/runner/work/smart-home/smart-home/server-linux-amd64
+          files: ./server-linux-x86
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: upload server linux arm 7 artifact
+  build_linux_amd64:
+    name: Build linux amd64
+    strategy:
+      matrix:
+        go: [ 1.22 ]
+    runs-on: [self-hosted, Linux, X64]
+    needs: [build_public, build_common]
+    steps:
+
+      - env:
+          OUTPUT1: ${{needs.build_public.outputs.output1}}
+        run: echo "Artifact ID from previous job is $OUTPUT1"
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: public_build
+          path: ./build
+
+      - name: Go mod tidy
+        run: |
+          echo -e "machine github.com\n  login ${{ secrets.GITHUBTOKEN }}" > ~/.netrc
+          make get_deps
+
+      - name: trying to build
+        id: build-linux-amd64
+        run: make build_linux_amd64
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: common_build
+          path: ./server-linux-amd64
+
+      - name: trying to build docker image
+        run: make docker_image_linux_amd64
+
+      - name: upload server linux amd64
         uses: softprops/action-gh-release@v1
         with:
-          files: /home/runner/work/smart-home/smart-home/server-linux-arm-7
+          files: ./server-linux-amd64
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: upload server linux arm 6 artifact
+  build_linux_arm6:
+    name: Build linux arm6
+    strategy:
+      matrix:
+        go: [ 1.22 ]
+    runs-on: [self-hosted, Linux, X64]
+    needs: [build_public]
+    steps:
+
+      - env:
+          OUTPUT1: ${{needs.build_public.outputs.output1}}
+        run: echo "Artifact ID from previous job is $OUTPUT1"
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: public_build
+          path: ./build
+
+      - name: Go mod tidy
+        run: |
+          echo -e "machine github.com\n  login ${{ secrets.GITHUBTOKEN }}" > ~/.netrc
+          make get_deps
+
+      - name: trying to build
+        id: build-linux-arm-6
+        run: make build_linux_armv6
+
+      - name: upload server linux armv6
         uses: softprops/action-gh-release@v1
         with:
-          files: /home/runner/work/smart-home/smart-home/server-linux-arm-6
+          files: ./server-linux-arm-6
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: upload server linux arm 5 artifact
+  build_linux_arm7:
+    name: Build linux arm7
+    strategy:
+      matrix:
+        go: [ 1.22 ]
+    runs-on: [self-hosted, Linux, X64]
+    needs: [build_public]
+    steps:
+
+      - env:
+          OUTPUT1: ${{needs.build_public.outputs.output1}}
+        run: echo "Artifact ID from previous job is $OUTPUT1"
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: public_build
+          path: ./build
+
+      - name: Go mod tidy
+        run: |
+          echo -e "machine github.com\n  login ${{ secrets.GITHUBTOKEN }}" > ~/.netrc
+          make get_deps
+
+      - name: trying to build
+        id: build-linux-armv7l
+        run: make build_linux_armv7l
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: common_build
+          path: ./server-linux-arm-7
+
+      - name: trying to build docker image
+        run: make docker_image_linux_armv7l
+
+      - name: upload server linux armv7
         uses: softprops/action-gh-release@v1
         with:
-          files: /home/runner/work/smart-home/smart-home/server-linux-arm-5
+          files: ./server-linux-arm-7
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-#      - name: upload server darwin amd64 artifact
-#        uses: softprops/action-gh-release@v1
-#        with:
-#          files: /home/runner/work/smart-home/smart-home/server-darwin-10.6-amd64
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#
-#      - name: upload server darwin arm64 artifact
-#        uses: softprops/action-gh-release@v1
-#        with:
-#          files: /home/runner/work/smart-home/smart-home/server-darwin-10.6-arm64
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#
-#      - name: upload cli darwin arm64 artifact
-#        uses: softprops/action-gh-release@v1
-#        with:
-#          files: /home/runner/work/smart-home/smart-home/cli-darwin-10.6-arm64
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#
-#      - name: upload cli darwin amd64 artifact
-#        uses: softprops/action-gh-release@v1
-#        with:
-#          files: /home/runner/work/smart-home/smart-home/cli-darwin-10.6-amd64
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  build_linux_arm64:
+    name: Build linux arm64
+    strategy:
+      matrix:
+        go: [ 1.22 ]
+    runs-on: [self-hosted, Linux, X64]
+    needs: [build_public, build_common]
+    steps:
 
-      - name: upload cli linux amd64 artifact
+      - env:
+          OUTPUT1: ${{needs.build_public.outputs.output1}}
+        run: echo "Artifact ID from previous job is $OUTPUT1"
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: public_build
+          path: ./build
+
+      - name: Go mod tidy
+        run: |
+          echo -e "machine github.com\n  login ${{ secrets.GITHUBTOKEN }}" > ~/.netrc
+          make get_deps
+
+      - name: trying to build
+        id: build-linux-arm64
+        run: make build_linux_arm64
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: common_build
+          path: ./server-linux-arm64
+
+      - name: trying to build docker image
+        run: make docker_image_linux_arm64
+
+      - name: upload server linux arm64
         uses: softprops/action-gh-release@v1
         with:
-          files: /home/runner/work/smart-home/smart-home/cli-linux-amd64
+          files: ./server-linux-arm64
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: upload cli linux amd64 artifact
+  build_windows_amd64:
+    name: Build windows amd64
+    strategy:
+      matrix:
+        go: [ 1.22 ]
+    runs-on: [self-hosted, Linux, X64]
+    needs: [build_public]
+    steps:
+
+      - env:
+          OUTPUT1: ${{needs.build_public.outputs.output1}}
+        run: echo "Artifact ID from previous job is $OUTPUT1"
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: public_build
+          path: ./build
+
+      - name: Go mod tidy
+        run: |
+          echo -e "machine github.com\n  login ${{ secrets.GITHUBTOKEN }}" > ~/.netrc
+          make get_deps
+
+      - name: trying to build
+        id: build-windows-amd64
+        run: make build_windows_amd64
+
+      - name: upload server linux arm64
         uses: softprops/action-gh-release@v1
         with:
-          files: /home/runner/work/smart-home/smart-home/cli-linux-amd64
+          files: ./server-windows-amd64
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: upload common artifact
+  build_windows_x86:
+    name: Build windows x86
+    strategy:
+      matrix:
+        go: [ 1.22 ]
+    runs-on: [self-hosted, Linux, X64]
+    needs: [build_public]
+    steps:
+
+      - env:
+          OUTPUT1: ${{needs.build_public.outputs.output1}}
+        run: echo "Artifact ID from previous job is $OUTPUT1"
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: public_build
+          path: ./build
+
+      - name: Go mod tidy
+        run: |
+          echo -e "machine github.com\n  login ${{ secrets.GITHUBTOKEN }}" > ~/.netrc
+          make get_deps
+
+      - name: trying to build
+        id: build-windows-x86
+        run: make build_windows_x86
+
+      - name: upload server linux 386
         uses: softprops/action-gh-release@v1
         with:
-          files: /home/runner/work/smart-home/smart-home/smart-home-common.tar.gz
+          files: ./server-windows-x86
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  docker_image_upload:
+    name: Upload docker images
+    runs-on: [self-hosted, Linux, X64]
+    needs: [build_linux_arm64, build_linux_amd64, build_linux_arm7, build_linux_x86]
+    steps:
+      - name: trying to upload docker image
+        run: make docker_image_upload
