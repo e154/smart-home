@@ -301,7 +301,7 @@ docker_image_upload:
 	docker manifest create --amend ${DOCKER_ACCOUNT}/${IMAGE}:${RELEASE_VERSION} \
 	${DOCKER_ACCOUNT}/${IMAGE}-amd64:${RELEASE_VERSION} \
 	${DOCKER_ACCOUNT}/${IMAGE}-arm64:${RELEASE_VERSION}
-	docker manifest push {DOCKER_ACCOUNT}/${IMAGE}:${RELEASE_VERSION}
+	docker manifest push ${DOCKER_ACCOUNT}/${IMAGE}:${RELEASE_VERSION}
 
 clean:
 	@echo MARK: clean
