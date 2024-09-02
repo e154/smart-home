@@ -18,6 +18,9 @@
 
 package main
 
+// #cgo LDFLAGS: -Wl,-rpath,.
+import "C"
+
 import (
 	"fmt"
 	"os"
