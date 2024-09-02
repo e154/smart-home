@@ -23,6 +23,7 @@ BUILD_NUMBER_VALUE=$(shell echo ${TRAVIS_BUILD_NUMBER})
 
 IMAGE=smart-home-${EXEC}
 DOCKER_ACCOUNT=e154
+RELEASE_VERSION ?= test
 DOCKER_IMAGE_VER=${DOCKER_ACCOUNT}/${IMAGE}:${RELEASE_VERSION}
 DOCKER_IMAGE_LATEST=${DOCKER_ACCOUNT}/${IMAGE}:latest
 
@@ -279,27 +280,28 @@ docs_deploy:
 
 docker_image_linux_x86:
 	echo ${ROOT}/${EXEC}-linux-x86
-	cd ${ROOT}/${EXEC}-linux-x86 && ls -ll && docker build --platform linux/386 -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
+	cd ${ROOT}/${EXEC}-linux-x86 && ls -ll && docker build --platform linux/386 -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE}-x86:${RELEASE_VERSION} .
 
 docker_image_linux_amd64:
 	echo ${ROOT}/${EXEC}-linux-amd64
-	cd ${ROOT}/${EXEC}-linux-amd64 && ls -ll && docker build --platform linux/amd64 -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
+	cd ${ROOT}/${EXEC}-linux-amd64 && ls -ll && docker build --platform linux/amd64 -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE}-amd64:${RELEASE_VERSION} .
 
 docker_image_linux_armv7l:
 	echo ${ROOT}/${EXEC}-linux-arm-7
-	cd ${ROOT}/${EXEC}-linux-arm-7 && ls -ll && docker build --platform linux/arm/v7 -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
+	cd ${ROOT}/${EXEC}-linux-arm-7 && ls -ll && docker build --platform linux/arm/v7 -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE}-arm-7:${RELEASE_VERSION} .
 
 docker_image_linux_arm64:
 	echo ${ROOT}/${EXEC}-linux-arm64
-	cd ${ROOT}/${EXEC}-linux-arm64 && ls -ll && docker build --platform linux/arm64 -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
+	cd ${ROOT}/${EXEC}-linux-arm64 && ls -ll && docker build --platform linux/arm64 -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE}-arm64:${RELEASE_VERSION} .
 
 docker_image_upload:
 	echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
-	docker tag ${DOCKER_ACCOUNT}/${IMAGE} ${DOCKER_IMAGE_VER}
-	echo -e "docker tag ${DOCKER_ACCOUNT}/${IMAGE} ${DOCKER_IMAGE_LATEST}"
-	docker tag ${DOCKER_ACCOUNT}/${IMAGE} ${DOCKER_IMAGE_LATEST}
-	docker push ${DOCKER_IMAGE_VER}
-	docker push ${DOCKER_IMAGE_LATEST}
+	docker push ${DOCKER_ACCOUNT}/${IMAGE}-arm64:${RELEASE_VERSION}
+	docker push ${DOCKER_ACCOUNT}/${IMAGE}-arm64:${RELEASE_VERSION}
+	docker manifest create --amend ${DOCKER_ACCOUNT}/${IMAGE}:${RELEASE_VERSION} \
+	${DOCKER_ACCOUNT}/${IMAGE}-amd64:${RELEASE_VERSION} \
+	${DOCKER_ACCOUNT}/${IMAGE}-arm64:${RELEASE_VERSION}
+	docker manifest push {DOCKER_ACCOUNT}/${IMAGE}:${RELEASE_VERSION}
 
 clean:
 	@echo MARK: clean
