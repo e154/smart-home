@@ -169,9 +169,9 @@ build_linux_arm64:
 # windows
 build_windows_amd64:
 	@echo MARK: build windows amd64
-	#rm -rf ${ROOT}/${EXEC}-windows-amd64
-	#mkdir -p ${ROOT}/${EXEC}-windows-amd64
-	#./bin/install_vosk.sh win win64 ${ROOT}/${EXEC}-windows-amd64
+	rm -rf ${ROOT}/${EXEC}-windows-amd64
+	mkdir -p ${ROOT}/${EXEC}-windows-amd64
+	./bin/install_vosk.sh win win64 ${ROOT}/${EXEC}-windows-amd64
 	export CGO_LDFLAGS_ALLOW="-Wl,-rpath.*" && \
 	export CGO_CFLAGS="-I${ROOT}/${EXEC}-windows-amd64" && \
 	export CGO_LDFLAGS="-L${ROOT}/${EXEC}-windows-amd64 -lvosk -L/usr/lib/x86_64-linux-gnu -ldl -lpthread" && \

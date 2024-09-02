@@ -21,6 +21,9 @@ __download() {
     VOSK_DIR="vosk-linux-aarch64-${VOSK_VER}"
   elif [[ ${ARCH} == "armv7l" ]]; then
     VOSK_DIR="vosk-linux-armv7l-${VOSK_VER}"
+  elif [[ ${ARCH} == "win32" ]]; then
+    VOSK_VER="0.3.42"
+    VOSK_DIR="vosk-win32-${VOSK_VER}"
   elif [[ ${ARCH} == "win64" ]]; then
     VOSK_DIR="vosk-win64-${VOSK_VER}"
   fi

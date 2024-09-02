@@ -9,7 +9,7 @@ on:
 
 jobs:
   build_public:
-    name: Testing public
+    name: Build public
     strategy:
       matrix:
         node: [ 16 ]
@@ -209,6 +209,17 @@ jobs:
       - name: Output artifact ID
         run: echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
 
+      - uses: actions/download-artifact@v4
+        with:
+          name: public_build
+          path: ./server-linux-amd64
+
+      - name: trying to build docker image
+        run: make docker_image_linux_amd64
+
+      - name: trying to build docker image
+        run: make docker_image_upload
+
   build_linux_arm6:
     name: Build linux arm6
     strategy:
@@ -293,7 +304,7 @@ jobs:
       matrix:
         go: [ 1.22 ]
     runs-on: [self-hosted, Linux, X64]
-    needs: [build_public]
+    needs: [build_public, build_common]
     steps:
 
       - env:
@@ -325,6 +336,17 @@ jobs:
 
       - name: Output artifact ID
         run: echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: public_build
+          path: ./server-linux-arm64
+
+      - name: trying to build docker image
+        run: make docker_image_linux_arm64
+
+      - name: trying to build docker image
+        run: make docker_image_upload
 
   build_windows_amd64:
     name: Build windows amd64
