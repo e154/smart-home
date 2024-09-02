@@ -176,7 +176,7 @@ jobs:
       matrix:
         go: [ 1.22 ]
     runs-on: [self-hosted, Linux, X64]
-    needs: [build_public]
+    needs: [build_public, build_common]
     steps:
 
       - env:
@@ -211,13 +211,13 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: public_build
+          name: build_common
           path: ./server-linux-amd64
 
       - name: trying to build docker image
         run: make docker_image_linux_amd64
 
-      - name: trying to build docker image
+      - name: trying to upload docker image
         run: make docker_image_upload
 
   build_linux_arm6:
@@ -339,13 +339,13 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: public_build
+          name: build_common
           path: ./server-linux-arm64
 
       - name: trying to build docker image
         run: make docker_image_linux_arm64
 
-      - name: trying to build docker image
+      - name: trying to upload docker image
         run: make docker_image_upload
 
   build_windows_amd64:
