@@ -9,8 +9,6 @@ on:
       - '!master'   # excludes master
       - '!docs'     # excludes docs
       - '!gh-pages' # excludes gh-pages
-    tags:
-      - "*"
 
 env:
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
