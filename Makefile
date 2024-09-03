@@ -115,6 +115,7 @@ build_linux_x86:
 	export LD_LIBRARY_PATH="${ROOT}/${EXEC}-linux-x86:$LD_LIBRARY_PATH" && \
 	export DYLD_LIBRARY_PATH="${ROOT}/${EXEC}-linux-x86" && \
 	${GO_BUILD_ENV} CXX='g++ -m32' CC='gcc -m32' GOOS=linux GOARCH=386 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-x86/server
+	cd ${ROOT}/${EXEC}-linux-x86 && ls -l && tar -zcf ${ROOT}/${EXEC}-linux-x86.tar.gz .
 
 build_linux_amd64:
 	@echo MARK: build linux amd64
@@ -127,6 +128,7 @@ build_linux_amd64:
 	export LD_LIBRARY_PATH="${ROOT}/${EXEC}-linux-amd64:$LD_LIBRARY_PATH" && \
 	export DYLD_LIBRARY_PATH="${ROOT}/${EXEC}-linux-amd64" && \
 	${GO_BUILD_ENV} GOOS=linux GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-amd64/server
+	cd ${ROOT}/${EXEC}-linux-amd64 && ls -l && tar -zcf ${ROOT}/${EXEC}-linux-amd64.tar.gz .
 
 build_linux_armv6:
 	@echo MARK: build linux armv6
@@ -139,6 +141,7 @@ build_linux_armv6:
 	export LD_LIBRARY_PATH="${ROOT}/${EXEC}-linux-arm-6:$LD_LIBRARY_PATH" && \
 	export DYLD_LIBRARY_PATH="${ROOT}/${EXEC}-linux-arm-6" && \
 	${GO_BUILD_ENV} CC=arm-linux-gnueabihf-gcc GOOS=linux GOARCH=arm GOARM=6 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-6/server
+	cd ${ROOT}/${EXEC}-linux-arm-6 && ls -l && tar -zcf ${ROOT}/${EXEC}-linux-arm-6.tar.gz .
 
 build_linux_armv7l:
 	@echo MARK: build linux armv7l
@@ -151,6 +154,7 @@ build_linux_armv7l:
 	export LD_LIBRARY_PATH="${ROOT}/${EXEC}-linux-arm-7:$LD_LIBRARY_PATH" && \
 	export DYLD_LIBRARY_PATH="${ROOT}/${EXEC}-linux-arm-7" && \
 	${GO_BUILD_ENV} CC=arm-linux-gnueabihf-gcc GOOS=linux GOARCH=arm GOARM=7 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-7/server
+	cd ${ROOT}/${EXEC}-linux-arm-7 && ls -l && tar -zcf ${ROOT}/${EXEC}-linux-arm-7.tar.gz .
 
 build_linux_arm64:
 	@echo MARK: build linux arm64
@@ -163,6 +167,7 @@ build_linux_arm64:
 	export LD_LIBRARY_PATH="${ROOT}/${EXEC}-linux-arm64:$LD_LIBRARY_PATH" && \
 	export DYLD_LIBRARY_PATH="${ROOT}/${EXEC}-linux-arm64" && \
 	${GO_BUILD_ENV} CC=aarch64-linux-gnu-gcc GOOS=linux GOARCH=arm64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm64/server
+	cd ${ROOT}/${EXEC}-linux-arm64 && ls -l && tar -zcf ${ROOT}/${EXEC}-linux-arm64.tar.gz .
 
 # windows
 build_windows_amd64:
@@ -176,6 +181,7 @@ build_windows_amd64:
 	export LD_LIBRARY_PATH="${ROOT}/${EXEC}-windows-amd64:$LD_LIBRARY_PATH" && \
 	export DYLD_LIBRARY_PATH="${ROOT}/${EXEC}-windows-amd64" && \
 	${GO_BUILD_ENV} CXX=x86_64-w64-mingw32-g++ CC=x86_64-w64-mingw32-gcc GOOS=windows GOARCH=amd64 go build -ldflags ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-windows-amd64/server.exe
+	cd ${ROOT}/${EXEC}-windows-amd64 && ls -l && tar -zcf ${ROOT}/${EXEC}-windows-amd64.tar.gz .
 
 build_windows_x86:
 	@echo MARK: build windows x86
@@ -188,6 +194,7 @@ build_windows_x86:
 	export LD_LIBRARY_PATH="${ROOT}/${EXEC}-windows-x86:$LD_LIBRARY_PATH" && \
 	export DYLD_LIBRARY_PATH="${ROOT}/${EXEC}-windows-x86" && \
 	${GO_BUILD_ENV} CXX=i686-w64-mingw32-g++ CC=i686-w64-mingw32-gcc GOOS=windows GOARCH=386 go build -ldflags ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-windows-x86/server.exe
+	cd ${ROOT}/${EXEC}-windows-x86 && ls -l && tar -zcf ${ROOT}/${EXEC}-windows-x86.tar.gz .
 
 build_public:
 	@echo MARK: build public
@@ -222,6 +229,7 @@ build_common_structure:
 	cp ${ROOT}/README* ${COMMON_DIR}
 	cp ${ROOT}/CONTRIBUTING.md ${COMMON_DIR}
 	chmod +x ${COMMON_DIR}/data/scripts/ping.sh
+	cd ${COMMON_DIR} && ls -l && tar -zcf ${ROOT}/common.tar.gz .
 
 build_docs:
 	@echo MARK: build doc

@@ -69,7 +69,7 @@ jobs:
       - name: upload common artifact
         uses: softprops/action-gh-release@v1
         with:
-          files: ./tmp/common
+          files: ./common.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -118,7 +118,7 @@ jobs:
       - name: upload server linux x86
         uses: softprops/action-gh-release@v1
         with:
-          files: ./server-linux-x86
+          files: ./server-linux-x86.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -167,7 +167,7 @@ jobs:
       - name: upload server linux amd64
         uses: softprops/action-gh-release@v1
         with:
-          files: ./server-linux-amd64
+          files: ./server-linux-amd64.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -204,7 +204,7 @@ jobs:
       - name: upload server linux armv6
         uses: softprops/action-gh-release@v1
         with:
-          files: ./server-linux-arm-6
+          files: ./server-linux-arm-6.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -253,7 +253,7 @@ jobs:
       - name: upload server linux armv7
         uses: softprops/action-gh-release@v1
         with:
-          files: ./server-linux-arm-7
+          files: ./server-linux-arm-7.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -302,7 +302,7 @@ jobs:
       - name: upload server linux arm64
         uses: softprops/action-gh-release@v1
         with:
-          files: ./server-linux-arm64
+          files: ./server-linux-arm64.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -339,7 +339,7 @@ jobs:
       - name: upload server linux arm64
         uses: softprops/action-gh-release@v1
         with:
-          files: ./server-windows-amd64
+          files: ./server-windows-amd64.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -376,7 +376,7 @@ jobs:
       - name: upload server linux 386
         uses: softprops/action-gh-release@v1
         with:
-          files: ./server-windows-x86
+          files: ./server-windows-x86.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
