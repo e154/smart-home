@@ -445,10 +445,10 @@ jobs:
       - name: Output artifact ID
         run: echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
 
-  docker_image_upload:
-    name: Upload docker images
-    runs-on: [self-hosted, Linux, X64]
-    needs: [build_linux_arm64, build_linux_amd64, build_linux_arm7, build_linux_x86]
-    steps:
-      - name: trying to upload docker image
-        run: make docker_image_upload
+#  docker_image_upload:
+#    name: Upload docker images
+#    runs-on: [self-hosted, Linux, X64]
+#    needs: [build_linux_arm64, build_linux_amd64, build_linux_arm7, build_linux_x86]
+#    steps:
+#      - name: trying to upload docker image
+#        run: make docker_image_upload
