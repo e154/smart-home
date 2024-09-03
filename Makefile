@@ -1,15 +1,12 @@
 .PHONY: get_deps fmt
 .DEFAULT_GOAL := build
 tests: lint test
-all: build_public build_linux_amd64 build_structure build_common_structure build_archive docker_image_linux_amd64
-deploy: docker_image_upload
 
 EXEC=server
 CLI=cli
 ROOT := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 SERVER_DIR = ${ROOT}/tmp/${EXEC}
 COMMON_DIR = ${ROOT}/tmp/common
-ARCHIVE=smart-home-common.tar.gz
 
 PROJECT ?=github.com/e154/smart-home
 TRAVIS_BUILD_NUMBER ?= local
@@ -23,7 +20,7 @@ BUILD_NUMBER_VALUE=$(shell echo ${TRAVIS_BUILD_NUMBER})
 
 IMAGE=smart-home-${EXEC}
 DOCKER_ACCOUNT=e154
-RELEASE_VERSION ?= test
+RELEASE_VERSION ?=v 0.0.0test
 DOCKER_IMAGE_VER=${DOCKER_ACCOUNT}/${IMAGE}:${RELEASE_VERSION}
 DOCKER_IMAGE_LATEST=${DOCKER_ACCOUNT}/${IMAGE}:latest
 
@@ -214,18 +211,6 @@ server:
 	oapi-codegen -generate server -package stub ${ROOT}/api/api.swagger.yaml > ${ROOT}/api/stub/server.go && \
 	oapi-codegen -generate types -package stub ${ROOT}/api/api.swagger.yaml > ${ROOT}/api/stub/types.go
 
-build_structure:
-	@echo MARK: create server structure
-	mkdir -p ${SERVER_DIR}
-	mkdir -p ${SERVER_DIR}/snapshots
-	cd ${SERVER_DIR}
-	cp -r ${ROOT}/conf ${SERVER_DIR}
-	cp -r ${ROOT}/data ${SERVER_DIR}
-	cp ${ROOT}/LICENSE ${SERVER_DIR}
-	cp ${ROOT}/README* ${SERVER_DIR}
-	cp ${ROOT}/CONTRIBUTING.md ${SERVER_DIR}
-	chmod +x ${SERVER_DIR}/data/scripts/ping.sh
-
 build_common_structure:
 	@echo MARK: create common structure
 	mkdir -p ${COMMON_DIR}
@@ -237,10 +222,6 @@ build_common_structure:
 	cp ${ROOT}/README* ${COMMON_DIR}
 	cp ${ROOT}/CONTRIBUTING.md ${COMMON_DIR}
 	chmod +x ${COMMON_DIR}/data/scripts/ping.sh
-
-build_archive:
-	@echo MARK: build app archive
-	cd ${COMMON_DIR} && ls -l && tar -zcf ${ROOT}/${ARCHIVE} .
 
 build_docs:
 	@echo MARK: build doc
@@ -309,11 +290,15 @@ docker_image_upload:
 
 clean:
 	@echo MARK: clean
-	rm -rf ${SERVER_DIR}
-	rm -f ${ROOT}/${EXEC}-*
-	rm -f ${ROOT}/${CLI}-*
-	rm -f ${ROOT}/libvosk*
-	rm -f ${HOME}/${ARCHIVE}
+	rm -rf ${ROOT}/${EXEC}-linux-x86
+	rm -rf ${ROOT}/${EXEC}-linux-amd64
+	rm -rf ${ROOT}/${EXEC}-linux-arm-6
+	rm -rf ${ROOT}/${EXEC}-linux-arm-7
+	rm -rf ${ROOT}/${EXEC}-linux-arm64
+	rm -rf ${ROOT}/${EXEC}-windows-amd64
+	rm -rf ${ROOT}/${EXEC}-windows-x86
+	docker rmi -f $(docker images -aq)
+	docker rm -vf $(docker ps -aq)
 
 front_client:
 	@echo MARK: generate front client lib

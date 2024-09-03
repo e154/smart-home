@@ -214,7 +214,9 @@ func (v *Vosk) runTest() error {
 func (v *Vosk) DownloadModel(modelName string) error {
 
 	destpath := filepath.Join(modelPath)
-	_ = os.MkdirAll(destpath, 0755)
+	if err := os.MkdirAll(destpath, 0755); err != nil {
+		return err
+	}
 
 	var ctx context.Context
 	ctx, v.downloadCancel = context.WithCancel(context.Background())

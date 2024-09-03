@@ -18,7 +18,6 @@ import {Grid, GridEditor, ItemPayloadGrid} from './grid';
 import {Three, ThreeEditor, ItemPayloadThree} from './three';
 import {Modal, ModalEditor, ItemPayloadModal} from './modal';
 import {IFrame, IFrameEditor, ItemPayloadIFrame} from './iframe';
-import {STT, STTEditor} from './stt';
 import {ItemPayloadJsonViewer, JsonViewer, JsonViewerEditor} from './json_viewer';
 import {useI18n} from "@/hooks/web/useI18n";
 
@@ -65,8 +64,6 @@ export const CardItemName = (name: string): any => {
       return Modal;
     case 'iframe':
       return IFrame;
-    case 'stt':
-      return STT;
     default:
       // console.error(`unknown card name "${name}"`);
       return Dummy;
@@ -116,8 +113,6 @@ export const CardEditorName = (name: string): any => {
       return ModalEditor;
     case 'iframe':
       return IFrameEditor;
-    case 'stt':
-      return STTEditor;
     default:
       // console.error(`unknown card name "${name}"`);
       return DummyEditor;
@@ -193,7 +188,6 @@ export const CardItemList: ItemsType[] = [
     children: [
       // {label: t('dashboard.editor.THREE'), value: 'three'},
       {label: t('dashboard.editor.CHART_CUSTOM'), value: 'chartCustom'},
-      {label: t('dashboard.editor.STT'), value: 'stt'},
     ],
   }
 ];
