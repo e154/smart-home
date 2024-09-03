@@ -1,7 +1,11 @@
-FROM postgres:15 as postgres
+FROM --platform=$BUILDPLATFORM postgres:15 as postgres
+ARG TARGETOS
+ARG TARGETARCH
 MAINTAINER Filippov Alex <support@e154.ru>
 
-FROM debian:12-slim
+FROM --platform=$BUILDPLATFORM debian:12-slim
+ARG TARGETOS
+ARG TARGETARCH
 RUN apt-get update \
     && apt-get install -y --no-install-recommends libpq5 ca-certificates iputils-ping
 RUN update-ca-certificates
@@ -54,6 +58,7 @@ ENV ROOT_MODE="false"
 ENV DOMAIN="localhost"
 ENV PPROF="false"
 ENV ROOT_SECRET=""
+ENV PATH="$PATH:/"
 
 ENV GATE_API_HTTP_PORT="8080"
 ENV GATE_API_HTTPS_PORT="8443"
@@ -66,6 +71,6 @@ ENV GATE_PROXY_TIMEOUT="5"
 ENV GATE_PROXY_IDLE_TIMEOUT="10"
 ENV GATE_PROXY_SECRET_KEY=""
 
-VOLUME $APP_DIR/snapshots
-VOLUME $APP_DIR/data
-VOLUME $APP_DIR/conf
+VOLUME /snapshots
+VOLUME /data
+VOLUME /conf

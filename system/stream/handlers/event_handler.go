@@ -19,17 +19,25 @@
 package handlers
 
 import (
+	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
+	"strings"
 
 	"github.com/e154/bus"
 	"go.uber.org/fx"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/webpush"
 	"github.com/e154/smart-home/system/stream"
+)
+
+var (
+	log = logger.MustGetLogger("handlers")
 )
 
 type EventHandler struct {
@@ -66,6 +74,7 @@ func (s *EventHandler) Start(_ context.Context) error {
 	s.stream.Subscribe("event_get_user_devices", s.EventGetUserDevices)
 	s.stream.Subscribe("command_terminal", s.CommandTerminal)
 	s.stream.Subscribe("event_get_server_version", s.EventGetServerVersion)
+	s.stream.Subscribe("event_stt", s.EventSTT)
 	return nil
 }
 
@@ -78,6 +87,7 @@ func (s *EventHandler) Shutdown(_ context.Context) error {
 	s.stream.UnSubscribe("event_get_user_devices")
 	s.stream.UnSubscribe("command_terminal")
 	s.stream.UnSubscribe("event_get_server_version")
+	s.stream.UnSubscribe("event_stt")
 	return nil
 }
 
@@ -158,5 +168,31 @@ func (s *EventHandler) EventGetServerVersion(client stream.IStreamClient, query 
 			User:      client.GetUser(),
 			SessionID: client.SessionID(),
 		},
+	})
+}
+
+func (s *EventHandler) EventSTT(client stream.IStreamClient, query string, body []byte) {
+
+	req := map[string]string{}
+	_ = json.Unmarshal(body, &req)
+
+	payload := req["payload"]
+	payload = strings.Replace(payload, "data:audio/raw;base64,", "", 1)
+
+	data, err := base64.StdEncoding.DecodeString(payload)
+	if err != nil {
+		log.Error(err.Error())
+		return
+	}
+
+	ioReaderData := bytes.NewReader(data)
+	buf := bytes.NewBuffer(make([]byte, 0))
+	if _, err := buf.ReadFrom(ioReaderData); err != nil {
+		log.Error(err.Error())
+		return
+	}
+
+	s.eventBus.Publish("system/stt", events.CommandSTT{
+		Payload: buf,
 	})
 }

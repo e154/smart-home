@@ -5,13 +5,14 @@ import {h, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
 import {ElButton, ElTag} from 'element-plus'
-import {ApiCondition} from "@/api/stub";
+import {ApiCondition, ApiStatistics} from "@/api/stub";
 import {useRouter} from "vue-router";
 import {ContentWrap} from "@/components/ContentWrap";
 import {parseTime} from "@/utils";
 import {EventStateChange} from "@/api/types";
 import {UUID} from "uuid-generator-ts";
 import {useCache} from "@/hooks/web/useCache";
+import Statistics from "@/components/Statistics/Statistics.vue";
 
 const {push} = useRouter()
 const {t} = useI18n()
@@ -190,9 +191,28 @@ const selectRow = (row) => {
   push(`/automation/conditions/edit/${id}`)
 }
 
+const statistic = ref<Nullable<ApiStatistics>>(null)
+const getStatistic = async () => {
+
+  const res = await api.v1.automationServiceGetStatistic()
+    .catch(() => {
+    })
+    .finally(() => {
+
+    })
+  if (res) {
+    statistic.value = res.data
+  }
+}
+
+getStatistic()
+
 </script>
 
 <template>
+
+  <Statistics v-model="statistic" :cols="6"/>
+
   <ContentWrap>
     <ElButton class="flex mb-20px items-left" type="primary" @click="addNew()" plain>
       <Icon icon="ep:plus" class="mr-5px"/>

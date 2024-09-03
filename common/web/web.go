@@ -20,12 +20,16 @@ package web
 
 import (
 	"bytes"
+	"context"
 	"encoding/base64"
 	"fmt"
+	"github.com/pkg/errors"
 	"io"
+	"math"
 	"net"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/e154/smart-home/common/apperr"
@@ -70,10 +74,6 @@ func (c *crawler) Probe(options Request) (status int, body []byte, err error) {
 		return
 	}
 
-	if err = c.auth(req, options.Url); err != nil {
-		return
-	}
-
 	var timeout = time.Second * 2
 	if options.Timeout > 0 {
 		timeout = options.Timeout
@@ -92,48 +92,75 @@ func (c *crawler) Probe(options Request) (status int, body []byte, err error) {
 	return
 }
 
-// Probe ...
+func (c *crawler) HEAD(options Request) (resp *http.Response, err error) {
+
+	options.Method = "HEAD"
+
+	// get heads
+	var req *http.Request
+	if req, err = c.prepareRequest(options); err != nil {
+		return
+	}
+
+	if resp, err = c.doIt(req, options.Timeout); err != nil {
+		return
+	}
+
+	switch resp.StatusCode {
+	case 200:
+	default:
+		return nil, errors.New(resp.Status)
+	}
+
+	return
+}
+
+// Download ...
 func (c *crawler) Download(options Request) (filePath string, err error) {
 
-	defer func() {
-		if err != nil {
-			fmt.Printf("%v", err.Error())
-		}
-	}()
+	log.Infof("Downloading %s", options.Url)
+
+	// get heads
+	var headResp *http.Response
+	if headResp, err = c.HEAD(options); err != nil {
+		return
+	}
+
+	defer headResp.Body.Close()
+	size, _ := strconv.ParseInt(headResp.Header.Get("Content-Length"), 10, 64)
+
+	log.Infof("File %s size: %s", options.Url, prettyByteSize(size))
 
 	var req *http.Request
 	if req, err = c.prepareRequest(options); err != nil {
 		return
 	}
 
-	if err = c.auth(req, options.Url); err != nil {
-		return
-	}
-
-	var timeout = time.Second * 2
-	if options.Timeout > 0 {
-		timeout = options.Timeout
-	}
-
 	var resp *http.Response
-	if resp, err = c.doIt(req, timeout); err != nil {
+	if resp, err = c.doIt(req, options.Timeout); err != nil {
 		return
 	}
 
 	defer resp.Body.Close()
 
 	var f *os.File
-	f, err = os.CreateTemp("/tmp", "*.jpeg")
+	f, err = os.CreateTemp("/tmp", "*")
 	if err != nil {
 		return
 	}
+	defer f.Close()
+
+	done := make(chan struct{})
+	defer close(done)
+
+	go printDownloadPercent(done, options.Url, f, size)
 
 	filePath = f.Name()
 	if _, err = io.Copy(f, resp.Body); err != nil {
 		return
 	}
 
-	log.Infof("file downloaded to '%s' ...", filePath)
+	log.Infof("File %s downloaded to: %s", options.Url, filePath)
 
 	return
 }
@@ -166,13 +193,17 @@ func (c *crawler) prepareRequest(options Request) (req *http.Request, err error)
 
 	var r io.Reader = nil
 	switch options.Method {
-	case "POST", "PUT", "UPDATE", "PATCH":
+	case "POST", "PUT", "UPDATE", "PATCH", "HEAD":
 		if options.Body != nil && len(options.Body) > 0 {
 			r = bytes.NewReader(options.Body)
 		}
 	}
 
-	if req, err = http.NewRequest(options.Method, options.Url, r); err != nil {
+	if options.Context == nil {
+		options.Context = context.Background()
+	}
+
+	if req, err = http.NewRequestWithContext(options.Context, options.Method, options.Url, r); err != nil {
 		return
 	}
 
@@ -183,6 +214,10 @@ func (c *crawler) prepareRequest(options Request) (req *http.Request, err error)
 		for k, v := range values {
 			req.Header.Set(k, v)
 		}
+	}
+
+	if err = c.auth(req, options.Url); err != nil {
+		return
 	}
 
 	return
@@ -207,4 +242,47 @@ func (c *crawler) auth(req *http.Request, uri string) (err error) {
 		c.dig.ApplyAuth(req)
 	}
 	return err
+}
+
+func printDownloadPercent(done chan struct{}, uri string, file *os.File, total int64) {
+	startTime := time.Now()
+	totalPretty := prettyByteSize(total)
+	var oldValue = 0.0
+	for {
+		now := time.Now()
+		select {
+		case <-done:
+			return
+		default:
+			fi, err := file.Stat()
+			if err != nil {
+				log.Error(err.Error())
+			}
+			size := fi.Size()
+			if size == 0 {
+				size = 1
+			}
+			var percent = float64(size) / float64(total) * 100
+			showPercent := math.Floor(percent)
+			if showPercent == oldValue {
+				continue
+			}
+			currentPretty := prettyByteSize(size)
+			eta := now.Sub(startTime) / time.Duration(showPercent) * time.Duration(100-showPercent)
+			log.Infof("Downloading %s: %s/%s (%.2f%%) ETA: %s", uri, currentPretty, totalPretty, showPercent, eta)
+			oldValue = showPercent
+		}
+		time.Sleep(time.Second / 2)
+	}
+}
+
+func prettyByteSize(b int64) string {
+	bf := float64(b)
+	for _, unit := range []string{"", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"} {
+		if math.Abs(bf) < 1024.0 {
+			return fmt.Sprintf("%3.1f%sB", bf, unit)
+		}
+		bf /= 1024.0
+	}
+	return fmt.Sprintf("%.1fYiB", bf)
 }

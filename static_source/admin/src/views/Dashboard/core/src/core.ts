@@ -22,6 +22,7 @@ import {FrameProp, KeysProp} from "@/views/Dashboard/components";
 import {EventStateChange} from "@/api/types";
 import {copyToClipboard, pasteFromClipboard} from "@/utils/clipboard";
 import {generateName} from "@/utils/name";
+import {stt} from "@/views/Dashboard/core/src/stt";
 
 export interface Position {
   width: string;
@@ -1334,6 +1335,7 @@ export class Core {
 
   eventBusHandler(eventName: string, args: any[]) {
     if (typeof eventName != 'string') return
+    stt.eventBusHandler(eventName, args)
     for (const index in this.tabs) {
       this.tabs[index].eventBusHandler(eventName, args);
     }

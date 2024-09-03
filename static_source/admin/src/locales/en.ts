@@ -385,6 +385,18 @@ export default {
             addAction: 'Add Action',
             entityActionName: 'Entity Action'
         },
+        stat_tasks_total_name: 'Tasks Total',
+        stat_tasks_total_descr: '',
+        stat_tasks_enabled_name: 'Tasks Enabled',
+        stat_tasks_enabled_descr: '',
+        stat_triggers_total_name: 'Triggers Total',
+        stat_triggers_total_descr: '',
+        stat_triggers_enabled_name: 'Triggers Enabled',
+        stat_triggers_enabled_descr: '',
+        stat_conditions_total_name: 'Conditions Total',
+        stat_conditions_total_descr: '',
+        stat_actions_total_name: 'Actions Total',
+        stat_actions_total_descr: '',
     },
     scripts: {
         id: 'ID',

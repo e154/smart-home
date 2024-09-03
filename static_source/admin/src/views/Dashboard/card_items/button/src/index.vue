@@ -62,7 +62,6 @@ requestCurrentState(props.item?.entityId);
     <ElButton
         style="width: 100%; height: 100%"
         v-if="item.enabled" v-show="!item.hidden"
-        :size="item.payload.button.size"
         :type="item.payload.button.type"
         :text="item.payload.button.asText"
         :round="item.payload.button.round"

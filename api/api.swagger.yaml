@@ -3764,6 +3764,23 @@ paths:
           $ref: '#/components/responses/HTTP-409'
       security:
         - ApiKeyAuth: [ ]
+  /v1/automation/statistic:
+    get:
+      tags:
+        - AutomationService
+      summary: get statistic
+      operationId: AutomationService_GetStatistic
+      responses:
+        200:
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiStatistics'
+        '401':
+          $ref: '#/components/responses/HTTP-401'
+      security:
+        - ApiKeyAuth: [ ]
   /v1/user:
     post:
       tags:

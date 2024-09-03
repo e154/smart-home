@@ -226,6 +226,8 @@ var (
 	ErrScriptStat     = ErrorWithCode("SCRIPT_STAT_ERROR", "failed to get script statistic", ErrInternal)
 	ErrScriptCompile  = ErrorWithCode("SCRIPT_COMPILE_ERROR", "failed to compile script", ErrInternal)
 
+	ErrAutomationStat = ErrorWithCode("AUTOMATION_STAT_ERROR", "failed to get automation statistic", ErrInternal)
+
 	ErrTagSearch   = ErrorWithCode("TAG_SEARCH_ERROR", "failed to search tag", ErrInternal)
 	ErrTagDelete   = ErrorWithCode("TAG_DELETE_ERROR", "failed to delete tag", ErrInternal)
 	ErrTagAdd      = ErrorWithCode("TAG_ADD_ERROR", "failed to add tag", ErrInternal)

@@ -7,23 +7,80 @@ on:
     tags:
       - "*"
 
+env:
+  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+
 jobs:
-  build:
-    if: github.event.base_ref != 'refs/heads/master'
-    name: Testing
+  build_public:
+    name: Build public
+    strategy:
+      matrix:
+        node: [ 16 ]
     runs-on: ubuntu-latest
+    outputs:
+      output1: ${{ steps.artifact-upload-step.outputs.artifact-id }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Node ${{ matrix.node }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Build public
+        id: build-public
+        env:
+          NODE_OPTIONS: "--max_old_space_size=4096"
+        run: make build_public
+
+      - uses: actions/upload-artifact@v4
+        id: artifact-upload-step
+        with:
+          name: public_build
+          path: ./build
+
+      - name: Output artifact ID
+        run: echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
+
+  build_common:
+    name: Build common
+    runs-on: ubuntu-latest
+    outputs:
+      output1: ${{ steps.artifact-upload-step.outputs.artifact-id }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Build common
+        id: build-common
+        run: make build_common_structure
+
+      - uses: actions/upload-artifact@v4
+        id: artifact-upload-step
+        with:
+          name: common_build
+          path: ./tmp/common
+
+      - name: Output artifact ID
+        run: echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
+
+  run_tests:
+    name: Run linux test
+    strategy:
+      matrix:
+        go: [ 1.22 ]
+    runs-on: ubuntu-latest
+    needs: [build_public]
 
     services:
-      # Label used to access the service container
       postgres:
-        # Docker Hub image
         image: postgis/postgis:11-3.3
-        # Provide the password for postgres
         env:
           POSTGRES_DB: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_USER: postgres
-        # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -33,6 +90,14 @@ jobs:
           - 5432:5432
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: public_build
+          path: ./build
+
       - name: Install PostgreSQL client
         run: |
           sudo apt-get update
@@ -47,29 +112,15 @@ jobs:
           export PGPASSWORD=postgres && psql -h localhost -p 5432 -c "CREATE EXTENSION pgcrypto;" -U postgres smart_home_test;
           export PGPASSWORD=postgres && psql -h localhost -p 5432 -c "CREATE EXTENSION Postgis;" -U postgres smart_home_test;
 
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Set up Go
+      - name: Install Go ${{ matrix.go }}
         uses: actions/setup-go@v2
         with:
-          go-version: 1.22.0
-
-      - name: Set up Node
-        uses: actions/setup-node@v2
-        with:
-          node-version: '16'
+          go-version: ${{ matrix.go }}
 
       - name: Prepary deps
         run: |
           echo -e "machine github.com\n  login ${{ secrets.GITHUBTOKEN }}" > ~/.netrc
           make get_deps
-
-      - name: Build public
-        id: build-public
-        env:
-          NODE_OPTIONS: "--max_old_space_size=4096"
-        run: make build_public
 
       - name: Unit tests
         id: test-code
@@ -84,6 +135,315 @@ jobs:
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
+  build_linux_x86:
+    name: Build linux x86
+    strategy:
+      matrix:
+        go: [ 1.22 ]
+    runs-on: [self-hosted, Linux, X64]
+    needs: [build_public]
+    steps:
+
+      - env:
+          OUTPUT1: ${{needs.build_public.outputs.output1}}
+        run: echo "Artifact ID from previous job is $OUTPUT1"
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: public_build
+          path: ./build
+
+      - name: Go mod tidy
+        run: |
+          echo -e "machine github.com\n  login ${{ secrets.GITHUBTOKEN }}" > ~/.netrc
+          make get_deps
+
       - name: trying to build
-        id: build-linux
-        run: make build_linux build_structure build_common_structure build_archive docker_image
+        id: build-linux-x86
+        run: make build_linux_x86
+
+      - uses: actions/upload-artifact@v4
+        id: artifact-upload-step
+        with:
+          name: linux_x86
+          path: ./server-linux-x86
+
+      - name: Output artifact ID
+        run: echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: common_build
+          path: ./server-linux-x86
+
+      - name: trying to build docker image
+        run: make docker_image_linux_x86
+
+  build_linux_amd64:
+    name: Build linux amd64
+    strategy:
+      matrix:
+        go: [ 1.22 ]
+    runs-on: [self-hosted, Linux, X64]
+    needs: [build_public, build_common]
+    steps:
+
+      - env:
+          OUTPUT1: ${{needs.build_public.outputs.output1}}
+        run: echo "Artifact ID from previous job is $OUTPUT1"
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: public_build
+          path: ./build
+
+      - name: Go mod tidy
+        run: |
+          echo -e "machine github.com\n  login ${{ secrets.GITHUBTOKEN }}" > ~/.netrc
+          make get_deps
+
+      - name: trying to build
+        id: build-linux-amd64
+        run: make build_linux_amd64
+
+      - uses: actions/upload-artifact@v4
+        id: artifact-upload-step
+        with:
+          name: linux_amd64
+          path: ./server-linux-amd64
+
+      - name: Output artifact ID
+        run: echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: common_build
+          path: ./server-linux-amd64
+
+      - name: trying to build docker image
+        run: make docker_image_linux_amd64
+
+  build_linux_arm6:
+    name: Build linux arm6
+    strategy:
+      matrix:
+        go: [ 1.22 ]
+    runs-on: [self-hosted, Linux, X64]
+    needs: [build_public]
+    steps:
+
+      - env:
+          OUTPUT1: ${{needs.build_public.outputs.output1}}
+        run: echo "Artifact ID from previous job is $OUTPUT1"
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: public_build
+          path: ./build
+
+      - name: Go mod tidy
+        run: |
+          echo -e "machine github.com\n  login ${{ secrets.GITHUBTOKEN }}" > ~/.netrc
+          make get_deps
+
+      - name: trying to build
+        id: build-linux-arm-6
+        run: make build_linux_armv6
+
+      - uses: actions/upload-artifact@v4
+        id: artifact-upload-step
+        with:
+          name: linux_arm6
+          path: ./server-linux-arm-6
+
+      - name: Output artifact ID
+        run: echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
+
+  build_linux_arm7:
+    name: Build linux arm7
+    strategy:
+      matrix:
+        go: [ 1.22 ]
+    runs-on: [self-hosted, Linux, X64]
+    needs: [build_public]
+    steps:
+
+      - env:
+          OUTPUT1: ${{needs.build_public.outputs.output1}}
+        run: echo "Artifact ID from previous job is $OUTPUT1"
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: public_build
+          path: ./build
+
+      - name: Go mod tidy
+        run: |
+          echo -e "machine github.com\n  login ${{ secrets.GITHUBTOKEN }}" > ~/.netrc
+          make get_deps
+
+      - name: trying to build
+        id: build-linux-armv7l
+        run: make build_linux_armv7l
+
+      - uses: actions/upload-artifact@v4
+        id: artifact-upload-step
+        with:
+          name: linux_arm7
+          path: ./server-linux-arm-7
+
+      - name: Output artifact ID
+        run: echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: common_build
+          path: ./server-linux-arm-7
+
+      - name: trying to build docker image
+        run: make docker_image_linux_armv7l
+
+  build_linux_arm64:
+    name: Build linux arm64
+    strategy:
+      matrix:
+        go: [ 1.22 ]
+    runs-on: [self-hosted, Linux, X64]
+    needs: [build_public, build_common]
+    steps:
+
+      - env:
+          OUTPUT1: ${{needs.build_public.outputs.output1}}
+        run: echo "Artifact ID from previous job is $OUTPUT1"
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: public_build
+          path: ./build
+
+      - name: Go mod tidy
+        run: |
+          echo -e "machine github.com\n  login ${{ secrets.GITHUBTOKEN }}" > ~/.netrc
+          make get_deps
+
+      - name: trying to build
+        id: build-linux-arm64
+        run: make build_linux_arm64
+
+      - uses: actions/upload-artifact@v4
+        id: artifact-upload-step
+        with:
+          name: linux_arm64
+          path: ./server-linux-arm64
+
+      - name: Output artifact ID
+        run: echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: common_build
+          path: ./server-linux-arm64
+
+      - name: trying to build docker image
+        run: make docker_image_linux_arm64
+
+  build_windows_amd64:
+    name: Build windows amd64
+    strategy:
+      matrix:
+        go: [ 1.22 ]
+    runs-on: [self-hosted, Linux, X64]
+    needs: [build_public]
+    steps:
+
+      - env:
+          OUTPUT1: ${{needs.build_public.outputs.output1}}
+        run: echo "Artifact ID from previous job is $OUTPUT1"
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: public_build
+          path: ./build
+
+      - name: Go mod tidy
+        run: |
+          echo -e "machine github.com\n  login ${{ secrets.GITHUBTOKEN }}" > ~/.netrc
+          make get_deps
+
+      - name: trying to build
+        id: build-windows-amd64
+        run: make build_windows_amd64
+
+      - uses: actions/upload-artifact@v4
+        id: artifact-upload-step
+        with:
+          name: windows_amd64
+          path: ./server-windows-amd64
+
+      - name: Output artifact ID
+        run: echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
+
+  build_windows_x86:
+    name: Build windows x86
+    strategy:
+      matrix:
+        go: [ 1.22 ]
+    runs-on: [self-hosted, Linux, X64]
+    needs: [build_public]
+    steps:
+
+      - env:
+          OUTPUT1: ${{needs.build_public.outputs.output1}}
+        run: echo "Artifact ID from previous job is $OUTPUT1"
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: public_build
+          path: ./build
+
+      - name: Go mod tidy
+        run: |
+          echo -e "machine github.com\n  login ${{ secrets.GITHUBTOKEN }}" > ~/.netrc
+          make get_deps
+
+      - name: trying to build
+        id: build-windows-x86
+        run: make build_windows_x86
+
+      - uses: actions/upload-artifact@v4
+        id: artifact-upload-step
+        with:
+          name: windows_x86
+          path: ./server-windows-x86
+
+      - name: Output artifact ID
+        run: echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
+
+  docker_image_upload:
+    name: Upload docker images
+    runs-on: [self-hosted, Linux, X64]
+    needs: [build_linux_arm64, build_linux_amd64, build_linux_arm7, build_linux_x86]
+    steps:
+      - name: trying to upload docker image
+        run: make docker_image_upload

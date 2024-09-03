@@ -19,6 +19,7 @@
 package controllers
 
 import (
+	"github.com/e154/smart-home/api/dto"
 	"github.com/labstack/echo/v4"
 
 	"github.com/e154/smart-home/api/stub"
@@ -125,4 +126,15 @@ func (c ControllerAutomation) AutomationServiceDisableTask(ctx echo.Context, id 
 func (c ControllerAutomation) AutomationServiceImportTask(ctx echo.Context, _ stub.AutomationServiceImportTaskParams) error {
 
 	return c.HTTP200(ctx, ResponseWithObj(ctx, struct{}{}))
+}
+
+// AutomationServiceGetStatistic ...
+func (c ControllerAutomation) AutomationServiceGetStatistic(ctx echo.Context) error {
+
+	statistic, err := c.endpoint.Automation.Statistic(ctx.Request().Context())
+	if err != nil {
+		return c.ERROR(ctx, err)
+	}
+
+	return c.HTTP200(ctx, ResponseWithObj(ctx, dto.GetStatistic(statistic)))
 }
