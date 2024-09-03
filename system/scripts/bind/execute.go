@@ -22,6 +22,12 @@ import (
 	"bytes"
 	"os/exec"
 	"strings"
+
+	"github.com/e154/smart-home/common/logger"
+)
+
+var (
+	log = logger.MustGetLogger("bind")
 )
 
 // Response ...

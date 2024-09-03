@@ -3,10 +3,7 @@ import {computed, PropType} from "vue";
 import {CardItem, Core} from "@/views/Dashboard/core";
 import {ElCol, ElDivider, ElFormItem, ElInput, ElOption, ElRow, ElSelect, ElSwitch} from 'element-plus'
 import {CommonEditor} from "@/views/Dashboard/card_items/common";
-import {useI18n} from "@/hooks/web/useI18n";
 import {EntitiesAction, EntitiesActionOptions} from "@/components/EntitiesAction";
-
-const {t} = useI18n()
 
 // ---------------------------------
 // common
@@ -84,23 +81,6 @@ const changedForActionButton = async (options: EntitiesActionOptions) => {
             <ElOption label="Danger" value="danger"/>
           </ElSelect>
         </ElFormItem>
-      </ElCol>
-    </ElRow>
-
-    <ElRow>
-      <ElCol>
-        <ElFormItem :label="$t('dashboard.editor.size')" prop="size">
-          <ElSelect
-              v-model="currentItem.payload.button.size"
-              placeholder="please select type"
-              style="width: 100%"
-          >
-            <ElOption label="Small" value="small"/>
-            <ElOption label="Large" value="large"/>
-            <ElOption label="Default" value="default"/>
-          </ElSelect>
-        </ElFormItem>
-
       </ElCol>
     </ElRow>
 

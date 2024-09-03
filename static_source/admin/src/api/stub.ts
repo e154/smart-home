@@ -6176,6 +6176,31 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * No description
      *
+     * @tags AutomationService
+     * @name AutomationServiceGetStatistic
+     * @summary get statistic
+     * @request GET:/v1/automation/statistic
+     * @secure
+     */
+    automationServiceGetStatistic: (params: RequestParams = {}) =>
+      this.request<
+        ApiStatistics,
+        {
+          error?: GenericErrorResponse & {
+            code?: "UNAUTHORIZED";
+          };
+        }
+      >({
+        path: `/v1/automation/statistic`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
      * @tags UserService
      * @name UserServiceAddUser
      * @summary add new user

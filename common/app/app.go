@@ -64,10 +64,6 @@ func Stop(app *fx.App) {
 	}
 }
 
-func Kill() error {
-	return syscall.Kill(syscall.Getpid(), syscall.SIGINT)
-}
-
 func Do(builder func(opt fx.Option) (app *fx.App), options fx.Option) {
 	app := builder(options)
 

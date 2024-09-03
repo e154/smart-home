@@ -20,46 +20,37 @@ package scripts
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func Test1(t *testing.T) {
 
-	//var state string
-	//store = func(i interface{}) {
-	//	state = fmt.Sprintf("%v", i)
-	//}
-	//
-	//var script1 *m.Script
 	Convey("scripts run syn command", t, func(ctx C) {
 		err := container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService) {
 
-			//todo: fix
-			//storeRegisterCallback(scriptService)
-			//
-			//script1 = &m.Script{
-			//	Lang:        "coffeescript",
-			//	Name:        "test1",
-			//	Source:      coffeeScript1,
-			//	Description: "test1",
-			//}
-			//
-			//engine1, err := scriptService.NewEngine(script1)
-			//So(err, ShouldBeNil)
-			//err = engine1.Compile()
-			//So(err, ShouldBeNil)
-			//
-			//_, err = engine1.Do()
-			//So(err, ShouldBeNil)
-			//
-			//So(state, ShouldEqual, "ok")
+			// engine
+			// ------------------------------------------------
+			script := &m.Script{
+				Lang: common.ScriptLangJavascript,
+			}
+			engine, err := scriptService.NewEngine(script)
+			So(err, ShouldBeNil)
+
+			_, err = engine.EvalString(`
+console.log("foo", "bar")
+console.error("foo", "bar")
+console.debug("foo", "bar")
+`)
 		})
 		if err != nil {
 			fmt.Println(err.Error())

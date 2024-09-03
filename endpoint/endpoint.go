@@ -65,6 +65,7 @@ type Endpoint struct {
 	Stream            *StreamEndpoint
 	Webdav            *WebdavEndpoint
 	Webhook           *WebhookEndpoint
+	Automation        *AutomationEndpoint
 }
 
 // NewEndpoint ...
@@ -105,5 +106,6 @@ func NewEndpoint(backup *backup.Backup, stream *stream.Stream, common *CommonEnd
 		Stream:            NewStreamEndpoint(common, stream),
 		Webdav:            NewWebdavEndpoint(common),
 		Webhook:           NewWebhookEndpoint(common),
+		Automation:        NewAutomationEndpoint(common),
 	}
 }

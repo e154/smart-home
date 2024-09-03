@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2023, Filippov Alex
+// Copyright (C) 2016-2024, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -24,18 +24,17 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/dop251/goja"
 	"github.com/pkg/errors"
 	"runtime/debug"
 
-	"github.com/dop251/goja"
 	. "github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/system/scripts/eventloop"
+	"github.com/e154/smart-home/system/scripts/require"
 )
 
-//go:embed typescript.js
-//go:embed coffeescript.js
-//go:embed jspack.js
+//go:embed *.js
 var scriptsAsset embed.FS
 
 // Javascript ...
@@ -47,14 +46,15 @@ type Javascript struct {
 	program      *goja.Program
 	lockPrograms sync.Mutex
 	programs     map[string]*goja.Program
+	loader       require.SourceLoader
 }
 
 // NewJavascript ...
-func NewJavascript(engine *Engine) *Javascript {
+func NewJavascript(engine *Engine, loader require.SourceLoader) *Javascript {
 	return &Javascript{
-		engine: engine,
-
+		engine:   engine,
 		programs: make(map[string]*goja.Program),
+		loader:   loader,
 	}
 }
 
@@ -64,7 +64,7 @@ func (j *Javascript) Init() (err error) {
 	j.vm = goja.New()
 	j.vm.SetFieldNameMapper(goja.TagFieldNameMapper("json", true))
 	//j.vm.SetFieldNameMapper(goja.UncapFieldNameMapper())
-	j.loop = eventloop.NewEventLoop(j.vm)
+	j.loop = eventloop.NewEventLoop(j.vm, j.loader)
 
 	j.bind()
 
@@ -269,23 +269,15 @@ func (j *Javascript) bind() {
 
 	//
 	// print()
-	// console()
 	// hex2arr()
 	// marshal(obj)
 	// unmarshal(json)
-	// jspack
 	//
 
 	_ = j.vm.Set("print", log.Info)
 
-	data, _ := scriptsAsset.ReadFile("jspack.js")
-
-	_, _ = j.vm.RunString(string(data))
-
 	_, _ = j.vm.RunString(`
 
-	jspack = new JSPack();
-    console = {log:print,warn:print,error:print,info:print},
 	hex2arr = function (hexString) {
 	   var result = [];
 	   while (hexString.length >= 2) {

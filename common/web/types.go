@@ -19,6 +19,7 @@
 package web
 
 import (
+	"context"
 	"time"
 )
 
@@ -29,6 +30,7 @@ type Request struct {
 	Body    []byte
 	Headers []map[string]string
 	Timeout time.Duration
+	Context context.Context
 }
 
 type Crawler interface {

@@ -5,7 +5,7 @@ import {h, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
 import {ElButton, ElMessage} from 'element-plus'
-import {ApiTask} from "@/api/stub";
+import {ApiStatistics, ApiTask} from "@/api/stub";
 import {useRouter} from "vue-router";
 import {ContentWrap} from "@/components/ContentWrap";
 import {parseTime} from "@/utils";
@@ -13,6 +13,7 @@ import {EventStateChange, EventTaskCompleted} from "@/api/types";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 import {useCache} from "@/hooks/web/useCache";
+import Statistics from "@/components/Statistics/Statistics.vue";
 
 const {push} = useRouter()
 const {t} = useI18n()
@@ -44,6 +45,7 @@ const currentID = ref('')
 
 const onStateChanged = (event: EventStateChange) => {
   getList()
+  getStatistic()
 }
 
 const onEventTaskActivated = (event: EventTaskCompleted) => {
@@ -268,9 +270,28 @@ const tableRowClassName = (data) => {
   return style
 }
 
+const statistic = ref<Nullable<ApiStatistics>>(null)
+const getStatistic = async () => {
+
+  const res = await api.v1.automationServiceGetStatistic()
+    .catch(() => {
+    })
+    .finally(() => {
+
+    })
+  if (res) {
+    statistic.value = res.data
+  }
+}
+
+getStatistic()
+
 </script>
 
 <template>
+
+  <Statistics v-model="statistic" :cols="6"/>
+
   <ContentWrap>
     <ElButton class="flex mb-20px items-left" type="primary" @click="addNew()" plain>
       <Icon icon="ep:plus" class="mr-5px"/>

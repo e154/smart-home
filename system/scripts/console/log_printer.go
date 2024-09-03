@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2023, Filippov Alex
+// Copyright (C) 2024, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -16,7 +16,7 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package bind
+package console
 
 import (
 	"github.com/e154/smart-home/common/logger"
@@ -24,19 +24,31 @@ import (
 
 var (
 	log = logger.MustGetLogger("js")
+
+	defaultStdPrinter Printer = &LogPrinter{}
 )
 
-// LogBind ...
-type LogBind struct{}
+// LogPrinter implements the console.Printer interface
+// that prints to the stdout or stderr.
+type LogPrinter struct {
+}
 
-// Info ...
-func (b *LogBind) Info(v ...interface{}) { log.Infof("%v", v...) }
+// Log prints s to the stdout.
+func (p LogPrinter) Log(s ...interface{}) {
+	log.Infof("%v", s...)
+}
 
-// Warn ...
-func (b *LogBind) Warn(v ...interface{}) { log.Warnf("%v", v...) }
+// Warn prints s to the stderr.
+func (p LogPrinter) Warn(s ...interface{}) {
+	log.Warnf("%v", s...)
+}
 
-// Debug ...
-func (b *LogBind) Debug(v ...interface{}) { log.Debugf("%v", v...) }
+// Error prints s to the stderr.
+func (p LogPrinter) Error(s ...interface{}) {
+	log.Errorf("%v", s...)
+}
 
-// Error ...
-func (b *LogBind) Error(v ...interface{}) { log.Errorf("%v", v...) }
+// Debug prints s to the stderr.
+func (p LogPrinter) Debug(s ...interface{}) {
+	log.Debug("%v", s...)
+}

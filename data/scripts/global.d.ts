@@ -1006,6 +1006,22 @@ declare global {
   function automationTriggerBle(msg: TriggerBleMessage): boolean;
 
   /**
+   * Interface for Stt trigger messages.
+   */
+  interface TriggerSttMessage {
+    payload: string;
+    trigger_name: string;
+    entity_id: string;
+  }
+
+  /**
+   * Function called when the "Speech to text" event occurs.
+   * @param {TriggerSttMessage} msg - stt trigger message.
+   * @returns {boolean} - The result of the trigger execution.
+   */
+  function automationTriggerStt(msg: TriggerSttMessage): boolean;
+
+  /**
    * Interface for responding to bluetooth commands.
    */
   interface BleResponse {

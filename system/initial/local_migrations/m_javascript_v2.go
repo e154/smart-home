@@ -57,7 +57,7 @@ func (n *MigrationJavascriptV2) Up(ctx context.Context, adaptors *adaptors.Adapt
 		script.Source = strings.ReplaceAll(script.Source, "CallAction", "EntityCallAction")
 		script.Source = strings.ReplaceAll(script.Source, "CallScene", "EntityCallScene")
 
-		engine, err = scripts.NewEngine(script, nil, nil)
+		engine, err = scripts.NewEngine(script, nil, nil, nil)
 		So(err, ShouldBeNil)
 
 		err = engine.Compile()
