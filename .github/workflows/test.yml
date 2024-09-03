@@ -3,7 +3,12 @@ name: Testing
 on:
   push:
     branches:
-      - "*"
+      - '*'         # matches every branch that doesn't contain a '/'
+      - '*/*'       # matches every branch containing a single '/'
+      - '**'        # matches every branch
+      - '!master'   # excludes master
+      - '!docs'     # excludes docs
+      - '!gh-pages' # excludes gh-pages
     tags:
       - "*"
 
@@ -141,7 +146,7 @@ jobs:
       matrix:
         go: [ 1.22 ]
     runs-on: [self-hosted, Linux, X64]
-    needs: [build_public]
+    needs: [build_public, build_common]
     steps:
 
       - env:
@@ -235,7 +240,7 @@ jobs:
       matrix:
         go: [ 1.22 ]
     runs-on: [self-hosted, Linux, X64]
-    needs: [build_public]
+    needs: [build_public, build_common]
     steps:
 
       - env:
@@ -274,7 +279,7 @@ jobs:
       matrix:
         go: [ 1.22 ]
     runs-on: [self-hosted, Linux, X64]
-    needs: [build_public]
+    needs: [build_public, build_common]
     steps:
 
       - env:
@@ -440,10 +445,10 @@ jobs:
       - name: Output artifact ID
         run: echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
 
-  docker_image_upload:
-    name: Upload docker images
-    runs-on: [self-hosted, Linux, X64]
-    needs: [build_linux_arm64, build_linux_amd64, build_linux_arm7, build_linux_x86]
-    steps:
-      - name: trying to upload docker image
-        run: make docker_image_upload
+#  docker_image_upload:
+#    name: Upload docker images
+#    runs-on: [self-hosted, Linux, X64]
+#    needs: [build_linux_arm64, build_linux_amd64, build_linux_arm7, build_linux_x86]
+#    steps:
+#      - name: trying to upload docker image
+#        run: make docker_image_upload
