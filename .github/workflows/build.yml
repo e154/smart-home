@@ -79,7 +79,7 @@ jobs:
       matrix:
         go: [ 1.22 ]
     runs-on: [self-hosted, Linux, X64]
-    needs: [build_public]
+    needs: [build_public, build_common]
     steps:
       - name: Set env
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
@@ -130,6 +130,10 @@ jobs:
     runs-on: [self-hosted, Linux, X64]
     needs: [build_public, build_common]
     steps:
+      - name: Set env
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+        env:
+          RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
 
       - env:
           OUTPUT1: ${{needs.build_public.outputs.output1}}
@@ -173,7 +177,7 @@ jobs:
       matrix:
         go: [ 1.22 ]
     runs-on: [self-hosted, Linux, X64]
-    needs: [build_public]
+    needs: [build_public, build_common]
     steps:
 
       - env:
@@ -210,8 +214,12 @@ jobs:
       matrix:
         go: [ 1.22 ]
     runs-on: [self-hosted, Linux, X64]
-    needs: [build_public]
+    needs: [build_public, build_common]
     steps:
+      - name: Set env
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+        env:
+          RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
 
       - env:
           OUTPUT1: ${{needs.build_public.outputs.output1}}
@@ -257,6 +265,10 @@ jobs:
     runs-on: [self-hosted, Linux, X64]
     needs: [build_public, build_common]
     steps:
+      - name: Set env
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+        env:
+          RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
 
       - env:
           OUTPUT1: ${{needs.build_public.outputs.output1}}
@@ -373,5 +385,10 @@ jobs:
     runs-on: [self-hosted, Linux, X64]
     needs: [build_linux_arm64, build_linux_amd64, build_linux_arm7, build_linux_x86]
     steps:
+      - name: Set env
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+        env:
+          RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
+
       - name: trying to upload docker image
         run: make docker_image_upload

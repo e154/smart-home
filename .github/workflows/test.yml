@@ -3,7 +3,12 @@ name: Testing
 on:
   push:
     branches:
-      - "*"
+      - '*'         # matches every branch that doesn't contain a '/'
+      - '*/*'       # matches every branch containing a single '/'
+      - '**'        # matches every branch
+      - '!master'   # excludes master
+      - '!docs'     # excludes docs
+      - '!gh-pages' # excludes gh-pages
     tags:
       - "*"
 
@@ -141,7 +146,7 @@ jobs:
       matrix:
         go: [ 1.22 ]
     runs-on: [self-hosted, Linux, X64]
-    needs: [build_public]
+    needs: [build_public, build_common]
     steps:
 
       - env:
@@ -235,7 +240,7 @@ jobs:
       matrix:
         go: [ 1.22 ]
     runs-on: [self-hosted, Linux, X64]
-    needs: [build_public]
+    needs: [build_public, build_common]
     steps:
 
       - env:
@@ -274,7 +279,7 @@ jobs:
       matrix:
         go: [ 1.22 ]
     runs-on: [self-hosted, Linux, X64]
-    needs: [build_public]
+    needs: [build_public, build_common]
     steps:
 
       - env:
