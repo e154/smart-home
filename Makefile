@@ -117,7 +117,7 @@ build_linux_amd64:
 	mkdir -p ${ROOT}/${EXEC}-linux-amd64
 	${GO_BUILD_ENV} GOOS=linux GOARCH=amd64 go build -ldflags="${GO_BUILD_LDFLAGS}" ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-amd64/server
 	cd ${ROOT}/${EXEC}-linux-amd64 && ls -l && tar -zcf ${ROOT}/${EXEC}-linux-amd64.tar.gz .
-
+ 
 build_linux_armv5:
 	@echo MARK: build linux armv5
 	rm -rf ${ROOT}/${EXEC}-linux-arm-5
