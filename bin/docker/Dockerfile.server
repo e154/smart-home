@@ -40,8 +40,8 @@ WORKDIR /app/
 RUN pwd
 RUN ls -l
 
-COPY conf .
-COPY data .
+COPY conf conf/
+COPY data data/
 COPY LICENSE .
 COPY README.md .
 COPY CONTRIBUTING.md .
