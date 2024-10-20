@@ -25,7 +25,7 @@ jobs:
       output1: ${{ steps.artifact-upload-step.outputs.artifact-id }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Install Node ${{ matrix.node }}
         uses: actions/setup-node@v2
@@ -54,7 +54,7 @@ jobs:
       output1: ${{ steps.artifact-upload-step.outputs.artifact-id }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Build common
         id: build-common
@@ -73,7 +73,7 @@ jobs:
     name: Run linux test
     strategy:
       matrix:
-        go: [ 1.22 ]
+        go: [ 1.23 ]
     runs-on: ubuntu-latest
     needs: [build_public]
 
@@ -94,7 +94,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - uses: actions/download-artifact@v4
         with:
@@ -142,9 +142,9 @@ jobs:
     name: Build linux x86
     strategy:
       matrix:
-        go: [ 1.22 ]
-    runs-on: [self-hosted, Linux, X64]
-    needs: [build_public, build_common]
+        go: [ 1.23 ]
+    runs-on: ubuntu-latest
+    needs: [build_public]
     steps:
 
       - env:
@@ -152,7 +152,7 @@ jobs:
         run: echo "Artifact ID from previous job is $OUTPUT1"
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - uses: actions/download-artifact@v4
         with:
@@ -177,21 +177,13 @@ jobs:
       - name: Output artifact ID
         run: echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: common_build
-          path: ./server-linux-x86
-
-      - name: trying to build docker image
-        run: make docker_image_linux_x86
-
   build_linux_amd64:
     name: Build linux amd64
     strategy:
       matrix:
-        go: [ 1.22 ]
-    runs-on: [self-hosted, Linux, X64]
-    needs: [build_public, build_common]
+        go: [ 1.23 ]
+    runs-on: ubuntu-latest
+    needs: [build_public]
     steps:
 
       - env:
@@ -199,7 +191,7 @@ jobs:
         run: echo "Artifact ID from previous job is $OUTPUT1"
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - uses: actions/download-artifact@v4
         with:
@@ -224,21 +216,13 @@ jobs:
       - name: Output artifact ID
         run: echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: common_build
-          path: ./server-linux-amd64
-
-      - name: trying to build docker image
-        run: make docker_image_linux_amd64
-
   build_linux_arm6:
     name: Build linux arm6
     strategy:
       matrix:
-        go: [ 1.22 ]
-    runs-on: [self-hosted, Linux, X64]
-    needs: [build_public, build_common]
+        go: [ 1.23 ]
+    runs-on: ubuntu-latest
+    needs: [build_public]
     steps:
 
       - env:
@@ -246,7 +230,7 @@ jobs:
         run: echo "Artifact ID from previous job is $OUTPUT1"
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - uses: actions/download-artifact@v4
         with:
@@ -275,9 +259,9 @@ jobs:
     name: Build linux arm7
     strategy:
       matrix:
-        go: [ 1.22 ]
-    runs-on: [self-hosted, Linux, X64]
-    needs: [build_public, build_common]
+        go: [ 1.23 ]
+    runs-on: ubuntu-latest
+    needs: [build_public]
     steps:
 
       - env:
@@ -285,7 +269,7 @@ jobs:
         run: echo "Artifact ID from previous job is $OUTPUT1"
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - uses: actions/download-artifact@v4
         with:
@@ -310,21 +294,13 @@ jobs:
       - name: Output artifact ID
         run: echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: common_build
-          path: ./server-linux-arm-7
-
-      - name: trying to build docker image
-        run: make docker_image_linux_armv7l
-
   build_linux_arm64:
     name: Build linux arm64
     strategy:
       matrix:
-        go: [ 1.22 ]
-    runs-on: [self-hosted, Linux, X64]
-    needs: [build_public, build_common]
+        go: [ 1.23 ]
+    runs-on: ubuntu-latest
+    needs: [build_public]
     steps:
 
       - env:
@@ -332,7 +308,7 @@ jobs:
         run: echo "Artifact ID from previous job is $OUTPUT1"
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - uses: actions/download-artifact@v4
         with:
@@ -357,20 +333,12 @@ jobs:
       - name: Output artifact ID
         run: echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: common_build
-          path: ./server-linux-arm64
-
-      - name: trying to build docker image
-        run: make docker_image_linux_arm64
-
   build_windows_amd64:
     name: Build windows amd64
     strategy:
       matrix:
-        go: [ 1.22 ]
-    runs-on: [self-hosted, Linux, X64]
+        go: [ 1.23 ]
+    runs-on: ubuntu-latest
     needs: [build_public]
     steps:
 
@@ -379,7 +347,7 @@ jobs:
         run: echo "Artifact ID from previous job is $OUTPUT1"
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - uses: actions/download-artifact@v4
         with:
@@ -408,8 +376,8 @@ jobs:
     name: Build windows x86
     strategy:
       matrix:
-        go: [ 1.22 ]
-    runs-on: [self-hosted, Linux, X64]
+        go: [ 1.23 ]
+    runs-on: ubuntu-latest
     needs: [build_public]
     steps:
 
@@ -418,7 +386,7 @@ jobs:
         run: echo "Artifact ID from previous job is $OUTPUT1"
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - uses: actions/download-artifact@v4
         with:
@@ -443,10 +411,23 @@ jobs:
       - name: Output artifact ID
         run: echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
 
-#  docker_image_upload:
-#    name: Upload docker images
-#    runs-on: [self-hosted, Linux, X64]
-#    needs: [build_linux_arm64, build_linux_amd64, build_linux_arm7, build_linux_x86]
-#    steps:
-#      - name: trying to upload docker image
-#        run: make docker_image_upload
+  docker_image_test:
+    name: Test docker images
+    runs-on: ubuntu-latest
+    needs: [build_public]
+    steps:
+      - name: Set env
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+        env:
+          RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: public_build
+          path: ./build
+
+      - name: trying to test docker image
+        run: make build

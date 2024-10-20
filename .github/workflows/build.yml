@@ -5,7 +5,7 @@ on:
     tags:
       - v[0-9]+.[0-9]+.[0-9]+
     branches:
-      - main
+      - master
 env:
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
@@ -77,9 +77,9 @@ jobs:
     name: Build linux x86
     strategy:
       matrix:
-        go: [ 1.22 ]
-    runs-on: [self-hosted, Linux, X64]
-    needs: [build_public, build_common]
+        go: [ 1.23 ]
+    runs-on: ubuntu-latest
+    needs: [build_public]
     steps:
       - name: Set env
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
@@ -107,14 +107,6 @@ jobs:
         id: build-linux-x86
         run: make build_linux_x86
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: common_build
-          path: ./server-linux-x86
-
-      - name: trying to build docker image
-        run: make docker_image_linux_x86
-
       - name: upload server linux x86
         uses: softprops/action-gh-release@v1
         with:
@@ -126,9 +118,9 @@ jobs:
     name: Build linux amd64
     strategy:
       matrix:
-        go: [ 1.22 ]
-    runs-on: [self-hosted, Linux, X64]
-    needs: [build_public, build_common]
+        go: [ 1.23 ]
+    runs-on: ubuntu-latest
+    needs: [build_public]
     steps:
       - name: Set env
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
@@ -156,14 +148,6 @@ jobs:
         id: build-linux-amd64
         run: make build_linux_amd64
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: common_build
-          path: ./server-linux-amd64
-
-      - name: trying to build docker image
-        run: make docker_image_linux_amd64
-
       - name: upload server linux amd64
         uses: softprops/action-gh-release@v1
         with:
@@ -171,13 +155,50 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  build_linux_armv5:
+    name: Build linux arm5
+    strategy:
+      matrix:
+        go: [ 1.23 ]
+    runs-on: ubuntu-latest
+    needs: [build_public]
+    steps:
+
+      - env:
+          OUTPUT1: ${{needs.build_public.outputs.output1}}
+        run: echo "Artifact ID from previous job is $OUTPUT1"
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: public_build
+          path: ./build
+
+      - name: Go mod tidy
+        run: |
+          echo -e "machine github.com\n  login ${{ secrets.GITHUBTOKEN }}" > ~/.netrc
+          make get_deps
+
+      - name: trying to build
+        id: build-linux-arm-5
+        run: make build_linux_armv5
+
+      - name: upload server linux armv5
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ./server-linux-arm-5.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   build_linux_arm6:
     name: Build linux arm6
     strategy:
       matrix:
-        go: [ 1.22 ]
-    runs-on: [self-hosted, Linux, X64]
-    needs: [build_public, build_common]
+        go: [ 1.23 ]
+    runs-on: ubuntu-latest
+    needs: [build_public]
     steps:
 
       - env:
@@ -212,9 +233,9 @@ jobs:
     name: Build linux arm7
     strategy:
       matrix:
-        go: [ 1.22 ]
-    runs-on: [self-hosted, Linux, X64]
-    needs: [build_public, build_common]
+        go: [ 1.23 ]
+    runs-on: ubuntu-latest
+    needs: [build_public]
     steps:
       - name: Set env
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
@@ -242,14 +263,6 @@ jobs:
         id: build-linux-armv7l
         run: make build_linux_armv7l
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: common_build
-          path: ./server-linux-arm-7
-
-      - name: trying to build docker image
-        run: make docker_image_linux_armv7l
-
       - name: upload server linux armv7
         uses: softprops/action-gh-release@v1
         with:
@@ -261,9 +274,9 @@ jobs:
     name: Build linux arm64
     strategy:
       matrix:
-        go: [ 1.22 ]
-    runs-on: [self-hosted, Linux, X64]
-    needs: [build_public, build_common]
+        go: [ 1.23 ]
+    runs-on: ubuntu-latest
+    needs: [build_public]
     steps:
       - name: Set env
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
@@ -291,14 +304,6 @@ jobs:
         id: build-linux-arm64
         run: make build_linux_arm64
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: common_build
-          path: ./server-linux-arm64
-
-      - name: trying to build docker image
-        run: make docker_image_linux_arm64
-
       - name: upload server linux arm64
         uses: softprops/action-gh-release@v1
         with:
@@ -310,8 +315,8 @@ jobs:
     name: Build windows amd64
     strategy:
       matrix:
-        go: [ 1.22 ]
-    runs-on: [self-hosted, Linux, X64]
+        go: [ 1.23 ]
+    runs-on: ubuntu-latest
     needs: [build_public]
     steps:
 
@@ -347,8 +352,8 @@ jobs:
     name: Build windows x86
     strategy:
       matrix:
-        go: [ 1.22 ]
-    runs-on: [self-hosted, Linux, X64]
+        go: [ 1.23 ]
+    runs-on: ubuntu-latest
     needs: [build_public]
     steps:
 
@@ -382,13 +387,21 @@ jobs:
 
   docker_image_upload:
     name: Upload docker images
-    runs-on: [self-hosted, Linux, X64]
-    needs: [build_linux_arm64, build_linux_amd64, build_linux_arm7, build_linux_x86]
+    runs-on: ubuntu-latest
+    needs: [build_public]
     steps:
       - name: Set env
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
         env:
           RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: public_build
+          path: ./build
 
       - name: trying to upload docker image
         run: make publish

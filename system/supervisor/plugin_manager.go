@@ -362,6 +362,9 @@ func (p *pluginManager) LoadPluginLib(pluginInfo *PluginFileInfo) error {
 func (p *pluginManager) ListPluginsDir(ctx context.Context) (list PluginFileInfos, total int64, err error) {
 
 	_ = filepath.Walk(pluginsDir, func(path string, info os.FileInfo, err error) error {
+		if info == nil {
+			return nil
+		}
 		if info.Name() == ".gitignore" || !info.IsDir() {
 			return nil
 		}
