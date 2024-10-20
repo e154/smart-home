@@ -37,9 +37,6 @@ COPY --from=postgres /usr/lib/postgresql/15/bin/pg_restore /usr/local/bin
 
 WORKDIR /app/
 
-RUN pwd
-RUN ls -l
-
 COPY conf conf/
 COPY data data/
 COPY LICENSE .
