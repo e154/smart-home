@@ -96,6 +96,8 @@ func (n *UserEndpoint) Add(ctx context.Context, params *m.User,
 
 	result, err = n.GetById(ctx, id)
 
+	log.Warnf("added new user %s id:(%d)", result.Nickname, result.Id)
+
 	return
 }
 
@@ -121,7 +123,11 @@ func (n *UserEndpoint) Delete(ctx context.Context, userId int64) (err error) {
 		return
 	}
 
-	err = n.adaptors.User.Delete(ctx, user.Id)
+	if err = n.adaptors.User.Delete(ctx, user.Id); err != nil {
+		return
+	}
+
+	log.Warnf("user %s id:(%d) was deleted", user.Nickname, user.Id)
 
 	return
 }
@@ -179,6 +185,8 @@ func (n *UserEndpoint) Update(ctx context.Context, params *m.User) (result *m.Us
 	}
 
 	result, err = n.GetById(ctx, user.Id)
+
+	log.Warnf("updated user %s id:(%d)", user.Nickname, user.Id)
 
 	return
 }

@@ -51,7 +51,11 @@ func (n *AreaEndpoint) Add(ctx context.Context, params *m.Area) (result *m.Area,
 		return
 	}
 
-	result, err = n.adaptors.Area.GetByName(ctx, params.Name)
+	if result, err = n.adaptors.Area.GetByName(ctx, params.Name); err != nil {
+		return nil, err
+	}
+
+	log.Infof("added area %s id:(%d)", result.Name, result.Id)
 
 	return
 }
@@ -97,6 +101,8 @@ func (n *AreaEndpoint) Update(ctx context.Context, params *m.Area) (area *m.Area
 		return
 	}
 
+	log.Infof("updated area %s id:(%d)", area.Name, area.Id)
+
 	return
 }
 
@@ -118,7 +124,11 @@ func (n *AreaEndpoint) Delete(ctx context.Context, id int64) (err error) {
 		return
 	}
 
-	err = n.adaptors.Area.DeleteByName(ctx, area.Name)
+	if err = n.adaptors.Area.DeleteByName(ctx, area.Name); err != nil {
+		return err
+	}
+
+	log.Infof("area %s id:(%d) was deleted", area.Name, id)
 
 	return
 }

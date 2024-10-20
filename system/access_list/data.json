@@ -766,5 +766,14 @@
       "description": "",
       "method": "get"
     }
+  },
+  "automation": {
+    "read_statistic": {
+      "actions": [
+        "/v1/automation/statistic"
+      ],
+      "method": "get",
+      "description": ""
+    }
   }
 }

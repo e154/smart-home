@@ -57,7 +57,6 @@ import (
 	_ "github.com/e154/smart-home/plugins/updater"
 	_ "github.com/e154/smart-home/plugins/uptime"
 	_ "github.com/e154/smart-home/plugins/version"
-	_ "github.com/e154/smart-home/plugins/vosk"
 	_ "github.com/e154/smart-home/plugins/weather_met"
 	_ "github.com/e154/smart-home/plugins/weather_owm"
 	_ "github.com/e154/smart-home/plugins/webdav"

@@ -24,15 +24,17 @@ import (
 	"sync"
 
 	"github.com/e154/bus"
+	"github.com/pkg/errors"
+	"go.uber.org/atomic"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/triggers"
+	"github.com/e154/smart-home/plugins/triggers/types"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/supervisor"
-	"github.com/pkg/errors"
-	"go.uber.org/atomic"
 )
 
 type triggerManager struct {
@@ -41,7 +43,7 @@ type triggerManager struct {
 	supervisor     supervisor.Supervisor
 	adaptors       *adaptors.Adaptors
 	isStarted      *atomic.Bool
-	rawPlugin      triggers.IGetTrigger
+	rawPlugin      types.IGetTrigger
 	triggerCounter *atomic.Uint64
 	sync.Mutex
 	triggers map[int64]*Trigger
@@ -113,7 +115,7 @@ func (a *triggerManager) load() {
 		return
 	}
 
-	if rawPlugin, ok := plugin.(triggers.IGetTrigger); ok {
+	if rawPlugin, ok := plugin.(types.IGetTrigger); ok {
 		a.rawPlugin = rawPlugin
 	} else {
 		log.Fatal("bad static cast triggers.IGetTrigger")

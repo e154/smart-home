@@ -59,6 +59,8 @@ func (n *EntityEndpoint) Add(ctx context.Context, entity *m.Entity) (result *m.E
 		return
 	}
 
+	log.Infof("added new entity id %s", result.Id)
+
 	n.eventBus.Publish("system/models/entities/"+entity.Id.String(), events.EventCreatedEntityModel{
 		EntityId: result.Id,
 	})
@@ -105,6 +107,8 @@ func (n *EntityEndpoint) Import(ctx context.Context, entity *m.Entity) (err erro
 	n.eventBus.Publish("system/models/entities/"+entity.Id.String(), events.EventCreatedEntityModel{
 		EntityId: entity.Id,
 	})
+
+	log.Infof("entity id %s was imported", entity.Id)
 
 	return
 }
@@ -162,6 +166,8 @@ func (n *EntityEndpoint) Update(ctx context.Context, params *m.Entity) (result *
 		EntityId: result.Id,
 	})
 
+	log.Infof("updated entity id %s", result.Id)
+
 	return
 }
 
@@ -200,6 +206,8 @@ func (n *EntityEndpoint) Delete(ctx context.Context, id common.EntityId) (err er
 		EntityId: id,
 	})
 
+	log.Infof("entity id %s was deleted", id)
+
 	return
 }
 
@@ -232,6 +240,8 @@ func (n *EntityEndpoint) Enable(ctx context.Context, id common.EntityId) (err er
 		EntityId: id,
 	})
 
+	log.Infof("entity id %s was enabled", id)
+
 	return
 }
 
@@ -256,6 +266,8 @@ func (n *EntityEndpoint) Disable(ctx context.Context, id common.EntityId) (err e
 	n.eventBus.Publish("system/entities/"+id.String(), events.CommandUnloadEntity{
 		EntityId: id,
 	})
+
+	log.Infof("entity id %s was disabled", id)
 
 	return
 }

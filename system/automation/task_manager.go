@@ -23,14 +23,16 @@ import (
 	"sync"
 
 	"github.com/e154/bus"
+	"go.uber.org/atomic"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/telemetry"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/triggers"
+	"github.com/e154/smart-home/plugins/triggers/types"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/supervisor"
-	"go.uber.org/atomic"
 )
 
 type taskManager struct {
@@ -40,7 +42,7 @@ type taskManager struct {
 	adaptors      *adaptors.Adaptors
 	taskCount     *atomic.Uint64
 	isStarted     *atomic.Bool
-	rawPlugin     triggers.IGetTrigger
+	rawPlugin     types.IGetTrigger
 	sync.Mutex
 	tasks map[int64]*Task
 }
@@ -94,7 +96,7 @@ func (a *taskManager) load() {
 		return
 	}
 
-	if rawPlugin, ok := plugin.(triggers.IGetTrigger); ok {
+	if rawPlugin, ok := plugin.(types.IGetTrigger); ok {
 		a.rawPlugin = rawPlugin
 	} else {
 		log.Fatal("bad static cast triggers.IGetTrigger")
@@ -113,7 +115,7 @@ func (a *taskManager) unload() {
 	}
 
 	for id := range a.tasks {
-		a.removeTask(id)
+		a.unloadTask(id)
 	}
 	a.isStarted.Store(false)
 
@@ -146,14 +148,14 @@ func (a *taskManager) eventHandler(_ string, msg interface{}) {
 	case events.CommandEnableTask:
 		go a.updateTask(v.Id)
 	case events.CommandDisableTask:
-		go a.removeTask(v.Id)
+		go a.unloadTask(v.Id)
 
 	case events.EventUpdatedTaskModel:
 		go a.updateTask(v.Id)
 	case events.EventCreatedTaskModel:
 		go a.updateTask(v.Id)
 	case events.EventRemovedTaskModel:
-		go a.removeTask(v.Id)
+		go a.unloadTask(v.Id)
 	}
 }
 
@@ -168,7 +170,7 @@ func (a *taskManager) addTask(model *m.Task) {
 	task.Start()
 }
 
-func (a *taskManager) removeTask(id int64) {
+func (a *taskManager) unloadTask(id int64) {
 	a.Lock()
 	defer a.Unlock()
 
@@ -176,7 +178,7 @@ func (a *taskManager) removeTask(id int64) {
 	if !ok {
 		return
 	}
-	log.Infof("remove task %d", id)
+	log.Infof("unload task %d", id)
 
 	task.Stop()
 	delete(a.tasks, id)
@@ -185,7 +187,7 @@ func (a *taskManager) removeTask(id int64) {
 }
 
 func (a *taskManager) updateTask(id int64) {
-	a.removeTask(id)
+	a.unloadTask(id)
 
 	task, err := a.adaptors.Task.GetById(context.Background(), id)
 	if err != nil {

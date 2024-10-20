@@ -61,6 +61,8 @@ func (n *ActionEndpoint) Add(ctx context.Context, action *m.Action) (result *m.A
 		Id: action.Id,
 	})
 
+	log.Infof("added new action %s id:(%d)", result.Name, result.Id)
+
 	return
 }
 
@@ -99,6 +101,8 @@ func (n *ActionEndpoint) Update(ctx context.Context, params *m.Action) (action *
 		Action: action,
 	})
 
+	log.Infof("updated action %s id:(%d)", params.Name, params.Id)
+
 	return
 }
 
@@ -125,6 +129,8 @@ func (n *ActionEndpoint) Delete(ctx context.Context, id int64) (err error) {
 	n.eventBus.Publish(fmt.Sprintf("system/models/actions/%d", id), events.EventRemovedActionModel{
 		Id: id,
 	})
+
+	log.Infof("action id %d was deleted", id)
 
 	return
 }

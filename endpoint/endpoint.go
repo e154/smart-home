@@ -47,7 +47,6 @@ type Endpoint struct {
 	DeveloperTools    *DeveloperToolsEndpoint
 	Mqtt              *MqttEndpoint
 	Plugin            *PluginEndpoint
-	PluginActor       *PluginActorEndpoint
 	Action            *ActionEndpoint
 	Condition         *ConditionEndpoint
 	Trigger           *TriggerEndpoint
@@ -88,7 +87,6 @@ func NewEndpoint(backup *backup.Backup, stream *stream.Stream, common *CommonEnd
 		DeveloperTools:    NewDeveloperToolsEndpoint(common),
 		Mqtt:              NewMqttEndpoint(common),
 		Plugin:            NewPluginEndpoint(common),
-		PluginActor:       NewPluginActorEndpoint(common),
 		Action:            NewActionEndpoint(common),
 		Condition:         NewConditionEndpoint(common),
 		Trigger:           NewTriggerEndpoint(common),

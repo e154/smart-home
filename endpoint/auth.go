@@ -167,6 +167,8 @@ func (a *AuthEndpoint) PasswordReset(ctx context.Context, userEmail string, toke
 		},
 	})
 
+	log.Warnf("password for user %s id:(%d) reset", user.Nickname, user.Id)
+
 	return
 }
 

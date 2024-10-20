@@ -62,6 +62,8 @@ func (n *AlexaSkillEndpoint) Add(ctx context.Context, params *m.AlexaSkill) (res
 		Skill: result,
 	})
 
+	log.Infof("added alexa's skill id %d", params.Id)
+
 	return
 }
 
@@ -90,6 +92,8 @@ func (n *AlexaSkillEndpoint) Update(ctx context.Context, params *m.AlexaSkill) (
 	if err != nil {
 		return
 	}
+
+	log.Infof("updated alexa's skill id %d", params.Id)
 
 	n.eventBus.Publish(fmt.Sprintf("system/models/alexa/skill/%d", skill.Id), alexa.EventUpdatedAlexaSkillModel{
 		Skill: skill,
@@ -127,6 +131,8 @@ func (n *AlexaSkillEndpoint) Delete(ctx context.Context, skillId int64) (err err
 	n.eventBus.Publish(fmt.Sprintf("system/models/alexa/skill/%d", skillId), alexa.EventDeletedAlexaSkill{
 		Skill: skill,
 	})
+
+	log.Infof("alexa's skill id %d was deleted", skillId)
 
 	return
 }

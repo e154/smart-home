@@ -83,6 +83,8 @@ func (n *ScriptEndpoint) Add(ctx context.Context, params *m.Script) (script *m.S
 		Script:   script,
 	})
 
+	log.Infof("added new script %s id:(%d)", params.Name, params.Id)
+
 	return
 }
 
@@ -102,6 +104,8 @@ func (n *ScriptEndpoint) Copy(ctx context.Context, scriptId int64) (script *m.Sc
 		return
 	}
 
+	oldID := script.Id
+	oldName := script.Name
 	script.Id = 0
 
 	const cpy = "[CPY]"
@@ -128,6 +132,8 @@ func (n *ScriptEndpoint) Copy(ctx context.Context, scriptId int64) (script *m.Sc
 		ScriptId: script.Id,
 		Script:   script,
 	})
+
+	log.Infof("script %s id:(%d) -> %s id:(%d) was copied", oldName, oldID, script.Name, script.Id)
 
 	return
 }
@@ -175,6 +181,8 @@ func (n *ScriptEndpoint) Update(ctx context.Context, script *m.Script) (result *
 		OldScript: oldScript,
 	})
 
+	log.Infof("script %s id:(%d) was updated", script.Name, script.Id)
+
 	return
 }
 
@@ -211,6 +219,8 @@ func (n *ScriptEndpoint) DeleteScriptById(ctx context.Context, scriptId int64) (
 		ScriptId: script.Id,
 		Script:   script,
 	})
+
+	log.Infof("script %s id:(%d) was deleted", script.Name, scriptId)
 
 	return
 }

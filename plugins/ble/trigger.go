@@ -27,10 +27,11 @@ import (
 	"time"
 
 	"github.com/e154/bus"
-	"github.com/e154/smart-home/plugins/triggers"
+
+	"github.com/e154/smart-home/plugins/triggers/types"
 )
 
-var _ triggers.ITrigger = (*Trigger)(nil)
+var _ types.ITrigger = (*Trigger)(nil)
 
 type Trigger struct {
 	eventBus     bus.Bus
@@ -94,7 +95,7 @@ func (t *Trigger) AsyncAttach(wg *sync.WaitGroup) {
 }
 
 // Subscribe ...
-func (t *Trigger) Subscribe(options triggers.Subscriber) error {
+func (t *Trigger) Subscribe(options types.Subscriber) error {
 
 	if options.Payload == nil {
 		return fmt.Errorf("payload is nil")
@@ -123,7 +124,7 @@ func (t *Trigger) Subscribe(options triggers.Subscriber) error {
 }
 
 // Unsubscribe ...
-func (t *Trigger) Unsubscribe(options triggers.Subscriber) error {
+func (t *Trigger) Unsubscribe(options types.Subscriber) error {
 
 	t.Lock()
 	defer t.Unlock()

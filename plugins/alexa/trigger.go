@@ -23,10 +23,11 @@ import (
 	"sync"
 
 	"github.com/e154/bus"
-	"github.com/e154/smart-home/plugins/triggers"
+
+	"github.com/e154/smart-home/plugins/triggers/types"
 )
 
-var _ triggers.ITrigger = (*Trigger)(nil)
+var _ types.ITrigger = (*Trigger)(nil)
 
 const (
 	// TriggerName ...
@@ -44,7 +45,7 @@ type Trigger struct {
 }
 
 // NewTrigger ...
-func NewTrigger(eventBus bus.Bus) (tr triggers.ITrigger) {
+func NewTrigger(eventBus bus.Bus) (tr types.ITrigger) {
 	return &Trigger{
 		eventBus:     eventBus,
 		msgQueue:     bus.NewBus(),
@@ -76,7 +77,7 @@ func (t *Trigger) eventHandler(topic string, msg interface{}) {
 }
 
 // Subscribe ...
-func (t Trigger) Subscribe(options triggers.Subscriber) error {
+func (t Trigger) Subscribe(options types.Subscriber) error {
 	if options.Payload == nil {
 		return fmt.Errorf("trigger '%s' subscribe to empty topic", t.name)
 	}
@@ -86,7 +87,7 @@ func (t Trigger) Subscribe(options triggers.Subscriber) error {
 }
 
 // Unsubscribe ...
-func (t Trigger) Unsubscribe(options triggers.Subscriber) error {
+func (t Trigger) Unsubscribe(options types.Subscriber) error {
 	if options.Payload == nil {
 		return fmt.Errorf("trigger '%s' unsubscribe from empty topic", t.name)
 	}

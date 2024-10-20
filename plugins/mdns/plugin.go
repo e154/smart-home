@@ -25,7 +25,7 @@ import (
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/plugins/triggers"
+	"github.com/e154/smart-home/plugins/triggers/types"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
@@ -44,7 +44,7 @@ func init() {
 
 type plugin struct {
 	*supervisor.Plugin
-	registrar triggers.IRegistrar
+	registrar types.IRegistrar
 }
 
 // New ...

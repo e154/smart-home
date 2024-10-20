@@ -27,6 +27,7 @@ import (
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/triggers"
+	"github.com/e154/smart-home/plugins/triggers/types"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
@@ -48,7 +49,7 @@ type plugin struct {
 	*supervisor.Plugin
 	server     IServer
 	actorsLock *sync.Mutex
-	registrar  triggers.IRegistrar
+	registrar  types.IRegistrar
 }
 
 // New ...
@@ -69,7 +70,7 @@ func (p *plugin) Load(ctx context.Context, service supervisor.Service) (err erro
 
 	// register trigger
 	if triggersPlugin, ok := service.Plugins()[triggers.Name]; ok {
-		if p.registrar, ok = triggersPlugin.(triggers.IRegistrar); ok {
+		if p.registrar, ok = triggersPlugin.(types.IRegistrar); ok {
 			if err = p.registrar.RegisterTrigger(NewTrigger(p.Service.EventBus())); err != nil {
 				log.Error(err.Error())
 				return

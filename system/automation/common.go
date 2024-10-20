@@ -19,11 +19,11 @@
 package automation
 
 import (
-	"github.com/e154/smart-home/plugins/triggers"
+	"github.com/e154/smart-home/plugins/triggers/types"
 	"github.com/e154/smart-home/system/scripts"
 )
 
 type TriggerSubscriber struct {
 	Engine     *scripts.EngineWatcher
-	Subscriber triggers.Subscriber
+	Subscriber types.Subscriber
 }

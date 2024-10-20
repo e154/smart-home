@@ -391,4 +391,4 @@ jobs:
           RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
 
       - name: trying to upload docker image
-        run: make docker_image_upload
+        run: make publish

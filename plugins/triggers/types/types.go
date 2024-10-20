@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2023, Filippov Alex
+// Copyright (C) 2016-2024, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -16,31 +16,38 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package endpoint
+package types
 
-// PluginActorEndpoint ...
-type PluginActorEndpoint struct {
-	*CommonEndpoint
+import (
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
+	"sync"
+)
+
+// IGetTrigger ...
+type IGetTrigger interface {
+	GetTrigger(string) (ITrigger, error)
 }
 
-// NewPluginActorEndpoint ...
-func NewPluginActorEndpoint(common *CommonEndpoint) *PluginActorEndpoint {
-	return &PluginActorEndpoint{
-		CommonEndpoint: common,
-	}
+// IRegistrar ...
+type IRegistrar interface {
+	RegisterTrigger(ITrigger) error
+	UnregisterTrigger(string) error
+	TriggerList() []string
 }
 
-// Add ...
-func (p *PluginActorEndpoint) Add() {}
+// todo deAttach
+type ITrigger interface {
+	Name() string
+	AsyncAttach(wg *sync.WaitGroup)
+	Subscribe(Subscriber) error
+	Unsubscribe(Subscriber) error
+	FunctionName() string
+}
 
-// GetByName ...
-func (p *PluginActorEndpoint) GetByName(name string) {}
-
-// Update ...
-func (p *PluginActorEndpoint) Update() {}
-
-// Delete ...
-func (p *PluginActorEndpoint) Delete() {}
-
-// Search ...
-func (p *PluginActorEndpoint) Search(query string, limit, offset int) {}
+// Subscriber ...
+type Subscriber struct {
+	EntityId *common.EntityId
+	Handler  interface{}
+	Payload  m.Attributes
+}

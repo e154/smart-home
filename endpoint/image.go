@@ -56,7 +56,11 @@ func (i *ImageEndpoint) Add(ctx context.Context, params *m.Image) (image *m.Imag
 		return
 	}
 
-	image, err = i.adaptors.Image.GetById(ctx, id)
+	if image, err = i.adaptors.Image.GetById(ctx, id); err != nil {
+		return
+	}
+
+	log.Infof("added new image id %d", image.Id)
 
 	return
 }
@@ -97,7 +101,11 @@ func (i *ImageEndpoint) Update(ctx context.Context, params *m.Image) (result *m.
 		return
 	}
 
-	result, err = i.adaptors.Image.GetById(ctx, params.Id)
+	if result, err = i.adaptors.Image.GetById(ctx, params.Id); err != nil {
+		return
+	}
+
+	log.Infof("updated image id %d", result.Id)
 
 	return
 }
@@ -116,7 +124,11 @@ func (i *ImageEndpoint) Delete(ctx context.Context, imageId int64) (err error) {
 		return
 	}
 
-	err = i.adaptors.Image.Delete(ctx, image.Id)
+	if err = i.adaptors.Image.Delete(ctx, image.Id); err != nil {
+		return
+	}
+
+	log.Infof("image id %d was deleted", imageId)
 
 	return
 }
@@ -151,6 +163,8 @@ func (i *ImageEndpoint) Upload(ctx context.Context, files map[string][]*multipar
 
 		file.Close()
 	}
+
+	log.Infof("uploaded %d images", len(fileList))
 
 	return
 }

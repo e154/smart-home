@@ -29,6 +29,7 @@ import (
 	"github.com/e154/smart-home/common/apperr"
 	"github.com/e154/smart-home/common/logger"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/plugins/triggers/types"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
@@ -49,7 +50,7 @@ func init() {
 type plugin struct {
 	*supervisor.Plugin
 	mu       *sync.Mutex
-	triggers map[string]ITrigger
+	triggers map[string]types.ITrigger
 }
 
 // New ...
@@ -57,7 +58,7 @@ func New() supervisor.Pluggable {
 	p := &plugin{
 		Plugin:   supervisor.NewPlugin(),
 		mu:       &sync.Mutex{},
-		triggers: make(map[string]ITrigger),
+		triggers: make(map[string]types.ITrigger),
 	}
 	p.F = F
 	return p
@@ -96,7 +97,7 @@ func (p *plugin) attachTrigger() {
 
 	for _, tr := range p.triggers {
 		wg.Add(1)
-		go func(tr ITrigger, wg *sync.WaitGroup) {
+		go func(tr types.ITrigger, wg *sync.WaitGroup) {
 			log.Infof("register trigger '%s'", tr.Name())
 			tr.AsyncAttach(wg)
 		}(tr, wg)
@@ -121,7 +122,7 @@ func (p *plugin) Version() string {
 }
 
 // GetTrigger ...
-func (p *plugin) GetTrigger(name string) (trigger ITrigger, err error) {
+func (p *plugin) GetTrigger(name string) (trigger types.ITrigger, err error) {
 
 	p.mu.Lock()
 	defer p.mu.Unlock()
@@ -134,7 +135,7 @@ func (p *plugin) GetTrigger(name string) (trigger ITrigger, err error) {
 }
 
 // RegisterTrigger ...
-func (p *plugin) RegisterTrigger(tr ITrigger) (err error) {
+func (p *plugin) RegisterTrigger(tr types.ITrigger) (err error) {
 
 	p.mu.Lock()
 	defer p.mu.Unlock()

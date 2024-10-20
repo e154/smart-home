@@ -47,14 +47,7 @@ func (n *MessageDeliveryEndpoint) List(ctx context.Context, pagination common.Pa
 		EndDate:   endDate,
 		Types:     nil,
 	}
-	//if startDate != nil {
-	//	date, _ := time.Parse("2006-01-02", *startDate)
-	//	queryObj.StartDate = &date
-	//}
-	//if endDate != nil {
-	//	date, _ := time.Parse("2006-01-02", *endDate)
-	//	queryObj.EndDate = &date
-	//}
+
 	if query != nil {
 		queryObj.Types = strings.Split(*query, ",")
 	}

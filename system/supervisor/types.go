@@ -20,12 +20,14 @@ package supervisor
 
 import (
 	"context"
-	"github.com/e154/smart-home/common/events"
+	"io/fs"
 	"time"
 
 	"github.com/e154/bus"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/web"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/mqtt"
@@ -240,4 +242,20 @@ type CallActionV2 struct {
 	ActionName string           `json:"action_name"`
 	Tags       []string         `json:"tags"`
 	AreaId     *int64           `json:"area_id"`
+}
+
+type PluginFileInfo struct {
+	ModTime  time.Time
+	Name     string
+	MimeType string
+	Size     int64
+	FileMode fs.FileMode
+}
+
+type PluginFileInfos []*PluginFileInfo
+
+func (l PluginFileInfos) Len() int      { return len(l) }
+func (l PluginFileInfos) Swap(i, j int) { l[i], l[j] = l[j], l[i] }
+func (l PluginFileInfos) Less(i, j int) bool {
+	return l[i].ModTime.UnixNano() > l[j].ModTime.UnixNano()
 }

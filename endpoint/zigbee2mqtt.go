@@ -66,6 +66,8 @@ func (n *Zigbee2mqttEndpoint) AddBridge(ctx context.Context, params *m.Zigbee2mq
 		Bridge: bridge,
 	})
 
+	log.Infof("added new z2m %s id:(%d) bridge", bridge.Name, bridge.Id)
+
 	return
 }
 
@@ -109,6 +111,8 @@ func (n *Zigbee2mqttEndpoint) UpdateBridge(ctx context.Context, params *m.Zigbee
 		Bridge: bridge,
 	})
 
+	log.Infof("updated z2m %s id:(%d) bridge", bridge.Name, bridge.Id)
+
 	return
 }
 
@@ -136,6 +140,8 @@ func (n *Zigbee2mqttEndpoint) Delete(ctx context.Context, id int64) (err error) 
 	n.eventBus.Publish(fmt.Sprintf("system/models/zigbee2mqtt/%d", id), events.EventRemovedZigbee2mqttModel{
 		Id: id,
 	})
+
+	log.Infof("z2m %d was deleted", id)
 
 	return
 }

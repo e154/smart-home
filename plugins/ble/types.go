@@ -21,7 +21,7 @@ package ble
 import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/plugins/triggers"
+	"github.com/e154/smart-home/plugins/triggers/types"
 	"github.com/e154/smart-home/system/supervisor"
 )
 
@@ -110,7 +110,7 @@ func NewTriggerParams() m.TriggerParams {
 
 type TriggerParams struct {
 	Bluetooth
-	options triggers.Subscriber
+	options types.Subscriber
 }
 
 type Bluetooth interface {

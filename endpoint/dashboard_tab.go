@@ -55,7 +55,11 @@ func (t *DashboardTabEndpoint) Add(ctx context.Context, tab *m.DashboardTab) (re
 		return
 	}
 
-	result, err = t.adaptors.DashboardTab.GetById(ctx, id)
+	if result, err = t.adaptors.DashboardTab.GetById(ctx, id); err != nil {
+		return
+	}
+
+	log.Infof("added new dashboard tab %s id:(%d)", result.Name, result.Id)
 
 	return
 }
@@ -94,7 +98,11 @@ func (t *DashboardTabEndpoint) Update(ctx context.Context, params *m.DashboardTa
 		return
 	}
 
-	result, err = t.adaptors.DashboardTab.GetById(ctx, params.Id)
+	if result, err = t.adaptors.DashboardTab.GetById(ctx, params.Id); err != nil {
+		return
+	}
+
+	log.Infof("updated dashboard tab %s id:(%d)", result.Name, result.Id)
 
 	return
 }
@@ -122,7 +130,11 @@ func (t *DashboardTabEndpoint) Delete(ctx context.Context, id int64) (err error)
 		return
 	}
 
-	err = t.adaptors.DashboardTab.Delete(ctx, id)
+	if err = t.adaptors.DashboardTab.Delete(ctx, id); err != nil {
+		return
+	}
+
+	log.Infof("dashboard tab id %d was deleted", id)
 
 	return
 }
@@ -145,7 +157,11 @@ func (t *DashboardTabEndpoint) Import(ctx context.Context, board *m.DashboardTab
 		return
 	}
 
-	err = t.preloadEntities(ctx, board)
+	if err = t.preloadEntities(ctx, board); err != nil {
+		return
+	}
+
+	log.Infof("dashboard tab %s id:(%d) was imported", result.Name, result.Id)
 
 	return
 }

@@ -63,6 +63,8 @@ func (n *TriggerEndpoint) Add(ctx context.Context, params *m.NewTrigger) (result
 		Id: id,
 	})
 
+	log.Infof("added new trigger %s id:(%d)", result.Name, result.Id)
+
 	return
 }
 
@@ -99,6 +101,8 @@ func (n *TriggerEndpoint) Update(ctx context.Context, params *m.UpdateTrigger) (
 	n.eventBus.Publish(fmt.Sprintf("system/models/triggers/%d", result.Id), events.EventUpdatedTriggerModel{
 		Id: result.Id,
 	})
+
+	log.Infof("updated trigger %s id:(%d)", result.Name, result.Id)
 
 	return
 }

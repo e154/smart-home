@@ -55,7 +55,11 @@ func (c *DashboardCardEndpoint) Add(ctx context.Context, card *m.DashboardCard) 
 		return
 	}
 
-	result, err = c.adaptors.DashboardCard.GetById(ctx, id)
+	if result, err = c.adaptors.DashboardCard.GetById(ctx, id); err != nil {
+		return
+	}
+
+	log.Infof("added new dashboard card %s id:(%d)", result.Title, result.Id)
 
 	return
 }
@@ -95,7 +99,11 @@ func (i *DashboardCardEndpoint) Update(ctx context.Context, params *m.DashboardC
 		return
 	}
 
-	result, err = i.adaptors.DashboardCard.GetById(ctx, params.Id)
+	if result, err = i.adaptors.DashboardCard.GetById(ctx, params.Id); err != nil {
+		return
+	}
+
+	log.Infof("updated dashboard card %s id:(%d)", result.Title, result.Id)
 
 	return
 }
@@ -123,7 +131,11 @@ func (c *DashboardCardEndpoint) Delete(ctx context.Context, id int64) (err error
 		return
 	}
 
-	err = c.adaptors.DashboardCard.Delete(ctx, id)
+	if err = c.adaptors.DashboardCard.Delete(ctx, id); err != nil {
+		return
+	}
+
+	log.Infof("dashboard card id %d was deleted", id)
 
 	return
 }
@@ -136,7 +148,11 @@ func (c *DashboardCardEndpoint) Import(ctx context.Context, card *m.DashboardCar
 		return
 	}
 
-	result, err = c.adaptors.DashboardCard.GetById(ctx, cardId)
+	if result, err = c.adaptors.DashboardCard.GetById(ctx, cardId); err != nil {
+		return
+	}
+
+	log.Infof("dashboard card %s id:(%d) was imported", result.Title, result.Id)
 
 	return
 }

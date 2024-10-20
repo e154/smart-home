@@ -27,10 +27,10 @@ import (
 	"go.uber.org/atomic"
 
 	"github.com/e154/smart-home/common/events"
-	"github.com/e154/smart-home/plugins/triggers"
+	"github.com/e154/smart-home/plugins/triggers/types"
 )
 
-var _ triggers.ITrigger = (*Trigger)(nil)
+var _ types.ITrigger = (*Trigger)(nil)
 
 type Trigger struct {
 	eventBus     bus.Bus
@@ -40,7 +40,7 @@ type Trigger struct {
 	name         string
 }
 
-func NewTrigger(eventBus bus.Bus) triggers.ITrigger {
+func NewTrigger(eventBus bus.Bus) types.ITrigger {
 	return &Trigger{
 		eventBus:     eventBus,
 		msgQueue:     bus.NewBus(),
@@ -98,14 +98,14 @@ func (t *Trigger) eventHandler(_ string, event interface{}) {
 }
 
 // Subscribe ...
-func (t *Trigger) Subscribe(options triggers.Subscriber) error {
+func (t *Trigger) Subscribe(options types.Subscriber) error {
 	//log.Infof("subscribe topic %s", options.EntityId)
 	t.counter.Inc()
 	return t.msgQueue.Subscribe(options.EntityId.String(), options.Handler)
 }
 
 // Unsubscribe ...
-func (t *Trigger) Unsubscribe(options triggers.Subscriber) error {
+func (t *Trigger) Unsubscribe(options types.Subscriber) error {
 	//log.Infof("unsubscribe topic %s", options.EntityId)
 	t.counter.Dec()
 	return t.msgQueue.Unsubscribe(options.EntityId.String(), options.Handler)

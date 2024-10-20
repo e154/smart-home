@@ -54,7 +54,11 @@ func (n *RoleEndpoint) Add(ctx context.Context, params *m.Role) (result *m.Role,
 		return
 	}
 
-	result, err = n.adaptors.Role.GetByName(ctx, params.Name)
+	if result, err = n.adaptors.Role.GetByName(ctx, params.Name); err != nil {
+		return
+	}
+
+	log.Infof("added role %s", params.Name)
 
 	return
 }
@@ -106,6 +110,9 @@ func (n *RoleEndpoint) Update(ctx context.Context, params *m.Role) (result *m.Ro
 		}
 		return
 	}
+
+	log.Infof("updated role %s", params.Name)
+
 	return
 }
 
@@ -129,7 +136,11 @@ func (n *RoleEndpoint) Delete(ctx context.Context, name string) (err error) {
 		return
 	}
 
-	err = n.adaptors.Role.Delete(ctx, name)
+	if err = n.adaptors.Role.Delete(ctx, name); err != nil {
+		return
+	}
+
+	log.Infof("role %s was deleted", name)
 
 	return
 }

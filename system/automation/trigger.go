@@ -22,15 +22,15 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/e154/bus"
 	"github.com/pkg/errors"
 	"go.uber.org/atomic"
 
-	"github.com/e154/bus"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/events"
 	"github.com/e154/smart-home/common/telemetry"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/plugins/triggers"
+	"github.com/e154/smart-home/plugins/triggers/types"
 	"github.com/e154/smart-home/system/scripts"
 )
 
@@ -40,7 +40,7 @@ type Trigger struct {
 	lastStatus         *atomic.Bool
 	model              *m.Trigger
 	name               string
-	triggerPlugin      triggers.ITrigger
+	triggerPlugin      types.ITrigger
 	taskName           string
 	triggerSubscribers []*TriggerSubscriber
 	eventBus           bus.Bus
@@ -51,7 +51,7 @@ func NewTrigger(
 	eventBus bus.Bus,
 	scriptService scripts.ScriptService,
 	model *m.Trigger,
-	rawPlugin triggers.IGetTrigger) (tr *Trigger, err error) {
+	rawPlugin types.IGetTrigger) (tr *Trigger, err error) {
 
 	pluginName := model.PluginName
 	if pluginName == "" {
@@ -59,7 +59,7 @@ func NewTrigger(
 		return nil, err
 	}
 
-	var triggerPlugin triggers.ITrigger
+	var triggerPlugin types.ITrigger
 	if triggerPlugin, err = rawPlugin.GetTrigger(pluginName); err != nil {
 		return
 	}
@@ -146,9 +146,9 @@ func (tr *Trigger) genCheckFunc(scriptEngine *scripts.EngineWatcher) func(msg in
 	}
 }
 
-func (tr *Trigger) genSubscriber(entityId *common.EntityId, check func(msg interface{}) (state bool, err error)) triggers.Subscriber {
+func (tr *Trigger) genSubscriber(entityId *common.EntityId, check func(msg interface{}) (state bool, err error)) types.Subscriber {
 
-	return triggers.Subscriber{
+	return types.Subscriber{
 		EntityId: entityId,
 		Payload:  tr.model.Payload,
 		Handler: func(_ string, msg interface{}) {

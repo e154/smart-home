@@ -58,6 +58,8 @@ func (v *VariableEndpoint) Add(ctx context.Context, variable m.Variable) (err er
 		Value: variable.Value,
 	})
 
+	log.Infof("added new variable %s", variable.Name)
+
 	return
 }
 
@@ -78,12 +80,15 @@ func (v *VariableEndpoint) Update(ctx context.Context, _variable m.Variable) (er
 		return
 	}
 
+	var oldName string
+
 	var variable m.Variable
 	if variable, err = v.adaptors.Variable.GetByName(ctx, _variable.Name); err == nil {
 		if variable.System && v.checkSuperUser(ctx) {
 			err = apperr.ErrVariableUpdateForbidden
 			return
 		}
+		oldName = variable.Name
 		variable.Value = _variable.Value
 		variable.Tags = _variable.Tags
 	} else {
@@ -100,6 +105,13 @@ func (v *VariableEndpoint) Update(ctx context.Context, _variable m.Variable) (er
 		Name:  variable.Name,
 		Value: variable.Value,
 	})
+
+	if oldName != variable.Name {
+		log.Infof("variable %s was renamed to %s", oldName, variable.Name)
+		return
+	}
+
+	log.Infof("updated variable %s", variable.Name)
 
 	return
 }
@@ -131,6 +143,8 @@ func (v *VariableEndpoint) Delete(ctx context.Context, name string) (err error) 
 	v.eventBus.Publish(fmt.Sprintf("system/models/variables/%s", name), events.EventRemovedVariableModel{
 		Name: name,
 	})
+
+	log.Infof("variable %s was deleted", variable.Name)
 
 	return
 }

@@ -65,6 +65,8 @@ func (n *TaskEndpoint) Add(ctx context.Context, task *m.NewTask) (result *m.Task
 		Id: id,
 	})
 
+	log.Infof("added new task %s id:(%d)", result.Name, result.Id)
+
 	return
 }
 
@@ -132,6 +134,8 @@ func (n *TaskEndpoint) Import(ctx context.Context, task *m.Task) (result *m.Task
 		Id: task.Id,
 	})
 
+	log.Infof("imported task %s id:(%d)", result.Name, result.Id)
+
 	return
 }
 
@@ -162,6 +166,8 @@ func (n *TaskEndpoint) Update(ctx context.Context, task *m.UpdateTask) (result *
 		Id: task.Id,
 	})
 
+	log.Infof("updated task %s id:(%d)", result.Name, result.Id)
+
 	return
 }
 
@@ -185,6 +191,9 @@ func (n *TaskEndpoint) Delete(ctx context.Context, id int64) (err error) {
 	n.eventBus.Publish(fmt.Sprintf("system/models/tasks/%d", id), events.EventRemovedTaskModel{
 		Id: id,
 	})
+
+	log.Infof("task id %d was deleted", id)
+
 	return
 }
 
@@ -211,6 +220,9 @@ func (n *TaskEndpoint) Disable(ctx context.Context, id int64) (err error) {
 	n.eventBus.Publish(fmt.Sprintf("system/automation/tasks/%d", id), events.CommandDisableTask{
 		Id: id,
 	})
+
+	log.Infof("task %d was deleted", id)
+
 	return
 }
 

@@ -54,7 +54,11 @@ func (d *DashboardEndpoint) Add(ctx context.Context, board *m.Dashboard) (result
 		return
 	}
 
-	result, err = d.adaptors.Dashboard.GetById(ctx, id)
+	if result, err = d.adaptors.Dashboard.GetById(ctx, id); err != nil {
+		return nil, err
+	}
+
+	log.Infof("added new dashboard %s id:(%d)", result.Name, result.Id)
 
 	return
 }
@@ -110,6 +114,8 @@ func (i *DashboardEndpoint) Update(ctx context.Context, params *m.Dashboard) (re
 		}
 	}
 
+	log.Infof("updated dashboard %s id:(%d)", result.Name, result.Id)
+
 	return
 }
 
@@ -135,9 +141,12 @@ func (d *DashboardEndpoint) Delete(ctx context.Context, id int64) (err error) {
 		return
 	}
 
-	err = d.adaptors.Dashboard.Delete(ctx, id)
-	if err != nil {
+	if err = d.adaptors.Dashboard.Delete(ctx, id); err != nil {
+		return err
 	}
+
+	log.Infof("dashboard id %d was deleted", id)
+
 	return
 }
 
@@ -195,7 +204,11 @@ func (d *DashboardEndpoint) Import(ctx context.Context, board *m.Dashboard) (res
 		return
 	}
 
-	err = d.preloadEntities(ctx, board)
+	if err = d.preloadEntities(ctx, board); err != nil {
+		return nil, err
+	}
+
+	log.Infof("dashboard %s id:(%d) was imported", result.Name, id)
 
 	return
 }

@@ -23,7 +23,6 @@ import (
 
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/plugins/vosk"
 	. "github.com/e154/smart-home/system/initial/assertions"
 )
 
@@ -42,7 +41,7 @@ func NewMigrationVosk(adaptors *adaptors.Adaptors) *MigrationVosk {
 func (n *MigrationVosk) Up(ctx context.Context, adaptors *adaptors.Adaptors) error {
 	err := n.adaptors.Plugin.CreateOrUpdate(ctx, &m.Plugin{
 		Name:     "vosk",
-		Version:  vosk.Version,
+		Version:  "0.0.1",
 		Enabled:  false,
 		System:   false,
 		Actor:    false,

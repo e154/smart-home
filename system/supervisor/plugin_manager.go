@@ -21,18 +21,25 @@ package supervisor
 import (
 	"context"
 	"fmt"
-	"github.com/e154/smart-home/common"
+	"os"
+	"path"
+	"path/filepath"
+	"plugin"
 	"sync"
 
+	"github.com/e154/bus"
 	"github.com/pkg/errors"
 	"go.uber.org/atomic"
 
-	"github.com/e154/bus"
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/apperr"
+	"github.com/e154/smart-home/common/debug"
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 )
+
+var pluginsDir = path.Join("data", "plugins")
 
 type pluginManager struct {
 	adaptors       *adaptors.Adaptors
@@ -50,6 +57,7 @@ func (p *pluginManager) Start(ctx context.Context) {
 	}
 	defer p.isStarted.Store(true)
 
+	p.loadPluginLibs(ctx)
 	p.loadPlugins(ctx)
 
 	log.Info("Started")
@@ -94,6 +102,23 @@ func (p *pluginManager) getPlugin(name string) (plugin Pluggable, err error) {
 	err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("name %s", name))
 
 	return
+}
+
+func (p *pluginManager) loadPluginLibs(ctx context.Context) error {
+
+	list, _, err := p.ListPluginsDir(ctx)
+	if err != nil {
+		log.Error(err.Error())
+		return err
+	}
+
+	for _, plugin := range list {
+		if err := p.LoadPluginLib(plugin); err != nil {
+			log.Error(err.Error())
+		}
+	}
+
+	return nil
 }
 
 func (p *pluginManager) loadPlugins(ctx context.Context) {
@@ -299,5 +324,64 @@ func (p *pluginManager) GetPluginReadme(ctx context.Context, name string, note *
 		return
 	}
 	result, err = plugin.Readme(note, lang)
+	return
+}
+
+func (p *pluginManager) LoadPluginLib(pluginInfo *PluginFileInfo) error {
+
+	//qwe, _ := filepath.Abs(path.Join(pluginsDir, pluginInfo.Name))
+	//os.Setenv("RPATH", fmt.Sprintf("%s:%s", qwe, os.Getenv("RPATH")))
+	//os.Setenv("PATH", fmt.Sprintf("%s:%s", qwe, os.Getenv("PATH")))
+	//os.Setenv("LD_PRELOAD", fmt.Sprintf("%s:%s", qwe, os.Getenv("LD_PRELOAD")))
+	//os.Setenv("LD_LIBRARY_PATH", fmt.Sprintf("%s:%s", qwe, os.Getenv("LD_LIBRARY_PATH")))
+	//os.Setenv("DYLD_LIBRARY_PATH", fmt.Sprintf("%s:%s", qwe, os.Getenv("DYLD_LIBRARY_PATH")))
+
+	//fmt.Println("PATH", os.Getenv("PATH"))
+
+	log.Infof("load external library %s", pluginInfo.Name)
+	plugin, err := plugin.Open(path.Join(pluginsDir, pluginInfo.Name, "plugin.so"))
+	if err != nil {
+		return err
+	}
+
+	newFunc, err := plugin.Lookup("New")
+	if err != nil {
+		return err
+	}
+
+	pluggable, ok := newFunc.(func() Pluggable)
+	if !ok {
+		return errors.New("unexpected type from module symbol")
+	}
+
+	RegisterPlugin(pluginInfo.Name, pluggable)
+
+	return nil
+}
+
+func (p *pluginManager) ListPluginsDir(ctx context.Context) (list PluginFileInfos, total int64, err error) {
+
+	_ = filepath.Walk(pluginsDir, func(path string, info os.FileInfo, err error) error {
+		if info.Name() == ".gitignore" || !info.IsDir() {
+			return nil
+		}
+		if info.Name()[0:1] == "." {
+			return nil
+		}
+		if info.Name() == "plugins" {
+			return nil
+		}
+		list = append(list, &PluginFileInfo{
+			Name:     info.Name(),
+			Size:     info.Size(),
+			FileMode: info.Mode(),
+			ModTime:  info.ModTime(),
+		})
+		return nil
+	})
+	total = int64(len(list))
+	//sort.Sort(list)
+
+	debug.Println(list)
 	return
 }

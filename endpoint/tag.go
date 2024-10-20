@@ -53,6 +53,8 @@ func (n *TagEndpoint) Update(ctx context.Context, tag *m.Tag) (result *m.Tag, er
 		return
 	}
 
+	oldName := tag.Name
+
 	if ok, errs := n.validation.Valid(tag); !ok {
 		err = apperr.ErrInvalidRequest
 		apperr.SetValidationErrors(err, errs)
@@ -64,6 +66,8 @@ func (n *TagEndpoint) Update(ctx context.Context, tag *m.Tag) (result *m.Tag, er
 	}
 
 	result = tag
+
+	log.Infof("updated tag %s -> %s", oldName, tag.Name)
 
 	return
 }
@@ -82,7 +86,11 @@ func (n *TagEndpoint) DeleteTagById(ctx context.Context, tagId int64) (err error
 		return
 	}
 
-	err = n.adaptors.Tag.Delete(ctx, tag.Name)
+	if err = n.adaptors.Tag.Delete(ctx, tag.Name); err != nil {
+		return
+	}
+
+	log.Infof("tag %s was deleted", tag.Name)
 
 	return
 }

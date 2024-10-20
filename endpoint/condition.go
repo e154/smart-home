@@ -61,6 +61,8 @@ func (n *ConditionEndpoint) Add(ctx context.Context, condition *m.Condition) (re
 		Id: result.Id,
 	})
 
+	log.Infof("added new condition %s id:(%d)", result.Name, result.Id)
+
 	return
 }
 
@@ -98,6 +100,8 @@ func (n *ConditionEndpoint) Update(ctx context.Context, params *m.Condition) (re
 		Id: result.Id,
 	})
 
+	log.Infof("updated condition %s id:(%d)", result.Name, result.Id)
+
 	return
 }
 
@@ -112,19 +116,21 @@ func (n *ConditionEndpoint) GetList(ctx context.Context, pagination common.PageP
 // Delete ...
 func (n *ConditionEndpoint) Delete(ctx context.Context, id int64) (err error) {
 
-	var area *m.Condition
-	area, err = n.adaptors.Condition.GetById(ctx, id)
+	var condition *m.Condition
+	condition, err = n.adaptors.Condition.GetById(ctx, id)
 	if err != nil {
 		return
 	}
 
-	if err = n.adaptors.Condition.Delete(ctx, area.Id); err != nil {
+	if err = n.adaptors.Condition.Delete(ctx, condition.Id); err != nil {
 		return
 	}
 
 	n.eventBus.Publish(fmt.Sprintf("system/models/conditions/%d", id), events.EventRemovedConditionModel{
 		Id: id,
 	})
+
+	log.Infof("condition %s id:(%d) was deleted", condition.Name, id)
 
 	return
 }

@@ -32,7 +32,7 @@ import (
 	"github.com/e154/smart-home/common/events"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/state_change"
-	"github.com/e154/smart-home/plugins/triggers"
+	"github.com/e154/smart-home/plugins/triggers/types"
 	auto "github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
@@ -84,7 +84,7 @@ func TestTriggerState2(t *testing.T) {
 				plugin, err := supervisor.GetPlugin("triggers")
 				So(err, ShouldBeNil)
 
-				rawPlugin, ok := plugin.(triggers.IGetTrigger)
+				rawPlugin, ok := plugin.(types.IGetTrigger)
 				So(ok, ShouldBeTrue)
 
 				trigger, err := auto.NewTrigger(eventBus, scriptService, model, rawPlugin)
