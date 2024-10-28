@@ -72,7 +72,7 @@ anchor = "smart"
 [languages.en]
 title = "Smart home"
 description = "The program complex"
-languageName ="English"
+languageName = "English"
 
 # Weight used for sorting.
 weight = 1
@@ -80,20 +80,20 @@ weight = 1
 [languages.ru]
 title = "Умный дом"
 description = "Програмный комплекс"
-languageName ="Русский"
+languageName = "Русский"
 contentDir = "content/ru"
 time_format_default = "02.01.2006"
 time_format_blog = "02.01.2006"
 
 [markup]
-  [markup.goldmark]
-    [markup.goldmark.renderer]
-      unsafe = true
-  [markup.highlight]
-      # See a complete list of available styles at https://xyproto.github.io/splash/docs/all.html
-      style = "tango"
-      # Uncomment if you want your chosen highlight style used for code blocks without a specified language
-      # guessSyntax = "true"
+[markup.goldmark]
+[markup.goldmark.renderer]
+unsafe = true
+[markup.highlight]
+# See a complete list of available styles at https://xyproto.github.io/splash/docs/all.html
+style = "tango"
+# Uncomment if you want your chosen highlight style used for code blocks without a specified language
+# guessSyntax = "true"
 
 # Everything below this are Site Params
 
@@ -201,8 +201,8 @@ enable = false
 #        desc = "Practical questions and curated answers"
 # Developer relevant links. These will show up on right side of footer and in the community page if you have one.
 [[params.links.developer]]
-	name = "GitHub"
-	url = "https://github.com/e154/smart-home"
-	icon = "fab fa-github"
-        desc = "Project page"
+name = "GitHub"
+url = "https://github.com/e154/smart-home"
+icon = "fab fa-github"
+desc = "Project page"
 

@@ -22,13 +22,12 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
 	"runtime"
 	"testing"
 	"time"
 
-	"github.com/e154/smart-home/system/validation"
-
-	"path/filepath"
+	"github.com/e154/smart-home/internal/system/validation"
 
 	"go.uber.org/dig"
 

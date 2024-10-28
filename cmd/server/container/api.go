@@ -19,8 +19,8 @@
 package container
 
 import (
-	"github.com/e154/smart-home/api"
-	"github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/internal/api"
+	"github.com/e154/smart-home/pkg/models"
 )
 
 // NewApiConfig ...

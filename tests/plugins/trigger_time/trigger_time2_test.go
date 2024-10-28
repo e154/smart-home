@@ -23,20 +23,21 @@ import (
 	"testing"
 	"time"
 
+	timeTrigger "github.com/e154/smart-home/internal/plugins/time"
+	"github.com/e154/smart-home/internal/system/automation"
+	"github.com/e154/smart-home/pkg/adaptors"
+	commonPkg "github.com/e154/smart-home/pkg/common"
+	"github.com/e154/smart-home/pkg/events"
+	"github.com/e154/smart-home/pkg/models"
+	"github.com/e154/smart-home/pkg/mqtt"
+	"github.com/e154/smart-home/pkg/plugins"
+	"github.com/e154/smart-home/pkg/scheduler"
+	"github.com/e154/smart-home/pkg/scripts"
+
 	. "github.com/smartystreets/goconvey/convey"
 	"go.uber.org/atomic"
 
 	"github.com/e154/bus"
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/events"
-	m "github.com/e154/smart-home/models"
-	timeTrigger "github.com/e154/smart-home/plugins/time"
-	"github.com/e154/smart-home/system/automation"
-	"github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/scheduler"
-	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/e154/smart-home/tests/plugins"
 )
 
@@ -53,11 +54,11 @@ entityAction = (entityId, actionName)->
 	Convey("trigger time", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			scriptService scripts.ScriptService,
-			supervisor supervisor.Supervisor,
+			supervisor plugins.Supervisor,
 			mqttServer mqtt.MqttServ,
 			automation automation.Automation,
 			eventBus bus.Bus,
-			scheduler *scheduler.Scheduler,
+			scheduler scheduler.Scheduler,
 		) {
 
 			var counter atomic.Int32
@@ -76,7 +77,7 @@ entityAction = (entityId, actionName)->
 			// ------------------------------------------------
 
 			sensorEnt := GetNewSensor("device1")
-			sensorEnt.Actions = []*m.EntityAction{
+			sensorEnt.Actions = []*models.EntityAction{
 				{
 					Name:        "CHECK",
 					Description: "condition check",
@@ -95,14 +96,14 @@ entityAction = (entityId, actionName)->
 
 			// automation
 			// ------------------------------------------------
-			trigger := &m.NewTrigger{
+			trigger := &models.NewTrigger{
 				Enabled:    true,
 				Name:       "trigger1",
 				PluginName: "time",
-				Payload: m.Attributes{
+				Payload: models.Attributes{
 					timeTrigger.AttrCron: {
 						Name:  timeTrigger.AttrCron,
-						Type:  common.AttributeString,
+						Type:  commonPkg.AttributeString,
 						Value: "* * * * * *", //every seconds
 					},
 				},
@@ -110,19 +111,19 @@ entityAction = (entityId, actionName)->
 			triggerId, err := AddTrigger(trigger, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
-			action := &m.Action{
+			action := &models.Action{
 				Name:             "action1",
-				EntityId:         common.NewEntityId(string(sensorEnt.Id)),
-				EntityActionName: common.String(sensorEnt.Actions[0].Name),
+				EntityId:         commonPkg.NewEntityId(string(sensorEnt.Id)),
+				EntityActionName: commonPkg.String(sensorEnt.Actions[0].Name),
 			}
 			action.Id, err = adaptors.Action.Add(context.Background(), action)
 			So(err, ShouldBeNil)
 
 			//TASK3
-			newTask := &m.NewTask{
+			newTask := &models.NewTask{
 				Name:       "Toggle plug OFF",
 				Enabled:    true,
-				Condition:  common.ConditionAnd,
+				Condition:  commonPkg.ConditionAnd,
 				TriggerIds: []int64{triggerId},
 				ActionIds:  []int64{action.Id},
 			}

@@ -1,4 +1,3 @@
-
 ---
 title: "Node"
 linkTitle: "node"
@@ -7,7 +6,9 @@ description: >
   
 ---
 
-The Node plugin is designed for the integration of external Node agents, providing the ability to work with Modbus devices on remote servers in the network or from other subnets. This plugin simplifies the connection and interaction with remote Modbus agents, expanding the functionality of the Smart Home system.
+The Node plugin is designed for the integration of external Node agents, providing the ability to work with Modbus
+devices on remote servers in the network or from other subnets. This plugin simplifies the connection and interaction
+with remote Modbus agents, expanding the functionality of the Smart Home system.
 
 #### Device Properties
 

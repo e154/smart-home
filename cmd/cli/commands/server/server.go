@@ -32,9 +32,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/e154/smart-home/pkg/mqtt"
+
 	"github.com/DrmagicE/gmqtt"
 	"github.com/DrmagicE/gmqtt/server"
-	"github.com/e154/smart-home/system/mqtt"
 	"github.com/koron/netx"
 	"github.com/spf13/cobra"
 )

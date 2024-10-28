@@ -1,20 +1,20 @@
 <div class="card">
-  {{ $lang := "" }}
-  {{ with $.Get "lang" }}
+    {{ $lang := "" }}
+    {{ with $.Get "lang" }}
     {{ $lang = $.Get "lang" }}
-  {{ end }}
-  {{ $highlight := "" }}
-  {{ with $.Get "highlight" }}
+    {{ end }}
+    {{ $highlight := "" }}
+    {{ with $.Get "highlight" }}
     {{ $highlight = $.Get "highlight" }}
-  {{ end }}
-  {{- with $.Get "header" -}}
+    {{ end }}
+    {{- with $.Get "header" -}}
     <div class="card-header bg-white">
-      {{- $.Get "header" | markdownify -}}
+        {{- $.Get "header" | markdownify -}}
     </div>
-  {{end}}
-  <div class="card-body code p-l0 m-0">
-      {{ with $.Inner }}
+    {{end}}
+    <div class="card-body code p-l0 m-0">
+        {{ with $.Inner }}
         {{- highlight $.Inner $lang $highlight -}}
-      {{ end }}
-  </div>
+        {{ end }}
+    </div>
 </div>

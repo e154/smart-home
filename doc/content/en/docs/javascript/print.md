@@ -6,7 +6,8 @@ description: >
 
 ---
 
-In the JavaScript environment, there is a function called `print(string)` that outputs the specified string to the console.
+In the JavaScript environment, there is a function called `print(string)` that outputs the specified string to the
+console.
 
 Example of using the `print` function:
 

@@ -8,5 +8,6 @@ ALTER TABLE variables
 
 -- +migrate Down
 -- SQL section 'Down' is executed when this migration is rolled back
-alter table variables drop column entity_id cascade ;
+alter table variables
+    drop column entity_id cascade;
 

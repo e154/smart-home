@@ -21,13 +21,14 @@ package commands
 import (
 	"fmt"
 
+	"github.com/e154/smart-home/internal/common/app"
+	"github.com/e154/smart-home/internal/system/gate/server"
+	"github.com/e154/smart-home/internal/system/logging"
+
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
 
 	. "github.com/e154/smart-home/cmd/server/gate_container"
-	"github.com/e154/smart-home/common/app"
-	"github.com/e154/smart-home/system/gate/server"
-	"github.com/e154/smart-home/system/logging"
 )
 
 const banner = `

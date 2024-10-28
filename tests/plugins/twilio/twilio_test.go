@@ -23,17 +23,18 @@ import (
 	"testing"
 	"time"
 
-	notifyCommon "github.com/e154/smart-home/plugins/notify/common"
+	"github.com/e154/smart-home/internal/plugins/notify"
+	notifyCommon "github.com/e154/smart-home/internal/plugins/notify/common"
+	"github.com/e154/smart-home/internal/plugins/twilio"
+	"github.com/e154/smart-home/pkg/adaptors"
+	"github.com/e154/smart-home/pkg/common"
+	m "github.com/e154/smart-home/pkg/models"
+	"github.com/e154/smart-home/pkg/plugins"
+	"github.com/e154/smart-home/pkg/scripts"
+
 	. "github.com/smartystreets/goconvey/convey"
 
 	"github.com/e154/bus"
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/plugins/notify"
-	"github.com/e154/smart-home/plugins/twilio"
-	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/e154/smart-home/tests/plugins"
 )
 
@@ -42,7 +43,7 @@ func TestTwilio(t *testing.T) {
 	Convey("twilio", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			scriptService scripts.ScriptService,
-			supervisor supervisor.Supervisor,
+			supervisor plugins.Supervisor,
 			eventBus bus.Bus) {
 
 			// register plugins

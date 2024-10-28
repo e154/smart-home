@@ -19,10 +19,10 @@
 package container
 
 import (
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/system/access_list"
-	"github.com/e154/smart-home/system/initial/local_migrations"
-	"github.com/e154/smart-home/system/validation"
+	"github.com/e154/smart-home/internal/system/access_list"
+	"github.com/e154/smart-home/internal/system/initial/local_migrations"
+	"github.com/e154/smart-home/internal/system/validation"
+	"github.com/e154/smart-home/pkg/adaptors"
 )
 
 func MigrationList(adaptors *adaptors.Adaptors,

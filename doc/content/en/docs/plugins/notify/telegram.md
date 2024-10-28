@@ -1,4 +1,3 @@
-
 ---
 title: "Telegram"
 linkTitle: "telegram"
@@ -7,15 +6,19 @@ description: >
 
 ---
 
-To work with the Telegram API and handle interactive commands from clients or use event-based notifications, the system provides the following configuration:
+To work with the Telegram API and handle interactive commands from clients or use event-based notifications, the system
+provides the following configuration:
 
 ### Configuration:
+
 * Token
 
 ### Commands:
+
 * Custom set of commands
 
 ### Attributes:
+
 * Custom set of attributes
 
 ### Actions:
@@ -25,7 +28,9 @@ There are two reserved commands in the system:
 * **/start** - Subscribe to notifications
 * **/quit** - Unsubscribe from notifications
 
-**Action** - It should be named in lowercase, without the "/" sign. A custom command will automatically be added to the list of available commands in the **/help** section. The custom command should be called in uppercase **/ACTION** -> **/action**.
+**Action** - It should be named in lowercase, without the "/" sign. A custom command will automatically be added to the
+list of available commands in the **/help** section. The custom command should be called in uppercase **/ACTION** -> *
+*/action**.
 
 ### JavaScript Properties:
 
@@ -49,22 +54,23 @@ msg.attributes = {
 };
 
 ```
-|  значение  | описание  |
-|-------------|---------|
-| newMessage() |    метод   |
-| msg |   type: Object (Message)  |
+
+| значение     | описание               |
+|--------------|------------------------|
+| newMessage() | метод                  |
+| msg          | type: Object (Message) |
 
 attributes:
 
-|  значение  | описание  |
-|-------------|---------|
-| body |  Type: string,  message body   |
-| chat_id | Type: int64,  user's id  |
-| keys |  Type: []string, keyboard   |
-| photo_uri |  Type: []string, image   |
-| photo_path |  Type: []string, image   |
-| file_path |  Type: []string, file   |
-| file_uri |  Type: []string, file   |
+| значение   | описание                    |
+|------------|-----------------------------|
+| body       | Type: string,  message body |
+| chat_id    | Type: int64,  user's id     |
+| keys       | Type: []string, keyboard    |
+| photo_uri  | Type: []string, image       |
+| photo_path | Type: []string, image       |
+| file_path  | Type: []string, file        |
+| file_uri   | Type: []string, file        |
 
 ----------------
 
@@ -74,11 +80,11 @@ attributes:
 telegramAction = (entityId, actionName, args)->
 ```
 
-| Value | Description |
-|-------|-------------|
-| entityId | Type: string, ID of the entity sending the message |
+| Value      | Description                                                              |
+|------------|--------------------------------------------------------------------------|
+| entityId   | Type: string, ID of the entity sending the message                       |
 | actionName | Type: string, name of the action in uppercase, without the '/' character |
-| args  | attributes |
+| args       | attributes                                                               |
 
 ----------------
 
@@ -87,18 +93,18 @@ telegramAction = (entityId, actionName, args)->
 ```coffeescript
 # telegram
 # ##################################
-telegramSendReport =->
-  entities = ['device.l3n1','device.l3n2','device.l3n3','device.l3n4']
+telegramSendReport = ->
+  entities = ['device.l3n1', 'device.l3n2', 'device.l3n3', 'device.l3n4']
   for entityId, i in entities
     entity = GetEntity(entityId)
     attr = EntityGetAttributes(entityId)
     sendMsg(format(entityId, entity.state.name, attr))
-  
+
 telegramAction = (entityId, actionName)->
 switch actionName
-    when 'CHECK' then telegramSendReport()
+  when 'CHECK' then telegramSendReport()
 
-sendMsg =(body)->
+sendMsg = (body)->
   msg = notifr.newMessage();
   msg.entity_id = 'telegram.testbot';
   msg.attributes = {

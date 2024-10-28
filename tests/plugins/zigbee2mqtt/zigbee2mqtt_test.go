@@ -24,15 +24,16 @@ import (
 	"testing"
 	"time"
 
+	"github.com/e154/smart-home/internal/system/automation"
+	"github.com/e154/smart-home/internal/system/zigbee2mqtt"
+	"github.com/e154/smart-home/pkg/adaptors"
+	"github.com/e154/smart-home/pkg/common"
+	"github.com/e154/smart-home/pkg/models"
+	"github.com/e154/smart-home/pkg/mqtt"
+	"github.com/e154/smart-home/pkg/plugins"
+	"github.com/e154/smart-home/pkg/scripts"
+
 	"github.com/e154/bus"
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/automation"
-	"github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/supervisor"
-	"github.com/e154/smart-home/system/zigbee2mqtt"
 	. "github.com/e154/smart-home/tests/plugins"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -136,7 +137,7 @@ automationAction = (entityId)->
 	Convey("zigbee2mqtt", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			scriptService scripts.ScriptService,
-			supervisor supervisor.Supervisor,
+			supervisor plugins.Supervisor,
 			zigbee2mqtt zigbee2mqtt.Zigbee2mqtt,
 			mqttServer mqtt.MqttServ,
 			automation automation.Automation,
@@ -150,7 +151,7 @@ automationAction = (entityId)->
 			time.Sleep(time.Millisecond * 500)
 
 			// add zigbee2mqtt
-			zigbeeServer := &m.Zigbee2mqtt{
+			zigbeeServer := &models.Zigbee2mqtt{
 				Name:       "main",
 				Devices:    nil,
 				PermitJoin: true,
@@ -161,7 +162,7 @@ automationAction = (entityId)->
 			So(err, ShouldBeNil)
 
 			// add zigbee2mqtt_device
-			butonDevice := &m.Zigbee2mqttDevice{
+			butonDevice := &models.Zigbee2mqttDevice{
 				Id:            zigbeeButtonId,
 				Zigbee2mqttId: zigbeeServer.Id,
 				Name:          zigbeeButtonId,
@@ -174,7 +175,7 @@ automationAction = (entityId)->
 			err = adaptors.Zigbee2mqttDevice.Add(context.Background(), butonDevice)
 			So(err, ShouldBeNil)
 
-			plugDevice := &m.Zigbee2mqttDevice{
+			plugDevice := &models.Zigbee2mqttDevice{
 				Id:            zigbeePlugId,
 				Zigbee2mqttId: zigbeeServer.Id,
 				Name:          zigbeePlugId,
@@ -207,12 +208,12 @@ automationAction = (entityId)->
 
 			// add entity
 			// ------------------------------------------------
-			buttonEnt := GetNewButton(fmt.Sprintf("zigbee2mqtt.%s", zigbeeButtonId), []*m.Script{buttonScript})
+			buttonEnt := GetNewButton(fmt.Sprintf("zigbee2mqtt.%s", zigbeeButtonId), []*models.Script{buttonScript})
 			err = adaptors.Entity.Add(context.Background(), buttonEnt)
 			So(err, ShouldBeNil)
 
-			plugEnt := GetNewPlug(fmt.Sprintf("zigbee2mqtt.%s", zigbeePlugId), []*m.Script{plugScript})
-			plugEnt.Actions = []*m.EntityAction{
+			plugEnt := GetNewPlug(fmt.Sprintf("zigbee2mqtt.%s", zigbeePlugId), []*models.Script{plugScript})
+			plugEnt.Actions = []*models.EntityAction{
 				{
 					Name:        "ON",
 					Description: "включить",
@@ -231,7 +232,7 @@ automationAction = (entityId)->
 
 			// automation
 			// ------------------------------------------------
-			trigger1 := &m.NewTrigger{
+			trigger1 := &models.NewTrigger{
 				Enabled:    true,
 				Name:       "state_change",
 				EntityIds:  []string{buttonEnt.Id.String()},
@@ -241,7 +242,7 @@ automationAction = (entityId)->
 			trigger1Id, err := AddTrigger(trigger1, adaptors, eventBus)
 			So(err, ShouldBeNil)
 
-			trigger2 := &m.NewTrigger{
+			trigger2 := &models.NewTrigger{
 				Enabled:    true,
 				Name:       "",
 				EntityIds:  []string{buttonEnt.Id.String()},
@@ -253,14 +254,14 @@ automationAction = (entityId)->
 
 			// conditions
 			// -----------------------
-			condition1 := &m.Condition{
+			condition1 := &models.Condition{
 				Name:   "check plug state",
 				Script: task1Script,
 			}
 			condition1.Id, err = adaptors.Condition.Add(context.Background(), condition1)
 			So(err, ShouldBeNil)
 
-			condition2 := &m.Condition{
+			condition2 := &models.Condition{
 				Name:   "check plug state",
 				Script: task2Script,
 			}
@@ -269,14 +270,14 @@ automationAction = (entityId)->
 
 			// actions
 			// -----------------------
-			action1 := &m.Action{
+			action1 := &models.Action{
 				Name:   "action on Plug",
 				Script: task1Script,
 			}
 			action1.Id, err = adaptors.Action.Add(context.Background(), action1)
 			So(err, ShouldBeNil)
 
-			action2 := &m.Action{
+			action2 := &models.Action{
 				Name:   "action on Plug",
 				Script: task2Script,
 			}
@@ -285,7 +286,7 @@ automationAction = (entityId)->
 
 			// tasks
 			// -----------------------
-			newTask1 := &m.NewTask{
+			newTask1 := &models.NewTask{
 				Name:         "Toggle plug ON",
 				Enabled:      true,
 				Condition:    common.ConditionAnd,
@@ -298,7 +299,7 @@ automationAction = (entityId)->
 			So(err, ShouldBeNil)
 
 			//TASK2
-			newTask2 := &m.NewTask{
+			newTask2 := &models.NewTask{
 				Name:         "Toggle plug OFF",
 				Enabled:      true,
 				Condition:    common.ConditionAnd,

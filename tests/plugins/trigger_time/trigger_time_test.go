@@ -22,18 +22,19 @@ import (
 	"testing"
 	"time"
 
+	timeTrigger "github.com/e154/smart-home/internal/plugins/time"
+	"github.com/e154/smart-home/internal/system/automation"
+	"github.com/e154/smart-home/pkg/adaptors"
+	commonPkg "github.com/e154/smart-home/pkg/common"
+	"github.com/e154/smart-home/pkg/models"
+	"github.com/e154/smart-home/pkg/plugins"
+	"github.com/e154/smart-home/pkg/scheduler"
+	"github.com/e154/smart-home/pkg/scripts"
+
 	"github.com/e154/bus"
 	. "github.com/smartystreets/goconvey/convey"
 	"go.uber.org/atomic"
 
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
-	m "github.com/e154/smart-home/models"
-	timeTrigger "github.com/e154/smart-home/plugins/time"
-	"github.com/e154/smart-home/system/automation"
-	"github.com/e154/smart-home/system/scheduler"
-	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/e154/smart-home/tests/plugins"
 )
 
@@ -52,10 +53,10 @@ automationTriggerTime = (msg)->
 	Convey("trigger time", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			scriptService scripts.ScriptService,
-			supervisor supervisor.Supervisor,
+			supervisor plugins.Supervisor,
 			automation automation.Automation,
 			eventBus bus.Bus,
-			scheduler *scheduler.Scheduler,
+			scheduler scheduler.Scheduler,
 		) {
 
 			var counter atomic.Int32
@@ -72,15 +73,15 @@ automationTriggerTime = (msg)->
 
 			// automation
 			// ------------------------------------------------
-			trigger := &m.NewTrigger{
+			trigger := &models.NewTrigger{
 				Enabled:    true,
 				Name:       "trigger1",
-				ScriptId:   common.Int64(task3Script.Id),
+				ScriptId:   commonPkg.Int64(task3Script.Id),
 				PluginName: "time",
-				Payload: m.Attributes{
+				Payload: models.Attributes{
 					timeTrigger.AttrCron: {
 						Name:  timeTrigger.AttrCron,
-						Type:  common.AttributeString,
+						Type:  commonPkg.AttributeString,
 						Value: "* * * * * *", //every seconds
 					},
 				},
@@ -89,10 +90,10 @@ automationTriggerTime = (msg)->
 			So(err, ShouldBeNil)
 
 			//TASK3
-			newTask := &m.NewTask{
+			newTask := &models.NewTask{
 				Name:       "Toggle plug OFF",
 				Enabled:    true,
-				Condition:  common.ConditionAnd,
+				Condition:  commonPkg.ConditionAnd,
 				TriggerIds: []int64{triggerId},
 			}
 			_, err = AddTask(newTask, adaptors, eventBus)

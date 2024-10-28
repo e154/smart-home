@@ -19,11 +19,12 @@
 package system
 
 import (
-	"github.com/e154/smart-home/common/config"
-	m "github.com/e154/smart-home/models"
 	"os"
 	"path"
 	"testing"
+
+	"github.com/e154/smart-home/internal/common/config"
+	m "github.com/e154/smart-home/pkg/models"
 
 	. "github.com/smartystreets/goconvey/convey"
 )

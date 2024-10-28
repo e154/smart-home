@@ -6,17 +6,25 @@ description: >
 
 ---
 
-These methods can be valuable when developing automated scenarios or applications in the "Smart Home" system where geographical aspects need to be considered, such as device locations, safety zones, or other geographic-related information.
+These methods can be valuable when developing automated scenarios or applications in the "Smart Home" system where
+geographical aspects need to be considered, such as device locations, safety zones, or other geographic-related
+information.
 
-1. `GeoDistanceToArea(areaId, point)`: This method allows you to determine the distance between a specified point (`point`) and a geographical area identified by its identifier (`areaId`). Typically, it is used to determine how close a point is to a specific area.
+1. `GeoDistanceToArea(areaId, point)`: This method allows you to determine the distance between a specified
+   point (`point`) and a geographical area identified by its identifier (`areaId`). Typically, it is used to determine
+   how close a point is to a specific area.
 
-2. `GeoPointInsideArea(areaId, point)`: This method is used to check if a given point (`point`) is inside a geographical area identified by its identifier (`areaId`). It returns a boolean value (true/false) indicating whether the point belongs to the specified area.
+2. `GeoPointInsideArea(areaId, point)`: This method is used to check if a given point (`point`) is inside a geographical
+   area identified by its identifier (`areaId`). It returns a boolean value (true/false) indicating whether the point
+   belongs to the specified area.
 
-3. `GeoDistanceBetweenPoints(point1, point2)`: This method enables you to calculate the distance between two specified points (`point1` and `point2`). It is commonly used to measure the distance between two geographic coordinates, for example, to determine the distance between two devices or locations.
-
+3. `GeoDistanceBetweenPoints(point1, point2)`: This method enables you to calculate the distance between two specified
+   points (`point1` and `point2`). It is commonly used to measure the distance between two geographic coordinates, for
+   example, to determine the distance between two devices or locations.
 
 
 1. Example of using `GeoDistanceToArea`:
+
 ```coffeescript
 # Determining the distance from point (55.7558, 37.6176) to the geographical area with the identifier "my_area."
 distance = GeoDistanceToArea("my_area", { latitude: 55.7558, longitude: 37.6176 })

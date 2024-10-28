@@ -23,13 +23,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/e154/smart-home/common/events"
+	moon2 "github.com/e154/smart-home/internal/plugins/moon"
+	"github.com/e154/smart-home/pkg/adaptors"
+	"github.com/e154/smart-home/pkg/events"
+	"github.com/e154/smart-home/pkg/plugins"
+	"github.com/e154/smart-home/pkg/scripts"
 
 	"github.com/e154/bus"
-	"github.com/e154/smart-home/adaptors"
-	moonPlugin "github.com/e154/smart-home/plugins/moon"
-	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/e154/smart-home/tests/plugins"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -39,7 +39,7 @@ func TestMoon(t *testing.T) {
 	Convey("moon", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			scriptService scripts.ScriptService,
-			supervisor supervisor.Supervisor,
+			supervisor plugins.Supervisor,
 			eventBus bus.Bus) {
 
 			// register plugins
@@ -66,15 +66,15 @@ func TestMoon(t *testing.T) {
 			defer eventBus.Unsubscribe("system/entities/"+moonEnt.Id.String(), fn)
 			// ------------------------------------------------
 
-			moon := moonPlugin.NewActor(moonEnt, supervisor.GetService())
+			moon := moon2.NewActor(moonEnt, supervisor.GetService())
 
 			t.Run("entity", func(t *testing.T) {
 				Convey("position", t, func(ctx C) {
 					moonEnt, err = adaptors.Entity.GetById(context.Background(), moonEnt.Id)
 					ctx.So(err, ShouldBeNil)
 
-					ctx.So(moonEnt.Settings[moonPlugin.AttrLat].Float64(), ShouldEqual, 54.9022)
-					ctx.So(moonEnt.Settings[moonPlugin.AttrLon].Float64(), ShouldEqual, 83.0335)
+					ctx.So(moonEnt.Settings[moon2.AttrLat].Float64(), ShouldEqual, 54.9022)
+					ctx.So(moonEnt.Settings[moon2.AttrLon].Float64(), ShouldEqual, 83.0335)
 				})
 			})
 
@@ -90,12 +90,12 @@ func TestMoon(t *testing.T) {
 					ctx.So(ok, ShouldBeTrue)
 
 					ctx.So(msg.NewState.State, ShouldNotBeNil)
-					ctx.So(msg.NewState.State.Name, ShouldEqual, moonPlugin.StateBelowHorizon)
+					ctx.So(msg.NewState.State.Name, ShouldEqual, moon2.StateBelowHorizon)
 					ctx.So(msg.NewState.State.Description, ShouldEqual, "below horizon")
-					ctx.So(msg.NewState.Attributes[moonPlugin.AttrAzimuth].String(), ShouldContainSubstring, "131.932179124")
-					ctx.So(msg.NewState.Attributes[moonPlugin.AttrElevation].String(), ShouldContainSubstring, "-1.206958128")
-					ctx.So(msg.NewState.Attributes[moonPlugin.AttrHorizonState].String(), ShouldEqual, "belowHorizon")
-					ctx.So(msg.NewState.Attributes[moonPlugin.AttrPhase].String(), ShouldEqual, "full_moon")
+					ctx.So(msg.NewState.Attributes[moon2.AttrAzimuth].String(), ShouldContainSubstring, "131.932179124")
+					ctx.So(msg.NewState.Attributes[moon2.AttrElevation].String(), ShouldContainSubstring, "-1.206958128")
+					ctx.So(msg.NewState.Attributes[moon2.AttrHorizonState].String(), ShouldEqual, "belowHorizon")
+					ctx.So(msg.NewState.Attributes[moon2.AttrPhase].String(), ShouldEqual, "full_moon")
 				})
 			})
 		})

@@ -14,11 +14,11 @@ create index tags_name_idx
 
 create table entity_tags
 (
-    entity_id text not null
+    entity_id text      not null
         constraint entity_id_at_entity_tags_2_entities_fk
             references entities
             on update cascade on delete cascade,
-    tag_id  bigserial not null
+    tag_id    bigserial not null
         constraint entity_tags_2_tags_fk
             references tags
             on update cascade on delete restrict,

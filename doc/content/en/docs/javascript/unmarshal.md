@@ -6,7 +6,8 @@ description: >
 
 ---
 
-In the JavaScript environment, there is a `unmarshal` function available that converts a JSON string into an object using the `JSON.parse` function.
+In the JavaScript environment, there is a `unmarshal` function available that converts a JSON string into an object
+using the `JSON.parse` function.
 
 Example implementation of the `unmarshal` function:
 
@@ -24,4 +25,5 @@ var obj = unmarshal(jsonStr);
 console.log(obj); // { name: "John", age: 30, city: "New York" }
 ```
 
-In this example, the `unmarshal` function takes the JSON string `jsonStr` and uses the `JSON.parse` function to convert the string into an object. The result of the function will be an object containing the data from the JSON string.
+In this example, the `unmarshal` function takes the JSON string `jsonStr` and uses the `JSON.parse` function to convert
+the string into an object. The result of the function will be an object containing the data from the JSON string.

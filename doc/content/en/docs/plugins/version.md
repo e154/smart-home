@@ -1,4 +1,3 @@
-
 ---
 title: "Version"
 linkTitle: "version"
@@ -7,7 +6,8 @@ description: >
   
 ---
 
-The "version" plugin in the system provides information about the version and build of the project. It displays the following parameters:
+The "version" plugin in the system provides information about the version and build of the project. It displays the
+following parameters:
 
 1. `version`: The project version.
 2. `revision`: The revision identifier (commit) in the version control system.
@@ -18,7 +18,8 @@ The "version" plugin in the system provides information about the version and bu
 7. `docker_image`: The name of the Docker image associated with the project.
 8. `go_version`: The version of the Go programming language used for project development.
 
-The "version" plugin provides access to this information, which is useful for tracking versions and monitoring the development process.
+The "version" plugin provides access to this information, which is useful for tracking versions and monitoring the
+development process.
 
 Here's an example of using the "version" plugin:
 
@@ -34,4 +35,5 @@ console.log("Docker image:", versionInfo.docker_image);
 console.log("Go version:", versionInfo.go_version);
 ```
 
-This plugin allows you to obtain up-to-date information about the project version and use it for various purposes such as displaying the version in the user interface or logging.
+This plugin allows you to obtain up-to-date information about the project version and use it for various purposes such
+as displaying the version in the user interface or logging.

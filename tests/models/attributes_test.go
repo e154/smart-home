@@ -23,10 +23,10 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/e154/smart-home/common/encryptor"
+	"github.com/e154/smart-home/pkg/common"
+	"github.com/e154/smart-home/pkg/common/encryptor"
+	"github.com/e154/smart-home/pkg/models"
 
-	"github.com/e154/smart-home/common"
-	m "github.com/e154/smart-home/models"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -199,11 +199,11 @@ func TestAttributes(t *testing.T) {
 	t.Run("deserialize from string", func(t *testing.T) {
 		Convey("deserialize from string", t, func(ctx C) {
 
-			attrVal := make(m.AttributeValue)
+			attrVal := make(models.AttributeValue)
 			err := json.Unmarshal([]byte(sourceAttrsValue), &attrVal)
 			So(err, ShouldBeNil)
 
-			var attrs = make(m.Attributes)
+			var attrs = make(models.Attributes)
 			err = json.Unmarshal([]byte(sourceAttrs), &attrs)
 			So(err, ShouldBeNil)
 
@@ -247,14 +247,14 @@ func TestAttributes(t *testing.T) {
 			So(s["i"], ShouldEqual, 123)
 			So(s["f"], ShouldEqual, 456.123)
 			So(s["b"], ShouldEqual, true)
-			m1, ok := s["m"].(m.AttributeValue)
+			m1, ok := s["m"].(models.AttributeValue)
 			So(ok, ShouldEqual, true)
 			So(m1["s2"], ShouldEqual, "string")
 			So(m1["i2"], ShouldEqual, 123)
 			So(m1["f2"], ShouldEqual, 456.123)
 			So(m1["b2"], ShouldEqual, true)
 			So(m1["m2"], ShouldNotBeNil)
-			m2, ok := m1["m2"].(m.AttributeValue)
+			m2, ok := m1["m2"].(models.AttributeValue)
 			So(ok, ShouldEqual, true)
 			So(m2["s3"], ShouldEqual, "string")
 			So(m2["i3"], ShouldEqual, 123)
@@ -345,7 +345,7 @@ func TestAttributes(t *testing.T) {
 			So(cpy["s"].Value, ShouldEqual, "string")
 			So(cpy["s"].String(), ShouldEqual, "string")
 			So(cpy["p"].Value, ShouldResemble, []interface{}{42.86754085166162, 74.57289978531306})
-			So(cpy["p"].Point(), ShouldResemble, m.Point{Lon: 42.86754085166162, Lat: 74.57289978531306})
+			So(cpy["p"].Point(), ShouldResemble, models.Point{Lon: 42.86754085166162, Lat: 74.57289978531306})
 			So(cpy["i"].Value, ShouldEqual, 123)
 			So(cpy["i"].Int64(), ShouldEqual, 123)
 			So(cpy["f"].Value, ShouldEqual, 456.123)
@@ -393,7 +393,7 @@ func TestAttributes(t *testing.T) {
 			So(cpy["s"].Value, ShouldEqual, "string")
 			So(cpy["s"].String(), ShouldEqual, "string")
 			So(cpy["p"].Value, ShouldResemble, []interface{}{42.86754085166162, 74.57289978531306})
-			So(cpy["p"].Point(), ShouldResemble, m.Point{Lon: 42.86754085166162, Lat: 74.57289978531306})
+			So(cpy["p"].Point(), ShouldResemble, models.Point{Lon: 42.86754085166162, Lat: 74.57289978531306})
 			So(cpy["i"].Value, ShouldEqual, 123)
 			So(cpy["i"].Int64(), ShouldEqual, 123)
 			So(cpy["f"].Value, ShouldEqual, 456.123)
@@ -441,7 +441,7 @@ func TestAttributes(t *testing.T) {
 			So(cpy["s"].Value, ShouldEqual, "string")
 			So(cpy["s"].String(), ShouldEqual, "string")
 			So(cpy["p"].Value, ShouldResemble, []interface{}{42.86754085166162, 74.57289978531306})
-			So(cpy["p"].Point(), ShouldResemble, m.Point{Lon: 42.86754085166162, Lat: 74.57289978531306})
+			So(cpy["p"].Point(), ShouldResemble, models.Point{Lon: 42.86754085166162, Lat: 74.57289978531306})
 			So(cpy["i"].Value, ShouldEqual, 123)
 			So(cpy["i"].Int64(), ShouldEqual, 123)
 			So(cpy["f"].Value, ShouldEqual, 456.123)

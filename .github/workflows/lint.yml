@@ -3,21 +3,24 @@ name: Lint
 on:
   push:
     branches:
-      - "*"
-    tags:
-      - "*"
+      - '*'         # matches every branch that doesn't contain a '/'
+      - '*/*'       # matches every branch containing a single '/'
+      - '**'        # matches every branch
+      - '!master'   # excludes master
+      - '!docs'     # excludes docs
+      - '!gh-pages' # excludes gh-pages
 
 jobs:
   lint:
     name: lint
     strategy:
       matrix:
-        go: [ 1.22 ]
+        go: [ 1.23 ]
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Install linter
         run: |

@@ -1,4 +1,3 @@
-
 ---
 title: "Onvif"
 linkTitle: "onvif"
@@ -7,11 +6,13 @@ description: >
   
 ---
 
-The Smart Home project provides the ONVIF plugin, enabling interaction with surveillance cameras using the ONVIF protocol. This plugin implements several JavaScript methods for camera control and snapshot retrieval.
+The Smart Home project provides the ONVIF plugin, enabling interaction with surveillance cameras using the ONVIF
+protocol. This plugin implements several JavaScript methods for camera control and snapshot retrieval.
 
 #### JavaScript Methods
 
-1. **`Camera.continuousMove(X, Y)`**: This method allows for smooth camera movement to the specified coordinates X and Y.
+1. **`Camera.continuousMove(X, Y)`**: This method allows for smooth camera movement to the specified coordinates X and
+   Y.
 
 2. **`Camera.stopContinuousMove()`**: This method stops continuous camera movement.
 
@@ -35,7 +36,8 @@ The Smart Home project provides the ONVIF plugin, enabling interaction with surv
 
 - **`password` (type: Encrypted)**: Encrypted password for authentication.
 
-- **`requireAuthorization` (type: Bool)**: Flag indicating whether authorization is required for interacting with the camera.
+- **`requireAuthorization` (type: Bool)**: Flag indicating whether authorization is required for interacting with the
+  camera.
 
 #### Control Commands
 
@@ -49,25 +51,26 @@ The Smart Home project provides the ONVIF plugin, enabling interaction with surv
 
 - **`offline`**: The device is unavailable or disconnected from the system.
 
-These functions allow the integration of surveillance cameras into the Smart Home system and efficient management through the ONVIF plugin.
+These functions allow the integration of surveillance cameras into the Smart Home system and efficient management
+through the ONVIF plugin.
 
 Example of using the "onvif" plugin to implement camera control:
 
 ```javascript
 continuousMove = function (args) {
-    var X, Y;
-    X = args['X'] || 0;
-    Y = args['Y'] || 0;
-    if (Math.abs(X) > Math.abs(Y)) {
-        Y = 0;
-    } else {
-        X = 0;
-    }
-    return Camera.continuousMove(X, Y);
+  var X, Y;
+  X = args['X'] || 0;
+  Y = args['Y'] || 0;
+  if (Math.abs(X) > Math.abs(Y)) {
+    Y = 0;
+  } else {
+    X = 0;
+  }
+  return Camera.continuousMove(X, Y);
 };
 
 stopStop = function (args) {
-    return Camera.stopContinuousMove();
+  return Camera.stopContinuousMove();
 };
 
 ```

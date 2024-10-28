@@ -19,7 +19,7 @@
 exports = {};
 
 var formatRegExp = /%[sdj%]/g;
-exports.format = function(f) {
+exports.format = function (f) {
   if (!isString(f)) {
     var objects = [];
     for (var i = 0; i < arguments.length; i++) {
@@ -31,12 +31,14 @@ exports.format = function(f) {
   var i = 1;
   var args = arguments;
   var len = args.length;
-  var str = String(f).replace(formatRegExp, function(x) {
+  var str = String(f).replace(formatRegExp, function (x) {
     if (x === '%%') return '%';
     if (i >= len) return x;
     switch (x) {
-      case '%s': return String(args[i++]);
-      case '%d': return Number(args[i++]);
+      case '%s':
+        return String(args[i++]);
+      case '%d':
+        return Number(args[i++]);
       case '%j':
         try {
           return JSON.stringify(args[i++]);
@@ -59,11 +61,12 @@ exports.format = function(f) {
 
 /**
  * Echos the value of a value. Trys to print the value out
- * in the best way possible given the different types.
+ * in the best way possible given the different triggers.
  *
  * @param {Object} obj The object to print out.
  * @param {Object} opts Optional options object that alters the output.
  */
+
 /* legacy: obj, showHidden, depth, colors*/
 function inspect(obj, opts) {
   // default options
@@ -89,24 +92,25 @@ function inspect(obj, opts) {
   if (ctx.colors) ctx.stylize = stylizeWithColor;
   return formatValue(ctx, obj, ctx.depth);
 }
+
 exports.inspect = inspect;
 
 
 // http://en.wikipedia.org/wiki/ANSI_escape_code#graphics
 inspect.colors = {
-  'bold' : [1, 22],
-  'italic' : [3, 23],
-  'underline' : [4, 24],
-  'inverse' : [7, 27],
-  'white' : [37, 39],
-  'grey' : [90, 39],
-  'black' : [30, 39],
-  'blue' : [34, 39],
-  'cyan' : [36, 39],
-  'green' : [32, 39],
-  'magenta' : [35, 39],
-  'red' : [31, 39],
-  'yellow' : [33, 39]
+  'bold': [1, 22],
+  'italic': [3, 23],
+  'underline': [4, 24],
+  'inverse': [7, 27],
+  'white': [37, 39],
+  'grey': [90, 39],
+  'black': [30, 39],
+  'blue': [34, 39],
+  'cyan': [36, 39],
+  'green': [32, 39],
+  'magenta': [35, 39],
+  'red': [31, 39],
+  'yellow': [33, 39]
 };
 
 // Don't use 'blue' not visible on cmd.exe
@@ -129,7 +133,7 @@ function stylizeWithColor(str, styleType) {
 
   if (style) {
     return '\u001b[' + inspect.colors[style][0] + 'm' + str +
-           '\u001b[' + inspect.colors[style][1] + 'm';
+      '\u001b[' + inspect.colors[style][1] + 'm';
   } else {
     return str;
   }
@@ -144,7 +148,7 @@ function stylizeNoColor(str, styleType) {
 function arrayToHash(array) {
   var hash = {};
 
-  array.forEach(function(val, idx) {
+  array.forEach(function (val, idx) {
     hash[val] = true;
   });
 
@@ -156,12 +160,12 @@ function formatValue(ctx, value, recurseTimes) {
   // Provide a hook for user-specified inspect functions.
   // Check that value is an object with an inspect function on it
   if (ctx.customInspect &&
-      value &&
-      isFunction(value.inspect) &&
-      // Filter out the util module, it's inspect function is special
-      value.inspect !== exports.inspect &&
-      // Also filter out any prototype objects using the circular check.
-      !(value.constructor && value.constructor.prototype === value)) {
+    value &&
+    isFunction(value.inspect) &&
+    // Filter out the util module, it's inspect function is special
+    value.inspect !== exports.inspect &&
+    // Also filter out any prototype objects using the circular check.
+    !(value.constructor && value.constructor.prototype === value)) {
     var ret = value.inspect(recurseTimes, ctx);
     if (!isString(ret)) {
       ret = formatValue(ctx, ret, recurseTimes);
@@ -169,7 +173,7 @@ function formatValue(ctx, value, recurseTimes) {
     return ret;
   }
 
-  // Primitive types cannot have properties
+  // Primitive triggers cannot have properties
   var primitive = formatPrimitive(ctx, value);
   if (primitive) {
     return primitive;
@@ -200,7 +204,7 @@ function formatValue(ctx, value, recurseTimes) {
   if (isString(raw)) {
     // for boxed Strings, we have to remove the 0-n indexed entries,
     // since they just noisey up the output and are redundant
-    keys = keys.filter(function(key) {
+    keys = keys.filter(function (key) {
       return !(key >= 0 && key < raw.length);
     });
   }
@@ -300,7 +304,7 @@ function formatValue(ctx, value, recurseTimes) {
   if (array) {
     output = formatArray(ctx, value, recurseTimes, visibleKeys, keys);
   } else {
-    output = keys.map(function(key) {
+    output = keys.map(function (key) {
       return formatProperty(ctx, value, recurseTimes, visibleKeys, key, array);
     });
   }
@@ -316,8 +320,8 @@ function formatPrimitive(ctx, value) {
     return ctx.stylize('undefined', 'undefined');
   if (isString(value)) {
     var simple = '\'' + JSON.stringify(value).replace(/^"|"$/g, '')
-                                             .replace(/'/g, "\\'")
-                                             .replace(/\\"/g, '"') + '\'';
+      .replace(/'/g, "\\'")
+      .replace(/\\"/g, '"') + '\'';
     return ctx.stylize(simple, 'string');
   }
   if (isNumber(value)) {
@@ -357,15 +361,15 @@ function formatArray(ctx, value, recurseTimes, visibleKeys, keys) {
   for (var i = 0, l = value.length; i < l; ++i) {
     if (hasOwnProperty(value, String(i))) {
       output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
-          String(i), true));
+        String(i), true));
     } else {
       output.push('');
     }
   }
-  keys.forEach(function(key) {
+  keys.forEach(function (key) {
     if (!key.match(/^\d+$/)) {
       output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
-          key, true));
+        key, true));
     }
   });
   return output;
@@ -374,7 +378,7 @@ function formatArray(ctx, value, recurseTimes, visibleKeys, keys) {
 
 function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
   var name, str, desc;
-  desc = Object.getOwnPropertyDescriptor(value, key) || { value: value[key] };
+  desc = Object.getOwnPropertyDescriptor(value, key) || {value: value[key]};
   if (desc.get) {
     if (desc.set) {
       str = ctx.stylize('[Getter/Setter]', 'special');
@@ -398,11 +402,11 @@ function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
       }
       if (str.indexOf('\n') > -1) {
         if (array) {
-          str = str.split('\n').map(function(line) {
+          str = str.split('\n').map(function (line) {
             return '  ' + line;
           }).join('\n').substr(2);
         } else {
-          str = '\n' + str.split('\n').map(function(line) {
+          str = '\n' + str.split('\n').map(function (line) {
             return '   ' + line;
           }).join('\n');
         }
@@ -421,9 +425,9 @@ function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
       name = ctx.stylize(name, 'name');
     } else {
       name = name.replace(/'/g, "\\'")
-                 .replace(/\\"/g, '"')
-                 .replace(/(^"|"$)/g, "'")
-                 .replace(/\\\\/g, '\\');
+        .replace(/\\"/g, '"')
+        .replace(/(^"|"$)/g, "'")
+        .replace(/\\\\/g, '\\');
       name = ctx.stylize(name, 'string');
     }
   }
@@ -433,17 +437,17 @@ function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
 
 
 function reduceToSingleString(output, base, braces) {
-  var length = output.reduce(function(prev, cur) {
+  var length = output.reduce(function (prev, cur) {
     return prev + cur.replace(/\u001b\[\d\d?m/g, '').length + 1;
   }, 0);
 
   if (length > 60) {
     return braces[0] +
-           (base === '' ? '' : base + '\n ') +
-           ' ' +
-           output.join(',\n  ') +
-           ' ' +
-           braces[1];
+      (base === '' ? '' : base + '\n ') +
+      ' ' +
+      output.join(',\n  ') +
+      ' ' +
+      braces[1];
   }
 
   return braces[0] + base + ' ' + output.join(', ') + ' ' + braces[1];
@@ -457,77 +461,91 @@ var isArray = exports.isArray = Array.isArray;
 function isBoolean(arg) {
   return typeof arg === 'boolean';
 }
+
 exports.isBoolean = isBoolean;
 
 function isNull(arg) {
   return arg === null;
 }
+
 exports.isNull = isNull;
 
 function isNullOrUndefined(arg) {
   return arg == null;
 }
+
 exports.isNullOrUndefined = isNullOrUndefined;
 
 function isNumber(arg) {
   return typeof arg === 'number';
 }
+
 exports.isNumber = isNumber;
 
 function isString(arg) {
   return typeof arg === 'string';
 }
+
 exports.isString = isString;
 
 function isSymbol(arg) {
   return typeof arg === 'symbol';
 }
+
 exports.isSymbol = isSymbol;
 
 function isUndefined(arg) {
   return arg === void 0;
 }
+
 exports.isUndefined = isUndefined;
 
 function isRegExp(re) {
   return isObject(re) && objectToString(re) === '[object RegExp]';
 }
+
 exports.isRegExp = isRegExp;
 
 function isObject(arg) {
   return typeof arg === 'object' && arg !== null;
 }
+
 exports.isObject = isObject;
 
 function isDate(d) {
   return isObject(d) && objectToString(d) === '[object Date]';
 }
+
 exports.isDate = isDate;
 
 function isError(e) {
   return isObject(e) &&
-      (objectToString(e) === '[object Error]' || e instanceof Error);
+    (objectToString(e) === '[object Error]' || e instanceof Error);
 }
+
 exports.isError = isError;
 
 function isFunction(arg) {
   return typeof arg === 'function';
 }
+
 exports.isFunction = isFunction;
 
 function isPrimitive(arg) {
   return arg === null ||
-         typeof arg === 'boolean' ||
-         typeof arg === 'number' ||
-         typeof arg === 'string' ||
-         typeof arg === 'symbol' ||  // ES6 symbol
-         typeof arg === 'undefined';
+    typeof arg === 'boolean' ||
+    typeof arg === 'number' ||
+    typeof arg === 'string' ||
+    typeof arg === 'symbol' ||  // ES6 symbol
+    typeof arg === 'undefined';
 }
+
 exports.isPrimitive = isPrimitive;
 
 function isBuffer(arg) {
   return arg instanceof Buffer;
 }
+
 exports.isBuffer = isBuffer;
 
 function objectToString(o) {
@@ -541,20 +559,20 @@ function pad(n) {
 
 
 months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep',
-              'Oct', 'Nov', 'Dec'];
+  'Oct', 'Nov', 'Dec'];
 
 // 26 Feb 16:19:34
 function timestamp() {
   var d = new Date();
   var time = [pad(d.getHours()),
-              pad(d.getMinutes()),
-              pad(d.getSeconds())].join(':');
+    pad(d.getMinutes()),
+    pad(d.getSeconds())].join(':');
   return [d.getDate(), months[d.getMonth()], time].join(' ');
 }
 
 
 // log is just a thin wrapper to console.log that prepends a timestamp
-exports.log = function() {
+exports.log = function () {
   console.log('%s - %s', timestamp(), exports.format.apply(exports, arguments));
 };
 
@@ -571,7 +589,7 @@ exports.log = function() {
  *     prototype.
  * @param {function} superCtor Constructor function to inherit prototype from.
  */
-exports.inherits = function(ctor, superCtor) {
+exports.inherits = function (ctor, superCtor) {
   ctor.super_ = superCtor;
   ctor.prototype = Object.create(superCtor.prototype, {
     constructor: {
@@ -583,7 +601,7 @@ exports.inherits = function(ctor, superCtor) {
   });
 };
 
-exports._extend = function(origin, add) {
+exports._extend = function (origin, add) {
   // Don't do anything if add isn't an object
   if (!add || !isObject(add)) return origin;
 

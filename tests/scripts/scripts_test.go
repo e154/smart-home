@@ -21,15 +21,16 @@ package scripts
 import (
 	"encoding/hex"
 	"fmt"
-	"github.com/e154/smart-home/system/logging"
 	"os"
 	"path/filepath"
 	"testing"
 	"time"
 
+	"github.com/e154/smart-home/internal/system/logging"
+	"github.com/e154/smart-home/pkg/common/encryptor"
+
 	"go.uber.org/dig"
 
-	"github.com/e154/smart-home/common/encryptor"
 	. "github.com/e154/smart-home/tests/scripts/container"
 )
 

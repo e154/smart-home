@@ -21,14 +21,14 @@ package models
 import (
 	"context"
 
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
-	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/pkg/adaptors"
+	"github.com/e154/smart-home/pkg/common"
+	"github.com/e154/smart-home/pkg/models"
 )
 
 // NetAttr ...
-func NetAttr() m.Attributes {
-	return m.Attributes{
+func NetAttr() models.Attributes {
+	return models.Attributes{
 		"s": {
 			Name: "s",
 			Type: common.AttributeString,
@@ -56,7 +56,7 @@ func NetAttr() m.Attributes {
 		"m": {
 			Name: "m",
 			Type: common.AttributeMap,
-			Value: m.Attributes{
+			Value: models.Attributes{
 				"s2": {
 					Name: "s2",
 					Type: common.AttributeString,
@@ -76,7 +76,7 @@ func NetAttr() m.Attributes {
 				"m2": {
 					Name: "m2",
 					Type: common.AttributeMap,
-					Value: m.Attributes{
+					Value: models.Attributes{
 						"s3": {
 							Name: "s3",
 							Type: common.AttributeString,
@@ -101,8 +101,8 @@ func NetAttr() m.Attributes {
 
 }
 
-func NetSettings() m.Attributes {
-	return m.Attributes{
+func NetSettings() models.Attributes {
+	return models.Attributes{
 		"s": {
 			Name:  "s",
 			Type:  common.AttributeString,
@@ -113,8 +113,8 @@ func NetSettings() m.Attributes {
 }
 
 // AddPlugin ...
-func AddPlugin(adaptors *adaptors.Adaptors, name string, opts ...m.AttributeValue) (err error) {
-	plugin := &m.Plugin{
+func AddPlugin(adaptors *adaptors.Adaptors, name string, opts ...models.AttributeValue) (err error) {
+	plugin := &models.Plugin{
 		Name:    name,
 		Version: "0.0.1",
 		Enabled: true,

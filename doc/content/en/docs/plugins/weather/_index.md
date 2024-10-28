@@ -1,4 +1,3 @@
-
 ---
 title: "Weather"
 linkTitle: "weather"
@@ -13,9 +12,12 @@ description: >
 
 &nbsp;
 
-In the **Smart Home** system, there is a basic "weather" plugin that provides the foundation for implementing weather plugins. This plugin enables access to weather information and allows the creation and integration of specific weather plugins for different data sources.
+In the **Smart Home** system, there is a basic "weather" plugin that provides the foundation for implementing weather
+plugins. This plugin enables access to weather information and allows the creation and integration of specific weather
+plugins for different data sources.
 
-The "weather" plugin includes a list of weather conditions that can be used to display current weather conditions. Here is the list of weather conditions supported by the "weather" plugin:
+The "weather" plugin includes a list of weather conditions that can be used to display current weather conditions. Here
+is the list of weather conditions supported by the "weather" plugin:
 
 1. `clearSky`: Clear sky.
 2. `fair`: Fair weather.
@@ -49,12 +51,17 @@ The "weather" plugin includes a list of weather conditions that can be used to d
 30. `sleet`: Sleet.
 31. `heavySleet`: Heavy sleet.
 
-The "weather" plugin has basic settings that allow you to configure its behavior and the display of weather information. Here is a description of the basic settings of the "weather" plugin:
+The "weather" plugin has basic settings that allow you to configure its behavior and the display of weather information.
+Here is a description of the basic settings of the "weather" plugin:
 
-1. `lat`: Latitude - a numerical value indicating the geographic latitude of the location for retrieving weather data. Providing the correct latitude allows obtaining up-to-date weather for the specified region.
-2. `lon`: Longitude - a numerical value indicating the geographic longitude of the location for retrieving weather data. Providing the correct longitude helps obtain up-to-date weather for the specified region.
-3. `theme`: Theme - a parameter that determines the appearance and style of displaying weather data. Possible values may vary depending on the implementation of the plugin and user settings.
-4. `winter`: Winter - a boolean value indicating which type of weather to display for the winter season. This setting allows adapting the display of weather depending on the time of year.
+1. `lat`: Latitude - a numerical value indicating the geographic latitude of the location for retrieving weather data.
+   Providing the correct latitude allows obtaining up-to-date weather for the specified region.
+2. `lon`: Longitude - a numerical value indicating the geographic longitude of the location for retrieving weather data.
+   Providing the correct longitude helps obtain up-to-date weather for the specified region.
+3. `theme`: Theme - a parameter that determines the appearance and style of displaying weather data. Possible values may
+   vary depending on the implementation of the plugin and user settings.
+4. `winter`: Winter - a boolean value indicating which type of weather to display for the winter season. This setting
+   allows adapting the display of weather depending on the time of year.
 
 Please note that specific settings and their values may vary depending on the implementation of the "weather" plugin.
 
@@ -71,7 +78,9 @@ The "weather" plugin implements the following basic properties for displaying we
 
 . `wind_speed`: Wind speed.
 
-For each of the five days of weather forecast (day1, day2, day3, day4, day5), similar properties are available, with the corresponding day prefix. For example, for the first day of the forecast, properties like `day1_main`, `day1_datetime`, `day1_humidity`, etc., are accessible.
+For each of the five days of weather forecast (day1, day2, day3, day4, day5), similar properties are available, with the
+corresponding day prefix. For example, for the first day of the forecast, properties
+like `day1_main`, `day1_datetime`, `day1_humidity`, etc., are accessible.
 
 Example usage of the "weather" plugin's basic properties:
 
@@ -101,4 +110,5 @@ console.log(day1Weather.day1_wind_bearing);
 console.log(day1Weather.day1_wind_speed);
 ```
 
-Please note that specific properties and their values may vary depending on the implementation of the "weather" plugin and the weather data source.
+Please note that specific properties and their values may vary depending on the implementation of the "weather" plugin
+and the weather data source.

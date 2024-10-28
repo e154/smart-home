@@ -24,14 +24,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/pkg/adaptors"
+	commonPkg "github.com/e154/smart-home/pkg/common"
+	"github.com/e154/smart-home/pkg/events"
+	"github.com/e154/smart-home/pkg/models"
+	"github.com/e154/smart-home/pkg/plugins"
+	"github.com/e154/smart-home/pkg/scripts"
 
 	"github.com/e154/bus"
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/e154/smart-home/tests/plugins"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -62,7 +62,7 @@ entityAction = (entityId, actionName)->
 	Convey("sensor", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			scriptService scripts.ScriptService,
-			supervisor supervisor.Supervisor,
+			supervisor plugins.Supervisor,
 			eventBus bus.Bus) {
 
 			// register plugins
@@ -92,14 +92,14 @@ entityAction = (entityId, actionName)->
 			// ------------------------------------------------
 
 			sensorEnt := GetNewSensor("device1")
-			sensorEnt.Actions = []*m.EntityAction{
+			sensorEnt.Actions = []*models.EntityAction{
 				{
 					Name:        "CHECK",
 					Description: "condition check",
 					Script:      plugScript,
 				},
 			}
-			sensorEnt.States = []*m.EntityState{
+			sensorEnt.States = []*models.EntityState{
 				{
 					Name:        "ENABLED",
 					Description: "enabled state",
@@ -113,15 +113,15 @@ entityAction = (entityId, actionName)->
 					Description: "error state",
 				},
 			}
-			sensorEnt.Attributes = m.Attributes{
+			sensorEnt.Attributes = models.Attributes{
 				"paid_rewards": {
 					Name: "paid_rewards",
-					Type: common.AttributeFloat,
+					Type: commonPkg.AttributeFloat,
 				},
 			}
 			err = adaptors.Entity.Add(context.Background(), sensorEnt)
 			ctx.So(err, ShouldBeNil)
-			_, err = adaptors.EntityStorage.Add(context.Background(), &m.EntityStorage{
+			_, err = adaptors.EntityStorage.Add(context.Background(), &models.EntityStorage{
 				EntityId:   sensorEnt.Id,
 				Attributes: sensorEnt.Attributes.Serialize(),
 			})

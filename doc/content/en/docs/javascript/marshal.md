@@ -6,7 +6,8 @@ description: >
 
 ---
 
-In the JavaScript environment, there is a function called `marshal` that converts an object into its JSON representation using the `JSON.stringify` function.
+In the JavaScript environment, there is a function called `marshal` that converts an object into its JSON representation
+using the `JSON.stringify` function.
 
 Here's an implementation example of the `marshal` function:
 
@@ -24,4 +25,6 @@ var jsonStr = marshal(obj);
 console.log(jsonStr); // {"name":"John","age":30,"city":"New York"}
 ```
 
-In this example, the `marshal` function takes an object `obj` and uses the `JSON.stringify` function to convert the object into its JSON representation. The result of the function will be a JSON string containing the serialized data of the object.
+In this example, the `marshal` function takes an object `obj` and uses the `JSON.stringify` function to convert the
+object into its JSON representation. The result of the function will be a JSON string containing the serialized data of
+the object.

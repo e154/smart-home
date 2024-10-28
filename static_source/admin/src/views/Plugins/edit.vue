@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ElButton, ElCol, ElEmpty, ElRow, ElTabPane, ElTabs} from 'element-plus'
+import {ElButton, ElCol, ElEmpty, ElRow, ElTabPane, ElTabs, ElPopconfirm} from 'element-plus'
 import api from "@/api/api";
 import {useRoute, useRouter} from "vue-router";
 import {computed, ref, unref} from "vue";
@@ -93,6 +93,7 @@ const fetch = async () => {
       enabled: plugin.enabled,
       system: plugin.system,
       actor: plugin.actor,
+      external: plugin.external,
       triggers: plugin.options?.triggers,
       actors: plugin.options?.actors,
       actorCustomAttrs: plugin.options?.actorCustomAttrs,
@@ -132,8 +133,21 @@ const save = async () => {
   }
 }
 
+const remove = async () => {
+  loading.value = true
+  const res = await api.v1.pluginServiceRemovePlugin(currentPlugin.value.name)
+    .catch(() => {
+    })
+    .finally(() => {
+      loading.value = false
+    })
+  if (res) {
+    cancel()
+  }
+}
+
 const cancel = () => {
-  push('/etc/plugins')
+  push('/etc/settings/plugins')
 }
 
 const showActorTabIf = (): boolean => {
@@ -205,6 +219,27 @@ fetch()
           <ElButton type="primary" @click="save()">
             {{ t('main.save') }}
           </ElButton>
+
+          <ElButton type="default" @click="cancel()">
+            {{ t('main.return') }}
+          </ElButton>
+
+          <ElPopconfirm
+            v-if="currentPlugin?.external"
+            :confirm-button-text="$t('main.ok')"
+            :cancel-button-text="$t('main.no')"
+            width="250"
+            style="margin-left: 10px;"
+            :title="$t('main.are_you_sure_to_do_want_this?')"
+            @confirm="remove"
+          >
+            <template #reference>
+              <ElButton class="mr-10px" type="danger" plain>
+                <Icon icon="ep:delete" class="mr-5px"/>
+                {{ t('main.remove') }}
+              </ElButton>
+            </template>
+          </ElPopconfirm>
         </div>
       </el-tab-pane>
       <!--  /Main  -->

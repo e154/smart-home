@@ -23,16 +23,17 @@ import (
 	"testing"
 	"time"
 
-	"github.com/e154/smart-home/common/events"
+	"github.com/e154/smart-home/internal/system/automation"
+	"github.com/e154/smart-home/pkg/adaptors"
+	"github.com/e154/smart-home/pkg/events"
+	m "github.com/e154/smart-home/pkg/models"
+	"github.com/e154/smart-home/pkg/plugins"
+	"github.com/e154/smart-home/pkg/scripts"
+
 	. "github.com/smartystreets/goconvey/convey"
 	"go.uber.org/atomic"
 
 	"github.com/e154/bus"
-	"github.com/e154/smart-home/adaptors"
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/automation"
-	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/e154/smart-home/tests/plugins"
 )
 
@@ -49,7 +50,7 @@ sceneEvent = (args)->
 	Convey("scene", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			scriptService scripts.ScriptService,
-			supervisor supervisor.Supervisor,
+			supervisor plugins.Supervisor,
 			automation automation.Automation,
 			eventBus bus.Bus) {
 

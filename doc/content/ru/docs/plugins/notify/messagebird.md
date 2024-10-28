@@ -1,4 +1,3 @@
-
 ---
 title: "Messagebird"
 linkTitle: "messagebird"
@@ -7,14 +6,16 @@ description: >
 
 ---
 
-Отправка sms уведомлений через провайдера услуг оповещения [messagebird](https://messagebird.com). Для возможности 
+Отправка sms уведомлений через провайдера услуг оповещения [messagebird](https://messagebird.com). Для возможности
 отправки сообщений потребуется регистрация в [messagebird](https://messagebird.com), и положительный баланс.
 
 ### Настройка
+
 * Access Key
 * Name
 
 ### Атрибуты
+
 * Payment
 * Type
 * Amount
@@ -36,10 +37,11 @@ msg.attributes = {
 };
 
 ```
-|  значение  | описание  |
-|-------------|---------|
-| newMessage() |    метод   |
-| msg |   type: Object (Message)  |
+
+| значение     | описание               |
+|--------------|------------------------|
+| newMessage() | метод                  |
+| msg          | type: Object (Message) |
 
 ----------------
 
@@ -49,7 +51,7 @@ msg.attributes = {
 # messagebird
 # ##################################
 
-sendMsg =(body)->
+sendMsg = (body)->
   msg = notifr.newMessage();
   msg.entity_id = 'messagebird.name';
   msg.attributes = {

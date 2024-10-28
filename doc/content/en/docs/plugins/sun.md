@@ -1,4 +1,3 @@
-
 ---
 title: "Sun"
 linkTitle: "sun"
@@ -13,7 +12,10 @@ description: >
 
 &nbsp;
 
-The "sun" plugin allows you to retrieve information about the current position and time of the sun based on the specified coordinates (latitude and longitude). It provides various parameters related to the position of the sun throughout the day, as well as sunrise, sunset, twilight, and other moments. The plugin's state can indicate whether the sun is above or below the horizon.
+The "sun" plugin allows you to retrieve information about the current position and time of the sun based on the
+specified coordinates (latitude and longitude). It provides various parameters related to the position of the sun
+throughout the day, as well as sunrise, sunset, twilight, and other moments. The plugin's state can indicate whether the
+sun is above or below the horizon.
 
 Parameters:
 
@@ -37,9 +39,11 @@ Parameters:
 18. `nadir`: Nadir (minimum sun elevation above the horizon)
 
 Settings:
+
 1. `lat`: Latitude (geographic latitude)
 2. `lon`: Longitude (geographic longitude)
 
 States:
+
 1. `aboveHorizon`: The sun is above the horizon
 2. `belowHorizon`: The sun is below the horizon

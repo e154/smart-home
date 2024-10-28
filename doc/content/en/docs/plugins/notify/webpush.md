@@ -1,4 +1,3 @@
-
 ---
 title: "Push уведомления"
 linkTitle: "webpush"
@@ -7,13 +6,16 @@ description: >
 
 ---
 
-Web push notifications are short messages that Smart Home sends to the browser to convey important information. They are displayed even to users who have left the website and do not require email or phone number input.
+Web push notifications are short messages that Smart Home sends to the browser to convey important information. They are
+displayed even to users who have left the website and do not require email or phone number input.
 
 ### Configuration:
+
 * Public Key
 * Private Key
 
 ### Attributes:
+
 * userIDS
 * title
 * body
@@ -36,10 +38,11 @@ msg.attributes = {
 };
 
 ```
-| Value | Description |
-|-------|-------------|
-| newMessage() | Method |
-| msg | Type: Object (Message) |
+
+| Value        | Description            |
+|--------------|------------------------|
+| newMessage() | Method                 |
+| msg          | Type: Object (Message) |
 
 ----------------
 
@@ -48,7 +51,7 @@ msg.attributes = {
 ```coffeescript
 # webpush
 # ##################################
-sendMsg =()->
+sendMsg = ()->
   msg = notifr.newMessage();
   msg.type = 'webpush';
   msg.attributes = {

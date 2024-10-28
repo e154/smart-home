@@ -1,7 +1,7 @@
 -- +migrate Up
 -- SQL in section 'Up' is executed when this migration is applied
 ALTER TABLE actions
-    ADD COLUMN entity_id text DEFAULT NULL,
+    ADD COLUMN entity_id          text DEFAULT NULL,
     ADD COLUMN entity_action_name text DEFAULT NULL;
 ALTER TABLE actions
     ADD CONSTRAINT actions_2_entities

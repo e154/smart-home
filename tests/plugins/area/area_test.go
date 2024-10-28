@@ -22,8 +22,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/e154/smart-home/adaptors"
-	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/pkg/adaptors"
+	"github.com/e154/smart-home/pkg/models"
+
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -32,18 +33,18 @@ func TestArea(t *testing.T) {
 	Convey("area", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors) {
 
-			area := &m.Area{
+			area := &models.Area{
 				Id:          0,
 				Name:        "zone 51",
 				Description: "zone 51",
-				Polygon: []m.Point{
+				Polygon: []models.Point{
 					{75.1, 29.2},
 					{77.2, 29.3},
 					{77.3, 29.4},
 					{75.4, 29.5},
 				},
 				Zoom: 6,
-				Center: m.Point{
+				Center: models.Point{
 					Lon: 76,
 					Lat: 30,
 				},
