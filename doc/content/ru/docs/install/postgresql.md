@@ -9,7 +9,8 @@ description: >
 
 ## Введение
 
-В этой статье мы рассмотрим, как установить PostgreSQL 15 с расширениями TimescaleDB и pgcrypto на операционной системе Linux Debian.
+В этой статье мы рассмотрим, как установить PostgreSQL 15 с расширениями TimescaleDB и pgcrypto на операционной системе
+Linux Debian.
 
 ## Шаг 1: Обновление пакетов
 
@@ -52,13 +53,15 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 ## Шаг 5: Настройка и использование
 
-Теперь PostgreSQL 15 с TimescaleDB и pgcrypto установлены и готовы к использованию. Вы можете настроить базу данных и начать работу с вашим проектом Smart Home.
+Теперь PostgreSQL 15 с TimescaleDB и pgcrypto установлены и готовы к использованию. Вы можете настроить базу данных и
+начать работу с вашим проектом Smart Home.
 
 # Установка PostgreSQL 15 с TimescaleDB и pgcrypto в Docker контейнере
 
 ## Введение
 
-В этой статье мы рассмотрим, как создать Docker контейнер с PostgreSQL 15, TimescaleDB и pgcrypto для вашего проекта Smart Home.
+В этой статье мы рассмотрим, как создать Docker контейнер с PostgreSQL 15, TimescaleDB и pgcrypto для вашего проекта
+Smart Home.
 
 ## Шаг 1: Установка Docker
 
@@ -95,6 +98,8 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 ## Шаг 4: Настройка и использование
 
-Теперь у вас есть Docker контейнер с PostgreSQL 15, TimescaleDB и pgcrypto для вашего проекта Smart Home. Вы можете настроить контейнер и начать использовать его в своем приложении.
+Теперь у вас есть Docker контейнер с PostgreSQL 15, TimescaleDB и pgcrypto для вашего проекта Smart Home. Вы можете
+настроить контейнер и начать использовать его в своем приложении.
 
-Обе эти статьи помогут вам установить и настроить PostgreSQL 15 с TimescaleDB и pgcrypto в Linux Debian и в Docker контейнере для вашего проекта Smart Home. Удачи!
+Обе эти статьи помогут вам установить и настроить PostgreSQL 15 с TimescaleDB и pgcrypto в Linux Debian и в Docker
+контейнере для вашего проекта Smart Home. Удачи!

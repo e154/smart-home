@@ -20,7 +20,7 @@ BUILD_NUMBER_VALUE=$(shell echo ${TRAVIS_BUILD_NUMBER})
 
 IMAGE=smart-home-${EXEC}
 DOCKER_ACCOUNT=e154
-RELEASE_VERSION ?= test
+RELEASE_VERSION ?= v0.0.0
 DOCKER_IMAGE_VER=${DOCKER_ACCOUNT}/${IMAGE}:${RELEASE_VERSION}
 DOCKER_IMAGE_LATEST=${DOCKER_ACCOUNT}/${IMAGE}:latest
 
@@ -32,9 +32,9 @@ DEVELOPERS_VAR=${PROJECT}/version.DevelopersString
 BUILD_NUMBER_VAR=${PROJECT}/version.BuildNumString
 DOCKER_IMAGE_VAR=${PROJECT}/version.DockerImageString
 
-GO_BUILD_LDFLAGS= -s -w -linkmode external -X ${VERSION_VAR}=${RELEASE_VERSION} -X ${REV_VAR}=${REV_VALUE} -X ${REV_URL_VAR}=${REV_URL_VALUE} -X ${GENERATED_VAR}=${GENERATED_VALUE} -X ${DEVELOPERS_VAR}=${DEVELOPERS_VALUE} -X ${BUILD_NUMBER_VAR}=${BUILD_NUMBER_VALUE} -X ${DOCKER_IMAGE_VAR}=${DOCKER_IMAGE_VER}
-GO_BUILD_FLAGS= -a -installsuffix cgo -v --ldflags '${GO_BUILD_LDFLAGS}'
-GO_BUILD_ENV=CGO_ENABLED=1
+GO_BUILD_LDFLAGS= -s -w -X ${VERSION_VAR}=${RELEASE_VERSION} -X ${REV_VAR}=${REV_VALUE} -X ${REV_URL_VAR}=${REV_URL_VALUE} -X ${GENERATED_VAR}=${GENERATED_VALUE} -X ${DEVELOPERS_VAR}=${DEVELOPERS_VALUE} -X ${BUILD_NUMBER_VAR}=${BUILD_NUMBER_VALUE} -X ${DOCKER_IMAGE_VAR}=${DOCKER_IMAGE_VER}
+GO_BUILD_FLAGS= -a -installsuffix -trimpath -v --ldflags '${GO_BUILD_LDFLAGS}'
+GO_BUILD_ENV=CGO_ENABLED=0
 GO_BUILD_TAGS= -tags 'production'
 GO_TEST=test -tags test -v
 
@@ -108,65 +108,42 @@ build_linux_x86:
 	@echo MARK: build linux x86
 	rm -rf ${ROOT}/${EXEC}-linux-x86
 	mkdir -p ${ROOT}/${EXEC}-linux-x86
-	./bin/install_vosk.sh linux x86 ${ROOT}/${EXEC}-linux-x86
-	export CGO_LDFLAGS_ALLOW="-Wl,-rpath.*" && \
-	export CGO_CFLAGS="-I${ROOT}/${EXEC}-linux-x86" && \
-	export CGO_LDFLAGS="-L${ROOT}/${EXEC}-linux-x86" && \
-	export LD_LIBRARY_PATH="${ROOT}/${EXEC}-linux-x86:$LD_LIBRARY_PATH" && \
-	export DYLD_LIBRARY_PATH="${ROOT}/${EXEC}-linux-x86" && \
-	${GO_BUILD_ENV} CXX='g++ -m32' CC='gcc -m32' GOOS=linux GOARCH=386 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-x86/server
+	${GO_BUILD_ENV} GOOS=linux GOARCH=386 go build -ldflags="${GO_BUILD_LDFLAGS}" ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-x86/server
 	cd ${ROOT}/${EXEC}-linux-x86 && ls -l && tar -zcf ${ROOT}/${EXEC}-linux-x86.tar.gz .
 
 build_linux_amd64:
 	@echo MARK: build linux amd64
 	rm -rf ${ROOT}/${EXEC}-linux-amd64
 	mkdir -p ${ROOT}/${EXEC}-linux-amd64
-	./bin/install_vosk.sh linux x86_64 ${ROOT}/${EXEC}-linux-amd64
-	export CGO_LDFLAGS_ALLOW="-Wl,-rpath.*" && \
-	export CGO_CFLAGS="-I${ROOT}/${EXEC}-linux-amd64" && \
-	export CGO_LDFLAGS="-L${ROOT}/${EXEC}-linux-amd64" && \
-	export LD_LIBRARY_PATH="${ROOT}/${EXEC}-linux-amd64:$LD_LIBRARY_PATH" && \
-	export DYLD_LIBRARY_PATH="${ROOT}/${EXEC}-linux-amd64" && \
-	${GO_BUILD_ENV} GOOS=linux GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-amd64/server
+	${GO_BUILD_ENV} GOOS=linux GOARCH=amd64 go build -ldflags="${GO_BUILD_LDFLAGS}" ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-amd64/server
 	cd ${ROOT}/${EXEC}-linux-amd64 && ls -l && tar -zcf ${ROOT}/${EXEC}-linux-amd64.tar.gz .
+
+build_linux_armv5:
+	@echo MARK: build linux armv5
+	rm -rf ${ROOT}/${EXEC}-linux-arm-5
+	mkdir -p ${ROOT}/${EXEC}-linux-arm-5
+	${GO_BUILD_ENV} CC=arm-linux-gnueabihf-gcc GOOS=linux GOARCH=arm GOARM=5 go build -ldflags="${GO_BUILD_LDFLAGS}" ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-6/server
+	cd ${ROOT}/${EXEC}-linux-arm-6 && ls -l && tar -zcf ${ROOT}/${EXEC}-linux-arm-6.tar.gz .
 
 build_linux_armv6:
 	@echo MARK: build linux armv6
 	rm -rf ${ROOT}/${EXEC}-linux-arm-6
 	mkdir -p ${ROOT}/${EXEC}-linux-arm-6
-	./bin/install_vosk.sh linux armv7l ${ROOT}/${EXEC}-linux-arm-6
-	export CGO_LDFLAGS_ALLOW="-Wl,-rpath.*" && \
-	export CGO_CFLAGS="-I${ROOT}/${EXEC}-linux-arm-6" && \
-	export CGO_LDFLAGS="-L${ROOT}/${EXEC}-linux-arm-6" && \
-	export LD_LIBRARY_PATH="${ROOT}/${EXEC}-linux-arm-6:$LD_LIBRARY_PATH" && \
-	export DYLD_LIBRARY_PATH="${ROOT}/${EXEC}-linux-arm-6" && \
-	${GO_BUILD_ENV} CC=arm-linux-gnueabihf-gcc GOOS=linux GOARCH=arm GOARM=6 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-6/server
+	${GO_BUILD_ENV} GOARCH=arm GOARM=6 go build -ldflags="${GO_BUILD_LDFLAGS}" ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-6/server
 	cd ${ROOT}/${EXEC}-linux-arm-6 && ls -l && tar -zcf ${ROOT}/${EXEC}-linux-arm-6.tar.gz .
 
 build_linux_armv7l:
 	@echo MARK: build linux armv7l
 	rm -rf ${ROOT}/${EXEC}-linux-arm-7
 	mkdir -p ${ROOT}/${EXEC}-linux-arm-7
-	./bin/install_vosk.sh linux armv7l ${ROOT}/${EXEC}-linux-arm-7
-	export CGO_LDFLAGS_ALLOW="-Wl,-rpath.*" && \
-	export CGO_CFLAGS="-I${ROOT}/${EXEC}-linux-arm-7" && \
-	export CGO_LDFLAGS="-L${ROOT}/${EXEC}-linux-arm-7" && \
-	export LD_LIBRARY_PATH="${ROOT}/${EXEC}-linux-arm-7:$LD_LIBRARY_PATH" && \
-	export DYLD_LIBRARY_PATH="${ROOT}/${EXEC}-linux-arm-7" && \
-	${GO_BUILD_ENV} CC=arm-linux-gnueabihf-gcc GOOS=linux GOARCH=arm GOARM=7 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-7/server
+	${GO_BUILD_ENV} GOOS=linux GOARCH=arm GOARM=7 go build -ldflags="${GO_BUILD_LDFLAGS}" ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-7/server
 	cd ${ROOT}/${EXEC}-linux-arm-7 && ls -l && tar -zcf ${ROOT}/${EXEC}-linux-arm-7.tar.gz .
 
 build_linux_arm64:
 	@echo MARK: build linux arm64
 	rm -rf ${ROOT}/${EXEC}-linux-arm64
 	mkdir -p ${ROOT}/${EXEC}-linux-arm64
-	./bin/install_vosk.sh linux aarch64 ${ROOT}/${EXEC}-linux-arm64
-	export CGO_LDFLAGS_ALLOW="-Wl,-rpath.*" && \
-	export CGO_CFLAGS="-I${ROOT}/${EXEC}-linux-arm64" && \
-	export CGO_LDFLAGS="-L${ROOT}/${EXEC}-linux-arm64" && \
-	export LD_LIBRARY_PATH="${ROOT}/${EXEC}-linux-arm64:$LD_LIBRARY_PATH" && \
-	export DYLD_LIBRARY_PATH="${ROOT}/${EXEC}-linux-arm64" && \
-	${GO_BUILD_ENV} CC=aarch64-linux-gnu-gcc GOOS=linux GOARCH=arm64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm64/server
+	${GO_BUILD_ENV} GOOS=linux GOARCH=arm64 go build -ldflags="${GO_BUILD_LDFLAGS}" ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm64/server
 	cd ${ROOT}/${EXEC}-linux-arm64 && ls -l && tar -zcf ${ROOT}/${EXEC}-linux-arm64.tar.gz .
 
 # windows
@@ -174,26 +151,14 @@ build_windows_amd64:
 	@echo MARK: build windows amd64
 	rm -rf ${ROOT}/${EXEC}-windows-amd64
 	mkdir -p ${ROOT}/${EXEC}-windows-amd64
-	./bin/install_vosk.sh win win64 ${ROOT}/${EXEC}-windows-amd64
-	export CGO_LDFLAGS_ALLOW="-Wl,-rpath.*" && \
-	export CGO_CFLAGS="-I${ROOT}/${EXEC}-windows-amd64" && \
-	export CGO_LDFLAGS="-L${ROOT}/${EXEC}-windows-amd64 -lvosk -L/usr/lib/x86_64-linux-gnu -ldl -lpthread" && \
-	export LD_LIBRARY_PATH="${ROOT}/${EXEC}-windows-amd64:$LD_LIBRARY_PATH" && \
-	export DYLD_LIBRARY_PATH="${ROOT}/${EXEC}-windows-amd64" && \
-	${GO_BUILD_ENV} CXX=x86_64-w64-mingw32-g++ CC=x86_64-w64-mingw32-gcc GOOS=windows GOARCH=amd64 go build -ldflags ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-windows-amd64/server.exe
+	${GO_BUILD_ENV} GOOS=windows GOARCH=amd64 go build -ldflags="${GO_BUILD_LDFLAGS}" ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-windows-amd64/server.exe
 	cd ${ROOT}/${EXEC}-windows-amd64 && ls -l && tar -zcf ${ROOT}/${EXEC}-windows-amd64.tar.gz .
 
 build_windows_x86:
 	@echo MARK: build windows x86
 	rm -rf ${ROOT}/${EXEC}-windows-x86
 	mkdir -p ${ROOT}/${EXEC}-windows-x86
-	./bin/install_vosk.sh win win32 ${ROOT}/${EXEC}-windows-x86
-	export CGO_LDFLAGS_ALLOW="-Wl,-rpath.*" && \
-	export CGO_CFLAGS="-I${ROOT}/${EXEC}-windows-x86" && \
-	export CGO_LDFLAGS="-L/usr/local/lib -L/usr/lib -L${ROOT}/${EXEC}-windows-x86 -lvosk -L/usr/lib/i386-linux-gnu -ldl -lpthread" && \
-	export LD_LIBRARY_PATH="${ROOT}/${EXEC}-windows-x86:$LD_LIBRARY_PATH" && \
-	export DYLD_LIBRARY_PATH="${ROOT}/${EXEC}-windows-x86" && \
-	${GO_BUILD_ENV} CXX=i686-w64-mingw32-g++ CC=i686-w64-mingw32-gcc GOOS=windows GOARCH=386 go build -ldflags ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-windows-x86/server.exe
+	${GO_BUILD_ENV} GOOS=windows GOARCH=386 go build -ldflags="${GO_BUILD_LDFLAGS}" ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-windows-x86/server.exe
 	cd ${ROOT}/${EXEC}-windows-x86 && ls -l && tar -zcf ${ROOT}/${EXEC}-windows-x86.tar.gz .
 
 build_public:
@@ -214,9 +179,9 @@ build_public:
 
 server:
 	@echo "Building http server"
-	mkdir -p ${ROOT}/api/stub && \
-	oapi-codegen -generate server -package stub ${ROOT}/api/api.swagger.yaml > ${ROOT}/api/stub/server.go && \
-	oapi-codegen -generate types -package stub ${ROOT}/api/api.swagger.yaml > ${ROOT}/api/stub/types.go
+	mkdir -p ${ROOT}/internal/api/stub && \
+	oapi-codegen -generate server -package stub ${ROOT}/internal/api/api.swagger.yaml > ${ROOT}/internal/api/stub/server.go && \
+	oapi-codegen -generate types -package stub ${ROOT}/internal/api/api.swagger.yaml > ${ROOT}/internal/api/stub/types.go
 
 build_common_structure:
 	@echo MARK: create common structure
@@ -267,35 +232,6 @@ docs_deploy:
 	git push -q upstream HEAD:gh-pages
 	echo -e "Done documentation deploy.\n"
 
-docker_image_linux_x86:
-	echo ${ROOT}/${EXEC}-linux-x86
-	cd ${ROOT}/${EXEC}-linux-x86 && ls -ll && docker build --platform linux/386 -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE}-x86:${RELEASE_VERSION} .
-
-docker_image_linux_amd64:
-	echo ${ROOT}/${EXEC}-linux-amd64
-	cd ${ROOT}/${EXEC}-linux-amd64 && ls -ll && docker build --platform linux/amd64 -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE}-amd64:${RELEASE_VERSION} .
-
-docker_image_linux_armv7l:
-	echo ${ROOT}/${EXEC}-linux-arm-7
-	cd ${ROOT}/${EXEC}-linux-arm-7 && ls -ll && docker build --platform linux/arm/v7 -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE}-arm-7:${RELEASE_VERSION} .
-
-docker_image_linux_arm64:
-	echo ${ROOT}/${EXEC}-linux-arm64
-	cd ${ROOT}/${EXEC}-linux-arm64 && ls -ll && docker build --platform linux/arm64 -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE}-arm64:${RELEASE_VERSION} .
-
-docker_image_upload:
-	echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
-	docker push ${DOCKER_ACCOUNT}/${IMAGE}-x86:${RELEASE_VERSION}
-	docker push ${DOCKER_ACCOUNT}/${IMAGE}-amd64:${RELEASE_VERSION}
-	docker push ${DOCKER_ACCOUNT}/${IMAGE}-arm-7:${RELEASE_VERSION}
-	docker push ${DOCKER_ACCOUNT}/${IMAGE}-arm64:${RELEASE_VERSION}
-	docker manifest create --amend ${DOCKER_ACCOUNT}/${IMAGE}:${RELEASE_VERSION} \
-	${DOCKER_ACCOUNT}/${IMAGE}-x86:${RELEASE_VERSION} \
-	${DOCKER_ACCOUNT}/${IMAGE}-amd64:${RELEASE_VERSION} \
-	${DOCKER_ACCOUNT}/${IMAGE}-arm-7:${RELEASE_VERSION} \
-	${DOCKER_ACCOUNT}/${IMAGE}-arm64:${RELEASE_VERSION}
-	docker manifest push ${DOCKER_ACCOUNT}/${IMAGE}:${RELEASE_VERSION}
-
 clean:
 	@echo MARK: clean
 	rm -rf ${ROOT}/${EXEC}-linux-x86
@@ -310,8 +246,47 @@ clean:
 
 front_client:
 	@echo MARK: generate front client lib
-	npx swagger-typescript-api@12.0.4 --axios -p ./api/api.swagger.yaml -o ./static_source/admin/src/api -n stub_new.ts
+	npx swagger-typescript-api@12.0.4 --axios -p ./internal/api/api.swagger.yaml -o ./static_source/admin/src/api -n stub_new.ts
 
 typedoc:
 	@echo MARK: typedoc
 	npx typedoc --tsconfig ./data/scripts/tsconfig.json --out ./api/typedoc ./data/scripts/global.d.ts
+
+.PHONY: local_build # Build the container image
+local_build:
+	docker --debug buildx build \
+		--build-arg GO_BUILD_LDFLAGS="${GO_BUILD_LDFLAGS}" \
+		--build-arg GO_BUILD_TAGS="${GO_BUILD_TAGS}" \
+		--build-arg RELEASE_VERSION="${RELEASE_VERSION}" \
+		-f ./bin/docker/Dockerfile.server \
+		--output "type=docker,push=false" \
+		--tag $(DOCKER_IMAGE_VER) \
+		.
+
+.PHONY: test_build # Build the container image
+test_build:
+	@docker buildx create --use --name=smart-home --node=smart-home && \
+	echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
+	docker buildx build \
+		--build-arg GO_BUILD_LDFLAGS="${GO_BUILD_LDFLAGS}" \
+		--build-arg GO_BUILD_TAGS="${GO_BUILD_TAGS}" \
+		--build-arg RELEASE_VERSION="${RELEASE_VERSION}" \
+		-f ./bin/docker/Dockerfile.server \
+		--platform linux/386,linux/amd64,linux/arm64,linux/arm/v5,linux/arm/v6,linux/arm/v7,linux/ppc64le,linux/s390x \
+		--output "type=image,push=false" \
+		--tag $(DOCKER_IMAGE_VER) \
+		.
+
+.PHONY: publish # Push the image to the remote registry
+publish:
+	@docker buildx create --use --name=smart-home --node=smart-home && \
+	echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
+	docker buildx build \
+		--build-arg GO_BUILD_LDFLAGS="${GO_BUILD_LDFLAGS}" \
+		--build-arg GO_BUILD_TAGS="${GO_BUILD_TAGS}" \
+		--build-arg RELEASE_VERSION="${RELEASE_VERSION}" \
+		-f ./bin/docker/Dockerfile.server \
+		--platform linux/386,linux/amd64,linux/arm64,linux/arm/v5,linux/arm/v6,linux/arm/v7,linux/ppc64le,linux/s390x \
+		--output "type=image,push=true" \
+		--tag $(DOCKER_IMAGE_VER) \
+		.

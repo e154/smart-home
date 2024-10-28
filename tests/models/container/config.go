@@ -21,8 +21,8 @@ package container
 import (
 	"path"
 
-	"github.com/e154/smart-home/common/config"
-	"github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/internal/common/config"
+	"github.com/e154/smart-home/pkg/models"
 )
 
 func ReadConfig() (conf *models.AppConfig) {

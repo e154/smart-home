@@ -1,1 +1,1 @@
-Alex Filippov <filippov.a@e154.ru>
+Alex Filippov <af@e154.ru>

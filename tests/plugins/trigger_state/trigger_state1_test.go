@@ -24,20 +24,21 @@ import (
 	"testing"
 	"time"
 
+	"github.com/e154/smart-home/internal/system/automation"
+	"github.com/e154/smart-home/internal/system/migrations"
+	"github.com/e154/smart-home/internal/system/zigbee2mqtt"
+	"github.com/e154/smart-home/pkg/adaptors"
+	"github.com/e154/smart-home/pkg/common"
+	"github.com/e154/smart-home/pkg/events"
+	"github.com/e154/smart-home/pkg/models"
+	"github.com/e154/smart-home/pkg/mqtt"
+	"github.com/e154/smart-home/pkg/plugins"
+	"github.com/e154/smart-home/pkg/scripts"
+
 	"github.com/e154/bus"
 	. "github.com/smartystreets/goconvey/convey"
 	"go.uber.org/atomic"
 
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/events"
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/automation"
-	"github.com/e154/smart-home/system/migrations"
-	"github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/supervisor"
-	"github.com/e154/smart-home/system/zigbee2mqtt"
 	. "github.com/e154/smart-home/tests/plugins"
 	. "github.com/e154/smart-home/tests/plugins/container"
 )
@@ -83,7 +84,7 @@ automationTriggerStateChanged = (msg)->
 	Convey("trigger state change", t, func(ctx C) {
 		_ = BuildContainer().Invoke(func(adaptors *adaptors.Adaptors,
 			scriptService scripts.ScriptService,
-			supervisor supervisor.Supervisor,
+			supervisor plugins.Supervisor,
 			zigbee2mqtt zigbee2mqtt.Zigbee2mqtt,
 			mqttServer mqtt.MqttServ,
 			automation automation.Automation,
@@ -98,7 +99,7 @@ automationTriggerStateChanged = (msg)->
 			AddPlugin(adaptors, "state_change")
 
 			// add zigbee2mqtt
-			zigbeeServer := &m.Zigbee2mqtt{
+			zigbeeServer := &models.Zigbee2mqtt{
 				Name:       "main",
 				Devices:    nil,
 				PermitJoin: true,
@@ -109,7 +110,7 @@ automationTriggerStateChanged = (msg)->
 			So(err, ShouldBeNil)
 
 			// add zigbee2mqtt_device
-			buttonDevice := &m.Zigbee2mqttDevice{
+			buttonDevice := &models.Zigbee2mqttDevice{
 				Id:            zigbeeButtonId,
 				Zigbee2mqttId: zigbeeServer.Id,
 				Name:          zigbeeButtonId,
@@ -165,7 +166,7 @@ automationTriggerStateChanged = (msg)->
 
 			// add entity
 			// ------------------------------------------------
-			buttonEnt := GetNewButton(fmt.Sprintf("zigbee2mqtt.%s", zigbeeButtonId), []*m.Script{buttonScript})
+			buttonEnt := GetNewButton(fmt.Sprintf("zigbee2mqtt.%s", zigbeeButtonId), []*models.Script{buttonScript})
 			err = adaptors.Entity.Add(context.Background(), buttonEnt)
 			So(err, ShouldBeNil)
 
@@ -179,7 +180,7 @@ automationTriggerStateChanged = (msg)->
 
 			// automation
 			// ------------------------------------------------
-			trigger := &m.NewTrigger{
+			trigger := &models.NewTrigger{
 				Enabled:    true,
 				Name:       "state_change",
 				EntityIds:  []string{buttonEnt.Id.String()},
@@ -192,7 +193,7 @@ automationTriggerStateChanged = (msg)->
 			time.Sleep(time.Millisecond * 500)
 
 			//TASK1
-			newTask := &m.NewTask{
+			newTask := &models.NewTask{
 				Name:       "Toggle plug ON",
 				Enabled:    true,
 				TriggerIds: []int64{triggerId},

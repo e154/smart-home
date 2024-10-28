@@ -1,4 +1,3 @@
-
 ---
 title: "Bluetooth Low Energy Плагин"
 linkTitle: "ble"

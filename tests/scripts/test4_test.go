@@ -22,11 +22,12 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/migrations"
-	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/internal/system/migrations"
+	"github.com/e154/smart-home/pkg/adaptors"
+	"github.com/e154/smart-home/pkg/common"
+	m "github.com/e154/smart-home/pkg/models"
+	"github.com/e154/smart-home/pkg/scripts"
+
 	. "github.com/smartystreets/goconvey/convey"
 )
 

@@ -23,18 +23,19 @@ import (
 	"testing"
 	"time"
 
+	"github.com/e154/smart-home/internal/plugins/notify"
+	notifyCommon "github.com/e154/smart-home/internal/plugins/notify/common"
+	"github.com/e154/smart-home/internal/plugins/telegram"
+	"github.com/e154/smart-home/pkg/adaptors"
+	"github.com/e154/smart-home/pkg/common"
+	"github.com/e154/smart-home/pkg/events"
+	"github.com/e154/smart-home/pkg/models"
+	"github.com/e154/smart-home/pkg/plugins"
+	"github.com/e154/smart-home/pkg/scripts"
+
 	. "github.com/smartystreets/goconvey/convey"
 
 	"github.com/e154/bus"
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/events"
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/plugins/notify"
-	notifyCommon "github.com/e154/smart-home/plugins/notify/common"
-	"github.com/e154/smart-home/plugins/telegram"
-	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/e154/smart-home/tests/plugins"
 )
 
@@ -52,7 +53,7 @@ telegramAction = (entityId, actionName)->
 	Convey("telegram", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			scriptService scripts.ScriptService,
-			supervisor supervisor.Supervisor,
+			supervisor plugins.Supervisor,
 			eventBus bus.Bus) {
 
 			// register plugins
@@ -75,7 +76,7 @@ telegramAction = (entityId, actionName)->
 			// add entity
 			// ------------------------------------------------
 			tgEnt := GetNewTelegram("clavicus")
-			tgEnt.Actions = []*m.EntityAction{
+			tgEnt.Actions = []*models.EntityAction{
 				{
 					Name:        "CHECK",
 					Description: "check status",
@@ -84,7 +85,7 @@ telegramAction = (entityId, actionName)->
 			}
 			err = adaptors.Entity.Add(context.Background(), tgEnt)
 			ctx.So(err, ShouldBeNil)
-			_, err = adaptors.EntityStorage.Add(context.Background(), &m.EntityStorage{
+			_, err = adaptors.EntityStorage.Add(context.Background(), &models.EntityStorage{
 				EntityId:   tgEnt.Id,
 				Attributes: tgEnt.Attributes.Serialize(),
 			})
@@ -97,7 +98,7 @@ telegramAction = (entityId, actionName)->
 			time.Sleep(time.Second)
 
 			// add chat
-			tgChan := m.TelegramChat{
+			tgChan := models.TelegramChat{
 				EntityId: tgEnt.Id,
 				ChatId:   123,
 				Username: "user",
@@ -124,7 +125,7 @@ telegramAction = (entityId, actionName)->
 					ctx.So(err, ShouldBeNil)
 					ctx.So(total, ShouldEqual, 1)
 
-					ctx.So(list[0].Status, ShouldEqual, m.MessageStatusSucceed)
+					ctx.So(list[0].Status, ShouldEqual, models.MessageStatusSucceed)
 					ctx.So(list[0].Address, ShouldEqual, "123")
 					ctx.So(list[0].ErrorMessageBody, ShouldBeNil)
 					ctx.So(list[0].ErrorMessageStatus, ShouldBeNil)

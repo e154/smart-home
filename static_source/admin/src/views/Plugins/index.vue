@@ -1,18 +1,20 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import {useI18n} from '@/hooks/web/useI18n'
 import {Table} from '@/components/Table'
 import {onMounted, onUnmounted, reactive, ref, watch} from 'vue'
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
-import {ElButton, ElMessage} from 'element-plus'
-import {ApiPlugin} from "@/api/stub";
+import {ElButton, ElMessage, ElRow, ElUpload, UploadProps, ElTag} from 'element-plus'
+import {ApiBackup, ApiPlugin} from "@/api/stub";
 import {useRouter} from "vue-router";
 import {ContentWrap} from "@/components/ContentWrap";
 import {EventStateChange} from "@/api/types";
 import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
+import {useCache} from "@/hooks/web/useCache";
 
 const {push} = useRouter()
+const {wsCache} = useCache()
 const {t} = useI18n()
 
 interface TableObject {
@@ -41,6 +43,12 @@ const columns: TableColumn[] = [
     field: 'name',
     label: t('plugins.name'),
     sortable: true
+  },
+  {
+    field: 'external',
+    label: t('plugins.external'),
+    sortable: true,
+    width: "100px"
   },
   {
     field: 'version',
@@ -150,30 +158,86 @@ const disable = async (plugin: ApiPlugin) => {
   });
 }
 
+const getUploadURL = () => {
+  let uri = import.meta.env.VITE_API_BASEPATH as string || window.location.origin;
+  const accessToken = wsCache.get("accessToken")
+  uri += '/v1/plugins/upload?access_token=' + accessToken;
+  const serverId = wsCache.get('serverId')
+  if (serverId) {
+    uri += '&server_id=' + serverId;
+  }
+  return uri;
+}
+
+const onSuccess: UploadProps['onSuccess'] = (file: ApiBackup, uploadFile) => {
+  getList()
+  ElMessage({
+    message: t('message.uploadSuccessfully'),
+    type: 'success',
+    duration: 2000
+  })
+}
+
+const onError: UploadProps['onError'] = (error, uploadFile, uploadFiles) => {
+  getList()
+  const body = JSON.parse(error.message)
+  const {message, code} = body.error;
+  ElMessage({
+    message: message,
+    type: 'error',
+    duration: 5000
+  })
+}
+
 </script>
 
 <template>
   <ContentWrap>
+
+    <ElRow class=" mb-20px">
+      <ElUpload
+        :action="getUploadURL()"
+        :auto-upload="true"
+        :multiple="false"
+        :on-error="onError"
+        :on-success="onSuccess"
+        class="upload-demo"
+      >
+        <ElButton plain type="primary">
+          <Icon class="mr-5px" icon="material-symbols:upload"/>
+          {{ $t('plugins.uploadPlugin') }}
+        </ElButton>
+      </ElUpload>
+    </ElRow>
+
     <Table
-      :selection="false"
-      v-model:pageSize="paginationObj.pageSize"
       v-model:currentPage="paginationObj.currentPage"
-      :showUpPagination="20"
+      v-model:pageSize="paginationObj.pageSize"
       :columns="columns"
       :data="tableObject.tableList"
       :loading="tableObject.loading"
       :pagination="paginationObj"
-      @sort-change="sortChange"
+      :selection="false"
+      :showUpPagination="20"
       style="width: 100%"
+      @sort-change="sortChange"
       @current-change="selectRow"
     >
+      <template #external="{ row }">
+        <div class="w-[100%]" v-if="row">
+          <ElTag v-if="row.external">
+            {{ t('plugins.external') }}
+          </ElTag>
+        </div>
+      </template>
+
       <template #status="{ row }">
         <div class="w-[100%] text-center">
-          <ElButton :link="true" @click.prevent.stop="enable(row)" v-if="!row?.isLoaded">
-            <Icon icon="noto:red-circle" class="mr-5px"/>
+          <ElButton v-if="!row?.isLoaded" :link="true" @click.prevent.stop="enable(row)">
+            <Icon class="mr-5px" icon="noto:red-circle"/>
           </ElButton>
-          <ElButton :link="true" @click.prevent.stop="disable(row)" v-if="row?.isLoaded">
-            <Icon icon="noto:green-circle" class="mr-5px"/>
+          <ElButton v-if="row?.isLoaded" :link="true" @click.prevent.stop="disable(row)">
+            <Icon class="mr-5px" icon="noto:green-circle"/>
           </ElButton>
         </div>
       </template>

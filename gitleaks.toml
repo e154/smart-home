@@ -95,7 +95,7 @@ id = "atlassian-api-token"
 regex = '''(?i)(?:atlassian|confluence)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}(?:=|>|:=|\|\|:|<=|=>|:)(?:'|\"|\s|=|\x60){0,5}([a-z0-9]{24})(?:['|\"|\n|\r|\s|\x60]|$)'''
 secretGroup = 1
 keywords = [
-    "atlassian","confluence",
+    "atlassian", "confluence",
 ]
 
 [[rules]]
@@ -103,7 +103,7 @@ description = "AWS"
 id = "aws-access-token"
 regex = '''(A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}'''
 keywords = [
-    "akia","agpa","aida","aroa","aipa","anpa","anva","asia",
+    "akia", "agpa", "aida", "aroa", "aipa", "anpa", "anva", "asia",
 ]
 
 [[rules]]
@@ -324,7 +324,7 @@ id = "gocardless-api-token"
 regex = '''(?i)(?:gocardless)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}(?:=|>|:=|\|\|:|<=|=>|:)(?:'|\"|\s|=|\x60){0,5}(live_(?i)[a-z0-9\-_=]{40})(?:['|\"|\n|\r|\s|\x60]|$)'''
 secretGroup = 1
 keywords = [
-    "live_","gocardless",
+    "live_", "gocardless",
 ]
 
 [[rules]]
@@ -348,7 +348,7 @@ description = "GitHub App Token"
 id = "github-app-token"
 regex = '''(ghu|ghs)_[0-9a-zA-Z]{36}'''
 keywords = [
-    "ghu_","ghs_",
+    "ghu_", "ghs_",
 ]
 
 [[rules]]
@@ -425,7 +425,7 @@ id = "linkedin-client-id"
 regex = '''(?i)(?:linkedin|linked-in)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}(?:=|>|:=|\|\|:|<=|=>|:)(?:'|\"|\s|=|\x60){0,5}([a-z0-9]{14})(?:['|\"|\n|\r|\s|\x60]|$)'''
 secretGroup = 1
 keywords = [
-    "linkedin","linked-in",
+    "linkedin", "linked-in",
 ]
 
 [[rules]]
@@ -434,7 +434,7 @@ id = "linkedin-client-secret"
 regex = '''(?i)(?:linkedin|linked-in)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}(?:=|>|:=|\|\|:|<=|=>|:)(?:'|\"|\s|=|\x60){0,5}([a-z0-9]{16})(?:['|\"|\n|\r|\s|\x60]|$)'''
 secretGroup = 1
 keywords = [
-    "linkedin","linked-in",
+    "linkedin", "linked-in",
 ]
 
 [[rules]]
@@ -443,7 +443,7 @@ id = "lob-api-key"
 regex = '''(?i)(?:lob)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}(?:=|>|:=|\|\|:|<=|=>|:)(?:'|\"|\s|=|\x60){0,5}((live|test)_[a-f0-9]{35})(?:['|\"|\n|\r|\s|\x60]|$)'''
 secretGroup = 1
 keywords = [
-    "test_","live_",
+    "test_", "live_",
 ]
 
 [[rules]]
@@ -452,7 +452,7 @@ id = "lob-pub-api-key"
 regex = '''(?i)(?:lob)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}(?:=|>|:=|\|\|:|<=|=>|:)(?:'|\"|\s|=|\x60){0,5}((test|live)_pub_[a-f0-9]{31})(?:['|\"|\n|\r|\s|\x60]|$)'''
 secretGroup = 1
 keywords = [
-    "test_pub","live_pub","_pub",
+    "test_pub", "live_pub", "_pub",
 ]
 
 [[rules]]
@@ -506,7 +506,7 @@ id = "messagebird-api-token"
 regex = '''(?i)(?:messagebird|message-bird|message_bird)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}(?:=|>|:=|\|\|:|<=|=>|:)(?:'|\"|\s|=|\x60){0,5}([a-z0-9]{25})(?:['|\"|\n|\r|\s|\x60]|$)'''
 secretGroup = 1
 keywords = [
-    "messagebird","message-bird","message_bird",
+    "messagebird", "message-bird", "message_bird",
 ]
 
 [[rules]]
@@ -515,7 +515,7 @@ id = "messagebird-client-id"
 regex = '''(?i)(?:messagebird|message-bird|message_bird)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}(?:=|>|:=|\|\|:|<=|=>|:)(?:'|\"|\s|=|\x60){0,5}([a-h0-9]{8}-[a-h0-9]{4}-[a-h0-9]{4}-[a-h0-9]{4}-[a-h0-9]{12})(?:['|\"|\n|\r|\s|\x60]|$)'''
 secretGroup = 1
 keywords = [
-    "messagebird","message-bird","message_bird",
+    "messagebird", "message-bird", "message_bird",
 ]
 
 [[rules]]
@@ -533,7 +533,7 @@ id = "new-relic-user-api-id"
 regex = '''(?i)(?:new-relic|newrelic|new_relic)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}(?:=|>|:=|\|\|:|<=|=>|:)(?:'|\"|\s|=|\x60){0,5}([a-z0-9]{64})(?:['|\"|\n|\r|\s|\x60]|$)'''
 secretGroup = 1
 keywords = [
-    "new-relic","newrelic","new_relic",
+    "new-relic", "newrelic", "new_relic",
 ]
 
 [[rules]]
@@ -688,7 +688,7 @@ description = "Slack token"
 id = "slack-access-token"
 regex = '''xox[baprs]-([0-9a-zA-Z]{10,48})'''
 keywords = [
-    "xoxb","xoxa","xoxp","xoxr","xoxs",
+    "xoxb", "xoxa", "xoxp", "xoxr", "xoxs",
 ]
 
 [[rules]]
@@ -704,7 +704,7 @@ description = "Stripe"
 id = "stripe-access-token"
 regex = '''(?i)(sk|pk)_(test|live)_[0-9a-z]{10,32}'''
 keywords = [
-    "sk_test","pk_test","sk_live","pk_live",
+    "sk_test", "pk_test", "sk_live", "pk_live",
 ]
 
 [[rules]]
@@ -749,10 +749,10 @@ regex = '''(?i)(?:key|api|token|secret|client|passwd|password|auth)(?:[0-9a-z\-_
 secretGroup = 1
 entropy = 3.5
 keywords = [
-    "key","api","token","secret","client","passwd","password","auth",
+    "key", "api", "token", "secret", "client", "passwd", "password", "auth",
 ]
 [rules.allowlist]
-stopwords= [
+stopwords = [
     "client",
     "endpoint",
     "vpn",

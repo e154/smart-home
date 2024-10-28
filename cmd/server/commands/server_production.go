@@ -20,19 +20,17 @@
 
 package commands
 
-// #cgo LDFLAGS: -Wl,-rpath,.
-import "C"
-
 import (
 	"fmt"
+
+	"github.com/e154/smart-home/internal/common/app"
+	"github.com/e154/smart-home/internal/system/initial"
+	logging2 "github.com/e154/smart-home/internal/system/logging"
 
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
 
 	. "github.com/e154/smart-home/cmd/server/container"
-	"github.com/e154/smart-home/common/app"
-	"github.com/e154/smart-home/system/initial"
-	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/version"
 )
 
@@ -46,8 +44,8 @@ var (
 			fmt.Printf(version.ShortVersionBanner, "")
 
 			app.Do(BuildContainer, fx.Invoke(func(
-				logger *logging.Logging,
-				dbSaver logging.ISaver,
+				logger *logging2.Logging,
+				dbSaver logging2.ISaver,
 				_ *initial.Initial,
 			) {
 				logger.SetDbSaver(dbSaver)

@@ -1,4 +1,3 @@
-
 ---
 title: "Twilio"
 linkTitle: "twilio"
@@ -7,14 +6,17 @@ description: >
 
 ---
 
-Sending SMS notifications through the notification service provider [Twilio](https://www.twilio.com/messaging). To be able to send messages, registration with [Twilio](https://www.twilio.com/messaging) and a positive balance are required.
+Sending SMS notifications through the notification service provider [Twilio](https://www.twilio.com/messaging). To be
+able to send messages, registration with [Twilio](https://www.twilio.com/messaging) and a positive balance are required.
 
 ### Configuration:
+
 * Token
 * Sid
 * From
 
 ### Attributes:
+
 * Amount
 * Sid
 * Currency
@@ -36,10 +38,11 @@ msg.attributes = {
 };
 
 ```
-| Value | Description |
-|-------|-------------|
-| newMessage() | Method |
-| msg | Type: Object (Message) |
+
+| Value        | Description            |
+|--------------|------------------------|
+| newMessage() | Method                 |
+| msg          | Type: Object (Message) |
 
 ----------------
 
@@ -49,7 +52,7 @@ msg.attributes = {
 # twilio
 # ##################################
 
-sendMsg =(body)->
+sendMsg = (body)->
   msg = notifr.newMessage();
   msg.entity_id = 'twilio.name';
   msg.attributes = {

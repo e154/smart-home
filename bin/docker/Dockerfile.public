@@ -1,0 +1,11 @@
+FROM node:16.20.2-slim
+WORKDIR /app
+COPY package*.json ./
+ENV GENERATE_SOURCEMAP=false
+ENV NODE_OPTIONS=--max_old_space_size=4096
+RUN npm i -g pnpm@8.15.1 && \
+  pnpm i
+COPY . .
+RUN pnpm run build:pro
+
+

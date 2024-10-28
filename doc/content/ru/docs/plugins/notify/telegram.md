@@ -1,4 +1,3 @@
-
 ---
 title: "Telegram"
 linkTitle: "telegram"
@@ -11,12 +10,15 @@ description: >
 событийное оповещение. Система не имеет ограничение на количество ботов, один entity - один бот.
 
 ### Настройка
+
 * Token
 
 ### Команды:
+
 * произвольный набор
 
 ### Атрибуты
+
 * произвольный набор
 
 ### Действия
@@ -26,13 +28,11 @@ description: >
 * **/start** - подписаться на уведомления
 * **/quit** - отписаться от уведомлений
 
-**Action** (действие) - должно наименоваться в нижнем регистре, без знаков "/". 
+**Action** (действие) - должно наименоваться в нижнем регистре, без знаков "/".
 Кастомная команда в системе автоматически добавится в список доступных команд раздела **/help**.
 Вызов кастомной команды с клиента следует производить в верхнем регистре **/ACTION** -> **/action**
 
-
 ### javascript свойства
-
 
 ----------------
 
@@ -54,22 +54,23 @@ msg.attributes = {
 };
 
 ```
-|  значение  | описание  |
-|-------------|---------|
-| newMessage() |    метод   |
-| msg |   type: Object (Message)  |
+
+| значение     | описание               |
+|--------------|------------------------|
+| newMessage() | метод                  |
+| msg          | type: Object (Message) |
 
 attributes:
 
-|  значение  | описание  |
-|-------------|---------|
-| body |  Type: string,  тело сообщения   |
-| chat_id | Type: int64,  id пользователя  |
-| keys |  Type: []string, клавиатура   |
-| photo_uri |  Type: []string, изображение   |
-| photo_path |  Type: []string, изображение   |
-| file_path |  Type: []string, файл   |
-| file_uri |  Type: []string, файл   |
+| значение   | описание                      |
+|------------|-------------------------------|
+| body       | Type: string,  тело сообщения |
+| chat_id    | Type: int64,  id пользователя |
+| keys       | Type: []string, клавиатура    |
+| photo_uri  | Type: []string, изображение   |
+| photo_path | Type: []string, изображение   |
+| file_path  | Type: []string, файл          |
+| file_uri   | Type: []string, файл          |
 
 ----------------
 
@@ -78,11 +79,12 @@ attributes:
 ```coffeescript
 telegramAction = (entityId, actionName, args)->
 ```
-| значение   | описание               |
-|-------------|-------------------|
-| entityId    | type: string, id сущности отправляющего сообщение |
-| actionName  | type: string, название действия, без символа '/' в верхнем регистре |
-| args  | attributes |
+
+| значение   | описание                                                            |
+|------------|---------------------------------------------------------------------|
+| entityId   | type: string, id сущности отправляющего сообщение                   |
+| actionName | type: string, название действия, без символа '/' в верхнем регистре |
+| args       | attributes                                                          |
 
 ----------------
 
@@ -91,18 +93,18 @@ telegramAction = (entityId, actionName, args)->
 ```coffeescript
 # telegram
 # ##################################
-telegramSendReport =->
-  entities = ['device.l3n1','device.l3n2','device.l3n3','device.l3n4']
+telegramSendReport = ->
+  entities = ['device.l3n1', 'device.l3n2', 'device.l3n3', 'device.l3n4']
   for entityId, i in entities
     entity = GetEntity(entityId)
     attr = EntityGetAttributes(entityId)
     sendMsg(format(entityId, entity.state.name, attr))
-  
+
 telegramAction = (entityId, actionName)->
 switch actionName
-    when 'CHECK' then telegramSendReport()
+  when 'CHECK' then telegramSendReport()
 
-sendMsg =(body)->
+sendMsg = (body)->
   msg = notifr.newMessage();
   msg.entity_id = 'telegram.testbot';
   msg.attributes = {

@@ -19,11 +19,11 @@
 package container
 
 import (
-	"github.com/e154/smart-home/system/gate/server"
+	"github.com/e154/smart-home/internal/system/gate/server"
+	"github.com/e154/smart-home/internal/system/logging"
 	"go.uber.org/fx"
 
 	"github.com/e154/bus"
-	"github.com/e154/smart-home/system/logging"
 )
 
 // BuildContainer ...

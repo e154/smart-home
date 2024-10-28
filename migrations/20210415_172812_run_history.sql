@@ -4,7 +4,7 @@ create table run_history
 (
     id    bigserial not null,
     start timestamp with time zone default CURRENT_TIMESTAMP,
-    "end"   timestamp with time zone default null
+    "end" timestamp with time zone default null
 );
 
 -- +migrate Down

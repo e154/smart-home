@@ -1,4 +1,3 @@
-
 ---
 title: "Speedtest"
 linkTitle: "speedtest"
@@ -7,7 +6,9 @@ description: >
   
 ---
 
-The Speedtest plugin provides the capability to measure internet connection speed directly from the Smart Home system. This plugin allows users to check the quality of their internet connection and use the obtained data to make decisions regarding network optimization.
+The Speedtest plugin provides the capability to measure internet connection speed directly from the Smart Home system.
+This plugin allows users to check the quality of their internet connection and use the obtained data to make decisions
+regarding network optimization.
 
 #### Device Properties
 

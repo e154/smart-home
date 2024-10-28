@@ -25,13 +25,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/e154/smart-home/pkg/adaptors"
+	commonPkg "github.com/e154/smart-home/pkg/common"
+	"github.com/e154/smart-home/pkg/events"
+	"github.com/e154/smart-home/pkg/models"
+	"github.com/e154/smart-home/pkg/plugins"
+	"github.com/e154/smart-home/pkg/scripts"
+
 	"github.com/e154/bus"
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/events"
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/scripts"
-	super "github.com/e154/smart-home/system/supervisor"
 	. "github.com/e154/smart-home/tests/plugins"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -41,7 +42,7 @@ func TestCommon(t *testing.T) {
 	Convey("sensor", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			scriptService scripts.ScriptService,
-			supervisor super.Supervisor,
+			supervisor plugins.Supervisor,
 			eventBus bus.Bus) {
 
 			// register plugins
@@ -61,13 +62,13 @@ func TestCommon(t *testing.T) {
 			// ------------------------------------------------
 
 			sensorEnt := GetNewSensor("device1")
-			sensorEnt.Actions = []*m.EntityAction{
+			sensorEnt.Actions = []*models.EntityAction{
 				{
 					Name:        "ACTION1",
 					Description: "action description",
 				},
 			}
-			sensorEnt.States = []*m.EntityState{
+			sensorEnt.States = []*models.EntityState{
 				{
 					Name:        "STATE1",
 					Description: "state description",
@@ -77,16 +78,16 @@ func TestCommon(t *testing.T) {
 					Description: "state description",
 				},
 			}
-			sensorEnt.Attributes = m.Attributes{
+			sensorEnt.Attributes = models.Attributes{
 				"v": {
 					Name: "v",
-					Type: common.AttributeString,
+					Type: commonPkg.AttributeString,
 				},
 			}
-			sensorEnt.Settings = m.Attributes{
+			sensorEnt.Settings = models.Attributes{
 				"v": {
 					Name: "v",
-					Type: common.AttributeString,
+					Type: commonPkg.AttributeString,
 				},
 			}
 
@@ -100,10 +101,10 @@ func TestCommon(t *testing.T) {
 			//--
 
 			sensor2Ent := GetNewSensor("device2")
-			sensor2Ent.Attributes = m.Attributes{
+			sensor2Ent.Attributes = models.Attributes{
 				"v": {
 					Name: "v",
-					Type: common.AttributeString,
+					Type: commonPkg.AttributeString,
 				},
 			}
 
@@ -116,10 +117,10 @@ func TestCommon(t *testing.T) {
 			//--
 
 			sensor3Ent := GetNewSensor("device3")
-			sensor3Ent.Attributes = m.Attributes{
+			sensor3Ent.Attributes = models.Attributes{
 				"v": {
 					Name: "v",
-					Type: common.AttributeString,
+					Type: commonPkg.AttributeString,
 				},
 			}
 
@@ -152,9 +153,9 @@ func TestCommon(t *testing.T) {
 					// 1
 					// ------------------------------------------------
 					ctx.Println("v1")
-					supervisor.SetState(sensorEnt.Id, super.EntityStateParams{
+					supervisor.SetState(sensorEnt.Id, plugins.EntityStateParams{
 						NewState: nil,
-						AttributeValues: m.AttributeValue{
+						AttributeValues: models.AttributeValue{
 							"v": "V1",
 						},
 						StorageSave: false,
@@ -193,9 +194,9 @@ func TestCommon(t *testing.T) {
 					// 2
 					// ------------------------------------------------
 					ctx.Println("\nv2")
-					supervisor.SetState(sensorEnt.Id, super.EntityStateParams{
+					supervisor.SetState(sensorEnt.Id, plugins.EntityStateParams{
 						NewState: nil,
-						AttributeValues: m.AttributeValue{
+						AttributeValues: models.AttributeValue{
 							"v": "V2",
 						},
 						StorageSave: true,
@@ -246,9 +247,9 @@ func TestCommon(t *testing.T) {
 					// 3
 					// ------------------------------------------------
 					ctx.Println("\nv3")
-					supervisor.SetState(sensorEnt.Id, super.EntityStateParams{
-						NewState: common.String("STATE1"),
-						AttributeValues: m.AttributeValue{
+					supervisor.SetState(sensorEnt.Id, plugins.EntityStateParams{
+						NewState: commonPkg.String("STATE1"),
+						AttributeValues: models.AttributeValue{
 							"v": "V3",
 						},
 						StorageSave: true,
@@ -302,8 +303,8 @@ func TestCommon(t *testing.T) {
 					// 4 (skip settings)
 					// ------------------------------------------------
 					ctx.Println("\nv4")
-					supervisor.SetState(sensorEnt.Id, super.EntityStateParams{
-						SettingsValue: m.AttributeValue{
+					supervisor.SetState(sensorEnt.Id, plugins.EntityStateParams{
+						SettingsValue: models.AttributeValue{
 							"v": "V4",
 						},
 						StorageSave: true,
@@ -316,8 +317,8 @@ func TestCommon(t *testing.T) {
 					// 5 (skip unknown fields)
 					// ------------------------------------------------
 					ctx.Println("\nv5")
-					supervisor.SetState(sensorEnt.Id, super.EntityStateParams{
-						SettingsValue: m.AttributeValue{
+					supervisor.SetState(sensorEnt.Id, plugins.EntityStateParams{
+						SettingsValue: models.AttributeValue{
 							"foo": "bar",
 						},
 						StorageSave: true,
@@ -332,9 +333,9 @@ func TestCommon(t *testing.T) {
 					// 6
 					// ------------------------------------------------
 					ctx.Println("\nv6")
-					supervisor.SetState(sensorEnt.Id, super.EntityStateParams{
-						NewState: common.String("FOO"),
-						AttributeValues: m.AttributeValue{
+					supervisor.SetState(sensorEnt.Id, plugins.EntityStateParams{
+						NewState: commonPkg.String("FOO"),
+						AttributeValues: models.AttributeValue{
 							"v": "V6",
 						},
 						StorageSave: true,
@@ -384,7 +385,7 @@ func TestCommon(t *testing.T) {
 
 					time.Sleep(time.Second)
 
-					list, total, err := adaptors.EntityStorage.List(context.Background(), 10, 0, "asc", "id", []common.EntityId{}, nil, nil)
+					list, total, err := adaptors.EntityStorage.List(context.Background(), 10, 0, "asc", "id", []commonPkg.EntityId{}, nil, nil)
 					ctx.So(err, ShouldBeNil)
 					ctx.So(total, ShouldEqual, 3)
 
@@ -425,8 +426,8 @@ func TestCommon(t *testing.T) {
 					// ------------------------------------------------
 					ctx.Println("\nv7")
 					for i := 0; i < 100; i++ {
-						supervisor.SetState(sensor2Ent.Id, super.EntityStateParams{
-							AttributeValues: m.AttributeValue{
+						supervisor.SetState(sensor2Ent.Id, plugins.EntityStateParams{
+							AttributeValues: models.AttributeValue{
 								"v": fmt.Sprintf("V%d", i),
 							},
 							StorageSave: true,
@@ -438,7 +439,7 @@ func TestCommon(t *testing.T) {
 
 					time.Sleep(time.Second)
 
-					_, total, err := adaptors.EntityStorage.List(context.Background(), 500, 0, "asc", "id", []common.EntityId{sensor2Ent.Id}, nil, nil)
+					_, total, err := adaptors.EntityStorage.List(context.Background(), 500, 0, "asc", "id", []commonPkg.EntityId{sensor2Ent.Id}, nil, nil)
 					ctx.So(err, ShouldBeNil)
 					ctx.So(total, ShouldEqual, 100)
 				})
@@ -464,8 +465,8 @@ func TestCommon(t *testing.T) {
 					// ------------------------------------------------
 					ctx.Println("\nv8")
 					for i := 0; i < 1000000; i++ {
-						supervisor.SetState(sensor3Ent.Id, super.EntityStateParams{
-							AttributeValues: m.AttributeValue{
+						supervisor.SetState(sensor3Ent.Id, plugins.EntityStateParams{
+							AttributeValues: models.AttributeValue{
 								"v": fmt.Sprintf("V%d", i),
 							},
 						})
@@ -476,7 +477,7 @@ func TestCommon(t *testing.T) {
 
 					time.Sleep(time.Second)
 
-					_, total, err := adaptors.EntityStorage.List(context.Background(), 25, 0, "asc", "id", []common.EntityId{sensor3Ent.Id}, nil, nil)
+					_, total, err := adaptors.EntityStorage.List(context.Background(), 25, 0, "asc", "id", []commonPkg.EntityId{sensor3Ent.Id}, nil, nil)
 					ctx.So(err, ShouldBeNil)
 					ctx.So(total, ShouldEqual, 0)
 				})

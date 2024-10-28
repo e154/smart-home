@@ -975,6 +975,7 @@ export interface ApiPlugin {
   enabled: boolean;
   system: boolean;
   actor: boolean;
+  external: boolean;
   settings: Record<string, ApiAttribute>;
   options?: ApiPluginOptionsResult;
   isLoaded?: boolean;
@@ -1023,6 +1024,7 @@ export interface ApiPluginShort {
   system: boolean;
   actor?: boolean;
   isLoaded?: boolean;
+  external: boolean;
 }
 
 export interface ApiReloadRequest {
@@ -4585,6 +4587,33 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags PluginService
+     * @name PluginServiceRemovePlugin
+     * @summary remove plugin
+     * @request DELETE:/v1/plugin/{name}
+     * @secure
+     */
+    pluginServiceRemovePlugin: (name: string, params: RequestParams = {}) =>
+      this.request<
+        void,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
+        path: `/v1/plugin/${name}`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags PluginService
      * @name PluginServiceDisablePlugin
      * @summary disable plugin
      * @request POST:/v1/plugin/{name}/disable
@@ -4788,6 +4817,41 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         method: "GET",
         query: query,
         secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags PluginService
+     * @name PluginServiceUploadPlugin
+     * @summary upload plugin archive
+     * @request POST:/v1/plugins/upload
+     * @secure
+     */
+    pluginServiceUploadPlugin: (
+      data: {
+        filename?: File[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        ApiPlugin,
+        | {
+            error?: GenericErrorResponse;
+          }
+        | {
+            error?: GenericErrorResponse & {
+              code?: "UNAUTHORIZED";
+            };
+          }
+      >({
+        path: `/v1/plugins/upload`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.FormData,
         format: "json",
         ...params,
       }),

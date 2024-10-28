@@ -20,17 +20,17 @@ package scripts
 
 import (
 	"fmt"
-	"github.com/e154/bus"
-	"github.com/e154/smart-home/common/events"
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"github.com/e154/bus"
+	"github.com/e154/smart-home/internal/system/migrations"
+	"github.com/e154/smart-home/pkg/adaptors"
+	"github.com/e154/smart-home/pkg/events"
+	m "github.com/e154/smart-home/pkg/models"
+	"github.com/e154/smart-home/pkg/scripts"
 
-	"github.com/e154/smart-home/adaptors"
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/migrations"
-	"github.com/e154/smart-home/system/scripts"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestEnginesWatcher(t *testing.T) {
@@ -129,11 +129,11 @@ func TestEnginesWatcher(t *testing.T) {
 				}
 				enginesWatcher.PushStruct("structObj", structObj)
 
-				enginesWatcher.BeforeSpawn(func(engine *scripts.Engine) {
+				enginesWatcher.BeforeSpawn(func(engine scripts.Engine) {
 					if _, err = engine.EvalString(fmt.Sprintf("const bar = %d;", 4)); err != nil {
 					}
 				})
-				enginesWatcher.Spawn(func(engine *scripts.Engine) {
+				enginesWatcher.Spawn(func(engine scripts.Engine) {
 
 				})
 

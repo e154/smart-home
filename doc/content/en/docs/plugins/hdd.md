@@ -1,4 +1,3 @@
-
 ---
 title: "HDD"
 linkTitle: "hdd"
@@ -13,7 +12,8 @@ description: >
 
 &nbsp;
 
-In the **Smart Home** system, there is a "hdd" plugin that provides the display of hard disk parameters. This plugin allows you to obtain information about various characteristics of the hard disk. Here are some of these parameters:
+In the **Smart Home** system, there is a "hdd" plugin that provides the display of hard disk parameters. This plugin
+allows you to obtain information about various characteristics of the hard disk. Here are some of these parameters:
 
 1. `path`: The `path` parameter contains the path to the mount point of the hard disk.
 
@@ -35,7 +35,8 @@ In the **Smart Home** system, there is a "hdd" plugin that provides the display 
 
 10. `inodes_used_percent`: The `inodes_used_percent` parameter indicates the percentage of inodes used on the hard disk.
 
-Additionally, the "hdd" plugin has a `mount_point` settings option that allows you to specify the mount point to display parameters for a specific hard disk.
+Additionally, the "hdd" plugin has a `mount_point` settings option that allows you to specify the mount point to display
+parameters for a specific hard disk.
 
 Here's an example of using the "hdd" plugin to retrieve hard disk parameters:
 

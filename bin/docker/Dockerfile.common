@@ -1,0 +1,21 @@
+FROM --platform=$BUILDPLATFORM postgres:15 AS postgres
+ARG TARGETOS
+ARG TARGETARCH
+
+FROM --platform=$BUILDPLATFORM debian:12-slim
+ARG TARGETOS
+ARG TARGETARCH
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libpq5 ca-certificates iputils-ping
+RUN update-ca-certificates
+COPY --from=postgres /usr/lib/postgresql/15/bin/pg_dump /usr/local/bin
+COPY --from=postgres /usr/lib/postgresql/15/bin/pg_restore /usr/local/bin
+COPY conf .
+COPY data .
+COPY LICENSE .
+COPY README.md .
+COPY CONTRIBUTING.md .
+USER nobody
+
+
+

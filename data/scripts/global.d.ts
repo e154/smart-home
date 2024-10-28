@@ -4,7 +4,7 @@ declare global {
   // Entity ID
   const ENTITY_ID: string;
 
-  // Enumerate attribute types
+  // Enumerate attribute triggers
   enum AttributeType {
     INT = 'int',
     STRING = 'string',
@@ -462,7 +462,7 @@ declare global {
   }
 
   /**
-   * Common message interface for different types of notifications.
+   * Common message interface for different triggers of notifications.
    */
   interface Message {
     type?: MessageType;

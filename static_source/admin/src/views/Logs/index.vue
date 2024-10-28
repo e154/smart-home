@@ -335,7 +335,7 @@ getList()
 <template>
   <ContentWrap>
     <ElRow :gutter="24">
-      <ElCol :span="12" :xs="12">
+      <ElCol :span="12" :xs="24">
         <Form
             class="search-form"
             :schema="schema"

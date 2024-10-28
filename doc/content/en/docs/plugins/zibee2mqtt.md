@@ -1,4 +1,3 @@
-
 ---
 title: "Zigbee2mqtt"
 linkTitle: "zigbee2mqtt"
@@ -7,13 +6,17 @@ description: >
   
 ---
 
-The "Zigbee2mqtt" plugin is part of the system and provides integration between Zigbee devices and an MQTT broker. This plugin allows you to control and manage Zigbee devices through MQTT messages.
+The "Zigbee2mqtt" plugin is part of the system and provides integration between Zigbee devices and an MQTT broker. This
+plugin allows you to control and manage Zigbee devices through MQTT messages.
 
-The "Zigbee2mqtt" plugin implements a JavaScript handler called `zigbee2mqttEvent`, which doesn't take any parameters. Inside the handler, there is an accessible `message` object that represents the information of the received MQTT message.
+The "Zigbee2mqtt" plugin implements a JavaScript handler called `zigbee2mqttEvent`, which doesn't take any parameters.
+Inside the handler, there is an accessible `message` object that represents the information of the received MQTT
+message.
 
 The properties of the `message` object include:
 
-1. `payload`: The value of the message, represented as a dictionary (map) where the keys are strings and the values can be of any type.
+1. `payload`: The value of the message, represented as a dictionary (map) where the keys are strings and the values can
+   be of any type.
 2. `topic`: The MQTT message topic, indicating the source or destination of the message.
 3. `qos`: The Quality of Service level of the MQTT message.
 4. `duplicate`: A flag indicating whether the message is a duplicate.
@@ -26,32 +29,33 @@ Here's an example of using the `zigbee2mqttEvent` handler:
 
 ```javascript
 function zigbee2mqttEvent(message) {
-    console.log("Received MQTT message:");
-    console.log("Payload:", message.payload);
-    console.log("Topic:", message.topic);
-    console.log("QoS:", message.qos);
-    console.log("Duplicate:", message.duplicate);
+  console.log("Received MQTT message:");
+  console.log("Payload:", message.payload);
+  console.log("Topic:", message.topic);
+  console.log("QoS:", message.qos);
+  console.log("Duplicate:", message.duplicate);
 
-    if (message.error) {
-        console.error("Error:", message.error);
-    } else if (message.success) {
-        console.log("Operation successful!");
-        console.log("New state:", message.new_state);
-    }
+  if (message.error) {
+    console.error("Error:", message.error);
+  } else if (message.success) {
+    console.log("Operation successful!");
+    console.log("New state:", message.new_state);
+  }
 
-    // Accessing the storage
-    const value = message.storage.getByName("key");
-    console.log("Value from storage:", value);
+  // Accessing the storage
+  const value = message.storage.getByName("key");
+  console.log("Value from storage:", value);
 }
 ```
 
-The `zigbee2mqttEvent` handler can be used to process incoming MQTT messages and perform additional operations based on the received data.
+The `zigbee2mqttEvent` handler can be used to process incoming MQTT messages and perform additional operations based on
+the received data.
 
 Here's an example in CoffeeScript:
 
 ```coffeescript
-zigbee2mqttEvent =(message)->
-  # Print '---mqtt new event from plug---'
+zigbee2mqttEvent = (message)->
+# Print '---mqtt new event from plug---'
   if !message || message.topic.includes('/set')
     return
   payload = unmarshal message.payload
@@ -68,8 +72,8 @@ zigbee2mqttEvent =(message)->
 ```
 
 ```coffeescript
-zigbee2mqttEvent =(message)->
-  # Print '---mqtt new event from button---'
+zigbee2mqttEvent = (message)->
+# Print '---mqtt new event from button---'
   if !message
     return
   payload = unmarshal message.payload

@@ -3,13 +3,20 @@
 <script>
   window.onload = function () {
     const ui = SwaggerUIBundle({
-      url: {{ $original | relURL }},
-      dom_id: '#ohpen_swagger_ui',
-      presets: [
-        SwaggerUIBundle.presets.apis,
-        SwaggerUIStandalonePreset
-      ]
-    });
+      url: {
+    {
+      $original | relURL
+    }
+  },
+    dom_id: '#ohpen_swagger_ui',
+      presets
+  :
+    [
+      SwaggerUIBundle.presets.apis,
+      SwaggerUIStandalonePreset
+    ]
+  })
+    ;
     window.ui = ui;
   };
 </script>

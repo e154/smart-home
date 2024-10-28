@@ -8,4 +8,5 @@ ALTER TABLE entities
 
 -- +migrate Down
 -- SQL section 'Down' is executed when this migration is rolled back
-alter table entities drop column parent cascade ;
+alter table entities
+    drop column parent cascade;

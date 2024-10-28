@@ -1,4 +1,3 @@
-
 ---
 title: "Bitmine"
 linkTitle: "bitmine"
@@ -9,8 +8,8 @@ description: >
 
 Работа с устройствами ASIC производителя Bitmine Antminer.
 
-
 поддерживаемые усторойства:
+
 * S9
 * S7
 * L3
@@ -22,7 +21,7 @@ description: >
 
 ----------------
 
-### Miner Базовая сущность 
+### Miner Базовая сущность
 
 ```coffeescript
 # константа с уникальным id устройства
@@ -31,36 +30,36 @@ const ENTITY_ID
 
 ```coffeescript
 result = Miner
-    .stats()
-    .devs()
-    .summary()
-    .pools()
-    .addPool(url string)
-    .version()
-    .enable(poolId int64)
-    .disable(poolId int64)
-    .delete(poolId int64)
-    .switchPool(poolId int64)
-    .restart()
+  .stats()
+  .devs()
+  .summary()
+  .pools()
+  .addPool(url string)
+  .version()
+  .enable(poolId int64)
+  .disable(poolId int64)
+  .delete(poolId int64)
+  .switchPool(poolId int64)
+  .restart()
 ```
 
-|  значение  | описание  |
-|-------------|---------|
-| result |    type: Object (Result)   |
+| значение | описание              |
+|----------|-----------------------|
+| result   | type: Object (Result) |
 
-|  значение  | описание  |
-|-------------|---------|
-| stats |   type: метод, статистика    |
-| devs |   type: метод, статистика    |
-| summary |   type: метод, статистика    |
-| pools |   type: метод, список серверов   |
-| addPool |   type: метод, добавление сервера   |
-| version |   type: метод, версия прошивки  |
-| enable |   type: метод, включение в работу сервера  |
-| disable |   type: метод, включение сервера  |
-| delete |   type: метод, удаление сервера  |
-| switchPool |   type: метод, переключние сервера  |
-| restart |   type: метод, мягкий перезапуск устройства  |
+| значение   | описание                                  |
+|------------|-------------------------------------------|
+| stats      | type: метод, статистика                   |
+| devs       | type: метод, статистика                   |
+| summary    | type: метод, статистика                   |
+| pools      | type: метод, список серверов              |
+| addPool    | type: метод, добавление сервера           |
+| version    | type: метод, версия прошивки              |
+| enable     | type: метод, включение в работу сервера   |
+| disable    | type: метод, включение сервера            |
+| delete     | type: метод, удаление сервера             |
+| switchPool | type: метод, переключние сервера          |
+| restart    | type: метод, мягкий перезапуск устройства |
 
 ----------------
 
@@ -73,11 +72,12 @@ result = Miner
   result: ""
 }
 ``` 
-|  значение  | описание  |
-|-------------|---------|
-| error |    type: boolean, признак ошибки   |
-| errMessage |   type: string, человекопонятное описание ошибки  |
-| result | type: string, json объект в текстовом формате, если запрос завершился без ошибок |
+
+| значение   | описание                                                                         |
+|------------|----------------------------------------------------------------------------------|
+| error      | type: boolean, признак ошибки                                                    |
+| errMessage | type: string, человекопонятное описание ошибки                                   |
+| result     | type: string, json объект в текстовом формате, если запрос завершился без ошибок |
 
 ----------------
 
@@ -86,11 +86,12 @@ result = Miner
 ```coffeescript
 entityAction = (entityId, actionName, args)->
 ```
-| значение   | описание               |
-|-------------|-------------------|
-| entityId    | type: string, id сущности отправляющего сообщение |
-| actionName  | type: string, название действия, без символа '/' в верхнем регистре |
-| args | Type: map[string]any |
+
+| значение   | описание                                                            |
+|------------|---------------------------------------------------------------------|
+| entityId   | type: string, id сущности отправляющего сообщение                   |
+| actionName | type: string, название действия, без символа '/' в верхнем регистре |
+| args       | Type: map[string]any                                                |
 
 ----------------
 
@@ -98,18 +99,19 @@ entityAction = (entityId, actionName, args)->
 
 ```coffeescript
   entityStateParams = {
-    "new_state": ""
-    "attribute_values": {}
-    "settings_value": {}
-    "storage_save": true
+  "new_state": ""
+  "attribute_values": {}
+  "settings_value": {}
+  "storage_save": true
 }
 ``` 
-|  значение  | описание  |
-|-------------|---------|
-| new_state |    type: *string, наименование статуса   |
-| attribute_values |   type: Object, новое состяние аттрибутов сущности |
-| settings_value | type: Object, новое состояние настроек сущности |
-| storage_save | type: boolean, признак записи нового состояния в бд |
+
+| значение         | описание                                            |
+|------------------|-----------------------------------------------------|
+| new_state        | type: *string, наименование статуса                 |
+| attribute_values | type: Object, новое состяние аттрибутов сущности    |
+| settings_value   | type: Object, новое состояние настроек сущности     |
+| storage_save     | type: boolean, признак записи нового состояния в бд |
 
 ----------------
 
@@ -119,10 +121,10 @@ entityAction = (entityId, actionName, args)->
 # cgminer
 # ##################################
 
-ifError =(res)->
+ifError = (res)->
   return !res || res.error || res.Error
 
-checkStatus =->
+checkStatus = ->
   stats = Miner.stats()
   if ifError(stats)
     EntitySetState ENTITY_ID,
@@ -131,7 +133,7 @@ checkStatus =->
   p = JSON.parse(stats.result)
   print p
 
-checkSum =->
+checkSum = ->
   summary = Miner.summary()
   if ifError(summary)
     EntitySetState ENTITY_ID,

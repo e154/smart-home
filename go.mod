@@ -1,8 +1,6 @@
 module github.com/e154/smart-home
 
-go 1.22
-
-toolchain go1.22.3
+go 1.23.0
 
 require (
 	github.com/DrmagicE/gmqtt v0.5.0
@@ -62,7 +60,6 @@ require (
 
 require (
 	github.com/alitto/pond v1.8.3
-	github.com/alphacep/vosk-api/go v0.3.42
 	github.com/caddyserver/certmagic v0.21.2
 	github.com/deepch/vdk v0.0.27
 	github.com/e154/bus v0.1.0

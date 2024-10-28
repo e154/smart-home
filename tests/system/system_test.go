@@ -25,9 +25,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/e154/smart-home/system/validation"
+	"github.com/e154/smart-home/internal/system/logging"
+	"github.com/e154/smart-home/internal/system/validation"
 
-	"github.com/e154/smart-home/system/logging"
 	. "github.com/e154/smart-home/tests/system/container"
 	"go.uber.org/dig"
 )

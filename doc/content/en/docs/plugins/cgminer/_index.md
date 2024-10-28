@@ -1,4 +1,3 @@
-
 ---
 title: "Cgminer"
 linkTitle: "cgminer"
@@ -10,9 +9,11 @@ description: >
 Extension for **ASIC** Device Monitoring
 
 Available Brands:
+
 * Bitmine Antminer
 
 ### Configuration:
+
 * host
 * port
 * timeout
@@ -22,10 +23,13 @@ Available Brands:
 * model
 
 ### Commands:
+
 * custom set
 
 ### Attributes:
+
 * custom set
 
 ### Status:
+
 * custom set

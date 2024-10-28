@@ -24,17 +24,18 @@ import (
 	"testing"
 	"time"
 
+	weatherPlugin "github.com/e154/smart-home/internal/plugins/weather"
+	weather_met2 "github.com/e154/smart-home/internal/plugins/weather_met"
+	"github.com/e154/smart-home/pkg/adaptors"
+	m "github.com/e154/smart-home/pkg/models"
+	"github.com/e154/smart-home/pkg/plugins"
+	"github.com/e154/smart-home/pkg/scheduler"
+	"github.com/e154/smart-home/pkg/scripts"
+	"github.com/e154/smart-home/pkg/web"
+
 	. "github.com/smartystreets/goconvey/convey"
 
 	"github.com/e154/bus"
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common/web"
-	m "github.com/e154/smart-home/models"
-	weatherPlugin "github.com/e154/smart-home/plugins/weather"
-	"github.com/e154/smart-home/plugins/weather_met"
-	"github.com/e154/smart-home/system/scheduler"
-	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/e154/smart-home/tests/plugins"
 )
 
@@ -45,9 +46,9 @@ func TestWeatherMet(t *testing.T) {
 	Convey("weather_met", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			scriptService scripts.ScriptService,
-			supervisor supervisor.Supervisor,
+			supervisor plugins.Supervisor,
 			eventBus bus.Bus,
-			scheduler *scheduler.Scheduler,
+			scheduler scheduler.Scheduler,
 			crawler web.Crawler) {
 
 			AddPlugin(adaptors, "weather_met")
@@ -93,11 +94,11 @@ func TestWeatherMet(t *testing.T) {
 			t.Run("weather_met", func(t *testing.T) {
 				Convey("weather_met", t, func(ctx C) {
 
-					w := weather_met.NewWeatherMet(adaptors, crawler)
+					w := weather_met2.NewWeatherMet(adaptors, crawler)
 
 					loc, _ := time.LoadLocation("Asia/Novosibirsk")
 					now := time.Date(2021, 5, 29, 0, 0, 0, 0, loc)
-					f, err := w.GetForecast(weather_met.Zone{
+					f, err := w.GetForecast(weather_met2.Zone{
 						Name: "home",
 						Lat:  weatherEnt.Settings[weatherPlugin.AttrLat].Float64(),
 						Lon:  weatherEnt.Settings[weatherPlugin.AttrLon].Float64(),

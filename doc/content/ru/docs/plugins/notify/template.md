@@ -1,4 +1,3 @@
-
 ---
 title: "Шаблон сообщения"
 linkTitle: "шаблоны"
@@ -10,13 +9,12 @@ description: >
 **Template** (Шаблон) - инструмент для заполнения и рассылки готовых сообщений.
 
 преимущества:
+
 * чистый код
 * разные шаблоны для разных типов
 * удобный вызов
 
-
 ### javascript свойства
-
 
 ----------------
 
@@ -24,14 +22,14 @@ description: >
 
 ```coffeescript
   tpl = template
-    .render(name, params)
+  .render(name, params)
 ```
 
-|  значение  | описание  |
-|-------------|---------|
-| name |    type: string, название шаблона   |
-| params |   type: Object, параметры шаблона, пример: {'key':'val'}  |
-| tpl | type: string, сгенерированное сообщение, готовое к отправке |
+| значение | описание                                                    |
+|----------|-------------------------------------------------------------|
+| name     | type: string, название шаблона                              |
+| params   | type: Object, параметры шаблона, пример: {'key':'val'}      |
+| tpl      | type: string, сгенерированное сообщение, готовое к отправке |
 
 ### пример кода
 
@@ -40,10 +38,10 @@ description: >
 # ##################################
 
 
-sendMsg =(body)->
+sendMsg = (body)->
   tpl = template
-    .render('name', {'key':'val'})
-  
+    .render('name', {'key': 'val'})
+
   msg = notifr.newMessage();
   msg.type = 'telegram';
   msg.attributes = {

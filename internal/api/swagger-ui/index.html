@@ -1,0 +1,98 @@
+<!--
+  ~ This file is part of the Smart Home
+  ~ Program complex distribution https://github.com/e154/smart-home
+  ~ Copyright (C) 2023, Filippov Alex
+  ~
+  ~ This library is free software: you can redistribute it and/or
+  ~ modify it under the terms of the GNU Lesser General Public
+  ~ License as published by the Free Software Foundation; either
+  ~ version 3 of the License, or (at your option) any later version.
+  ~
+  ~ This library is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  ~ Library General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this library.  If not, see
+  ~ <https://www.gnu.org/licenses/>.
+  -->
+
+<!-- HTML for static distribution bundle build -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Swagger UI</title>
+    <link href="swagger-ui.css" rel="stylesheet" type="text/css"/>
+    <link href="SwaggerDark.css" rel="stylesheet" type="text/css"/>
+    <link href="favicon-32x32.png" rel="icon" sizes="32x32" type="image/png"/>
+    <link href="favicon-16x16.png" rel="icon" sizes="16x16" type="image/png"/>
+    <style>
+        html {
+            box-sizing: border-box;
+            overflow: -moz-scrollbars-vertical;
+            overflow-y: scroll;
+        }
+
+        *,
+        *:before,
+        *:after {
+            box-sizing: inherit;
+        }
+    </style>
+</head>
+
+<body>
+<div id="swagger-ui"></div>
+
+<script charset="UTF-8" src="swagger-ui-bundle.js"></script>
+<script charset="UTF-8" src="swagger-ui-standalone-preset.js"></script>
+<script>
+  window.onload = function () {
+    // Begin Swagger UI call region
+    const ui = SwaggerUIBundle({
+      url: "/api.swagger.yaml",
+      dom_id: '#swagger-ui',
+      docExpansion: 'none',
+      deepLinking: true,
+      presets: [
+        SwaggerUIBundle.presets.apis,
+        SwaggerUIStandalonePreset
+      ],
+      plugins: [
+        SwaggerUIBundle.plugins.DownloadUrl
+      ],
+      layout: "StandaloneLayout",
+      requestInterceptor: function (req) {
+        // access token
+        if (!req.headers.Authorization) {
+          try {
+            let {v} = JSON.parse(localStorage.getItem('accessToken'))
+            v = v.replaceAll("\"", "")
+            req.headers.Authorization = v
+          } catch (e) {
+
+          }
+        }
+
+        // server id
+        try {
+          let {v} = JSON.parse(localStorage.getItem('serverId'))
+          v = v.replaceAll("\"", "")
+          if (v) {
+            req.headers['X-SERVER-ID'] = v;
+          }
+        } catch (e) {
+
+        }
+        return req
+      }
+    });
+    // End Swagger UI call region
+
+    window.ui = ui;
+  };
+</script>
+</body>
+</html>

@@ -1,4 +1,3 @@
-
 ---
 title: "Slack"
 linkTitle: "slack"
@@ -10,6 +9,7 @@ description: >
 To send notifications to Slack chat, you'll need to configure the following settings:
 
 ### Configuration:
+
 - Token
 - User name
 
@@ -30,10 +30,10 @@ msg.attributes = {
 };
 ```
 
-| Value | Description |
-|-------|-------------|
-| newMessage() | Method |
-| msg | Type: Object (Message) |
+| Value        | Description            |
+|--------------|------------------------|
+| newMessage() | Method                 |
+| msg          | Type: Object (Message) |
 
 ----------------
 
@@ -43,12 +43,12 @@ msg.attributes = {
 # slack
 # ##################################
 
-sendMsg =(body)->
+sendMsg = (body)->
   msg = notifr.newMessage();
-    msg.entity_id = 'slack.name';
-    msg.attributes = {
-      'channel': '#ch',
-      'text': 'some text'
+  msg.entity_id = 'slack.name';
+  msg.attributes = {
+    'channel': '#ch',
+    'text': 'some text'
   };
   notifr.send(msg);
 ```

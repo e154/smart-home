@@ -21,15 +21,15 @@ package api
 import (
 	"context"
 
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/pkg/adaptors"
+	"github.com/e154/smart-home/pkg/common"
+	"github.com/e154/smart-home/pkg/models"
+	"github.com/e154/smart-home/pkg/scripts"
 )
 
 // AddPlugin ...
-func AddPlugin(adaptors *adaptors.Adaptors, name string, opts ...m.AttributeValue) (err error) {
-	plugin := &m.Plugin{
+func AddPlugin(adaptors *adaptors.Adaptors, name string, opts ...models.AttributeValue) (err error) {
+	plugin := &models.Plugin{
 		Name:    name,
 		Version: "0.0.1",
 		Enabled: true,
@@ -43,8 +43,8 @@ func AddPlugin(adaptors *adaptors.Adaptors, name string, opts ...m.AttributeValu
 }
 
 // AddArea ...
-func AddArea(adaptors *adaptors.Adaptors, name string, _ ...m.Attributes) (area *m.Area, err error) {
-	area = &m.Area{
+func AddArea(adaptors *adaptors.Adaptors, name string, _ ...models.Attributes) (area *models.Area, err error) {
+	area = &models.Area{
 		Name:        name,
 		Description: "description " + name,
 	}
@@ -54,16 +54,16 @@ func AddArea(adaptors *adaptors.Adaptors, name string, _ ...m.Attributes) (area 
 }
 
 // AddScript ...
-func AddScript(name, src string, adaptors *adaptors.Adaptors, scriptService scripts.ScriptService) (script *m.Script, err error) {
+func AddScript(name, src string, adaptors *adaptors.Adaptors, scriptService scripts.ScriptService) (script *models.Script, err error) {
 
-	script = &m.Script{
+	script = &models.Script{
 		Lang:        common.ScriptLangCoffee,
 		Name:        name,
 		Source:      src,
 		Description: "description " + name,
 	}
 
-	var engine *scripts.Engine
+	var engine scripts.Engine
 	if engine, err = scriptService.NewEngine(script); err != nil {
 		return
 	}

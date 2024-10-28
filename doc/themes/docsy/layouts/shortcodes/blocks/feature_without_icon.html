@@ -1,18 +1,19 @@
 {{ $url_text := .Get "url_text" }}
 <div class="col-lg-4 mb-5 mb-lg-0 text-center ">
-  <h4 class="h3">
-    {{ if eq .Page.File.Ext "md" }}
-      {{ .Get "title" | markdownify }}
-    {{ else }}
-      {{ .Get "title" | htmlUnescape | safeHTML }}
-    {{ end }}
-  </h4>
-  <p class="mb-0">
-    {{ if eq .Page.File.Ext "md" }}
-      {{ .Inner | markdownify }}
-    {{ else }}
-      {{ .Inner | htmlUnescape | safeHTML }}
-    {{ end }}
-  </p>
-  {{ with .Get "url" }}<p><a href="{{ . }}">{{ with $url_text }}{{ $url_text }}{{ else }}{{ T "ui_read_more" }}{{ end }} …</a></p>{{ end }}
+    <h4 class="h3">
+        {{ if eq .Page.File.Ext "md" }}
+        {{ .Get "title" | markdownify }}
+        {{ else }}
+        {{ .Get "title" | htmlUnescape | safeHTML }}
+        {{ end }}
+    </h4>
+    <p class="mb-0">
+        {{ if eq .Page.File.Ext "md" }}
+        {{ .Inner | markdownify }}
+        {{ else }}
+        {{ .Inner | htmlUnescape | safeHTML }}
+        {{ end }}
+    </p>
+    {{ with .Get "url" }}<p><a href="{{ . }}">{{ with $url_text }}{{ $url_text }}{{ else }}{{ T "ui_read_more" }}{{ end
+    }} …</a></p>{{ end }}
 </div>

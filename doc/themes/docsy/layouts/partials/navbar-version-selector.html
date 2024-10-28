@@ -1,8 +1,9 @@
-<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-	{{ .Site.Params.version_menu }}
+<a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle" data-toggle="dropdown" href="#"
+   id="navbarDropdown" role="button">
+    {{ .Site.Params.version_menu }}
 </a>
-<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-	{{ range .Site.Params.versions }}
-	<a class="dropdown-item" href="{{ .url }}">{{ .version }}</a>
-	{{ end }}
+<div aria-labelledby="navbarDropdownMenuLink" class="dropdown-menu">
+    {{ range .Site.Params.versions }}
+    <a class="dropdown-item" href="{{ .url }}">{{ .version }}</a>
+    {{ end }}
 </div>

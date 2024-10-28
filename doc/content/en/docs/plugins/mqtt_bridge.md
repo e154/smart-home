@@ -1,4 +1,3 @@
-
 ---
 title: "MQTT bridge"
 linkTitle: "mqtt_bridge"
@@ -7,13 +6,15 @@ description: >
   
 ---
 
-The MQTT Bridge plugin provides functionality for integrating devices through the MQTT protocol. This plugin allows efficient data exchange between devices and the Smart Home system using an MQTT broker.
+The MQTT Bridge plugin provides functionality for integrating devices through the MQTT protocol. This plugin allows
+efficient data exchange between devices and the Smart Home system using an MQTT broker.
 
 #### Device Settings
 
 Each device created using the MQTT Bridge plugin has the following settings:
 
-- **`keepAlive` (type: Int)**: The time in seconds after which the device sends a ping to maintain an active connection with the broker.
+- **`keepAlive` (type: Int)**: The time in seconds after which the device sends a ping to maintain an active connection
+  with the broker.
 
 - **`pingTimeout` (type: Int)**: The time in seconds expected to receive a response to the ping from the broker.
 
@@ -43,4 +44,5 @@ Each device created using the MQTT Bridge plugin can have the following statuses
 
 - **`offline`**: The device is not connected to the broker or has lost the connection.
 
-These settings and statuses provide flexibility in integrating devices through the MQTT protocol, allowing easy configuration and monitoring of their state within the Smart Home system.
+These settings and statuses provide flexibility in integrating devices through the MQTT protocol, allowing easy
+configuration and monitoring of their state within the Smart Home system.

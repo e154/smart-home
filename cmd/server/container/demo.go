@@ -19,16 +19,16 @@
 package container
 
 import (
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/system/initial/demo"
-	"github.com/e154/smart-home/system/initial/demo/example1"
-	"github.com/e154/smart-home/system/scripts"
+	demo2 "github.com/e154/smart-home/internal/system/initial/demo"
+	"github.com/e154/smart-home/internal/system/initial/demo/example1"
+	"github.com/e154/smart-home/pkg/adaptors"
+	"github.com/e154/smart-home/pkg/scripts"
 )
 
 func NewDemo(adaptors *adaptors.Adaptors,
-	scriptService scripts.ScriptService) (d *demo.Demos) {
-	list := make(map[string]demo.Demo)
+	scriptService scripts.ScriptService) (d *demo2.Demos) {
+	list := make(map[string]demo2.Demo)
 	list["example1"] = example1.NewExample1(adaptors, scriptService)
-	d = demo.NewDemos(list)
+	d = demo2.NewDemos(list)
 	return
 }
