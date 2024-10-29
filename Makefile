@@ -122,14 +122,14 @@ build_linux_armv5:
 	@echo MARK: build linux armv5
 	rm -rf ${ROOT}/${EXEC}-linux-arm-5
 	mkdir -p ${ROOT}/${EXEC}-linux-arm-5
-	${GO_BUILD_ENV} CC=arm-linux-gnueabihf-gcc GOOS=linux GOARCH=arm GOARM=5 go build -ldflags="${GO_BUILD_LDFLAGS}" ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-6/server
+	${GO_BUILD_ENV} GOOS=linux GOARCH=arm GOARM=5 go build -ldflags="${GO_BUILD_LDFLAGS}" ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-6/server
 	cd ${ROOT}/${EXEC}-linux-arm-6 && ls -l && tar -zcf ${ROOT}/${EXEC}-linux-arm-6.tar.gz .
 
 build_linux_armv6:
 	@echo MARK: build linux armv6
 	rm -rf ${ROOT}/${EXEC}-linux-arm-6
 	mkdir -p ${ROOT}/${EXEC}-linux-arm-6
-	${GO_BUILD_ENV} GOARCH=arm GOARM=6 go build -ldflags="${GO_BUILD_LDFLAGS}" ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-6/server
+	${GO_BUILD_ENV} GOOS=linux GOARCH=arm GOARM=6 go build -ldflags="${GO_BUILD_LDFLAGS}" ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-6/server
 	cd ${ROOT}/${EXEC}-linux-arm-6 && ls -l && tar -zcf ${ROOT}/${EXEC}-linux-arm-6.tar.gz .
 
 build_linux_armv7l:
