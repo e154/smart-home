@@ -424,22 +424,20 @@ func (p *ExternalPlugins) loadExternalPlugins() {
 		if info == nil {
 			return nil
 		}
-		if info.Name() == ".gitignore" || !info.IsDir() {
+		if info.IsDir() && info.Name() == "plugins" {
 			return nil
 		}
-		if info.Name()[0:1] == "." {
-			return nil
+		if info.IsDir() {
+			list = append(list, &plugins.PluginFileInfo{
+				Name:     info.Name(),
+				Size:     info.Size(),
+				FileMode: info.Mode(),
+				ModTime:  info.ModTime(),
+				IsDir:    info.IsDir(),
+			})
+
+			return filepath.SkipDir
 		}
-		if info.Name() == "plugins" {
-			return nil
-		}
-		list = append(list, &plugins.PluginFileInfo{
-			Name:     info.Name(),
-			Size:     info.Size(),
-			FileMode: info.Mode(),
-			ModTime:  info.ModTime(),
-			IsDir:    info.IsDir(),
-		})
 		return nil
 	})
 
