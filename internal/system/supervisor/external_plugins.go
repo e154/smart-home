@@ -395,8 +395,9 @@ func (p *ExternalPlugins) loadGoPlugin(pluginName string) error {
 		return nil
 	}
 
-	log.Infof("load external library %s", pluginName)
-	plugin, err := plugin.Open(path.Join(pluginsDir, pluginName, "plugin.so"))
+	dir := path.Join(pluginsDir, pluginName, "plugin.so")
+	log.Infof("load external plugin %s", dir)
+	plugin, err := plugin.Open(dir)
 	if err != nil {
 		return err
 	}
