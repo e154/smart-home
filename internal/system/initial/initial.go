@@ -26,14 +26,13 @@ import (
 
 	"github.com/e154/smart-home/internal/api"
 	"github.com/e154/smart-home/internal/endpoint"
-	"github.com/e154/smart-home/internal/system/access_list"
 	"github.com/e154/smart-home/internal/system/automation"
 	"github.com/e154/smart-home/internal/system/gate/client"
 	. "github.com/e154/smart-home/internal/system/initial/assertions"
 	"github.com/e154/smart-home/internal/system/initial/demo"
 	localMigrations "github.com/e154/smart-home/internal/system/initial/local_migrations"
 	"github.com/e154/smart-home/internal/system/logging_ws"
-	"github.com/e154/smart-home/internal/system/media"
+	"github.com/e154/smart-home/internal/system/rbac/access_list"
 	"github.com/e154/smart-home/internal/system/terminal"
 	"github.com/e154/smart-home/internal/system/validation"
 	. "github.com/e154/smart-home/pkg/adaptors"
@@ -89,7 +88,6 @@ func NewInitial(lc fx.Lifecycle,
 	localMigrations *localMigrations.Migrations,
 	demo *demo.Demos,
 	_ scheduler.Scheduler,
-	_ *media.Media,
 	db *gorm.DB,
 	eventBus bus.Bus,
 	_ *terminal.Terminal) *Initial {

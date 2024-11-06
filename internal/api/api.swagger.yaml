@@ -4131,6 +4131,9 @@ paths:
         - $ref: '#/components/parameters/listSort'
         - $ref: '#/components/parameters/listPage'
         - $ref: '#/components/parameters/listLimit'
+        - $ref: '#/components/parameters/query'
+        - $ref: '#/components/parameters/tags'
+        - $ref: '#/components/parameters/entityIds'
       responses:
         200:
           description: A successful response.

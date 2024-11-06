@@ -15,7 +15,7 @@ import {UUID} from 'uuid-generator-ts';
 import {eventBus, RenderVar, requestCurrentState, Resolve, scriptService, stateService} from '@/views/Dashboard/core';
 import {debounce} from "lodash-es";
 import {ref} from "vue";
-import {ItemPayload} from "@/views/Dashboard/card_items";
+import {initFunc, ItemPayload} from "@/views/Dashboard/card_items";
 import {ButtonAction, Compare, CompareProp} from "./types"
 import {AttributeValue, GetAttributeValue} from "@/components/Attributes"
 import {FrameProp, KeysProp} from "@/views/Dashboard/components";
@@ -129,116 +129,7 @@ export class CardItem {
       if (payload.hideOn) {
         this.hideOn = payload.hideOn;
       }
-      if (!this.payload.image) {
-        this.payload.image = {
-          image: undefined,
-          attrField: ''
-        };
-      }
-      if (!this.payload.icon) {
-        this.payload.icon = {
-          value: '',
-          iconColor: '#000000',
-        };
-      }
-      if (this.payload.image.attrField == undefined) {
-        this.payload.image.attrField = '';
-      }
-      if (!this.payload.image.image) {
-        this.payload.image.image = undefined;
-      }
-      if (!this.payload.button) {
-        this.payload.button = {};
-      }
-      if (!this.payload.state) {
-        this.payload.state = {
-          items: [],
-          default_image: undefined,
-          defaultImage: undefined,
-          defaultIcon: undefined,
-          defaultIconColor: undefined,
-          defaultIconSize: undefined,
-        };
-      }
-      if (!this.payload.text) {
-        this.payload.text = {
-          items: [],
-          default_text: '<div>default text</div>',
-          current_text: ''
-        };
-      }
-      if (!this.payload.logs) {
-        this.payload.logs = {
-          limit: 20
-        };
-      }
-      if (!this.payload.progress) {
-        this.payload.progress = {
-          items: [],
-          type: '',
-          showText: false,
-          textInside: false,
-          strokeWidth: 26,
-          width: 100
-        };
-      }
-      if (!this.payload.chart) {
-        this.payload.chart = {
-          type: 'line',
-          metric_index: 0,
-          width: 400,
-          height: 400,
-          xAxis: false,
-          yAxis: false,
-          legend: false,
-          range: '24h'
-        };
-      }
-      if (!this.payload.chartCustom) {
-        this.payload.chartCustom = {};
-      }
-      if (!this.payload?.map) {
-        this.payload.map = {
-          markers: []
-        };
-      } else {
-        if (!this.payload.map?.markers) {
-          this.payload.map.markers = [];
-        }
-        for (const index in this.payload.map?.markers) {
-          const entityId = this.payload.map.markers[index].entityId;
-          if (entityId) {
-            stateService.requestCurrentState(entityId)
-          }
-        }
-      }
-      if (!this.payload.slider) {
-        this.payload.slider = {};
-      }
-      if (!this.payload.colorPicker) {
-        this.payload.colorPicker = {};
-      }
-      if (!this.payload.joystick) {
-        this.payload.joystick = {};
-      }
-      if (!this.payload.video) {
-        this.payload.video = {};
-      }
-      if (!this.payload.entityStorage) {
-        this.payload.entityStorage = {};
-      }
-      if (!this.payload.grid) {
-        this.payload.grid = {
-          items: [],
-          tooltip: false,
-          gap: false,
-          gapSize: 5,
-          defaultImage: undefined,
-          cellHeight: 25,
-          cellWidth: 25,
-          attribute: '',
-        };
-      }
+      initFunc(this.payload)
     }
 
     // get state

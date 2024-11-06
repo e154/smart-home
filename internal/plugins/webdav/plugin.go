@@ -112,10 +112,14 @@ func (p *plugin) Options() m.PluginOptions {
 
 // ServeHTTP ...
 func (p *plugin) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	username, password, _ := r.BasicAuth()
 
-	if p.settings[AttrAnonymous].Bool() ||
-		username == p.settings[AttrUser].String() && password == p.settings[AttrPassword].Decrypt() {
+	if p.settings[AttrAnonymous].Bool() {
+		p.server.ServeHTTP(w, r)
+		return
+	}
+
+	username, password, _ := r.BasicAuth()
+	if _, err := p.Service.Authorization().AuthPlain(username, password); err == nil {
 		p.server.ServeHTTP(w, r)
 		return
 	}

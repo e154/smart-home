@@ -51,7 +51,6 @@ func TestMain(m *testing.M) {
 		_ *logging.Logging,
 		migrations *migrations.Migrations,
 	) {
-
 		migrations.Purge()
 
 		time.Sleep(time.Millisecond * 500)

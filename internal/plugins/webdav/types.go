@@ -32,22 +32,12 @@ const (
 	// Name ...
 	Name = "webdav"
 
-	AttrUser      = "user"
-	AttrPassword  = "password"
 	AttrAnonymous = "anonymous"
 )
 
 // NewSettings ...
 func NewSettings() m.Attributes {
 	return m.Attributes{
-		AttrUser: {
-			Name: AttrUser,
-			Type: commonPkg.AttributeString,
-		},
-		AttrPassword: {
-			Name: AttrPassword,
-			Type: commonPkg.AttributeEncrypted,
-		},
 		AttrAnonymous: {
 			Name: AttrAnonymous,
 			Type: commonPkg.AttributeBool,

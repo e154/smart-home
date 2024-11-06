@@ -588,6 +588,89 @@ declare global {
     pop(key: string): string;
   }
 
+  /**
+   * Interface for push new variable in storage V2.
+   */
+  interface VariablePushRequest {
+    name: string;
+    value: string;
+    tags?: string[];
+  }
+
+  /**
+   * Interface for list variables in storage V2.
+   */
+  interface ListVariableOptions {
+    limit: number;
+    offset: number;
+    orderBy: string;
+    sort: string;
+    system?: boolean;
+    name?: string;
+    query?: string;
+    tags?: string[];
+    entityIds?: string[];
+  }
+
+  interface Tag {
+    id: number;
+    name: string;
+  }
+
+  interface Variable {
+    created_at?: string;
+    updated_at?: string;
+    name: string;
+    value: string;
+    entity_id?: string;
+    system?: boolean;
+    tags?: Tag[];
+  }
+
+  interface VariableListResponse {
+    items: Variable[];
+    total: number;
+    error?: string;
+  }
+
+  interface GetByNameResponse {
+    variable?: Variable;
+    error?: string;
+  }
+
+  /**
+   * Interface for storage management V2.
+   */
+  interface Variable {
+    /**
+     * Adds a value to the store using the specified key.
+     * @param {VariablePushRequest} request - The value to add.
+     * @returns {string} - Error, if it exists.
+     */
+    push(request: VariablePushRequest): string;
+
+    /**
+     * Retrieves a value from storage for the specified key.
+     * @param {GetByNameResponse} key - The key to get the value.
+     * @returns {string} - The returned value.
+     */
+    getByName(key: string): GetByNameResponse;
+
+    /**
+     * Searches the storage for values using the specified key.
+     * @param {ListVariableOptions} request - Params to search for values.
+     * @returns {VariableListResponse} - Found values as an object.
+     */
+    list(request: ListVariableOptions): VariableListResponse;
+
+    /**
+     * Removes and returns a value from storage for the specified key.
+     * @param {string} key - The key to delete the value.
+     * @returns {string} - Error, if it exists.
+     */
+    delete(key: string): string;
+  }
+
   /////////////////////////////
   /// system events
   /////////////////////////////

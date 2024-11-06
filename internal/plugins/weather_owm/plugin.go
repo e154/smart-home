@@ -24,6 +24,7 @@ import (
 
 	"github.com/e154/smart-home/internal/plugins/weather"
 	"github.com/e154/smart-home/internal/system/supervisor"
+	"github.com/e154/smart-home/pkg/events"
 	"github.com/e154/smart-home/pkg/logger"
 	m "github.com/e154/smart-home/pkg/models"
 	"github.com/e154/smart-home/pkg/plugins"
@@ -106,6 +107,21 @@ func (p plugin) Name() string {
 
 func (p *plugin) eventHandler(_ string, msg interface{}) {
 
+	switch v := msg.(type) {
+	case events.EventCallEntityAction:
+		values, ok := p.Check(v)
+		if !ok {
+			return
+		}
+
+		for _, value := range values {
+			actor := value.(*Actor)
+			go actor.update()
+		}
+
+	default:
+		//fmt.Printf("new event: %v\n", reflect.TypeOf(v).String())
+	}
 }
 
 // Depends ...
@@ -116,9 +132,11 @@ func (p *plugin) Depends() []string {
 // Options ...
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
-		Actors:      true,
-		ActorAttrs:  weather.BaseForecast(),
-		ActorStates: plugins.ToEntityStateShort(weather.NewActorStates(false, false)),
-		ActorSetts:  NewSettings(),
+		Actors:             true,
+		ActorAttrs:         weather.BaseForecast(),
+		ActorStates:        plugins.ToEntityStateShort(weather.NewActorStates(false, false)),
+		ActorSetts:         NewSettings(),
+		ActorCustomActions: true,
+		ActorActions:       plugins.ToEntityActionShort(NewActions()),
 	}
 }

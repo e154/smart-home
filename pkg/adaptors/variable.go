@@ -30,6 +30,52 @@ type VariableRepo interface {
 	GetByName(ctx context.Context, name string) (ver m.Variable, err error)
 	Delete(ctx context.Context, name string) (err error)
 	DeleteTags(ctx context.Context, name string) (err error)
-	List(ctx context.Context, limit, offset int64, orderBy, sort string, system bool, name string) (list []m.Variable, total int64, err error)
+	List(ctx context.Context, options *ListVariableOptions) (list []m.Variable, total int64, err error)
 	Search(ctx context.Context, query string, limit, offset int) (list []m.Variable, total int64, err error)
+}
+
+type ListVariableOptions struct {
+	Limit     int       `json:"limit"`
+	Offset    int       `json:"offset"`
+	OrderBy   string    `json:"orderBy"`
+	Sort      string    `json:"sort"`
+	System    *bool     `json:"system"`
+	Names     []string  `json:"names"`
+	Query     *string   `json:"query"`
+	Tags      *[]string `json:"tags"`
+	EntityIds *[]string `json:"entityIds"`
+}
+
+func NewListVariableOptions(limit, offset int64, orderBy, sort string) *ListVariableOptions {
+	return &ListVariableOptions{
+		Limit:   int(limit),
+		Offset:  int(offset),
+		OrderBy: orderBy,
+		Sort:    sort,
+	}
+}
+
+func (v *ListVariableOptions) WithSystem(system bool) *ListVariableOptions {
+	v.System = &system
+	return v
+}
+
+func (v *ListVariableOptions) WithNames(names []string) *ListVariableOptions {
+	v.Names = names
+	return v
+}
+
+func (v *ListVariableOptions) WithQuery(query *string) *ListVariableOptions {
+	v.Query = query
+	return v
+}
+
+func (v *ListVariableOptions) WithTags(tags *[]string) *ListVariableOptions {
+	v.Tags = tags
+	return v
+}
+
+func (v *ListVariableOptions) WithEntity(entityIds *[]string) *ListVariableOptions {
+	v.EntityIds = entityIds
+	return v
 }

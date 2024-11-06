@@ -112,7 +112,9 @@ func (g *GateClient) initWspServer() {
 		g.proxy = nil
 	}
 
-	list, _, err := g.adaptors.Variable.List(context.Background(), 7, 0, "", "", true, "gateClientId,gateClientSecretKey,gateClientServerHost,gateClientServerPort,gateClientPoolIdleSize,gateClientPoolMaxSize,gateClientTLS")
+	options := adaptors.NewListVariableOptions(7, 0, "", "").
+		WithNames([]string{"gateClientId", "gateClientSecretKey", "gateClientServerHost", "gateClientServerPort", "gateClientPoolIdleSize", "gateClientPoolMaxSize", "gateClientTLS"})
+	list, _, err := g.adaptors.Variable.List(context.Background(), options)
 	if err != nil {
 		log.Error(err.Error())
 		return

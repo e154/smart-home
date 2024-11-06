@@ -22,10 +22,10 @@ import (
 	"context"
 
 	"github.com/e154/bus"
-	"github.com/e154/smart-home/internal/system/access_list"
 	"github.com/e154/smart-home/internal/system/automation"
 	"github.com/e154/smart-home/internal/system/cache"
 	"github.com/e154/smart-home/internal/system/jwt_manager"
+	"github.com/e154/smart-home/internal/system/rbac/access_list"
 	"github.com/e154/smart-home/internal/system/validation"
 	"github.com/e154/smart-home/internal/system/zigbee2mqtt"
 	"github.com/e154/smart-home/pkg/adaptors"
@@ -41,9 +41,9 @@ type CommonEndpoint struct {
 	accessList    access_list.AccessListService
 	scriptService scripts.ScriptService
 	zigbee2mqtt   zigbee2mqtt.Zigbee2mqtt
-	eventBus   bus.Bus
-	supervisor plugins.Supervisor
-	mqtt       mqtt.MqttServ
+	eventBus      bus.Bus
+	supervisor    plugins.Supervisor
+	mqtt          mqtt.MqttServ
 	jwtManager    jwt_manager.JwtManager
 	validation    *validation.Validate
 	appConfig     *m.AppConfig

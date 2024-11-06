@@ -22,7 +22,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	web2 "github.com/e154/smart-home/internal/common/web"
+	web2 "github.com/e154/smart-home/internal/system/web"
 	m "github.com/e154/smart-home/pkg/models"
 	"github.com/e154/smart-home/pkg/web"
 

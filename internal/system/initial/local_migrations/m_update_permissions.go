@@ -21,9 +21,9 @@ package local_migrations
 import (
 	"context"
 
-	"github.com/e154/smart-home/internal/system/access_list"
 	. "github.com/e154/smart-home/internal/system/initial/assertions"
 	"github.com/e154/smart-home/internal/system/orm"
+	"github.com/e154/smart-home/internal/system/rbac/access_list"
 	"github.com/e154/smart-home/pkg/adaptors"
 	"github.com/e154/smart-home/pkg/models"
 )

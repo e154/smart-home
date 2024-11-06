@@ -17,5 +17,5 @@ smart-home-common.tar.gz
 /coverage.out
 /webdav
 /data/plugins/*
-libvosk.dylib
 .air.toml
+dist

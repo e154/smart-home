@@ -26,7 +26,7 @@ import (
 	"github.com/e154/smart-home/internal/plugins/email"
 	"github.com/e154/smart-home/internal/plugins/notify"
 	notifyCommon "github.com/e154/smart-home/internal/plugins/notify/common"
-	access_list2 "github.com/e154/smart-home/internal/system/access_list"
+	"github.com/e154/smart-home/internal/system/rbac/access_list"
 	"github.com/e154/smart-home/pkg/apperr"
 	"github.com/e154/smart-home/pkg/events"
 	"github.com/e154/smart-home/pkg/models"
@@ -173,7 +173,7 @@ func (a *AuthEndpoint) PasswordReset(ctx context.Context, userEmail string, toke
 }
 
 // AccessList ...
-func (a *AuthEndpoint) AccessList(ctx context.Context, user *models.User, accessListService access_list2.AccessListService) (accessList *access_list2.AccessList, err error) {
+func (a *AuthEndpoint) AccessList(ctx context.Context, user *models.User, accessListService access_list.AccessListService) (accessList *access_list.AccessList, err error) {
 	accessList = accessListService.List(ctx)
 	return
 }

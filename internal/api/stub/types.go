@@ -2303,7 +2303,10 @@ type VariableServiceGetVariableListParams struct {
 	Page *ListPage `form:"page,omitempty" json:"page,omitempty"`
 
 	// Limit The number of results returned on a page
-	Limit *ListLimit `form:"limit,omitempty" json:"limit,omitempty"`
+	Limit    *ListLimit `form:"limit,omitempty" json:"limit,omitempty"`
+	Query    *Query     `form:"query,omitempty" json:"query,omitempty"`
+	Tags     *Tags      `form:"tags[],omitempty" json:"tags[],omitempty"`
+	EntityId *EntityIds `form:"entityId[],omitempty" json:"entityId[],omitempty"`
 }
 
 // VariableServiceSearchVariableParams defines parameters for VariableServiceSearchVariable.

@@ -23,6 +23,7 @@ import (
 	"fmt"
 
 	"github.com/e154/smart-home/internal/common"
+	"github.com/e154/smart-home/pkg/adaptors"
 	"github.com/e154/smart-home/pkg/apperr"
 	"github.com/e154/smart-home/pkg/events"
 	m "github.com/e154/smart-home/pkg/models"
@@ -58,7 +59,7 @@ func (v *VariableEndpoint) Add(ctx context.Context, variable m.Variable) (err er
 		Value: variable.Value,
 	})
 
-	log.Infof("added new variable %s", variable.Name)
+	log.Infof("added or updated variable %s", variable.Name)
 
 	return
 }
@@ -117,10 +118,11 @@ func (v *VariableEndpoint) Update(ctx context.Context, _variable m.Variable) (er
 }
 
 // GetList ...
-func (v *VariableEndpoint) GetList(ctx context.Context, pagination common.PageParams) (list []m.Variable, total int64, err error) {
+func (v *VariableEndpoint) GetList(ctx context.Context, pagination common.PageParams, query *string, tags *[]string, entityIds *[]string) (list []m.Variable, total int64, err error) {
 
-	list, total, err = v.adaptors.Variable.List(ctx, pagination.Limit, pagination.Offset, pagination.Order,
-		pagination.SortBy, false, "")
+	options := adaptors.NewListVariableOptions(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy).
+		WithQuery(query).WithTags(tags).WithEntity(entityIds)
+	list, total, err = v.adaptors.Variable.List(ctx, options)
 	return
 }
 

@@ -70,9 +70,9 @@ func (n *Variable) Delete(ctx context.Context, name string) (err error) {
 }
 
 // List ...
-func (n *Variable) List(ctx context.Context, limit, offset int64, orderBy, sort string, system bool, name string) (list []models.Variable, total int64, err error) {
+func (n *Variable) List(ctx context.Context, options *adaptors.ListVariableOptions) (list []models.Variable, total int64, err error) {
 	var dbList []db.Variable
-	if dbList, total, err = n.table.List(ctx, int(limit), int(offset), orderBy, sort, system, name); err != nil {
+	if dbList, total, err = n.table.List(ctx, options); err != nil {
 		return
 	}
 

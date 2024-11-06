@@ -142,7 +142,7 @@ func (p *pluginManager) loadPlugin(ctx context.Context, name string, ext bool) (
 
 	if ext {
 		if err = p.ExternalPlugins.loadGoPlugin(name); err != nil {
-			err = errors.Wrap(apperr.ErrPluginUpload, err.Error())
+			err = errors.Wrap(apperr.ErrPluginLoadExternal, err.Error())
 			return
 		}
 	}
@@ -268,6 +268,7 @@ func (p *pluginManager) RemovePlugin(ctx context.Context, name string) error {
 	}
 
 	if err := p.ExternalPlugins.loadGoPlugin(name); err != nil {
+		err = errors.Wrap(apperr.ErrPluginLoadExternal, err.Error())
 		log.Warn(err.Error())
 	}
 

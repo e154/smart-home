@@ -19,7 +19,7 @@
 package onvif
 
 import (
-	"github.com/e154/smart-home/internal/system/media"
+	"github.com/e154/smart-home/internal/plugins/media/server"
 	"github.com/e154/smart-home/internal/system/supervisor"
 	"github.com/e154/smart-home/pkg/common"
 	"github.com/e154/smart-home/pkg/events"
@@ -74,7 +74,7 @@ func NewActor(entity *m.Entity,
 }
 
 func (a *Actor) Destroy() {
-	a.Service.EventBus().Publish("system/media", media.EventRemoveList{Name: a.Id.String()})
+	a.Service.EventBus().Publish("system/media", server.EventRemoveList{Name: a.Id.String()})
 	go a.client.Shutdown()
 }
 
@@ -157,7 +157,7 @@ func (a *Actor) prepareMotionAlarm(event *MotionAlarm) {
 
 func (a *Actor) prepareStreamList(event *StreamList) {
 	a.snapshotUri = event.SnapshotUri
-	a.Service.EventBus().Publish("system/media", media.EventUpdateList{
+	a.Service.EventBus().Publish("system/media", server.EventUpdateList{
 		Name:     a.Id.String(),
 		Channels: event.List,
 	})

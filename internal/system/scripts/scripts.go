@@ -23,6 +23,7 @@ import (
 
 	"github.com/e154/smart-home/internal/system/scripts/bind"
 	"github.com/e154/smart-home/internal/system/storage"
+	"github.com/e154/smart-home/internal/system/validation"
 	"github.com/e154/smart-home/pkg/adaptors"
 	"github.com/e154/smart-home/pkg/common/encryptor"
 	"github.com/e154/smart-home/pkg/events"
@@ -46,6 +47,7 @@ type scriptService struct {
 	storage    *storage.Storage
 	eventBus   bus.Bus
 	adaptors   *adaptors.Adaptors
+	validation *validation.Validate
 }
 
 // NewScriptService ...
@@ -53,7 +55,8 @@ func NewScriptService(lc fx.Lifecycle,
 	cfg *models.AppConfig,
 	storage *storage.Storage,
 	eventBus bus.Bus,
-	adaptors *adaptors.Adaptors) scripts.ScriptService {
+	adaptors *adaptors.Adaptors,
+	validation *validation.Validate) scripts.ScriptService {
 
 	s := &scriptService{
 		cfg:        cfg,
@@ -62,6 +65,7 @@ func NewScriptService(lc fx.Lifecycle,
 		storage:    storage,
 		eventBus:   eventBus,
 		adaptors:   adaptors,
+		validation: validation,
 	}
 
 	s.bind()
@@ -133,6 +137,7 @@ func (s *scriptService) bind() {
 	s.PushFunctions("Encrypt", encryptor.EncryptBind)
 	s.PushFunctions("Decrypt", encryptor.DecryptBind)
 	s.PushStruct("Storage", bind.NewStorageBind(s.storage))
+	s.PushStruct("Variable", bind.NewVariable(s.adaptors, s.validation, s.eventBus))
 	s.PushStruct("http", bind.NewHttpBind())
 	s.PushStruct("HTTP", bind.NewHttpBind())
 }

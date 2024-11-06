@@ -25,7 +25,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/e154/smart-home/internal/common/web/urlpath"
+	"github.com/e154/smart-home/internal/common/urlpath"
 	"github.com/e154/smart-home/internal/system/supervisor"
 	m "github.com/e154/smart-home/pkg/models"
 	"github.com/e154/smart-home/pkg/plugins"

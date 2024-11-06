@@ -62,8 +62,6 @@ func NewAuthenticator(adaptors *adaptors.Adaptors) mqtt.MqttAuthenticator {
 // Authenticate ...
 func (a *Authenticator) Authenticate(login string, pass interface{}) (err error) {
 
-	log.Infof("login: \"%v\", pass: \"%v\"", login, pass)
-
 	password, ok := pass.(string)
 	if !ok || password == "" {
 		err = apperr.ErrBadLoginOrPassword
@@ -97,9 +95,14 @@ func (a *Authenticator) Authenticate(login string, pass interface{}) (err error)
 
 	var user *m.User
 	if user, err = a.adaptors.User.GetByNickname(context.Background(), login); err != nil {
-		err = errors.Wrap(apperr.ErrUnauthorized, fmt.Sprintf("email %s", login))
-		return
-	} else if !user.CheckPass(password) {
+		if user, err = a.adaptors.User.GetByEmail(context.Background(), login); err != nil {
+			err = errors.Wrap(apperr.ErrUnauthorized, fmt.Sprintf("email %s", login))
+			log.Warnf("failed login attempt: \"%v\", pass: \"%v\"", login, pass)
+			return
+		}
+	}
+
+	if !user.CheckPass(password) {
 		err = apperr.ErrPassNotValid
 		return
 	} else if user.Status == "blocked" {

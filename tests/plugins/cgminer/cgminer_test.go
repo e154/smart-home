@@ -20,6 +20,7 @@ package cgminer
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
@@ -159,7 +160,7 @@ entityAction = (entityId, actionName)->
 	}
 
 	Convey("cgminer", t, func(ctx C) {
-		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
+		err := container.Invoke(func(adaptors *adaptors.Adaptors,
 			scriptService scripts.ScriptService,
 			supervisor plugins.Supervisor,
 			eventBus bus.Bus) {
@@ -383,5 +384,8 @@ entityAction = (entityId, actionName)->
 			})
 
 		})
+		if err != nil {
+			fmt.Println(err.Error())
+		}
 	})
 }

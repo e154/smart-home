@@ -141,6 +141,13 @@ func (s *Storage) pop(name string) (val string, err error) {
 	if err = s.adaptors.Variable.Delete(context.Background(), name); err != nil {
 		return
 	}
+
+	s.eventBus.Publish(fmt.Sprintf("system/models/variables/%s", name), events.EventRemovedVariableModel{
+		Name: name,
+	})
+
+	log.Infof("variable %s was deleted", name)
+
 	s.pool.Delete(name)
 	return
 }

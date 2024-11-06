@@ -30,14 +30,16 @@ import (
 )
 
 type service struct {
-	bus           bus.Bus
-	adaptors      *adaptors.Adaptors
-	supervisor    plugins.Supervisor
-	scriptService scripts.ScriptService
-	mqttServ      mqtt.MqttServ
-	appConfig     *models.AppConfig
-	scheduler     scheduler.Scheduler
-	crawler       web.Crawler
+	bus              bus.Bus
+	adaptors         *adaptors.Adaptors
+	supervisor       plugins.Supervisor
+	scriptService    scripts.ScriptService
+	mqttServ         mqtt.MqttServ
+	appConfig        *models.AppConfig
+	scheduler        scheduler.Scheduler
+	crawler          web.Crawler
+	authorization    plugins.Authorization
+	httpAccessFilter plugins.HttpAccessFilter
 }
 
 // Plugins ...
@@ -89,4 +91,14 @@ func (s service) Scheduler() scheduler.Scheduler {
 // Crawler ...
 func (s service) Crawler() web.Crawler {
 	return s.crawler
+}
+
+// Authorization ...
+func (s service) Authorization() plugins.Authorization {
+	return s.authorization
+}
+
+// HttpAccessFilter ...
+func (s service) HttpAccessFilter() plugins.HttpAccessFilter {
+	return s.httpAccessFilter
 }

@@ -11,7 +11,7 @@ import (
 	"github.com/e154/smart-home/internal/api/dto"
 	"github.com/e154/smart-home/internal/common"
 	"github.com/e154/smart-home/internal/endpoint"
-	"github.com/e154/smart-home/internal/system/access_list"
+	"github.com/e154/smart-home/internal/system/rbac/access_list"
 	"github.com/e154/smart-home/internal/system/validation"
 	"github.com/e154/smart-home/pkg/apperr"
 	pkgCommon "github.com/e154/smart-home/pkg/common"

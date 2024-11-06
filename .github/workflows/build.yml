@@ -41,6 +41,7 @@ jobs:
         with:
           name: public_build
           path: ./build
+          retention-days: 1
 
       - name: Output artifact ID
         run: echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
@@ -63,23 +64,28 @@ jobs:
         with:
           name: common_build
           path: ./tmp/common
+          retention-days: 1
 
       - name: Output artifact ID
         run: echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
 
       - name: upload common artifact
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: ./common.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  build_linux_x86:
-    name: Build linux x86
-    strategy:
-      matrix:
-        go: [ 1.23 ]
+  build_artifacts:
+    name: Build artefacts
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        go_version:
+          - 1.23.0
+        include:
+          - target: artifact-all
     needs: [ build_public ]
     steps:
       - name: Set env
@@ -99,296 +105,67 @@ jobs:
           name: public_build
           path: ./build
 
-      - name: Go mod tidy
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: create .env
+        id: create-env
+        run: make create_env
+
+      - name: Configure environment
+        uses: c-py/action-dotenv-to-setenv@v2
+        with:
+          env-file: .env
+
+      - name: trying to build artefacts
+        uses: docker/bake-action@v5
+        with:
+          files: |
+            ./docker-bake.hcl
+            ${{ steps.meta.outputs.bake-file }}
+          targets: ${{ matrix.target }}
+          set: |
+            *.cache-from=type=gha,scope=base
+            goxx.args.GO_VERSION=${{ matrix.go_version }}
+
+      - name: List artifacts
+        if: ${{ matrix.target == 'artifact-all' }}
         run: |
-          echo -e "machine github.com\n  login ${{ secrets.GITHUBTOKEN }}" > ~/.netrc
-          make get_deps
+          tree -nh ./dist
 
-      - name: trying to build
-        id: build-linux-x86
-        run: make build_linux_x86
+      - name: Build archive
+        id: build-archive
+        run: make build_archive
 
-      - name: upload server linux x86
-        uses: softprops/action-gh-release@v1
+      - name: upload builds
+        uses: softprops/action-gh-release@v2
         with:
-          files: ./server-linux-x86.tar.gz
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  build_linux_amd64:
-    name: Build linux amd64
-    strategy:
-      matrix:
-        go: [ 1.23 ]
-    runs-on: ubuntu-latest
-    needs: [ build_public ]
-    steps:
-      - name: Set env
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-        env:
-          RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
-
-      - env:
-          OUTPUT1: ${{needs.build_public.outputs.output1}}
-        run: echo "Artifact ID from previous job is $OUTPUT1"
-
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: public_build
-          path: ./build
-
-      - name: Go mod tidy
-        run: |
-          echo -e "machine github.com\n  login ${{ secrets.GITHUBTOKEN }}" > ~/.netrc
-          make get_deps
-
-      - name: trying to build
-        id: build-linux-amd64
-        run: make build_linux_amd64
-
-      - name: upload server linux amd64
-        uses: softprops/action-gh-release@v1
-        with:
-          files: ./server-linux-amd64.tar.gz
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  build_linux_armv5:
-    name: Build linux arm5
-    strategy:
-      matrix:
-        go: [ 1.23 ]
-    runs-on: ubuntu-latest
-    needs: [ build_public ]
-    steps:
-
-      - env:
-          OUTPUT1: ${{needs.build_public.outputs.output1}}
-        run: echo "Artifact ID from previous job is $OUTPUT1"
-
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: public_build
-          path: ./build
-
-      - name: Go mod tidy
-        run: |
-          echo -e "machine github.com\n  login ${{ secrets.GITHUBTOKEN }}" > ~/.netrc
-          make get_deps
-
-      - name: trying to build
-        id: build-linux-arm-5
-        run: make build_linux_armv5
-
-      - name: upload server linux armv5
-        uses: softprops/action-gh-release@v1
-        with:
-          files: ./server-linux-arm-5.tar.gz
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  build_linux_arm6:
-    name: Build linux arm6
-    strategy:
-      matrix:
-        go: [ 1.23 ]
-    runs-on: ubuntu-latest
-    needs: [ build_public ]
-    steps:
-
-      - env:
-          OUTPUT1: ${{needs.build_public.outputs.output1}}
-        run: echo "Artifact ID from previous job is $OUTPUT1"
-
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: public_build
-          path: ./build
-
-      - name: Go mod tidy
-        run: |
-          echo -e "machine github.com\n  login ${{ secrets.GITHUBTOKEN }}" > ~/.netrc
-          make get_deps
-
-      - name: trying to build
-        id: build-linux-arm-6
-        run: make build_linux_armv6
-
-      - name: upload server linux armv6
-        uses: softprops/action-gh-release@v1
-        with:
-          files: ./server-linux-arm-6.tar.gz
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  build_linux_arm7:
-    name: Build linux arm7
-    strategy:
-      matrix:
-        go: [ 1.23 ]
-    runs-on: ubuntu-latest
-    needs: [ build_public ]
-    steps:
-      - name: Set env
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-        env:
-          RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
-
-      - env:
-          OUTPUT1: ${{needs.build_public.outputs.output1}}
-        run: echo "Artifact ID from previous job is $OUTPUT1"
-
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: public_build
-          path: ./build
-
-      - name: Go mod tidy
-        run: |
-          echo -e "machine github.com\n  login ${{ secrets.GITHUBTOKEN }}" > ~/.netrc
-          make get_deps
-
-      - name: trying to build
-        id: build-linux-armv7l
-        run: make build_linux_armv7l
-
-      - name: upload server linux armv7
-        uses: softprops/action-gh-release@v1
-        with:
-          files: ./server-linux-arm-7.tar.gz
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  build_linux_arm64:
-    name: Build linux arm64
-    strategy:
-      matrix:
-        go: [ 1.23 ]
-    runs-on: ubuntu-latest
-    needs: [ build_public ]
-    steps:
-      - name: Set env
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-        env:
-          RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
-
-      - env:
-          OUTPUT1: ${{needs.build_public.outputs.output1}}
-        run: echo "Artifact ID from previous job is $OUTPUT1"
-
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: public_build
-          path: ./build
-
-      - name: Go mod tidy
-        run: |
-          echo -e "machine github.com\n  login ${{ secrets.GITHUBTOKEN }}" > ~/.netrc
-          make get_deps
-
-      - name: trying to build
-        id: build-linux-arm64
-        run: make build_linux_arm64
-
-      - name: upload server linux arm64
-        uses: softprops/action-gh-release@v1
-        with:
-          files: ./server-linux-arm64.tar.gz
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  build_windows_amd64:
-    name: Build windows amd64
-    strategy:
-      matrix:
-        go: [ 1.23 ]
-    runs-on: ubuntu-latest
-    needs: [ build_public ]
-    steps:
-
-      - env:
-          OUTPUT1: ${{needs.build_public.outputs.output1}}
-        run: echo "Artifact ID from previous job is $OUTPUT1"
-
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: public_build
-          path: ./build
-
-      - name: Go mod tidy
-        run: |
-          echo -e "machine github.com\n  login ${{ secrets.GITHUBTOKEN }}" > ~/.netrc
-          make get_deps
-
-      - name: trying to build
-        id: build-windows-amd64
-        run: make build_windows_amd64
-
-      - name: upload server linux arm64
-        uses: softprops/action-gh-release@v1
-        with:
-          files: ./server-windows-amd64.tar.gz
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  build_windows_x86:
-    name: Build windows x86
-    strategy:
-      matrix:
-        go: [ 1.23 ]
-    runs-on: ubuntu-latest
-    needs: [ build_public ]
-    steps:
-
-      - env:
-          OUTPUT1: ${{needs.build_public.outputs.output1}}
-        run: echo "Artifact ID from previous job is $OUTPUT1"
-
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: public_build
-          path: ./build
-
-      - name: Go mod tidy
-        run: |
-          echo -e "machine github.com\n  login ${{ secrets.GITHUBTOKEN }}" > ~/.netrc
-          make get_deps
-
-      - name: trying to build
-        id: build-windows-x86
-        run: make build_windows_x86
-
-      - name: upload server linux 386
-        uses: softprops/action-gh-release@v1
-        with:
-          files: ./server-windows-x86.tar.gz
+          files: |
+            ./linux_amd64.tar.gz
+            ./linux_arm64.tar.gz
+            ./linux_arm_v6.tar.gz
+            ./linux_arm_v7.tar.gz
+            ./linux_ppc64le.tar.gz
+            ./linux_riscv64.tar.gz
+            ./linux_s390x.tar.gz
+            ./windows_amd64.tar.gz
+            ./windows_arm64.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   docker_image_upload:
     name: Upload docker images
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        go_version:
+          - 1.23.0
+        include:
+          - target: image-all
     needs: [ build_public ]
     steps:
       - name: Set env
@@ -404,5 +181,36 @@ jobs:
           name: public_build
           path: ./build
 
-      - name: trying to upload docker image
-        run: make publish
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: create .env
+        id: create-env
+        run: make create_env
+
+      - name: Configure environment
+        uses: c-py/action-dotenv-to-setenv@v2
+        with:
+          env-file: .env
+
+      - name: Login to DockerHub
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: trying to build artefacts
+        uses: docker/bake-action@v5
+        with:
+          files: |
+            ./docker-bake.hcl
+            ${{ steps.meta.outputs.bake-file }}
+          targets: ${{ matrix.target }}
+          set: |
+            *.cache-from=type=gha,scope=base
+            goxx.args.GO_VERSION=${{ matrix.go_version }}
+          push: true

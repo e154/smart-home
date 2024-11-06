@@ -20,7 +20,7 @@ package controllers
 
 import (
 	"github.com/e154/smart-home/internal/endpoint"
-	"github.com/e154/smart-home/internal/system/access_list"
+	"github.com/e154/smart-home/internal/system/rbac/access_list"
 	"github.com/e154/smart-home/internal/system/stream/handlers"
 	"github.com/e154/smart-home/internal/system/validation"
 	m "github.com/e154/smart-home/pkg/models"
@@ -57,9 +57,6 @@ type Controllers struct {
 	*ControllerMessageDelivery
 	*ControllerIndex
 	*ControllerMqtt
-	*ControllerMedia
-	*ControllerWebdav
-	*ControllerWebhook
 }
 
 // NewControllers ...
@@ -100,8 +97,5 @@ func NewControllers(
 		ControllerMessageDelivery:   NewControllerMessageDelivery(common),
 		ControllerIndex:             NewControllerIndex(common),
 		ControllerMqtt:              NewControllerMqtt(common),
-		ControllerMedia:             NewControllerMedia(common),
-		ControllerWebdav:            NewControllerWebdav(common),
-		ControllerWebhook:           NewControllerWebhook(common),
 	}
 }

@@ -84,7 +84,7 @@ func (c ControllerVariable) VariableServiceGetVariableByName(ctx echo.Context, n
 func (c ControllerVariable) VariableServiceGetVariableList(ctx echo.Context, params stub.VariableServiceGetVariableListParams) error {
 
 	pagination := c.Pagination(params.Page, params.Limit, params.Sort)
-	items, total, err := c.endpoint.Variable.GetList(ctx.Request().Context(), pagination)
+	items, total, err := c.endpoint.Variable.GetList(ctx.Request().Context(), pagination, params.Query, params.Tags, params.EntityId)
 	if err != nil {
 		return c.ERROR(ctx, err)
 	}

@@ -20,9 +20,9 @@ package container
 
 import (
 	"github.com/e154/smart-home/internal/endpoint"
-	"github.com/e154/smart-home/internal/system/access_list"
 	local_migrations2 "github.com/e154/smart-home/internal/system/initial/local_migrations"
 	"github.com/e154/smart-home/internal/system/orm"
+	"github.com/e154/smart-home/internal/system/rbac/access_list"
 	"github.com/e154/smart-home/internal/system/validation"
 	"github.com/e154/smart-home/pkg/adaptors"
 	"github.com/e154/smart-home/pkg/scripts"
@@ -64,5 +64,6 @@ func MigrationList(adaptors *adaptors.Adaptors,
 		local_migrations2.NewMigrationWebhook(adaptors),
 		local_migrations2.NewMigrationRemoveTriggersPlugin(adaptors),
 		local_migrations2.NewMigrationMdns(adaptors),
+		local_migrations2.NewMigrationMedia(adaptors),
 	}
 }
