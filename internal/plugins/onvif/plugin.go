@@ -24,8 +24,8 @@ import (
 	"sync"
 	"time"
 
-	web2 "github.com/e154/smart-home/internal/common/web"
 	"github.com/e154/smart-home/internal/system/supervisor"
+	web2 "github.com/e154/smart-home/internal/system/web"
 	"github.com/e154/smart-home/pkg/common"
 	"github.com/e154/smart-home/pkg/events"
 	"github.com/e154/smart-home/pkg/logger"

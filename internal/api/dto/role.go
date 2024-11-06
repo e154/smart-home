@@ -20,7 +20,7 @@ package dto
 
 import (
 	"github.com/e154/smart-home/internal/api/stub"
-	"github.com/e154/smart-home/internal/system/access_list"
+	"github.com/e154/smart-home/internal/system/rbac/access_list"
 	m "github.com/e154/smart-home/pkg/models"
 )
 

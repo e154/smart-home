@@ -23,9 +23,7 @@ import (
 	"github.com/e154/smart-home/internal/adaptors"
 	"github.com/e154/smart-home/internal/api"
 	"github.com/e154/smart-home/internal/api/controllers"
-	"github.com/e154/smart-home/internal/common/web"
 	"github.com/e154/smart-home/internal/endpoint"
-	"github.com/e154/smart-home/internal/system/access_list"
 	"github.com/e154/smart-home/internal/system/automation"
 	"github.com/e154/smart-home/internal/system/backup"
 	"github.com/e154/smart-home/internal/system/gate/client"
@@ -35,12 +33,14 @@ import (
 	"github.com/e154/smart-home/internal/system/logging"
 	"github.com/e154/smart-home/internal/system/logging_db"
 	"github.com/e154/smart-home/internal/system/logging_ws"
-	"github.com/e154/smart-home/internal/system/media"
 	"github.com/e154/smart-home/internal/system/migrations"
 	"github.com/e154/smart-home/internal/system/mqtt"
 	"github.com/e154/smart-home/internal/system/mqtt_authenticator"
 	"github.com/e154/smart-home/internal/system/orm"
 	"github.com/e154/smart-home/internal/system/rbac"
+	"github.com/e154/smart-home/internal/system/rbac/access_list"
+	"github.com/e154/smart-home/internal/system/rbac/rbac_echo"
+	"github.com/e154/smart-home/internal/system/rbac/rbac_http"
 	"github.com/e154/smart-home/internal/system/scheduler"
 	"github.com/e154/smart-home/internal/system/scripts"
 	"github.com/e154/smart-home/internal/system/storage"
@@ -49,6 +49,7 @@ import (
 	"github.com/e154/smart-home/internal/system/supervisor"
 	"github.com/e154/smart-home/internal/system/terminal"
 	"github.com/e154/smart-home/internal/system/validation"
+	"github.com/e154/smart-home/internal/system/web"
 	"github.com/e154/smart-home/internal/system/zigbee2mqtt"
 	"go.uber.org/fx"
 )
@@ -68,6 +69,7 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 			migrations.NewMigrations,
 			web.New,
 			adaptors.NewAdaptors,
+			rbac.NewAuthenticator,
 			scheduler.NewScheduler,
 			NewLoggerConfig,
 			logging.NewLogger,
@@ -79,13 +81,13 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 			MigrationList,
 			localMigrations.NewMigrations,
 			NewDemo,
-			media.NewMedia,
 			initial.NewInitial,
 			NewMqttConfig,
 			mqtt_authenticator.NewAuthenticator,
 			mqtt.NewMqtt,
 			access_list.NewAccessListService,
-			rbac.NewEchoAccessFilter,
+			rbac_echo.NewEchoAccessFilter,
+			rbac_http.NewHttpAccessFilter,
 			jwt_manager.NewJwtManager,
 			NewZigbee2mqttConfig,
 			zigbee2mqtt.NewZigbee2mqtt,

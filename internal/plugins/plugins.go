@@ -29,6 +29,7 @@ import (
 	_ "github.com/e154/smart-home/internal/plugins/html5_notify"
 	_ "github.com/e154/smart-home/internal/plugins/logs"
 	_ "github.com/e154/smart-home/internal/plugins/mdns"
+	_ "github.com/e154/smart-home/internal/plugins/media"
 	_ "github.com/e154/smart-home/internal/plugins/memory"
 	_ "github.com/e154/smart-home/internal/plugins/memory_app"
 	_ "github.com/e154/smart-home/internal/plugins/messagebird"

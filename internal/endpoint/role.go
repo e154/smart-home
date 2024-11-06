@@ -22,7 +22,7 @@ import (
 	"context"
 
 	"github.com/e154/smart-home/internal/common"
-	access_list2 "github.com/e154/smart-home/internal/system/access_list"
+	"github.com/e154/smart-home/internal/system/rbac/access_list"
 	"github.com/e154/smart-home/pkg/apperr"
 	"github.com/e154/smart-home/pkg/models"
 
@@ -159,7 +159,7 @@ func (n *RoleEndpoint) Search(ctx context.Context, query string, limit, offset i
 
 // GetAccessList ...
 func (n *RoleEndpoint) GetAccessList(ctx context.Context, roleName string,
-	accessListService access_list2.AccessListService) (accessList access_list2.AccessList, err error) {
+	accessListService access_list.AccessListService) (accessList access_list.AccessList, err error) {
 
 	var role *models.Role
 	role, err = n.adaptors.Role.GetByName(ctx, roleName)

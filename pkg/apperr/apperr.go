@@ -171,6 +171,7 @@ var (
 	ErrPluginNotLoaded       = ErrorWithCode("PLUGIN_NOT_LOADED", "plugin not loaded", ErrInvalidRequest)
 	ErrPluginUploadForbidden = ErrorWithCode("PLUGIN_UPLOAD_ERROR", "failed to upload plugin", ErrAccessForbidden)
 	ErrPluginUpload          = ErrorWithCode("PLUGIN_UPLOAD_ERROR", "failed to upload plugin", ErrInvalidRequest)
+	ErrPluginLoadExternal    = ErrorWithCode("PLUGIN_LOAD_EXTERNAL_ERROR", "failed load external plugin", ErrInternal)
 
 	ErrRoleAdd             = ErrorWithCode("ROLE_ADD_ERROR", "failed to add role", ErrInternal)
 	ErrRoleGet             = ErrorWithCode("ROLE_GET_ERROR", "failed to get role", ErrInternal)

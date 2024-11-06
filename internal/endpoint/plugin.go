@@ -22,8 +22,10 @@ import (
 	"bufio"
 	"context"
 	"mime/multipart"
+	"net/http"
 
 	"github.com/e154/smart-home/internal/common"
+	"github.com/e154/smart-home/internal/common/urlpath"
 	"github.com/e154/smart-home/pkg/apperr"
 	"github.com/e154/smart-home/pkg/models"
 	"github.com/e154/smart-home/pkg/plugins"
@@ -188,6 +190,38 @@ func (p *PluginEndpoint) Upload(ctx context.Context, files map[string][]*multipa
 
 		pluginList = append(pluginList, newPlugin)
 	}
+
+	return
+}
+
+// Custom ...
+func (p *PluginEndpoint) Custom(w http.ResponseWriter, r *http.Request) {
+
+	path := urlpath.New(r.URL.String())
+
+	pluginName := path.Segments[1].Const
+
+	if pluginName == "" {
+		http.Error(w, "Method Not Allowed", 405)
+		return
+	}
+
+	if isLoaded := p.supervisor.PluginIsLoaded(pluginName); !isLoaded {
+		http.Error(w, "Method Not Allowed", 405)
+		return
+	}
+
+	pl, err := p.supervisor.GetPlugin(pluginName)
+	if err != nil {
+		return
+	}
+
+	plugin, ok := pl.(http.Handler)
+	if !ok {
+		return
+	}
+
+	plugin.ServeHTTP(w, r)
 
 	return
 }

@@ -137,7 +137,7 @@ func (p *WeatherOwm) FetchData(name string, lat, lon float64, now time.Time, set
 
 	// get from storage
 	if zone, err = p.fetchFromLocalStorage(name); err == nil {
-		if zone.LoadedAt != nil && now.Sub(common.TimeValue(zone.LoadedAt)).Minutes() < 60 {
+		if zone.LoadedAt != nil && now.Sub(common.TimeValue(zone.LoadedAt)).Minutes() < 45 {
 			return
 		}
 	} else {

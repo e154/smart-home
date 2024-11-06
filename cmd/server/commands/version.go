@@ -27,11 +27,12 @@ import (
 )
 
 var (
+	mode       string
 	versionCmd = &cobra.Command{
 		Use:   "version",
 		Short: "The current version of the smart-home software package",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf(version.ShortVersionBanner, version.GetHumanVersion())
+			fmt.Printf(version.ShortVersionBanner, version.GetHumanVersion(), mode)
 		},
 	}
 )

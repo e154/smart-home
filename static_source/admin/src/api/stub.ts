@@ -6593,6 +6593,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
          * @format uint64
          */
         limit?: number;
+        query?: string;
+        "tags[]"?: string[];
+        "entityId[]"?: string[];
       },
       params: RequestParams = {},
     ) =>

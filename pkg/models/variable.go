@@ -30,7 +30,7 @@ import (
 type Variable struct {
 	CreatedAt time.Time        `json:"created_at"`
 	UpdatedAt time.Time        `json:"updated_at"`
-	Name      string           `json:"name"`
+	Name      string           `json:"name" validate:"required"`
 	Value     string           `json:"value"`
 	EntityId  *common.EntityId `json:"entity_id"`
 	System    bool             `json:"system"`

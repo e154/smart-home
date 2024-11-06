@@ -4,8 +4,8 @@ import {Table} from '@/components/Table'
 import {h, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
-import {ElButton, ElTag} from 'element-plus'
-import {ApiEntityShort, ApiVariable} from "@/api/stub";
+import {ElButton, ElTag, ElCollapse, ElCollapseItem} from 'element-plus'
+import {ApiEntityShort, ApiTag, ApiVariable} from "@/api/stub";
 import {useRouter} from "vue-router";
 import {ContentWrap} from "@/components/ContentWrap";
 import {useCache} from "@/hooks/web/useCache";
@@ -13,16 +13,22 @@ import {UUID} from "uuid-generator-ts";
 import stream from "@/api/stream";
 import {EventStateChange} from "@/api/types";
 import {parseTime} from "@/utils";
+import {Form} from "@/components/Form";
+import {FormSchema} from "@/types/form";
+import {useForm} from "@/hooks/web/useForm";
 
 const {push} = useRouter()
 const {t} = useI18n()
 const {wsCache} = useCache()
+const {register, methods} = useForm()
 
 interface TableObject {
   tableList: ApiVariable[]
   params?: any
   loading: boolean
   sort?: string
+  query?: string
+  tags?: string[]
 }
 
 interface Params {
@@ -36,7 +42,9 @@ const tableObject = reactive<TableObject>(
     {
       tableList: [],
       loading: false,
-      sort: wsCache.get(cachePref + 'Sort') || '-createdAt'
+      sort: wsCache.get(cachePref + 'Sort') || '-createdAt',
+      query: wsCache.get(cachePref + 'Query'),
+      tags: wsCache.get(cachePref + 'Tags'),
     }
 );
 
@@ -91,11 +99,15 @@ const getList = async () => {
   wsCache.set(cachePref + 'CurrentPage', paginationObj.value.currentPage)
   wsCache.set(cachePref + 'PageSize', paginationObj.value.pageSize)
   wsCache.set(cachePref + 'Sort', tableObject.sort)
+  wsCache.set(cachePref + 'Query', tableObject.query)
+  wsCache.set(cachePref + 'Tags', tableObject.tags)
 
   let params: Params = {
     page: paginationObj.value.currentPage,
     limit: paginationObj.value.pageSize,
     sort: tableObject.sort,
+    query: tableObject.query || undefined,
+    tags: tableObject?.tags || undefined,
   }
 
   const res = await api.v1.variableServiceGetVariableList(params)
@@ -170,10 +182,87 @@ onUnmounted(() => {
   stream.unsubscribe('event_updated_variable_model', currentID.value);
 })
 
+// filters
+
+// search form
+const schema = reactive<FormSchema[]>([
+  {
+    field: 'name',
+    label: t('variables.name'),
+    component: 'Input',
+    colProps: {
+      span: 12
+    },
+    componentProps: {
+      placeholder: t('variables.name'),
+      onChange: (val: string) => {
+        tableObject.query = val || undefined
+        getList()
+      }
+    }
+  },
+  {
+    field: 'tags',
+    label: t('main.tags'),
+    component: 'Tags',
+    colProps: {
+      span: 12
+    },
+    value: [],
+    hidden: false,
+    componentProps: {
+      placeholder: t('main.tags'),
+      onChange: (val: ApiTag) => {
+        wsCache.set(cachePref + 'Tags', val)
+        tableObject.tags = val || undefined
+        getList()
+      }
+    }
+  },
+])
+
+const filterList = () => {
+  let list = ''
+  if (tableObject?.query) {
+    list += 'name(' + tableObject.query + ') '
+  }
+  if (tableObject?.tags && tableObject?.tags.length) {
+    list += 'tags(' + tableObject.tags + ') '
+  }
+  if (list != '') {
+    list = ': ' + list
+  }
+  return list
+}
+
+const {setValues, setSchema} = methods
+if (wsCache.get(cachePref + 'Query')) {
+  setValues({
+    name: wsCache.get(cachePref + 'Query')
+  })
+}
+if (wsCache.get(cachePref + 'Tags')) {
+  setValues({
+    tags: wsCache.get(cachePref + 'Tags')
+  })
+}
+
 </script>
 
 <template>
   <ContentWrap>
+    <ElCollapse class="mb-20px">
+      <ElCollapseItem :title="$t('main.filter') + filterList()">
+        <Form
+          class="filter-form"
+          :schema="schema"
+          label-position="top"
+          label-width="auto"
+          hide-required-asterisk
+          @register="register"
+        />
+      </ElCollapseItem>
+    </ElCollapse>
     <ElButton class="flex mb-20px items-left" type="primary" @click="addNew()" plain>
       <Icon icon="ep:plus" class="mr-5px"/>
       {{ t('variables.addNew') }}

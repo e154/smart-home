@@ -395,8 +395,9 @@ func (p *ExternalPlugins) loadGoPlugin(pluginName string) error {
 		return nil
 	}
 
-	log.Infof("load external library %s", pluginName)
-	plugin, err := plugin.Open(path.Join(pluginsDir, pluginName, "plugin.so"))
+	dir := path.Join(pluginsDir, pluginName, "plugin.so")
+	log.Infof("load external plugin %s", dir)
+	plugin, err := plugin.Open(dir)
 	if err != nil {
 		return err
 	}
@@ -424,22 +425,20 @@ func (p *ExternalPlugins) loadExternalPlugins() {
 		if info == nil {
 			return nil
 		}
-		if info.Name() == ".gitignore" || !info.IsDir() {
+		if info.IsDir() && info.Name() == "plugins" {
 			return nil
 		}
-		if info.Name()[0:1] == "." {
-			return nil
+		if info.IsDir() {
+			list = append(list, &plugins.PluginFileInfo{
+				Name:     info.Name(),
+				Size:     info.Size(),
+				FileMode: info.Mode(),
+				ModTime:  info.ModTime(),
+				IsDir:    info.IsDir(),
+			})
+
+			return filepath.SkipDir
 		}
-		if info.Name() == "plugins" {
-			return nil
-		}
-		list = append(list, &plugins.PluginFileInfo{
-			Name:     info.Name(),
-			Size:     info.Size(),
-			FileMode: info.Mode(),
-			ModTime:  info.ModTime(),
-			IsDir:    info.IsDir(),
-		})
 		return nil
 	})
 
@@ -447,6 +446,9 @@ func (p *ExternalPlugins) loadExternalPlugins() {
 		if !item.IsDir {
 			continue
 		}
-		p.loadGoPlugin(item.Name)
+		if err := p.loadGoPlugin(item.Name); err != nil {
+			err = errors.Wrap(apperr.ErrPluginLoadExternal, err.Error())
+			log.Warn(err.Error())
+		}
 	}
 }

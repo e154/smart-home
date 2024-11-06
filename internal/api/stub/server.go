@@ -4609,6 +4609,27 @@ func (w *ServerInterfaceWrapper) VariableServiceGetVariableList(ctx echo.Context
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter limit: %s", err))
 	}
 
+	// ------------- Optional query parameter "query" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "query", ctx.QueryParams(), &params.Query)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter query: %s", err))
+	}
+
+	// ------------- Optional query parameter "tags[]" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "tags[]", ctx.QueryParams(), &params.Tags)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter tags[]: %s", err))
+	}
+
+	// ------------- Optional query parameter "entityId[]" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "entityId[]", ctx.QueryParams(), &params.EntityId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter entityId[]: %s", err))
+	}
+
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.VariableServiceGetVariableList(ctx, params)
 	return err

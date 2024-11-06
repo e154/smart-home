@@ -28,7 +28,7 @@ import (
 
 	"github.com/e154/smart-home/internal/api/controllers"
 	"github.com/e154/smart-home/internal/api/stub"
-	"github.com/e154/smart-home/internal/system/rbac"
+	rbacEcho "github.com/e154/smart-home/internal/system/rbac/rbac_echo"
 	"github.com/e154/smart-home/pkg/adaptors"
 	"github.com/e154/smart-home/pkg/events"
 	"github.com/e154/smart-home/pkg/logger"
@@ -51,7 +51,7 @@ var (
 // Api ...
 type Api struct {
 	controllers   *controllers.Controllers
-	echoFilter    *rbac.EchoAccessFilter
+	echoFilter    *rbacEcho.EchoAccessFilter
 	echo          *echo.Echo
 	cfg           Config
 	certPublic    string
@@ -67,7 +67,7 @@ type Api struct {
 
 // NewApi ...
 func NewApi(controllers *controllers.Controllers,
-	echoFilter *rbac.EchoAccessFilter,
+	echoFilter *rbacEcho.EchoAccessFilter,
 	cfg Config,
 	eventBus bus.Bus,
 	adaptors *adaptors.Adaptors) (api *Api) {
@@ -422,27 +422,13 @@ func (a *Api) registerHandlers() {
 		r.URL, _ = r.URL.Parse(r.RequestURI)
 		snapshotServer.ServeHTTP(w, r)
 	}))))
-	// webdav
-	webdav := echo.WrapHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		//r.RequestURI = strings.ReplaceAll(r.RequestURI, "/webdav/", "/")
-		//r.URL, _ = r.URL.Parse(r.RequestURI)
-		a.controllers.Webdav(w, r)
-	}))
-	a.echo.Any("/webdav", webdav)
-	a.echo.Any("/webdav/*", webdav)
-	// webhook
-	webhook := echo.WrapHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		a.controllers.Webhook(w, r)
-	}))
-	a.echo.Any("/webhook", webhook)
-	a.echo.Any("/webhook/*", webhook)
 
-	// media
-	a.echo.Any("/stream/:entity_id/channel/:channel/mse", a.echoFilter.Auth(a.controllers.StreamMSE)) //Auth
-	//a.echo.Any("/stream/:entity_id/channel/:channel/hlsll/live/init.mp4", a.controllers.Media.StreamHLSLLInit)
-	//a.echo.Any("/stream/:entity_id/channel/:channel/hlsll/live/index.m3u8", a.controllers.Media.StreamHLSLLM3U8)
-	//a.echo.Any("/stream/:entity_id/channel/:channel/hlsll/live/segment/:segment/:any", a.controllers.Media.StreamHLSLLM4Segment)
-	//a.echo.Any("/stream/:entity_id/channel/:channel/hlsll/live/fragment/:segment/:fragment/:any", a.controllers.Media.StreamHLSLLM4Fragment)
+	// plugins handler
+	custom := echo.WrapHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		a.controllers.Custom(w, r)
+	}))
+	a.echo.Any("/:plugin", custom)
+	a.echo.Any("/:plugin/*", custom)
 
 	// Cors
 	a.echo.Use(middleware.CORSWithConfig(middleware.CORSConfig{

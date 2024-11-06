@@ -526,3 +526,13 @@ func WeatherCondition(w ProductWeather) (state plugins.ActorState) {
 
 	return
 }
+
+// NewActions ...
+func NewActions() map[string]plugins.ActorAction {
+	return map[string]plugins.ActorAction{
+		"update": {
+			Name:        "update",
+			Description: "Update weather",
+		},
+	}
+}

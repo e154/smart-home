@@ -23,7 +23,7 @@ import (
 	"fmt"
 	"io"
 
-	web2 "github.com/e154/smart-home/internal/common/web"
+	web2 "github.com/e154/smart-home/internal/system/web"
 	"github.com/e154/smart-home/pkg/web"
 )
 

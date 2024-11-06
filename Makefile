@@ -22,7 +22,6 @@ IMAGE=smart-home-${EXEC}
 DOCKER_ACCOUNT=e154
 RELEASE_VERSION ?= v0.0.0
 DOCKER_IMAGE_VER=${DOCKER_ACCOUNT}/${IMAGE}:${RELEASE_VERSION}
-DOCKER_IMAGE_LATEST=${DOCKER_ACCOUNT}/${IMAGE}:latest
 
 VERSION_VAR=${PROJECT}/version.VersionString
 REV_VAR=${PROJECT}/version.RevisionString
@@ -32,10 +31,7 @@ DEVELOPERS_VAR=${PROJECT}/version.DevelopersString
 BUILD_NUMBER_VAR=${PROJECT}/version.BuildNumString
 DOCKER_IMAGE_VAR=${PROJECT}/version.DockerImageString
 
-GO_BUILD_LDFLAGS= -s -w -X ${VERSION_VAR}=${RELEASE_VERSION} -X ${REV_VAR}=${REV_VALUE} -X ${REV_URL_VAR}=${REV_URL_VALUE} -X ${GENERATED_VAR}=${GENERATED_VALUE} -X ${DEVELOPERS_VAR}=${DEVELOPERS_VALUE} -X ${BUILD_NUMBER_VAR}=${BUILD_NUMBER_VALUE} -X ${DOCKER_IMAGE_VAR}=${DOCKER_IMAGE_VER}
-GO_BUILD_FLAGS= -a -installsuffix -trimpath -v --ldflags '${GO_BUILD_LDFLAGS}'
-GO_BUILD_ENV=CGO_ENABLED=0
-GO_BUILD_TAGS= -tags 'production'
+GO_BUILD_LDFLAGS=-X ${VERSION_VAR}=${RELEASE_VERSION} -X ${REV_VAR}=${REV_VALUE} -X ${REV_URL_VAR}=${REV_URL_VALUE} -X ${GENERATED_VAR}=${GENERATED_VALUE} -X ${DEVELOPERS_VAR}=${DEVELOPERS_VALUE} -X ${BUILD_NUMBER_VAR}=${BUILD_NUMBER_VALUE} -X ${DOCKER_IMAGE_VAR}=${DOCKER_IMAGE_VER}
 GO_TEST=test -tags test -v
 
 test_system:
@@ -102,64 +98,6 @@ comments:
 svgo:
 	DIR=${ROOT}/data/icons/*
 	cd ${ROOT} && svgo ${DIR} --enable=inlineStyles  --config '{ "plugins": [ { "inlineStyles": { "onlyMatchedOnce": false } }] }' --pretty
-
-# linux
-build_linux_x86:
-	@echo MARK: build linux x86
-	rm -rf ${ROOT}/${EXEC}-linux-x86
-	mkdir -p ${ROOT}/${EXEC}-linux-x86
-	${GO_BUILD_ENV} GOOS=linux GOARCH=386 go build -ldflags="${GO_BUILD_LDFLAGS}" ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-x86/server
-	cd ${ROOT}/${EXEC}-linux-x86 && ls -l && tar -zcf ${ROOT}/${EXEC}-linux-x86.tar.gz .
-
-build_linux_amd64:
-	@echo MARK: build linux amd64
-	rm -rf ${ROOT}/${EXEC}-linux-amd64
-	mkdir -p ${ROOT}/${EXEC}-linux-amd64
-	${GO_BUILD_ENV} GOOS=linux GOARCH=amd64 go build -ldflags="${GO_BUILD_LDFLAGS}" ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-amd64/server
-	cd ${ROOT}/${EXEC}-linux-amd64 && ls -l && tar -zcf ${ROOT}/${EXEC}-linux-amd64.tar.gz .
-
-build_linux_armv5:
-	@echo MARK: build linux armv5
-	rm -rf ${ROOT}/${EXEC}-linux-arm-5
-	mkdir -p ${ROOT}/${EXEC}-linux-arm-5
-	${GO_BUILD_ENV} CC=arm-linux-gnueabihf-gcc GOOS=linux GOARCH=arm GOARM=5 go build -ldflags="${GO_BUILD_LDFLAGS}" ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-6/server
-	cd ${ROOT}/${EXEC}-linux-arm-6 && ls -l && tar -zcf ${ROOT}/${EXEC}-linux-arm-6.tar.gz .
-
-build_linux_armv6:
-	@echo MARK: build linux armv6
-	rm -rf ${ROOT}/${EXEC}-linux-arm-6
-	mkdir -p ${ROOT}/${EXEC}-linux-arm-6
-	${GO_BUILD_ENV} GOARCH=arm GOARM=6 go build -ldflags="${GO_BUILD_LDFLAGS}" ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-6/server
-	cd ${ROOT}/${EXEC}-linux-arm-6 && ls -l && tar -zcf ${ROOT}/${EXEC}-linux-arm-6.tar.gz .
-
-build_linux_armv7l:
-	@echo MARK: build linux armv7l
-	rm -rf ${ROOT}/${EXEC}-linux-arm-7
-	mkdir -p ${ROOT}/${EXEC}-linux-arm-7
-	${GO_BUILD_ENV} GOOS=linux GOARCH=arm GOARM=7 go build -ldflags="${GO_BUILD_LDFLAGS}" ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-7/server
-	cd ${ROOT}/${EXEC}-linux-arm-7 && ls -l && tar -zcf ${ROOT}/${EXEC}-linux-arm-7.tar.gz .
-
-build_linux_arm64:
-	@echo MARK: build linux arm64
-	rm -rf ${ROOT}/${EXEC}-linux-arm64
-	mkdir -p ${ROOT}/${EXEC}-linux-arm64
-	${GO_BUILD_ENV} GOOS=linux GOARCH=arm64 go build -ldflags="${GO_BUILD_LDFLAGS}" ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm64/server
-	cd ${ROOT}/${EXEC}-linux-arm64 && ls -l && tar -zcf ${ROOT}/${EXEC}-linux-arm64.tar.gz .
-
-# windows
-build_windows_amd64:
-	@echo MARK: build windows amd64
-	rm -rf ${ROOT}/${EXEC}-windows-amd64
-	mkdir -p ${ROOT}/${EXEC}-windows-amd64
-	${GO_BUILD_ENV} GOOS=windows GOARCH=amd64 go build -ldflags="${GO_BUILD_LDFLAGS}" ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-windows-amd64/server.exe
-	cd ${ROOT}/${EXEC}-windows-amd64 && ls -l && tar -zcf ${ROOT}/${EXEC}-windows-amd64.tar.gz .
-
-build_windows_x86:
-	@echo MARK: build windows x86
-	rm -rf ${ROOT}/${EXEC}-windows-x86
-	mkdir -p ${ROOT}/${EXEC}-windows-x86
-	${GO_BUILD_ENV} GOOS=windows GOARCH=386 go build -ldflags="${GO_BUILD_LDFLAGS}" ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-windows-x86/server.exe
-	cd ${ROOT}/${EXEC}-windows-x86 && ls -l && tar -zcf ${ROOT}/${EXEC}-windows-x86.tar.gz .
 
 build_public:
 	@echo MARK: build public
@@ -234,13 +172,9 @@ docs_deploy:
 
 clean:
 	@echo MARK: clean
-	rm -rf ${ROOT}/${EXEC}-linux-x86
-	rm -rf ${ROOT}/${EXEC}-linux-amd64
-	rm -rf ${ROOT}/${EXEC}-linux-arm-6
-	rm -rf ${ROOT}/${EXEC}-linux-arm-7
-	rm -rf ${ROOT}/${EXEC}-linux-arm64
-	rm -rf ${ROOT}/${EXEC}-windows-amd64
-	rm -rf ${ROOT}/${EXEC}-windows-x86
+	rm -rf ${ROOT}/dist
+	rm -rf ${ROOT}/build/public
+	rm -rf ${ROOT}/static_source/admin/node_modules
 	docker rmi -f $(docker images -aq)
 	docker rm -vf $(docker ps -aq)
 
@@ -250,43 +184,51 @@ front_client:
 
 typedoc:
 	@echo MARK: typedoc
-	npx typedoc --tsconfig ./data/scripts/tsconfig.json --out ./api/typedoc ./data/scripts/global.d.ts
+	npx typedoc --tsconfig ./data/scripts/tsconfig.json --out ./internal/api/typedoc ./data/scripts/global.d.ts
 
-.PHONY: local_build # Build the container image
+.PHONY: build_darwin_arm64
+build_darwin_arm64:
+	@echo MARK: build local artefact
+	RELEASE_VERSION=${RELEASE_VERSION} GO_BUILD_LDFLAGS=${GO_BUILD_LDFLAGS} docker buildx bake artifact-darwin-arm64
+
+.PHONY: build_artifacts
+build_artifacts:
+	@echo MARK: build all artefacts
+	RELEASE_VERSION=${RELEASE_VERSION} GO_BUILD_LDFLAGS=${GO_BUILD_LDFLAGS} docker buildx bake artifact-all
+
+.PHONY: local_build
 local_build:
-	docker --debug buildx build \
-		--build-arg GO_BUILD_LDFLAGS="${GO_BUILD_LDFLAGS}" \
-		--build-arg GO_BUILD_TAGS="${GO_BUILD_TAGS}" \
-		--build-arg RELEASE_VERSION="${RELEASE_VERSION}" \
-		-f ./bin/docker/Dockerfile.server \
-		--output "type=docker,push=false" \
-		--tag $(DOCKER_IMAGE_VER) \
-		.
+	@echo MARK: local build
+	RELEASE_VERSION=${RELEASE_VERSION} GO_BUILD_LDFLAGS=${GO_BUILD_LDFLAGS} docker buildx bake image-linux-arm64 --load
 
-.PHONY: test_build # Build the container image
+.PHONY: test_build
 test_build:
-	@docker buildx create --use --name=smart-home --node=smart-home && \
-	echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
-	docker buildx build \
-		--build-arg GO_BUILD_LDFLAGS="${GO_BUILD_LDFLAGS}" \
-		--build-arg GO_BUILD_TAGS="${GO_BUILD_TAGS}" \
-		--build-arg RELEASE_VERSION="${RELEASE_VERSION}" \
-		-f ./bin/docker/Dockerfile.server \
-		--platform linux/386,linux/amd64,linux/arm64,linux/arm/v5,linux/arm/v6,linux/arm/v7,linux/ppc64le,linux/s390x \
-		--output "type=image,push=false" \
-		--tag $(DOCKER_IMAGE_VER) \
-		.
+	@echo MARK: local build
+	RELEASE_VERSION=${RELEASE_VERSION} GO_BUILD_LDFLAGS=${GO_BUILD_LDFLAGS} docker buildx bake image-all
 
 .PHONY: publish # Push the image to the remote registry
 publish:
-	@docker buildx create --use --name=smart-home --node=smart-home && \
-	echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
-	docker buildx build \
-		--build-arg GO_BUILD_LDFLAGS="${GO_BUILD_LDFLAGS}" \
-		--build-arg GO_BUILD_TAGS="${GO_BUILD_TAGS}" \
-		--build-arg RELEASE_VERSION="${RELEASE_VERSION}" \
-		-f ./bin/docker/Dockerfile.server \
-		--platform linux/386,linux/amd64,linux/arm64,linux/arm/v5,linux/arm/v6,linux/arm/v7,linux/ppc64le,linux/s390x \
-		--output "type=image,push=true" \
-		--tag $(DOCKER_IMAGE_VER) \
-		.
+	@echo MARK: push docker image
+	echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin && \
+	RELEASE_VERSION=${RELEASE_VERSION} GO_BUILD_LDFLAGS=${GO_BUILD_LDFLAGS} docker buildx bake image-all --push
+
+.PHONY: create_env
+create_env:
+	echo "RELEASE_VERSION=\"${RELEASE_VERSION}\"\nGO_BUILD_LDFLAGS=\"${GO_BUILD_LDFLAGS}\"" >> .env
+
+.PHONY: build_archive
+build_archive:
+	cd ${ROOT}/dist/linux_amd64 && ls -l && tar -zcf ${ROOT}/linux_amd64.tar.gz .
+	cd ${ROOT}/dist/linux_arm64 && ls -l && tar -zcf ${ROOT}/linux_arm64.tar.gz .
+	cd ${ROOT}/dist/linux_arm_v6 && ls -l && tar -zcf ${ROOT}/linux_arm_v6.tar.gz .
+	cd ${ROOT}/dist/linux_arm_v7 && ls -l && tar -zcf ${ROOT}/linux_arm_v7.tar.gz .
+	cd ${ROOT}/dist/linux_ppc64le && ls -l && tar -zcf ${ROOT}/linux_ppc64le.tar.gz .
+	cd ${ROOT}/dist/linux_riscv64 && ls -l && tar -zcf ${ROOT}/linux_riscv64.tar.gz .
+	cd ${ROOT}/dist/linux_s390x && ls -l && tar -zcf ${ROOT}/linux_s390x.tar.gz .
+	cd ${ROOT}/dist/windows_amd64 && ls -l && tar -zcf ${ROOT}/windows_amd64.tar.gz .
+	cd ${ROOT}/dist/windows_arm64 && ls -l && tar -zcf ${ROOT}/windows_arm64.tar.gz .
+
+.PHONY: build_artifact_public
+build_artifact_public:
+	@echo MARK: local build
+	docker buildx bake artifact-public

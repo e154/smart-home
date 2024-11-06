@@ -22,6 +22,8 @@ import (
 	"bufio"
 	"context"
 	"io/fs"
+	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/e154/smart-home/pkg/adaptors"
@@ -206,6 +208,8 @@ type Service interface {
 	AppConfig() *models.AppConfig
 	Scheduler() scheduler.Scheduler
 	Crawler() web.Crawler
+	Authorization() Authorization
+	HttpAccessFilter() HttpAccessFilter
 }
 
 // Pluggable ...
@@ -274,4 +278,13 @@ type EntityStateParams struct {
 	AttributeValues m.AttributeValue `json:"attribute_values"`
 	SettingsValue   m.AttributeValue `json:"settings_value"`
 	StorageSave     bool             `json:"storage_save"`
+}
+
+type Authorization interface {
+	AuthPlain(login, pass string) (*m.User, error)
+	AuthREST(ctx context.Context, accessToken string, requestURI *url.URL, method string) (*m.User, bool, error)
+}
+
+type HttpAccessFilter interface {
+	Auth(next http.Handler) http.Handler
 }

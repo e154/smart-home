@@ -1,76 +1,65 @@
-FROM --platform=$BUILDPLATFORM postgres:15 as postgres
+# syntax=docker/dockerfile:1
+
+ARG UBUNTU_VERSION="20.04"
+ARG GO_VERSION="1.23.0"
+
+FROM ubuntu:${UBUNTU_VERSION} AS base
+RUN export DEBIAN_FRONTEND="noninteractive" \
+  && apt-get update \
+  && apt-get install --no-install-recommends -y software-properties-common \
+  && add-apt-repository ppa:git-core/ppa \
+  && apt-get update \
+  && apt-get install --no-install-recommends -y \
+    bash \
+    binutils \
+    ca-certificates \
+    clang \
+    curl \
+    g++ \
+    gcc \
+    git \
+    libc6-dev \
+    libssl-dev \
+    llvm \
+    make \
+    pkg-config \
+    tzdata \
+    uuid \
+  && apt-get -y autoremove \
+  && apt-get clean -y \
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+  && ln -sf /usr/include/asm-generic /usr/include/asm
+
+FROM base AS golang
+RUN export DEBIAN_FRONTEND="noninteractive" && apt-get update && apt-get install --no-install-recommends -y curl jq
+WORKDIR /golang
+RUN curl -m30 --retry 5 --retry-connrefused --retry-delay 5 -sSL "https://go.dev/dl/?mode=json&include=all" -o "godist.json"
+ARG GO_VERSION
 ARG TARGETOS
 ARG TARGETARCH
-MAINTAINER Filippov Alex <support@e154.ru>
+ENV PATH="/usr/local/go/bin:$PATH"
+RUN <<EOT
+  set -ex
+  curl --head --silent --fail --location "https://go.dev/dl/go${GO_VERSION}.${TARGETOS}-${TARGETARCH}.tar.gz" 1>/dev/null 2>&1 || GO_VERSION=${GO_VERSION%.0}
+  GO_DIST_FILE=go${GO_VERSION}.${TARGETOS}-${TARGETARCH}.tar.gz
+  GO_DIST_URL=https://go.dev/dl/${GO_DIST_FILE}
+  SHA256=$(cat godist.json | jq -r ".[] | select(.version==\"go${GO_VERSION}\") | .files[] | select(.filename==\"$GO_DIST_FILE\").sha256")
+  curl -sSL "$GO_DIST_URL.asc" -o "go.tgz.asc"
+  curl -sSL "$GO_DIST_URL" -o "go.tgz"
+  echo "$SHA256 *go.tgz" | sha256sum -c -
+  tar -C /usr/local -xzf go.tgz
+  go version
+EOT
 
-FROM --platform=$BUILDPLATFORM debian:12-slim
-ARG TARGETOS
-ARG TARGETARCH
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends libpq5 ca-certificates iputils-ping
-RUN update-ca-certificates
-COPY --from=postgres /usr/lib/postgresql/15/bin/pg_dump /usr/local/bin
-COPY --from=postgres /usr/lib/postgresql/15/bin/pg_restore /usr/local/bin
-ENTRYPOINT ["/server"]
-USER nobody
-ADD . /
+FROM base
+COPY --from=golang /usr/local/go /usr/local/go
 
-EXPOSE 3000
-EXPOSE 3001
-EXPOSE 3002
-EXPOSE 3003
-EXPOSE 1883
-EXPOSE 8080
-EXPOSE 8443
+ENV GOROOT="/usr/local/go"
+ENV GOPATH="/go"
+ARG GO_VERSION
+ENV GO_VERSION=${GO_VERSION}
 
-ENV PG_USER="smart_home"
-ENV PG_PASS="smart_home"
-ENV PG_HOST="postgres"
-ENV PG_NAME="smart_home"
-ENV PG_PORT="5432"
-ENV PG_DEBUG="false"
-ENV PG_MAX_IDLE_CONNS="10"
-ENV PG_MAX_OPEN_CONNS="50"
-ENV PG_CONN_MAX_LIFE_TIME="30"
-ENV AUTO_MIGRATE="true"
-ENV SNAPSHOT_DIR=""
-ENV MODE="release"
-ENV MQTT_PORT="1883"
-ENV MQTT_RETRY_INTERVAL="20"
-ENV MQTT_RETRY_CHECK_INTERVAL="20"
-ENV MQTT_SESSION_EXPIRY_INTERVAL="0"
-ENV MQTT_SESSION_EXPIRE_CHECK_INTERVAL="0"
-ENV MQTT_QUEUE_QOS_0_MESSAGES="true"
-ENV MQTT_MAX_INFLIGHT="32"
-ENV MQTT_MAX_AWAIT_REL="100"
-ENV MQTT_MAX_MSG_QUEUE="1000"
-ENV MQTT_DELIVER_MODE="1"
-ENV LOGGING="true"
-ENV COLORED_LOGGING="false"
-ENV ALEXA_HOST=""
-ENV ALEXA_PORT="3003"
-ENV API_HTTP_PORT="3001"
-ENV API_HTTPS_PORT="3002"
-ENV API_SWAGGER="true"
-ENV API_GZIP="false"
-ENV LANG="EN"
-ENV ROOT_MODE="false"
-ENV DOMAIN="localhost"
-ENV PPROF="false"
-ENV ROOT_SECRET=""
-ENV PATH="$PATH:/"
-
-ENV GATE_API_HTTP_PORT="8080"
-ENV GATE_API_HTTPS_PORT="8443"
-ENV GATE_API_DEBUG="false"
-ENV GATE_API_GZIP="true"
-ENV GATE_DOMAIN="localhost"
-ENV GATE_PPROF="false"
-ENV GATE_HTTPS="false"
-ENV GATE_PROXY_TIMEOUT="5"
-ENV GATE_PROXY_IDLE_TIMEOUT="10"
-ENV GATE_PROXY_SECRET_KEY=""
-
-VOLUME /snapshots
-VOLUME /data
-VOLUME /conf
+ENV PATH="$GOPATH/bin:/usr/local/go/bin:/osxcross/bin:$PATH"
+ENV LD_LIBRARY_PATH="/osxcross/lib:$LD_LIBRARY_PATH"
+COPY rootfs /
+RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"

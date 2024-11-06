@@ -19,6 +19,8 @@
 package controllers
 
 import (
+	"net/http"
+
 	"github.com/e154/smart-home/internal/api/dto"
 	"github.com/e154/smart-home/internal/api/stub"
 	"github.com/e154/smart-home/pkg/apperr"
@@ -161,4 +163,8 @@ func (c ControllerPlugin) PluginServiceUploadPlugin(ctx echo.Context, params stu
 		"files":  resultPlugins,
 		"errors": errs,
 	})
+}
+
+func (c ControllerPlugin) Custom(w http.ResponseWriter, r *http.Request) {
+	c.endpoint.Plugin.Custom(w, r)
 }

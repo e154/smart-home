@@ -40,7 +40,8 @@ var (
 		Short: "Run smart home server",
 		Run: func(cmd *cobra.Command, args []string) {
 
-			fmt.Printf(version.ShortVersionBanner, "")
+			mode = "test"
+			fmt.Printf(version.ShortVersionBanner, version.VersionString, mode)
 
 			app.Do(BuildContainer, fx.Invoke(func(
 				_ *initial.Initial,
