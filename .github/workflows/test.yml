@@ -102,6 +102,8 @@ jobs:
         with:
           name: public_build
           path: ./build
+      - name: Display structure of downloaded files
+        run: ls -R ./build
 
       - name: Install PostgreSQL client
         run: |
@@ -165,6 +167,8 @@ jobs:
         with:
           name: public_build
           path: ./build
+      - name: Display structure of downloaded files
+        run: ls -R ./build
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
