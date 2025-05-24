@@ -20,18 +20,20 @@ package cgminer
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
+	"github.com/e154/smart-home/internal/common/debug"
+	"github.com/e154/smart-home/internal/plugins/cgminer"
+	"github.com/e154/smart-home/pkg/adaptors"
+	commonPkg "github.com/e154/smart-home/pkg/common"
+	"github.com/e154/smart-home/pkg/events"
+	"github.com/e154/smart-home/pkg/models"
+	"github.com/e154/smart-home/pkg/plugins"
+	"github.com/e154/smart-home/pkg/scripts"
+
 	"github.com/e154/bus"
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/debug"
-	"github.com/e154/smart-home/common/events"
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/plugins/cgminer"
-	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/e154/smart-home/tests/plugins"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -158,9 +160,9 @@ entityAction = (entityId, actionName)->
 	}
 
 	Convey("cgminer", t, func(ctx C) {
-		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
+		err := container.Invoke(func(adaptors *adaptors.Adaptors,
 			scriptService scripts.ScriptService,
-			supervisor supervisor.Supervisor,
+			supervisor plugins.Supervisor,
 			eventBus bus.Bus) {
 
 			// register plugins
@@ -190,7 +192,7 @@ entityAction = (entityId, actionName)->
 			l3Ent := GetNewBitmineL3("device1")
 			l3Ent.Settings[cgminer.SettingHost].Value = host
 			l3Ent.Settings[cgminer.SettingPort].Value = port
-			l3Ent.Actions = []*m.EntityAction{
+			l3Ent.Actions = []*models.EntityAction{
 				{
 					Name:        "ENABLE",
 					Description: "включить",
@@ -227,7 +229,7 @@ entityAction = (entityId, actionName)->
 					Script:      plugScript,
 				},
 			}
-			l3Ent.States = []*m.EntityState{
+			l3Ent.States = []*models.EntityState{
 				{
 					Name:        "ENABLED",
 					Description: "enabled state",
@@ -241,63 +243,63 @@ entityAction = (entityId, actionName)->
 					Description: "error state",
 				},
 			}
-			l3Ent.Attributes = m.Attributes{
+			l3Ent.Attributes = models.Attributes{
 				"heat": {
 					Name: "heat",
-					Type: common.AttributeBool,
+					Type: commonPkg.AttributeBool,
 				},
 				"chain1_temp_chip": {
 					Name: "chain1_temp_chip",
-					Type: common.AttributeInt,
+					Type: commonPkg.AttributeInt,
 				},
 				"chain2_temp_chip": {
 					Name: "chain2_temp_chip",
-					Type: common.AttributeInt,
+					Type: commonPkg.AttributeInt,
 				},
 				"chain3_temp_chip": {
 					Name: "chain3_temp_chip",
-					Type: common.AttributeInt,
+					Type: commonPkg.AttributeInt,
 				},
 				"chain4_temp_chip": {
 					Name: "chain4_temp_chip",
-					Type: common.AttributeInt,
+					Type: commonPkg.AttributeInt,
 				},
 				"chain1_temp_pcb": {
 					Name: "chain1_temp_pcb",
-					Type: common.AttributeInt,
+					Type: commonPkg.AttributeInt,
 				},
 				"chain2_temp_pcb": {
 					Name: "chain2_temp_pcb",
-					Type: common.AttributeInt,
+					Type: commonPkg.AttributeInt,
 				},
 				"chain3_temp_pcb": {
 					Name: "chain3_temp_pcb",
-					Type: common.AttributeInt,
+					Type: commonPkg.AttributeInt,
 				},
 				"chain4_temp_pcb": {
 					Name: "chain4_temp_pcb",
-					Type: common.AttributeInt,
+					Type: commonPkg.AttributeInt,
 				},
 				"fan1": {
 					Name: "fan1",
-					Type: common.AttributeInt,
+					Type: commonPkg.AttributeInt,
 				},
 				"fan2": {
 					Name: "fan2",
-					Type: common.AttributeInt,
+					Type: commonPkg.AttributeInt,
 				},
 				"ghs_av": {
 					Name: "ghs_av",
-					Type: common.AttributeInt,
+					Type: commonPkg.AttributeInt,
 				},
 				"hardware_errors": {
 					Name: "hardware_errors",
-					Type: common.AttributeInt,
+					Type: commonPkg.AttributeInt,
 				},
 			}
 			err = adaptors.Entity.Add(context.Background(), l3Ent)
 			ctx.So(err, ShouldBeNil)
-			_, err = adaptors.EntityStorage.Add(context.Background(), &m.EntityStorage{
+			_, err = adaptors.EntityStorage.Add(context.Background(), &models.EntityStorage{
 				EntityId:   l3Ent.Id,
 				Attributes: l3Ent.Attributes.Serialize(),
 			})
@@ -382,5 +384,8 @@ entityAction = (entityId, actionName)->
 			})
 
 		})
+		if err != nil {
+			fmt.Println(err.Error())
+		}
 	})
 }

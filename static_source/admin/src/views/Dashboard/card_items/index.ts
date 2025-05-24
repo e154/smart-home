@@ -11,7 +11,7 @@ import {EntityStorage, EntityStorageEditor, ItemPayloadEntityStorage} from './en
 import {Map, MapEditor, ItemPayloadMap} from './map';
 import {Slider, SliderEditor, ItemPayloadSlider} from './slider';
 import {ColorPicker, ColorPickerEditor, ItemPayloadColorPicker} from './color_picker';
-import {StreamPlayer, StreamPlayerEditor, ItemPayloadVideo} from './video';
+import {StreamPlayer, StreamPlayerEditor, ItemPayloadVideo} from './stream_player';
 import {Joystick, JoystickEditor, ItemPayloadJoystick} from './joystick';
 import {Icon, IconEditor, ItemPayloadIcon} from './icon';
 import {Grid, GridEditor, ItemPayloadGrid} from './grid';
@@ -20,6 +20,7 @@ import {Modal, ModalEditor, ItemPayloadModal} from './modal';
 import {IFrame, IFrameEditor, ItemPayloadIFrame} from './iframe';
 import {ItemPayloadJsonViewer, JsonViewer, JsonViewerEditor} from './json_viewer';
 import {useI18n} from "@/hooks/web/useI18n";
+import {stateService} from "@/views/Dashboard/core";
 
 export const CardItemName = (name: string): any => {
   switch (name) {
@@ -98,6 +99,7 @@ export const CardEditorName = (name: string): any => {
     case 'colorPicker':
       return ColorPickerEditor;
     case 'streamPlayer':
+    case 'video':
       return StreamPlayerEditor;
     case 'joystick':
       return JoystickEditor;
@@ -206,7 +208,7 @@ export interface ItemPayload {
   slider?: ItemPayloadSlider;
   colorPicker?: ItemPayloadColorPicker;
   joystick?: ItemPayloadJoystick;
-  video?: ItemPayloadVideo;
+  streamPlayer?: ItemPayloadVideo;
   entityStorage?: ItemPayloadEntityStorage;
   grid?: ItemPayloadGrid;
   three?: ItemPayloadThree;
@@ -214,3 +216,117 @@ export interface ItemPayload {
   modal?: ItemPayloadModal;
   iframe?: ItemPayloadIFrame;
 }
+
+export const initFunc = function(payload :any) {
+    if (!payload.image) {
+        payload.image = {
+            image: undefined,
+            attrField: ''
+        };
+    }
+    if (!payload.icon) {
+        payload.icon = {
+            value: '',
+            iconColor: '#000000',
+        };
+    }
+    if (payload.image.attrField == undefined) {
+        payload.image.attrField = '';
+    }
+    if (!payload.image.image) {
+        payload.image.image = undefined;
+    }
+    if (!payload.button) {
+        payload.button = {};
+    }
+    if (!payload.state) {
+        payload.state = {
+            items: [],
+            default_image: undefined,
+            defaultImage: undefined,
+            defaultIcon: undefined,
+            defaultIconColor: undefined,
+            defaultIconSize: undefined,
+        };
+    }
+    if (!payload.text) {
+        payload.text = {
+            items: [],
+            default_text: '<div>default text</div>',
+            current_text: ''
+        };
+    }
+    if (!payload.logs) {
+        payload.logs = {
+            limit: 20
+        };
+    }
+    if (!payload.progress) {
+        payload.progress = {
+            items: [],
+            type: '',
+            showText: false,
+            textInside: false,
+            strokeWidth: 26,
+            width: 100
+        };
+    }
+    if (!payload.chart) {
+        payload.chart = {
+            type: 'line',
+            metric_index: 0,
+            width: 400,
+            height: 400,
+            xAxis: false,
+            yAxis: false,
+            legend: false,
+            range: '24h'
+        };
+    }
+    if (!payload.chartCustom) {
+        payload.chartCustom = {};
+    }
+    if (!payload?.map) {
+        payload.map = {
+            markers: []
+        };
+    } else {
+        if (!payload.map?.markers) {
+            payload.map.markers = [];
+        }
+        for (const index in payload.map?.markers) {
+            const entityId = payload.map.markers[index].entityId;
+            if (entityId) {
+                stateService.requestCurrentState(entityId)
+            }
+        }
+    }
+    if (!payload.slider) {
+        payload.slider = {};
+    }
+    if (!payload.colorPicker) {
+        payload.colorPicker = {};
+    }
+    if (!payload.joystick) {
+        payload.joystick = {};
+    }
+    if (!payload.streamPlayer) {
+        payload.streamPlayer = {};
+    }
+    if (!payload.entityStorage) {
+        payload.entityStorage = {};
+    }
+    if (!payload.grid) {
+        payload.grid = {
+            items: [],
+            tooltip: false,
+            gap: false,
+            gapSize: 5,
+            defaultImage: undefined,
+            cellHeight: 25,
+            cellWidth: 25,
+            attribute: '',
+        };
+    }
+}
+

@@ -19,13 +19,13 @@
 package container
 
 import (
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/endpoint"
-	"github.com/e154/smart-home/system/access_list"
-	"github.com/e154/smart-home/system/initial/local_migrations"
-	"github.com/e154/smart-home/system/orm"
-	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/validation"
+	"github.com/e154/smart-home/internal/endpoint"
+	local_migrations2 "github.com/e154/smart-home/internal/system/initial/local_migrations"
+	"github.com/e154/smart-home/internal/system/orm"
+	"github.com/e154/smart-home/internal/system/rbac/access_list"
+	"github.com/e154/smart-home/internal/system/validation"
+	"github.com/e154/smart-home/pkg/adaptors"
+	"github.com/e154/smart-home/pkg/scripts"
 )
 
 func MigrationList(adaptors *adaptors.Adaptors,
@@ -33,36 +33,37 @@ func MigrationList(adaptors *adaptors.Adaptors,
 	validation *validation.Validate,
 	scriptService scripts.ScriptService,
 	orm *orm.Orm,
-	endpoint *endpoint.Endpoint) []local_migrations.Migration {
-	return []local_migrations.Migration{
-		local_migrations.NewMigrationImages(adaptors, "./"),
-		local_migrations.NewMigrationTemplates(adaptors),
-		local_migrations.NewMigrationAreas(adaptors),
-		local_migrations.NewMigrationPlugins(adaptors),
-		local_migrations.NewMigrationRoles(adaptors, accessList, validation),
-		local_migrations.NewMigrationRoleNobody(adaptors),
-		local_migrations.NewMigrationScripts(adaptors, scriptService),
-		local_migrations.NewMigrationEntity(adaptors, endpoint),
-		local_migrations.NewMigrationAutomations(adaptors, endpoint),
-		local_migrations.NewMigrationDashboard(adaptors),
-		local_migrations.NewMigrationEncryptor(adaptors),
-		local_migrations.NewMigrationJavascript(adaptors),
-		local_migrations.NewMigrationMqttBridge(adaptors),
-		local_migrations.NewMigrationScheduler(adaptors),
-		local_migrations.NewMigrationJavascriptV2(adaptors),
-		local_migrations.NewMigrationTimezone(adaptors),
-		local_migrations.NewMigrationSpeedtest(adaptors),
-		local_migrations.NewMigrationBackup(adaptors),
-		local_migrations.NewMigrationGate(adaptors),
-		local_migrations.NewMigrationAddVar1(adaptors),
-		local_migrations.NewMigrationUpdatePermissions(adaptors, accessList, orm),
-		local_migrations.NewMigrationWebdav(adaptors),
-		local_migrations.NewMigrationAddVar2(adaptors),
-		local_migrations.NewMigrationAutocert(adaptors),
-		local_migrations.NewMigrationPachka(adaptors),
-		local_migrations.NewMigrationWebhook(adaptors),
-		local_migrations.NewMigrationRemoveTriggersPlugin(adaptors),
-		local_migrations.NewMigrationMdns(adaptors),
-		local_migrations.NewMigrationVosk(adaptors),
+	endpoint *endpoint.Endpoint) []local_migrations2.Migration {
+	return []local_migrations2.Migration{
+		local_migrations2.NewMigrationInit(adaptors),
+		local_migrations2.NewMigrationImages(adaptors, "./"),
+		local_migrations2.NewMigrationTemplates(adaptors),
+		local_migrations2.NewMigrationAreas(adaptors),
+		local_migrations2.NewMigrationPlugins(adaptors),
+		local_migrations2.NewMigrationRoles(adaptors, accessList, validation),
+		local_migrations2.NewMigrationRoleNobody(adaptors),
+		local_migrations2.NewMigrationScripts(adaptors, scriptService),
+		local_migrations2.NewMigrationEntity(adaptors, endpoint),
+		local_migrations2.NewMigrationAutomations(adaptors, endpoint),
+		local_migrations2.NewMigrationDashboard(adaptors),
+		local_migrations2.NewMigrationEncryptor(adaptors),
+		local_migrations2.NewMigrationJavascript(adaptors),
+		local_migrations2.NewMigrationMqttBridge(adaptors),
+		local_migrations2.NewMigrationScheduler(adaptors),
+		local_migrations2.NewMigrationJavascriptV2(adaptors),
+		local_migrations2.NewMigrationTimezone(adaptors),
+		local_migrations2.NewMigrationSpeedtest(adaptors),
+		local_migrations2.NewMigrationBackup(adaptors),
+		local_migrations2.NewMigrationGate(adaptors),
+		local_migrations2.NewMigrationAddVar1(adaptors),
+		local_migrations2.NewMigrationUpdatePermissions(adaptors, accessList, orm),
+		local_migrations2.NewMigrationWebdav(adaptors),
+		local_migrations2.NewMigrationAddVar2(adaptors),
+		local_migrations2.NewMigrationAutocert(adaptors),
+		local_migrations2.NewMigrationPachka(adaptors),
+		local_migrations2.NewMigrationWebhook(adaptors),
+		local_migrations2.NewMigrationRemoveTriggersPlugin(adaptors),
+		local_migrations2.NewMigrationMdns(adaptors),
+		local_migrations2.NewMigrationMedia(adaptors),
 	}
 }

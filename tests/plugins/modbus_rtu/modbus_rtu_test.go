@@ -25,17 +25,18 @@ import (
 	"testing"
 	"time"
 
+	"github.com/e154/smart-home/internal/plugins/modbus_rtu"
+	"github.com/e154/smart-home/internal/plugins/node"
+	"github.com/e154/smart-home/internal/system/automation"
+	"github.com/e154/smart-home/internal/system/migrations"
+	"github.com/e154/smart-home/pkg/adaptors"
+	"github.com/e154/smart-home/pkg/events"
+	"github.com/e154/smart-home/pkg/models"
+	"github.com/e154/smart-home/pkg/mqtt"
+	"github.com/e154/smart-home/pkg/plugins"
+	"github.com/e154/smart-home/pkg/scripts"
+
 	"github.com/e154/bus"
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common/events"
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/plugins/modbus_rtu"
-	"github.com/e154/smart-home/plugins/node"
-	"github.com/e154/smart-home/system/automation"
-	"github.com/e154/smart-home/system/migrations"
-	"github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/e154/smart-home/tests/plugins"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -95,7 +96,7 @@ entityAction = (entityId, actionName)->
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService,
-			supervisor supervisor.Supervisor,
+			supervisor plugins.Supervisor,
 			mqttServer mqtt.MqttServ,
 			automation automation.Automation,
 			eventBus bus.Bus) {
@@ -132,7 +133,7 @@ entityAction = (entityId, actionName)->
 
 			plugEnt := GetNewModbusRtu("plug")
 			plugEnt.ParentId = &nodeEnt.Id
-			plugEnt.Actions = []*m.EntityAction{
+			plugEnt.Actions = []*models.EntityAction{
 				{
 					Name:        "ON",
 					Description: "включить",
@@ -154,7 +155,7 @@ entityAction = (entityId, actionName)->
 					Script:      plugActionOnOffScript,
 				},
 			}
-			plugEnt.States = []*m.EntityState{
+			plugEnt.States = []*models.EntityState{
 				{
 					Name:        "ON",
 					Description: "on state",
@@ -176,7 +177,7 @@ entityAction = (entityId, actionName)->
 			plugEnt.Settings[modbus_rtu.AttrParity].Value = "none"
 			err = adaptors.Entity.Add(context.Background(), plugEnt)
 			So(err, ShouldBeNil)
-			_, err = adaptors.EntityStorage.Add(context.Background(), &m.EntityStorage{
+			_, err = adaptors.EntityStorage.Add(context.Background(), &models.EntityStorage{
 				EntityId:   plugEnt.Id,
 				Attributes: plugEnt.Attributes.Serialize(),
 			})

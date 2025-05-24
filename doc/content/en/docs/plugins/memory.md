@@ -1,4 +1,3 @@
-
 ---
 title: "Memory"
 linkTitle: "memory"
@@ -13,7 +12,8 @@ description: >
 
 &nbsp;
 
-In the **Smart Home** system, there is a "memory" plugin that allows you to display the parameters of the RAM (random access memory). This plugin provides access to the following parameters:
+In the **Smart Home** system, there is a "memory" plugin that allows you to display the parameters of the RAM (random
+access memory). This plugin provides access to the following parameters:
 
 1. `total`: The `total` parameter displays the total amount of system memory in bytes.
 

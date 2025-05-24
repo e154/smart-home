@@ -1,4 +1,3 @@
-
 ---
 title: "Messagebird"
 linkTitle: "messagebird"
@@ -7,13 +6,16 @@ description: >
 
 ---
 
-To send SMS notifications through the MessageBird notification service provider, you'll need to register with MessageBird and have a positive balance.
+To send SMS notifications through the MessageBird notification service provider, you'll need to register with
+MessageBird and have a positive balance.
 
 ### Configuration:
+
 - Access Key
 - Name
 
 ### Attributes:
+
 - Payment
 - Type
 - Amount
@@ -35,10 +37,10 @@ msg.attributes = {
 };
 ```
 
-| Value | Description |
-|-------|-------------|
-| newMessage() | Method |
-| msg | Type: Object (Message) |
+| Value        | Description            |
+|--------------|------------------------|
+| newMessage() | Method                 |
+| msg          | Type: Object (Message) |
 
 ----------------
 
@@ -48,7 +50,7 @@ msg.attributes = {
 # messagebird
 # ##################################
 
-sendMsg =(body)->
+sendMsg = (body)->
   msg = notifr.newMessage();
   msg.entity_id = 'messagebird.name';
   msg.attributes = {

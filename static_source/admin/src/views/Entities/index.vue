@@ -5,7 +5,7 @@ import {h, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
 import {Pagination, TableColumn} from '@/types/table'
 import api from "@/api/api";
 import {ElButton, ElCollapse, ElCollapseItem, ElMessage, ElTag} from 'element-plus'
-import {ApiArea, ApiEntityShort, ApiPlugin, ApiStatistics, ApiTag} from "@/api/stub";
+import {ApiArea, ApiEntity, ApiEntityShort, ApiPlugin, ApiStatistics, ApiTag} from "@/api/stub";
 import {useForm} from "@/hooks/web/useForm";
 import {useRouter} from "vue-router";
 import {parseTime} from "@/utils";
@@ -284,12 +284,12 @@ const importHandler = (val: any) => {
 }
 
 const importEntity = async () => {
-  let val: ApiEntityShort;
+  let val: ApiEntity;
   try {
     if (importedEntity.value?.json) {
-      val = importedEntity.value.json as ApiEntityShort;
+      val = importedEntity.value.json as ApiEntity;
     } else if (importedEntity.value.text) {
-      val = JSON.parse(importedEntity.value.text) as ApiEntityShort;
+      val = JSON.parse(importedEntity.value.text) as ApiEntity;
     }
   } catch {
     ElMessage({
@@ -300,7 +300,7 @@ const importEntity = async () => {
     });
     return
   }
-  const entity: ApiEntityShort = {
+  const entity: ApiEntity = {
     id: val.id,
     pluginName: val.pluginName,
     description: val.description,
@@ -314,7 +314,8 @@ const importEntity = async () => {
     attributes: val.attributes,
     settings: val.settings,
     scripts: val.scripts,
-    tags: val.tags
+    tags: val.tags,
+    metrics: val.metrics
   }
   const res = await api.v1.entityServiceImportEntity(entity)
   if (res) {

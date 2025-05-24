@@ -1,64 +1,6 @@
-version: '3.3'
-
 services:
-  smart-home-gate-data:
-    image: e154/smart-home-gate:latest
-    entrypoint:
-      - /bin/true
-    volumes:
-      - /opt/smart-home-gate/conf
-    links:
-      - postgres:postgres
-  smart-home-gate:
-    image: e154/smart-home-gate:latest
-    environment:
-      PG_USER: smart_home
-      PG_PASS: smart_home
-    stdin_open: true
-    volumes:
-      - smart-home-gate-data:/opt/smart-home-gate/conf
-    tty: true
-    links:
-      - postgres:postgres
-  smart-home-server:
-    image: e154/smart-home-server:latest
-    environment:
-      PG_USER: smart_home
-      PG_PASS: smart_home
-    stdin_open: true
-    volumes:
-      - smart-home-server-data:/opt/smart-home-server/conf
-      - smart-home-server-data:/opt/smart-home-server/data
-      - smart-home-server-data:/opt/smart-home-server/snapshots
-    tty: true
-    links:
-      - postgres:postgres
-  smart-home-node:
-    image: e154/smart-home-node:latest
-    environment:
-      MQTT_IP: smart-home-server
-      NAME: node2
-      TOPIC: node2
-      MQTT_USERNAME: node2
-      MQTT_PASSWORD: node2
-  smart-home-server-data:
-    image: e154/smart-home-server:latest
-    entrypoint:
-      - /bin/true
-    volumes:
-      - /opt/smart-home-server/conf
-      - /opt/smart-home-server/data
-      - /opt/smart-home-server/snapshots
-    links:
-      - postgres:postgres
-  smart-home-configurator:
-    image: e154/smart-home-configurator:latest
-    environment:
-      API_ADDR: smart-home-server
-    links:
-      - smart-home-server:smart-home-server
   postgres:
-    image: postgres:11
+    image: timescale/timescaledb:latest-pg15
     restart: always
     volumes:
       - db-data:/var/lib/postgresql
@@ -71,6 +13,39 @@ services:
       test: [ "CMD-SHELL", "pg_isready -d smart_home -U smart_home" ]
       interval: 10s
       timeout: 10s
-
+  smart-home-server:
+    image: e154/smart-home-server:v0.21.1
+    environment:
+      PG_USER: smart_home
+      PG_PASS: smart_home
+    stdin_open: true
+    volumes:
+      - /Users/delta54/smart-home/conf
+      - /Users/delta54/smart-home/data
+      - /Users/delta54/smart-home/snapshots
+    tty: true
+    links:
+      - postgres:postgres
+    ports:
+      - "3001:3001"
+      - "3002:3002"
+      - "1883:1883"
+  zigbee2mqtt:
+    container_name: zigbee2mqtt
+    image: koenkk/zigbee2mqtt
+    restart: unless-stopped
+    links:
+      - smart-home-server:smart-home-server
+    volumes:
+      - /Users/delta54/smart-home/zigbee2mqtt:/app/data
+      - /run/udev:/run/udev:ro
+    ports:
+      # Frontend port
+      - 8081:8080
+    environment:
+      - TZ=Asia/Bangkok
+    devices:
+      # Make sure this matched your adapter location
+      - /dev/ttyUSB0:/dev/ttyUSB0
 volumes:
   db-data:

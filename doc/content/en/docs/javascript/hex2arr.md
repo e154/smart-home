@@ -6,7 +6,8 @@ description: >
 
 ---
 
-The `hex2arr(hexString)` function is available in a JavaScript environment, and it converts a hexadecimal string to a byte array (`[]byte`).
+The `hex2arr(hexString)` function is available in a JavaScript environment, and it converts a hexadecimal string to a
+byte array (`[]byte`).
 
 Here's an example implementation of the `hex2arr` function:
 
@@ -20,6 +21,7 @@ hex2arr = function (hexString) {
     return result;
 };
 ```
+
 more examples:
 
 ```javascript
@@ -47,4 +49,6 @@ var byteArr = hex2arr(hexString);
 console.log(byteArr); // [ 72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100 ]
 ```
 
-In this example, the `hex2arr` function takes the hexadecimal string `"48656C6C6F20576F726C64"`, which represents "Hello World" in hexadecimal format. The result of the function is a byte array containing the corresponding ASCII values of the characters.
+In this example, the `hex2arr` function takes the hexadecimal string `"48656C6C6F20576F726C64"`, which represents "Hello
+World" in hexadecimal format. The result of the function is a byte array containing the corresponding ASCII values of
+the characters.

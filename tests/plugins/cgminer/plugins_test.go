@@ -25,10 +25,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/e154/smart-home/internal/system/logging"
+	"github.com/e154/smart-home/internal/system/migrations"
+
 	"go.uber.org/dig"
 
-	"github.com/e154/smart-home/system/logging"
-	"github.com/e154/smart-home/system/migrations"
 	. "github.com/e154/smart-home/tests/plugins/container"
 )
 
@@ -50,7 +51,6 @@ func TestMain(m *testing.M) {
 		_ *logging.Logging,
 		migrations *migrations.Migrations,
 	) {
-
 		migrations.Purge()
 
 		time.Sleep(time.Millisecond * 500)

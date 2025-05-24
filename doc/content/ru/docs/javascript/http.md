@@ -1,4 +1,3 @@
-
 ---
 title: "http запросы"
 linkTitle: "http"
@@ -7,13 +6,14 @@ description: >
 
 ---
 
-В проекте **Smart Home** имеется возможность выполнения произвольных HTTP запросов синхронно к сторонним ресурсам. 
+В проекте **Smart Home** имеется возможность выполнения произвольных HTTP запросов синхронно к сторонним ресурсам.
 
 Объект `http` позволяет выполнять синхронные HTTP запросы к сторонним ресурсам, таким как API-сервисы,
 и получать ответы. Вы можете использовать этот метод для интеграции с другими системами и получения или отправки данных
 через HTTP протокол в вашем проекте **Smart Home**.
 
 поддерживаемые методы:
+
 * GET
 * POST
 * PUT
@@ -25,42 +25,44 @@ description: >
 
 Для этого доступен соответствующий метод:
 
-### GET запрос 
+### GET запрос
+
 ```coffeescript
 response = http.get(url)
 ```
 
-|  значение  | описание  |
-|-------------|---------|
-| url |    адрес запроса   |
+| значение | описание           |
+|----------|--------------------|
+| url      | адрес запроса      |
 | response | рекзультат запроса |
-
 
 ----------------
 
-### POST запрос 
+### POST запрос
+
 ```coffeescript
 response = http.post(url, body)
 ```
 
-|  значение  | описание  |
-|-------------|---------|
-| url |    адрес запроса   |
-| body |    тело запроса   |
+| значение | описание           |
+|----------|--------------------|
+| url      | адрес запроса      |
+| body     | тело запроса       |
 | response | рекзультат запроса |
 
 ----------------
 
-### Headers запрос 
+### Headers запрос
+
 ```coffeescript
 response = http.headers(headers).post(url, body)
 ```
 
-|  значение  | описание  |
-|-------------|---------|
-| headers |    адрес запроса   |
-| url |    адрес запроса   |
-| body |    тело запроса   |
+| значение | описание           |
+|----------|--------------------|
+| headers  | адрес запроса      |
+| url      | адрес запроса      |
+| body     | тело запроса       |
 | response | рекзультат запроса |
 
 ----------------
@@ -71,9 +73,9 @@ response = http.headers(headers).post(url, body)
 # auth
 # ##################################
 
-res = http.digestAuth('user','password').download(uri);
+res = http.digestAuth('user', 'password').download(uri);
 
-res = http.basicAuth('user','password').download(uri);
+res = http.basicAuth('user', 'password').download(uri);
 
 res = http.download(uri);
 
@@ -90,7 +92,7 @@ p = JSON.parse(res.body)
 # POST http
 # ##################################
 
-res = http.post("%s", {'foo':'bar'})
+res = http.post("%s", {'foo': 'bar'})
 if res.error
   return
 p = JSON.parse(res.body)
@@ -99,7 +101,7 @@ p = JSON.parse(res.body)
 # PUT http
 # ##################################
 
-res = http.put("%s", {'foo':'bar'})
+res = http.put("%s", {'foo': 'bar'})
 if res.error
   return
 p = JSON.parse(res.body)
@@ -108,7 +110,7 @@ p = JSON.parse(res.body)
 # GET http + custom headers
 # ##################################
 
-res = http.headers([{'apikey':'some text'}]).get("%s")
+res = http.headers([{'apikey': 'some text'}]).get("%s")
 if res.error
 return
 p = JSON.parse(res.body)

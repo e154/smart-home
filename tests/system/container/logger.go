@@ -18,7 +18,9 @@
 
 package container
 
-import "github.com/e154/smart-home/system/logging"
+import (
+	"github.com/e154/smart-home/internal/system/logging"
+)
 
 func NewLoggerConfig() *logging.Config {
 	return &logging.Config{}

@@ -24,10 +24,10 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/e154/smart-home/common/logger"
+	"github.com/e154/smart-home/internal/common"
+	"github.com/e154/smart-home/pkg/logger"
 
 	"github.com/e154/smart-home/cmd/cli/commands/generate"
-	"github.com/e154/smart-home/common"
 	"github.com/spf13/cobra"
 )
 
@@ -45,7 +45,7 @@ import (
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/triggers/known/emptypb"
 
 	"{{.Dir}}/api/stub/api"	
 )

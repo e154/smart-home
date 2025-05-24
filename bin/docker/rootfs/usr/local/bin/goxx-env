@@ -1,0 +1,303 @@
+#!/usr/bin/env bash
+
+: "${TARGETPLATFORM=}"
+: "${TARGETOS=}"
+: "${TARGETARCH=}"
+: "${TARGETVARIANT=}"
+
+: "${GOXX_CROSS=}"
+: "${GOXX_HOSTARCH=}"
+: "${GOXX_DEBARCH=}"
+: "${GOXX_TRIPLE=}"
+
+: "${CGO_ENABLED=}"
+: "${GOOS=}"
+: "${GOARCH=}"
+: "${GOARM=}"
+: "${GOMIPS=}"
+: "${GOMIPS64=}"
+: "${GOBIN=}"
+
+: "${AR=}"
+: "${CC=}"
+: "${CXX=}"
+: "${PKG_CONFIG=}"
+
+: "${CGO_CFLAGS=}"
+: "${CGO_CPPFLAGS=}"
+: "${CGO_CXXFLAGS=}"
+: "${CGO_FFLAGS=}"
+: "${CGO_LDFLAGS=}"
+
+set -e
+
+# https://github.com/tonistiigi/xx/blob/c6d32015eb3e03de264a54ea9237388b319118b1/base/xx-info#L56-L58
+if [ -n "$TARGETPAIR" ] && [ -z "$TARGETPLATFORM" ]; then
+  os="$(echo "$TARGETPAIR" | cut -d"-" -f1)"
+  arch="$(echo "$TARGETPAIR" | cut -d"-" -f2)"
+  if [ "${arch#armv}" != "${arch}" ]; then
+    variant="${arch#arm}"
+    arch="arm"
+  fi
+  if [ -n "$os" ] && [ -n "$arch" ]; then
+    TARGETPLATFORM="$os/$arch"
+    if [ -n "$variant" ]; then
+      TARGETPLATFORM="$TARGETPLATFORM/$variant"
+    fi
+  fi
+fi
+
+case "$(uname -m)" in
+  "x86_64")
+    GOXX_HOSTARCH="amd64"
+    if [ -z "$TARGETPLATFORM" ]; then
+      TARGETPLATFORM="linux/amd64"
+    fi
+    ;;
+  "i386")
+    GOXX_HOSTARCH="i386"
+    if [ -z "$TARGETPLATFORM" ]; then
+      TARGETPLATFORM="linux/386"
+    fi
+    ;;
+  "aarch64")
+    GOXX_HOSTARCH="arm64"
+    if [ -z "$TARGETPLATFORM" ]; then
+      TARGETPLATFORM="linux/arm64"
+    fi
+    ;;
+  "arm64")
+    GOXX_HOSTARCH="arm64"
+    if [ -z "$TARGETPLATFORM" ]; then
+      TARGETPLATFORM="linux/arm64"
+    fi
+    ;;
+  "armv7l")
+    GOXX_HOSTARCH="armhf"
+    if [ -z "$TARGETPLATFORM" ]; then
+      TARGETPLATFORM="linux/arm/v7"
+    fi
+    ;;
+  "armv6l")
+    GOXX_HOSTARCH="armel"
+    if [ -z "$TARGETPLATFORM" ]; then
+      TARGETPLATFORM="linux/arm/v6"
+    fi
+    ;;
+  "armv5l")
+    GOXX_HOSTARCH="armel"
+    if [ -z "$TARGETPLATFORM" ]; then
+      TARGETPLATFORM="linux/arm/v5"
+    fi
+    ;;
+  "mips")
+    GOXX_HOSTARCH="mips"
+    if [ -z "$TARGETPLATFORM" ]; then
+      TARGETPLATFORM="linux/mips"
+    fi
+    ;;
+  "mipsle")
+    GOXX_HOSTARCH="mipsle"
+    if [ -z "$TARGETPLATFORM" ]; then
+      TARGETPLATFORM="linux/mipsle"
+    fi
+    ;;
+  "mips64")
+    GOXX_HOSTARCH="mips64"
+    if [ -z "$TARGETPLATFORM" ]; then
+      TARGETPLATFORM="linux/mips64"
+    fi
+    ;;
+  "mips64le")
+    GOXX_HOSTARCH="mips64le"
+    if [ -z "$TARGETPLATFORM" ]; then
+      TARGETPLATFORM="linux/mips64le"
+    fi
+    ;;
+  "ppc64le")
+    GOXX_HOSTARCH="ppc64le"
+    if [ -z "$TARGETPLATFORM" ]; then
+      TARGETPLATFORM="linux/ppc64le"
+    fi
+    ;;
+  "riscv64")
+    GOXX_HOSTARCH="riscv64"
+    if [ -z "$TARGETPLATFORM" ]; then
+      TARGETPLATFORM="linux/riscv64"
+    fi
+    ;;
+  "s390x")
+    GOXX_HOSTARCH="s390x"
+    if [ -z "$TARGETPLATFORM" ]; then
+      TARGETPLATFORM="linux/s390x"
+    fi
+    ;;
+esac
+
+if [ -n "$TARGETPLATFORM" ]; then
+  os="$(echo $TARGETPLATFORM | cut -d"/" -f1)"
+  arch="$(echo $TARGETPLATFORM | cut -d"/" -f2)"
+  if [ -n "$os" ] && [ -n "$arch" ]; then
+    TARGETOS="$os"
+    TARGETARCH="$arch"
+    variant="$(echo $TARGETPLATFORM | cut -d"/" -f3)"
+    if [ -n "$variant" ]; then
+      TARGETVARIANT="$variant"
+    fi
+  fi
+fi
+
+if [ -n "$TARGETOS" ]; then
+  GOOS="$TARGETOS"
+fi
+
+if [ -n "$TARGETARCH" ]; then
+  GOARCH="$TARGETARCH"
+fi
+
+if [ -n "$TARGETVARIANT" ]; then
+  case "$TARGETARCH" in
+    arm)
+      case "$TARGETVARIANT" in
+        "v5")
+          GOARM="5"
+          ;;
+        "v6")
+          GOARM="6"
+          ;;
+        *)
+          GOARM="7"
+          ;;
+      esac
+      ;;
+    mips64|mips64*)
+      GOMIPS64="$TARGETVARIANT"
+      ;;
+    mips|mips*)
+      GOMIPS="$TARGETVARIANT"
+      ;;
+  esac
+fi
+
+if [ "$GOOS" = "wasi" ]; then
+  GOOS="js"
+fi
+
+case "$GOARCH" in
+  "386")
+    GOXX_DEBARCH="i386"
+    GOXX_TRIPLE="i686-linux-gnu"
+    if [ "$GOOS" = "windows" ]; then
+      GOXX_TRIPLE="i686-w64-mingw32"
+    fi
+    ;;
+  "amd64")
+    GOXX_DEBARCH="amd64"
+    if [ "$GOOS" != "darwin" ]; then
+      GOXX_TRIPLE="x86_64-linux-gnu"
+      if [ "$GOOS" = "windows" ]; then
+        GOXX_TRIPLE="x86_64-w64-mingw32"
+      fi
+    fi
+    ;;
+  "arm")
+    case "$GOARM" in
+    "5")
+      GOXX_DEBARCH="armel"
+      GOXX_TRIPLE="arm-linux-gnueabi"
+      if [ "$GOOS" = "windows" ]; then
+        GOXX_TRIPLE="armv5-w64-mingw32"
+      fi
+      if [ "$CGO_ENABLED" = "1" ]; then
+        CGO_CFLAGS="-march=armv5t"
+        CGO_CXXFLAGS="-march=armv5t"
+      fi
+      ;;
+    "6")
+      GOXX_DEBARCH="armel"
+      GOXX_TRIPLE="arm-linux-gnueabi"
+      if [ "$GOOS" = "windows" ]; then
+        GOXX_TRIPLE="armv6-w64-mingw32"
+      fi
+      if [ "$CGO_ENABLED" = "1" ]; then
+        CGO_CFLAGS="-march=armv6"
+        CGO_CXXFLAGS="-march=armv6"
+      fi
+      ;;
+    "7")
+      GOXX_DEBARCH="armhf"
+      GOXX_TRIPLE="arm-linux-gnueabihf"
+      if [ "$GOOS" = "windows" ]; then
+        GOXX_TRIPLE="armv7-w64-mingw32"
+      fi
+      if [ "$CGO_ENABLED" = "1" ]; then
+        CGO_CFLAGS="-march=armv7-a -fPIC"
+        CGO_CXXFLAGS="-march=armv7-a -fPIC"
+      fi
+      ;;
+    *)
+      GOXX_DEBARCH="armhf"
+      GOXX_TRIPLE="arm-linux-gnueabihf"
+      ;;
+    esac
+    ;;
+  "arm64")
+    GOXX_DEBARCH="arm64"
+    if [ "$GOOS" != "darwin" ]; then
+      GOXX_TRIPLE="aarch64-linux-gnu"
+      if [ "$GOOS" = "windows" ]; then
+        GOXX_TRIPLE="aarch64-w64-mingw32"
+      fi
+    fi
+    ;;
+  "mips")
+    GOXX_DEBARCH="mips"
+    GOXX_TRIPLE="mips-linux-gnu"
+    ;;
+  "mipsle")
+    GOXX_DEBARCH="mipsel"
+    GOXX_TRIPLE="mipsel-linux-gnu"
+    ;;
+  "mips64")
+    GOXX_DEBARCH="mips64"
+    GOXX_TRIPLE="mips64-linux-gnuabi64"
+    ;;
+  "mips64le")
+    GOXX_DEBARCH="mips64el"
+    GOXX_TRIPLE="mips64el-linux-gnuabi64"
+    ;;
+  "ppc64le")
+    GOXX_DEBARCH="ppc64el"
+    GOXX_TRIPLE="powerpc64le-linux-gnu"
+    ;;
+  "riscv64")
+    GOXX_DEBARCH="riscv64"
+    GOXX_TRIPLE="riscv64-linux-gnu"
+    ;;
+  "s390x")
+    GOXX_DEBARCH="s390x"
+    GOXX_TRIPLE="s390x-linux-gnu"
+    ;;
+esac
+
+if [ "$GOOS" = "linux" ] && [ "$GOXX_HOSTARCH" = "$GOXX_DEBARCH" ]; then
+  GOXX_CROSS=0
+else
+  GOXX_CROSS=1
+fi
+
+if [ "$CGO_ENABLED" = "1" ]; then
+  if [ "$GOOS" = "darwin" ]; then
+    CC="o64-clang"
+    CXX="o64-clang++"
+  else
+    AR="$GOXX_TRIPLE-ar"
+    CC="$GOXX_TRIPLE-gcc"
+    CXX="$GOXX_TRIPLE-g++"
+    PKG_CONFIG="$GOXX_TRIPLE-pkg-config"
+  fi
+  if [ "$GOOS" = "windows" ]; then
+    CGO_CFLAGS="-D_WIN32_WINNT=0x0400"
+    CGO_CXXFLAGS="-D_WIN32_WINNT=0x0400"
+  fi
+fi

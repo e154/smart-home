@@ -20,18 +20,19 @@ package trigger_empty
 
 import (
 	"context"
-	timeTrigger "github.com/e154/smart-home/plugins/time"
 	"testing"
 	"time"
 
+	timeTrigger "github.com/e154/smart-home/internal/plugins/time"
+	"github.com/e154/smart-home/internal/system/automation"
+	"github.com/e154/smart-home/pkg/adaptors"
+	commonPkg "github.com/e154/smart-home/pkg/common"
+	"github.com/e154/smart-home/pkg/models"
+	"github.com/e154/smart-home/pkg/plugins"
+	"github.com/e154/smart-home/pkg/scheduler"
+	"github.com/e154/smart-home/pkg/scripts"
+
 	"github.com/e154/bus"
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/automation"
-	"github.com/e154/smart-home/system/scheduler"
-	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/e154/smart-home/tests/plugins"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -41,10 +42,10 @@ func TestTriggerEmpty(t *testing.T) {
 	Convey("trigger empty", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			scriptService scripts.ScriptService,
-			supervisor supervisor.Supervisor,
+			supervisor plugins.Supervisor,
 			automation automation.Automation,
 			eventBus bus.Bus,
-			scheduler *scheduler.Scheduler,
+			scheduler scheduler.Scheduler,
 		) {
 
 			// register plugins
@@ -63,14 +64,14 @@ func TestTriggerEmpty(t *testing.T) {
 
 			// automation
 			// ------------------------------------------------
-			trigger := &m.NewTrigger{
+			trigger := &models.NewTrigger{
 				Enabled:    true,
 				Name:       "trigger1",
 				PluginName: "time",
-				Payload: m.Attributes{
+				Payload: models.Attributes{
 					timeTrigger.AttrCron: {
 						Name:  timeTrigger.AttrCron,
-						Type:  common.AttributeString,
+						Type:  commonPkg.AttributeString,
 						Value: "* * * * * *", //every seconds
 					},
 				},
@@ -79,10 +80,10 @@ func TestTriggerEmpty(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			//TASK3
-			newTask := &m.NewTask{
+			newTask := &models.NewTask{
 				Name:       "Toggle plug OFF",
 				Enabled:    true,
-				Condition:  common.ConditionAnd,
+				Condition:  commonPkg.ConditionAnd,
 				TriggerIds: []int64{triggerId},
 			}
 			_, err = AddTask(newTask, adaptors, eventBus)

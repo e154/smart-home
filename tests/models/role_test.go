@@ -23,10 +23,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/e154/smart-home/adaptors"
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/access_list"
-	"github.com/e154/smart-home/system/migrations"
+	"github.com/e154/smart-home/internal/system/migrations"
+	"github.com/e154/smart-home/internal/system/rbac/access_list"
+	"github.com/e154/smart-home/pkg/adaptors"
+	"github.com/e154/smart-home/pkg/models"
+
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -40,13 +41,13 @@ func TestRole(t *testing.T) {
 			// clear database
 			_ = migrations.Purge()
 
-			demoRole := &m.Role{
+			demoRole := &models.Role{
 				Name: "demo",
 			}
 			err := adaptors.Role.Add(context.Background(), demoRole)
 			So(err, ShouldBeNil)
 
-			userRole := &m.Role{
+			userRole := &models.Role{
 				Name:   "user",
 				Parent: demoRole,
 			}
@@ -61,7 +62,7 @@ func TestRole(t *testing.T) {
 				for right := range item {
 					if strings.Contains(right, "read") ||
 						strings.Contains(right, "view") {
-						permission := &m.Permission{
+						permission := &models.Permission{
 							RoleName:    demoRole.Name,
 							PackageName: pack,
 							LevelName:   right,
@@ -78,7 +79,7 @@ func TestRole(t *testing.T) {
 				for right := range item {
 					if !strings.Contains(right, "read") &&
 						!strings.Contains(right, "view") {
-						permission := &m.Permission{
+						permission := &models.Permission{
 							RoleName:    userRole.Name,
 							PackageName: pack,
 							LevelName:   right,
@@ -91,7 +92,7 @@ func TestRole(t *testing.T) {
 				}
 			}
 
-			adminRole := &m.Role{
+			adminRole := &models.Role{
 				Name:   "admin",
 				Parent: userRole,
 			}

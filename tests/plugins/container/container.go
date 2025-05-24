@@ -20,27 +20,28 @@ package container
 
 import (
 	"github.com/e154/bus"
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common/web"
-	"github.com/e154/smart-home/endpoint"
-	"github.com/e154/smart-home/system/access_list"
-	"github.com/e154/smart-home/system/automation"
-	"github.com/e154/smart-home/system/backup"
-	"github.com/e154/smart-home/system/gate/client"
-	"github.com/e154/smart-home/system/initial"
-	"github.com/e154/smart-home/system/jwt_manager"
-	"github.com/e154/smart-home/system/logging"
-	"github.com/e154/smart-home/system/logging_db"
-	"github.com/e154/smart-home/system/migrations"
-	"github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/mqtt_authenticator"
-	"github.com/e154/smart-home/system/orm"
-	"github.com/e154/smart-home/system/scheduler"
-	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/storage"
-	"github.com/e154/smart-home/system/stream"
-	"github.com/e154/smart-home/system/supervisor"
-	"github.com/e154/smart-home/system/zigbee2mqtt"
+	"github.com/e154/smart-home/internal/adaptors"
+	"github.com/e154/smart-home/internal/endpoint"
+	"github.com/e154/smart-home/internal/system/automation"
+	"github.com/e154/smart-home/internal/system/backup"
+	"github.com/e154/smart-home/internal/system/gate/client"
+	"github.com/e154/smart-home/internal/system/initial"
+	"github.com/e154/smart-home/internal/system/jwt_manager"
+	"github.com/e154/smart-home/internal/system/logging"
+	"github.com/e154/smart-home/internal/system/logging_db"
+	"github.com/e154/smart-home/internal/system/migrations"
+	"github.com/e154/smart-home/internal/system/mqtt"
+	"github.com/e154/smart-home/internal/system/mqtt_authenticator"
+	"github.com/e154/smart-home/internal/system/orm"
+	"github.com/e154/smart-home/internal/system/rbac/access_list"
+	"github.com/e154/smart-home/internal/system/scheduler"
+	"github.com/e154/smart-home/internal/system/scripts"
+	"github.com/e154/smart-home/internal/system/storage"
+	"github.com/e154/smart-home/internal/system/stream"
+	"github.com/e154/smart-home/internal/system/supervisor"
+	"github.com/e154/smart-home/internal/system/validation"
+	"github.com/e154/smart-home/internal/system/web"
+	"github.com/e154/smart-home/internal/system/zigbee2mqtt"
 	"go.uber.org/dig"
 	"go.uber.org/fx"
 )
@@ -50,12 +51,14 @@ func BuildContainer() (container *dig.Container) {
 
 	container = dig.New()
 	_ = container.Provide(ReadConfig)
+	_ = container.Provide(validation.NewValidate)
 	_ = container.Provide(NewOrmConfig)
 	_ = container.Provide(web.New)
 	_ = container.Provide(orm.NewOrm)
 	_ = container.Provide(NewMigrationsConfig)
 	_ = container.Provide(migrations.NewMigrations)
 	_ = container.Provide(adaptors.NewAdaptors)
+	_ = container.Provide(NewAuthenticator)
 	_ = container.Provide(scheduler.NewScheduler)
 	_ = container.Provide(scripts.NewScriptService)
 	_ = container.Provide(initial.NewInitial)
@@ -65,6 +68,7 @@ func BuildContainer() (container *dig.Container) {
 	_ = container.Provide(mqtt.NewMqtt)
 	_ = container.Provide(mqtt_authenticator.NewAuthenticator)
 	_ = container.Provide(access_list.NewAccessListService)
+	_ = container.Provide(NewHttpAccessFilter)
 	_ = container.Provide(stream.NewStreamService)
 	_ = container.Provide(client.NewGateClient)
 	_ = container.Provide(NewZigbee2mqttConfig)

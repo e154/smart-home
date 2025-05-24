@@ -26,16 +26,17 @@ import (
 	"testing"
 	"time"
 
+	"github.com/e154/smart-home/internal/system/automation"
+	"github.com/e154/smart-home/internal/system/logging"
+	"github.com/e154/smart-home/internal/system/migrations"
+	"github.com/e154/smart-home/pkg/adaptors"
+	"github.com/e154/smart-home/pkg/plugins"
+	"github.com/e154/smart-home/pkg/scheduler"
+	"github.com/e154/smart-home/pkg/scripts"
+
 	"github.com/e154/bus"
 	"go.uber.org/dig"
 
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/system/automation"
-	"github.com/e154/smart-home/system/logging"
-	"github.com/e154/smart-home/system/migrations"
-	"github.com/e154/smart-home/system/scheduler"
-	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/e154/smart-home/tests/plugins"
 	. "github.com/e154/smart-home/tests/plugins/container"
 )
@@ -59,9 +60,9 @@ func TestMain(m *testing.M) {
 		migrations *migrations.Migrations,
 		adaptors *adaptors.Adaptors,
 		scriptService scripts.ScriptService,
-		supervisor supervisor.Supervisor,
+		supervisor plugins.Supervisor,
 		automation automation.Automation,
-		scheduler *scheduler.Scheduler,
+		scheduler scheduler.Scheduler,
 		eventBus bus.Bus,
 	) {
 

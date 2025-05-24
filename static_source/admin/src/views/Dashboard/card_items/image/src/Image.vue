@@ -17,19 +17,19 @@ const props = defineProps({
 // component methods
 // ---------------------------------
 
-const image = ref<string>()
+const Image = ref<string>()
 const style = ref({})
 
 const update = debounce(async () => {
   if (props.image) {
-    image.value = props.image
+    Image.value = props.image
     style.value = {
       "background": `url(${props.image})`,
       'width': '100%',
       'height': '100%'
     }
   } else {
-    image.value = null
+    Image.value = null
     style.value = {}
   }
 }, 100)
@@ -48,7 +48,7 @@ watch(
 </script>
 
 <template>
-  <ElImage v-if="!props.background && image" :src="image">
+  <ElImage v-if="!props.background && image" :src="Image">
     <template #error>
       <div class="image-slot">
         <ElIcon>

@@ -1,4 +1,3 @@
-
 ---
 title: "Templates"
 linkTitle: "templates"
@@ -23,11 +22,11 @@ The **Template** feature allows you to generate and distribute pre-defined messa
 tpl = template.render(name, params)
 ```
 
-| Value | Description |
-|-------|-------------|
-| name | Type: string, name of the template |
+| Value  | Description                                             |
+|--------|---------------------------------------------------------|
+| name   | Type: string, name of the template                      |
 | params | Type: Object, template parameters (e.g., {'key':'val'}) |
-| tpl | Type: string, generated message ready to be sent |
+| tpl    | Type: string, generated message ready to be sent        |
 
 ----------------
 
@@ -38,10 +37,10 @@ tpl = template.render(name, params)
 # ##################################
 
 
-sendMsg =(body)->
+sendMsg = (body)->
   tpl = template
-    .render('name', {'key':'val'})
-  
+    .render('name', {'key': 'val'})
+
   msg = notifr.newMessage();
   msg.type = 'telegram';
   msg.attributes = {

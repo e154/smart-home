@@ -23,12 +23,13 @@ package commands
 import (
 	"fmt"
 
+	"github.com/e154/smart-home/internal/common/app"
+	"github.com/e154/smart-home/internal/system/initial"
+
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
 
 	. "github.com/e154/smart-home/cmd/server/container"
-	"github.com/e154/smart-home/common/app"
-	"github.com/e154/smart-home/system/initial"
 	"github.com/e154/smart-home/version"
 )
 
@@ -39,7 +40,8 @@ var (
 		Short: "Run smart home server",
 		Run: func(cmd *cobra.Command, args []string) {
 
-			fmt.Printf(version.ShortVersionBanner, "")
+			mode = "test"
+			fmt.Printf(version.ShortVersionBanner, version.VersionString, mode)
 
 			app.Do(BuildContainer, fx.Invoke(func(
 				_ *initial.Initial,

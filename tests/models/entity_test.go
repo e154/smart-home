@@ -22,11 +22,13 @@ import (
 	"context"
 	"testing"
 
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/access_list"
-	"github.com/e154/smart-home/system/migrations"
+	"github.com/e154/smart-home/internal/endpoint"
+	"github.com/e154/smart-home/internal/system/migrations"
+	"github.com/e154/smart-home/internal/system/rbac/access_list"
+	"github.com/e154/smart-home/pkg/adaptors"
+	"github.com/e154/smart-home/pkg/common"
+	"github.com/e154/smart-home/pkg/models"
+
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -34,18 +36,19 @@ func TestEntity(t *testing.T) {
 	Convey("entity", t, func(ctx C) {
 		err := container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
-			accessList access_list.AccessListService) {
+			accessList access_list.AccessListService,
+			endpoint *endpoint.Endpoint) {
 
 			// clear database
 			_ = migrations.Purge()
 
 			// add scripts
-			script1 := &m.Script{
+			script1 := &models.Script{
 				Lang:   common.ScriptLangCoffee,
 				Name:   "script1",
 				Source: "print 'OK'",
 			}
-			script2 := &m.Script{
+			script2 := &models.Script{
 				Lang:   common.ScriptLangCoffee,
 				Name:   "script2",
 				Source: "print 'OK'",
@@ -61,11 +64,11 @@ func TestEntity(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			// add image
-			image1 := &m.Image{
+			image1 := &models.Image{
 				Url:  "foo",
 				Name: "foo",
 			}
-			image2 := &m.Image{
+			image2 := &models.Image{
 				Url:  "bar",
 				Name: "bar",
 			}
@@ -77,32 +80,32 @@ func TestEntity(t *testing.T) {
 			t.Run("Create", func(t *testing.T) {
 				Convey("", t, func(ctx C) {
 					// entity
-					entity := &m.Entity{
+					entity := &models.Entity{
 						Id:         common.EntityId("sensor.entity1"),
 						PluginName: "sensor",
 						AutoLoad:   true,
 						ImageId:    common.Int64(image1.Id),
-						Scripts: []*m.Script{
+						Scripts: []*models.Script{
 							script1,
 						},
-						Actions: []*m.EntityAction{
+						Actions: []*models.EntityAction{
 							{
 								Name:     "ACTION1",
 								ScriptId: common.Int64(script1.Id),
 								ImageId:  common.Int64(image2.Id),
 							},
 						},
-						States: []*m.EntityState{
+						States: []*models.EntityState{
 							{
 								Name: "STATE1",
 							},
 						},
-						Metrics: []*m.Metric{
+						Metrics: []*models.Metric{
 							{
 								Name:        "bar",
 								Description: "bar",
-								Options: m.MetricOptions{
-									Items: []m.MetricOptionsItem{
+								Options: models.MetricOptions{
+									Items: []models.MetricOptionsItem{
 										{
 											Name:        "foo",
 											Description: "foo",
@@ -116,7 +119,7 @@ func TestEntity(t *testing.T) {
 						},
 						Attributes: NetAttr(),
 						Settings:   NetSettings(),
-						Tags: []*m.Tag{
+						Tags: []*models.Tag{
 							{Name: "foo"},
 						},
 					}
@@ -153,30 +156,30 @@ func TestEntity(t *testing.T) {
 			t.Run("Update", func(t *testing.T) {
 				Convey("", t, func(ctx C) {
 					// entity
-					entity := &m.Entity{
+					entity := &models.Entity{
 						Id:         common.EntityId("sensor.entity1"),
 						AutoLoad:   true,
 						PluginName: "sensor",
-						Scripts: []*m.Script{
+						Scripts: []*models.Script{
 							script2,
 						},
-						Actions: []*m.EntityAction{
+						Actions: []*models.EntityAction{
 							{
 								Name:     "ACTION2",
 								ScriptId: common.Int64(script1.Id),
 							},
 						},
-						States: []*m.EntityState{
+						States: []*models.EntityState{
 							{
 								Name: "STATE2",
 							},
 						},
-						Metrics: []*m.Metric{
+						Metrics: []*models.Metric{
 							{
 								Name:        "bar2",
 								Description: "bar2",
-								Options: m.MetricOptions{
-									Items: []m.MetricOptionsItem{
+								Options: models.MetricOptions{
+									Items: []models.MetricOptionsItem{
 										{
 											Name:        "foo2",
 											Description: "foo2",
@@ -188,11 +191,11 @@ func TestEntity(t *testing.T) {
 								},
 							},
 						},
-						Tags: []*m.Tag{
+						Tags: []*models.Tag{
 							{Name: "bar"},
 						},
 					}
-					err = adaptors.Entity.Update(context.Background(), entity)
+					_, err = endpoint.Entity.Update(context.Background(), entity)
 					So(err, ShouldBeNil)
 
 					entity, err = adaptors.Entity.GetById(context.Background(), entity.Id)
@@ -211,10 +214,10 @@ func TestEntity(t *testing.T) {
 					So(entity.Metrics[0].Options.Items[0].Name, ShouldEqual, "foo2")
 
 					// v2
-					entity.Actions = []*m.EntityAction{}
+					entity.Actions = []*models.EntityAction{}
 					entity.Tags = nil
 
-					err = adaptors.Entity.Update(context.Background(), entity)
+					_, err = endpoint.Entity.Update(context.Background(), entity)
 					So(err, ShouldBeNil)
 
 					entity, err = adaptors.Entity.GetById(context.Background(), entity.Id)
@@ -231,14 +234,14 @@ func TestEntity(t *testing.T) {
 					So(entity.Metrics[0].Options.Items[0].Name, ShouldEqual, "foo2")
 
 					// v3
-					entity.Actions = []*m.EntityAction{
+					entity.Actions = []*models.EntityAction{
 						{
 							Name:     "ACTION2",
 							ScriptId: common.Int64(script1.Id),
 						},
 					}
-					entity.States = []*m.EntityState{}
-					err = adaptors.Entity.Update(context.Background(), entity)
+					entity.States = []*models.EntityState{}
+					_, err = endpoint.Entity.Update(context.Background(), entity)
 					So(err, ShouldBeNil)
 
 					entity, err = adaptors.Entity.GetById(context.Background(), entity.Id)
@@ -254,13 +257,13 @@ func TestEntity(t *testing.T) {
 					So(entity.Metrics[0].Options.Items[0].Name, ShouldEqual, "foo2")
 
 					// v4
-					entity.Actions = []*m.EntityAction{}
-					entity.States = []*m.EntityState{}
-					entity.Scripts = []*m.Script{
+					entity.Actions = []*models.EntityAction{}
+					entity.States = []*models.EntityState{}
+					entity.Scripts = []*models.Script{
 						script1,
 						script2,
 					}
-					err = adaptors.Entity.Update(context.Background(), entity)
+					_, err = endpoint.Entity.Update(context.Background(), entity)
 					So(err, ShouldBeNil)
 
 					entity, err = adaptors.Entity.GetById(context.Background(), entity.Id)
@@ -274,12 +277,12 @@ func TestEntity(t *testing.T) {
 					So(entity.Metrics[0].Options.Items[0].Name, ShouldEqual, "foo2")
 
 					// v5
-					entity.Actions = []*m.EntityAction{}
-					entity.States = []*m.EntityState{}
-					entity.Scripts = []*m.Script{}
-					entity.Metrics = []*m.Metric{}
+					entity.Actions = []*models.EntityAction{}
+					entity.States = []*models.EntityState{}
+					entity.Scripts = []*models.Script{}
+					entity.Metrics = []*models.Metric{}
 
-					err = adaptors.Entity.Update(context.Background(), entity)
+					_, err = endpoint.Entity.Update(context.Background(), entity)
 					So(err, ShouldBeNil)
 
 					entity, err = adaptors.Entity.GetById(context.Background(), entity.Id)
@@ -291,15 +294,15 @@ func TestEntity(t *testing.T) {
 					So(len(entity.Metrics), ShouldEqual, 0)
 
 					// v5
-					entity.Actions = []*m.EntityAction{}
-					entity.States = []*m.EntityState{}
-					entity.Scripts = []*m.Script{}
-					entity.Metrics = []*m.Metric{
+					entity.Actions = []*models.EntityAction{}
+					entity.States = []*models.EntityState{}
+					entity.Scripts = []*models.Script{}
+					entity.Metrics = []*models.Metric{
 						{
 							Name:        "bar4",
 							Description: "bar4",
-							Options: m.MetricOptions{
-								Items: []m.MetricOptionsItem{
+							Options: models.MetricOptions{
+								Items: []models.MetricOptionsItem{
 									{
 										Name:        "foo4",
 										Description: "foo4",
@@ -312,7 +315,7 @@ func TestEntity(t *testing.T) {
 						},
 					}
 
-					err = adaptors.Entity.Update(context.Background(), entity)
+					_, err = endpoint.Entity.Update(context.Background(), entity)
 					So(err, ShouldBeNil)
 
 					entity, err = adaptors.Entity.GetById(context.Background(), entity.Id)
@@ -330,10 +333,10 @@ func TestEntity(t *testing.T) {
 			t.Run("Import", func(t *testing.T) {
 				Convey("", t, func(ctx C) {
 					// entity
-					entity := &m.Entity{
+					entity := &models.Entity{
 						Id:         common.EntityId("sensor.entity2"),
 						PluginName: "sensor",
-						Scripts: []*m.Script{
+						Scripts: []*models.Script{
 							{
 								Id:     456,
 								Lang:   common.ScriptLangCoffee,
@@ -347,12 +350,12 @@ func TestEntity(t *testing.T) {
 								Source: "print 'OK'",
 							},
 						},
-						Actions: []*m.EntityAction{
+						Actions: []*models.EntityAction{
 							{
 								Id:          123,
 								Name:        "ACTION3",
 								Description: "ACTION3",
-								Script: &m.Script{
+								Script: &models.Script{
 									Id:     456,
 									Lang:   common.ScriptLangCoffee,
 									Name:   "script3",
@@ -360,19 +363,19 @@ func TestEntity(t *testing.T) {
 								},
 							},
 						},
-						States: []*m.EntityState{
+						States: []*models.EntityState{
 							{
 								Id:          123,
 								Description: "STATE3",
 								Name:        "STATE3",
 							},
 						},
-						Metrics: []*m.Metric{
+						Metrics: []*models.Metric{
 							{
 								Name:        "bar3",
 								Description: "bar3",
-								Options: m.MetricOptions{
-									Items: []m.MetricOptionsItem{
+								Options: models.MetricOptions{
+									Items: []models.MetricOptionsItem{
 										{
 											Name:        "foo3",
 											Description: "foo3",
@@ -384,12 +387,12 @@ func TestEntity(t *testing.T) {
 								},
 							},
 						},
-						Tags: []*m.Tag{
+						Tags: []*models.Tag{
 							{Name: "foo"},
 							{Name: "bar"},
 						},
 					}
-					err = adaptors.Entity.Import(context.Background(), entity)
+					err = endpoint.Entity.Import(context.Background(), entity)
 					So(err, ShouldBeNil)
 
 					entity, err = adaptors.Entity.GetById(context.Background(), entity.Id)
@@ -409,17 +412,17 @@ func TestEntity(t *testing.T) {
 					So(entity.Metrics[0].Name, ShouldEqual, "bar3")
 					So(entity.Metrics[0].Options.Items[0].Name, ShouldEqual, "foo3")
 
-					entity3 := &m.Entity{
+					entity3 := &models.Entity{
 						Id:         common.EntityId("sensor.entity3"),
 						PluginName: "sensor",
-						Scripts:    []*m.Script{},
-						Actions:    []*m.EntityAction{},
-						States:     []*m.EntityState{},
-						Metrics:    []*m.Metric{},
+						Scripts:    []*models.Script{},
+						Actions:    []*models.EntityAction{},
+						States:     []*models.EntityState{},
+						Metrics:    []*models.Metric{},
 						Attributes: NetAttr(),
 						Settings:   NetSettings(),
 					}
-					err = adaptors.Entity.Import(context.Background(), entity3)
+					err = endpoint.Entity.Import(context.Background(), entity3)
 					So(err, ShouldBeNil)
 
 					entity, err = adaptors.Entity.GetById(context.Background(), entity3.Id)
@@ -436,7 +439,7 @@ func TestEntity(t *testing.T) {
 					So(entity.Attributes["s"].Name, ShouldEqual, "s")
 					So(entity.Attributes["s"].String(), ShouldEqual, "")
 
-					err = adaptors.Entity.Import(context.Background(), entity3)
+					err = endpoint.Entity.Import(context.Background(), entity3)
 					So(err, ShouldNotBeNil)
 				})
 			})

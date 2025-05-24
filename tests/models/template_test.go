@@ -23,11 +23,12 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/endpoint"
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/migrations"
+	"github.com/e154/smart-home/internal/endpoint"
+	"github.com/e154/smart-home/internal/system/migrations"
+	"github.com/e154/smart-home/pkg/adaptors"
+	"github.com/e154/smart-home/pkg/common"
+	"github.com/e154/smart-home/pkg/models"
+
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -48,33 +49,33 @@ func TestTemplate(t *testing.T) {
 
 			// add templates
 			// ------------------------------------------------
-			templates := []*m.Template{
+			templates := []*models.Template{
 				{
 					Name:       "main",
 					Content:    "[message:block]",
-					Status:     m.TemplateStatusActive,
-					Type:       m.TemplateTypeItem,
+					Status:     models.TemplateStatusActive,
+					Type:       models.TemplateTypeItem,
 					ParentName: nil,
 				},
 				{
 					Name:       "message",
 					Content:    "[title:block][body:block]",
-					Status:     m.TemplateStatusActive,
-					Type:       m.TemplateTypeItem,
+					Status:     models.TemplateStatusActive,
+					Type:       models.TemplateTypeItem,
 					ParentName: common.String("main"),
 				},
 				{
 					Name:       "title",
 					Content:    "[title:content] [var1]",
-					Status:     m.TemplateStatusActive,
-					Type:       m.TemplateTypeItem,
+					Status:     models.TemplateStatusActive,
+					Type:       models.TemplateTypeItem,
 					ParentName: common.String("message"),
 				},
 				{
 					Name:       "body",
 					Content:    "[body:content] [var2]",
-					Status:     m.TemplateStatusActive,
-					Type:       m.TemplateTypeItem,
+					Status:     models.TemplateStatusActive,
+					Type:       models.TemplateTypeItem,
 					ParentName: common.String("message"),
 				},
 				{
@@ -96,22 +97,22 @@ func TestTemplate(t *testing.T) {
     }
   ]
 }`, subject),
-					Status:     m.TemplateStatusActive,
-					Type:       m.TemplateTypeTemplate,
+					Status:     models.TemplateStatusActive,
+					Type:       models.TemplateTypeTemplate,
 					ParentName: nil,
 				},
 				{
 					Name:       "sms_body",
 					Content:    "[code:block]",
-					Status:     m.TemplateStatusActive,
-					Type:       m.TemplateTypeItem,
+					Status:     models.TemplateStatusActive,
+					Type:       models.TemplateTypeItem,
 					ParentName: nil,
 				},
 				{
 					Name:       "code",
 					Content:    "[code:content] [code]",
-					Status:     m.TemplateStatusActive,
-					Type:       m.TemplateTypeItem,
+					Status:     models.TemplateStatusActive,
+					Type:       models.TemplateTypeItem,
 					ParentName: common.String("sms_body"),
 				},
 				{
@@ -128,15 +129,15 @@ func TestTemplate(t *testing.T) {
    }
 ]
 }`,
-					Status:     m.TemplateStatusActive,
-					Type:       m.TemplateTypeTemplate,
+					Status:     models.TemplateStatusActive,
+					Type:       models.TemplateTypeTemplate,
 					ParentName: nil,
 				},
 				{
 					Name:       "sms_warning",
 					Content:    "some warning message",
-					Status:     m.TemplateStatusActive,
-					Type:       m.TemplateTypeItem,
+					Status:     models.TemplateStatusActive,
+					Type:       models.TemplateTypeItem,
 					ParentName: nil,
 				},
 				{
@@ -148,8 +149,8 @@ func TestTemplate(t *testing.T) {
  "title": "",
  "fields": []
 }`,
-					Status:     m.TemplateStatusActive,
-					Type:       m.TemplateTypeTemplate,
+					Status:     models.TemplateStatusActive,
+					Type:       models.TemplateTypeTemplate,
 					ParentName: nil,
 				},
 			}

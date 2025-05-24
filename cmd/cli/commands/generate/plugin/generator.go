@@ -24,10 +24,10 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/e154/smart-home/common/logger"
+	"github.com/e154/smart-home/internal/common"
+	"github.com/e154/smart-home/pkg/logger"
 
 	"github.com/e154/smart-home/cmd/cli/commands/generate"
-	"github.com/e154/smart-home/common"
 	"github.com/spf13/cobra"
 )
 
@@ -103,7 +103,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/pkg/errors"
+	"errors"
 
 	"{{.Dir}}/common"
 	"{{.Dir}}/common/apperr"
@@ -205,7 +205,7 @@ func (p *plugin) removeEntity(entityId common.EntityId) (err error) {
 	defer p.actorsLock.Unlock()
 
 	if _, ok := p.actors[entityId]; !ok {
-		err = errors.Wrap(apperr.ErrNotFound, fmt.Sprintf("failed remove \"%s\"", entityId.Name()))
+		err = fmt.Errorf("failed remove \"%s\": %w", entityId.Name(), apperr.ErrNotFound)
 		return
 	}
 
@@ -280,7 +280,7 @@ func NewAttr() m.Attributes {
 	return m.Attributes{
 		AttrPhase: {
 			Name: AttrPhase,
-			Type: common.AttributeString,
+			Type: commonPkg.AttributeString,
 		},
 	}
 }
@@ -290,11 +290,11 @@ func NewSettings() m.Attributes {
 	return m.Attributes{
 		SettingParam1: {
 			Name: SettingParam1,
-			Type: common.AttributeString,
+			Type: commonPkg.AttributeString,
 		},
 		SettingParam2: {
 			Name: SettingParam2,
-			Type: common.AttributeString,
+			Type: commonPkg.AttributeString,
 		},
 	}
 }
@@ -410,5 +410,5 @@ func createFile(fp, tpl, fileName, pluginName string) {
 func (e Generator) addPLugin(fp, pluginName string) {
 	createFile(fp, actorTpl, "actor", pluginName)
 	createFile(fp, pluginTpl, "plugin", pluginName)
-	createFile(fp, typesTpl, "types", pluginName)
+	createFile(fp, typesTpl, "triggers", pluginName)
 }

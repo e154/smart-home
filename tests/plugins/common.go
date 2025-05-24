@@ -21,67 +21,68 @@ package plugins
 import (
 	"context"
 	"fmt"
-	"go.uber.org/atomic"
 	"net"
 	"net/http"
 	"sync"
 	"time"
 
+	"github.com/e154/smart-home/internal/plugins/alexa"
+	"github.com/e154/smart-home/internal/plugins/cgminer"
+	"github.com/e154/smart-home/internal/plugins/cgminer/bitmine"
+	"github.com/e154/smart-home/internal/plugins/modbus_rtu"
+	"github.com/e154/smart-home/internal/plugins/modbus_tcp"
+	"github.com/e154/smart-home/internal/plugins/moon"
+	"github.com/e154/smart-home/internal/plugins/node"
+	"github.com/e154/smart-home/internal/plugins/scene"
+	"github.com/e154/smart-home/internal/plugins/sun"
+	"github.com/e154/smart-home/internal/plugins/telegram"
+	"github.com/e154/smart-home/internal/plugins/weather"
+	"github.com/e154/smart-home/internal/plugins/zigbee2mqtt"
+	"github.com/e154/smart-home/pkg/adaptors"
+	commonPkg "github.com/e154/smart-home/pkg/common"
+	"github.com/e154/smart-home/pkg/events"
+	"github.com/e154/smart-home/pkg/models"
+	scripts "github.com/e154/smart-home/pkg/scripts"
+	"go.uber.org/atomic"
+
 	"github.com/phayes/freeport"
 	"github.com/smartystreets/goconvey/convey"
 
 	"github.com/e154/bus"
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/events"
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/plugins/alexa"
-	"github.com/e154/smart-home/plugins/cgminer"
-	"github.com/e154/smart-home/plugins/cgminer/bitmine"
-	"github.com/e154/smart-home/plugins/modbus_rtu"
-	"github.com/e154/smart-home/plugins/modbus_tcp"
-	"github.com/e154/smart-home/plugins/moon"
-	"github.com/e154/smart-home/plugins/node"
-	"github.com/e154/smart-home/plugins/scene"
-	"github.com/e154/smart-home/plugins/sun"
-	"github.com/e154/smart-home/plugins/telegram"
-	"github.com/e154/smart-home/plugins/weather"
-	"github.com/e154/smart-home/plugins/zigbee2mqtt"
-	"github.com/e154/smart-home/system/scripts"
 )
 
 // GetNewButton ...
-func GetNewButton(id string, scripts []*m.Script) *m.Entity {
-	return &m.Entity{
-		Id:           common.EntityId(id),
+func GetNewButton(id string, scripts []*models.Script) *models.Entity {
+	return &models.Entity{
+		Id:           commonPkg.EntityId(id),
 		Description:  "MiJia wireless switch",
 		PluginName:   zigbee2mqtt.EntityZigbee2mqtt,
 		Scripts:      scripts,
 		AutoLoad:     true,
 		RestoreState: true,
-		Attributes: m.Attributes{
-			"click": &m.Attribute{
+		Attributes: models.Attributes{
+			"click": &models.Attribute{
 				Name: "click",
-				Type: common.AttributeString,
+				Type: commonPkg.AttributeString,
 			},
-			"action": &m.Attribute{
+			"action": &models.Attribute{
 				Name: "action",
-				Type: common.AttributeString,
+				Type: commonPkg.AttributeString,
 			},
-			"battery": &m.Attribute{
+			"battery": &models.Attribute{
 				Name: "battery",
-				Type: common.AttributeInt,
+				Type: commonPkg.AttributeInt,
 			},
-			"voltage": &m.Attribute{
+			"voltage": &models.Attribute{
 				Name: "voltage",
-				Type: common.AttributeInt,
+				Type: commonPkg.AttributeInt,
 			},
-			"linkquality": &m.Attribute{
+			"linkquality": &models.Attribute{
 				Name: "linkquality",
-				Type: common.AttributeInt,
+				Type: commonPkg.AttributeInt,
 			},
 		},
-		States: []*m.EntityState{
+		States: []*models.EntityState{
 			{
 				Name:        "LONG_CLICK",
 				Description: "long click",
@@ -147,41 +148,41 @@ func GetNewButton(id string, scripts []*m.Script) *m.Entity {
 }
 
 // GetNewPlug ...
-func GetNewPlug(id string, scrits []*m.Script) *m.Entity {
-	return &m.Entity{
-		Id:           common.EntityId(id),
+func GetNewPlug(id string, scrits []*models.Script) *models.Entity {
+	return &models.Entity{
+		Id:           commonPkg.EntityId(id),
 		Description:  "MiJia power plug ZigBee",
 		PluginName:   zigbee2mqtt.EntityZigbee2mqtt,
 		Scripts:      scrits,
 		AutoLoad:     true,
 		RestoreState: true,
-		Attributes: m.Attributes{
-			"power": &m.Attribute{
+		Attributes: models.Attributes{
+			"power": &models.Attribute{
 				Name: "power",
-				Type: common.AttributeInt,
+				Type: commonPkg.AttributeInt,
 			},
-			"state": &m.Attribute{
+			"state": &models.Attribute{
 				Name: "state",
-				Type: common.AttributeString,
+				Type: commonPkg.AttributeString,
 			},
-			"voltage": &m.Attribute{
+			"voltage": &models.Attribute{
 				Name: "voltage",
-				Type: common.AttributeInt,
+				Type: commonPkg.AttributeInt,
 			},
-			"consumption": &m.Attribute{
+			"consumption": &models.Attribute{
 				Name: "consumption",
-				Type: common.AttributeString,
+				Type: commonPkg.AttributeString,
 			},
-			"linkquality": &m.Attribute{
+			"linkquality": &models.Attribute{
 				Name: "linkquality",
-				Type: common.AttributeInt,
+				Type: commonPkg.AttributeInt,
 			},
-			"temperature": &m.Attribute{
+			"temperature": &models.Attribute{
 				Name: "temperature",
-				Type: common.AttributeInt,
+				Type: commonPkg.AttributeInt,
 			},
 		},
-		States: []*m.EntityState{
+		States: []*models.EntityState{
 			{
 				Name:        "ON",
 				Description: "on state",
@@ -195,9 +196,9 @@ func GetNewPlug(id string, scrits []*m.Script) *m.Entity {
 }
 
 // GetNewScene ...
-func GetNewScene(id string, scripts []*m.Script) *m.Entity {
-	return &m.Entity{
-		Id:           common.EntityId(id),
+func GetNewScene(id string, scripts []*models.Script) *models.Entity {
+	return &models.Entity{
+		Id:           commonPkg.EntityId(id),
 		Description:  "scene",
 		PluginName:   scene.EntityScene,
 		Scripts:      scripts,
@@ -207,12 +208,12 @@ func GetNewScene(id string, scripts []*m.Script) *m.Entity {
 }
 
 // GetNewNode ...
-func GetNewNode(name string) *m.Entity {
+func GetNewNode(name string) *models.Entity {
 	settings := node.NewSettings()
 	settings[node.AttrNodeLogin].Value = "node1"
 	settings[node.AttrNodePass].Value = "node1"
-	return &m.Entity{
-		Id:           common.EntityId(fmt.Sprintf("node.%s", name)),
+	return &models.Entity{
+		Id:           commonPkg.EntityId(fmt.Sprintf("node.%s", name)),
 		Description:  "main node",
 		PluginName:   "node",
 		AutoLoad:     true,
@@ -223,19 +224,19 @@ func GetNewNode(name string) *m.Entity {
 }
 
 // GetNewMoon ...
-func GetNewMoon(name string) *m.Entity {
+func GetNewMoon(name string) *models.Entity {
 	settings := moon.NewSettings()
 	settings[moon.AttrLat].Value = 54.9022
 	settings[moon.AttrLon].Value = 83.0335
-	return &m.Entity{
-		Id:           common.EntityId(fmt.Sprintf("moon.%s", name)),
+	return &models.Entity{
+		Id:           commonPkg.EntityId(fmt.Sprintf("moon.%s", name)),
 		Description:  "home",
 		PluginName:   "moon",
 		AutoLoad:     true,
 		RestoreState: true,
 		Attributes:   moon.NewAttr(),
 		Settings:     settings,
-		States: []*m.EntityState{
+		States: []*models.EntityState{
 			{
 				Name:        moon.StateAboveHorizon,
 				Description: "above horizon",
@@ -249,12 +250,12 @@ func GetNewMoon(name string) *m.Entity {
 }
 
 // GetNewWeatherMet ...
-func GetNewWeatherMet(name string) *m.Entity {
+func GetNewWeatherMet(name string) *models.Entity {
 	settings := weather.NewSettings()
 	settings[weather.AttrLat].Value = 54.9022
 	settings[weather.AttrLon].Value = 83.0335
-	return &m.Entity{
-		Id:           common.EntityId(fmt.Sprintf("weather_met.%s", name)),
+	return &models.Entity{
+		Id:           commonPkg.EntityId(fmt.Sprintf("weather_met.%s", name)),
 		Description:  name,
 		PluginName:   "weather_met",
 		AutoLoad:     true,
@@ -280,19 +281,19 @@ func GetNewWeatherMet(name string) *m.Entity {
 //}
 
 // GetNewSun ...
-func GetNewSun(name string) *m.Entity {
+func GetNewSun(name string) *models.Entity {
 	settings := sun.NewSettings()
 	settings[sun.AttrLat].Value = 54.9022
 	settings[sun.AttrLon].Value = 83.0335
-	return &m.Entity{
-		Id:           common.EntityId(fmt.Sprintf("sun.%s", name)),
+	return &models.Entity{
+		Id:           commonPkg.EntityId(fmt.Sprintf("sun.%s", name)),
 		Description:  "home",
 		PluginName:   "sun",
 		AutoLoad:     true,
 		RestoreState: true,
 		Attributes:   sun.NewAttr(),
 		Settings:     settings,
-		States: []*m.EntityState{
+		States: []*models.EntityState{
 			{
 				Name:        sun.AttrDusk,
 				Description: "dusk (evening nautical twilight starts)",
@@ -302,7 +303,7 @@ func GetNewSun(name string) *m.Entity {
 }
 
 // GetNewBitmineL3 ...
-func GetNewBitmineL3(name string) *m.Entity {
+func GetNewBitmineL3(name string) *models.Entity {
 	settings := cgminer.NewSettings()
 	settings[cgminer.SettingHost].Value = "192.168.0.243"
 	settings[cgminer.SettingPort].Value = 4028
@@ -311,8 +312,8 @@ func GetNewBitmineL3(name string) *m.Entity {
 	settings[cgminer.SettingPass].Value = "pass"
 	settings[cgminer.SettingManufacturer].Value = bitmine.ManufactureBitmine
 	settings[cgminer.SettingModel].Value = bitmine.DeviceL3Plus
-	return &m.Entity{
-		Id:           common.EntityId(fmt.Sprintf("cgminer.%s", name)),
+	return &models.Entity{
+		Id:           commonPkg.EntityId(fmt.Sprintf("cgminer.%s", name)),
 		Description:  "antminer L3",
 		PluginName:   "cgminer",
 		AutoLoad:     true,
@@ -323,10 +324,10 @@ func GetNewBitmineL3(name string) *m.Entity {
 }
 
 // GetNewSensor ...
-func GetNewSensor(name string) *m.Entity {
+func GetNewSensor(name string) *models.Entity {
 
-	return &m.Entity{
-		Id:           common.EntityId(fmt.Sprintf("sensor.%s", name)),
+	return &models.Entity{
+		Id:           commonPkg.EntityId(fmt.Sprintf("sensor.%s", name)),
 		Description:  "api",
 		PluginName:   "sensor",
 		AutoLoad:     true,
@@ -335,9 +336,9 @@ func GetNewSensor(name string) *m.Entity {
 }
 
 // GetNewModbusRtu ...
-func GetNewModbusRtu(name string) *m.Entity {
-	return &m.Entity{
-		Id:           common.EntityId(fmt.Sprintf("modbus_rtu.%s", name)),
+func GetNewModbusRtu(name string) *models.Entity {
+	return &models.Entity{
+		Id:           commonPkg.EntityId(fmt.Sprintf("modbus_rtu.%s", name)),
 		Description:  fmt.Sprintf("%s entity", name),
 		PluginName:   "modbus_rtu",
 		AutoLoad:     true,
@@ -348,9 +349,9 @@ func GetNewModbusRtu(name string) *m.Entity {
 }
 
 // GetNewModbusTcp ...
-func GetNewModbusTcp(name string) *m.Entity {
-	return &m.Entity{
-		Id:           common.EntityId(fmt.Sprintf("modbus_tcp.%s", name)),
+func GetNewModbusTcp(name string) *models.Entity {
+	return &models.Entity{
+		Id:           commonPkg.EntityId(fmt.Sprintf("modbus_tcp.%s", name)),
 		Description:  fmt.Sprintf("%s entity", name),
 		PluginName:   "modbus_tcp",
 		AutoLoad:     true,
@@ -361,11 +362,11 @@ func GetNewModbusTcp(name string) *m.Entity {
 }
 
 // GetNewTelegram ...
-func GetNewTelegram(name string) *m.Entity {
+func GetNewTelegram(name string) *models.Entity {
 	settings := telegram.NewSettings()
 	settings[telegram.AttrToken].Value = "XXXX"
-	return &m.Entity{
-		Id:           common.EntityId(fmt.Sprintf("%s.%s", telegram.Name, name)),
+	return &models.Entity{
+		Id:           commonPkg.EntityId(fmt.Sprintf("%s.%s", telegram.Name, name)),
 		Description:  "",
 		PluginName:   telegram.Name,
 		AutoLoad:     true,
@@ -376,8 +377,8 @@ func GetNewTelegram(name string) *m.Entity {
 }
 
 // AddPlugin ...
-func AddPlugin(adaptors *adaptors.Adaptors, name string, opts ...m.AttributeValue) (err error) {
-	plugin := &m.Plugin{
+func AddPlugin(adaptors *adaptors.Adaptors, name string, opts ...models.AttributeValue) (err error) {
+	plugin := &models.Plugin{
 		Name:     name,
 		Version:  "0.0.1",
 		Enabled:  true,
@@ -510,16 +511,16 @@ func GetPort() int64 {
 }
 
 // AddScript ...
-func AddScript(name, src string, adaptors *adaptors.Adaptors, scriptService scripts.ScriptService) (script *m.Script, err error) {
+func AddScript(name, src string, adaptors *adaptors.Adaptors, scriptService scripts.ScriptService) (script *models.Script, err error) {
 
-	script = &m.Script{
-		Lang:        common.ScriptLangCoffee,
+	script = &models.Script{
+		Lang:        commonPkg.ScriptLangCoffee,
 		Name:        name,
 		Source:      src,
 		Description: "description " + name,
 	}
 
-	var engine *scripts.Engine
+	var engine scripts.Engine
 	if engine, err = scriptService.NewEngine(script); err != nil {
 		return
 	}
@@ -533,7 +534,7 @@ func AddScript(name, src string, adaptors *adaptors.Adaptors, scriptService scri
 	return
 }
 
-func AddTrigger(trigger *m.NewTrigger, adaptors *adaptors.Adaptors, eventBus bus.Bus) (id int64, err error) {
+func AddTrigger(trigger *models.NewTrigger, adaptors *adaptors.Adaptors, eventBus bus.Bus) (id int64, err error) {
 	if id, err = adaptors.Trigger.Add(context.Background(), trigger); err != nil {
 		return
 	}
@@ -543,7 +544,7 @@ func AddTrigger(trigger *m.NewTrigger, adaptors *adaptors.Adaptors, eventBus bus
 	return
 }
 
-func AddTask(newTask *m.NewTask, adaptors *adaptors.Adaptors, eventBus bus.Bus) (task1Id int64, err error) {
+func AddTask(newTask *models.NewTask, adaptors *adaptors.Adaptors, eventBus bus.Bus) (task1Id int64, err error) {
 	if task1Id, err = adaptors.Task.Add(context.Background(), newTask); err != nil {
 		return
 	}

@@ -42,7 +42,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/e154/smart-home/system/mqtt_client"
+	mqtt_client2 "github.com/e154/smart-home/internal/system/mqtt_client"
+
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/koron/netx"
 	"github.com/spf13/cobra"
@@ -106,7 +107,7 @@ func onPublish(i mqtt.Client, msg mqtt.Message) {
 
 func client(cmd *cobra.Command, args []string) {
 
-	cfg := &mqtt_client.Config{
+	cfg := &mqtt_client2.Config{
 		CleanSession: true,
 		Broker:       clientURI,
 		KeepAlive:    300,
@@ -114,7 +115,7 @@ func client(cmd *cobra.Command, args []string) {
 		Password:     password,
 		ClientID:     fmt.Sprintf("pingmqclient%d%d", os.Getpid(), time.Now().Unix()),
 	}
-	c, err := mqtt_client.NewClient(cfg)
+	c, err := mqtt_client2.NewClient(cfg)
 	if err != nil {
 		log.Fatalln(err.Error())
 		return

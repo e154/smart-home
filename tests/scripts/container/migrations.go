@@ -18,7 +18,9 @@
 
 package container
 
-import "github.com/e154/smart-home/system/migrations"
+import (
+	"github.com/e154/smart-home/internal/system/migrations"
+)
 
 // NewMigrationsConfig ...
 func NewMigrationsConfig() *migrations.Config {

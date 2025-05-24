@@ -1,0 +1,127 @@
+#!/usr/bin/env bash
+
+set -e
+
+source goxx-env
+
+exitnolinux() {
+  if [ "${GOOS}" != "linux" ]; then
+    echo >&2 "WARN: skipping packages installation on ${GOOS}"
+    exit 0
+  fi
+}
+
+setaptsources() {
+  local file=$1
+  local arch=$2
+  local mainuri=$3
+  local securi=$4
+  local release=$(. /etc/os-release && echo "$UBUNTU_CODENAME")
+  cat > "$file" <<EOL
+deb [arch=$arch] $mainuri $release main restricted universe multiverse
+deb [arch=$arch] $mainuri $release-updates main restricted universe multiverse
+deb [arch=$arch] $mainuri $release-backports main restricted universe multiverse
+deb [arch=$arch] $securi $release-security main restricted universe multiverse
+EOL
+}
+
+if [ -z "${GOXX_SKIP_APT_PORTS}" ]; then
+  case "${GOXX_HOSTARCH}" in
+  amd64 | i386)
+      setaptsources "/etc/apt/sources.list" "$GOXX_HOSTARCH" "http://archive.ubuntu.com/ubuntu/" "http://security.ubuntu.com/ubuntu/"
+      ;;
+    *)
+      setaptsources "/etc/apt/sources.list" "$GOXX_HOSTARCH" "http://ports.ubuntu.com/ubuntu-ports/" "http://ports.ubuntu.com/ubuntu-ports/"
+      ;;
+  esac
+  if [ "$GOOS" = "linux" ] && [ "$GOXX_CROSS" = "1" ]; then
+    case "${GOXX_DEBARCH}" in
+      amd64 | i386)
+        setaptsources "/etc/apt/sources.list.d/port-$GOXX_DEBARCH.list" "$GOXX_DEBARCH" "http://archive.ubuntu.com/ubuntu/" "http://security.ubuntu.com/ubuntu/"
+        ;;
+      *)
+        setaptsources "/etc/apt/sources.list.d/port-$GOXX_DEBARCH.list" "$GOXX_DEBARCH" "http://ports.ubuntu.com/ubuntu-ports/" "http://ports.ubuntu.com/ubuntu-ports/"
+        ;;
+    esac
+  fi
+  if ! dpkg --print-foreign-architectures | grep "$GOXX_DEBARCH" >/dev/null; then
+    if [ "$GOOS" = "linux" ] && [ "$GOXX_CROSS" = "1" ]; then
+      dpkg --add-architecture "$GOXX_DEBARCH"
+    fi
+    apt-get update
+  fi
+fi
+
+if [ "$GOOS" = "linux" ] && [ "$GOXX_DEBARCH" = "$GOXX_HOSTARCH" ]; then
+  (set -x ; apt-get "$@")
+  exit 0
+fi
+
+suffix=$GOXX_TRIPLE
+if [ "$suffix" = "x86_64-linux-gnu" ]; then
+  suffix="x86-64-linux-gnu"
+fi
+if [ "$GOOS" = "windows" ]; then
+  case "$GOARCH" in
+    amd64) suffix="mingw-w64-x86-64" ;;
+    386) suffix="mingw-w64-i686" ;;
+    arm64) suffix="mingw-w64-aarch64" ;;
+    arm) suffix="mingw-w64-arm" ;;
+  esac
+fi
+
+packages=
+parsed=
+n=$#
+for p in "$@"; do
+  if [ $# = $n ]; then set --; fi
+  arg=
+  case "$p" in
+    -*)
+      arg="$p"
+      ;;
+    "install" | "remove" | "search" | "show" | "list" | "info")
+      parsed=1
+      arg="$p"
+      ;;
+    *)
+      if [ -n "$parsed" ]; then
+        if [ -z "${packages}" ]; then
+          packages="$p"
+        else
+          packages="${packages} ${p}"
+        fi
+      else
+        arg="$p"
+      fi
+      ;;
+  esac
+  if [ -n "$arg" ]; then
+    set -- "$@" "$arg"
+  fi
+done
+
+empty=1
+for p in ${packages}; do
+  n=
+  if [ "$GOXX_CROSS" = "0" ] && [ -n "$(apt-cache madison "${p}" 2>/dev/null)" ]; then
+    n=${p}
+  elif [ -n "$(apt-cache madison "${p}-${suffix}" 2>/dev/null)" ]; then
+    n="${p}-${suffix}"
+  elif [ "${GOOS}" = "linux" ] && [ -n "$(apt-cache madison "${p}-${GOXX_DEBARCH}-cross" 2>/dev/null)" ]; then
+    n="${p}-${GOXX_DEBARCH}-cross"
+  elif [ "${GOOS}" = "linux" ] && [ -n "$(apt-cache madison "${p}:${GOXX_DEBARCH}" 2>/dev/null)" ]; then
+    n="${p}:${GOXX_DEBARCH}"
+  else
+    continue
+  fi
+  empty=
+  set -- "$@" "$n"
+done
+
+if [ -n "$empty" ]; then
+  exitnolinux
+fi
+
+set -x
+exec apt-get "$@"

@@ -1,4 +1,3 @@
-
 ---
 title: "Plugin ONVIF"
 linkTitle: "onvif"
@@ -7,7 +6,9 @@ description: >
   
 ---
 
-Проект Smart Home предоставляет плагин ONVIF, который обеспечивает возможность взаимодействия с камерами наблюдения по протоколу ONVIF. Данный плагин реализует несколько методов JavaScript, предназначенных для управления камерами и получения снимков.
+Проект Smart Home предоставляет плагин ONVIF, который обеспечивает возможность взаимодействия с камерами наблюдения по
+протоколу ONVIF. Данный плагин реализует несколько методов JavaScript, предназначенных для управления камерами и
+получения снимков.
 
 #### Методы JavaScript
 
@@ -49,25 +50,26 @@ description: >
 
 - **`offline`**: Устройство недоступно или отключено от системы.
 
-Эти функции позволяют интегрировать камеры наблюдения в систему Smart Home и эффективно управлять ими через плагин ONVIF.
+Эти функции позволяют интегрировать камеры наблюдения в систему Smart Home и эффективно управлять ими через плагин
+ONVIF.
 
 Пример использования плагина "onvif" для реализации управления камерой:
 
 ```javascript
 continuousMove = function (args) {
-    var X, Y;
-    X = args['X'] || 0;
-    Y = args['Y'] || 0;
-    if (Math.abs(X) > Math.abs(Y)) {
-        Y = 0;
-    } else {
-        X = 0;
-    }
-    return Camera.continuousMove(X, Y);
+  var X, Y;
+  X = args['X'] || 0;
+  Y = args['Y'] || 0;
+  if (Math.abs(X) > Math.abs(Y)) {
+    Y = 0;
+  } else {
+    X = 0;
+  }
+  return Camera.continuousMove(X, Y);
 };
 
 stopStop = function (args) {
-    return Camera.stopContinuousMove();
+  return Camera.stopContinuousMove();
 };
 
 ```

@@ -26,9 +26,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/e154/smart-home/common/encryptor"
+	"github.com/e154/smart-home/internal/system/logging"
+	"github.com/e154/smart-home/pkg/common/encryptor"
 
-	"github.com/e154/smart-home/system/logging"
 	. "github.com/e154/smart-home/tests/models/container"
 	"go.uber.org/dig"
 )

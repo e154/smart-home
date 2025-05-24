@@ -1,4 +1,3 @@
-
 ---
 title: "EMAIL"
 linkTitle: "email"
@@ -7,7 +6,8 @@ description: >
   
 ---
 
-The Email plugin provides the ability to integrate email sending functionality into the Smart Home system. This plugin allows users to configure email parameters and send notifications or messages from devices within the smart home.
+The Email plugin provides the ability to integrate email sending functionality into the Smart Home system. This plugin
+allows users to configure email parameters and send notifications or messages from devices within the smart home.
 
 #### Device Settings
 

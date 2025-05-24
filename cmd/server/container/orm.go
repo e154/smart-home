@@ -19,8 +19,8 @@
 package container
 
 import (
-	"github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/orm"
+	"github.com/e154/smart-home/internal/system/orm"
+	"github.com/e154/smart-home/pkg/models"
 )
 
 // NewOrmConfig ...

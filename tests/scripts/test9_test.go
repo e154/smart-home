@@ -23,11 +23,12 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/migrations"
-	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/internal/system/migrations"
+	"github.com/e154/smart-home/pkg/adaptors"
+	"github.com/e154/smart-home/pkg/common"
+	"github.com/e154/smart-home/pkg/models"
+	"github.com/e154/smart-home/pkg/scripts"
+
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -60,19 +61,19 @@ func Test9(t *testing.T) {
 
 			// add templates
 			// ------------------------------------------------
-			templates := []*m.Template{
+			templates := []*models.Template{
 				{
 					Name:       "sms_body",
 					Content:    "[code:block]",
-					Status:     m.TemplateStatusActive,
-					Type:       m.TemplateTypeItem,
+					Status:     models.TemplateStatusActive,
+					Type:       models.TemplateTypeItem,
 					ParentName: nil,
 				},
 				{
 					Name:       "code",
 					Content:    "[code:content] [code]",
-					Status:     m.TemplateStatusActive,
-					Type:       m.TemplateTypeItem,
+					Status:     models.TemplateStatusActive,
+					Type:       models.TemplateTypeItem,
 					ParentName: common.String("sms_body"),
 				},
 				{
@@ -89,8 +90,8 @@ func Test9(t *testing.T) {
    }
 ]
 }`,
-					Status:     m.TemplateStatusActive,
-					Type:       m.TemplateTypeTemplate,
+					Status:     models.TemplateStatusActive,
+					Type:       models.TemplateTypeTemplate,
 					ParentName: nil,
 				},
 			}

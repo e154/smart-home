@@ -1,4 +1,3 @@
-
 ---
 title: "Zigbee2mqtt"
 linkTitle: "zigbee2mqtt"
@@ -15,11 +14,13 @@ description: >
 
 Свойства объекта `message` включают:
 
-1. `payload`: Значение сообщения, представленное в виде словаря (map), где ключи являются строками, а значения могут быть любого типа.
+1. `payload`: Значение сообщения, представленное в виде словаря (map), где ключи являются строками, а значения могут
+   быть любого типа.
 2. `topic`: Топик MQTT-сообщения, указывающий на источник или назначение сообщения.
 3. `qos`: Уровень качества обслуживания (Quality of Service) MQTT-сообщения.
 4. `duplicate`: Флаг, указывающий, является ли сообщение дубликатом.
-5. `storage`: Объект `Storage`, предоставляющий доступ к хранилищу данных для кеширования и получения произвольных значений.
+5. `storage`: Объект `Storage`, предоставляющий доступ к хранилищу данных для кеширования и получения произвольных
+   значений.
 6. `error`: Строка, содержащая информацию об ошибке, если таковая возникла при обработке сообщения.
 7. `success`: Булево значение, указывающее на успешное выполнение операции или обработку сообщения.
 8. `new_state`: Объект `StateParams`, представляющий новое состояние актора после выполнения операции.
@@ -28,22 +29,22 @@ description: >
 
 ```javascript
 function zigbee2mqttEvent(message) {
-    console.log("Received MQTT message:");
-    console.log("Payload:", message.payload);
-    console.log("Topic:", message.topic);
-    console.log("QoS:", message.qos);
-    console.log("Duplicate:", message.duplicate);
+  console.log("Received MQTT message:");
+  console.log("Payload:", message.payload);
+  console.log("Topic:", message.topic);
+  console.log("QoS:", message.qos);
+  console.log("Duplicate:", message.duplicate);
 
-    if (message.error) {
-        console.error("Error:", message.error);
-    } else if (message.success) {
-        console.log("Operation successful!");
-        console.log("New state:", message.new_state);
-    }
+  if (message.error) {
+    console.error("Error:", message.error);
+  } else if (message.success) {
+    console.log("Operation successful!");
+    console.log("New state:", message.new_state);
+  }
 
-    // Доступ к хранилищу
-    const value = message.storage.getByName("key");
-    console.log("Value from storage:", value);
+  // Доступ к хранилищу
+  const value = message.storage.getByName("key");
+  console.log("Value from storage:", value);
 }
 ```
 
@@ -51,7 +52,7 @@ function zigbee2mqttEvent(message) {
 дополнительных операций на основе полученных данных.
 
 ```coffeescript
-zigbee2mqttEvent =(message)->
+zigbee2mqttEvent = (message)->
 #print '---mqtt new event from plug---'
   if !message || message.topic.includes('/set')
     return
@@ -69,8 +70,8 @@ zigbee2mqttEvent =(message)->
 ```
 
 ```coffeescript
-zigbee2mqttEvent =(message)->
-  #print '---mqtt new event from button---'
+zigbee2mqttEvent = (message)->
+#print '---mqtt new event from button---'
   if !message
     return
   payload = unmarshal message.payload

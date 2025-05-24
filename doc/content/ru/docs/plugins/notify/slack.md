@@ -1,4 +1,3 @@
-
 ---
 title: "Slack"
 linkTitle: "slack"
@@ -10,6 +9,7 @@ description: >
 Отправка уведомлений в чат slack
 
 ### Настройка
+
 * Token
 * User name
 
@@ -30,10 +30,11 @@ msg.attributes = {
 };
 
 ```
-|  значение  | описание  |
-|-------------|---------|
-| newMessage() |    метод   |
-| msg |   type: Object (Message)  |
+
+| значение     | описание               |
+|--------------|------------------------|
+| newMessage() | метод                  |
+| msg          | type: Object (Message) |
 
 ----------------
 
@@ -43,12 +44,12 @@ msg.attributes = {
 # slack
 # ##################################
 
-sendMsg =(body)->
+sendMsg = (body)->
   msg = notifr.newMessage();
-    msg.entity_id = 'slack.name';
-    msg.attributes = {
-      'channel': '#ch',
-      'text': 'some text'
+  msg.entity_id = 'slack.name';
+  msg.attributes = {
+    'channel': '#ch',
+    'text': 'some text'
   };
   notifr.send(msg);
 ```

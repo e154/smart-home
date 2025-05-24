@@ -6,7 +6,7 @@ import {getAllKeys, getFilteredKeys} from "@/views/Dashboard/core";
 import {propTypes} from "@/utils/propTypes";
 
 const currentValue = ref<Nullable<string>>(null)
-const allKeys = ref<{ value: string }[]>([])
+const AllKeys = ref<{ value: string }[]>([])
 
 const emit = defineEmits(['change', 'update:modelValue'])
 
@@ -28,12 +28,12 @@ watch(
       }
       if (props.allKeys) {
         const keys = getAllKeys(val)
-        allKeys.value = keys.map(value => {
+        AllKeys.value = keys.map(value => {
           return {value: value}
         })
       } else {
         const keys = getFilteredKeys(val)
-        allKeys.value = keys.map(value => {
+        AllKeys.value = keys.map(value => {
           return {value: value}
         })
       }
@@ -60,8 +60,8 @@ watch(
 
 const querySearch = (queryString: string, cb: any) => {
   const results = queryString
-      ? allKeys.value.filter(createFilter(queryString))
-      : allKeys.value
+      ? AllKeys.value.filter(createFilter(queryString))
+      : AllKeys.value
   // call callback function to return suggestions
   cb(results)
 }

@@ -1,4 +1,3 @@
-
 ---
 title: "Moon"
 linkTitle: "moon"
@@ -13,11 +12,14 @@ description: >
 
 &nbsp;
 
-In the **Smart Home** system, there is a "moon" plugin that allows displaying various parameters related to the phases of the moon and its position in the sky. This plugin provides access to the following parameters:
+In the **Smart Home** system, there is a "moon" plugin that allows displaying various parameters related to the phases
+of the moon and its position in the sky. This plugin provides access to the following parameters:
 
-1. `horizonState`: The `horizonState` parameter indicates the moon's state relative to the horizon. It can be either "aboveHorizon" or "belowHorizon".
+1. `horizonState`: The `horizonState` parameter indicates the moon's state relative to the horizon. It can be either "
+   aboveHorizon" or "belowHorizon".
 
-2. `phase`: The `phase` parameter displays the current phase of the moon. For example, "new_moon", "waxing_crescent", "first_quarter", "waxing_gibbous", "full_moon", "waning_gibbous", "third_quarter", "waning_crescent".
+2. `phase`: The `phase` parameter displays the current phase of the moon. For example, "new_moon", "waxing_crescent", "
+   first_quarter", "waxing_gibbous", "full_moon", "waning_gibbous", "third_quarter", "waning_crescent".
 
 3. `azimuth`: The `azimuth` parameter indicates the azimuthal position of the moon in degrees.
 
@@ -27,7 +29,8 @@ In the **Smart Home** system, there is a "moon" plugin that allows displaying va
 
 6. `belowHorizon`: The `belowHorizon` parameter indicates whether the moon is below the horizon (true/false).
 
-Additionally, the "moon" plugin has settings `lat` and `lon`, which allow specifying the latitude and longitude for determining the moon's position in the sky.
+Additionally, the "moon" plugin has settings `lat` and `lon`, which allow specifying the latitude and longitude for
+determining the moon's position in the sky.
 
 Here's an example of using the "moon" plugin to retrieve moon parameters:
 

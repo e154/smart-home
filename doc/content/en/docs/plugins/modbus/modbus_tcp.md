@@ -1,4 +1,3 @@
-
 ---
 title: "Modbus tcp"
 linkTitle: "modbus tcp"
@@ -7,7 +6,9 @@ description: >
 
 ---
 
-In the **Smart Home** system, there is a Modbus TCP plugin implemented that enables interaction with devices using the Modbus TCP protocol. The plugin provides the `ModbusTcp(func, addr, count, command)` method, which allows sending commands and receiving data using the specified protocol.
+In the **Smart Home** system, there is a Modbus TCP plugin implemented that enables interaction with devices using the
+Modbus TCP protocol. The plugin provides the `ModbusTcp(func, addr, count, command)` method, which allows sending
+commands and receiving data using the specified protocol.
 
 Arguments of the `ModbusTcp` method:
 
@@ -28,7 +29,9 @@ const response = ModbusTcp(FUNC, ADDRESS, COUNT, COMMAND);
 console.log(response);
 ```
 
-The `ModbusTcp` method allows sending Modbus TCP commands, performing register reads or writes, and retrieving data from devices. You can use this method in your **Smart Home** project to interact with devices that support the Modbus TCP protocol.
+The `ModbusTcp` method allows sending Modbus TCP commands, performing register reads or writes, and retrieving data from
+devices. You can use this method in your **Smart Home** project to interact with devices that support the Modbus TCP
+protocol.
 
 {{< alert color="warning" >}}To work with a Modbus RTU device, a configured **node** is required.{{< /alert >}}
 
@@ -87,26 +90,27 @@ const ENTITY_ID
 result = ModbusTcp(func, addr, count, command)
 ```
 
-|  Value   | Description |
-|-------------|---------|
-| func | Function to be executed on the device |
-| addr | Address of the first register (40108-40001 = 107 = 6B hex) |
-| count | Number of registers to read (reading 3 registers from 40108 to 40110) |
-| command | Command |
-
+| Value   | Description                                                           |
+|---------|-----------------------------------------------------------------------|
+| func    | Function to be executed on the device                                 |
+| addr    | Address of the first register (40108-40001 = 107 = 6B hex)            |
+| count   | Number of registers to read (reading 3 registers from 40108 to 40110) |
+| command | Command                                                               |
 
 ```coffeescript
 # Event handler function for actions:
 entityAction = (entityId, actionName, args)->
 ```
 
-|  Value   | Description |
-|-------------|---------|
-| entityId | Unique ID of the device |
+| Value      | Description               |
+|------------|---------------------------|
+| entityId   | Unique ID of the device   |
 | actionName | System name of the action |
-| args | Type: map[string]any |
+| args       | Type: map[string]any      |
 
-{{< alert color="warning" >}}The **Action** object is available in action scripts and scripts attached to the device.{{< /alert >}}
+{{< alert color="warning" >}}The **Action** object is available in action scripts and scripts attached to the device.{{<
+/alert >}}
+
 ```coffeescript
 state = {
   new_state: 'ENABLED',
@@ -115,17 +119,17 @@ state = {
   },
   settings_value: {},
   storage_save: true
-} 
+}
 # Save the state 
 EntitySetState ENTITY_ID, state
 ```
 
-|  Value   | Description |
-|-------------|---------|
-| new_state | Unique system name of the state |
+| Value            | Description                                            |
+|------------------|--------------------------------------------------------|
+| new_state        | Unique system name of the state                        |
 | attribute_values | Values of attributes previously defined for the device |
-| settings_value | Values of settings previously defined for the device |
-| storage_save | Flag indicating whether to save the state
+| settings_value   | Values of settings previously defined for the device   |
+| storage_save     | Flag indicating whether to save the state              
 
 ----------------
 

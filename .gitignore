@@ -15,10 +15,8 @@ server-*
 build/public/*
 smart-home-common.tar.gz
 /coverage.out
-webdav
-/data/vosk/models
-/data/vosk/models/*
-/data/vosk/libvosk
-/data/vosk/libvosk/*
+/webdav
 /data/plugins/*
-libvosk.dylib
+.air.toml
+dist
+/smart-home-copy

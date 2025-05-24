@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+set -e
+
+source goxx-env
+
+if [ -n "$GOOS" ]; then
+  export GOOS=$GOOS
+fi
+if [ -n "$GOARCH" ]; then
+  export GOARCH=$GOARCH
+fi
+if [ -n "$GOARM" ]; then
+  export GOARM=$GOARM
+fi
+if [ -n "$GOMIPS" ]; then
+  export GOMIPS=$GOMIPS
+fi
+if [ -n "$GOMIPS64" ]; then
+  export GOMIPS64=$GOMIPS64
+fi
+if [ -n "$GOBIN" ]; then
+  export GOBIN=$GOBIN
+fi
+
+if command -v "$AR" >/dev/null 2>/dev/null; then
+  export AR=$AR
+fi
+if command -v "$CC" >/dev/null 2>/dev/null; then
+  export CC=$CC
+fi
+if command -v "$CXX" >/dev/null 2>/dev/null; then
+  export CXX=$CXX
+fi
+if command -v "$PKG_CONFIG" >/dev/null 2>/dev/null; then
+  export PKG_CONFIG=$PKG_CONFIG
+fi
+if [ -n "$CGO_CFLAGS" ]; then
+  export CGO_CFLAGS=$CGO_CFLAGS
+fi
+if [ -n "$CGO_CPPFLAGS" ]; then
+  export CGO_CPPFLAGS=$CGO_CPPFLAGS
+fi
+if [ -n "$CGO_CXXFLAGS" ]; then
+  export CGO_CXXFLAGS=$CGO_CXXFLAGS
+fi
+if [ -n "$CGO_FFLAGS" ]; then
+  export CGO_FFLAGS=$CGO_FFLAGS
+fi
+if [ -n "$CGO_LDFLAGS" ]; then
+  export CGO_LDFLAGS=$CGO_LDFLAGS
+fi
+
+if [ -z "$GOBIN" ] && [ -n "$GOPATH" ] && [ -n "$GOARCH" ] && [ -n "$GOOS" ]; then
+  export PATH=${GOPATH}/bin/${GOOS}_${GOARCH}:${PATH}
+fi
+
+exec go "$@"

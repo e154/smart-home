@@ -23,10 +23,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/e154/smart-home/adaptors"
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/access_list"
-	"github.com/e154/smart-home/system/migrations"
+	"github.com/e154/smart-home/internal/system/migrations"
+	"github.com/e154/smart-home/internal/system/rbac/access_list"
+	"github.com/e154/smart-home/pkg/adaptors"
+	"github.com/e154/smart-home/pkg/models"
+
 	"github.com/go-playground/validator/v10"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -42,7 +43,7 @@ func TestUser(t *testing.T) {
 			_ = migrations.Purge()
 
 			// add role
-			userRole := &m.Role{
+			userRole := &models.Role{
 				Name: "user_role",
 			}
 			err := adaptors.Role.Add(context.Background(), userRole)
@@ -54,7 +55,7 @@ func TestUser(t *testing.T) {
 					if strings.Contains(right, "read") ||
 						strings.Contains(right, "view") ||
 						strings.Contains(right, "show") {
-						permission := &m.Permission{
+						permission := &models.Permission{
 							RoleName:    userRole.Name,
 							PackageName: pack,
 							LevelName:   right,
@@ -73,12 +74,12 @@ func TestUser(t *testing.T) {
 			)
 
 			// add user
-			user := &m.User{
+			user := &models.User{
 				Nickname: nickname,
 				RoleName: "user_role",
 				Email:    email,
 				Lang:     "en",
-				Meta: []*m.UserMeta{
+				Meta: []*models.UserMeta{
 					{
 						Key:   "phone1",
 						Value: "+18004001234",

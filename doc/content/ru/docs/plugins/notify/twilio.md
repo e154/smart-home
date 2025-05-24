@@ -1,4 +1,3 @@
-
 ---
 title: "Twilio"
 linkTitle: "twilio"
@@ -11,11 +10,13 @@ description: >
 отправки сообщений потребуется регистрация в [twilio](https://www.twilio.com/messaging), и положительный баланс.
 
 ### Настройка
+
 * Token
 * Sid
 * From
 
 ### Атрибуты
+
 * Amount
 * Sid
 * Currency
@@ -37,10 +38,11 @@ msg.attributes = {
 };
 
 ```
-|  значение  | описание  |
-|-------------|---------|
-| newMessage() |    метод   |
-| msg |   type: Object (Message)  |
+
+| значение     | описание               |
+|--------------|------------------------|
+| newMessage() | метод                  |
+| msg          | type: Object (Message) |
 
 ----------------
 
@@ -50,7 +52,7 @@ msg.attributes = {
 # twilio
 # ##################################
 
-sendMsg =(body)->
+sendMsg = (body)->
   msg = notifr.newMessage();
   msg.entity_id = 'twilio.name';
   msg.attributes = {

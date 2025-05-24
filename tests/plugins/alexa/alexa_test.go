@@ -24,15 +24,16 @@ import (
 	"testing"
 	"time"
 
+	alexa2 "github.com/e154/smart-home/internal/plugins/alexa"
+	"github.com/e154/smart-home/pkg/adaptors"
+	"github.com/e154/smart-home/pkg/common"
+	"github.com/e154/smart-home/pkg/models"
+	"github.com/e154/smart-home/pkg/plugins"
+	"github.com/e154/smart-home/pkg/scripts"
+
 	. "github.com/smartystreets/goconvey/convey"
 
 	"github.com/e154/bus"
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/plugins/alexa"
-	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/e154/smart-home/tests/plugins"
 )
 
@@ -245,7 +246,7 @@ skillOnIntent = ->
 	Convey("alexa", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			scriptService scripts.ScriptService,
-			supervisor supervisor.Supervisor,
+			supervisor plugins.Supervisor,
 			eventBus bus.Bus) {
 
 			// register plugins
@@ -259,16 +260,16 @@ skillOnIntent = ->
 
 			// common
 			// ------------------------------------------------
-			ch := make(chan alexa.EventAlexaAction)
+			ch := make(chan alexa2.EventAlexaAction)
 			defer close(ch)
 			fn := func(_ string, m interface{}) {
 				switch v := m.(type) {
-				case alexa.EventAlexaAction:
+				case alexa2.EventAlexaAction:
 					ch <- v
 				}
 			}
-			eventBus.Subscribe(alexa.TopicPluginAlexa, fn)
-			defer eventBus.Unsubscribe(alexa.TopicPluginAlexa, fn)
+			eventBus.Subscribe(alexa2.TopicPluginAlexa, fn)
+			defer eventBus.Unsubscribe(alexa2.TopicPluginAlexa, fn)
 
 			// add scripts
 			// ------------------------------------------------
@@ -279,7 +280,7 @@ skillOnIntent = ->
 			// add alexa skills
 			// ------------------------------------------------
 
-			skill := &m.AlexaSkill{
+			skill := &models.AlexaSkill{
 				SkillId:     "amzn1.ask.skill.1ccc278b-ffbf-440c-87e3-83349761fbab",
 				Description: "flat lights",
 				Status:      "enabled",
@@ -288,7 +289,7 @@ skillOnIntent = ->
 			skill.Id, err = adaptors.AlexaSkill.Add(context.Background(), skill)
 			So(err, ShouldBeNil)
 
-			intent := &m.AlexaIntent{
+			intent := &models.AlexaIntent{
 				Name:         "FlatLights",
 				AlexaSkillId: skill.Id,
 				ScriptId:     alexaSkillScript.Id,
@@ -307,17 +308,17 @@ skillOnIntent = ->
 			plugin, err := supervisor.GetPlugin("alexa")
 			So(err, ShouldBeNil)
 
-			alexaPlugin, ok := plugin.(alexa.AlexaPlugin)
+			alexaPlugin, ok := plugin.(alexa2.AlexaPlugin)
 			So(ok, ShouldBeTrue)
 
 			server := alexaPlugin.Server()
 
 			t.Run("on launch", func(t *testing.T) {
-				req := &alexa.Request{}
+				req := &alexa2.Request{}
 				err = json.Unmarshal([]byte(launchRequest), req)
 				ctx.So(err, ShouldBeNil)
 
-				resp := alexa.NewResponse()
+				resp := alexa2.NewResponse()
 				server.OnLaunchHandler(nil, req, resp)
 
 				ctx.So(lastVal, ShouldEqual, "skillOnLaunch")
@@ -325,17 +326,17 @@ skillOnIntent = ->
 
 			t.Run("on intent", func(t *testing.T) {
 
-				req := &alexa.Request{}
+				req := &alexa2.Request{}
 				err = json.Unmarshal([]byte(intentRequest), req)
 				ctx.So(err, ShouldBeNil)
 
-				resp := alexa.NewResponse()
+				resp := alexa2.NewResponse()
 				server.OnIntentHandle(nil, req, resp)
 
 				ctx.So(lastVal, ShouldEqual, "kitchen_on")
 
 				// wait message
-				msg, ok := WaitT[alexa.EventAlexaAction](time.Second*2, ch)
+				msg, ok := WaitT[alexa2.EventAlexaAction](time.Second*2, ch)
 				ctx.So(ok, ShouldBeTrue)
 
 				ctx.So(msg.Payload, ShouldEqual, "kitchen_on")

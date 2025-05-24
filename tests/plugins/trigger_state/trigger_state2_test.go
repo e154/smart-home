@@ -24,20 +24,21 @@ import (
 	"testing"
 	"time"
 
+	"github.com/e154/smart-home/internal/plugins/state_change"
+	automation2 "github.com/e154/smart-home/internal/system/automation"
+	"github.com/e154/smart-home/internal/system/migrations"
+	"github.com/e154/smart-home/pkg/adaptors"
+	commonPkg "github.com/e154/smart-home/pkg/common"
+	"github.com/e154/smart-home/pkg/events"
+	"github.com/e154/smart-home/pkg/models"
+	"github.com/e154/smart-home/pkg/mqtt"
+	types "github.com/e154/smart-home/pkg/plugins"
+	"github.com/e154/smart-home/pkg/plugins/triggers"
+	"github.com/e154/smart-home/pkg/scripts"
+
 	"github.com/e154/bus"
 	. "github.com/smartystreets/goconvey/convey"
 
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/events"
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/plugins/state_change"
-	"github.com/e154/smart-home/plugins/triggers/types"
-	auto "github.com/e154/smart-home/system/automation"
-	"github.com/e154/smart-home/system/migrations"
-	"github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/e154/smart-home/tests/plugins"
 	. "github.com/e154/smart-home/tests/plugins/container"
 )
@@ -48,9 +49,9 @@ func TestTriggerState2(t *testing.T) {
 		Convey("", t, func(ctx C) {
 			err := BuildContainer().Invoke(func(adaptors *adaptors.Adaptors,
 				scriptService scripts.ScriptService,
-				supervisor supervisor.Supervisor,
+				supervisor types.Supervisor,
 				mqttServer mqtt.MqttServ,
-				automation auto.Automation,
+				automation automation2.Automation,
 				eventBus bus.Bus,
 				migrations *migrations.Migrations) {
 
@@ -68,12 +69,12 @@ func TestTriggerState2(t *testing.T) {
 				So(<-waitCh, ShouldBeTrue)
 				So(<-pluginsCh, ShouldBeTrue)
 
-				script := &m.Script{
+				script := &models.Script{
 					Id:       1,
 					Compiled: `function automationTriggerStateChanged(msg) {return true}`,
 				}
 
-				model := &m.Trigger{
+				model := &models.Trigger{
 					Id:         1,
 					Name:       "tr1",
 					PluginName: "state_change",
@@ -84,10 +85,10 @@ func TestTriggerState2(t *testing.T) {
 				plugin, err := supervisor.GetPlugin("triggers")
 				So(err, ShouldBeNil)
 
-				rawPlugin, ok := plugin.(types.IGetTrigger)
+				rawPlugin, ok := plugin.(triggers.IGetTrigger)
 				So(ok, ShouldBeTrue)
 
-				trigger, err := auto.NewTrigger(eventBus, scriptService, model, rawPlugin)
+				trigger, err := automation2.NewTrigger(eventBus, scriptService, model, rawPlugin)
 				So(err, ShouldBeNil)
 				So(trigger, ShouldNotBeNil)
 
@@ -101,7 +102,7 @@ func TestTriggerState2(t *testing.T) {
 
 				// test 2
 				// ------------------------------------------------
-				script3 := &m.Script{
+				script3 := &models.Script{
 					Id:   3,
 					Name: "script3",
 					Compiled: `
@@ -114,16 +115,16 @@ function automationTriggerStateChanged(msg) {
 				entityFoo := GetNewSensor("foo")
 				entityBar := GetNewSensor("bar")
 
-				model2 := &m.Trigger{
+				model2 := &models.Trigger{
 					Name:       "tr1",
 					PluginName: "state_change",
 					Id:         2,
 					Script:     script3,
 					Enabled:    true,
-					Entities:   []*m.Entity{entityFoo, entityBar},
+					Entities:   []*models.Entity{entityFoo, entityBar},
 				}
 
-				trigger2, err := auto.NewTrigger(eventBus, scriptService, model2, rawPlugin)
+				trigger2, err := automation2.NewTrigger(eventBus, scriptService, model2, rawPlugin)
 				So(err, ShouldBeNil)
 				So(trigger2, ShouldNotBeNil)
 
@@ -132,10 +133,10 @@ function automationTriggerStateChanged(msg) {
 				eventBus.Publish(fmt.Sprintf("system/entities/%s", entityFoo.Id), events.EventStateChanged{
 					EntityId: entityFoo.Id,
 					NewState: events.EventEntityState{
-						Attributes: m.Attributes{
-							"foo": &m.Attribute{
+						Attributes: models.Attributes{
+							"foo": &models.Attribute{
 								Name:  "foo",
-								Type:  common.AttributeString,
+								Type:  commonPkg.AttributeString,
 								Value: "bar",
 							},
 						},
@@ -161,10 +162,10 @@ function automationTriggerStateChanged(msg) {
 				eventBus.Publish(fmt.Sprintf("system/entities/%s", entityFoo.Id), events.EventStateChanged{
 					EntityId: entityFoo.Id,
 					NewState: events.EventEntityState{
-						Attributes: m.Attributes{
-							"foo": &m.Attribute{
+						Attributes: models.Attributes{
+							"foo": &models.Attribute{
 								Name:  "foo",
-								Type:  common.AttributeString,
+								Type:  commonPkg.AttributeString,
 								Value: "bar",
 							},
 						},

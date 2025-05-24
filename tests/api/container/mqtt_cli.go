@@ -21,8 +21,9 @@ package container
 import (
 	"context"
 
+	"github.com/e154/smart-home/pkg/mqtt"
+
 	"github.com/DrmagicE/gmqtt/server"
-	"github.com/e154/smart-home/system/mqtt"
 )
 
 // MqttCli ...

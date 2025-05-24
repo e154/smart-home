@@ -23,13 +23,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/e154/smart-home/common/events"
+	sun2 "github.com/e154/smart-home/internal/plugins/sun"
+	"github.com/e154/smart-home/pkg/adaptors"
+	"github.com/e154/smart-home/pkg/events"
+	"github.com/e154/smart-home/pkg/plugins"
+	"github.com/e154/smart-home/pkg/scripts"
 
 	"github.com/e154/bus"
-	"github.com/e154/smart-home/adaptors"
-	sunPlugin "github.com/e154/smart-home/plugins/sun"
-	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/supervisor"
 	. "github.com/e154/smart-home/tests/plugins"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -39,7 +39,7 @@ func TestSun(t *testing.T) {
 	Convey("sun", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			scriptService scripts.ScriptService,
-			supervisor supervisor.Supervisor,
+			supervisor plugins.Supervisor,
 			eventBus bus.Bus) {
 
 			AddPlugin(adaptors, "sun")
@@ -63,15 +63,15 @@ func TestSun(t *testing.T) {
 
 			// add entity
 			// ------------------------------------------------
-			sun := sunPlugin.NewActor(sunEnt, supervisor.GetService())
+			sun := sun2.NewActor(sunEnt, supervisor.GetService())
 
 			t.Run("entity", func(t *testing.T) {
 				Convey("phase", t, func(ctx C) {
 					sunEnt, err = adaptors.Entity.GetById(context.Background(), sunEnt.Id)
 					ctx.So(err, ShouldBeNil)
 
-					ctx.So(sunEnt.Settings[sunPlugin.AttrLat].Float64(), ShouldEqual, 54.9022)
-					ctx.So(sunEnt.Settings[sunPlugin.AttrLon].Float64(), ShouldEqual, 83.0335)
+					ctx.So(sunEnt.Settings[sun2.AttrLat].Float64(), ShouldEqual, 54.9022)
+					ctx.So(sunEnt.Settings[sun2.AttrLon].Float64(), ShouldEqual, 83.0335)
 				})
 			})
 
@@ -87,12 +87,12 @@ func TestSun(t *testing.T) {
 					ctx.So(ok, ShouldBeTrue)
 
 					ctx.So(msg.NewState.State, ShouldNotBeNil)
-					ctx.So(msg.NewState.State.Name, ShouldEqual, sunPlugin.AttrDusk)
+					ctx.So(msg.NewState.State.Name, ShouldEqual, sun2.AttrDusk)
 					ctx.So(msg.NewState.State.Description, ShouldEqual, "dusk (evening nautical twilight starts)")
-					ctx.So(msg.NewState.Attributes[sunPlugin.AttrAzimuth].String(), ShouldContainSubstring, "326.127522661")
-					ctx.So(msg.NewState.Attributes[sunPlugin.AttrElevation].String(), ShouldContainSubstring, "-7.663125133")
-					ctx.So(msg.NewState.Attributes[sunPlugin.AttrHorizonState].String(), ShouldEqual, "belowHorizon")
-					ctx.So(msg.NewState.Attributes[sunPlugin.AttrPhase].String(), ShouldEqual, "dusk")
+					ctx.So(msg.NewState.Attributes[sun2.AttrAzimuth].String(), ShouldContainSubstring, "326.127522661")
+					ctx.So(msg.NewState.Attributes[sun2.AttrElevation].String(), ShouldContainSubstring, "-7.663125133")
+					ctx.So(msg.NewState.Attributes[sun2.AttrHorizonState].String(), ShouldEqual, "belowHorizon")
+					ctx.So(msg.NewState.Attributes[sun2.AttrPhase].String(), ShouldEqual, "dusk")
 				})
 			})
 		})

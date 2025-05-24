@@ -19,17 +19,17 @@
 package container
 
 import (
-	"github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/mqtt_authenticator"
+	systemMqtt "github.com/e154/smart-home/internal/system/mqtt"
+	"github.com/e154/smart-home/pkg/mqtt"
 )
 
 // Mqtt ...
 type Mqtt struct {
-	authenticator mqtt_authenticator.MqttAuthenticator
+	authenticator mqtt.MqttAuthenticator
 }
 
 // NewMqtt ...
-func NewMqtt(authenticator mqtt_authenticator.MqttAuthenticator) mqtt.MqttServ {
+func NewMqtt(authenticator mqtt.MqttAuthenticator) mqtt.MqttServ {
 	return &Mqtt{
 		authenticator: authenticator,
 	}
@@ -57,11 +57,11 @@ func (m Mqtt) NewClient(name string) mqtt.MqttCli {
 func (m Mqtt) RemoveClient(name string) {}
 
 // Admin ...
-func (m Mqtt) Admin() mqtt.Admin {
+func (m Mqtt) Admin() systemMqtt.Admin {
 	return nil
 }
 
 // Authenticator ...
-func (m Mqtt) Authenticator() mqtt_authenticator.MqttAuthenticator {
+func (m Mqtt) Authenticator() mqtt.MqttAuthenticator {
 	return m.authenticator
 }

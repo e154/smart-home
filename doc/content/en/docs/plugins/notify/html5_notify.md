@@ -1,4 +1,3 @@
-
 ---
 title: "HTML5 Уведомления"
 linkTitle: "html5_notify"
@@ -7,9 +6,12 @@ description: >
 
 ---
 
-HTML5 notifications are a way to display information to users on a web page without reloading or navigating to another page. Notifications can contain text, images, sound, or video and appear in the bottom-right corner of the screen. HTML5 notifications utilize an API that allows web applications to send notifications to the browser using JavaScript.
+HTML5 notifications are a way to display information to users on a web page without reloading or navigating to another
+page. Notifications can contain text, images, sound, or video and appear in the bottom-right corner of the screen. HTML5
+notifications utilize an API that allows web applications to send notifications to the browser using JavaScript.
 
 Attributes:
+
 - userIDS: The user IDs associated with the notification.
 - title: The title of the notification.
 - body: The body or content of the notification.
@@ -32,10 +34,10 @@ msg.attributes = {
 };
 ```
 
-| Value | Description |
-|-------|-------------|
-| newMessage() | Method |
-| msg | Type: Object (Message) |
+| Value        | Description            |
+|--------------|------------------------|
+| newMessage() | Method                 |
+| msg          | Type: Object (Message) |
 
 ----------------
 
@@ -45,7 +47,7 @@ msg.attributes = {
 # html5_notify
 # ##################################
 
-sendMsg =()->
+sendMsg = ()->
   msg = notifr.newMessage();
   msg.type = 'html5_notify';
   msg.attributes = {

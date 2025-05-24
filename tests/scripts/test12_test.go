@@ -23,11 +23,12 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/e154/smart-home/adaptors"
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/migrations"
-	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/storage"
+	"github.com/e154/smart-home/internal/system/migrations"
+	"github.com/e154/smart-home/internal/system/storage"
+	"github.com/e154/smart-home/pkg/adaptors"
+	"github.com/e154/smart-home/pkg/models"
+	"github.com/e154/smart-home/pkg/scripts"
+
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -68,8 +69,8 @@ func Test12(t *testing.T) {
 	Convey("check db storage", t, func(ctx C) {
 		err := container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
-			storageService *storage.Storage,
-			scriptService scripts.ScriptService) {
+			scriptService scripts.ScriptService,
+			storage *storage.Storage) {
 
 			// clear database
 			// ------------------------------------------------
@@ -79,7 +80,7 @@ func Test12(t *testing.T) {
 
 			storeRegisterCallback(scriptService)
 
-			script1 := &m.Script{
+			script1 := &models.Script{
 				Lang:        "coffeescript",
 				Name:        "test12",
 				Source:      coffeeScripts["coffeeScript27"],
@@ -95,23 +96,21 @@ func Test12(t *testing.T) {
 			_, err = engine.Do()
 			So(err, ShouldBeNil)
 
-			_, err = adaptors.Variable.GetByName(context.Background(), "foo")
-			So(err, ShouldNotBeNil)
+			storage.Serialize()
 
-			storageService.Serialize()
-			storage, err := adaptors.Variable.GetByName(context.Background(), "foo")
+			variable, err := adaptors.Variable.GetByName(context.Background(), "foo")
 			So(err, ShouldBeNil)
-			So(storage.Value, ShouldEqual, `{"bar":"foo"}`)
+			So(variable.Value, ShouldEqual, `{"bar":"foo"}`)
 
-			err = adaptors.Variable.CreateOrUpdate(context.Background(), m.Variable{
+			err = adaptors.Variable.CreateOrUpdate(context.Background(), models.Variable{
 				Name:  "foo2",
 				Value: `{"foo":"bar"}`,
 			})
 			So(err, ShouldBeNil)
 
-			storage, err = adaptors.Variable.GetByName(context.Background(), "foo2")
+			variable, err = adaptors.Variable.GetByName(context.Background(), "foo2")
 			So(err, ShouldBeNil)
-			So(storage.Value, ShouldEqual, `{"foo":"bar"}`)
+			So(variable.Value, ShouldEqual, `{"foo":"bar"}`)
 		})
 		if err != nil {
 			fmt.Println(err.Error())

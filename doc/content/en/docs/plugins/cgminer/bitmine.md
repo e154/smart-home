@@ -1,4 +1,3 @@
-
 ---
 title: "Bitmine"
 linkTitle: "bitmine"
@@ -10,6 +9,7 @@ description: >
 Working with Bitmine Antminer ASIC devices.
 
 Supported devices:
+
 * S9
 * S7
 * L3
@@ -30,36 +30,36 @@ const ENTITY_ID;
 
 ```javascript
 const result = Miner
-    .stats()
-    .devs()
-    .summary()
-    .pools()
-    .addPool(url)
-    .version()
-    .enable(poolId)
-    .disable(poolId)
-    .delete(poolId)
-    .switchPool(poolId)
-    .restart();
+  .stats()
+  .devs()
+  .summary()
+  .pools()
+  .addPool(url)
+  .version()
+  .enable(poolId)
+  .disable(poolId)
+  .delete(poolId)
+  .switchPool(poolId)
+  .restart();
 ```
 
-|  Property  | Description  |
-|-------------|---------|
-| result |    Type: Object (Result)   |
+| Property | Description           |
+|----------|-----------------------|
+| result   | Type: Object (Result) |
 
-|  Property  | Description  |
-|-------------|---------|
-| stats |   Type: Method, statistics    |
-| devs |   Type: Method, statistics    |
-| summary |   Type: Method, statistics    |
-| pools |   Type: Method, server list   |
-| addPool |   Type: Method, add server   |
-| version |   Type: Method, firmware version  |
-| enable |   Type: Method, enable server  |
-| disable |   Type: Method, disable server  |
-| delete |   Type: Method, delete server  |
-| switchPool |   Type: Method, switch server  |
-| restart |   Type: Method, soft device restart  |
+| Property   | Description                       |
+|------------|-----------------------------------|
+| stats      | Type: Method, statistics          |
+| devs       | Type: Method, statistics          |
+| summary    | Type: Method, statistics          |
+| pools      | Type: Method, server list         |
+| addPool    | Type: Method, add server          |
+| version    | Type: Method, firmware version    |
+| enable     | Type: Method, enable server       |
+| disable    | Type: Method, disable server      |
+| delete     | Type: Method, delete server       |
+| switchPool | Type: Method, switch server       |
+| restart    | Type: Method, soft device restart |
 
 ----------------
 
@@ -72,11 +72,12 @@ const result = {
   result: ""
 };
 ``` 
-|  Property  | Description  |
-|-------------|---------|
-| error |    Type: boolean, error indicator   |
-| errMessage |   Type: string, human-readable error message  |
-| result | Type: string, JSON object in string format, if the request is completed without errors |
+
+| Property   | Description                                                                            |
+|------------|----------------------------------------------------------------------------------------|
+| error      | Type: boolean, error indicator                                                         |
+| errMessage | Type: string, human-readable error message                                             |
+| result     | Type: string, JSON object in string format, if the request is completed without errors |
 
 ----------------
 
@@ -86,11 +87,12 @@ const result = {
 entityAction = (entityId, actionName, args) => {
 }
 ```
-| Property  | Description  |
-|-------------|---------|
-| entityId |    Type: string, ID of the entity sending the message   |
-| actionName |   Type: string, name of the action, in uppercase without the '/' symbol  |
-| args | Type: map[string]any |
+
+| Property   | Description                                                           |
+|------------|-----------------------------------------------------------------------|
+| entityId   | Type: string, ID of the entity sending the message                    |
+| actionName | Type: string, name of the action, in uppercase without the '/' symbol |
+| args       | Type: map[string]any                                                  |
 
 ----------------
 
@@ -104,12 +106,13 @@ const entityStateParams = {
   "storage_save": true
 };
 ``` 
-|  Property  | Description  |
-|-------------|---------|
-| new_state |    Type: *string, name of the new state   |
-| attribute_values |   Type: Object, new state of the entity's attributes |
-| settings_value | Type: Object, new state of the entity's settings |
-| storage_save | Type: boolean, indicator to save the new state to the database |
+
+| Property         | Description                                                    |
+|------------------|----------------------------------------------------------------|
+| new_state        | Type: *string, name of the new state                           |
+| attribute_values | Type: Object, new state of the entity's attributes             |
+| settings_value   | Type: Object, new state of the entity's settings               |
+| storage_save     | Type: boolean, indicator to save the new state to the database |
 
 ----------------
 
@@ -119,10 +122,10 @@ const entityStateParams = {
 # cgminer
 # ##################################
 
-ifError =(res)->
+ifError = (res)->
   return !res || res.error || res.Error
 
-checkStatus =(args)->
+checkStatus = (args)->
   stats = Miner.stats()
   if ifError(stats)
     EntitySetState ENTITY_ID,
@@ -131,7 +134,7 @@ checkStatus =(args)->
   p = JSON.parse(stats.result)
   print p
 
-checkSum =(args)->
+checkSum = (args)->
   summary = Miner.summary()
   if ifError(summary)
     EntitySetState ENTITY_ID,
