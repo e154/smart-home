@@ -40,7 +40,6 @@ if [ "$(. goxx-env && echo $GOOS)" = "linux" ]; then
   LDFLAGS="$LDFLAGS -extldflags -static"
 fi
 GO_BUILD_TAGS="-tags production,netgo,osusergo"
-ls -R .
 goxx-go env
 goxx-go build -a -v -o /out/server -trimpath -ldflags "$LDFLAGS" $BUILDMODE $GO_BUILD_TAGS .
 #mkdir -p /out/deps

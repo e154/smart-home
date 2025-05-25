@@ -189,7 +189,6 @@ jobs:
           source: .
           files: |
             ./docker-bake.hcl
-            ${{ steps.meta.outputs.bake-file }}
           targets: ${{ matrix.target }}
           set: |
             *.cache-from=type=gha,scope=base
