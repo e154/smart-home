@@ -20,3 +20,4 @@ smart-home-common.tar.gz
 .air.toml
 dist
 /smart-home-copy
+/.env

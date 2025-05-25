@@ -102,8 +102,6 @@ jobs:
         with:
           name: public_build
           path: ./build
-      - name: Display structure of downloaded files
-        run: ls -R ./build
 
       - name: Install PostgreSQL client
         run: |
@@ -155,7 +153,6 @@ jobs:
 
     needs: [ build_public ]
     steps:
-
       - env:
           OUTPUT1: ${{needs.build_public.outputs.output1}}
         run: echo "Artifact ID from previous job is $OUTPUT1"
@@ -167,8 +164,6 @@ jobs:
         with:
           name: public_build
           path: ./build
-      - name: Display structure of downloaded files
-        run: ls -R ./build
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -184,6 +179,9 @@ jobs:
         uses: c-py/action-dotenv-to-setenv@v2
         with:
           env-file: .env
+
+      - name: Display structure of downloaded files
+        run: ls -R ./build
 
       - name: trying to build artifacts
         uses: docker/bake-action@v6
