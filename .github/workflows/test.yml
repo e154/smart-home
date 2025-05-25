@@ -186,12 +186,14 @@ jobs:
       - name: trying to build artifacts
         uses: docker/bake-action@v6
         with:
+          source: .
           files: |
             ./docker-bake.hcl
             ${{ steps.meta.outputs.bake-file }}
           targets: ${{ matrix.target }}
           set: |
             *.cache-from=type=gha,scope=base
+            goxx.context=.
             goxx.args.GO_VERSION=${{ matrix.go_version }}
 
       - name: List artifacts
