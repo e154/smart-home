@@ -192,7 +192,6 @@ jobs:
           targets: ${{ matrix.target }}
           set: |
             *.cache-from=type=gha,scope=base
-            goxx.context=.
             goxx.args.GO_VERSION=${{ matrix.go_version }}
 
       - name: List artifacts
