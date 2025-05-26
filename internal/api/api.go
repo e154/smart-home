@@ -402,6 +402,7 @@ func (a *Api) registerHandlers() {
 
 	// static files
 	a.echo.GET("/", echo.WrapHandler(a.controllers.Index(publicAssets.F)))
+	a.echo.GET("/index.html", echo.WrapHandler(a.controllers.Index(publicAssets.F)))
 	var publicHandler = echo.WrapHandler(http.FileServer(http.FS(publicAssets.F)))
 	a.echo.GET("/*", publicHandler)
 	a.echo.GET("/assets/*", publicHandler)

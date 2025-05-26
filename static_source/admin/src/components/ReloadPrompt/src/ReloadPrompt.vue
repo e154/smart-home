@@ -5,18 +5,9 @@ import stream from "@/api/stream";
 import {Version} from "@/components/ReloadPrompt/src/types";
 import {ElButton} from 'element-plus'
 import {useRegisterSW} from 'virtual:pwa-register/vue'
-import {registerSW} from 'virtual:pwa-register'
 
-const {updateServiceWorker, offlineReady} = useRegisterSW({
-  immediate: true,
-  onRegisteredSW(swUrl, r) {
-    if (!r) return;
-    console.log(`Service Worker at: ${swUrl}`)
-    r.update()
-  },
-})
+const {offlineReady, needRefresh, updateServiceWorker} = useRegisterSW({immediate: true})
 
-const needRefresh = ref<boolean>(false)
 const currentVersion = ref<Version>()
 
 const currentID = ref('')
@@ -43,19 +34,20 @@ onMounted(() => {
 
 onUnmounted(() => stream.unsubscribe('event_server_version', currentID.value))
 
+const isNewAppFetching = ref(false)
 const update = async () => {
 
-  useRegisterSW({
-    immediate: true,
-    async onRegisteredSW(swUrl, r) {
-      if (!r) return;
-      console.log(`Service Worker at: ${swUrl}`)
-      await r.update()
-    },
-  })
+  if (isNewAppFetching.value) {
+    return
+  }
+
+  isNewAppFetching.value = true
+  updateServiceWorker(true)
+
 }
 
 function close() {
+  offlineReady.value = false
   needRefresh.value = false
 }
 
@@ -67,22 +59,32 @@ const onVersion = (version: Version) => {
   console.log('received server version', version)
 
   needRefresh.value = version.generated_string !== currentVersion.value?.generated_string
+
+  console.log("need refresh", needRefresh.value)
 }
 
 </script>
 
 <template>
   <div
-    v-if="needRefresh"
+    v-if="offlineReady || needRefresh"
     class="pwa-toast"
     role="alert"
   >
     <div class="message">
-      <span>
-        {{ $t('main.newContentMessage') }}
+      <span v-if="isNewAppFetching">
+        Loading...
+      </span>
+      <span v-else>
+        <span v-if="offlineReady">
+        {{ $t('main.offlineReady') }}
+        </span>
+        <span v-else>
+          {{ $t('main.newContentMessage') }}
+        </span>
       </span>
     </div>
-    <ElButton type="primary" @click="update()" size="small">
+    <ElButton v-if="needRefresh" type="primary" @click="update()" :disabled="isNewAppFetching" size="small">
       {{ $t('main.reload') }}
     </ElButton>
     <ElButton @click="close" size="small">

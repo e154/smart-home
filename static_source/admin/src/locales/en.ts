@@ -39,6 +39,7 @@ export default {
         tags: 'Tags',
         actions: 'Actions',
         or: 'Or',
+        offlineReady: 'App ready to work offline',
         newContentMessage: 'New content available, click on reload button to update.',
         upload: 'Upload',
         download: 'Download',
