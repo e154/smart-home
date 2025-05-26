@@ -35,7 +35,7 @@ target "image" {
     "org.opencontainers.image.version": "${RELEASE_VERSION}"
   }
 
-  tags = ["e154/smart-home-server-test:${RELEASE_VERSION}", "e154/smart-home-server-test:latest"]
+  tags = ["e154/smart-home-server:${RELEASE_VERSION}", "e154/smart-home-server-test:latest"]
 }
 
 target "image-local" {
