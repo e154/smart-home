@@ -14,7 +14,7 @@ services:
       interval: 10s
       timeout: 10s
   smart-home-server:
-    image: e154/smart-home-server:v0.21.1
+    image: e154/smart-home-server-test:latest
     environment:
       PG_USER: smart_home
       PG_PASS: smart_home
