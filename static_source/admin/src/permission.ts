@@ -48,7 +48,7 @@ router.beforeEach(async (to, from, next) => {
 
       // 是否使用动态路由
       if (appStore.getDynamicRouter) {
-        userInfo.role === 'admin'
+        userInfo?.role === 'admin'
           ? await permissionStore.generateRoutes('admin', roleRouters as AppCustomRouteRecordRaw[])
           : await permissionStore.generateRoutes('test', roleRouters as string[])
       } else {

@@ -16,6 +16,7 @@ import Unfonts from 'unplugin-fonts/vite'
 import analyze from "rollup-plugin-analyzer";
 import {VitePWA, VitePWAOptions} from 'vite-plugin-pwa'
 import process from "node:process";
+import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vitejs.dev/config/
 const root = process.cwd()
@@ -89,6 +90,7 @@ export default ({command, mode}: ConfigEnv): UserConfig => {
     base: env.VITE_BASE_PATH,
     plugins: [
       Vue(),
+      vueDevTools(),
       VueJsx(),
       WindiCSS(),
       progress(),
