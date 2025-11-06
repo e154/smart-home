@@ -149,7 +149,7 @@ func BenchmarkDebounce(b *testing.B) {
 	}
 }
 
-func ExampleNew() {
+func ExampleNew_v1() {
 	var counter uint64
 
 	f := func() {
@@ -172,7 +172,7 @@ func ExampleNew() {
 	// Output: Counter is 3
 }
 
-func ExampleNew2() {
+func ExampleNew_v2() {
 	var counter1 uint64
 	var counter2 uint64
 
