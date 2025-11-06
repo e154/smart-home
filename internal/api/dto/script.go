@@ -85,9 +85,11 @@ func (s Script) ToSearchResult(list []*m.Script) *stub.ApiSearchScriptListResult
 
 	for _, script := range list {
 		items = append(items, stub.ApiScript{
-			Id:   script.Id,
-			Lang: string(script.Lang),
-			Name: script.Name,
+			Id:        script.Id,
+			Lang:      string(script.Lang),
+			Name:      script.Name,
+			CreatedAt: script.CreatedAt,
+			UpdatedAt: script.UpdatedAt,
 		})
 	}
 

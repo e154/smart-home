@@ -19,14 +19,14 @@
 package commands
 
 import (
-	. "github.com/e154/smart-home/internal/common/app"
-	"github.com/e154/smart-home/internal/system/backup"
-	"github.com/e154/smart-home/internal/system/logging"
-	. "github.com/e154/smart-home/pkg/logger"
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
 
 	. "github.com/e154/smart-home/cmd/server/container"
+	. "github.com/e154/smart-home/internal/common/app"
+	"github.com/e154/smart-home/internal/system/backup"
+	"github.com/e154/smart-home/internal/system/logging"
+	. "github.com/e154/smart-home/pkg/logger"
 )
 
 var (
