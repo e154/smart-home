@@ -6,7 +6,7 @@ import { ElementPlusSize } from '@/types/elementPlus'
 import { useCache } from '@/hooks/web/useCache'
 import { LayoutType } from '@/types/layout'
 import { ThemeTypes } from '@/types/theme'
-import {ApiCurrentUser} from "@/api/stub";
+import {ApiCurrentUser, ApiScript} from "@/api/stub";
 import stream from "@/api/stream";
 import pushService from "@/api/pushService";
 
@@ -48,6 +48,7 @@ interface AppState {
   onlineStatus: 'online' | 'offline'
   standalone: boolean
   activeWindow: string
+  globalScript: ApiScript | undefined
 }
 
 export const useAppStore = defineStore('app', {
@@ -119,7 +120,8 @@ export const useAppStore = defineStore('app', {
         topHeaderHoverColor: '#f6f6f6',
         // 头部边框颜色
         topToolBorderColor: '#eee'
-      }
+      },
+      globalScript: wsCache.get('globalScript') as ApiScript || undefined,
     }
   },
   getters: {
@@ -227,6 +229,9 @@ export const useAppStore = defineStore('app', {
     },
     getActiveWindow(): string {
       return this.activeWindow
+    },
+    getGlobalScript(): ApiScript | undefined {
+      return this.globalScript
     },
   },
   actions: {
@@ -382,6 +387,11 @@ export const useAppStore = defineStore('app', {
     },
     setActiveWindow(name: string) {
       this.activeWindow = name
+    },
+    setGlobalScript(script: ApiScript) {
+      // this.globalScript = Object.assign(this.globalScript, script)
+      this.globalScript = script
+      wsCache.set('globalScript', this.globalScript)
     }
   }
 })

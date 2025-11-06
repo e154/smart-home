@@ -109,7 +109,7 @@ const exec = async () => {
 
   <!-- show dialog -->
   <Dialog v-model="dialogVisible" :title="t('scripts.modalWindow')" :maxHeight="400" width="80%">
-    <ScriptEditor v-if="!loading" v-model="currentScript" @save="save"/>
+    <ScriptEditor style="height: 400px" v-if="!loading" v-model="currentScript" @save="save"/>
     <template #footer>
       <ElButton type="success" @click="exec()">{{ t('main.exec') }}</ElButton>
       <ElButton @click="save()">{{ t('main.update') }}</ElButton>

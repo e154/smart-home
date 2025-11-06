@@ -1,9 +1,9 @@
-FROM node:18.20 AS base
+FROM node:20.19 AS base
 WORKDIR /app
 COPY ./static_source/admin .
 ENV GENERATE_SOURCEMAP=false
 ENV NODE_OPTIONS="--max_old_space_size=4096"
-RUN npm i -g pnpm@9.13.2 && pnpm i
+RUN npm i -g pnpm@10.18.3 && pnpm i
 RUN pnpm run build:pro
 FROM scratch AS export
 COPY --from=base /app/dist-pro .

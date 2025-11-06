@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2023, Filippov Alex
+// Copyright (C) 2025, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -16,31 +16,11 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package commands
+package scripts
 
 import (
-	"github.com/spf13/cobra"
-	"go.uber.org/fx"
-
-	. "github.com/e154/smart-home/cmd/server/container"
-	. "github.com/e154/smart-home/internal/common/app"
-	"github.com/e154/smart-home/internal/system/initial"
-	"github.com/e154/smart-home/internal/system/logging"
+	"embed"
 )
 
-var (
-	demoCmd = &cobra.Command{
-		Use:   "demo",
-		Short: "Filling the database with entities that help you quickly understand the process of setting up and managing the smart-home complex",
-		Run: func(cmd *cobra.Command, args []string) {
-
-			app := BuildContainer(fx.Invoke(func(
-				logger *logging.Logging,
-				initialService *initial.Initial) {
-
-				initialService.InstallDemoData()
-			}))
-			Start(app)
-		},
-	}
-)
+//go:embed global.d.ts
+var F embed.FS

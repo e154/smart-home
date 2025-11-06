@@ -15,9 +15,6 @@ env:
 jobs:
   build_public:
     name: Build public
-    strategy:
-      matrix:
-        node: [ 18 ]
     runs-on: ubuntu-latest
     outputs:
       output1: ${{ steps.artifact-upload-step.outputs.artifact-id }}
@@ -25,16 +22,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Node ${{ matrix.node }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node }}
-
       - name: Build public
         id: build-public
-        env:
-          NODE_OPTIONS: "--max_old_space_size=4096"
-        run: make build_public
+        run: make build_artifact_public
 
       - uses: actions/upload-artifact@v4
         id: artifact-upload-step
@@ -83,7 +73,7 @@ jobs:
       fail-fast: false
       matrix:
         go_version:
-          - 1.23.0
+          - 1.25.0
         include:
           - target: artifact-all
 
@@ -164,7 +154,7 @@ jobs:
       fail-fast: false
       matrix:
         go_version:
-          - 1.23.0
+          - 1.25.0
         include:
           - target: image-all
     needs: [ build_public ]
