@@ -105,7 +105,7 @@ build_public:
 	node -v  && \
 	echo -e "npm version.\n"  && \
 	npm -v  && \
-	npm i -g pnpm@9.13.2  && \
+	npm i -g pnpm@10.18.3  && \
 	echo -e "pnpm version.\n"  && \
 	pnpm -v && \
 	cd ${ROOT}/static_source/admin && \

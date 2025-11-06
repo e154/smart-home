@@ -39,8 +39,9 @@ const loading = ref(false)
 const scriptId = computed(() => parseInt(route.params.id));
 const currentScript = ref<Nullable<ApiScript>>(null)
 const activeTab = ref('source')
-const currentVersionIdx = ref(0)
-const currentVersion = ref<Nullable<ApiScript>>(null)
+const previousVersionIdx = ref(0)
+
+const previousVersion = ref<Nullable<ApiScript>>(null)
 const versions = ref<Nullable<ApiScript[]>>([])
 
 const currentID = ref('')
@@ -76,8 +77,9 @@ const fetch = async () => {
     currentScript.value = res.data
     if (res.data?.versions && res.data.versions.length) {
       versions.value = res.data.versions;
-      if (res.data.versions.length > 1) {
-        currentVersion.value = res.data.versions[1]
+      if (res.data.versions.length > 0) {
+        res.data.versions.shift()
+        previousVersion.value = res.data.versions[0]
       }
     }
   } else {
@@ -120,8 +122,8 @@ const updateVersions = async () => {
         loading.value = false
       })
   if (res) {
-    if (res.data?.versions && res.data.versions.length) {
-      currentVersion.value = res.data.versions[0]
+    if (res.data?.versions && res.data.versions.length > 1) {
+      previousVersion.value = res.data.versions[1]
       versions.value = res.data.versions
     }
   }
@@ -195,7 +197,7 @@ const onScriptEditorChange = (val: string) => {
 }
 
 const selectVersionHandler = () => {
-  currentVersion.value = currentScript.value?.versions[currentVersionIdx.value] || null
+  previousVersion.value = currentScript.value?.versions[previousVersionIdx.value] || null
 }
 
 const reloadKey = ref(0)
@@ -218,8 +220,8 @@ fetch()
       <!-- /main -->
 
       <!-- source -->
-      <ElTabPane :label="$t('scripts.source')" name="source">
-        <Infotip
+      <ElTabPane :label="$t('scripts.source')" name="source" class="h-100" style="min-height: 700px">
+<!--        <Infotip
             :show-index="false"
             title="INFO"
             :schema="[
@@ -236,7 +238,7 @@ fetch()
         keys: ['scripts']
       },
     ]"
-        />
+        />-->
         <ScriptEditor :key="reloadKey"
                       v-model="currentScript"
                       class="mb-20px"
@@ -246,13 +248,13 @@ fetch()
       <!-- /source -->
 
       <!-- versions -->
-      <ElTabPane :label="$t('scripts.scriptVersions')" name="versions">
+      <ElTabPane :label="$t('scripts.scriptVersions')" name="versions" class="h-100" style="min-height: 700px">
 
-        <ElRow v-if="activeTab == 'versions' && !loading && versions" class="mb-20px">
+        <ElRow v-if="activeTab == 'versions' && !loading && versions?.length" class="mb-20px">
           <ElCol>
             <ElFormItem :label="$t('scripts.scriptVersions')" prop="action">
               <ElSelect
-                  v-model="currentVersionIdx"
+                  v-model="previousVersionIdx"
                   clearable
                   :placeholder="$t('dashboard.editor.selectAction')"
                   style="width: 100%"
@@ -267,9 +269,9 @@ fetch()
 
             </ElFormItem>
           </ElCol>
-          <ElCol>
+          <ElCol style="height: 650px">
             <MergeEditor :source="currentScript"
-                         :destination="currentVersion"
+                         :destination="previousVersion"
                          @update:source="onMergeEditorChange"/>
           </ElCol>
         </ElRow>

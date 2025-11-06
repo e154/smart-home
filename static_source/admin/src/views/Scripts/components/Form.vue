@@ -50,7 +50,7 @@ const schema = reactive<FormSchema[]>([
     field: 'lang',
     label: t('scripts.lang'),
     component: 'Select',
-    value: 'coffeescript',
+    value: 'ts',
     componentProps: {
       options: [
         {
