@@ -6,11 +6,11 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![telegram group](https://img.shields.io/badge/telegram-group-blue)](https://t.me/SmartHomGo)
 
-| Branch | Status                                                                                                  |
-|--------|---------------------------------------------------------------------------------------------------------|
-| master | ![Build Status](https://github.com/e154/smart-home/actions/workflows/test.yml/badge.svg?branch=master)  |
-| dev    | ![Build Status](https://github.com/e154/smart-home/actions/workflows/test.yml/badge.svg?branch=develop) |
-| docs   | ![Build Status](https://github.com/e154/smart-home/actions/workflows/docs.yml/badge.svg?branch=docs)    |
+| Branch | Status                                                                                                                                                          |
+|--------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| master | [![Build and Deploy](https://github.com/e154/smart-home/actions/workflows/build.yml/badge.svg)](https://github.com/e154/smart-home/actions/workflows/build.yml) |
+| dev    | [![Testing](https://github.com/e154/smart-home/actions/workflows/test.yml/badge.svg)](https://github.com/e154/smart-home/actions/workflows/test.yml)            |
+| docs   | [![Docs](https://github.com/e154/smart-home/actions/workflows/docs.yml/badge.svg)](https://github.com/e154/smart-home/actions/workflows/docs.yml)               |
 
 ### Overview
 
