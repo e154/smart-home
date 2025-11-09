@@ -31,7 +31,7 @@ class PushService {
     if (!this.isStarted) return;
     this.isStarted = false
 
-    stream.unsubscribe('event_user_device', this.currentID)
+    stream.unsubscribe('event_user_devices', this.currentID)
     stream.unsubscribe('event_new_webpush_public_key', this.currentID)
   }
 

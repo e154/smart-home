@@ -44,8 +44,8 @@ services:
       - 8081:8080
     environment:
       - TZ=Asia/Bangkok
-    devices:
-      # Make sure this matched your adapter location
-      - /dev/ttyUSB0:/dev/ttyUSB0
+#    devices:
+#      # Make sure this matched your adapter location
+#      - /dev/ttyUSB0:/dev/ttyUSB0
 volumes:
   db-data:
