@@ -53,7 +53,7 @@ target "image-all" {
     "linux/arm/v6",
     "linux/arm/v7",
     "linux/ppc64le",
-    "linux/riscv64",
+    /* "linux/riscv64", */
     "linux/s390x"
   ]
 }
@@ -81,7 +81,7 @@ target "artifact-all" {
     "linux/arm/v6",
     "linux/arm/v7",
     "linux/ppc64le",
-    "linux/riscv64",
+    /* "linux/riscv64", */
     "linux/s390x",
     "windows/amd64",
     "windows/arm64"

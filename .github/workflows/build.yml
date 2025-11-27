@@ -140,7 +140,6 @@ jobs:
             ./linux_arm_v6.tar.gz
             ./linux_arm_v7.tar.gz
             ./linux_ppc64le.tar.gz
-            ./linux_riscv64.tar.gz
             ./linux_s390x.tar.gz
             ./windows_amd64.tar.gz
             ./windows_arm64.tar.gz
