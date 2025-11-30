@@ -42,16 +42,12 @@ fi
 GO_BUILD_TAGS="-tags production,netgo,osusergo"
 goxx-go env
 goxx-go build -a -v -o /out/server -trimpath -ldflags "$LDFLAGS" $BUILDMODE $GO_BUILD_TAGS .
-#mkdir -p /out/deps
-#ls -R /out
-#ldd-copy-dependencies.sh -b /out/server -t /out/deps
-#find /usr -name "libdl*" | xargs -I % sh -c 'mkdir -p $(dirname /out/deps%); cp % /out/deps%;'
 EOT
 
 FROM scratch AS artifact
 COPY --from=build /out /
 
-FROM --platform=$BUILDPLATFORM debian:bookworm-slim
+FROM debian:bookworm-slim
 RUN apt-get update; \
     apt-get install -y --no-install-recommends \
       libpq5 \
