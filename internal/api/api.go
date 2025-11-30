@@ -26,13 +26,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/e154/smart-home/internal/api/controllers"
-	"github.com/e154/smart-home/internal/api/stub"
-	rbacEcho "github.com/e154/smart-home/internal/system/rbac/rbac_echo"
-	"github.com/e154/smart-home/pkg/adaptors"
-	"github.com/e154/smart-home/pkg/events"
-	"github.com/e154/smart-home/pkg/logger"
-
 	"github.com/e154/bus"
 	"github.com/grandcat/zeroconf"
 	echopprof "github.com/hiko1129/echo-pprof"
@@ -42,6 +35,12 @@ import (
 	"go.uber.org/atomic"
 
 	publicAssets "github.com/e154/smart-home/build"
+	"github.com/e154/smart-home/internal/api/controllers"
+	"github.com/e154/smart-home/internal/api/stub"
+	rbacEcho "github.com/e154/smart-home/internal/system/rbac/rbac_echo"
+	"github.com/e154/smart-home/pkg/adaptors"
+	"github.com/e154/smart-home/pkg/events"
+	"github.com/e154/smart-home/pkg/logger"
 )
 
 var (
@@ -406,13 +405,7 @@ func (a *Api) registerHandlers() {
 	var publicHandler = echo.WrapHandler(http.FileServer(http.FS(publicAssets.F)))
 	a.echo.GET("/*", publicHandler)
 	a.echo.GET("/assets/*", publicHandler)
-	// todo fix stupid overkill
-	a.echo.GET("/a*", publicHandler)
-	a.echo.GET("/b*", publicHandler)
-	a.echo.GET("/f*", publicHandler)
-	a.echo.GET("/s*", publicHandler)
-	a.echo.GET("/l*", publicHandler)
-	a.echo.GET("/m*", publicHandler)
+	a.echo.GET("/sw*.js", publicHandler)
 	fileServer := http.FileServer(http.Dir("./data/file_storage"))
 	a.echo.Any("/upload/*", echo.WrapHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		r.RequestURI = strings.ReplaceAll(r.RequestURI, "/upload/", "/")
@@ -433,9 +426,7 @@ func (a *Api) registerHandlers() {
 	}))))
 
 	// plugins handler
-	custom := echo.WrapHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		a.controllers.Custom(w, r)
-	}))
+	custom := echo.WrapHandler(http.HandlerFunc(a.controllers.Custom))
 	a.echo.Any("/:plugin", custom)
 	a.echo.Any("/:plugin/*", custom)
 
